@@ -50,7 +50,7 @@ type
     Original Binary importer code by Paul M. Bearne, Text importer by Adem. }
   TVKSTLVectorFile = class(TVKVectorFile)
   public
-    { Public Declarations }
+    
     class function Capabilities: TVKDataFileCapabilities; override;
 
     procedure LoadFromStream(aStream: TStream); override;

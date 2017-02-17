@@ -53,7 +53,7 @@ type
   }
   TVKParticles = class(TVKImmaterialSceneObject)
   private
-    { Private Declarations }
+    
     FCubeSize: GLfloat;
     FEdgeColor: TVKColor;
     FVisibleAtRunTime: Boolean;
@@ -66,7 +66,7 @@ type
     FOnBeforeRenderParticles, FOnAfterRenderParticles: TDirectRenderEvent;
 
   protected
-    { Protected Declarations }
+    
     procedure SetCubeSize(const val: GLfloat);
     procedure SetEdgeColor(const val: TVKColor);
     procedure SetVisibleAtRunTime(const val: Boolean);
@@ -75,7 +75,7 @@ type
     procedure ClearParticlePool;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
@@ -96,7 +96,7 @@ type
     procedure KillParticles;
 
   published
-    { Published Declarations }
+    
     property CubeSize: GLfloat read FCubeSize write SetCubeSize;
     property EdgeColor: TVKColor read FEdgeColor write SetEdgeColor;
     property VisibleAtRunTime: Boolean read FVisibleAtRunTime write SetVisibleAtRunTime default False;

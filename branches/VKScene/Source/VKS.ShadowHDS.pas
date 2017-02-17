@@ -42,7 +42,7 @@ type
       data, and to a MaterialLibrary where shadowmaps will be placed. }
 	 TVKShadowHDS = class (TVKHeightDataSourceFilter)
 	   private
-	      { Private Declarations }
+	      
          FTileSize:integer;
 
          FShadowmapLibrary : TVKMaterialLibrary;
@@ -61,7 +61,7 @@ type
          FAmbient:single;
          OwnerHDS:TVKHeightDataSource; //The owner of the tile
 	   protected
-	      { Protected Declarations }
+	      
          procedure SetShadowmapLibrary(const val : TVKMaterialLibrary);
          procedure SetScale(AValue: TVKCoordinates);
          procedure SetLightVector(AValue: TVKCoordinates);
@@ -79,7 +79,7 @@ type
          procedure WorldToLocal(wx,wy:single;var HD:TVKHeightData;var lx:single; var ly:single);
 
 	   public
-	      { Public Declarations }
+	      
          SkipGenerate:boolean;  //When true, only a blank ShadowMap is generated (FAST), but OnThreadBmp32 is still called in a subthread.
 	        constructor Create(AOwner: TComponent); override;
          destructor  Destroy; override;
@@ -97,7 +97,7 @@ type
          function    Shade(HeightData:TVKHeightData;x,y:integer;ShadowHeight,TerrainHeight:single):byte;
 	   published
 
-	      { Published Declarations }
+	      
          property ShadowmapLibrary : TVKMaterialLibrary read FShadowmapLibrary write SetShadowmapLibrary;
          property OnThreadBmp32 : TThreadBmp32 read FOnThreadBmp32 write FOnThreadBmp32; //WARNING: This runs in a subthread
          property OnNewTilePrepared : TNewTilePreparedEvent read FOnNewTilePrepared write FOnNewTilePrepared;

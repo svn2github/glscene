@@ -15,7 +15,7 @@ uses
   Winapi.OpenGLext,
   System.Classes,
   System.SysUtils,
-  //VKS
+  
   VKS.OpenGLAdapter,
   VKS.VectorGeometry,
   VKS.VectorTypes,
@@ -94,11 +94,11 @@ type
   { Wrapper around a parameter of a GLSL program. }
   TVKGLSLShaderParameter = class(TVKCustomShaderParameter)
   private
-    { Private Declarations }
+    
     FGLSLProg: TVKProgramHandle;
     FParameterID: GLInt;
   protected
-    { Protected Declarations }
+    
     function GetAsVector1f: Single; override;
     function GetAsVector2f: TVector2f; override;
     function GetAsVector3f: TVector3f; override;

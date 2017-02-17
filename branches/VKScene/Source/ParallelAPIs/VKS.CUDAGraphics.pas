@@ -13,7 +13,7 @@ uses
   Winapi.OpenGLext,
   System.Classes,
   FMX.Dialogs,
-  //VKS
+  
   VKS.CrossPlatform,
   VKS.CUDA,
   VKS.Context,
@@ -39,7 +39,7 @@ type
 
   TVKVertexAttribute = class(TCollectionItem)
   private
-    { Private declarations }
+    
     FName: string;
     FType: TVKSLDataType;
     FFunc: TCUDAFunction;
@@ -51,12 +51,12 @@ type
     function GetLocation: GLint;
     function GetOwner: TVKVertexAttributes; reintroduce;
   public
-    { Public Declarations }
+    
     constructor Create(ACollection: TCollection); override;
     procedure NotifyChange(Sender: TObject);
     property Location: GLint read GetLocation;
   published
-    { Published Declarations }
+    
     property Name: string read FName write SetName;
     property GLSLType: TVKSLDataType read FType write SetType;
     property KernelFunction: TCUDAFunction read FFunc write SetFunc;
@@ -69,11 +69,11 @@ type
 
   TVKVertexAttributes = class(TOwnedCollection)
   private
-    { Private declarations }
+    
     procedure SetItems(Index: Integer; const AValue: TVKVertexAttribute);
     function GetItems(Index: Integer): TVKVertexAttribute;
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent);
     procedure NotifyChange(Sender: TObject);
     function MakeUniqueName(const ANameRoot: string): string;
@@ -91,7 +91,7 @@ type
 
   TVKCustomFeedBackMesh = class(TVKBaseSceneObject)
   private
-    { Private declarations }
+    
     FGeometryResource: TCUDAGraphicResource;
     FAttributes: TVKVertexAttributes;
     FVAO: TVKVertexArrayHandle;
@@ -111,14 +111,14 @@ type
     procedure SetShader(AShader: TVKGLSLShader);
     procedure SetCommonFunc(AFunc: TCUDAFunction);
   protected
-    { Protected Declarations }
+    
     procedure Notification(AComponent: TComponent;
       Operation: TOperation); override;
     procedure RefreshAttributes;
     procedure AllocateHandles;
     procedure LaunchKernels;
   protected
-    { Protected Declarations }
+    
     property Attributes: TVKVertexAttributes read FAttributes write SetAttributes;
     { GLSL shader as material. If it absent or disabled - nothing be drawen. }
     property Shader: TVKGLSLShader read FShader write SetShader;
@@ -146,7 +146,7 @@ type
        sorting purposes. }
     property Blend: Boolean read FBlend write FBlend default False;
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
@@ -158,7 +158,7 @@ type
 
   TVKFeedBackMesh = class(TVKCustomFeedBackMesh)
   published
-    { Published Declarations }
+    
     property Attributes;
     property Shader;
     property PrimitiveType;
@@ -190,7 +190,7 @@ type
 
   TCUDAGLImageResource = class(TCUDAGraphicResource)
   private
-    { Private declarations }
+    
     fMaterialLibrary: TVKMaterialLibrary;
     fTextureName: TVKLibMaterialName;
     procedure SetMaterialLibrary(const Value: TVKMaterialLibrary);
@@ -202,7 +202,7 @@ type
     procedure Notification(AComponent: TComponent; Operation: TOperation);
       override;
   public
-    { Public declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
@@ -211,7 +211,7 @@ type
     procedure BindArrayToTexture(var cudaArray: TCUDAMemData;
       ALeyer, ALevel: LOngWord); override;
   published
-    { Published declarations }
+    
     property TextureName: TVKLibMaterialName read fTextureName write
       SetTextureName;
     property MaterialLibrary: TVKMaterialLibrary read fMaterialLibrary write
@@ -221,7 +221,7 @@ type
 
   TCUDAGLGeometryResource = class(TCUDAGraphicResource)
   private
-    { Private declarations }
+    
     FFeedBackMesh: TVKCustomFeedBackMesh;
     procedure SetFeedBackMesh(const Value: TVKCustomFeedBackMesh);
     function GetAttribArraySize(AAttr: TVKVertexAttribute): LongWord;
@@ -236,7 +236,7 @@ type
     function GetElementArrayDataSize: LongWord; override;
     function GetElementArrayAddress: Pointer; override;
   public
-    { Public declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
@@ -250,7 +250,7 @@ type
     property IndexDataSize: LongWord read GetElementArrayDataSize;
     property IndexDataAddress: Pointer read GetElementArrayAddress;
   published
-    { Published declarations }
+    
     property FeedBackMesh: TVKCustomFeedBackMesh read FFeedBackMesh write
       SetFeedBackMesh;
     property Mapping;

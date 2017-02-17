@@ -23,13 +23,13 @@ type
 
   TVKRagdolBoneList = class (TPersistentObjectList)
   private
-    { Private Declarations }
+    
      FRagdoll : TVKRagdoll;
   protected
-    { Protected Declarations }
+    
     function GetRagdollBone(Index: Integer) : TVKRagdolBone;
   public
-    { Public Declarations }
+    
     constructor Create(Ragdoll: TVKRagdoll); reintroduce;
     destructor Destroy; override;
 
@@ -42,7 +42,7 @@ type
 
 	TVKRagdolBone = class (TVKRagdolBoneList)
   private
-    { Private Declarations }
+    
     FOwner : TVKRagdolBoneList;
     FName : String;
     FBoneID : Integer; //Refering to TVKActor Bone
@@ -65,14 +65,14 @@ type
     procedure UpdateChild;
     procedure StopChild;
   protected
-    { Protected Declarations }
+    
     function GetRagdollBone(Index: Integer) : TVKRagdolBone;
     procedure Start; virtual; abstract;
     procedure Align; virtual; abstract;
     procedure Update; virtual; abstract;
     procedure Stop; virtual; abstract;
   public
-    { Public Declarations }
+    
     constructor CreateOwned(aOwner : TVKRagdolBoneList);
     constructor Create(Ragdoll: TVKRagdoll);
     destructor Destroy; override;
@@ -94,15 +94,15 @@ type
 
   TVKRagdoll = class(TPersistentObject)
 	private
-    { Private Declarations }
+    
     FOwner : TVKBaseMesh;
     FRootBone : TVKRagdolBone;
     FEnabled: Boolean;
     FBuilt: Boolean;
   protected
-    { Protected Declarations }
+    
   public
-    { Public Declarations }
+    
     constructor Create(AOwner : TVKBaseMesh); reintroduce;
     destructor Destroy; override;
 

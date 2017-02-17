@@ -23,7 +23,7 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-  //VKS
+  
   VKS.Texture, VKS.Scene, VKS.VectorGeometry, VKS.VectorTypes,
   VKS.Cadencer, VKS.Strings, Winapi.OpenGL, Winapi.OpenGLext,  VKS.CustomShader, VKS.Color,
   VKS.RenderContextInfo, VKS.Material, VKS.GLSLShader;

@@ -12,7 +12,7 @@ uses
   System.Classes,
   System.SysUtils,
   FMX.Dialogs,
-  //VKS
+  
   VKS.CUDAContext,
   VKS.CUDA,
   VKS.CUDAFourierTransform,
@@ -35,7 +35,7 @@ type
 
   TCUDAFFTPlan = class(TCUDAComponent)
   private
-    { Private declarations }
+    
     FHandle: TcufftHandle;
     FWidth: Integer;
     FHeight: Integer;
@@ -56,14 +56,14 @@ type
     procedure DestroyHandles; override;
     class procedure CheckLib;
   public
-    { Public declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
     procedure Execute(ASrc: TCUDAMemData; ADst: TCUDAMemData;
       const ADir: TCUDAFFTdir = fftdForward);
   published
-    { Published declarations }
+    
     property Width: Integer read fWidth write SetWidth default 256;
     property Height: Integer read FHeight write SetHeight default 0;
     property Depth: Integer read FDepth write SetDepth default 0;

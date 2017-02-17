@@ -24,7 +24,7 @@ type
   //
   TVKTextureLensFlare = class(TVKBaseSceneObject)
   private
-    { Private Declarations }
+    
     FSize: integer;
     FCurrSize: Single;
     FNumSecs: integer;
@@ -42,25 +42,25 @@ type
     procedure SetImgSecondaries(const Value: TVKTexture);
     procedure SetSeed(const Value: Integer);
   protected
-    { Protected Declarations }
+    
     procedure SetSize(aValue: integer);
     procedure SetNumSecs(aValue: integer);
     procedure SetAutoZTest(aValue: boolean);
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure BuildList(var rci: TVKRenderContextInfo); override;
     procedure DoProgress(const progressTime: TProgressTimes); override;
   published
-    { Public Declarations }
-    //: MaxRadius of the flare.
+    
+    // MaxRadius of the flare.
     property Size: integer read FSize write SetSize default 50;
-    //: Random seed
+    // Random seed
     property Seed: Integer read FSeed write SetSeed;
-    //: Number of secondary flares.
+    // Number of secondary flares.
     property NumSecs: integer read FNumSecs write SetNumSecs default 8;
-    //: Number of segments used when rendering circles.
+    // Number of segments used when rendering circles.
     //property Resolution: integer read FResolution write SetResolution default 64;
     property AutoZTest: boolean read FAutoZTest write SetAutoZTest default True;
     // The Textures

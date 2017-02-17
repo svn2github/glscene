@@ -49,7 +49,7 @@ type
   //
   TVKODEManager = class (TComponent)
     private
-      { Private Declarations }
+      
       FWorld : PdxWorld;
       FSpace : PdxSpace;
       FContactGroup : TdJointGroupID;
@@ -72,7 +72,7 @@ type
       FGeomColorStat: TVKColor;
 
     protected
-      { Protected Declarations }
+      
       procedure Loaded; override;
 
       procedure CalcContact(Object1, Object2 : TObject; var Contact:TdContact);
@@ -104,7 +104,7 @@ type
       property ODEBehaviours[index : Integer] : TVKODEBehaviour read GetODEBehaviour;
 
     public
-      { Public Declarations }
+      
       constructor Create(AOwner:TComponent); override;
       destructor Destroy; override;
       procedure Step(deltaTime:double);
@@ -117,7 +117,7 @@ type
       property NumContactJoints : integer read FNumContactJoints;
 
     published
-      { Published Declarations }
+      
       property Gravity     : TVKCoordinates read FGravity write SetGravity;
       property OnCollision : TODECollisionEvent read FOnCollision write FOnCollision;
       property OnCustomCollision : TODECustomCollisionEvent read FOnCustomCollision write FOnCustomCollision;
@@ -137,14 +137,14 @@ type
   //
   TODECollisionSurface = class (TPersistent)
     private
-      { Private Declarations }
+      
       FOwner : TPersistent;
       FSurfaceParams : TdSurfaceParameters;
       FRFCoeff   : Single;
       FRFEnabled : Boolean;
 
     protected
-      { Protected Declarations }
+      
       procedure WriteToFiler(writer : TWriter);
       procedure ReadFromFiler(reader : TReader);
 
@@ -173,13 +173,13 @@ type
       procedure SetSlip2(value : TdReal);
 
     public
-      { Public Declarations }
+      
       constructor Create(AOwner : TPersistent);
       function GetOwner: TPersistent; override;
       procedure Assign(Source : TPersistent); override;
 
     published
-      { Published Declarations }
+      
       property RollingFrictionCoeff : Single read FRFCoeff write FRFCoeff;
       property RollingFrictionEnabled : Boolean read FRFEnabled write FRFEnabled;
       property SurfaceMode : TSurfaceModes read GetSurfaceMode write SetSurfaceMode;
@@ -211,7 +211,7 @@ type
       FInitialized : Boolean;
       FOwnerBaseSceneObject : TVKBaseSceneObject;
     protected
-      { Protected Declarations }
+      
       procedure Initialize; virtual;
       procedure Finalize; virtual;
 
@@ -224,7 +224,7 @@ type
       function GetAbsoluteMatrix : TMatrix;
 
     public
-      { Public Declarations }
+      
       constructor Create(AOwner : TVKXCollection); override;
       destructor Destroy; override;
 
@@ -236,7 +236,7 @@ type
       property AbsoluteMatrix : TMatrix read GetAbsoluteMatrix;
 
     published
-      { Published Declarations }
+      
       property Manager : TVKODEManager read FManager write SetManager;
       property Surface : TODECollisionSurface read FSurface write SetSurface;
       property OnCollision : TODEObjectCollisionEvent read FOnCollision write FOnCollision;
@@ -247,7 +247,7 @@ type
   //
   TVKODEDynamic = class (TVKODEBehaviour)
     private
-      { Private Declarations }
+      
       FBody : PdxBody;
       FMass : TdMass;
       FElements : TODEElements;
@@ -271,7 +271,7 @@ type
       procedure UnregisterJoint(Joint : TODEJointBase);
 
     public
-      { Public Declarations }
+      
       constructor Create(AOwner : TVKXCollection); override;
       destructor Destroy; override;
 
@@ -298,7 +298,7 @@ type
       property Mass : TdMass read GetMass write SetMass;
 
     published
-      { Published Declarations }
+      
       property Elements : TODEElements read FElements;
       property Enabled : Boolean read GetEnabled write SetEnabled;
 
@@ -308,11 +308,11 @@ type
   //
   TVKODEStatic = class (TVKODEBehaviour)
     private
-      { Private Declarations }
+      
       FElements : TODEElements;
 
     protected
-      { Protected Declarations }
+      
       procedure Initialize; override;
       procedure Finalize; override;
       procedure WriteToFiler(writer : TWriter); override;
@@ -320,7 +320,7 @@ type
       procedure AlignElements;
 
     public
-      { Public Declarations }
+      
       constructor Create(AOwner : TVKXCollection); override;
       destructor Destroy; override;
 
@@ -331,7 +331,7 @@ type
       function AddNewElement(AChild:TODEElementClass):TODEElementBase; dynamic;
 
     published
-      { Published Declarations }
+      
       property Elements : TODEElements read FElements;
 
   end;
@@ -340,11 +340,11 @@ type
   //
   TODEElements = class(TVKXCollection)
     private
-      { Private Declarations }
+      
       function GetElement(index : integer) : TODEElementBase;
 
     public
-      { Public Declarations }
+      
       destructor Destroy; override;
       class function ItemsClass : TVKXCollectionItemClass; override;
       procedure Initialize;
@@ -362,7 +362,7 @@ type
   //
   TODEElementBase = class (TVKXCollectionItem)
     private
-      { Private Declarations }
+      
       FMass  : TdMass;
       FDensity : TdReal;
       FGeomTransform,
@@ -377,7 +377,7 @@ type
       FIsCalculating : Boolean;
 
     protected
-      { Protected Declarations }
+      
       procedure Initialize; virtual;
       procedure Finalize; virtual;
       function CalculateMass : TdMass; virtual;
@@ -405,7 +405,7 @@ type
       procedure SetUp(const Value : TVKCoordinates);
 
     public
-      { Public Declarations }
+      
       constructor Create(AOwner : TVKXCollection); override;
       destructor Destroy; override;
 
@@ -420,7 +420,7 @@ type
       property Initialized : Boolean read FInitialized;
 
     published
-      { Published Declarations }
+      
       property Density : TdReal read FDensity write SetDensity;
       property Position : TVKCoordinates read FPosition write SetPosition;
       property Direction : TVKCoordinates read FDirection write SetDirection;
@@ -433,13 +433,13 @@ type
   { ODE box implementation. }
   TODEElementBox = class (TODEElementBase)
     private
-      { Private Declarations }
+      
       FBoxWidth,
       FBoxHeight,
       FBoxDepth : TdReal;
 
     protected
-      { Protected Declarations }
+      
       procedure Initialize; override;
       function CalculateMass : TdMass; override;
       procedure ODERebuild; override;
@@ -454,7 +454,7 @@ type
       procedure SetBoxDepth(const Value: TdReal);
 
     public
-      { Public Declarations }
+      
       constructor Create(AOwner : TVKXCollection); override;
 
       procedure Render(var rci : TVKRenderContextInfo); override;
@@ -474,11 +474,11 @@ type
   { ODE sphere implementation. }
   TODEElementSphere = class (TODEElementBase)
     private
-      { Private Declarations }
+      
       FRadius : TdReal;
 
     protected
-      { Protected Declarations }
+      
       procedure Initialize; override;
       function CalculateMass : TdMass; override;
       procedure ODERebuild; override;
@@ -490,7 +490,7 @@ type
       procedure SetRadius(const Value: TdReal);
 
     public
-      { Public Declarations }
+      
       constructor Create(AOwner : TVKXCollection); override;
 
       procedure Render(var rci : TVKRenderContextInfo); override;
@@ -500,7 +500,7 @@ type
       class function ItemCategory : String; override;
 
     published
-      { Published Declarations }
+      
       property Radius : TdReal read GetRadius write SetRadius;
 
   end;
@@ -510,12 +510,12 @@ type
   { ODE capped cylinder implementation. }
   TODEElementCapsule = class (TODEElementBase)
     private
-      { Private Declarations }
+      
       FRadius,
       FLength : TdReal;
 
     protected
-      { Protected Declarations }
+      
       procedure Initialize; override;
       function CalculateMass : TdMass; override;
       procedure ODERebuild; override;
@@ -529,7 +529,7 @@ type
       procedure SetLength(const Value: TdReal);
 
     public
-      { Public Declarations }
+      
       constructor Create(AOwner : TVKXCollection); override;
 
       procedure Render(var rci : TVKRenderContextInfo); override;
@@ -539,7 +539,7 @@ type
       class function ItemCategory : String; override;
 
     published
-      { Published Declarations }
+      
       property Radius : TdReal read GetRadius write SetRadius;
       property Length : TdReal read GetLength write SetLength;
 
@@ -550,12 +550,12 @@ type
   { ODE cylinder implementation. }
   TODEElementCylinder = class (TODEElementBase)
     private
-      { Private Declarations }
+      
       FRadius,
       FLength : TdReal;
 
     protected
-      { Protected Declarations }
+      
       procedure Initialize; override;
       function CalculateMass : TdMass; override;
       procedure ODERebuild; override;
@@ -569,7 +569,7 @@ type
       procedure SetLength(const Value: TdReal);
 
     public
-      { Public Declarations }
+      
       constructor Create(AOwner:TVKXCollection); override;
 
       procedure Render(var rci : TVKRenderContextInfo); override;
@@ -579,7 +579,7 @@ type
       class function ItemCategory : String; override;
 
     published
-      { Published Declarations }
+      
       property Radius : TdReal read GetRadius write SetRadius;
       property Length : TdReal read GetLength write SetLength;
 
@@ -591,13 +591,13 @@ type
   { ODE tri-mesh implementation. }
   TODEElementTriMesh = class (TODEElementBase)
     private
-      { Private Declarations }
+      
       FTriMeshData : PdxTriMeshData;
       FVertices : TAffineVectorList;
       FIndices : TIntegerList;
 
     protected
-      { Protected Declarations }
+      
       procedure Initialize; override;
       procedure Finalize; override;
       function CalculateMass : TdMass; override;
@@ -609,7 +609,7 @@ type
       procedure SetIndices(const Value : TIntegerList);
 
     public
-      { Public Declarations }
+      
       constructor Create(AOwner : TVKXCollection); override;
       destructor Destroy; override;
 
@@ -629,7 +629,7 @@ type
   { ODE plane implementation. }
   TODEElementPlane = class (TODEElementBase)
     protected
-      { Protected Declarations }
+      
       procedure Initialize; override;
 
       procedure WriteToFiler(writer : TWriter); override;
@@ -638,7 +638,7 @@ type
       procedure AlignGeomElementToMatrix(Mat:TMatrix); override;
 
     public
-      { Public Declarations }
+      
       class function FriendlyName : String; override;
       class function FriendlyDescription : String; override;
       class function ItemCategory : String; override;
@@ -651,11 +651,11 @@ type
   { An XCollection decendant for ODE Joints. }
   TODEJoints = class(TVKXCollection)
     protected
-      { Protected Declarations }
+      
       function GetJoint(index: integer): TODEJointBase;
 
     public
-      { Public Declarations }
+      
       class function ItemsClass : TVKXCollectionItemClass; override;
 
       procedure Initialize;
@@ -670,11 +670,11 @@ type
   { Component front-end for storing ODE Joints. }
   TVKODEJointList = class(TComponent)
     private
-      { Private Declarations }
+      
       FJoints : TODEJoints;
 
     protected
-      { Protected Declarations }
+      
       procedure WriteJoints(stream : TStream);
       procedure ReadJoints(stream : TStream);
       procedure DefineProperties(Filer: TFiler); override;
@@ -683,12 +683,12 @@ type
       procedure Notification(AComponent: TComponent; Operation: TOperation); override;
 
     public
-      { Public Declarations }
+      
       constructor Create(AOwner:TComponent); override;
       destructor Destroy; override;
 
     published
-      { Published Declarations }
+      
       property Joints : TODEJoints read FJoints;
 
   end;
@@ -701,7 +701,7 @@ type
   { Base structures for ODE Joints. }
   TODEJointBase = class (TVKXCollectionItem)
     private
-      { Private Declarations }
+      
       FJointID : TdJointID;
       FObject1,
       FObject2 : TVKBaseSceneObject;
@@ -714,7 +714,7 @@ type
       FJointOptions : TJointOptions;
 
     protected
-      { Protected Declarations }
+      
 
       procedure WriteToFiler(writer : TWriter); override;
       procedure ReadFromFiler(reader : TReader); override;
@@ -736,7 +736,7 @@ type
       property JointOptions : TJointOptions read FJointOptions write SetJointOptions;
 
     public
-      { Public Declarations }
+      
       constructor Create(aOwner : TVKXCollection); override;
       destructor Destroy; override;
       procedure StructureChanged; virtual;
@@ -752,7 +752,7 @@ type
 
 
     published
-      { Published Declarations }
+      
       property Manager : TVKODEManager read FManager write SetManager;
       property Object1 : TVKBaseSceneObject read FObject1 write SetObject1;
       property Object2 : TVKBaseSceneObject read FObject2 write SetObject2;
@@ -765,7 +765,7 @@ type
 
   TODEJointParams = class (TPersistent)
     private
-      { Private Declarations }
+      
       FOwner : TPersistent;
       FSetCallback : TODESetParamCallback;
       FGetCallback : TODEGetParamCallback;
@@ -795,7 +795,7 @@ type
       FFlagSuspensionCFM : Boolean;
 
     protected
-      { Protected Declarations }
+      
       function GetLoStop : TdReal;
       function GetHiStop : TdReal;
       function GetVel : TdReal;
@@ -824,7 +824,7 @@ type
       procedure ReadFromFiler(reader : TReader);
 
     public
-      { Public Declarations }
+      
       constructor Create(AOwner : TPersistent);
       function GetOwner : TPersistent; override;
       procedure Assign(Source : TPersistent); override;
@@ -835,7 +835,7 @@ type
       property GetCallback : TODEGetParamCallback read FGetCallback write FGetCallback;
 
     published
-      { Published Declarations }
+      
       property LoStop : TdReal read GetLoStop write SetLoStop;
       property HiStop : TdReal read GetHiStop write SetHiStop;
       property Vel : TdReal read GetVel write SetVel;
@@ -855,13 +855,13 @@ type
   { ODE hinge joint implementation. }
   TGLODEJointHinge = class (TODEJointBase)
     private
-      { Private Declarations }
+      
       FAnchor,
       FAxis : TVKCoordinates;
       FAxisParams : TODEJointParams;
 
     protected
-      { Protected Declarations }
+      
 
       procedure WriteToFiler(writer : TWriter); override;
       procedure ReadFromFiler(reader : TReader); override;
@@ -876,7 +876,7 @@ type
       function GetAxisParam(Param :  Integer; var Value : TdReal) : Boolean;
 
     public
-      { Public Declarations }
+      
       constructor Create(aOwner : TVKXCollection); override;
       destructor Destroy; override;
       procedure StructureChanged; override;
@@ -886,7 +886,7 @@ type
       class function FriendlyDescription : String; override;
 
     published
-      { Published Declarations }
+      
       property Anchor : TVKCoordinates read FAnchor write SetAnchor;
       property Axis : TVKCoordinates read FAxis write SetAxis;
       property AxisParams : TODEJointParams read FAxisParams write SetAxisParams;
@@ -898,11 +898,11 @@ type
   { ODE ball joint implementation. }
   TODEJointBall = class (TODEJointBase)
     private
-      { Private Declarations }
+      
       FAnchor : TVKCoordinates;
 
     protected
-      { Protected Declarations }
+      
 
       procedure WriteToFiler(writer : TWriter); override;
       procedure ReadFromFiler(reader : TReader); override;
@@ -911,7 +911,7 @@ type
       procedure AnchorChange(Sender : TObject);
 
     public
-      { Public Declarations }
+      
       constructor Create(aOwner : TVKXCollection); override;
       destructor Destroy; override;
 
@@ -922,7 +922,7 @@ type
       class function FriendlyDescription : String; override;
 
     published
-      { Published Declarations }
+      
       property Anchor : TVKCoordinates read FAnchor write SetAnchor;
 
   end;
@@ -932,12 +932,12 @@ type
   { ODE slider joint implementation. }
   TODEJointSlider = class (TODEJointBase)
     private
-      { Private Declarations }
+      
       FAxis : TVKCoordinates;
       FAxisParams : TODEJointParams;
 
     protected
-      { Protected Declarations }
+      
 
       procedure WriteToFiler(writer : TWriter); override;
       procedure ReadFromFiler(reader : TReader); override;
@@ -950,7 +950,7 @@ type
       function GetAxisParam(Param :  Integer; var Value : TdReal) : Boolean;
 
     public
-      { Public Declarations }
+      
       constructor Create(aOwner : TVKXCollection); override;
       destructor Destroy; override;
 
@@ -961,7 +961,7 @@ type
       class function FriendlyDescription : String; override;
 
     published
-      { Published Declarations }
+      
       property Axis : TVKCoordinates read FAxis write SetAxis;
       property AxisParams : TODEJointParams read FAxisParams write SetAxisParams;
 
@@ -972,13 +972,13 @@ type
   { ODE fixed joint implementation. }
   TODEJointFixed = class (TODEJointBase)
     protected
-      { Protected Declarations }
+      
 
       procedure WriteToFiler(writer : TWriter); override;
       procedure ReadFromFiler(reader : TReader); override;
 
     public
-      { Public Declarations }
+      
       class function FriendlyName : String; override;
       class function FriendlyDescription : String; override;
       procedure Initialize; override;
@@ -990,7 +990,7 @@ type
   { ODE hinge2 joint implementation. }
   TGLODEJointHinge2 = class (TODEJointBase)
     private
-      { Private Declarations }
+      
       FAnchor,
       FAxis1,
       FAxis2 : TVKCoordinates;
@@ -998,7 +998,7 @@ type
       FAxis2Params : TODEJointParams;
 
     protected
-      { Protected Declarations }
+      
 
       procedure WriteToFiler(writer : TWriter); override;
       procedure ReadFromFiler(reader : TReader); override;
@@ -1018,7 +1018,7 @@ type
       function GetAxis2Param(Param :  Integer; var Value : TdReal) : Boolean;
 
     public
-      { Public Declarations }
+      
       constructor Create(aOwner : TVKXCollection); override;
       destructor Destroy; override;
 
@@ -1029,7 +1029,7 @@ type
       class function FriendlyDescription : String; override;
 
     published
-      { Published Declarations }
+      
       property Anchor : TVKCoordinates read FAnchor write SetAnchor;
       property Axis1 : TVKCoordinates read FAxis1 write SetAxis1;
       property Axis2 : TVKCoordinates read FAxis2 write SetAxis2;
@@ -1043,7 +1043,7 @@ type
   { ODE universal joint implementation. }
   TODEJointUniversal = class (TODEJointBase)
     private
-      { Private Declarations }
+      
       FAnchor,
       FAxis1,
       FAxis2 : TVKCoordinates;
@@ -1051,7 +1051,7 @@ type
       FAxis2Params : TODEJointParams;
 
     protected
-      { Protected Declarations }
+      
 
       procedure WriteToFiler(writer : TWriter); override;
       procedure ReadFromFiler(reader : TReader); override;
@@ -1071,7 +1071,7 @@ type
       function GetAxis2Param(Param :  Integer; var Value : TdReal) : Boolean;
 
     public
-      { Public Declarations }
+      
       constructor Create(aOwner : TVKXCollection); override;
       destructor Destroy; override;
 
@@ -1082,7 +1082,7 @@ type
       class function FriendlyDescription : String; override;
 
     published
-      { Published Declarations }
+      
       property Anchor : TVKCoordinates read FAnchor write SetAnchor;
       property Axis1 : TVKCoordinates read FAxis1 write SetAxis1;
       property Axis2 : TVKCoordinates read FAxis2 write SetAxis2;

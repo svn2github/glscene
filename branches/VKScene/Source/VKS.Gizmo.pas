@@ -14,7 +14,7 @@ interface
 uses
   System.Classes,
   System.SysUtils,
-  //VKS
+  
   VKS.Scene,
   VKS.Color,
   VKS.Objects,

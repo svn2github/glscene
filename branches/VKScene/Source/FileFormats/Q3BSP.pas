@@ -100,7 +100,7 @@ type
    //
    TQ3BSP = class (TObject)
       public
-         { Public Declarations }
+         
          Header         : TBSPHeader;
          Lumps          : array of TBSPLump;
          NumOfVerts     : Integer;

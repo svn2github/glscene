@@ -12,7 +12,7 @@ interface
 uses
   Winapi.OpenGL,
   System.Classes, System.SysUtils,
-  //VKS
+  
   VKS.VectorGeometry, VKS.VectorTypes, VKS.BaseClasses,
   VKS.CrossPlatform;
 
@@ -39,7 +39,7 @@ type
     Handles dynamic default values to save resource file space.  }
   TVKCustomCoordinates = class(TVKUpdateAbleObject)
   private
-    { Private Declarations }
+    
     FCoords: TVector;
     FStyle: TVKCoordinatesStyle; // NOT Persistent
     FPDefaultCoords: PVector;
@@ -55,7 +55,7 @@ type
     procedure SetDirectCoordinate(const Index: Integer; const AValue: GLfloat);
 
   protected
-    { Protected Declarations }
+    
     procedure SetDirectVector(const V: TVector);
 
     procedure DefineProperties(Filer: TFiler); override;
@@ -63,7 +63,7 @@ type
     procedure WriteData(Stream: TStream);
 
   public
-    { Public Declarations }
+    
     constructor CreateInitialized(AOwner: TPersistent; const AValue: TVector;
       const AStyle: TVKCoordinatesStyle = CsUnknown);
     destructor Destroy; override;
@@ -198,7 +198,7 @@ type
   TVKCoordinatesUpdateAbleComponent = class(TVKUpdateAbleComponent,
     IGLCoordinatesUpdateAble)
   public
-    { Public Declarations }
+    
     procedure CoordinateChanged(Sender: TVKCustomCoordinates); virtual;
       abstract;
   end;

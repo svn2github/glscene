@@ -23,7 +23,7 @@ type
   //
   TVKSkyDomeBand = class(TCollectionItem)
   private
-    { Private Declarations }
+    
     FStartAngle: Single;
     FStopAngle: Single;
     FStartColor: TVKColor;
@@ -32,7 +32,7 @@ type
     FStacks: Integer;
 
   protected
-    { Protected Declarations }
+    
     function GetDisplayName: string; override;
     procedure SetStartAngle(const val: Single);
     procedure SetStartColor(const val: TVKColor);
@@ -43,7 +43,7 @@ type
     procedure OnColorChange(sender: TObject);
 
   public
-    { Public Declarations }
+    
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -51,7 +51,7 @@ type
     procedure BuildList(var rci: TVKRenderContextInfo);
 
   published
-    { Published Declarations }
+    
     property StartAngle: Single read FStartAngle write SetStartAngle;
     property StartColor: TVKColor read FStartColor write SetStartColor;
     property StopAngle: Single read FStopAngle write SetStopAngle;
@@ -64,14 +64,14 @@ type
   //
   TVKSkyDomeBands = class(TCollection)
   protected
-    { Protected Declarations }
+    
     owner: TComponent;
     function GetOwner: TPersistent; override;
     procedure SetItems(index: Integer; const val: TVKSkyDomeBand);
     function GetItems(index: Integer): TVKSkyDomeBand;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent);
     function Add: TVKSkyDomeBand;
     function FindItemID(ID: Integer): TVKSkyDomeBand;
@@ -86,25 +86,25 @@ type
   //
   TVKSkyDomeStar = class(TCollectionItem)
   private
-    { Private Declarations }
+    
     FRA, FDec: Single;
     FMagnitude: Single;
     FColor: TColor;
     FCacheCoord: TAffineVector; // cached cartesian coordinates
 
   protected
-    { Protected Declarations }
+    
     function GetDisplayName: string; override;
 
   public
-    { Public Declarations }
+    
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
 
     procedure Assign(Source: TPersistent); override;
 
   published
-    { Published Declarations }
+    
       { Right Ascension, in degrees. }
     property RA: Single read FRA write FRA;
     { Declination, in degrees. }
@@ -120,7 +120,7 @@ type
   //
   TVKSkyDomeStars = class(TCollection)
   protected
-    { Protected Declarations }
+    
     owner: TComponent;
     function GetOwner: TPersistent; override;
     procedure SetItems(index: Integer; const val: TVKSkyDomeStar);
@@ -129,7 +129,7 @@ type
     procedure PrecomputeCartesianCoordinates;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent);
 
     function Add: TVKSkyDomeStar;
@@ -168,19 +168,19 @@ type
          }
   TVKSkyDome = class(TVKCameraInvariantObject)
   private
-    { Private Declarations }
+    
     FOptions: TVKSkyDomeOptions;
     FBands: TVKSkyDomeBands;
     FStars: TVKSkyDomeStars;
 
   protected
-    { Protected Declarations }
+    
     procedure SetBands(const val: TVKSkyDomeBands);
     procedure SetStars(const val: TVKSkyDomeStars);
     procedure SetOptions(const val: TVKSkyDomeOptions);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -188,7 +188,7 @@ type
     procedure BuildList(var rci: TVKRenderContextInfo); override;
 
   published
-    { Published Declarations }
+    
     property Bands: TVKSkyDomeBands read FBands write SetBands;
     property Stars: TVKSkyDomeStars read FStars write SetStars;
     property Options: TVKSkyDomeOptions read FOptions write SetOptions default [];
@@ -209,7 +209,7 @@ type
      for using TVKEarthSkyDome. }
   TVKEarthSkyDome = class(TVKSkyDome)
   private
-    { Private Declarations }
+    
     FSunElevation: Single;
     FTurbidity: Single;
     FCurSunColor, FCurSkyColor, FCurHazeColor: TColorVector;
@@ -224,7 +224,7 @@ type
     FExtendedOptions: TEarthSkydomeOptions;
     FMorning: boolean;
   protected
-    { Protected Declarations }
+    
     procedure Loaded; override;
 
     procedure SetSunElevation(const val: Single);
@@ -244,7 +244,7 @@ type
     function CalculateColor(const theta, cosGamma: Single): TColorVector;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -254,7 +254,7 @@ type
     procedure SetSunAtTime(HH, MM: Single);
 
   published
-    { Published Declarations }
+    
       { Elevation of the sun, measured in degrees. }
     property SunElevation: Single read FSunElevation write SetSunElevation;
     { Expresses the purity of air.  Value range is from 1 (pure athmosphere) to 120 (very nebulous) }

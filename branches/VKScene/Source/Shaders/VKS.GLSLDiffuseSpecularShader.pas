@@ -25,14 +25,14 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-  //VKS
+  
   VKS.Texture, VKS.Scene, VKS.VectorGeometry, Winapi.OpenGL, Winapi.OpenGLext,  VKS.Strings,
   VKS.CustomShader, VKS.GLSLShader, VKS.Color, VKS.RenderContextInfo, VKS.Material;
 
 type
   EGLSLDiffuseSpecularShaderException = class(EGLSLShaderException);
 
-  //: Abstract class.
+  // Abstract class.
   TVKBaseCustomGLSLDiffuseSpecular = class(TVKCustomGLSLShader)
   private
     FLightPower: Single;
@@ -48,11 +48,11 @@ type
     property LightPower: Single read FLightPower write FLightPower;
     property RealisticSpecular: Boolean read FRealisticSpecular write SetRealisticSpecular;
 
-    //: User can disable fog support and save some FPS if he doesn't need it.
+    // User can disable fog support and save some FPS if he doesn't need it.
     property FogSupport: TVKShaderFogSupport read FFogSupport write SetFogSupport default sfsAuto;
   end;
 
-  //: Abstract class.
+  // Abstract class.
   TVKBaseGLSLDiffuseSpecularShaderMT = class(TVKBaseCustomGLSLDiffuseSpecular, IGLMaterialLibrarySupported)
   private
     FMaterialLibrary: TVKMaterialLibrary;
@@ -60,7 +60,7 @@ type
     FMainTextureName: TVKLibMaterialName;
     function GetMainTextureName: TVKLibMaterialName;
     procedure SetMainTextureName(const Value: TVKLibMaterialName);
-    //: Implementing IGLMaterialLibrarySupported.
+    // Implementing IGLMaterialLibrarySupported.
     function GetMaterialLibrary: TVKAbstractMaterialLibrary;
   protected
     procedure SetMaterialLibrary(const Value: TVKMaterialLibrary); virtual;

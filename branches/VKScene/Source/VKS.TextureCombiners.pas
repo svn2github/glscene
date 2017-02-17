@@ -15,7 +15,7 @@ uses
   Winapi.OpenGLext,
   System.SysUtils,
   System.Classes,
-  //VKS
+  
   VKS.OpenGLAdapter,
   VKS.Context;
 

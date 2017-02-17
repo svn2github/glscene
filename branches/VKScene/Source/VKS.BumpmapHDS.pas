@@ -17,7 +17,7 @@ interface
 
 uses
   System.Classes, System.SysUtils, System.SyncObjs,
-  //VKS
+  
   VKS.HeightData, VKS.Graphics, VKS.VectorGeometry,
   VKS.Texture, VKS.Material, Winapi.OpenGL, Winapi.OpenGLext,  VKS.Utils, VKS.VectorTypes;
 
@@ -36,7 +36,7 @@ type
     data, and to a MaterialLibrary where bumpmaps will be placed. }
   TVKBumpmapHDS = class(TVKHeightDataSourceFilter)
   private
-    { Private Declarations }
+    
     // FElevationHDS : TVKHeightDataSource;
     FBumpmapLibrary: TVKMaterialLibrary;
     FOnNewTilePrepared: TNewTilePreparedEvent;
@@ -45,14 +45,14 @@ type
     FMaxTextures: Integer;
     Uno: TCriticalSection;
   protected
-    { Protected Declarations }
+    
     procedure SetBumpmapLibrary(const val: TVKMaterialLibrary);
     procedure SetBumpScale(const val: Single);
     function StoreBumpScale: Boolean;
     procedure SetSubSampling(const val: Integer);
     procedure Trim(MaxTextureCount: Integer);
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Release(aHeightData: TVKHeightData); override;
@@ -64,7 +64,7 @@ type
     // procedure  TileTextureCoordinates(heightData : TVKHeightData; TextureScale:TTexPoint; TextureOffset:TTexPoint);
     procedure PreparingData(heightData: TVKHeightData); override;
   published
-    { Published Declarations }
+    
     property BumpmapLibrary: TVKMaterialLibrary read FBumpmapLibrary
       write SetBumpmapLibrary;
     property OnNewTilePrepared: TNewTilePreparedEvent read FOnNewTilePrepared

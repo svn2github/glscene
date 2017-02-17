@@ -34,7 +34,7 @@ type
   { A context driver for standard Windows Vulkan }
   TVKWinContext = class(TVKContext)
   protected
-    { Protected Declarations }
+    
     FDC: HDC;
     FRC: HGLRC;
     FShareContext: TVKWinContext;
@@ -69,7 +69,7 @@ type
     { DoGetHandles must be implemented in child classes,
       and return the display + window }
   public
-    { Public Declarations }
+    
     constructor Create; override;
     destructor Destroy; override;
 

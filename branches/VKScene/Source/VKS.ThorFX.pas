@@ -37,7 +37,7 @@ type
   { Thor special effect manager. }
   TVKThorFXManager = class(TVKCadenceAbleComponent)
   private
-    { Private Declarations }
+    
     FClients: TList;
     FThorpoints: PThorpointArray;
     FTarget: TVKCoordinates;
@@ -51,7 +51,7 @@ type
     FDisabled, FCore, FGlow: boolean;
     FOnCalcPoint: TCalcPointEvent;
   protected
-    { Protected Declarations }
+    
     procedure RegisterClient(aClient: TVKBThorFX);
     procedure DeRegisterClient(aClient: TVKBThorFX);
     procedure DeRegisterAllClients;
@@ -69,12 +69,12 @@ type
     procedure CalcThor;
     procedure CalcFrac(left, right: integer; lh, rh: single; xyz: integer);
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure DoProgress(const progressTime: TProgressTimes); override;
   published
-    { Published Declarations }
+    
     property Target: TVKCoordinates read FTarget write SetTarget;
     property Cadencer: TVKCadencer read FCadencer write SetCadencer;
     property Maxpoints: integer read FMaxpoints write SetMaxpoints default 256;
@@ -98,19 +98,19 @@ type
   { Thor special effect }
   TVKBThorFX = class(TVKObjectPostEffect)
   private
-    { Private Declarations }
+    
     FManager: TVKThorFXManager;
     FManagerName: String; // NOT persistent, temporarily used for persistence
     FTarget: TVKCoordinates;
   protected
-    { Protected Declarations }
+    
     procedure SetManager(const val: TVKThorFXManager);
     procedure WriteToFiler(writer: TWriter); override;
     procedure ReadFromFiler(reader: TReader); override;
     procedure Loaded; override;
     procedure SetTarget(const val: TVKCoordinates);
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TVKXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -118,7 +118,7 @@ type
     class function FriendlyDescription: String; override;
     procedure Render(var rci: TVKRenderContextInfo); override;
   published
-    { Published Declarations }
+    
     { Refers the collision manager. }
     property Manager: TVKThorFXManager read FManager write SetManager;
   end;

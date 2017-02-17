@@ -221,14 +221,14 @@ type
        as for directly drawing/reading from the current OpenGL buffer. }
   TVKImage = class(TVKBaseImage)
   private
-    { Private Declarations }
+    
     FVerticalReverseOnAssignFromBitmap: Boolean;
     FBlank: boolean;
     fOldColorFormat: GLenum;
     fOldDataType: GLenum;
     procedure DataConvertTask;
   protected
-    { Protected Declarations }
+    
     procedure SetWidth(val: Integer);
     procedure SetHeight(const val: Integer);
     procedure SetDepth(const val: Integer);
@@ -236,8 +236,8 @@ type
     procedure SetCubeMap(const val: Boolean);
     procedure SetArray(const val: Boolean);
     function GetScanLine(index: Integer): PGLPixel32Array;
-    procedure AssignFrom24BitsBitmap(aBitmap: TVKBitmap);
-    procedure AssignFrom32BitsBitmap(aBitmap: TVKBitmap);
+    procedure AssignFrom24BitsBitmap(aBitmap: TBitmap);
+    procedure AssignFrom32BitsBitmap(aBitmap: TBitmap);
 {$IFDEF VKS_Graphics32_SUPPORT}
     procedure AssignFromBitmap32(aBitmap32: TBitmap32);
 {$ENDIF}
@@ -246,7 +246,7 @@ type
 {$ENDIF}
 
   public
-    { Public Declarations }
+    
     constructor Create; override;
     destructor Destroy; override;
     { Accepts TVKImage and TGraphic subclasses. }
@@ -257,7 +257,7 @@ type
       if you do your own drawing and reverse RGB on the drawing side. 
       If you're after speed, don't forget to set the bitmap's dimensions
       to a power of two! }
-    procedure AssignFromBitmap24WithoutRGBSwap(aBitmap: TVKBitmap);
+    procedure AssignFromBitmap24WithoutRGBSwap(aBitmap: TBitmap);
     { Assigns from a 2D Texture. 
       The context which holds the texture must be active and the texture
       handle valid. }
@@ -267,7 +267,7 @@ type
     procedure AssignFromTexture2D(textureHandle: TVKTextureHandle); overload;
 
     { Create a 32 bits TBitmap from self content. }
-    function Create32BitsBitmap: TVKBitmap;
+    function Create32BitsBitmap: TBitmap;
 
     { Width of the bitmap.  }
     property Width: Integer read GetWidth write SetWidth;
@@ -350,7 +350,7 @@ type
       wrapX: Boolean = True; wrapY: Boolean = True);
     { Assumes the bitmap content is a normal map and normalizes all pixels.  }
     procedure NormalizeNormalMap;
-    procedure AssignToBitmap(aBitmap: TVKBitmap);
+    procedure AssignToBitmap(aBitmap: TBitmap);
     { Generate level of detail. }
     procedure GenerateMipmap(AFilter: TImageFilterFunction); override;
     { Clear all levels except first. }
@@ -374,7 +374,7 @@ type
   { Stores registered raster file formats. }
   TRasterFileFormatsList = class(TPersistentObjectList)
   public
-    { Public Declarations }
+    
     destructor Destroy; override;
 
     procedure Add(const Ext, Desc: string; DescID: Integer; AClass:
@@ -405,7 +405,7 @@ procedure GammaCorrectRGBArray(base: Pointer; pixelCount: Integer;
   gamma: Single);
 procedure BrightenRGBArray(base: Pointer; pixelCount: Integer;
   factor: Single);
-//: Read access to the list of registered vector file formats
+// Read access to the list of registered vector file formats
 function GetRasterFileFormats: TRasterFileFormatsList;
 { Returns an extension by its index
    in the internal image files dialogs filter. 
@@ -415,7 +415,7 @@ function RasterFileFormatExtensionByIndex(index: Integer): string;
 procedure RegisterRasterFormat(const AExtension, ADescription: string;
   AClass: TVKBaseImageClass);
 procedure UnregisterRasterFormat(AClass: TVKBaseImageClass);
-//: Return an optimal number of texture pyramid
+// Return an optimal number of texture pyramid
 function GetImageLodNumber(w, h, d: integer; IsVolume: Boolean): Integer;
 
 var
@@ -2256,7 +2256,7 @@ end;
 
 procedure TVKImage.Assign(Source: TPersistent);
 var
-  bmp: TVKBitmap;
+  bmp: TBitmap;
   graphic: TVKGraphic;
 begin
   if (Source is TVKImage) or (Source is TVKBaseImage) then
@@ -2282,14 +2282,14 @@ begin
   end
   else if Source is TVKGraphic then
   begin
-    if (Source is TVKBitmap)
-    and (TVKBitmap(Source).PixelFormat in [glpf24bit, glpf32bit])
-    and (((TVKBitmap(Source).Width and 3) = 0) or (GL_EXT_bgra)) then
+    if (Source is TBitmap)
+    and (TBitmap(Source).PixelFormat in [glpf24bit, glpf32bit])
+    and (((TBitmap(Source).Width and 3) = 0) or (GL_EXT_bgra)) then
     begin
-      if TVKBitmap(Source).PixelFormat = glpf24bit then
-        AssignFrom24BitsBitmap(TVKBitmap(Source))
+      if TBitmap(Source).PixelFormat = glpf24bit then
+        AssignFrom24BitsBitmap(TBitmap(Source))
       else
-        AssignFrom32BitsBitmap(TVKBitmap(Source))
+        AssignFrom32BitsBitmap(TBitmap(Source))
     end
 {$IFDEF VKS_PngImage_SUPPORT}
     else if Source is TPngImage then
@@ -2298,7 +2298,7 @@ begin
     else
     begin
       graphic := TVKGraphic(Source);
-      bmp := TVKBitmap.Create;
+      bmp := TBitmap.Create;
       try
         // crossbuilder: useless to set pixelformat before setting the size ?
         //               or maybe just useless at all on gtk .. as soon as
@@ -2346,7 +2346,7 @@ end;
 
 // AssignFrom24BitsBitmap
 //
-procedure TVKImage.AssignFrom24BitsBitmap(aBitmap: TVKBitmap);
+procedure TVKImage.AssignFrom24BitsBitmap(aBitmap: TBitmap);
 var
   y, lineSize: Integer;
   rowOffset: Int64;
@@ -2425,7 +2425,7 @@ end;
 
 // AssignFromBitmap24WithoutRGBSwap
 //
-procedure TVKImage.AssignFromBitmap24WithoutRGBSwap(aBitmap: TVKBitmap);
+procedure TVKImage.AssignFromBitmap24WithoutRGBSwap(aBitmap: TBitmap);
 var
   y: Integer;
   rowOffset: Int64;
@@ -2478,7 +2478,7 @@ end;
 
 // AssignFrom32BitsBitmap
 //
-procedure TVKImage.AssignFrom32BitsBitmap(aBitmap: TVKBitmap);
+procedure TVKImage.AssignFrom32BitsBitmap(aBitmap: TBitmap);
 var
   y: Integer;
   rowOffset: Int64;
@@ -2733,7 +2733,7 @@ end;
 // Create32BitsBitmap
 //
 
-function TVKImage.Create32BitsBitmap: TVKBitmap;
+function TVKImage.Create32BitsBitmap: TBitmap;
 var
   y, x, x4: Integer;
   pSrc, pDest: PAnsiChar;
@@ -2745,7 +2745,7 @@ begin
   end;
   Narrow;
 
-  Result := TVKBitmap.Create;
+  Result := TBitmap.Create;
   { TODO : E2129 Cannot assign to a read-only property }
   (*Result.PixelFormat := glpf32bit;*)
   Result.Width := Width;
@@ -3249,7 +3249,7 @@ end;
 //Converts a TVKImage back into a TBitmap
 //
 
-procedure TVKImage.AssignToBitmap(aBitmap: TVKBitmap); //TVKBitmap = TBitmap
+procedure TVKImage.AssignToBitmap(aBitmap: TBitmap); //TBitmap = TBitmap
 var
   y: integer;
   pSrc, pDest: PAnsiChar;

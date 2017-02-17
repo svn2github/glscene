@@ -55,7 +55,7 @@ type
      }
   TVKShadowPlane = class(TVKPlane)
   private
-    { Private Declarations }
+    
     FRendering: Boolean;
     FShadowingObject: TVKBaseSceneObject;
     FShadowedLight: TVKLightSource;
@@ -64,7 +64,7 @@ type
     FOnBeginRenderingShadows, FOnEndRenderingShadows: TNotifyEvent;
 
   protected
-    { Protected Declarations }
+    
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
     procedure SetShadowingObject(const val: TVKBaseSceneObject);
     procedure SetShadowedLight(const val: TVKLightSource);
@@ -72,7 +72,7 @@ type
     procedure SetShadowOptions(const val: TShadowPlaneOptions);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
@@ -82,7 +82,7 @@ type
     procedure Assign(Source: TPersistent); override;
 
   published
-    { Public Declarations }
+    
           { Selects the object to mirror. 
              If nil, the whole scene is mirrored. }
     property ShadowingObject: TVKBaseSceneObject read FShadowingObject write SetShadowingObject;

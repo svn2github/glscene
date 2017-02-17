@@ -68,7 +68,7 @@ type
 
   TVKHeightDataSource = class(TComponent)
   private
-    { Private Declarations }
+    
     FData: TThreadList; // stores all TVKHeightData, whatever their state/type
     FDataHash: array [0 .. 255] of TList; // X/Y hash references for HeightDatas
     FThread: TThread; // queue manager
@@ -78,7 +78,7 @@ type
     // FReleaseLatency : TDateTime;      //Not used anymore???
     FDefaultHeight: Single;
   protected
-    { Protected Declarations }
+    
     procedure SetMaxThreads(const Val: Integer);
 
     function HashKey(XLeft, YTop: Integer): Integer;
@@ -91,7 +91,7 @@ type
     function FindMatchInList(XLeft, YTop, size: Integer;
       DataType: TVKHeightDataType): TVKHeightData;
   public
-    { Public Declarations }
+    
 
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -226,7 +226,7 @@ type
   // TVKHeightData = class (TObject)
   TVKHeightData = class(TVKUpdateAbleObject)
   private
-    { Private Declarations }
+    
     FUsers: array of TVKHeightDataUser;
     FOwner: TVKHeightDataSource;
     FDataState: TVKHeightDataState;
@@ -263,7 +263,7 @@ type
     procedure ConvertSingleToSmallInt;
 
   protected
-    { Protected Declarations }
+    
     FThread: TVKHeightDataThread;
     // thread used for multi-threaded processing (if any)
 
@@ -279,7 +279,7 @@ type
     NewVersion: TVKHeightData; // the replacement tile
     DontUse: boolean; // Tells TerrainRenderer which version to use
 
-    { Public Declarations }
+    
 
     // constructor Create(AOwner : TComponent); override;
     constructor Create(AOwner: TVKHeightDataSource; aXLeft, aYTop, aSize: Integer;
@@ -420,11 +420,11 @@ type
       }
   TVKHeightDataThread = class(TThread)
   protected
-    { Protected Declarations }
+    
     FHeightData: TVKHeightData;
 
   public
-    { Public Declarations }
+    
     destructor Destroy; override;
     { The Height Data the thread is to prepare.  }
     property HeightData: TVKHeightData read FHeightData write FHeightData;
@@ -441,16 +441,16 @@ type
     (gray) bitmap. }
   TVKBitmapHDS = class(TVKHeightDataSource)
   private
-    { Private Declarations }
+    
     FScanLineCache: array of PByteArray;
-    FBitmap: TVKBitmap;
-    FPicture: TVKPicture;
+    FBitmap: TBitmap;
+    FPicture: TPicture;
     FInfiniteWrap: boolean;
     FInverted: boolean;
 
   protected
-    { Protected Declarations }
-    procedure SetPicture(const Val: TVKPicture);
+    
+    procedure SetPicture(const Val: TPicture);
     procedure OnPictureChanged(sender: TObject);
     procedure SetInfiniteWrap(Val: boolean);
     procedure SetInverted(Val: boolean);
@@ -459,7 +459,7 @@ type
     procedure FreeMonochromeBitmap;
     function GetScanLine(y: Integer): PByteArray;
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
@@ -469,12 +469,12 @@ type
     function Height: Integer; override;
 
   published
-    { Published Declarations }
+    
     { The picture serving as Height field data reference. 
       The picture is (if not already) internally converted to a 8 bit
       bitmap (grayscale). For better performance and to save memory,
       feed it this format! }
-    property Picture: TVKPicture read FPicture write SetPicture;
+    property Picture: TPicture read FPicture write SetPicture;
     { If true the height field is wrapped indefinetely. }
     property InfiniteWrap: boolean read FInfiniteWrap write SetInfiniteWrap
       default True;
@@ -496,15 +496,15 @@ type
     application-side (for application-specific needs). }
   TVKCustomHDS = class(TVKHeightDataSource)
   private
-    { Private Declarations }
+    
     FOnStartPreparingData: TStartPreparingDataEvent;
     FOnMarkDirty: TMarkDirtyEvent;
 
   protected
-    { Protected Declarations }
+    
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure StartPreparingData(HeightData: TVKHeightData); override;
@@ -512,7 +512,7 @@ type
     procedure MarkDirty(const Area: TVKRect); override;
 
   published
-    { Published Declarations }
+    
     property MaxPoolSize;
 
     property OnStartPreparingData: TStartPreparingDataEvent
@@ -533,19 +533,19 @@ type
     (this component expects to find "tbase.bin" in the current directory). }
   TVKTerrainBaseHDS = class(TVKHeightDataSource)
   private
-    { Private Declarations }
+    
 
   protected
-    { Protected Declarations }
+    
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure StartPreparingData(HeightData: TVKHeightData); override;
 
   published
-    { Published Declarations }
+    
     property MaxPoolSize;
   end;
 
@@ -569,12 +569,12 @@ type
   }
   TVKHeightDataSourceFilter = Class(TVKHeightDataSource)
   private
-    { Private Declarations }
+    
     FHDS: TVKHeightDataSource;
     FOnSourceDataFetched: TSourceDataFetchedEvent;
     FActive: boolean;
   protected
-    { Protected Declarations }
+    
     { PreparingData:   
       Override this function in your filter subclasses, to make any
       updates/changes to HeightData, before it goes into the cache.
@@ -582,7 +582,7 @@ type
     procedure PreparingData(HeightData: TVKHeightData); virtual; abstract;
     procedure SetHDS(Val: TVKHeightDataSource);
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Release(aHeightData: TVKHeightData); override;
@@ -595,7 +595,7 @@ type
       read FOnSourceDataFetched write FOnSourceDataFetched;
 
   published
-    { Published Declarations }
+    
     property MaxPoolSize;
     property HeightDataSource: TVKHeightDataSource read FHDS write SetHDS;
     property Active: boolean read FActive write FActive;
@@ -1784,7 +1784,7 @@ end;
 constructor TVKBitmapHDS.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  FPicture := TVKPicture.Create(AOwner);
+  FPicture := TPicture.Create(AOwner);
   FPicture.OnDblClick := OnPictureChanged;
   FInfiniteWrap := True;
   FInverted := True;
@@ -1801,7 +1801,7 @@ end;
 
 // SetPicture
 //
-procedure TVKBitmapHDS.SetPicture(const Val: TVKPicture);
+procedure TVKBitmapHDS.SetPicture(const Val: TPicture);
 begin
   FPicture.Assign(Val);
 end;
@@ -1874,7 +1874,7 @@ var
   hPal: HPalette;
 begin
   size := RoundUpToPowerOf2(size);
-  FBitmap := TVKBitmap.Create;
+  FBitmap := TBitmap.Create;
   { TODO -oPW : E2129 Cannot assign to a read-only property }
   (*FBitmap.PixelFormat := glpf8bit;*)
   FBitmap.Width := size;

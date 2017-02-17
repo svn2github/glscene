@@ -31,7 +31,7 @@ type
       FEvents : TTimeEvents;
 
    protected
-      { Protected declarations }
+      
       procedure Notification(AComponent: TComponent; Operation: TOperation); override;
 
       procedure SetCadencer(const val : TVKCadencer);
@@ -46,7 +46,7 @@ type
       procedure Reset();
 
    published
-      { Published declarations }
+      
       property Cadencer : TVKCadencer read FCadencer write SetCadencer;
       property Enabled : boolean read FEnabled write FEnabled default True;
       property FreeEventOnEnd : boolean read FFreeEventOnEnd write FFreeEventOnEnd default False;
@@ -57,14 +57,14 @@ type
 	//
 	TTimeEvents = class (TCollection)
    protected
-      { Protected Declarations }
+      
       Owner : TComponent;
       function GetOwner: TPersistent; override;
       procedure SetItems(index : Integer; const val : TTimeEvent);
       function GetItems(index : Integer) : TTimeEvent;
 
    public
-      { Public Declarations }
+      
       constructor Create(AOwner : TComponent);
 
       function Add: TTimeEvent;
@@ -81,7 +81,7 @@ type
    //
    TTimeEvent = class (TCollectionItem)
       private
-         { Private Declarations }
+         
          FName: String;
          FStartTime, FEndTime, FElapsedTime : Double;
          FPeriod : Double;
@@ -93,24 +93,24 @@ type
          procedure SetEnabled(const Value: Boolean);
 
       protected
-         { Protected Declarations }
+         
          function GetDisplayName : String; override;
          procedure SetName(val : String);
 
          procedure DoEvent(const curTime : Double);
 
       public
-         { Public Declarations }
+         
          constructor Create(Collection : TCollection); override;
          destructor Destroy; override;
 
-         //: Number of times the event was triggered since activation
+         // Number of times the event was triggered since activation
          property TickCount : Cardinal read FTickCount;
-         //: Elapsed time since the event was activated
+         // Elapsed time since the event was activated
          property ElapsedTime : Double read FElapsedTime; 
 
       published
-         { Published Declarations }
+         
          property Name : String read FName write SetName;
          property StartTime : Double read FStartTime write FStartTime;
          property EndTime : Double read FEndTime write FEndTime;

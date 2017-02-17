@@ -15,7 +15,7 @@ uses
   Winapi.OpenGLext,
   System.Classes,
   System.SysUtils,
-  //VKS
+  
   VKS.Scene,
   VKS.Context,
   VKS.XOpenGL,
@@ -35,21 +35,21 @@ type
   //
   TVKSamplingScale = class(TVKUpdateAbleObject)
   private
-    { Private Declarations }
+    
     FMin: Single;
     FMax: Single;
     FOrigin: Single;
     FStep: Single;
 
   protected
-    { Protected Declarations }
+    
     procedure SetMin(const val: Single);
     procedure SetMax(const val: Single);
     procedure SetOrigin(const val: Single);
     procedure SetStep(const val: Single);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
 
@@ -68,7 +68,7 @@ type
       SamplingEnabled: Boolean = True);
 
   published
-    { Published Declarations }
+    
     property Min: Single read FMin write SetMin;
     property Max: Single read FMax write SetMax;
     property Origin: Single read FOrigin write SetOrigin;
@@ -103,7 +103,7 @@ type
     point may have an additionnal color and texture coordinate. }
   TVKHeightField = class(TVKSceneObject)
   private
-    { Private Declarations }
+    
     FOnGetHeight: TVKHeightFieldGetHeightEvent;
     FOnGetHeight2: TVKHeightFieldGetHeight2Event;
     FXSamplingScale: TVKSamplingScale;
@@ -113,7 +113,7 @@ type
     FColorMode: TVKHeightFieldColorMode;
 
   protected
-    { Protected Declarations }
+    
     procedure SetXSamplingScale(const val: TVKSamplingScale);
     procedure SetYSamplingScale(const val: TVKSamplingScale);
     procedure SetOptions(const val: TVKHeightFieldOptions);
@@ -127,7 +127,7 @@ type
       var Color: TColorVector; var texPoint: TTexPoint);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
@@ -138,7 +138,7 @@ type
     property TriangleCount: Integer read FTriangleCount;
 
   published
-    { Published Declarations }
+    
     property XSamplingScale: TVKSamplingScale read FXSamplingScale
       write SetXSamplingScale;
     property YSamplingScale: TVKSamplingScale read FYSamplingScale
@@ -180,7 +180,7 @@ type
     Renders an XYZ grid using lines. }
   TVKXYZGrid = class(TVKLineBase)
   private
-    { Private Declarations }
+    
     FXSamplingScale: TVKSamplingScale;
     FYSamplingScale: TVKSamplingScale;
     FZSamplingScale: TVKSamplingScale;
@@ -188,7 +188,7 @@ type
     FLinesStyle: TXYZGridLinesStyle;
 
   protected
-    { Protected Declarations }
+    
     procedure SetXSamplingScale(const val: TVKSamplingScale);
     procedure SetYSamplingScale(const val: TVKSamplingScale);
     procedure SetZSamplingScale(const val: TVKSamplingScale);
@@ -197,7 +197,7 @@ type
     procedure SetLinesSmoothing(const val: Boolean);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -206,7 +206,7 @@ type
     procedure NotifyChange(Sender: TObject); override;
 
   published
-    { Published Declarations }
+    
     property XSamplingScale: TVKSamplingScale read FXSamplingScale
       write SetXSamplingScale;
     property YSamplingScale: TVKSamplingScale read FYSamplingScale

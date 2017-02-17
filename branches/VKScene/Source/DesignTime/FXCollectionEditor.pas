@@ -75,7 +75,7 @@ type
     procedure FormHide(Sender: TObject);
     procedure ListViewChange(Sender: TObject);
   private
-    { Private declarations }
+    
     FXCollection: TVKXCollection;
     // ownerComponent : TComponent;
     FDesigner: IDesigner;
@@ -86,7 +86,7 @@ type
     procedure OnNameChanged(Sender: TObject);
     procedure OnXCollectionDestroyed(Sender: TObject);
   public
-    { Public declarations }
+    
     procedure SetXCollection(aXCollection: TVKXCollection; designer: IDesigner);
   end;
 

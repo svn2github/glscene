@@ -29,7 +29,7 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-  //VKS
+  
   VKS.Scene, VKS.XCollection, VKS.VectorGeometry, VKS.VectorLists,
   VKS.VectorFileObjects, VKS.CrossPlatform, VKS.DCEMisc, VKS.EllipseCollision,
   VKS.TerrainRenderer, VKS.Coordinates, VKS.BaseClasses, VKS.Manager,
@@ -72,7 +72,7 @@ type
 
   TVKDCEManager = class (TComponent)
   private
-    { Private Declarations }
+    
     FStatics : TList;
     FDynamics : TList;
     FGravity: Single;
@@ -87,7 +87,7 @@ type
     function GetDynamicCount: Integer;
     function GetStaticCount: Integer;
   protected
-    { Protected Declarations }
+    
     procedure RegisterStatic(aClient : TVKDCEStatic);
     procedure DeRegisterStatic(aClient : TVKDCEStatic);
     procedure DeRegisterAllStatics;
@@ -95,7 +95,7 @@ type
     procedure DeRegisterDynamic(aClient : TVKDCEDynamic);
     procedure DeRegisterAllDynamics;
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     //Moves the body by the distance and returns the average friction
@@ -104,7 +104,7 @@ type
     property DynamicCount: Integer read GetDynamicCount;
     property StaticCount: Integer read GetStaticCount;
   published
-    { Published Declarations }
+    
     property Gravity : Single read FGravity write FGravity;
     property WorldDirection : TVKCoordinates read FWorldDirection write SetWorldDirection;
     property WorldScale : Single read FWorldScale write SetWorldScale;
@@ -116,7 +116,7 @@ type
 
   TVKDCEStatic = class (TVKBehaviour)
 	private
-		{ Private Declarations }
+		
     FManager : TVKDCEManager;
     FManagerName : String; // NOT persistent, temporarily used for persistence
     FActive: Boolean;
@@ -133,13 +133,13 @@ type
     procedure SetBounceFactor(const Value: Single);
     procedure SetSize(const Value: TVKCoordinates);
   protected
-    { Protected Declarations }
+    
     procedure SetManager(const val : TVKDCEManager);
     procedure WriteToFiler(writer : TWriter); override;
     procedure ReadFromFiler(reader : TReader); override;
     procedure Loaded; override;
   public
-    { Public Declarations }
+    
     constructor Create(aOwner : TVKXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -147,7 +147,7 @@ type
     class function FriendlyDescription : String; override;
     property OnCollision : TDCEObjectCollisionEvent read FOnCollision write FOnCollision;
   published
-    { Published Declarations }
+    
     property Active : Boolean read FActive write FActive;
     property Manager : TVKDCEManager read FManager write SetManager;
     property Shape : TDCEShape read FShape write SetShape;
@@ -162,7 +162,7 @@ type
 
   TVKDCEDynamic = class (TVKBehaviour)
 	private
-		{ Private Declarations }
+		
     FManager : TVKDCEManager;
     FManagerName : String; // NOT persistent, temporarily used for persistence
     FActive: Boolean;
@@ -191,13 +191,13 @@ type
     procedure SetBounceFactor(const Value: Single);
     procedure SetSize(const Value: TVKCoordinates);
   protected
-    { Protected Declarations }
+    
     procedure SetManager(const val : TVKDCEManager);
     procedure WriteToFiler(writer : TWriter); override;
     procedure ReadFromFiler(reader : TReader); override;
     procedure Loaded; override;
   public
-    { Public Declarations }
+    
     constructor Create(aOwner : TVKXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -220,7 +220,7 @@ type
     property MaxRecursionDepth:byte read FMaxRecursionDepth write FMaxRecursionDepth;//gak20041119
     property OnCollision : TDCEObjectCollisionEvent read FOnCollision write FOnCollision;
   published
-    { Published Declarations }
+    
     property Active : Boolean read FActive write FActive;
     property Manager : TVKDCEManager read FManager write SetManager;
     property UseGravity : Boolean read FUseGravity write FUseGravity;

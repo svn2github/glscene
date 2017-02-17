@@ -11,7 +11,7 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-  //VKS
+  
   VKS.Strings,
   VKS.PersistentClasses,
   VKS.ApplicationFileIO;
@@ -100,7 +100,7 @@ Type
 
   TVKArchiveFileFormatsList = class(TPersistentObjectList)
   public
-    { Public Declarations }
+    
     destructor Destroy; override;
 
     procedure Add(const Ext, Desc: string; DescID: Integer; AClass:
@@ -119,7 +119,7 @@ Type
 
   TLibArchive = class(TCollectionItem)
   private
-    { Private Declarations }
+    
       vArchive: TVKBaseArchive;
       ArcClass: TVKBaseArchiveClass;
       FFileName:  string;
@@ -129,10 +129,10 @@ Type
       function GetContentList: TStrings;
       procedure SetName(const val: string);
   protected
-    { Protected Declarations }
+    
       function GetDisplayName: string; override;
   public
-    { Public Declarations }
+    
     constructor Create(ACollection: TCollection); override;
     destructor Destroy; override;
 
@@ -178,11 +178,11 @@ Type
 
   TLibArchives = class(TOwnedCollection)
   protected
-    { Protected Declarations }
+    
     procedure SetItems(index: Integer; const val: TLibArchive);
     function GetItems(index: Integer): TLibArchive;
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent);
 
     function Owner: TPersistent;

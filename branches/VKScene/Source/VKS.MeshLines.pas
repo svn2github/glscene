@@ -12,7 +12,7 @@ interface
 uses
   System.Classes, System.SysUtils,
   Winapi.OpenGL, Winapi.OpenGLext, 
-  //VKS
+  
   VKS.Scene, VKS.Objects, VKS.Texture, VKS.VectorFileObjects, VKS.Coordinates,
   VKS.Context, VKS.Material, VKS.Color, VKS.State,
   VKS.Nodes, VKS.VectorGeometry, VKS.Spline, VKS.VectorLists, VKS.RenderContextInfo;
@@ -40,7 +40,7 @@ type
       Stores TLineNode items. }
    TLineNodes = class(TVKNodes)
    public
-     { Public Declarations }
+     
      constructor Create(AOwner : TComponent); overload;
      destructor destroy; override;
      procedure NotifyChange; override;

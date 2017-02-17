@@ -44,7 +44,7 @@ type
   //
   TVKObjectManager = class(TComponent)
   private
-    { Private Declarations }
+    
     FSceneObjectList: TList;
     FObjectIcons: TStyleBook; // In VCL FObjectIcons: TImageList; <- a list of icons for scene objects
 {$IFDEF MSWINDOWS}
@@ -55,13 +55,13 @@ type
       FLightsourceRootIndex,
       FObjectRootIndex: Integer;
   protected
-    { Protected Declarations }
+    
     procedure DestroySceneObjectList;
     function FindSceneObjectClass(AObjectClass: TVKSceneObjectClass;
       const ASceneObject: string = ''): PSceneObjectEntry;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
@@ -71,11 +71,11 @@ type
     function GetCategory(ASceneObject: TVKSceneObjectClass): string;
     procedure GetRegisteredSceneObjects(ObjectList: TStringList);
     procedure PopulateMenuWithRegisteredSceneObjects(AMenuItem: TMenuItem; AClickEvent: TNotifyEvent);
-    //: Registers a stock object and adds it to the stock object list
+    // Registers a stock object and adds it to the stock object list
     procedure RegisterSceneObject(ASceneObject: TVKSceneObjectClass; const AName, ACategory: string); overload;
     procedure RegisterSceneObject(ASceneObject: TVKSceneObjectClass; const AName, ACategory: string; ABitmap: TBitmap); overload;
     procedure RegisterSceneObject(ASceneObject: TVKSceneObjectClass; const AName, ACategory: string; ResourceModule: Cardinal; ResourceName: string = ''); overload;
-    //: Unregisters a stock object and removes it from the stock object list
+    // Unregisters a stock object and removes it from the stock object list
     procedure UnRegisterSceneObject(ASceneObject: TVKSceneObjectClass);
 
     property ObjectIcons: TStyleBook read FObjectIcons; //In VCL TImageList

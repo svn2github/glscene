@@ -19,7 +19,7 @@ uses
   Winapi.OpenGLext,
   System.Classes,
   System.SysUtils,
-  //VKS
+  
   VKS.OpenGLAdapter,
   VKS.Strings,  
   VKS.XOpenGL,  
@@ -64,14 +64,14 @@ type
     Locking (hardware passthrough) is supported, see "Locked" property for details. }
   TVKVertexList = class(TVKUpdateAbleObject)
   private
-    { Private Declarations }
+    
     FValues: PVKVertexDataArray;
     FCount: Integer;
     FCapacity, FGrowth: Integer;
     FLockedOldValues: PVKVertexDataArray;
 
   protected
-    { Protected Declarations }
+    
     FGL: TVKExtensionsAndEntryPoints;
     procedure SetCapacity(const val: Integer);
     procedure SetGrowth(const val: Integer);
@@ -97,7 +97,7 @@ type
     procedure SetLocked(val: Boolean);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
 
@@ -182,14 +182,14 @@ type
     up the mesh (triangles, strips...) }
   TVKMesh = class(TVKSceneObject)
   private
-    { Private Declarations }
+    
     FVertices: TVKVertexList;
     FMode: TMeshMode;
     FVertexMode: TVertexMode;
     FAxisAlignedDimensionsCache: TVector;
 
   protected
-    { Protected Declarations }
+    
     procedure SetMode(AValue: TMeshMode);
     procedure SetVertices(AValue: TVKVertexList);
     procedure SetVertexMode(AValue: TVertexMode);
@@ -197,7 +197,7 @@ type
     procedure VerticesChanged(Sender: TObject);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -209,7 +209,7 @@ type
     procedure StructureChanged; override;
 
   published
-    { Published Declarations }
+    
     property Mode: TMeshMode read FMode write SetMode;
     property VertexMode: TVertexMode read FVertexMode write SetVertexMode
       default vmVNCT;

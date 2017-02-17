@@ -24,13 +24,13 @@ type
     { Stores a single PCM coded sound sample. }
   TVKSoundSample = class(TCollectionItem)
   private
-    { Private Declarations }
+    
     FName: string;
     FData: TVKSoundFile;
     FTag: Integer;
 
   protected
-    { Protected Declarations }
+    
     procedure DefineProperties(Filer: TFiler); override;
     procedure ReadData(Stream: TStream); virtual;
     procedure WriteData(Stream: TStream); virtual;
@@ -38,7 +38,7 @@ type
     procedure SetData(const val: TVKSoundFile);
 
   public
-    { Public Declarations }
+    
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -52,11 +52,11 @@ type
     function LengthInSamples: Integer;
     function LengthInSec: Single;
 
-    //: This Tag is reserved for sound manager use only
+    // This Tag is reserved for sound manager use only
     property ManagerTag: Integer read FTag write FTag;
 
   published
-    { Published Declarations }
+    
     property Name: string read FName write FName;
     property Data: TVKSoundFile read FData write SetData stored False;
   end;
@@ -65,14 +65,14 @@ type
   //
   TVKSoundSamples = class(TCollection)
   protected
-    { Protected Declarations }
+    
     owner: TComponent;
     function GetOwner: TPersistent; override;
     procedure SetItems(index: Integer; const val: TVKSoundSample);
     function GetItems(index: Integer): TVKSoundSample;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent);
     function Add: TVKSoundSample;
     function FindItemID(ID: Integer): TVKSoundSample;
@@ -88,23 +88,23 @@ type
   //
   TVKSoundLibrary = class(TComponent)
   private
-    { Private Declarations }
+    
     FSamples: TVKSoundSamples;
 
   protected
-    { Protected Declarations }
+    
     procedure SetSamples(const val: TVKSoundSamples);
 
     procedure Notification(AComponent: TComponent; Operation: TOperation);
       override;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
   published
-    { Published Declarations }
+    
     property Samples: TVKSoundSamples read FSamples write SetSamples;
   end;
 
@@ -120,7 +120,7 @@ type
     { Base class for origin of sound playback. }
   TVKBaseSoundSource = class(TCollectionItem)
   private
-    { Private Declarations }
+    
     FBehaviourToNotify: TVKBSoundEmitter;
       // private only, NOT persistent, not assigned
     FPriority: Integer;
@@ -140,7 +140,7 @@ type
     FFrequency: Integer;
 
   protected
-    { Protected Declarations }
+    
     procedure WriteToFiler(writer: TWriter);
     procedure ReadFromFiler(reader: TReader);
 
@@ -162,7 +162,7 @@ type
     procedure SetFrequency(const val: Integer);
 
   public
-    { Public Declarations }
+    
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -171,7 +171,7 @@ type
 
     function Sample: TVKSoundSample;
 
-    //: This Tag is reserved for sound manager use only
+    // This Tag is reserved for sound manager use only
     property ManagerTag: PtrUInt read FTag write FTag;
 
     { Origin object for the sound sources. 
@@ -184,7 +184,7 @@ type
     property Origin: TVKBaseSceneObject read FOrigin write SetOrigin;
 
   published
-    { Published Declarations }
+    
     property SoundLibrary: TVKSoundLibrary read GetSoundLibrary write
       SetSoundLibrary;
     property SoundName: string read FSoundName write SetSoundName;
@@ -239,11 +239,11 @@ type
        vector. }
   TVKSoundSource = class(TVKBaseSoundSource)
   public
-    { Public Declarations }
+    
     destructor Destroy; override;
 
   published
-    { Published Declarations }
+    
     property Origin;
   end;
 
@@ -251,7 +251,7 @@ type
   //
   TVKSoundSources = class(TCollection)
   protected
-    { Protected Declarations }
+    
     owner: TComponent;
     function GetOwner: TPersistent; override;
     procedure SetItems(index: Integer; const val: TVKSoundSource);
@@ -261,7 +261,7 @@ type
     function FindItemID(ID: Integer): TVKSoundSource;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent);
 
     property Items[index: Integer]: TVKSoundSource read GetItems write SetItems;
@@ -290,7 +290,7 @@ type
        occur in destructor however. }
   TVKSoundManager = class(TVKCadenceAbleComponent)
   private
-    { Private Declarations }
+    
     FActive: Boolean;
     FMute: Boolean;
     FPause: Boolean;
@@ -315,7 +315,7 @@ type
     procedure ReadDoppler(reader: TReader);
 
   protected
-    { Protected Declarations }
+    
     procedure Notification(AComponent: TComponent; Operation: TOperation);
       override;
     procedure SetSources(const val: TVKSoundSources);
@@ -340,7 +340,7 @@ type
       TVector);
 
     function DoActivate: Boolean; dynamic;
-    //: Invoked AFTER all sources have been stopped
+    // Invoked AFTER all sources have been stopped
     procedure DoDeActivate; dynamic;
     { Effect mute of all sounds. 
        Default implementation call MuteSource for all non-muted sources
@@ -363,7 +363,7 @@ type
     procedure Notify3DFactorsChanged; dynamic;
     procedure NotifyEnvironmentChanged; dynamic;
 
-    //: Called when a source will be freed
+    // Called when a source will be freed
     procedure KillSource(aSource: TVKBaseSoundSource); virtual;
     { Request to update source's data in low-level sound API. 
        Default implementation just clears the "Changes" flags. }
@@ -373,7 +373,7 @@ type
       virtual;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
@@ -395,7 +395,7 @@ type
     function EAXSupported: Boolean; dynamic;
 
   published
-    { Published Declarations }
+    
       { Activation/deactivation of the low-level sound API }
     property Active: Boolean read FActive write SetActive default False;
 
@@ -471,13 +471,13 @@ type
        convenience. }
   TVKBSoundEmitter = class(TVKBehaviour)
   private
-    { Private Declarations }
+    
     FPlaying: Boolean; // used at design-time ONLY
     FSource: TVKBaseSoundSource;
     FPlayingSource: TVKSoundSource;
 
   protected
-    { Protected Declarations }
+    
     procedure WriteToFiler(writer: TWriter); override;
     procedure ReadFromFiler(reader: TReader); override;
     procedure Loaded; override;
@@ -489,7 +489,7 @@ type
     procedure NotifySourceDestruction(aSource: TVKSoundSource);
 
   public
-    { Public Declarations }
+    
     constructor Create(aOwner: TVKXCollection); override;
     destructor Destroy; override;
 
@@ -504,7 +504,7 @@ type
     property PlayingSource: TVKSoundSource read FPlayingSource;
 
   published
-    { Published Declarations }
+    
     property Source: TVKBaseSoundSource read FSource write SetSource;
     property Playing: Boolean read GetPlaying write SetPlaying default False;
 

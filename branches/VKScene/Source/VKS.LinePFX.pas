@@ -25,15 +25,15 @@ type
    { Linear particle.  }
    TVKLineParticle = class (TVKParticle)
       private
-         { Private Declarations }
+         
          FDirection : TAffineVector;
          FLength : Single;
 
       protected
-         { Protected Declarations }
+         
 
       public
-         { Public Declarations }
+         
          procedure WriteToFiler(writer : TVirtualWriter); override;
          procedure ReadFromFiler(reader : TVirtualReader); override;
 
@@ -52,13 +52,13 @@ type
       using TVKPointLightPFXManager. }
    TVKLinePFXManager = class (TVKLifeColoredPFXManager)
       private
-         { Private Declarations }
+         
          Fvx, Fvy : TAffineVector;        // NOT persistent
          FNvx, FNvy : TAffineVector;        // NOT persistent
          FDefaultLength : Single;
 
       protected
-         { Protected Declarations }
+         
          function StoreDefaultLength : Boolean;
 
          function TexturingMode : Cardinal; override;
@@ -69,7 +69,7 @@ type
          procedure FinalizeRendering(var rci: TVKRenderContextInfo); override;
 
       public
-         { Public Declarations }
+         
          constructor Create(aOwner : TComponent); override;
          destructor Destroy; override;
 
@@ -77,7 +77,7 @@ type
          function CreateParticle : TVKParticle; override;
 
 	   published
-	      { Published Declarations }
+	      
          property DefaultLength : Single read FDefaultLength write FDefaultLength stored StoreDefaultLength;
 
          property ParticleSize;

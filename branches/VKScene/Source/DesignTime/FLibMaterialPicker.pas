@@ -33,9 +33,9 @@ type
     procedure CBObjectChange(Sender: TObject);
     procedure CBBackgroundChange(Sender: TObject);
   private
-    { Private declarations }
+    
   public
-    { Public declarations }
+    
     function Execute(var materialName: TVKLibMaterialName;
       materialLibrary: TVKAbstractMaterialLibrary): Boolean;
   end;

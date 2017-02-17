@@ -17,7 +17,7 @@ uses
   System.Classes,
   System.UITypes,
   FMX.Graphics,
-  //VKS
+  
   VKS.VectorGeometry,
   VKS.Color,
   VKS.CrossPlatform,
@@ -41,7 +41,7 @@ type
        unexpected behaviour). }
   TVKCanvas = class
   private
-    { Private Declarations }
+    
     FBufferSizeX, FBufferSizeY: Integer;
 
     FLastPrimitive: Integer;
@@ -51,7 +51,7 @@ type
     FCurrentPenColorVector: TVector;
     FArcDirection: TArcDirection;
   protected
-    { Protected Declarations }
+    
     procedure BackupVulkanStates;
 
     procedure StartPrimitive(const primitiveType: Integer);
@@ -74,7 +74,7 @@ type
       AngleBegin, AngleEnd: Single;
       UpdateCurrentPos: Boolean); overload;
   public
-    { Public Declarations }
+    
     constructor Create(bufferSizeX, bufferSizeY: Integer;
       const baseTransform: TMatrix); overload;
     constructor Create(bufferSizeX, bufferSizeY: Integer); overload;

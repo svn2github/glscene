@@ -103,7 +103,7 @@ Type
     Constructor Create(AOwner: TComponent); override;
     Procedure Generate; override;
     Function GetPerlinValue_2D(x, y: Double): Double;
-    Procedure MakeBitmap(Param: TVKBitmap);
+    Procedure MakeBitmap(Param: TBitmap);
     Procedure SetHeightData(heightData: TVKHeightData);
   End;
 
@@ -538,7 +538,7 @@ Begin
   Result := total;
 End;
 
-Procedure TVK2DPerlin.MakeBitmap(Param: TVKBitmap);
+Procedure TVK2DPerlin.MakeBitmap(Param: TBitmap);
 
 Var
   XC, YC: Integer;

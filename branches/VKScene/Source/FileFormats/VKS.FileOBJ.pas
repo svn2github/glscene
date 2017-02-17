@@ -18,7 +18,7 @@ interface
 uses
   System.Classes,
   System.SysUtils,
-  //VKS
+  
   VKS.OpenGLAdapter,
   VKS.ApplicationFileIO,
   VKS.CrossPlatform, VKS.PersistentClasses, VKS.VectorGeometry,

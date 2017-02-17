@@ -20,7 +20,7 @@ interface
 
 uses
   System.Classes,
-  //VKS
+  
   VKS.Material, VKS.CrossPlatform, VKS.Color, VKS.RenderContextInfo,
   Winapi.OpenGL, Winapi.OpenGLext,  VKS.Context, VKS.State, VKS.TextureFormat;
 
@@ -30,7 +30,7 @@ type
   //
   TVKOutlineShader = class(TVKShader)
   private
-    { Private Declarations }
+    
     FPassCount: integer;
     FLineColor: TVKColor;
     FOutlineSmooth: Boolean;
@@ -40,17 +40,17 @@ type
     procedure SetOutlineSmooth(v: boolean);
 
   protected
-    { Protected Declarations }
+    
     procedure DoApply(var rci: TVKRenderContextInfo; Sender: TObject); override;
     function DoUnApply(var rci: TVKRenderContextInfo): Boolean; override;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
   published
-    { Published Declarations }
+    
     property LineColor: TVKColor read FLineColor write FLineColor;
     { Line smoothing control }
     property LineSmooth: Boolean read FOutlineSmooth write SetOutlineSmooth

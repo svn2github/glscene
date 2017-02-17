@@ -19,7 +19,7 @@ uses
   Winapi.OpenGLext,
   System.SysUtils,
   FMX.Dialogs,
-  //VKS
+  
   VKS.OpenGLAdapter,
   VKS.Scene,
   VKS.Context,

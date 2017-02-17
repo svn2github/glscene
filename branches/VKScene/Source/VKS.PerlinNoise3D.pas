@@ -25,17 +25,17 @@ type
       2D noise requests are taken in the Z=0 slice }
    TVKPerlin3DNoise = class (TObject)
       protected
-         { Private Declarations }
+         
          FPermutations : packed array [0..cPERLIN_TABLE_SIZE-1] of Integer;
          FGradients : packed array [0..cPERLIN_TABLE_SIZE*3-1] of Single;
 
       protected
-         { Protected Declarations }
+         
          function Lattice(ix, iy, iz : Integer; fx, fy, fz : Single) : Single; overload;
          function Lattice(ix, iy : Integer; fx, fy : Single) : Single; overload;
 
       public
-         { Public Declarations }
+         
          constructor Create(randomSeed : Integer);
          procedure Initialize(randomSeed : Integer);
 

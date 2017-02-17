@@ -24,14 +24,14 @@ type
    { MasterObject description for a MultiProxy object. }
 	TVKMultiProxyMaster = class (TCollectionItem)
 	   private
-	      { Private Declarations }
+	      
          FMasterObject : TVKBaseSceneObject;
          FDistanceMin, FDistanceMin2 : Single;
          FDistanceMax, FDistanceMax2 : Single;
          FVisible : Boolean;
 
 	   protected
-	      { Protected Declarations }
+	      
          function GetDisplayName : String; override;
          procedure SetMasterObject(const val : TVKBaseSceneObject);
          procedure SetDistanceMin(const val : Single);
@@ -39,7 +39,7 @@ type
          procedure SetVisible(const val : Boolean);
 
       public
-	      { Public Declarations }
+	      
 	      constructor Create(Collection : TCollection); override;
 	      destructor Destroy; override;
 	      procedure Assign(Source: TPersistent); override;
@@ -48,7 +48,7 @@ type
          procedure NotifyChange;
 
       published
-         { Published Declarations }
+         
          { Specifies the Master object which will be proxy'ed. }
          property MasterObject : TVKBaseSceneObject read FMasterObject write SetMasterObject;
          { Minimum visibility distance (inclusive). }
@@ -66,16 +66,16 @@ type
    { Collection of TVKMultiProxyMaster. }
 	TVKMultiProxyMasters = class (TOwnedCollection)
 	   private
-	      { Private Declarations }
+	      
 
 	   protected
-	      { Protected Declarations }
+	      
          procedure SetItems(index : Integer; const val : TVKMultiProxyMaster);
 	      function GetItems(index : Integer) : TVKMultiProxyMaster;
          procedure Update(Item: TCollectionItem); override;
 
       public
-	      { Public Declarations }
+	      
 	      constructor Create(AOwner : TPersistent);
 
          function Add : TVKMultiProxyMaster; overload;
@@ -99,19 +99,19 @@ type
       (item zero in the MasterObjects collection). }
    TVKMultiProxy = class (TVKSceneObject)
       private
-			{ Private Declarations }
+			
          FMasterObjects : TVKMultiProxyMasters;
          FRendering : Boolean; // internal use (loop protection)
 
 	   protected
-	      { Protected Declarations }
+	      
          procedure SetMasterObjects(const val : TVKMultiProxyMasters);
          procedure Notification(AComponent: TComponent; Operation: TOperation); override;
 
          function PrimaryMaster : TVKBaseSceneObject;
 
       public
-			{ Public Declarations }
+			
          constructor Create(AOwner: TComponent); override;
          destructor Destroy; override;
 
@@ -126,7 +126,7 @@ type
          function GenerateSilhouette(const silhouetteParameters : TVKSilhouetteParameters) : TVKSilhouette; override;
 
       published
-         { Published Declarations }
+         
          property MasterObjects : TVKMultiProxyMasters read FMasterObjects write SetMasterObjects;
          
          property ObjectsSorting;

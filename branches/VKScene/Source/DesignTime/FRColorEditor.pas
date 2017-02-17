@@ -44,7 +44,7 @@ type
     procedure AlphaEditChange(Sender: TObject);
     procedure PAPreviewDblClick(Sender: TObject);
   private
-    { Private declarations }
+    
     FOnChange : TNotifyEvent;
     Updating : Boolean;
     WorkBitmap : TBitmap;
@@ -59,7 +59,7 @@ type
     procedure DragColorSliderToPosition(XPos : integer);
     procedure ContentsChanged;
   public
-    { Public declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     property Color : THomogeneousFltVector read GetColor write SetColor;

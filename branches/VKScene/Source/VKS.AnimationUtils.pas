@@ -15,7 +15,7 @@ interface
 
 uses
   System.SysUtils, System.Classes, System.Math,
-  //VKS
+  
   VKS.CrossPlatform, VKS.VectorTypes, VKS.VectorGeometry;
 
 type

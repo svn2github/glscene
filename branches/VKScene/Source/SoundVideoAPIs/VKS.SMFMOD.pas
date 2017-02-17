@@ -19,7 +19,7 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-  //VKS
+  
   FMod, FmodTypes, FmodPresets,
   VKS.Sound, VKS.Scene, VKS.VectorGeometry;
 
@@ -29,12 +29,12 @@ type
 	//
 	TVKSMFMOD = class (TVKSoundManager)
 	   private
-	      { Private Declarations }
+	      
          FActivated : Boolean;
          FEAXCapable : Boolean; // not persistent
 
 	   protected
-	      { Protected Declarations }
+	      
 	      function DoActivate : Boolean; override;
 	      procedure DoDeActivate; override;
          procedure NotifyMasterVolumeChange; override;
@@ -49,7 +49,7 @@ type
          function GetDefaultFrequency(aSource : TVKBaseSoundSource) : Integer;
 
       public
-	      { Public Declarations }
+	      
 	      constructor Create(AOwner : TComponent); override;
 	      destructor Destroy; override;
 
@@ -59,7 +59,7 @@ type
          function EAXSupported : Boolean; override;
 
 	   published
-	      { Published Declarations }
+	      
          property MaxChannels default 32;
 	end;
 

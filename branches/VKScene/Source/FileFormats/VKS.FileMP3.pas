@@ -21,14 +21,14 @@ type
       *Partial* support only, access to PCMData is NOT supported. }
    TVKMP3File = class (TVKSoundFile)
       private
-         { Public Declarations }
+         
          data : array of Byte; // used to store MP3 bitstream
 
       protected
-         { Protected Declarations }
+         
 
       public
-         { Private Declarations }
+         
          function CreateCopy(AOwner: TPersistent) : TVKDataFile; override;
 
          class function Capabilities : TVKDataFileCapabilities; override;

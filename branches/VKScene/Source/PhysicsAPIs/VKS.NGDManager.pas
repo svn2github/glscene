@@ -21,11 +21,17 @@ uses
   NewtonImport, NewtonImport_JointLibrary, // Newton
   VKS.VectorGeometry, // PVector TVector TMatrix PMatrix NullHmgVector...
   VKS.VectorLists, // TaffineVectorList for Tree
-  VKS.XCollection, //VKS TVKXCollection file function
-  VKS.BaseClasses, VKS.Scene, VKS.Manager, VKS.CrossPlatform,
-  VKS.Coordinates, VKS.Objects, VKS.GeomObjects,
+  VKS.XCollection,  //TVKXCollection file function
+  VKS.BaseClasses,
+  VKS.Scene,
+  VKS.Manager,
+  VKS.CrossPlatform,
+  VKS.Coordinates,
+  VKS.Objects,
+  VKS.GeomObjects,
   VKS.VectorFileObjects, // cube cone freeform...
-  VKS.Color, VKS.GeometryBB; // For show debug
+  VKS.Color,
+  VKS.GeometryBB; // For show debug
 
 type
 
@@ -132,20 +138,14 @@ type
     property GeomColorDyn: TVKColor read FGeomColorDyn write FGeomColorDyn;
     property GeomColorStat: TVKColor read FGeomColorStat write FGeomColorStat;
     property AABBColor: TVKColor read FAABBColor write FAABBColor;
-    property AABBColorSleep
-      : TVKColor read FAABBColorSleep write FAABBColorSleep;
-    property CenterOfMassColor
-      : TVKColor read FCenterOfMassColor write FCenterOfMassColor;
+    property AABBColorSleep: TVKColor read FAABBColorSleep write FAABBColorSleep;
+    property CenterOfMassColor: TVKColor read FCenterOfMassColor write FCenterOfMassColor;
     property ContactColor: TVKColor read FContactColor write FContactColor;
-    property JointAxisColor
-      : TVKColor read FJointAxisColor write FJointAxisColor;
-    property JointPivotColor
-      : TVKColor read FJointPivotColor write FJointPivotColor;
+    property JointAxisColor: TVKColor read FJointAxisColor write FJointAxisColor;
+    property JointPivotColor: TVKColor read FJointPivotColor write FJointPivotColor;
     property ForceColor: TVKColor read FForceColor write FForceColor;
-    property AppliedForceColor
-      : TVKColor read FAppliedForceColor write FAppliedForceColor;
-    property AppliedVelocityColor
-      : TVKColor read FAppliedVelocityColor write FAppliedVelocityColor;
+    property AppliedForceColor: TVKColor read FAppliedForceColor write FAppliedForceColor;
+    property AppliedVelocityColor: TVKColor read FAppliedVelocityColor write FAppliedVelocityColor;
     property CustomColor: TVKColor read FCustomColor write FCustomColor;
     property NGDManagerDebugs: TNGDManagerDebugs read FNGDManagerDebugs write
       SetNGDManagerDebugs default[];
@@ -156,7 +156,7 @@ type
   TVKNGDManager = class(TComponent)
 
   strict private
-    { Private Declarations }
+    
     FVisible: Boolean; // Show Debug at design time
     FVisibleAtRunTime: Boolean; // Show Debug at run time
     FDllVersion: Integer;
@@ -200,13 +200,13 @@ type
     procedure NotifyChange(Sender: TObject); // Debug view
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Step(deltatime: Single);
 
   published
-    { Published Declarations }
+    
 
     property Visible: Boolean read FVisible write SetVisible default True;
     property VisibleAtRunTime: Boolean read FVisibleAtRunTime write
@@ -259,7 +259,7 @@ type
     FNGDSurfaceItem: TNGDSurfaceItem;
     FHeightFieldOptions: TVKHeightField;
   protected
-    { Protected Declarations }
+    
     procedure Initialize; virtual;
     procedure Finalize; virtual;
     procedure WriteToFiler(writer: TWriter); override;
@@ -303,7 +303,7 @@ type
       buffer: Pointer; size: Cardinal); static; cdecl;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TVKXCollection); override;
     destructor Destroy; override;
     procedure Reinitialize;
@@ -318,7 +318,7 @@ type
       SetHeightFieldOptions;
 
   published
-    { Published Declarations }
+    
     property Manager: TVKNGDManager read FManager write SetManager;
     property ContinuousCollisionMode
       : Boolean read FContinuousCollisionMode write
@@ -338,7 +338,7 @@ type
 
   TVKNGDDynamic = class(TVKNGDBehaviour)
   strict private
-    { Private Declarations }
+    
     FAABBmin: TVKCoordinates;
     FAABBmax: TVKCoordinates;
     FForce: TVKCoordinates;
@@ -366,7 +366,7 @@ type
     function StoredLinearDamping: Boolean;
     function StoredNullCollisionVolume: Boolean;
   protected
-    { Protected Declarations }
+    
     procedure SetAutoSleep(const Value: Boolean);
     procedure SetLinearDamping(const Value: Single);
     procedure SetDensity(const Value: Single); virtual;
@@ -393,7 +393,7 @@ type
 
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TVKXCollection); override;
     destructor Destroy; override;
     procedure AddImpulse(const veloc, pointposit: TVector);
@@ -406,25 +406,19 @@ type
       : TApplyForceAndTorqueEvent read FCustomForceAndTorqueEvent write
       FCustomForceAndTorqueEvent;
   published
-    { Published Declarations }
+    
     property Force: TVKCoordinates read FForce write FForce;
     property Torque: TVKCoordinates read FTorque write FTorque;
     property Velocity: TVector read GetVelocity write SetVelocity;
     property Omega: TVector read GetOmega write SetOmega;
-    property CenterOfMass
-      : TVKCoordinates read FCenterOfMass write FCenterOfMass;
+    property CenterOfMass: TVKCoordinates read FCenterOfMass write FCenterOfMass;
     property AutoSleep: Boolean read FAutoSleep write SetAutoSleep default True;
-    property LinearDamping
-      : Single read FLinearDamping write SetLinearDamping
+    property LinearDamping: Single read FLinearDamping write SetLinearDamping
       stored StoredLinearDamping;
-    property AngularDamping
-      : TVKCoordinates read FAngularDamping write FAngularDamping;
-    property Density
-      : Single read FDensity write SetDensity stored StoredDensity;
-    property UseGravity
-      : Boolean read FUseGravity write FUseGravity default True;
-    property NullCollisionVolume
-      : Single read FNullCollisionVolume write FNullCollisionVolume stored
+    property AngularDamping: TVKCoordinates read FAngularDamping write FAngularDamping;
+    property Density: Single read FDensity write SetDensity stored StoredDensity;
+    property UseGravity: Boolean read FUseGravity write FUseGravity default True;
+    property NullCollisionVolume: Single read FNullCollisionVolume write FNullCollisionVolume stored
       StoredNullCollisionVolume;
 
     // Read Only
@@ -435,21 +429,17 @@ type
     property Volume: Single read FVolume;
     property Mass: Single read FMass;
   end;
-
   TVKNGDStatic = class(TVKNGDBehaviour)
-  private
-    { Private Declarations }
-
   protected
-    { Protected Declarations }
+
     procedure Render; override;
 
   public
-    { Public Declarations }
+
     class function FriendlyName: string; override;
 
   published
-    { Published Declarations }
+
   end;
 
   TNGDSurfaceItem = class(TCollectionItem)
@@ -519,21 +509,15 @@ type
       StoredSoftness;
     property Elasticity: Single read FElasticity write SetElasticity stored
       StoredElasticity;
-    property Collidable
-      : Boolean read FCollidable write SetCollidable default True;
-    property StaticFriction
-      : Single read FStaticFriction write SetStaticFriction
+    property Collidable: Boolean read FCollidable write SetCollidable default True;
+    property StaticFriction: Single read FStaticFriction write SetStaticFriction
       stored StoredStaticFriction;
-    property KineticFriction
-      : Single read FKineticFriction write SetKineticFriction stored
+    property KineticFriction: Single read FKineticFriction write SetKineticFriction stored
       StoredKineticFriction;
-    property ContinuousCollisionMode
-      : Boolean read FContinuousCollisionMode write
+    property ContinuousCollisionMode: Boolean read FContinuousCollisionMode write
       SetContinuousCollisionMode default False;
-    property Thickness
-      : Boolean read FThickness write SetThickness default False;
-    property ContactProcessEvent
-      : TContactProcessEvent read FContactProcessEvent
+    property Thickness: Boolean read FThickness write SetThickness default False;
+    property ContactProcessEvent: TContactProcessEvent read FContactProcessEvent
       write FContactProcessEvent;
     property AABBOverlapEvent: TAABBOverlapEvent read FAABBOverlapEvent write
       FAABBOverlapEvent;
@@ -560,8 +544,7 @@ type
     destructor Destroy; override;
 
   published
-    property PinDirection
-      : TVKCoordinates read FPinDirection write FPinDirection;
+    property PinDirection: TVKCoordinates read FPinDirection write FPinDirection;
   end;
 
   TNGDJointPin2 = class(TNGDJointPin)
@@ -573,8 +556,7 @@ type
     destructor Destroy; override;
 
   published
-    property PinDirection2
-      : TVKCoordinates read FPinDirection2 write FPinDirection2;
+    property PinDirection2: TVKCoordinates read FPinDirection2 write FPinDirection2;
   end;
 
   TNGDJointBallAndSocket = class(TNGDJointPivot)

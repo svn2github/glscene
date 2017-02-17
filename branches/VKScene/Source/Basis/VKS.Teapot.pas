@@ -26,11 +26,11 @@ type
      The only use of this object is as placeholder for testing... }
   TVKTeapot = class(TVKSceneObject)
   private
-    { Private Declarations }
+    
     FGrid: Cardinal;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     function AxisAlignedDimensionsUnscaled: TVector; override;
     procedure BuildList(var rci: TVKRenderContextInfo); override;

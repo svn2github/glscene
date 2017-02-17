@@ -62,10 +62,10 @@ type
     procedure LBUniformsKeyDown(Sender: TObject; var Key: Word;
       var KeyChar: Char; Shift: TShiftState);
   private
-    { Private declarations }
+    
     FUniformList: array of IShaderParameter;
   public
-    { Public declarations }
+    
     procedure Clear;
     procedure AddTextureName(const S: string);
     procedure AddSamplerName(const S: string);

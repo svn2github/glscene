@@ -55,7 +55,7 @@ type
    TimeReference (setting CurrentTime does NOT trigger progression). }
   TVKCadencer = class(TComponent)
   private
-    { Private Declarations }
+    
     FSubscribedCadenceableComponents: TList;
     FScene: TVKScene;
     FTimeMultiplier: Double;
@@ -72,7 +72,7 @@ type
     procedure SetCurrentTime(const Value: Double);
 
   protected
-    { Protected Declarations }
+    
     procedure Notification(AComponent: TComponent; Operation: TOperation);
       override;
     function StoreTimeMultiplier: Boolean;
@@ -89,7 +89,7 @@ type
     procedure OnIdleEvent(Sender: TObject; var Done: Boolean);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
@@ -119,7 +119,7 @@ type
     property CurrentTime: Double read FCurrentTime write SetCurrentTime;
 
   published
-    { Published Declarations }
+    
     { The TVKScene that will be cadenced (progressed). }
     property Scene: TVKScene read FScene write SetScene;
     { Enables/Disables cadencing. 
@@ -188,17 +188,17 @@ type
   { Adds a property to connect/subscribe to a cadencer.  }
   TVKCustomCadencedComponent = class(TVKUpdateAbleComponent)
   private
-    { Private Declarations }
+    
     FCadencer: TVKCadencer;
 
   protected
-    { Protected Declarations }
+    
     procedure SetCadencer(const val: TVKCadencer);
 
     property Cadencer: TVKCadencer read FCadencer write SetCadencer;
 
   public
-    { Public Declarations }
+    
     destructor Destroy; override;
 
     procedure Notification(AComponent: TComponent; Operation: TOperation);
@@ -209,7 +209,7 @@ type
   //
   TVKCadencedComponent = class(TVKCustomCadencedComponent)
   published
-    { Published Declarations }
+    
     property Cadencer;
   end;
 

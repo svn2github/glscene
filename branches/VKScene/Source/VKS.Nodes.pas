@@ -11,7 +11,7 @@ interface
 uses
   Winapi.OpenGL, Winapi.OpenGLext,
   System.Classes, System.SysUtils,
-  //VKS
+  
   VKS.VectorGeometry,  VKS.OpenGLAdapter,
   VKS.Context, VKS.BaseClasses,  VKS.Coordinates, VKS.Spline,
   VKS.XOpenGL, VKS.VectorTypes;
@@ -24,7 +24,7 @@ type
   //
   TVKNode = class(TCollectionItem)
   private
-    { Private Declarations }
+    
     FCoords: TVector;
     FTagObject: TObject;
     procedure SetAsVector(const Value: TVector);
@@ -34,13 +34,13 @@ type
     function GetCoordinate(const Index: Integer): GLfloat;
 
   protected
-    { Protected Declarations }
+    
     function StoreCoordinate(AIndex: Integer): Boolean;
 
     function GetDisplayName: string; override;
 
   public
-    { Public Declarations }
+    
     constructor Create(ACollection: TCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -60,7 +60,7 @@ type
 
     property TagObject: TObject read FTagObject write FTagObject;
   published
-    { Published Declarations }
+    
     property X: GLfloat index 0 read GetCoordinate write SetCoordinate
       stored StoreCoordinate;
     property Y: GLfloat index 1 read GetCoordinate write SetCoordinate
@@ -73,16 +73,16 @@ type
   //
   TVKNodes = class(TOwnedCollection)
   private
-    { Private Declarations }
+    
 
   protected
-    { Protected Declarations }
+    
     procedure SetItems(Index: Integer; const Val: TVKNode);
     function GetItems(Index: Integer): TVKNode;
     procedure Update(Item: TCollectionItem); override;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TPersistent;
       AItemClass: TCollectionItemClass = nil);
     function CreateCopy(AOwner: TPersistent): TVKNodes;

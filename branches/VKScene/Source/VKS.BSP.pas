@@ -41,18 +41,18 @@ type
   //
   TBSPClusterVisibility = class
   private
-    { Private Declarations }
+    
     FData: PByteArray;
     FSize, FBytesPerCluster, FCount: Integer;
 
   protected
-    { Protected Declarations }
+    
     procedure SetCount(NumClusters: Integer);
     function GetVisibility(Source, Destination: Integer): Boolean;
     procedure SetVisibility(Source, Destination: Integer; const Value: Boolean);
 
   public
-    { Public Declarations }
+    
     constructor Create;
     destructor Destroy; override;
 
@@ -74,16 +74,16 @@ type
     the 1st facegroup (of index 0) being the root node of the BSP tree. }
   TBSPMeshObject = class(TVKMeshObject)
   private
-    { Private Declarations }
+    
     FRenderSort: TBSPRenderSort;
     FClusterVisibility: TBSPClusterVisibility;
     FUseClusterVisibility: Boolean;
 
   protected
-    { Protected Declarations }
+    
 
   public
-    { Public Declarations }
+    
     constructor CreateOwned(AOwner: TVKMeshObjectList);
     destructor Destroy; override;
 
@@ -127,19 +127,19 @@ type
     nodes are referred by their index. }
   TFGBSPNode = class(TFGVertexIndexList)
   private
-    { Private Declarations }
+    
     FSplitPlane: THmgPlane;
     FPositiveSubNodeIndex: Integer;
     FNegativeSubNodeIndex: Integer;
     FCluster: Integer;
 
   protected
-    { Protected Declarations }
+    
     function AddLerp(iA, iB: Integer; fB, fA: Single): Integer;
     function AddLerpIfDistinct(iA, iB, iMid: Integer): Integer;
 
   public
-    { Public Declarations }
+    
     constructor CreateOwned(AOwner: TVKFaceGroups); override;
     destructor Destroy; override;
 

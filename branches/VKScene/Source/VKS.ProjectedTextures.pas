@@ -46,22 +46,22 @@ type
      Can be places anywhere in the scene. }
   TVKTextureEmitter = class(TVKSceneObject)
   private
-    { Private Declarations }
+    
     FFOVy: single;
     FAspect: single;
 
   protected
-    { Protected Declarations }
+    
     { Sets up the base texture matrix for this emitter 
        Should be called whenever a change on its properties is made.}
     procedure SetupTexMatrix(var ARci: TVKRenderContextInfo);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
 
   published
-    { Published Declarations }
+    
     { Indicates the field-of-view of the projection frustum.}
     property FOVy: single read FFOVy write FFOVy;
 
@@ -75,22 +75,22 @@ type
   { Specifies an item on the TVKTextureEmitters collection. }
   TVKTextureEmitterItem = class(TCollectionItem)
   private
-    { Private Declarations }
+    
     FEmitter: TVKTextureEmitter;
 
   protected
-    { Protected Declarations }
+    
     procedure SetEmitter(const val: TVKTextureEmitter);
     procedure RemoveNotification(aComponent: TComponent);
     function GetDisplayName: string; override;
 
   public
-    { Public Declarations }
+    
     constructor Create(ACollection: TCollection); override;
     procedure Assign(Source: TPersistent); override;
 
   published
-    { Published Declarations }
+    
     property Emitter: TVKTextureEmitter read FEmitter write SetEmitter;
 
   end;
@@ -100,17 +100,17 @@ type
   { Collection of TVKTextureEmitter. }
   TVKTextureEmitters = class(TCollection)
   private
-    { Private Declarations }
+    
     FOwner: TVKProjectedTextures;
 
   protected
-    { Protected Declarations }
+    
     function GetOwner: TPersistent; override;
     function GetItems(index: Integer): TVKTextureEmitterItem;
     procedure RemoveNotification(aComponent: TComponent);
 
   public
-    { Public Declarations }
+    
     procedure AddEmitter(texEmitter: TVKTextureEmitter);
 
     property Items[index: Integer]: TVKTextureEmitterItem read GetItems; default;
@@ -124,19 +124,19 @@ type
      and receivers (children of this object). }
   TVKProjectedTextures = class(TVKImmaterialSceneObject)
   private
-    { Private Declarations }
+    
     FEmitters: TVKTextureEmitters;
     FStyle: TVKProjectedTexturesStyle;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure DoRender(var ARci: TVKRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
 
   published
-    { Published Declarations }
+    
 
     { List of texture emitters. }
     property Emitters: TVKTextureEmitters read FEmitters write FEmitters;

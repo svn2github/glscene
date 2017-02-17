@@ -19,7 +19,7 @@ uses
   Winapi.OpenGL,
   Winapi.OpenGLext,
   System.Classes,
-  //VKS
+  
   VKS.OpenGLAdapter,
   VKS.Scene,
   VKS.VectorGeometry,
@@ -71,14 +71,14 @@ type
      Can be a light or an opaque object. }
   TVKShadowVolumeCaster = class(TCollectionItem)
   private
-    { Private Declarations }
+    
     FCaster: TVKBaseSceneObject;
     FEffectiveRadius: Single;
     FCapping: TVKShadowVolumeCapping;
     FCastingMode: TVKShadowCastingMode;
 
   protected
-    { Protected Declarations }
+    
     procedure SetCaster(const val: TVKBaseSceneObject);
     function GetGLShadowVolume: TVKShadowVolume;
 
@@ -86,7 +86,7 @@ type
     function GetDisplayName: string; override;
 
   public
-    { Public Declarations }
+    
     constructor Create(ACollection: TCollection); override;
     destructor Destroy; override;
 
@@ -99,7 +99,7 @@ type
     property GLShadowVolume: TVKShadowVolume read GetGLShadowVolume;
 
   published
-    { Published Declarations }
+    
 
           { Radius beyond which the caster can be ignored. 
              Zero (default value) means the caster can never be ignored. }
@@ -122,7 +122,7 @@ type
   { Specifies an individual shadow casting occluder.  }
   TVKShadowVolumeOccluder = class(TVKShadowVolumeCaster)
   published
-    { Published Declarations }
+    
     property Caster;
   end;
 
@@ -131,11 +131,11 @@ type
   { Specifies an individual shadow casting light.  }
   TVKShadowVolumeLight = class(TVKShadowVolumeCaster)
   private
-    { Private Declarations }
+    
     FSilhouettes: TPersistentObjectList;
 
   protected
-    { Protected Declarations }
+    
     function GetLightSource: TVKLightSource;
     procedure SetLightSource(const ls: TVKLightSource);
 
@@ -148,14 +148,14 @@ type
       Boolean;
 
   public
-    { Public Declarations }
+    
     constructor Create(ACollection: TCollection); override;
     destructor Destroy; override;
 
     procedure FlushSilhouetteCache;
 
   published
-    { Published Declarations }
+    
           { Shadow casting lightsource.  }
     property LightSource: TVKLightSource read GetLightSource write
       SetLightSource;
@@ -167,15 +167,15 @@ type
   { Collection of TVKShadowVolumeCaster. }
   TVKShadowVolumeCasters = class(TOwnedCollection)
   private
-    { Private Declarations }
+    
 
   protected
-    { Protected Declarations }
+    
     function GetItems(index: Integer): TVKShadowVolumeCaster;
     procedure RemoveNotification(aComponent: TComponent);
 
   public
-    { Public Declarations }
+    
     function AddCaster(obj: TVKBaseSceneObject; effectiveRadius: Single = 0;
       CastingMode: TVKShadowCastingMode = scmRecursivelyVisible):
       TVKShadowVolumeCaster;
@@ -231,7 +231,7 @@ type
       }
   TVKShadowVolume = class(TVKImmaterialSceneObject)
   private
-    { Private Declarations }
+    
     FActive: Boolean;
     FRendering: Boolean;
     FLights: TVKShadowVolumeCasters;
@@ -242,7 +242,7 @@ type
     FDarkeningColor: TVKColor;
 
   protected
-    { Protected Declarations }
+    
     procedure Notification(AComponent: TComponent; Operation: TOperation);
       override;
 
@@ -254,7 +254,7 @@ type
     procedure SetDarkeningColor(const val: TVKColor);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
@@ -266,7 +266,7 @@ type
     procedure FlushSilhouetteCache;
 
   published
-    { Public Declarations }
+    
           { Determines if shadow volume rendering is active. 
              When set to false, children will be rendered without any shadowing
              or multipass lighting. }

@@ -25,7 +25,7 @@ uses
   System.Classes,
   System.SysUtils,
   System.Math,
-  //VKS
+  
 
   VKS.VectorGeometry,
   VKS.VectorTypes,
@@ -68,7 +68,7 @@ type
     display list (see Amalgamate property). }
   TVKDummyCube = class(TVKCameraInvariantObject)
   private
-    { Private Declarations }
+    
     FCubeSize: GLfloat;
     FEdgeColor: TVKColor;
     FVisibleAtRunTime, FAmalgamate: Boolean;
@@ -76,14 +76,14 @@ type
     FOnVisibilityDetermination: TVKVisibilityDeterminationEvent;
 
   protected
-    { Protected Declarations }
+    
     procedure SetCubeSize(const val: GLfloat);
     procedure SetEdgeColor(const val: TVKColor);
     procedure SetVisibleAtRunTime(const val: Boolean);
     procedure SetAmalgamate(const val: Boolean);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
@@ -100,7 +100,7 @@ type
     function BarycenterAbsolutePosition: TVector; override;
 
   published
-    { Published Declarations }
+    
     property CubeSize: GLfloat read FCubeSize write SetCubeSize;
     property EdgeColor: TVKColor read FEdgeColor write SetEdgeColor;
     { If true the dummycube's edges will be visible at runtime. 
@@ -145,7 +145,7 @@ type
     tiling is only applied to texture coordinates. }
   TVKPlane = class(TVKSceneObject)
   private
-    { Private Declarations }
+    
     FXOffset, FYOffset: GLfloat;
     FXScope, FYScope: GLfloat;
     FWidth, FHeight: GLfloat;
@@ -153,7 +153,7 @@ type
     FStyle: TVKPlaneStyles;
     FMesh: array of array of TVertexRec;
   protected
-    { Protected Declarations }
+    
     procedure SetHeight(const aValue: Single);
     procedure SetWidth(const aValue: Single);
     procedure SetXOffset(const Value: GLfloat);
@@ -167,7 +167,7 @@ type
     procedure SetStyle(const val: TVKPlaneStyles);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
 
     procedure Assign(Source: TPersistent); override;
@@ -189,7 +189,7 @@ type
     function PointDistance(const aPoint: TVector): Single;
 
   published
-    { Public Declarations }
+    
     property Height: GLfloat read FHeight write SetHeight;
     property Width: GLfloat read FWidth write SetWidth;
     property XOffset: GLfloat read FXOffset write SetXOffset;
@@ -209,7 +209,7 @@ type
     if you want a 2D sprite that does not get scaled, see TVKHUDSprite. }
   TVKSprite = class(TVKSceneObject)
   private
-    { Private Declarations }
+    
     FWidth: GLfloat;
     FHeight: GLfloat;
     FRotation: GLfloat;
@@ -217,7 +217,7 @@ type
     FMirrorU, FMirrorV: Boolean;
 
   protected
-    { Protected Declarations }
+    
     procedure SetWidth(const val: GLfloat);
     procedure SetHeight(const val: GLfloat);
     procedure SetRotation(const val: GLfloat);
@@ -227,7 +227,7 @@ type
     procedure SetMirrorV(const val: Boolean);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
 
     procedure Assign(Source: TPersistent); override;
@@ -240,7 +240,7 @@ type
     procedure SetSquareSize(const Size: GLfloat);
 
   published
-    { Published Declarations }
+    
     { Sprite Width in 3D world units. }
     property Width: GLfloat read FWidth write SetWidth;
     { Sprite Height in 3D world units. }
@@ -269,14 +269,14 @@ type
     what each parameter does. }
   TVKPointParameters = class(TVKUpdateAbleObject)
   private
-    { Private Declarations }
+    
     FEnabled: Boolean;
     FMinSize, FMaxSize: Single;
     FFadeTresholdSize: Single;
     FDistanceAttenuation: TVKCoordinates;
 
   protected
-    { Protected Declarations }
+    
     procedure SetEnabled(const val: Boolean);
     procedure SetMinSize(const val: Single);
     procedure SetMaxSize(const val: Single);
@@ -288,7 +288,7 @@ type
     procedure WriteData(Stream: TStream);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
 
@@ -298,7 +298,7 @@ type
     procedure UnApply;
 
   published
-    { Published Declarations }
+    
     property Enabled: Boolean read FEnabled write SetEnabled default False;
     property MinSize: Single read FMinSize write SetMinSize stored False;
     property MaxSize: Single read FMaxSize write SetMaxSize stored False;
@@ -316,7 +316,7 @@ type
     and Colors properties. }
   TVKPoints = class(TVKImmaterialSceneObject)
   private
-    { Private Declarations }
+    
     FPositions: TAffineVectorList;
     FColors: TVectorList;
     FSize: Single;
@@ -325,7 +325,7 @@ type
     FStatic, FNoZWrite: Boolean;
 
   protected
-    { Protected Declarations }
+    
     function StoreSize: Boolean;
     procedure SetNoZWrite(const val: Boolean);
     procedure SetStatic(const val: Boolean);
@@ -336,7 +336,7 @@ type
     procedure SetPointParameters(const val: TVKPointParameters);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
@@ -356,7 +356,7 @@ type
     property Colors: TVectorList read FColors write SetColors;
 
   published
-    { Published Declarations }
+    
     { If true points do not write their Z to the depth buffer. }
     property NoZWrite: Boolean read FNoZWrite write SetNoZWrite;
     { Tells the component if point coordinates are static. 
@@ -393,23 +393,23 @@ type
     Adds a Color property (TVKColor). }
   TVKLinesNode = class(TVKNode)
   private
-    { Private Declarations }
+    
     FColor: TVKColor;
 
   protected
-    { Protected Declarations }
+    
     procedure SetColor(const val: TVKColor);
     procedure OnColorChange(Sender: TObject);
     function StoreColor: Boolean;
 
   public
-    { Public Declarations }
+    
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
 
   published
-    { Published Declarations }
+    
 
     { The node color. 
       Can also defined the line color (interpolated between nodes) if
@@ -423,7 +423,7 @@ type
     Stores TVKLinesNode items. }
   TVKLinesNodes = class(TVKNodes)
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); overload;
 
     procedure NotifyChange; override;
@@ -435,14 +435,14 @@ type
     Introduces line style properties (width, color...). }
   TVKLineBase = class(TVKImmaterialSceneObject)
   private
-    { Private Declarations }
+    
     FLineColor: TVKColor;
     FLinePattern: GLushort;
     FLineWidth: Single;
     FAntiAliased: Boolean;
 
   protected
-    { Protected Declarations }
+    
     procedure SetLineColor(const Value: TVKColor);
     procedure SetLinePattern(const Value: GLushort);
     procedure SetLineWidth(const val: Single);
@@ -455,14 +455,14 @@ type
     procedure SetupLineStyle(var rci: TVKRenderContextInfo);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
     procedure NotifyChange(Sender: TObject); override;
 
   published
-    { Published Declarations }
+    
     { Indicates if Vulkan should smooth line edges. 
       Smoothed lines looks better but are poorly implemented in most OpenGL
       drivers and take *lots* of rendering time. }
@@ -487,7 +487,7 @@ type
     Base class, does not render anything. }
   TVKNodedLines = class(TVKLineBase)
   private
-    { Private Declarations }
+    
     FNodes: TVKLinesNodes;
     FNodesAspect: TLineNodesAspect;
     FNodeColor: TVKColor;
@@ -495,7 +495,7 @@ type
     FOldNodeColor: TColorVector;
 
   protected
-    { Protected Declarations }
+    
     procedure SetNodesAspect(const Value: TLineNodesAspect);
     procedure SetNodeColor(const Value: TVKColor);
     procedure OnNodeColorChanged(Sender: TObject);
@@ -507,7 +507,7 @@ type
       Color: TVKColor);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -520,7 +520,7 @@ type
     procedure AddNode(const Value: TAffineVector); overload;
 
   published
-    { Published Declarations }
+    
     { Default color for nodes. 
       lnaInvisible and lnaAxes ignore this setting. }
     property NodeColor: TVKColor read FNodeColor write SetNodeColor;
@@ -552,7 +552,7 @@ type
     the node aspect that suits you. }
   TVKLines = class(TVKNodedLines)
   private
-    { Private Declarations }
+    
     FDivision: Integer;
     FSplineMode: TLineSplineMode;
     FOptions: TLinesOptions;
@@ -561,7 +561,7 @@ type
     FNURBSKnots: TSingleList;
 
   protected
-    { Protected Declarations }
+    
     procedure SetSplineMode(const val: TLineSplineMode);
     procedure SetDivision(const Value: Integer);
     procedure SetOptions(const val: TLinesOptions);
@@ -569,7 +569,7 @@ type
     procedure SetNURBSTolerance(const val: Single);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -582,7 +582,7 @@ type
       write SetNURBSTolerance;
 
   published
-    { Published Declarations }
+    
     { Number of divisions for each segment in spline modes. 
       Minimum 1 (disabled), ignored in lsmLines mode. }
     property Division: Integer read FDivision write SetDivision default 10;
@@ -611,7 +611,7 @@ type
     with a TVKFreeForm and a material library. }
   TVKCube = class(TVKSceneObject)
   private
-    { Private Declarations }
+    
     FCubeSize: TAffineVector;
     FParts: TCubeParts;
     FNormalDirection: TNormalDirection;
@@ -620,13 +620,13 @@ type
     procedure SetParts(aValue: TCubeParts);
     procedure SetNormalDirection(aValue: TNormalDirection);
   protected
-    { Protected Declarations }
+    
     procedure DefineProperties(Filer: TFiler); override;
     procedure ReadData(Stream: TStream);
     procedure WriteData(Stream: TStream);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
 
     function GenerateSilhouette(const silhouetteParameters
@@ -640,7 +640,7 @@ type
       : Boolean; override;
 
   published
-    { Published Declarations }
+    
     property CubeWidth: GLfloat index 0 read GetCubeWHD write SetCubeWHD
       stored False;
     property CubeHeight: GLfloat index 1 read GetCubeWHD write SetCubeWHD
@@ -668,12 +668,12 @@ type
     math is part of the GLU library). }
   TVKQuadricObject = class(TVKSceneObject)
   private
-    { Private Declarations }
+    
     FNormals: TNormalSmoothing;
     FNormalDirection: TNormalDirection;
 
   protected
-    { Protected Declarations }
+    
     procedure SetNormals(aValue: TNormalSmoothing);
     procedure SetNormalDirection(aValue: TNormalDirection);
     procedure SetupQuadricParams(quadric: GLUquadricObj);
@@ -681,12 +681,12 @@ type
     procedure SetInvertedQuadricOrientation(quadric: GLUquadricObj);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     procedure Assign(Source: TPersistent); override;
 
   published
-    { Published Declarations }
+    
     property Normals: TNormalSmoothing read FNormals write SetNormals
       default nsSmooth;
     property NormalDirection: TNormalDirection read FNormalDirection
@@ -704,7 +704,7 @@ type
     of sphere. }
   TVKSphere = class(TVKQuadricObject)
   private
-    { Private Declarations }
+    
     FRadius: GLfloat;
     FSlices, FStacks: GLint;
     FTop: TAngleLimit1;
@@ -723,7 +723,7 @@ type
     procedure SetTopCap(aValue: TCapType);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     procedure Assign(Source: TPersistent); override;
 
@@ -736,7 +736,7 @@ type
     function GenerateSilhouette(const silhouetteParameters
       : TVKSilhouetteParameters): TVKSilhouette; override;
   published
-    { Published Declarations }
+    
     property Bottom: TAngleLimit1 read FBottom write SetBottom default -90;
     property BottomCap: TCapType read FBottomCap write SetBottomCap
       default ctNone;
@@ -754,12 +754,12 @@ type
   { Base class for objects based on a polygon. }
   TVKPolygonBase = class(TVKSceneObject)
   private
-    { Private Declarations }
+    
     FDivision: Integer;
     FSplineMode: TLineSplineMode;
 
   protected
-    { Protected Declarations }
+    
     FNodes: TVKNodes;
     procedure CreateNodes; dynamic;
     procedure SetSplineMode(const val: TLineSplineMode);
@@ -767,7 +767,7 @@ type
     procedure SetNodes(const aNodes: TVKNodes);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -779,7 +779,7 @@ type
     procedure AddNode(const Value: TAffineVector); overload;
 
   published
-    { Published Declarations }
+    
     { The nodes list.  }
     property Nodes: TVKNodes read FNodes write SetNodes;
     { Number of divisions for each segment in spline modes. 
@@ -799,7 +799,7 @@ type
     as well as being just a slice of Superellipsoid. }
   TVKSuperellipsoid = class(TVKQuadricObject)
   private
-    { Private Declarations }
+    
     FRadius, FxyCurve, FzCurve: GLfloat;
     FSlices, FStacks: GLint;
     FTop: TAngleLimit1;
@@ -820,7 +820,7 @@ type
     procedure SetTopCap(aValue: TCapType);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     procedure Assign(Source: TPersistent); override;
 
@@ -833,7 +833,7 @@ type
     function GenerateSilhouette(const silhouetteParameters
       : TVKSilhouetteParameters): TVKSilhouette; override;
   published
-    { Published Declarations }
+    
     property Bottom: TAngleLimit1 read FBottom write SetBottom default -90;
     property BottomCap: TCapType read FBottomCap write SetBottomCap
       default ctNone;

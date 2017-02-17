@@ -49,11 +49,11 @@ type
      property is ignored and replaced appropriately. }
   TVKWindowsBitmapFont = class(TVKCustomBitmapFont)
   private
-    { Private Declarations }
+    
     FFont: TFont;
     procedure SetList(const AList : TIntegerList);
   protected
-    { Protected Declarations }
+    
     procedure SetFont(value: TFont);
     procedure LoadWindowsFont; virtual;
     function  StoreRanges: Boolean;
@@ -62,7 +62,7 @@ type
     function  TextureFormat: Integer; override;
     procedure StreamlineRanges;
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
@@ -77,7 +77,7 @@ type
     property Glyphs;
 
   published
-    { Published Declarations }
+    
       { The font used to prepare the texture. 
          Note: the font color is ignored. }
     property Font: TFont read FFont write SetFont;
@@ -173,7 +173,7 @@ end;
 
 procedure TVKWindowsBitmapFont.LoadWindowsFont;
 
-  procedure ComputeCharRects(bitmap: TVKBitmap);
+  procedure ComputeCharRects(bitmap: TBitmap);
   var
     px, py, cw, n, x, y: Integer;
     PaddedHeight : integer;
@@ -265,7 +265,7 @@ procedure TVKWindowsBitmapFont.LoadWindowsFont;
   end;
 
 var
-  bitmap: TVKBitmap;
+  bitmap: TBitmap;
   ch: widechar;
   i, cw, nbChars, n: Integer;
 begin

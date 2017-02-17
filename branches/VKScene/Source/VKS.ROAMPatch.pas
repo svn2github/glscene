@@ -15,7 +15,7 @@ uses
   Winapi.OpenGL,
   Winapi.OpenGLext,
   System.SysUtils,
-  //VKS
+  
   VKS.OpenGLAdapter,
   VKS.VectorGeometry,
   VKS.HeightData,
@@ -50,7 +50,7 @@ type
   //
   TVKROAMPatch = class(TObject)
   private
-    { Private Declarations }
+    
     FID: Integer;
     FHeightData: TVKHeightData; // Referred, not owned
     FHeightRaster: PSmallIntRaster;
@@ -75,7 +75,7 @@ type
     FContourWidth: Integer;
 
   protected
-    { Protected Declarations }
+    
     procedure SetHeightData(Val: TVKHeightData);
     procedure SetOcclusionSkip(Val: Integer);
 
@@ -85,7 +85,7 @@ type
       VertexIndices: TIntegerList; TexCoords: TTexPointList);
 
   public
-    { Public Declarations }
+    
     constructor Create;
     destructor Destroy; override;
 

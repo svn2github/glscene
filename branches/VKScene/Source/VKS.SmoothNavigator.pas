@@ -334,14 +334,14 @@ type
   protected
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
   public
-    //: Constructors-destructors.
+    // Constructors-destructors.
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
-    //: From TVKNavigator. Probably, should not be public.
+    // From TVKNavigator. Probably, should not be public.
     procedure SetObject(Value: TVKBaseSceneObject); override;
 
-    //: Uses InertiaParams.
+    // Uses InertiaParams.
     procedure TurnHorizontal(Angle: Single; ADeltaTime: Double); virtual;
     procedure TurnVertical(Angle: Single; ADeltaTime: Double); virtual;
     procedure FlyForward(const Plus, Minus: Boolean; ADeltaTime: Double; const Accelerate: Boolean = False); virtual;
@@ -349,22 +349,22 @@ type
     procedure StrafeHorizontal(const Plus, Minus: Boolean; ADeltaTime: Double; const Accelerate: Boolean = False); virtual;
     procedure StrafeVertical(const Plus, Minus: Boolean; ADeltaTime: Double; const Accelerate: Boolean = False); virtual;
 
-    //: Uses MoveAroundParams. Returns True, if object was actually moved.
+    // Uses MoveAroundParams. Returns True, if object was actually moved.
     function MoveAroundTarget(const PitchDelta, TurnDelta : Single; const ADeltaTime: Double): Boolean; virtual;
     function MoveObjectAround(const AObject: TVKBaseSceneObject; PitchDelta, TurnDelta : Single; ADeltaTime: Double): Boolean; virtual;
 
-    //: Uses AdjustDistanceParams.
+    // Uses AdjustDistanceParams.
     function AdjustDistanceToPoint(const  APoint: TVector; const DistanceRatio : Single; ADeltaTime: Double): Boolean; virtual;
     function AdjustDistanceToTarget(const DistanceRatio : Single; const ADeltaTime: Double): Boolean; virtual;
 
-    //: Uses AdjustDistanceParamsEx.
+    // Uses AdjustDistanceParamsEx.
     function AdjustDistanceToPointEx(const  APoint: TVector; ADeltaTime: Double): Boolean; virtual;
     function AdjustDistanceToTargetEx(const ADeltaTime: Double): Boolean; virtual;
 
-    //: Uses CustomAnimatedItems.
+    // Uses CustomAnimatedItems.
     procedure AnimateCustomItems(const ADeltaTime: Double); virtual;
 
-    //: Uses GeneralParams.
+    // Uses GeneralParams.
       { In ScaleParameters, Value should be around 1. }
     procedure ScaleParameters(const Value: Single); virtual;
     procedure AutoScaleParameters(const FPS: Single); virtual;

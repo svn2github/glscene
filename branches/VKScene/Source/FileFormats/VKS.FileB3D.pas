@@ -50,7 +50,7 @@ var
   Mo: TVKMeshObject;
   I, J: Integer;
   FaceGroup: TFGVertexIndexList;
-  // lightmapBmp : TVKBitmap;
+  // lightmapBmp : TBitmap;
   Node: PNODEChunk;
   B3DMat: TB3DMaterial;
   B3DTex: TB3DTexture;

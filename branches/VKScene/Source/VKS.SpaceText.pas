@@ -58,7 +58,7 @@ type
   //
   TVKTextAdjust = class(TPersistent)
   private
-    { Private Declarations }
+    
     FHorz: TVKTextHorzAdjust;
     FVert: TVKTextVertAdjust;
     FOnChange: TNotifyEvent;
@@ -66,14 +66,14 @@ type
     procedure SetVert(const Value: TVKTextVertAdjust);
 
   public
-    { public Declarations }
+    
     constructor Create;
     procedure Assign(Source: TPersistent); override;
 
     property OnChange: TNotifyEvent read FOnChange write FOnChange;
 
   published
-    { Published Declarations }
+    
     property Horz: TVKTextHorzAdjust read FHorz write SetHorz default haLeft;
     property Vert: TVKTextVertAdjust read FVert write SetVert
       default vaBaseLine;
@@ -99,7 +99,7 @@ type
   { Renders a text in 3D. }
   TVKSpaceText = class(TVKSceneObject)
   private
-    { Private Declarations }
+    
     FFont: TFont;
     FExtrusion: Single;
     FAllowedDeviation: Single;
@@ -121,7 +121,7 @@ type
     procedure SetOblique(const Value: Single);
     procedure SetTextHeight(const Value: Single);
   protected
-    { Protected Declarations }
+    
     FTextFontEntry: PFontEntry;
     FontChanged: Boolean;
     procedure DestroyHandle; override;
@@ -129,7 +129,7 @@ type
     procedure GetFirstAndLastChar(var firstChar, lastChar: Integer);
     procedure DoOnLinesChange(sender: TObject); virtual;
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
@@ -153,7 +153,7 @@ type
     function AxisAlignedDimensionsUnscaled: TVector; override;
     function BarycenterAbsolutePosition: TVector; override;
   published
-    { Published Declarations }
+    
     { Adjusts the 3D font extrusion. 
       If Extrusion=0, the characters will be flat (2D), values >0 will
       give them a third dimension. }
@@ -179,11 +179,11 @@ type
   { Manages a list of fonts for which display lists were created. }
   TFontManager = class(TList)
   private
-    { Private Declarations }
+    
     FCurrentBase: Integer;
 
   protected
-    { Protected Declarations }
+    
     procedure NotifyClients(Clients: TList);
     procedure VirtualHandleAlloc(sender: TVKVirtualHandle;
       var handle: Cardinal);
@@ -191,7 +191,7 @@ type
       var handle: Cardinal);
 
   public
-    { Public Declarations }
+    
     constructor Create;
     destructor Destroy; override;
 

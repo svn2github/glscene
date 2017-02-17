@@ -20,7 +20,7 @@ type
     procedure TrackBarChange(Sender: TObject);
     procedure EditChange(Sender: TObject);
   private
-    { Private declarations }
+    
     procedure SetValue(const val : Single);
     function GetValue : Single;
     procedure SetValueMin(const val : Single);
@@ -28,7 +28,7 @@ type
     procedure SetValueMax(const val : Single);
     function GetValueMax : Single;
   public
-    { Public declarations }
+    
     property Value : Single read GetValue write SetValue;
     property ValueMin : Single read GetValueMin write SetValueMin;
     property ValueMax : Single read GetValueMax write SetValueMax;

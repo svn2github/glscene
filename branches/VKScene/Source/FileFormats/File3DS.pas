@@ -250,7 +250,7 @@ implementation
 
 uses
   System.SysUtils,
-  //VKS
+  
   Const3DS, Utils3DS, VKS.ApplicationFileIO;
 
 function StrPasFree(P: PChar3DS): String;

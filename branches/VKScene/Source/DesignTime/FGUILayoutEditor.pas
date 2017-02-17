@@ -58,7 +58,7 @@ type
     ImageDelete: TImage;
     procedure Items_ListClick(Sender: TObject);
   private
-    { Private declarations }
+    
     Rect_point1, Rect_point2: TPoint;
     Sorted_Elements: array[0..9] of TVKGuiElement;
 
@@ -68,7 +68,7 @@ type
     function GetEnabledSpins: Boolean;
     procedure SetEnabledSpins(Value: Boolean);
   public
-    { Public declarations }
+    
   end;
 
 var

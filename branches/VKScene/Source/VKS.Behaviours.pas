@@ -11,8 +11,9 @@ interface
 {$I VKScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
-  //VKS
+  System.Classes, 
+  System.SysUtils,
+  
   VKS.VectorTypes,
   VKS.Scene,
   VKS.VectorGeometry,
@@ -21,9 +22,6 @@ uses
   VKS.Coordinates;
 
 type
-
-  // TVKDamping
-
   { Holds parameters for TVKScene basic damping model.
     Damping is modeled by calculating a force from the speed, this force
     can then be transformed to an acceleration is you know the object's mass.
@@ -38,16 +36,16 @@ type
      }
   TVKDamping = class(TVKUpdateAbleObject)
   private
-    { Private Declarations }
+    
     FConstant: single;
     FLinear: single;
     FQuadratic: single;
 
   protected
-    { Protected Declarations }
+    
 
   public
-    { Public Declarations }
+    
     constructor Create(aOwner: TPersistent); override;
     destructor Destroy; override;
 
@@ -66,7 +64,7 @@ type
       const quadratic: single = 0);
 
   published
-    { Published Declarations }
+    
     property Constant: single read FConstant write FConstant;
     property Linear: single read FLinear write FLinear;
     property Quadratic: single read FQuadratic write FQuadratic;
@@ -82,7 +80,7 @@ type
     if this approximation does not suits your needs :). }
   TVKBInertia = class(TVKBehaviour)
   private
-    { Private Declarations }
+    
     FMass: single;
     FTranslationSpeed: TVKCoordinates;
     FTurnSpeed, FRollSpeed, FPitchSpeed: single;
@@ -90,7 +88,7 @@ type
     FDampingEnabled: boolean;
 
   protected
-    { Protected Declarations }
+    
     procedure SetTranslationSpeed(const val: TVKCoordinates);
     procedure SetTranslationDamping(const val: TVKDamping);
     procedure SetRotationDamping(const val: TVKDamping);
@@ -99,7 +97,7 @@ type
     procedure ReadFromFiler(reader: TReader); override;
 
   public
-    { Public Declarations }
+    
     constructor Create(aOwner: TVKXCollection); override;
     destructor Destroy; override;
 
@@ -130,7 +128,7 @@ type
     procedure SurfaceBounce(const surfaceNormal: TVector; restitution: single);
 
   published
-    { Published Declarations }
+    
     property Mass: single read FMass write FMass;
     property TranslationSpeed: TVKCoordinates
       read FTranslationSpeed write SetTranslationSpeed;
@@ -161,18 +159,18 @@ type
   { Applies a constant acceleration to a TVKBInertia.<p> }
   TVKBAcceleration = class(TVKBehaviour)
   private
-    { Private Declarations }
+    
     FAcceleration: TVKCoordinates;
 
   protected
-    { Protected Declarations }
+    
     procedure SetAcceleration(const val: TVKCoordinates);
 
     procedure WriteToFiler(writer: TWriter); override;
     procedure ReadFromFiler(reader: TReader); override;
 
   public
-    { Public Declarations }
+    
     constructor Create(aOwner: TVKXCollection); override;
     destructor Destroy; override;
 
@@ -185,7 +183,7 @@ type
     procedure DoProgress(const progressTime: TProgressTimes); override;
 
   published
-    { Published Declarations }
+    
     property Acceleration: TVKCoordinates read FAcceleration write FAcceleration;
   end;
 

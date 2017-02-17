@@ -64,7 +64,7 @@ type
    end;
 
 
-//: Invokes the editor for the given TVKTextureImage
+// Invokes the editor for the given TVKTextureImage
 function EditTextureImage(aTexImage : TVKTextureImage) : Boolean;
 procedure RegisterTextureImageEditor(aTexImageClass : TVKTextureImageClass;
                                        texImageEditor : TVKTextureImageEditorClass);

@@ -26,7 +26,7 @@ interface
 uses
    System.Classes, System.SysUtils,
    FMX.Forms, FMX.Dialogs,
-   //VKS
+   
    OpenAL{al, alut, alTypes},  
    VKS.VectorGeometry, 
    VKS.Sound, 
@@ -40,7 +40,7 @@ type
       private
          FActivated : Boolean;      
       protected
-	      { Protected Declarations }
+	      
          function DoActivate : Boolean; override;
          procedure DoDeActivate; override;
          procedure NotifyMasterVolumeChange; override;
@@ -57,7 +57,7 @@ type
          function GetALFormat(sampling : TVKSoundSampling) : Integer;
          
       public
-	      { Public Declarations }
+	      
          constructor Create(AOwner : TComponent); override;
 	      destructor Destroy; override;
 

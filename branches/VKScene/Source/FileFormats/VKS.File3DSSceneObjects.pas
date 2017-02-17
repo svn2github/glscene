@@ -14,7 +14,7 @@ uses
   System.Classes,
   System.SysUtils,
   System.Math,
-  //VKS
+  
   VKS.VectorGeometry, Winapi.OpenGL, Winapi.OpenGLext,  VKS.OpenGLAdapter, VKS.Context, VKS.Scene,
   VKS.VectorFileObjects, VKS.VectorTypes, VKS.PersistentClasses,
   VKS.CrossPlatform, VKS.Coordinates, VKS.RenderContextInfo, VKS.State;

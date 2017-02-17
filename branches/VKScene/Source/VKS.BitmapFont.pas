@@ -15,7 +15,7 @@ interface
 uses
   System.Classes, System.SysUtils, System.Types, System.UITypes,
   FMX.Graphics, FMX.Types,
-  //VKS
+  
   VKS.Scene, VKS.VectorGeometry, VKS.Context, VKS.CrossPlatform,
   VKS.Texture, VKS.State, VKS.Utils, VKS.Graphics, VKS.Color, VKS.BaseClasses,
   VKS.RenderContextInfo, VKS.TextureFormat,
@@ -36,7 +36,7 @@ type
     function GetStartASCII: WideString;
     function GetStopASCII: WideString;
   protected
-    { Protected Declarations }
+    
     FStartASCII, FStopASCII: WideChar;
     FStartGlyphIdx, FStopGlyphIdx, FCharCount: Integer;
     procedure SetStartASCII(const val: WideString);
@@ -44,14 +44,14 @@ type
     procedure SetStartGlyphIdx(val: Integer);
     function GetDisplayName: string; override;
   public
-    { Public Declarations }
+    
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
 
     procedure Assign(Source: TPersistent); override;
     procedure NotifyChange;
   published
-    { Published Declarations }
+    
     property StartASCII: WideString read GetStartASCII write SetStartASCII;
     property StopASCII: WideString read GetStopASCII write SetStopASCII;
     property StartGlyphIdx: Integer read FStartGlyphIdx write SetStartGlyphIdx;
@@ -65,7 +65,7 @@ type
   private
     FCharCount: Integer;
   protected
-    { Protected Declarations }
+    
     FOwner: TComponent;
 
     function GetOwner: TPersistent; override;
@@ -75,7 +75,7 @@ type
     procedure Update(Item: TCollectionItem); override;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent);
     destructor Destroy; override;
 
@@ -117,9 +117,9 @@ type
     when rendering with linear filtering. }
   TVKCustomBitmapFont = class(TVKUpdateAbleComponent)
   private
-    { Private Declarations }
+    
     FRanges: TVKBitmapFontRanges;
-    FGlyphs: TVKPicture;
+    FGlyphs: TPicture;
     FCharWidth, FCharHeight: Integer;
     FGlyphsIntervalX, FGlyphsIntervalY: Integer;
     FHSpace, FVSpace, FHSpaceFix: Integer;
@@ -133,14 +133,14 @@ type
     FTextureModified: boolean;
     FLastTexture: TVKTextureHandle;
   protected
-    { Protected Declarations }
+    
     FChars: array of TCharInfo;
     FCharsLoaded: boolean;
     procedure ResetCharWidths(w: Integer = -1);
     procedure SetCharWidths(index, value: Integer);
 
     procedure SetRanges(const val: TVKBitmapFontRanges);
-    procedure SetGlyphs(const val: TVKPicture);
+    procedure SetGlyphs(const val: TPicture);
     procedure SetCharWidth(const val: Integer);
     procedure SetCharHeight(const val: Integer);
     procedure SetGlyphsIntervalX(const val: Integer);
@@ -167,7 +167,7 @@ type
 
     { A single bitmap containing all the characters.<p>
       The transparent color is that of the top left pixel. }
-    property Glyphs: TVKPicture read FGlyphs write SetGlyphs;
+    property Glyphs: TPicture read FGlyphs write SetGlyphs;
     {  Nb of horizontal pixels between two columns in the Glyphs. }
     property GlyphsIntervalX: Integer read FGlyphsIntervalX
       write SetGlyphsIntervalX;
@@ -197,7 +197,7 @@ type
       write FGlyphsAlpha default tiaDefault;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
@@ -249,7 +249,7 @@ type
     This class only publuishes some of the properties. }
   TVKBitmapFont = class(TVKCustomBitmapFont)
   published
-    { Published Declarations }
+    
     property Glyphs;
     property GlyphsIntervalX;
     property GlyphsIntervalY;
@@ -275,7 +275,7 @@ type
     component. Default character scale is 1 font pixel = 1 space unit. }
   TVKFlatText = class(TVKImmaterialSceneObject)
   private
-    { Private Declarations }
+    
     FBitmapFont: TVKCustomBitmapFont;
     FText: UnicodeString;
     FAlignment: TAlignment;
@@ -284,7 +284,7 @@ type
     FOptions: TVKFlatTextOptions;
 
   protected
-    { Protected Declarations }
+    
     procedure SetBitmapFont(const val: TVKCustomBitmapFont);
     procedure SetText(const val: UnicodeString);
     procedure SetAlignment(const val: TAlignment);
@@ -296,7 +296,7 @@ type
       Operation: TOperation); override;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
@@ -306,7 +306,7 @@ type
     procedure Assign(Source: TPersistent); override;
 
   published
-    { Published Declarations }
+    
     { Refers the bitmap font to use.
       The referred bitmap font component stores and allows access to
       individual character bitmaps. }
@@ -590,7 +590,7 @@ constructor TVKCustomBitmapFont.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   FRanges := TVKBitmapFontRanges.Create(Self);
-  FGlyphs := TVKPicture.Create(AOwner);
+  FGlyphs := TPicture.Create(AOwner);
   FGlyphs.Bitmap.OnChange := OnGlyphsChanged;
   FCharWidth := 16;
   FCharHeight := 16;
@@ -682,7 +682,7 @@ end;
 
 // SetGlyphs
 //
-procedure TVKCustomBitmapFont.SetGlyphs(const val: TVKPicture);
+procedure TVKCustomBitmapFont.SetGlyphs(const val: TPicture);
 begin
   FGlyphs.Assign(val);
 end;
@@ -829,7 +829,7 @@ end;
 //
 procedure TVKCustomBitmapFont.PrepareImage(var ARci: TVKRenderContextInfo);
 var
-  bitmap: TVKBitmap;
+  bitmap: TBitmap;
   bitmap32: TVKBitmap32;
   cap: Integer;
   X, Y, w, h: Integer;
@@ -862,7 +862,7 @@ begin
   FTextRows := 1 + (h - 1) div FTextureHeight;
   FTextCols := 1 + (w - 1) div FTextureWidth;
 
-  bitmap := TVKBitmap.Create;
+  bitmap := TBitmap.Create;
   with bitmap do
   begin
 {$IFDEF MSWINDOWS}

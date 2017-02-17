@@ -22,7 +22,7 @@ uses
   FMX.Forms,
   FMX.Controls,
   FMX.Menus,
-  //VKS
+  
   VKS.OpenGLAdapter,
   VKS.Scene,
   VKS.Context,
@@ -51,7 +51,7 @@ type
     the original resolution isn't restored. }
   TVKFullScreenViewer = class(TVKNonVisualViewer)
   private
-    { Private Declarations }
+    
     FFormIsOwned: Boolean;
     FForm: TForm;
     FOwnDC: THandle; // in VCL HWND;
@@ -100,7 +100,7 @@ type
     procedure SetForm(aVal: TForm);
     procedure SetManualRendering(const val: Boolean);
   protected
-    { Protected Declarations }
+    
     function GetHandle: TWindowHandle;
 
     procedure DoBeforeRender(Sender: TObject);
@@ -116,7 +116,7 @@ type
     procedure DoDeactivate(Sender: TObject);
     procedure DoFormDestroy(Sender: TObject);
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
@@ -148,7 +148,7 @@ type
 
     property RenderDC: THandle read FOwnDC; //HWND
   published
-    { Public Declarations }
+    
     property Form: TForm read FForm write SetForm;
 
     property ManualRendering: Boolean read FManualRendering

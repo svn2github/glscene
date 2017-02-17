@@ -28,7 +28,7 @@ type
   { The Q3BSP vector file (Quake III BSP).  }
   TVKQ3BSPVectorFile = class(TVKVectorFile)
   public
-    { Public Declarations }
+    
     class function Capabilities: TVKDataFileCapabilities; override;
 
     procedure LoadFromStream(aStream: TStream); override;
@@ -119,7 +119,7 @@ var
   i, j, n, y: Integer;
   facePtr: PBSPFace;
   lightmapLib: TVKMaterialLibrary;
-  lightmapBmp: TVKBitmap;
+  lightmapBmp: TBitmap;
   libMat: TVKLibMaterial;
   bspLightMap: PBSPLightmap;
   plane: THmgPlane;
@@ -143,7 +143,7 @@ begin
     begin
       // import lightmaps
       n := bsp.NumOfLightmaps;
-      lightmapBmp := TVKBitmap.Create;
+      lightmapBmp := TBitmap.Create;
       try
         { TODO : E2129 Cannot assign to a read-only property }
         (*lightmapBmp.PixelFormat := glpf24bit;*)

@@ -16,7 +16,7 @@ uses
   Winapi.OpenGLext,
   System.SysUtils,
   FMX.Dialogs,
-  //VKS
+  
   VKS.Strings,
   VKS.VectorGeometry,
   VKS.VectorTypes;

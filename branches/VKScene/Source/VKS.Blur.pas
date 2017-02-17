@@ -18,7 +18,7 @@ uses
   System.SysUtils,
   System.UITypes,
   FMX.Graphics,
-  //VKS
+  
   VKS.OpenGLAdapter,
   VKS.Scene,
   VKS.VectorGeometry,

@@ -33,7 +33,7 @@ type
   //
   TVKSkyBox = class(TVKCameraInvariantObject, IGLMaterialLibrarySupported)
   private
-    { Private Declarations }
+    
     FMatNameTop: string;
     FMatNameRight: string;
     FMatNameFront: string;
@@ -49,7 +49,7 @@ type
     //implementing IGLMaterialLibrarySupported
     function GetMaterialLibrary: TVKAbstractMaterialLibrary;
   protected
-    { Protected Declarations }
+    
     procedure SetMaterialLibrary(const Value: TVKMaterialLibrary);
     procedure SetMatNameBack(const Value: string);
     procedure SetMatNameBottom(const Value: string);
@@ -63,7 +63,7 @@ type
     procedure SetStyle(const value: TVKSkyBoxStyle);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
@@ -74,7 +74,7 @@ type
       override;
 
   published
-    { Published Declarations }
+    
     property MaterialLibrary: TVKMaterialLibrary read FMaterialLibrary write
       SetMaterialLibrary;
     property MatNameTop: TVKLibMaterialName read FMatNameTop write

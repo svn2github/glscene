@@ -19,7 +19,7 @@ type
    //
    TVKNurbsVectorFile = class(TVKVectorFile)
       public
-         { Public Declarations }
+         
          class function Capabilities : TVKDataFileCapabilities; override;
          procedure LoadFromStream(stream : TStream); override;
    end;

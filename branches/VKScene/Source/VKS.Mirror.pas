@@ -48,7 +48,7 @@ type
      materials/mirror demo before using this component. }
   TVKMirror = class(TVKSceneObject)
   private
-    { Private Declarations }
+    
     FRendering: Boolean;
     FMirrorObject: TVKBaseSceneObject;
     FWidth, FHeight: GLfloat;
@@ -60,7 +60,7 @@ type
     FSlices: GLint; //ORL
 
   protected
-    { Protected Declarations }
+    
     procedure Notification(AComponent: TComponent; Operation: TOperation);
       override;
     procedure SetMirrorObject(const val: TVKBaseSceneObject);
@@ -77,7 +77,7 @@ type
     function GetSlices: GLint; //ORL
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
 
     procedure DoRender(var ARci: TVKRenderContextInfo;
@@ -88,7 +88,7 @@ type
     function AxisAlignedDimensionsUnscaled: TVector; override;
 
   published
-    { Public Declarations }
+    
           { Selects the object to mirror. 
              If nil, the whole scene is mirrored. }
     property MirrorObject: TVKBaseSceneObject read FMirrorObject write

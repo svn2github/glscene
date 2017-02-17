@@ -45,7 +45,7 @@ type
   //
   TVKLibMaterialNameProperty = class(TStringProperty)
   public
-    { Public Declarations }
+    
     function GetAttributes: TPropertyAttributes; override;
     procedure Edit; override;
   end;
@@ -54,7 +54,7 @@ type
   //
   TVKSceneViewerEditor = class(TComponentEditor)
   public
-    { Public Declarations }
+    
     procedure ExecuteVerb(Index: Integer); override;
     function GetVerb(Index: Integer): string; override;
     function GetVerbCount: Integer; override;
@@ -64,7 +64,7 @@ type
   //
   TVKSceneEditor = class(TComponentEditor)
   public
-    { Public Declarations }
+    
     procedure Edit; override;
 
     procedure ExecuteVerb(Index: Integer); override;
@@ -76,7 +76,7 @@ type
   //
   TResolutionProperty = class(TPropertyEditor)
   public
-    { Public Declarations }
+    
     function GetAttributes: TPropertyAttributes; override;
     function GetValue: string; override;
     procedure GetValues(Proc: TGetStrProc); override;
@@ -87,7 +87,7 @@ type
   //
   TVKTextureProperty = class(TClassProperty)
   public
-    { Protected Declarations }
+    
     function GetAttributes: TPropertyAttributes; override;
   end;
 
@@ -95,7 +95,7 @@ type
   //
   TVKTextureImageProperty = class(TClassProperty)
   public
-    { Protected Declarations }
+    
     function GetAttributes: TPropertyAttributes; override;
     procedure Edit; override;
   end;
@@ -104,7 +104,7 @@ type
   //
   TVKImageClassProperty = class(TClassProperty)
   public
-    { Public Declarations }
+    
     function GetAttributes: TPropertyAttributes; override;
     procedure GetValues(Proc: TGetStrProc); override;
     function GetValue: string; override;
@@ -116,10 +116,10 @@ type
   TVKColorProperty = class(TClassProperty, ICustomPropertyDrawing,
     ICustomPropertyListDrawing)
   private
-    { Private Declarations }
+    
 
   protected
-    { Protected Declarations }
+    
     function ColorToBorderColor(aColor: TColorVector;
       selected: Boolean): TColor;
 
@@ -148,7 +148,7 @@ type
   //
   TSoundFileProperty = class(TClassProperty)
   public
-    { Public Declarations }
+    
     function GetAttributes: TPropertyAttributes; override;
     function GetValue: string; override;
     procedure Edit; override;
@@ -158,7 +158,7 @@ type
   //
   TSoundNameProperty = class(TStringProperty)
   public
-    { Public Declarations }
+    
     function GetAttributes: TPropertyAttributes; override;
     procedure GetValues(Proc: TGetStrProc); override;
   end;
@@ -167,7 +167,7 @@ type
   //
   TVKCoordinatesProperty = class(TClassProperty)
   public
-    { Public Declarations }
+    
     function GetAttributes: TPropertyAttributes; override;
     procedure Edit; override;
   end;
@@ -176,7 +176,7 @@ type
   //
   TVKMaterialProperty = class(TClassProperty)
   public
-    { Public Declarations }
+    
     function GetAttributes: TPropertyAttributes; override;
     procedure Edit; override;
   end;
@@ -185,7 +185,7 @@ type
   //
   TVKGUILayoutEditor = class(TComponentEditor)
   public
-    { Public Declarations }
+    
     procedure Edit; override;
 
     procedure ExecuteVerb(Index: Integer); override;
@@ -204,7 +204,7 @@ type
     in D6! Grrr... }
   TReuseableDefaultEditor = class(TComponentEditor, IDefaultEditor)
   protected
-    { Protected Declarations }
+    
     FFirst: IProperty;
     FBest: IProperty;
     FContinue: Boolean;
@@ -213,7 +213,7 @@ type
       var Continue: Boolean); virtual;
 
   public
-    { Public Declarations }
+    
     procedure Edit; override;
   end;
 
@@ -234,7 +234,7 @@ type
   //
   TVKAnimationNameProperty = class(TStringProperty)
   public
-    { Public Declarations }
+    
     function GetAttributes: TPropertyAttributes; override;
     procedure GetValues(Proc: TGetStrProc); override;
   end;
@@ -273,44 +273,44 @@ type
 
   TVKMaterialComponentNameProperty = class(TStringProperty)
   public
-    { Public Declarations }
+    
     function GetAttributes: TPropertyAttributes; override;
     procedure Edit; override;
   end;
 
   TVKLibTextureNameProperty = class(TVKMaterialComponentNameProperty)
   public
-    { Public Declarations }
+    
     procedure GetValues(Proc: TGetStrProc); override;
   end;
 
   TVKLibSamplerNameProperty = class(TVKMaterialComponentNameProperty)
   public
-    { Public Declarations }
+    
     procedure GetValues(Proc: TGetStrProc); override;
   end;
 
   TVKLibCombinerNameProperty = class(TVKMaterialComponentNameProperty)
   public
-    { Public Declarations }
+    
     procedure GetValues(Proc: TGetStrProc); override;
   end;
 
   TVKLibShaderNameProperty = class(TVKMaterialComponentNameProperty)
   public
-    { Public Declarations }
+    
     procedure GetValues(Proc: TGetStrProc); override;
   end;
 
   TVKLibAttachmentNameProperty = class(TVKMaterialComponentNameProperty)
   public
-    { Public Declarations }
+    
     procedure GetValues(Proc: TGetStrProc); override;
   end;
 
   TVKLibAsmProgNameProperty = class(TVKMaterialComponentNameProperty)
   public
-    { Public Declarations }
+    
     procedure GetValues(Proc: TGetStrProc); override;
   end;
 
@@ -318,7 +318,7 @@ type
   //
   TPictureFileProperty = class(TStringProperty)
   public
-    { Public Declarations }
+    
     function GetAttributes: TPropertyAttributes; override;
     procedure Edit; override;
   end;
@@ -327,7 +327,7 @@ type
   //
   TShaderFileProperty = class(TStringProperty)
   public
-    { Public Declarations }
+    
     function GetAttributes: TPropertyAttributes; override;
     procedure Edit; override;
   end;
@@ -336,7 +336,7 @@ type
   //
   TAsmProgFileProperty = class(TStringProperty)
   public
-    { Public Declarations }
+    
     function GetAttributes: TPropertyAttributes; override;
     procedure Edit; override;
   end;
@@ -347,19 +347,19 @@ type
   private
     procedure PassUniform(const S: string);
   public
-    { Public Declarations }
+    
     function GetAttributes: TPropertyAttributes; override;
     procedure Edit; override;
   end;
 
   TVKShaderEditorProperty = class(TClassProperty)
   protected
-    { Protected declarations }
+    
     function GetStrings: TStrings;
     procedure SetStrings(const Value: TStrings);
     procedure OnShaderCheck(Sender: TObject);
   public
-    { Public declarations }
+    
     function GetAttributes: TPropertyAttributes; override;
     procedure Edit; override;
   end;

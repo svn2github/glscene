@@ -27,7 +27,7 @@ interface
 uses
   System.Classes,
   System.SysUtils,
-  //VKS
+  
   VKS.OpenGLAdapter,
   VKS.CrossPlatform, VKS.Scene, VKS.Texture, VKS.VectorGeometry, VKS.Context,
   VKS.Color, VKS.RenderContextInfo, VKS.TextureFormat, VKS.VectorTypes;
@@ -70,7 +70,7 @@ type
     property Aspect: single read FAspect write FAspect;
     { Indicates the style of the projected textures.}
     property Style: TVKSLProjectedTexturesStyle read FStyle write SetStyle;
-    {:Fall off/ attenuation of the projected texture}
+    {Fall off/ attenuation of the projected texture}
     property Attenuation: single read FAttenuation write FAttenuation;
     property Brightness: single read FBrightness write FBrightness;
     property Color: TVKColor read FColor write FColor;

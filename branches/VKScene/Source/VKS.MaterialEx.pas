@@ -26,7 +26,7 @@ uses
   System.Classes,
   System.SysUtils,
   FMX.Dialogs,
-  //VKS
+  
   VKS.OpenGLAdapter,
   VKS.RenderContextInfo,
   VKS.BaseClasses,
@@ -73,7 +73,7 @@ type
       TVKXCollectionItem,
       IGLMaterialLibrarySupported)
   private
-    { Private Declarations }
+    
     FNameHashKey: Integer;
     FUserList: TPersistentObjectList;
     FDefferedInit: Boolean;
@@ -82,13 +82,13 @@ type
     function GetUserList: TPersistentObjectList;
     function GetMaterialLibraryEx: TVKMaterialLibraryEx;
   protected
-    { Protected Declarations }
+    
     procedure SetName(const AValue: TVKMaterialComponentName); override;
     procedure NotifyChange(Sender: TObject); virtual;
     property UserList: TPersistentObjectList read GetUserList;
     procedure DoOnPrepare(Sender: TVKContext); virtual; abstract;
   public
-    { Public Declarations }
+    
     destructor Destroy; override;
 
     procedure RegisterUser(AUser: TVKUpdateAbleObject);
@@ -99,7 +99,7 @@ type
     property MaterialLibrary: TVKMaterialLibraryEx read GetMaterialLibraryEx;
     property IsValid: Boolean read FIsValid;
   published
-    { Published Declarations }
+    
     property Name: TVKMaterialComponentName read GetName write SetName;
     { Run-time flag, indicate that resource
        should initialize in case of failure material's level. }
@@ -116,7 +116,7 @@ type
       TVKUpdateAbleObject,
       IGLMaterialLibrarySupported)
   protected
-    { Protected Declarations }
+    
     FEnabled: Boolean;
     FNextPassName: TVKLibMaterialName;
     function GetMaterial: TVKLibMaterialEx;
@@ -126,13 +126,13 @@ type
     procedure Loaded; virtual;
     property NextPass: TVKLibMaterialName read FNextPassName write SetNextPass;
   public
-    { Public Declarations }
+    
     procedure NotifyChange(Sender: TObject); override;
     function GetMaterialLibrary: TVKAbstractMaterialLibrary;
 
     property MaterialLibrary: TVKMaterialLibraryEx read GetMaterialLibraryEx;
   published
-    { Published Declarations }
+    
     property Enabled: Boolean read FEnabled write SetEnabled;
   end;
 
@@ -141,11 +141,11 @@ type
 
   TVKTextureSampler = class(TVKBaseMaterialCollectionItem)
   protected
-    { Protected Declarations }
+    
     procedure WriteToFiler(AWriter: TWriter); override;
     procedure ReadFromFiler(AReader: TReader); override;
   private
-    { Private Declarations }
+    
     FHandle: TVKSamplerHandle;
     FMinFilter: TVKMinFilter;
     FMagFilter: TVKMagFilter;
@@ -168,7 +168,7 @@ type
     procedure SetCompareFunc(AValue: TDepthFunction);
     procedure SetDecodeSRGB(AValue: Boolean);
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TVKXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -183,7 +183,7 @@ type
 
     property Handle: TVKSamplerHandle read FHandle;
   published
-    { Published Declarations }
+    
 
     { Texture magnification filter. }
     property MagFilter: TVKMagFilter read FMagFilter write SetMagFilter
@@ -221,7 +221,7 @@ type
 
   TVKAbstractTexture = class(TVKBaseMaterialCollectionItem)
   protected
-    { Protected Declarations }
+    
     FHandle: TVKTextureHandle;
     FInternalFormat: GLinternalFormat;
     FWidth: Integer;
@@ -234,10 +234,10 @@ type
     procedure Apply(var ARci: TVKRenderContextInfo); virtual; abstract;
     procedure UnApply(var ARci: TVKRenderContextInfo); virtual; abstract;
   public
-    { Public Declarations }
+    
     property Handle: TVKTextureHandle read FHandle;
   published
-    { Published Declarations }
+    
     property Shape: TVKTextureTarget read GetTextureTarget;
   end;
 
@@ -260,11 +260,11 @@ type
 
   TVKTextureImageEx = class(TVKAbstractTexture)
   protected
-    { Protected Declarations }
+    
     procedure WriteToFiler(AWriter: TWriter); override;
     procedure ReadFromFiler(AReader: TReader); override;
   private
-    { Private Declarations }
+    
     FCompression: TVKTextureCompression;
     FImage: TVKBaseImage;
     FImageAlpha: TVKTextureImageAlpha;
@@ -297,7 +297,7 @@ type
     procedure StreamTransfer;
     procedure CalcLODRange(out AFirstLOD, ALastLOD: Integer);
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TVKXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -310,7 +310,7 @@ type
 
     class function FriendlyName: string; override;
   published
-    { Published Declarations }
+    
 
     // Factual texture properties
     property InternalWidth: Integer read FWidth;
@@ -365,11 +365,11 @@ type
 
   TVKFrameBufferAttachment = class(TVKAbstractTexture)
   protected
-    { Protected Declarations }
+    
     procedure WriteToFiler(AWriter: TWriter); override;
     procedure ReadFromFiler(AReader: TReader); override;
   private
-    { Private Declarations }
+    
     FRenderBufferHandle: TVKRenderbufferHandle;
     FLayered: Boolean;
     FCubeMap: Boolean;
@@ -386,7 +386,7 @@ type
     procedure SetSamples(AValue: Integer);
     procedure SetFixedSamplesLocation(AValue: Boolean);
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TVKXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -399,7 +399,7 @@ type
 
     class function FriendlyName: string; override;
   published
-    { Published Declarations }
+    
     property InternalWidth: Integer read FWidth
       write SetWidth default 256;
     property InternalHeight: Integer read FHeight
@@ -435,7 +435,7 @@ type
         shader or fixed-function pipeline. }
   TVKTextureSwizzling = class(TVKUpdateAbleObject)
   private
-    { Private Declarations }
+    
     FSwizzles: TSwizzleVector;
     function GetSwizzle(AIndex: Integer): TVKTextureSwizzle;
     procedure SetSwizzle(AIndex: Integer; AValue: TVKTextureSwizzle);
@@ -447,7 +447,7 @@ type
     procedure WriteToFiler(AWriter: TWriter);
     procedure ReadFromFiler(AReader: TReader);
   published
-    { Published Declarations }
+    
     property RedFrom: TVKTextureSwizzle index 0 read GetSwizzle
       write SetSwizzle stored StoreSwizzle;
     property GreenFrom: TVKTextureSwizzle index 1 read GetSwizzle
@@ -463,7 +463,7 @@ type
 
   TVKTextureProperties = class(TVKLibMaterialProperty)
   private
-    { Private Declarations }
+    
     FLibTextureName: TVKMaterialComponentName;
     FLibSamplerName: TVKMaterialComponentName;
     FLibTexture: TVKAbstractTexture;
@@ -516,7 +516,7 @@ type
   protected
     procedure Loaded; override;
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -530,7 +530,7 @@ type
 
     property TextureMatrix: TMatrix read FTextureMatrix write SetTextureMatrix;
   published
-    { Published Declarations }
+    
     property LibTextureName: TVKMaterialComponentName read GetLibTextureName
       write SetLibTextureName;
     property LibSamplerName: TVKMaterialComponentName read GetLibSamplerName
@@ -574,7 +574,7 @@ type
   //
   TVKFixedFunctionProperties = class(TVKLibMaterialProperty)
   private
-    { Private Declarations }
+    
     FFrontProperties: TVKFaceProperties;
     FBackProperties: TVKFaceProperties;
     FDepthProperties: TVKDepthProperties;
@@ -597,7 +597,7 @@ type
     procedure SetTexProp(AValue: TVKTextureProperties);
     procedure SetTextureMode(AValue: TVKTextureMode);
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -608,7 +608,7 @@ type
     function Blended: Boolean;
 
   published
-    { Published Declarations }
+    
     property MaterialOptions: TMaterialOptions read FMaterialOptions write
       SetMaterialOptions default [];
 
@@ -640,11 +640,11 @@ type
 
   TVKTextureCombiner = class(TVKBaseMaterialCollectionItem)
   protected
-    { Protected Declarations }
+    
     procedure WriteToFiler(AWriter: TWriter); override;
     procedure ReadFromFiler(AReader: TReader); override;
   private
-    { Private Declarations }
+    
     FHandle: TVKVirtualHandle;
     FScript: TStringList;
     FCommandCache: TCombinerCache;
@@ -652,7 +652,7 @@ type
     procedure DoAllocate(Sender: TVKVirtualHandle; var handle: GLuint);
     procedure DoDeallocate(Sender: TVKVirtualHandle; var handle: GLuint);
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TVKXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -663,7 +663,7 @@ type
 
     class function FriendlyName: string; override;
   published
-    { Published Declarations }
+    
     property Script: TStringList read FScript write SetScript;
   end;
 
@@ -672,11 +672,11 @@ type
 
   TVKASMVertexProgram = class(TVKBaseMaterialCollectionItem)
   protected
-    { Protected Declarations }
+    
     procedure WriteToFiler(AWriter: TWriter); override;
     procedure ReadFromFiler(AReader: TReader); override;
   private
-    { Private Declarations }
+    
     FHandle: TVKVertexProgramHandle;
     FSource: TStringList;
     FSourceFile: string;
@@ -685,7 +685,7 @@ type
     procedure SetSourceFile(AValue: string);
     function GetHandle: TVKVertexProgramHandle;
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TVKXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -697,7 +697,7 @@ type
     procedure NotifyChange(Sender: TObject); override;
     property Handle: TVKVertexProgramHandle read GetHandle;
   published
-    { Published Declarations }
+    
     property Source: TStringList read FSource write SetSource;
     property SourceFile: string read FSourceFile write SetSourceFile;
     property InfoLog: string read FInfoLog;
@@ -735,7 +735,7 @@ type
   protected
     procedure Loaded; override;
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
 
@@ -745,7 +745,7 @@ type
     procedure Apply(var ARci: TVKRenderContextInfo);
     procedure UnApply(var ARci: TVKRenderContextInfo);
   published
-    { Published Declarations }
+    
     property LibCombinerName: string read GetLibCombinerName
       write SetLibCombinerName;
     property LibAsmProgName: string read GetLibAsmProgName
@@ -786,11 +786,11 @@ type
 
   TVKShaderEx = class(TVKBaseMaterialCollectionItem)
   protected
-    { Protected Declarations }
+    
     procedure WriteToFiler(AWriter: TWriter); override;
     procedure ReadFromFiler(AReader: TReader); override;
   private
-    { Private Declarations }
+    
     FHandle: array[TVKShaderType] of TVKShaderHandle;
     FSource: TStringList;
     FSourceFile: string;
@@ -807,7 +807,7 @@ type
     procedure SetGeometryVerticesOut(AValue: GLint);
     function GetHandle: TVKShaderHandle;
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TVKXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -819,7 +819,7 @@ type
     procedure NotifyChange(Sender: TObject); override;
     property Handle: TVKShaderHandle read GetHandle;
   published
-    { Published Declarations }
+    
     property Source: TStringList read FSource write SetSource;
     property SourceFile: string read FSourceFile write SetSourceFile;
     property ShaderType: TVKShaderType read FShaderType
@@ -838,7 +838,7 @@ type
 
   TVKAbstractShaderUniform = class(TVKUpdateAbleObject, IShaderParameter)
   protected
-    { Protected Declarations }
+    
     FName: string;
     FNameHashCode: Integer;
     FType: TVKSLDataType;
@@ -910,7 +910,7 @@ type
 
   TVKShaderUniform = class(TVKAbstractShaderUniform, IShaderParameter)
   protected
-    { Protected Declarations }
+    
     FLocation: GLint;
     FStoreProgram: GLuint;
     FAutoSet: TUniformAutoSetMethod;
@@ -967,7 +967,7 @@ type
     procedure WriteToFiler(AWriter: TWriter); override;
     procedure ReadFromFiler(AReader: TReader); override;
   public
-    { Public Declarations }
+    
     procedure SetFloatArray(const Values: PGLFloat; Count: Integer); override;
     procedure SetIntArray(const Values: PGLInt; Count: Integer); override;
     procedure SetUIntArray(const Values: PGLUInt; Count: Integer); override;
@@ -985,7 +985,7 @@ type
 
   TVKShaderUniformDSA = class(TVKShaderUniform)
   protected
-    { Protected Declarations }
+    
     procedure SetFloat(const Value: GLfloat); override;
     procedure SetVec2(const Value: TVector2f); override;
     procedure SetVec3(const Value: TVector3f); override;
@@ -1005,7 +1005,7 @@ type
     procedure SetMat3(const Value: TMatrix3f); override;
     procedure SetMat4(const Value: TMatrix4f); override;
   public
-    { Public Declarations }
+    
     procedure SetFloatArray(const Values: PGLFloat; Count: Integer); override;
     procedure SetIntArray(const Values: PGLInt; Count: Integer); override;
     procedure SetUIntArray(const Values: PGLUInt; Count: Integer); override;
@@ -1016,13 +1016,13 @@ type
 
   TVKShaderUniformTexture = class(TVKShaderUniform)
   private
-    { Private Declarations }
+    
     FLibTexture: TVKAbstractTexture;
     FLibSampler: TVKTextureSampler;
     FTarget: TVKTextureTarget;
     FSwizzling: TSwizzleVector;
   protected
-    { Protected Declarations }
+    
     FLibTexureName: TVKMaterialComponentName;
     FLibSamplerName: TVKMaterialComponentName;
     function GetTextureName: string; override;
@@ -1036,7 +1036,7 @@ type
     procedure ReadFromFiler(AReader: TReader); override;
     procedure Loaded;
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -1058,7 +1058,7 @@ type
 
   TVKBaseShaderModel = class(TVKLibMaterialProperty)
   protected
-    { Protected Declarations }
+    
     FHandle: TVKProgramHandle;
     FLibShaderName: array[TVKShaderType] of string;
     FShaders: array[TVKShaderType] of TVKShaderEx;
@@ -1091,7 +1091,7 @@ type
     class function IsSupported: Boolean; virtual; abstract;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -1109,7 +1109,7 @@ type
     property IsValid: Boolean read FIsValid;
     property Uniforms[const AName: string]: IShaderParameter read GetUniform;
   published
-    { Published Declarations }
+    
     // Compilation info log for design time
     property InfoLog: string read FInfoLog;
     // Turn on autofill of uniforms
@@ -1120,20 +1120,20 @@ type
 
   TVKShaderModel3 = class(TVKBaseShaderModel)
   public
-    { Public Declarations }
+    
     class function IsSupported: Boolean; override;
   published
-    { Published Declarations }
+    
     property LibVertexShaderName;
     property LibFragmentShaderName;
   end;
 
   TVKShaderModel4 = class(TVKBaseShaderModel)
   public
-    { Public Declarations }
+    
     class function IsSupported: Boolean; override;
   published
-    { Published Declarations }
+    
     property LibVertexShaderName;
     property LibGeometryShaderName;
     property LibFragmentShaderName;
@@ -1141,12 +1141,12 @@ type
 
   TVKShaderModel5 = class(TVKBaseShaderModel)
   public
-    { Public Declarations }
+    
     procedure Apply(var ARci: TVKRenderContextInfo); override;
     procedure UnApply(var ARci: TVKRenderContextInfo); override;
     class function IsSupported: Boolean; override;
   published
-    { Published Declarations }
+    
     property LibTessControlShaderName;
     property LibTessEvalShaderName;
     property LibVertexShaderName;
@@ -1159,7 +1159,7 @@ type
 
   TVKLibMaterialEx = class(TVKAbstractLibMaterial)
   private
-    { Private Declarations }
+    
     FHandle: TVKVirtualHandle;
     FApplicableLevel: TVKMaterialLevel;
     FSelectedLevel: TVKMaterialLevel;
@@ -1190,7 +1190,7 @@ type
     procedure RemoveDefferedInit;
     procedure DoOnPrepare(Sender: TVKContext);
   public
-    { Public Declarations }
+    
     constructor Create(ACollection: TCollection); override;
     destructor Destroy; override;
 
@@ -1202,7 +1202,7 @@ type
 
     function Blended: Boolean; override;
   published
-    { Published Declarations }
+    
     property ApplicableLevel: TVKMaterialLevel read FApplicableLevel write
       SetLevel
       default mlAuto;
@@ -1243,7 +1243,7 @@ type
     procedure SetItems(AIndex: Integer; const AValue: TVKLibMaterialEx);
     function GetItems(AIndex: Integer): TVKLibMaterialEx;
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent);
 
     function MaterialLibrary: TVKMaterialLibraryEx;
@@ -1262,10 +1262,10 @@ type
 
   TVKMatLibComponents = class(TVKXCollection)
   protected
-    { Protected Declarations }
+    
     function GetItems(index: Integer): TVKBaseMaterialCollectionItem;
   public
-    { Public Declarations }
+    
     function GetNamePath: string; override;
     class function ItemsClass: TVKXCollectionItemClass; override;
     property Items[index: Integer]: TVKBaseMaterialCollectionItem
@@ -1294,10 +1294,10 @@ type
 
   TVKMaterialLibraryEx = class(TVKAbstractMaterialLibrary)
   private
-    { Private Declarations }
+    
     FComponents: TVKMatLibComponents;
   protected
-    { Protected Declarations }
+    
     procedure Loaded; override;
     function GetMaterials: TVKLibMaterialsEx;
     procedure SetMaterials(AValue: TVKLibMaterialsEx);
@@ -1308,7 +1308,7 @@ type
     procedure WriteComponents(AStream: TStream);
     procedure ReadComponents(AStream: TStream);
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
@@ -1329,7 +1329,7 @@ type
 
     procedure SetLevelForAll(const ALevel: TVKMaterialLevel);
   published
-    { Published Declarations }
+    
       { The materials collection. }
     property Materials: TVKLibMaterialsEx read GetMaterials write SetMaterials
       stored StoreMaterials;
@@ -2329,7 +2329,7 @@ const
 var
   ext, filename: string;
   BaseImageClass: TVKBaseImageClass;
-  LPicture: TVKPicture;
+  LPicture: TPicture;
   LGraphic: TVKGraphic;
   LImage: TVKImage;
   level: Integer;
@@ -2413,7 +2413,7 @@ begin
             else
             begin
                { TODO : E2035 Not enough actual parameters }
-              (*LPicture := TVKPicture.Create;*)
+              (*LPicture := TPicture.Create;*)
               LPicture.Bitmap.LoadFromFile(FSourceFile);
               FImage.Assign(LPicture.Bitmap);
               LPicture.Destroy;

@@ -42,7 +42,7 @@ type
   { MasterObject description for a MultiProxy object. }
   TVKMaterialMultiProxyMaster = class(TVKInterfacedCollectionItem, IGLMaterialLibrarySupported)
   private
-    { Private Declarations }
+    
     FMasterObject: TVKBaseSceneObject;
     FMasterLibMaterial: TVKLibMaterial;
     FTempLibMaterialName: TVKLibMaterialName;
@@ -54,7 +54,7 @@ type
     // Implementing IGLMaterialLibrarySupported.
     function GetMaterialLibrary: TVKAbstractMaterialLibrary;
   protected
-    { Protected Declarations }
+    
     function GetDisplayName: string; override;
     procedure SetMasterObject(const Val: TVKBaseSceneObject);
     procedure SetDistanceMin(const Val: Single);
@@ -63,7 +63,7 @@ type
     function GetDistanceMax: Single;
 
   public
-    { Public Declarations }
+    
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -76,7 +76,7 @@ type
        MasterLibMaterialName }
     property MasterLibMaterial: TVKLibMaterial read FMasterLibMaterial write FMasterLibMaterial stored False;
   published
-    { Published Declarations }
+    
     { Specifies the Master object which will be proxy'ed. }
     property MasterObject: TVKBaseSceneObject read FMasterObject write SetMasterObject;
     { Specifies the Material, that current master object will use. }
@@ -92,16 +92,16 @@ type
   { Collection of TVKMaterialMultiProxyMaster. }
   TVKMaterialMultiProxyMasters = class(TOwnedCollection)
   private
-    { Private Declarations }
+    
 
   protected
-    { Protected Declarations }
+    
     procedure SetItems(index: Integer; const Val: TVKMaterialMultiProxyMaster);
     function GetItems(index: Integer): TVKMaterialMultiProxyMaster;
     procedure Update(Item: TCollectionItem); override;
     procedure Notification(AComponent: TComponent); virtual;
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TPersistent);
 
     function Add: TVKMaterialMultiProxyMaster; overload;
@@ -124,20 +124,20 @@ type
       (item zero in the MasterObjects collection). }
   TVKMaterialMultiProxy = class(TVKBaseSceneObject)
   private
-    { Private Declarations }
+    
     FMasterObjects: TVKMaterialMultiProxyMasters;
     FRendering: Boolean; // internal use (loop protection)
     FMaterialLibrary: TVKMaterialLibrary;
     procedure SetMaterialLibrary(const Value: TVKMaterialLibrary);
   protected
-    { Protected Declarations }
+    
     procedure SetMasterObjects(const Val: TVKMaterialMultiProxyMasters);
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
 
     function PrimaryMaster: TVKBaseSceneObject;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
@@ -149,7 +149,7 @@ type
     function GenerateSilhouette(const silhouetteParameters: TVKSilhouetteParameters): TVKSilhouette; override;
 
   published
-    { Published Declarations }
+    
     property MasterObjects: TVKMaterialMultiProxyMasters read FMasterObjects write SetMasterObjects;
     property MaterialLibrary: TVKMaterialLibrary read FMaterialLibrary write SetMaterialLibrary;
 

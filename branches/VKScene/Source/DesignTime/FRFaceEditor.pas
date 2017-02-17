@@ -13,7 +13,7 @@ uses
   FMX.Types, FMX.Graphics, FMX.Controls, FMX.Forms, FMX.Dialogs, FMX.StdCtrls,
   FMX.TabControl,
 
-  //VKS
+  
   FRTrackBarEdit, FRColorEditor, VKS.Material, FMX.Controls.Presentation;
 
 type
@@ -31,14 +31,14 @@ type
     CESpecular: TRColorEditor;
     procedure TBEShininessTrackBarChange(Sender: TObject);
   private
-    { Private declarations }
+    
     FOnChange: TNotifyEvent;
     Updating: Boolean;
     FFaceProperties: TVKFaceProperties;
     procedure SetFaceProperties(const val: TVKFaceProperties);
     procedure OnColorChange(Sender: TObject);
   public
-    { Public declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 

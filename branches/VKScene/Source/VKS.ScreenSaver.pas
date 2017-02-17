@@ -75,7 +75,7 @@ type
 		for the events fired... and the size of the form :). }
 	TVKScreenSaver = class (TComponent)
 		private
-			{ Private Declarations }
+			
 			mouseEventsToIgnore : Integer;
 			FHonourWindowsPassword : Boolean;
          FOptions : TScreenSaverOptions;
@@ -89,7 +89,7 @@ type
          lastMousePosition : TPoint;
       FMutex: THandle;
 		protected
-			{ Protected Declarations }
+			
 			procedure Loaded; override;
 
 			procedure FormMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Single);
@@ -101,7 +101,7 @@ type
 			procedure ExecuteSaver;
 
 		public
-			{ Public Declarations }
+			
 			constructor Create(AOwner : TComponent); override;
 			destructor Destroy; override;
 
@@ -123,7 +123,7 @@ type
 			property InPreviewMode : Boolean read FInPreviewMode;
 
 		published
-			{ Published Declarations }
+			
 			property Options : TScreenSaverOptions read FOptions write FOptions default cDefaultScreenSaverOptions;
 			{ If True, windows screen-saver password is checked before closing. 
 				You may be wanting to set this prop to false if you're using your

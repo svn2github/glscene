@@ -98,14 +98,14 @@ type
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure ListBoxExtensionsDblClick(Sender: TObject);
   private
-    { Private declarations }
+    
 
   protected
-    { Protected declarations }
+    
     procedure LoadContributors;
     function GetSceneVersion: string;
   public
-    { Public declarations }
+    
     procedure GetInfoFrom(aSceneBuffer: TVKSceneBuffer);
   end;
 

@@ -16,7 +16,7 @@ uses
   Winapi.OpenGLext,
   System.Classes,
   System.SysUtils,
-  //VKS
+  
   VKS.OpenGLAdapter,
   VKS.Scene,
   VKS.VectorGeometry,
@@ -42,17 +42,17 @@ type
      lens flare elements. }
   TVKFlareGradient = class(TVKUpdateAbleObject)
   private
-    { Private Declarations }
+    
     FFromColor: TVKColor;
     FToColor: TVKColor;
 
   protected
-    { Protected Declarations }
+    
     procedure SetFromColor(const val: TVKColor);
     procedure SetToColor(const val: TVKColor);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TPersistent); override;
     constructor CreateInitialized(AOwner: TPersistent;
       const fromColor, toColor: TColorVector);
@@ -60,7 +60,7 @@ type
     procedure Assign(Source: TPersistent); override;
 
   published
-    { Public Declarations }
+    
     property FromColor: TVKColor read FFromColor write SetFromColor;
     property ToColor: TVKColor read FToColor write SetToColor;
   end;
@@ -74,7 +74,7 @@ type
   //
   TVKLensFlare = class(TVKBaseSceneObject)
   private
-    { Private Declarations }
+    
     FSize: Integer;
     FDeltaTime: Single;
     FCurrSize: Single;
@@ -100,7 +100,7 @@ type
     FPreRenderPoint: TVKRenderPoint;
 
   protected
-    { Protected Declarations }
+    
     procedure SetGlowGradient(const val: TVKFlareGradient);
     procedure SetRingGradient(const val: TVKFlareGradient);
     procedure SetStreaksGradient(const val: TVKFlareGradient);
@@ -134,7 +134,7 @@ type
     procedure RenderSecondaries(const posVector: TAffineVector);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Notification(AComponent: TComponent; Operation: TOperation);
@@ -156,7 +156,7 @@ type
     property FlareInstantaneousSize: Single read FCurrSize write FCurrSize;
 
   published
-    { Public Declarations }
+    
     property GlowGradient: TVKFlareGradient read FGlowGradient write
       SetGlowGradient;
     property RingGradient: TVKFlareGradient read FRingGradient;
@@ -164,22 +164,22 @@ type
     property RaysGradient: TVKFlareGradient read FRaysGradient;
     property SecondariesGradient: TVKFlareGradient read FSecondariesGradient;
 
-    //: MaxRadius of the flare.
+    // MaxRadius of the flare.
     property Size: Integer read FSize write SetSize default 50;
-    //: Random seed
+    // Random seed
     property Seed: Integer read FSeed write SetSeed;
-    //: To create elliptic flares.
+    // To create elliptic flares.
     property Squeeze: Single read FSqueeze write SetSqueeze stored StoreSqueeze;
-    //: Number of streaks.
+    // Number of streaks.
     property NumStreaks: Integer read FNumStreaks write SetNumStreaks default 4;
-    //: Width of the streaks.
+    // Width of the streaks.
     property StreakWidth: Single read FStreakWidth write SetStreakWidth stored
       StoreStreakWidth;
-    //: Angle of the streaks (in degrees)
+    // Angle of the streaks (in degrees)
     property StreakAngle: Single read FStreakAngle write SetStreakAngle;
-    //: Number of secondary flares.
+    // Number of secondary flares.
     property NumSecs: Integer read FNumSecs write SetNumSecs default 8;
-    //: Number of segments used when rendering circles.
+    // Number of segments used when rendering circles.
     property Resolution: Integer read FResolution write SetResolution default
       64;
     { Automatically computes FlareIsNotOccluded depending on ZBuffer test. 
@@ -191,7 +191,7 @@ type
        This value is automatically updated if AutoZTest is set. }
     property FlareIsNotOccluded: Boolean read FFlareIsNotOccluded write
       FFlareIsNotOccluded;
-    //: Which elements should be rendered?
+    // Which elements should be rendered?
     property Elements: TFlareElements read FElements write SetElements default
       cDefaultFlareElements;
     { Is the flare size adjusted dynamically? 

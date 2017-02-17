@@ -28,12 +28,12 @@ type
       Note : X, Y & Z are actually interpolated independently. }
    TCubicSpline = class (TObject)
       private
-         { Private Declarations }
+         
          matX, matY, matZ, matW : TCubicSplineMatrix;
          FNb : Integer;
 
       public
-         { Public Declarations }
+         
          { Creates the spline and declares interpolation points. 
             Time references go from 0 (first point) to nb-1 (last point), the
             first and last reference matrices respectively are used when T is

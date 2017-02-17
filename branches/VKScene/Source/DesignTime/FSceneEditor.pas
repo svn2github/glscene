@@ -129,9 +129,9 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure ACInfoExecute(Sender: TObject);
   private
-    { Private declarations }
+    
   public
-    { Public declarations }
+    
   end;
 
 function GLSceneEditorForm: TVKSceneEditorForm;

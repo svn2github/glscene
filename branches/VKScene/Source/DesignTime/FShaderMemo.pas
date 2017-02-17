@@ -38,9 +38,9 @@ type
     GLSLMemo: TMemo;
     procedure FormCreate(Sender: TObject);
   private
-    { Private declarations }
+    
   public
-    { Public declarations }
+    
   end;
 
 function VKShaderEditorForm: TVKShaderMemoForm;

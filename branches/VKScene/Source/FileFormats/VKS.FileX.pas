@@ -14,7 +14,7 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-  //VKS
+  
   VKS.VectorFileObjects, VKS.ApplicationFileIO, VKS.VectorGeometry, VKS.Texture,
   VKS.VectorLists, VKS.Material,
 
@@ -24,7 +24,7 @@ uses
 type
   TVKXVectorFile = class (TVKVectorFile)
     public
-      { Public Declarations }
+      
       class function Capabilities: TVKDataFileCapabilities; override;
       procedure LoadFromStream(aStream : TStream); override;
   end;

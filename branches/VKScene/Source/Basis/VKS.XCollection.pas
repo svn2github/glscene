@@ -42,12 +42,12 @@ type
 
   TVKXCollectionItem = class(TVKInterfacedPersistent)
   private
-    { Private Declarations }
+    
     FOwner: TVKXCollection;
     FName: string;
 
   protected
-    { Protected Declarations }
+    
     function GetName: string; virtual;
     procedure SetName(const val: string); virtual;
     function GetOwner: TPersistent; override;
@@ -63,7 +63,7 @@ type
     procedure RaiseFilerException(const archiveVersion: integer);
 
   public
-    { Public Declarations }
+    
     constructor Create(aOwner: TVKXCollection); virtual;
     destructor Destroy; override;
 
@@ -103,7 +103,7 @@ type
     class function CanAddTo(collection: TVKXCollection): Boolean; virtual;
 
   published
-    { Published Declarations }
+    
     property Name: string read FName write SetName;
   end;
 
@@ -120,7 +120,7 @@ type
     with polymorphism-support and full backward compatibility). }
   TVKXCollection = class(TPersistent)
   private
-    { Private Declarations }
+    
     FOwner: TPersistent;
     FList: TList;
     FCount: integer;
@@ -128,7 +128,7 @@ type
     { Archive Version is used to update the way data items is loaded. }
     FArchiveVersion: integer;
   protected
-    { Protected Declarations }
+    
     function GetItems(Index: integer): TVKXCollectionItem;
     function GetOwner: TPersistent; override;
 
@@ -136,7 +136,7 @@ type
     procedure WriteToFiler(writer: TWriter);
 
   public
-    { Public Declarations }
+    
     constructor Create(aOwner: TPersistent); virtual;
     destructor Destroy; override;
 

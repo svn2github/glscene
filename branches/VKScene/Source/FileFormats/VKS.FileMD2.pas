@@ -25,7 +25,7 @@ type
       Based on code by Roger Cao. }
    TVKMD2VectorFile = class(TVKVectorFile)
       public
-         { Public Declarations }
+         
          class function Capabilities : TVKDataFileCapabilities; override;
          procedure LoadFromStream(aStream : TStream); override;
    end;

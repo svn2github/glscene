@@ -27,13 +27,13 @@ type
       The items are treated as being sectors. } 
    TPortalMeshObjectList = class (TVKMeshObjectList)
       private
-         { Private Declarations }
+         
 
       protected
-         { Protected Declarations }
+         
 
       public
-         { Public Declarations }
+         
          constructor CreateOwned(AOwner : TVKBaseMesh);
          destructor Destroy; override;
 
@@ -46,14 +46,14 @@ type
    { A portal renderer sector.  }
    TSectorMeshObject = class (TVKMorphableMeshObject)
       private
-         { Private Declarations }
+         
          FRenderDone : Boolean;
 
       protected
-         { Protected Declarations }
+         
 
       public
-         { Public Declarations }
+         
          constructor CreateOwned(AOwner : TVKMeshObjectList);
          destructor Destroy; override;
 
@@ -70,13 +70,13 @@ type
       implements the portal. }
 	TFGPolygon = class (TFGVertexNormalTexIndexList)
 	   private
-	      { Private Declarations }
+	      
 
 	   protected
-	      { Protected Declarations }
+	      
 
 	   public
-	      { Public Declarations }
+	      
 	      constructor CreateOwned(AOwner : TVKFaceGroups); override;
          destructor Destroy; override;
 
@@ -90,16 +90,16 @@ type
       implements the portal. }
 	TFGPortalPolygon = class (TFGPolygon)
 	   private
-	      { Private Declarations }
+	      
          FDestinationSectorIndex : Integer;
          FCenter, FNormal : TAffineVector;
          FRadius : Single;
 
 	   protected
-	      { Protected Declarations }
+	      
 
 	   public
-	      { Public Declarations }
+	      
 	      constructor CreateOwned(AOwner : TVKFaceGroups); override;
          destructor Destroy; override;
 
@@ -115,18 +115,18 @@ type
    { Portal Renderer class. }
    TVKPortal = class(TVKBaseMesh)
       private
-         { Private Declarations }
+         
 
       protected
-         { Protected Declarations }
+         
 
       public
-         { Public Declarations }
+         
          constructor Create(AOwner: TComponent); override;
          destructor Destroy; override;
 
       published
-         { Published Declarations }
+         
          property MaterialLibrary;
     end;
 

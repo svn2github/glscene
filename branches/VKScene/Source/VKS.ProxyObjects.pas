@@ -29,20 +29,20 @@ type
      the color. }
   TVKColorProxy = class(TVKProxyObject)
   private
-    { Private Declarations }
+    
     FFrontColor: TVKFaceProperties;
     function GetMasterMaterialObject: TVKCustomSceneObject;
     procedure SetMasterMaterialObject(const Value: TVKCustomSceneObject);
     procedure SetFrontColor(AValue: TVKFaceProperties);
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
     procedure DoRender(var ARci: TVKRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
   published
-    { Published Declarations }
+    
     property FrontColor: TVKFaceProperties read FFrontColor write
       SetFrontColor;
     // Redeclare as TVKCustomSceneObject.
@@ -57,7 +57,7 @@ type
      a material library. }
   TVKMaterialProxy = class(TVKProxyObject, IGLMaterialLibrarySupported)
   private
-    { Private Declarations }
+    
     FTempLibMaterialName: string;
     FMasterLibMaterial: TVKLibMaterial;
     FMaterialLibrary: TVKMaterialLibrary;
@@ -69,7 +69,7 @@ type
     // Implementing IGLMaterialLibrarySupported.
     function GetMaterialLibrary: TVKAbstractMaterialLibrary;
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     procedure Notification(AComponent: TComponent; Operation: TOperation);
       override;
@@ -83,7 +83,7 @@ type
     property MasterLibMaterial: TVKLibMaterial read FMasterLibMaterial write
       FMasterLibMaterial stored False;
   published
-    { Published Declarations }
+    
     property MaterialLibrary: TVKMaterialLibrary read FMaterialLibrary write
       SetMaterialLibrary;
     { Specifies the Material, that current master object will use. }
@@ -102,10 +102,10 @@ type
     function GetMasterFreeFormObject: TVKFreeForm;
     procedure SetMasterFreeFormObject(const Value: TVKFreeForm);
   protected
-    { Protected Declarations }
+    
 
   public
-    { Public Declarations }
+    
 
     { If the MasterObject is a FreeForm, you can raycast against the Octree,
        which is alot faster.  You must build the octree before using. }
@@ -118,7 +118,7 @@ type
       intersectPoint: PVector = nil;
       intersectNormal: PVector = nil): Boolean;
   published
-    { Published Declarations }
+    
    // Redeclare as TVKFreeForm.
     property MasterObject: TVKFreeForm read GetMasterFreeFormObject write
       SetMasterFreeFormObject;
@@ -143,7 +143,7 @@ type
   { A proxy object specialized for Actors.  }
   TVKActorProxy = class(TVKProxyObject, IGLMaterialLibrarySupported)
   private
-    { Private Declarations }
+    
     FCurrentFrame: Integer;
     FStartFrame: Integer;
     FEndFrame: Integer;
@@ -174,11 +174,11 @@ type
     procedure SetStoredBoneNames(const Value: TStrings);
     procedure SetOnBeforeRender(const Value: TVKProgressEvent);
   protected
-    { Protected Declarations }
+    
     procedure DoStoreBonesMatrices;
       // stores matrices of bones of the current frame rendered
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Notification(AComponent: TComponent; Operation: TOperation);
@@ -215,7 +215,7 @@ type
       intersectNormal: PVector = nil): Boolean; overload;
 
   published
-    { Published Declarations }
+    
     property AnimationMode: TVKActorProxyAnimationMode read FAnimationMode write
       FAnimationMode default pamInherited;
     property Animation: TVKActorAnimationName read FAnimation write SetAnimation;

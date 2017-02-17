@@ -30,7 +30,7 @@ interface
 
 uses
   System.Classes, System.SysUtils, System.Math, System.Contnrs,
-  //VKS
+  
   VKS.Scene, VKS.VectorGeometry,
   VKS.SmoothNavigator, VKS.VectorTypes;
 

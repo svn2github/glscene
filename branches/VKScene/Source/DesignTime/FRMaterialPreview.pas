@@ -51,9 +51,9 @@ type
     procedure SetMaterial(const Value: TVKMaterial);
     function GetLibMaterial: TVKAbstractLibMaterial;
     procedure SetLibMaterial(const Value: TVKAbstractLibMaterial);
-    { Private declarations }
+    
   public
-    { Public declarations }
+    
     IsMouseUp : Boolean;
     Down : TPointF;
     GLMaterialLibrary: TVKMaterialLibrary;

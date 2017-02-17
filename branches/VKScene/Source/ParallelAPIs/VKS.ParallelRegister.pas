@@ -22,7 +22,7 @@ type
 
   TVKSCUDAEditor = class(TComponentEditor)
   public
-    { Public Declarations }
+    
     procedure Edit; override;
     procedure ExecuteVerb(Index: Integer); override;
     function GetVerb(Index: Integer): string; override;
@@ -31,7 +31,7 @@ type
 
   TVKSCUDACompilerEditor = class(TComponentEditor)
   public
-    { Public Declarations }
+    
     procedure Edit; override;
     procedure ExecuteVerb(Index: Integer); override;
     function GetVerb(Index: Integer): string; override;
@@ -43,7 +43,7 @@ type
     FModuleList: TStringList;
     procedure RefreshModuleList;
   public
-    { Public Declarations }
+    
     constructor Create(const ADesigner: IDesigner; APropCount: Integer); override;
     destructor Destroy; override;
     function GetAttributes: TPropertyAttributes; override;
@@ -55,7 +55,7 @@ type
   private
     FDeviceList: TStringList;
   public
-    { Public Declarations }
+    
     constructor Create(const ADesigner: IDesigner; APropCount: Integer); override;
     destructor Destroy; override;
     function GetAttributes: TPropertyAttributes; override;

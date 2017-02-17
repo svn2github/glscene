@@ -25,7 +25,7 @@ type
       http://gts.sourceforge.net/ }
    TVKGTSVectorFile = class(TVKVectorFile)
       public
-         { Public Declarations }
+         
          class function Capabilities : TVKDataFileCapabilities; override;
          procedure LoadFromStream(aStream : TStream); override;
    end;

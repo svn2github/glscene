@@ -55,7 +55,7 @@ type
 
   TVKPicture = TImage;  // in VCL is TPicture
   TVKGraphic = TBitmap; // in VCL is TGraphic
-  TVKBitmap = TBitmap;
+  TBitmap = TBitmap;
   TGraphicClass = class of TBitmap; // in VCL is class of TGraphic
 
   TVKTextLayout = (tlTop, tlCenter, tlBottom); // idem TTextLayout;
@@ -170,7 +170,7 @@ function GetCurrentColorDepth: Integer;
 function PixelFormatToColorBits(aPixelFormat: TPixelFormat): Integer;
 
 { Returns the bitmap's scanline for the specified row. }
-function BitmapScanLine(aBitmap: TVKBitmap; aRow: Integer): Pointer;
+function BitmapScanLine(aBitmap: TBitmap; aRow: Integer): Pointer;
 
 { Replace path delimiter to delimiter of the current platform. }
 procedure FixPathDelimiter(var S: string);
@@ -425,7 +425,7 @@ end;
 // BitmapScanLine
 //
 
-function BitmapScanLine(aBitmap: TVKBitmap; aRow: Integer): Pointer;
+function BitmapScanLine(aBitmap: TBitmap; aRow: Integer): Pointer;
 var
   BitmapData : TBitmapData;
 begin

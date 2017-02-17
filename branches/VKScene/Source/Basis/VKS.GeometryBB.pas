@@ -13,7 +13,7 @@ interface
 
 uses
   System.SysUtils,
-  //VKS
+  
   VKS.VectorGeometry, VKS.VectorLists, VKS.VectorTypes;
 
 type

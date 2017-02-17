@@ -22,7 +22,7 @@ uses
   FMX.Controls,
   FMX.Types,
   FMX.Dialogs,
-  //VKS
+  
   VKS.OpenGLAdapter,
   VKS.Context,
   VKS.VectorGeometry,
@@ -188,7 +188,7 @@ type
 
   TVKBaseSceneObject = class(TVKCoordinatesUpdateAbleComponent)
   private
-    { Private Declarations }
+    
     FAbsoluteMatrix, FInvAbsoluteMatrix: PMatrix;
     FLocalMatrix: PMatrix;
     FObjectStyle: TVKObjectStyles;
@@ -264,7 +264,7 @@ type
     procedure SetAbsoluteMatrix(const Value: TMatrix);
     procedure SetBBChanges(const Value: TObjectBBChanges);
   protected
-    { Protected Declarations }
+    
     procedure Loaded; override;
     procedure SetScene(const Value: TVKScene); virtual;
 
@@ -299,7 +299,7 @@ type
 
     procedure DrawAxes(var rci: TVKRenderContextInfo; pattern: Word);
     procedure GetChildren(AProc: TGetChildProc; Root: TComponent); override;
-    //: Should the object be considered as blended for sorting purposes?
+    // Should the object be considered as blended for sorting purposes?
     function Blended: Boolean; virtual;
     procedure RebuildMatrix;
     procedure SetName(const NewName: TComponentName); override;
@@ -318,7 +318,7 @@ type
     procedure CalculateBoundingBoxPersonalUnscaled(var ANewBoundingBox:
       THmgBoundingBox); virtual;
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     constructor CreateAsChild(aParentOwner: TVKBaseSceneObject);
     destructor Destroy; override;
@@ -524,10 +524,10 @@ type
     property Children[Index: Integer]: TVKBaseSceneObject read Get; default;
     property Count: Integer read GetCount;
     property Index: Integer read GetIndex write SetIndex;
-    //: Create a new scene object and add it to this object as new child
+    // Create a new scene object and add it to this object as new child
     function AddNewChild(AChild: TVKSceneObjectClass): TVKBaseSceneObject;
       dynamic;
-    //: Create a new scene object and add it to this object as first child
+    // Create a new scene object and add it to this object as first child
     function AddNewChildFirst(AChild: TVKSceneObjectClass): TVKBaseSceneObject;
       dynamic;
     procedure AddChild(AChild: TVKBaseSceneObject); dynamic;
@@ -577,11 +577,11 @@ type
     function GetParentComponent: TComponent; override;
     function HasParent: Boolean; override;
     function IsUpdating: Boolean;
-    //: Moves the object along the Up vector (move up/down)
+    // Moves the object along the Up vector (move up/down)
     procedure Lift(ADistance: Single);
-    //: Moves the object along the direction vector
+    // Moves the object along the direction vector
     procedure Move(ADistance: Single);
-    //: Translates the object
+    // Translates the object
     procedure Translate(tx, ty, tz: Single);
     procedure MoveObjectAround(anObject: TVKBaseSceneObject;
       pitchDelta, turnDelta: Single);
@@ -605,12 +605,12 @@ type
     { Applies rotations around the absolute given vector (angle in degrees).  }
     procedure RotateAbsolute(const axis: TAffineVector; angle: Single);
       overload;
-    //: Moves camera along the right vector (move left and right)
+    // Moves camera along the right vector (move left and right)
     procedure Slide(ADistance: Single);
-    //: Orients the object toward a target object
+    // Orients the object toward a target object
     procedure PointTo(const ATargetObject: TVKBaseSceneObject; const AUpVector:
       TVector); overload;
-    //: Orients the object toward a target absolute position
+    // Orients the object toward a target absolute position
     procedure PointTo(const AAbsolutePosition, AUpVector: TVector); overload;
 
     procedure Render(var ARci: TVKRenderContextInfo);
@@ -622,7 +622,7 @@ type
     procedure StructureChanged; dynamic;
     procedure ClearStructureChanged;
 
-    //: Recalculate an orthonormal system
+    // Recalculate an orthonormal system
     procedure CoordinateChanged(Sender: TVKCustomCoordinates); override;
     procedure TransformationChanged;
     procedure NotifyChange(Sender: TObject); override;
@@ -661,7 +661,7 @@ type
 
     property TagObject: TObject read FTagObject write FTagObject;
   published
-    { Published Declarations }
+    
     property TagFloat: Single read FTagFloat write FTagFloat;
 
   end;
@@ -690,7 +690,7 @@ type
        }
   TVKBaseBehaviour = class(TVKXCollectionItem)
   protected
-    { Protected Declarations }
+    
     procedure SetName(const val: string); override;
 
     { Override this function to write subclass data. }
@@ -703,7 +703,7 @@ type
     function OwnerBaseSceneObject: TVKBaseSceneObject;
 
   public
-    { Public Declarations }
+    
     constructor Create(aOwner: TVKXCollection); override;
     destructor Destroy; override;
 
@@ -730,11 +730,11 @@ type
      be TVKBehaviour subclasses. }
   TVKBehaviours = class(TVKXCollection)
   protected
-    { Protected Declarations }
+    
     function GetBehaviour(index: Integer): TVKBehaviour;
 
   public
-    { Public Declarations }
+    
     constructor Create(aOwner: TPersistent); override;
 
     function GetNamePath: string; override;
@@ -768,14 +768,14 @@ type
 
   TVKObjectEffect = class(TVKBaseBehaviour)
   protected
-    { Protected Declarations }
+    
     { Override this function to write subclass data. }
     procedure WriteToFiler(writer: TWriter); override;
     { Override this function to read subclass data. }
     procedure ReadFromFiler(reader: TReader); override;
 
   public
-    { Public Declarations }
+    
     procedure Render(var rci: TVKRenderContextInfo); virtual;
   end;
 
@@ -806,11 +806,11 @@ type
      This object expects itself to be owned by a TVKBaseSceneObject.  }
   TVKObjectEffects = class(TVKXCollection)
   protected
-    { Protected Declarations }
+    
     function GetEffect(index: Integer): TVKObjectEffect;
 
   public
-    { Public Declarations }
+    
     constructor Create(aOwner: TPersistent); override;
 
     function GetNamePath: string; override;
@@ -835,12 +835,12 @@ type
      see TVKMaterial. }
   TVKCustomSceneObject = class(TVKBaseSceneObject)
   private
-    { Private Declarations }
+    
     FMaterial: TVKMaterial;
     FHint: string;
 
   protected
-    { Protected Declarations }
+    
     function Blended: Boolean; override;
 
     procedure SetVKMaterial(AValue: TVKMaterial);
@@ -848,7 +848,7 @@ type
     procedure Loaded; override;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
@@ -869,7 +869,7 @@ type
      only take cares of disabling the build list. }
   TVKSceneRootObject = class(TVKBaseSceneObject)
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
   end;
 
@@ -882,12 +882,12 @@ type
      have no material of their own. }
   TVKImmaterialSceneObject = class(TVKCustomSceneObject)
   public
-    { Public Declarations }
+    
     procedure DoRender(var ARci: TVKRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
 
   published
-    { Published Declarations }
+    
     property ObjectsSorting;
     property VisibilityCulling;
     property Direction;
@@ -915,18 +915,18 @@ type
      (object always has same orientation as camera). }
   TVKCameraInvariantObject = class(TVKImmaterialSceneObject)
   private
-    { Private Declarations }
+    
     FCamInvarianceMode: TVKCameraInvarianceMode;
 
   protected
-    { Protected Declarations }
+    
     procedure SetCamInvarianceMode(const val: TVKCameraInvarianceMode);
 
     property CamInvarianceMode: TVKCameraInvarianceMode read FCamInvarianceMode
       write SetCamInvarianceMode;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
 
     procedure Assign(Source: TPersistent); override;
@@ -940,7 +940,7 @@ type
      Publishes the Material property. }
   TVKSceneObject = class(TVKCustomSceneObject)
   published
-    { Published Declarations }
+    
     property Material;
     property ObjectsSorting;
     property VisibilityCulling;
@@ -976,18 +976,18 @@ type
      states.  }
   TVKDirectVulkan = class(TVKImmaterialSceneObject)
   private
-    { Private Declarations }
+    
     FUseBuildList: Boolean;
     FOnRender: TDirectRenderEvent;
     FBlend: Boolean;
 
   protected
-    { Protected Declarations }
+    
     procedure SetUseBuildList(const val: Boolean);
     function Blended: Boolean; override;
     procedure SetBlend(const val: Boolean);
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
 
     procedure Assign(Source: TPersistent); override;
@@ -995,7 +995,7 @@ type
 
     function AxisAlignedDimensionsUnscaled: TVector; override;
   published
-    { Published Declarations }
+    
     { Specifies if a build list be made. 
        If True, GLScene will generate a build list (Vulkan-side cache),
        ie. OnRender will only be invoked once for the first render, or after
@@ -1025,15 +1025,15 @@ type
      Callbacks must be explicitly unregistered. }
   TVKRenderPoint = class(TVKImmaterialSceneObject)
   private
-    { Private Declarations }
+    
     FCallBacks: array of TDirectRenderEvent;
     FFreeCallBacks: array of TNotifyEvent;
 
   protected
-    { Protected Declarations }
+    
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure BuildList(var rci: TVKRenderContextInfo); override;
@@ -1044,7 +1044,7 @@ type
     procedure Clear;
 
   published
-    { Published Declarations }
+    
   end;
 
   // TVKProxyObject
@@ -1055,12 +1055,12 @@ type
      Use it for duplicates of an object. }
   TVKProxyObject = class(TVKBaseSceneObject)
   private
-    { Private Declarations }
+    
     FMasterObject: TVKBaseSceneObject;
     FProxyOptions: TVKProxyObjectOptions;
 
   protected
-    { Protected Declarations }
+    
     FRendering: Boolean;
 
     procedure Notification(AComponent: TComponent; Operation: TOperation);
@@ -1069,7 +1069,7 @@ type
     procedure SetProxyOptions(const val: TVKProxyObjectOptions);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
@@ -1087,7 +1087,7 @@ type
       TVKSilhouetteParameters): TVKSilhouette; override;
 
   published
-    { Published Declarations }
+    
     { Specifies the Master object which will be proxy'ed. }
     property MasterObject: TVKBaseSceneObject read FMasterObject write
       SetMasterObject;
@@ -1141,7 +1141,7 @@ type
      like lightmapping. }
   TVKLightSource = class(TVKBaseSceneObject)
   private
-    { Private Declarations }
+    
     FLightID: Cardinal;
     FSpotDirection: TVKCoordinates;
     FSpotExponent, FSpotCutOff: Single;
@@ -1151,7 +1151,7 @@ type
     FLightStyle: TLightStyle;
 
   protected
-    { Protected Declarations }
+    
     procedure SetAmbient(AValue: TVKColor);
     procedure SetDiffuse(AValue: TVKColor);
     procedure SetSpecular(AValue: TVKColor);
@@ -1165,12 +1165,12 @@ type
     procedure SetLightStyle(const val: TLightStyle);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure DoRender(var ARci: TVKRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
-    //: light sources have different handle types than normal scene objects
+    // light sources have different handle types than normal scene objects
     function GetHandle(var rci: TVKRenderContextInfo): Cardinal; override;
     function RayCastIntersect(const rayStart, rayVector: TVector;
       intersectPoint: PVector = nil;
@@ -1184,7 +1184,7 @@ type
     function Attenuated: Boolean;
 
   published
-    { Published Declarations }
+    
     property Ambient: TVKColor read FAmbient write SetAmbient;
     property ConstAttenuation: Single read FConstAttenuation write
       SetConstAttenuation;
@@ -1226,7 +1226,7 @@ type
      defining a point of view and optical characteristics. }
   TVKCamera = class(TVKBaseSceneObject)
   private
-    { Private Declarations }
+    
     FFocalLength: Single;
     FDepthOfView: Single;
     FNearPlane: Single; // nearest distance to the camera
@@ -1243,7 +1243,7 @@ type
     FFOVY, FFOVX: Double;
 
   protected
-    { Protected Declarations }
+    
     procedure Notification(AComponent: TComponent; Operation: TOperation);
       override;
     procedure SetTargetObject(const val: TVKBaseSceneObject);
@@ -1257,7 +1257,7 @@ type
     function StoreNearPlaneBias: Boolean;
 
   public
-    { Public Declarations }
+    
     constructor Create(aOwner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -1268,7 +1268,7 @@ type
        Vulkan documentation. }
     property NearPlane: Single read FNearPlane;
 
-    //: Apply camera transformation
+    // Apply camera transformation
     procedure Apply;
     procedure DoRender(var ARci: TVKRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
@@ -1280,7 +1280,7 @@ type
       AWidth, AHeight: Integer; ADPI: Integer);
     procedure AutoLeveling(Factor: Single);
     procedure Reset(aSceneBuffer: TVKSceneBuffer);
-    //: Position the camera so that the whole scene can be seen
+    // Position the camera so that the whole scene can be seen
     procedure ZoomAll(aSceneBuffer: TVKSceneBuffer);
 
     procedure RotateObject(obj: TVKBaseSceneObject; pitchDelta, turnDelta:
@@ -1352,7 +1352,7 @@ type
     dimension (width or height). }
     procedure SetFieldOfView(const AFieldOfView, AViewportDimension: single);
   published
-    { Published Declarations }
+    
     { Depth of field/view. 
        Adjusts the maximum distance, beyond which objects will be clipped
        (ie. not visisble). 
@@ -1432,7 +1432,7 @@ type
      at runtime, use the AddNewChild method of TVKBaseSceneObject. }
   TVKScene = class(TVKUpdateAbleComponent)
   private
-    { Private Declarations }
+    
     FUpdateCount: Integer;
     FObjects: TVKSceneRootObject;
     FBaseContext: TVKContext; //reference, not owned!
@@ -1447,12 +1447,12 @@ type
     FInitializableObjects: TVKInitializableObjectList;
 
   protected
-    { Protected Declarations }
+    
     procedure AddLight(aLight: TVKLightSource);
     procedure RemoveLight(aLight: TVKLightSource);
-    //: Adds all lights in the subtree (anObj included)
+    // Adds all lights in the subtree (anObj included)
     procedure AddLights(anObj: TVKBaseSceneObject);
-    //: Removes all lights in the subtree (anObj included)
+    // Removes all lights in the subtree (anObj included)
     procedure RemoveLights(anObj: TVKBaseSceneObject);
 
     procedure GetChildren(AProc: TGetChildProc; Root: TComponent); override;
@@ -1462,7 +1462,7 @@ type
 
     procedure ReadState(Reader: TReader); override;
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
@@ -1517,7 +1517,7 @@ type
       FInitializableObjects;
     property CurrentDeltaTime: Double read FCurrentDeltaTime;
   published
-    { Published Declarations }
+    
     { Defines default ObjectSorting option for scene objects. }
     property ObjectsSorting: TVKObjectsSorting read FObjectsSorting write
       SetObjectsSorting default osRenderBlendedLast;
@@ -1552,7 +1552,7 @@ type
      intensity is used for blending to a fixed color. }
   TVKFogEnvironment = class(TVKUpdateAbleObject)
   private
-    { Private Declarations }
+    
     FSceneBuffer: TVKSceneBuffer;
     FFogColor: TVKColor; // alpha value means the fog density
     FFogStart, FFogEnd: Single;
@@ -1560,7 +1560,7 @@ type
     FFogDistance: TFogDistance;
 
   protected
-    { Protected Declarations }
+    
     procedure SetFogColor(Value: TVKColor);
     procedure SetFogStart(Value: Single);
     procedure SetFogEnd(Value: Single);
@@ -1568,7 +1568,7 @@ type
     procedure SetFogDistance(const val: TFogDistance);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
 
@@ -1578,7 +1578,7 @@ type
     function IsAtDefaultValues: Boolean;
 
   published
-    { Published Declarations }
+    
     { Color of the fog when it is at 100% intensity. }
     property FogColor: TVKColor read FFogColor write SetFogColor;
     { Minimum distance for fog, what is closer is not affected. }
@@ -1617,7 +1617,7 @@ type
   { Encapsulates an Vulkan frame/rendering buffer.  }
   TVKSceneBuffer = class(TVKUpdateAbleObject)
   private
-    { Private Declarations }
+    
     // Internal state
     FRendering: Boolean;
     FRenderingContext: TVKContext;
@@ -1673,7 +1673,7 @@ type
     procedure SetLayer(const Value: TVKContextLayer);
 
   protected
-    { Protected Declarations }
+    
     procedure SetBackgroundColor(AColor: TColor);
     procedure SetBackgroundAlpha(alpha: Single);
     procedure SetAmbientColor(AColor: TVKColor);
@@ -1704,14 +1704,14 @@ type
     procedure DoChange;
     procedure DoStructuralChange;
 
-    //: DPI for current/last render
+    // DPI for current/last render
     property RenderDPI: Integer read FRenderDPI;
 
     property OnPrepareGLContext: TNotifyEvent read FOnPrepareGLContext write
       FOnPrepareGLContext;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
 
@@ -1723,13 +1723,13 @@ type
     procedure DestroyRC;
     function RCInstantiated: Boolean;
     procedure Resize(newLeft, newTop, newWidth, newHeight: Integer);
-    //: Indicates hardware acceleration support
+    // Indicates hardware acceleration support
     function Acceleration: TVKContextAcceleration;
 
-    //: ViewPort for current/last render
+    // ViewPort for current/last render
     property ViewPort: TRectangle read FViewPort;
 
-    //: Fills the PickList with objects in Rect area
+    // Fills the PickList with objects in Rect area
     procedure PickObjects(const rect: TVKRect; pickList: TVKPickList;
       objectCountGuess: Integer);
     { Returns a PickList with objects in Rect area. 
@@ -1737,10 +1737,10 @@ type
        Objects are sorted by depth (nearest objects first). }
     function GetPickedObjects(const rect: TVKRect; objectCountGuess: Integer =
       64): TVKPickList;
-    //: Returns the nearest object at x, y coordinates or nil if there is none
+    // Returns the nearest object at x, y coordinates or nil if there is none
     function GetPickedObject(x, y: Integer): TVKBaseSceneObject;
 
-    //: Returns the color of the pixel at x, y in the frame buffer
+    // Returns the color of the pixel at x, y in the frame buffer
     function GetPixelColor(x, y: Integer): TColor;
     { Returns the raw depth (Z buffer) of the pixel at x, y in the frame buffer. 
        This value does not map to the actual eye-object distance, but to
@@ -1771,7 +1771,7 @@ type
     { Render the scene to a bitmap at given DPI. 
       DPI = "dots per inch". 
       The "magic" DPI of the screen is 96 under Windows. }
-    procedure RenderToBitmap(ABitmap: TVKBitmap; DPI: Integer = 0);
+    procedure RenderToBitmap(ABitmap: TBitmap; DPI: Integer = 0);
     { Render the scene to a bitmap at given DPI and saves it to a file. 
        DPI = "dots per inch". 
        The "magic" DPI of the screen is 96 under Windows. }
@@ -1786,7 +1786,7 @@ type
        The returned TVKBitmap32 should be freed by calling code. }
     function CreateSnapShot: TVKImage;
     { Creates a FMX bitmap that is a snapshot of current Vulkan content.  }
-    function CreateSnapShotBitmap: TVKBitmap;
+    function CreateSnapShotBitmap: TBitmap;
     procedure CopyToTexture(aTexture: TVKTexture); overload;
     procedure CopyToTexture(aTexture: TVKTexture; xSrc, ySrc, AWidth, AHeight:
       Integer;
@@ -1939,7 +1939,7 @@ type
     property Layer: TVKContextLayer read FLayer write SetLayer
       default clMainPlane;
   published
-    { Published Declarations }
+    
     { Fog environment options.
        See TVKFogEnvironment. }
     property FogEnvironment: TVKFogEnvironment read FFogEnvironment write
@@ -2045,7 +2045,7 @@ type
      or full-screen viewers. }
   TVKNonVisualViewer = class(TComponent)
   private
-    { Private Declarations }
+    
     FBuffer: TVKSceneBuffer;
     FWidth, FHeight: Integer;
     FCubeMapRotIdx: Integer;
@@ -2054,7 +2054,7 @@ type
     //FCreateTexture : Boolean;
 
   protected
-    { Protected Declarations }
+    
     procedure SetBeforeRender(const val: TNotifyEvent);
     function GetBeforeRender: TNotifyEvent;
     procedure SetPostRender(const val: TNotifyEvent);
@@ -2074,7 +2074,7 @@ type
     procedure DoBufferStructuralChange(Sender: TObject); virtual;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
@@ -2102,7 +2102,7 @@ type
       zNear: Single = 0;
       zFar: Single = 0);
   published
-    { Public Declarations }
+    
     { Camera from which the scene is rendered. }
     property Camera: TVKCamera read GetCamera write SetCamera;
 
@@ -2133,15 +2133,15 @@ type
      WGL_ARB_pbuffer extension (indirectly). }
   TVKMemoryViewer = class(TVKNonVisualViewer)
   private
-    { Private Declarations }
+    
     FBufferCount: integer;
     procedure SetBufferCount(const Value: integer);
 
   protected
-    { Protected Declarations }
+    
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
 
     procedure InstantiateRenderingContext;
@@ -2149,7 +2149,7 @@ type
     procedure Render(baseObject: TVKBaseSceneObject = nil); override;
 
   published
-    { Public Declarations }
+    
     { Set BufferCount > 1 for multiple render targets.  
        Users should check if the corresponding extension (GL_ATI_draw_buffers)
        is supported. Current hardware limit is BufferCount = 4. }
@@ -8075,12 +8075,12 @@ end;
 
 procedure TVKSceneBuffer.RenderToFile(const aFile: string; DPI: Integer);
 var
-  aBitmap: TVKBitmap;
+  aBitmap: TBitmap;
   saveAllowed: Boolean;
   fileName: string;
 begin
   Assert((not FRendering), strAlreadyRendering);
-  aBitmap := TVKBitmap.Create;
+  aBitmap := TBitmap.Create;
   try
     aBitmap.Width := FViewPort.Width;
     aBitmap.Height := FViewPort.Height;
@@ -8110,12 +8110,12 @@ end;
 procedure TVKSceneBuffer.RenderToFile(const AFile: string; bmpWidth, bmpHeight:
   Integer);
 var
-  aBitmap: TVKBitmap;
+  aBitmap: TBitmap;
   saveAllowed: Boolean;
   fileName: string;
 begin
   Assert((not FRendering), strAlreadyRendering);
-  aBitmap := TVKBitmap.Create;
+  aBitmap := TBitmap.Create;
   try
     aBitmap.Width := bmpWidth;
     aBitmap.Height := bmpHeight;
@@ -8163,7 +8163,7 @@ end;
 // CreateSnapShotBitmap
 //
 
-function TVKSceneBuffer.CreateSnapShotBitmap: TVKBitmap;
+function TVKSceneBuffer.CreateSnapShotBitmap: TBitmap;
 var
   bmp32: TVKBitmap32;
 begin
@@ -8321,7 +8321,7 @@ end;
 // RenderToBitmap
 //
 
-procedure TVKSceneBuffer.RenderToBitmap(ABitmap: TVKBitmap; DPI: Integer);
+procedure TVKSceneBuffer.RenderToBitmap(ABitmap: TBitmap; DPI: Integer);
 var
   nativeContext: TVKContext;
   aColorBits: Integer;

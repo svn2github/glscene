@@ -16,7 +16,7 @@ uses
   Winapi.OpenGL,
   Winapi.OpenGLext,
   System.Classes,
-  //VKS
+  
 //  VKS.OpenGLAdapter,
   VKS.Scene,
   VKS.VectorGeometry,
@@ -38,7 +38,7 @@ type
     and SweepAngle properties). }
   TVKDisk = class(TVKQuadricObject)
   private
-    { Private Declarations }
+    
     FStartAngle, FSweepAngle, FOuterRadius, FInnerRadius: GLfloat;
     FSlices, FLoops: GLint;
     procedure SetOuterRadius(const aValue: Single);
@@ -49,7 +49,7 @@ type
     procedure SetSweepAngle(const aValue: Single);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     procedure BuildList(var rci: TVKRenderContextInfo); override;
 
@@ -60,7 +60,7 @@ type
       : Boolean; override;
 
   published
-    { Published Declarations }
+    
     { Allows defining a "hole" in the disk. }
     property InnerRadius: GLfloat read FInnerRadius write SetInnerRadius;
     { Number of radial mesh subdivisions. }
@@ -84,13 +84,13 @@ type
     Stacks property to 1. }
   TVKCylinderBase = class(TVKQuadricObject)
   private
-    { Private Declarations }
+    
     FBottomRadius: GLfloat;
     FSlices, FStacks, FLoops: GLint;
     FHeight: GLfloat;
 
   protected
-    { Protected Declarations }
+    
     procedure SetBottomRadius(const aValue: Single);
     procedure SetHeight(const aValue: Single);
     procedure SetSlices(aValue: GLint);
@@ -98,7 +98,7 @@ type
     procedure SetLoops(aValue: GLint);
     function GetTopRadius: Single; virtual;
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
 
     procedure Assign(Source: TPersistent); override;
@@ -106,7 +106,7 @@ type
     function GenerateSilhouette(const silhouetteParameters
       : TVKSilhouetteParameters): TVKSilhouette; override;
   published
-    { Published Declarations }
+    
     property BottomRadius: GLfloat read FBottomRadius write SetBottomRadius;
     property Height: GLfloat read FHeight write SetHeight;
     property Slices: GLint read FSlices write SetSlices default 16;
@@ -125,16 +125,16 @@ type
   { A cone object. }
   TVKCone = class(TVKCylinderBase)
   private
-    { Private Declarations }
+    
     FParts: TVKConeParts;
 
   protected
-    { Protected Declarations }
+    
     procedure SetParts(aValue: TVKConeParts);
     function GetTopRadius: Single; override;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     procedure Assign(Source: TPersistent); override;
 
@@ -145,7 +145,7 @@ type
       : Boolean; override;
 
   published
-    { Published Declarations }
+    
     property Parts: TVKConeParts read FParts write SetParts
       default [coSides, coBottom];
   end;
@@ -164,20 +164,20 @@ type
   { Cylinder object, can also be used to make truncated cones }
   TVKCylinder = class(TVKCylinderBase)
   private
-    { Private Declarations }
+    
     FParts: TVKCylinderParts;
     FTopRadius: GLfloat;
     FAlignment: TVKCylinderAlignment;
 
   protected
-    { Protected Declarations }
+    
     procedure SetTopRadius(const aValue: Single);
     procedure SetParts(aValue: TVKCylinderParts);
     procedure SetAlignment(val: TVKCylinderAlignment);
     function GetTopRadius: Single; override;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     procedure Assign(Source: TPersistent); override;
 
@@ -192,7 +192,7 @@ type
     procedure Align(const startPoint, endPoint: TAffineVector); overload;
 
   published
-    { Published Declarations }
+    
     property TopRadius: GLfloat read FTopRadius write SetTopRadius;
     property Parts: TVKCylinderParts read FParts write SetParts
       default [cySides, cyBottom, cyTop];
@@ -203,7 +203,7 @@ type
   { Capsule object, can also be used to make truncated cones }
   TVKCapsule = class(TVKSceneObject)
   private
-    { Private Declarations }
+    
     FParts: TVKCylinderParts;
     FRadius: GLfloat;
     FSlices: GLint;
@@ -211,7 +211,7 @@ type
     FHeight: GLfloat;
     FAlignment: TVKCylinderAlignment;
   protected
-    { Protected Declarations }
+    
     procedure SetHeight(const aValue: Single);
     procedure SetRadius(const aValue: Single);
     procedure SetSlices(const aValue: integer);
@@ -219,7 +219,7 @@ type
     procedure SetParts(aValue: TVKCylinderParts);
     procedure SetAlignment(val: TVKCylinderAlignment);
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     procedure Assign(Source: TPersistent); override;
     procedure BuildList(var rci: TVKRenderContextInfo); override;
@@ -231,7 +231,7 @@ type
     procedure Align(const startObj, endObj: TVKBaseSceneObject); overload;
     procedure Align(const startPoint, endPoint: TAffineVector); overload;
   published
-    { Published Declarations }
+    
     property Height: GLfloat read FHeight write SetHeight;
     property Slices: GLint read FSlices write SetSlices;
     property Stacks: GLint read FStacks write SetStacks;
@@ -252,21 +252,21 @@ type
   { An annulus is a cylinder that can be made hollow (pipe-like). }
   TVKAnnulus = class(TVKCylinderBase)
   private
-    { Private Declarations }
+    
     FParts: TVKAnnulusParts;
     FBottomInnerRadius: GLfloat;
     FTopInnerRadius: GLfloat;
     FTopRadius: GLfloat;
 
   protected
-    { Protected Declarations }
+    
     procedure SetTopRadius(const aValue: Single);
     procedure SetTopInnerRadius(const aValue: Single);
     procedure SetBottomInnerRadius(const aValue: Single);
     procedure SetParts(aValue: TVKAnnulusParts);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     procedure Assign(Source: TPersistent); override;
 
@@ -277,7 +277,7 @@ type
       : Boolean; override;
 
   published
-    { Published Declarations }
+    
     property BottomInnerRadius: GLfloat read FBottomInnerRadius
       write SetBottomInnerRadius;
     property TopInnerRadius: GLfloat read FTopInnerRadius
@@ -297,14 +297,14 @@ type
   { A Torus object. }
   TVKTorus = class(TVKSceneObject)
   private
-    { Private Declarations }
+    
     FParts: TVKTorusParts;
     FRings, FSides: Cardinal;
     FStartAngle, FStopAngle: Single;
     FMinorRadius, FMajorRadius: Single;
     FMesh: array of array of TVertexRec;
   protected
-    { Protected Declarations }
+    
     procedure SetMajorRadius(const aValue: Single);
     procedure SetMinorRadius(const aValue: Single);
     procedure SetRings(aValue: Cardinal);
@@ -314,7 +314,7 @@ type
     procedure SetParts(aValue: TVKTorusParts);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
 
     procedure BuildList(var rci: TVKRenderContextInfo); override;
@@ -324,7 +324,7 @@ type
       : Boolean; override;
 
   published
-    { Published Declarations }
+    
     property MajorRadius: Single read FMajorRadius write SetMajorRadius;
     property MinorRadius: Single read FMinorRadius write SetMinorRadius;
     property Rings: Cardinal read FRings write SetRings default 25;
@@ -353,7 +353,7 @@ type
     By default the bottom arrow is off }
   TVKArrowLine = class(TVKCylinderBase)
   private
-    { Private Declarations }
+    
     FParts: TVKArrowLineParts;
     FTopRadius: Single;
     fTopArrowHeadHeight: Single;
@@ -363,7 +363,7 @@ type
     FHeadStackingStyle: TVKArrowHeadStackingStyle;
 
   protected
-    { Protected Declarations }
+    
     procedure SetTopRadius(const aValue: Single);
     procedure SetTopArrowHeadHeight(const aValue: Single);
     procedure SetTopArrowHeadRadius(const aValue: Single);
@@ -373,13 +373,13 @@ type
     procedure SetHeadStackingStyle(const val: TVKArrowHeadStackingStyle);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     procedure BuildList(var rci: TVKRenderContextInfo); override;
     procedure Assign(Source: TPersistent); override;
 
   published
-    { Published Declarations }
+    
     property TopRadius: GLfloat read FTopRadius write SetTopRadius;
     property HeadStackingStyle: TVKArrowHeadStackingStyle read FHeadStackingStyle
       write SetHeadStackingStyle default ahssStacked;
@@ -410,7 +410,7 @@ type
     By default the bottom arrow is off }
   TVKArrowArc = class(TVKCylinderBase)
   private
-    { Private Declarations }
+    
     fArcRadius: Single;
     FStartAngle: Single;
     FStopAngle: Single;
@@ -424,7 +424,7 @@ type
     FMesh: array of array of TVertexRec;
 
   protected
-    { Protected Declarations }
+    
     procedure SetArcRadius(const aValue: Single);
     procedure SetStartAngle(const aValue: Single);
     procedure SetStopAngle(const aValue: Single);
@@ -437,13 +437,13 @@ type
     procedure SetHeadStackingStyle(const val: TVKArrowHeadStackingStyle);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     procedure BuildList(var rci: TVKRenderContextInfo); override;
     procedure Assign(Source: TPersistent); override;
 
   published
-    { Published Declarations }
+    
     property ArcRadius: GLfloat read fArcRadius write SetArcRadius;
     property StartAngle: GLfloat read FStartAngle write SetStartAngle;
     property StopAngle: GLfloat read FStopAngle write SetStopAngle;
@@ -477,22 +477,22 @@ type
     need "complex polygons" with holes, patches and cutouts, see GLMultiPolygon. }
   TVKPolygon = class(TVKPolygonBase)
   private
-    { Private Declarations }
+    
     FParts: TPolygonParts;
 
   protected
-    { Protected Declarations }
+    
     procedure SetParts(const val: TPolygonParts);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
     procedure BuildList(var rci: TVKRenderContextInfo); override;
 
   published
-    { Published Declarations }
+    
     { Parts of polygon. 
       The 'top' of the polygon is the position were the curve describing
       the polygon spin counter-clockwise (i.e. right handed convention). }
@@ -518,7 +518,7 @@ type
     Height cannot be greater than ApexHeight. }
   TVKFrustrum = class(TVKSceneObject)
   private
-    { Private Declarations }
+    
     FApexHeight, FBaseDepth, FBaseWidth, FHeight: GLfloat;
     FParts: TFrustrumParts;
     FNormalDirection: TNormalDirection;
@@ -530,13 +530,13 @@ type
     procedure SetNormalDirection(aValue: TNormalDirection);
 
   protected
-    { Protected Declarations }
+    
     procedure DefineProperties(Filer: TFiler); override;
     procedure ReadData(Stream: TStream);
     procedure WriteData(Stream: TStream);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     procedure BuildList(var rci: TVKRenderContextInfo); override;
     procedure Assign(Source: TPersistent); override;
@@ -545,7 +545,7 @@ type
     function AxisAlignedBoundingBoxUnscaled: TAABB;
     function AxisAlignedDimensionsUnscaled: TVector; override;
   published
-    { Published Declarations }
+    
     property ApexHeight: GLfloat read FApexHeight write SetApexHeight
       stored False;
     property BaseDepth: GLfloat read FBaseDepth write SetBaseDepth

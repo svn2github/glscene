@@ -24,18 +24,18 @@ type
    { Defines a sound sampling quality. }
 	TVKSoundSampling = class (TPersistent)
 	   private
-	      { Private Declarations }
+	      
          FOwner : TPersistent;
          FFrequency : Integer;
          FNbChannels : Integer;
          FBitsPerSample : Integer;
 
 	   protected
-	      { Protected Declarations }
+	      
          function GetOwner : TPersistent; override;
 
 	   public
-	      { Public Declarations }
+	      
 	      constructor Create(AOwner: TPersistent);
          destructor Destroy; override;
 	      procedure Assign(Source: TPersistent); override;
@@ -47,7 +47,7 @@ type
          function WaveFormat : TWaveFormatEx;
         {$ENDIF}
 	   published
-	      { Published Declarations }
+	      
          { Sampling frequency in Hz (= samples per sec) }
          property Frequency : Integer read FFrequency write FFrequency default 22050;
          { Nb of sampling channels. 
@@ -69,15 +69,15 @@ type
       methods in most cases. }
    TVKSoundFile = class (TVKDataFile)
       private
-         { Private Declarations }
+         
          FSampling : TVKSoundSampling;
 
       protected
-         { Protected Declarations }
+         
          procedure SetSampling(const val : TVKSoundSampling);
 
       public
-         { Public Declarations }
+         
 	      constructor Create(AOwner: TPersistent); override;
          destructor Destroy; override;
 
@@ -115,7 +115,7 @@ type
    //
    TVKSoundFileFormatsList = class(TList)
       public
-         { Public Declarations }
+         
          destructor Destroy; override;
          procedure Add(const Ext, Desc: String; DescID: Integer; AClass: TVKSoundFileClass);
          function FindExt(Ext: string): TVKSoundFileClass;

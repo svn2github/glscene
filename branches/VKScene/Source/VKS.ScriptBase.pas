@@ -32,13 +32,13 @@ type
      base class.  }
   TVKScriptBase = class(TVKXCollectionItem)
 		private
-      { Private Declarations }
+      
       FText : TStringList;
       FDescription : String;
       FErrors : TStringList; // not persistent
 
 		protected
-			{ Protected Declarations }
+			
       procedure WriteToFiler(writer : TWriter); override;
       procedure ReadFromFiler(reader : TReader); override;
       function GetState : TVKScriptState; virtual; abstract;
@@ -46,7 +46,7 @@ type
       procedure Notification(AComponent: TComponent; Operation: TOperation); virtual;
 
 		public
-      { Public Declarations }
+      
       constructor Create(aOwner : TVKXCollection); override;
       destructor Destroy; override;
 
@@ -65,7 +65,7 @@ type
       property State : TVKScriptState read GetState;
 
 		published
-      { Published Declarations }
+      
       property Text : TStringList read FText write SetText;
       property Description : String read FDescription write FDescription;
 
@@ -76,14 +76,14 @@ type
   { XCollection descendant for storing and handling scripts. }
   TVKScripts = class(TVKXCollection)
 		private
-			{ Private Declarations }
+			
 
 		protected
-			{ Protected Declarations }
+			
       function GetItems(index : Integer) : TVKScriptBase;
 
 		public
-			{ Public Declarations }
+			
 			procedure Assign(Source: TPersistent); override;
 
       class function ItemsClass : TVKXCollectionItemClass; override;
@@ -99,11 +99,11 @@ type
      design-time. Links the scripts to Delphi's persistence model. }
   TVKScriptLibrary = class (TComponent)
     private
-      { Private Declarations }
+      
       FScripts : TVKScripts;
 
     protected
-      { Protected Declarations }
+      
       procedure DefineProperties(Filer : TFiler); override;
       procedure WriteScriptsData(Stream : TStream);
       procedure ReadScriptsData(Stream : TStream);
@@ -111,12 +111,12 @@ type
       procedure Notification(AComponent: TComponent; Operation: TOperation); override;
 
     public
-      { Public Declarations }
+      
       constructor Create(AOwner : TComponent); override;
       destructor Destroy; override;
 
     published
-      { Published Declarations }
+      
       property Scripts : TVKScripts read FScripts;
 
   end;

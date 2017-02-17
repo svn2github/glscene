@@ -14,7 +14,7 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-  //VKS   
+     
   VKS.Scene, VKS.BitmapFont, VKS.Material, VKS.CrossPlatform, Winapi.OpenGL, Winapi.OpenGLext,  VKS.Context,
   VKS.PersistentClasses, VKS.VectorGeometry, VKS.Coordinates, VKS.BaseClasses;
 
@@ -27,9 +27,9 @@ type
     FHeight: Single;
 
   protected
-    //: self notification on hide. Also notifies children.
+    // self notification on hide. Also notifies children.
     procedure NotifyHide; dynamic;
-    //: child notification on show. Also notifies children.
+    // child notification on show. Also notifies children.
     procedure NotifyShow; dynamic;
 
     procedure SetLeft(const Value: GLfloat);

@@ -60,16 +60,16 @@ type
     procedure CBImageAlphaChange(Sender: TObject);
     procedure CBFilteringQualityChange(Sender: TObject);
   private
-    { Private declarations }
+    
     FTexture: TVKTexture;
     FOnChange: TNotifyEvent;
     Changeing: Boolean;
   protected
-    { Protected declarations }
+    
     procedure SetTexture(const val: TVKTexture);
     procedure DoOnChange; dynamic;
   public
-    { Public declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 

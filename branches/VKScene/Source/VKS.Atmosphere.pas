@@ -17,7 +17,7 @@ interface
 
 uses
   System.SysUtils, System.Classes,
-  //VKS
+  
   VKS.Scene, VKS.Objects, VKS.Cadencer, Winapi.OpenGL, Winapi.OpenGLext,  VKS.VectorGeometry,
   VKS.Context, VKS.Strings, VKS.Color, VKS.RenderContextInfo, VKS.State,
   VKS.CrossPlatform, VKS.VectorTypes;

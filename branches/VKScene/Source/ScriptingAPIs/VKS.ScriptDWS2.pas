@@ -33,13 +33,13 @@ type
      abstracted VKS.ScriptBase . }
   TVKScriptDWS2 = class(TVKScriptBase)
     private
-      { Private Declarations }
+      
       FDWS2Program : TProgram;
       FCompiler : TVKDelphiWebScriptII;
       FCompilerName : String;
 
     protected
-      { Protected Declarations }
+      
       procedure SetCompiler(const Value : TVKDelphiWebScriptII);
 
       procedure ReadFromFiler(reader : TReader); override;
@@ -50,7 +50,7 @@ type
       function GetState : TVKScriptState; override;
 
     public
-      { Public Declarations }
+      
       destructor Destroy; override;
 
       procedure Assign(Source: TPersistent); override;
@@ -70,7 +70,7 @@ type
       property DWS2Program : TProgram read FDWS2Program;
 
     published
-      { Published Declarations }
+      
       property Compiler : TVKDelphiWebScriptII read FCompiler write SetCompiler;
 
   end;

@@ -40,7 +40,7 @@ type
        to look fire-like. }
   TVKFireFXManager = class(TVKCadenceAbleComponent)
   private
-    { Private Declarations }
+    
     FClients: TList;
     FFireParticles: PFireParticleArray;
     FFireDir, FInitialDir: TVKCoordinates;
@@ -56,7 +56,7 @@ type
     FNoZWrite: Boolean;
 
   protected
-    { Protected Declarations }
+    
     procedure RegisterClient(aClient: TVKBFireFX);
     procedure DeRegisterClient(aClient: TVKBFireFX);
     procedure DeRegisterAllClients;
@@ -77,7 +77,7 @@ type
     procedure AffParticle3d(Color2: TColorVector; const mat: TMatrix);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
@@ -103,7 +103,7 @@ type
     procedure DoProgress(const progressTime: TProgressTimes); override;
 
   published
-    { Published Declarations }
+    
           { Adjusts the acceleration direction (abs coordinates). }
     property FireDir: TVKCoordinates read FFireDir write SetFireDir;
     { Adjusts the initial direction (abs coordinates). }
@@ -161,12 +161,12 @@ type
      This effect works as a client of TFireFXManager }
   TVKBFireFX = class(TVKObjectPostEffect)
   private
-    { Private Declarations }
+    
     FManager: TVKFireFXManager;
     FManagerName: string; // NOT persistent, temporarily used for persistence
 
   protected
-    { Protected Declarations }
+    
     procedure SetManager(const val: TVKFireFXManager);
 
     procedure WriteToFiler(writer: TWriter); override;
@@ -174,7 +174,7 @@ type
     procedure Loaded; override;
 
   public
-    { Public Declarations }
+    
     constructor Create(aOwner: TVKXCollection); override;
     destructor Destroy; override;
 
@@ -186,7 +186,7 @@ type
     procedure Render(var rci: TVKRenderContextInfo); override;
 
   published
-    { Published Declarations }
+    
           { Refers the collision manager. }
     property Manager: TVKFireFXManager read FManager write SetManager;
   end;

@@ -10,7 +10,7 @@ interface
 
 uses
   System.Classes,
-  //VKS
+  
   VKS.VectorFileObjects, VKS.VectorGeometry,
   VKS.VectorLists, VKS.ApplicationFileIO;
 

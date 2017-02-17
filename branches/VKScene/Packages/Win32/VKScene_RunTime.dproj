@@ -162,7 +162,7 @@
         <DCCReference Include="..\..\Source\VKS.AnimationUtils.pas"/>
         <DCCReference Include="..\..\Source\VKS.ApplicationFileIO.pas"/>
         <DCCReference Include="..\..\Source\VKS.ArchiveManager.pas"/>
-        <DCCReference Include="..\..\Source\VKS.AsmShader.pas"/>
+        <DCCReference Include="..\..\Source\Shaders\VKS.AsmShader.pas"/>
         <DCCReference Include="..\..\Source\VKS.AsyncHDS.pas"/>
         <DCCReference Include="..\..\Source\Basis\VKS.AsyncTimer.pas"/>
         <DCCReference Include="..\..\Source\VKS.Atmosphere.pas"/>
@@ -188,7 +188,7 @@
         <DCCReference Include="..\..\Source\VKS.Coordinates.pas"/>
         <DCCReference Include="..\..\Source\VKS.CrossPlatform.pas"/>
         <DCCReference Include="..\..\Source\VKS.CurvesAndSurfaces.pas"/>
-        <DCCReference Include="..\..\Source\VKS.CustomShader.pas"/>
+        <DCCReference Include="..\..\Source\Shaders\VKS.CustomShader.pas"/>
         <DCCReference Include="..\..\Source\VKS.DCE.pas"/>
         <DCCReference Include="..\..\Source\VKS.DCEMisc.pas"/>
         <DCCReference Include="..\..\Source\VKS.EParticleMasksManager.pas"/>
@@ -258,7 +258,7 @@
         <DCCReference Include="..\..\Source\VKS.HeightData.pas"/>
         <DCCReference Include="..\..\Source\VKS.HeightTileFile.pas"/>
         <DCCReference Include="..\..\Source\VKS.HeightTileFileHDS.pas"/>
-        <DCCReference Include="..\..\Source\VKS.HiddenLineShader.pas"/>
+        <DCCReference Include="..\..\Source\Shaders\VKS.HiddenLineShader.pas"/>
         <DCCReference Include="..\..\Source\VKS.ImageUtils.pas"/>
         <DCCReference Include="..\..\Source\VKS.Imposter.pas"/>
         <DCCReference Include="..\..\Source\VKS.Isosurface.pas"/>
@@ -280,7 +280,7 @@
         <DCCReference Include="..\..\Source\VKS.MeshUtils.pas"/>
         <DCCReference Include="..\..\Source\VKS.Mirror.pas"/>
         <DCCReference Include="..\..\Source\VKS.Movement.pas"/>
-        <DCCReference Include="..\..\Source\VKS.MultiMaterialShader.pas"/>
+        <DCCReference Include="..\..\Source\Shaders\VKS.MultiMaterialShader.pas"/>
         <DCCReference Include="..\..\Source\VKS.MultiPolygon.pas"/>
         <DCCReference Include="..\..\Source\VKS.MultiProxy.pas"/>
         <DCCReference Include="..\..\Source\VKS.MultisampleImage.pas"/>
@@ -299,7 +299,7 @@
         <DCCReference Include="..\..\Source\VKS.PerlinNoise3D.pas"/>
         <DCCReference Include="..\..\Source\VKS.PerlinPFX.pas"/>
         <DCCReference Include="..\..\Source\Basis\VKS.PersistentClasses.pas"/>
-        <DCCReference Include="..\..\Source\VKS.PhongShader.pas"/>
+        <DCCReference Include="..\..\Source\Shaders\VKS.PhongShader.pas"/>
         <DCCReference Include="..\..\Source\VKS.PictureRegisteredFormats.pas"/>
         <DCCReference Include="..\..\Source\VKS.PipelineTransformation.pas"/>
         <DCCReference Include="..\..\Source\VKS.PlugInIntf.pas"/>
@@ -452,16 +452,7 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployClass Name="DependencyModule">
-                    <Platform Name="Win32">
-                        <Operation>0</Operation>
-                        <Extensions>.dll;.bpl</Extensions>
-                    </Platform>
-                    <Platform Name="OSX32">
-                        <Operation>1</Operation>
-                        <Extensions>.dylib</Extensions>
-                    </Platform>
-                </DeployClass>
+                <DeployClass Name="ProjectiOSDeviceResourceRules"/>
                 <DeployClass Name="ProjectOSXResource">
                     <Platform Name="OSX32">
                         <RemoteDir>Contents\Resources</RemoteDir>
@@ -801,7 +792,16 @@
                         <Operation>1</Operation>
                     </Platform>
                 </DeployClass>
-                <DeployClass Name="ProjectiOSDeviceResourceRules"/>
+                <DeployClass Name="DependencyModule">
+                    <Platform Name="Win32">
+                        <Operation>0</Operation>
+                        <Extensions>.dll;.bpl</Extensions>
+                    </Platform>
+                    <Platform Name="OSX32">
+                        <Operation>1</Operation>
+                        <Extensions>.dylib</Extensions>
+                    </Platform>
+                </DeployClass>
                 <ProjectRoot Platform="iOSDevice64" Name="$(PROJECTNAME).app"/>
                 <ProjectRoot Platform="Win64" Name="$(PROJECTNAME)"/>
                 <ProjectRoot Platform="iOSDevice32" Name="$(PROJECTNAME).app"/>

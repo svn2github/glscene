@@ -35,7 +35,7 @@ type
   { An object encapsulating the OpenGL feedback rendering mode. }
   TVKFeedback = class(TVKBaseSceneObject)
   private
-    { Private Declarations }
+    
     FActive: Boolean;
     FBuffer: TSingleList;
     FMaxBufferSize: Cardinal;
@@ -44,12 +44,12 @@ type
     FMode: TFeedbackMode;
 
   protected
-    { Protected Declarations }
+    
     procedure SetMaxBufferSize(const Value: Cardinal);
     procedure SetMode(const Value: TFeedbackMode);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
@@ -65,10 +65,10 @@ type
       TexCoords: TAffineVectorList = nil;
       VertexIndices: TIntegerList = nil);
 
-    //: True when there is data in the buffer ready for parsing
+    // True when there is data in the buffer ready for parsing
     property Buffered: Boolean read FBuffered;
 
-    //: The feedback buffer
+    // The feedback buffer
     property Buffer: TSingleList read FBuffer;
 
     { Vertex positions in the buffer needs to be scaled by
@@ -76,13 +76,13 @@ type
     property CorrectionScaling: Single read FCorrectionScaling;
 
   published
-    { Published Declarations }
+    
 
-    //: Maximum size allocated for the feedback buffer
+    // Maximum size allocated for the feedback buffer
     property MaxBufferSize: Cardinal read FMaxBufferSize write SetMaxBufferSize;
-    //: Toggles the feedback rendering
+    // Toggles the feedback rendering
     property Active: Boolean read FActive write FActive;
-    //: The type of data that is collected in the feedback buffer
+    // The type of data that is collected in the feedback buffer
     property Mode: TFeedbackMode read FMode write SetMode;
 
     property Visible;

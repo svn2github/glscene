@@ -26,7 +26,7 @@ type
       (the whole mesh uses a single texture bitmap). }
    TVKFileDAE = class(TVKVectorFile)
       public
-         { Public Declarations }
+         
          class function Capabilities : TVKDataFileCapabilities; override;
          procedure LoadFromStream(aStream : TStream); override;
    end;

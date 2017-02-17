@@ -37,7 +37,7 @@ type
   //
   TVKContourNodes = class(TVKNodes)
   public
-    { Public Declarations }
+    
     procedure NotifyChange; override;
   end;
 
@@ -65,7 +65,7 @@ type
     procedure Assign(Source: TPersistent); override;
 
   published
-    { Published Declarations }
+    
     property Description: string read FDescription write SetDescription;
     { The nodes list.  }
     property Nodes: TVKContourNodes read FNodes write SetNodes;
@@ -127,7 +127,7 @@ type
      outline will be recalculated. The ouline in fact is a list of VKS.VectorLists. }
   TMultiPolygonBase = class(TVKSceneObject)
   private
-    { Private Declarations }
+    
     FContours: TVKContours;
     FOutline: TPolygonList;
     FContoursNormal: TAffineVector;
@@ -139,7 +139,7 @@ type
     procedure SetContoursNormal(const Value: TAffineVector);
 
   protected
-    { Protected Declarations }
+    
     procedure RenderTesselatedPolygon(textured: Boolean;
       normal: PAffineVector; invertNormals: Boolean);
     procedure RetrieveOutline(List: TPolygonList);
@@ -147,7 +147,7 @@ type
     //property PNormal:PAffineVector read FPNormal;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -165,7 +165,7 @@ type
     procedure StructureChanged; override;
 
   published
-    { Published Declarations }
+    
     property Contours: TVKContours read FContours write SetContours;
   end;
 
@@ -176,21 +176,21 @@ type
      to add a node to a contour (contours are allocated automatically). }
   TVKMultiPolygon = class(TMultiPolygonBase)
   private
-    { Private Declarations }
+    
     FParts: TPolygonParts;
 
   protected
-    { Protected Declarations }
+    
     procedure SetParts(const value: TPolygonParts);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     procedure Assign(Source: TPersistent); override;
     procedure BuildList(var rci: TVKRenderContextInfo); override;
 
   published
-    { Published Declarations }
+    
     property Parts: TPolygonParts read FParts write SetParts default [ppTop, ppBottom];
   end;
 

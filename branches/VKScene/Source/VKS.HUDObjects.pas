@@ -48,24 +48,24 @@ type
     can't be used to duplicate an hud sprite. }
   TVKHUDSprite = class(TVKSprite)
   private
-    { Private Declarations }
+    
     FXTiles, FYTiles: Integer;
     function StoreWidth: Boolean;
     function StoreHeight: Boolean;
   protected
-    { Protected Declarations }
+    
     procedure SetXTiles(const val: Integer);
     procedure SetYTiles(const val: Integer);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
 
     procedure DoRender(var rci: TVKRenderContextInfo;
       renderSelf, renderChildren: Boolean); override;
 
   published
-    { Published Declarations }
+    
     property XTiles: Integer read FXTiles write SetXTiles default 1;
     property YTiles: Integer read FYTiles write SetYTiles default 1;
     // Redeclare them with new default values.
@@ -81,7 +81,7 @@ type
     alignment can also be controled. }
   TVKHUDText = class(TVKImmaterialSceneObject)
   private
-    { Private Declarations }
+    
     FBitmapFont: TVKCustomBitmapFont;
     FText: UnicodeString;
     FRotation: Single;
@@ -90,7 +90,7 @@ type
     FModulateColor: TVKColor;
 
   protected
-    { Protected Declarations }
+    
     procedure SetBitmapFont(const val: TVKCustomBitmapFont);
     procedure SetText(const val: UnicodeString);
     procedure SetRotation(const val: Single);
@@ -104,7 +104,7 @@ type
       var rci: TVKRenderContextInfo);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
@@ -112,7 +112,7 @@ type
       renderSelf, renderChildren: Boolean); override;
 
   published
-    { Published Declarations }
+    
     { Refers the bitmap font to use. 
       The referred bitmap font component stores and allows access to
       individual character bitmaps. }

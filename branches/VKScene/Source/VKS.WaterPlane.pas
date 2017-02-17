@@ -18,7 +18,7 @@ uses
   Winapi.OpenGLext,
   System.Classes,
   FMX.Types,
-  //VKS
+  
   VKS.OpenGLAdapter,
   VKS.VectorGeometry, VKS.Scene, VKS.VectorLists,
   VKS.CrossPlatform, VKS.PersistentClasses, VKS.BaseClasses,
@@ -40,7 +40,7 @@ type
    //
    TVKWaterPlane = class (TVKSceneObject)
 		private
-         { Private Declarations }
+         
          FLocks : packed array of ByteBool;
          FPositions, FVelocity : packed array of Single;
          FPlaneQuadIndices : TPersistentObjectList;
@@ -57,18 +57,18 @@ type
          FTimeToNextRainDrop : Single;
          FMaximumCatchupIterations : Integer;
          FLastIterationStepTime : Single;
-         FMask : TVKPicture;
+         FMask : TPicture;
          FOptions : TVKWaterPlaneOptions;
 
       protected
-         { Protected Declarations }
+         
          procedure SetElastic(const value : Single);
          procedure SetResolution(const value : Integer);
          procedure SetRainTimeInterval(const val : Integer);
          procedure SetViscosity(const val : Single);
          procedure SetRainForce(const val : Single);
          procedure SetSimulationFrequency(const val : Single);
-         procedure SetMask(val : TVKPicture);
+         procedure SetMask(val : TPicture);
          procedure SetOptions(const val : TVKWaterPlaneOptions);
 
          procedure DoMaskChanged(Sender : TObject);
@@ -80,7 +80,7 @@ type
          procedure Iterate;
 
       public
-         { Public Declarations }
+         
          constructor Create(AOwner : TComponent); override;
          destructor Destroy; override;
 
@@ -100,7 +100,7 @@ type
          property LastIterationStepTime : Single read FLastIterationStepTime;
 
       published
-         { Published Declarations }
+         
          
          property Active : Boolean read FActive write FActive default True;
 
@@ -117,7 +117,7 @@ type
             Pixels with a green/gray component beyond 128 are active, the others
             are not (in short, white = active, black = inactive). 
             The picture will automatically be stretched to match the resolution. }
-         property Mask : TVKPicture read FMask write SetMask;
+         property Mask : TPicture read FMask write SetMask;
 
          { Maximum frequency (in Hz) at which simulation iterations happen. }
          property SimulationFrequency : Single read FSimulationFrequency write SetSimulationFrequency;
@@ -155,7 +155,7 @@ begin
    FPlaneQuadTexCoords:=TTexPointList.Create;
    FPlaneQuadVertices:=TAffineVectorList.Create;
    FPlaneQuadNormals:=TAffineVectorList.Create;
-   FMask:=TVKPicture.Create(AOwner);
+   FMask:=TPicture.Create(AOwner);
    FMask.Bitmap.OnChange:=DoMaskChanged;
 
    SetResolution(64);
@@ -298,7 +298,7 @@ end;
 procedure TVKWaterPlane.Reset;
 var
    i, j, ij, resSqr : Integer;
-   maskBmp : TVKBitmap;
+   maskBmp : TBitmap;
    scanLine : PIntegerArray;
    il : TIntegerList;
    locked : Boolean;
@@ -310,7 +310,7 @@ begin
       FLocks[i]:=False;
    end;
    if FMask.Width>0 then begin
-      maskBmp:=TVKBitmap.Create;
+      maskBmp:=TBitmap.Create;
       try
          { TODO : E2129 Cannot assign to a read-only property }
          (*maskBmp.PixelFormat:= TPixelFormat.RGBA32F; //in VCL glpf32bit;*)
@@ -561,7 +561,7 @@ end;
 
 // SetMask
 //
-procedure TVKWaterPlane.SetMask(val : TVKPicture);
+procedure TVKWaterPlane.SetMask(val : TPicture);
 begin
    FMask.Assign(val);
 end;

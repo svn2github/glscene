@@ -40,9 +40,9 @@ type
     CBPolygonMode: TComboBox;
     procedure OnMaterialChanged(Sender: TObject);
   private
-    { Private declarations }
+    
   public
-    { Public declarations }
+    
     constructor Create(AOwner: TComponent); override;
     function Execute(AMaterial: TVKMaterial): Boolean;
   end;

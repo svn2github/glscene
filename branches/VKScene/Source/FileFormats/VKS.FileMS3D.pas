@@ -12,7 +12,7 @@ interface
 
 uses
   System.Classes, System.SysUtils, System.Math,
-  //VKS
+  
   VKS.CrossPlatform, VKS.VectorFileObjects,
   VKS.VectorTypes, VKS.Material, VKS.Color, VKS.Texture,
   VKS.VectorGeometry, VKS.VectorLists, VKS.ApplicationFileIO;

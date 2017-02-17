@@ -20,7 +20,7 @@ interface
 
 uses
   System.Classes,
-  //VKS
+  
   VKS.Scene, VKS.CrossPlatform, VKS.BaseClasses, VKS.State, Winapi.OpenGL, Winapi.OpenGLext,  VKS.OpenGL1x, 
   VKS.Context, VKS.RenderContextInfo, VKS.VectorGeometry, VKS.Coordinates,
   VKS.TextureFormat, VKS.Color, VKS.Texture, VKS.Material, GLSL.Shader, VKS.CustomShader;

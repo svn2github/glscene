@@ -12,7 +12,7 @@ interface
 
 uses
   System.SysUtils,
-  //VKS
+  
   VKS.VectorFileObjects,
   VKS.VectorLists,
   VKS.VectorGeometry,

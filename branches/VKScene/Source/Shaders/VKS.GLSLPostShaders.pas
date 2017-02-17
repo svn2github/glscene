@@ -12,7 +12,7 @@ interface
 
 uses
   System.Classes,
-  //VKS
+  
   VKS.Texture, VKS.Scene, VKS.VectorGeometry, VKS.Context, VKS.Material,
   VKS.GLSLShader, VKS.CustomShader, VKS.RenderContextInfo, VKS.TextureFormat,
   VKS.VectorTypes;

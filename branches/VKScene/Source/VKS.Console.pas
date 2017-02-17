@@ -144,7 +144,7 @@ type
     property OnCommand: TVKlConsoleEvent read FOnCommand write FOnCommand;
     property OnHelp: TNotifyEvent read FOnHelp write FOnHelp;
 
-    //: Disabled commands won't execute
+    // Disabled commands won't execute
     property Enabled: Boolean read FEnabled write FEnabled default True;
     { If command is disabled and user calls it, no error report will be
        generated if SilentDisabled is enabled }
@@ -269,10 +269,10 @@ type
     { Refreshes the Hud (clip lines outside the visible console). }
     procedure RefreshHud; virtual;
 
-    //: Register built-in commands (onCreate)
+    // Register built-in commands (onCreate)
     procedure RegisterBuiltInCommands; virtual;
 
-    //: Internal command handlers:
+    // Internal command handlers:
 
     procedure ProcessInternalCommandHelp(const ConsoleCommand:
       TVKConsoleCommand; const Console: TVKCustomConsole; var Command:
@@ -321,12 +321,12 @@ type
       override;
     procedure SetName(const Value: TComponentName); override;
   public
-    //: Methods:
-    //: User *must* call these methodsin his code.
+    // Methods:
+    // User *must* call these methodsin his code.
     procedure ProcessKeyPress(const c: Char); virtual;
     procedure ProcessKeyDown(const key: word); virtual;
 
-    //: Navigation through code from outside
+    // Navigation through code from outside
     procedure NavigateUp;
     procedure NavigateDown;
     procedure NavigatePageUp;
@@ -352,13 +352,13 @@ type
     property HUDSpriteColor: TColor read GetHUDSpriteColor write
       SetHUDSpriteColor stored False;
 
-    //: Where user enters his commands.
+    // Where user enters his commands.
     property InputLine: string read FInputLine write FInputLine;
 
-    //: List of commands that user typed.
+    // List of commands that user typed.
     property TypedCommands: TStringList read FTypedCommands;
 
-    //: Commands have events that are called when user types a sertauin command
+    // Commands have events that are called when user types a sertauin command
     property Commands: TVKConsoleCommandList read FCommands;
     { Aditional commands can be registered to participate in command auto-completion.
      They can be interpreted in the global OnCommandIssued event handler. }

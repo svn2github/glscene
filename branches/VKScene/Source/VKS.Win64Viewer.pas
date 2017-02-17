@@ -22,7 +22,7 @@ uses
   FMX.Controls,
   FMX.Dialogs.Win,
   FMX.Viewport3D,
-  //VKS
+  
   VKS.OpenGLAdapter,
   VKS.Scene,
   VKS.Win64Context,
@@ -56,7 +56,7 @@ type
      depth testing, etc. and can take care of framerate calculation.  }
   TVKSceneViewer = class(TViewPort3D)
   private
-    { Private Declarations }
+    
     FBuffer: TVKSceneBuffer;
     FVSync: TVSyncMode;
     FOwnDC: HDC;
@@ -83,7 +83,7 @@ type
     function GetIsRenderingContextAvailable: Boolean;
 
   protected
-    { Protected Declarations }
+    
     procedure SetBeforeRender(const val: TNotifyEvent);
     function GetBeforeRender: TNotifyEvent;
     procedure SetPostRender(const val: TNotifyEvent);
@@ -105,7 +105,7 @@ type
     procedure MouseMove(Shift: TShiftState; X, Y: Integer); /// Vcl - override;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
@@ -132,7 +132,7 @@ type
     property MouseInControl: Boolean read FMouseInControl;
 
   published
-    { Published Declarations }
+    
     { Camera from which the scene is rendered. }
     property Camera: TVKCamera read GetCamera write SetCamera;
 

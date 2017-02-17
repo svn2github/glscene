@@ -48,7 +48,7 @@ type
 
   TVKEParticleMask = class(TCollectionItem, IGLMaterialLibrarySupported)
   private
-    { Private Declarations }
+    
     FName: string;
     FScale: TVKCoordinates;
     FPosition: TVKCoordinates;
@@ -73,9 +73,9 @@ type
     procedure SetYMask(const Value: TVKLibMaterialName);
     procedure SetZMask(const Value: TVKLibMaterialName);
     procedure SetMaterialLibrary(const Value: TVKMaterialLibrary);
-    function XCan: TVKBitmap;
-    function YCan: TVKBitmap;
-    function ZCan: TVKBitmap;
+    function XCan: TBitmap;
+    function YCan: TBitmap;
+    function ZCan: TBitmap;
     //implementing IGLMaterialLibrarySupported
     function GetMaterialLibrary: TVKAbstractMaterialLibrary;
     //implementing IInterface
@@ -83,10 +83,10 @@ type
     function _AddRef: Integer; stdcall;
     function _Release: Integer; stdcall;
   protected
-    { Protected Declarations }
+    
     function GetDisplayName: string; override;
   public
-    { Public Declarations }
+    
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -99,7 +99,7 @@ type
     procedure GenerateMaskFromProjection(FromMask, ToMask:
       TVKEProjectedParticleMask; Depth: Integer);
   published
-    { Published Declarations }
+    
     // scales and positions
     property Scale: TVKCoordinates read FScale write FScale;
     property Position: TVKCoordinates read FPosition write FPosition;
@@ -124,14 +124,14 @@ type
 
   TVKEParticleMasks = class(TCollection)
   protected
-    { Protected Declarations }
+    
     Owner: TComponent;
     function GetOwner: TPersistent; override;
     procedure SetItems(Index: Integer; const Val: TVKEParticleMask);
     function GetItems(Index: Integer): TVKEParticleMask;
 
   public
-    { Public Declarations }
+    
     function Add: TVKEParticleMask;
     constructor Create(AOwner: TComponent);
     property Items[Index: Integer]: TVKEParticleMask read GetItems write
@@ -141,9 +141,9 @@ type
   TVKEParticleMasksManager = class(TComponent)
   private
     FParticleMasks: TVKEParticleMasks;
-    { Private declarations }
+    
   protected
-    { Protected declarations }
+    
     procedure ApplyOrthoGraphic(var Vec: TVector3f; Mask: TVKEParticleMask);
     procedure ApplyRotation(var Vec: TVector3f; Mask: TVKEParticleMask);
     procedure ApplyRotationTarget(var Vec: TVector3f; Mask: TVKEParticleMask;
@@ -153,7 +153,7 @@ type
       TVKEParticleMask; TargetObject: TVKBaseSceneObject);
     procedure FindParticlePosition(var Vec: TVector3f; Mask: TVKEParticleMask);
   public
-    { Public declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     function CreateParticlePositionFromMask(MaskName: string): TVector3f;
@@ -166,7 +166,7 @@ type
     function ParticleMaskByName(MaskName: string): TVKEParticleMask;
 
   published
-    { Published declarations }
+    
     property ParticleMasks: TVKEParticleMasks read FParticleMasks write
       FParticleMasks;
   end;
@@ -260,8 +260,8 @@ end;
 procedure TVKEParticleMask.GenerateMaskFromProjection(FromMask,
   ToMask: TVKEProjectedParticleMask; Depth: Integer);
 var
-  FromBitMap: TVKBitmap;
-  ToBitMap: TVKBitmap;
+  FromBitMap: TBitmap;
+  ToBitMap: TBitmap;
   X, Y: Integer;
   Rect: TVKRect;
 begin
@@ -609,7 +609,7 @@ begin
   LZ := MaxInteger(IXW, IYH);
 end;
 
-function TVKEParticleMask.XCan: TVKBitmap;
+function TVKEParticleMask.XCan: TBitmap;
 begin
   Result := nil;
   if not assigned(FMaterialLibrary) then
@@ -621,11 +621,11 @@ begin
     Exit;
 
   Result :=
-    TVKBitmap((FMaterialLibrary.LibMaterialByName(FXMask).Material.Texture.Image as
+    TBitmap((FMaterialLibrary.LibMaterialByName(FXMask).Material.Texture.Image as
     TVKPersistentImage).Picture.Bitmap);
 end;
 
-function TVKEParticleMask.YCan: TVKBitmap;
+function TVKEParticleMask.YCan: TBitmap;
 begin
   Result := nil;
   if not assigned(FMaterialLibrary) then
@@ -637,11 +637,11 @@ begin
     Exit;
 
   Result :=
-    TVKBitmap((FMaterialLibrary.LibMaterialByName(FYMask).Material.Texture.Image as
+    TBitmap((FMaterialLibrary.LibMaterialByName(FYMask).Material.Texture.Image as
     TVKPersistentImage).Picture.Bitmap);
 end;
 
-function TVKEParticleMask.ZCan: TVKBitmap;
+function TVKEParticleMask.ZCan: TBitmap;
 begin
   Result := nil;
   if not assigned(FMaterialLibrary) then
@@ -653,7 +653,7 @@ begin
     Exit;
 
   Result :=
-    TVKBitmap((FMaterialLibrary.LibMaterialByName(FZMask).Material.Texture.Image as
+    TBitmap((FMaterialLibrary.LibMaterialByName(FZMask).Material.Texture.Image as
     TVKPersistentImage).Picture.Bitmap);
 end;
 

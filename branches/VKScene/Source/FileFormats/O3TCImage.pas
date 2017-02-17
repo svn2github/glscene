@@ -26,9 +26,9 @@ uses
 
 type
 
-  TO3TCImage = class(TVKBitmap)
+  TO3TCImage = class(TBitmap)
   public
-    { Public Declarations }
+    
     procedure LoadFromStream(stream: TStream); override;
     procedure SaveToStream(stream: TStream); override;
   end;
@@ -93,7 +93,7 @@ initialization
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
 
-  TVKPicture.RegisterFileFormat(
+  TPicture.RegisterFileFormat(
     'o3tc', 'oZone3D Texture Compression', TO3TCImage);
 
   // ------------------------------------------------------------------
@@ -104,7 +104,7 @@ finalization
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
 
-  TVKPicture.UnregisterGraphicClass(TO3TCImage);
+  TPicture.UnregisterGraphicClass(TO3TCImage);
 
 end.
 

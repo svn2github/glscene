@@ -25,7 +25,7 @@ uses
   FMX.Controls,
   FMX.Types,
   FMX.Dialogs,
-  //VKS
+  
   VKS.OpenGLAdapter,
   VKS.Generics,
   VKS.CrossPlatform,
@@ -103,7 +103,7 @@ type
      All rendering context share the same lists. }
   TVKContext = class
   private
-    { Private Declarations }
+    
     FColorBits, FAlphaBits: Integer;
     FDepthBits: Integer;
     FStencilBits: Integer;
@@ -129,7 +129,7 @@ type
     procedure SetActive(const aActive: Boolean);
     procedure SetLayer(const Value: TVKContextLayer);
   protected
-    { Protected Declarations }
+    
     FVK: TVKExtensionsAndEntryPoints;
     FXVK: TAbstractMultitextureCoordinator;
     FVKStates: TVKStateCache;
@@ -151,7 +151,7 @@ type
     procedure MakeGLCurrent;
     function GetXGL: TAbstractMultitextureCoordinator;
   public
-    { Public Declarations }
+    
     constructor Create; virtual;
     destructor Destroy; override;
 
@@ -161,7 +161,7 @@ type
 
     property PipelineTransformation: TVKTransformation read FTransformation;
 
-    //: Context manager reference
+    // Context manager reference
     property Manager: TVKContextManager read FManager;
 
     { Color bits for the rendering context }
@@ -256,15 +256,15 @@ type
      class/subclass. }
   TVKScreenControlingContext = class(TVKContext)
   private
-    { Private Declarations }
+    
     FWidth, FHeight: Integer;
     FFullScreen: Boolean;
 
   protected
-    { Protected Declarations }
+    
 
   public
-    { Public Declarations }
+    
     property Width: Integer read FWidth write FWidth;
     property Height: Integer read FHeight write FHeight;
     property FullScreen: Boolean read FFullScreen write FFullScreen;
@@ -287,7 +287,7 @@ type
      use the TVKListHandle and TVKTextureHandle subclasses. }
   TVKContextHandle = class
   private
-    { Private Declarations }
+    
     FHandles: TList;
     FLastHandle : PGLRCHandle;
     FOnPrepare: TOnPrepareHandleData;
@@ -297,11 +297,11 @@ type
     function RCItem(AIndex: integer): PGLRCHandle; {$IFDEF VKS_INLINE}inline;{$ENDIF}
     procedure CheckCurrentRC;
   protected
-    { Protected Declarations }
-    //: Invoked by when there is no compatible context left for relocation
+    
+    // Invoked by when there is no compatible context left for relocation
     procedure ContextDestroying;
 
-    //: Specifies if the handle can be transfered across shared contexts
+    // Specifies if the handle can be transfered across shared contexts
     class function Transferable: Boolean; virtual;
     class function IsValid(const ID: GLuint): GLboolean; virtual;
 
@@ -309,7 +309,7 @@ type
     procedure DoDestroyHandle(var AHandle: GLuint); virtual; abstract;
 
   public
-    { Public Declarations }
+    
     constructor Create; virtual;
     constructor CreateAndAllocate(failIfAllocationFailed: Boolean = True);
     destructor Destroy; override;
@@ -328,7 +328,7 @@ type
     { Notify the data was changed through all context. }
     procedure NotifyChangesOfData;
 
-    //: Checks if required extensions / OpenGL version are met
+    // Checks if required extensions / OpenGL version are met
     class function IsSupported: Boolean; virtual;
     function IsAllocatedForContext(AContext: TVKContext = nil): Boolean;
     function IsShared: Boolean;
@@ -347,17 +347,17 @@ type
   { A context handle with event-based handle allocation and destruction. }
   TVKVirtualHandle = class(TVKContextHandle)
   private
-    { Private Declarations }
+    
     FOnAllocate,
     FOnDestroy: TVKVirtualHandleEvent;
     FTag: Integer;
   protected
-    { Protected Declarations }
+    
     function DoAllocateHandle: GLuint; override;
     procedure DoDestroyHandle(var AHandle: GLuint); override;
     class function Transferable: Boolean; override;
   public
-    { Public Declarations }
+    
     property OnAllocate: TVKVirtualHandleEvent read FOnAllocate write
       FOnAllocate;
     property OnDestroy: TVKVirtualHandleEvent read FOnDestroy write FOnDestroy;
@@ -378,15 +378,15 @@ type
   { Manages a handle to a display list. }
   TVKListHandle = class(TVKContextHandle)
   private
-    { Private Declarations }
+    
 
   protected
-    { Protected Declarations }
+    
     function DoAllocateHandle: GLuint; override;
     procedure DoDestroyHandle(var AHandle: GLuint); override;
     class function IsValid(const ID: GLuint): GLboolean; override;
   public
-    { Public Declarations }
+    
     procedure NewList(mode: Cardinal);
     procedure EndList;
     procedure CallList;
@@ -400,12 +400,12 @@ type
     FTarget: TVKTextureTarget;
     procedure SetTarget(ATarget: TVKTextureTarget);
   protected
-    { Protected Declarations }
+    
     function DoAllocateHandle: GLuint; override;
     procedure DoDestroyHandle(var AHandle: GLuint); override;
     class function IsValid(const ID: GLuint): GLboolean; override;
   public
-    { Public Declarations }
+    
     property Target: TVKTextureTarget read FTarget write SetTarget;
   end;
 
@@ -414,12 +414,12 @@ type
   { Manages a handle to a sampler. }
   TVKSamplerHandle = class(TVKContextHandle)
   protected
-    { Protected Declarations }
+    
     function DoAllocateHandle: GLuint; override;
     procedure DoDestroyHandle(var AHandle: GLuint); override;
     class function IsValid(const ID: GLuint): GLboolean; override;
   public
-    { Public Declarations }
+    
     class function IsSupported: Boolean; override;
   end;
 
@@ -429,10 +429,10 @@ type
      Do not use this class directly, use one of its subclasses instead. }
   TVKQueryHandle = class(TVKContextHandle)
   private
-    { Private Declarations }
+    
     FActive: Boolean;
   protected
-    { Protected Declarations }
+    
     class function Transferable: Boolean; override;
     function DoAllocateHandle: GLuint; override;
     procedure DoDestroyHandle(var AHandle: GLuint); override;
@@ -440,7 +440,7 @@ type
     function GetQueryType: TQueryType; virtual; abstract;
     class function IsValid(const ID: GLuint): GLboolean; override;
   public
-    { Public Declarations }
+    
     procedure BeginQuery;
     procedure EndQuery;
 
@@ -530,17 +530,17 @@ type
      checked by the user.  }
   TVKBufferObjectHandle = class(TVKContextHandle)
   private
-    { Private Declarations }
+    
     FSize: Integer;
   protected
-    { Protected Declarations }
+    
     function DoAllocateHandle: GLuint; override;
     procedure DoDestroyHandle(var AHandle: GLuint); override;
 
     function GetTarget: GLuint; virtual; abstract;
     class function IsValid(const ID: GLuint): GLboolean; override;
   public
-    { Public Declarations }
+    
     { Creates the buffer object buffer and initializes it. }
     constructor CreateFromData(p: Pointer; size: Integer; bufferUsage: GLuint);
 
@@ -563,7 +563,7 @@ type
        that is re-specified very often. 
        Valid only if the buffer has been bound. }
     procedure BufferData(p: Pointer; size: Integer; bufferUsage: GLuint);
-    //: Invokes Bind then BufferData
+    // Invokes Bind then BufferData
     procedure BindBufferData(p: Pointer; size: Integer; bufferUsage: GLuint);
     { Updates part of an already existing buffer. 
        offset and size indicate which part of the data in the buffer is
@@ -596,7 +596,7 @@ type
      Do not use this class directly, use one of its subclasses instead. }
   TVKVBOHandle = class(TVKBufferObjectHandle)
   private
-    { Private Declarations }
+    
 
     function GetVBOTarget: GLuint;
   public
@@ -850,17 +850,17 @@ type
 
   TVKProgramHandleEXT = class(TVKContextHandle)
   private
-    { Private Declarations }
+    
     FReady: Boolean;
     FInfoLog: string;
   protected
-    { Protected Declarations }
+    
     function DoAllocateHandle: GLuint; override;
     procedure DoDestroyHandle(var AHandle: GLuint); override;
     class function IsValid(const ID: GLuint): GLboolean; override;
     class function GetTarget: GLEnum; virtual; abstract;
   public
-    { Public Declarations }
+    
     procedure LoadARBProgram(AText: string);
     procedure Enable;
     procedure Disable;
@@ -871,28 +871,28 @@ type
 
   TVKVertexProgramHandle = class(TVKProgramHandleEXT)
   protected
-    { Protected Declarations }
+    
     class function GetTarget: GLEnum; override;
   public
-    { Public Declarations }
+    
     class function IsSupported: Boolean; override;
   end;
 
   TVKFragmentProgramHandle = class(TVKProgramHandleEXT)
   protected
-    { Protected Declarations }
+    
     class function GetTarget: GLEnum; override;
   public
-    { Public Declarations }
+    
     class function IsSupported: Boolean; override;
   end;
 
   TVKGeometryProgramHandle = class(TVKProgramHandleEXT)
   protected
-    { Protected Declarations }
+    
     class function GetTarget: GLEnum; override;
   public
-    { Public Declarations }
+    
     class function IsSupported: Boolean; override;
   end;
 
@@ -902,14 +902,14 @@ type
      Do not use this class directly, use one of its subclasses instead. }
   TVKSLHandle = class(TVKContextHandle)
   private
-    { Private Declarations }
+    
 
   protected
-    { Protected Declarations }
+    
     procedure DoDestroyHandle(var AHandle: GLuint); override;
 
   public
-    { Public Declarations }
+    
     function InfoLog: string;
     class function IsSupported: Boolean; override;
   end;
@@ -922,17 +922,17 @@ type
      Do not use this class directly, use one of its subclasses instead. }
   TVKShaderHandle = class(TVKSLHandle)
   private
-    { Private Declarations }
+    
     FShaderType: Cardinal;
 
   protected
-    { Protected Declarations }
+    
     function DoAllocateHandle: GLuint; override;
     class function IsValid(const ID: GLuint): GLboolean; override;
   public
-    { Public Declarations }
+    
     procedure ShaderSource(const source: AnsiString); overload;
-    //: Returns True if compilation sucessful
+    // Returns True if compilation sucessful
     function CompileShader: Boolean;
 
     property ShaderType: Cardinal read FShaderType;
@@ -945,7 +945,7 @@ type
   { Manages a handle to a Vertex Shader Object. }
   TVKVertexShaderHandle = class(TVKShaderHandle)
   public
-    { Public Declarations }
+    
     constructor Create; override;
     class function IsSupported: Boolean; override;
   end;
@@ -955,7 +955,7 @@ type
   { Manages a handle to a Geometry Shader Object. }
   TVKGeometryShaderHandle = class(TVKShaderHandle)
   public
-    { Public Declarations }
+    
     constructor Create; override;
     class function IsSupported: Boolean; override;
   end;
@@ -965,7 +965,7 @@ type
   { Manages a handle to a Fragment Shader Object. }
   TVKFragmentShaderHandle = class(TVKShaderHandle)
   public
-    { Public Declarations }
+    
     constructor Create; override;
     class function IsSupported: Boolean; override;
   end;
@@ -975,7 +975,7 @@ type
   { Manages a handle to a Tessellation Control Shader Object. }
   TVKTessControlShaderHandle = class(TVKShaderHandle)
   public
-    { Public Declarations }
+    
     constructor Create; override;
     class function IsSupported: Boolean; override;
   end;
@@ -985,7 +985,7 @@ type
   { Manages a handle to a Tessellation Evaluation Shader Object. }
   TVKTessEvaluationShaderHandle = class(TVKShaderHandle)
   public
-    { Public Declarations }
+    
     constructor Create; override;
     class function IsSupported: Boolean; override;
   end;
@@ -999,7 +999,7 @@ type
   public
     class function IsValid(const ID: GLuint): GLboolean; override;
   private
-    { Private Declarations }
+    
     FName: string;
     function GetUniform1i(const index: string): Integer;
     procedure SetUniform1i(const index: string; val: Integer);
@@ -1035,11 +1035,11 @@ type
     procedure SetUniformBuffer(const index: string;
       Value: TVKUniformBufferHandle);
   protected
-    { Protected Declarations }
+    
     function DoAllocateHandle: GLuint; override;
 
   public
-    { Public Declarations }
+    
     property Name: string read FName write FName;
 
     constructor Create; override;
@@ -1126,7 +1126,7 @@ type
   { Stores and manages all the TVKContext objects.  }
   TVKContextManager = class
   private
-    { Private Declarations }
+    
     FList: TThreadList;
     FTerminated: Boolean;
     FNotifications: array of TVKContextNotification;
@@ -1137,7 +1137,7 @@ type
     FThreadTask: TServiceContextTaskList;
     FServiceContext: TVKContext;
   protected
-    { Protected Declarations }
+    
     procedure Lock;
     procedure UnLock;
 
@@ -1148,7 +1148,7 @@ type
     procedure DestroyingContextBy(aContext: TVKContext);
 
       public
-         { Public Declarations }
+         
          constructor Create;
          destructor Destroy; override;
 
@@ -1169,7 +1169,7 @@ type
     { Unregisters an object from the notification lists.  }
     procedure RemoveNotification(anObject: TObject);
 
-    //: Marks the context manager for termination
+    // Marks the context manager for termination
     procedure Terminate;
 
     { Request all contexts to destroy all their handles. }

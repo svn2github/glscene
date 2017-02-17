@@ -14,7 +14,7 @@ interface
 uses
   System.Classes, System.SysUtils,
   Winapi.OpenGL, Winapi.OpenGLext,
-  //VKS
+  
   VKS.Scene, VKS.Texture, VKS.Graphics, VKS.Strings,
   VKS.CustomShader, VKS.Context, VKS.VectorGeometry, VKS.RenderContextInfo,
   VKS.Material, VKS.TextureFormat;
@@ -71,7 +71,7 @@ type
     property TempTextureTarget: TVKTextureTarget read FTempTextureTarget write FTempTextureTarget default ttTexture2d;
     property Shaders: TVKPostShaderCollection read FShaders write SetShaders;
 
-    //: Publish some stuff from TVKBaseSceneObject.
+    // Publish some stuff from TVKBaseSceneObject.
     property Visible;
     property OnProgress;
   end;
@@ -106,7 +106,7 @@ type
     FPreset: TVKPostEffectPreset;
     FRenderBuffer: TVKPostEffectBuffer;
   protected
-    //: May be should be private...
+    // May be should be private...
     procedure MakeGrayEffect; virtual;
     procedure MakeNegativeEffect; virtual;
     procedure MakeDistortEffect; virtual;
@@ -120,9 +120,9 @@ type
     procedure Assign(Source: TPersistent); override;
   published
     property Preset: TVKPostEffectPreset read FPreset write FPreset default pepNone;
-    //: User creates this effect.
+    // User creates this effect.
     property OnCustomEffect: TVKOnCustomPostEffectEvent read FOnCustomEffect write FOnCustomEffect;
-    //: Publish some stuff from TVKBaseSCeneObject.
+    // Publish some stuff from TVKBaseSCeneObject.
     property Visible;
     property OnProgress;
   end;

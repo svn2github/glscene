@@ -27,7 +27,7 @@ type
   { Base class for lists, introduces common behaviours. }
   TBaseList = class(TPersistentObject)
   private
-    { Private Declarations }
+    
     FCount: Integer;
     FCapacity: Integer;
     FGrowthDelta: Integer;
@@ -36,10 +36,10 @@ type
     FRevision: LongWord;
     FTagString: string;
   protected
-    { Protected Declarations }
-    //: The base list pointer (untyped)
+    
+    // The base list pointer (untyped)
     FBaseList: VKS.VectorGeometry.PByteArray;
-    //: Must be defined by all subclasses in their constructor(s)
+    // Must be defined by all subclasses in their constructor(s)
     FItemSize: Integer;
 
     procedure SetCount(Val: Integer);
@@ -56,7 +56,7 @@ type
     procedure WriteItemsData(AWriter : TWriter); virtual;
     procedure DefineProperties(AFiler: TFiler); override;
   public
-    { Public Declarations }
+    
     constructor Create; override;
     destructor Destroy; override;
     procedure Assign(Src: TPersistent); override;
@@ -110,13 +110,13 @@ type
   { Base class for vector lists, introduces common behaviours. }
   TBaseVectorList = class(TBaseList)
   private
-    { Private Declarations }
+    
   protected
-    { Protected Declarations }
+    
     function GetItemAddress(Index: Integer): PFloatArray;
 
   public
-    { Public Declarations }
+    
     procedure WriteToFiler(writer: TVirtualWriter); override;
     procedure ReadFromFiler(reader: TVirtualReader); override;
 
@@ -150,17 +150,17 @@ type
        The list has stack-like push/pop methods. }
   TAffineVectorList = class(TBaseVectorList)
   private
-    { Private Declarations }
+    
     FList: PAffineVectorArray;
 
   protected
-    { Protected Declarations }
+    
     function Get(Index: Integer): TAffineVector;
     procedure Put(Index: Integer; const item: TAffineVector);
     procedure SetCapacity(NewCapacity: Integer); override;
 
   public
-    { Public Declarations }
+    
     constructor Create; override;
     procedure Assign(Src: TPersistent); override;
 
@@ -189,11 +189,11 @@ type
     procedure Translate(const delta: TAffineVector); overload; override;
     procedure Translate(const delta: TAffineVector; base, nb: Integer); overload;
 
-    //: Translates the given item
+    // Translates the given item
     procedure TranslateItem(Index: Integer; const delta: TAffineVector);
-    //: Translates given items
+    // Translates given items
     procedure TranslateItems(Index: Integer; const delta: TAffineVector; nb: Integer);
-    //: Combines the given item
+    // Combines the given item
     procedure CombineItem(Index: Integer; const vector: TAffineVector; const f: Single);
 
         { Transforms all items by the matrix as if they were points. 
@@ -218,17 +218,17 @@ type
        The list has stack-like push/pop methods. }
   TVectorList = class(TBaseVectorList)
   private
-    { Private Declarations }
+    
     FList: PVectorArray;
 
   protected
-    { Protected Declarations }
+    
     function Get(Index: Integer): TVector;
     procedure Put(Index: Integer; const item: TVector);
     procedure SetCapacity(NewCapacity: Integer); override;
 
   public
-    { Public Declarations }
+    
     constructor Create; override;
     procedure Assign(Src: TPersistent); override;
 
@@ -259,17 +259,17 @@ type
        The list has stack-like push/pop methods. }
   TTexPointList = class(TBaseVectorList)
   private
-    { Private Declarations }
+    
     FList: PTexPointArray;
 
   protected
-    { Protected Declarations }
+    
     function Get(Index: Integer): TTexPoint;
     procedure Put(Index: Integer; const item: TTexPoint);
     procedure SetCapacity(NewCapacity: Integer); override;
 
   public
-    { Public Declarations }
+    
     constructor Create; override;
     procedure Assign(Src: TPersistent); override;
 
@@ -304,17 +304,17 @@ type
        The list has stack-like push/pop methods. }
   TIntegerList = class(TBaseList)
   private
-    { Private Declarations }
+    
     FList: PIntegerArray;
 
   protected
-    { Protected Declarations }
+    
     function Get(Index: Integer): Integer;
     procedure Put(Index: Integer; const item: Integer);
     procedure SetCapacity(newCapacity: Integer); override;
 
   public
-    { Public Declarations }
+    
     constructor Create; override;
     procedure Assign(src: TPersistent); override;
 
@@ -382,17 +382,17 @@ type
        The list has stack-like push/pop methods. }
   TSingleList = class(TBaseList)
   private
-    { Private Declarations }
+    
     FList: PSingleArrayList;
 
   protected
-    { Protected Declarations }
+    
     function Get(Index: Integer): Single;
     procedure Put(Index: Integer; const item: Single);
     procedure SetCapacity(NewCapacity: Integer); override;
 
   public
-    { Public Declarations }
+    
     constructor Create; override;
     procedure Assign(Src: TPersistent); override;
 
@@ -441,17 +441,17 @@ type
          The list has stack-like push/pop methods. }
   TDoubleList = class(TBaseList)
   private
-    { Private Declarations }
+    
     FList: PDoubleArrayList;
 
   protected
-    { Protected Declarations }
+    
     function Get(Index: Integer): Double;
     procedure Put(Index: Integer; const item: Double);
     procedure SetCapacity(NewCapacity: Integer); override;
 
   public
-    { Public Declarations }
+    
     constructor Create; override;
     procedure Assign(Src: TPersistent); override;
 
@@ -491,17 +491,17 @@ type
    Similar to TList, but using Byte as items.  }
   TByteList = class(TBaseList)
   private
-    { Private Declarations }
+    
     FList: PByteArray;
 
   protected
-    { Protected Declarations }
+    
     function Get(Index: Integer): Byte;
     procedure Put(Index: Integer; const item: Byte);
     procedure SetCapacity(NewCapacity: Integer); override;
 
   public
-    { Public Declarations }
+    
     constructor Create; override;
     procedure Assign(Src: TPersistent); override;
 
@@ -520,17 +520,17 @@ type
         The list has stack-like push/pop methods. }
   TQuaternionList = class(TBaseVectorList)
   private
-    { Private Declarations }
+    
     FList: PQuaternionArray;
 
   protected
-    { Protected Declarations }
+    
     function Get(Index: Integer): TQuaternion;
     procedure Put(Index: Integer; const item: TQuaternion);
     procedure SetCapacity(NewCapacity: Integer); override;
 
   public
-    { Public Declarations }
+    
     constructor Create; override;
     procedure Assign(Src: TPersistent); override;
 
@@ -573,15 +573,15 @@ type
 
   T4ByteList = class(TBaseList)
   private
-    { Private Declarations }
+    
     FList: P4ByteArrayList;
   protected
-    { Protected Declarations }
+    
     function  Get(Index: Integer): T4ByteData;
     procedure Put(Index: Integer; const item: T4ByteData);
     procedure SetCapacity(NewCapacity: Integer); override;
   public
-    { Public Declarations }
+    
     constructor Create; override;
     procedure Assign(Src: TPersistent); override;
 
@@ -611,17 +611,17 @@ type
   //
   TLongWordList = class(TBaseList)
   private
-    { Private Declarations }
+    
     FList: PLongWordArray;
 
   protected
-    { Protected Declarations }
+    
     function Get(Index: Integer): LongWord;
     procedure Put(Index: Integer; const item: LongWord);
     procedure SetCapacity(newCapacity: Integer); override;
 
   public
-    { Public Declarations }
+    
     constructor Create; override;
     procedure Assign(src: TPersistent); override;
 

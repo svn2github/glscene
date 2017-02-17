@@ -18,7 +18,7 @@ interface
 
 uses
   System.Classes,
-  //VKS
+  
   VKS.Material, VKS.Scene, VKS.VectorGeometry, 
   VKS.Strings, VKS.RenderContextInfo;
 

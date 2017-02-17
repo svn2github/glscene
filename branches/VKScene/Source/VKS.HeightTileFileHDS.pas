@@ -22,7 +22,7 @@ type
    { An Height Data Source for the HTF format.  }
 	TVKHeightTileFileHDS = class (TVKHeightDataSource)
 	   private
-	      { Private Declarations }
+	      
          FInfiniteWrap : Boolean;
          FInverted     : Boolean;
          FHTFFileName : String;
@@ -30,14 +30,14 @@ type
          FMinElevation : Integer;
 
 	   protected
-	      { Protected Declarations }
+	      
          procedure SetHTFFileName(const val : String);
          procedure SetInfiniteWrap(val : Boolean);
          procedure SetInverted(val : Boolean);
          procedure SetMinElevation(val : Integer);
 
 	   public
-	      { Public Declarations }
+	      
 	        constructor Create(AOwner: TComponent); override;
          destructor Destroy; override;
          procedure StartPreparingData(HeightData : TVKHeightData); override;
@@ -46,7 +46,7 @@ type
          function OpenHTF:TVKHeightTileFile; //gives you direct access to the HTF object
 
 	   published
-	      { Published Declarations }
+	      
 
          { FileName of the HTF file. 
             Note that it is accessed via the services of VKS.ApplicationFileIO,

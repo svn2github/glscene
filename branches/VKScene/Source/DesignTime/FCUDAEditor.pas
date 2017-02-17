@@ -13,7 +13,7 @@ uses
   System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
   FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.Layouts,
   FMX.ListBox, FMX.Objects, FMX.StdCtrls, FMX.Controls.Presentation,
-  //VKS
+  
   VKS.Strings,
   VKS.CUDA, VKS.CUDAFFTPlan, VKS.CUDAGraphics;
 
@@ -28,9 +28,9 @@ type
     Image3: TImage;
     ListBox1: TListBox;
   private
-    { Private declarations }
+    
   public
-    { Public declarations }
+    
   end;
 
 var

@@ -16,7 +16,7 @@ uses
   Winapi.OpenGLext,
   System.Classes, System.SysUtils, System.Types,
   FMX.Graphics, FMX.Objects,
-  //VKS
+  
   VKS.OpenGLAdapter,
   VKS.Strings, VKS.CrossPlatform, VKS.BaseClasses,
   VKS.VectorGeometry, VKS.Graphics, VKS.Context, VKS.State, VKS.Color, VKS.Coordinates,
@@ -185,8 +185,8 @@ type
      no particular memory cost. }
     procedure ReleaseBitmap32; virtual;
     //{ AsBitmap : Returns the TextureImage as a TBitmap }
-    function AsBitmap: TVKBitmap;
-    procedure AssignToBitmap(aBitmap: TVKBitmap);
+    function AsBitmap: TBitmap;
+    procedure AssignToBitmap(aBitmap: TBitmap);
 
     property Width: Integer read GetWidth;
     property Height: Integer read GetHeight;
@@ -205,14 +205,14 @@ type
        calculated at run-time (with a TVKMemoryViewer for instance). }
   TVKBlankImage = class(TVKTextureImage)
   private
-    { Private Declarations }
+    
     procedure SetWidth(val: Integer);
     procedure SetHeight(val: Integer);
     procedure SetDepth(val: Integer);
     procedure SetCubeMap(const val: Boolean);
     procedure SetArray(const val: Boolean);
   protected
-    { Protected Declarations }
+    
     fBitmap: TVKImage;
 
     fWidth, fHeight, fDepth: Integer;
@@ -228,7 +228,7 @@ type
     function GetDepth: Integer; override;
     function GetTextureTarget: TVKTextureTarget; override;
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
 
@@ -243,7 +243,7 @@ type
     class function FriendlyDescription: string; override;
 
   published
-    { Published Declarations }
+    
     { Width, heigth and depth of the blank image (for memory allocation). }
     property Width: Integer read GetWidth write SetWidth default 256;
     property Height: Integer read GetHeight write SetHeight default 256;
@@ -258,24 +258,24 @@ type
   { Base class for image data classes internally based on a TPicture. }
   TVKPictureImage = class(TVKTextureImage)
   private
-    { Private Declarations }
+    
     FBitmap: TVKImage;
-    FGLPicture: TVKPicture;
+    FGLPicture: TPicture;
     FUpdateCounter: Integer;
 
   protected
-    { Protected Declarations }
+    
     function GetHeight: Integer; override;
     function GetWidth: Integer; override;
     function GetDepth: Integer; override;
     function GetTextureTarget: TVKTextureTarget; override;
 
-    function GetPicture: TVKPicture;
-    procedure SetPicture(const aPicture: TVKPicture);
+    function GetPicture: TPicture;
+    procedure SetPicture(const aPicture: TPicture);
     procedure PictureChanged(Sender: TObject);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
 
@@ -291,7 +291,7 @@ type
     procedure ReleaseBitmap32; override;
 
     { Holds the image content. }
-    property Picture: TVKPicture read GetPicture write SetPicture;
+    property Picture: TPicture read GetPicture write SetPicture;
   end;
 
   // TVKPersistentImage
@@ -306,7 +306,7 @@ type
   private
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
 
@@ -316,7 +316,7 @@ type
     class function FriendlyDescription: string; override;
     property NativeTextureTarget;
   published
-    { Published Declarations }
+    
     property Picture;
   end;
 
@@ -338,13 +338,13 @@ type
     function GetDepth: Integer; override;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
 
     procedure Assign(Source: TPersistent); override;
 
-    //: Only picture file name is saved
+    // Only picture file name is saved
     procedure SaveToFile(const fileName: string); override;
     { Load picture file name or use fileName as picture filename. 
        The autodetection is based on the filelength and presence of zeros. }
@@ -374,23 +374,23 @@ type
        Saving & loading as a whole currently not supported. }
   TVKCubeMapImage = class(TVKTextureImage)
   private
-    { Private Declarations }
+    
     FImage: TVKImage;
     FUpdateCounter: Integer;
     FPicture: array[cmtPX..cmtNZ] of TVKPicture;
   protected
-    { Protected Declarations }
+    
     function GetWidth: Integer; override;
     function GetHeight: Integer; override;
     function GetDepth: Integer; override;
-    procedure SetPicture(index: TVKCubeMapTarget; const val: TVKPicture);
+    procedure SetPicture(index: TVKCubeMapTarget; const val: TPicture);
     function GetPicture(index: TVKCubeMapTarget): TVKPicture;
     function GetTextureTarget: TVKTextureTarget; override;
 
     procedure PictureChanged(Sender: TObject);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
 
@@ -415,13 +415,13 @@ type
     SetPicture;
 
   published
-    { Public Declarations }
-    property PicturePX: TVKPicture index cmtPX read GetPicture write SetPicture;
-    property PictureNX: TVKPicture index cmtNX read GetPicture write SetPicture;
-    property PicturePY: TVKPicture index cmtPY read GetPicture write SetPicture;
-    property PictureNY: TVKPicture index cmtNY read GetPicture write SetPicture;
-    property PicturePZ: TVKPicture index cmtPZ read GetPicture write SetPicture;
-    property PictureNZ: TVKPicture index cmtNZ read GetPicture write SetPicture;
+    
+    property PicturePX: TPicture index cmtPX read GetPicture write SetPicture;
+    property PictureNX: TPicture index cmtNX read GetPicture write SetPicture;
+    property PicturePY: TPicture index cmtPY read GetPicture write SetPicture;
+    property PictureNY: TPicture index cmtNY read GetPicture write SetPicture;
+    property PicturePZ: TPicture index cmtPZ read GetPicture write SetPicture;
+    property PictureNZ: TPicture index cmtNZ read GetPicture write SetPicture;
   end;
 
   // TVKTextureMappingMode
@@ -439,7 +439,7 @@ type
        Alpha channel for all bitmaps (see TVKTextureImageAlpha). }
   TVKTexture = class(TVKUpdateAbleObject)
   private
-    { Private Declarations }
+    
     FTextureHandle: TVKTextureHandle;
     FSamplerHandle: TVKVirtualHandle;
     FTextureFormat: GLinternalFormat;
@@ -475,7 +475,7 @@ type
     fDepthTextureMode: TVKDepthTextureMode;
     FKeepImageAfterTransfer: Boolean;
   protected
-    { Protected Declarations }
+    
     procedure SetImage(AValue: TVKTextureImage);
     procedure SetImageAlpha(const val: TVKTextureImageAlpha);
     procedure SetImageBrightness(const val: Single);
@@ -522,18 +522,18 @@ type
     function StoreImageClassName: Boolean;
 
     function GetHandle: GLuint; virtual;
-    //: Load texture to OpenGL subsystem
+    // Load texture to OpenGL subsystem
     procedure PrepareImage(target: GLuint); virtual;
-    //: Setup OpenGL texture parameters
+    // Setup OpenGL texture parameters
     procedure PrepareParams(target: GLuint); virtual;
 
     procedure DoOnTextureNeeded(Sender: TObject; var textureFileName: string);
     procedure OnSamplerAllocate(Sender: TVKVirtualHandle; var Handle: Cardinal);
     procedure OnSamplerDestroy(Sender: TVKVirtualHandle; var Handle: Cardinal);
-    //: Shows a special image that indicates an error
+    // Shows a special image that indicates an error
     procedure SetTextureErrorImage;
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
 
@@ -597,7 +597,7 @@ type
     property TexDepth: Integer read FTexDepth;
     { Give texture rendering context }
   published
-    { Published Declarations }
+    
 
     { Image ClassName for enabling True polymorphism. 
     This is ugly, but since the default streaming mechanism does a
@@ -792,14 +792,14 @@ type
   ETexture = class(Exception);
   EGLShaderException = class(Exception);
 
-  //: Register a TVKTextureImageClass (used for persistence and IDE purposes)
+  // Register a TVKTextureImageClass (used for persistence and IDE purposes)
 procedure RegisterTextureImageClass(textureImageClass: TVKTextureImageClass);
-//: Finds a registerer TVKTextureImageClass using its classname
+// Finds a registerer TVKTextureImageClass using its classname
 function FindTextureImageClass(const className: string): TVKTextureImageClass;
-//: Finds a registerer TVKTextureImageClass using its FriendlyName
+// Finds a registerer TVKTextureImageClass using its FriendlyName
 function FindTextureImageClassByFriendlyName(const friendlyName: string):
   TVKTextureImageClass;
-//: Defines a TStrings with the list of registered TVKTextureImageClass.
+// Defines a TStrings with the list of registered TVKTextureImageClass.
 procedure SetTextureImageClassesToStrings(aStrings: TStrings);
 { Creates a TStrings with the list of registered TVKTextureImageClass.
  To be freed by caller. }
@@ -1054,7 +1054,7 @@ end;
 // If possible, rather use AssignToBitmap.
 //
 
-function TVKTextureImage.AsBitmap: TVKBitmap;
+function TVKTextureImage.AsBitmap: TBitmap;
 begin
   result := self.GetBitmap32.Create32BitsBitmap;
 end;
@@ -1062,7 +1062,7 @@ end;
 // AssignToBitmap
 //
 
-procedure TVKTextureImage.AssignToBitmap(aBitmap: TVKBitmap);
+procedure TVKTextureImage.AssignToBitmap(aBitmap: TBitmap);
 begin
   Self.GetBitmap32.AssignToBitmap(aBitmap);
 end;
@@ -1422,7 +1422,7 @@ end;
 
 procedure TVKPictureImage.Assign(Source: TPersistent);
 var
-  bmp: TVKBitmap;
+  bmp: TBitmap;
 begin
   if Assigned(Source) then
   begin
@@ -1544,12 +1544,12 @@ end;
 // GetPicture
 //
 
-function TVKPictureImage.GetPicture: TVKPicture;
+function TVKPictureImage.GetPicture: TPicture;
 begin
   if not Assigned(FGLPicture) then
   begin
    { TODO -oPW : E2035 Not enough actual parameters }
-    (*FGLPicture := TVKPicture.Create;*)
+    (*FGLPicture := TPicture.Create;*)
     FGLPicture.Bitmap.OnChange := PictureChanged;
   end;
   Result := FGLPicture;
@@ -1558,7 +1558,7 @@ end;
 // SetPicture
 //
 
-procedure TVKPictureImage.SetPicture(const aPicture: TVKPicture);
+procedure TVKPictureImage.SetPicture(const aPicture: TPicture);
 begin
   Picture.Assign(aPicture);
 end;
@@ -1853,7 +1853,7 @@ begin
   for i := Low(FPicture) to High(FPicture) do
   begin
     { TODO -oPW : E2035 Not enough actual parameters }
-    (*FPicture[i] := TVKPicture.Create();*)
+    (*FPicture[i] := TPicture.Create();*)
     FPicture[i].Bitmap.OnChange := PictureChanged;
   end;
 end;
@@ -2002,12 +2002,12 @@ end;
 procedure TVKCubeMapImage.SaveToFile(const fileName: string);
 var
   fs: TFileStream;
-  bmp: TVKBitmap;
+  bmp: TBitmap;
   i: TVKCubeMapTarget;
   version: Word;
 begin
   fs := TFileStream.Create(fileName, fmCreate);
-  bmp := TVKBitmap.Create;
+  bmp := TBitmap.Create;
   try
     version := $0100;
     fs.Write(version, 2);
@@ -2028,12 +2028,12 @@ end;
 procedure TVKCubeMapImage.LoadFromFile(const fileName: string);
 var
   fs: TFileStream;
-  bmp: TVKBitmap;
+  bmp: TBitmap;
   i: TVKCubeMapTarget;
   version: Word;
 begin
   fs := TFileStream.Create(fileName, fmOpenRead + fmShareDenyWrite);
-  bmp := TVKBitmap.Create;
+  bmp := TBitmap.Create;
   try
     fs.Read(version, 2);
     Assert(version = $0100);
@@ -3927,7 +3927,7 @@ initialization
   RegisterTextureImageClass(TVKPicFileImage);
   RegisterTextureImageClass(TVKCubeMapImage);
 
-  RegisterTGraphicClassFileExtension('.bmp', TVKBitmap);
+  RegisterTGraphicClassFileExtension('.bmp', TBitmap);
 
 finalization
 

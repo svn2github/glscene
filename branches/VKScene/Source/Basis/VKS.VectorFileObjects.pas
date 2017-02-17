@@ -17,7 +17,7 @@ uses
   System.Classes,
   System.SysUtils,
   System.Types,
-  //VKS
+  
   VKS.OpenGLAdapter,
   VKS.Scene,
   VKS.VectorGeometry,
@@ -58,14 +58,14 @@ type
      does no rendering of its own. }
   TVKBaseMeshObject = class(TPersistentObject)
   private
-    { Private Declarations }
+    
     FName: string;
     FVertices: TAffineVectorList;
     FNormals: TAffineVectorList;
     FVisible: Boolean;
 
   protected
-    { Protected Declarations }
+    
     procedure SetVertices(const val: TAffineVectorList);
     procedure SetNormals(const val: TAffineVectorList);
 
@@ -73,7 +73,7 @@ type
       var nb: Integer); dynamic;
 
   public
-    { Public Declarations }
+    
     constructor Create; override;
     destructor Destroy; override;
 
@@ -127,7 +127,7 @@ type
        not recalculate the matrices, but marks the current ones as dirty). }
   TVKSkeletonFrame = class(TPersistentObject)
   private
-    { Private Declarations }
+    
     FOwner: TVKSkeletonFrameList;
     FName: string;
     FPosition: TAffineVectorList;
@@ -137,13 +137,13 @@ type
     FTransformMode: TVKSkeletonFrameTransform;
 
   protected
-    { Protected Declarations }
+    
     procedure SetPosition(const val: TAffineVectorList);
     procedure SetRotation(const val: TAffineVectorList);
     procedure SetQuaternion(const val: TQuaternionList);
 
   public
-    { Public Declarations }
+    
     constructor CreateOwned(aOwner: TVKSkeletonFrameList);
     constructor Create; override;
     destructor Destroy; override;
@@ -173,7 +173,7 @@ type
     { Flushes (frees) then LocalMatrixList data. 
        Call this function to allow a recalculation of local matrices. }
     procedure FlushLocalMatrixList;
-    //: As the name states; Convert Quaternions to Rotations or vice-versa.
+    // As the name states; Convert Quaternions to Rotations or vice-versa.
     procedure ConvertQuaternionsToRotations(KeepQuaternions: Boolean = True);
     procedure ConvertRotationsToQuaternions(KeepRotations: Boolean = True);
   end;
@@ -183,21 +183,21 @@ type
   { A list of TVKSkeletonFrame objects. }
   TVKSkeletonFrameList = class(TPersistentObjectList)
   private
-    { Private Declarations }
+    
     FOwner: TPersistent;
 
   protected
-    { Protected Declarations }
+    
     function GetSkeletonFrame(Index: Integer): TVKSkeletonFrame;
 
   public
-    { Public Declarations }
+    
     constructor CreateOwned(AOwner: TPersistent);
     destructor Destroy; override;
 
     procedure ReadFromFiler(reader: TVirtualReader); override;
 
-    //: As the name states; Convert Quaternions to Rotations or vice-versa.
+    // As the name states; Convert Quaternions to Rotations or vice-versa.
     procedure ConvertQuaternionsToRotations(
       KeepQuaternions: Boolean = True; SetTransformMode: Boolean = True);
     procedure ConvertRotationsToQuaternions(
@@ -217,18 +217,18 @@ type
     { A list of skeleton bones.  }
   TVKSkeletonBoneList = class(TPersistentObjectList)
   private
-    { Private Declarations }
+    
     FSkeleton: TVKSkeleton; // not persistent
 
   protected
-    { Protected Declarations }
+    
     FGlobalMatrix: TMatrix;
 
     function GetSkeletonBone(Index: Integer): TVKSkeletonBone;
     procedure AfterObjectCreatedByReader(Sender: TObject); override;
 
   public
-    { Public Declarations }
+    
     constructor CreateOwned(aOwner: TVKSkeleton);
     constructor Create; override;
     destructor Destroy; override;
@@ -247,7 +247,7 @@ type
 
     function BoneCount: Integer;
 
-    //: Render skeleton wireframe
+    // Render skeleton wireframe
     procedure BuildList(var mrci: TVKRenderContextInfo); virtual; abstract;
     procedure PrepareGlobalMatrices; virtual;
   end;
@@ -257,17 +257,17 @@ type
     { This list store skeleton root bones exclusively.  }
   TVKSkeletonRootBoneList = class(TVKSkeletonBoneList)
   private
-    { Private Declarations }
+    
 
   protected
-    { Protected Declarations }
+    
 
   public
-    { Public Declarations }
+    
     procedure WriteToFiler(writer: TVirtualWriter); override;
     procedure ReadFromFiler(reader: TVirtualReader); override;
 
-    //: Render skeleton wireframe
+    // Render skeleton wireframe
     procedure BuildList(var mrci: TVKRenderContextInfo); override;
 
     property GlobalMatrix: TMatrix read FGlobalMatrix write FGlobalMatrix;
@@ -281,19 +281,19 @@ type
        matrices are stored here. }
   TVKSkeletonBone = class(TVKSkeletonBoneList)
   private
-    { Private Declarations }
+    
     FOwner: TVKSkeletonBoneList; // indirectly persistent
     FBoneID: Integer;
     FName: string;
     FColor: Cardinal;
 
   protected
-    { Protected Declarations }
+    
     function GetSkeletonBone(Index: Integer): TVKSkeletonBone;
     procedure SetColor(const val: Cardinal);
 
   public
-    { Public Declarations }
+    
     constructor CreateOwned(aOwner: TVKSkeletonBoneList);
     constructor Create; override;
     destructor Destroy; override;
@@ -301,7 +301,7 @@ type
     procedure WriteToFiler(writer: TVirtualWriter); override;
     procedure ReadFromFiler(reader: TVirtualReader); override;
 
-    //: Render skeleton wireframe
+    // Render skeleton wireframe
     procedure BuildList(var mrci: TVKRenderContextInfo); override;
 
     property Owner: TVKSkeletonBoneList read FOwner;
@@ -341,7 +341,7 @@ type
      Overriden classes should be named as TSCxxxxx. }
   TVKSkeletonCollider = class(TPersistentObject)
   private
-    { Private Declarations }
+    
     FOwner: TVKSkeletonColliderList;
     FBone: TVKSkeletonBone;
     FBoneID: Integer;
@@ -349,12 +349,12 @@ type
     FAutoUpdate: Boolean;
 
   protected
-    { Protected Declarations }
+    
     procedure SetBone(const val: TVKSkeletonBone);
     procedure SetLocalMatrix(const val: TMatrix);
 
   public
-    { Public Declarations }
+    
     constructor Create; override;
     constructor CreateOwned(AOwner: TVKSkeletonColliderList);
     procedure WriteToFiler(writer: TVirtualWriter); override;
@@ -365,7 +365,7 @@ type
     procedure AlignCollider; virtual;
 
     property Owner: TVKSkeletonColliderList read FOwner;
-    //: The bone that this collider associates with.
+    // The bone that this collider associates with.
     property Bone: TVKSkeletonBone read FBone write SetBone;
     { Offset and orientation of the collider in the associated
        bone's space. }
@@ -381,15 +381,15 @@ type
   { List class for storing TVKSkeletonCollider objects. }
   TVKSkeletonColliderList = class(TPersistentObjectList)
   private
-    { Private Declarations }
+    
     FOwner: TPersistent;
 
   protected
-    { Protected Declarations }
+    
     function GetSkeletonCollider(index: Integer): TVKSkeletonCollider;
 
   public
-    { Public Declarations }
+    
     constructor CreateOwned(AOwner: TPersistent);
     destructor Destroy; override;
 
@@ -425,7 +425,7 @@ type
        various frame blending operations. }
   TVKSkeleton = class(TPersistentObject)
   private
-    { Private Declarations }
+    
     FOwner: TVKBaseMesh;
     FRootBones: TVKSkeletonRootBoneList;
     FFrames: TVKSkeletonFrameList;
@@ -436,7 +436,7 @@ type
     FMorphInvisibleParts: Boolean;
 
   protected
-    { Protected Declarations }
+    
     procedure SetRootBones(const val: TVKSkeletonRootBoneList);
     procedure SetFrames(const val: TVKSkeletonFrameList);
     function GetCurrentFrame: TVKSkeletonFrame;
@@ -444,7 +444,7 @@ type
     procedure SetColliders(const val: TVKSkeletonColliderList);
 
   public
-    { Public Declarations }
+    
     constructor CreateOwned(AOwner: TVKBaseMesh);
     constructor Create; override;
     destructor Destroy; override;
@@ -528,7 +528,7 @@ type
      Subclasses are named "TMOxxx". }
   TVKMeshObject = class(TVKBaseMeshObject)
   private
-    { Private Declarations }
+    
     FOwner: TVKMeshObjectList;
     FExtentCacheRevision: Cardinal;
     FTexCoords: TAffineVectorList; // provision for 3D textures
@@ -556,7 +556,7 @@ type
     procedure SetUseVBO(const Value: boolean);
     procedure SetValidBuffers(Value: TVBOBuffers);
   protected
-    { Protected Declarations }
+    
     procedure SetTexCoords(const val: TAffineVectorList);
     procedure SetLightmapTexCoords(const val: TAffineVectorList);
     procedure SetColors(const val: TVectorList);
@@ -582,7 +582,7 @@ type
 
     property ValidBuffers: TVBOBuffers read FValidBuffers write SetValidBuffers;
   public
-    { Public Declarations }
+    
     { Creates, assigns Owner and adds to list. }
     constructor CreateOwned(AOwner: TVKMeshObjectList);
     constructor Create; override;
@@ -606,28 +606,28 @@ type
     { Prepare the texture and materials before rendering. 
        Invoked once, before building the list and NOT while building the list. }
     procedure PrepareBuildList(var mrci: TVKRenderContextInfo); virtual;
-    //: Similar to regular scene object's BuildList method
+    // Similar to regular scene object's BuildList method
     procedure BuildList(var mrci: TVKRenderContextInfo); virtual;
 
-    //: The extents of the object (min and max coordinates)
+    // The extents of the object (min and max coordinates)
     procedure GetExtents(out min, max: TAffineVector); overload; virtual;
     procedure GetExtents(out aabb: TAABB); overload; virtual;
 
-    //: Barycenter from vertices data
+    // Barycenter from vertices data
     function GetBarycenter: TVector;
 
-    //: Precalculate whatever is needed for rendering, called once
+    // Precalculate whatever is needed for rendering, called once
     procedure Prepare; dynamic;
 
     function PointInObject(const aPoint: TAffineVector): Boolean; virtual;
 
-    //: Returns the triangle data for a given triangle
+    // Returns the triangle data for a given triangle
     procedure GetTriangleData(tri: Integer; list: TAffineVectorList;
       var v0, v1, v2: TAffineVector); overload;
     procedure GetTriangleData(tri: Integer; list: TVectorList;
       var v0, v1, v2: TVector); overload;
 
-    //: Sets the triangle data of a given triangle
+    // Sets the triangle data of a given triangle
     procedure SetTriangleData(tri: Integer; list: TAffineVectorList;
       const v0, v1, v2: TAffineVector); overload;
     procedure SetTriangleData(tri: Integer; list: TVectorList;
@@ -672,10 +672,10 @@ type
     { A TexCoordsEx list wrapper for tangents usage,
        returns TexCoordsEx[BinormalsTexCoordIndex]. }
     property Tangents: TVectorList read GetTangents write SetTangents;
-    //: Specify the texcoord extension index for binormals (default = 2)
+    // Specify the texcoord extension index for binormals (default = 2)
     property BinormalsTexCoordIndex: Integer read FBinormalsTexCoordIndex write
       SetBinormalsTexCoordIndex;
-    //: Specify the texcoord extension index for tangents (default = 3)
+    // Specify the texcoord extension index for tangents (default = 3)
     property TangentsTexCoordIndex: Integer read FTangentsTexCoordIndex write
       SetTangentsTexCoordIndex;
 
@@ -686,18 +686,18 @@ type
   { A list of TVKMeshObject objects. }
   TVKMeshObjectList = class(TPersistentObjectList)
   private
-    { Private Declarations }
+    
     FOwner: TVKBaseMesh;
 
     { Resturns True if all its MeshObjects use VBOs. }
     function GetUseVBO: Boolean;
     procedure SetUseVBO(const Value: Boolean);
   protected
-    { Protected Declarations }
+    
     function GetMeshObject(Index: Integer): TVKMeshObject;
 
   public
-    { Public Declarations }
+    
     constructor CreateOwned(aOwner: TVKBaseMesh);
     destructor Destroy; override;
 
@@ -709,7 +709,7 @@ type
     { Prepare the texture and materials before rendering. 
        Invoked once, before building the list and NOT while building the list. }
     procedure PrepareBuildList(var mrci: TVKRenderContextInfo); virtual;
-    //: Similar to regular scene object's BuildList method
+    // Similar to regular scene object's BuildList method
     procedure BuildList(var mrci: TVKRenderContextInfo); virtual;
 
     procedure MorphTo(morphTargetIndex: Integer);
@@ -735,7 +735,7 @@ type
        Resturns True if all its MeshObjects use VBOs. }
     property UseVBO: Boolean read GetUseVBO write SetUseVBO;
 
-    //: Precalculate whatever is needed for rendering, called once
+    // Precalculate whatever is needed for rendering, called once
     procedure Prepare; dynamic;
 
     function FindMeshByName(MeshName: string): TVKMeshObject;
@@ -754,14 +754,14 @@ type
   { A morph target, stores alternate lists of vertices and normals. }
   TVKMeshMorphTarget = class(TVKBaseMeshObject)
   private
-    { Private Declarations }
+    
     FOwner: TVKMeshMorphTargetList;
 
   protected
-    { Protected Declarations }
+    
 
   public
-    { Public Declarations }
+    
     constructor CreateOwned(AOwner: TVKMeshMorphTargetList);
     destructor Destroy; override;
 
@@ -776,15 +776,15 @@ type
   { A list of TVKMeshMorphTarget objects. }
   TVKMeshMorphTargetList = class(TPersistentObjectList)
   private
-    { Private Declarations }
+    
     FOwner: TPersistent;
 
   protected
-    { Protected Declarations }
+    
     function GeTVKMeshMorphTarget(Index: Integer): TVKMeshMorphTarget;
 
   public
-    { Public Declarations }
+    
     constructor CreateOwned(AOwner: TPersistent);
     destructor Destroy; override;
 
@@ -805,14 +805,14 @@ type
      existing "morph targets". }
   TVKMorphableMeshObject = class(TVKMeshObject)
   private
-    { Private Declarations }
+    
     FMorphTargets: TVKMeshMorphTargetList;
 
   protected
-    { Protected Declarations }
+    
 
   public
-    { Public Declarations }
+    
     constructor Create; override;
     destructor Destroy; override;
 
@@ -854,7 +854,7 @@ type
        When BonesPerVertex is 1, the weight is ignored (set to 1.0). }
   TVKSkeletonMeshObject = class(TVKMorphableMeshObject)
   private
-    { Private Declarations }
+    
     FVerticesBonesWeights: PVerticesBoneWeights;
     FVerticeBoneWeightCount, FVerticeBoneWeightCapacity: Integer;
     FBonesPerVertex: Integer;
@@ -864,14 +864,14 @@ type
     procedure BackupBoneMatrixInvertedMeshes; // ragdoll
     procedure RestoreBoneMatrixInvertedMeshes; // ragdoll
   protected
-    { Protected Declarations }
+    
     procedure SetVerticeBoneWeightCount(const val: Integer);
     procedure SetVerticeBoneWeightCapacity(const val: Integer);
     procedure SetBonesPerVertex(const val: Integer);
     procedure ResizeVerticesBonesWeights;
 
   public
-    { Public Declarations }
+    
     constructor Create; override;
     destructor Destroy; override;
 
@@ -911,7 +911,7 @@ type
      a single base facegroup element. }
   TVKFaceGroup = class(TPersistentObject)
   private
-    { Private Declarations }
+    
     FOwner: TVKFaceGroups;
     FMaterialName: string;
     FMaterialCache: TVKLibMaterial;
@@ -920,13 +920,13 @@ type
       // NOT Persistent, internal use only (rendering options)
 
   protected
-    { Protected Declarations }
+    
     procedure AttachLightmap(lightMap: TVKTexture; var mrci:
       TVKRenderContextInfo);
     procedure AttachOrDetachLightmap(var mrci: TVKRenderContextInfo);
 
   public
-    { Public Declarations }
+    
     constructor CreateOwned(AOwner: TVKFaceGroups); virtual;
     destructor Destroy; override;
 
@@ -950,7 +950,7 @@ type
        Default implementation does nothing }
     procedure Reverse; dynamic;
 
-    //: Precalculate whatever is needed for rendering, called once
+    // Precalculate whatever is needed for rendering, called once
     procedure Prepare; dynamic;
 
     property Owner: TVKFaceGroups read FOwner write FOwner;
@@ -980,7 +980,7 @@ type
      in the order given by the vertices.  }
   TFGVertexIndexList = class(TVKFaceGroup)
   private
-    { Private Declarations }
+    
     FVertexIndices: TIntegerList;
     FIndexVBO: TVKVBOElementArrayHandle;
     FMode: TVKFaceGroupMeshMode;
@@ -988,14 +988,14 @@ type
     procedure SetupVBO;
     procedure InvalidateVBO;
   protected
-    { Protected Declarations }
+    
     procedure SetVertexIndices(const val: TIntegerList);
 
     procedure AddToList(source, destination: TAffineVectorList;
       indices: TIntegerList);
 
   public
-    { Public Declarations }
+    
     constructor Create; override;
     destructor Destroy; override;
 
@@ -1014,7 +1014,7 @@ type
     { If mode is strip or fan, convert the indices to triangle list indices. }
     procedure ConvertToList;
 
-    //: Return the normal from the 1st three points in the facegroup
+    // Return the normal from the 1st three points in the facegroup
     function GetNormal: TAffineVector;
 
     property Mode: TVKFaceGroupMeshMode read FMode write FMode;
@@ -1029,17 +1029,17 @@ type
      indices are optionnal, if missing (empty), VertexIndices will be used. }
   TFGVertexNormalTexIndexList = class(TFGVertexIndexList)
   private
-    { Private Declarations }
+    
     FNormalIndices: TIntegerList;
     FTexCoordIndices: TIntegerList;
 
   protected
-    { Protected Declarations }
+    
     procedure SetNormalIndices(const val: TIntegerList);
     procedure SetTexCoordIndices(const val: TIntegerList);
 
   public
-    { Public Declarations }
+    
     constructor Create; override;
     destructor Destroy; override;
 
@@ -1066,15 +1066,15 @@ type
      per triangle, depending on the face it is used in. }
   TFGIndexTexCoordList = class(TFGVertexIndexList)
   private
-    { Private Declarations }
+    
     FTexCoords: TAffineVectorList;
 
   protected
-    { Protected Declarations }
+    
     procedure SetTexCoords(const val: TAffineVectorList);
 
   public
-    { Public Declarations }
+    
     constructor Create; override;
     destructor Destroy; override;
 
@@ -1097,15 +1097,15 @@ type
   { A list of TVKFaceGroup objects. }
   TVKFaceGroups = class(TPersistentObjectList)
   private
-    { Private Declarations }
+    
     FOwner: TVKMeshObject;
 
   protected
-    { Protected Declarations }
+    
     function GetFaceGroup(Index: Integer): TVKFaceGroup;
 
   public
-    { Public Declarations }
+    
     constructor CreateOwned(AOwner: TVKMeshObject);
     destructor Destroy; override;
 
@@ -1148,16 +1148,16 @@ type
      (see Delphi Help). }
   TVKVectorFile = class(TVKDataFile)
   private
-    { Private Declarations }
+    
     FNormalsOrientation: TMeshNormalsOrientation;
 
   protected
-    { Protected Declarations }
+    
     procedure SetNormalsOrientation(const val: TMeshNormalsOrientation);
       virtual;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TPersistent); override;
 
     function Owner: TVKBaseMesh;
@@ -1176,7 +1176,7 @@ type
      all of GLScene features. }
   TVKGLSMVectorFile = class(TVKVectorFile)
   public
-    { Public Declarations }
+    
     class function Capabilities: TVKDataFileCapabilities; override;
 
     procedure LoadFromStream(aStream: TStream); override;
@@ -1188,7 +1188,7 @@ type
   { Base class for mesh objects. }
   TVKBaseMesh = class(TVKSceneObject)
   private
-    { Private Declarations }
+    
     FNormalsOrientation: TMeshNormalsOrientation;
     FMaterialLibrary: TVKMaterialLibrary;
     FLightmapLibrary: TVKMaterialLibrary;
@@ -1205,7 +1205,7 @@ type
     FLastLoadedFilename: string;
 
   protected
-    { Protected Declarations }
+    
     FMeshObjects: TVKMeshObjectList; // a list of mesh objects
     FSkeleton: TVKSkeleton; // skeleton data & frames
     procedure SetUseMeshMaterials(const val: Boolean);
@@ -1241,7 +1241,7 @@ type
     procedure PrepareBuildList(var mrci: TVKRenderContextInfo); dynamic;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -1380,15 +1380,15 @@ type
      as a single object in a scene. }
   TVKFreeForm = class(TVKBaseMesh)
   private
-    { Private Declarations }
+    
     FOctree: TVKOctree;
 
   protected
-    { Protected Declarations }
+    
     function GetOctree: TVKOctree;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
@@ -1413,7 +1413,7 @@ type
     procedure BuildOctree(TreeDepth: integer = 3);
 
   published
-    { Published Declarations }
+    
     property AutoCentering;
     property AutoScaling;
     property MaterialLibrary;
@@ -1454,14 +1454,14 @@ type
        SwitchAnimation, and can also be "blended" via a TVKAnimationControler. }
   TVKActorAnimation = class(TCollectionItem)
   private
-    { Private Declarations }
+    
     FName: string;
     FStartFrame: Integer;
     FEndFrame: Integer;
     FReference: TVKActorAnimationReference;
 
   protected
-    { Protected Declarations }
+    
     function GetDisplayName: string; override;
     function FrameCount: Integer;
     procedure SetStartFrame(const val: Integer);
@@ -1471,7 +1471,7 @@ type
     function GetAsString: string;
 
   public
-    { Public Declarations }
+    
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -1494,7 +1494,7 @@ type
     procedure MakeSkeletalRotationDelta;
 
   published
-    { Published Declarations }
+    
     property Name: string read FName write FName;
     { Index of the initial frame of the animation. }
     property StartFrame: Integer read FStartFrame write SetStartFrame;
@@ -1512,17 +1512,17 @@ type
     { Collection of actor animations sequences. }
   TVKActorAnimations = class(TCollection)
   private
-    { Private Declarations }
+    
     FOwner: TVKActor;
 
   protected
-    { Protected Declarations }
+    
     function GetOwner: TPersistent; override;
     procedure SetItems(index: Integer; const val: TVKActorAnimation);
     function GetItems(index: Integer): TVKActorAnimation;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TVKActor);
     function Add: TVKActorAnimation;
     function FindItemID(ID: Integer): TVKActorAnimation;
@@ -1546,12 +1546,12 @@ type
     { Base class for skeletal animation control.  }
   TVKBaseAnimationControler = class(TComponent)
   private
-    { Private Declarations }
+    
     FEnabled: Boolean;
     FActor: TVKActor;
 
   protected
-    { Protected Declarations }
+    
     procedure Notification(AComponent: TComponent; Operation: TOperation);
       override;
     procedure SetEnabled(const val: Boolean);
@@ -1561,12 +1561,12 @@ type
     function Apply(var lerpInfo: TVKBlendedLerpInfo): Boolean; virtual;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
   published
-    { Published Declarations }
+    
     property Enabled: Boolean read FEnabled write SetEnabled default True;
     property Actor: TVKActor read FActor write SetActor;
   end;
@@ -1581,12 +1581,12 @@ type
        make the head turn toward a target. }
   TVKAnimationControler = class(TVKBaseAnimationControler)
   private
-    { Private Declarations }
+    
     FAnimationName: TVKActorAnimationName;
     FRatio: Single;
 
   protected
-    { Protected Declarations }
+    
     procedure SetAnimationName(const val: TVKActorAnimationName);
     procedure SetRatio(const val: Single);
 
@@ -1594,7 +1594,7 @@ type
     function Apply(var lerpInfo: TVKBlendedLerpInfo): Boolean; override;
 
   published
-    { Published Declarations }
+    
     property AnimationName: string read FAnimationName write SetAnimationName;
     property Ratio: Single read FRatio write SetRatio;
   end;
@@ -1632,7 +1632,7 @@ type
      animation blending (via TVKAnimationControler components). }
   TVKActor = class(TVKBaseMesh)
   private
-    { Private Declarations }
+    
     FStartFrame, FEndFrame: Integer;
     FReference: TVKActorAnimationReference;
     FCurrentFrame: Integer;
@@ -1648,7 +1648,7 @@ type
     FOptions: TVKActorOptions;
 
   protected
-    { Protected Declarations }
+    
     procedure SetCurrentFrame(val: Integer);
     procedure SetStartFrame(val: Integer);
     procedure SetEndFrame(val: Integer);
@@ -1665,7 +1665,7 @@ type
     procedure UnRegisterControler(aControler: TVKBaseAnimationControler);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -1706,7 +1706,7 @@ type
     function isSwitchingAnimation: boolean;
 
   published
-    { Published Declarations }
+    
     property StartFrame: Integer read FStartFrame write SetStartFrame default 0;
     property EndFrame: Integer read FEndFrame write SetEndFrame default 0;
 
@@ -1771,7 +1771,7 @@ type
   { Stores registered vector file formats. }
   TVKVectorFileFormatsList = class(TPersistentObjectList)
   public
-    { Public Declarations }
+    
     destructor Destroy; override;
 
     procedure Add(const Ext, Desc: string; DescID: Integer; AClass:
@@ -1790,11 +1790,11 @@ type
 
   EInvalidVectorFile = class(Exception);
 
-  //: Read access to the list of registered vector file formats
+  // Read access to the list of registered vector file formats
 function GetVectorFileFormats: TVKVectorFileFormatsList;
-//: A file extension filter suitable for dialog's 'Filter' property
+// A file extension filter suitable for dialog's 'Filter' property
 function VectorFileFormatsFilter: string;
-//: A file extension filter suitable for a savedialog's 'Filter' property
+// A file extension filter suitable for a savedialog's 'Filter' property
 function VectorFileFormatsSaveFilter: string;
 { Returns an extension by its index in the vector files dialogs filter. 
    Use VectorFileFormatsFilter to obtain the filter. }

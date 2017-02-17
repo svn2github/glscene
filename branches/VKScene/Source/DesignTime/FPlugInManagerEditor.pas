@@ -44,10 +44,10 @@ type
     procedure UnloadButtonClick(Sender: TObject);
     procedure ServiceBoxChange(Sender: TObject);
   private
-    { Private declarations }
+    
     FManager: TVKPlugInManager;
   public
-    { Public declarations }
+    
     class procedure EditPlugIns(AManager: TVKPlugInManager);
   end;
 

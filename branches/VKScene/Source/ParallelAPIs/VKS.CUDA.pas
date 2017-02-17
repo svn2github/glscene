@@ -14,7 +14,7 @@ uses
   System.Classes,
   System.SysUtils,
   FMX.Dialogs,
-  //VKS
+  
   VKS.PersistentClasses,
   VKS.BaseClasses,
   VKS.CrossPlatform,
@@ -65,7 +65,7 @@ type
     function GetItem(const i: Integer): TCUDAComponent;
     function GetItemsCount: Integer;
   protected
-    { Protected declarations }
+    
     FStatus: TCUresult;
     FChanges: TCUDAChanges;
     function GetContext: TCUDAContext; override;
@@ -77,7 +77,7 @@ type
     procedure SetName(const NewName: TComponentName); override;
     function GetIsAllocated: Boolean; virtual; abstract;
   public
-    { Public declarations }
+    
     destructor Destroy; override;
     procedure CuNotifyChange(AChange: TCUDAChange); virtual;
 
@@ -106,7 +106,7 @@ type
 
   TCUDAModule = class(TCUDAComponent)
   private
-    { Private declarations }
+    
     FHandle: PCUmodule;
     FCode: TStringList;
     FCodeType: TVKSCUDACompilerOutput;
@@ -117,7 +117,7 @@ type
     function GetKernelTexture(const AName: string): TCUDATexture;
     function GetKernelConstant(const AName: string): TCUDAConstant;
   protected
-    { Protected declarations }
+    
     procedure AllocateHandles; override;
     procedure DestroyHandles; override;
     procedure OnChangeCode(Sender: TObject);
@@ -125,7 +125,7 @@ type
     function GetContext: TCUDAContext; override;
     function GetIsAllocated: Boolean; override;
   public
-    { Public declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -144,7 +144,7 @@ type
     property KernelConstant[const AName: string]: TCUDAConstant
       read GetKernelConstant;
   published
-    { Published declarations }
+    
     property Code: TStringList read FCode write SetCode;
     property Compiler: TVKSCUDACompiler read FCompiler write SetCompiler;
   end;
@@ -195,7 +195,7 @@ type
 
   TCUDAMemData = class(TCUDAComponent)
   private
-    { Private declarations }
+    
     FData: TCUdeviceptr;
     FMappedMemory: TCUdeviceptr;
     FHandle: PCUarray;
@@ -225,7 +225,7 @@ type
     procedure DestroyHandles; override;
     function GetIsAllocated: Boolean; override;
   public
-    { Public declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure CuNotifyChange(AChange: TCUDAChange); override;
@@ -263,7 +263,7 @@ type
     property MappedMemoryAddress: TCUdeviceptr read FMappedMemory;
     property ArrayHandle: PCUarray read GetArrayHandle;
   published
-    { Published declarations }
+    
     property Width: Integer read fWidth write SetWidth default 256;
     property Height: Integer read fHeight write SetHeight default 0;
     property Depth: Integer read fDepth write SetDepth default 0;
@@ -302,7 +302,7 @@ type
     property Reference: Boolean read FRef write SetRef;
     function GetIsAllocated: Boolean; override;
   public
-    { Public declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     property IsValueDefined: Boolean read FDefined write SetDefined;
@@ -321,7 +321,7 @@ type
   public
     property DeviceAddress: TCUdeviceptr read GetDeviceAddress;
   published
-    { Published declarations }
+    
     property KernelName;
     property DataType;
     property CustomType;
@@ -334,16 +334,16 @@ type
 
   TCUDAFuncParam = class(TCUDAUniform)
   private
-    { Private declarations }
+    
   protected
     { Protected declaration }
     procedure AllocateHandles; override;
     procedure DestroyHandles; override;
   public
-    { Public declarations }
+    
     constructor Create(AOwner: TComponent); override;
   published
-    { Published declarations }
+    
     property KernelName;
     property DataType;
     property CustomType;
@@ -353,7 +353,7 @@ type
 
   TCUDAFunction = class(TCUDAComponent)
   private
-    { Private declarations }
+    
     FKernelName: string;
     FHandle: PCUfunction;
     FAutoSync: Boolean;
@@ -379,7 +379,7 @@ type
     procedure DestroyHandles; override;
     function GetIsAllocated: Boolean; override;
   public
-    { Public declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure SetParam(Value: Integer); overload;
@@ -406,7 +406,7 @@ type
     property LocalMemorySize: Integer read GetLocalMemorySize;
     property NumRegisters: Integer read GetNumRegisters;
   published
-    { Published declarations }
+    
     property KernelName: string read FKernelName write SetKernelName;
 
     property AutoSync: Boolean read FAutoSync write FAutoSync default true;
@@ -418,7 +418,7 @@ type
 
   TCUDATexture = class(TCUDAComponent)
   private
-    { Private declarations }
+    
     FKernelName: string;
     FHandle: PCUtexref;
     fArray: TCUDAMemData;
@@ -445,12 +445,12 @@ type
     procedure DestroyHandles; override;
     function GetIsAllocated: Boolean; override;
   public
-    { Public declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     property Handle: PCUtexref read GetHandle;
   published
-    { Published declarations }
+    
     property KernelName: string read FKernelName write SetKernelName;
     property AddressModeS: TCuAddresMode read fAddressModeS
       write SetAddressModeS default amClamp;
@@ -472,7 +472,7 @@ type
 
   TVKSCUDA = class(TCUDAComponent)
   private
-    { Private declarations }
+    
     fDevice: TVKSCUDADevice;
     fContext: TCUDAContext;
     FOnOpenGLInteropInit: TOnOpenGLInteropInit;
@@ -480,20 +480,20 @@ type
     procedure SetOnOpenGLInteropInit(AEvent: TOnOpenGLInteropInit);
     function GetModule(const i: Integer): TCUDAModule;
   protected
-    { Protected declarations }
+    
     procedure Notification(AComponent: TComponent;
       Operation: TOperation); override;
     function GetContext: TCUDAContext; override;
     function GetIsAllocated: Boolean; override;
   public
-    { Public declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
     property Context: TCUDAContext read GetContext;
     property Modules[const i: Integer]: TCUDAModule read GetModule;
   published
-    { Published declarations }
+    
     property ComputingDevice: TVKSCUDADevice read fDevice write SetDevice;
     property OnOpenGLInteropInit: TOnOpenGLInteropInit read FOnOpenGLInteropInit
       write SetOnOpenGLInteropInit;

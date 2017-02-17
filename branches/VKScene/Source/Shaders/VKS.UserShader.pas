@@ -15,7 +15,7 @@ interface
 
 uses
   System.Classes, 
-  //VKS
+  
   VKS.Material, VKS.RenderContextInfo;
 
 type

@@ -89,7 +89,7 @@ type
 
   // TVKState
   //
-//: Reflects all relevant (binary) states of Vulkan subsystem
+// Reflects all relevant (binary) states of Vulkan subsystem
   TVKState = (stAlphaTest, stAutoNormal,
     stBlend, stColorMaterial, stCullFace, stDepthTest, stDither,
     stFog, stLighting, stLineSmooth, stLineStipple,
@@ -194,7 +194,7 @@ type
      Vulkan context. }
   TVKStateCache = class
   private
-    { Private Declarations }
+    
     // Legacy state
     FFrontBackColors: array[0..1, 0..3] of TVector;
     FFrontBackShininess: array[0..1] of Integer;
@@ -390,7 +390,7 @@ type
 
     FOnLightsChanged: TOnLightsChanged;
   protected
-    { Protected Declarations }
+    
     // Vertex Array Data state
     procedure SetVertexArrayBinding(const Value: GLuint);
     function GetArrayBufferBinding: GLuint;
@@ -565,7 +565,7 @@ type
     function GetMaterialEmission(const aFace: TCullFaceMode): TVector;
     function GetMaterialShininess(const aFace: TCullFaceMode): Integer;
   public
-    { Public Declarations }
+    
     constructor Create; virtual;
     destructor Destroy; override;
 

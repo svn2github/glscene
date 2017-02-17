@@ -15,7 +15,7 @@ uses
   Winapi.OpenGLext,
   System.Classes,
   System.SysUtils,
-  //VKS
+  
   VKS.OpenGLAdapter,
   VKS.Scene,
   VKS.Context,
@@ -70,7 +70,7 @@ type
      Note: Remeber to enable Destination Alpha on your viewer.}
   TImposter = class(TObject)
   private
-    { Private Declarations }
+    
     FRequestCount: Integer;
     FBuilder: TVKImposterBuilder;
     FTexture: TVKTextureHandle;
@@ -79,7 +79,7 @@ type
     FModulated: Boolean;
 
   protected
-    { Protected Declarations }
+    
     FVx, FVy: TVector;
     FStaticOffset: TVector;
     FQuad: array[0..3] of TVector;
@@ -89,7 +89,7 @@ type
     procedure RenderQuad(const texExtents, objPos: TVector; size: Single);
 
   public
-    { Public Declarations }
+    
     constructor Create(aBuilder: TVKImposterBuilder); virtual;
     destructor Destroy; override;
 
@@ -133,7 +133,7 @@ type
   { Abstract ImposterBuilder class. }
   TVKImposterBuilder = class(TVKUpdateAbleComponent)
   private
-    { Private Declarations }
+    
     FBackColor: TVKColor;
     FBuildOffset: TVKCoordinates;
     FImposterRegister: TPersistentObjectList;
@@ -145,7 +145,7 @@ type
     FOnImposterLoaded: TImposterLoadedEvent;
 
   protected
-    { Protected Declarations }
+    
     procedure SetRenderPoint(AValue: TVKRenderPoint);
     procedure RenderPointFreed(Sender: TObject);
     procedure SetBackColor(AValue: TVKColor);
@@ -169,7 +169,7 @@ type
       bmp32: TVKBitmap32); virtual;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Notification(AComponent: TComponent; Operation: TOperation);
@@ -186,7 +186,7 @@ type
     procedure UnRequestImposterFor(impostoredObject: TVKBaseSceneObject);
 
   published
-    { Published Declarations }
+    
       { Specifies the render point at which the impostor texture(s) can be prepared. 
          For best result, the render point should happen in viewer that has
          a destination alpha (otherwise, impostors will be opaque). }
@@ -229,25 +229,25 @@ type
     { Describes a set of orientation in a corona fashion. }
   TVKStaticImposterBuilderCorona = class(TCollectionItem)
   private
-    { Private Declarations }
+    
     FSamples: Integer;
     FElevation: Single;
     FSampleBaseIndex: Integer;
 
   protected
-    { Protected Declarations }
+    
     function GetDisplayName: string; override;
     procedure SetSamples(AValue: Integer);
     procedure SetElevation(AValue: Single);
 
   public
-    { Public Declarations }
+    
     constructor Create(ACollection: TCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
 
   published
-    { Published Declarations }
+    
     property Samples: Integer read FSamples write SetSamples default 8;
     property Elevation: Single read FElevation write SetElevation;
   end;
@@ -261,11 +261,11 @@ type
   //
   TVKStaticImposterBuilderCoronas = class(TOwnedCollection)
   private
-    { Private Declarations }
+    
     FCoronaTangentLookup: array of TCoronaTangentLookup;
 
   protected
-    { Protected Declarations }
+    
     procedure SetItems(AIndex: Integer; const AValue:
       TVKStaticImposterBuilderCorona);
     function GetItems(AIndex: Integer): TVKStaticImposterBuilderCorona;
@@ -277,7 +277,7 @@ type
       TVKStaticImposterBuilderCorona;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TPersistent);
 
     function Add: TVKStaticImposterBuilderCorona; overload;
@@ -296,13 +296,13 @@ type
   { Imposter class whose texture contains several views from different angles. }
   TStaticImposter = class(TImposter)
   private
-    { Private Declarations }
+    
 
   protected
-    { Protected Declarations }
+    
 
   public
-    { Public Declarations }
+    
     procedure Render(var rci: TVKRenderContextInfo;
       const objPos, localCameraPos: TVector;
       size: Single); override;
@@ -317,7 +317,7 @@ type
   { Builds imposters whose texture is a catalog of prerendered views. }
   TVKStaticImposterBuilder = class(TVKImposterBuilder)
   private
-    { Private Declarations }
+    
     FCoronas: TVKStaticImposterBuilderCoronas;
     FSampleSize: Integer;
     FTextureSize: TVKPoint;
@@ -328,7 +328,7 @@ type
     FSamplesAlphaScale: Single;
 
   protected
-    { Protected Declarations }
+    
     procedure SetCoronas(AValue: TVKStaticImposterBuilderCoronas);
     procedure SetSampleSize(AValue: Integer);
     procedure SetSamplingRatioBias(AValue: Single);
@@ -354,7 +354,7 @@ type
     procedure ComputeStaticParams(destImposter: TImposter);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
@@ -373,7 +373,7 @@ type
     property SamplesPerAxis: TVKPoint read FSamplesPerAxis;
 
   published
-    { Published Declarations }
+    
       { Description of the samples looking orientations. }
     property Coronas: TVKStaticImposterBuilderCoronas read FCoronas write
       SetCoronas;
@@ -408,24 +408,24 @@ type
   //
   TVKDynamicImposterBuilder = class(TVKImposterBuilder)
   private
-    { Private Declarations }
+    
     FMinTexSize, FMaxTexSize: Integer;
     FMinDistance, FTolerance: Single;
     FUseMatrixError: Boolean;
 
   protected
-    { Protected Declarations }
+    
     procedure SetMinDistance(const AValue: Single);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     {         procedure DoRender(var rci : TVKRenderContextInfo;
                                 renderSelf, renderChildren : Boolean); override; }
 
   published
-    { Published Declarations }
+    
     property MinTexSize: Integer read FMinTexSize write FMinTexSize;
     property MaxTexSize: Integer read FMaxTexSize write FMaxTexSize;
     property MinDistance: Single read FMinDistance write SetMinDistance;
@@ -438,17 +438,17 @@ type
   //
   TVKImposter = class(TVKImmaterialSceneObject)
   private
-    { Private Declarations }
+    
     FBuilder: TVKImposterBuilder;
     FImpostoredObject: TVKBaseSceneObject;
 
   protected
-    { Protected Declarations }
+    
     procedure SetBuilder(const AValue: TVKImposterBuilder);
     procedure SetImpostoredObject(const AValue: TVKBaseSceneObject);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Notification(AComponent: TComponent; Operation: TOperation);
@@ -457,7 +457,7 @@ type
       ARenderSelf, ARenderChildren: Boolean); override;
 
   published
-    { Published Declarations }
+    
     property Builder: TVKImposterBuilder read FBuilder write SetBuilder;
     property ImpostoredObject: TVKBaseSceneObject read FImpostoredObject write
       SetImpostoredObject;

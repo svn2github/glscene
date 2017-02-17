@@ -13,7 +13,7 @@ uses
   Winapi.OpenGL,
   Winapi.OpenGLext,
   System.Classes,
-  //VKS
+  
   VKS.VectorTypes, VKS.TextureFormat, VKS.RenderContextInfo;
 
 type

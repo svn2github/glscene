@@ -13,7 +13,7 @@ interface
 
 uses
   System.Classes,
-  //VKS
+  
   VKS.Scene, VKS.CrossPlatform, VKS.BaseClasses, VKS.State, Winapi.OpenGL, Winapi.OpenGLext,  VKS.OpenGL1x, 
   VKS.Context, VKS.RenderContextInfo, VKS.Coordinates, VKS.VectorGeometry, VKS.VectorTypes,
   VKS.TextureFormat, VKS.Color, VKS.Texture, VKS.Material, GLSLS.Shader, VKS.CustomShader;

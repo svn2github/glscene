@@ -31,7 +31,7 @@ uses
 type
 	TVKTexturedHDS = class (TVKHeightDataSource)
 	   private
-	      { Private Declarations }
+	      
          FOnStartPreparingData : TStartPreparingDataEvent;
          FOnMarkDirty : TMarkDirtyEvent;
          FHeightDataSource : TVKHeightDataSource;
@@ -40,17 +40,17 @@ type
          FTileSize         : integer;
          FTilesPerTexture  : integer;
 	   protected
-	      { Protected Declarations }
+	      
          procedure SetHeightDataSource(val:TVKHeightDataSource);
 	   public
-	      { Public Declarations }
+	      
   	     constructor Create(AOwner: TComponent); override;
          destructor Destroy; override;
          procedure StartPreparingData(heightData : TVKHeightData); override;
          procedure MarkDirty(const area : TVKRect); override;
 
 	   published
-	      { Published Declarations }
+	      
          property MaxPoolSize;
          property OnStartPreparingData : TStartPreparingDataEvent read FOnStartPreparingData write FOnStartPreparingData;
          property OnMarkDirtyEvent : TMarkDirtyEvent read FOnMarkDirty write FOnMarkDirty;

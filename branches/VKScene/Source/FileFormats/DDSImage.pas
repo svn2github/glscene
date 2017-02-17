@@ -7,7 +7,7 @@
     RGB8, R10G10B10A2, RGBA8, RGBA16, R16F, RGBA16F, R32F, RGBA32F, GR16, GR16F, GR32F,
     Compressed RGB S3TC DXT1, Compressed RGBA S3TC DXT1, Compressed RGBA S3TC DXT3,
     Compressed RGBA S3TC DXT5
-    But it down color to RGBA8 because becomes to TVKBitmap
+    But it down color to RGBA8 because becomes to TBitmap
     Good for preview picture in OpenDialog,
     so you may include both DDSImage (preview) and GLFileDDS (loading)
 
@@ -25,7 +25,7 @@ uses
   System.Classes,
   System.SysUtils,
   FMX.Graphics,
-  //VKS
+  
   VKS.CrossPlatform,
   VKS.VectorGeometry,
   VKS.Graphics,
@@ -37,9 +37,9 @@ uses
 
 type
 
-  TDDSImage = class(TVKBitmap)
+  TDDSImage = class(TBitmap)
   public
-    { Public Declarations }
+    
     procedure LoadFromStream(stream: TStream); //override; -> E2170 Cannot override a non-virtual method override;
     procedure SaveToStream(stream: TStream); //override; -> E2170 Cannot override a non-virtual method override;
   end;
@@ -172,7 +172,7 @@ initialization
 
   { TODO : E2003 Undeclared identifier: 'RegisterFileFormat' }
  (*
-  TVKPicture.RegisterFileFormat(
+  TPicture.RegisterFileFormat(
     'dds', 'Microsoft DirectDraw Surface', TDDSImage);
   *)
   // ------------------------------------------------------------------
@@ -184,7 +184,7 @@ finalization
   // ------------------------------------------------------------------
   { TODO : E2003 Undeclared identifier: 'UnregisterGraphicClass' }
   (*
-  TVKPicture.UnregisterGraphicClass(TDDSImage);
+  TPicture.UnregisterGraphicClass(TDDSImage);
   *)
 end.
 

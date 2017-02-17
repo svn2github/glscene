@@ -18,7 +18,7 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-  //VKS
+  
   VKS.Scene, VKS.VectorGeometry, VKS.Color, VKS.Material, VKS.Strings,
   VKS.VectorFileObjects, VKS.XOpenGL, VKS.State, VKS.PersistentClasses,
   VKS.CrossPlatform, VKS.Coordinates, VKS.RenderContextInfo;

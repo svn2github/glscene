@@ -50,7 +50,7 @@ type
   //
   TVKTreeLeaves = class
   private
-    { Private Declarations }
+    
     FOwner: TVKTree;
     FCount: Integer;
     FVertices: TAffineVectorList;
@@ -58,7 +58,7 @@ type
     FTexCoords: TAffineVectorList;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TVKTree);
     destructor Destroy; override;
 
@@ -77,7 +77,7 @@ type
   //
   TVKTreeBranch = class
   private
-    { Private Declarations }
+    
     FOwner: TVKTreeBranches;
     FLeft: TVKTreeBranch;
     FCenter: TVKTreeBranch;
@@ -94,7 +94,7 @@ type
       const matrix: TMatrix; TexCoordY, Twist: Single; Level: Integer);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TVKTreeBranches; AParent: TVKTreeBranch);
     destructor Destroy; override;
 
@@ -112,7 +112,7 @@ type
   //
   TVKTreeBranches = class
   private
-    { Private Declarations }
+    
     FOwner: TVKTree;
     FSinList: TSingleList;
     FCosList: TSingleList;
@@ -128,7 +128,7 @@ type
     procedure BuildBranches;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TVKTree);
     destructor Destroy; override;
 
@@ -148,7 +148,7 @@ type
   //
   TVKTreeBranchNoise = class
   private
-    { Private Declarations }
+    
     FBranchNoise: Single;
     FLeft, FRight, FCenter: TVKTreeBranchNoise;
 
@@ -157,7 +157,7 @@ type
     function GetRight: TVKTreeBranchNoise;
 
   public
-    { Public Declarations }
+    
     constructor Create;
     destructor Destroy; override;
 
@@ -171,7 +171,7 @@ type
   //
   TVKTree = class(TVKImmaterialSceneObject)
   private
-    { Private Declarations }
+    
     FDepth: Integer;
     FBranchFacets: Integer;
     FLeafSize: Single;
@@ -203,7 +203,7 @@ type
     FAxisAlignedDimensionsCache: TVector;
 
   protected
-    { Protected Declarations }
+    
     procedure SetDepth(const Value: Integer);
     procedure SetBranchFacets(const Value: Integer);
     procedure SetLeafSize(const Value: Single);
@@ -229,7 +229,7 @@ type
     procedure Loaded; override;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
@@ -258,7 +258,7 @@ type
     property Noise: TVKTreeBranchNoise read FNoise;
 
   published
-    { Published Declarations }
+    
     { The depth of tree branch recursion. }
     property Depth: Integer read FDepth write SetDepth;
     { The number of facets for each branch in the tree. }

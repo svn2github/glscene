@@ -25,15 +25,15 @@ type
    { TGA image load/save capable class for Delphi. 
       TGA formats supported : 24 and 32 bits uncompressed or RLE compressed,
       saves only to uncompressed TGA. }
-        TTGAImage = class (TVKBitmap)
+        TTGAImage = class (TBitmap)
 	   private
-	      { Private Declarations }
+	      
 
 	   protected
-	      { Protected Declarations }
+	      
 
 	   public
-	      { Public Declarations }
+	      
 	      constructor Create; override;
          destructor Destroy; override;
 
@@ -279,11 +279,11 @@ initialization
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
   { TODO : E2003 Undeclared identifier: 'RegisterFileFormat' }
-  (*  TVKPicture.RegisterFileFormat('tga', 'Targa', TTGAImage); *)
+  (*  TPicture.RegisterFileFormat('tga', 'Targa', TTGAImage); *)
   //?  RegisterRasterFormat('tga', 'Targa', TTGAImage);
 
 finalization
   { TODO : E2003 Undeclared identifier: 'UNregisterFileFormat' }
-  (*  TVKPicture.UnregisterGraphicClass(TTGAImage); *)
+  (*  TPicture.UnregisterGraphicClass(TTGAImage); *)
 
 end.

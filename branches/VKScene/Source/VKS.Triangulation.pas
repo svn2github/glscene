@@ -15,7 +15,7 @@ uses
   System.Types,
   Vcl.Dialogs,
   Vcl.Graphics,
-  //VKS
+  
   VKS.VectorGeometry;
 
 // Set these as applicable
@@ -76,12 +76,12 @@ type
 type
   TVKDelaunay2D = class
   private
-    { Private declarations }
+    
     function InCircle(Xp, Yp, X1, Y1, X2, Y2, X3, Y3: Single; var Xc: Single;
       var Yc: Single; var R: Single; j: Integer): Boolean;
     function Triangulate(nvert: Integer): Integer;
   public
-    { Public declarations }
+    
     Vertex: TDVertex;
     Triangle: TDTriangle;
     HowMany: Integer;

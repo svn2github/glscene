@@ -11,7 +11,7 @@ interface
 uses
   Winapi.OpenGL,
   System.SysUtils, System.Classes,
-  //VKS
+  
   VKS.Context, VKS.VectorLists, VKS.VectorGeometry,
   VKS.BaseClasses, VKS.PersistentClasses;
 
@@ -37,15 +37,15 @@ type
      This list is used to store the results of a PickObjects call. }
   TVKPickList = class(TPersistentObjectList)
   private
-    { Private Declarations }
+    
     function GetFar(aValue: Integer): Single;
     function GetHit(aValue: Integer): TObject;
     function GetNear(aValue: Integer): Single;
     function GetSubObjects(aValue: Integer): TPickSubObjects;
   protected
-    { Protected Declarations }
+    
   public
-    { Public Declarations }
+    
     constructor Create(aSortType: TPickSortType); reintroduce;
 
     procedure AddHit(obj: TObject; const subObj: TPickSubObjects;

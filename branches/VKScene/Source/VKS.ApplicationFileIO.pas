@@ -62,20 +62,20 @@ type
        the last one created will be the active one. }
   TVKApplicationFileIO = class(TComponent)
   private
-    { Private declarations }
+    
     FOnFileStream: TAFIOFileStreamEvent;
     FOnFileStreamExists: TAFIOFileStreamExistsEvent;
 
   protected
-    { Protected declarations }
+    
 
   public
-    { Public declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
   published
-    { Published declarations }
+    
       { Event that allows you to specify a stream for the file. 
          Destruction of the stream is at the discretion of the code that
          invoked CreateFileStream. Return nil to let the default mechanism
@@ -101,11 +101,11 @@ type
      to this class, without the need to rewrite subclasses. }
   TVKDataFile = class(TVKUpdateAbleObject)
   private
-    { Private Declarations }
+    
     FResourceName: string;
     procedure SetResourceName(const AName: string);
   public
-    { Public Declarations }
+    
 
     { Describes what the TVKDataFile is capable of. 
        Default value is [dfcRead]. }
@@ -130,7 +130,7 @@ type
   TVKDataFileClass = class of TVKDataFile;
   TVKSResourceStream = TResourceStream;
 
-  //: Returns true if an VKS.ApplicationFileIO has been defined
+  // Returns true if an VKS.ApplicationFileIO has been defined
 function ApplicationFileIODefined: Boolean;
 
 { Creates a file stream corresponding to the fileName. 

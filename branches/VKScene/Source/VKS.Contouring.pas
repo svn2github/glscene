@@ -13,7 +13,7 @@ uses
   System.Classes, 
   System.Math,
   System.Generics.Collections,
-  //VKS
+  
   VKS.VectorGeometry, 
   VKS.VectorLists, 
   VKS.Objects, 

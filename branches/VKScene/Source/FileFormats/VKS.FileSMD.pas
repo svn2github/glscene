@@ -25,7 +25,7 @@ type
       (the one with mesh data) be read first. }
    TVKSMDVectorFile = class(TVKVectorFile)
       public
-         { Public Declarations }
+         
          class function Capabilities : TVKDataFileCapabilities; override;
 
          procedure LoadFromStream(aStream : TStream); override;

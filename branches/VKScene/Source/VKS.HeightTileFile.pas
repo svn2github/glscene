@@ -80,7 +80,7 @@ type
    { Interfaces a Tiled file }
    TVKHeightTileFile = class (TObject)
       private
-         { Private Declarations }
+         
          FFile : TStream;
          FHeader : THTFHeader;
          FTileIndex : packed array of TVKHeightTileInfo;
@@ -93,7 +93,7 @@ type
          FInBuf : array of ShortInt;
 
       protected
-         { Protected Declarations }
+         
          function GetTiles(index : Integer) : PHeightTileInfo;
          function QuadTableX(x : Integer) : Integer;
          function QuadTableY(y : Integer) : Integer;
@@ -104,7 +104,7 @@ type
          property TileIndexOffset : Int64 read FHeader.TileIndexOffset write FHeader.TileIndexOffset;
 
       public
-         { Public Declarations }
+         
          { Creates a new HTF file. 
             Read and data access methods are not available when creating. }
          constructor CreateNew(const fileName : String;

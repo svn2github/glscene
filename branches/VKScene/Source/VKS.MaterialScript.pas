@@ -26,32 +26,32 @@ type
     FName: string;
     procedure SetShader(const Value: TVKShader);
     procedure SetName(const Value: string);
-    { Private Declarations }
+    
 
   protected
-    { Protected Declarations }
+    
     function GetDisplayName: string; override;
 
   public
-    { Public Declarations }
+    
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
 
   published
-    { Published Declarations }
+    
     property Shader: TVKShader read FShader write SetShader;
     property Name: string read FName write SetName;
   end;
 
   TVKShaderItems = class(TOwnedCollection)
   private
-    { Protected Declarations }
+    
     procedure SetItems(Index: Integer; const Val: TVKShaderItem);
     function GetItems(Index: Integer): TVKShaderItem;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TPersistent);
     property Items[Index: Integer]: TVKShaderItem read GetItems write SetItems; default;
 
@@ -63,32 +63,32 @@ type
     FName: string;
     procedure SetMaterialLibrary(const Value: TVKMaterialLibrary);
     procedure SetName(const Value: string);
-    { Private Declarations }
+    
 
   protected
-    { Protected Declarations }
+    
     function GetDisplayName: string; override;
 
   public
-    { Public Declarations }
+    
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
 
   published
-    { Published Declarations }
+    
     property MaterialLibrary: TVKMaterialLibrary read FMaterialLibrary write SetMaterialLibrary;
     property Name: string read FName write SetName;
   end;
 
   TVKMaterialLibraryItems = class(TOwnedCollection)
   private
-    { Protected Declarations }
+    
     procedure SetItems(Index: Integer; const Val: TVKMaterialLibraryItem);
     function GetItems(Index: Integer): TVKMaterialLibraryItem;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TPersistent);
     property Items[Index: Integer]: TVKMaterialLibraryItem read GetItems write SetItems; default;
 
@@ -97,7 +97,7 @@ type
 
   TVKMaterialScripter = class(TComponent)
   private
-    { Private declarations }
+    
     FShaderItems: TVKShaderItems;
     FMaterialLibraryItems: TVKMaterialLibraryItems;
     FAppend: Boolean;
@@ -194,11 +194,11 @@ type
     procedure XPictureNZ;
 
   protected
-    { Protected declarations }
+    
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
 
   public
-    { Public declarations }
+    
     property DebugMemo: TMemo read FMemo write SetMemo;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -206,7 +206,7 @@ type
     procedure CompileScript;
 
   published
-    { Published declarations }
+    
     property Script: TStrings read FScript write SetScript;
     property MaterialLibrary: TVKMaterialLibrary read FMaterialLibrary write SetMaterialLibrary;
     property Shaders: TVKShaderItems read FShaderItems write SeTVKShaderItems;

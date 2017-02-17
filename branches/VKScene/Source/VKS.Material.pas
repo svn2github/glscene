@@ -16,7 +16,7 @@ uses
   Winapi.OpenGL,
   Winapi.OpenGLext,
   FMX.Dialogs,
-  //VKS
+  
   VKS.OpenGLAdapter,
   VKS.RenderContextInfo,
   VKS.BaseClasses,
@@ -99,7 +99,7 @@ type
      DoApply, DoUnApply and DoFinalize. }
   TVKShader = class(TVKUpdateAbleComponent)
   private
-    { Private Declarations }
+    
     FEnabled: Boolean;
     FLibMatUsers: TList;
     FVirtualHandle: TVKVirtualHandle;
@@ -109,7 +109,7 @@ type
     FFailedInitAction: TVKShaderFailedInitAction;
 
   protected
-    { Protected Declarations }
+    
           { Invoked once, before the first call to DoApply. 
              The call happens with the Vulkan context being active. }
     procedure DoInitialize(var rci: TVKRenderContextInfo; Sender: TObject);
@@ -148,7 +148,7 @@ type
     function GetStardardNotSupportedMessage: string; virtual;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
@@ -186,7 +186,7 @@ type
       fiaRaiseStandardException;
 
   published
-    { Published Declarations }
+    
       { Turns on/off shader application. 
          Note that this only turns on/off the shader application, if the
          ShaderStyle is ssReplace, the material won't be applied even if
@@ -207,12 +207,12 @@ type
      polygon mode (lines / fill). }
   TVKFaceProperties = class(TVKUpdateAbleObject)
   private
-    { Private Declarations }
+    
     FAmbient, FDiffuse, FSpecular, FEmission: TVKColor;
     FShininess: TShininess;
 
   protected
-    { Protected Declarations }
+    
     procedure SetAmbient(AValue: TVKColor);
     procedure SetDiffuse(AValue: TVKColor);
     procedure SetEmission(AValue: TVKColor);
@@ -220,7 +220,7 @@ type
     procedure SetShininess(AValue: TShininess);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
 
@@ -230,7 +230,7 @@ type
     procedure Assign(Source: TPersistent); override;
 
   published
-    { Published Declarations }
+    
     property Ambient: TVKColor read FAmbient write SetAmbient;
     property Diffuse: TVKColor read FDiffuse write SetDiffuse;
     property Emission: TVKColor read FEmission write SetEmission;
@@ -240,14 +240,14 @@ type
 
   TVKDepthProperties = class(TVKUpdateAbleObject)
   private
-    { Private Declarations }
+    
     FDepthTest: boolean;
     FDepthWrite: GLboolean;
     FZNear, FZFar: Single;
     FCompareFunc: TDepthfunction;
     FDepthClamp: Boolean;
   protected
-    { Protected Declarations }
+    
     procedure SetZNear(Value: Single);
     procedure SetZFar(Value: Single);
     procedure SetCompareFunc(Value: TVKDepthCompareFunc);
@@ -258,14 +258,14 @@ type
     function StoreZNear: Boolean;
     function StoreZFar: Boolean;
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TPersistent); override;
 
     procedure Apply(var rci: TVKRenderContextInfo);
     procedure Assign(Source: TPersistent); override;
 
   published
-    { Published Declarations }
+    
     { Specifies the mapping of the near clipping plane to
        window coordinates.  The initial value is 0.  }
     property ZNear: Single read FZNear write SetZNear stored StoreZNear;
@@ -389,7 +389,7 @@ type
   TVKMaterial = class(TVKUpdateAbleObject, IGLMaterialLibrarySupported,
       IVKNotifyAble, IVKTextureNotifyAble)
   private
-    { Private Declarations }
+    
     FFrontProperties, FBackProperties: TVKFaceProperties;
     FDepthProperties: TVKDepthProperties;
     FBlendingMode: TBlendingMode;
@@ -406,7 +406,7 @@ type
     // Implementing IGLMaterialLibrarySupported.
     function GetMaterialLibrary: TVKAbstractMaterialLibrary;
   protected
-    { Protected Declarations }
+    
     function GetBackProperties: TVKFaceProperties;
     procedure SetBackProperties(Values: TVKFaceProperties);
     procedure SetFrontProperties(Values: TVKFaceProperties);
@@ -425,11 +425,11 @@ type
     procedure SetBlendingParams(const Value: TVKBlendingParameters);
 
     procedure NotifyLibMaterialDestruction;
-    //: Back, Front, Texture and blending not stored if linked to a LibMaterial
+    // Back, Front, Texture and blending not stored if linked to a LibMaterial
     function StoreMaterialProps: Boolean;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
 
@@ -450,25 +450,25 @@ type
        library. }
     function Blended: Boolean;
 
-    //: True if the material has a secondary texture
+    // True if the material has a secondary texture
     function HasSecondaryTexture: Boolean;
 
-    //: True if the material comes from the library instead of the texture property
+    // True if the material comes from the library instead of the texture property
     function MaterialIsLinkedToLib: Boolean;
 
-    //: Gets the primary texture either from material library or the texture property
+    // Gets the primary texture either from material library or the texture property
     function GetActualPrimaryTexture: TVKTexture;
 
-    //: Gets the primary Material either from material library or the texture property
+    // Gets the primary Material either from material library or the texture property
     function GetActualPrimaryMaterial: TVKMaterial;
 
-    //: Return the LibMaterial (see LibMaterialName)
+    // Return the LibMaterial (see LibMaterialName)
     function GetLibMaterial: TVKLibMaterial;
 
     procedure QuickAssignMaterial(const MaterialLibrary: TVKMaterialLibrary;
       const Material: TVKLibMaterial);
   published
-    { Published Declarations }
+    
     property BackProperties: TVKFaceProperties read GetBackProperties write
       SetBackProperties stored StoreMaterialProps;
     property FrontProperties: TVKFaceProperties read FFrontProperties write
@@ -505,7 +505,7 @@ type
     IGLMaterialLibrarySupported,
     IVKNotifyAble)
   protected
-    { Protected Declarations }
+    
     FUserList: TList;
     FName: TVKLibMaterialName;
     FNameHashKey: Integer;
@@ -518,21 +518,21 @@ type
     function _AddRef: Integer; stdcall;
     function _Release: Integer; stdcall;
   protected
-    { Protected Declarations }
+    
     function GetDisplayName: string; override;
     class function ComputeNameHashKey(const name: string): Integer;
     procedure SetName(const val: TVKLibMaterialName);
     procedure Loaded; virtual; abstract;
 
   public
-    { Public Declarations }
+    
     constructor Create(ACollection: TCollection); override;
     destructor Destroy; override;
 
     procedure Assign(Source: TPersistent); override;
 
     procedure Apply(var ARci: TVKRenderContextInfo); virtual; abstract;
-    //: Restore non-standard material states that were altered
+    // Restore non-standard material states that were altered
     function UnApply(var ARci: TVKRenderContextInfo): Boolean; virtual; abstract;
 
     procedure RegisterUser(obj: TVKUpdateAbleObject); overload;
@@ -548,7 +548,7 @@ type
     function Blended: Boolean; virtual;
     property MaterialLibrary: TVKAbstractMaterialLibrary read GetMaterialLibrary;
   published
-    { Published Declarations }
+    
     property Name: TVKLibMaterialName read FName write SetName;
     property Tag: Integer read FTag write FTag;
   end;
@@ -561,7 +561,7 @@ type
        materials (which are used in almost all objects). }
   TVKLibMaterial = class(TVKAbstractLibMaterial, IVKTextureNotifyAble)
   private
-    { Private Declarations }
+    
     FMaterial: TVKMaterial;
     FTextureOffset, FTextureScale: TVKCoordinates;
     FTextureRotate: Single;
@@ -572,7 +572,7 @@ type
     FShader: TVKShader;
     libMatTexture2: TVKLibMaterial; // internal cache
   protected
-    { Protected Declarations }
+    
     procedure Loaded; override;
     procedure SetMaterial(const val: TVKMaterial);
     procedure SetTextureOffset(const val: TVKCoordinates);
@@ -588,7 +588,7 @@ type
     procedure DoOnTextureNeeded(Sender: TObject; var textureFileName: string);
     procedure OnNotifyChange(Sender: TObject);
   public
-    { Public Declarations }
+    
     constructor Create(ACollection: TCollection); override;
     destructor Destroy; override;
 
@@ -596,7 +596,7 @@ type
 
     procedure PrepareBuildList;
     procedure Apply(var ARci: TVKRenderContextInfo); override;
-    //: Restore non-standard material states that were altered
+    // Restore non-standard material states that were altered
     function UnApply(var ARci: TVKRenderContextInfo): Boolean; override;
 
     procedure NotifyUsersOfTexMapChange;
@@ -605,7 +605,7 @@ type
     procedure NotifyTexMapChange(Sender: TObject);
     function Blended: Boolean; override;
   published
-    { Published Declarations }
+    
     property Material: TVKMaterial read FMaterial write SetMaterial;
 
     { Texture offset in texture coordinates. 
@@ -637,7 +637,7 @@ type
 
   TVKAbstractLibMaterials = class(TOwnedCollection)
   protected
-    { Protected Declarations }
+    
     procedure Loaded;
     function GetMaterial(const AName: TVKLibMaterialName): TVKAbstractLibMaterial;
     {$IFDEF VKS_INLINE}inline;{$ENDIF}
@@ -652,13 +652,13 @@ type
 
   TVKLibMaterials = class(TVKAbstractLibMaterials)
   protected
-    { Protected Declarations }
+    
     procedure SetItems(index: Integer; const val: TVKLibMaterial);
     function GetItems(index: Integer): TVKLibMaterial;
     procedure DestroyHandles;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent);
 
     function Owner: TPersistent;
@@ -696,7 +696,7 @@ type
 
   TVKAbstractMaterialLibrary = class(TVKCadenceAbleComponent)
   protected
-    { Protected Declarations }
+    
     FMaterials: TVKAbstractLibMaterials;
     FLastAppliedMaterial: TVKAbstractLibMaterial;
     FTexturePaths: string;
@@ -705,7 +705,7 @@ type
     property TexturePaths: string read FTexturePaths write SetTexturePaths;
     procedure Loaded; override;
   public
-    { Public Declarations }
+    
 
     procedure SetNamesToTStrings(AStrings: TStrings);
     { Applies the material of given name. 
@@ -732,16 +732,16 @@ type
      like texture coordinates transforms. }
   TVKMaterialLibrary = class(TVKAbstractMaterialLibrary)
   private
-    { Private Declarations }
+    
     FDoNotClearMaterialsOnLoad: Boolean;
     FOnTextureNeeded: TTextureNeededEvent;
   protected
-    { Protected Declarations }
+    
     function GetMaterials: TVKLibMaterials;
     procedure SetMaterials(const val: TVKLibMaterials);
     function StoreMaterials: Boolean;
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure DestroyHandles;
@@ -787,7 +787,7 @@ type
       TVKLibMaterialName;
 
   published
-    { Published Declarations }
+    
       { The materials collection. }
     property Materials: TVKLibMaterials read GetMaterials write SetMaterials stored
       StoreMaterials;
@@ -2953,7 +2953,7 @@ var
   img: TVKTextureImage;
   pim: TVKPersistentImage;
   ss: TStringStream;
-  bmp: TVKBitmap;
+  bmp: TBitmap;
   texExItem: TVKTextureExItem;
 begin
   with writer do
@@ -2979,7 +2979,7 @@ begin
         WriteBoolean(true);
         ss := TStringStream.Create('');
         try
-          bmp := TVKBitmap.Create;
+          bmp := TBitmap.Create;
           try
             bmp.Assign(pim.Picture.Bitmap);
             bmp.SaveToStream(ss);
@@ -3094,7 +3094,7 @@ begin
           WriteBoolean(True);
           ss := TStringStream.Create('');
           try
-            bmp := TVKBitmap.Create;
+            bmp := TBitmap.Create;
             try
               bmp.Assign(pim.Picture.Bitmap);
               bmp.SaveToStream(ss);
@@ -3126,7 +3126,7 @@ var
   i, n, size, tex, texCount: Integer;
   LName: string;
   ss: TStringStream;
-  bmp: TVKBitmap;
+  bmp: TBitmap;
   texExItem: TVKTextureExItem;
 begin
   archiveVersion := reader.ReadInteger;
@@ -3148,7 +3148,7 @@ begin
         begin
           ss := TStringStream.Create(ReadString);
           try
-            bmp := TVKBitmap.Create;
+            bmp := TBitmap.Create;
             try
               bmp.LoadFromStream(ss);
               if libMat = nil then
@@ -3269,7 +3269,7 @@ begin
             if ReadBoolean then
             begin
               ss := TStringStream.Create(ReadString);
-              bmp := TVKBitmap.Create;
+              bmp := TBitmap.Create;
               try
                 bmp.LoadFromStream(ss);
                 texExItem.Texture.Image.Assign(bmp);

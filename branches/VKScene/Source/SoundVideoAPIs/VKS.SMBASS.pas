@@ -19,7 +19,7 @@ interface
 uses
   Winapi.Windows,
   System.Classes, System.SysUtils, FMX.Forms,
-  //VKS
+  
   Bass,  
   VKS.Sound, 
   VKS.Scene, 
@@ -35,12 +35,12 @@ type
 	//
 	TVKSMBASS = class (TVKSoundManager)
 	   private
-	      { Private Declarations }
+	      
          FActivated : Boolean;
          FAlgorithm3D : TBASS3DAlgorithm;
 
 	   protected
-	      { Protected Declarations }
+	      
 	      function DoActivate : Boolean; override;
 	      procedure DoDeActivate; override;
          procedure NotifyMasterVolumeChange; override;
@@ -55,7 +55,7 @@ type
          function GetDefaultFrequency(aSource : TVKBaseSoundSource) : Integer;
          
       public
-	      { Public Declarations }
+	      
 	      constructor Create(AOwner : TComponent); override;
 	      destructor Destroy; override;
 
@@ -65,7 +65,7 @@ type
          function EAXSupported : Boolean; override;
 
 	   published
-	      { Published Declarations }
+	      
          property Algorithm3D : TBASS3DAlgorithm read FAlgorithm3D write FAlgorithm3D default algDefault;
 	end;
 

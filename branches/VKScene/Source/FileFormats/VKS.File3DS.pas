@@ -12,7 +12,7 @@ interface
 
 uses
   System.Classes, System.SysUtils, System.Math,
-  //VKS
+  
   VKS.Scene, VKS.Objects, VKS.VectorFileObjects, VKS.Texture, VKS.ApplicationFileIO,
   VKS.VectorGeometry, File3DS, Types3DS, Winapi.OpenGL, Winapi.OpenGLext,  VKS.Context, VKS.PersistentClasses,
   VKS.Strings, VKS.File3DSSceneObjects, VKS.CrossPlatform, VKS.VectorTypes, VKS.VectorLists,
@@ -269,7 +269,7 @@ type
      information and require textures when loading. }
   TVK3DSVectorFile = class(TVKVectorFile)
   public
-    { Public Declarations }
+    
     class function Capabilities: TVKDataFileCapabilities; override;
     procedure LoadFromStream(aStream: TStream); override;
   end;

@@ -24,9 +24,9 @@ uses
 
 type
 
-  THDRImage = class(TVKBitmap)
+  THDRImage = class(TBitmap)
   public
-    { Public Declarations }
+    
     { TODO : E2170 Cannot override a non-virtual method }
 
     procedure LoadFromStream(stream: TStream); //in VCL override;
@@ -98,7 +98,7 @@ initialization
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
   { TODO : E2003 Undeclared identifier: 'RegisterFileFormat', it needs to be added }
-  (*TVKPicture.RegisterFileFormat('HDR', 'High Dynamic Range Image', THDRImage);*)
+  (*TPicture.RegisterFileFormat('HDR', 'High Dynamic Range Image', THDRImage);*)
 
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
@@ -108,7 +108,7 @@ finalization
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
   { TODO : E2003 Undeclared identifier: 'UnregisterFileFormat', it needs to be added }
-  (*TVKPicture.UnregisterGraphicClass(THDRImage);*)
+  (*TPicture.UnregisterGraphicClass(THDRImage);*)
 
 end.
 

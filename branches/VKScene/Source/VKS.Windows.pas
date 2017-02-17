@@ -250,7 +250,7 @@ type
   end;
 
   TVKCustomControl = class;
-  TVKCustomRenderEvent = procedure(Sender: TVKCustomControl; Bitmap: TVKBitmap)
+  TVKCustomRenderEvent = procedure(Sender: TVKCustomControl; Bitmap: TBitmap)
     of object;
   TVKCustomControl = class(TVKFocusControl)
   private
@@ -258,8 +258,8 @@ type
     FCustomObject: TObject;
     FOnRender: TVKCustomRenderEvent;
     FMaterial: TVKMaterial;
-    FBitmap: TVKBitmap;
-    FInternalBitmap: TVKBitmap;
+    FBitmap: TBitmap;
+    FInternalBitmap: TBitmap;
     FBitmapChanged: Boolean;
     FXTexCoord: Single;
     FYTexCoord: Single;
@@ -269,7 +269,7 @@ type
     procedure SetCentered(const Value: Boolean);
   protected
     procedure OnBitmapChanged(Sender: TObject);
-    procedure SetBitmap(ABitmap: TVKBitmap);
+    procedure SetBitmap(ABitmap: TBitmap);
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -282,7 +282,7 @@ type
     property OnRender: TVKCustomRenderEvent read FOnRender write FOnRender;
     property Centered: Boolean read FCentered write SetCentered;
     property Material: TVKMaterial read FMaterial write SetMaterial;
-    property Bitmap: TVKBitmap read FBitmap write SetBitmap;
+    property Bitmap: TBitmap read FBitmap write SetBitmap;
     property MaxInvalidRenderCount: Integer read FMaxInvalidRenderCount write
       FMaxInvalidRenderCount;
   end;
@@ -1817,7 +1817,7 @@ constructor TVKCustomControl.Create(AOwner: TComponent);
 begin
   inherited;
   FMaterial := TVKMaterial.create(Self);
-  FBitmap := TVKBitmap.create;
+  FBitmap := TBitmap.create;
   FBitmap.OnChange := OnBitmapChanged;
   FInternalBitmap := nil;
   FInvalidRenderCount := 0;
@@ -1845,7 +1845,7 @@ begin
   FBitmapChanged := True;
 end;
 
-procedure TVKCustomControl.SetBitmap(ABitmap: TVKBitmap);
+procedure TVKCustomControl.SetBitmap(ABitmap: TBitmap);
 begin
   FBitmap.Assign(ABitmap);
 end;
@@ -1865,7 +1865,7 @@ begin
     begin
       FInvalidRenderCount := 0;
       if not Assigned(FInternalBitmap) then
-        FInternalBitmap := TVKBitmap.Create;
+        FInternalBitmap := TBitmap.Create;
 
       { TODO : E2129 Cannot assign to a read-only property }
       (*

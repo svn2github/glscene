@@ -19,7 +19,7 @@ uses
   System.Classes,
   System.SysUtils,
   FMX.Dialogs,
-  //VKS
+  
   VKS.OpenGLAdapter,
   VKS.VectorGeometry,
   VKS.Scene,

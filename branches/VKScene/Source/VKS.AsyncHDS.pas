@@ -53,16 +53,16 @@ type
 
 	 TVKAsyncHDS = class (TVKHeightDataSourceFilter)
 	   private
-	      { Private Declarations }
+	      
        FOnIdleEvent :TIdleEvent;
        FOnNewTilePrepared : TNewTilePreparedEvent;
        FUseDirtyTiles:TUseDirtyTiles;
        FTilesUpdated:boolean;
 	   protected
-	      { Protected Declarations }
+	      
     public
       //TilesUpdated:boolean;
-	      { Public Declarations }
+	      
       constructor Create(AOwner: TComponent); override;
       destructor Destroy; override;
       procedure BeforePreparingData(heightData : TVKHeightData); override;
@@ -75,7 +75,7 @@ type
       function  TilesUpdated:boolean;        //Returns true if tiles have been updated since the flag was last reset
       procedure TilesUpdatedFlagReset;       //sets the TilesUpdatedFlag to false; (is ThreadSafe)
 	   published
-	      { Published Declarations }
+	      
       property OnIdle : TIdleEvent read FOnIdleEvent write FOnIdleEvent;
       property OnNewTilePrepared : TNewTilePreparedEvent read FOnNewTilePrepared write FOnNewTilePrepared;
       property UseDirtyTiles :TUseDirtyTiles read FUseDirtyTiles write FUseDirtyTiles;

@@ -24,12 +24,12 @@ type
    { Stores row information for a tiled area.  }
    TVKTiledAreaRow = class (TPersistentObject)
 	   private
-			{ Private Declarations }
+			
          FColMin, FColMax : Integer;
          FData : TIntegerList;
 
 		protected
-			{ Protected Declarations }
+			
          procedure SetColMin(const val : Integer);
          procedure SetColMax(const val : Integer);
 
@@ -37,7 +37,7 @@ type
          procedure SetCell(col, val : Integer);
 
 		public
-			{ Public Declarations }
+			
 			constructor Create; override;
          destructor Destroy; override;
 	      procedure WriteToFiler(writer : TVirtualWriter); override;
@@ -62,12 +62,12 @@ type
       assumed as "empty". }
    TVKTiledArea = class (TPersistentObject)
 	   private
-			{ Private Declarations }
+			
          FRowMin, FRowMax : Integer;
          FRows : TPersistentObjectList;
 
 		protected
-			{ Protected Declarations }
+			
          procedure SetRowMin(const val : Integer);
          procedure SetRowMax(const val : Integer);
 
@@ -76,7 +76,7 @@ type
          function GetRow(index : Integer) : TVKTiledAreaRow;
 
 		public
-			{ Public Declarations }
+			
 			constructor Create; override;
          destructor Destroy; override;
 	      procedure WriteToFiler(writer : TVirtualWriter); override;
@@ -104,14 +104,14 @@ type
       Its bounding dimensions are determined by its painted tile. }
 	TVKTilePlane = class (TVKImmaterialSceneObject)
 	   private
-			{ Private Declarations }
+			
          FNoZWrite : Boolean;
          FTiles : TVKTiledArea;
          FMaterialLibrary : TVKMaterialLibrary;
          FSortByMaterials : Boolean;
 
 		protected
-			{ Protected Declarations }
+			
          procedure SetNoZWrite(const val : Boolean);
          procedure SetTiles(const val : TVKTiledArea);
          procedure SetMaterialLibrary(const val : TVKMaterialLibrary);
@@ -120,7 +120,7 @@ type
          procedure Notification(AComponent: TComponent; Operation: TOperation); override;
 
 		public
-			{ Public Declarations }
+			
 			constructor Create(AOwner: TComponent); override;
          destructor Destroy; override;
 
@@ -128,7 +128,7 @@ type
                             ARenderSelf, ARenderChildren : Boolean); override;
          procedure BuildList(var rci : TVKRenderContextInfo); override;
 
-         //: Access to the TiledArea data
+         // Access to the TiledArea data
          property Tiles : TVKTiledArea read FTiles write SetTiles;
          { Controls the sorting of tiles by material. 
             This property should ideally be left always at its default, True,
@@ -137,7 +137,7 @@ type
          property SortByMaterials : Boolean read FSortByMaterials write SetSortByMaterials;
 
 		published
-			{ Public Declarations }
+			
 
          { If True the tiles are rendered without writing to the ZBuffer. }
          property NoZWrite : Boolean read FNoZWrite write SetNoZWrite;

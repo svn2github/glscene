@@ -22,7 +22,7 @@ interface
 
 uses
   System.SysUtils, System.Classes, System.Math,
-  //VKS
+  
   VKS.Scene, VKS.VectorTypes, VKS.VectorFileObjects,
   VKS.VectorGeometry, VKS.BSP, VKS.VectorLists;
 

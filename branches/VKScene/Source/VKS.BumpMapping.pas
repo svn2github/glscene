@@ -29,11 +29,11 @@ procedure CalcTangentSpaceLightVectors(Light : TAffineVector;
                                        Colors: TVectorList);
 
 function CreateObjectSpaceNormalMap(Width, Height : Integer;
-                                    HiNormals,HiTexCoords : TAffineVectorList) : TVKBitmap;
+                                    HiNormals,HiTexCoords : TAffineVectorList) : TBitmap;
 function CreateTangentSpaceNormalMap(Width, Height : Integer;
                                      HiNormals, HiTexCoords,
                                      LoNormals, LoTexCoords,
-                                     Tangents, BiNormals : TAffineVectorList) : TVKBitmap;
+                                     Tangents, BiNormals : TAffineVectorList) : TBitmap;
 
 implementation
 
@@ -317,7 +317,7 @@ end;
 // CreateObjectSpaceNormalMap
 //
 function CreateObjectSpaceNormalMap(Width, Height : Integer;
-                                    HiNormals,HiTexCoords : TAffineVectorList) : TVKBitmap;
+                                    HiNormals,HiTexCoords : TAffineVectorList) : TBitmap;
 var
   i : integer;
   NormalMap : TAffineVectorList;
@@ -328,7 +328,7 @@ begin
   CalcObjectSpaceNormalMap(Width,Height,NormalMap,HiNormals,HiTexCoords);
 
   // Create the bitmap
-  Result:=TVKBitmap.Create;
+  Result:=TBitmap.Create;
   { TODO : E2129 Cannot assign to a read-only property }
   (*Result.Image.Width := Width;
   Result.Image.Height := Height;
@@ -349,7 +349,7 @@ end;
 function CreateTangentSpaceNormalMap(Width, Height : Integer;
                                      HiNormals, HiTexCoords,
                                      LoNormals, LoTexCoords,
-                                     Tangents, BiNormals : TAffineVectorList) : TVKBitmap;
+                                     Tangents, BiNormals : TAffineVectorList) : TBitmap;
 
   function NormalToTangentSpace(Normal : TAffineVector;
                                 x,y,x1,y1,x2,y2,x3,y3 : Integer;
@@ -441,7 +441,7 @@ begin
   end;
 
   // Create the bitmap
-  Result:=TVKBitmap.Create;
+  Result:=TBitmap.Create;
   Result.Width:=Width;
   Result.Height:=Height;
   { TODO : E2129 Cannot assign to a read-only property }

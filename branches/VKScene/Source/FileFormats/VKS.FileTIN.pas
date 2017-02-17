@@ -24,7 +24,7 @@ type
       This format is encountered in the DEM/DTED world and used in place of grids. }
    TVKTINVectorFile = class(TVKVectorFile)
       public
-         { Public Declarations }
+         
          class function Capabilities : TVKDataFileCapabilities; override;
          procedure LoadFromStream(aStream : TStream); override;
    end;

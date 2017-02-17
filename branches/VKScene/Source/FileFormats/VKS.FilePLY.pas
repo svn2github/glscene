@@ -25,7 +25,7 @@ type
       without specified normals, and will ignore most header specifications. }
    TVKPLYVectorFile = class(TVKVectorFile)
       public
-         { Public Declarations }
+         
          class function Capabilities : TVKDataFileCapabilities; override;
          procedure LoadFromStream(aStream : TStream); override;
    end;

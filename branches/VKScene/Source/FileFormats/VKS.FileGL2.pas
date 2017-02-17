@@ -11,7 +11,7 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-  //VKS
+  
   VKS.VectorFileObjects, VKS.ApplicationFileIO, VKS.Material,
   VKS.VectorGeometry, FileGL2, VKS.VectorTypes, VKS.VectorLists;
 

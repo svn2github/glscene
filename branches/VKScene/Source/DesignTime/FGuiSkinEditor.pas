@@ -52,7 +52,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
   private
-    { Private declarations }
+    
     FOriginalWndProc: TWndMethod;
 
     FFocusRect: TRect;
@@ -74,7 +74,7 @@ type
     procedure AddElement(Index: Integer);
     procedure DrawCrossair(Point: TPoint);
   public
-    { Public declarations }
+    
     TheGuiComponent: TVKGuiElementList;
     SelectedElement: TVKGUIElement;
 

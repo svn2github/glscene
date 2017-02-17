@@ -14,7 +14,7 @@ interface
 uses
   System.Classes, System.SysUtils,
 
-  //VKS
+  
   VKS.VectorGeometry, VKS.VectorTypes, VKS.VectorFileObjects,
   VKS.ApplicationFileIO, VKS.Graph;
 
@@ -28,7 +28,7 @@ type
 
   TVKGRDVectorFile = class(TVKVectorFile)
    public
-    { Public Declarations }
+    
     HeightField: TVKHeightField;
     Nodes: array of TSingleArray;
     class function Capabilities: TVKDataFileCapabilities; override;

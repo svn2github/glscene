@@ -15,7 +15,7 @@ interface
 uses
   System.SysUtils,
   System.Classes,
-  //VKS
+  
   VKS.VectorFileObjects, VKS.VectorGeometry,
   VKS.ApplicationFileIO,
   FileOCT;
@@ -27,7 +27,7 @@ type
   { The OCT vector file (FSRad output).  }
   TVKOCTVKVectorFile = class(TVKVectorFile)
   public
-    { Public Declarations }
+    
     class function Capabilities: TVKDataFileCapabilities; override;
 
     procedure LoadFromStream(aStream: TStream); override;
@@ -75,7 +75,7 @@ var
   mo: TVKMeshObject;
   fg: TFGVertexIndexList;
   lightmapLib: TVKMaterialLibrary;
-  lightmapBmp: TVKBitmap;
+  lightmapBmp: TBitmap;
   libMat: TVKLibMaterial;
 begin
   oct := TOCTFile.Create(aStream);
@@ -88,7 +88,7 @@ begin
     begin
       // import lightmaps
       n := oct.Header.numLightmaps;
-      lightmapBmp := TVKBitmap.Create;
+      lightmapBmp := TBitmap.Create;
       try
         { TODO : E2129 Cannot assign to a read-only property }
         (*lightmapBmp.PixelFormat := glpf24bit;*)

@@ -23,7 +23,7 @@ type
      a texture generation mode, no texture will be mapped. }
   TVKDodecahedron = class(TVKSceneObject)
   public
-    { Public Declarations }
+    
     procedure BuildList(var rci: TVKRenderContextInfo); override;
   end;
 
@@ -34,7 +34,7 @@ type
      a texture generation mode, no texture will be mapped. }
   TVKIcosahedron = class(TVKSceneObject)
   public
-    { Public Declarations }
+    
     procedure BuildList(var rci: TVKRenderContextInfo); override;
   end;
 
@@ -45,7 +45,7 @@ type
      a texture generation mode, no texture will be mapped. }
   TVKOctahedron = class(TVKSceneObject)
   public
-    { Public Declarations }
+    
     procedure BuildList(var rci: TVKRenderContextInfo); override;
   end;
 
@@ -56,7 +56,7 @@ type
      a texture generation mode, no texture will be mapped. }
   TVKTetrahedron = class(TVKSceneObject)
   public
-    { Public Declarations }
+    
     procedure BuildList(var rci: TVKRenderContextInfo); override;
   end;
 
