@@ -195,6 +195,9 @@
         <DelphiCompile Include="..\..\Source\Basis\GLCanvas.pas">
             <BuildOrder>9</BuildOrder>
         </DelphiCompile>
+        <DelphiCompile Include="..\..\Source\Basis\GLCoordinates.pas">
+            <BuildOrder>197</BuildOrder>
+        </DelphiCompile>
         <DelphiCompile Include="..\..\Source\Basis\GLGeometryBB.pas">
             <BuildOrder>10</BuildOrder>
         </DelphiCompile>
@@ -297,9 +300,6 @@
         <DelphiCompile Include="..\..\Source\GLAnimationUtils.pas">
             <BuildOrder>38</BuildOrder>
         </DelphiCompile>
-        <DelphiCompile Include="..\..\Source\GLAsmShader.pas">
-            <BuildOrder>40</BuildOrder>
-        </DelphiCompile>
         <DelphiCompile Include="..\..\Source\GLAsyncHDS.pas">
             <BuildOrder>41</BuildOrder>
         </DelphiCompile>
@@ -347,9 +347,6 @@
         </DelphiCompile>
         <DelphiCompile Include="..\..\Source\GLContouring.pas">
             <BuildOrder>56</BuildOrder>
-        </DelphiCompile>
-        <DelphiCompile Include="..\..\Source\GLCoordinates.pas">
-            <BuildOrder>57</BuildOrder>
         </DelphiCompile>
         <DelphiCompile Include="..\..\Source\GLCrossPlatform.pas">
             <BuildOrder>58</BuildOrder>
@@ -693,6 +690,9 @@
         <DelphiCompile Include="..\..\Source\GLzBuffer.pas">
             <BuildOrder>175</BuildOrder>
         </DelphiCompile>
+        <DelphiCompile Include="..\..\Source\Shaders\GLAsmShader.pas">
+            <BuildOrder>198</BuildOrder>
+        </DelphiCompile>
         <DelphiCompile Include="..\..\Source\Shaders\GLShaderCombiner.pas">
             <BuildOrder>182</BuildOrder>
         </DelphiCompile>
@@ -866,7 +866,16 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployClass Name="ProjectiOSDeviceResourceRules"/>
+                <DeployClass Name="DependencyModule">
+                    <Platform Name="Win32">
+                        <Operation>0</Operation>
+                        <Extensions>.dll;.bpl</Extensions>
+                    </Platform>
+                    <Platform Name="OSX32">
+                        <Operation>1</Operation>
+                        <Extensions>.dylib</Extensions>
+                    </Platform>
+                </DeployClass>
                 <DeployClass Name="ProjectOSXResource">
                     <Platform Name="OSX32">
                         <RemoteDir>Contents\Resources</RemoteDir>
@@ -1205,16 +1214,7 @@
                         <Operation>1</Operation>
                     </Platform>
                 </DeployClass>
-                <DeployClass Name="DependencyModule">
-                    <Platform Name="Win32">
-                        <Operation>0</Operation>
-                        <Extensions>.dll;.bpl</Extensions>
-                    </Platform>
-                    <Platform Name="OSX32">
-                        <Operation>1</Operation>
-                        <Extensions>.dylib</Extensions>
-                    </Platform>
-                </DeployClass>
+                <DeployClass Name="ProjectiOSDeviceResourceRules"/>
                 <ProjectRoot Platform="iOSDevice64" Name="$(PROJECTNAME).app"/>
                 <ProjectRoot Platform="Win64" Name="$(PROJECTNAME)"/>
                 <ProjectRoot Platform="iOSDevice32" Name="$(PROJECTNAME).app"/>
