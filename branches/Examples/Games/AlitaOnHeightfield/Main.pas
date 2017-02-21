@@ -11,7 +11,7 @@ uses
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
   Vcl.Imaging.jpeg, Vcl.ExtCtrls, Vcl.StdCtrls, Vcl.ExtDlgs,
   Vcl.Buttons, Vcl.ComCtrls,
-  // GLS
+   
   GLScene,
   GLObjects,
   GLCadencer,
@@ -86,9 +86,9 @@ type
     procedure HeightField1GetHeight(const X, Y: Single; var z: Single;
       var Color: TVector4f; var TexPoint: TTexPoint);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
     snowyMapActive: Boolean;
   end;
 
