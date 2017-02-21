@@ -1,0 +1,12 @@
+uniform float time;
+
+void main(){
+
+  vec4 p = gl_Vertex;
+  if(time >= 0) {
+    p.y += sin(time + p.x) / 2;
+  }
+  gl_Position = gl_ModelViewProjectionMatrix * p;
+  gl_TexCoord[0] = gl_TextureMatrix[0] * gl_MultiTexCoord0;
+  
+}
