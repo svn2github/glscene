@@ -28,14 +28,10 @@ type
   private
      
   public
-     
     IniFile : TIniFile;
     procedure ReadIniFile; virtual;
     procedure WriteIniFile; virtual;
     procedure SetLanguage;
-  published
-    //
-  protected
   end;
 
 var
@@ -83,13 +79,13 @@ begin
       end;
       LANG_GERMAN:
       begin
-        UseLanguage('ru');
-        Application.HelpFile := UpperCase(LocalePath + 'ru'+ PathDelim+'GLSViewer.chm');
+        UseLanguage('de');
+        Application.HelpFile := UpperCase(LocalePath + 'de'+ PathDelim+'GLSViewer.chm');
       end;
       LANG_FRENCH:
       begin
-        UseLanguage('ru');
-        Application.HelpFile := UpperCase(LocalePath + 'ru'+ PathDelim+'GLSViewer.chm');
+        UseLanguage('fr');
+        Application.HelpFile := UpperCase(LocalePath + 'fr'+ PathDelim+'GLSViewer.chm');
       end
       else
       begin
@@ -111,7 +107,6 @@ begin
   //TP_GlobalIgnoreClassProperty(TAction, 'Category');
 
   //LoadNewResourceModule(Language);//when using ITE, ENU for English USA
-
 end;
 
 

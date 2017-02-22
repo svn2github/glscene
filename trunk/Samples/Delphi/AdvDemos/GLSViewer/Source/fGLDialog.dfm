@@ -29,10 +29,12 @@ inherited GLDialog: TGLDialog
       Height = 284
       Align = alClient
       Lines.Strings = (
-        'Tris'
-        'Area'
-        'Volume')
+        ''
+        ''
+        '')
       TabOrder = 0
+      ExplicitLeft = 2
+      ExplicitTop = 2
     end
   end
   object PanelBottom: TPanel

@@ -178,7 +178,7 @@ inherited GLAbout: TGLAbout
     ExplicitTop = 89
     ExplicitWidth = 446
     ExplicitHeight = 189
-    object LabelCopyright: TLabel
+    object LabelCopyright: TLabel [0]
       Left = 102
       Top = 159
       Width = 57
@@ -192,7 +192,7 @@ inherited GLAbout: TGLAbout
       Font.Style = []
       ParentFont = False
     end
-    object imgOpenGL: TImage
+    object imgOpenGL: TImage [1]
       Left = 40
       Top = 83
       Width = 100
@@ -377,7 +377,7 @@ inherited GLAbout: TGLAbout
       ShowHint = True
       OnDblClick = imgOpenGLDblClick
     end
-    object imgSourceForge: TImage
+    object imgSourceForge: TImage [2]
       Left = 159
       Top = 61
       Width = 136
@@ -542,7 +542,7 @@ inherited GLAbout: TGLAbout
       Transparent = True
       OnDblClick = imgSourceForgeDblClick
     end
-    object imgGLScene: TImage
+    object imgGLScene: TImage [3]
       Left = 308
       Top = 83
       Width = 100
@@ -2386,21 +2386,21 @@ inherited GLAbout: TGLAbout
       Stretch = True
       OnDblClick = imgGLSceneDblClick
     end
-    object Label1: TLabel
+    object Label1: TLabel [4]
       Left = 288
       Top = 159
       Width = 95
       Height = 16
       Caption = 'GLScene Team'
     end
-    object Label3: TLabel
+    object Label3: TLabel [5]
       Left = 123
       Top = 28
       Width = 188
       Height = 16
       Caption = '3D view, 3D file formats support:'
     end
-    object FreeAndOpenSource: TLabel
+    object FreeAndOpenSource: TLabel [6]
       Left = 123
       Top = 6
       Width = 130
@@ -2412,6 +2412,15 @@ inherited GLAbout: TGLAbout
       Font.Name = 'MS Sans Serif'
       Font.Style = []
       ParentFont = False
+    end
+    inherited Memo: TMemo
+      Width = 444
+      Height = 187
+      TabOrder = 1
+      Visible = False
+      ExplicitTop = 0
+      ExplicitWidth = 444
+      ExplicitHeight = 187
     end
     object PanelYears: TPanel
       Left = 187

@@ -884,7 +884,7 @@ procedure TMainForm.acToolsInfoExecute(Sender: TObject);
 begin
   with TGLDialog.Create(Self) do
   try
-    Memo.Lines[0] := 'Tris: ' + IntToStr(ffObject.MeshObjects.TriangleCount);
+    Memo.Lines[0] := 'Triangles: ' + IntToStr(ffObject.MeshObjects.TriangleCount);
     Memo.Lines[1] := 'Area: ' + FloatToStr(ffObject.MeshObjects.Area);
     Memo.Lines[2] := 'Volume: ' + FloatToStr(ffObject.MeshObjects.Volume);
     ShowModal;
