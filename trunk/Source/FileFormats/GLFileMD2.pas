@@ -17,23 +17,22 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
-  GLVectorFileObjects, GLApplicationFileIO,
+  System.Classes,
+  System.SysUtils,
+  GLVectorFileObjects,
+  GLApplicationFileIO,
   FileMD2;
 
 type
-   // TGLMD2VectorFile
-   //
-   {The MD2 vector file (Quake2 actor file). 
+   {The MD2 vector file (Quake2 actor file).
       Stores a set of "frames" describing the different postures of the actor,
       it may be animated by TGLActor. The "Skin" must be loaded indepentendly
-      (the whole mesh uses a single texture bitmap). 
+      (the whole mesh uses a single texture bitmap).
       Based on code by Roger Cao. }
    TGLMD2VectorFile = class(TGLVectorFile)
       public
-         
-         class function Capabilities : TGLDataFileCapabilities; override;
-         procedure LoadFromStream(aStream : TStream); override;
+        class function Capabilities : TGLDataFileCapabilities; override;
+        procedure LoadFromStream(aStream : TStream); override;
    end;
 
 // ------------------------------------------------------------------
@@ -44,22 +43,15 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-
-
-
 // ------------------
 // ------------------ TGLMD2VectorFile ------------------
 // ------------------
 
-// Capabilities
-//
 class function TGLMD2VectorFile.Capabilities : TGLDataFileCapabilities;
 begin
    Result:=[dfcRead];
 end;
 
-// LoadFromStream
-//
 procedure TGLMD2VectorFile.LoadFromStream(aStream : TStream);
 var
    i, j : Integer;

@@ -5,20 +5,8 @@
    ASE (ASCI Scene Export) file format support for GLScene 
 
    History : 
-       10/11/12 - PW - Added CPP compatibility: changed vector arrays to arrays of records
-       21/06/08 - DaStr - Bugfixed GetFaceGroup() (Thanks Beon)
-       29/05/08 - DaStr - Made compatible with Delphi 5
-       27/12/07 - DaStr - Added skipping unknown file sections
-                             Improved ASE material objects structure:
-                               Material can keep up to 12 texture maps
-                               SubMaterial can keep up to 12 texture maps
-                             Added ability to select texture, lightmap
-                              ASE material/submaterial maps
-                             Bugfixed parsing failures on unknown section found
-                              (all above changes were made by MaX)
-       19/05/07 - DaStr - Initial version (contributed by MaX)
-  Parser supported features list:
-    blablabla :)
+     19/05/07 - DaStr - Initial version (contributed by MaX)
+
 }
 unit GLFileASE;
 
@@ -27,10 +15,16 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
-  GLVectorFileObjects, GLApplicationFileIO,
-  GLVectorTypes, GLVectorGeometry, GLVectorLists,
-  GLCrossPlatform, GLTexture, GLMaterial;
+  System.Classes, 
+  System.SysUtils,
+  GLVectorFileObjects, 
+  GLApplicationFileIO,
+  GLVectorTypes, 
+  GLVectorGeometry, 
+  GLVectorLists,
+  GLCrossPlatform, 
+  GLTexture, 
+  GLMaterial;
 
 const
   GL_ASE_MAX_TEXURE_CHANNELS = 12; // maximum texture channels

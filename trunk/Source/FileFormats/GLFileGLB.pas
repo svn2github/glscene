@@ -2,14 +2,13 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   SMD vector file format implementation. 
+   GLB binary file for glTF format implementation. 
 
    History : 
-       30/03/04 - EG - Basic Half-Life2/XSI support
-       05/06/03 - SG - Separated from GLVectorFileObjects.pas
+       30/03/04 - PW - Creation
 	 
 }
-unit GLFileSMD;
+unit GLFileGLB;
 
 interface
 
@@ -21,20 +20,15 @@ uses
   GLApplicationFileIO,
   GLVectorTypes, 
   GLVectorGeometry, 
-  GLMaterial;
+  GLMaterial,
+  GLUtils;
 
 type
-   {The SMD vector file is Half-life's skeleton format. 
-      The SMD is a text-based file format. They come in two flavors: one that
-      old Skeleton and triangle (mesh) data, and animation files that store
-      Skeleton frames. 
-      This reader curently reads both, but requires that the main file
-      (the one with mesh data) be read first. }
-   TGLSMDVectorFile = class(TGLVectorFile)
+   {The GLB binary glTF format is a runtime asset delivery format 
+      for GL APIs: WebGL, OpenGL ES OpenGL and Vulkan. }
+   TGLBVectorFile = class(TGLVectorFile)
       public
-         
          class function Capabilities : TGLDataFileCapabilities; override;
-
          procedure LoadFromStream(aStream : TStream); override;
          procedure SaveToStream(aStream : TStream); override;
    end;
@@ -47,18 +41,17 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses GLUtils;
 
 // ------------------
-// ------------------ TGLSMDVectorFile ------------------
+// ------------------ TGLGLBVectorFile ------------------
 // ------------------
 
-class function TGLSMDVectorFile.Capabilities : TGLDataFileCapabilities;
+class function TGLBVectorFile.Capabilities : TGLDataFileCapabilities;
 begin
    Result:=[dfcRead, dfcWrite];
 end;
 
-procedure TGLSMDVectorFile.LoadFromStream(aStream : TStream);
+procedure TGLBVectorFile.LoadFromStream(aStream : TStream);
 
    procedure AllocateMaterial(const name : String);
    var
@@ -192,7 +185,7 @@ begin
 
                  if tl.Count>9
                  then begin
-                   // Half-Life 2 SMD, specifies bones and weights
+                   // specifies bones and weights
                    weightCount := StrToInt(tl[9]);
                    SetLength(boneIDs,weightCount);
                    for j := 0 to weightCount - 1 do begin
@@ -207,7 +200,7 @@ begin
                  end
                  else
                  begin
-                   // Half-Life 1 simple format
+                   // simple format
                    boneID:=StrToInt(tl[0]);
                    nVert:=FindOrAdd(boneID,AffineVectorMake(GLUtils.StrToFloatDef(tl[1]), GLUtils.StrToFloatDef(tl[2]), GLUtils.StrToFloatDef(tl[3])),                                AffineVectorMake(GLUtils.StrToFloatDef(tl[4]), GLUtils.StrToFloatDef(tl[5]), GLUtils.StrToFloatDef(tl[6])));
                    nTex:=TexCoords.FindOrAdd(AffineVectorMake(GLUtils.StrToFloatDef(tl[7]), GLUtils.StrToFloatDef(tl[8]), 0));
@@ -225,7 +218,7 @@ begin
    end;
 end;
 
-procedure TGLSMDVectorFile.SaveToStream(aStream : TStream);
+procedure TGLBVectorFile.SaveToStream(aStream : TStream);
 var
    str,
    nodes     : TStrings;
@@ -313,6 +306,6 @@ initialization
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-   RegisterVectorFileFormat('smd', 'Half-Life SMD files', TGLSMDVectorFile);
+   RegisterVectorFileFormat('glb', 'Binary glTF files', TGLBVectorFile);
 
 end.

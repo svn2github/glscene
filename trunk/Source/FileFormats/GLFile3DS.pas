@@ -42,8 +42,7 @@ type
 
   EGLFile3DS = class(Exception);
 
-  {TGLFile3DSAnimationData.
-     A record that holds all the information that is used during 3ds animation. }
+  { A record that holds all the information that is used during 3ds animation. }
   TGLFile3DSAnimationData = packed record
     ModelMatrix: TMatrix;
     Color: TVector;            // Omni Light.
@@ -53,9 +52,7 @@ type
     Roll: Single;
   end;
 
-  {TGLFile3DSAnimationKeys.
-
-     An abstract class that describes how to interpolate animation keys. }
+  { An abstract class that describes how to interpolate animation keys. }
   TGLFile3DSAnimationKeys = class(TPersistentObject)
   private
     FNumKeys: Integer;
@@ -202,7 +199,7 @@ type
   TGLFile3DSAnimKeysClassType = (ctScale, ctRot, ctPos, ctCol, ctTPos,
     ctFall, ctHot, ctRoll);
 
-  {TGLFile3DSDummyObject. A 3ds-specific TGLMorphableMeshObject. }
+  { A 3ds-specific TGLMorphableMeshObject. }
   TGLFile3DSDummyObject = class(TGLMorphableMeshObject)
   private
     FAnimList: TGLFile3DSAnimationKeyList;
@@ -234,14 +231,14 @@ type
     property RefrenceTransf: TGLFile3DSAnimationData read FRefTranf write FRefTranf;
   end;
 
-  {TGLFile3DSDummyObject. A 3ds-specific mesh object. }
+  {A 3ds-specific mesh object. }
   TGLFile3DSMeshObject = class(TGLFile3DSDummyObject)
   public
     procedure LoadAnimation(const AData: Pointer); override;
     procedure BuildList(var ARci: TGLRenderContextInfo); override;
   end;
 
-  {TGLFile3DSDummyObject. A 3ds-specific omni light. }
+  {A 3ds-specific omni light. }
   TGLFile3DSOmniLightObject = class(TGLFile3DSDummyObject)
   private
     FLightSrc: TGLFile3DSLight;
@@ -265,7 +262,7 @@ type
     procedure SetFrame(const AFrame: real); override;
   end;
 
-  {TGLFile3DSCameraObject. A 3ds-specific camera. }
+  { A 3ds-specific camera. }
   TGLFile3DSCameraObject = class(TGLFile3DSDummyObject)
   private
     FTargetObj: TGLDummyCube;
@@ -281,15 +278,13 @@ type
     destructor Destroy; override;
   end;
 
-  // TGL3DSVectorFile
-
-  {The 3DStudio vector file. 
-     Uses an upgraded version if a 3DS import library by Mike Lischke. 
+  {The 3DStudio vector file.
+     Uses an upgraded version if a 3DS import library by Mike Lischke.
      (http://www.lishcke-online.de). A 3DS file may contain material
      information and require textures when loading. }
   TGL3DSVectorFile = class(TGLVectorFile)
   public
-    
+
     class function Capabilities: TGLDataFileCapabilities; override;
     procedure LoadFromStream(aStream: TStream); override;
   end;
@@ -337,9 +332,6 @@ const
   CGLFILE3DS_DEFAULT_FRAME = 0;
 
 
-
-// AnimKeysClassTypeToClass
-
 function AnimKeysClassTypeToClass(
   const AAnimKeysClassType: TGLFile3DSAnimKeysClassType): TClass;
 begin
@@ -360,8 +352,6 @@ begin
   end;
 end;
 
-
-// ClassToAnimKeysClassType
 
 function ClassToAnimKeysClassType(
   const AAnimKeysClass: TClass): TGLFile3DSAnimKeysClassType;
@@ -389,8 +379,6 @@ begin
   end;
 end;
 
-// MakeRotationQuaternion
-
 function MakeRotationQuaternion(const axis: TAffineVector; angle: single): TQuaternion;
 var
   v: Tvector;
@@ -407,8 +395,6 @@ begin
   Result.ImagPart := AffineVectorMake(v);
   Result.RealPart := v.W;
 end;
-
-// QuaternionToRotateMatrix
 
 function QuaternionToRotateMatrix(const Quaternion: TQuaternion): TMatrix;
 var
@@ -626,8 +612,6 @@ begin
   if FNumKeys > 0 then
     DataTransf.ModelMatrix := MatrixMultiply(DataTransf.ModelMatrix,
       CreateScaleMatrix(InterpolateValue(FScale, AFrame)));
-
-
 end;
 
 procedure TGLFile3DSScaleAnimationKeys.Assign(Source: TPersistent);
@@ -698,8 +682,6 @@ begin
       FRot[I].Y := AffVect.Y;
       FRot[I].Z := AffVect.Z;
     end;
-
-
   end;
 end;
 
@@ -1308,7 +1290,6 @@ begin
       ModelMatrix.W.X := ModelMatrix.W.X - Pivot.X;
       ModelMatrix.W.Y := ModelMatrix.W.Y - Pivot.Y;
       ModelMatrix.W.Z := ModelMatrix.W.Z - Pivot.Z;
-
     end;
   end;
 
@@ -1368,7 +1349,6 @@ begin
     aCol := TGLFile3DSColorAnimationKeys.Create;
     aCol.LoadData(NCKeys, CKeys, Color);
     AddKeys(aCol);
-
     if Parent <> '' then
       FParent := TGLFile3DSDummyObject(Owner.FindMeshByName(string(Parent)));
   end;
@@ -1402,7 +1382,6 @@ end;
 procedure TGLFile3DSOmniLightObject.Assign(Source: TPersistent);
 begin
   inherited;
-
   if Source is TGLFile3DSOmniLightObject then
     FlightSrc.Assign((Source as TGLFile3DSOmniLightObject).FLightSrc);
 end;
@@ -1432,7 +1411,6 @@ end;
 destructor TGLFile3DSOmniLightObject.Destroy;
 begin
   FLightSrc.Free;
-
   inherited;
 end;
 
@@ -1598,14 +1576,10 @@ end;
 // ------------------ TGL3DSVectorFile ------------------
 // ------------------
 
-// Capabilities
-
 class function TGL3DSVectorFile.Capabilities: TGLDataFileCapabilities;
 begin
   Result := [dfcRead];
 end;
-
-// LoadFromStream
 
 procedure TGL3DSVectorFile.LoadFromStream(aStream: TStream);
 type
@@ -2343,9 +2317,9 @@ end;
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 initialization
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
   RegisterClasses([TGLFile3DSDummyObject, TGLFile3DSMeshObject,
     TGLFile3DSOmniLightObject, TGLFile3DSSpotLightObject,
     TGLFile3DSCameraObject]);

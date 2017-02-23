@@ -97,6 +97,8 @@ contains
   GLFileDDS in '..\..\Source\FileFormats\GLFileDDS.pas',
   GLFileDXF in '..\..\Source\FileFormats\GLFileDXF.pas',
   GLFileGL2 in '..\..\Source\FileFormats\GLFileGL2.pas',
+  GLFileGLB in '..\..\Source\FileFormats\GLFileGLB.pas',
+  GLFileGLTF in '..\..\Source\FileFormats\GLFileGLTF.pas',
   GLFileGRD in '..\..\Source\FileFormats\GLFileGRD.pas',
   GLFileGTS in '..\..\Source\FileFormats\GLFileGTS.pas',
   GLFileHDR in '..\..\Source\FileFormats\GLFileHDR.pas',
