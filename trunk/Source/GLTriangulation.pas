@@ -5,7 +5,7 @@
    Classes and methods for triangulation of scatter points.
 
    History :
-      17/05/15 - PW - Created TGLDelaunay2D class for RAD Studio, based on code
+      17/05/15 - PW - Created TGLDelaunay2D class based on code
          from Paul Bourke (http://paulbourke.net/) and conversion
          from VB to Delphi6 by Dr Steve Evans (steve@lociuk.com)
 }

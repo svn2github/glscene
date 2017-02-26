@@ -3,9 +3,9 @@
 //
 {
   DDS File support for GLScene.
-  History :  
+  History :
     20/01/10 - Yar - Creation
-    The whole history is logged in previous version of the unit.
+    The whole history is logged in previous version of the unit
 
 }
 unit GLFileDDS;
@@ -15,20 +15,22 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
-   
-  GLCrossPlatform, OpenGLTokens, GLContext, GLGraphics, GLTextureFormat,
-  GLSrgbe, GLApplicationFileIO, GLVectorGeometry, GLStrings;
+  System.Classes,
+  System.SysUtils,
+
+  OpenGLTokens,
+  GLCrossPlatform,
+  GLContext,
+  GLGraphics,
+  GLTextureFormat,
+  GLSrgbe,
+  GLApplicationFileIO,
+  GLVectorGeometry,
+  GLStrings;
 
 type
 
-  // TGLDDSResolutions
-  //
-
   TGLDDSDetailLevels = (ddsHighDet, ddsMediumDet, ddsLowDet);
-
-  // TGLDDSImage
-  //
 
   TGLDDSImage = class(TGLBaseImage)
   private
@@ -67,9 +69,6 @@ implementation
 uses
   DXTC;
 
- 
-//
-
 procedure TGLDDSImage.LoadFromFile(const filename: string);
 var
   fs: TStream;
@@ -88,9 +87,6 @@ begin
     raise EInvalidRasterFile.CreateFmt(strFileNotFound, [filename]);
 end;
 
-// SaveToFile
-//
-
 procedure TGLDDSImage.SaveToFile(const filename: string);
 var
   fs: TStream;
@@ -103,9 +99,6 @@ begin
   end;
   ResourceName := filename;
 end;
-
-// LoadFromStream
-//
 
 procedure TGLDDSImage.LoadFromStream(stream: TStream);
 var
@@ -362,9 +355,6 @@ begin
   end;
 end;
 
-// AssignFromTexture
-//
-
 procedure TGLDDSImage.AssignFromTexture(textureContext: TGLContext;
   const textureHandle: Cardinal;
   textureTarget: TGLTextureTarget;
@@ -611,9 +601,6 @@ begin
     FreeMem(tempBuf);
   end;
 end;
-
-// Capabilities
-//
 
 class function TGLDDSImage.Capabilities: TGLDataFileCapabilities;
 begin

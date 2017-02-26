@@ -18,16 +18,20 @@ interface
 uses
   System.SysUtils,
   
-  GLVectorGeometry, GLHeightData, GLVectorLists, GLCrossPlatform, GLContext,
-  OpenGLTokens, XOpenGL, GLContouring;
+  GLVectorGeometry, 
+  GLHeightData, 
+  GLVectorLists, 
+  GLCrossPlatform, 
+  GLContext,
+  OpenGLTokens, 
+  XOpenGL, 
+  GLContouring;
 
 type
 
   // Exception use by Split for SafeTesselate
   EGLROAMException = class(Exception);
 
-  // TROAMTriangleNode
-  //
   PROAMTriangleNode = ^TROAMTriangleNode;
 
   TROAMTriangleNode = packed record
@@ -35,18 +39,13 @@ type
     LeftChild, RightChild: PROAMTriangleNode;
   end;
 
-  // TROAMRenderPoint
-  //
   TROAMRenderPoint = packed record
     X, Y: Integer;
     Idx: Integer;
   end;
 
-  // TGLROAMPatch
-  //
   TGLROAMPatch = class(TObject)
   private
-     
     FID: Integer;
     FHeightData: TGLHeightData; // Referred, not owned
     FHeightRaster: PSmallIntRaster;
@@ -62,35 +61,25 @@ type
     FVertexScale, FVertexOffset: TAffineVector;
     FTextureScale, FTextureOffset: TAffineVector;
     FMaxTLVarianceDepth, FMaxBRVarianceDepth: Integer;
-
     FOcclusionQuery: TGLOcclusionQueryHandle;
     FOcclusionSkip, FOcclusionCounter: Integer;
     FLastOcclusionTestPassed: Boolean;
-
     FContourInterval: Integer;
     FContourWidth: Integer;
-
   protected
-    
     procedure SetHeightData(Val: TGLHeightData);
     procedure SetOcclusionSkip(Val: Integer);
-
     procedure RenderROAM(Vertices: TAffineVectorList;
       VertexIndices: TIntegerList; TexCoords: TTexPointList);
     procedure RenderAsStrips(Vertices: TAffineVectorList;
       VertexIndices: TIntegerList; TexCoords: TTexPointList);
-
   public
-    
     constructor Create;
     destructor Destroy; override;
-
     procedure ComputeVariance(Variance: Integer);
-
     procedure ResetTessellation;
     procedure ConnectToTheWest(WestPatch: TGLROAMPatch);
     procedure ConnectToTheNorth(NorthPatch: TGLROAMPatch);
-
     // Returns false if MaxCLODTriangles limit is reached(Lin)
     function Tesselate: Boolean;
     {  AV free version of Tesselate. 
@@ -121,16 +110,12 @@ type
     property HeightData: TGLHeightData read FHeightData write SetHeightData;
     property VertexScale: TAffineVector read FVertexScale write FVertexScale;
     property VertexOffset: TAffineVector read FVertexOffset write FVertexOffset;
-
     property ObserverPosition: TAffineVector read FObserverPosition
       write FObserverPosition;
-
     property TextureScale: TAffineVector read FTextureScale write FTextureScale;
     property TextureOffset: TAffineVector read FTextureOffset
       write FTextureOffset;
-
     property HighRes: Boolean read FHighRes write FHighRes;
-
     {  Number of frames to skip after an occlusion test returned zero pixels. }
     property OcclusionSkip: Integer read FOcclusionSkip write SetOcclusionSkip;
     {  Number of frames remaining to next occlusion test. }
@@ -186,14 +171,10 @@ var
   TessObserverPosX, TessObserverPosY: Integer;
 
 type
-  // TROAMVariancePoint
-  //
   TROAMVariancePoint = packed record
     X, Y, Z: Integer;
   end;
 
-  // SetROAMTrianglesCapacity
-  //
 procedure SetROAMTrianglesCapacity(nb: Integer);
 begin
   vNbTris := 0;
@@ -204,15 +185,11 @@ begin
   end;
 end;
 
-// GetROAMTrianglesCapacity
-//
 function GetROAMTrianglesCapacity: Integer;
 begin
   Result := vTriangleNodesCapacity;
 end;
 
-// DrawContours
-//
 procedure DrawContours(Vertices: TAffineVectorList; VertexIndices: TIntegerList;
   ContourInterval: Integer; ContourWidth: Integer; DecVal: Integer);
 var
@@ -250,14 +227,12 @@ begin
 end;
 
 // The result is the delta between the old address of the array and the new one
-//
 function IncreaseTrianglesCapacity(NewCapacity: Integer): int64;
 
   procedure FixNodePtr(var p: PROAMTriangleNode; const delta: int64);
   begin
     if p = nil then
       exit;
-
     Inc(PByte(p), delta);
   end;
 
@@ -271,12 +246,9 @@ begin
     exit;
 
   oldsize := vTriangleNodesCapacity;
-
   oldbase := pointer(vTriangleNodes);
   SetLength(vTriangleNodes, NewCapacity);
-
   vTriangleNodesCapacity := NewCapacity;
-
   newbase := pointer(vTriangleNodes);
 
   // Array has not been relocated, no need to fix
@@ -289,7 +261,6 @@ begin
   for i := 0 to oldsize - 1 do
   begin
     node := @vTriangleNodes[i];
-
     FixNodePtr(node^.Base, Result);
     FixNodePtr(node^.Left, Result);
     FixNodePtr(node^.Right, Result);
@@ -298,8 +269,6 @@ begin
   end;
 end;
 
-// AllocTriangleNode
-//
 function AllocTriangleNode: Integer;
 var
   nilNode: PROAMTriangleNode;
@@ -322,8 +291,6 @@ begin
   Inc(vNbTris);
 end;
 
-// Split
-//
 function Split(tri: PROAMTriangleNode): Boolean;
 var
   n: Integer;
@@ -416,8 +383,6 @@ end;
 // ------------------ TGLROAMPatch ------------------
 // ------------------
 
- 
-//
 constructor TGLROAMPatch.Create;
 begin
   inherited Create;
@@ -428,8 +393,6 @@ begin
   FOcclusionQuery := TGLOcclusionQueryHandle.Create;
 end;
 
- 
-//
 destructor TGLROAMPatch.Destroy;
 begin
   FListHandle.Free;
@@ -437,8 +400,6 @@ begin
   inherited Destroy;
 end;
 
-// SetHeightData
-//
 procedure TGLROAMPatch.SetHeightData(Val: TGLHeightData);
 begin
   FHeightData := Val;
@@ -446,8 +407,6 @@ begin
   FHeightRaster := Val.SmallIntRaster;
 end;
 
-// SetOcclusionSkip
-//
 procedure TGLROAMPatch.SetOcclusionSkip(Val: Integer);
 begin
   if Val < 0 then
@@ -459,8 +418,6 @@ begin
   end;
 end;
 
-// ConnectToTheWest
-//
 procedure TGLROAMPatch.ConnectToTheWest(WestPatch: TGLROAMPatch);
 begin
   if Assigned(WestPatch) then
@@ -475,8 +432,6 @@ begin
   end;
 end;
 
-// ConnectToTheNorth
-//
 procedure TGLROAMPatch.ConnectToTheNorth(NorthPatch: TGLROAMPatch);
 begin
   if Assigned(NorthPatch) then
@@ -491,8 +446,6 @@ begin
   end;
 end;
 
-// ComputeVariance
-//
 procedure TGLROAMPatch.ComputeVariance(Variance: Integer);
 var
   raster: PSmallIntRaster;
@@ -590,8 +543,6 @@ begin
   SetLength(FBRVariance, FMaxBRVarianceDepth);
 end;
 
-// ResetTessellation
-//
 procedure TGLROAMPatch.ResetTessellation;
 begin
   FTLNode := AllocTriangleNode;
@@ -604,8 +555,6 @@ begin
   FEast := nil;
 end;
 
-// RecursTessellate
-//
 function RecursTessellate(tri: PROAMTriangleNode; n: cardinal;
   const Left, Right, apex: cardinal): Boolean;
 // returns false if tessellation failed due to MaxCLODTriangles limit
@@ -629,8 +578,6 @@ begin
   end;
 end;
 
-// Tesselate
-//
 function TGLROAMPatch.Tesselate: Boolean;
 // Returns false if MaxCLODTriangles limit is reached.
 var
@@ -650,8 +597,6 @@ var
     Result := Round(Sqrt(f) + f * c1Div100);
   end;
 
-// FullBaseTess
-//
 procedure FullBaseTess(tri: PROAMTriangleNode; n: cardinal); forward;
 
   procedure FullLeftTess(tri: PROAMTriangleNode; n: cardinal);
@@ -729,8 +674,6 @@ begin
       VertexDist(0, s), VertexDist(s, s));
 end;
 
-// SafeTesselate
-//
 function TGLROAMPatch.SafeTesselate: Boolean;
 var
   Fail: Boolean;
@@ -752,8 +695,6 @@ begin
   until not Fail;
 end;
 
-// RenderHighRes
-//
 procedure TGLROAMPatch.RenderHighRes(Vertices: TAffineVectorList;
   VertexIndices: TIntegerList; TexCoords: TTexPointList; ForceROAM: Boolean);
 
@@ -787,14 +728,11 @@ begin
     xgl.TexCoordPointer(2, GL_FLOAT, 0, TexCoords.List);
 
     FListHandle.AllocateHandle;
-
     GL.NewList(FListHandle.Handle, GL_COMPILE);
       GL.DrawElements(Primitive, VertexIndices.Count, GL_UNSIGNED_INT,
         VertexIndices.List);
     GL.EndList;
-
     DrawContours(Vertices, VertexIndices, FContourInterval, FContourWidth, 1);
-
     Vertices.Count := 0;
     TexCoords.Count := 0;
     VertexIndices.Count := 0;
@@ -804,8 +742,6 @@ begin
   GL.CallList(FListHandle.Handle);
 end;
 
-// RenderAccum
-//
 procedure TGLROAMPatch.RenderAccum(Vertices: TAffineVectorList;
   VertexIndices: TIntegerList; TexCoords: TTexPointList;
   AutoFlushVertexCount: Integer);
@@ -859,8 +795,6 @@ begin
 
 end;
 
-// FlushAccum
-//
 class procedure TGLROAMPatch.FlushAccum(Vertices: TAffineVectorList;
   VertexIndices: TIntegerList; TexCoords: TTexPointList);
 begin
@@ -901,8 +835,6 @@ begin
   VertexIndices.Count := 0;
 end;
 
-// RecursRender
-//
 procedure RecursRender(const tri: PROAMTriangleNode;
   const Left, Right, apex: TROAMRenderPoint);
 var
@@ -929,8 +861,6 @@ begin
   end;
 end;
 
-// RenderROAM
-//
 procedure TGLROAMPatch.RenderROAM(Vertices: TAffineVectorList;
   VertexIndices: TIntegerList; TexCoords: TTexPointList);
 
@@ -966,8 +896,6 @@ begin
     div SizeOf(Integer);
 end;
 
-// RenderAsStrips
-//
 procedure TGLROAMPatch.RenderAsStrips(Vertices: TAffineVectorList;
   VertexIndices: TIntegerList; TexCoords: TTexPointList);
 

@@ -135,8 +135,6 @@ begin
     Result := 0;
 end;
 
-// Initialize_Contouring
-//
 procedure Initialize_Contouring;
 
 var
@@ -172,8 +170,6 @@ begin
   end;
 end;
 
-// Release_Memory_Isoline
-//
 procedure Release_Memory_Isoline;
 begin
   SetLength(Visited, 0);
@@ -184,8 +180,6 @@ begin
   SetLength(LineY2, 0);
 end;
 
-// Cuts
-//
 procedure Cuts(const g: TGLMatrix; i, j: Integer; var s: array of Integer);
 begin
   s[0] := 0;
@@ -239,8 +233,6 @@ begin
   end;
 end;
 
-// Free_Exit
-//
 function Free_Exit(const Visited: TGLByteMatrix;
   i, j, NX, NY, Lexit: Integer): Boolean;
 var
@@ -259,8 +251,6 @@ begin
   end;
 end;
 
-// TraceIsoline
-//
 procedure TraceIsoline(i, j, Lexit, NX, NY: Integer; const Grid: TGLMatrix;
   const Visited: TGLByteMatrix; var LineX, LineY: TGLVector;
   var NP: Integer; var OffGrid: Boolean);
@@ -341,7 +331,6 @@ end;
 { LineX and LineY are (pointers to) zero-offset vectors, to which
   sufficient space has been allocated to store the coordinates of
   any feasible Isoline }
-//
 function GetNextIsoline(var Isoline: TGLIsoline): Boolean;
 var
   OffGrid: boolean;
@@ -410,8 +399,6 @@ begin
   Result := False;
 end;
 
-// TriangleElevationSegments
-//
 procedure TriangleElevationSegments(const p1, p2, p3: TAffineVector;
   ElevationDelta: Single; Segments: TAffineVectorList);
 
@@ -465,8 +452,6 @@ begin
   end;
 end;
 
-// TIsolines class
-//
 constructor TGLIsolines.Create(AOwner: TComponent);
 begin
   LineList := TList.Create;
@@ -533,8 +518,6 @@ begin
   NP := 0;
 end;
 
-// Conrec
-//
 procedure TGLIsolines.Conrec(PlaneSFindex:Integer;PlaneSF:TGLfreeForm; Data: TGLMatrix; ilb, iub, jlb, jub: Integer;
   X: TGLVector; Y: TGLVector;  NC: Integer; HgtL: TGLVector;
   Z_Kfix: Single; res3Dmax,res3Dmin: Single);

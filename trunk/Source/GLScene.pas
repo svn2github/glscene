@@ -6641,26 +6641,16 @@ var
   VP: array[0..1] of Double;
 begin
   case Which of
-    limClipPlanes:
-      GL.GetIntegerv(GL_MAX_CLIP_PLANES, @Result);
-    limEvalOrder:
-      GL.GetIntegerv(GL_MAX_EVAL_ORDER, @Result);
-    limLights:
-      GL.GetIntegerv(GL_MAX_LIGHTS, @Result);
-    limListNesting:
-      GL.GetIntegerv(GL_MAX_LIST_NESTING, @Result);
-    limModelViewStack:
-      GL.GetIntegerv(GL_MAX_MODELVIEW_STACK_DEPTH, @Result);
-    limNameStack:
-      GL.GetIntegerv(GL_MAX_NAME_STACK_DEPTH, @Result);
-    limPixelMapTable:
-      GL.GetIntegerv(GL_MAX_PIXEL_MAP_TABLE, @Result);
-    limProjectionStack:
-      GL.GetIntegerv(GL_MAX_PROJECTION_STACK_DEPTH, @Result);
-    limTextureSize:
-      GL.GetIntegerv(GL_MAX_TEXTURE_SIZE, @Result);
-    limTextureStack:
-      GL.GetIntegerv(GL_MAX_TEXTURE_STACK_DEPTH, @Result);
+    limClipPlanes: GL.GetIntegerv(GL_MAX_CLIP_PLANES, @Result);
+    limEvalOrder: GL.GetIntegerv(GL_MAX_EVAL_ORDER, @Result);
+    limLights: GL.GetIntegerv(GL_MAX_LIGHTS, @Result);
+    limListNesting: GL.GetIntegerv(GL_MAX_LIST_NESTING, @Result);
+    limModelViewStack: GL.GetIntegerv(GL_MAX_MODELVIEW_STACK_DEPTH, @Result);
+    limNameStack: GL.GetIntegerv(GL_MAX_NAME_STACK_DEPTH, @Result);
+    limPixelMapTable: GL.GetIntegerv(GL_MAX_PIXEL_MAP_TABLE, @Result);
+    limProjectionStack: GL.GetIntegerv(GL_MAX_PROJECTION_STACK_DEPTH, @Result);
+    limTextureSize: GL.GetIntegerv(GL_MAX_TEXTURE_SIZE, @Result);
+    limTextureStack: GL.GetIntegerv(GL_MAX_TEXTURE_STACK_DEPTH, @Result);
     limViewportDims:
       begin
         GL.GetDoublev(GL_MAX_VIEWPORT_DIMS, @VP);
@@ -6669,37 +6659,22 @@ begin
         else
           Result := Round(VP[1]);
       end;
-    limAccumAlphaBits:
-      GL.GetIntegerv(GL_ACCUM_ALPHA_BITS, @Result);
-    limAccumBlueBits:
-      GL.GetIntegerv(GL_ACCUM_BLUE_BITS, @Result);
-    limAccumGreenBits:
-      GL.GetIntegerv(GL_ACCUM_GREEN_BITS, @Result);
-    limAccumRedBits:
-      GL.GetIntegerv(GL_ACCUM_RED_BITS, @Result);
-    limAlphaBits:
-      GL.GetIntegerv(GL_ALPHA_BITS, @Result);
-    limAuxBuffers:
-      GL.GetIntegerv(GL_AUX_BUFFERS, @Result);
-    limDepthBits:
-      GL.GetIntegerv(GL_DEPTH_BITS, @Result);
-    limStencilBits:
-      GL.GetIntegerv(GL_STENCIL_BITS, @Result);
-    limBlueBits:
-      GL.GetIntegerv(GL_BLUE_BITS, @Result);
-    limGreenBits:
-      GL.GetIntegerv(GL_GREEN_BITS, @Result);
-    limRedBits:
-      GL.GetIntegerv(GL_RED_BITS, @Result);
-    limIndexBits:
-      GL.GetIntegerv(GL_INDEX_BITS, @Result);
-    limStereo:
-      GL.GetIntegerv(GL_STEREO, @Result);
-    limDoubleBuffer:
-      GL.GetIntegerv(GL_DOUBLEBUFFER, @Result);
-    limSubpixelBits:
-      GL.GetIntegerv(GL_SUBPIXEL_BITS, @Result);
-    limNbTextureUnits:
+    limAccumAlphaBits: GL.GetIntegerv(GL_ACCUM_ALPHA_BITS, @Result);
+    limAccumBlueBits: GL.GetIntegerv(GL_ACCUM_BLUE_BITS, @Result);
+    limAccumGreenBits: GL.GetIntegerv(GL_ACCUM_GREEN_BITS, @Result);
+    limAccumRedBits: GL.GetIntegerv(GL_ACCUM_RED_BITS, @Result);
+    limAlphaBits: GL.GetIntegerv(GL_ALPHA_BITS, @Result);
+    limAuxBuffers: GL.GetIntegerv(GL_AUX_BUFFERS, @Result);
+    limDepthBits: GL.GetIntegerv(GL_DEPTH_BITS, @Result);
+    limStencilBits: GL.GetIntegerv(GL_STENCIL_BITS, @Result);
+    limBlueBits: GL.GetIntegerv(GL_BLUE_BITS, @Result);
+    limGreenBits: GL.GetIntegerv(GL_GREEN_BITS, @Result);
+    limRedBits: GL.GetIntegerv(GL_RED_BITS, @Result);
+    limIndexBits: GL.GetIntegerv(GL_INDEX_BITS, @Result);
+    limStereo: GL.GetIntegerv(GL_STEREO, @Result);
+    limDoubleBuffer: GL.GetIntegerv(GL_DOUBLEBUFFER, @Result);
+    limSubpixelBits: GL.GetIntegerv(GL_SUBPIXEL_BITS, @Result);
+    limNbTextureUnits: 
       if GL.ARB_multitexture then
         GL.GetIntegerv(GL_MAX_TEXTURE_UNITS_ARB, @Result)
       else

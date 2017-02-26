@@ -34,12 +34,13 @@ interface
 uses
   System.Classes,
    
-  GLCrossPlatform, GLHeightData, GLMaterial;
+  GLCrossPlatform, 
+  GLHeightData, 
+  GLMaterial;
 
 type
-	TGLTexturedHDS = class (TGLHeightDataSource)
-	   private
-	       
+  TGLTexturedHDS = class (TGLHeightDataSource)
+    private
          FOnStartPreparingData : TStartPreparingDataEvent;
          FOnMarkDirty : TMarkDirtyEvent;
          FHeightDataSource : TGLHeightDataSource;
@@ -77,8 +78,6 @@ implementation
 // ------------------ TGLTexturedHDS ------------------
 // ------------------
 
- 
-//
 constructor TGLTexturedHDS.Create(AOwner: TComponent);
 begin
   FHeightDataSource:=nil;
@@ -88,15 +87,11 @@ begin
 	inherited Create(AOwner);
 end;
 
- 
-//
 destructor TGLTexturedHDS.Destroy;
 begin
 	inherited Destroy;
 end;
 
-// MarkDirty
-//
 procedure TGLTexturedHDS.MarkDirty(const area : TGLRect);
 begin
    inherited;
@@ -141,12 +136,14 @@ begin
   if Assigned(MatLib) then begin
     //--Get the world coordinates of the current terrain height tile--
     texSize:=FTileSize*FTilesPerTexture;
-    if FWholeTilesOnly then begin   //picks top texture that covers the WHOLE tile.
+    if FWholeTilesOnly then 
+    begin   //picks top texture that covers the WHOLE tile.
       tileL:=(HD.XLeft            )/texSize;
       tileT:=(HD.YTop +(HD.Size-1))/texSize-1;
       tileR:=(HD.XLeft+(HD.Size-1))/texSize;
       tileB:=(HD.YTop             )/texSize-1;
-    end else begin                 //picks top texture that covers any part of the tile. If the texture si not wrapped, the rest of the tile is left blank.
+    end else 
+    begin                 //picks top texture that covers any part of the tile. If the texture si not wrapped, the rest of the tile is left blank.
       tileL:=(HD.XLeft+(HD.Size-2))/texSize;
       tileT:=(HD.YTop +1          )/texSize-1;
       tileR:=(HD.XLeft+1          )/texSize;

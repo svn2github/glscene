@@ -5,43 +5,19 @@
    An extention of TGLNavigator, which allows to move objects with inertia
    Note: it is not completely FPS-independant. Only Moving code is, but
    MoveAroundTarget, Turn[Vertical/Horizontal] and AdjustDistanceTo[..] is not.
-
      Don't know why, but when I make their code identical, these function stop
    working completely. So you probably have to call the AutoScaleParameters
    procedure once in a while for it to adjust to the current framerate.
    If someone knows a better way to solve this issue, please contact me via
    glscene newsgroups. 
 
-
     History :  
-       30/06/11 - DaStr - Converted many procedures to functions
-                             Bugfixed Assign() in some places
-                             Added "Cutoff" property instead of fixed EPS values
-       02/06/11 - DaStr - DeltaTime is now Double, like in Cadencer
-                             Added CustomAnimatedItems
-       28/05/11 - DaStr - Added the AdjustDistanceTo[..]Ex procedures
-       25/02/07 - DaStr - Added the AdjustDistanceTo[..] procedures
-       23/02/07 - DaStr - Initial version (contributed to GLScene)
-
+       10/12/05 - DaStr - Initial version 
 
     TODO:
       1) Scale "Old values" too, when callin the Scale parameter procedure to
          avoid the temporary "freeze" of controls.
       2) AddImpulse procedures.
-
-
-
-    Previous version history:
-        v1.0    10 December  '2005  Creation
-        v1.0.2  11 December  '2005  TurnMaxAngle added
-        v1.1    04 March     '2006  Inertia became FPS-independant
-                                    TGLSmoothNavigatorParameters added
-        v1.1.6  18 February  '2007  Merged with GLInertedUserInterface.pas
-                                    All parameters moved into separate classes
-                                    Added MoveAroudTargetWithInertia
-        v1.2    23 February  '2007  Finally made it trully FPS-independant
-                                    Added default values to every property
-                                    Contributed to GLScene
 }
 
 unit GLSmoothNavigator;
@@ -53,8 +29,14 @@ interface
 uses
   System.Classes,
   
-  GLScene, GLVectorTypes, GLNavigator, GLVectorGeometry,
-  GLCrossPlatform, GLCoordinates, GLScreen, GLXCollection;
+  GLScene, 
+  GLVectorTypes, 
+  GLNavigator, 
+  GLVectorGeometry,
+  GLCrossPlatform, 
+  GLCoordinates, 
+  GLScreen, 
+  GLXCollection;
 
 type
 
@@ -330,9 +312,6 @@ type
     property Cutoff: Double read FCutoff write FCutoff stored StoreCutoff;    
   end;
 
-
-  // TGLSmoothNavigator
-  //
   {TGLSmoothNavigator is the component for moving a TGLBaseSceneObject, and all
        classes based on it, this includes all the objects from the Scene Editor. 
 
@@ -407,16 +386,11 @@ type
   end;
 
 
-  // TGLSmoothUserInterface
-  //
   {TGLSmoothUserInterface is the component which reads the userinput and transform it into action. 
-      
 	    Mouselook(ADeltaTime: double) : handles mouse look... Should be called
                            in the Cadencer event. (Though it works everywhere!)
-      
 	   The four properties to get you started are:
-      
-	    InvertMouse     : Inverts the mouse Y axis.
+            InvertMouse     : Inverts the mouse Y axis.
 	    AutoUpdateMouse : If enabled (by defaul), than handles all mouse updates.
 	    GLNavigator     : The Navigator which receives the user movement.
 	    GLVertNavigator : The Navigator which if set receives the vertical user
@@ -1668,7 +1642,10 @@ begin
   FTargetValue.Assign(Value);
 end;
 
+//==========================================================
 initialization
+//==========================================================
+
   RegisterClasses([
       TGLSmoothNavigator, TGLSmoothUserInterface,
       TGLNavigatorInertiaParameters, TGLNavigatorGeneralParameters,

@@ -2,9 +2,9 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-  DelphiWebScriptII symbol creation for GLVectorGeometry types and functions.
+  DelphiWebScript symbol creation for GLVectorGeometry types and functions.
   History :
-  27/04/2004 - SG - Creation
+    27/04/2004 - SG - Creation
 }
 unit dwsVectorGeometry;
 
@@ -28,7 +28,9 @@ type
 
 procedure Register;
 
+//=========================================================
 implementation
+//=========================================================
 
 type
   TVectorMakeFunction = class(TInternalFunction)
@@ -179,10 +181,6 @@ begin
       Info.Element([i]).Element([j]).Value := mat[i][j];
 end;
 
-// ----------
-// ---------- Tdws2VectorGeometryUnit ----------
-// ----------
-
 procedure TdwsVectorGeometryUnit.AddUnitSymbols(SymbolTable: TSymbolTable);
 var
   FloatSymbol: TSymbol;
@@ -254,10 +252,6 @@ begin
   FUnitName := 'GLVectorGeometry';
 end;
 
-// ----------
-// ---------- TVectorMakeFunction ----------
-// ----------
-
 procedure TVectorMakeFunction.Execute;
 begin
   Info.Vars['Result'].Element([0]).Value := Info['x'];
@@ -266,10 +260,6 @@ begin
   Info.Vars['Result'].Element([3]).Value := Info['w'];
 end;
 
-// ----------
-// ---------- TSetVectorFunction ----------
-// ----------
-
 procedure TSetVectorFunction.Execute;
 begin
   Info.Vars['v'].Element([0]).Value := Info['x'];
@@ -277,10 +267,6 @@ begin
   Info.Vars['v'].Element([2]).Value := Info['z'];
   Info.Vars['v'].Element([3]).Value := Info['w'];
 end;
-
-// ----------
-// ---------- TVectorAddFunction ----------
-// ----------
 
 procedure TVectorAddFunction.Execute;
 var
@@ -292,10 +278,6 @@ begin
   SetInfoFromVector(Info.Vars['Result'], vr);
 end;
 
-// ----------
-// ---------- TVectorSubtractFunction ----------
-// ----------
-
 procedure TVectorSubtractFunction.Execute;
 var
   v1, v2, vr: TVector;
@@ -305,10 +287,6 @@ begin
   VectorSubtract(v1, v2, vr);
   SetInfoFromVector(Info.Vars['Result'], vr);
 end;
-
-// ----------
-// ---------- TVectorScaleFunction ----------
-// ----------
 
 procedure TVectorScaleFunction.Execute;
 var
@@ -320,10 +298,6 @@ begin
   VectorScale(v, f, vr);
   SetInfoFromVector(Info.Vars['Result'], vr);
 end;
-
-// ----------
-// ---------- TCombineVectorFunction ----------
-// ----------
 
 procedure TCombineVectorFunction.Execute;
 var
@@ -338,10 +312,6 @@ begin
   Info.Vars['f'].Value := f;
 end;
 
-// ----------
-// ---------- TVectorCombineFunction ----------
-// ----------
-
 procedure TVectorCombineFunction.Execute;
 var
   v1, v2, vr: TVector;
@@ -354,10 +324,6 @@ begin
   VectorCombine(v1, v2, f1, f2, vr);
   SetInfoFromVector(Info.Vars['Result'], vr);
 end;
-
-// ----------
-// ---------- TVectorCombine3Function ----------
-// ----------
 
 procedure TVectorCombine3Function.Execute;
 var
@@ -374,10 +340,6 @@ begin
   SetInfoFromVector(Info.Vars['Result'], vr);
 end;
 
-// ----------
-// ---------- TVectorDotProductFunction ----------
-// ----------
-
 procedure TVectorDotProductFunction.Execute;
 var
   v1, v2: TVector;
@@ -386,10 +348,6 @@ begin
   v2 := GetVectorFromInfo(Info.Vars['v2']);
   Info.Result := VectorDotProduct(v1, v2);
 end;
-
-// ----------
-// ---------- TVectorCrossProductFunction ----------
-// ----------
 
 procedure TVectorCrossProductFunction.Execute;
 var
@@ -401,10 +359,6 @@ begin
   SetInfoFromVector(Info.Vars['Result'], vr);
 end;
 
-// ----------
-// ---------- TVectorNormalizeFunction ----------
-// ----------
-
 procedure TVectorNormalizeFunction.Execute;
 var
   v, vr: TVector;
@@ -413,10 +367,6 @@ begin
   vr := VectorNormalize(v);
   SetInfoFromVector(Info.Vars['Result'], vr);
 end;
-
-// ----------
-// ---------- TVectorTransformFunction ----------
-// ----------
 
 procedure TVectorTransformFunction.Execute;
 var
@@ -429,10 +379,6 @@ begin
   SetInfoFromVector(Info.Vars['Result'], vr);
 end;
 
-// ----------
-// ---------- TInvertMatrixFunction ----------
-// ----------
-
 procedure TInvertMatrixFunction.Execute;
 var
   mat: TMatrix;
@@ -442,10 +388,6 @@ begin
   SetInfoFromMatrix(Info.Vars['Result'], mat);
 end;
 
-// ----------
-// ---------- TTransposeMatrixFunction ----------
-// ----------
-
 procedure TTransposeMatrixFunction.Execute;
 var
   mat: TMatrix;
@@ -454,10 +396,6 @@ begin
   TransposeMatrix(mat);
   SetInfoFromMatrix(Info.Vars['Result'], mat);
 end;
-
-// ----------
-// ---------- TMatrixMultiplyFunction ----------
-// ----------
 
 procedure TMatrixMultiplyFunction.Execute;
 var
@@ -469,10 +407,6 @@ begin
   SetInfoFromMatrix(Info.Vars['Result'], mr);
 end;
 
-// ----------
-// ---------- TCreateScaleMatrixFunction ----------
-// ----------
-
 procedure TCreateScaleMatrixFunction.Execute;
 var
   v: TVector;
@@ -483,10 +417,6 @@ begin
   SetInfoFromMatrix(Info.Vars['Result'], mr);
 end;
 
-// ----------
-// ---------- TCreateTranslationMatrixFunction ----------
-// ----------
-
 procedure TCreateTranslationMatrixFunction.Execute;
 var
   v: TVector;
@@ -496,10 +426,6 @@ begin
   mr := CreateTranslationMatrix(v);
   SetInfoFromMatrix(Info.Vars['Result'], mr);
 end;
-
-// ----------
-// ---------- TCreateScaleAndTranslationMatrixFunction ----------
-// ----------
 
 procedure TCreateScaleAndTranslationMatrixFunction.Execute;
 var
@@ -512,10 +438,6 @@ begin
   SetInfoFromMatrix(Info.Vars['Result'], mr);
 end;
 
-// ----------
-// ---------- TCreateRotationMatrixXFunction ----------
-// ----------
-
 procedure TCreateRotationMatrixXFunction.Execute;
 var
   angle: Single;
@@ -525,10 +447,6 @@ begin
   mr := CreateRotationMatrixX(angle);
   SetInfoFromMatrix(Info.Vars['Result'], mr);
 end;
-
-// ----------
-// ---------- TCreateRotationMatrixYFunction ----------
-// ----------
 
 procedure TCreateRotationMatrixYFunction.Execute;
 var
@@ -540,10 +458,6 @@ begin
   SetInfoFromMatrix(Info.Vars['Result'], mr);
 end;
 
-// ----------
-// ---------- TCreateRotationMatrixZFunction ----------
-// ----------
-
 procedure TCreateRotationMatrixZFunction.Execute;
 var
   angle: Single;
@@ -553,10 +467,6 @@ begin
   mr := CreateRotationMatrixZ(angle);
   SetInfoFromMatrix(Info.Vars['Result'], mr);
 end;
-
-// ----------
-// ---------- TCreateRotationMatrixFunction ----------
-// ----------
 
 procedure TCreateRotationMatrixFunction.Execute;
 var

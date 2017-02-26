@@ -69,13 +69,40 @@ implementation
 
 {$R *.dfm}
 
+procedure TForm1.FormCreate(Sender: TObject);
+var
+  I : Integer;
+begin
+  Randomize;
+  sdir := -10;
+  GLCamera1.CameraStyle := cscustom;
+
+  SetGLSceneMediaDir();
+
+  GLSLProjectedTextures1.Material.Texture.Image.LoadFromFile('flare1.bmp');
+  GLSLProjectedTextures1.Material.Texture.Disabled := False;
+  GLSLProjectedTextures1.Material.Texture.TextureWrap := twNone;
+  GLSLProjectedTextures1.Material.Texture.MinFilter := miLinear;
+  GLSLProjectedTextures1.Material.Texture.MagFilter := maLinear;
+  GLSLProjectedTextures1.UseLightmaps := True;
+  GLCube1.Material.Texture.Image.LoadFromFile('ashwood.jpg');
+  GLCube1.Material.Texture.Disabled := False;
+
+
+  GLFreeForm1.LoadFromFile('groundtest.lmts');
+  GLFreeForm1.ObjectStyle := [osDirectDraw];
+
+  for I := 0 to GLMaterialLibrary1.Materials.Count - 1 do
+    GLMaterialLibrary1.Materials.Items[I].Material.MaterialOptions := [moNoLighting];
+
+end;
+
 procedure TForm1.GLCadencer1Progress(Sender: TObject; const DeltaTime, newTime: Double);
 var
   I: Integer;
 begin
   for I := 1 to glslProjectedTextures1.Emitters.Count - 1 do
     glslProjectedTextures1.Emitters[I].Emitter.turn(DeltaTime * (I + 1) * 10);
-
   GLSceneViewer1.Invalidate;
   GLArrowLine1.Position.Y := GLArrowLine1.Position.Y + sdir * DeltaTime;
   if GLArrowLine1.Position.Y > 20 then
@@ -88,7 +115,6 @@ begin
     GLArrowLine1.Position.Y := 10;
     sdir := 10;
   end;
-
 end;
 
 procedure TForm1.GLCamera1CustomPerspective(const viewport: TRectangle; Width, Height, DPI: Integer; var viewPortRadius: Single);
@@ -122,34 +148,6 @@ end;
 procedure TForm1.Timer1Timer(Sender: TObject);
 begin
   Caption := 'GLSL Projected Texture ' +GLSceneViewer1.FramesPerSecondText();
-end;
-
-procedure TForm1.FormCreate(Sender: TObject);
-var
-  I : Integer;
-begin
-  Randomize;
-  sdir := -10;
-  GLCamera1.CameraStyle := cscustom;
-
-  SetGLSceneMediaDir();
-
-  GLSLProjectedTextures1.Material.Texture.Image.LoadFromFile('flare1.bmp');
-  GLSLProjectedTextures1.Material.Texture.Disabled := False;
-  GLSLProjectedTextures1.Material.Texture.TextureWrap := twNone;
-  GLSLProjectedTextures1.Material.Texture.MinFilter := miLinear;
-  GLSLProjectedTextures1.Material.Texture.MagFilter := maLinear;
-  GLSLProjectedTextures1.UseLightmaps := True;
-  GLCube1.Material.Texture.Image.LoadFromFile('ashwood.jpg');
-  GLCube1.Material.Texture.Disabled := False;
-
-
-  GLFreeForm1.LoadFromFile('groundtest.lmts');
-  GLFreeForm1.ObjectStyle := [osDirectDraw];
-
-  for I := 0 to GLMaterialLibrary1.Materials.Count - 1 do
-    GLMaterialLibrary1.Materials.Items[I].Material.MaterialOptions := [moNoLighting];
-
 end;
 
 end.

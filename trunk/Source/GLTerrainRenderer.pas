@@ -55,8 +55,6 @@ type
     tmReleaseUnusedTiles, tmAllocateNewTiles, tmWaitForPreparing);
   TTileManagementFlags = set of TTileManagementFlag;
 
-  // TGLTerrainRenderer
-  //
   {  Basic terrain renderer. 
     This renderer uses no sophisticated meshing, it just builds and maintains
     a set of terrain tiles, performs basic visibility culling and renders its
@@ -66,7 +64,6 @@ type
     expressed as z=f(x, y) data. }
   TGLTerrainRenderer = class(TGLSceneObject)
   private
-     
     FHeightDataSource: TGLHeightDataSource;
     FTileSize: Integer;
     FQualityDistance, FinvTileSize: Single;
@@ -81,18 +78,13 @@ type
     FOnPatchPostRender: TPatchPostRenderEvent;
     FOnHeightDataPostRender: TGLHeightDataPostRenderEvent;
     FOnMaxCLODTrianglesReached: TMaxCLODTrianglesReachedEvent;
-
     FQualityStyle: TTerrainHighResStyle;
     FOcclusionFrameSkip: Integer;
     FOcclusionTesselate: TTerrainOcclusionTesselate;
-
     FContourInterval: Integer;
     FContourWidth: Integer;
-
   protected
-    
     FTilesHash: packed array [0 .. cTilesHashSize] of TList;
-
     procedure MarkAllTilesAsUnused;
     procedure ReleaseAllUnusedTiles;
     procedure MarkHashedTileAsUsed(const tilePos: TAffineVector);
@@ -100,7 +92,6 @@ type
       canAllocate: Boolean = True): TGLHeightData; overload;
     function HashedTile(const xLeft, yTop: Integer; canAllocate: Boolean = True)
       : TGLHeightData; overload;
-
     procedure SetHeightDataSource(const val: TGLHeightDataSource);
     procedure SetTileSize(const val: Integer);
     procedure SetTilesPerTexture(const val: Single);
@@ -108,31 +99,21 @@ type
     procedure SetMaterialLibrary(const Val: TGLMaterialLibrary);
     procedure SetQualityStyle(const Val: TTerrainHighResStyle);
     procedure SetOcclusionFrameSkip(Val: Integer);
-
-    procedure Notification(AComponent: TComponent;
-      Operation: TOperation); override;
+    procedure Notification(AComponent: TComponent; Operation: TOperation); override;
     procedure DestroyHandle; override;
-
     procedure ReleaseAllTiles; dynamic;
     procedure OnTileDestroyed(Sender: TObject); virtual;
     function GetPreparedPatch(const TilePos, EyePos: TAffineVector;
       TexFactor: Single; HDList: TList): TGLROAMPatch;
-
   public
-    
-
     { TileManagement flags can be used to turn off various Tile cache management features.
       This helps to prevent unnecessary tile cache flushes, when rendering from multiple cameras. }
     TileManagement: TTileManagementFlags;
-
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
     procedure BuildList(var rci: TGLRenderContextInfo); override;
     function RayCastIntersect(const rayStart, rayVector: TVector;
-      intersectPoint: PVector = nil; intersectNormal: PVector = nil)
-      : Boolean; override;
-
+      intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean; override;
     {  Interpolates height for the given point. 
       Expects a point expressed in absolute coordinates. }
     function InterpolatedHeight(const p: TVector): Single; overload; virtual;
@@ -140,9 +121,7 @@ type
     {  Triangle count for the last render. }
     property LastTriangleCount: Integer read FLastTriangleCount;
     function HashedTileCount: Integer;
-
   published
-    
     {  Specifies the HeightData provider component. }
     property HeightDataSource: TGLHeightDataSource read FHeightDataSource
       write SetHeightDataSource;
@@ -157,7 +136,6 @@ type
       the terrain renderer's material is used. }
     property MaterialLibrary: TGLMaterialLibrary read FMaterialLibrary
       write SetMaterialLibrary;
-
     {  Quality distance hint. 
       This parameter gives an hint to the terrain renderer at which distance
       the terrain quality can be degraded to favor speed. The distance is
@@ -213,7 +191,6 @@ type
     property OcclusionTesselate: TTerrainOcclusionTesselate
       read FOcclusionTesselate write FOcclusionTesselate
       default totTesselateIfVisible;
-
     {  Allows to specify terrain bounds. 
       Default rendering bounds will reach depth of view in all direction,
       with this event you can chose to specify a smaller rendered
@@ -238,15 +215,12 @@ type
      }
     property OnMaxCLODTrianglesReached: TMaxCLODTrianglesReachedEvent
       read FOnMaxCLODTrianglesReached write FOnMaxCLODTrianglesReached;
-
      {  Distance between contours - zero (default) for no contours  PGS }
     property ContourInterval: Integer read FContourInterval
       write FContourInterval default 0;
-
      {  Width of contour lines }
     property ContourWidth: Integer read FContourWidth
       write FContourWidth default 1;
-
   end;
 
 // ------------------------------------------------------------------
@@ -257,8 +231,6 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-// HashKey
-//
 function HashKey(const XLeft, YTop: Integer): Integer;
 begin
   Result := (XLeft + (XLeft shr 8) + (XLeft shr 16) + (YTop shl 1) +
@@ -270,8 +242,6 @@ end;
 // ------------------ TGLTerrainRenderer ------------------
 // ------------------
 
- 
-//
 constructor TGLTerrainRenderer.Create(AOwner: TComponent);
 var
   i: Integer;
@@ -293,8 +263,6 @@ begin
     tmAllocateNewTiles];
 end;
 
- 
-//
 destructor TGLTerrainRenderer.Destroy;
 var
   i: Integer;
@@ -311,8 +279,6 @@ begin
   inherited Destroy;
 end;
 
-// Notification
-//
 procedure TGLTerrainRenderer.Notification(AComponent: TComponent;
   Operation: TOperation);
 begin
@@ -326,8 +292,6 @@ begin
   inherited;
 end;
 
-// DestroyHandle
-//
 procedure TGLTerrainRenderer.DestroyHandle;
 begin
   inherited;
@@ -336,8 +300,6 @@ begin
     HeightDataSource.Clear;
 end;
 
-// RayCastIntersect
-//
 function TGLTerrainRenderer.RayCastIntersect(const rayStart, rayVector: TVector;
   intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean;
 var
@@ -427,8 +389,6 @@ begin
   end;
 end;
 
-// ReleaseAllTiles
-//
 procedure TGLTerrainRenderer.ReleaseAllTiles;
 var
   i, k: Integer;
@@ -448,8 +408,6 @@ begin
     end;
 end;
 
-// OnTileDestroyed
-//
 procedure TGLTerrainRenderer.OnTileDestroyed(Sender: TObject);
 var
   List: TList;
@@ -467,8 +425,6 @@ begin
   end;
 end;
 
-// InterpolatedHeight (hmg)
-//
 function TGLTerrainRenderer.InterpolatedHeight(const p: TVector): Single;
 var
   pLocal: TVector;
@@ -483,15 +439,11 @@ begin
     Result := 0;
 end;
 
-// InterpolatedHeight (affine)
-//
 function TGLTerrainRenderer.InterpolatedHeight(const p: TAffineVector): Single;
 begin
   Result := InterpolatedHeight(PointMake(p));
 end;
 
-// BuildList
-//
 procedure TGLTerrainRenderer.BuildList(var rci: TGLRenderContextInfo);
 var
   vEye, vEyeDirection: TVector;
@@ -541,7 +493,6 @@ begin
     Exit;
   if HeightDataSource = nil then
     Exit;
-
   currentMaterialName := '';
   // first project eye position into heightdata coordinates
   vEye := VectorTransform(rci.cameraPosition, InvAbsoluteMatrix);
@@ -823,8 +774,6 @@ begin
   HeightDataSource.Data.UnLockList;
 end;
 
-// MarkAllTilesAsUnused
-//
 procedure TGLTerrainRenderer.MarkAllTilesAsUnused;
 var
   i, j, zero: Integer;
@@ -840,8 +789,6 @@ begin
     end;
 end;
 
-// ReleaseAllUnusedTiles
-//
 procedure TGLTerrainRenderer.ReleaseAllUnusedTiles;
 var
   i, j: Integer;
@@ -865,8 +812,6 @@ begin
   end;
 end;
 
-// HashedTileCount
-//
 function TGLTerrainRenderer.HashedTileCount: Integer;
 var
   i: Integer;
@@ -883,8 +828,6 @@ begin
 end;
 
 
-// MarkHashedTileAsUsed
-//
 procedure TGLTerrainRenderer.MarkHashedTileAsUsed(const tilePos: TAffineVector);
 var
   hd: TGLHeightData;
@@ -899,8 +842,6 @@ begin
     hd.Tag := 1;
 end;
 
-// HashedTile
-//
 function TGLTerrainRenderer.HashedTile(const tilePos: TAffineVector;
   canAllocate: Boolean = True): TGLHeightData;
 var
@@ -911,8 +852,6 @@ begin
   Result := HashedTile(xLeft, yTop, canAllocate);
 end;
 
-// HashedTile
-//
 function TGLTerrainRenderer.HashedTile(const xLeft, yTop: Integer;
   canAllocate: Boolean = True): TGLHeightData;
 var
@@ -953,8 +892,6 @@ begin
     Result := nil;
 end;
 
-// GetPreparedPatch
-//
 function TGLTerrainRenderer.GetPreparedPatch(const TilePos,
   EyePos: TAffineVector; TexFactor: Single; HDList: TList): TGLROAMPatch;
 var
@@ -1022,8 +959,6 @@ begin
   end;
 end;
 
-// SetHeightDataSource
-//
 procedure TGLTerrainRenderer.SetHeightDataSource(const val: TGLHeightDataSource);
 begin
   if FHeightDataSource <> val then
@@ -1041,8 +976,6 @@ begin
   end;
 end;
 
-// SetTileSize
-//
 procedure TGLTerrainRenderer.SetTileSize(const val: Integer);
 begin
   if val <> FTileSize then
@@ -1057,8 +990,6 @@ begin
   end;
 end;
 
-// SetTilesPerTexture
-//
 procedure TGLTerrainRenderer.SetTilesPerTexture(const val: Single);
 begin
   if val <> FTilesPerTexture then
@@ -1068,8 +999,6 @@ begin
   end;
 end;
 
-// SetCLODPrecision
-//
 procedure TGLTerrainRenderer.SetCLODPrecision(const val: Integer);
 var
   i, k: Integer;
@@ -1098,8 +1027,6 @@ begin
   end;
 end;
 
-// SetMaterialLibrary
-//
 procedure TGLTerrainRenderer.SetMaterialLibrary(const val: TGLMaterialLibrary);
 begin
   if val <> FMaterialLibrary then
@@ -1109,8 +1036,6 @@ begin
   end;
 end;
 
-// SetQualityStyle
-//
 procedure TGLTerrainRenderer.SetQualityStyle(const val: TTerrainHighResStyle);
 begin
   if val <> FQualityStyle then
@@ -1120,8 +1045,6 @@ begin
   end;
 end;
 
-// SetOcclusionFrameSkip
-//
 procedure TGLTerrainRenderer.SetOcclusionFrameSkip(val: Integer);
 var
   i, k: Integer;

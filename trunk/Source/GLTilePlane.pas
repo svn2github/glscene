@@ -30,9 +30,6 @@ uses
   XOpenGL;
 
 type
-
-   // TGLTiledAreaRow
-   //
    {Stores row information for a tiled area.  }
    TGLTiledAreaRow = class (TPersistentObject)
 	   private
@@ -66,8 +63,6 @@ type
 
    end;
 
-   // TGLTiledArea
-   //
    {Stores tile information in a tiled area. 
       Each tile stores an integer value with zero the default value,
       assumed as "empty". }
@@ -107,8 +102,6 @@ type
 
    end;
 
-   // TGLTilePlane
-   //
    {A tiled textured plane. 
       This plane object stores and displays texture tiles that composes it,
       and is optimized to minimize texture switches when rendering.
@@ -167,8 +160,6 @@ implementation
 // ------------------ TGLTiledAreaRow ------------------
 // ------------------
 
- 
-//
 constructor TGLTiledAreaRow.Create;
 begin
    inherited;
@@ -177,16 +168,12 @@ begin
    FColMax:=-1;
 end;
 
- 
-//
 destructor TGLTiledAreaRow.Destroy;
 begin
    FData.Free;
    inherited;
 end;
 
-// WriteToFiler
-//
 procedure TGLTiledAreaRow.WriteToFiler(writer : TVirtualWriter);
 begin
    inherited WriteToFiler(writer);
@@ -197,8 +184,6 @@ begin
    end;
 end;
 
-// ReadFromFiler
-//
 procedure TGLTiledAreaRow.ReadFromFiler(reader : TVirtualReader);
 var
 	archiveVersion : Integer;
@@ -212,8 +197,6 @@ begin
    end;
 end;
 
-// Pack
-//
 procedure TGLTiledAreaRow.Pack;
 var
    i, startSkip : Integer;
@@ -243,15 +226,11 @@ begin
    end;
 end;
 
-// Empty
-//
 function TGLTiledAreaRow.Empty : Boolean;
 begin
    Result:=(FData.Count=0);
 end;
 
-// RemapTiles
-//
 procedure TGLTiledAreaRow.RemapTiles(remapList : TIntegerList);
 var
    i, k : Integer;
@@ -264,8 +243,6 @@ begin
    end;
 end;
 
-// SetColMax
-//
 procedure TGLTiledAreaRow.SetColMax(const val : Integer);
 begin
    if val>=ColMin then
@@ -274,8 +251,6 @@ begin
    FColMax:=val;
 end;
 
-// SetColMin
-//
 procedure TGLTiledAreaRow.SetColMin(const val : Integer);
 begin
    if ColMax>=val then begin
@@ -286,8 +261,6 @@ begin
    FColMin:=val;
 end;
 
-// GetCell
-//
 function TGLTiledAreaRow.GetCell(col : Integer) : Integer;
 begin
    if (col>=ColMin) and (col<=ColMax) then
@@ -295,8 +268,6 @@ begin
    else Result:=0;
 end;
 
-// SetCell
-//
 procedure TGLTiledAreaRow.SetCell(col, val : Integer);
 var
    i : Integer;
@@ -320,8 +291,6 @@ end;
 // ------------------ TGLTiledArea ------------------
 // ------------------
 
- 
-//
 constructor TGLTiledArea.Create;
 begin
    inherited;
@@ -329,16 +298,12 @@ begin
    FRowMax:=-1;
 end;
 
- 
-//
 destructor TGLTiledArea.Destroy;
 begin
    FRows.CleanFree;
    inherited;
 end;
 
-// WriteToFiler
-//
 procedure TGLTiledArea.WriteToFiler(writer : TVirtualWriter);
 begin
    inherited WriteToFiler(writer);
@@ -349,8 +314,6 @@ begin
    end;
 end;
 
-// ReadFromFiler
-//
 procedure TGLTiledArea.ReadFromFiler(reader : TVirtualReader);
 var
 	archiveVersion : Integer;
@@ -364,8 +327,6 @@ begin
    end;
 end;
 
-// Pack
-//
 procedure TGLTiledArea.Pack;
 var
    i, firstNonNil, lastNonNil : Integer;
@@ -398,8 +359,6 @@ begin
    end else FRows.Clear;
 end;
 
-// Clear
-//
 procedure TGLTiledArea.Clear;
 begin
    FRows.Clean;
@@ -407,15 +366,11 @@ begin
    FRowMax:=-1;
 end;
 
-// Empty
-//
 function TGLTiledArea.Empty : Boolean;
 begin
    Result:=(FRows.Count=0);
 end;
 
-// RemapTiles
-//
 procedure TGLTiledArea.RemapTiles(remapList : TIntegerList);
 var
    i : Integer;
@@ -428,8 +383,6 @@ begin
    end;
 end;
 
-// GetTile
-//
 function TGLTiledArea.GetTile(col, row : Integer) : Integer;
 var
    i : Integer;
@@ -444,8 +397,6 @@ begin
    end else Result:=0;
 end;
 
-// SetTile
-//
 procedure TGLTiledArea.SetTile(col, row, val : Integer);
 var
    r : TGLTiledAreaRow;
@@ -460,8 +411,6 @@ begin
    r.Cell[col]:=val;
 end;
 
-// GetRow
-//
 function TGLTiledArea.GetRow(index : Integer) : TGLTiledAreaRow;
 begin
    index:=index-RowMin;
@@ -470,8 +419,6 @@ begin
    else Result:=nil;
 end;
 
-// SetRowMax
-//
 procedure TGLTiledArea.SetRowMax(const val : Integer);
 begin
    if val>=RowMin then begin
@@ -482,8 +429,6 @@ begin
    FRowMax:=val;
 end;
 
-// SetRowMin
-//
 procedure TGLTiledArea.SetRowMin(const val : Integer);
 begin
    if val<=RowMax then begin
@@ -498,8 +443,6 @@ end;
 // ------------------ TGLTilePlane ------------------
 // ------------------
 
- 
-//
 constructor TGLTilePlane.Create(AOwner:Tcomponent);
 begin
    inherited Create(AOwner);
@@ -507,8 +450,6 @@ begin
    FSortByMaterials:=True;
 end;
 
- 
-//
 destructor TGLTilePlane.Destroy;
 begin
    MaterialLibrary:=nil;
@@ -516,8 +457,6 @@ begin
    inherited;
 end;
 
-// SetNoZWrite
-//
 procedure TGLTilePlane.SetNoZWrite(const val : Boolean);
 begin
    if FNoZWrite<>val then begin
@@ -526,8 +465,6 @@ begin
    end;
 end;
 
-// SetTiles
-//
 procedure TGLTilePlane.SetTiles(const val : TGLTiledArea);
 begin
    if val<>FTiles then begin
@@ -536,8 +473,6 @@ begin
    end;
 end;
 
-// SetMaterialLibrary
-//
 procedure TGLTilePlane.SetMaterialLibrary(const val : TGLMaterialLibrary);
 begin
    if FMaterialLibrary<>val then begin
@@ -552,16 +487,12 @@ begin
    end;
 end;
 
-// SetSortByMaterials
-//
 procedure TGLTilePlane.SetSortByMaterials(const val : Boolean);
 begin
    FSortByMaterials:=val;
 	StructureChanged;
 end;
 
-// Notification
-//
 procedure TGLTilePlane.Notification(AComponent: TComponent; Operation: TOperation);
 begin
    if Operation=opRemove then begin
@@ -571,8 +502,6 @@ begin
    inherited;
 end;
 
-// DoRender
-//
 procedure TGLTilePlane.DoRender(var ARci : TGLRenderContextInfo;
                                 ARenderSelf, ARenderChildren : Boolean);
 var
@@ -585,8 +514,6 @@ begin
    inherited;
 end;
 
-// BuildList
-//
 procedure TGLTilePlane.BuildList(var rci : TGLRenderContextInfo);
 type
    TQuadListInfo = packed record

@@ -3161,9 +3161,6 @@ begin
   Result.W := 0;
 end;
 
-// Prepare
-//
-
 procedure TMeshObject.Prepare;
 var
   i: Integer;

@@ -5,7 +5,7 @@
   DelphiWebScript implementation for the GLScene scripting layer. 
 
   History :  
-       04/11/2004 - SG - Creation
+    04/11/2004 - SG - Creation
     
 }
 unit GLScriptDWS;
@@ -23,10 +23,8 @@ uses
   GLManager;
 
 type
-  // TGLDelphiWebScript
-  //
   {This class only adds manager registration logic to the TDelphiWebScriptII
-     class to enable the XCollection items (ie. TGLScriptDWS2) retain it's
+     class to enable the XCollection items (ie. TGLScriptDWS) retain it's
      assigned compiler from design to run -time. }
   TGLDelphiWebScript = class(TDelphiWebScript)
     public
@@ -34,34 +32,23 @@ type
       destructor Destroy; override;
   end;
 
-  // GLScriptDWS
-  //
-  {Implements DelphiWebScriptII scripting functionality through the
-     abstracted GLScriptBase . }
+  {Implements DelphiWebScript scripting functionality through the
+     abstracted GLScriptBase }
   TGLScriptDWS = class(TGLScriptBase)
     private
-       
       FDWSProgram : TProgram;
       FCompiler : TGLDelphiWebScript;
       FCompilerName : String;
-
     protected
-      
       procedure SetCompiler(const Value : TGLDelphiWebScriptII);
-
       procedure ReadFromFiler(reader : TReader); override;
       procedure WriteToFiler(writer : TWriter); override;
       procedure Loaded; override;
       procedure Notification(AComponent: TComponent; Operation: TOperation); override;
-
       function GetState : TGLScriptState; override;
-
     public
-      
       destructor Destroy; override;
-
       procedure Assign(Source: TPersistent); override;
-
       procedure Compile; override;
       procedure Start; override;
       procedure Stop; override;
@@ -96,8 +83,6 @@ implementation
 // --------------- Miscellaneous ---------------
 // ---------------
 
-// Register
-//
 procedure Register;
 begin
   RegisterClasses([TGLDelphiWebScript, TGLScriptDWS]);
@@ -109,16 +94,12 @@ end;
 // ---------- TGLDelphiWebScript ----------
 // ----------
 
- 
-//
 constructor TGLDelphiWebScript.Create(AOnwer : TComponent);
 begin
   inherited;
   RegisterManager(Self);
 end;
 
- 
-//
 destructor TGLDelphiWebScript.Destroy;
 begin
   DeregisterManager(Self);
@@ -127,19 +108,15 @@ end;
 
 
 // ---------------
-// --------------- TGLScriptDWS2 ---------------
+// --------------- TGLScriptDWS ---------------
 // ---------------
 
- 
-//
 destructor TGLScriptDWS.Destroy;
 begin
   Invalidate;
   inherited;
 end;
 
-// Assign
-//
 procedure TGLScriptDWS.Assign(Source: TPersistent);
 begin
   inherited;
@@ -148,8 +125,6 @@ begin
   end;
 end;
 
-// ReadFromFiler
-//
 procedure TGLScriptDWS.ReadFromFiler(reader : TReader);
 var
   archiveVersion : Integer;
@@ -163,8 +138,6 @@ begin
   end;
 end;
 
-// WriteToFiler
-//
 procedure TGLScriptDWS.WriteToFiler(writer : TWriter);
 begin
   inherited;
@@ -178,8 +151,6 @@ begin
   end;
 end;
 
-// Loaded
-//
 procedure TGLScriptDWS.Loaded;
 var
   temp : TComponent;
@@ -193,37 +164,27 @@ begin
   end;
 end;
 
-// Notification
-//
 procedure TGLScriptDWS.Notification(AComponent: TComponent; Operation: TOperation);
 begin
   if (AComponent = Compiler) and (Operation = opRemove) then
     Compiler:=nil;
 end;
 
- 
-//
 class function TGLScriptDWS.FriendlyName : String;
 begin
   Result:='GLScriptDWS';
 end;
 
-// FriendlyDescription
-//
 class function TGLScriptDWS.FriendlyDescription : String;
 begin
   Result:='DelphiWebScript script';
 end;
 
-// ItemCategory
-//
 class function TGLScriptDWS.ItemCategory : String;
 begin
   Result:='';
 end;
 
-// Compile
-//
 procedure TGLScriptDWS.Compile;
 begin
   Invalidate;
@@ -233,8 +194,6 @@ begin
     raise Exception.Create('No compiler assigned!');
 end;
 
-// Execute
-//
 procedure TGLScriptDWS.Execute;
 begin
   if (State = ssUncompiled) then
@@ -245,8 +204,6 @@ begin
     FDWS2Program.Execute;
 end;
 
-// Invalidate
-//
 procedure TGLScriptDWS.Invalidate;
 begin
   if (State <> ssUncompiled) or Assigned(FDWSProgram) then begin
@@ -255,8 +212,6 @@ begin
   end;
 end;
 
-// Start
-//
 procedure TGLScriptDWS.Start;
 begin
   if (State = ssUncompiled) then
@@ -265,16 +220,12 @@ begin
     FDWS2Program.BeginProgram(False);
 end;
 
-// Stop
-//
 procedure TGLScriptDWS.Stop;
 begin
   if (State = ssRunning) then
     FDWS2Program.EndProgram;
 end;
 
-// Call
-//
 function TGLScriptDWS.Call(aName: String; aParams: array of Variant) : Variant;
 var
   Symbol : TSymbol;
@@ -296,8 +247,6 @@ begin
   end;
 end;
 
-// SetCompiler
-//
 procedure TGLScriptDWS.SetCompiler(const Value : TGLDelphiWebScript);
 begin
   if Value<>FCompiler then begin
@@ -306,8 +255,6 @@ begin
   end;
 end;
 
-// GetState
-//
 function TGLScriptDWS.GetState : TGLScriptState;
 begin
   Result:=ssUncompiled;

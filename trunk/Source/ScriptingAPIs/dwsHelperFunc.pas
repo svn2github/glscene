@@ -25,7 +25,6 @@ function AddClassSymbol(SymbolTable: TSymbolTable;
 procedure AddPropertyToClass(Name, DataType, ReadAccess, WriteAccess,
   IndexDataType: String; IsDefault: Boolean; ClassSym: TClassSymbol;
   Table: TSymbolTable);
-
 procedure ValidateExternalObject(ExtObject: TObject; ObjClass: TClass);
 
 // -------------------------------------------------------------------
@@ -36,8 +35,6 @@ implementation
 // -------------------------------------------------------------------
 // -------------------------------------------------------------------
 
-// AddForwardDeclaration
-//
 procedure AddForwardDeclaration(ClassName: String; SymbolTable: TSymbolTable);
 var
   Sym: TSymbol;
@@ -50,8 +47,6 @@ begin
   SymbolTable.AddSymbol(Sym);
 end;
 
-// AddClassSymbol
-//
 function AddClassSymbol(SymbolTable: TSymbolTable;
   Name, Ancestor: String): TSymbol;
 var
@@ -99,8 +94,6 @@ begin
   end;
 end;
 
-// AddPropertyToClass
-//
 procedure AddPropertyToClass(Name, DataType, ReadAccess, WriteAccess,
   IndexDataType: String; IsDefault: Boolean; ClassSym: TClassSymbol;
   Table: TSymbolTable);
@@ -128,8 +121,6 @@ begin
     ClassSym.DefaultProperty := PropertySym;
 end;
 
-// ValidateExternalObject
-//
 procedure ValidateExternalObject(ExtObject: TObject; ObjClass: TClass);
 var
   Valid: Boolean;

@@ -44,41 +44,25 @@ uses
 
 type
 
-  // TSpaceTextCharRange
-  //
   TGLSpaceTextCharRange = (stcrDefault, stcrAlphaNum, stcrNumbers, stcrWide);
 
-  // TGLTextHorzAdjust
-  //
   // Note: haAligned, haCentrically, haFitIn have not been implemented!
-  //
-  TGLTextHorzAdjust = (haLeft, haCenter, haRight, haAligned,
-    haCentrically, haFitIn);
+  TGLTextHorzAdjust = (haLeft, haCenter, haRight, haAligned, haCentrically, haFitIn);
 
-  // TGLTextVertAdjust
-  //
   TGLTextVertAdjust = (vaTop, vaCenter, vaBottom, vaBaseLine);
 
-  // TGLTextAdjust
-  //
   TGLTextAdjust = class(TPersistent)
   private
-     
     FHorz: TGLTextHorzAdjust;
     FVert: TGLTextVertAdjust;
     FOnChange: TNotifyEvent;
     procedure SetHorz(const Value: TGLTextHorzAdjust);
     procedure SetVert(const Value: TGLTextVertAdjust);
-
   public
-    
     constructor Create;
     procedure Assign(Source: TPersistent); override;
-
     property OnChange: TNotifyEvent read FOnChange write FOnChange;
-
   published
-    
     property Horz: TGLTextHorzAdjust read FHorz write SetHorz default haLeft;
     property Vert: TGLTextVertAdjust read FVert write SetVert
       default vaBaseLine;
@@ -99,12 +83,9 @@ type
     FClients: TList;
   end;
 
-  // TGLSpaceText
-  //
   {  Renders a text in 3D. }
   TGLSpaceText = class(TGLSceneObject)
   private
-     
     FFont: TFont;
     FExtrusion: Single;
     FAllowedDeviation: Single;
@@ -126,7 +107,6 @@ type
     procedure SetOblique(const Value: Single);
     procedure SetTextHeight(const Value: Single);
   protected
-    
     FTextFontEntry: PFontEntry;
     FontChanged: Boolean;
     procedure DestroyHandle; override;
@@ -134,20 +114,15 @@ type
     procedure GetFirstAndLastChar(var firstChar, lastChar: Integer);
     procedure DoOnLinesChange(sender: TObject); virtual;
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
     procedure Assign(Source: TPersistent); override;
-
     procedure BuildList(var rci: TGLRenderContextInfo); override;
     procedure DoRender(var ARci: TGLRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
-
     function TextWidth(const str: WideString = ''): Single;
     function TextMaxHeight(const str: WideString = ''): Single;
     function TextMaxUnder(const str: WideString = ''): Single;
-
     {  Note: this fuction is valid only after text has been rendered
       the first time. Before that it returns zeros. }
     procedure TextMetrics(const str: WideString;
@@ -158,7 +133,6 @@ type
     function AxisAlignedDimensionsUnscaled: TVector; override;
     function BarycenterAbsolutePosition: TVector; override;
   published
-    
     {  Adjusts the 3D font extrusion. 
       If Extrusion=0, the characters will be flat (2D), values >0 will
       give them a third dimension. }
@@ -179,27 +153,19 @@ type
     property Adjust: TGLTextAdjust read FAdjust write SetAdjust;
   end;
 
-  // TFontManager
-  //
   {  Manages a list of fonts for which display lists were created. }
   TFontManager = class(TList)
   private
-     
     FCurrentBase: Integer;
-
   protected
-    
     procedure NotifyClients(Clients: TList);
     procedure VirtualHandleAlloc(sender: TGLVirtualHandle;
       var handle: Cardinal);
     procedure VirtualHandleDestroy(sender: TGLVirtualHandle;
       var handle: Cardinal);
-
   public
-    
     constructor Create;
     destructor Destroy; override;
-
     function FindFont(AName: string; FStyles: TFontStyles; FExtrusion: Single;
       FAllowedDeviation: Single; FFirstChar, FLastChar: Integer): PFontEntry;
     function GetFontBase(AName: string; FStyles: TFontStyles;
@@ -229,18 +195,12 @@ const
 var
   vFontManager: TFontManager;
 
-  // FontManager
-  //
-
 function FontManager: TFontManager;
 begin
   if not Assigned(vFontManager) then
     vFontManager := TFontManager.Create;
   Result := vFontManager;
 end;
-
-// ReleaseFontManager
-//
 
 procedure ReleaseFontManager;
 begin
@@ -255,18 +215,12 @@ end;
 // ------------------ TGLTextAdjust ------------------
 // ------------------
 
- 
-//
-
 constructor TGLTextAdjust.Create;
 begin
   inherited;
   FHorz := haLeft;
   FVert := vaBaseLine;
 end;
-
-// Assign
-//
 
 procedure TGLTextAdjust.Assign(Source: TPersistent);
 begin
@@ -281,9 +235,6 @@ begin
     inherited Assign(Source);
 end;
 
-// SetHorz
-//
-
 procedure TGLTextAdjust.SetHorz(const Value: TGLTextHorzAdjust);
 begin
   if FHorz <> Value then
@@ -293,9 +244,6 @@ begin
       FOnChange(Self);
   end;
 end;
-
-// SetVert
-//
 
 procedure TGLTextAdjust.SetVert(const Value: TGLTextVertAdjust);
 begin
@@ -311,9 +259,6 @@ end;
 // ------------------ TGLSpaceText ------------------
 // ------------------
 
- 
-//
-
 constructor TGLSpaceText.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
@@ -328,9 +273,6 @@ begin
   FLines.OnChange := DoOnLinesChange;
 end;
 
- 
-//
-
 destructor TGLSpaceText.Destroy;
 begin
   FAdjust.OnChange := nil;
@@ -341,9 +283,6 @@ begin
   FontManager.Release(FTextFontEntry, Self);
   inherited Destroy;
 end;
-
-// TextMetrics
-//
 
 procedure TGLSpaceText.TextMetrics(const str: WideString;
   out width, maxHeight, maxUnder: Single);
@@ -377,18 +316,12 @@ begin
   end;
 end;
 
-// TextWidth
-//
-
 function TGLSpaceText.TextWidth(const str: WideString = ''): Single;
 var
   mh, mu: Single;
 begin
   TextMetrics(str, Result, mh, mu);
 end;
-
-// TextMaxHeight
-//
 
 function TGLSpaceText.TextMaxHeight(const str: WideString = ''): Single;
 var
@@ -397,17 +330,12 @@ begin
   TextMetrics(str, w, Result, mu);
 end;
 
-// TextMaxUnder
-//
-
 function TGLSpaceText.TextMaxUnder(const str: WideString = ''): Single;
 var
   w, mh: Single;
 begin
   TextMetrics(str, w, mh, Result);
 end;
-
-// Assign
 
 procedure TGLSpaceText.Assign(Source: TPersistent);
 begin
@@ -426,9 +354,6 @@ begin
     StructureChanged;
   end;
 end;
-
-// BuildList
-//
 
 procedure TGLSpaceText.BuildList(var rci: TGLRenderContextInfo);
 var
@@ -521,17 +446,11 @@ begin
   end;
 end;
 
-// DestroyHandle
-//
-
 procedure TGLSpaceText.DestroyHandle;
 begin
   FontChanged := True;
   inherited;
 end;
-
-// GetFirstAndLastChar
-//
 
 procedure TGLSpaceText.GetFirstAndLastChar(var firstChar, lastChar: Integer);
 begin
@@ -559,9 +478,6 @@ begin
   end;
 end;
 
-// DoRender
-//
-
 procedure TGLSpaceText.DoRender(var ARci: TGLRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);
 var
@@ -586,9 +502,6 @@ begin
   inherited;
 end;
 
-// SetExtrusion
-//
-
 procedure TGLSpaceText.SetExtrusion(AValue: Single);
 begin
   Assert(AValue >= 0, 'Extrusion must be >=0');
@@ -598,9 +511,6 @@ begin
     OnFontChange(nil);
   end;
 end;
-
-// SetAllowedDeviation
-//
 
 procedure TGLSpaceText.SetAllowedDeviation(const val: Single);
 begin
@@ -614,9 +524,6 @@ begin
   end;
 end;
 
-// SetCharacterRange
-//
-
 procedure TGLSpaceText.SetCharacterRange(const val: TGLSpaceTextCharRange);
 begin
   if FCharacterRange <> val then
@@ -626,26 +533,17 @@ begin
   end;
 end;
 
-// SetFont
-//
-
 procedure TGLSpaceText.SetFont(AFont: TFont);
 begin
   FFont.Assign(AFont);
   OnFontChange(nil);
 end;
 
-// OnFontChange
-//
-
 procedure TGLSpaceText.OnFontChange(sender: TObject);
 begin
   FontChanged := True;
   StructureChanged;
 end;
-
-// SetText
-//
 
 procedure TGLSpaceText.SetText(const AText: WideString);
 begin
@@ -661,9 +559,6 @@ begin
   StructureChanged;
 end;
 
-// SetAdjust
-//
-
 function TGLSpaceText.GetText: WideString;
 begin
   if FLines.Count = 1 then
@@ -672,25 +567,16 @@ begin
     Result := FLines.Text;
 end;
 
-// SetAdjust
-//
-
 procedure TGLSpaceText.SetLines(const Value: TStringList);
 begin
   FLines.Assign(Value);
 end;
-
-// SetAdjust
-//
 
 procedure TGLSpaceText.SetAdjust(const Value: TGLTextAdjust);
 begin
   FAdjust.Assign(Value);
   StructureChanged;
 end;
-
-// SetAspectRatio
-//
 
 procedure TGLSpaceText.SetAspectRatio(const Value: Single);
 begin
@@ -701,9 +587,6 @@ begin
   end;
 end;
 
-// SetOblique
-//
-
 procedure TGLSpaceText.SetOblique(const Value: Single);
 begin
   if FOblique <> Value then
@@ -712,9 +595,6 @@ begin
     StructureChanged;
   end;
 end;
-
-// SetTextHeight
-//
 
 procedure TGLSpaceText.SetTextHeight(const Value: Single);
 begin
@@ -725,17 +605,11 @@ begin
   end;
 end;
 
-// NotifyFontChanged
-//
-
 procedure TGLSpaceText.NotifyFontChanged;
 begin
   FTextFontEntry := nil;
   FontChanged := True;
 end;
-
-// NotifyChange
-//
 
 procedure TGLSpaceText.NotifyChange(sender: TObject);
 begin
@@ -744,9 +618,6 @@ begin
   else
     inherited;
 end;
-
-// DefaultHandler
-//
 
 procedure TGLSpaceText.DefaultHandler(var Message);
 begin
@@ -758,9 +629,6 @@ begin
       inherited;
   end;
 end;
-
-// BarycenterAbsolutePosition
-//
 
 function TGLSpaceText.BarycenterAbsolutePosition: TVector;
 var
@@ -804,9 +672,6 @@ begin
   Result := LocalToAbsolute(AdjustVector);
 end;
 
-// AxisAlignedDimensionsUnscaled
-//
-
 function TGLSpaceText.AxisAlignedDimensionsUnscaled: TVector;
 var
   lWidth, lHeightMax, lHeightMin: Single;
@@ -829,16 +694,10 @@ end;
 // ------------------ TFontManager ------------------
 // ------------------
 
- 
-//
-
 constructor TFontManager.Create;
 begin
   inherited;
 end;
-
- 
-//
 
 destructor TFontManager.Destroy;
 var
@@ -855,17 +714,11 @@ begin
   inherited Destroy;
 end;
 
-// VirtualHandleAlloc
-//
-
 procedure TFontManager.VirtualHandleAlloc(sender: TGLVirtualHandle;
   var handle: Cardinal);
 begin
   handle := FCurrentBase;
 end;
-
-// VirtualHandleDestroy
-//
 
 procedure TFontManager.VirtualHandleDestroy(sender: TGLVirtualHandle;
   var handle: Cardinal);
@@ -873,9 +726,6 @@ begin
   if handle <> 0 then
     GL.DeleteLists(handle, sender.Tag);
 end;
-
-// FindFond
-//
 
 function TFontManager.FindFont(AName: string; FStyles: TFontStyles;
   FExtrusion: Single; FAllowedDeviation: Single; FFirstChar, FLastChar: Integer)
@@ -896,9 +746,6 @@ begin
         Break;
       end;
 end;
-
-// GetFontBase
-//
 
 function TFontManager.GetFontBase(AName: string; FStyles: TFontStyles;
   FExtrusion: Single; allowedDeviation: Single; firstChar, lastChar: Integer;
@@ -979,9 +826,6 @@ begin
   end;
 end;
 
-// Release
-//
-
 procedure TFontManager.Release(entry: PFontEntry; client: TObject);
 var
   hMsg: TMessage;
@@ -1005,9 +849,6 @@ begin
     end;
   end;
 end;
-
-// NotifyClients
-//
 
 procedure TFontManager.NotifyClients(Clients: TList);
 var

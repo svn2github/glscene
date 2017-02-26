@@ -5,14 +5,8 @@
    Texture combiners setup utility functions. 
 
    History :  
-       05/03/11 - Yar - Added combiner's commands cache   
-       23/08/10 - Yar - Added OpenGLTokens to uses
-       18/06/10 - Yar - Replaced OpenGL functions to OpenGLAdapter
-       02/04/07 - DaStr - Added $I GLScene.inc
-       17/12/03 - EG - Alpha and RGB channels separate combination now supported
-       23/05/03 - EG - All tex units now accepted as target
-       22/05/03 - EG - Fixed GL_ADD_SIGNED_ARB parsing, better error reporting
-       16/05/03 - EG - Creation
+     16/05/03 - EG - Creation
+
     
 }
 unit GLTextureCombiners;
@@ -30,7 +24,6 @@ uses
 
 
 type
-
   TCombinerCommand = record
     ActiveUnit: Integer;
     Arg1: Integer;
@@ -39,17 +32,14 @@ type
 
   TCombinerCache = array of TCombinerCommand;
 
-  // ETextureCombinerError
-  //
-  ETextureCombinerError = class(Exception)
-    ;
+  ETextureCombinerError = class(Exception);
 
-  {Parses a TC text description and setups combiners accordingly. 
-     *experimental*
-     Knowledge of texture combiners is a requirement
-     Syntax: pascal-like, one instruction per line, use '//' for comment. 
+  { Parses a TC text description and setups combiners accordingly. 
+    *experimental*
+    Knowledge of texture combiners is a requirement
+    Syntax: pascal-like, one instruction per line, use '//' for comment. 
 
-     Examples: 
+    Examples: 
       Tex1:=Tex0;   // replace texture 1 with texture 0
       Tex1:=Tex0+Tex1; // additive blending between textures 0 and 1
       Tex1:=Tex0-Tex1; // subtractive blending between textures 0 and 1
@@ -82,17 +72,11 @@ var
   vActiveUnit: Integer;
   vCommandCache: TCombinerCache;
 
-// TCAssertCheck
-//
-
 procedure TCAssertCheck(const b: Boolean; const errMsg: string);
 begin
   if not b then
     raise ETextureCombinerError.Create(errMsg);
 end;
-
-// RemoveSpaces
-//
 
 function RemoveSpaces(const str: string): string;
 var
@@ -113,9 +97,6 @@ begin
   end;
   SetLength(Result, p - 1);
 end;
-
-// ProcessTextureCombinerArgument
-//
 
 procedure ProcessTextureCombinerArgument(arg: string; sourceEnum, operandEnum: Integer;
   const dest: string);
@@ -196,9 +177,6 @@ begin
   cmd.Arg2 := operandValue;
   vCommandCache[High(vCommandCache)] := cmd;
 end;
-
-// ProcessTextureCombinerLine
-//
 
 procedure ProcessTextureCombinerLine(const tcLine: string);
 var
@@ -340,9 +318,6 @@ begin
   if arg3 <> '' then
     ProcessTextureCombinerArgument(arg3, sourceBaseEnum + 2, operandBaseEnum + 2, dest);
 end;
-
-// SetupTextureCombiners
-//
 
 function GetTextureCombiners(const tcCode: TStringList): TCombinerCache;
 var

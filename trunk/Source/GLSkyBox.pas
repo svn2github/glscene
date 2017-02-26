@@ -28,16 +28,11 @@ uses
 
 type
 
-  // TGLSkyBoxStyle
-  //
   TGLSkyBoxStyle = (sbsFull, sbsTopHalf, sbsBottomHalf, sbTopTwoThirds,
     sbsTopHalfClamped);
 
-  // TGLSkyBox
-  //
   TGLSkyBox = class(TGLCameraInvariantObject, IGLMaterialLibrarySupported)
   private
-     
     FMatNameTop: string;
     FMatNameRight: string;
     FMatNameFront: string;
@@ -49,11 +44,9 @@ type
     FCloudsPlaneOffset: Single;
     FCloudsPlaneSize: Single;
     FStyle: TGLSkyBoxStyle;
-
     //implementing IGLMaterialLibrarySupported
     function GetMaterialLibrary: TGLAbstractMaterialLibrary;
   protected
-    
     procedure SetMaterialLibrary(const Value: TGLMaterialLibrary);
     procedure SetMatNameBack(const Value: string);
     procedure SetMatNameBottom(const Value: string);
@@ -65,20 +58,15 @@ type
     procedure SetCloudsPlaneOffset(const Value: single);
     procedure SetCloudsPlaneSize(const Value: single);
     procedure SetStyle(const value: TGLSkyBoxStyle);
-
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
     procedure DoRender(var ARci: TGLRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
     procedure BuildList(var ARci: TGLRenderContextInfo); override;
     procedure Notification(AComponent: TComponent; Operation: TOperation);
       override;
-
   published
-    
     property MaterialLibrary: TGLMaterialLibrary read FMaterialLibrary write
       SetMaterialLibrary;
     property MatNameTop: TGLLibMaterialName read FMatNameTop write
@@ -118,9 +106,6 @@ uses
 // ------------------ TGLSkyBox ------------------
 // ------------------
 
- 
-//
-
 constructor TGLSkyBox.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
@@ -132,24 +117,15 @@ begin
     // the bigger, the more this extends the clouds cap to the horizon
 end;
 
- 
-//
-
 destructor TGLSkyBox.Destroy;
 begin
   inherited;
 end;
 
-// GetMaterialLibrary
-//
-
 function TGLSkyBox.GetMaterialLibrary: TGLAbstractMaterialLibrary;
 begin
   Result := FMaterialLibrary;
 end;
-
-// Notification
-//
 
 procedure TGLSkyBox.Notification(AComponent: TComponent; Operation: TOperation);
 begin
@@ -157,9 +133,6 @@ begin
     MaterialLibrary := nil;
   inherited;
 end;
-
-// DoRender
-//
 
 procedure TGLSkyBox.DoRender(var ARci: TGLRenderContextInfo; ARenderSelf,
   ARenderChildren: Boolean);
@@ -173,8 +146,6 @@ begin
   inherited;
   Arci.ignoreDepthRequests := False;
 end;
-// DoRender
-//
 
 procedure TGLSkyBox.BuildList(var ARci: TGLRenderContextInfo);
 var
@@ -417,17 +388,11 @@ begin
   StructureChanged;
 end;
 
-// SetStyle
-//
-
 procedure TGLSkyBox.SetStyle(const value: TGLSkyBoxStyle);
 begin
   FStyle := value;
   StructureChanged;
 end;
-
-// SetMaterialLibrary
-//
 
 procedure TGLSkyBox.SetMaterialLibrary(const value: TGLMaterialLibrary);
 begin
@@ -481,9 +446,9 @@ end;
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 initialization
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
 
   RegisterClass(TGLSkyBox);
 

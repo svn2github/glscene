@@ -15,7 +15,7 @@ interface
 uses
   System.Classes,
   System.SysUtils,
-  //dws
+  
   dwsExprs, 
   dwsSymbols, 
   dwsComp, 
@@ -27,30 +27,25 @@ uses
 type
   TdwsClassesUnit = class(TdwsUnitComponent)
     private
-
       procedure AddClassTPersistent(SymbolTable : TSymbolTable);
       procedure AddClassTComponent(SymbolTable : TSymbolTable);
-
     protected
       procedure AddUnitSymbols(SymbolTable: TSymbolTable); override;
-
     public
       constructor Create(AOwner: TComponent); override;
-
   end;
 
 procedure Register;
 
+//===============================================================
 implementation
+//===============================================================
 
 // ----------
 // ---------- Internal class method class declarations ----------
 // ----------
 
 type
-
-  // TPersitent
-
   TPersistentAssignMethod = class(TInternalMethod)
     public
       procedure Execute(var ExternalObject: TObject); override;
@@ -60,8 +55,6 @@ type
     public
       procedure Execute(var ExternalObject: TObject); override;
   end;
-
-  // TComponent
 
   TComponentCreateMethod = class(TInternalMethod)
     public
@@ -147,8 +140,6 @@ type
 // ----------
 // ---------- Internal class method execute procedures ----------
 // ----------
-
-// TPersistent internal class methods
 
 // TPersistent.Assign
 procedure TPersistentAssignMethod.Execute(var ExternalObject: TObject);
@@ -308,16 +299,12 @@ end;
 // ---------- TdwsClassesUnit ----------
 // ----------
 
- 
-//
 constructor TdwsClassesUnit.Create(AOwner: TComponent);
 begin
   inherited;
   FUnitName:='Classes';
 end;
 
-// AddClassTPersistent
-//
 procedure TdwsClassesUnit.AddClassTPersistent(SymbolTable: TSymbolTable);
 var
   ClassSym : TClassSymbol;
@@ -330,8 +317,6 @@ begin
     TPersistentGetNamePathMethod.Create(mkFunction, [maVirtual], 0, 'GetNamePath', [], 'String', ClassSym, SymbolTable);
 end;
 
-// AddClassTComponent
-//
 procedure TdwsClassesUnit.AddClassTComponent(SymbolTable: TSymbolTable);
 var
   ClassSym : TClassSymbol;
@@ -380,8 +365,6 @@ begin
   AddPropertyToClass('Components', 'TComponent', 'GetComponent', 'SetComponent', 'Integer', True, ClassSym, SymbolTable);
 end;
 
-// AddUnitSymbols
-//
 procedure TdwsClassesUnit.AddUnitSymbols(SymbolTable: TSymbolTable);
 begin
   // Forward class declaration

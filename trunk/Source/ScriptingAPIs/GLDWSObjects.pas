@@ -6,7 +6,6 @@
   objects in GLScene 
 
   History :  
-       04/11/2004 - SG - Moved TGLDelphiWebScriptII to GLScriptDWS2 unit. 
        06/04/2004 - SG - Creation
     
 }
@@ -17,18 +16,16 @@ interface
 uses
   System.Classes, 
   System.SysUtils, 
-  dwsComp, 
-  dwsExprs, 
-  dwsSymbols,
   GLScene, 
   GLXCollection, 
   GLScriptDWS2, 
   GLBaseClasses, 
-  GLManager;
+  GLManager,
+  dwsComp, 
+  dwsExprs, 
+  dwsSymbols;
 
 type
-  // TGLDWSActiveBehaviour
-  //
   { A DelphiWebScript enabled behaviour. This behaviour also calls
     on the OnProgress and OnBeginProgram procedures in the script if
     they are found. Once compiled and executed the program remains
@@ -40,30 +37,24 @@ type
       FDWS2Program : TProgram;
       FCompiler : TGLDelphiWebScriptII;
       FCompilerName : String;
-
       procedure SetActive(const Value : Boolean);
       procedure SetScript(const Value : TStringList);
       procedure SetCompiler(const Value : TGLDelphiWebScriptII);
-
       procedure CompileProgram;
       procedure BeginProgram;
       procedure EndProgram;
       procedure KillProgram;
-
     protected
       procedure WriteToFiler(writer : TWriter); override;
       procedure ReadFromFiler(reader : TReader); override;
       procedure Loaded; override;
-
     public
       constructor Create(AOwner : TGLXCollection); override;
       destructor Destroy; override;
       class function FriendlyName : String; override;
       procedure DoProgress(const ProgressTimes : TProgressTimes); override;
       procedure InvalidateScript;
-
       property DWSProgram : TProgram read FDWS2Program;
-
     published
       property Active : Boolean read FActive write SetActive;
       property Script : TStringList read FScript write SetScript;
@@ -94,16 +85,12 @@ end;
 // ---------- TGLDWSActiveBehaviour ----------
 // ----------
 
- 
-//
 constructor TGLDWSActiveBehaviour.Create(AOwner: TGLXCollection);
 begin
   inherited;
   FScript:=TStringList.Create;
 end;
 
- 
-//
 destructor TGLDWSActiveBehaviour.Destroy;
 begin
   KillProgram;
@@ -111,15 +98,11 @@ begin
   inherited;
 end;
 
- 
-//
 class function TGLDWSActiveBehaviour.FriendlyName: String;
 begin
   Result:='DWS Active Script';
 end;
 
-// DoProgress
-//
 procedure TGLDWSActiveBehaviour.DoProgress(const ProgressTimes: TProgressTimes);
 var
   Symbol : TSymbol;
@@ -135,8 +118,6 @@ begin
   end;
 end;
 
-// Loaded
-//
 procedure TGLDWSActiveBehaviour.Loaded;
 var
   temp : TComponent;
@@ -152,8 +133,6 @@ begin
   end;
 end;
 
-// ReadFromFiler
-//
 procedure TGLDWSActiveBehaviour.ReadFromFiler(reader: TReader);
 begin
   inherited;
@@ -165,8 +144,6 @@ begin
   end;
 end;
 
-// WriteToFiler
-//
 procedure TGLDWSActiveBehaviour.WriteToFiler(writer: TWriter);
 begin
   inherited;
@@ -180,8 +157,6 @@ begin
   end;
 end;
 
-// CompileProgram
-//
 procedure TGLDWSActiveBehaviour.CompileProgram;
 begin
   if Assigned(Compiler) then begin
@@ -192,8 +167,6 @@ begin
   end;
 end;
 
-// BeginProgram
-//
 procedure TGLDWSActiveBehaviour.BeginProgram;
 var
   Symbol : TSymbol;
@@ -218,8 +191,6 @@ begin
   end;
 end;
 
-// EndProgram
-//
 procedure TGLDWSActiveBehaviour.EndProgram;
 begin
   if Assigned(DWSProgram) then begin
@@ -228,8 +199,6 @@ begin
   end;
 end;
 
-// KillProgram
-//
 procedure TGLDWSActiveBehaviour.KillProgram;
 begin
   if Assigned(DWSProgram) then begin
@@ -238,16 +207,12 @@ begin
   end;
 end;
 
-// InvalidateScript
-//
 procedure TGLDWSActiveBehaviour.InvalidateScript;
 begin
   KillProgram;
   CompileProgram;
 end;
 
-// SetActive
-//
 procedure TGLDWSActiveBehaviour.SetActive(const Value: Boolean);
 begin
   if Value<>FActive then begin
@@ -258,8 +223,6 @@ begin
   end;
 end;
 
-// SetScript
-//
 procedure TGLDWSActiveBehaviour.SetScript(const Value: TStringList);
 begin
   if Assigned(Value) then begin
@@ -272,8 +235,6 @@ begin
   end;
 end;
 
-// SetCompiler
-//
 procedure TGLDWSActiveBehaviour.SetCompiler(const Value: TGLDelphiWebScriptII);
 begin
   if Value<>FCompiler then begin

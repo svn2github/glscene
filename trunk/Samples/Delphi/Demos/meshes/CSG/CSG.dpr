@@ -1,4 +1,4 @@
-{: Demo of Constructive Solid Geometry in GLScene.
+{  Demo of Constructive Solid Geometry in GLScene.
 
    Its kept very simple, you can use mouse to rotate view(drag)
    and mousewheel to zoom/unzoom.<p>
@@ -14,14 +14,10 @@
 
    Features: CSG_Union, CSG_Subtraction, CSG_Intersection.
 
-	<b>History : </b><font size=-1><ul>
-      <li>29/11/03 - JAJ - Sometimes a single tri is messed up...
-                          (often(1/3) happends on 2 triangles in this demo when using intersection)
-	</ul></font>
-
-	<b>History : </b><font size=-1><ul>
-      <li>29/11/03 - JAJ - Created and Submitted to GLScene.
-	</ul></font>
+	 History :
+     29/11/03 - JAJ - Created and Submitted to GLScene.
+                      Sometimes a single tri is messed up...
+                     often(1/3) happends on 2 triangles in this demo when using intersection)
 }
 program CSG;
 

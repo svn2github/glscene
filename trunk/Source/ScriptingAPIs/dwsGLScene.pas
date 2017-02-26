@@ -19,31 +19,27 @@ interface
 uses
   System.Classes,
   System.SysUtils,
-  //dws
+ 
+  GLScene,
+  GLVectorGeometry,
+  GLCoordinates,
   dwsExprs,
   dwsSymbols,
   dwsComp,
   dwsCompStrings,
   dwsStack,
   dwsFunctions,
-  dwsHelperFunc,
-  GLScene,
-  GLVectorGeometry,
-  GLCoordinates;
+  dwsHelperFunc;
 
 type
   TdwsGLSceneUnit = class(TdwsUnitComponent)
     private
-
       procedure AddClassTGLCoordinates(SymbolTable : TSymbolTable);
       procedure AddClassTGLBaseSceneObject(SymbolTable : TSymbolTable);
-
     protected
       procedure AddUnitSymbols(SymbolTable: TSymbolTable); override;
-
     public
       constructor Create(AOwner: TComponent); override;
-
   end;
 
 procedure Register;
@@ -56,7 +52,9 @@ implementation
 
 type
 
-  // TGLCoordinates
+//--------------------------
+//-------- TGLCoordinates
+//--------------------------
 
   TGLCoordinatesSetXMethod = class(TInternalMethod)
     public
@@ -163,9 +161,9 @@ type
       procedure Execute(var ExternalObject: TObject); override;
   end;
 
-
-  // TGLBaseSceneObject
-
+//--------------------------
+// TGLBaseSceneObject
+//--------------------------
   TGLBaseSceneObjectSetVisibleMethod = class(TInternalMethod)
     public
       procedure Execute(var ExternalObject: TObject); override;
@@ -326,8 +324,6 @@ type
 // ---------- Vector/Matrix to/from IInfo helper functions ----------
 // ----------
 
-// GetVectorFromInfo
-//
 function GetVectorFromInfo(Info : IInfo) : TVector;
 begin
   Result:=VectorMake(Info.Element([0]).Value,
@@ -336,8 +332,6 @@ begin
                      Info.Element([3]).Value);
 end;
 
-// SetInfoFromVector
-//
 procedure SetInfoFromVector(Info : IInfo; vec : TVector);
 var
   i : Integer;
@@ -346,8 +340,6 @@ begin
     Info.Element([i]).Value:=vec[i];
 end;
 
-// GetMatrixFromInfo
-//
 function GetMatrixFromInfo(Info : IInfo) : TMatrix;
 var
   i : Integer;
@@ -359,8 +351,6 @@ begin
                           Info.Element([i]).Element([3]).Value);
 end;
 
-// SetInfoFromMatrix
-//
 procedure SetInfoFromMatrix(Info : IInfo; mat : TMatrix);
 var
   i,j : Integer;
@@ -783,19 +773,14 @@ end;
 // ----------
 // ---------- Global procedures/functions ----------
 // ----------
-
 procedure Register;
 begin
   RegisterComponents('GLScene DWS2', [Tdws2GLSceneUnit]);
 end;
 
-
 // ----------
 // ---------- TdwsGLSceneUnit ----------
 // ----------
-
- 
-//
 constructor TdwsGLSceneUnit.Create(AOwner: TComponent);
 begin
   inherited;
@@ -806,8 +791,6 @@ begin
   end;
 end;
 
-// AddClassTGLCoordinates
-//
 procedure TdwsGLSceneUnit.AddClassTGLCoordinates(
   SymbolTable: TSymbolTable);
 var
@@ -867,8 +850,6 @@ begin
   AddPropertyToClass('AsString', 'String', 'GetAsString', '', '', False, ClassSym, SymbolTable);
 end;
 
-// AddClassTGLBaseSceneObject
-//
 procedure TdwsGLSceneUnit.AddClassTGLBaseSceneObject(
   SymbolTable: TSymbolTable);
 var
@@ -957,8 +938,6 @@ begin
   AddPropertyToClass('RollAngle', 'Float', 'GetRollAngle', 'SetRollAngle', '', False, ClassSym, SymbolTable);
 end;
 
-// AddUnitSymbols
-//
 procedure TdwsGLSceneUnit.AddUnitSymbols(SymbolTable: TSymbolTable);
 begin
   // Forward class declaration

@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Implements basic shadow volumes support. 
+   Implements basic shadow volumes support.
 
    Be aware that only objects that support silhouette determination have a chance
    to cast correct shadows. Transparent/blended/shader objects among the receivers
@@ -22,7 +22,7 @@ interface
 uses
   System.Classes,
   System.SysUtils,
-  
+
   GLScene,
   GLVectorGeometry,
   OpenGLTokens,
@@ -50,11 +50,11 @@ type
    Note that if you use the capping, you must either set the depth of view of
    your camera to something very large (f.i. 1e9), or you could use the infinite
    mode (csInfinitePerspective) of your camera.
-   
+
       svcDefault : Default behaviour
       svcAlways : Always generates caps
       svcNever : Never generates caps
-   
+
    }
   TGLShadowVolumeCapping = (svcDefault, svcAlways, svcNever);
 
@@ -72,47 +72,31 @@ type
   TGLShadowCastingMode = (scmAlways, scmVisible, scmRecursivelyVisible,
     scmParentVisible, scmParentRecursivelyVisible);
 
-  // TGLShadowVolumeCaster
-  //
-  {Specifies an individual shadow caster. 
+  {Specifies an individual shadow caster.
      Can be a light or an opaque object. }
   TGLShadowVolumeCaster = class(TCollectionItem)
   private
-     
     FCaster: TGLBaseSceneObject;
     FEffectiveRadius: Single;
     FCapping: TGLShadowVolumeCapping;
     FCastingMode: TGLShadowCastingMode;
-
   protected
-    
     procedure SetCaster(const val: TGLBaseSceneObject);
     function GetGLShadowVolume: TGLShadowVolume;
-
     procedure RemoveNotification(aComponent: TComponent);
     function GetDisplayName: string; override;
-
   public
-    
     constructor Create(ACollection: TCollection); override;
     destructor Destroy; override;
-
     procedure Assign(Source: TPersistent); override;
-
-    {Shadow casting object. 
-       Can be an opaque object or a lightsource. }
+    {Shadow casting object. Can be an opaque object or a lightsource. }
     property Caster: TGLBaseSceneObject read FCaster write SetCaster;
-
     property GLShadowVolume: TGLShadowVolume read GetGLShadowVolume;
-
   published
-    
-
-          {Radius beyond which the caster can be ignored. 
-             Zero (default value) means the caster can never be ignored. }
-    property EffectiveRadius: Single read FEffectiveRadius write
-      FEffectiveRadius;
-    {Specifies if the shadow volume should be capped. 
+    {Radius beyond which the caster can be ignored.
+     Zero (default value) means the caster can never be ignored. }
+    property EffectiveRadius: Single read FEffectiveRadius write FEffectiveRadius;
+    {Specifies if the shadow volume should be capped.
        Capping helps solve shadowing artefacts, at the cost of performance. }
     property Capping: TGLShadowVolumeCapping read FCapping write FCapping default
       svcDefault;
@@ -124,78 +108,49 @@ type
       FCastingMode default scmRecursivelyVisible;
   end;
 
-  // TGLShadowVolumeOccluder
-  //
   {Specifies an individual shadow casting occluder.  }
   TGLShadowVolumeOccluder = class(TGLShadowVolumeCaster)
   published
-    
     property Caster;
   end;
 
-  // TGLShadowVolumeLight
-  //
   {Specifies an individual shadow casting light.  }
   TGLShadowVolumeLight = class(TGLShadowVolumeCaster)
   private
-     
     FSilhouettes: TPersistentObjectList;
-
   protected
-    
     function GetLightSource: TGLLightSource;
     procedure SetLightSource(const ls: TGLLightSource);
-
     function GetCachedSilhouette(AIndex: Integer): TGLSilhouette;
     procedure StoreCachedSilhouette(AIndex: Integer; ASil: TGLSilhouette);
-
-    {Compute and setup scissor clipping rect for the light. 
+    {Compute and setup scissor clipping rect for the light.
        Returns true if a scissor rect was setup }
     function SetupScissorRect(worldAABB: PAABB; var rci: TGLRenderContextInfo):
       Boolean;
-
   public
-    
     constructor Create(ACollection: TCollection); override;
     destructor Destroy; override;
-
     procedure FlushSilhouetteCache;
-
   published
-    
-          {Shadow casting lightsource.  }
-    property LightSource: TGLLightSource read GetLightSource write
-      SetLightSource;
+    {Shadow casting lightsource.  }
+    property LightSource: TGLLightSource read GetLightSource write SetLightSource;
   end;
 
-  // TGLShadowVolumeCasters
-  //
   {Collection of TGLShadowVolumeCaster. }
   TGLShadowVolumeCasters = class(TOwnedCollection)
-  private
-     
-
   protected
-    
     function GetItems(index: Integer): TGLShadowVolumeCaster;
     procedure RemoveNotification(aComponent: TComponent);
-
   public
-    
     function AddCaster(obj: TGLBaseSceneObject; effectiveRadius: Single = 0;
       CastingMode: TGLShadowCastingMode = scmRecursivelyVisible):
       TGLShadowVolumeCaster;
     procedure RemoveCaster(obj: TGLBaseSceneObject);
     function IndexOfCaster(obj: TGLBaseSceneObject): Integer;
-
-    property Items[index: Integer]: TGLShadowVolumeCaster read GetItems;
-    default;
+    property Items[index: Integer]: TGLShadowVolumeCaster read GetItems; default;
   end;
 
-  // TGLShadowVolumeOption
-  //
-  {Shadow volume rendering options/optimizations. 
-     
+  {Shadow volume rendering options/optimizations.
       svoShowVolumes : make the shadow volumes visible
       svoDesignVisible : the shadow are visible at design-time
       svoCacheSilhouettes : cache shadow volume silhouettes, beneficial when
@@ -209,10 +164,7 @@ type
     svoWorldScissorClip, svoDesignVisible);
   TGLShadowVolumeOptions = set of TGLShadowVolumeOption;
 
-  // TGLShadowVolumeMode
-  //
-  {Shadow rendering modes. 
-     
+  {Shadow rendering modes.
       svmAccurate : will render the scene with ambient lighting only, then
         for each light will make a diffuse+specular pass
       svmDarkening : renders the scene with lighting on as usual, then darkens
@@ -222,9 +174,7 @@ type
       }
   TGLShadowVolumeMode = (svmAccurate, svmDarkening, svmOff);
 
-  // TGLShadowVolume
-  //
-  {Simple shadow volumes. 
+  {Simple shadow volumes.
      Shadow receiving objects are the ShadowVolume's children, shadow casters
      (opaque objects or lights) must be explicitly specified in the Casters
      collection. 
@@ -237,7 +187,6 @@ type
       }
   TGLShadowVolume = class(TGLImmaterialSceneObject)
   private
-     
     FActive: Boolean;
     FRendering: Boolean;
     FLights: TGLShadowVolumeCasters;
@@ -246,44 +195,31 @@ type
     FOptions: TGLShadowVolumeOptions;
     FMode: TGLShadowVolumeMode;
     FDarkeningColor: TGLColor;
-
   protected
-    
-    procedure Notification(AComponent: TComponent; Operation: TOperation);
-      override;
-
+    procedure Notification(AComponent: TComponent; Operation: TOperation); override;
     procedure SetActive(const val: Boolean);
     procedure SetLights(const val: TGLShadowVolumeCasters);
     procedure SetOccluders(const val: TGLShadowVolumeCasters);
     procedure SetOptions(const val: TGLShadowVolumeOptions);
     procedure SetMode(const val: TGLShadowVolumeMode);
     procedure SetDarkeningColor(const val: TGLColor);
-
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
     procedure DoRender(var ARci: TGLRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
-
     procedure Assign(Source: TPersistent); override;
-
     procedure FlushSilhouetteCache;
-
   published
-    
-          {Determines if shadow volume rendering is active. 
-             When set to false, children will be rendered without any shadowing
-             or multipass lighting. }
+    {Determines if shadow volume rendering is active.
+     When set to false, children will be rendered without any shadowing
+     or multipass lighting. }
     property Active: Boolean read FActive write SetActive default True;
     {Lights that cast shadow volumes. }
     property Lights: TGLShadowVolumeCasters read FLights write SetLights;
     {Occluders that cast shadow volumes. }
-    property Occluders: TGLShadowVolumeCasters read FOccluders write
-      SetOccluders;
-
-    {Specifies if the shadow volume should be capped. 
+    property Occluders: TGLShadowVolumeCasters read FOccluders write SetOccluders;
+    {Specifies if the shadow volume should be capped.
        Capping helps solve shadowing artefacts, at the cost of performance. }
     property Capping: TGLShadowVolumeCapping read FCapping write FCapping default
       svcAlways;
@@ -291,16 +227,14 @@ type
     property Options: TGLShadowVolumeOptions read FOptions write SetOptions
       default [svoCacheSilhouettes, svoScissorClips];
     {Shadow rendering mode. }
-    property Mode: TGLShadowVolumeMode read FMode write SetMode default
-      svmAccurate;
+    property Mode: TGLShadowVolumeMode read FMode write SetMode default svmAccurate;
     {Darkening color used in svmDarkening mode. }
-    property DarkeningColor: TGLColor read FDarkeningColor write
-      SetDarkeningColor;
+    property DarkeningColor: TGLColor read FDarkeningColor write SetDarkeningColor;
   end;
 
-  //-------------------------------------------------------------
-  //-------------------------------------------------------------
-  //-------------------------------------------------------------
+//-------------------------------------------------------------
+//-------------------------------------------------------------
+//-------------------------------------------------------------
 implementation
 //-------------------------------------------------------------
 //-------------------------------------------------------------
@@ -309,9 +243,6 @@ implementation
 // ------------------
 // ------------------ TGLShadowVolumeCaster ------------------
 // ------------------
-
- 
-//
 
 constructor TGLShadowVolumeCaster.Create(ACollection: TCollection);
 begin
@@ -324,16 +255,10 @@ type
   // Required for Delphi 5 support.
   THackOwnedCollection = class(TOwnedCollection);
 
-  // GetGLShadowVolume
-  //
-
 function TGLShadowVolumeCaster.GetGLShadowVolume: TGLShadowVolume;
 begin
   Result := TGLShadowVolume(THackOwnedCollection(Collection).GetOwner);
 end;
-
- 
-//
 
 destructor TGLShadowVolumeCaster.Destroy;
 begin
@@ -341,9 +266,6 @@ begin
     FCaster.RemoveFreeNotification(GLShadowVolume);
   inherited;
 end;
-
-// Assign
-//
 
 procedure TGLShadowVolumeCaster.Assign(Source: TPersistent);
 begin
@@ -356,9 +278,6 @@ begin
   end;
   inherited;
 end;
-
-// SetCaster
-//
 
 procedure TGLShadowVolumeCaster.SetCaster(const val: TGLBaseSceneObject);
 begin
@@ -373,9 +292,6 @@ begin
   end;
 end;
 
-// RemoveNotification
-//
-
 procedure TGLShadowVolumeCaster.RemoveNotification(aComponent: TComponent);
 begin
   if aComponent = FCaster then
@@ -386,9 +302,6 @@ begin
     Free;
   end;
 end;
-
-// GetDisplayName
-//
 
 function TGLShadowVolumeCaster.GetDisplayName: string;
 begin
@@ -410,17 +323,11 @@ end;
 // ------------------ TGLShadowVolumeLight ------------------
 // ------------------
 
- 
-//
-
 constructor TGLShadowVolumeLight.Create(ACollection: TCollection);
 begin
   inherited Create(ACollection);
   FSilhouettes := TPersistentObjectList.Create;
 end;
-
- 
-//
 
 destructor TGLShadowVolumeLight.Destroy;
 begin
@@ -429,32 +336,20 @@ begin
   inherited;
 end;
 
-// FlushSilhouetteCache
-//
-
 procedure TGLShadowVolumeLight.FlushSilhouetteCache;
 begin
   FSilhouettes.Clean;
 end;
-
- 
-//
 
 function TGLShadowVolumeLight.GetLightSource: TGLLightSource;
 begin
   Result := TGLLightSource(Caster);
 end;
 
-// SetLightSource
-//
-
 procedure TGLShadowVolumeLight.SetLightSource(const ls: TGLLightSource);
 begin
   SetCaster(ls);
 end;
-
-// GetCachedSilhouette
-//
 
 function TGLShadowVolumeLight.GetCachedSilhouette(AIndex: Integer):
   TGLSilhouette;
@@ -464,9 +359,6 @@ begin
   else
     Result := nil;
 end;
-
-// StoreCachedSilhouette
-//
 
 procedure TGLShadowVolumeLight.StoreCachedSilhouette(AIndex: Integer; ASil:
   TGLSilhouette);
@@ -480,9 +372,6 @@ begin
     FSilhouettes[AIndex] := ASil;
   end;
 end;
-
-// TGLShadowVolumeLight
-//
 
 function TGLShadowVolumeLight.SetupScissorRect(worldAABB: PAABB; var rci:
   TGLRenderContextInfo): Boolean;
@@ -541,9 +430,6 @@ end;
 // ------------------ TGLShadowVolumeCasters ------------------
 // ------------------
 
-// RemoveNotification
-//
-
 procedure TGLShadowVolumeCasters.RemoveNotification(aComponent: TComponent);
 var
   i: Integer;
@@ -552,16 +438,10 @@ begin
     Items[i].RemoveNotification(aComponent);
 end;
 
-// GetItems
-//
-
 function TGLShadowVolumeCasters.GetItems(index: Integer): TGLShadowVolumeCaster;
 begin
   Result := TGLShadowVolumeCaster(inherited Items[index]);
 end;
-
-// AddCaster
-//
 
 function TGLShadowVolumeCasters.AddCaster(obj: TGLBaseSceneObject;
   effectiveRadius: Single = 0;
@@ -578,9 +458,6 @@ begin
   result := newCaster;
 end;
 
-// RemoveCaster
-//
-
 procedure TGLShadowVolumeCasters.RemoveCaster(obj: TGLBaseSceneObject);
 var
   i: Integer;
@@ -589,9 +466,6 @@ begin
   if i >= 0 then
     Delete(i);
 end;
-
-// IndexOfCaster
-//
 
 function TGLShadowVolumeCasters.IndexOfCaster(obj: TGLBaseSceneObject): Integer;
 var
@@ -612,9 +486,6 @@ end;
 // ------------------ TGLShadowVolume ------------------
 // ------------------
 
- 
-//
-
 constructor TGLShadowVolume.Create(AOwner: Tcomponent);
 begin
   inherited Create(AOwner);
@@ -628,9 +499,6 @@ begin
   FDarkeningColor := TGLColor.CreateInitialized(Self, VectorMake(0, 0, 0, 0.5));
 end;
 
- 
-//
-
 destructor TGLShadowVolume.Destroy;
 begin
   inherited;
@@ -638,9 +506,6 @@ begin
   FLights.Free;
   FOccluders.Free;
 end;
-
-// Notification
-//
 
 procedure TGLShadowVolume.Notification(AComponent: TComponent; Operation:
   TOperation);
@@ -652,9 +517,6 @@ begin
   end;
   inherited;
 end;
-
-// Assign
-//
 
 procedure TGLShadowVolume.Assign(Source: TPersistent);
 begin
@@ -668,9 +530,6 @@ begin
   inherited Assign(Source);
 end;
 
-// FlushSilhouetteCache
-//
-
 procedure TGLShadowVolume.FlushSilhouetteCache;
 var
   i: Integer;
@@ -678,9 +537,6 @@ begin
   for i := 0 to Lights.Count - 1 do
     (Lights[i] as TGLShadowVolumeLight).FlushSilhouetteCache;
 end;
-
-// SetActive
-//
 
 procedure TGLShadowVolume.SetActive(const val: Boolean);
 begin
@@ -691,9 +547,6 @@ begin
   end;
 end;
 
-// SetLights
-//
-
 procedure TGLShadowVolume.SetLights(const val: TGLShadowVolumeCasters);
 begin
   Assert(val.ItemClass = TGLShadowVolumeLight);
@@ -701,18 +554,12 @@ begin
   StructureChanged;
 end;
 
-// SetOccluders
-//
-
 procedure TGLShadowVolume.SetOccluders(const val: TGLShadowVolumeCasters);
 begin
   Assert(val.ItemClass = TGLShadowVolumeOccluder);
   FOccluders.Assign(val);
   StructureChanged;
 end;
-
-// SetOptions
-//
 
 procedure TGLShadowVolume.SetOptions(const val: TGLShadowVolumeOptions);
 begin
@@ -725,9 +572,6 @@ begin
   end;
 end;
 
-// SetMode
-//
-
 procedure TGLShadowVolume.SetMode(const val: TGLShadowVolumeMode);
 begin
   if FMode <> val then
@@ -737,16 +581,10 @@ begin
   end;
 end;
 
-// SetDarkeningColor
-//
-
 procedure TGLShadowVolume.SetDarkeningColor(const val: TGLColor);
 begin
   FDarkeningColor.Assign(val);
 end;
-
-// DoRender
-//
 
 procedure TGLShadowVolume.DoRender(var ARci: TGLRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);
@@ -862,11 +700,9 @@ begin
         opaqueCapping.Add(nil);
       end;
     end;
-
     // render the shadow volumes
     with ARci.GLStates do
     begin
-
       if Mode = svmAccurate then
       begin
         // first turn off all the shadow casting lights diffuse and specular
@@ -935,7 +771,6 @@ begin
           silParams.Style := ssOmni;
         end;
         silParams.CappingRequired := True;
-
         if Assigned(pWorldAABB) or (svoScissorClips in Options) then
         begin
           if lightCaster.SetupScissorRect(pWorldAABB, ARci) then
@@ -943,12 +778,10 @@ begin
           else
             Disable(stScissorTest);
         end;
-
         // clear the stencil and prepare for shadow volume pass
         GL.Clear(GL_STENCIL_BUFFER_BIT);
         SetStencilFunc(cfAlways, 0, 255);
         DepthFunc := cfLess;
-
         if svoShowVolumes in Options then
         begin
           GL.Color3f(0.05 * i, 0.1, 0);
@@ -964,17 +797,13 @@ begin
         Disable(stLighting);
         GL.EnableClientState(GL_VERTEX_ARRAY);
         SetPolygonOffset(1, 1);
-
         // for all opaque shadow casters
         for k := 0 to opaques.Count - 1 do
         begin
           obj := TGLBaseSceneObject(opaques[k]);
           if obj = nil then
             Continue;
-
-          SetVector(silParams.SeenFrom,
-            obj.AbsoluteToLocal(lightSource.AbsolutePosition));
-
+          SetVector(silParams.SeenFrom, obj.AbsoluteToLocal(lightSource.AbsolutePosition));
           sil := lightCaster.GetCachedSilhouette(k);
           if (not Assigned(sil)) or (not CompareMem(@sil.Parameters, @silParams,
             SizeOf(silParams))) then
@@ -998,7 +827,6 @@ begin
 
                 CullFaceMode := cmFront;
                 SetStencilOp(soKeep, soIncr, soKeep);
-
                 with sil do
                 begin
                   GL.DrawElements(GL_QUADS, Indices.Count, GL_UNSIGNED_INT,
@@ -1051,9 +879,7 @@ begin
                 sil.Free;
             end;
         end;
-
         GL.DisableClientState(GL_VERTEX_ARRAY);
-
         // re-enable light's diffuse and specular, but no ambient
         LightEnabling[LightID] := True;
         LightAmbient[LightID] := NullHmgVector;
@@ -1076,7 +902,6 @@ begin
         else
         begin
           SetStencilFunc(cfNotEqual, 0, 255);
-
           DepthFunc := cfAlways;
           SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
 
@@ -1101,7 +926,6 @@ begin
 
           SetBlendFunc(bfSrcAlpha, bfOne);
         end;
-
         // disable light, but restore its ambient component
         LightEnabling[lightID] := False;
         LightAmbient[lightID] := lightSource.Ambient.Color;

@@ -182,7 +182,7 @@ object Form1: TForm1
         object GLLightSource1: TGLLightSource
           Ambient.Color = {9A99193F9A99193F9A99193F0000803F}
           ConstAttenuation = 1.000000000000000000
-          Diffuse.Color = {9A99193F9A99193F9A99193F0000803F}
+          Diffuse.Color = {3333333F3333333F3333333F0000803F}
           Position.Coordinates = {0000000000008040000000000000803F}
           SpotCutOff = 180.000000000000000000
           object GLSphere1: TGLSphere
@@ -203,7 +203,7 @@ object Form1: TForm1
         FocalLength = 50.000000000000000000
         TargetObject = DCCamera
         CameraStyle = csInfinitePerspective
-        Position.Coordinates = {000020410000E0400000A0400000803F}
+        Position.Coordinates = {0000604100006041000020410000803F}
       end
     end
     object DCLight2: TGLDummyCube
@@ -319,10 +319,10 @@ object Form1: TForm1
         Up.Coordinates = {0000803F000000000000000000000000}
         BottomRadius = 0.600000023841857900
         Height = 6.000000000000000000
-        TopRadius = 0.800000011920928900
+        TopRadius = 0.800000011920929000
       end
       object GLSphere4: TGLSphere
-        Position.Coordinates = {00000000000000000000C0C00000803F}
+        Position.Coordinates = {00000000000080400000A0C00000803F}
         Radius = 2.000000000000000000
         object GLSphere_Shadow: TGLSphere
           Visible = False

@@ -12,11 +12,25 @@ uses
   Vcl.Dialogs,
   Vcl.ExtCtrls,
   Vcl.StdCtrls,
-  
-  GLScene, GLObjects, GLCadencer, GLWin32Viewer, GLShadowVolume,
-  GLVectorFileObjects, GLFileSMD, GLTexture, GLVectorTypes,
-  GLGeomObjects, GLSilhouette, GLVectorGeometry, GLMaterial, GLCoordinates,
-  GLCrossPlatform, GLSimpleNavigation, GLBaseClasses, GLUtils;
+
+  GLScene,
+  GLObjects,
+  GLCadencer,
+  GLWin32Viewer,
+  GLShadowVolume,
+  GLVectorFileObjects,
+  GLFileSMD,
+  GLTexture,
+  GLVectorTypes,
+  GLGeomObjects,
+  GLSilhouette,
+  GLVectorGeometry,
+  GLMaterial,
+  GLCoordinates,
+  GLCrossPlatform,
+  GLSimpleNavigation,
+  GLBaseClasses,
+  GLUtils;
 
 type
   TForm1 = class(TForm)
@@ -76,10 +90,7 @@ type
     procedure CBRedLightClick(Sender: TObject);
     procedure ScrollBar_ShadowResolutionChange(Sender: TObject);
     procedure Button_GenerateSilhouetteClick(Sender: TObject);
-  private
-     
   public
-     
     mx, my: Integer;
   end;
 
@@ -134,11 +145,10 @@ end;
 
 procedure TForm1.CBShowVolumesClick(Sender: TObject);
 begin
-  with GLShadowVolume do
-    if CBShowVolumes.Checked then
-      Options := Options + [svoShowVolumes]
-    else
-      Options := Options - [svoShowVolumes];
+  if CBShowVolumes.Checked then
+    GLShadowVolume.Options := GLShadowVolume.Options + [svoShowVolumes]
+  else
+    GLShadowVolume.Options := GLShadowVolume.Options - [svoShowVolumes];
 end;
 
 procedure TForm1.RBZFailClick(Sender: TObject);
@@ -192,16 +202,19 @@ end;
 procedure TForm1.CBMainLightClick(Sender: TObject);
 begin
   GLLightSource1.Shining := CBMainLight.Checked;
+  GLSphere1.Visible := CBMainLight.Checked;
 end;
 
 procedure TForm1.CBBlueLightClick(Sender: TObject);
 begin
   GLLightSource2.Shining := CBBlueLight.Checked;
+  GLSphere2.Visible := CBBlueLight.Checked;
 end;
 
 procedure TForm1.CBRedLightClick(Sender: TObject);
 begin
   GLLightSource3.Shining := CBRedLight.Checked;
+  GLSphere3.Visible := CBRedLight.Checked;
 end;
 
 procedure TForm1.ScrollBar_ShadowResolutionChange(Sender: TObject);
@@ -213,28 +226,21 @@ end;
 
 procedure TForm1.Button_GenerateSilhouetteClick(Sender: TObject);
 var
-  silhouetteParameters: TGLSilhouetteParameters;
+  SilhouetteParameters: TGLSilhouetteParameters;
   Silhouette: TGLSilhouette;
   i: Integer;
   Target: TGLSceneObject;
 begin
   Target := GLSphere4;
-
-  silhouetteParameters.CappingRequired := false;
-  SetVector(silhouetteParameters.SeenFrom,
-    GLLines1.AbsoluteToLocal(GLCamera.AbsolutePosition));
-
-  silhouetteParameters.Style := ssOmni;
-
-  Silhouette := Target.GenerateSilhouette(silhouetteParameters);
-
+  SilhouetteParameters.CappingRequired := false;
+  SetVector(SilhouetteParameters.SeenFrom, GLLines1.AbsoluteToLocal(GLCamera.AbsolutePosition));
+  SilhouetteParameters.Style := ssOmni;
+  Silhouette := Target.GenerateSilhouette(SilhouetteParameters);
   GLLines1.Nodes.Clear;
-
   for i := 0 to Silhouette.Indices.Count - 1 do
     GLLines1.Nodes.AddNode
       (GLLines1.AbsoluteToLocal(Target.LocalToAbsolute(Silhouette.Vertices
       [Silhouette.Indices[i]])));
-
   FreeAndNil(Silhouette);
 end;
 
