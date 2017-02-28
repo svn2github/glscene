@@ -3,8 +3,8 @@ object Form1: TForm1
   Top = 119
   BorderWidth = 5
   Caption = 'Torque'
-  ClientHeight = 350
-  ClientWidth = 655
+  ClientHeight = 330
+  ClientWidth = 635
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -20,11 +20,11 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 78
-    Width = 655
-    Height = 231
+    Width = 635
+    Height = 211
     Camera = GLCamera1
     Buffer.BackgroundColor = clBlack
-    FieldOfView = 98.227912902832030000
+    FieldOfView = 93.066192626953130000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
@@ -33,7 +33,7 @@ object Form1: TForm1
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 655
+    Width = 635
     Height = 78
     Align = alTop
     TabOrder = 1
@@ -93,8 +93,8 @@ object Form1: TForm1
   end
   object PanelBottom: TPanel
     Left = 0
-    Top = 309
-    Width = 655
+    Top = 289
+    Width = 635
     Height = 41
     Align = alBottom
     Caption = 

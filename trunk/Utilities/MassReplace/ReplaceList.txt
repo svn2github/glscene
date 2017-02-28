@@ -5,6 +5,8 @@ TArrowLine>>>TGLArrowLine
 TApplicationFileIO>>TGLApplicationFileIO
 TAsyncTimer>>>TGLAsyncTimer
 TBaseMesh>>>TGLBaseMesh
+TBinaryReader>>>TGLBinaryReader
+TBinaryWriter>>>TGLBinaryWriter
 TBitmapFont>>>TGLBitmapFont
 TCylinderBase>>>TGLCylinderBase
 TCone>>>TGLCone

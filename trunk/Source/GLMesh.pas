@@ -8,11 +8,9 @@
 
   History :
   18/06/00 - EG - Creation from split of GLObjects,
-                    TGLVertexList now uses TVertexData,
-                    Rewrite of TGLMesh.CalcNormals (smaller & faster)
-
-  The whole history is logged in previous version of the unit
-
+                  TGLVertexList now uses TGLVertexData,
+                  Rewrite of TGLMesh.CalcNormals (smaller & faster)
+             The whole history is logged in previous version of the unit
 }
 unit GLMesh;
 
@@ -63,18 +61,15 @@ type
   TGLVertexDataArray = array[0..(MAXINT shr 6)] of TGLVertexData;
   PGLVertexDataArray = ^TGLVertexDataArray;
 
-  {  Stores an interlaced vertex list for direct use in OpenGL.
+  { Stores an interlaced vertex list for direct use in OpenGL.
     Locking (hardware passthrough) is supported, see "Locked" property for details. }
   TGLVertexList = class(TGLUpdateAbleObject)
   private
-
     FValues: PGLVertexDataArray;
     FCount: Integer;
     FCapacity, FGrowth: Integer;
     FLockedOldValues: PGLVertexDataArray;
-
   protected
-
     procedure SetCapacity(const val: Integer);
     procedure SetGrowth(const val: Integer);
     procedure Grow;
@@ -88,29 +83,22 @@ type
     function GetVertexTexCoord(index: Integer): TTexPoint;
     procedure SetVertexColor(index: Integer; const val: TVector4f);
     function GetVertexColor(index: Integer): TVector4f;
-
     function GetFirstEntry: PGLFloat;
     function GetFirstColor: PGLFloat;
     function GetFirstNormal: PGLFloat;
     function GetFirstVertex: PGLFloat;
     function GetFirstTexPoint: PGLFloat;
-
     function GetLocked: Boolean;
     procedure SetLocked(val: Boolean);
-
   public
-
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
-
-    function CreateInterpolatedCoords(list2: TGLVertexList; lerpFactor: Single)
-      : TGLVertexList;
-
+    function CreateInterpolatedCoords(list2: TGLVertexList; lerpFactor: Single): TGLVertexList;
     {  Adds a vertex to the list, fastest method. }
     procedure AddVertex(const vertexData: TGLVertexData); overload;
     {  Adds a vertex to the list, fastest method for adding a triangle. }
     procedure AddVertex3(const vd1, vd2, vd3: TGLVertexData); overload;
-    {  Adds a vertex to the list. 
+    {  Adds a vertex to the list.
       Use the NullVector, NullHmgVector or NullTexPoint constants for
       params you don't want to set. }
     procedure AddVertex(const aVertex: TVertex; const aNormal: TAffineVector;
@@ -119,14 +107,11 @@ type
     procedure AddVertex(const vertex: TVertex; const normal: TAffineVector;
       const color: TColorVector); overload;
     {  Adds a vertex to the list, no texturing, not color version.  }
-    procedure AddVertex(const vertex: TVertex;
-      const normal: TAffineVector); overload;
+    procedure AddVertex(const vertex: TVertex; const normal: TAffineVector); overload;
     {  Duplicates the vertex of given index and adds it at the end of the list. }
     procedure DuplicateVertex(index: Integer);
-
     procedure Assign(Source: TPersistent); override;
     procedure Clear;
-
     property Vertices[index: Integer]: TGLVertexData read GetVertices write SetVertices; default;
     property VertexCoord[index: Integer]: TAffineVector read GetVertexCoord write SetVertexCoord;
     property VertexNormal[index: Integer]: TAffineVector read GetVertexNormal write SetVertexNormal;
@@ -139,7 +124,6 @@ type
     {  Vertex capacity that will be added each time the list needs to grow.
       default value is 256 (chunks of approx 13 kb). }
     property Growth: Integer read FGrowth write SetGrowth;
-
     {  Calculates the sum of all vertex coords }
     function SumVertexCoords: TAffineVector;
     {  Calculates the extents of the vertice coords. }
@@ -148,15 +132,12 @@ type
     procedure NormalizeNormals;
     {  Translate all coords by given vector }
     procedure Translate(const v: TAffineVector);
-
     procedure DefineOpenGLArrays;
-
     property FirstColor: PGLFloat read GetFirstColor;
     property FirstEntry: PGLFloat read GetFirstEntry;
     property FirstNormal: PGLFloat read GetFirstNormal;
     property FirstVertex: PGLFloat read GetFirstVertex;
     property FirstTexPoint: PGLFloat read GetFirstTexPoint;
-
     {  Locking state of the vertex list.
       You can "Lock" a list to increase rendering performance on some
       OpenGL implementations (NVidia's). A Locked list size shouldn't be
@@ -177,21 +158,16 @@ type
     up the mesh (triangles, strips...) }
   TGLMesh = class(TGLSceneObject)
   private
-     
     FVertices: TGLVertexList;
     FMode: TGLMeshMode;
     FVertexMode: TGLVertexMode;
     FAxisAlignedDimensionsCache: TVector;
-
   protected
-    
     procedure SetMode(AValue: TGLMeshMode);
     procedure SetVertices(AValue: TGLVertexList);
     procedure SetVertexMode(AValue: TGLVertexMode);
     procedure VerticesChanged(Sender: TObject);
-
   public
-
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -204,7 +180,6 @@ type
     function Area: Single;
     function Volume: Single;
   published
-    
     property Mode: TGLMeshMode read FMode write SetMode;
     property VertexMode: TGLVertexMode read FVertexMode write SetVertexMode
       default vmVNCT;

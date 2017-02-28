@@ -28,7 +28,7 @@ uses
   GLTeapot,
   GLGeomObjects,
   GLRenderContextInfo,
-  GLUtils;
+  GLUtils, GLMesh, GLVectorFileObjects;
 
 type
   TForm1 = class(TForm)

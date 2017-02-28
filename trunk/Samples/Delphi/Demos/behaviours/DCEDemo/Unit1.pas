@@ -14,13 +14,33 @@ uses
   Vcl.ExtCtrls,
   Vcl.Imaging.Jpeg,
 
-  
-  GLScene, GLObjects, GLCadencer, GLWin32Viewer, GLDCE, GLMaterial,
-  GLTexture, GLHeightData,  GLTerrainRenderer, GLVectorFileObjects,
-  GLBitmapFont, GLWindowsFont, GLHUDObjects, GLCrossPlatform,
-  GLCoordinates, GLVectorGeometry, GLFileMD2, GLFile3DS, GLContext,
-  GLEllipseCollision, GLRenderContextInfo, GLKeyboard, GLProxyObjects,
-  GLState, GLUtils, GLBaseClasses, GLVectorTypes;
+  GLScene,
+  GLObjects,
+  GLCadencer,
+  GLWin32Viewer,
+  GLDCE,
+  GLMaterial,
+  GLTexture,
+  GLHeightData,
+  GLTerrainRenderer,
+  GLVectorFileObjects,
+  GLBitmapFont,
+  GLWindowsFont,
+  GLHUDObjects,
+  GLCrossPlatform,
+  GLCoordinates,
+  GLVectorGeometry,
+  GLFileMD2,
+  GLFile3DS,
+  GLContext,
+  GLEllipseCollision,
+  GLRenderContextInfo,
+  GLKeyboard,
+  GLProxyObjects,
+  GLState,
+  GLUtils,
+  GLBaseClasses,
+  GLVectorTypes;
 
 type
   TForm1 = class(TForm)
@@ -60,10 +80,7 @@ type
     procedure Timer1Timer(Sender: TObject);
     procedure GLDirectOpenGL1Render(Sender: TObject;
       var rci: TGLRenderContextInfo);
-  private
-     
   public
-     
     mx, my: Integer;
     Jumped: boolean;
     procedure Load;

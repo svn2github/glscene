@@ -59,8 +59,7 @@ type
   protected
     procedure SetVertices(const val: TAffineVectorList);
     procedure SetNormals(const val: TAffineVectorList);
-    procedure ContributeToBarycenter(var currentSum: TAffineVector;
-      var nb: Integer); dynamic;
+    procedure ContributeToBarycenter(var currentSum: TAffineVector; var nb: Integer); dynamic;
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -97,8 +96,10 @@ type
     property Vertices: TAffineVectorList read FVertices write SetVertices;
     property Normals: TAffineVectorList read FNormals write SetNormals;
   end;
+
   TGLSkeletonFrameList = class;
   TGLSkeletonFrameTransform = (sftRotation, sftQuaternion);
+
   { Stores position and rotation for skeleton joints.
     If you directly alter some values, make sure to call FlushLocalMatrixList
     so that the local matrices will be recalculated (the call to Flush does
@@ -165,8 +166,7 @@ type
       KeepRotations: Boolean = True; SetTransformMode: Boolean = True);
     property Owner: TPersistent read FOwner;
     procedure Clear; override;
-    property Items[Index: Integer]: TGLSkeletonFrame read GetSkeletonFrame;
-      default;
+    property Items[Index: Integer]: TGLSkeletonFrame read GetSkeletonFrame; default;
   end;
 
   TGLSkeleton = class;
@@ -386,8 +386,7 @@ type
     { Turning this option off (by default) alows to increase FPS,
        but may break backwards-compatibility, because some may choose to
        attach other objects to invisible parts. }
-    property MorphInvisibleParts: Boolean read FMorphInvisibleParts write
-      FMorphInvisibleParts;
+    property MorphInvisibleParts: Boolean read FMorphInvisibleParts write FMorphInvisibleParts;
   end;
 
   { Rendering options per TMeshObject.moroGroupByMaterial : if set,
@@ -483,8 +482,7 @@ type
     procedure SetTriangleData(tri: Integer; list: TAffineVectorList; const v0, v1, v2: TAffineVector); overload;
     procedure SetTriangleData(tri: Integer; list: TVectorList; const v0, v1, v2: TVector); overload;
     { Build the tangent space from the mesh object's vertex, normal
-       and texcoord data, filling the binormals and tangents where
-       specified. }
+       and texcoord data, filling the binormals and tangents where specified. }
     procedure BuildTangentSpace(buildBinormals: Boolean = True; buildTangents: Boolean = True);
     property Owner: TGLMeshObjectList read FOwner;
     property Mode: TGLMeshObjectMode read FMode write FMode;
@@ -496,14 +494,13 @@ type
     { If set, rendering will use VBO's instead of vertex arrays. }
     property UseVBO: boolean read FUseVBO write SetUseVBO;
     { The TexCoords Extension is a list of vector lists that are used
-       to extend the vertex data applied during rendering.
-       The lists are applied to the GL_TEXTURE0_ARB + index texture
-       environment. This means that if TexCoordsEx 0 or 1 have data it
-       will override the TexCoords or LightMapTexCoords repectively.
-       Lists are created on demand, meaning that if you request
-       TexCoordsEx[4] it will create the list up to and including 4.
-       The extensions are only applied to the texture environment if
-       they contain data. }
+      to extend the vertex data applied during rendering.
+      The lists are applied to the GL_TEXTURE0_ARB + index texture
+      environment. This means that if TexCoordsEx 0 or 1 have data it
+      will override the TexCoords or LightMapTexCoords repectively.
+      Lists are created on demand, meaning that if you request
+      TexCoordsEx[4] it will create the list up to and including 4.
+      The extensions are only applied to the texture environment if they contain data. }
     property TexCoordsEx[index: Integer]: TVectorList read GetTexCoordsEx write
       SetTexCoordsEx;
     { A TexCoordsEx list wrapper for binormals usage,
@@ -907,12 +904,10 @@ type
       Triggered by LoadFromFile/Stream and AddDataFromFile/Stream.
       Allows to adjust/transfer subclass-specific features. }
     procedure PrepareVectorFile(aFile: TGLVectorFile); dynamic;
-
     { Invoked after a mesh has been loaded/added.
       Triggered by LoadFromFile/Stream and AddDataFromFile/Stream.
       Allows to adjust/transfer subclass-specific features. }
     procedure PrepareMesh; dynamic;
-
     { Recursively propagated to mesh object and facegroups.
       Notifies that they all can establish their material library caches. }
     procedure PrepareMaterialLibraryCache;
@@ -933,7 +928,6 @@ type
     function BarycenterOffset: TVector;
     function BarycenterPosition: TVector;
     function BarycenterAbsolutePosition: TVector; override;
-
     procedure BuildList(var rci: TGLRenderContextInfo); override;
     procedure DoRender(var rci: TGLRenderContextInfo;
       renderSelf, renderChildren: Boolean); override;
@@ -1090,6 +1084,7 @@ const
 type
   TGLActor = class;
   TGLActorAnimationReference = (aarMorph, aarSkeleton, aarNone);
+
   { An actor animation sequence.
     An animation sequence is a named set of contiguous frames that can be used
     for animating an actor. The referred frames can be either morph or skeletal

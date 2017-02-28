@@ -164,12 +164,11 @@ type
      Subclasses implement either visual scene objects (that are made to be
      visible at runtime, like a Cube) or structural objects (that influence
      rendering or are used for varied structural manipulations,
-     like the ProxyObject). 
+     like the ProxyObject).
      To add children at runtime, use the AddNewChild method of TGLBaseSceneObject;
      other children manipulations methods and properties are provided (to browse,
      move and delete them). Using the regular TComponent methods is not
      encouraged. }
-
   TGLBaseSceneObject = class(TGLCoordinatesUpdateAbleComponent)
   private
     FAbsoluteMatrix, FInvAbsoluteMatrix: PMatrix;
@@ -202,10 +201,9 @@ type
     FOnPicked: TNotifyEvent;
     FTagObject: TObject;
     FTagFloat: Single;
-
     //  FOriginalFiler: TFiler;   //used to allow persistent events in behaviours & effects
-    {If somebody could look at DefineProperties, ReadBehaviours, ReadEffects and verify code
-    is safe to use then it could be uncommented}
+    {If somebody could look at DefineProperties, ReadBehaviours, ReadEffects
+     and verify code is safe to use then it could be uncommented}
     function Get(Index: Integer): TGLBaseSceneObject;
     function GetCount: Integer;
     function GetIndex: Integer;
@@ -426,18 +424,15 @@ type
       AUseBaryCenter: Boolean = False): THmgBoundingBox;
     function BoundingBoxAbsolute(const AIncludeChilden: Boolean = True; const
       AUseBaryCenter: Boolean = False): THmgBoundingBox;
-
     {Advanced BB functions that use a caching scheme.
        Also they include children and use BaryCenter. }
     function BoundingBoxPersonalUnscaledEx: THmgBoundingBox;
     function BoundingBoxOfChildrenEx: THmgBoundingBox;
     function BoundingBoxIncludingChildrenEx: THmgBoundingBox;
-
     {Max distance of corners of the BoundingBox. }
     function BoundingSphereRadius: Single;
     function BoundingSphereRadiusUnscaled: Single;
-
-    {Indicates if a point is within an object. 
+    {Indicates if a point is within an object.
        Given coordinate is an absolute coordinate.
        Linear or surfacic objects shall always return False. 
        Default value is based on AxisAlignedDimension and a cube bounding. }
@@ -532,7 +527,6 @@ type
     procedure ResetRotations;
     {Reset rotations and applies them back in the specified order. }
     procedure ResetAndPitchTurnRoll(const degX, degY, degZ: Single);
-
     {Applies rotations around absolute X, Y and Z axis.  }
     procedure RotateAbsolute(const rx, ry, rz: Single); overload;
     {Applies rotations around the absolute given vector (angle in degrees).  }
@@ -560,7 +554,6 @@ type
     property PitchAngle: Single read GetPitchAngle write SetPitchAngle;
     property RollAngle: Single read GetRollAngle write SetRollAngle;
     property TurnAngle: Single read GetTurnAngle write SetTurnAngle;
-
     property ShowAxes: Boolean read FShowAxes write SetShowAxes default False;
     property Changes: TGLObjectChanges read FChanges;
     property BBChanges: TObjectBBChanges read fBBChanges write SetBBChanges;
@@ -578,12 +571,9 @@ type
       write SetVisibilityCulling default vcInherited;
     property OnProgress: TGLProgressEvent read FOnProgress write FOnProgress;
     property OnPicked: TNotifyEvent read FOnPicked write FOnPicked;
-    property OnAddedToParent: TNotifyEvent read FOnAddedToParent write
-      FOnAddedToParent;
-    property Behaviours: TGLBehaviours read GetBehaviours write SetBehaviours
-      stored False;
-    property Effects: TGLObjectEffects read GetEffects write SetEffects stored
-      False;
+    property OnAddedToParent: TNotifyEvent read FOnAddedToParent write FOnAddedToParent;
+    property Behaviours: TGLBehaviours read GetBehaviours write SetBehaviours stored False;
+    property Effects: TGLObjectEffects read GetEffects write SetEffects stored False;
     property TagObject: TObject read FTagObject write FTagObject;
   published
     property TagFloat: Single read FTagFloat write FTagFloat;
@@ -600,14 +590,12 @@ type
         (covers animation, inertia etc.)
       proxy : the subclass is an interface to and external, shared operator
         (like gravity, force-field effects etc.)
-      
+
      Some behaviours may be cooperative (like force-fields affects inertia)
-     or unique (e.g. only one inertia behaviour per object). 
-     NOTES : 
-      Don't forget to override the ReadFromFiler/WriteToFiler persistence
+     or unique (e.g. only one inertia behaviour per object).
+     NOTES : Don't forget to override the ReadFromFiler/WriteToFiler persistence
         methods if you add data in a subclass !
-      Subclasses must be registered using the RegisterXCollectionItemClass
-        function }
+      Subclasses must be registered using the RegisterXCollectionItemClass function }
   TGLBaseBehaviour = class(TGLXCollectionItem)
   protected
     procedure SetName(const val: string); override;
@@ -8214,8 +8202,7 @@ initialization
 //------------------------------------------------------------------------------
 
   RegisterClasses([TGLLightSource, TGLCamera, TGLProxyObject,
-    TGLScene, TGLDirectOpenGL, TGLRenderPoint,
-      TGLMemoryViewer]);
+    TGLScene, TGLDirectOpenGL, TGLRenderPoint, TGLMemoryViewer]);
 
   // preparation for high resolution timer
   QueryPerformanceFrequency(vCounterFrequency);

@@ -15,52 +15,48 @@ interface
 uses
   Winapi.OpenGL,
   System.Classes,
-  
+
   GLScene,
   GLVectorGeometry,
   GLObjects,
+  GLVectorFileObjects,
+  GLMesh,
   GLRenderContextInfo;
 
 type
 
   { The tetrahedron has no texture coordinates defined, ie. without using
     a texture generation mode, no texture will be mapped. }
-  TGLTetrahedron = class(TGLSceneObject)
+  TGLTetrahedron = class(TGLBaseMesh)
   public
-    
     procedure BuildList(var rci: TGLRenderContextInfo); override;
   end;
 
   {The octahedron has no texture coordinates defined, ie. without using
     a texture generation mode, no texture will be mapped. }
-  TGLOctahedron = class(TGLSceneObject)
+  TGLOctahedron = class(TGLBaseMesh)
   public
-    
     procedure BuildList(var rci: TGLRenderContextInfo); override;
   end;
 
   {The hexahedron has no texture coordinates defined, ie. without using
     a texture generation mode, no texture will be mapped. }
-  TGLHexahedron = class(TGLSceneObject)
+  TGLHexahedron = class(TGLBaseMesh)
   public
-    
     procedure BuildList(var rci: TGLRenderContextInfo); override;
-    procedure GetVolume;
   end;
 
   {The dodecahedron has no texture coordinates defined, ie. without using
    a texture generation mode, no texture will be mapped. }
-  TGLDodecahedron = class(TGLSceneObject)
+  TGLDodecahedron = class(TGLBaseMesh)
   public
-    
     procedure BuildList(var rci: TGLRenderContextInfo); override;
   end;
 
   {The icosahedron has no texture coordinates defined, ie. without using
      a texture generation mode, no texture will be mapped. }
-  TGLIcosahedron = class(TGLSceneObject)
+  TGLIcosahedron = class(TGLBaseMesh)
   public
-    
     procedure BuildList(var rci: TGLRenderContextInfo); override;
   end;
 
@@ -73,8 +69,6 @@ implementation
 //--------------------  TGLTetrahedron ------------------------
 //--------------------
 
-// BuildList
-//
 procedure TGLTetrahedron.BuildList(var rci: TGLRenderContextInfo);
 const
   Vertices: packed array [0 .. 3] of TAffineVector =
@@ -109,8 +103,6 @@ end;
 //--------------------  TGLOctahedron ------------------------
 //--------------------
 
-// BuildList
-//
 procedure TGLOctahedron.BuildList(var rci: TGLRenderContextInfo);
 const
   Vertices: packed array [0 .. 5] of TAffineVector =
@@ -153,8 +145,6 @@ end;
 // ------------------ TGLHexahedron ------------------
 // ------------------
 
-// BuildList
-//
 procedure TGLHexahedron.BuildList(var rci: TGLRenderContextInfo);
 const
   Vertices: packed array [0 .. 7] of TAffineVector =
@@ -191,19 +181,9 @@ begin
   end;
 end;
 
-//GetVolume
-//
-procedure TGLHexahedron.GetVolume;
-begin
-  //
-end;
-
 // ------------------
 // ------------------ TGLDodecahedron ------------------
 // ------------------
-
-// BuildList
-//
 
 procedure TGLDodecahedron.BuildList(var rci: TGLRenderContextInfo);
 const
@@ -256,9 +236,6 @@ end;
 // ------------------
 // ------------------ TGLIcosahedron ------------------
 // ------------------
-
-// BuildList
-//
 
 procedure TGLIcosahedron.BuildList(var rci: TGLRenderContextInfo);
 const
