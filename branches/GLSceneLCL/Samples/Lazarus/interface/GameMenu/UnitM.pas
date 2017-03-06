@@ -66,7 +66,7 @@ procedure TForm1.FormCreate(Sender: TObject);
 begin
   SetGLSceneMediaDir();
 
-  GLMaterialLibrary1.Materials[0].Material.Texture.Image.LoadFromFile('GLScene.bmp');
+  GLMaterialLibrary1.Materials[0].Material.Texture.Image.LoadFromFile(MediaPath+'clouds.jpg');
 
   GameMenu := TGLGameMenu(GLScene1.Objects.AddNewChild(TGLGameMenu));
   GameMenu.MaterialLibrary := GLMaterialLibrary1;

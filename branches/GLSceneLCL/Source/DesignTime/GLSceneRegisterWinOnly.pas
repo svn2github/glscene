@@ -51,7 +51,7 @@ end;
 
 initialization
 
-   {$I nonGLSceneLCL.lrs}
+   {$I ../../resources/nonGLScene.lrs}
 
    with ObjectManager do begin
       RegisterSceneObject(TGLSpaceText, 'SpaceText', glsOCDoodad, HInstance);

@@ -52,7 +52,7 @@ interface
 uses
   SysUtils, Classes,
   StdCtrls,
-   cene
+
   GLTexture, GLTextureFormat, GLGraphics, GLUtils, GLColor, GLCoordinates,
   GLMaterial, GLState;
 

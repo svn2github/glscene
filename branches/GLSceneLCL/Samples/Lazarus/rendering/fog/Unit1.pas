@@ -151,7 +151,7 @@ var
 
 begin
   SetGLSceneMediaDir();
-  GLMaterialLibrary1.AddTextureMaterial('glscene', 'glscene.bmp');
+  GLMaterialLibrary1.AddTextureMaterial('glscene', MediaPath+'glscene.bmp');
   for X := -cNb to cNb do
     for Y := -cNb to cNb do
       for Z := -cNb to cNb do

@@ -92,14 +92,14 @@ procedure TForm1.FormCreate(Sender: TObject);
 begin
    SetGLSceneMediaDir();
    // Load Actor into GLScene
-   Actor1.LoadFromFile('waste.md2');
-   Actor1.Material.Texture.Image.LoadFromFile('waste.jpg');
+   Actor1.LoadFromFile(MediaPath+'waste.md2');
+   Actor1.Material.Texture.Image.LoadFromFile(MediaPath+'waste.jpg');
 
    // Load Quake2 animations defaults, for "waste.md2", this is not required
    // since the author did not renamed the frames, and thus, GLScene can
    // recover them from the .MD2, but other authors just made a mess...
    // Loading the default animations takes care of that
-   Actor1.Animations.LoadFromFile('Quake2Animations.aaf');
+   Actor1.Animations.LoadFromFile(MediaPath+'Quake2Animations.aaf');
 
    // Scale Actor for put in the Scene
    Actor1.Scale.SetVector(0.04, 0.04, 0.04, 0);
@@ -111,7 +111,7 @@ begin
    CBAnimationsChange(Self);
 
    // Load Texture for ground disk
-   Disk1.Material.Texture.Image.LoadFromFile('clover.jpg');
+   Disk1.Material.Texture.Image.LoadFromFile(MediaPath+'clover.jpg');
 end;
 
 procedure TForm1.SBPlayClick(Sender: TObject);
@@ -141,8 +141,8 @@ end;
 procedure TForm1.BBLoadWeaponClick(Sender: TObject);
 begin
    // Load weapon model and texture
-   Actor2.LoadFromFile('weaponWaste.md2');
-   Actor2.Material.Texture.Image.LoadFromFile('weaponWaste.jpg');
+   Actor2.LoadFromFile(MediaPath+'weaponWaste.md2');
+   Actor2.Material.Texture.Image.LoadFromFile(MediaPath+'weaponWaste.jpg');
 
    // Get animations frames from the main actor
    Actor2.Animations.Assign(Actor1.Animations);

@@ -75,12 +75,12 @@ begin
       // Load all 6 texture map components of the cube map
       // The 'PX', 'NX', etc. refer to 'positive X', 'negative X', etc.
       // and follow the RenderMan specs/conventions
-      Picture[cmtPX].LoadFromFile('cm_left.jpg');
-      Picture[cmtNX].LoadFromFile('cm_right.jpg');
-      Picture[cmtPY].LoadFromFile('cm_top.jpg');
-      Picture[cmtNY].LoadFromFile('cm_bottom.jpg');
-      Picture[cmtPZ].LoadFromFile('cm_back.jpg');
-      Picture[cmtNZ].LoadFromFile('cm_front.jpg');
+      Picture[cmtPX].LoadFromFile(MediaPath+'cm_left.jpg');
+      Picture[cmtNX].LoadFromFile(MediaPath+'cm_right.jpg');
+      Picture[cmtPY].LoadFromFile(MediaPath+'cm_top.jpg');
+      Picture[cmtNY].LoadFromFile(MediaPath+'cm_bottom.jpg');
+      Picture[cmtPZ].LoadFromFile(MediaPath+'cm_back.jpg');
+      Picture[cmtNZ].LoadFromFile(MediaPath+'cm_front.jpg');
     end;
     // Select reflection cube map environment mapping
     // This is the mode you'll most commonly use with cube maps, normal cube

@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectOptions>
     <Version Value="9"/>
@@ -6,7 +6,6 @@
     <General>
       <MainUnit Value="0"/>
       <UseXPManifest Value="True"/>
-      <ActiveWindowIndexAtStart Value="0"/>
     </General>
     <i18n>
       <EnableI18N LFM="False"/>
@@ -28,25 +27,19 @@
         <LaunchingApplication PathPlusParams="\usr\bin\xterm -T 'Lazarus Run Output' -e $(LazarusDir)\tools\runwait.sh $(TargetCmdLine)"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="3">
+    <RequiredPackages Count="2">
       <Item1>
-        <PackageName Value=" GLSceneLCL_DesignTime"/>
+        <PackageName Value="GLScene_RunTime"/>
       </Item1>
       <Item2>
-        <PackageName Value=" GLSceneLCL_RunTime"/>
-      </Item2>
-      <Item3>
         <PackageName Value="LCL"/>
-      </Item3>
+      </Item2>
     </RequiredPackages>
     <Units Count="8">
       <Unit0>
         <Filename Value="Actor.lpr"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="0"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="21" Y="9"/>
+        <CursorPos X="38" Y="9"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
@@ -57,25 +50,19 @@
         <ComponentName Value="Form1"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="Unit1"/>
-        <TopLine Value="1"/>
         <CursorPos X="26" Y="7"/>
         <UsageCount Value="20"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit1>
       <Unit2>
         <Filename Value="..\..\..\Source\GLGameMenu.pas"/>
-        <UnitName Value="GLGameMenu"/>
-        <WindowIndex Value="0"/>
         <TopLine Value="484"/>
-        <CursorPos X="1" Y="521"/>
+        <CursorPos Y="521"/>
         <UsageCount Value="10"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit2>
       <Unit3>
         <Filename Value="..\..\..\Source\ GLPipelineTransformation.pas"/>
-        <UnitName Value="GLPipelineTransformation"/>
-        <WindowIndex Value="0"/>
         <TopLine Value="211"/>
         <CursorPos X="50" Y="231"/>
         <UsageCount Value="10"/>
@@ -86,20 +73,17 @@
         <ComponentName Value="Form1"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="demo"/>
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="103"/>
-        <CursorPos X="23" Y="93"/>
+        <TopLine Value="18"/>
+        <CursorPos X="3" Y="34"/>
         <UsageCount Value="10"/>
         <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit4>
       <Unit5>
         <Filename Value="..\..\..\Source\ GLApplicationFileIO.pas"/>
-        <UnitName Value="GLApplicationFileIO"/>
-        <WindowIndex Value="0"/>
         <TopLine Value="179"/>
         <CursorPos X="52" Y="201"/>
         <UsageCount Value="10"/>
@@ -108,31 +92,30 @@
       <Unit6>
         <Filename Value="..\actortwocam\actortwocam.lpr"/>
         <UnitName Value="ActorTwoCam"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="1" Y="1"/>
         <UsageCount Value="10"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit6>
       <Unit7>
         <Filename Value="..\..\..\..\Source\GLApplicationFileIO.pas"/>
-        <UnitName Value="GLApplicationFileIO"/>
-        <WindowIndex Value="0"/>
         <TopLine Value="188"/>
-        <CursorPos X="1" Y="209"/>
+        <CursorPos Y="209"/>
         <UsageCount Value="10"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit7>
     </Units>
-    <JumpHistory Count="2" HistoryIndex="1">
+    <JumpHistory Count="3" HistoryIndex="2">
       <Position1>
         <Filename Value="demo.pas"/>
         <Caret Line="48" Column="42" TopLine="21"/>
       </Position1>
       <Position2>
         <Filename Value="Actor.lpr"/>
-        <Caret Line="9" Column="21" TopLine="1"/>
+        <Caret Line="9" Column="21"/>
       </Position2>
+      <Position3>
+        <Filename Value="demo.pas"/>
+        <Caret Line="145" Column="57" TopLine="200"/>
+      </Position3>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
@@ -161,12 +144,6 @@
         </Win32>
       </Options>
     </Linking>
-    <Other>
-      <CompilerMessages>
-        <UseMsgFile Value="True"/>
-      </CompilerMessages>
-      <CompilerPath Value="$(CompPath)"/>
-    </Other>
   </CompilerOptions>
   <Debugging>
     <Exceptions Count="3">

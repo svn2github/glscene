@@ -61,7 +61,7 @@ begin
   // dynamically create 2 materials and load 2 textures
   with GLMaterialLibrary do
   begin
-    with AddTextureMaterial('wood', 'ashwood.jpg') do
+    with AddTextureMaterial('wood', MediaPath+'ashwood.jpg') do
     begin
       Material.FrontProperties.Emission.Color := clrGray50;
       Material.FaceCulling := fcNoCull;

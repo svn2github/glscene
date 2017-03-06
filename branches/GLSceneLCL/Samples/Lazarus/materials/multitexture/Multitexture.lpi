@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectOptions>
     <Version Value="9"/>
@@ -6,7 +6,6 @@
     <General>
       <MainUnit Value="0"/>
       <UseXPManifest Value="True"/>
-      <ActiveWindowIndexAtStart Value="0"/>
     </General>
     <i18n>
       <EnableI18N LFM="False"/>
@@ -30,7 +29,7 @@
     </RunParams>
     <RequiredPackages Count="2">
       <Item1>
-        <PackageName Value=" GLSceneLCL_RunTime"/>
+        <PackageName Value="GLScene_RunTime"/>
       </Item1>
       <Item2>
         <PackageName Value="LCL"/>
@@ -41,8 +40,6 @@
         <Filename Value="Multitexture.lpr"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="1"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
         <CursorPos X="34" Y="18"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
@@ -54,27 +51,28 @@
         <ComponentName Value="Form1"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="Main"/>
         <IsVisibleTab Value="True"/>
-        <EditorIndex Value="0"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="46"/>
-        <CursorPos X="22" Y="72"/>
+        <TopLine Value="67"/>
+        <CursorPos X="43" Y="78"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit1>
     </Units>
-    <JumpHistory Count="2" HistoryIndex="1">
+    <JumpHistory Count="3" HistoryIndex="2">
       <Position1>
         <Filename Value="Main.pas"/>
-        <Caret Line="129" Column="1" TopLine="102"/>
+        <Caret Line="129" TopLine="102"/>
       </Position1>
       <Position2>
         <Filename Value="Main.pas"/>
         <Caret Line="68" Column="12" TopLine="60"/>
       </Position2>
+      <Position3>
+        <Filename Value="Main.pas"/>
+        <Caret Line="76" Column="33" TopLine="55"/>
+      </Position3>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
@@ -103,12 +101,6 @@
         </Win32>
       </Options>
     </Linking>
-    <Other>
-      <CompilerMessages>
-        <UseMsgFile Value="True"/>
-      </CompilerMessages>
-      <CompilerPath Value="$(CompPath)"/>
-    </Other>
   </CompilerOptions>
   <Debugging>
     <Exceptions Count="3">

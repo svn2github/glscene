@@ -102,8 +102,8 @@ end;
 procedure TForm1.FormCreate(Sender: TObject);
 begin
   SetGLSceneMediaDir();
-  matLib.Materials[0].Material.Texture.Image.LoadFromFile('projector.tga');
-  matLib.Materials[1].Material.Texture.Image.LoadFromFile('flare1.bmp');
+  matLib.Materials[0].Material.Texture.Image.LoadFromFile(MediaPath+'projector.tga');
+  matLib.Materials[1].Material.Texture.Image.LoadFromFile(MediaPath+'flare1.bmp');
 
   emitter1.Material.MaterialLibrary := matLib;
   emitter1.Material.LibMaterialName := 'spot';
@@ -112,9 +112,9 @@ begin
   emitter2.Material.LibMaterialName := 'spot2';
   emitter2.FOVy := 40;
 
-  GLPlane1.Material.Texture.Image.LoadFromFile('cm_front.jpg');
-  GLPlane2.Material.Texture.Image.LoadFromFile('cm_left.jpg');
-  GLPlane3.Material.Texture.Image.LoadFromFile('cm_bottom.jpg');
+  GLPlane1.Material.Texture.Image.LoadFromFile(MediaPath+'cm_front.jpg');
+  GLPlane2.Material.Texture.Image.LoadFromFile(MediaPath+'cm_left.jpg');
+  GLPlane3.Material.Texture.Image.LoadFromFile(MediaPath+'cm_bottom.jpg');
 
   projLight.Emitters.AddEmitter(emitter1);
   projLight.Emitters.AddEmitter(emitter2);

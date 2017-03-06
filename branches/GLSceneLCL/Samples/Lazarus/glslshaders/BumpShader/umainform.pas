@@ -105,14 +105,14 @@ var
 begin
    SetGLSceneMediaDir();
   //First load models
-  Fighter.LoadFromFile('TRINITYrage.smd'); //Fighter
-  Fighter.AddDataFromFile('walk.smd');
+  Fighter.LoadFromFile(MediaPath+'\'+'TRINITYrage.smd'); //Fighter
+  Fighter.AddDataFromFile(MediaPath+'\'+'walk.smd');
   Fighter.Animations[1].MakeSkeletalTranslationStatic;
-  Fighter.AddDataFromFile('run.smd');
+  Fighter.AddDataFromFile(MediaPath+'\'+'run.smd');
   Fighter.Animations[2].MakeSkeletalTranslationStatic;
-  Fighter.AddDataFromFile('long_jump.smd');
-  Fighter.AddDataFromFile('jump.smd');
-  Fighter.AddDataFromFile('look_left_right.smd');
+  Fighter.AddDataFromFile(MediaPath+'\'+'long_jump.smd');
+  Fighter.AddDataFromFile(MediaPath+'\'+'jump.smd');
+  Fighter.AddDataFromFile(MediaPath+'\'+'look_left_right.smd');
   Fighter.Animations[5].MakeSkeletalRotationDelta;
   Fighter.SwitchToAnimation(1);
 {
@@ -125,26 +125,26 @@ begin
   Fighter.Scale.Scale(3);
 //  Fighter.MeshObjects.BuildTangentSpace;
 
-  Teapot.LoadFromFile('teapot.3ds'); //Teapot
+  Teapot.LoadFromFile(MediaPath+'\'+'teapot.3ds'); //Teapot
   Teapot.Scale.Scale(0.8);
   //  Teapot.MeshObjects.BuildTangentSpace; does not have texture coordinates...
 
-  Sphere_big.LoadFromFile('Sphere_big.3DS'); //Sphere_big
+  Sphere_big.LoadFromFile(MediaPath+'\'+'Sphere_big.3DS'); //Sphere_big
   Sphere_big.Scale.Scale(70);
   Sphere_big.MeshObjects.BuildTangentSpace;
 
-  Sphere_little.LoadFromFile('Sphere_little.3DS'); //Sphere_little
+  Sphere_little.LoadFromFile(MediaPath+'\'+'Sphere_little.3DS'); //Sphere_little
   Sphere_little.Scale.Scale(4);
   Sphere_little.MeshObjects.BuildTangentSpace;
 
   // Then load textures
-  MaterialLibrary.LibMaterialByName('Earth').Material.Texture.Image.LoadFromFile('Earth.jpg');
+  MaterialLibrary.LibMaterialByName('Earth').Material.Texture.Image.LoadFromFile(MediaPath+'\'+'Earth.jpg');
   with MaterialLibrary.LibMaterialByName('EarthGross').Material.Texture do
   begin
     ImageClassName:= TGLCompositeImage.ClassName;
-    Image.LoadFromFile('EarthSpec.dds');
+    Image.LoadFromFile(MediaPath+'\'+'EarthSpec.dds');
   end;
-  MaterialLibrary.LibMaterialByName('EarthNormals').Material.Texture.Image.LoadFromFile('EarthNormals.jpg');
+  MaterialLibrary.LibMaterialByName('EarthNormals').Material.Texture.Image.LoadFromFile(MediaPath+'\'+'EarthNormals.jpg');
 
   // Create Shader
   MultiLightShader := TGLSLMLBumpShader.Create(Self);

@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectOptions>
     <Version Value="9"/>
@@ -7,7 +7,6 @@
       <MainUnit Value="0"/>
       <ResourceType Value="res"/>
       <UseXPManifest Value="True"/>
-      <ActiveWindowIndexAtStart Value="0"/>
     </General>
     <i18n>
       <EnableI18N LFM="False"/>
@@ -31,7 +30,7 @@
     </RunParams>
     <RequiredPackages Count="2">
       <Item1>
-        <PackageName Value=" GLSceneLCL_RunTime"/>
+        <PackageName Value="GLScene_RunTime"/>
       </Item1>
       <Item2>
         <PackageName Value="LCL"/>
@@ -49,10 +48,7 @@
         <ComponentName Value="Form1"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="uParticleMasking"/>
         <IsVisibleTab Value="True"/>
-        <EditorIndex Value="0"/>
-        <WindowIndex Value="0"/>
         <TopLine Value="234"/>
         <CursorPos X="3" Y="13"/>
         <UsageCount Value="20"/>
@@ -62,8 +58,6 @@
       </Unit1>
       <Unit2>
         <Filename Value="..\..\..\Source\ GLAsyncTimer.pas"/>
-        <UnitName Value="GLAsyncTimer"/>
-        <WindowIndex Value="0"/>
         <TopLine Value="74"/>
         <CursorPos X="26" Y="81"/>
         <UsageCount Value="10"/>
@@ -71,17 +65,15 @@
       </Unit2>
       <Unit3>
         <Filename Value="F:\share\fpcsrc\2.4.2\rtl\objpas\classes\classesh.inc"/>
-        <WindowIndex Value="0"/>
         <TopLine Value="1482"/>
         <CursorPos X="3" Y="1465"/>
         <UsageCount Value="10"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit3>
     </Units>
-    <JumpHistory Count="1" HistoryIndex="0">
+    <JumpHistory Count="1">
       <Position1>
         <Filename Value="uParticleMasking.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
       </Position1>
     </JumpHistory>
   </ProjectOptions>
@@ -111,12 +103,6 @@
         </Win32>
       </Options>
     </Linking>
-    <Other>
-      <CompilerMessages>
-        <UseMsgFile Value="True"/>
-      </CompilerMessages>
-      <CompilerPath Value="$(CompPath)"/>
-    </Other>
   </CompilerOptions>
   <Debugging>
     <Exceptions Count="3">

@@ -20,7 +20,7 @@ uses
   // GLScene
   GLScene, GLVectorFileObjects, GLObjects, GLTexture, GLVectorLists, GLCadencer,
   GLLCLViewer, GLSimpleNavigation, GLPostEffects, GLCrossPlatform,
-  MeshUtils, GLVectorGeometry, GLMaterial, GLCoordinates, GLBaseClasses,
+   GLVectorGeometry, GLMaterial, GLCoordinates, GLBaseClasses,
   GLRenderContextInfo;
 
 type
@@ -67,8 +67,8 @@ end;
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
   SetGLSceneMediaDir();
-  GLActor1.LoadFromFile('waste.md2');
-  GLActor1.Material.Texture.Image.LoadFromFile('waste.jpg');
+  GLActor1.LoadFromFile(MediaPath+'\'+'waste.md2');
+  GLActor1.Material.Texture.Image.LoadFromFile(MediaPath+'\'+'waste.jpg');
   GLActor1.Material.Texture.Enabled := True;
   GLActor1.SwitchToAnimation(GLActor1.Animations[0]);
 

@@ -369,7 +369,6 @@ end;
 //
 procedure TGLMS3DVectorFile.LoadFromStream(aStream: TStream);
 var
-   cene
   i, j, k: integer;
   itemp: PtrUInt;
   wtemp: word;

@@ -8,7 +8,7 @@ object Form1: TForm1
   ClientWidth = 316
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
-  LCLVersion = '0.9.31'
+  LCLVersion = '1.6.2.0'
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Height = 334
@@ -39,7 +39,7 @@ object Form1: TForm1
       PitchAngle = 0
       RollAngle = 0
       TurnAngle = 0
-      CubeSize = 0.80000001192093
+      CubeSize = 0.800000011920929
       VisibleAtRunTime = True
     end
     object GLLightSource1: TGLLightSource
@@ -55,7 +55,14 @@ object Form1: TForm1
     end
     object Teapot1: TGLTeapot
       TagFloat = 0
+      Material.Texture.ImageClassName = 'TGLBlankImage'
+      Material.Texture.Image.Width = 64
+      Material.Texture.Image.Height = 64
+      Material.Texture.Image.ColorFormat = 6408
+      Material.Texture.MagFilter = maNearest
+      Material.Texture.MinFilter = miNearest
       Material.Texture.TextureMode = tmReplace
+      Material.Texture.Compression = tcNone
       PitchAngle = 0
       Position.Coordinates = {
         00000000000080BE000000000000803F

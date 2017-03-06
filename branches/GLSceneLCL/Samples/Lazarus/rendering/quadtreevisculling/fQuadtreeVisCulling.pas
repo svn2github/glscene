@@ -11,7 +11,7 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLScene, GLLCLViewer, GLSkydome, GLObjects, GLKeyboard,
   GLHeightData, GLTerrainRenderer, GLTexture, GLCadencer, GLNavigator,
-  SpatialPartitioning, GLVectorGeometry, ExtCtrls, GLBitmapFont, GeometryBB,
+  GLSpatialPartitioning, GLVectorGeometry, ExtCtrls, GLBitmapFont, GLGeometryBB,
   GLWindowsFont, GLHUDObjects, StdCtrls, ComCtrls,
   GLCrossPlatform, GLMaterial, GLCoordinates, GLBaseClasses, GLRenderContextInfo;
 
@@ -59,7 +59,7 @@ type
     { Private declarations }
     cullingMode: string;
     visiblecount,treecount: integer;
-    SpacePartition: TSectoredSpacePartition;
+    SpacePartition: TGLSectoredSpacePartition;
     FCamHeight : single;
     procedure CreateTrees;
   public

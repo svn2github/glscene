@@ -38,7 +38,6 @@ uses
   // VCL
   Classes, SysUtils,
 
-   cene
   GLVectorFileObjects, GLApplicationFileIO, GLVectorGeometry, GLTexture,
   GLVectorLists, GLMaterial,
 

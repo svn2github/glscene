@@ -15,12 +15,12 @@ object frmQuadtreeVisCulling: TfrmQuadtreeVisCulling
   OnDestroy = FormDestroy
   OnKeyPress = FormKeyPress
   Position = poScreenCenter
-  LCLVersion = '0.9.31'
+  LCLVersion = '1.6.2.0'
   object Label2: TLabel
     Left = 288
-    Height = 14
+    Height = 13
     Top = 10
-    Width = 33
+    Width = 32
     Caption = 'Label2'
     ParentColor = False
   end
@@ -58,9 +58,9 @@ object frmQuadtreeVisCulling: TfrmQuadtreeVisCulling
     TabOrder = 2
     object Label1: TLabel
       Left = 8
-      Height = 14
+      Height = 13
       Top = 8
-      Width = 83
+      Width = 82
       Caption = 'Generating Trees'
       ParentColor = False
     end
@@ -183,8 +183,15 @@ object frmQuadtreeVisCulling: TfrmQuadtreeVisCulling
     object tree: TGLSprite
       TagFloat = 0
       Material.BlendingMode = bmTransparency
+      Material.Texture.ImageClassName = 'TGLBlankImage'
+      Material.Texture.Image.Width = 64
+      Material.Texture.Image.Height = 64
+      Material.Texture.Image.ColorFormat = 6408
       Material.Texture.ImageAlpha = tiaSuperBlackTransparent
+      Material.Texture.MagFilter = maNearest
+      Material.Texture.MinFilter = miNearest
       Material.Texture.TextureMode = tmReplace
+      Material.Texture.Compression = tcNone
       Material.Texture.Disabled = False
       PitchAngle = 0
       RollAngle = 0
@@ -233,14 +240,28 @@ object frmQuadtreeVisCulling: TfrmQuadtreeVisCulling
       item
         Name = '1'
         Tag = 0
+        Material.Texture.ImageClassName = 'TGLBlankImage'
+        Material.Texture.Image.Width = 64
+        Material.Texture.Image.Height = 64
+        Material.Texture.Image.ColorFormat = 6408
+        Material.Texture.MagFilter = maNearest
+        Material.Texture.MinFilter = miNearest
         Material.Texture.TextureMode = tmReplace
+        Material.Texture.Compression = tcNone
         Material.Texture.Disabled = False
         Texture2Name = '2'
       end    
       item
         Name = '2'
         Tag = 0
+        Material.Texture.ImageClassName = 'TGLBlankImage'
+        Material.Texture.Image.Width = 64
+        Material.Texture.Image.Height = 64
+        Material.Texture.Image.ColorFormat = 6408
+        Material.Texture.MagFilter = maNearest
+        Material.Texture.MinFilter = miNearest
         Material.Texture.TextureMode = tmModulate
+        Material.Texture.Compression = tcNone
         Material.Texture.Disabled = False
       end>
     left = 80

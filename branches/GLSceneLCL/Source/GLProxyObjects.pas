@@ -55,7 +55,6 @@ interface
 
 uses
   Classes, SysUtils,
-   cene
   GLScene,  GLVectorGeometry,  GLTexture,  GLVectorFileObjects,
   GLStrings,  GLRenderContextInfo,  GLBaseClasses, GLMaterial,
   OpenGLTokens,  GLContext,  GLVectorTypes;

@@ -1,0 +1,147 @@
+object frmMain: TfrmMain
+  Left = 433
+  Height = 491
+  Top = 293
+  Width = 592
+  Caption = 'Accumulator'
+  ClientHeight = 491
+  ClientWidth = 592
+  LCLVersion = '1.6.4.0'
+  object SceneViewer: TGLSceneViewer
+    Left = 0
+    Height = 491
+    Top = 0
+    Width = 592
+    Camera = camMain
+    FieldOfView = 156.976486206055
+    Align = alClient
+    TabOrder = 0
+  end
+  object btnInitAccum: TButton
+    Left = 8
+    Height = 25
+    Top = 8
+    Width = 193
+    Caption = 'New'
+    OnClick = btnInitAccumClick
+    TabOrder = 1
+  end
+  object btnAddObject: TButton
+    Left = 8
+    Height = 25
+    Top = 40
+    Width = 193
+    Caption = 'Add object'
+    OnClick = btnAddObjectClick
+    TabOrder = 2
+  end
+  object btnDelObject: TButton
+    Left = 8
+    Height = 25
+    Top = 72
+    Width = 193
+    Caption = 'Delete Object'
+    OnClick = btnDelObjectClick
+    TabOrder = 3
+  end
+  object btnDeinitAccum: TButton
+    Left = 8
+    Height = 25
+    Top = 104
+    Width = 193
+    Caption = 'Clear'
+    OnClick = btnDeinitAccumClick
+    TabOrder = 4
+  end
+  object pnlFPS: TPanel
+    Left = 8
+    Height = 25
+    Top = 136
+    Width = 193
+    BevelInner = bvLowered
+    TabOrder = 5
+  end
+  object GLScene: TGLScene
+    object esdSky: TGLEarthSkyDome
+      TagFloat = 0
+      PitchAngle = 0
+      RollAngle = 0
+      TurnAngle = 0
+      Bands = <>
+      Stars = <>
+      SunElevation = 75
+      Turbidity = 15
+      ExtendedOptions = []
+      Slices = 48
+      Stacks = 24
+    end
+    object lsLight: TGLLightSource
+      TagFloat = 0
+      ConstAttenuation = 2.5
+      LinearAttenuation = 0
+      QuadraticAttenuation = 0
+      Position.Coordinates = {
+        00000000000020C1000000000000803F
+      }
+      SpotCutOff = 180
+      SpotDirection.Coordinates = {
+        00000000000000000000000000000000
+      }
+      SpotExponent = 0
+    end
+    object dscTerrain: TGLDisk
+      TagFloat = 0
+      Material.Texture.ImageClassName = 'TGLBlankImage'
+      Material.Texture.Image.Width = 64
+      Material.Texture.Image.Height = 64
+      Material.Texture.Image.ColorFormat = 6408
+      Material.Texture.MagFilter = maNearest
+      Material.Texture.MinFilter = miNearest
+      Material.Texture.Compression = tcNone
+      PitchAngle = 0
+      Position.Coordinates = {
+        000000000000803E000000000000803F
+      }
+      RollAngle = 0
+      TurnAngle = 0
+      InnerRadius = 0
+      OuterRadius = 1
+      Slices = 64
+      StartAngle = 0
+      SweepAngle = 360
+      object dcObjects: TGLDummyCube
+        TagFloat = 0
+        PitchAngle = 0
+        Position.Coordinates = {
+          00000000000000006666663E0000803F
+        }
+        RollAngle = 0
+        TurnAngle = 0
+        CubeSize = 1
+      end
+    end
+    object camMain: TGLCamera
+      TagFloat = 0
+      DepthOfView = 300
+      FocalLength = 50
+      TargetObject = dscTerrain
+      Position.Coordinates = {
+        000000000000A0BF0000003F0000803F
+      }
+    end
+  end
+  object FPSTimer: TGLAsyncTimer
+    Enabled = True
+    OnTimer = FPSTimerTimer
+    ThreadPriority = tpNormal
+    left = 32
+  end
+  object Cadencer: TGLCadencer
+    Scene = GLScene
+    MaxDeltaTime = 0
+    MinDeltaTime = 0
+    FixedDeltaTime = 0
+    OnProgress = CadencerProgress
+    left = 64
+  end
+end

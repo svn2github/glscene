@@ -9,7 +9,7 @@ object Form1: TForm1
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
   OnCreate = FormCreate
-  LCLVersion = '0.9.31'
+  LCLVersion = '1.6.2.0'
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Height = 471
@@ -50,7 +50,7 @@ object Form1: TForm1
         RollAngle = 0
         TurnAngle = 0
         Visible = False
-        Radius = 0.05000000074506
+        Radius = 0.0500000007450581
       end
     end
     object DOInitialize: TGLDirectOpenGL
@@ -86,13 +86,13 @@ object Form1: TForm1
       RollAngle = 0
       TurnAngle = 0
       XSamplingScale.Min = -100
-      XSamplingScale.max = 100
+      XSamplingScale.Max = 100
       XSamplingScale.Origin = 0
-      XSamplingScale.step = 2
+      XSamplingScale.Step = 2
       YSamplingScale.Min = -100
-      YSamplingScale.max = 100
+      YSamplingScale.Max = 100
       YSamplingScale.Origin = 0
-      YSamplingScale.step = 2
+      YSamplingScale.Step = 2
       OnGetHeight = GLHeightField1GetHeight
     end
     object GLSphere2: TGLSphere
@@ -129,10 +129,13 @@ object Form1: TForm1
       item
         Name = 'water'
         Tag = 0
+        Material.Texture.MagFilter = maNearest
+        Material.Texture.MinFilter = miNearest
         Material.Texture.TextureMode = tmReplace
         Material.Texture.TextureFormat = tfRGB
+        Material.Texture.Compression = tcNone
         Material.Texture.Disabled = False
-        Material.Texture.NormalMapScale = 0.05000000074506
+        Material.Texture.NormalMapScale = 0.0500000007450581
         Shader = GLUserShader1
       end    
       item

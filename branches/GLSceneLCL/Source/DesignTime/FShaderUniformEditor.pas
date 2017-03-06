@@ -248,7 +248,7 @@ end;
 
 initialization
 
-{$i FShaderUniformEditorLCL.lrs}
+{$i FShaderUniformEditor.lrs}
 
 finalization
 

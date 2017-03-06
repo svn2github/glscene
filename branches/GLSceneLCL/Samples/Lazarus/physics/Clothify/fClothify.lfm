@@ -11,45 +11,45 @@ object frmClothify: TfrmClothify
   OnCreate = FormCreate
   OnMouseWheel = FormMouseWheel
   Position = poScreenCenter
-  LCLVersion = '0.9.29'
+  LCLVersion = '1.6.2.0'
   object Label1: TLabel
-    Left = 670
-    Height = 14
+    Left = 671
+    Height = 13
     Top = 0
-    Width = 39
+    Width = 38
     Anchors = [akTop, akRight]
     Caption = '0,0 FPS'
     ParentColor = False
   end
   object Label3: TLabel
     Left = 8
-    Height = 14
+    Height = 13
     Top = 0
-    Width = 28
+    Width = 27
     Caption = 'Slack'
     ParentColor = False
   end
   object Label6: TLabel
     Left = 104
-    Height = 14
+    Height = 13
     Top = 0
-    Width = 44
+    Width = 43
     Caption = 'Iterations'
     ParentColor = False
   end
   object Label7: TLabel
     Left = 192
-    Height = 14
+    Height = 13
     Top = 0
-    Width = 35
+    Width = 34
     Caption = 'Friction'
     ParentColor = False
   end
   object Label8: TLabel
     Left = 416
-    Height = 14
+    Height = 13
     Top = 0
-    Width = 45
+    Width = 44
     Caption = 'Shadows'
     ParentColor = False
   end
@@ -82,31 +82,31 @@ object frmClothify: TfrmClothify
     Visible = False
     object Label2: TLabel
       Left = 8
-      Height = 14
+      Height = 13
       Top = 16
-      Width = 27
+      Width = 26
       Caption = 'Mesh'
       ParentColor = False
     end
     object Label4: TLabel
       Left = 152
-      Height = 14
+      Height = 13
       Top = 16
-      Width = 28
+      Width = 27
       Caption = 'Mode'
       ParentColor = False
     end
     object Label5: TLabel
       Left = 248
-      Height = 14
+      Height = 13
       Top = 16
-      Width = 35
+      Width = 34
       Caption = 'Collider'
       ParentColor = False
     end
     object ComboBox_MeshName: TComboBox
       Left = 8
-      Height = 21
+      Height = 23
       Top = 32
       Width = 137
       ItemHeight = 13
@@ -125,7 +125,7 @@ object frmClothify: TfrmClothify
     end
     object ComboBox_ConstraintType: TComboBox
       Left = 152
-      Height = 21
+      Height = 23
       Top = 32
       Width = 89
       ItemHeight = 13
@@ -138,7 +138,7 @@ object frmClothify: TfrmClothify
     end
     object ComboBox_Collider: TComboBox
       Left = 248
-      Height = 21
+      Height = 23
       Top = 32
       Width = 73
       ItemHeight = 13
@@ -253,7 +253,7 @@ object frmClothify: TfrmClothify
   end
   object ComboBox_Shadow: TComboBox
     Left = 416
-    Height = 21
+    Height = 23
     Top = 16
     Width = 145
     ItemHeight = 13

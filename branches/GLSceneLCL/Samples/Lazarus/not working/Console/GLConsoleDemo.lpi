@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectOptions>
+    <Version Value="9"/>
+    <PathDelim Value="\"/>
+    <General>
+      <MainUnit Value="0"/>
+      <UseXPManifest Value="True"/>
+    </General>
+    <i18n>
+      <EnableI18N LFM="False"/>
+    </i18n>
+    <VersionInfo>
+      <StringTable ProductVersion=""/>
+    </VersionInfo>
+    <BuildModes Count="1">
+      <Item1 Name="default" Default="True"/>
+    </BuildModes>
+    <PublishOptions>
+      <Version Value="2"/>
+      <IncludeFileFilter Value="*.(pas|pp|inc|lfm|lpr|lrs|lpi|lpk|sh|xml)"/>
+      <ExcludeFileFilter Value="*.(bak|ppu|ppw|o|so);*~;backup"/>
+    </PublishOptions>
+    <RunParams>
+      <local>
+        <FormatVersion Value="1"/>
+        <LaunchingApplication PathPlusParams="\usr\bin\xterm -T 'Lazarus Run Output' -e $(LazarusDir)\tools\runwait.sh $(TargetCmdLine)"/>
+      </local>
+    </RunParams>
+    <RequiredPackages Count="2">
+      <Item1>
+        <PackageName Value="GLScene_RunTime"/>
+      </Item1>
+      <Item2>
+        <PackageName Value="LCL"/>
+      </Item2>
+    </RequiredPackages>
+    <Units Count="14">
+      <Unit0>
+        <Filename Value="GLConsoleDemo.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="31" Y="10"/>
+        <UsageCount Value="25"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="uMainForm.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="MainForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <TopLine Value="109"/>
+        <CursorPos X="4" Y="132"/>
+        <UsageCount Value="25"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="..\..\..\Source\GLTexture.pas"/>
+        <TopLine Value="1806"/>
+        <CursorPos Y="1825"/>
+        <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="..\..\..\..\Source\GLTexture.pas"/>
+        <EditorIndex Value="6"/>
+        <TopLine Value="473"/>
+        <CursorPos X="14" Y="525"/>
+        <UsageCount Value="12"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="..\..\..\..\Source\GLUtils.pas"/>
+        <TopLine Value="693"/>
+        <CursorPos X="15" Y="726"/>
+        <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="E:\lazarus\components\lazutils\fileutil.inc"/>
+        <TopLine Value="99"/>
+        <CursorPos X="3" Y="104"/>
+        <UsageCount Value="10"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="E:\lazarus\components\lazutils\fileutil.pas"/>
+        <UnitName Value="FileUtil"/>
+        <TopLine Value="202"/>
+        <CursorPos X="18" Y="222"/>
+        <UsageCount Value="10"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="..\..\..\..\Source\GLScene.pas"/>
+        <EditorIndex Value="4"/>
+        <TopLine Value="5370"/>
+        <CursorPos X="34" Y="5397"/>
+        <UsageCount Value="12"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="..\..\..\..\Source\GLConsole.pas"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="787"/>
+        <CursorPos X="46" Y="811"/>
+        <UsageCount Value="12"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit8>
+      <Unit9>
+        <Filename Value="..\..\..\..\Source\GLHUDObjects.pas"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="191"/>
+        <CursorPos X="17" Y="87"/>
+        <UsageCount Value="12"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit9>
+      <Unit10>
+        <Filename Value="..\..\..\..\Source\Basis\GLObjects.pas"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="765"/>
+        <CursorPos X="3" Y="781"/>
+        <UsageCount Value="12"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit10>
+      <Unit11>
+        <Filename Value="..\..\..\..\Source\GLMaterial.pas"/>
+        <EditorIndex Value="5"/>
+        <TopLine Value="1474"/>
+        <CursorPos X="42" Y="1395"/>
+        <UsageCount Value="12"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit11>
+      <Unit12>
+        <Filename Value="..\..\..\..\Source\GLTextureFormat.pas"/>
+        <EditorIndex Value="8"/>
+        <TopLine Value="669"/>
+        <CursorPos X="10" Y="250"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit12>
+      <Unit13>
+        <Filename Value="..\..\..\..\Source\GLCrossPlatform.pas"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="7"/>
+        <TopLine Value="383"/>
+        <CursorPos Y="399"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit13>
+    </Units>
+    <JumpHistory Count="30" HistoryIndex="29">
+      <Position1>
+        <Filename Value="uMainForm.pas"/>
+        <Caret Line="132" TopLine="113"/>
+      </Position1>
+      <Position2>
+        <Filename Value="..\..\..\..\Source\GLTexture.pas"/>
+        <Caret Line="813" Column="14" TopLine="797"/>
+      </Position2>
+      <Position3>
+        <Filename Value="uMainForm.pas"/>
+        <Caret Line="131" Column="20" TopLine="109"/>
+      </Position3>
+      <Position4>
+        <Filename Value="..\..\..\..\Source\GLTexture.pas"/>
+        <Caret Line="154" Column="57" TopLine="138"/>
+      </Position4>
+      <Position5>
+        <Filename Value="..\..\..\..\Source\GLTexture.pas"/>
+        <Caret Line="187" Column="51" TopLine="160"/>
+      </Position5>
+      <Position6>
+        <Filename Value="..\..\..\..\Source\GLTexture.pas"/>
+        <Caret Line="191" Column="52" TopLine="164"/>
+      </Position6>
+      <Position7>
+        <Filename Value="..\..\..\..\Source\GLTexture.pas"/>
+        <Caret Line="368" Column="23" TopLine="342"/>
+      </Position7>
+      <Position8>
+        <Filename Value="..\..\..\..\Source\GLTexture.pas"/>
+        <Caret Line="446" Column="23" TopLine="420"/>
+      </Position8>
+      <Position9>
+        <Filename Value="..\..\..\..\Source\GLTexture.pas"/>
+        <Caret Line="519" Column="23" TopLine="492"/>
+      </Position9>
+      <Position10>
+        <Filename Value="..\..\..\..\Source\GLTexture.pas"/>
+        <Caret Line="556" Column="23" TopLine="529"/>
+      </Position10>
+      <Position11>
+        <Filename Value="..\..\..\..\Source\GLTexture.pas"/>
+        <Caret Line="613" Column="23" TopLine="587"/>
+      </Position11>
+      <Position12>
+        <Filename Value="..\..\..\..\Source\GLTexture.pas"/>
+        <Caret Line="1154" Column="26" TopLine="1128"/>
+      </Position12>
+      <Position13>
+        <Filename Value="..\..\..\..\Source\GLTexture.pas"/>
+        <Caret Line="1334" Column="35" TopLine="1313"/>
+      </Position13>
+      <Position14>
+        <Filename Value="..\..\..\..\Source\GLTexture.pas"/>
+        <Caret Line="1554" Column="33" TopLine="1554"/>
+      </Position14>
+      <Position15>
+        <Filename Value="..\..\..\..\Source\GLTexture.pas"/>
+        <Caret Line="1566" Column="18" TopLine="1554"/>
+      </Position15>
+      <Position16>
+        <Filename Value="uMainForm.pas"/>
+        <Caret Line="131" Column="20" TopLine="109"/>
+      </Position16>
+      <Position17>
+        <Filename Value="..\..\..\..\Source\Basis\GLObjects.pas"/>
+        <Caret Line="781" Column="3" TopLine="765"/>
+      </Position17>
+      <Position18>
+        <Filename Value="..\..\..\..\Source\GLScene.pas"/>
+        <Caret Line="1161" Column="3" TopLine="1145"/>
+      </Position18>
+      <Position19>
+        <Filename Value="..\..\..\..\Source\GLScene.pas"/>
+        <Caret Line="1083" Column="3" TopLine="1067"/>
+      </Position19>
+      <Position20>
+        <Filename Value="..\..\..\..\Source\GLScene.pas"/>
+        <Caret Line="5397" Column="34" TopLine="5370"/>
+      </Position20>
+      <Position21>
+        <Filename Value="..\..\..\..\Source\GLTexture.pas"/>
+        <Caret Line="742" Column="17" TopLine="759"/>
+      </Position21>
+      <Position22>
+        <Filename Value="..\..\..\..\Source\GLTexture.pas"/>
+        <Caret Line="739" Column="30" TopLine="725"/>
+      </Position22>
+      <Position23>
+        <Filename Value="..\..\..\..\Source\GLTexture.pas"/>
+        <Caret Line="3435" Column="65" TopLine="3422"/>
+      </Position23>
+      <Position24>
+        <Filename Value="..\..\..\..\Source\GLTexture.pas"/>
+        <Caret Line="1043" Column="18" TopLine="1016"/>
+      </Position24>
+      <Position25>
+        <Filename Value="uMainForm.pas"/>
+        <Caret Line="131" Column="20" TopLine="109"/>
+      </Position25>
+      <Position26>
+        <Filename Value="..\..\..\..\Source\GLTexture.pas"/>
+        <Caret Line="816" Column="14" TopLine="801"/>
+      </Position26>
+      <Position27>
+        <Filename Value="..\..\..\..\Source\GLMaterial.pas"/>
+        <Caret Line="1395" Column="42" TopLine="1474"/>
+      </Position27>
+      <Position28>
+        <Filename Value="..\..\..\..\Source\GLTexture.pas"/>
+        <Caret Line="2345" Column="58" TopLine="1850"/>
+      </Position28>
+      <Position29>
+        <Filename Value="..\..\..\..\Source\GLTexture.pas"/>
+        <Caret Line="525" Column="14" TopLine="473"/>
+      </Position29>
+      <Position30>
+        <Filename Value="uMainForm.pas"/>
+        <Caret Line="132" Column="4" TopLine="109"/>
+      </Position30>
+    </JumpHistory>
+  </ProjectOptions>
+  <CompilerOptions>
+    <Version Value="11"/>
+    <PathDelim Value="\"/>
+    <Target>
+      <Filename Value="GLConsoleDemo"/>
+    </Target>
+    <SearchPaths>
+      <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+      <SrcPath Value="$(LazarusDir)\lcl;$(LazarusDir)\lcl\interfaces\$(LCLWidgetType)"/>
+    </SearchPaths>
+    <Parsing>
+      <SyntaxOptions>
+        <SyntaxMode Value="Delphi"/>
+      </SyntaxOptions>
+    </Parsing>
+    <Linking>
+      <Debugging>
+        <StripSymbols Value="True"/>
+        <UseExternalDbgSyms Value="True"/>
+      </Debugging>
+      <Options>
+        <Win32>
+          <GraphicApplication Value="True"/>
+        </Win32>
+      </Options>
+    </Linking>
+  </CompilerOptions>
+  <Debugging>
+    <Exceptions Count="3">
+      <Item1>
+        <Name Value="EAbort"/>
+      </Item1>
+      <Item2>
+        <Name Value="ECodetoolError"/>
+      </Item2>
+      <Item3>
+        <Name Value="EFOpenError"/>
+      </Item3>
+    </Exceptions>
+  </Debugging>
+</CONFIG>

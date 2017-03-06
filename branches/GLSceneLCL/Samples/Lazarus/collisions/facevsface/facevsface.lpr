@@ -6,8 +6,8 @@ uses
   {$IFDEF UNIX}{$IFDEF UseCThreads}
   cthreads,
   {$ENDIF}{$ENDIF}
-  Forms, Interfaces,
-  Unit1 in 'Unit1.pas', GLS_WinOnly{Form1};
+  Forms, GLScene_RunTime, GLScene_WinOnly, GLScene_OpenAL, Interfaces,
+  Unit1 in 'Unit1.pas';
 
 {$R *.res}
 

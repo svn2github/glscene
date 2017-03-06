@@ -75,7 +75,7 @@ var
 begin
   SetGLSceneMediaDir();
   // Load high poly mesh (10,000 triangles).
-  FreeForm1.LoadFromFile('HighPolyObject.3ds');
+  FreeForm1.LoadFromFile(MediaPath+'HighPolyObject.3ds');
 
   t := StartPrecisionTimer;
 

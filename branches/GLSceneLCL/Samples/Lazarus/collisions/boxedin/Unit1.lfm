@@ -1,7 +1,7 @@
 object Form1: TForm1
-  Left = 62
+  Left = 170
   Height = 574
-  Top = 15
+  Top = 275
   Width = 705
   Caption = 'Form1'
   ClientHeight = 574
@@ -10,7 +10,7 @@ object Form1: TForm1
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
   OnCreate = FormCreate
-  LCLVersion = '0.9.29'
+  LCLVersion = '1.6.2.0'
   object GLSceneViewer2: TGLSceneViewer
     Left = 0
     Height = 509
@@ -35,33 +35,33 @@ object Form1: TForm1
     TabOrder = 1
     object Label1: TLabel
       Left = 424
-      Height = 14
+      Height = 13
       Top = 8
-      Width = 33
+      Width = 32
       Caption = 'Label1'
       ParentColor = False
     end
     object Label2: TLabel
       Left = 424
-      Height = 14
+      Height = 13
       Top = 24
-      Width = 33
+      Width = 32
       Caption = 'Label2'
       ParentColor = False
     end
     object Label3: TLabel
       Left = 424
-      Height = 14
+      Height = 13
       Top = 40
-      Width = 33
+      Width = 32
       Caption = 'Label3'
       ParentColor = False
     end
     object Label4: TLabel
       Left = 216
-      Height = 14
+      Height = 13
       Top = 8
-      Width = 38
+      Width = 37
       Caption = 'Velocity'
       ParentColor = False
     end
@@ -141,7 +141,7 @@ object Form1: TForm1
       Up.Coordinates = {
         E9DC72BF000000009BE8A13E00000000
       }
-      Radius = 0.10000000149012
+      Radius = 0.100000001490116
       Slices = 6
       Stacks = 6
       object ArrowLine1: TGLArrowLine
@@ -159,13 +159,13 @@ object Form1: TForm1
         }
         RollAngle = 0
         TurnAngle = 0
-        BottomRadius = 0.05000000074506
+        BottomRadius = 0.0500000007450581
         Height = 1
-        TopRadius = 0.10000000149012
+        TopRadius = 0.100000001490116
         TopArrowHeadHeight = 2
-        TopArrowHeadRadius = 0.20000000298023
+        TopArrowHeadRadius = 0.200000002980232
         BottomArrowHeadHeight = 0.5
-        BottomArrowHeadRadius = 0.20000000298023
+        BottomArrowHeadRadius = 0.200000002980232
       end
     end
     object DummyCube2: TGLDummyCube

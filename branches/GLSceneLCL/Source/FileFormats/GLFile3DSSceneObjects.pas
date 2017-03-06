@@ -24,7 +24,6 @@ uses
   SysUtils,
   Math,
 
-   cene
   GLVectorGeometry, OpenGLTokens, OpenGLAdapter, GLContext, GLScene,
   GLVectorFileObjects, GLVectorTypes, GLPersistentClasses,
   GLCrossPlatform, GLCoordinates, GLRenderContextInfo, GLState;

@@ -145,7 +145,7 @@ begin
     Add('varying float noise; ');
 
     //
-     L textureless classic 3D noise "cnoise",
+     //GL textureless classic 3D noise "cnoise",
     // with an RSL-style periodic variant "pnoise".
     // Author:  Stefan Gustavson (stefan.gustavson@liu.se)
     // Version: 2011-10-11

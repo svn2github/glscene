@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectOptions>
     <Version Value="9"/>
@@ -6,7 +6,6 @@
     <General>
       <MainUnit Value="0"/>
       <UseXPManifest Value="True"/>
-      <ActiveWindowIndexAtStart Value="0"/>
     </General>
     <i18n>
       <EnableI18N LFM="False"/>
@@ -27,25 +26,23 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="4">
+    <RequiredPackages Count="2">
       <Item1>
-        <PackageName Value="GLSS_BASS"/>
+        <PackageName Value="GLScene_RunTime"/>
       </Item1>
       <Item2>
-        <PackageName Value=" GLSceneLCL_DesignTime"/>
-      </Item2>
-      <Item3>
-        <PackageName Value=" GLSceneLCL_RunTime"/>
-      </Item3>
-      <Item4>
         <PackageName Value="LCL"/>
-      </Item4>
+      </Item2>
     </RequiredPackages>
-    <Units Count="5">
+    <Units Count="7">
       <Unit0>
         <Filename Value="terrain.lpr"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="Terrain"/>
+        <EditorIndex Value="2"/>
+        <CursorPos X="26" Y="9"/>
         <UsageCount Value="20"/>
+        <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit0>
       <Unit1>
@@ -56,10 +53,8 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="Unit1"/>
         <IsVisibleTab Value="True"/>
-        <EditorIndex Value="0"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="277"/>
-        <CursorPos X="79" Y="296"/>
+        <TopLine Value="113"/>
+        <CursorPos X="82" Y="123"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -67,20 +62,14 @@
       </Unit1>
       <Unit2>
         <Filename Value="..\..\..\..\Lazarus\GLSS_BASS.pas"/>
-        <UnitName Value="GLSS_BASS"/>
-        <EditorIndex Value="1"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
+        <EditorIndex Value="-1"/>
         <CursorPos X="3" Y="6"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit2>
       <Unit3>
         <Filename Value="..\..\..\..\Source\GLScene.pas"/>
-        <UnitName Value="GLScene"/>
-        <EditorIndex Value="3"/>
-        <WindowIndex Value="0"/>
+        <EditorIndex Value="4"/>
         <TopLine Value="337"/>
         <CursorPos X="10" Y="368"/>
         <UsageCount Value="10"/>
@@ -89,13 +78,29 @@
       </Unit3>
       <Unit4>
         <Filename Value="F:\Lazarus\lcl\include\winapi.inc"/>
-        <EditorIndex Value="2"/>
-        <WindowIndex Value="0"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="304"/>
-        <CursorPos X="1" Y="325"/>
+        <CursorPos Y="325"/>
+        <UsageCount Value="10"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="unit1.lfm"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="167"/>
+        <CursorPos X="6" Y="198"/>
         <UsageCount Value="10"/>
         <Loaded Value="True"/>
-      </Unit4>
+        <DefaultSyntaxHighlighter Value="LFM"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="..\..\..\..\Source\GLTexture.pas"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="1551"/>
+        <CursorPos Y="1567"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit6>
     </Units>
     <JumpHistory Count="10" HistoryIndex="9">
       <Position1>
@@ -104,7 +109,6 @@
       </Position1>
       <Position2>
         <Filename Value="unit1.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
       </Position2>
       <Position3>
         <Filename Value="unit1.pas"/>
@@ -119,24 +123,23 @@
         <Caret Line="285" Column="27" TopLine="264"/>
       </Position5>
       <Position6>
-        <Filename Value="F:\Lazarus\lcl\include\winapi.inc"/>
-        <Caret Line="476" Column="1" TopLine="455"/>
+        <Filename Value="terrain.lpr"/>
       </Position6>
       <Position7>
-        <Filename Value="..\..\..\..\Lazarus\GLSS_BASS.pas"/>
-        <Caret Line="6" Column="3" TopLine="1"/>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="70" Column="7" TopLine="49"/>
       </Position7>
       <Position8>
-        <Filename Value="F:\Lazarus\lcl\include\winapi.inc"/>
-        <Caret Line="476" Column="1" TopLine="455"/>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="49" Column="69" TopLine="32"/>
       </Position8>
       <Position9>
-        <Filename Value="F:\Lazarus\lcl\include\winapi.inc"/>
-        <Caret Line="325" Column="1" TopLine="304"/>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="83" Column="7" TopLine="68"/>
       </Position9>
       <Position10>
-        <Filename Value="F:\Lazarus\lcl\include\winapi.inc"/>
-        <Caret Line="476" Column="1" TopLine="455"/>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="123" Column="82" TopLine="113"/>
       </Position10>
     </JumpHistory>
   </ProjectOptions>
@@ -166,12 +169,6 @@
         </Win32>
       </Options>
     </Linking>
-    <Other>
-      <CompilerMessages>
-        <UseMsgFile Value="True"/>
-      </CompilerMessages>
-      <CompilerPath Value="$(CompPath)"/>
-    </Other>
   </CompilerOptions>
   <Debugging>
     <Exceptions Count="3">

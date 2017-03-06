@@ -6,7 +6,7 @@ uses
   {$IFDEF UNIX}{$IFDEF UseCThreads}
   cthreads,
   {$ENDIF}{$ENDIF}
-  Forms, Interfaces,
+  Forms, GLScene_RunTime, Interfaces,
   ExPolygon1 in 'ExPolygon1.pas' {Form1};
 
 {$R *.res}

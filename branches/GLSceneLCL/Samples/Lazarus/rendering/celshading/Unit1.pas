@@ -57,7 +57,7 @@ begin
   r := GLActor1.BoundingSphereRadius;
   GLActor1.Scale.SetVector(2.5 / r, 2.5 / r, 2.5 / r);
   GLActor1.AnimationMode := aamLoop;
-  GLMaterialLibrary1.Materials[0].Material.Texture.Image.LoadFromFile('wastecell.jpg');
+  GLMaterialLibrary1.Materials[0].Material.Texture.Image.LoadFromFile(MediaPath+'wastecell.jpg');
 end;
 
 procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject; Button: TMouseButton;

@@ -96,6 +96,23 @@ resourcestring
   glsUnknownParam =
     'Unknown %s "%s" for "%s" or program not in use';
 
+  //
+  // Context
+  strCannotAlterAnActiveContext = 'Cannot alter an active context';
+  strContextActivationFailed = 'Context activation failed: %X, %s';
+  strContextAlreadyCreated = 'Context already created';
+  strContextDeactivationFailed = 'Context deactivation failed';
+  strContextNotCreated = 'Context not created';
+  strDeleteContextFailed = 'Delete context failed';
+  strFailedToShare = 'DoCreateContext - Failed to share contexts';
+  strIncompatibleContexts = 'Incompatible contexts';
+  strInvalidContextRegistration = 'Invalid context registration';
+  strInvalidNotificationRemoval = 'Invalid notification removal';
+  strNoActiveRC = 'No active rendering context';
+  strUnbalancedContexActivations = 'Unbalanced context activations';
+  strUnableToCreateLegacyContext = 'Unable to create legacy context';
+
+
 implementation
 
 end.

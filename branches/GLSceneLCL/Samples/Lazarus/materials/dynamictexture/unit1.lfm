@@ -14,7 +14,7 @@ object Form1: TForm1
   OnCreate = FormCreate
   OnKeyDown = FormKeyDown
   OnResize = FormResize
-  LCLVersion = '0.9.29'
+  LCLVersion = '1.6.2.0'
   object GLSceneViewer1: TGLSceneViewer
     Left = 8
     Height = 297
@@ -77,8 +77,11 @@ object Form1: TForm1
     Materials = <    
       item
         Name = 'Anim'
-        Material.Texture.TextureMode = tmReplace
         Tag = 0
+        Material.Texture.MagFilter = maNearest
+        Material.Texture.MinFilter = miNearest
+        Material.Texture.TextureMode = tmReplace
+        Material.Texture.Compression = tcNone
       end>
     left = 544
     top = 96
@@ -99,4 +102,4 @@ object Form1: TForm1
     left = 544
     top = 176
   end
-end
+end

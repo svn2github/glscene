@@ -80,7 +80,7 @@ uses
 procedure TForm1.FormCreate(Sender: TObject);
 begin
    SetGLSceneMediaDir();
-   HeightField1.Material.Texture.Image.LoadFromFile('marbletiles.jpg');
+   HeightField1.Material.Texture.Image.LoadFromFile(MediaPath+'\'+'marbletiles.jpg');
 end;
 
 procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject;

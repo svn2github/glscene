@@ -54,7 +54,6 @@ uses
   // VCL
   Classes, SysUtils, Math,
 
-   cene
   GLScene, GLObjects, GLVectorFileObjects, GLTexture, GLApplicationFileIO,
   GLVectorGeometry, File3DS, Types3DS, OpenGLTokens, GLContext, GLPersistentClasses,
   GLStrings, GLFile3DSSceneObjects, GLCrossPlatform, GLVectorTypes, GLVectorLists,

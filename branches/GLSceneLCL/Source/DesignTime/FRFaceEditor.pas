@@ -19,8 +19,8 @@ uses
   Classes,
   Graphics,
   GLTexture, 
-  FRTrackBarEditLCL,
-  FRColorEditorLCL, 
+  FRTrackBarEdit,
+  FRColorEditor,
   GLMaterial;
 
 type
@@ -147,7 +147,7 @@ end;
 
 initialization
 
-  {$I FRFaceEditorLCL.lrs}
+  {$I FRFaceEditor.lrs}
 
 
 end.

@@ -8,7 +8,7 @@ object Form1: TForm1
   ClientWidth = 598
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
-  LCLVersion = '0.9.29'
+  LCLVersion = '1.6.2.0'
   object GLSceneViewer1: TGLSceneViewer
     Left = 8
     Height = 481
@@ -75,9 +75,9 @@ object Form1: TForm1
       end    
       item
         ShiftState = [ssRight]
-        Action = snaMoveAroundTarget
+        Action = snaRotateTarget
       end>
     left = 16
     top = 16
   end
-end
+end

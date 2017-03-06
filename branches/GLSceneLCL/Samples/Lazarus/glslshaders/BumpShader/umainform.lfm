@@ -12,7 +12,7 @@ object GLSLTestForm: TGLSLTestForm
   OnCreate = FormCreate
   OnMouseWheel = FormMouseWheel
   Position = poScreenCenter
-  LCLVersion = '0.9.31'
+  LCLVersion = '1.6.2.0'
   object Viewer: TGLSceneViewer
     Left = 0
     Height = 400
@@ -122,6 +122,13 @@ object GLSLTestForm: TGLSLTestForm
       CubeSize = 1
       object GLArrowLine1: TGLArrowLine
         TagFloat = 0
+        Material.Texture.ImageClassName = 'TGLBlankImage'
+        Material.Texture.Image.Width = 64
+        Material.Texture.Image.Height = 64
+        Material.Texture.Image.ColorFormat = 6408
+        Material.Texture.MagFilter = maNearest
+        Material.Texture.MinFilter = miNearest
+        Material.Texture.Compression = tcNone
         PitchAngle = 0
         Position.Coordinates = {
           00000000000000000000C8420000803F
@@ -131,13 +138,13 @@ object GLSLTestForm: TGLSLTestForm
           0000A0410000A0410000A04100000000
         }
         TurnAngle = 0
-        BottomRadius = 0.10000000149012
+        BottomRadius = 0.100000001490116
         Height = 1
-        TopRadius = 0.10000000149012
+        TopRadius = 0.100000001490116
         TopArrowHeadHeight = 0.5
-        TopArrowHeadRadius = 0.20000000298023
+        TopArrowHeadRadius = 0.200000002980232
         BottomArrowHeadHeight = 0.5
-        BottomArrowHeadRadius = 0.20000000298023
+        BottomArrowHeadRadius = 0.200000002980232
       end
       object GLXYZGrid1: TGLXYZGrid
         TagFloat = 0
@@ -154,17 +161,17 @@ object GLSLTestForm: TGLSLTestForm
           00000000000000000000803F00000000
         }
         XSamplingScale.Min = -200
-        XSamplingScale.max = 200
+        XSamplingScale.Max = 200
         XSamplingScale.Origin = 0
-        XSamplingScale.step = 20
+        XSamplingScale.Step = 20
         YSamplingScale.Min = -200
-        YSamplingScale.max = 200
+        YSamplingScale.Max = 200
         YSamplingScale.Origin = 0
-        YSamplingScale.step = 20
+        YSamplingScale.Step = 20
         ZSamplingScale.Min = -200
-        ZSamplingScale.max = 200
+        ZSamplingScale.Max = 200
         ZSamplingScale.Origin = 0
-        ZSamplingScale.step = 20
+        ZSamplingScale.Step = 20
         Parts = [gpX, gpZ]
       end
     end
@@ -204,6 +211,13 @@ object GLSLTestForm: TGLSLTestForm
         Material.FrontProperties.Emission.Color = {
           F4F3733FEEED6D3F000000000000803F
         }
+        Material.Texture.ImageClassName = 'TGLBlankImage'
+        Material.Texture.Image.Width = 64
+        Material.Texture.Image.Height = 64
+        Material.Texture.Image.ColorFormat = 6408
+        Material.Texture.MagFilter = maNearest
+        Material.Texture.MinFilter = miNearest
+        Material.Texture.Compression = tcNone
         PitchAngle = 0
         RollAngle = 0
         TurnAngle = 0
@@ -413,7 +427,10 @@ object GLSLTestForm: TGLSLTestForm
           8180003E8180003EE1E0E03D0000803F
         }
         Material.Texture.ImageAlpha = tiaOpaque
+        Material.Texture.MagFilter = maNearest
+        Material.Texture.MinFilter = miNearest
         Material.Texture.TextureMode = tmReplace
+        Material.Texture.Compression = tcNone
         Material.Texture.Disabled = False
         Material.MaterialLibrary = MaterialLibrary
       end    

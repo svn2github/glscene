@@ -21,26 +21,30 @@
 }
 unit Unit1;
 
-{$MODE Delphi}
+{.$MODE Delphi}
 
 interface
 
 uses
-  SysUtils, Classes, Graphics, Controls, Forms,
-  GLScene, GLObjects, GLVectorGeometry, ExtCtrls, GLTexture, GLCadencer,
-  GLViewer, GLColor, GLCrossPlatform, GLCoordinates, GLBaseClasses, GLMaterial;
+  SysUtils, Classes, Graphics, Controls, Forms, GLScene, GLObjects,
+  GLVectorGeometry, ExtCtrls, GLTexture, GLCadencer, GLColor,
+  GLCrossPlatform, GLCoordinates, GLMaterial, GLLCLViewer, GLAsyncTimer;
 
 type
+
+  { TForm1 }
+
   TForm1 = class(TForm)
     GLSceneViewer1: TGLSceneViewer;
     GLScene1: TGLScene;
     GLCamera1: TGLCamera;
     DummyCube1: TGLDummyCube;
     GLLightSource1: TGLLightSource;
-    Timer1: TTimer;
     GLCadencer1: TGLCadencer;
     procedure FormCreate(Sender: TObject);
-    procedure Timer1Timer(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+    procedure GLAsyncTimer1Timer(Sender: TObject);
+
     procedure GLCadencer1Progress(Sender: TObject;
       const deltaTime, newTime: double);
   private
@@ -86,16 +90,28 @@ begin
       end;
 end;
 
-procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime, newTime: double);
+procedure TForm1.FormShow(Sender: TObject);
 begin
-  DummyCube1.TurnAngle := 90 * newTime; // 90° per second
+  GLCadencer1.Enabled:=true;
+  //Timer1.Enabled:=true;
+
 end;
 
-procedure TForm1.Timer1Timer(Sender: TObject);
+procedure TForm1.GLAsyncTimer1Timer(Sender: TObject);
 begin
-  Caption := Format('%.2f FPS', [GLSceneViewer1.FramesPerSecond]);
+   Self.Caption := Format('%.2f FPS', [GLSceneViewer1.FramesPerSecond]);
   GLSceneViewer1.ResetPerformanceMonitor;
 end;
 
+procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime, newTime: double);
+begin
+  DummyCube1.TurnAngle := 90 * newTime; // 90° per second
+  //GLSceneViewer1.Invalidate;
+  //  Caption := Format('%.2f FPS', [GLSceneViewer1.FramesPerSecond]);
+ // GLSceneViewer1.ResetPerformanceMonitor;
+end;
+
+
+
 end.
-
+

@@ -533,7 +533,7 @@ end;
 
 initialization
 {$IFDEF FPC}
-{$I GLSceneObjectsLCL.lrs}
+{$I ../../resources/GLSceneObjects.lrs}
 {$ENDIF}
 
 end.

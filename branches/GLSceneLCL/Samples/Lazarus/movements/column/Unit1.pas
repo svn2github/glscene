@@ -30,7 +30,7 @@ interface
 uses
   Forms, GLScene, GLObjects, GLTexture, Classes, Controls,
   ExtCtrls, StdCtrls, GLCadencer, GLLCLViewer, GLColor, GLCrossPlatform,
-  GLCoordinates, GLBaseClasses;
+  GLCoordinates;
 
 type
   TForm1 = class(TForm)
@@ -105,4 +105,4 @@ begin
 end;
 
 end.
-
+

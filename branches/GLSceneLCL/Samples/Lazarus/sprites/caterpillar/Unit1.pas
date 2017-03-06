@@ -25,6 +25,7 @@ interface
 
 uses
   Forms, GLScene, GLObjects, StdCtrls, GLTexture, Classes, Controls, ExtCtrls,
+
   GLCadencer, GLLCLViewer, GLCrossPlatform, GLMaterial, GLProxyObjects,
   GLCoordinates;
 
@@ -60,26 +61,20 @@ implementation
 
 {$R *.lfm}
 
-uses SysUtils, GLVectorGeometry, FileUtil;
+uses SysUtils, GLVectorGeometry, GLUtils;
 
 procedure TForm1.FormCreate(Sender: TObject);
 var
-  picName: string;
-  i: integer;
+
   spr: TGLSprite;
-  path: UTF8String;
-  p: integer;
+  i:integer;
 begin
-  path := ExtractFilePath(ParamStrUTF8(0));
-  p := Pos('DemosLCL', path);
-  Delete(path, p + 5, Length(path));
-  path := IncludeTrailingPathDelimiter(path) + 'media';
-  SetCurrentDirUTF8(path);
+  SetGLSceneMediaDir();
   // Load texture for sprite2, this is the hand-coded way using a PersistentImage
   // Sprite1 uses a PicFileImage, and so the image is automagically loaded by
   // GLScene when necessary (no code is required).
   // (Had I used two PicFileImage, I would have avoided this code)
-  GLMaterialLibrary1.Materials[0].Material.Texture.Image.LoadFromFile('flare1.bmp');
+  GLMaterialLibrary1.Materials[0].Material.Texture.Image.LoadFromFile(MediaPath+'\'+'flare1.bmp');
   Sprite1.Material.Texture.Assign(GLMaterialLibrary1.Materials[0].Material.Texture);
   // New sprites are created by duplicating the template "sprite2"
   for i := 1 to 9 do

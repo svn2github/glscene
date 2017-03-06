@@ -541,7 +541,7 @@ end;
 
 initialization
 
-{$I FGUILayoutEditorLCL.lrs}
+{$I FGUILayoutEditor.lrs}
 
 finalization
 

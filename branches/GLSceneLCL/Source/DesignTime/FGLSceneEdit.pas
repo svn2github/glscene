@@ -582,14 +582,14 @@ end;
 //
 procedure TGLSceneEditorForm.SetBehavioursSubItems(parent : TMenuItem ; XCollection: TGLXCollection);
 begin
-  SetXCollectionSubItems(parent, GLXCollection, AddBehaviourClick);
+  SetXCollectionSubItems(parent, XCollection, AddBehaviourClick);
 end;
 
 // SetEffectsSubItems
 //
 procedure TGLSceneEditorForm.SetEffectsSubItems(parent : TMenuItem ; XCollection: TGLXCollection);
 begin
-  SetXCollectionSubItems(parent, GLXCollection, AddEffectClick);
+  SetXCollectionSubItems(parent, XCollection, AddEffectClick);
 end;
 
 
@@ -1506,7 +1506,7 @@ end;
 
 initialization
 
-  {$I GLSceneEditLCL.lrs}
+  {$I FGLSceneEdit.lrs}
 
 finalization
   ReleaseGLSceneEditorForm;

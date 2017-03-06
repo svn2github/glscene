@@ -11,7 +11,7 @@ object Form1: TForm1
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
   OnCreate = FormCreate
-  LCLVersion = '0.9.31'
+  LCLVersion = '1.6.2.0'
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Height = 380
@@ -41,7 +41,7 @@ object Form1: TForm1
         TagFloat = 0
         DepthOfView = 30
         FocalLength = 50
-        NearPlaneBias = 0.10000000149012
+        NearPlaneBias = 0.100000001490116
         TargetObject = DCCamera
         Position.Coordinates = {
           CDCCCC3E9A99993ECDCC4C3E0000803F
@@ -142,13 +142,13 @@ object Form1: TForm1
         Up.Coordinates = {
           00000000D7B35D3F0100003F00000000
         }
-        BottomRadius = 0.10000000149012
+        BottomRadius = 0.100000001490116
         Height = 1
-        TopRadius = 0.10000000149012
+        TopRadius = 0.100000001490116
         TopArrowHeadHeight = 0.5
-        TopArrowHeadRadius = 0.20000000298023
+        TopArrowHeadRadius = 0.200000002980232
         BottomArrowHeadHeight = 0.5
-        BottomArrowHeadRadius = 0.20000000298023
+        BottomArrowHeadRadius = 0.200000002980232
       end
     end
   end
@@ -157,14 +157,20 @@ object Form1: TForm1
       item
         Name = 'walkway'
         Tag = 0
+        Material.Texture.MagFilter = maNearest
+        Material.Texture.MinFilter = miNearest
         Material.Texture.TextureMode = tmModulate
+        Material.Texture.Compression = tcNone
         Material.Texture.FilteringQuality = tfAnisotropic
         Material.Texture.Disabled = False
       end    
       item
         Name = 'rawwall'
         Tag = 0
+        Material.Texture.MagFilter = maNearest
+        Material.Texture.MinFilter = miNearest
         Material.Texture.TextureMode = tmModulate
+        Material.Texture.Compression = tcNone
         Material.Texture.FilteringQuality = tfAnisotropic
         Material.Texture.Disabled = False
         TextureScale.Coordinates = {
@@ -174,7 +180,10 @@ object Form1: TForm1
       item
         Name = 'marbletiles'
         Tag = 0
+        Material.Texture.MagFilter = maNearest
+        Material.Texture.MinFilter = miNearest
         Material.Texture.TextureMode = tmModulate
+        Material.Texture.Compression = tcNone
         Material.Texture.Disabled = False
         TextureScale.Coordinates = {
           000040410000803F0000803F00000000

@@ -1,33 +1,33 @@
 object Form1: TForm1
-  Left = 211
-  Height = 857
-  Top = 170
+  Left = 250
+  Height = 678
+  Top = 90
   Width = 977
   Caption = 'Demo GLGizmoEx'
-  ClientHeight = 857
+  ClientHeight = 678
   ClientWidth = 977
   Font.Height = -11
   Font.Name = 'MS Shell Dlg 2'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  LCLVersion = '0.9.29'
+  LCLVersion = '1.6.2.0'
   object Label9: TLabel
     Left = 16
-    Height = 14
+    Height = 13
     Top = 274
-    Width = 67
+    Width = 66
     Caption = 'Rotate Coef :'
     ParentColor = False
   end
   object Viewer: TGLSceneViewer
     Left = 201
-    Height = 857
+    Height = 678
     Top = 0
     Width = 776
     Camera = camera
     Buffer.BackgroundColor = clMedGray
-    FieldOfView = 165.313980102539
+    FieldOfView = 163.219573974609
     Align = alClient
     OnMouseDown = ViewerMouseDown
     OnMouseMove = ViewerMouseMove
@@ -36,11 +36,11 @@ object Form1: TForm1
   end
   object Panel1: TPanel
     Left = 0
-    Height = 857
+    Height = 678
     Top = 0
     Width = 201
     Align = alLeft
-    ClientHeight = 857
+    ClientHeight = 678
     ClientWidth = 201
     TabOrder = 1
     object Bevel1: TBevel
@@ -53,65 +53,66 @@ object Form1: TForm1
     end
     object Label1: TLabel
       Left = 8
-      Height = 14
+      Height = 13
       Top = 504
-      Width = 101
+      Width = 100
       Caption = 'Bounding Box Color :'
       ParentColor = False
     end
     object Label2: TLabel
       Left = 8
-      Height = 14
+      Height = 13
       Top = 544
-      Width = 82
+      Width = 81
       Caption = 'Label Infos Color'
       ParentColor = False
     end
     object Label3: TLabel
       Left = 8
-      Height = 14
+      Height = 13
       Top = 584
-      Width = 70
+      Width = 69
       Caption = 'Selected Color'
       ParentColor = False
     end
     object Label4: TLabel
       Left = 24
-      Height = 14
+      Height = 13
       Top = 466
-      Width = 85
+      Width = 84
       Caption = 'Auto Zoom factor'
       ParentColor = False
     end
     object Label5: TLabel
       Left = 48
-      Height = 14
+      Height = 13
       Top = 487
-      Width = 61
+      Width = 60
       Caption = 'Zoom Factor'
       ParentColor = False
     end
     object Label6: TLabel
       Left = 24
-      Height = 14
+      Height = 13
       Top = 277
-      Width = 60
+      Width = 59
       Caption = 'Move Coef :'
       ParentColor = False
     end
     object Label7: TLabel
       Left = 17
-      Height = 14
+      Height = 13
       Top = 299
-      Width = 67
+      Width = 66
       Caption = 'Rotate Coef :'
       ParentColor = False
     end
     object Label8: TLabel
-      Left = 5
-      Height = 27
+      Left = 1
+      Height = 39
       Top = 9
-      Width = 252
+      Width = 199
+      Align = alTop
       Caption = 'GLGizmo  '#13#10'code by Adirex, Degiovani, Delauney, Mrqzzz'
       Font.Height = -11
       Font.Name = 'MS Shell Dlg 2'
@@ -122,17 +123,17 @@ object Form1: TForm1
     end
     object Label10: TLabel
       Left = 17
-      Height = 14
+      Height = 13
       Top = 323
-      Width = 59
+      Width = 58
       Caption = 'Scale Coef :'
       ParentColor = False
     end
     object Label11: TLabel
       Left = 5
-      Height = 14
+      Height = 13
       Top = 253
-      Width = 78
+      Width = 77
       Caption = 'Gizmo Thickness'
       ParentColor = False
     end
@@ -491,13 +492,13 @@ object Form1: TForm1
           }
           RollAngle = 0
           TurnAngle = 0
-          BottomRadius = 0.10000000149011
+          BottomRadius = 0.100000001490116
           Height = 1
-          TopRadius = 0.10000000149011
+          TopRadius = 0.100000001490116
           TopArrowHeadHeight = 0.5
-          TopArrowHeadRadius = 0.20000000298023
+          TopArrowHeadRadius = 0.200000002980232
           BottomArrowHeadHeight = 0.5
-          BottomArrowHeadRadius = 0.20000000298023
+          BottomArrowHeadRadius = 0.200000002980232
           object GLArrowLine4: TGLArrowLine
             TagFloat = 0
             Material.FrontProperties.Diffuse.Color = {
@@ -515,13 +516,13 @@ object Form1: TForm1
             Up.Coordinates = {
               0000000000000000000080BF00000000
             }
-            BottomRadius = 0.10000000149011
+            BottomRadius = 0.100000001490116
             Height = 1
-            TopRadius = 0.10000000149011
+            TopRadius = 0.100000001490116
             TopArrowHeadHeight = 0.5
-            TopArrowHeadRadius = 0.20000000298023
+            TopArrowHeadRadius = 0.200000002980232
             BottomArrowHeadHeight = 0.5
-            BottomArrowHeadRadius = 0.20000000298023
+            BottomArrowHeadRadius = 0.200000002980232
           end
         end
       end

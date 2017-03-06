@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectOptions>
     <Version Value="9"/>
@@ -29,7 +29,7 @@
     </RunParams>
     <RequiredPackages Count="2">
       <Item1>
-        <PackageName Value=" GLSceneLCL_RunTime"/>
+        <PackageName Value="GLScene_RunTime"/>
       </Item1>
       <Item2>
         <PackageName Value="LCL"/>
@@ -39,7 +39,6 @@
       <Unit0>
         <Filename Value="dyntexdemo.lpr"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="dyntexdemo"/>
       </Unit0>
       <Unit1>
         <Filename Value="unit1.pas"/>
@@ -52,7 +51,7 @@
     </Units>
   </ProjectOptions>
   <CompilerOptions>
-    <Version Value="9"/>
+    <Version Value="11"/>
     <Target>
       <Filename Value="dyntexdemo"/>
     </Target>
@@ -77,11 +76,5 @@
         </Win32>
       </Options>
     </Linking>
-    <Other>
-      <CompilerMessages>
-        <UseMsgFile Value="True"/>
-      </CompilerMessages>
-      <CompilerPath Value="$(CompPath)"/>
-    </Other>
   </CompilerOptions>
-</CONFIG>
+</CONFIG>

@@ -22,7 +22,7 @@
 }
 unit Unit1;
 
-{$MODE Delphi}
+{.$MODE Delphi}
 
 interface
 

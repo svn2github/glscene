@@ -10,8 +10,7 @@ object Form1: TForm1
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
   OnKeyPress = FormKeyPress
-  OnMouseWheel = FormMouseWheel
-  LCLVersion = '0.9.29'
+  LCLVersion = '1.6.2.0'
   object GLSceneViewer1: TGLSceneViewer
     Left = 6
     Height = 296
@@ -19,10 +18,11 @@ object Form1: TForm1
     Width = 365
     Camera = GLCamera1
     Buffer.BackgroundColor = clBlack
-    FieldOfView = 40.6089477539062
+    FieldOfView = 40.6089477539063
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
+    OnMouseWheel = FormMouseWheel
     TabOrder = 0
   end
   object GLScene1: TGLScene
@@ -82,4 +82,4 @@ object Form1: TForm1
       end
     end
   end
-end
+end

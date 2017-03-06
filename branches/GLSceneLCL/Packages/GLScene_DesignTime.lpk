@@ -8,7 +8,7 @@
       <Version Value="11"/>
       <SearchPaths>
         <IncludeFiles Value="../Source"/>
-        <OtherUnitFiles Value="../Source"/>
+        <OtherUnitFiles Value="../Source;../Source/Basis;../Source/DesignTime;../Source/FileFormats;../Source/GameAPIs;../Source/ParallelAPIs;../Source/PhysicsAPIs;../Source/Shaders;../Source/SoundVideoAPIs"/>
         <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
         <SrcPath Value="../Lazarus"/>
       </SearchPaths>
@@ -20,7 +20,7 @@
       </Parsing>
       <Other>
         <CompilerMessages>
-          <IgnoredMessages idx4055="True" idx5024="True"/>
+          <IgnoredMessages idx5024="True" idx4055="True"/>
         </CompilerMessages>
       </Other>
     </CompilerOptions>
@@ -31,91 +31,91 @@
         <UnitName Value="FXCollectionEditor"/>
       </Item1>
       <Item2>
-        <Filename Value="../Source/DesignTime/GLSceneEdit.pas"/>
-        <UnitName Value="GLSceneEdit"/>
-      </Item2>
-      <Item3>
         <Filename Value="../Source/DesignTime/GLSceneFormDesign.pas"/>
         <HasRegisterProc Value="True"/>
         <UnitName Value="GLSceneFormDesign"/>
+      </Item2>
+      <Item3>
+        <Filename Value="../Resources/GLScene.lrs"/>
+        <Type Value="LRS"/>
       </Item3>
       <Item4>
-        <Filename Value="../Resources/GLScene.lrs"/>
+        <Filename Value="../Resources/GLSceneObjects.lrs"/>
         <Type Value="LRS"/>
       </Item4>
       <Item5>
-        <Filename Value="../Resources/GLSceneObjects.lrs"/>
-        <Type Value="LRS"/>
-      </Item5>
-      <Item6>
         <Filename Value="../Source/DesignTime/GLSceneRegister.pas"/>
         <HasRegisterProc Value="True"/>
         <UnitName Value="GLSceneRegister"/>
-      </Item6>
-      <Item7>
-        <Filename Value="../Source/Resources/nonGLScene.lrs"/>
-        <Type Value="LRS"/>
-      </Item7>
-      <Item8>
+      </Item5>
+      <Item6>
         <Filename Value="../Source/RegisterXCollection.pas"/>
         <HasRegisterProc Value="True"/>
         <UnitName Value="RegisterXCollection"/>
-      </Item8>
-      <Item9>
+      </Item6>
+      <Item7>
         <Filename Value="../Source/Basis/GLObjectManager.pas"/>
         <UnitName Value="GLObjectManager"/>
-      </Item9>
-      <Item10>
+      </Item7>
+      <Item8>
         <Filename Value="../Source/DesignTime/FLibMaterialPicker.pas"/>
         <UnitName Value="FLibMaterialPicker"/>
-      </Item10>
-      <Item11>
+      </Item8>
+      <Item9>
         <Filename Value="../Source/DesignTime/FMaterialEditorForm.pas"/>
         <UnitName Value="FMaterialEditorForm"/>
-      </Item11>
-      <Item12>
+      </Item9>
+      <Item10>
         <Filename Value="../Source/DesignTime/FRColorEditor.pas"/>
         <UnitName Value="FRColorEditor"/>
-      </Item12>
-      <Item13>
+      </Item10>
+      <Item11>
         <Filename Value="../Source/DesignTime/FRFaceEditor.pas"/>
         <UnitName Value="FRFaceEditor"/>
-      </Item13>
-      <Item14>
+      </Item11>
+      <Item12>
         <Filename Value="../Source/DesignTime/FRMaterialPreview.pas"/>
         <UnitName Value="FRMaterialPreview"/>
-      </Item14>
-      <Item15>
+      </Item12>
+      <Item13>
         <Filename Value="../Source/DesignTime/FRTextureEdit.pas"/>
         <UnitName Value="FRTextureEdit"/>
-      </Item15>
-      <Item16>
+      </Item13>
+      <Item14>
         <Filename Value="../Source/DesignTime/FRTrackBarEdit.pas"/>
         <UnitName Value="FRTrackBarEdit"/>
-      </Item16>
-      <Item17>
+      </Item14>
+      <Item15>
         <Filename Value="../Source/DesignTime/FVectorEditor.pas"/>
         <UnitName Value="FVectorEditor"/>
-      </Item17>
-      <Item18>
+      </Item15>
+      <Item16>
         <Filename Value="../Source/DesignTime/FInfo.pas"/>
         <UnitName Value="FInfo"/>
-      </Item18>
-      <Item19>
-        <Filename Value="../Source/Shaders/FShaderUniformEditor.pas"/>
-        <UnitName Value="FShaderUniformEditor"/>
-      </Item19>
-      <Item20>
+      </Item16>
+      <Item17>
         <Filename Value="../Source/DesignTime/FGUILayoutEditor.lfm"/>
         <Type Value="LFM"/>
-      </Item20>
-      <Item21>
+      </Item17>
+      <Item18>
         <Filename Value="../Source/DesignTime/FGUILayoutEditor.lrs"/>
         <Type Value="LRS"/>
-      </Item21>
-      <Item22>
+      </Item18>
+      <Item19>
         <Filename Value="../Source/DesignTime/FGUILayoutEditor.pas"/>
         <UnitName Value="FGUILayoutEditor"/>
+      </Item19>
+      <Item20>
+        <Filename Value="../Source/DesignTime/FGLSceneEdit.pas"/>
+        <UnitName Value="FGLSceneEdit"/>
+      </Item20>
+      <Item21>
+        <Filename Value="../Source/DesignTime/FShaderUniformEditor.pas"/>
+        <UnitName Value="FShaderUniformEditor"/>
+      </Item21>
+      <Item22>
+        <Filename Value="../Source/DesignTime/FGUISkinEditor.pas"/>
+        <UnitName Value="FGuiSkinEditor"/>
       </Item22>
     </Files>
     <i18n>

@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectOptions>
     <Version Value="9"/>
@@ -6,7 +6,6 @@
     <General>
       <MainUnit Value="0"/>
       <UseXPManifest Value="True"/>
-      <ActiveWindowIndexAtStart Value="0"/>
     </General>
     <i18n>
       <EnableI18N LFM="False"/>
@@ -30,21 +29,19 @@
     </RunParams>
     <RequiredPackages Count="2">
       <Item1>
-        <PackageName Value=" GLSceneLCL_RunTime"/>
+        <PackageName Value="GLScene_RunTime"/>
       </Item1>
       <Item2>
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="4">
+    <Units Count="5">
       <Unit0>
         <Filename Value="meshhit.lpr"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="2"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
         <CursorPos X="19" Y="8"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="22"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit0>
@@ -54,39 +51,40 @@
         <ComponentName Value="Form1"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="Unit1"/>
         <IsVisibleTab Value="True"/>
-        <EditorIndex Value="0"/>
-        <WindowIndex Value="0"/>
         <TopLine Value="40"/>
-        <CursorPos X="23" Y="58"/>
-        <UsageCount Value="20"/>
+        <CursorPos X="37" Y="60"/>
+        <UsageCount Value="22"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit1>
       <Unit2>
         <Filename Value="..\..\..\Source\ GLApplicationFileIO.pas"/>
-        <UnitName Value="GLApplicationFileIO"/>
-        <WindowIndex Value="0"/>
         <TopLine Value="181"/>
-        <CursorPos X="1" Y="195"/>
+        <CursorPos Y="195"/>
         <UsageCount Value="10"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit2>
       <Unit3>
         <Filename Value="..\..\..\..\Source\GLApplicationFileIO.pas"/>
-        <UnitName Value="GLApplicationFileIO"/>
-        <EditorIndex Value="1"/>
-        <WindowIndex Value="0"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="196"/>
-        <CursorPos X="1" Y="217"/>
+        <CursorPos Y="217"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit3>
+      <Unit4>
+        <Filename Value="..\..\..\..\Source\Basis\GLApplicationFileIO.pas"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="183"/>
+        <CursorPos Y="199"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit4>
     </Units>
-    <JumpHistory Count="3" HistoryIndex="2">
+    <JumpHistory Count="4" HistoryIndex="3">
       <Position1>
         <Filename Value="Unit1.pas"/>
         <Caret Line="59" Column="4" TopLine="46"/>
@@ -97,8 +95,12 @@
       </Position2>
       <Position3>
         <Filename Value="Unit1.pas"/>
-        <Caret Line="14" Column="21" TopLine="1"/>
+        <Caret Line="14" Column="21"/>
       </Position3>
+      <Position4>
+        <Filename Value="Unit1.pas"/>
+        <Caret Line="58" Column="23" TopLine="40"/>
+      </Position4>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
@@ -127,12 +129,6 @@
         </Win32>
       </Options>
     </Linking>
-    <Other>
-      <CompilerMessages>
-        <UseMsgFile Value="True"/>
-      </CompilerMessages>
-      <CompilerPath Value="$(CompPath)"/>
-    </Other>
   </CompilerOptions>
   <Debugging>
     <Exceptions Count="3">

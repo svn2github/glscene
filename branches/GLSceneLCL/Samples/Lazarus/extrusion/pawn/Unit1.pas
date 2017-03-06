@@ -66,7 +66,7 @@ uses GLUtils;
 procedure TForm1.FormCreate(Sender: TObject);
 begin
    SetGLSceneMediaDir();
-   RotationSolid1.Material.Texture.Image.LoadFromFile('ashwood.jpg');
+   RotationSolid1.Material.Texture.Image.LoadFromFile(MediaPath+'ashwood.jpg');
 end;
 
 procedure TForm1.CheckBox1Click(Sender: TObject);

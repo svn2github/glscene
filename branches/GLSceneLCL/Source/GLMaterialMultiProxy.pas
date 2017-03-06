@@ -44,7 +44,7 @@ interface
 
 uses
   Classes, SysUtils,
-   cene
+
   GLScene, GLVectorGeometry, GLTexture, GLMaterial, GLSilhouette, GLStrings,
   GLCrossPlatform, GLPersistentClasses, GLRenderContextInfo, GLBaseClasses,
   GLContext , GLVectorTypes;

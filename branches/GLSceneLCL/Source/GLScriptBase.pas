@@ -16,7 +16,7 @@ unit GLScriptBase;
 interface
 
 uses
-  Classes, XCollection;
+  Classes, GLXCollection;
 
 type
   TGLScriptState = ( ssUncompiled,    // The script has yet to be compiled.

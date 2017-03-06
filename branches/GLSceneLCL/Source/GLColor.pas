@@ -1,7 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{   All color types, constants and utilities should go here
+{
+   All color types, constants and utilities should go here
 
    History :  
      10/11/12 - PW - Added CPPB compatibility: restored $NODEFINE directives
@@ -419,12 +420,15 @@ end;
 
 // ConvertWinColor
 //
+
+
+
 function ConvertWinColor(aColor: TColor; alpha: Single = 1): TColorVector;
 var
   winColor: Integer;
 begin
   // Delphi color to Windows color
-  winColor := ColorToRGB(aColor);
+  winColor := aColor and $FFFFFF; //ColorToRGB(aColor);
   // convert 0..255 range into 0..1 range
   Result.V[0] := (winColor and $FF) * (1 / 255);
   Result.V[1] := ((winColor shr 8) and $FF) * (1 / 255);
@@ -1116,4 +1120,4 @@ initialization
 finalization
 	vColorManager.Free;
 
-end.
+end.

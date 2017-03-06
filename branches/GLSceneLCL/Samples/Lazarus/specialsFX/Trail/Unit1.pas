@@ -8,7 +8,7 @@ interface
 uses
   SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLCadencer, GLScene, GLObjects, GLGeomObjects,
-  GLLCLViewer, GLTrail, GLTexture, Vectorgeometry, StdCtrls,
+  GLLCLViewer, GLTrail, GLTexture, GLVectorgeometry, StdCtrls,
   ComCtrls, ExtCtrls, GLMesh, GLVectorTypes, GLCrossPlatform, GLCoordinates,
   GLBaseClasses;
 

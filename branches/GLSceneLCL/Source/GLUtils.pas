@@ -33,13 +33,9 @@ interface
 {$I GLScene.inc}
 
 uses
-  // VCL
-  {$IFDEF GLS_DELPHI_XE2_UP}
-  System.Classes, System.SysUtils, VCL.Graphics, VCL.Controls, System.UITypes,
-  {$ELSE}
-  Classes, SysUtils, Graphics, Controls,
-{$ENDIF}
-   cene
+  Classes, SysUtils, types,
+  Graphics, Controls, FileUtil, LazUtf8, lazfileutils, Dialogs, ExtDlgs,
+  // GLScene
   GLVectorGeometry, GLCrossPlatform;
 
 type
@@ -112,8 +108,10 @@ function SavePictureDialog(var aFileName: string; const aTitle: string = ''): Bo
 { Pops up a simple open picture dialog. }
 function OpenPictureDialog(var aFileName: string; const aTitle: string = ''): Boolean;
 
-procedure SetGLSceneMediaDir();
+//procedure SetGLSceneMediaDir();
+Function SetGLSceneMediaDir:string;
 
+var MediaPath:String;
 //------------------------------------------------------
 //------------------------------------------------------
 //------------------------------------------------------
@@ -123,17 +121,8 @@ implementation
 //------------------------------------------------------
 
 uses
-{$IFDEF FPC}
-  FileUtil,
-{$ENDIF}
-  GLApplicationFileIO,
-{$IFDEF GLS_DELPHI_XE2_UP}
-  VCL.Dialogs,
-  VCL.ExtDlgs;
-{$ELSE}
-  Dialogs,
-  ExtDlgs;
-{$ENDIF}
+  GLApplicationFileIO;
+
 
 
 var
@@ -710,17 +699,28 @@ begin
   end;
 end;
 
-procedure SetGLSceneMediaDir();
+Function SetGLSceneMediaDir:string;
 var
-  {$IFDEF FPC}path: UTF8String{$ELSE}path: String {$ENDIF};
-  p: Integer;
+  path: UTF8String;
+  p: integer;
 begin
-   path := {$IFDEF FPC}ParamStrUTF8(0){$ELSE}ParamStr(0){$ENDIF};
-   path := LowerCase(ExtractFilePath(path));
+   result:='';
+
+   // We need to lower case path because the functions are case sensible
+//   path := lowercase(ExtractFilePath(ParamStrUTF8(0)));
+   path := lowercase(ExtractFilePath(ParamStr(0)));
    p := Pos('samples', path);
-   Delete(path, p+7, Length(path));
-   path := IncludeTrailingPathDelimiter(path) + 'media';
-   {$IFDEF FPC}SetCurrentDirUTF8(path);{$ELSE}SetCurrentDir(path);{$ENDIF}
+   Delete(path, p + 7, Length(path));
+   path := IncludeTrailingPathDelimiter(IncludeTrailingPathDelimiter(path) + 'media');
+   SetCurrentDir(path);
+   // SetCurrentDirUTF8(path) -->  NOT WORKING ON W10 64Bits !
+     // We need to store the result in a global var "MediaPath"
+     // The function SetCurrentDirUTF8 return TRUE but we are always in the application's folder
+     // NB These functions provide from LazFileUtils unit and not from deprecated functions in FileUtils unit.
+
+   MediaPath:=Path ;
+   result:=path;
+
 end;
 
 end.

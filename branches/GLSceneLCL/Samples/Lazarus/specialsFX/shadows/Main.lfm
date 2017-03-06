@@ -12,7 +12,7 @@ object MainFm: TMainFm
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
   OnCreate = FormCreate
-  LCLVersion = '0.9.31'
+  LCLVersion = '1.6.2.0'
   object Label1: TLabel
     Left = 0
     Height = 13
@@ -100,9 +100,9 @@ object MainFm: TMainFm
     TabOrder = 2
     object Label4: TLabel
       Left = 25
-      Height = 12
+      Height = 11
       Top = 6
-      Width = 73
+      Width = 72
       Caption = 'Camera Distance'
       Font.CharSet = ANSI_CHARSET
       Font.Color = clWindowText
@@ -113,9 +113,9 @@ object MainFm: TMainFm
     end
     object TimeLbl: TLabel
       Left = 228
-      Height = 12
+      Height = 11
       Top = 27
-      Width = 22
+      Width = 21
       Caption = 'Time'
       Font.CharSet = ANSI_CHARSET
       Font.Color = clWindowText
@@ -162,9 +162,9 @@ object MainFm: TMainFm
     TabOrder = 3
     object Label3: TLabel
       Left = 25
-      Height = 12
+      Height = 11
       Top = 6
-      Width = 73
+      Width = 72
       Caption = 'Camera Distance'
       Font.CharSet = ANSI_CHARSET
       Font.Color = clWindowText
@@ -175,9 +175,9 @@ object MainFm: TMainFm
     end
     object Label5: TLabel
       Left = 193
-      Height = 12
+      Height = 11
       Top = 6
-      Width = 28
+      Width = 27
       Caption = 'Focus'
       Font.CharSet = ANSI_CHARSET
       Font.Color = clWindowText
@@ -291,9 +291,9 @@ object MainFm: TMainFm
     TabOrder = 5
     object Label9: TLabel
       Left = 28
-      Height = 12
+      Height = 11
       Top = 64
-      Width = 60
+      Width = 59
       Caption = 'Shadow Alpha'
       Font.CharSet = ANSI_CHARSET
       Font.Color = clWindowText
@@ -408,11 +408,11 @@ object MainFm: TMainFm
         XSamplingScale.Min = -1
         XSamplingScale.Max = 1
         XSamplingScale.Origin = 0
-        XSamplingScale.Step = 0.07000000029802
+        XSamplingScale.Step = 0.0700000002980232
         YSamplingScale.Min = -1
         YSamplingScale.Max = 1
         YSamplingScale.Origin = 0
-        YSamplingScale.Step = 0.07000000029802
+        YSamplingScale.Step = 0.0700000002980232
         Options = [hfoTextureCoordinates]
       end
       object Cube1: TGLCube
@@ -431,12 +431,19 @@ object MainFm: TMainFm
       end
       object Torus1: TGLTorus
         TagFloat = 0
+        Material.Texture.ImageClassName = 'TGLBlankImage'
+        Material.Texture.Image.Width = 64
+        Material.Texture.Image.Height = 64
+        Material.Texture.Image.ColorFormat = 6408
+        Material.Texture.MagFilter = maNearest
+        Material.Texture.MinFilter = miNearest
         Material.Texture.TextureMode = tmModulate
+        Material.Texture.Compression = tcNone
         PitchAngle = 0
         RollAngle = 0
         TurnAngle = 0
         MajorRadius = 1.10000002384186
-        MinorRadius = 0.15000000596046
+        MinorRadius = 0.150000005960464
         Rings = 28
         Sides = 16
         StartAngle = 0
@@ -478,7 +485,7 @@ object MainFm: TMainFm
         0000000000000000000000000000003F
       }
       Soft = False
-      Tolerance = 0.01499999966472
+      Tolerance = 0.0149999996647239
       DepthFade = False
     end
     object GLCamera1: TGLCamera
@@ -537,17 +544,28 @@ object MainFm: TMainFm
         Name = 'PlaneMat'
         Tag = 0
         Material.Texture.ImageClassName = 'TGLBlankImage'
+        Material.Texture.Image.Width = 64
+        Material.Texture.Image.Height = 64
         Material.Texture.Image.ColorFormat = 6408
+        Material.Texture.MagFilter = maNearest
+        Material.Texture.MinFilter = miNearest
+        Material.Texture.Compression = tcNone
       end    
       item
         Name = 'Tiles'
         Tag = 0
+        Material.Texture.MagFilter = maNearest
+        Material.Texture.MinFilter = miNearest
         Material.Texture.TextureMode = tmModulate
+        Material.Texture.Compression = tcNone
       end    
       item
         Name = 'BeigeMarble'
         Tag = 0
+        Material.Texture.MagFilter = maNearest
+        Material.Texture.MinFilter = miNearest
         Material.Texture.TextureMode = tmModulate
+        Material.Texture.Compression = tcNone
       end    
       item
         Name = 'Marble'

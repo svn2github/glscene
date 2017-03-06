@@ -73,7 +73,6 @@ interface
 uses
   Classes, SysUtils,
 
-   cene
   GLVectorGeometry, GLVectorTypes, GLTexture, OpenGLTokens, GLContext, GLCustomShader,
   GLRenderContextInfo, GLTextureFormat, GLSLParameter;
 

@@ -73,8 +73,9 @@ uses
   OpenGLAdapter,
   GLContext,
   GLCrossPlatform,
+  GLStrings,
   GLState,
-  {$IFDEF GLS_LOGGING}GLSLog,{$ENDIF}
+ GLSLog,
   GLVectorGeometry;
 
 

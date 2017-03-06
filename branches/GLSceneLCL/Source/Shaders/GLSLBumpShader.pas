@@ -83,7 +83,7 @@ uses
   // VCL
   Classes, SysUtils,
   
-   cene
+
   GLTexture, GLScene, GLVectorGeometry, GLVectorTypes, GLCadencer, GLStrings,
   OpenGLTokens, GLSLShader, GLCustomShader, GLColor, GLRenderContextInfo,
   GLMaterial;

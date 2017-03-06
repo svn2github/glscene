@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectOptions>
     <Version Value="9"/>
@@ -6,7 +6,6 @@
     <General>
       <MainUnit Value="0"/>
       <UseXPManifest Value="True"/>
-      <ActiveWindowIndexAtStart Value="0"/>
     </General>
     <i18n>
       <EnableI18N LFM="False"/>
@@ -27,16 +26,13 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="3">
+    <RequiredPackages Count="2">
       <Item1>
-        <PackageName Value=" GLSceneLCL_DesignTime"/>
+        <PackageName Value="GLScene_RunTime"/>
       </Item1>
       <Item2>
-        <PackageName Value=" GLSceneLCL_RunTime"/>
-      </Item2>
-      <Item3>
         <PackageName Value="LCL"/>
-      </Item3>
+      </Item2>
     </RequiredPackages>
     <Units Count="3">
       <Unit0>
@@ -53,8 +49,6 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="MainFormUnit"/>
         <IsVisibleTab Value="True"/>
-        <EditorIndex Value="0"/>
-        <WindowIndex Value="0"/>
         <TopLine Value="106"/>
         <CursorPos X="118" Y="126"/>
         <UsageCount Value="20"/>
@@ -64,10 +58,8 @@
       </Unit1>
       <Unit2>
         <Filename Value="..\..\..\..\Source\GLApplicationFileIO.pas"/>
-        <UnitName Value="GLApplicationFileIO"/>
-        <WindowIndex Value="0"/>
         <TopLine Value="182"/>
-        <CursorPos X="1" Y="209"/>
+        <CursorPos Y="209"/>
         <UsageCount Value="10"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit2>
@@ -109,12 +101,6 @@
         </Win32>
       </Options>
     </Linking>
-    <Other>
-      <CompilerMessages>
-        <UseMsgFile Value="True"/>
-      </CompilerMessages>
-      <CompilerPath Value="$(CompPath)"/>
-    </Other>
   </CompilerOptions>
   <Debugging>
     <Exceptions Count="3">

@@ -76,13 +76,13 @@ begin
   SetGLSceneMediaDir();
   with GLMaterialLibrary.Materials do
   begin
-    Image1.Picture.LoadFromFile('beigemarble.jpg');
+    Image1.Picture.LoadFromFile(MediaPath+'beigemarble.jpg');
     Items[0].Material.Texture.Image.Assign(Image1.Picture);
-    Image2.Picture.LoadFromFile('Flare1.bmp');
+    Image2.Picture.LoadFromFile(MediaPath+'Flare1.bmp');
     Items[1].Material.Texture.Image.Assign(Image2.Picture);
-    Image3.Picture.LoadFromFile('clover.jpg');
+    Image3.Picture.LoadFromFile(MediaPath+'clover.jpg');
     Items[2].Material.Texture.Image.Assign(Image3.Picture);
-    Image4.Picture.LoadFromFile('cm_front.jpg');
+    Image4.Picture.LoadFromFile(MediaPath+'cm_front.jpg');
     Items[3].Material.Texture.Image.Assign(Image4.Picture);
   end;
   GLTexCombineShader.Combiners.Assign(MECombiner.Lines);

@@ -10,7 +10,7 @@ object Form1: TForm1
   Font.Name = 'MS Sans Serif'
   Menu = MainMenu1
   OnCreate = FormCreate
-  LCLVersion = '0.9.31'
+  LCLVersion = '1.6.2.0'
   WindowState = wsMaximized
   object Bevel1: TBevel
     Left = 0
@@ -49,6 +49,13 @@ object Form1: TForm1
       Material.FrontProperties.Emission.Color = {
         0000803F0000803F0000803F0000803F
       }
+      Material.Texture.ImageClassName = 'TGLBlankImage'
+      Material.Texture.Image.Width = 64
+      Material.Texture.Image.Height = 64
+      Material.Texture.Image.ColorFormat = 6408
+      Material.Texture.MagFilter = maNearest
+      Material.Texture.MinFilter = miNearest
+      Material.Texture.Compression = tcNone
       PitchAngle = 0
       Position.Coordinates = {
         0000484200004842000000000000803F
@@ -146,7 +153,10 @@ object Form1: TForm1
         }
         Material.BlendingMode = bmTransparency
         Material.Texture.ImageAlpha = tiaTopLeftPointColorTransparent
+        Material.Texture.MagFilter = maNearest
+        Material.Texture.MinFilter = miNearest
         Material.Texture.TextureMode = tmModulate
+        Material.Texture.Compression = tcNone
         Material.Texture.Disabled = False
       end>
     left = 136

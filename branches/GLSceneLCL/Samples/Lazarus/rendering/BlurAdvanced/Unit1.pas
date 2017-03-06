@@ -7,7 +7,7 @@ interface
 
 uses
   SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, GLLCLViewer, GLScene, GLObjects, GLHUDObjects,
+  Dialogs, GLViewer, GLScene, GLObjects, GLHUDObjects,
   GLGeomObjects, GLCadencer, ExtCtrls, GLBlur, GLTexture, ComCtrls,
   StdCtrls, GLCrossPlatform, GLMaterial, GLCoordinates, GLBaseClasses;
 
@@ -78,8 +78,8 @@ begin
   // load materials
   with GLMaterialLibrary1 do
   begin
-    Materials[0].Material.Texture.Image.LoadFromFile('beigemarble.jpg');
-    Materials[1].Material.Texture.Image.LoadFromFile('moon.bmp');
+    Materials[0].Material.Texture.Image.LoadFromFile(MediaPath+'\'+'beigemarble.jpg');
+    Materials[1].Material.Texture.Image.LoadFromFile(MediaPath+'\'+'moon.bmp');
   end;
 end;
 

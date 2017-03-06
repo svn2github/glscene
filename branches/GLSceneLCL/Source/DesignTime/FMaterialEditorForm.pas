@@ -254,7 +254,7 @@ initialization
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
 
-  {$i FMaterialEditorFormLCL.lrs}
+  {$i FMaterialEditorForm.lrs}
 
 finalization
 

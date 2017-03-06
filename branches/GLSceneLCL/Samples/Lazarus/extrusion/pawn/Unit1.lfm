@@ -12,12 +12,12 @@ object Form1: TForm1
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
   OnCreate = FormCreate
-  LCLVersion = '0.9.31'
+  LCLVersion = '1.6.2.0'
   object Label1: TLabel
     Left = 296
-    Height = 19
+    Height = 18
     Top = 8
-    Width = 60
+    Width = 59
     Caption = 'Options'
     Font.CharSet = ANSI_CHARSET
     Font.Height = -16
@@ -28,25 +28,25 @@ object Form1: TForm1
   end
   object Label2: TLabel
     Left = 272
-    Height = 14
+    Height = 13
     Top = 240
-    Width = 23
+    Width = 22
     Caption = 'Stop'
     ParentColor = False
   end
   object Label3: TLabel
     Left = 272
-    Height = 14
+    Height = 13
     Top = 152
-    Width = 29
+    Width = 28
     Caption = 'Slices'
     ParentColor = False
   end
   object Label4: TLabel
     Left = 272
-    Height = 14
+    Height = 13
     Top = 192
-    Width = 43
+    Width = 42
     Caption = 'Divisions'
     ParentColor = False
   end
@@ -172,42 +172,42 @@ object Form1: TForm1
         TurnAngle = 0
         Nodes = <        
           item
-            Y = 0.89999997615814
+            Y = 0.899999976158142
           end        
           item
-            X = 0.40000000596046
-            Y = 0.80000001192093
+            X = 0.400000005960464
+            Y = 0.800000011920929
           end        
           item
-            X = 0.44999998807907
+            X = 0.449999988079071
             Y = 0.5
           end        
           item
             X = 0.25
-            Y = 0.30000001192093
+            Y = 0.300000011920929
           end        
           item
             X = 0.25
-            Y = -0.10000000149012
+            Y = -0.100000001490116
           end        
           item
-            X = 0.60000002384186
+            X = 0.600000023841858
             Y = -0.5
           end        
           item
-            X = 0.60000002384186
-            Y = -0.89999997615814
+            X = 0.600000023841858
+            Y = -0.899999976158142
           end        
           item
-            X = 0.58999997377396
-            Y = -0.94999998807907
+            X = 0.589999973773956
+            Y = -0.949999988079071
           end        
           item
-            X = 0.60000002384186
+            X = 0.600000023841858
             Y = -1
           end        
           item
-            X = 0.60000002384186
+            X = 0.600000023841858
             Y = -1
           end        
           item

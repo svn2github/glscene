@@ -30,7 +30,7 @@ interface
 
 uses
   Classes, SysUtils,
-   cene
+
   GLScene, GLBitmapFont, GLMaterial, GLCrossPlatform, OpenGLTokens, GLContext,
   GLPersistentClasses, GLVectorGeometry, GLCoordinates, GLBaseClasses;
 

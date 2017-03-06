@@ -848,7 +848,7 @@ implementation
 // ------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------
-
+uses Dialogs;
 
 resourcestring
   strCyclicRefMat = 'Cyclic reference detected in material "%s"';
@@ -3474,23 +3474,29 @@ function TGLMaterialLibrary.AddTextureMaterial(const materialName, fileName:
   persistent: Boolean = True): TGLLibMaterial;
 begin
   Result := Materials.Add;
+
   with Result do
   begin
     Name := materialName;
+
     with Material.Texture do
     begin
       MinFilter := miLinearMipmapLinear;
       MagFilter := maLinear;
       TextureMode := tmModulate;
       Disabled := False;
+
       if persistent then
       begin
+
+        Image := TGLPersistentImage.Create(Material.Texture);
         ImageClassName := TGLPersistentImage.ClassName;
         if fileName <> '' then
           Image.LoadFromFile(fileName);
       end
       else
       begin
+        ShowMessage(filename);
         ImageClassName := TGLPicFileImage.ClassName;
         TGLPicFileImage(Image).PictureFileName := fileName;
       end;

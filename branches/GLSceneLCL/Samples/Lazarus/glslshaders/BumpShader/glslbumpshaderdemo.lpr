@@ -6,8 +6,8 @@ uses
   {$IFDEF UNIX}{$IFDEF UseCThreads}
   cthreads,
   {$ENDIF}{$ENDIF}
-  Forms, Interfaces,
-  umainform,  GLSceneLCL_DesignTime,  GLSceneLCL_runtime;
+  Forms, GLScene_RunTime, Interfaces,
+  umainform;
 
 {$R *.res}
 

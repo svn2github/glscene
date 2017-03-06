@@ -166,10 +166,10 @@ end;
 procedure TMainFm.FormCreate(Sender: TObject);
 begin
  SetGLSceneMediaDir();
- GLMaterialLibrary1.Materials[2].Material.texture.Image.loadFromFile('marbletiles.jpg');
+ GLMaterialLibrary1.Materials[2].Material.texture.Image.loadFromFile(MediaPath+'\'+'marbletiles.jpg');
  GLMaterialLibrary1.Materials[2].Material.texture.disabled:=false;
 
- GLMaterialLibrary1.Materials[3].Material.texture.Image.loadFromFile('beigemarble.jpg');
+ GLMaterialLibrary1.Materials[3].Material.texture.Image.loadFromFile(MediaPath+'\'+'beigemarble.jpg');
  GLMaterialLibrary1.Materials[3].Material.texture.disabled:=false;
 end;
 

@@ -10,7 +10,7 @@ object Form1: TForm1
   Font.Name = 'MS Sans Serif'
   OnCreate = FormCreate
   OnKeyPress = FormKeyPress
-  LCLVersion = '0.9.31'
+  LCLVersion = '1.6.2.0'
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Height = 475
@@ -36,9 +36,9 @@ object Form1: TForm1
     OnResize = MainPanelResize
     object Label1: TLabel
       Left = 144
-      Height = 14
+      Height = 13
       Top = 6
-      Width = 235
+      Width = 234
       Caption = 'Press "W" or "S" to navigate or "Enter" to select '
       ParentColor = False
     end
@@ -66,6 +66,13 @@ object Form1: TForm1
       CubeSize = 1
       object GLCube1: TGLCube
         TagFloat = 0
+        Material.Texture.ImageClassName = 'TGLBlankImage'
+        Material.Texture.Image.Width = 64
+        Material.Texture.Image.Height = 64
+        Material.Texture.Image.ColorFormat = 6408
+        Material.Texture.MagFilter = maNearest
+        Material.Texture.MinFilter = miNearest
+        Material.Texture.Compression = tcNone
         PitchAngle = 0
         Position.Coordinates = {
           0000803F00000000000000000000803F
@@ -116,6 +123,7 @@ object Form1: TForm1
       item
         Name = 'LibMaterial'
         Tag = 0
+        Material.Texture.ImageClassName = 'TGLPicFileImage'
         Material.Texture.Disabled = False
       end>
     left = 216

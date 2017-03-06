@@ -12,7 +12,7 @@ object Form1: TForm1
   Font.Name = 'MS Sans Serif'
   OnCreate = FormCreate
   Position = poScreenCenter
-  LCLVersion = '0.9.31'
+  LCLVersion = '1.6.2.0'
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Height = 434
@@ -101,6 +101,9 @@ object Form1: TForm1
           0000803F0000003F000000000000803F
         }
         Material.MaterialOptions = [moNoLighting]
+        Material.Texture.MagFilter = maNearest
+        Material.Texture.MinFilter = miNearest
+        Material.Texture.Compression = tcNone
         Material.Texture.Disabled = False
         Shader = GLTexturedCelShader
       end    
@@ -110,6 +113,9 @@ object Form1: TForm1
         Material.FrontProperties.Diffuse.Color = {
           00000000000000000000803F0000803F
         }
+        Material.Texture.MagFilter = maNearest
+        Material.Texture.MinFilter = miNearest
+        Material.Texture.Compression = tcNone
         Shader = GLColoredCelShader
       end>
     left = 40

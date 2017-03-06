@@ -7,7 +7,7 @@
       <Version Value="11"/>
       <SearchPaths>
         <IncludeFiles Value="../Source"/>
-        <OtherUnitFiles Value="../Source"/>
+        <OtherUnitFiles Value="../Source;../Source/Basis;../Source/DesignTime;../Source/FileFormats;../Source/GameAPIs;../Source/ParallelAPIs;../Source/PhysicsAPIs;../Source/Shaders;../Source/SoundVideoAPIs"/>
         <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
       <Parsing>
@@ -167,7 +167,7 @@
       </Item33>
       <Item34>
         <Filename Value="../Source/Basis/GLXCollection.pas"/>
-        <UnitName Value="XCollection"/>
+        <UnitName Value="GLXCollection"/>
       </Item34>
       <Item35>
         <Filename Value="../Source/Basis/XOpenGL.pas"/>
@@ -375,7 +375,7 @@
       </Item85>
       <Item86>
         <Filename Value="../Source/FileFormats/GLFileTGA.pas"/>
-        <UnitName Value="TGA"/>
+        <UnitName Value="GLFileTGA"/>
       </Item86>
       <Item87>
         <Filename Value="../Source/FileFormats/Types3DS.pas"/>
@@ -947,7 +947,7 @@
       </Item228>
       <Item229>
         <Filename Value="../Source/FileFormats/TGA.pas"/>
-        <UnitName Value="GLFileTGA"/>
+        <UnitName Value="TGA"/>
       </Item229>
       <Item230>
         <Filename Value="../Source/Shaders/GLSLPostShaders.pas"/>

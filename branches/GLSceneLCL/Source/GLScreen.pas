@@ -26,7 +26,7 @@
 }
 unit GLScreen;
 
- creen    - This units contains routines to interact with the screen/desktop.
+ // screen    - This units contains routines to interact with the screen/desktop.
 // Version     - 0.0.8
 // Last Change - 30. September 1998
 // for more information see help file

@@ -33,7 +33,7 @@ type
     DummyCube2: TGLDummyCube;
     GLCadencer1: TGLCadencer;
     Button1: TButton;
-    AVIRecorder1: TGLAVIRecorder;
+
     procedure TrackBarChange(Sender: TObject);
     procedure FormResize(Sender: TObject);
     procedure Button1Click(Sender: TObject);

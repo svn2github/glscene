@@ -214,7 +214,7 @@ begin
 
   //this Delphi bug shows all panels transparent
   //the code below is to avoid this bug in XP
-  panElements.ParentBackground := False;
+ (* panElements.ParentBackground := False;
   panElements.ParentBackground := True;
   panElements.ParentBackground := False;
 
@@ -228,7 +228,7 @@ begin
 
   panZoomImage.ParentBackground := False;
   panZoomImage.ParentBackground := True;
-  panZoomImage.ParentBackground := False;
+  panZoomImage.ParentBackground := False; *)
 end;
 
 procedure TGUISkinEditor.FormDestroy(Sender: TObject);
@@ -255,7 +255,7 @@ begin
 
   If (Assigned(mat.MaterialLibrary) and (Mat.LibMaterialName <> '')) then
   Begin
-    mat := mat.MaterialLibrary.Materials.GetLibMaterialByName(Mat.LibMaterialName).Material;
+    mat := TGLMaterialLibrary(mat.MaterialLibrary).Materials.GetLibMaterialByName(Mat.LibMaterialName).Material;
   End;
   Width := Mat.Texture.Image.Width;
   Height := Mat.Texture.Image.Height;

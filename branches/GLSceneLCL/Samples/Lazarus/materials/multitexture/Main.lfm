@@ -11,7 +11,7 @@ object Form1: TForm1
   Font.Name = 'MS Sans Serif'
   OnCreate = FormCreate
   Position = poScreenCenter
-  LCLVersion = '0.9.31'
+  LCLVersion = '1.6.2.0'
   object Image1: TImage
     Left = 416
     Height = 128
@@ -30,33 +30,33 @@ object Form1: TForm1
   end
   object Label1: TLabel
     Left = 416
-    Height = 14
+    Height = 13
     Top = 40
-    Width = 70
+    Width = 69
     Caption = 'Texture Map 1'
     ParentColor = False
   end
   object Label2: TLabel
     Left = 416
-    Height = 14
+    Height = 13
     Top = 192
-    Width = 70
+    Width = 69
     Caption = 'Texture Map 2'
     ParentColor = False
   end
   object Label3: TLabel
     Left = 416
-    Height = 14
+    Height = 13
     Top = 368
-    Width = 61
+    Width = 60
     Caption = 'Map 2 Scale'
     ParentColor = False
   end
   object Label4: TLabel
     Left = 432
-    Height = 20
+    Height = 19
     Top = 8
-    Width = 94
+    Width = 93
     Caption = 'MultiTexture'
     Font.CharSet = ANSI_CHARSET
     Font.Height = -16
@@ -126,14 +126,20 @@ object Form1: TForm1
       item
         Name = 'Base'
         Tag = 0
+        Material.Texture.MagFilter = maNearest
+        Material.Texture.MinFilter = miNearest
         Material.Texture.TextureMode = tmReplace
+        Material.Texture.Compression = tcNone
         Material.Texture.Disabled = False
         Texture2Name = 'Second'
       end    
       item
         Name = 'Second'
         Tag = 0
+        Material.Texture.MagFilter = maNearest
+        Material.Texture.MinFilter = miNearest
         Material.Texture.TextureMode = tmModulate
+        Material.Texture.Compression = tcNone
         Material.Texture.Disabled = False
       end>
     left = 48

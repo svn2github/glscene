@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectOptions>
     <Version Value="9"/>
@@ -6,7 +6,6 @@
     <General>
       <MainUnit Value="0"/>
       <UseXPManifest Value="True"/>
-      <ActiveWindowIndexAtStart Value="0"/>
     </General>
     <i18n>
       <EnableI18N LFM="False"/>
@@ -30,7 +29,7 @@
     </RunParams>
     <RequiredPackages Count="2">
       <Item1>
-        <PackageName Value=" GLSceneLCL_RunTime"/>
+        <PackageName Value="GLScene_RunTime"/>
       </Item1>
       <Item2>
         <PackageName Value="LCL"/>
@@ -41,8 +40,6 @@
         <Filename Value="Fading.lpr"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="3"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
         <CursorPos X="19" Y="8"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
@@ -54,11 +51,8 @@
         <ComponentName Value="Form1"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="Unit1"/>
         <IsVisibleTab Value="True"/>
-        <EditorIndex Value="0"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="55"/>
+        <TopLine Value="78"/>
         <CursorPos X="50" Y="57"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
@@ -67,10 +61,7 @@
       </Unit1>
       <Unit2>
         <Filename Value="..\..\..\..\Source\GLCrossPlatform.pas"/>
-        <UnitName Value="GLCrossPlatform"/>
         <EditorIndex Value="2"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
         <CursorPos X="77" Y="67"/>
         <UsageCount Value="10"/>
         <Loaded Value="True"/>
@@ -78,9 +69,7 @@
       </Unit2>
       <Unit3>
         <Filename Value="..\..\..\..\Source\GLScreen.pas"/>
-        <UnitName Value="GLScreen"/>
         <EditorIndex Value="1"/>
-        <WindowIndex Value="0"/>
         <TopLine Value="72"/>
         <CursorPos X="25" Y="104"/>
         <UsageCount Value="10"/>
@@ -91,7 +80,7 @@
     <JumpHistory Count="7" HistoryIndex="6">
       <Position1>
         <Filename Value="Unit1.pas"/>
-        <Caret Line="29" Column="3" TopLine="1"/>
+        <Caret Line="29" Column="3"/>
       </Position1>
       <Position2>
         <Filename Value="Unit1.pas"/>
@@ -103,7 +92,6 @@
       </Position3>
       <Position4>
         <Filename Value="..\..\..\..\Source\GLCrossPlatform.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
       </Position4>
       <Position5>
         <Filename Value="Unit1.pas"/>
@@ -115,7 +103,7 @@
       </Position6>
       <Position7>
         <Filename Value="..\..\..\..\Source\GLScreen.pas"/>
-        <Caret Line="29" Column="46" TopLine="1"/>
+        <Caret Line="29" Column="46"/>
       </Position7>
     </JumpHistory>
   </ProjectOptions>
@@ -145,12 +133,6 @@
         </Win32>
       </Options>
     </Linking>
-    <Other>
-      <CompilerMessages>
-        <UseMsgFile Value="True"/>
-      </CompilerMessages>
-      <CompilerPath Value="$(CompPath)"/>
-    </Other>
   </CompilerOptions>
   <Debugging>
     <Exceptions Count="3">

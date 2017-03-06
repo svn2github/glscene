@@ -11,12 +11,12 @@ object Form1: TForm1
   Font.Height = -11
   Font.Name = 'Arial'
   OnCreate = FormCreate
-  LCLVersion = '0.9.31'
+  LCLVersion = '1.6.2.0'
   object Label1: TLabel
-    Left = 448
-    Height = 16
+    Left = 449
+    Height = 15
     Top = 8
-    Width = 76
+    Width = 75
     Anchors = [akTop, akRight]
     Caption = 'Culling Mode:'
     Font.Color = clWindowText
@@ -27,10 +27,10 @@ object Form1: TForm1
     ParentFont = False
   end
   object Label2: TLabel
-    Left = 466
-    Height = 16
+    Left = 467
+    Height = 15
     Top = 120
-    Width = 48
+    Width = 47
     Anchors = [akTop, akRight]
     Caption = 'Objects:'
     Font.Color = clWindowText
@@ -205,6 +205,9 @@ object Form1: TForm1
       item
         Name = 'ActorTexture'
         Tag = 0
+        Material.Texture.MagFilter = maNearest
+        Material.Texture.MinFilter = miNearest
+        Material.Texture.Compression = tcNone
         Material.Texture.Disabled = False
       end>
     left = 144

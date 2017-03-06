@@ -7,7 +7,6 @@
       <MainUnit Value="0"/>
       <ResourceType Value="res"/>
       <UseXPManifest Value="True"/>
-      <ActiveWindowIndexAtStart Value="-1"/>
     </General>
     <VersionInfo>
       <Language Value=""/>
@@ -29,16 +28,13 @@
         <LaunchingApplication PathPlusParams="\usr\X11R6\bin\xterm -T 'Lazarus Run Output' -e $(LazarusDir)\tools\runwait.sh $(TargetCmdLine)"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="1">
+    <RequiredPackages Count="2">
       <Item1>
-        <PackageName Value="GLSceneLCL_DesignTime"/>
+        <PackageName Value="GLScene_RunTime"/>
       </Item1>
-      <Item1>
-        <PackageName Value="GLSceneLCL_RunTime"/>
-      </Item1>
-      <Item1>
+      <Item2>
         <PackageName Value="LCL"/>
-      </Item1>
+      </Item2>
     </RequiredPackages>
     <Units Count="5">
       <Unit0>
@@ -57,8 +53,10 @@
         <ComponentName Value="Form1"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <EditorIndex Value="-1"/>
+        <IsVisibleTab Value="True"/>
         <UsageCount Value="20"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit1>
       <Unit2>
@@ -83,8 +81,8 @@
       </Unit3>
       <Unit4>
         <Filename Value="..\..\..\..\Source\FXCollectionEditorLCL.pas"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
         <TopLine Value="81"/>
         <CursorPos X="45" Y="90"/>
         <UsageCount Value="10"/>

@@ -68,7 +68,7 @@ var
 procedure TForm1.FormCreate(Sender: TObject);
 begin
   SetGLSceneMediaDir();
-  BitmapFont.Glyphs.LoadFromFile('toonfont.bmp');
+  BitmapFont.Glyphs.LoadFromFile(MediaPath+'toonfont.bmp');
 end;
 
 procedure TForm1.GLTimeEventsMGR1Events0Event(event: TTimeEvent);

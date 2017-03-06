@@ -10,7 +10,7 @@ object PostShaderDemoForm: TPostShaderDemoForm
   Font.Name = 'MS Sans Serif'
   OnCreate = FormCreate
   Position = poScreenCenter
-  LCLVersion = '0.9.31'
+  LCLVersion = '1.6.2.0'
   WindowState = wsMaximized
   object Viewer: TGLSceneViewer
     Left = 0
@@ -68,9 +68,9 @@ object PostShaderDemoForm: TPostShaderDemoForm
     TabOrder = 2
     object Label1: TLabel
       Left = 16
-      Height = 14
+      Height = 13
       Top = 8
-      Width = 43
+      Width = 42
       Caption = 'Shaders:'
       ParentColor = False
     end
@@ -116,13 +116,13 @@ object PostShaderDemoForm: TPostShaderDemoForm
           0000A0410000A0410000A04100000000
         }
         TurnAngle = 0
-        BottomRadius = 0.10000000149012
+        BottomRadius = 0.100000001490116
         Height = 1
-        TopRadius = 0.10000000149012
+        TopRadius = 0.100000001490116
         TopArrowHeadHeight = 0.5
-        TopArrowHeadRadius = 0.20000000298023
+        TopArrowHeadRadius = 0.200000002980232
         BottomArrowHeadHeight = 0.5
-        BottomArrowHeadRadius = 0.20000000298023
+        BottomArrowHeadRadius = 0.200000002980232
       end
       object GLXYZGrid1: TGLXYZGrid
         TagFloat = 0
@@ -139,17 +139,17 @@ object PostShaderDemoForm: TPostShaderDemoForm
           00000000000000000000803F00000000
         }
         XSamplingScale.Min = -200
-        XSamplingScale.max = 200
+        XSamplingScale.Max = 200
         XSamplingScale.Origin = 0
-        XSamplingScale.step = 20
+        XSamplingScale.Step = 20
         YSamplingScale.Min = -200
-        YSamplingScale.max = 200
+        YSamplingScale.Max = 200
         YSamplingScale.Origin = 0
-        YSamplingScale.step = 20
+        YSamplingScale.Step = 20
         ZSamplingScale.Min = -200
-        ZSamplingScale.max = 200
+        ZSamplingScale.Max = 200
         ZSamplingScale.Origin = 0
-        ZSamplingScale.step = 20
+        ZSamplingScale.Step = 20
         Parts = [gpX, gpZ]
       end
     end
@@ -306,7 +306,10 @@ object PostShaderDemoForm: TPostShaderDemoForm
           8988083E8180003E8988083E0000803F
         }
         Material.BlendingMode = bmTransparency
+        Material.Texture.MagFilter = maNearest
+        Material.Texture.MinFilter = miNearest
         Material.Texture.TextureMode = tmModulate
+        Material.Texture.Compression = tcNone
         Material.Texture.Disabled = False
       end    
       item
@@ -322,7 +325,10 @@ object PostShaderDemoForm: TPostShaderDemoForm
           8180003E8180003EE1E0E03D0000803F
         }
         Material.BlendingMode = bmTransparency
+        Material.Texture.MagFilter = maNearest
+        Material.Texture.MinFilter = miNearest
         Material.Texture.TextureMode = tmModulate
+        Material.Texture.Compression = tcNone
         Material.Texture.Disabled = False
       end    
       item

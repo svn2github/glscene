@@ -21,9 +21,12 @@ interface
 
 uses
   Forms, GLScene, GLObjects, Classes, Controls, GLTeapot,
-  GLLCLViewer, GLCrossPlatform, GLCoordinates, GLBaseClasses;
+  GLLCLViewer, GLCrossPlatform, GLCoordinates, GLBaseClasses, Types;
 
 type
+
+  { TForm1 }
+
   TForm1 = class(TForm)
     GLScene1: TGLScene;
     GLSceneViewer1: TGLSceneViewer;
@@ -121,4 +124,4 @@ begin
 end;
 
 end.
-
+

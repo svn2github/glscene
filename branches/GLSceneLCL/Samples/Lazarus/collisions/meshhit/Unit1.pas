@@ -57,7 +57,7 @@ procedure TForm1.FormCreate(Sender: TObject);
 begin
    SetGLSceneMediaDir();
    // Load mushroom mesh
-   FreeForm1.LoadFromFile('mushroom.3ds');
+   FreeForm1.LoadFromFile(MediaPath+'mushroom.3ds');
 end;
 
 // Perform the raycasting for the perspective camera & viewer

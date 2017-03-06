@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectOptions>
     <Version Value="9"/>
@@ -6,7 +6,6 @@
     <General>
       <MainUnit Value="0"/>
       <UseXPManifest Value="True"/>
-      <ActiveWindowIndexAtStart Value="0"/>
     </General>
     <i18n>
       <EnableI18N LFM="False"/>
@@ -30,7 +29,7 @@
     </RunParams>
     <RequiredPackages Count="2">
       <Item1>
-        <PackageName Value=" GLSceneLCL_RunTime"/>
+        <PackageName Value="GLScene_RunTime"/>
       </Item1>
       <Item2>
         <PackageName Value="LCL"/>
@@ -41,8 +40,6 @@
         <Filename Value="GLMenuDemo.lpr"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="2"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
         <CursorPos X="19" Y="8"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
@@ -54,12 +51,9 @@
         <ComponentName Value="Form1"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="UnitM"/>
         <IsVisibleTab Value="True"/>
-        <EditorIndex Value="0"/>
-        <WindowIndex Value="0"/>
         <TopLine Value="57"/>
-        <CursorPos X="22" Y="67"/>
+        <CursorPos X="92" Y="69"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -67,11 +61,9 @@
       </Unit1>
       <Unit2>
         <Filename Value="..\..\..\..\Source\GLTexture.pas"/>
-        <UnitName Value="GLTexture"/>
         <EditorIndex Value="1"/>
-        <WindowIndex Value="0"/>
         <TopLine Value="1875"/>
-        <CursorPos X="1" Y="1895"/>
+        <CursorPos Y="1895"/>
         <UsageCount Value="10"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
@@ -80,11 +72,11 @@
     <JumpHistory Count="2" HistoryIndex="1">
       <Position1>
         <Filename Value="UnitM.pas"/>
-        <Caret Line="17" Column="3" TopLine="1"/>
+        <Caret Line="17" Column="3"/>
       </Position1>
       <Position2>
         <Filename Value="UnitM.pas"/>
-        <Caret Line="141" Column="1" TopLine="102"/>
+        <Caret Line="141" TopLine="102"/>
       </Position2>
     </JumpHistory>
   </ProjectOptions>
@@ -114,12 +106,6 @@
         </Win32>
       </Options>
     </Linking>
-    <Other>
-      <CompilerMessages>
-        <UseMsgFile Value="True"/>
-      </CompilerMessages>
-      <CompilerPath Value="$(CompPath)"/>
-    </Other>
   </CompilerOptions>
   <Debugging>
     <Exceptions Count="3">

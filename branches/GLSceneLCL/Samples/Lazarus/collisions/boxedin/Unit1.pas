@@ -68,7 +68,7 @@ uses GLFile3DS, GLUtils, LCLType;
 procedure TForm1.FormCreate(Sender: TObject);
 begin
   SetGLSceneMediaDir();
-  FreeForm1.LoadFromFile('BoxedIn.3ds');
+  FreeForm1.LoadFromFile(MediaPath+'BoxedIn.3ds');
 
   FreeForm1.BuildOctree;
   Label1.Caption := 'Octree Nodes    : ' + IntToStr(FreeForm1.Octree.NodeCount);

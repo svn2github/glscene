@@ -223,7 +223,6 @@ interface
 uses
   Classes, SysUtils,
 
-   cene
   GLStrings, GLCrossPlatform, GLBaseClasses, OpenGLTokens,
   GLVectorGeometry, GLGraphics, GLContext, GLState, GLColor, GLCoordinates,
   GLRenderContextInfo, GLTextureFormat, GLApplicationFileIO, GLUtils;
@@ -3431,8 +3430,7 @@ begin
         FTextureHandle.NotifyDataUpdated;
         // Check supporting
         target := DecodeGLTextureTarget(Image.NativeTextureTarget);
-        if not IsTargetSupported(target)
-          or not IsFormatSupported(TextureFormatEx) then
+        if not IsTargetSupported(target) or not IsFormatSupported(TextureFormatEx) then
         begin
           SetTextureErrorImage;
           target := GL_TEXTURE_2D;

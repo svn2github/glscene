@@ -5,7 +5,7 @@ uses
   cthreads,
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, Unit1;
+  Forms, GLScene_RunTime, Unit1;
 
 begin
   Application.Title:='DynamicTextureDemo';

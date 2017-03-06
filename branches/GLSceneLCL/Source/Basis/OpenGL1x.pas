@@ -104,7 +104,7 @@ interface
  // DaStr: MULTITHREADOPENGL is defined in GLScene.inc, but you can override it
  // manually here, though I would not reccomend it. This is because other units
  // may depend on this option too. So if you need this option, please use the
-  _MULTITHREAD define in GLScene.inc.
+ // _MULTITHREAD define in GLScene.inc.
 {.$define MULTITHREADOPENGL}
 
 uses

@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectOptions>
     <Version Value="9"/>
@@ -6,7 +6,6 @@
     <General>
       <MainUnit Value="0"/>
       <UseXPManifest Value="True"/>
-      <ActiveWindowIndexAtStart Value="0"/>
     </General>
     <i18n>
       <EnableI18N LFM="False"/>
@@ -30,19 +29,17 @@
     </RunParams>
     <RequiredPackages Count="2">
       <Item1>
-        <PackageName Value=" GLSceneLCL_RunTime"/>
+        <PackageName Value="GLScene_RunTime"/>
       </Item1>
       <Item2>
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="3">
+    <Units Count="4">
       <Unit0>
         <Filename Value="cursor.lpr"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="1"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
+        <EditorIndex Value="2"/>
         <CursorPos X="19" Y="8"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
@@ -54,12 +51,9 @@
         <ComponentName Value="Form1"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="Unit1"/>
         <IsVisibleTab Value="True"/>
-        <EditorIndex Value="0"/>
-        <WindowIndex Value="0"/>
         <TopLine Value="75"/>
-        <CursorPos X="40" Y="108"/>
+        <CursorPos X="51" Y="89"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -67,18 +61,25 @@
       </Unit1>
       <Unit2>
         <Filename Value="..\..\..\Source\GLTexture.pas"/>
-        <UnitName Value="GLTexture"/>
-        <WindowIndex Value="0"/>
         <TopLine Value="1806"/>
-        <CursorPos X="1" Y="1825"/>
+        <CursorPos Y="1825"/>
         <UsageCount Value="10"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit2>
+      <Unit3>
+        <Filename Value="..\..\..\..\Source\GLTexture.pas"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="1551"/>
+        <CursorPos Y="1567"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit3>
     </Units>
-    <JumpHistory Count="3" HistoryIndex="2">
+    <JumpHistory Count="4" HistoryIndex="3">
       <Position1>
         <Filename Value="Unit1.pas"/>
-        <Caret Line="26" Column="3" TopLine="1"/>
+        <Caret Line="26" Column="3"/>
       </Position1>
       <Position2>
         <Filename Value="Unit1.pas"/>
@@ -88,6 +89,10 @@
         <Filename Value="Unit1.pas"/>
         <Caret Line="29" Column="50" TopLine="17"/>
       </Position3>
+      <Position4>
+        <Filename Value="Unit1.pas"/>
+        <Caret Line="89" Column="51" TopLine="75"/>
+      </Position4>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
@@ -116,12 +121,6 @@
         </Win32>
       </Options>
     </Linking>
-    <Other>
-      <CompilerMessages>
-        <UseMsgFile Value="True"/>
-      </CompilerMessages>
-      <CompilerPath Value="$(CompPath)"/>
-    </Other>
   </CompilerOptions>
   <Debugging>
     <Exceptions Count="3">

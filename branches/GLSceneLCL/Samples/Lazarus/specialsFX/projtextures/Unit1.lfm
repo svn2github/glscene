@@ -12,7 +12,7 @@ object Form1: TForm1
   Font.Name = 'MS Sans Serif'
   OnCreate = FormCreate
   OnKeyDown = FormKeyDown
-  LCLVersion = '0.9.31'
+  LCLVersion = '1.6.2.0'
   object viewer: TGLSceneViewer
     Left = 0
     Height = 488
@@ -63,7 +63,7 @@ object Form1: TForm1
           }
           RollAngle = 0
           TurnAngle = 0
-          CubeSize = 0.20000000298023
+          CubeSize = 0.200000002980232
           EdgeColor.Color = {
             000000000000803F000000000000803F
           }
@@ -78,7 +78,7 @@ object Form1: TForm1
             PitchAngle = 0
             RollAngle = 0
             TurnAngle = 0
-            Radius = 0.05000000074506
+            Radius = 0.0500000007450581
             Slices = 4
             Stacks = 4
           end
@@ -99,7 +99,7 @@ object Form1: TForm1
           }
           RollAngle = 0
           TurnAngle = 0
-          CubeSize = 0.20000000298023
+          CubeSize = 0.200000002980232
           EdgeColor.Color = {
             0000803F0000803F000000000000803F
           }
@@ -125,7 +125,7 @@ object Form1: TForm1
             PitchAngle = 0
             RollAngle = 0
             TurnAngle = 0
-            Radius = 0.05000000074506
+            Radius = 0.0500000007450581
             Slices = 4
             Stacks = 4
           end
@@ -156,7 +156,11 @@ object Form1: TForm1
             FFFEFE3EFFFEFE3EFFFEFE3E0000803F
           }
           Material.MaterialOptions = [moNoLighting]
+          Material.Texture.ImageClassName = 'TGLPicFileImage'
+          Material.Texture.MagFilter = maNearest
+          Material.Texture.MinFilter = miNearest
           Material.Texture.TextureMode = tmModulate
+          Material.Texture.Compression = tcNone
           Material.Texture.Disabled = False
           PitchAngle = 0
           Position.Coordinates = {
@@ -171,6 +175,10 @@ object Form1: TForm1
         end
         object GLPlane2: TGLPlane
           TagFloat = 0
+          Material.Texture.ImageClassName = 'TGLPicFileImage'
+          Material.Texture.MagFilter = maNearest
+          Material.Texture.MinFilter = miNearest
+          Material.Texture.Compression = tcNone
           Material.Texture.Disabled = False
           Direction.Coordinates = {
             0000803F000000000000000000000000
@@ -192,7 +200,11 @@ object Form1: TForm1
             FFFEFE3EFFFEFE3EFFFEFE3E0000803F
           }
           Material.MaterialOptions = [moNoLighting]
+          Material.Texture.ImageClassName = 'TGLPicFileImage'
+          Material.Texture.MagFilter = maNearest
+          Material.Texture.MinFilter = miNearest
           Material.Texture.TextureMode = tmModulate
+          Material.Texture.Compression = tcNone
           Material.Texture.Disabled = False
           Direction.Coordinates = {
             000000000000803F0000000000000000
@@ -216,13 +228,20 @@ object Form1: TForm1
           Material.FrontProperties.Diffuse.Color = {
             CDCC4C3FCDCC4C3FE1E0E03D0000803F
           }
+          Material.Texture.ImageClassName = 'TGLBlankImage'
+          Material.Texture.Image.Width = 64
+          Material.Texture.Image.Height = 64
+          Material.Texture.Image.ColorFormat = 6408
+          Material.Texture.MagFilter = maNearest
+          Material.Texture.MinFilter = miNearest
+          Material.Texture.Compression = tcNone
           PitchAngle = 0
           Position.Coordinates = {
             CDCC4C3E0000003F0000003F0000803F
           }
           RollAngle = 0
           TurnAngle = 0
-          Radius = 0.30000001192093
+          Radius = 0.300000011920929
         end
       end
     end

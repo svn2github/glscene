@@ -349,7 +349,7 @@ end;
 
 initialization
 
-  {$i FXCollectionEditorLCL.lrs}
+  {$i FXCollectionEditor.lrs}
 
 finalization
   ReleaseXCollectionEditor;

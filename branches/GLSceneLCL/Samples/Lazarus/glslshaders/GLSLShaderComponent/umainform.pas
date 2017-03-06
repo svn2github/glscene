@@ -99,8 +99,7 @@ begin
   Sphere_little.Scale.Scale(4);
 
   // Then load textures.
-  MaterialLibrary.LibMaterialByName('Earth').Material.Texture.Image.LoadFromFile(
-    'Earth.jpg');
+//  MaterialLibrary.LibMaterialByName('Earth').Material.Texture.Image.LoadFromFile( 'Earth.jpg');
 
   // Shader.
   GLSLShader.Enabled := True;

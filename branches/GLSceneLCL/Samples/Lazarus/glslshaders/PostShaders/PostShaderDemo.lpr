@@ -8,7 +8,7 @@ uses
   {$IFDEF UNIX}{$IFDEF UseCThreads}
   cthreads,
   {$ENDIF}{$ENDIF}
-  Forms, Interfaces, umainform in 'umainform.pas';
+  Forms, GLScene_RunTime, Interfaces, umainform in 'umainform.pas';
 
 {$R *.res}
 

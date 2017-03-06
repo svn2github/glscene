@@ -912,11 +912,11 @@ begin
     GL.Vertex3f(CollisionState.Contact.intPoint.V[0],
       CollisionState.Contact.intPoint.V[1], CollisionState.Contact.intPoint.V[2]);
     GL.Vertex3f(CollisionState.Contact.intPoint.V[0] +
-      CollisionState.Contact.intNormal.V[0],  phere4.Radius,
+      CollisionState.Contact.intNormal.V[0], // sphere4.Radius,
       CollisionState.Contact.intPoint.V[1] + CollisionState.Contact.intNormal.V[1],
-       phere4.Radius,
+      // sphere4.Radius,
       CollisionState.Contact.intPoint.V[2] + CollisionState.Contact.intNormal.V[2]);
-     phere4.Radius);
+    // sphere4.Radius);
   end;
   GL.End_();
 end;

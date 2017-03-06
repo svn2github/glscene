@@ -74,7 +74,7 @@ var
 begin
   SetGLSceneMediaDir();
   // collect JPeg textures from the demos' media directory
-  i := FindFirst('*.jpg', faAnyFile, sr);
+  i := FindFirst(MediaPath+'*.jpg', faAnyFile, sr);
   while i = 0 do
   begin
     CBImage.Items.Add(sr.Name);

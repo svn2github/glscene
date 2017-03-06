@@ -2,22 +2,20 @@
   This source is only used to compile and install the package.
  }
 
-unit GLScene_WinOnly; 
+unit GLScene_WinOnly;
 
 interface
 
 uses
-    GLJoystick, GLScreenSaver, GLSMWaveOut, GLAVIRecorder, 
-  GLSceneRegisterWinOnlyLCL, GLSVfw, GLSpaceText, LazarusPackageIntf;
+  GLJoystick, GLScreenSaver, GLSMWaveOut, GLAVIRecorder, GLSVfw, GLSpaceText, 
+  LazarusPackageIntf;
 
 implementation
 
-procedure Register; 
+procedure Register;
 begin
-  RegisterUnit('GLSceneRegisterWinOnly', @GLSceneRegisterWinOnly.Register
-    ); 
-end; 
+end;
 
 initialization
-  RegisterPackage('GLScene_WinOnly', @Register); 
+  RegisterPackage('GLScene_WinOnly', @Register);
 end.

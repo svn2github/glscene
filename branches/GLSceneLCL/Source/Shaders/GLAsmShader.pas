@@ -31,7 +31,6 @@ uses
   // VCL
   Classes, SysUtils,
 
-   cene
   GLVectorGeometry, GLVectorTypes, GLTexture, OpenGLTokens, GLContext,
   GLCustomShader, GLRenderContextInfo;
 

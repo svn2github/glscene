@@ -74,7 +74,6 @@ uses
   // Standard
   {$IFDEF MSWINDOWS}Windows,{$ENDIF} Classes, SysUtils,
 
-   cene
   OpenGL1x, GLScene, GLColor, GLObjects, GLVectorGeometry, GLMaterial, GLStrings,
   GLGeomObjects, GLBitmapFont, GLViewer, GLVectorFileObjects, GLCrossPlatform,
   GLCoordinates, GLRenderContextInfo, GLGeometryBB, GLVectorTypes, GLCanvas,

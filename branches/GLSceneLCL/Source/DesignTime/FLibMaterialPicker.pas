@@ -241,7 +241,7 @@ end;
 
 initialization
 
-  {$I FLibMaterialPickerLCL.lrs}
+  {$I FLibMaterialPicker.lrs}
 
 finalization
   ReleaseLibMaterialPicker;

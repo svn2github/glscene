@@ -1,7 +1,7 @@
 object Form1: TForm1
-  Left = 198
+  Left = 579
   Height = 302
-  Top = 107
+  Top = 377
   Width = 344
   Caption = 'Form1'
   ClientHeight = 302
@@ -9,7 +9,8 @@ object Form1: TForm1
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
   OnCreate = FormCreate
-  LCLVersion = '0.9.29'
+  OnShow = FormShow
+  LCLVersion = '1.6.2.0'
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Height = 302
@@ -23,11 +24,11 @@ object Form1: TForm1
   end
   object GLScene1: TGLScene
     ObjectsSorting = osNone
-    left = 8
+    left = 32
     top = 8
     object DummyCube1: TGLDummyCube
       TagFloat = 0
-      ObjectsSorting = osRenderBlendedLast
+      ObjectsSorting = osRenderFarthestFirst
       PitchAngle = 0
       RollAngle = 0
       TurnAngle = 0
@@ -55,19 +56,22 @@ object Form1: TForm1
       }
     end
   end
-  object Timer1: TTimer
-    Interval = 4000
-    OnTimer = Timer1Timer
-    left = 8
-    top = 40
-  end
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
+    Enabled = False
     MaxDeltaTime = 0
     MinDeltaTime = 0
     FixedDeltaTime = 0
     OnProgress = GLCadencer1Progress
-    left = 8
+    left = 35
     top = 72
   end
-end
+  object GLAsyncTimer1: TGLAsyncTimer
+    Enabled = True
+    Interval = 1
+    OnTimer = GLAsyncTimer1Timer
+    ThreadPriority = tpNormal
+    left = 35
+    top = 144
+  end
+end

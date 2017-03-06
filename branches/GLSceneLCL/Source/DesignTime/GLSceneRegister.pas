@@ -16,7 +16,7 @@ uses
   Resource,
   Classes, 
   GLObjectManager, 
-  ComponentEditors, 
+  ComponentEditors,
   PropEdits, 
   LCLType,
   LazIDEIntf, 
@@ -170,7 +170,7 @@ uses
   GLFileDDS, GLFileO3TC, GLFileHDR, GLFileBMP, GLFileTGA,
 
   // Property editor forms
-  GLSceneEdit, FVectorEditor, FMaterialEditorForm, FRMaterialPreview,
+  FGLSceneEdit, FVectorEditor, FMaterialEditorForm, FRMaterialPreview,
   FLibMaterialPicker, FRTextureEdit, FRFaceEditor,
   FRColorEditor, FRTrackBarEdit, FShaderUniformEditor, FGUILayoutEditor;
 
@@ -899,7 +899,7 @@ var
   ml: TGLMaterial;
 begin
   ml := TGLMaterial(GetObjectValue);
-  if FMaterialEditorFormLCL.MaterialEditorForm.Execute(ml) then
+  if FMaterialEditorForm.MaterialEditorForm.Execute(ml) then
     Modified;
 end;
 
@@ -1496,7 +1496,7 @@ end;
 
 initialization
 
-{$I GLSceneLCL.lrs}
+{$I ../../resources/GLScene.lrs}
 
   GLColor.vUseDefaultColorSets := True;
   GLCoordinates.vUseDefaultCoordinateSets := True;

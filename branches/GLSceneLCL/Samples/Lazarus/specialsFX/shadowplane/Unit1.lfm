@@ -10,7 +10,7 @@ object Form1: TForm1
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
   OnCreate = FormCreate
-  LCLVersion = '0.9.31'
+  LCLVersion = '1.6.2.0'
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Height = 362
@@ -86,7 +86,7 @@ object Form1: TForm1
         }
         RollAngle = 0
         TurnAngle = 0
-        Radius = 0.20000000298023
+        Radius = 0.200000002980232
       end
       object Torus1: TGLTorus
         TagFloat = 0
@@ -102,8 +102,8 @@ object Form1: TForm1
         Up.Coordinates = {
           00000000441DAF3EB28F70BF00000000
         }
-        MajorRadius = 0.30000001192093
-        MinorRadius = 0.10000000149012
+        MajorRadius = 0.300000011920929
+        MinorRadius = 0.100000001490116
         Rings = 24
         Sides = 12
         StartAngle = 0
@@ -141,7 +141,7 @@ object Form1: TForm1
           PitchAngle = 0
           RollAngle = 0
           TurnAngle = 0
-          Radius = 0.10000000149012
+          Radius = 0.100000001490116
           Slices = 8
           Stacks = 8
         end
@@ -258,7 +258,10 @@ object Form1: TForm1
         Material.FrontProperties.Emission.Color = {
           CDCC4C3ECDCC4C3ECDCC4C3E0000803F
         }
+        Material.Texture.MagFilter = maNearest
+        Material.Texture.MinFilter = miNearest
         Material.Texture.TextureMode = tmModulate
+        Material.Texture.Compression = tcNone
         Material.Texture.Disabled = False
         TextureScale.Coordinates = {
           0000003F0000003F0000803F00000000

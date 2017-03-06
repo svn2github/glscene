@@ -13,7 +13,7 @@ object MainForm: TMainForm
   Font.Name = 'MS Sans Serif'
   OnCreate = FormCreate
   ShowHint = True
-  LCLVersion = '0.9.31'
+  LCLVersion = '1.6.2.0'
   object Label1: TLabel
     Left = 507
     Height = 320
@@ -34,9 +34,9 @@ object MainForm: TMainForm
     TabOrder = 0
     object Label2: TLabel
       Left = 8
-      Height = 14
+      Height = 13
       Top = 10
-      Width = 50
+      Width = 49
       Caption = 'PostEffect'
       ParentColor = False
     end
@@ -79,7 +79,10 @@ object MainForm: TMainForm
     top = 80
     object GLActor1: TGLActor
       TagFloat = 0
+      Material.Texture.MagFilter = maNearest
+      Material.Texture.MinFilter = miNearest
       Material.Texture.TextureMode = tmReplace
+      Material.Texture.Compression = tcNone
       Direction.Coordinates = {
         000000000000803F0000000000000000
       }

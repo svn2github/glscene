@@ -222,7 +222,7 @@ end;
 
 initialization
 
-  {$I FRTextureEditLCL.lrs}
+  {$I FRTextureEdit.lrs}
 
 end.
 

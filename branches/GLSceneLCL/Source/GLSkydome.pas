@@ -47,7 +47,7 @@ interface
 uses
   Classes,
   Graphics,
-   Cene
+
   GLScene,
   GLVectorGeometry,
   GLGraphics,

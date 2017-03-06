@@ -36,7 +36,6 @@ uses
   // VCL
   Classes, SysUtils,
 
-   cene
   GLScene, GLVectorGeometry, GlColor, GLMaterial, GLStrings,
   GLVectorFileObjects, XOpenGL, GLState, GLPersistentClasses,
   {Needed for Delphi 5} GlCrossPlatform, GLCoordinates, GLRenderContextInfo;

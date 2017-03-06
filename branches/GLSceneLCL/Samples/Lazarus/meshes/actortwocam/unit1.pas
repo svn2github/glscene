@@ -92,19 +92,19 @@ begin
    SetGLSceneMediaDir();
 
    // Load mushroom mesh
-   FreeForm1.LoadFromFile('mushroom.3ds');
+   FreeForm1.LoadFromFile(MediaPath+'mushroom.3ds');
 
    // Duplicate our reference mushroom (but not its mesh data !)
    AddMushrooms;
 
    // Load Actor into GLScene
-   Actor1.LoadFromFile('waste.md2');
-   Actor1.Material.Texture.Image.LoadFromFile('waste.jpg');
-   Actor1.Animations.LoadFromFile('Quake2Animations.aaf');
+   Actor1.LoadFromFile(MediaPath+'waste.md2');
+   Actor1.Material.Texture.Image.LoadFromFile(MediaPath+'waste.jpg');
+   Actor1.Animations.LoadFromFile(MediaPath+'Quake2Animations.aaf');
    Actor1.Scale.SetVector(0.04, 0.04, 0.04, 0);
    // Load weapon model and texture
-   Actor2.LoadFromFile('weaponWaste.md2');
-   Actor2.Material.Texture.Image.LoadFromFile('weaponWaste.jpg');
+   Actor2.LoadFromFile(MediaPath+'weaponWaste.md2');
+   Actor2.Material.Texture.Image.LoadFromFile(MediaPath+'weaponWaste.jpg');
    Actor2.Animations.Assign(Actor1.Animations);
 
    // Define animation properties
@@ -114,7 +114,7 @@ begin
    Actor2.Synchronize(Actor1);
 
    // Load Texture for ground disk
-   Disk1.Material.Texture.Image.LoadFromFile('clover.jpg');
+   Disk1.Material.Texture.Image.LoadFromFile(MediaPath+'clover.jpg');
 end;
 
 procedure TForm1.CBMouseLookClick(Sender: TObject);

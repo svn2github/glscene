@@ -51,7 +51,6 @@ uses
   // System
   SysUtils, Classes,
   Graphics,
-   cene
   GLTexture, GLMaterial, GLScene, GLVectorGeometry, GLVectorTypes,
   GLParticleFX, GLCrossPlatform, GLCoordinates;
 

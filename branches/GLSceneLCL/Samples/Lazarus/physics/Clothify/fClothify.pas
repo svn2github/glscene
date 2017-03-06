@@ -123,9 +123,10 @@ implementation
 
 {$R *.lfm}
 
+uses glutils;
 procedure TfrmClothify.FormCreate(Sender: TObject);
 begin
-  SetCurrentDir('..\..\Media\');
+  SetGLSceneMediaDir();
 
   ComboBox_MeshName.ItemIndex:=0;
   ComboBox_ConstraintType.ItemIndex:=0;

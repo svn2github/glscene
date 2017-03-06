@@ -47,30 +47,33 @@
 }
 unit Unit1;
 
-{$MODE Delphi}
+{.$MODE Delphi}
 
 interface
 
 uses
-  SysUtils, Classes, Graphics, Controls, Forms,
-  GLScene, GLObjects, GLVectorGeometry, ExtCtrls, GLTexture, GLCadencer,
-  GLLCLViewer, GLCrossPlatform, GLColor, GLCoordinates, GLBaseClasses;
+  SysUtils, Classes, Graphics, Controls, Forms, ExtCtrls,Dialogs,
+  GLScene, GLObjects, GLVectorGeometry,  GLTexture,
+  GLCadencer, GLCrossPlatform, GLColor, GLLCLViewer, GLCoordinates;
 
 type
+
+  { TForm1 }
+
   TForm1 = class(TForm)
     GLSceneViewer1: TGLSceneViewer;
     GLScene1: TGLScene;
     GLCamera1: TGLCamera;
     DummyCube1: TGLDummyCube;
     GLLightSource1: TGLLightSource;
-    Timer1: TTimer;
     GLCadencer1: TGLCadencer;
+    Timer1: TTimer;
     procedure FormCreate(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
-    procedure GLCadencer1Progress(Sender: TObject;
-      const deltaTime, newTime: double);
+    procedure GLCadencer1Progress(Sender: TObject; const deltaTime, newTime: double);
   private
     { Déclarations privées }
+    UpdateFPS:Boolean;
   public
     { Déclarations publiques }
   end;
@@ -109,23 +112,30 @@ begin
 
           // uncomment following lines to stress OpenGL with more color changes calls
 
-          //         Ambient.Color:=VectorLerp(clrYellow, clrRed, (x*x+y*y+z*z)/(cSize*cSize*3));
-          //         Emission.Color:=VectorLerp(clrYellow, clrRed, (x*x+y*y+z*z)/(cSize*cSize*3));
-          //         Specular.Color:=VectorLerp(clrYellow, clrRed, (x*x+y*y+z*z)/(cSize*cSize*3));
+         //          Ambient.Color:=VectorLerp(clrYellow, clrRed, (x*x+y*y+z*z)/(cSize*cSize*3));
+         //          Emission.Color:=VectorLerp(clrYellow, clrRed, (x*x+y*y+z*z)/(cSize*cSize*3));
+         //          Specular.Color:=VectorLerp(clrYellow, clrRed, (x*x+y*y+z*z)/(cSize*cSize*3));
         end;
       end;
+  UpdateFPS:=false;
+ // GLCadencer1.Enabled:=true;
 end;
 
 procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime, newTime: double);
 begin
   DummyCube1.TurnAngle := 90 * newTime; // 90° per second
+  //Work here
+  if UpdateFPS then
+  begin
+    Caption := Format('%.2f FPS', [GLSceneViewer1.FramesPerSecond]);
+    GLSceneViewer1.ResetPerformanceMonitor;
+  end;
 end;
 
 procedure TForm1.Timer1Timer(Sender: TObject);
 begin
-  Caption := Format('%.2f FPS', [GLSceneViewer1.FramesPerSecond]);
-  GLSceneViewer1.ResetPerformanceMonitor;
+  UpdateFPS := not(UpdateFPS);
 end;
 
 end.
-
+

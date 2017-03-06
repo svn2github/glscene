@@ -9,20 +9,20 @@ object Form1: TForm1
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
   OnCreate = FormCreate
-  LCLVersion = '0.9.31'
+  LCLVersion = '1.6.2.0'
   object Label1: TLabel
     Left = 8
-    Height = 14
+    Height = 13
     Top = 8
-    Width = 79
+    Width = 78
     Caption = 'Orthogonal View'
     ParentColor = False
   end
   object Label2: TLabel
     Left = 280
-    Height = 14
+    Height = 13
     Top = 8
-    Width = 83
+    Width = 82
     Caption = 'Perspective View'
     ParentColor = False
   end
@@ -102,7 +102,7 @@ object Form1: TForm1
       Up.Coordinates = {
         E9DC72BF000000009BE8A13E00000000
       }
-      Radius = 0.30000001192093
+      Radius = 0.300000011920929
       Slices = 6
       Stacks = 6
       object ArrowLine1: TGLArrowLine
@@ -120,13 +120,13 @@ object Form1: TForm1
         }
         RollAngle = 0
         TurnAngle = 0
-        BottomRadius = 0.05000000074506
+        BottomRadius = 0.0500000007450581
         Height = 1
-        TopRadius = 0.10000000149012
+        TopRadius = 0.100000001490116
         TopArrowHeadHeight = 0.5
-        TopArrowHeadRadius = 0.20000000298023
+        TopArrowHeadRadius = 0.200000002980232
         BottomArrowHeadHeight = 0.5
-        BottomArrowHeadRadius = 0.20000000298023
+        BottomArrowHeadRadius = 0.200000002980232
       end
     end
     object GLCamera1: TGLCamera

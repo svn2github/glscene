@@ -45,8 +45,8 @@ uses
   SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   GLScene, GLTerrainRenderer, GLObjects, GLHeightData, GLColor,
   ExtCtrls, GLCadencer, StdCtrls, GLTexture, GLHUDObjects, GLBitmapFont,
-  GLSkydome, GLLCLViewer, GLSound, GLSMBASS, GLVectorGeometry, GLLensFlare,
-  GLCrossPlatform, GLMaterial, GLCoordinates, GLBaseClasses, GLState, GLFileMP3;
+  GLSkydome, GLLCLViewer, GLVectorGeometry, GLLensFlare,
+  GLCrossPlatform, GLMaterial, GLCoordinates, GLBaseClasses, GLState;
 
 type
   TForm1 = class(TForm)
@@ -65,9 +65,9 @@ type
     SPMoon: TGLSprite;
     SPSun: TGLSprite;
     DCSound: TGLDummyCube;
-    GLSMBASS1: TGLSMBASS;
+    //GLSMBASS1: TGLSMBASS;
     TISound: TTimer;
-    GLSoundLibrary: TGLSoundLibrary;
+    //GLSoundLibrary: TGLSoundLibrary;
     GLLensFlare: TGLLensFlare;
     GLDummyCube1: TGLDummyCube;
     InitialRenderPoint: TGLRenderPoint;
@@ -80,7 +80,7 @@ type
       newTime: Double);
     procedure FormCreate(Sender: TObject);
     procedure FormKeyPress(Sender: TObject; var Key: Char);
-    procedure TISoundTimer(Sender: TObject);
+    //procedure TISoundTimer(Sender: TObject);
   private
     { Déclarations privées }
   public
@@ -107,21 +107,21 @@ begin
    // take into account all the data required/allocated by the renderer
    GLBitmapHDS1.MaxPoolSize:=8*1024*1024;
    // specify height map data
-   GLBitmapHDS1.Picture.LoadFromFile('terrain.bmp');
+   GLBitmapHDS1.Picture.LoadFromFile(MediaPath+'terrain.bmp');
    // load the texture maps
-   GLMaterialLibrary1.Materials[0].Material.Texture.Image.LoadFromFile('snow512.jpg');
-   GLMaterialLibrary1.Materials[1].Material.Texture.Image.LoadFromFile('detailmap.jpg');
-   SPMoon.Material.Texture.Image.LoadFromFile('moon.bmp');
-   SPSun.Material.Texture.Image.LoadFromFile('flare1.bmp');
+   GLMaterialLibrary1.Materials[0].Material.Texture.Image.LoadFromFile(MediaPath+'snow512.jpg');
+   GLMaterialLibrary1.Materials[1].Material.Texture.Image.LoadFromFile(MediaPath+'detailmap.jpg');
+   SPMoon.Material.Texture.Image.LoadFromFile(MediaPath+'moon.bmp');
+   SPSun.Material.Texture.Image.LoadFromFile(MediaPath+'flare1.bmp');
    // apply texture map scale (our heightmap size is 256)
    TerrainRenderer1.TilesPerTexture:=256/TerrainRenderer1.TileSize;
    // load Bitmap Font
-   BitmapFont1.Glyphs.LoadFromFile('darkgold_font.bmp');
+   BitmapFont1.Glyphs.LoadFromFile(MediaPath+'darkgold_font.bmp');
    // load and setup sound samples
-   with GLSoundLibrary.Samples do begin
-      Add.LoadFromFile('ChillyWind.mp3');
-      Add.LoadFromFile('howl.mp3');
-   end;
+ (*  with GLSoundLibrary.Samples do begin
+      Add.LoadFromFile(MediaPath+'ChillyWind.mp3');
+      Add.LoadFromFile(MediaPath+'howl.mp3');
+   end;    *)
    // Could've been done at design time, but then it hurts the eyes ;)
    GLSceneViewer1.Buffer.BackgroundColor:=clWhite;
    // Move camera starting point to an interesting hand-picked location
@@ -264,7 +264,8 @@ begin
    Key:=#0;
 end;
 
-procedure TForm1.TISoundTimer(Sender: TObject);
+
+(* procedure TForm1.TISoundTimer(Sender: TObject);
 var
    wolfPos : TVector;
    c, s : Single;
@@ -297,7 +298,7 @@ begin
    TISound.Enabled:=False;
    TISound.Interval:=10000+Random(10000);
    TISound.Enabled:=True;
-end;
+end; *)
 
 // Test Code for InterpolatedHeight, use as a Button1's click event
 {

@@ -68,9 +68,9 @@ var
 begin
   SetGLSceneMediaDir();
 
-  MasterActor.LoadFromFile('TRINITYrage.smd');
-  MasterActor.AddDataFromFile('run.smd');
-  MasterActor.AddDataFromFile('jump.smd');
+  MasterActor.LoadFromFile(MediaPath+'TRINITYrage.smd');
+  MasterActor.AddDataFromFile(MediaPath+'run.smd');
+  MasterActor.AddDataFromFile(MediaPath+'jump.smd');
 
   MasterActor.Animations.Items[0].Name := 'still';
   MasterActor.Animations.Items[1].Name := 'walk';

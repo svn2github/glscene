@@ -71,7 +71,7 @@ uses
 procedure TForm1.FormCreate(Sender: TObject);
 begin
    SetGLSceneMediaDir();
-   GLMaterialLibrary.Materials[0].Material.Texture.Image.LoadFromFile('beigemarble.jpg');
+   GLMaterialLibrary.Materials[0].Material.Texture.Image.LoadFromFile(MediaPath+'\'+'beigemarble.jpg');
 end;
 
 procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,

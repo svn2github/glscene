@@ -109,7 +109,7 @@ end;
 
 initialization
 
-  {$I FRTrackBarEditLCL.lrs}
+  {$I FRTrackBarEdit.lrs}
 
 
 end.

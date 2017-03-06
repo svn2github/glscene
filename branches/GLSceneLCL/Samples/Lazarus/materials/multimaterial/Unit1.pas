@@ -63,7 +63,7 @@ begin
   with GLMaterialLibrary1 do
   begin
     // Add the specular pass
-    with AddTextureMaterial('specular', ' GLSceneLCL_alpha.bmp') do
+    with AddTextureMaterial('specular', MediaPath+'GLScene_alpha.bmp') do
     begin
       // tmBlend for shiny background
       //Material.Texture.TextureMode:=tmBlend;
@@ -72,7 +72,7 @@ begin
       Material.BlendingMode := bmAdditive;
       Texture2Name := 'specular_tex2';
     end;
-    with AddTextureMaterial('specular_tex2', 'chrome_buckle.bmp') do
+    with AddTextureMaterial('specular_tex2',MediaPath+ 'chrome_buckle.bmp') do
     begin
       Material.Texture.MappingMode := tmmCubeMapReflection;
       Material.Texture.ImageBrightness := 0.3;
@@ -85,10 +85,10 @@ begin
   with GLMaterialLibrary2 do
   begin
     // Pass 1 : Base texture
-    AddTextureMaterial('Pass1', 'GLScene.bmp');//}
+    AddTextureMaterial('Pass1',MediaPath+ 'GLScene.bmp');//}
 
     // Pass 2 : Add a bit of detail
-    with AddTextureMaterial('Pass2', 'detailmap.jpg') do
+    with AddTextureMaterial('Pass2', MediaPath+'detailmap.jpg') do
     begin
       Material.Texture.TextureMode := tmBlend;
       Material.BlendingMode := bmAdditive;

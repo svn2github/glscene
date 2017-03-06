@@ -62,7 +62,6 @@ interface
 uses
   Classes, SysUtils,
 
-   cene
   GLTexture, GLScene, GLVectorGeometry, OpenGLTokens, GLStrings, GLCustomShader,
   GLSLShader, GLColor, GLRenderContextInfo, GLMaterial;
 

@@ -67,7 +67,7 @@ implementation
 
 {$R *.lfm}
 
-uses GLVectorGeometry, Polynomials;
+uses GLVectorGeometry, GLPolynomials;
 
 procedure TForm1.BUCastClick(Sender: TObject);
 var
@@ -139,4 +139,4 @@ begin
    DummyCube1.TurnAngle:=newTime*50;
 end;
 
-end.
+end.

@@ -13,7 +13,7 @@ object Form1: TForm1
   Font.Name = 'MS Sans Serif'
   OnCreate = FormCreate
   OnMouseWheel = FormMouseWheel
-  LCLVersion = '0.9.31'
+  LCLVersion = '1.6.2.0'
   object GLSceneViewer1: TGLSceneViewer
     Left = 3
     Height = 371
@@ -37,9 +37,9 @@ object Form1: TForm1
     TabOrder = 1
     object Label1: TLabel
       Left = 335
-      Height = 12
+      Height = 11
       Top = 58
-      Width = 73
+      Width = 72
       Caption = 'Camera Distance'
       Font.CharSet = ANSI_CHARSET
       Font.Color = clWindowText
@@ -50,9 +50,9 @@ object Form1: TForm1
     end
     object Label6: TLabel
       Left = 344
-      Height = 12
+      Height = 11
       Top = 28
-      Width = 48
+      Width = 47
       Caption = 'Glow Alpha'
       Font.CharSet = ANSI_CHARSET
       Font.Color = clWindowText
@@ -63,9 +63,9 @@ object Form1: TForm1
     end
     object Label4: TLabel
       Left = 432
-      Height = 12
+      Height = 11
       Top = 28
-      Width = 38
+      Width = 37
       Caption = 'Vibration'
       Font.CharSet = ANSI_CHARSET
       Font.Color = clWindowText
@@ -76,9 +76,9 @@ object Form1: TForm1
     end
     object Label3: TLabel
       Left = 440
-      Height = 12
+      Height = 11
       Top = 0
-      Width = 38
+      Width = 37
       Caption = 'Wildness'
       Font.CharSet = ANSI_CHARSET
       Font.Color = clWindowText
@@ -89,9 +89,9 @@ object Form1: TForm1
     end
     object Label5: TLabel
       Left = 344
-      Height = 12
+      Height = 11
       Top = 0
-      Width = 41
+      Width = 40
       Caption = 'Glow Size'
       Font.CharSet = ANSI_CHARSET
       Font.Color = clWindowText
@@ -305,8 +305,10 @@ object Form1: TForm1
     end
     object HeightField1: TGLHeightField
       TagFloat = 0
-      Material.Texture.MinFilter = miNearestMipmapNearest
+      Material.Texture.MagFilter = maNearest
+      Material.Texture.MinFilter = miNearest
       Material.Texture.TextureMode = tmModulate
+      Material.Texture.Compression = tcNone
       Material.Texture.Disabled = False
       Direction.Coordinates = {
         000000000000803F0000000000000000
@@ -326,11 +328,11 @@ object Form1: TForm1
       XSamplingScale.Min = -1
       XSamplingScale.Max = 1
       XSamplingScale.Origin = 0
-      XSamplingScale.Step = 0.20000000298023
+      XSamplingScale.Step = 0.200000002980232
       YSamplingScale.Min = -1
       YSamplingScale.Max = 1
       YSamplingScale.Origin = 0
-      YSamplingScale.Step = 0.20000000298023
+      YSamplingScale.Step = 0.200000002980232
       Options = [hfoTextureCoordinates]
       OnGetHeight = HeightField1GetHeight
     end
@@ -349,6 +351,13 @@ object Form1: TForm1
         Material.FrontProperties.Emission.Color = {
           00000000000000008180003E0000803F
         }
+        Material.Texture.ImageClassName = 'TGLBlankImage'
+        Material.Texture.Image.Width = 64
+        Material.Texture.Image.Height = 64
+        Material.Texture.Image.ColorFormat = 6408
+        Material.Texture.MagFilter = maNearest
+        Material.Texture.MinFilter = miNearest
+        Material.Texture.Compression = tcNone
         PitchAngle = 0
         Position.Coordinates = {
           0000404000000000000000000000803F
@@ -364,6 +373,13 @@ object Form1: TForm1
         Material.FrontProperties.Emission.Color = {
           00000000000000008180003E0000803F
         }
+        Material.Texture.ImageClassName = 'TGLBlankImage'
+        Material.Texture.Image.Width = 64
+        Material.Texture.Image.Height = 64
+        Material.Texture.Image.ColorFormat = 6408
+        Material.Texture.MagFilter = maNearest
+        Material.Texture.MinFilter = miNearest
+        Material.Texture.Compression = tcNone
         PitchAngle = 0
         Position.Coordinates = {
           000040C000000000000000000000803F
@@ -419,7 +435,7 @@ object Form1: TForm1
     }
     Cadencer = GLCadencer1
     Maxpoints = 64
-    GlowSize = 0.20000000298023
+    GlowSize = 0.200000002980232
     Vibrate = 0
     InnerColor.Color = {
       0000803F0000803F0000803F9A99993E

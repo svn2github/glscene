@@ -11,28 +11,28 @@ object Form1: TForm1
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
   OnCreate = FormCreate
-  LCLVersion = '0.9.31'
+  LCLVersion = '1.6.2.0'
   object LFogStart: TLabel
     Left = 8
-    Height = 14
+    Height = 13
     Top = 312
-    Width = 39
+    Width = 38
     Caption = 'fog start'
     ParentColor = False
   end
   object LFogEnd: TLabel
     Left = 8
-    Height = 14
+    Height = 13
     Top = 344
-    Width = 37
+    Width = 36
     Caption = 'fog end'
     ParentColor = False
   end
   object LFogColor: TLabel
     Left = 344
-    Height = 14
+    Height = 13
     Top = 288
-    Width = 42
+    Width = 41
     Caption = 'fog color'
     ParentColor = False
   end
@@ -45,9 +45,9 @@ object Form1: TForm1
   end
   object LFogDensity: TLabel
     Left = 344
-    Height = 14
+    Height = 13
     Top = 336
-    Width = 145
+    Width = 144
     Caption = 'fog density (for fmExp/fmExp2)'
     ParentColor = False
   end

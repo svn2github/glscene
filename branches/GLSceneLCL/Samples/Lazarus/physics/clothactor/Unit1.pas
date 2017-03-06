@@ -61,7 +61,7 @@ type
   public
     { Public declarations }
     mx, my: integer;
-    VerletWorld: TVerletWorld;
+    VerletWorld: TglVerletWorld;
     EdgeDetector: TEdgeDetector;
     AirResistance: TVFAirResistance;
   end;
@@ -74,7 +74,7 @@ implementation
 {$R *.lfm}
 
 uses
-  FileUtil, GLContext;
+  GLUtils, GLContext;
 
 // Mesh normal recalculation routines
 
@@ -147,26 +147,19 @@ begin
 end;
 
 procedure TForm1.FormCreate(Sender: TObject);
-var
-  path: UTF8String;
-  p: integer;
 begin
-  path := ExtractFilePath(ParamStrUTF8(0));
-  p := Pos('DemosLCL', path);
-  Delete(path, p + 5, Length(path));
-  path := IncludeTrailingPathDelimiter(path) + 'media';
-  SetCurrentDirUTF8(path);
 
+  SetGLSceneMediaDir();
   Randomize;
   // Load the actor and animations
-  GLActor1.LoadFromFile('trinityRAGE.smd');
-  GLActor1.AddDataFromFile('walk.smd');
+  GLActor1.LoadFromFile(MediaPath+'trinityRAGE.smd');
+  GLActor1.AddDataFromFile(MediaPath+'walk.smd');
   GLActor1.Animations[1].MakeSkeletalTranslationStatic;
   GLActor1.SwitchToAnimation('walk');
   GLActor1.BuildSilhouetteConnectivityData;
 
   // Load the cape
-  Cape.LoadFromFile('cape.3ds');
+  Cape.LoadFromFile(MediaPath+'cape.3ds');
   Cape.Position.Y := GLActor1.BoundingSphereRadius - 10;
   PrepareMeshForNormalsRecalc(Cape);
   Cape.BuildSilhouetteConnectivityData;
@@ -174,14 +167,14 @@ begin
   // Set up the floor texture and reposition to below the actors feet
   with GLPlane1.Material.Texture do
   begin
-    Image.LoadFromFile('beigemarble.jpg');
+    Image.LoadFromFile(MediaPath+'beigemarble.jpg');
     Disabled := False;
   end;
   GLPlane1.Position.Y := -GLActor1.BoundingSphereRadius;
 
   // Setting up the verlet world using the optional dynamic octree can
   // give good perfamnce increases.
-  VerletWorld := TVerletWorld.Create;
+  VerletWorld := TGLVerletWorld.Create;
   VerletWorld.CreateOctree(
     AffineVectorMake(0, 0, 0),
     AffineVectorMake(0, 0, 0), 10, 6);
@@ -211,7 +204,7 @@ begin
   // by the actor's skeleton.
   with GLActor1.Skeleton.Colliders do
   begin
-    LoadFromFile('trinityRAGE.glsc');
+    LoadFromFile(MediaPath+'trinityRAGE.glsc');
     AlignColliders;
   end;
 
@@ -256,28 +249,28 @@ procedure TForm1.OctreeRendererRender(Sender: TObject; var rci: TRenderContextIn
     rci.GLStates.LineWidth := w;
 
     GL.Begin_(GL_LINE_STRIP);
-    GL.Vertex3f(AABB.min[0], AABB.min[1], AABB.min[2]);
-    GL.Vertex3f(AABB.min[0], AABB.max[1], AABB.min[2]);
-    GL.Vertex3f(AABB.max[0], AABB.max[1], AABB.min[2]);
-    GL.Vertex3f(AABB.max[0], AABB.min[1], AABB.min[2]);
-    GL.Vertex3f(AABB.min[0], AABB.min[1], AABB.min[2]);
+    GL.Vertex3f(AABB.min.v[0], AABB.min.v[1], AABB.min.v[2]);
+    GL.Vertex3f(AABB.min.v[0], AABB.max.v[1], AABB.min.v[2]);
+    GL.Vertex3f(AABB.max.v[0], AABB.max.v[1], AABB.min.v[2]);
+    GL.Vertex3f(AABB.max.v[0], AABB.min.v[1], AABB.min.v[2]);
+    GL.Vertex3f(AABB.min.v[0], AABB.min.v[1], AABB.min.v[2]);
 
-    GL.Vertex3f(AABB.min[0], AABB.min[1], AABB.max[2]);
-    GL.Vertex3f(AABB.min[0], AABB.max[1], AABB.max[2]);
-    GL.Vertex3f(AABB.max[0], AABB.max[1], AABB.max[2]);
-    GL.Vertex3f(AABB.max[0], AABB.min[1], AABB.max[2]);
-    GL.Vertex3f(AABB.min[0], AABB.min[1], AABB.max[2]);
+    GL.Vertex3f(AABB.min.v[0], AABB.min.v[1], AABB.max.v[2]);
+    GL.Vertex3f(AABB.min.v[0], AABB.max.v[1], AABB.max.v[2]);
+    GL.Vertex3f(AABB.max.v[0], AABB.max.v[1], AABB.max.v[2]);
+    GL.Vertex3f(AABB.max.v[0], AABB.min.v[1], AABB.max.v[2]);
+    GL.Vertex3f(AABB.min.v[0], AABB.min.v[1], AABB.max.v[2]);
     GL.End_;
 
     GL.Begin_(GL_LINES);
-    GL.Vertex3f(AABB.min[0], AABB.max[1], AABB.min[2]);
-    GL.Vertex3f(AABB.min[0], AABB.max[1], AABB.max[2]);
+    GL.Vertex3f(AABB.min.v[0], AABB.max.v[1], AABB.min.v[2]);
+    GL.Vertex3f(AABB.min.v[0], AABB.max.v[1], AABB.max.v[2]);
 
-    GL.Vertex3f(AABB.max[0], AABB.max[1], AABB.min[2]);
-    GL.Vertex3f(AABB.max[0], AABB.max[1], AABB.max[2]);
+    GL.Vertex3f(AABB.max.v[0], AABB.max.v[1], AABB.min.v[2]);
+    GL.Vertex3f(AABB.max.v[0], AABB.max.v[1], AABB.max.v[2]);
 
-    GL.Vertex3f(AABB.max[0], AABB.min[1], AABB.min[2]);
-    GL.Vertex3f(AABB.max[0], AABB.min[1], AABB.max[2]);
+    GL.Vertex3f(AABB.max.v[0], AABB.min.v[1], AABB.min.v[2]);
+    GL.Vertex3f(AABB.max.v[0], AABB.min.v[1], AABB.max.v[2]);
     GL.End_;
   end;
 

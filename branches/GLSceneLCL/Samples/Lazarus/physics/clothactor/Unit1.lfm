@@ -10,7 +10,7 @@ object Form1: TForm1
   Font.Name = 'MS Sans Serif'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  LCLVersion = '0.9.29'
+  LCLVersion = '1.6.2.0'
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Height = 423
@@ -84,6 +84,9 @@ object Form1: TForm1
         CubeSize = 1
         object GLActor1: TGLActor
           TagFloat = 0
+          Material.Texture.MagFilter = maNearest
+          Material.Texture.MinFilter = miNearest
+          Material.Texture.Compression = tcNone
           Direction.Coordinates = {
             000000000000803F0000000000000000
           }
@@ -122,7 +125,10 @@ object Form1: TForm1
         Material.FrontProperties.Specular.Color = {
           0000003F0000003F0000003F0000803F
         }
+        Material.Texture.MagFilter = maNearest
+        Material.Texture.MinFilter = miNearest
         Material.Texture.TextureMode = tmModulate
+        Material.Texture.Compression = tcNone
         Material.FaceCulling = fcNoCull
         PitchAngle = 0
         RollAngle = 0
@@ -138,7 +144,10 @@ object Form1: TForm1
         Material.FrontProperties.Diffuse.Color = {
           0000803F0000803F0000803F0000803F
         }
+        Material.Texture.MagFilter = maNearest
+        Material.Texture.MinFilter = miNearest
         Material.Texture.TextureMode = tmModulate
+        Material.Texture.Compression = tcNone
         Direction.Coordinates = {
           000000000000803F0000000000000000
         }

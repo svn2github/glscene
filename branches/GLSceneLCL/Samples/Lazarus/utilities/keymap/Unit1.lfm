@@ -1,7 +1,7 @@
 object Form1: TForm1
-  Left = 209
+  Left = 159
   Height = 161
-  Top = 108
+  Top = 183
   Width = 289
   Caption = 'Form1'
   ClientHeight = 161
@@ -10,7 +10,7 @@ object Form1: TForm1
   Font.Name = 'MS Sans Serif'
   FormStyle = fsStayOnTop
   OnCreate = FormCreate
-  LCLVersion = '0.9.29'
+  LCLVersion = '1.6.2.0'
   object Label1: TLabel
     Left = 8
     Height = 13

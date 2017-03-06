@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectOptions>
     <Version Value="9"/>
@@ -6,7 +6,6 @@
     <General>
       <MainUnit Value="0"/>
       <UseXPManifest Value="True"/>
-      <ActiveWindowIndexAtStart Value="0"/>
     </General>
     <i18n>
       <EnableI18N LFM="False"/>
@@ -30,7 +29,7 @@
     </RunParams>
     <RequiredPackages Count="2">
       <Item1>
-        <PackageName Value=" GLSceneLCL_RunTime"/>
+        <PackageName Value="GLScene_RunTime"/>
       </Item1>
       <Item2>
         <PackageName Value="LCL"/>
@@ -41,8 +40,6 @@
         <Filename Value="points.lpr"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="1"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
         <CursorPos X="19" Y="8"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
@@ -54,10 +51,7 @@
         <ComponentName Value="Form1"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="Unit1"/>
         <IsVisibleTab Value="True"/>
-        <EditorIndex Value="0"/>
-        <WindowIndex Value="0"/>
         <TopLine Value="74"/>
         <CursorPos X="8" Y="95"/>
         <UsageCount Value="20"/>
@@ -66,9 +60,7 @@
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit1>
       <Unit2>
-        <Filename Value="C:\lazarus\components\GLSceneLCL\Source\GLVectorGeometry.pas"/>
-        <UnitName Value="GLVectorGeometry"/>
-        <WindowIndex Value="0"/>
+        <Filename Value="..\..\..\..\..\GLSceneLCL\Source\GLVectorGeometry.pas"/>
         <TopLine Value="7067"/>
         <CursorPos X="14" Y="7072"/>
         <UsageCount Value="10"/>
@@ -76,37 +68,29 @@
       </Unit2>
       <Unit3>
         <Filename Value="..\..\..\Source\GLObjects.pas"/>
-        <UnitName Value="GLObjects"/>
-        <WindowIndex Value="0"/>
         <TopLine Value="2177"/>
-        <CursorPos X="1" Y="2198"/>
+        <CursorPos Y="2198"/>
         <UsageCount Value="10"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit3>
       <Unit4>
         <Filename Value="..\..\..\Source\GLVectorLists.pas"/>
-        <UnitName Value="GLVectorLists"/>
-        <WindowIndex Value="0"/>
         <TopLine Value="1403"/>
-        <CursorPos X="1" Y="1430"/>
+        <CursorPos Y="1430"/>
         <UsageCount Value="10"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit4>
       <Unit5>
         <Filename Value="..\..\..\Source\GLScene.pas"/>
-        <UnitName Value="GLScene"/>
-        <WindowIndex Value="0"/>
         <TopLine Value="4356"/>
-        <CursorPos X="1" Y="4375"/>
+        <CursorPos Y="4375"/>
         <UsageCount Value="10"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit5>
       <Unit6>
         <Filename Value="..\..\..\Source\GLVectorGeometry.pas"/>
-        <UnitName Value="GLVectorGeometry"/>
-        <WindowIndex Value="0"/>
         <TopLine Value="7321"/>
-        <CursorPos X="1" Y="7345"/>
+        <CursorPos Y="7345"/>
         <UsageCount Value="10"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit6>
@@ -114,115 +98,115 @@
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="Unit1.pas"/>
-        <Caret Line="94" Column="1" TopLine="69"/>
+        <Caret Line="94" TopLine="69"/>
       </Position1>
       <Position2>
         <Filename Value="Unit1.pas"/>
-        <Caret Line="95" Column="1" TopLine="69"/>
+        <Caret Line="95" TopLine="69"/>
       </Position2>
       <Position3>
         <Filename Value="Unit1.pas"/>
-        <Caret Line="90" Column="1" TopLine="69"/>
+        <Caret Line="90" TopLine="69"/>
       </Position3>
       <Position4>
         <Filename Value="Unit1.pas"/>
-        <Caret Line="91" Column="1" TopLine="69"/>
+        <Caret Line="91" TopLine="69"/>
       </Position4>
       <Position5>
         <Filename Value="Unit1.pas"/>
-        <Caret Line="92" Column="1" TopLine="69"/>
+        <Caret Line="92" TopLine="69"/>
       </Position5>
       <Position6>
         <Filename Value="Unit1.pas"/>
-        <Caret Line="93" Column="1" TopLine="69"/>
+        <Caret Line="93" TopLine="69"/>
       </Position6>
       <Position7>
         <Filename Value="Unit1.pas"/>
-        <Caret Line="94" Column="1" TopLine="69"/>
+        <Caret Line="94" TopLine="69"/>
       </Position7>
       <Position8>
         <Filename Value="Unit1.pas"/>
-        <Caret Line="95" Column="1" TopLine="69"/>
+        <Caret Line="95" TopLine="69"/>
       </Position8>
       <Position9>
         <Filename Value="Unit1.pas"/>
-        <Caret Line="90" Column="1" TopLine="69"/>
+        <Caret Line="90" TopLine="69"/>
       </Position9>
       <Position10>
         <Filename Value="Unit1.pas"/>
-        <Caret Line="91" Column="1" TopLine="69"/>
+        <Caret Line="91" TopLine="69"/>
       </Position10>
       <Position11>
         <Filename Value="Unit1.pas"/>
-        <Caret Line="92" Column="1" TopLine="69"/>
+        <Caret Line="92" TopLine="69"/>
       </Position11>
       <Position12>
         <Filename Value="Unit1.pas"/>
-        <Caret Line="93" Column="1" TopLine="69"/>
+        <Caret Line="93" TopLine="69"/>
       </Position12>
       <Position13>
         <Filename Value="Unit1.pas"/>
-        <Caret Line="94" Column="1" TopLine="69"/>
+        <Caret Line="94" TopLine="69"/>
       </Position13>
       <Position14>
         <Filename Value="Unit1.pas"/>
-        <Caret Line="95" Column="1" TopLine="69"/>
+        <Caret Line="95" TopLine="69"/>
       </Position14>
       <Position15>
         <Filename Value="Unit1.pas"/>
-        <Caret Line="90" Column="1" TopLine="69"/>
+        <Caret Line="90" TopLine="69"/>
       </Position15>
       <Position16>
         <Filename Value="Unit1.pas"/>
-        <Caret Line="91" Column="1" TopLine="69"/>
+        <Caret Line="91" TopLine="69"/>
       </Position16>
       <Position17>
         <Filename Value="Unit1.pas"/>
-        <Caret Line="92" Column="1" TopLine="69"/>
+        <Caret Line="92" TopLine="69"/>
       </Position17>
       <Position18>
         <Filename Value="Unit1.pas"/>
-        <Caret Line="93" Column="1" TopLine="69"/>
+        <Caret Line="93" TopLine="69"/>
       </Position18>
       <Position19>
         <Filename Value="Unit1.pas"/>
-        <Caret Line="94" Column="1" TopLine="69"/>
+        <Caret Line="94" TopLine="69"/>
       </Position19>
       <Position20>
         <Filename Value="Unit1.pas"/>
-        <Caret Line="95" Column="1" TopLine="69"/>
+        <Caret Line="95" TopLine="69"/>
       </Position20>
       <Position21>
         <Filename Value="Unit1.pas"/>
-        <Caret Line="90" Column="1" TopLine="69"/>
+        <Caret Line="90" TopLine="69"/>
       </Position21>
       <Position22>
         <Filename Value="Unit1.pas"/>
-        <Caret Line="91" Column="1" TopLine="69"/>
+        <Caret Line="91" TopLine="69"/>
       </Position22>
       <Position23>
         <Filename Value="Unit1.pas"/>
-        <Caret Line="92" Column="1" TopLine="69"/>
+        <Caret Line="92" TopLine="69"/>
       </Position23>
       <Position24>
         <Filename Value="Unit1.pas"/>
-        <Caret Line="93" Column="1" TopLine="69"/>
+        <Caret Line="93" TopLine="69"/>
       </Position24>
       <Position25>
         <Filename Value="Unit1.pas"/>
-        <Caret Line="94" Column="1" TopLine="69"/>
+        <Caret Line="94" TopLine="69"/>
       </Position25>
       <Position26>
         <Filename Value="Unit1.pas"/>
-        <Caret Line="95" Column="1" TopLine="69"/>
+        <Caret Line="95" TopLine="69"/>
       </Position26>
       <Position27>
         <Filename Value="Unit1.pas"/>
-        <Caret Line="90" Column="1" TopLine="69"/>
+        <Caret Line="90" TopLine="69"/>
       </Position27>
       <Position28>
         <Filename Value="Unit1.pas"/>
-        <Caret Line="91" Column="1" TopLine="69"/>
+        <Caret Line="91" TopLine="69"/>
       </Position28>
       <Position29>
         <Filename Value="Unit1.pas"/>
@@ -260,12 +244,6 @@
         </Win32>
       </Options>
     </Linking>
-    <Other>
-      <CompilerMessages>
-        <UseMsgFile Value="True"/>
-      </CompilerMessages>
-      <CompilerPath Value="$(CompPath)"/>
-    </Other>
   </CompilerOptions>
   <Debugging>
     <Exceptions Count="3">

@@ -1,12 +1,14 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
-  <Package Version="3">
+  <Package Version="4">
     <Name Value="GLScene_WinOnly"/>
+    <Type Value="RunAndDesignTime"/>
+    <AddToProjectUsesSection Value="True"/>
     <CompilerOptions>
-      <Version Value="9"/>
+      <Version Value="11"/>
       <SearchPaths>
-        <IncludeFiles Value="../Source/"/>
-        <OtherUnitFiles Value="../Source/"/>
+        <IncludeFiles Value="../Source"/>
+        <OtherUnitFiles Value="../Source;../Source/Basis;../Source/DesignTime;../Source/FileFormats;../Source/GameAPIs;../Source/ParallelAPIs;../Source/PhysicsAPIs;../Source/Shaders;../Source/SoundVideoAPIs"/>
         <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
       <Parsing>
@@ -15,20 +17,17 @@
           <UseAnsiStrings Value="False"/>
         </SyntaxOptions>
       </Parsing>
-      <Other>
-        <CompilerPath Value="$(CompPath)"/>
-      </Other>
     </CompilerOptions>
     <Description Value="GLScene Windows Only support"/>
     <Version Major="1" Build="3"/>
-    <Files Count="7">
+    <Files Count="6">
       <Item1>
         <Filename Value="../Source/Basis/GLJoystick.pas"/>
-        <UnitName Value="Joystick"/>
+        <UnitName Value="GLJoystick"/>
       </Item1>
       <Item2>
         <Filename Value="../Source/SoundVideoAPIs/GLScreenSaver.pas"/>
-        <UnitName Value="ScreenSaver"/>
+        <UnitName Value="GLScreenSaver"/>
       </Item2>
       <Item3>
         <Filename Value="../Source/SoundVideoAPIs/GLSMWaveOut.pas"/>
@@ -39,20 +38,14 @@
         <UnitName Value="GLAVIRecorder"/>
       </Item4>
       <Item5>
-        <Filename Value="../Source/GLSceneRegisterWinOnly.pas"/>
-        <HasRegisterProc Value="True"/>
-        <UnitName Value="GLSceneRegisterWinOnly"/>
-      </Item5>
-      <Item6>
         <Filename Value="../Source/SoundVideoAPIs/GLSVfw.pas"/>
         <UnitName Value="GLSVfw"/>
-      </Item6>
-      <Item7>
+      </Item5>
+      <Item6>
         <Filename Value="../Source/GLSpaceText.pas"/>
         <UnitName Value="GLSpaceText"/>
-      </Item7>
+      </Item6>
     </Files>
-    <Type Value="RunAndDesignTime"/>
     <RequiredPkgs Count="2">
       <Item1>
         <PackageName Value="GLScene_DesignTime"/>
@@ -63,7 +56,7 @@
       </Item2>
     </RequiredPkgs>
     <UsageOptions>
-      <UnitPath Value="$(PkgOutDir)/"/>
+      <UnitPath Value="$(PkgOutDir)"/>
     </UsageOptions>
     <PublishOptions>
       <Version Value="2"/>

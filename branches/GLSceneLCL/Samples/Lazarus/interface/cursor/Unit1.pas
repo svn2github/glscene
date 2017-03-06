@@ -86,7 +86,7 @@ begin
   GLSceneViewer1.Cursor := crNone;
   // and load my ugly cursor (size adjusted in design props)
   with GLMaterialLibrary1.Materials[0] do
-    Material.Texture.Image.LoadFromFile('cursor.bmp');
+    Material.Texture.Image.LoadFromFile(MediaPath+'cursor.bmp');
 end;
 
 procedure TForm1.MILoadImageClick(Sender: TObject);

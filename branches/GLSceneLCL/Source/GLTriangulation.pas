@@ -92,7 +92,7 @@ type
     tPoints: Integer; // Variable for total number of points (vertices)
     OnProgress: TDProgressEvent;
     constructor Create;
-    destructor Destroy;
+    destructor Destroy;override;
     procedure Mesh(sort: Boolean);
     procedure AddPoint(X, Y, Z, U, V: Single; MatIndex: Integer);
     procedure AddPointNoCheck(X, Y, Z, U, V: Single; MatIndex: Integer);

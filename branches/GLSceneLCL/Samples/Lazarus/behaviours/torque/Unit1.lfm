@@ -2,36 +2,36 @@ object Form1: TForm1
   Left = 125
   Height = 170
   Top = 119
-  Width = 540
+  Width = 582
   BorderStyle = bsDialog
   BorderWidth = 5
   Caption = 'Form1'
   ClientHeight = 170
-  ClientWidth = 540
+  ClientWidth = 582
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
   OnCreate = FormCreate
-  LCLVersion = '0.9.29'
+  LCLVersion = '1.6.2.0'
   object Label1: TLabel
     Left = 448
-    Height = 43
+    Height = 39
     Top = 88
-    Width = 97
+    Width = 89
     Caption = 'Move your mouse'#13#10'over an object and'#13#10'it will start spinning'
     ParentColor = False
   end
   object Label2: TLabel
     Left = 8
-    Height = 28
+    Height = 26
     Top = 8
-    Width = 128
+    Width = 124
     Alignment = taCenter
     Caption = 'Cube has a small constant'#13#10'and linear damping'
     ParentColor = False
   end
   object Label3: TLabel
     Left = 168
-    Height = 43
+    Height = 39
     Top = 0
     Width = 100
     Alignment = taCenter
@@ -40,9 +40,9 @@ object Form1: TForm1
   end
   object Label4: TLabel
     Left = 328
-    Height = 28
+    Height = 26
     Top = 8
-    Width = 115
+    Width = 109
     Alignment = taCenter
     Caption = 'Octahedron has a'#13#10'only quadratic damping'
     ParentColor = False
@@ -53,15 +53,15 @@ object Form1: TForm1
     Top = 48
     Width = 441
     Camera = GLCamera1
-    FieldOfView = 62.3478813171386
+    FieldOfView = 62.3478813171387
     OnMouseMove = GLSceneViewer1MouseMove
     TabOrder = 0
   end
   object CheckBox1: TCheckBox
     Left = 448
-    Height = 22
+    Height = 19
     Top = 144
-    Width = 85
+    Width = 82
     Caption = 'Double Mass'
     OnClick = CheckBox1Click
     TabOrder = 1
@@ -143,4 +143,4 @@ object Form1: TForm1
     left = 480
     top = 48
   end
-end
+end

@@ -104,12 +104,12 @@ procedure TForm1.FormCreate(Sender: TObject);
 begin
   SetGLSceneMediaDir();
   // Load the bunny mesh and scale for viewing
-  Bunny.LoadFromFile('bunny.glsm');
+  Bunny.LoadFromFile(MediaPath+'bunny.ply');
   Bunny.Scale.Scale(2 / Bunny.BoundingSphereRadius);
 
   // Load the normal map
   with GLMaterialLibrary1.Materials[0].Material.Texture.Image do
-    LoadFromFile('bunnynormals.jpg');
+    LoadFromFile(MediaPath+'bunnynormals.jpg');
 
   // Link the lights to their toggles
   CheckBox1.Tag := 0;
