@@ -1,0 +1,60 @@
+global proc int mx2ExportOptions(string $parent, string $action, string $initialSettings, string $resultCallback)
+{
+	string	$currentOptions;
+	string	$optionList[];
+	string	$optionBreakDown[];
+	int		$i;
+
+	if( $action == "post" )
+	{
+		setParent $parent;
+
+		radioButtonGrp -l "Export: " -nrb 2 -la2 "Current Frame" "Playback Range" mx2range;
+                				
+		// Now set to current settings.
+		$currentOptions = $initialSettings;
+
+		if( size($currentOptions) > 0 )
+		{
+			tokenize($currentOptions, ";", $optionList);
+
+			for($i = 0; $i < size($optionList); $i++)
+			{
+				tokenize($optionList[$i], "=", $optionBreakDown);
+
+				if ($optionBreakDown[0] == "animation")
+				{
+					if( $optionBreakDown[1] == "0" )
+					{
+						radioButtonGrp -e -sl 1 mx2range;
+					}
+					else
+					{
+						radioButtonGrp -e -sl 2 mx2range;
+					}
+				}
+			}
+		}
+
+		return 1;
+	}
+	else if( $action == "query" )
+	{
+		if (`radioButtonGrp -q -sl mx2range` == 1)
+		{
+			$currentOptions = "animation=0";
+		}
+		else
+		{
+			$currentOptions = "animation=1";
+		}
+
+		eval($resultCallback+" \""+$currentOptions+"\"");
+
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
+}

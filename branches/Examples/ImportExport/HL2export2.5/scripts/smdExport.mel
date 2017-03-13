@@ -1,0 +1,2008 @@
+// smd export script version 2.4
+// by theo 8/17/2001
+// updated by Prall 6/23/2005
+
+// can be called from command line as
+// "smdExport( #, # )" where arg0: 0 = animation , 1 = reference smd , 2= Vta animation ,3= full compile
+//arg1: 0 = all in the same body group, 1 = each piece in a separate body group
+
+// change history
+// 1.02 improved handling of shader export failure
+// 1.03 added support for joint orientation
+//	improved detection of non-shaded surfaces
+// 1.04 added progress bar with support for cancelling export
+// 1.05 fixed exporting transforms with rotate-orient and joint-orient values other than 0
+// 1.06 corrected handling of offset pivot points
+//	another fix for non-shaded surfaces
+// 1.07 added check for large numbers of skin influences.
+// 1.08 animation smd's don't export vmt files.
+// 1.09 (BRJ) Added seperate body groups, removed need for setting the project workspace, lots of bug fixes
+
+// 1.5  prall: added smd animation import  
+// 2.0  prall: added vertex animation export
+// 2.1  prall: improved vta export....multiple meshes and change filter
+// 2.2  prall:  -improved export gui
+//	        -added export from layers for ref,phy and break models	
+//	        -added qc generation
+//		-added multiple animations export
+//		-changed path calculations
+//		-added full compile
+//		
+// 2.3 prall:   -multiple texture subdirs
+//		-HLMV thumbnail rendering
+//		-material attributes
+//		-skinfamilies
+//		-compile on/off
+//		-export textures on/off
+//		-some bugs fixed		
+//
+// 2.4 prall:   -tried to fix some path probs
+//		-fixed pCube1,pCube11 filter probs
+//		-removed need for sourcesdk/bin path variable...uses sourcesdk variable now
+//		-fixed wooden.large error
+//		-added LOD model support
+//		-hl2shader update
+//
+// 2.5 prall:   -break model options
+//		-create layer GUI
+//		-shelf
+
+global proc string[] string2Array(string $stringList)
+	{
+	string $list[];
+	string $item;
+	$num = `tokenize $stringList "#" $list`;
+	int $cnt = 0;
+	for ($item in $list)
+		{
+		$list[$cnt] = `substitute "§" $item ""`;
+		$cnt ++;
+		}
+	return $list;
+	}
+	
+global proc string array2String(string $array[])
+	{
+	string $list;
+	string $item;
+	for ($item in $array)
+		{
+		$list += $item + "§#";
+		}
+	return $list;
+	}
+
+	
+global proc string smdGetShader (string $face)
+	{
+	global string $smdShaderGrps[];
+	global string $smdFileTx[];
+	global string $smdBadShaderWarning[];
+
+	string $shadingGroup[] = `listSets -t 1 -o $face`;
+	if (`size $shadingGroup` == 0)
+		{
+		trace ("smdGetShader: no shader assigned to " + $face + "\n");
+		return "debug/debugempty";
+		}
+	if (`size $shadingGroup` != 1)
+		{
+		trace ("smdGetShader: More than one shader assigned to " + $face + "\n!!");
+		return "debug/debugempty";
+		}
+
+	string $shaderNode[] = `listConnections ($shadingGroup[0] + ".ss")`;
+	if (`size $shaderNode` == 0)
+		{
+		trace ("smdGetShader: shading group " + $shadingGroup[0] + " invalid\n");
+		appendStringArray $smdBadShaderWarning {$shadingGroup[0]} 1;
+		return "debug/debugempty";
+		}
+
+	// is it in the list of collected Shaders?
+	int $x;
+	int $grpCount = `size $smdShaderGrps`;
+	for ($x = 0; $x < $grpCount; $x++)
+		{
+		if ($smdShaderGrps[$x] == $shadingGroup[0]) return $smdFileTx[$x];
+		}
+	
+	// if not, add this shading-group/texture pair to the dictionary
+	string $fileTexture, $baseTexture;
+	$fileTexture = `fileNodeInfo -f $shaderNode[0] color`;
+	$fileTexture = `tolower $fileTexture`;
+	$baseTexture = `basename $fileTexture ""`;
+	if (`size $baseTexture` == 0 || (getRelativeMaterialsrcName($fileTexture) == "") || (! `gmatch $baseTexture "*.tga"`))
+		{
+		appendStringArray $smdBadShaderWarning {$shadingGroup[0]} 1;
+		$baseTexture = "debug/debugempty";
+		}
+	appendStringArray $smdShaderGrps {$shadingGroup[0]} 1;
+	appendStringArray $smdFileTx {$baseTexture} 1;
+	return $baseTexture;
+	}
+
+
+//-----------------------------------------------------------------------------
+// prettifies numbers for printing
+//-----------------------------------------------------------------------------
+global proc string numFormat (float $num, float $decimalPlaces, int $width) 
+	{
+	$decimalPlaces = `clamp 1 6 $decimalPlaces`;
+	string $formattedNumber;
+	int $expanded = $num * (`pow 10 ($decimalPlaces)`);
+	float $contracted = $expanded * (`pow 10 (-1 * $decimalPlaces)`);
+	string $raw = $contracted;
+
+	string $fraction = `match "[0-9]+$" $raw`;
+	
+	if ($num < 0) $fraction = "-" + $fraction;
+
+	if (`size $fraction` == `size $raw`) // no decimal point
+		{
+		if ((`size $raw`) < ($width - 2))
+			{
+			$raw += ".";
+			while (`size $raw` < $width)
+				{
+				$raw += "0";
+				}
+			}
+		}
+	else
+		{
+		while (`size $raw` < $width)
+			{
+			$raw += "0";
+			}
+		}
+	return $raw;
+	}
+
+
+//-----------------------------------------------------------------------------
+// Find the bone index for a transform
+//-----------------------------------------------------------------------------
+proc int DetermineBoneIndex( string $transformName )
+	{
+	global string $g_smdSkeleton[];
+
+	string $testline;
+	for ($testline in $g_smdSkeleton)
+		{
+		if ((`match $transformName $testline`) == $transformName )
+			{
+			string $buffer[];
+			tokenize $testline $buffer;
+			return $buffer[0];
+			}
+		}
+
+	warning( "Unable to find " + $transformName + " in the list of exported bones!\n");
+	return -1;
+	}
+
+//-----------------------------------------------------------------------------
+// maya 6.5+ fix  thanks to dodger
+//-----------------------------------------------------------------------------
+global proc string[] getVerticesFaceOrdered( string $mesh )
+{
+        string $ret[];
+
+        // TED: add check to see if $mesh exists
+        $numFaces = `polyEvaluate -f $mesh`;
+
+        int $i;
+        int $v = 0;
+        for( $i = 0; $i < $numFaces[0]; $i++ )
+        {
+                string $face = $mesh + ".f[" + $i + "]";
+                string $rawFaceStr[] = `polyInfo -faceToVertex $face`;
+
+                // Thanks to the MEL How-To #55 for the tokenize technique - http://www.ewertb.com/maya/mel/mel.php?howto=55
+                string $tokens[];
+
+                tokenize $rawFaceStr[0] " :\n\r" $tokens;
+
+                int $vertexOrder[];
+                clear $vertexOrder;
+
+                int $t;
+                for ( $t = 2; $t < `size $tokens`; $t++ )
+                {
+                        $vertexOrder[`size $vertexOrder`] = $tokens[$t];
+                }
+
+                for( $t = 0; $t < 3; $t++ )
+                {
+                        $ret[$v++] = $mesh + ".vtxFace[" + $vertexOrder[$t] + "][" + $i + "]";
+                }
+        }
+
+        return $ret;
+}
+
+
+
+//-----------------------------------------------------------------------------
+// get the triangle array for reference smds
+//-----------------------------------------------------------------------------
+proc int smdGetTriangles( int $fileHandle, string $mesh ) 
+	{
+	trace ("getting triangles for " + $mesh + "\n");
+
+	global string $g_smdSkeleton[];
+	global string $smdShaderGrps[];
+	global string $mat;
+	
+	string $skinCluster;
+	$skinCluster = `findRelatedSkinCluster $mesh`;
+	int $hasSkinCluster = (`size $skinCluster` != 0);
+
+	string $tempParent[];
+	$tempParent = `listTransforms $mesh`;
+	$fakeXform = $tempParent[0];
+	
+	// triangulate the mesh:
+	string $tempTriangulation[] = `polyTriangulate -ch true $mesh`;
+	
+	// prepare to iterate across the mesh:
+	int $faceCount[] = `polyEvaluate -f $mesh`;
+	string $meshName[] = `listRelatives -p $mesh`;
+
+	progressWindow
+		-progress 0
+		-minValue 0
+		-maxValue $faceCount[0]
+		-title ("processing " + $meshName[0])
+		-status ("Extracting triangle information for mesh " + $mesh)
+		-isInterruptable true;
+
+	// Gets the entire vertex list for this mesh
+	
+	string $vertexList[] = getVerticesFaceOrdered( $mesh );
+
+/*	
+	string $meshFaces = $mesh + ".f[0:" + $faceCount[0] + "]";
+	string $vertexList[] = `polyListComponentConversion -toVertexFace $meshFaces`;
+	$vertexList = `filterExpand -sm 70 -expand true $vertexList`;
+*/	
+	
+	
+	
+	if (`size $vertexList` != (3 * $faceCount[0]))
+		{
+		warning( "Error parsing mesh " + $mesh + "!!\n" );
+		return 0;
+		}
+
+	int $vertex = 0;
+	for ($counter = 0; $counter < $faceCount[0]; $counter++)
+		{
+		progressWindow -edit
+			-progress $counter
+			;
+
+		// begin with the material applied to this face
+		string $testFace = $mesh + ".f[" + $counter + "]";
+		string $shader = `smdGetShader $testFace`;
+		fprint $fileHandle $shader;
+		fprint $fileHandle "\n";
+
+		int $errorOccurred = 0;
+		int $lastVertex;
+		for ( $lastVertex = $vertex + 3; $vertex < $lastVertex; $vertex++ )
+			{
+			string $normVert = $vertexList[$vertex];
+
+			fprint $fileHandle "0";
+
+			// get vert position
+			float $worldPos[3] = `xform -q -t -ws $normVert`;
+			int $q;
+			for ($q = 0; $q < 3; $q++)
+				{
+				string $pos = `numFormat $worldPos[$q] 5 8`;
+				fprint $fileHandle " ";
+				fprint $fileHandle $pos;
+				}
+
+			// vertex normal
+			float $normal[3] = `polyNormalPerVertex -q -xyz $normVert`;
+			for ($q = 0; $q < 3; $q++)
+				{
+				string $norm = `numFormat $normal[$q] 5 7`;
+				fprint $fileHandle " ";
+				fprint $fileHandle $norm;
+				}
+
+			// UV Coords
+			string $texVerts[2] = `polyListComponentConversion -toUV $normVert`;
+			float $uvCoords[2];
+			if (`size $texVerts` == 0)
+				{
+				trace ($normVert + "has bad UV coordinates\n");
+				$uvCoords = {0,0};
+				}
+			else
+				{
+				$uvCoords = `polyEditUV -q $texVerts[0]`;
+				}
+			
+			for ($q = 0; $q < 2; $q++)
+				{
+				string $uv = `numFormat $uvCoords[$q] 5 7`;
+				fprint $fileHandle " ";
+				fprint $fileHandle $uv;
+				}
+
+			// get list of skin weights or assign all verts to the object
+			// if there is no skin cluster
+			if (!$hasSkinCluster)
+				{
+				fprint $fileHandle " 1 ";
+				if ($fakeXform == "")
+					{
+					fprint $fileHandle "0";
+					}
+				else
+					{
+					string $testName = ("\"" + $fakeXform + "\"");
+					int $boneIndex = DetermineBoneIndex( $testName );
+					if ($boneIndex >= 0)
+						{
+						fprint $fileHandle $boneIndex;
+						}
+					else
+						{
+						$errorOccurred = 1;
+						fprint $fileHandle "0";
+						}
+					}
+				fprint $fileHandle " 1\n";
+				}
+			else
+				// get the skin cluster info
+				{
+				string $skinVert[] = `polyListComponentConversion -tv $normVert`;
+				$normVert = $skinVert[0];
+				int $influenceCount;
+				float $skinWeights[] = `skinPercent -ib .05 -q -v $skinCluster $normVert`;
+				$influenceCount = `size $skinWeights`;
+				if ($influenceCount > 4) warning ("vertex " + $skinVert[0] + " has " + $influenceCount + " skin weights");
+				string $skinXforms[] = `skinPercent -ib .05 -q -t $skinCluster $normVert`;
+
+				fprint $fileHandle " ";
+				fprint $fileHandle $influenceCount;
+				int $z;
+				for ($z = 0; $z <$influenceCount; $z++)
+					{
+					string $testName = ("\"" + $skinXforms[$z] + "\"");
+
+					int $boneIndex = DetermineBoneIndex( $testName );
+					fprint $fileHandle " ";
+					if ($boneIndex >= 0)
+						{
+						fprint $fileHandle $boneIndex;
+						}
+					else
+						{
+						$errorOccurred = 1;
+						fprint $fileHandle "0";
+						}
+
+					string $weight = `numFormat $skinWeights[$z] 3 5`;
+					fprint $fileHandle " ";
+					fprint $fileHandle $weight;
+					}
+				fprint $fileHandle "\n";
+				}
+			}
+
+		if ( `progressWindow -q -isCancelled` || $errorOccurred )
+			{	
+			delete $tempTriangulation[0];
+			progressWindow -endProgress;
+			return 0;
+			}
+		}
+
+	delete $tempTriangulation[0];
+	progressWindow -endProgress;
+	return 1;
+	}
+
+
+//-----------------------------------------------------------------------------
+// export vertex animation data VTA
+//-----------------------------------------------------------------------------
+proc string[] vtaGetTrans( int $vertN, string $mesh , int $time ) 
+	{
+		
+	trace ("getting triangles for " + $mesh + "\n");
+
+	currentTime $time;
+	
+
+	global int $vertNr;
+	global string $g_smdSkeleton[];
+	global string $smdShaderGrps[];
+	string $outLine[];
+	
+	// triangulate the mesh:
+	string $tempTriangulation[] = `polyTriangulate -ch true $mesh`;
+	
+	// prepare to iterate across the mesh:
+	int $faceCount[] = `polyEvaluate -f $mesh`;
+	int $vertCount[] = `polyEvaluate -v $mesh`;
+	string $meshName[] = `listRelatives -p $mesh`;
+
+	progressWindow
+		-progress 0
+		-minValue 0
+		-maxValue $faceCount[0]
+		-title ("processing " + $meshName[0])
+		-status ("Extracting vertex information for mesh " + $mesh)
+		-isInterruptable true;
+
+	// Gets the entire vertex list for this mesh
+	
+	string $vertexList[] = getVerticesFaceOrdered( $mesh );
+	
+	/*
+	string $meshFaces = $mesh + ".f[0:" + $faceCount[0] + "]";
+	string $vertexList[] = `polyListComponentConversion -toVertexFace $meshFaces`;
+	$vertexList = `polyListComponentConversion -fromVertexFace -toVertex $vertexList`;
+	*/
+	
+	$vertexList = `filterExpand -sm 31 -expand true $vertexList`;
+	
+
+		
+	for ($counter = 0; $counter < $vertCount[0]; $counter++)
+		{
+		progressWindow -edit
+			-progress $counter
+			;
+		
+		int $errorOccurred = 0;
+			
+		string $normVert = $vertexList[$counter];
+		
+				
+		//index vert
+		$outLine[$counter] = $outLine[$counter]+ $vertNr;
+		
+			
+		// get vert position
+		float $worldPos[3] = `xform -q -t -ws $normVert`;
+		int $q;
+		for ($q = 0; $q < 3; $q++)
+			{
+			string $pos = `numFormat $worldPos[$q] 5 8`;
+			$outLine[$counter] = $outLine[$counter] + " ";
+			$outLine[$counter] = $outLine[$counter] + $pos;
+			}
+		
+		// vertex normal
+		float $normal[3] = `polyNormalPerVertex -q -xyz $normVert`;
+		for ($q = 0; $q < 3; $q++)
+			{
+			string $norm = `numFormat $normal[$q] 5 7`;
+			$outLine[$counter] = $outLine[$counter] + " ";
+			$outLine[$counter] = $outLine[$counter] + $norm;
+			}
+			
+		$vertNr++;	
+		print $outLine[$counter];
+		print "\n";
+		print $vertNr;
+		}
+			
+	
+	
+	delete $tempTriangulation[0];
+	progressWindow -endProgress;
+	
+	
+	return $outLine;
+	}
+
+
+//-----------------------------------------------------------------------------
+// Gets the pose of the character at a particular time
+//-----------------------------------------------------------------------------
+proc string[] smdGetPose (int $time)
+	{
+	currentTime $time;
+	global string $gMainProgressBar;
+	global string $g_smdSkeleton[];
+	string $pose[];
+	
+	//$pose = {("time " + $time)};
+
+	int $boneCount = `size $g_smdSkeleton`;
+
+	progressBar -edit
+		-beginProgress
+		-isInterruptable false
+		-status ("Extracting pose information for frame " + $time)
+		-maxValue $boneCount
+		$gMainProgressBar;
+
+	int $poseIterator;
+	for ($poseIterator = 0; $poseIterator < $boneCount; $poseIterator ++)
+		{
+		// Update the progress bar
+		progressBar -edit -step 1 $gMainProgressBar;
+
+		string $localName;
+		string $decomposeBones[];
+		tokenize $g_smdSkeleton[$poseIterator] $decomposeBones;
+		$localName = $decomposeBones[1];
+		int $len = `size $localName`;
+		$localName = `substring $localName 2 ($len -1)`;
+
+		// This gets the parent (if any) of the bone under analysis
+		string $par[] = `listRelatives -p -f $localName`;
+
+		// This is tricky here.	The transformation matrix stored in maya
+		// is generated by the following transformations (see docs on xform)
+        //                        -1                       -1
+        // [M]  = [sp]x[s]x[sh]x[sp]x[st]x[rp]x[ra]x[ro]x[rp]x[rt]x[t]
+		// Since we don't care about scale, we're gonna blow off the 's' matrices
+		// rp is the rotation pivot, which has to be the origin of the object
+		// in the game in order for that all to work.
+		// NOTE: ra == (rotate axis) as seen in the joint
+		// attribute editor, as far as I can tell. 
+		// ro == the rotate field of the joint attribute editor
+		// joint orient appears to be accessible only using the -m query
+
+		// get the translation info in world units, to eliminate scaling
+		// This is computing the location of the child rotation pivot in relation to the parent rotation pivot
+		// NOTE: It doesn't seem to take into account the coordinate system of the
+		// parent pivot. Shouldn't trans be measured in that space?
+		float $trans[3] = `xform -q -wd -t $localName`;
+		float $rp[3] = `xform -q -wd -rp $localName`;
+		float $pp[3];
+		if (`size $par` != 0)
+			{
+			$pp = `xform -q -wd -rp $par[0]`;
+			}
+
+		int $ctr;
+		for ($ctr = 0; $ctr <= 2; $ctr ++)
+			{
+			$trans[$ctr] += $rp[$ctr];
+			$trans[$ctr] -= $pp[$ctr];
+			}
+
+		// get the correct rotations from the matrix, not the animation channels
+		float $rot[] = `objectOrientEuler $localName 0`;
+
+		string $bonePose = ($poseIterator + " ")  ;
+		int $x;
+		string $format;
+		float $radians;
+		for ($x = 0; $x < 3; $x++)
+			{
+			$bonePose += " ";
+			$format =`numFormat $trans[$x] 4 7`;
+			$bonePose += $format;
+			}
+		for ($x = 0; $x < 3; $x++)
+			{
+			$bonePose += " ";
+			$radians = `deg_to_rad $rot[$x]`;
+			$format = `numFormat $radians 5 7`;
+			$bonePose += $format;
+			}
+		appendStringArray $pose {$bonePose} 1;
+		}
+
+	progressBar -edit -endProgress $gMainProgressBar;
+	return $pose;
+	}
+
+
+//-----------------------------------------------------------------------------
+// Export animation data
+//-----------------------------------------------------------------------------
+proc exportAnimationData( int $fileHandle, int $animStart, int $animEnd )
+	{
+	fprint $fileHandle "skeleton\n";
+
+	int $now = $animStart;
+	int $cnt = 0;
+	for ($now; $now <= $animEnd; $now++)
+		{
+		
+		string $refPose[] = `smdGetPose $now`;
+		fprint $fileHandle "time ";
+		fprint $fileHandle $cnt;
+		fprint $fileHandle "\n";
+		// output the bone pose
+		$cnt++;
+		for ($line in $refPose)
+			{
+			fprint $fileHandle $line; 
+			fprint $fileHandle "\n";
+			}
+		}
+
+	fprint $fileHandle "end\n";
+	}
+
+
+//-----------------------------------------------------------------------------
+// Export vertex animation data
+//-----------------------------------------------------------------------------
+proc exportVtaData( int $fileHandle, string $meshList[], int $animStart, int $animEnd )
+	{
+	fprint $fileHandle "vertexanimation\n";
+	
+	global string $lastFrame[];
+	global string $frame[];
+	
+	//global string $frameTmp[];
+	int $now = $animStart;
+	for ($now; $now <= $animEnd; $now++)
+		{
+		
+		
+		string $eachMesh;
+		global int $vertNr;
+		$vertNr = 0;
+					
+		fprint $fileHandle "time ";
+		fprint $fileHandle $now;
+		fprint $fileHandle "\n";
+		
+		for ($eachMesh in $meshList)
+			{
+			// we ignore objects with the drawing override
+			// set, so we can use polymesh objects for 
+			// markers and so on
+			if (`getAttr ($eachMesh + ".do.ovs")` == 1) 
+				{
+				string $frameTmp[] = `vtaGetTrans $vertNr $eachMesh $now`;
+				
+				string $line1;
+				for ($line1 in $frameTmp)
+					{
+					$frame[ size ($frame) ] = $line1;
+					}
+				clear $frameTmp;				
+				}
+			else
+				{
+				trace ("ignoring vertex info for " + $eachMesh+ "\n");
+				}
+			}
+			
+
+			
+			string $line;
+			int $cnt =0;
+			if ($now == 0)
+				{
+				for ($line in $frame)
+					{
+					fprint $fileHandle $line;
+					fprint $fileHandle "\n";
+					}
+				}
+			else
+				{
+				for ($line in $frame)
+					{
+					if ($frame[$cnt] != $lastFrame[$cnt])
+						{
+						fprint $fileHandle $line;
+						fprint $fileHandle "\n";
+						}
+					$cnt++;
+					}
+				}
+			clear $lastFrame;
+			$lastFrame = $frame;
+			clear $frame;
+		}
+		
+
+		
+	fprint $fileHandle "end\n";
+	}
+
+
+
+
+//-----------------------------------------------------------------------------
+// Export animation data, given a ref pose (for optimization of separate body groups)
+//-----------------------------------------------------------------------------
+proc exportAnimationDataPose( int $fileHandle, string $refPose[] )
+	{
+	fprint $fileHandle "skeleton\n";
+
+	// output the bone pose
+	fprint $fileHandle "time 0\n";
+	
+	for ($line in $refPose)
+		{
+		fprint $fileHandle $line; 
+		fprint $fileHandle "\n";
+		}
+
+	fprint $fileHandle "end\n";
+	}
+
+
+//-----------------------------------------------------------------------------
+// Export triangle list
+//-----------------------------------------------------------------------------
+proc int exportTriangleList( int $fileHandle, string $meshList[] )
+	{
+	// iterate through the mesh objects
+	fprint $fileHandle "triangles\n";
+	string $eachMesh;
+	for ($eachMesh in $meshList)
+		{
+		// we ignore objects with the drawing override
+		// set, so we can use polymesh objects for 
+		// markers and so on
+		print $eachMesh;
+		if (`getAttr ($eachMesh + ".do.ovs")` == 1) 
+			{
+			int $continue = `smdGetTriangles $fileHandle $eachMesh`;
+			if ($continue == 0)
+				{
+				fprint $fileHandle "end\n";
+				trace "\n\n----------------------------------------------\n----------------------------------------------\n";
+				warning "Export cancelled by user";
+				return 0;
+				}
+			}
+		else
+			{
+			trace ("ignoring triangle info for " + $eachMesh+ "\n");
+			}
+		}
+
+	fprint $fileHandle "end\n";
+	return 1;
+	}
+	
+	
+	
+
+
+//-----------------------------------------------------------------------------
+// Export .VMT files used by the model
+//-----------------------------------------------------------------------------
+proc int exportVMTFiles( string $fileRoot )
+	{
+	global string $smdShaderGrps[];
+	global string $smdBadShaderWarning[];
+	global string $skinlist[];
+	clear $skinlist;
+	// now export the .vmt files for shaders used in the model
+	trace "\n\n----------------------------------------------\n----------------------------------------------\n";
+	trace "exporting vmt files:\n";
+	int $numShaders = `size $smdShaderGrps`;
+	progressWindow
+		-progress 0
+		-minValue 0
+		-maxValue $numShaders
+		-status ""
+		-title ("exporting material system files")
+		-isInterruptable true;
+
+	int $ok;
+	int $step = 0;
+	string $usedShader;
+	for ($usedShader in $smdShaderGrps)
+		{
+		trace($usedShader);
+		trace("\n");
+
+		string $thisShader[];
+		$thisShader = `listConnections ($usedShader + ".ss")`;
+		$ok = `vmt $thisShader[0]`;
+		if (!$ok)
+			{
+			appendStringArray $smdBadShaderWarning {$usedShader} 1;
+			}
+		
+		
+		
+		int $skinsExists = `attributeQuery -n $thisShader[0] -ex skins`;
+		if ($skinsExists == 1)
+			{
+			string $sh = `getAttr ($thisShader[0] + ".skins")`;
+			if ($sh != "")
+				{
+				int $last = `size $skinlist`;
+				$skinlist[$last] = $thisShader[0] + " " +$sh;
+				string $shl[];
+				tokenize $sh " " $shl;
+				string $sha;
+				for ($sha in $shl)
+					{
+					$ok = `vmt $sha`;
+					if (!$ok)
+						{
+						appendStringArray $smdBadShaderWarning {$usedShader} 1;
+						}
+					}
+				}
+			}
+		
+		
+		
+		
+		$step ++;
+		progressWindow	-edit
+				-status $usedShader
+				-progress $step;
+
+		if (`progressWindow -q -isCancelled`)
+			{	
+			progressWindow -endProgress;
+			return 0;
+			}
+		}
+					
+	progressWindow -endProgress;
+	
+	$smdBadShaderWarning = `stringArrayRemoveDuplicates $smdBadShaderWarning`;
+	if (`size $smdBadShaderWarning` > 0 )
+		{
+		trace ("*** The following shaders did not export correctly:\n");
+		string $bs;
+		for ($bs in $smdBadShaderWarning) trace (" " + $bs +  "\n");
+		}
+	trace "\n\n----------------------------------------------\n----------------------------------------------\n";
+	return 1;
+	}
+
+
+//-----------------------------------------------------------------------------
+// Exports the skeleton
+//-----------------------------------------------------------------------------
+proc exportSkeleton( int $fileHandle )
+	{
+	global string $g_smdSkeleton[];
+
+	// output skeleton inf section
+	fprint $fileHandle  "nodes\n";
+
+	string $line;
+	for ($line in $g_smdSkeleton)
+		{
+		// this is a hacky way of dealing with referenced names
+		// should be done better at some later date.
+
+		// Basically it looks for joints named "namespace:jointname"
+		// and removes the namespace part of it.
+
+		string $lineItems[];
+		string $noRef;
+		tokenizeList $line $lineItems;
+
+		// NoRef stores the name of the bone at this point
+		$noRef = $lineItems[1];
+		$noRef = `substitute "^.*:" $noRef "\""`; // namespace option must be on
+		
+		//fix underscore from import
+		$noRef = `substitute "ValveBiped_" $noRef "ValveBiped."`;
+		$noRef = `substitute "weapon_" $noRef "weapon."`;
+		
+		$line = `substitute $lineItems[1] $line $noRef`;
+		fprint $fileHandle  $line; 
+		fprint $fileHandle "\n";
+		}
+
+	fprint $fileHandle "end\n";
+	}
+
+
+//-----------------------------------------------------------------------------
+// Generates a list of bones in the scene
+//-----------------------------------------------------------------------------
+proc smdAddBone (string $bone, int $parent) // iterative function for assembling bone lists
+	{
+	global int $g_smdBoneCounter;
+	global string $g_smdSkeleton[];
+	global string $g_smdIgnoreList[];
+
+	$g_smdBoneCounter ++;
+	int $myBoneID = $g_smdBoneCounter;
+	string $children[] = `listRelatives -c -type transform -pa $bone`;
+	$children = `stringArrayRemove $g_smdIgnoreList $children`;
+	string $thisChild;
+	for ($thisChild in $children)
+		{
+		smdAddBone $thisChild $myBoneID;
+		}
+	string $pad = "";
+	if ($myBoneID < 10) $pad += "0";
+	if ($myBoneID < 100) $pad += "0";
+	string $output[] = {($pad + $myBoneID + " \"" + $bone+ "\"  " + $parent)};
+	appendStringArray $g_smdSkeleton $output 1;
+	}
+	
+
+//-----------------------------------------------------------------------------
+// Make sure no valid nodes lie under ignore nodes
+//-----------------------------------------------------------------------------
+proc int checkSkeleton( string $bone, string $ignoreList[], int $belowInvalid )
+	{
+	// NOTE: non-ignoreable joints of ignoreable nodes need to be added!
+	int $invalidBone = ( stringArrayCount( $bone, $ignoreList ) != 0 );
+	if ( !$invalidBone && $belowInvalid && (`nodeType $bone` == "joint") )
+		{
+		warning("Bone " + $bone + " lies beneath an invalid bone! Export aborted\n");
+		trace("Bone " + $bone + " lies beneath an invalid bone! Export aborted\n");
+		return 0;
+		}
+
+	string $children[] = `listRelatives -c -type transform -pa $bone`;
+
+	string $thisChild;
+	for ($thisChild in $children)
+		{
+		if (!checkSkeleton( $thisChild, $ignoreList, $invalidBone ) )
+			return 0;
+		}
+
+	return 1;
+	}
+
+
+//-----------------------------------------------------------------------------
+// Scene analysis for determining what to export
+//-----------------------------------------------------------------------------
+proc int buildExportLists( string $meshList[] )
+	{
+	int $fixPhy = `getAttr smdInfo.smdFixTrans`;
+	int $fixTransform = `getAttr smdInfo.smdFixCol`;
+	
+	
+	if ($fixPhy == 1)
+		{
+		string $layers[] = `ls -type "displayLayer"`;
+		
+		for ($layer in $layers)
+			{
+			string $match = `match "[Pp][Hh][Yy].*" $layer`;
+			if ($match != "")
+				{
+				layerEditorSelectObjects $layer;
+				
+				string $sel[];
+				$sel = `ls -sl -ni -tr`;
+				print $sel;		
+				if ($sel[1] != "")
+					{
+					layerEditorRemoveObjects $layer;
+					polyUnite -ch 1 $sel;
+					$sel = `ls -sl -ni -tr`;
+					polySoftEdge -a 180 -ch 1 $sel;
+					layerEditorAddObjects $layer;
+					DeleteHistory;
+					}
+				
+				
+				} 
+			}
+		
+		
+		}
+	
+			
+	
+	global string $g_smdIgnoreList[];
+	global string $g_smdSkeleton[];
+	global int $g_smdBoneCounter;
+	
+	clear $g_smdIgnoreList;
+	clear $g_smdSkeleton;
+
+	// This is the list of all nodes
+	select -clear;
+	string $rootNodes[] = `listUnselected`;
+
+	$g_smdIgnoreList = `ls 			
+		-type buttonManip
+		-type pointConstraint
+		-type orientConstraint
+		-type aimConstraint
+		-type poleVectorConstraint
+		-type ikHandle
+		-type ikEffector
+		-type place3dTexture
+		`;
+	string $g_smdIgnoreListTheseTransforms[] = `ls -type camera
+		-type light
+		-type locator
+		-type nurbsCurve
+		-type nurbsSurface
+		-type place3dTexture
+		`;
+
+	string $rm;
+	for ($rm in $g_smdIgnoreListTheseTransforms)
+		{
+		appendStringArray $g_smdIgnoreList (`listTransforms $rm`) 1;
+		}
+
+	string $eachRoot;
+	for ($eachRoot in $rootNodes)
+		{
+		int $ok = checkSkeleton( $eachRoot, $g_smdIgnoreList, 0 );
+		if (!$ok) return 0;
+		}
+
+	string $jointList[];
+	$jointList = `stringArrayRemove $g_smdIgnoreList $rootNodes`;
+
+	$meshList = `ls -type mesh -ni`;
+	string $parent[] = listRelatives("-p","-path",$meshList);
+	string $mesh;
+	if ($fixTransform == 1)
+		{
+		for ($mesh in $parent)
+			{
+			select $mesh;
+			makeIdentity -apply true -t 1 -r 1 -s 1 -n 0;
+			makeIdentity-apply false -t 1 -r 1 -s 1;
+			}
+		}		
+	// assemble a list of skeletons
+	$g_smdBoneCounter = -1;
+	$g_smdSkeleton = {};
+
+	for ($eachRoot in $jointList)
+		{
+		smdAddBone $eachRoot -1;
+		}
+
+	$g_smdSkeleton = `sort $g_smdSkeleton`;
+	return 1;
+	}
+
+
+//-----------------------------------------------------------------------------
+// Open SMD file for writing
+//-----------------------------------------------------------------------------
+proc int beginSMDFile( string $smdFileName )
+	{
+	trace "\n\n----------------------------------------------\n----------------------------------------------\n";
+	trace ("exporting to " + ($smdFileName)+ "\n");
+
+	// open the file for writing
+	if (`okToWrite $smdFileName 1` == 0)
+		{
+		error ("unable to open " + $smdFileName +  " for write");
+		return 0;
+		}
+
+	int $fileHandle = `fopen $smdFileName "w"`;
+	if (!$fileHandle) 
+		{
+		error ("unable to open " + $smdFileName +  " for write");
+		return 0;
+		}
+
+	// write the header
+	fprint $fileHandle  "version 1\n";
+	
+	return $fileHandle;
+	}
+
+
+
+
+//-----------------------------------------------------------------------------
+// Entry point for exporting reference smds
+//-----------------------------------------------------------------------------
+proc int exportSingleReference( string $smdFileName, string $meshList[], string $refPose[] )
+	{
+	int $ok;
+	int $fileHandle = beginSMDFile( $smdFileName );
+	if (!$fileHandle) return 0;
+
+	// output skeleton data
+	exportSkeleton( $fileHandle );
+
+	exportAnimationDataPose( $fileHandle, $refPose );
+
+	// Export triangle information
+	$ok = exportTriangleList( $fileHandle, $meshList );
+
+	fclose $fileHandle;
+	return $ok;
+	}
+
+
+//-----------------------------------------------------------------------------
+// Writes the qci file with all of the bodygroups into it
+//-----------------------------------------------------------------------------
+proc int exportQCIFile( string $qciFileName, string $baseFileName, string $meshList[] )
+	{
+	global string $qciName;
+	$qciName = `substitute "^.*/" $qciFileName ""`;
+	if (`okToWrite $qciFileName 1` == 0)
+		{
+		error ("unable to open " + $qciFileName +  " for write");
+		return 0;
+		}
+
+	int $qciFileHandle = `fopen $qciFileName "w"`;
+	if (!$qciFileHandle) 
+		{
+		error ("unable to open " + $qciFileName +  " for write");
+		return 0;
+		}
+
+	string $mesh;
+	string $shape;
+	for( $shape in $meshList )
+		{
+		string $mesh = `substitute "Shape" $shape ""`;
+		string $smdFileName = $baseFileName + "_" + $shape + ".smd";
+		
+		
+		if ($mesh == "main")
+			{
+			fprint $qciFileHandle  "$body studio \"";
+				fprint $qciFileHandle $smdFileName;
+				fprint $qciFileHandle "\"\n";
+			fprint $qciFileHandle  "\n";
+			}
+		else
+			{
+			fprint $qciFileHandle  "$bodygroup ";
+				fprint $qciFileHandle $mesh;
+				fprint $qciFileHandle "\n";
+			fprint $qciFileHandle  "{\n";
+			fprint $qciFileHandle  "blank\n";
+			fprint $qciFileHandle  "studio \""; 
+				fprint $qciFileHandle $smdFileName;
+				fprint $qciFileHandle "\"\n";
+			fprint $qciFileHandle  "}\n";
+			fprint $qciFileHandle  "\n";
+			}
+		}
+
+	fclose $qciFileHandle;
+	return 1;
+	}
+
+
+//-----------------------------------------------------------------------------
+// Entry point for exporting reference smds
+//-----------------------------------------------------------------------------
+proc int exportReference( string $fileRoot, string $smdFileName, string $meshList[], int $seperateBodyGroups )
+	{
+	// Necessary for smdGetPose to operate correctly
+	computeVMTDirectories();
+
+	// Make list of bone positions -- in references we use the current time
+	// Cache this off, we don't want to recompute it in the seperate body group case
+	int $now = `currentTime -q`;
+	string $refPose[] = `smdGetPose $now`;
+	int $ok;
+	if ( $seperateBodyGroups )
+		{
+		string $baseSMDFileName = `substitute "\\.smd$" $smdFileName ""`;
+
+		string $mesh;
+		string $bodyGroupMesh[1];
+		for ($mesh in $meshList)
+			{
+			string $bodyGroupFileName = $baseSMDFileName + "_" + $mesh + ".smd";
+			$bodyGroupMesh[0] = $mesh;
+			$ok = exportSingleReference( $bodyGroupFileName, $bodyGroupMesh, $refPose );
+			if (!$ok) return 0;
+			}
+
+		string $baseFileName = `substitute "^.*/" $baseSMDFileName ""`;
+		string $qciFileName = $baseSMDFileName + ".qci";
+		$ok = exportQCIFile( $qciFileName, $baseFileName, $meshList );
+		if (!$ok) return 0;
+		}
+	else
+		{
+		$ok = exportSingleReference( $smdFileName, $meshList, $refPose );
+		if (!$ok) return 0;
+		}
+
+	$ok = exportVMTFiles( $fileRoot );
+	if ($ok == 0) return 0;
+	
+	return 1;
+	}
+
+
+//-----------------------------------------------------------------------------
+// Entry point for exporting animation smds
+//-----------------------------------------------------------------------------
+proc int exportAnimation( string $smdFileName)
+	{
+	int $fileHandle = beginSMDFile( $smdFileName );
+	if (!$fileHandle)
+		{
+		return 0;
+		}
+
+	// output skeleton data
+	exportSkeleton( $fileHandle );
+
+	// if this is a reference SMD, export triangle information
+	int $ok;
+	int $animStart = 0;//`playbackOptions -q -ast`;
+	int $animEnd = 1;//`playbackOptions -q -aet`;
+	
+	trace ("Extracting animation data frames " + $animStart + " to " + $animEnd + "/n");
+	exportAnimationData( $fileHandle, $animStart, $animEnd );
+
+	fclose $fileHandle;
+	return 1;
+	}
+
+
+//-----------------------------------------------------------------------------
+// Entry point for exporting multiple animation smds
+//-----------------------------------------------------------------------------
+proc int exportAnimationList( string $smdFileName)
+	{
+	string $aniNameList[];
+	string $aniStartList[];
+	string $aniEndList[];
+		
+	string $aniName = `getAttr smdInfo.smdAniName`;
+	string $aniStart = `getAttr smdInfo.smdAniStart`;
+	string $aniEnd = `getAttr smdInfo.smdAniEnd`;
+			
+	$aniNameList = string2Array($aniName);
+	$aniStartList = string2Array($aniStart);
+	$aniEndList = string2Array($aniEnd);
+	
+	string $item;
+	int $cnt = 0;
+	for ($item in $aniNameList)
+		{	
+		
+		string $aniFile = `substitute ".smd" $smdFileName "_"`;
+		$aniFile += $item +".smd";
+		int $fileHandle = beginSMDFile( $aniFile );
+		if (!$fileHandle)
+			{
+			return 0;
+			}
+				
+		// output skeleton data
+		exportSkeleton( $fileHandle );
+	
+		// if this is a reference SMD, export triangle information
+				
+		trace ("Extracting animation data frames " + $aniStartList[$cnt] + " to " + $aniEndList[$cnt] + "/n");
+		exportAnimationData( $fileHandle, $aniStartList[$cnt], $aniEndList[$cnt] );
+	
+		fclose $fileHandle;
+		$cnt++;
+		}
+	return 1;
+	}
+
+
+
+
+
+//-----------------------------------------------------------------------------
+// Entry point for exporting animation vtas
+//-----------------------------------------------------------------------------
+proc int exportVtaAnimation( string $vtaFileName, string $meshList[])
+	{
+	global string $lastVertexList[];		
+	int $fileHandle = beginSMDFile( $vtaFileName );
+	if (!$fileHandle)
+		{
+		return 0;
+		}
+
+	// output skeleton data
+	exportSkeleton( $fileHandle );
+        
+	int $ok;
+	int $animStart = `playbackOptions -q -ast`;
+	int $animEnd = `playbackOptions -q -aet`;
+	
+	//output skeleton animation
+	trace ("Extracting animation data frames " + $animStart + " to " + $animEnd + "/n");
+	exportAnimationData( $fileHandle, $animStart, $animEnd);
+	
+	//output vertex animation
+	trace ("Extracting Vertex animation data frames " + $animStart + " to " + $animEnd + "/n");
+	exportVtaData( $fileHandle, $meshList, $animStart, $animEnd );
+
+	fclose $fileHandle;
+	return 1;
+	}
+
+
+
+
+proc int exportQC( string $qcFileName, string $refFileName, int $type)		//type 1=break,2=base
+	{
+	global string $realTexPath[];
+	global string $breakNameList[];
+	global string $skinlist[];
+	global string $LODNameList[];
+	string $surf = "default:solidmetal:Metal_Box:metal-ametal_bouncy:slipperymetal:metalgrate:metalvent:metalpanel:dirt:mud:slipperyslime:grass:tile:Wood:Wood_lowdensity:Wood_Box:Wood_Crate:Wood_Plank:Wood_Solid:Wood_Furniture:Wood_Panel:water:slime:quicksand:wade:ladder:glass:computer:concrete:rock:porcelain:boulder:gravel:brick:concrete_block:chainlink:chain:flesh:bloodyflesh:alienflesh:armorflesh:watermelon:snow:ice:carpet:plaster:cardboard:plastic_barrel:Plastic_Box:plastic:item:sand:rubber:rubbertire:jeeptire:slidingrubbertire:brakingrubbertire:slidingrubbertire_front:slidingrubbertire_rear:glassbottle:pottery:grenade:canister:metal_barrel:floating_metal_barrel:plastic_barrel_buoyant:roller:popcan:paintcan:paper:papercup:ceiling_tile:weapon:default_silent:player:player_control_clip:no_decal:foliage:";
+	string $key = "Cardboard.Small:Cardboard.Medium:Cardboard.Large:Cloth.Small:Cloth.Medium:Cloth.Large:Wooden.Tiny:Wooden.Small:Wooden.Medium:Wooden.Large:Wooden.ExtraLarge:Wooden.Huge:Stone.Small:Stone.Medium:Stone.Large:Stone.Huge:Glass.Small:Glass.Window:Metal.Small:Metal.Medium:Metal.Large:Plastic.Small:Plastic.Medium:Plastic.Large:Item.Small:Item.Medium:Item.Large:Pottery.Small:Pottery.Medium:Pottery.Large:Pottery.Huge:Flesh.Tiny:Flesh.Small:";
+	string $surfList[];
+	string $keyList[];
+	int $n1= `tokenize $surf ":" $surfList`;
+	int $n2= `tokenize $key ":" $keyList`;
+	
+	string $modelName =`substitute "^.*/model_sources/" $refFileName ""`;
+	$refFileName =`substitute "^.*/" $refFileName ""`;
+		
+	string $paths[];
+	int $num = `tokenize $refFileName "\\/" $paths`;
+	string $name = $paths[$num-1];
+	string $bodyName;
+	string $ref;
+	//$bodyName = `match ($paths[$num-1]+".*") $refNameList[0]`;
+	
+	
+	if (`okToWrite $qcFileName 1` == 0)
+		{
+		error ("unable to open " + $qcFileName +  " for write");
+		return 0;
+		}
+
+	int $qcFileHandle = `fopen $qcFileName "w"`;
+	if (!$qcFileHandle) 
+		{
+		error ("unable to open " + $qcFileName +  " for write");
+		return 0;
+		}
+
+			fprint $qcFileHandle  "$modelname \"";
+			fprint $qcFileHandle $modelName;
+			fprint $qcFileHandle ".mdl\"\n";
+			fprint $qcFileHandle  "\n";
+
+			string $l;
+			for ($l in $realTexPath)
+				{
+				fprint $qcFileHandle  "$cdmaterials ";
+				fprint $qcFileHandle $l;
+				fprint $qcFileHandle "\n";
+				}
+			
+			fprint $qcFileHandle "$scale ";
+			string $scale = `getAttr smdInfo.qcScale`;
+			fprint $qcFileHandle $scale;
+			fprint $qcFileHandle "\n";
+			
+			
+			
+			string $isbreak = `match "[Bb][Rr][Ee][Aa][Kk]" $name`;
+			if ($isbreak != "")
+				{
+				string $layer = `substitute "^.*_" $name "ref_"`;
+				int $Exists = `attributeQuery -n $layer -ex surface`;
+				if ($Exists != 0)
+					{
+					fprint $qcFileHandle  "$surfaceprop \"";
+					int $surfnr = `getAttr ($layer+".surface")`;
+					string $surf = $surfList[$surfnr];
+					fprint $qcFileHandle  $surf;
+					fprint $qcFileHandle  "\"\n";
+					}
+				else
+					{
+					fprint $qcFileHandle  "$surfaceprop \"";
+					string $surf = `getAttr smdInfo.qcSurface`;
+					fprint $qcFileHandle  $surf;
+					fprint $qcFileHandle  "\"\n";
+					}	
+				}
+			else
+				{
+				fprint $qcFileHandle  "$surfaceprop \"";
+				string $surf = `getAttr smdInfo.qcSurface`;
+				fprint $qcFileHandle  $surf;
+				fprint $qcFileHandle  "\"\n";
+				}
+			
+
+
+
+			if (`getAttr smdInfo.qcStatic` == 1)
+				{
+				fprint $qcFileHandle "$staticprop\n";
+				}
+			else
+				{	
+				string $isbreak = `match "[Bb][Rr][Ee][Aa][Kk]" $name`;
+				if ($isbreak != "")
+					{
+					string $layer = `substitute "^.*_" $name "ref_"`;
+					int $Exists = `attributeQuery -n $layer -ex keyvalue`;
+					if ($Exists != 0)
+						{
+						fprint $qcFileHandle  "$keyvalues { \"prop_data\" { \"base\" \"";
+						int $keynr = `getAttr ($layer+".keyvalue")`;
+						string $key= $keyList[$keynr];
+						fprint $qcFileHandle  $key;
+						fprint $qcFileHandle  "\" } }\n";
+						}
+					else
+						{
+						fprint $qcFileHandle  "$keyvalues { \"prop_data\" { \"base\" \"";
+						string $key = `getAttr smdInfo.qcKey`;
+						fprint $qcFileHandle  $key;
+						fprint $qcFileHandle  "\" } }\n";
+						}
+					}
+				else
+					{
+					fprint $qcFileHandle  "$keyvalues { \"prop_data\" { \"base\" \"";
+					string $key = `getAttr smdInfo.qcKey`;
+					fprint $qcFileHandle  $key;
+					fprint $qcFileHandle  "\" } }\n";
+					}
+				}
+			
+						
+			
+			
+			
+			if (`getAttr smdInfo.seperateBodyGroup` == 0 || $type != 2)				//bgroups
+				{
+				fprint $qcFileHandle  "$body \"Body\" \""; 
+				fprint $qcFileHandle $name;
+				fprint $qcFileHandle "\"\n";
+				}
+			else
+				{
+				global string $qciName;
+				fprint $qcFileHandle "$include \"";
+				fprint $qcFileHandle $qciName;
+				fprint $qcFileHandle "\"\n";
+				}
+			
+			
+			
+			
+			
+			if (`getAttr smdInfo.qcLOD`== 1 && $type == 2)						//lods
+				{
+				string $LODModel;
+				for ($LODModel in $LODNameList)
+					{
+					$LODModel = `substitute "^.*/" $LODModel ""`;
+					string $LODRange = `substitute "^.*[Ll][Oo][Dd]_" $LODModel ""`;
+					fprint $qcFileHandle  "\n$lod ";
+					fprint $qcFileHandle  $LODRange;
+					fprint $qcFileHandle  "\n{\nreplacemodel \"";
+					fprint $qcFileHandle  $name;
+					fprint $qcFileHandle  "\" \"";
+					fprint $qcFileHandle  $LODModel;
+					fprint $qcFileHandle  "\"\n}\n";
+					}
+				
+				}
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			if (`size $skinlist` != 0)							//skins
+				{
+				global string $skinlines[];
+				clear $skinlines;
+				fprint $qcFileHandle "$texturegroup skinfamilies {";
+				string $s;
+				for ($s in $skinlist)
+					{
+					string $sha[];
+					tokenize $s " " $sha;
+					string $s1;
+					int $cnt =0;
+					for ($s1 in $sha)
+						{
+						$skinlines[$cnt] = $skinlines[$cnt] + " \"";
+						string $f=`fileNodeInfo -f $s1 color`;
+						$f = `substitute "^.*/" $f ""`;
+						$f = `substitute ".tga" $f ".vmt"`;
+						$skinlines[$cnt] = $skinlines[$cnt] + $f + "\"";
+						$cnt++;       
+						}
+					}
+				
+				string $ln;
+				for ($ln in $skinlines)
+					{
+					fprint $qcFileHandle "\r\n\t{";
+					fprint $qcFileHandle $ln;
+					fprint $qcFileHandle " }";
+					}
+				fprint $qcFileHandle "\r\n}\n";			
+				
+				}
+			
+			
+			
+				
+						
+			if (`getAttr smdInfo.smdIdle` == 1 || $type == 1 )				//idle
+				{
+				fprint $qcFileHandle  "$sequence idle \"";
+				fprint $qcFileHandle  $name;
+				fprint $qcFileHandle  "_idle\" loop fps 1\n";
+				}	
+				
+			if (`getAttr smdInfo.smdAni`== 1 && $type == 2 )				//ani
+				{
+				string $aniNameList[];
+				string $aniAddList[];
+				
+				string $aniName = `getAttr smdInfo.smdAniName`;
+				string $aniAdd = `getAttr smdInfo.smdAniAdd`;
+					
+				$aniNameList = string2Array($aniName);
+				$aniAddList = string2Array($aniAdd);
+				
+				string $n;
+				int $c = 0;
+				for ($n in $aniNameList)
+					{
+					fprint $qcFileHandle  "$sequence ";
+					fprint $qcFileHandle  $n;
+					fprint $qcFileHandle  " \"";
+					fprint $qcFileHandle  $name;
+					fprint $qcFileHandle  "_";
+					fprint $qcFileHandle  $n;
+					fprint $qcFileHandle  "\" ";
+					fprint $qcFileHandle  $aniAddList[$c];
+					fprint $qcFileHandle  "\n";
+					$c++;
+					}
+				}
+				
+				
+					
+			
+			
+			if ($type == 1 || $type == 2 && `getAttr smdInfo.smdPhy`==1 )			//physics
+				{
+				string $isbreak = `match "[Bb][Rr][Ee][Aa][Kk]" $name`;
+				if ($isbreak != "")
+					{
+					string $layer = `substitute "^.*_" $name "ref_"`;
+					int $Exists = `attributeQuery -n $layer -ex mass`;
+					if ($Exists != 0)
+						{
+						string $mass = `getAttr ($layer+".mass")`;
+						fprint $qcFileHandle  "$collisionmodel \"";
+						fprint $qcFileHandle  $name;
+						fprint $qcFileHandle  "_phy.smd\"\n{\n";
+						fprint $qcFileHandle  "$mass ";
+						fprint $qcFileHandle  $mass;
+						fprint $qcFileHandle  "\n$concave\n}";
+						}			
+					}
+				else
+					{
+					string $mass = `getAttr smdInfo.qcMass`;
+					fprint $qcFileHandle  "$collisionmodel \"";
+					fprint $qcFileHandle  $name;
+					fprint $qcFileHandle  "_phy.smd\"\n{\n";
+					fprint $qcFileHandle  "$mass ";
+					fprint $qcFileHandle  $mass;
+					fprint $qcFileHandle  "\n$concave\n}";
+					}
+				}
+			
+			
+			
+			
+			
+			if (`getAttr smdInfo.smdBreak`== 1 && $type == 2)				// breakmodels
+				{
+				fprint $qcFileHandle  "\n$collisiontext\n{";
+				string $breakModel;
+				for ($breakModel in $breakNameList)
+					{
+					$breakModel = `substitute "^.*/model_sources/" $breakModel ""`;
+					string $breakLayer = `substitute "^.*_" $breakModel "ref_"`;
+					int $fadeExists = `attributeQuery -n $breakLayer -ex fadetime`;
+					int $healthExists = `attributeQuery -n $breakLayer -ex health`;
+										
+					fprint $qcFileHandle  "\nbreak { \"model\" \"";
+					fprint $qcFileHandle  $breakModel;
+					fprint $qcFileHandle "\"";
+					
+					if ($healthExists != 0)
+						{
+						string $health = `getAttr ($breakLayer+".health")`;
+						if ($health != "0")
+							{
+							fprint $qcFileHandle  " \"health\" \"";
+							fprint $qcFileHandle $health;
+							fprint $qcFileHandle "\"";
+							}
+						}
+					
+					
+					
+					if ($fadeExists != 0)
+						{
+						string $fade = `getAttr ($breakLayer+".fadetime")`;
+						fprint $qcFileHandle  " \"fadetime\" \"";
+						fprint $qcFileHandle $fade;
+						fprint $qcFileHandle "\" }";
+						}
+					else
+						{
+						fprint $qcFileHandle  " \"fadetime\" \"0\" }";
+						}
+						
+					}
+				fprint $qcFileHandle "\n}\n";
+				}
+			
+			if ($type == 2)
+				{
+				string $add = `getAttr smdInfo.qcAdd`;
+				fprint $qcFileHandle "\n";
+				fprint $qcFileHandle $add;
+				}			
+			
+	
+	fclose $qcFileHandle;
+	return 1;
+	}
+	
+
+
+
+//-----------------------------------------------------------------------------
+// Main entry point for exporting SMDs
+//-----------------------------------------------------------------------------
+global proc int smdExport (int $reference, int $separateBodyGroups)
+	{
+	source "paths";
+	global string $smdFileTx[];
+	global string $smdShaderGrps[];
+	global string $smdBadShaderWarning[];
+	global string $vpj;
+	global string $breakNameList[];
+	global string $LODNameList[];
+	
+	clear $smdFileTx;
+	clear $smdShaderGrps;
+	clear $smdBadShaderWarning;
+
+	// prepare the file
+	string $fileName = `getAttr smdInfo.smdTarget`;
+
+	// Make sure it lies in the 'scenes' directory
+	//string $pathCheck = `match "/[Ss][Cc][Ee][Nn][Ee][Ss]/" $fileName`;
+	//$pathCheck = `tolower( $pathCheck )`;
+	//if ($pathCheck != "/scenes/")
+	//	{
+	//	error ("In order to export to SMD, the maya file must lie in the 'scenes' directory!");
+	//	return 0;
+	//	}
+
+	// analyze the scene, finding root bones and meshes but skipping cameras and lights
+	string $meshList[];
+	if ( !buildExportLists( $meshList ) )
+		return 0;
+
+	// Compute the workspace directory
+	string $fileScenePath = `match "^.*/[Mm][Oo][Dd][Ee][Ll]_[Ss][Oo][Uu][Rr][Cc][Ee][Ss]/" $fileName`;
+	string $fileRoot = `substitute "/[Mm][Oo][Dd][Ee][Ll]_[Ss][Oo][Uu][Rr][Cc][Ee][Ss]/$" $fileScenePath "/"`;
+	string $relPath = stripName(`substitute $fileRoot $fileName ""`);
+	string $relPathMdl = `substitute "model_sources" $relPath "models"`;	
+	
+	
+	// Create an 'smd' directory on disk where we're going to export stuff...			 
+	workspace -dir $vpj;
+	int $mdlExists = `filetest -d $relPathMdl`;
+	if ($mdlExists == false) 
+		{
+		workspace -create $relPathMdl;
+		}
+	
+	workspace -dir $fileRoot;
+	int $smdExists = `filetest -d $relPath`;
+	if ($smdExists == false) 
+		{
+		workspace -create $relPath;
+		}
+	workspace -dir $relPath;
+	print $vpj;
+	print "\n";
+	print $fileRoot;
+	print "\n";
+	print $relPath;
+	print "\n";
+	print $relPathMdl;
+	
+	
+	// the smd file will be named the same as the model file, only placed in the smd directory
+	string $smdFileName = $fileName;
+	string $smdPhy;
+	string $smdIdle;
+	string $smdName;
+	string $qcName;
+	string $vtaFileName;
+	
+	//$smdFileName = `substitute "/[Ss][Cc][Ee][Nn][Ee][Ss]/" $smdFileName "/model_sources/"`;
+	//$smdFileName = `substitute "\\.[Mm][AaBb]$" $smdFileName ".smd"`;
+	$smdPhy = `substitute ".[Ss][Mm][Dd]" $smdFileName "_phy.smd"`;
+	$smdIdle = `substitute ".[Ss][Mm][Dd]" $smdFileName "_idle.smd"`;
+	$smdName = `substitute ".[Ss][Mm][Dd]" $smdFileName ""`;
+	$qcName = `substitute ".[Ss][Mm][Dd]" $smdFileName ".qc"`;
+	$vtaFileName = `substitute ".[Ss][Mm][Dd]" $smdFileName ".vta"`;
+	
+	
+	waitCursor -state on;
+
+	int $retval;
+	
+	
+	if (`getAttr smdInfo.smdIdle`== 1)
+		{
+		$retval = exportAnimation( $smdIdle );
+		}
+	
+	
+	
+	if ( $reference == 1)
+		{
+		$retval = exportReference( $fileRoot, $fileName, $meshList, $separateBodyGroups );
+		}
+	if ( $reference == 0)
+		{
+		$retval = exportAnimation( $smdFileName );
+		}
+	if ( $reference == 2)
+		{
+		$retval = exportVtaAnimation($vtaFileName,$meshList);
+		}
+	if ( $reference == 3)	
+		{
+			
+		string $layer;	
+		int $breakCnt = 0;
+		int $LODCnt =0;
+		string $layers[] = `ls -type "displayLayer"`;
+		for( $layer in $layers )
+			{
+			
+			//####################################### export LOD's ######################################
+			
+			string $layerCheck = `match "[Ll][Oo][Dd]_.*" $layer`;						
+			if ($layerCheck != "" && `getAttr smdInfo.qcLOD` == 1)
+				{
+				$meshListLayer = `listConnections -sh 1 -type mesh ($layer+".drawInfo")`;
+				string $mesh5;
+				string $meshOut5[];
+				int $cnt5=0;
+				for ($mesh5 in $meshList)
+					{
+					string $meshLayer5;
+					for ($meshLayer5 in $meshListLayer)
+						{
+						if ($mesh5 == $meshLayer5)
+							{
+							$cnt5++;
+							$meshOut5[$cnt5-1] = $mesh5;
+							
+							}
+						
+						}
+					}
+				
+				$LODNameList[$LODCnt] = $smdName + "_" + $layerCheck;
+				string $FileName = $smdName + "_" + $layerCheck + ".smd";
+				$retval = exportReference( $fileRoot, $FileName, $meshOut5, 0 );
+				
+				$LODCnt ++ ;
+				}
+				
+			
+					
+			
+			
+			
+			
+			
+			//####################################### export and compile break gibs ######################################
+			
+			string $layerCheck = `match "[Rr][Ee][Ff]_[Bb][Rr][Ee][Aa][Kk].*" $layer`;						
+			if ($layerCheck != "" && `getAttr smdInfo.smdBreak` == 1)
+				{
+				$meshListLayer = `listConnections -sh 1 -type mesh ($layer+".drawInfo")`;
+				string $mesh;
+				string $meshOut[];
+				int $cnt=0;
+				for ($mesh in $meshList)
+					{
+					string $meshLayer;
+					for ($meshLayer in $meshListLayer)
+						{
+						if ($mesh == $meshLayer)
+							{
+							$cnt++;
+							$meshOut[$cnt-1] = $mesh;
+							
+							}
+						
+						}
+					}
+				string $break = `substitute "[Rr][Ee][Ff]_" $layerCheck ""`;
+				$breakNameList[$breakCnt] = $smdName + "_" + $break;
+				string $FileName = $smdName + "_" + $break + ".smd";
+				$retval = exportReference( $fileRoot, $FileName, $meshOut, 0 );
+				
+				$breakCnt ++ ;
+			
+			
+			//	################### get phys layer for breakref ###################################
+				
+				$meshListLayer = `listConnections -sh 1 -type mesh ("phy_"+$break+".drawInfo")`;
+				
+				string $mesh1;
+				string $meshOut1[];
+				int $cnt1=0;
+				for ($mesh1 in $meshList)
+					{
+					string $meshLayer1;
+					for ($meshLayer1 in $meshListLayer)
+						{
+						if ($mesh1 == $meshLayer1)
+							{
+							$cnt1++;
+							$meshOut1[$cnt1-1] = $mesh1;
+							
+							}
+						}
+					}
+				string $breakFileName = $smdName + "_" + $break + "_phy.smd";
+				string $bname = $smdName + "_" + $break;
+				
+				$retval = exportReference( $fileRoot, $breakFileName, $meshOut1, 0 );
+				
+				string $breakIdle = $bname + "_idle.smd";
+				$retval = exportAnimation( $breakIdle );
+				
+				$retval = exportQC($bname+".qc",$bname,1);
+				string $std;
+				$std = `system ("%sourcesdk%/bin/studiomdl \"" + $bname + ".qc\"")`;
+				print $std;
+				
+				}
+				
+				
+		//############################ export base ref Layer #######################################		
+			
+			$layerCheck = `match "[Rr][Ee][Ff][Ee][Rr][Ee][Nn][Cc][Ee].*" $layer`;
+			if ($layerCheck != "" && `getAttr smdInfo.smdRef` == 1)
+				{
+				
+				$meshListLayer = `listConnections -sh 1 -type mesh ($layer+".drawInfo")`;
+				string $mesh2;
+				string $meshOut2[];
+				int $cnt2=0;
+				for ($mesh2 in $meshList)
+					{
+					string $meshLayer;
+					for ($meshLayer in $meshListLayer)
+						{
+						if ($mesh2 == $meshLayer)
+							{
+							$cnt2++;
+							$meshOut2[$cnt2-1] = $mesh2;
+							
+							}
+						
+						}
+					}
+				$retval = exportReference( $fileRoot, $smdName+".smd", $meshOut2, $separateBodyGroups );
+				
+				}
+				
+	//########################### export base phy layer #################################################	
+				
+			$layerCheck = `match "[Pp][Hh][Yy][Ss][Ii][Cc][Ss].*" $layer`;
+			if ($layerCheck != "" && `getAttr smdInfo.smdPhy` == 1)
+				{
+				
+				$meshListLayer = `listConnections -sh 1 -type mesh ($layer+".drawInfo")`;
+				string $mesh3;
+				string $meshOut3[];
+				int $cnt3=0;
+				for ($mesh3 in $meshList)
+					{
+					string $meshLayer;
+					for ($meshLayer in $meshListLayer)
+						{
+						if ($mesh3 == $meshLayer)
+							{
+							$cnt3++;
+							$meshOut3[$cnt3-1] = $mesh3;
+							
+							}
+						
+						}
+					}
+				$retval = exportReference( $fileRoot, $smdPhy, $meshOut3, 0 );
+				}
+			
+			
+			}
+		
+		}
+	if (`getAttr smdInfo.smdAni`== 1)
+		{
+		$retval = $retval = exportAnimationList( $smdFileName );
+		}
+	
+		
+	if (`getAttr smdInfo.fullCompile`== 1)
+		{
+		$retval = exportQC($qcName,$smdName,2);
+		}	
+	if ( $reference == 3 && `getAttr smdInfo.compile` == 1)
+		{	
+		string $std;
+		$std = `system ("%sourcesdk%/bin/studiomdl \"" + $qcName + "\"")`;
+		print $std;
+		}
+	
+	if (`getAttr smdInfo.Thumb`==1)
+		{
+		string $sName = `file -q -sceneName`;
+		$sName = `substitute "^.*/" $sName ""`;
+		$sName = `substitute "\\.[Mm][AaBb]$" $sName "_perspShape_tmp.jpg"`;
+		string $tName = `substitute "^.*/model_sources/" $smdName ""`;
+		string $plress[] = `listConnections defaultRenderGlobals.resolution`;
+		setAttr defaultRenderGlobals.imageFormat 8;
+		setAttr ($plress[0]+".width") 640;
+		setAttr ($plress[0]+".height") 480;
+		setAttr -type "string" defaultRenderGlobals.imageFilePrefix "";
+		setAttr "perspShape.backgroundColor" -type double3 0.6529 0.6529 0.6529 ;
+		//FrameAll;
+		render persp;
+		
+		string $std1;
+		$std1 = "\""+ $fileRoot+"/images/" + $sName + "\" " + "\"%vproject%/models/" + $tName + ".jpg\"";
+		$std1 = `substituteAllString $std1 "/"  "\\"`;
+		print $std1;
+		$std1 = `system ("copy /y " +$std1)`;
+		print $std1;
+		}
+	
+	waitCursor -state off;
+	waitCursor -state off;
+	return $retval;
+	}
+
+

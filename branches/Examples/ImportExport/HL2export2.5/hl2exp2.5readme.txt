@@ -1,0 +1,191 @@
+Source Exporter 2.5 for maya 4-7 updated by Prall 
+
+install: 1.	copy all files from the zip to
+
+		%USERPROFILE%/my documents/maya/x.x/
+		
+		should be something like 
+
+		c:/documents and settings/username/my documents/maya/7.0/
+
+		or use the path from environment variable MAYA_SCRIPTS_PATH
+	 
+	 
+scene:  1.	add a phongE shader with a power of 2 tga texture connected to the color channel to your mesh
+		tga must be in materialsrc/models/anyfolder
+	2.	to use material options load hl2shader.mel in script editor, select the whole script (ctrl+a)
+		file->save selected to shelf and give it a name. u will get a shelf button that creates a phongE shader 
+		with some extra atributes. save another copy without the first line to make a update button for existing phongE shaders
+	3.	create a "reference" named layer and add the reference mesh to it (with mesh selected rmb click on the layer and select
+		"add selected objects" from dropdown.
+	4.	do the same for "physics" and if u want breakable model also for "ref_break_01" + "phy_break_01" , "ref_break_02" a.s.o.
+		use the create layer gui to get extra attributes for the break layers where you can set individual surfaceprops and mass
+	5.	to use skins add the shader names seperated by " " in the skins extra attribute of the base shader
+		(example: apply phongE1 to object and set "phongE2 PhongE3" as skins attribute...this will create 3 skins of these 3
+		shaders and converts its textures)if u have multiple materials for a model make sure the skin count is the same on
+		textures you want to switch (ex. 2 bark textures + 3 branch textures only work if u reuse one of the bark shaders in
+		the skin attribute....if u have only 2 it wont switch them, only the 3 branches....this ofcourse doesnt matter if u 
+		have just 1 bark texture) 
+	
+
+
+export:	1.	save your scene and use 
+		smdOptionWindow (mel command line or file->exportsmd option box) or use the shelf button
+	2.	go to paths tab and click default
+	3.	click full compile
+
+
+some notes:
+		
+	-paths	do not use special chars or spaces
+		/sources/scenes/ >> /sources/model_sources/ >> /vproject/models/
+		/sources/materialsrc/models/ >> /vproject/materials/models/
+	-no undo before export
+		save before or maya will crash
+	-unique shape names
+		do not use dupe shape names
+	-steam
+		make sure it is running or export wont work
+	-textures
+		make sure they are tgas with a power of 2 resolution
+		you can use bumpmaps or normal maps connected to bump of phonge shader
+		just name them *_height or *_normal for correct export
+
+
+
+
+
+
+
+Export Tab Options:
+	-export Reference smd from Layer "reference"
+		only uncheck if it already exists (to speed recompile)
+	-export Physics smd from Layer "physics"
+		only uncheck if it already exists (to speed recompile)
+	-freeze and reset transforms
+		better not use that..freeze transform and reset for every mesh in the scene
+	-combine and smooth collision meshes
+		collisionmodels seem to need a single node. this combines multiple collision meshes
+		and combines them (per layer) and smoothes edges. good if you just copy
+		around some primitives as collision model
+	-export/compile break models from Layer "ref_break*" and "phy_break*"
+		exports break smd's form Layers named "ref_break*" and "phy_break*"
+		(ex. ref_break01 phy_break01, ref_break02 phy_break02)
+		creates qc's with same settings as base, compiles and adds break commands to base qc 
+        -export LOD Models from Layer LOD_range
+		creates a LOD model for each Layer called LOD_range where range is the min distance
+		for this LOD Model
+        -export 1 frame Idle smd
+		use it to create dummy animation smd, uncheck if you have your own idle animation in
+		Animation Tab. It doesnt affec the dummy idle from break models, just the base model
+       	-export Animation smds
+		exports Animations set in Animations Tab
+	-export Textures
+		exports Textures
+	-generate QC
+		well...what might this do?? ;) uncheck if u want to use your own qc but compile will fail
+		if the correct named (scenename.qc) and working qc doesnt exist
+	-Compile
+		run studiomdl
+	-body groups from "reference" Layer
+		generates body groups from the reference layer. it uses each mesh as body group with this
+		mesh as submodel and a blank one. mesh named "main" will be used as base mesh, if there is
+		no mesh named main in the reference layer, base mesh will be the first mesh
+		NOTE: gets turned off when using staticprop
+	-HLMV Thumbnail
+		renders a 640 x 480 jpg from framed perspective view to the mdl location as model icon in HLMV
+		makes stuff easier to find ....make sure you have a bright light in scene...
+		default turns out too dark
+
+
+
+
+
+
+
+Path Settings:
+	-smd/qc Path
+		this is the models source path. it must have /model_sources/ in it and /model_sources/
+		should be in the same folder as your maya scenes folder
+	-texture Path:
+		this is the textures source root path. it must have /materialsrc/ at the end, exact paths are 
+		take from the Texturefile Nodes (tga)
+	-Default
+		this resets paths to default. both paths are taken form the scene file path (works only with
+		saved scene in /scenes/ dir).  
+		NOTE: the target paths are generated from the vproject environment variable and the relative paths
+		from texturefile nodes and smd/qc path
+QC Settings:
+	-Mass
+		Mass for collisionmodel in Kilo
+	-Staticprop
+		sets staticprop in qc, disables seperate body groups, overrides keyvalues 
+	-Scale
+		guess what...scale factor
+	-Surfaceprop
+		select what u think might fit
+	-keyvalues
+		select one from the list
+	-add to end of QC File
+		anything u write there will be added to the end of base qc file
+Animations:
+	-Sequence Name
+		name of the sequence
+	-start frame
+		start frame in timeline for this sequence
+	-end frame
+		end frame in timeline for this sequence
+	-add on end
+		end of the sequence line...add your framerate, rotation, events, whatever here
+	-Add
+		adds sequence with current Animation Settings
+	-edit
+		save Animation Settings changes for selected Sqyuence
+	-del
+		remove selected sequence
+
+
+
+
+
+// change history
+// 1.02 improved handling of shader export failure
+// 1.03 added support for joint orientation
+//	improved detection of non-shaded surfaces
+// 1.04 added progress bar with support for cancelling export
+// 1.05 fixed exporting transforms with rotate-orient and joint-orient values other than 0
+// 1.06 corrected handling of offset pivot points
+//	another fix for non-shaded surfaces
+// 1.07 added check for large numbers of skin influences.
+// 1.08 animation smd's don't export vmt files.
+// 1.09 (BRJ) Added seperate body groups, removed need for setting the project workspace, lots of bug fixes
+
+// 1.5  prall: added smd animation import  
+// 2.0  prall: added vertex animation export
+// 2.1  prall: improved vta export....multiple meshes and change filter
+// 2.2  prall:  -improved export gui
+//	        -added export from layers for ref,phy and break models	
+//	        -added qc generation
+//		-added multiple animations export
+//		-changed path calculations
+//		-added full compile
+//		
+// 2.3 prall:   -multiple texture subdirs
+//		-HLMV thumbnail rendering
+//		-material attributes
+//		-skinfamilies
+//		-compile on/off
+//		-export textures on/off
+//		-some bugs fixed		
+//
+// 2.4 prall:   -tried to fix some path probs
+//		-fixed pCube1,pCube11 filter probs
+//		-removed need for sourcesdk/bin path variable...uses sourcesdk variable now
+//		-fixed wooden.large error
+//		-added LOD model support
+//		-hl2shader update
+//
+// 2.5 prall:   -break model options
+//		-create layer GUI
+//		-shelf
+//		-optimized import

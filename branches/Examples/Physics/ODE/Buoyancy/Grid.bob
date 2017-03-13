@@ -1,0 +1,16 @@
+Comment This demonstrates how badly a low number of bobbies (4) aproximates a geombox
+
+// Bobby x, y, z, radius
+Bobby 0, 0, 0, 0.31
+Bobby 0, 1, 0, 0.31
+Bobby 1, 0, 0, 0.31
+Bobby 1, 1, 0, 0.31
+Bobby 0, 0, 1, 0.31
+Bobby 0, 1, 1, 0.31
+Bobby 1, 0, 1, 0.31
+Bobby 1, 1, 1, 0.31
+
+// GeomBox x,y,z, sizex, sizey, sizez, BobbyResolution (0= no bobbies)
+GeomBox 0,0,0, 1,1,1, 0
+
+

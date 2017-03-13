@@ -1,0 +1,742 @@
+global proc int isSmdInfoDefined()
+	{
+	source "fixup";
+
+	string $check[] = `ls smdInfo`;
+	if (`size $check` == 0)
+		return 0;
+
+	smdInfoFixup;
+
+	return 1;
+	}
+
+
+proc smdMakeScriptNode ()
+	{
+	// is there one already?
+	string $check[] = `ls smdInfo`;
+	if ( !isSmdInfoDefined() )
+		{
+		scriptNode -st 2 -name "smdInfo";
+		addAttr -ln seperateBodyGroup -at bool  smdInfo;
+		
+		addAttr -ln smdType -at "enum" -en "Animation:Reference:"  smdInfo;
+		addAttr -ln smdTarget -dt "string" smdInfo;
+		addAttr -ln fullCompile -at bool smdInfo;
+		addAttr -ln texPath -dt "string" smdInfo;
+		
+		addAttr -ln smdBreak -at bool smdInfo;
+		addAttr -ln smdIdle -at bool smdInfo;
+		addAttr -ln smdRef -at bool smdInfo;
+		addAttr -ln smdPhy -at bool smdInfo;
+		addAttr -ln smdFixTrans -at bool smdInfo;
+		addAttr -ln smdFixCol -at bool smdInfo;
+		
+		addAttr -ln smdAni -at bool smdInfo;
+		addAttr -ln smdAniName -dt "string" smdInfo;
+		addAttr -ln smdAniStart -dt "string" smdInfo;
+		addAttr -ln smdAniEnd -dt "string" smdInfo;
+		addAttr -ln smdAniAdd -dt "string" smdInfo;
+		
+		addAttr -ln qcScale -dt "string" smdInfo;
+		addAttr -ln qcStatic -at bool smdInfo;
+		addAttr -ln qcSurface -dt "string" smdInfo;
+		addAttr -ln qcKey -dt "string" smdInfo;
+		addAttr -ln qcAdd -dt "string" smdInfo;
+		addAttr -ln qcMass -dt "string" smdInfo;
+		
+		addAttr -ln compile -at bool smdInfo;
+		addAttr -ln Thumb -at bool smdInfo;
+		addAttr -ln Tex -at bool smdInfo;
+		addAttr -ln qcLOD -at bool smdInfo;
+		
+		
+		
+		setAttr smdInfo.seperateBodyGroup 0;
+		setAttr smdInfo.fullCompile 1;
+		setAttr smdInfo.smdIdle 1;
+		setAttr smdInfo.smdRef 1;
+		setAttr smdInfo.smdPhy 1;
+		setAttr smdInfo.smdFixTrans 0;
+		setAttr smdInfo.smdFixCol 0;
+		
+		setAttr smdInfo.smdAniName -type "string" "idle§#";
+		setAttr smdInfo.smdAniStart -type "string" "0§#";
+		setAttr smdInfo.smdAniEnd -type "string" "1§#";
+		setAttr smdInfo.smdAniAdd -type "string" "loop fps 30§#";
+		
+		setAttr smdInfo.qcScale -type "string" "1";
+		setAttr smdInfo.qcStatic 0;
+		setAttr smdInfo.qcSurface -type "string" "default";
+		setAttr smdInfo.qcKey -type "string" "Wooden.Large";
+		setAttr smdInfo.qcMass -type "string" "1";
+		setAttr smdInfo.compile 1;
+		setAttr smdInfo.Thumb 0;
+		setAttr smdInfo.Tex 1;
+		setAttr smdInfo.qcLOD 0;
+		//updatePaths;
+		}
+	
+	
+	
+	}
+
+global proc string stripName (string $filePath)
+	{
+	string $result;
+	string $paths[];
+	int $num = `tokenize $filePath "\\/" $paths`;
+	$result = `substitute $paths[$num-1] $filePath ""`;
+	return $result;
+	}
+	
+
+global proc updatePaths ()
+	{
+	        
+		string $fileName = `file -q -sceneName`;
+		string $destination;
+		string $textarget;
+		global string $vmt_materials;
+		global string $vmt_materialsrc;
+		$destination = `substitute "/[Ss][Cc][Ee][Nn][Ee][Ss]/" $fileName "/model_sources/"`;
+		$destination = `substitute "\\.[Mm][AaBb]$" $destination ".smd"`;
+		setAttr -type "string" smdInfo.smdTarget $destination;
+		textField -e -tx `getAttr smdInfo.smdTarget` smd;
+		$textarget = `substitute "/[Ss][Cc][Ee][Nn][Ee][Ss]/" $fileName "/materialsrc/"`;
+		$textarget = `substitute "/materialsrc/.*" $textarget "/materialsrc/"`;
+		setAttr -type "string" smdInfo.texPath $textarget;
+		textField -e -tx $textarget tex;	
+		
+		string $smdPhy = `substitute ".[Ss][Mm][Dd]" $destination "_phy.smd"`;
+		string $smdIdle = `substitute ".[Ss][Mm][Dd]" $destination "_idle.smd"`;
+		
+		string $output = "Physics Name:   " + $smdPhy;
+			text -e -l $output phy;
+		$output = "IDLE Name:       " + $smdIdle;
+			text -e -l $output idle;
+
+	}
+
+global proc updateAni ()
+	{
+	int $lastsel[] = `textScrollList -q -sii aniName`;
+	int $last = $lastsel[0];
+	textScrollList -e -ra aniName;
+	string $ani =`getAttr smdInfo.smdAniName`;
+	string $lst[] = string2Array($ani);
+	int $size = `size $lst`;
+	for ($itm in $lst)
+		{
+		textScrollList -e -a $itm aniName;
+		}
+	
+	if ($last != 0 && $last <= $size)
+		{
+		textScrollList -e -sii $last aniName;
+		}
+		
+	}
+
+global proc saveAniItem (int $item)
+	{
+	string $aniNameList[];
+	string $aniStartList[];
+	string $aniEndList[];
+	string $aniAddList[];
+	
+	string $aniName = `getAttr smdInfo.smdAniName`;
+	string $aniStart = `getAttr smdInfo.smdAniStart`;
+	string $aniEnd = `getAttr smdInfo.smdAniEnd`;
+	string $aniAdd = `getAttr smdInfo.smdAniAdd`;
+		
+	$aniNameList = string2Array($aniName);
+	$aniStartList = string2Array($aniStart);
+	$aniEndList = string2Array($aniEnd);
+	$aniAddList = string2Array($aniAdd);
+	
+	$aniNameList[$item-1] = `textField -q -tx aniNameField`;
+	$aniStartList[$item-1] =  `textField -q -tx aniStart`;
+	$aniEndList[$item-1] = `textField -q -tx aniEnd`;
+	$aniAddList[$item-1] = `textField -q -tx aniAdd`;
+	
+			
+	$aniName = array2String($aniNameList);
+	$aniStart = array2String($aniStartList);
+	$aniEnd = array2String($aniEndList);
+	$aniAdd = array2String($aniAddList);
+	
+	setAttr smdInfo.smdAniName -type "string" $aniName;
+	setAttr smdInfo.smdAniStart  -type "string" $aniStart;
+	setAttr smdInfo.smdAniEnd  -type "string" $aniEnd;
+	setAttr smdInfo.smdAniAdd  -type "string" $aniAdd;
+	
+	updateAni;
+	}
+
+global proc addAniItem ()
+	{
+	string $aniName = `getAttr smdInfo.smdAniName`;
+	string $aniStart = `getAttr smdInfo.smdAniStart`;
+	string $aniEnd = `getAttr smdInfo.smdAniEnd`;
+	string $aniAdd = `getAttr smdInfo.smdAniAdd`;
+	
+	string $itm = `textField -q -tx aniNameField`;
+	string $match = `match $itm $aniName`;
+	if ($match != $itm)
+		{
+		$aniName += $itm + "§#";
+		$aniStart += `textField -q -tx aniStart` + "§#";
+		$aniEnd += `textField -q -tx aniEnd` + "§#";
+		$aniAdd += `textField -q -tx aniAdd` + "§#";
+		}
+	else
+		{
+		error "sequence name exists or empty";
+		}
+	
+	setAttr smdInfo.smdAniName -type "string" $aniName;
+	setAttr smdInfo.smdAniStart -type "string" $aniStart;
+	setAttr smdInfo.smdAniEnd -type "string" $aniEnd;
+	setAttr smdInfo.smdAniAdd -type "string" $aniAdd;
+	
+	
+	updateAni;
+	}
+	
+global proc delAniItem(int $item)
+	{
+	string $aniNameList[];
+	string $aniStartList[];
+	string $aniEndList[];
+	string $aniAddList[];
+	
+	
+	string $aniNameListNew[];
+	string $aniStartListNew[];
+	string $aniEndListNew[];
+	string $aniAddListNew[];
+	
+	
+	string $aniName = `getAttr smdInfo.smdAniName`;
+	string $aniStart = `getAttr smdInfo.smdAniStart`;
+	string $aniEnd = `getAttr smdInfo.smdAniEnd`;
+	string $aniAdd = `getAttr smdInfo.smdAniAdd`;
+	
+	
+	$aniNameList = string2Array($aniName);
+	$aniStartList = string2Array($aniStart);
+	$aniEndList = string2Array($aniEnd);
+	$aniAddList = string2Array($aniAdd);
+	
+	
+	int $cnt = 0;
+	int $cnt1 = 0;
+	for ($n in $aniNameList)
+		{
+		if ($cnt != $item-1)
+			{
+			$aniNameListNew[$cnt1] = $aniNameList[$cnt];
+			$aniStartListNew[$cnt1] = $aniStartList[$cnt];
+			$aniEndListNew[$cnt1] = $aniEndList[$cnt];
+			$aniAddListNew[$cnt1] = $aniAddList[$cnt];
+			$cnt1++;
+			}  
+		$cnt ++;
+		}
+	
+	$aniName = array2String($aniNameListNew);
+	$aniStart = array2String($aniStartListNew);
+	$aniEnd = array2String($aniEndListNew);
+	$aniAdd = array2String($aniAddListNew);
+	
+	
+	setAttr smdInfo.smdAniName -type "string" $aniName;
+	setAttr smdInfo.smdAniStart -type "string" $aniStart;
+	setAttr smdInfo.smdAniEnd -type "string" $aniEnd;
+	setAttr smdInfo.smdAniAdd -type "string" $aniAdd;
+	
+	updateAni;
+	
+	}
+	
+
+global proc updateAniItem(int $item)
+	{
+	string $aniNameList[];
+	string $aniStartList[];
+	string $aniEndList[];
+	string $aniAddList[];
+	
+	string $aniName = `getAttr smdInfo.smdAniName`;
+	string $aniStart = `getAttr smdInfo.smdAniStart`;
+	string $aniEnd = `getAttr smdInfo.smdAniEnd`;
+	string $aniAdd = `getAttr smdInfo.smdAniAdd`;
+		
+	$aniNameList = string2Array($aniName);
+	$aniStartList = string2Array($aniStart);
+	$aniEndList = string2Array($aniEnd);
+	$aniAddList = string2Array($aniAdd);
+	
+	textField -e -tx $aniNameList[$item-1] aniNameField;
+	textField -e -tx $aniStartList[$item-1] aniStart;
+	textField -e -tx $aniEndList[$item-1] aniEnd;
+	textField -e -tx $aniAddList[$item-1] aniAdd;
+	
+	updateAni;
+	}	
+
+global proc updateNode ()
+	{
+	setAttr -type "string" smdInfo.smdTarget `textField -q -tx smd`;
+	setAttr -type "string" smdInfo.texPath `textField -q -tx tex`;
+	string $destination = `textField -q -tx smd`;
+	string $smdPhy = `substitute ".[Ss][Mm][Dd]" $destination "_phy.smd"`;
+	string $smdIdle = `substitute ".[Ss][Mm][Dd]" $destination "_idle.smd"`;
+	string $output = "Physics Name:   " + $smdPhy;
+	text -e -l $output phy;
+	$output = "IDLE Name:       " + $smdIdle;
+	text -e -l $output idle;
+	}
+
+global proc propList()
+	{
+	
+	textScrollList -e -ra qcSurf;
+	textScrollList -e 	-a "default" -a "solidmetal" -a "Metal_Box" -a "metal" -a"metal_bouncy"
+				-a "slipperymetal" -a "metalgrate" -a "metalvent" -a "metalpanel" -a "dirt"
+				-a "mud" -a "slipperyslime" -a "grass" -a "tile" -a "Wood"
+				-a "Wood_lowdensity" -a "Wood_Box" -a "Wood_Crate" -a "Wood_Plank" -a "Wood_Solid"
+				-a "Wood_Furniture" -a "Wood_Panel" -a "water" -a "slime" -a "quicksand"
+				-a "wade" -a "ladder" -a "glass" -a "computer" -a "concrete"
+				-a "rock" -a "porcelain" -a "boulder" -a "gravel" -a "brick"
+				-a "concrete_block" -a "chainlink" -a "chain" -a "flesh" -a "bloodyflesh"
+				-a "alienflesh" -a "armorflesh" -a "watermelon" -a "snow" -a "ice"
+				-a "carpet" -a "plaster" -a "cardboard" -a "plastic_barrel" -a "Plastic_Box"
+				-a "plastic" -a "item" -a "sand" -a "rubber" -a "rubbertire"
+				-a "jeeptire" -a "slidingrubbertire" -a "brakingrubbertire" -a "slidingrubbertire_front" -a "slidingrubbertire_rear"
+				-a "glassbottle" -a "pottery" -a "grenade" -a "canister" -a "metal_barrel"
+				-a "floating_metal_barrel" -a "plastic_barrel_buoyant" -a "roller" -a "popcan" -a "paintcan"
+				-a "paper" -a "papercup" -a "ceiling_tile" -a "weapon" -a "default_silent"
+				-a "player" -a "player_control_clip" -a "no_decal" -a "foliage"
+				qcSurf;
+	if (`getAttr smdInfo.qcSurface` != "")
+		{
+		textScrollList -e -si `getAttr smdInfo.qcSurface` qcSurf; 
+		}
+	
+	textScrollList -e -ra qcKey;
+	textScrollList -e 	-a "Cardboard.Small" -a "Cardboard.Medium" -a "Cardboard.Large" -a "Cloth.Small" -a" Cloth.Medium"
+				-a "Cloth.Large" -a "Wooden.Tiny" -a "Wooden.Small" -a "Wooden.Medium" -a "Wooden.Large"
+				-a "Wooden.ExtraLarge" -a "Wooden.Huge" -a "Stone.Small" -a "Stone.Medium" -a "Stone.Large"
+				-a "Stone.Huge" -a "Glass.Small" -a "Glass.Window" -a "Metal.Small" -a "Metal.Medium"
+				-a "Metal.Large" -a "Plastic.Small" -a "Plastic.Medium" -a "Plastic.Large" -a "Item.Small"
+				-a "Item.Medium" -a "Item.Large" -a "Pottery.Small" -a "Pottery.Medium" -a "Pottery.Large"
+				-a "Pottery.Huge" -a "Flesh.Tiny" -a "Flesh.Small"
+				qcKey;
+	
+	if (`getAttr smdInfo.qcKey` != "")
+		{
+		textScrollList -e -si `getAttr smdInfo.qcKey` qcKey; 
+		}
+		
+	}
+
+global proc smdOptionWindow ()
+	{
+	source "fixup";
+
+	smdMakeScriptNode;
+	
+	int $oldSmdType;
+	int $oldSeperateBodyGroup;
+	string $oldSmdTarget;
+	int $oldFullCompile;
+	string $oldTexPath;
+
+
+	$oldSmdType = `getAttr smdInfo.smdType`;
+	$oldSeperateBodyGroup = `getAttr smdInfo.seperateBodyGroup`;
+	$oldSmdTarget = `getAttr smdInfo.smdTarget`;
+	$oldFullCompile = `getAttr smdInfo.fullCompile`;
+	$oldTexPath = `getAttr smdInfo.texPath`;
+	
+	
+	
+	if (`window -exists smdOptWin` == 1)
+		{
+		deleteUI -window smdOptWin;
+		}
+
+	window -title "SMD Export options"
+
+		-w 600
+		-h 800
+		-s 1
+		-mnb false
+		-mxb false
+		smdOptWin;
+
+
+columnLayout main;
+
+string $tabs = `tabLayout -innerMarginWidth 5 -innerMarginHeight 5 -scr 1 -hst 16 -vst 16 -cr 1 -p main tlay`;
+
+//create tab export#####################################################
+string $tab1 = `columnLayout -adj 1 -p tlay tab1`;
+
+        columnLayout -p tab1 topLayout;
+		//columnLayout -cal "left" -cat "both" 10 -cw 400 -rs 9;
+		//	text -w 380 -label $destination  -align "center";
+		
+		setParent topLayout;
+			columnLayout -cal "left" -cat "both" 70 -cw 400 -rs 9;
+			
+			checkBox -label "export Reference smd from Layer \"reference\"" 
+				-value `getAttr smdInfo.smdRef`
+				-onCommand "setAttr smdInfo.smdRef 1"
+				-offCommand "setAttr smdInfo.smdRef 0"
+				;
+			checkBox -label "export Physics smd from Layer \"physics\"" 
+				-value `getAttr smdInfo.smdPhy` 
+				-onCommand "setAttr smdInfo.smdPhy 1"
+				-offCommand "setAttr smdInfo.smdPhy 0"
+				;
+			
+			checkBox -label "freeze and reset Transforms (not with anims!)" 
+				-value `getAttr smdInfo.smdFixTrans` 
+				-onCommand "setAttr smdInfo.smdFixTrans 1"
+				-offCommand "setAttr smdInfo.smdFixTrans 0"
+				;
+			
+			checkBox -label "combine and smooth collision meshes" 
+				-value `getAttr smdInfo.smdFixCol` 
+				-onCommand "setAttr smdInfo.smdFixCol 1"
+				-offCommand "setAttr smdInfo.smdFixCol 0"
+				;
+			
+			
+			checkBox -label "export/compile break models from Layer \"ref_break*\" and \"phy_break*\"" 
+				-value `getAttr smdInfo.smdBreak` 
+				-onCommand "setAttr smdInfo.smdBreak 1"
+				-offCommand "setAttr smdInfo.smdBreak 0"
+				;
+			
+			checkBox -label "export LOD models from Layer \"LOD_range\"" 
+				-value `getAttr smdInfo.qcLOD` 
+				-onCommand "setAttr smdInfo.qcLOD 1"
+				-offCommand "setAttr smdInfo.qcLOD 0"
+				;
+						
+			
+			checkBox -label "export 1 frame Idle smd" 
+				-value `getAttr smdInfo.smdIdle` 
+				-onCommand "setAttr smdInfo.smdIdle 1"
+				-offCommand "setAttr smdInfo.smdIdle 0"
+				;
+			checkBox -label "export Animation smds" 
+				-value `getAttr smdInfo.smdAni` 
+				-onCommand "setAttr smdInfo.smdAni 1"
+				-offCommand "setAttr smdInfo.smdAni 0"
+				;
+			checkBox -label "export Textures" 
+				-value `getAttr smdInfo.Tex` 
+				-onCommand "setAttr smdInfo.Tex 1"
+				-offCommand "setAttr smdInfo.Tex 0"
+				;
+			checkBox -label "generate QC" 
+				-value `getAttr smdInfo.fullCompile` 
+				-onCommand "setAttr smdInfo.fullCompile 1"
+				-offCommand "setAttr smdInfo.fullCompile 0"
+				;
+			checkBox -label "Compile" 
+				-value `getAttr smdInfo.compile` 
+				-onCommand "setAttr smdInfo.compile 1"
+				-offCommand "setAttr smdInfo.compile 0"
+				;
+			checkBox -label "body groups from \"reference\" Layer" 
+				-value `getAttr smdInfo.seperateBodyGroup` 
+				-onCommand "setAttr smdInfo.seperateBodyGroup 1"
+				-offCommand "setAttr smdInfo.seperateBodyGroup 0"
+				sep;
+			checkBox -label "HLMV Thumbnail" 
+				-value `getAttr smdInfo.Thumb` 
+				-onCommand "setAttr smdInfo.Thumb 1"
+				-offCommand "setAttr smdInfo.Thumb 0"
+				;
+			text -label "" ;
+		
+
+
+				
+					
+					
+					
+
+
+//create Tab path settings##############################################################
+string $tab2 = `columnLayout -adj 1 -p tlay tab2`;
+			columnLayout -p tab2 top;
+				string $smdTarget;
+				string $texFolder;
+				string $smdPhy;
+				string $smdIdle;
+				string $output;
+				
+				$smdTarget=`getAttr smdInfo.smdTarget`;
+				$texFolder=`getAttr smdInfo.texPath`;
+
+		
+				rowLayout -nc 2 -columnWidth2 80 600 ;
+					text -vis 1 
+						-label "smd/qc Path"
+						-align "left" ;
+					textField -w 600 -text $smdTarget -editable 1 -cc "updateNode;" smd;
+
+				setParent top;
+				
+							
+				rowLayout -nc 2 -columnWidth2 80 600 -co2 6 6;
+					
+					text -vis 1 
+						-label "texture Path"
+						-align "left" ;
+					textField -w 600 -text $texFolder -cc " " tex;
+					
+				$smdPhy = `substitute ".[Ss][Mm][Dd]" $smdTarget "_phy.smd"`;
+				$smdIdle = `substitute ".[Ss][Mm][Dd]" $smdTarget "_idle.smd"`;
+		
+				$output = "Physics Name:   " + $smdPhy;
+					text -w 600 -label $output  -align "left" -p top phy;
+				$output = "IDLE Name:       " + $smdIdle;
+					text -w 600 -label $output  -align "left" -p top idle;
+				button -label "default" -c "updatePaths;" -p top;
+				setParent top;
+
+string $tab3 = `columnLayout -adj 1 -p tlay tab3`;
+			
+			rowLayout -numberOfColumns 6 -cw6 30 30 100 140 60 300 -co6 6 6 6 6 6 6 -p tab3 tt2;
+				text -vis 1 -label "Mass" -align "right" -p tt2;
+				textField -w 30 -cc "setAttr smdInfo.qcMass -type \"string\" `textField -q -text qcMass`" -text `getAttr smdInfo.qcMass` -p tt2 qcMass;
+			checkBox -label "Static Prop" 
+				-value `getAttr smdInfo.qcStatic` 
+				-onCommand "setAttr smdInfo.qcStatic 1;setAttr smdInfo.seperateBodyGroup 0;checkBox -e -value 0 sep"
+				-offCommand "setAttr smdInfo.qcStatic 0"
+				-align "right"
+				;
+			
+			
+			rowLayout -numberOfColumns 6 -cw6 30 30 60 140 60 300 -co6 6 6 6 6 6 6 -p tab3 tt1;
+				text -vis 1 -label "Scale" -align "right" -p tt1;
+				textField -w 30 -cc "setAttr smdInfo.qcScale -type \"string\" `textField -q -text qcScale`" -text `getAttr smdInfo.qcScale` -p tt1 qcScale;
+				
+				text -vis 1 -label "Surfaceprop" -align "right" -p tt1;
+				textScrollList -w 120 -sc "setAttr smdInfo.qcSurface -type \"string\" `textScrollList -q -si qcSurf`" -p tt1 qcSurf;
+				
+				
+				text -vis 1 -label "Keyvalue" -align "right" -p tt1;
+				textScrollList -w 300 -sc "setAttr smdInfo.qcKey -type \"string\" `textScrollList -q -si qcKey`" -p tt1 qcKey;
+				propList;
+			
+			text -vis 1 -label "add to end of QC File" -align "left" -p tab3;
+			scrollField -w 600 -h 200 -text `getAttr smdInfo.qcAdd` -cc "setAttr smdInfo.qcAdd -type \"string\" `scrollField -q -text qcAdd`" -p tab3 qcAdd;					
+
+
+
+string $tab4 = `columnLayout -adj 1 -p tlay tab4`;
+			rowLayout -numberOfColumns 2 -cw2 150 400 -co2 6 6 -p tab4 t1;
+				text -vis 1 -label "Animation Name" -align "left" -p t1;
+				text -vis 1 -label "Animation Settings" -align "left" -p t1;
+			
+			rowLayout -numberOfColumns 2 -cw2 150 400 -co2 6 6 -p tab4 t2;	
+				
+							
+				textScrollList -w 140 -h 200 -p t2 -ams false -sc "$sa = `textScrollList -q -sii aniName`;int $s = $sa[0];updateAniItem($s);" aniName;
+				updateAni;
+									
+				
+				columnLayout -p t2 c1;
+					rowLayout -nc 2 -cw2 100 50 -co2 6 6 -p c1 r1;
+						text -vis 1 -label "sequence Name" -align "right" -p r1;
+						textField -w 50 -cc "" -p r1 aniNameField;
+												
+				
+				
+					rowLayout -nc 4 -cw4 100 50 100 50 -co4 6 6 6 6 -p c1 r2;
+						text -vis 1 -label "sequence Start" -align "right" -p r2;
+						textField -w 50 -cc " " -p r2 aniStart;
+						text -vis 1 -label "sequence End" -align "right" -p r2;
+						textField -w 50 -cc " " -p r2 aniEnd;
+					
+					rowLayout -nc 2 -cw2 100 200 -co2 6 6 -p c1 r4;
+						text -vis 1 -label "add on end" -align "right" -p r4;
+						textField -w 200 -cc "" -p r4 aniAdd;
+						
+					rowLayout -nc 3 -cw3 100 100 100 -co3 6 6 6 -ct3 "both" "both" "both" -p c1 r3;
+						
+						button -label "Add" -c "addAniItem;" -p r3;
+						button -label "edit" -c "$sa = `textScrollList -q -sii aniName`;int $s = $sa[0];saveAniItem($s);" -p r3;
+						button -label "del" -c "$it = `textScrollList -q -sii aniName`;int $i = $it[0];delAniItem($i);" -p r3;
+				
+				
+string $tab5 = `columnLayout -adj 1 -p tlay tab5`;
+				string $help;
+				$help += "Source Exporter 2.4 updated by Prall\n";
+				$help += "\n";
+				$help += "some notes:\n";
+				$help += "	-paths\n";
+				$help += "		/sources/scenes/ >> /sources/model_sources/ >> /vproject/models/\n";
+				$help += "		/sources/materialsrc/models/ >> /vproject/materials/models/\n";
+				$help += "	-no undo before export\n";
+				$help += "		save before or maya will crash\n";
+				$help += "	-unique shape names\n";
+				$help += "		do not use dupe shape names\n";
+				$help += "	-steam\n";
+				$help += "		make sure it is running or export wont work\n";
+				$help += "	-textures\n";
+				$help += "		make sure they are tgas with a power of 2 resolution\n";
+				$help += "		you can use bumpmaps or normal maps connected to bump of phonge shader\n";
+				$help += "		just name them *_height or *_normal for correct export\n";
+				$help += "\n";
+				$help += "\n";
+				$help += "\n";
+				$help += "\n";
+				$help += "\n";
+				$help += "\n";
+				$help += "\n";
+				
+				$help += "Export Tab Options:\n";  
+				$help += "	-export Reference smd from Layer \"reference\"\n";
+				$help += "		only uncheck if it already exists (to speed recompile)\n";
+				$help += "	-export Physics smd from Layer \"physics\"\n";
+				$help += "		only uncheck if it already exists (to speed recompile)\n";
+				$help += "	-freeze and reset transforms\n";
+				$help += "		better not use that..freeze transform and reset for every mesh in the scene\n";
+				$help += "	-combine and smooth collision meshes\n";
+				$help += "		collisionmodels seem to need a single node. this combines multiple collision meshes\n";
+				$help += "		and combines them (per layer) and smoothes edges. good if you just copy\n";
+				$help += "		around some primitives as collision model\n";
+				$help += "	-export/compile break models from Layer \"ref_break*\" and \"phy_break*\"\n";
+				$help += "		exports break smd's form Layers named \"ref_break*\" and \"phy_break*\"\n";
+				$help += "		(ex. ref_break01 phy_break01, ref_break02 phy_break02)\n";
+				$help += "		creates qc's with same settings as base, compiles and adds break commands to base qc \n";
+				$help += "	-export LOD Models from Layer \"LOD_range\"\n";
+				$help += "		creates a LOD model for each Layer called LOD_range where range is the min distance\n";
+				$help += "		for this LOD Model\n";
+				$help += "      -export 1 frame Idle smd\n";
+				$help += "		use it to create dummy animation smd, uncheck if you have your own idle animation in\n";
+				$help += "		Animation Tab. It doesnt affec the dummy idle from break models, just the base model\n";
+				$help += "      -export Animation smds\n";
+				$help += "		exports Animations set in Animations Tab\n";
+				$help += "	-export Textures\n";
+				$help += "		exports Textures\n";
+				$help += "	-generate QC\n";
+				$help += "		well...what might this do?? ;) uncheck if u want to use your own qc but compile will fail\n";
+				$help += "		if the correct named (scenename.qc) and working qc doesnt exist\n";
+				$help += "	-Compile\n";
+				$help += "		run studiomdl\n";
+				$help += "	-body groups from \"reference\" Layer\n";
+				$help += "		generates body groups from the reference layer. it uses each mesh as body group with this\n";
+				$help += "		mesh as submodel and a blank one. mesh named \"main\" will be used as base mesh, if there is\n";
+				$help += "		no mesh named main in the reference layer, base mesh will be the first mesh\n";
+				$help += "		NOTE: gets turned off when using staticprop\n";
+				$help += "	-HLMV Thumbnail\n";
+				$help += "		renders a 640 x 480 jpg from framed perspective view to the mdl location as model icon in HLMV\n";
+				$help += "		makes stuff easier to find ....make sure you have a bright light in scene...\n";
+				$help += "		default turns out too dark\n";
+				$help += "\n";
+				$help += "\n";
+				$help += "\n";
+				$help += "\n";
+				$help += "\n";
+				$help += "\n";
+				$help += "\n";
+				$help += "Path Settings:\n";
+				$help += "	-smd/qc Path\n";
+				$help += "		this is the models source path. it must have /model_sources/ in it and /model_sources/\n";
+				$help += "		should be in the same folder as your maya scenes folder\n";
+				$help += "	-texture Path:\n";
+				$help += "		this is the textures source root path. it must have /materialsrc/ at the end, exact paths are \n";
+				$help += "		take from the Texturefile Nodes (tga)\n";
+				$help += "	-Default\n";
+				$help += "		this resets paths to default. both paths are taken form the scene file path (works only with\n";
+				$help += "		saved scene in /scenes/ dir).  \n";
+				$help += "		NOTE: the target paths are generated from the vproject environment variable and the relative paths\n";
+				$help += "		from texturefile nodes and smd/qc path\n";
+				$help += "QC Settings:\n";
+				$help += "	-Mass\n";
+				$help += "		Mass for collisionmodel in Kilo\n";
+				$help += "	-Staticprop\n";
+				$help += "		sets staticprop in qc, disables seperate body groups, overrides keyvalues \n";
+				$help += "	-Scale\n";
+				$help += "		guess what...scale factor\n";
+				$help += "	-Surfaceprop\n";
+				$help += "		select what u think might fit\n";
+				$help += "	-keyvalues\n";
+				$help += "		select one from the list\n";
+				$help += "	-add to end of QC File\n";
+				$help += "		anything u write there will be added to the end of base qc file\n";
+				$help += "Animations:\n";
+				$help += "	-Sequence Name\n";
+				$help += "		name of the sequence\n";
+				$help += "	-start frame\n";
+				$help += "		start frame in timeline for this sequence\n";
+				$help += "	-end frame\n";
+				$help += "		end frame in timeline for this sequence\n";
+				$help += "	-add on end\n";
+				$help += "		end of the sequence line...add your framerate, rotation, events, whatever here\n";
+				$help += "	-Add\n";
+				$help += "		adds sequence with current Animation Settings\n";
+				$help += "	-edit\n";
+				$help += "		save Animation Settings changes for selected Sqyuence\n";
+				$help += "	-del\n";
+				$help += "		remove selected sequence\n";
+				$help += "\n";
+				$help += "\n";
+				$help += "\n";
+				$help += "\n";
+				$help += "\n";
+				$help += "\n";
+				$help += "\n";
+				$help += "\n";
+				$help += "\n";
+				$help += "\n";
+				$help += "\n";
+				$help += "\n";
+				$help += "\n";
+				$help += "\n";
+				$help += "\n";
+								
+				scrollField -w 600 -h 250 -text $help -ed 0 -p tab5;
+			
+
+rowLayout -numberOfColumns 4 
+					-height 32
+					-cw4 128 128 128 128 
+					-ct4 "both" "both" "both" "both"
+					-co4 6 6 6 6 
+		 			-p main;
+					button -label "OK settings" -c "updateNode;deleteUI -window smdOptWin;" -align "center";
+					button -label "Full Compile" -c "updateNode;deleteUI -window smdOptWin; smdExport( 3, `getAttr smdInfo.seperateBodyGroup` )" -align "center";
+					button -label "Export only" -c "updateNode;deleteUI -window smdOptWin; smdExport( `getAttr smdInfo.smdType`, `getAttr smdInfo.seperateBodyGroup` )" -align "center";
+					button -label "Cancel" -c "deleteUI -window smdOptWin" -align "center";	
+					
+
+
+
+
+
+
+tabLayout -edit
+-tabLabel $tab1 "Export" 
+-tabLabel $tab2 "Path Settings"
+-tabLabel $tab3 "QC Settings"
+-tabLabel $tab4 "Animations"
+-tabLabel $tab5 "Help"
+$tabs;
+
+
+					
+	showWindow smdOptWin;
+	};

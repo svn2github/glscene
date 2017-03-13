@@ -1,0 +1,5 @@
+global proc vtaExport ()
+	{
+	smdExport( 2, 0 );
+	
+	}

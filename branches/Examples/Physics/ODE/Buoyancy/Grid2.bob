@@ -1,0 +1,6 @@
+Comment The number of bobbies is 4x4x4
+
+// GeomBox x,y,z, sizex, sizey, sizez, BobbyResolution (0= no bobbies)
+GeomBox 0,0,0, 1,1,1, 2
+
+

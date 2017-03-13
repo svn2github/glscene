@@ -1,0 +1,11 @@
+// GeomSphere x, y, z, radius, Bobby(0=false, 1=true)
+GeomSphere 0, 0, 0, 0.5, 1
+GeomSphere 0, 1, 0, 0.5, 1
+GeomSphere 1, 0, 0, 0.5, 1
+GeomSphere 1, 1, 0, 0.5, 1
+GeomSphere 0, 0, 1, 0.5, 1
+GeomSphere 0, 1, 1, 0.5, 1
+GeomSphere 1, 0, 1, 0.5, 1
+GeomSphere 1, 1, 1, 0.5, 1
+
+

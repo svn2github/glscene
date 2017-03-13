@@ -1,0 +1,9 @@
+// just a simple interface to the smdRead function with a file browser dialog
+
+global proc string smdImportani()
+{
+source "smd/smdRead";
+string $test = `fileDialog -dm "*.smd"`;
+return `smdReadani $test`;
+//return `smdRead $test`;
+}

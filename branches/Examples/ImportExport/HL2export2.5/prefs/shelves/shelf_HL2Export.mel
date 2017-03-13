@@ -1,0 +1,92 @@
+global proc shelf_HL2Export () {
+    global string $gBuffStr;
+    global string $gBuffStr0;
+    global string $gBuffStr1;
+
+
+    shelfButton
+        -enableCommandRepeat 1
+        -enable 1
+        -width 34
+        -height 34
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -align "center" 
+        -label "smdOptionWindow;" 
+        -labelOffset 0
+        -font "tinyBoldLabelFont" 
+        -imageOverlayLabel "Export" 
+        -image "USERMENUICONATTRIBUTEFILT.BMP" 
+        -image1 "USERMENUICONATTRIBUTEFILT.BMP" 
+        -style "iconOnly" 
+        -marginWidth 1
+        -marginHeight 1
+        -command "smdOptionWindow;" 
+        -actionIsSubstitute 0
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -enable 1
+        -width 34
+        -height 34
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -align "center" 
+        -label "add hl2 shader attributes" 
+        -labelOffset 0
+        -font "tinyBoldLabelFont" 
+        -imageOverlayLabel "ADD" 
+        -image "USEROUT_BLINN.BMP" 
+        -image1 "USEROUT_BLINN.BMP" 
+        -style "iconOnly" 
+        -marginWidth 1
+        -marginHeight 1
+        -command "string $shade[] = `ls -sl`;\r\n\r\n\r\nint $Exists;\r\n\r\n$Exists = `attributeQuery -n $shade[0] -ex matType`;\r\nif ($Exists == 0)\r\n\t{\r\n\taddAttr -ln matType -at \"enum\" -en \"VertexLitGeneric:UnLitGeneric:\" $shade[0];\r\n\tsetAttr -e -keyable true ($shade[0] +\".matType\");\r\n\t}\r\n\r\n$Exists = `attributeQuery -n $shade[0] -ex nocull`;\r\nif ($Exists == 0)\r\n\t{\r\n\taddAttr -ln nocull -at bool $shade[0];\r\n\tsetAttr -e -keyable true ($shade[0] +\".nocull\") 0;\r\n\t}\r\n\r\n$Exists = `attributeQuery -n $shade[0] -ex alphatest`;\r\nif ($Exists == 0)\r\n\t{\r\n\taddAttr -ln alphatest -at bool $shade[0];\r\n\tsetAttr -e -keyable true ($shade[0] +\".alphatest\") 0;\r\n\t}\r\n\r\n$Exists = `attributeQuery -n $shade[0] -ex skins`;\r\nif ($Exists == 0)\r\n\t{\r\n\taddAttr -ln skins -dt \"string\" $shade[0];\r\n\tsetAttr -e -keyable true ($shade[0] +\".skins\");\r\n\t}\r\n\t\r\n$Exists = `attributeQuery -n $shade[0] -ex nomip`;\r\nif ($Exists == 0)\r\n\t{\r\n\taddAttr -ln nomip -at bool $shade[0];\r\n\tsetAttr -e -keyable true ($shade[0] +\".nomip\") 0;\r\n\t}\r\n\r\n$Exists = `attributeQuery -n $shade[0] -ex nonice`;\r\nif ($Exists == 0)\r\n\t{\r\n\taddAttr -ln nonice -at bool $shade[0];\r\n\tsetAttr -e -keyable true ($shade[0] +\".nonice\") 0;\r\n\t}\r\n\r\n\r\nstring $r = $shade[0] + \".roughness\";\r\nsetAttr $r 0;\r\nstring $h = $shade[0] + \".highlightSize\";\r\nsetAttr $h 0;" 
+        -actionIsSubstitute 0
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -enable 1
+        -width 34
+        -height 34
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -align "center" 
+        -label "create hl2 shader" 
+        -labelOffset 0
+        -font "tinyBoldLabelFont" 
+        -imageOverlayLabel "NEW" 
+        -image "USEROUT_PHONG.BMP" 
+        -image1 "USEROUT_PHONG.BMP" 
+        -style "iconOnly" 
+        -marginWidth 1
+        -marginHeight 1
+        -command "shadingNode -asShader phongE;\r\nstring $shade[] = `ls -sl`;\r\n\r\n\r\nint $Exists;\r\n\r\n$Exists = `attributeQuery -n $shade[0] -ex matType`;\r\nif ($Exists == 0)\r\n\t{\r\n\taddAttr -ln matType -at \"enum\" -en \"VertexLitGeneric:UnLitGeneric:\" $shade[0];\r\n\tsetAttr -e -keyable true ($shade[0] +\".matType\");\r\n\t}\r\n\r\n$Exists = `attributeQuery -n $shade[0] -ex nocull`;\r\nif ($Exists == 0)\r\n\t{\r\n\taddAttr -ln nocull -at bool $shade[0];\r\n\tsetAttr -e -keyable true ($shade[0] +\".nocull\") 0;\r\n\t}\r\n\r\n$Exists = `attributeQuery -n $shade[0] -ex alphatest`;\r\nif ($Exists == 0)\r\n\t{\r\n\taddAttr -ln alphatest -at bool $shade[0];\r\n\tsetAttr -e -keyable true ($shade[0] +\".alphatest\") 0;\r\n\t}\r\n\r\n$Exists = `attributeQuery -n $shade[0] -ex skins`;\r\nif ($Exists == 0)\r\n\t{\r\n\taddAttr -ln skins -dt \"string\" $shade[0];\r\n\tsetAttr -e -keyable true ($shade[0] +\".skins\");\r\n\t}\r\n\t\r\n$Exists = `attributeQuery -n $shade[0] -ex nomip`;\r\nif ($Exists == 0)\r\n\t{\r\n\taddAttr -ln nomip -at bool $shade[0];\r\n\tsetAttr -e -keyable true ($shade[0] +\".nomip\") 0;\r\n\t}\r\n\r\n$Exists = `attributeQuery -n $shade[0] -ex nonice`;\r\nif ($Exists == 0)\r\n\t{\r\n\taddAttr -ln nonice -at bool $shade[0];\r\n\tsetAttr -e -keyable true ($shade[0] +\".nonice\") 0;\r\n\t}\r\n\r\n\r\nstring $r = $shade[0] + \".roughness\";\r\nsetAttr $r 0;\r\nstring $h = $shade[0] + \".highlightSize\";\r\nsetAttr $h 0;" 
+        -actionIsSubstitute 0
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -enable 1
+        -width 34
+        -height 34
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -align "center" 
+        -label "layerCreate;" 
+        -labelOffset 0
+        -font "tinyBoldLabelFont" 
+        -imageOverlayLabel "Layer" 
+        -image "USEROUT_DEFAULT.BMP" 
+        -image1 "USEROUT_DEFAULT.BMP" 
+        -style "iconOnly" 
+        -marginWidth 1
+        -marginHeight 1
+        -command "layerCreate;" 
+        -actionIsSubstitute 0
+    ;
+
+} 
