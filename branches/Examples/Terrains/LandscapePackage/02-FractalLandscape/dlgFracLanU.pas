@@ -65,7 +65,7 @@ uses
   Vcl.Samples.Spin,
   Vcl.ComCtrls,
   Vcl.Buttons,
-  // GLS
+
   GLScene,
   GLTerrainRenderer,
   GLObjects,
@@ -79,8 +79,7 @@ uses
   GLCrossPlatform,
   GLBaseClasses,
   GLColor,
-  //
-  ahGLRandomHDS;
+  GLRandomHDS;
 
 type
   TdlgFracLan = class(TForm)
@@ -126,7 +125,6 @@ type
     tbErosionRate: TTrackBar;
     Label10: TLabel;
     tbDepositionRate: TTrackBar;
-    btApply: TBitBtn;
     Label11: TLabel;
     seSeed: TSpinEdit;
     GroupBox7: TGroupBox;
@@ -191,6 +189,7 @@ type
     edDefaultTexture: TEdit;
     btDefaultTexture: TButton;
     OpenPictureDialog1: TOpenPictureDialog;
+    btApply: TBitBtn;
     procedure GLSceneViewer1MouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
@@ -441,19 +440,18 @@ end;
 procedure TdlgFracLan.GLSceneViewer1MouseMove(Sender: TObject;
   Shift: TShiftState; X, Y: Integer);
 begin
-{
-   if Shift=[ssLeft] then
-      GLCamera1.MoveAroundTarget(my-y, mx-x)
-   else if Shift=[ssRight] then
-      GLCamera1.RotateTarget(my-y, mx-x);
-   mx:=x; my:=y;
+{ not workable !
+  if ssLeft in Shift then
+    GLCamera1.MoveAroundTarget(my - Y, mx - X);
+  mx := X;
+  my := Y;
 }
 
   if ssLeft in Shift then
   begin
     if abs(X - mx) > abs(my - Y) then
     begin
-      GLCamera1.Turn(X -mx);
+      GLCamera1.Turn(X - mx);
       // GLCamera1.Up.SetVector(0,1,0);
     end
     else
@@ -492,14 +490,15 @@ begin
     Screen.Cursor := crHourGlass;
 
     { Load temporary textures }
-    { Forest:=LoadJPGtexture('Forest.jpg');
-      Sea:=LoadJPGTexture('Sea.jpg');
-      Snow:=LoadJPGTexture('Snow.jpg');
-      Cliff:=LoadJPGTexture('Cliff.jpg');
-      BrownSoil:=LoadJPGTexture('BrownSoil.jpg');
-      Grass:=LoadJPGTexture('Grass.jpg');
-      Beach:=LoadJPGTexture('Beach.jpg'); }
+    Forest := LoadJPGtexture('Forest.jpg');
+    Sea := LoadJPGtexture('Sea.jpg');
+    Snow := LoadJPGtexture('Snow.jpg');
+    Cliff := LoadJPGtexture('Cliff.jpg');
+    BrownSoil := LoadJPGtexture('BrownSoil.jpg');
+    Grass := LoadJPGtexture('Grass.jpg');
+    Beach := LoadJPGtexture('Beach.jpg');
 
+  {
     Forest := LoadJPGtexture('mousse_1.jpg');
     Sea := LoadJPGtexture('Sea.jpg');
     Snow := LoadJPGtexture('004_neige.jpg');
@@ -508,6 +507,7 @@ begin
     Grass := LoadJPGtexture('nature073-Terre+Herbe.jpg');
     // Grass:=LoadJPGTexture('nature093-Gazon.jpg');
     Beach := LoadJPGtexture('057terresable-Clair.jpg');
+  }
 
     with FractalHDS do
     begin
@@ -526,7 +526,7 @@ begin
 
     end; // with
 
-  finally { Finalisation }
+  finally // Finalisation
     Sea.Free; // The bitmaps are only needed while landscape is being built
     Forest.Free;
     Snow.Free;
@@ -598,19 +598,19 @@ begin
 
     { Erosion properties }
     {
-    ErosionByRain.Enabled := ckRainErosion.Checked;
-    ErosionByRain.ErosionRate := tbErosionRate.Position / 10;
-    ErosionByRain.DepositRate := tbDepositionRate.Position / 10;
+      ErosionByRain.Enabled := ckRainErosion.Checked;
+      ErosionByRain.ErosionRate := tbErosionRate.Position / 10;
+      ErosionByRain.DepositRate := tbDepositionRate.Position / 10;
 
-    ErosionBySea.Enabled := ckSeaErosion.Checked;
-    ErosionBySea.BeachHeight := tbBeachHeight.Position / 100 * Amplitude;
+      ErosionBySea.Enabled := ckSeaErosion.Checked;
+      ErosionBySea.BeachHeight := tbBeachHeight.Position / 100 * Amplitude;
 
-    ErosionByLife.Enabled := ckLifeErosion.Checked;
-    ErosionByLife.Robustness := IntPower(10, tbRobustness.Position);
+      ErosionByLife.Enabled := ckLifeErosion.Checked;
+      ErosionByLife.Robustness := IntPower(10, tbRobustness.Position);
 
-    Steps.Enabled := ckStepped.Checked;
-    Steps.Count := seStepCount.Value;
-    { }
+      Steps.Enabled := ckStepped.Checked;
+      Steps.Count := seStepCount.Value;
+      { }
 
     { Lighting properties }
     // LightColor:=ConvertWinColor(shColor.Brush.Color);

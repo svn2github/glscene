@@ -16,12 +16,14 @@ Title=GLScene Guide
 [FILES]
 Installation\Installation.htm
 Introduction\Introduction.htm
+Introduction\Welcome.htm
 
 [MAP]
 #include ..\..\#IDH\Idh_Main.h
 
 [TEXT POPUPS]
 ..\..\#IDH\Idh_Popup.h
+..\..\#IDH\IdhFiles.txt
 
 [INFOTYPES]
 

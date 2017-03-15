@@ -30,6 +30,7 @@ object fDuneFighter: TfDuneFighter
     FieldOfView = 125.219512939453100000
     Align = alClient
     TabOrder = 0
+    ExplicitHeight = 520
   end
   object Panel1: TPanel
     Left = 0

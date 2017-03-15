@@ -1,28 +1,30 @@
 unit ShortestU;
-{ This program shows how simple it is to set up a fractal landscape. I've commented
-  the objects created at design time.
-  Basically, you need a SceneViewer, a Scene, a Camera, a MaterialLibrary and
-  a TerrainRenderer; make the latter child of a DummyCube if you want to be able
-  to rescale it (to create wider perspective). All these objects must be linked
-  properly as shown in other tutorials.
-
-  This code just build and display a landscape. You can't navigate it nor rotate the angle
-  of view.
-
-  Alexandre Hirzel, July 2003
-}
 
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages,
-  System.SysUtils, System.Variants, System.Classes,
-  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
-  // GLS
-  GLScene, GLTerrainRenderer, GLObjects, GLTexture, GLWin32Viewer,
-  GLMaterial, GLCoordinates, GLCrossPlatform, GLBaseClasses,
+  Winapi.Windows,
+  Winapi.Messages,
+  System.SysUtils,
+  System.Variants,
+  System.Classes,
+  System.Math,
+  Vcl.Graphics,
+  Vcl.Controls,
+  Vcl.Forms,
+  Vcl.Dialogs,
+
+  GLScene,
+  GLTerrainRenderer,
+  GLObjects, GLTexture,
+  GLWin32Viewer,
+  GLMaterial,
+  GLCoordinates,
+  GLCrossPlatform,
+  GLBaseClasses,
+
   // Unit where the random landscape are coded
-  ahGLrandomHDS;
+  GLRandomHDS;
 
 type
   TForm1 = class(TForm)
@@ -40,11 +42,13 @@ type
       X, Y: Integer);
     procedure GLSceneViewer1MouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
+    procedure FormMouseWheel(Sender: TObject; Shift: TShiftState;
+      WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
   private
     hdsLandscape: TGLFractalHDS; // Declare the landscape manually
     mx, my: Integer;
   public
-    { Public declarations }
+
   end;
 
 var
@@ -56,9 +60,9 @@ implementation
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
-  { Setting up terrain renderer. This could be done at design time but you have
-    missed it. These transformations are needed because, in a HDS, the z vector
-    is pointing upward. }
+ { Setting up terrain renderer. This could be done at design time but you have
+   missed it. These transformations are needed because, in a HDS, the z vector
+   is pointing upward. }
   GLTerrainRenderer1.Up.SetVector(0, 0, 1);
   GLTerrainRenderer1.Direction.SetVector(0, 1, 0);
 
@@ -77,6 +81,12 @@ begin
   end; // with
 end;
 
+procedure TForm1.FormMouseWheel(Sender: TObject; Shift: TShiftState;
+  WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
+begin
+   GLCamera1.AdjustDistanceToTarget(Power(1.03, WheelDelta/120));
+end;
+
 procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
@@ -89,8 +99,10 @@ procedure TForm1.GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
 begin
   if ssLeft in Shift then
     GLCamera1.MoveAroundTarget(my - Y, mx - X);
+{
   if ssRight in Shift then
     GLCamera1.MoveTargetInEyeSpace((Y - my) * 0.05, (mx - X) * 0.05, 0);
+}
   mx := X;
   my := Y;
 end;

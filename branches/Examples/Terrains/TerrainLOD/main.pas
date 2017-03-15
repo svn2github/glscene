@@ -19,7 +19,7 @@ uses
   Vcl.StdCtrls,
   Vcl.Imaging.JPeg,
 
-  // GLS
+   
   GLWin32Viewer,
   GLTexture,
   GLScene,
@@ -79,14 +79,14 @@ type
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
   private
-    { Private declarations }
+     
     mx: Integer;
     my: Integer;
     FCamHeight: Single;
     map: TMap;
     procedure LoadMap;
   public
-    { Public declarations }
+     
   end;
 
 var

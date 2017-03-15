@@ -75,10 +75,9 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormKeyPress(Sender: TObject; var Key: Char);
     procedure TISoundTimer(Sender: TObject);
-  private
-     
+    procedure FormMouseWheel(Sender: TObject; Shift: TShiftState;
+      WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
   public
-     
     mx, my: Integer;
     fullScreen: Boolean;
     FCamHeight: Single;
@@ -317,6 +316,12 @@ begin
         Visible := (not Visible) and SPSun.Visible;
   end;
   Key := #0;
+end;
+
+procedure TForm1.FormMouseWheel(Sender: TObject; Shift: TShiftState;
+  WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
+begin
+   GLCamera1.AdjustDistanceToTarget(Power(1.03, WheelDelta/120));
 end;
 
 procedure TForm1.TISoundTimer(Sender: TObject);

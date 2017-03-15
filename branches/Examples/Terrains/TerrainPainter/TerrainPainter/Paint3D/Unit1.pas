@@ -29,7 +29,7 @@ uses
   GR32_RangeBars,
   GR32_Blend,GR32_Layers,
 
-  //GLS
+   
   OpenGLTokens,
   GLScene,
   GLGraph,
@@ -158,9 +158,9 @@ type
     procedure SpeedButton1Click(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
     mx, my : Integer;
     TerrainPainter: TGLTerrainPainter;
     //Return the application path

@@ -373,10 +373,9 @@ type
   end;
 
   TGLTextureMappingMode = (tmmUser, tmmObjectLinear, tmmEyeLinear, tmmSphere,
-    tmmCubeMapReflection, tmmCubeMapNormal,
-    tmmCubeMapLight0, tmmCubeMapCamera);
+    tmmCubeMapReflection, tmmCubeMapNormal, tmmCubeMapLight0, tmmCubeMapCamera);
 
-    {Defines basic texturing properties.
+  {Defines basic texturing properties.
        You can control texture wrapping, smoothing/filtering and of course define
        the texture map (note that texturing is disabled by default).
        A built-in mechanism (through ImageAlpha) allows auto-generation of an
@@ -577,7 +576,7 @@ type
     property TextureFormatEx: TGLInternalFormat read FTextureFormat write
       SetTextureFormatEx stored StoreTextureFormatEx;
 
-    {Texture compression control. 
+    {Texture compression control.
     If True the compressed TextureFormat variant (the OpenGL ICD must
     support GL_ARB_texture_compression, or this option is ignored). }
     property Compression: TGLTextureCompression read FCompression write

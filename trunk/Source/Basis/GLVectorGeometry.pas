@@ -1119,6 +1119,8 @@ function QuaternionSlerp(const source, dest: TQuaternion; const T: Single): TQua
 // Logarithmic and exponential functions
 // ------------------------------------------------------------------------------
 
+function Logarithm2(const X: Single): Single;
+
 // Raise base to any power. For fractional exponents, or |exponents| > MaxInt, base must be > 0
 function PowerSingle(const Base, Exponent: Single): Single; overload;
 // Raise base to an integer
@@ -6713,6 +6715,11 @@ begin
   ArcTo.V[Z] := Q.ImagPart.V[X] * ArcFrom.V[Y] - Q.ImagPart.V[Y] * ArcFrom.V[X];
   if Q.RealPart < 0 then
     SetAffineVector(ArcFrom, -ArcFrom.V[X], -ArcFrom.V[Y], 0);
+end;
+
+function Logarithm2(const X: Single): Single;
+begin
+  result := Log2(X);
 end;
 
 function PowerSingle(const Base, Exponent: Single): Single;

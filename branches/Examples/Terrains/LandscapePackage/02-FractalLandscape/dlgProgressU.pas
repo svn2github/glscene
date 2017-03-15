@@ -14,7 +14,7 @@ type
     procedure timTaskTimer(Sender: TObject);
     procedure FormHide(Sender: TObject);
   private
-    { Private declarations }
+     
   public
     procedure Execute;
   end;

@@ -63,8 +63,7 @@ type
       ssLowLevel: shader is applied after material application, and unapplied
            before material unapplication
       ssReplace: shader is applied in place of the material (and material
-           is completely ignored)
-      }
+           is completely ignored)}
   TGLShaderStyle = (ssHighLevel, ssLowLevel, ssReplace);
 
   {Defines what to do if for some reason shader failed to initialize.

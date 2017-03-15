@@ -2,8 +2,8 @@ object dlgFracLan: TdlgFracLan
   Left = 242
   Top = 106
   Caption = 'FractalLandscape'
-  ClientHeight = 501
-  ClientWidth = 651
+  ClientHeight = 496
+  ClientWidth = 685
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -12,7 +12,9 @@ object dlgFracLan: TdlgFracLan
   Font.Style = []
   KeyPreview = True
   OldCreateOrder = False
+  Position = poScreenCenter
   ShowHint = True
+  WindowState = wsMaximized
   OnActivate = FormActivate
   OnClose = FormClose
   OnCreate = FormCreate
@@ -28,16 +30,19 @@ object dlgFracLan: TdlgFracLan
   end
   object PageControl1: TPageControl
     Left = 0
-    Top = 356
-    Width = 651
+    Top = 351
+    Width = 685
     Height = 120
     ActivePage = TabSheet3
     Align = alBottom
     HotTrack = True
     TabOrder = 0
     OnChange = PageControl1Change
+    ExplicitTop = 356
+    ExplicitWidth = 651
     object TabSheet1: TTabSheet
       Caption = 'Topography'
+      ExplicitWidth = 643
       object GroupBox1: TGroupBox
         Left = 193
         Top = 0
@@ -152,10 +157,10 @@ object dlgFracLan: TdlgFracLan
           Hint = 
             'Resolution of the height-field (parameter of the fractal algorit' +
             'hm)'
-          MaxValue = 25
+          MaxValue = 10
           MinValue = 3
           TabOrder = 0
-          Value = 7
+          Value = 6
           OnChange = OnTopographyChanged
         end
         object tbRoughness: TTrackBar
@@ -306,6 +311,7 @@ object dlgFracLan: TdlgFracLan
     object TabSheet3: TTabSheet
       Caption = 'Erosion'
       ImageIndex = 2
+      ExplicitWidth = 643
       object GroupBox5: TGroupBox
         Left = 0
         Top = 0
@@ -324,7 +330,7 @@ object dlgFracLan: TdlgFracLan
           FocusControl = tbBeachHeight
         end
         object ckSeaErosion: TCheckBox
-          Left = 8
+          Left = 3
           Top = 16
           Width = 73
           Height = 17
@@ -454,11 +460,12 @@ object dlgFracLan: TdlgFracLan
       object GroupBox14: TGroupBox
         Left = 457
         Top = 0
-        Width = 186
+        Width = 220
         Height = 92
         Align = alClient
         Caption = 'Steps'
         TabOrder = 3
+        ExplicitWidth = 186
         object Label26: TLabel
           Left = 6
           Top = 40
@@ -494,6 +501,7 @@ object dlgFracLan: TdlgFracLan
     object TabSheet2: TTabSheet
       Caption = 'Lighting'
       ImageIndex = 1
+      ExplicitWidth = 643
       object GroupBox3: TGroupBox
         Left = 0
         Top = 0
@@ -619,6 +627,7 @@ object dlgFracLan: TdlgFracLan
     object TabSheet4: TTabSheet
       Caption = 'Texture'
       ImageIndex = 3
+      ExplicitWidth = 643
       object GroupBox8: TGroupBox
         Left = 0
         Top = 0
@@ -774,6 +783,7 @@ object dlgFracLan: TdlgFracLan
     object TabSheet5: TTabSheet
       Caption = 'View'
       ImageIndex = 4
+      ExplicitWidth = 643
       object GroupBox11: TGroupBox
         Left = 0
         Top = 0
@@ -875,6 +885,7 @@ object dlgFracLan: TdlgFracLan
     object TabSheet6: TTabSheet
       Caption = 'Credits'
       ImageIndex = 5
+      ExplicitWidth = 643
       object Memo1: TMemo
         Left = 0
         Top = 0
@@ -1005,8 +1016,8 @@ object dlgFracLan: TdlgFracLan
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 651
-    Height = 356
+    Width = 685
+    Height = 351
     Camera = GLCamera1
     Buffer.FogEnvironment.FogColor.Color = {FCA9313F9CC4603F91ED7C3F0000803F}
     Buffer.FogEnvironment.FogStart = 400.000000000000000000
@@ -1015,23 +1026,25 @@ object dlgFracLan: TdlgFracLan
     Buffer.BackgroundColor = clSkyBlue
     Buffer.FogEnable = True
     Buffer.Lighting = False
-    FieldOfView = 148.620010375976600000
+    FieldOfView = 148.195465087890600000
     OnMouseEnter = GLSceneViewer1MouseEnter
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
     TabOrder = 2
-    ExplicitTop = -6
+    ExplicitHeight = 350
   end
   object Panel1: TPanel
     Left = 0
-    Top = 476
-    Width = 651
+    Top = 471
+    Width = 685
     Height = 25
     Align = alBottom
     TabOrder = 1
+    ExplicitTop = 476
+    ExplicitWidth = 651
     DesignSize = (
-      651
+      685
       25)
     object lblDebug: TLabel
       Left = 8
@@ -1040,8 +1053,8 @@ object dlgFracLan: TdlgFracLan
       Height = 13
     end
     object btApply: TBitBtn
-      Left = 580
-      Top = 0
+      Left = 461
+      Top = 2
       Width = 75
       Height = 25
       Anchors = [akRight, akBottom]

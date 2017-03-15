@@ -14,6 +14,7 @@ object Form1: TForm1
   Position = poScreenCenter
   WindowState = wsMaximized
   OnCreate = FormCreate
+  OnMouseWheel = FormMouseWheel
   PixelsPerInch = 96
   TextHeight = 13
   object GLSceneViewer1: TGLSceneViewer
@@ -26,6 +27,7 @@ object Form1: TForm1
     FieldOfView = 154.447631835937500000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
+    OnMouseMove = GLSceneViewer1MouseMove
     TabOrder = 0
   end
   object GLScene1: TGLScene

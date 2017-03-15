@@ -9,7 +9,9 @@ Language=0x419 Русский (Россия)
 
 
 [FILES]
-HTML\Installation.htm
+Introduction\Introduction.htm
+Installation\Installation.htm
+Introduction\Welcome.htm
 
 [MAP]
 #include ..\..\#IDH\Idh_Main.h

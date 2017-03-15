@@ -298,6 +298,7 @@
         <DCCReference Include="..\..\Source\GLProxyObjects.pas"/>
         <DCCReference Include="..\..\Source\GLROAMPatch.pas"/>
         <DCCReference Include="..\..\Source\GLRagdoll.pas"/>
+        <DCCReference Include="..\..\Source\GLRandomHDS.pas"/>
         <DCCReference Include="..\..\Source\GLRenderContextInfo.pas"/>
         <DCCReference Include="..\..\Source\GLSArchiveManager.pas"/>
         <DCCReference Include="..\..\Source\GLSCrossXML.pas"/>

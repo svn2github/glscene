@@ -110,9 +110,8 @@ object dlgFracArchip: TdlgFracArchip
     Left = 48
     Top = 88
   end
-  object AsyncTimer1: TGLAsyncTimer
-    Interval = 1
-    OnTimer = AsyncTimer1Timer
+  object GLAsyncTimer1: TGLAsyncTimer
+    OnTimer = GLAsyncTimer1Timer
     Left = 160
     Top = 88
   end

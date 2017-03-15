@@ -1,18 +1,3 @@
-{
-  This demo illustrate the use of the tFractalArchipelago, an infinite random
-  landscape made of fractal islands. The crucial procedures are :
-  - FormCreate: Landscape instanciation, hooking to TerrainRenderer and texture loading
-  - FormActivate: Setting up landscape parameters and initialisation
-  - AsyncTimer1Timer: Updating
-  - OnDrawTexture: Land-cover drawing. This is where you define which texture is
-  used depending on elevation, slope, aspect and position.
-
-  Please consider testing the FractalLandscape first to understand how fractal
-  landscapes are built and what the various parameters are controlling.
-
-  Alexandre Hirzel, (c) June 2003
-
-}
 unit dlgFracArchipU;
 
 interface
@@ -26,14 +11,13 @@ uses
   Vcl.Graphics,
   Vcl.Controls,
   Vcl.Forms,
-  Vcl.Spin, 
-  Vcl.Dialogs,
   Vcl.Samples.Spin,
+  Vcl.Dialogs,
   Vcl.ComCtrls,
   Vcl.Buttons,
   Vcl.ExtCtrls,
   Vcl.StdCtrls,
-  // GLS
+
   GLScene,
   GLTerrainRenderer,
   GLObjects,
@@ -48,7 +32,7 @@ uses
   GLBaseClasses,
   GLColor,
   GLKeyboard,
-  ahGLRandomHDS;
+  GLRandomHDS;
 
 type
   TdlgFracArchip = class(TForm)
@@ -60,9 +44,9 @@ type
     Panel1: TPanel;
     lblDebug: TLabel;
     Timer1: TTimer;
-    AsyncTimer1: TGLAsyncTimer;
     GLDummyCube1: TGLDummyCube;
     Label1: TLabel;
+    GLAsyncTimer1: TGLAsyncTimer;
     procedure GLSceneViewer1MouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
@@ -72,7 +56,7 @@ type
     procedure FormActivate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
-    procedure AsyncTimer1Timer(Sender: TObject);
+    procedure GLAsyncTimer1Timer(Sender: TObject);
   private
     mx, my: Integer;
     FCamHeight: Single;
@@ -106,48 +90,48 @@ var
 
 function TextureSea(const X, Y: Integer): TColorVector;
 begin
-  with Sea do
-    Result := ConvertWinColor(Canvas.Pixels[X * 5 mod Width, Y * 5 mod Height]);
+  Result := ConvertWinColor(Sea.Canvas.Pixels[X * 5 mod Sea.Width,
+    Y * 5 mod Sea.Height]);
   // Result:=TextureBlue(x,y);
 end;
 
 function TextureForest(const X, Y: Integer): TColorVector;
 begin
-  with Forest do
-    Result := ConvertWinColor(Canvas.Pixels[X mod Width, Y mod Height]);
+  Result := ConvertWinColor(Forest.Canvas.Pixels[X mod Forest.Width,
+    Y mod Forest.Height]);
   AddVector(Result, 0.2); // Original texture is too dark
   // Result:=TextureDarkGreen(x,y);
 end;
 
 function TextureGrass(const X, Y: Integer): TColorVector;
 begin
-  with Grass do
-    Result := ConvertWinColor(Canvas.Pixels[X mod Width, Y mod Height]);
+  Result := ConvertWinColor(Grass.Canvas.Pixels[X mod Grass.Width,
+    Y mod Grass.Height]);
   AddVector(Result, 0.2); // Original texture is too dark
 end;
 
 function TextureSnow(const X, Y: Integer): TColorVector;
 begin
-  with Snow do
-    Result := ConvertWinColor(Canvas.Pixels[X mod Width, Y mod Height]);
+  Result := ConvertWinColor(Snow.Canvas.Pixels[X mod Snow.Width,
+    Y mod Snow.Height]);
 end;
 
 function TextureBeach(const X, Y: Integer): TColorVector;
 begin
-  with Beach do
-    Result := ConvertWinColor(Canvas.Pixels[X mod Width, Y mod Height]);
+  Result := ConvertWinColor(Beach.Canvas.Pixels[X mod Beach.Width,
+    Y mod Beach.Height]);
 end;
 
 function TextureCliff(const X, Y: Integer): TColorVector;
 begin
-  with Cliff do
-    Result := ConvertWinColor(Canvas.Pixels[X * 2 mod Width, Y * 2 mod Height]);
+  Result := ConvertWinColor(Cliff.Canvas.Pixels[X * 2 mod Cliff.Width,
+    Y * 2 mod Cliff.Height]);
 end;
 
 function TextureBrownSoil(const X, Y: Integer): TColorVector;
 begin
-  with BrownSoil do
-    Result := ConvertWinColor(Canvas.Pixels[X mod Width, Y mod Height]);
+  Result := ConvertWinColor(BrownSoil.Canvas.Pixels[X mod BrownSoil.Width,
+    Y mod BrownSoil.Height]);
 end;
 
 procedure TdlgFracArchip.FormCreate(Sender: TObject);
@@ -164,8 +148,7 @@ begin
   FractalArchip.Depth := 7;
   Rendering := False;
 
-  { Load textures
-    These textures are used by the OnDrawTexture event handler }
+  { Load textures that are used by the OnDrawTexture event handler }
   Forest := LoadJPGtexture('mousse_1.jpg');
   Sea := LoadJPGtexture('Sea.jpg');
   Snow := LoadJPGtexture('004_neige.jpg');
@@ -178,13 +161,13 @@ begin
   FCamHeight := 6;
 end;
 
-function TdlgFracArchip.OnDrawTexture(const Sender: TGLBaseRandomHDS;
-  X, Y: Integer; z: double; aNormal: TVector): TColorVector;
 { Select the color to paint depending on height(z) and normal. x and y are used to
   drape a texture.
   This is here that you play with texture effects and express your artistic mind.
   Here, I only used three strata (+sea), but you can't imagine anything.
   The magic numbers here are the result of tweaking, not calculus. }
+function TdlgFracArchip.OnDrawTexture(const Sender: TGLBaseRandomHDS;
+  X, Y: Integer; z: double; aNormal: TVector): TColorVector;
 const
   f = VerticalScalingFactor;
 var
@@ -221,9 +204,9 @@ begin
   end; // with
 end;
 
+{ Flashy version of the regular OnDrawTexture. Helps debugging textures. }
 function TdlgFracArchip.OnDrawTextureFlashy(const Sender: TGLBaseRandomHDS;
   X, Y: Integer; z: double; aNormal: TVector): TColorVector;
-{ Flashy version of the regular OnDrawTexture. Helps debugging textures. }
 const
   f = VerticalScalingFactor;
 var
@@ -337,7 +320,8 @@ begin
 
     { Lighting properties }
     AmbientLight := 0.4;
-    LightDirection := VectorMake(-sqrt(1 - sqr(-0.5)), -0.5, -sqrt(1 - sqr(-0.5)));
+    LightDirection := VectorMake(-sqrt(1 - sqr(-0.5)), -0.5,
+      -sqrt(1 - sqr(-0.5)));
     Lighting := True;
     Shadows := False;
 
@@ -385,7 +369,8 @@ begin
   FractalArchip.Free;
 end;
 
-procedure TdlgFracArchip.AsyncTimer1Timer(Sender: TObject);
+
+procedure TdlgFracArchip.GLAsyncTimer1Timer(Sender: TObject);
 var
   DeltaTime: double;
 begin
@@ -447,12 +432,16 @@ end;
 procedure TdlgFracArchip.SetRendering(const Value: boolean);
 begin
   FRendering := Value;
-  AsyncTimer1.Enabled := FRendering;
+  GLAsyncTimer1.Enabled := FRendering;
   GLSceneViewer1.Enabled := FRendering;
   GLSceneViewer1.Visible := FRendering;
-  { if fRendering=False
-    then TerrainRenderer1.HeightDataSource:=nil
-    else TerrainRenderer1.HeightDataSource:=FractalArchip; }
+
+  if fRendering = False
+  then
+    TerrainRenderer1.HeightDataSource := nil
+  else
+    TerrainRenderer1.HeightDataSource := FractalArchip;
+
 end;
 
 function TdlgFracArchip.OnDrawTextureSlope(const Sender: TGLBaseRandomHDS;

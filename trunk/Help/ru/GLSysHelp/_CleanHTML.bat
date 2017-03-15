@@ -6,4 +6,4 @@ del *.hhc /s
 del *.hhk /s
 del *.hhp /s
 del *.log /s
-
+del *.css /s

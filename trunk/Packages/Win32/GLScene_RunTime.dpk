@@ -198,6 +198,7 @@ contains
   GLProxyObjects in '..\..\Source\GLProxyObjects.pas',
   GLROAMPatch in '..\..\Source\GLROAMPatch.pas',
   GLRagdoll in '..\..\Source\GLRagdoll.pas',
+  GLRandomHDS in '..\..\Source\GLRandomHDS.pas',
   GLRenderContextInfo in '..\..\Source\GLRenderContextInfo.pas',
   GLSArchiveManager in '..\..\Source\GLSArchiveManager.pas',
   GLSCrossXML in '..\..\Source\GLSCrossXML.pas',

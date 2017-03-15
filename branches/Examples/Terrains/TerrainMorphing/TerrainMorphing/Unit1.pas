@@ -7,7 +7,7 @@ uses
   System.SysUtils, System.Variants, System.Classes,
   Vcl.Graphics, Vcl.Controls, Vcl.Forms,
   Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.Imaging.Jpeg,
-  // GLS
+   
   GLScene, GLObjects, GLCadencer, GLTexture, GLWin32Viewer,
   GLVectorGeometry, GLAsyncTimer, GLUtils, GLHUDObjects, GLBitmapFont,
   GLWindowsFont, GLKeyboard, XOpenGL, GLHeightData, GLTerrainRenderer,
@@ -48,9 +48,9 @@ type
     procedure explpxcombine(F: TColor32; var B: TColor32; M: TColor32);
     procedure GLTerrainRenderer1GetTerrainBounds(var l, t, r, B: Single);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
   end;
 
 const

@@ -58,11 +58,9 @@ type
     FStencilRBO: TGLStencilRBO;
     FColorAttachment: Integer;
     FRendering: Boolean;
-
     FHasColor: Boolean;
     FHasDepth: Boolean;
     FHasStencil: Boolean;
-
     FMaterialLibrary: TGLMaterialLibrary;
     FColorTextureName: TGLLibMaterialName;
     FDepthTextureName: TGLLibMaterialName;
@@ -116,14 +114,10 @@ type
     procedure Notification(AComponent: TComponent;
       Operation: TOperation); override;
     procedure Initialize;
-
     procedure ForceDimensions(Texture: TGLTexture);
-
     procedure RenderToFBO(var ARci: TGLRenderContextInfo);
-
     procedure ApplyCamera(var ARci: TGLRenderContextInfo);
     procedure UnApplyCamera(var ARci: TGLRenderContextInfo);
-
     procedure DoBeforeRender(var ARci: TGLRenderContextInfo);
     procedure DoAfterRender(var ARci: TGLRenderContextInfo);
     procedure DoPreInitialize;
@@ -156,20 +150,15 @@ type
       only works with TGLBlankImage and TGLFloatDataImage, otherwise does nothing }
     property ForceTextureDimensions: Boolean read FForceTextureDimensions
       write SetForceTextureDimentions default True;
-
     property Width: Integer read FWidth write SetWidth default 256;
     property Height: Integer read FHeight write SetHeight default 256;
-
     property Aspect: Single read FAspect write FAspect stored StoreAspect;
-
     property ColorTextureName: TGLLibMaterialName read FColorTextureName
       write SetColorTextureName;
-
     property DepthTextureName: TGLLibMaterialName read FDepthTextureName
       write SetDepthTextureName;
     property MaterialLibrary: TGLAbstractMaterialLibrary read GetMaterialLibrary
       write SetMaterialLibrary;
-
     property BackgroundColor: TGLColor read FBackgroundColor
       write SetBackgroundColor;
     property ClearOptions: TGLFBOClearOptions read FClearOptions
@@ -178,7 +167,6 @@ type
     {  camera used for rendering to the FBO
       if not assigned, use the active view's camera }
     property Camera: TGLCamera read FCamera write SetCamera;
-
     {  adjust the scene scale of the camera so that the rendering
       becomes independent of the width of the fbo renderer
       0 = disabled }
@@ -236,7 +224,9 @@ type
 
 implementation
 
-{ TGLFBORenderer }
+//
+// TGLFBORenderer
+//
 
 procedure TGLFBORenderer.ApplyCamera(var ARci: TGLRenderContextInfo);
 var
@@ -860,16 +850,10 @@ begin
   end;
 end;
 
-// StoreSceneScaleFactor
-//
-
 function TGLFBORenderer.StoreSceneScaleFactor: Boolean;
 begin
   Result := (FSceneScaleFactor <> 0.0);
 end;
-
-// StoreAspect
-//
 
 function TGLFBORenderer.StoreAspect: Boolean;
 begin
