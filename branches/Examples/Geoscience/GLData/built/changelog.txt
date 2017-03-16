@@ -1,0 +1,92 @@
+glData 0.3.2 (5-October-2003)
++ Added Delaunay Triangulation Option
+* Fixed revert process bug
+
+glData 0.3.1 (21-September-2003)
++ Added Coordinate Axes Module
++ Added Bounding Box for scalar and vector datasets
++ Updated user interface to allow window docking
+* Bug fix (trimmed text) in import module
+
+glData 0.3.0 (3-September-2003)
++ Added benchmarking tool
++ Added point 'locator'
++ Added rectilinear geothermal simulation grids (MULKOM/TOUGH/TETRAD)
++ Added support for vector fields
++ Display multiple Surfer Grids
++ Display multiple ArcInfo Grids
++ Surfer Animation - export to AVI
++ Added format control for colour scale
++ Added start of online help
++ Enhancements to Tip of the Day (thanks Dave Kerr)
+* Numerical edits now accept scientific format
+* Removed JVCL dependancy
+
+glData 0.2.8 (2-July-2003)
++ Added export module
+* Much improved colour scale (all types, all modes)
+* Bug fix to ArcInfo scaling
+
+glData 0.2.7 (29-June-2003)
++ Added import module
++ Added preliminary colour scale (data points clr only)
+* Faster Surfer/ArcInfo Rendering
+* Bugfixes
+
+glData 0.2.6 (24-June-2003)
++ Added user-settings to registry
++ Added support for colour spectrum files (.clr)
++ Included a number of sample palettes
+
+glData 0.2.5 (21-June-2003)
++ Added ability to apply a base map (jpeg format) to a grid
++ Added ability to tile base map, x and y tile factors
++ Added zoom by mouse wheel - Requested by Dave Kerr
+* Bug fix to surfer importing - correctly detects ArcInfo grids
+
+glData 0.2.4 (20-June-2003)
++ Added start of points (GLPOINTS) 
++ Added ability to import a scalar value (for data)
++ Added start of pipe view (interpolated value between nodes)
++ Added ArcInfo grid importing - Thanks to Phil Scadden for code.
+* Bug fix for surfer importing - Thanks to Richard Beitelmair for reporting.  
+
+glData 0.2.3 (20-May-2003)
++ Added sorting tool for both original and processed data
++ Added preferences form (hotkey = F2)
++ Added alpha blending for surfer grids
++ Added option for setting background colour
++ Added move tool HUD for updating candidate position
++ Updated user interface
+* Bug fixes for centering and displaying a surfer grid
+
+glData 0.2.2 (16-May-2003)
++ Added "Move" Tool for moving data points - the grid data 
+and connectivity line updates in real time! 
++ Added function for setting focus from the processed grid record
++ Added "Empty" functions for both original and measured data grids.
+
+glData 0.2.1 (14-May-2003)
++ Added orthogonal camera projection
++ Added scene scaling (independent x,y,z scale factors)
++ Added start of Head Up Display (HUD)
++ Added export of processed data 
++ Added live editing (scene updating) of processed data
+
+glData 0.2.0 (13-May-2003)
++ Surfer Grids (using 'gridparser' - http://software.pbpower.net)
++ Added feedback on focus point and position
+
+glData 0.1.3 (12-May-2003)
++ Added Output To Bitmap Functions
++ Added Center View Function
++ Added Co-ordinate Transformation Report
++ Added Connectivity Line
+
+glData 0.1.2 (9-May-2003)
++ Added options to set point colour, radius
++ Added option to toggle point wireframe mode
++ Rearranged interface
+
+glData 0.1.1 (7-May-2003)
+First Public Release (based on "datapoints" demo on http://www.caperaven.co.za)

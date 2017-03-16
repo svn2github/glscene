@@ -1,0 +1,11 @@
+The glData homepage is http://gldata.sourceforge.net. The website was created by Graphic Edge Ltd. (http://www.graphic-edge.co.nz).
+glData is built with the GLScene graphics library (http://www.glscene.org).  GLScene is the best OpenGL graphics library for Delphi.  
+Special GLScene components were built for glData including the TGLArrowLine.
+Be sure to check out Dave Kerr's ai.planet project (http://aiplanet.sourceforge.net).
+glData is released under the terms of the Mozilla Public Licence. It is therefore open source software.
+The 'colour tool' (Tools menu) can be used to create and/or edit a list of identifier-colour combinations.
+Almost all program settings can be accessed from the 'preferences' (Tools menu). Settings are stored in the registry for the current user.
+Antialiasing (Preferences -> Display) may be supported in your graphics card. 
+Antialiasing improves the rendering quality at the cost of reduced interactive performance.
+The benchmark, locator, and axes forms can be docked into the main window.
+VirtualDub (http://www.virtualdub.org) is a useful program for animation post production. 

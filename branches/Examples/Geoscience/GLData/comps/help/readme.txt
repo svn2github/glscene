@@ -1,0 +1,2 @@
+Documentation from pasdoc (http://pasdoc.sourceforge.net) can be generated into this directory simply by running:
+pasdoc.bat or pasdoc_withprivate (includes private definitions) from parent directory (the root of the "comps" module).

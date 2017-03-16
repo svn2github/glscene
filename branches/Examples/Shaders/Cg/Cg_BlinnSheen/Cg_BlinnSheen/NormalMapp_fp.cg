@@ -1,0 +1,53 @@
+struct fragin 
+{
+    float2 texcoords            : TEXCOORD0;
+    float4 tangentToEyeMat0     : TEXCOORD4;
+    float3 tangentToEyeMat1     : TEXCOORD5;
+    float3 tangentToEyeMat2     : TEXCOORD6;
+    float3 eyeSpacePosition     : TEXCOORD7;
+};
+
+float4 main( fragin In,
+    uniform sampler2D diffuseMap    : TEXUNIT0,
+    uniform sampler2D normalMap     : TEXUNIT1,
+    uniform sampler2D glossMap      : TEXUNIT2,
+    uniform float3 eyeSpaceLightPosition) : COLOR
+{
+    float bscale = In.tangentToEyeMat0.w;
+    
+    float  m = 34;                                      // specular exponent
+    float4 kd = tex2D( diffuseMap, In.texcoords );      // diffuse color
+    float4 ks = 0.9 * tex2D( glossMap, In.texcoords );  // specular color
+
+    // Get eye-space eye vector.
+    float3 v = normalize( -In.eyeSpacePosition );
+
+    // Get eye-space light and halfangle vectors.
+    float3 l = normalize( eyeSpaceLightPosition - In.eyeSpacePosition );
+    float3 h = normalize( v + l );
+
+    // Get tangent-space normal vector from normal map.
+    // Uncompress vectors ([0, 1] -> [-1, 1])
+    float3 tangentSpaceNormal = 2.0f * (tex2D( normalMap, In.texcoords ).rgb - 0.5f);
+
+    float3 bumpscale = float3( bscale, bscale, 1.0 );
+    tangentSpaceNormal = tangentSpaceNormal * bumpscale;
+
+    // Transform it into eye-space.
+    float3 n;
+    n[0] = dot( In.tangentToEyeMat0.xyz, tangentSpaceNormal );
+    n[1] = dot( In.tangentToEyeMat1, tangentSpaceNormal );
+    n[2] = dot( In.tangentToEyeMat2, tangentSpaceNormal );
+    n = normalize( n );
+
+    // Compute the lighting equation coefficients.
+    float ndotl = max( dot(n,l), 0 );   // clamp 0 to 1
+    float ndoth = max( dot(n,h), 0 );   // clamp 0 to 1
+    float flag  = (float)(ndotl > 0);   // if (ndotl <= 0) specular = 0
+
+    // Compute Blinn-Phong lighting.
+    return ( kd * ndotl + flag * ks * pow( ndoth, m ) );
+
+
+}
+

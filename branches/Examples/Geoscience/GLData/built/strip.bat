@@ -1,0 +1,1 @@
+stripreloc.exe glData.exe

@@ -1,0 +1,60 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{7CFBDB42-7DD9-4BA3-AEE5-B0AE6C217A2D}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="comps\GEdgeIO.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="comps\GEdgeIODB.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="glData.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="GEdgeIO">
+        <MSBuild Projects="comps\GEdgeIO.dproj"/>
+    </Target>
+    <Target Name="GEdgeIO:Clean">
+        <MSBuild Projects="comps\GEdgeIO.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="GEdgeIO:Make">
+        <MSBuild Projects="comps\GEdgeIO.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="GEdgeIODB">
+        <MSBuild Projects="comps\GEdgeIODB.dproj"/>
+    </Target>
+    <Target Name="GEdgeIODB:Clean">
+        <MSBuild Projects="comps\GEdgeIODB.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="GEdgeIODB:Make">
+        <MSBuild Projects="comps\GEdgeIODB.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="glData">
+        <MSBuild Projects="glData.dproj"/>
+    </Target>
+    <Target Name="glData:Clean">
+        <MSBuild Projects="glData.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="glData:Make">
+        <MSBuild Projects="glData.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="GEdgeIO;GEdgeIODB;glData"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="GEdgeIO:Clean;GEdgeIODB:Clean;glData:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="GEdgeIO:Make;GEdgeIODB:Make;glData:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

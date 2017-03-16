@@ -1,0 +1,1 @@
+NSIS will place the install set in this directory.

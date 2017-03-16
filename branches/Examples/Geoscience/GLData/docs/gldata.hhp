@@ -1,0 +1,17 @@
+[OPTIONS]
+Compatibility=1.1 or later
+Compiled file=gldata.chm
+Contents file=gldata.hhc
+Default Window=Main
+Default topic=index.html
+Display compile progress=No
+Index file=gldata.hhk
+Language=0x1409 English (New Zealand)
+Title=glData Help
+
+[WINDOWS]
+Main="glData Help","gldata.hhc","gldata.hhk","index.html",,,,,,0x2120,,0x3046,,0x1000000,,,,,,0
+
+
+[INFOTYPES]
+

@@ -1,0 +1,10 @@
+8-August-2003:
++ Added Tip of the Day component (primarily because the JVCL one was buggy)
+
+29-June-2003: 
+First Release with Import Component that contains support for:
++ Comma Separated Value File (CSV)
++ Tab Separated Value File (TSV)
++ Space Separated Value File (SSV)
++ Fixed Format (Space Separated Value) File (SSV)
++ Clipboard
