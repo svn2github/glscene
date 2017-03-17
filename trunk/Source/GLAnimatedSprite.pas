@@ -21,6 +21,7 @@ interface
 uses
   System.Classes, 
   System.SysUtils,
+  System.Math,
    
   GLScene, 
   GLVectorGeometry, 

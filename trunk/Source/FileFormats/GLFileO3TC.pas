@@ -1,10 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ 
+{
   O3TC file loading
 
-  History :  
+  History :
     20/01/10 - Yar - Creation
     The whole history is logged in previous version of the unit
 }
@@ -17,7 +17,8 @@ interface
 uses
   System.Classes,
   System.SysUtils,
-  
+  System.Math,
+
   OpenGLTokens,
   GLCrossPlatform,
   GLContext,
@@ -293,7 +294,7 @@ var
       Result := fElementSize * (cw * ch * (FLOD[level].Depth and -4) + x +
         cw * (y + ch * (z - 4 * ch)))
     else
-      Result := fElementSize * (4 * (x + cw * (y + ch * floor(z / 4))) + (z and
+      Result := fElementSize * (4 * (x + cw * (y + ch * Floor(z / 4))) + (z and
         3));
     if Result < 0 then
       Result := 0;

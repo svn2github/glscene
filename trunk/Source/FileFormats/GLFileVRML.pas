@@ -15,6 +15,8 @@ interface
 uses
   System.Classes,
   System.SysUtils,
+  System.Math,
+
   GLVectorFileObjects,
   GLMaterial,
   GLApplicationFileIO,
@@ -32,17 +34,15 @@ type
     procedure LoadFromStream(aStream: TStream); override;
   end;
 
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
 implementation
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-// TessellatePolygon
-//
 procedure TessellatePolygon(PolyVerts: TAffineVectorList;
   PolyIndices, TriIndices: TIntegerList);
 
@@ -162,15 +162,11 @@ end;
 // ------------------ TGLVRMLVectorFile ------------------
 // ------------------
 
-// Capabilities
-//
 class function TGLVRMLVectorFile.Capabilities: TGLDataFileCapabilities;
 begin
   Result := [dfcRead];
 end;
 
-// LoadFromStream
-//
 procedure TGLVRMLVectorFile.LoadFromStream(aStream: TStream);
 var
   mesh: TMeshObject;

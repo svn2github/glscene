@@ -15,10 +15,16 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
-  
-  GLVectorGeometry, GLScene, GLCrossPlatform, GLCoordinates, 
-  GLScreen, GLVectorTypes;
+  System.Classes,
+  System.SysUtils,
+  System.Math,
+
+  GLVectorGeometry,
+  GLScene,
+  GLCrossPlatform,
+  GLCoordinates,
+  GLScreen,
+  GLVectorTypes;
 
 type
 
@@ -233,7 +239,7 @@ Begin
   If (FCurrentHAngle < 0) or (FCurrentHAngle > 360) then
   Begin
     TempVal := (FCurrentHAngle)/360;
-    FCurrentHAngle :=  (TempVal-Floor(TempVal))*360;
+    FCurrentHAngle :=  (TempVal - Floor(TempVal))*360;
   End;
 
   Angle := DegToRadian(Angle); {make it ready for Cos and Sin }

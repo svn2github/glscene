@@ -1227,10 +1227,6 @@ function Trunc(X: Extended): Int64;
 function Round(X: Extended): Int64;
 function Frac(X: Extended): Extended;
 {$ENDIF}
-function Ceil(V: Single): Integer; overload;
-function Ceil64(V: Extended): Int64; overload;
-function Floor(V: Single): Integer; overload;
-function Floor64(V: Extended): Int64; overload;
 
 // Multiples i by s and returns the rounded result.
 function ScaleAndRound(i: Integer; var S: Single): Integer;
@@ -7187,42 +7183,6 @@ begin
 end;
 
 {$ENDIF}
-
-function Ceil64(V: Extended): Int64; overload;
-begin
-  if Frac(V) > 0 then
-    result := Trunc(V) + 1
-  else
-    result := Trunc(V);
-end;
-
-function Ceil(V: Single): Integer; overload;
-begin
-{$HINTS OFF}
-  if Frac(V) > 0 then
-    result := Trunc(V) + 1
-  else
-    result := Trunc(V);
-{$HINTS ON}
-end;
-
-function Floor64(V: Extended): Int64; overload;
-begin
-  if V < 0 then
-    result := Trunc(V) - 1
-  else
-    result := Trunc(V);
-end;
-
-function Floor(V: Single): Integer; overload;
-begin
-{$HINTS OFF}
-  if V < 0 then
-    result := Trunc(V) - 1
-  else
-    result := Trunc(V);
-{$HINTS ON}
-end;
 
 function Sign(X: Single): Integer;
 begin
