@@ -8,11 +8,12 @@ interface
 uses
   Winapi.Windows,
   System.Classes,
+  System.Math,
   System.SysUtils,
   Vcl.Graphics,
   Vcl.Forms,
   Vcl.Controls,
-   
+
   GLScene,
   GLObjects,
   GLHUDObjects,
@@ -363,7 +364,7 @@ begin
   FTimer := FTimer + pt.deltaTime;
   if FTimer > 1 / FFps then
   begin
-    FTimer := FTimer - floor(FTimer * FFps) / FFps;
+    FTimer := FTimer - Floor(FTimer * FFps) / FFps;
     FMem.Render(FCube);
     FMem.CopyToTexture(FHud.Material.Texture);
     FReady := true;

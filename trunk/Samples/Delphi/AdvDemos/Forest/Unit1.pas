@@ -5,7 +5,8 @@ interface
 uses
   Winapi.Windows,
   Winapi.OpenGL,
-  System.SysUtils, 
+  Winapi.OpenGLext,
+  System.SysUtils,
   System.Classes, 
   System.Math, 
   System.Types,
@@ -16,8 +17,7 @@ uses
   Vcl.Imaging.Jpeg, 
   Vcl.ExtCtrls,
   
-  OpenGLTokens, 
-  GLWin32Viewer, 
+  GLWin32Viewer,
   GLCadencer, 
   GLTexture, 
   GLVectorTypes, 
@@ -507,7 +507,7 @@ var
   cameraPosBackup, cameraDirectionBackup: TVector;
   frustumBackup: TFrustum;
   clipPlane: TDoubleHmgPlane;
-  glTarget: TGLEnum;
+  glTarget: GLEnum;
 begin
   supportsGLSL := GL.ARB_shader_objects and GL.ARB_fragment_shader and GL.ARB_vertex_shader;
   enableRectReflection := GL.NV_texture_rectangle and ((not enableGLSL) or GL.EXT_Cg_shader);

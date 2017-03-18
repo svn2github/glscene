@@ -630,7 +630,7 @@ begin
         else
         begin
           // arctan2 returns results between -pi and +pi, we want between 0 and 360
-          angle := 180 / pi * ArcTangent2(localIntPoint.X, localIntPoint.Y);
+          angle := 180 / pi * ArcTan2(localIntPoint.X, localIntPoint.Y);
           if angle < 0 then
             angle := angle + 360;
           // we also want StartAngle and StartAngle+SweepAngle to be in this range

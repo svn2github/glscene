@@ -20,6 +20,8 @@ interface
 uses
   System.Classes,
   System.SysUtils,
+  System.Math,
+
   GLVectorFileObjects,
   GLMaterial,
   GLCrossPlatform,

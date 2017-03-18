@@ -15,11 +15,24 @@ uses
   Vcl.ComCtrls,
   Vcl.Forms,
 
-  
-  GLScene, GLObjects, GLCadencer, GLVectorFileObjects,
-  StdCtrls,  Graphics,  GLSkydome, GLWin32Viewer, GLNavigator,
-  GLFileMD2, GLFile3DS, GLGeomObjects, GLCrossPlatform,
-  GLCoordinates, GLBaseClasses, GLUtils, GLVectorGeometry,  GLKeyboard;
+  GLScene,
+  GLObjects,
+  GLCadencer,
+  GLVectorFileObjects,
+  StdCtrls,
+  Graphics,
+  GLSkydome,
+  GLWin32Viewer,
+  GLNavigator,
+  GLFileMD2,
+  GLFile3DS,
+  GLGeomObjects,
+  GLCrossPlatform,
+  GLCoordinates,
+  GLBaseClasses,
+  GLUtils,
+  GLVectorGeometry,
+  GLKeyboard;
 
 
 type
@@ -46,7 +59,6 @@ type
     GLNavigator1: TGLNavigator;
     GLUserInterface1: TGLUserInterface;
     CBMouseLook: TCheckBox;
-
     procedure FormCreate(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
@@ -55,10 +67,6 @@ type
   private
     procedure AddMushrooms;
     procedure HandleKeys(const deltaTime: Double);
-
-  public
-     
-
   end;
 
 var

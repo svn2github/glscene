@@ -275,8 +275,6 @@ type
     procedure GetTerrainBounds(var l, t, r, b: single);
     // This procedure MUST be called by the descendent of TGLBaseRandomHDS
     procedure SetSize(const aSize: integer);
-    // tTerrainRender event handler
-    procedure StartPreparingData(heightData: TGLHeightData); override;
   public
     FHeight: TMapOfSingle;
     FLightMap: TMapOfSingle;
@@ -296,14 +294,14 @@ type
       - Perform a basic smoothing if TextureScale>1 }
     procedure BuildLightMap; overload;
     procedure BuildLightMap(const aLightDirection: TVector); overload;
-    // Normals are needed for lighting and slope-based textures 
+    // Normals are needed for lighting and slope-based textures
     procedure BuildNormals;
     { For every pixel of the texture, computes slope and interpolated height and
       sends these information to a user-supplied function (OnDrawTexture), whose
       result is a tColorVector. If no OnDrawTexture is supplied, a basic default
       texture will be used. }
     procedure BuildTexture;
-    // Fill the heightfield with "Empty" values (-999) 
+    // Fill the heightfield with "Empty" values (-999)
     procedure ClearHeightField;
     // Fill the light map with 1
     procedure ClearLightMap;
@@ -315,7 +313,7 @@ type
     procedure ConstrainCoordinates(var x, y: integer); overload;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    // Enforces an identical height on the opposing edges of the landscape 
+    // Enforces an identical height on the opposing edges of the landscape
     procedure DoCyclicBoundaries;
     (* Not yet implemented *)
     procedure DoErosionByFraction;
@@ -326,7 +324,7 @@ type
     { Creare sharp valleys and canyons. If DepositRate>0, it will also fill the
       low pools, producing flat "lakes" and "ponds" }
     procedure DoErosionByRain;
-    // Create a beach and a cliff around the islands 
+    // Create a beach and a cliff around the islands
     procedure DoErosionBySea;
     { Cut all elevations lower than sea level. If Transparency>0, the sea surface
       will not be flat, but a slight elevation change (unperceptible in 3D view)
@@ -378,6 +376,8 @@ type
     { Use these boundaries with non-cyclic landscapes to constrain camera movements. }
     function XMoveBoundary: single;
     function ZMoveBoundary: single;
+    // tTerrainRender event handler
+    procedure StartPreparingData(heightData: TGLHeightData); override;
   published
     property Cyclic: boolean read FCyclic write SetCyclic;
   end;
@@ -478,7 +478,6 @@ type
     function fSortLandscapes(Item1, Item2: Pointer): integer;
     // procedure PrepareLandTileData(HeightData:tHeightData; LandTile:tLandTile);
     { tTerrainRender event handler }
-    procedure StartPreparingData(heightData: TGLHeightData); override;
     procedure SetTerrainRenderer(const Value: TGLTerrainRenderer); override;
   public
     procedure ApplyLighting(var aLandTile: TLandTile);
@@ -526,6 +525,7 @@ type
     { Use these boundaries with non-cyclic landscapes to constrain camera movements. }
     function XMoveBoundary: single;
     function ZMoveBoundary: single;
+    procedure StartPreparingData(heightData: TGLHeightData); override;
   published
     property Camera: TGLCamera read FCamera write SetCamera;
     property Cyclic: boolean read FCyclic write SetCyclic;
@@ -544,7 +544,7 @@ type
     { Probability that a given landtile is non-default }
     property LandTileDensity: single read FLandTileDensity
       write SetLandTileDensity;
-    // Base seed for the entire archipelago 
+    // Base seed for the entire archipelago
     property Seed: integer read FSeed write SetSeed;
     // Terrain renderer linked to the HDS. Must be set just after creation. 
     property TerrainRenderer: TGLTerrainRenderer read FTerrainRenderer

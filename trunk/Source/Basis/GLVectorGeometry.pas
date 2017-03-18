@@ -1167,26 +1167,10 @@ procedure SinCosine(const Theta, radius: Single; out Sin, Cos: Single); overload
 procedure PrepareSinCosCache(var S, c: array of Single; startAngle, stopAngle: Single);
 
 function ArcCosine(const X: Extended): Extended; overload;
-function ArcCosine(const X: Single): Single; overload;
 function ArcSine(const X: Extended): Extended; overload;
-function ArcSine(const X: Single): Single; overload;
-function ArcTangent2(const Y, X: Extended): Extended; overload;
-function ArcTangent2(const Y, X: Single): Single; overload;
+
 // Fast ArcTangent2 approximation, about 0.07 rads accuracy
 function FastArcTangent2(Y, X: Single): Single;
-function Tangent(const X: Extended): Extended; overload;
-function Tangent(const X: Single): Single; overload;
-function CoTangent(const X: Extended): Extended; overload;
-function CoTangent(const X: Single): Single; overload;
-
-// ------------------------------------------------------------------------------
-// Hyperbolic Trigonometric functions
-// ------------------------------------------------------------------------------
-
-function Sinh(const X: Single): Single; overload;
-function Sinh(const X: Double): Double; overload;
-function Cosh(const X: Single): Single; overload;
-function Cosh(const X: Double): Double; overload;
 
 // ------------------------------------------------------------------------------
 // Miscellanious math functions
@@ -1215,24 +1199,10 @@ procedure RandomPointOnSphere(var p: TAffineVector);
 function RoundInt(V: Single): Single; overload;
 function RoundInt(V: Extended): Extended; overload;
 
-{$IFDEF GLS_ASM}
-function Int(V: Single): Single; overload;
-function Int(V: Extended): Extended; overload;
-function Frac(V: Single): Single; overload;
-function Frac(V: Extended): Extended; overload;
-function Round(V: Single): Integer; overload;
-function Round64(V: Extended): Int64; overload;
-{$ELSE}
-function Trunc(X: Extended): Int64;
-function Round(X: Extended): Int64;
-function Frac(X: Extended): Extended;
-{$ENDIF}
-
 // Multiples i by s and returns the rounded result.
 function ScaleAndRound(i: Integer; var S: Single): Integer;
 
 // Returns the sign of the x value using the (-1, 0, +1) convention
-function Sign(X: Single): Integer;
 function SignStrict(X: Single): Integer;
 
 // Returns True if x is in [a; b]
@@ -5630,12 +5600,12 @@ begin
   Tran[ttRotateY] := ArcSine(-row0.V[Z]);
   if Cos(Tran[ttRotateY]) <> 0 then
   begin
-    Tran[ttRotateX] := ArcTangent2(row1.V[Z], row2.V[Z]);
-    Tran[ttRotateZ] := ArcTangent2(row0.V[Y], row0.V[X]);
+    Tran[ttRotateX] := ArcTan2(row1.V[Z], row2.V[Z]);
+    Tran[ttRotateZ] := ArcTan2(row0.V[Y], row0.V[X]);
   end
   else
   begin
-    Tran[ttRotateX] := ArcTangent2(row1.V[X], row1.V[Y]);
+    Tran[ttRotateX] := ArcTan2(row1.V[X], row1.V[Y]);
     Tran[ttRotateZ] := 0;
   end;
   // All done!
@@ -6925,40 +6895,12 @@ end;
 
 function ArcCosine(const X: Extended): Extended;
 begin
-  result := ArcTangent2(Sqrt(1 - Sqr(X)), X);
-end;
-
-function ArcCosine(const X: Single): Single;
-// Result:=ArcTan2(Sqrt(c1 - X * X), X);
-begin
-{$HINTS OFF}
-  result := ArcCos(X);
-{$HINTS ON}
+  result := ArcTan2(Sqrt(1 - Sqr(X)), X);
 end;
 
 function ArcSine(const X: Extended): Extended;
 begin
-  result := ArcTangent2(X, Sqrt(1 - Sqr(X)))
-end;
-
-function ArcSine(const X: Single): Single;
-// Result:=ArcTan2(X, Sqrt(1 - X * X))
-begin
-{$HINTS OFF}
-  result := ArcSin(X);
-{$HINTS ON}
-end;
-
-function ArcTangent2(const Y, X: Extended): Extended;
-begin
-  result := ArcTan2(Y, X);
-end;
-
-function ArcTangent2(const Y, X: Single): Single;
-begin
-{$HINTS OFF}
-  result := ArcTan2(Y, X);
-{$HINTS ON}
+  result := ArcTan2(X, Sqrt(1 - Sqr(X)))
 end;
 
 function FastArcTangent2(Y, X: Single): Single;
@@ -6983,52 +6925,6 @@ begin
     else
       result := c3PIdiv4 - cPIdiv4 * (X + abs_y) / (abs_y - X);
   end;
-end;
-
-function Tangent(const X: Extended): Extended;
-begin
-  result := Tan(X);
-end;
-
-function Tangent(const X: Single): Single;
-begin
-{$HINTS OFF}
-  result := Tan(X);
-{$HINTS ON}
-end;
-
-function CoTangent(const X: Extended): Extended;
-begin
-  result := CoTan(X);
-end;
-
-function CoTangent(const X: Single): Single;
-begin
-{$HINTS OFF}
-  result := CoTan(X);
-{$HINTS ON}
-end;
-
-function Sinh(const X: Single): Single;
-begin
-  result := 0.5 * (Exp(X) - Exp(-X));
-end;
-
-// Sinh
-//
-function Sinh(const X: Double): Double;
-begin
-  result := 0.5 * (Exp(X) - Exp(-X));
-end;
-
-function Cosh(const X: Single): Single;
-begin
-  result := 0.5 * (Exp(X) + Exp(-X));
-end;
-
-function Cosh(const X: Double): Double;
-begin
-  result := 0.5 * (Exp(X) + Exp(-X));
 end;
 
 function RSqrt(V: Single): Single;
@@ -7099,99 +6995,6 @@ end;
 function RoundInt(V: Extended): Extended;
 begin
   result := Int(V + 0.5);
-end;
-
-{$IFDEF GLS_ASM}
-function Int(V: Extended): Extended;
-asm
-  SUB     ESP,4
-  FSTCW   [ESP]
-  FLDCW   cwChop
-  FLD     DWORD PTR[v]
-  FRNDINT
-  FLDCW   [ESP]
-  ADD     ESP,4
-end;
-
-function Int(V: Single): Single;
-asm
-  SUB     ESP,4
-  FSTCW   [ESP]
-  FLDCW   cwChop
-  FLD     DWORD PTR[V]
-  FRNDINT
-  FLDCW   [ESP]
-  ADD     ESP,4
-end;
-
-function Frac(V: Extended): Extended;
-asm
-  SUB     ESP,4
-  FSTCW   [ESP]
-  FLDCW   cwChop
-  FLD     DWORD PTR[V]
-  FLD     ST
-  FRNDINT
-  FSUB
-  FLDCW   [ESP]
-  ADD     ESP,4
-end;
-
-function Frac(V: Single): Single;
-asm
-  SUB     ESP,4
-  FSTCW   [ESP]
-  FLDCW   cwChop
-  FLD     DWORD PTR[V]
-  FLD     ST
-  FRNDINT
-  FSUB
-  FLDCW   [ESP]
-  ADD     ESP,4
-end;
-
-function Round64(V: Extended): Int64;
-asm
-  FLD      DWORD PTR[V]
-  FISTP    qword ptr [v]           // use v as storage to place the result
-  MOV      EAX, dword ptr [v]
-  MOV      EDX, dword ptr [v+4]
-end;
-
-function Round(V: Single): Integer;
-asm
-  FLD     DWORD PTR[V]
-  FISTP   DWORD PTR [V]     // use v as storage to place the result
-  MOV     EAX, [v]
-end;
-
-{$ELSE}
-
-function Trunc(X: Extended): Int64;
-begin
-  result := System.Trunc(X);
-end;
-
-function Round(X: Extended): Int64;
-begin
-  result := System.Round(X);
-end;
-
-function Frac(X: Extended): Extended;
-begin
-  result := System.Frac(X);
-end;
-
-{$ENDIF}
-
-function Sign(X: Single): Integer;
-begin
-  if X < 0 then
-    result := -1
-  else if X > 0 then
-    result := 1
-  else
-    result := 0;
 end;
 
 function SignStrict(X: Single): Integer;
