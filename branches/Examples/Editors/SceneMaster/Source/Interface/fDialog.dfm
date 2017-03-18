@@ -1,6 +1,6 @@
-inherited SDialog: TSDialog
+inherited FormDialog: TFormDialog
   BorderIcons = [biSystemMenu]
-  Caption = 'SMaster Dialog'
+  Caption = 'Scene Master Dialog'
   ClientHeight = 362
   ClientWidth = 484
   ExplicitWidth = 500

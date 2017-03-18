@@ -1,4 +1,4 @@
-unit fSAbout;
+unit fAbout;
 
 interface
 
@@ -16,10 +16,11 @@ uses
   Vcl.StdCtrls,
   Vcl.ExtCtrls,
   Vcl.Imaging.jpeg,
-  fSDialog;
+
+  fDialog;
 
 type
-  TSAbout = class(TSDialog)
+  TFormAbout = class(TFormDialog)
     LabelCopyright: TLabel;
     PanelYears: TPanel;
     imgOpenGL: TImage;
@@ -42,7 +43,7 @@ type
   end;
 
 var
-  SAbout: TSAbout;
+  FormAbout: TFormAbout;
 
 implementation
 
@@ -56,19 +57,19 @@ begin
 end;
 
 
-procedure TSAbout.BuiltWithDelphiDblClick(Sender: TObject);
+procedure TFormAbout.BuiltWithDelphiDblClick(Sender: TObject);
 begin
   inherited;
   GotoURL(Handle, 'http://www.embarcadero.com');
 end;
 
-procedure TSAbout.FormCreate(Sender: TObject);
+procedure TFormAbout.FormCreate(Sender: TObject);
 begin
   inherited;
   StaticTextVersion.Caption := ReadVersionInfo(Application.ExeName);
 end;
 
-function TSAbout.GetFileInfo(const FileName: TFileName): TVSFixedFileInfo;
+function TFormAbout.GetFileInfo(const FileName: TFileName): TVSFixedFileInfo;
 var
   Handle, VersionSize: DWord;
   SubBlock: string;
@@ -90,22 +91,22 @@ begin
   end;
 end;
 
-procedure TSAbout.imgGLSceneDblClick(Sender: TObject);
+procedure TFormAbout.imgGLSceneDblClick(Sender: TObject);
 begin
   GotoURL(Handle, 'http://www.glscene.org/');
 end;
 
-procedure TSAbout.imgOpenGLDblClick(Sender: TObject);
+procedure TFormAbout.imgOpenGLDblClick(Sender: TObject);
 begin
   GotoURL(Handle, 'http://www.opengl.org/');
 end;
 
-procedure TSAbout.imgSourceForgeDblClick(Sender: TObject);
+procedure TFormAbout.imgSourceForgeDblClick(Sender: TObject);
 begin
   GotoURL(Handle, 'http://www.sourceforge.net/projects/glscene/');
 end;
 
-function TSAbout.ReadVersionInfo(FileName: TFileName): TFileName;
+function TFormAbout.ReadVersionInfo(FileName: TFileName): TFileName;
 type
   TGetWords = record
     case boolean of

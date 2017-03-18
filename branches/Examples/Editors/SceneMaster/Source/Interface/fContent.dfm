@@ -1,9 +1,8 @@
-object SContentBrowser: TSContentBrowser
+object FormContent: TFormContent
   Left = 0
   Top = 0
-  Align = alBottom
   BorderStyle = bsDialog
-  Caption = 'Content Browser'
+  Caption = 'Content'
   ClientHeight = 70
   ClientWidth = 780
   Color = clBtnFace

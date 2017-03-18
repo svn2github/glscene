@@ -7,7 +7,7 @@ http://glscene.org
 Released as Freeware and open-sourced
 under Mozilla PL (http://mozilla.org)
 
-3D Formats: glTF, DAE, 3DS, OBJ, SMD, MD2, TIN, PLY, STL etc.
+3D Formats: glTF, DAE, 3DS, OBJ, SMD, MD2, PLY, STL etc.
 2D Formats: JPG, BMP, TGA, PNG, TIFF etc.
 
 GLS Team

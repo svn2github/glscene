@@ -1,4 +1,4 @@
-object dmSMaster: TdmSMaster
+object DMDialogs: TDMDialogs
   OldCreateOrder = False
   Height = 334
   Width = 390

@@ -1,4 +1,4 @@
-unit dSMaster;
+unit dDialogs;
 
 interface
 
@@ -9,7 +9,7 @@ uses
   Vcl.ExtDlgs;
 
 type
-  TdmSMaster = class(TDataModule)
+  TDMDialogs = class(TDataModule)
     ColorDialog: TColorDialog;
     OpenDialog: TOpenDialog;
     SaveDialog: TSaveDialog;
@@ -23,7 +23,7 @@ type
   end;
 
 var
-  dmSMaster: TdmSMaster;
+  DMDialogs: TDMDialogs;
 
 implementation
 

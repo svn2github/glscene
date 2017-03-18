@@ -1,29 +1,29 @@
 program SceneMaster;
 
-{: GLScene Viewer based on GLSViewer by Eric Grange
-   http://www.sourceforge.net/projects/glscene
-}
-
 uses
   Forms,
-  fSForm in 'Source\fSForm.pas' {SForm},
-  fSDialog in 'Source\fSDialog.pas' {SDialog},
-  fSMain in 'Source\fSMain.pas' {SMaster},
-  uNavCube in 'Source\uNavCube.pas',
-  uGlobals in 'Source\uGlobals.pas',
-  uSettings in 'Source\uSettings.pas',
-  dSMaster in 'Source\dSMaster.pas' {dmSMaster: TDataModule},
-  fSAbout in 'Source\fSAbout.pas' {SAbout},
-  fSOptions in 'Source\fSOptions.pas' {GLOptions},
-  fSContentBrowser in 'Source\fSContentBrowser.pas' {SContentBrowser};
+  fInitial in 'Source\Interface\fInitial.pas' {FormInitial},
+  fDialog in 'Source\Interface\fDialog.pas' {FormDialog},
+  fMain in 'Source\Interface\fMain.pas' {FormMaster},
+  uNavCube in 'Source\Module\uNavCube.pas',
+  uGlobals in 'Source\Module\uGlobals.pas',
+  uSettings in 'Source\Module\uSettings.pas',
+  dDialogs in 'Source\Interface\dDialogs.pas' {DMDialogs: TDataModule},
+  fAbout in 'Source\Interface\fAbout.pas' {FormAbout},
+  fOptions in 'Source\Interface\fOptions.pas' {GLOptions},
+  fContent in 'Source\Interface\fContent.pas' {FormContent},
+  fKitbag in 'Source\Interface\fKitbag.pas' {FormKitbag},
+  dImages in 'Source\Interface\dImages.pas' {DMImages: TDataModule};
 
 {$R *.res}
 
 begin
   Application.Initialize;
   Application.Title := 'GLSViewer';
-  Application.CreateForm(TSMaster, SMaster);
-  Application.CreateForm(TdmSMaster, dmSMaster);
-  Application.CreateForm(TSContentBrowser, SContentBrowser);
+  Application.CreateForm(TFormMaster, FormMaster);
+  Application.CreateForm(TDMDialogs, DMDialogs);
+  Application.CreateForm(TFormContent, FormContent);
+  Application.CreateForm(TFormKitbag, FormKitbag);
+  Application.CreateForm(TDMImages, DMImages);
   Application.Run;
 end.

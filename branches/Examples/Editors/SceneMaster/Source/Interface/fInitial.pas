@@ -1,4 +1,4 @@
-unit fSForm;
+unit fInitial;
 
 interface
 
@@ -13,10 +13,10 @@ uses
   GLGnuGettext;
 
 type
-  TSForm = class(TForm)
+  TFormInitial = class(TForm)
     procedure FormCreate(Sender: TObject);
   private
-     
+
   public
     IniFile : TIniFile;
     procedure ReadIniFile; virtual;
@@ -25,23 +25,22 @@ type
   end;
 
 var
-  SForm: TSForm;
+  FormInitial: TFormInitial;
   LangID : Word;
 
 implementation
 
 {$R *.dfm}
 
-//Here goes the translation of all component strings
-//
-procedure TSForm.FormCreate(Sender: TObject);
+//Here goes a translation of all component strings
+procedure TFormInitial.FormCreate(Sender: TObject);
 begin
   inherited;
   SetLanguage;
   TranslateComponent(Self);
 end;
 
-procedure TSForm.SetLanguage;
+procedure TFormInitial.SetLanguage;
 var
   LocalePath : TFileName;
   IniFile : TIniFile;
@@ -101,7 +100,7 @@ end;
 
 
 
-procedure TSForm.ReadIniFile;
+procedure TFormInitial.ReadIniFile;
 begin
   IniFile := TIniFile.Create(ChangeFileExt(Application.ExeName, '.ini'));
   with IniFile do
@@ -113,7 +112,7 @@ begin
 end;
 
 
-procedure TSForm.WriteIniFile;
+procedure TFormInitial.WriteIniFile;
 begin
   //
 end;

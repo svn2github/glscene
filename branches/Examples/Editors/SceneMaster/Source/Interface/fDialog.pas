@@ -1,4 +1,4 @@
-unit fSDialog;
+unit fDialog;
 
 interface
 
@@ -15,10 +15,10 @@ uses
   Vcl.StdCtrls, 
   Vcl.ExtCtrls,
 
-  fSForm;
+  fInitial;
 
 type
-  TSDialog = class(TSForm)
+  TFormDialog = class(TFormInitial)
     PanelTop: TPanel;
     PanelMiddle: TPanel;
     PanelBottom: TPanel;
@@ -37,29 +37,29 @@ type
   end;
 
 var
-  SDialog: TSDialog;
+  FormDialog: TFormDialog;
 
 implementation
 
 {$R *.dfm}
 
-procedure TSDialog.ButtonHelpClick(Sender: TObject);
+procedure TFormDialog.ButtonHelpClick(Sender: TObject);
 begin
   Application.HelpContext(HelpContext);
 end;
 
-function TSDialog.Execute: boolean;
+function TFormDialog.Execute: boolean;
 begin
   Result := ShowModal = mrOk;
 end;
 
-procedure TSDialog.ReadIniFile;
+procedure TFormDialog.ReadIniFile;
 begin
   inherited;
   //
 end;
 
-procedure TSDialog.WriteIniFile;
+procedure TFormDialog.WriteIniFile;
 begin
   //
   inherited;

@@ -1,27 +1,30 @@
-unit fSOptions;
+unit fOptions;
 
 interface
 
 uses
-  Winapi.Windows, 
+  Winapi.Windows,
   Winapi.Messages,
-  System.SysUtils, 
-  System.Variants, 
-  System.Classes, 
+  System.SysUtils,
+  System.UITypes,
+  System.Variants,
+  System.Classes,
   System.IniFiles,
-  Vcl.Graphics, 
-  Vcl.Controls, 
-  Vcl.Forms, 
+  Vcl.Graphics,
+  Vcl.Controls,
+  Vcl.Forms,
   Vcl.Dialogs,
-  Vcl.StdCtrls, 
+  Vcl.StdCtrls,
   Vcl.ExtCtrls,
 
-  dSMaster,
-  fSForm,
-  fSDialog;
+  GLGnuGettext,
+
+  dDialogs,
+  fInitial,
+  fDialog;
 
 type
-  TSOptions = class(TSDialog)
+  TFormOptions = class(TFormDialog)
     CheckBoxAxis: TCheckBox;
     Label1: TLabel;
     RadioGroupLanguage: TRadioGroup;
@@ -32,8 +35,6 @@ type
     procedure ButtonOKClick(Sender: TObject);
     procedure PanelBackgroundClick(Sender: TObject);
     procedure CheckBoxAxisClick(Sender: TObject);
-  private
-     
   public
     CurLangID : Word;
     procedure ReadIniFile; override;
@@ -41,30 +42,29 @@ type
   end;
 
 var
-  SOptions: TSOptions;
+  FormOptions: TFormOptions;
 
 implementation
 
 {$R *.dfm}
 
 uses
-  GLGnuGettext,
-  fSMain;
+  fMain;
 
 
-procedure TSOptions.FormCreate(Sender: TObject);
+procedure TFormOptions.FormCreate(Sender: TObject);
 begin
   inherited;
   ReadIniFile;
 end;
 
-procedure TSOptions.FormClose(Sender: TObject; var Action: TCloseAction);
+procedure TFormOptions.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   WriteIniFile;
   inherited;
 end;
 
-procedure TSOptions.ReadIniFile;
+procedure TFormOptions.ReadIniFile;
 begin
   inherited;
   IniFile := TIniFile.Create(ChangeFileExt(Application.ExeName, '.ini'));
@@ -88,7 +88,7 @@ begin
     end;
 end;
 
-procedure TSOptions.RadioGroupLanguageClick(Sender: TObject);
+procedure TFormOptions.RadioGroupLanguageClick(Sender: TObject);
 begin
   case RadioGroupLanguage.ItemIndex of
     0: CurLangID := LANG_ENGLISH;
@@ -102,7 +102,7 @@ begin
   end;
 end;
 
-procedure TSOptions.WriteIniFile;
+procedure TFormOptions.WriteIniFile;
 begin
   IniFile := TIniFile.Create(ChangeFileExt(Application.ExeName, '.ini'));
   with IniFile do
@@ -116,30 +116,30 @@ begin
   inherited;
 end;
 
-procedure TSOptions.CheckBoxAxisClick(Sender: TObject);
+procedure TFormOptions.CheckBoxAxisClick(Sender: TObject);
 begin
   if CheckBoxAxis.Checked then
-    SMaster.DCAxis.Visible := True
+    FormMaster.DCAxis.Visible := True
   else
-    SMaster.DCAxis.Visible := False;
+    FormMaster.DCAxis.Visible := False;
 end;
 
 
-procedure TSOptions.PanelBackgroundClick(Sender: TObject);
+procedure TFormOptions.PanelBackgroundClick(Sender: TObject);
 var
    bmp : TBitmap;
    col : TColor;
 
 begin
-   dmSMaster.ColorDialog.Color := PanelBackground.Color;
-   if dmSMaster.ColorDialog.Execute then
+   DMDialogs.ColorDialog.Color := PanelBackground.Color;
+   if DMDialogs.ColorDialog.Execute then
    begin
-     PanelBackground.Color :=  dmSMaster.ColorDialog.Color;
-     SMaster.ApplyBgColor;
+     PanelBackground.Color :=  DMDialogs.ColorDialog.Color;
+     FormMaster.ApplyBgColor;
    end;
 end;
 
-procedure TSOptions.ButtonOKClick(Sender: TObject);
+procedure TFormOptions.ButtonOKClick(Sender: TObject);
 var
   FileName: TFileName;
 begin

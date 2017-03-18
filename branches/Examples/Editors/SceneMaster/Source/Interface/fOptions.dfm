@@ -1,4 +1,4 @@
-inherited GLOptions: TGLOptions
+inherited FormOptions: TFormOptions
   HelpContext = 0
   Caption = 'Options'
   OnClose = FormClose

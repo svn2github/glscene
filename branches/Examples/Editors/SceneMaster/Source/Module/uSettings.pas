@@ -1,7 +1,4 @@
-//
-//  uSettings for GLSViewer
-//
-
+(*  Scene Master 3D *)
 unit uSettings;
 
 interface
@@ -15,7 +12,7 @@ uses
   Vcl.Forms,
   Vcl.Graphics,
   Vcl.ActnList,
-  //
+
   GLGnuGettext;
 
 procedure InitGeneralRegistry;

@@ -1,5 +1,5 @@
-inherited SAbout: TSAbout
-  Caption = 'SAbout'
+inherited FormAbout: TFormAbout
+  Caption = 'About'
   ClientHeight = 323
   ClientWidth = 446
   Icon.Data = {

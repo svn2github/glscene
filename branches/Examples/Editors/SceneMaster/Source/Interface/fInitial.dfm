@@ -1,4 +1,4 @@
-object SForm: TSForm
+object FormInitial: TFormInitial
   Left = 392
   Top = 227
   HelpContext = 1
