@@ -130,13 +130,13 @@ type
     procedure GetInfoFrom(aSceneBuffer: TGLSceneBuffer);
   end;
 
+//======================================================================
 implementation
+//======================================================================
 
 {$R *.dfm}
 {$R FInfo.res}
 
-// ShowInfoForm
-//
 procedure ShowInfoForm(aSceneBuffer: TGLSceneBuffer; Modal: boolean);
 var
   GLInfoForm: TGLInfoForm;
@@ -155,22 +155,20 @@ begin
   end;
 end;
 
-// FormCreate
-//
+// -------------------------------------------------------------------
+
 procedure TGLInfoForm.FormCreate(Sender: TObject);
 begin
   PageControl.ActivePageIndex := 0;
 end;
 
-// FormShow
-//
 procedure TGLInfoForm.FormShow(Sender: TObject);
 begin
   PageControl.ActivePageIndex := 0;
 end;
 
-// GetInfoFrom
-//
+// -------------------------------------------------------------------
+
 procedure TGLInfoForm.GetInfoFrom(aSceneBuffer: TGLSceneBuffer);
 const
   DRIVER_MASK = PFD_GENERIC_FORMAT or PFD_GENERIC_ACCELERATED;
@@ -298,7 +296,7 @@ begin
   end;
 end;
 
-// CloseButtonClick
+// -------------------------------------------------------------------
 //
 procedure TGLInfoForm.CloseButtonClick(Sender: TObject);
 begin
@@ -387,19 +385,21 @@ end;
 // -------------------------------------------------------------------
 //
 procedure TGLInfoForm.LoadContributors;
-// var
-// ContributorsFileName: string;
+ var
+   ContributorsFileName: string;
+   ContrPath: TFileName;
 begin
-  // In the future, will be loaded from a file
+{
+   ContrPath := ExtractFilePath(Application.ExeName);
+   ContributorsFileName := ContrPath + '\Contributors.txt';
 
-  { ContributorsFileName:=
-    // 'GLSceneContributors.txt';
-
-    if FileExistsUTF8(ContributorsFileName) then
-    MemoContributors.Lines.LoadFromFile(UTF8ToSys(ContributorsFileName))
+   if FileExists(ContributorsFileName)
+    then
+      MemoContributors.Lines.LoadFromFile(ContributorsFileName)
     else
-    MemoContributors.Lines.Text:='Cannot find contributors list.';
-    MemoContributors.Lines.Add( ContributorsFileName) }
+      MemoContributors.Lines.Text := 'Cannot find contributors list.';
+    MemoContributors.Lines.Add(ContributorsFileName);
+}
 end;
 
 // -------------------------------------------------------------------

@@ -36,10 +36,6 @@ object GLInfoForm: TGLInfoForm
     object TabSheetGLScene: TTabSheet
       Caption = 'GLScene'
       ImageIndex = 4
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Image: TImage
         Left = 1
         Top = 2
@@ -2730,10 +2726,6 @@ object GLInfoForm: TGLInfoForm
     end
     object TabSheetInformation: TTabSheet
       Caption = 'Information'
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object ScrollBoxInfo: TScrollBox
         Left = 0
         Top = 0
@@ -3457,10 +3449,6 @@ object GLInfoForm: TGLInfoForm
     object TabSheetExtensions: TTabSheet
       Caption = 'Supported extensions'
       ImageIndex = 3
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object ListBoxExtensions: TListBox
         Left = 0
         Top = 0
@@ -3487,10 +3475,6 @@ object GLInfoForm: TGLInfoForm
     end
     object TabSheetContributors: TTabSheet
       Caption = 'Contributors'
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object MemoContributors: TMemo
         Left = 0
         Top = 0
@@ -3516,6 +3500,7 @@ object GLInfoForm: TGLInfoForm
           'Dave Kerr'
           'Degiovani'
           'Eric Grange'
+          'Eric Hardinge'
           'Eric Pascual'
           'Erick Schuitema'
           'fig'
@@ -3563,10 +3548,6 @@ object GLInfoForm: TGLInfoForm
     end
     object TabSheetAbout: TTabSheet
       Caption = 'About'
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object WebsiteLbl: TLabel
         Left = 57
         Top = 274
