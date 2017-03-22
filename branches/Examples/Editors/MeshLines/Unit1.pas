@@ -19,7 +19,7 @@ uses
   Vcl.ComCtrls,
   Vcl.StdCtrls,
   Vcl.ExtCtrls,
-  // GLS
+   
   GLWin32Viewer,
   GLScene,
   GLObjects,
@@ -153,7 +153,7 @@ type
     function AddLineToTree(LineItem: TLineItem): TTreeNode;
     function AddLineNodeToTree(lineNode: TLineNode): TTreeNode;
   public
-    { Public declarations }
+     
   end;
 
 var
