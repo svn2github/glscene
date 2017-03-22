@@ -376,7 +376,7 @@ var
 begin
 	// Load texture for sprite2, this is the hand-coded way using a PersistentImage
 	// Sprite1 uses a PicFileImage, and so the image is automagically loaded by
-	 cene when necessary (no code is required).
+ //	GLScene when necessary (no code is required).
 	// (Had I used two PicFileImage, I would have avoided this code)
 {	picName:='..\..\media\flare1.bmp';
 	GLMaterialLibrary1.Materials[0].Material.Texture.Image.LoadFromFile(picName);}

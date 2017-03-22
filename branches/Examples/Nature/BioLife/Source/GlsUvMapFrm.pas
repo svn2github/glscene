@@ -1,27 +1,60 @@
 unit GlsUvMapFrm;
-{C:\D5\GLS;C:\D5\ok;C:\D5\Jan;C:\D5\Tree;C:\D5\Ben}
-{   CapeRaven mesh demo.
-   Changing mesh vertex data, normals and striping redundent data.
-   Custom cube class declared for vertex point identification.
-   On moving these vertex modifiers, the apointed vertex follows.}
+
+{ CapeRaven mesh demo.
+  Changing mesh vertex data, normals and striping redundent data.
+  Custom cube class declared for vertex point identification.
+  On moving these vertex modifiers, the apointed vertex follows. }
+
 interface
 
 uses
-  Windows, Messages, SysUtils,  Classes, Graphics, Controls, Forms,
-  Dialogs, GLScene, GLVectorFileObjects, GLWin32Viewer, GLMisc, GLVectorLists,
-  Geometry, GLTexture, GLObjects, StdCtrls, ExtCtrls, Menus, ExtDlgs,
-  GLFileOBJ, Contnrs,  GLVectorTypes,
-  ComCtrls, Buttons;
+  Winapi.Windows,
+  Winapi.Messages,
+  System.SysUtils,
+  System.Classes,
+  System.Contnrs,
+  System.Math,
+  Vcl.Graphics,
+  Vcl.Controls,
+  Vcl.Forms,
+  Vcl.StdCtrls,
+  Vcl.ExtCtrls,
+  Vcl.Menus,
+  Vcl.ExtDlgs,
+  Vcl.Dialogs,
+  Vcl.ComCtrls,
+  Vcl.Buttons,
+
+  OpenGL1x,
+  GLScene,
+  GLState,
+  GLColor,
+  GLVectorFileObjects,
+  GLWin32Viewer,
+  GLVectorLists,
+  GLVectorGeometry,
+  GLTexture,
+  GLObjects,
+  GLFileOBJ,
+  GLVectorTypes,
+  GLMaterial,
+  GLCoordinates,
+  GLCrossPlatform,
+  GLPersistentClasses,
+  GLMeshUtils,
+  GLBaseClasses;
 
 type
   TDrawingTool = (dtLine, dtRectangle, dtEllipse, dtRoundRect);
+
 type
   TModifierCube = class(TGLCube)
   public
-    FVectorIndex : Integer;
-    FMeshObjIndex : Integer;
+    FVectorIndex: Integer;
+    FMeshObjIndex: Integer;
     constructor Create(AOwner: TComponent); override;
   end;
+
   TGLS3dUvForm = class(TForm)
     GLScene1: TGLScene;
     GLCamera1: TGLCamera;
@@ -130,11 +163,10 @@ type
     procedure Exit1Click(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
-
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
       X, Y: Integer);
-    procedure GLSceneViewer1MouseDown(Sender: TObject;
-      Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure GLSceneViewer1MouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
     procedure ApplyTexture1Click(Sender: TObject);
     procedure Open3ds1Click(Sender: TObject);
     procedure Save3ds1Click(Sender: TObject);
@@ -146,27 +178,25 @@ type
     procedure ComboBox1Change(Sender: TObject);
     procedure ComboBox2Change(Sender: TObject);
     procedure CheckBox1Click(Sender: TObject);
-
     procedure About1Click(Sender: TObject);
-
     procedure ImageMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
-    procedure ImageMouseMove(Sender: TObject; Shift: TShiftState; X,
-      Y: Integer);
+    procedure ImageMouseMove(Sender: TObject; Shift: TShiftState;
+      X, Y: Integer);
     procedure ImageMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure PenEditChange(Sender: TObject);
     procedure PenColorClick(Sender: TObject);
     procedure BrushColorClick(Sender: TObject);
-procedure SetBrushStyle(Sender: TObject);
-procedure SetPenStyle(Sender: TObject);
-procedure SaveStyles;
-procedure RestoreStyles;
+    procedure SetBrushStyle(Sender: TObject);
+    procedure SetPenStyle(Sender: TObject);
+    procedure SaveStyles;
+    procedure RestoreStyles;
     procedure Line1Click(Sender: TObject);
     procedure Rectangle1Click(Sender: TObject);
     procedure Ellipse1Click(Sender: TObject);
     procedure RoundRect1Click(Sender: TObject);
-procedure DrawShape(TopLeft, BottomRight: TPoint; AMode: TPenMode);
+    procedure DrawShape(TopLeft, BottomRight: TPoint; AMode: TPenMode);
     procedure SaveTexture1Click(Sender: TObject);
     procedure SaveAsTexture1Click(Sender: TObject);
     procedure N128x1281Click(Sender: TObject);
@@ -176,14 +206,13 @@ procedure DrawShape(TopLeft, BottomRight: TPoint; AMode: TPenMode);
     procedure Copy1Click(Sender: TObject);
     procedure Paste1Click(Sender: TObject);
 
-    {Meshedit}
-
+    { Meshedit }
     procedure cbPolygonModeChange(Sender: TObject);
-procedure SetVertexModifiers;
+    procedure SetVertexModifiers;
     procedure chbViewPointsClick(Sender: TObject);
-procedure ShowModifierStatus(const aObj: TModifierCube);
-function MouseWorldPos(x, y: Integer): TVector;
-procedure ChangeMeshVector(const aObj : TModifierCube; const aPos : TVector4f);
+    procedure ShowModifierStatus(const aObj: TModifierCube);
+    function MouseWorldPos(X, Y: Integer): TVector;
+    procedure ChangeMeshVector(const aObj: TModifierCube; const aPos: TVector4f);
     procedure GLSceneViewer1MouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure chbShowAxisClick(Sender: TObject);
@@ -193,126 +222,128 @@ procedure ChangeMeshVector(const aObj : TModifierCube; const aPos : TVector4f);
     procedure btnNormalsClick(Sender: TObject);
     procedure btnTextcoordsClick(Sender: TObject);
     procedure btnGroupsClick(Sender: TObject);
-procedure StripAndRecalc;
+    procedure StripAndRecalc;
   private
-    {Meshedit}
+    { Meshedit }
     function GetPolygonMode: TPolygonMode;
     procedure SetPolygonMode(const Value: TPolygonMode);
-    property PolygonMode : TPolygonMode read GetPolygonMode write SetPolygonMode;
-
+    property PolygonMode: TPolygonMode read GetPolygonMode write SetPolygonMode;
   private
 
-     
-    {Meshedit}
-    FOldX, FOldY      : Integer;
-    FModifierList     : TObjectList;
-    FSelectedModifier : TModifierCube;
-    FMoveZ            : Boolean;
-    FOldMouseWorldPos : TVector;
+    { Meshedit }
+    FOldX, FOldY: Integer;
+    FModifierList: TObjectList;
+    FSelectedModifier: TModifierCube;
+    FMoveZ: Boolean;
+    FOldMouseWorldPos: TVector;
 
-procedure ShowMeshData(const aList : TStringList);
+    procedure ShowMeshData(const aList: TStringList);
   public
-     
-    {Painting}
+
+    { Painting }
     BrushStyle: TBrushStyle;
     PenStyle: TPenStyle;
     PenWide: Integer;
-    MeshEditing,
-    Drawing: Boolean;
+    MeshEditing, Drawing: Boolean;
     Origin, MovePt: TPoint;
     DrawingTool: TDrawingTool;
     CurrentFile: string;
-    {Tex Edit}
-    mx,my : integer;
+    { Tex Edit }
+    mx, my: Integer;
     procedure GetTexCoordsWireframe;
     procedure DisplayHint(Sender: TObject);
   end;
-  TAxis = 0..2;
+
+  TAxis = 0 .. 2;
+
 var
   GLS3dUvForm: TGLS3dUvForm;
-  Filename3DS:String;
+  Filename3DS: String;
 
-procedure UVPlanarMapping(Vertices,TexCoords : TAffineVectorList; Axis:TAxis = 2);
-procedure UVCubicMapping(Vertices,TexCoords : TAffineVectorList; Axis:TAxis = 2);
-procedure UVCylindricalMapping(Vertices,TexCoords : TAffineVectorList; Axis:TAxis = 2);
-procedure UVSphericalMapping(Vertices,TexCoords : TAffineVectorList; Axis: TAxis = 2);
-
+procedure UVPlanarMapping(Vertices, TexCoords: TAffineVectorList;
+  Axis: TAxis = 2);
+procedure UVCubicMapping(Vertices, TexCoords: TAffineVectorList;
+  Axis: TAxis = 2);
+procedure UVCylindricalMapping(Vertices, TexCoords: TAffineVectorList;
+  Axis: TAxis = 2);
+procedure UVSphericalMapping(Vertices, TexCoords: TAffineVectorList;
+  Axis: TAxis = 2);
 
 implementation
 
 uses
-  Clipbrd, GlsUvAboutFrm,
-  PersistentClasses, OpenGL12, MeshUtils;
+  Clipbrd,
+  GlsUvAboutFrm;
 
 {$R *.dfm}
 
 const
-  {Default combobox index for startup}
-  CLinePolyMode  = 1;
-  {Scale dimention}
-  CModifierDim   = 0.04;
+  { Default combobox index for startup }
+  CLinePolyMode = 1;
+  { Scale dimention }
+  CModifierDim = 0.04;
 
 var
-  {Modifier colors}
-  CModColorNormal : TColorVector;
-  CModColorSelect : TColorVector;
+  { Modifier colors }
+  CModColorNormal: TColorVector;
+  CModColorSelect: TColorVector;
 
 constructor TModifierCube.Create(AOwner: TComponent);
 begin
   inherited;
-  {Set the modifiers initial size and color}
-  CubeWidth  := CModifierDim;
+  { Set the modifiers initial size and color }
+  CubeWidth := CModifierDim;
   CubeHeight := CModifierDim;
-  CubeDepth  := CModifierDim;
+  CubeDepth := CModifierDim;
   Material.FrontProperties.Diffuse.Color := CModColorNormal;
 end;
 
 procedure TGLS3dUvForm.FormCreate(Sender: TObject);
 var
-  s : single;
+  s: single;
   Bitmap: TBitmap;
 begin
-MeshEditing:=False;
+  MeshEditing := False;
   Application.OnHint := DisplayHint;
   Bitmap := nil;
   try
     Bitmap := TBitmap.Create;
     Bitmap.Width := 256;
     Bitmap.Height := 256;
-    Bitmap.PixelFormat:= pf24bit;
+    Bitmap.PixelFormat := pf24bit;
     Image.Picture.Graphic := Bitmap;
   finally
     Bitmap.Free;
   end;
-  Image.Canvas.FillRect(Rect(0,0,Image.Width,Image.Height));
-{ Assertion Error  GLVectorFileObjects line 4190}
-                                   {obj'}
-  If (not FileExists(ExtractFilePath(ParamStr(0))+'cube.3ds'))
-  then
+  Image.Canvas.FillRect(Rect(0, 0, Image.Width, Image.Height));
+  { Assertion Error  GLVectorFileObjects line 4190 }
+  { obj' }
+  If (not FileExists(ExtractFilePath(ParamStr(0)) + 'cube.3ds')) then
   begin
     showmessage('cube.3ds file is missing');
     Application.Terminate;
   end;
-    GLFreeForm1.LoadFromFile(ExtractFilePath(ParamStr(0))+'cube.3ds');
-    StripAndRecalc;
-    SetVertexModifiers;
-  {GLFreeForm1.LoadFromFile('teapot.3ds'); }
+  GLFreeForm1.LoadFromFile(ExtractFilePath(ParamStr(0)) + 'cube.3ds');
+  StripAndRecalc;
+  SetVertexModifiers;
+  { GLFreeForm1.LoadFromFile('teapot.3ds'); }
   GLFreeForm1.Material.Texture.Image.LoadFromFile('grid.bmp');
-  GLFreeForm1.Material.Texture.Disabled:=False;
-  GLFreeForm1.Scale.SetVector(0.05,0.05,0.05);
-  s:=4/(GLFreeForm1.BoundingSphereRadius);
-    GLFreeForm1.Scale.SetVector(s,s,s);
+  GLFreeForm1.Material.Texture.Disabled := False;
+  GLFreeForm1.Scale.SetVector(0.05, 0.05, 0.05);
+  s := 4 / (GLFreeForm1.BoundingSphereRadius);
+  GLFreeForm1.Scale.SetVector(s, s, s);
   GLFreeForm1.Pitch(90);
-  ComboBox2.Itemindex:=0;
-  ComboBox1.Itemindex:=0;
+  ComboBox2.Itemindex := 0;
+  ComboBox1.Itemindex := 0;
   ComboBox1Change(nil);
   FModifierList := TObjectList.Create;
   CModColorNormal := clrCoral;
   CModColorSelect := clrSkyBlue;
-  cbPolygonMode.ItemIndex := CLinePolyMode;
+  cbPolygonMode.Itemindex := CLinePolyMode;
 end;
+
 procedure TGLS3dUvForm.DisplayHint(Sender: TObject);
-begin                      {Both parts if not xx|yyy}
+begin { Both parts if not xx|yyy }
   StatusBar1.SimpleText := GetLongHint(Application.Hint);
 end;
 
@@ -320,344 +351,400 @@ procedure TGLS3dUvForm.Exit1Click(Sender: TObject);
 begin
   Close;
 end;
-procedure TGLS3dUvForm.FormClose(Sender: TObject;
-  var Action: TCloseAction);
+
+procedure TGLS3dUvForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-{}
+  { }
 end;
+
 procedure TGLS3dUvForm.FormDestroy(Sender: TObject);
 begin
   FModifierList.Clear;
   FreeAndNil(FModifierList);
 end;
 
-
-
-procedure UVPlanarMapping(Vertices,TexCoords : TAffineVectorList; Axis:TAxis = 2);
+procedure UVPlanarMapping(Vertices, TexCoords: TAffineVectorList;
+  Axis: TAxis = 2);
 var
-  i,j : integer;
-  P,center,min,max : TAffineVector;
-  u,v : single;
+  i, j: Integer;
+  P, center, min, max: TAffineVector;
+  u, v: single;
 begin
-    u:=0;    v:=0; {Compiler shutup}
-  for i:=0 to Vertices.Count-1 do begin
-    P:=Vertices.Items[i];
-    for j:=0 to 2 do begin
-      if i=0 then begin
-        min[j]:=P[j];
-        max[j]:=P[j];
-      end else begin
-        if P[j]<min[j] then min[j]:=P[j];
-        if P[j]>max[j] then max[j]:=P[j];
+  u := 0;
+  v := 0; { Compiler shutup }
+  for i := 0 to Vertices.Count - 1 do
+  begin
+    P := Vertices.Items[i];
+    for j := 0 to 2 do
+    begin
+      if i = 0 then
+      begin
+        min.V[j] := P.V[j];
+        max.V[j] := P.V[j];
+      end
+      else
+      begin
+        if P.V[j] < min.V[j] then
+          min.V[j] := P.V[j];
+        if P.V[j] > max.V[j] then
+          max.V[j] := P.V[j];
       end;
     end;
   end;
-  center:=VectorScale(VectorAdd(max,min),0.5);
-  vertices.Translate(VectorNegate(center));
-  min:=VectorSubtract(min,center);
-  max:=VectorSubtract(max,center);
+  center := VectorScale(VectorAdd(max, min), 0.5);
+  Vertices.Translate(VectorNegate(center));
+  min := VectorSubtract(min, center);
+  max := VectorSubtract(max, center);
 
   // Generate texture coordinates
   TexCoords.Clear;
-  for i:=0 to Vertices.Count do begin
-    P:=Vertices.Items[i];
+  for i := 0 to Vertices.Count do
+  begin
+    P := Vertices.Items[i];
     case Axis of
-      0 : begin
-        u:=(P[1]/(max[1]-min[1]));
-        v:=(-P[2]/(max[2]-min[2]));
-      end;
-      1 : begin
-        u:=(P[0]/(max[0]-min[0]));
-        v:=(-P[2]/(max[2]-min[2]));
-      end;
-      2 : begin
-        u:=(P[0]/(max[0]-min[0]));
-        v:=(-P[1]/(max[1]-min[1]));
-      end;
+      0:
+        begin
+          u := (P.Y / (max.Y - min.Y));
+          v := (-P.Z / (max.Z - min.Z));
+        end;
+      1:
+        begin
+          u := (P.X / (max.X - min.X));
+          v := (-P.Z / (max.Z - min.Z));
+        end;
+      2:
+        begin
+          u := (P.X / (max.X - min.X));
+          v := (-P.Y / (max.Y - min.Y));
+        end;
     end;
-    u:=u+0.5;
-    v:=v+0.5;
-    TexCoords.Add(u,v,0);
+    u := u + 0.5;
+    v := v + 0.5;
+    TexCoords.Add(u, v, 0);
   end;
 end;
 
-procedure UVCubicMapping(Vertices,TexCoords : TAffineVectorList; Axis:TAxis = 2);
+procedure UVCubicMapping(Vertices, TexCoords: TAffineVectorList;
+  Axis: TAxis = 2);
 begin
   // This one is a little more complicated...I'm working on it
 end;
 
-procedure UVCylindricalMapping(Vertices,TexCoords : TAffineVectorList; Axis:TAxis = 2);
+procedure UVCylindricalMapping(Vertices, TexCoords: TAffineVectorList;
+  Axis: TAxis = 2);
 var
-  i,j      : integer;
-  P,Pn,center,
-  min,max  : TAffineVector;
-{  temp,}u,v : single;
+  i, j: Integer;
+  P, Pn, center, min, max: TAffineVector;
+  { temp, } u, v: single;
 begin
-    u:=0;    v:=0; {Compiler shutup}
+  u := 0;
+  v := 0; { Compiler shutup }
   // Get the center
-  for i:=0 to Vertices.Count-1 do begin
-    P:=Vertices.Items[i];
-    for j:=0 to 2 do begin
-      if i=0 then begin
-        min[j]:=P[j];
-        max[j]:=P[j];
-      end else begin
-        if P[j]<min[j] then min[j]:=P[j];
-        if P[j]>max[j] then max[j]:=P[j];
+  for i := 0 to Vertices.Count - 1 do
+  begin
+    P := Vertices.Items[i];
+    for j := 0 to 2 do
+    begin
+      if i = 0 then
+      begin
+        min.V[j] := P.V[j];
+        max.V[j] := P.V[j];
+      end
+      else
+      begin
+        if P.V[j] < min.V[j] then
+          min.V[j] := P.V[j];
+        if P.V[j] > max.V[j] then
+          max.V[j] := P.V[j];
       end;
     end;
   end;
-  center:=VectorScale(VectorAdd(max,min),0.5);
-  vertices.Translate(VectorNegate(center));
-  min:=VectorSubtract(min,center);
-  max:=VectorSubtract(max,center);
+  center := VectorScale(VectorAdd(max, min), 0.5);
+  Vertices.Translate(VectorNegate(center));
+  min := VectorSubtract(min, center);
+  max := VectorSubtract(max, center);
 
   // Generate texture coordinates
   TexCoords.Clear;
-  for i:=0 to Vertices.Count do begin
-    P:=Vertices.Items[i];
-    Pn:=VectorNormalize(P);
+  for i := 0 to Vertices.Count do
+  begin
+    P := Vertices.Items[i];
+    Pn := VectorNormalize(P);
     case Axis of
-      0 : begin
-        u:=arctan2(Pn[2],-Pn[1])/2;
-        v:=(P[0]/(max[0]-min[0]));
-      end;
-      1 : begin
-        u:=arctan2(-Pn[0],Pn[2])/2;
-        v:=(P[1]/(max[1]-min[1]));
-      end;
-      2 : begin
-        u:=arctan2(-Pn[0],-Pn[1])/2;
-        v:=(P[2]/(max[2]-min[2]));
-      end;
+      0:
+        begin
+          u := ArcTan2(Pn.Z, -Pn.Y) / 2;
+          v := (P.X / (max.X - min.X));
+        end;
+      1:
+        begin
+          u := arctan2(-Pn.X, Pn.Z) / 2;
+          v := (P.Y / (max.Y - min.Y));
+        end;
+      2:
+        begin
+          u := arctan2(-Pn.X, -Pn.Y) / 2;
+          v := (P.Z / (max.Z - min.Z));
+        end;
     end;
-    u:=0.5-u/Pi;
-    u:=u-floor(u);
-    v:=v+0.5;
-    TexCoords.Add(u,v,0);
+    u := 0.5 - u / Pi;
+    u := u - floor(u);
+    v := v + 0.5;
+    TexCoords.Add(u, v, 0);
   end;
 end;
 
-procedure UVSphericalMapping(Vertices,TexCoords : TAffineVectorList; Axis: TAxis = 2);
+procedure UVSphericalMapping(Vertices, TexCoords: TAffineVectorList;
+  Axis: TAxis = 2);
 var
-  i,j      : integer;
-  P,center,
-  min,max  : TAffineVector;
-{  radius, }
-{  temp,}u,v : single;
+  i, j: Integer;
+  P, center, min, max: TAffineVector;
+  { radius, }
+  { temp, } u, v: single;
 begin
-    u:=0;    v:=0; {Compiler shutup}
+  u := 0;
+  v := 0; { Compiler shutup }
   // Get the center
-  for i:=0 to Vertices.Count-1 do begin
-    P:=Vertices.Items[i];
-    for j:=0 to 2 do begin
-      if i=0 then begin
-        min[j]:=P[j];
-        max[j]:=P[j];
-      end else begin
-        if P[j]<min[j] then min[j]:=P[j];
-        if P[j]>max[j] then max[j]:=P[j];
+  for i := 0 to Vertices.Count - 1 do
+  begin
+    P := Vertices.Items[i];
+    for j := 0 to 2 do
+    begin
+      if i = 0 then
+      begin
+        min.V[j] := P.V[j];
+        max.V[j] := P.V[j];
+      end
+      else
+      begin
+        if P.V[j] < min.V[j] then
+          min.V[j] := P.V[j];
+        if P.V[j] > max.V[j] then
+          max.V[j] := P.V[j];
       end;
     end;
   end;
-  center:=VectorScale(VectorAdd(max,min),0.5);
-  vertices.Translate(VectorNegate(center));
+  center := VectorScale(VectorAdd(max, min), 0.5);
+  Vertices.Translate(VectorNegate(center));
 
   // Generate texture coordinates
   TexCoords.Clear;
-  for i:=0 to Vertices.Count do begin
-    P:=VectorNormalize(Vertices.Items[i]);
+  for i := 0 to Vertices.Count do
+  begin
+    P := VectorNormalize(Vertices.Items[i]);
     case Axis of
-      0 : begin
-        u:=arctan2(P[2],-P[1]);
-        v:=arctan(P[0]/sqrt(P[1]*P[1]+P[2]*P[2]));
-      end;
-      1 : begin
-        u:=arctan2(-P[0],P[2]);
-        v:=arctan(P[1]/sqrt(P[0]*P[0]+P[2]*P[2]));
-      end;
-      2 : begin
-        u:=arctan2(-P[0],-P[1]);
-        v:=arctan(P[2]/sqrt(P[0]*P[0]+P[1]*P[1]));
-      end;
+      0:
+        begin
+          u := arctan2(P.Z, -P.Y);
+          v := arctan(P.X / sqrt(P.Y * P.Y + P.Z * P.Z));
+        end;
+      1:
+        begin
+          u := arctan2(-P.X, P.Z);
+          v := arctan(P.Y / sqrt(P.X * P.X + P.Z * P.Z));
+        end;
+      2:
+        begin
+          u := arctan2(-P.X, -P.Y);
+          v := arctan(P.Z / sqrt(P.X * P.X + P.Y * P.Y));
+        end;
     end;
-    u:=1-u/(2*Pi);
-    v:=abs(0.5-v/Pi);
-    u:=u-floor(u);
-    TexCoords.Add(u,v,0);
+    u := 1 - u / (2 * Pi);
+    v := abs(0.5 - v / Pi);
+    u := u - floor(u);
+    TexCoords.Add(u, v, 0);
   end;
 end;
-
-
 
 procedure TGLS3dUvForm.GLSceneViewer1MouseMove(Sender: TObject;
   Shift: TShiftState; X, Y: Integer);
 var
-  lCurrentPos : TVector;
-  lOldV       : TVector3f;
-  lDiff       : TVector4f;
+  lCurrentPos: TVector;
+  lOldV: TVector3f;
+  lDiff: TVector4f;
 begin
   If MeshEditing then
   begin
-  {If ctrl is not in use, move around freeform}
-  if (ssLeft in Shift) and (not (ssCtrl in Shift)) then
-  begin
-    GLCamera1.MoveAroundTarget(FOldY - Y, FOldX - X);
-    FOldX := X; FOldY := Y;
-    Exit;
-  end;
-
-  {Move modifier and change relevant vertex data}
-  if (ssLeft in Shift) then
-  begin
-    FMoveZ := rbZY.Checked;
-
-    lCurrentPos := MouseWorldPos(X, Y);
-    if Assigned(FSelectedModifier) and (VectorNorm(FOldMouseWorldPos) <> 0) then
+    { If ctrl is not in use, move around freeform }
+    if (ssLeft in Shift) and (not(ssCtrl in Shift)) then
     begin
-      MakeVector(lOldV, FSelectedModifier.Position.X, FSelectedModifier.Position.Y, FSelectedModifier.Position.Z);
-      lDiff := VectorSubtract(lCurrentPos, FOldMouseWorldPos);
-      FSelectedModifier.Position.Translate(lDiff);
-      ChangeMeshVector(FSelectedModifier, lDiff);
+      GLCamera1.MoveAroundTarget(FOldY - Y, FOldX - X);
+      FOldX := X;
+      FOldY := Y;
+      Exit;
     end;
-    FOldMouseWorldPos := lCurrentPos;
-  end;
-  end else
+
+    { Move modifier and change relevant vertex data }
+    if (ssLeft in Shift) then
+    begin
+      FMoveZ := rbZY.Checked;
+
+      lCurrentPos := MouseWorldPos(X, Y);
+      if Assigned(FSelectedModifier) and (VectorNorm(FOldMouseWorldPos) <> 0)
+      then
+      begin
+        MakeVector(lOldV, FSelectedModifier.Position.X,
+          FSelectedModifier.Position.Y, FSelectedModifier.Position.Z);
+        lDiff := VectorSubtract(lCurrentPos, FOldMouseWorldPos);
+        FSelectedModifier.Position.Translate(lDiff);
+        ChangeMeshVector(FSelectedModifier, lDiff);
+      end;
+      FOldMouseWorldPos := lCurrentPos;
+    end;
+  end
+  else
   begin
-  if ssLeft in Shift then
-    GLCamera1.MoveAroundTarget(my-y,mx-x);
-    mx:=X;
-    my:=Y;
+    if ssLeft in Shift then
+      GLCamera1.MoveAroundTarget(my - Y, mx - X);
+    mx := X;
+    my := Y;
   end;
 end;
 
 procedure TGLS3dUvForm.GLSceneViewer1MouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 var
-  lObj : TGLBaseSceneObject;
+  lObj: TGLBaseSceneObject;
 begin
   If MeshEditing then
   begin
-  FOldX := X; FOldY := Y;
-  {If selecting a different modifier, change the last one's color back to default}
-  if Assigned(FSelectedModifier) then
-     FSelectedModifier.Material.FrontProperties.Diffuse.Color := CModColorNormal;
-  {Get selected objects}
-  if not (ssCtrl in Shift) then
-    Exit;
-  {Check if selected object is a modifier.
-   If so, change modifiers color as to indicated selected modifier.}  
-  lObj := GLSceneViewer1.Buffer.GetPickedObject(X, Y);
-  if (lObj is TModifierCube) then
-  begin
-    FSelectedModifier := TModifierCube(lObj);
-    FSelectedModifier.Material.FrontProperties.Diffuse.Color := CModColorSelect;
-    FSelectedModifier.NotifyChange(FSelectedModifier);
-    ShowModifierStatus(TModifierCube(lObj));
+    FOldX := X;
+    FOldY := Y;
+    { If selecting a different modifier, change the last one's color back to default }
+    if Assigned(FSelectedModifier) then
+      FSelectedModifier.Material.FrontProperties.Diffuse.Color :=
+        CModColorNormal;
+    { Get selected objects }
+    if not(ssCtrl in Shift) then
+      Exit;
+    { Check if selected object is a modifier.
+      If so, change modifiers color as to indicated selected modifier. }
+    lObj := GLSceneViewer1.Buffer.GetPickedObject(X, Y);
+    if (lObj is TModifierCube) then
+    begin
+      FSelectedModifier := TModifierCube(lObj);
+      FSelectedModifier.Material.FrontProperties.Diffuse.Color :=
+        CModColorSelect;
+      FSelectedModifier.NotifyChange(FSelectedModifier);
+      ShowModifierStatus(TModifierCube(lObj));
 
-    FMoveZ := rbZY.Checked;
-    FOldMouseWorldPos := MouseWorldPos(X, Y);
-  end;
-  end else
+      FMoveZ := rbZY.Checked;
+      FOldMouseWorldPos := MouseWorldPos(X, Y);
+    end;
+  end
+  else
   begin
-    mx:=X;
-    my:=Y;
+    mx := X;
+    my := Y;
   end;
 end;
+
 procedure TGLS3dUvForm.GLSceneViewer1MouseUp(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
   If MeshEditing then
   begin
-  if Assigned(FSelectedModifier) then
-  begin
-    FSelectedModifier.Material.FrontProperties.Diffuse.Color := CModColorNormal;
-    FSelectedModifier := nil;
-    {Recalculate structure and redraw freeform}
-    StripAndRecalc;
-    {Reset vertex modifiers and their data.}
-    SetVertexModifiers;
-  end;
-  end;
-end;
-procedure TGLS3dUvForm.GetTexCoordsWireframe;
-var
-  i,j,x,y,x0,y0 : integer;
-  fg  : TFGVertexIndexList;
-begin
-  x0:=0;y0:=0;{Compiler shut up}
-  GLS3dUvForm.Image.Canvas.FillRect(Rect(0,0,
-                              GLS3dUvForm.Image.Width,
-                              GLS3dUvForm.Image.Height));
-  GLS3dUvForm.Image.Canvas.Pen.Color:=clBlack;
-  with GLS3dUvForm.GLFreeForm1.MeshObjects.Items[0] do begin
-    for i:=0 to FaceGroups.Count-1 do begin
-      fg:=TFGVertexIndexList(FaceGroups.Items[i]);
-      for j:=0 to fg.VertexIndices.Count-1 do begin
-        if j=0 then begin
-          x0:=round(TexCoords.Items[fg.VertexIndices.Items[j]][0]*GLS3dUvForm.Image.Width);
-          y0:=round(TexCoords.Items[fg.VertexIndices.Items[j]][1]*GLS3dUvForm.Image.Height);
-          Image.Canvas.MoveTo(x0,y0);
-        end else begin
-          x:=round(TexCoords.Items[fg.VertexIndices.Items[j]][0]*GLS3dUvForm.Image.Width);
-          y:=round(TexCoords.Items[fg.VertexIndices.Items[j]][1]*GLS3dUvForm.Image.Height);
-          Image.Canvas.LineTo(x,y);
-        end;
-      end;
-      Image.Canvas.LineTo(x0,y0);
+    if Assigned(FSelectedModifier) then
+    begin
+      FSelectedModifier.Material.FrontProperties.Diffuse.Color :=
+        CModColorNormal;
+      FSelectedModifier := nil;
+      { Recalculate structure and redraw freeform }
+      StripAndRecalc;
+      { Reset vertex modifiers and their data. }
+      SetVertexModifiers;
     end;
   end;
 end;
 
-
+procedure TGLS3dUvForm.GetTexCoordsWireframe;
+var
+  i, j, X, Y, x0, y0: Integer;
+  fg: TFGVertexIndexList;
+begin
+  x0 := 0;
+  y0 := 0; { Compiler shut up }
+  GLS3dUvForm.Image.Canvas.FillRect(Rect(0, 0, GLS3dUvForm.Image.Width,
+    GLS3dUvForm.Image.Height));
+  GLS3dUvForm.Image.Canvas.Pen.Color := clBlack;
+  with GLS3dUvForm.GLFreeForm1.MeshObjects.Items[0] do
+  begin
+    for i := 0 to FaceGroups.Count - 1 do
+    begin
+      fg := TFGVertexIndexList(FaceGroups.Items[i]);
+      for j := 0 to fg.VertexIndices.Count - 1 do
+      begin
+        if j = 0 then
+        begin
+          x0 := round(TexCoords.Items[fg.VertexIndices.Items[j]].X *
+            GLS3dUvForm.Image.Width);
+          y0 := round(TexCoords.Items[fg.VertexIndices.Items[j]].Y *
+            GLS3dUvForm.Image.Height);
+          Image.Canvas.MoveTo(x0, y0);
+        end
+        else
+        begin
+          X := round(TexCoords.Items[fg.VertexIndices.Items[j]].X *
+            GLS3dUvForm.Image.Width);
+          Y := round(TexCoords.Items[fg.VertexIndices.Items[j]].Y *
+            GLS3dUvForm.Image.Height);
+          Image.Canvas.LineTo(X, Y);
+        end;
+      end;
+      Image.Canvas.LineTo(x0, y0);
+    end;
+  end;
+end;
 
 procedure TGLS3dUvForm.ApplyTexture1Click(Sender: TObject);
 begin
-  ApplyTexture1.Checked:= (not ApplyTexture1.Checked);
+  ApplyTexture1.Checked := (not ApplyTexture1.Checked);
   If ApplyTexture1.Checked then
-  GLFreeForm1.Material.Texture.Disabled:=False else
-  GLFreeForm1.Material.Texture.Disabled:=True;
+    GLFreeForm1.Material.Texture.Disabled := False
+  else
+    GLFreeForm1.Material.Texture.Disabled := True;
 end;
 
 procedure TGLS3dUvForm.Open3ds1Click(Sender: TObject);
 var
-  s : single;
+  s: single;
 begin
   If OpenDialog1.Execute then
   begin
-  Image.Canvas.FillRect(Rect(0,0,Image.Width,Image.Height));
-  GLFreeForm1.LoadFromFile(OpenDialog1.Filename{'teapot.3ds'});
-  Filename3DS:=OpenDialog1.Filename;
-  {Need a Autoscale function here
-  GLFreeForm1.Scale.SetVector(0.05,0.05,0.05);}
-  s:=4/(GLFreeForm1.BoundingSphereRadius);
-  GLFreeForm1.Scale.SetVector(s,s,s);
-  ComboBox1Change(nil);
-  GLFreeForm1.Pitch(90);
-  StripAndRecalc;
-  SetVertexModifiers;
+    Image.Canvas.FillRect(Rect(0, 0, Image.Width, Image.Height));
+    GLFreeForm1.LoadFromFile(OpenDialog1.Filename { 'teapot.3ds' } );
+    Filename3DS := OpenDialog1.Filename;
+    { Need a Autoscale function here
+      GLFreeForm1.Scale.SetVector(0.05,0.05,0.05); }
+    s := 4 / (GLFreeForm1.BoundingSphereRadius);
+    GLFreeForm1.Scale.SetVector(s, s, s);
+    ComboBox1Change(nil);
+    GLFreeForm1.Pitch(90);
+    StripAndRecalc;
+    SetVertexModifiers;
   end;
 end;
 
 procedure TGLS3dUvForm.Save3ds1Click(Sender: TObject);
 begin
-  {Save as WHATEVER GLSCENE USES that has UV Coords...}
-{  SaveDialog1.Filter:='*.obj';}
-  SaveDialog1.Filename:= ChangeFileExt(OpenDialog1.FileName,'.obj');
+  { Save as WHATEVER GLSCENE USES that has UV Coords... }
+  { SaveDialog1.Filter:='*.obj'; }
+  SaveDialog1.Filename := ChangeFileExt(OpenDialog1.Filename, '.obj');
   If SaveDialog1.Execute then
-     GLFreeForm1.SaveToFile(SaveDialog1.FileName);
+    GLFreeForm1.SaveToFile(SaveDialog1.Filename);
 end;
 
 procedure TGLS3dUvForm.LoadTexture1Click(Sender: TObject);
 begin
   If OpenPictureDialog1.Execute then
   begin
-  GLFreeForm1.Material.Texture.Image.LoadFromFile(OpenPictureDialog1.Filename);
-  GLFreeForm1.Material.Texture.Disabled:=False;
-    CurrentFile := OpenPictureDialog1.FileName;
+    GLFreeForm1.Material.Texture.Image.LoadFromFile
+      (OpenPictureDialog1.Filename);
+    GLFreeForm1.Material.Texture.Disabled := False;
+    CurrentFile := OpenPictureDialog1.Filename;
     SaveStyles;
     Image.Picture.LoadFromFile(CurrentFile);
-    Image.Picture.Bitmap.PixelFormat:= pf24bit;
+    Image.Picture.Bitmap.PixelFormat := pf24bit;
     RestoreStyles;
   end;
 end;
@@ -666,72 +753,81 @@ procedure TGLS3dUvForm.SaveTexture1Click(Sender: TObject);
 begin
   if CurrentFile <> EmptyStr then
     Image.Picture.SaveToFile(CurrentFile)
-  else SaveAsTexture1Click(Sender);
+  else
+    SaveAsTexture1Click(Sender);
 end;
 
 procedure TGLS3dUvForm.SaveAsTexture1Click(Sender: TObject);
 begin
   if SaveDialog1.Execute then
   begin
-    CurrentFile := SaveDialog1.FileName;
+    CurrentFile := SaveDialog1.Filename;
     SaveTexture1Click(Sender);
   end;
 end;
 
 procedure TGLS3dUvForm.Clear1Click(Sender: TObject);
 begin
-  Image.Canvas.FillRect(Rect(0,0,Image.Width,Image.Height));
+  Image.Canvas.FillRect(Rect(0, 0, Image.Width, Image.Height));
   GetTexCoordsWireframe;
 end;
+
 procedure TGLS3dUvForm.N128x1281Click(Sender: TObject);
 begin
-  Image.Picture.Bitmap.Width:=128;
-  Image.Picture.Bitmap.Height:=128;
-  Image.Canvas.FillRect(Rect(0,0,Image.Width,Image.Height));
+  Image.Picture.Bitmap.Width := 128;
+  Image.Picture.Bitmap.Height := 128;
+  Image.Canvas.FillRect(Rect(0, 0, Image.Width, Image.Height));
   GetTexCoordsWireframe;
 end;
+
 procedure TGLS3dUvForm.N256x2561Click(Sender: TObject);
 begin
-  Image.Picture.Bitmap.Width:=256;
-  Image.Picture.Bitmap.Height:=256;
-  Image.Canvas.FillRect(Rect(0,0,Image.Width,Image.Height));
+  Image.Picture.Bitmap.Width := 256;
+  Image.Picture.Bitmap.Height := 256;
+  Image.Canvas.FillRect(Rect(0, 0, Image.Width, Image.Height));
   GetTexCoordsWireframe;
 end;
+
 procedure TGLS3dUvForm.N512x5121Click(Sender: TObject);
 begin
-  Image.Picture.Bitmap.Width:=512;
-  Image.Picture.Bitmap.Height:=512;
-  Image.Canvas.FillRect(Rect(0,0,Image.Width,Image.Height));
+  Image.Picture.Bitmap.Width := 512;
+  Image.Picture.Bitmap.Height := 512;
+  Image.Canvas.FillRect(Rect(0, 0, Image.Width, Image.Height));
   GetTexCoordsWireframe;
 end;
+
 procedure TGLS3dUvForm.N1024x10241Click(Sender: TObject);
 begin
-  Image.Picture.Bitmap.Width:=1024;
-  Image.Picture.Bitmap.Height:=1024;
-  Image.Canvas.FillRect(Rect(0,0,Image.Width,Image.Height));
+  Image.Picture.Bitmap.Width := 1024;
+  Image.Picture.Bitmap.Height := 1024;
+  Image.Canvas.FillRect(Rect(0, 0, Image.Width, Image.Height));
   GetTexCoordsWireframe;
 end;
 
-
 procedure TGLS3dUvForm.Savemeshasbmp1Click(Sender: TObject);
-begin   {? 32 bit for transparency ? or leave it to them?}
-  Image.Picture.Bitmap.PixelFormat:=pf24bit;
-  Image.Picture.Bitmap.SaveToFile(ChangeFileExt(Filename3DS,'.bmp'))
+begin { ? 32 bit for transparency ? or leave it to them? }
+  Image.Picture.Bitmap.PixelFormat := pf24bit;
+  Image.Picture.Bitmap.SaveToFile(ChangeFileExt(Filename3DS, '.bmp'))
 end;
 
 procedure TGLS3dUvForm.Help2Click(Sender: TObject);
 begin
-  ShowMessage('Under Construction');
+  showmessage('Under Construction');
 end;
 
 procedure TGLS3dUvForm.ComboBox1Change(Sender: TObject);
 begin
-  with GLFreeForm1.MeshObjects.Items[0] do begin
-    case ComboBox2.ItemIndex of
-      0 : UVPlanarMapping(Vertices,TexCoords,Combobox1.ItemIndex);
-      1 : UVCubicMapping(Vertices,TexCoords,Combobox1.ItemIndex);
-      2 : UVCylindricalMapping(Vertices,TexCoords,Combobox1.ItemIndex);
-      3 : UVSphericalMapping(Vertices,TexCoords,Combobox1.ItemIndex);
+  with GLFreeForm1.MeshObjects.Items[0] do
+  begin
+    case ComboBox2.Itemindex of
+      0:
+        UVPlanarMapping(Vertices, TexCoords, ComboBox1.Itemindex);
+      1:
+        UVCubicMapping(Vertices, TexCoords, ComboBox1.Itemindex);
+      2:
+        UVCylindricalMapping(Vertices, TexCoords, ComboBox1.Itemindex);
+      3:
+        UVSphericalMapping(Vertices, TexCoords, ComboBox1.Itemindex);
     end;
   end;
   GetTexCoordsWireframe;
@@ -745,24 +841,23 @@ end;
 
 procedure TGLS3dUvForm.CheckBox1Click(Sender: TObject);
 begin
-  if Checkbox1.Checked then
-    GLFreeForm1.NormalsOrientation:=mnoInvert
+  if CheckBox1.Checked then
+    GLFreeForm1.NormalsOrientation := mnoInvert
   else
-    GLFreeForm1.NormalsOrientation:=mnoDefault;
+    GLFreeForm1.NormalsOrientation := mnoDefault;
 end;
 
 procedure TGLS3dUvForm.About1Click(Sender: TObject);
 begin
   AboutBox.ShowModal;
 end;
-(**********************************************)
-(**********************************************)
+(* ******************************************** *)
+(* ******************************************** *)
 
-
-(**********************************************)
-(**********************************************)
-procedure TGLS3dUvForm.ImageMouseDown(Sender: TObject;
-  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+(* ******************************************** *)
+(* ******************************************** *)
+procedure TGLS3dUvForm.ImageMouseDown(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
 begin
   Drawing := True;
   Image.Canvas.MoveTo(X, Y);
@@ -793,8 +888,8 @@ begin
   end;
 end;
 
-(**********************************************)
-(**********************************************)
+(* ******************************************** *)
+(* ******************************************** *)
 
 procedure TGLS3dUvForm.PenEditChange(Sender: TObject);
 begin
@@ -819,12 +914,18 @@ procedure TGLS3dUvForm.SetPenStyle(Sender: TObject);
 begin
   with Image.Canvas.Pen do
   begin
-    if Sender = SolidPen then Style := psSolid
-    else if Sender = DashPen then Style := psDash
-    else if Sender = DotPen then Style := psDot
-    else if Sender = DashDotPen then Style := psDashDot
-    else if Sender = DashDotDotPen then Style := psDashDotDot
-    else if Sender = ClearPen then Style := psClear;
+    if Sender = SolidPen then
+      Style := psSolid
+    else if Sender = DashPen then
+      Style := psDash
+    else if Sender = DotPen then
+      Style := psDot
+    else if Sender = DashDotPen then
+      Style := psDashDot
+    else if Sender = DashDotDotPen then
+      Style := psDashDotDot
+    else if Sender = ClearPen then
+      Style := psClear;
   end;
 end;
 
@@ -832,14 +933,22 @@ procedure TGLS3dUvForm.SetBrushStyle(Sender: TObject);
 begin
   with Image.Canvas.Brush do
   begin
-    if Sender = SolidBrush then Style := bsSolid
-    else if Sender = ClearBrush then Style := bsClear
-    else if Sender = HorizontalBrush then Style := bsHorizontal
-    else if Sender = VerticalBrush then Style := bsVertical
-    else if Sender = FDiagonalBrush then Style := bsFDiagonal
-    else if Sender = BDiagonalBrush then Style := bsBDiagonal
-    else if Sender = CrossBrush then Style := bsCross
-    else if Sender = DiagCrossBrush then Style := bsDiagCross;
+    if Sender = SolidBrush then
+      Style := bsSolid
+    else if Sender = ClearBrush then
+      Style := bsClear
+    else if Sender = HorizontalBrush then
+      Style := bsHorizontal
+    else if Sender = VerticalBrush then
+      Style := bsVertical
+    else if Sender = FDiagonalBrush then
+      Style := bsFDiagonal
+    else if Sender = BDiagonalBrush then
+      Style := bsBDiagonal
+    else if Sender = CrossBrush then
+      Style := bsCross
+    else if Sender = DiagCrossBrush then
+      Style := bsDiagCross;
   end;
 end;
 
@@ -894,17 +1003,19 @@ begin
           Image.Canvas.MoveTo(TopLeft.X, TopLeft.Y);
           Image.Canvas.LineTo(BottomRight.X, BottomRight.Y);
         end;
-      dtRectangle: Image.Canvas.Rectangle(TopLeft.X, TopLeft.Y, BottomRight.X,
-        BottomRight.Y);
-      dtEllipse: Image.Canvas.Ellipse(Topleft.X, TopLeft.Y, BottomRight.X,
-        BottomRight.Y);
-      dtRoundRect: Image.Canvas.RoundRect(TopLeft.X, TopLeft.Y, BottomRight.X,
-        BottomRight.Y, (TopLeft.X - BottomRight.X) div 2,
-        (TopLeft.Y - BottomRight.Y) div 2);
+      dtRectangle:
+        Image.Canvas.Rectangle(TopLeft.X, TopLeft.Y, BottomRight.X,
+          BottomRight.Y);
+      dtEllipse:
+        Image.Canvas.Ellipse(TopLeft.X, TopLeft.Y, BottomRight.X,
+          BottomRight.Y);
+      dtRoundRect:
+        Image.Canvas.RoundRect(TopLeft.X, TopLeft.Y, BottomRight.X,
+          BottomRight.Y, (TopLeft.X - BottomRight.X) div 2,
+          (TopLeft.Y - BottomRight.Y) div 2);
     end;
   end;
 end;
-
 
 procedure TGLS3dUvForm.Cut1Click(Sender: TObject);
 var
@@ -940,12 +1051,11 @@ begin
     end;
   end;
 end;
-(**********************************************)
-(**********************************************)
+(* ******************************************** *)
+(* ******************************************** *)
 
-
-(**********************************************)
-(**********************************************)
+(* ******************************************** *)
+(* ******************************************** *)
 function TGLS3dUvForm.GetPolygonMode: TPolygonMode;
 begin
   Result := GLS3dUvForm.GLFreeForm1.Material.PolygonMode;
@@ -956,23 +1066,23 @@ begin
   GLS3dUvForm.GLFreeForm1.Material.PolygonMode := Value;
 end;
 
-
 procedure TGLS3dUvForm.cbPolygonModeChange(Sender: TObject);
 begin
-  PolygonMode := TPolygonMode(cbPolygonMode.ItemIndex);
+  PolygonMode := TPolygonMode(cbPolygonMode.Itemindex);
 end;
 
 procedure TGLS3dUvForm.SetVertexModifiers;
-  procedure ScaleVector(var V1, V2 : TVector3F);
+  procedure ScaleVector(var V1, V2: TVector3f);
   begin
-    V1[0] := V1[0] * V2[0];
-    V1[1] := V1[1] * V2[1];
-    V1[2] := V1[2] * V2[2];
+    V1.X := V1.X * V2.X;
+    V1.Y := V1.Y * V2.Y;
+    V1.Z := V1.Z * V2.Z;
   end;
+
 var
-  i, j : Integer;
-  lVector, lScale : TVector3F;
-  lModifier : TModifierCube;
+  i, j: Integer;
+  lVector, lScale: TVector3f;
+  lModifier: TModifierCube;
 begin
   FModifierList.Clear;
   GLScene1.BeginUpdate;
@@ -1000,10 +1110,9 @@ begin
   end;
 end;
 
-
 procedure TGLS3dUvForm.chbViewPointsClick(Sender: TObject);
 var
-  i : Integer;
+  i: Integer;
 begin
   GLScene1.BeginUpdate;
   try
@@ -1019,32 +1128,35 @@ begin
   if aObj = nil then
     StatusBar1.Panels[0].Text := ''
   else
-    StatusBar1.Panels[0].Text := Format('Modifier vector index [%d]', [aObj.FVectorIndex]);
+    StatusBar1.Panels[0].Text := Format('Modifier vector index [%d]',
+      [aObj.FVectorIndex]);
 end;
 
-function TGLS3dUvForm.MouseWorldPos(x, y: Integer): TVector;
+function TGLS3dUvForm.MouseWorldPos(X, Y: Integer): TVector;
 var
-  v : TVector;
+  v: TVector;
 begin
-  y := GLSceneViewer1.Height - y;
+  Y := GLSceneViewer1.Height - Y;
 
   if Assigned(FSelectedModifier) then
   begin
-    SetVector(v, x, y, 0);
+    SetVector(v, X, Y, 0);
     if FMoveZ then
-      GLSceneViewer1.Buffer.ScreenVectorIntersectWithPlaneXZ(v, FSelectedModifier.Position.Y, Result)
+      GLSceneViewer1.Buffer.ScreenVectorIntersectWithPlaneXZ(v,
+        FSelectedModifier.Position.Y, Result)
     else
-      GLSceneViewer1.Buffer.ScreenVectorIntersectWithPlaneXY(v, FSelectedModifier.Position.Z, Result);
+      GLSceneViewer1.Buffer.ScreenVectorIntersectWithPlaneXY(v,
+        FSelectedModifier.Position.Z, Result);
   end
   else
     SetVector(Result, NullVector);
 end;
 
-procedure TGLS3dUvForm.ChangeMeshVector(const aObj : TModifierCube; const aPos : TVector4f);
+procedure TGLS3dUvForm.ChangeMeshVector(const aObj: TModifierCube;
+  const aPos: TVector4f);
 var
-  lVIndex,
-  lMIndex  : Integer;
-  v        : TVector3f;
+  lVIndex, lMIndex: Integer;
+  v: TVector3f;
 begin
   if aObj = nil then
     Exit;
@@ -1052,13 +1164,11 @@ begin
   lVIndex := aObj.FVectorIndex;
   lMIndex := aObj.FMeshObjIndex;
 
-  {Get new vertex position, keep freeform scale in mind and redraw freeform.}
-  MakeVector(v, aPos[0]/CModifierDim, aPos[1]/CModifierDim, aPos[2]/CModifierDim);
+  { Get new vertex position, keep freeform scale in mind and redraw freeform. }
+  MakeVector(v, aPos.X / CModifierDim, aPos.Y / CModifierDim, aPos.Z / CModifierDim);
   GLFreeForm1.MeshObjects.Items[lMIndex].Vertices.TranslateItem(lVIndex, v);
   GLFreeForm1.StructureChanged;
 end;
-
-
 
 procedure TGLS3dUvForm.chbShowAxisClick(Sender: TObject);
 begin
@@ -1077,9 +1187,9 @@ end;
 
 procedure TGLS3dUvForm.btnVertexClick(Sender: TObject);
 var
-  i, j    : Integer;
-  lList   : TStringList;
-  lVector : TVector3f;
+  i, j: Integer;
+  lList: TStringList;
+  lVector: TVector3f;
 begin
   lList := TStringList.Create;
   try
@@ -1090,7 +1200,7 @@ begin
         for j := 0 to Items[i].Vertices.Count - 1 do
         begin
           lVector := Items[i].Vertices.Items[j];
-          lList.Add(Format('%f %f %f', [lVector[0], lVector[1], lVector[2]]));
+          lList.Add(Format('%f %f %f', [lVector.X, lVector.Y, lVector.Z]));
         end;
       end;
     ShowMeshData(lList);
@@ -1101,9 +1211,9 @@ end;
 
 procedure TGLS3dUvForm.btnNormalsClick(Sender: TObject);
 var
-  i, j    : Integer;
-  lList   : TStringList;
-  lVector : TVector3f;
+  i, j: Integer;
+  lList: TStringList;
+  lVector: TVector3f;
 begin
   lList := TStringList.Create;
   try
@@ -1114,7 +1224,7 @@ begin
         for j := 0 to Items[i].Normals.Count - 1 do
         begin
           lVector := Items[i].Normals.Items[j];
-          lList.Add(Format('%f %f %f', [lVector[0], lVector[1], lVector[2]]));
+          lList.Add(Format('%f %f %f', [lVector.X, lVector.Y, lVector.Z]));
         end;
       end;
     ShowMeshData(lList);
@@ -1125,9 +1235,9 @@ end;
 
 procedure TGLS3dUvForm.btnTextcoordsClick(Sender: TObject);
 var
-  i, j    : Integer;
-  lList   : TStringList;
-  lVector : TVector3f;
+  i, j: Integer;
+  lList: TStringList;
+  lVector: TVector3f;
 begin
   lList := TStringList.Create;
   try
@@ -1138,7 +1248,7 @@ begin
         for j := 0 to Items[i].TexCoords.Count - 1 do
         begin
           lVector := Items[i].TexCoords.Items[j];
-          lList.Add(Format('%f %f %f', [lVector[0], lVector[1], lVector[2]]));
+          lList.Add(Format('%f %f %f', [lVector.X, lVector.Y, lVector.Z]));
         end;
       end;
     ShowMeshData(lList);
@@ -1149,8 +1259,8 @@ end;
 
 procedure TGLS3dUvForm.btnGroupsClick(Sender: TObject);
 var
-  i    : Integer;
-  lList   : TStringList;
+  i: Integer;
+  lList: TStringList;
 begin
   lList := TStringList.Create;
   try
@@ -1168,14 +1278,13 @@ end;
 
 procedure TGLS3dUvForm.StripAndRecalc;
 var
-  lTrigList,
-  lNormals    : TAffineVectorList;
-  lIndices    : TIntegerList;
-  lObj        : TGLMeshObject;
-  lStrips     : TPersistentObjectList;
+  lTrigList, lNormals: TAffineVectorList;
+  lIndices: TIntegerList;
+  lObj: TMeshObject;
+  lStrips: TPersistentObjectList;
 
-  lFaceGroup  : TFGVertexIndexList;
-  i           : Integer;
+  lFaceGroup: TFGVertexIndexList;
+  i: Integer;
 begin
   // Extract raw triangle data to work with.
   lTrigList := GLFreeForm1.MeshObjects.ExtractTriangles;
@@ -1184,7 +1293,7 @@ begin
   lIndices := BuildVectorCountOptimizedIndices(lTrigList);
   // Alter reference/indice pair and removes unused reference values.
   RemapAndCleanupReferences(lTrigList, lIndices);
-   // Calculate normals.
+  // Calculate normals.
   lNormals := BuildNormals(lTrigList, lIndices);
 
   // Strip where posible.
@@ -1194,12 +1303,12 @@ begin
   GLFreeForm1.MeshObjects.Clear;
 
   // Setup new mesh object.
-  lObj := TGLMeshObject.CreateOwned(GLFreeForm1.MeshObjects);
+  lObj := TMeshObject.CreateOwned(GLFreeForm1.MeshObjects);
   lObj.Vertices := lTrigList;
   lObj.Mode := momFaceGroups;
   lObj.Normals := lNormals;
 
-  for i:=0 to lStrips.Count-1 do
+  for i := 0 to lStrips.Count - 1 do
   begin
     lFaceGroup := TFGVertexIndexList.CreateOwned(lObj.FaceGroups);
     lFaceGroup.VertexIndices := (lStrips[i] as TIntegerList);
@@ -1207,7 +1316,7 @@ begin
       lFaceGroup.Mode := fgmmTriangleStrip
     else
       lFaceGroup.Mode := fgmmTriangles;
-    lFaceGroup.MaterialName:=IntToStr(i and 15);
+    lFaceGroup.MaterialName := IntToStr(i and 15);
   end;
   // Redraw freeform
   GLFreeForm1.StructureChanged;
@@ -1217,9 +1326,9 @@ begin
   lIndices.Free;
 end;
 
-procedure  TGLS3dUvForm.ShowMeshData(const aList : TStringList);
+procedure TGLS3dUvForm.ShowMeshData(const aList: TStringList);
 Begin
-  MeshDataListBox.{Lines.}Assign(aList);
+  MeshDataListBox.{ Lines. } Assign(aList);
 End;
 
 end.

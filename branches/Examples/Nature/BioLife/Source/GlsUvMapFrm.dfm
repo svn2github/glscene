@@ -1,9 +1,9 @@
 object GLS3dUvForm: TGLS3dUvForm
   Left = 145
   Top = 76
-  Width = 593
-  Height = 459
   Caption = 'GLS 3D UV Mesh'
+  ClientHeight = 400
+  ClientWidth = 577
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -46,22 +46,21 @@ object GLS3dUvForm: TGLS3dUvForm
   object Splitter1: TSplitter
     Left = 188
     Top = 0
-    Width = 3
-    Height = 394
-    Cursor = crHSplit
+    Height = 381
+    ExplicitHeight = 394
   end
   object ScrollPanel: TPanel
     Left = 0
     Top = 0
     Width = 188
-    Height = 394
+    Height = 381
     Align = alLeft
     TabOrder = 0
     object PageControl1: TPageControl
       Left = 1
       Top = 1
       Width = 186
-      Height = 392
+      Height = 379
       ActivePage = TabSheet3
       Align = alClient
       TabOrder = 0
@@ -143,7 +142,6 @@ object GLS3dUvForm: TGLS3dUvForm
             Height = 21
             Hint = 'UV Mapping type'
             Style = csDropDownList
-            ItemHeight = 13
             TabOrder = 1
             OnChange = ComboBox2Change
             Items.Strings = (
@@ -159,7 +157,6 @@ object GLS3dUvForm: TGLS3dUvForm
             Height = 21
             Hint = 'Display Axis'
             Style = csDropDownList
-            ItemHeight = 13
             TabOrder = 2
             OnChange = ComboBox1Change
             Items.Strings = (
@@ -185,16 +182,16 @@ object GLS3dUvForm: TGLS3dUvForm
             Min = 1
             Position = 1
             TabOrder = 4
-            Wrap = False
           end
         end
         object ScrollBox1: TScrollBox
           Left = 0
           Top = 93
           Width = 178
-          Height = 271
+          Height = 258
           Align = alClient
           TabOrder = 1
+          ExplicitHeight = 271
           object Image: TImage
             Left = 0
             Top = 0
@@ -231,7 +228,6 @@ object GLS3dUvForm: TGLS3dUvForm
           Height = 21
           Hint = 'Point Line Area'
           Style = csDropDownList
-          ItemHeight = 13
           TabOrder = 0
           OnChange = cbPolygonModeChange
           Items.Strings = (
@@ -333,14 +329,8 @@ object GLS3dUvForm: TGLS3dUvForm
           Height = 45
           Hint = 'See me'
           Max = 20
-          Orientation = trHorizontal
-          Frequency = 1
           Position = 5
-          SelEnd = 0
-          SelStart = 0
           TabOrder = 3
-          TickMarks = tmBottomRight
-          TickStyle = tsAuto
           OnChange = tbPosChange
         end
         object GroupBox2: TGroupBox
@@ -378,7 +368,7 @@ object GLS3dUvForm: TGLS3dUvForm
           Left = 0
           Top = 89
           Width = 178
-          Height = 275
+          Height = 262
           Align = alClient
           TabOrder = 0
           object MeshDataListBox: TListBox
@@ -391,7 +381,7 @@ object GLS3dUvForm: TGLS3dUvForm
             Font.Height = -11
             Font.Name = 'Courier'
             Font.Style = []
-            ItemHeight = 13
+            ItemHeight = 14
             ParentFont = False
             TabOrder = 0
           end
@@ -454,22 +444,23 @@ object GLS3dUvForm: TGLS3dUvForm
   object GLSceneViewer1: TGLSceneViewer
     Left = 191
     Top = 0
-    Width = 394
-    Height = 394
+    Width = 386
+    Height = 381
     Camera = GLCamera1
     BeforeRender = GLSceneViewer1BeforeRender
+    FieldOfView = 150.586914062500000000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
     OnMouseUp = GLSceneViewer1MouseUp
+    TabOrder = 1
   end
   object StatusBar1: TStatusBar
     Left = 0
-    Top = 394
-    Width = 585
+    Top = 381
+    Width = 577
     Height = 19
     Panels = <>
-    SimplePanel = False
   end
   object GLScene1: TGLScene
     Left = 288
@@ -477,15 +468,15 @@ object GLS3dUvForm: TGLS3dUvForm
     object GLFreeForm1: TGLFreeForm
     end
     object dcModifiers: TGLDummyCube
-      CubeSize = 1
+      CubeSize = 1.000000000000000000
       object GLCamera1: TGLCamera
-        DepthOfView = 100
-        FocalLength = 50
+        DepthOfView = 100.000000000000000000
+        FocalLength = 50.000000000000000000
         TargetObject = dcModifiers
         Position.Coordinates = {0000A0400000A0400000A0400000803F}
         object GLLightSource1: TGLLightSource
-          ConstAttenuation = 1
-          SpotCutOff = 180
+          ConstAttenuation = 1.000000000000000000
+          SpotCutOff = 180.000000000000000000
         end
       end
     end
@@ -735,7 +726,6 @@ object GLS3dUvForm: TGLS3dUvForm
     Top = 90
   end
   object ColorDialog1: TColorDialog
-    Ctl3D = True
     Left = 256
     Top = 88
   end

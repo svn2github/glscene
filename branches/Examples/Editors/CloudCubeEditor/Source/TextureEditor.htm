@@ -1,0 +1,98 @@
+<HTML>
+<HEAD>
+<TITLE>Texture Editor</TITLE>
+<META name=keywords content="Ivan Lee Herring, Texture Editor">
+<META name=description content="Texture Editor" >
+<META name=author content="Ivan Lee Herring"> 
+<META NAME="Generator" CONTENT="Notepad">
+</HEAD>
+<BODY TEXT="#000000" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" BGCOLOR="#c0c0c0">
+
+<CENTER>This page updated: January, 2006</CENTER>
+<P>
+<P>  </P>
+<P>  </P>
+<P> GLScene <STRONG>Texture Editor</STRONG></P>
+<UL><LI>General Use</LI>
+<UL><LI>The general purpose is to Black out the edge of images so they look more like Clouds than square textures. The most usefull tool for this is the Circle (with the Check boxes Unchecked).. at various sizes. Generally, Less work is required with MF Maker images (if they are done with the check box checked). Procedural and CA Maker images require some 'artistic license' to black out portions...</LI></UL>
+
+<UL><LI>The Top Right portion Loads and Saves the image, located on the Left half. The Bottom Right portion has 2 halves. The Left is Painting and the Right is Magic Wand Filling. Right clicking the panel area to the left will pop-up a Painting menu.</LI></UL>
+<UL><LI>Clicking the [Painting Cloning] Toggles between the two activities. Cloning is turned on when the button is pressed. Right clicking the panel area to the right will pop-up a Cloning menu.</LI></UL>
+
+<UL><LI>The image can be saved using the Save Image button. Changing the Image size to larger than 128 (256 or 512) may allow cropping the image to select a portion for use. Numbering the images (for example: a1..a16 or b1..b16) will aid selection into the texture combiner and keep the images in groups.</LI></UL>
+</UL>
+
+<P><STRONG>Texture Editor Things</STRONG> </P>
+<img src="TextureEditor.png" alt="Texture Editor form" align="right">
+
+<UL><LI>Top Portion</LI>
+<UL><LI>[Open] button will activate a file open dialog.</LI>
+<UL><LI>The file name is displayed here, after loading.</LI></UL>
+<UL><LI>The Green arrow button Undoes the last action.. only 1 level of Undo... it will Flip back and forth.</LI></UL>
+<UL><LI>? Help got you here</LI></UL>
+<UL><LI>[Exit] button Closes the form.</LI></UL>
+</UL>
+<UL><LI>"Save Image" Button</LI>
+<UL><LI>Selecting a Button will activate the Save file dialog to enter the file name. Using BMP as the file type for other than 24 bit may lead to errors if opened in auxiliary image editors, as a 32 bit BMP only has On/Off and these change individual pixel transparency values. Cloud Cubes will actually MAKE the image Transparent, No matter which button is used. (Well, I could have the program load in images and use whatever Transparency the image had... but that would lead to errors I think.) Transparent images could be used in programs to skip the 'Make Transparent' part of loading, as well as having the Images store MipMaps. </LI></UL>
+<UL><LI>24 bit is a normal image with No transparency
+<BR>32S is a Super Black Transparent image: Any portion that is Black will be transparent.
+<BR>32A Luminance becomes transparent
+<BR>32Sqr The Square Root Luminance becomes transparent
+</LI></UL>
+</UL>
+</UL>
+
+<UL><LI>Cloning</LI>
+<UL><LI>Panel, Check box</LI>  
+<UL><LI>Panel displays Location</LI></UL>
+<UL><LI>Check box flips TopLeft to Top or Bottom</LI></UL>
+</UL>
+<UL><LI>Cloning will Clone the portion TO the Mouse Area. Pressing the [Shift] key while Cloning will allow moving the Cloned Target area </LI>
+<UL><LI>To do: Make the Clone target be outlined..Highlighted</LI></UL>
+</UL>
+<UL><LI>Right Clicking the Clone panel will pop-up a menu</LI>
+<UL><LI>Size: of the Cloned area</LI></UL>
+<UL><LI>Box or Circle: the Shape to be cloned</LI></UL>
+</UL>
+</UL>
+
+
+<UL><LI>Painting</LI>
+<UL><LI>The [5] box controls the size of the Paint tool.</LI></UL>
+<UL><LI>The left check box toggles using White or Black as the Paint color.</LI></UL>
+<UL><LI>[Paint Box] Clicking the box activates a Color selection dialog.</LI></UL>
+<UL><LI>The right check box toggles using [White or Black] or the [Paint Box] color as the Paint color.</LI></UL>
+
+<UL><LI>[Dot, Box, Circle, Flood, Edge, Paint] selects thePaint tool</LI>
+<UL><LI>Dot only works if the Size is 1, tho if the size is 1 Circle does about the same thing...</LI></UL>
+<UL><LI>Box shape IAW size</LI></UL>
+<UL><LI>Circle shape IAW size</LI></UL>
+<UL><LI>Flood fill the Image</LI></UL>
+<UL><LI>Edge fill the Image</LI></UL>
+<UL><LI>Paint an area IAW size with random dots.. sort of a 'Spray Paint' effect.</LI></UL>
+</UL>
+
+<UL><LI>[Smooth] will smooth..blur the image using which filter selected from the box on the right. [The Last button area will perform Edge Detection, rather than smooth.. usefull for 'cleaning' the edge of a cloud.. maybe.</LI></UL>
+</UL>
+
+<UL><LI>Magic Wand Filling Wanding is done using the Right Mouse button</LI>
+<UL><LI>Drop Down List, Slider</LI>
+<UL><LI>Drop Down List</LI></UL>
+<UL><LI>Slider</LI></UL>
+<UL><LI>Slider</LI></UL>
+<UL><LI>..</LI></UL>
+<UL><LI>..</LI></UL>
+</UL>
+
+
+<P>  </P>
+
+
+
+<CENTER>
+<A HREF="http://www.ezl.com/~ilh2o/copyright.html">Copyright</A>
+ 
+<A HREF="http://www.ezl.com/~ilh2o/">© 1991..2006 by Ivan Lee Herring</A></CENTER>
+<CENTER><HR width="535" size="7" color="gold" noshade></CENTER>
+</BODY>
+</HTML>

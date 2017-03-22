@@ -19,7 +19,7 @@ uses
   System.Classes,
   Vcl.Dialogs,
   Vcl.Graphics,
-  
+
   GLVectorTypes,
   GLVectorGeometry,
   GLCrossPlatform,
@@ -33,12 +33,9 @@ type
   PRGBColor = ^TRGBColor;
   TRGBColor = TVector3b;
 
-  // TGLColor
-  //
   { Wraps an OpenGL color. }
   TGLColor = class(TGLUpdateAbleObject)
   private
-    { Private Properties }
     FColor: TColorVector;
     FPDefaultColor: PColorVector;
     procedure SetColorVector(const aColor: TColorVector); overload;
@@ -47,18 +44,13 @@ type
     procedure SetAsWinColor(const val: TColor);
     function GetAsWinColor: TColor;
     procedure SetDirectColorVector(const aColor: TColorVector);
-
   protected
-    { Protected Properties }
     procedure DefineProperties(Filer: TFiler); override;
     procedure ReadData(Stream: TStream);
     procedure WriteData(Stream: TStream);
-
     function GetHSVA: TVector;
     procedure SetHSVA(const hsva: TVector);
-
   public
-    { Public Properties }
     constructor Create(AOwner: TPersistent); override;
     constructor CreateInitialized(AOwner: TPersistent;
       const color: TColorVector; changeEvent: TNotifyEvent = nil);
@@ -67,18 +59,14 @@ type
     procedure Assign(Source: TPersistent); override;
     procedure Initialize(const color: TColorVector);
     function AsAddress: PSingle;
-
     procedure RandomColor;
     procedure SetColor(red, green, blue: Single; alpha: Single = 1); overload;
-
     property color: TColorVector read FColor write SetColorVector;
     property DirectColor: TColorVector read FColor write SetDirectColorVector;
     property AsWinColor: TColor read GetAsWinColor write SetAsWinColor;
     property hsva: TVector read GetHSVA write SetHSVA;
     property DefaultColor: TColorVector read FColor;
-
   published
-    { Published Properties }
     property red: Single index 0 read GetColorComponent write SetColorComponent
       stored False;
     property green: Single index 1 read GetColorComponent
@@ -96,12 +84,9 @@ type
     color: TColorVector;
   end;
 
-  // TGLColorManager
-  //
   TGLColorManager = class(TList)
   public
     destructor Destroy; override;
-
     procedure AddColor(const aName: String; const aColor: TColorVector);
     procedure EnumColors(Proc: TGetStrProc); overload;
     procedure EnumColors(AValues: TStrings); overload;
@@ -114,23 +99,21 @@ type
   end;
 
 function ColorManager: TGLColorManager;
-
 procedure RegisterColor(const aName: String; const aColor: TColorVector);
 procedure UnRegisterColor(const aName: String);
-
 function GetRValue(rgb: DWORD): Byte; {$NODEFINE GetRValue}
 function GetGValue(rgb: DWORD): Byte; {$NODEFINE GetGValue}
 function GetBValue(rgb: DWORD): Byte; {$NODEFINE GetBValue}
 procedure InitGLSceneColors;
 { Converts a delphi color into its RGB fragments and correct range. }
 function ConvertWinColor(aColor: TColor; alpha: Single = 1): TColorVector;
-
-// : Converts a color vector (containing float values)
+// Converts a color vector (containing float values)
 function ConvertColorVector(const aColor: TColorVector): TColor; overload;
 { Converts a color vector (containing float values) and alter intensity.
   intensity is in [0..1] }
-function ConvertColorVector(const aColor: TColorVector; intensity: Single): TColor; overload;
-// : Converts RGB components into a color vector with correct range
+function ConvertColorVector(const aColor: TColorVector; intensity: Single)
+  : TColor; overload;
+// Converts RGB components into a color vector with correct range
 function ConvertRGBColor(const aColor: array of Byte): TColorVector;
 
 // color definitions
@@ -383,13 +366,13 @@ var
   // their default values (ie. design-time) or not (run-time)
   vUseDefaultColorSets: Boolean = False;
 
+//======================================================================
 implementation
+//======================================================================
 
 var
   vColorManager: TGLColorManager;
 
-  // ColorManager
-  //
 function ColorManager: TGLColorManager;
 begin
   if not Assigned(vColorManager) then
@@ -400,8 +383,6 @@ begin
   Result := vColorManager;
 end;
 
-// ConvertWinColor
-//
 function ConvertWinColor(aColor: TColor; alpha: Single = 1): TColorVector;
 var
   winColor: Integer;
@@ -415,29 +396,21 @@ begin
   Result.W := alpha;
 end;
 
-// GetRValue
-//
 function GetRValue(rgb: DWORD): Byte;
 begin
   Result := Byte(rgb);
 end;
 
-// GetGValue
-//
 function GetGValue(rgb: DWORD): Byte;
 begin
   Result := Byte(rgb shr 8);
 end;
 
-// GetBValue
-//
 function GetBValue(rgb: DWORD): Byte;
 begin
   Result := Byte(rgb shr 16);
 end;
 
-// InitGLSceneColors
-//
 procedure InitGLSceneColors;
 begin
   clrScrollBar := ConvertWinColor(clScrollBar);
@@ -467,16 +440,12 @@ begin
   clrBackground := ConvertWinColor(clBackground);
 end;
 
-// ConvertColorVector
-//
 function ConvertColorVector(const aColor: TColorVector): TColor;
 begin
   Result := rgb(Round(255 * aColor.X), Round(255 * aColor.Y),
     Round(255 * aColor.Z));
 end;
 
-// ConvertColorVector
-//
 function ConvertColorVector(const aColor: TColorVector;
   intensity: Single): TColor;
 begin
@@ -485,8 +454,6 @@ begin
     Round(intensity * aColor.Z));
 end;
 
-// ConvertRGBColor
-//
 function ConvertRGBColor(const aColor: array of Byte): TColorVector;
 var
   n: Integer;
@@ -511,17 +478,12 @@ end;
 // ------------------
 // ------------------ TGLColor ------------------
 // ------------------
-
- 
-//
 constructor TGLColor.Create(AOwner: TPersistent);
 begin
   inherited;
   Initialize(clrBlack);
 end;
 
-// CreateInitialized
-//
 constructor TGLColor.CreateInitialized(AOwner: TPersistent;
   const color: TColorVector; changeEvent: TNotifyEvent = nil);
 begin
@@ -530,8 +492,6 @@ begin
   OnNotifyChange := changeEvent;
 end;
 
- 
-//
 destructor TGLColor.Destroy;
 begin
   if Assigned(FPDefaultColor) then
@@ -539,8 +499,6 @@ begin
   inherited;
 end;
 
-// Initialize
-//
 procedure TGLColor.Initialize(const color: TColorVector);
 begin
   SetVector(FColor, color);
@@ -552,8 +510,6 @@ begin
   end;
 end;
 
-// SetColorVector
-//
 procedure TGLColor.SetColorVector(const aColor: TColorVector);
 begin
   SetVector(FColor, aColor);
@@ -565,8 +521,6 @@ begin
   SetVector(FColor, aColor);
 end;
 
-// SetColorComponent
-//
 procedure TGLColor.SetColorComponent(index: Integer; value: Single);
 begin
   if FColor.V[index] <> value then
@@ -576,30 +530,22 @@ begin
   end;
 end;
 
-// SetAsWinColor
-//
 procedure TGLColor.SetAsWinColor(const val: TColor);
 begin
   FColor := ConvertWinColor(val);
   NotifyChange(Self);
 end;
 
-// GetAsWinColor
-//
 function TGLColor.GetAsWinColor: TColor;
 begin
   Result := ConvertColorVector(FColor);
 end;
 
-// GetColorComponent
-//
 function TGLColor.GetColorComponent(const index: Integer): Single;
 begin
   Result := FColor.V[Index];
 end;
 
-// Assign
-//
 procedure TGLColor.Assign(Source: TPersistent);
 begin
   if Assigned(Source) and (Source is TGLColor) then
@@ -611,8 +557,6 @@ begin
     inherited;
 end;
 
-// DefineProperties
-//
 procedure TGLColor.DefineProperties(Filer: TFiler);
 begin
   inherited;
@@ -620,22 +564,16 @@ begin
     not(Assigned(FPDefaultColor) and VectorEquals(FColor, FPDefaultColor^)));
 end;
 
-// ReadData
-//
 procedure TGLColor.ReadData(Stream: TStream);
 begin
   Stream.Read(FColor, SizeOf(FColor));
 end;
 
-// WriteData
-//
 procedure TGLColor.WriteData(Stream: TStream);
 begin
   Stream.Write(FColor, SizeOf(FColor));
 end;
 
-// NotifyChange
-//
 procedure TGLColor.NotifyChange(Sender: TObject);
 var
   intf: IGLNotifyable;
@@ -650,15 +588,11 @@ begin
   end;
 end;
 
-// AsAddress
-//
 function TGLColor.AsAddress: PSingle;
 begin
   Result := @FColor;
 end;
 
-// RandomColor
-//
 procedure TGLColor.RandomColor;
 begin
   red := Random;
@@ -666,8 +600,6 @@ begin
   blue := Random;
 end;
 
-// SetColor
-//
 procedure TGLColor.SetColor(red, green, blue: Single; alpha: Single = 1);
 begin
   FColor.X := red;
@@ -677,8 +609,6 @@ begin
   NotifyChange(Self);
 end;
 
-// GetHSVA
-//
 function TGLColor.GetHSVA: TVector;
 var
   delta, min: Single;
@@ -715,8 +645,6 @@ begin
   Result.W := alpha;
 end;
 
-// SetHSVA
-//
 procedure TGLColor.SetHSVA(const hsva: TVector);
 var
   f, hTemp, p, q, t: Single;
@@ -788,8 +716,6 @@ end;
 // ------------------ TGLColorManager ------------------
 // ------------------
 
-// Find Color
-//
 function TGLColorManager.FindColor(const aName: String): TColorVector;
 var
   i: Integer;
@@ -803,8 +729,6 @@ begin
     end;
 end;
 
-// GetColor
-//
 function TGLColorManager.GetColor(const aName: String): TColorVector;
 var
   workCopy: String;
@@ -884,8 +808,8 @@ begin
       aColor.W]);
 end;
 
- 
-//
+// ------------------------------------------------------------------------------
+
 destructor TGLColorManager.Destroy;
 var
   i: Integer;
@@ -895,8 +819,8 @@ begin
   inherited Destroy;
 end;
 
-// AddColor
-//
+// ------------------------------------------------------------------------------
+
 procedure TGLColorManager.AddColor(const aName: String;
   const aColor: TColorVector);
 var
@@ -913,8 +837,6 @@ begin
   Add(newEntry);
 end;
 
-// EnumColors
-//
 procedure TGLColorManager.EnumColors(Proc: TGetStrProc);
 var
   i: Integer;
@@ -923,8 +845,6 @@ begin
     Proc(string(TColorEntry(Items[i]^).Name));
 end;
 
-// EnumColors
-//
 procedure TGLColorManager.EnumColors(AValues: TStrings);
 var
   i: Integer;
@@ -933,8 +853,6 @@ begin
     AValues.Add(string(TColorEntry(Items[i]^).Name));
 end;
 
-// RegisterDefaultColors
-//
 procedure TGLColorManager.RegisterDefaultColors;
 begin
   Capacity := 150;
@@ -1066,7 +984,6 @@ begin
   AddColor('clrBlue', clrBlue);
   AddColor('clrFuchsia', clrFuchsia);
   AddColor('clrAqua', clrAqua);
-
   AddColor('clrScrollBar', clrScrollBar);
   AddColor('clrBackground', clrBackground);
   AddColor('clrActiveCaption', clrActiveCaption);
@@ -1094,8 +1011,6 @@ begin
   AddColor('clrInfoBk', clrInfoBk);
 end;
 
-// RemoveColor
-//
 procedure TGLColorManager.RemoveColor(const aName: String);
 var
   i: Integer;
@@ -1110,15 +1025,11 @@ begin
   end;
 end;
 
-// RegisterColor
-//
 procedure RegisterColor(const aName: String; const aColor: TColorVector);
 begin
   ColorManager.AddColor(aName, aColor);
 end;
 
-// UnregisterColor
-//
 procedure UnRegisterColor(const aName: String);
 begin
   ColorManager.RemoveColor(aName);

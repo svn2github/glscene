@@ -23,7 +23,7 @@ uses
   VCL.Dialogs, 
   VCL.ExtDlgs,
   GLStrings,
-  GLVectorGeometry, 
+  GLVectorGeometry,
   GLCrossPlatform;
 
 type
@@ -118,9 +118,6 @@ uses
 var
   vSqrt255: TSqrt255Array;
 
-// WordToIntegerArray
-//
-
 procedure WordToIntegerArray(Source: PWordArray; Dest: PIntegerArray; Count: Cardinal);
 var
   i: integer;
@@ -129,18 +126,12 @@ begin
     Dest^[i] := Source^[i];
 end;
 
-// RoundUpToPowerOf2
-//
-
 function RoundUpToPowerOf2(value: Integer): Integer;
 begin
   Result := 1;
   while (Result < value) do
     Result := Result shl 1;
 end;
-
-// RoundDownToPowerOf2
-//
 
 function RoundDownToPowerOf2(value: Integer): Integer;
 begin
@@ -154,16 +145,10 @@ begin
     Result := 1;
 end;
 
-// IsPowerOf2
-//
-
 function IsPowerOf2(value: Integer): Boolean;
 begin
   Result := (RoundUpToPowerOf2(value) = value);
 end;
-
-// ReadCRLFString
-//
 
 function ReadCRLFString(aStream: TStream): AnsiString;
 var
@@ -178,9 +163,6 @@ begin
   Result := Copy(Result, 1, Length(Result) - 2);
 end;
 
-// WriteCRLFString
-//
-
 procedure WriteCRLFString(aStream: TStream; const aString: AnsiString);
 const
   cCRLF: Integer = $0A0D;
@@ -191,9 +173,6 @@ begin
     Write(cCRLF, 2);
   end;
 end;
-
-// TryStrToFloat
-//
 
 function TryStrToFloat(const strValue: string; var val: Extended): Boolean;
 var
@@ -284,17 +263,11 @@ begin
   Result := True;
 end;
 
-// StrToFloatDef
-//
-
 function StrToFloatDef(const strValue: string; defValue: Extended = 0): Extended;
 begin
   if not TryStrToFloat(strValue, Result) then
     result := defValue;
 end;
-
-// StringToColorAdvancedSafe
-//
 
 function StringToColorAdvancedSafe(const Str: string; const Default: TColor): TColor;
 begin
@@ -302,17 +275,11 @@ begin
     Result := Default;
 end;
 
-// StringToColorAdvanced
-//
-
 function StringToColorAdvanced(const Str: string): TColor;
 begin
   if not TryStringToColorAdvanced(Str, Result) then
     raise EGLUtilsException.CreateResFmt(@strInvalidColor, [Str]);
 end;
-
-// TryStringToColorAdvanced
-//
 
 function TryStringToColorAdvanced(const Str: string; var OutColor: TColor): Boolean;
 var
@@ -340,9 +307,6 @@ begin
     end;
   end;
 end;
-
-// ParseInteger
-//
 
 function ParseInteger(var p: PChar): Integer;
 var
@@ -376,9 +340,6 @@ begin
   if neg then
     Result := -Result;
 end;
-
-// ParseFloat
-//
 
 function ParseFloat(var p: PChar): Extended;
 var
@@ -456,9 +417,6 @@ begin
     Result := -Result;
 end;
 
-// SaveAnsiStringToFile
-//
-
 procedure SaveAnsiStringToFile(const fileName: string; const data: AnsiString);
 var
   n: Cardinal;
@@ -473,9 +431,6 @@ begin
     fs.Free;
   end;
 end;
-
-// LoadAnsiStringFromFile
-//
 
 function LoadAnsiStringFromFile(const fileName: string): AnsiString;
 var
@@ -498,9 +453,6 @@ begin
     Result := '';
 end;
 
-// SaveStringToFile
-//
-
 procedure SaveStringToFile(const fileName: string; const data: String);
 var
   n: Cardinal;
@@ -515,9 +467,6 @@ begin
     fs.Free;
   end;
 end;
-
-// LoadStringFromFile
-//
 
 function LoadStringFromFile(const fileName: string): String;
 var
@@ -540,9 +489,6 @@ begin
     Result := '';
 end;
 
-
-// SaveComponentToFile
-//
 
 procedure SaveComponentToFile(const Component: TComponent; const FileName: string; const AsText: Boolean);
 var
@@ -569,9 +515,6 @@ begin
   end;
 end;
 
-// LoadComponentFromFile
-//
-
 procedure LoadComponentFromFile(const Component: TComponent; const FileName: string; const AsText: Boolean = True);
 var
   Stream: TStream;
@@ -597,9 +540,6 @@ begin
   end;
 end;
 
-// SizeOfFile
-//
-
 function SizeOfFile(const fileName: string): Int64;
 var
   fs: TStream;
@@ -617,9 +557,6 @@ begin
     Result := 0;
 end;
 
-// GetSqrt255Array
-//
-
 function GetSqrt255Array: PSqrt255Array;
 const
   cOneDiv255 = 1 / 255;
@@ -634,32 +571,20 @@ begin
   Result := @vSqrt255;
 end;
 
-// InformationDlg
-//
-
 procedure InformationDlg(const msg: string);
 begin
   ShowMessage(msg);
 end;
-
-// QuestionDlg
-//
 
 function QuestionDlg(const msg: string): Boolean;
 begin
   Result := (MessageDlg(msg, mtConfirmation, [mbYes, mbNo], 0) = mrYes);
 end;
 
-// InputDlg
-//
-
 function InputDlg(const aCaption, aPrompt, aDefault: string): string;
 begin
   Result := InputBox(aCaption, aPrompt, aDefault);
 end;
-
-// SavePictureDialog
-//
 
 function SavePictureDialog(var aFileName: string; const aTitle: string = ''): Boolean;
 var
@@ -681,9 +606,6 @@ begin
     saveDialog.Free;
   end;
 end;
-
-// OpenPictureDialog
-//
 
 function OpenPictureDialog(var aFileName: string; const aTitle: string = ''): Boolean;
 var

@@ -1,0 +1,111 @@
+
+==============================================
+
+No.1) BUGFIX. GLVectorFileObjects Line #5427
+
+The case statement in TFGVertexNormalTexIndexList.BuildList is missing 
+the fgmmQuads case.
+
+Original code:
+
+    case Mode of
+       fgmmTriangles, fgmmFlatTriangles : glBegin(GL_TRIANGLES);
+       fgmmTriangleStrip :                glBegin(GL_TRIANGLE_STRIP);
+       fgmmTriangleFan   :                glBegin(GL_TRIANGLE_FAN);
+    else
+       Assert(False);
+    end;
+
+Modified code:
+Add this line before "else"
+
+       fgmmQuads: glBegin(GL_QUADS);
+
+It seems the author simply forgot to add this line, since it works 
+perfectly.
+
+==============================================
+
+No.2) ENH. Adding a progress event to the TGLBaseMesh.LoadFromStream
+
+Loading large meshes (OBJ, 3DS etc.) may take quite some time, 
+especially if normals have to be (re-)created or facegroups have to be 
+sorted. To provide UI feedback, I added a progress event.
+
+To keep similar things similar, the implementation copies the behavior 
+of the VCL TImage.OnProgress. I haven't had any use for RedrawNow yet, 
+but I can see why one might, so I left it in.
+
+New code (add before TGLBaseMesh type declaration, Line #1188)
+
+    TGLProgressStage = (psStarting, psRunning, psEnding);
+    TGLProgressEvent = procedure (Sender: TObject;
+                                  Stage:  TGLProgressStage;
+                                  PercentDone: Byte;
+                                  RedrawNow: Boolean;
+                                  const Msg: string) of object;
+
+New private member to TGLBaseMesh
+    FOnProgress   : TGLProgressEvent;
+
+
+New published member to TGLBaseMesh
+    {: Fires file processing events }
+    property OnProgress :TGLProgressEvent
+              read FOnProgress write FOnProgress;
+
+New code in TGLBaseMesh.create()
+    FOnProgress:=NIL;
+
+
+Up to here, this basically does nothing, but provide an interface. The 
+firing of this progress event has to happen in the file formats units.
+
+if Assigned(FOnProgress) then FOnProgress(Self,psStarting,0,false,'');
+
+if Assigned(FOnProgress) then FOnProgress(Self,psRunning,perc,false,'');
+
+if Assigned(FOnProgress) then FOnProgress(Self,psEnding,100,true,'');
+
+
+==============================================
+
+I have made a few other changes to my GLscene copy - if small additions 
+like the ones above are welcome, I'll post them when I find the time to 
+do so.
+
+BTW: Does anyone care for a basic GLfileDXF.pas unit?
+
+J. Daub
+
+>New code in TGLBaseMesh.create()
+>    FOnProgress:=NIL;
+
+This happens automatically in any descendant of TObject, so the explicit nil
+assignment is unnecesary.
+/////////////
+
+
+
+Note 1)
+
+This code needs the bugfix submitted to glscene.general on Dec 28th 
+2005. If you do not care about the OnProgress event (the enhancement 
+mentioned in the same post), simply put comment tags around the 
+DoProgress code.
+
+Note 2)
+
+This unit does not read all DXF tags. To be honest, it reads just the 3D 
+stuff, and ignores lines, dimensions, text and such. Who cares about 2D 
+anyway?
+
+Note 3)
+
+Turn on TwoSideLighting - DXF-faces have no constant winding order, so 
+they mey appear flipped, and you are actually looking that their backside.
+
+
+I'd love to read how the unit works for you.
+
+Jörn

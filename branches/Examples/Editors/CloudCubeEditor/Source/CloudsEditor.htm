@@ -1,0 +1,215 @@
+<HTML>
+<HEAD>
+<TITLE>Gls Cloud Cube Editor</TITLE>
+<META name=keywords content="Ivan Lee Herring, Gls Cloud Cube Editor">
+<META name=description content="Gls Cloud Cube Editor" >
+<META name=author content="Ivan Lee Herring"> 
+<META NAME="Generator" CONTENT="Notepad">
+</HEAD>
+<BODY TEXT="#000000" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" BGCOLOR="#c0c0c0">
+
+<CENTER>This page updated: January, 2006</CENTER>
+<P>
+<P>  </P>
+<P>  </P>
+<P> GLScene <STRONG>Gls Cloud Cube Editor</STRONG></P>
+
+<UL><LI>The purpose is to create clouds using Cube holders of sprites or particles. The area to the right contains controls to do this. At its bottom are buttons to activate other forms to make the textures. The top portion controls the current Cube and the Cubes page(s) contain parameters OF the sprites IN the Cube, the Global page contains Global parameters.</LI></UL>
+
+<UL><LI>Parameter Pages</LI>
+<UL><LI>Clouds: Described here</LI></UL>
+<UL><LI>Cubes</LI>
+<UL><LI>Cubes (first page) Size  <A HREF="CloudsEditor_CubesSize.htm">Clouds Editor Cubes (Size)</A></LI></UL>
+<UL><LI>Cubes: Type <A HREF="CloudsEditor_CubesType.htm">Clouds Editor Type</A></LI></UL>
+<UL><LI>Cubes: Image <A HREF="CloudsEditor_CubesImageAll.htm">Clouds Editor Image All: Set the Textures, Set 16:1, Set 64:1</A></LI>
+<UL><LI>Cubes: Image <A HREF="CloudsEditor_CubesImageType.htm">Clouds Editor Image Type</A></LI></UL>
+<UL><LI>Cubes: Image <A HREF="CloudsEditor_CubesImageAlpha.htm">Clouds Editor Image Alpha</A></LI></UL>
+<UL><LI>Cubes: Image <A HREF="CloudsEditor_CubesImagePLMask.htm">Clouds Editor Image PL Mask</A></LI></UL>
+<UL><LI>Cubes: Image <A HREF="CloudsEditor_CubesImagePages.htm">Clouds Editor Image 4 pages to load Textures: ..6, ..12, ..18, ..24</A></LI></UL>
+</UL>
+<UL><LI>Cubes: Albedo <A HREF="CloudsEditor_CubesAlbedo.htm">Clouds Editor Albedo</A></LI></UL>
+</UL>
+<UL><LI>Global:  <A HREF="CloudsEditor_Global.htm">CloudsEditor _Global</A></LI>
+<UL><LI>Sun</LI></UL>
+<UL><LI>Dome</LI></UL>
+<UL><LI>Makers</LI>
+<UL><LI>MF:  <A HREF="MFClouds.htm">MF Clouds</A></LI></UL>
+<UL><LI>Nan:  <A HREF="NanClouds.htm">Nan Clouds</A></LI></UL>
+<UL><LI>PC:  <A HREF="ProceduralClouds.htm">Procedural Clouds</A></LI></UL>
+<UL><LI>Texture Editor:  <A HREF="TextureEditor.htm">Texture Editor</A></LI></UL>
+<UL><LI>Texture Combiner:  <A HREF="TexCombine.htm">Texture Combiner</A></LI></UL>
+</UL>
+</UL>
+<UL><LI>Niniane</LI></UL>
+</UL>
+
+
+
+<UL><LI>Cloud Image Texture hints</LI>
+<UL><LI>Textures are thought to be 128x128, there might be code Expecting that size.</LI></UL>
+<UL><LI>Make sure Textures are NOT Full frame (they should have Black edges) else Square edges will  appear. Edit if necessary using the TextureEditor. Textures can be made smaller or larger than 128 then resized, pasted... to MAKE the image.</LI></UL>
+<UL><LI>Makers: The image can be saved used the Save Image button. Changing the Image size to larger than 128 (256 or 512) may allow cropping the image to select a portion for use. Numbering the images (for example: a1..a16 or b1..b16) will aid selection into the texture combiner and keeping the images organized.</LI></UL>
+<UL><LI>Make a thin cube for bottom of cloud</LI></UL>
+</UL>
+
+
+<P><STRONG>Gls Cloud Cube Editor How To</STRONG> </P>
+<UL><LI>Install</LI>
+<UL><LI>Make a Clouds directory and unzip the file in it.</LI></UL>
+<UL><LI>Make an Images directory</LI></UL>
+<UL><LI>Run the program and create..save..move cloud images into the Images directory. Use the Makers to create cloud textures. MF Clouds is easiest, the others create 'special' clouds.</LI></UL>
+</UL>
+
+<UL><LI>Make a Cloud</LI>
+<UL><LI>No matter the Cloud type , AT LEAST 1 file must be selected and the Button on the All page pressed.</LI>
+<UL><LI>First the Texture images must be selected (for all the clouds). See Cubes Image help ... Click a button to load the file name, Click the box to Toggle using That texture, and set the Max percent the cloud will use that texture.  The Max of all images used Must be > 100.  If necessary set the last image to 100.  The images will be used, 1 per texture (if they are set to be used for that cube), repeatedly until they have been used their max amount. The Min value has not been utilized, other than it must be > 0 for the texture to be used.</LI></UL>
+<UL><LI>Set the Alpha and Type for all images (or ignore it, the default works for me, kinda, they do seem to have dark edges..rather than going light to transparent) (Type is ignored, as nothing uses other than 1 image per file, yet. When it is implemented, only PFX sprite types will use more than 1 image per texture).  The File name, Alpha and Type are actually Global.. for all the Cubes to be made.  The Use toggle and the Percent are set Per Cube.</LI></UL>
+</UL>
+<UL><LI>Set the Cubes Size parameters: number of sprites, X,Z range, etc...</LI></UL>
+<UL><LI>Set the values for the Cube on the Clouds page (Position, Size, (do not use Rotation, and speed is currently ignored)). Press the black lettered Add button to create a Cube.</LI>
+<UL><LI>Click the Cube (in the center) and move the Cursor. The new Cube should be what is moved. Position it as desired. Yes even after setting the Position the Cloud cube can be re-positioned and Resized. Hold down the [CTRL] key while moving the Gizmo Cursor and the Cube will change size.</LI></UL>
+<UL><LI>It helps to move the Cube or sprite a little in the direction desired and then press the [CTRL] key to activate the resizing.  Also using the Top left corner, rather than the individual arrows is sometimes easier, especially when a Cube or Sprite becomes very very small.</LI></UL>
+</UL>
+<UL><LI>Press the Generate Button to make the Sprites for the Cube. The Regenerate button will regenerate (remake the sprites) ... if the Size range Min Max is not the same they will be different sizes.. and the position will change.</LI></UL>
+<UL><LI>The Sprites button box toggles the display of the Cube, Sprites, or both.  This helps selecting the Cube or a Sprite to move..Resize.  There is a 'bug' in the PFX sprites.. in that they do not 'disappear' like normal sprites... O well. It also takes a bit to make them go away after pressing [New]. Click Off in the Sprite Display and Press Regenerate... they should disappear then.</LI></UL>
+
+</UL>
+<UL><LI>Press the Save button to save the Cloud data into a file. Note that a Cubes Sprites can be Moved..Resized beyond the values set for them, Sprites can be positioned outside of their Cube.. if Regenerated, they will become 'normal' again. Once saved, a Cloud Cube can later be loaded using the Open button.</LI></UL>
+
+
+<P><STRONG>Gls Cloud Cube Editor Things</STRONG> </P>
+<img src="CloudsEditor.png" alt="Cloud Editor form" align="right">
+<UL><LI>Top Portion</LI>
+<UL><LI>New: Clears anything created, resets to Defaults</LI></UL>
+<UL><LI>Open Button</LI>
+<UL><LI>File name display is in the form caption (.dat is the file extension)</LI></UL></UL>
+<UL><LI>Save Button activates a File name selector</LI></UL>
+<UL><LI>Exit Button closes the application.</LI></UL>
+<UL><LI>Add a Cube using current parameters (here and in the Cubes pages)</LI>
+<UL><LI>Blue Add: Add at Blue Cube position</LI></UL>
+<UL><LI>Red Add: At last location</LI></UL>
+<UL><LI>Add Open...: Is Complicated. It loads a .glsm or dxf file containing a 'shape' that will be filled with Sprites. To use it the Cubes/Type/ Cloud Pattern must be set to 'Fill Shape...' and the Cubes/Type/ Generation Method set to 'Fill Shape...'. [or not.. they will be set when loading] The checkbox toggles using input Cube sizes (X, Y and Z size on this page) or a Default 1 as size. (The shape is resized from whatever size it was designed as) The other checkbox toggles displaying the freeform (to check that the Shape Up X,Y, or Z is correctly set). The other checkbox toggles setting the Shape Up direction Negative or not. The Edit box with the 6 in it is the Resolution..density of the Sprites... Used as X,Y,Z so 6 become 6x6x6=216 possible sprites... Not all are in the Shape, unless it is just a cube. Those Not in the shape are culled.. Setting the Cubes/Size number of parts (sprites) is ignored... but it is filled in with the number actually used, after generation. Textures (Cubes/Image) must be set prior to generation, or a Cloud.dat file opened and its textures used. The Progress bar between the Generate buttons displays progress during shape file loading (which happens during the first Generation) and Sprite location determination. The checkbox there toggles using input Sprite sizes (Variable X and Z size) or a Default (all are square size and a percentage of the Shape size).</LI></UL></UL>
+<UL><LI>The Arrow buttons select the 'Current Cube' and changes the Text display to that cubes data. This can be used to 'Edit' .. Change the current Cubes Parameters. Especially helpfull when a Cube becomes inverted.. just delete the Negative sign on the Size. [Reset] the Cube after changes to 'Set' the new parameters.</LI></UL>
+
+<UL><LI>[Delete] the last cube made.. maybe..might not work. There is no Undo.. Save per Good thing created. There is no Multiple file loading to combine cloud files.</LI></UL>
+<UL><LI>[Reset] is used to Reset (change) the Cube parameters to what is set in the text inputs, after changing the Cube Text viewed using the Arrow buttons.</LI></UL>
+<UL><LI>Position X,Y,Z: Can be changed by the Mouse using the Gizmo or manually changed and Reset to the new values. This can be usefull as a Cube can get lost.</LI></UL>
+<UL><LI>Size of the cube: All sprites will be contained Within this area. Can be changed by the Mouse using the Gizmo or manually changed and Reset to the new values. This can be usefull as a Cube can become negative.. hard to tell.. but if there is a - sign in front of the number.. manually delete the minus sign and press the Reset button.</LI></UL>
+<UL><LI>Rotation: uhm leave at 0,0,0 to avoid confusion as the Sprites will not be in that rotated area.</LI></UL>
+<UL><LI>Speed is per X,Y,Z direction, not actually implemented yet. Sprites will be moved individually to reduce the lag.</LI></UL>
+<UL><LI>Cube Group is used to visually link groups of cloud cubes.. someday will be used to apply additional effects.</LI>
+  <UL><LI>Color panel</LI></UL>
+  <UL><LI>Text input</LI></UL>
+  </UL>
+</UL>
+</UL>
+
+<UL><LI>Middle</LI>
+<UL><LI>[Sprites: On, Off, And] used to view Cubes, Sprites, or Both  and allow easier visual editing of one or the other.</LI>
+<UL><LI>On: Sprites ON Cubes OFF, Off: Sprites Off Cubes ON, And: Sprites ON Cubes ON</LI></UL></UL>
+<UL><LI>Generate sprites for New cubes, keeping Sprite data already generated</LI></UL>
+<UL><LI>ReGenerate data for ALL Cubes: Sprites</LI></UL>
+</UL>
+
+<UL><LI>Bottom</LI>
+<UL><LI>The Maker and Editor buttons linked at the top of this page.</LI></UL>
+<UL><LI>The little Box on the left toggles the display of the Grid, so you can create a Cloud, Save it  using [Image Capture], and use IT as a Cloud Texture later.</LI></UL>
+<UL><LI>The other little Box on the left toggles the display of the Grid, so you can create a Cloud, Save it  using [Image Capture], and use IT as a Cloud Texture later.</LI></UL>
+<UL><LI>[Image Capture] Button: Pressing the dots pops-up a dialog to input the file name of the image to be saved.  The order of the dots indicates the size of the Image: None (place holder) Current Screen size, x1(32bit), x2(32bit), ~1 Square(32bit)</LI></UL>
+<UL><LI>A Help button (this).</LI></UL>
+<UL><LI>The little Box on the right toggles the display of FPS information.</LI></UL>
+<UL><LI>The other little Box on the right toggles the Use of a Screen refresh (.. can 'pause' PFX Sprite creation-destruction) in the display of FPS information.</LI></UL>
+</UL>
+
+<P>  </P>
+
+
+<P><STRONG>Gls Cloud Cube Editor Screen: Viewer</STRONG> </P>
+
+<UL><LI>Mouse</LI>
+<UL><LI>Left Button</LI>
+<UL><LI>Move the Selected Object (See ___ for a description of Movement). The Gizmo will display Arrows when an object is selected. The selected objects Name, X,Y,Z location will be displayed in the Status Bar at the bottom of the viewer.</LI></UL>
+<UL><LI>While pressing the [CTRL] key: Resize the Selected Object</LI></UL>
+</UL>
+<UL><LI>Right Button</LI>
+<UL><LI>Rotates around the Target Object (Normally in the center: 0,0,0)</LI></UL>
+<UL><LI>While pressing the [CTRL] key: Resets the Target Object to Center 0,0,0</LI></UL>
+</UL>
+</UL>
+
+<UL><LI>Keyboard</LI>
+<UL><LI>[Esc] Quits..Exits the program</LI></UL>
+<UL><LI>Camera Zoom Keys</LI>
+<UL><LI>[Z] Zooms In</LI></UL>
+<UL><LI>[C] Zooms Out</LI></UL>
+</UL>
+<UL><LI>Target Object Movement</LI>
+<UL><LI>Up: [W]</LI></UL>
+<UL><LI>Down: [S]</LI></UL>
+<UL><LI>Left: [A]</LI></UL>
+<UL><LI>Right: [D]</LI></UL>
+<UL><LI>Forward: [Q]</LI></UL>
+<UL><LI>Reverse: [E]</LI></UL>
+</UL>
+</UL>
+
+<UL><LI>Screen Color is Set in Global Environment</LI></UL>
+<UL><LI>Sun Color is Set in Global Environment</LI></UL>
+<UL><LI>The Status bar at the bottom displays the Selected object, X,Y,Z positions, and in the far right display box: FPS: Frames Per Second and the number of Sprites, Particles, PFX CS Particles, PFX Fog, PFX PL Mask and the Sort time (of the PFX particles)</LI></UL>
+
+<P>  </P>
+
+
+<P><STRONG>Gls Cloud Cube Editor</STRONG></P>
+
+<UL><LI>Review..Summary</LI>
+<UL><LI>Introduction</LI>
+<UL><LI>Started as a clone of the paper [Realistic and Fast Cloud Rendering] by Niniane Wang using GLScene</LI></UL>
+</UL>
+
+<UL><LI>Project Description</LI>
+<UL><LI>Purpose: Create a Cloud component</LI></UL>
+<UL><LI>Process: Random Trial and Error</LI></UL>
+<UL><LI>Results: Dec 21, 2012</LI></UL>
+<UL><LI>Conclusion: OBE</LI></UL>
+</UL>
+<UL><LI>Report - Sources</LI>
+
+<UL><LI>[1] Mark J. Harris and Anselmo Lastra, Real-Time Cloud Rendering. Computer Graphics Forum (Eurographics 2001 Proceedings), 20(3):76-84, September 2001.</LI></UL>
+
+<UL><LI>[2] Niniane Wang, Realistic and Fast Cloud Rendering, Journal of graphics tools, 9(3):21-40, 2004</LI>
+<UL><LI><A HREF="http://ofb.net/~niniane/clouds-jgt.pdf"> <EM>Realistic and Fast Cloud Rendering, Niniane Wang (pdf)</EM></A></LI></UL>
+<UL><LI><A HREF="http://www.ugcs.caltech.edu/~eggplant"> <EM>Home Page</EM></A></LI></UL>
+</UL>
+
+<UL><LI><A HREF="http://www.nada.kth.se/~gustavt/"> <EM>Cloud Modeling for Computer Graphics, Gustav Taxén</EM></A></LI></UL>
+
+ 
+<UL><LI>Gardner ("Visual Simulation of Clouds", SIGGRAPH '85)</LI></UL>
+
+<UL><LI>Nishita et al. ("Display of Clouds Taking into Account Multiple Anisotropic Scattering and Sky Light", SIGGRAPH '96).</LI></UL>
+</UL>
+<UL><LI>Todo</LI>
+<UL><LI>Poly Ex Parameters:</LI>
+<UL><LI># of Textures per Image: 1,4,16,64</LI></UL>
+<UL><LI>Cube # (to record and select data)</LI></UL>
+<UL><LI>Sprite # ""  ""</LI></UL>
+</UL>
+<UL><LI>ImporterEx: rather than 360 degrees of 1 object: Load a 64 image file and use to make Imposters</LI></UL>
+<UL><LI>Make a Cloud of Fog and use It as the Imposter</LI></UL>
+<UL><LI>FogEx without any movement: Set the location of the particles (?Set cadencer to nil?)</LI></UL>
+<UL><LI>Particle Mask: Change into an Effect so more than 1 can be made...</LI></UL>
+<UL><LI>Ditto with CSprite</LI></UL>
+</UL>
+</UL>
+
+
+
+
+<CENTER>
+<A HREF="http://www.ezl.com/~ilh2o/copyright.html">Copyright</A>
+ 
+<A HREF="http://www.ezl.com/~ilh2o/">© 1991..2006 by Ivan Lee Herring</A></CENTER>
+<CENTER><HR width="535" size="7" color="gold" noshade></CENTER>
+</BODY>
+</HTML>

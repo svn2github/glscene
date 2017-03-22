@@ -24,6 +24,7 @@ unit nLifeMain;
 3061      17633
 546816    1110016
 }
+
 (*MATFA BOIDS
   ufrmBoids in 'ufrmBoids.pas' {frmBoids},
   uBoids in 'uBoids.pas',
@@ -33,14 +34,14 @@ unit nLifeMain;
   uTMovable in 'uTMovable.pas',
   uTMovableEngine in 'uTMovableEngine.pas',
   ufrmSettings in 'ufrmSettings.pas' {frmSettings};
-TV,{:Array3924;}
-TV7848,{:Array7848;}
-TV15696,{:Array15696;
-SetLength(Aa,156,96);
-SetLength(Image,156,96);
-SetLength(Image78,78,48);
-SetLength(TV15696,156,96);
-ImageByte:Byte;
+  TV,{:Array3924;}
+  TV7848,{:Array7848;}
+  TV15696,{:Array15696;
+  SetLength(Aa,156,96);
+  SetLength(Image,156,96);
+  SetLength(Image78,78,48);
+  SetLength(TV15696,156,96);
+  ImageByte:Byte;
         FOR I := 0 TO 155 DO FOR J := 0 TO 95 DO
         begin
          read( fil, ImageByte );
@@ -55,8 +56,10 @@ ImageByte:Byte;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages,
-  System.SysUtils, System.Classes, Vcl.Graphics,
+  Winapi.Windows,
+  Winapi.Messages,
+  System.SysUtils,
+  System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Buttons,
   Vcl.ExtCtrls, Vcl.Menus, Vcl.StdCtrls;
 
@@ -138,7 +141,7 @@ uses
   nAntsFarm,{ 7000}
   nTorso,{ 9000 }
   {nDolphin,}
-  {GlsUvMapFrm,    }
+  GlsUvMapFrm,
   GlsTreeFrm, {  9900 }
   GlsBirdFrm, {8000, but uses its own help file}
               {AAADemoForm  8050 }
@@ -381,7 +384,7 @@ end;
 
 procedure TLifeMainForm.ToolsBtnClick(Sender: TObject);
 begin
-   3dUvForm.Show; Tools 3D Editor / Texture Painter Help 14000
+   GLS3dUvForm.Show; // Tools 3D Editor / Texture Painter Help 14000
 end;
 procedure TLifeMainForm.Tools1Click(Sender: TObject);
 begin
