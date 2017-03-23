@@ -1,4 +1,4 @@
-program Build_TGLMesh;
+program GLXYZGrid_with_Icosahedron;
 
 uses
   Forms,
