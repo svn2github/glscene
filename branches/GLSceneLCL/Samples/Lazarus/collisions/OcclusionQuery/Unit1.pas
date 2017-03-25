@@ -52,8 +52,8 @@ type
     Label3: TLabel;
     GLCone1: TGLCone;
     procedure GLSceneViewer1BeforeRender(Sender: TObject);
-    procedure OGLBeginQueriesRender(Sender: TObject; var rci: TRenderContextInfo);
-    procedure OGLEndQueriesRender(Sender: TObject; var rci: TRenderContextInfo);
+    procedure OGLBeginQueriesRender(Sender: TObject; var rci: TGLRenderContextInfo);
+    procedure OGLEndQueriesRender(Sender: TObject; var rci: TGLRenderContextInfo);
     procedure FormDestroy(Sender: TObject);
     procedure GLCadencer1Progress(Sender: TObject;
       const deltaTime, newTime: double);
@@ -112,7 +112,7 @@ begin
 end;
 
 procedure TForm1.OGLBeginQueriesRender(Sender: TObject;
-  var rci: TRenderContextInfo);
+  var rci: TGLRenderContextInfo);
 begin
   // Generate the queries, if not already created
   if not queriesCreated then
@@ -138,7 +138,7 @@ begin
 end;
 
 procedure TForm1.OGLEndQueriesRender(Sender: TObject;
-  var rci: TRenderContextInfo);
+  var rci: TGLRenderContextInfo);
 var
   lQuery: TGLQueryHandle;
 begin

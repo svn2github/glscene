@@ -13,14 +13,14 @@
    22/01/10 - Yar - Added GLTextureFormat to uses
    13/02/07 - LIN- Thread-safe, for use with TGLAsyncHDS
   Also takes advantage of texture-coodrinates, calculated by HeightDataSource
-   02/02/07 - LIN- GLBumpmapHDS is now derived from THeightDataSourceFilter.
+   02/02/07 - LIN- GLBumpmapHDS is now derived from TGLHeightDataSourceFilter.
   HeightDataSource replaces ElevationHDS.
-  (More efficient, since it no longer has to copy and release the entire Source HDS's THeightData object.)
+  (More efficient, since it no longer has to copy and release the entire Source HDS's TGLHeightData object.)
    01/02/07 - LIN- Added 'MaxTextures' property.
   if the MaterialLibrary.Materials.Count > MaxTextures, then unused textures are deleted.
   Set MaxTextures=0 to disable Auto-deletes, and manage your normal-map textures manually.
 
-  WARNING: If you use THeightData.MaterialName, instead of THeightData.LibMaterial,
+  WARNING: If you use TGLHeightData.MaterialName, instead of TGLHeightData.LibMaterial,
   then HeightData does NOT register the texture as being used.
   So make sure MaxTextures=0 if you use MaterialName.
 
@@ -54,17 +54,17 @@ type
   // TNewTilePreparedEvent
   //
   TNewTilePreparedEvent = procedure(Sender: TGLBumpmapHDS;
-    heightData: THeightData; normalMapMaterial: TGLLibMaterial) of object;
+    heightData: TGLHeightData; normalMapMaterial: TGLLibMaterial) of object;
 
   // TGLBumpmapHDS
   //
   { : An Height Data Source that generates elevation bumpmaps automatically.
     The HDS must be connected to another HDS, which will provide the elevation
     data, and to a MaterialLibrary where bumpmaps will be placed. }
-  TGLBumpmapHDS = class(THeightDataSourceFilter)
+  TGLBumpmapHDS = class(TGLHeightDataSourceFilter)
   private
      
-    // FElevationHDS : THeightDataSource;
+    // FElevationHDS : TGLHeightDataSource;
     FBumpmapLibrary: TGLMaterialLibrary;
     FOnNewTilePrepared: TNewTilePreparedEvent;
     FBumpScale: Single;
@@ -82,14 +82,14 @@ type
      
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    procedure Release(aHeightData: THeightData); override;
+    procedure Release(aHeightData: TGLHeightData); override;
     procedure Notification(AComponent: TComponent;
       Operation: TOperation); override;
-    procedure GenerateNormalMap(heightData: THeightData; normalMap: TGLBitmap32;
+    procedure GenerateNormalMap(heightData: TGLHeightData; normalMap: TGLBitmap32;
       scale: Single);
     procedure TrimTextureCache(MaxTextureCount: Integer);
-    // procedure  TileTextureCoordinates(heightData : THeightData; TextureScale:TTexPoint; TextureOffset:TTexPoint);
-    procedure PreparingData(heightData: THeightData); override;
+    // procedure  TileTextureCoordinates(heightData : TGLHeightData; TextureScale:TTexPoint; TextureOffset:TTexPoint);
+    procedure PreparingData(heightData: TGLHeightData); override;
   published
      
     property BumpmapLibrary: TGLMaterialLibrary read FBumpmapLibrary
@@ -109,9 +109,9 @@ type
     property MaxPoolSize;
     { : If MaxTextures>0 then the Bumpmap library is trimmed down to size whenever
       the texture count is larger than MaxTextures. The oldest, unused texture is trimmed first.
-      However, if you used THeightData.MaterialName, instead of THeightData.LibMaterial,
-      then the THeightData component does not register the texture as being used.
-      So, if you use THeightData.MaterialName then make sure MaxTextures=0.
+      However, if you used TGLHeightData.MaterialName, instead of TGLHeightData.LibMaterial,
+      then the TGLHeightData component does not register the texture as being used.
+      So, if you use TGLHeightData.MaterialName then make sure MaxTextures=0.
       If MaxTextures=0 or if treads(GLAsyncHDS) are used, then the texture cache
       is NOT trimmed automatically.
       You will have to manually trim the cache from the main thread, by
@@ -173,7 +173,7 @@ end;
 // Release
 //
 
-procedure TGLBumpmapHDS.Release(aHeightData: THeightData);
+procedure TGLBumpmapHDS.Release(aHeightData: TGLHeightData);
 var
   libMat: TGLLibMaterial;
 begin
@@ -188,8 +188,8 @@ end;
 //
 // This will repeatedly delete the oldest unused texture from the TGLMaterialLibrary,
 // until the texture count drops to MaxTextureCount.
-// DONT use this if you used THeightData.MaterialName to link your terrain textures.
-// Either use with THeightData.LibMaterial, or manually delete unused Normal-Map textures.
+// DONT use this if you used TGLHeightData.MaterialName to link your terrain textures.
+// Either use with TGLHeightData.LibMaterial, or manually delete unused Normal-Map textures.
 //
 
 procedure TGLBumpmapHDS.TrimTextureCache(MaxTextureCount: Integer);
@@ -230,9 +230,9 @@ end;
 // PreparingData
 //
 
-procedure TGLBumpmapHDS.PreparingData(heightData: THeightData);
+procedure TGLBumpmapHDS.PreparingData(heightData: TGLHeightData);
 var
-  HD: THeightData;
+  HD: TGLHeightData;
   libMat: TGLLibMaterial;
   bmp32: TGLBitmap32;
   MatName: string;
@@ -290,11 +290,11 @@ end;
 // GenerateNormalMap
 //
 
-procedure TGLBumpmapHDS.GenerateNormalMap(heightData: THeightData;
+procedure TGLBumpmapHDS.GenerateNormalMap(heightData: TGLHeightData;
   normalMap: TGLBitmap32; scale: Single);
 var
   MapSize: Integer;
-  HD: THeightData;
+  HD: TGLHeightData;
   X, Y: Integer;
   scaleVec: TAffineVector;
   vec: TAffineVector;

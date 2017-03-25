@@ -1234,11 +1234,11 @@ type
     constructor Create;
     destructor Destroy; override;
 
-    { Returns an appropriate, ready-to use context.
+    {: Returns an appropriate, ready-to use context.
        The returned context should be freed by caller. }
     function CreateContext(AClass: TGLContextClass = nil): TGLContext;
 
-    { Returns the number of TGLContext object.
+    {: Returns the number of TGLContext object.
        This is *not* the number of OpenGL rendering contexts! }
     function ContextCount: Integer;
     { Registers a new object to notify when the last context is destroyed.

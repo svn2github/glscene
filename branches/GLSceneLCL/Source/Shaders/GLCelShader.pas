@@ -73,8 +73,8 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
-    procedure DoApply(var rci: TRenderContextInfo; Sender: TObject); override;
-    function DoUnApply(var rci: TRenderContextInfo): Boolean; override;
+    procedure DoApply(var rci: TGLRenderContextInfo; Sender: TObject); override;
+    function DoUnApply(var rci: TGLRenderContextInfo): Boolean; override;
 
     property ShadeTexture: TGLTexture read FShadeTexture;
 
@@ -243,7 +243,7 @@ end;
 // DoApply
 //
 
-procedure TGLCelShader.DoApply(var rci: TRenderContextInfo; Sender: TObject);
+procedure TGLCelShader.DoApply(var rci: TGLRenderContextInfo; Sender: TObject);
 var
   light: TVector;
 begin
@@ -278,7 +278,7 @@ end;
 // DoUnApply
 //
 
-function TGLCelShader.DoUnApply(var rci: TRenderContextInfo): Boolean;
+function TGLCelShader.DoUnApply(var rci: TGLRenderContextInfo): Boolean;
 begin
   Result := False;
   if (csDesigning in ComponentState) then

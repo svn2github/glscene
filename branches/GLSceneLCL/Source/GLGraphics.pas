@@ -90,18 +90,16 @@ uses
 {$IFDEF MSWINDOWS}
   Windows,
 {$ENDIF}
-  Classes, SysUtils, SyncObjs, Graphics,
+  Classes, SysUtils, SyncObjs, Graphics, Math,
 {$IFDEF GLS_Graphics32_SUPPORT}
   GR32,
 {$ENDIF}
 {$IFDEF GLS_PngImage_SUPPORT}
   Pngimage,
 {$ENDIF}
-{$IFDEF FPC}
   fpimage,
   Intfgraphics,
   GraphType,
-{$ENDIF}
   GLApplicationFileIO,
   GLPersistentClasses,
   OpenGLTokens,
@@ -501,7 +499,7 @@ resourcestring
 var
   vRasterFileFormats: TRasterFileFormatsList;
 
-{$IFDEF GLS_REGIONS}{$REGION 'Raster File Registries'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{%REGION  'Raster File Registries'}{$ENDIF}
 
   // GetRasterFileFormats
   //
@@ -629,10 +627,10 @@ begin
   else if (magic[0] = $E0FFD8FF) and (magic[1] = $464A1000) then
     ext := 'JPG';
 
-  Result := FindExt(ext);
+  {Result := FindExt(ext);
   if not Assigned(Result) then
     raise EInvalidRasterFile.CreateFmt(glsUnknownExtension,
-      [ext, 'GLFile' + UpperCase(ext)]);
+      [ext, 'GLFile' + UpperCase(ext)]); }
 end;
 
 // Remove
@@ -1740,13 +1738,13 @@ begin
     begin
       if SGIS_generate_mipmap then
       begin
-        if EXT_direct_state_access then
+      {  if EXT_direct_state_access then
           TextureParameterf(
             glHandle,
             glTarget,
             GL_GENERATE_MIPMAP_SGIS,
             GL_TRUE)
-        else
+        else }
           TexParameteri(glTarget, GL_GENERATE_MIPMAP_SGIS, GL_TRUE);
       end
       else
@@ -1759,13 +1757,13 @@ begin
 
     // Setup top limitation of LODs
     if SGIS_texture_lod and (LLevelCount > 1) then
-      if EXT_direct_state_access then
+   {   if EXT_direct_state_access then
         TextureParameterf(
           glHandle,
           glTarget,
           GL_TEXTURE_MAX_LEVEL_SGIS,
           LLevelCount - 1)
-      else
+      else }
         TexParameteri(glTarget, GL_TEXTURE_MAX_LEVEL_SGIS, LLevelCount - 1);
 
     // Select transfer method
@@ -3527,7 +3525,7 @@ begin
   end;
 end;
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{%ENDREGION}{$ENDIF}
 
 initialization
 

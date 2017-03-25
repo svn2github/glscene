@@ -47,7 +47,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-uses {$IFNDEF FPC}FXCollectionEditor{$ELSE}FXCollectionEditor{$ENDIF};
+uses FXCollectionEditor;
 
 
 procedure Register;

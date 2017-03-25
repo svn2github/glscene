@@ -36,7 +36,7 @@ type
     FMultipler: Single;
   public
     constructor Create(AOwner: TComponent); override;
-    procedure DoRender(var rci: TRenderContextInfo; renderSelf, renderChildren: Boolean); override;
+    procedure DoRender(var rci: TGLRenderContextInfo; renderSelf, renderChildren: Boolean); override;
     procedure CoordinateChanged(Sender: TGLCustomCoordinates); override;
     destructor Destroy; override;
   published
@@ -52,7 +52,7 @@ type
     FQuadDisk: array[0..1] of PGLUquadric;
   public
     constructor Create(AOwner: TComponent); override;
-    procedure DoRender(var rci: TRenderContextInfo; renderSelf, renderChildren: Boolean); override;
+    procedure DoRender(var rci: TGLRenderContextInfo; renderSelf, renderChildren: Boolean); override;
     procedure CoordinateChanged(Sender: TGLCustomCoordinates); override;
     destructor Destroy; override;
   published
@@ -83,7 +83,7 @@ type
     FRefMat: TMatrix;
     constructor Create(AOWner: TComponent); override;
     destructor Destroy; override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TGLRenderContextInfo); override;
     procedure CoordinateChanged(Sender: TGLCustomCoordinates); override;
     function AxisAlignedDimensionsUnscaled: TVector; override;
     function BarycenterAbsolutePosition: TVector; override;
@@ -167,7 +167,7 @@ begin
   FMultipler := 1;
 end;
 
-procedure TGLFile3DSLight.DoRender(var rci: TRenderContextInfo; renderSelf, renderChildren: Boolean);
+procedure TGLFile3DSLight.DoRender(var rci: TGLRenderContextInfo; renderSelf, renderChildren: Boolean);
 
   procedure BuildFace;
   begin
@@ -245,7 +245,7 @@ begin
   end;
 end;
 
-procedure TGLFile3DSCamera.DoRender(var rci: TRenderContextInfo; renderSelf, renderChildren: Boolean);
+procedure TGLFile3DSCamera.DoRender(var rci: TGLRenderContextInfo; renderSelf, renderChildren: Boolean);
 
   procedure BuildCyl;
   begin
@@ -414,7 +414,7 @@ begin
   Filer.DefineBinaryProperty('MeshObjectsData', ReadMesh, WriteMesh, True);
 end;
 
-procedure TGLFile3DSFreeForm.BuildList(var rci: TRenderContextInfo);
+procedure TGLFile3DSFreeForm.BuildList(var rci: TGLRenderContextInfo);
 begin
   GL.MultMatrixf(@FTransfMat);
   GL.MultMatrixf(@FScaleMat);

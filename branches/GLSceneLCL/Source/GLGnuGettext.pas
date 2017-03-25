@@ -109,9 +109,10 @@ uses
   Windows,
 {$else}
   Libc,
-{$ifdef FPC}
-  CWString,
 {$endif}
+
+{$ifdef FPC}
+ // CWString,
 {$endif}
   Classes, StrUtils, SysUtils, TypInfo;
 

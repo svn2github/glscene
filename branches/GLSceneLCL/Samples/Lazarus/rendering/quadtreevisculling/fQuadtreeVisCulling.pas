@@ -48,12 +48,12 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure queryVisibleRender(Sender: TObject;
-      var rci: TRenderContextInfo);
+      var rci: TGLRenderContextInfo);
     procedure Timer1Timer(Sender: TObject);
     procedure FormKeyPress(Sender: TObject; var Key: Char);
     procedure cbShowQuadtreeClick(Sender: TObject);
     procedure GLDirectOpenGL2Render(Sender: TObject;
-      var rci: TRenderContextInfo);
+      var rci: TGLRenderContextInfo);
     procedure Button1Click(Sender: TObject);
   private
     { Private declarations }
@@ -170,7 +170,7 @@ begin
 end;
 
 procedure TfrmQuadtreeVisCulling.queryVisibleRender(Sender: TObject;
-  var rci: TRenderContextInfo);
+  var rci: TGLRenderContextInfo);
   function PlaneToStr(const APlane : THmgPlane) : string;
   begin
     result := Format('(%2.1f, %2.1f, %2.1f, %2.1f)',[
@@ -263,7 +263,7 @@ begin
 end;
 
 procedure TfrmQuadtreeVisCulling.GLDirectOpenGL2Render(
-  Sender: TObject; var rci: TRenderContextInfo);
+  Sender: TObject; var rci: TGLRenderContextInfo);
 {var
   ExtendendFrustum : TExtendedFrustum;//}
 begin

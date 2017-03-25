@@ -73,8 +73,8 @@ Type
     procedure SetSpecularColor(AValue: TGLColor);
 
   protected
-    procedure DoApply(var rci : TRenderContextInfo; Sender : TObject); override;
-    function DoUnApply(var rci: TRenderContextInfo): Boolean; override;
+    procedure DoApply(var rci : TGLRenderContextInfo; Sender : TObject); override;
+    function DoUnApply(var rci: TGLRenderContextInfo): Boolean; override;
 
     procedure SetMaterialLibrary(const Value: TGLAbstractMaterialLibrary); virtual;
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
@@ -287,7 +287,7 @@ begin
   inherited;
 end;
 
-procedure TGLCustomGLSLSimpleErosionShader.DoApply(var rci : TRenderContextInfo; Sender : TObject);
+procedure TGLCustomGLSLSimpleErosionShader.DoApply(var rci : TGLRenderContextInfo; Sender : TObject);
 begin
   GetGLSLProg.UseProgramObject;
 
@@ -311,7 +311,7 @@ begin
  // GetGLSLProg.UniformTextureHandle['Noise2d', 1, GL_TEXTURE_2D] := FNoiseTexture.Handle;
 end;
 
-function TGLCustomGLSLSimpleErosionShader.DoUnApply(var rci: TRenderContextInfo): Boolean;
+function TGLCustomGLSLSimpleErosionShader.DoUnApply(var rci: TGLRenderContextInfo): Boolean;
 begin
   GetGLSLProg.EndUseProgramObject;
   //gl.PopAttrib;

@@ -29,7 +29,7 @@ type
   TGLDodecahedron = class(TGLSceneObject)
   public
      
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TGLRenderContextInfo); override;
   end;
 
   // TGLIcosahedron
@@ -40,7 +40,7 @@ type
   TGLIcosahedron = class(TGLSceneObject)
   public
      
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TGLRenderContextInfo); override;
   end;
 
   // TGLOctahedron
@@ -51,7 +51,7 @@ type
   TGLOctahedron = class(TGLSceneObject)
   public
      
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TGLRenderContextInfo); override;
   end;
 
   // TGLTetrahedron
@@ -62,7 +62,7 @@ type
   TGLTetrahedron = class(TGLSceneObject)
   public
      
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TGLRenderContextInfo); override;
   end;
 
 
@@ -83,7 +83,7 @@ uses GLObjects;
 // BuildList
 //
 
-procedure TGLDodecahedron.BuildList(var rci: TRenderContextInfo);
+procedure TGLDodecahedron.BuildList(var rci: TGLRenderContextInfo);
 begin
   DodecahedronBuildList;
 end;
@@ -95,7 +95,7 @@ end;
 // BuildList
 //
 
-procedure TGLIcosahedron.BuildList(var rci: TRenderContextInfo);
+procedure TGLIcosahedron.BuildList(var rci: TGLRenderContextInfo);
 begin
   IcosahedronBuildList;
 end;
@@ -106,7 +106,7 @@ end;
 
 // BuildList
 //
-procedure TGLOctahedron.BuildList(var rci: TRenderContextInfo);
+procedure TGLOctahedron.BuildList(var rci: TGLRenderContextInfo);
 begin
   OctahedronBuildList;
 end;
@@ -117,7 +117,7 @@ end;
 
 // BuildList
 //
-procedure TGLTetrahedron.BuildList(var rci: TRenderContextInfo);
+procedure TGLTetrahedron.BuildList(var rci: TGLRenderContextInfo);
 begin
   TetrahedronBuildList;
 end;

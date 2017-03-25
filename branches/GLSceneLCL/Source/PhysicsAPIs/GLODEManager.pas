@@ -197,7 +197,7 @@ type
       procedure UnregisterODEBehaviour(ODEBehaviour : TGLODEBehaviour);
 
       procedure SetRenderPoint(const value : TGLRenderPoint);
-      procedure RenderEvent(Sender : TObject; var rci : TRenderContextInfo);
+      procedure RenderEvent(Sender : TObject; var rci : TGLRenderContextInfo);
       procedure RenderPointFreed(Sender : TObject);
 
     procedure SetVisible(const Value: Boolean);
@@ -337,7 +337,7 @@ type
       destructor Destroy; override;
 
       procedure NotifyChange(Sender : TObject);
-      procedure Render(var rci : TRenderContextInfo); virtual;
+      procedure Render(var rci : TGLRenderContextInfo); virtual;
 
       procedure Reinitialize;
       property Initialized : Boolean read FInitialized;
@@ -383,7 +383,7 @@ type
       constructor Create(AOwner : TGLXCollection); override;
       destructor Destroy; override;
 
-      procedure Render(var rci : TRenderContextInfo); override;
+      procedure Render(var rci : TGLRenderContextInfo); override;
 
       class function FriendlyName : String; override;
       class function UniqueItem : Boolean; override;
@@ -432,7 +432,7 @@ type
       constructor Create(AOwner : TGLXCollection); override;
       destructor Destroy; override;
 
-      procedure Render(var rci : TRenderContextInfo); override;
+      procedure Render(var rci : TGLRenderContextInfo); override;
 
       class function FriendlyName : String; override;
       class function UniqueItem : Boolean; override;
@@ -460,7 +460,7 @@ type
 
       procedure NotifyChange(Sender : TObject);
 
-      procedure Render(var rci : TRenderContextInfo);
+      procedure Render(var rci : TGLRenderContextInfo);
 
       property Element[index : integer] : TODEElementBase read GetElement;
 
@@ -517,7 +517,7 @@ type
       constructor Create(AOwner : TGLXCollection); override;
       destructor Destroy; override;
 
-      procedure Render(var rci : TRenderContextInfo); virtual;
+      procedure Render(var rci : TGLRenderContextInfo); virtual;
 
       function AbsoluteMatrix:TMatrix;
       function AbsolutePosition:TAffineVector;
@@ -565,7 +565,7 @@ type
        
       constructor Create(AOwner : TGLXCollection); override;
 
-      procedure Render(var rci : TRenderContextInfo); override;
+      procedure Render(var rci : TGLRenderContextInfo); override;
 
       class function FriendlyName : String; override;
       class function FriendlyDescription : String; override;
@@ -601,7 +601,7 @@ type
        
       constructor Create(AOwner : TGLXCollection); override;
 
-      procedure Render(var rci : TRenderContextInfo); override;
+      procedure Render(var rci : TGLRenderContextInfo); override;
 
       class function FriendlyName : String; override;
       class function FriendlyDescription : String; override;
@@ -640,7 +640,7 @@ type
        
       constructor Create(AOwner : TGLXCollection); override;
 
-      procedure Render(var rci : TRenderContextInfo); override;
+      procedure Render(var rci : TGLRenderContextInfo); override;
 
       class function FriendlyName : String; override;
       class function FriendlyDescription : String; override;
@@ -680,7 +680,7 @@ type
        
       constructor Create(AOwner:TGLXCollection); override;
 
-      procedure Render(var rci : TRenderContextInfo); override;
+      procedure Render(var rci : TGLRenderContextInfo); override;
 
       class function FriendlyName : String; override;
       class function FriendlyDescription : String; override;
@@ -1668,7 +1668,7 @@ end;
 // RenderEvent
 //
 procedure TGLODEManager.RenderEvent(Sender: TObject;
-  var rci : TRenderContextInfo);
+  var rci : TGLRenderContextInfo);
 var
   i : Integer;
 begin
@@ -2121,7 +2121,7 @@ end;
 
 // Render
 //
-procedure TGLODEBehaviour.Render(var rci: TRenderContextInfo);
+procedure TGLODEBehaviour.Render(var rci: TGLRenderContextInfo);
 begin
   // virtual
 end;
@@ -2196,7 +2196,7 @@ end;
 
 // Render
 //
-procedure TGLODEDynamic.Render(var rci : TRenderContextInfo);
+procedure TGLODEDynamic.Render(var rci : TGLRenderContextInfo);
 var
   mat : TMatrix;
 begin
@@ -2514,7 +2514,7 @@ end;
 
 // Render
 //
-procedure TGLODEStatic.Render(var rci: TRenderContextInfo);
+procedure TGLODEStatic.Render(var rci: TGLRenderContextInfo);
 var
   mat : TMatrix;
 begin
@@ -2660,7 +2660,7 @@ end;
 
 // Render
 //
-procedure TODEElements.Render(var rci : TRenderContextInfo);
+procedure TODEElements.Render(var rci : TGLRenderContextInfo);
 var
   i : integer;
 begin
@@ -2713,7 +2713,7 @@ end;
 
 // Render
 //
-procedure TODEElementBase.Render(var rci: TRenderContextInfo);
+procedure TODEElementBase.Render(var rci: TGLRenderContextInfo);
 begin
   // Override this procedure with element drawing OpenGL code
 end;
@@ -3015,7 +3015,7 @@ end;
 
 // BuildList
 //
-procedure TODEElementBox.Render(var rci : TRenderContextInfo);
+procedure TODEElementBox.Render(var rci : TGLRenderContextInfo);
 begin
   GL.PushMatrix;
 
@@ -3204,7 +3204,7 @@ end;
 
 // Render
 //
-procedure TODEElementSphere.Render(var rci : TRenderContextInfo);
+procedure TODEElementSphere.Render(var rci : TGLRenderContextInfo);
 var
   AngTop, AngBottom, AngStart, AngStop, StepV, StepH : Double;
   SinP, CosP, SinP2, CosP2, SinT, CosT, Phi, Phi2, Theta: Double;
@@ -3373,7 +3373,7 @@ end;
 
 // Render
 //
-procedure TODEElementCapsule.Render(var rci : TRenderContextInfo);
+procedure TODEElementCapsule.Render(var rci : TGLRenderContextInfo);
 var
   i,j,
   Stacks,Slices : integer;
@@ -3554,7 +3554,7 @@ end;
 
 // Render
 //
-procedure TODEElementCylinder.Render(var rci : TRenderContextInfo);
+procedure TODEElementCylinder.Render(var rci : TGLRenderContextInfo);
 var
   i,j,
   Stacks,Slices : integer;

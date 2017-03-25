@@ -91,7 +91,7 @@ type
     FQuad: array[0..3] of TVector;
     FStaticScale: Single;
 
-    procedure PrepareTexture(var rci: TRenderContextInfo); dynamic;
+    procedure PrepareTexture(var rci: TGLRenderContextInfo); dynamic;
     procedure RenderQuad(const texExtents, objPos: TVector; size: Single);
 
   public
@@ -99,13 +99,13 @@ type
     constructor Create(aBuilder: TGLImposterBuilder); virtual;
     destructor Destroy; override;
 
-    procedure BeginRender(var rci: TRenderContextInfo); virtual;
-    procedure Render(var rci: TRenderContextInfo;
+    procedure BeginRender(var rci: TGLRenderContextInfo); virtual;
+    procedure Render(var rci: TGLRenderContextInfo;
       const objPos, localCameraPos: TVector;
       size: Single); virtual;
-    procedure EndRender(var rci: TRenderContextInfo); virtual;
+    procedure EndRender(var rci: TGLRenderContextInfo); virtual;
 
-    procedure RenderOnce(var rci: TRenderContextInfo;
+    procedure RenderOnce(var rci: TGLRenderContextInfo;
       const objPos, localCameraPos: TVector;
       size: Single);
 
@@ -164,13 +164,13 @@ type
     procedure UnregisterImposter(imposter: TImposter);
 
     function CreateNewImposter: TImposter; virtual;
-    procedure PrepareImposters(Sender: TObject; var rci: TRenderContextInfo);
+    procedure PrepareImposters(Sender: TObject; var rci: TGLRenderContextInfo);
       virtual;
-    procedure DoPrepareImposter(var rci: TRenderContextInfo;
+    procedure DoPrepareImposter(var rci: TGLRenderContextInfo;
       impostoredObject: TGLBaseSceneObject;
       destImposter: TImposter); virtual; abstract;
     procedure DoUserSpecifiedImposter(
-      var rci: TRenderContextInfo;
+      var rci: TGLRenderContextInfo;
       destImposter: TImposter;
       bmp32: TGLBitmap32); virtual;
 
@@ -309,7 +309,7 @@ type
 
   public
      
-    procedure Render(var rci: TRenderContextInfo;
+    procedure Render(var rci: TGLRenderContextInfo;
       const objPos, localCameraPos: TVector;
       size: Single); override;
   end;
@@ -350,11 +350,11 @@ type
     function ComputeOptimalTextureSize: TGLPoint;
 
     function CreateNewImposter: TImposter; override;
-    procedure DoPrepareImposter(var rci: TRenderContextInfo;
+    procedure DoPrepareImposter(var rci: TGLRenderContextInfo;
       impostoredObject: TGLBaseSceneObject;
       destImposter: TImposter); override;
     procedure DoUserSpecifiedImposter(
-      var rci: TRenderContextInfo;
+      var rci: TGLRenderContextInfo;
       destImposter: TImposter;
       bmp32: TGLBitmap32); override;
     procedure ComputeStaticParams(destImposter: TImposter);
@@ -366,7 +366,7 @@ type
 
     { Render imposter texture.
        Buffer and object must be compatible, RC must have been activated. }
-    procedure Render(var rci: TRenderContextInfo;
+    procedure Render(var rci: TGLRenderContextInfo;
       impostoredObject: TGLBaseSceneObject;
       destImposter: TImposter);
     { Ratio (0..1) of the texture that will be used by samples.
@@ -427,7 +427,7 @@ type
      
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    {         procedure DoRender(var rci : TRenderContextInfo;
+    {         procedure DoRender(var rci : TGLRenderContextInfo;
                                 renderSelf, renderChildren : Boolean); override; }
 
   published
@@ -459,7 +459,7 @@ type
     destructor Destroy; override;
     procedure Notification(AComponent: TComponent; Operation: TOperation);
       override;
-    procedure DoRender(var ARci: TRenderContextInfo;
+    procedure DoRender(var ARci: TGLRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
 
   published
@@ -512,7 +512,7 @@ end;
 // PrepareTexture
 //
 
-procedure TImposter.PrepareTexture(var rci: TRenderContextInfo);
+procedure TImposter.PrepareTexture(var rci: TGLRenderContextInfo);
 var
   i: Integer;
 begin
@@ -538,7 +538,7 @@ end;
 // BeginRender
 //
 
-procedure TImposter.BeginRender(var rci: TRenderContextInfo);
+procedure TImposter.BeginRender(var rci: TGLRenderContextInfo);
 var
   mat: TMatrix;
   filter: TGLEnum;
@@ -624,7 +624,7 @@ end;
 // Render
 //
 
-procedure TImposter.Render(var rci: TRenderContextInfo;
+procedure TImposter.Render(var rci: TGLRenderContextInfo;
   const objPos, localCameraPos: TVector;
   size: Single);
 const
@@ -657,7 +657,7 @@ end;
 // EndRender
 //
 
-procedure TImposter.EndRender(var rci: TRenderContextInfo);
+procedure TImposter.EndRender(var rci: TGLRenderContextInfo);
 begin
   GL.End_;
   rci.GLStates.ActiveTextureEnabled[ttTexture2D] := False;
@@ -666,7 +666,7 @@ end;
 // RenderOnce
 //
 
-procedure TImposter.RenderOnce(var rci: TRenderContextInfo;
+procedure TImposter.RenderOnce(var rci: TGLRenderContextInfo;
   const objPos, localCameraPos: TVector;
   size: Single);
 begin
@@ -745,7 +745,7 @@ end;
 //
 
 procedure TGLImposterBuilder.PrepareImposters(Sender: TObject; var rci:
-  TRenderContextInfo);
+  TGLRenderContextInfo);
 var
   i: Integer;
   imp: TImposter;
@@ -777,7 +777,7 @@ end;
 //
 
 procedure TGLImposterBuilder.DoUserSpecifiedImposter(
-  var rci: TRenderContextInfo;
+  var rci: TGLRenderContextInfo;
   destImposter: TImposter;
   bmp32: TGLBitmap32);
 var
@@ -1169,7 +1169,7 @@ end;
 // Render
 //
 
-procedure TStaticImposter.Render(var rci: TRenderContextInfo;
+procedure TStaticImposter.Render(var rci: TGLRenderContextInfo;
   const objPos, localCameraPos: TVector;
   size: Single);
 var
@@ -1352,7 +1352,7 @@ end;
 //
 
 procedure TGLStaticImposterBuilder.DoPrepareImposter(var rci:
-  TRenderContextInfo;
+  TGLRenderContextInfo;
   impostoredObject: TGLBaseSceneObject; destImposter: TImposter);
 begin
   Render(rci, impostoredObject, destImposter);
@@ -1362,7 +1362,7 @@ end;
 //
 
 procedure TGLStaticImposterBuilder.DoUserSpecifiedImposter(
-  var rci: TRenderContextInfo;
+  var rci: TGLRenderContextInfo;
   destImposter:
   TImposter;
   bmp32: TGLBitmap32);
@@ -1403,7 +1403,7 @@ end;
 // Render
 //
 
-procedure TGLStaticImposterBuilder.Render(var rci: TRenderContextInfo;
+procedure TGLStaticImposterBuilder.Render(var rci: TGLRenderContextInfo;
   impostoredObject: TGLBaseSceneObject; destImposter: TImposter);
 var
   i, coronaIdx, curSample: Integer;
@@ -1599,7 +1599,7 @@ end;
 {
 // DoRender
 //
-procedure TGLDynamicImposterBuilder.DoRender(var rci : TRenderContextInfo;
+procedure TGLDynamicImposterBuilder.DoRender(var rci : TGLRenderContextInfo;
   renderSelf, renderChildren : Boolean);
 var
   i, size, Left, Top, Width, Height : Integer;
@@ -1767,7 +1767,7 @@ end;
 // DoRender
 //
 
-procedure TGLImposter.DoRender(var ARci: TRenderContextInfo;
+procedure TGLImposter.DoRender(var ARci: TGLRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);
 var
   camPos: TVector;

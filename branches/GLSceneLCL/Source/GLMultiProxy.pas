@@ -122,7 +122,7 @@ type
          destructor Destroy; override;
 
 	      procedure Assign(Source: TPersistent); override;
-         procedure DoRender(var rci : TRenderContextInfo;
+         procedure DoRender(var rci : TGLRenderContextInfo;
                             renderSelf, renderChildren : Boolean); override;
                             
          function AxisAlignedDimensionsUnscaled : TVector; override;
@@ -393,7 +393,7 @@ end;
 
 // Render
 //
-procedure TGLMultiProxy.DoRender(var rci : TRenderContextInfo;
+procedure TGLMultiProxy.DoRender(var rci : TGLRenderContextInfo;
                                   renderSelf, renderChildren : Boolean);
 var
    i : Integer;

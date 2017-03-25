@@ -107,7 +107,7 @@ type
 
     function GenerateVertexProgram: string;
     function GenerateFragmentProgram: string;
-    procedure DoLightPass(var rci: TRenderContextInfo; lightID: Cardinal);
+    procedure DoLightPass(var rci: TGLRenderContextInfo; lightID: Cardinal);
 
   protected
     procedure SetBumpMethod(const Value: TBumpMethod);
@@ -124,8 +124,8 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
-    procedure DoApply(var rci: TRenderContextInfo; Sender: TObject); override;
-    function DoUnApply(var rci: TRenderContextInfo): Boolean; override;
+    procedure DoApply(var rci: TGLRenderContextInfo; Sender: TObject); override;
+    function DoUnApply(var rci: TGLRenderContextInfo): Boolean; override;
 
   published
     property BumpMethod: TBumpMethod read FBumpMethod write SetBumpMethod;
@@ -565,7 +565,7 @@ end;
 // DoLightPass
 //
 
-procedure TGLBumpShader.DoLightPass(var rci: TRenderContextInfo;
+procedure TGLBumpShader.DoLightPass(var rci: TGLRenderContextInfo;
   lightID: Cardinal);
 var
   dummyHandle, tempHandle: Integer;
@@ -644,7 +644,7 @@ end;
 // DoApply
 //
 
-procedure TGLBumpShader.DoApply(var rci: TRenderContextInfo; Sender: TObject);
+procedure TGLBumpShader.DoApply(var rci: TGLRenderContextInfo; Sender: TObject);
 var
   maxTextures, i: Integer;
   ambient, LMaterialAmbient: TColorVector;
@@ -744,7 +744,7 @@ end;
 // DoUnApply
 //
 
-function TGLBumpShader.DoUnApply(var rci: TRenderContextInfo): Boolean;
+function TGLBumpShader.DoUnApply(var rci: TGLRenderContextInfo): Boolean;
 var
   ambient, LMaterialAmbient: TVector;
 begin

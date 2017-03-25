@@ -36,7 +36,7 @@ type
     DirectOpenGL1: TGLDirectOpenGL;
     GLLightSource1: TGLLightSource;
     GLCadencer1: TGLCadencer;
-    procedure DirectOpenGL1Render(Sender: TObject; var rci: TRenderContextInfo);
+    procedure DirectOpenGL1Render(Sender: TObject; var rci: TGLRenderContextInfo);
     procedure FormCreate(Sender: TObject);
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
@@ -80,7 +80,7 @@ begin
   GLSceneViewer1.Invalidate;
 end;
 
-procedure TForm1.DirectOpenGL1Render(Sender: TObject; var rci: TRenderContextInfo);
+procedure TForm1.DirectOpenGL1Render(Sender: TObject; var rci: TGLRenderContextInfo);
 var
   material: TGLLibMaterial;
 begin

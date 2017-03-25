@@ -84,9 +84,9 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
-    procedure DoRender(var ARci: TRenderContextInfo;
+    procedure DoRender(var ARci: TGLRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
-    procedure BuildList(var ARci: TRenderCOntextInfo); override;
+    procedure BuildList(var ARci: TGLRenderContextInfo); override;
     procedure Notification(AComponent: TComponent; Operation: TOperation);
       override;
 
@@ -174,7 +174,7 @@ end;
 // DoRender
 //
 
-procedure TGLSkyBox.DoRender(var ARci: TRenderContextInfo; ARenderSelf,
+procedure TGLSkyBox.DoRender(var ARci: TGLRenderContextInfo; ARenderSelf,
   ARenderChildren: Boolean);
 begin
   // We want children of the sky box to appear far away too
@@ -189,7 +189,7 @@ end;
 // DoRender
 //
 
-procedure TGLSkyBox.BuildList(var ARci: TRenderCOntextInfo);
+procedure TGLSkyBox.BuildList(var ARci: TGLRenderContextInfo);
 var
   f, cps, cof1: Single;
   oldStates: TGLStates;

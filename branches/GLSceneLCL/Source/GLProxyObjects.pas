@@ -80,7 +80,7 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
-    procedure DoRender(var ARci: TRenderContextInfo;
+    procedure DoRender(var ARci: TGLRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
   published
      
@@ -116,7 +116,7 @@ type
       override;
     destructor Destroy; override;
 
-    procedure DoRender(var ARci: TRenderContextInfo;
+    procedure DoRender(var ARci: TGLRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
     { Specifies the Material, that current master object will use.
        Provides a faster way to access FMasterLibMaterial, compared to
@@ -224,7 +224,7 @@ type
     destructor Destroy; override;
     procedure Notification(AComponent: TComponent; Operation: TOperation);
       override;
-    procedure DoRender(var ARci: TRenderContextInfo;
+    procedure DoRender(var ARci: TGLRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
     procedure DoProgress(const progressTime: TProgressTimes); override;
     property CurrentFrame: Integer read FCurrentFrame;
@@ -320,7 +320,7 @@ end;
 // Render
 //
 
-procedure TGLColorProxy.DoRender(var ARci: TRenderContextInfo;
+procedure TGLColorProxy.DoRender(var ARci: TGLRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);
 var
   gotMaster, masterGotEffects, oldProxySubObject: Boolean;
@@ -551,7 +551,7 @@ end;
 // DoRender
 //
 
-procedure TGLActorProxy.DoRender(var ARci: TRenderContextInfo; ARenderSelf,
+procedure TGLActorProxy.DoRender(var ARci: TGLRenderContextInfo; ARenderSelf,
   ARenderChildren: Boolean);
 var
   // TGLActorProxy specific
@@ -917,7 +917,7 @@ begin
   inherited;
 end;
 
-procedure TGLMaterialProxy.DoRender(var ARci: TRenderContextInfo;
+procedure TGLMaterialProxy.DoRender(var ARci: TGLRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);
 var
   gotMaster, masterGotEffects, oldProxySubObject: Boolean;

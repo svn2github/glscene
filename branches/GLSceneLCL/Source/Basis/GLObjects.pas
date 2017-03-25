@@ -158,7 +158,7 @@ type
   // TGLVisibilityDeterminationEvent
   //
   TGLVisibilityDeterminationEvent = function(Sender: TObject;
-    var rci: TRenderContextInfo): Boolean of object;
+    var rci: TGLRenderContextInfo): Boolean of object;
 
   PVertexRec = ^TVertexRec;
   TVertexRec = record
@@ -205,8 +205,8 @@ type
     function RayCastIntersect(const rayStart, rayVector: TVector;
       intersectPoint: PVector = nil; intersectNormal: PVector = nil)
       : Boolean; override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
-    procedure DoRender(var rci: TRenderContextInfo;
+    procedure BuildList(var rci: TGLRenderContextInfo); override;
+    procedure DoRender(var rci: TGLRenderContextInfo;
       renderSelf, renderChildren: Boolean); override;
     procedure StructureChanged; override;
     function BarycenterAbsolutePosition: TVector; override;
@@ -284,7 +284,7 @@ type
 
     procedure Assign(Source: TPersistent); override;
 
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TGLRenderContextInfo); override;
     function GenerateSilhouette(const silhouetteParameters
       : TGLSilhouetteParameters): TGLSilhouette; override;
 
@@ -343,7 +343,7 @@ type
     constructor Create(AOwner: TComponent); override;
 
     procedure Assign(Source: TPersistent); override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TGLRenderContextInfo); override;
 
     function AxisAlignedDimensionsUnscaled: TVector; override;
 
@@ -453,7 +453,7 @@ type
     destructor Destroy; override;
 
     procedure Assign(Source: TPersistent); override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TGLRenderContextInfo); override;
 
     { : Points positions.
       If empty, a single point is assumed at (0, 0, 0) }
@@ -493,10 +493,10 @@ type
   { : Possible aspects for the nodes of a TLine. }
   TLineNodesAspect = (lnaInvisible, lnaAxes, lnaCube, lnaDodecahedron);
 
-  // TLineSplineMode
+  // TGLLineSplineMode
   //
   { : Available spline modes for a TLine. }
-  TLineSplineMode = (lsmLines, lsmCubicSpline, lsmBezierSpline, lsmNURBSCurve,
+  TGLLineSplineMode = (lsmLines, lsmCubicSpline, lsmBezierSpline, lsmNURBSCurve,
     lsmSegments, lsmLoop);
 
   // TGLLinesNode
@@ -564,7 +564,7 @@ type
     { : Setup OpenGL states according to line style.
       You must call RestoreLineStyle after drawing your lines.
       You may use nested calls with SetupLineStyle/RestoreLineStyle. }
-    procedure SetupLineStyle(var rci: TRenderContextInfo);
+    procedure SetupLineStyle(var rci: TGLRenderContextInfo);
 
   public
      
@@ -615,7 +615,7 @@ type
     procedure SetNodeSize(const val: Single);
     function StoreNodeSize: Boolean;
 
-    procedure DrawNode(var rci: TRenderContextInfo; X, Y, Z: Single;
+    procedure DrawNode(var rci: TGLRenderContextInfo; X, Y, Z: Single;
       Color: TGLColor);
 
   public
@@ -666,7 +666,7 @@ type
   private
      
     FDivision: Integer;
-    FSplineMode: TLineSplineMode;
+    FSplineMode: TGLLineSplineMode;
     FOptions: TLinesOptions;
     FNURBSOrder: Integer;
     FNURBSTolerance: Single;
@@ -674,7 +674,7 @@ type
 
   protected
      
-    procedure SetSplineMode(const val: TLineSplineMode);
+    procedure SetSplineMode(const val: TGLLineSplineMode);
     procedure SetDivision(const Value: Integer);
     procedure SetOptions(const val: TLinesOptions);
     procedure SetNURBSOrder(const val: Integer);
@@ -686,7 +686,7 @@ type
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
 
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TGLRenderContextInfo); override;
 
     property NURBSKnots: TSingleList read FNURBSKnots;
     property NURBSOrder: Integer read FNURBSOrder write SetNURBSOrder;
@@ -699,7 +699,7 @@ type
       Minimum 1 (disabled), ignored in lsmLines mode. }
     property Division: Integer read FDivision write SetDivision default 10;
     { : Default spline drawing mode. }
-    property SplineMode: TLineSplineMode read FSplineMode write SetSplineMode
+    property SplineMode: TGLLineSplineMode read FSplineMode write SetSplineMode
       default lsmLines;
 
     { : Rendering options for the line.
@@ -743,7 +743,7 @@ type
 
     function GenerateSilhouette(const silhouetteParameters
       : TGLSilhouetteParameters): TGLSilhouette; override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TGLRenderContextInfo); override;
 
     procedure Assign(Source: TPersistent); override;
     function AxisAlignedDimensionsUnscaled: TVector; override;
@@ -839,7 +839,7 @@ type
     constructor Create(AOwner: TComponent); override;
     procedure Assign(Source: TPersistent); override;
 
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TGLRenderContextInfo); override;
     function AxisAlignedDimensionsUnscaled: TVector; override;
     function RayCastIntersect(const rayStart, rayVector: TVector;
       intersectPoint: PVector = nil; intersectNormal: PVector = nil)
@@ -868,13 +868,13 @@ type
   private
      
     FDivision: Integer;
-    FSplineMode: TLineSplineMode;
+    FSplineMode: TGLLineSplineMode;
 
   protected
      
     FNodes: TGLNodes;
     procedure CreateNodes; dynamic;
-    procedure SetSplineMode(const val: TLineSplineMode);
+    procedure SetSplineMode(const val: TGLLineSplineMode);
     procedure SetDivision(const Value: Integer);
     procedure SetNodes(const aNodes: TGLNodes);
 
@@ -899,7 +899,7 @@ type
     property Division: Integer read FDivision write SetDivision default 10;
     { : Default spline drawing mode.
       This mode is used only for the curve, not for the rotation path. }
-    property SplineMode: TLineSplineMode read FSplineMode write SetSplineMode
+    property SplineMode: TGLLineSplineMode read FSplineMode write SetSplineMode
       default lsmLines;
 
   end;
@@ -936,7 +936,7 @@ type
     constructor Create(AOwner: TComponent); override;
     procedure Assign(Source: TPersistent); override;
 
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TGLRenderContextInfo); override;
     function AxisAlignedDimensionsUnscaled: TVector; override;
     function RayCastIntersect(const rayStart, rayVector: TVector;
       intersectPoint: PVector = nil; intersectNormal: PVector = nil)
@@ -962,7 +962,7 @@ type
 
 
 { : Issues OpenGL for a unit-size cube stippled wireframe. }
-procedure CubeWireframeBuildList(var rci: TRenderContextInfo; Size: TGLFloat;
+procedure CubeWireframeBuildList(var rci: TGLRenderContextInfo; Size: TGLFloat;
   Stipple: Boolean; const Color: TColorVector);
 { : Issues OpenGL for a unit-size dodecahedron. }
 procedure DodecahedronBuildList;
@@ -999,7 +999,7 @@ const
   // CubeWireframeBuildList
   //
 
-procedure CubeWireframeBuildList(var rci: TRenderContextInfo; Size: TGLFloat;
+procedure CubeWireframeBuildList(var rci: TGLRenderContextInfo; Size: TGLFloat;
   Stipple: Boolean; const Color: TColorVector);
 var
   mi, ma: Single;
@@ -1283,7 +1283,7 @@ end;
 // BuildList
 //
 
-procedure TGLDummyCube.BuildList(var rci: TRenderContextInfo);
+procedure TGLDummyCube.BuildList(var rci: TGLRenderContextInfo);
 begin
   if (csDesigning in ComponentState) or (FVisibleAtRunTime) then
     CubeWireframeBuildList(rci, FCubeSize, True, EdgeColor.Color);
@@ -1292,7 +1292,7 @@ end;
 // DoRender
 //
 
-procedure TGLDummyCube.DoRender(var rci: TRenderContextInfo;
+procedure TGLDummyCube.DoRender(var rci: TGLRenderContextInfo;
   renderSelf, renderChildren: Boolean);
 begin
   if Assigned(FOnVisibilityDetermination) then
@@ -1550,7 +1550,7 @@ end;
 // BuildList
 //
 
-procedure TGLPlane.BuildList(var rci: TRenderContextInfo);
+procedure TGLPlane.BuildList(var rci: TGLRenderContextInfo);
 
   procedure EmitVertex(ptr: PVertexRec); {$IFDEF GLS_INLINE}inline;{$ENDIF}
   begin
@@ -1888,7 +1888,7 @@ end;
 // BuildList
 //
 
-procedure TGLSprite.BuildList(var rci: TRenderContextInfo);
+procedure TGLSprite.BuildList(var rci: TGLRenderContextInfo);
 var
   vx, vy: TAffineVector;
   w, h: Single;
@@ -2273,7 +2273,7 @@ end;
 // BuildList
 //
 
-procedure TGLPoints.BuildList(var rci: TRenderContextInfo);
+procedure TGLPoints.BuildList(var rci: TGLRenderContextInfo);
 var
   n: Integer;
   v: TVector;
@@ -2549,7 +2549,7 @@ end;
 // SetupLineStyle
 //
 
-procedure TGLLineBase.SetupLineStyle(var rci: TRenderContextInfo);
+procedure TGLLineBase.SetupLineStyle(var rci: TGLRenderContextInfo);
 begin
   with rci.GLStates do
   begin
@@ -2781,7 +2781,7 @@ end;
 // DrawNode
 //
 
-procedure TGLNodedLines.DrawNode(var rci: TRenderContextInfo; X, Y, Z: Single;
+procedure TGLNodedLines.DrawNode(var rci: TGLRenderContextInfo; X, Y, Z: Single;
   Color: TGLColor);
 begin
   GL.PushMatrix;
@@ -2932,7 +2932,7 @@ end;
 // SetSplineMode
 //
 
-procedure TGLLines.SetSplineMode(const val: TLineSplineMode);
+procedure TGLLines.SetSplineMode(const val: TGLLineSplineMode);
 begin
   if FSplineMode <> val then
   begin
@@ -2982,7 +2982,7 @@ end;
 // BuildList
 //
 
-procedure TGLLines.BuildList(var rci: TRenderContextInfo);
+procedure TGLLines.BuildList(var rci: TGLRenderContextInfo);
 var
   i, n: Integer;
   A, B, C: TGLFloat;
@@ -3159,7 +3159,7 @@ end;
 // BuildList
 //
 
-procedure TGLCube.BuildList(var rci: TRenderContextInfo);
+procedure TGLCube.BuildList(var rci: TGLRenderContextInfo);
 var
   hw, hh, hd, nd: TGLFloat;
   TanLoc, BinLoc: Integer;
@@ -3629,7 +3629,7 @@ end;
 // BuildList
 //
 
-procedure TGLSphere.BuildList(var rci: TRenderContextInfo);
+procedure TGLSphere.BuildList(var rci: TGLRenderContextInfo);
 var
   v1, V2, N1: TAffineVector;
   AngTop, AngBottom, AngStart, AngStop, StepV, StepH: Double;
@@ -4089,7 +4089,7 @@ end;
 // SetSplineMode
 //
 
-procedure TGLPolygonBase.SetSplineMode(const val: TLineSplineMode);
+procedure TGLPolygonBase.SetSplineMode(const val: TGLLineSplineMode);
 begin
   if FSplineMode <> val then
   begin
@@ -4171,7 +4171,7 @@ end;
 // BuildList
 //
 
-procedure TGLSuperellipsoid.BuildList(var rci: TRenderContextInfo);
+procedure TGLSuperellipsoid.BuildList(var rci: TGLRenderContextInfo);
 var
   CosPc1, SinPc1, CosTc2, SinTc2: Double;
 

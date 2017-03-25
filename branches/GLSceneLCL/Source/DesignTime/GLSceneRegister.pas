@@ -22,8 +22,7 @@ uses
   LazIDEIntf, 
   ProjectIntf, 
   ProjectResourcesIntf, 
-  MacroIntf, 
-  Laz_XMLCfg,
+  MacroIntf,
   Forms;
 
 type

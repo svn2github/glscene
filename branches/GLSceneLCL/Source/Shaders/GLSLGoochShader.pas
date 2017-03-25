@@ -54,8 +54,8 @@ type
     procedure SetCoolColor(AValue: TGLColor);
 
   protected
-    procedure DoApply(var rci : TRenderContextInfo; Sender : TObject); override;
-    function DoUnApply(var rci: TRenderContextInfo): Boolean; override;
+    procedure DoApply(var rci : TGLRenderContextInfo; Sender : TObject); override;
+    function DoUnApply(var rci: TGLRenderContextInfo): Boolean; override;
   public
     constructor Create(AOwner : TComponent); override;
     destructor Destroy; override;
@@ -199,7 +199,7 @@ begin
   inherited;
 end;
 
-procedure TGLCustomGLSLSimpleGoochShader.DoApply(var rci: TRenderContextInfo;
+procedure TGLCustomGLSLSimpleGoochShader.DoApply(var rci: TGLRenderContextInfo;
   Sender: TObject);
 begin
 
@@ -222,7 +222,7 @@ begin
 //  gl.BlendFunc(cGLBlendFunctionToGLEnum[FBlendSrc],cGLBlendFunctionToGLEnum[FBlendDst]);
 end;
 
-function TGLCustomGLSLSimpleGoochShader.DoUnApply(var rci: TRenderContextInfo): Boolean;
+function TGLCustomGLSLSimpleGoochShader.DoUnApply(var rci: TGLRenderContextInfo): Boolean;
 begin
 
   gl.ActiveTexture(GL_TEXTURE0_ARB);

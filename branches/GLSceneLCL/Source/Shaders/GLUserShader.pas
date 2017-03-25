@@ -20,8 +20,8 @@ uses
   Classes, GLMaterial, GLRenderContextInfo;
 
 type
-  TOnDoApplyEvent = procedure (Sender : TObject; var rci : TRenderContextInfo) of Object;
-  TOnDoUnApplyEvent = procedure (Sender : TObject; Pass:Integer; var rci : TRenderContextInfo; var Continue : Boolean) of Object;
+  TOnDoApplyEvent = procedure (Sender : TObject; var rci : TGLRenderContextInfo) of Object;
+  TOnDoUnApplyEvent = procedure (Sender : TObject; Pass:Integer; var rci : TGLRenderContextInfo; var Continue : Boolean) of Object;
   
   TGLUserShader = class(TGLShader)
     private
@@ -29,8 +29,8 @@ type
       FOnDoApply : TOnDoApplyEvent;
       FOnDoUnApply : TOnDoUnApplyEvent;
     protected
-      procedure DoApply(var rci : TRenderContextInfo; Sender : TObject); override;
-      function DoUnApply(var rci : TRenderContextInfo) : Boolean; override;
+      procedure DoApply(var rci : TGLRenderContextInfo; Sender : TObject); override;
+      function DoUnApply(var rci : TGLRenderContextInfo) : Boolean; override;
     published
       property OnDoApply : TOnDoApplyEvent read FOnDoApply write FOnDoApply;
       property OnDoUnApply : TOnDoUnApplyEvent read FOnDoUnApply write FOnDoUnApply;
@@ -51,7 +51,7 @@ implementation
 
 // DoApply
 //
-procedure TGLUserShader.DoApply(var rci: TRenderContextInfo; Sender : TObject);
+procedure TGLUserShader.DoApply(var rci: TGLRenderContextInfo; Sender : TObject);
 begin
   FPass:=1;
   if Assigned(FOnDoApply) and (not (csDesigning in ComponentState)) then
@@ -60,7 +60,7 @@ end;
 
 // DoUnApply
 //
-function TGLUserShader.DoUnApply(var rci: TRenderContextInfo): Boolean;
+function TGLUserShader.DoUnApply(var rci: TGLRenderContextInfo): Boolean;
 begin
   Result:=False;
   if Assigned(FOnDoUnApply) and (not (csDesigning in ComponentState)) then begin

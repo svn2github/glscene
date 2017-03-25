@@ -64,7 +64,7 @@ type
   private
      
     FID: Integer;
-    FHeightData: THeightData; // Referred, not owned
+    FHeightData: TGLHeightData; // Referred, not owned
     FHeightRaster: PSmallIntRaster;
     FTLNode, FBRNode: Integer;
     FTLVariance, FBRVariance: array of cardinal;
@@ -85,7 +85,7 @@ type
 
   protected
      
-    procedure SetHeightData(val: THeightData);
+    procedure SeTGLHeightData(val: TGLHeightData);
     procedure SetOcclusionSkip(val: Integer);
 
     procedure RenderROAM(vertices: TAffineVectorList;
@@ -133,7 +133,7 @@ type
     class procedure FlushAccum(vertices: TAffineVectorList;
       vertexIndices: TIntegerList; texCoords: TTexPointList);
 
-    property HeightData: THeightData read FHeightData write SetHeightData;
+    property HeightData: TGLHeightData read FHeightData write SeTGLHeightData;
     property VertexScale: TAffineVector read FVertexScale write FVertexScale;
     property VertexOffset: TAffineVector read FVertexOffset write FVertexOffset;
 
@@ -395,9 +395,9 @@ begin
   inherited Destroy;
 end;
 
-// SetHeightData
+// SeTGLHeightData
 //
-procedure TGLROAMPatch.SetHeightData(val: THeightData);
+procedure TGLROAMPatch.SeTGLHeightData(val: TGLHeightData);
 begin
   FHeightData := val;
   FPatchSize := FHeightData.Size - 1;

@@ -199,7 +199,7 @@ type
     procedure SetViewer(const val: TGLSceneViewer);
     function GetCaster: TGLMemoryViewer;
     procedure SetCaster(const val: TGLMemoryViewer);
-    procedure CalcShadowTexture(var rci: TRenderContextInfo);
+    procedure CalcShadowTexture(var rci: TGLRenderContextInfo);
     function HardSet(const x, y: integer): Byte;
 
     function SoftTest(const x, y: integer): Byte;
@@ -215,7 +215,7 @@ type
     CasterZBuf: TGLzBuffer;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    procedure DoRender(var ARci: TRenderContextInfo; ARenderSelf,
+    procedure DoRender(var ARci: TGLRenderContextInfo; ARenderSelf,
       ARenderChildren: Boolean); override;
   published
     property Viewer: TGLSceneViewer read GetViewer write SetViewer;
@@ -782,7 +782,7 @@ end;
 // DoRender
 //
 
-procedure TGLZShadows.DoRender(var ARci: TRenderContextInfo;
+procedure TGLZShadows.DoRender(var ARci: TGLRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);
 var
   vx, vy, vx1, vy1: Single;
@@ -880,7 +880,7 @@ begin
     Self.RenderChildren(0, Count - 1, ARci);
 end;
 
-procedure TGLZShadows.CalcShadowTexture(var rci: TRenderContextInfo);
+procedure TGLZShadows.CalcShadowTexture(var rci: TGLRenderContextInfo);
 var
   pix, p0, p1, p2, p3, p4: Byte;
   pM, pL, pT: Byte;

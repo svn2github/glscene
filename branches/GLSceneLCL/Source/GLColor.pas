@@ -2,19 +2,11 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   All color types, constants and utilities should go here
+  All color types, constants and utilities should go here
 
-   History :  
-     10/11/12 - PW - Added CPPB compatibility: restored $NODEFINE directives
-     04/11/10 - DaStr - Removed dependancy from OpenGL (this time for good)
-     24/10/10 - DaStr - Removed dependancy from OpenGL
-     23/08/10 - Yar - Added OpenGLTokens to uses
-     31/05/10 - Yar - Fixed warnings for Delhi2009/2010
-     04/03/10 - DanB - TGLColorManager.GetColor now uses CharInSet
-     05/10/08 - DanB - Moved TGLColor/ TGLColorManager in from GLTexture.pas
-     06/06/07 - DaStr - Initial version (BugtrackerID = 1732211)
-                          (separated from GLTexture.pas and GLCrossPlatform.pas)
-   
+  History :
+  06/06/07 - DaStr - separated from GLTexture.pas and GLCrossPlatform.pas
+  The whole history is logged in previous version of the unit
 }
 unit GLColor;
 
@@ -23,10 +15,16 @@ interface
 {$I GLScene.inc}
 
 uses
-  SysUtils, Classes, Dialogs, Graphics,
+  SysUtils, 
+  Classes, 
+  Dialogs, 
+  Graphics,
    
-  GLVectorTypes, GLVectorGeometry, GLCrossPlatform,
-  GLPersistentClasses, GLBaseClasses;
+  GLVectorTypes, 
+  GLVectorGeometry, 
+  GLCrossPlatform,
+  GLPersistentClasses, 
+  GLBaseClasses;
 
 type
   PColorVector = ^TColorVector;
@@ -35,8 +33,6 @@ type
   PRGBColor = ^TRGBColor;
   TRGBColor = TVector3b;
 
-   // TGLColor
-	//
    { Wraps an OpenGL color. }
    TGLColor = class(TGLUpdateAbleObject)
       private
@@ -79,28 +75,16 @@ type
          property HSVA : TVector read GetHSVA write SetHSVA;
 
          property DefaultColor : TColorVector read FColor;
+ published
+    property Red: Single index 0 read GetColorComponent
+      write SetColorComponent;
+    property Green: Single index 1 read GetColorComponent
+      write SetColorComponent;
+    property Blue: Single index 2 read GetColorComponent
+      write SetColorComponent;
+    property Alpha: Single index 3 read GetColorComponent
+      write SetColorComponent;
 
-{$IFNDEF FPC}
-  published
-    { Published Properties }
-    property Red: Single index 0 read GetColorComponent
-      write SetColorComponent stored False;
-    property Green: Single index 1 read GetColorComponent
-      write SetColorComponent stored False;
-    property Blue: Single index 2 read GetColorComponent
-      write SetColorComponent stored False;
-    property Alpha: Single index 3 read GetColorComponent
-      write SetColorComponent stored False;
-{$ELSE}
-    property Red: Single index 0 read GetColorComponent
-      write SetColorComponent;
-    property Green: Single index 1 read GetColorComponent
-      write SetColorComponent;
-    property Blue: Single index 2 read GetColorComponent
-      write SetColorComponent;
-    property Alpha: Single index 3 read GetColorComponent
-      write SetColorComponent;
-{$ENDIF}
 	end;
 
    PColorEntry = ^TColorEntry;
@@ -114,7 +98,6 @@ type
    TGLColorManager = class (TList)
       public
          destructor Destroy; override;
-
          procedure AddColor(const aName: String; const aColor: TColorVector);
          procedure EnumColors(Proc: TGetStrProc); overload;
          procedure EnumColors(AValues: TStrings); overload;
@@ -228,7 +211,6 @@ const
 // startup, since they depend on the desktop scheme)
 const
    {$J+ - allow change of the following typed constants}
-
    clrScrollBar           : TColorVector = (X:0;Y:0;Z:0;W:1);
    clrBackground          : TColorVector = (X:0;Y:0;Z:0;W:1);
    clrActiveCaption       : TColorVector = (X:0;Y:0;Z:0;W:1);

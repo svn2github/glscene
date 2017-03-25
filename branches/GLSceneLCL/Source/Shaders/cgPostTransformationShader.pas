@@ -36,7 +36,7 @@ type
     FTransformationPower:      Single;
     FTransformationTexture: TGLTexture;
   protected
-    procedure DoApply(var rci: TRenderContextInfo; Sender: TObject); override;
+    procedure DoApply(var rci: TGLRenderContextInfo; Sender: TObject); override;
 
     // Implementing IGLPostShader.
     procedure DoUseTempTexture(const TempTexture: TGLTextureHandle; TextureTarget: TGLTextureTarget);
@@ -119,7 +119,7 @@ begin
 end;
 
 procedure TGLCustomCGPostTransformationShader.DoApply(
-  var rci: TRenderContextInfo; Sender: TObject);
+  var rci: TGLRenderContextInfo; Sender: TObject);
 begin
   inherited;
   FragmentProgram.ParamByName('screenW').SetAsScalar(rci.viewPortSize.cx);

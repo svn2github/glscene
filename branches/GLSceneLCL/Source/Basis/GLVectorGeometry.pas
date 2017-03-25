@@ -248,7 +248,7 @@ type
    // types to specify continous streams of a specific type
    // switch off range checking to access values beyond the limits
    PByteVector = ^TByteVector;
-   PByteArray = PByteVector;
+   PByteArray = ^TByteVector; //PByteVector;
    TByteVector = array[0..cMaxArray] of Byte;
 
    PWordVector = ^TWordVector;

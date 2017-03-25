@@ -29,13 +29,11 @@ uses
   GLObjects, 
   GLWindows, 
   GLHUDObjects,
-  GLViewer, 
+  GLLCLViewer, 
   GLGui, 
   GLGraphics, 
   GLUtils, 
   GLCrossPlatform,
-  GLCoordinates, 
-  GLBaseClasses, 
   GLMaterial;
 
 type

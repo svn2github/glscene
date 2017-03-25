@@ -73,7 +73,7 @@ type
          constructor Create(AOwner : TGLTree);
          destructor Destroy; override;
 
-         procedure BuildList(var rci : TRenderContextInfo);
+         procedure BuildList(var rci : TGLRenderContextInfo);
          procedure AddNew(matrix : TMatrix);
          procedure Clear;
 
@@ -143,7 +143,7 @@ type
          constructor Create(AOwner : TGLTree);
          destructor Destroy; override;
 
-         procedure BuildList(var rci : TRenderContextInfo);
+         procedure BuildList(var rci : TGLRenderContextInfo);
          procedure Clear;
 
          property Owner : TGLTree read FOwner;
@@ -245,9 +245,9 @@ type
          destructor Destroy; override;
 
          procedure Notification(AComponent: TComponent; Operation: TOperation); override;
-         procedure DoRender(var ARci : TRenderContextInfo;
+         procedure DoRender(var ARci : TGLRenderContextInfo;
                             ARenderSelf, ARenderChildren : Boolean); override;
-         procedure BuildList(var rci : TRenderContextInfo); override;
+         procedure BuildList(var rci : TGLRenderContextInfo); override;
          procedure StructureChanged; override;
 
          procedure BuildMesh(GLBaseMesh : TGLBaseMesh);
@@ -370,7 +370,7 @@ end;
 
 // BuildList
 //
-procedure TGLTreeLeaves.BuildList(var rci: TRenderContextInfo);
+procedure TGLTreeLeaves.BuildList(var rci: TGLRenderContextInfo);
 var
    i : integer;
    n : TAffineVector;
@@ -709,7 +709,7 @@ end;
 
 // BuildList
 //
-procedure TGLTreeBranches.BuildList(var rci: TRenderContextInfo);
+procedure TGLTreeBranches.BuildList(var rci: TGLRenderContextInfo);
 var
    i, stride : Integer;
    libMat : TGLLibMaterial;
@@ -859,7 +859,7 @@ end;
 
 // DoRender
 //
-procedure TGLTree.DoRender(var ARci : TRenderContextInfo;
+procedure TGLTree.DoRender(var ARci : TGLRenderContextInfo;
                            ARenderSelf, ARenderChildren : Boolean);
 begin
    MaterialLibrary.LibMaterialByName(BranchMaterialName).PrepareBuildList;
@@ -870,7 +870,7 @@ end;
 
 // BuildList
 //
-procedure TGLTree.BuildList(var rci: TRenderContextInfo);
+procedure TGLTree.BuildList(var rci: TGLRenderContextInfo);
 begin
    if FRebuildTree then begin
       FBranches.BuildBranches;

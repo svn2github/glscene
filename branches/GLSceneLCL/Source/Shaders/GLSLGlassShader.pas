@@ -65,8 +65,8 @@ Type
 
 
   protected
-    procedure DoApply(var rci : TRenderContextInfo; Sender : TObject); override;
-    function DoUnApply(var rci: TRenderContextInfo): Boolean; override;
+    procedure DoApply(var rci : TGLRenderContextInfo; Sender : TObject); override;
+    function DoUnApply(var rci: TGLRenderContextInfo): Boolean; override;
 
     procedure SetMaterialLibrary(const Value: TGLAbstractMaterialLibrary); virtual;
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
@@ -254,7 +254,7 @@ begin
   inherited;
 end;
 
-procedure TGLCustomGLSLGlassShader.DoApply(var rci: TRenderContextInfo; Sender: TObject);
+procedure TGLCustomGLSLGlassShader.DoApply(var rci: TGLRenderContextInfo; Sender: TObject);
 begin
   // Auto Render EnvMap
   // capture and create material from framebuffer
@@ -307,7 +307,7 @@ begin
 
 end;
 
-function TGLCustomGLSLGlassShader.DoUnApply(var rci: TRenderContextInfo): Boolean;
+function TGLCustomGLSLGlassShader.DoUnApply(var rci: TGLRenderContextInfo): Boolean;
 begin
   gl.Disable(GL_BLEND);
   GetGLSLProg.EndUseProgramObject;

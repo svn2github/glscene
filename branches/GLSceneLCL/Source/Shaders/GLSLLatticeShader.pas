@@ -37,8 +37,8 @@ type
     procedure SetLatticeScale(const Value: TGLCoordinates2);
     procedure SetLatticeThreshold(const Value: TGLCoordinates2);
   protected
-    procedure DoApply(var rci : TRenderContextInfo; Sender : TObject); override;
-    function DoUnApply(var rci: TRenderContextInfo): Boolean; override;
+    procedure DoApply(var rci : TGLRenderContextInfo; Sender : TObject); override;
+    function DoUnApply(var rci: TGLRenderContextInfo): Boolean; override;
   public
     constructor Create(AOwner : TComponent); override;
     destructor Destroy; override;
@@ -75,8 +75,8 @@ type
     procedure SetSpecularColor(AValue: TGLColor);
 
   protected
-    procedure DoInitialize(var rci : TRenderContextInfo; Sender : TObject); override;
-    procedure DoApply(var rci : TRenderContextInfo; Sender : TObject); override;
+    procedure DoInitialize(var rci : TGLRenderContextInfo; Sender : TObject); override;
+    procedure DoApply(var rci : TGLRenderContextInfo; Sender : TObject); override;
 
     procedure SetMaterialLibrary(const Value: TGLAbstractMaterialLibrary); virtual;
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
@@ -156,14 +156,14 @@ begin
   inherited;
 end;
 
-procedure TGLCustomGLSLSimpleLatticeShader.DoApply(var rci: TRenderContextInfo;Sender: TObject);
+procedure TGLCustomGLSLSimpleLatticeShader.DoApply(var rci: TGLRenderContextInfo;Sender: TObject);
 begin
   GetGLSLProg.UseProgramObject;
   Param['Scale'].AsVector2f := FLatticeScale.AsPoint2D;
   Param['Threshold'].AsVector2f := FLatticeThreshold.AsPoint2D;
 end;
 
-function TGLCustomGLSLSimpleLatticeShader.DoUnApply(var rci: TRenderContextInfo): Boolean;
+function TGLCustomGLSLSimpleLatticeShader.DoUnApply(var rci: TGLRenderContextInfo): Boolean;
 begin
   Result := False;
   //gl.ActiveTexture(GL_TEXTURE0_ARB);
@@ -210,7 +210,7 @@ begin
   inherited;
 end;
 
-procedure TGLCustomGLSLLatticeShader.DoApply(var rci: TRenderContextInfo; Sender: TObject);
+procedure TGLCustomGLSLLatticeShader.DoApply(var rci: TGLRenderContextInfo; Sender: TObject);
 begin
 
   inherited;
@@ -226,7 +226,7 @@ begin
 
 end;
 
-procedure TGLCustomGLSLLatticeShader.DoInitialize(var rci : TRenderContextInfo; Sender : TObject);
+procedure TGLCustomGLSLLatticeShader.DoInitialize(var rci : TGLRenderContextInfo; Sender : TObject);
 begin
   with VertexProgram.Code do
   begin

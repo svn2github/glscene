@@ -123,10 +123,10 @@ type
     function GetCurrentParam: TGLSLShaderParameter; virtual;
     procedure SetActiveVarying(const Value: TStrings);
     procedure SetTransformFeedBackMode(const Value: TGLTransformFeedBackMode);
-    procedure DoInitialize(var rci: TRenderContextInfo; Sender: TObject); override;
+    procedure DoInitialize(var rci: TGLRenderContextInfo; Sender: TObject); override;
     procedure DoFinalize; override;
-    procedure DoApply(var rci: TRenderContextInfo; Sender: TObject); override;
-    function DoUnApply(var rci: TRenderContextInfo): Boolean; override;
+    procedure DoApply(var rci: TGLRenderContextInfo; Sender: TObject); override;
+    function DoUnApply(var rci: TGLRenderContextInfo): Boolean; override;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -225,7 +225,7 @@ uses
 
 { TGLCustomGLSLShader }
 
-procedure TGLCustomGLSLShader.DoApply(var rci: TRenderContextInfo; Sender: TObject);
+procedure TGLCustomGLSLShader.DoApply(var rci: TGLRenderContextInfo; Sender: TObject);
 begin
   FGLSLProg.UseProgramObject;
   if Assigned(FOnApply) then
@@ -235,7 +235,7 @@ begin
 end;
 
 
-procedure TGLCustomGLSLShader.DoInitialize(var rci: TRenderContextInfo; Sender: TObject);
+procedure TGLCustomGLSLShader.DoInitialize(var rci: TGLRenderContextInfo; Sender: TObject);
 const
   cBufferMode: array[tfbmInterleaved..tfbmSeparate] of GLenum = (
     GL_INTERLEAVED_ATTRIBS_EXT, GL_SEPARATE_ATTRIBS_EXT);
@@ -334,7 +334,7 @@ begin
 end;
 
 
-function TGLCustomGLSLShader.DoUnApply(var rci: TRenderContextInfo): Boolean;
+function TGLCustomGLSLShader.DoUnApply(var rci: TGLRenderContextInfo): Boolean;
 begin
   Result := False;
   if Assigned(FOnUnApply) then
@@ -352,7 +352,7 @@ end;
 
 function TGLCustomGLSLShader.GetActiveAttribs: TGLActiveAttribArray;
 var
-  LRci: TRenderContextInfo;
+  LRci: TGLRenderContextInfo;
   i, j: Integer;
   buff: array[0..127] of AnsiChar;
   len: GLsizei;

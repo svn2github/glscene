@@ -94,7 +94,7 @@ type
          destructor Destroy; override;
 
          procedure DoProgress(const progressTime : TProgressTimes); override;
-         procedure BuildList(var rci : TRenderContextInfo); override;
+         procedure BuildList(var rci : TGLRenderContextInfo); override;
          procedure Assign(Source: TPersistent); override;
          function AxisAlignedDimensionsUnscaled : TVector; override;
 
@@ -460,7 +460,7 @@ end;
 
 // BuildList
 //
-procedure TGLWaterPlane.BuildList(var rci : TRenderContextInfo);
+procedure TGLWaterPlane.BuildList(var rci : TGLRenderContextInfo);
 var
    i : Integer;
    il : TIntegerList;

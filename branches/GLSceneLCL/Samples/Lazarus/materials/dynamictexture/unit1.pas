@@ -35,7 +35,7 @@ type
     procedure FormKeyDown(Sender: TObject; var Key: word; Shift: TShiftState);
     procedure FormResize(Sender: TObject);
     procedure FormCreate(Sender: TObject);
-    procedure GLDirectOpenGL1Render(Sender: TObject; var rci: TRenderContextInfo);
+    procedure GLDirectOpenGL1Render(Sender: TObject; var rci: TGLRenderContextInfo);
     procedure Timer1Timer(Sender: TObject);
     procedure GLCadencer1Progress(Sender: TObject; const DeltaTime, newTime: double);
   private
@@ -102,7 +102,7 @@ begin
   GLSceneViewer1.Invalidate;
 end;
 
-procedure TForm1.GLDirectOpenGL1Render(Sender: TObject; var rci: TRenderContextInfo);
+procedure TForm1.GLDirectOpenGL1Render(Sender: TObject; var rci: TGLRenderContextInfo);
 var
   tex: TGLTexture;
   img: TGLDynamicTextureImage;

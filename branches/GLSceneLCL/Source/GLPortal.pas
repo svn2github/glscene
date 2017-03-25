@@ -41,7 +41,7 @@ type
          constructor CreateOwned(AOwner : TGLBaseMesh);
          destructor Destroy; override;
 
-         procedure BuildList(var mrci : TRenderContextInfo); override;
+         procedure BuildList(var mrci : TGLRenderContextInfo); override;
    end;
 
 
@@ -61,7 +61,7 @@ type
          constructor CreateOwned(AOwner : TGLMeshObjectList);
          destructor Destroy; override;
 
-         procedure BuildList(var mrci : TRenderContextInfo); override;
+         procedure BuildList(var mrci : TGLRenderContextInfo); override;
          procedure Prepare; override;
 
          property RenderDone : Boolean read FRenderDone write FRenderDone;
@@ -107,7 +107,7 @@ type
 	      constructor CreateOwned(AOwner : TGLFaceGroups); override;
          destructor Destroy; override;
 
-         procedure BuildList(var mrci : TRenderContextInfo); override;
+         procedure BuildList(var mrci : TGLRenderContextInfo); override;
 
          procedure Prepare; override;
 
@@ -164,7 +164,7 @@ end;
 
 // BuildList
 //
-procedure TPortalMeshObjectList.BuildList(var mrci : TRenderContextInfo);
+procedure TPortalMeshObjectList.BuildList(var mrci : TGLRenderContextInfo);
 var
    i : Integer;
    startSector : TGLMeshObject;
@@ -204,7 +204,7 @@ end;
 
 // BuildList
 //
-procedure TSectorMeshObject.BuildList(var mrci : TRenderContextInfo);
+procedure TSectorMeshObject.BuildList(var mrci : TGLRenderContextInfo);
 var
    i : Integer;
    libMat : TGLLibMaterial;
@@ -286,7 +286,7 @@ end;
 
 // BuildList
 //
-procedure TFGPortalPolygon.BuildList(var mrci : TRenderContextInfo);
+procedure TFGPortalPolygon.BuildList(var mrci : TGLRenderContextInfo);
 var
    dir : TAffineVector;
 begin

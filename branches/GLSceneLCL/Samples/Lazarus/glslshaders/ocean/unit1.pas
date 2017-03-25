@@ -36,7 +36,7 @@ type
     DOOceanPlane: TGLDirectOpenGL;
     procedure FormCreate(Sender: TObject);
     procedure DOInitializeRender(Sender: TObject;
-      var rci: TRenderContextInfo);
+      var rci: TGLRenderContextInfo);
     procedure GLHeightField1GetHeight(const x, y: Single; var z: Single;
       var acolor: TColorVector; var texPoint: TTexPoint);
     procedure GLMemoryViewer1BeforeRender(Sender: TObject);
@@ -46,11 +46,11 @@ type
       newTime: Double);
     procedure Timer1Timer(Sender: TObject);
     procedure GLUserShader1DoApply(Sender: TObject;
-      var rci: TRenderContextInfo);
+      var rci: TGLRenderContextInfo);
     procedure GLUserShader1DoUnApply(Sender: TObject; Pass: Integer;
-      var rci: TRenderContextInfo; var Continue: Boolean);
+      var rci: TGLRenderContextInfo; var Continue: Boolean);
     procedure DOOceanPlaneRender(Sender: TObject;
-      var rci: TRenderContextInfo);
+      var rci: TGLRenderContextInfo);
   private
     { Déclarations privées }
   public
@@ -219,7 +219,7 @@ begin
 end;
 
 procedure TForm1.DoInitializeRender(Sender: TObject;
-  var rci: TRenderContextInfo);
+  var rci: TGLRenderContextInfo);
 begin
   if not (GL.ARB_shader_objects and GL.ARB_vertex_program and GL.ARB_vertex_shader
     and GL.ARB_fragment_shader) then
@@ -271,7 +271,7 @@ begin
 end;
 
 procedure TForm1.GLUserShader1DoApply(Sender: TObject;
-  var rci: TRenderContextInfo);
+  var rci: TGLRenderContextInfo);
 var
   camPos: TVector;
 begin
@@ -284,7 +284,7 @@ begin
 end;
 
 procedure TForm1.GLUserShader1DoUnApply(Sender: TObject; Pass: Integer;
-  var rci: TRenderContextInfo; var Continue: Boolean);
+  var rci: TGLRenderContextInfo; var Continue: Boolean);
 begin
   programObject.EndUseProgramObject;
 end;
@@ -332,7 +332,7 @@ var
   nbVerts: Integer;
 
 procedure TForm1.DOOceanPlaneRender(Sender: TObject;
-  var rci: TRenderContextInfo);
+  var rci: TGLRenderContextInfo);
 var
   x, y: Integer;
   v: TTexPointList;

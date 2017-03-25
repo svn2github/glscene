@@ -87,7 +87,7 @@ type
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
 
-    procedure BuildList(var rci: TRenderContextInfo);
+    procedure BuildList(var rci: TGLRenderContextInfo);
 
   published
      
@@ -118,7 +118,7 @@ type
     default;
 
     procedure NotifyChange;
-    procedure BuildList(var rci: TRenderContextInfo);
+    procedure BuildList(var rci: TGLRenderContextInfo);
   end;
 
   // TGLSkyDomeStar
@@ -176,7 +176,7 @@ type
     property Items[index: Integer]: TGLSkyDomeStar read GetItems write SetItems;
     default;
 
-    procedure BuildList(var rci: TRenderContextInfo; twinkle: Boolean);
+    procedure BuildList(var rci: TGLRenderContextInfo; twinkle: Boolean);
 
     { Adds nb random stars of the given color.
        Stars are homogenously scattered on the complete sphere, not only the band defined or visible dome. }
@@ -224,7 +224,7 @@ type
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
 
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TGLRenderContextInfo); override;
 
   published
      
@@ -288,7 +288,7 @@ type
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
 
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TGLRenderContextInfo); override;
 
     procedure SetSunAtTime(HH, MM: Single);
 
@@ -452,7 +452,7 @@ end;
 // BuildList
 //
 
-procedure TGLSkyDomeBand.BuildList(var rci: TRenderContextInfo);
+procedure TGLSkyDomeBand.BuildList(var rci: TGLRenderContextInfo);
 
 // coordinates system note: X is forward, Y is left and Z is up
 // always rendered as sphere of radius 1
@@ -578,7 +578,7 @@ end;
 // BuildList
 //
 
-procedure TGLSkyDomeBands.BuildList(var rci: TRenderContextInfo);
+procedure TGLSkyDomeBands.BuildList(var rci: TGLRenderContextInfo);
 var
   i: Integer;
 begin
@@ -706,7 +706,7 @@ end;
 // BuildList
 //
 
-procedure TGLSkyDomeStars.BuildList(var rci: TRenderContextInfo; twinkle:
+procedure TGLSkyDomeStars.BuildList(var rci: TGLRenderContextInfo; twinkle:
   Boolean);
 var
   i, n: Integer;
@@ -977,7 +977,7 @@ end;
 // BuildList
 //
 
-procedure TGLSkyDome.BuildList(var rci: TRenderContextInfo);
+procedure TGLSkyDome.BuildList(var rci: TGLRenderContextInfo);
 var
   f: Single;
 begin
@@ -1168,7 +1168,7 @@ end;
 // BuildList
 //
 
-procedure TGLEarthSkyDome.BuildList(var rci: TRenderContextInfo);
+procedure TGLEarthSkyDome.BuildList(var rci: TGLRenderContextInfo);
 var
   f: Single;
 begin

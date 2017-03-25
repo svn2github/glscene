@@ -39,12 +39,12 @@ type
   protected
      
     procedure DoLightPass(lightID: Cardinal); virtual;
-    procedure DoAmbientPass(var rci: TRenderContextInfo); virtual;
-    procedure UnApplyLights(var rci: TRenderContextInfo); virtual;
+    procedure DoAmbientPass(var rci: TGLRenderContextInfo); virtual;
+    procedure UnApplyLights(var rci: TGLRenderContextInfo); virtual;
 
-    procedure DoApply(var rci: TRenderContextInfo; Sender: TObject); override;
-    function DoUnApply(var rci: TRenderContextInfo): Boolean; override;
-    procedure DoInitialize(var rci : TRenderContextInfo; Sender : TObject); override;
+    procedure DoApply(var rci: TGLRenderContextInfo; Sender: TObject); override;
+    function DoUnApply(var rci: TGLRenderContextInfo): Boolean; override;
+    procedure DoInitialize(var rci : TGLRenderContextInfo; Sender : TObject); override;
   public
      
     constructor Create(AOwner: TComponent); override;
@@ -59,7 +59,7 @@ implementation
 
 // DoApply
 //
-procedure TGLPhongShader.DoApply(var rci: TRenderContextInfo; Sender: TObject);
+procedure TGLPhongShader.DoApply(var rci: TGLRenderContextInfo; Sender: TObject);
 begin
   if (csDesigning in ComponentState) and not DesignTimeEnabled then Exit;
 
@@ -82,7 +82,7 @@ end;
 
 // DoUnApply
 //
-function TGLPhongShader.DoUnApply(var rci: TRenderContextInfo): Boolean;
+function TGLPhongShader.DoUnApply(var rci: TGLRenderContextInfo): Boolean;
 begin
   Result := False;
   if (csDesigning in ComponentState) and not DesignTimeEnabled then Exit;
@@ -111,7 +111,7 @@ end;
 
 // DoInitialize
 //
-procedure TGLPhongShader.DoInitialize(var rci : TRenderContextInfo; Sender : TObject);
+procedure TGLPhongShader.DoInitialize(var rci : TGLRenderContextInfo; Sender : TObject);
 begin
   if (csDesigning in ComponentState) and not DesignTimeEnabled then Exit;
   inherited;
@@ -216,7 +216,7 @@ end;
 
 // UnApplyLights
 //
-procedure TGLPhongShader.UnApplyLights(var rci: TRenderContextInfo);
+procedure TGLPhongShader.UnApplyLights(var rci: TGLRenderContextInfo);
 begin
   rci.GLStates.DepthFunc := cfLEqual;
   rci.GLStates.Enable(stBlend);
@@ -231,7 +231,7 @@ begin
   inherited;
 end;
 
-procedure TGLPhongShader.DoAmbientPass(var rci: TRenderContextInfo);
+procedure TGLPhongShader.DoAmbientPass(var rci: TGLRenderContextInfo);
 var
   ambient, materialAmbient: TVector;
 begin

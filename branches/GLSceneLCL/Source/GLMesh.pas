@@ -210,7 +210,7 @@ type
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
 
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TGLRenderContextInfo); override;
     procedure CalcNormals(Frontface: TFaceWinding);
     property Vertices: TGLVertexList read FVertices write SetVertices;
     function AxisAlignedDimensionsUnscaled: TVector; override;
@@ -736,7 +736,7 @@ end;
 // BuildList
 //
 
-procedure TGLMesh.BuildList(var rci: TRenderContextInfo);
+procedure TGLMesh.BuildList(var rci: TGLRenderContextInfo);
 var
   VertexCount: Longint;
 begin

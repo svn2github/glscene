@@ -14,7 +14,7 @@
    30/03/07 - DaStr - Added $I GLScene.inc
    28/03/07 - DaStr - Cosmetic fixes for FPC compatibility
    27/03/07 - Lin- Added TileManagement flags. - Helps prevent tile cache fushes.
-   19/03/07 - Lin- Added IgnoredByRenderer flag to THeightData.
+   19/03/07 - Lin- Added IgnoredByRenderer flag to TGLHeightData.
   Helps manage duplicate tiles, when a dirty tile is being replaced.
    16/03/07 - DaStr - Added explicit pointer dereferencing
   (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
@@ -37,7 +37,7 @@
    24/02/02 - EG - Hybrid ROAM-stripifier engine
    18/12/01 - EG - Vertex-cache aware stripifier (+10% on GeForce)
    12/08/01 - EG - Completely rewritten handles management
-   21/07/01 - EG - Added Notication registration in SetHeightDataSource
+   21/07/01 - EG - Added Notication registration in SeTGLHeightDataSource
    04/03/01 - EG - Completed for first release
    12/02/01 - EG - Creation
    
@@ -64,11 +64,11 @@ const
 type
 
   TGetTerrainBoundsEvent = procedure(var l, t, r, b: single) of object;
-  TPatchPostRenderEvent = procedure(var rci: TRenderContextInfo;
+  TPatchPostRenderEvent = procedure(var rci: TGLRenderContextInfo;
     const patches: TList) of object;
-  THeightDataPostRenderEvent = procedure(var rci: TRenderContextInfo;
+  TGLHeightDataPostRenderEvent = procedure(var rci: TGLRenderContextInfo;
     var HeightDatas: TList) of object;
-  TMaxCLODTrianglesReachedEvent = procedure(var rci: TRenderContextInfo)
+  TMaxCLODTrianglesReachedEvent = procedure(var rci: TGLRenderContextInfo)
     of object;
 
   TTerrainHighResStyle = (hrsFullGeometry, hrsTesselated);
@@ -85,13 +85,13 @@ type
     a set of terrain tiles, performs basic visibility culling and renders its
     stuff. You can use it has a base class/sample for more specialized
     terrain renderers.
-    The Terrain heightdata is retrieved directly from a THeightDataSource, and
+    The Terrain heightdata is retrieved directly from a TGLHeightDataSource, and
     expressed as z=f(x, y) data. }
   // TGLTerrainRenderer = class (TGLSceneObject)
   TGLTerrainRenderer = class(TGLSceneObject)
   private
      
-    FHeightDataSource: THeightDataSource;
+    FHeightDataSource: TGLHeightDataSource;
     FTileSize: Integer;
     FQualityDistance, FinvTileSize: single;
     FLastTriangleCount: Integer;
@@ -103,7 +103,7 @@ type
     FMaterialLibrary: TGLMaterialLibrary;
     FOnGetTerrainBounds: TGetTerrainBoundsEvent;
     FOnPatchPostRender: TPatchPostRenderEvent;
-    FOnHeightDataPostRender: THeightDataPostRenderEvent;
+    FOnHeightDataPostRender: TGLHeightDataPostRenderEvent;
     FOnMaxCLODTrianglesReached: TMaxCLODTrianglesReachedEvent;
 
     FQualityStyle: TTerrainHighResStyle;
@@ -118,11 +118,11 @@ type
     procedure ReleaseAllUnusedTiles;
     procedure MarkHashedTileAsUsed(const tilePos: TAffineVector);
     function HashedTile(const tilePos: TAffineVector;
-      canAllocate: boolean = True): THeightData; overload;
+      canAllocate: boolean = True): TGLHeightData; overload;
     function HashedTile(const xLeft, yTop: Integer; canAllocate: boolean = True)
-      : THeightData; overload;
+      : TGLHeightData; overload;
 
-    procedure SetHeightDataSource(const val: THeightDataSource);
+    procedure SeTGLHeightDataSource(const val: TGLHeightDataSource);
     procedure SetTileSize(const val: Integer);
     procedure SetTilesPerTexture(const val: single);
     procedure SetCLODPrecision(const val: Integer);
@@ -149,7 +149,7 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TGLRenderContextInfo); override;
     function RayCastIntersect(const rayStart, rayVector: TVector;
       intersectPoint: PVector = nil; intersectNormal: PVector = nil)
       : boolean; override;
@@ -165,8 +165,8 @@ type
   published
      
     { : Specifies the HeightData provider component. }
-    property HeightDataSource: THeightDataSource read FHeightDataSource
-      write SetHeightDataSource;
+    property HeightDataSource: TGLHeightDataSource read FHeightDataSource
+      write SeTGLHeightDataSource;
     { : Size of the terrain tiles.
       Must be a power of two. }
     property TileSize: Integer read FTileSize write SetTileSize default 16;
@@ -248,10 +248,10 @@ type
     property OnPatchPostRender: TPatchPostRenderEvent read FOnPatchPostRender
       write FOnPatchPostRender;
     { : Invoked for each heightData not culled out by the terrain renderer.
-      The list holds THeightData objects and allows per-patch
+      The list holds TGLHeightData objects and allows per-patch
       post-processings, like waters, trees... It is invoked *after*
       OnPatchPostRender. }
-    property OnHeightDataPostRender: THeightDataPostRenderEvent
+    property OnHeightDataPostRender: TGLHeightDataPostRenderEvent
       read FOnHeightDataPostRender write FOnHeightDataPostRender;
     { : Invoked whenever the MaxCLODTriangles limit was reached during last rendering.
       This forced the terrain renderer to resize the buffer, which affects performance.
@@ -445,14 +445,14 @@ end;
 procedure TGLTerrainRenderer.ReleaseAllTiles;
 var
   i, k: Integer;
-  hd: THeightData;
+  hd: TGLHeightData;
 begin
   for i := 0 to cTilesHashSize do
     with FTilesHash[i] do
     begin
       for k := Count - 1 downto 0 do
       begin
-        hd := THeightData(Items[k]);
+        hd := TGLHeightData(Items[k]);
         OnTileDestroyed(hd);
         hd.OnDestroy := nil;
         hd.Release;
@@ -467,7 +467,7 @@ procedure TGLTerrainRenderer.OnTileDestroyed(Sender: TObject);
 var
   list: TList;
 begin
-  with Sender as THeightData do
+  with Sender as TGLHeightData do
   begin
     if ObjectTag <> nil then
     begin
@@ -505,7 +505,7 @@ end;
 
 // BuildList
 
-procedure TGLTerrainRenderer.BuildList(var rci: TRenderContextInfo);
+procedure TGLTerrainRenderer.BuildList(var rci: TGLRenderContextInfo);
 var
   vEye, vEyeDirection: TVector;
   tilePos, absTilePos, observer: TAffineVector;
@@ -851,7 +851,7 @@ begin
     begin
       zero := 0;
       for j := Count - 1 downto 0 do
-        THeightData(Items[j]).Tag := zero;
+        TGLHeightData(Items[j]).Tag := zero;
     end;
 end;
 
@@ -861,14 +861,14 @@ procedure TGLTerrainRenderer.ReleaseAllUnusedTiles;
 var
   i, j: Integer;
   hashList: TList;
-  hd: THeightData;
+  hd: TGLHeightData;
 begin
   for i := 0 to cTilesHashSize do
   begin
     hashList := FTilesHash[i];
     for j := hashList.Count - 1 downto 0 do
     begin
-      hd := THeightData(hashList.Items[j]);
+      hd := TGLHeightData(hashList.Items[j]);
       if hd.Tag = 0 then
       begin
         hashList.Delete(j);
@@ -902,7 +902,7 @@ end;
 
 procedure TGLTerrainRenderer.MarkHashedTileAsUsed(const tilePos: TAffineVector);
 var
-  hd: THeightData;
+  hd: TGLHeightData;
   canAllocate: boolean;
 begin
   if not(tmMarkUsedTiles in TileManagement) then
@@ -917,7 +917,7 @@ end;
 // HashedTile
 
 function TGLTerrainRenderer.HashedTile(const tilePos: TAffineVector;
-  canAllocate: boolean = True): THeightData;
+  canAllocate: boolean = True): TGLHeightData;
 var
   xLeft, yTop: Integer;
 begin
@@ -929,17 +929,17 @@ end;
 // HashedTile
 
 function TGLTerrainRenderer.HashedTile(const xLeft, yTop: Integer;
-  canAllocate: boolean = True): THeightData;
+  canAllocate: boolean = True): TGLHeightData;
 var
   i: Integer;
-  hd: THeightData;
+  hd: TGLHeightData;
   hashList: TList;
 begin
   // is the tile already in our list?
   hashList := FTilesHash[HashKey(xLeft, yTop)];
   for i := hashList.Count - 1 downto 0 do
   begin
-    hd := THeightData(hashList.Items[i]);
+    hd := TGLHeightData(hashList.Items[i]);
     if (hd.xLeft = xLeft) and (hd.yTop = yTop) then
     begin
       if hd.DontUse then
@@ -973,7 +973,7 @@ end;
 function TGLTerrainRenderer.GetPreparedPatch(const tilePos,
   eyePos: TAffineVector; texFactor: single; hdList: TList): TGLROAMPatch;
 var
-  tile: THeightData;
+  tile: TGLHeightData;
   patch: TGLROAMPatch;
   xLeft, yTop: Integer;
   canAllocate: boolean;
@@ -1035,9 +1035,9 @@ begin
   end;
 end;
 
-// SetHeightDataSource
+// SeTGLHeightDataSource
 
-procedure TGLTerrainRenderer.SetHeightDataSource(const val: THeightDataSource);
+procedure TGLTerrainRenderer.SeTGLHeightDataSource(const val: TGLHeightDataSource);
 begin
   if FHeightDataSource <> val then
   begin
@@ -1086,7 +1086,7 @@ end;
 procedure TGLTerrainRenderer.SetCLODPrecision(const val: Integer);
 var
   i, k: Integer;
-  hd: THeightData;
+  hd: TGLHeightData;
 begin
   if val <> FCLODPrecision then
   begin
@@ -1099,7 +1099,7 @@ begin
       begin
         for k := Count - 1 downto 0 do
         begin
-          hd := THeightData(Items[k]);
+          hd := TGLHeightData(Items[k]);
           if Assigned(hd.ObjectTag) then
           begin
             (hd.ObjectTag as TGLROAMPatch).Free;
@@ -1138,7 +1138,7 @@ end;
 procedure TGLTerrainRenderer.SetOcclusionFrameSkip(val: Integer);
 var
   i, k: Integer;
-  hd: THeightData;
+  hd: TGLHeightData;
 begin
   if val < 0 then
     val := 0;
@@ -1150,7 +1150,7 @@ begin
       begin
         for k := Count - 1 downto 0 do
         begin
-          hd := THeightData(Items[k]);
+          hd := TGLHeightData(Items[k]);
           if hd.ObjectTag <> nil then
             TGLROAMPatch(hd.ObjectTag).OcclusionSkip := OcclusionFrameSkip;
         end;

@@ -82,7 +82,7 @@ type
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    procedure DoRender(var rci: TRenderContextInfo; renderSelf, renderChildren: boolean); override;
+    procedure DoRender(var rci: TGLRenderContextInfo; renderSelf, renderChildren: boolean); override;
   published
     { Indicates the field-of-view of the projection frustum.}
     property FOV: single read FFOV write FFOV;
@@ -166,7 +166,7 @@ type
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    procedure DoRender(var rci: TRenderContextInfo;
+    procedure DoRender(var rci: TGLRenderContextInfo;
       renderSelf, renderChildren: Boolean); override;
     procedure StructureChanged; override;
   published
@@ -209,7 +209,7 @@ end;
 // SetupTexMatrix
 //
 
-procedure TGLSLTextureEmitter.DoRender(var rci: TRenderContextInfo;
+procedure TGLSLTextureEmitter.DoRender(var rci: TGLRenderContextInfo;
   renderSelf, renderChildren: boolean);
 begin
   SetupTexMatrix;
@@ -559,7 +559,7 @@ end;
 // DoRender
 //
 
-procedure TGLSLProjectedTextures.DoRender(var rci: TRenderContextInfo;
+procedure TGLSLProjectedTextures.DoRender(var rci: TGLRenderContextInfo;
   renderSelf, renderChildren: boolean);
 var
   i: integer;

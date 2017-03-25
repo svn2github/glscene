@@ -34,26 +34,11 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, 
-  SysUtils,  
-  Graphics,
+  Classes, SysUtils,  Graphics,
    
-  GLScene, 
-  GLVectorGeometry, 
-  GLObjects, 
-  GLBitmapFont, 
-  GLTexture, 
-  GLMaterial,
-  GLHudObjects, 
-  GLColor, 
-  GLGraphics, 
-  GLContext, 
-  OpenGLTokens,
-  XOpenGL, 
-  GLState, 
-  GLTextureFormat, 
-  GLBaseClasses, 
-  GLRenderContextInfo;
+  GLScene, GLVectorGeometry, GLObjects, GLBitmapFont, GLTexture, GLMaterial,
+  GLHudObjects, GLColor, GLGraphics, GLContext, OpenGLTokens,
+  XOpenGL, GLState, GLTextureFormat, GLBaseClasses, GLRenderContextInfo;
 
 type
 
@@ -119,7 +104,7 @@ type
     destructor Destroy; override;
 
     procedure DoProgress(const progressTime: TProgressTimes); override;
-    procedure DoRender(var ARci: TRenderContextInfo;
+    procedure DoRender(var ARci: TGLRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
   published
@@ -167,11 +152,11 @@ type
     function StoreIntensity: Boolean;
   protected
     procedure DoOnAddedToParent; override;
-    procedure InitializeObject(ASender: TObject; const ARci: TRenderContextInfo); virtual;
+    procedure InitializeObject(ASender: TObject; const ARci: TGLRenderContextInfo); virtual;
   public
     { This function is only valid AFTER OpenGL has been initialized. }
     function SupportsRequiredExtensions: Boolean;
-    procedure DoRender(var ARci: TRenderContextInfo; ARenderSelf, ARenderChildren: Boolean); override;
+    procedure DoRender(var ARci: TGLRenderContextInfo; ARenderSelf, ARenderChildren: Boolean); override;
     constructor Create(aOwner: TComponent); override;
     procedure Assign(Source: TPersistent); override;
   published
@@ -451,7 +436,7 @@ end;
 
 {$WARNINGS Off} //Suppress "unsafe" warning
 
-procedure TGLBlur.DoRender(var ARci: TRenderContextInfo;
+procedure TGLBlur.DoRender(var ARci: TGLRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);
 var
   vx, vy, vx1, vy1, f: Single;
@@ -788,7 +773,7 @@ begin
     Scene.InitializableObjects.Add(Self);
 end;
 
-procedure TGLMotionBlur.DoRender(var ARci: TRenderContextInfo; ARenderSelf, ARenderChildren: Boolean);
+procedure TGLMotionBlur.DoRender(var ARci: TGLRenderContextInfo; ARenderSelf, ARenderChildren: Boolean);
 begin
   if not (ARci.ignoreMaterials or (csDesigning in ComponentState) or
     (ARci.drawState = dsPicking)) then
@@ -836,7 +821,7 @@ begin
 end;
 
 procedure TGLMotionBlur.InitializeObject(ASender: TObject;
-  const ARci: TRenderContextInfo);
+  const ARci: TGLRenderContextInfo);
 begin
   // If extension is not supported, silently disable this component.
   if not (csDesigning in ComponentState) then

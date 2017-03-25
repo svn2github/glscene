@@ -94,8 +94,8 @@ type
     destructor Destroy; override;
 
     procedure Assign(Source: TPersistent); override;
-    procedure BuildList(var ARci: TRenderContextInfo); override;
-    procedure DoRender(var ARci: TRenderContextInfo;
+    procedure BuildList(var ARci: TGLRenderContextInfo); override;
+    procedure DoRender(var ARci: TGLRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
     procedure DoProgress(const progressTime: TProgressTimes); override;
 
@@ -221,7 +221,7 @@ end;
 // BuildList
 //
 
-procedure TGLParticles.BuildList(var ARci: TRenderContextInfo);
+procedure TGLParticles.BuildList(var ARci: TGLRenderContextInfo);
 var
   mi, ma: Single;
 begin
@@ -268,7 +268,7 @@ end;
 // DoRender
 //
 
-procedure TGLParticles.DoRender(var ARci: TRenderContextInfo;
+procedure TGLParticles.DoRender(var ARci: TGLRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);
 begin
   if (csDesigning in ComponentState) or (FVisibleAtRunTime) then
@@ -371,7 +371,7 @@ end;
 
 function TGLParticles.CreateParticle: TGLBaseSceneObject;
 begin
-  if Count > 0 then
+ if Count > 0 then
   begin
     if particlePool.Count > 0 then
     begin

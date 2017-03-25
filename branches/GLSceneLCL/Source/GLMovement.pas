@@ -162,7 +162,7 @@ type
   private
     FPathLine: TGLLines;
     FShowPath: Boolean;
-    FPathSplineMode: TLineSplineMode;
+    FPathSplineMode: TGLLineSplineMode;
 
     FNodes: TGLPathNodes;
 
@@ -196,7 +196,7 @@ type
     procedure SetCurrentNodeIndex(const Value: integer);
 
     procedure SetShowPath(const Value: Boolean);
-    procedure SetPathSplineMode(const Value: TLineSplineMode);
+    procedure SetPathSplineMode(const Value: TGLLineSplineMode);
   protected
     procedure WriteToFiler(writer : TWriter);
     procedure ReadFromFiler(reader : TReader);
@@ -244,7 +244,7 @@ type
     property Name: string Read FName Write FName;
 
     { This property is currently ignored. }
-    property PathSplineMode: TLineSplineMode read FPathSplineMode write SetPathSplineMode default lsmLines;
+    property PathSplineMode: TGLLineSplineMode read FPathSplineMode write SetPathSplineMode default lsmLines;
     property RotationMode: TGLMovementRotationMode read FRotationMode write FRotationMode default rmTurnPitchRoll;
 
     property StartTime: double Read FStartTime Write SetStartTime;
@@ -719,7 +719,7 @@ begin
   UpdatePathLine;
 end;
 
-procedure TGLMovementPath.SetPathSplineMode(const Value: TLineSplineMode);
+procedure TGLMovementPath.SetPathSplineMode(const Value: TGLLineSplineMode);
 begin
   if Value<>FPathSplineMode then
   begin

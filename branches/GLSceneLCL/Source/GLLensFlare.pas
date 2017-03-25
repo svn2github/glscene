@@ -145,7 +145,7 @@ type
     procedure SetElements(aValue: TFlareElements);
     procedure SetDynamic(aValue: Boolean);
     procedure SetPreRenderPoint(const val: TGLRenderPoint);
-    procedure PreRenderEvent(Sender: TObject; var rci: TRenderContextInfo);
+    procedure PreRenderEvent(Sender: TObject; var rci: TGLRenderContextInfo);
     procedure PreRenderPointFreed(Sender: TObject);
 
     // These are quite unusual in that they don't use an RCI, since
@@ -165,7 +165,7 @@ type
     procedure Notification(AComponent: TComponent; Operation: TOperation);
       override;
 
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TGLRenderContextInfo); override;
     procedure DoProgress(const progressTime: TProgressTimes); override;
 
     { Prepares pre-rendered texture to speed up actual rendering.
@@ -554,7 +554,7 @@ end;
 // BuildList
 //
 
-procedure TGLLensFlare.BuildList(var rci: TRenderContextInfo);
+procedure TGLLensFlare.BuildList(var rci: TGLRenderContextInfo);
 var
   i: Integer;
   depth, dist: Single;
@@ -1034,7 +1034,7 @@ end;
 //
 
 procedure TGLLensFlare.PreRenderEvent(Sender: TObject; var rci:
-  TRenderContextInfo);
+  TGLRenderContextInfo);
 begin
   PreRender(rci.buffer as TGLSceneBuffer);
 end;

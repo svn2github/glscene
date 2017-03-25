@@ -54,7 +54,7 @@ type
     procedure BUPointsClick(Sender: TObject);
     procedure BURectsClick(Sender: TObject);
     procedure BUTextOutClick(Sender: TObject);
-    procedure GLDirectOpenGL1Render(Sender: TObject; var rci: TRenderContextInfo);
+    procedure GLDirectOpenGL1Render(Sender: TObject; var rci: TGLRenderContextInfo);
   private
     { Private declarations }
     procedure PaintTheBox;
@@ -140,7 +140,7 @@ begin
   LAGDI.Caption := Format('GDI: %.1f msec', [StopPrecisionTimer(t) * 1000]);
 end;
 
-procedure TForm1.GLDirectOpenGL1Render(Sender: TObject; var rci: TRenderContextInfo);
+procedure TForm1.GLDirectOpenGL1Render(Sender: TObject; var rci: TGLRenderContextInfo);
 var
   i, x, y: integer;
   glc: TGLCanvas;

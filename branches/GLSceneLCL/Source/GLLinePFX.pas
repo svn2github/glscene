@@ -70,11 +70,11 @@ type
          function StoreDefaultLength : Boolean;
 
          function TexturingMode : Cardinal; override;
-         procedure InitializeRendering(var rci: TRenderContextInfo); override;
-         procedure BeginParticles(var rci: TRenderContextInfo); override;
-         procedure RenderParticle(var rci: TRenderContextInfo; aParticle : TGLParticle); override;
-         procedure EndParticles(var rci: TRenderContextInfo); override;
-         procedure FinalizeRendering(var rci: TRenderContextInfo); override;
+         procedure InitializeRendering(var rci: TGLRenderContextInfo); override;
+         procedure BeginParticles(var rci: TGLRenderContextInfo); override;
+         procedure RenderParticle(var rci: TGLRenderContextInfo; aParticle : TGLParticle); override;
+         procedure EndParticles(var rci: TGLRenderContextInfo); override;
+         procedure FinalizeRendering(var rci: TGLRenderContextInfo); override;
 
       public
           
@@ -145,7 +145,7 @@ end;
 
 // InitializeRendering
 //
-procedure TGLLinePFXManager.InitializeRendering(var rci: TRenderContextInfo);
+procedure TGLLinePFXManager.InitializeRendering(var rci: TGLRenderContextInfo);
 var
    i : Integer;
    matrix : TMatrix;
@@ -162,14 +162,14 @@ end;
 
 // BeginParticles
 //
-procedure TGLLinePFXManager.BeginParticles(var rci: TRenderContextInfo);
+procedure TGLLinePFXManager.BeginParticles(var rci: TGLRenderContextInfo);
 begin
    ApplyBlendingMode(rci);
 end;
 
 // RenderParticle
 //
-procedure TGLLinePFXManager.RenderParticle(var rci: TRenderContextInfo; aParticle : TGLParticle);
+procedure TGLLinePFXManager.RenderParticle(var rci: TGLRenderContextInfo; aParticle : TGLParticle);
 var
    lifeTime, sizeScale, fx, fy, f : Single;
    inner, outer : TColorVector;
@@ -212,14 +212,14 @@ end;
 
 // EndParticles
 //
-procedure TGLLinePFXManager.EndParticles(var rci: TRenderContextInfo);
+procedure TGLLinePFXManager.EndParticles(var rci: TGLRenderContextInfo);
 begin
    UnapplyBlendingMode(rci);
 end;
 
 // FinalizeRendering
 //
-procedure TGLLinePFXManager.FinalizeRendering(var rci: TRenderContextInfo);
+procedure TGLLinePFXManager.FinalizeRendering(var rci: TGLRenderContextInfo);
 begin
    inherited;
 end;

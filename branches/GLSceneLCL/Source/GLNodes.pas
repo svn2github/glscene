@@ -25,8 +25,7 @@ uses
    
   GLVectorGeometry, OpenGLTokens, OpenGLAdapter, GLContext, GLBaseClasses,
   GLCoordinates, GLSpline,
-  XOpenGL
-, GLVectorTypes;
+  XOpenGL, GLVectorTypes;
 
 
 {$I GLScene.inc}

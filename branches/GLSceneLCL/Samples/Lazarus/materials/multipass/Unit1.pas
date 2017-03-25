@@ -68,8 +68,8 @@ type
     BackgroundColor, LineColor: TColorVector;
     PassCount: Integer;
   public
-    procedure DoApply(var rci: TRenderContextInfo; Sender: TObject); override;
-    function DoUnApply(var rci: TRenderContextInfo): Boolean; override;
+    procedure DoApply(var rci: TGLRenderContextInfo; Sender: TObject); override;
+    function DoUnApply(var rci: TGLRenderContextInfo): Boolean; override;
   end;
 
   TOutLineShader = class(TGLShader)
@@ -79,11 +79,11 @@ type
     OutlineWidth, Oldlinewidth: Single;
     PassCount: Integer;
   public
-    procedure DoApply(var rci: TRenderContextInfo; Sender: TObject); override;
-    function DoUnApply(var rci: TRenderContextInfo): Boolean; override;
+    procedure DoApply(var rci: TGLRenderContextInfo; Sender: TObject); override;
+    function DoUnApply(var rci: TGLRenderContextInfo): Boolean; override;
   end;
 
-procedure THiddenLineShader.DoApply(var rci: TRenderContextInfo; Sender:
+procedure THiddenLineShader.DoApply(var rci: TGLRenderContextInfo; Sender:
   TObject);
 begin
   // new object getting rendered, 1st pass
@@ -101,7 +101,7 @@ begin
   end;
 end;
 
-function THiddenLineShader.DoUnApply(var rci: TRenderContextInfo): Boolean;
+function THiddenLineShader.DoUnApply(var rci: TGLRenderContextInfo): Boolean;
 begin
   case PassCount of
     1:
@@ -134,7 +134,7 @@ begin
   end;
 end;
 
-procedure TOutLineShader.DoApply(var rci: TRenderContextInfo; Sender: TObject);
+procedure TOutLineShader.DoApply(var rci: TGLRenderContextInfo; Sender: TObject);
 begin
   PassCount := 1;
   with rci.GLStates do
@@ -161,7 +161,7 @@ begin
   end;
 end;
 
-function TOutLineShader.DoUnApply(var rci: TRenderContextInfo): Boolean;
+function TOutLineShader.DoUnApply(var rci: TGLRenderContextInfo): Boolean;
 begin
   case PassCount of
     1:

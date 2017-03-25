@@ -217,7 +217,8 @@ procedure TGLPerlinPFXManager.PrepareImage(bmp32 : TGLBitmap32; var texFormat : 
    procedure PrepareSubImage(dx, dy, s : Integer; noise : TGLPerlin3DNoise);
    var
       s2 : Integer;
-      x, y, d : Integer;
+      x, y : Integer;
+      d:longint;
       is2, f, fy, pf, nBase, nAmp, df, dfg : Single;
       invGamma : Single;
       scanLine : PGLPixel32Array;
@@ -228,7 +229,8 @@ procedure TGLPerlinPFXManager.PrepareImage(bmp32 : TGLBitmap32; var texFormat : 
       pf:=FNoiseScale*0.05*is2;
       nAmp:=FNoiseAmplitude*(0.01);
       nBase:=1-nAmp*0.5;
-
+      df:=0.0;
+      d:=0;
       if Gamma<0.1 then
          invGamma:=10
       else invGamma:=1/Gamma;
@@ -239,12 +241,14 @@ procedure TGLPerlinPFXManager.PrepareImage(bmp32 : TGLBitmap32; var texFormat : 
          scanLine:=bmp32.ScanLine[y+dy];
          for x:=0 to s-1 do begin
             f:=Sqr((x+0.5-s2)*is2)+fy;
-            if f<1 then begin
+            if f<1 then
+            begin
                df:=nBase+nAmp*noise.Noise(x*pf, y*pf);
-               if gotIntensityCorrection then
-                  df:=ClampValue(Power(df, InvGamma)*Brightness, 0, 1);
+               if gotIntensityCorrection then df:=ClampValue(Power(df, InvGamma)*Brightness, 0, 1);
                dfg:=Power((1-Sqrt(f)), FSmoothness);
-               d:=Trunc(df*255);
+               {$R-}
+               d:=trunc(df*255);
+
                if d > 255 then d:=255;
                with scanLine^[x+dx] do begin
                   r:=d;
@@ -252,6 +256,7 @@ procedure TGLPerlinPFXManager.PrepareImage(bmp32 : TGLBitmap32; var texFormat : 
                   b:=d;
                   a:=Trunc(dfg*255);
                end;
+               {$R+}
             end else PInteger(@scanLine[x+dx])^:=0;
          end;
       end;

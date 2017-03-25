@@ -33,6 +33,9 @@ uses
   GLCoordinates;
 
 type
+
+  { TForm1 }
+
   TForm1 = class(TForm)
     GLScene1: TGLScene;
     GLSceneViewer1: TGLSceneViewer;
@@ -59,6 +62,10 @@ type
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
       X, Y: Integer);
     procedure CheckBox1Click(Sender: TObject);
+    procedure HeightField1GetHeight(const x, y: Single; var z: Single;
+      var Color: TColorVector; var TexPoint: TTexPoint);
+    procedure HeightField1GetHeight2(Sender: TObject; const x, y: Single;
+      var z: Single; var Color: TColorVector; var TexPoint: TTexPoint);
     procedure TrackBar1Change(Sender: TObject);
     procedure TrackBar2Change(Sender: TObject);
     procedure TrackBar3Change(Sender: TObject);
@@ -154,6 +161,18 @@ begin
    if CheckBox1.Checked then
       HeightField1.Options:=HeightField1.Options+[hfoTwoSided]
    else HeightField1.Options:=HeightField1.Options-[hfoTwoSided];
+end;
+
+procedure TForm1.HeightField1GetHeight(const x, y: Single; var z: Single;
+  var Color: TColorVector; var TexPoint: TTexPoint);
+begin
+
+end;
+
+procedure TForm1.HeightField1GetHeight2(Sender: TObject; const x, y: Single;
+  var z: Single; var Color: TColorVector; var TexPoint: TTexPoint);
+begin
+
 end;
 
 procedure TForm1.ComboBox1Change(Sender: TObject);

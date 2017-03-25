@@ -55,7 +55,7 @@ type
     procedure GLCadencer1Progress(Sender: TObject;
       const deltaTime, newTime: double);
     procedure Timer1Timer(Sender: TObject);
-    procedure OctreeRendererRender(Sender: TObject; var rci: TRenderContextInfo);
+    procedure OctreeRendererRender(Sender: TObject; var rci: TGLRenderContextInfo);
   private
     { Private declarations }
   public
@@ -241,7 +241,7 @@ begin
   GLLightSource1.PointTo(GLActor1, YHMGVector);
 end;
 
-procedure TForm1.OctreeRendererRender(Sender: TObject; var rci: TRenderContextInfo);
+procedure TForm1.OctreeRendererRender(Sender: TObject; var rci: TGLRenderContextInfo);
 
   procedure RenderAABB(AABB: TAABB; w, r, g, b: single);
   begin

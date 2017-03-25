@@ -52,7 +52,9 @@ uses
   GLPhongShader, GLShaderCombiner, GLTexCombineShader, GLTextureSharingShader, 
   GLUserShader, GLFileBMP, TGA, GLSLPostShaders, GLSLErosionShader, 
   GLSLFurShader, GLSLGlassShader, GLSLGoochShader, GLSLIvoryShader, 
-  GLSLSemShader, GLSLToonShader, GLSLVertexDisplacementShader, GLTriangulation;
+  GLSLSemShader, GLSLToonShader, GLSLVertexDisplacementShader, 
+  GLTriangulation, GLMeshLines, GLSLLatticeShader, GLFileQ3BSP, GLFileOCT, 
+  GLFileDXF, GLFileGRD;
 
 implementation
 

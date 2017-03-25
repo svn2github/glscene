@@ -1,26 +1,28 @@
-object XCollectionEditor: TGLXCollectionEditor
-  Left = 265
-  Height = 243
-  Top = 131
-  Width = 263
+object GLXCollectionEditor: TGLXCollectionEditor
+  Left = 496
+  Height = 424
+  Top = 179
+  Width = 388
   HorzScrollBar.Page = 262
   VertScrollBar.Page = 242
   ActiveControl = ListView
-  Caption = 'XCollectionEditor'
-  ClientHeight = 243
-  ClientWidth = 263
+  Caption = 'XCollection Editor'
+  ClientHeight = 424
+  ClientWidth = 388
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
+  FormStyle = fsStayOnTop
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnHide = FormHide
+  Position = poScreenCenter
   ShowHint = True
-  LCLVersion = '0.9.29'
+  LCLVersion = '1.6.4.0'
   object ListView: TListView
     Left = 0
-    Height = 217
+    Height = 398
     Top = 26
-    Width = 263
+    Width = 388
     Align = alClient
     Columns = <    
       item
@@ -43,7 +45,7 @@ object XCollectionEditor: TGLXCollectionEditor
     Left = 0
     Height = 26
     Top = 0
-    Width = 263
+    Width = 388
     AutoSize = True
     BorderWidth = 1
     Caption = 'ToolBar1'
@@ -62,6 +64,7 @@ object XCollectionEditor: TGLXCollectionEditor
     end
     object ToolButton5: TToolButton
       Left = 36
+      Height = 22
       Top = 2
       Width = 8
       Caption = 'ToolButton5'
@@ -75,6 +78,7 @@ object XCollectionEditor: TGLXCollectionEditor
     end
     object ToolButton6: TToolButton
       Left = 67
+      Height = 22
       Top = 2
       Width = 8
       Caption = 'ToolButton6'
@@ -266,8 +270,8 @@ object XCollectionEditor: TGLXCollectionEditor
   end
   object ActionList: TActionList
     Images = ImageList
-    left = 64
-    top = 64
+    left = 200
+    top = 72
     object ACRemove: TAction
       Caption = 'Remove item'
       Hint = 'Remove item'
@@ -425,6 +429,6 @@ object XCollectionEditor: TGLXCollectionEditor
   object PMToolBar: TPopupMenu
     OnPopup = PMToolBarPopup
     left = 24
-    top = 104
+    top = 144
   end
 end

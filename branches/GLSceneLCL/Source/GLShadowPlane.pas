@@ -95,7 +95,7 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
-    procedure DoRender(var ARci: TRenderContextInfo;
+    procedure DoRender(var ARci: TGLRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
 
     procedure Assign(Source: TPersistent); override;
@@ -171,7 +171,7 @@ end;
 // DoRender
 //
 
-procedure TGLShadowPlane.DoRender(var ARci: TRenderContextInfo;
+procedure TGLShadowPlane.DoRender(var ARci: TGLRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);
 var
   oldProxySubObject, oldIgnoreMaterials: Boolean;

@@ -139,7 +139,7 @@ type
     constructor Create(AOwner: TGLXCollection); override;
     destructor Destroy; override;
 
-    procedure Render(var rci: TRenderContextInfo); override;
+    procedure Render(var rci: TGLRenderContextInfo); override;
 
     property Geom: PdxGeom read FGeom;
 
@@ -727,7 +727,7 @@ end;
 // Render
 //
 
-procedure TGLODECustomCollider.Render(var rci: TRenderContextInfo);
+procedure TGLODECustomCollider.Render(var rci: TGLRenderContextInfo);
 var
   i: Integer;
 begin

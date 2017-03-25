@@ -11,7 +11,7 @@ object Form1: TForm1
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
   OnCreate = FormCreate
-  LCLVersion = '1.6.2.0'
+  LCLVersion = '1.6.4.0'
   object Label1: TLabel
     Left = 0
     Height = 13
@@ -159,6 +159,13 @@ object Form1: TForm1
     top = 16
     object HeightField1: TGLHeightField
       TagFloat = 0
+      Material.Texture.ImageClassName = 'TGLBlankImage'
+      Material.Texture.Image.Width = 64
+      Material.Texture.Image.Height = 64
+      Material.Texture.Image.ColorFormat = 6408
+      Material.Texture.MagFilter = maNearest
+      Material.Texture.MinFilter = miNearest
+      Material.Texture.Compression = tcNone
       Direction.Coordinates = {
         000000000000803F2EBD3BB300000000
       }
@@ -176,6 +183,8 @@ object Form1: TForm1
       YSamplingScale.Max = 1
       YSamplingScale.Origin = 0
       YSamplingScale.Step = 0.0799999982118607
+      OnGetHeight = HeightField1GetHeight
+      OnGetHeight2 = HeightField1GetHeight2
       object Sphere1: TGLSphere
         TagFloat = 0
         Material.FrontProperties.Diffuse.Color = {

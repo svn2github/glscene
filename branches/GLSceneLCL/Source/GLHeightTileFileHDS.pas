@@ -33,7 +33,7 @@ type
 	// TGLHeightTileFileHDS
 	//
    { An Height Data Source for the HTF format. }
-	TGLHeightTileFileHDS = class (THeightDataSource)
+	TGLHeightTileFileHDS = class (TGLHeightDataSource)
 	   private
 	       
          FInfiniteWrap : Boolean;
@@ -53,7 +53,7 @@ type
 	       
 	        constructor Create(AOwner: TComponent); override;
          destructor Destroy; override;
-         procedure StartPreparingData(HeightData : THeightData); override;
+         procedure StartPreparingData(HeightData : TGLHeightData); override;
          function Width :integer;    override;
          function Height:integer;    override;
          function OpenHTF:THeightTileFile; //gives you direct access to the HTF object
@@ -160,9 +160,9 @@ end;
 
 // StartPreparingData
 //
-procedure TGLHeightTileFileHDS.StartPreparingData(HeightData : THeightData);
+procedure TGLHeightTileFileHDS.StartPreparingData(HeightData : TGLHeightData);
 var
-   oldType : THeightDataType;
+   oldType : TGLHeightDataType;
    htfTile : PHeightTile;
    htfTileInfo : PHeightTileInfo;
    x, y : Integer;

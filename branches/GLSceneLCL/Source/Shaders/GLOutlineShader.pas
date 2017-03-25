@@ -53,8 +53,8 @@ type
 
   protected
      
-    procedure DoApply(var rci: TRenderContextInfo; Sender: TObject); override;
-    function DoUnApply(var rci: TRenderContextInfo): Boolean; override;
+    procedure DoApply(var rci: TGLRenderContextInfo; Sender: TObject); override;
+    function DoUnApply(var rci: TGLRenderContextInfo): Boolean; override;
 
   public
      
@@ -108,7 +108,7 @@ end;
 // DoApply
 //
 
-procedure TGLOutlineShader.DoApply(var rci: TRenderContextInfo; Sender:
+procedure TGLOutlineShader.DoApply(var rci: TGLRenderContextInfo; Sender:
   TObject);
 begin
   // We first draw the object as usual in the first pass. This allows objects
@@ -119,7 +119,7 @@ end;
 // DoUnApply
 //
 
-function TGLOutlineShader.DoUnApply(var rci: TRenderContextInfo): Boolean;
+function TGLOutlineShader.DoUnApply(var rci: TGLRenderContextInfo): Boolean;
 begin
   if rci.ignoreMaterials or (stStencilTest in rci.GLStates.States) then
   begin

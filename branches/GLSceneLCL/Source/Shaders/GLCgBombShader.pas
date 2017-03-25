@@ -98,8 +98,8 @@ type
     function GetMaterialLibrary: TGLAbstractMaterialLibrary;
 
   protected
-    procedure DoInitialize(var rci : TRenderContextInfo; Sender : TObject); override;
-    procedure DoApply(var rci: TRenderContextInfo; Sender: TObject); override;
+    procedure DoInitialize(var rci : TGLRenderContextInfo; Sender : TObject); override;
+    procedure DoApply(var rci: TGLRenderContextInfo; Sender: TObject); override;
     procedure OnApplyVP(CgProgram: TCgProgram; Sender: TObject); virtual;
     procedure OnApplyFP(CgProgram: TCgProgram; Sender: TObject); virtual;
     procedure OnUnApplyFP(CgProgram: TCgProgram); virtual;
@@ -133,8 +133,8 @@ type
 
   TGLCgBombShader = class(TGLCustomCGBombShader)
   protected
-    procedure DoInitialize(var rci : TRenderContextInfo; Sender : TObject); override;
-    procedure DoApply(var rci: TRenderContextInfo; Sender: TObject); override;
+    procedure DoInitialize(var rci : TGLRenderContextInfo; Sender : TObject); override;
+    procedure DoApply(var rci: TGLRenderContextInfo; Sender: TObject); override;
     procedure OnApplyVP(CgProgram: TCgProgram; Sender: TObject); override;
     procedure OnApplyFP(CgProgram: TCgProgram; Sender: TObject); override;
     procedure OnUnApplyFP(CgProgram: TCgProgram); override;
@@ -188,7 +188,7 @@ begin
 end;
 
 
-procedure TGLCustomCGBombShader.DoApply(var rci: TRenderContextInfo; Sender: TObject);
+procedure TGLCustomCGBombShader.DoApply(var rci: TGLRenderContextInfo; Sender: TObject);
 begin
   VertexProgram.Apply(rci, Sender);
   FragmentProgram.Apply(rci, Sender);
@@ -210,7 +210,7 @@ begin
 end;
 
 
-procedure TGLCustomCGBombShader.DoInitialize(var rci : TRenderContextInfo; Sender : TObject);
+procedure TGLCustomCGBombShader.DoInitialize(var rci : TGLRenderContextInfo; Sender : TObject);
 begin
   if FGradientTexture = nil then
   try
@@ -484,7 +484,7 @@ end;
 
 { TGLCgBombShader }
 
-procedure TGLCgBombShader.DoApply(var rci: TRenderContextInfo;
+procedure TGLCgBombShader.DoApply(var rci: TGLRenderContextInfo;
   Sender: TObject);
 begin
 {$IFNDEF GLS_OPTIMIZATIONS}
@@ -493,7 +493,7 @@ begin
 {$ENDIF}
 end;
 
-procedure TGLCgBombShader.DoInitialize(var rci : TRenderContextInfo; Sender : TObject);
+procedure TGLCgBombShader.DoInitialize(var rci : TGLRenderContextInfo; Sender : TObject);
 begin
 {$IFNDEF GLS_OPTIMIZATIONS}
   if (not (csDesigning in ComponentState)) or DesignEnable then

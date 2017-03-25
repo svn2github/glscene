@@ -33,8 +33,8 @@ type
   private
 
   protected
-    procedure DoApply(var rci : TRenderContextInfo; Sender : TObject); override;
-    function DoUnApply(var rci: TRenderContextInfo): Boolean; override;
+    procedure DoApply(var rci : TGLRenderContextInfo; Sender : TObject); override;
+    function DoUnApply(var rci: TGLRenderContextInfo): Boolean; override;
   public
     constructor Create(AOwner : TComponent); override;
     destructor Destroy; override;
@@ -107,7 +107,7 @@ begin
   inherited;
 end;
 
-procedure TGLCustomGLSLIvoryShader.DoApply(var rci: TRenderContextInfo;
+procedure TGLCustomGLSLIvoryShader.DoApply(var rci: TGLRenderContextInfo;
   Sender: TObject);
 begin
   GetGLSLProg.UseProgramObject;
@@ -115,7 +115,7 @@ begin
 end;
 
 function TGLCustomGLSLIvoryShader.DoUnApply(
-  var rci: TRenderContextInfo): Boolean;
+  var rci: TGLRenderContextInfo): Boolean;
 begin
   Result := False;
   GetGLSLProg.EndUseProgramObject;

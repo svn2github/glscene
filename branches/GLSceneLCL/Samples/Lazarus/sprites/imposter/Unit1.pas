@@ -26,7 +26,7 @@ type
     CBShowImposter: TCheckBox;
     CBSampleSize: TComboBox;
     Label2: TLabel;
-    procedure GLDirectOpenGL1Render(Sender: TObject; var rci: TRenderContextInfo);
+    procedure GLDirectOpenGL1Render(Sender: TObject; var rci: TGLRenderContextInfo);
     procedure GLCadencer1Progress(Sender: TObject;
       const deltaTime, newTime: double);
     procedure FormCreate(Sender: TObject);
@@ -72,7 +72,7 @@ begin
   impBuilder.RequestImposterFor(GLTeapot1);
 end;
 
-procedure TForm1.GLDirectOpenGL1Render(Sender: TObject; var rci: TRenderContextInfo);
+procedure TForm1.GLDirectOpenGL1Render(Sender: TObject; var rci: TGLRenderContextInfo);
 var
   camPos, pos: TVector;
   imp: TImposter;

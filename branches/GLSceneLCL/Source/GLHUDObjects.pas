@@ -86,7 +86,7 @@ type
      
     constructor Create(AOwner: TComponent); override;
 
-    procedure DoRender(var rci: TRenderContextInfo;
+    procedure DoRender(var rci: TGLRenderContextInfo;
       renderSelf, renderChildren: Boolean); override;
 
   published
@@ -108,7 +108,7 @@ type
   private
      
     FBitmapFont: TGLCustomBitmapFont;
-    FText: UnicodeString;
+    FText: String;
     FRotation: Single;
     FAlignment: TAlignment;
     FLayout: TGLTextLayout;
@@ -117,7 +117,7 @@ type
   protected
      
     procedure SetBitmapFont(const val: TGLCustomBitmapFont);
-    procedure SetText(const val: UnicodeString);
+    procedure SetText(const val: String);
     procedure SetRotation(const val: Single);
     procedure SetAlignment(const val: TAlignment);
     procedure SetLayout(const val: TGLTextLayout);
@@ -126,14 +126,14 @@ type
     procedure Notification(AComponent: TComponent;
       Operation: TOperation); override;
     procedure RenderTextAtPosition(const X, Y, Z: Single;
-      var rci: TRenderContextInfo);
+      var rci: TGLRenderContextInfo);
 
   public
      
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
-    procedure DoRender(var rci: TRenderContextInfo;
+    procedure DoRender(var rci: TGLRenderContextInfo;
       renderSelf, renderChildren: Boolean); override;
 
   published
@@ -146,7 +146,7 @@ type
     { : Text to render.
       Be aware that only the characters available in the bitmap font will
       be rendered. CR LF sequences are allowed. }
-    property Text: UnicodeString read FText write SetText;
+    property Text: String read FText write SetText;
     { : Rotation angle in degrees (2d). }
     property Rotation: Single read FRotation write SetRotation;
     { : Controls the text alignment (horizontal).
@@ -164,7 +164,7 @@ type
     them to screen coordinates and renderes text there. }
   TGLAbsoluteHUDText = class(TGLHUDText)
   public
-    procedure DoRender(var rci: TRenderContextInfo;
+    procedure DoRender(var rci: TGLRenderContextInfo;
       renderSelf, renderChildren: Boolean); override;
   end;
 
@@ -175,7 +175,7 @@ type
     Note: this still does not solve the font scaling problem. }
   TGLResolutionIndependantHUDText = class(TGLHUDText)
   public
-    procedure DoRender(var rci: TRenderContextInfo;
+    procedure DoRender(var rci: TGLRenderContextInfo;
       renderSelf, renderChildren: Boolean); override;
     constructor Create(AOwner: TComponent); override;
   end;
@@ -238,7 +238,7 @@ end;
 // DoRender
 //
 
-procedure TGLHUDSprite.DoRender(var rci: TRenderContextInfo;
+procedure TGLHUDSprite.DoRender(var rci: TGLRenderContextInfo;
   renderSelf, renderChildren: Boolean);
 var
   vx, vy, vx1, vy1, f: Single;
@@ -399,7 +399,7 @@ end;
 // SetText
 //
 
-procedure TGLHUDText.SetText(const val: UnicodeString);
+procedure TGLHUDText.SetText(const val: String);
 begin
   FText := val;
   StructureChanged;
@@ -444,7 +444,7 @@ end;
 //
 
 procedure TGLHUDText.RenderTextAtPosition(const X, Y, Z: Single;
-  var rci: TRenderContextInfo);
+  var rci: TGLRenderContextInfo);
 var
   f: Single;
 begin
@@ -480,7 +480,7 @@ end;
 // DoRender
 //
 
-procedure TGLHUDText.DoRender(var rci: TRenderContextInfo;
+procedure TGLHUDText.DoRender(var rci: TGLRenderContextInfo;
   renderSelf, renderChildren: Boolean);
 begin
   RenderTextAtPosition(Position.X, Position.Y, Position.Z, rci);
@@ -505,7 +505,7 @@ end;
 // DoRender
 //
 
-procedure TGLResolutionIndependantHUDText.DoRender(var rci: TRenderContextInfo;
+procedure TGLResolutionIndependantHUDText.DoRender(var rci: TGLRenderContextInfo;
   renderSelf, renderChildren: Boolean);
 begin
   RenderTextAtPosition(Position.X * rci.viewPortSize.cx,
@@ -521,7 +521,7 @@ end;
 // DoRender
 //
 
-procedure TGLAbsoluteHUDText.DoRender(var rci: TRenderContextInfo;
+procedure TGLAbsoluteHUDText.DoRender(var rci: TGLRenderContextInfo;
   renderSelf, renderChildren: Boolean);
 var
   Temp: TAffineVector;
