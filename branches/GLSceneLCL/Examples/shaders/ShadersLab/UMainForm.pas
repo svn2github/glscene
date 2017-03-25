@@ -1,5 +1,7 @@
 unit UMainForm;
 
+{$mode objfpc}{$H+}
+
 interface
 
 uses
@@ -13,8 +15,7 @@ uses
   ExtCtrls,
   ComCtrls,
   ExtDlgs,
-  tga,
-  GLFileTGA,
+  TGA,
   GLMaterial,
   GLScene,
   GLLCLViewer,
@@ -45,19 +46,20 @@ uses
   GLSLVertexDisplacementShader,
   GLSLGlassShader,
   GLCustomShader,
-  GLSLToonShader;
+  GLSLToonShader, Types;
 
 type
 
   { TMainForm }
 
   TMainForm = class(TForm)
-    GLSimpleNavigation1: TGLSimpleNavigation;
+
     Panel1: TPanel;
-    Viewer: TGLSceneViewer;
     MaterialLibrary: TGLMaterialLibrary;
     GLScene1: TGLScene;
     Cadencer: TGLCadencer;
+    Panel2: TPanel;
+    Viewer: TGLSceneViewer;
     World: TGLDummyCube;
     Camera: TGLCamera;
     GLLightSource1: TGLLightSource;
@@ -410,6 +412,20 @@ type
     procedure Shape20MouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
     procedure Shape21MouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
     procedure Shape22MouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
+    procedure ViewerMouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure ViewerMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer
+      );
+    procedure ViewerMouseUp(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure ViewerMouseWheel(Sender: TObject; Shift: TShiftState;
+      WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
+    private
+    protected
+      MousePoint: TPoint;
+      md:Boolean;
+    public
+
   end;
 
 var
@@ -437,7 +453,7 @@ var
 
 implementation
 
-{$R *.dfm}
+{$R *.lfm}
 
 uses
   GLFileOBJ, GLFileSTL, GLFileLWO,
@@ -559,9 +575,9 @@ begin
     VertexDisplacementShader.ElapsedTime := newTime;
   end;
 
-
-  //application.ProcessMessages;
-   Viewer.Invalidate;
+  Viewer.Refresh;
+    if Self.Focused then
+      Viewer.Invalidate;
 end;
 
 procedure TMainForm.FormShow(Sender: TObject);
@@ -823,7 +839,7 @@ end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
-
+  MainForm.DoubleBuffered:=True;
 end;
 
 procedure TMainForm.FormActivate(Sender: TObject);
@@ -1078,6 +1094,124 @@ begin
     ToonShader.OutlinetColor.Color := ConvertWinColor(ColorDialog.Color);
     Shape22.Brush.Color := ColorDialog.Color;
   end;
+end;
+
+procedure TMainForm.ViewerMouseDown(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+begin
+    MousePoint.X := X;
+  MousePoint.Y := Y;
+  if Shift = [ssLeft] then
+  begin
+   // Screen.Cursor := crRotate;
+   // NavCube.ActiveMouse := True;
+  end
+  else if Shift = [ssRight] then
+  begin
+   // Screen.Cursor := crZoom;
+  end;
+  md:=true;
+(*  if ssShift in Shift then        { Shift key down}
+  begin
+    if ssLeft in Shift then Screen.Cursor := crZoom;
+  end
+  else if ssCtrl in Shift then    { Ctrl key down }
+  begin
+    //if ssLeft in Shift then Screen.Cursor := crSlidexz
+    //else
+    // if ssRight in Shift then Screen.Cursor := crLightxz;
+  end
+  else if ssAlt in Shift then     { Alt key down }
+  begin
+    //if ssLeft in Shift then Screen.Cursor := crSlidezy
+    //else
+    //if ssRight in Shift then Screen.Cursor := crLightxy;
+  end
+  else { no shift, ctrl or alt key }
+  begin
+    if Shift = [ssLeft] then Screen.Cursor := crRotate
+    else
+      if Shift = [ssRight] then Screen.Cursor := crZoom;
+  end;   *)
+end;
+
+procedure TMainForm.ViewerMouseMove(Sender: TObject; Shift: TShiftState; X,
+  Y: Integer);
+begin
+   if md and (Shift <> []) then
+  begin
+    if ssLeft in Shift then
+    begin
+      if ssShift in Shift then
+      begin
+        //Showmessage('on the rock');
+        //NavCube.ActiveMouse:=True;
+      end
+      else
+      begin
+       // NavCube.ActiveMouse:=False;
+        Camera.MoveAroundTarget((MousePoint.y - Y) * 0.1, (MousePoint.x - X) * 0.1)
+      end;
+    end
+    else if ssRight in Shift then
+    begin
+      if ssShift in Shift then   { shift key down }
+      begin
+        with Camera do AdjustDistanceToTarget(Power(1.0125, MousePoint.y - Y));
+      end
+      else
+      begin
+        with Camera do
+        begin
+          FocalLength  := FocalLength - (MousePoint.y - Y);
+          if FocalLength > 3000 then FocalLength := 3000;   { max focal length }
+          if FocalLength < 10 then FocalLength := 10;       { min focal length }
+        end;       { display in statusbar palel }
+      end;
+    (*  d := Camera.DistanceToTarget * 0.01 * (X - MousePoint.x + Y - MousePoint.y);
+      if IsKeyDown('x') then ffObject.Translate(d, 0, 0)
+      else if IsKeyDown('y') then ffObject.Translate(0, d, 0)
+      else if IsKeyDown('z') then ffObject.Translate(0, 0, d)
+      else
+      begin
+        if ssShift in Shift then
+          Camera.RotateObject(ffObject, (MousePoint.y - Y) * 0.1, (MousePoint.x - X) * 0.1)
+        else
+          Camera.RotateObject(ffObject, MousePoint.y - Y, MousePoint.x - X);
+      end; *)
+    end;
+    MousePoint.X := X;         { update mouse position }
+    MousePoint.Y := Y;
+  end;
+end;
+
+procedure TMainForm.ViewerMouseUp(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+begin
+    Screen.Cursor := crDefault;
+  md := False;
+end;
+
+procedure TMainForm.ViewerMouseWheel(Sender: TObject; Shift: TShiftState;
+  WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
+begin
+   if (MousePoint.X >= Viewer.Left) and
+      (MousePoint.X <= Viewer.Left + Viewer.Width) and
+      (MousePoint.Y >= Viewer.Top) and
+      (MousePoint.y <= Viewer.Top +Viewer.Height) then
+   begin
+ { a wheel step = WheelDelta/300; each step adjusts target distance by 2.5%
+   another method to zoom in or out }
+     //GLSViewer.SetFocus;
+
+       Camera.AdjustDistanceToTarget(Power(1.025, WheelDelta / 300));
+       Camera.DepthOfView := 2 * Camera.DistanceToTarget + 2 * Objects.BoundingSphereRadius;
+
+     Handled := True;
+
+     //Camera1.AdjustDistanceToTarget(Power(1.025, WheelDelta/300));
+     //ShowCameraLocation;
+   end;
 end;
 
 procedure TMainForm.Shape2MouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
