@@ -1,10 +1,9 @@
 object Form1: TForm1
   Left = 276
   Top = 162
-  BorderStyle = bsDialog
   Caption = 'Anti-ZFighting Shader Demo'
-  ClientHeight = 530
-  ClientWidth = 649
+  ClientHeight = 520
+  ClientWidth = 639
   Color = clBlack
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -12,26 +11,29 @@ object Form1: TForm1
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
+  Position = poScreenCenter
+  WindowState = wsMaximized
   OnCreate = FormCreate
   OnMouseWheel = FormMouseWheel
   PixelsPerInch = 96
   TextHeight = 13
   object GLSceneViewer1: TGLSceneViewer
-    Left = 8
-    Top = 8
-    Width = 633
-    Height = 465
+    Left = 0
+    Top = 0
+    Width = 639
+    Height = 520
     Camera = GLCamera1
     Buffer.BackgroundColor = clDefault
     Buffer.DepthPrecision = dp32bits
-    FieldOfView = 133.454193115234400000
+    FieldOfView = 137.924972534179700000
+    Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
     TabOrder = 0
   end
   object CheckBox1: TCheckBox
-    Left = 16
-    Top = 480
+    Left = 24
+    Top = 48
     Width = 137
     Height = 17
     Hint = 'dfhdfh'
@@ -50,8 +52,8 @@ object Form1: TForm1
     OnClick = CheckBox1Click
   end
   object CheckBox2: TCheckBox
-    Left = 16
-    Top = 504
+    Left = 24
+    Top = 16
     Width = 209
     Height = 17
     Caption = 'Ignore Depth Buffer'
@@ -67,8 +69,8 @@ object Form1: TForm1
     OnClick = CheckBox2Click
   end
   object GLScene1: TGLScene
-    Left = 312
-    Top = 480
+    Left = 288
+    Top = 24
     object GLSkyDome1: TGLSkyDome
       Bands = <
         item
@@ -1244,7 +1246,7 @@ object Form1: TForm1
         Material.Texture.TextureMode = tmModulate
         Material.Texture.Disabled = False
       end>
-    Left = 280
-    Top = 480
+    Left = 400
+    Top = 24
   end
 end

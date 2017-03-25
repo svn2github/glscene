@@ -60,7 +60,7 @@ type
     OffsetEnd: Cardinal;
   end;
 
-  TMDCBorderFrame = packed record
+  TMDCBorderFrame = record
     BBMin, BBMax: TMDCPoint;
     LocalOrigin: TMDCPoint;
     Radius: Single;
@@ -132,24 +132,20 @@ type
     procedure LoadFromStream(AStream: TStream); override;
   end;
 
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
 implementation
 
 // ------------------
 // ------------------ TGLMDCVectorFile ------------------
 // ------------------
 
-// Capabilities
-//
 class function TGLMDCVectorFile.Capabilities: TGLDataFileCapabilities;
 begin
   Result := [DfcRead];
 end;
 
-// LoadFromStream
-//
 procedure TGLMDCVectorFile.LoadFromStream(AStream: TStream);
 
 type

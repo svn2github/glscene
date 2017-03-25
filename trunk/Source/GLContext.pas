@@ -248,7 +248,7 @@ type
     FFullScreen: Boolean;
 
   protected
-    
+
 
   public
     
@@ -359,7 +359,6 @@ type
     FTarget: TGLTextureTarget;
     procedure SetTarget(ATarget: TGLTextureTarget);
   protected
-    
     function DoAllocateHandle: Cardinal; override;
     procedure DoDestroyHandle(var AHandle: Cardinal); override;
     class function IsValid(const ID: Cardinal): Boolean; override;
@@ -382,10 +381,8 @@ type
      Do not use this class directly, use one of its subclasses instead. }
   TGLQueryHandle = class(TGLContextHandle)
   private
-     
     FActive: Boolean;
   protected
-    
     class function Transferable: Boolean; override;
     function DoAllocateHandle: Cardinal; override;
     procedure DoDestroyHandle(var AHandle: Cardinal); override;
@@ -406,10 +403,8 @@ type
     function QueryResultInt64: TGLint64EXT;
     function QueryResultUInt64: TGLuint64EXT;
     function QueryResultBool: TGLboolean;
-
     property Target: Cardinal read GetTarget;
     property QueryType: TQueryType read GetQueryType;
-
     {True if within a Begin/EndQuery. }
     property Active: Boolean read FActive;
   end;
@@ -1297,9 +1292,6 @@ begin
     FAntiAliasing := val;
 end;
 
-// SetAcceleration
-//
-
 procedure TGLContext.SetAcceleration(const val: TGLContextAcceleration);
 begin
   if Active then
@@ -1308,16 +1300,10 @@ begin
     FAcceleration := val;
 end;
 
-// GetActive
-//
-
 function TGLContext.GetActive: Boolean;
 begin
   Result := (FActivationCount > 0);
 end;
-
-// SetActive
-//
 
 procedure TGLContext.SetActive(const aActive: Boolean);
 begin
@@ -1331,9 +1317,6 @@ begin
   end;
 end;
 
-// CreateContext
-//
-
 procedure TGLContext.CreateContext(ADeviceHandle: HDC);
 begin
   if IsValid then
@@ -1341,9 +1324,6 @@ begin
   DoCreateContext(ADeviceHandle);
   Manager.ContextCreatedBy(Self);
 end;
-
-// CreateMemoryContext
-//
 
 procedure TGLContext.CreateMemoryContext(outputDevice: HWND;
   width, height: Integer; BufferCount: integer);
@@ -1353,9 +1333,6 @@ begin
   DoCreateMemoryContext(outputDevice, width, height, BufferCount);
   Manager.ContextCreatedBy(Self);
 end;
-
-// PrepareHandlesData
-//
 
 procedure TGLContext.PrepareHandlesData;
 var
@@ -1387,9 +1364,6 @@ begin
     FIsPraparationNeed := False;
   end;
 end;
-
-// PropagateSharedContext
-//
 
 procedure TGLContext.PropagateSharedContext;
 var
@@ -1442,9 +1416,6 @@ begin
 {$ENDIF}
 end;
 
-// ShareLists
-//
-
 procedure TGLContext.ShareLists(aContext: TGLContext);
 begin
 {$IFNDEF GLS_MULTITHREAD}
@@ -1473,9 +1444,6 @@ begin
 {$ENDIF}
 end;
 
-// DestroyAllHandles
-//
-
 procedure TGLContext.DestroyAllHandles;
 var
   i: Integer;
@@ -1498,9 +1466,6 @@ begin
     Deactivate;
   end;
 end;
-
-// DestroyContext
-//
 
 procedure TGLContext.DestroyContext;
 var
@@ -1566,9 +1531,6 @@ begin
   FGL.Close;
 end;
 
-// Activate
-//
-
 procedure TGLContext.Activate;
 begin
 {$IFDEF GLS_MULTITHREAD}
@@ -1593,9 +1555,6 @@ begin
   Inc(FActivationCount);
 end;
 
-// Deactivate
-//
-
 procedure TGLContext.Deactivate;
 begin
   Assert(vCurrentGLContext = Self);
@@ -1615,9 +1574,6 @@ begin
   FLock.Leave;
 {$ENDIF}
 end;
-
-// FindCompatibleContext
-//
 
 function TGLContext.FindCompatibleContext: TGLContext;
 var
@@ -1667,9 +1623,6 @@ end;
 // ------------------ TGLContextHandle ------------------
 // ------------------
 
- 
-//
-
 constructor TGLContextHandle.Create;
 begin
   inherited Create;
@@ -1681,9 +1634,6 @@ begin
   GLContextManager.FHandles.Add(Self);
 end;
 
-// CreateAndAllocate
-//
-
 constructor TGLContextHandle.CreateAndAllocate(failIfAllocationFailed: Boolean =
   True);
 begin
@@ -1692,9 +1642,6 @@ begin
   if failIfAllocationFailed and (Handle = 0) then
     raise EGLContext.Create('Auto-allocation failed');
 end;
-
- 
-//
 
 destructor TGLContextHandle.Destroy;
 var
@@ -1708,9 +1655,6 @@ begin
     GLContextManager.FHandles.Remove(Self);
   inherited Destroy;
 end;
-
-// AllocateHandle
-//
 
 function TGLContextHandle.AllocateHandle: Cardinal;
 var
@@ -1830,9 +1774,6 @@ begin
   Result := FLastHandle.FHandle;
 end;
 
-// DestroyHandle
-//
-
 procedure TGLContextHandle.DestroyHandle;
 var
   oldContext: TGLContext;
@@ -1868,9 +1809,6 @@ begin
       oldContext.Activate;
   end;
 end;
-
-// ContextDestroying
-//
 
 procedure TGLContextHandle.ContextDestroying;
 var
@@ -2059,9 +1997,6 @@ begin
   Result := false;
 end;
 
-// Transferable
-//
-
 class function TGLContextHandle.Transferable: Boolean;
 begin
   Result := True;
@@ -2071,8 +2006,6 @@ class function TGLContextHandle.IsValid(const ID: Cardinal): Boolean;
 begin
   Result := True;
 end;
-// IsSupported
-//
 
 class function TGLContextHandle.IsSupported: Boolean;
 begin
@@ -2083,18 +2016,12 @@ end;
 // ------------------ TGLVirtualHandle ------------------
 // ------------------
 
-// DoAllocateHandle
-//
-
 function TGLVirtualHandle.DoAllocateHandle: Cardinal;
 begin
   Result := 0;
   if Assigned(FOnAllocate) then
     FOnAllocate(Self, Result);
 end;
-
-// DoDestroyHandle
-//
 
 procedure TGLVirtualHandle.DoDestroyHandle(var AHandle: Cardinal);
 begin
@@ -2127,16 +2054,10 @@ end;
 // ------------------ TGLListHandle ------------------
 // ------------------
 
-// DoAllocateHandle
-//
-
 function TGLListHandle.DoAllocateHandle: Cardinal;
 begin
   Result := GL.GenLists(1);
 end;
-
-// DoDestroyHandle
-//
 
 procedure TGLListHandle.DoDestroyHandle(var AHandle: Cardinal);
 begin
@@ -2152,32 +2073,20 @@ begin
   end;
 end;
 
-// IsValid
-//
-
 class function TGLListHandle.IsValid(const ID: Cardinal): Boolean;
 begin
   Result := GL.IsList(ID);
 end;
-
-// NewList
-//
 
 procedure TGLListHandle.NewList(mode: Cardinal);
 begin
   vCurrentGLContext.GLStates.NewList(GetHandle, mode);
 end;
 
-// EndList
-//
-
 procedure TGLListHandle.EndList;
 begin
   vCurrentGLContext.GLStates.EndList;
 end;
-
-// CallList
-//
 
 procedure TGLListHandle.CallList;
 begin
@@ -2188,18 +2097,12 @@ end;
 // ------------------ TGLTextureHandle ------------------
 // ------------------
 
-// DoAllocateHandle
-//
-
 function TGLTextureHandle.DoAllocateHandle: Cardinal;
 begin
   Result := 0;
   GL.GenTextures(1, @Result);
   FTarget := ttNoShape;
 end;
-
-// DoDestroyHandle
-//
 
 procedure TGLTextureHandle.DoDestroyHandle(var AHandle: Cardinal);
 var
@@ -2234,9 +2137,6 @@ begin
   end;
 end;
 
-// IsValid
-//
-
 class function TGLTextureHandle.IsValid(const ID: Cardinal): Boolean;
 begin
   Result := GL.IsTexture(ID);
@@ -2252,17 +2152,11 @@ end;
 // ------------------ TGLSamplerHandle ------------------
 // ------------------
 
-// DoAllocateHandle
-//
-
 function TGLSamplerHandle.DoAllocateHandle: Cardinal;
 begin
   Result := 0;
   GL.GenSamplers(1, @Result);
 end;
-
-// DoDestroyHandle
-//
 
 procedure TGLSamplerHandle.DoDestroyHandle(var AHandle: Cardinal);
 begin
@@ -2278,16 +2172,10 @@ begin
   end;
 end;
 
-// TGLSamplerHandle
-//
-
 class function TGLSamplerHandle.IsSupported: Boolean;
 begin
   Result := GL.ARB_sampler_objects;
 end;
-
-// IsValid
-//
 
 class function TGLSamplerHandle.IsValid(const ID: Cardinal): Boolean;
 begin
@@ -2298,9 +2186,6 @@ end;
 // ------------------ TGLQueryHandle ------------------
 // ------------------
 
-// BeginQuery
-//
-
 procedure TGLQueryHandle.BeginQuery;
 begin
   if vCurrentGLContext.GLStates.CurrentQuery[QueryType] = 0 then
@@ -2308,25 +2193,16 @@ begin
   Factive := True;
 end;
 
-// CounterBits
-//
-
 function TGLQueryHandle.CounterBits: integer;
 begin
   GL.GetQueryiv(Target, GL_QUERY_COUNTER_BITS, @Result);
 end;
-
-// DoAllocateHandle
-//
 
 function TGLQueryHandle.DoAllocateHandle: Cardinal;
 begin
   Result := 0;
   GL.GenQueries(1, @Result);
 end;
-
-// DoDestroyHandle
-//
 
 procedure TGLQueryHandle.DoDestroyHandle(var AHandle: Cardinal);
 begin
@@ -2342,16 +2218,10 @@ begin
   end;
 end;
 
-// IsValid
-//
-
 class function TGLQueryHandle.IsValid(const ID: Cardinal): Boolean;
 begin
   Result := GL.IsQuery(ID);
 end;
-
-// EndQuery
-//
 
 procedure TGLQueryHandle.EndQuery;
 begin
@@ -2362,40 +2232,25 @@ begin
   vCurrentGLContext.GLStates.EndQuery(QueryType);
 end;
 
-// IsResultAvailable
-//
-
 function TGLQueryHandle.IsResultAvailable: boolean;
 begin
   GL.GetQueryObjectiv(Handle, GL_QUERY_RESULT_AVAILABLE, @Result);
 end;
-
-// QueryResultInt
-//
 
 function TGLQueryHandle.QueryResultInt: TGLInt;
 begin
   GL.GetQueryObjectiv(Handle, GL_QUERY_RESULT, @Result);
 end;
 
-// QueryResultInt64
-//
-
 function TGLQueryHandle.QueryResultInt64: TGLint64EXT;
 begin
   GL.GetQueryObjecti64v(Handle, GL_QUERY_RESULT, @Result);
 end;
 
-// QueryResultUInt
-//
-
 function TGLQueryHandle.QueryResultUInt: Cardinal;
 begin
   GL.GetQueryObjectuiv(Handle, GL_QUERY_RESULT, @Result);
 end;
-
-// QueryResultUInt64
-//
 
 function TGLQueryHandle.QueryResultUInt64: TGLuint64EXT;
 begin
@@ -2410,9 +2265,6 @@ begin
   Result := I > 0;
 end;
 
-// Transferable
-//
-
 class function TGLQueryHandle.Transferable: Boolean;
 begin
   Result := False;
@@ -2422,32 +2274,20 @@ end;
 // ------------------ TGLOcclusionQueryHandle ------------------
 // ------------------
 
-// GetQueryType
-//
-
 function TGLOcclusionQueryHandle.GetQueryType: TQueryType;
 begin
   Result := qrySamplesPassed;
 end;
-
-// GetTarget
-//
 
 function TGLOcclusionQueryHandle.GetTarget: Cardinal;
 begin
   Result := GL_SAMPLES_PASSED;
 end;
 
-// IsSupported
-//
-
 class function TGLOcclusionQueryHandle.IsSupported: Boolean;
 begin
   Result := GL.VERSION_1_5;
 end;
-
-// PixelCount
-//
 
 function TGLOcclusionQueryHandle.PixelCount: Integer;
 begin
@@ -2458,24 +2298,15 @@ end;
 // ------------------ TGLBooleanOcclusionQueryHandle ------------------
 // ------------------
 
-// GetQueryType
-//
-
 function TGLBooleanOcclusionQueryHandle.GetQueryType: TQueryType;
 begin
   Result := qryAnySamplesPassed;
 end;
 
-// GetTarget
-//
-
 function TGLBooleanOcclusionQueryHandle.GetTarget: Cardinal;
 begin
   Result := GL_ANY_SAMPLES_PASSED;
 end;
-
-// IsSupported
-//
 
 class function TGLBooleanOcclusionQueryHandle.IsSupported: Boolean;
 begin
@@ -2485,9 +2316,6 @@ end;
 // ------------------
 // ------------------ TGLTimerQueryHandle ------------------
 // ------------------
-
-// GetTarget
-//
 
 function TGLTimerQueryHandle.GetQueryType: TQueryType;
 begin
@@ -2499,16 +2327,10 @@ begin
   Result := GL_TIME_ELAPSED;
 end;
 
-// IsSupported
-//
-
 class function TGLTimerQueryHandle.IsSupported: Boolean;
 begin
   Result := GL.EXT_timer_query or GL.ARB_timer_query;
 end;
-
-// Time
-//
 
 function TGLTimerQueryHandle.Time: Integer;
 begin
@@ -2519,32 +2341,20 @@ end;
 // ------------------ TGLPrimitiveQueryHandle ------------------
 // ------------------
 
-// GetQueryType
-//
-
 function TGLPrimitiveQueryHandle.GetQueryType: TQueryType;
 begin
   Result := qryPrimitivesGenerated;
 end;
-
-// GetTarget
-//
 
 function TGLPrimitiveQueryHandle.GetTarget: Cardinal;
 begin
   Result := GL_PRIMITIVES_GENERATED;
 end;
 
-// IsSupported
-//
-
 class function TGLPrimitiveQueryHandle.IsSupported: Boolean;
 begin
   Result := GL.VERSION_3_0;
 end;
-
-// PrimitivesGenerated
-//
 
 function TGLPrimitiveQueryHandle.PrimitivesGenerated: Integer;
 begin
@@ -2554,9 +2364,6 @@ end;
 // ------------------
 // ------------------ TGLBufferObjectHandle ------------------
 // ------------------
-
-// CreateFromData
-//
 
 constructor TGLBufferObjectHandle.CreateFromData(p: Pointer; size: Integer;
   bufferUsage: Cardinal);
@@ -2568,17 +2375,11 @@ begin
   UnBind;
 end;
 
-// DoAllocateHandle
-//
-
 function TGLBufferObjectHandle.DoAllocateHandle: Cardinal;
 begin
   Result := 0;
   GL.GenBuffers(1, @Result);
 end;
-
-// DoDestroyHandle
-//
 
 procedure TGLBufferObjectHandle.DoDestroyHandle(var AHandle: Cardinal);
 begin
@@ -2595,16 +2396,10 @@ begin
   end;
 end;
 
-// IsValid
-//
-
 class function TGLBufferObjectHandle.IsValid(const ID: Cardinal): Boolean;
 begin
   Result := GL.IsBuffer(ID);
 end;
-
-// IsSupported
-//
 
 class function TGLBufferObjectHandle.IsSupported: Boolean;
 begin
@@ -3597,9 +3392,6 @@ begin
   inherited;
 end;
 
-// IsSupported
-//
-
 class function TGLVertexShaderHandle.IsSupported: Boolean;
 begin
   Result := GL.ARB_vertex_shader;
@@ -3608,9 +3400,6 @@ end;
 // ------------------
 // ------------------ TGLGeometryShaderHandle ------------------
 // ------------------
-
- 
-//
 
 constructor TGLGeometryShaderHandle.Create;
 begin
@@ -3630,17 +3419,11 @@ end;
 // ------------------ TGLFragmentShaderHandle ------------------
 // ------------------
 
- 
-//
-
 constructor TGLFragmentShaderHandle.Create;
 begin
   FShaderType := GL_FRAGMENT_SHADER_ARB;
   inherited;
 end;
-
-// IsSupported
-//
 
 class function TGLFragmentShaderHandle.IsSupported: Boolean;
 begin
@@ -3660,9 +3443,6 @@ begin
   inherited;
 end;
 
-// IsSupported
-//
-
 class function TGLTessControlShaderHandle.IsSupported: Boolean;
 begin
   Result := GL.ARB_tessellation_shader;
@@ -3672,17 +3452,11 @@ end;
 // ------------------ TGLTessEvaluationShaderHandle ------------------
 // ------------------
 
- 
-//
-
 constructor TGLTessEvaluationShaderHandle.Create;
 begin
   FShaderType := GL_TESS_EVALUATION_SHADER;
   inherited;
 end;
-
-// IsSupported
-//
 
 class function TGLTessEvaluationShaderHandle.IsSupported: Boolean;
 begin
@@ -3693,24 +3467,15 @@ end;
 // ------------------ TGLProgramHandle ------------------
 // ------------------
 
-// DoAllocateHandle
-//
-
 function TGLProgramHandle.DoAllocateHandle: cardinal;
 begin
   Result := GL.CreateProgram();
 end;
 
-// IsValid
-//
-
 class function TGLProgramHandle.IsValid(const ID: Cardinal): Boolean;
 begin
   Result := GL.IsProgram(ID);
 end;
-
-// AddShader
-//
 
 procedure TGLProgramHandle.AddShader(shaderType: TGLShaderHandleClass; const
   shaderSource: string;
@@ -3735,16 +3500,10 @@ begin
   GL.CheckError;
 end;
 
-// AttachObject
-//
-
 procedure TGLProgramHandle.AttachObject(shader: TGLShaderHandle);
 begin
   GL.AttachShader(GetHandle, shader.Handle);
 end;
-
-// DetachAllObject
-//
 
 procedure TGLProgramHandle.DetachAllObject;
 var
@@ -3764,26 +3523,17 @@ begin
   end;
 end;
 
-// BindAttribLocation
-//
-
 procedure TGLProgramHandle.BindAttribLocation(index: Integer; const aName:
   string);
 begin
   GL.BindAttribLocation(GetHandle, index, PAnsiChar(AnsiString(aName)));
 end;
 
-// BindFragDataLocation
-//
-
 procedure TGLProgramHandle.BindFragDataLocation(index: Integer; const aName:
   string);
 begin
   GL.BindFragDataLocation(GetHandle, index, PAnsiChar(AnsiString(name)));
 end;
-
-// LinkProgram
-//
 
 function TGLProgramHandle.LinkProgram: Boolean;
 var
@@ -4482,9 +4232,6 @@ begin
     Free;
   end;
 end;
-
-// DestroyAllHandles
-//
 
 procedure TGLContextManager.DestroyAllHandles;
 var

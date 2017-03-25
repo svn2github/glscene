@@ -1,0 +1,16 @@
+0	 (i)  Log subsystem started in elapsed time mode.
+0	 (i)  Logging [debug info (D), info (i), notices (M), warnings (W), errors (Er), fatal errors (!!)]
+0	 (i)  Buffered mode: False
+0	 (i)  Temporary rendering context created
+0	 (M)  Getting OpenGL entry points and extension
+0	 (M)  
+16	 (i)  OpenGL rendering context information:
+16	 (i)  Renderer     : Intel(R) HD Graphics 4000
+32	 (i)  Vendor       : Intel
+32	 (i)  Version      : 4.0.0 - Build 10.18.10.4276
+32	 (i)  GLSL version : 4.00 - Build 10.18.10.4276
+47	 (M)  
+47	 (i)  Temporary rendering context destroyed
+63	 (M)  Getting OpenGL entry points and extension
+5875	 (i)  Logged fatal_errors: 0, errors: 0, warnings: 0, notices: 4, info: 10, debug: 0
+5875	 (i)  Log session shutdown

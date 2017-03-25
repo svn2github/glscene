@@ -37,18 +37,13 @@ uses
   GLRenderContextInfo;
 
 type
-
   TGLVertexAttribute = class;
   TGLVertexAttributes = class;
 
   TOnBeforeKernelLaunch = procedure(Sender: TGLVertexAttribute) of object;
 
-  // TGLVertexAttribute
-  //
-
   TGLVertexAttribute = class(TCollectionItem)
   private
-     
     FName: string;
     FType: TGLSLDataType;
     FFunc: TCUDAFunction;
@@ -60,12 +55,10 @@ type
     function GetLocation: Integer;
     function GetOwner: TGLVertexAttributes; reintroduce;
   public
-    
     constructor Create(ACollection: TCollection); override;
     procedure NotifyChange(Sender: TObject);
     property Location: Integer read GetLocation;
   published
-    
     property Name: string read FName write SetName;
     property GLSLType: TGLSLDataType read FType write SetType;
     property KernelFunction: TCUDAFunction read FFunc write SetFunc;
@@ -73,16 +66,11 @@ type
       FOnBeforeKernelLaunch write FOnBeforeKernelLaunch;
   end;
 
-  // TGLVertexAttributes
-  //
-
   TGLVertexAttributes = class(TOwnedCollection)
   private
-     
     procedure SetItems(Index: Integer; const AValue: TGLVertexAttribute);
     function GetItems(Index: Integer): TGLVertexAttribute;
   public
-    
     constructor Create(AOwner: TComponent);
     procedure NotifyChange(Sender: TObject);
     function MakeUniqueName(const ANameRoot: string): string;
@@ -95,12 +83,8 @@ type
   TFeedBackMeshPrimitive = (fbmpPoint, fbmpLine, fbmpTriangle);
   TFeedBackMeshLaunching = (fblCommon, fblOnePerAtttribute);
 
-  // TGLFeedBackMesh
-  //
-
   TGLCustomFeedBackMesh = class(TGLBaseSceneObject)
   private
-     
     FGeometryResource: TCUDAGraphicResource;
     FAttributes: TGLVertexAttributes;
     FVAO: TGLVertexArrayHandle;
@@ -120,14 +104,12 @@ type
     procedure SetShader(AShader: TGLSLShader);
     procedure SetCommonFunc(AFunc: TCUDAFunction);
   protected
-    
     procedure Notification(AComponent: TComponent;
       Operation: TOperation); override;
     procedure RefreshAttributes;
     procedure AllocateHandles;
     procedure LaunchKernels;
   protected
-    
     property Attributes: TGLVertexAttributes read FAttributes write SetAttributes;
     { GLSL shader as material. If it absent or disabled - nothing be drawen. }
     property Shader: TGLSLShader read FShader write SetShader;
@@ -155,10 +137,8 @@ type
        sorting purposes. }
     property Blend: Boolean read FBlend write FBlend default False;
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
     procedure DoRender(var ARci: TGLRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
     property ArrayBufferHandle: TGLVBOArrayBufferHandle read FVBO;
@@ -167,7 +147,6 @@ type
 
   TGLFeedBackMesh = class(TGLCustomFeedBackMesh)
   published
-    
     property Attributes;
     property Shader;
     property PrimitiveType;
@@ -194,17 +173,13 @@ type
     property Effects;
   end;
 
-  // TCUDAGLImageResource
-  //
   TCUDAGLImageResource = class(TCUDAGraphicResource)
   private
-     
     fMaterialLibrary: TGLMaterialLibrary;
     fTextureName: TGLLibMaterialName;
     procedure SetMaterialLibrary(const Value: TGLMaterialLibrary);
     procedure SetTextureName(const Value: TGLLibMaterialName);
   protected
-    { Protected declaration }
     procedure AllocateHandles; override;
     procedure DestroyHandles; override;
     procedure Notification(AComponent: TComponent; Operation: TOperation);
@@ -229,12 +204,10 @@ type
 
   TCUDAGLGeometryResource = class(TCUDAGraphicResource)
   private
-     
     FFeedBackMesh: TGLCustomFeedBackMesh;
     procedure SetFeedBackMesh(const Value: TGLCustomFeedBackMesh);
     function GetAttribArraySize(AAttr: TGLVertexAttribute): LongWord;
   protected
-    { Protected declaration }
     procedure AllocateHandles; override;
     procedure DestroyHandles; override;
     procedure Notification(AComponent: TComponent;
@@ -244,13 +217,10 @@ type
     function GetElementArrayDataSize: LongWord; override;
     function GetElementArrayAddress: Pointer; override;
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
     procedure MapResources; override;
     procedure UnMapResources; override;
-
     property AttributeDataSize[const AttribName: string]: LongWord read
       GetAttributeArraySize;
     property AttributeDataAddress[const AttribName: string]: Pointer read
@@ -258,7 +228,6 @@ type
     property IndexDataSize: LongWord read GetElementArrayDataSize;
     property IndexDataAddress: Pointer read GetElementArrayAddress;
   published
-    
     property FeedBackMesh: TGLCustomFeedBackMesh read FFeedBackMesh write
       SetFeedBackMesh;
     property Mapping;
@@ -734,7 +703,7 @@ begin
   Inc(Pbyte(Result), PtrUInt(MapPtr));
 end;
 
- 
+
 
 // -----------------------
 // ----------------------- TGLVertexAttribute -------------------
@@ -859,7 +828,7 @@ begin
   inherited Items[index] := AValue;
 end;
 
- 
+
 
 // -----------------------
 // ----------------------- TGLCustomFeedBackMesh -------------------
@@ -903,35 +872,20 @@ begin
         EnabledLocations[I] := True;
         case Attributes[I].GLSLType of
             GLSLType1F:  GL.VertexAttribPointer(L, 1, GL_FLOAT, false, 0, pointer(Offset));
-
             GLSLType2F:  GL.VertexAttribPointer(L, 2, GL_FLOAT, false, 0, pointer(Offset));
-
             GLSLType3F:  GL.VertexAttribPointer(L, 3, GL_FLOAT, false, 0, pointer(Offset));
-
             GLSLType4F:  GL.VertexAttribPointer(L, 4, GL_FLOAT, false, 0, pointer(Offset));
-
             GLSLType1I:  GL.VertexAttribIPointer(L, 1, GL_INT, 0, pointer(Offset));
-
             GLSLType2I:  GL.VertexAttribIPointer(L, 2, GL_INT, 0, pointer(Offset));
-
             GLSLType3I:  GL.VertexAttribIPointer(L, 3, GL_INT, 0, pointer(Offset));
-
             GLSLType4I:  GL.VertexAttribIPointer(L, 4, GL_INT, 0, pointer(Offset));
-
             GLSLType1UI: GL.VertexAttribIPointer(L, 1, GL_UNSIGNED_INT, 0, pointer(Offset));
-
             GLSLType2UI: GL.VertexAttribIPointer(L, 2, GL_UNSIGNED_INT, 0, pointer(Offset));
-
             GLSLType3UI: GL.VertexAttribIPointer(L, 3, GL_UNSIGNED_INT, 0, pointer(Offset));
-
             GLSLType4UI: GL.VertexAttribIPointer(L, 4, GL_UNSIGNED_INT, 0, pointer(Offset));
-
             GLSLTypeMat2F: GL.VertexAttribPointer(L, 4, GL_FLOAT, false, 0, pointer(Offset));
-
             GLSLTypeMat3F: GL.VertexAttribPointer(L, 9, GL_FLOAT, false, 0, pointer(Offset));
-
             GLSLTypeMat4F: GL.VertexAttribPointer(L, 16, GL_FLOAT, false, 0, pointer(Offset));
-
         end; // of case
       end;
       Inc(Offset, GR.GetAttribArraySize(Attributes[I]));
@@ -966,9 +920,6 @@ begin
   FElementNumber := 0;
   FBlend := False;
 end;
-
- 
-//
 
 destructor TGLCustomFeedBackMesh.Destroy;
 begin

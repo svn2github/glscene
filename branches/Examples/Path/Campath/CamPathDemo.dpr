@@ -1,8 +1,8 @@
-program Project2;
+program CamPathDemo;
 
 uses
   Forms,
-  Unit1 in 'Unit1.pas' {Form1};
+  campathdemomain in 'campathdemomain.pas' {Form1};
 
 {$R *.res}
 
