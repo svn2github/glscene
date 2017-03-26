@@ -1,0 +1,40 @@
+Trade Federation Battle Droids for Half-Life (1 of 3)
+-----------------------------------------------------
+
+Author:       	Simon Bursey - AKA NinjaSi
+
+Model Name:   	Infantry Battle Droid
+Version:       	1.0
+Relaese Date:  	26 July 1999
+Total Size:  	368KB
+Polygons:     	798
+Vertices:     	435
+Texture Size:  	82KB ()
+Team Colors:   	No, but I'm working on it...
+Animations:   	Modified the standard animations to cope with the body shape
+Build Time:    	2 weeks on and off
+Programs Used:	3D Studio MAX R2.5, Photoshop 5, Quant 3.0, Paintshop Pro 5
+
+Known bugs:
+The joints at the top of the legs could do with modifying,
+The "fire 2 handed" animation is terrible, but I don't think it is used in the game anyway.
+
+Description:
+These are my first ever half life models based on the robots in 'Star Wars Episode 1: The Phantom Menace' (Copyright Lucasfilm Ltd, used without permission). The model has a fairly high polygon count due to the rigid joints.
+
+Installation:
+
+Model Files:    Put Bdroid_a.mdl and Bdroid_a.bmp int valve/models/player/Bdroid_a.
+
+Extras:
+
+Team Logo:      Put Bdroid_a_logo.bmp in your logos directory.
+Windows Cursor: Put Bdroid_wait.ani in your windows/cursors directory and set it up as the wait cursor (instead of the arrow & hourglass ).
+
+Distribution:
+Distribute these models freely - as a set or individually, but please include the text files.
+
+---------------------------------------------
+
+E-mail:	   simon.bursey@virgin.net
+Website:   http://freespace.virgin.net/simon.bursey

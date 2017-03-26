@@ -1,0 +1,77 @@
+<html>
+<head>
+<title>Skeletal Mesh Collider (SMC) Editor Outline and Help</title>
+<style>
+<!--
+h1   {font-family:arial; font-weight:bold; font-size:20px; color:navy;}
+h2   {font-family:arial; font-weight:bold; font-size:16px; color:darkgreen;}
+p,li {font-family:arial; font-size:14px; color:black;}
+-->
+</style>
+</head>
+<body>
+<h1>Skeletal Mesh Collider (SMC) Editor Outline and Help</h1>
+<p>By Stuart Gooding</p>
+<h2>Introduction</h2>
+<p>
+This program is designed to help with the creation and manipulation of collider primitives for skeletal mesh actors. These colliders can be used for collision testing for systems like ODE or verlets, or perhaps calculating if and where an object like a bullet strikes an actor.
+</p>
+
+<h2>Loading mesh and animation data</h2>
+<p>
+The program loads an example actor and animations from the model folder upon execution, for demonstration and testing purposes. To load an actor of your own select 'Load mesh' from the 'Actor' menu. Select 'Load animations' to add to the actors animations. Try to add animations that will test the models full potential motion, this helps to check if the colliders encompass the model as a whole in any possible position.
+</p>
+
+<h2>Creating and manipulating colliders</h2>
+<p>
+Currently the only way to assign colliders to the model is through the 'Generate colliders' button on the work panel, also accessible through the 'Generate' option in the 'Colliders' menu. This operation generates a collider for each bone to bone connection and each end bone that have vertices weighted to them. For bone-to-bone connections it uses a capsule (or capped cylinder) collider and determines the radius by the maximum distance of it's weighted vertices from its central axis. The end bones (extremities like feet, hands and head) have spherical colliders assigned with a radius of the maximum distance of any vertex from the bone's position. Any bones without vertices weighted to them are ignored.
+</p>
+
+<p>
+Once generated, the colliders can be manipulated by selecting them from the 'Collider' list in the work panel. The selected collider will be highlighted in red. The shape information for collider will populate the lower edit boxes in the work panel. This information can be modified and then applied with the 'Apply changes' button on the work panel. The 'Reset changes' button repopulates the shape data from the unchanged collider. Many of the generated colliders can be trimmed from the model (using the 'Delete collider' button on the work panel) since the collision shape doesn't necessarily need toes or fingers, for example the heel to toe collider could possible be extended to cover the entire foot.
+</p>
+
+<p>
+The collider orientation can be altered with the right and middle mouse buttons. To rotate a collider use the right mouse button, holding down the shift or control keys while rotating can change the axis of rotation. The middle mouse button changes the position. Holding down the shift key can change the plane of translation. These controls can be a little unruly at times and will possibly be updated in the future, however, it does allow for complete manipulation of the rotation and position of a collider.
+</p>
+
+<h2>Loading and saving colliders</h2>
+<p>
+Once the colliders have been set up, they can be saved to file using the SMC format. This is a format of my own design and may not be final ... I have tried to cater for everything but something may need to be added in the future. The current format is as follows:
+</p>
+<p>
+<b>Header</b>
+<ul>
+<li>4 character ID code 'SMCF'</li>
+<li>Version number (Integer)</li>
+<li>Collider count (Integer)</li>
+</ul>
+</p>
+<p>
+<b>For each collider</b>
+<ul>
+<li>Collider type (Integer) : 0 = Sphere, 1 = Capsule, 2 = Box</li>
+<li>Bone 1 ID (Integer)</li>
+<li>Bone 2 ID (Integer) : -1 for end bones</li>
+<li>Collider parameters (Array of 3 Single floats)</li>
+<li>Transform matrix (TMatrix, 16 x Single floats)</li>
+</ul>
+</p>
+
+<p>Previously saved colliders can be loaded with the 'Load' option in the 'Colliders' menu or the 'Load colliders' button on the work panel. The 'Box' type collider mentioned above isn't availble as yet but the SMC format is prepared to handle it. This collider will become available when the collider types can be altered and colliders can be added manually, the auto-generating algorithm isn't clever enough (and probably never will be) to determine when a box collider should be used.</p>
+
+<h2>Camera controls</h2>
+<p>
+The left mouse button can be used to orbit the camera around the actor. Holding the shift key and the left mouse button adjusts the cameras distance from the actor (effectively a zoom feature).
+</p>
+
+<h2>Last words</h2>
+<p>
+Any comments or criticisms can be sent to <a href="stuart_gooding@yahoo.co.uk">stuart_gooding@yahoo.co.uk</a>. If you have any ideas that you think should be implemented please let me know.
+</p>
+
+<p>
+Cheers,<br />
+Stuart.
+</p>
+</body>
