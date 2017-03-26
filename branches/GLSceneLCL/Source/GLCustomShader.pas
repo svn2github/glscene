@@ -396,7 +396,7 @@ procedure DrawTexturedScreenQuad6(const ViewPortSize: TGLSize);
 procedure CopyScreentoTexture(const ViewPortSize: TGLSize; const TextureTarget: Word = GL_TEXTURE_2D);
 procedure CopyScreentoTexture2(const ViewPortSize: TGLSize; const TextureTarget: Word = GL_TEXTURE_2D);
 
-function IsFogEnabled(const AFogSupportMode: TGLShaderFogSupport; var rci: TRenderContextInfo): Boolean;
+function IsFogEnabled(const AFogSupportMode: TGLShaderFogSupport; var rci: TGLRenderContextInfo): Boolean;
 procedure GetActiveLightsList(const ALightIDs: TIntegerList);
 
 implementation
@@ -419,7 +419,7 @@ begin
   end;
 end;
 
-function IsFogEnabled(const AFogSupportMode: TGLShaderFogSupport; var rci: TRenderContextInfo): Boolean;
+function IsFogEnabled(const AFogSupportMode: TGLShaderFogSupport; var rci: TGLRenderContextInfo): Boolean;
 begin
   case AFogSupportMode of
     sfsEnabled:  Result := True;
