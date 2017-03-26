@@ -33,8 +33,6 @@ uses
 type
   TTouchEvent = procedure(X, Y, TouchWidth, TouchHeight : integer; TouchID : Cardinal; MultiTouch : boolean) of object;
 
-  // TGLSceneViewer
-  //
   {Component where the GLScene objects get rendered.
      This component delimits the area where OpenGL renders the scene,
      it represents the 3D scene viewed from a camera (specified in the
@@ -56,7 +54,6 @@ type
     FOnTouchMove: TTouchEvent;
     FOnTouchUp: TTouchEvent;
     FOnTouchDown: TTouchEvent;
-
     procedure WMEraseBkgnd(var Message: TWMEraseBkgnd); message WM_ERASEBKGND;
     procedure WMPaint(var Message: TWMPaint); message WM_PAINT;
     procedure WMSize(var Message: TWMSize); message WM_SIZE;
@@ -65,13 +62,10 @@ type
     procedure WMTouch(var Message: TMessage); message WM_TOUCH;
     procedure CMMouseEnter(var msg: TMessage); message CM_MOUSEENTER;
     procedure CMMouseLeave(var msg: TMessage); message CM_MOUSELEAVE;
-
     function GetFieldOfView: single;
     procedure SetFieldOfView(const Value: single);
     function GetIsRenderingContextAvailable: Boolean;
-
   protected
-    
     procedure SetBeforeRender(const val: TNotifyEvent);
     function GetBeforeRender: TNotifyEvent;
     procedure SetPostRender(const val: TNotifyEvent);
@@ -81,7 +75,6 @@ type
     procedure SetCamera(const val: TGLCamera);
     function GetCamera: TGLCamera;
     procedure SetBuffer(const val: TGLSceneBuffer);
-
     procedure CreateParams(var Params: TCreateParams); override;
     procedure CreateWnd; override;
     procedure DestroyWnd; override;
@@ -89,74 +82,56 @@ type
     procedure DoBeforeRender(Sender: TObject); dynamic;
     procedure DoBufferChange(Sender: TObject); virtual;
     procedure DoBufferStructuralChange(Sender: TObject); dynamic;
-
     procedure MouseMove(Shift: TShiftState; X, Y: Integer); override;
-
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
-    {Makes TWinControl's RecreateWnd public. 
+    {Makes TWinControl's RecreateWnd public.
        This procedure allows to work around limitations in some OpenGL
        drivers (like MS Software OpenGL) that are not able to share lists
        between RCs that already have display lists. }
     procedure RecreateWnd;
-
     property IsRenderingContextAvailable: Boolean read GetIsRenderingContextAvailable;
-
     function LastFrameTime: Single;
     function FramesPerSecond: Single;
     function FramesPerSecondText(decimals: Integer = 1): string;
     procedure ResetPerformanceMonitor;
-
     function CreateSnapShotBitmap: TBitmap;
-
     procedure RegisterTouch;
     procedure UnregisterTouch;
-
     property RenderDC: HDC read FOwnDC;
     property MouseInControl: Boolean read FMouseInControl;
-
   published
-    
     {Camera from which the scene is rendered. }
     property Camera: TGLCamera read GetCamera write SetCamera;
-
-    {Specifies if the refresh should be synchronized with the VSync signal. 
+    {Specifies if the refresh should be synchronized with the VSync signal.
        If the underlying OpenGL ICD does not support the WGL_EXT_swap_control
        extension, this property is ignored.  }
     property VSync: TGLVSyncMode read FVSync write FVSync default vsmNoSync;
-
-    {Triggered before the scene's objects get rendered. 
+    {Triggered before the scene's objects get rendered.
        You may use this event to execute your own OpenGL rendering. }
     property BeforeRender: TNotifyEvent read GetBeforeRender write SetBeforeRender;
-    {Triggered just after all the scene's objects have been rendered. 
+    {Triggered just after all the scene's objects have been rendered.
        The OpenGL context is still active in this event, and you may use it
        to execute your own OpenGL rendering.  }
     property PostRender: TNotifyEvent read GetPostRender write SetPostRender;
-    {Called after rendering. 
+    {Called after rendering.
        You cannot issue OpenGL calls in this event, if you want to do your own
        OpenGL stuff, use the PostRender event. }
     property AfterRender: TNotifyEvent read GetAfterRender write SetAfterRender;
-
     {Access to buffer properties. }
     property Buffer: TGLSceneBuffer read FBuffer write SetBuffer;
-
-    {Returns or sets the field of view for the viewer, in degrees. 
+    {Returns or sets the field of view for the viewer, in degrees.
     This value depends on the camera and the width and height of the scene.
     The value isn't persisted, if the width/height or camera.focallength is
     changed, FieldOfView is changed also. }
     property FieldOfView: single read GetFieldOfView write SetFieldOfView;
-
     property OnMouseLeave: TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
     property OnMouseEnter: TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
-
     property OnTouchMove: TTouchEvent read FOnTouchMove write FOnTouchMove;
     property OnTouchUp: TTouchEvent read FOnTouchUp write FOnTouchUp;
     property OnTouchDown: TTouchEvent read FOnTouchDown write FOnTouchDown;
-
     property Align;
     property Anchors;
     property DragCursor;
@@ -166,7 +141,6 @@ type
     property Hint;
     property PopupMenu;
     property Visible;
-
     property OnClick;
     property OnDblClick;
     property OnDragDrop;
@@ -176,23 +150,18 @@ type
     property OnMouseDown;
     property OnMouseMove;
     property OnMouseUp;
-
     property OnMouseWheel;
     property OnMouseWheelDown;
     property OnMouseWheelUp;
-
     property OnKeyDown;
     property OnKeyUp;
-
     property OnContextPopup;
     property TabStop;
     property TabOrder;
     property OnEnter;
     property OnExit;
-
     property OnGesture;
     property Touch;
-
   end;
 
 
@@ -255,14 +224,9 @@ begin
 end;
 {$ENDIF}
 
-
 // ------------------
 // ------------------ TGLSceneViewer ------------------
 // ------------------
-
- 
-//
-
 constructor TGLSceneViewer.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
@@ -278,18 +242,12 @@ begin
   FBuffer.OnStructuralChange := DoBufferStructuralChange;
 end;
 
- 
-//
-
 destructor TGLSceneViewer.Destroy;
 begin
   FBuffer.Free;
   FBuffer := nil;
   inherited Destroy;
 end;
-
-// Notification
-//
 
 procedure TGLSceneViewer.Notification(AComponent: TComponent; Operation: TOperation);
 begin
@@ -301,9 +259,6 @@ begin
   inherited;
 end;
 
-// RecreateWnd
-//
-
 procedure TGLSceneViewer.RecreateWnd;
 begin
   inherited;
@@ -314,24 +269,15 @@ begin
   RegisterTouchWindow(Handle, 0);
 end;
 
-// SetBeforeRender
-//
-
 procedure TGLSceneViewer.SetBeforeRender(const val: TNotifyEvent);
 begin
   FBuffer.BeforeRender := val;
 end;
 
-// GetBeforeRender
-//
-
 function TGLSceneViewer.GetBeforeRender: TNotifyEvent;
 begin
   Result := FBuffer.BeforeRender;
 end;
-
-// SetPostRender
-//
 
 procedure TGLSceneViewer.SetPostRender(const val: TNotifyEvent);
 begin
@@ -343,56 +289,35 @@ begin
   UnregisterTouchWindow(Handle);
 end;
 
-// GetPostRender
-//
-
 function TGLSceneViewer.GetPostRender: TNotifyEvent;
 begin
   Result := FBuffer.PostRender;
 end;
-
-// SetAfterRender
-//
 
 procedure TGLSceneViewer.SetAfterRender(const val: TNotifyEvent);
 begin
   FBuffer.AfterRender := val;
 end;
 
-// GetAfterRender
-//
-
 function TGLSceneViewer.GetAfterRender: TNotifyEvent;
 begin
   Result := FBuffer.AfterRender;
 end;
-
-// SetCamera
-//
 
 procedure TGLSceneViewer.SetCamera(const val: TGLCamera);
 begin
   FBuffer.Camera := val;
 end;
 
-// GetCamera
-//
-
 function TGLSceneViewer.GetCamera: TGLCamera;
 begin
   Result := FBuffer.Camera;
 end;
 
-// SetBuffer
-//
-
 procedure TGLSceneViewer.SetBuffer(const val: TGLSceneBuffer);
 begin
   FBuffer.Assign(val);
 end;
-
-// CreateParams
-//
 
 procedure TGLSceneViewer.CreateParams(var Params: TCreateParams);
 begin
@@ -404,9 +329,6 @@ begin
   end;
 end;
 
-// CreateWnd
-//
-
 procedure TGLSceneViewer.CreateWnd;
 begin
   inherited CreateWnd;
@@ -416,9 +338,6 @@ begin
   FOwnDC := GetDC(Handle);
   FBuffer.CreateRC(FOwnDC, False);
 end;
-
-// DestroyWnd
-//
 
 procedure TGLSceneViewer.DestroyWnd;
 begin
@@ -431,9 +350,6 @@ begin
   inherited;
 end;
 
-// WMEraseBkgnd
-//
-
 procedure TGLSceneViewer.WMEraseBkgnd(var Message: TWMEraseBkgnd);
 begin
   if IsRenderingContextAvailable then
@@ -441,10 +357,6 @@ begin
   else
     inherited;
 end;
-
-
-// WMSize
-//
 
 procedure TGLSceneViewer.WMSize(var Message: TWMSize);
 begin
@@ -494,7 +406,6 @@ begin
       begin
         OnTouchDown(Point.X, Point.Y, TouchInput.cxContact, TouchInput.cyContact, TouchInput.dwID, Multitouch);
       end;
-
       if (TouchInput.dwFlags AND TOUCHEVENTF_UP) > 0 then
       if Assigned(OnTouchUp) then
       begin
@@ -510,9 +421,6 @@ begin
       inherited;
   end;
 end;
-
-// WMPaint
-//
 
 procedure TGLSceneViewer.WMPaint(var Message: TWMPaint);
 var
@@ -539,16 +447,10 @@ begin
 end;
 
 
-// WMGetDglCode
-//
-
 procedure TGLSceneViewer.WMGetDglCode(var Message: TMessage);
 begin
   Message.Result := Message.Result or DLGC_WANTARROWS;
 end;
-
-// WMDestroy
-//
 
 procedure TGLSceneViewer.WMDestroy(var Message: TWMDestroy);
 begin
@@ -564,9 +466,6 @@ begin
   inherited;
 end;
 
-// CMMouseEnter
-//
-
 procedure TGLSceneViewer.CMMouseEnter(var msg: TMessage);
 begin
   inherited;
@@ -574,9 +473,6 @@ begin
   if Assigned(FOnMouseEnter) then
     FOnMouseEnter(Self);
 end;
-
-// CMMouseLeave
-//
 
 procedure TGLSceneViewer.CMMouseLeave(var msg: TMessage);
 begin
@@ -586,9 +482,6 @@ begin
     FOnMouseLeave(Self);
 end;
 
-// Loaded
-//
-
 procedure TGLSceneViewer.Loaded;
 begin
   inherited Loaded;
@@ -596,25 +489,16 @@ begin
   HandleNeeded;
 end;
 
-// DoBeforeRender
-//
-
 procedure TGLSceneViewer.DoBeforeRender(Sender: TObject);
 begin
   SetupVSync(VSync);
 end;
-
-// DoBufferChange
-//
 
 procedure TGLSceneViewer.DoBufferChange(Sender: TObject);
 begin
   if (not Buffer.Rendering) and (not Buffer.Freezed) then
     Invalidate;
 end;
-
-// DoBufferStructuralChange
-//
 
 procedure TGLSceneViewer.DoBufferStructuralChange(Sender: TObject);
 begin
@@ -628,40 +512,25 @@ begin
     FBuffer.NotifyMouseMove(Shift, X, Y);
 end;
 
-// LastFrameTime
-//
-
 function TGLSceneViewer.LastFrameTime: Single;
 begin
   Result := FBuffer.LastFrameTime;
 end;
-
-// FramesPerSecond
-//
 
 function TGLSceneViewer.FramesPerSecond: Single;
 begin
   Result := FBuffer.FramesPerSecond;
 end;
 
-// FramesPerSecondText
-//
-
 function TGLSceneViewer.FramesPerSecondText(decimals: Integer = 1): string;
 begin
   Result := Format('%.*f FPS', [decimals, FBuffer.FramesPerSecond]);
 end;
 
-// ResetPerformanceMonitor
-//
-
 procedure TGLSceneViewer.ResetPerformanceMonitor;
 begin
   FBuffer.ResetPerformanceMonitor;
 end;
-
-// CreateSnapShotBitmap
-//
 
 function TGLSceneViewer.CreateSnapShotBitmap: TBitmap;
 begin
@@ -674,31 +543,20 @@ begin
     RenderDC, 0, 0, SRCCOPY);
 end;
 
-// GetFieldOfView
-//
-
 function TGLSceneViewer.GetFieldOfView: single;
 begin
   if not Assigned(Camera) then
     result := 0
-
   else if Width < Height then
     result := Camera.GetFieldOfView(Width)
-
   else
     result := Camera.GetFieldOfView(Height);
 end;
-
-// GetIsRenderingContextAvailable
-//
 
 function TGLSceneViewer.GetIsRenderingContextAvailable: Boolean;
 begin
   Result := FBuffer.RCInstantiated and FBuffer.RenderingContext.IsValid;
 end;
-
-// SetFieldOfView
-//
 
 procedure TGLSceneViewer.SetFieldOfView(const Value: single);
 begin
@@ -721,6 +579,5 @@ initialization
   // ------------------------------------------------------------------
 
   RegisterClass(TGLSceneViewer);
-
 end.
 

@@ -353,7 +353,7 @@ type
     FFaceCulling: TFaceCulling;
     FPolygonMode: TPolygonMode;
     currentLibMaterial: TGLAbstractLibMaterial;
-    // Implementing IGLMaterialLibrarySupported.
+    { Implementing IGLMaterialLibrarySupported.}
     function GetMaterialLibrary: TGLAbstractMaterialLibrary;
   protected
     function GetBackProperties: TGLFaceProperties;
@@ -392,15 +392,15 @@ type
        Will return the libmaterial's blending if it is linked to a material
        library. }
     function Blended: Boolean;
-    // True if the material has a secondary texture
+    { True if the material has a secondary texture }
     function HasSecondaryTexture: Boolean;
-    // True if the material comes from the library instead of the texture property
+    { True if the material comes from the library instead of the texture property}
     function MaterialIsLinkedToLib: Boolean;
-    // Gets the primary texture either from material library or the texture property
+    { Gets the primary texture either from material library or the texture property}
     function GetActualPrimaryTexture: TGLTexture;
-    // Gets the primary Material either from material library or the texture property
+    { Gets the primary Material either from material library or the texture property}
     function GetActualPrimaryMaterial: TGLMaterial;
-    // Return the LibMaterial (see LibMaterialName)
+    { Return the LibMaterial (see LibMaterialName)}
     function GetLibMaterial: TGLLibMaterial;
     procedure QuickAssignMaterial(const MaterialLibrary: TGLMaterialLibrary;
       const Material: TGLLibMaterial);
@@ -441,9 +441,9 @@ type
     FNameHashKey: Integer;
     FTag: Integer;
     FNotifying: Boolean; // used for recursivity protection
-    //implementing IGLMaterialLibrarySupported
+    {implementing IGLMaterialLibrarySupported}
     function GetMaterialLibrary: TGLAbstractMaterialLibrary;
-    //implementing IInterface
+    {implementing IInterface}
     function QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
     function _AddRef: Integer; stdcall;
     function _Release: Integer; stdcall;
@@ -457,7 +457,7 @@ type
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
     procedure Apply(var ARci: TGLRenderContextInfo); virtual;
-    // Restore non-standard material states that were altered
+    { Restore non-standard material states that were altered}
     function UnApply(var ARci: TGLRenderContextInfo): Boolean; virtual;
     procedure RegisterUser(obj: TGLUpdateAbleObject); overload;
     procedure UnregisterUser(obj: TGLUpdateAbleObject); overload;
@@ -511,7 +511,7 @@ type
     procedure Assign(Source: TPersistent); override;
     procedure PrepareBuildList;
     procedure Apply(var ARci: TGLRenderContextInfo); override;
-    // Restore non-standard material states that were altered
+    { Restore non-standard material states that were altered}
     function UnApply(var ARci: TGLRenderContextInfo): Boolean; override;
     procedure NotifyUsersOfTexMapChange;
     property TextureMatrix: TMatrix read FTextureMatrix write SetTextureMatrix;
@@ -1768,7 +1768,7 @@ begin
   end;
 end;
 
- 
+
 
 // ------------------
 // ------------------ TGLLibMaterial ------------------
@@ -1957,9 +1957,6 @@ procedure TGLLibMaterial.NotifyTexMapChange(Sender: TObject);
 begin
   NotifyUsersOfTexMapChange();
 end;
-
-// NotifyUsersOfTexMapChange
-//
 
 procedure TGLLibMaterial.NotifyUsersOfTexMapChange;
 var

@@ -26,7 +26,8 @@ interface
 uses
   System.Classes,
   System.SysUtils,
-  
+
+  OpenGLTokens,
   GLVectorGeometry,
   GLVectorLists,
   GLScene,
@@ -35,38 +36,29 @@ uses
   GLRenderContextInfo,
   GLContext,
   GLState,
-  OpenGLTokens,
   GLMeshUtils,
   GLVectorTypes;
 
 type
   TFeedbackMode = (fm2D, fm3D, fm3DColor, fm3DColorTexture, fm4DColorTexture);
 
-  // TGLFeedback
   {An object encapsulating the OpenGL feedback rendering mode. }
   TGLFeedback = class(TGLBaseSceneObject)
   private
-     
     FActive: Boolean;
     FBuffer: TSingleList;
     FMaxBufferSize: Cardinal;
     FBuffered: Boolean;
     FCorrectionScaling: Single;
     FMode: TFeedbackMode;
-
   protected
-    
     procedure SetMaxBufferSize(const Value: Cardinal);
     procedure SetMode(const Value: TFeedbackMode);
-
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
     procedure DoRender(var ARci: TGLRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
-
     {Parse the the feedback buffer for polygon data and build
        a mesh into the assigned lists. }
     procedure BuildMeshFromBuffer(
@@ -75,49 +67,34 @@ type
       Colors: TVectorList = nil;
       TexCoords: TAffineVectorList = nil;
       VertexIndices: TIntegerList = nil);
-
     // True when there is data in the buffer ready for parsing
     property Buffered: Boolean read FBuffered;
-
     // The feedback buffer
     property Buffer: TSingleList read FBuffer;
-
     {Vertex positions in the buffer needs to be scaled by
        CorrectionScaling to get correct coordinates. }
     property CorrectionScaling: Single read FCorrectionScaling;
-
   published
-    
-
     // Maximum size allocated for the feedback buffer
     property MaxBufferSize: Cardinal read FMaxBufferSize write SetMaxBufferSize;
     // Toggles the feedback rendering
     property Active: Boolean read FActive write FActive;
     // The type of data that is collected in the feedback buffer
     property Mode: TFeedbackMode read FMode write SetMode;
-
     property Visible;
   end;
 
-  // ----------------------------------------------------------------------
-  // ----------------------------------------------------------------------
-  // ----------------------------------------------------------------------
+// ----------------------------------------------------------------------
+// ----------------------------------------------------------------------
+// ----------------------------------------------------------------------
 implementation
-// ----------------------------------------------------------------------
-// ----------------------------------------------------------------------
-// ----------------------------------------------------------------------
-
 // ----------
 // ---------- TGLFeedback ----------
 // ----------
 
- 
-//
-
 constructor TGLFeedback.Create(AOwner: TComponent);
 begin
   inherited;
-
   FMaxBufferSize := $100000;
   FBuffer := TSingleList.Create;
   FBuffer.Capacity := FMaxBufferSize div SizeOf(Single);
@@ -126,18 +103,11 @@ begin
   FMode := fm3DColorTexture;
 end;
 
- 
-//
-
 destructor TGLFeedback.Destroy;
 begin
   FBuffer.Free;
-
   inherited;
 end;
-
-// DoRender
-//
 
 procedure TGLFeedback.DoRender(var ARci: TGLRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);
@@ -213,9 +183,6 @@ begin
   ARci.GLStates.ViewPort :=
     Vector4iMake(0, 0, ARci.viewPortSize.cx, ARci.viewPortSize.cy);
 end;
-
-// BuildMeshFromBuffer
-//
 
 procedure TGLFeedback.BuildMeshFromBuffer(
   Vertices: TAffineVectorList = nil;
@@ -347,9 +314,6 @@ begin
   tempIndices.Destroy;
 end;
 
-// SetMaxBufferSize
-//
-
 procedure TGLFeedback.SetMaxBufferSize(const Value: Cardinal);
 begin
   if Value <> FMaxBufferSize then
@@ -360,9 +324,6 @@ begin
     FBuffer.Capacity := FMaxBufferSize div SizeOf(Single);
   end;
 end;
-
-// SetMode
-//
 
 procedure TGLFeedback.SetMode(const Value: TFeedbackMode);
 begin
