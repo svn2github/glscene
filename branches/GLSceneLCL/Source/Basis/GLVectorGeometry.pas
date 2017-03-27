@@ -214,15 +214,51 @@ unit GLVectorGeometry;
 // (c) Copyright 1999, Dipl. Ing. Mike Lischke (public@lischke-online.de)
 
 interface
-
+{$I GLScene.inc}
 uses
   GLCrossPlatform, GLVectorTypes;
 
 const
    cMaxArray = (MaxInt shr 4);
-   cColinearBias = 1e-8;
+   EpsilonFuzzFactor = 1000;
+   EpsilonXTResolution = 1E-19 * EpsilonFuzzFactor;
+   cPI       : Single =  3.141592654;
+   cPIdiv180 : Single =  0.017453292;
+   c180divPI : Single = 57.29577951;
+   c2PI :      Single =  6.283185307;
+   cPIdiv2 :   Single =  1.570796326;
+   cPIdiv4 :   Single =  0.785398163;
+   c3PIdiv2 :  Single =  4.71238898;
+   c3PIdiv4 :  Single =  2.35619449;
+   cInv2PI :   Single = 1/6.283185307;
+   cInv360 :   Single = 1/360;
+   c180 :      Single = 180;
+   c360 :      Single = 360;
+   cOneHalf :  Single = 0.5;
+   cMinusOneHalf :  Single = -0.5;
+   cOneDotFive : Single = 0.5;
+   cZero : Single = 0.0;
+   cOne : Single = 1.0;
+   cLn10 :     Single = 2.302585093;
+   cEpsilon : Single = 1e-10;
+   cColinearBias = 1E-8;
+   cEulerNumber = 2.71828182846;
 
-{$I GLScene.inc}
+   // portées maximal les types de points flottants IEEE
+   // Compatible avec Math.pas
+   //-------------------------
+   // Ranges of the IEEE floating point types, including denormals
+   // with Math.pas compatible name
+   MinSingle   =  1.5e-45;
+   MaxSingle   =  3.4e+38;
+   MinDouble   =  5.0e-324;
+   MaxDouble   =  1.7e+308;
+   MinExtended =  3.4e-4932;
+   MaxExtended =  1.1e+4932;
+   // Complex
+   MinComp     = -9.223372036854775807e+18;
+   MaxComp     =  9.223372036854775807e+18;
+
 
 // define for turning off assembly routines in this unit
 // *experimental* and incomplete
@@ -1379,7 +1415,7 @@ function  ArcSin(const X : Single) : Single; overload;
 function  ArcTan2(const Y, X : Extended) : Extended; overload;
 function  ArcTan2(const Y, X : Single) : Single; overload;
 { Fast ArcTan2 approximation, about 0.07 rads accuracy. }
-function  FastArcTan2(y, x : Single) : Single;
+
 function  Tan(const X : Extended) : Extended; overload;
 function  Tan(const X : Single) : Single; overload;
 function  CoTan(const X : Extended) : Extended; overload;
@@ -1393,6 +1429,25 @@ function  Sinh(const x : Single) : Single; overload;
 function  Sinh(const x : Double) : Double; overload;
 function  Cosh(const x : Single) : Single; overload;
 function  Cosh(const x : Double) : Double; overload;
+
+function IsZero(const A: Extended; Const Epsilon: Extended=0.0): Boolean;
+
+function FastArcTan2(y, x : Single) : Single;
+function ArcSine(const x : Single) : Single;
+
+function ArcCsc(const X: Single): Single;
+function ArcSec(const X: Single): Single;
+function ArcCot(const X: Single): Single;
+
+function CscH(const X: Single): Single;
+function SecH(const X: Single): Single;
+function CotH(const X: Extended): Extended;
+
+function ArcCscH(const X: Single): Single;
+function ArcSecH(const X: Single): Single;
+function ArcCotH(const X: Single): Single;
+
+function SinCosh(const x : Single) : Single;
 
 //------------------------------------------------------------------------------
 // Miscellanious math functions
@@ -1778,33 +1833,10 @@ function ShiftObjectFromCenter(const AOriginalPosition: TVector;
 function ShiftObjectFromCenter(const AOriginalPosition: TAffineVector;
  const ACenter: TAffineVector; const ADistance: Single; const AFromCenterSpot: Boolean): TAffineVector; overload;
  
-const
-   cPI       : Single =  3.141592654;
-   cPIdiv180 : Single =  0.017453292;
-   c180divPI : Single = 57.29577951;
-   c2PI :      Single =  6.283185307;
-   cPIdiv2 :   Single =  1.570796326;
-   cPIdiv4 :   Single =  0.785398163;
-   c3PIdiv2 :  Single =  4.71238898;
-   c3PIdiv4 :  Single =  2.35619449;
-   cInv2PI :   Single = 1/6.283185307;
-   cInv360 :   Single = 1/360;
-   c180 :      Single = 180;
-   c360 :      Single = 360;
-   cOneHalf :  Single = 0.5;
-   cLn10 :     Single = 2.302585093;
 
 
-   // Ranges of the IEEE floating point types, including denormals
-   // with Math.pas compatible name
-   MinSingle   =  1.5e-45;
-   MaxSingle   =  3.4e+38;
-   MinDouble   =  5.0e-324;
-   MaxDouble   =  1.7e+308;
-   MinExtended =  3.4e-4932;
-   MaxExtended =  1.1e+4932;
-   MinComp     = -9.223372036854775807e+18;
-   MaxComp     =  9.223372036854775807e+18;
+
+
 
 var
    // this var is adjusted during "initialization", current values are
@@ -1824,21 +1856,20 @@ implementation
 
 uses SysUtils, Math;
 
-const
+
 {$ifndef GEOMETRY_NO_ASM}
   // FPU status flags (high order byte)
-  cwChop : Word = $1F3F;
+  const
+    cwChop : Word = $1F3F;
 {$endif}
 
   // to be used as descriptive indices
+Const
   X = 0;
   Y = 1;
   Z = 2;
   W = 3;
 
-  cZero : Single = 0.0;
-  cOne : Single = 1.0;
-  cOneDotFive : Single = 0.5;
 
 // OptimizationMode
 //
@@ -8496,13 +8527,14 @@ end;
 
 // FastArcTan2
 //
+
 function FastArcTan2(y, x : Single) : Single;
 // accuracy of about 0.07 rads
-const
-   cEpsilon : Single = 1e-10;
+
 var
    abs_y : Single;
 begin
+  {$mmx+}
    abs_y:=Abs(y)+cEpsilon;      // prevent 0/0 condition
    if y<0 then begin
       if x>=0 then
@@ -8513,6 +8545,7 @@ begin
          Result:=cPIdiv4-cPIdiv4*(x-abs_y)/(x+abs_y)
       else Result:=c3PIdiv4-cPIdiv4*(x+abs_y)/(abs_y-x);
    end;
+  {$mmx-}
 end;
 
 // Tan (Extended)
@@ -8645,6 +8678,106 @@ asm
       fadd
       fmul  cOneDotFive
 {$endif}
+end;
+
+
+
+
+
+function ArcSine(const x : Single) : Single;
+begin
+   Result:= FastArcTan2(X, Sqrt(1 - Sqr(X)))
+end;
+
+function IsZero(const A: Extended; Const Epsilon: Extended=0.0): Boolean;
+Var e:Extended;
+begin
+  if Epsilon = 0 then E := EpsilonXTResolution else E:=Epsilon;
+  Result := Abs(A) <= E;
+end;
+
+// next only for single case
+//ArcCsc,
+function ArcCsc(const X: Single): Single;
+begin
+
+  if IsZero(X) then
+  Result := Infinity
+  else
+  Result := ArcSin(1 / X);
+
+end;
+//ArcSec,
+function ArcSec(const X: Single): Single;
+begin
+  if IsZero(X) then
+  Result := Infinity
+  else
+  Result := ArcCos(1 / X);
+end;
+//ArcCot
+function ArcCot(const X: Single): Single;
+begin
+  if IsZero(X) then
+  Result := PI / 2
+  else
+  Result := ArcTan(1 / X);
+end;
+//Csch
+function CscH(const X: Single): Single;
+begin
+  Result := 1 / SinH(X);
+end;
+
+//SecH
+function SecH(const X: Single): Single;
+begin
+  Result := 1 / CosH(X);
+end;
+//CotH
+function CotH(const X: Extended): Extended;
+begin
+  Result := 1 / TanH(X);
+end;
+
+//ArcCsch,
+function ArcCscH(const X: Single): Single;
+begin
+  if IsZero(X) then
+  Result := Infinity
+  else
+  if X < 0 then
+  Result := Ln((1 - Sqrt(1 + X * X)) / X)
+  else
+  Result := Ln((1 + Sqrt(1 + X * X)) / X);
+end;
+
+//ArcSecH
+
+function ArcSecH(const X: Single): Single;
+begin
+  if IsZero(X) then
+  Result := Infinity
+  else if SameValue(X, 1) then
+  Result := 0
+  else
+  Result := Ln((Sqrt(1 - X * X) + 1) / X);
+end;
+
+//ArcCotH
+function ArcCotH(const X: Single): Single;
+begin
+  if SameValue(X, 1) then
+  Result := Infinity // 1.0 / 0.0
+  else if SameValue(X, -1) then
+  Result := NegInfinity // -1.0 / 0.0
+  else
+  Result := 0.5 * Ln((X + 1) / (X - 1));
+end;
+
+function SinCosh(const x : Single) : Single;
+begin
+   Result:=0.5*(Exp(x)-Exp(-x));
 end;
 
 // RSqrt

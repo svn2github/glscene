@@ -308,6 +308,11 @@ initialization
 
   { Register this Fileformat-Handler with GLScene }
   RegisterRasterFormat('tga', 'TARGA Image File', TGLTGAImage);
+//  TGLPicture.RegisterFileFormat('tga', 'TARGA Image File', TGLTGAImage);
+
+finalization
+
+ //  TGLPicture.UnregisterGraphicClass(TGLTGAImage);
 
 end.
 

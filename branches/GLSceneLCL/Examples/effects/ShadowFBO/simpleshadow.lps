@@ -28,23 +28,19 @@
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit1>
     </Units>
-    <JumpHistory Count="4" HistoryIndex="3">
+    <JumpHistory Count="3" HistoryIndex="2">
       <Position1>
         <Filename Value="u_Main.pas"/>
-        <Caret Line="12" Column="9" TopLine="34"/>
+        <Caret Line="160" Column="46" TopLine="148"/>
       </Position1>
       <Position2>
         <Filename Value="u_Main.pas"/>
-        <Caret Line="160" Column="46" TopLine="148"/>
+        <Caret Line="107" Column="4" TopLine="37"/>
       </Position2>
       <Position3>
         <Filename Value="u_Main.pas"/>
-        <Caret Line="107" Column="4" TopLine="37"/>
-      </Position3>
-      <Position4>
-        <Filename Value="u_Main.pas"/>
         <Caret Line="106" Column="4" TopLine="71"/>
-      </Position4>
+      </Position3>
     </JumpHistory>
   </ProjectSession>
 </CONFIG>

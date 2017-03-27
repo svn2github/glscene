@@ -8,8 +8,8 @@
       <Unit0>
         <Filename Value="ShadersLab.lpr"/>
         <IsPartOfProject Value="True"/>
-        <UsageCount Value="20"/>
-        <Loaded Value="True"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="21"/>
       </Unit0>
       <Unit1>
         <Filename Value="UMainForm.pas"/>
@@ -18,12 +18,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <IsVisibleTab Value="True"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="1191"/>
         <CursorPos X="40" Y="1208"/>
-        <UsageCount Value="20"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
+        <UsageCount Value="21"/>
       </Unit1>
       <Unit2>
         <Filename Value="..\..\editors\SceneMaster\umainform.pas"/>
@@ -34,27 +32,9 @@
         <UsageCount Value="10"/>
       </Unit2>
     </Units>
-    <JumpHistory Count="5" HistoryIndex="4">
-      <Position1>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="417" Column="2" TopLine="398"/>
-      </Position1>
-      <Position2>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="1105" Column="15" TopLine="1101"/>
-      </Position2>
-      <Position3>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="1150" Column="14" TopLine="1137"/>
-      </Position3>
-      <Position4>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="1135" Column="14" TopLine="1113"/>
-      </Position4>
-      <Position5>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="580" Column="7" TopLine="557"/>
-      </Position5>
-    </JumpHistory>
+    <General>
+      <ActiveWindowIndexAtStart Value="-1"/>
+    </General>
+    <JumpHistory HistoryIndex="-1"/>
   </ProjectSession>
 </CONFIG>

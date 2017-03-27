@@ -565,7 +565,6 @@ object Form1: TForm1
   OnMouseWheel = FormMouseWheel
   Position = poScreenCenter
   LCLVersion = '1.6.4.0'
-  WindowState = wsMaximized
   object vp: TGLSceneViewer
     Cursor = crSizeAll
     Left = 0

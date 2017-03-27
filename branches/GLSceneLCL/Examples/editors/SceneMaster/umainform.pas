@@ -27,6 +27,7 @@ type
     acShaderHiddenLines: TAction;
     acShaderOutLines: TAction;
     acShaderNone: TAction;
+    actInvertNormals: TAction;
     actOpenModel: TAction;
     acWireFrameShading: TAction;
     DCCamera: TGLDummyCube;
@@ -46,9 +47,13 @@ type
     ffObject: TGLFreeForm;
     BBox: TGLCube;
     DCAxis: TGLDummyCube;
+    FrontAmbientLight: TGLLightSource;
+    backAmbientLight: TGLLightSource;
+    KeyAmbientLigth: TGLLightSource;
     HiddenLineShader: TGLHiddenLineShader;
-    OutlineShader: TGLOutlineShader;
     MenuItem20: TMenuItem;
+    MenuItem23: TMenuItem;
+    OutlineShader: TGLOutlineShader;
     MenuItem21: TMenuItem;
     MenuItem22: TMenuItem;
     WorldGrid: TGLXYZGrid;
@@ -99,6 +104,7 @@ type
     procedure acShaderOutLinesExecute(Sender: TObject);
     procedure acSmoothShadingExecute(Sender: TObject);
     procedure acTextureShadingExecute(Sender: TObject);
+    procedure actInvertNormalsExecute(Sender: TObject);
     procedure actOpenModelExecute(Sender: TObject);
     procedure acWireFrameShadingExecute(Sender: TObject);
     procedure CadencerProgress(Sender: TObject; const deltaTime, newTime: Double);
@@ -380,6 +386,14 @@ begin
     ApplyObjectTexturing();
 end;
 
+procedure TMainForm.actInvertNormalsExecute(Sender: TObject);
+begin
+  if actInvertNormals.Checked then
+     ffObject.NormalsOrientation:=mnoInvert
+   else
+     ffObject.NormalsOrientation:=mnoDefault;
+end;
+
 procedure TMainForm.actOpenModelExecute(Sender: TObject);
 begin
   NavCube.ActiveMouse := False;
@@ -505,7 +519,7 @@ begin
         Items[i].Shader := HiddenLineShader
       else if (acShaderOutLines.Checked) then
         Items[i].Shader := OutLineShader
-      else
+      else if (acShaderNone.Checked) then
         Items[i].Shader := nil;
     end;
   GLSViewer.Buffer.Lighting := acSceneLighting.Checked;
@@ -580,7 +594,7 @@ begin
   //BBox.Position.AsAffineVector := VectorLerp(min, max, 0.5);
  // ffObject.Translate(0,(BBox.Position.Y*2),0);
 
-  GridStep := 1.0;
+  // GridStep := 1.0;
 
 
   With WorldGrid do
@@ -589,14 +603,14 @@ begin
     begin
       min:=-BBox.CubeWidth+1;
       max:=BBox.CubeWidth+1;
-     // GridStep := (10*BBox.CubeWidth)/BBox.CubeWidth;
+      GridStep :=1.0+ (10*BBox.CubeWidth)/BBox.CubeWidth;
       step:=GridStep;
     end;
     With ZSamplingScale do
     begin
       min:=-BBox.CubeDepth+1;
       max:=BBox.CubeDepth+1;
-   //   GridStep := (10*BBox.CubeDepth)/BBox.CubeDepth;
+      GridStep :=1.0+ (10*BBox.CubeDepth)/BBox.CubeDepth;
       step:=GridStep;
     end;
   end;
@@ -607,7 +621,7 @@ begin
     begin
       min:=-BBox.CubeWidth+1;
       max:=BBox.CubeWidth+1;
-  //    GridStep := (10*BBox.CubeWidth)/BBox.CubeWidth;
+      GridStep :=1.0+ (10*BBox.CubeWidth)/BBox.CubeWidth;
       step:=GridStep;
       step:=GridStep;
     end;
@@ -615,7 +629,7 @@ begin
     begin
       min:=-BBox.CubeDepth+1;
       max:=BBox.CubeDepth+1;
-  //    GridStep := (10*BBox.CubeDepth)/BBox.CubeDepth;
+      GridStep :=1.0+ (10*BBox.CubeDepth)/BBox.CubeDepth;
       step:=GridStep;
     end;
   end;
@@ -627,14 +641,14 @@ begin
     begin
       min:=-BBox.CubeHeight+1;
       max:=BBox.CubeHeight+1;
-  //    GridStep := (10*BBox.CubeHeight)/BBox.CubeHeight;
+      GridStep :=1.0+ (10*BBox.CubeHeight)/BBox.CubeHeight;
       step:=GridStep;
     end;
     With ZSamplingScale do
     begin
       min:=-BBox.CubeDepth+1;
       max:=BBox.CubeDepth+1;
- //     GridStep := (10*BBox.CubeDepth)/BBox.CubeDepth;
+      GridStep :=1.0+ (10*BBox.CubeDepth)/BBox.CubeDepth;
       step:=GridStep;
     end;
   end;

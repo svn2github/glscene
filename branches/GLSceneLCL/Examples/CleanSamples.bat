@@ -1,8 +1,8 @@
 echo off
 del *.exe /s  
 del *.scr /s
-del *.dcu /s 
-del *.ddp /s
+del *.ppu /s 
+del *.ldp /s
 del *.ppu /s
 del *.o /s
 del *.~* /s
@@ -49,3 +49,4 @@ echo delete directories with subdirectories and files
 echo---------------------------------------------------------
 for /r %1 %%R in (backup) do if exist "%%R" (rd /s /q "%%R")
 for /r %1 %%R in (lib) do if exist "%%R" (rd /s /q "%%R")
+for /r %1 %%R in (bin) do if exist "%%R" (rd /s /q "%%R")

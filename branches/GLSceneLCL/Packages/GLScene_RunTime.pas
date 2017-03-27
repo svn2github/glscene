@@ -48,13 +48,13 @@ uses
   GLVerletSkeletonColliders, GLWaterPlane, GLWindows, GLWindowsFont, 
   GLzBuffer, GLCrossPlatform, GLFullScreenViewer, GLKeyboard, GLScreen, 
   GLViewer, GLWidgetContext, GLAsmShader, GLBumpShader, GLCelShader, 
-  GLCustomShader, GLHiddenLineShader, GLMultiMaterialShader, GLOutlineShader, 
-  GLPhongShader, GLShaderCombiner, GLTexCombineShader, GLTextureSharingShader, 
-  GLUserShader, GLFileBMP, TGA, GLSLPostShaders, GLSLErosionShader, 
-  GLSLFurShader, GLSLGlassShader, GLSLGoochShader, GLSLIvoryShader, 
-  GLSLSemShader, GLSLToonShader, GLSLVertexDisplacementShader, 
-  GLTriangulation, GLMeshLines, GLSLLatticeShader, GLFileQ3BSP, GLFileOCT, 
-  GLFileDXF, GLFileGRD;
+  GLHiddenLineShader, GLMultiMaterialShader, GLOutlineShader, GLPhongShader, 
+  GLShaderCombiner, GLTexCombineShader, GLTextureSharingShader, GLUserShader, 
+  GLFileBMP, TGA, GLSLPostShaders, GLSLErosionShader, GLSLFurShader, 
+  GLSLGlassShader, GLSLGoochShader, GLSLIvoryShader, GLSLSemShader, 
+  GLSLToonShader, GLSLVertexDisplacementShader, GLTriangulation, GLMeshLines, 
+  GLSLLatticeShader, GLFileQ3BSP, GLFileOCT, GLFileDXF, GLFileGRD, 
+  GLCustomShader;
 
 implementation
 

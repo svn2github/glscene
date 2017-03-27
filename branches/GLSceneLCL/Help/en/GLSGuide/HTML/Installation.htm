@@ -1,209 +1,114 @@
+<!DOCTYPE html>
 <html>
-
 <head>
-<meta http-equiv=Content-Type content="text/html; charset=windows-1252">
-<meta name=Generator content="Microsoft Word 14 (filtered)">
-<title>GLScene</title>
-<style>
-<!--
- /* Font Definitions */
- @font-face
-	{font-family:Tahoma;
-	panose-1:2 11 6 4 3 5 4 4 2 4;}
- /* Style Definitions */
- p.MsoNormal, li.MsoNormal, div.MsoNormal
-	{margin:0cm;
-	margin-bottom:.0001pt;
-	font-size:12.0pt;
-	font-family:"Times New Roman","serif";}
-a:link, span.MsoHyperlink
-	{color:black;
-	text-decoration:underline;}
-a:visited, span.MsoHyperlinkFollowed
-	{color:purple;
-	text-decoration:underline;}
-p
-	{margin-right:0cm;
-	margin-left:0cm;
-	font-size:12.0pt;
-	font-family:"Times New Roman","serif";}
-code
-	{font-family:"Courier New";}
-p.MsoAcetate, li.MsoAcetate, div.MsoAcetate
-	{mso-style-link:"\0422\0435\043A\0441\0442 \0432\044B\043D\043E\0441\043A\0438 \0417\043D\0430\043A";
-	margin:0cm;
-	margin-bottom:.0001pt;
-	font-size:8.0pt;
-	font-family:"Tahoma","sans-serif";}
-p.MsoListParagraph, li.MsoListParagraph, div.MsoListParagraph
-	{margin-top:0cm;
-	margin-right:0cm;
-	margin-bottom:0cm;
-	margin-left:36.0pt;
-	margin-bottom:.0001pt;
-	font-size:12.0pt;
-	font-family:"Times New Roman","serif";}
-span.a
-	{mso-style-name:"\0422\0435\043A\0441\0442 \0432\044B\043D\043E\0441\043A\0438 \0417\043D\0430\043A";
-	mso-style-link:"\0422\0435\043A\0441\0442 \0432\044B\043D\043E\0441\043A\0438";
-	font-family:"Tahoma","sans-serif";}
-p.msolistparagraphcxspfirst, li.msolistparagraphcxspfirst, div.msolistparagraphcxspfirst
-	{mso-style-name:msolistparagraphcxspfirst;
-	margin-top:0cm;
-	margin-right:0cm;
-	margin-bottom:0cm;
-	margin-left:36.0pt;
-	margin-bottom:.0001pt;
-	font-size:12.0pt;
-	font-family:"Times New Roman","serif";}
-p.msolistparagraphcxspmiddle, li.msolistparagraphcxspmiddle, div.msolistparagraphcxspmiddle
-	{mso-style-name:msolistparagraphcxspmiddle;
-	margin-top:0cm;
-	margin-right:0cm;
-	margin-bottom:0cm;
-	margin-left:36.0pt;
-	margin-bottom:.0001pt;
-	font-size:12.0pt;
-	font-family:"Times New Roman","serif";}
-p.msolistparagraphcxsplast, li.msolistparagraphcxsplast, div.msolistparagraphcxsplast
-	{mso-style-name:msolistparagraphcxsplast;
-	margin-top:0cm;
-	margin-right:0cm;
-	margin-bottom:0cm;
-	margin-left:36.0pt;
-	margin-bottom:.0001pt;
-	font-size:12.0pt;
-	font-family:"Times New Roman","serif";}
-p.msochpdefault, li.msochpdefault, div.msochpdefault
-	{mso-style-name:msochpdefault;
-	margin-right:0cm;
-	margin-left:0cm;
-	font-size:10.0pt;
-	font-family:"Times New Roman","serif";}
-.MsoChpDefault
-	{font-size:10.0pt;}
-@page WordSection1
-	{size:595.3pt 841.9pt;
-	margin:2.0cm 42.5pt 2.0cm 3.0cm;}
-div.WordSection1
-	{page:WordSection1;}
--->
-</style>
+    <meta charset="UTF-8">
+    <title>GLScene Lazarus Installation</title>
+    <meta name=description content="Installation.htm for GLSceneLCL Branche, the OpenGL solution for Lazarus and Delphi.">
+    <meta name=keywords content="Delphi, Lazarus, OpenGL, GLScene, graphics, 3D, programming, Shader, tutorial, 3DS, component, library, tools, IDE,  real-time, animation, rendering">
+    <style>
+        html {
+          /* set base font-size to equiv "10px", which is adapted to rem unit */  
+          /* IE9-IE11 math fixing. See http://bit.ly/1g4X0bX */
+          /* thanks to @guardian, @victorbritopro and @eQRoeil */
+          font-size: 10px;
+          font-size: 62.5%;
+          font-size: calc(1em * 0.625);
 
-<meta name=description
-content="readme.htm for GLScene, the OpenGL solution for Delphi.">
-<meta name=keywords
-content="Delphi, OpenGL, GLScene, graphics, 3D, programming, windows, tutorial, 3DS, component, library, tools, IDE, Idera, real-time, animation, rendering">
+        }
+        body {
+          min-height: 240px;
+          height: 100%;
+          font-size: 16px;
+          font-size:1.6em;
+          font-size: 1.6rem;
+          font-family: "Roboto", Helvetica, Arial, sans-serif;
+          font-weight: normal;
+          line-height: 1.1;
+          /* min-height: 100000px; */
+        }
+        h1, h2, h3, h4 {
+            color: #ff8000;
+            font-weight: 500;
+            line-height: 1.5;
+            margin: 0 0 1rem;
+            text-align: center;	
+        }
+        .subtitle {
+            color:#000;
+        }
+        ul {
+            margin-top:1rem;
+        }
+        ul li {
+            margin-top:0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        ol > li {
+            margin-top:0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .notice_box {
+            width:80%; margin:0.5rem auto; background-color:#dbbb72; padding:0.5rem
+        }
+    </style>
 </head>
-
-<body bgcolor=white lang=RU link=black vlink=purple>
-
-<div class=WordSection1>
-
-<div align=center>
-
-<table class=MsoNormalTable border=0 cellpadding=0 width="100%"
- style='width:100.0%'>
- <tr>
-  <td width="15%" style='width:15.0%;padding:.75pt .75pt .75pt .75pt'></td>
-  <td width="70%" style='width:70.0%;padding:.75pt .75pt .75pt .75pt'>
-  <p class=MsoNormal align=center style='text-align:center'><strong><span
-  lang=EN-US style='font-size:24.0pt;font-family:"Arial","sans-serif";
-  color:#FF8000'>Installation of GLScene</span></strong><b><span lang=EN-US
-  style='font-size:24.0pt;font-family:"Arial","sans-serif";color:#FF8000'><br>
-  <strong><span style='font-family:"Arial","sans-serif"'>into Lazarus LCL</span></strong></span></b></p>
-  </td>
-  <td width="15%" style='width:15.0%;padding:.75pt .75pt .75pt .75pt'></td>
- </tr>
-</table>
-
-</div>
-
-<div class=MsoNormal align=center style='text-align:center'>
-
-<hr size=1 width="100%" noshade style='color:#FF8000' align=center>
-
-</div>
-
-<div align=center>
-
-<table class=MsoNormalTable border=0 cellpadding=0 width="90%"
- style='width:90.0%'>
- <tr>
-  <td width="100%" style='width:100.0%;padding:.75pt .75pt .75pt .75pt'>
-  <p><span lang=EN-US>The Instruction for installing GLScene library into
-  Lazarus to work with Free Pascal Compiler (FPC) includes next steps: </span></p>
-  </td>
- </tr>
-</table>
-
-</div>
-
-<div class=MsoNormal align=center style='text-align:center'>
-
-<hr size=1 width="66%" noshade style='color:#FF8000' align=center>
-
-</div>
-
-<div align=center>
-
-<table class=MsoNormalTable border=0 cellpadding=0 width="90%"
- style='width:90.0%'>
- <tr>
-  <td width="99%" style='width:99.66%;padding:.75pt .75pt .75pt .75pt'>
-  <p class=MsoNormal><span lang=EN-US>1.</span><span lang=EN-US
-  style='font-size:7.0pt'> </span><span lang=EN-US>Download the last release of
-  GLSceneLCL for Lazarus from the page <a
-  href="http://sourceforge.net/projects/glscene/files/">http://sourceforge.net/projects/glscene/files/</a>
-  as archive file.&nbsp; You may also to check out source codes of current SVN version
-  of GLScene from the URL of repository <a
-  href="https://svn.code.sf.net/p/glscene/code/branch">https://svn.code.sf.net/p/glscene/code/branch</a>.
-  </span></p>
-  <p class=MsoNormal style='margin-left:18.0pt'><span lang=EN-US>&nbsp;</span></p>
-  <p class=MsoNormal><span lang=EN-US>2. For SVN version make a copy of the
-  trunk in a separate directory, e.g. in the working directory ../GLSceneLCL,
-  to prevent original source codes from occasional changes. You may skip this
-  step if you don’t need to update the code from SVN repository further.</span></p>
-  <p class=MsoNormal style='margin-left:18.0pt'><span lang=EN-US>&nbsp;</span></p>
-  <p class=MsoNormal><span lang=EN-US>3.</span><span lang=EN-US
-  style='font-size:7.0pt'> </span><span lang=EN-US>Copy auxiliary dynamic libraries
-  from ..GLSceneLCL/Source/external into your system directory to support 3D
-  sounds, shaders and physics (BASS, FMOD, OpenAL, SDL, CG, ODE, Newton).
-  Otherwise you will need to have ones for every application directory with exe
-  file that calls an appropriate dll. </span></p>
-  <p class=MsoListParagraph><span lang=EN-US>&nbsp;</span></p>
-  <p class=MsoNormal><span lang=EN-US>4. Setup Library Paths in Options dialog.
-  Add the directory ../GLSceneLCL/Source to search files for GLScene’s
-  applications and samples</span></p>
-  <p class=MsoNormal style='margin-left:18.0pt'><span lang=EN-US>&nbsp;</span></p>
-  <p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
-  <p class=MsoNormal><span lang=EN-US>5. Open the lpk packages in your
-  ../GLSceneLCL/Packages directory, compile and install ones.</span></p>
-  <p class=MsoNormal><span lang=EN-US>Note: SDL package should not be installed
-  on Windows 7/8/8.1 due to conflict with Lazarus environment</span></p>
-  <p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
-  <p class=MsoNormal><span lang=EN-US>After installation you can start to work
-  with GLScene’s component library and use demos for LCL in
-  “..GLSceneLCL/Samples/Lazarus” directory.</span></p>
-  </td>
- </tr>
- <tr>
-  <td width="99%" style='width:99.66%;padding:.75pt .75pt .75pt .75pt'>
-  <p><span lang=EN-US>&nbsp;</span></p>
-  </td>
- </tr>
-</table>
-
-</div>
-
-<div class=MsoNormal align=center style='text-align:center'>
-
-<hr size=1 width="66%" noshade style='color:#FF8000' align=center>
-
-</div>
-
-</div>
+<body>
+<header>
+    <h1 style="width:30%; margin:auto">Installation of GLScene into Lazarus since version 1.6.x</h1>
+    <hr size=1 width="66%" noshade style='color:#FF8000' align=center>
+</header>
+<main style="width:66%; margin:auto">
+  <h2 class="subtitle">The Instruction for installing GLScene library into Lazarus 1.6x and up to work with Free Pascal Compiler (FPC)</h2>
+  <hr size=1 width="66%" noshade style='color:#FF8000' align=center>
+  <ol>
+      <li><strong>Download the last release of GLSceneLCL for Lazarus</strong>  
+      <ul>
+          <li><p>From the page http://sourceforge.net/projects/glscene/files/ as archive file.<br>Select Branch->GLSceneLCL</p></li>
+          <li><p>From current SVN version of GLScene from the URL of repository https://svn.code.sf.net/p/glscene/code/branch/GLSceneLCL.</p><p class="notice_box">
+               <strong>NOTICE : </strong>Make a copy of the trunk in a separate directory, e.g. in the working directory ../GLSceneLCL, to prevent original source codes from occasional changes.              
+          </p></li>
+      </ul>
+    </li>
+    <li><strong> Copy auxiliary dynamic libraries </strong> 
+    <ul>
+      <li>Under Windows
+      <p>Run setup.bat in ..\GLSceneLCL\external directory as administrator to copy auxiliary dynamic libraries into C:\Windows\System32 and C:\Windows\SysWOW64 directories </p>      
+      </li>
+      <li>Under Linux</li>
+      <p></p>
+    </ul>
+    <p>... to support 3D sounds, shaders and physics (BASS, FMOD, OpenAL, SDL, CG, ODE, Newton). Otherwise you will need to have ones for every application directory with exe file that calls an appropriate dll. </p> 
+    <p class="notice_box">
+      <strong>NOTICE : </strong>BASS, FMOD, CG Are only supported under Windows.
+    </p>
+    <li><strong>Install Components</strong>
+       <p>Launch Lazarus IDE</p>
+        <ol>
+            <li><p>Open and Compile Package GLScene_Runtime<br><img src="laz_glscene_linstall_step_01.jpg" alt=""><br><img src="laz_glscene_linstall_step_02.jpg" alt=""></p></li>            
+            <li><p>Open and Compile Package GLScene_OpenAL</p><p>Do the same as step 1 above.</p></li>
+            <li><p>Open Compile and Install Package GLScene_Designtime<br><img src="laz_glscene_linstall_step_03.jpg" alt="">
+            <br><img src="laz_glscene_linstall_step_03a.jpg" alt=""><br><img src="laz_glscene_linstall_step_03b.jpg" alt=""></p></li>
+            <li><p>If you want using SDL Library</p>
+                <p class="notice_box">
+                   <strong>NOTICE : </strong> Compile package GLScene_SDL
+                </p>
+            </li> 
+            <li><p>If you are under Windows</p>
+                <p class="notice_box">
+                   <strong>NOTICE : </strong> You can compile others packages GLScene_Bass, GLScene_FMod, GLScene_ODE, GLScene_NGD, GLScene_CgShader and GLScene_WinOlnly 
+                </p>
+            </li>            
+        </ol>
+    </li>    
+    <li><strong>After restarting Lazarus IDE</strong><p>Normally you'll can open or create new GLScene projects</p>
+    <p><br><img style="max-width:95%;" src="laz_glscene_linstal_ok.jpg" alt=""></p></li>
+  </ol> 
+</main>
+<footer style="Text-align:center;">
+ <hr size=1 width="66%" noshade style='color:#FF8000' align=center>
+  <p><a href="https://sourceforge.net/projects/glscene/">GLScene Home Page</a> - <a href="http://www.lazarus-ide.org">Lazarus Home Page</a></p>  
+  <hr size=1 width="66%" noshade style='color:#FF8000' align=center>
+</footer>
 
 </body>
-
 </html>

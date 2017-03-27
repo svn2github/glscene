@@ -221,7 +221,8 @@ begin
    if header.IDLength>0 then
       stream.Seek(header.IDLength, soFromCurrent);
 
-   {$IFDEF FPC}
+
+    try
      rimg.Init;
      rimg.Description.Init_BPP32_B8G8R8A8_BIO_TTB(Width, Height);
      rimg.Description.RedShift := 16;
@@ -232,9 +233,9 @@ begin
        rimg.Description.LineOrder := riloBottomToTop;
      RIMG.DataSize := Width * Height * 4;
      GetMem(rimg.Data, RIMG.DataSize);
-   {$ENDIF}
 
-   try
+
+
      case header.ImageType of
         0 : begin // empty image, support is useless but easy ;)
            Width:=0;
@@ -275,13 +276,13 @@ begin
         raise ETGAException.Create('Unsupported TGA ImageType '+IntToStr(header.ImageType));
      end;
 
-     {$IFDEF FPC}
-     LoadFromRawImage(rimg, false);
-     {$ENDIF}
+
+     LoadFromRawImage(rimg, False);
+
    finally
-     {$IFDEF FPC}
+
      FreeMem(rimg.Data);
-     {$ENDIF}
+
    end;
 end;
 
@@ -289,9 +290,6 @@ end;
 //
 procedure TTGAImage.SaveToStream(stream : TStream);
 var
-{$IFDEF GLS_DELPHI_OR_CPPB}
-   y, rowSize : Integer;
-{$ENDIF}
    header : TTGAHeader;
 begin
    // prepare the header, essentially made up from zeroes
@@ -299,28 +297,11 @@ begin
    header.ImageType:=2;
    header.Width:=Width;
    header.Height:=Height;
-{$IFDEF GLS_DELPHI_OR_CPPB}
-   case PixelFormat of
-      glpf24bit : header.PixelSize:=24;
-      glpf32bit : header.PixelSize:=32;
-   else
-      raise ETGAException.Create('Unsupported Bitmap format');
-   end;
-{$ENDIF}
 
-{$IFDEF FPC}
    header.PixelSize:=32;
-{$ENDIF}
    stream.Write(header, SizeOf(TTGAHeader));
-
-{$IFDEF GLS_DELPHI_OR_CPPB}
-   rowSize:=(Width*header.PixelSize) div 8;
-   for y:=0 to Height-1 do
-      stream.Write(ScanLine[Height-y-1]^, rowSize);
-{$ENDIF}
-{$IFDEF FPC}
    stream.Write(RawImage.Data^, Width*Height*4);
-{$ENDIF}
+
 end;
 
 // ------------------------------------------------------------------

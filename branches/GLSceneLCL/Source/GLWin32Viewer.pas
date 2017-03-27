@@ -42,7 +42,6 @@ interface
 uses
   Windows, Messages, Classes,  SysUtils, Types,
   Graphics, Forms, Controls,
-   cene
   GLScene, GLWin32Context,  GLContext;
 
 type

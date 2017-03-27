@@ -125,9 +125,10 @@
     <Version Value="11"/>
     <PathDelim Value="\"/>
     <Target>
-      <Filename Value="bin\$(TargetOs)\$(BuildMode)\$NameOnly($(ProjFile))-$(TargetCPU)"/>
+      <Filename Value="$(ProjFile)-$(TargetCPU)"/>
     </Target>
     <SearchPaths>
+      <IncludeFiles Value="$(ProjOutDir)"/>
       <UnitOutputDirectory Value="lib\$(BuildMode)\$(TargetOS)-$(TargetCPU)"/>
     </SearchPaths>
     <Linking>

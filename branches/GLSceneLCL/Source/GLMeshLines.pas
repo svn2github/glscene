@@ -11,7 +11,7 @@ unit GLMeshLines;
 interface
 
 uses
-  Classes,   
+  Classes,
   SysUtils,
   OpenGLTokens, 
    
