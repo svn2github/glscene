@@ -245,7 +245,7 @@ procedure TGLWindowsBitmapFont.LoadWindowsFont;
 
   // credits to the Unicode version of SynEdit for this function. GPL/MPL as GLScene
   function GetTextSize(DC: HDC; Str: PWideChar; Count: Integer): TSize;
-    var tm: TTextMetricW;
+    var tm: TTextMetric;
 
   begin
     Result.cx := 0;

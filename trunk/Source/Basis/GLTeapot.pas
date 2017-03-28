@@ -25,17 +25,12 @@ uses
 
 type
 
-  // TGLTeapot
-  //
-  {The classic teapot. 
+  {The classic teapot.
      The only use of this object is as placeholder for testing... }
   TGLTeapot = class(TGLSceneObject)
   private
-     
     FGrid: Cardinal;
-
   public
-    
     constructor Create(AOwner: TComponent); override;
     function AxisAlignedDimensionsUnscaled: TVector; override;
     procedure BuildList(var rci: TGLRenderContextInfo); override;
@@ -43,20 +38,13 @@ type
       ARenderSelf, ARenderChildren: Boolean); override;
   end;
 
-  //-------------------------------------------------------------
-  //-------------------------------------------------------------
-  //-------------------------------------------------------------
+//-------------------------------------------------------------
+//-------------------------------------------------------------
+//-------------------------------------------------------------
 implementation
-//-------------------------------------------------------------
-//-------------------------------------------------------------
-//-------------------------------------------------------------
-
 // ------------------
 // ------------------ TGLTeapot ------------------
 // ------------------
-
- 
-//
 
 constructor TGLTeapot.Create(AOwner: TComponent);
 begin
@@ -64,16 +52,10 @@ begin
   FGrid := 5;
 end;
 
-// AxisAlignedDimensionsUnscaled
-//
-
 function TGLTeapot.AxisAlignedDimensionsUnscaled: TVector;
 begin
   SetVector(Result, 0.55, 0.25, 0.35);
 end;
-
-// BuildList
-//
 
 procedure TGLTeapot.BuildList(var rci: TGLRenderContextInfo);
 
@@ -177,9 +159,6 @@ begin
   rci.GLStates.InvertGLFrontFace;
 end;
 
-// DoRender
-//
-
 procedure TGLTeapot.DoRender(var ARci: TGLRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);
 const
@@ -219,9 +198,9 @@ end;
 //-------------------------------------------------------------
 //-------------------------------------------------------------
 initialization
-  //-------------------------------------------------------------
-  //-------------------------------------------------------------
-  //-------------------------------------------------------------
+//-------------------------------------------------------------
+//-------------------------------------------------------------
+//-------------------------------------------------------------
 
   RegisterClasses([TGLTeapot]);
 

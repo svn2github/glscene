@@ -31,8 +31,6 @@ type
   TProcInt = procedure(I: Integer) of object;
   TProcAffineAffineAffine = procedure(V1, V2, V3: TAffineFLTVector) of object;
 
-  // TOctreeTriangleInfo
-  //
   {  Stores information about an intersected triangle. }
   POctreeTriangleInfo = ^TOctreeTriangleInfo;
 
@@ -41,8 +39,6 @@ type
     Vertex: array [0 .. 2] of TAffineVector;
   end;
 
-  // TOctreeNode
-  //
   POctreeNode = ^TOctreeNode;
 
   TOctreeNode = record
@@ -58,12 +54,10 @@ type
     ChildArray: array [0 .. 7] of POctreeNode; // Octree's 8 children
   end;
 
-  // TGLOctree
-  //
   {  Manages an Octree containing references to triangles.  }
   TGLOctree = class(TObject)
   private
-     
+
 {$IFDEF DEBUG}
     Intersections: Integer;
     // for debugging  - number of triangles intersecting an AABB plane
@@ -102,12 +96,9 @@ type
 
     // : Example of how to process each node in the tree
     procedure ConvertR4(ONode: POctreeNode; const Scale: TAffineFLTVector);
-
     procedure CreateTree(Depth: Integer);
     procedure CutMesh;
-
   public
-    
     WorldMinExtent, WorldMaxExtent: TAffineFLTVector;
     RootNode: POctreeNode; // always points to root node
     MaxOlevel: Integer; // max depth level of TOctreeNode
@@ -116,32 +107,25 @@ type
     TriCountMesh: Integer; // total number of triangles in the mesh
     TriCountOctree: Integer; // total number of triangles cut into the octree
     MeshCount: Integer; // number of meshes currently cut into the Octree
-
     ResultArray: array of POctreeNode;
     // holds the result nodes of various calls
-
-    { 19/06/2004 - Lucas G. - Needed this change - Used in ECMisc.pas }
     TriangleFiler: TAffineVectorList;
     procedure WalkSphereToLeaf(Onode: POctreeNode; const P: TVector;
       Radius: Single);
-
-    {  Initializes the tree from the triangle list. 
+    {  Initializes the tree from the triangle list.
       All triangles must be contained in the world extent to be properly
       taken into account. }
     procedure InitializeTree(const AWorldMinExtent, AWorldMaxExtent
       : TAffineVector; const ATriangles: TAffineVectorList;
       const ATreeDepth: Integer);
     procedure DisposeTree;
-
     destructor Destroy; override;
-
     function RayCastIntersect(const RayStart, RayVector: TVector;
       IntersectPoint: PVector = nil; IntersectNormal: PVector = nil;
       TriangleInfo: POctreeTriangleInfo = nil): Boolean;
     function SphereSweepIntersect(const RayStart, RayVector: TVector;
       const Velocity, Radius: Single; IntersectPoint: PVector = nil;
       IntersectNormal: PVector = nil): Boolean;
-
     function TriangleIntersect(const V1, V2, V3: TAffineVector): Boolean;
     {  Returns all triangles in the AABB. }
     function GetTrianglesFromNodesIntersectingAABB(const ObjAABB: TAABB)
@@ -155,11 +139,10 @@ type
     // function SphereIntersect(position:TAffineVector; radius:single);
   end;
 
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
 implementation
-
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -189,7 +172,6 @@ end;
 // Notes : Triangle should be defined in clockwise order a,b,c
 // Return: TRUE if point is in triangle, FALSE if not.
 // -----------------------------------------------------------------------
-
 function CheckPointInTriangle(Point, A, B, C: TAffineVector): Boolean;
 var
   Total_angles: Single;
@@ -224,7 +206,6 @@ end;
 // Notes : Helper function for closestPointOnTriangle()
 // Return: closest point on line segment
 // -----------------------------------------------------------------------
-
 function ClosestPointOnLine(const A, B, P: TAffineVector): TAffineVector;
 var
   D, T: Double;
@@ -232,7 +213,6 @@ var
 begin
   VectorSubtract(P, A, C);
   VectorSubtract(B, A, V);
-
   D := VectorLength(V);
   NormalizeVector(V);
   T := VectorDotProduct(V, C);
@@ -330,8 +310,6 @@ begin
     Result := Rab;
 end;
 
-// HitBoundingBox
-//
 function HitBoundingBox(const MinB, MaxB: TAffineFLTVector;
   const Origin, Dir: TVector; var Coord: TVector): BOOLEAN;
 const
@@ -724,52 +702,24 @@ begin
 end;
 
 // ------------------
-// ------------------ TOctree ------------------
+// ------------------ TGLOctree ------------------
 // ------------------
 
 const
   MIN = 0;
-
-const
   MID = 1;
-
-const
   MAX = 2;
-
-const
   POINT = 0;
-
-const
   TRIANGLE = 1;
-
-const
   TOPFACE = 0;
-
-const
   BOTTOMFACE = 1;
-
-const
   LEFTFACE = 2;
-
-const
   RIGHTFACE = 3;
-
-const
   FRONTFACE = 4;
-
-const
   BACKFACE = 5;
-
-const
   TOPLEFT = 0;
-
-const
   TOPRIGHT = 1;
-
-const
   BOTTOMLEFT = 2;
-
-const
   BOTTOMRIGHT = 3;
 
   // Theory on FlagMax and FlagMin:
@@ -849,16 +799,12 @@ const
     (MAX, MAX, MIN), // Bottom right corner
     (MAX, MIN, MIN));
 
-   
-  //
 destructor TGLOctree.Destroy;
 begin
   DisposeTree;
   inherited Destroy;
 end;
 
-// DisposeTree
-//
 procedure TGLOctree.DisposeTree;
 
   procedure WalkDispose(var Node: POctreeNode);
@@ -880,8 +826,6 @@ begin
   TriangleFiler := nil;
 end;
 
-// CreateTree
-//
 procedure TGLOctree.CreateTree(Depth: Integer);
 begin
   MaxOlevel := Depth; // initialize max depth.
@@ -956,8 +900,6 @@ begin
   end;
 end;
 
-// InitializeTree
-//
 procedure TGLOctree.InitializeTree(const AWorldMinExtent, AWorldMaxExtent
   : TAffineVector; const ATriangles: TAffineVectorList;
   const ATreeDepth: Integer);
@@ -988,8 +930,6 @@ begin
   CutMesh;
 end;
 
-// Refine
-//
 procedure TGLOctree.Refine(ParentNode: POctreeNode; Level: Integer);
 var
   N, X, Z: Integer;
@@ -1022,8 +962,6 @@ begin
   end; // end if
 end;
 
-// ConvertR4
-//
 procedure TGLOctree.ConvertR4(ONode: POctreeNode; const Scale: TAffineFLTVector);
 var
   N: Smallint;
@@ -1039,8 +977,6 @@ begin
   end
 end;
 
-// PointInNode
-//
 function TGLOctree.PointInNode(const Min, Max, APoint: TAffineFLTVector): BOOLEAN;
 begin
   Result := (APoint.X >= Min.X) and
@@ -1049,16 +985,12 @@ begin
     (APoint.Z <= Max.Z);
 end;
 
-// WalkPointToLeaf
-//
 procedure TGLOctree.WalkPointToLeaf(Onode: POctreeNode; const P: TAffineVector);
 begin
   Finalize(Resultarray);
   WalkPointToLeafx(Onode, P);
 end;
 
-// WalkPointToLeafx
-//
 procedure TGLOctree.WalkPointToLeafx(Onode: POctreeNode; const P: TAffineVector);
 var
   N: Integer;
@@ -1076,8 +1008,6 @@ begin
   end;
 end;
 
-// SphereInNode
-//
 function TGLOctree.SphereInNode(const MinExtent, MaxExtent: TAffineVector;
   const C: TVector; Radius: Single): Boolean;
 // Sphere-AABB intersection by Miguel Gomez
@@ -1108,8 +1038,6 @@ begin
     Result := FALSE;
 end;
 
-// WalkSphereToLeaf
-//
 procedure TGLOctree.WalkSphereToLeaf(Onode: POctreeNode; const P: TVector;
   Radius: Single);
 begin
@@ -1117,8 +1045,6 @@ begin
   WalkSphereToLeafx(Onode, P, Radius);
 end;
 
-// WalkSphereToLeafx
-//
 procedure TGLOctree.WalkSphereToLeafx(Onode: POctreeNode; const P: TVector;
   Radius: Single);
 var
@@ -1145,8 +1071,6 @@ begin
   WalkRayToLeafx(Onode, P, V);
 end;
 
-// WalkRayToLeafx
-//
 procedure TGLOctree.WalkRayToLeafx(Onode: POctreeNode; const P, V: TVector);
 var
   N: Integer;
@@ -1204,8 +1128,6 @@ begin
   end; // end for n
 end;
 
-// WalkTriToLeaf
-//
 procedure TGLOctree.WalkTriToLeaf(Onode: POctreeNode;
   const V1, V2, V3: TAffineFLTVector);
 begin
@@ -1213,8 +1135,6 @@ begin
   WalkTriToLeafx(Onode, V1, V2, V3);
 end;
 
-// WalkTriToLeafx
-//
 procedure TGLOctree.WalkTriToLeafx(Onode: POctreeNode;
   const V1, V2, V3: TAffineFLTVector);
 var
@@ -1236,8 +1156,6 @@ begin
   end;
 end;
 
-// RayCastIntersectAABB
-//
 function TGLOctree.RayCastIntersect(const RayStart, RayVector: TVector;
   IntersectPoint: PVector = nil; IntersectNormal: PVector = nil;
   TriangleInfo: POctreeTriangleInfo = nil): Boolean;
@@ -1516,8 +1434,6 @@ begin
   end; // end for i nodes
 end;
 
-// AABBIntersect
-//
 function TGLOctree.AABBIntersect(const AABB: TAABB; M1to2, M2to1: TMatrix;
   Triangles: TAffineVectorList = nil): Boolean;
 var
@@ -1555,8 +1471,6 @@ begin
   TriList.Free;
 end;
 
-// GetTrianglesFromNodesIntersectingAABB
-//
 function TGLOctree.GetTrianglesFromNodesIntersectingAABB(const ObjAABB: TAABB)
   : TAffineVectorList;
 var
@@ -1621,8 +1535,6 @@ begin
 
 end;
 
-// GetTrianglesFromNodesIntersectingCube
-//
 function TGLOctree.GetTrianglesFromNodesIntersectingCube(const ObjAABB: TAABB;
   const ObjToSelf, SelfToObj: TMatrix): TAffineVectorList;
 var
