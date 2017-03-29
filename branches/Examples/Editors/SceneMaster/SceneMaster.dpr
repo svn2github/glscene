@@ -2,18 +2,18 @@ program SceneMaster;
 
 uses
   Forms,
-  fInitial in 'Source\Interface\fInitial.pas' {FormInitial},
-  fDialog in 'Source\Interface\fDialog.pas' {FormDialog},
-  fMain in 'Source\Interface\fMain.pas' {FormMaster},
-  uNavCube in 'Source\Module\uNavCube.pas',
-  uGlobals in 'Source\Module\uGlobals.pas',
-  uSettings in 'Source\Module\uSettings.pas',
-  dDialogs in 'Source\Interface\dDialogs.pas' {DMDialogs: TDataModule},
-  fAbout in 'Source\Interface\fAbout.pas' {FormAbout},
-  fOptions in 'Source\Interface\fOptions.pas' {GLOptions},
-  fContent in 'Source\Interface\fContent.pas' {FormContent},
-  fKitbag in 'Source\Interface\fKitbag.pas' {FormKitbag},
-  dImages in 'Source\Interface\dImages.pas' {DMImages: TDataModule};
+  fInitial in 'Source\fInitial.pas' {InitialForm},
+  fDialog in 'Source\fDialog.pas' {FormDialog},
+  fMain in 'Source\fMain.pas' {FormMaster},
+  uNavCube in 'Source\uNavCube.pas',
+  uGlobals in 'Source\uGlobals.pas',
+  uSettings in 'Source\uSettings.pas',
+  dDialogs in 'Source\dDialogs.pas' {DMDialogs: TDataModule},
+  fAbout in 'Source\fAbout.pas' {AboutForm},
+  fOptions in 'Source\fOptions.pas' {OptionsForm},
+  fContent in 'Source\fContent.pas' {ContentForm},
+  fKitpack in 'Source\fKitpack.pas' {KitpackForm},
+  dImages in 'Source\dImages.pas' {DMImages: TDataModule};
 
 {$R *.res}
 
@@ -22,8 +22,8 @@ begin
   Application.Title := 'GLSViewer';
   Application.CreateForm(TFormMaster, FormMaster);
   Application.CreateForm(TDMDialogs, DMDialogs);
-  Application.CreateForm(TFormContent, FormContent);
-  Application.CreateForm(TFormKitbag, FormKitbag);
+  Application.CreateForm(TContentForm, ContentForm);
+  Application.CreateForm(TKitpackForm, KitpackForm);
   Application.CreateForm(TDMImages, DMImages);
   Application.Run;
 end.

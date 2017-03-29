@@ -2,26 +2,27 @@ program Plot_2D_v3;
 
 uses
   Forms,
-  Main in 'Main.pas' {MainForm},
-  Functs in 'Functs.pas' {FunctionsForm},
-  GridOpts in 'GridOpts.pas' {GridOptionsForm},
-  Numeric in 'Numeric.pas' {NumericForm},
-  TextBlocks in 'TextBlocks.pas' {TextBlocksForm},
-  Derivative in 'Derivative.pas' {DerivativeForm},
-  IntegrateX in 'IntegrateX.pas' {IntegrateXForm},
-  IntegrateY in 'IntegrateY.pas' {IntegrateYForm},
-  Between in 'Between.pas' {BetweenForm},
-  VolumeX in 'VolumeX.pas' {VolumeXForm},
-  VolumeY in 'VolumeY.pas' {VolumeYForm},
-  Bitmap in 'Bitmap.pas' {BitmapForm},
-  Print in 'Print.pas' {PrintForm},
-  Style in 'Style.pas' {StyleNameForm},
-  fxValue in 'fxValue.pas' {fxValueForm},
-  fx1Value in 'fx1Value.pas' {fx1ValueForm},
-  fx2Value in 'fx2Value.pas' {fx2ValueForm},
-  uCanvas in 'uCanvas.pas',
-  uGlobal in 'uGlobal.pas',
-  uParser in 'uParser.pas';
+  fMain in 'Source\fMain.pas' {MainForm},
+  fFuncts in 'Source\fFuncts.pas' {FunctionsForm},
+  fGridOpts in 'Source\fGridOpts.pas' {GridOptionsForm},
+  fNumeric in 'Source\fNumeric.pas' {NumericForm},
+  fTextBlocks in 'Source\fTextBlocks.pas' {TextBlocksForm},
+  fDerivative in 'Source\fDerivative.pas' {DerivativeForm},
+  fIntegrateX in 'Source\fIntegrateX.pas' {IntegrateXForm},
+  fIntegrateY in 'Source\fIntegrateY.pas' {IntegrateYForm},
+  fBetween in 'Source\fBetween.pas' {BetweenForm},
+  fVolumeX in 'Source\fVolumeX.pas' {VolumeXForm},
+  fVolumeY in 'Source\fVolumeY.pas' {VolumeYForm},
+  fBitmap in 'Source\fBitmap.pas' {BitmapForm},
+  fPrint in 'Source\fPrint.pas' {PrintForm},
+  fStyle in 'Source\fStyle.pas' {StyleNameForm},
+  fxValue in 'Source\fxValue.pas' {fxValueForm},
+  fx1Value in 'Source\fx1Value.pas' {fx1ValueForm},
+  fx2Value in 'Source\fx2Value.pas' {fx2ValueForm},
+  uCanvas in 'Source\uCanvas.pas',
+  uGlobal in 'Source\uGlobal.pas',
+  uParser in 'Source\uParser.pas',
+  fAbout in 'Source\fAbout.pas' {AboutForm};
 
 {$R *.res}
 
@@ -43,5 +44,6 @@ begin
   Application.CreateForm(TfxValueForm, fxValueForm);
   Application.CreateForm(Tfx1ValueForm, fx1ValueForm);
   Application.CreateForm(Tfx2ValueForm, fx2ValueForm);
+  Application.CreateForm(TAboutForm, AboutForm);
   Application.Run;
 end.

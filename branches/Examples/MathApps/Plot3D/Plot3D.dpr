@@ -1,21 +1,20 @@
-//
-// Initial code by Eric Hardinge
-//
+
 program Plot3D;
 
 uses
   Forms,
-  Main in 'Main.pas' {ViewForm},
-  Functions in 'Functions.pas' {FunctionsForm},
-  GridOptions in 'GridOptions.pas' {GridOptionsForm},
-  Evaluate in 'Evaluate.pas' {EvaluateForm},
-  CoordOptions in 'CoordOptions.pas' {CoordsForm},
-  DerivativeOptions in 'DerivativeOptions.pas' {DerivativesForm},
-  GridColors in 'GridColors.pas' {GridColorsForm},
-  PlotColors in 'PlotColors.pas' {PlotColorsForm},
-  AddPlotColors in 'AddPlotColors.pas' {AddPlotColorsForm},
-  uParser in 'uParser.pas',
-  uGlobal in 'uGlobal.pas';
+  fMain in 'Source\fMain.pas' {ViewForm},
+  fFunctions in 'Source\fFunctions.pas' {FunctionsForm},
+  fGridOptions in 'Source\fGridOptions.pas' {GridOptionsForm},
+  fEvaluate in 'Source\fEvaluate.pas' {EvaluateForm},
+  fCoordOptions in 'Source\fCoordOptions.pas' {CoordsForm},
+  fDerivativeOptions in 'Source\fDerivativeOptions.pas' {DerivativesForm},
+  fGridColors in 'Source\fGridColors.pas' {GridColorsForm},
+  fPlotColors in 'Source\fPlotColors.pas' {PlotColorsForm},
+  fAddPlotColors in 'Source\fAddPlotColors.pas' {AddPlotColorsForm},
+  uParser in 'Source\uParser.pas',
+  uGlobal in 'Source\uGlobal.pas',
+  fAbout in 'Source\fAbout.pas' {AboutForm};
 
 {$R *.res}
 
@@ -31,5 +30,6 @@ begin
   Application.CreateForm(TGridColorsForm, GridColorsForm);
   Application.CreateForm(TPlotColorsForm, PlotColorsForm);
   Application.CreateForm(TAddPlotColorsForm, AddPlotColorsForm);
+  Application.CreateForm(TAboutForm, AboutForm);
   Application.Run;
 end.
