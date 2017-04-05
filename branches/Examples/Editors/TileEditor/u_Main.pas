@@ -10,12 +10,13 @@ uses
   System.SysUtils,
   System.Variants,
   System.Classes,
+  System.Math,
   Vcl.Graphics,
   Vcl.Controls,
   Vcl.Forms,
   Vcl.Dialogs,
   Vcl.Imaging.jpeg,
-  //GLS
+   
   GLCadencer,
   GLWin32Viewer,
   GLCrossPlatform,
@@ -103,7 +104,7 @@ begin
       map_point.X := round(x);
       map_modified := true;
       end;
-    if abs(floor(y) - map_point.Y) > 4 then begin
+    if abs(Floor(Y) - map_point.Y) > 4 then begin
       map_point.Y := floor(y);
       map_modified := true;
       end;

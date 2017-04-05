@@ -149,9 +149,9 @@ object Form1: TForm1
     DesignSize = (
       215
       711)
-    object Label15: TLabel
-      Left = 95
-      Top = 304
+    object LabelParts: TLabel
+      Left = 31
+      Top = 229
       Width = 24
       Height = 13
       Anchors = [akTop, akRight]
@@ -273,7 +273,7 @@ object Form1: TForm1
       Layout = blGlyphBottom
       OnClick = SpeedButton1Click
     end
-    object Label13: TLabel
+    object LabelDepth: TLabel
       Left = 42
       Top = 171
       Width = 29
@@ -287,7 +287,7 @@ object Form1: TForm1
       Font.Style = []
       ParentFont = False
     end
-    object Label11: TLabel
+    object LabelBHeight: TLabel
       Left = 12
       Top = 136
       Width = 59
@@ -301,7 +301,7 @@ object Form1: TForm1
       Font.Style = []
       ParentFont = False
     end
-    object Label7: TLabel
+    object LabelWidth: TLabel
       Left = 27
       Top = 68
       Width = 28
@@ -315,7 +315,7 @@ object Form1: TForm1
       Font.Style = []
       ParentFont = False
     end
-    object Label9: TLabel
+    object LabelFHeight: TLabel
       Left = 13
       Top = 100
       Width = 58
@@ -352,9 +352,9 @@ object Form1: TForm1
       TabOrder = 0
       WordWrap = False
     end
-    object BottomCB: TCheckBox
-      Left = 54
-      Top = 312
+    object cbBottom: TCheckBox
+      Left = 46
+      Top = 296
       Width = 65
       Height = 17
       Anchors = [akTop, akRight]
@@ -386,9 +386,9 @@ object Form1: TForm1
       TabOrder = 2
       OnClick = btAddCubesClick
     end
-    object BackCB: TCheckBox
-      Left = 54
-      Top = 280
+    object cbBack: TCheckBox
+      Left = 46
+      Top = 264
       Width = 65
       Height = 17
       Anchors = [akTop, akRight]
@@ -404,9 +404,9 @@ object Form1: TForm1
       TabOrder = 3
       OnClick = PartsCBClick
     end
-    object FrontCB: TCheckBox
-      Left = 54
-      Top = 264
+    object cbFront: TCheckBox
+      Left = 46
+      Top = 248
       Width = 65
       Height = 17
       Anchors = [akTop, akRight]
@@ -422,9 +422,9 @@ object Form1: TForm1
       TabOrder = 4
       OnClick = PartsCBClick
     end
-    object RightCB: TCheckBox
-      Left = 54
-      Top = 344
+    object cbRight: TCheckBox
+      Left = 46
+      Top = 328
       Width = 65
       Height = 17
       Anchors = [akTop, akRight]
@@ -440,9 +440,9 @@ object Form1: TForm1
       TabOrder = 5
       OnClick = PartsCBClick
     end
-    object LeftCB: TCheckBox
-      Left = 54
-      Top = 328
+    object cbLeft: TCheckBox
+      Left = 46
+      Top = 312
       Width = 65
       Height = 17
       Anchors = [akTop, akRight]
@@ -458,9 +458,9 @@ object Form1: TForm1
       TabOrder = 6
       OnClick = PartsCBClick
     end
-    object TopCB: TCheckBox
-      Left = 54
-      Top = 296
+    object cbTop: TCheckBox
+      Left = 46
+      Top = 280
       Width = 65
       Height = 17
       Anchors = [akTop, akRight]
@@ -566,11 +566,12 @@ object Form1: TForm1
     end
     object GLFreeForm1: TGLFreeForm
       Material.FrontProperties.Diffuse.Color = {0000803FF8FEFE3E000000000000803F}
+      Material.FrontProperties.Emission.Color = {0000803F0000803F000000000000803F}
+      Material.FrontProperties.Specular.Color = {938C0C3E938E0E3FDCD6D63E0000803F}
       Material.Texture.Disabled = False
       Scale.Coordinates = {CDCCCC3DCDCCCC3DCDCCCC3D00000000}
       ShowAxes = True
       MaterialLibrary = GLMaterialLibrary1
-      LightmapLibrary = GLMaterialLibrary1
     end
     object dcBlock: TGLDummyCube
       ShowAxes = True
@@ -578,7 +579,7 @@ object Form1: TForm1
       object Block: TGLCube
         Material.FrontProperties.Ambient.Color = {00000000000000000000803F0000803F}
         Material.FrontProperties.Diffuse.Color = {00000000000000000000803F0000803F}
-        Material.FrontProperties.Emission.Color = {00000000000000000000803F0000803F}
+        Material.FrontProperties.Emission.Color = {00000000F8FEFE3E0000803F0000803F}
         Material.FrontProperties.Specular.Color = {00000000000000000000803F0000803F}
         Material.BlendingMode = bmAdditive
         CubeSize = {6666863F6666863F6666863F}
@@ -624,6 +625,31 @@ object Form1: TForm1
     Top = 80
   end
   object GLMaterialLibrary1: TGLMaterialLibrary
+    Materials = <
+      item
+        Name = 'LibMaterial'
+        Tag = 0
+      end
+      item
+        Name = 'LibMaterial1'
+        Tag = 0
+      end
+      item
+        Name = 'LibMaterial2'
+        Tag = 0
+      end
+      item
+        Name = 'LibMaterial3'
+        Tag = 0
+      end
+      item
+        Name = 'LibMaterial4'
+        Tag = 0
+      end
+      item
+        Name = 'LibMaterial5'
+        Tag = 0
+      end>
     Left = 72
     Top = 133
   end

@@ -64,7 +64,9 @@ uses
   fAbout,
   fOptions,
   fDialog,
+  uGlobals,
   uNavCube,
+
   fInitial;
 
 type
@@ -212,11 +214,6 @@ type
 var
   FormMaster: TFormMaster;
   NavCube: TGLNavCube;
-  BinPath : TfileName;
-  AssetsPath : TFileName;
-  ImagePath : TFileName;
-  LayoutFName : TFileName;
-  RecentFName : TFileName;
 
 const
   NumObjects: Integer = 1000;

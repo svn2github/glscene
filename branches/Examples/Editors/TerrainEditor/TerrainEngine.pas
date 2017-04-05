@@ -6,7 +6,7 @@ uses
   Winapi.OpenGL,
   System.Math,
   Vcl.Graphics,
-  //GLS
+   
   GLVectorTypes,
   GLVectorGeometry;
 
@@ -79,7 +79,7 @@ type
   { .: TTerrain :. }
   TTerrain = class(TObject)
   private
-    { Private declarations }
+     
     FData: THeightData;
 
   protected
@@ -90,7 +90,7 @@ type
     procedure DrawManually();
     procedure LoadFromBitmap(Bitmap: TBitmap);
   public
-    { Public declarations }
+     
     constructor Create(const FileName: String; GridScale: Single = 1.0;
       VerticalScale: Single = 100.0; TextureScale: Single = 1.0);
     destructor Destroy(); override;

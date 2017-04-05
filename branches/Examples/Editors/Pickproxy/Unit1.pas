@@ -5,7 +5,7 @@ interface
 uses
   Winapi.Windows, System.SysUtils, System.Classes,
   Vcl.Controls, Vcl.Forms,
-  // GLS
+   
   GLFile3DS,
   GLScene, GLObjects, GLWin32Viewer, GLCrossPlatform, GLCadencer, GLColor,
   GLVectorFileObjects, GLCoordinates, GLBaseClasses, GLProxyObjects,

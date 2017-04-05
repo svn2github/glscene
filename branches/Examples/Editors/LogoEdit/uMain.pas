@@ -12,7 +12,7 @@ uses
   Vcl.ActnMenus, Vcl.Grids, Vcl.ComCtrls, Vcl.ExtCtrls, Vcl.Imaging.pngimage,
 
 
-  // GLS
+   
   GLScene, GLVectorFileObjects, GLObjects, GLCoordinates,
   GLWin32Viewer, GLCrossPlatform, GLBaseClasses,
   GLHUDObjects, Menus, ShellCtrls, GLFile3DS, GLVectorTypes, GLVectorGeometry,
@@ -137,7 +137,7 @@ begin
 end;
 
 //
-// <—— Run ——————————————————————————————————————————————————————————————————«««—
+// <—— Run ——————————————————————————————————————————————————————————————————«««E
 //
 
 procedure TForm1.FormCreate(Sender: TObject);

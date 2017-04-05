@@ -3,12 +3,27 @@ unit Unit1;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages,
-  System.SysUtils, System.Variants, System.Classes,
-  Graphics, Controls, Forms, Dialogs, StdCtrls, ExtCtrls,
-  //GLS
-  GLWin32Viewer, GLScene, GLObjects, GLGeomObjects,
-  GLSkydome, GLAsyncTimer, GLCadencer, GLCoordinates, GLCrossPlatform,
+  Winapi.Windows,
+  Winapi.Messages,
+  System.SysUtils,
+  System.Variants,
+  System.Classes,
+  Graphics,
+  Controls,
+  Forms,
+  Dialogs,
+  StdCtrls,
+  ExtCtrls,
+
+  GLWin32Viewer,
+  GLScene,
+  GLObjects,
+  GLGeomObjects,
+  GLSkydome,
+  GLAsyncTimer,
+  GLCadencer,
+  GLCoordinates,
+  GLCrossPlatform,
   GLBaseClasses;
 
 type
@@ -50,13 +65,13 @@ type
     procedure CadencerProgress(Sender: TObject; const deltaTime,
       newTime: Double);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
   end;
 
 const
-  MAX_OBJECTS = 10;
+  MAX_OBJECTS = 20;
 
 var
   frmMain: TfrmMain;
@@ -134,7 +149,7 @@ var
   i: integer;
 begin
   if AccumInit then begin
-    Application.MessageBox('Аккумулятор объектов уже инициализирован!', PChar(Caption), 0);
+    Application.MessageBox('Accumulator was initialized!', PChar(Caption), 0);
     Exit;
   end;
   for i := 0 to MAX_OBJECTS - 1 do Objects[i] := TAccumObject.Create(i);
@@ -144,19 +159,19 @@ end;
 procedure TfrmMain.btnAddObjectClick(Sender: TObject);
 begin
   if not AccumInit then begin
-    Application.MessageBox('Аккумулятор объектов не инициализирован!', PChar(Caption), 0);
+    Application.MessageBox('Accumulator not initialized!', PChar(Caption), 0);
     Exit;
   end;
-  if GetNonUseObject = nil then Application.MessageBox('В аккумуляторе нет свободных объектов!', PChar(Caption), 0);
+  if GetNonUseObject = nil then Application.MessageBox('There are no free objects in accumulator!', PChar(Caption), 0);
 end;
 
 procedure TfrmMain.btnDelObjectClick(Sender: TObject);
 begin
   if not AccumInit then begin
-    Application.MessageBox('Аккумулятор объектов не инициализирован!', PChar(Caption), 0);
+    Application.MessageBox('Accumulator not initialized!', PChar(Caption), 0);
     Exit;
   end;
-  if KillUseObject = -1 then Application.MessageBox('В аккумуляторе нет занятых объектов!', PChar(Caption), 0);
+  if KillUseObject = -1 then Application.MessageBox('There are no used objects in accumulator!', PChar(Caption), 0);
 end;
 
 procedure TfrmMain.FormCreate(Sender: TObject);
@@ -170,7 +185,7 @@ var
   i: integer;
 begin
   if not AccumInit then begin
-    Application.MessageBox('Аккумулятор объектов не инициализирован!', PChar(Caption), 0);
+    Application.MessageBox('Accumulator not initialized!', PChar(Caption), 0);
     Exit;
   end;
   for i := 0 to MAX_OBJECTS - 1 do Objects[i].Free;

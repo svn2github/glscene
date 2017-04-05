@@ -12,7 +12,7 @@ uses
   Vcl.Forms,
   Vcl.Dialogs,
   Vcl.Imaging.jpeg,
-  //GLS
+   
   GLCadencer,
   GLWin32Viewer,
   GLCrossPlatform,

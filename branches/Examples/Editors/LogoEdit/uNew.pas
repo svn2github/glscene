@@ -6,7 +6,7 @@ uses
   Winapi.Windows, Winapi.Messages,
   System.SysUtils, System.Variants, System.Classes,
   Graphics, Controls, Forms, Dialogs, StdCtrls, Spin, Buttons,
-  // GLS
+   
   GLVectorGeometry;
 
 type
@@ -19,9 +19,9 @@ type
     SpeedButton1: TSpeedButton;
     procedure SpeedButton1Click(Sender: TObject);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
   end;
 
 var

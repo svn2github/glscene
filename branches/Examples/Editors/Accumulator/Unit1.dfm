@@ -1,7 +1,7 @@
 object frmMain: TfrmMain
   Left = 192
   Top = 107
-  Caption = #1044#1077#1084#1086' - '#1040#1082#1082#1091#1084#1091#1083#1103#1090#1086#1088' '#1054#1073#1098#1077#1082#1090#1086#1074
+  Caption = 'Accumulator of objects'
   ClientHeight = 601
   ClientWidth = 854
   Color = clBtnFace
@@ -30,7 +30,7 @@ object frmMain: TfrmMain
     Top = 8
     Width = 193
     Height = 25
-    Caption = #1048#1085#1080#1094#1080#1072#1083#1080#1079#1080#1088#1086#1074#1072#1090#1100' '#1072#1082#1082#1091#1084#1091#1083#1103#1090#1086#1088
+    Caption = 'Initialize accumulator'
     TabOrder = 1
     OnClick = btnInitAccumClick
   end
@@ -39,7 +39,7 @@ object frmMain: TfrmMain
     Top = 40
     Width = 193
     Height = 25
-    Caption = #1044#1086#1073#1072#1074#1080#1090#1100' '#1086#1073#1098#1077#1082#1090
+    Caption = 'Add object'
     TabOrder = 2
     OnClick = btnAddObjectClick
   end
@@ -48,7 +48,7 @@ object frmMain: TfrmMain
     Top = 72
     Width = 193
     Height = 25
-    Caption = #1059#1076#1072#1083#1080#1090#1100' '#1086#1073#1098#1077#1082#1090
+    Caption = 'Delete object'
     TabOrder = 3
     OnClick = btnDelObjectClick
   end
@@ -57,7 +57,7 @@ object frmMain: TfrmMain
     Top = 104
     Width = 193
     Height = 25
-    Caption = #1054#1089#1074#1086#1073#1086#1076#1080#1090#1100' '#1072#1082#1082#1091#1084#1091#1083#1103#1090#1086#1088
+    Caption = 'Free accumulator'
     TabOrder = 4
     OnClick = btnDeinitAccumClick
   end
@@ -110,11 +110,11 @@ object frmMain: TfrmMain
     Enabled = True
     OnTimer = FPSTimerTimer
     ThreadPriority = tpNormal
-    Left = 32
+    Left = 368
   end
   object Cadencer: TGLCadencer
     Scene = GLScene
     OnProgress = CadencerProgress
-    Left = 64
+    Left = 440
   end
 end

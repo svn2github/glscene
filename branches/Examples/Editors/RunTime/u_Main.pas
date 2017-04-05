@@ -14,7 +14,7 @@ uses
   Vcl.Dialogs,
   Vcl.StdCtrls,
   Vcl.ExtCtrls,
-  //GLS
+   
   GLWin32Viewer,
   GLScene,
   GLCadencer,

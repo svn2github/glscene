@@ -13,7 +13,7 @@ uses
   Vcl.Controls,
   Vcl.Forms,
   Vcl.Dialogs,
-  //GLS
+   
   GLScene,
   GLObjects,
   GLCadencer,
@@ -46,7 +46,7 @@ type
     procedure FormMouseWheel(Sender: TObject; Shift: TShiftState;
       WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
   private
-    { Private declarations }
+     
     FTerrain: TTerrain;
     GPoint: TPoint;
 
@@ -55,7 +55,7 @@ type
 
     procedure UpdateCursor;
   public
-    { Public declarations }
+     
   end;
 
 var

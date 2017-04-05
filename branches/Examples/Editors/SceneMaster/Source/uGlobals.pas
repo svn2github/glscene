@@ -22,6 +22,12 @@ var
   TexturePath: TFileName;
   IniFile: TIniFile;
 
+  BinPath : TFileName;
+  AssetsPath : TFileName;
+  ImagePath : TFileName;
+  LayoutFName : TFileName;
+  RecentFName : TFileName;
+
   Language: integer;
   GeneralSection: string = RegGLSViewer + 'General';
 
