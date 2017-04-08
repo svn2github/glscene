@@ -1,0 +1,356 @@
+<HTML>
+<HEAD>
+<TITLE>AStar Pathfinder</TITLE>
+<META name=keywords content="Ivan Lee Herring, AStar Pathfinder">
+<META name=description content="AStar Pathfinder" >
+<META name=author content="Ivan Lee Herring"> 
+<META NAME="Generator" CONTENT="Notepad">
+</HEAD>
+<BODY TEXT="#000000" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" BGCOLOR="#c0c0c0">
+
+<CENTER>This page updated: March, 2006</CENTER>
+<P>
+<P>  </P>
+<P>  </P>
+<P><STRONG>AStar Pathfinder</STRONG> Overview</P>
+
+<UL><LI>Introduction</LI>
+<UL><LI>AStar Pathfinder is based on Gridded data. There are several implementations of the pathfinding code. Implementing a Vector based pathfinder that travels along Roads (Vector based data) is on the To Do list, although it will become its own program, not run concurrently.</LI></UL>
+<UL><LI>Purpose: Select start and finish points and have the route through the obstacles determined.</LI></UL> 
+<UL><LI>Simple AStar returns a list of path locations that can be displayed. Multiple units can be processed in succession and then displayed per step or in succession.</LI>
+<UL><LI>The Classic Data Display, a Click and Move, a 5 unit Pathfinder, and other scenarios are available from the Menu, they use a Simple (1 at a time) AStar Pathfinder.</LI></UL> 
+</UL>
+<UL><LI>When Collision detection is used, the results are returned per step, and the program must repeatedly check for progress to display unit movement, as it tracks the location of all units.</LI>
+<UL><LI>Project File .apf collates files that are loaded by the 3D Viewer to run a Collision (Multiple Unit) Pathfinder.</LI></UL>
+<UL><LI>Use the Terrain Sculptor to create the Terrain files. Unit Actors .md2 and texture are not supplied. See online Quake 2 Polycount for variety.</LI></UL>
+</UL>
+<UL><LI>Each cell has a Cost (F) assigned to it. F=G+H</LI>
+<UL><LI>The Cost of traveling is based on G (Ground or Terrain): Actual cost to get from Start to Current Point. Travel is counted as the distance along the path, When terrain information is available, it is added to the distance cost.</LI></UL>
+<UL><LI>H Cost: Heuristic: Estimate of Cost to reach the Target point (f.i.  Manhattan distance) from Current location. Terrain cost (if available) is an estimate of the 'average' terrain... what is used as the estimated value can affect the pathfinding.</LI></UL>
+<UL><LI>F=G+H : The Terrain Cost cannot be more than the Distance cost else the pathfinder gets lost. Distance cost is 10 per cell or 15 per Diagonal cell. 
+<BR>Perhaps when using Terrain the values should be 100 and 150 to allow a range of integer values. 
+<BR>Obstacles could then be set at 100 so any terrain cost greater than 100 becomes an Obstacle (No go area).</LI></UL>
+</UL>
+</UL>
+
+
+<UL><LI>What is Included</LI>
+<UL><LI>AStar Zip contains:A Folder containing the program, several html files, and several more .zip files: src, flags, textures, brushes, actors, and Projects</LI></UL>
+<UL><LI>src: the pascal Source code</LI></UL>
+<UL><LI>flags: folder contains files used by the 2D Sprite Viewer (10x10) as Bases and Targets and 3D Terrain viewer (348x64) as targets (1536x256) could be used too.</LI></UL>
+<UL><LI>textures: folder contains files used by the Terrain Sculptor and Texture Painter.. get more and place them here (256x256)</LI></UL>
+<UL><LI>brushes: folder contains brushes used by the Texture Painter</LI></UL>
+<UL><LI>actors: contains an empty folder : place waste.md2 and waste.jpg in a waste folder you create. Place other actors in separate folders. Place Quake2Animations.aaf in the Actors folder</LI></UL>
+<UL><LI>Projects: contains an empty folder to hold the Project data created.</LI></UL>
+</UL>
+
+<UL><LI>Form and Function</LI>
+<UL><LI>The menu, keyboard and Mouse interface are described below.</LI></UL>
+<UL><LI>Files :The Program loads 3 'types' of files. Files loaded are a Program Options File (POF), an Obstacle file for the Demos (AOF), and an AStar Project File (APF). Project files are used to load data for the 3D Pathfinder.</LI>
+<UL><LI>(POF) Program Options File (pof) : Save Program information. Base Program data is saved..Loaded at program start : astar.pof contains Menu selections and window locations.</LI></UL>
+<UL><LI>(AOF) Obstacle data can be loaded independently : tile10x80x60.aof for use in the Demos.</LI>
+  <UL><LI>tile is a hint (the Demo is 50) others are 10, maybe someday 1</LI></UL>
+  <UL><LI>the 80x60 would be from an 800x600 screen on a tilesize of 10: Tile Width 80 Tile Height 60</LI></UL>
+  <UL><LI>Obstacles only (aof) also part of the Project/Data file, available separately to change (Save..Load) the map (usefull for Demos).</LI></UL>
+</UL>
+<UL><LI>(APF) <A HREF="astarprojectfile.html">AStar Project  File</A>  Load..Save  Project files contains the first page data, and the file names of the other three sections.</LI>
+
+<UL><LI>AStar Units File (auf)</LI>
+  <UL><LI>AStar Unit Flag : a bmp file to use as a texture for the Target (bmp)</LI></UL>
+  <UL><LI>AStar Unit Actor (md2)</LI></UL>
+  <UL><LI>AStar Unit Actor texture (bmp or jpg)</LI></UL>
+  <UL><LI>acf: Microsoft Agent Character File (HTTP format)</LI></UL>
+</UL>
+<UL><LI>AStar Terrain Data File (adf)</LI>
+<UL><LI>AStar Height data: a bmp or htf File (bmp or htf)</LI></UL>
+<UL><LI>AStar Image (Texture): File (.bmp)</LI></UL>
+<UL><LI>AStar Map Attributes (Combined) File (amf)</LI>
+<UL><LI>AStar Elevations (Gradient..Slope) File (aef) (Not the raw DEM data)</LI></UL>
+<UL><LI>AStar Vegetation File (avf)</LI></UL>
+<UL><LI>AStar Soils File (asf)</LI></UL>
+<UL><LI>AStar Hydrology File (ahf)</LI></UL>
+<UL><LI>AStar Transportation File (atf)</LI></UL>
+<UL><LI>AStar Urban Areas File (aaf)</LI></UL>
+<UL><LI>AStar Obstacles File (aof)</LI></UL>
+</UL>
+<UL><LI>AStar Influence Map File (aif)</LI></UL>
+<UL><LI>AStar NOGO (Combined) File (anf)</LI></UL>
+<UL><LI>AStar G Cost File (agf)</LI></UL>
+<UL><LI>AStar MAG (Map Attributes [RGB]:[G#] G Cost) B File (abf)</LI></UL>
+<UL><LI>AStar AI Logic File (alf)</LI></UL>
+</UL>
+
+
+<UL><LI>a,b,c,d,e,f,g,h,i,[J,K],l,m,n,o,p,[QR],s,t,u,v,[WXYZ]</LI></UL>
+</UL>
+</UL>
+</UL>
+
+
+
+<P><STRONG>AStar Pathfinder</STRONG> Form</P>
+<img src="astarmenu.png" alt="AStar Pathfinder Menu">
+<UL><LI>Menu</LI>
+<UL><LI>File</LI>
+  <UL><LI>[New] Clears Obstacles and Resets unit locations.</LI></UL>
+  <UL><LI>[Open...] an Obstacle file</LI></UL>
+  <UL><LI>[Save As...] Save Obstacles as .aof or the screen as a .bmp</LI></UL>
+  <UL><LI>-----------</LI></UL>
+  <UL><LI>Program Options... Display colors: used in the Demos</LI>
+      <UL><LI>AStar Display Colors File (aff) can be used to save color 'Sets'</LI></UL>
+      <UL><LI>[AStar Data Display Arrows Color] : Selects White or Black for visibility against the Ground Color</LI></UL>
+      <UL><LI>Base and Target colors iaw 5 units:</LI></UL>
+  </UL>
+  <UL><LI>-----------</LI></UL>
+  <UL><LI>[Setup Printer...] Select printer and its parameters</LI></UL>
+  <UL><LI>[Print...] Screen </LI></UL>
+  <UL><LI>[Exit] the program</LI></UL>
+</UL>
+<UL><LI>Search (Heuristic)</LI>
+  <UL><LI>Dijkstra (H=0)</LI></UL>
+  <UL><LI>Diagonal </LI></UL>
+  <UL><LI>Manhattan </LI></UL>
+  <UL><LI>Best First (not really H= too large)</LI></UL>
+  <UL><LI>Euclidean (SQRT() )</LI></UL>
+  <UL><LI>Tie Breakers</LI>
+    <UL><LI>None</LI></UL>
+    <UL><LI>Straight (Base to Target)</LI></UL>
+    <UL><LI>Close (extensive)</LI></UL>
+    <UL><LI>Far (extensive)</LI></UL>
+  </UL>
+  <UL><LI>Use Original (M+N): If Manhattan and (Tie Breakers) None are selected, this toggles using the original Code. Only here to test the impact on speed of adding Heuristic and G-Cost options.</LI></UL>
+</UL>
+<UL><LI>View</LI>
+  <UL><LI>Grid Lines Displayed</LI></UL>
+  <UL><LI>Path Displayed</LI></UL>
+  <UL><LI>Autoload Obstacle File (Filename?)</LI></UL>
+    <UL><LI>Memo Active (Demo data display Grabs the Cursor)</LI></UL>
+    <UL><LI> Display Splash Screen (Seen it once...)</LI></UL>
+  <UL><LI>Screen Size</LI>
+  <UL><LI>650x500 or 800x600 are for the Demos</LI></UL>
+  <UL><LI>3 middle ones are ?..?</LI></UL>
+  <UL><LI>256x256 to 4096x4096 are for 3D scenarios: Set here (Options), Do there.</LI></UL>
+</UL>
+  <UL><LI>Tile Size</LI>
+  <UL><LI>50x50 is for the Data Display Demo</LI></UL>
+  <UL><LI>10x10 is for the other demos</LI></UL>
+  <UL><LI>32x32 .. 2x2 ..1x1 are  for 3D scenarios</LI></UL>
+</UL>
+</UL>
+<UL><LI>Project</LI>
+  <UL><LI>Data Display Demo</LI></UL>
+  <UL><LI>Go there</LI></UL>
+  <UL><LI>5 unit star</LI></UL>
+  <UL><LI>-----------</LI></UL>
+  <UL><LI>Chasers</LI></UL>
+  <UL><LI>Collision</LI></UL>
+  <UL><LI>..</LI></UL>
+  <UL><LI>5 units with 1 enemy</LI></UL>
+<UL><LI>Historical information on the available Projects:  iaw my <A HREF="_astarDirections.rtf">_astarDirections.rtf</A> directions compiled from the original source code</LI></UL>
+</UL>
+<UL><LI>Run</LI>
+  <UL><LI>Ten silly names for the Speed 9..0 to assign to the currently active unit.</LI></UL>
+
+</UL>
+<UL><LI>Tools</LI>
+  <UL><LI><A HREF="astarprojectfile.html">AStar Project  File</A> : Set parameters for 3D Pathfinder</LI>
+      <UL><LI>Project Base options: </LI>
+      <UL><LI>[Image size] : </LI></UL>
+      <UL><LI>[Tile size] : </LI></UL>
+      <UL><LI>[Terrain Value Alpha ( 0.0 .. 1.0 )]  Check box : and data input</LI></UL>
+      <UL><LI>[Average Terrain (H Estimate)] data input : </LI></UL>
+      <UL><LI>[Terrain (MAG) G Cost = NoGo] data input: </LI></UL>
+      <UL><LI>[Turning penalty ( 0.0 .. 1.0 )]  Check box : and data input</LI></UL>
+      <UL><LI>[Grid Lines Displayed] : </LI></UL>
+      <UL><LI>[Path Displayed] : </LI></UL>
+      <UL><LI>[Claimed Nodes Displayed] : </LI></UL>
+      <UL><LI>[Process NoGo Islands] : </LI></UL>
+      <UL><LI>[Penalize Adjacent paths] : </LI></UL>
+      </UL>
+
+     <UL><LI>Units: Locations, etc... for 5 units and 1 Enemy </LI>
+       <UL><LI>AStar Unit Flag : a bmp file to use as a texture for the Target (bmp)</LI></UL>
+       <UL><LI>AStar Unit Actor (md2)</LI></UL>
+       <UL><LI>AStar Unit Actor texture (bmp or jpg)</LI></UL>
+       <UL><LI>acf: Microsoft Agent Character File (HTTP format)</LI></UL>
+     </UL> 
+     <UL><LI>Terrain Data: .adf : names of files created in the Terrain Sculptor</LI>
+      <UL><LI>Height data file: Heightfield .bmp</LI></UL>
+      <UL><LI>Texture Image file: .bmp</LI></UL>
+
+      <UL><LI>Map Attributes</LI>
+      <UL><LI>Map Attributes file: .amf</LI></UL>
+      <UL><LI>Elevation Slope file: .aef</LI></UL>
+      <UL><LI>...not actually required... Map Attributes makes them all combined. The concept is they will be derived from Images, DOQ, sundry data and stored in the individual layers and then combined. As is now, they are simply 'painted', using the Terrain Sculptor.</LI>
+          <UL><LI>AStar Vegetation File (avf)</LI></UL>
+          <UL><LI>AStar Soils File (asf)</LI></UL>
+          <UL><LI>AStar Hydrology File (ahf)</LI></UL>
+          <UL><LI>AStar Transportation File (atf)</LI></UL>
+          <UL><LI>AStar Urban Areas File (aaf)</LI></UL>
+          <UL><LI>AStar Obstacles File (aof)</LI></UL>
+      </UL>
+      </UL>
+      <UL><LI>NOGO : Computed from Slope and Map Attributes</LI></UL>
+      <UL><LI>Influence Map : NA</LI></UL>
+      <UL><LI>G Cost file: .agf</LI></UL>
+      <UL><LI>MAG Values : .abf Set can be changed in the Terrain Sculptor</LI></UL>
+     </UL> 
+  </UL>
+<UL><LI><A HREF="astarSculptor.html">Landscape Sculptor</A> : Create the Terrain data</LI>
+<UL><LI>Create, Edit, and save a Heightfield. 
+  <BR>On the second page: Create and save the Slope for it. 
+  <BR>On the third page: Create the Texture. If desired, use the Terrain Painter to enhance the texture.
+  <BR>On the fourth page: Load the texture [Background] and Set the Attributes. Save the G Cost data .agf file. Save the Map Attributes data .amf file. Save the Attributes MAG B data .abf file.
+  <BR>Set the file names in the Project Options as parameters for the 3D Pathfinder.</LI></UL>
+</UL>
+<UL><LI><A HREF="astarPainter.html">Map Texture Painter</A> : Paint the Terrain Texture in more detail</LI></UL>
+<UL><LI>---</LI></UL>
+  <UL><LI>[2D Sprite Viewer...] is a GR32 implementation that uses Sprites rather than Actors. 
+    <BR>The Keyboard and Mouse react [about the same.]
+    <BR>A Project file must be selected for the Viewer to Load and Run. 
+    <BR>Texture Size of 512x512 w/ Tilesize of 1x1 is optimal for this. (Using larger sizes makes for unusable Memory requirements)
+    <BR>The Terrain Image Texture is loaded as Ground and Sprites use the Target Texture and Actor Texture (Use the 10x10 (Ghost and pointer) bmp for the Sprites).
+    <BR>There is NO MENU. Choose Unit 1..5, Scenario F1..F3, Right Mouse Click to Start Pathfinding
+    <BR>Close the Viewer to return to the Main form.</LI></UL>
+  <UL><LI>[Terrain 3D Viewer...] is a GLScene OpenGL implementation using the Collision Pathfinder code or the Non-collision. It is still the Scale..Size..Resolution.
+      <BR>A Project file must be selected for the Viewer to Load and Run. There is NO MENU. 
+      <BR>Close the Viewer to return to the Main form.</LI>
+    <UL><LI>Keyboard keys:</LI>
+      <UL><LI>F1..F3.. key: Set Scenario</LI></UL>
+      <UL><LI>1,2,3,4,5 key: Set Selected Unit</LI></UL>
+      <UL><LI>[CTRL] + 1,2,3,4,5, 6 key: Set Selected Enemy</LI></UL>
+      <UL><LI>__ key:</LI></UL>
+      <UL><LI>Arrow keys: Move Camera</LI></UL>
+      <UL><LI>__ key:</LI></UL>
+     </UL>
+   <UL><LI>Scenarios:</LI>
+      <UL><LI>Scenario 1: Click Path Move Selected Unit</LI></UL>
+      <UL><LI>Scenario 1: Pathfind Base to Target Selected Unit (Test unit locations)</LI></UL>
+      <UL><LI>Scenario 3: All Units Collision Pathfinding</LI></UL>
+     </UL>
+      <UL><LI>Right Mouse Click : (1) Set Target + Go, (2..3..) Go Pathfind</LI></UL>
+      <UL><LI>Right Mouse Click : Move..Rotate around view</LI></UL>
+  </UL>
+<UL><LI>---</LI></UL>
+<UL><LI>Clear All Obstacles in the demos</LI></UL>
+<UL><LI>Set Random Obstacles in the demos (Create more each time)</LI></UL>
+  <UL><LI>Save Obstacles .aof</LI></UL>
+<UL><LI>---</LI></UL>
+<UL><LI>Save Unit Locations : Enables visual placement of the Units for the 3D Pathfinder</LI></UL>
+</UL>
+
+<UL><LI>Help</LI>
+  <UL><LI>Loads the Contents page of a nonexistant help file.</LI></UL>
+  <UL><LI>Activates Windows Help</LI></UL>
+  <UL><LI>Loads this html page.</LI></UL>
+  <UL><LI>About AStar Pathfinder. This is a standard About providing Links to Patrick Lester, Delphi, GLScene, and OpenGL. Copyright, Version and sundry data are displayed.</LI>
+     <UL><LI>Windows XP no longer supports the same as Windows 98, so depending on your OS, some information will be blank or nothing will appear when a button is pressed.</LI></UL>
+     <UL><LI>Some buttons do things, others do not.</LI></UL>
+  </UL>
+</UL>
+</UL>
+</UL>
+
+
+<UL><LI>Screen..Keyboard..Mouse</LI>
+<UL><LI>Screen</LI>
+  <UL><LI>Filename is displayed in the form Caption</LI></UL>
+  <UL><LI>What happens when the screen is clicked with the Mouse depends on if in Edit Mode or Path Mode</LI></UL>
+  <UL><LI>Edit Mode: Left clicks places Targets. Right click places Base start points.</LI></UL>
+  <UL><LI>Path Mode: Same, except Right click will move the Unit to that place and Start the pathfinding.</LI></UL>
+</UL>
+<UL><LI>Keyboard</LI>
+  <UL><LI>[Ctrl] and a key</LI>
+  <UL><LI>[F2]: Ejects from pathfinding if it gets lost in a loop...</LI></UL>
+  <UL><LI>[F12]: Screenshot</LI></UL>
+  <UL><LI>[Ctrl] and a Number key 1..5 Select the 'Active' Enemy Bunker, 6 selects the Enemy Unit.</LI></UL>
+</UL>
+  <UL><LI>[Enter] aka [Return] key toggles being in Edit or Path Mode</LI></UL>
+  <UL><LI>The Number keys 1..5 Select the 'Active' unit.</LI></UL>
+  <UL><LI>The Number key 9 Single steps the path, if in Path mode. The Number key 0 finishes a Stepping path, similar to Right clicking </LI></UL>
+
+  <UL><LI>O key and Mouse Click places an Obstacle</LI></UL>
+  <UL><LI>[Esc] quits the program</LI></UL>
+  <UL><LI>..</LI></UL>
+</UL>
+<UL><LI>Mouse</LI>
+  <UL><LI>Left Button</LI>
+  <UL><LI>Position current Units Base</LI></UL>
+  <UL><LI>Pressing the keyboard key 'O' while Mouse Clicking will place an Obstacle, Clicking an Obstacle will remove it.</LI></UL>
+  <UL><LI>Enemy bunkers are selected by pressing the keyboard key 'E' while selecting a Bunker or Enemy Target point.</LI></UL>
+  <UL><LI>..</LI></UL>
+</UL>
+  <UL><LI>Right Button</LI>
+  <UL><LI> Activates the Start of Pathfinding, if in Path mode.</LI></UL>
+  <UL><LI>Positions a Unit Target (and the Unit will Pathfind to it)</LI></UL>
+  <UL><LI>'E' positions the Enemy Base</LI></UL>
+</UL>
+</UL>
+</UL>
+
+<img src="astarstatus.png" alt="AStar Pathfinder Status bar">
+
+<UL><LI>Status bar</LI>
+<UL><LI>Edit or Path mode</LI></UL>
+<UL><LI>Time it took to perform the search, in milliseconds</LI></UL>
+<UL><LI>Current Unit: Path Mode: the one used, Edit Mode: having the Base and Target locations set by Mouse Left or Right click respectively.</LI></UL>
+<UL><LI>Current Scenario</LI></UL>
+<UL><LI>Mouse Screen Coordinates (Pixels)</LI></UL>
+<UL><LI>Mouse Tile Coordinates</LI></UL>
+<UL><LI>Program Hints, Progress, Activity, Status,...</LI></UL>
+</UL>
+
+<P>  </P>
+
+
+<P><STRONG>AStar Pathfinder</STRONG> Review..Summary</P>
+
+
+<UL><LI>Introduction</LI></UL>
+<UL><LI>Project Description: A Star Pathfinding</LI>
+<UL><LI>Purpose: Develop A* pathfinding in Delphi Pascal for use in VR GIS applications.</LI></UL>
+<UL><LI>Process: Step by Step</LI></UL>
+<UL><LI>Results: TBD unless OBE</LI></UL>
+<UL><LI>Conclusion: Patrick Lester did a good job in writing and commenting his html pages and source code.</LI></UL>
+</UL>
+<UL><LI>Report - Sources</LI>
+<UL><LI>A Star</LI>
+<UL><LI>Cloned from the C code <A HREF="http://www.policyalmanac.org/games/aStarTutorial.htm"><EM>A Pathfinding for Beginners</EM></A> by Patrick Lester and implementing ideas from <A HREF="http://www.student.nada.kth.se/~f93-maj/pathfinder/index.html"><EM>An optimal pathfinder for vehicles in real-world digital terrain maps</EM></A> by F. Markus Jönsson and all the knowledge of <A HREF="http://www-cs-students.stanford.edu/~amitp/gameprog.html"><EM>Amit Patel</EM></A></LI>
+<UL><LI><A HREF="http://www.cs.uiowa.edu/~dsidran/"><EM>An Analysis of Dimdal’s An Optimal Pathfinder for Vehicles
+in Real-World Terrain Maps</EM></A></LI></UL>
+</UL></UL>
+<UL><LI>Viewers</LI>
+<UL><LI><A HREF="http://glscene.sourceforge.net/index.php">GLScene</A> </LI></UL>
+<UL><LI><A HREF="http://sourceforge.net/projects/graphics32">Graphics32</A> </LI></UL>
+</UL>
+<UL><LI>Terrain Creation</LI>
+<UL><LI><A HREF="http://www.cambrianlabs.com/mattias/">Mattias Landscape</A> Sculptor</LI></UL>
+<UL><LI>3D Terrain Painter Created by Lucas R. Goraieb,  01/19/2004 </LI></UL>
+<UL><LI>et al</LI></UL>
+</UL>
+<UL><LI>Media</LI>
+<UL><LI>Actor MD2 : <A HREF="http://www.planetquake.com/polycount/">PolyCount</A></LI></UL>
+<UL><LI>Textures: <A HREF="http://astronomy.swin.edu.au/~pbourke/texture/">paul bourke textures</A> .. 
+<A HREF="http://perso.club-internet.fr/lemog/#">lemog textures</A></LI></UL>
+</UL>
+</UL>
+<UL><LI>Todo</LI>
+<UL><LI>Implement Lester C code in pascal.</LI></UL>
+<UL><LI>Implement 3D viewer using GLScene</LI>
+<UL><LI>Implement "An optimal pathfinder for vehicles in real-world digital terrain maps" by F. Markus Jönsson</LI></UL>
+</UL>
+<UL><LI>Implement a Vector based pathfinder that travels along Roads (or Vector based data).</LI></UL>
+<UL><LI>Implement whatever I think of along the way</LI></UL>
+</UL>
+
+
+ 
+
+
+<CENTER>
+<A HREF="http://www.ezl.com/~ilh2o/copyright.html">Copyright</A>
+ 
+<A HREF="http://www.ezl.com/~ilh2o/">© 1991..2006 by Ivan Lee Herring</A></CENTER>
+<CENTER><HR width="535" size="7" color="gold" noshade></CENTER>
+</BODY>
+</HTML>

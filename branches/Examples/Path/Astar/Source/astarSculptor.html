@@ -1,0 +1,200 @@
+<HTML>
+<HEAD>
+<TITLE>AStar Pathfinder Landscape Sculptor</TITLE>
+<META name=keywords content="Ivan Lee Herring, AStar Pathfinder Landscape Sculptor">
+<META name=description content="AStar Pathfinder Landscape Sculptor" >
+<META name=author content="Ivan Lee Herring"> 
+<META NAME="Generator" CONTENT="Notepad">
+</HEAD>
+<BODY TEXT="#000000" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" BGCOLOR="#c0c0c0">
+
+<CENTER>This page updated: March, 2006</CENTER>
+<P>
+<P>  </P>
+<P>  </P>
+<P><STRONG>AStar Pathfinder Landscape Sculptor</STRONG></P>
+<UL><LI>General Use</LI>
+<UL><LI>Cloned from <A HREF="http://www.cambrianlabs.com/mattias/">Mattias</A> Landscaper with changes and addittions. 
+<BR>There are four (4) pages: Terrain, Slope, Texture, and Terrain Attributes.</LI>
+<UL><LI>Terrain: Create .. Edit .. Save the Heightfield</LI>
+<UL><LI>Select size</LI></UL>
+<UL><LI>Press GO</LI></UL>
+<UL><LI>Edit using the Mouse and the Trackbars at the bottom of the form to adjust the size and depth: darkness.. elevation change</LI></UL>
+<UL><LI>Save</LI></UL>
+</UL>
+<UL><LI>Slope: Create .. Save the Slope</LI>
+<UL><LI>Select size</LI></UL>
+<UL><LI>Press [Slopes]</LI></UL>
+<UL><LI>Press [Save Slope.aef]</LI></UL>
+<UL><LI>Make a Slope at 0.01 and save it. change to 0.3 and create another [Slopes] to use when the Texture is created. 
+<BR> Using the Slope created at 0.01 will make the texture have too many slopes.. it is used to have a Range of Slopes. The 0.3 Setting only has the Steep slopes.
+<BR>As another option the size cna be changed to blank out the slope prior to Texture creation.
+</LI></UL>
+</UL>
+<UL><LI>Texture: Create .. Save the Texture</LI>
+<UL><LI>Select size</LI></UL>
+<UL><LI> [Create] </LI></UL>
+<UL><LI> [Save..] </LI></UL>
+<UL><LI>Paint more detail before or after using the Terrain Painter </LI></UL>
+</UL>
+<UL><LI>Terrain Attributes: Create .. Save the Attributes</LI>
+<UL><LI>Select sizes and Load the Texture [Background]</LI></UL>
+<UL><LI>Click different attributes to change Colors and their attribute values</LI></UL>
+<UL><LI>Click .. Drag.. Paint your Scenario</LI>
+<UL><LI>Use the Big brush to quickly paint, then convert to Map Attributes, and Repaint.</LI></UL>
+</UL>
+<UL><LI>Save Map Att .amf</LI></UL>
+<UL><LI>Save G Cost .agf</LI></UL>
+<UL><LI>Save MAG B .abf</LI></UL>
+</UL>
+</UL>
+<UL><LI>Requires these 256x256 textures be in the Textures directory: ssand.jpg, vgrass.jpg, vforest.jpg, srock.jpg, hsnow.jpg, srocky.jpg (Replace as desired.. rename or recompile)</LI></UL>
+<UL><LI>A Project Terrain Data File (adf) requires a heightfield.bmp, (Map Attributes (Combined) File (amf): thus a slope.aef is suggested), a Texture.bmp, MAG Values B .abf, and a G-Cost .agf </LI></UL>
+</UL>
+
+<P><STRONG>Description of all the buttons and baubles</STRONG> </P>
+
+<UL><LI>Terrain</LI>
+<UL><LI>[Landscape  Size] : 256, 512, 1024</LI></UL>
+<UL><LI>[Load] </LI></UL>
+<UL><LI>[Save] </LI></UL>
+<UL><LI>[Clear] </LI></UL>
+<UL><LI>[GO] </LI></UL>
+<UL><LI>Memo area</LI>
+<UL><LI>Using cup \/ or bubble /\ as second line changes the 'form' of the heightfield</LI></UL>
+</UL>
+<UL><LI>[Reset Default Memo] if changed into oblivion</LI></UL>
+<UL><LI>[w/Island] creates a lowered edge</LI></UL>
+<UL><LI>[Standard] redisplays</LI></UL>
+<UL><LI>[Render water] colors in the lower areas</LI></UL>
+<UL><LI>[Rescale] might be meaningless without a data input area.</LI></UL>
+<UL><LI>[Subdivide] ... ?</LI></UL>
+<UL><LI>[Height altering] is used to 'Edit' the heightfield</LI>
+<UL><LI>[Radius] slider changes the width of the 'paintbrush'</LI>
+<UL><LI>[Box] if checked the paintbrush is square, unchecked it is round.</LI></UL>
+</UL>
+<UL><LI>[Depth]  slider changes the density..darkness of the 'paintbrush'</LI></UL>
+</UL>
+
+</UL>
+
+<UL><LI>Slope</LI>
+<UL><LI>[Slope  Size] is normally 2, 4, or 8 times the size of the Terrain heightfield</LI></UL>
+<UL><LI>[Slopes] renders the slopes iaw</LI>
+<UL><LI>the density data input: [0.01]</LI></UL>
+</UL>
+<UL><LI>[Save bitmap] saves the slope image... it can be used as the Texture background when painting the Terrain attributes</LI></UL>
+<UL><LI>[Save Slope.aef] saves the .aef and a .bmp, colored iaw the slope ranges, also can be used as the Texture background or Twix image when painting the Terrain attributes.</LI>
+<UL><LI>Panels and Data entry areas enable changing the Colors (Click the Panels) and the Slope Attribute values. (This is the only place to change them)</LI></UL>
+</UL>
+
+<UL><LI>[Slope or Texture] toggles which image to render to:</LI>
+<UL><LI>[Shaded] will darken the image</LI></UL>
+<UL><LI>[AA Basic] Anti Alias</LI></UL>
+<UL><LI>[AASweep] " " ...</LI></UL>
+<UL><LI>[Shadow] more darkness</LI></UL>
+</UL>
+
+</UL>
+
+<UL><LI>Texture</LI>
+<UL><LI>[Texture Size] is normally 2,4,8 times the Heightmap size</LI></UL>
+<UL><LI>[Create] the Texture iaw the parameters</LI></UL>
+<UL><LI>[Shaded] will do all the Slope Shady stuff to the Texture.</LI></UL>
+<UL><LI>[Ambient] data input is another thing to decipher</LI></UL>
+<UL><LI>[Save...] the Texture to use with the heightfield and as the background during Terrain attribute painting.</LI></UL>
+<UL><LI>[Flip n Save...] to use as a Scenario Planner. Be advised what you see here will be flipped vertically when viewed in 3D.</LI></UL>
+<UL><LI>The Sand, Grass, Forest, Rock, Snow, and Slope Modifiers determine the range of coverage of the texture image; or the color, if no image is found.</LI>
+<UL><LI>Button to choose the texture image</LI></UL>
+<UL><LI>Button to choose the color</LI></UL>
+<UL><LI>4 data edit areas (Sand used as example). StartHeight, FullOnHeight, StopHeight, FullOffHeight</LI></UL>
+<UL><LI>[-2] : StartHeight</LI></UL>
+<UL><LI>[-1] : FullOnHeight</LI></UL>
+<UL><LI>[0.2] : StopHeight</LI></UL>
+<UL><LI>[0.3] : FullOffHeight</LI></UL>
+</UL>
+<UL><LI>[Paint Grid] then [Flip n Save...] to use as a Scenario Planner. </LI>
+<UL><LI>The Panel can be clicked to select the Grid Color</LI></UL>
+<UL><LI>Grid Size selects from 64x64, 32x32, 20x20, 16x16, 10x10, 8x8</LI></UL>
+</UL>
+</UL>
+
+
+<UL><LI>Terrain Attributes</LI>
+<UL><LI>[Image Size] Ditto on 2, 3, 8 multiple of height.</LI></UL>
+<UL><LI>[Tile Size] determines the density of the pathfinding (Image 2048 at Tile 1x1 takes ~300meg, so 4096 takes 4 times that... 1.2 Terabyte)</LI></UL>
+<UL><LI>[New] blanks out and sets up</LI></UL>
+<UL><LI>[Base] creates the texture using only colors.. in the Background image. But they are lerped so are no longer the same as the Attribute colors.. still under construction... a Terrain Attributes autofill</LI></UL>
+<UL><LI>[Background] loads an image to use as the background... paint by numbers.</LI></UL>
+<UL><LI>[Save Back...] as the [Paint Map] toggles painting the background or the Terrain Map Attributes... the background might become art. Use to Mark Roads, Lakes, ... to Paint in the Terrain Painter or use as a locator for 3D Objects.</LI></UL>
+<UL><LI>[Load Map...] enables finishing later.. just be sure to have the Big Brush toggled, then Convert and Repaint.. as it is Only an image when loaded. Can also be used to have several versions of the Attributes.. Change the values (but not the colors), Load the image then save the Attribtes as a different file name.</LI></UL>
+<UL><LI>[Save Map...] refrigerator art.. see above.</LI></UL>
+<UL><LI>[Paint Map] toggles painting the background or the Terrain Map Attributes.</LI></UL>
+<UL><LI>the [slider] controls the transparency of the Attributes.. to check out the background to atttribute consistency.</LI></UL>
+<UL><LI>There are Big Brush, File saving and Map Attribute areas</LI>
+
+<UL><LI>Big Brush is used to Rapidly paint Map Attributes.. BUT the [Convert] button MUST be pressed after painting to convert 'colors' into actual attributes and the related G-Costs.</LI>
+<UL><LI>[_] checkbox toggles painting with the Big Brush</LI></UL>
+<UL><LI>Radius [Slider] controls the size of the paitbrush</LI></UL>
+<UL><LI>[Convert] Big Brush paint into 'stored' Map Attributes and G-Costs arrays.</LI></UL>
+<UL><LI>[RePaint] using Map Attributes at the designated tile size (image may become 'blocky'.. as it is now tiled.</LI></UL>
+</UL>
+
+<UL><LI>[Twix] loads an image to use as an intermediate comparison layer. The Slider controls its transparency. Use to compare the Texture to ____ (Slope) to Map Attributes.</LI></UL>
+<UL><LI>[Units] loads Unit Locations to use as an intermediate comparison layer. The Slider controls its transparency. 
+  <BR>Use to compare the Locations to ____ (Slope) to Map Attributes.
+  <BR>The other Slider controls the Size, so even at 1x1 they can be larger, thus Visible.</LI></UL>
+
+<UL><LI>File saving</LI>
+<UL><LI>..</LI></UL>
+<UL><LI>Map Att</LI>
+<UL><LI>Open</LI></UL>
+<UL><LI>File name</LI></UL>
+<UL><LI>Save</LI></UL>
+</UL>
+<UL><LI>G Cost</LI>
+<UL><LI>Open</LI></UL>
+<UL><LI>File name</LI></UL>
+<UL><LI>Save</LI></UL>
+</UL>
+<UL><LI>MAG B</LI>
+<UL><LI>Open</LI></UL>
+<UL><LI>File name</LI></UL>
+<UL><LI>Save</LI></UL>
+</UL>
+</UL>
+
+<UL><LI>Map Attribute</LI>
+<UL><LI>Color panel displays the Attribute color. If clicked a COlor dislog enables choosing a new color.</LI></UL>
+<UL><LI>Data area displays the Attribute value. If changed, then [Set] then the MAG B file should be saved. Dunno what happens when the values and colors are changed mid-stream...</LI></UL>
+<UL><LI>[Set] button stores Color and/or Value changes. The MAG B file still needs to be saved to actually 'store' the changes for further use</LI></UL>
+<UL><LI>27 different Attributes</LI>
+<UL><LI>0: 'Base' is the default: Black color, when an image is created [New] it is all black, so any unfilled areas become Base level (Bare Dirt was used as the default, but it was out of order and this is just a place holder.</LI></UL>
+<UL><LI>T Hiway is the fast lane</LI></UL>
+<UL><LI>..</LI></UL>
+<UL><LI>27: O-NoGo areas Obstacles to all.</LI></UL>
+</UL>
+</UL>
+
+</UL>
+
+</UL>
+
+<UL><LI>and theres more</LI>
+<UL><LI>The view in 3D is from the Top of the Image. The Top Left side of the Image is the Bottom Left side of the Terrain.</LI> 
+<UL><LI>Unit Placement (locations) are from Y=Image size at the top of the image to Y=0 at the bottom.</LI></UL> 
+<UL><LI>Height data Size Ratio to Texture Size ?</LI></UL>
+</UL>
+<UL><LI>On the Texture page, there is a [Flip and Save] button that can be used to Visually place Units. There is also a [Paint Grid] button to aid unit placement.</LI></UL>
+<UL><LI>Placement of Units in a NoGo area (Lakes, Swamps, Steep Slopes,...) will make it impossible for them to move...</LI></UL>
+<UL><LI>Placement of Targets ...Ditto... impossible for them to be found</LI></UL>
+<UL><LI>...</LI></UL>
+</UL>
+
+<CENTER>
+<A HREF="http://www.ezl.com/~ilh2o/copyright.html">Copyright</A>
+ 
+<A HREF="http://www.ezl.com/~ilh2o/">© 1991..2006 by Ivan Lee Herring</A></CENTER>
+<CENTER><HR width="535" size="7" color="gold" noshade></CENTER>
+</BODY>
+</HTML>

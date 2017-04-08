@@ -1,0 +1,119 @@
+{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fmodern\fprq1\fcharset0 Courier New;}{\f1\fnil\fcharset0 Courier New;}}
+{\*\generator Msftedit 5.41.15.1503;}\viewkind4\uc1\pard\tx0\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\f0\fs20 This Program and Instructions is a Clone of :\par
+A* Pathfinder C Code (Version 1.71a) (\f1 06/16/03 )\f0  \par
+\pard and \f1 A* Pathfinder \f0 Blitz Basic Code \f1 (Version 2.0) (Updated 4/7/04)\f0\par
+\pard\tx0\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920 by Patrick Lester pwlester@policyalmanac.org \par
+http://www.policyalmanac.org/games/aStarTutorial.htm\par
+\par
+This file has become OBE.\par
+\par
+There are changes in the code and instructions that happened along the way. Rather than 7 slightly different versions, there are 2 versions: the basic C (Demo 1 and 2) converted to Pascal and the advanced Basic (Demo 7) converted to Pascal. There are some things (unit selection..deployment) not implemented, or implemented differently. Credit Patrick Lester for his code, comments, and instructions, however, \i Read his \i0 Instructions \i and Run his programs\i0  \ul before\ulnone  \ul\i discrediting\ulnone\i0  him iaw this program. Combining all the demos into 1 program made for many If..then statements in the 'Scenarios' and possibly slightly slower performance. The actual  pathfinding code is not affected, other than conversion into Pascal from Basic. It also provides for further development IAW F. Markus Jonsson's aka Dimdal paper "\i An optimal pathfinder for vehicles in real-world digital terrain maps"\i0 . \par
+\par
+\par
+[0] General Interaction Instructions. \par
+[1] AStar Data Display Demo Directions\par
+[2 Come get some] Demo #1 Smiley \par
+[3 Go Go wish upon AStar] PATHFINDING DEMO #2 - Smiley & Chaser\par
+[4 King Astar of the Misty Valley] PATHFINDING DEMO #3 - Smiley & Chaser (4-way)\par
+[5 King Astar : Dynamic Chase] PATHFINDING DEMO #4a - Collision Avoidance (loop-based)\par
+[6] PATHFINDING DEMO #4b - Collision Avoidance (time-based)\par
+[7] PATHFINDING DEMO #5 - Group Movement\par
+\par
+\b [0] General Interaction Instructions\b0\par
+Edit..Pathfinding Modes are Toggled using the Enter key. The current mode is displayed in the Status bar. The Program starts in Edit mode and Resets to Edit mode if a Project is changed.\par
+\ul\i Edit and Pathfinding Modes:\ulnone\i0\par
+-Press a number key (1,2,3,4,5) to activate the unit for Base and Target Location changes. Default is Unit #1, Display Demo only has 1 unit.\par
+-Move the red target Circle around by right clicking on the screen.\par
+-Move the green start Square around by left clicking on the screen.\par
+-While holding the 'O' button (O for Obstacle) down: Draw blue square obstacle walls by left clicking on the screen or Erase blue obstacle walls by left clicking on them. Load or Save an obstacle file.aof \par
+\par
+-Use the Menu to toggle drawing Paths or Gridlines on or off.\par
+/[Ctrl]+F12 will capture the Gameplay area as a screenshot.  VK_SNAPSHOT PRINT SCREEN is not used, it is left unused so you can capture the screen to the clipboard and use another program to process it.\par
+-Press escape to exit the program.\par
+\par
+\ul\i Pathfinding Mode:\ulnone\i0\par
+-Start the pathfinding search by pressing the Enter button.\par
+-Move the red target around by right clicking on the screen. This will also Start Path finding and the path will be displayed and or the Searchers will traverse the path.\par
+-After the path is found, return to Edit mode by pressing Enter or Find another Path by Right clicking another square to move the red target Circle there.\par
+-If 'working' is displayed in the status bar, rather than a time: Press [ctrl] F2 to break out of pathfinding. Move things and try again.  On large maps it may appear momentarily...\par
+\par
+\ul\i Edit Mode:\ulnone\i0\par
+You can add or delete walls, move the Base or Target, then press enter to search again.\par
+\par
+\par
+\b [1] AStar Data Display Demo Directions\par
+\b0 Demo finds the shortest path between the green square and the red square.\par
+\ul\i Pathfinding Mode:\ulnone\i0\par
+-Right Click a square to set the target, find a new path to it, and display all steps.\par
+-Press [9] to do a step-by-step search (the screen will be cleared, the purpose is to display the adjacent tiles per step). Continue pressing [9] for each\par
+new step.  Press [0] to finish a step-by-step search all at once (or right click to set a new target and display all steps to the new target).\par
+\ul\i Results\ulnone\i0\par
+- Path is marked by red dots.\par
+- Squares highlighted in green were added to the "open list" of\par
+  squares to be checked, but were never fully checked.\par
+- Squares highlighted in blue were fully checked and added to the\par
+  "closed list".\par
+- Pointers point to a square's parent.\par
+- F, G, and H costs are printed in each cell. The F cost is\par
+  printed in the upper left corner, G in lower left corner, and\par
+  H in lower right corner.\par
+\par
+\b [2 Come get some] Demo #1 Smiley \b0\par
+- When in pathfinding mode, right click anywhere (any reachable spot) on the map to make the smiley go there from its current position. This position becomes the new starting base for the next search.\par
+\par
+\b [3 Go Go wish upon  AStar] PATHFINDING DEMO #2 - Smiley & Chaser\par
+\b0 This demo shows how to use the main AStar library to move 5 Base..Targets (a smiley faced sprite and a chaser ghost) around a maze that you have created.\par
+- Press enter to activate the smiley sprite, then right click on any reachable spot on the map. The smiley will use AStar to find the best path to that spot and then go there. You may continue to right click to find more paths. Press enter again to deactivate the sprite and return to map Edit mode. (Place the 5 Base..Targets in new .. different .. separate positions) Use the numbers 1..5 to select which Base..Target is to be moved. Load an obstacle file.aof or Add obstacles using the 'O' key.\par
+\par
+\b [4 King Astar of the Misty Valley ] PATHFINDING DEMO #3 - Smiley & Chaser (4-way)\par
+\b0 I Skipped this and changed it to another Demo #4_. \{This demo is the same as demo #2, except that it uses a 4-way pathfinder? (No diagonal movement) rather than an 8-way pathfinder, which may be better for platform games, among other uses.\}\par
+\par
+\b [5 King Astar : Dynamic Chase] PATHFINDING DEMO #4a - Collision Avoidance (loop-based)\par
+\b0 -This demo illustrates pathfinding in an environment where units must be able to detect collisions and pathfind around one another. I may write an article describing these concepts in more detail later, but for now this will have to do:\par
+-Basically units 'claim' nodes as they move along. A unit claims both the square it is in and the next one it is moving to. If no other units have claimed the node, it moves along normally. -If the node has already been claimed, a collision is detected and the unit does one of two things: \par
+(1) if the other unit is stopped or following a path that will result in a head-on collision with this unit, this unit generates a new path.\par
+(2) otherwise, the unit stops and waits for the other unit move out of the way before continuing on its current path.\par
+[x]When generating new paths, units pay attention to stopped units and any adjacent units. They ignore any units that are moving and not adjacent to them.\par
+\par
+\par
+\b [6] PATHFINDING DEMO #4b - Collision Avoidance (time-based)\par
+\b0 -This demo illustrates pathfinding in an environment where units must be able to detect collisions and pathfind around one another. This demo is the same as demo 4a, except that this demo uses time, as measured by Millisecs(), to regulate unit speeds. This ensures consistent movement speeds from one PC to the next, regardless of differing chip speeds and monitor refresh rates.\par
+\ul\i Instructions are the same as demo 4a\ulnone\i0\par
+\par
+\par
+\b [7] PATHFINDING DEMO #5 - Group Movement\par
+\b0 This demo adds a few features that facilitate group movement. These new features include:\par
+When a unit is selected and sent to a given location on the map, different destinations are chosen for each unit member (when they arrive).\par
+- Paths already claimed by nearby units have a small terrain penalty added to them. This encourages units to find paths that are slightly different from nearby units, which reduces collisions.\par
+- When a collision occurs, units will always repath, but will not use the new path if it is too long compared to simply temporarily stopping in place and waiting for the other unit to move out of the way. This makes movement a bit smoother than tempstopping most of the time.\par
+- Areas of the map that are completely walled off from the rest of the map are identified as separate islands. The CheckRedirect() function is updated to reflect this information.\par
+- The FindPath() function has been modified to allow small random movement when a nonexistent path is found. This prevents units from locking up if they  are approaching from opposite directions down a corridor.\par
+\par
+\ul\i Instructions are the same as demo 4a\ulnone\i0\par
+\par
+Press enter to activate the sprites, then right click on any reachable spot on the map. The selected sprite will use AStar to find the best path to that spot and then go there. You may continue to right click to find more paths.\par
+- Select different units by keyboarding their number, left clicking their Base starting position, then right clicking to position their target\par
+\par
+\par
+\ul\i Instructions\ulnone\i0\par
+\par
+\ul\i Edit Mode: Enemy only in Demo #7 ie #5 ? :\ulnone\i0\par
+-Press a number key (1,2,3,4,5) to \ul activate\ulnone  the unit for Base and Target Location changes. \par
+-While holding the 'Ctrl' key, Press a number key (1,2,3,4,5) to \ul activate\ulnone  the Enemy Bunker Base Position for Location changes. Press the 6 number key to \ul activate\ulnone  the Enemy unit for Base and Target Location changes.\par
+-While holding the 'E' button (E for Enemy) down: \ul Position\ulnone  Enemy Base or Bunker by left clicking on the screen. Right click to position the Enemy Target.\par
+\par
+\ul\i Pathfinding Mode:\ulnone\i0\par
+-Press enter to toggle Path Mode, then right click on any reachable spot on the map. The (user controlled sprite)(ALL?) will use AStar to find the best path to that spot and then go there. You may continue to right click to find more paths.\par
+\par
+\pard\i\f1 Function RunProgram() [C code..Not what happens here. For reference only\}\i0\par
+\tab While Not KeyHit(1) ;while escape key isn't pressed\tab\tab\par
+\tab\tab UpdateGameClock() ;see shared functions.bb include file\par
+\tab\tab UserInput() ;process mouse and keyboard input\tab\par
+\tab\tab MoveUnits() ;move sprites\tab\tab\tab\par
+\tab\tab RenderScreen() ;draw stuff on the screen\tab\tab\par
+\tab Wend\par
+\pard\tx0\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\i End Function\i0\f0\par
+\par
+\par
+}
+ 

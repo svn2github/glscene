@@ -1,0 +1,130 @@
+Vista List
+dtVERectangle
+X : 0
+Y : 0
+X2: 644
+Y2: 317
+V1: 255
+V2: 65280
+CC: 2
+dtVPRectangle
+X : 0
+Y : 0
+X2: 640
+Y2: 317
+V1: 12632256
+V2: 16744576
+V3: 16711680
+V4: 65535
+V4: 6
+dtEllipse
+X : 180
+Y : 56
+X2: 256
+Y2: 136
+V1: 12632256
+V2: 16744576
+dtVDRectangle
+X : 180
+Y : 56
+X2: 256
+Y2: 136
+V1: 12632256
+V2: 16744576
+G:\VR_GIS\Fractal\dragon.vld
+dtCSEllipse
+X : 178
+Y : 57
+X2: 255
+Y2: 136
+Lx: 2
+Ly: 2
+V1: 4194368
+V2: 65280
+dtRectangle
+X : 44
+Y : 337
+X2: -8
+Y2: 201
+V1: 32896
+V2: 12615680
+dtVRectangle
+X : 0
+Y : 231
+X2: 119
+Y2: 146
+X3: 354
+Y3: 297
+X4: 383
+Y4: 376
+Z : 6
+E : 0
+V1: 8388736
+V2: 32768
+dtVRectangle
+X : 638
+Y : 217
+X2: 487
+Y2: 121
+X3: 228
+Y3: 337
+X4: 638
+Y4: 445
+Z : 6
+E : 100
+V1: 16744576
+V2: 32768
+dtVRectangle
+X : 0
+Y : 200
+X2: 65
+Y2: 162
+X3: 338
+Y3: 341
+X4: 0
+Y4: 404
+Z : 6
+E : 100
+V1: 32768
+V2: 32896
+dtRectangle
+X : 639
+Y : 339
+X2: -6
+Y2: 439
+V1: 16711680
+V2: 12615680
+dtVRectangle
+X : 334
+Y : 477
+X2: 585
+Y2: 287
+X3: 639
+Y3: 331
+X4: 639
+Y4: 478
+Z : 6
+E : 0
+V1: 65280
+V2: 12615680
+dtVRectangle
+X : 352
+Y : 479
+X2: 49
+Y2: 266
+X3: 0
+Y3: 304
+X4: 0
+Y4: 479
+Z : 6
+E : 0
+V1: 65408
+V2: 4227072
+dtVNRectangle
+X : 352
+Y : 479
+X2: 49
+Y2: 266
+V1: 4227072
+V2: 65280
+G:\VR_GIS\Fractal\NFDemo.vln
