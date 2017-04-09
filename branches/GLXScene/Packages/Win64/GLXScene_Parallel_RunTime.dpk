@@ -1,0 +1,52 @@
+package GLXScene_Parallel_RunTime;
+
+{$R *.res}
+{$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
+{$ALIGN 8}
+{$ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{$DEBUGINFO OFF}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA ON}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS ON}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION OFF}
+{$OVERFLOWCHECKS OFF}
+{$RANGECHECKS OFF}
+{$REFERENCEINFO ON}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES ON}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST OFF}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$DEFINE DEBUG}
+{$ENDIF IMPLICITBUILDING}
+{$DESCRIPTION 'GLXScene GPU Computing'}
+{$RUNONLY}
+{$IMPLICITBUILD ON}
+
+requires
+  rtl,
+  fmx,
+  GLXScene_RunTime;
+
+contains
+  GLX.CUDARunTime in '..\..\Source\ParallelAPIs\GLX.CUDARunTime.pas',
+  GLX.CUDAFourierTransform in '..\..\Source\ParallelAPIs\GLX.CUDAFourierTransform.pas',
+  GLX.CUDAUtility in '..\..\Source\ParallelAPIs\GLX.CUDAUtility.pas',
+  GLX.CUDA in '..\..\Source\ParallelAPIs\GLX.CUDA.pas',
+  GLX.CUDACompiler in '..\..\Source\ParallelAPIs\GLX.CUDACompiler.pas',
+  GLX.CUDAContext in '..\..\Source\ParallelAPIs\GLX.CUDAContext.pas',
+  GLX.CUDAFFTPlan in '..\..\Source\ParallelAPIs\GLX.CUDAFFTPlan.pas',
+  GLX.CUDAGraphics in '..\..\Source\ParallelAPIs\GLX.CUDAGraphics.pas',
+  GLX.CUDAParser in '..\..\Source\ParallelAPIs\GLX.CUDAParser.pas',
+  GLX.CUDADataAccess in '..\..\Source\ParallelAPIs\GLX.CUDADataAccess.pas',
+  GLX.CL in '..\..\Source\ParallelAPIs\GLX.CL.pas',
+  GLX.CL_GL in '..\..\Source\ParallelAPIs\GLX.CL_GL.pas',
+  GLX.CUDAApi in '..\..\Source\ParallelAPIs\GLX.CUDAApi.pas';
+
+end.

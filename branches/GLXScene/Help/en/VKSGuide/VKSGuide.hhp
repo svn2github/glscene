@@ -1,0 +1,21 @@
+[OPTIONS]
+Compatibility=1.1 or later
+Compiled file=VKSGuide.chm
+Contents file=VKSGuide.hhc
+Default topic=HTML\Installation.htm
+Display compile progress=No
+Index file=VKSGuide.hhk
+Language=0x409 Английский (США)
+
+
+[FILES]
+HTML\Installation.htm
+
+[MAP]
+#include ..\..\#IDH\Idh_Main.h
+
+[TEXT POPUPS]
+..\..\#IDH\Idh_Popup.h
+
+[INFOTYPES]
+
