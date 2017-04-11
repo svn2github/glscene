@@ -17,7 +17,8 @@ uses
   VKS.CUDARunTime,
   VKS.Context,
   VKS.Generics,
-  VKS.CL,
+  CL,
+  CL_Platform,
   VKS.CUDAAPI;
 
 type

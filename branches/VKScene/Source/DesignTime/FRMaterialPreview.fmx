@@ -2,7 +2,6 @@ object RMaterialPreview: TRMaterialPreview
   Size.Width = 211.000000000000000000
   Size.Height = 228.000000000000000000
   Size.PlatformDefault = False
-  TabOrder = 0
   object CBObject: TComboBox
     Size.Width = 57.000000000000000000
     Size.Height = 22.000000000000000000

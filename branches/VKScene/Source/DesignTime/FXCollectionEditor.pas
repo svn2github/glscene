@@ -52,7 +52,6 @@ type
   PInstPropList = ^TInstPropList;
   TInstPropList = array[0..1023] of TInstProp;
 
-
 type
   TVKXCollectionEditor = class(TForm)
     ToolBar1: TToolBar;
@@ -75,7 +74,6 @@ type
     procedure FormHide(Sender: TObject);
     procedure ListViewChange(Sender: TObject);
   private
-    
     FXCollection: TVKXCollection;
     // ownerComponent : TComponent;
     FDesigner: IDesigner;
@@ -86,7 +84,6 @@ type
     procedure OnNameChanged(Sender: TObject);
     procedure OnXCollectionDestroyed(Sender: TObject);
   public
-    
     procedure SetXCollection(aXCollection: TVKXCollection; designer: IDesigner);
   end;
 
@@ -131,8 +128,6 @@ begin
   RegisterXCollectionDestroyEvent(OnXCollectionDestroyed);
 end;
 
-// FormDestroy
-//
 procedure TVKXCollectionEditor.FormDestroy(Sender: TObject);
 begin
   DeRegisterGLBehaviourNameChangeEvent(OnNameChanged);
@@ -140,16 +135,12 @@ begin
   DeRegisterXCollectionDestroyEvent(OnXCollectionDestroyed);
 end;
 
-// FormHide
-//
 procedure TVKXCollectionEditor.FormHide(Sender: TObject);
 begin
   SetXCollection(nil, nil);
   ReleaseXCollectionEditor;
 end;
 
-// SetXCollection
-//
 procedure TVKXCollectionEditor.SetXCollection(aXCollection: TVKXCollection;
   designer: IDesigner);
 begin
@@ -251,7 +242,8 @@ begin
   updatingListView := True;
   try
     if ListView.Selected <> nil then
-      prevSelData := ListView.Selected.Data[DisplayedName]
+///in VCL   prevSelData := ListView.Selected.Data[DisplayedName]
+      prevSelData := ListView.Selected.FieldAddress(DisplayedName)
     else
       prevSelData := nil;
     with ListView.Items do
@@ -286,8 +278,6 @@ begin
   ListViewChange(Self);
 end;
 
-// PrepareXCollectionItemPopup
-//
 procedure TVKXCollectionEditor.PrepareXCollectionItemPopup(parent: TMenuItem);
 var
   i: Integer;
@@ -314,7 +304,6 @@ begin
       end
       else
         categoryItem := parent;
-
       mi := TMenuItem.Create(owner);
       mi.Text := XCollectionItemClass.FriendlyName;
       mi.OnClick := OnAddXCollectionItemClick;

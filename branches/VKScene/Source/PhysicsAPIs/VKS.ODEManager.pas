@@ -203,7 +203,7 @@ type
   { Basis structures for GLScene behaviour style implementations. }
   TVKODEBehaviour = class (TVKBehaviour)
     private
-      { Private Declartions }
+      
       FManager : TVKODEManager;
       FManagerName : String;
       FSurface : TODECollisionSurface;

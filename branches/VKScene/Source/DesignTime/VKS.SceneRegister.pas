@@ -23,7 +23,6 @@ uses
   FMX.StdCtrls,
   FMX.Graphics,
 
-
   { TODO : F1026 Files not found: 'ToolsAPI' etc.}
   (*need to create instead a custom PropertyEditor like it described in -> *)
   (*ms-help://embarcadero.rs_xe7/rad/Creating_a_Component_Editor_and_a_Property_Editor_for_FireMonkey_Components.html*)
@@ -41,27 +40,19 @@ uses
   VKS.ObjectManager;
 
 type
-  // TVKLibMaterialNameProperty
-  //
   TVKLibMaterialNameProperty = class(TStringProperty)
   public
-    
     function GetAttributes: TPropertyAttributes; override;
     procedure Edit; override;
   end;
 
-  // TVKSceneViewerEditor
-  //
   TVKSceneViewerEditor = class(TComponentEditor)
   public
-    
     procedure ExecuteVerb(Index: Integer); override;
     function GetVerb(Index: Integer): string; override;
     function GetVerbCount: Integer; override;
   end;
 
-  // TVKSceneEditor
-  //
   TVKSceneEditor = class(TComponentEditor)
   public
     
@@ -72,62 +63,43 @@ type
     function GetVerbCount: Integer; override;
   end;
 
-  // TResolutionProperty
-  //
   TResolutionProperty = class(TPropertyEditor)
   public
-    
     function GetAttributes: TPropertyAttributes; override;
     function GetValue: string; override;
     procedure GetValues(Proc: TGetStrProc); override;
     procedure SetValue(const Value: string); override;
   end;
 
-  // TClassProperty
-  //
   TVKTextureProperty = class(TClassProperty)
   public
-    
     function GetAttributes: TPropertyAttributes; override;
   end;
 
-  // TVKTextureImageProperty
-  //
   TVKTextureImageProperty = class(TClassProperty)
   public
-    
     function GetAttributes: TPropertyAttributes; override;
     procedure Edit; override;
   end;
 
-  // TVKImageClassProperty
-  //
   TVKImageClassProperty = class(TClassProperty)
   public
-    
     function GetAttributes: TPropertyAttributes; override;
     procedure GetValues(Proc: TGetStrProc); override;
     function GetValue: string; override;
     procedure SetValue(const Value: string); override;
   end;
 
-  // TVKColorProperty
-  //
   TVKColorProperty = class(TClassProperty, ICustomPropertyDrawing,
     ICustomPropertyListDrawing)
   private
-    
-
   protected
-    
     function ColorToBorderColor(aColor: TColorVector;
       selected: Boolean): TColor;
-
   public
     function GetAttributes: TPropertyAttributes; override;
     procedure GetValues(Proc: TGetStrProc); override;
     procedure Edit; override;
-
     // ICustomPropertyListDrawing  stuff
     procedure ListMeasureHeight(const Value: string; ACanvas: TCanvas;
       var AHeight: Integer);
@@ -144,58 +116,40 @@ type
     procedure SetValue(const Value: string); override;
   end;
 
-  // TSoundFileProperty
-  //
   TSoundFileProperty = class(TClassProperty)
   public
-    
     function GetAttributes: TPropertyAttributes; override;
     function GetValue: string; override;
     procedure Edit; override;
   end;
 
-  // TSoundNameProperty
-  //
   TSoundNameProperty = class(TStringProperty)
   public
-    
     function GetAttributes: TPropertyAttributes; override;
     procedure GetValues(Proc: TGetStrProc); override;
   end;
 
-  // TVKCoordinatesProperty
-  //
   TVKCoordinatesProperty = class(TClassProperty)
   public
-    
     function GetAttributes: TPropertyAttributes; override;
     procedure Edit; override;
   end;
 
-  // TVKMaterialProperty
-  //
   TVKMaterialProperty = class(TClassProperty)
   public
-    
     function GetAttributes: TPropertyAttributes; override;
     procedure Edit; override;
   end;
 
-  // TVKGUILayoutEditor
-  //
   TVKGUILayoutEditor = class(TComponentEditor)
   public
-    
     procedure Edit; override;
-
     procedure ExecuteVerb(Index: Integer); override;
     function GetVerb(Index: Integer): string; override;
     function GetVerbCount: Integer; override;
   end;
 
-  // TReuseableDefaultEditor
-  //
-  { Editor copied from DsgnIntf. 
+  { Editor copied from DsgnIntf.
     Could have been avoided, if only that guy at Borland didn't chose to
     publish only half of the stuff (and that's not the only class with
     that problem, most of the subitems handling code in TVKSceneBaseObject is
@@ -204,21 +158,16 @@ type
     in D6! Grrr... }
   TReuseableDefaultEditor = class(TComponentEditor, IDefaultEditor)
   protected
-    
     FFirst: IProperty;
     FBest: IProperty;
     FContinue: Boolean;
     procedure CheckEdit(const Prop: IProperty);
     procedure EditProperty(const Prop: IProperty;
       var Continue: Boolean); virtual;
-
   public
-    
     procedure Edit; override;
   end;
 
-  // TVKMaterialLibraryEditor
-  //
   { Editor for material library.  }
   TVKMaterialLibraryEditor = class(TReuseableDefaultEditor, IDefaultEditor)
   protected
@@ -230,16 +179,13 @@ type
     function GetVerbCount: Integer; override;
   end;
 
-  // TVKAnimationNameProperty
-  //
   TVKAnimationNameProperty = class(TStringProperty)
   public
-    
     function GetAttributes: TPropertyAttributes; override;
     procedure GetValues(Proc: TGetStrProc); override;
   end;
 
-  { Selection editor for TVKSoundLibrary. 
+  { Selection editor for TVKSoundLibrary.
     Allows units to be added to the uses clause automatically when
     sound files are loaded into a TVKSoundLibrary at design-time. }
   TVKSoundLibrarySelectionEditor = class(TSelectionEditor)
@@ -247,7 +193,7 @@ type
     procedure RequiresUnits(Proc: TGetStrProc); override;
   end;
 
-  { Selection editor for TVKBaseSceneObject. 
+  { Selection editor for TVKBaseSceneObject.
     Allows units to be added to the uses clause automatically when
     behaviours/effects are added to a TVKBaseSceneObject at design-time. }
   TVKBaseSceneObjectSelectionEditor = class(TSelectionEditor)
@@ -255,8 +201,6 @@ type
     procedure RequiresUnits(Proc: TGetStrProc); override;
   end;
 
-  // TVKSArchiveManagerEditor
-  //
   { Editor for GLScene Archive Manager.  }
   TVKSArchiveManagerEditor = class(TReuseableDefaultEditor, IDefaultEditor)
   protected
@@ -268,112 +212,87 @@ type
     function GetVerbCount: Integer; override;
   end;
 
-  // TVKMaterialComponentNameProperty
-  //
-
   TVKMaterialComponentNameProperty = class(TStringProperty)
   public
-    
     function GetAttributes: TPropertyAttributes; override;
     procedure Edit; override;
   end;
 
   TVKLibTextureNameProperty = class(TVKMaterialComponentNameProperty)
   public
-    
     procedure GetValues(Proc: TGetStrProc); override;
   end;
 
   TVKLibSamplerNameProperty = class(TVKMaterialComponentNameProperty)
   public
-    
     procedure GetValues(Proc: TGetStrProc); override;
   end;
 
   TVKLibCombinerNameProperty = class(TVKMaterialComponentNameProperty)
   public
-    
     procedure GetValues(Proc: TGetStrProc); override;
   end;
 
   TVKLibShaderNameProperty = class(TVKMaterialComponentNameProperty)
   public
-    
     procedure GetValues(Proc: TGetStrProc); override;
   end;
 
   TVKLibAttachmentNameProperty = class(TVKMaterialComponentNameProperty)
   public
-    
     procedure GetValues(Proc: TGetStrProc); override;
   end;
 
   TVKLibAsmProgNameProperty = class(TVKMaterialComponentNameProperty)
   public
-    
     procedure GetValues(Proc: TGetStrProc); override;
   end;
 
-  // TPictureFileProperty
-  //
   TPictureFileProperty = class(TStringProperty)
   public
-    
     function GetAttributes: TPropertyAttributes; override;
     procedure Edit; override;
   end;
 
-  // TShaderFileProperty
-  //
   TShaderFileProperty = class(TStringProperty)
   public
-    
     function GetAttributes: TPropertyAttributes; override;
     procedure Edit; override;
   end;
 
-  // TAsmProgFileProperty
-  //
   TAsmProgFileProperty = class(TStringProperty)
   public
-    
     function GetAttributes: TPropertyAttributes; override;
     procedure Edit; override;
   end;
 
-  // TUniformAutoSetProperty
-  //
   TUniformAutoSetProperty = class(TPropertyEditor)
   private
     procedure PassUniform(const S: string);
   public
-    
     function GetAttributes: TPropertyAttributes; override;
     procedure Edit; override;
   end;
 
   TVKShaderEditorProperty = class(TClassProperty)
   protected
-    
     function GetStrings: TStrings;
     procedure SetStrings(const Value: TStrings);
     procedure OnShaderCheck(Sender: TObject);
   public
-    
     function GetAttributes: TPropertyAttributes; override;
     procedure Edit; override;
   end;
 
 procedure Register;
 
-// : Auto-create for object manager
+// Auto-create for object manager
 function ObjectManager: TVKObjectManager;
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 implementation
-
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -385,6 +304,7 @@ uses
   FShaderMemo,
   FShaderUniformEditor,
   FVectorEditor,
+  FSceneEditor,
   VKS.AnimatedSprite,
   VKS.ApplicationFileIO,
   VKS.AsmShader,
@@ -451,7 +371,6 @@ uses
   VKS.ProxyObjects,
   VKS.RenderContextInfo,
   VKS.ArchiveManager,
-  VKS.SceneEdit,
   VKS.Screen,
   VKS.ScriptBase,
   VKS.ShaderCombiner,
@@ -462,11 +381,11 @@ uses
   VKS.SkyBox,
   VKS.Skydome,
   VKS.Language,
-  GLSL.BumpShader,
-  GLSL.DiffuseSpecularShader,
-  GLSL.PostBlurShader,
-  GLSL.ProjectedTextures,
-  GLSL.Shader,
+  VKS.GLSLBumpShader,
+  VKS.GLSLDiffuseSpecularShader,
+  VKS.GLSLPostShaders,
+  VKS.GLSLProjectedTextures,
+  VKS.GLSLShader,
   VKS.SmoothNavigator,
   VKS.SMWaveOut,
   VKS.State,
@@ -498,7 +417,7 @@ uses
   VKS.VectorGeometry,
   // Image file formats
   DDSImage,
-  TGA,
+  VKS.FileTGA,
   // Vector file formats
   VKS.File3DS,
   VKS.FileASE,
@@ -977,17 +896,13 @@ begin
 end;
 
 {$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF VKS_REGION}{$REGION 'TSoundNameProperty'}{$ENDIF}
-// GetAttributes
-//
+
+//---------------------------------------------------------
 
 function TSoundNameProperty.GetAttributes: TPropertyAttributes;
 begin
   Result := [paValueList];
 end;
-
-// GetValues
-//
 
 procedure TSoundNameProperty.GetValues(Proc: TGetStrProc);
 var
@@ -1001,18 +916,13 @@ begin
         Proc(Samples[i].Name);
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF VKS_REGION}{$REGION 'TVKCoordinatesProperty'}{$ENDIF}
-// GetAttributes
-//
-
+//---------------------------------------------------------
+{ TVKCoordinatesProperty }
+//--------------------------------------------------------
 function TVKCoordinatesProperty.GetAttributes: TPropertyAttributes;
 begin
   Result := [paDialog, paSubProperties];
 end;
-
-// Edit;
-//
 
 procedure TVKCoordinatesProperty.Edit;
 var
@@ -1030,18 +940,14 @@ begin
   end;
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+//--------------------------------------------------------
+
 {$IFDEF VKS_REGION}{$REGION 'TVKMaterialProperty'}{$ENDIF}
-// GetAttributes
-//
 
 function TVKMaterialProperty.GetAttributes: TPropertyAttributes;
 begin
   Result := [paDialog, paSubProperties];
 end;
-
-// Edit
-//
 
 procedure TVKMaterialProperty.Edit;
 begin
@@ -1575,7 +1481,7 @@ end;
 procedure GLRegisterPropertiesInCategories;
 begin
 
-  { GL.SceneViewer }
+  { VKS.SceneViewer }
   // property types
 {$IFDEF WIN32}
   RegisterPropertiesInCategory(sVulkanCategoryName,
@@ -1661,55 +1567,36 @@ begin
   RegisterPropertiesInCategory(sVisualCategoryName, TVKSpaceText,
     ['AllowedDeviation', 'AspectRatio', 'Extrusion', 'Oblique', 'TextHeight']);
 {$ENDIF}
-  // TVKSphere
   RegisterPropertiesInCategory(sVisualCategoryName, TVKSphere,
     ['Bottom', 'Radius', 'Slices', 'Stacks', 'Start', 'Stop']);
-  // TVKDisk
   RegisterPropertiesInCategory(sVisualCategoryName, TVKDisk,
     ['*Radius', 'Loops', 'Slices']);
-  // TVKCone
   RegisterPropertiesInCategory(sVisualCategoryName, TVKCone,
     ['BottomRadius', 'Loops', 'Slices', 'Stacks']);
-  // TVKCylinder
   RegisterPropertiesInCategory(sVisualCategoryName, TVKCylinder,
     ['*Radius', 'Loops', 'Slices', 'Stacks']);
-  // TVKCapsule
   RegisterPropertiesInCategory(sVisualCategoryName, TVKCapsule,
     ['*Radius', 'Loops', 'Slices', 'Stacks']);
-  // TVKAnnulus
   RegisterPropertiesInCategory(sVisualCategoryName, TVKAnnulus,
     ['Bottom*', 'Loops', 'Slices', 'Stacks', 'Top*']);
-  // TVKTorus
   RegisterPropertiesInCategory(sVisualCategoryName, TVKTorus,
     ['*Radius', 'Rings', 'Sides']);
-  // TVKArrowLine
   RegisterPropertiesInCategory(sVisualCategoryName, TVKArrowLine,
     ['Bottom*', 'Loops', 'Slices', 'Stacks', 'Top*']);
-  // TVKPolygon
   RegisterPropertiesInCategory(sVisualCategoryName, TVKPolygon, ['Division']);
-
-  { VKS.MultiPolygon }
   RegisterPropertiesInCategory(sVulkanCategoryName, [TypeInfo(TVKContourNodes),
     TypeInfo(TVKContours)]);
-  // TVKMultiPolygon
   RegisterPropertiesInCategory(sVisualCategoryName, TVKContour, ['Division']);
-
-  { VKS.Extrusion }
   RegisterPropertiesInCategory(sVisualCategoryName,
     [TypeInfo(TVKNodes), TypeInfo(TPipeNodesColorMode)]);
-  // TVKRevolutionSolid
   RegisterPropertiesInCategory(sVisualCategoryName, TVKRevolutionSolid,
     ['Division', 'Slices', 'YOffsetPerTurn']);
-  // TVKExtrusionSolid
   RegisterPropertiesInCategory(sVisualCategoryName, TVKExtrusionSolid,
     ['Stacks']);
-  // TVKPipe
   RegisterPropertiesInCategory(sVisualCategoryName, TVKPipeNode,
     ['RadiusFactor']);
   RegisterPropertiesInCategory(sVisualCategoryName, TVKPipe,
     ['Division', 'Radius', 'Slices']);
-
-  { VKS.VectorFileObjects }
   RegisterPropertiesInCategory(sVulkanCategoryName,
     [TypeInfo(TVKActorAnimationMode), TypeInfo(TVKActorAnimations),
     TypeInfo(TMeshAutoCenterings), TypeInfo(TActorFrameInterpolation),
@@ -1719,185 +1606,122 @@ begin
   RegisterPropertiesInCategory(sVisualCategoryName,
     [TypeInfo(TMeshAutoCenterings), TypeInfo(TVKActorAnimationReference),
     TypeInfo(TMeshNormalsOrientation)]);
-  // TVKFreeForm
   RegisterPropertiesInCategory(sVulkanCategoryName, TVKFreeForm,
     ['UseMeshmaterials']);
-  // TVKAnimationControler
   RegisterPropertiesInCategory(sVulkanCategoryName, TVKAnimationControler,
     ['AnimationName']);
   RegisterPropertiesInCategory(sLinkageCategoryName, TVKAnimationControler,
     ['AnimationName']);
-  // TVKActor
-  RegisterPropertiesInCategory(sVulkanCategoryName, TVKActorAnimation,
-    ['*Frame']);
+  RegisterPropertiesInCategory(sVulkanCategoryName, TVKActorAnimation, ['*Frame']);
   RegisterPropertiesInCategory(sVulkanCategoryName, TVKActor,
     ['*Frame*', 'Interval', 'OverlaySkeleton', 'UseMeshmaterials']);
   RegisterPropertiesInCategory(sVisualCategoryName, TVKActor,
     ['OverlaySkeleton']);
+  RegisterPropertiesInCategory(sVulkanCategoryName, [TypeInfo(TMeshMode), TypeInfo(TVertexMode)]);
+  RegisterPropertiesInCategory(sVulkanCategoryName, [TypeInfo(TVKHeightFieldOptions)]);
+  RegisterPropertiesInCategory(sVisualCategoryName, [TypeInfo(TVKHeightFieldColorMode),
+    TypeInfo(TVKSamplingScale), TypeInfo(TXYZGridLinesStyle), TypeInfo(TXYZGridParts)]);
+  RegisterPropertiesInCategory(sVulkanCategoryName, TVKXYZGrid, ['Antialiased']);
+  RegisterPropertiesInCategory(sVisualCategoryName, TVKXYZGrid, ['Antialiased', 'Line*']);
 
-  { VKS.Mesh }
-  RegisterPropertiesInCategory(sVulkanCategoryName,
-    [TypeInfo(TMeshMode), TypeInfo(TVertexMode)]);
-
-  { VKS.Graph }
-  RegisterPropertiesInCategory(sVulkanCategoryName,
-    [TypeInfo(TVKHeightFieldOptions)]);
-  RegisterPropertiesInCategory(sVisualCategoryName,
-    [TypeInfo(TVKHeightFieldColorMode), TypeInfo(TVKSamplingScale),
-    TypeInfo(TXYZGridLinesStyle), TypeInfo(TXYZGridParts)]);
-  // TVKXYZGrid
-  RegisterPropertiesInCategory(sVulkanCategoryName, TVKXYZGrid,
-    ['Antialiased']);
-  RegisterPropertiesInCategory(sVisualCategoryName, TVKXYZGrid,
-    ['Antialiased', 'Line*']);
-
-  { VKS.Particles }
-  // TVKParticles
-  RegisterPropertiesInCategory(sLayoutCategoryName, TVKParticles,
-    ['VisibleAtRunTime']);
+  RegisterPropertiesInCategory(sLayoutCategoryName, TVKParticles, ['VisibleAtRunTime']);
   RegisterPropertiesInCategory(sVisualCategoryName, TVKParticles,
     ['*Size', 'VisibleAtRunTime']);
 
-  { VKS.Skydome }
   RegisterPropertiesInCategory(sVulkanCategoryName,
     [TypeInfo(TVKSkyDomeBands), TypeInfo(TVKSkyDomeOptions),
     TypeInfo(TVKSkyDomeStars)]);
-  // TVKSkyDomeBand
   RegisterPropertiesInCategory(sVisualCategoryName, TVKSkyDomeBand,
     ['Slices', 'Stacks', '*Angle']);
-  // TVKSkyDomeStar
   RegisterPropertiesInCategory(sVisualCategoryName, TVKSkyDomeStar,
     ['Dec', 'Magnitude', 'RA']);
-  // TVKEarthSkyDome
   RegisterPropertiesInCategory(sVulkanCategoryName, TVKEarthSkyDome,
     ['Slices', 'Stacks', 'SunElevation', 'Turbidity']);
-
-  { VKS.Mirror }
   RegisterPropertiesInCategory(sVulkanCategoryName, [TypeInfo(TMirrorOptions),
     TypeInfo(TVKBaseSceneObject)]);
-
-  { VKS.ParticleFX }
   RegisterPropertiesInCategory(sVulkanCategoryName, [TypeInfo(TBlendingMode)]);
   RegisterPropertiesInCategory(sVisualCategoryName,
     [TypeInfo(TBlendingMode), TypeInfo(TPFXLifeColors),
     TypeInfo(TSpriteColorMode)]);
-  // TVKParticleFXRenderer
   RegisterPropertiesInCategory(sVulkanCategoryName, TVKParticleFXRenderer,
     ['ZWrite']);
   RegisterPropertiesInCategory(sVisualCategoryName, TVKParticleFXRenderer,
     ['ZWrite']);
-  // TPFXLifeColor
   RegisterPropertiesInCategory(sVulkanCategoryName, TPFXLifeColor,
     ['LifeTime']);
   RegisterPropertiesInCategory(sVisualCategoryName, TPFXLifeColor,
     ['LifeTime']);
-  // TVKLifeColoredPFXManager
   RegisterPropertiesInCategory(sVisualCategoryName, TVKLifeColoredPFXManager,
     ['Acceleration', 'ParticleSize']);
-  // GLPolygonPFXManager
   RegisterPropertiesInCategory(sVisualCategoryName, TVKPolygonPFXManager,
     ['NbSides']);
-  // TVKPointLightPFXManager
   RegisterPropertiesInCategory(sVisualCategoryName, TVKPointLightPFXManager,
     ['TexMapSize']);
-
-  { VKS.TerrainRenderer }
-  RegisterPropertiesInCategory(sVulkanCategoryName,
-    [TypeInfo(TVKHeightDataSource)]);
-  // TVKTerrainRenderer
+  RegisterPropertiesInCategory(sVulkanCategoryName, [TypeInfo(TVKHeightDataSource)]);
   RegisterPropertiesInCategory(sVisualCategoryName, TVKTerrainRenderer,
     ['*CLOD*', 'QualityDistance', 'Tile*']);
-
-  { VKS.zBuffer }
   RegisterPropertiesInCategory(sVulkanCategoryName, [TypeInfo(TVKMemoryViewer),
     TypeInfo(TVKSceneViewer), TypeInfo(TOptimise)]);
   RegisterPropertiesInCategory(sVisualCategoryName, [TypeInfo(TOptimise)]);
-
-  // TVKZShadows
   RegisterPropertiesInCategory(sVisualCategoryName, TVKZShadows,
     ['DepthFade', '*Shadow', 'Soft', 'Tolerance']);
-
-  { VKS.HUDObjects }
   RegisterPropertiesInCategory(sLayoutCategoryName, [TypeInfo(TTextLayout)]);
   RegisterPropertiesInCategory(sVisualCategoryName,
     [TypeInfo(TVKBitmapFont), TypeInfo(TTextLayout)]);
-
   RegisterPropertiesInCategory(sLocalizableCategoryName,
     [TypeInfo(TVKBitmapFont)]);
-
-  { VKS.Texture }
   RegisterPropertiesInCategory(sVulkanCategoryName,
     [TypeInfo(TVKMaterial), TypeInfo(TVKMaterialLibrary),
     TypeInfo(TVKLibMaterials), TypeInfo(TTextureNeededEvent)]);
-  // TVKLibMaterial
   RegisterPropertiesInCategory(sVulkanCategoryName, TVKLibMaterial,
     ['Texture2Name']);
   RegisterPropertiesInCategory(sVisualCategoryName, TVKLibMaterial,
     ['TextureOffset', 'TextureScale']);
-  // TVKMaterialLibrary
   RegisterPropertiesInCategory(sVulkanCategoryName, TVKMaterialLibrary,
     ['TexturePaths']);
-
-  { VKS.Cadencer }
   RegisterPropertiesInCategory(sVulkanCategoryName, [TypeInfo(TVKCadencer)]);
-
-  { VKS.Collision }
   RegisterPropertiesInCategory(sVulkanCategoryName,
     [TypeInfo(TObjectCollisionEvent)]);
-
-  { VKS.FireFX }
-  // TVKFireFXManager
   RegisterPropertiesInCategory(sVulkanCategoryName, TVKFireFXManager,
     ['MaxParticles', 'NoZWrite', 'Paused', 'UseInterval']);
   RegisterPropertiesInCategory(sVisualCategoryName, TVKFireFXManager,
     ['Fire*', 'InitialDir', 'NoZWrite', 'Particle*', 'Paused']);
-
-  { VKS.ThorFX }
   RegisterPropertiesInCategory(sVulkanCategoryName,
     [TypeInfo(TCalcPointEvent)]);
-  // GLThorFXManager
   RegisterPropertiesInCategory(sVulkanCategoryName, TVKThorFXManager,
     ['Maxpoints', 'Paused']);
   RegisterPropertiesInCategory(sVisualCategoryName, TVKThorFXManager,
     ['Core', 'Glow*', 'Paused', 'Target', 'Vibrate', 'Wildness']);
-
-  { VKS.BitmapFont }
   RegisterPropertiesInCategory(sVulkanCategoryName,
     [TypeInfo(TVKMagFilter), TypeInfo(TVKMinFilter)]);
   RegisterPropertiesInCategory(sLocalizableCategoryName,
     [TypeInfo(TVKBitmapFontRanges)]);
-  // TVKBitmapFontRange
   RegisterPropertiesInCategory(sLocalizableCategoryName, TVKBitmapFontRange,
     ['*ASCII']);
-  // TVKBitmapFont
   RegisterPropertiesInCategory(sLayoutCategoryName, TVKBitmapFont,
     ['Char*', '*Interval*', '*Space']);
   RegisterPropertiesInCategory(sLocalizableCategoryName, TVKBitmapFont,
     ['Glyphs']);
   RegisterPropertiesInCategory(sVisualCategoryName, TVKBitmapFont,
     ['Char*', '*Interval*', '*Space', 'Glyphs']);
-
-  { VKS.HeightData }
-  // TVKBitmapHDS
   RegisterPropertiesInCategory(sVulkanCategoryName, TVKBitmapHDS,
     ['MaxPoolSize']);
   RegisterPropertiesInCategory(sVisualCategoryName, TVKBitmapHDS, ['Picture']);
-
 end;
 
 procedure Register;
 begin
-  RegisterComponents('GLScene', [TVKScene, TVKSceneViewer, TVKMemoryViewer,
+  RegisterComponents('VKScene', [TVKScene, TVKSceneViewer, TVKMemoryViewer,
     TVKMaterialLibrary, TVKMaterialLibraryEx, TVKCadencer, TVKGuiLayout,
     TVKBitmapFont, TVKWindowsBitmapFont, TVKScriptLibrary, TVKSoundLibrary,
     TVKFullScreenViewer]);
 
-  RegisterComponents('GLScene PFX', [TVKCustomPFXManager, TVKPolygonPFXManager,
+  RegisterComponents('VKScene PFX', [TVKCustomPFXManager, TVKPolygonPFXManager,
     TVKPointLightPFXManager, TVKCustomSpritePFXManager, TVKPerlinPFXManager,
     TVKLinePFXManager, TVKFireFXManager, TVKThorFXManager,
     TVKEParticleMasksManager]);
 
-  RegisterComponents('GLScene Utils', [TVKAsyncTimer, TVKStaticImposterBuilder,
+  RegisterComponents('VKScene Utils', [TVKAsyncTimer, TVKStaticImposterBuilder,
     TVKCollisionManager, TVKAnimationControler, TVKAVIRecorder, TVKDCEManager,
     TVKFPSMovementManager, TVKMaterialScripter, TVKUserInterface, TVKNavigator,
     TVKSmoothNavigator, TVKSmoothUserInterface, TVKTimeEventsMGR,
@@ -1905,11 +1729,11 @@ begin
     TVKCameraController, TVKSLanguage, TVKSLogger, TVKSArchiveManager,
     TVKJoystick, TVKScreenSaver, TVKSSynHiMemo]);
 
-  RegisterComponents('GLScene Terrain', [TVKBitmapHDS, TVKCustomHDS,
+  RegisterComponents('VKScene Terrain', [TVKBitmapHDS, TVKCustomHDS,
     TVKHeightTileFileHDS, TVKBumpmapHDS, TVKPerlinHDS, TVKTexturedHDS,
     TVKAsyncHDS, TVKShadowHDS]);
 
-  RegisterComponents('GLScene Shaders', [TVKTexCombineShader, TVKPhongShader,
+  RegisterComponents('VKScene Shaders', [TVKTexCombineShader, TVKPhongShader,
     TVKUserShader, TVKHiddenLineShader, TVKCelShader, TVKOutlineShader,
     TVKMultiMaterialShader, TVKBumpShader, TVKGLSLShader,
     TVKSLDiffuseSpecularShader, TVKSLBumpShader, TVKAsmShader,
@@ -1921,7 +1745,7 @@ begin
   RegisterComponentEditor(TVKMaterialLibraryEx, TVKMaterialLibraryEditor);
   RegisterComponentEditor(TVKSArchiveManager, TVKSArchiveManagerEditor);
 
-  GLRegisterPropertiesInCategories;
+  VKRegisterPropertiesInCategories;
 
   RegisterPropertyEditor(TypeInfo(TResolution), nil, '', TResolutionProperty);
   RegisterPropertyEditor(TypeInfo(TVKTexture), TVKMaterial, '',
@@ -2017,17 +1841,17 @@ begin
     TVKShaderEditorProperty);
 end;
 
-function GetGLSceneVersion: string;
+function GetVKSceneVersion: string;
 var
   LProject: IOTAProject;
   LExePath, LProjectPath, LSVN, LRevision: string;
 begin
-  LRevision := Copy(GLSCENE_REVISION, 12, 4);
+  LRevision := Copy(VKSCENE_REVISION, 12, 4);
 
   // will be assigned after project compilation
   // after each compilation get it from file \.svn\entries in 4-th line
-  // and write to file GLSceneRevision
-  // in both fail (no \.svn\entries or GLSceneRevision file) get a version value from GLScene.pas
+  // and write to file VKSceneRevision
+  // in both fail (no \.svn\entries or VKSceneRevision file) get a version value from GLScene.pas
   LProject := GetActiveProject;
   LExePath := ExtractFilePath(ParamStr(0));
   if Assigned(LProject) then
@@ -2046,17 +1870,17 @@ begin
             // Save
             Clear;
             Add(LRevision);
-            SaveToFile(LExePath + 'GLSceneRevision');
+            SaveToFile(LExePath + 'VKSceneRevision');
           end;
         finally
           Free;
         end;
   end
-  else if FileExists(LExePath + 'GLSceneRevision') then
+  else if FileExists(LExePath + 'VKSceneRevision') then
     try
       with TStringList.Create do
         try
-          LoadFromFile(LExePath + 'GLSceneRevision');
+          LoadFromFile(LExePath + 'VKSceneRevision');
           if (Count >= 1) and (Trim(Strings[0]) <> '') then
             LRevision := Trim(Strings[0]);
         finally
@@ -2066,7 +1890,7 @@ begin
     end;
 
   // Finally
-  Result := Format(GLSCENE_VERSION, [LRevision]);
+  Result := Format(VKSCENE_VERSION, [LRevision]);
 end;
 
 function GetProjectTargetName: string;
@@ -2089,7 +1913,7 @@ initialization
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-SplashScreenServices.AddPluginBitmap(GetGLSceneVersion,
+SplashScreenServices.AddPluginBitmap(GetVKSceneVersion,
   LoadBitmap(HInstance, 'TVKScene'), False, 'MPL 2 license', 'SVN version');
 
 VKS.CrossPlatform.IsDesignTime := True;
@@ -2106,155 +1930,155 @@ begin
   RegisterSceneObject(TVKDummyCube, 'DummyCube', '', HInstance);
 
   // Basic geometry
-  RegisterSceneObject(TVKSprite, 'Sprite', glsOCBasicGeometry, HInstance);
-  RegisterSceneObject(TVKPoints, 'Points', glsOCBasicGeometry, HInstance);
-  RegisterSceneObject(TVKLines, 'Lines', glsOCBasicGeometry, HInstance);
-  RegisterSceneObject(TVKPlane, 'Plane', glsOCBasicGeometry, HInstance);
-  RegisterSceneObject(TVKPolygon, 'Polygon', glsOCBasicGeometry, HInstance);
-  RegisterSceneObject(TVKCube, 'Cube', glsOCBasicGeometry, HInstance);
-  RegisterSceneObject(TVKFrustrum, 'Frustrum', glsOCBasicGeometry, HInstance);
-  RegisterSceneObject(TVKSphere, 'Sphere', glsOCBasicGeometry, HInstance);
-  RegisterSceneObject(TVKDisk, 'Disk', glsOCBasicGeometry, HInstance);
-  RegisterSceneObject(TVKCone, 'Cone', glsOCBasicGeometry, HInstance);
-  RegisterSceneObject(TVKCylinder, 'Cylinder', glsOCBasicGeometry, HInstance);
-  RegisterSceneObject(TVKCapsule, 'Capsule', glsOCBasicGeometry, HInstance);
-  RegisterSceneObject(TVKDodecahedron, 'Dodecahedron', glsOCBasicGeometry,
+  RegisterSceneObject(TVKSprite, 'Sprite', strOCBasicGeometry, HInstance);
+  RegisterSceneObject(TVKPoints, 'Points', strOCBasicGeometry, HInstance);
+  RegisterSceneObject(TVKLines, 'Lines', strOCBasicGeometry, HInstance);
+  RegisterSceneObject(TVKPlane, 'Plane', strOCBasicGeometry, HInstance);
+  RegisterSceneObject(TVKPolygon, 'Polygon', strOCBasicGeometry, HInstance);
+  RegisterSceneObject(TVKCube, 'Cube', strOCBasicGeometry, HInstance);
+  RegisterSceneObject(TVKFrustrum, 'Frustrum', strOCBasicGeometry, HInstance);
+  RegisterSceneObject(TVKSphere, 'Sphere', strOCBasicGeometry, HInstance);
+  RegisterSceneObject(TVKDisk, 'Disk', strOCBasicGeometry, HInstance);
+  RegisterSceneObject(TVKCone, 'Cone', strOCBasicGeometry, HInstance);
+  RegisterSceneObject(TVKCylinder, 'Cylinder', strOCBasicGeometry, HInstance);
+  RegisterSceneObject(TVKCapsule, 'Capsule', strOCBasicGeometry, HInstance);
+  RegisterSceneObject(TVKDodecahedron, 'Dodecahedron', strOCBasicGeometry,
     HInstance);
-  RegisterSceneObject(TVKIcosahedron, 'Icosahedron', glsOCBasicGeometry,
+  RegisterSceneObject(TVKIcosahedron, 'Icosahedron', strOCBasicGeometry,
     HInstance);
-  RegisterSceneObject(TVKOctahedron, 'Octahedron', glsOCBasicGeometry,
+  RegisterSceneObject(TVKOctahedron, 'Octahedron', strOCBasicGeometry,
     HInstance);
-  RegisterSceneObject(TVKTetrahedron, 'Tetrahedron', glsOCBasicGeometry,
+  RegisterSceneObject(TVKTetrahedron, 'Tetrahedron', strOCBasicGeometry,
     HInstance);
-  RegisterSceneObject(TVKSuperellipsoid, 'Superellipsoid', glsOCBasicGeometry,
+  RegisterSceneObject(TVKSuperellipsoid, 'Superellipsoid', strOCBasicGeometry,
     HInstance);
 
   // Advanced geometry
   RegisterSceneObject(TVKAnimatedSprite, 'Animated Sprite',
-    glsOCAdvancedGeometry, HInstance);
-  RegisterSceneObject(TVKArrowLine, 'ArrowLine', glsOCAdvancedGeometry,
+    strOCAdvancedGeometry, HInstance);
+  RegisterSceneObject(TVKArrowLine, 'ArrowLine', strOCAdvancedGeometry,
     HInstance);
-  RegisterSceneObject(TVKArrowArc, 'ArrowArc', glsOCAdvancedGeometry,
+  RegisterSceneObject(TVKArrowArc, 'ArrowArc', strOCAdvancedGeometry,
     HInstance);
-  RegisterSceneObject(TVKAnnulus, 'Annulus', glsOCAdvancedGeometry, HInstance);
+  RegisterSceneObject(TVKAnnulus, 'Annulus', strOCAdvancedGeometry, HInstance);
   RegisterSceneObject(TVKExtrusionSolid, 'ExtrusionSolid',
-    glsOCAdvancedGeometry, HInstance);
-  RegisterSceneObject(TVKMultiPolygon, 'MultiPolygon', glsOCAdvancedGeometry,
+    strOCAdvancedGeometry, HInstance);
+  RegisterSceneObject(TVKMultiPolygon, 'MultiPolygon', strOCAdvancedGeometry,
     HInstance);
-  RegisterSceneObject(TVKPipe, 'Pipe', glsOCAdvancedGeometry, HInstance);
+  RegisterSceneObject(TVKPipe, 'Pipe', strOCAdvancedGeometry, HInstance);
   RegisterSceneObject(TVKRevolutionSolid, 'RevolutionSolid',
-    glsOCAdvancedGeometry, HInstance);
-  RegisterSceneObject(TVKTorus, 'Torus', glsOCAdvancedGeometry, HInstance);
+    strOCAdvancedGeometry, HInstance);
+  RegisterSceneObject(TVKTorus, 'Torus', strOCAdvancedGeometry, HInstance);
 
   // Mesh objects
-  RegisterSceneObject(TVKActor, 'Actor', glsOCMeshObjects, HInstance);
-  RegisterSceneObject(TVKFreeForm, 'FreeForm', glsOCMeshObjects, HInstance);
-  RegisterSceneObject(TVKMesh, 'Mesh', glsOCMeshObjects, HInstance);
-  RegisterSceneObject(TVKTilePlane, 'TilePlane', glsOCMeshObjects, HInstance);
-  RegisterSceneObject(TVKPortal, 'Portal', glsOCMeshObjects, HInstance);
-  RegisterSceneObject(TVKTerrainRenderer, 'TerrainRenderer', glsOCMeshObjects,
+  RegisterSceneObject(TVKActor, 'Actor', strOCMeshObjects, HInstance);
+  RegisterSceneObject(TVKFreeForm, 'FreeForm', strOCMeshObjects, HInstance);
+  RegisterSceneObject(TVKMesh, 'Mesh', strOCMeshObjects, HInstance);
+  RegisterSceneObject(TVKTilePlane, 'TilePlane', strOCMeshObjects, HInstance);
+  RegisterSceneObject(TVKPortal, 'Portal', strOCMeshObjects, HInstance);
+  RegisterSceneObject(TVKTerrainRenderer, 'TerrainRenderer', strOCMeshObjects,
     HInstance);
 
   // Graph-plotting objects
-  RegisterSceneObject(TVKFlatText, 'FlatText', glsOCGraphPlottingObjects,
+  RegisterSceneObject(TVKFlatText, 'FlatText', strOCGraphPlottingObjects,
     HInstance);
-  RegisterSceneObject(TVKHeightField, 'HeightField', glsOCGraphPlottingObjects,
+  RegisterSceneObject(TVKHeightField, 'HeightField', strOCGraphPlottingObjects,
     HInstance);
-  RegisterSceneObject(TVKXYZGrid, 'XYZGrid', glsOCGraphPlottingObjects,
+  RegisterSceneObject(TVKXYZGrid, 'XYZGrid', strOCGraphPlottingObjects,
     HInstance);
 
   // Particle systems
-  RegisterSceneObject(TVKParticles, 'Particles', glsOCParticleSystems,
+  RegisterSceneObject(TVKParticles, 'Particles', strOCParticleSystems,
     HInstance);
   RegisterSceneObject(TVKParticleFXRenderer, 'PFX Renderer',
-    glsOCParticleSystems, HInstance);
+    strOCParticleSystems, HInstance);
 
   // Environment objects
-  RegisterSceneObject(TVKEarthSkyDome, 'EarthSkyDome', glsOCEnvironmentObjects,
+  RegisterSceneObject(TVKEarthSkyDome, 'EarthSkyDome', strOCEnvironmentObjects,
     HInstance);
-  RegisterSceneObject(TVKSkyDome, 'SkyDome', glsOCEnvironmentObjects,
+  RegisterSceneObject(TVKSkyDome, 'SkyDome', strOCEnvironmentObjects,
     HInstance);
-  RegisterSceneObject(TVKSkyBox, 'SkyBox', glsOCEnvironmentObjects, HInstance);
-  RegisterSceneObject(TVKAtmosphere, 'Atmosphere', glsOCEnvironmentObjects,
+  RegisterSceneObject(TVKSkyBox, 'SkyBox', strOCEnvironmentObjects, HInstance);
+  RegisterSceneObject(TVKAtmosphere, 'Atmosphere', strOCEnvironmentObjects,
     HInstance);
 
   // HUD objects.
-  RegisterSceneObject(TVKHUDSprite, 'HUD Sprite', glsOCHUDObjects, HInstance);
-  RegisterSceneObject(TVKHUDText, 'HUD Text', glsOCHUDObjects, HInstance);
+  RegisterSceneObject(TVKHUDSprite, 'HUD Sprite', strOCHUDObjects, HInstance);
+  RegisterSceneObject(TVKHUDText, 'HUD Text', strOCHUDObjects, HInstance);
   RegisterSceneObject(TVKResolutionIndependantHUDText,
-    'Resolution Independant HUD Text', glsOCHUDObjects, HInstance);
-  RegisterSceneObject(TVKAbsoluteHUDText, 'Absolute HUD Text', glsOCHUDObjects,
+    'Resolution Independant HUD Text', strOCHUDObjects, HInstance);
+  RegisterSceneObject(TVKAbsoluteHUDText, 'Absolute HUD Text', strOCHUDObjects,
     HInstance);
-  RegisterSceneObject(TVKGameMenu, 'GameMenu', glsOCHUDObjects, HInstance);
-  RegisterSceneObject(TVKConsole, 'Console', glsOCHUDObjects, HInstance);
+  RegisterSceneObject(TVKGameMenu, 'GameMenu', strOCHUDObjects, HInstance);
+  RegisterSceneObject(TVKConsole, 'Console', strOCHUDObjects, HInstance);
 
   // GUI objects.
-  RegisterSceneObject(TVKBaseControl, 'Root Control', glsOCGuiObjects,
+  RegisterSceneObject(TVKBaseControl, 'Root Control', strOCGuiObjects,
     HInstance);
-  RegisterSceneObject(TVKPopupMenu, 'GLPopupMenu', glsOCGuiObjects, HInstance);
-  RegisterSceneObject(TVKForm, 'GLForm', glsOCGuiObjects, HInstance);
-  RegisterSceneObject(TVKPanel, 'GLPanel', glsOCGuiObjects, HInstance);
-  RegisterSceneObject(TVKButton, 'GLButton', glsOCGuiObjects, HInstance);
-  RegisterSceneObject(TVKCheckBox, 'GLCheckBox', glsOCGuiObjects, HInstance);
-  RegisterSceneObject(TVKEdit, 'GLEdit', glsOCGuiObjects, HInstance);
-  RegisterSceneObject(TVKLabel, 'GLLabel', glsOCGuiObjects, HInstance);
-  RegisterSceneObject(TVKAdvancedLabel, 'GLAdvancedLabel', glsOCGuiObjects,
+  RegisterSceneObject(TVKPopupMenu, 'GLPopupMenu', strOCGuiObjects, HInstance);
+  RegisterSceneObject(TVKForm, 'GLForm', strOCGuiObjects, HInstance);
+  RegisterSceneObject(TVKPanel, 'GLPanel', strOCGuiObjects, HInstance);
+  RegisterSceneObject(TVKButton, 'GLButton', strOCGuiObjects, HInstance);
+  RegisterSceneObject(TVKCheckBox, 'GLCheckBox', strOCGuiObjects, HInstance);
+  RegisterSceneObject(TVKEdit, 'GLEdit', strOCGuiObjects, HInstance);
+  RegisterSceneObject(TVKLabel, 'GLLabel', strOCGuiObjects, HInstance);
+  RegisterSceneObject(TVKAdvancedLabel, 'GLAdvancedLabel', strOCGuiObjects,
     HInstance);
-  RegisterSceneObject(TVKScrollbar, 'GLScrollbar', glsOCGuiObjects, HInstance);
-  RegisterSceneObject(StringGrid, 'GLStringGrid', glsOCGuiObjects,
+  RegisterSceneObject(TVKScrollbar, 'GLScrollbar', strOCGuiObjects, HInstance);
+  RegisterSceneObject(StringGrid, 'GLStringGrid', strOCGuiObjects,
     HInstance);
-  RegisterSceneObject(TVKCustomControl, 'GLBitmapControl', glsOCGuiObjects,
+  RegisterSceneObject(TVKCustomControl, 'GLBitmapControl', strOCGuiObjects,
     HInstance);
 
   // Special objects
-  RegisterSceneObject(TVKLensFlare, 'LensFlare', glsOCSpecialObjects,
+  RegisterSceneObject(TVKLensFlare, 'LensFlare', strOCSpecialObjects,
     HInstance);
   RegisterSceneObject(TVKTextureLensFlare, 'TextureLensFlare',
-    glsOCSpecialObjects, HInstance);
-  RegisterSceneObject(TVKMirror, 'Mirror', glsOCSpecialObjects, HInstance);
-  RegisterSceneObject(TVKShadowPlane, 'ShadowPlane', glsOCSpecialObjects,
+    strOCSpecialObjects, HInstance);
+  RegisterSceneObject(TVKMirror, 'Mirror', strOCSpecialObjects, HInstance);
+  RegisterSceneObject(TVKShadowPlane, 'ShadowPlane', strOCSpecialObjects,
     HInstance);
-  RegisterSceneObject(TVKShadowVolume, 'ShadowVolume', glsOCSpecialObjects,
+  RegisterSceneObject(TVKShadowVolume, 'ShadowVolume', strOCSpecialObjects,
     HInstance);
-  RegisterSceneObject(TVKZShadows, 'ZShadows', glsOCSpecialObjects, HInstance);
+  RegisterSceneObject(TVKZShadows, 'ZShadows', strOCSpecialObjects, HInstance);
   RegisterSceneObject(TVKSLTextureEmitter, 'GLSL Texture Emitter',
-    glsOCSpecialObjects, HInstance);
+    strOCSpecialObjects, HInstance);
   RegisterSceneObject(TVKSLProjectedTextures, 'GLSL Projected Textures',
-    glsOCSpecialObjects, HInstance);
-  RegisterSceneObject(TVKTextureEmitter, 'Texture Emitter', glsOCSpecialObjects,
+    strOCSpecialObjects, HInstance);
+  RegisterSceneObject(TVKTextureEmitter, 'Texture Emitter', strOCSpecialObjects,
     HInstance);
   RegisterSceneObject(TVKProjectedTextures, 'Projected Textures',
-    glsOCSpecialObjects, HInstance);
-  RegisterSceneObject(TVKBlur, 'Blur', glsOCSpecialObjects, HInstance);
-  RegisterSceneObject(TVKMotionBlur, 'MotionBlur', glsOCSpecialObjects,
+    strOCSpecialObjects, HInstance);
+  RegisterSceneObject(TVKBlur, 'Blur', strOCSpecialObjects, HInstance);
+  RegisterSceneObject(TVKMotionBlur, 'MotionBlur', strOCSpecialObjects,
     HInstance);
-  RegisterSceneObject(TVKSpaceText, 'SpaceText', glsOCDoodad, HInstance);
-  RegisterSceneObject(TVKTrail, 'Trail', glsOCSpecialObjects, HInstance);
-  RegisterSceneObject(TVKPostEffect, 'PostEffect', glsOCSpecialObjects,
+  RegisterSceneObject(TVKSpaceText, 'SpaceText', strOCDoodad, HInstance);
+  RegisterSceneObject(TVKTrail, 'Trail', strOCSpecialObjects, HInstance);
+  RegisterSceneObject(TVKPostEffect, 'PostEffect', strOCSpecialObjects,
     HInstance);
   RegisterSceneObject(TVKPostShaderHolder, 'PostShaderHolder',
-    glsOCSpecialObjects, HInstance);
+    strOCSpecialObjects, HInstance);
 
   // Doodad objects.
-  RegisterSceneObject(TVKTeapot, 'Teapot', glsOCDoodad, HInstance);
-  RegisterSceneObject(TVKTree, 'Tree', glsOCDoodad, HInstance);
-  RegisterSceneObject(TVKWaterPlane, 'WaterPlane', glsOCDoodad, HInstance);
+  RegisterSceneObject(TVKTeapot, 'Teapot', strOCDoodad, HInstance);
+  RegisterSceneObject(TVKTree, 'Tree', strOCDoodad, HInstance);
+  RegisterSceneObject(TVKWaterPlane, 'WaterPlane', strOCDoodad, HInstance);
 
   // Proxy objects.
-  RegisterSceneObject(TVKProxyObject, 'ProxyObject', glsOCProxyObjects,
+  RegisterSceneObject(TVKProxyObject, 'ProxyObject', strOCProxyObjects,
     HInstance);
-  RegisterSceneObject(TVKColorProxy, 'ColorProxy', glsOCProxyObjects,
+  RegisterSceneObject(TVKColorProxy, 'ColorProxy', strOCProxyObjects,
     HInstance);
-  RegisterSceneObject(TVKFreeFormProxy, 'FreeFormProxy', glsOCProxyObjects,
+  RegisterSceneObject(TVKFreeFormProxy, 'FreeFormProxy', strOCProxyObjects,
     HInstance);
-  RegisterSceneObject(TVKMaterialProxy, 'MaterialProxy', glsOCProxyObjects,
+  RegisterSceneObject(TVKMaterialProxy, 'MaterialProxy', strOCProxyObjects,
     HInstance);
-  RegisterSceneObject(TVKActorProxy, 'ActorProxy', glsOCProxyObjects,
+  RegisterSceneObject(TVKActorProxy, 'ActorProxy', strOCProxyObjects,
     HInstance);
-  RegisterSceneObject(TVKMultiProxy, 'MultiProxy', glsOCProxyObjects,
+  RegisterSceneObject(TVKMultiProxy, 'MultiProxy', strOCProxyObjects,
     HInstance);
   RegisterSceneObject(TVKMaterialMultiProxy, 'MaterialMultiProxy',
-    glsOCProxyObjects, HInstance);
+    strOCProxyObjects, HInstance);
 
   // Other objects.
   RegisterSceneObject(TVKDirectVulkan, 'Direct Vulkan', '', HInstance);
@@ -2264,7 +2088,9 @@ begin
   RegisterSceneObject(TVKFBORenderer, 'Vulkan FrameBuffer', '', HInstance);
 end;
 
+//=================================================================
 finalization
+//=================================================================
 
 ObjectManager.Free;
 

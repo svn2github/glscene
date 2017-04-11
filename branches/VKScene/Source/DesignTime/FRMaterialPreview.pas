@@ -10,14 +10,36 @@ unit FRMaterialPreview;
 interface
 
 uses
-  System.SysUtils, System.Types, System.UITypes, System.Classes,
-  System.Variants, System.Math.Vectors,
-  FMX.Types, FMX.Graphics, FMX.Controls, FMX.Forms, FMX.Dialogs, FMX.StdCtrls,
-  FMX.Media, FMX.Viewport3D, FMX.ListBox, FMX.Types3D, FMX.Controls3D,
-  FMX.Objects3D, FMX.MaterialSources,
+  System.SysUtils,
+  System.Types,
+  System.UITypes,
+  System.Classes,
+  System.Variants,
+  System.Math.Vectors,
+  FMX.Types,
+  FMX.Graphics,
+  FMX.Controls,
+  FMX.Forms,
+  FMX.Dialogs,
+  FMX.StdCtrls,
+  FMX.Media,
+  FMX.Viewport3D,
+  FMX.ListBox,
+  FMX.Types3D,
+  FMX.Controls3D,
+  FMX.Objects3D,
+  FMX.MaterialSources,
+  FMX.Layers3D,
 
-  VKS.Scene, VKS.BaseClasses, VKS.SceneViewer, VKS.Material, VKS.Teapot,
-  VKS.HUDObjects, VKS.GeomObjects, VKS.Color, VKS.Coordinates, FMX.Layers3D;
+  VKS.Scene,
+  VKS.BaseClasses,
+//  VKS.SceneViewer,
+  VKS.Material,
+  VKS.Teapot,
+  VKS.HUDObjects,
+  VKS.GeomObjects,
+  VKS.Color,
+  VKS.Coordinates;
 
 type
   TRMaterialPreview = class(TFrame)

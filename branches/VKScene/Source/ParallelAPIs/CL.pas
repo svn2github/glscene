@@ -2,175 +2,83 @@
 // VKScene Component Library, based on GLScene http://glscene.sourceforge.net 
 //
 {
-   Conversion of OpenCL header file: cl.h and cl_platforms.h to VKS.CL.pas,
+   Conversion of OpenCL cl.h header file into CL.pas
    from http://www.khronos.org/registry/cl/.
 }
-// *****************************************************************************
-// * Copyright (c) 2008-2015 The Khronos Group Inc.
-// *
-// * Permission is hereby granted, free of charge, to any person obtaining a
-// * copy of this software and/or associated documentation files (the
-// * "Materials"), to deal in the Materials without restriction, including
-// * without limitation the rights to use, copy, modify, merge, publish,
-// * distribute, sublicense, and/or sell copies of the Materials, and to
-// * permit persons to whom the Materials are furnished to do so, subject to
-// * the following conditions:
-// *
-// * The above copyright notice and this permission notice shall be included
-// * in all copies or substantial portions of the Materials.
-// *
-// * THE MATERIALS ARE PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-// * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-// * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-// * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-// * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-// * MATERIALS OR THE USE OR OTHER DEALINGS IN THE MATERIALS.
-// *****************************************************************************
+(****************************************************************************
+ * Copyright (c) 2008-2015 The Khronos Group Inc.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and/or associated documentation files (the
+ * "Materials"), to deal in the Materials without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Materials, and to
+ * permit persons to whom the Materials are furnished to do so, subject to
+ * the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included
+ * in all copies or substantial portions of the Materials.
+ *
+ * MODIFICATIONS TO THIS FILE MAY MEAN IT NO LONGER ACCURATELY REFLECTS
+ * KHRONOS STANDARDS. THE UNMODIFIED, NORMATIVE VERSIONS OF KHRONOS
+ * SPECIFICATIONS AND HEADER INFORMATION ARE LOCATED AT
+ *    https://www.khronos.org/registry/
+ *
+ * THE MATERIALS ARE PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+ * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ * MATERIALS OR THE USE OR OTHER DEALINGS IN THE MATERIALS.
+ **************************************************************************)
 
-unit VKS.CL;
+unit CL;
 
 interface
 
 uses
-  Winapi.Windows;
+  Winapi.Windows,
+  CL_Platform;
 
 const
+  {$IFDEF MSWINDOWS}
   LibOpenCL = 'OpenCL.dll';
-
-//+++++++++++++ Types and constants from CL_Platform.h ++++++++++++++
-type
-  Tsize_t = NativeUInt; // 32 or 64 bit unsigned integer
-  Psize_t = ^Tsize_t;
-  intptr_t = NativeUInt;
-  // Pintptr_t = ^intptr_t;
-
-  // scalar types
-  Tcl_char = ShortInt;
-  Tcl_uchar = Byte;
-  Tcl_short = SmallInt;
-  Tcl_ushort = Word;
-  Tcl_int = LongInt;
-  Tcl_uint = LongWord;
-  Tcl_long = Int64;
-  Tcl_ulong = UInt64;
-
-  Tcl_half = Word;
-  Tcl_float = Single;
-  Tcl_double = Double;
-
-  Pcl_char = ^Tcl_char;
-  Pcl_uchar = ^Tcl_uchar;
-  Pcl_short = ^Tcl_short;
-  Pcl_ushort = ^Tcl_ushort;
-  Pcl_int = ^Tcl_int;
-  Pcl_uint = ^Tcl_uint;
-  Pcl_long = ^Tcl_long;
-  Pcl_ulong = ^Tcl_ulong;
-
-  Pcl_half = ^Tcl_half;
-  Pcl_float = ^Tcl_float;
-  Pcl_double = ^Tcl_double;
-
-  /// *
-  // * Vector types
-  // *
-  // *  Note:   OpenCL requires that all types be naturally aligned.
-  // *          This means that vector types must be naturally aligned.
-  // *          For example, a vector of four floats must be aligned to
-  // *          a 16 byte boundary (calculated as 4 * the natural 4-byte
-  // *          alignment of the float).  The alignment qualifiers here
-  // *          will only function properly if your compiler supports them
-  // *          and if you don't actively work to defeat them.  For example,
-  // *          in order for a cl_float4 to be 16 byte aligned in a struct,
-  // *          the start of the struct must itself be 16-byte aligned.
-  // *
-  // *          Maintaining proper alignment is the user's responsibility.
-  // */
-//******************************************************************************//
+ {$ELSE}
+  LibOpenCL = 'OpenCL.so';
+ {$ENDIF}
 
 type
-  Tcl_char2 = array [0 .. 1] of Tcl_char;
-  Tcl_char4 = array [0 .. 3] of Tcl_char;
-  Tcl_char8 = array [0 .. 7] of Tcl_char;
-  Tcl_char16 = array [0 .. 15] of Tcl_char;
-
-  Tcl_uchar2 = array [0 .. 1] of Tcl_uchar;
-  Tcl_uchar4 = array [0 .. 3] of Tcl_uchar;
-  Tcl_uchar8 = array [0 .. 7] of Tcl_uchar;
-  Tcl_uchar16 = array [0 .. 15] of Tcl_uchar;
-
-  Tcl_short2 = array [0 .. 1] of Tcl_short;
-  Tcl_short4 = array [0 .. 3] of Tcl_short;
-  Tcl_short8 = array [0 .. 7] of Tcl_short;
-  Tcl_short16 = array [0 .. 15] of Tcl_short;
-
-  Tcl_ushort2 = array [0 .. 1] of Tcl_ushort;
-  Tcl_ushort4 = array [0 .. 3] of Tcl_ushort;
-  Tcl_ushort8 = array [0 .. 7] of Tcl_ushort;
-  Tcl_ushort16 = array [0 .. 15] of Tcl_ushort;
-
-  Tcl_int2 = array [0 .. 1] of Tcl_int;
-  Tcl_int4 = array [0 .. 3] of Tcl_int;
-  Tcl_int8 = array [0 .. 7] of Tcl_int;
-  Tcl_int16 = array [0 .. 15] of Tcl_int;
-
-  Tcl_uint2 = array [0 .. 1] of Tcl_uint;
-  Tcl_uint4 = array [0 .. 3] of Tcl_uint;
-  Tcl_uint8 = array [0 .. 7] of Tcl_uint;
-  Tcl_uint16 = array [0 .. 15] of Tcl_uint;
-
-  Tcl_long2 = array [0 .. 1] of Tcl_long;
-  Tcl_long4 = array [0 .. 3] of Tcl_long;
-  Tcl_long8 = array [0 .. 7] of Tcl_long;
-  Tcl_long16 = array [0 .. 15] of Tcl_long;
-
-  Tcl_ulong2 = array [0 .. 1] of Tcl_ulong;
-  Tcl_ulong4 = array [0 .. 3] of Tcl_ulong;
-  Tcl_ulong8 = array [0 .. 7] of Tcl_ulong;
-  Tcl_ulong16 = array [0 .. 15] of Tcl_ulong;
-
-  Tcl_float2 = array [0 .. 1] of Tcl_float;
-  Tcl_float4 = array [0 .. 3] of Tcl_float;
-  Tcl_float8 = array [0 .. 7] of Tcl_float;
-  Tcl_float16 = array [0 .. 15] of Tcl_float;
-
-  Tcl_double2 = array [0 .. 1] of Tcl_double;
-  Tcl_double4 = array [0 .. 3] of Tcl_double;
-  Tcl_double8 = array [0 .. 7] of Tcl_double;
-  Tcl_double16 = array [0 .. 15] of Tcl_double;
- // There are no vector types for half
-
-type
-  T_cl_platform_id = record end;
+  T_cl_emptyrecord = record end;
+  T_cl_platform_id = T_cl_emptyrecord;
   Tcl_platform_id = ^T_cl_platform_id;
   Pcl_platform_id = ^Tcl_platform_id;
-  T_cl_device_id = record end;
+  T_cl_device_id = T_cl_emptyrecord;
   Tcl_device_id = ^T_cl_device_id;
   Pcl_device_id = ^Tcl_device_id;
-  T_cl_context = record end;
+  T_cl_context = T_cl_emptyrecord;
   Tcl_context = ^T_cl_context;
   Pcl_context = ^Tcl_context;
-  T_cl_command_queue = record end;
+  T_cl_command_queue = T_cl_emptyrecord;
   Tcl_command_queue = ^T_cl_command_queue;
   Pcl_command_queue = ^Tcl_command_queue;
-  T_cl_mem = record end;
+  T_cl_mem = T_cl_emptyrecord;
   Tcl_mem = ^T_cl_mem;
   Pcl_mem = ^Tcl_mem;
-  T_cl_program = record end;
+  T_cl_program = T_cl_emptyrecord;
   Tcl_program = ^T_cl_program;
   Pcl_program = ^Tcl_program;
-  T_cl_kernel = record end;
+  T_cl_kernel = T_cl_emptyrecord;
   Tcl_kernel = ^T_cl_kernel;
   Pcl_kernel = ^Tcl_kernel;
-  T_cl_event = record end;
+  T_cl_event = T_cl_emptyrecord;
   Tcl_event = ^T_cl_event;
   Pcl_event = ^Tcl_event;
-  T_cl_sampler = record end;
+  T_cl_sampler = T_cl_emptyrecord;
   Tcl_sampler = ^T_cl_sampler;
   Pcl_sampler = ^Tcl_sampler;
-  
-  Tcl_bool = Tcl_uint;  //* WARNING!  Unlike cl_ types in cl_platform.h, cl_bool is not guaranteed to be the same size as the bool in kernels. *//                    
+
+  Tcl_bool = Tcl_uint;  //* WARNING!  Unlike cl_ types in cl_platform.h, cl_bool is not guaranteed to be the same size as the bool in kernels. *//
   Pcl_bool = ^Tcl_bool;
   Tcl_bitfield = Tcl_ulong;
   Pcl_bitfield = ^Tcl_bitfield;
@@ -277,68 +185,30 @@ type
 
   Tcl_image_desc = record
     image_type: Tcl_mem_object_type;
-    image_width: Tsize_t;
-    image_height: Tsize_t;
-    image_depth: Tsize_t;
-    image_array_size: Tsize_t;
-    image_row_pitch: Tsize_t;
-    image_slice_pitch: Tsize_t;
+    image_width: NativeUInt;
+    image_height: NativeUInt;
+    image_depth: NativeUInt;
+    image_array_size: NativeUInt;
+    image_row_pitch: NativeUInt;
+    image_slice_pitch: NativeUInt;
     num_mip_levels: Tcl_uint;
     num_samples: Tcl_uint;
     case Word of
-     1: (buffer: Tcl_mem;);
-     2: (mem_object: Tcl_mem;);
+     1: (buffer: Pcl_mem;);
+     2: (mem_object: Pcl_mem;);
   end;
   Pcl_image_desc = ^Tcl_image_desc;
 
   Tcl_buffer_region = record
-    origin: Tsize_t;
-    size: Tsize_t;
+    origin: NativeUInt;
+    size: NativeUInt;
   end;
   Pcl_buffer_region = ^Tcl_buffer_region;
 
- const
-  CL_CHAR_BIT = 8;
-  CL_SCHAR_MAX = 127;
-  CL_SCHAR_MIN = (-127 - 1);
-  CL_CHAR_MAX = CL_SCHAR_MAX;
-  CL_CHAR_MIN = CL_SCHAR_MIN;
-  CL_UCHAR_MAX = 255;
-  CL_SHRT_MAX = 32767;
-  CL_SHRT_MIN = (-32767 - 1);
-  CL_USHRT_MAX = 65535;
-  CL_INT_MAX = 2147483647;
-  CL_INT_MIN = (-2147483647 - 1);
-  CL_UINT_MAX = $FFFFFFFF;
-  CL_LONG_MAX = $7FFFFFFFFFFFFFFF;
-  CL_LONG_MIN = -$7FFFFFFFFFFFFFFF - 1;
-  CL_ULONG_MAX = $FFFFFFFFFFFFFFFF;
-
-  CL_FLT_DIG = 6;
-  CL_FLT_MANT_DIG = 24;
-  CL_FLT_MAX_10_EXP = +38;
-  CL_FLT_MAX_EXP = +128;
-  CL_FLT_MIN_10_EXP = -37;
-  CL_FLT_MIN_EXP = -125;
-  CL_FLT_RADIX = 2;
-  CL_FLT_MAX = 1.7E38; // 0x1.fffffep127f;
-  CL_FLT_MIN = 1.17E-38; // 0x1.0p-126f;
-  CL_FLT_EPSILON = 1.0E-7; // 0x1.0p-23f;
-
-  CL_DBL_DIG = 15;
-  CL_DBL_MANT_DIG = 53;
-  CL_DBL_MAX_10_EXP = +308;
-  CL_DBL_MAX_EXP = +1024;
-  CL_DBL_MIN_10_EXP = -307;
-  CL_DBL_MIN_EXP = -1021;
-  CL_DBL_RADIX = 2;
-  CL_DBL_MAX = 8.98E307; // 0x1.fffffffffffffp1023;
-  CL_DBL_MIN = 2.2E-308; // 0x1.0p-1022;
-  CL_DBL_EPSILON = 2.2E-26; // 0x1.0p-52;
-//+++++++++ End of CL_Platform.h ++++++++++++++++++++ 
+(******************************************************************************)
   
  
-//* Error Codes *//
+(* Error Codes *)
 const
   CL_SUCCESS =                                     0;
   CL_DEVICE_NOT_FOUND =                           -1;
@@ -403,20 +273,20 @@ const
   CL_INVALID_PIPE_SIZE =                         -69;
   CL_INVALID_DEVICE_QUEUE =                      -70;
 
-  // OpenCL Version
+  (* OpenCL Version *)
   CL_VERSION_1_0 =                                 1;
   CL_VERSION_1_1 =                                 1;
   CL_VERSION_1_2 =                                 1;
   CL_VERSION_2_0 =                                 1;
   CL_VERSION_2_1 =                                 1;
 
-  //* cl_bool *//
+  (* cl_bool *)
   CL_FALSE =                                       0;
   CL_TRUE =                                        1;
   CL_BLOCKING =                                    CL_TRUE;
   CL_NON_BLOCKING =                                CL_FALSE;
 
-  //* cl_platform_info *//
+  (* cl_platform_info *)
   CL_PLATFORM_PROFILE =                            $0900;
   CL_PLATFORM_VERSION =                            $0901;
   CL_PLATFORM_NAME =                               $0902;
@@ -424,7 +294,7 @@ const
   CL_PLATFORM_EXTENSIONS =                         $0904;
   CL_PLATFORM_HOST_TIMER_RESOLUTION =              $0905;
 
-  //* cl_device_type - bitfield *//
+  (* cl_device_type - bitfield *)
   CL_DEVICE_TYPE_DEFAULT =                         (1 shl 0);
   CL_DEVICE_TYPE_CPU =                             (1 shl 1);
   CL_DEVICE_TYPE_GPU =                             (1 shl 2);
@@ -432,7 +302,7 @@ const
   CL_DEVICE_TYPE_CUSTOM =                          (1 shl 4);
   CL_DEVICE_TYPE_ALL =                             $FFFFFFFF;
 
-  //* cl_device_info *//
+  (* cl_device_info *)
   CL_DEVICE_TYPE =                                 $1000;
   CL_DEVICE_VENDOR_ID =                            $1001;
   CL_DEVICE_MAX_COMPUTE_UNITS =                    $1002;
@@ -485,7 +355,7 @@ const
   CL_DEVICE_EXTENSIONS =                           $1030;
   CL_DEVICE_PLATFORM =                             $1031;
   CL_DEVICE_DOUBLE_FP_CONFIG =                     $1032;
-//* 0x1033 reserved for CL_DEVICE_HALF_FP_CONFIG *//
+  CL_DEVICE_HALF_FP_CONFIG =                       $1033;
   CL_DEVICE_PREFERRED_VECTOR_WIDTH_HALF =          $1034;
   CL_DEVICE_HOST_UNIFIED_MEMORY =                  $1035;   //* deprecated *//
   CL_DEVICE_NATIVE_VECTOR_WIDTH_CHAR =             $1036;
@@ -529,7 +399,7 @@ const
   CL_DEVICE_MAX_NUM_SUB_GROUPS =                   $105C;
   CL_DEVICE_SUB_GROUP_INDEPENDENT_FORWARD_PROGRESS = $105D;
 
-  //* cl_device_fp_config - bitfield *//
+  (* cl_device_fp_config - bitfield *)
   CL_FP_DENORM =                               (1 shl 0);
   CL_FP_INF_NAN =                              (1 shl 1);
   CL_FP_ROUND_TO_NEAREST =                     (1 shl 2);
@@ -539,42 +409,42 @@ const
   CL_FP_SOFT_FLOAT =                           (1 shl 6);
   CL_FP_CORRECTLY_ROUNDED_DIVIDE_SQRT =        (1 shl 7);
 
-  //* cl_device_mem_cache_type *//
+  (* cl_device_mem_cache_type *)
   CL_NONE =                                     $0;
   CL_READ_ONLY_CACHE =                          $1;
   CL_READ_WRITE_CACHE =                         $2;
 
-  //* cl_device_local_mem_type *//
+  (* cl_device_local_mem_type *)
   CL_LOCAL =                                    $1;
   CL_GLOBAL =                                   $2;
 
-  //* cl_device_exec_capabilities - bitfield *//
+  (* cl_device_exec_capabilities - bitfield *)
   CL_EXEC_KERNEL =                              (1 shl 0);
   CL_EXEC_NATIVE_KERNEL =                       (1 shl 1);
 
-  //* cl_command_queue_properties - bitfield *//
+  (* cl_command_queue_properties - bitfield *)
   CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE =      (1 shl 0);
   CL_QUEUE_PROFILING_ENABLE =                   (1 shl 1);
   CL_QUEUE_ON_DEVICE =                          (1 shl 2);
   CL_QUEUE_ON_DEVICE_DEFAULT =                  (1 shl 3);
 
-  // cl_context_info
+  (* cl_context_info *)
   CL_CONTEXT_REFERENCE_COUNT =                      $1080;
   CL_CONTEXT_DEVICES =                              $1081;
   CL_CONTEXT_PROPERTIES =                           $1082;
   CL_CONTEXT_NUM_DEVICES =                          $1083;
 
-  //* cl_context_properties *//
+  (* cl_context_properties *)
   CL_CONTEXT_PLATFORM =                             $1084;
   CL_CONTEXT_INTEROP_USER_SYNC =                    $1085;
     
-  //* cl_device_partition_property *//
+  (* cl_device_partition_property *)
   CL_DEVICE_PARTITION_EQUALLY =                     $1086;
   CL_DEVICE_PARTITION_BY_COUNTS =                   $1087;
   CL_DEVICE_PARTITION_BY_COUNTS_LIST_END =          $0;
   CL_DEVICE_PARTITION_BY_AFFINITY_DOMAIN =          $1088;
     
-  //* cl_device_affinity_domain *//
+  (* cl_device_affinity_domain *)
   CL_DEVICE_AFFINITY_DOMAIN_NUMA =               (1 shl 0);
   CL_DEVICE_AFFINITY_DOMAIN_L4_CACHE =           (1 shl 1);
   CL_DEVICE_AFFINITY_DOMAIN_L3_CACHE =           (1 shl 2);
@@ -582,7 +452,7 @@ const
   CL_DEVICE_AFFINITY_DOMAIN_L1_CACHE =           (1 shl 4);
   CL_DEVICE_AFFINITY_DOMAIN_NEXT_PARTITIONABLE = (1 shl 5);
     
-  //* cl_device_svm_capabilities *//
+  (* cl_device_svm_capabilities *)
   CL_DEVICE_SVM_COARSE_GRAIN_BUFFER =            (1 shl 0);
   CL_DEVICE_SVM_FINE_GRAIN_BUFFER =              (1 shl 1);
   CL_DEVICE_SVM_FINE_GRAIN_SYSTEM =              (1 shl 2);
@@ -859,280 +729,279 @@ const
   CL_PROFILING_COMMAND_END =                      $1283;
   CL_PROFILING_COMMAND_COMPLETE =                 $1284;
 
+(*************************************************************************)
+(*** Functions                                                         ***)
+(*************************************************************************)
 
-  //********************************************************************************
-var
-  //* Platform API *//
-  clGetPlatformIDs: function(num_entries: Tcl_uint;
+  (* Platform API *)
+  function clGetPlatformIDs(num_entries: Tcl_uint;
     platforms: Pcl_platform_id;
     num_platforms: Pcl_uint): Tcl_int;     // CL_API_SUFFIX__VERSION_1_0
-   stdcall;
+   stdcall; external LibOpenCL;
 
-  clGetPlatformInfo: function(cl_platform: Tcl_platform_id;
+  function clGetPlatformInfo(cl_platform: Tcl_platform_id;
     param_name: Tcl_platform_info;
-    param_value_size: Tsize_t;
+    param_value_size: NativeUInt;
     param_value: Pointer;
     param_value_size_ret: Psize_t): Tcl_int;  // CL_API_SUFFIX__VERSION_1_0
-   stdcall;
+   stdcall; external LibOpenCL;
 
   //* Device APIs *//
-  clGetDeviceIDs: function(_platform: Tcl_platform_id;
+  function clGetDeviceIDs(_platform: Pcl_platform_id;
     device_type: Tcl_device_type;
     num_entries: Tcl_uint;
     devices: Pcl_device_id;
     num_devices: Pcl_uint): Tcl_int;  // CL_API_SUFFIX__VERSION_1_0
-   stdcall;
+   stdcall; external LibOpenCL;
 
-  clGetDeviceInfo: function(device: Tcl_device_id;
+  function clGetDeviceInfo(device: Pcl_device_id;
     param_name: Tcl_device_info;
-    param_value_size: Tsize_t;
+    param_value_size: NativeUInt;
     param_value: Pointer;
     param_value_size_ret: Psize_t): Tcl_int;  // CL_API_SUFFIX__VERSION_1_0
-   stdcall;
+   stdcall; external LibOpenCL;
 
-  clCreateSubDevices: function(in_device: Tcl_device_id;
+  function clCreateSubDevices(in_device: Pcl_device_id;
     properties: Pcl_device_partition_property;
     num_devices: Tcl_uint;
     out_devices: Pcl_device_id;
   	num_devices_ret: Pcl_uint): Tcl_int;    // CL_API_SUFFIX__VERSION_1_2
-   stdcall;
+   stdcall; external LibOpenCL;
 
-  clRetainDevice: function(device : Tcl_device_id): Tcl_int; // CL_API_SUFFIX__VERSION_1_2
-  stdcall;
+  function clRetainDevice(device : Pcl_device_id): Tcl_int; // CL_API_SUFFIX__VERSION_1_2
+    stdcall; external LibOpenCL;
 
-  clReleaseDevice: function(device : Tcl_device_id): Tcl_int; // CL_API_SUFFIX__VERSION_1_2
-  stdcall;
+  function clReleaseDevice(device : Pcl_device_id): Tcl_int; // CL_API_SUFFIX__VERSION_1_2
+    stdcall; external LibOpenCL;
 
-  clSetDefaultDeviceCommandQueue: function(context: Tcl_context;
-    device: Tcl_device_id;
-    command_queue: Tcl_command_queue): Tcl_int; //CL_API_SUFFIX__VERSION_2_1
-  stdcall;
+  function clSetDefaultDeviceCommandQueue(context: Pcl_context;
+    device: Pcl_device_id;
+    command_queue: Pcl_command_queue): Tcl_int; //CL_API_SUFFIX__VERSION_2_1
+  stdcall; external LibOpenCL;
 
-  clGetDeviceAndHostTimer: function(device: Tcl_device_id;
+  function clGetDeviceAndHostTimer(device: Pcl_device_id;
     device_timestamp: Pcl_ulong;
     host_timestamp: Pcl_ulong): Tcl_int;  //CL_API_SUFFIX__VERSION_2_1
-  stdcall;
+  stdcall; external LibOpenCL;
 
-  clGetHostTimer: function(device: Tcl_device_id;
+  function clGetHostTimer(device: Pcl_device_id;
     host_timestamp: Pcl_ulong): Tcl_int;  //CL_API_SUFFIX__VERSION_2_1
-  stdcall;
+  stdcall; external LibOpenCL;
 
   //* Context APIs *//
 type
   Tcl_context_notify = procedure(errinfo: PAnsiChar;
     private_info: Pointer;
-    size: Tsize_t;
+    size: NativeUInt;
     user_data: Pointer);
    stdcall;
 
-var
-  clCreateContext: function(properties: Pcl_context_properties;
+
+  function clCreateContext(properties: Pcl_context_properties;
     num_devices: Tcl_uint;
     devices: Pcl_device_id;
     pfn_notify: Tcl_context_notify; {const char *, const void *, size_t, void *}
     user_data: Pointer;
-    errcode_ret: Pcl_int): Tcl_context;   // CL_API_SUFFIX__VERSION_1_0
-   stdcall;
+    errcode_ret: Pcl_int): Pcl_context;   // CL_API_SUFFIX__VERSION_1_0
+   stdcall; external LibOpenCL;
 
-  clCreateContextFromType: function(properties: Pcl_context_properties;
+  function clCreateContextFromType(properties: Pcl_context_properties;
     device_type: Tcl_device_type;
     pfn_notify: Tcl_context_notify; {const char *, const void *, size_t, void *}
     user_data: Pointer;
-    errcode_ret: Pcl_int): Tcl_context;  //CL_API_SUFFIX__VERSION_1_0
-   stdcall;
+    errcode_ret: Pcl_int): Pcl_context;  //CL_API_SUFFIX__VERSION_1_0
+   stdcall; external LibOpenCL;
 
-  clRetainContext: function(context: Tcl_context): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
-   stdcall;
+  function clRetainContext(context: Pcl_context): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
+   stdcall; external LibOpenCL;
 
-  clReleaseContext: function(context: Tcl_context): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
-   stdcall;
+  function clReleaseContext(context: Pcl_context): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
+   stdcall; external LibOpenCL;
 
-  clGetContextInfo: function(context: Tcl_context;
+  function clGetContextInfo(context: Pcl_context;
     param_name: Tcl_context_info;
-    param_value_size: Tsize_t;
+    param_value_size: NativeUInt;
     param_value: Pointer;
     param_value_size_ret: Psize_t): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
-   stdcall;
+   stdcall; external LibOpenCL;
 
   //* Command Queue APIs *//
-  clCreateCommandQueue: function(context: Tcl_context;
-    device: Tcl_device_id;
+  function clCreateCommandQueue(context: Pcl_context;
+    device: Pcl_device_id;
     properties: Tcl_command_queue_properties;
-    errcode_ret: Pcl_int): Tcl_command_queue; //CL_API_SUFFIX__VERSION_2_0
-   stdcall;
+    errcode_ret: Pcl_int): Pcl_command_queue; //CL_API_SUFFIX__VERSION_2_0
+   stdcall; external LibOpenCL;
 
-  clRetainCommandQueue: function(command_queue: Tcl_command_queue): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
-   stdcall;
+  function clRetainCommandQueue(command_queue: Pcl_command_queue): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
+   stdcall; external LibOpenCL;
 
-  clReleaseCommandQueue: function(command_queue: Tcl_command_queue): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
-  stdcall;
+  function clReleaseCommandQueue(command_queue: Pcl_command_queue): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
+  stdcall; external LibOpenCL;
 
-  clGetCommandQueueInfo: function(command_queue: Tcl_command_queue;
+  function clGetCommandQueueInfo(command_queue: Pcl_command_queue;
     param_name: Tcl_command_queue_info;
-    param_value_size: Tsize_t;
+    param_value_size: NativeUInt;
     param_value: Pointer;
     param_value_size_ret: Psize_t): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
-  stdcall;
+  stdcall; external LibOpenCL;
 
   //* Memory Object APIs *//
-  clCreateBuffer: function(context: Tcl_context;
+  function clCreateBuffer(context: Pcl_context;
     flags: Tcl_mem_flags;
-    size: Tsize_t;
+    size: NativeUInt;
     host_ptr: Pointer;
-    errcode_ret: Pcl_int): Tcl_mem;  //CL_API_SUFFIX__VERSION_1_0
-   stdcall;
+    errcode_ret: Pcl_int): Pcl_mem;  //CL_API_SUFFIX__VERSION_1_0
+   stdcall; external LibOpenCL;
 
-  clCreateSubBuffer: function(buffer: Tcl_mem;
+  function clCreateSubBuffer(buffer: Pcl_mem;
     flags: Tcl_mem_flags;
     buffer_create_type: Tcl_buffer_create_type;
     buffer_create_info: Pointer;
-    errcode_ret: Pcl_int): Tcl_mem;   //CL_API_SUFFIX__VERSION_1_1
-   stdcall;
+    errcode_ret: Pcl_int): Pcl_mem;   //CL_API_SUFFIX__VERSION_1_1
+   stdcall; external LibOpenCL;
 
-  clCreateImage: function(context: Tcl_context;
+  function clCreateImage(context: Pcl_context;
     flags: Tcl_mem_flags;
     image_format: Pcl_image_format;
     image_desc: Pcl_image_desc;
     host_ptr: Pointer;
-    errcode_ret: Pcl_int): Tcl_mem; //CL_API_SUFFIX__VERSION_1_2
-   stdcall;
+    errcode_ret: Pcl_int): Pcl_mem; //CL_API_SUFFIX__VERSION_1_2
+   stdcall; external LibOpenCL;
 
-  clCreatePipe: function(context: Tcl_context;
+  function clCreatePipe(context: Pcl_context;
     flags: Tcl_mem_flags;
     pipe_packet_size: Tcl_uint;
     pipe_max_packets: Tcl_uint;
     properties: Pcl_pipe_properties;
-    errcode_ret: Pcl_int): Tcl_mem;   //CL_API_SUFFIX__VERSION_2_0
-   stdcall;
+    errcode_ret: Pcl_int): Pcl_mem;   //CL_API_SUFFIX__VERSION_2_0
+   stdcall; external LibOpenCL;
 
-  clRetainMemObject: function(memobj: Tcl_mem): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
-   stdcall;
+  function clRetainMemObject(memobj: Pcl_mem): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
+   stdcall; external LibOpenCL;
 
-  clReleaseMemObject: function(memobj: Tcl_mem): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
-   stdcall;
+  function clReleaseMemObject(memobj: Pcl_mem): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
+   stdcall; external LibOpenCL;
 
-  clGetSupportedImageFormats: function(context: Tcl_context;
+  function clGetSupportedImageFormats(context: Pcl_context;
     flags: Tcl_mem_flags;
     image_type: Tcl_mem_object_type;
     num_entries: Tcl_uint;
     image_formats: Pcl_image_format;
     num_image_formats: Pcl_uint): Tcl_int;   //CL_API_SUFFIX__VERSION_1_0
-   stdcall;
+   stdcall; external LibOpenCL;
 
-  clGetMemObjectInfo: function(memobj: Tcl_mem;
+  function clGetMemObjectInfo(memobj: Pcl_mem;
     param_name: Tcl_mem_info;
-    param_value_size: Tsize_t;
+    param_value_size: NativeUInt;
     param_value: Pointer;
     param_value_size_ret: Psize_t): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
-   stdcall;
+   stdcall; external LibOpenCL;
 
-  clGetImageInfo: function(image: Tcl_mem;
+  function clGetImageInfo(image: Pcl_mem;
     param_name: Tcl_image_info;
-    param_value_size: Tsize_t;
+    param_value_size: NativeUInt;
     param_value: Pointer;
     param_value_size_ret: Psize_t): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
-   stdcall;
+   stdcall; external LibOpenCL;
 
-  clGetPipeInfo: function(pipe: Tcl_mem;
+  function clGetPipeInfo(pipe: Pcl_mem;
     param_name: Tcl_pipe_info;
-    param_value_size: Tsize_t;
+    param_value_size: NativeUInt;
     param_value: Pointer;
     param_value_size_ret: Psize_t): Tcl_int; //CL_API_SUFFIX__VERSION_2_0
-   stdcall;
+   stdcall; external LibOpenCL;
 
 type
-  Tcl_destructor_notify = procedure(memobj: Tcl_mem;
+  Tcl_destructor_notify = procedure(memobj: Pcl_mem;
     user_data: Pointer);
    stdcall;
 
- var
-  clSetMemObjectDestructorCallback: function(memobj: Tcl_mem;
+  function clSetMemObjectDestructorCallback(memobj: Pcl_mem;
      pfn_notify:   Tcl_destructor_notify; //( cl_mem /* memobj */, void* /*user_data*/),
      user_data: Pointer): Tcl_int;     //CL_API_SUFFIX__VERSION_1_1
-   stdcall;
+   stdcall; external LibOpenCL;
 
    //* SVM Allocation APIs *//
-   clSVMAlloc: function(context: Tcl_context;
+   function clSVMAlloc(context: Pcl_context;
      flags: Tcl_svm_mem_flags;
-     size: Tsize_t;
+     size: NativeUInt;
      alignment: Tcl_uint): Pointer; //CL_API_SUFFIX__VERSION_2_0
-   stdcall;
+   stdcall; external LibOpenCL;
 
-   clSVMFree: procedure(context: Tcl_context;
+   procedure clSVMFree(context: Pcl_context;
      svm_pointer: Pointer);     //CL_API_SUFFIX__VERSION_2_0
-   stdcall;
+   stdcall; external LibOpenCL;
 
   //* Sampler APIs *//
-  clCreateSamplerWithProperties: function(context: Tcl_context;
+  function clCreateSamplerWithProperties(context: Pcl_context;
     normalized_coords: Pcl_sampler_properties;
     addressing_mode: Tcl_addressing_mode;
-    errcode_ret: Pcl_int): Tcl_sampler;   //CL_API_SUFFIX__VERSION_2_0
-   stdcall;
+    errcode_ret: Pcl_int): Pcl_sampler;   //CL_API_SUFFIX__VERSION_2_0
+   stdcall; external LibOpenCL;
 
-  clRetainSampler: function(sampler: Tcl_sampler): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
-   stdcall;
+  function clRetainSampler(sampler: Pcl_sampler): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
+   stdcall; external LibOpenCL;
 
-  clReleaseSampler: function(sampler: Tcl_sampler): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
-   stdcall;
+  function clReleaseSampler(sampler: Pcl_sampler): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
+   stdcall; external LibOpenCL;
 
-  clGetSamplerInfo: function(sampler: Tcl_sampler;
+  function clGetSamplerInfo(sampler: Pcl_sampler;
     param_name: Tcl_sampler_info;
-    param_value_size: Tsize_t;
+    param_value_size: NativeUInt;
     param_value: Pointer;
     param_value_size_ret: Psize_t): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
-   stdcall;
+   stdcall; external LibOpenCL;
 
   //* Program Object APIs *//
-  clCreateProgramWithSource: function(context: Tcl_context;
+  function clCreateProgramWithSource(context: Pcl_context;
     count: Tcl_uint;
     strings: PPAnsiChar;
     lengths: Psize_t;
-    errcode_ret: Pcl_int): Tcl_program;  //CL_API_SUFFIX__VERSION_1_0
-   stdcall;
+    errcode_ret: Pcl_int): Pcl_program;  //CL_API_SUFFIX__VERSION_1_0
+   stdcall; external LibOpenCL;
 
-  clCreateProgramWithBinary: function(context: Tcl_context;
+  function clCreateProgramWithBinary(context: Pcl_context;
     num_devices: Tcl_uint;
     device_list: Pcl_device_id;
     lengths: Psize_t;
     binaries: PByte;
     binary_status: Pcl_int;
-    errcode_ret: Pcl_int): Tcl_program;   //CL_API_SUFFIX__VERSION_1_0
-   stdcall;
+    errcode_ret: Pcl_int): Pcl_program;   //CL_API_SUFFIX__VERSION_1_0
+   stdcall; external LibOpenCL;
 
-  clCreateProgramWithBuiltInKernels: function(context: Tcl_context;
+  function clCreateProgramWithBuiltInKernels(context: Pcl_context;
     num_devices: Tcl_uint;
     device_list: Pcl_device_id;
     kernel_names: Pcl_char;
-    errcode_ret: Pcl_int): Tcl_program; //CL_API_SUFFIX__VERSION_1_2
-   stdcall;
+    errcode_ret: Pcl_int): Pcl_program; //CL_API_SUFFIX__VERSION_1_2
+   stdcall; external LibOpenCL;
 
-  clCreateProgramWithIL: function(context: Tcl_context;
+  function clCreateProgramWithIL(context: Pcl_context;
     il: Pointer;
-    length: Tsize_t;
-    errcode_ret: Pcl_int): Tcl_program; //CL_API_SUFFIX__VERSION_2_1
-   stdcall;
+    length: NativeUInt;
+    errcode_ret: Pcl_int): Pcl_program; //CL_API_SUFFIX__VERSION_2_1
+   stdcall; external LibOpenCL;
 
-  clRetainProgram: function(_program: Tcl_program): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
-   stdcall;
+  function clRetainProgram(_program: Pcl_program): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
+   stdcall; external LibOpenCL;
 
-  clReleaseProgram: function(_program: Tcl_program): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
-   stdcall;
+  function clReleaseProgram(_program: Pcl_program): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
+   stdcall; external LibOpenCL;
 
 type
-  Tcl_programbuilt_notify = procedure(_program: Tcl_program;
+  Tcl_programbuilt_notify = procedure(_program: Pcl_program;
     user_data: Pointer);
    stdcall;
 
-var
-  clBuildProgram: function(_program: Tcl_program;
+  function clBuildProgram(_program: Pcl_program;
     num_devices: Tcl_uint;
     device_list: Pcl_device_id;
     options: Pcl_char;
     pfn_notify: Tcl_programbuilt_notify;
     user_data: Pointer): Tcl_int;  //CL_API_SUFFIX__VERSION_1_0
-   stdcall;
+   stdcall; external LibOpenCL;
 
-  clCompileProgram: function(_program: Tcl_program;
+  function clCompileProgram(_program: Pcl_program;
     num_devices: Tcl_uint;
     device_list: Pcl_device_id;
     options: Pcl_char;
@@ -1141,9 +1010,9 @@ var
   	header_include_names: PPAnsiChar;
     pfn_notify: Tcl_programbuilt_notify;
     user_data: Pointer): Tcl_int; //CL_API_SUFFIX__VERSION_1_2
-   stdcall;
+   stdcall; external LibOpenCL;
 
-  clLinkProgram: function(context: Tcl_context;
+  function clLinkProgram(context: Pcl_context;
     num_devices: Tcl_uint;
     device_list: Pcl_device_id;
     options: Pcl_char;
@@ -1151,329 +1020,328 @@ var
     input_programs: Pcl_program;
     pfn_notify: Tcl_programbuilt_notify; //(cl_program /* program */, void * /* user_data */)
     user_data: Pointer;
-    errcode_ret: Pcl_int): Tcl_program; //CL_API_SUFFIX__VERSION_1_2
-   stdcall;
+    errcode_ret: Pcl_int): Pcl_program; //CL_API_SUFFIX__VERSION_1_2
+   stdcall; external LibOpenCL;
 
-  clUnloadPlatformCompiler: function: Tcl_int; //CL_API_SUFFIX__VERSION_1_2
-   stdcall;
+  function clUnloadPlatformCompiler: Tcl_int; //CL_API_SUFFIX__VERSION_1_2
+   stdcall; external LibOpenCL;
 
-  clGetProgramInfo: function(_program: Tcl_program;
+  function clGetProgramInfo(_program: Pcl_program;
     param_name: Tcl_program_info;
-    param_value_size: Tsize_t;
+    param_value_size: NativeUInt;
     param_value: Pointer;
     param_value_size_ret: Psize_t): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
-   stdcall;
+   stdcall; external LibOpenCL;
 
-  clGetProgramBuildInfo: function(_program: Tcl_program;
-    device: Tcl_device_id;
+  function clGetProgramBuildInfo(_program: Pcl_program;
+    device: Pcl_device_id;
     param_name: Tcl_program_build_info;
-    param_value_size: Tsize_t;
+    param_value_size: NativeUInt;
     param_value: Pointer;
     param_value_size_ret: Psize_t): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
-   stdcall;
+   stdcall; external LibOpenCL;
 
   //* Kernel Object APIs *//
-  clCreateKernel: function(_program: Tcl_program;
+  function clCreateKernel(_program: Pcl_program;
     kernel_name: PAnsiChar;
-    errcode_ret: Pcl_int): Tcl_kernel; //CL_API_SUFFIX__VERSION_1_0
-   stdcall;
+    errcode_ret: Pcl_int): Pcl_kernel; //CL_API_SUFFIX__VERSION_1_0
+   stdcall; external LibOpenCL;
 
-  clCreateKernelsInProgram: function(_program: Tcl_program;
+  function clCreateKernelsInProgram(_program: Pcl_program;
     num_kernels: Tcl_uint;
     kernels: Pcl_kernel;
     num_kernels_ret: Pcl_uint): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
-   stdcall;
+   stdcall; external LibOpenCL;
 
-  clCloneKernel: function(source_kernel: Tcl_kernel;
+  function clCloneKernel(source_kernel: Pcl_kernel;
     errocode_ret: Pcl_int): Tcl_int;   //CL_API_SUFFIX__VERSION_2_1
-   stdcall;
+   stdcall; external LibOpenCL;
 
-  clRetainKernel: function(kernel: Tcl_kernel): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
-   stdcall;
+  function clRetainKernel(kernel: Pcl_kernel): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
+   stdcall; external LibOpenCL;
 
-  clReleaseKernel: function(kernel: Tcl_kernel): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
-   stdcall;
+  function clReleaseKernel(kernel: Pcl_kernel): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
+   stdcall; external LibOpenCL;
 
-  clSetKernelArg: function(kernel: Tcl_kernel;
+  function clSetKernelArg(kernel: Pcl_kernel;
     arg_index: Tcl_uint;
-    arg_size: Tsize_t;
+    arg_size: NativeUInt;
     arg_value: Pointer): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
-   stdcall;
+   stdcall; external LibOpenCL;
 
-  clSetKernelArgSVMPointer: function(kernel: Tcl_kernel;
+  function clSetKernelArgSVMPointer(kernel: Pcl_kernel;
     arg_index: Tcl_uint;
     arg_value: Pointer): Tcl_int; //CL_API_SUFFIX__VERSION_2_0
-   stdcall;
+   stdcall; external LibOpenCL;
 
-  clSetKernelExecInfo: function(kernel: Tcl_kernel;
+  function clSetKernelExecInfo(kernel: Pcl_kernel;
     param_name: Tcl_kernel_exec_info;
-    param_value_size: Tsize_t;
+    param_value_size: NativeUInt;
     param_value: Pointer): Tcl_int; //CL_API_SUFFIX__VERSION_2_0
-   stdcall;
+   stdcall; external LibOpenCL;
 
-  clGetKernelInfo: function(kernel: Tcl_kernel;
+  function clGetKernelInfo(kernel: Pcl_kernel;
     param_name: Tcl_kernel_info;
-    param_value_size: Tsize_t;
+    param_value_size: NativeUInt;
     param_value: Pointer;
     param_value_size_ret: Psize_t): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
-   stdcall;
+   stdcall; external LibOpenCL;
 
-  clGetKernelArgInfo: function(kernel: Tcl_kernel;
+  function clGetKernelArgInfo(kernel: Pcl_kernel;
     arg_indx: Tcl_uint;
     param_name: Tcl_kernel_arg_info;
-	param_value_size: Tsize_t;
+	param_value_size: NativeUInt;
     param_value: Pointer;
     param_value_size_ret: Psize_t): Tcl_int; //CL_API_SUFFIX__VERSION_1_2
-   stdcall;
+   stdcall; external LibOpenCL;
 
-  clGetKernelWorkGroupInfo: function(kernel: Tcl_kernel;
-    device: Tcl_device_id;
+  function clGetKernelWorkGroupInfo(kernel: Pcl_kernel;
+    device: Pcl_device_id;
     param_name: Tcl_kernel_work_group_info;
-    param_value_size: Tsize_t;
+    param_value_size: NativeUInt;
     param_value: Pointer;
     param_value_size_ret: Psize_t): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
-   stdcall;
+   stdcall; external LibOpenCL;
 
-  clGetKernelSubGroupInfo: function(kernel: Tcl_kernel;
-    device: Tcl_device_id;
+  function clGetKernelSubGroupInfo(kernel: Pcl_kernel;
+    device: Pcl_device_id;
     param_name: Tcl_kernel_sub_group_info;
-    input_value_size: Tsize_t;
+    input_value_size: NativeUInt;
     input_value: Pointer;
-    param_value_size: Tsize_t;
+    param_value_size: NativeUInt;
     param_value: Pointer;
     param_value_size_ret: Psize_t): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
-   stdcall;
+   stdcall; external LibOpenCL;
 
   //* Event Object APIs *//
-  clWaitForEvents: function(num_events: Tcl_uint;
+  function clWaitForEvents(num_events: Tcl_uint;
     event_list: Pcl_event): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
-   stdcall;
+   stdcall; external LibOpenCL;
 
-  clGetEventInfo: function(event: Tcl_event;
+  function clGetEventInfo(event: Pcl_event;
     param_name: Tcl_event_info;
-    param_value_size: Tsize_t;
+    param_value_size: NativeUInt;
     param_value: Pointer;
     param_value_size_ret: Psize_t): Tcl_int;   //CL_API_SUFFIX__VERSION_1_0
-   stdcall;
+   stdcall; external LibOpenCL;
 
-  clCreateUserEvent: function(context: Tcl_context;
-    errcode_ret: Pcl_int): Tcl_event;   //CL_API_SUFFIX__VERSION_1_1
-   stdcall;
+  function clCreateUserEvent(context: Pcl_context;
+    errcode_ret: Pcl_int): Pcl_event;   //CL_API_SUFFIX__VERSION_1_1
+   stdcall; external LibOpenCL;
 
-  clRetainEvent: function(event: Tcl_event): Tcl_int;  //CL_API_SUFFIX__VERSION_1_0
-   stdcall;
+  function clRetainEvent(event: Pcl_event): Tcl_int;  //CL_API_SUFFIX__VERSION_1_0
+   stdcall; external LibOpenCL;
 
-  clReleaseEvent: function(event: Tcl_event): Tcl_int;  //CL_API_SUFFIX__VERSION_1_0
-   stdcall;
+  function clReleaseEvent(event: Pcl_event): Tcl_int;  //CL_API_SUFFIX__VERSION_1_0
+   stdcall; external LibOpenCL;
 
-  clSetUserEventStatus: function(event: Tcl_event;
+  function clSetUserEventStatus(event: Pcl_event;
     execution_status: Tcl_int): Tcl_int; //CL_API_SUFFIX__VERSION_1_1
-   stdcall;
+   stdcall; external LibOpenCL;
 
  type
-  Tcl_event_notify = procedure(event: Tcl_event;
+  Tcl_event_notify = procedure(event: Pcl_event;
     num_event: Tcl_int;
     user_data: Pointer);
    stdcall;
 
-var
-  clSetEventCallback: function(event: Tcl_event;
+  function clSetEventCallback(event: Pcl_event;
     command_exec_callback_type: Tcl_int;
     pfn_notify: Tcl_event_notify;
     user_data: Pointer): Tcl_int; //CL_API_SUFFIX__VERSION_1_1
-   stdcall;
+   stdcall; external LibOpenCL;
 
   //* Profiling APIs *//
-  clGetEventProfilingInfo: function(event: Tcl_event;
+  function clGetEventProfilingInfo(event: Pcl_event;
     param_name: Tcl_profiling_info;
-    param_value_size: Tsize_t;
+    param_value_size: NativeUInt;
     param_value: Pointer;
     param_value_size_ret: Psize_t): Tcl_int;  //CL_API_SUFFIX__VERSION_1_0
-   stdcall;
+   stdcall; external LibOpenCL;
 
   //* Flush and Finish APIs *//
-  clFlush: function(command_queue: Tcl_command_queue): Tcl_int;  //CL_API_SUFFIX__VERSION_1_0
-   stdcall;
+  function clFlush(command_queue: Pcl_command_queue): Tcl_int;  //CL_API_SUFFIX__VERSION_1_0
+   stdcall; external LibOpenCL;
 
-  clFinish: function(command_queue: Tcl_command_queue): Tcl_int;  //CL_API_SUFFIX__VERSION_1_0
-   stdcall;
+  function clFinish(command_queue: Pcl_command_queue): Tcl_int;  //CL_API_SUFFIX__VERSION_1_0
+   stdcall; external LibOpenCL;
 
   //* Enqueued Commands APIs *//
-  clEnqueueReadBuffer: function(command_queue: Tcl_command_queue;
-    buffer: Tcl_mem;
+  function clEnqueueReadBuffer(command_queue: Pcl_command_queue;
+    buffer: Pcl_mem;
     blocking_read: Tcl_bool;
-    offset: Tsize_t;
-    size: Tsize_t;
+    offset: NativeUInt;
+    size: NativeUInt;
     ptr: Pointer;
     num_events_in_wait_list: Tcl_uint;
     event_wait_list: Pcl_event;
     event: Pcl_event): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
-   stdcall;
+   stdcall; external LibOpenCL;
 
-  clEnqueueReadBufferRect: function(command_queue: Tcl_command_queue;
-    buffer: Tcl_mem;
+  function clEnqueueReadBufferRect(command_queue: Pcl_command_queue;
+    buffer: Pcl_mem;
     blocking_read: Tcl_bool;
     buffer_offset: Psize_t;
     host_offset: Psize_t;
     region: Psize_t;
-    buffer_row_pitch: Tsize_t;
-    buffer_slice_pitch: Tsize_t;
-    host_row_pitch: Tsize_t;
-    host_slice_pitch: Tsize_t;
+    buffer_row_pitch: NativeUInt;
+    buffer_slice_pitch: NativeUInt;
+    host_row_pitch: NativeUInt;
+    host_slice_pitch: NativeUInt;
     ptr: Pointer;
     num_events_in_wait_list: Tcl_uint;
     event_wait_list: Pcl_event;
     event: Pcl_event): Tcl_int;  //CL_API_SUFFIX__VERSION_1_1
-   stdcall;
+   stdcall; external LibOpenCL;
 
-  clEnqueueWriteBuffer: function(command_queue: Tcl_command_queue;
-    buffer: Tcl_mem;
+  function clEnqueueWriteBuffer(command_queue: Pcl_command_queue;
+    buffer: Pcl_mem;
     blocking_write: Tcl_bool;
-    offset: Tsize_t;
-    size: Tsize_t;
+    offset: NativeUInt;
+    size: NativeUInt;
     ptr: Pointer;
     num_events_in_wait_list: Tcl_uint;
     event_wait_list: Pcl_event;
     event: Pcl_event): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
-   stdcall;
+   stdcall; external LibOpenCL;
 
-  clEnqueueWriteBufferRect: function(command_queue: Tcl_command_queue;
-    buffer: Tcl_mem;
+  function clEnqueueWriteBufferRect(command_queue: Pcl_command_queue;
+    buffer: Pcl_mem;
     blocking_write: Tcl_bool;
     buffer_offset: Psize_t;
     host_offset: Psize_t;
     region: Psize_t;
-    buffer_row_pitch: Tsize_t;
-    buffer_slice_pitch: Tsize_t;
-    host_row_pitch: Tsize_t;
-    host_slice_pitch: Tsize_t;
+    buffer_row_pitch: NativeUInt;
+    buffer_slice_pitch: NativeUInt;
+    host_row_pitch: NativeUInt;
+    host_slice_pitch: NativeUInt;
     ptr: Pointer;
     num_events_in_wait_list: Tcl_uint;
     event_wait_list: Pcl_event;
     event: Pcl_event): Tcl_int; //CL_API_SUFFIX__VERSION_1_1
-   stdcall;
+   stdcall; external LibOpenCL;
 
-  clEnqueueFillBuffer: function(command_queue: Tcl_command_queue;
-    buffer: Tcl_mem;
+  function clEnqueueFillBuffer(command_queue: Pcl_command_queue;
+    buffer: Pcl_mem;
     pattern: Pointer;
-    pattern_size: Tsize_t;
-    offset: Tsize_t;
-    size: Tsize_t;
+    pattern_size: NativeUInt;
+    offset: NativeUInt;
+    size: NativeUInt;
     num_events_in_wait_list: Tcl_uint;
     event_wait_list: Pcl_event;
     event: Pcl_event): Tcl_int; //CL_API_SUFFIX__VERSION_1_2
-   stdcall;
+   stdcall; external LibOpenCL;
 
-  clEnqueueCopyBuffer: function(command_queue: Tcl_command_queue;
-    src_buffer: Tcl_mem;
-    dst_buffer: Tcl_mem;
-    src_offset: Tsize_t;
-    dst_offset: Tsize_t;
-    size: Tsize_t;
+  function clEnqueueCopyBuffer(command_queue: Pcl_command_queue;
+    src_buffer: Pcl_mem;
+    dst_buffer: Pcl_mem;
+    src_offset: NativeUInt;
+    dst_offset: NativeUInt;
+    size: NativeUInt;
     num_events_in_wait_list: Tcl_uint;
     event_wait_list: Pcl_event;
     event: Pcl_event): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
-   stdcall;
+   stdcall; external LibOpenCL;
 
-  clEnqueueCopyBufferRect: function(command_queue: Tcl_command_queue;
-    src_buffer: Tcl_mem;
-    dst_buffer: Tcl_mem;
-    src_offset: Tsize_t;
-    dst_offset: Tsize_t;
-    region: Tsize_t;
-    src_row_pitch: Tsize_t;
-    src_slice_pitch: Tsize_t;
-    dst_row_pitch: Tsize_t;
-    dst_slice_pitch: Tsize_t;
+  function clEnqueueCopyBufferRect(command_queue: Pcl_command_queue;
+    src_buffer: Pcl_mem;
+    dst_buffer: Pcl_mem;
+    src_offset: NativeUInt;
+    dst_offset: NativeUInt;
+    region: NativeUInt;
+    src_row_pitch: NativeUInt;
+    src_slice_pitch: NativeUInt;
+    dst_row_pitch: NativeUInt;
+    dst_slice_pitch: NativeUInt;
     num_events_in_wait_list: Tcl_uint;
     event_wait_list: Pcl_event;
     event: Pcl_event): Tcl_int; //CL_API_SUFFIX__VERSION_1_1
-   stdcall;
+   stdcall; external LibOpenCL;
 
-  clEnqueueReadImage: function(command_queue: Tcl_command_queue;
-    image: Tcl_mem;
+  function clEnqueueReadImage(command_queue: Pcl_command_queue;
+    image: Pcl_mem;
     blocking_read: Tcl_bool;
     origin: Psize_t; // x3
     region: Psize_t; // x3
-    row_pitch: Tsize_t;
-    slice_pitch: Tsize_t;
+    row_pitch: NativeUInt;
+    slice_pitch: NativeUInt;
     ptr: Pointer;
     num_events_in_wait_list: Tcl_uint;
     event_wait_list: Pcl_event;
     event: Pcl_event): Tcl_int;  // CL_API_SUFFIX__VERSION_1_0
-   stdcall;
+   stdcall; external LibOpenCL;
 
-  clEnqueueWriteImage: function(command_queue: Tcl_command_queue;
-    image: Tcl_mem;
+  function clEnqueueWriteImage(command_queue: Pcl_command_queue;
+    image: Pcl_mem;
     blocking_write: Tcl_bool;
     origin: Psize_t; // x3
     region: Psize_t; // x3
-    input_row_pitch: Tsize_t;
-    input_slice_pitch: Tsize_t;
+    input_row_pitch: NativeUInt;
+    input_slice_pitch: NativeUInt;
     ptr: Pointer;
     num_events_in_wait_list: Tcl_uint;
     event_wait_list: Pcl_event;
     event: Pcl_event): Tcl_int;  // CL_API_SUFFIX__VERSION_1_0
-   stdcall;
+   stdcall; external LibOpenCL;
 
 
-  clEnqueueFillImage: function(command_queue: Tcl_command_queue;
-    image: Tcl_mem;
+  function clEnqueueFillImage(command_queue: Pcl_command_queue;
+    image: Pcl_mem;
     fill_color: Pointer;
     origin: Psize_t; //x3
     region: Psize_t; //x3
     num_events_in_wait_list: Tcl_uint;
     event_wait_list: Pcl_event;
     event: Pcl_event): Tcl_int; // CL_API_SUFFIX__VERSION_1_2
-   stdcall;
+   stdcall; external LibOpenCL;
 
-  clEnqueueCopyImage: function(command_queue: Tcl_command_queue;
-    src_image: Tcl_mem;
-    dst_image: Tcl_mem;
+  function clEnqueueCopyImage(command_queue: Pcl_command_queue;
+    src_image: Pcl_mem;
+    dst_image: Pcl_mem;
     src_origin: Psize_t; //x3
     dst_origin: Psize_t; //x3
     region: Psize_t; //x3
     num_events_in_wait_list: Tcl_uint;
     event_wait_list: Pcl_event;
     event: Pcl_event): Tcl_int;  // CL_API_SUFFIX__VERSION_1_0
-   stdcall;
+   stdcall; external LibOpenCL;
 
-  clEnqueueCopyImageToBuffer: function(command_queue: Tcl_command_queue;
-    src_image: Tcl_mem;
-    dst_buffer: Tcl_mem;
+  function clEnqueueCopyImageToBuffer(command_queue: Pcl_command_queue;
+    src_image: Pcl_mem;
+    dst_buffer: Pcl_mem;
     src_origin: Psize_t; //x3
     region: Psize_t; //x3
-    dst_offset: Tsize_t;
+    dst_offset: NativeUInt;
     num_events_in_wait_list: Tcl_uint;
     event_wait_list: Pcl_event;
     event: Pcl_event): Tcl_int; // CL_API_SUFFIX__VERSION_1_0
-   stdcall;
+   stdcall; external LibOpenCL;
 
-  clEnqueueCopyBufferToImage: function(command_queue: Tcl_command_queue;
-    src_buffer: Tcl_mem;
-    dst_image: Tcl_mem;
-    src_offset: Tsize_t;
+  function clEnqueueCopyBufferToImage(command_queue: Pcl_command_queue;
+    src_buffer: Pcl_mem;
+    dst_image: Pcl_mem;
+    src_offset: NativeUInt;
     dst_origin: Psize_t; //x3
     region: Psize_t; //x3
     num_events_in_wait_list: Tcl_uint;
     event_wait_list: Pcl_event;
     event: Pcl_event): Tcl_int;  //CL_API_SUFFIX__VERSION_1_0
-   stdcall;
+   stdcall; external LibOpenCL;
 
-  clEnqueueMapBuffer: function(command_queue: Tcl_command_queue;
-    buffer: Tcl_mem;
-    blocking_map: Tcl_bool;
+  function clEnqueueMapBuffer(command_queue: Pcl_command_queue;
+    buffer: Pcl_mem;
+    blocking_map: Pcl_bool;
     map_flags: Tcl_map_flags;
-    offset: Tsize_t;
-    cb: Tsize_t;
+    offset: NativeUInt;
+    cb: NativeUInt;
     num_events_in_wait_list: Tcl_uint;
     event_wait_list: Pcl_event;
     event: Pcl_event;
     errcode_ret: Pcl_int): Pointer; //CL_API_SUFFIX__VERSION_1_0
-   stdcall;
+   stdcall; external LibOpenCL;
 
-  clEnqueueMapImage: function(command_queue: Tcl_command_queue;
-    image: Tcl_mem;
+  function clEnqueueMapImage(command_queue: Pcl_command_queue;
+    image: Pcl_mem;
     blocking_map: Tcl_bool;
     map_flags: Tcl_map_flags;
     origin: Psize_t; //x3
@@ -1484,27 +1352,27 @@ var
     event_wait_list: Pcl_event;
     event: Pcl_event;
     errcode_ret: Pcl_int): Pointer;  //CL_API_SUFFIX__VERSION_1_0
-   stdcall;
+   stdcall; external LibOpenCL;
 
-  clEnqueueUnmapMemObject: function(command_queue: Tcl_command_queue;
-    memobj: Tcl_mem;
+  function clEnqueueUnmapMemObject(command_queue: Pcl_command_queue;
+    memobj: Pcl_mem;
     mapped_ptr: Pointer;
     num_events_in_wait_list: Tcl_uint;
     event_wait_list: Pcl_event;
     event: Pcl_event): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
-   stdcall;
+   stdcall; external LibOpenCL;
 
-  clEnqueueMigrateMemObjects: function(command_queue: Tcl_command_queue;
+  function clEnqueueMigrateMemObjects(command_queue: Pcl_command_queue;
     num_mem_objects: Tcl_uint;
   	mem_objects: Pcl_mem;
     flags: Tcl_mem_flags;
     num_events_in_wait_list: Tcl_uint;
     event_wait_list: Pcl_event;
     event: Pcl_event): Tcl_int;  //CL_API_SUFFIX__VERSION_1_2
-   stdcall;
+   stdcall; external LibOpenCL;
 
-  clEnqueueNDRangeKernel: function(command_queue: Tcl_command_queue;
-    kernel: Tcl_kernel;
+  function clEnqueueNDRangeKernel(command_queue: Pcl_command_queue;
+    kernel: Pcl_kernel;
     work_dim: Tcl_uint;
     global_work_offset: Psize_t;
     global_work_size: Psize_t;
@@ -1512,43 +1380,41 @@ var
     num_events_in_wait_list: Tcl_uint;
     event_wait_list: Pcl_event;
     event: Pcl_event): Tcl_int;  //CL_API_SUFFIX__VERSION_1_0
-   stdcall;
+   stdcall; external LibOpenCL;
 
 type
   Tcl_EnqueueNativeKernel = procedure();
    stdcall;
 
-var
-  clEnqueueNativeKernel: function(command_queue: Tcl_command_queue;
+  function clEnqueueNativeKernel(command_queue: Pcl_command_queue;
     user_func: Tcl_EnqueueNativeKernel;
     args: Pointer;
-    cb_args: Tsize_t;
+    cb_args: NativeUInt;
     num_mem_objects: Tcl_uint;
     mem_list: Pcl_mem;
     args_mem_loc: PPointer;
     num_events_in_wait_list: Tcl_uint;
     event_wait_list: Pcl_event;
     event: Pcl_event): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
-   stdcall;
+   stdcall; external LibOpenCL;
 
-  clEnqueueMarkerWithWaitList: function(command_queue: Tcl_command_queue;
+  function clEnqueueMarkerWithWaitList(command_queue: Pcl_command_queue;
     num_events_in_wait_list: Tcl_uint;
 	event_wait_list: Pcl_event;
     event: Pcl_event): Tcl_int; //CL_API_SUFFIX__VERSION_1_2
-   stdcall;
+   stdcall; external LibOpenCL;
 
-  clEnqueueBarrierWithWaitList: function(command_queue: Tcl_command_queue;
+  function clEnqueueBarrierWithWaitList(command_queue: Pcl_command_queue;
     num_events_in_wait_list: Tcl_uint;
 	event_wait_list: Pcl_event;
     event: Pcl_event): Tcl_int; //CL_API_SUFFIX__VERSION_1_2
-   stdcall;
+   stdcall; external LibOpenCL;
 
 type
   Tcl_EnqueueSVM_fn = procedure();
    stdcall;
 
-var
-  clEnqueueSVMFree: function(command_queue: Tcl_command_queue;
+  function clEnqueueSVMFree(command_queue: Pcl_command_queue;
     num_svm_pointers: Tcl_uint;
     args: Pointer;
     pfn_free_func: Tcl_EnqueueSVM_fn;
@@ -1558,9 +1424,9 @@ var
     num_events_in_wait_list: Tcl_uint;
     event_wait_list: Pcl_event;
     event: Pcl_event): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
-   stdcall;
+   stdcall; external LibOpenCL;
 
-  clEnqueueSVMMemcpy: function(command_queue: Tcl_command_queue;
+  function clEnqueueSVMMemcpy(command_queue: Pcl_command_queue;
     num_svm_pointers: Tcl_uint;
     args: Pointer;
     user_data: Pointer;
@@ -1569,9 +1435,9 @@ var
     num_events_in_wait_list: Tcl_uint;
     event_wait_list: Pcl_event;
     event: Pcl_event): Tcl_int; //CL_API_SUFFIX__VERSION_2_0
-   stdcall;
+   stdcall; external LibOpenCL;
 
-  clEnqueueSVMMap: function(command_queue: Tcl_command_queue;
+  function clEnqueueSVMMap(command_queue: Pcl_command_queue;
     num_svm_pointers: Tcl_uint;
     args: Pointer;
     user_data: Pointer;
@@ -1580,16 +1446,16 @@ var
     num_events_in_wait_list: Tcl_uint;
     event_wait_list: Pcl_event;
     event: Pcl_event): Tcl_int; //CL_API_SUFFIX__VERSION_2_0
-   stdcall;
+   stdcall; external LibOpenCL;
 
-  clEnqueueSVMUnmap: function(command_queue: Tcl_command_queue;
+  function clEnqueueSVMUnmap(command_queue: Pcl_command_queue;
     svm_ptr: Pointer;
     num_events_in_wait_list: Tcl_uint;
     event_wait_list: Pcl_event;
     event: Pcl_event): Tcl_int; //CL_API_SUFFIX__VERSION_2_0
-   stdcall;
+   stdcall; external LibOpenCL;
 
-  clEnqueueSVMmigrateMem: function(command_queue: Tcl_command_queue;
+  function clEnqueueSVMmigrateMem(command_queue: Pcl_command_queue;
     num_svm_pointers: Tcl_uint;
     svm_pointers: PPointer;
     sizes: Psize_t;
@@ -1597,15 +1463,15 @@ var
     num_events_in_wait_list: Tcl_uint;
     event_wait_list: Pcl_event;
     event: Pcl_event): Tcl_int; //CL_API_SUFFIX__VERSION_2_1
-   stdcall;
+   stdcall; external LibOpenCL;
 
-  clEnqueueWaitForEvents: function(command_queue: Tcl_command_queue;
+  function clEnqueueWaitForEvents(command_queue: Pcl_command_queue;
     num_events: Tcl_uint;
     event_list: Pcl_event): Tcl_int;
-   stdcall;
+   stdcall; external LibOpenCL;
 
-  clEnqueueBarrier: function(command_queue: Tcl_command_queue): Tcl_int;
-   stdcall;
+  function clEnqueueBarrier(command_queue: Pcl_command_queue): Tcl_int;
+   stdcall; external LibOpenCL;
 
   //* Extension function access
   //*
@@ -1615,9 +1481,9 @@ var
   //* calling the returned function address.
   //*
 
-  clGetExtensionFunctionAddressForPlatform: function(platform: Tcl_platform_id;
+  function clGetExtensionFunctionAddressForPlatform(_platform: Pcl_platform_id;
     func_name: Pcl_char): Pointer;  //CL_API_SUFFIX__VERSION_1_2
-   stdcall;
+   stdcall; external LibOpenCL;
 
 
    //* Deprecated OpenCL 1.1 APIs *//
@@ -1699,105 +1565,6 @@ begin
   if CLHandle = INVALID_MODULEHANDLE then
     Exit;
 
-  clGetPlatformIDs:=GetProcAddressOpenCL('clGetPlatformIDs');
-  clGetPlatformInfo:=GetProcAddressOpenCL('clGetPlatformInfo');
-  clGetDeviceIDs:=GetProcAddressOpenCL('clGetDeviceIDs');
-  clGetDeviceInfo:=GetProcAddressOpenCL('clGetDeviceInfo');
-  clCreateSubDevices:=GetProcAddressOpenCL('clCreateSubDevices');
-  clRetainDevice:=GetProcAddressOpenCL('clRetainDevice');
-  clReleaseDevice:=GetProcAddressOpenCL('clReleaseDevice');
-  clSetDefaultDeviceCommandQueue:=GetProcAddressOpenCL('clSetDefaultDeviceCommandQueue');
-  clGetDeviceAndHostTimer:=GetProcAddressOpenCL('clGetDeviceAndHostTimer');
-  clGetHostTimer:=GetProcAddressOpenCL('clGetHostTimer');
-  clCreateContext:=GetProcAddressOpenCL('clCreateContext');
-  clCreateContextFromType:=GetProcAddressOpenCL('clCreateContextFromType');
-  clRetainContext:=GetProcAddressOpenCL('clRetainContext');
-  clReleaseContext:=GetProcAddressOpenCL('clReleaseContext');
-  clGetContextInfo:=GetProcAddressOpenCL('clGetContextInfo');
-  clCreateCommandQueue:=GetProcAddressOpenCL('clCreateCommandQueue');
-  clRetainCommandQueue:=GetProcAddressOpenCL('clRetainCommandQueue');
-  clReleaseCommandQueue:=GetProcAddressOpenCL('clReleaseCommandQueue');
-  clGetCommandQueueInfo:=GetProcAddressOpenCL('clGetCommandQueueInfo');
-  clCreateBuffer:=GetProcAddressOpenCL('clCreateBuffer');
-  clCreateSubBuffer:=GetProcAddressOpenCL('clCreateSubBuffer');
-  clCreateImage:=GetProcAddressOpenCL('clCreateImage');
-  clCreatePipe:=GetProcAddressOpenCL('clCreatePipe');
-  clRetainMemObject:=GetProcAddressOpenCL('clRetainMemObject');
-  clReleaseMemObject:=GetProcAddressOpenCL('clReleaseMemObject');
-  clGetSupportedImageFormats:=GetProcAddressOpenCL('clGetSupportedImageFormats');
-  clGetMemObjectInfo:=GetProcAddressOpenCL('clGetMemObjectInfo');
-  clGetImageInfo:=GetProcAddressOpenCL('clGetImageInfo');
-  clGetPipeInfo:=GetProcAddressOpenCL('clGetPipeInfo');
-  clSetMemObjectDestructorCallback:=GetProcAddressOpenCL('clSetMemObjectDestructorCallback');
-  clSVMAlloc:=GetProcAddressOpenCL('clSVMAlloc');
-  clSVMFree:=GetProcAddressOpenCL('clSVMFree');
-  clCreateSamplerWithProperties:=GetProcAddressOpenCL('clCreateSamplerWithProperties');
-  clRetainSampler:=GetProcAddressOpenCL('clRetainSampler');
-  clReleaseSampler:=GetProcAddressOpenCL('clReleaseSampler');
-  clGetSamplerInfo:=GetProcAddressOpenCL('clGetSamplerInfo');
-  clCreateProgramWithSource:=GetProcAddressOpenCL('clCreateProgramWithSource');
-  clCreateProgramWithBinary:=GetProcAddressOpenCL('clCreateProgramWithBinary');
-  clCreateProgramWithBuiltInKernels:=GetProcAddressOpenCL('clCreateProgramWithBuiltInKernels');
-  clCreateProgramWithIL:=GetProcAddressOpenCL('clCreateProgramWithIL');
-  clRetainProgram:=GetProcAddressOpenCL('clRetainProgram');
-  clReleaseProgram:=GetProcAddressOpenCL('clReleaseProgram');
-  clBuildProgram:=GetProcAddressOpenCL('clBuildProgram');
-  clCompileProgram:=GetProcAddressOpenCL('clCompileProgram');
-  clLinkProgram:=GetProcAddressOpenCL('clLinkProgram');
-  clUnloadPlatformCompiler:=GetProcAddressOpenCL('clUnloadPlatformCompiler');
-  clGetProgramInfo:=GetProcAddressOpenCL('clGetProgramInfo');
-  clGetProgramBuildInfo:=GetProcAddressOpenCL('clGetProgramBuildInfo');
-  clCreateKernel:=GetProcAddressOpenCL('clCreateKernel');
-  clCreateKernelsInProgram:=GetProcAddressOpenCL('clCreateKernelsInProgram');
-  clCloneKernel:=GetProcAddressOpenCL('clCloneKernel');
-  clRetainKernel:=GetProcAddressOpenCL('clRetainKernel');
-  clReleaseKernel:=GetProcAddressOpenCL('clReleaseKernel');
-  clSetKernelArg:=GetProcAddressOpenCL('clSetKernelArg');
-  clSetKernelArgSVMPointer:=GetProcAddressOpenCL('clSetKernelArgSVMPointer');
-  clSetKernelExecInfo:=GetProcAddressOpenCL('clSetKernelExecInfo');
-  clGetKernelInfo:=GetProcAddressOpenCL('clGetKernelInfo');
-  clGetKernelArgInfo:=GetProcAddressOpenCL('clGetKernelArgInfo');
-  clGetKernelWorkGroupInfo:=GetProcAddressOpenCL('clGetKernelWorkGroupInfo');
-  clGetKernelSubGroupInfo:=GetProcAddressOpenCL('clGetKernelSubGroupInfo');
-  clWaitForEvents:=GetProcAddressOpenCL('clWaitForEvents');
-  clGetEventInfo:=GetProcAddressOpenCL('clGetEventInfo');
-  clCreateUserEvent:=GetProcAddressOpenCL('clCreateUserEvent');
-  clRetainEvent:=GetProcAddressOpenCL('clRetainEvent');
-  clReleaseEvent:=GetProcAddressOpenCL('clReleaseEvent');
-  clSetUserEventStatus:=GetProcAddressOpenCL('clSetUserEventStatus');
-  clSetEventCallback:=GetProcAddressOpenCL('clSetEventCallback');
-  clGetEventProfilingInfo:=GetProcAddressOpenCL('clGetEventProfilingInfo');
-  clFlush:=GetProcAddressOpenCL('clFlush');
-  clFinish:=GetProcAddressOpenCL('clFinish');
-  clEnqueueReadBuffer:=GetProcAddressOpenCL('clEnqueueReadBuffer');
-  clEnqueueReadBufferRect:=GetProcAddressOpenCL('clEnqueueReadBufferRect');
-  clEnqueueWriteBuffer:=GetProcAddressOpenCL('clEnqueueWriteBuffer');
-  clEnqueueWriteBufferRect:=GetProcAddressOpenCL('clEnqueueWriteBufferRect');
-  clEnqueueFillBuffer:=GetProcAddressOpenCL('clEnqueueFillBuffer');
-  clEnqueueCopyBuffer:=GetProcAddressOpenCL('clEnqueueCopyBuffer');
-  clEnqueueCopyBufferRect:=GetProcAddressOpenCL('clEnqueueCopyBufferRect');
-  clEnqueueReadImage:=GetProcAddressOpenCL('clEnqueueReadImage');
-  clEnqueueWriteImage:=GetProcAddressOpenCL('clEnqueueWriteImage');
-  clEnqueueFillImage:=GetProcAddressOpenCL('clEnqueueFillImage');
-  clEnqueueCopyImage:=GetProcAddressOpenCL('clEnqueueCopyImage');
-  clEnqueueCopyImageToBuffer:=GetProcAddressOpenCL('clEnqueueCopyImageToBuffer');
-  clEnqueueCopyBufferToImage:=GetProcAddressOpenCL('clEnqueueCopyBufferToImage');
-  clEnqueueMapBuffer:=GetProcAddressOpenCL('clEnqueueMapBuffer');
-  clEnqueueMapImage:=GetProcAddressOpenCL('clEnqueueMapImage');
-  clEnqueueUnmapMemObject:=GetProcAddressOpenCL('clEnqueueUnmapMemObject');
-  clEnqueueMigrateMemObjects:=GetProcAddressOpenCL('clEnqueueMigrateMemObjects');
-  clEnqueueNDRangeKernel:=GetProcAddressOpenCL('clEnqueueNDRangeKernel');
-  clEnqueueNativeKernel:=GetProcAddressOpenCL('clEnqueueNativeKernel');
-  clEnqueueMarkerWithWaitList:=GetProcAddressOpenCL('clEnqueueMarkerWithWaitList');
-  clEnqueueBarrierWithWaitList:=GetProcAddressOpenCL('clEnqueueBarrierWithWaitList');
-  clEnqueueSVMFree:=GetProcAddressOpenCL('clEnqueueSVMFree');
-  clEnqueueSVMMemcpy:=GetProcAddressOpenCL('clEnqueueSVMMemcpy');
-  clEnqueueSVMMap:=GetProcAddressOpenCL('clEnqueueSVMMap');
-  clEnqueueSVMUnmap:=GetProcAddressOpenCL('clEnqueueSVMUnmap');
-  clEnqueueSVMmigrateMem:=GetProcAddressOpenCL('clEnqueueSVMmigrateMem');
-  clEnqueueWaitForEvents:=GetProcAddressOpenCL('clEnqueueWaitForEvents');
-  clEnqueueBarrier:=GetProcAddressOpenCL('clEnqueueBarrier');
-  clGetExtensionFunctionAddressForPlatform:=GetProcAddressOpenCL('clGetExtensionFunctionAddressForPlatform');
 
   Result := True;
 end;

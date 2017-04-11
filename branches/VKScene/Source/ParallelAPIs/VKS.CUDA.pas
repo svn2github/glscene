@@ -31,7 +31,8 @@ uses
   VKS.CUDADataAccess,
   VKS.Strings,
   VKS.Utils,
-  VKS.CL,
+  CL,
+  CL_Platform,
   VKS.CUDAApi;
 
 type

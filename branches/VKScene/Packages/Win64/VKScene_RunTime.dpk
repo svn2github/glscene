@@ -46,6 +46,7 @@ contains
   FileOCT in '..\..\Source\FileFormats\FileOCT.pas',
   FileTGA in '..\..\Source\FileFormats\FileTGA.pas',
   FileX in '..\..\Source\FileFormats\FileX.pas',
+  OpenGLAdapter in '..\..\Source\Basis\OpenGLAdapter.pas',
   VKS.AVIRecorder in '..\..\Source\SoundVideoAPIs\VKS.AVIRecorder.pas',
   VKS.AnimatedSprite in '..\..\Source\VKS.AnimatedSprite.pas',
   VKS.AnimationUtils in '..\..\Source\VKS.AnimationUtils.pas',
@@ -178,7 +179,6 @@ contains
   VKS.ObjectManager in '..\..\Source\VKS.ObjectManager.pas',
   VKS.Objects in '..\..\Source\VKS.Objects.pas',
   VKS.Octree in '..\..\Source\Basis\VKS.Octree.pas',
-  VKS.OpenGLAdapter in '..\..\Source\Basis\VKS.OpenGLAdapter.pas',
   VKS.OutlineShader in '..\..\Source\VKS.OutlineShader.pas',
   VKS.ParametricSurfaces in '..\..\Source\VKS.ParametricSurfaces.pas',
   VKS.ParticleFX in '..\..\Source\VKS.ParticleFX.pas',
@@ -262,7 +262,6 @@ contains
   VKS.Windows in '..\..\Source\VKS.Windows.pas',
   VKS.WindowsFont in '..\..\Source\VKS.WindowsFont.pas',
   VKS.XCollection in '..\..\Source\Basis\VKS.XCollection.pas',
-  VKS.XOpenGL in '..\..\Source\Basis\VKS.XOpenGL.pas',
   VKS.zBuffer in '..\..\Source\VKS.zBuffer.pas',
   HDRImage in '..\..\Source\FileFormats\HDRImage.pas',
   LWObjects in '..\..\Source\FileFormats\LWObjects.pas',
@@ -271,7 +270,8 @@ contains
   Types3DS in '..\..\Source\FileFormats\Types3DS.pas',
   Utils3DS in '..\..\Source\FileFormats\Utils3DS.pas',
   VRMLParser in '..\..\Source\FileFormats\VRMLParser.pas',
-  VKS.Vulkan in '..\..\Source\Basis\VKS.Vulkan.pas';
+  XOpenGL in '..\..\Source\Basis\XOpenGL.pas',
+  Vulkan in '..\..\Source\Basis\Vulkan.pas';
 
 end.
 

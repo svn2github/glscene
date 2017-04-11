@@ -26,7 +26,6 @@ object VKSceneEditorForm: TVKSceneEditorForm
       ParentShowHint = False
       ShowHint = True
       StyleLookup = 'cornerbuttonstyle'
-      Visible = True
       object ImLoadScene: TImage
         MultiResBitmap.Height = 16
         MultiResBitmap.Width = 16
@@ -78,7 +77,6 @@ object VKSceneEditorForm: TVKSceneEditorForm
       ParentShowHint = False
       ShowHint = True
       StyleLookup = 'cornerbuttonstyle'
-      Visible = True
       object ImInfo: TImage
         MultiResBitmap.Height = 16
         MultiResBitmap.Width = 16
@@ -118,7 +116,6 @@ object VKSceneEditorForm: TVKSceneEditorForm
       ParentShowHint = False
       ShowHint = True
       StyleLookup = 'cornerbuttonstyle'
-      Visible = True
       object ImPaste: TImage
         MultiResBitmap.Height = 16
         MultiResBitmap.Width = 16
@@ -171,7 +168,6 @@ object VKSceneEditorForm: TVKSceneEditorForm
       ParentShowHint = False
       ShowHint = True
       StyleLookup = 'cornerbuttonstyle'
-      Visible = True
       object ImCopy: TImage
         MultiResBitmap.Height = 16
         MultiResBitmap.Width = 16
@@ -219,7 +215,6 @@ object VKSceneEditorForm: TVKSceneEditorForm
       ParentShowHint = False
       ShowHint = True
       StyleLookup = 'cornerbuttonstyle'
-      Visible = True
       object ImCut: TImage
         MultiResBitmap.Height = 16
         MultiResBitmap.Width = 16
@@ -266,7 +261,6 @@ object VKSceneEditorForm: TVKSceneEditorForm
       ParentShowHint = False
       ShowHint = True
       StyleLookup = 'cornerbuttonstyle'
-      Visible = True
       object ImDeleteObject: TImage
         MultiResBitmap.Height = 16
         MultiResBitmap.Width = 16
@@ -308,7 +302,6 @@ object VKSceneEditorForm: TVKSceneEditorForm
       ParentShowHint = False
       ShowHint = True
       StyleLookup = 'cornerbuttonstyle'
-      Visible = True
       object ImExpand: TImage
         MultiResBitmap.Height = 16
         MultiResBitmap.Width = 16
@@ -347,7 +340,6 @@ object VKSceneEditorForm: TVKSceneEditorForm
       ParentShowHint = False
       ShowHint = True
       StyleLookup = 'cornerbuttonstyle'
-      Visible = True
       object ImMoveDown: TImage
         MultiResBitmap.Height = 16
         MultiResBitmap.Width = 16
@@ -400,7 +392,6 @@ object VKSceneEditorForm: TVKSceneEditorForm
       ParentShowHint = False
       ShowHint = True
       StyleLookup = 'cornerbuttonstyle'
-      Visible = True
       object ImMoveUp: TImage
         MultiResBitmap.Height = 16
         MultiResBitmap.Width = 16
@@ -494,7 +485,6 @@ object VKSceneEditorForm: TVKSceneEditorForm
       ParentShowHint = False
       ShowHint = True
       StyleLookup = 'cornerbuttonstyle'
-      Visible = True
       object ImGalleryPanel: TImage
         MultiResBitmap.Height = 16
         MultiResBitmap.Width = 16
@@ -534,7 +524,6 @@ object VKSceneEditorForm: TVKSceneEditorForm
       ParentShowHint = False
       ShowHint = True
       StyleLookup = 'cornerbuttonstyle'
-      Visible = True
       object ImAddObjects: TImage
         MultiResBitmap.Height = 16
         MultiResBitmap.Width = 16
@@ -601,7 +590,6 @@ object VKSceneEditorForm: TVKSceneEditorForm
       ParentShowHint = False
       ShowHint = True
       StyleLookup = 'cornerbuttonstyle'
-      Visible = True
       object ImStayOnTop: TImage
         MultiResBitmap.Height = 16
         MultiResBitmap.Width = 16
@@ -644,7 +632,6 @@ object VKSceneEditorForm: TVKSceneEditorForm
       ParentShowHint = False
       ShowHint = True
       StyleLookup = 'cornerbuttonstyle'
-      Visible = True
       object ImSaveScene: TImage
         MultiResBitmap.Height = 16
         MultiResBitmap.Width = 16
@@ -740,7 +727,6 @@ object VKSceneEditorForm: TVKSceneEditorForm
           ShowHint = True
           StyleLookup = 'cornerbuttonstyle'
           TextSettings.HorzAlign = Leading
-          Visible = True
           object ImArrowDownEff: TImage
             MultiResBitmap.Height = 21
             MultiResBitmap.TransparentColor = 12632256
@@ -825,7 +811,6 @@ object VKSceneEditorForm: TVKSceneEditorForm
           ShowHint = True
           StyleLookup = 'cornerbuttonstyle'
           TextSettings.HorzAlign = Leading
-          Visible = True
           object ImArrowDownBeh: TImage
             MultiResBitmap.Height = 21
             MultiResBitmap.TransparentColor = 12632256

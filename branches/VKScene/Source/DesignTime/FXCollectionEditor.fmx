@@ -36,7 +36,6 @@ object VKXCollectionEditor: TVKXCollectionEditor
       Size.Height = 22.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 1
-      Visible = True
     end
     object Button2: TButton
       Action = ACMoveUp
@@ -45,7 +44,6 @@ object VKXCollectionEditor: TVKXCollectionEditor
       Position.X = 136.000000000000000000
       Position.Y = 8.000000000000000000
       TabOrder = 2
-      Visible = True
     end
     object Button3: TButton
       Action = ACMoveDown
@@ -54,7 +52,6 @@ object VKXCollectionEditor: TVKXCollectionEditor
       Position.X = 216.000000000000000000
       Position.Y = 8.000000000000000000
       TabOrder = 3
-      Visible = True
     end
   end
   object ListView: TListView

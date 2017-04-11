@@ -134,8 +134,8 @@ type
     
   end;
 
-function GLSceneEditorForm: TVKSceneEditorForm;
-procedure ReleaseGLSceneEditorForm;
+function VKSceneEditorForm: TVKSceneEditorForm;
+procedure ReleaseVKSceneEditorForm;
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -148,24 +148,24 @@ implementation
 {$R *.fmx}
 
 const
-  cRegistryKey = 'Software\GLSceneVKS\GLSceneEdit';
+  cRegistryKey = 'Software\VKScene\VKSceneEdit';
 
 var
-  vGLSceneEditorForm: TVKSceneEditorForm;
+  vVKSceneEditorForm: TVKSceneEditorForm;
 
-function GLSceneEditorForm: TVKSceneEditorForm;
+function VKSceneEditorForm: TVKSceneEditorForm;
 begin
-  if not Assigned(vGLSceneEditorForm) then
-    vGLSceneEditorForm := TVKSceneEditorForm.Create(nil);
-  Result := vGLSceneEditorForm;
+  if not Assigned(vVKSceneEditorForm) then
+    vVKSceneEditorForm := TVKSceneEditorForm.Create(nil);
+  Result := vVKSceneEditorForm;
 end;
 
-procedure ReleaseGLSceneEditorForm;
+procedure ReleaseVKSceneEditorForm;
 begin
-  if Assigned(vGLSceneEditorForm) then
+  if Assigned(vVKSceneEditorForm) then
   begin
-    vGLSceneEditorForm.Free;
-    vGLSceneEditorForm := nil;
+    vVKSceneEditorForm.Free;
+    vVKSceneEditorForm := nil;
   end;
 end;
 
@@ -178,8 +178,6 @@ begin
     Result := defaultValue;
 end;
 
-// FormCreate
-//
 procedure TVKSceneEditorForm.FormCreate(Sender: TObject);
 var
   CurrentNode: TTreeNode;
@@ -242,8 +240,6 @@ begin
   Tree.OnEdited := TreeEdited;
 end;
 
-// FormDestroy
-//
 procedure TVKSceneEditorForm.FormDestroy(Sender: TObject);
 var
   reg: TRegistry;
@@ -266,8 +262,6 @@ begin
   end;
 end;
 
-// ACInfoExecute
-//
 procedure TVKSceneEditorForm.ACInfoExecute(Sender: TObject);
 var
   AScene: TVKSceneViewer;

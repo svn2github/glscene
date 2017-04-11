@@ -7,12 +7,25 @@ unit FShaderUniformEditor;
 interface
 
 uses
-  System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
-  FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.Layouts,
-  FMX.ListBox, FMX.StdCtrls,
+  System.SysUtils,
+  System.Types,
+  System.UITypes,
+  System.Classes,
+  System.Variants,
+  FMX.Types,
+  FMX.Controls,
+  FMX.Forms,
+  FMX.Graphics,
+  FMX.Dialogs,
+  FMX.Layouts,
+  FMX.ListBox,
+  FMX.StdCtrls,
+  FMX.Controls.Presentation,
 
-  VKS.GLSLParameter, VKS.TextureFormat, VKS.VectorGeometry,
-  FMX.Controls.Presentation;
+  VKS.GLSLParameter,
+  VKS.TextureFormat,
+  VKS.VectorGeometry,
+  VKS.Strings;
 
 type
   TVKShaderUniformEditorForm = class(TForm)
@@ -62,15 +75,12 @@ type
     procedure LBUniformsKeyDown(Sender: TObject; var Key: Word;
       var KeyChar: Char; Shift: TShiftState);
   private
-    
     FUniformList: array of IShaderParameter;
   public
-    
     procedure Clear;
     procedure AddTextureName(const S: string);
     procedure AddSamplerName(const S: string);
     procedure AddUniform(AValue: IShaderParameter);
-
     procedure Execute;
   end;
 
@@ -78,26 +88,28 @@ type
 function GLShaderUniformEditorForm: TVKShaderUniformEditorForm;
 procedure ReleaseShaderUniformEditor;
 
+//==================================================================
 implementation
+//==================================================================
 
 {$R *.fmx}
 
 var
-  vGLShaderUniformEditor: TVKShaderUniformEditorForm;
+  vVKShaderUniformEditor: TVKShaderUniformEditorForm;
 
   function GLShaderUniformEditorForm: TVKShaderUniformEditorForm;
 begin
-  if not Assigned(vGLShaderUniformEditor) then
-    vGLShaderUniformEditor := TVKShaderUniformEditorForm.Create(nil);
-  Result := vGLShaderUniformEditor;
+  if not Assigned(vVKShaderUniformEditor) then
+    vVKShaderUniformEditor := TVKShaderUniformEditorForm.Create(nil);
+  Result := vVKShaderUniformEditor;
 end;
 
 procedure ReleaseShaderUniformEditor;
 begin
-  if Assigned(vGLShaderUniformEditor) then
+  if Assigned(vVKShaderUniformEditor) then
   begin
-    vGLShaderUniformEditor.Free;
-    vGLShaderUniformEditor := nil;
+    vVKShaderUniformEditor.Free;
+    vVKShaderUniformEditor := nil;
   end;
 end;
 
@@ -132,9 +144,9 @@ begin
   AutoSetBox.Items.Clear;
   TextureBox.Items.Clear;
   SamplerBox.Items.Clear;
-  AutoSetBox.Items.Add(rstrNothing);
-  TextureBox.Items.Add(rstrNothing);
-  SamplerBox.Items.Add(rstrNothing);
+  AutoSetBox.Items.Add(strNothing);
+  TextureBox.Items.Add(strNothing);
+  SamplerBox.Items.Add(strNothing);
   AutoSetBox.ItemIndex := 0;
   TextureBox.ItemIndex := 0;
   SamplerBox.ItemIndex := 0;
@@ -173,7 +185,7 @@ begin
   if LBUniforms.ItemIndex >= 0 then
   begin
     AutoSetBox.Items.Clear;
-    AutoSetBox.Items.Add(rstrNothing);
+    AutoSetBox.Items.Add(strNothing);
     IParam := FUniformList[LBUniforms.ItemIndex];
     if IParam.GLSLSamplerType <> GLSLSamplerUndefined then
     begin

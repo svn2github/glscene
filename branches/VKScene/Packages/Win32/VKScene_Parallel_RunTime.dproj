@@ -132,6 +132,9 @@
         <DCCReference Include="rtl.dcp"/>
         <DCCReference Include="fmx.dcp"/>
         <DCCReference Include="VKScene_RunTime.dcp"/>
+        <DCCReference Include="..\..\Source\ParallelAPIs\CL.pas"/>
+        <DCCReference Include="..\..\Source\ParallelAPIs\CL_GL.pas"/>
+        <DCCReference Include="..\..\Source\ParallelAPIs\CL_Platform.pas"/>
         <DCCReference Include="..\..\Source\ParallelAPIs\VKS.CUDARunTime.pas"/>
         <DCCReference Include="..\..\Source\ParallelAPIs\VKS.CUDAFourierTransform.pas"/>
         <DCCReference Include="..\..\Source\ParallelAPIs\VKS.CUDAUtility.pas"/>
@@ -142,7 +145,6 @@
         <DCCReference Include="..\..\Source\ParallelAPIs\VKS.CUDAGraphics.pas"/>
         <DCCReference Include="..\..\Source\ParallelAPIs\VKS.CUDAParser.pas"/>
         <DCCReference Include="..\..\Source\ParallelAPIs\VKS.CUDADataAccess.pas"/>
-        <DCCReference Include="..\..\Source\ParallelAPIs\VKS.CL_GL.pas"/>
         <DCCReference Include="..\..\Source\ParallelAPIs\VKS.CUDAApi.pas"/>
         <BuildConfiguration Include="Debug">
             <Key>Cfg_2</Key>
