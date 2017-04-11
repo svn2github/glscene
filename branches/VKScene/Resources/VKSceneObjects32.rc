@@ -1,0 +1,114 @@
+vks_camera BITMAP objects\vks_camera32.bmp
+vks_lights BITMAP objects\vks_lights32.bmp
+vks_objects BITMAP objects\vks_objects32.bmp
+vks_root BITMAP objects\vks_root32.bmp
+vks_cross BITMAP objects\vks_cross32.bmp
+
+TVKCamera BITMAP objects\TVKCamera32.bmp
+TVKDirectOpenGL BITMAP objects\TVKDirectOpenGL32.bmp
+TVKDummyCube BITMAP objects\TVKDummyCube32.bmp
+TVKLightSource BITMAP objects\TVKLightSource32.bmp
+
+TVKFeedback BITMAP objects\TVKFeedback32.bmp
+TVKImposter BITMAP objects\TVKImposter32.bmp
+TVKRenderPoint BITMAP objects\TVKRenderPoint32.bmp
+TVKFBORenderer BITMAP objects\TVKFBORenderer32.bmp
+
+TVKHUDSprite BITMAP objects\hud_objects\TVKHUDSprite32.bmp
+TVKHUDText BITMAP objects\hud_objects\TVKHUDText32.bmp
+TVKResolutionIndependantHUDText BITMAP objects\hud_objects\TVKResolutionIndependantHUDText32.bmp
+TVKAbsoluteHUDText BITMAP objects\hud_objects\TVKAbsoluteHUDText32.bmp
+TVKConsole BITMAP objects\hud_objects\TVKConsole32.bmp
+TVKGameMenu BITMAP objects\hud_objects\TVKGameMenu32.bmp
+
+TVKAdvancedLabel BITMAP objects\gui_objects\TVKAdvancedLabel32.bmp
+TVKBaseControl BITMAP objects\gui_objects\TVKBaseControl32.bmp
+TVKButton BITMAP objects\gui_objects\TVKButton32.bmp
+TVKCheckBox BITMAP objects\gui_objects\TVKCheckBox32.bmp
+TVKCustomControl BITMAP objects\gui_objects\TVKCustomControl32.bmp
+TVKEdit BITMAP objects\gui_objects\TVKEdit32.bmp
+TVKForm BITMAP objects\gui_objects\TVKForm32.bmp
+TVKLabel BITMAP objects\gui_objects\TVKLabel32.bmp
+TVKPanel BITMAP objects\gui_objects\TVKPanel32.bmp
+TVKPopupMenu BITMAP objects\gui_objects\TVKPopupMenu32.bmp
+TVKScrollBar BITMAP objects\gui_objects\TVKScrollBar32.bmp
+TVKStringGrid BITMAP objects\gui_objects\TVKStringGrid32.bmp
+
+TVKCone BITMAP objects\basic_geometry\TVKCone32.bmp
+TVKCube BITMAP objects\basic_geometry\TVKCube32.bmp
+TVKCylinder BITMAP objects\basic_geometry\TVKCylinder32.bmp
+TVKDisk BITMAP objects\basic_geometry\TVKDisk32.bmp
+TVKDodecahedron BITMAP objects\basic_geometry\TVKDodecahedron32.bmp
+TVKFrustrum BITMAP objects\basic_geometry\TVKFrustrum32.bmp
+TVKHexahedron BITMAP objects\basic_geometry\TVKHexahedron32.bmp
+TVKIcosahedron BITMAP objects\basic_geometry\TVKIcosahedron32.bmp
+TVKTetrahedron BITMAP objects\basic_geometry\TVKTetrahedron32.bmp
+TVKOctahedron BITMAP objects\basic_geometry\TVKOctahedron32.bmp
+TVKLines BITMAP objects\basic_geometry\TVKLines32.bmp
+TVKPlane BITMAP objects\basic_geometry\TVKPlane32.bmp
+TVKPoints BITMAP objects\basic_geometry\TVKPoints32.bmp
+TVKPolygon BITMAP objects\basic_geometry\TVKPolygon32.bmp
+TVKSphere BITMAP objects\basic_geometry\TVKSphere32.bmp
+TVKSprite BITMAP objects\basic_geometry\TVKSprite32.bmp
+TVKCapsule BITMAP objects\basic_geometry\TVKCapsule32.bmp
+TVKSuperellipsoid BITMAP objects\basic_geometry\TVKSuperellipsoid32.bmp
+
+TVKAnimatedSprite BITMAP objects\advanced_geometry\TVKAnimatedSprite32.bmp
+TVKAnnulus BITMAP objects\advanced_geometry\TVKAnnulus32.bmp
+TVKArrowLine BITMAP objects\advanced_geometry\TVKArrowLine32.bmp
+TVKArrowArc BITMAP objects\advanced_geometry\TVKArrowArc32.bmp
+TVKExtrusionSolid BITMAP objects\advanced_geometry\TVKExtrusionSolid32.bmp
+TVKMultiPolygon BITMAP objects\advanced_geometry\TVKMultiPolygon32.bmp
+TVKPipe BITMAP objects\advanced_geometry\TVKPipe32.bmp
+TVKRevolutionSolid BITMAP objects\advanced_geometry\TVKRevolutionSolid32.bmp
+TVKTorus BITMAP objects\advanced_geometry\TVKTorus32.bmp
+TVKGeoSphere BITMAP objects\advanced_geometry\TVKGeoSphere32.bmp
+
+TVKActor BITMAP objects\mesh_objects\TVKActor32.bmp
+TVKFreeForm BITMAP objects\mesh_objects\TVKFreeForm32.bmp
+TVKMesh BITMAP objects\mesh_objects\TVKMesh32.bmp
+TVKPortal BITMAP objects\mesh_objects\TVKPortal32.bmp
+TVKTerrainRenderer BITMAP objects\mesh_objects\TVKTerrainRenderer32.bmp
+TVKTilePlane BITMAP objects\mesh_objects\TVKTilePlane32.bmp
+
+TVKFlatText BITMAP objects\graph_plotting_objects\TVKFlatText32.bmp
+TVKHeightfield BITMAP objects\graph_plotting_objects\TVKHeightfield32.bmp
+TVKXYZGrid BITMAP objects\graph_plotting_objects\TVKXYZGrid32.bmp
+
+TVKParticleFXRenderer BITMAP objects\particle_systems\TVKParticleFXRenderer32.bmp
+TVKParticles BITMAP objects\particle_systems\TVKParticles32.bmp
+
+TVKEarthSkyDome BITMAP objects\environment_objects\TVKEarthSkyDome32.bmp
+TVKSkyDome BITMAP objects\environment_objects\TVKSkyDome32.bmp
+TVKAtmosphere BITMAP objects\environment_objects\TVKAtmosphere32.bmp
+TVKSkyBox BITMAP objects\environment_objects\TVKSkyBox32.bmp
+
+TVKSpaceText BITMAP objects\doodad_objects\TVKSpaceText32.bmp
+TVKTeapot BITMAP objects\doodad_objects\TVKTeapot32.bmp
+TVKTree BITMAP objects\doodad_objects\TVKTree32.bmp
+TVKWaterplane BITMAP objects\doodad_objects\TVKWaterplane32.bmp
+
+TVKBlur BITMAP objects\special_objects\TVKBlur32.bmp
+TVKMotionBlur BITMAP objects\special_objects\TVKMotionBlur32.bmp
+TVKLensflare BITMAP objects\special_objects\TVKLensflare32.bmp
+TVKMirror BITMAP objects\special_objects\TVKMirror32.bmp
+TVKShadowPlane BITMAP objects\special_objects\TVKShadowPlane32.bmp
+TVKShadowVolume BITMAP objects\special_objects\TVKShadowVolume32.bmp
+TVKZShadows BITMAP objects\special_objects\TVKZShadows32.bmp
+TVKTrail BITMAP objects\special_objects\TVKTrail32.bmp
+TVKTextureLensFlare BITMAP objects\special_objects\TVKTextureLensFlare32.bmp
+TVKTextureEmitter BITMAP objects\special_objects\TVKTextureEmitter32.bmp
+TVKSLTextureEmitter BITMAP objects\special_objects\TVKSLTextureEmitter32.bmp
+TVKProjectedTextures BITMAP objects\special_objects\TVKProjectedTextures32.bmp
+TVKSLProjectedTextures BITMAP objects\special_objects\TVKSLProjectedTextures32.bmp
+TVKPostShaderHolder BITMAP objects\special_objects\TVKPostShaderHolder32.bmp
+TVKPostEffect BITMAP objects\special_objects\TVKPostEffect32.bmp
+
+TVKActorProxy BITMAP objects\proxy_objects\TVKActorProxy32.bmp
+TVKColorProxy BITMAP objects\proxy_objects\TVKColorProxy32.bmp
+TVKFreeFormProxy BITMAP objects\proxy_objects\TVKFreeFormProxy32.bmp
+TVKMaterialProxy BITMAP objects\proxy_objects\TVKMaterialProxy32.bmp
+TVKMaterialMultiProxy BITMAP objects\proxy_objects\TVKMaterialMultiProxy32.bmp
+TVKMultiProxy BITMAP objects\proxy_objects\TVKMultiProxy32.bmp
+TVKProxyObject BITMAP objects\proxy_objects\TVKProxyObject32.bmp
+

@@ -1,0 +1,72 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{CA88E812-B9BB-4FD2-812F-5BC40027F9F7}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="Win64\VKScene_RunTime.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Win64\VKScene_Sounds_RunTime.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Win64\VKScene_Physics_RunTime.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Win64\VKScene_Parallel_RunTime.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="VKScene_RunTime">
+        <MSBuild Projects="Win64\VKScene_RunTime.dproj"/>
+    </Target>
+    <Target Name="VKScene_RunTime:Clean">
+        <MSBuild Projects="Win64\VKScene_RunTime.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="VKScene_RunTime:Make">
+        <MSBuild Projects="Win64\VKScene_RunTime.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="VKScene_Sounds_RunTime">
+        <MSBuild Projects="Win64\VKScene_Sounds_RunTime.dproj"/>
+    </Target>
+    <Target Name="VKScene_Sounds_RunTime:Clean">
+        <MSBuild Projects="Win64\VKScene_Sounds_RunTime.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="VKScene_Sounds_RunTime:Make">
+        <MSBuild Projects="Win64\VKScene_Sounds_RunTime.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="VKScene_Physics_RunTime">
+        <MSBuild Projects="Win64\VKScene_Physics_RunTime.dproj"/>
+    </Target>
+    <Target Name="VKScene_Physics_RunTime:Clean">
+        <MSBuild Projects="Win64\VKScene_Physics_RunTime.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="VKScene_Physics_RunTime:Make">
+        <MSBuild Projects="Win64\VKScene_Physics_RunTime.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="VKScene_Parallel_RunTime">
+        <MSBuild Projects="Win64\VKScene_Parallel_RunTime.dproj"/>
+    </Target>
+    <Target Name="VKScene_Parallel_RunTime:Clean">
+        <MSBuild Projects="Win64\VKScene_Parallel_RunTime.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="VKScene_Parallel_RunTime:Make">
+        <MSBuild Projects="Win64\VKScene_Parallel_RunTime.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="VKScene_RunTime;VKScene_Sounds_RunTime;VKScene_Physics_RunTime;VKScene_Parallel_RunTime"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="VKScene_RunTime:Clean;VKScene_Sounds_RunTime:Clean;VKScene_Physics_RunTime:Clean;VKScene_Parallel_RunTime:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="VKScene_RunTime:Make;VKScene_Sounds_RunTime:Make;VKScene_Physics_RunTime:Make;VKScene_Parallel_RunTime:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>
