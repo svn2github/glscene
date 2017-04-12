@@ -4,7 +4,6 @@
 {
     This class is required for loading images such classes as in DDSImage,
     TVKO3TCImage, TVKHDRImage etc.
-
 }
 
 unit VKS.CompositeImage;
@@ -25,9 +24,6 @@ uses
 
 type
 
-  // TVKCompositeImage
-  //
-
   TVKCompositeImage = class(TVKTextureImage)
   private
     FBitmap: TVKBitmap32;
@@ -41,37 +37,30 @@ type
     function GetDepth: Integer; override;
     function GetTextureTarget: TVKTextureTarget; override;
   public
-
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
-
     procedure Assign(Source: TPersistent); override;
-
     function GetBitmap32: TVKBitmap32; override;
     procedure ReleaseBitmap32; override;
-
     procedure SaveToFile(const fileName: string); override;
     procedure LoadFromFile(const fileName: string); override;
     procedure LoadFromStream(const AStream: TStream);
     class function FriendlyName: string; override;
     class function FriendlyDescription: string; override;
     property NativeTextureTarget;
-
   published
     property Width: Integer read GetWidth write SetWidth;
     property Height: Integer read GetHeight write SetHeight;
     property Depth: Integer read GetDepth write SetDepth;
   end;
 
+//=========================================================
 implementation
+//=========================================================
 
 // ------------------
 // ------------------ TVKCompositeImage ------------------
 // ------------------
-
-// Create
-//
-
 constructor TVKCompositeImage.Create(AOwner: TPersistent);
 begin
   inherited;
@@ -80,17 +69,11 @@ begin
   FDepth := 0;
 end;
 
-// Destroy
-//
-
 destructor TVKCompositeImage.Destroy;
 begin
   ReleaseBitmap32;
   inherited Destroy;
 end;
-
-// Assign
-//
 
 procedure TVKCompositeImage.Assign(Source: TPersistent);
 begin
@@ -118,9 +101,6 @@ begin
     inherited;
 end;
 
-// SetWidth
-//
-
 procedure TVKCompositeImage.SetWidth(val: Integer);
 begin
   if val <> FWidth then
@@ -132,16 +112,10 @@ begin
   end;
 end;
 
-// GetWidth
-//
-
 function TVKCompositeImage.GetWidth: Integer;
 begin
   Result := FWidth;
 end;
-
-// SetHeight
-//
 
 procedure TVKCompositeImage.SetHeight(val: Integer);
 begin
@@ -154,16 +128,10 @@ begin
   end;
 end;
 
-// GetHeight
-//
-
 function TVKCompositeImage.GetHeight: Integer;
 begin
   Result := FHeight;
 end;
-
-// SetDepth
-//
 
 procedure TVKCompositeImage.SetDepth(val: Integer);
 begin
@@ -176,16 +144,10 @@ begin
   end;
 end;
 
-// GetDepth
-//
-
 function TVKCompositeImage.GetDepth: Integer;
 begin
   Result := FDepth;
 end;
-
-// GetBitmap32
-//
 
 function TVKCompositeImage.GetBitmap32: TVKBitmap32;
 begin
@@ -203,9 +165,6 @@ begin
   Result := FBitmap;
 end;
 
-// ReleaseBitmap32
-//
-
 procedure TVKCompositeImage.ReleaseBitmap32;
 begin
   if Assigned(FBitmap) then
@@ -214,9 +173,6 @@ begin
     FBitmap := nil;
   end;
 end;
-
-// SaveToFile
-//
 
 procedure TVKCompositeImage.SaveToFile(const fileName: string);
 var
@@ -315,7 +271,9 @@ begin
     Result := ttNoShape;
 end;
 
+//=========================================================
 initialization
+//=========================================================
   RegisterTextureImageClass(TVKCompositeImage);
 
 end.

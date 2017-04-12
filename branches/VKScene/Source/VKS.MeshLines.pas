@@ -1,8 +1,8 @@
 //
-// VKScene Component Library, based on GLScene http://glscene.sourceforge.net 
+// VKScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
 {
-   Line implementation by means of a Triangle strip. 
+  Line implementation by means of a Triangle strip.
 }
 
 unit VKS.MeshLines;
@@ -10,17 +10,27 @@ unit VKS.MeshLines;
 interface
 
 uses
-  System.Classes, System.SysUtils,
-  Winapi.OpenGL, Winapi.OpenGLext, 
-  
-  VKS.Scene, VKS.Objects, VKS.Texture, VKS.VectorFileObjects, VKS.Coordinates,
-  VKS.Context, VKS.Material, VKS.Color, VKS.State,
-  VKS.Nodes, VKS.VectorGeometry, VKS.Spline, VKS.VectorLists, VKS.RenderContextInfo;
+  Winapi.OpenGL,
+  System.Classes,
+  System.SysUtils,
+
+  VKS.Scene,
+  VKS.Objects,
+  VKS.Texture,
+  VKS.VectorFileObjects,
+  VKS.Coordinates,
+  VKS.Context,
+  VKS.Material,
+  VKS.Color,
+  VKS.State,
+  VKS.Nodes,
+  VKS.VectorGeometry,
+  VKS.Spline,
+  VKS.VectorLists,
+  VKS.RenderContextInfo;
 
 type
-   // TLineNode
-   //
-   { Specialized Node for use in a TVKLines objects. 
+   { Specialized Node for use in a TVKLines objects.
       Adds a Width property }
    TLineNode = class(TVKNode)
    private
@@ -34,13 +44,11 @@ type
    published
    end;
 
-   // TLineNodes
-   //
-   { Specialized collection for Nodes in TVKMeshLines objects. 
+   { Specialized collection for Nodes in TVKMeshLines objects.
       Stores TLineNode items. }
    TLineNodes = class(TVKNodes)
    public
-     
+
      constructor Create(AOwner : TComponent); overload;
      destructor destroy; override;
      procedure NotifyChange; override;
@@ -99,23 +107,23 @@ type
 
   TLightmapBounds = class(TVKCustomCoordinates)
   private
-    function GetLeft: GLfloat;
-    function GetTop: GLfloat;
-    function GetRight: GLfloat;
-    function GetBottom: GLfloat;
-    function GetWidth: GLfloat;
-    function GetHeight: GLfloat;
-    procedure SetLeft(const value: GLfloat);
-    procedure SetTop(const value: GLfloat);
-    procedure SetRight(const value: GLfloat);
-    procedure SetBottom(const value: GLfloat);
+    function GetLeft: Single;
+    function GetTop: Single;
+    function GetRight: Single;
+    function GetBottom: Single;
+    function GetWidth: Single;
+    function GetHeight: Single;
+    procedure SetLeft(const value: Single);
+    procedure SetTop(const value: Single);
+    procedure SetRight(const value: Single);
+    procedure SetBottom(const value: Single);
   published
-    property Left: GLfloat read GetLeft write SetLeft stored False;
-    property Top: GLfloat read GetTop write SetTop stored False;
-    property Right: GLfloat read GetRight write SetRight stored False;
-    property Bottom: GLfloat read GetBottom write SetBottom stored False;
-    property Width: GLfloat read GetWidth;
-    property Height: GLfloat read GetHeight;
+    property Left: Single read GetLeft write SetLeft stored False;
+    property Top: Single read GetTop write SetTop stored False;
+    property Right: Single read GetRight write SetRight stored False;
+    property Bottom: Single read GetBottom write SetBottom stored False;
+    property Width: Single read GetWidth;
+    property Height: Single read GetHeight;
   end;
 
   TVKMeshLines = class(TVKFreeForm)
@@ -193,8 +201,6 @@ implementation
 const
   CIRCLESEGMENTS = 32;
 
-// TLineNode
-//
 constructor TLineNode.Create(Collection : TCollection);
 begin
 	inherited Create(Collection);
@@ -214,8 +220,6 @@ begin
 	inherited;
 end;
 
-// TLineNodes
-//
 constructor TLineNodes.Create(AOwner : TComponent);
 begin
    inherited Create(AOwner, TLineNode);
@@ -250,9 +254,6 @@ begin
   end;
 end;
 
-
-// TLineCollection
-//
 function TLineCollection.GetItems(index: Integer): TLineItem;
 begin
    Result:=TLineItem(inherited Items[index]);
@@ -274,8 +275,6 @@ begin
   Result.Name := Name;
 end;
 
-// TMeshLine
-//
 constructor TLineItem.Create(Collection: TCollection);
 begin
   inherited;
@@ -351,61 +350,64 @@ begin
     TVKMeshLines(Collection.Owner).NotifyChange(Self);
 end;
 
+//--------------------------------
 { TLightmapBounds }
+//--------------------------------
 
-function TLightmapBounds.GetLeft: GLfloat;
+function TLightmapBounds.GetLeft: Single;
 begin
   Result := X;
 end;
 
-function TLightmapBounds.GetTop: GLfloat;
+function TLightmapBounds.GetTop: Single;
 begin
   Result := Y;
 end;
 
-function TLightmapBounds.GetRight: GLfloat;
+function TLightmapBounds.GetRight: Single;
 begin
   Result := Z;
 end;
 
-function TLightmapBounds.GetBottom: GLfloat;
+function TLightmapBounds.GetBottom: Single;
 begin
   Result := W;
 end;
 
-function TLightmapBounds.GetWidth: GLfloat;
+function TLightmapBounds.GetWidth: Single;
 begin
   Result := Z - X;
 end;
 
-function TLightmapBounds.GetHeight: GLfloat;
+function TLightmapBounds.GetHeight: Single;
 begin
   Result := W - Y;
 end;
 
-procedure TLightmapBounds.SetLeft(const value: GLfloat);
+procedure TLightmapBounds.SetLeft(const value: Single);
 begin
   X := Value;
 end;
 
-procedure TLightmapBounds.SetTop(const value: GLfloat);
+procedure TLightmapBounds.SetTop(const value: Single);
 begin
   Y := Value;
 end;
 
-procedure TLightmapBounds.SetRight(const value: GLfloat);
+procedure TLightmapBounds.SetRight(const value: Single);
 begin
   Z := Value;
 end;
 
-procedure TLightmapBounds.SetBottom(const value: GLfloat);
+procedure TLightmapBounds.SetBottom(const value: Single);
 begin
   W := Value;
 end;
 
 
+//--------------------------------
 // TVKMeshLine
-//
+//--------------------------------
 constructor TVKMeshLines.Create(AOwner: TComponent);
 begin
   inherited;
@@ -990,8 +992,10 @@ begin
     lSpline.Free;
 end;
 
-
+//--------------------------------
 initialization
+//--------------------------------
+
    RegisterClasses([TVKMeshLines]);
 
 end.

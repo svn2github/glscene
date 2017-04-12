@@ -25,7 +25,7 @@ type
   { Holds parameters for TVKScene basic damping model.
     Damping is modeled by calculating a force from the speed, this force
     can then be transformed to an acceleration is you know the object's mass.
-    Formulas : 
+    Formulas :
     damping = constant + linear * Speed + quadratic * Speed^2
     accel = damping / Mass
     That's just basic physics :). A note on the components :
@@ -36,22 +36,15 @@ type
      }
   TVKDamping = class(TVKUpdateAbleObject)
   private
-    
     FConstant: single;
     FLinear: single;
     FQuadratic: single;
-
   protected
-    
-
   public
-    
     constructor Create(aOwner: TPersistent); override;
     destructor Destroy; override;
-
     procedure WriteToFiler(writer: TWriter);
     procedure ReadFromFiler(reader: TReader);
-
     procedure Assign(Source: TPersistent); override;
       { Calculates attenuated speed over deltaTime.<p>
             Integration step is 0.01 sec, and the following formula is applied
@@ -62,15 +55,11 @@ type
     { Sets all damping parameters in a single call. }
     procedure SetDamping(const constant: single = 0; const linear: single = 0;
       const quadratic: single = 0);
-
   published
-    
     property Constant: single read FConstant write FConstant;
     property Linear: single read FLinear write FLinear;
     property Quadratic: single read FQuadratic write FQuadratic;
   end;
-
-  // TVKBInertia
 
   { Simple translation and rotation Inertia behaviour.
     Stores translation and rotation speeds, to which you can apply
@@ -80,71 +69,55 @@ type
     if this approximation does not suits your needs :). }
   TVKBInertia = class(TVKBehaviour)
   private
-    
     FMass: single;
     FTranslationSpeed: TVKCoordinates;
     FTurnSpeed, FRollSpeed, FPitchSpeed: single;
     FTranslationDamping, FRotationDamping: TVKDamping;
     FDampingEnabled: boolean;
-
   protected
-    
     procedure SetTranslationSpeed(const val: TVKCoordinates);
     procedure SetTranslationDamping(const val: TVKDamping);
     procedure SetRotationDamping(const val: TVKDamping);
-
     procedure WriteToFiler(writer: TWriter); override;
     procedure ReadFromFiler(reader: TReader); override;
-
   public
-    
     constructor Create(aOwner: TVKXCollection); override;
     destructor Destroy; override;
-
     procedure Assign(Source: TPersistent); override;
-
     class function FriendlyName: string; override;
     class function FriendlyDescription: string; override;
     class function UniqueItem: boolean; override;
-
     procedure DoProgress(const progressTime: TProgressTimes); override;
-
     { Adds time-proportionned acceleration to the speed. }
     procedure ApplyTranslationAcceleration(const deltaTime: double;
       const accel: TVector);
-      { Applies a timed force to the inertia.<p>
-        If Mass is null, nothing is done. }
+    { Applies a timed force to the inertia. If Mass is null, nothing is done. }
     procedure ApplyForce(const deltaTime: double; const force: TVector);
-      { Applies a timed torque to the inertia (yuck!).<p>
-        This gets a "yuck!" because it is as false as the rest of the
-        rotation  model. }
+    { Applies a timed torque to the inertia (yuck!).
+      This gets a "yuck!" because it is as false as the rest of the rotation  model. }
     procedure ApplyTorque(const deltaTime: double;
       const turnTorque, rollTorque, pitchTorque: single);
-    { Inverts the translation vector.<p> }
+    { Inverts the translation vector. }
     procedure MirrorTranslation;
-         { Bounce speed as if hitting a surface.<p>
-            restitution is the coefficient of restituted energy (1=no energy loss,
-            0=no bounce). The normal is NOT assumed to be normalized. }
+    { Bounce speed as if hitting a surface.
+      restitution is the coefficient of restituted energy (1=no energy loss,
+      0=no bounce). The normal is NOT assumed to be normalized. }
     procedure SurfaceBounce(const surfaceNormal: TVector; restitution: single);
-
   published
-    
     property Mass: single read FMass write FMass;
     property TranslationSpeed: TVKCoordinates
       read FTranslationSpeed write SetTranslationSpeed;
     property TurnSpeed: single read FTurnSpeed write FTurnSpeed;
     property RollSpeed: single read FRollSpeed write FRollSpeed;
     property PitchSpeed: single read FPitchSpeed write FPitchSpeed;
-
-      { Enable/Disable damping (damping has a high cpu-cycle cost).<p>
-        Damping is enabled by default. }
+    { Enable/Disable damping (damping has a high cpu-cycle cost).
+      Damping is enabled by default. }
     property DampingEnabled: boolean read FDampingEnabled write FDampingEnabled;
-      { Damping applied to translation speed.
-        Note that it is not "exactly" applied, ie. if damping would stop
-        your object after 0.5 time unit, and your progression steps are
-        of 1 time unit, there will be an integration error of 0.5 time unit. }
-    property TranslationDamping: TVKDamping read FTranslationDamping
-      write SetTranslationDamping;
+    { Damping applied to translation speed.
+      Note that it is not "exactly" applied, ie. if damping would stop
+      your object after 0.5 time unit, and your progression steps are
+      of 1 time unit, there will be an integration error of 0.5 time unit. }
+    property TranslationDamping: TVKDamping read FTranslationDamping write SetTranslationDamping;
       { Damping applied to rotation speed (yuck!).
         Well, this one is not "exact", like TranslationDamping, and neither
         it is "physical" since I'm reusing the mass and... and... well don't
@@ -154,36 +127,23 @@ type
     property RotationDamping: TVKDamping read FRotationDamping write SetRotationDamping;
   end;
 
-  // TVKBAcceleration
-
   { Applies a constant acceleration to a TVKBInertia.<p> }
   TVKBAcceleration = class(TVKBehaviour)
   private
-    
     FAcceleration: TVKCoordinates;
-
   protected
-    
     procedure SetAcceleration(const val: TVKCoordinates);
-
     procedure WriteToFiler(writer: TWriter); override;
     procedure ReadFromFiler(reader: TReader); override;
-
   public
-    
     constructor Create(aOwner: TVKXCollection); override;
     destructor Destroy; override;
-
     procedure Assign(Source: TPersistent); override;
-
     class function FriendlyName: string; override;
     class function FriendlyDescription: string; override;
     class function UniqueItem: boolean; override;
-
     procedure DoProgress(const progressTime: TProgressTimes); override;
-
   published
-    
     property Acceleration: TVKCoordinates read FAcceleration write FAcceleration;
   end;
 
@@ -207,8 +167,6 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-// GetInertia
-
 function GetInertia(const AGLSceneObject: TVKBaseSceneObject): TVKBInertia;
 var
   i: integer;
@@ -219,8 +177,6 @@ begin
   else
     Result := nil;
 end;
-
-// GetOrCreateInertia (TVKBehaviours)
 
 function GetOrCreateInertia(behaviours: TVKBehaviours): TVKBInertia;
 var
@@ -233,14 +189,10 @@ begin
     Result := TVKBInertia.Create(behaviours);
 end;
 
-// GetOrCreateInertia (TVKBaseSceneObject)
-
 function GetOrCreateInertia(obj: TVKBaseSceneObject): TVKBInertia;
 begin
   Result := GetOrCreateInertia(obj.Behaviours);
 end;
-
-// GetOrCreateAcceleration (TVKBehaviours)
 
 function GetOrCreateAcceleration(behaviours: TVKBehaviours): TVKBAcceleration;
 var
@@ -253,8 +205,6 @@ begin
     Result := TVKBAcceleration.Create(behaviours);
 end;
 
-// GetOrCreateAcceleration (TVKBaseSceneObject)
-
 function GetOrCreateAcceleration(obj: TVKBaseSceneObject): TVKBAcceleration;
 begin
   Result := GetOrCreateAcceleration(obj.Behaviours);
@@ -263,8 +213,6 @@ end;
 // ------------------
 // ------------------ TVKDamping ------------------
 // ------------------
-
-// Create
 
 constructor TVKDamping.Create(aOwner: TPersistent);
 begin
@@ -275,8 +223,6 @@ destructor TVKDamping.Destroy;
 begin
   inherited Destroy;
 end;
-
-// Assign
 
 procedure TVKDamping.Assign(Source: TPersistent);
 begin
@@ -289,8 +235,6 @@ begin
   else
     inherited Assign(Source);
 end;
-
-// WriteToFiler
 
 procedure TVKDamping.WriteToFiler(writer: TWriter);
 var
@@ -309,8 +253,6 @@ begin
     end;
   end;
 end;
-
-// ReadFromFiler
 
 procedure TVKDamping.ReadFromFiler(reader: TReader);
 begin
@@ -331,8 +273,6 @@ begin
     end;
   end;
 end;
-
-// Calculate
 
 function TVKDamping.Calculate(speed, deltaTime: double): double;
 var
@@ -355,14 +295,10 @@ begin
   Result := speed;
 end;
 
-// DampingAsString
-
 function TVKDamping.AsString(const damping: TVKDamping): string;
 begin
   Result := Format('[%f; %f; %f]', [Constant, Linear, Quadratic]);
 end;
-
-// SetDamping
 
 procedure TVKDamping.SetDamping(const constant: single = 0;
   const linear: single = 0; const quadratic: single = 0);
@@ -376,8 +312,6 @@ end;
 // ------------------ TVKBInertia ------------------
 // ------------------
 
-// Create
-
 constructor TVKBInertia.Create(aOwner: TVKXCollection);
 begin
   inherited Create(aOwner);
@@ -388,8 +322,6 @@ begin
   FRotationDamping := TVKDamping.Create(Self);
 end;
 
-// Destroy
-
 destructor TVKBInertia.Destroy;
 begin
   FRotationDamping.Free;
@@ -397,8 +329,6 @@ begin
   FTranslationSpeed.Free;
   inherited Destroy;
 end;
-
-// Assign
 
 procedure TVKBInertia.Assign(Source: TPersistent);
 begin
@@ -415,8 +345,6 @@ begin
   end;
   inherited Assign(Source);
 end;
-
-// WriteToFiler
 
 procedure TVKBInertia.WriteToFiler(writer: TWriter);
 begin
@@ -435,8 +363,6 @@ begin
   end;
 end;
 
-// ReadFromFiler
-
 procedure TVKBInertia.ReadFromFiler(reader: TReader);
 begin
   inherited;
@@ -454,49 +380,35 @@ begin
   end;
 end;
 
-// SetTranslationSpeed
-
 procedure TVKBInertia.SetTranslationSpeed(const val: TVKCoordinates);
 begin
   FTranslationSpeed.Assign(val);
 end;
-
-// SetTranslationDamping
 
 procedure TVKBInertia.SetTranslationDamping(const val: TVKDamping);
 begin
   FTranslationDamping.Assign(val);
 end;
 
-// SetRotationDamping
-
 procedure TVKBInertia.SetRotationDamping(const val: TVKDamping);
 begin
   FRotationDamping.Assign(val);
 end;
-
-// FriendlyName
 
 class function TVKBInertia.FriendlyName: string;
 begin
   Result := 'Simple Inertia';
 end;
 
-// FriendlyDescription
-
 class function TVKBInertia.FriendlyDescription: string;
 begin
   Result := 'A simple translation and rotation inertia';
 end;
 
-// UniqueBehaviour
-
 class function TVKBInertia.UniqueItem: boolean;
 begin
   Result := True;
 end;
-
-// DoProgress
 
 procedure TVKBInertia.DoProgress(const progressTime: TProgressTimes);
 var
@@ -559,8 +471,6 @@ begin
     end;
 end;
 
-// ApplyTranslationAcceleration
-
 procedure TVKBInertia.ApplyTranslationAcceleration(const deltaTime: double;
   const accel: TVector);
 begin
@@ -568,16 +478,12 @@ begin
     accel, 1, deltaTime);
 end;
 
-// ApplyForce
-
 procedure TVKBInertia.ApplyForce(const deltaTime: double; const force: TVector);
 begin
   if Mass <> 0 then
     FTranslationSpeed.AsVector :=
       VectorCombine(FTranslationSpeed.AsVector, force, 1, deltaTime / Mass);
 end;
-
-// ApplyTorque
 
 procedure TVKBInertia.ApplyTorque(const deltaTime: double;
   const turnTorque, rollTorque, pitchTorque: single);
@@ -593,14 +499,10 @@ begin
   end;
 end;
 
-// MirrorTranslation
-
 procedure TVKBInertia.MirrorTranslation;
 begin
   FTranslationSpeed.Invert;
 end;
-
-// SurfaceBounce
 
 procedure TVKBInertia.SurfaceBounce(const surfaceNormal: TVector; restitution: single);
 var
@@ -620,8 +522,6 @@ end;
 // ------------------ TVKBAcceleration ------------------
 // ------------------
 
-// Create
-
 constructor TVKBAcceleration.Create(aOwner: TVKXCollection);
 begin
   inherited;
@@ -631,15 +531,11 @@ begin
   FAcceleration := TVKCoordinates.CreateInitialized(Self, NullHmgVector, csVector);
 end;
 
-// Destroy
-
 destructor TVKBAcceleration.Destroy;
 begin
   inherited;
   FAcceleration.Free;
 end;
-
-// Assign
 
 procedure TVKBAcceleration.Assign(Source: TPersistent);
 begin
@@ -649,8 +545,6 @@ begin
   end;
   inherited Assign(Source);
 end;
-
-// WriteToFiler
 
 procedure TVKBAcceleration.WriteToFiler(writer: TWriter);
 begin
@@ -662,8 +556,6 @@ begin
   end;
 end;
 
-// ReadFromFiler
-
 procedure TVKBAcceleration.ReadFromFiler(reader: TReader);
 begin
   inherited;
@@ -674,35 +566,25 @@ begin
   end;
 end;
 
-// SetAcceleration
-
 procedure TVKBAcceleration.SetAcceleration(const val: TVKCoordinates);
 begin
   FAcceleration.Assign(val);
 end;
-
-// FriendlyName
 
 class function TVKBAcceleration.FriendlyName: string;
 begin
   Result := 'Simple Acceleration';
 end;
 
-// FriendlyDescription
-
 class function TVKBAcceleration.FriendlyDescription: string;
 begin
   Result := 'A simple and constant acceleration';
 end;
 
-// UniqueBehaviour
-
 class function TVKBAcceleration.UniqueItem: boolean;
 begin
   Result := False;
 end;
-
-// DoProgress
 
 procedure TVKBAcceleration.DoProgress(const progressTime: TProgressTimes);
 var
@@ -729,9 +611,9 @@ end;
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 initialization
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
 
   // class registrations
   RegisterXCollectionItemClass(TVKBInertia);

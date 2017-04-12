@@ -78,7 +78,6 @@ type
     procedure SetRenderWidth(const Value: Integer);
     procedure UpdateImageSettings;
     procedure SetPreset(const Value: TVKBlurPreset);
-
     function StoreBlurBottom: Boolean;
     function StoreBlurDeltaTime: Boolean;
     function StoreBlurRight: Boolean;
@@ -98,7 +97,6 @@ type
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
     procedure DoProgress(const progressTime: TProgressTimes); override;
     procedure DoRender(var ARci: TVKRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
@@ -158,7 +156,6 @@ type
   published
     // The more the intensity, the more blur you have.
     property Intensity: Single read FIntensity write FIntensity stored StoreIntensity;
-
     // From TVKBaseSceneObject.
     property Visible;
     property OnProgress;
@@ -167,7 +164,9 @@ type
     property Hint;
   end;
 
+//====================================================================
 implementation
+//====================================================================
 
 const
   EPS = 0.001;
@@ -279,7 +278,6 @@ var
     end;
 
   begin
-
     for t := 0 to passes do
     begin
       for y := 2 to BMP.Height - 3 do
@@ -740,8 +738,9 @@ begin
   Result := Abs(FBlurTop - 0.01) > EPS;
 end;
 
+//-------------------------------------------------
 { TVKMotionBlur }
-
+//-------------------------------------------------
 procedure TVKMotionBlur.Assign(Source: TPersistent);
 begin
   inherited;
@@ -840,9 +839,9 @@ end;
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 initialization
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
 
      // class registrations
   RegisterClass(TVKBlur);

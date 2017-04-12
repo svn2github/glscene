@@ -7,7 +7,7 @@
   A bumpmap texture is generated for each terrain tile, and placed into a TVKMaterialLibrary.
       
        
-   
+
 }
 unit VKS.BumpmapHDS;
 
@@ -16,27 +16,31 @@ interface
 {$I VKScene.inc}
 
 uses
-  System.Classes, System.SysUtils, System.SyncObjs,
-  
-  VKS.HeightData, VKS.Graphics, VKS.VectorGeometry,
-  VKS.Texture, VKS.Material, Winapi.OpenGL, Winapi.OpenGLext,  VKS.Utils, VKS.VectorTypes;
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
+  System.Classes,
+  System.SysUtils,
+  System.SyncObjs,
+
+  VKS.HeightData,
+  VKS.Graphics,
+  VKS.VectorGeometry,
+  VKS.Texture,
+  VKS.Material,
+  VKS.Utils,
+  VKS.VectorTypes;
 
 type
   TVKBumpmapHDS = class;
 
-  // TNewTilePreparedEvent
-  //
   TNewTilePreparedEvent = procedure(Sender: TVKBumpmapHDS;
     heightData: TVKHeightData; normalMapMaterial: TVKLibMaterial) of object;
 
-  // TVKBumpmapHDS
-  //
-  { An Height Data Source that generates elevation bumpmaps automatically. 
+  { An Height Data Source that generates elevation bumpmaps automatically.
     The HDS must be connected to another HDS, which will provide the elevation
     data, and to a MaterialLibrary where bumpmaps will be placed. }
   TVKBumpmapHDS = class(TVKHeightDataSourceFilter)
   private
-    
     // FElevationHDS : TVKHeightDataSource;
     FBumpmapLibrary: TVKMaterialLibrary;
     FOnNewTilePrepared: TNewTilePreparedEvent;
@@ -45,14 +49,12 @@ type
     FMaxTextures: Integer;
     Uno: TCriticalSection;
   protected
-    
     procedure SetBumpmapLibrary(const val: TVKMaterialLibrary);
     procedure SetBumpScale(const val: Single);
     function StoreBumpScale: Boolean;
     procedure SetSubSampling(const val: Integer);
     procedure Trim(MaxTextureCount: Integer);
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Release(aHeightData: TVKHeightData); override;
@@ -60,18 +62,21 @@ type
       Operation: TOperation); override;
     procedure GenerateNormalMap(heightData: TVKHeightData; normalMap: TVKBitmap32;
       scale: Single);
+   { This will repeatedly delete the oldest unused texture from the TVKMaterialLibrary,
+     until the texture count drops to MaxTextureCount.
+     DONT use this if you used TVKHeightData.MaterialName to link your terrain textures.
+     Either use with TVKHeightData.LibMaterial, or manually delete unused Normal-Map textures. }
     procedure TrimTextureCache(MaxTextureCount: Integer);
     // procedure  TileTextureCoordinates(heightData : TVKHeightData; TextureScale:TTexPoint; TextureOffset:TTexPoint);
     procedure PreparingData(heightData: TVKHeightData); override;
   published
-    
     property BumpmapLibrary: TVKMaterialLibrary read FBumpmapLibrary
       write SetBumpmapLibrary;
     property OnNewTilePrepared: TNewTilePreparedEvent read FOnNewTilePrepared
       write FOnNewTilePrepared;
     property BumpScale: Single read FBumpScale write SetBumpScale
       stored StoreBumpScale;
-    { Specifies the amount of subsampling for the bump texture. 
+    { Specifies the amount of subsampling for the bump texture.
       This value must be a power of 2, and is used to divide the height
       tile resolution to determine the bump texture resolution (f.i.
       a tile size of 128 with a subsampling of 4 will result in textures
@@ -93,11 +98,10 @@ type
     property OnSourceDataFetched;
   end;
 
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
 implementation
-
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -105,13 +109,9 @@ implementation
 const
   cDefaultBumpScale = 0.01;
 
-  // ------------------
-  // ------------------ TVKBumpmapHDS ------------------
-  // ------------------
-
-  // Create
-  //
-
+// ------------------
+// ------------------ TVKBumpmapHDS ------------------
+// ------------------
 constructor TVKBumpmapHDS.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
@@ -120,18 +120,12 @@ begin
   Uno := TCriticalSection.Create;
 end;
 
-// Destroy
-//
-
 destructor TVKBumpmapHDS.Destroy;
 begin
   BumpmapLibrary := nil;
   Uno.Free;
   inherited Destroy;
 end;
-
-// Notification
-//
 
 procedure TVKBumpmapHDS.Notification(AComponent: TComponent;
   Operation: TOperation);
@@ -144,9 +138,6 @@ begin
   inherited;
 end;
 
-// Release
-//
-
 procedure TVKBumpmapHDS.Release(aHeightData: TVKHeightData);
 var
   libMat: TVKLibMaterial;
@@ -157,14 +148,6 @@ begin
     libMat.free;
   inherited;
 end;
-
-// TrimTextureCache
-//
-// This will repeatedly delete the oldest unused texture from the TVKMaterialLibrary,
-// until the texture count drops to MaxTextureCount.
-// DONT use this if you used TVKHeightData.MaterialName to link your terrain textures.
-// Either use with TVKHeightData.LibMaterial, or manually delete unused Normal-Map textures.
-//
 
 procedure TVKBumpmapHDS.TrimTextureCache(MaxTextureCount: Integer);
 // Thread-safe Version
@@ -200,9 +183,6 @@ begin
     end;
   end;
 end;
-
-// PreparingData
-//
 
 procedure TVKBumpmapHDS.PreparingData(heightData: TVKHeightData);
 var
@@ -268,9 +248,6 @@ begin
   Uno.Release;
 end;
 
-// GenerateNormalMap
-//
-
 procedure TVKBumpmapHDS.GenerateNormalMap(heightData: TVKHeightData;
   normalMap: TVKBitmap32; scale: Single);
 var
@@ -307,9 +284,6 @@ begin
   end;
 end;
 
-// SetBumpmapLibrary
-//
-
 procedure TVKBumpmapHDS.SetBumpmapLibrary(const val: TVKMaterialLibrary);
 begin
   if val <> FBumpmapLibrary then
@@ -323,9 +297,6 @@ begin
   end;
 end;
 
-// SetBumpScale
-//
-
 procedure TVKBumpmapHDS.SetBumpScale(const val: Single);
 begin
   if FBumpScale <> val then
@@ -335,16 +306,10 @@ begin
   end;
 end;
 
-// StoreBumpScale
-//
-
 function TVKBumpmapHDS.StoreBumpScale: Boolean;
 begin
   Result := (FBumpScale <> cDefaultBumpScale);
 end;
-
-// SetSubSampling
-//
 
 procedure TVKBumpmapHDS.SetSubSampling(const val: Integer);
 begin
@@ -361,12 +326,10 @@ end;
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 initialization
-
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-// class registrations
 RegisterClass(TVKBumpmapHDS);
 
 end.

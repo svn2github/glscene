@@ -2,8 +2,7 @@
 // VKScene Component Library, based on GLScene http://glscene.sourceforge.net 
 //
 {
-   Implements the standard Teapot, build from evaluators. 
-   
+   Implements the standard Teapot, build from evaluators.
 }
 unit VKS.Teapot;
 
@@ -12,25 +11,23 @@ interface
 {$I VKScene.inc}
 
 uses
+  Winapi.OpenGL,
   System.Classes,
-  Winapi.OpenGL, Winapi.OpenGLext,
 
-  VKS.Scene, VKS.VectorGeometry, VKS.Context,
-  VKS.RenderContextInfo, VKS.VectorTypes;
+  VKS.Scene,
+  VKS.VectorGeometry,
+  VKS.Context,
+  VKS.RenderContextInfo,
+  VKS.VectorTypes;
 
 type
 
-  // TVKTeapot
-  //
-  { The classic teapot. 
-     The only use of this object is as placeholder for testing... }
+  { The classic teapot.
+    The only use of this object is as placeholder for testing... }
   TVKTeapot = class(TVKSceneObject)
   private
-    
     FGrid: Cardinal;
-
   public
-    
     constructor Create(AOwner: TComponent); override;
     function AxisAlignedDimensionsUnscaled: TVector; override;
     procedure BuildList(var rci: TVKRenderContextInfo); override;
@@ -38,16 +35,13 @@ type
       ARenderSelf, ARenderChildren: Boolean); override;
   end;
 
-  //-------------------------------------------------------------
-  //-------------------------------------------------------------
-  //-------------------------------------------------------------
+//-------------------------------------------------------------
+//-------------------------------------------------------------
+//-------------------------------------------------------------
 implementation
 // ------------------
 // ------------------ TVKTeapot ------------------
 // ------------------
-
-// Create
-//
 
 constructor TVKTeapot.Create(AOwner: TComponent);
 begin
@@ -55,16 +49,10 @@ begin
   FGrid := 5;
 end;
 
-// AxisAlignedDimensionsUnscaled
-//
-
 function TVKTeapot.AxisAlignedDimensionsUnscaled: TVector;
 begin
   SetVector(Result, 0.55, 0.25, 0.35);
 end;
-
-// BuildList
-//
 
 procedure TVKTeapot.BuildList(var rci: TVKRenderContextInfo);
 
@@ -168,9 +156,6 @@ begin
   rci.VKStates.InvertFrontFace;
 end;
 
-// DoRender
-//
-
 procedure TVKTeapot.DoRender(var ARci: TVKRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);
 const
@@ -210,9 +195,9 @@ end;
 //-------------------------------------------------------------
 //-------------------------------------------------------------
 initialization
-  //-------------------------------------------------------------
-  //-------------------------------------------------------------
-  //-------------------------------------------------------------
+//-------------------------------------------------------------
+//-------------------------------------------------------------
+//-------------------------------------------------------------
 
   RegisterClasses([TVKTeapot]);
 

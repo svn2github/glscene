@@ -82,7 +82,8 @@ type
     NC - number of cut levels
     HgtL - values of cut levels
   }
-    procedure Conrec(PlaneSFindex:Integer; PlaneSF: TVKFreeForm; Data: TVKMatrix; ilb, iub, jlb, jub: Integer;
+    procedure Conrec(PlaneSFindex:Integer; PlaneSF: TVKFreeForm; Data: TVKMatrix;
+         ilb, iub, jlb, jub: Integer;
          X: TVKVector; Y: TVKVector; NC: Integer; HgtL: TVKVector; Z_Kfix: Single;
          res3Dmax, res3Dmin: Single);
    private
@@ -127,8 +128,6 @@ begin
     Result := 0;
 end;
 
-// Initialize_Contouring
-//
 procedure Initialize_Contouring;
 
 var
@@ -164,8 +163,6 @@ begin
   end;
 end;
 
-// Release_Memory_Isoline
-//
 procedure Release_Memory_Isoline;
 begin
   SetLength(Visited, 0);
@@ -176,8 +173,6 @@ begin
   SetLength(LineY2, 0);
 end;
 
-// Cuts
-//
 procedure Cuts(const g: TVKMatrix; i, j: Integer; var s: array of Integer);
 begin
   s[0] := 0;
@@ -203,8 +198,6 @@ begin
   end;
 end;
 
-// Intercept
-//
 procedure Intercept(const g: TVKMatrix; i, j, s: Integer; var x, y: Single);
 begin
   case s of
@@ -231,8 +224,6 @@ begin
   end;
 end;
 
-// Free_Exit
-//
 function Free_Exit(const Visited: TVKByteMatrix;
   i, j, NX, NY, Lexit: Integer): Boolean;
 var
@@ -251,8 +242,6 @@ begin
   end;
 end;
 
-// TraceIsoline
-//
 procedure TraceIsoline(i, j, Lexit, NX, NY: Integer; const Grid: TVKMatrix;
   const Visited: TVKByteMatrix; var LineX, LineY: TVKVector;
   var NP: Integer; var OffGrid: Boolean);
@@ -330,11 +319,10 @@ begin
   // Have finished loop
 end;
 
+function GetNextIsoline(var Isoline: TVKIsoline): Boolean;
 { LineX and LineY are (pointers to) zero-offset vectors, to which
   sufficient space has been allocated to store the coordinates of
   any feasible Isoline }
-//
-function GetNextIsoline(var Isoline: TVKIsoline): Boolean;
 var
   OffGrid: boolean;
   Lexit: integer;
@@ -402,8 +390,6 @@ begin
   Result := False;
 end;
 
-// TriangleElevationSegments
-//
 procedure TriangleElevationSegments(const p1, p2, p3: TAffineVector;
   ElevationDelta: Single; Segments: TAffineVectorList);
 
@@ -457,8 +443,6 @@ begin
   end;
 end;
 
-// TIsolines class
-//
 constructor TVKIsolines.Create(AOwner: TComponent);
 begin
   LineList := TList.Create;
@@ -525,9 +509,11 @@ begin
   NP := 0;
 end;
 
-// Conrec
-//
-procedure TVKIsolines.Conrec(PlaneSFindex:Integer;PlaneSF:TVKfreeForm; Data: TVKMatrix; ilb, iub, jlb, jub: Integer;
+//--------------------------------------------------------------------------
+{ Conrec }
+//--------------------------------------------------------------------------
+procedure TVKIsolines.Conrec(PlaneSFindex:Integer;PlaneSF:TVKfreeForm;
+  Data: TVKMatrix; ilb, iub, jlb, jub: Integer;
   X: TVKVector; Y: TVKVector;  NC: Integer; HgtL: TVKVector;
   Z_Kfix: Single; res3Dmax,res3Dmin: Single);
 // ------------------------------------------------------------------------------
@@ -564,7 +550,6 @@ var
 begin
  SetLength(GLSpaceTextSF, NC-1);
  IUniqueList := TList<Single>.Create;
-
  ScaleFont:= 0.025 * MaxValue(Y);      // 050515
 
   // set casting array
