@@ -33,7 +33,8 @@ uses
   VKS.RenderContextInfo,
   VKS.Nodes,
   VKS.State,
-  VKS.VectorTypes;
+  VKS.VectorTypes,
+  VKS.VectorLists;
 
 type
 
@@ -266,7 +267,6 @@ implementation
 
 uses
   VKS.Spline,
-  VKS.VectorLists,
   XOpenGL;
 
 // ------------------

@@ -2,18 +2,20 @@
 // VKScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
 {
-   VRML file format parser.
-
+ VRML file format parser.
 }
-unit VRMLParser;
+unit uVRMLParser;
 
 interface
 
 {$I VKScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
-  VKS.VectorTypes, VKS.VectorLists, VKS.Utils;
+  System.Classes,
+  System.SysUtils,
+  VKS.VectorTypes,
+  VKS.VectorLists,
+  VKS.Utils;
 
 type
   TVRMLNode = class
@@ -22,20 +24,16 @@ type
       FParent : TVRMLNode;
       FName,
       FDefName : String;
-
       function GetNode(index : Integer) : TVRMLNode;
-
     public
       constructor Create; virtual;
       constructor CreateOwned(AParent : TVRMLNode);
       destructor Destroy; override;
-
       function Count : Integer;
       procedure Clear;
       procedure Add(node : TVRMLNode);
       procedure Remove(node : TVRMLNode);
       procedure Delete(index : Integer);
-
       property Nodes[index : Integer] : TVRMLNode read GetNode; default;
       property Parent : TVRMLNode read FParent;
       property Name : String read FName write FName;
@@ -74,17 +72,14 @@ type
       FHasEmissive,
       FHasTransparency,
       FHasShininess : Boolean;
-
     public
       constructor Create; override;
-
       property DiffuseColor : TVector3f read FDiffuseColor write FDiffuseColor;
       property AmbientColor : TVector3f read FAmbientColor write FAmbientColor;
       property SpecularColor : TVector3f read FSpecularColor write FSpecularColor;
       property EmissiveColor : TVector3f read FEmissiveColor write FEmissiveColor;
       property Transparency : Single read FTransparency write FTransparency;
       property Shininess : Single read FShininess write FShininess;
-
       property HasDiffuse : Boolean read FHasDiffuse write FHasDiffuse;
       property HasAmbient : Boolean read FHasAmbient write FHasAmbient;
       property HasSpecular : Boolean read FHasSpecular write FHasSpecular;
@@ -114,7 +109,6 @@ type
       FScaleFactor : TVector3f;
     public
       constructor Create; override;
-
       property Center : TVector3f read FCenter write FCenter;
       property Rotation : TVector4f read FRotation write FRotation;
       property ScaleFactor : TVector3f read FScaleFactor write FScaleFactor;
@@ -128,13 +122,11 @@ type
       FCurrentNode : TVRMLNode;
       FAllowUnknownNodes : Boolean;
       FDefines : TList;
-
     protected
       function ReadToken : String;
       function ReadSingle : Single;
       function ReadVector3f : TVector3f;
       function ReadVector4f : TVector4f;
-
       procedure ReadUnknownArray(defname : String = '');
       procedure ReadUnknownHeirachy(defname : String = '');
       procedure ReadUnknown(unknown_token : String; defname : String = '');
@@ -153,16 +145,12 @@ type
       procedure ReadGroup(defname : String = '');
       procedure ReadDef;
       procedure ReadUse;
-
     public
       constructor Create;
       destructor Destroy; override;
-
       procedure Parse(Text : String);
-
       property RootNode : TVRMLNode read FRootNode;
       property AllowUnknownNodes : Boolean read FAllowUnknownNodes write FAllowUnknownNodes;
-
   end;
 
 //---------------------------------------------------------------------------
@@ -215,15 +203,11 @@ end;
 // --------------- TVRMLNode ---------------
 // ---------------
 
-// Create
-//
 constructor TVRMLNode.Create;
 begin
   FNodes:=TList.Create;
 end;
 
-// CreateOwned
-//
 constructor TVRMLNode.CreateOwned(AParent : TVRMLNode);
 begin
   Create;
@@ -231,8 +215,6 @@ begin
     AParent.Add(Self);
 end;
 
-// Destroy
-//
 destructor TVRMLNode.Destroy;
 begin
   Clear;
@@ -296,16 +278,12 @@ end;
 // --------------- TVRMLSingleArray ---------------
 // ---------------
 
-// Create
-//
 constructor TVRMLSingleArray.Create;
 begin
   inherited;
   FValues:=TSingleList.Create;
 end;
 
-// Destroy
-//
 destructor TVRMLSingleArray.Destroy;
 begin
   FValues.Free;
@@ -338,8 +316,6 @@ end;
 // --------------- TVRMLMaterial ---------------
 // ---------------
 
-// Create
-//
 constructor TVRMLMaterial.Create;
 begin
   inherited;
@@ -357,8 +333,6 @@ end;
 // --------------- TVRMLTransform ---------------
 // ---------------
 
-// Create
-//
 constructor TVRMLTransform.Create;
 begin
   inherited;
@@ -372,8 +346,6 @@ end;
 // --------------- TVRMLParser ---------------
 // ---------------
 
-// Create
-//
 constructor TVRMLParser.Create;
 begin
   FDefines:=TList.Create;
@@ -382,8 +354,6 @@ begin
   FAllowUnknownNodes:=False;
 end;
 
-// Destroy
-//
 destructor TVRMLParser.Destroy;
 begin
   FDefines.Free;
@@ -391,8 +361,6 @@ begin
   inherited;
 end;
 
-// ReadToken
-//
 function TVRMLParser.ReadToken : String;
 begin
   if FCursor<FTokens.Count then begin
@@ -924,8 +892,6 @@ begin
     ReadUnknown(token);
 end;
 
-// ReadUse
-//
 procedure TVRMLParser.ReadUse;
 begin
   with TVRMLUse.CreateOwned(FCurrentNode) do begin

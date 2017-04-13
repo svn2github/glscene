@@ -20,7 +20,7 @@ uses
   System.Classes,
   System.SysUtils,
   
-  OpenGLAdapter,
+  uOpenGLAdapter,
   VKS.Scene,
   VKS.HeightData,
   VKS.Material,
@@ -53,19 +53,15 @@ type
     tmReleaseUnusedTiles, tmAllocateNewTiles, tmWaitForPreparing);
   TVKTileManagementFlags = set of TVKTileManagementFlag;
 
-  // TVKTerrainRenderer
-
-  { Basic terrain renderer. 
+  { Basic terrain renderer.
     This renderer uses no sophisticated meshing, it just builds and maintains
     a set of terrain tiles, performs basic visibility culling and renders its
     stuff. You can use it has a base class/sample for more specialized
     terrain renderers. 
     The Terrain heightdata is retrieved directly from a TVKHeightDataSource, and
     expressed as z=f(x, y) data. }
-  // TVKTerrainRenderer = class (TVKSceneObject)
   TVKTerrainRenderer = class(TVKSceneObject)
   private
-    
     FHeightDataSource: TVKHeightDataSource;
     FTileSize: Integer;
     FQualityDistance, FinvTileSize: single;
@@ -80,18 +76,13 @@ type
     FOnPatchPostRender: TPatchPostRenderEvent;
     FOnHeightDataPostRender: TVKHeightDataPostRenderEvent;
     FOnMaxCLODTrianglesReached: TMaxCLODTrianglesReachedEvent;
-
     FQualityStyle: TVKTerrainHighResStyle;
     FOcclusionFrameSkip: Integer;
     FOcclusionTesselate: TVKTerrainOcclusionTesselate;
-
     FContourInterval: Integer;
     FContourWidth: Integer;
-
   protected
-    
     FTilesHash: packed array [0 .. cTilesHashSize] of TList;
-
     procedure MarkAllTilesAsUnused;
     procedure ReleaseAllUnusedTiles;
     procedure MarkHashedTileAsUsed(const tilePos: TAffineVector);
@@ -107,65 +98,53 @@ type
     procedure SetMaterialLibrary(const Val: TVKMaterialLibrary);
     procedure SetQualityStyle(const Val: TVKTerrainHighResStyle);
     procedure SetOcclusionFrameSkip(Val: Integer);
-
     procedure Notification(AComponent: TComponent;
       Operation: TOperation); override;
     procedure DestroyHandle; override;
-
     procedure ReleaseAllTiles; dynamic;
     procedure OnTileDestroyed(Sender: TObject); virtual;
     function GetPreparedPatch(const TilePos, EyePos: TAffineVector;
       TexFactor: Single; HDList: TList): TVKROAMPatch;
-
   public
-    
-
     { TileManagement flags can be used to turn off various Tile cache management features.
       This helps to prevent unnecessary tile cache flushes, when rendering from multiple cameras. }
     TileManagement: TVKTileManagementFlags;
-
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
     procedure BuildList(var rci: TVKRenderContextInfo); override;
     function RayCastIntersect(const rayStart, rayVector: TVector;
       intersectPoint: PVector = nil; intersectNormal: PVector = nil)
       : boolean; override;
-
-    { Interpolates height for the given point. 
+    { Interpolates height for the given point.
       Expects a point expressed in absolute coordinates. }
     function InterpolatedHeight(const p: TVector): single; overload; virtual;
     function InterpolatedHeight(const p: TAffineVector): single; overload;
     { Triangle count for the last render. }
     property LastTriangleCount: Integer read FLastTriangleCount;
     function HashedTileCount: Integer;
-
   published
-    
     { Specifies the HeightData provider component. }
     property HeightDataSource: TVKHeightDataSource read FHeightDataSource
       write SetHeightDataSource;
-    { Size of the terrain tiles. 
-      Must be a power of two. }
+    { Size of the terrain tiles. Must be a power of two. }
     property TileSize: Integer read FTileSize write SetTileSize default 16;
     { Number of tiles required for a full texture map. }
     property TilesPerTexture: single read FTilesPerTexture
       write SetTilesPerTexture;
-    { Link to the material library holding terrain materials. 
+    { Link to the material library holding terrain materials.
       If unspecified, and for all terrain tiles with unspecified material,
       the terrain renderer's material is used. }
     property MaterialLibrary: TVKMaterialLibrary read FMaterialLibrary
       write SetMaterialLibrary;
-
-    {  Quality distance hint. 
+    {  Quality distance hint.
       This parameter gives an hint to the terrain renderer at which distance
       the terrain quality can be degraded to favor speed. The distance is
-      expressed in absolute coordinates units. 
+      expressed in absolute coordinates units.
       All tiles closer than this distance are rendered according to
       QualityStyle and with a static resolution. }
     property QualityDistance: Single read FQualityDistance
       write FQualityDistance;
-    { Determines how high-res tiles (closer than QualityDistance) are rendered. 
+    { Determines how high-res tiles (closer than QualityDistance) are rendered.
       hrsFullGeometry (default value) means that the high-res tiles are rendered
       with full-geometry, and no LOD of any kind, while hrsTesselated means
       the tiles will be tesselated once, with the best output for the
@@ -173,18 +152,18 @@ type
       in further frames without any adpative tesselation. }
     property QualityStyle: TVKTerrainHighResStyle read FQualityStyle
       write SetQualityStyle default hrsFullGeometry;
-    {  Maximum number of CLOD triangles per scene. 
+    {  Maximum number of CLOD triangles per scene.
       Triangles in high-resolution tiles (closer than QualityDistance) do
       not count toward this limit. }
     property MaxCLODTriangles: Integer read FMaxCLODTriangles
       write FMaxCLODTriangles default 65536;
-    {  Precision of CLOD tiles. 
+    {  Precision of CLOD tiles.
       The lower the value, the higher the precision and triangle count.
       Large values will result in coarse terrain.
       high-resolution tiles (closer than QualityDistance) ignore this setting. }
     property CLODPrecision: Integer read FCLODPrecision write SetCLODPrecision
       default 100;
-    {  Numbers of frames to skip for a tile when occlusion testing found it invisible. 
+    {  Numbers of frames to skip for a tile when occlusion testing found it invisible.
       Occlusion testing can help reduce CPU, T&L and fillrate requirements
       when tiles are occluded, either by the terrain itself (tiles behind
       a mountain or a cliff) or by geometry that was rendered before the
@@ -200,7 +179,7 @@ type
       This optimization requires the hardware to support GL_NV_occlusion_query. }
     property OcclusionFrameSkip: Integer read FOcclusionFrameSkip
       write SetOcclusionFrameSkip default 0;
-    {  Determines if and how occlusion testing affects tesselation. 
+    {  Determines if and how occlusion testing affects tesselation.
       Turning off tesselation of tiles determined invisible can improve
       performance, however, it may result in glitches since the tesselation
       of an ivisible tile can have a slight effect on the tesselation
@@ -212,51 +191,40 @@ type
     property OcclusionTesselate: TVKTerrainOcclusionTesselate
       read FOcclusionTesselate write FOcclusionTesselate
       default totTesselateIfVisible;
-
-    {  Allows to specify terrain bounds. 
+    {  Allows to specify terrain bounds.
       Default rendering bounds will reach depth of view in all direction,
       with this event you can chose to specify a smaller rendered
       terrain area. }
     property OnGetTerrainBounds: TGetTerrainBoundsEvent read FOnGetTerrainBounds
       write FOnGetTerrainBounds;
-    { Invoked for each rendered patch after terrain render has completed. 
+    { Invoked for each rendered patch after terrain render has completed.
       The list holds TVKROAMPatch objects and allows per-patch
       post-processings, like waters, trees... It is invoked *before*
       OnHeightDataPostRender. }
     property OnPatchPostRender: TPatchPostRenderEvent read FOnPatchPostRender
       write FOnPatchPostRender;
-    {  Invoked for each heightData not culled out by the terrain renderer. 
+    {  Invoked for each heightData not culled out by the terrain renderer.
       The list holds TVKHeightData objects and allows per-patch
       post-processings, like waters, trees... It is invoked *after*
       OnPatchPostRender. }
     property OnHeightDataPostRender: TVKHeightDataPostRenderEvent
       read FOnHeightDataPostRender write FOnHeightDataPostRender;
-    {  Invoked whenever the MaxCLODTriangles limit was reached during last rendering. 
+    {  Invoked whenever the MaxCLODTriangles limit was reached during last rendering.
       This forced the terrain renderer to resize the buffer, which affects performance.
-      If this event is fired frequently, one should increase MaxCLODTriangles.
-     }
+      If this event is fired frequently, one should increase MaxCLODTriangles. }
     property OnMaxCLODTrianglesReached: TMaxCLODTrianglesReachedEvent
       read FOnMaxCLODTrianglesReached write FOnMaxCLODTrianglesReached;
-
      {  Distance between contours - zero (default) for no contours  PGS }
     property ContourInterval: Integer read FContourInterval
       write FContourInterval default 0;
-
      {  Width of contour lines }
     property ContourWidth: Integer read FContourWidth
       write FContourWidth default 1;
-
   end;
 
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
+//===================================================================
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-
-// HashKey
+//===================================================================
 
 function HashKey(const xLeft, yTop: Integer): Integer;
 begin
@@ -264,12 +232,9 @@ begin
     (yTop shr 9) + (yTop shr 17)) and cTilesHashSize;
 end;
 
-
 // ------------------
 // ------------------ TVKTerrainRenderer ------------------
 // ------------------
-
-// Create
 
 constructor TVKTerrainRenderer.Create(AOwner: TComponent);
 var
@@ -292,8 +257,6 @@ begin
     tmAllocateNewTiles];
 end;
 
-// Destroy
-//
 destructor TVKTerrainRenderer.Destroy;
 var
   i: Integer;
@@ -310,8 +273,6 @@ begin
   inherited Destroy;
 end;
 
-// Notification
-//
 procedure TVKTerrainRenderer.Notification(AComponent: TComponent;
   Operation: TOperation);
 begin

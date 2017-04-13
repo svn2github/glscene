@@ -11,49 +11,38 @@ interface
 {$I VKScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
-  VKS.VectorFileObjects, VKS.ApplicationFileIO, 
-  FileMD2;
+  System.Classes,
+  System.SysUtils,
+  VKS.VectorFileObjects,
+  VKS.ApplicationFileIO,
+
+  uFileMD2;
 
 type
-   // TVKMD2VectorFile
-   //
-   { The MD2 vector file (Quake2 actor file). 
+   { The MD2 vector file (Quake2 actor file).
       Stores a set of "frames" describing the different postures of the actor,
       it may be animated by TVKActor. The "Skin" must be loaded indepentendly
       (the whole mesh uses a single texture bitmap). 
       Based on code by Roger Cao. }
    TVKMD2VectorFile = class(TVKVectorFile)
       public
-         
          class function Capabilities : TVKDataFileCapabilities; override;
          procedure LoadFromStream(aStream : TStream); override;
    end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-
-
-
 
 // ------------------
 // ------------------ TVKMD2VectorFile ------------------
 // ------------------
 
-// Capabilities
-//
 class function TVKMD2VectorFile.Capabilities : TVKDataFileCapabilities;
 begin
    Result:=[dfcRead];
 end;
 
-// LoadFromStream
-//
 procedure TVKMD2VectorFile.LoadFromStream(aStream : TStream);
 var
    i, j : Integer;
@@ -112,11 +101,7 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
    RegisterVectorFileFormat('md2', 'Quake II model files', TVKMD2VectorFile);

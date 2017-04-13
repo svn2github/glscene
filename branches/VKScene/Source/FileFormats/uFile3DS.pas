@@ -16,7 +16,7 @@
    
      
 }
-unit File3DS;
+unit uFile3DS;
 
 interface
 
@@ -26,7 +26,9 @@ interface
 {$RANGECHECKS OFF}
 
 uses 
-  System.Classes, Types3DS, VKS.CrossPlatform;
+  System.Classes,
+  uTypes3DS,
+  VKS.CrossPlatform;
 
 type
   TFile3DS = class;
@@ -57,7 +59,6 @@ type
   // For convinience and speed the data of the chunks is collected into some
   // special structures (FMaterialList etc.) and presented to the user
   // by the following helper classes:
-
   TMaterialList = class
   private
     FOwner: TFile3DS;
@@ -69,8 +70,7 @@ type
     constructor Create(AOwner: TFile3DS); virtual;
     destructor Destroy; override;
     procedure ClearList;
-
-    property Count: Integer read GetCount;
+     property Count: Integer read GetCount;
     property Material[Index: Integer]: PMaterial3DS read GetMaterial; default;
     property MaterialByName[const Name: String]: PMaterial3DS
       read GetMaterialByName;
@@ -91,9 +91,7 @@ type
   public
     constructor Create(AOwner: TFile3DS); virtual;
     destructor Destroy; override;
-
     procedure ClearLists;
-
     property CameraCount: Integer read GetCamCount;
     property MeshCount: Integer read GetMeshObjectCount;
     property OmniLightCount: Integer read GetOmniCount;
@@ -122,9 +120,7 @@ type
   public
     constructor Create(AOwner: TFile3DS); virtual;
     destructor Destroy; override;
-
     procedure ClearLists;
-
     property AmbientLightMotion: PKFAmbient3DS read GetAmbientMotion;
     property CameraMotionCount: Integer read GetCamMotionCount;
     property MeshMotionCount: Integer read GetMeshMotionCount;
@@ -139,9 +135,9 @@ type
       read GetSpotLightMotion;
   end;
 
-  // TFile3DS is the  main class and supplies the user with all available data
-  // from a specific 3DS file. The data is currently read only, but the class might be
-  // finished sometime later...
+  { TFile3DS is the  main class and supplies the user with all available data
+   from a specific 3DS file. The data is currently read only, but the class might be
+   finished sometime later... }
   TFile3DS = class
   private
     FNodeList: PNodeList;
@@ -182,8 +178,7 @@ type
     constructor CreateFromFile(const FileName: String); virtual;
     destructor Destroy; override;
     procedure ClearLists;
-
-    // database methods
+    { database methods }
     procedure DumpDataBase(Strings: TStrings; DumpLevel: TDumpLevel);
     procedure LoadFromFile(const FileName: String);
     procedure LoadFromStream(const aStream: TStream);
@@ -244,14 +239,17 @@ type
       write FOnLoadProgress;
   end;
 
-  // ---------------------------------------------------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------------------------------------------------
 implementation
+// ---------------------------------------------------------------------------------------------------------------------
 
 uses
   System.SysUtils,
-  
-  Const3DS, Utils3DS, VKS.ApplicationFileIO;
+ 
+  uConst3DS,
+  uUtils3DS,
+  VKS.ApplicationFileIO;
 
 function StrPasFree(P: PChar3DS): String;
 begin
@@ -2819,7 +2817,7 @@ end;
 function TFile3DS.GetDatabaseRelease: TReleaseLevel;
 
 begin
-  Result := Utils3DS.GetDatabaseRelease(Self, FDatabase);
+  Result := uUtils3DS.GetDatabaseRelease(Self, FDatabase);
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -2827,7 +2825,7 @@ end;
 function TFile3DS.GetMeshRelease: TReleaseLevel;
 
 begin
-  Result := Utils3DS.GetMeshRelease(Self, FDatabase);
+  Result := uUtils3DS.GetMeshRelease(Self, FDatabase);
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------

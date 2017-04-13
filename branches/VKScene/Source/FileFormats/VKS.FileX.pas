@@ -2,8 +2,8 @@
 // VKScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
 {
-   Simple X format support for Delphi (Microsoft's favorite format)
-    
+  Simple X format support for Delphi (Microsoft's favorite format)
+
 }
 
 unit VKS.FileX;
@@ -13,116 +13,141 @@ interface
 {$I VKScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
-  
-  VKS.VectorFileObjects, VKS.ApplicationFileIO, VKS.VectorGeometry, VKS.Texture,
-  VKS.VectorLists, VKS.Material,
+  System.Classes,
+  System.SysUtils,
+
+  VKS.VectorFileObjects,
+  VKS.ApplicationFileIO,
+  VKS.VectorGeometry,
+  VKS.Texture,
+  VKS.VectorLists,
+  VKS.Material,
 
   // Misc
-  FileX;
+  uFileX;
 
 type
-  TVKXVectorFile = class (TVKVectorFile)
-    public
-      
-      class function Capabilities: TVKDataFileCapabilities; override;
-      procedure LoadFromStream(aStream : TStream); override;
+  TVKXVectorFile = class(TVKVectorFile)
+  public
+    class function Capabilities: TVKDataFileCapabilities; override;
+    procedure LoadFromStream(aStream: TStream); override;
   end;
 
+  // ==========================================================
 implementation
 
-class function TVKXVectorFile.Capabilities : TVKDataFileCapabilities;
+// ==========================================================
+
+class function TVKXVectorFile.Capabilities: TVKDataFileCapabilities;
 begin
-   Result := [dfcRead];
+  Result := [dfcRead];
 end;
 
 procedure TVKXVectorFile.LoadFromStream(aStream: TStream);
 var
-  DXFile : TDXFile;
+  DXFile: TDXFile;
 
-  procedure RecursDXFile(DXNode : TDXNode);
+  procedure RecursDXFile(DXNode: TDXNode);
   var
-    i,j,k,l,vertcount : integer;
-    mo : TVKMeshObject;
-    mat : TMatrix;
-    libmat : TVKLibMaterial;
-    fg : TFGVertexNormalTexIndexList;
-    str : String;
+    i, j, k, l, vertcount: integer;
+    mo: TVKMeshObject;
+    mat: TMatrix;
+    libmat: TVKLibMaterial;
+    fg: TFGVertexNormalTexIndexList;
+    str: String;
   begin
-    mat:=IdentityHMGMatrix;
+    mat := IdentityHMGMatrix;
     if Assigned(DXNode.Owner) then
-      if DXNode.Owner is TDXFrame then begin
-        mat:=TDXFrame(DXNode.Owner).GlobalMatrix;
+      if DXNode.Owner is TDXFrame then
+      begin
+        mat := TDXFrame(DXNode.Owner).GlobalMatrix;
         TransposeMatrix(mat);
       end;
 
-    if DXNode is TDXMesh then begin
-      mo:=TVKMeshObject.CreateOwned(Owner.MeshObjects);
-      mo.Mode:=momFaceGroups;
+    if DXNode is TDXMesh then
+    begin
+      mo := TVKMeshObject.CreateOwned(Owner.MeshObjects);
+      mo.Mode := momFaceGroups;
       mo.Vertices.Assign(TDXMesh(DXNode).Vertices);
       mo.Vertices.TransformAsPoints(mat);
       mo.Normals.Assign(TDXMesh(DXNode).Normals);
       mo.Normals.TransformAsVectors(mat);
       mo.TexCoords.Assign(TDXMesh(DXNode).TexCoords);
 
-      if TDXMesh(DXNode).MaterialList.Count>0 then begin
+      if TDXMesh(DXNode).MaterialList.Count > 0 then
+      begin
         // Add the materials
-        if (Owner.UseMeshMaterials) and Assigned(Owner.MaterialLibrary) then begin
-          for i:=0 to TDXMesh(DXNode).MaterialList.Count-1 do begin
-            Str:=TDXMesh(DXNode).MaterialList.Items[i].Texture;
-            if FileExists(Str) then
-              libmat:=Owner.MaterialLibrary.AddTextureMaterial('', Str)
+        if (Owner.UseMeshMaterials) and Assigned(Owner.MaterialLibrary) then
+        begin
+          for i := 0 to TDXMesh(DXNode).MaterialList.Count - 1 do
+          begin
+            str := TDXMesh(DXNode).MaterialList.Items[i].Texture;
+            if FileExists(str) then
+              libmat := Owner.MaterialLibrary.AddTextureMaterial('', str)
             else
-              libmat:=Owner.MaterialLibrary.Materials.Add;
+              libmat := Owner.MaterialLibrary.Materials.Add;
 
-            libmat.Name:=Format('%s_%d',[DXNode.Name,i]);
-            with libmat.Material.FrontProperties do begin
-              Diffuse.Color:=TDXMesh(DXNode).MaterialList.Items[i].Diffuse;
-              Shininess:=Round(TDXMesh(DXNode).MaterialList.Items[i].SpecPower/2);
-              Specular.Color:=VectorMake(TDXMesh(DXNode).MaterialList.Items[i].Specular);
-              Emission.Color:=VectorMake(TDXMesh(DXNode).MaterialList.Items[i].Emissive);
+            libmat.Name := Format('%s_%d', [DXNode.Name, i]);
+            with libmat.Material.FrontProperties do
+            begin
+              Diffuse.Color := TDXMesh(DXNode).MaterialList.Items[i].Diffuse;
+              Shininess := Round(TDXMesh(DXNode).MaterialList.Items[i]
+                .SpecPower / 2);
+              Specular.Color :=
+                VectorMake(TDXMesh(DXNode).MaterialList.Items[i].Specular);
+              Emission.Color :=
+                VectorMake(TDXMesh(DXNode).MaterialList.Items[i].Emissive);
             end;
           end;
         end;
 
         // Add the facegroups (separate since material library
         // can be unassigned)
-        for i:=0 to TDXMesh(DXNode).MaterialList.Count-1 do begin
-          fg:=TFGVertexNormalTexIndexList.CreateOwned(mo.FaceGroups);
-          fg.MaterialName:=Format('%s_%d',[DXNode.Name,i]);
+        for i := 0 to TDXMesh(DXNode).MaterialList.Count - 1 do
+        begin
+          fg := TFGVertexNormalTexIndexList.CreateOwned(mo.FaceGroups);
+          fg.MaterialName := Format('%s_%d', [DXNode.Name, i]);
         end;
 
         // Now add the indices per material
-        vertcount:=0;
-        for i:=0 to TDXMesh(DXNode).VertCountIndices.Count-1 do begin
-          if (i<TDXMesh(DXNode).MaterialIndices.Count) then begin
-            j:=TDXMesh(DXNode).MaterialIndices[i];
-            k:=TDXMesh(DXNode).VertCountIndices[i];
-            for l:=vertcount to vertcount+k-1 do begin
-              TFGVertexNormalTexIndexList(mo.FaceGroups[j]).VertexIndices.Add(TDXMesh(DXNode).VertexIndices[l]);
-              if mo.TexCoords.Count>0 then
-                TFGVertexNormalTexIndexList(mo.FaceGroups[j]).TexCoordIndices.Add(TDXMesh(DXNode).VertexIndices[l]);
-              if TDXMesh(DXNode).NormalIndices.Count>0 then
-                TFGVertexNormalTexIndexList(mo.FaceGroups[j]).NormalIndices.Add(TDXMesh(DXNode).NormalIndices[l])
+        vertcount := 0;
+        for i := 0 to TDXMesh(DXNode).VertCountIndices.Count - 1 do
+        begin
+          if (i < TDXMesh(DXNode).MaterialIndices.Count) then
+          begin
+            j := TDXMesh(DXNode).MaterialIndices[i];
+            k := TDXMesh(DXNode).VertCountIndices[i];
+            for l := vertcount to vertcount + k - 1 do
+            begin
+              TFGVertexNormalTexIndexList(mo.FaceGroups[j])
+                .VertexIndices.Add(TDXMesh(DXNode).VertexIndices[l]);
+              if mo.TexCoords.Count > 0 then
+                TFGVertexNormalTexIndexList(mo.FaceGroups[j])
+                  .TexCoordIndices.Add(TDXMesh(DXNode).VertexIndices[l]);
+              if TDXMesh(DXNode).NormalIndices.Count > 0 then
+                TFGVertexNormalTexIndexList(mo.FaceGroups[j])
+                  .NormalIndices.Add(TDXMesh(DXNode).NormalIndices[l])
             end;
-            vertcount:=vertcount+k;
+            vertcount := vertcount + k;
           end;
         end;
 
-      end else begin
-        fg:=TFGVertexNormalTexIndexList.CreateOwned(mo.FaceGroups);
+      end
+      else
+      begin
+        fg := TFGVertexNormalTexIndexList.CreateOwned(mo.FaceGroups);
         fg.NormalIndices.Assign(TDXMesh(DXNode).NormalIndices);
         fg.VertexIndices.Assign(TDXMesh(DXNode).VertexIndices);
       end;
 
     end;
 
-    for i:=0 to DXNode.Count-1 do
+    for i := 0 to DXNode.Count - 1 do
       RecursDXFile(TDXNode(DXNode[i]));
   end;
 
 begin
-  DXFile:=TDXFile.Create;
+  DXFile := TDXFile.Create;
   try
     DXFile.LoadFromStream(aStream);
     RecursDXFile(DXFile.RootNode);
@@ -132,6 +157,7 @@ begin
 end;
 
 initialization
-  RegisterVectorFileFormat('x', 'DirectX Model files', TVKXVectorFile);
+
+RegisterVectorFileFormat('x', 'DirectX Model files', TVKXVectorFile);
 
 end.

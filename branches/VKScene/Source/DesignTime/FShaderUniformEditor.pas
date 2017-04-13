@@ -84,7 +84,6 @@ type
     procedure Execute;
   end;
 
-
 function GLShaderUniformEditorForm: TVKShaderUniformEditorForm;
 procedure ReleaseShaderUniformEditor;
 
@@ -113,7 +112,9 @@ begin
   end;
 end;
 
+//-----------------------------------------------------------
 { TShaderUniformEditor }
+//-----------------------------------------------------------
 
 procedure TVKShaderUniformEditorForm.AddUniform(AValue: IShaderParameter);
 begin
@@ -267,7 +268,9 @@ begin
   SamplerBox.Items.Add(S);
 end;
 
+//-----------------------------------------------------------
 initialization
+//-----------------------------------------------------------
 
 finalization
   ReleaseShaderUniformEditor;

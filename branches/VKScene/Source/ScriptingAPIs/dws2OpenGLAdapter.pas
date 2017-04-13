@@ -8,7 +8,7 @@
 
   This unit is still under development. 
 }
-unit dws2OpenGLAdapter;
+unit dws2VKS.OpenGLAdapter;
 
 interface
 
@@ -38,7 +38,7 @@ procedure Register;
 implementation
 
 uses
-  dws2Functions, Winapi.OpenGL, Winapi.OpenGLext,  OpenGLAdapter, VKS.Context, VKS.VectorGeometry;
+  dws2Functions, Winapi.OpenGL, Winapi.OpenGLext,  uOpenGLAdapter, VKS.Context, VKS.VectorGeometry;
 
 type
   TglPushAttrib = class(TInternalFunction)

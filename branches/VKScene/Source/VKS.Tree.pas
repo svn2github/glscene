@@ -28,8 +28,8 @@ uses
   Winapi.OpenGLext,
   System.Classes,
   System.SysUtils,
-  // VKS
-  OpenGLAdapter,
+
+  uOpenGLAdapter,
   VKS.Scene,
   VKS.Material,
   VKS.VectorGeometry,
@@ -46,26 +46,19 @@ type
   TVKTreeBranches = class;
   TVKTreeBranchNoise = class;
 
-  // TVKTreeLeaves
-  //
   TVKTreeLeaves = class
   private
-    
     FOwner: TVKTree;
     FCount: Integer;
     FVertices: TAffineVectorList;
     FNormals: TAffineVectorList;
     FTexCoords: TAffineVectorList;
-
   public
-    
     constructor Create(AOwner: TVKTree);
     destructor Destroy; override;
-
     procedure BuildList(var rci: TVKRenderContextInfo);
     procedure AddNew(matrix: TMatrix);
     procedure Clear;
-
     property Owner: TVKTree read FOwner;
     property Count: Integer read FCount;
     property Vertices: TAffineVectorList read FVertices;
@@ -73,11 +66,8 @@ type
     property TexCoords: TAffineVectorList read FTexCoords;
   end;
 
-  // TVKTreeBranch
-  //
   TVKTreeBranch = class
   private
-    
     FOwner: TVKTreeBranches;
     FLeft: TVKTreeBranch;
     FCenter: TVKTreeBranch;
@@ -89,15 +79,11 @@ type
     FLower: TIntegerList;
     FUpper: TIntegerList;
     FCentralLeader: Boolean;
-
     procedure BuildBranch(branchNoise: TVKTreeBranchNoise;
       const matrix: TMatrix; TexCoordY, Twist: Single; Level: Integer);
-
   public
-    
     constructor Create(AOwner: TVKTreeBranches; AParent: TVKTreeBranch);
     destructor Destroy; override;
-
     property Owner: TVKTreeBranches read FOwner;
     property Left: TVKTreeBranch read FLeft;
     property Center: TVKTreeBranch read FCenter;
@@ -108,11 +94,8 @@ type
     property Upper: TIntegerList read FUpper;
   end;
 
-  // TVKTreeBranches
-  //
   TVKTreeBranches = class
   private
-    
     FOwner: TVKTree;
     FSinList: TSingleList;
     FCosList: TSingleList;
@@ -124,17 +107,12 @@ type
     FCount: Integer;
     FBranchCache: TList;
     FBranchIndices: TIntegerList;
-
     procedure BuildBranches;
-
   public
-    
     constructor Create(AOwner: TVKTree);
     destructor Destroy; override;
-
     procedure BuildList(var rci: TVKRenderContextInfo);
     procedure Clear;
-
     property Owner: TVKTree read FOwner;
     property SinList: TSingleList read FSinList;
     property CosList: TSingleList read FCosList;
@@ -144,34 +122,24 @@ type
     property Count: Integer read FCount;
   end;
 
-  // TVKTreeBranchNoise
-  //
   TVKTreeBranchNoise = class
   private
-    
     FBranchNoise: Single;
     FLeft, FRight, FCenter: TVKTreeBranchNoise;
-
     function GetLeft: TVKTreeBranchNoise;
     function GetCenter: TVKTreeBranchNoise;
     function GetRight: TVKTreeBranchNoise;
-
   public
-    
     constructor Create;
     destructor Destroy; override;
-
     property Left: TVKTreeBranchNoise read GetLeft;
     property Center: TVKTreeBranchNoise read GetCenter;
     property Right: TVKTreeBranchNoise read GetRight;
     property branchNoise: Single read FBranchNoise;
   end;
 
-  // TVKTree
-  //
   TVKTree = class(TVKImmaterialSceneObject)
   private
-    
     FDepth: Integer;
     FBranchFacets: Integer;
     FLeafSize: Single;
@@ -188,22 +156,16 @@ type
     FAutoCenter: Boolean;
     FAutoRebuild: Boolean;
     FCenterBranchConstant: Single;
-
     FLeaves: TVKTreeLeaves;
     FBranches: TVKTreeBranches;
     FNoise: TVKTreeBranchNoise;
-
     FMaterialLibrary: TVKMaterialLibrary;
     FLeafMaterialName: TVKLibMaterialName;
     FLeafBackMaterialName: TVKLibMaterialName;
     FBranchMaterialName: TVKLibMaterialName;
-
     FRebuildTree: Boolean;
-
     FAxisAlignedDimensionsCache: TVector;
-
   protected
-    
     procedure SetDepth(const Value: Integer);
     procedure SetBranchFacets(const Value: Integer);
     procedure SetLeafSize(const Value: Single);
@@ -220,45 +182,34 @@ type
     procedure SetAutoCenter(const Value: Boolean);
     procedure SetAutoRebuild(const Value: Boolean);
     procedure SetCenterBranchConstant(const Value: Single);
-
     procedure SetMaterialLibrary(const Value: TVKMaterialLibrary);
     procedure SetLeafMaterialName(const Value: TVKLibMaterialName);
     procedure SetLeafBackMaterialName(const Value: TVKLibMaterialName);
     procedure SetBranchMaterialName(const Value: TVKLibMaterialName);
-
     procedure Loaded; override;
-
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
     procedure Notification(AComponent: TComponent;
       Operation: TOperation); override;
     procedure DoRender(var ARci: TVKRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
     procedure BuildList(var rci: TVKRenderContextInfo); override;
     procedure StructureChanged; override;
-
     procedure BuildMesh(GLBaseMesh: TVKBaseMesh);
     procedure RebuildTree;
     procedure ForceTotalRebuild;
     procedure Clear;
-
     procedure GetExtents(var min, max: TAffineVector);
     function AxisAlignedDimensionsUnscaled: TVector; override;
-
     procedure LoadFromStream(aStream: TStream);
     procedure SaveToStream(aStream: TStream);
     procedure LoadFromFile(aFileName: String);
     procedure SaveToFile(aFileName: String);
-
     property Leaves: TVKTreeLeaves read FLeaves;
     property Branches: TVKTreeBranches read FBranches;
     property Noise: TVKTreeBranchNoise read FNoise;
-
   published
-    
     { The depth of tree branch recursion. }
     property Depth: Integer read FDepth write SetDepth;
     { The number of facets for each branch in the tree. }
@@ -296,7 +247,6 @@ type
       The effect also depends on the BranchAngle variable. }
     property CenterBranchConstant: Single read FCenterBranchConstant
       write SetCenterBranchConstant;
-
     property MaterialLibrary: TVKMaterialLibrary read FMaterialLibrary
       write SetMaterialLibrary;
     property LeafMaterialName: TVKLibMaterialName read FLeafMaterialName
@@ -307,17 +257,14 @@ type
       write SetBranchMaterialName;
   end;
 
-  // -----------------------------------------------------------------------------
-  // -----------------------------------------------------------------------------
-  // -----------------------------------------------------------------------------
+//=========================================================================
 implementation
+//=========================================================================
 
-// -----------------------------------------------------------------------------
+// ------------------------------------------------------------------------
 // TVKTreeLeaves
-// -----------------------------------------------------------------------------
+// ------------------------------------------------------------------------
 
-// Create
-//
 constructor TVKTreeLeaves.Create(AOwner: TVKTree);
 begin
   FOwner := AOwner;
@@ -327,8 +274,6 @@ begin
   FTexCoords := TAffineVectorList.Create;
 end;
 
-// Destroy
-//
 destructor TVKTreeLeaves.Destroy;
 begin
   FVertices.Free;
@@ -337,8 +282,6 @@ begin
   inherited;
 end;
 
-// AddNew
-//
 procedure TVKTreeLeaves.AddNew(matrix: TMatrix);
 var
   radius: Single;
@@ -362,8 +305,6 @@ begin
   FTexCoords.Add(YVector, XYVector);
 end;
 
-// BuildList
-//
 procedure TVKTreeLeaves.BuildList(var rci: TVKRenderContextInfo);
 var
   i: Integer;

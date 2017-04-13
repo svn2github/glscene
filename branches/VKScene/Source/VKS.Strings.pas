@@ -10,7 +10,6 @@ unit VKS.Strings;
 interface
 
 resourcestring
-  //
   // General
   strDot = '.';
   strError   = 'Error!';
@@ -21,11 +20,9 @@ resourcestring
   strStateCashMissing = 'States cash missing: ';
   strUnknownArchiveVersion = 'Unknown archive version: ';
 
-  //
   // SceneEdit
   strGLSceneEditor = 'GLScene Editor';
 
-  //
   // SceneViewer
   strNoRenderingContext = 'Could not create a rendering context';
   strWrongVersion       = 'Need at least Vulkan version 1.1';
@@ -36,12 +33,10 @@ resourcestring
   strAlreadyRendering   = 'Already rendering';
   strSceneViewerNotDefined = 'SceneViewer not defined!';
 
-  //
   // Cadencer
   strCadencerNotDefined   = 'Cadencer not defined!';
   strCadencerNotDefinedEx = 'Cadencer not defined for  the ''%s'' component';
 
-  //
   // Context
   strCannotAlterAnActiveContext = 'Cannot alter an active context';
   strContextActivationFailed = 'Context activation failed: %X, %s';
@@ -57,12 +52,9 @@ resourcestring
   strUnbalancedContexActivations = 'Unbalanced context activations';
   strUnableToCreateLegacyContext = 'Unable to create legacy context';
 
-
-  //
   // VKS.InitVulkan
   strVulkanError = 'Vulkan error - %s';
 
-  //
   // File3DS
   str3DSMapNotFound = 'Loading %s map texture failed: %s in %s';
 
@@ -95,34 +87,25 @@ resourcestring
   strError3DS_PUT_FAIL = 'Failed to add new data to the database.';
   strError3DS_INVALID_INDEX = 'Invalid index %d.';
 
-  //
   // FilePGM
   strCUTILFailed = 'Can not initialize cutil32.dll';
 
-
-  //
   // Graphics
   strCantConvertImg = '%s: can''t convert image to RGBA8 format';
 
-  //
   // Joystick
   strNoJoystickDriver   = 'There''s no joystick driver present';
   strConnectJoystick    = 'Joystick is not connected to your system';
   strJoystickError      = 'Your system reports a joystick error, can''t do anything about it';
 
-  //
   // Material
   strCyclicRefMat = 'Cyclic reference detected in material "%s"';
 
-
-  //
   // PersistentClasses
   strInvalidFileSignature = 'Invalid file signature';
   strBrokenObjectListArchive = 'Broken ObjectList archive';
   strListIndexError = 'Invalid list index';
 
-
-  //
   // SceneContext
   strForwardContextFailed = 'Can not create forward compatible context: #%X, %s';
   strBackwardContextFailed = 'Can not create backward compatible context: #%X, %s';
@@ -136,45 +119,37 @@ resourcestring
   strOESRC_created = 'Vulkan ES 2.0 context seccussfuly created';
   strPBufferRC_created = 'Backward compatible core PBuffer context successfully created';
 
-  //
-  // SceneRegister addtional to DesignIntf
+  // SceneRegister string parameters
   strVulkanCategoryName = 'Vulkan';
   strLayoutCategoryName = 'Layout';
   strLocalizableCategoryName = 'Localizable';
   strVisualCategoryName = 'Visual';
 
-
-  //
   // Shaders
   strShaderNeedsAtLeastOneLightSource   = 'This shader needs at least one LightSource!';
   strShaderNeedsAtLeastOneLightSourceEx = 'Shader ''%s'' needs at least one LightSource!';
 
-  //
   // Tree
   strSceneRoot  = 'Scene root';
   strObjectRoot = 'Scene objects';
   strCameraRoot = 'Cameras';
   strCamera     = 'Camera';
 
-  //
   // Textures
   strImageInvalid = 'Could not load texture, image is invalid';
   strNoNewTexture = 'Could not get new texture name';
 
-  //
   // Materials
   strMatLibNotDefined = 'Material Library not defined!';
   strMaterialNotFoundInMatlib = 'Material not found in current Material Library!';
   strMaterialNotFoundInMatlibEx = 'Material "%s" not found in current Material Library!';
 
-  //
   // Objects
   strSphereTopBottom = 'The top angle must be higher than the bottom angle';
   strSphereStartStop = 'The start angle must be smaller than then stop angle';
   strMaterialNotFound = 'Loading failed: could not find material %s';
   strInterleaveNotSupported = 'Interleaved Array format not supported yet. Sorry.';
 
-  //
   //Common messages
   strUnknownArchive = '%s : unknown archive version %d';
   strOutOfMemory = 'Fatal: Out of memory';
@@ -186,13 +161,11 @@ resourcestring
   strUnknownExtension = 'Unknown file extension (%s), maybe you forgot to add the support '
                        +'unit to your uses? (%s?)' ;
   strMissingResource = 'Missing application resource: %s: %s';
-
   strIncompatibleTypes = 'Incompatible types!';
   strUnknownType       = 'Unknown type!';
   strUnsupportedType   = 'Unsupported type!';
 
-  //
-  // Object categories in GLSceneRegistry
+  // Object categories in VKSceneRegistry
   strOCBasicGeometry = 'Basic geometry';
   strOCAdvancedGeometry = 'Advanced geometry';
   strOCMeshObjects = 'Mesh objects';
@@ -206,16 +179,13 @@ resourcestring
   strOCProxyObjects = 'Proxy objects';
   strOCExperimental = 'Experimental objects';
 
-  //
   // Utils
   strInvalidColor = '''%s'' is not a valid color format!';
   strUnknownParam = 'Unknown %s "%s" for "%s" or program not in use';
 
-  //
   // FXCollectionEditor
   strXCollectionEditor = 'XCollection editor';
 
-  //
   // CUDA strings
   strModuleAbsent = 'Module is absent';
   strInvalidParamType = 'Invalid parameter type';
@@ -250,15 +220,10 @@ resourcestring
   strSourceFileNotFound = 'Source file not found';
   strSuccessCompilation = 'Successful compilation:' + #10#13 + '%s';
 
-
-
-//---------------------------------------------------------
-//---------------------------------------------------------
 //---------------------------------------------------------
 implementation
 //---------------------------------------------------------
-//---------------------------------------------------------
-//---------------------------------------------------------
 
 end.
+
 

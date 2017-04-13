@@ -5,7 +5,7 @@
   FileMD3 - File loading methods for the MD3 file format
     
 }
-unit FileMD3;
+unit uFileMD3;
 
 interface
 

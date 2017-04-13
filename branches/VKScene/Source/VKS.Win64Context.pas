@@ -3,7 +3,6 @@
 //
 {
   Cross-platform context.
-
 }
 unit VKS.Win64Context;
 
@@ -12,16 +11,16 @@ interface
 {$I VKScene.inc}
 
 uses
-  Winapi.Windows,
-  Winapi.Messages,
   Winapi.OpenGL,
   Winapi.OpenGLext,
+  Winapi.Windows,
+  Winapi.Messages,
   System.SysUtils,
   System.Classes,
   FMX.Forms,
   FMX.Dialogs,
 ///  FMX.Platform.Win,
-  OpenGLAdapter,
+  uOpenGLAdapter,
   VKS.Context,
   VKS.CrossPlatform,
   VKS.State,
@@ -29,8 +28,6 @@ uses
   VKS.VectorGeometry;
 
 type
-  // TGSceneContext
-  //
   { A context driver for standard Windows Vulkan }
   TVKWinContext = class(TVKContext)
   protected
@@ -43,20 +40,16 @@ type
     FfAttribs: packed array of Single;
     FLegacyContextsOnly: Boolean;
     FSwapBufferSupported: Boolean;
-
     procedure SpawnLegacyContext(aDC: HDC); // used for WGL_pixel_format soup
     procedure CreateOldContext(aDC: HDC); dynamic;
     procedure CreateNewContext(aDC: HDC); dynamic;
-
     procedure ClearIAttribs;
     procedure AddIAttrib(attrib, value: Integer);
     procedure ChangeIAttrib(attrib, newValue: Integer);
     procedure DropIAttrib(attrib: Integer);
     procedure ClearFAttribs;
     procedure AddFAttrib(attrib, value: Single);
-
     procedure DestructionEarlyWarning(sender: TObject);
-
     procedure ChooseWGLFormat(DC: HDC; nMaxFormats: Cardinal;
       piFormats: PInteger; var nNumFormats: Integer; BufferCount: Integer = 1);
     procedure DoCreateContext(ADeviceHandle: THandle); override;
@@ -69,15 +62,11 @@ type
     { DoGetHandles must be implemented in child classes,
       and return the display + window }
   public
-    
     constructor Create; override;
     destructor Destroy; override;
-
     function IsValid: Boolean; override;
     procedure SwapBuffers; override;
-
     function RenderOutputDevice: Pointer; override;
-
     property DC: HDC read FDC;
     property RC: HGLRC read FRC;
   end;
@@ -91,13 +80,8 @@ var
     destruction. }
   vUseWindowTrackingHook: Boolean = True;
 
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
 implementation
-
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 var
@@ -141,8 +125,6 @@ begin
     Result := CallNextHookEx(vTrackingHook, nCode, wParam, lParam);
 end;
 
-// TrackWindow
-//
 procedure TrackWindow(h: HWND; notifyEvent: TNotifyEvent);
 begin
   if not IsWindow(h) then

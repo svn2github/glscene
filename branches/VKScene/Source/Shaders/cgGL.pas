@@ -87,7 +87,7 @@
  *)
 unit cgGL;
 
-{$I GLScene.inc}
+{$I VKScene.inc}
 
 interface
 

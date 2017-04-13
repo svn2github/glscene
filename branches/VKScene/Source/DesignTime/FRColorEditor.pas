@@ -9,11 +9,26 @@ unit FRColorEditor;
 interface
 
 uses
-  System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
-  FMX.Types, FMX.Graphics, FMX.Controls, FMX.Forms, FMX.Dialogs, FMX.StdCtrls,
-  FMX.Colors, FMX.Edit, FMX.Controls.Presentation, FMX.Objects,
+  System.SysUtils,
+  System.Types,
+  System.UITypes,
+  System.Classes,
+  System.Variants,
+  FMX.Types,
+  FMX.Graphics,
+  FMX.Controls,
+  FMX.Forms,
+  FMX.Dialogs,
+  FMX.StdCtrls,
+  FMX.Colors,
+  FMX.Edit,
+  FMX.Controls.Presentation,
+  FMX.Objects,
 
-  VKS.VectorGeometry, VKS.Color, VKS.Texture, VKS.VectorTypes,
+  VKS.VectorGeometry,
+  VKS.Color,
+  VKS.Texture,
+  VKS.VectorTypes,
   VKS.Crossplatform;
 
 type
@@ -44,7 +59,6 @@ type
     procedure AlphaEditChange(Sender: TObject);
     procedure PAPreviewDblClick(Sender: TObject);
   private
-    
     FOnChange : TNotifyEvent;
     Updating : Boolean;
     WorkBitmap : TBitmap;
@@ -59,16 +73,16 @@ type
     procedure DragColorSliderToPosition(XPos : integer);
     procedure ContentsChanged;
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     property Color : THomogeneousFltVector read GetColor write SetColor;
   published
     property OnChange : TNotifyEvent read FOnChange write FOnChange;
-
   end;
 
+//=====================================================================
 implementation
+//=====================================================================
 
 {$R *.fmx}
 

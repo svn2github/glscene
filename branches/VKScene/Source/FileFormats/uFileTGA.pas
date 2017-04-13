@@ -3,20 +3,20 @@
 //
 {
    Graphic engine friendly loading of TGA image.
-   
 }
 
-unit FileTGA;
+unit uFileTGA;
 
 interface
 
-{.$I GLScene.inc}
+{.$I VKScene.inc}
 
 uses
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
   System.Classes,
   System.SysUtils,
   VKS.CrossPlatform,
-  Winapi.OpenGL, Winapi.OpenGLext, 
   VKS.Context,
   VKS.Graphics,
   VKS.TextureFormat,
@@ -24,18 +24,13 @@ uses
 
 type
 
-  // TVKTGAImage
-  //
-
   TVKTGAImage = class(TVKBaseImage)
   public
-    
     procedure LoadFromFile(const filename: string); override;
     procedure SaveToFile(const filename: string); override;
     procedure LoadFromStream(stream: TStream); override;
     procedure SaveToStream(stream: TStream); override;
     class function Capabilities: TVKDataFileCapabilities; override;
-
     procedure AssignFromTexture(textureContext: TVKContext;
       const textureHandle: GLuint;
       textureTarget: TVKTextureTarget;
@@ -43,12 +38,11 @@ type
       const intFormat: TVKInternalFormat); reintroduce;
   end;
 
+//======================================================================
 implementation
+//======================================================================
 
 type
-
-  // TTGAHeader
-  //
 
   TTGAFileHeader = packed record
     IDLength: Byte;
@@ -64,9 +58,6 @@ type
     PixelSize: Byte;
     ImageDescriptor: Byte;
   end;
-
-  // ReadAndUnPackRLETGA24
-  //
 
 procedure ReadAndUnPackRLETGA24(stream: TStream; destBuf: PAnsiChar;
   totalSize: Integer);
@@ -106,9 +97,6 @@ begin
   end;
 end;
 
-// ReadAndUnPackRLETGA32
-//
-
 procedure ReadAndUnPackRLETGA32(stream: TStream; destBuf: PAnsiChar;
   totalSize: Integer);
 type
@@ -147,9 +135,6 @@ begin
   end;
 end;
 
-// LoadFromFile
-//
-
 procedure TVKTGAImage.LoadFromFile(const filename: string);
 var
   fs: TStream;
@@ -167,9 +152,6 @@ begin
   else
     raise EInvalidRasterFile.CreateFmt('File %s not found', [filename]);
 end;
-
-// SaveToFile
-//
 
 procedure TVKTGAImage.SaveToFile(const filename: string);
 var
@@ -282,9 +264,6 @@ begin
   end;
 end;
 
-// SaveToStream
-//
-
 procedure TVKTGAImage.SaveToStream(stream: TStream);
 begin
 {$MESSAGE Hint 'TVKTGAImage.SaveToStream not yet implemented' }
@@ -305,7 +284,9 @@ begin
   Result := [dfcRead {, dfcWrite}];
 end;
 
+//===========================================================
 initialization
+//===========================================================
 
   { Register this Fileformat-Handler with GLScene }
   RegisterRasterFormat('tga', 'TARGA Image File', TVKTGAImage);

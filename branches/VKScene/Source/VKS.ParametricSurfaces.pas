@@ -39,7 +39,7 @@ uses
   VKS.PersistentClasses,
   VKS.Texture,
   Winapi.OpenGL, Winapi.OpenGLext, 
-  OpenGLAdapter,
+  uOpenGLAdapter,
   VKS.State,
   VKS.Context,
   VKS.RenderContextInfo;

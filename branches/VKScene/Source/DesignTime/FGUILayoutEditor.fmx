@@ -331,6 +331,8 @@ object Layouts_Form: TLayouts_Form
       DefaultItemStyles.ItemStyle = ''
       DefaultItemStyles.GroupHeaderStyle = ''
       DefaultItemStyles.GroupFooterStyle = ''
+      Viewport.Width = 157.000000000000000000
+      Viewport.Height = 125.000000000000000000
     end
     object Add_Button: TButton
       Position.X = 16.000000000000000000
@@ -415,14 +417,17 @@ object Layouts_Form: TLayouts_Form
       Text = 'Name'
     end
     object Elements_Grid: TStringGrid
+      CanFocus = True
+      ClipChildren = True
       Position.X = 40.000000000000000000
       Position.Y = 240.000000000000000000
       Size.Width = 121.000000000000000000
       Size.Height = 100.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 5
-      RowCount = 100
       RowHeight = 21.000000000000000000
+      Viewport.Width = 117.000000000000000000
+      Viewport.Height = 75.000000000000000000
     end
     object LabelX: TLabel
       Position.X = 8.000000000000000000
@@ -503,6 +508,8 @@ object Layouts_Form: TLayouts_Form
     Size.Height = 423.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 6
+    Viewport.Width = 436.000000000000000000
+    Viewport.Height = 423.000000000000000000
     object PaintBox1: TPaintBox
       Size.Width = 225.000000000000000000
       Size.Height = 225.000000000000000000

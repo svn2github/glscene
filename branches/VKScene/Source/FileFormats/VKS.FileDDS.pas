@@ -16,7 +16,7 @@ uses
   System.Classes,
   System.SysUtils,
   
-  OpenGLAdapter,
+  uOpenGLAdapter,
   VKS.CrossPlatform,
   VKS.Context,
   VKS.Graphics,
@@ -24,17 +24,14 @@ uses
   VKS.RGBE,
   VKS.ApplicationFileIO,
   VKS.VectorGeometry,
-  VKS.Strings;
+  VKS.Strings,
+
+  uDXTC;
+
 
 type
 
-  // TVKDDSResolutions
-  //
-
   TVKDDSDetailLevels = (ddsHighDet, ddsMediumDet, ddsLowDet);
-
-  // TVKDDSImage
-  //
 
   TVKDDSImage = class(TVKBaseImage)
   private
@@ -62,17 +59,13 @@ var
      low - skipped the first two levels. }
   vDDSDetailLevel: TVKDDSDetailLevels = ddsHighDet;
 
+//======================================================
 implementation
-
-uses
-  DXTC;
+//======================================================
 
 // ------------------
 // ------------------ TVKDDSImage ------------------
 // ------------------
-
-// LoadFromFile
-//
 
 procedure TVKDDSImage.LoadFromFile(const filename: string);
 var
@@ -92,9 +85,6 @@ begin
     raise EInvalidRasterFile.CreateFmt(strFileNotFound, [filename]);
 end;
 
-// SaveToFile
-//
-
 procedure TVKDDSImage.SaveToFile(const filename: string);
 var
   fs: TStream;
@@ -107,9 +97,6 @@ begin
   end;
   ResourceName := filename;
 end;
-
-// LoadFromStream
-//
 
 procedure TVKDDSImage.LoadFromStream(stream: TStream);
 var

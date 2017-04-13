@@ -9,12 +9,26 @@ unit FPlugInManagerEditor;
 interface
 
 uses
-  System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
-  FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.StdCtrls,
-  FMX.Layouts, FMX.ListBox, FMX.Objects,
+  System.SysUtils,
+  System.Types,
+  System.UITypes,
+  System.Classes,
+  System.Variants,
+  FMX.Types,
+  FMX.Controls,
+  FMX.Forms,
+  FMX.Graphics,
+  FMX.Dialogs,
+  FMX.StdCtrls,
+  FMX.Layouts,
+  FMX.ListBox,
+  FMX.Objects,
+  FMX.Memo,
+  FMX.ScrollBox,
+  FMX.Controls.Presentation,
 
-  VKS.PlugInIntf, VKS.PlugInManager, FMX.Memo, FMX.ScrollBox,
-  FMX.Controls.Presentation;
+  VKS.PlugInIntf,
+  VKS.PlugInManager;
 
 type
   TVKPlugInManagerEditor = class(TForm)
@@ -44,19 +58,17 @@ type
     procedure UnloadButtonClick(Sender: TObject);
     procedure ServiceBoxChange(Sender: TObject);
   private
-    
     FManager: TVKPlugInManager;
   public
-    
     class procedure EditPlugIns(AManager: TVKPlugInManager);
   end;
 
 var
   PlugInManagerEditor: TVKPlugInManagerEditor;
 
-  // ------------------------------------------------------------------------------
-
+//=======================================================================
 implementation
+//=======================================================================
 
 {$R *.fmx}
 

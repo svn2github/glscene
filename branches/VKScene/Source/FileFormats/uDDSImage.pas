@@ -13,7 +13,7 @@
 
 }
 
-unit DDSImage;
+unit uDDSImage;
 
 interface
 
@@ -32,7 +32,7 @@ uses
   VKS.Context,
   VKS.FileDDS,
   VKS.TextureFormat,
-  DXTC;
+  uDXTC;
 
 
 type

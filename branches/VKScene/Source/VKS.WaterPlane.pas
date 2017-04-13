@@ -20,7 +20,7 @@ uses
   FMX.Types,
   FMX.Graphics,
 
-  OpenGLAdapter,
+  uOpenGLAdapter,
   VKS.VectorGeometry,
   VKS.Scene,
   VKS.VectorLists,

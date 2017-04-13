@@ -4,15 +4,18 @@
 {
 	Loader for FSRad OCT files. 
 } 
-unit FileOCT;
+unit uFileOCT;
 
 interface
 
 {$I VKScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
-  VKS.VectorGeometry, VKS.MeshUtils, VKS.VectorLists;
+  System.Classes,
+  System.SysUtils,
+  VKS.VectorGeometry,
+  VKS.MeshUtils,
+  VKS.VectorLists;
 
 type
 

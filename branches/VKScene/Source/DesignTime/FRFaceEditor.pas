@@ -9,12 +9,23 @@ unit FRFaceEditor;
 interface
 
 uses
-  System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
-  FMX.Types, FMX.Graphics, FMX.Controls, FMX.Forms, FMX.Dialogs, FMX.StdCtrls,
+  System.SysUtils,
+  System.Types,
+  System.UITypes,
+  System.Classes,
+  System.Variants,
+  FMX.Types,
+  FMX.Graphics,
+  FMX.Controls,
+  FMX.Forms,
+  FMX.Dialogs,
+  FMX.StdCtrls,
   FMX.TabControl,
+  FMX.Controls.Presentation,
 
-  
-  FRTrackBarEdit, FRColorEditor, VKS.Material, FMX.Controls.Presentation;
+  FRTrackBarEdit,
+  FRColorEditor,
+  VKS.Material;
 
 type
   TRFaceEditor = class(TFrame)
@@ -31,27 +42,28 @@ type
     CESpecular: TRColorEditor;
     procedure TBEShininessTrackBarChange(Sender: TObject);
   private
-    
     FOnChange: TNotifyEvent;
     Updating: Boolean;
     FFaceProperties: TVKFaceProperties;
     procedure SetFaceProperties(const val: TVKFaceProperties);
     procedure OnColorChange(Sender: TObject);
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
     property OnChange: TNotifyEvent read FOnChange write FOnChange;
     property FaceProperties: TVKFaceProperties read FFaceProperties
       write SetFaceProperties;
   end;
 
+//=====================================================================
 implementation
+//=====================================================================
 
 {$R *.fmx}
 
+//---------------------------------------------------------
 { TRFaceEditor }
+//---------------------------------------------------------
 
 constructor TRFaceEditor.Create(AOwner: TComponent);
 begin
@@ -128,8 +140,6 @@ begin
   end;
 end;
 
-// SetFaceProperties
-//
 procedure TRFaceEditor.SetFaceProperties(const val: TVKFaceProperties);
 begin
   Updating := True;

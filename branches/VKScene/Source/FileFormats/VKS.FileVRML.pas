@@ -3,16 +3,22 @@
 //
 {
    Preliminary VRML vector file support for GLScene.
-    
 }
 unit VKS.FileVRML;
 
 interface
 
 uses
-  System.Classes, System.SysUtils, 
-  VKS.VectorFileObjects, VKS.Material, VKS.ApplicationFileIO,
-  VKS.VectorTypes, VKS.VectorGeometry, VKS.VectorLists, VRMLParser, VKS.MeshUtils;
+  System.Classes, 
+  System.SysUtils, 
+  VKS.VectorFileObjects, 
+  VKS.Material, 
+  VKS.ApplicationFileIO,
+  VKS.VectorTypes, 
+  VKS.VectorGeometry, 
+  VKS.VectorLists, 
+  uVRMLParser, 
+  VKS.MeshUtils;
 
 type
 
@@ -23,15 +29,9 @@ type
   end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 
-// TessellatePolygon
-//
 procedure TessellatePolygon(PolyVerts : TAffineVectorList;
   PolyIndices, TriIndices : TIntegerList);
 
@@ -139,15 +139,11 @@ end;
 // ------------------ TVKVRMLVectorFile ------------------
 // ------------------
 
-// Capabilities
-//
 class function TVKVRMLVectorFile.Capabilities : TVKDataFileCapabilities;
 begin
   Result:=[dfcRead];
 end;
 
-// LoadFromStream
-//
 procedure TVKVRMLVectorFile.LoadFromStream(aStream : TStream);
 var
   mesh : TVKMeshObject;
@@ -532,11 +528,7 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
    RegisterVectorFileFormat('wrl', 'VRML files', TVKVRMLVectorFile);

@@ -18,7 +18,7 @@ uses
   System.SysUtils,
   System.Types,
   
-  OpenGLAdapter,
+  uOpenGLAdapter,
   VKS.Scene,
   VKS.VectorGeometry,
   VKS.Texture,
@@ -35,6 +35,7 @@ uses
   VKS.RenderContextInfo,
   VKS.Coordinates,
   VKS.BaseClasses,
+  VKS.Strings,
   VKS.TextureFormat;
 
 type
@@ -1809,17 +1810,18 @@ var
     // Mrqzzz : Flag to avoid loading materials (useful for IDE Extentions or scene editors)
   vGLVectorFileObjectsEnableVBOByDefault: Boolean = True;
 
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+//===========================================================================
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
+//===========================================================================
 
 uses
-  VKS.Strings, XOpenGL, VKS.CrossPlatform, VKS.MeshUtils, VKS.State, VKS.Utils,
-  VKS.BaseMeshSilhouette, VKS.VectorTypes;
+  XOpenGL,
+  VKS.CrossPlatform,
+  VKS.MeshUtils,
+  VKS.State,
+  VKS.Utils,
+  VKS.BaseMeshSilhouette,
+  VKS.VectorTypes;
 
 var
   vVectorFileFormats: TVKVectorFileFormatsList;

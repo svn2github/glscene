@@ -10,9 +10,12 @@ unit VKS.ParallelRegister;
 interface
 
 uses
-  System.Classes, System.SysUtils,
-
-  DesignIntf, DesignEditors, STREDIT, ToolsAPI,
+  System.Classes,
+  System.SysUtils,
+  DesignIntf,
+  DesignEditors,
+  ToolsAPI,
+  STREDIT,
 
   VKS.SceneRegister;
 

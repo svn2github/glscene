@@ -14,9 +14,22 @@ interface
 
 uses
   System.Win.Registry,
-  System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
-  FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.StdCtrls,
-  FMX.Objects, FMX.Layouts, FMX.Menus, FMX.Memo, FMX.ScrollBox,
+  System.SysUtils,
+  System.Types,
+  System.UITypes,
+  System.Classes,
+  System.Variants,
+  FMX.Types,
+  FMX.Controls,
+  FMX.Forms,
+  FMX.Graphics,
+  FMX.Dialogs,
+  FMX.StdCtrls,
+  FMX.Objects,
+  FMX.Layouts,
+  FMX.Menus,
+  FMX.Memo,
+  FMX.ScrollBox,
   FMX.Controls.Presentation;
 
 type
@@ -37,22 +50,19 @@ type
     Image3: TImage;
     GLSLMemo: TMemo;
     procedure FormCreate(Sender: TObject);
-  private
-    
-  public
-    
   end;
 
 function VKShaderEditorForm: TVKShaderMemoForm;
 procedure ReleaseGLShaderEditor;
 
-
+//=====================================================================
 implementation
+//=====================================================================
 
 {$R *.fmx}
 
 const
-  cRegistryKey = 'Software\GLScene\GLSceneShaderEdit';
+  cRegistryKey = 'Software\VKScene\VKSceneShaderEdit';
 
 var
   vShaderEditor: TVKShaderMemoForm;

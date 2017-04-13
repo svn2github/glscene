@@ -4,8 +4,8 @@
 {
    Base persistence classes. 
 
-   These classes are used in VKS.Scene, but are designed for generic purpose. 
-   They implement a slightly different persistence mechanism than that of the VCL,
+   These classes are used in VKScene, but are designed for generic purpose.
+   They implement a slightly different persistence mechanism than that of the FMX,
    allowing for object-level versioning (100% backward compatibility) and full
    polymorphic persistence.
 

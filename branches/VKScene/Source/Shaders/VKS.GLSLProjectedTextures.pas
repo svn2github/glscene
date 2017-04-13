@@ -28,7 +28,7 @@ uses
   System.Classes,
   System.SysUtils,
   
-  OpenGLAdapter,
+  uOpenGLAdapter,
   VKS.CrossPlatform, VKS.Scene, VKS.Texture, VKS.VectorGeometry, VKS.Context,
   VKS.Color, VKS.RenderContextInfo, VKS.TextureFormat, VKS.VectorTypes;
 

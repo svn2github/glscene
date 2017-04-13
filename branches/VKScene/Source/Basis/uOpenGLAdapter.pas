@@ -4,7 +4,7 @@
 {
   OpenGL adapter
 }
-unit OpenGLAdapter;
+unit uOpenGLAdapter;
 
 interface
 

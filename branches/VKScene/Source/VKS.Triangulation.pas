@@ -1,9 +1,8 @@
 //
-// VKScene Component Library, based on GLScene http://glscene.sourceforge.net 
+// VKScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
 {
-	Classes and methods for 2D triangulation of scatter points. 
-  
+	Classes and methods for 2D triangulation of scatter points.
 }
 
 unit VKS.Triangulation;
@@ -13,8 +12,8 @@ interface
 uses
   System.Classes,
   System.Types,
-  Vcl.Dialogs,
-  Vcl.Graphics,
+  FMX.Dialogs,
+  FMX.Graphics,
   
   VKS.VectorGeometry;
 
@@ -32,7 +31,7 @@ type
   TDProgressEvent = procedure(State: string; Pos, Max: Integer;
     AlwaysUpdate: Boolean = False) of object;
 
-  // Points (Vertices)
+// Points (Vertices)
 type
   DVertex = record
     X: Single;
@@ -43,7 +42,7 @@ type
     MatIndex: Integer;
   end;
 
-  // Created Triangles, vv# are the vertex pointers
+// Created Triangles, vv# are the vertex pointers
 type
   DTriangle = record
     vv0: LongInt;
@@ -76,12 +75,10 @@ type
 type
   TVKDelaunay2D = class
   private
-    
     function InCircle(Xp, Yp, X1, Y1, X2, Y2, X3, Y3: Single; var Xc: Single;
       var Yc: Single; var R: Single; j: Integer): Boolean;
     function Triangulate(nvert: Integer): Integer;
   public
-    
     Vertex: TDVertex;
     Triangle: TDTriangle;
     HowMany: Integer;
@@ -97,11 +94,7 @@ type
   end;
 
 //------------------------------------------------------------------------
-//------------------------------------------------------------------------
-//------------------------------------------------------------------------
 implementation
-//------------------------------------------------------------------------
-//------------------------------------------------------------------------
 //------------------------------------------------------------------------
 
 constructor TVKDelaunay2D.Create;

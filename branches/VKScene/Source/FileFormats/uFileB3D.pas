@@ -6,7 +6,7 @@
   	  
      
 }
-unit FileB3D;
+unit uFileB3D;
 
 interface
 
@@ -14,9 +14,12 @@ interface
 {$R-}
 
 uses
-  System.Classes, System.SysUtils,
-  
-  VKS.VectorGeometry, VKS.VectorTypes, VKS.VectorLists;
+  System.Classes,
+  System.SysUtils,
+
+  VKS.VectorGeometry,
+  VKS.VectorTypes,
+  VKS.VectorLists;
 
 
 type

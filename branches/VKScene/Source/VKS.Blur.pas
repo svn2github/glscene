@@ -19,7 +19,7 @@ uses
   System.UITypes,
   FMX.Graphics,
   
-  OpenGLAdapter,
+  uOpenGLAdapter,
   VKS.Scene,
   VKS.VectorGeometry,
   VKS.Objects,

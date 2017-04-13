@@ -82,8 +82,8 @@ procedure ConvertImage(const ASrc: Pointer; const ADst: Pointer; ASrcColorFormat
 
 procedure RescaleImage(const ASrc: Pointer; const ADst: Pointer; AColorFormat: GLEnum; ADataType: GLEnum; AFilter: TImageFilterFunction; ASrcWidth, ASrcHeight, ADstWidth, ADstHeight: Integer);
 procedure Build2DMipmap(const ASrc: Pointer; const ADst: TPointerArray; AColorFormat: GLEnum; ADataType: GLEnum; AFilter: TImageFilterFunction; ASrcWidth, ASrcHeight: Integer);
-
 procedure AlphaGammaBrightCorrection(const ASrc: Pointer; AColorFormat: GLEnum; ADataType: GLEnum; ASrcWidth, ASrcHeight: Integer; anAlphaProc: TImageAlphaProc; ABrightness: Single; AGamma: Single);
+
 //----------------------------------------------------------------------------------------
 implementation
 //----------------------------------------------------------------------------------------
@@ -96,8 +96,7 @@ type
   TConvertFromInfProc = procedure(ASource: PIntermediateFormatArray; ADest: Pointer; AColorFormat: GLEnum; AWidth, AHeight: Integer);
 
 procedure Swap(var A, B: Integer);
-{$IFDEF VKS_INLINE} inline;
-{$ENDIF}
+{$IFDEF VKS_INLINE} inline;{$ENDIF}
 var
   C: Integer;
 begin

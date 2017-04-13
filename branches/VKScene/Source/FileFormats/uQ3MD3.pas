@@ -5,7 +5,7 @@
    Helper classes and methods for Quake3 MD3 actors 
     
 }
-unit Q3MD3;
+unit uQ3MD3;
 
 interface
 
@@ -17,7 +17,7 @@ uses
   VKS.VectorFileObjects,
   VKS.VectorLists, 
   VKS.Material, 
-  FileMD3;
+  uFileMD3;
 
 type
   // This class is used to extract the tag transform information

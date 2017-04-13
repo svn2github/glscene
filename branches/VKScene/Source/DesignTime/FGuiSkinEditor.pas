@@ -3,7 +3,6 @@
 //
 {
    Editor for Gui skin. 
- 
 }
 unit FGuiSkinEditor;
 
@@ -11,12 +10,29 @@ interface
 
 uses
   System.Messaging,
-  System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
-  FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.StdCtrls,
-  FMX.Layouts, FMX.ListBox, FMX.Objects, FMX.Controls.Presentation, FMX.Edit,
+  System.SysUtils,
+  System.Types,
+  System.UITypes,
+  System.Classes,
+  System.Variants,
+  System.Math.Vectors,
+  FMX.Types,
+  FMX.Controls,
+  FMX.Forms,
+  FMX.Graphics,
+  FMX.Dialogs,
+  FMX.StdCtrls,
+  FMX.Layouts,
+  FMX.ListBox,
+  FMX.Objects,
+  FMX.Controls.Presentation,
+  FMX.Edit,
+  FMX.Controls3D,
 
-  VKS.Gui, VKS.Texture, VKS.BaseClasses, VKS.Material, System.Math.Vectors,
-  FMX.Controls3D;
+  VKS.Gui,
+  VKS.Texture,
+  VKS.BaseClasses,
+  VKS.Material;
 
 type
   TGUISkinEditor = class(TForm)
@@ -52,32 +68,24 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
   private
-    
     FOriginalWndProc: TWndMethod;
-
     FFocusRect: TRect;
     VisibleRect: TRect;
     PreviewMousePoint: TPoint;
     PreviewWidth,
       PreviewHeight: Integer;
     FullMousePoint: TPoint;
-
     MouseDown: Boolean;
-
     procedure ImageWndProc(var Message: TMessage);
-
     procedure DrawImageFocusRect(ARect: TRect);
     procedure AlignZoomPanel;
     procedure UpdateRegionEdits;
-
     procedure SetEditState(Parent: TControl; Enabled: Boolean);
     procedure AddElement(Index: Integer);
     procedure DrawCrossair(Point: TPoint);
   public
-    
     TheGuiComponent: TVKGuiElementList;
     SelectedElement: TVKGUIElement;
-
     Tex: TVKTexture;
     Zoom: Single;
     Width: Integer;

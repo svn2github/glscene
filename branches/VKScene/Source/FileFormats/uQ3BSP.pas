@@ -5,7 +5,7 @@
 	Simple Quake III BSP file loader. 
  
 }
-unit Q3BSP;
+unit uQ3BSP;
 
 interface
 

@@ -2,18 +2,22 @@
 // VKScene Component Library, based on GLScene http://glscene.sourceforge.net 
 //
 {
-  VKS.FileMD3 - Code for loading animated MD3 files into GLScene
-              FreeForms and Actors.
-    .
+  Code for loading animated MD3 files into VKScene FreeForms and Actors.
 }
 unit VKS.FileMD3;
 
 interface
 
 uses
-  System.Classes, System.SysUtils,
-  VKS.VectorFileObjects, VKS.Material, VKS.ApplicationFileIO,
-  VKS.VectorGeometry, FileMD3, VKS.Texture;
+  System.Classes,
+  System.SysUtils,
+  VKS.VectorFileObjects,
+  VKS.Material,
+  VKS.ApplicationFileIO,
+  VKS.VectorGeometry,
+  VKS.Texture,
+
+  uFileMD3;
 
 type
 
@@ -23,27 +27,19 @@ type
       procedure LoadFromStream(aStream : TStream); override;
   end;
 
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
+//==================================================================
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
+//==================================================================
 
 // ------------------
 // ------------------ TVKMD3VectorFile ------------------
 // ------------------
 
-// Capabilities
-//
 class function TVKMD3VectorFile.Capabilities : TVKDataFileCapabilities;
 begin
   Result:=[dfcRead];
 end;
 
-// LoadFromStream
-//
 procedure TVKMD3VectorFile.LoadFromStream(aStream : TStream);
 var
   i,j,k,
@@ -138,11 +134,7 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
    RegisterVectorFileFormat('md3', 'MD3 files', TVKMD3VectorFile);

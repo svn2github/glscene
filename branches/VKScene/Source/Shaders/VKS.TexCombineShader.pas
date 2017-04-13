@@ -16,7 +16,7 @@ uses
   System.Classes,
   System.SysUtils,
   
-  OpenGLAdapter,
+  uOpenGLAdapter,
   VKS.Texture,
   VKS.Material,
   VKS.RenderContextInfo,
@@ -28,68 +28,51 @@ uses
 
 type
 
-  // TVKTexCombineShader
-  //
   { A shader that can setup the texture combiner.  }
   TVKTexCombineShader = class(TVKShader)
   private
-    
     FCombiners: TStringList;
     FCommandCache: TCombinerCache;
     FCombinerIsValid: Boolean; // to avoid reparsing invalid stuff
     FDesignTimeEnabled: Boolean;
-
     FMaterialLibrary: TVKMaterialLibrary;
     FLibMaterial3Name: TVKLibMaterialName;
-    currentLibMaterial3: TVKLibMaterial;
+    CurrentLibMaterial3: TVKLibMaterial;
     FLibMaterial4Name: TVKLibMaterialName;
-    currentLibMaterial4: TVKLibMaterial;
-
+    CurrentLibMaterial4: TVKLibMaterial;
     FApplied3, FApplied4: Boolean;
-
   protected
-    
     procedure SetCombiners(const val: TStringList);
     procedure SetDesignTimeEnabled(const val: Boolean);
     procedure SetMaterialLibrary(const val: TVKMaterialLibrary);
     procedure SetLibMaterial3Name(const val: TVKLibMaterialName);
     procedure SetLibMaterial4Name(const val: TVKLibMaterialName);
-
     procedure NotifyLibMaterial3Destruction;
     procedure NotifyLibMaterial4Destruction;
-
     procedure DoInitialize(var rci: TVKRenderContextInfo; Sender: TObject); override;
     procedure DoApply(var rci: TVKRenderContextInfo; Sender: TObject); override;
     function DoUnApply(var rci: TVKRenderContextInfo): Boolean; override;
     procedure DoFinalize; override;
-
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
     procedure NotifyChange(Sender: TObject); override;
-
   published
-    
     property Combiners: TStringList read FCombiners write SetCombiners;
     property DesignTimeEnabled: Boolean read FDesignTimeEnabled write SetDesignTimeEnabled;
-
     property MaterialLibrary: TVKMaterialLibrary read FMaterialLibrary write SetMaterialLibrary;
     property LibMaterial3Name: TVKLibMaterialName read FLibMaterial3Name write SetLibMaterial3Name;
     property LibMaterial4Name: TVKLibMaterialName read FLibMaterial4Name write SetLibMaterial4Name;
   end;
 
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
+//===================================================================
 implementation
+//===================================================================
+
 // ------------------
 // ------------------ TVKTexCombineShader ------------------
 // ------------------
-
-// Create
-//
 
 constructor TVKTexCombineShader.Create(AOwner: TComponent);
 begin
@@ -101,9 +84,6 @@ begin
   FCommandCache := nil;
 end;
 
-// Destroy
-//
-
 destructor TVKTexCombineShader.Destroy;
 begin
   if Assigned(currentLibMaterial3) then
@@ -113,9 +93,6 @@ begin
   inherited;
   FCombiners.Free;
 end;
-
-// Notification
-//
 
 procedure TVKTexCombineShader.Notification(AComponent: TComponent; Operation: TOperation);
 begin
@@ -128,9 +105,6 @@ begin
   inherited;
 end;
 
-// NotifyChange
-//
-
 procedure TVKTexCombineShader.NotifyChange(Sender: TObject);
 begin
   FCombinerIsValid := True;
@@ -138,17 +112,11 @@ begin
   inherited NotifyChange(Sender);
 end;
 
-// NotifyLibMaterial3Destruction
-//
-
 procedure TVKTexCombineShader.NotifyLibMaterial3Destruction;
 begin
   FLibMaterial3Name := '';
   currentLibMaterial3 := nil;
 end;
-
-// NotifyLibMaterial4Destruction
-//
 
 procedure TVKTexCombineShader.NotifyLibMaterial4Destruction;
 begin
@@ -156,18 +124,12 @@ begin
   currentLibMaterial4 := nil;
 end;
 
-// SetMaterialLibrary
-//
-
 procedure TVKTexCombineShader.SetMaterialLibrary(const val: TVKMaterialLibrary);
 begin
   FMaterialLibrary := val;
   SetLibMaterial3Name(LibMaterial3Name);
   SetLibMaterial4Name(LibMaterial4Name);
 end;
-
-// SetLibMaterial3Name
-//
 
 procedure TVKTexCombineShader.SetLibMaterial3Name(const val: TVKLibMaterialName);
 var

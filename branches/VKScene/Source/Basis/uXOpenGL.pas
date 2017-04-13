@@ -10,7 +10,7 @@
    This unit is Open-Source under MPL
    The history is logged in a former GLS version of the unit.
 }
-unit XOpenGL;
+unit uXOpenGL;
 
 interface
 
@@ -97,16 +97,16 @@ type
        Calls to Begin/EndUpdate may be nested. }
     procedure EndUpdate;
 
-    { Saves XOpenGL State on the stack. }
+    { Saves State on the stack. }
     procedure PushState;
-    { Restores XOpenGL State from the stack. }
+    { Restores State from the stack. }
     procedure PopState;
 
     { Whenever called, 2nd texture units changes will be forbidden to . 
        Use this function when you're using the 2nd texture unit for your own
-       purposes and don't want XOpenGL to alter it. }
+       purposes and don't want to alter it. }
     procedure ForbidSecondTextureUnit;
-    { Allow XOpenGL to use the second texture unit again. }
+    { Allow to use the second texture unit again. }
     procedure AllowSecondTextureUnit;
     { Returns the complex mapping in bitwise form. }
     function GetBitWiseMapping: Cardinal;

@@ -3,7 +3,6 @@
 //
 {
   Edits a TVKXCollection
-
 }
 unit FXCollectionEditor;
 
@@ -90,13 +89,9 @@ type
 function XCollectionEditor: TVKXCollectionEditor;
 procedure ReleaseXCollectionEditor;
 
-//------------------------------------------------------------------------
-//------------------------------------------------------------------------
-//------------------------------------------------------------------------
+//=======================================================================
 implementation
-//------------------------------------------------------------------------
-//------------------------------------------------------------------------
-//------------------------------------------------------------------------
+//=======================================================================
 
 {$R *.fmx}
 
@@ -119,8 +114,6 @@ begin
   end;
 end;
 
-// FormCreate
-//
 procedure TVKXCollectionEditor.FormCreate(Sender: TObject);
 begin
   RegisterGLBehaviourNameChangeEvent(OnNameChanged);
@@ -163,7 +156,6 @@ begin
   end;
   PrepareListView;
 end;
-
 
 procedure TVKXCollectionEditor.ListViewChange(Sender: TObject);
 var
@@ -223,8 +215,6 @@ begin
   /// to do
 end;
 
-// OnXCollectionDestroyed
-//
 procedure TVKXCollectionEditor.OnXCollectionDestroyed(Sender: TObject);
 begin
   if TVKXCollection(Sender) = FXCollection then

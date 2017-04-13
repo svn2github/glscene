@@ -98,7 +98,7 @@ uses
   Winapi.Windows;
 {$ENDIF}
 
-{$I GLScene.inc}
+{$I VKScene.inc}
 
 {$MINENUMSIZE 4}
 

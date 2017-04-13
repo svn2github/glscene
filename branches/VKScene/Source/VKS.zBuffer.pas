@@ -64,41 +64,30 @@ type
     FDataIdx, FDataInvIdx: TZArrayIdx;
     FWidth, FHeight: Integer;
     FDataSize: Integer;
-
     ang1, ang2, scal, c1, s1, c2, s2, vw, vh: single; //VectorToScreen variables;
     lt, rt, lb, rb: TAffineVector; //ScreenToVector corner vectors;
     UpVec, riVec: TAffineVector;
-
     ltW, rtW, lbW, rbW: TAffineVector; //ScreenToVector corner vectors;(Warped)
     UpVecW, riVecW: TAffineVector;
     OrthInvDov, OrthAddX, OrthMulX, OrthAddY, OrthMulY: single;
-
     dov, np, fp, NpFp, OneMinNp_Fp, invOneMinNp_Fp: single; //Calc Variables;
-
     cam: TVKCamera;
-
     procedure DoCalcVectors;
-
   protected
     procedure PrepareBufferMemory;
     procedure SetWidth(val: Integer);
     procedure SetHeight(const val: Integer);
-
   public
     SceneViewer: TVKSceneViewer;
     MemoryViewer: TVKMemoryViewer;
     Buffer: TVKSceneBuffer;
-
     Normal: TAffineVector; //Absolute direction of camera
-
     constructor Create;
     destructor Destroy; override;
-
     procedure LinkToViewer(viewer: TVKSceneViewer); overload;
     procedure LinkToViewer(viewer: TVKMemoryViewer); overload;
     function GetDepthBuffer(CalcVectors: Boolean; ContextIsActive: boolean):
       PZArray;
-
     function GetPixelzDepth(x, y: integer): Single;
     function PixelToDistance_OLD(x, y: integer): Single;
     function PixelToDistance(x, y: integer): Single;
@@ -108,11 +97,9 @@ type
     property Data: PZArray read FData;
     property DataIdx: TZArrayIdx read FDataIdx;
     property DataInvIdx: TZArrayIdx read FDataIdx;
-
     procedure Refresh;
     function FastScreenToVector(x, y: Integer): TAffineVector;
     function FastVectorToScreen(vec: TAffineVector): TAffineVector;
-
     function PixelToWorld(const x, y: Integer): TAffineVector;
     function WorldToPixel(const aPoint: TAffineVector; out pixX, pixY: integer;
       out pixZ: single): boolean;
@@ -124,8 +111,6 @@ type
       single; out pixZ: single): boolean;
   end;
 
-  // TVKZShadows
-  //
   TVKZShadows = class(TVKBaseSceneObject)
   private
     FViewer: TVKSceneViewer;
@@ -134,44 +119,34 @@ type
     FFrustShadow: Boolean;
     FSkyShadow: Boolean;
     FOptimise: TOptimise;
-
     FData: PAArray;
     FDataIdx, FDataInvIdx: TAArrayIdx;
     FDataSize: Integer;
-
     FWidth: integer;
     FHeight: integer;
     FXRes: integer;
     FYRes: integer;
     Fsoft: boolean;
     FTolerance: single;
-
     FColor: TVKColor;
     SCol: TVKPixel32;
-
     //stepX, stepY :single;
-
     FTexturePrepared: Boolean;
-
     FTexHandle: TVKTextureHandle;
-
   protected
     procedure PrepareAlphaMemory;
-
     function GetViewer: TVKSceneViewer;
     procedure SetViewer(const val: TVKSceneViewer);
     function GetCaster: TVKMemoryViewer;
     procedure SetCaster(const val: TVKMemoryViewer);
     procedure CalcShadowTexture(var rci: TVKRenderContextInfo);
     function HardSet(const x, y: integer): Byte;
-
     function SoftTest(const x, y: integer): Byte;
     procedure SetWidth(const val: integer);
     procedure SetHeight(const val: integer);
     procedure SetXRes(const val: integer);
     procedure SetYRes(const val: integer);
     procedure SetSoft(const val: boolean);
-
     procedure BindTexture;
   public
     ViewerZBuf: TVKzBuffer;
@@ -196,12 +171,13 @@ type
     //          property Material;
     property ObjectsSorting;
     property Visible;
-
     property DepthFade: Boolean read FDepthFade write FDepthFade;
     function CastShadow: boolean;
   end;
 
+//======================================================================
 implementation
+//======================================================================
 
 constructor TVKzBuffer.Create;
 begin
@@ -245,8 +221,6 @@ begin
   self.DoCalcVectors;
 end;
 
-//---Destroy---
-
 destructor TVKzBuffer.Destroy;
 begin
   FreeMem(FData);
@@ -270,8 +244,6 @@ begin
   FDataInvIdx[FHeight] := FDataInvIdx[FHeight - 1];
 end;
 
-//---Width---
-
 procedure TVKzBuffer.SetWidth(val: Integer);
 begin
   if val <> FWidth then
@@ -281,8 +253,6 @@ begin
     PrepareBufferMemory;
   end;
 end;
-
-//---Height---
 
 procedure TVKzBuffer.SetHeight(const val: Integer);
 begin
@@ -409,6 +379,7 @@ begin
   NpFp := np * fp;
   OneMinNp_Fp := 1 - np / fp;
   invOneMinNp_Fp := 1 / OneMinNp_Fp;
+
   //-----------For VectorToScreen-------------
   {
     cam :=Viewer.Camera.Position.AsAffineVector;
@@ -664,9 +635,6 @@ end;
 // ------------------ TVKZShadows ------------------
 // ------------------
 
-// Create
-//
-
 constructor TVKZShadows.Create(AOwner: TComponent);
 begin
   inherited;
@@ -679,8 +647,6 @@ begin
   FTexHandle := TVKTextureHandle.Create;
 end;
 
-//---Destroy---
-
 destructor TVKZShadows.Destroy;
 begin
   ViewerZBuf.Free;
@@ -690,9 +656,6 @@ begin
   FreeMem(FData);
   inherited Destroy;
 end;
-
-// BindTexture
-//
 
 procedure TVKZShadows.BindTexture;
 begin
@@ -741,9 +704,6 @@ begin
     FDataInvIdx[i] := @FData[(FYRes - i - 1) * FXRes]; // range: [0..height-1]
   end;
 end;
-
-// DoRender
-//
 
 procedure TVKZShadows.DoRender(var ARci: TVKRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);
@@ -1104,8 +1064,9 @@ begin
         end;
 end;
 
-function TVKZShadows.HardSet(const x, y: integer): Byte;
+//--------------------------------------------------------------------
 
+function TVKZShadows.HardSet(const x, y: integer): Byte;
 var
   pix: Byte;
   coord: TAffineVector;
@@ -1332,14 +1293,10 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
 
-     // class registrations
+  // class registrations
   RegisterClasses([TVKZShadows]);
 
 end.

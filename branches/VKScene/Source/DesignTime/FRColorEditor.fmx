@@ -2,7 +2,6 @@ object RColorEditor: TRColorEditor
   Size.Width = 371.000000000000000000
   Size.Height = 134.000000000000000000
   Size.PlatformDefault = False
-  TabOrder = 0
   OnResize = FrameResize
   object ColorEditorPaintBox: TPaintBox
     Align = Client
@@ -65,7 +64,7 @@ object RColorEditor: TRColorEditor
     Size.Width = 81.000000000000000000
     Size.Height = 17.000000000000000000
     Size.PlatformDefault = False
-    TextSettings.Font.Style = [fsBold]
+    TextSettings.Font.StyleExt = {00070000000000000004000000}
     TextSettings.FontColor = claRed
     Text = 'Red'
   end
@@ -76,7 +75,7 @@ object RColorEditor: TRColorEditor
     Size.Width = 73.000000000000000000
     Size.Height = 17.000000000000000000
     Size.PlatformDefault = False
-    TextSettings.Font.Style = [fsBold]
+    TextSettings.Font.StyleExt = {00070000000000000004000000}
     TextSettings.FontColor = claGreen
     Text = 'Green'
   end
@@ -87,7 +86,7 @@ object RColorEditor: TRColorEditor
     Size.Width = 73.000000000000000000
     Size.Height = 17.000000000000000000
     Size.PlatformDefault = False
-    TextSettings.Font.Style = [fsBold]
+    TextSettings.Font.StyleExt = {00070000000000000004000000}
     TextSettings.FontColor = claBlue
     Text = 'Blue'
   end
@@ -98,7 +97,7 @@ object RColorEditor: TRColorEditor
     Size.Width = 73.000000000000000000
     Size.Height = 17.000000000000000000
     Size.PlatformDefault = False
-    TextSettings.Font.Style = [fsBold]
+    TextSettings.Font.StyleExt = {00070000000000000004000000}
     Text = 'Alpha'
   end
   object RedEdit: TEdit

@@ -6,12 +6,28 @@ unit FInfo;
 interface
 
 uses
-  System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
-  FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.StdCtrls,
-  FMX.TabControl, FMX.Layouts, FMX.ListBox, FMX.Memo,
-  
-  VKS.Scene, Winapi.OpenGL, Winapi.OpenGLext,  VKS.Context, FMX.ScrollBox,
-  FMX.Controls.Presentation;
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
+  System.SysUtils,
+  System.Types,
+  System.UITypes,
+  System.Classes,
+  System.Variants,
+  FMX.Types,
+  FMX.Controls,
+  FMX.Forms,
+  FMX.Graphics,
+  FMX.Dialogs,
+  FMX.StdCtrls,
+  FMX.TabControl,
+  FMX.Layouts,
+  FMX.ListBox,
+  FMX.Memo,
+  FMX.ScrollBox,
+  FMX.Controls.Presentation,
+
+  VKS.Scene,
+  VKS.Context;
 
 type
   TInfoForm = class(TForm)
@@ -98,27 +114,22 @@ type
       Shift: TShiftState);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure ListBoxExtensionsDblClick(Sender: TObject);
-  private
-    
-
   protected
-    
     procedure LoadContributors;
     function GetSceneVersion: string;
   public
-    
     procedure GetInfoFrom(aSceneBuffer: TVKSceneBuffer);
   end;
 
 var
   InfoForm: TInfoForm;
 
+//=======================================================================
 implementation
+//=======================================================================
 
 {$R *.fmx}
 
-// ShowInfoForm
-//
 procedure ShowInfoForm(aSceneBuffer: TVKSceneBuffer; Modal: boolean);
 var
   infoForm: TInfoForm;
@@ -137,22 +148,20 @@ begin
   end;
 end;
 
-// FormCreate
-//
+//---------------------------------------
+{ TInfoForm }
+//---------------------------------------
+
 procedure TInfoForm.FormCreate(Sender: TObject);
 begin
   TabControl.ActiveTab := TabItemGLScene;
 end;
 
-// FormShow
-//
 procedure TInfoForm.FormShow(Sender: TObject);
 begin
   TabControl.ActiveTab := TabItemGLScene;
 end;
 
-// GetInfoFrom
-//
 procedure TInfoForm.GetInfoFrom(aSceneBuffer: TVKSceneBuffer);
   { TODO -cIncompatibility : Need to replace TPixelFormatDescriptor and HDC }
 ///const
@@ -284,15 +293,11 @@ begin
   end;
 end;
 
-// CloseButtonClick
-//
 procedure TInfoForm.ButtonCloseClick(Sender: TObject);
 begin
   Close;
 end;
 
-// FormKeyDown
-//
 procedure TInfoForm.FormKeyDown(Sender: TObject; var Key: Word;
   var KeyChar: Char; Shift: TShiftState);
 begin
@@ -300,15 +305,13 @@ begin
     Close;
 end;
 
-// FormClose
-//
 procedure TInfoForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   Release;
 end;
 
 // -------------------------------------------------------------------
-//
+
 procedure TInfoForm.ListBoxExtensionsDblClick(Sender: TObject);
 var
   p: Integer;
@@ -334,7 +337,7 @@ begin
 end;
 
 // -------------------------------------------------------------------
-//
+
 procedure TInfoForm.LoadContributors;
 // var
 // ContributorsFileName: string;
@@ -352,7 +355,7 @@ begin
 end;
 
 // -------------------------------------------------------------------
-//
+
 function TInfoForm.GetSceneVersion: string;
 var
   FExePath, FGLSceneRevision: string;
@@ -377,17 +380,15 @@ end;
 
 
 // -------------------------------------------------------------------
-//
+
 procedure TInfoForm.WebSiteLblClick(Sender: TObject);
 begin
 ///  ShellExecute(0, 'open', PChar(Url), nil, nil, SW_SHOW);
 ///  ShowHTMLUrl(WebSiteLbl.Text);
 end;
 
+// ------------------------------------------------------------------------------
 initialization
-
-// ------------------------------------------------------------------------------
-// ------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------
 
 RegisterInfoForm(ShowInfoForm);

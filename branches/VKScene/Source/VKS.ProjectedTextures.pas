@@ -25,136 +25,93 @@ uses
 
 type
   { Possible styles of texture projection. Possible values: 
-      ptsOriginal: Original projection method (first pass,
-         is default scene render, second pass is texture
-         projection).
-      ptsInverse: Inverse projection method (first pass
-         is texture projection, sencond pass is regular scene
-         render). This method is useful if you want to simulate
-         lighting only through projected textures (the textures
-         of the scene are "masked" into the white areas of
-         the projection textures).
-       }
+    ptsOriginal: Original projection method (first pass,
+    is default scene render, second pass is texture  projection).
+    ptsInverse: Inverse projection method (first pass
+    is texture projection, sencond pass is regular scene render).
+    This method is useful if you want to simulate
+    lighting only through projected textures (the textures
+    of the scene are "masked" into the white areas of
+    the projection textures). }
   TVKProjectedTexturesStyle = (ptsOriginal, ptsInverse);
 
   TVKProjectedTextures = class;
 
-  // TVKTextureEmmiter
-  //
-  { A projected texture emmiter. 
+  { A projected texture emmiter.
      It's material property will be used as the projected texture.
      Can be places anywhere in the scene. }
   TVKTextureEmitter = class(TVKSceneObject)
   private
-    
     FFOVy: single;
     FAspect: single;
-
   protected
-    
-    { Sets up the base texture matrix for this emitter 
+    { Sets up the base texture matrix for this emitter
        Should be called whenever a change on its properties is made.}
     procedure SetupTexMatrix(var ARci: TVKRenderContextInfo);
-
   public
-    
     constructor Create(AOwner: TComponent); override;
-
   published
-    
     { Indicates the field-of-view of the projection frustum.}
     property FOVy: single read FFOVy write FFOVy;
-
     { x/y ratio. For no distortion, this should be set to
        texture.width/texture.height.}
     property Aspect: single read FAspect write FAspect;
   end;
 
-  // TVKTextureEmitterItem
-  //
   { Specifies an item on the TVKTextureEmitters collection. }
   TVKTextureEmitterItem = class(TCollectionItem)
   private
-    
     FEmitter: TVKTextureEmitter;
-
   protected
-    
     procedure SetEmitter(const val: TVKTextureEmitter);
     procedure RemoveNotification(aComponent: TComponent);
     function GetDisplayName: string; override;
-
   public
-    
     constructor Create(ACollection: TCollection); override;
     procedure Assign(Source: TPersistent); override;
-
   published
-    
     property Emitter: TVKTextureEmitter read FEmitter write SetEmitter;
-
   end;
 
-  // TVKTextureEmitters
-  //
   { Collection of TVKTextureEmitter. }
   TVKTextureEmitters = class(TCollection)
   private
-    
     FOwner: TVKProjectedTextures;
-
   protected
-    
     function GetOwner: TPersistent; override;
     function GetItems(index: Integer): TVKTextureEmitterItem;
     procedure RemoveNotification(aComponent: TComponent);
-
   public
-    
     procedure AddEmitter(texEmitter: TVKTextureEmitter);
-
     property Items[index: Integer]: TVKTextureEmitterItem read GetItems; default;
-
   end;
 
-  // TVKProjectedTexture
-  //
-  { Projected Textures Manager. 
-     Specifies active texture Emitters (whose texture will be projected)
-     and receivers (children of this object). }
+  { Projected Textures Manager.
+    Specifies active texture Emitters (whose texture will be projected)
+    and receivers (children of this object). }
   TVKProjectedTextures = class(TVKImmaterialSceneObject)
   private
-    
     FEmitters: TVKTextureEmitters;
     FStyle: TVKProjectedTexturesStyle;
-
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure DoRender(var ARci: TVKRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
-
   published
-    
-
     { List of texture emitters. }
     property Emitters: TVKTextureEmitters read FEmitters write FEmitters;
-
     { Indicates the style of the projected textures. }
     property Style: TVKProjectedTexturesStyle read FStyle write FStyle;
   end;
 
-  //-------------------------------------------------------------
-  //-------------------------------------------------------------
-  //-------------------------------------------------------------
+//==============================================================
 implementation
+//==============================================================
+
 // ------------------
 // ------------------ TVKTextureEmitter ------------------
 // ------------------
-
-// Create
-//
 
 constructor TVKTextureEmitter.Create(aOwner: TComponent);
 begin
@@ -162,9 +119,6 @@ begin
   FFOVy := 90;
   FAspect := 1;
 end;
-
-// SetupTexMatrix
-//
 
 procedure TVKTextureEmitter.SetupTexMatrix(var ARci: TVKRenderContextInfo);
 const
@@ -187,16 +141,10 @@ end;
 // ------------------ TVKTextureEmitterItem ------------------
 // ------------------
 
-// Create
-//
-
 constructor TVKTextureEmitterItem.Create(ACollection: TCollection);
 begin
   inherited Create(ACollection);
 end;
-
-// Assign
-//
 
 procedure TVKTextureEmitterItem.Assign(Source: TPersistent);
 begin
@@ -207,9 +155,6 @@ begin
   end;
   inherited;
 end;
-
-// SetCaster
-//
 
 procedure TVKTextureEmitterItem.SetEmitter(const val: TVKTextureEmitter);
 begin

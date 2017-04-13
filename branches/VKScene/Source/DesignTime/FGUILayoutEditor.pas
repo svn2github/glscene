@@ -6,13 +6,28 @@ unit FGUILayoutEditor;
 interface
 
 uses
-  System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
-  FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.StdCtrls,
-  FMX.Layouts, FMX.ListBox, System.Rtti, FMX.Grid, FMX.Controls.Presentation,
-  FMX.Edit, FMX.EditBox, FMX.SpinBox, FMX.Objects,
+  System.SysUtils,
+  System.Types,
+  System.UITypes,
+  System.Classes,
+  System.Variants,
+  System.Rtti,
+  FMX.Types,
+  FMX.Controls,
+  FMX.Forms,
+  FMX.Graphics,
+  FMX.Dialogs,
+  FMX.StdCtrls,
+  FMX.Layouts,
+  FMX.ListBox,
+  FMX.Grid,
+  FMX.Controls.Presentation,
+  FMX.Edit,
+  FMX.EditBox,
+  FMX.SpinBox,
+  FMX.Objects,
 
-   
-  VKS.Gui;
+  VKS.Gui, FMX.Grid.Style, FMX.ScrollBox;
 
 type
   TLayouts_Form = class(TForm)
@@ -58,23 +73,22 @@ type
     ImageDelete: TImage;
     procedure Items_ListClick(Sender: TObject);
   private
-    
     Rect_point1, Rect_point2: TPoint;
     Sorted_Elements: array[0..9] of TVKGuiElement;
-
     procedure SyncImages;
     procedure DrawCurrentElement;
     procedure RefreshComponentBox;
     function GetEnabledSpins: Boolean;
     procedure SetEnabledSpins(Value: Boolean);
   public
-    
   end;
 
 var
   Layouts_Form: TLayouts_Form;
 
+//======================================================================
 implementation
+//======================================================================
 
 {$R *.fmx}
 
@@ -82,8 +96,9 @@ var
   vGUILayoutEditor: Tlayouts_form;
   Zoom: integer = 1;
 
+//---------------------------------------------------------------
 { TLayouts_Form }
-
+//---------------------------------------------------------------
 procedure TLayouts_Form.DrawCurrentElement;
 begin
   with Elements_Grid do

@@ -1,7 +1,7 @@
 //
 // VKScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
-{ 
+{
   Implementation of basic scene objects plus some management routines.
 
   All objects declared in this unit are part of the basic GLScene package,
@@ -25,12 +25,11 @@ uses
   System.Classes,
   System.SysUtils,
   System.Math,
-  
 
   VKS.VectorGeometry,
   VKS.VectorTypes,
   VKS.Scene,
-  OpenGLAdapter,
+  uOpenGLAdapter,
   VKS.VectorLists,
   VKS.CrossPlatform,
   VKS.Context,
@@ -43,8 +42,6 @@ uses
 
 type
 
-  // TVKVisibilityDeterminationEvent
-  //
   TVKVisibilityDeterminationEvent = function(Sender: TObject;
     var rci: TVKRenderContextInfo): Boolean of object;
 
@@ -57,38 +54,29 @@ type
     TexCoord: TVector2f;
   end;
 
-  // TVKDummyCube
-  //
-  { A simple cube, invisible at run-time. 
+  { A simple cube, invisible at run-time.
     This is a usually non-visible object -except at design-time- used for
     building hierarchies or groups, when some kind of joint or movement
-    mechanism needs be described, you can use DummyCubes. 
-    DummyCube's barycenter is its children's barycenter. 
+    mechanism needs be described, you can use DummyCubes.
+    DummyCube's barycenter is its children's barycenter.
     The DummyCube can optionnally amalgamate all its children into a single
     display list (see Amalgamate property). }
   TVKDummyCube = class(TVKCameraInvariantObject)
   private
-    
     FCubeSize: GLfloat;
     FEdgeColor: TVKColor;
     FVisibleAtRunTime, FAmalgamate: Boolean;
     FGroupList: TVKListHandle;
     FOnVisibilityDetermination: TVKVisibilityDeterminationEvent;
-
   protected
-    
     procedure SetCubeSize(const val: GLfloat);
     procedure SetEdgeColor(const val: TVKColor);
     procedure SetVisibleAtRunTime(const val: Boolean);
     procedure SetAmalgamate(const val: Boolean);
-
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
     procedure Assign(Source: TPersistent); override;
-
     function AxisAlignedDimensionsUnscaled: TVector; override;
     function RayCastIntersect(const rayStart, rayVector: TVector;
       intersectPoint: PVector = nil; intersectNormal: PVector = nil)
@@ -98,54 +86,47 @@ type
       renderSelf, renderChildren: Boolean); override;
     procedure StructureChanged; override;
     function BarycenterAbsolutePosition: TVector; override;
-
   published
-    
     property CubeSize: GLfloat read FCubeSize write SetCubeSize;
     property EdgeColor: TVKColor read FEdgeColor write SetEdgeColor;
-    { If true the dummycube's edges will be visible at runtime. 
+    { If true the dummycube's edges will be visible at runtime.
       The default behaviour of the dummycube is to be visible at design-time
       only, and invisible at runtime. }
     property VisibleAtRunTime: Boolean read FVisibleAtRunTime
       write SetVisibleAtRunTime default False;
-    { Amalgamate the dummy's children in a single Vulkan entity. 
+    { Amalgamate the dummy's children in a single Vulkan entity.
       This activates a special rendering mode, which will compile
       the rendering of all of the dummycube's children objects into a
       single display list. This may provide a significant speed up in some
       situations, however, this means that changes to the children will
-      be ignored untill you call StructureChanged on the dummy cube. 
+      be ignored untill you call StructureChanged on the dummy cube.
       Some objects, that have their own display list management, may not
       be compatible with this behaviour. This will also prevents sorting
-      and culling to operate as usual. 
+      and culling to operate as usual.
       In short, this features is best used for static, non-transparent
       geometry, or when the point of view won't change over a large
       number of frames. }
     property Amalgamate: Boolean read FAmalgamate write SetAmalgamate
       default False;
-    { Camera Invariance Options. 
+    { Camera Invariance Options.
       These options allow to "deactivate" sensitivity to camera, f.i. by
       centering the object on the camera or ignoring camera orientation. }
     property CamInvarianceMode default cimNone;
-    { Event for custom visibility determination. 
+    { Event for custom visibility determination.
       Event handler should return True if the dummycube and its children
       are to be considered visible for the current render. }
     property OnVisibilityDetermination: TVKVisibilityDeterminationEvent
       read FOnVisibilityDetermination write FOnVisibilityDetermination;
   end;
 
-  // TVKPlaneStyle
-  //
   TVKPlaneStyle = (psSingleQuad, psTileTexture);
   TVKPlaneStyles = set of TVKPlaneStyle;
 
-  // TVKPlane
-  //
-  { A simple plane object. 
+  { A simple plane object.
     Note that a plane is always made of a single quad (two triangles) and the
     tiling is only applied to texture coordinates. }
   TVKPlane = class(TVKSceneObject)
   private
-    
     FXOffset, FYOffset: GLfloat;
     FXScope, FYScope: GLfloat;
     FWidth, FHeight: GLfloat;
@@ -153,7 +134,6 @@ type
     FStyle: TVKPlaneStyles;
     FMesh: array of array of TVertexRec;
   protected
-    
     procedure SetHeight(const aValue: Single);
     procedure SetWidth(const aValue: Single);
     procedure SetXOffset(const Value: GLfloat);
@@ -165,31 +145,23 @@ type
     function StoreYScope: Boolean;
     procedure SetYTiles(const Value: Cardinal);
     procedure SetStyle(const val: TVKPlaneStyles);
-
   public
-    
     constructor Create(AOwner: TComponent); override;
-
     procedure Assign(Source: TPersistent); override;
-
     procedure BuildList(var rci: TVKRenderContextInfo); override;
     function GenerateSilhouette(const silhouetteParameters
       : TVKSilhouetteParameters): TVKSilhouette; override;
-
     function AxisAlignedDimensionsUnscaled: TVector; override;
     function RayCastIntersect(const rayStart, rayVector: TVector;
       intersectPoint: PVector = nil; intersectNormal: PVector = nil)
       : Boolean; override;
-    { Computes the screen coordinates of the smallest rectangle encompassing the plane. 
+    { Computes the screen coordinates of the smallest rectangle encompassing the plane.
       Returned extents are NOT limited to any physical screen extents. }
     function ScreenRect(aBuffer: TVKSceneBuffer): TVKRect;
-
-    { Computes the signed distance to the point. 
+    { Computes the signed distance to the point.
       Point coordinates are expected in absolute coordinates. }
     function PointDistance(const aPoint: TVector): Single;
-
   published
-    
     property Height: GLfloat read FHeight write SetHeight;
     property Width: GLfloat read FWidth write SetWidth;
     property XOffset: GLfloat read FXOffset write SetXOffset;
@@ -202,22 +174,17 @@ type
       default [psSingleQuad, psTileTexture];
   end;
 
-  // TVKSprite
-  //
-  { A rectangular area, perspective projected, but always facing the camera. 
+  { A rectangular area, perspective projected, but always facing the camera.
     A TVKSprite is perspective projected and as such is scaled with distance,
     if you want a 2D sprite that does not get scaled, see TVKHUDSprite. }
   TVKSprite = class(TVKSceneObject)
   private
-    
     FWidth: GLfloat;
     FHeight: GLfloat;
     FRotation: GLfloat;
     FAlphaChannel: Single;
     FMirrorU, FMirrorV: Boolean;
-
   protected
-    
     procedure SetWidth(const val: GLfloat);
     procedure SetHeight(const val: GLfloat);
     procedure SetRotation(const val: GLfloat);
@@ -225,22 +192,15 @@ type
     function StoreAlphaChannel: Boolean;
     procedure SetMirrorU(const val: Boolean);
     procedure SetMirrorV(const val: Boolean);
-
   public
-    
     constructor Create(AOwner: TComponent); override;
-
     procedure Assign(Source: TPersistent); override;
     procedure BuildList(var rci: TVKRenderContextInfo); override;
-
     function AxisAlignedDimensionsUnscaled: TVector; override;
-
     procedure SetSize(const Width, Height: GLfloat);
-    // : Set width and height to "size"
+    // Set width and height to "size"
     procedure SetSquareSize(const Size: GLfloat);
-
   published
-    
     { Sprite Width in 3D world units. }
     property Width: GLfloat read FWidth write SetWidth;
     { Sprite Height in 3D world units. }
@@ -257,48 +217,34 @@ type
     property MirrorV: Boolean read FMirrorV write SetMirrorV default False;
   end;
 
-  // TVKPointStyle
-  //
   TVKPointStyle = (psSquare, psRound, psSmooth, psSmoothAdditive,
     psSquareAdditive);
 
-  // TVKPointParameters
-  //
-  { Point parameters as in ARB_point_parameters. 
+  { Point parameters as in ARB_point_parameters.
     Make sure to read the ARB_point_parameters spec if you want to understand
     what each parameter does. }
   TVKPointParameters = class(TVKUpdateAbleObject)
   private
-    
     FEnabled: Boolean;
     FMinSize, FMaxSize: Single;
     FFadeTresholdSize: Single;
     FDistanceAttenuation: TVKCoordinates;
-
   protected
-    
     procedure SetEnabled(const val: Boolean);
     procedure SetMinSize(const val: Single);
     procedure SetMaxSize(const val: Single);
     procedure SetFadeTresholdSize(const val: Single);
     procedure SetDistanceAttenuation(const val: TVKCoordinates);
-
     procedure DefineProperties(Filer: TFiler); override;
     procedure ReadData(Stream: TStream);
     procedure WriteData(Stream: TStream);
-
   public
-    
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
-
     procedure Assign(Source: TPersistent); override;
-
     procedure Apply;
     procedure UnApply;
-
   published
-    
     property Enabled: Boolean read FEnabled write SetEnabled default False;
     property MinSize: Single read FMinSize write SetMinSize stored False;
     property MaxSize: Single read FMaxSize write SetMaxSize stored False;
@@ -309,23 +255,18 @@ type
       write SetDistanceAttenuation;
   end;
 
-  // TVKPoints
-  //
-  { Renders a set of non-transparent colored points. 
+  { Renders a set of non-transparent colored points.
     The points positions and their color are defined through the Positions
     and Colors properties. }
   TVKPoints = class(TVKImmaterialSceneObject)
   private
-    
     FPositions: TAffineVectorList;
     FColors: TVectorList;
     FSize: Single;
     FStyle: TVKPointStyle;
     FPointParameters: TVKPointParameters;
     FStatic, FNoZWrite: Boolean;
-
   protected
-    
     function StoreSize: Boolean;
     procedure SetNoZWrite(const val: Boolean);
     procedure SetStatic(const val: Boolean);
@@ -334,29 +275,20 @@ type
     procedure SetColors(const val: TVectorList);
     procedure SetStyle(const val: TVKPointStyle);
     procedure SetPointParameters(const val: TVKPointParameters);
-
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
     procedure Assign(Source: TPersistent); override;
     procedure BuildList(var rci: TVKRenderContextInfo); override;
-
-    { Points positions. 
-      If empty, a single point is assumed at (0, 0, 0) }
+    { Points positions. If empty, a single point is assumed at (0, 0, 0) }
     property Positions: TAffineVectorList read FPositions write SetPositions;
-    { Defines the points colors. 
-       
+    { Defines the points colors.
        if empty, point color will be opaque white
        if contains a single color, all points will use that color
        if contains N colors, the first N points (at max) will be rendered
-      using the corresponding colors.
-        }
+      using the corresponding colors. }
     property Colors: TVectorList read FColors write SetColors;
-
   published
-    
     { If true points do not write their Z to the depth buffer. }
     property NoZWrite: Boolean read FNoZWrite write SetNoZWrite;
     { Tells the component if point coordinates are static. 
@@ -373,104 +305,74 @@ type
       on their distance to the observer. }
     property PointParameters: TVKPointParameters read FPointParameters
       write SetPointParameters;
-
   end;
 
-  // TLineNodesAspect
-  //
   { Possible aspects for the nodes of a TLine. }
   TLineNodesAspect = (lnaInvisible, lnaAxes, lnaCube, lnaDodecahedron);
 
-  // TLineSplineMode
-  //
   { Available spline modes for a TLine. }
   TLineSplineMode = (lsmLines, lsmCubicSpline, lsmBezierSpline, lsmNURBSCurve,
     lsmSegments, lsmLoop);
 
-  // TVKLinesNode
-  //
-  { Specialized Node for use in a TVKLines objects. 
+  { Specialized Node for use in a TVKLines objects.
     Adds a Color property (TVKColor). }
   TVKLinesNode = class(TVKNode)
   private
-    
     FColor: TVKColor;
-
   protected
-    
     procedure SetColor(const val: TVKColor);
     procedure OnColorChange(Sender: TObject);
     function StoreColor: Boolean;
-
   public
-    
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
-
   published
-    
-
-    { The node color. 
+    { The node color.
       Can also defined the line color (interpolated between nodes) if
       loUseNodeColorForLines is set (in TVKLines). }
     property Color: TVKColor read FColor write SetColor stored StoreColor;
   end;
 
-  // TVKLinesNodes
-  //
-  { Specialized collection for Nodes in a TVKLines objects. 
-    Stores TVKLinesNode items. }
+  { Specialized collection for Nodes in a TVKLines objects. Stores TVKLinesNode items. }
   TVKLinesNodes = class(TVKNodes)
   public
-    
     constructor Create(AOwner: TComponent); overload;
-
     procedure NotifyChange; override;
   end;
 
-  // TVKLineBase
-  //
-  { Base class for line objects. 
+  { Base class for line objects.
     Introduces line style properties (width, color...). }
   TVKLineBase = class(TVKImmaterialSceneObject)
   private
-    
     FLineColor: TVKColor;
     FLinePattern: GLushort;
     FLineWidth: Single;
     FAntiAliased: Boolean;
-
   protected
-    
     procedure SetLineColor(const Value: TVKColor);
     procedure SetLinePattern(const Value: GLushort);
     procedure SetLineWidth(const val: Single);
     function StoreLineWidth: Boolean;
     procedure SetAntiAliased(const val: Boolean);
-
-    { Setup Vulkan states according to line style. 
-      You must call RestoreLineStyle after drawing your lines. 
+    { Setup Vulkan states according to line style.
+      You must call RestoreLineStyle after drawing your lines.
       You may use nested calls with SetupLineStyle/RestoreLineStyle. }
     procedure SetupLineStyle(var rci: TVKRenderContextInfo);
-
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
     procedure NotifyChange(Sender: TObject); override;
-
   published
-    
-    { Indicates if Vulkan should smooth line edges. 
+    { Indicates if Vulkan should smooth line edges.
       Smoothed lines looks better but are poorly implemented in most OpenGL
       drivers and take *lots* of rendering time. }
     property AntiAliased: Boolean read FAntiAliased write SetAntiAliased
       default False;
     { Default color of the lines. }
     property LineColor: TVKColor read FLineColor write SetLineColor;
-    { Bitwise line pattern. 
+    { Bitwise line pattern.
       For instance $FFFF (65535) is a white line (stipple disabled), $0000
       is a black line, $CCCC is the stipple used in axes and dummycube, etc. }
     property LinePattern: GLushort read FLinePattern write SetLinePattern
@@ -481,53 +383,38 @@ type
     property Visible;
   end;
 
-  // TVKNodedLines
-  //
-  { Class that defines lines via a series of nodes. 
-    Base class, does not render anything. }
+  { Class that defines lines via a series of nodes. Base class, does not render anything. }
   TVKNodedLines = class(TVKLineBase)
   private
-    
     FNodes: TVKLinesNodes;
     FNodesAspect: TLineNodesAspect;
     FNodeColor: TVKColor;
     FNodeSize: Single;
     FOldNodeColor: TColorVector;
-
   protected
-    
     procedure SetNodesAspect(const Value: TLineNodesAspect);
     procedure SetNodeColor(const Value: TVKColor);
     procedure OnNodeColorChanged(Sender: TObject);
     procedure SetNodes(const aNodes: TVKLinesNodes);
     procedure SetNodeSize(const val: Single);
     function StoreNodeSize: Boolean;
-
     procedure DrawNode(var rci: TVKRenderContextInfo; X, Y, Z: Single;
       Color: TVKColor);
-
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
-
     function AxisAlignedDimensionsUnscaled: TVector; override;
-
     procedure AddNode(const coords: TVKCoordinates); overload;
     procedure AddNode(const X, Y, Z: GLfloat); overload;
     procedure AddNode(const Value: TVector); overload;
     procedure AddNode(const Value: TAffineVector); overload;
-
   published
-    
-    { Default color for nodes. 
-      lnaInvisible and lnaAxes ignore this setting. }
+    { Default color for nodes. lnaInvisible and lnaAxes ignore this setting. }
     property NodeColor: TVKColor read FNodeColor write SetNodeColor;
     { The nodes list.  }
     property Nodes: TVKLinesNodes read FNodes write SetNodes;
-
-    { Default aspect of line nodes. 
+    { Default aspect of line nodes.
       May help you materialize nodes, segments and control points. }
     property NodesAspect: TLineNodesAspect read FNodesAspect
       write SetNodesAspect default lnaAxes;
@@ -536,82 +423,62 @@ type
       stored StoreNodeSize;
   end;
 
-  // TLinesOptions
-  //
   TLinesOption = (loUseNodeColorForLines, loColorLogicXor);
   TLinesOptions = set of TLinesOption;
 
-  // TVKLines
-  //
-  { Set of 3D line segments. 
+  { Set of 3D line segments.
     You define a 3D Line by adding its nodes in the "Nodes" property. The line
     may be rendered as a set of segment or as a curve (nodes then act as spline
-    control points). 
+    control points).
     Alternatively, you can also use it to render a set of spacial nodes (points
     in space), just make the lines transparent and the nodes visible by picking
     the node aspect that suits you. }
   TVKLines = class(TVKNodedLines)
   private
-    
     FDivision: Integer;
     FSplineMode: TLineSplineMode;
     FOptions: TLinesOptions;
     FNURBSOrder: Integer;
     FNURBSTolerance: Single;
     FNURBSKnots: TSingleList;
-
   protected
-    
     procedure SetSplineMode(const val: TLineSplineMode);
     procedure SetDivision(const Value: Integer);
     procedure SetOptions(const val: TLinesOptions);
     procedure SetNURBSOrder(const val: Integer);
     procedure SetNURBSTolerance(const val: Single);
-
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
-
     procedure BuildList(var rci: TVKRenderContextInfo); override;
-
     property NURBSKnots: TSingleList read FNURBSKnots;
     property NURBSOrder: Integer read FNURBSOrder write SetNURBSOrder;
-    property NURBSTolerance: Single read FNURBSTolerance
-      write SetNURBSTolerance;
-
+    property NURBSTolerance: Single read FNURBSTolerance write SetNURBSTolerance;
   published
-    
-    { Number of divisions for each segment in spline modes. 
+    { Number of divisions for each segment in spline modes.
       Minimum 1 (disabled), ignored in lsmLines mode. }
     property Division: Integer read FDivision write SetDivision default 10;
     { Default spline drawing mode.  }
     property SplineMode: TLineSplineMode read FSplineMode write SetSplineMode
       default lsmLines;
-
-    { Rendering options for the line. 
-       
+    { Rendering options for the line.
        loUseNodeColorForLines: if set lines will be drawn using node
       colors (and color interpolation between nodes), if not, LineColor
       will be used (single color).
-      loColorLogicXor: enable logic operation for color of XOR type.
-        }
+      loColorLogicXor: enable logic operation for color of XOR type.  }
     property Options: TLinesOptions read FOptions write SetOptions;
   end;
 
   TCubePart = (cpTop, cpBottom, cpFront, cpBack, cpLeft, cpRight);
   TCubeParts = set of TCubePart;
 
-  // TVKCube
-  //
-  { A simple cube object. 
+  { A simple cube object.
     This cube use the same material for each of its faces, ie. all faces look
     the same. If you want a multi-material cube, use a mesh in conjunction
     with a TVKFreeForm and a material library. }
   TVKCube = class(TVKSceneObject)
   private
-    
     FCubeSize: TAffineVector;
     FParts: TCubeParts;
     FNormalDirection: TNormalDirection;
@@ -620,27 +487,20 @@ type
     procedure SetParts(aValue: TCubeParts);
     procedure SetNormalDirection(aValue: TNormalDirection);
   protected
-    
     procedure DefineProperties(Filer: TFiler); override;
     procedure ReadData(Stream: TStream);
     procedure WriteData(Stream: TStream);
-
   public
-    
     constructor Create(AOwner: TComponent); override;
-
     function GenerateSilhouette(const silhouetteParameters
       : TVKSilhouetteParameters): TVKSilhouette; override;
     procedure BuildList(var rci: TVKRenderContextInfo); override;
-
     procedure Assign(Source: TPersistent); override;
     function AxisAlignedDimensionsUnscaled: TVector; override;
     function RayCastIntersect(const rayStart, rayVector: TVector;
       intersectPoint: PVector = nil; intersectNormal: PVector = nil)
       : Boolean; override;
-
   published
-    
     property CubeWidth: GLfloat index 0 read GetCubeWHD write SetCubeWHD
       stored False;
     property CubeHeight: GLfloat index 1 read GetCubeWHD write SetCubeWHD
@@ -653,40 +513,29 @@ type
       default [cpTop, cpBottom, cpFront, cpBack, cpLeft, cpRight];
   end;
 
-  // TNormalSmoothing
-  //
-  { Determines how and if normals are smoothed. 
-    - nsFlat : facetted look 
-    - nsSmooth : smooth look 
+  { Determines how and if normals are smoothed.
+    - nsFlat : facetted look
+    - nsSmooth : smooth look
     - nsNone : unlighted rendering, usefull for decla texturing }
   TNormalSmoothing = (nsFlat, nsSmooth, nsNone);
 
-  // TVKQuadricObject
-  //
-  { Base class for quadric objects. 
+  { Base class for quadric objects.
     Introduces some basic Quadric interaction functions (the actual quadric
     math is part of the GLU library). }
   TVKQuadricObject = class(TVKSceneObject)
   private
-    
     FNormals: TNormalSmoothing;
     FNormalDirection: TNormalDirection;
-
   protected
-    
     procedure SetNormals(aValue: TNormalSmoothing);
     procedure SetNormalDirection(aValue: TNormalDirection);
     procedure SetupQuadricParams(quadric: GLUquadricObj);
     procedure SetNormalQuadricOrientation(quadric: GLUquadricObj);
     procedure SetInvertedQuadricOrientation(quadric: GLUquadricObj);
-
   public
-    
     constructor Create(AOwner: TComponent); override;
     procedure Assign(Source: TPersistent); override;
-
   published
-    
     property Normals: TNormalSmoothing read FNormals write SetNormals
       default nsSmooth;
     property NormalDirection: TNormalDirection read FNormalDirection
@@ -697,14 +546,11 @@ type
   TAngleLimit2 = 0 .. 360;
   TCapType = (ctNone, ctCenter, ctFlat);
 
-  // TVKSphere
-  //
-  { A sphere object. 
+  { A sphere object.
     The sphere can have to and bottom caps, as well as being just a slice
     of sphere. }
   TVKSphere = class(TVKQuadricObject)
   private
-    
     FRadius: GLfloat;
     FSlices, FStacks: GLint;
     FTop: TAngleLimit1;
@@ -721,22 +567,17 @@ type
     procedure SetStacks(aValue: GLint);
     procedure SetTop(aValue: TAngleLimit1);
     procedure SetTopCap(aValue: TCapType);
-
   public
-    
     constructor Create(AOwner: TComponent); override;
     procedure Assign(Source: TPersistent); override;
-
     procedure BuildList(var rci: TVKRenderContextInfo); override;
     function AxisAlignedDimensionsUnscaled: TVector; override;
     function RayCastIntersect(const rayStart, rayVector: TVector;
       intersectPoint: PVector = nil; intersectNormal: PVector = nil)
       : Boolean; override;
-
     function GenerateSilhouette(const silhouetteParameters
       : TVKSilhouetteParameters): TVKSilhouette; override;
   published
-    
     property Bottom: TAngleLimit1 read FBottom write SetBottom default -90;
     property BottomCap: TCapType read FBottomCap write SetBottomCap
       default ctNone;
@@ -749,57 +590,43 @@ type
     property TopCap: TCapType read FTopCap write SetTopCap default ctNone;
   end;
 
-  // TVKPolygonBase
-  //
   { Base class for objects based on a polygon. }
   TVKPolygonBase = class(TVKSceneObject)
   private
-    
     FDivision: Integer;
     FSplineMode: TLineSplineMode;
-
   protected
-    
     FNodes: TVKNodes;
     procedure CreateNodes; dynamic;
     procedure SetSplineMode(const val: TLineSplineMode);
     procedure SetDivision(const Value: Integer);
     procedure SetNodes(const aNodes: TVKNodes);
-
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
     procedure NotifyChange(Sender: TObject); override;
-
     procedure AddNode(const coords: TVKCoordinates); overload;
     procedure AddNode(const X, Y, Z: GLfloat); overload;
     procedure AddNode(const Value: TVector); overload;
     procedure AddNode(const Value: TAffineVector); overload;
-
   published
-    
     { The nodes list.  }
     property Nodes: TVKNodes read FNodes write SetNodes;
-    { Number of divisions for each segment in spline modes. 
+    { Number of divisions for each segment in spline modes.
       Minimum 1 (disabled), ignored in lsmLines mode. }
     property Division: Integer read FDivision write SetDivision default 10;
-    { Default spline drawing mode. 
+    { Default spline drawing mode.
       This mode is used only for the curve, not for the rotation path. }
     property SplineMode: TLineSplineMode read FSplineMode write SetSplineMode
       default lsmLines;
-
   end;
 
-  // TVKSuperellipsoid
-  //
-  { A Superellipsoid object. 
+  { A Superellipsoid object.
     The Superellipsoid can have top and bottom caps,
     as well as being just a slice of Superellipsoid. }
   TVKSuperellipsoid = class(TVKQuadricObject)
   private
-    
     FRadius, FxyCurve, FzCurve: GLfloat;
     FSlices, FStacks: GLint;
     FTop: TAngleLimit1;
@@ -818,22 +645,17 @@ type
     procedure SetStacks(aValue: GLint);
     procedure SetTop(aValue: TAngleLimit1);
     procedure SetTopCap(aValue: TCapType);
-
   public
-    
     constructor Create(AOwner: TComponent); override;
     procedure Assign(Source: TPersistent); override;
-
     procedure BuildList(var rci: TVKRenderContextInfo); override;
     function AxisAlignedDimensionsUnscaled: TVector; override;
     function RayCastIntersect(const rayStart, rayVector: TVector;
       intersectPoint: PVector = nil; intersectNormal: PVector = nil)
       : Boolean; override;
-
     function GenerateSilhouette(const silhouetteParameters
       : TVKSilhouetteParameters): TVKSilhouette; override;
   published
-    
     property Bottom: TAngleLimit1 read FBottom write SetBottom default -90;
     property BottomCap: TCapType read FBottomCap write SetBottomCap
       default ctNone;
@@ -848,7 +670,6 @@ type
     property TopCap: TCapType read FTopCap write SetTopCap default ctNone;
   end;
 
-
 { Issues Vulkan for a unit-size cube stippled wireframe. }
 procedure CubeWireframeBuildList(var rci: TVKRenderContextInfo; Size: GLfloat;
   Stipple: Boolean; const Color: TColorVector);
@@ -861,19 +682,12 @@ procedure OctahedronBuildList;
 { Issues Vulkan for a unit-size tetrahedron. }
 procedure TetrahedronBuildList;
 
-
-
 var
   TangentAttributeName: AnsiString = 'Tangent';
   BinormalAttributeName: AnsiString = 'Binormal';
 
 // -------------------------------------------------------------
-// -------------------------------------------------------------
-// -------------------------------------------------------------
 implementation
-
-// -------------------------------------------------------------
-// -------------------------------------------------------------
 // -------------------------------------------------------------
 
 uses
@@ -883,9 +697,6 @@ uses
 
 const
   cDefaultPointSize: Single = 1.0;
-
-  // CubeWireframeBuildList
-  //
 
 procedure CubeWireframeBuildList(var rci: TVKRenderContextInfo; Size: GLfloat;
   Stipple: Boolean; const Color: TColorVector);
@@ -939,8 +750,6 @@ begin
   glEnd;
 end;
 
-// DodecahedronBuildList
-//
 procedure DodecahedronBuildList;
 const
   A = 1.61803398875 * 0.3; // (Sqrt(5)+1)/2
@@ -990,8 +799,6 @@ begin
   end;
 end;
 
-// IcosahedronBuildList
-//
 procedure IcosahedronBuildList;
 const
   A = 0.5;
@@ -1028,8 +835,6 @@ begin
   end;
 end;
 
-// OctahedronBuildList
-//
 procedure OctahedronBuildList;
 const
   Vertices: packed array [0 .. 5] of TAffineVector =
@@ -1064,8 +869,6 @@ begin
   end;
 end;
 
-// TetrahedronBuildList
-//
 procedure TetrahedronBuildList;
 const
   TetT = 1.73205080756887729;
@@ -1109,9 +912,6 @@ end;
 // ------------------ TVKDummyCube ------------------
 // ------------------
 
-// Create
-//
-
 constructor TVKDummyCube.Create(AOwner: TComponent);
 begin
   inherited;
@@ -1123,18 +923,12 @@ begin
   CamInvarianceMode := cimNone;
 end;
 
-// Destroy
-//
-
 destructor TVKDummyCube.Destroy;
 begin
   FGroupList.Free;
   FEdgeColor.Free;
   inherited;
 end;
-
-// Assign
-//
 
 procedure TVKDummyCube.Assign(Source: TPersistent);
 begin
@@ -1148,9 +942,6 @@ begin
   inherited Assign(Source);
 end;
 
-// AxisAlignedDimensionsUnscaled
-//
-
 function TVKDummyCube.AxisAlignedDimensionsUnscaled: TVector;
 begin
   Result.X := 0.5 * Abs(FCubeSize);
@@ -1159,26 +950,17 @@ begin
   Result.W := 0;
 end;
 
-// RayCastIntersect
-//
-
 function TVKDummyCube.RayCastIntersect(const rayStart, rayVector: TVector;
   intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean;
 begin
   Result := False;
 end;
 
-// BuildList
-//
-
 procedure TVKDummyCube.BuildList(var rci: TVKRenderContextInfo);
 begin
   if (csDesigning in ComponentState) or (FVisibleAtRunTime) then
     CubeWireframeBuildList(rci, FCubeSize, True, EdgeColor.Color);
 end;
-
-// DoRender
-//
 
 procedure TVKDummyCube.DoRender(var rci: TVKRenderContextInfo;
   renderSelf, renderChildren: Boolean);
@@ -1210,18 +992,12 @@ begin
   end;
 end;
 
-// StructureChanged
-//
-
 procedure TVKDummyCube.StructureChanged;
 begin
   if FAmalgamate then
     FGroupList.DestroyHandle;
   inherited;
 end;
-
-// BarycenterAbsolutePosition
-//
 
 function TVKDummyCube.BarycenterAbsolutePosition: TVector;
 var
@@ -1238,9 +1014,6 @@ begin
     Result := AbsolutePosition;
 end;
 
-// SetCubeSize
-//
-
 procedure TVKDummyCube.SetCubeSize(const val: GLfloat);
 begin
   if val <> FCubeSize then
@@ -1249,9 +1022,6 @@ begin
     StructureChanged;
   end;
 end;
-
-// SetEdgeColor
-//
 
 procedure TVKDummyCube.SetEdgeColor(const val: TVKColor);
 begin
@@ -1262,9 +1032,6 @@ begin
   end;
 end;
 
-// SetVisibleAtRunTime
-//
-
 procedure TVKDummyCube.SetVisibleAtRunTime(const val: Boolean);
 begin
   if val <> FVisibleAtRunTime then
@@ -1273,9 +1040,6 @@ begin
     StructureChanged;
   end;
 end;
-
-// SetAmalgamate
-//
 
 procedure TVKDummyCube.SetAmalgamate(const val: Boolean);
 begin
@@ -1292,9 +1056,6 @@ end;
 // ------------------ TVKPlane ------------------
 // ------------------
 
-// Create
-//
-
 constructor TVKPlane.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
@@ -1307,9 +1068,6 @@ begin
   ObjectStyle := ObjectStyle + [osDirectDraw];
   FStyle := [psSingleQuad, psTileTexture];
 end;
-
-// Assign
-//
 
 procedure TVKPlane.Assign(Source: TPersistent);
 begin
@@ -1329,18 +1087,12 @@ begin
   inherited Assign(Source);
 end;
 
-// AxisAlignedDimensions
-//
-
 function TVKPlane.AxisAlignedDimensionsUnscaled: TVector;
 begin
   Result.X := 0.5 * Abs(FWidth);
   Result.Y := 0.5 * Abs(FHeight);
   Result.Z := 0;
 end;
-
-// RayCastIntersect
-//
 
 function TVKPlane.RayCastIntersect(const rayStart, rayVector: TVector;
   intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean;
@@ -1398,9 +1150,6 @@ begin
   end;
 end;
 
-// GenerateSilhouette
-//
-
 function TVKPlane.GenerateSilhouette(const silhouetteParameters
   : TVKSilhouetteParameters): TVKSilhouette;
 var
@@ -1434,9 +1183,6 @@ begin
       Add(2, 3, 0);
     end;
 end;
-
-// BuildList
-//
 
 procedure TVKPlane.BuildList(var rci: TVKRenderContextInfo);
 
@@ -1558,9 +1304,6 @@ begin
   end;
 end;
 
-// SetWidth
-//
-
 procedure TVKPlane.SetWidth(const aValue: Single);
 begin
   if aValue <> FWidth then
@@ -1570,9 +1313,6 @@ begin
     StructureChanged;
   end;
 end;
-
-// ScreenRect
-//
 
 function TVKPlane.ScreenRect(aBuffer: TVKSceneBuffer): TVKRect;
 var
@@ -1599,17 +1339,11 @@ begin
     FillChar(Result, SizeOf(TVKRect), 0);
 end;
 
-// PointDistance
-//
-
 function TVKPlane.PointDistance(const aPoint: TVector): Single;
 begin
   Result := VectorDotProduct(VectorSubtract(aPoint, AbsolutePosition),
     AbsoluteDirection);
 end;
-
-// SetHeight
-//
 
 procedure TVKPlane.SetHeight(const aValue: Single);
 begin
@@ -1621,9 +1355,6 @@ begin
   end;
 end;
 
-// SetXOffset
-//
-
 procedure TVKPlane.SetXOffset(const Value: GLfloat);
 begin
   if Value <> FXOffset then
@@ -1633,9 +1364,6 @@ begin
     StructureChanged;
   end;
 end;
-
-// SetXScope
-//
 
 procedure TVKPlane.SetXScope(const Value: GLfloat);
 begin
@@ -1649,16 +1377,10 @@ begin
   end;
 end;
 
-// StoreXScope
-//
-
 function TVKPlane.StoreXScope: Boolean;
 begin
   Result := (FXScope <> 1);
 end;
-
-// SetXTiles
-//
 
 procedure TVKPlane.SetXTiles(const Value: Cardinal);
 begin
@@ -1670,9 +1392,6 @@ begin
   end;
 end;
 
-// SetYOffset
-//
-
 procedure TVKPlane.SetYOffset(const Value: GLfloat);
 begin
   if Value <> FYOffset then
@@ -1682,9 +1401,6 @@ begin
     StructureChanged;
   end;
 end;
-
-// SetYScope
-//
 
 procedure TVKPlane.SetYScope(const Value: GLfloat);
 begin
@@ -1698,16 +1414,10 @@ begin
   end;
 end;
 
-// StoreYScope
-//
-
 function TVKPlane.StoreYScope: Boolean;
 begin
   Result := (FYScope <> 1);
 end;
-
-// SetYTiles
-//
 
 procedure TVKPlane.SetYTiles(const Value: Cardinal);
 begin
@@ -1718,9 +1428,6 @@ begin
     StructureChanged;
   end;
 end;
-
-// SetStyle
-//
 
 procedure TVKPlane.SetStyle(const val: TVKPlaneStyles);
 begin
@@ -1735,9 +1442,6 @@ end;
 // ------------------ TVKSprite ------------------
 // ------------------
 
-// Create
-//
-
 constructor TVKSprite.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
@@ -1746,9 +1450,6 @@ begin
   FWidth := 1;
   FHeight := 1;
 end;
-
-// Assign
-//
 
 procedure TVKSprite.Assign(Source: TPersistent);
 begin
@@ -1770,9 +1471,6 @@ begin
   // as width
   Result.Z := 0.5 * Abs(FWidth);
 end;
-
-// BuildList
-//
 
 procedure TVKSprite.BuildList(var rci: TVKRenderContextInfo);
 var
@@ -2479,9 +2177,6 @@ end;
 // ------------------ TVKLinesNode ------------------
 // ------------------
 
-// Create
-//
-
 constructor TVKLinesNode.Create(Collection: TCollection);
 begin
   inherited Create(Collection);
@@ -2491,17 +2186,11 @@ begin
   FColor.OnNotifyChange := OnColorChange;
 end;
 
-// Destroy
-//
-
 destructor TVKLinesNode.Destroy;
 begin
   FColor.Free;
   inherited Destroy;
 end;
-
-// Assign
-//
 
 procedure TVKLinesNode.Assign(Source: TPersistent);
 begin
@@ -2510,24 +2199,15 @@ begin
   inherited;
 end;
 
-// SetColor
-//
-
 procedure TVKLinesNode.SetColor(const val: TVKColor);
 begin
   FColor.Assign(val);
 end;
 
-// OnColorChange
-//
-
 procedure TVKLinesNode.OnColorChange(Sender: TObject);
 begin
   (Collection as TVKNodes).NotifyChange;
 end;
-
-// StoreColor
-//
 
 function TVKLinesNode.StoreColor: Boolean;
 begin
@@ -2539,16 +2219,10 @@ end;
 // ------------------ TVKLinesNodes ------------------
 // ------------------
 
-// Create
-//
-
 constructor TVKLinesNodes.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner, TVKLinesNode);
 end;
-
-// NotifyChange
-//
 
 procedure TVKLinesNodes.NotifyChange;
 begin
@@ -2559,9 +2233,6 @@ end;
 // ------------------
 // ------------------ TVKNodedLines ------------------
 // ------------------
-
-// Create
-//
 
 constructor TVKNodedLines.Create(AOwner: TComponent);
 begin
@@ -2575,18 +2246,12 @@ begin
   FNodeSize := 1;
 end;
 
-// Destroy
-//
-
 destructor TVKNodedLines.Destroy;
 begin
   FNodes.Free;
   FNodeColor.Free;
   inherited Destroy;
 end;
-
-// SetNodesAspect
-//
 
 procedure TVKNodedLines.SetNodesAspect(const Value: TLineNodesAspect);
 begin
@@ -2596,9 +2261,6 @@ begin
     StructureChanged;
   end;
 end;
-
-// SetNodeColor
-//
 
 procedure TVKNodedLines.SetNodeColor(const Value: TVKColor);
 begin
@@ -2619,9 +2281,6 @@ begin
       TVKLinesNode(Nodes[i]).Color.Assign(FNodeColor);
   SetVector(FOldNodeColor, FNodeColor.Color);
 end;
-
-// SetNodes
-//
 
 procedure TVKNodedLines.SetNodes(const aNodes: TVKLinesNodes);
 begin
@@ -2701,9 +2360,6 @@ begin
   glPopMatrix;
 end;
 
-// AxisAlignedDimensionsUnscaled
-//
-
 function TVKNodedLines.AxisAlignedDimensionsUnscaled: TVector;
 var
   i: Integer;
@@ -2729,9 +2385,6 @@ begin
   StructureChanged;
 end;
 
-// AddNode (xyz)
-//
-
 procedure TVKNodedLines.AddNode(const X, Y, Z: GLfloat);
 var
   n: TVKNode;
@@ -2753,9 +2406,6 @@ begin
   StructureChanged;
 end;
 
-// AddNode (affine vector)
-//
-
 procedure TVKNodedLines.AddNode(const Value: TAffineVector);
 var
   n: TVKNode;
@@ -2768,9 +2418,6 @@ end;
 // ------------------
 // ------------------ TVKLines ------------------
 // ------------------
-
-// Create
-//
 
 constructor TVKLines.Create(AOwner: TComponent);
 begin
@@ -2791,9 +2438,6 @@ begin
   inherited Destroy;
 end;
 
-// SetDivision
-//
-
 procedure TVKLines.SetDivision(const Value: Integer);
 begin
   if Value <> FDivision then
@@ -2805,9 +2449,6 @@ begin
     StructureChanged;
   end;
 end;
-
-// SetOptions
-//
 
 procedure TVKLines.SetOptions(const val: TLinesOptions);
 begin
@@ -2826,9 +2467,6 @@ begin
     StructureChanged;
   end;
 end;
-
-// SetNURBSOrder
-//
 
 procedure TVKLines.SetNURBSOrder(const val: Integer);
 begin

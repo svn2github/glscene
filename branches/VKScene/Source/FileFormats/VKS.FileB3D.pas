@@ -9,12 +9,19 @@ unit VKS.FileB3D;
 interface
 
 uses
-  System.Classes, System.SysUtils,
-   
-  VKS.VectorFileObjects, VKS.ApplicationFileIO, VKS.Texture, VKS.TextureFormat,
-  VKS.Material, VKS.VectorTypes, VKS.VectorGeometry, VKS.VectorLists,
+  System.Classes,
+  System.SysUtils,
 
-  FileB3D;
+  VKS.VectorFileObjects,
+  VKS.ApplicationFileIO,
+  VKS.Texture,
+  VKS.TextureFormat,
+  VKS.Material,
+  VKS.VectorTypes,
+  VKS.VectorGeometry,
+  VKS.VectorLists,
+
+  uFileB3D;
 
 type
   TVKB3DVectorFile = class(TVKVectorFile)
@@ -24,23 +31,14 @@ type
   end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 // ------------------------------ TVKB3DVectorFile ------------------------------
-// Capabilities
-
 class function TVKB3DVectorFile.Capabilities: TVKDataFileCapabilities;
 begin
   Result := [DfcRead];
 end;
-
-// LoadFromStream
 
 procedure TVKB3DVectorFile.LoadFromStream(AStream: TStream);
 

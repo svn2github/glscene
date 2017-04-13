@@ -1,9 +1,8 @@
 //
-// VKScene Component Library, based on GLScene http://glscene.sourceforge.net 
+// VKScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
-{ 
-   Scene Editor, for adding + removing scene objects within the Delphi IDE. 
-
+{
+   Scene Editor, for adding + removing scene objects within the Delphi IDE.
 }
 
 unit FSceneEditor;
@@ -128,22 +127,14 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure ACInfoExecute(Sender: TObject);
-  private
-    
-  public
-    
   end;
 
 function VKSceneEditorForm: TVKSceneEditorForm;
 procedure ReleaseVKSceneEditorForm;
 
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
+//==================================================================
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
+//==================================================================
 
 {$R *.fmx}
 
@@ -189,14 +180,14 @@ begin
   with Tree.Items do
   begin
     // first add the scene root
-    CurrentNode := Add(nil, glsSceneRoot);
+    CurrentNode := Add(nil, strSceneRoot);
     with CurrentNode do
     begin
       ImageIndex := ObjectManager.SceneRootIndex;
       SelectedIndex := ImageIndex;
     end;
     // and the root for all objects
-    FObjectNode := AddChild(CurrentNode, glsObjectRoot);
+    FObjectNode := AddChild(CurrentNode, strObjectRoot);
     FSceneObjects := FObjectNode;
     with FObjectNode do
     begin
@@ -267,7 +258,7 @@ var
   AScene: TVKSceneViewer;
 begin
   AScene := TVKSceneViewer.Create(Self);
-  AScene.Name := 'GLSceneEditor';
+  AScene.Name := 'VKSceneEditor';
   AScene.Width := 0;
   AScene.Height := 0;
   AScene.parent := Self;

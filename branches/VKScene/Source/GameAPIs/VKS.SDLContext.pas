@@ -2,12 +2,12 @@
 // VKScene Component Library, based on GLScene http://glscene.sourceforge.net 
 //
 {
-   SDL specific Context and Viewer. 
+   SDL specific Context and Viewer.
    NOTA: SDL notifies use of context destruction *after* it happened, this prevents
          clean release of allocated stuff and requires a temporary switch to
-         "ignore OpenGL errors" mode during destruction, thus potentially
+         "ignore Vulkan errors" mode during destruction, thus potentially
          leaking memory (depending on hardware drivers willingness to perform
-         automatic releases) 
+         automatic releases)
 }
 unit VKS.SDLContext;
 
@@ -26,48 +26,33 @@ uses
 
 type
 
-  // TVKSDLViewer
-  //
-  { A viewer using SDL. 
-     Beware: only one at a time, no other viewers allowed! 
+  { A viewer using SDL.
+     Beware: only one at a time, no other viewers allowed!
      Will also close the application when the window is closed! }
   TVKSDLViewer = class(TVKNonVisualViewer)
   private
-    
     FCaption: string;
     FOnSDLEvent: TSDLEvent;
     FOnEventPollDone: TNotifyEvent;
     FOnResize: TNotifyEvent;
-
   protected
-    
     procedure SetCaption(const val: string);
-
     procedure DoOnOpen(sender: TObject);
     procedure DoOnClose(sender: TObject);
     procedure DoOnResize(sender: TObject);
     procedure DoOnSDLEvent(sender: TObject; const event: TSDL_Event);
     procedure DoOnEventPollDone(sender: TObject);
-
     procedure DoBufferStructuralChange(Sender: TObject); override;
     procedure PrepareGLContext; override;
-
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
     procedure Render(baseObject: TVKBaseSceneObject = nil); override;
-
     function Active: Boolean;
-
   published
-    
     property Caption: string read FCaption write SetCaption;
-
     property OnResize: TNotifyEvent read FOnResize write FOnResize;
-
-    { Fired whenever an SDL Event is polled. 
+    { Fired whenever an SDL Event is polled.
        SDL_QUITEV and SDL_VIDEORESIZE are not passed to this event handler,
        they are passed via OnClose and OnResize respectively. }
     property OnSDLEvent: TSDLEvent read FOnSDLEvent write FOnSDLEvent;
@@ -75,68 +60,50 @@ type
     property OnEventPollDone: TNotifyEvent read FOnEventPollDone write FOnEventPollDone;
   end;
 
-  // TVKSDLContext
-  //
-  { A context driver for Vulkan via SDL (libsdl.org). 
-     Due to limitations of SDL: 
+  { A context driver for Vulkan via SDL (libsdl.org).
+     Due to limitations of SDL:
       you may have only one SDL window opened at any time (you cannot
         have memory viewers)
-      closing the SDL window will terminate the application
-       }
+      closing the SDL window will terminate the application }
   TVKSDLContext = class(TVKScreenControlingContext)
   private
-    
     FSDLWin: TSDLWindow;
     FSimulatedValidity: Boolean; // Hack around SDL's post-notified destruction of context
-
   protected
-    
     procedure DoCreateContext(outputDevice: HDC); override;
     procedure DoCreateMemoryContext(outputDevice: HWND; width, height: Integer; BufferCount: integer); override;
     function DoShareLists(aContext: TVKContext): Boolean; override;
     procedure DoDestroyContext; override;
     procedure DoActivate; override;
     procedure DoDeactivate; override;
-
   public
-    
     constructor Create; override;
     destructor Destroy; override;
-
     function IsValid: Boolean; override;
     procedure SwapBuffers; override;
-
     function RenderOutputDevice: Pointer; override;
-
     property SDLWindow: TSDLWindow read FSDLWin;
   end;
 
 procedure Register;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 uses
-  OpenGLAdapter,
+  uOpenGLAdapter,
   VKS.CrossPlatform,
   XOpenGL;
 
 procedure Register;
 begin
-  RegisterComponents('GLScene', [TVKSDLViewer]);
+  RegisterComponents('VKScene', [TVKSDLViewer]);
 end;
 
 // ------------------
 // ------------------ TVKSDLViewer ------------------
 // ------------------
-
-// Create
-//
 
 constructor TVKSDLViewer.Create(AOwner: TComponent);
 begin
@@ -145,24 +112,15 @@ begin
   Height := 480;
 end;
 
-// Destroy
-//
-
 destructor TVKSDLViewer.Destroy;
 begin
   inherited Destroy;
 end;
 
-// DoBufferStructuralChange
-//
-
 procedure TVKSDLViewer.DoBufferStructuralChange(Sender: TObject);
 begin
   // ignore that, supporting it with SDL is not very praticable as of now...
 end;
-
-// PrepareGLContext
-//
 
 procedure TVKSDLViewer.PrepareGLContext;
 begin
@@ -182,9 +140,6 @@ begin
   end;
 end;
 
-// Render
-//
-
 procedure TVKSDLViewer.Render(baseObject: TVKBaseSceneObject = nil);
 begin
   LoadOpenGL;
@@ -195,16 +150,10 @@ begin
   Buffer.Render(baseObject);
 end;
 
-// Active
-//
-
 function TVKSDLViewer.Active: Boolean;
 begin
   Result := Assigned(Buffer.RenderingContext) and Buffer.RenderingContext.IsValid;
 end;
-
-// SetCaption
-//
 
 procedure TVKSDLViewer.SetCaption(const val: string);
 begin
@@ -218,24 +167,15 @@ begin
   end;
 end;
 
-// DoOnOpen
-//
-
 procedure TVKSDLViewer.DoOnOpen(sender: TObject);
 begin
   // nothing yet
 end;
 
-// DoOnClose
-//
-
 procedure TVKSDLViewer.DoOnClose(sender: TObject);
 begin
   // nothing yet
 end;
-
-// DoOnResize
-//
 
 procedure TVKSDLViewer.DoOnResize(sender: TObject);
 begin
@@ -249,17 +189,11 @@ begin
     FOnResize(Self);
 end;
 
-// DoOnSDLEvent
-//
-
 procedure TVKSDLViewer.DoOnSDLEvent(sender: TObject; const event: TSDL_Event);
 begin
   if Assigned(FOnSDLEvent) then
     FOnSDLEvent(sender, event);
 end;
-
-// DoOnEventPollDone
-//
 
 procedure TVKSDLViewer.DoOnEventPollDone(sender: TObject);
 begin
@@ -271,17 +205,11 @@ end;
 // ------------------ TVKSDLContext ------------------
 // ------------------
 
-// Create
-//
-
 constructor TVKSDLContext.Create;
 begin
   inherited Create;
   FSDLWin := TSDLWindow.Create(nil);
 end;
-
-// Destroy
-//
 
 destructor TVKSDLContext.Destroy;
 var
@@ -298,9 +226,6 @@ begin
   end;
   FreeAndNil(FSDLWin);
 end;
-
-// DoCreateContext
-//
 
 procedure TVKSDLContext.DoCreateContext(outputDevice: HDC);
 var
@@ -335,25 +260,16 @@ begin
   MakeGLCurrent;
 end;
 
-// DoCreateMemoryContext
-//
-
 procedure TVKSDLContext.DoCreateMemoryContext(outputDevice: HWND; width, height: Integer; BufferCount: integer);
 begin
   raise Exception.Create(ClassName + ': Memory contexts not supported');
 end;
-
-// DoShareLists
-//
 
 function TVKSDLContext.DoShareLists(aContext: TVKContext): Boolean;
 begin
   // nothing (only one context at all times... no need to share)
   Result := False;
 end;
-
-// DoDestroyContext
-//
 
 procedure TVKSDLContext.DoDestroyContext;
 begin
@@ -371,32 +287,20 @@ begin
     FGL.Initialize;
 end;
 
-// Deactivate
-//
-
 procedure TVKSDLContext.DoDeactivate;
 begin
   // nothing particular (only one context, always active)
 end;
-
-// IsValid
-//
 
 function TVKSDLContext.IsValid: Boolean;
 begin
   Result := (Assigned(FSDLWin) and (FSDLWin.Active)) or FSimulatedValidity;
 end;
 
-// SwapBuffers
-//
-
 procedure TVKSDLContext.SwapBuffers;
 begin
   FSDLWin.SwapBuffers;
 end;
-
-// RenderOutputDevice
-//
 
 function TVKSDLContext.RenderOutputDevice: Pointer;
 begin
@@ -405,12 +309,8 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
 
   RegisterClass(TVKSDLViewer);
   RegisterGLContextClass(TVKSDLContext);

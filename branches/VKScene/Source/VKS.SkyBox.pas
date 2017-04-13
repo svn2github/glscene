@@ -13,27 +13,24 @@ interface
 {$I VKScene.inc}
 
 uses
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
   System.Classes,
+
   VKS.Scene,
   VKS.Material,
   VKS.VectorGeometry,
-  Winapi.OpenGL, Winapi.OpenGLext, 
   XOpenGL,
   VKS.RenderContextInfo, 
   VKS.VectorTypes;
 
 type
 
-  // TVKSkyBoxStyle
-  //
   TVKSkyBoxStyle = (sbsFull, sbsTopHalf, sbsBottomHalf, sbTopTwoThirds,
     sbsTopHalfClamped);
 
-  // TVKSkyBox
-  //
   TVKSkyBox = class(TVKCameraInvariantObject, IGLMaterialLibrarySupported)
   private
-    
     FMatNameTop: string;
     FMatNameRight: string;
     FMatNameFront: string;
@@ -45,11 +42,9 @@ type
     FCloudsPlaneOffset: Single;
     FCloudsPlaneSize: Single;
     FStyle: TVKSkyBoxStyle;
-
     //implementing IGLMaterialLibrarySupported
     function GetMaterialLibrary: TVKAbstractMaterialLibrary;
   protected
-    
     procedure SetMaterialLibrary(const Value: TVKMaterialLibrary);
     procedure SetMatNameBack(const Value: string);
     procedure SetMatNameBottom(const Value: string);
@@ -61,20 +56,15 @@ type
     procedure SetCloudsPlaneOffset(const Value: single);
     procedure SetCloudsPlaneSize(const Value: single);
     procedure SetStyle(const value: TVKSkyBoxStyle);
-
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
     procedure DoRender(var ARci: TVKRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
     procedure BuildList(var ARci: TVKRenderContextInfo); override;
     procedure Notification(AComponent: TComponent; Operation: TOperation);
       override;
-
   published
-    
     property MaterialLibrary: TVKMaterialLibrary read FMaterialLibrary write
       SetMaterialLibrary;
     property MatNameTop: TVKLibMaterialName read FMatNameTop write
@@ -98,13 +88,9 @@ type
     property Style: TVKSkyBoxStyle read FStyle write FStyle default sbsFull;
   end;
 
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+//===================================================================
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
+//===================================================================
 
 uses
   VKS.Context,
@@ -113,9 +99,6 @@ uses
 // ------------------
 // ------------------ TVKSkyBox ------------------
 // ------------------
-
-// Create
-//
 
 constructor TVKSkyBox.Create(AOwner: TComponent);
 begin
@@ -128,24 +111,15 @@ begin
     // the bigger, the more this extends the clouds cap to the horizon
 end;
 
-// Destroy
-//
-
 destructor TVKSkyBox.Destroy;
 begin
   inherited;
 end;
 
-// GetMaterialLibrary
-//
-
 function TVKSkyBox.GetMaterialLibrary: TVKAbstractMaterialLibrary;
 begin
   Result := FMaterialLibrary;
 end;
-
-// Notification
-//
 
 procedure TVKSkyBox.Notification(AComponent: TComponent; Operation: TOperation);
 begin

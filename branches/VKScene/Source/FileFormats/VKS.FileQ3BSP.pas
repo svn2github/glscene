@@ -23,7 +23,6 @@ uses
   VKS.VectorGeometry,
   VKS.VectorTypes,
   VKS.VectorLists,
-  Q3BSP,
   VKS.BSP,
   VKS.Texture,
   VKS.Graphics,
@@ -31,18 +30,16 @@ uses
   VKS.State,
   VKS.Utils,
   VKS.Material,
-  VKS.TextureFormat;
+  VKS.TextureFormat,
+
+  uQ3BSP;
 
 type
 
-  // TVKQ3BSPVectorFile
-  //
   { The Q3BSP vector file (Quake III BSP).  }
   TVKQ3BSPVectorFile = class(TVKVectorFile)
   public
-    
     class function Capabilities: TVKDataFileCapabilities; override;
-
     procedure LoadFromStream(aStream: TStream); override;
   end;
 
@@ -51,28 +48,20 @@ var
   vQ3BSPLightmapGammaCorrection: Single = 2.5;
   vQ3BSPLightmapBrightness: Single = 2; // scaling factor, 1.0 = unchanged
   vGLFileQ3BSPLoadMaterials: boolean = True; // Mrqzzz : Flag to avoid loading materials (useful for IDE Extentions like GlaredX)
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+
+// ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 // ------------------
 // ------------------ TVKSTLVectorFile ------------------
 // ------------------
 
-// Capabilities
-//
-
 class function TVKQ3BSPVectorFile.Capabilities: TVKDataFileCapabilities;
 begin
   Result := [dfcRead];
 end;
 
-// LoadFromStream
-//
 procedure TVKQ3BSPVectorFile.LoadFromStream(aStream: TStream);
 
   function LocateTextureFile(const texName: string): string;

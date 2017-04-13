@@ -17,9 +17,10 @@ uses
   System.Classes,
   FMX.Graphics,
 
-  VKS.VectorFileObjects, VKS.VectorGeometry,
+  VKS.VectorFileObjects,
+  VKS.VectorGeometry,
   VKS.ApplicationFileIO,
-  FileOCT;
+  uFileOCT;
 
 type
 

@@ -24,25 +24,33 @@ interface
 {$I VKScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
+  System.Classes,
+  System.SysUtils,
 
-  Winapi.OpenGL, Winapi.OpenGLext,   OpenGLAdapter,  VKS.Spline,
-  XOpenGL,  VKS.Context, VKS.VectorTypes,
-  VKS.VectorGeometry, VKS.VectorLists, VKS.PersistentClasses,
-  VKS.Scene, VKS.Objects, VKS.GeomObjects, VKS.Nodes, VKS.BaseClasses,
-  VKS.Coordinates, VKS.RenderContextInfo;
+  uOpenGLAdapter,
+  XOpenGL,
+  VKS.Spline,
+  VKS.Context,
+  VKS.VectorTypes,
+  VKS.VectorGeometry,
+  VKS.VectorLists,
+  VKS.PersistentClasses,
+  VKS.Scene,
+  VKS.Objects,
+  VKS.GeomObjects,
+  VKS.Nodes,
+  VKS.BaseClasses,
+  VKS.Coordinates,
+  VKS.RenderContextInfo;
 
 type
-  // TVKContourNodes
-  //
   TVKContourNodes = class(TVKNodes)
   public
-    
     procedure NotifyChange; override;
   end;
 
-  // TVKContour
-  //
   TVKContour = class(TCollectionItem)
   private
     FNodes: TVKContourNodes;
@@ -53,23 +61,19 @@ type
     procedure SetDivision(Value: Integer);
     procedure SetSplineMode(const Value: TLineSplineMode);
     procedure SetDescription(const Value: string);
-
   protected
     procedure CreateNodes; dynamic;
     procedure NodesChanged(Sender: TObject);
     function GetDisplayName: string; override;
-
   public
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
-
   published
-    
     property Description: string read FDescription write SetDescription;
     { The nodes list.  }
     property Nodes: TVKContourNodes read FNodes write SetNodes;
-    { Number of divisions for each segment in spline modes. 
+    { Number of divisions for each segment in spline modes.
       Minimum 1 (disabled), ignored in lsmLines mode. }
     property Division: Integer read FDivision write SetDivision default 10;
     { Default spline drawing mode. 
@@ -79,55 +83,44 @@ type
 
   TVKContourClass = class of TVKContour;
 
-  // TVKContours
-  //
   TVKContours = class(TVKNotifyCollection)
   private
     function GetItems(index: Integer): TVKContour;
     procedure SetItems(index: Integer; const Value: TVKContour);
   protected
-
   public
     constructor Create(AOwner: TComponent); overload;
     function Add: TVKContour;
     function FindItemID(ID: Integer): TVKContour;
     property Items[index: Integer]: TVKContour read GetItems write SetItems; default;
     procedure GetExtents(var min, max: TAffineVector);
-
   end;
 
-  // TPolygonList
-  //
   TPolygonList = class(TPersistentObjectList)
   private
     FAktList: TAffineVectorList;
     function GetList(I: Integer): TAffineVectorList;
-
   public
     procedure Add;
     property AktList: TAffineVectorList read FAktList;
     property List[I: Integer]: TAffineVectorList read GetList;
   end;
 
-  // TMultiPolygonBase
-  //
-  { Multipolygon is defined with multiple contours. 
+  { Multipolygon is defined with multiple contours.
      The contours have to be in the X-Y plane, otherwise they are projected
-     to it (this is done automatically by the tesselator). 
+     to it (this is done automatically by the tesselator).
      The plane normal is pointing in +Z. All contours are automatically closed,
-     so there is no need to specify the last node equal to the first one. 
+     so there is no need to specify the last node equal to the first one.
      Contours should be defined counterclockwise, the first contour (index = 0)
      is taken as is, all following are reversed. This means you can define the
      outer contour first and the holes and cutouts after that. If you give the
-     following contours in clockwise order, the first contour is extended. 
-
+     following contours in clockwise order, the first contour is extended.
      TMultiPolygonBase will take the input contours and let the tesselator
      make an outline from it (this is done in RetreiveOutline). This outline is
      used for Rendering. Only when there are changes in the contours, the
      outline will be recalculated. The ouline in fact is a list of VKS.VectorLists. }
   TMultiPolygonBase = class(TVKSceneObject)
   private
-    
     FContours: TVKContours;
     FOutline: TPolygonList;
     FContoursNormal: TAffineVector;
@@ -137,70 +130,48 @@ type
     procedure SetPath(i: Integer; const value: TVKContourNodes);
     function GetOutline: TPolygonList;
     procedure SetContoursNormal(const Value: TAffineVector);
-
   protected
-    
     procedure RenderTesselatedPolygon(textured: Boolean;
       normal: PAffineVector; invertNormals: Boolean);
     procedure RetrieveOutline(List: TPolygonList);
     procedure ContourChanged(Sender: TObject); virtual;
     //property PNormal:PAffineVector read FPNormal;
-
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
-
     procedure AddNode(const i: Integer; const coords: TVKCoordinates); overload;
     procedure AddNode(const i: Integer; const X, Y, Z: GLfloat); overload;
     procedure AddNode(const i: Integer; const value: TVector); overload;
     procedure AddNode(const i: Integer; const value: TAffineVector); overload;
-
     property Path[i: Integer]: TVKContourNodes read GetPath write SetPath;
     property Outline: TPolygonList read GetOutline;
     property ContoursNormal: TAffineVector read FContoursNormal write SetContoursNormal;
-
     function AxisAlignedDimensionsUnscaled: TVector; override;
     procedure StructureChanged; override;
-
   published
-    
     property Contours: TVKContours read FContours write SetContours;
   end;
 
-  // TVKMultiPolygon
-  //
-  { A polygon that can have holes and multiple contours. 
+  { A polygon that can have holes and multiple contours.
      Use the Path property to access a contour or one of the AddNode methods
      to add a node to a contour (contours are allocated automatically). }
   TVKMultiPolygon = class(TMultiPolygonBase)
   private
-    
     FParts: TPolygonParts;
-
   protected
-    
     procedure SetParts(const value: TPolygonParts);
-
   public
-    
     constructor Create(AOwner: TComponent); override;
     procedure Assign(Source: TPersistent); override;
     procedure BuildList(var rci: TVKRenderContextInfo); override;
-
   published
-    
     property Parts: TPolygonParts read FParts write SetParts default [ppTop, ppBottom];
   end;
 
-  //-------------------------------------------------------------
-  //-------------------------------------------------------------
-  //-------------------------------------------------------------
+//============================================================
 implementation
-//-------------------------------------------------------------
-//-------------------------------------------------------------
-//-------------------------------------------------------------
+//============================================================
 
 type
   { page oriented pointer array, with persistent pointer target memory.
@@ -227,7 +198,9 @@ type
     procedure GetNewVector(var P: Pointer);
   end;
 
+//-----------------------------------------------
   { TVectorPool }
+//-----------------------------------------------
 
 constructor TVectorPool.Create(APageSize, AEntrySize: Integer);
 begin
@@ -268,16 +241,11 @@ end;
 // ------------------ TPolygonList ------------------
 // ------------------
 
-// Add
-//
 procedure TPolygonList.Add;
 begin
   FAktList := TAffineVectorList.Create;
   inherited Add(FAktList);
 end;
-
-// GetList
-//
 
 function TPolygonList.GetList(i: Integer): TAffineVectorList;
 begin
@@ -363,7 +331,9 @@ begin
   end;
 end;
 
+//--------------------------------------------
 { TVKContours }
+//--------------------------------------------
 
 function TVKContours.Add: TVKContour;
 begin
@@ -390,9 +360,6 @@ begin
   inherited Items[index] := value;
 end;
 
-// GetExtents
-//
-
 procedure TVKContours.GetExtents(var min, max: TAffineVector);
 var
   i, k: Integer;
@@ -416,10 +383,9 @@ begin
   end;
 end;
 
+//--------------------------------------------
 { TMultiPolygonBase }
-
-// Create
-//
+//--------------------------------------------
 
 constructor TMultiPolygonBase.Create(AOwner: TComponent);
 begin
@@ -429,9 +395,6 @@ begin
   FContoursNormal := AffineVectorMake(0, 0, 1);
   FAxisAlignedDimensionsCache.X := -1;
 end;
-
-// Destroy
-//
 
 destructor TMultiPolygonBase.Destroy;
 begin
@@ -444,9 +407,6 @@ begin
   inherited;
 end;
 
-// Assign
-//
-
 procedure TMultiPolygonBase.Assign(Source: TPersistent);
 begin
   if Source is TMultiPolygonBase then
@@ -455,9 +415,6 @@ begin
   end;
   inherited;
 end;
-
-// ContourChanged
-//
 
 procedure TMultiPolygonBase.ContourChanged(Sender: TObject);
 begin
@@ -470,48 +427,30 @@ begin
   end;
 end;
 
-// AddNode (vector)
-//
-
 procedure TMultiPolygonBase.AddNode(const i: Integer; const value: TVector);
 begin
   Path[i].AddNode(value);
 end;
-
-// AddNode (float)
-//
 
 procedure TMultiPolygonBase.AddNode(const i: Integer; const x, y, z: GLfloat);
 begin
   Path[i].AddNode(x, y, z);
 end;
 
-// AddNode (coords)
-//
-
 procedure TMultiPolygonBase.AddNode(const i: Integer; const coords: TVKCoordinates);
 begin
   Path[i].AddNode(coords);
 end;
-
-// AddNode (affine vector)
-//
 
 procedure TMultiPolygonBase.AddNode(const I: Integer; const value: TAffineVector);
 begin
   Path[i].AddNode(value);
 end;
 
-// Assign
-//
-
 procedure TMultiPolygonBase.SetContours(const Value: TVKContours);
 begin
   FContours.Assign(Value);
 end;
-
-// GetOutline
-//
 
 function TMultiPolygonBase.GetOutline: TPolygonList;
 begin
@@ -523,9 +462,6 @@ begin
   Result := FOutline;
 end;
 
-// GetContour
-//
-
 function TMultiPolygonBase.GetPath(i: Integer): TVKContourNodes;
 begin
   Assert(i >= 0);
@@ -533,9 +469,6 @@ begin
     Contours.Add;
   Result := Contours[i].Nodes;
 end;
-
-// SetContour
-//
 
 procedure TMultiPolygonBase.SetPath(i: Integer; const value: TVKContourNodes);
 begin
@@ -704,9 +637,6 @@ begin
   end;
 end;
 
-// RenderTesselatedPolygon
-//
-
 procedure TMultiPolygonBase.RenderTesselatedPolygon(textured: Boolean;
   normal: PAffineVector;
   invertNormals: Boolean);
@@ -781,17 +711,11 @@ end;
 // ------------------ TVKMultiPolygon ------------------
 // ------------------
 
-// Create
-//
-
 constructor TVKMultiPolygon.Create(AOwner: TComponent);
 begin
   inherited;
   FParts := [ppTop, ppBottom];
 end;
-
-// Assign
-//
 
 procedure TVKMultiPolygon.Assign(Source: TPersistent);
 begin
@@ -801,9 +725,6 @@ begin
   end;
   inherited;
 end;
-
-// BuildList
-//
 
 procedure TVKMultiPolygon.BuildList(var rci: TVKRenderContextInfo);
 var
@@ -824,9 +745,6 @@ begin
   end;
 end;
 
-// SetParts
-//
-
 procedure TVKMultiPolygon.SetParts(const value: TPolygonParts);
 begin
   if FParts <> value then
@@ -836,16 +754,10 @@ begin
   end;
 end;
 
-// SetContoursNormal
-//
-
 procedure TMultiPolygonBase.SetContoursNormal(const Value: TAffineVector);
 begin
   FContoursNormal := Value;
 end;
-
-// AxisAlignedDimensionsUnscaled
-//
 
 function TMultiPolygonBase.AxisAlignedDimensionsUnscaled: TVector;
 var
@@ -861,9 +773,6 @@ begin
   SetVector(Result, FAxisAlignedDimensionsCache);
 end;
 
-// StructureChanged
-//
-
 procedure TMultiPolygonBase.StructureChanged;
 begin
   FAxisAlignedDimensionsCache.X := -1;
@@ -874,9 +783,6 @@ end;
 // ------------------ TVKContourNodes ------------------
 // ------------------
 
-// NotifyChange
-//
-
 procedure TVKContourNodes.NotifyChange;
 begin
   if (GetOwner <> nil) then
@@ -884,12 +790,8 @@ begin
 end;
 
 //-------------------------------------------------------------
-//-------------------------------------------------------------
-//-------------------------------------------------------------
 initialization
-  //-------------------------------------------------------------
-  //-------------------------------------------------------------
-  //-------------------------------------------------------------
+//-------------------------------------------------------------
 
   RegisterClass(TVKMultiPolygon);
 

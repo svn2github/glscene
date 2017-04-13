@@ -20,9 +20,9 @@ uses
   System.Classes,
   System.SysUtils,
   
-  OpenGLAdapter,
+  uOpenGLAdapter,
   VKS.Strings,  
-  XOpenGL,  
+  XOpenGL,
   VKS.Context,  
   VKS.Scene,
   VKS.VectorGeometry,   

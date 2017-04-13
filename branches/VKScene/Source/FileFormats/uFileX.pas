@@ -5,16 +5,20 @@
    Simple X format support for Delphi (Microsoft's favorite format) 
  
 }
-unit FileX;
+unit uFileX;
 
 interface
 
 {$I VKScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
-  VKS.VectorTypes, VKS.VectorGeometry, VKS.VectorLists,
-  VKS.PersistentClasses, VKS.Utils;
+  System.Classes,
+  System.SysUtils,
+  VKS.VectorTypes,
+  VKS.VectorGeometry,
+  VKS.VectorLists,
+  VKS.PersistentClasses,
+  VKS.Utils;
 
 type
   TDXNode = class;
@@ -53,37 +57,29 @@ type
       FSpecular,
       FEmissive : TVector3f;
       FTexture : String;
-
     public
       constructor CreateOwned(AOwner : TDXMaterialList);
-
       property Diffuse : TVector4f read FDiffuse write FDiffuse;
       property SpecPower : Single read FSpecPower write FSpecPower;
       property Specular : TVector3f read FSpecular write FSpecular;
       property Emissive : TVector3f read FEmissive write FEmissive;
       property Texture : String read FTexture write FTexture;
-
   end;
 
   TDXMaterialList = class (TDXNode)
     private
       function GetMaterial(index : Integer) : TDXMaterial;
-
     public
       property Items[index : Integer] : TDXMaterial read GetMaterial;
-
   end;
 
   TDXFrame = class (TDXNode)
     private
       FMatrix : TMatrix;
-
     public
       constructor Create; override;
-
       function GlobalMatrix : TMatrix;
       property Matrix : TMatrix read FMatrix write FMatrix;
-
   end;
 
   TDXMesh = class (TDXNode)
@@ -96,11 +92,9 @@ type
       FMaterialIndices,
       FVertCountIndices : TIntegerList;
       FMaterialList : TDXMaterialList;
-
     public
       constructor Create; override;
       destructor Destroy; override;
-
       property Vertices : TAffineVectorList read FVertices;
       property Normals : TAffineVectorList read FNormals;
       property TexCoords : TAffineVectorList read FTexCoords;
@@ -115,36 +109,26 @@ type
     private
       FRootNode : TDXNode;
       FHeader : TDXFileHeader;
-
     protected
       procedure ParseText(Stream : TStream);
       procedure ParseBinary(Stream : TStream);
-
     public
       constructor Create;
       destructor Destroy; override;
       procedure LoadFromStream(Stream : TStream);
       //procedure SaveToStream(Stream : TStream);
-
       property Header : TDXFileHeader read FHeader;
       property RootNode : TDXNode read FRootNode;
-
   end;
 
 // ----------------------------------------------------------------------
-// ----------------------------------------------------------------------
-// ----------------------------------------------------------------------
 implementation
-// ----------------------------------------------------------------------
-// ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
 
 // ----------------------------------------------------------------------
 // Text parsing functions
 // ----------------------------------------------------------------------
 
-// RemoveComments
-//
 procedure RemoveComments(Text : TStringList);
 var
   i, comment : Integer;
@@ -164,24 +148,17 @@ end;
 // TDXFile
 // ----------------------------------------------------------------------
 
-// Create
-//
 constructor TDXFile.Create;
 begin
   FRootNode:=TDXNode.Create;
 end;
 
-// Destroy
-//
 destructor TDXFile.Destroy;
 begin
   FRootNode.Free;
-
   inherited;
 end;
 
-// LoadFromStream
-//
 procedure TDXFile.LoadFromStream(Stream : TStream);
 begin
   Stream.Read(FHeader, SizeOf(TDXFileHeader));
@@ -572,8 +549,6 @@ end;
 // TDXMaterialList
 // ----------------------------------------------------------------------
 
-// GetMaterial
-//
 function TDXMaterialList.GetMaterial(index: Integer): TDXMaterial;
 begin
   Result:=TDXMaterial(Get(index));
@@ -584,8 +559,6 @@ end;
 // TDXMesh
 // ----------------------------------------------------------------------
 
-// Create
-//
 constructor TDXMesh.Create;
 begin
   inherited;
@@ -600,8 +573,6 @@ begin
   FMaterialList:=TDXMaterialList.Create;
 end;
 
-// Destroy
-//
 destructor TDXMesh.Destroy;
 begin
   FVertices.Free;
@@ -621,8 +592,6 @@ end;
 // TDXNode
 // ----------------------------------------------------------------------
 
-// Create
-//
 constructor TDXNode.Create;
 begin
   // Virtual

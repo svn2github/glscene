@@ -6,7 +6,7 @@
    Adapted from DevIL image library (http://openil.sourceforge.net) 
 
 }
-unit DXTC;
+unit uDXTC;
 
 interface
 

@@ -23,15 +23,16 @@ uses
   FMX.StdCtrls,
   FMX.Graphics,
 
-  { TODO : F1026 Files not found: 'ToolsAPI' etc.}
+  { TODO : F1026 Files not found: 'VCLEditors' etc.}
   (*need to create instead a custom PropertyEditor like it described in -> *)
   (*ms-help://embarcadero.rs_xe7/rad/Creating_a_Component_Editor_and_a_Property_Editor_for_FireMonkey_Components.html*)
   (*
+  VCLEditors,
   ToolsAPI,
   DesignIntf,
   DesignEditors,
-  VCLEditors,
   *)
+
   VKS.Strings,
   VKS.Scene,
   VKS.Context,
@@ -55,7 +56,7 @@ type
 
   TVKSceneEditor = class(TComponentEditor)
   public
-    
+
     procedure Edit; override;
 
     procedure ExecuteVerb(Index: Integer); override;

@@ -11,19 +11,36 @@ interface
 {$I VKScene.inc}
 
 uses
-  System.Classes, System.SysUtils, System.Math,
-  
-  VKS.Scene, VKS.Objects, VKS.VectorFileObjects, VKS.Texture, VKS.ApplicationFileIO,
-  VKS.VectorGeometry, File3DS, Types3DS, Winapi.OpenGL, Winapi.OpenGLext,  VKS.Context, VKS.PersistentClasses,
-  VKS.Strings, VKS.File3DSSceneObjects, VKS.CrossPlatform, VKS.VectorTypes, VKS.VectorLists,
-  VKS.RenderContextInfo, VKS.Material;
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
+  System.Classes,
+  System.SysUtils,
+  System.Math,
+
+  VKS.Scene,
+  VKS.Objects,
+  VKS.VectorFileObjects,
+  VKS.Texture,
+  VKS.ApplicationFileIO,
+  VKS.VectorGeometry,
+  VKS.Context,
+  VKS.PersistentClasses,
+  VKS.Strings,
+  VKS.File3DSSceneObjects,
+  VKS.CrossPlatform,
+  VKS.VectorTypes,
+  VKS.VectorLists,
+  VKS.RenderContextInfo,
+  VKS.Material,
+
+  uFile3DS,
+  uTypes3DS;
 
 type
 
   EGLFile3DS = class(Exception);
 
-  { TVKFile3DSAnimationData.
-     A record that holds all the information that is used during 3ds animation. }
+  { A record that holds all the information that is used during 3ds animation. }
   TVKFile3DSAnimationData = packed record
     ModelMatrix: TMatrix;
     Color: TVector;            // Omni Light.
@@ -33,9 +50,7 @@ type
     Roll: single;
   end;
 
-  { TVKFile3DSAnimationKeys.
-
-     An abstract class that describes how to interpolate animation keys. }
+  {  An abstract class that describes how to interpolate animation keys. }
   TVKFile3DSAnimationKeys = class(TPersistentObject)
   private
     FNumKeys: integer;
@@ -53,7 +68,6 @@ type
       const AData: Pointer); virtual;
     procedure Apply(var DataTransf: TVKFile3DSAnimationData; const AFrame: real);
       virtual; abstract;
-
     procedure Assign(Source: TPersistent); override;
     procedure WriteToFiler(Writer: TVirtualWriter); override;
     procedure ReadFromFiler(Reader: TVirtualReader); override;
@@ -182,7 +196,7 @@ type
   TVKFile3DSAnimKeysClassType = (ctScale, ctRot, ctPos, ctCol, ctTPos,
     ctFall, ctHot, ctRoll);
 
-  { TVKFile3DSDummyObject. A 3ds-specific TVKMorphableMeshObject. }
+  { A 3ds-specific TVKMorphableMeshObject. }
   TVKFile3DSDummyObject = class(TVKMorphableMeshObject)
   private
     FAnimList: TVKFile3DSAnimationKeyList;
@@ -194,7 +208,6 @@ type
   public
     procedure LoadAnimation(const AData: Pointer); virtual;
     procedure SetFrame(const AFrame: real); virtual;
-
     procedure MorphTo(morphTargetIndex: integer); override;
     procedure Lerp(morphTargetIndex1, morphTargetIndex2: integer;
       lerpFactor: single); override;
@@ -202,7 +215,6 @@ type
     function ExtractTriangles(texCoords: TAffineVectorList = nil;
       normals: TAffineVectorList = nil): TAffineVectorList;
       override;
-
     procedure WriteToFiler(Writer: TVirtualWriter); override;
     procedure ReadFromFiler(Reader: TVirtualReader); override;
     procedure Assign(Source: TPersistent); override;
@@ -214,14 +226,14 @@ type
     property RefrenceTransf: TVKFile3DSAnimationData read FRefTranf write FRefTranf;
   end;
 
-  { TVKFile3DSDummyObject. A 3ds-specific mesh object. }
+  { A 3ds-specific mesh object. }
   TVKFile3DSMeshObject = class(TVKFile3DSDummyObject)
   public
     procedure LoadAnimation(const AData: Pointer); override;
     procedure BuildList(var ARci: TVKRenderContextInfo); override;
   end;
 
-  { TVKFile3DSDummyObject. A 3ds-specific omni light. }
+  { A 3ds-specific omni light. }
   TVKFile3DSOmniLightObject = class(TVKFile3DSDummyObject)
   private
     FLightSrc: TVKFile3DSLight;
@@ -237,7 +249,7 @@ type
     destructor Destroy; override;
   end;
 
-  { TVKFile3DSSpotLightObject. A 3ds-specific spot light. }
+  {  A 3ds-specific spot light. }
   TVKFile3DSSpotLightObject = class(TVKFile3DSOmniLightObject)
   public
     procedure LoadData(const AOwner: TVKBaseMesh; const AData: PLight3DS); override;
@@ -245,7 +257,7 @@ type
     procedure SetFrame(const AFrame: real); override;
   end;
 
-  { TVKFile3DSCameraObject. A 3ds-specific camera. }
+  { A 3ds-specific camera. }
   TVKFile3DSCameraObject = class(TVKFile3DSDummyObject)
   private
     FTargetObj: TVKDummyCube;
@@ -261,15 +273,13 @@ type
     destructor Destroy; override;
   end;
 
-  // TVK3DSVectorFile
-
-  { The 3DStudio vector file. 
-     Uses an upgraded version if a 3DS import library by Mike Lischke. 
+  { The 3DStudio vector file.
+     Uses an upgraded version if a 3DS import library by Mike Lischke.
      (http://www.lishcke-online.de). A 3DS file may contain material
      information and require textures when loading. }
   TVK3DSVectorFile = class(TVKVectorFile)
   public
-    
+
     class function Capabilities: TVKDataFileCapabilities; override;
     procedure LoadFromStream(aStream: TStream); override;
   end;
@@ -306,12 +316,9 @@ var
   vGLFile3DS_LoadedStaticFrame: integer = -1;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
+
 const
   cGLFILE3DS_FIXDEFAULTUPAXISY_ROTATIONVALUE = PI/2;
   CGLFILE3DS_DEFAULT_FRAME = 0;

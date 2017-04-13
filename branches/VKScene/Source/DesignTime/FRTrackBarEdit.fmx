@@ -2,8 +2,8 @@ object RTrackBarEdit: TRTrackBarEdit
   Size.Width = 307.000000000000000000
   Size.Height = 37.000000000000000000
   Size.PlatformDefault = False
-  TabOrder = 0
   object TrackBar: TTrackBar
+    CanParentFocus = True
     Max = 255.000000000000000000
     Orientation = Horizontal
     Position.X = 8.000000000000000000

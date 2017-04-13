@@ -2,16 +2,14 @@
 // VKScene Component Library, based on GLScene http://glscene.sourceforge.net 
 //
 {
-    
+ Constants for commonly used structures
 }
-unit Const3DS;
+unit uConst3DS;
 
 interface
 
 uses
-  Types3DS;
-
-// ---------------- Constants for commonly used structures --------------------
+  uTypes3DS;
 
 const // Flags used by the flag field of the Mesh3DS structure
       FaceCAVisable3DS = $0001;                  // flags the CA edge as visible

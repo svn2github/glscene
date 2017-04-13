@@ -9,7 +9,6 @@
     it uses that material's texture. The referenced material settings will be ignored,
     but the texture's settings (like TextureMode, ImageGamma, ImageBrightness) will be used.
     Instead the local material settings (listed in the collection) will be used.
-            
  }
 
 unit VKS.TextureSharingShader;
@@ -17,11 +16,21 @@ unit VKS.TextureSharingShader;
 interface
 
 uses
-  System.Classes, System.SysUtils,
-  
-  VKS.Scene, VKS.VectorGeometry, VKS.Color, VKS.Material, VKS.Strings,
-  VKS.VectorFileObjects, XOpenGL, VKS.State, VKS.PersistentClasses,
-  VKS.CrossPlatform, VKS.Coordinates, VKS.RenderContextInfo;
+  System.Classes,
+  System.SysUtils,
+
+  VKS.Scene,
+  VKS.VectorGeometry,
+  VKS.Color,
+  VKS.Material,
+  VKS.Strings,
+  VKS.VectorFileObjects,
+  XOpenGL,
+  VKS.State,
+  VKS.PersistentClasses,
+  VKS.CrossPlatform,
+  VKS.Coordinates,
+  VKS.RenderContextInfo;
 
 type
   TVKTextureSharingShader = class;
@@ -31,7 +40,6 @@ type
     FTextureMatrix: TMatrix;
     FNeedToUpdateTextureMatrix: Boolean;
     FTextureMatrixIsUnitary: Boolean;
-
     FLibMaterial: TVKLibMaterial;
     FTexOffset: TVKCoordinates2;
     FTexScale: TVKCoordinates2;
@@ -43,7 +51,6 @@ type
     FShininess: TShininess;
     FMaterialLibrary: TVKMaterialLibrary;
     FLibMaterialName: TVKLibMaterialName;
-
     procedure SetAmbient(const Value: TVKColor);
     procedure SetDiffuse(const Value: TVKColor);
     procedure SetEmission(const Value: TVKColor);
@@ -55,31 +62,24 @@ type
     procedure SetLibMaterial(const Value: TVKLibMaterial);
     procedure SetTexOffset(const Value: TVKCoordinates2);
     procedure SetTexScale(const Value: TVKCoordinates2);
-
     function GetTextureMatrix: TMatrix;
     function GetTextureMatrixIsUnitary: Boolean;
   protected
     procedure coordNotifychange(Sender: TObject);
     procedure OtherNotifychange(Sender: TObject);
-
     function GetDisplayName: string; override;
     function GetTextureSharingShader: TVKTextureSharingShader;
-
     // Implementing IVKMaterialLibrarySupported.
     function GetMaterialLibrary: TVKAbstractMaterialLibrary; virtual;
-
   public
     procedure Apply(var rci: TVKRenderContextInfo);
     procedure UnApply(var rci: TVKRenderContextInfo);
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
-
     property LibMaterial: TVKLibMaterial read FLibMaterial write SetLibMaterial;
-
     property TextureMatrix: TMatrix read GetTextureMatrix;
     property TextureMatrixIsUnitary: Boolean read GetTextureMatrixIsUnitary;
   published
-
     property TexOffset: TVKCoordinates2 read FTexOffset write SetTexOffset;
     property TexScale: TVKCoordinates2 read FTexScale write SetTexScale;
     property BlendingMode: TBlendingMode read FBlendingMode write SetBlendingMode;
@@ -121,15 +121,13 @@ type
     property Materials: TVKTextureSharingShaderMaterials read FMaterials write SetMaterials;
   end;
 
-//----------------------------------------------------------------------------
-//----------------------------------------------------------------------------
-//----------------------------------------------------------------------------
+//=======================================================================
 implementation
-//----------------------------------------------------------------------------
-//----------------------------------------------------------------------------
-//----------------------------------------------------------------------------
+//=======================================================================
 
+//----------------------------------------------------------------------------
 { TVKTextureSharingShaderMaterial }
+//----------------------------------------------------------------------------
 
 procedure TVKTextureSharingShaderMaterial.Apply(var rci: TVKRenderContextInfo);
 begin
@@ -598,8 +596,10 @@ begin
   inherited Items[AIndex] := Value;
 end;
 
-
+//----------------------------------------------------------------------------
 initialization
+//----------------------------------------------------------------------------
+
   RegisterClasses([TVKTextureSharingShader, TVKTextureSharingShaderMaterials,
                    TVKTextureSharingShaderMaterial]);
 

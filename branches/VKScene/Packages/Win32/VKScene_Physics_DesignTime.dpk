@@ -33,7 +33,7 @@ package VKScene_Physics_DesignTime;
 
 requires
   rtl,
-  vcl,
+  fmx,
   VKScene_RunTime,
   VKScene_Physics_RunTime;
 

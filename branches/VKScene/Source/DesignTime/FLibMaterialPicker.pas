@@ -3,21 +3,37 @@
 //
 {
  Allows choosing a material in a material library 
-    
 }
 unit FLibMaterialPicker;
 
 interface
 
 uses
-  System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
+  System.SysUtils,
+  System.Types,
+  System.UITypes,
+  System.Classes,
+  System.Variants,
   System.Math.Vectors,
-  FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.StdCtrls,
-  FMX.Layouts, FMX.ListBox, FMX.Objects, FMX.Media, FMX.Viewport3D,
-  FMX.Controls3D, FMX.Objects3D, FMX.Types3D,
+  FMX.Types,
+  FMX.Controls,
+  FMX.Forms,
+  FMX.Graphics,
+  FMX.Dialogs,
+  FMX.StdCtrls,
+  FMX.Layouts,
+  FMX.ListBox,
+  FMX.Objects,
+  FMX.Media,
+  FMX.Viewport3D,
+  FMX.Controls3D,
+  FMX.Objects3D,
+  FMX.Types3D,
+  FMX.MaterialSources,
+  FMX.Controls.Presentation,
 
-  VKS.Material, FMX.MaterialSources, FRMaterialPreview,
-  FMX.Controls.Presentation;
+  VKS.Material,
+  FRMaterialPreview;
 
 type
   TVKLibMaterialPicker = class(TForm)
@@ -32,10 +48,7 @@ type
     procedure LBMaterialsDblClick(Sender: TObject);
     procedure CBObjectChange(Sender: TObject);
     procedure CBBackgroundChange(Sender: TObject);
-  private
-    
   public
-    
     function Execute(var materialName: TVKLibMaterialName;
       materialLibrary: TVKAbstractMaterialLibrary): Boolean;
   end;
@@ -43,7 +56,9 @@ type
 function GLLibMaterialPicker: TVKLibMaterialPicker;
 procedure ReleaseLibMaterialPicker;
 
+//=================================================================
 implementation
+//=================================================================
 
 {$R *.fmx}
 
@@ -66,8 +81,9 @@ begin
   end;
 end;
 
+//-----------------------------------------------------
 { TLibMaterialPicker }
-
+//-----------------------------------------------------
 procedure TVKLibMaterialPicker.CBBackgroundChange(Sender: TObject);
 begin
   //

@@ -9,12 +9,19 @@ unit VKS.Nodes;
 interface
 
 uses
-  Winapi.OpenGL, Winapi.OpenGLext,
-  System.Classes, System.SysUtils,
-  
-  VKS.VectorGeometry,  OpenGLAdapter,
-  VKS.Context, VKS.BaseClasses,  VKS.Coordinates, VKS.Spline,
-  XOpenGL, VKS.VectorTypes;
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
+  System.Classes,
+  System.SysUtils,
+
+  uOpenGLAdapter,
+  VKS.VectorGeometry,
+  VKS.Context,
+  VKS.BaseClasses,
+  VKS.Coordinates,
+  VKS.Spline,
+  XOpenGL,
+  VKS.VectorTypes;
 
 
 {$I VKScene.inc}

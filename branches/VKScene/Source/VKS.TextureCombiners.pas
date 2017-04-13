@@ -16,7 +16,7 @@ uses
   System.SysUtils,
   System.Classes,
   
-  OpenGLAdapter,
+  uOpenGLAdapter,
   VKS.Context;
 
 type

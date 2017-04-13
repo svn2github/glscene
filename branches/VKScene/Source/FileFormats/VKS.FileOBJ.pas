@@ -3,27 +3,43 @@
 //
 {
     Support-Code to load Wavefront OBJ Files into TVKFreeForm-Components
-    in GLScene.  
+    in GLScene.
     Note that you must manually add this unit to one of your project's uses
     to enable support for OBJ & OBJF at run-time.
-    
+
 }
 unit VKS.FileOBJ;
 
-{$I VKScene.inc}
 {.$DEFINE STATS}{ Define to display statistics after loading. }
 
 interface
 
+{$I VKScene.inc}
+
 uses
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
   System.Classes,
   System.SysUtils,
-  
-  OpenGLAdapter,
+
+  uOpenGLAdapter,
+  XOpenGL,
+  VKS.VectorTypes,
+  VKS.Strings,
+  VKS.Context,
+  VKS.MeshUtils,
+  VKS.Utils,
   VKS.ApplicationFileIO,
-  VKS.CrossPlatform, VKS.PersistentClasses, VKS.VectorGeometry,
-  VKS.Scene,  VKS.VectorFileObjects, VKS.VectorLists,  VKS.Texture,  VKS.Color,
-  VKS.RenderContextInfo, VKS.Material;
+  VKS.CrossPlatform,
+  VKS.PersistentClasses,
+  VKS.VectorGeometry,
+  VKS.Scene,
+  VKS.VectorFileObjects,
+  VKS.VectorLists,
+  VKS.Texture,
+  VKS.Color,
+  VKS.RenderContextInfo,
+  VKS.Material;
 
 const
   BufSize = 10240; { Load input data in chunks of BufSize Bytes. }
@@ -32,8 +48,6 @@ const
 
 type
 
-  // TVKOBJVectorFile
-  //
   TVKOBJVectorFile = class(TVKVectorFile)
   private
     FSourceStream: TStream; { Load from this stream }
@@ -42,39 +56,29 @@ type
     FLineNo: Integer; { current Line number - for error messages }
     FEof: Boolean; { Stream done? }
     FBufPos: Integer; { Position in the buffer }
-
   protected
     // Read a single line of text from the source stream, set FEof to true when done.
     procedure ReadLine;
     // Raise a class-specific exception
     procedure Error(const msg: string);
-
     procedure CalcMissingOBJNormals(mesh: TVKMeshObject);
-
   public
     class function Capabilities: TVKDataFileCapabilities; override;
-
     procedure LoadFromStream(aStream: TStream); override;
     procedure SaveToStream(aStream: TStream); override;
   end;
 
-  // EGLOBJFileError
-  //
   EGLOBJFileError = class(Exception)
   private
     FLineNo: Integer;
-
   public
     property LineNo: Integer read FLineNo;
-
   end;
 
-  // TVKMTLFile
-  //
-  { A simple class that know how to extract infos from a mtl file. 
+  { A simple class that know how to extract infos from a mtl file.
      mtl files are companion files of the obj, they store material
      information. Guessed content (imported ones denoted with a '*',
-     please help if you know more): 
+     please help if you know more):
       materials begin with a 'newmtl' command followed by material name
       *Kd command defines the diffuse color
       *map_Kd command defines the diffuse texture image
@@ -87,12 +91,10 @@ type
       Ns defines the specular exponent or shininess or phong specular (?)
       Ni is the refraction index (greater than 1)
       *illum defines the illumination model (0 for no lighting, 1 for
-          ambient and diffuse, 2 for full lighting)
-       }
+          ambient and diffuse, 2 for full lighting) }
   TVKMTLFile = class(TStringList)
   public
     procedure Prepare;
-
     function MaterialStringProperty(const materialName, propertyName: string): string;
     function MaterialVectorProperty(const materialName, propertyName: string;
       const defaultValue: TVector): TVector;
@@ -104,25 +106,9 @@ var
 
   vGLFileOBJ_SplitMesh: boolean = False;
 
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+//===================================================================
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-
-uses
-  VKS.VectorTypes,
-  VKS.Strings,
-  Winapi.OpenGL, Winapi.OpenGLext, 
-  XOpenGL,
-  VKS.Context,
-  VKS.MeshUtils,
-  VKS.Utils;
-
-// StreamEOF
-//
+//===================================================================
 
 function StreamEOF(S: TStream): Boolean;
 begin
@@ -135,9 +121,6 @@ function Rest(const s: string; Count: integer): string;
 begin
   Result := copy(s, Count, Length(s) - Count + 1);
 end;
-
-// NextToken
-//
 
 function NextToken(var s: string; delimiter: Char): string;
 { Return the next Delimiter-delimited Token from the string s and
@@ -164,12 +147,9 @@ end;
     texture-coordinates. Pass -1 to Add for the index of a missing object.
   - Polygons are defined by counting off the number of vertices added to the
     PolygonVertices-property. So a PolygonVertices-List of
-
       [3,4,6]
-
     says "Vertex indices 0,1 and 2 make up a triangle, 3,4,5 and 6 a quad and
     7,8,9,10,11 and 12 a hexagon".
-
 }
 
 type

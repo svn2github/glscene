@@ -73,9 +73,7 @@ type
     procedure SetMaterial(const Value: TVKMaterial);
     function GetLibMaterial: TVKAbstractLibMaterial;
     procedure SetLibMaterial(const Value: TVKAbstractLibMaterial);
-    
   public
-    
     IsMouseUp : Boolean;
     Down : TPointF;
     GLMaterialLibrary: TVKMaterialLibrary;
@@ -86,14 +84,18 @@ type
       write SetLibMaterial;
   end;
 
+//=======================================================================
 implementation
+//=======================================================================
 
 {$R *.fmx}
 
 var
   MX, MY: Integer;
 
+//--------------------------------------------------------------
 { TRMaterialPreview }
+//--------------------------------------------------------------
 
 constructor TRMaterialPreview.Create(AOwner: TComponent);
 begin
@@ -142,7 +144,6 @@ begin
   begin
     World.RotationAngle.X := World.RotationAngle.X - ((Y - Down.Y) * 0.3);
     World.RotationAngle.Y := World.RotationAngle.Y + ((X - Down.X) * 0.3);
-
     Down := PointF(X, Y);
   end;
 end;

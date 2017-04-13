@@ -9,15 +9,29 @@ unit FMaterialEditorForm;
 interface
 
 uses
-  System.Classes, System.SysUtils, System.TypInfo, System.Types,
-  System.UITypes, System.Variants,
-  FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, 
-  FMX.TabControl, FMX.StdCtrls, FMX.Objects, FMX.ListBox,
-  
-  
-  FRMaterialPreview, FRColorEditor, FRFaceEditor,  
-  VKS.Texture, FRTextureEdit,
-  VKS.Material, VKS.State;
+  System.Classes,
+  System.SysUtils,
+  System.TypInfo,
+  System.Types,
+  System.UITypes,
+  System.Variants,
+  FMX.Types,
+  FMX.Controls,
+  FMX.Forms,
+  FMX.Graphics,
+  FMX.Dialogs,
+  FMX.TabControl,
+  FMX.StdCtrls,
+  FMX.Objects,
+  FMX.ListBox,
+
+  FRMaterialPreview,
+  FRColorEditor,
+  FRFaceEditor,
+  VKS.Texture,
+  FRTextureEdit,
+  VKS.Material,
+  VKS.State, FMX.Controls.Presentation;
 
 type
   TMaterialEditorForm = class(TForm)
@@ -39,10 +53,7 @@ type
     Label2: TLabel;
     CBPolygonMode: TComboBox;
     procedure OnMaterialChanged(Sender: TObject);
-  private
-    
   public
-    
     constructor Create(AOwner: TComponent); override;
     function Execute(AMaterial: TVKMaterial): Boolean;
   end;
@@ -50,8 +61,9 @@ type
 function MaterialEditorForm: TMaterialEditorForm;
 procedure ReleaseMaterialEditorForm;
 
-
+//======================================================================
 implementation
+//======================================================================
 
 {$R *.fmx}
 
@@ -74,8 +86,7 @@ begin
   end;
 end;
 
-// Create
-//
+//------------------------------------------------------------------
 
 constructor TMaterialEditorForm.Create(AOwner: TComponent);
 var
@@ -91,9 +102,6 @@ begin
   FEBack.OnChange := OnMaterialChanged;
   RTextureEdit.OnChange := OnMaterialChanged;
 end;
-
-// Execute
-//
 
 function TMaterialEditorForm.Execute(AMaterial: TVKMaterial): Boolean;
 begin
@@ -118,9 +126,6 @@ begin
     end;
 end;
 
-// OnMaterialChanged
-//
-
 procedure TMaterialEditorForm.OnMaterialChanged(Sender: TObject);
 begin
   MPPreview.GLSViewer.BeginUpdate;
@@ -136,12 +141,8 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
 
 finalization
 

@@ -9,6 +9,8 @@ unit VKS.Material;
 
 interface
 
+{$I VKScene.inc}
+
 uses
   Winapi.OpenGL,
   Winapi.OpenGLext,
@@ -18,7 +20,7 @@ uses
   FMX.Dialogs,
   FMX.Graphics,
 
-  OpenGLAdapter,
+  uOpenGLAdapter,
   VKS.RenderContextInfo,
   VKS.BaseClasses,
   VKS.Context,
@@ -36,7 +38,6 @@ uses
   VKS.Graphics,
   VKS.Utils;
 
-{$I VKScene.inc}
 {$UNDEF VKS_MULTITHREAD}
 type
   TVKFaceProperties = class;

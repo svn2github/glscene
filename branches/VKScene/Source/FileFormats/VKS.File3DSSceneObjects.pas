@@ -11,13 +11,23 @@ interface
 {$I VKScene.inc}
 
 uses
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
   System.Classes,
   System.SysUtils,
   System.Math,
-  
-  VKS.VectorGeometry, Winapi.OpenGL, Winapi.OpenGLext,  OpenGLAdapter, VKS.Context, VKS.Scene,
-  VKS.VectorFileObjects, VKS.VectorTypes, VKS.PersistentClasses,
-  VKS.CrossPlatform, VKS.Coordinates, VKS.RenderContextInfo, VKS.State;
+
+  uOpenGLAdapter,
+  VKS.VectorGeometry,
+  VKS.Context,
+  VKS.Scene,
+  VKS.VectorFileObjects,
+  VKS.VectorTypes,
+  VKS.PersistentClasses,
+  VKS.CrossPlatform,
+  VKS.Coordinates,
+  VKS.RenderContextInfo,
+  VKS.State;
 
 type
   TVKFile3DSLight = class(TVKLightSource)
@@ -87,7 +97,9 @@ type
 var
   vGLFile3DSSceneObjects_RenderCameraAndLights: Boolean = False;
 
+//===============================================================
 implementation
+//===============================================================
 
 function MakeRotationQuaternion(const axis: TAffineVector; angle: Single): TQuaternion;
 var

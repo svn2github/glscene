@@ -31,44 +31,31 @@ uses
 
 type
 
-  // TVKSamplingScale
-  //
   TVKSamplingScale = class(TVKUpdateAbleObject)
   private
-    
     FMin: Single;
     FMax: Single;
     FOrigin: Single;
     FStep: Single;
-
   protected
-    
     procedure SetMin(const val: Single);
     procedure SetMax(const val: Single);
     procedure SetOrigin(const val: Single);
     procedure SetStep(const val: Single);
-
   public
-    
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
-
     procedure Assign(Source: TPersistent); override;
-
-    { Returns the Base value for Step browsing. 
+    { Returns the Base value for Step browsing.
       ie. the lowest value (superior to Min) that verifies
       Frac((Origin-StepBase)/Step)=0.0, this value may be superior to Max. }
     function StepBase: Single;
     { Maximum number of steps that can occur between Min and Max. }
     function MaxStepCount: Integer;
-
     function IsValid: Boolean;
-
     procedure SetBaseStepMaxToVars(var Base, Step, Max: Single;
       SamplingEnabled: Boolean = True);
-
   published
-    
     property Min: Single read FMin write SetMin;
     property Max: Single read FMax write SetMax;
     property Origin: Single read FOrigin write SetOrigin;
@@ -80,30 +67,22 @@ type
   TVKHeightFieldGetHeight2Event = procedure(Sender: TObject; const x, y: Single;
     var z: Single; var Color: TColorVector; var TexPoint: TTexPoint) of object;
 
-  // TVKHeightFieldOptions
-  //
   TVKHeightFieldOption = (hfoTextureCoordinates, hfoTwoSided);
   TVKHeightFieldOptions = set of TVKHeightFieldOption;
 
-  // TVKHeightFieldColorMode
-  //
   TVKHeightFieldColorMode = (hfcmNone, hfcmEmission, hfcmAmbient, hfcmDiffuse,
     hfcmAmbientAndDiffuse);
 
-  // TVKHeightField
-  //
-  { Renders a sampled height-field. 
+  { Renders a sampled height-field.
     HeightFields are used to materialize z=f(x, y) surfaces, you can use it to
     render anything from math formulas to statistics. Most important properties
     of an height field are its sampling scales (X & Y) that determine the extents
-    and the resolution of the base grid. 
-
+    and the resolution of the base grid.
     The component will then invoke it OnGetHeight event to retrieve Z values for
     all of the grid points (values are retrieved only once for each point). Each
     point may have an additionnal color and texture coordinate. }
   TVKHeightField = class(TVKSceneObject)
   private
-    
     FOnGetHeight: TVKHeightFieldGetHeightEvent;
     FOnGetHeight2: TVKHeightFieldGetHeight2Event;
     FXSamplingScale: TVKSamplingScale;
@@ -111,34 +90,25 @@ type
     FOptions: TVKHeightFieldOptions;
     FTriangleCount: Integer;
     FColorMode: TVKHeightFieldColorMode;
-
   protected
-    
     procedure SetXSamplingScale(const val: TVKSamplingScale);
     procedure SetYSamplingScale(const val: TVKSamplingScale);
     procedure SetOptions(const val: TVKHeightFieldOptions);
     procedure SetOnGetHeight(const val: TVKHeightFieldGetHeightEvent);
     procedure SetOnGetHeight2(const val: TVKHeightFieldGetHeight2Event);
     procedure SetColorMode(const val: TVKHeightFieldColorMode);
-
     procedure DefaultHeightField(const x, y: Single; var z: Single;
       var Color: TColorVector; var TexPoint: TTexPoint);
     procedure Height2Field(const x, y: Single; var z: Single;
       var Color: TColorVector; var texPoint: TTexPoint);
-
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
     procedure Assign(Source: TPersistent); override;
     procedure BuildList(var rci: TVKRenderContextInfo); override;
     procedure NotifyChange(Sender: TObject); override;
-
     property TriangleCount: Integer read FTriangleCount;
-
   published
-    
     property XSamplingScale: TVKSamplingScale read FXSamplingScale
       write SetXSamplingScale;
     property YSamplingScale: TVKSamplingScale read FYSamplingScale
@@ -148,65 +118,50 @@ type
       default hfcmNone;
     property Options: TVKHeightFieldOptions read FOptions write SetOptions
       default [hfoTwoSided];
-
     { Primary event to return heights. }
     property OnGetHeight: TVKHeightFieldGetHeightEvent read FOnGetHeight
       write SetOnGetHeight;
-    { Alternate this event to return heights. 
+    { Alternate this event to return heights.
       This events passes an extra "Sender" parameter, it will be invoked
       only if OnGetHeight isn't defined. }
     property OnGetHeight2: TVKHeightFieldGetHeight2Event read FOnGetHeight2
       write SetOnGetHeight2;
   end;
 
-  // TXYZGridParts
-  //
   TXYZGridPart = (gpX, gpY, gpZ);
   TXYZGridParts = set of TXYZGridPart;
 
-  // TXYZGridLinesStyle
-  //
-  { Rendering Style for grid lines. 
+  { Rendering Style for grid lines.
     - glsLine : a single line is used for each grid line (from Min to Max),
-    this provides the fastest rendering 
+    this provides the fastest rendering
     - glsSegments : line segments are used between each node of the grid,
     this enhances perspective and quality, at the expense of computing
     power. }
   TXYZGridLinesStyle = (strLine, glsSegments);
 
-  // TVKXYZGrid
-  //
-  { An XYZ Grid object. 
+  { An XYZ Grid object.
     Renders an XYZ grid using lines. }
   TVKXYZGrid = class(TVKLineBase)
   private
-    
     FXSamplingScale: TVKSamplingScale;
     FYSamplingScale: TVKSamplingScale;
     FZSamplingScale: TVKSamplingScale;
     FParts: TXYZGridParts;
     FLinesStyle: TXYZGridLinesStyle;
-
   protected
-    
     procedure SetXSamplingScale(const val: TVKSamplingScale);
     procedure SetYSamplingScale(const val: TVKSamplingScale);
     procedure SetZSamplingScale(const val: TVKSamplingScale);
     procedure SetParts(const val: TXYZGridParts);
     procedure SetLinesStyle(const val: TXYZGridLinesStyle);
     procedure SetLinesSmoothing(const val: Boolean);
-
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
-
     procedure BuildList(var rci: TVKRenderContextInfo); override;
     procedure NotifyChange(Sender: TObject); override;
-
   published
-    
     property XSamplingScale: TVKSamplingScale read FXSamplingScale
       write SetXSamplingScale;
     property YSamplingScale: TVKSamplingScale read FYSamplingScale
@@ -216,21 +171,18 @@ type
     property Parts: TXYZGridParts read FParts write SetParts default [gpX, gpY];
     property LinesStyle: TXYZGridLinesStyle read FLinesStyle write SetLinesStyle
       default glsSegments;
-    { Adjusts lines smoothing (or antialiasing). 
+    { Adjusts lines smoothing (or antialiasing).
       Obsolete, now maps to Antialiased property. }
     property LinesSmoothing: Boolean write SetLinesSmoothing stored False;
   end;
 
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+//=====================================================================
 implementation
+//=====================================================================
+
 // ------------------
 // ------------------ TVKSamplingScale ------------------
 // ------------------
-
-// Create
-//
 
 constructor TVKSamplingScale.Create(AOwner: TPersistent);
 begin
@@ -238,16 +190,10 @@ begin
   FStep := 0.1;
 end;
 
-// Destroy
-//
-
 destructor TVKSamplingScale.Destroy;
 begin
   inherited Destroy;
 end;
-
-// Assign
-//
 
 procedure TVKSamplingScale.Assign(Source: TPersistent);
 begin
@@ -263,9 +209,6 @@ begin
     inherited Assign(Source);
 end;
 
-// SetMin
-//
-
 procedure TVKSamplingScale.SetMin(const val: Single);
 begin
   FMin := val;
@@ -273,9 +216,6 @@ begin
     FMax := FMin;
   NotifyChange(Self);
 end;
-
-// SetMax
-//
 
 procedure TVKSamplingScale.SetMax(const val: Single);
 begin
@@ -285,17 +225,11 @@ begin
   NotifyChange(Self);
 end;
 
-// SetOrigin
-//
-
 procedure TVKSamplingScale.SetOrigin(const val: Single);
 begin
   FOrigin := val;
   NotifyChange(Self);
 end;
-
-// SetStep
-//
 
 procedure TVKSamplingScale.SetStep(const val: Single);
 begin
@@ -305,9 +239,6 @@ begin
     FStep := 1;
   NotifyChange(Self);
 end;
-
-// StepBase
-//
 
 function TVKSamplingScale.StepBase: Single;
 begin
@@ -324,16 +255,10 @@ begin
     Result := FMin;
 end;
 
-// MaxStepCount
-//
-
 function TVKSamplingScale.MaxStepCount: Integer;
 begin
   Result := Round(0.5 + (Max - Min) / Step);
 end;
-
-// IsValid
-//
 
 function TVKSamplingScale.IsValid: Boolean;
 begin

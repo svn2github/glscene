@@ -27,7 +27,7 @@ uses
   System.SysUtils,
   FMX.Dialogs,
   
-  OpenGLAdapter,
+  uOpenGLAdapter,
   VKS.RenderContextInfo,
   VKS.BaseClasses,
   VKS.Context,

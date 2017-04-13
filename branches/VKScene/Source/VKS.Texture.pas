@@ -19,7 +19,7 @@ uses
   FMX.Graphics,
   FMX.Objects,
 
-  OpenGLAdapter,
+  uOpenGLAdapter,
   VKS.CrossPlatform,
   VKS.BaseClasses,
   VKS.VectorGeometry,
@@ -698,7 +698,7 @@ implementation
 //------------------------------------------------------------------------------
 
 uses
-  VKS.Scene, // TODO: remove dependancy on GLScene.pas unit (related to tmmCubeMapLight0)
+  VKS.Scene, // TODO: remove dependancy on VKScene.pas unit (related to tmmCubeMapLight0)
   XOpenGL,
   VKS.PictureRegisteredFormats,
   VKS.VectorTypes;

@@ -14,7 +14,7 @@ uses
   System.Classes,
   System.SysUtils,
   
-  OpenGLAdapter,
+  uOpenGLAdapter,
   VKS.CrossPlatform,
   VKS.Context,
   VKS.Graphics,

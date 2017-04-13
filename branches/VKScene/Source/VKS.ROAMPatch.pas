@@ -16,7 +16,7 @@ uses
   Winapi.OpenGLext,
   System.SysUtils,
   
-  OpenGLAdapter,
+  uOpenGLAdapter,
   VKS.VectorGeometry,
   VKS.HeightData,
   VKS.Contouring,
@@ -27,11 +27,9 @@ uses
 
 type
 
-  // Exception use by Split for SafeTesselate
+  { Exception use by Split for SafeTesselate }
   EGLROAMException = class(Exception);
 
-  // TROAMTriangleNode
-  //
   PROAMTriangleNode = ^TROAMTriangleNode;
 
   TROAMTriangleNode = packed record
@@ -39,18 +37,13 @@ type
     LeftChild, RightChild: PROAMTriangleNode;
   end;
 
-  // TROAMRenderPoint
-  //
   TROAMRenderPoint = packed record
     X, Y: Integer;
     Idx: Integer;
   end;
 
-  // TVKROAMPatch
-  //
   TVKROAMPatch = class(TObject)
   private
-    
     FID: Integer;
     FHeightData: TVKHeightData; // Referred, not owned
     FHeightRaster: PSmallIntRaster;
@@ -66,51 +59,41 @@ type
     FVertexScale, FVertexOffset: TAffineVector;
     FTextureScale, FTextureOffset: TAffineVector;
     FMaxTLVarianceDepth, FMaxBRVarianceDepth: Integer;
-
     FOcclusionQuery: TVKOcclusionQueryHandle;
     FOcclusionSkip, FOcclusionCounter: Integer;
     FLastOcclusionTestPassed: Boolean;
-
     FContourInterval: Integer;
     FContourWidth: Integer;
-
   protected
-    
     procedure SetHeightData(Val: TVKHeightData);
     procedure SetOcclusionSkip(Val: Integer);
-
     procedure RenderROAM(Vertices: TAffineVectorList;
       VertexIndices: TIntegerList; TexCoords: TTexPointList);
     procedure RenderAsStrips(Vertices: TAffineVectorList;
       VertexIndices: TIntegerList; TexCoords: TTexPointList);
-
   public
-    
     constructor Create;
     destructor Destroy; override;
-
     procedure ComputeVariance(Variance: Integer);
-
     procedure ResetTessellation;
     procedure ConnectToTheWest(WestPatch: TVKROAMPatch);
     procedure ConnectToTheNorth(NorthPatch: TVKROAMPatch);
-
-    // Returns false if MaxCLODTriangles limit is reached(Lin)
+    { Returns false if MaxCLODTriangles limit is reached(Lin) }
     function Tesselate: Boolean;
-    {  AV free version of Tesselate. 
+    {  AV free version of Tesselate.
       When IncreaseTrianglesCapacity is called, all PROAMTriangleNode
       values in higher function became invalid due to the memory shifting.
       Recursivity is the main problem, that's why SafeTesselate is calling
       Tesselate in a try..except . }
     function SafeTesselate: Boolean;
-    {  Render the patch in high-resolution. 
+    {  Render the patch in high-resolution.
       The lists are assumed to have enough capacity to allow AddNC calls
       (additions without capacity check). High-resolution renders use
       display lists, and are assumed to be made together. }
     procedure RenderHighRes(Vertices: TAffineVectorList;
       VertexIndices: TIntegerList; TexCoords: TTexPointList;
       ForceROAM: Boolean);
-    {  Render the patch by accumulating triangles. 
+    {  Render the patch by accumulating triangles.
       The lists are assumed to have enough capacity to allow AddNC calls
       (additions without capacity check).
       Once at least autoFlushVertexCount vertices have been accumulated,
@@ -125,22 +108,18 @@ type
     property HeightData: TVKHeightData read FHeightData write SetHeightData;
     property VertexScale: TAffineVector read FVertexScale write FVertexScale;
     property VertexOffset: TAffineVector read FVertexOffset write FVertexOffset;
-
     property ObserverPosition: TAffineVector read FObserverPosition
       write FObserverPosition;
-
     property TextureScale: TAffineVector read FTextureScale write FTextureScale;
     property TextureOffset: TAffineVector read FTextureOffset
       write FTextureOffset;
-
     property HighRes: Boolean read FHighRes write FHighRes;
-
     {  Number of frames to skip after an occlusion test returned zero pixels. }
     property OcclusionSkip: Integer read FOcclusionSkip write SetOcclusionSkip;
     {  Number of frames remaining to next occlusion test. }
     property OcclusionCounter: Integer read FOcclusionCounter
       write FOcclusionCounter;
-    {  Result for the last occlusion test. 
+    {  Result for the last occlusion test.
       Note that this value is updated upon rendering the tile in
       non-high-res mode only. }
     property LastOcclusionTestPassed: Boolean read FLastOcclusionTestPassed;
@@ -155,21 +134,16 @@ type
       write FContourWidth  default 1;
   end;
 
-  {  Specifies the maximum number of ROAM triangles that may be allocated. }
+{  Specifies the maximum number of ROAM triangles that may be allocated. }
 procedure SetROAMTrianglesCapacity(nb: Integer);
 function GetROAMTrianglesCapacity: Integer;
 {  Draw contours on rendering terrain patches }
 procedure DrawContours(Vertices: TAffineVectorList; VertexIndices: TIntegerList;
   ContourInterval: Integer; ContourWidth: Integer; DecVal: Integer);
 
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
+//==================================================================
 implementation
-
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
+//==================================================================
 
 var
   FVBOVertHandle, FVBOTexHandle: TVKVBOArrayBufferHandle;
@@ -190,14 +164,10 @@ var
   TessObserverPosX, TessObserverPosY: Integer;
 
 type
-  // TROAMVariancePoint
-  //
   TROAMVariancePoint = packed record
     X, Y, Z: Integer;
   end;
 
-  // SetROAMTrianglesCapacity
-  //
 procedure SetROAMTrianglesCapacity(nb: Integer);
 begin
   vNbTris := 0;
@@ -208,15 +178,11 @@ begin
   end;
 end;
 
-// GetROAMTrianglesCapacity
-//
 function GetROAMTrianglesCapacity: Integer;
 begin
   Result := vTriangleNodesCapacity;
 end;
 
-// DrawContours
-//
 procedure DrawContours(Vertices: TAffineVectorList; VertexIndices: TIntegerList;
   ContourInterval: Integer; ContourWidth: Integer; DecVal: Integer);
 var
@@ -302,8 +268,6 @@ begin
   end;
 end;
 
-// AllocTriangleNode
-//
 function AllocTriangleNode: Integer;
 var
   nilNode: PROAMTriangleNode;
@@ -326,8 +290,6 @@ begin
   Inc(vNbTris);
 end;
 
-// Split
-//
 function Split(tri: PROAMTriangleNode): Boolean;
 var
   n: Integer;
@@ -421,8 +383,6 @@ end;
 // ------------------ TVKROAMPatch ------------------
 // ------------------
 
-// Create
-//
 constructor TVKROAMPatch.Create;
 begin
   inherited Create;
@@ -433,8 +393,6 @@ begin
   FOcclusionQuery := TVKOcclusionQueryHandle.Create;
 end;
 
-// Destroy
-//
 destructor TVKROAMPatch.Destroy;
 begin
   FListHandle.Free;
@@ -442,8 +400,6 @@ begin
   inherited Destroy;
 end;
 
-// SetHeightData
-//
 procedure TVKROAMPatch.SetHeightData(Val: TVKHeightData);
 begin
   FHeightData := Val;
@@ -451,8 +407,6 @@ begin
   FHeightRaster := Val.SmallIntRaster;
 end;
 
-// SetOcclusionSkip
-//
 procedure TVKROAMPatch.SetOcclusionSkip(Val: Integer);
 begin
   if Val < 0 then
@@ -464,8 +418,6 @@ begin
   end;
 end;
 
-// ConnectToTheWest
-//
 procedure TVKROAMPatch.ConnectToTheWest(WestPatch: TVKROAMPatch);
 begin
   if Assigned(WestPatch) then

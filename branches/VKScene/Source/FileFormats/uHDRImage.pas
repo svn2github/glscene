@@ -3,84 +3,91 @@
 //
 {
     Good for preview picture in OpenDialog,
-    so you may include both O3TCImage (preview) and GLFileO3TC (loading)
-  
+    so you may include both HDRImage (preview) and GLFileHDR (loading)
+      
 }
 
-unit O3TCImage;
+unit uHDRImage;
 
 interface
 
 {$I VKScene.inc}
 
 uses
-{$IFDEF MSWINDOWS}
   Winapi.Windows,
-{$ENDIF}
+  Winapi.OpenGL,
   System.Classes,
   System.SysUtils,
+  FMX.Graphics,
+
   VKS.CrossPlatform,
   VKS.VectorGeometry,
-  VKS.Graphics,
-  VKS.OpenGLTokens;
+  VKS.Graphics;
 
 type
 
-  TO3TCImage = class(TBitmap)
+  THDRImage = class(TBitmap)
   public
     
-    procedure LoadFromStream(stream: TStream); override;
-    procedure SaveToStream(stream: TStream); override;
+    { TODO : E2170 Cannot override a non-virtual method }
+
+    procedure LoadFromStream(stream: TStream); //in VCL override;
+    procedure SaveToStream(stream: TStream); //in VCL override;
+
   end;
 
 implementation
 
 uses
-  GLFileO3TC,
+  VKS.FileHDR,
   VKS.TextureFormat;
 
 // ------------------
-// ------------------ TO3TCImage ------------------
+// ------------------ THDRImage ------------------
 // ------------------
 
 // LoadFromStream
 //
 
-procedure TO3TCImage.LoadFromStream(stream: TStream);
+procedure THDRImage.LoadFromStream(stream: TStream);
 var
-  FullO3TC: TVKO3TCImage;
+  FullHDR: TVKHDRImage;
   src, dst: PGLubyte;
-  y: Integer;
+  y: integer;
 begin
-  FullO3TC := TVKO3TCImage.Create;
+  FullHDR := TVKHDRImage.Create;
   try
-    FullO3TC.LoadFromStream(stream);
+    FullHDR.LoadFromStream(stream);
   except
-    FullO3TC.Free;
+    FullHDR.Free;
     raise;
   end;
 
-  FullO3TC.Narrow;
+  FullHDR.Narrow;
 
-  Width := FullO3TC.LevelWidth[0];
-  Height := FullO3TC.LevelHeight[0];
-  Transparent := true;
+  Width := FullHDR.LevelWidth[0];
+  Height := FullHDR.LevelHeight[0];
+  { TODO : E2064 Left side cannot be assigned to }
+  (*
+  Transparent := false;
   PixelFormat := glpf32bit;
+  *)
 
-  src := PGLubyte(FullO3TC.Data);
+  src := PGLubyte(FullHDR.Data);
   for y := 0 to Height - 1 do
   begin
-    dst := ScanLine[Height - 1 - y];
-    BGRA32ToRGBA32(src, dst, Width);
+    { TODO : E2003 Undeclared identifier: 'ScanLine' }
+    (*dst := ScanLine[Height - 1 - y];*)
+    Move(src^, dst^, Width * 4);
     Inc(src, Width * 4);
   end;
-  FullO3TC.Free;
+  FullHDR.Free;
 end;
 
 // SaveToStream
 //
 
-procedure TO3TCImage.SaveToStream(stream: TStream);
+procedure THDRImage.SaveToStream(stream: TStream);
 begin
   Assert(False, 'Not supported');
 end;
@@ -92,9 +99,8 @@ initialization
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
-
-  TPicture.RegisterFileFormat(
-    'o3tc', 'oZone3D Texture Compression', TO3TCImage);
+  { TODO : E2003 Undeclared identifier: 'RegisterFileFormat', it needs to be added }
+  (*TPicture.RegisterFileFormat('HDR', 'High Dynamic Range Image', THDRImage);*)
 
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
@@ -103,8 +109,8 @@ finalization
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
-
-  TPicture.UnregisterGraphicClass(TO3TCImage);
+  { TODO : E2003 Undeclared identifier: 'UnregisterFileFormat', it needs to be added }
+  (*TPicture.UnregisterGraphicClass(THDRImage);*)
 
 end.
 

@@ -55,8 +55,6 @@ type
 
   TOnMatricesPush = procedure() of object;
 
-  // TVKTransformation
-  //
   TVKTransformation = class(TObject)
   private
     FStackPos: Integer;
@@ -83,17 +81,14 @@ type
     property OnPush: TOnMatricesPush read FOnPush write FOnPush;
   public
     constructor Create;
-
     procedure IdentityAll;
     procedure Push(AValue: PTransformationRec = nil);
     procedure Pop;
     procedure ReplaceFromStack;
     function StackTop: TTransformationRec;
-
     property ModelMatrix: TMatrix read GetModelMatrix write SetModelMatrix;
     property ViewMatrix: TMatrix read GetViewMatrix write SetViewMatrix;
     property ProjectionMatrix: TMatrix read GetProjectionMatrix write SetProjectionMatrix;
-
     property InvModelMatrix: TMatrix read GetInvModelMatrix;
     property ModelViewMatrix: TMatrix read GetModelViewMatrix;
     property NormalModelMatrix: TAffineMatrix read GetNormalModelMatrix;

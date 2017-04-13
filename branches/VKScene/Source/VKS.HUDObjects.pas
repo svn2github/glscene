@@ -11,6 +11,8 @@ interface
 {$I VKScene.inc}
 
 uses
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
   System.Classes,
 
   VKS.Scene,
@@ -20,16 +22,13 @@ uses
   VKS.CrossPlatform,
   VKS.Color,
   VKS.RenderContextInfo,
-  Winapi.OpenGL, Winapi.OpenGLext, 
   VKS.Context,
   VKS.State,
   XOpenGL;
 
 type
 
-  // TVKHUDSprite
-  //
-  { A rectangular area, NOT perspective projected. 
+  { A rectangular area, NOT perspective projected.
     (x, y) coordinates map directly to the viewport (in pixels) and refer
     the center of the area. 
     The coordinate system is that of an equivalent TCanvas, ie. top-left
@@ -40,32 +39,25 @@ type
     blending capabilities (transparency or additive), is to set the texture
     mode to tmModulate, in FrontProperties, to use the Emission color to
     control coloring/intensity, and finally use the Diffuse color's alpha
-    to control transparency (while setting the other RGB components to 0). 
+    to control transparency (while setting the other RGB components to 0).
     You can also control aplha-blending by defining a <1 value in the sprite's
     AlphaChannel field. This provides you with hardware accelerated,
-    alpha-blended blitting. 
+    alpha-blended blitting.
     Note : since TVKHUDSprite works in absolute coordinates, TVKProxyObject
     can't be used to duplicate an hud sprite. }
   TVKHUDSprite = class(TVKSprite)
   private
-    
     FXTiles, FYTiles: Integer;
     function StoreWidth: Boolean;
     function StoreHeight: Boolean;
   protected
-    
     procedure SetXTiles(const val: Integer);
     procedure SetYTiles(const val: Integer);
-
   public
-    
     constructor Create(AOwner: TComponent); override;
-
     procedure DoRender(var rci: TVKRenderContextInfo;
       renderSelf, renderChildren: Boolean); override;
-
   published
-    
     property XTiles: Integer read FXTiles write SetXTiles default 1;
     property YTiles: Integer read FYTiles write SetYTiles default 1;
     // Redeclare them with new default values.
@@ -73,62 +65,51 @@ type
     property Height stored StoreHeight;
   end;
 
-  // TVKHUDText
-  //
-  { A 2D text displayed and positionned in 2D coordinates. 
+  { A 2D text displayed and positionned in 2D coordinates.
     The HUDText uses a character font defined and stored by a TVKBitmapFont
     component. The text can be scaled and rotated (2D), the layout and
     alignment can also be controled. }
   TVKHUDText = class(TVKImmaterialSceneObject)
   private
-    
     FBitmapFont: TVKCustomBitmapFont;
     FText: UnicodeString;
     FRotation: Single;
     FAlignment: TAlignment;
     FLayout: TVKTextLayout;
     FModulateColor: TVKColor;
-
   protected
-    
     procedure SetBitmapFont(const val: TVKCustomBitmapFont);
     procedure SetText(const val: UnicodeString);
     procedure SetRotation(const val: Single);
     procedure SetAlignment(const val: TAlignment);
     procedure SetLayout(const val: TVKTextLayout);
     procedure SetModulateColor(const val: TVKColor);
-
     procedure Notification(AComponent: TComponent;
       Operation: TOperation); override;
     procedure RenderTextAtPosition(const X, Y, Z: Single;
       var rci: TVKRenderContextInfo);
-
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
     procedure DoRender(var rci: TVKRenderContextInfo;
       renderSelf, renderChildren: Boolean); override;
-
   published
-    
-    { Refers the bitmap font to use. 
+    { Refers the bitmap font to use.
       The referred bitmap font component stores and allows access to
       individual character bitmaps. }
     property BitmapFont: TVKCustomBitmapFont read FBitmapFont
       write SetBitmapFont;
-    { Text to render. 
+    { Text to render.
       Be aware that only the characters available in the bitmap font will
       be rendered. CR LF sequences are allowed. }
     property Text: UnicodeString read FText write SetText;
     { Rotation angle in degrees (2d). }
     property Rotation: Single read FRotation write SetRotation;
-    { Controls the text alignment (horizontal). 
+    { Controls the text alignment (horizontal).
       Possible values : taLeftJustify, taRightJustify, taCenter }
     property Alignment: TAlignment read FAlignment write SetAlignment
       default taLeftJustify;
-    { Controls the text layout (vertical). 
+    { Controls the text layout (vertical).
       Possible values : tlTop, tlCenter, tlBottom }
     property Layout: TVKTextLayout read FLayout write SetLayout default tlTop;
     { Color modulation, can be used for fade in/out too. }
@@ -155,16 +136,13 @@ type
     constructor Create(AOwner: TComponent); override;
   end;
 
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+//=====================================================================
 implementation
+//=====================================================================
+
 // ------------------
 // ------------------ TVKHUDSprite ------------------
 // ------------------
-
-// Create
-//
 
 constructor TVKHUDSprite.Create(AOwner: TComponent);
 begin
@@ -176,9 +154,6 @@ begin
   FYTiles := 1;
 end;
 
-// SetXTiles
-//
-
 procedure TVKHUDSprite.SetXTiles(const val: Integer);
 begin
   if val <> FXTiles then
@@ -188,9 +163,6 @@ begin
   end;
 end;
 
-// SetYTiles
-//
-
 procedure TVKHUDSprite.SetYTiles(const val: Integer);
 begin
   if val <> FYTiles then
@@ -199,9 +171,6 @@ begin
     StructureChanged;
   end;
 end;
-
-// DoRender
-//
 
 procedure TVKHUDSprite.DoRender(var rci: TVKRenderContextInfo;
   renderSelf, renderChildren: Boolean);
@@ -311,18 +280,12 @@ end;
 // ------------------ TVKHUDText ------------------
 // ------------------
 
-// Create
-//
-
 constructor TVKHUDText.Create(AOwner: TComponent);
 begin
   inherited;
   ObjectStyle := ObjectStyle + [osDirectDraw, osNoVisibilityCulling];
   FModulateColor := TVKColor.CreateInitialized(Self, clrWhite);
 end;
-
-// Destroy
-//
 
 destructor TVKHUDText.Destroy;
 begin
@@ -331,9 +294,6 @@ begin
   inherited;
 end;
 
-// Notification
-//
-
 procedure TVKHUDText.Notification(AComponent: TComponent;
   Operation: TOperation);
 begin
@@ -341,9 +301,6 @@ begin
     BitmapFont := nil;
   inherited;
 end;
-
-// SetBitmapFont
-//
 
 procedure TVKHUDText.SetBitmapFont(const val: TVKCustomBitmapFont);
 begin
@@ -361,17 +318,11 @@ begin
   end;
 end;
 
-// SetText
-//
-
 procedure TVKHUDText.SetText(const val: UnicodeString);
 begin
   FText := val;
   StructureChanged;
 end;
-
-// SetRotation
-//
 
 procedure TVKHUDText.SetRotation(const val: Single);
 begin
@@ -379,17 +330,11 @@ begin
   StructureChanged;
 end;
 
-// SetAlignment
-//
-
 procedure TVKHUDText.SetAlignment(const val: TAlignment);
 begin
   FAlignment := val;
   StructureChanged;
 end;
-
-// SetLayout
-//
 
 procedure TVKHUDText.SetLayout(const val: TVKTextLayout);
 begin
@@ -397,16 +342,10 @@ begin
   StructureChanged;
 end;
 
-// SetModulateColor
-//
-
 procedure TVKHUDText.SetModulateColor(const val: TVKColor);
 begin
   FModulateColor.Assign(val);
 end;
-
-// RenderTextAtPosition
-//
 
 procedure TVKHUDText.RenderTextAtPosition(const X, Y, Z: Single;
   var rci: TVKRenderContextInfo);
@@ -442,9 +381,6 @@ begin
   end;
 end;
 
-// DoRender
-//
-
 procedure TVKHUDText.DoRender(var rci: TVKRenderContextInfo;
   renderSelf, renderChildren: Boolean);
 begin
@@ -457,18 +393,12 @@ end;
 // ------------------ TVKResolutionIndependantHUDText ------------------
 // ------------------
 
-// Create
-//
-
 constructor TVKResolutionIndependantHUDText.Create(AOwner: TComponent);
 begin
   inherited;
   Position.X := 0.5;
   Position.Y := 0.5;
 end;
-
-// DoRender
-//
 
 procedure TVKResolutionIndependantHUDText.DoRender(var rci: TVKRenderContextInfo;
   renderSelf, renderChildren: Boolean);
@@ -483,9 +413,6 @@ end;
 // ------------------ TVKAbsoluteHUDText ------------------
 // ------------------
 
-// DoRender
-//
-
 procedure TVKAbsoluteHUDText.DoRender(var rci: TVKRenderContextInfo;
   renderSelf, renderChildren: Boolean);
 var
@@ -498,14 +425,9 @@ begin
     Self.renderChildren(0, Count - 1, rci);
 end;
 
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
+//=======================================================================
 initialization
-
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
+//=======================================================================
 
 // class registrations
 RegisterClasses([TVKHUDText, TVKHUDSprite, TVKResolutionIndependantHUDText,

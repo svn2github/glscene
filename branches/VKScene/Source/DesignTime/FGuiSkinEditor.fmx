@@ -33,7 +33,7 @@ object GUISkinEditor: TGUISkinEditor
       Size.PlatformDefault = False
       TabOrder = 2
       Text = '+'
-      TextSettings.Font.Style = [fsBold]
+      TextSettings.Font.StyleExt = {00070000000000000004000000}
     end
     object btnDelete: TButton
       StyledSettings = [Family, Size, FontColor]
@@ -44,7 +44,7 @@ object GUISkinEditor: TGUISkinEditor
       Size.PlatformDefault = False
       TabOrder = 0
       Text = '-'
-      TextSettings.Font.Style = [fsBold]
+      TextSettings.Font.StyleExt = {00070000000000000004000000}
     end
     object LBElements: TListBox
       Position.X = 8.000000000000000000
@@ -57,6 +57,8 @@ object GUISkinEditor: TGUISkinEditor
       DefaultItemStyles.ItemStyle = ''
       DefaultItemStyles.GroupHeaderStyle = ''
       DefaultItemStyles.GroupFooterStyle = ''
+      Viewport.Width = 125.000000000000000000
+      Viewport.Height = 325.000000000000000000
     end
     object Label2: TLabel
       Position.X = 144.000000000000000000

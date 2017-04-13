@@ -5,7 +5,7 @@
   MD2 file loader 
 }
 
-unit FileMD2;
+unit uFileMD2;
 
 interface
 

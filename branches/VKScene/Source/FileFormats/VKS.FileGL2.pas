@@ -10,10 +10,17 @@ unit VKS.FileGL2;
 interface
 
 uses
-  System.Classes, System.SysUtils,
-  
-  VKS.VectorFileObjects, VKS.ApplicationFileIO, VKS.Material,
-  VKS.VectorGeometry, FileGL2, VKS.VectorTypes, VKS.VectorLists;
+  System.Classes,
+  System.SysUtils,
+
+  VKS.VectorFileObjects,
+  VKS.ApplicationFileIO,
+  VKS.Material,
+  VKS.VectorGeometry,
+  VKS.VectorTypes,
+  VKS.VectorLists,
+
+  uFileGL2;
 
 type
 
@@ -35,27 +42,19 @@ var
                                           // per vertex. Use this global
                                           // variable to set a different limit.
 
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
+//====================================================================
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
+//====================================================================
 
 // ------------------
 // ------------------ TVKGLMVectorFile ------------------
 // ------------------
 
-// Capabilities
-//
 class function TVKGLMVectorFile.Capabilities : TVKDataFileCapabilities;
 begin
   Result:=[dfcRead];
 end;
 
-// LoadFromStream
-//
 procedure TVKGLMVectorFile.LoadFromStream(aStream : TStream);
 var
   GLMFile     : TFileGLM;

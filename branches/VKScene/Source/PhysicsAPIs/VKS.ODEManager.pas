@@ -1,9 +1,8 @@
 //
-// VKScene Component Library, based on GLScene http://glscene.sourceforge.net 
+// VKScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
 {
-  An ODE Manager for GLScene.  
-
+  An ODE Manager for GLScene.
   Notes:
   This code is still under development so any part of it may change at anytime.
 }
@@ -15,27 +14,39 @@ interface
 {$I VKScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
+  System.Classes,
+  System.SysUtils,
 
-  ODEGL, ODEImport, VKS.Scene, VKS.VectorGeometry, VKS.Texture,
-  Winapi.OpenGL, Winapi.OpenGLext,  XOpenGL, VKS.Objects, VKS.XCollection,
-  VKS.PersistentClasses, VKS.VectorLists, VKS.Color, VKS.Coordinates,
-  VKS.RenderContextInfo, VKS.Manager, VKS.State;
+  ODEGL,
+  ODEImport,
+  VKS.Scene,
+  VKS.VectorGeometry,
+  VKS.Texture,
+  XOpenGL,
+  VKS.Objects,
+  VKS.XCollection,
+  VKS.PersistentClasses,
+  VKS.VectorLists,
+  VKS.Color,
+  VKS.Coordinates,
+  VKS.RenderContextInfo,
+  VKS.Manager,
+  VKS.State;
 
 type
 
-  TODECustomCollisionEvent = procedure (Geom1, Geom2 : PdxGeom) of object;
+  TODECustomCollisionEvent = procedure(Geom1, Geom2: PdxGeom) of object;
 
-  TODECollisionEvent = procedure (Sender : TObject; Object1, Object2 : TObject;
-                                  var Contact:TdContact;
-                                  var HandleCollision:Boolean) of object;
+  TODECollisionEvent = procedure(Sender: TObject; Object1, Object2: TObject;
+    var Contact: TdContact; var HandleCollision: Boolean) of object;
 
-  TODEObjectCollisionEvent = procedure (Sender : TObject; Object2 : TObject;
-                                        var Contact:TdContact;
-                                        var HandleCollision:Boolean) of object;
+  TODEObjectCollisionEvent = procedure(Sender: TObject; Object2: TObject;
+    var Contact: TdContact; var HandleCollision: Boolean) of object;
 
-  TODECollisionSurfaceMode = (csmMu2,csmFDir1,csmBounce,csmSoftERP,csmSoftCFM,
-                              csmMotion1,csmMotion2,csmSlip1,csmSlip2);
+  TODECollisionSurfaceMode = (csmMu2, csmFDir1, csmBounce, csmSoftERP,
+    csmSoftCFM, csmMotion1, csmMotion2, csmSlip1, csmSlip2);
   TSurfaceModes = set of TODECollisionSurfaceMode;
 
   TODESolverMethod = (osmDefault, osmStepFast, osmQuickStep);
@@ -45,53 +56,38 @@ type
   TODEElementBase = class;
   TODEJointBase = class;
 
-  // TVKODEManager
-  //
-  TVKODEManager = class (TComponent)
-    private
-      
-      FWorld : PdxWorld;
-      FSpace : PdxSpace;
-      FContactGroup : TdJointGroupID;
-      FGravity : TVKCoordinates;
-      FOnCollision : TODECollisionEvent;
-      FOnCustomCollision : TODECustomCollisionEvent;
-      FNumContactJoints,
-      FMaxContacts : Integer;
-      FODEBehaviours : TPersistentObjectList;
-      FRFContactList : TList;
-      FIterations : Integer;
-      FSolver : TODESolverMethod;
-      FContacts : array of TdContact;
-      FContactGeoms : array of TdContactGeom;
-      FRenderPoint : TVKRenderPoint;
-      FVisible,
-      FVisibleAtRunTime : Boolean;
-      FGeomColorDynD,
-      FGeomColorDynE,
-      FGeomColorStat: TVKColor;
-
-    protected
-      
-      procedure Loaded; override;
-
-      procedure CalcContact(Object1, Object2 : TObject; var Contact:TdContact);
-      procedure Collision(g1,g2:PdxGeom);
-
-      procedure GravityChange(Sender:TObject);
-
-      procedure SetMaxContacts(const Value : Integer);
-      procedure SetGravity(value:TVKCoordinates);
-      procedure SetIterations(const val : Integer);
-
-      function GetODEBehaviour(index : Integer) : TVKODEBehaviour;
-      procedure RegisterODEBehaviour(ODEBehaviour : TVKODEBehaviour);
-      procedure UnregisterODEBehaviour(ODEBehaviour : TVKODEBehaviour);
-
-      procedure SetRenderPoint(const value : TVKRenderPoint);
-      procedure RenderEvent(Sender : TObject; var rci : TVKRenderContextInfo);
-      procedure RenderPointFreed(Sender : TObject);
-
+  TVKODEManager = class(TComponent)
+  private
+    FWorld: PdxWorld;
+    FSpace: PdxSpace;
+    FContactGroup: TdJointGroupID;
+    FGravity: TVKCoordinates;
+    FOnCollision: TODECollisionEvent;
+    FOnCustomCollision: TODECustomCollisionEvent;
+    FNumContactJoints, FMaxContacts: Integer;
+    FODEBehaviours: TPersistentObjectList;
+    FRFContactList: TList;
+    FIterations: Integer;
+    FSolver: TODESolverMethod;
+    FContacts: array of TdContact;
+    FContactGeoms: array of TdContactGeom;
+    FRenderPoint: TVKRenderPoint;
+    FVisible, FVisibleAtRunTime: Boolean;
+    FGeomColorDynD, FGeomColorDynE, FGeomColorStat: TVKColor;
+  protected
+    procedure Loaded; override;
+    procedure CalcContact(Object1, Object2: TObject; var Contact: TdContact);
+    procedure Collision(g1, g2: PdxGeom);
+    procedure GravityChange(Sender: TObject);
+    procedure SetMaxContacts(const Value: Integer);
+    procedure SetGravity(Value: TVKCoordinates);
+    procedure SetIterations(const val: Integer);
+    function GetODEBehaviour(index: Integer): TVKODEBehaviour;
+    procedure RegisterODEBehaviour(ODEBehaviour: TVKODEBehaviour);
+    procedure UnregisterODEBehaviour(ODEBehaviour: TVKODEBehaviour);
+    procedure SetRenderPoint(const Value: TVKRenderPoint);
+    procedure RenderEvent(Sender: TObject; var rci: TVKRenderContextInfo);
+    procedure RenderPointFreed(Sender: TObject);
     procedure SetVisible(const Value: Boolean);
     procedure SetVisibleAtRunTime(const Value: Boolean);
     procedure SetGeomColorDynE(const Value: TVKColor);
@@ -100,1160 +96,814 @@ type
     procedure GeomColorChangeDynD(Sender: TObject);
     procedure SetGeomColorStat(const Value: TVKColor);
     procedure GeomColorChangeStat(Sender: TObject);
-
-      property ODEBehaviours[index : Integer] : TVKODEBehaviour read GetODEBehaviour;
-
-    public
-      
-      constructor Create(AOwner:TComponent); override;
-      destructor Destroy; override;
-      procedure Step(deltaTime:double);
-
-      procedure NotifyChange(Sender : TObject);
-
-      property World : PdxWorld read FWorld;
-      property Space : PdxSpace read FSpace;
-      property ContactGroup : TdJointGroupID read FContactGroup;
-      property NumContactJoints : integer read FNumContactJoints;
-
-    published
-      
-      property Gravity     : TVKCoordinates read FGravity write SetGravity;
-      property OnCollision : TODECollisionEvent read FOnCollision write FOnCollision;
-      property OnCustomCollision : TODECustomCollisionEvent read FOnCustomCollision write FOnCustomCollision;
-      property Solver : TODESolverMethod read FSolver write FSolver;
-      property Iterations : Integer read FIterations write SetIterations;
-      property MaxContacts : Integer read FMaxContacts write SetMaxContacts;
-      property RenderPoint : TVKRenderPoint read FRenderPoint write SetRenderPoint;
-      property Visible : Boolean read FVisible write SetVisible;
-      property VisibleAtRunTime : Boolean read FVisibleAtRunTime write SetVisibleAtRunTime;
-      property GeomColorDynD: TVKColor read FGeomColorDynD write SetGeomColorDynD;
-      property GeomColorDynE: TVKColor read FGeomColorDynE write SetGeomColorDynE;
-      property GeomColorStat: TVKColor read FGeomColorStat write SetGeomColorStat;
-
+    property ODEBehaviours[index: Integer]: TVKODEBehaviour read GetODEBehaviour;
+  public
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
+    procedure Step(deltaTime: double);
+    procedure NotifyChange(Sender: TObject);
+    property World: PdxWorld read FWorld;
+    property Space: PdxSpace read FSpace;
+    property ContactGroup: TdJointGroupID read FContactGroup;
+    property NumContactJoints: Integer read FNumContactJoints;
+  published
+    property Gravity: TVKCoordinates read FGravity write SetGravity;
+    property OnCollision: TODECollisionEvent read FOnCollision
+      write FOnCollision;
+    property OnCustomCollision: TODECustomCollisionEvent read FOnCustomCollision
+      write FOnCustomCollision;
+    property Solver: TODESolverMethod read FSolver write FSolver;
+    property Iterations: Integer read FIterations write SetIterations;
+    property MaxContacts: Integer read FMaxContacts write SetMaxContacts;
+    property RenderPoint: TVKRenderPoint read FRenderPoint write SetRenderPoint;
+    property Visible: Boolean read FVisible write SetVisible;
+    property VisibleAtRunTime: Boolean read FVisibleAtRunTime
+      write SetVisibleAtRunTime;
+    property GeomColorDynD: TVKColor read FGeomColorDynD write SetGeomColorDynD;
+    property GeomColorDynE: TVKColor read FGeomColorDynE write SetGeomColorDynE;
+    property GeomColorStat: TVKColor read FGeomColorStat write SetGeomColorStat;
   end;
 
-  // TODECollisionSurface
-  //
-  TODECollisionSurface = class (TPersistent)
-    private
-      
-      FOwner : TPersistent;
-      FSurfaceParams : TdSurfaceParameters;
-      FRFCoeff   : Single;
-      FRFEnabled : Boolean;
-
-    protected
-      
-      procedure WriteToFiler(writer : TWriter);
-      procedure ReadFromFiler(reader : TReader);
-
-      function GetSurfaceMode : TSurfaceModes;
-      function GetMu : TdReal;
-      function GetMu2 : TdReal;
-      function GetBounce : TdReal;
-      function GetBounce_Vel : TdReal;
-      function GetSoftERP : TdReal;
-      function GetSoftCFM : TdReal;
-      function GetMotion1 : TdReal;
-      function GetMotion2 : TdReal;
-      function GetSlip1 : TdReal;
-      function GetSlip2 : TdReal;
-
-      procedure SetSurfaceMode(value:TSurfaceModes);
-      procedure SetMu(value : TdReal);
-      procedure SetMu2(value : TdReal);
-      procedure SetBounce(value : TdReal);
-      procedure SetBounce_Vel(value : TdReal);
-      procedure SetSoftERP(value : TdReal);
-      procedure SetSoftCFM(value : TdReal);
-      procedure SetMotion1(value : TdReal);
-      procedure SetMotion2(value : TdReal);
-      procedure SetSlip1(value : TdReal);
-      procedure SetSlip2(value : TdReal);
-
-    public
-      
-      constructor Create(AOwner : TPersistent);
-      function GetOwner: TPersistent; override;
-      procedure Assign(Source : TPersistent); override;
-
-    published
-      
-      property RollingFrictionCoeff : Single read FRFCoeff write FRFCoeff;
-      property RollingFrictionEnabled : Boolean read FRFEnabled write FRFEnabled;
-      property SurfaceMode : TSurfaceModes read GetSurfaceMode write SetSurfaceMode;
-      property Mu : TdReal read GetMu write SetMu;
-      property Mu2 : TdReal read GetMu2 write SetMu2;
-      property Bounce : TdReal read GetBounce write SetBounce;
-      property Bounce_Vel : TdReal read GetBounce_Vel write SetBounce_Vel;
-      property SoftERP : TdReal read GetSoftERP write SetSoftERP;
-      property SoftCFM : TdReal read GetSoftCFM write SetSoftCFM;
-      property Motion1 : TdReal read GetMotion1 write SetMotion1;
-      property Motion2 : TdReal read GetMotion2 write SetMotion2;
-      property Slip1 : TdReal read GetSlip1 write SetSlip1;
-      property Slip2 : TdReal read GetSlip2 write SetSlip2;
-
+  TODECollisionSurface = class(TPersistent)
+  private
+    FOwner: TPersistent;
+    FSurfaceParams: TdSurfaceParameters;
+    FRFCoeff: Single;
+    FRFEnabled: Boolean;
+  protected
+    procedure WriteToFiler(writer: TWriter);
+    procedure ReadFromFiler(reader: TReader);
+    function GetSurfaceMode: TSurfaceModes;
+    function GetMu: TdReal;
+    function GetMu2: TdReal;
+    function GetBounce: TdReal;
+    function GetBounce_Vel: TdReal;
+    function GetSoftERP: TdReal;
+    function GetSoftCFM: TdReal;
+    function GetMotion1: TdReal;
+    function GetMotion2: TdReal;
+    function GetSlip1: TdReal;
+    function GetSlip2: TdReal;
+    procedure SetSurfaceMode(Value: TSurfaceModes);
+    procedure SetMu(Value: TdReal);
+    procedure SetMu2(Value: TdReal);
+    procedure SetBounce(Value: TdReal);
+    procedure SetBounce_Vel(Value: TdReal);
+    procedure SetSoftERP(Value: TdReal);
+    procedure SetSoftCFM(Value: TdReal);
+    procedure SetMotion1(Value: TdReal);
+    procedure SetMotion2(Value: TdReal);
+    procedure SetSlip1(Value: TdReal);
+    procedure SetSlip2(Value: TdReal);
+  public
+    constructor Create(AOwner: TPersistent);
+    function GetOwner: TPersistent; override;
+    procedure Assign(Source: TPersistent); override;
+  published
+    property RollingFrictionCoeff: Single read FRFCoeff write FRFCoeff;
+    property RollingFrictionEnabled: Boolean read FRFEnabled write FRFEnabled;
+    property SurfaceMode: TSurfaceModes read GetSurfaceMode
+      write SetSurfaceMode;
+    property Mu: TdReal read GetMu write SetMu;
+    property Mu2: TdReal read GetMu2 write SetMu2;
+    property Bounce: TdReal read GetBounce write SetBounce;
+    property Bounce_Vel: TdReal read GetBounce_Vel write SetBounce_Vel;
+    property SoftERP: TdReal read GetSoftERP write SetSoftERP;
+    property SoftCFM: TdReal read GetSoftCFM write SetSoftCFM;
+    property Motion1: TdReal read GetMotion1 write SetMotion1;
+    property Motion2: TdReal read GetMotion2 write SetMotion2;
+    property Slip1: TdReal read GetSlip1 write SetSlip1;
+    property Slip2: TdReal read GetSlip2 write SetSlip2;
   end;
 
   TODEElementClass = class of TODEElementBase;
 
-  // TVKODEBehaviour
-  //
   { Basis structures for GLScene behaviour style implementations. }
-  TVKODEBehaviour = class (TVKBehaviour)
-    private
-      
-      FManager : TVKODEManager;
-      FManagerName : String;
-      FSurface : TODECollisionSurface;
-      FOnCollision : TODEObjectCollisionEvent;
-      FInitialized : Boolean;
-      FOwnerBaseSceneObject : TVKBaseSceneObject;
-    protected
-      
-      procedure Initialize; virtual;
-      procedure Finalize; virtual;
-
-      procedure WriteToFiler(writer : TWriter); override;
-      procedure ReadFromFiler(reader : TReader); override;
-      procedure Loaded; override;
-
-      procedure SetManager(Value : TVKODEManager);
-      procedure SetSurface(value:TODECollisionSurface);
-      function GetAbsoluteMatrix : TMatrix;
-
-    public
-      
-      constructor Create(AOwner : TVKXCollection); override;
-      destructor Destroy; override;
-
-      procedure NotifyChange(Sender : TObject);
-      procedure Render(var rci : TVKRenderContextInfo); virtual;
-
-      procedure Reinitialize;
-      property Initialized : Boolean read FInitialized;
-      property AbsoluteMatrix : TMatrix read GetAbsoluteMatrix;
-
-    published
-      
-      property Manager : TVKODEManager read FManager write SetManager;
-      property Surface : TODECollisionSurface read FSurface write SetSurface;
-      property OnCollision : TODEObjectCollisionEvent read FOnCollision write FOnCollision;
-
+  TVKODEBehaviour = class(TVKBehaviour)
+  private
+    FManager: TVKODEManager;
+    FManagerName: String;
+    FSurface: TODECollisionSurface;
+    FOnCollision: TODEObjectCollisionEvent;
+    FInitialized: Boolean;
+    FOwnerBaseSceneObject: TVKBaseSceneObject;
+  protected
+    procedure Initialize; virtual;
+    procedure Finalize; virtual;
+    procedure WriteToFiler(writer: TWriter); override;
+    procedure ReadFromFiler(reader: TReader); override;
+    procedure Loaded; override;
+    procedure SetManager(Value: TVKODEManager);
+    procedure SetSurface(Value: TODECollisionSurface);
+    function GetAbsoluteMatrix: TMatrix;
+  public
+    constructor Create(AOwner: TVKXCollection); override;
+    destructor Destroy; override;
+    procedure NotifyChange(Sender: TObject);
+    procedure Render(var rci: TVKRenderContextInfo); virtual;
+    procedure Reinitialize;
+    property Initialized: Boolean read FInitialized;
+    property AbsoluteMatrix: TMatrix read GetAbsoluteMatrix;
+  published
+    property Manager: TVKODEManager read FManager write SetManager;
+    property Surface: TODECollisionSurface read FSurface write SetSurface;
+    property OnCollision: TODEObjectCollisionEvent read FOnCollision
+      write FOnCollision;
   end;
 
-  // TVKODEDynamic
-  //
-  TVKODEDynamic = class (TVKODEBehaviour)
-    private
-      
-      FBody : PdxBody;
-      FMass : TdMass;
-      FElements : TODEElements;
-      FEnabled : Boolean;
-      FJointRegister : TList;
-
-    protected
-      { Protected Declarations}
-      procedure Initialize; override;
-      procedure Finalize; override;
-      procedure WriteToFiler(writer : TWriter); override;
-      procedure ReadFromFiler(reader : TReader); override;
-
-      procedure SetMass(const Value : TdMass);
-      function GetMass : TdMass;
-      procedure AlignBodyToMatrix(Mat: TMatrix);
-      procedure SetEnabled(const Value : Boolean);
-      function GetEnabled : Boolean;
-
-      procedure RegisterJoint(Joint : TODEJointBase);
-      procedure UnregisterJoint(Joint : TODEJointBase);
-
-    public
-      
-      constructor Create(AOwner : TVKXCollection); override;
-      destructor Destroy; override;
-
-      procedure Render(var rci : TVKRenderContextInfo); override;
-
-      class function FriendlyName : String; override;
-      class function UniqueItem : Boolean; override;
-
-      function AddNewElement(AChild:TODEElementClass):TODEElementBase; dynamic;
-      procedure AlignObject;
-      function CalculateMass : TdMass;
-      procedure CalibrateCenterOfMass;
-
-      procedure AddForce(Force : TAffineVector);
-      procedure AddForceAtPos(Force, Pos : TAffineVector);
-      procedure AddForceAtRelPos(Force, Pos : TAffineVector);
-      procedure AddRelForce(Force : TAffineVector);
-      procedure AddRelForceAtPos(Force, Pos : TAffineVector);
-      procedure AddRelForceAtRelPos(Force, Pos : TAffineVector);
-      procedure AddTorque(Torque : TAffineVector);
-      procedure AddRelTorque(Torque : TAffineVector);
-
-      property Body : PdxBody read FBody;
-      property Mass : TdMass read GetMass write SetMass;
-
-    published
-      
-      property Elements : TODEElements read FElements;
-      property Enabled : Boolean read GetEnabled write SetEnabled;
-
+  TVKODEDynamic = class(TVKODEBehaviour)
+  private
+    FBody: PdxBody;
+    FMass: TdMass;
+    FElements: TODEElements;
+    FEnabled: Boolean;
+    FJointRegister: TList;
+  protected
+    procedure Initialize; override;
+    procedure Finalize; override;
+    procedure WriteToFiler(writer: TWriter); override;
+    procedure ReadFromFiler(reader: TReader); override;
+    procedure SetMass(const Value: TdMass);
+    function GetMass: TdMass;
+    procedure AlignBodyToMatrix(Mat: TMatrix);
+    procedure SetEnabled(const Value: Boolean);
+    function GetEnabled: Boolean;
+    procedure RegisterJoint(Joint: TODEJointBase);
+    procedure UnregisterJoint(Joint: TODEJointBase);
+  public
+    constructor Create(AOwner: TVKXCollection); override;
+    destructor Destroy; override;
+    procedure Render(var rci: TVKRenderContextInfo); override;
+    class function FriendlyName: String; override;
+    class function UniqueItem: Boolean; override;
+    function AddNewElement(AChild: TODEElementClass): TODEElementBase; dynamic;
+    procedure AlignObject;
+    function CalculateMass: TdMass;
+    procedure CalibrateCenterOfMass;
+    procedure AddForce(Force: TAffineVector);
+    procedure AddForceAtPos(Force, Pos: TAffineVector);
+    procedure AddForceAtRelPos(Force, Pos: TAffineVector);
+    procedure AddRelForce(Force: TAffineVector);
+    procedure AddRelForceAtPos(Force, Pos: TAffineVector);
+    procedure AddRelForceAtRelPos(Force, Pos: TAffineVector);
+    procedure AddTorque(Torque: TAffineVector);
+    procedure AddRelTorque(Torque: TAffineVector);
+    property Body: PdxBody read FBody;
+    property Mass: TdMass read GetMass write SetMass;
+  published
+    property Elements: TODEElements read FElements;
+    property Enabled: Boolean read GetEnabled write SetEnabled;
   end;
 
-  // TVKODEStatic
-  //
-  TVKODEStatic = class (TVKODEBehaviour)
-    private
-      
-      FElements : TODEElements;
-
-    protected
-      
-      procedure Initialize; override;
-      procedure Finalize; override;
-      procedure WriteToFiler(writer : TWriter); override;
-      procedure ReadFromFiler(reader : TReader); override;
-      procedure AlignElements;
-
-    public
-      
-      constructor Create(AOwner : TVKXCollection); override;
-      destructor Destroy; override;
-
-      procedure Render(var rci : TVKRenderContextInfo); override;
-
-      class function FriendlyName : String; override;
-      class function UniqueItem : Boolean; override;
-      function AddNewElement(AChild:TODEElementClass):TODEElementBase; dynamic;
-
-    published
-      
-      property Elements : TODEElements read FElements;
-
+  TVKODEStatic = class(TVKODEBehaviour)
+  private
+    FElements: TODEElements;
+  protected
+    procedure Initialize; override;
+    procedure Finalize; override;
+    procedure WriteToFiler(writer: TWriter); override;
+    procedure ReadFromFiler(reader: TReader); override;
+    procedure AlignElements;
+  public
+    constructor Create(AOwner: TVKXCollection); override;
+    destructor Destroy; override;
+    procedure Render(var rci: TVKRenderContextInfo); override;
+    class function FriendlyName: String; override;
+    class function UniqueItem: Boolean; override;
+    function AddNewElement(AChild: TODEElementClass): TODEElementBase; dynamic;
+  published
+    property Elements: TODEElements read FElements;
   end;
 
-  // TODEElements
-  //
   TODEElements = class(TVKXCollection)
-    private
-      
-      function GetElement(index : integer) : TODEElementBase;
-
-    public
-      
-      destructor Destroy; override;
-      class function ItemsClass : TVKXCollectionItemClass; override;
-      procedure Initialize;
-      procedure Finalize;
-
-      procedure NotifyChange(Sender : TObject);
-
-      procedure Render(var rci : TVKRenderContextInfo);
-
-      property Element[index : integer] : TODEElementBase read GetElement;
-
+  private
+    function GetElement(index: Integer): TODEElementBase;
+  public
+    destructor Destroy; override;
+    class function ItemsClass: TVKXCollectionItemClass; override;
+    procedure Initialize;
+    procedure Finalize;
+    procedure NotifyChange(Sender: TObject);
+    procedure Render(var rci: TVKRenderContextInfo);
+    property Element[index: Integer]: TODEElementBase read GetElement;
   end;
 
-  // TODEElementBase
-  //
-  TODEElementBase = class (TVKXCollectionItem)
-    private
-      
-      FMass  : TdMass;
-      FDensity : TdReal;
-      FGeomTransform,
-      FGeomElement   : PdxGeom;
-      FPosition,
-      FDirection,
-      FUp        : TVKCoordinates;
-      FLocalMatrix : TMatrix;
-      FRealignODE,
-      FInitialized,
-      FDynamic,
-      FIsCalculating : Boolean;
-
-    protected
-      
-      procedure Initialize; virtual;
-      procedure Finalize; virtual;
-      function CalculateMass : TdMass; virtual;
-      procedure ODERebuild; virtual;
-
-      procedure NotifyChange(Sender:TObject);
-      procedure CoordinateChanged(Sender : TObject);
-
-      procedure WriteToFiler(writer : TWriter); override;
-      procedure ReadFromFiler(reader : TReader); override;
-
-      function IsODEInitialized : Boolean;
-      procedure AlignGeomElementToMatrix(Mat:TMatrix); virtual;
-      procedure SetGeomElement(aGeom : PdxGeom);
-
-      procedure RebuildMatrix;
-      procedure RebuildVectors;
-
-      procedure SetDensity(const Value: TdReal);
-      procedure SetMatrix(const Value: TMatrix);
-      function GetMatrix: TMatrix;
-
-      procedure SetPosition(const Value : TVKCoordinates);
-      procedure SetDirection(const Value : TVKCoordinates);
-      procedure SetUp(const Value : TVKCoordinates);
-
-    public
-      
-      constructor Create(AOwner : TVKXCollection); override;
-      destructor Destroy; override;
-
-      procedure Render(var rci : TVKRenderContextInfo); virtual;
-
-      function AbsoluteMatrix:TMatrix;
-      function AbsolutePosition:TAffineVector;
-
-      property Matrix : TMatrix read GetMatrix write SetMatrix;
-      property GeomTransform : PdxGeom read FGeomTransform;
-      property Geom : PdxGeom read FGeomElement;
-      property Initialized : Boolean read FInitialized;
-
-    published
-      
-      property Density : TdReal read FDensity write SetDensity;
-      property Position : TVKCoordinates read FPosition write SetPosition;
-      property Direction : TVKCoordinates read FDirection write SetDirection;
-      property Up : TVKCoordinates read FUp write SetUp;
-
+  TODEElementBase = class(TVKXCollectionItem)
+  private
+    FMass: TdMass;
+    FDensity: TdReal;
+    FGeomTransform, FGeomElement: PdxGeom;
+    FPosition, FDirection, FUp: TVKCoordinates;
+    FLocalMatrix: TMatrix;
+    FRealignODE, FInitialized, FDynamic, FIsCalculating: Boolean;
+  protected
+    procedure Initialize; virtual;
+    procedure Finalize; virtual;
+    function CalculateMass: TdMass; virtual;
+    procedure ODERebuild; virtual;
+    procedure NotifyChange(Sender: TObject);
+    procedure CoordinateChanged(Sender: TObject);
+    procedure WriteToFiler(writer: TWriter); override;
+    procedure ReadFromFiler(reader: TReader); override;
+    function IsODEInitialized: Boolean;
+    procedure AlignGeomElementToMatrix(Mat: TMatrix); virtual;
+    procedure SetGeomElement(aGeom: PdxGeom);
+    procedure RebuildMatrix;
+    procedure RebuildVectors;
+    procedure SetDensity(const Value: TdReal);
+    procedure SetMatrix(const Value: TMatrix);
+    function GetMatrix: TMatrix;
+    procedure SetPosition(const Value: TVKCoordinates);
+    procedure SetDirection(const Value: TVKCoordinates);
+    procedure SetUp(const Value: TVKCoordinates);
+  public
+    constructor Create(AOwner: TVKXCollection); override;
+    destructor Destroy; override;
+    procedure Render(var rci: TVKRenderContextInfo); virtual;
+    function AbsoluteMatrix: TMatrix;
+    function AbsolutePosition: TAffineVector;
+    property Matrix: TMatrix read GetMatrix write SetMatrix;
+    property GeomTransform: PdxGeom read FGeomTransform;
+    property Geom: PdxGeom read FGeomElement;
+    property Initialized: Boolean read FInitialized;
+  published
+    property Density: TdReal read FDensity write SetDensity;
+    property Position: TVKCoordinates read FPosition write SetPosition;
+    property Direction: TVKCoordinates read FDirection write SetDirection;
+    property Up: TVKCoordinates read FUp write SetUp;
   end;
 
-  // TODEElementBox
-  //
   { ODE box implementation. }
-  TODEElementBox = class (TODEElementBase)
-    private
-      
-      FBoxWidth,
-      FBoxHeight,
-      FBoxDepth : TdReal;
-
-    protected
-      
-      procedure Initialize; override;
-      function CalculateMass : TdMass; override;
-      procedure ODERebuild; override;
-      procedure WriteToFiler(writer : TWriter); override;
-      procedure ReadFromFiler(reader : TReader); override;
-
-      function GetBoxWidth  : TdReal;
-      function GetBoxHeight : TdReal;
-      function GetBoxDepth  : TdReal;
-      procedure SetBoxWidth(const Value: TdReal);
-      procedure SetBoxHeight(const Value: TdReal);
-      procedure SetBoxDepth(const Value: TdReal);
-
-    public
-      
-      constructor Create(AOwner : TVKXCollection); override;
-
-      procedure Render(var rci : TVKRenderContextInfo); override;
-
-      class function FriendlyName : String; override;
-      class function FriendlyDescription : String; override;
-      class function ItemCategory : String; override;
-
-    published
-      property BoxWidth : TdReal read GetBoxWidth write SetBoxWidth;
-      property BoxHeight : TdReal read GetBoxHeight write SetBoxHeight;
-      property BoxDepth : TdReal read GetBoxDepth write SetBoxDepth;
+  TODEElementBox = class(TODEElementBase)
+  private
+    FBoxWidth, FBoxHeight, FBoxDepth: TdReal;
+  protected
+    procedure Initialize; override;
+    function CalculateMass: TdMass; override;
+    procedure ODERebuild; override;
+    procedure WriteToFiler(writer: TWriter); override;
+    procedure ReadFromFiler(reader: TReader); override;
+    function GetBoxWidth: TdReal;
+    function GetBoxHeight: TdReal;
+    function GetBoxDepth: TdReal;
+    procedure SetBoxWidth(const Value: TdReal);
+    procedure SetBoxHeight(const Value: TdReal);
+    procedure SetBoxDepth(const Value: TdReal);
+  public
+    constructor Create(AOwner: TVKXCollection); override;
+    procedure Render(var rci: TVKRenderContextInfo); override;
+    class function FriendlyName: String; override;
+    class function FriendlyDescription: String; override;
+    class function ItemCategory: String; override;
+  published
+    property BoxWidth: TdReal read GetBoxWidth write SetBoxWidth;
+    property BoxHeight: TdReal read GetBoxHeight write SetBoxHeight;
+    property BoxDepth: TdReal read GetBoxDepth write SetBoxDepth;
   end;
 
-  // TODEElementSphere
-  //
   { ODE sphere implementation. }
-  TODEElementSphere = class (TODEElementBase)
-    private
-      
-      FRadius : TdReal;
-
-    protected
-      
-      procedure Initialize; override;
-      function CalculateMass : TdMass; override;
-      procedure ODERebuild; override;
-
-      procedure WriteToFiler(writer : TWriter); override;
-      procedure ReadFromFiler(reader : TReader); override;
-
-      function GetRadius : TdReal;
-      procedure SetRadius(const Value: TdReal);
-
-    public
-      
-      constructor Create(AOwner : TVKXCollection); override;
-
-      procedure Render(var rci : TVKRenderContextInfo); override;
-
-      class function FriendlyName : String; override;
-      class function FriendlyDescription : String; override;
-      class function ItemCategory : String; override;
-
-    published
-      
-      property Radius : TdReal read GetRadius write SetRadius;
-
+  TODEElementSphere = class(TODEElementBase)
+  private
+    FRadius: TdReal;
+  protected
+    procedure Initialize; override;
+    function CalculateMass: TdMass; override;
+    procedure ODERebuild; override;
+    procedure WriteToFiler(writer: TWriter); override;
+    procedure ReadFromFiler(reader: TReader); override;
+    function GetRadius: TdReal;
+    procedure SetRadius(const Value: TdReal);
+  public
+    constructor Create(AOwner: TVKXCollection); override;
+    procedure Render(var rci: TVKRenderContextInfo); override;
+    class function FriendlyName: String; override;
+    class function FriendlyDescription: String; override;
+    class function ItemCategory: String; override;
+  published
+    property Radius: TdReal read GetRadius write SetRadius;
   end;
 
-  // TODEElementCapsule
-  //
   { ODE capped cylinder implementation. }
-  TODEElementCapsule = class (TODEElementBase)
-    private
-      
-      FRadius,
-      FLength : TdReal;
-
-    protected
-      
-      procedure Initialize; override;
-      function CalculateMass : TdMass; override;
-      procedure ODERebuild; override;
-
-      procedure WriteToFiler(writer : TWriter); override;
-      procedure ReadFromFiler(reader : TReader); override;
-
-      function GetRadius : TdReal;
-      function GetLength : TdReal;
-      procedure SetRadius(const Value: TdReal);
-      procedure SetLength(const Value: TdReal);
-
-    public
-      
-      constructor Create(AOwner : TVKXCollection); override;
-
-      procedure Render(var rci : TVKRenderContextInfo); override;
-
-      class function FriendlyName : String; override;
-      class function FriendlyDescription : String; override;
-      class function ItemCategory : String; override;
-
-    published
-      
-      property Radius : TdReal read GetRadius write SetRadius;
-      property Length : TdReal read GetLength write SetLength;
-
+  TODEElementCapsule = class(TODEElementBase)
+  private
+    FRadius, FLength: TdReal;
+  protected
+    procedure Initialize; override;
+    function CalculateMass: TdMass; override;
+    procedure ODERebuild; override;
+    procedure WriteToFiler(writer: TWriter); override;
+    procedure ReadFromFiler(reader: TReader); override;
+    function GetRadius: TdReal;
+    function GetLength: TdReal;
+    procedure SetRadius(const Value: TdReal);
+    procedure SetLength(const Value: TdReal);
+  public
+    constructor Create(AOwner: TVKXCollection); override;
+    procedure Render(var rci: TVKRenderContextInfo); override;
+    class function FriendlyName: String; override;
+    class function FriendlyDescription: String; override;
+    class function ItemCategory: String; override;
+  published
+    property Radius: TdReal read GetRadius write SetRadius;
+    property Length: TdReal read GetLength write SetLength;
   end;
 
-  // TODEElementCylinder
-  //
   { ODE cylinder implementation. }
-  TODEElementCylinder = class (TODEElementBase)
-    private
-      
-      FRadius,
-      FLength : TdReal;
-
-    protected
-      
-      procedure Initialize; override;
-      function CalculateMass : TdMass; override;
-      procedure ODERebuild; override;
-
-      procedure WriteToFiler(writer : TWriter); override;
-      procedure ReadFromFiler(reader : TReader); override;
-
-      function GetRadius : TdReal;
-      function GetLength : TdReal;
-      procedure SetRadius(const Value: TdReal);
-      procedure SetLength(const Value: TdReal);
-
-    public
-      
-      constructor Create(AOwner:TVKXCollection); override;
-
-      procedure Render(var rci : TVKRenderContextInfo); override;
-
-      class function FriendlyName : String; override;
-      class function FriendlyDescription : String; override;
-      class function ItemCategory : String; override;
-
-    published
-      
-      property Radius : TdReal read GetRadius write SetRadius;
-      property Length : TdReal read GetLength write SetLength;
-
+  TODEElementCylinder = class(TODEElementBase)
+  private
+    FRadius, FLength: TdReal;
+  protected
+    procedure Initialize; override;
+    function CalculateMass: TdMass; override;
+    procedure ODERebuild; override;
+    procedure WriteToFiler(writer: TWriter); override;
+    procedure ReadFromFiler(reader: TReader); override;
+    function GetRadius: TdReal;
+    function GetLength: TdReal;
+    procedure SetRadius(const Value: TdReal);
+    procedure SetLength(const Value: TdReal);
+  public
+    constructor Create(AOwner: TVKXCollection); override;
+    procedure Render(var rci: TVKRenderContextInfo); override;
+    class function FriendlyName: String; override;
+    class function FriendlyDescription: String; override;
+    class function ItemCategory: String; override;
+  published
+    property Radius: TdReal read GetRadius write SetRadius;
+    property Length: TdReal read GetLength write SetLength;
   end;
 
-
-  // TODEElementTriMesh
-  //
   { ODE tri-mesh implementation. }
-  TODEElementTriMesh = class (TODEElementBase)
-    private
-      
-      FTriMeshData : PdxTriMeshData;
-      FVertices : TAffineVectorList;
-      FIndices : TIntegerList;
-
-    protected
-      
-      procedure Initialize; override;
-      procedure Finalize; override;
-      function CalculateMass : TdMass; override;
-
-      procedure WriteToFiler(writer : TWriter); override;
-      procedure ReadFromFiler(reader : TReader); override;
-
-      procedure SetVertices(const Value : TAffineVectorList);
-      procedure SetIndices(const Value : TIntegerList);
-
-    public
-      
-      constructor Create(AOwner : TVKXCollection); override;
-      destructor Destroy; override;
-
-      class function FriendlyName : String; override;
-      class function FriendlyDescription : String; override;
-      class function ItemCategory : String; override;
-
-      procedure RefreshTriMeshData;
-
-      property Vertices : TAffineVectorList read FVertices write SetVertices;
-      property Indices : TIntegerList read FIndices write SetIndices;
-
+  TODEElementTriMesh = class(TODEElementBase)
+  private
+    FTriMeshData: PdxTriMeshData;
+    FVertices: TAffineVectorList;
+    FIndices: TIntegerList;
+  protected
+    procedure Initialize; override;
+    procedure Finalize; override;
+    function CalculateMass: TdMass; override;
+    procedure WriteToFiler(writer: TWriter); override;
+    procedure ReadFromFiler(reader: TReader); override;
+    procedure SetVertices(const Value: TAffineVectorList);
+    procedure SetIndices(const Value: TIntegerList);
+  public
+    constructor Create(AOwner: TVKXCollection); override;
+    destructor Destroy; override;
+    class function FriendlyName: String; override;
+    class function FriendlyDescription: String; override;
+    class function ItemCategory: String; override;
+    procedure RefreshTriMeshData;
+    property Vertices: TAffineVectorList read FVertices write SetVertices;
+    property Indices: TIntegerList read FIndices write SetIndices;
   end;
 
-  // TODEElementPlane
-  //
   { ODE plane implementation. }
-  TODEElementPlane = class (TODEElementBase)
-    protected
-      
-      procedure Initialize; override;
-
-      procedure WriteToFiler(writer : TWriter); override;
-      procedure ReadFromFiler(reader : TReader); override;
-
-      procedure AlignGeomElementToMatrix(Mat:TMatrix); override;
-
-    public
-      
-      class function FriendlyName : String; override;
-      class function FriendlyDescription : String; override;
-      class function ItemCategory : String; override;
-      class function CanAddTo(collection : TVKXCollection) : Boolean; override;
-
+  TODEElementPlane = class(TODEElementBase)
+  protected
+    procedure Initialize; override;
+    procedure WriteToFiler(writer: TWriter); override;
+    procedure ReadFromFiler(reader: TReader); override;
+    procedure AlignGeomElementToMatrix(Mat: TMatrix); override;
+  public
+    class function FriendlyName: String; override;
+    class function FriendlyDescription: String; override;
+    class function ItemCategory: String; override;
+    class function CanAddTo(collection: TVKXCollection): Boolean; override;
   end;
 
-  // TVKODEJoints
-  //
   { An XCollection decendant for ODE Joints. }
   TODEJoints = class(TVKXCollection)
-    protected
-      
-      function GetJoint(index: integer): TODEJointBase;
-
-    public
-      
-      class function ItemsClass : TVKXCollectionItemClass; override;
-
-      procedure Initialize;
-      procedure Finalize;
-
-      property Joint[index:integer] : TODEJointBase read GetJoint; default;
-
+  protected
+    function GetJoint(index: Integer): TODEJointBase;
+  public
+    class function ItemsClass: TVKXCollectionItemClass; override;
+    procedure Initialize;
+    procedure Finalize;
+    property Joint[index: Integer]: TODEJointBase read GetJoint; default;
   end;
 
-  // TVKODEJointList
-  //
   { Component front-end for storing ODE Joints. }
   TVKODEJointList = class(TComponent)
-    private
-      
-      FJoints : TODEJoints;
-
-    protected
-      
-      procedure WriteJoints(stream : TStream);
-      procedure ReadJoints(stream : TStream);
-      procedure DefineProperties(Filer: TFiler); override;
-
-      procedure Loaded; override;
-      procedure Notification(AComponent: TComponent; Operation: TOperation); override;
-
-    public
-      
-      constructor Create(AOwner:TComponent); override;
-      destructor Destroy; override;
-
-    published
-      
-      property Joints : TODEJoints read FJoints;
-
+  private
+    FJoints: TODEJoints;
+  protected
+    procedure WriteJoints(stream: TStream);
+    procedure ReadJoints(stream: TStream);
+    procedure DefineProperties(Filer: TFiler); override;
+    procedure Loaded; override;
+    procedure Notification(AComponent: TComponent;
+      Operation: TOperation); override;
+  public
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
+  published
+    property Joints: TODEJoints read FJoints;
   end;
 
   TJointOption = (joBothObjectsMustBeAssigned);
   TJointOptions = set of TJointOption;
 
-  // TODEJointBase
-  //
   { Base structures for ODE Joints. }
-  TODEJointBase = class (TVKXCollectionItem)
-    private
-      
-      FJointID : TdJointID;
-      FObject1,
-      FObject2 : TVKBaseSceneObject;
-      FManager : TVKODEManager;
-      FObject1Name,
-      FObject2Name,
-      FManagerName : String;
-      FInitialized,
-      FEnabled : Boolean;
-      FJointOptions : TJointOptions;
-
-    protected
-      
-
-      procedure WriteToFiler(writer : TWriter); override;
-      procedure ReadFromFiler(reader : TReader); override;
-
-      procedure Loaded; override;
-
-      function IsODEInitialized : Boolean;
-      procedure RegisterJointWithObject(Obj : TVKBaseSceneObject);
-      procedure UnregisterJointWithObject(Obj : TVKBaseSceneObject);
-      procedure Attach;
-
-      procedure SetManager(const Value : TVKODEManager);
-      procedure SetObject1(const Value : TVKBaseSceneObject);
-      procedure SetObject2(const Value : TVKBaseSceneObject);
-      procedure SetEnabled(const Value : Boolean);
-
-      procedure SetJointOptions(const Value : TJointOptions);
-
-      property JointOptions : TJointOptions read FJointOptions write SetJointOptions;
-
-    public
-      
-      constructor Create(aOwner : TVKXCollection); override;
-      destructor Destroy; override;
-      procedure StructureChanged; virtual;
-
-      procedure Initialize; virtual;
-      procedure Finalize; virtual;
-      function IsAttached : Boolean;
-
-      procedure DoLoaded;
-
-      property JointID : TdJointID read FJointID;
-      property Initialized : Boolean read FInitialized;
-
-
-    published
-      
-      property Manager : TVKODEManager read FManager write SetManager;
-      property Object1 : TVKBaseSceneObject read FObject1 write SetObject1;
-      property Object2 : TVKBaseSceneObject read FObject2 write SetObject2;
-      property Enabled : Boolean read FEnabled write SetEnabled;
-
+  TODEJointBase = class(TVKXCollectionItem)
+  private
+    FJointID: TdJointID;
+    FObject1, FObject2: TVKBaseSceneObject;
+    FManager: TVKODEManager;
+    FObject1Name, FObject2Name, FManagerName: String;
+    FInitialized, FEnabled: Boolean;
+    FJointOptions: TJointOptions;
+  protected
+    procedure WriteToFiler(writer: TWriter); override;
+    procedure ReadFromFiler(reader: TReader); override;
+    procedure Loaded; override;
+    function IsODEInitialized: Boolean;
+    procedure RegisterJointWithObject(Obj: TVKBaseSceneObject);
+    procedure UnregisterJointWithObject(Obj: TVKBaseSceneObject);
+    procedure Attach;
+    procedure SetManager(const Value: TVKODEManager);
+    procedure SetObject1(const Value: TVKBaseSceneObject);
+    procedure SetObject2(const Value: TVKBaseSceneObject);
+    procedure SetEnabled(const Value: Boolean);
+    procedure SetJointOptions(const Value: TJointOptions);
+    property JointOptions: TJointOptions read FJointOptions
+      write SetJointOptions;
+  public
+    constructor Create(AOwner: TVKXCollection); override;
+    destructor Destroy; override;
+    procedure StructureChanged; virtual;
+    procedure Initialize; virtual;
+    procedure Finalize; virtual;
+    function IsAttached: Boolean;
+    procedure DoLoaded;
+    property JointID: TdJointID read FJointID;
+    property Initialized: Boolean read FInitialized;
+  published
+    property Manager: TVKODEManager read FManager write SetManager;
+    property Object1: TVKBaseSceneObject read FObject1 write SetObject1;
+    property Object2: TVKBaseSceneObject read FObject2 write SetObject2;
+    property Enabled: Boolean read FEnabled write SetEnabled;
   end;
 
-  TODESetParamCallback = function (Param : Integer; const Value : TdReal) : Boolean of object;
-  TODEGetParamCallback = function (Param :  Integer; var Value : TdReal) : Boolean of object;
+  TODESetParamCallback = function(Param: Integer; const Value: TdReal)
+    : Boolean of object;
+  TODEGetParamCallback = function(Param: Integer; var Value: TdReal)
+    : Boolean of object;
 
-  TODEJointParams = class (TPersistent)
-    private
-      
-      FOwner : TPersistent;
-      FSetCallback : TODESetParamCallback;
-      FGetCallback : TODEGetParamCallback;
-
-      FLoStop,
-      FHiStop,
-      FVel,
-      FFMax,
-      FFudgeFactor,
-      FBounce,
-      FCFM,
-      FStopERP,
-      FStopCFM,
-      FSuspensionERP,
-      FSuspensionCFM : TdReal;
-
-      FFlagLoStop,
-      FFlagHiStop,
-      FFlagVel,
-      FFlagFMax,
-      FFlagFudgeFactor,
-      FFlagBounce,
-      FFlagCFM,
-      FFlagStopERP,
-      FFlagStopCFM,
-      FFlagSuspensionERP,
-      FFlagSuspensionCFM : Boolean;
-
-    protected
-      
-      function GetLoStop : TdReal;
-      function GetHiStop : TdReal;
-      function GetVel : TdReal;
-      function GetFMax : TdReal;
-      function GetFudgeFactor : TdReal;
-      function GetBounce : TdReal;
-      function GetCFM : TdReal;
-      function GetStopERP : TdReal;
-      function GetStopCFM : TdReal;
-      function GetSuspensionERP : TdReal;
-      function GetSuspensionCFM : TdReal;
-
-      procedure SetLoStop(const Value : TdReal);
-      procedure SetHiStop(const Value : TdReal);
-      procedure SetVel(const Value : TdReal);
-      procedure SetFMax(const Value : TdReal);
-      procedure SetFudgeFactor(const Value : TdReal);
-      procedure SetBounce(const Value : TdReal);
-      procedure SetCFM(const Value : TdReal);
-      procedure SetStopERP(const Value : TdReal);
-      procedure SetStopCFM(const Value : TdReal);
-      procedure SetSuspensionERP(const Value : TdReal);
-      procedure SetSuspensionCFM(const Value : TdReal);
-
-      procedure WriteToFiler(writer : TWriter);
-      procedure ReadFromFiler(reader : TReader);
-
-    public
-      
-      constructor Create(AOwner : TPersistent);
-      function GetOwner : TPersistent; override;
-      procedure Assign(Source : TPersistent); override;
-
-      procedure ApplyFlagged;
-
-      property SetCallback : TODESetParamCallback read FSetCallback write FSetCallback;
-      property GetCallback : TODEGetParamCallback read FGetCallback write FGetCallback;
-
-    published
-      
-      property LoStop : TdReal read GetLoStop write SetLoStop;
-      property HiStop : TdReal read GetHiStop write SetHiStop;
-      property Vel : TdReal read GetVel write SetVel;
-      property FMax : TdReal read GetFMax write SetFMax;
-      property FudgeFactor : TdReal read GetFudgeFactor write SetFudgeFactor;
-      property Bounce : TdReal read GetBounce write SetBounce;
-      property CFM : TdReal read GetCFM write SetCFM;
-      property StopERP : TdReal read GetStopERP write SetStopERP;
-      property StopCFM : TdReal read GetStopCFM write SetStopCFM;
-      property SuspensionERP : TdReal read GetSuspensionERP write SetSuspensionERP;
-      property SuspensionCFM : TdReal read GetSuspensionCFM write SetSuspensionCFM;
-
+  TODEJointParams = class(TPersistent)
+  private
+    FOwner: TPersistent;
+    FSetCallback: TODESetParamCallback;
+    FGetCallback: TODEGetParamCallback;
+    FLoStop, FHiStop, FVel, FFMax, FFudgeFactor, FBounce, FCFM, FStopERP,
+      FStopCFM, FSuspensionERP, FSuspensionCFM: TdReal;
+    FFlagLoStop, FFlagHiStop, FFlagVel, FFlagFMax, FFlagFudgeFactor,
+      FFlagBounce, FFlagCFM, FFlagStopERP, FFlagStopCFM, FFlagSuspensionERP,
+      FFlagSuspensionCFM: Boolean;
+  protected
+    function GetLoStop: TdReal;
+    function GetHiStop: TdReal;
+    function GetVel: TdReal;
+    function GetFMax: TdReal;
+    function GetFudgeFactor: TdReal;
+    function GetBounce: TdReal;
+    function GetCFM: TdReal;
+    function GetStopERP: TdReal;
+    function GetStopCFM: TdReal;
+    function GetSuspensionERP: TdReal;
+    function GetSuspensionCFM: TdReal;
+    procedure SetLoStop(const Value: TdReal);
+    procedure SetHiStop(const Value: TdReal);
+    procedure SetVel(const Value: TdReal);
+    procedure SetFMax(const Value: TdReal);
+    procedure SetFudgeFactor(const Value: TdReal);
+    procedure SetBounce(const Value: TdReal);
+    procedure SetCFM(const Value: TdReal);
+    procedure SetStopERP(const Value: TdReal);
+    procedure SetStopCFM(const Value: TdReal);
+    procedure SetSuspensionERP(const Value: TdReal);
+    procedure SetSuspensionCFM(const Value: TdReal);
+    procedure WriteToFiler(writer: TWriter);
+    procedure ReadFromFiler(reader: TReader);
+  public
+    constructor Create(AOwner: TPersistent);
+    function GetOwner: TPersistent; override;
+    procedure Assign(Source: TPersistent); override;
+    procedure ApplyFlagged;
+    property SetCallback: TODESetParamCallback read FSetCallback
+      write FSetCallback;
+    property GetCallback: TODEGetParamCallback read FGetCallback
+      write FGetCallback;
+  published
+    property LoStop: TdReal read GetLoStop write SetLoStop;
+    property HiStop: TdReal read GetHiStop write SetHiStop;
+    property Vel: TdReal read GetVel write SetVel;
+    property FMax: TdReal read GetFMax write SetFMax;
+    property FudgeFactor: TdReal read GetFudgeFactor write SetFudgeFactor;
+    property Bounce: TdReal read GetBounce write SetBounce;
+    property CFM: TdReal read GetCFM write SetCFM;
+    property StopERP: TdReal read GetStopERP write SetStopERP;
+    property StopCFM: TdReal read GetStopCFM write SetStopCFM;
+    property SuspensionERP: TdReal read GetSuspensionERP write SetSuspensionERP;
+    property SuspensionCFM: TdReal read GetSuspensionCFM write SetSuspensionCFM;
   end;
 
-  // TGLODEJointHinge
-  //
   { ODE hinge joint implementation. }
-  TGLODEJointHinge = class (TODEJointBase)
-    private
-      
-      FAnchor,
-      FAxis : TVKCoordinates;
-      FAxisParams : TODEJointParams;
-
-    protected
-      
-
-      procedure WriteToFiler(writer : TWriter); override;
-      procedure ReadFromFiler(reader : TReader); override;
-
-      procedure SetAnchor(const Value : TVKCoordinates);
-      procedure SetAxis(const Value : TVKCoordinates);
-      procedure AnchorChange(Sender : TObject);
-      procedure AxisChange(Sender : TObject);
-
-      procedure SetAxisParams(const Value : TODEJointParams);
-      function SetAxisParam(Param :  Integer; const Value : TdReal) : Boolean;
-      function GetAxisParam(Param :  Integer; var Value : TdReal) : Boolean;
-
-    public
-      
-      constructor Create(aOwner : TVKXCollection); override;
-      destructor Destroy; override;
-      procedure StructureChanged; override;
-
-      procedure Initialize; override;
-      class function FriendlyName : String; override;
-      class function FriendlyDescription : String; override;
-
-    published
-      
-      property Anchor : TVKCoordinates read FAnchor write SetAnchor;
-      property Axis : TVKCoordinates read FAxis write SetAxis;
-      property AxisParams : TODEJointParams read FAxisParams write SetAxisParams;
-
+  TGLODEJointHinge = class(TODEJointBase)
+  private
+    FAnchor, FAxis: TVKCoordinates;
+    FAxisParams: TODEJointParams;
+  protected
+    procedure WriteToFiler(writer: TWriter); override;
+    procedure ReadFromFiler(reader: TReader); override;
+    procedure SetAnchor(const Value: TVKCoordinates);
+    procedure SetAxis(const Value: TVKCoordinates);
+    procedure AnchorChange(Sender: TObject);
+    procedure AxisChange(Sender: TObject);
+    procedure SetAxisParams(const Value: TODEJointParams);
+    function SetAxisParam(Param: Integer; const Value: TdReal): Boolean;
+    function GetAxisParam(Param: Integer; var Value: TdReal): Boolean;
+  public
+    constructor Create(AOwner: TVKXCollection); override;
+    destructor Destroy; override;
+    procedure StructureChanged; override;
+    procedure Initialize; override;
+    class function FriendlyName: String; override;
+    class function FriendlyDescription: String; override;
+  published
+    property Anchor: TVKCoordinates read FAnchor write SetAnchor;
+    property Axis: TVKCoordinates read FAxis write SetAxis;
+    property AxisParams: TODEJointParams read FAxisParams write SetAxisParams;
   end;
 
-  // TODEJointBall
-  //
   { ODE ball joint implementation. }
-  TODEJointBall = class (TODEJointBase)
-    private
-      
-      FAnchor : TVKCoordinates;
-
-    protected
-      
-
-      procedure WriteToFiler(writer : TWriter); override;
-      procedure ReadFromFiler(reader : TReader); override;
-
-      procedure SetAnchor(const Value : TVKCoordinates);
-      procedure AnchorChange(Sender : TObject);
-
-    public
-      
-      constructor Create(aOwner : TVKXCollection); override;
-      destructor Destroy; override;
-
-      procedure StructureChanged; override;
-      procedure Initialize; override;
-
-      class function FriendlyName : String; override;
-      class function FriendlyDescription : String; override;
-
-    published
-      
-      property Anchor : TVKCoordinates read FAnchor write SetAnchor;
-
+  TODEJointBall = class(TODEJointBase)
+  private
+    FAnchor: TVKCoordinates;
+  protected
+    procedure WriteToFiler(writer: TWriter); override;
+    procedure ReadFromFiler(reader: TReader); override;
+    procedure SetAnchor(const Value: TVKCoordinates);
+    procedure AnchorChange(Sender: TObject);
+  public
+    constructor Create(AOwner: TVKXCollection); override;
+    destructor Destroy; override;
+    procedure StructureChanged; override;
+    procedure Initialize; override;
+    class function FriendlyName: String; override;
+    class function FriendlyDescription: String; override;
+  published
+    property Anchor: TVKCoordinates read FAnchor write SetAnchor;
   end;
 
-  // TODEJointSlider
-  //
   { ODE slider joint implementation. }
-  TODEJointSlider = class (TODEJointBase)
-    private
-      
-      FAxis : TVKCoordinates;
-      FAxisParams : TODEJointParams;
-
-    protected
-      
-
-      procedure WriteToFiler(writer : TWriter); override;
-      procedure ReadFromFiler(reader : TReader); override;
-
-      procedure SetAxis(const Value : TVKCoordinates);
-      procedure AxisChange(Sender : TObject);
-
-      procedure SetAxisParams(const Value : TODEJointParams);
-      function SetAxisParam(Param :  Integer; const Value : TdReal) : Boolean;
-      function GetAxisParam(Param :  Integer; var Value : TdReal) : Boolean;
-
-    public
-      
-      constructor Create(aOwner : TVKXCollection); override;
-      destructor Destroy; override;
-
-      procedure StructureChanged; override;
-      procedure Initialize; override;
-
-      class function FriendlyName : String; override;
-      class function FriendlyDescription : String; override;
-
-    published
-      
-      property Axis : TVKCoordinates read FAxis write SetAxis;
-      property AxisParams : TODEJointParams read FAxisParams write SetAxisParams;
-
+  TODEJointSlider = class(TODEJointBase)
+  private
+    FAxis: TVKCoordinates;
+    FAxisParams: TODEJointParams;
+  protected
+    procedure WriteToFiler(writer: TWriter); override;
+    procedure ReadFromFiler(reader: TReader); override;
+    procedure SetAxis(const Value: TVKCoordinates);
+    procedure AxisChange(Sender: TObject);
+    procedure SetAxisParams(const Value: TODEJointParams);
+    function SetAxisParam(Param: Integer; const Value: TdReal): Boolean;
+    function GetAxisParam(Param: Integer; var Value: TdReal): Boolean;
+  public
+    constructor Create(AOwner: TVKXCollection); override;
+    destructor Destroy; override;
+    procedure StructureChanged; override;
+    procedure Initialize; override;
+    class function FriendlyName: String; override;
+    class function FriendlyDescription: String; override;
+  published
+    property Axis: TVKCoordinates read FAxis write SetAxis;
+    property AxisParams: TODEJointParams read FAxisParams write SetAxisParams;
   end;
 
-  // TODEJointFixed
-  //
   { ODE fixed joint implementation. }
-  TODEJointFixed = class (TODEJointBase)
-    protected
-      
-
-      procedure WriteToFiler(writer : TWriter); override;
-      procedure ReadFromFiler(reader : TReader); override;
-
-    public
-      
-      class function FriendlyName : String; override;
-      class function FriendlyDescription : String; override;
-      procedure Initialize; override;
-
+  TODEJointFixed = class(TODEJointBase)
+  protected
+    procedure WriteToFiler(writer: TWriter); override;
+    procedure ReadFromFiler(reader: TReader); override;
+  public
+    class function FriendlyName: String; override;
+    class function FriendlyDescription: String; override;
+    procedure Initialize; override;
   end;
 
-  // TGLODEJointHinge2
-  //
   { ODE hinge2 joint implementation. }
-  TGLODEJointHinge2 = class (TODEJointBase)
-    private
-      
-      FAnchor,
-      FAxis1,
-      FAxis2 : TVKCoordinates;
-      FAxis1Params,
-      FAxis2Params : TODEJointParams;
-
-    protected
-      
-
-      procedure WriteToFiler(writer : TWriter); override;
-      procedure ReadFromFiler(reader : TReader); override;
-
-      procedure SetAnchor(const Value : TVKCoordinates);
-      procedure SetAxis1(const Value : TVKCoordinates);
-      procedure SetAxis2(const Value : TVKCoordinates);
-      procedure AnchorChange(Sender : TObject);
-      procedure Axis1Change(Sender : TObject);
-      procedure Axis2Change(Sender : TObject);
-
-      procedure SetAxis1Params(const Value : TODEJointParams);
-      procedure SetAxis2Params(const Value : TODEJointParams);
-      function SetAxis1Param(Param :  Integer; const Value : TdReal) : Boolean;
-      function SetAxis2Param(Param :  Integer; const Value : TdReal) : Boolean;
-      function GetAxis1Param(Param :  Integer; var Value : TdReal) : Boolean;
-      function GetAxis2Param(Param :  Integer; var Value : TdReal) : Boolean;
-
-    public
-      
-      constructor Create(aOwner : TVKXCollection); override;
-      destructor Destroy; override;
-
-      procedure StructureChanged; override;
-      procedure Initialize; override;
-
-      class function FriendlyName : String; override;
-      class function FriendlyDescription : String; override;
-
-    published
-      
-      property Anchor : TVKCoordinates read FAnchor write SetAnchor;
-      property Axis1 : TVKCoordinates read FAxis1 write SetAxis1;
-      property Axis2 : TVKCoordinates read FAxis2 write SetAxis2;
-      property Axis1Params : TODEJointParams read FAxis1Params write SetAxis1Params;
-      property Axis2Params : TODEJointParams read FAxis2Params write SetAxis2Params;
-
+  TGLODEJointHinge2 = class(TODEJointBase)
+  private
+    FAnchor, FAxis1, FAxis2: TVKCoordinates;
+    FAxis1Params, FAxis2Params: TODEJointParams;
+  protected
+    procedure WriteToFiler(writer: TWriter); override;
+    procedure ReadFromFiler(reader: TReader); override;
+    procedure SetAnchor(const Value: TVKCoordinates);
+    procedure SetAxis1(const Value: TVKCoordinates);
+    procedure SetAxis2(const Value: TVKCoordinates);
+    procedure AnchorChange(Sender: TObject);
+    procedure Axis1Change(Sender: TObject);
+    procedure Axis2Change(Sender: TObject);
+    procedure SetAxis1Params(const Value: TODEJointParams);
+    procedure SetAxis2Params(const Value: TODEJointParams);
+    function SetAxis1Param(Param: Integer; const Value: TdReal): Boolean;
+    function SetAxis2Param(Param: Integer; const Value: TdReal): Boolean;
+    function GetAxis1Param(Param: Integer; var Value: TdReal): Boolean;
+    function GetAxis2Param(Param: Integer; var Value: TdReal): Boolean;
+  public
+    constructor Create(AOwner: TVKXCollection); override;
+    destructor Destroy; override;
+    procedure StructureChanged; override;
+    procedure Initialize; override;
+    class function FriendlyName: String; override;
+    class function FriendlyDescription: String; override;
+  published
+    property Anchor: TVKCoordinates read FAnchor write SetAnchor;
+    property Axis1: TVKCoordinates read FAxis1 write SetAxis1;
+    property Axis2: TVKCoordinates read FAxis2 write SetAxis2;
+    property Axis1Params: TODEJointParams read FAxis1Params
+      write SetAxis1Params;
+    property Axis2Params: TODEJointParams read FAxis2Params
+      write SetAxis2Params;
   end;
 
-  // TODEJointUniversal
-  //
   { ODE universal joint implementation. }
-  TODEJointUniversal = class (TODEJointBase)
-    private
-      
-      FAnchor,
-      FAxis1,
-      FAxis2 : TVKCoordinates;
-      FAxis1Params,
-      FAxis2Params : TODEJointParams;
-
-    protected
-      
-
-      procedure WriteToFiler(writer : TWriter); override;
-      procedure ReadFromFiler(reader : TReader); override;
-
-      procedure SetAnchor(const Value : TVKCoordinates);
-      procedure SetAxis1(const Value : TVKCoordinates);
-      procedure SetAxis2(const Value : TVKCoordinates);
-      procedure AnchorChange(Sender : TObject);
-      procedure Axis1Change(Sender : TObject);
-      procedure Axis2Change(Sender : TObject);
-
-      procedure SetAxis1Params(const Value : TODEJointParams);
-      procedure SetAxis2Params(const Value : TODEJointParams);
-      function SetAxis1Param(Param :  Integer; const Value : TdReal) : Boolean;
-      function SetAxis2Param(Param :  Integer; const Value : TdReal) : Boolean;
-      function GetAxis1Param(Param :  Integer; var Value : TdReal) : Boolean;
-      function GetAxis2Param(Param :  Integer; var Value : TdReal) : Boolean;
-
-    public
-      
-      constructor Create(aOwner : TVKXCollection); override;
-      destructor Destroy; override;
-
-      procedure Initialize; override;
-      procedure StructureChanged; override;
-
-      class function FriendlyName : String; override;
-      class function FriendlyDescription : String; override;
-
-    published
-      
-      property Anchor : TVKCoordinates read FAnchor write SetAnchor;
-      property Axis1 : TVKCoordinates read FAxis1 write SetAxis1;
-      property Axis2 : TVKCoordinates read FAxis2 write SetAxis2;
-      property Axis1Params : TODEJointParams read FAxis1Params write SetAxis1Params;
-      property Axis2Params : TODEJointParams read FAxis2Params write SetAxis2Params;
-
+  TODEJointUniversal = class(TODEJointBase)
+  private
+    FAnchor, FAxis1, FAxis2: TVKCoordinates;
+    FAxis1Params, FAxis2Params: TODEJointParams;
+  protected
+    procedure WriteToFiler(writer: TWriter); override;
+    procedure ReadFromFiler(reader: TReader); override;
+    procedure SetAnchor(const Value: TVKCoordinates);
+    procedure SetAxis1(const Value: TVKCoordinates);
+    procedure SetAxis2(const Value: TVKCoordinates);
+    procedure AnchorChange(Sender: TObject);
+    procedure Axis1Change(Sender: TObject);
+    procedure Axis2Change(Sender: TObject);
+    procedure SetAxis1Params(const Value: TODEJointParams);
+    procedure SetAxis2Params(const Value: TODEJointParams);
+    function SetAxis1Param(Param: Integer; const Value: TdReal): Boolean;
+    function SetAxis2Param(Param: Integer; const Value: TdReal): Boolean;
+    function GetAxis1Param(Param: Integer; var Value: TdReal): Boolean;
+    function GetAxis2Param(Param: Integer; var Value: TdReal): Boolean;
+  public
+    constructor Create(AOwner: TVKXCollection); override;
+    destructor Destroy; override;
+    procedure Initialize; override;
+    procedure StructureChanged; override;
+    class function FriendlyName: String; override;
+    class function FriendlyDescription: String; override;
+  published
+    property Anchor: TVKCoordinates read FAnchor write SetAnchor;
+    property Axis1: TVKCoordinates read FAxis1 write SetAxis1;
+    property Axis2: TVKCoordinates read FAxis2 write SetAxis2;
+    property Axis1Params: TODEJointParams read FAxis1Params
+      write SetAxis1Params;
+    property Axis2Params: TODEJointParams read FAxis2Params
+      write SetAxis2Params;
   end;
-
 
 { ODE nearCallBack, throws near callback to the collision procedure
-   of the ODE manager linked by the Data pointer. }
-procedure nearCallBack(Data:Pointer; o1,o2:PdxGeom); cdecl;
+  of the ODE manager linked by the Data pointer. }
+procedure nearCallBack(Data: Pointer; o1, o2: PdxGeom); cdecl;
 { Helper functions for extracting data from objects with different
-   inheritance. }
-function GetBodyFromObject(anObject : TObject):PdxBody;
-function GetBodyFromGLSceneObject(anObject : TVKBaseSceneObject):PdxBody;
-function GetSurfaceFromObject(anObject : TObject):TODECollisionSurface;
+  inheritance. }
+function GetBodyFromObject(anObject: TObject): PdxBody;
+function GetBodyFromGLSceneObject(anObject: TVKBaseSceneObject): PdxBody;
+function GetSurfaceFromObject(anObject: TObject): TODECollisionSurface;
 
 // GLODEObject register methods (used for joint object persistence)
-procedure RegisterGLSceneObject(anObject : TVKBaseSceneObject);
-procedure UnregisterGLSceneObject(anObject : TVKBaseSceneObject);
-function GetGLSceneObject(anObjectName : String) : TVKBaseSceneObject;
+procedure RegisterGLSceneObject(anObject: TVKBaseSceneObject);
+procedure UnregisterGLSceneObject(anObject: TVKBaseSceneObject);
+function GetGLSceneObject(anObjectName: String): TVKBaseSceneObject;
 
 // Get and GetOrCreate functions for ode behaviours
-function GetOdeStatic(obj: TVKBaseSceneObject): TVKODEStatic;
-function GetOrCreateOdeStatic(obj: TVKBaseSceneObject): TVKODEStatic;
-function GetOdeDynamic(obj: TVKBaseSceneObject): TVKODEDynamic;
-function GetOrCreateOdeDynamic(obj: TVKBaseSceneObject): TVKODEDynamic;
+function GetOdeStatic(Obj: TVKBaseSceneObject): TVKODEStatic;
+function GetOrCreateOdeStatic(Obj: TVKBaseSceneObject): TVKODEStatic;
+function GetOdeDynamic(Obj: TVKBaseSceneObject): TVKODEDynamic;
+function GetOrCreateOdeDynamic(Obj: TVKBaseSceneObject): TVKODEDynamic;
 
 var
-  vGLODEObjectRegister : TList;
+  vGLODEObjectRegister: TList;
 
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
+//=====================================================================
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
+//=====================================================================
+
 uses
   VKS.Context;
 
-// nearCallBack
-//
-procedure nearCallBack(Data:Pointer; o1,o2:PdxGeom); cdecl;
+procedure nearCallBack(Data: Pointer; o1, o2: PdxGeom); cdecl;
 begin
-  TVKODEManager(Data).Collision(o1,o2);
+  TVKODEManager(Data).Collision(o1, o2);
 end;
 
-// GetBodyFromObject
-//
-function GetBodyFromObject(anObject : TObject):PdxBody;
+function GetBodyFromObject(anObject: TObject): PdxBody;
 begin
-  Result:=nil;
+  Result := nil;
   if Assigned(anObject) then
     if anObject is TVKODEDynamic then
-      Result:=TVKODEDynamic(anObject).Body;
+      Result := TVKODEDynamic(anObject).Body;
 end;
 
-// GetBodyFromGLSceneObject
-//
-function GetBodyFromGLSceneObject(anObject : TVKBaseSceneObject) : PdxBody;
+function GetBodyFromGLSceneObject(anObject: TVKBaseSceneObject): PdxBody;
 var
-  temp : TVKODEDynamic;
+  temp: TVKODEDynamic;
 begin
-  Result:=nil;
-  if Assigned(anObject) then begin
-    temp:=TVKODEDynamic(anObject.Behaviours.GetByClass(TVKODEDynamic));
-    if temp<>nil then
-      Result:=temp.Body;
+  Result := nil;
+  if Assigned(anObject) then
+  begin
+    temp := TVKODEDynamic(anObject.Behaviours.GetByClass(TVKODEDynamic));
+    if temp <> nil then
+      Result := temp.Body;
   end;
 end;
 
-// GetSurfaceFromObject
-//
-function GetSurfaceFromObject(anObject : TObject) : TODECollisionSurface;
+function GetSurfaceFromObject(anObject: TObject): TODECollisionSurface;
 var
-  odebehaviour: TVKOdeBehaviour;
+  ODEBehaviour: TVKODEBehaviour;
 begin
-  Result:=nil;
+  Result := nil;
   if Assigned(anObject) then
     if anObject is TVKODEBehaviour then
-      Result:=TVKODEBehaviour(anObject).Surface
+      Result := TVKODEBehaviour(anObject).Surface
     else
     begin
-         if (anObject is TVKBaseSceneObject) then
-         begin
-              odebehaviour:=TVKOdeBehaviour(TVKBaseSceneObject(anObject).Behaviours.GetByClass(TVKODEBehaviour));
-              if assigned(odebehaviour) then
-                 Result:=odebehaviour.Surface
-         end;
+      if (anObject is TVKBaseSceneObject) then
+      begin
+        ODEBehaviour := TVKODEBehaviour(TVKBaseSceneObject(anObject)
+          .Behaviours.GetByClass(TVKODEBehaviour));
+        if Assigned(ODEBehaviour) then
+          Result := ODEBehaviour.Surface
+      end;
     end;
 end;
 
-// IsGLODEObject
-//
-function IsGLODEObject(Obj : TVKBaseSceneObject):Boolean;
+function IsGLODEObject(Obj: TVKBaseSceneObject): Boolean;
 var
-  temp : TVKODEDynamic;
+  temp: TVKODEDynamic;
 begin
-  Result:=False;
-  if Assigned(Obj) then begin
-    temp:=TVKODEDynamic(Obj.Behaviours.GetByClass(TVKODEDynamic));
-    Result:=Assigned(temp);
+  Result := False;
+  if Assigned(Obj) then
+  begin
+    temp := TVKODEDynamic(Obj.Behaviours.GetByClass(TVKODEDynamic));
+    Result := Assigned(temp);
   end;
 end;
 
-// RegisterGLSceneObject
-//
-procedure RegisterGLSceneObject(anObject : TVKBaseSceneObject);
+procedure RegisterGLSceneObject(anObject: TVKBaseSceneObject);
 begin
   if vGLODEObjectRegister.IndexOf(anObject) = -1 then
     vGLODEObjectRegister.Add(anObject);
 end;
 
-// UnregisterGLSceneObject
-//
-procedure UnregisterGLSceneObject(anObject : TVKBaseSceneObject);
+procedure UnregisterGLSceneObject(anObject: TVKBaseSceneObject);
 begin
   vGLODEObjectRegister.Remove(anObject);
 end;
 
-// GetGLSceneObject
-//
-function GetGLSceneObject(anObjectName : String) : TVKBaseSceneObject;
+function GetGLSceneObject(anObjectName: String): TVKBaseSceneObject;
 var
-  i : Integer;
+  i: Integer;
 begin
-  Result:=nil;
-  for i:=0 to vGLODEObjectRegister.Count-1 do
-    if TVKBaseSceneObject(vGLODEObjectRegister[i]).GetNamePath = anObjectName then begin
-      Result:=vGLODEObjectRegister[i];
+  Result := nil;
+  for i := 0 to vGLODEObjectRegister.Count - 1 do
+    if TVKBaseSceneObject(vGLODEObjectRegister[i]).GetNamePath = anObjectName
+    then
+    begin
+      Result := vGLODEObjectRegister[i];
       Exit;
     end;
 end;
 
-// GetOdeStatic
-//
-function GetOdeStatic(obj: TVKBaseSceneObject): TVKODEStatic;
+function GetOdeStatic(Obj: TVKBaseSceneObject): TVKODEStatic;
 begin
-     result:= TVKODEStatic(obj.Behaviours.GetByClass(TVKODEStatic));
+  Result := TVKODEStatic(Obj.Behaviours.GetByClass(TVKODEStatic));
 end;
 
-// GetOrCreateOdeStatic
-//
-function GetOrCreateOdeStatic(obj: TVKBaseSceneObject): TVKODEStatic;
+function GetOrCreateOdeStatic(Obj: TVKBaseSceneObject): TVKODEStatic;
 begin
-     result:= TVKODEStatic(obj.GetOrCreateBehaviour(TVKODEStatic));
+  Result := TVKODEStatic(Obj.GetOrCreateBehaviour(TVKODEStatic));
 end;
 
-// GetOdeDynamic
-//
-function GetOdeDynamic(obj: TVKBaseSceneObject): TVKODEDynamic;
+function GetOdeDynamic(Obj: TVKBaseSceneObject): TVKODEDynamic;
 begin
-     result:= TVKODEDynamic(obj.Behaviours.GetByClass(TVKODEDynamic));
+  Result := TVKODEDynamic(Obj.Behaviours.GetByClass(TVKODEDynamic));
 end;
 
-// GetOrCreateOdeDynamic
-//
-function GetOrCreateOdeDynamic(obj: TVKBaseSceneObject): TVKODEDynamic;
+function GetOrCreateOdeDynamic(Obj: TVKBaseSceneObject): TVKODEDynamic;
 begin
-     result:= TVKODEDynamic(obj.GetOrCreateBehaviour(TVKODEDynamic));
+  Result := TVKODEDynamic(Obj.GetOrCreateBehaviour(TVKODEDynamic));
 end;
 
 // ---------------
 // --------------- TVKODEManager ---------------
 // ---------------
 
-// Create
-//
-constructor TVKODEManager.Create(AOwner:TComponent);
+constructor TVKODEManager.Create(AOwner: TComponent);
 begin
   FWorld := nil;
   if not InitODE('') then
@@ -1261,47 +911,50 @@ begin
 
   inherited;
 
-  FODEBehaviours:=TPersistentObjectList.Create;
-  FRFContactList:=TList.Create;
+  FODEBehaviours := TPersistentObjectList.Create;
+  FRFContactList := TList.Create;
 
-  FGravity:=TVKCoordinates.CreateInitialized(Self, NullHmgPoint, csVector);
-  FGravity.OnNotifyChange:=GravityChange;
+  FGravity := TVKCoordinates.CreateInitialized(Self, NullHmgPoint, csVector);
+  FGravity.OnNotifyChange := GravityChange;
 
-  FSolver:=osmDefault;
-  FIterations:=3;
-  MaxContacts:=8;
+  FSolver := osmDefault;
+  FIterations := 3;
+  MaxContacts := 8;
 
-  if not (csDesigning in ComponentState) then begin
-    FWorld:=dWorldCreate;
-    FSpace:=dHashSpaceCreate(nil);
-    dWorldSetCFM(FWorld,1e-5);
+  if not(csDesigning in ComponentState) then
+  begin
+    FWorld := dWorldCreate;
+    FSpace := dHashSpaceCreate(nil);
+    dWorldSetCFM(FWorld, 1E-5);
     dWorldSetQuickStepNumIterations(FWorld, FIterations);
-    FContactGroup:=dJointGroupCreate(100);
+    FContactGroup := dJointGroupCreate(100);
   end;
 
-  FGeomColorDynD := TVKColor.CreateInitialized(Self, clrRed, GeomColorChangeDynD);
-  FGeomColorDynE := TVKColor.CreateInitialized(Self, clrLime, GeomColorChangeDynE);
-  FGeomColorStat := TVKColor.CreateInitialized(Self, clrBlue, GeomColorChangeStat);
+  FGeomColorDynD := TVKColor.CreateInitialized(Self, clrRed,
+    GeomColorChangeDynD);
+  FGeomColorDynE := TVKColor.CreateInitialized(Self, clrLime,
+    GeomColorChangeDynE);
+  FGeomColorStat := TVKColor.CreateInitialized(Self, clrBlue,
+    GeomColorChangeStat);
 
   RegisterManager(Self);
 end;
 
-// Destroy
-//
 destructor TVKODEManager.Destroy;
 begin
   RenderPoint := nil;
 
   // Unregister everything
-  while FODEBehaviours.Count>0 do
-    ODEBehaviours[0].Manager:=nil;
+  while FODEBehaviours.Count > 0 do
+    ODEBehaviours[0].Manager := nil;
 
   // Clean up everything
   FODEBehaviours.Free;
   FGravity.Free;
   FRFContactList.Free;
 
-  if Assigned(FWorld) then begin
+  if Assigned(FWorld) then
+  begin
     dJointGroupEmpty(FContactGroup);
     dJointGroupDestroy(FContactGroup);
     dSpaceDestroy(FSpace);
@@ -1316,263 +969,261 @@ begin
   inherited Destroy;
 end;
 
-// RegisterObject
-//
-procedure TVKODEManager.RegisterODEBehaviour(ODEBehaviour : TVKODEBehaviour);
+procedure TVKODEManager.RegisterODEBehaviour(ODEBehaviour: TVKODEBehaviour);
 begin
   FODEBehaviours.Add(ODEBehaviour);
 end;
 
-// UnregisterObject
-//
-procedure TVKODEManager.UnregisterODEBehaviour(ODEBehaviour : TVKODEBehaviour);
+procedure TVKODEManager.UnregisterODEBehaviour(ODEBehaviour: TVKODEBehaviour);
 begin
   FODEBehaviours.Remove(ODEBehaviour);
 end;
 
-// Loaded
-//
 procedure TVKODEManager.Loaded;
 begin
   GravityChange(Self);
 end;
 
-// SetGravity
-//
-procedure TVKODEManager.SetGravity(value:TVKCoordinates);
+procedure TVKODEManager.SetGravity(Value: TVKCoordinates);
 begin
-  FGravity.SetPoint(value.DirectX,value.DirectY,value.DirectZ);
+  FGravity.SetPoint(Value.DirectX, Value.DirectY, Value.DirectZ);
 end;
 
-// GravityChange
-//
-procedure TVKODEManager.GravityChange(Sender:TObject);
+procedure TVKODEManager.GravityChange(Sender: TObject);
 begin
   if Assigned(FWorld) then
-    dWorldSetGravity(FWorld,FGravity.X,FGravity.Y,FGravity.Z);
+    dWorldSetGravity(FWorld, FGravity.X, FGravity.Y, FGravity.Z);
 end;
 
-// CalculateContact
-//
-procedure TVKODEManager.CalcContact(Object1, Object2 : TObject; var Contact:TdContact);
+procedure TVKODEManager.CalcContact(Object1, Object2: TObject;
+  var Contact: TdContact);
 var
-  Surface1, Surface2 : TODECollisionSurface;
-  Body1, Body2 : PdxBody;
+  Surface1, Surface2: TODECollisionSurface;
+  Body1, Body2: PdxBody;
 begin
-  Surface1:=GetSurfaceFromObject(Object1);
-  Surface2:=GetSurfaceFromObject(Object2);
-  if not (Assigned(Surface1) and Assigned(Surface2)) then
-    exit;
+  Surface1 := GetSurfaceFromObject(Object1);
+  Surface2 := GetSurfaceFromObject(Object2);
+  if not(Assigned(Surface1) and Assigned(Surface2)) then
+    Exit;
 
-  with contact.surface do begin
+  with Contact.Surface do
+  begin
     // Average the involved contact information and assign it to the contact.
     // Better methods for contact calculation will be looked into in the future.
-    mode:=Surface1.FSurfaceParams.mode or Surface2.FSurfaceParams.mode;
-    mu:=(Surface1.Mu+Surface2.Mu)*0.5;
-    mu2:=(Surface1.Mu2+Surface2.Mu2)*0.5;
-    bounce:=(Surface1.Bounce+Surface2.Bounce)*0.5;
-    bounce_vel:=(Surface1.Bounce_Vel+Surface2.Bounce_Vel)*0.5;
-    soft_erp:=(Surface1.SoftERP+Surface2.SoftERP)*0.5;
-    soft_cfm:=(Surface1.SoftCFM+Surface2.SoftCFM)*0.5;
-    motion1:=(Surface1.Motion1+Surface2.Motion1)*0.5;
-    motion2:=(Surface1.Motion2+Surface2.Motion2)*0.5;
-    slip1:=(Surface1.Slip1+Surface2.Slip1)*0.5;
-    slip2:=(Surface1.Slip2+Surface2.Slip2)*0.5;
+    mode := Surface1.FSurfaceParams.mode or Surface2.FSurfaceParams.mode;
+    Mu := (Surface1.Mu + Surface2.Mu) * 0.5;
+    Mu2 := (Surface1.Mu2 + Surface2.Mu2) * 0.5;
+    Bounce := (Surface1.Bounce + Surface2.Bounce) * 0.5;
+    Bounce_Vel := (Surface1.Bounce_Vel + Surface2.Bounce_Vel) * 0.5;
+    soft_erp := (Surface1.SoftERP + Surface2.SoftERP) * 0.5;
+    soft_cfm := (Surface1.SoftCFM + Surface2.SoftCFM) * 0.5;
+    Motion1 := (Surface1.Motion1 + Surface2.Motion1) * 0.5;
+    Motion2 := (Surface1.Motion2 + Surface2.Motion2) * 0.5;
+    Slip1 := (Surface1.Slip1 + Surface2.Slip1) * 0.5;
+    Slip2 := (Surface1.Slip2 + Surface2.Slip2) * 0.5;
   end;
 
   // Rolling friction
-  Body1:=GetBodyFromObject(Object1);
-  Body2:=GetBodyFromObject(Object2);
+  Body1 := GetBodyFromObject(Object1);
+  Body2 := GetBodyFromObject(Object2);
   if (Surface1.RollingFrictionEnabled) and Assigned(Body1) then
     FRFContactList.Add(Object1);
   if (Surface2.RollingFrictionEnabled) and Assigned(Body2) then
     FRFContactList.Add(Object2);
 end;
 
-// Collision
-//
-procedure TVKODEManager.Collision(g1,g2:PdxGeom);
+procedure TVKODEManager.Collision(g1, g2: PdxGeom);
 var
-  i, flags, num_contacts : integer;
-  Obj1, Obj2 : Pointer;
-  b1, b2 : PdxBody;
-  Joint : TdJointID;
-  HandleCollision : Boolean;
+  i, flags, num_contacts: Integer;
+  Obj1, Obj2: Pointer;
+  b1, b2: PdxBody;
+  Joint: TdJointID;
+  HandleCollision: Boolean;
 begin
   // Check for custom collision handling event
-  if Assigned(FOnCustomCollision) then begin
-    FOnCustomCollision(g1,g2);
-    exit;
+  if Assigned(FOnCustomCollision) then
+  begin
+    FOnCustomCollision(g1, g2);
+    Exit;
   end;
 
-  Obj1:=dGeomGetData(g1);
-  Obj2:=dGeomGetData(g2);
-  b1:=dGeomGetBody(g1);
-  b2:=dGeomGetBody(g2);
+  Obj1 := dGeomGetData(g1);
+  Obj2 := dGeomGetData(g2);
+  b1 := dGeomGetBody(g1);
+  b2 := dGeomGetBody(g2);
 
   // don't create contact between static objects
-  if not Assigned(b1) and not Assigned(b2) then Exit;
+  if not Assigned(b1) and not Assigned(b2) then
+    Exit;
 
   if Assigned(b1) and Assigned(b2) then
-    if dAreConnected(b1,b2)=1 then
-      exit;
+    if dAreConnected(b1, b2) = 1 then
+      Exit;
 
   // Get the collisions
-  flags:=$0000FFFF and FMaxContacts;
-  num_contacts:=dCollide(g1,g2,flags,FContactGeoms[0],SizeOf(TdContactGeom));
+  flags := $0000FFFF and FMaxContacts;
+  num_contacts := dCollide(g1, g2, flags, FContactGeoms[0],
+    SizeOf(TdContactGeom));
 
   // Set up the initial contact info
-  for i:=0 to num_contacts-1 do begin
-    FContacts[i].geom:=FContactGeoms[i];
+  for i := 0 to num_contacts - 1 do
+  begin
+    FContacts[i].Geom := FContactGeoms[i];
   end;
 
-  for i:=0 to num_contacts-1 do begin
-    HandleCollision:=True;
+  for i := 0 to num_contacts - 1 do
+  begin
+    HandleCollision := True;
 
-    if Assigned(Obj1) and Assigned(Obj2) then begin
+    if Assigned(Obj1) and Assigned(Obj2) then
+    begin
       // Calculate the contact based on Obj1 and Obj2 surface info
-      CalcContact(Obj1,Obj2,FContacts[i]);
-      if Assigned(FOnCollision) then begin
+      CalcContact(Obj1, Obj2, FContacts[i]);
+      if Assigned(FOnCollision) then
+      begin
         // Fire the Scene level OnCollision event for last minute
         // customization to the contact before the contact joint
         // is created
-        FOnCollision(Self,Obj1,Obj2,FContacts[i],HandleCollision);
+        FOnCollision(Self, Obj1, Obj2, FContacts[i], HandleCollision);
       end;
       // Fire the OnCollision event for each object
       if TObject(Obj1) is TVKODEBehaviour then
         if Assigned(TVKODEBehaviour(Obj1).FOnCollision) then
-          TVKODEBehaviour(Obj1).FOnCollision(Self,Obj2,FContacts[i],HandleCollision);
+          TVKODEBehaviour(Obj1).FOnCollision(Self, Obj2, FContacts[i],
+            HandleCollision);
       if TObject(Obj2) is TVKODEBehaviour then
         if Assigned(TVKODEBehaviour(Obj2).FOnCollision) then
-          TVKODEBehaviour(Obj2).FOnCollision(Self,Obj1,FContacts[i],HandleCollision);
-    end else begin
+          TVKODEBehaviour(Obj2).FOnCollision(Self, Obj1, FContacts[i],
+            HandleCollision);
+    end
+    else
+    begin
       // Default surface values
-      FContacts[i].surface.mu:=1000;
+      FContacts[i].Surface.Mu := 1000;
     end;
-    if HandleCollision then begin
+    if HandleCollision then
+    begin
       // Create and assign the contact joint
-      Joint:=dJointCreateContact(FWorld,FContactGroup,@FContacts[i]);
-      dJointAttach(Joint,b1,b2);
+      Joint := dJointCreateContact(FWorld, FContactGroup, @FContacts[i]);
+      dJointAttach(Joint, b1, b2);
       // Increment the number of contact joints this step
       Inc(FNumContactJoints);
     end;
   end;
 end;
 
-// Step
-//
-procedure TVKODEManager.Step(deltaTime:double);
+procedure TVKODEManager.Step(deltaTime: double);
 var
-  i : Integer;
-  vec   : PdVector3;
-  body  : PdxBody;
-  Coeff : Single;
+  i: Integer;
+  vec: PdVector3;
+  Body: PdxBody;
+  Coeff: Single;
 begin
-  if not Assigned(World) then exit;
+  if not Assigned(World) then
+    Exit;
 
   // Reset the contact joint counter
-  FNumContactJoints:=0;
+  FNumContactJoints := 0;
 
   // Align static elements to their GLScene parent objects
-  for i:=0 to FODEBehaviours.Count-1 do
+  for i := 0 to FODEBehaviours.Count - 1 do
     if ODEBehaviours[i] is TVKODEStatic then
       if ODEBehaviours[i].Initialized then
         TVKODEStatic(ODEBehaviours[i]).AlignElements;
 
   // Run ODE collisions and step the scene
-  dSpaceCollide(FSpace,Self,nearCallback);
+  dSpaceCollide(FSpace, Self, nearCallBack);
   case FSolver of
-    osmDefault   : dWorldStep(FWorld, deltaTime);
-    osmStepFast  : dWorldStepFast1(FWorld, deltaTime, FIterations);
-    osmQuickStep : dWorldQuickStep(FWorld, deltaTime);
+    osmDefault:
+      dWorldStep(FWorld, deltaTime);
+    osmStepFast:
+      dWorldStepFast1(FWorld, deltaTime, FIterations);
+    osmQuickStep:
+      dWorldQuickStep(FWorld, deltaTime);
   end;
   dJointGroupEmpty(FContactGroup);
 
   // Align dynamic objects to their ODE bodies
-  for i:=0 to FODEBehaviours.Count-1 do
+  for i := 0 to FODEBehaviours.Count - 1 do
     if ODEBehaviours[i] is TVKODEDynamic then
       if ODEBehaviours[i].Initialized then
         TVKODEDynamic(ODEBehaviours[i]).AlignObject;
 
   // Process rolling friction
-  Coeff:=0;
-  body:=nil;
-  while FRFContactList.Count>0 do begin
-    if TObject(FRFContactList[0]) is TVKODEDynamic then begin
-      Body:=TVKODEDynamic(FRFContactList[0]).Body;
-      Coeff:=1-(TVKODEDynamic(FRFContactList[0]).Surface.RollingFrictionCoeff/
-                TVKODEDynamic(FRFContactList[0]).Mass.Mass);
+  Coeff := 0;
+  Body := nil;
+  while FRFContactList.Count > 0 do
+  begin
+    if TObject(FRFContactList[0]) is TVKODEDynamic then
+    begin
+      Body := TVKODEDynamic(FRFContactList[0]).Body;
+      Coeff := 1 - (TVKODEDynamic(FRFContactList[0])
+        .Surface.RollingFrictionCoeff / TVKODEDynamic(FRFContactList[0])
+        .Mass.Mass);
     end;
-    vec:=dBodyGetAngularVel(body);
-    dBodySetAngularVel(body,vec[0]*Coeff,vec[1]*Coeff,vec[2]*Coeff);
+    vec := dBodyGetAngularVel(Body);
+    dBodySetAngularVel(Body, vec[0] * Coeff, vec[1] * Coeff, vec[2] * Coeff);
     FRFContactList.Delete(0);
   end;
 end;
 
-// NotifyChange
-//
 procedure TVKODEManager.NotifyChange(Sender: TObject);
 begin
   if Assigned(RenderPoint) then
     RenderPoint.StructureChanged;
 end;
 
-// SetInterations
-//
-procedure TVKODEManager.SetIterations(const val : Integer);
+procedure TVKODEManager.SetIterations(const val: Integer);
 begin
-  FIterations:=val;
+  FIterations := val;
   if Assigned(FWorld) then
     dWorldSetQuickStepNumIterations(FWorld, FIterations);
 end;
 
-// SetMaxContacts
-//
-procedure TVKODEManager.SetMaxContacts(const Value : Integer);
+procedure TVKODEManager.SetMaxContacts(const Value: Integer);
 begin
-  if Value<>FMaxContacts then begin
-    FMaxContacts:=Value;
+  if Value <> FMaxContacts then
+  begin
+    FMaxContacts := Value;
     SetLength(FContacts, FMaxContacts);
     SetLength(FContactGeoms, FMaxContacts);
   end;
 end;
 
-// GetODEBahaviour
-//
-function TVKODEManager.GetODEBehaviour(index : Integer) : TVKODEBehaviour;
+function TVKODEManager.GetODEBehaviour(index: Integer): TVKODEBehaviour;
 begin
-  Result:=TVKODEBehaviour(FODEBehaviours[index]);
+  Result := TVKODEBehaviour(FODEBehaviours[index]);
 end;
 
-// SetRenderPoint
-//
-procedure TVKODEManager.SetRenderPoint(const value: TVKRenderPoint);
+procedure TVKODEManager.SetRenderPoint(const Value: TVKRenderPoint);
 begin
-  if FRenderPoint<>Value then begin
+  if FRenderPoint <> Value then
+  begin
     if Assigned(FRenderPoint) then
       FRenderPoint.UnRegisterCallBack(RenderEvent);
-    FRenderPoint:=Value;
+    FRenderPoint := Value;
     if Assigned(FRenderPoint) then
       FRenderPoint.RegisterCallBack(RenderEvent, RenderPointFreed);
   end;
 end;
 
-// RenderEvent
-//
 procedure TVKODEManager.RenderEvent(Sender: TObject;
-  var rci : TVKRenderContextInfo);
+  var rci: TVKRenderContextInfo);
 var
-  i : Integer;
+  i: Integer;
 begin
-  if not Visible then Exit;
-  if not (csDesigning in ComponentState) then
-    if not VisibleAtRunTime then Exit;
+  if not Visible then
+    Exit;
+  if not(csDesigning in ComponentState) then
+    if not VisibleAtRunTime then
+      Exit;
 
   rci.VKStates.Disable(stLighting);
   rci.VKStates.Enable(stPolygonOffsetLine);
   rci.VKStates.SetPolygonOffset(1, 2);
 
-  for i := 0 to FODEBehaviours.Count - 1 do begin
+  for i := 0 to FODEBehaviours.Count - 1 do
+  begin
     if ODEBehaviours[i] is TVKODEDynamic then
       if TVKODEDynamic(ODEBehaviours[i]).GetEnabled then
         glColor4fv(GeomColorDynE.AsAddress)
@@ -1585,35 +1236,28 @@ begin
   end;
 end;
 
-// RenderPointFreed
-//
-procedure TVKODEManager.RenderPointFreed(Sender : TObject);
+procedure TVKODEManager.RenderPointFreed(Sender: TObject);
 begin
-  FRenderPoint:=nil;
+  FRenderPoint := nil;
 end;
 
-// SetVisible
-//
 procedure TVKODEManager.SetVisible(const Value: Boolean);
 begin
-  if Value<>FVisible then begin
-    FVisible:=Value;
+  if Value <> FVisible then
+  begin
+    FVisible := Value;
     NotifyChange(Self);
   end;
 end;
 
-// SetVisibleAtRunTime
-//
 procedure TVKODEManager.SetVisibleAtRunTime(const Value: Boolean);
 begin
-  if Value<>FVisibleAtRunTime then begin
-    FVisibleAtRunTime:=Value;
+  if Value <> FVisibleAtRunTime then
+  begin
+    FVisibleAtRunTime := Value;
     NotifyChange(Self);
   end;
 end;
-
-// SetGeomColorDynD
-//
 
 procedure TVKODEManager.SetGeomColorDynD(const Value: TVKColor);
 begin
@@ -1621,16 +1265,10 @@ begin
   NotifyChange(Self);
 end;
 
-// GeomColorChangeDynD
-//
-
 procedure TVKODEManager.GeomColorChangeDynD(Sender: TObject);
 begin
   NotifyChange(Self);
 end;
-
-// SetGeomColorDynE
-//
 
 procedure TVKODEManager.SetGeomColorDynE(const Value: TVKColor);
 begin
@@ -1638,25 +1276,16 @@ begin
   NotifyChange(Self);
 end;
 
-// GeomColorChangeDynE
-//
-
 procedure TVKODEManager.GeomColorChangeDynE(Sender: TObject);
 begin
   NotifyChange(Self);
 end;
-
-// SetGeomColorStat
-//
 
 procedure TVKODEManager.SetGeomColorStat(const Value: TVKColor);
 begin
   FGeomColorStat.Assign(Value);
   NotifyChange(Self);
 end;
-
-// GeomColorChangeStat
-//
 
 procedure TVKODEManager.GeomColorChangeStat(Sender: TObject);
 begin
@@ -1667,58 +1296,54 @@ end;
 // --------------- TODECollisionSurface ---------------
 // ---------------
 
-// Create
-//
-constructor TODECollisionSurface.Create(AOwner : TPersistent);
+constructor TODECollisionSurface.Create(AOwner: TPersistent);
 begin
   inherited Create;
-  FOwner:=AOwner;
-  Mu:=1000;
-  RollingFrictionEnabled:=False;
-  RollingFrictionCoeff:=0.001;    // Larger Coeff = more friction
+  FOwner := AOwner;
+  Mu := 1000;
+  RollingFrictionEnabled := False;
+  RollingFrictionCoeff := 0.001; // Larger Coeff = more friction
 end;
 
-// GetOwner
-//
 function TODECollisionSurface.GetOwner: TPersistent;
 begin
-  Result:=FOwner;
+  Result := FOwner;
 end;
 
-// Assign
-//
-procedure TODECollisionSurface.Assign(Source : TPersistent);
+procedure TODECollisionSurface.Assign(Source: TPersistent);
 begin
   inherited;
-  if not Assigned(Source) then exit;
-  if Source is TODECollisionSurface then begin
-    RollingFrictionCoeff:=TODECollisionSurface(Source).RollingFrictionCoeff;
-    RollingFrictionEnabled:=TODECollisionSurface(Source).RollingFrictionEnabled;
-    SurfaceMode:=TODECollisionSurface(Source).SurfaceMode;
-    Mu:=TODECollisionSurface(Source).Mu;
-    Mu2:=TODECollisionSurface(Source).Mu2;
-    Bounce:=TODECollisionSurface(Source).Bounce;
-    Bounce_Vel:=TODECollisionSurface(Source).Bounce_Vel;
-    SoftERP:=TODECollisionSurface(Source).SoftERP;
-    SoftCFM:=TODECollisionSurface(Source).SoftCFM;
-    Motion1:=TODECollisionSurface(Source).Motion1;
-    Motion2:=TODECollisionSurface(Source).Motion2;
-    Slip1:=TODECollisionSurface(Source).Slip1;
-    Slip2:=TODECollisionSurface(Source).Slip2;
+  if not Assigned(Source) then
+    Exit;
+  if Source is TODECollisionSurface then
+  begin
+    RollingFrictionCoeff := TODECollisionSurface(Source).RollingFrictionCoeff;
+    RollingFrictionEnabled := TODECollisionSurface(Source)
+      .RollingFrictionEnabled;
+    SurfaceMode := TODECollisionSurface(Source).SurfaceMode;
+    Mu := TODECollisionSurface(Source).Mu;
+    Mu2 := TODECollisionSurface(Source).Mu2;
+    Bounce := TODECollisionSurface(Source).Bounce;
+    Bounce_Vel := TODECollisionSurface(Source).Bounce_Vel;
+    SoftERP := TODECollisionSurface(Source).SoftERP;
+    SoftCFM := TODECollisionSurface(Source).SoftCFM;
+    Motion1 := TODECollisionSurface(Source).Motion1;
+    Motion2 := TODECollisionSurface(Source).Motion2;
+    Slip1 := TODECollisionSurface(Source).Slip1;
+    Slip2 := TODECollisionSurface(Source).Slip2;
   end;
 end;
 
-// WriteToFiler
-//
 procedure TODECollisionSurface.WriteToFiler(writer: TWriter);
 var
-  mode : TSurfaceModes;
+  mode: TSurfaceModes;
 begin
-  with writer do begin
+  with writer do
+  begin
     WriteInteger(0);
     WriteFloat(RollingFrictionCoeff);
     WriteBoolean(RollingFrictionEnabled);
-    mode:=SurfaceMode;
+    mode := SurfaceMode;
     Write(mode, SizeOf(TSurfaceModes));
     WriteFloat(Mu);
     WriteFloat(Mu2);
@@ -1733,189 +1358,188 @@ begin
   end;
 end;
 
-// ReadFromFiler
-//
 procedure TODECollisionSurface.ReadFromFiler(reader: TReader);
 var
-  archiveVersion : Integer;
-  mode : TSurfaceModes;
+  archiveVersion: Integer;
+  mode: TSurfaceModes;
 begin
-  with reader do begin
-    archiveVersion:=ReadInteger;
+  with reader do
+  begin
+    archiveVersion := ReadInteger;
     Assert(archiveVersion = 0);
-    RollingFrictionCoeff:=ReadFloat;
-    RollingFrictionEnabled:=ReadBoolean;
+    RollingFrictionCoeff := ReadFloat;
+    RollingFrictionEnabled := ReadBoolean;
     Read(mode, SizeOf(TSurfaceModes));
-    SurfaceMode:=mode;
-    Mu:=ReadFloat;
-    Mu2:=ReadFloat;
-    Bounce:=ReadFloat;
-    Bounce_Vel:=ReadFloat;
-    SoftERP:=ReadFloat;
-    SoftCFM:=ReadFloat;
-    Motion1:=ReadFloat;
-    Motion2:=ReadFloat;
-    Slip1:=ReadFloat;
-    Slip2:=ReadFloat;
+    SurfaceMode := mode;
+    Mu := ReadFloat;
+    Mu2 := ReadFloat;
+    Bounce := ReadFloat;
+    Bounce_Vel := ReadFloat;
+    SoftERP := ReadFloat;
+    SoftCFM := ReadFloat;
+    Motion1 := ReadFloat;
+    Motion2 := ReadFloat;
+    Slip1 := ReadFloat;
+    Slip2 := ReadFloat;
   end;
 end;
 
 // GetSurfaceMode
 //
-function TODECollisionSurface.GetSurfaceMode:TSurfaceModes;
+function TODECollisionSurface.GetSurfaceMode: TSurfaceModes;
 var
-  ASurfaceModes : TSurfaceModes;
+  ASurfaceModes: TSurfaceModes;
 begin
   ASurfaceModes := [];
-  if (FSurfaceParams.Mode and dContactSlip2)<>0 then
-    ASurfaceModes:=ASurfaceModes+[csmSlip2];
-  if (FSurfaceParams.Mode and dContactSlip1)<>0 then
-    ASurfaceModes:=ASurfaceModes+[csmSlip1];
-  if (FSurfaceParams.Mode and dContactMotion2)<>0 then
-    ASurfaceModes:=ASurfaceModes+[csmMotion2];
-  if (FSurfaceParams.Mode and dContactMotion1)<>0 then
-    ASurfaceModes:=ASurfaceModes+[csmMotion1];
-  if (FSurfaceParams.Mode and dContactSoftCFM)<>0 then
-    ASurfaceModes:=ASurfaceModes+[csmSoftCFM];
-  if (FSurfaceParams.Mode and dContactSoftERP)<>0 then
-    ASurfaceModes:=ASurfaceModes+[csmSoftERP];
-  if (FSurfaceParams.Mode and dContactBounce)<>0 then
-    ASurfaceModes:=ASurfaceModes+[csmBounce];
-  if (FSurfaceParams.Mode and dContactFDir1)<>0 then
-    ASurfaceModes:=ASurfaceModes+[csmFDir1];
-  if (FSurfaceParams.Mode and dContactMu2)<>0 then
-    ASurfaceModes:=ASurfaceModes+[csmMu2];
-  result:=ASurfaceModes;
+  if (FSurfaceParams.mode and dContactSlip2) <> 0 then
+    ASurfaceModes := ASurfaceModes + [csmSlip2];
+  if (FSurfaceParams.mode and dContactSlip1) <> 0 then
+    ASurfaceModes := ASurfaceModes + [csmSlip1];
+  if (FSurfaceParams.mode and dContactMotion2) <> 0 then
+    ASurfaceModes := ASurfaceModes + [csmMotion2];
+  if (FSurfaceParams.mode and dContactMotion1) <> 0 then
+    ASurfaceModes := ASurfaceModes + [csmMotion1];
+  if (FSurfaceParams.mode and dContactSoftCFM) <> 0 then
+    ASurfaceModes := ASurfaceModes + [csmSoftCFM];
+  if (FSurfaceParams.mode and dContactSoftERP) <> 0 then
+    ASurfaceModes := ASurfaceModes + [csmSoftERP];
+  if (FSurfaceParams.mode and dContactBounce) <> 0 then
+    ASurfaceModes := ASurfaceModes + [csmBounce];
+  if (FSurfaceParams.mode and dContactFDir1) <> 0 then
+    ASurfaceModes := ASurfaceModes + [csmFDir1];
+  if (FSurfaceParams.mode and dContactMu2) <> 0 then
+    ASurfaceModes := ASurfaceModes + [csmMu2];
+  Result := ASurfaceModes;
 end;
 
 // SetSurfaceMode
 //
-procedure TODECollisionSurface.SetSurfaceMode(value:TSurfaceModes);
+procedure TODECollisionSurface.SetSurfaceMode(Value: TSurfaceModes);
 var
-  AMode : Integer;
+  AMode: Integer;
 begin
   AMode := 0;
-  if csmSlip2 in value then
-    AMode:=AMode or dContactSlip2;
-  if csmSlip1 in value then
-    AMode:=AMode or dContactSlip1;
-  if csmMotion2 in value then
-    AMode:=AMode or dContactMotion2;
-  if csmMotion1 in value then
-    AMode:=AMode or dContactMotion1;
-  if csmSoftCFM in value then
-    AMode:=AMode or dContactSoftCFM;
-  if csmSoftERP in value then
-    AMode:=AMode or dContactSoftERP;
-  if csmBounce in value then
-    AMode:=AMode or dContactBounce;
-  if csmFDir1 in value then
-    AMode:=AMode or dContactFDir1;
-  if csmMu2 in value then
-    AMode:=AMode or dContactMu2;
-  FSurfaceParams.Mode:=AMode;
+  if csmSlip2 in Value then
+    AMode := AMode or dContactSlip2;
+  if csmSlip1 in Value then
+    AMode := AMode or dContactSlip1;
+  if csmMotion2 in Value then
+    AMode := AMode or dContactMotion2;
+  if csmMotion1 in Value then
+    AMode := AMode or dContactMotion1;
+  if csmSoftCFM in Value then
+    AMode := AMode or dContactSoftCFM;
+  if csmSoftERP in Value then
+    AMode := AMode or dContactSoftERP;
+  if csmBounce in Value then
+    AMode := AMode or dContactBounce;
+  if csmFDir1 in Value then
+    AMode := AMode or dContactFDir1;
+  if csmMu2 in Value then
+    AMode := AMode or dContactMu2;
+  FSurfaceParams.mode := AMode;
 end;
 
 // CollisionSurface Property methods
 //
-function TODECollisionSurface.GetMu : TdReal;
+function TODECollisionSurface.GetMu: TdReal;
 begin
-  result:=FSurfaceParams.Mu;
+  Result := FSurfaceParams.Mu;
 end;
 
-function TODECollisionSurface.GetMu2 : TdReal;
+function TODECollisionSurface.GetMu2: TdReal;
 begin
-  result:=FSurfaceParams.Mu2;
+  Result := FSurfaceParams.Mu2;
 end;
 
-function TODECollisionSurface.GetBounce : TdReal;
+function TODECollisionSurface.GetBounce: TdReal;
 begin
-  result:=FSurfaceParams.Bounce;
+  Result := FSurfaceParams.Bounce;
 end;
 
-function TODECollisionSurface.GetBounce_Vel : TdReal;
+function TODECollisionSurface.GetBounce_Vel: TdReal;
 begin
-  result:=FSurfaceParams.Bounce_Vel;
+  Result := FSurfaceParams.Bounce_Vel;
 end;
 
-function TODECollisionSurface.GetSoftERP : TdReal;
+function TODECollisionSurface.GetSoftERP: TdReal;
 begin
-  result:=FSurfaceParams.soft_erp;
+  Result := FSurfaceParams.soft_erp;
 end;
 
-function TODECollisionSurface.GetSoftCFM : TdReal;
+function TODECollisionSurface.GetSoftCFM: TdReal;
 begin
-  result:=FSurfaceParams.soft_cfm;
+  Result := FSurfaceParams.soft_cfm;
 end;
 
-function TODECollisionSurface.GetMotion1 : TdReal;
+function TODECollisionSurface.GetMotion1: TdReal;
 begin
-  result:=FSurfaceParams.Motion1;
+  Result := FSurfaceParams.Motion1;
 end;
 
-function TODECollisionSurface.GetMotion2 : TdReal;
+function TODECollisionSurface.GetMotion2: TdReal;
 begin
-  result:=FSurfaceParams.Motion2;
+  Result := FSurfaceParams.Motion2;
 end;
 
-function TODECollisionSurface.GetSlip1 : TdReal;
+function TODECollisionSurface.GetSlip1: TdReal;
 begin
-  result:=FSurfaceParams.Slip1;
+  Result := FSurfaceParams.Slip1;
 end;
 
-function TODECollisionSurface.GetSlip2 : TdReal;
+function TODECollisionSurface.GetSlip2: TdReal;
 begin
-  result:=FSurfaceParams.Slip2;
+  Result := FSurfaceParams.Slip2;
 end;
 
-procedure TODECollisionSurface.SetMu(value : TdReal);
+procedure TODECollisionSurface.SetMu(Value: TdReal);
 begin
-  FSurfaceParams.Mu:=value;
+  FSurfaceParams.Mu := Value;
 end;
 
-procedure TODECollisionSurface.SetMu2(value : TdReal);
+procedure TODECollisionSurface.SetMu2(Value: TdReal);
 begin
-  FSurfaceParams.Mu2:=value;
+  FSurfaceParams.Mu2 := Value;
 end;
 
-procedure TODECollisionSurface.SetBounce(value : TdReal);
+procedure TODECollisionSurface.SetBounce(Value: TdReal);
 begin
-  FSurfaceParams.Bounce:=value;
+  FSurfaceParams.Bounce := Value;
 end;
 
-procedure TODECollisionSurface.SetBounce_Vel(value : TdReal);
+procedure TODECollisionSurface.SetBounce_Vel(Value: TdReal);
 begin
-  FSurfaceParams.Bounce_Vel:=value;
+  FSurfaceParams.Bounce_Vel := Value;
 end;
 
-procedure TODECollisionSurface.SetSoftERP(value : TdReal);
+procedure TODECollisionSurface.SetSoftERP(Value: TdReal);
 begin
-  FSurfaceParams.soft_erp:=value;
+  FSurfaceParams.soft_erp := Value;
 end;
 
-procedure TODECollisionSurface.SetSoftCFM(value : TdReal);
+procedure TODECollisionSurface.SetSoftCFM(Value: TdReal);
 begin
-  FSurfaceParams.soft_cfm:=value;
+  FSurfaceParams.soft_cfm := Value;
 end;
 
-procedure TODECollisionSurface.SetMotion1(value : TdReal);
+procedure TODECollisionSurface.SetMotion1(Value: TdReal);
 begin
-  FSurfaceParams.Motion1:=value;
+  FSurfaceParams.Motion1 := Value;
 end;
 
-procedure TODECollisionSurface.SetMotion2(value : TdReal);
+procedure TODECollisionSurface.SetMotion2(Value: TdReal);
 begin
-  FSurfaceParams.Motion2:=value;
+  FSurfaceParams.Motion2 := Value;
 end;
 
-procedure TODECollisionSurface.SetSlip1(value : TdReal);
+procedure TODECollisionSurface.SetSlip1(Value: TdReal);
 begin
-  FSurfaceParams.Slip1:=value;
+  FSurfaceParams.Slip1 := Value;
 end;
 
-procedure TODECollisionSurface.SetSlip2(value : TdReal);
+procedure TODECollisionSurface.SetSlip2(Value: TdReal);
 begin
-  FSurfaceParams.Slip2:=value;
+  FSurfaceParams.Slip2 := Value;
 end;
 
 
@@ -1925,12 +1549,12 @@ end;
 
 // Create
 //
-constructor TVKODEBehaviour.Create(AOwner : TVKXCollection);
+constructor TVKODEBehaviour.Create(AOwner: TVKXCollection);
 begin
   inherited;
-  FSurface:=TODECollisionSurface.Create(Self);
-  FInitialized:=False;
-  FOwnerBaseSceneObject:=OwnerBaseSceneObject;
+  FSurface := TODECollisionSurface.Create(Self);
+  FInitialized := False;
+  FOwnerBaseSceneObject := OwnerBaseSceneObject;
   if Assigned(FOwnerBaseSceneObject) then
     RegisterGLSceneObject(OwnerBaseSceneObject);
 end;
@@ -1940,7 +1564,7 @@ end;
 destructor TVKODEBehaviour.Destroy;
 begin
   if Assigned(Manager) then
-    Manager:=nil;
+    Manager := nil;
   if Assigned(FOwnerBaseSceneObject) then
     UnregisterGLSceneObject(FOwnerBaseSceneObject);
   FSurface.Free;
@@ -1951,14 +1575,14 @@ end;
 //
 procedure TVKODEBehaviour.Initialize;
 begin
-  FInitialized:=True;
+  FInitialized := True;
 end;
 
 // Finalize
 //
 procedure TVKODEBehaviour.Finalize;
 begin
-  FInitialized:=False;
+  FInitialized := False;
 end;
 
 // Reinitialize
@@ -1972,26 +1596,29 @@ end;
 
 // WriteToFiler
 //
-procedure TVKODEBehaviour.WriteToFiler(writer : TWriter);
+procedure TVKODEBehaviour.WriteToFiler(writer: TWriter);
 begin
   inherited;
-  with writer do begin
+  with writer do
+  begin
     WriteInteger(0); // Archive version
     if Assigned(FManager) then
       WriteString(FManager.GetNamePath)
-    else WriteString('');
+    else
+      WriteString('');
     Surface.WriteToFiler(writer);
   end;
 end;
 
 // ReadFromFiler
 //
-procedure TVKODEBehaviour.ReadFromFiler(reader : TReader);
+procedure TVKODEBehaviour.ReadFromFiler(reader: TReader);
 begin
   inherited;
-  with reader do begin
+  with reader do
+  begin
     Assert(ReadInteger = 0); // Archive version
-    FManagerName:=ReadString;
+    FManagerName := ReadString;
     Surface.ReadFromFiler(reader);
   end;
 end;
@@ -2000,14 +1627,15 @@ end;
 //
 procedure TVKODEBehaviour.Loaded;
 var
-  mng : TComponent;
+  mng: TComponent;
 begin
   inherited;
-  if FManagerName<>'' then begin
-    mng:=FindManager(TVKODEManager, FManagerName);
+  if FManagerName <> '' then
+  begin
+    mng := FindManager(TVKODEManager, FManagerName);
     if Assigned(mng) then
-      Manager:=TVKODEManager(mng);
-    FManagerName:='';
+      Manager := TVKODEManager(mng);
+    FManagerName := '';
   end
 end;
 
@@ -2028,17 +1656,21 @@ end;
 
 // SetManager
 //
-procedure TVKODEBehaviour.SetManager(Value : TVKODEManager);
+procedure TVKODEBehaviour.SetManager(Value: TVKODEManager);
 begin
-  if FManager<>Value then begin
-    if Assigned(FManager) then begin
+  if FManager <> Value then
+  begin
+    if Assigned(FManager) then
+    begin
       if Initialized then
         Finalize;
       FManager.UnregisterODEBehaviour(Self);
     end;
-    FManager:=Value;
-    if Assigned(FManager) then begin
-      if not (csDesigning in TComponent(Owner.Owner).ComponentState) then // mrqzzz moved here
+    FManager := Value;
+    if Assigned(FManager) then
+    begin
+      if not(csDesigning in TComponent(Owner.Owner).ComponentState) then
+      // mrqzzz moved here
         Initialize;
       FManager.RegisterODEBehaviour(Self);
     end;
@@ -2047,19 +1679,19 @@ end;
 
 // SetSurface
 //
-procedure TVKODEBehaviour.SetSurface(value: TODECollisionSurface);
+procedure TVKODEBehaviour.SetSurface(Value: TODECollisionSurface);
 begin
-  FSurface.Assign(value);
+  FSurface.Assign(Value);
 end;
 
 // GetAbsoluteMatrix
 //
-function TVKODEBehaviour.GetAbsoluteMatrix : TMatrix;
+function TVKODEBehaviour.GetAbsoluteMatrix: TMatrix;
 begin
-  Result:=IdentityHMGMatrix;
+  Result := IdentityHMGMatrix;
   if Assigned(Owner.Owner) then
     if Owner.Owner is TVKBaseSceneObject then
-      Result:=TVKBaseSceneObject(Owner.Owner).AbsoluteMatrix;
+      Result := TVKBaseSceneObject(Owner.Owner).AbsoluteMatrix;
 end;
 
 
@@ -2069,12 +1701,12 @@ end;
 
 // Create
 //
-constructor TVKODEDynamic.Create(AOwner : TVKXCollection);
+constructor TVKODEDynamic.Create(AOwner: TVKXCollection);
 begin
   inherited;
-  FElements:=TODEElements.Create(Self);
-  FJointRegister:=TList.Create;
-  FEnabled:=True;
+  FElements := TODEElements.Create(Self);
+  FJointRegister := TList.Create;
+  FEnabled := True;
 end;
 
 // Destroy
@@ -2088,14 +1720,15 @@ end;
 
 // Render
 //
-procedure TVKODEDynamic.Render(var rci : TVKRenderContextInfo);
+procedure TVKODEDynamic.Render(var rci: TVKRenderContextInfo);
 var
-  mat : TMatrix;
+  Mat: TMatrix;
 begin
-  if Assigned(Owner.Owner) then begin
+  if Assigned(Owner.Owner) then
+  begin
     rci.PipelineTransformation.Push;
-    mat:=TVKBaseSceneObject(Owner.Owner).AbsoluteMatrix;
-    rci.PipelineTransformation.ModelMatrix := mat;
+    Mat := TVKBaseSceneObject(Owner.Owner).AbsoluteMatrix;
+    rci.PipelineTransformation.ModelMatrix := Mat;
   end;
 
   Elements.Render(rci);
@@ -2108,29 +1741,31 @@ end;
 //
 class function TVKODEDynamic.FriendlyName: String;
 begin
-  Result:='ODE Dynamic';
+  Result := 'ODE Dynamic';
 end;
 
 // Initialize
 //
 procedure TVKODEDynamic.Initialize;
 var
-  i : Integer;
+  i: Integer;
 begin
-  if (not Assigned(Manager)) or Assigned(FBody) or (FInitialized) then exit;
-  if not Assigned(Manager.World) then exit;
+  if (not Assigned(Manager)) or Assigned(FBody) or (FInitialized) then
+    Exit;
+  if not Assigned(Manager.World) then
+    Exit;
 
-  FBody:=dBodyCreate(Manager.World);
+  FBody := dBodyCreate(Manager.World);
   AlignBodyToMatrix(OwnerBaseSceneObject.AbsoluteMatrix);
   dMassSetZero(FMass);
   FElements.Initialize;
   CalculateMass;
   CalibrateCenterOfMass;
-  if (FMass.mass>0) and (FBody<>nil) then // mrqzzz
-     dBodySetMass(FBody,@FMass);
-  Enabled:=FEnabled;
+  if (FMass.Mass > 0) and (FBody <> nil) then // mrqzzz
+    dBodySetMass(FBody, @FMass);
+  Enabled := FEnabled;
 
-  for i:=0 to FJointRegister.Count-1 do
+  for i := 0 to FJointRegister.Count - 1 do
     TODEJointBase(FJointRegister[i]).Attach;
 
   inherited;
@@ -2140,26 +1775,29 @@ end;
 //
 procedure TVKODEDynamic.Finalize;
 var
-  i : Integer;
+  i: Integer;
 begin
-  if not FInitialized then exit;
+  if not FInitialized then
+    Exit;
   FElements.Finalize;
-  if Assigned(FBody) then begin
+  if Assigned(FBody) then
+  begin
     dBodyDestroy(FBody);
-    FBody:=nil;
+    FBody := nil;
   end;
   dMassSetZero(FMass);
-  for i:=0 to FJointRegister.Count-1 do
+  for i := 0 to FJointRegister.Count - 1 do
     TODEJointBase(FJointRegister[i]).Attach;
   inherited;
 end;
 
 // WriteToFiler
 //
-procedure TVKODEDynamic.WriteToFiler(writer : TWriter);
+procedure TVKODEDynamic.WriteToFiler(writer: TWriter);
 begin
   inherited;
-  with writer do begin
+  with writer do
+  begin
     WriteInteger(1); // Archive version
     FElements.WriteToFiler(writer);
     writer.WriteBoolean(FEnabled);
@@ -2168,28 +1806,30 @@ end;
 
 // ReadFromFiler
 //
-procedure TVKODEDynamic.ReadFromFiler(reader : TReader);
+procedure TVKODEDynamic.ReadFromFiler(reader: TReader);
 var
-  archiveVersion : Integer;
+  archiveVersion: Integer;
 begin
   inherited;
-  with reader do begin
-    archiveVersion:=ReadInteger;
-    Assert((archiveVersion >= 0) and (archiveVersion<=1)); // Archive version
+  with reader do
+  begin
+    archiveVersion := ReadInteger;
+    Assert((archiveVersion >= 0) and (archiveVersion <= 1)); // Archive version
 
     // version 0
     FElements.ReadFromFiler(reader);
 
     // version 1
-    if archiveVersion>=1 then begin
-      FEnabled:=ReadBoolean;
+    if archiveVersion >= 1 then
+    begin
+      FEnabled := ReadBoolean;
     end;
   end;
 end;
 
 // RegisterJoint
 //
-procedure TVKODEDynamic.RegisterJoint(Joint : TODEJointBase);
+procedure TVKODEDynamic.RegisterJoint(Joint: TODEJointBase);
 begin
   if FJointRegister.IndexOf(Joint) = -1 then
     FJointRegister.Add(Joint);
@@ -2197,7 +1837,7 @@ end;
 
 // UnregisterJoint
 //
-procedure TVKODEDynamic.UnregisterJoint(Joint : TODEJointBase);
+procedure TVKODEDynamic.UnregisterJoint(Joint: TODEJointBase);
 begin
   if FJointRegister.IndexOf(Joint) > -1 then
     FJointRegister.Remove(Joint);
@@ -2205,182 +1845,196 @@ end;
 
 // AddNewElement
 //
-function TVKODEDynamic.AddNewElement(AChild:TODEElementClass):TODEElementBase;
+function TVKODEDynamic.AddNewElement(AChild: TODEElementClass): TODEElementBase;
 var
-  calcmass : TdMass;
+  calcmass: TdMass;
 begin
-  Result:=AChild.Create(FElements);
-  //FElements.Add(Result);
+  Result := AChild.Create(FElements);
+  // FElements.Add(Result);
   Result.Initialize;
-  calcmass:=CalculateMass;
-  if (calcMass.mass>0) and (FBody<>nil) then // mrqzzz
-     dBodySetMass(FBody,@calcmass);
+  calcmass := CalculateMass;
+  if (calcmass.Mass > 0) and (FBody <> nil) then // mrqzzz
+    dBodySetMass(FBody, @calcmass);
 end;
 
 // AlignObject
 //
 procedure TVKODEDynamic.AlignObject;
 var
-  pos : PdVector3;
-  R : PdMatrix3;
-  m : TMatrix;
+  Pos: PdVector3;
+  R: PdMatrix3;
+  m: TMatrix;
 begin
-  pos:=dBodyGetPosition(Body);
-  R:=dBodyGetRotation(Body);
-  ODEGL.ODERToGLSceneMatrix(m,R^,pos^);
+  Pos := dBodyGetPosition(Body);
+  R := dBodyGetRotation(Body);
+  ODEGL.ODERToGLSceneMatrix(m, R^, Pos^);
   if OwnerBaseSceneObject.Parent is TVKBaseSceneObject then
-    m:=MatrixMultiply(m, OwnerBaseSceneObject.Parent.InvAbsoluteMatrix);
-  OwnerBaseSceneObject.Matrix:=m;
+    m := MatrixMultiply(m, OwnerBaseSceneObject.Parent.InvAbsoluteMatrix);
+  OwnerBaseSceneObject.Matrix := m;
 end;
 
 // AlignBodyToMatrix
 //
-procedure TVKODEDynamic.AlignBodyToMatrix(Mat:TMatrix);
+procedure TVKODEDynamic.AlignBodyToMatrix(Mat: TMatrix);
 var
-  R : TdMatrix3;
+  R: TdMatrix3;
 begin
-  if not Assigned(FBody) then exit;
-  R[0]:=Mat.X.X; R[1]:=Mat.Y.X; R[2]:= Mat.Z.X; R[3]:= 0;
-  R[4]:=Mat.X.Y; R[5]:=Mat.Y.Y; R[6]:= Mat.Z.Y; R[7]:= 0;
-  R[8]:=Mat.X.Z; R[9]:=Mat.Y.Z; R[10]:=Mat.Z.Z; R[11]:=0;
-  dBodySetRotation(FBody,R);
-  dBodySetPosition(FBody,Mat.W.X,Mat.W.Y,Mat.W.Z);
+  if not Assigned(FBody) then
+    Exit;
+  R[0] := Mat.X.X;
+  R[1] := Mat.Y.X;
+  R[2] := Mat.Z.X;
+  R[3] := 0;
+  R[4] := Mat.X.Y;
+  R[5] := Mat.Y.Y;
+  R[6] := Mat.Z.Y;
+  R[7] := 0;
+  R[8] := Mat.X.Z;
+  R[9] := Mat.Y.Z;
+  R[10] := Mat.Z.Z;
+  R[11] := 0;
+  dBodySetRotation(FBody, R);
+  dBodySetPosition(FBody, Mat.W.X, Mat.W.Y, Mat.W.Z);
 end;
 
 // CalculateMass
 //
-function TVKODEDynamic.CalculateMass : TdMass;
+function TVKODEDynamic.CalculateMass: TdMass;
 var
-  i : integer;
-  m : TdMass;
+  i: Integer;
+  m: TdMass;
 begin
   dMassSetZero(FMass);
-  for i:=0 to Elements.Count-1 do begin
-    m:=TODEElementBase(Elements[i]).CalculateMass;
-    dMassAdd(FMass,m);
+  for i := 0 to Elements.Count - 1 do
+  begin
+    m := TODEElementBase(Elements[i]).CalculateMass;
+    dMassAdd(FMass, m);
   end;
-  Result:=FMass;
+  Result := FMass;
 end;
 
 // CalibrateCenterOfMass
 //
 procedure TVKODEDynamic.CalibrateCenterOfMass;
 var
-  pos : TAffineVector;
+  Pos: TAffineVector;
 begin
-  SetAffineVector(pos,FMass.c[0],FMass.c[1],FMass.c[2]);
-  NegateVector(pos);
-  dMassTranslate(Fmass,pos.X,pos.Y,pos.Z);
+  SetAffineVector(Pos, FMass.c[0], FMass.c[1], FMass.c[2]);
+  NegateVector(Pos);
+  dMassTranslate(FMass, Pos.X, Pos.Y, Pos.Z);
 end;
 
 // GetMass
 //
 function TVKODEDynamic.GetMass: TdMass;
 begin
-  dBodyGetMass(FBody,FMass);
-  Result:=FMass;
+  dBodyGetMass(FBody, FMass);
+  Result := FMass;
 end;
 
 // SetMass
 //
-procedure TVKODEDynamic.SetMass(const value: TdMass);
+procedure TVKODEDynamic.SetMass(const Value: TdMass);
 begin
-  FMass:=value;
-  if FMass.mass>0 then dBodySetMass(FBody,@FMass);
+  FMass := Value;
+  if FMass.Mass > 0 then
+    dBodySetMass(FBody, @FMass);
 end;
 
 // UniqueItem
 //
-class function TVKODEDynamic.UniqueItem : Boolean;
+class function TVKODEDynamic.UniqueItem: Boolean;
 begin
-  Result:=True;
+  Result := True;
 end;
 
 // SetEnabled
 //
-procedure TVKODEDynamic.SetEnabled(const Value : Boolean);
+procedure TVKODEDynamic.SetEnabled(const Value: Boolean);
 begin
-  FEnabled:=Value;
-  if Assigned(FBody) then begin
-    if FEnabled then dBodyEnable(FBody)
-    else dBodyDisable(FBody);
+  FEnabled := Value;
+  if Assigned(FBody) then
+  begin
+    if FEnabled then
+      dBodyEnable(FBody)
+    else
+      dBodyDisable(FBody);
   end;
 end;
 
 // GetEnabled
 //
-function TVKODEDynamic.GetEnabled : Boolean;
+function TVKODEDynamic.GetEnabled: Boolean;
 begin
   if Assigned(FBody) then
-    FEnabled:=(dBodyIsEnabled(FBody)=1);
-  Result:=FEnabled;
+    FEnabled := (dBodyIsEnabled(FBody) = 1);
+  Result := FEnabled;
 end;
 
 // AddForce
 //
-procedure TVKODEDynamic.AddForce(Force : TAffineVector);
+procedure TVKODEDynamic.AddForce(Force: TAffineVector);
 begin
   if Assigned(FBody) then
-    dBodyAddForce(FBody,Force.X,Force.Y,Force.Z);
+    dBodyAddForce(FBody, Force.X, Force.Y, Force.Z);
 end;
 
 // AddlForceAtPos
 //
-procedure TVKODEDynamic.AddForceAtPos(Force, Pos : TAffineVector);
+procedure TVKODEDynamic.AddForceAtPos(Force, Pos: TAffineVector);
 begin
   if Assigned(FBody) then
-    dBodyAddForceAtPos(FBody,Force.X,Force.Y,Force.Z,
-                        Pos.X,Pos.Y,Pos.Z);
+    dBodyAddForceAtPos(FBody, Force.X, Force.Y, Force.Z, Pos.X, Pos.Y, Pos.Z);
 end;
 
 // AddForceAtRelPos
 //
-procedure TVKODEDynamic.AddForceAtRelPos(Force, Pos : TAffineVector);
+procedure TVKODEDynamic.AddForceAtRelPos(Force, Pos: TAffineVector);
 begin
   if Assigned(FBody) then
-    dBodyAddForceAtRelPos(FBody,Force.X,Force.Y,Force.Z,Pos.X,Pos.Y,Pos.Z);
+    dBodyAddForceAtRelPos(FBody, Force.X, Force.Y, Force.Z, Pos.X,
+      Pos.Y, Pos.Z);
 end;
 
 // AddRelForce
 //
-procedure TVKODEDynamic.AddRelForce(Force : TAffineVector);
+procedure TVKODEDynamic.AddRelForce(Force: TAffineVector);
 begin
   if Assigned(FBody) then
-    dBodyAddRelForce(FBody,Force.X,Force.Y,Force.Z);
+    dBodyAddRelForce(FBody, Force.X, Force.Y, Force.Z);
 end;
 
 // AddRelForceAtPos
 //
-procedure TVKODEDynamic.AddRelForceAtPos(Force, Pos : TAffineVector);
+procedure TVKODEDynamic.AddRelForceAtPos(Force, Pos: TAffineVector);
 begin
   if Assigned(FBody) then
-    dBodyAddForceAtPos(FBody,Force.X,Force.Y,Force.Z,
-                       Pos.X,Pos.Y,Pos.Z);
+    dBodyAddForceAtPos(FBody, Force.X, Force.Y, Force.Z, Pos.X, Pos.Y, Pos.Z);
 end;
 
 // AddRelForceAtRelPos
 //
-procedure TVKODEDynamic.AddRelForceAtRelPos(Force, Pos : TAffineVector);
+procedure TVKODEDynamic.AddRelForceAtRelPos(Force, Pos: TAffineVector);
 begin
   if Assigned(FBody) then
-    dBodyAddRelForceAtRelPos(FBody,Force.X,Force.Y,Force.Z,
-                             Pos.X,Pos.Y,Pos.Z);
+    dBodyAddRelForceAtRelPos(FBody, Force.X, Force.Y, Force.Z, Pos.X,
+      Pos.Y, Pos.Z);
 end;
 
 // AddTorque
 //
-procedure TVKODEDynamic.AddTorque(Torque : TAffineVector);
+procedure TVKODEDynamic.AddTorque(Torque: TAffineVector);
 begin
   if Assigned(FBody) then
-    dBodyAddTorque(FBody,Torque.X,Torque.Y,Torque.Z);
+    dBodyAddTorque(FBody, Torque.X, Torque.Y, Torque.Z);
 end;
 
 // AddRelTorque
 //
-procedure TVKODEDynamic.AddRelTorque(Torque : TAffineVector);
+procedure TVKODEDynamic.AddRelTorque(Torque: TAffineVector);
 begin
   if Assigned(FBody) then
-    dBodyAddRelTorque(FBody,Torque.X,Torque.Y,Torque.Z);
+    dBodyAddRelTorque(FBody, Torque.X, Torque.Y, Torque.Z);
 end;
 
 
@@ -2390,10 +2044,10 @@ end;
 
 // Create
 //
-constructor TVKODEStatic.Create(AOwner : TVKXCollection);
+constructor TVKODEStatic.Create(AOwner: TVKXCollection);
 begin
   inherited;
-  FElements:=TODEElements.Create(Self);
+  FElements := TODEElements.Create(Self);
 end;
 
 // Destroy
@@ -2408,12 +2062,13 @@ end;
 //
 procedure TVKODEStatic.Render(var rci: TVKRenderContextInfo);
 var
-  mat : TMatrix;
+  Mat: TMatrix;
 begin
-  if Assigned(Owner.Owner) then begin
+  if Assigned(Owner.Owner) then
+  begin
     rci.PipelineTransformation.Push;
-    mat:=TVKBaseSceneObject(Owner.Owner).AbsoluteMatrix;
-    rci.PipelineTransformation.ModelMatrix := mat;
+    Mat := TVKBaseSceneObject(Owner.Owner).AbsoluteMatrix;
+    rci.PipelineTransformation.ModelMatrix := Mat;
   end;
 
   Elements.Render(rci);
@@ -2426,22 +2081,24 @@ end;
 //
 class function TVKODEStatic.FriendlyName: String;
 begin
-  Result:='ODE Static';
+  Result := 'ODE Static';
 end;
 
 // UniqueItem
 //
-class function TVKODEStatic.UniqueItem : Boolean;
+class function TVKODEStatic.UniqueItem: Boolean;
 begin
-  Result:=True;
+  Result := True;
 end;
 
 // Initialize
 //
 procedure TVKODEStatic.Initialize;
 begin
-  if (not Assigned(Manager)) or (FInitialized) then exit;
-  if not Assigned(Manager.Space) then exit;
+  if (not Assigned(Manager)) or (FInitialized) then
+    Exit;
+  if not Assigned(Manager.Space) then
+    Exit;
 
   FElements.Initialize;
 
@@ -2452,7 +2109,8 @@ end;
 //
 procedure TVKODEStatic.Finalize;
 begin
-  if not FInitialized then exit;
+  if not FInitialized then
+    Exit;
   FElements.Finalize;
 
   inherited;
@@ -2460,10 +2118,11 @@ end;
 
 // WriteToFiler
 //
-procedure TVKODEStatic.WriteToFiler(writer : TWriter);
+procedure TVKODEStatic.WriteToFiler(writer: TWriter);
 begin
   inherited;
-  with writer do begin
+  with writer do
+  begin
     WriteInteger(0); // Archive version
     FElements.WriteToFiler(writer);
   end;
@@ -2471,10 +2130,11 @@ end;
 
 // ReadFromFiler
 //
-procedure TVKODEStatic.ReadFromFiler(reader : TReader);
+procedure TVKODEStatic.ReadFromFiler(reader: TReader);
 begin
   inherited;
-  with reader do begin
+  with reader do
+  begin
     Assert(ReadInteger = 0); // Archive version
     FElements.ReadFromFiler(reader);
   end;
@@ -2482,11 +2142,12 @@ end;
 
 // AddNewElement
 //
-function TVKODEStatic.AddNewElement(AChild:TODEElementClass):TODEElementBase;
+function TVKODEStatic.AddNewElement(AChild: TODEElementClass): TODEElementBase;
 begin
-  Result:=nil;
-  if not Assigned(Manager) then exit;
-  Result:=AChild.Create(FElements);
+  Result := nil;
+  if not Assigned(Manager) then
+    Exit;
+  Result := AChild.Create(FElements);
   FElements.Add(Result);
   Result.Initialize;
 end;
@@ -2495,12 +2156,14 @@ end;
 //
 procedure TVKODEStatic.AlignElements;
 var
-  i : Integer;
+  i: Integer;
 begin
-  if not FInitialized then exit;
+  if not FInitialized then
+    Exit;
 
-  for i:=0 to FElements.Count-1 do
-    TODEElementBase(FElements[i]).AlignGeomElementToMatrix(TODEElementBase(FElements[i]).AbsoluteMatrix);
+  for i := 0 to FElements.Count - 1 do
+    TODEElementBase(FElements[i]).AlignGeomElementToMatrix
+      (TODEElementBase(FElements[i]).AbsoluteMatrix);
 end;
 
 
@@ -2518,25 +2181,25 @@ end;
 
 // GetElement
 //
-function TODEElements.GetElement(index : integer) : TODEElementBase;
+function TODEElements.GetElement(index: Integer): TODEElementBase;
 begin
-  result:=TODEElementBase(Items[index]);
+  Result := TODEElementBase(Items[index]);
 end;
 
 // ItemsClass
 //
-class function TODEElements.ItemsClass : TVKXCollectionItemClass;
+class function TODEElements.ItemsClass: TVKXCollectionItemClass;
 begin
-  Result:=TODEElementBase;
+  Result := TODEElementBase;
 end;
 
 // Initialize
 //
 procedure TODEElements.Initialize;
 var
-  i : integer;
+  i: Integer;
 begin
-  for i:=0 to Count-1 do
+  for i := 0 to Count - 1 do
     TODEElementBase(Items[i]).Initialize;
 end;
 
@@ -2544,19 +2207,19 @@ end;
 //
 procedure TODEElements.Finalize;
 var
-  i : integer;
+  i: Integer;
 begin
-  for i:=0 to Count-1 do
+  for i := 0 to Count - 1 do
     TODEElementBase(Items[i]).Finalize;
 end;
 
 // Render
 //
-procedure TODEElements.Render(var rci : TVKRenderContextInfo);
+procedure TODEElements.Render(var rci: TVKRenderContextInfo);
 var
-  i : integer;
+  i: Integer;
 begin
-  for i:=0 to Count-1 do
+  for i := 0 to Count - 1 do
     TODEElementBase(Items[i]).Render(rci);
 end;
 
@@ -2576,27 +2239,28 @@ end;
 
 // Create
 //
-constructor TODEElementBase.Create(AOwner : TVKXCollection);
+constructor TODEElementBase.Create(AOwner: TVKXCollection);
 begin
   inherited;
-  FPosition:=TVKCoordinates.CreateInitialized(Self, NullHmgPoint, csPoint);
-  FPosition.OnNotifyChange:=NotifyChange;
-  FDirection:=TVKCoordinates.CreateInitialized(Self, ZHmgVector, csVector);
-  FDirection.OnNotifyChange:=CoordinateChanged;
-  FUp:=TVKCoordinates.CreateInitialized(Self, YHmgVector, csVector);
-  FUp.OnNotifyChange:=CoordinateChanged;
-  FDensity:=1;
-  FInitialized:=False;
-  FDynamic:=(Owner.Owner is TVKODEDynamic);
-  FLocalMatrix:=IdentityHMGMatrix;
-  FIsCalculating:=False;
+  FPosition := TVKCoordinates.CreateInitialized(Self, NullHmgPoint, csPoint);
+  FPosition.OnNotifyChange := NotifyChange;
+  FDirection := TVKCoordinates.CreateInitialized(Self, ZHmgVector, csVector);
+  FDirection.OnNotifyChange := CoordinateChanged;
+  FUp := TVKCoordinates.CreateInitialized(Self, YHmgVector, csVector);
+  FUp.OnNotifyChange := CoordinateChanged;
+  FDensity := 1;
+  FInitialized := False;
+  FDynamic := (Owner.Owner is TVKODEDynamic);
+  FLocalMatrix := IdentityHMGMatrix;
+  FIsCalculating := False;
 end;
 
 // Destroy
 //
 destructor TODEElementBase.Destroy;
 begin
-  if FInitialized then Finalize;
+  if FInitialized then
+    Finalize;
   FPosition.Free;
   FDirection.Free;
   FUp.Free;
@@ -2614,62 +2278,73 @@ end;
 //
 procedure TODEElementBase.Initialize;
 var
-  Manager : TVKODEManager;
-  Body : PdxBody;
+  Manager: TVKODEManager;
+  Body: PdxBody;
 begin
-  Manager:=nil;
-  Body:=nil;
+  Manager := nil;
+  Body := nil;
 
   if Owner.Owner is TVKODEBehaviour then
-    Manager:=TVKODEBehaviour(Owner.Owner).Manager;
-  if not Assigned(Manager) then exit;
+    Manager := TVKODEBehaviour(Owner.Owner).Manager;
+  if not Assigned(Manager) then
+    Exit;
 
-  if FDynamic then begin
+  if FDynamic then
+  begin
     if Owner.Owner is TVKODEDynamic then
-      Body:=TVKODEDynamic(Owner.Owner).Body;
-    if not Assigned(Body) then exit;
+      Body := TVKODEDynamic(Owner.Owner).Body;
+    if not Assigned(Body) then
+      Exit;
   end;
 
-  if not Assigned(Manager.World) then exit;
+  if not Assigned(Manager.World) then
+    Exit;
 
-  if FDynamic then begin
-    FGeomTransform:=dCreateGeomTransform(Manager.Space);
-    dGeomSetBody(FGeomTransform,Body);
-    dGeomTransformSetCleanup(FGeomTransform,0);
-    dGeomTransformSetGeom(FGeomTransform,FGeomElement);
-    dGeomSetData(FGeomTransform,Owner.Owner);
+  if FDynamic then
+  begin
+    FGeomTransform := dCreateGeomTransform(Manager.Space);
+    dGeomSetBody(FGeomTransform, Body);
+    dGeomTransformSetCleanup(FGeomTransform, 0);
+    dGeomTransformSetGeom(FGeomTransform, FGeomElement);
+    dGeomSetData(FGeomTransform, Owner.Owner);
     AlignGeomElementToMatrix(FLocalMatrix);
-  end else begin
+  end
+  else
+  begin
     dSpaceAdd(Manager.Space, FGeomElement);
-    dGeomSetData(FGeomElement,Owner.Owner);
+    dGeomSetData(FGeomElement, Owner.Owner);
     AlignGeomElementToMatrix(AbsoluteMatrix);
   end;
 
-  FInitialized:=True;
+  FInitialized := True;
 end;
 
 // Finalize
 //
 procedure TODEElementBase.Finalize;
 begin
-  if not FInitialized then exit;
-  if Assigned(FGeomTransform) then begin
+  if not FInitialized then
+    Exit;
+  if Assigned(FGeomTransform) then
+  begin
     dGeomDestroy(FGeomTransform);
-    FGeomTransform:=nil;
+    FGeomTransform := nil;
   end;
-  if Assigned(FGeomElement) then begin
+  if Assigned(FGeomElement) then
+  begin
     dGeomDestroy(FGeomElement);
-    FGeomElement:=nil;
+    FGeomElement := nil;
   end;
-  FInitialized:=False;
+  FInitialized := False;
 end;
 
 // WriteToFiler
 //
-procedure TODEElementBase.WriteToFiler(writer : TWriter);
+procedure TODEElementBase.WriteToFiler(writer: TWriter);
 begin
   inherited;
-  with writer do begin
+  with writer do
+  begin
     WriteInteger(0); // Archive version
     FPosition.WriteToFiler(writer);
     FDirection.WriteToFiler(writer);
@@ -2680,15 +2355,16 @@ end;
 
 // ReadFromFiler
 //
-procedure TODEElementBase.ReadFromFiler(reader : TReader);
+procedure TODEElementBase.ReadFromFiler(reader: TReader);
 begin
   inherited;
-  with reader do begin
+  with reader do
+  begin
     Assert(ReadInteger = 0); // Archive version
     FPosition.ReadFromFiler(reader);
     FDirection.ReadFromFiler(reader);
     FUp.ReadFromFiler(reader);
-    Density:=ReadFloat;
+    Density := ReadFloat;
   end;
   NotifyChange(Self);
 end;
@@ -2697,120 +2373,135 @@ end;
 //
 function TODEElementBase.AbsoluteMatrix: TMatrix;
 var
-  Mat : TMatrix;
+  Mat: TMatrix;
 begin
-  Mat:=IdentityHMGMatrix;
+  Mat := IdentityHMGMatrix;
   if Owner.Owner is TVKODEBehaviour then
-    Mat:=TVKODEBehaviour(Owner.Owner).AbsoluteMatrix;
-  Result:=MatrixMultiply(Mat,FLocalMatrix);
+    Mat := TVKODEBehaviour(Owner.Owner).AbsoluteMatrix;
+  Result := MatrixMultiply(Mat, FLocalMatrix);
 end;
 
 // AbsolutePosition
 //
 function TODEElementBase.AbsolutePosition: TAffineVector;
 begin
-  Result:=AffineVectorMake(AbsoluteMatrix.W);
+  Result := AffineVectorMake(AbsoluteMatrix.W);
 end;
 
 // AlignGeomElementToMatrix
 //
 procedure TODEElementBase.AlignGeomElementToMatrix(Mat: TMatrix);
 var
-  R : TdMatrix3;
+  R: TdMatrix3;
 begin
-  if not Assigned(FGeomElement) then exit;
-  dGeomSetPosition(FGeomElement,Mat.W.X,Mat.W.Y,Mat.W.Z);
-  R[0]:=Mat.X.X; R[1]:=Mat.Y.X; R[2]:= Mat.Z.X; R[3]:= 0;
-  R[4]:=Mat.X.Y; R[5]:=Mat.Y.Y; R[6]:= Mat.Z.Y; R[7]:= 0;
-  R[8]:=Mat.X.Z; R[9]:=Mat.Y.Z; R[10]:=Mat.Z.Z; R[11]:=0;
-  dGeomSetRotation(FGeomElement,R);
-  FRealignODE:=False;
+  if not Assigned(FGeomElement) then
+    Exit;
+  dGeomSetPosition(FGeomElement, Mat.W.X, Mat.W.Y, Mat.W.Z);
+  R[0] := Mat.X.X;
+  R[1] := Mat.Y.X;
+  R[2] := Mat.Z.X;
+  R[3] := 0;
+  R[4] := Mat.X.Y;
+  R[5] := Mat.Y.Y;
+  R[6] := Mat.Z.Y;
+  R[7] := 0;
+  R[8] := Mat.X.Z;
+  R[9] := Mat.Y.Z;
+  R[10] := Mat.Z.Z;
+  R[11] := 0;
+  dGeomSetRotation(FGeomElement, R);
+  FRealignODE := False;
 end;
 
 // SetGeomElement
 //
-procedure TODEElementBase.SetGeomElement(aGeom : PdxGeom);
+procedure TODEElementBase.SetGeomElement(aGeom: PdxGeom);
 begin
-  FGeomElement:=aGeom;
+  FGeomElement := aGeom;
 end;
 
 // IsODEInitialized
 //
-function TODEElementBase.IsODEInitialized : Boolean;
+function TODEElementBase.IsODEInitialized: Boolean;
 var
-  Manager : TVKODEManager;
+  Manager: TVKODEManager;
 begin
-  Result:=False;
-  Manager:=nil;
+  Result := False;
+  Manager := nil;
   if Owner.Owner is TVKODEBehaviour then
-    Manager:=TVKODEBehaviour(Owner.Owner).Manager;
-  if not Assigned(Manager) then exit;
-  Result:=Assigned(Manager.Space);
+    Manager := TVKODEBehaviour(Owner.Owner).Manager;
+  if not Assigned(Manager) then
+    Exit;
+  Result := Assigned(Manager.Space);
 end;
 
 // CalculateMass
 //
 function TODEElementBase.CalculateMass: TdMass;
 var
-  R : TdMatrix3;
+  R: TdMatrix3;
 begin
-  R[0]:=FLocalMatrix.X.X;
-  R[1]:=FLocalMatrix.Y.X;
-  R[2]:=FLocalMatrix.Z.X;
-  R[3]:= 0;
-  R[4]:=FLocalMatrix.X.Y;
-  R[5]:=FLocalMatrix.Y.Y;
-  R[6]:=FLocalMatrix.Z.Y;
-  R[7]:= 0;
-  R[8]:=FLocalMatrix.X.Z;
-  R[9]:=FLocalMatrix.Y.Z;
-  R[10]:=FLocalMatrix.Z.Z;
-  R[11]:=0;
-  dMassRotate(FMass,R);
-  dMassTranslate(FMass,FLocalMatrix.W.X,
-                       FLocalMatrix.W.Y,
-                       FLocalMatrix.W.Z);
-  result:=FMass;
+  R[0] := FLocalMatrix.X.X;
+  R[1] := FLocalMatrix.Y.X;
+  R[2] := FLocalMatrix.Z.X;
+  R[3] := 0;
+  R[4] := FLocalMatrix.X.Y;
+  R[5] := FLocalMatrix.Y.Y;
+  R[6] := FLocalMatrix.Z.Y;
+  R[7] := 0;
+  R[8] := FLocalMatrix.X.Z;
+  R[9] := FLocalMatrix.Y.Z;
+  R[10] := FLocalMatrix.Z.Z;
+  R[11] := 0;
+  dMassRotate(FMass, R);
+  dMassTranslate(FMass, FLocalMatrix.W.X, FLocalMatrix.W.Y, FLocalMatrix.W.Z);
+  Result := FMass;
 end;
 
 // CoordinateChanged
 //
-procedure TODEElementBase.CoordinateChanged(Sender : TObject);
+procedure TODEElementBase.CoordinateChanged(Sender: TObject);
 var
-  rightVector : TVector;
+  rightVector: TVector;
 begin
-  if FIsCalculating then Exit;
-  FIsCalculating:=True;
+  if FIsCalculating then
+    Exit;
+  FIsCalculating := True;
   try
-    if Sender = FDirection then begin
+    if Sender = FDirection then
+    begin
       if FDirection.VectorLength = 0 then
-        FDirection.DirectVector:=ZHmgVector;
+        FDirection.DirectVector := ZHmgVector;
       FDirection.Normalize;
-      rightVector:=VectorCrossProduct(FDirection.AsVector, FUp.AsVector);
-      if VectorLength(rightVector)<1e-5 then begin
-        rightVector:=VectorCrossProduct(ZHmgVector, FUp.AsVector);
-        if VectorLength(rightVector)<1e-5 then
-          rightVector:=VectorCrossProduct(XHmgVector, FUp.AsVector);
+      rightVector := VectorCrossProduct(FDirection.AsVector, FUp.AsVector);
+      if VectorLength(rightVector) < 1E-5 then
+      begin
+        rightVector := VectorCrossProduct(ZHmgVector, FUp.AsVector);
+        if VectorLength(rightVector) < 1E-5 then
+          rightVector := VectorCrossProduct(XHmgVector, FUp.AsVector);
       end;
-      FUp.DirectVector:=VectorCrossProduct(rightVector, FDirection.AsVector);
+      FUp.DirectVector := VectorCrossProduct(rightVector, FDirection.AsVector);
       FUp.Normalize;
 
-    end else if Sender = FUp then begin
+    end
+    else if Sender = FUp then
+    begin
       if FUp.VectorLength = 0 then
-        FUp.DirectVector:=YHmgVector;
+        FUp.DirectVector := YHmgVector;
       FUp.Normalize;
-      rightVector:=VectorCrossProduct(FDirection.AsVector, FUp.AsVector);
-      if VectorLength(rightVector)<1e-5 then begin
-        rightVector:=VectorCrossProduct(ZHmgVector, FUp.AsVector);
-        if VectorLength(rightVector)<1e-5 then
-          rightVector:=VectorCrossProduct(XHmgVector, FUp.AsVector);
+      rightVector := VectorCrossProduct(FDirection.AsVector, FUp.AsVector);
+      if VectorLength(rightVector) < 1E-5 then
+      begin
+        rightVector := VectorCrossProduct(ZHmgVector, FUp.AsVector);
+        if VectorLength(rightVector) < 1E-5 then
+          rightVector := VectorCrossProduct(XHmgVector, FUp.AsVector);
       end;
-      FDirection.DirectVector:=VectorCrossProduct(FUp.AsVector, RightVector);
+      FDirection.DirectVector := VectorCrossProduct(FUp.AsVector, rightVector);
       FDirection.Normalize;
     end;
     NotifyChange(Self);
   finally
-    FIsCalculating:=False;
+    FIsCalculating := False;
   end;
 end;
 
@@ -2826,33 +2517,33 @@ end;
 //
 function TODEElementBase.GetMatrix: TMatrix;
 begin
-  result:=FLocalMatrix;
+  Result := FLocalMatrix;
 end;
 
 // RebuildMatrix
 //
 procedure TODEElementBase.RebuildMatrix;
 begin
-  VectorCrossProduct(FUp.AsVector,FDirection.AsVector,FLocalMatrix.X);
-  SetVector(FLocalMatrix.Y,FUp.AsVector);
-  SetVector(FLocalMatrix.Z,FDirection.AsVector);
-  SetVector(FLocalMatrix.W,FPosition.AsVector);
+  VectorCrossProduct(FUp.AsVector, FDirection.AsVector, FLocalMatrix.X);
+  SetVector(FLocalMatrix.Y, FUp.AsVector);
+  SetVector(FLocalMatrix.Z, FDirection.AsVector);
+  SetVector(FLocalMatrix.W, FPosition.AsVector);
 end;
 
 // RebuildVectors
 //
 procedure TODEElementBase.RebuildVectors;
 begin
-  FUp.SetVector(FLocalMatrix.Y.X,FLocalMatrix.Y.Y,FLocalMatrix.Y.Z);
-  FDirection.SetVector(FLocalMatrix.Z.X,FLocalMatrix.Z.Y,FLocalMatrix.Z.Z);
-  FPosition.SetPoint(FLocalMatrix.W.X,FLocalMatrix.W.Y,FLocalMatrix.W.Z);
+  FUp.SetVector(FLocalMatrix.Y.X, FLocalMatrix.Y.Y, FLocalMatrix.Y.Z);
+  FDirection.SetVector(FLocalMatrix.Z.X, FLocalMatrix.Z.Y, FLocalMatrix.Z.Z);
+  FPosition.SetPoint(FLocalMatrix.W.X, FLocalMatrix.W.Y, FLocalMatrix.W.Z);
 end;
 
 // SetDensity
 //
 procedure TODEElementBase.SetDensity(const Value: TdReal);
 begin
-  FDensity:=Value;
+  FDensity := Value;
 end;
 
 // SetMatrix
@@ -2868,11 +2559,14 @@ end;
 //
 procedure TODEElementBase.ODERebuild;
 begin
-  if Initialized then begin
-    if FDynamic then begin
+  if Initialized then
+  begin
+    if FDynamic then
+    begin
       CalculateMass;
       AlignGeomElementToMatrix(FLocalMatrix);
-    end else
+    end
+    else
       AlignGeomElementToMatrix(AbsoluteMatrix);
   end;
   if Assigned(Owner) then
@@ -2881,21 +2575,21 @@ end;
 
 // SetPosition
 //
-procedure TODEElementBase.SetPosition(const Value : TVKCoordinates);
+procedure TODEElementBase.SetPosition(const Value: TVKCoordinates);
 begin
   FPosition.Assign(Value);
 end;
 
 // SetDirection
 //
-procedure TODEElementBase.SetDirection(const Value : TVKCoordinates);
+procedure TODEElementBase.SetDirection(const Value: TVKCoordinates);
 begin
   FDirection.Assign(Value);
 end;
 
 // SetUp
 //
-procedure TODEElementBase.SetUp(const Value : TVKCoordinates);
+procedure TODEElementBase.SetUp(const Value: TVKCoordinates);
 begin
   FUp.Assign(Value);
 end;
@@ -2907,35 +2601,35 @@ end;
 
 // BuildList
 //
-procedure TODEElementBox.Render(var rci : TVKRenderContextInfo);
+procedure TODEElementBox.Render(var rci: TVKRenderContextInfo);
 begin
   glPushMatrix;
 
   glMultMatrixf(@FLocalMatrix);
 
   glBegin(GL_LINE_LOOP);
-    glVertex3f(-FBoxWidth/2,-FBoxHeight/2,-FBoxDepth/2);
-    glVertex3f(-FBoxWidth/2,FBoxHeight/2,-FBoxDepth/2);
-    glVertex3f(-FBoxWidth/2,FBoxHeight/2,FBoxDepth/2);
-    glVertex3f(-FBoxWidth/2,-FBoxHeight/2,FBoxDepth/2);
+  glVertex3f(-FBoxWidth / 2, -FBoxHeight / 2, -FBoxDepth / 2);
+  glVertex3f(-FBoxWidth / 2, FBoxHeight / 2, -FBoxDepth / 2);
+  glVertex3f(-FBoxWidth / 2, FBoxHeight / 2, FBoxDepth / 2);
+  glVertex3f(-FBoxWidth / 2, -FBoxHeight / 2, FBoxDepth / 2);
   glEnd;
 
   glBegin(GL_LINE_LOOP);
-    glVertex3f(FBoxWidth/2,FBoxHeight/2,FBoxDepth/2);
-    glVertex3f(FBoxWidth/2,-FBoxHeight/2,FBoxDepth/2);
-    glVertex3f(FBoxWidth/2,-FBoxHeight/2,-FBoxDepth/2);
-    glVertex3f(FBoxWidth/2,FBoxHeight/2,-FBoxDepth/2);
+  glVertex3f(FBoxWidth / 2, FBoxHeight / 2, FBoxDepth / 2);
+  glVertex3f(FBoxWidth / 2, -FBoxHeight / 2, FBoxDepth / 2);
+  glVertex3f(FBoxWidth / 2, -FBoxHeight / 2, -FBoxDepth / 2);
+  glVertex3f(FBoxWidth / 2, FBoxHeight / 2, -FBoxDepth / 2);
   glEnd;
 
   glBegin(GL_LINES);
-    glVertex3f(-FBoxWidth/2,FBoxHeight/2,-FBoxDepth/2);
-    glVertex3f(FBoxWidth/2,FBoxHeight/2,-FBoxDepth/2);
-    glVertex3f(-FBoxWidth/2,-FBoxHeight/2,FBoxDepth/2);
-    glVertex3f(FBoxWidth/2,-FBoxHeight/2,FBoxDepth/2);
-    glVertex3f(-FBoxWidth/2,-FBoxHeight/2,-FBoxDepth/2);
-    glVertex3f(FBoxWidth/2,-FBoxHeight/2,-FBoxDepth/2);
-    glVertex3f(-FBoxWidth/2,FBoxHeight/2,FBoxDepth/2);
-    glVertex3f(FBoxWidth/2,FBoxHeight/2,FBoxDepth/2);
+  glVertex3f(-FBoxWidth / 2, FBoxHeight / 2, -FBoxDepth / 2);
+  glVertex3f(FBoxWidth / 2, FBoxHeight / 2, -FBoxDepth / 2);
+  glVertex3f(-FBoxWidth / 2, -FBoxHeight / 2, FBoxDepth / 2);
+  glVertex3f(FBoxWidth / 2, -FBoxHeight / 2, FBoxDepth / 2);
+  glVertex3f(-FBoxWidth / 2, -FBoxHeight / 2, -FBoxDepth / 2);
+  glVertex3f(FBoxWidth / 2, -FBoxHeight / 2, -FBoxDepth / 2);
+  glVertex3f(-FBoxWidth / 2, FBoxHeight / 2, FBoxDepth / 2);
+  glVertex3f(FBoxWidth / 2, FBoxHeight / 2, FBoxDepth / 2);
   glEnd;
 
   glPopMatrix;
@@ -2943,31 +2637,34 @@ end;
 
 // Create
 //
-constructor TODEElementBox.Create(AOwner : TVKXCollection);
+constructor TODEElementBox.Create(AOwner: TVKXCollection);
 begin
   inherited;
-  BoxWidth:=1;
-  BoxHeight:=1;
-  BoxDepth:=1;
+  BoxWidth := 1;
+  BoxHeight := 1;
+  BoxDepth := 1;
 end;
 
 // Initialize
 //
 procedure TODEElementBox.Initialize;
 begin
-  if FInitialized then exit;
-  if not IsODEInitialized then exit;
+  if FInitialized then
+    Exit;
+  if not IsODEInitialized then
+    Exit;
 
-  FGeomElement:=dCreateBox(nil,FBoxWidth,FBoxHeight,FBoxDepth);
+  FGeomElement := dCreateBox(nil, FBoxWidth, FBoxHeight, FBoxDepth);
   inherited;
 end;
 
 // WriteToFiler
 //
-procedure TODEElementBox.WriteToFiler(writer : TWriter);
+procedure TODEElementBox.WriteToFiler(writer: TWriter);
 begin
   inherited;
-  with writer do begin
+  with writer do
+  begin
     WriteInteger(0); // Archive version
     WriteFloat(BoxWidth);
     WriteFloat(BoxHeight);
@@ -2977,83 +2674,87 @@ end;
 
 // ReadFromFiler
 //
-procedure TODEElementBox.ReadFromFiler(reader : TReader);
+procedure TODEElementBox.ReadFromFiler(reader: TReader);
 begin
   inherited;
-  with reader do begin
+  with reader do
+  begin
     Assert(ReadInteger = 0); // Archive version
-    BoxWidth:=ReadFloat;
-    BoxHeight:=ReadFloat;
-    BoxDepth:=ReadFloat;
+    BoxWidth := ReadFloat;
+    BoxHeight := ReadFloat;
+    BoxDepth := ReadFloat;
   end;
 end;
 
 // FriendlyName
 //
-class function TODEElementBox.FriendlyName : String;
+class function TODEElementBox.FriendlyName: String;
 begin
-  Result:='Box';
+  Result := 'Box';
 end;
 
 // FriendlyDescription
 //
-class function TODEElementBox.FriendlyDescription : String;
+class function TODEElementBox.FriendlyDescription: String;
 begin
-  Result:='The ODE box element implementation';
+  Result := 'The ODE box element implementation';
 end;
 
 // ItemCategory
 //
-class function TODEElementBox.ItemCategory : String;
+class function TODEElementBox.ItemCategory: String;
 begin
-  Result:='Primitives';
+  Result := 'Primitives';
 end;
 
 // CalculateMass
 //
 function TODEElementBox.CalculateMass: TdMass;
 begin
-  dMassSetBox(FMass,FDensity,BoxWidth,BoxHeight,BoxDepth);
-  result:=inherited CalculateMass;
+  dMassSetBox(FMass, FDensity, BoxWidth, BoxHeight, BoxDepth);
+  Result := inherited CalculateMass;
 end;
 
 // GetBoxWidth
 //
 function TODEElementBox.GetBoxWidth: TdReal;
 var
-  vec : TdVector3;
+  vec: TdVector3;
 begin
-  if Assigned(FGeomTransform) then begin
-    dGeomBoxGetLengths(Geom,vec);
-    FBoxWidth:=vec[0];
+  if Assigned(FGeomTransform) then
+  begin
+    dGeomBoxGetLengths(Geom, vec);
+    FBoxWidth := vec[0];
   end;
-  result:=FBoxWidth;
+  Result := FBoxWidth;
 end;
 
 // GetBoxHeight
 //
 function TODEElementBox.GetBoxHeight: TdReal;
 var
-  vec : TdVector3;
+  vec: TdVector3;
 begin
-  if Assigned(FGeomTransform) then begin
-    dGeomBoxGetLengths(Geom,vec);
-    FBoxHeight:=vec[1];
+  if Assigned(FGeomTransform) then
+  begin
+    dGeomBoxGetLengths(Geom, vec);
+    FBoxHeight := vec[1];
   end;
-  result:=FBoxHeight;
+  Result := FBoxHeight;
 end;
 
 // GetBoxDepth
 //
 function TODEElementBox.GetBoxDepth: TdReal;
 var
-  vec : TdVector3;
+  vec: TdVector3;
 begin
-  if Assigned(FGeomTransform) then begin
-    dGeomBoxGetLengths(Geom,vec);
-    FBoxDepth:=vec[2];
+  if Assigned(FGeomTransform) then
+  begin
+    dGeomBoxGetLengths(Geom, vec);
+    FBoxDepth := vec[2];
   end;
-  result:=FBoxDepth;
+  Result := FBoxDepth;
 end;
 
 // ODERebuild
@@ -3061,7 +2762,7 @@ end;
 procedure TODEElementBox.ODERebuild;
 begin
   if Assigned(Geom) then
-    dGeomBoxSetLengths(Geom,FBoxWidth,FBoxHeight,FBoxDepth);
+    dGeomBoxSetLengths(Geom, FBoxWidth, FBoxHeight, FBoxDepth);
   inherited;
 end;
 
@@ -3069,7 +2770,7 @@ end;
 //
 procedure TODEElementBox.SetBoxWidth(const Value: TdReal);
 begin
-  FBoxWidth:=Value;
+  FBoxWidth := Value;
   ODERebuild;
 end;
 
@@ -3077,7 +2778,7 @@ end;
 //
 procedure TODEElementBox.SetBoxHeight(const Value: TdReal);
 begin
-  FBoxHeight:=Value;
+  FBoxHeight := Value;
   ODERebuild;
 end;
 
@@ -3085,7 +2786,7 @@ end;
 //
 procedure TODEElementBox.SetBoxDepth(const Value: TdReal);
 begin
-  FBoxDepth:=Value;
+  FBoxDepth := Value;
   ODERebuild;
 end;
 
@@ -3096,66 +2797,70 @@ end;
 
 // Render
 //
-procedure TODEElementSphere.Render(var rci : TVKRenderContextInfo);
+procedure TODEElementSphere.Render(var rci: TVKRenderContextInfo);
 var
-  AngTop, AngBottom, AngStart, AngStop, StepV, StepH : Double;
-  SinP, CosP, SinP2, CosP2, SinT, CosT, Phi, Phi2, Theta: Double;
-  FTop, FBottom, FStart, FStop : Single;
-  I, J, FSlices, FStacks: Integer;
+  AngTop, AngBottom, AngStart, AngStop, StepV, StepH: double;
+  SinP, CosP, SinP2, CosP2, SinT, CosT, Phi, Phi2, Theta: double;
+  FTop, FBottom, FStart, FStop: Single;
+  i, J, FSlices, FStacks: Integer;
 begin
   glPushMatrix;
 
   glMultMatrixf(@FLocalMatrix);
   glScalef(Radius, Radius, Radius);
 
-  FTop:=90;
-  FBottom:=-90;
-  FStart:=0;
-  FStop:=360;
-  FSlices:=16;
-  FStacks:=16;
+  FTop := 90;
+  FBottom := -90;
+  FStart := 0;
+  FStop := 360;
+  FSlices := 16;
+  FStacks := 16;
 
-  AngTop:=DegToRadian(FTop);
-  AngBottom:=DegToRadian(FBottom);
-  AngStart:=DegToRadian(FStart);
-  AngStop:=DegToRadian(FStop);
-  StepH:=(AngStop - AngStart) / FSlices;
-  StepV:=(AngTop - AngBottom) / FStacks;
+  AngTop := DegToRadian(FTop);
+  AngBottom := DegToRadian(FBottom);
+  AngStart := DegToRadian(FStart);
+  AngStop := DegToRadian(FStop);
+  StepH := (AngStop - AngStart) / FSlices;
+  StepV := (AngTop - AngBottom) / FStacks;
 
-  Phi:=AngTop;
-  Phi2:=Phi-StepV;
-  for J:=0 to FStacks-1 do begin
-    Theta:=AngStart;
+  Phi := AngTop;
+  Phi2 := Phi - StepV;
+  for J := 0 to FStacks - 1 do
+  begin
+    Theta := AngStart;
     SinCosine(Phi, SinP, CosP);
     SinCosine(Phi2, SinP2, CosP2);
 
     glBegin(GL_LINE_LOOP);
-    for i:=0 to FSlices do begin
+    for i := 0 to FSlices do
+    begin
       SinCosine(Theta, SinT, CosT);
-      glVertex3f(CosP*SinT,SinP,CosP*CosT);
-      Theta:=Theta+StepH;
+      glVertex3f(CosP * SinT, SinP, CosP * CosT);
+      Theta := Theta + StepH;
     end;
     glEnd;
-    Phi:=Phi2;
-    Phi2:=Phi2 - StepV;
+    Phi := Phi2;
+    Phi2 := Phi2 - StepV;
   end;
 
-  Phi:=AngTop;
-  Phi2:=Phi-StepV;
-  for J:=0 to FStacks-1 do begin
-    Theta:=AngStart;
+  Phi := AngTop;
+  Phi2 := Phi - StepV;
+  for J := 0 to FStacks - 1 do
+  begin
+    Theta := AngStart;
     SinCosine(Phi, SinP, CosP);
     SinCosine(Phi2, SinP2, CosP2);
 
     glBegin(GL_LINE_LOOP);
-    for i:=0 to FSlices do begin
+    for i := 0 to FSlices do
+    begin
       SinCosine(Theta, SinT, CosT);
-      glVertex3f(SinP,CosP*SinT,CosP*CosT);
-      Theta:=Theta+StepH;
+      glVertex3f(SinP, CosP * SinT, CosP * CosT);
+      Theta := Theta + StepH;
     end;
     glEnd;
-    Phi:=Phi2;
-    Phi2:=Phi2 - StepV;
+    Phi := Phi2;
+    Phi2 := Phi2 - StepV;
   end;
 
   glPopMatrix;
@@ -3163,29 +2868,32 @@ end;
 
 // Create
 //
-constructor TODEElementSphere.Create(AOwner : TVKXCollection);
+constructor TODEElementSphere.Create(AOwner: TVKXCollection);
 begin
   inherited;
-  FRadius:=0.5;
+  FRadius := 0.5;
 end;
 
 // Initialize
 //
 procedure TODEElementSphere.Initialize;
 begin
-  if FInitialized then exit;
-  if not IsODEInitialized then exit;
+  if FInitialized then
+    Exit;
+  if not IsODEInitialized then
+    Exit;
 
-  FGeomElement:=dCreateSphere(nil,FRadius);
+  FGeomElement := dCreateSphere(nil, FRadius);
   inherited;
 end;
 
 // WriteToFiler
 //
-procedure TODEElementSphere.WriteToFiler(writer : TWriter);
+procedure TODEElementSphere.WriteToFiler(writer: TWriter);
 begin
   inherited;
-  with writer do begin
+  with writer do
+  begin
     WriteInteger(0); // Archive version
     WriteFloat(Radius);
   end;
@@ -3193,42 +2901,43 @@ end;
 
 // ReadFromFiler
 //
-procedure TODEElementSphere.ReadFromFiler(reader : TReader);
+procedure TODEElementSphere.ReadFromFiler(reader: TReader);
 begin
   inherited;
-  with reader do begin
+  with reader do
+  begin
     Assert(ReadInteger = 0); // Archive version
-    Radius:=ReadFloat;
+    Radius := ReadFloat;
   end;
 end;
 
 // FriendlyName
 //
-class function TODEElementSphere.FriendlyName : String;
+class function TODEElementSphere.FriendlyName: String;
 begin
-  Result:='Sphere';
+  Result := 'Sphere';
 end;
 
 // FriendlyDescription
 //
-class function TODEElementSphere.FriendlyDescription : String;
+class function TODEElementSphere.FriendlyDescription: String;
 begin
-  Result:='The ODE sphere element implementation';
+  Result := 'The ODE sphere element implementation';
 end;
 
 // ItemCategory
 //
-class function TODEElementSphere.ItemCategory : String;
+class function TODEElementSphere.ItemCategory: String;
 begin
-  Result:='Primitives';
+  Result := 'Primitives';
 end;
 
 // CalculateMass
 //
 function TODEElementSphere.CalculateMass: TdMass;
 begin
-  dMassSetSphere(FMass,FDensity,Radius);
-  result:=inherited CalculateMass;
+  dMassSetSphere(FMass, FDensity, Radius);
+  Result := inherited CalculateMass;
 end;
 
 // GetRadius
@@ -3236,16 +2945,17 @@ end;
 function TODEElementSphere.GetRadius: TdReal;
 begin
   if Assigned(FGeomElement) then
-    FRadius:=dGeomSphereGetRadius(FGeomElement);
-  result:=FRadius;
+    FRadius := dGeomSphereGetRadius(FGeomElement);
+  Result := FRadius;
 end;
 
 // ODERebuild
 //
 procedure TODEElementSphere.ODERebuild;
 begin
-  if Assigned(Geom) then begin
-    dGeomSphereSetRadius(Geom,FRadius);
+  if Assigned(Geom) then
+  begin
+    dGeomSphereSetRadius(Geom, FRadius);
   end;
   inherited;
 end;
@@ -3254,7 +2964,7 @@ end;
 //
 procedure TODEElementSphere.SetRadius(const Value: TdReal);
 begin
-  FRadius:=Value;
+  FRadius := Value;
   ODERebuild;
 end;
 
@@ -3265,51 +2975,61 @@ end;
 
 // Render
 //
-procedure TODEElementCapsule.Render(var rci : TVKRenderContextInfo);
+procedure TODEElementCapsule.Render(var rci: TVKRenderContextInfo);
 var
-  i,j,
-  Stacks,Slices : integer;
+  i, J, Stacks, Slices: Integer;
 begin
   glPushMatrix;
 
   glMultMatrixf(@FLocalMatrix);
 
-  Stacks:=8;
-  Slices:=16;
+  Stacks := 8;
+  Slices := 16;
 
   // Middle horizontal circles
-  for j:=0 to Stacks-1 do begin
+  for J := 0 to Stacks - 1 do
+  begin
     glBegin(GL_LINE_LOOP);
-      for i:=0 to Slices-1 do
-        glVertex3f(FRadius*sin(2*i*PI/Slices),FRadius*cos(2*i*PI/Slices),-FLength/2+FLength*j/(Stacks-1));
+    for i := 0 to Slices - 1 do
+      glVertex3f(FRadius * sin(2 * i * PI / Slices),
+        FRadius * cos(2 * i * PI / Slices), -FLength / 2 + FLength * J /
+        (Stacks - 1));
     glEnd;
   end;
 
   // Middle vertical lines
   glBegin(GL_LINES);
-    for i:=0 to (Slices div 2)-1 do begin
-      glVertex3f(FRadius*sin(2*i*PI/Slices),FRadius*cos(2*i*PI/Slices),-FLength/2);
-      glVertex3f(FRadius*sin(2*i*PI/Slices),FRadius*cos(2*i*PI/Slices),FLength/2);
-      glVertex3f(-FRadius*sin(2*i*PI/Slices),-FRadius*cos(2*i*PI/Slices),-FLength/2);
-      glVertex3f(-FRadius*sin(2*i*PI/Slices),-FRadius*cos(2*i*PI/Slices),FLength/2);
-    end;
+  for i := 0 to (Slices div 2) - 1 do
+  begin
+    glVertex3f(FRadius * sin(2 * i * PI / Slices),
+      FRadius * cos(2 * i * PI / Slices), -FLength / 2);
+    glVertex3f(FRadius * sin(2 * i * PI / Slices),
+      FRadius * cos(2 * i * PI / Slices), FLength / 2);
+    glVertex3f(-FRadius * sin(2 * i * PI / Slices),
+      -FRadius * cos(2 * i * PI / Slices), -FLength / 2);
+    glVertex3f(-FRadius * sin(2 * i * PI / Slices),
+      -FRadius * cos(2 * i * PI / Slices), FLength / 2);
+  end;
   glEnd;
 
   // Cap XZ half-circles
   glPushMatrix;
-  for j:=0 to (Slices div 2)-1 do begin
+  for J := 0 to (Slices div 2) - 1 do
+  begin
     // Top
     glBegin(GL_LINE_STRIP);
-      for i:=0 to Slices do
-        glVertex3f(FRadius*cos(i*PI/Slices),0,FRadius*sin(i*PI/Slices)+FLength/2);
+    for i := 0 to Slices do
+      glVertex3f(FRadius * cos(i * PI / Slices), 0,
+        FRadius * sin(i * PI / Slices) + FLength / 2);
     glEnd;
 
     // Bottom
     glBegin(GL_LINE_STRIP);
-      for i:=0 to Slices do
-        glVertex3f(FRadius*cos(i*PI/Slices),0,-(FRadius*sin(i*PI/Slices)+FLength/2));
+    for i := 0 to Slices do
+      glVertex3f(FRadius * cos(i * PI / Slices), 0,
+        -(FRadius * sin(i * PI / Slices) + FLength / 2));
     glEnd;
-    glRotatef(360/Slices,0,0,1);
+    glRotatef(360 / Slices, 0, 0, 1);
   end;
   glPopMatrix;
   glPopMatrix;
@@ -3317,30 +3037,33 @@ end;
 
 // Create
 //
-constructor TODEElementCapsule.Create(AOwner : TVKXCollection);
+constructor TODEElementCapsule.Create(AOwner: TVKXCollection);
 begin
   inherited;
-  FRadius:=0.5;
-  FLength:=1;
+  FRadius := 0.5;
+  FLength := 1;
 end;
 
 // Initialize
 //
 procedure TODEElementCapsule.Initialize;
 begin
-  if FInitialized then exit;
-  if not IsODEInitialized then exit;
+  if FInitialized then
+    Exit;
+  if not IsODEInitialized then
+    Exit;
 
-  FGeomElement:=dCreateCapsule(nil,FRadius,FLength);
+  FGeomElement := dCreateCapsule(nil, FRadius, FLength);
   inherited;
 end;
 
 // WriteToFiler
 //
-procedure TODEElementCapsule.WriteToFiler(writer : TWriter);
+procedure TODEElementCapsule.WriteToFiler(writer: TWriter);
 begin
   inherited;
-  with writer do begin
+  with writer do
+  begin
     WriteInteger(0); // Archive version
     WriteFloat(Radius);
     WriteFloat(Length);
@@ -3349,69 +3072,72 @@ end;
 
 // ReadFromFiler
 //
-procedure TODEElementCapsule.ReadFromFiler(reader : TReader);
+procedure TODEElementCapsule.ReadFromFiler(reader: TReader);
 begin
   inherited;
-  with reader do begin
+  with reader do
+  begin
     Assert(ReadInteger = 0); // Archive version
-    Radius:=ReadFloat;
-    Length:=ReadFloat;
+    Radius := ReadFloat;
+    Length := ReadFloat;
   end;
 end;
 
 // FriendlyName
 //
-class function TODEElementCapsule.FriendlyName : String;
+class function TODEElementCapsule.FriendlyName: String;
 begin
-  Result:='Capsule';
+  Result := 'Capsule';
 end;
 
 // FriendlyDescription
 //
-class function TODEElementCapsule.FriendlyDescription : String;
+class function TODEElementCapsule.FriendlyDescription: String;
 begin
-  Result:='The ODE capped cylinder element implementation';
+  Result := 'The ODE capped cylinder element implementation';
 end;
 
 // ItemCategory
 //
-class function TODEElementCapsule.ItemCategory : String;
+class function TODEElementCapsule.ItemCategory: String;
 begin
-  Result:='Primitives';
+  Result := 'Primitives';
 end;
 
 // CalculateMass
 //
 function TODEElementCapsule.CalculateMass: TdMass;
 begin
-  dMassSetCapsule(FMass,FDensity,3,FRadius,FLength);
-  result:=inherited CalculateMass;
+  dMassSetCapsule(FMass, FDensity, 3, FRadius, FLength);
+  Result := inherited CalculateMass;
 end;
 
 // GetRadius
 //
 function TODEElementCapsule.GetRadius: TdReal;
 var
-  rad, len : TdReal;
+  rad, len: TdReal;
 begin
-  if Assigned(FGeomElement) then begin
-    dGeomCapsuleGetParams(Geom,rad,len);
-    FRadius:=rad;
+  if Assigned(FGeomElement) then
+  begin
+    dGeomCapsuleGetParams(Geom, rad, len);
+    FRadius := rad;
   end;
-  result:=FRadius;
+  Result := FRadius;
 end;
 
 // GetLength
 //
 function TODEElementCapsule.GetLength: TdReal;
 var
-  rad, len : TdReal;
+  rad, len: TdReal;
 begin
-  if Assigned(FGeomElement) then begin
-    dGeomCapsuleGetParams(Geom,rad,len);
-    FLength:=len;
+  if Assigned(FGeomElement) then
+  begin
+    dGeomCapsuleGetParams(Geom, rad, len);
+    FLength := len;
   end;
-  result:=FLength;
+  Result := FLength;
 end;
 
 // ODERebuild
@@ -3419,7 +3145,7 @@ end;
 procedure TODEElementCapsule.ODERebuild;
 begin
   if Assigned(Geom) then
-    dGeomCapsuleSetParams(Geom,FRadius,FLength);
+    dGeomCapsuleSetParams(Geom, FRadius, FLength);
   inherited;
 end;
 
@@ -3427,7 +3153,7 @@ end;
 //
 procedure TODEElementCapsule.SetRadius(const Value: TdReal);
 begin
-  FRadius:=Value;
+  FRadius := Value;
   ODERebuild;
 end;
 
@@ -3435,7 +3161,7 @@ end;
 //
 procedure TODEElementCapsule.SetLength(const Value: TdReal);
 begin
-  FLength:=Value;
+  FLength := Value;
   ODERebuild;
 end;
 
@@ -3446,46 +3172,53 @@ end;
 
 // Render
 //
-procedure TODEElementCylinder.Render(var rci : TVKRenderContextInfo);
+procedure TODEElementCylinder.Render(var rci: TVKRenderContextInfo);
 var
-  i,j,
-  Stacks,Slices : integer;
+  i, J, Stacks, Slices: Integer;
 begin
   glPushMatrix;
 
   glMultMatrixf(@FLocalMatrix);
 
-  Stacks:=8;
-  Slices:=16;
+  Stacks := 8;
+  Slices := 16;
 
   // Middle horizontal circles
-  for j:=0 to Stacks-1 do begin
+  for J := 0 to Stacks - 1 do
+  begin
     glBegin(GL_LINE_LOOP);
-      for i:=0 to Slices-1 do
-        glVertex3f(FRadius*sin(2*i*PI/Slices),-FLength/2+FLength*j/(Stacks-1),FRadius*cos(2*i*PI/Slices));
+    for i := 0 to Slices - 1 do
+      glVertex3f(FRadius * sin(2 * i * PI / Slices), -FLength / 2 + FLength * J
+        / (Stacks - 1), FRadius * cos(2 * i * PI / Slices));
     glEnd;
   end;
 
   // Middle vertical lines
   glBegin(GL_LINES);
-    for i:=0 to (Slices div 2)-1 do begin
-      glVertex3f(FRadius*sin(2*i*PI/Slices),-FLength/2,FRadius*cos(2*i*PI/Slices));
-      glVertex3f(FRadius*sin(2*i*PI/Slices),FLength/2,FRadius*cos(2*i*PI/Slices));
-      glVertex3f(-FRadius*sin(2*i*PI/Slices),-FLength/2,-FRadius*cos(2*i*PI/Slices));
-      glVertex3f(-FRadius*sin(2*i*PI/Slices),FLength/2,-FRadius*cos(2*i*PI/Slices));
-    end;
+  for i := 0 to (Slices div 2) - 1 do
+  begin
+    glVertex3f(FRadius * sin(2 * i * PI / Slices), -FLength / 2,
+      FRadius * cos(2 * i * PI / Slices));
+    glVertex3f(FRadius * sin(2 * i * PI / Slices), FLength / 2,
+      FRadius * cos(2 * i * PI / Slices));
+    glVertex3f(-FRadius * sin(2 * i * PI / Slices), -FLength / 2,
+      -FRadius * cos(2 * i * PI / Slices));
+    glVertex3f(-FRadius * sin(2 * i * PI / Slices), FLength / 2,
+      -FRadius * cos(2 * i * PI / Slices));
+  end;
   glEnd;
 
   // Caps
   glPushMatrix;
-  for j:=0 to (Slices div 2)-1 do begin
+  for J := 0 to (Slices div 2) - 1 do
+  begin
     glBegin(GL_LINES);
-      glVertex3f(-FRadius,FLength/2,0);
-      glVertex3f(FRadius,FLength/2,0);
-      glVertex3f(-FRadius,-FLength/2,0);
-      glVertex3f(FRadius,-FLength/2,0);
+    glVertex3f(-FRadius, FLength / 2, 0);
+    glVertex3f(FRadius, FLength / 2, 0);
+    glVertex3f(-FRadius, -FLength / 2, 0);
+    glVertex3f(FRadius, -FLength / 2, 0);
     glEnd;
-    glRotatef(360/Slices,0,1,0);
+    glRotatef(360 / Slices, 0, 1, 0);
   end;
   glPopMatrix;
 
@@ -3497,27 +3230,30 @@ end;
 constructor TODEElementCylinder.Create(AOwner: TVKXCollection);
 begin
   inherited;
-  FRadius:=0.5;
-  FLength:=1;
+  FRadius := 0.5;
+  FLength := 1;
 end;
 
 // Initialize
 //
 procedure TODEElementCylinder.Initialize;
 begin
-  if FInitialized then exit;
-  if not IsODEInitialized then exit;
+  if FInitialized then
+    Exit;
+  if not IsODEInitialized then
+    Exit;
 
-  FGeomElement:=dCreateCylinder(nil,FRadius,FLength);
+  FGeomElement := dCreateCylinder(nil, FRadius, FLength);
   inherited;
 end;
 
 // WriteToFiler
 //
-procedure TODEElementCylinder.WriteToFiler(writer : TWriter);
+procedure TODEElementCylinder.WriteToFiler(writer: TWriter);
 begin
   inherited;
-  with writer do begin
+  with writer do
+  begin
     WriteInteger(0); // Archive version
     WriteFloat(Radius);
     WriteFloat(Length);
@@ -3526,69 +3262,72 @@ end;
 
 // ReadFromFiler
 //
-procedure TODEElementCylinder.ReadFromFiler(reader : TReader);
+procedure TODEElementCylinder.ReadFromFiler(reader: TReader);
 begin
   inherited;
-  with reader do begin
+  with reader do
+  begin
     Assert(ReadInteger = 0); // Archive version
-    Radius:=ReadFloat;
-    Length:=ReadFloat;
+    Radius := ReadFloat;
+    Length := ReadFloat;
   end;
 end;
 
 // FriendlyName
 //
-class function TODEElementCylinder.FriendlyName : String;
+class function TODEElementCylinder.FriendlyName: String;
 begin
-  Result:='Cylinder';
+  Result := 'Cylinder';
 end;
 
 // FriendlyDescription
 //
-class function TODEElementCylinder.FriendlyDescription : String;
+class function TODEElementCylinder.FriendlyDescription: String;
 begin
-  Result:='The ODE cylinder element implementation';
+  Result := 'The ODE cylinder element implementation';
 end;
 
 // ItemCategory
 //
-class function TODEElementCylinder.ItemCategory : String;
+class function TODEElementCylinder.ItemCategory: String;
 begin
-  Result:='Primitives';
+  Result := 'Primitives';
 end;
 
 // CalculateMass
 //
 function TODEElementCylinder.CalculateMass: TdMass;
 begin
-  dMassSetCylinder(FMass,FDensity,3,FRadius,FLength);
-  result:=inherited CalculateMass;
+  dMassSetCylinder(FMass, FDensity, 3, FRadius, FLength);
+  Result := inherited CalculateMass;
 end;
 
 // GetRadius
 //
 function TODEElementCylinder.GetRadius: TdReal;
 var
-  rad, len : TdReal;
+  rad, len: TdReal;
 begin
-  if Assigned(FGeomElement) then begin
-    dGeomCylinderGetParams(Geom,rad,len);
-    FRadius:=rad;
+  if Assigned(FGeomElement) then
+  begin
+    dGeomCylinderGetParams(Geom, rad, len);
+    FRadius := rad;
   end;
-  result:=FRadius;
+  Result := FRadius;
 end;
 
 // GetLength
 //
 function TODEElementCylinder.GetLength: TdReal;
 var
-  rad, len : TdReal;
+  rad, len: TdReal;
 begin
-  if Assigned(FGeomElement) then begin
-    dGeomCylinderGetParams(Geom,rad,len);
-    FLength:=len;
+  if Assigned(FGeomElement) then
+  begin
+    dGeomCylinderGetParams(Geom, rad, len);
+    FLength := len;
   end;
-  result:=FLength;
+  Result := FLength;
 end;
 
 // ODERebuild
@@ -3596,7 +3335,7 @@ end;
 procedure TODEElementCylinder.ODERebuild;
 begin
   if Assigned(Geom) then
-    dGeomCylinderSetParams(Geom,FRadius,FLength);
+    dGeomCylinderSetParams(Geom, FRadius, FLength);
   inherited;
 end;
 
@@ -3604,7 +3343,7 @@ end;
 //
 procedure TODEElementCylinder.SetRadius(const Value: TdReal);
 begin
-  FRadius:=Value;
+  FRadius := Value;
   ODERebuild;
 end;
 
@@ -3612,7 +3351,7 @@ end;
 //
 procedure TODEElementCylinder.SetLength(const Value: TdReal);
 begin
-  FLength:=Value;
+  FLength := Value;
   ODERebuild;
 end;
 
@@ -3624,11 +3363,11 @@ end;
 
 // Create
 //
-constructor TODEElementTriMesh.Create(AOwner : TVKXCollection);
+constructor TODEElementTriMesh.Create(AOwner: TVKXCollection);
 begin
   inherited;
-  FVertices:=TAffineVectorList.Create;
-  FIndices:=TIntegerList.Create;
+  FVertices := TAffineVectorList.Create;
+  FIndices := TIntegerList.Create;
 end;
 
 // Destroy
@@ -3644,15 +3383,16 @@ end;
 //
 procedure TODEElementTriMesh.Initialize;
 begin
-  if not IsODEInitialized then exit;
-  if FInitialized or not ((FVertices.Count>0) and (FIndices.Count>0)) then exit;
+  if not IsODEInitialized then
+    Exit;
+  if FInitialized or not((FVertices.Count > 0) and (FIndices.Count > 0)) then
+    Exit;
 
-  FTriMeshData:=dGeomTriMeshDataCreate;
+  FTriMeshData := dGeomTriMeshDataCreate;
   dGeomTriMeshDataBuildSingle(FTriMeshData, @FVertices.List[0],
-                              3*SizeOf(Single), FVertices.Count,
-                              @FIndices.List[0], FIndices.Count,
-                              3*SizeOf(Integer));
-  FGeomElement:=dCreateTriMesh(nil, FTriMeshData, nil, nil, nil);
+    3 * SizeOf(Single), FVertices.Count, @FIndices.List[0], FIndices.Count,
+    3 * SizeOf(Integer));
+  FGeomElement := dCreateTriMesh(nil, FTriMeshData, nil, nil, nil);
 
   inherited;
 end;
@@ -3661,7 +3401,8 @@ end;
 //
 procedure TODEElementTriMesh.Finalize;
 begin
-  if not FInitialized then exit;
+  if not FInitialized then
+    Exit;
   if Assigned(FTriMeshData) then
     dGeomTriMeshDataDestroy(FTriMeshData);
   inherited;
@@ -3669,64 +3410,68 @@ end;
 
 // WriteToFiler
 //
-procedure TODEElementTriMesh.WriteToFiler(writer : TWriter);
+procedure TODEElementTriMesh.WriteToFiler(writer: TWriter);
 begin
   inherited;
-  with writer do begin
+  with writer do
+  begin
     WriteInteger(0); // Archive version
   end;
 end;
 
 // ReadFromFiler
 //
-procedure TODEElementTriMesh.ReadFromFiler(reader : TReader);
+procedure TODEElementTriMesh.ReadFromFiler(reader: TReader);
 begin
   inherited;
-  with reader do begin
+  with reader do
+  begin
     Assert(ReadInteger = 0); // Archive version
   end;
 end;
 
 // FriendlyName
 //
-class function TODEElementTriMesh.FriendlyName : String;
+class function TODEElementTriMesh.FriendlyName: String;
 begin
-  Result:='Tri-Mesh';
+  Result := 'Tri-Mesh';
 end;
 
 // FriendlyDescription
 //
-class function TODEElementTriMesh.FriendlyDescription : String;
+class function TODEElementTriMesh.FriendlyDescription: String;
 begin
-  Result:='The ODE tri-mesh element implementation';
+  Result := 'The ODE tri-mesh element implementation';
 end;
 
 // ItemCategory
 //
-class function TODEElementTriMesh.ItemCategory : String;
+class function TODEElementTriMesh.ItemCategory: String;
 begin
-  Result:='Meshes';
+  Result := 'Meshes';
 end;
 
 // CalculateMass
 //
 function TODEElementTriMesh.CalculateMass: TdMass;
 var
-  r : Single;
-  min, max : TAffineVector;
+  R: Single;
+  min, max: TAffineVector;
 begin
-  if Vertices.Count>0 then begin
-    Vertices.GetExtents(min,max);
-    r:=MaxFloat(VectorLength(min), VectorLength(Max));
-  end else
-    r:=1;
-  dMassSetSphere(FMass,FDensity,r);
-  result:=inherited CalculateMass;
+  if Vertices.Count > 0 then
+  begin
+    Vertices.GetExtents(min, max);
+    R := MaxFloat(VectorLength(min), VectorLength(max));
+  end
+  else
+    R := 1;
+  dMassSetSphere(FMass, FDensity, R);
+  Result := inherited CalculateMass;
 end;
 
 // SetVertices
 //
-procedure TODEElementTriMesh.SetVertices(const Value : TAffineVectorList);
+procedure TODEElementTriMesh.SetVertices(const Value: TAffineVectorList);
 begin
   FVertices.Assign(Value);
   RefreshTriMeshData;
@@ -3734,7 +3479,7 @@ end;
 
 // SetIndices
 //
-procedure TODEElementTriMesh.SetIndices(const Value : TIntegerList);
+procedure TODEElementTriMesh.SetIndices(const Value: TIntegerList);
 begin
   FIndices.Assign(Value);
   RefreshTriMeshData;
@@ -3758,16 +3503,18 @@ end;
 //
 procedure TODEElementPlane.Initialize;
 begin
-  if FInitialized then exit;
-  if not IsODEInitialized then exit;
+  if FInitialized then
+    Exit;
+  if not IsODEInitialized then
+    Exit;
 
-  FGeomElement:=dCreatePlane(nil,0,0,1,0);
+  FGeomElement := dCreatePlane(nil, 0, 0, 1, 0);
   inherited;
 end;
 
 // WriteToFiler
 //
-procedure TODEElementPlane.WriteToFiler(writer : TWriter);
+procedure TODEElementPlane.WriteToFiler(writer: TWriter);
 begin
   // ArchiveVersion 1, added inherited call
   writer.WriteInteger(1);
@@ -3776,56 +3523,57 @@ end;
 
 // ReadFromFiler
 //
-procedure TODEElementPlane.ReadFromFiler(reader : TReader);
+procedure TODEElementPlane.ReadFromFiler(reader: TReader);
 var
-  archiveVersion : Integer;
+  archiveVersion: Integer;
 begin
-  archiveVersion:=reader.ReadInteger;
-  Assert(archiveVersion in [0..1]);
+  archiveVersion := reader.ReadInteger;
+  Assert(archiveVersion in [0 .. 1]);
   if archiveVersion >= 1 then
     inherited;
 end;
 
 // FriendlyName
 //
-class function TODEElementPlane.FriendlyName : String;
+class function TODEElementPlane.FriendlyName: String;
 begin
-  Result:='Plane';
+  Result := 'Plane';
 end;
 
 // FriendlyDescription
 //
-class function TODEElementPlane.FriendlyDescription : String;
+class function TODEElementPlane.FriendlyDescription: String;
 begin
-  Result:='The ODE plane element implementation';
+  Result := 'The ODE plane element implementation';
 end;
 
 // ItemCategory
 //
-class function TODEElementPlane.ItemCategory : String;
+class function TODEElementPlane.ItemCategory: String;
 begin
-  Result:='Primitives';
+  Result := 'Primitives';
 end;
 
 // CanAddTo
 //
-class function TODEElementPlane.CanAddTo(collection : TVKXCollection) : Boolean;
+class function TODEElementPlane.CanAddTo(collection: TVKXCollection): Boolean;
 begin
-  Result:=False;
+  Result := False;
   if Assigned(TODEElements(collection).Owner) then
     if TODEElements(collection).Owner is TVKODEStatic then
-      Result:=True;
+      Result := True;
 end;
 
 // AlignGeomElementToMatrix
 //
-procedure TODEElementPlane.AlignGeomElementToMatrix(Mat:TMatrix);
+procedure TODEElementPlane.AlignGeomElementToMatrix(Mat: TMatrix);
 var
-  d : Single;
+  d: Single;
 begin
-  if not Assigned(FGeomElement) then exit;
-  d:=VectorDotProduct(Mat.Z, Mat.W);
-  dGeomPlaneSetParams(FGeomElement,Mat.Z.X,Mat.Z.Y,Mat.Z.Z,d);
+  if not Assigned(FGeomElement) then
+    Exit;
+  d := VectorDotProduct(Mat.Z, Mat.W);
+  dGeomPlaneSetParams(FGeomElement, Mat.Z.X, Mat.Z.Y, Mat.Z.Z, d);
 end;
 
 
@@ -3835,18 +3583,18 @@ end;
 
 // ItemsClass
 //
-class function TODEJoints.ItemsClass : TVKXCollectionItemClass;
+class function TODEJoints.ItemsClass: TVKXCollectionItemClass;
 begin
-  Result:=TODEJointBase;
+  Result := TODEJointBase;
 end;
 
 // Initialize
 //
 procedure TODEJoints.Initialize;
 var
-  i : integer;
+  i: Integer;
 begin
-  for i:=0 to Count-1 do
+  for i := 0 to Count - 1 do
     Joint[i].Initialize;
 end;
 
@@ -3854,17 +3602,17 @@ end;
 //
 procedure TODEJoints.Finalize;
 var
-  i : integer;
+  i: Integer;
 begin
-  for i:=0 to Count-1 do
+  for i := 0 to Count - 1 do
     Joint[i].Finalize;
 end;
 
 // GetJoint
 //
-function TODEJoints.GetJoint(index: integer): TODEJointBase;
+function TODEJoints.GetJoint(index: Integer): TODEJointBase;
 begin
-  Result:=TODEJointBase(Items[index]);
+  Result := TODEJointBase(Items[index]);
 end;
 
 
@@ -3877,7 +3625,7 @@ end;
 constructor TVKODEJointList.Create(AOwner: TComponent);
 begin
   inherited;
-  FJoints:=TODEJoints.Create(Self);
+  FJoints := TODEJoints.Create(Self);
 end;
 
 // Destroy
@@ -3893,18 +3641,17 @@ end;
 procedure TVKODEJointList.DefineProperties(Filer: TFiler);
 begin
   inherited;
-  Filer.DefineBinaryProperty('ODEJointsData',
-                             ReadJoints, WriteJoints,
-                             (Assigned(FJoints) and (FJoints.Count>0)));
+  Filer.DefineBinaryProperty('ODEJointsData', ReadJoints, WriteJoints,
+    (Assigned(FJoints) and (FJoints.Count > 0)));
 end;
 
 // WriteJoints
 //
-procedure TVKODEJointList.WriteJoints(stream : TStream);
+procedure TVKODEJointList.WriteJoints(stream: TStream);
 var
-  writer : TWriter;
+  writer: TWriter;
 begin
-  writer:=TWriter.Create(stream, 16384);
+  writer := TWriter.Create(stream, 16384);
   try
     Joints.WriteToFiler(writer);
   finally
@@ -3914,11 +3661,11 @@ end;
 
 // ReadJoints
 //
-procedure TVKODEJointList.ReadJoints(stream : TStream);
+procedure TVKODEJointList.ReadJoints(stream: TStream);
 var
-  reader : TReader;
+  reader: TReader;
 begin
-  reader:=TReader.Create(stream, 16384);
+  reader := TReader.Create(stream, 16384);
   try
     Joints.ReadFromFiler(reader);
   finally
@@ -3930,26 +3677,28 @@ end;
 //
 procedure TVKODEJointList.Loaded;
 var
-  i : integer;
+  i: Integer;
 begin
   inherited;
-  for i:=0 to FJoints.Count-1 do
+  for i := 0 to FJoints.Count - 1 do
     FJoints[i].Loaded;
 end;
 
 // Notification
 //
-procedure TVKODEJointList.Notification(AComponent: TComponent; Operation: TOperation);
+procedure TVKODEJointList.Notification(AComponent: TComponent;
+  Operation: TOperation);
 var
-  i : Integer;
+  i: Integer;
 begin
   inherited;
   if (Operation = opRemove) and (AComponent is TVKBaseSceneObject) then
-    for i:=0 to Joints.Count-1 do begin
+    for i := 0 to Joints.Count - 1 do
+    begin
       if TVKBaseSceneObject(AComponent) = Joints[i].Object1 then
-        Joints[i].Object1:=nil;
+        Joints[i].Object1 := nil;
       if TVKBaseSceneObject(AComponent) = Joints[i].Object2 then
-        Joints[i].Object2:=nil;
+        Joints[i].Object2 := nil;
     end;
 end;
 
@@ -3960,12 +3709,12 @@ end;
 
 // Create
 //
-constructor TODEJointBase.Create(AOwner : TVKXCollection);
+constructor TODEJointBase.Create(AOwner: TVKXCollection);
 begin
   inherited;
-  FJointID:=nil;
-  FEnabled:=True;
-  FInitialized:=False;
+  FJointID := nil;
+  FEnabled := True;
+  FInitialized := False;
 end;
 
 // Destroy
@@ -3979,7 +3728,8 @@ end;
 //
 procedure TODEJointBase.Initialize;
 begin
-  if not IsODEInitialized then exit;
+  if not IsODEInitialized then
+    Exit;
 
   if Assigned(FObject1) then
     RegisterJointWithObject(FObject1);
@@ -3987,56 +3737,62 @@ begin
     RegisterJointWithObject(FObject2);
   Attach;
 
-  FInitialized:=True;
+  FInitialized := True;
 end;
 
 // Finalize
 //
 procedure TODEJointBase.Finalize;
 begin
-  if not Initialized then exit;
+  if not Initialized then
+    Exit;
 
   if Assigned(FObject1) then
     UnregisterJointWithObject(FObject1);
   if Assigned(FObject2) then
     UnregisterJointWithObject(FObject2);
-  if FJointID<>nil then
+  if FJointID <> nil then
     dJointDestroy(FJointID);
 
-  FInitialized:=False;
+  FInitialized := False;
 end;
 
 // WriteToFiler
 //
-procedure TODEJointBase.WriteToFiler(writer : TWriter);
+procedure TODEJointBase.WriteToFiler(writer: TWriter);
 begin
   inherited;
-  with writer do begin
+  with writer do
+  begin
     WriteInteger(0); // Archive version
     if Assigned(FManager) then
       WriteString(FManager.GetNamePath)
-    else WriteString('');
+    else
+      WriteString('');
     if Assigned(FObject1) then
       WriteString(FObject1.GetNamePath)
-    else WriteString('');
+    else
+      WriteString('');
     if Assigned(FObject2) then
       WriteString(FObject2.GetNamePath)
-    else WriteString('');
+    else
+      WriteString('');
     WriteBoolean(FEnabled);
   end;
 end;
 
 // ReadFromFiler
 //
-procedure TODEJointBase.ReadFromFiler(reader : TReader);
+procedure TODEJointBase.ReadFromFiler(reader: TReader);
 begin
   inherited;
-  with reader do begin
+  with reader do
+  begin
     Assert(ReadInteger = 0); // Archive version
-    FManagerName:=ReadString;
-    FObject1Name:=ReadString;
-    FObject2Name:=ReadString;
-    FEnabled:=ReadBoolean;
+    FManagerName := ReadString;
+    FObject1Name := ReadString;
+    FObject2Name := ReadString;
+    FEnabled := ReadBoolean;
   end;
 end;
 
@@ -4044,17 +3800,18 @@ end;
 //
 procedure TODEJointBase.Loaded;
 begin
-     DoLoaded;
+  DoLoaded;
 end;
 
 // RegisterJointWithObject
 //
-procedure TODEJointBase.RegisterJointWithObject(Obj : TVKBaseSceneObject);
+procedure TODEJointBase.RegisterJointWithObject(Obj: TVKBaseSceneObject);
 var
-  temp : TVKODEDynamic;
+  temp: TVKODEDynamic;
 begin
-  if Assigned(Obj) then begin
-    temp:=TVKODEDynamic(Obj.Behaviours.GetByClass(TVKODEDynamic));
+  if Assigned(Obj) then
+  begin
+    temp := TVKODEDynamic(Obj.Behaviours.GetByClass(TVKODEDynamic));
     if Assigned(temp) then
       temp.RegisterJoint(Self);
   end;
@@ -4062,12 +3819,13 @@ end;
 
 // UnregisterJointWithObject
 //
-procedure TODEJointBase.UnregisterJointWithObject(Obj : TVKBaseSceneObject);
+procedure TODEJointBase.UnregisterJointWithObject(Obj: TVKBaseSceneObject);
 var
-  temp : TVKODEDynamic;
+  temp: TVKODEDynamic;
 begin
-  if Assigned(Obj) then begin
-    temp:=TVKODEDynamic(Obj.Behaviours.GetByClass(TVKODEDynamic));
+  if Assigned(Obj) then
+  begin
+    temp := TVKODEDynamic(Obj.Behaviours.GetByClass(TVKODEDynamic));
     if Assigned(temp) then
       temp.UnregisterJoint(Self);
   end;
@@ -4075,34 +3833,39 @@ end;
 
 // IsODEInitialized
 //
-function TODEJointBase.IsODEInitialized : Boolean;
+function TODEJointBase.IsODEInitialized: Boolean;
 begin
-  Result:=False;
-  if not Assigned(Manager) then exit;
-  Result:=Assigned(Manager.World);
+  Result := False;
+  if not Assigned(Manager) then
+    Exit;
+  Result := Assigned(Manager.World);
 end;
 
 // Attach
 //
 procedure TODEJointBase.Attach;
 var
-  Body1, Body2 : PdxBody;
+  Body1, Body2: PdxBody;
 begin
-  if (FJointID=nil) or not FInitialized then exit;
+  if (FJointID = nil) or not FInitialized then
+    Exit;
 
-  if Enabled then begin
-    Body1:=GetBodyFromGLSceneObject(FObject1);
-    Body2:=GetBodyFromGLSceneObject(FObject2);
-  end else begin
-    Body1:=nil;
-    Body2:=nil;
+  if Enabled then
+  begin
+    Body1 := GetBodyFromGLSceneObject(FObject1);
+    Body2 := GetBodyFromGLSceneObject(FObject2);
+  end
+  else
+  begin
+    Body1 := nil;
+    Body2 := nil;
   end;
 
   if (joBothObjectsMustBeAssigned in JointOptions) then
-    if not (Assigned(Body1) and Assigned(Body2)) then
+    if not(Assigned(Body1) and Assigned(Body2)) then
       Exit;
 
-  dJointAttach(FJointID,Body1,Body2);
+  dJointAttach(FJointID, Body1, Body2);
   if Assigned(Body1) or Assigned(Body2) then
     StructureChanged;
 end;
@@ -4111,13 +3874,14 @@ end;
 //
 procedure TODEJointBase.SetManager(const Value: TVKODEManager);
 begin
-  if FManager<>Value then begin
+  if FManager <> Value then
+  begin
     if Assigned(FManager) then
-      if not (csDesigning in FManager.ComponentState) then
+      if not(csDesigning in FManager.ComponentState) then
         Finalize;
-    FManager:=Value;
+    FManager := Value;
     if Assigned(FManager) then
-      if not (csDesigning in FManager.ComponentState) then
+      if not(csDesigning in FManager.ComponentState) then
         Initialize;
   end;
 end;
@@ -4126,15 +3890,16 @@ end;
 //
 procedure TODEJointBase.SetObject1(const Value: TVKBaseSceneObject);
 begin
-  if FObject1<>Value then begin
+  if FObject1 <> Value then
+  begin
     if Assigned(FObject1) then
       UnregisterJointWithObject(FObject1);
-    FObject1:=Value;
+    FObject1 := Value;
     if Assigned(FObject1) then
       if IsGLODEObject(FObject1) then
         RegisterJointWithObject(FObject1)
       else
-        FObject1:=nil;
+        FObject1 := nil;
     Attach;
   end;
 end;
@@ -4143,25 +3908,27 @@ end;
 //
 procedure TODEJointBase.SetObject2(const Value: TVKBaseSceneObject);
 begin
-  if FObject2<>Value then begin
+  if FObject2 <> Value then
+  begin
     if Assigned(FObject2) then
       UnregisterJointWithObject(FObject2);
-    FObject2:=Value;
+    FObject2 := Value;
     if Assigned(FObject2) then
       if IsGLODEObject(FObject2) then
         RegisterJointWithObject(FObject2)
       else
-        FObject2:=nil;
+        FObject2 := nil;
     Attach;
   end;
 end;
 
 // SetEnabled
 //
-procedure TODEJointBase.SetEnabled(const Value : Boolean);
+procedure TODEJointBase.SetEnabled(const Value: Boolean);
 begin
-  if FEnabled<>Value then begin
-    FEnabled:=Value;
+  if FEnabled <> Value then
+  begin
+    FEnabled := Value;
     if IsODEInitialized then
       Attach;
   end;
@@ -4178,55 +3945,59 @@ end;
 //
 procedure TODEJointBase.DoLoaded;
 var
-  mng : TComponent;
-  obj : TVKBaseSceneObject;
+  mng: TComponent;
+  Obj: TVKBaseSceneObject;
 begin
   inherited;
-  if FManagerName<>'' then begin
-    mng:=FindManager(TVKODEManager, FManagerName);
+  if FManagerName <> '' then
+  begin
+    mng := FindManager(TVKODEManager, FManagerName);
     if Assigned(mng) then
-      Manager:=TVKODEManager(mng);
-    FManagerName:='';
+      Manager := TVKODEManager(mng);
+    FManagerName := '';
   end;
-  if FObject1Name<>'' then begin
-    obj:=GetGLSceneObject(FObject1Name);
-    if Assigned(obj) then
-      Object1:=obj;
-    FObject1Name:='';
+  if FObject1Name <> '' then
+  begin
+    Obj := GetGLSceneObject(FObject1Name);
+    if Assigned(Obj) then
+      Object1 := Obj;
+    FObject1Name := '';
   end;
-  if FObject2Name<>'' then begin
-    obj:=GetGLSceneObject(FObject2Name);
-    if Assigned(obj) then
-      Object2:=obj;
-    FObject2Name:='';
+  if FObject2Name <> '' then
+  begin
+    Obj := GetGLSceneObject(FObject2Name);
+    if Assigned(Obj) then
+      Object2 := Obj;
+    FObject2Name := '';
   end;
   Attach;
 end;
 
-
 // IsAttached
 //
-function TODEJointBase.IsAttached : Boolean;
+function TODEJointBase.IsAttached: Boolean;
 var
-  body1, body2 : PdxBody;
+  Body1, Body2: PdxBody;
 begin
-  Result:=False;
-  if JointID<>nil then begin
-    body1:=dJointGetBody(JointID, 0);
-    body2:=dJointGetBody(JointID, 1);
+  Result := False;
+  if JointID <> nil then
+  begin
+    Body1 := dJointGetBody(JointID, 0);
+    Body2 := dJointGetBody(JointID, 1);
     if joBothObjectsMustBeAssigned in JointOptions then
-      Result:=Assigned(body1) and Assigned(body2)
+      Result := Assigned(Body1) and Assigned(Body2)
     else
-      Result:=Assigned(body1) or Assigned(body2);
+      Result := Assigned(Body1) or Assigned(Body2);
   end;
 end;
 
 // SetJointOptions
 //
-procedure TODEJointBase.SetJointOptions(const Value : TJointOptions);
+procedure TODEJointBase.SetJointOptions(const Value: TJointOptions);
 begin
-  if Value<>FJointOptions then begin
-    FJointOptions:=Value;
+  if Value <> FJointOptions then
+  begin
+    FJointOptions := Value;
     Attach;
   end;
 end;
@@ -4238,45 +4009,48 @@ end;
 
 // Create
 //
-constructor TODEJointParams.Create(AOwner : TPersistent);
+constructor TODEJointParams.Create(AOwner: TPersistent);
 begin
   inherited Create;
-  FOwner:=AOwner;
+  FOwner := AOwner;
 end;
 
 // GetOwner
 //
-function TODEJointParams.GetOwner : TPersistent;
+function TODEJointParams.GetOwner: TPersistent;
 begin
-  Result:=FOwner;
+  Result := FOwner;
 end;
 
 // Assign
 //
-procedure TODEJointParams.Assign(Source : TPersistent);
+procedure TODEJointParams.Assign(Source: TPersistent);
 begin
   inherited;
-  if not Assigned(Source) then exit;
-  if Source is TODEJointParams then begin
-    LoStop:=TODEJointParams(Source).LoStop;
-    HiStop:=TODEJointParams(Source).HiStop;
-    Vel:=TODEJointParams(Source).Vel;
-    FMax:=TODEJointParams(Source).FMax;
-    FudgeFactor:=TODEJointParams(Source).FudgeFactor;
-    Bounce:=TODEJointParams(Source).Bounce;
-    CFM:=TODEJointParams(Source).CFM;
-    StopERP:=TODEJointParams(Source).StopERP;
-    StopCFM:=TODEJointParams(Source).StopCFM;
-    SuspensionERP:=TODEJointParams(Source).SuspensionERP;
-    SuspensionCFM:=TODEJointParams(Source).SuspensionCFM;
+  if not Assigned(Source) then
+    Exit;
+  if Source is TODEJointParams then
+  begin
+    LoStop := TODEJointParams(Source).LoStop;
+    HiStop := TODEJointParams(Source).HiStop;
+    Vel := TODEJointParams(Source).Vel;
+    FMax := TODEJointParams(Source).FMax;
+    FudgeFactor := TODEJointParams(Source).FudgeFactor;
+    Bounce := TODEJointParams(Source).Bounce;
+    CFM := TODEJointParams(Source).CFM;
+    StopERP := TODEJointParams(Source).StopERP;
+    StopCFM := TODEJointParams(Source).StopCFM;
+    SuspensionERP := TODEJointParams(Source).SuspensionERP;
+    SuspensionCFM := TODEJointParams(Source).SuspensionCFM;
   end;
 end;
 
 // WriteToFiler
 //
-procedure TODEJointParams.WriteToFiler(writer : TWriter);
+procedure TODEJointParams.WriteToFiler(writer: TWriter);
 begin
-  with writer do begin
+  with writer do
+  begin
     WriteInteger(0); // Archive version
     WriteFloat(LoStop);
     WriteFloat(HiStop);
@@ -4294,267 +4068,279 @@ end;
 
 // ReadFromFiler
 //
-procedure TODEJointParams.ReadFromFiler(reader : TReader);
+procedure TODEJointParams.ReadFromFiler(reader: TReader);
 var
-  archiveVersion : Integer;
+  archiveVersion: Integer;
 begin
-  with reader do begin
-    archiveVersion:=ReadInteger;
+  with reader do
+  begin
+    archiveVersion := ReadInteger;
     Assert(archiveVersion = 0);
 
-    LoStop:=ReadFloat;
-    HiStop:=ReadFloat;
-    Vel:=ReadFloat;
-    FMax:=ReadFloat;
-    FudgeFactor:=ReadFloat;
-    Bounce:=ReadFloat;
-    CFM:=ReadFloat;
-    StopERP:=ReadFloat;
-    StopCFM:=ReadFloat;
-    SuspensionERP:=ReadFloat;
-    SuspensionCFM:=ReadFloat;
+    LoStop := ReadFloat;
+    HiStop := ReadFloat;
+    Vel := ReadFloat;
+    FMax := ReadFloat;
+    FudgeFactor := ReadFloat;
+    Bounce := ReadFloat;
+    CFM := ReadFloat;
+    StopERP := ReadFloat;
+    StopCFM := ReadFloat;
+    SuspensionERP := ReadFloat;
+    SuspensionCFM := ReadFloat;
   end;
 end;
 
 // GetLoStop
 //
-function TODEJointParams.GetLoStop : TdReal;
+function TODEJointParams.GetLoStop: TdReal;
 begin
   if Assigned(GetCallback) then
     GetCallback(dParamLoStop1, FLoStop);
-  Result:=FLoStop;
+  Result := FLoStop;
 end;
 
 // GetHiStop
 //
-function TODEJointParams.GetHiStop : TdReal;
+function TODEJointParams.GetHiStop: TdReal;
 begin
   if Assigned(GetCallback) then
     GetCallback(dParamHiStop1, FHiStop);
-  Result:=FHiStop;
+  Result := FHiStop;
 end;
 
 // GetVel
 //
-function TODEJointParams.GetVel : TdReal;
+function TODEJointParams.GetVel: TdReal;
 begin
   if Assigned(GetCallback) then
     GetCallback(dParamVel1, FVel);
-  Result:=FVel;
+  Result := FVel;
 end;
 
 // GetFMax
 //
-function TODEJointParams.GetFMax : TdReal;
+function TODEJointParams.GetFMax: TdReal;
 begin
   if Assigned(GetCallback) then
     GetCallback(dParamFMax1, FFMax);
-  Result:=FFMax;
+  Result := FFMax;
 end;
 
 // GetFudgeFactor
 //
-function TODEJointParams.GetFudgeFactor : TdReal;
+function TODEJointParams.GetFudgeFactor: TdReal;
 begin
   if Assigned(GetCallback) then
     GetCallback(dParamFudgeFactor1, FFudgeFactor);
-  Result:=FFudgeFactor;
+  Result := FFudgeFactor;
 end;
 
 // GetBounce
 //
-function TODEJointParams.GetBounce : TdReal;
+function TODEJointParams.GetBounce: TdReal;
 begin
   if Assigned(GetCallback) then
     GetCallback(dParamBounce1, FBounce);
-  Result:=FBounce;
+  Result := FBounce;
 end;
 
 // GetCFM
 //
-function TODEJointParams.GetCFM : TdReal;
+function TODEJointParams.GetCFM: TdReal;
 begin
   if Assigned(GetCallback) then
     GetCallback(dParamCFM1, FCFM);
-  Result:=FCFM;
+  Result := FCFM;
 end;
 
 // GetStopERP
 //
-function TODEJointParams.GetStopERP : TdReal;
+function TODEJointParams.GetStopERP: TdReal;
 begin
   if Assigned(GetCallback) then
     GetCallback(dParamStopERP1, FStopERP);
-  Result:=FStopERP;
+  Result := FStopERP;
 end;
 
 // GetStopCFM
 //
-function TODEJointParams.GetStopCFM : TdReal;
+function TODEJointParams.GetStopCFM: TdReal;
 begin
   if Assigned(GetCallback) then
     GetCallback(dParamStopCFM1, FStopCFM);
-  Result:=FStopCFM;
+  Result := FStopCFM;
 end;
 
 // GetSuspensionERP
 //
-function TODEJointParams.GetSuspensionERP : TdReal;
+function TODEJointParams.GetSuspensionERP: TdReal;
 begin
   if Assigned(GetCallback) then
     GetCallback(dParamSuspensionERP, FSuspensionERP);
-  Result:=FSuspensionERP;
+  Result := FSuspensionERP;
 end;
 
 // GetSuspensionCFM
 //
-function TODEJointParams.GetSuspensionCFM : TdReal;
+function TODEJointParams.GetSuspensionCFM: TdReal;
 begin
   if Assigned(GetCallback) then
     GetCallback(dParamSuspensionCFM, FSuspensionCFM);
-  Result:=FSuspensionCFM;
+  Result := FSuspensionCFM;
 end;
 
 // SetLoStop
 //
-procedure TODEJointParams.SetLoStop(const Value : TdReal);
+procedure TODEJointParams.SetLoStop(const Value: TdReal);
 begin
-  if Value<>FLoStop then begin
-    FLoStop:=Value;
+  if Value <> FLoStop then
+  begin
+    FLoStop := Value;
     if Assigned(SetCallback) then
-      FFlagLoStop:=not SetCallback(dParamLoStop1, FLoStop)
+      FFlagLoStop := not SetCallback(dParamLoStop1, FLoStop)
     else
-      FFlagLoStop:=True;
+      FFlagLoStop := True;
   end;
 end;
 
 // SetHiStop
 //
-procedure TODEJointParams.SetHiStop(const Value : TdReal);
+procedure TODEJointParams.SetHiStop(const Value: TdReal);
 begin
-  if Value<>FHiStop then begin
-    FHiStop:=Value;
+  if Value <> FHiStop then
+  begin
+    FHiStop := Value;
     if Assigned(SetCallback) then
-      FFlagHiStop:=not SetCallback(dParamHiStop1, FHiStop)
+      FFlagHiStop := not SetCallback(dParamHiStop1, FHiStop)
     else
-      FFlagHiStop:=True;
+      FFlagHiStop := True;
   end;
 end;
 
 // SetVel
 //
-procedure TODEJointParams.SetVel(const Value : TdReal);
+procedure TODEJointParams.SetVel(const Value: TdReal);
 begin
-  if Value<>FVel then begin
-    FVel:=Value;
+  if Value <> FVel then
+  begin
+    FVel := Value;
     if Assigned(SetCallback) then
-      FFlagVel:=not SetCallback(dParamVel1, FVel)
+      FFlagVel := not SetCallback(dParamVel1, FVel)
     else
-      FFlagVel:=True;
+      FFlagVel := True;
   end;
 end;
 
 // SetFMax
 //
-procedure TODEJointParams.SetFMax(const Value : TdReal);
+procedure TODEJointParams.SetFMax(const Value: TdReal);
 begin
-  if Value<>FFMax then begin
-    FFMax:=Value;
+  if Value <> FFMax then
+  begin
+    FFMax := Value;
     if Assigned(SetCallback) then
-      FFlagFMax:=not SetCallback(dParamFMax1, FFMax)
+      FFlagFMax := not SetCallback(dParamFMax1, FFMax)
     else
-      FFlagFMax:=True;
+      FFlagFMax := True;
   end;
 end;
 
 // SetFudgeFactor
 //
-procedure TODEJointParams.SetFudgeFactor(const Value : TdReal);
+procedure TODEJointParams.SetFudgeFactor(const Value: TdReal);
 begin
-  if Value<>FFudgeFactor then begin
-    FFudgeFactor:=Value;
+  if Value <> FFudgeFactor then
+  begin
+    FFudgeFactor := Value;
     if Assigned(SetCallback) then
-      FFlagFudgeFactor:=not SetCallback(dParamFudgeFactor1, FFudgeFactor)
+      FFlagFudgeFactor := not SetCallback(dParamFudgeFactor1, FFudgeFactor)
     else
-      FFlagFudgeFactor:=True;
+      FFlagFudgeFactor := True;
   end;
 end;
 
 // SetBounce
 //
-procedure TODEJointParams.SetBounce(const Value : TdReal);
+procedure TODEJointParams.SetBounce(const Value: TdReal);
 begin
-  if Value<>FBounce then begin
-    FBounce:=Value;
+  if Value <> FBounce then
+  begin
+    FBounce := Value;
     if Assigned(SetCallback) then
-      FFlagBounce:=not SetCallback(dParamBounce1, FBounce)
+      FFlagBounce := not SetCallback(dParamBounce1, FBounce)
     else
-      FFlagBounce:=True;
+      FFlagBounce := True;
   end;
 end;
 
 // SetCFM
 //
-procedure TODEJointParams.SetCFM(const Value : TdReal);
+procedure TODEJointParams.SetCFM(const Value: TdReal);
 begin
-  if Value<>FCFM then begin
-    FCFM:=Value;
+  if Value <> FCFM then
+  begin
+    FCFM := Value;
     if Assigned(SetCallback) then
-      FFlagCFM:=not SetCallback(dParamCFM1, FCFM)
+      FFlagCFM := not SetCallback(dParamCFM1, FCFM)
     else
-      FFlagCFM:=True;
+      FFlagCFM := True;
   end;
 end;
 
 // SetStopERP
 //
-procedure TODEJointParams.SetStopERP(const Value : TdReal);
+procedure TODEJointParams.SetStopERP(const Value: TdReal);
 begin
-  if Value<>FStopERP then begin
-    FStopERP:=Value;
+  if Value <> FStopERP then
+  begin
+    FStopERP := Value;
     if Assigned(SetCallback) then
-      FFlagStopERP:=not SetCallback(dParamStopERP1, FStopERP)
+      FFlagStopERP := not SetCallback(dParamStopERP1, FStopERP)
     else
-      FFlagStopERP:=True;
+      FFlagStopERP := True;
   end;
 end;
 
 // SetStopCFM
 //
-procedure TODEJointParams.SetStopCFM(const Value : TdReal);
+procedure TODEJointParams.SetStopCFM(const Value: TdReal);
 begin
-  if Value<>FStopCFM then begin
-    FStopCFM:=Value;
+  if Value <> FStopCFM then
+  begin
+    FStopCFM := Value;
     if Assigned(SetCallback) then
-      FFlagStopCFM:=not SetCallback(dParamStopCFM1, FStopCFM)
+      FFlagStopCFM := not SetCallback(dParamStopCFM1, FStopCFM)
     else
-      FFlagStopCFM:=True;
+      FFlagStopCFM := True;
   end;
 end;
 
 // SetSuspensionERP
 //
-procedure TODEJointParams.SetSuspensionERP(const Value : TdReal);
+procedure TODEJointParams.SetSuspensionERP(const Value: TdReal);
 begin
-  if Value<>FSuspensionERP then begin
-    FSuspensionERP:=Value;
+  if Value <> FSuspensionERP then
+  begin
+    FSuspensionERP := Value;
     if Assigned(SetCallback) then
-      FFlagSuspensionERP:=not SetCallback(dParamSuspensionERP, FSuspensionERP)
+      FFlagSuspensionERP := not SetCallback(dParamSuspensionERP, FSuspensionERP)
     else
-      FFlagSuspensionERP:=True;
+      FFlagSuspensionERP := True;
   end;
 end;
 
 // SetSuspensionCFM
 //
-procedure TODEJointParams.SetSuspensionCFM(const Value : TdReal);
+procedure TODEJointParams.SetSuspensionCFM(const Value: TdReal);
 begin
-  if Value<>FSuspensionCFM then begin
-    FSuspensionCFM:=Value;
+  if Value <> FSuspensionCFM then
+  begin
+    FSuspensionCFM := Value;
     if Assigned(SetCallback) then
-      FFlagSuspensionCFM:=not SetCallback(dParamSuspensionCFM, FSuspensionCFM)
+      FFlagSuspensionCFM := not SetCallback(dParamSuspensionCFM, FSuspensionCFM)
     else
-      FFlagSuspensionCFM:=True;
+      FFlagSuspensionCFM := True;
   end;
 end;
 
@@ -4562,18 +4348,30 @@ end;
 //
 procedure TODEJointParams.ApplyFlagged;
 begin
-  if not Assigned(SetCallback) then Exit;
-  if FFlagLoStop then SetCallback(dParamLoStop1, FLoStop);
-  if FFlagHiStop then SetCallback(dParamHiStop1, FHiStop);
-  if FFlagVel then SetCallback(dParamVel1, FVel);
-  if FFlagFMax then SetCallback(dParamFMax1, FFMax);
-  if FFlagFudgeFactor then SetCallback(dParamFudgeFactor1, FFudgeFactor);
-  if FFlagBounce then SetCallback(dParamBounce1, FBounce);
-  if FFlagCFM then SetCallback(dParamCFM1, FCFM);
-  if FFlagStopERP then SetCallback(dParamStopERP1, FStopERP);
-  if FFlagStopCFM then SetCallback(dParamStopCFM1, FStopCFM);
-  if FFlagSuspensionERP then SetCallback(dParamSuspensionERP, FSuspensionERP);
-  if FFlagSuspensionCFM then SetCallback(dParamSuspensionCFM, FSuspensionCFM);
+  if not Assigned(SetCallback) then
+    Exit;
+  if FFlagLoStop then
+    SetCallback(dParamLoStop1, FLoStop);
+  if FFlagHiStop then
+    SetCallback(dParamHiStop1, FHiStop);
+  if FFlagVel then
+    SetCallback(dParamVel1, FVel);
+  if FFlagFMax then
+    SetCallback(dParamFMax1, FFMax);
+  if FFlagFudgeFactor then
+    SetCallback(dParamFudgeFactor1, FFudgeFactor);
+  if FFlagBounce then
+    SetCallback(dParamBounce1, FBounce);
+  if FFlagCFM then
+    SetCallback(dParamCFM1, FCFM);
+  if FFlagStopERP then
+    SetCallback(dParamStopERP1, FStopERP);
+  if FFlagStopCFM then
+    SetCallback(dParamStopCFM1, FStopCFM);
+  if FFlagSuspensionERP then
+    SetCallback(dParamSuspensionERP, FSuspensionERP);
+  if FFlagSuspensionCFM then
+    SetCallback(dParamSuspensionCFM, FSuspensionCFM);
 end;
 
 
@@ -4583,16 +4381,16 @@ end;
 
 // Create
 //
-constructor TGLODEJointHinge.Create(AOwner : TVKXCollection);
+constructor TGLODEJointHinge.Create(AOwner: TVKXCollection);
 begin
   inherited;
-  FAnchor:=TVKCoordinates.CreateInitialized(Self, NullHMGPoint, csPoint);
-  FAnchor.OnNotifyChange:=AnchorChange;
-  FAxis:=TVKCoordinates.CreateInitialized(Self, ZHmgVector, csVector);
-  FAxis.OnNotifyChange:=AxisChange;
-  FAxisParams:=TODEJointParams.Create(Self);
-  FAxisParams.SetCallback:=SetAxisParam;
-  FAxisParams.GetCallback:=GetAxisParam;
+  FAnchor := TVKCoordinates.CreateInitialized(Self, NullHmgPoint, csPoint);
+  FAnchor.OnNotifyChange := AnchorChange;
+  FAxis := TVKCoordinates.CreateInitialized(Self, ZHmgVector, csVector);
+  FAxis.OnNotifyChange := AxisChange;
+  FAxisParams := TODEJointParams.Create(Self);
+  FAxisParams.SetCallback := SetAxisParam;
+  FAxisParams.GetCallback := GetAxisParam;
 
 end;
 
@@ -4609,17 +4407,19 @@ end;
 //
 procedure TGLODEJointHinge.Initialize;
 begin
-  if (not IsODEInitialized) or (FInitialized) then exit;
-  FJointID:=dJointCreateHinge(FManager.World,nil);
+  if (not IsODEInitialized) or (FInitialized) then
+    Exit;
+  FJointID := dJointCreateHinge(FManager.World, nil);
   inherited;
 end;
 
 // WriteToFiler
 //
-procedure TGLODEJointHinge.WriteToFiler(writer : TWriter);
+procedure TGLODEJointHinge.WriteToFiler(writer: TWriter);
 begin
   inherited;
-  with writer do begin
+  with writer do
+  begin
     WriteInteger(0); // Archive version
     FAnchor.WriteToFiler(writer);
     FAxis.WriteToFiler(writer);
@@ -4629,10 +4429,11 @@ end;
 
 // ReadFromFiler
 //
-procedure TGLODEJointHinge.ReadFromFiler(reader : TReader);
+procedure TGLODEJointHinge.ReadFromFiler(reader: TReader);
 begin
   inherited;
-  with reader do begin
+  with reader do
+  begin
     Assert(ReadInteger = 0); // Archive version
     FAnchor.ReadFromFiler(reader);
     FAxis.ReadFromFiler(reader);
@@ -4651,7 +4452,7 @@ end;
 
 // AnchorChange
 //
-procedure TGLODEJointHinge.AnchorChange(Sender : TObject);
+procedure TGLODEJointHinge.AnchorChange(Sender: TObject);
 begin
   if IsAttached then
     dJointSetHingeAnchor(FJointID, FAnchor.X, FAnchor.Y, FAnchor.Z);
@@ -4659,72 +4460,78 @@ end;
 
 // AxisChange
 //
-procedure TGLODEJointHinge.AxisChange(Sender : TObject);
+procedure TGLODEJointHinge.AxisChange(Sender: TObject);
 var
-  vec : TVector;
+  vec: TVector;
 begin
-  vec:=FAxis.DirectVector;
+  vec := FAxis.DirectVector;
   NormalizeVector(vec);
-  FAxis.DirectVector:=vec;
+  FAxis.DirectVector := vec;
   if IsAttached then
     dJointSetHingeAxis(FJointID, FAxis.X, FAxis.Y, FAxis.Z);
 end;
 
 // FriendlyName
 //
-class function TGLODEJointHinge.FriendlyName : String;
+class function TGLODEJointHinge.FriendlyName: String;
 begin
-  Result:='Hinge';
+  Result := 'Hinge';
 end;
 
 // FriendlyDescription
 //
-class function TGLODEJointHinge.FriendlyDescription : String;
+class function TGLODEJointHinge.FriendlyDescription: String;
 begin
-  Result:='ODE Hinge joint';
+  Result := 'ODE Hinge joint';
 end;
 
 // SetAnchor
 //
-procedure TGLODEJointHinge.SetAnchor(const Value : TVKCoordinates);
+procedure TGLODEJointHinge.SetAnchor(const Value: TVKCoordinates);
 begin
   FAnchor.Assign(Value);
 end;
 
 // SetAxis
 //
-procedure TGLODEJointHinge.SetAxis(const Value : TVKCoordinates);
+procedure TGLODEJointHinge.SetAxis(const Value: TVKCoordinates);
 begin
   FAxis.Assign(Value);
 end;
 
 // SetAxisParams
 //
-procedure TGLODEJointHinge.SetAxisParams(const Value : TODEJointParams);
+procedure TGLODEJointHinge.SetAxisParams(const Value: TODEJointParams);
 begin
   AxisParams.Assign(Value);
 end;
 
 // SetAxisParam
 //
-function TGLODEJointHinge.SetAxisParam(Param :  Integer; const Value : TdReal) : Boolean;
+function TGLODEJointHinge.SetAxisParam(Param: Integer;
+  const Value: TdReal): Boolean;
 begin
-  if IsAttached then begin
+  if IsAttached then
+  begin
     dJointSetHingeParam(JointID, Param, Value);
-    Result:=True;
-  end else
-    Result:=False;
+    Result := True;
+  end
+  else
+    Result := False;
 end;
 
 // GetAxisParam
 //
-function TGLODEJointHinge.GetAxisParam(Param :  Integer; var Value : TdReal) : Boolean;
+function TGLODEJointHinge.GetAxisParam(Param: Integer;
+  var Value: TdReal): Boolean;
 begin
-  if IsAttached then begin
-    Value:=dJointGetHingeParam(JointID, Param);
-    Result:=True;
-  end else
-    Result:=False;
+  if IsAttached then
+  begin
+    Value := dJointGetHingeParam(JointID, Param);
+    Result := True;
+  end
+  else
+    Result := False;
 end;
 
 
@@ -4734,11 +4541,11 @@ end;
 
 // Create
 //
-constructor TODEJointBall.Create(AOwner : TVKXCollection);
+constructor TODEJointBall.Create(AOwner: TVKXCollection);
 begin
   inherited;
-  FAnchor:=TVKCoordinates.CreateInitialized(Self, NullHMGPoint, csPoint);
-  FAnchor.OnNotifyChange:=AnchorChange;
+  FAnchor := TVKCoordinates.CreateInitialized(Self, NullHmgPoint, csPoint);
+  FAnchor.OnNotifyChange := AnchorChange;
 end;
 
 // Destroy
@@ -4752,17 +4559,19 @@ end;
 //
 procedure TODEJointBall.Initialize;
 begin
-  if (not IsODEInitialized) or (FInitialized) then exit;
-  FJointID:=dJointCreateBall(FManager.World,nil);
+  if (not IsODEInitialized) or (FInitialized) then
+    Exit;
+  FJointID := dJointCreateBall(FManager.World, nil);
   inherited;
 end;
 
 // WriteToFiler
 //
-procedure TODEJointBall.WriteToFiler(writer : TWriter);
+procedure TODEJointBall.WriteToFiler(writer: TWriter);
 begin
   inherited;
-  with writer do begin
+  with writer do
+  begin
     WriteInteger(0); // Archive version
     FAnchor.WriteToFiler(writer);
   end;
@@ -4770,10 +4579,11 @@ end;
 
 // ReadFromFiler
 //
-procedure TODEJointBall.ReadFromFiler(reader : TReader);
+procedure TODEJointBall.ReadFromFiler(reader: TReader);
 begin
   inherited;
-  with reader do begin
+  with reader do
+  begin
     Assert(ReadInteger = 0); // Archive version
     FAnchor.ReadFromFiler(reader);
   end;
@@ -4788,7 +4598,7 @@ end;
 
 // AnchorChange
 //
-procedure TODEJointBall.AnchorChange(Sender : TObject);
+procedure TODEJointBall.AnchorChange(Sender: TObject);
 begin
   if IsAttached then
     dJointSetBallAnchor(FJointID, FAnchor.X, FAnchor.Y, FAnchor.Z);
@@ -4796,21 +4606,21 @@ end;
 
 // FriendlyName
 //
-class function TODEJointBall.FriendlyName : String;
+class function TODEJointBall.FriendlyName: String;
 begin
-  Result:='Ball';
+  Result := 'Ball';
 end;
 
 // FriendlyDescription
 //
-class function TODEJointBall.FriendlyDescription : String;
+class function TODEJointBall.FriendlyDescription: String;
 begin
-  Result:='ODE Ball joint implementation';
+  Result := 'ODE Ball joint implementation';
 end;
 
 // SetAnchor
 //
-procedure TODEJointBall.SetAnchor(const Value : TVKCoordinates);
+procedure TODEJointBall.SetAnchor(const Value: TVKCoordinates);
 begin
   FAnchor.Assign(Value);
 end;
@@ -4822,14 +4632,14 @@ end;
 
 // Create
 //
-constructor TODEJointSlider.Create(AOwner : TVKXCollection);
+constructor TODEJointSlider.Create(AOwner: TVKXCollection);
 begin
   inherited;
-  FAxis:=TVKCoordinates.CreateInitialized(Self, ZHmgVector, csVector);
-  FAxis.OnNotifyChange:=AxisChange;
-  FAxisParams:=TODEJointParams.Create(Self);
-  FAxisParams.SetCallback:=SetAxisParam;
-  FAxisParams.GetCallback:=GetAxisParam;
+  FAxis := TVKCoordinates.CreateInitialized(Self, ZHmgVector, csVector);
+  FAxis.OnNotifyChange := AxisChange;
+  FAxisParams := TODEJointParams.Create(Self);
+  FAxisParams.SetCallback := SetAxisParam;
+  FAxisParams.GetCallback := GetAxisParam;
 end;
 
 // Destroy
@@ -4844,17 +4654,19 @@ end;
 //
 procedure TODEJointSlider.Initialize;
 begin
-  if (not IsODEInitialized) or (FInitialized) then exit;
-  FJointID:=dJointCreateSlider(FManager.World,nil);
+  if (not IsODEInitialized) or (FInitialized) then
+    Exit;
+  FJointID := dJointCreateSlider(FManager.World, nil);
   inherited;
 end;
 
 // WriteToFiler
 //
-procedure TODEJointSlider.WriteToFiler(writer : TWriter);
+procedure TODEJointSlider.WriteToFiler(writer: TWriter);
 begin
   inherited;
-  with writer do begin
+  with writer do
+  begin
     WriteInteger(0); // Archive version
     FAxis.WriteToFiler(writer);
     FAxisParams.WriteToFiler(writer);
@@ -4863,10 +4675,11 @@ end;
 
 // ReadFromFiler
 //
-procedure TODEJointSlider.ReadFromFiler(reader : TReader);
+procedure TODEJointSlider.ReadFromFiler(reader: TReader);
 begin
   inherited;
-  with reader do begin
+  with reader do
+  begin
     Assert(ReadInteger = 0); // Archive version
     FAxis.ReadFromFiler(reader);
     FAxisParams.ReadFromFiler(reader);
@@ -4883,65 +4696,71 @@ end;
 
 // AxisChange
 //
-procedure TODEJointSlider.AxisChange(Sender : TObject);
+procedure TODEJointSlider.AxisChange(Sender: TObject);
 var
-  vec : TVector;
+  vec: TVector;
 begin
-  vec:=FAxis.DirectVector;
+  vec := FAxis.DirectVector;
   NormalizeVector(vec);
-  FAxis.DirectVector:=vec;
+  FAxis.DirectVector := vec;
   if IsAttached then
     dJointSetSliderAxis(FJointID, FAxis.X, FAxis.Y, FAxis.Z);
 end;
 
 // FriendlyName
 //
-class function TODEJointSlider.FriendlyName : String;
+class function TODEJointSlider.FriendlyName: String;
 begin
-  Result:='Slider';
+  Result := 'Slider';
 end;
 
 // FriendlyDescription
 //
-class function TODEJointSlider.FriendlyDescription : String;
+class function TODEJointSlider.FriendlyDescription: String;
 begin
-  Result:='ODE Slider joint implementation';
+  Result := 'ODE Slider joint implementation';
 end;
 
 // SetAxis
 //
-procedure TODEJointSlider.SetAxis(const Value : TVKCoordinates);
+procedure TODEJointSlider.SetAxis(const Value: TVKCoordinates);
 begin
   FAxis.Assign(Value);
 end;
 
 // SetAxisParams
 //
-procedure TODEJointSlider.SetAxisParams(const Value : TODEJointParams);
+procedure TODEJointSlider.SetAxisParams(const Value: TODEJointParams);
 begin
   AxisParams.Assign(Value);
 end;
 
 // SetAxisParam
 //
-function TODEJointSlider.SetAxisParam(Param :  Integer; const Value : TdReal) : Boolean;
+function TODEJointSlider.SetAxisParam(Param: Integer;
+  const Value: TdReal): Boolean;
 begin
-  if IsAttached then begin
+  if IsAttached then
+  begin
     dJointSetSliderParam(JointID, Param, Value);
-    Result:=True;
-  end else
-    Result:=False;
+    Result := True;
+  end
+  else
+    Result := False;
 end;
 
 // GetAxisParam
 //
-function TODEJointSlider.GetAxisParam(Param :  Integer; var Value : TdReal) : Boolean;
+function TODEJointSlider.GetAxisParam(Param: Integer;
+  var Value: TdReal): Boolean;
 begin
-  if IsAttached then begin
-    Value:=dJointGetSliderParam(JointID, Param);
-    Result:=True;
-  end else
-    Result:=False;
+  if IsAttached then
+  begin
+    Value := dJointGetSliderParam(JointID, Param);
+    Result := True;
+  end
+  else
+    Result := False;
 end;
 
 
@@ -4953,43 +4772,46 @@ end;
 //
 procedure TODEJointFixed.Initialize;
 begin
-  if (not IsODEInitialized) or (FInitialized) then exit;
-  FJointID:=dJointCreateFixed(FManager.World,nil);
+  if (not IsODEInitialized) or (FInitialized) then
+    Exit;
+  FJointID := dJointCreateFixed(FManager.World, nil);
   inherited;
 end;
 
 // WriteToFiler
 //
-procedure TODEJointFixed.WriteToFiler(writer : TWriter);
+procedure TODEJointFixed.WriteToFiler(writer: TWriter);
 begin
   inherited;
-  with writer do begin
+  with writer do
+  begin
     WriteInteger(0); // Archive version
   end;
 end;
 
 // ReadFromFiler
 //
-procedure TODEJointFixed.ReadFromFiler(reader : TReader);
+procedure TODEJointFixed.ReadFromFiler(reader: TReader);
 begin
   inherited;
-  with reader do begin
+  with reader do
+  begin
     Assert(ReadInteger = 0); // Archive version
   end;
 end;
 
 // FriendlyName
 //
-class function TODEJointFixed.FriendlyName : String;
+class function TODEJointFixed.FriendlyName: String;
 begin
-  Result:='Fixed';
+  Result := 'Fixed';
 end;
 
 // FriendlyDescription
 //
-class function TODEJointFixed.FriendlyDescription : String;
+class function TODEJointFixed.FriendlyDescription: String;
 begin
-  Result:='ODE Fixed joint implementation';
+  Result := 'ODE Fixed joint implementation';
 end;
 
 
@@ -4999,23 +4821,23 @@ end;
 
 // Create
 //
-constructor TGLODEJointHinge2.Create(AOwner : TVKXCollection);
+constructor TGLODEJointHinge2.Create(AOwner: TVKXCollection);
 begin
   inherited;
-  FAnchor:=TVKCoordinates.CreateInitialized(Self, NullHMGPoint, csPoint);
-  FAnchor.OnNotifyChange:=AnchorChange;
-  FAxis1:=TVKCoordinates.CreateInitialized(Self, ZHmgVector, csVector);
-  FAxis1.OnNotifyChange:=Axis1Change;
-  FAxis2:=TVKCoordinates.CreateInitialized(Self, ZHmgVector, csVector);
-  FAxis2.OnNotifyChange:=Axis2Change;
-  FAxis1Params:=TODEJointParams.Create(Self);
-  FAxis1Params.SetCallback:=SetAxis1Param;
-  FAxis1Params.GetCallback:=GetAxis1Param;
-  FAxis2Params:=TODEJointParams.Create(Self);
-  FAxis2Params.SetCallback:=SetAxis2Param;
-  FAxis2Params.GetCallback:=GetAxis2Param;
+  FAnchor := TVKCoordinates.CreateInitialized(Self, NullHmgPoint, csPoint);
+  FAnchor.OnNotifyChange := AnchorChange;
+  FAxis1 := TVKCoordinates.CreateInitialized(Self, ZHmgVector, csVector);
+  FAxis1.OnNotifyChange := Axis1Change;
+  FAxis2 := TVKCoordinates.CreateInitialized(Self, ZHmgVector, csVector);
+  FAxis2.OnNotifyChange := Axis2Change;
+  FAxis1Params := TODEJointParams.Create(Self);
+  FAxis1Params.SetCallback := SetAxis1Param;
+  FAxis1Params.GetCallback := GetAxis1Param;
+  FAxis2Params := TODEJointParams.Create(Self);
+  FAxis2Params.SetCallback := SetAxis2Param;
+  FAxis2Params.GetCallback := GetAxis2Param;
 
-  JointOptions:=[joBothObjectsMustBeAssigned];
+  JointOptions := [joBothObjectsMustBeAssigned];
 end;
 
 // Destroy
@@ -5033,17 +4855,19 @@ end;
 //
 procedure TGLODEJointHinge2.Initialize;
 begin
-  if (not IsODEInitialized) or (FInitialized) then exit;
-  FJointID:=dJointCreateHinge2(FManager.World,nil);
+  if (not IsODEInitialized) or (FInitialized) then
+    Exit;
+  FJointID := dJointCreateHinge2(FManager.World, nil);
   inherited;
 end;
 
 // WriteToFiler
 //
-procedure TGLODEJointHinge2.WriteToFiler(writer : TWriter);
+procedure TGLODEJointHinge2.WriteToFiler(writer: TWriter);
 begin
   inherited;
-  with writer do begin
+  with writer do
+  begin
     WriteInteger(0); // Archive version
     FAnchor.WriteToFiler(writer);
     FAxis1.WriteToFiler(writer);
@@ -5055,10 +4879,11 @@ end;
 
 // ReadFromFiler
 //
-procedure TGLODEJointHinge2.ReadFromFiler(reader : TReader);
+procedure TGLODEJointHinge2.ReadFromFiler(reader: TReader);
 begin
   inherited;
-  with reader do begin
+  with reader do
+  begin
     Assert(ReadInteger = 0); // Archive version
     FAnchor.ReadFromFiler(reader);
     FAxis1.ReadFromFiler(reader);
@@ -5081,7 +4906,7 @@ end;
 
 // AnchorChange
 //
-procedure TGLODEJointHinge2.AnchorChange(Sender : TObject);
+procedure TGLODEJointHinge2.AnchorChange(Sender: TObject);
 begin
   if IsAttached then
     dJointSetHinge2Anchor(FJointID, FAnchor.X, FAnchor.Y, FAnchor.Z);
@@ -5089,121 +4914,133 @@ end;
 
 // Axis1Change
 //
-procedure TGLODEJointHinge2.Axis1Change(Sender : TObject);
+procedure TGLODEJointHinge2.Axis1Change(Sender: TObject);
 var
-  vec : TVector;
+  vec: TVector;
 begin
-  vec:=FAxis1.DirectVector;
+  vec := FAxis1.DirectVector;
   NormalizeVector(vec);
-  FAxis1.DirectVector:=vec;
+  FAxis1.DirectVector := vec;
   if IsAttached then
     dJointSetHinge2Axis1(FJointID, FAxis1.X, FAxis1.Y, FAxis1.Z);
 end;
 
 // Axis2Change
 //
-procedure TGLODEJointHinge2.Axis2Change(Sender : TObject);
+procedure TGLODEJointHinge2.Axis2Change(Sender: TObject);
 var
-  vec : TVector;
+  vec: TVector;
 begin
-  vec:=FAxis2.DirectVector;
+  vec := FAxis2.DirectVector;
   NormalizeVector(vec);
-  FAxis2.DirectVector:=vec;
+  FAxis2.DirectVector := vec;
   if IsAttached then
     dJointSetHinge2Axis2(FJointID, FAxis2.X, FAxis2.Y, FAxis2.Z);
 end;
 
 // FriendlyName
 //
-class function TGLODEJointHinge2.FriendlyName : String;
+class function TGLODEJointHinge2.FriendlyName: String;
 begin
-  Result:='Hinge2';
+  Result := 'Hinge2';
 end;
 
 // FriendlyDescription
 //
-class function TGLODEJointHinge2.FriendlyDescription : String;
+class function TGLODEJointHinge2.FriendlyDescription: String;
 begin
-  Result:='ODE Double Axis Hinge joint implementation';
+  Result := 'ODE Double Axis Hinge joint implementation';
 end;
 
 // SetAnchor
 //
-procedure TGLODEJointHinge2.SetAnchor(const Value : TVKCoordinates);
+procedure TGLODEJointHinge2.SetAnchor(const Value: TVKCoordinates);
 begin
   FAnchor.Assign(Value);
 end;
 
 // SetAxis1
 //
-procedure TGLODEJointHinge2.SetAxis1(const Value : TVKCoordinates);
+procedure TGLODEJointHinge2.SetAxis1(const Value: TVKCoordinates);
 begin
   FAxis1.Assign(Value);
 end;
 
 // SetAxis2
 //
-procedure TGLODEJointHinge2.SetAxis2(const Value : TVKCoordinates);
+procedure TGLODEJointHinge2.SetAxis2(const Value: TVKCoordinates);
 begin
   FAxis2.Assign(Value);
 end;
 
 // SetAxis1Params
 //
-procedure TGLODEJointHinge2.SetAxis1Params(const Value : TODEJointParams);
+procedure TGLODEJointHinge2.SetAxis1Params(const Value: TODEJointParams);
 begin
   Axis1Params.Assign(Value);
 end;
 
 // SetAxis2Params
 //
-procedure TGLODEJointHinge2.SetAxis2Params(const Value : TODEJointParams);
+procedure TGLODEJointHinge2.SetAxis2Params(const Value: TODEJointParams);
 begin
   Axis2Params.Assign(Value);
 end;
 
 // SetAxis1Param
 //
-function TGLODEJointHinge2.SetAxis1Param(Param :  Integer; const Value : TdReal) : Boolean;
+function TGLODEJointHinge2.SetAxis1Param(Param: Integer;
+  const Value: TdReal): Boolean;
 begin
-  if IsAttached then begin
+  if IsAttached then
+  begin
     dJointSetHinge2Param(JointID, Param, Value);
-    Result:=True;
-  end else
-    Result:=False;
+    Result := True;
+  end
+  else
+    Result := False;
 end;
 
 // SetAxis2Param
 //
-function TGLODEJointHinge2.SetAxis2Param(Param :  Integer; const Value : TdReal) : Boolean;
+function TGLODEJointHinge2.SetAxis2Param(Param: Integer;
+  const Value: TdReal): Boolean;
 begin
-  if IsAttached then begin
-    dJointSetHinge2Param(JointID, dParamLoStop2+Param, Value);
-    Result:=True;
-  end else
-    Result:=False;
+  if IsAttached then
+  begin
+    dJointSetHinge2Param(JointID, dParamLoStop2 + Param, Value);
+    Result := True;
+  end
+  else
+    Result := False;
 end;
 
 // GetAxis1Param
 //
-function TGLODEJointHinge2.GetAxis1Param(Param :  Integer; var Value : TdReal) : Boolean;
+function TGLODEJointHinge2.GetAxis1Param(Param: Integer;
+  var Value: TdReal): Boolean;
 begin
-  if IsAttached then begin
-    Value:=dJointGetHinge2Param(JointID, Param);
-    Result:=True;
-  end else
-    Result:=False;
+  if IsAttached then
+  begin
+    Value := dJointGetHinge2Param(JointID, Param);
+    Result := True;
+  end
+  else
+    Result := False;
 end;
 
 // GetAxis2Param
 //
-function TGLODEJointHinge2.GetAxis2Param(Param :  Integer; var Value : TdReal) : Boolean;
+function TGLODEJointHinge2.GetAxis2Param(Param: Integer;
+  var Value: TdReal): Boolean;
 begin
-  if IsAttached then begin
-    Value:=dJointGetHinge2Param(JointID, dParamLoStop2+Param);
-    Result:=True;
-  end else
-    Result:=False;
+  if IsAttached then
+  begin
+    Value := dJointGetHinge2Param(JointID, dParamLoStop2 + Param);
+    Result := True;
+  end
+  else
+    Result := False;
 end;
 
 
@@ -5213,23 +5050,23 @@ end;
 
 // Create
 //
-constructor TODEJointUniversal.Create(AOwner : TVKXCollection);
+constructor TODEJointUniversal.Create(AOwner: TVKXCollection);
 begin
   inherited;
-  FAnchor:=TVKCoordinates.CreateInitialized(Self, NullHMGPoint, csPoint);
-  FAnchor.OnNotifyChange:=AnchorChange;
-  FAxis1:=TVKCoordinates.CreateInitialized(Self, ZHmgVector, csVector);
-  FAxis1.OnNotifyChange:=Axis1Change;
-  FAxis2:=TVKCoordinates.CreateInitialized(Self, XHmgVector, csVector);
-  FAxis2.OnNotifyChange:=Axis2Change;
-  FAxis1Params:=TODEJointParams.Create(Self);
-  FAxis1Params.SetCallback:=SetAxis1Param;
-  FAxis1Params.GetCallback:=GetAxis1Param;
-  FAxis2Params:=TODEJointParams.Create(Self);
-  FAxis2Params.SetCallback:=SetAxis2Param;
-  FAxis2Params.GetCallback:=GetAxis2Param;
+  FAnchor := TVKCoordinates.CreateInitialized(Self, NullHmgPoint, csPoint);
+  FAnchor.OnNotifyChange := AnchorChange;
+  FAxis1 := TVKCoordinates.CreateInitialized(Self, ZHmgVector, csVector);
+  FAxis1.OnNotifyChange := Axis1Change;
+  FAxis2 := TVKCoordinates.CreateInitialized(Self, XHmgVector, csVector);
+  FAxis2.OnNotifyChange := Axis2Change;
+  FAxis1Params := TODEJointParams.Create(Self);
+  FAxis1Params.SetCallback := SetAxis1Param;
+  FAxis1Params.GetCallback := GetAxis1Param;
+  FAxis2Params := TODEJointParams.Create(Self);
+  FAxis2Params.SetCallback := SetAxis2Param;
+  FAxis2Params.GetCallback := GetAxis2Param;
 
-  JointOptions:=[joBothObjectsMustBeAssigned];
+  JointOptions := [joBothObjectsMustBeAssigned];
 end;
 
 // Destroy
@@ -5247,17 +5084,19 @@ end;
 //
 procedure TODEJointUniversal.Initialize;
 begin
-  if (not IsODEInitialized) or (FInitialized) then exit;
-  FJointID:=dJointCreateUniversal(FManager.World,nil);
+  if (not IsODEInitialized) or (FInitialized) then
+    Exit;
+  FJointID := dJointCreateUniversal(FManager.World, nil);
   inherited;
 end;
 
 // WriteToFiler
 //
-procedure TODEJointUniversal.WriteToFiler(writer : TWriter);
+procedure TODEJointUniversal.WriteToFiler(writer: TWriter);
 begin
   inherited;
-  with writer do begin
+  with writer do
+  begin
     WriteInteger(0); // Archive version
     FAnchor.WriteToFiler(writer);
     FAxis1.WriteToFiler(writer);
@@ -5269,10 +5108,11 @@ end;
 
 // ReadFromFiler
 //
-procedure TODEJointUniversal.ReadFromFiler(reader : TReader);
+procedure TODEJointUniversal.ReadFromFiler(reader: TReader);
 begin
   inherited;
-  with reader do begin
+  with reader do
+  begin
     Assert(ReadInteger = 0); // Archive version
     FAnchor.ReadFromFiler(reader);
     FAxis1.ReadFromFiler(reader);
@@ -5295,7 +5135,7 @@ end;
 
 // AnchorChange
 //
-procedure TODEJointUniversal.AnchorChange(Sender : TObject);
+procedure TODEJointUniversal.AnchorChange(Sender: TObject);
 begin
   if IsAttached then
     dJointSetUniversalAnchor(FJointID, FAnchor.X, FAnchor.Y, FAnchor.Z);
@@ -5303,121 +5143,133 @@ end;
 
 // Axis1Change
 //
-procedure TODEJointUniversal.Axis1Change(Sender : TObject);
+procedure TODEJointUniversal.Axis1Change(Sender: TObject);
 var
-  vec : TVector;
+  vec: TVector;
 begin
-  vec:=FAxis1.DirectVector;
+  vec := FAxis1.DirectVector;
   NormalizeVector(vec);
-  FAxis1.DirectVector:=vec;
+  FAxis1.DirectVector := vec;
   if IsAttached then
     dJointSetUniversalAxis1(FJointID, FAxis1.X, FAxis1.Y, FAxis1.Z);
 end;
 
 // Axis2Change
 //
-procedure TODEJointUniversal.Axis2Change(Sender : TObject);
+procedure TODEJointUniversal.Axis2Change(Sender: TObject);
 var
-  vec : TVector;
+  vec: TVector;
 begin
-  vec:=FAxis2.DirectVector;
+  vec := FAxis2.DirectVector;
   NormalizeVector(vec);
-  FAxis2.DirectVector:=vec;
+  FAxis2.DirectVector := vec;
   if IsAttached then
     dJointSetUniversalAxis2(FJointID, FAxis2.X, FAxis2.Y, FAxis2.Z);
 end;
 
 // FriendlyName
 //
-class function TODEJointUniversal.FriendlyName : String;
+class function TODEJointUniversal.FriendlyName: String;
 begin
-  Result:='Universal';
+  Result := 'Universal';
 end;
 
 // FriendlyDescription
 //
-class function TODEJointUniversal.FriendlyDescription : String;
+class function TODEJointUniversal.FriendlyDescription: String;
 begin
-  Result:='ODE Universal joint implementation';
+  Result := 'ODE Universal joint implementation';
 end;
 
 // SetAnchor
 //
-procedure TODEJointUniversal.SetAnchor(const Value : TVKCoordinates);
+procedure TODEJointUniversal.SetAnchor(const Value: TVKCoordinates);
 begin
   FAnchor.Assign(Value);
 end;
 
 // SetAxis1
 //
-procedure TODEJointUniversal.SetAxis1(const Value : TVKCoordinates);
+procedure TODEJointUniversal.SetAxis1(const Value: TVKCoordinates);
 begin
   FAxis1.Assign(Value);
 end;
 
 // SetAxis2
 //
-procedure TODEJointUniversal.SetAxis2(const Value : TVKCoordinates);
+procedure TODEJointUniversal.SetAxis2(const Value: TVKCoordinates);
 begin
   FAxis2.Assign(Value);
 end;
 
 // SetAxis1Params
 //
-procedure TODEJointUniversal.SetAxis1Params(const Value : TODEJointParams);
+procedure TODEJointUniversal.SetAxis1Params(const Value: TODEJointParams);
 begin
   Axis1Params.Assign(Value);
 end;
 
 // SetAxis2Params
 //
-procedure TODEJointUniversal.SetAxis2Params(const Value : TODEJointParams);
+procedure TODEJointUniversal.SetAxis2Params(const Value: TODEJointParams);
 begin
   Axis2Params.Assign(Value);
 end;
 
 // SetAxis1Param
 //
-function TODEJointUniversal.SetAxis1Param(Param :  Integer; const Value : TdReal) : Boolean;
+function TODEJointUniversal.SetAxis1Param(Param: Integer;
+  const Value: TdReal): Boolean;
 begin
-  if IsAttached then begin
+  if IsAttached then
+  begin
     dJointSetUniversalParam(JointID, Param, Value);
-    Result:=True;
-  end else
-    Result:=False;
+    Result := True;
+  end
+  else
+    Result := False;
 end;
 
 // SetAxis2Param
 //
-function TODEJointUniversal.SetAxis2Param(Param :  Integer; const Value : TdReal) : Boolean;
+function TODEJointUniversal.SetAxis2Param(Param: Integer;
+  const Value: TdReal): Boolean;
 begin
-  if IsAttached then begin
-    dJointSetUniversalParam(JointID, dParamLoStop2+Param, Value);
-    Result:=True;
-  end else
-    Result:=False;
+  if IsAttached then
+  begin
+    dJointSetUniversalParam(JointID, dParamLoStop2 + Param, Value);
+    Result := True;
+  end
+  else
+    Result := False;
 end;
 
 // GetAxis1Param
 //
-function TODEJointUniversal.GetAxis1Param(Param :  Integer; var Value : TdReal) : Boolean;
+function TODEJointUniversal.GetAxis1Param(Param: Integer;
+  var Value: TdReal): Boolean;
 begin
-  if IsAttached then begin
-    Value:=dJointGetUniversalParam(JointID, Param);
-    Result:=True;
-  end else
-    Result:=False;
+  if IsAttached then
+  begin
+    Value := dJointGetUniversalParam(JointID, Param);
+    Result := True;
+  end
+  else
+    Result := False;
 end;
 
 // GetAxis2Param
 //
-function TODEJointUniversal.GetAxis2Param(Param :  Integer; var Value : TdReal) : Boolean;
+function TODEJointUniversal.GetAxis2Param(Param: Integer;
+  var Value: TdReal): Boolean;
 begin
-  if IsAttached then begin
-    Value:=dJointGetUniversalParam(JointID, dParamLoStop2+Param);
-    Result:=True;
-  end else
-    Result:=False;
+  if IsAttached then
+  begin
+    Value := dJointGetUniversalParam(JointID, dParamLoStop2 + Param);
+    Result := True;
+  end
+  else
+    Result := False;
 end;
 
 
@@ -5426,56 +5278,58 @@ end;
 // ------------------------------------------------------------------
 
 initialization
+
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-  vGLODEObjectRegister:=TList.Create;
+vGLODEObjectRegister := TList.Create;
 
-  RegisterXCollectionItemClass(TVKODEDynamic);
-  RegisterXCollectionItemClass(TVKODEStatic);
+RegisterXCollectionItemClass(TVKODEDynamic);
+RegisterXCollectionItemClass(TVKODEStatic);
 
-  RegisterXCollectionItemClass(TODEElementBox);
-  RegisterXCollectionItemClass(TODEElementSphere);
-  RegisterXCollectionItemClass(TODEElementCapsule);
-  RegisterXCollectionItemClass(TODEElementCylinder);
-  RegisterXCollectionItemClass(TODEElementTriMesh);
-  RegisterXCollectionItemClass(TODEElementPlane);
+RegisterXCollectionItemClass(TODEElementBox);
+RegisterXCollectionItemClass(TODEElementSphere);
+RegisterXCollectionItemClass(TODEElementCapsule);
+RegisterXCollectionItemClass(TODEElementCylinder);
+RegisterXCollectionItemClass(TODEElementTriMesh);
+RegisterXCollectionItemClass(TODEElementPlane);
 
-  RegisterXCollectionItemClass(TGLODEJointHinge);
-  RegisterXCollectionItemClass(TODEJointBall);
-  RegisterXCollectionItemClass(TODEJointSlider);
-  RegisterXCollectionItemClass(TODEJointFixed);
-  RegisterXCollectionItemClass(TGLODEJointHinge2);
-  RegisterXCollectionItemClass(TODEJointUniversal);
+RegisterXCollectionItemClass(TGLODEJointHinge);
+RegisterXCollectionItemClass(TODEJointBall);
+RegisterXCollectionItemClass(TODEJointSlider);
+RegisterXCollectionItemClass(TODEJointFixed);
+RegisterXCollectionItemClass(TGLODEJointHinge2);
+RegisterXCollectionItemClass(TODEJointUniversal);
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 finalization
+
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-  vGLODEObjectRegister.Free;
+vGLODEObjectRegister.Free;
 
-  UnregisterXCollectionItemClass(TVKODEDynamic);
-  UnregisterXCollectionItemClass(TVKODEStatic);
+UnregisterXCollectionItemClass(TVKODEDynamic);
+UnregisterXCollectionItemClass(TVKODEStatic);
 
-  UnregisterXCollectionItemClass(TODEElementBox);
-  UnregisterXCollectionItemClass(TODEElementSphere);
-  UnregisterXCollectionItemClass(TODEElementCapsule);
-  UnregisterXCollectionItemClass(TODEElementCylinder);
-  UnregisterXCollectionItemClass(TODEElementTriMesh);
-  UnregisterXCollectionItemClass(TODEElementPlane);
+UnregisterXCollectionItemClass(TODEElementBox);
+UnregisterXCollectionItemClass(TODEElementSphere);
+UnregisterXCollectionItemClass(TODEElementCapsule);
+UnregisterXCollectionItemClass(TODEElementCylinder);
+UnregisterXCollectionItemClass(TODEElementTriMesh);
+UnregisterXCollectionItemClass(TODEElementPlane);
 
-  UnregisterXCollectionItemClass(TGLODEJointHinge);
-  UnregisterXCollectionItemClass(TODEJointBall);
-  UnregisterXCollectionItemClass(TODEJointSlider);
-  UnregisterXCollectionItemClass(TODEJointFixed);
-  UnregisterXCollectionItemClass(TGLODEJointHinge2);
-  UnregisterXCollectionItemClass(TODEJointUniversal);
+UnregisterXCollectionItemClass(TGLODEJointHinge);
+UnregisterXCollectionItemClass(TODEJointBall);
+UnregisterXCollectionItemClass(TODEJointSlider);
+UnregisterXCollectionItemClass(TODEJointFixed);
+UnregisterXCollectionItemClass(TGLODEJointHinge2);
+UnregisterXCollectionItemClass(TODEJointUniversal);
 
-//  CloseODE;
+// CloseODE;
 
 end.

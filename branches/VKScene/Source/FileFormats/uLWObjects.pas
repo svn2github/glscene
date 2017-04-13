@@ -2,14 +2,15 @@
 // VKScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
 
-unit LWObjects;
+unit uLWObjects;
 
 interface
 
 {$I VKScene.inc}
 
 uses
-  System.Classes, VKS.VectorGeometry;
+  System.Classes,
+  VKS.VectorGeometry;
 
 type
 

@@ -6,13 +6,15 @@
 	Note:
 	Also referred to as MDX (MDXM/MDXA) format in C source. 
 }
-unit FileGL2;
+unit uFileGL2;
 
 interface
 
 uses
-  System.Classes, System.SysUtils,
-  VKS.VectorTypes, VKS.VectorGeometry;
+  System.Classes,
+  System.SysUtils,
+  VKS.VectorTypes,
+  VKS.VectorGeometry;
 
 type
   TVKMHeader = record
