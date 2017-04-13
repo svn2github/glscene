@@ -1,9 +1,9 @@
 package VKScene_DesignTime;
 
 {$R *.res}
-{$R '..\..\Resources\GLSceneObjects.dcr'}
-{$R '..\..\Resources\GLScene.dcr'}
-{$R '..\..\Resources\nonGLScene.dcr'}
+{$R '..\..\Resources\VKSceneObjects.dcr'}
+{$R '..\..\Resources\VKScene.dcr'}
+{$R '..\..\Resources\nonVKScene.dcr'}
 {$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
 {$ALIGN 8}
 {$ASSERTIONS ON}
@@ -52,8 +52,8 @@ contains
   FShaderMemo in '..\..\Source\DesignTime\FShaderMemo.pas' {VKShaderMemoForm},
   FShaderUniformEditor in '..\..\Source\DesignTime\FShaderUniformEditor.pas' {GLShaderUniformEditorForm},
   FGuiSkinEditor in '..\..\Source\DesignTime\FGuiSkinEditor.pas' {GUISkinEditor},
-  VKS.RegisterXCollection in '..\..\Source\DesignTime\VKS.RegisterXCollection.pas',
   FSceneEditor in '..\..\Source\DesignTime\FSceneEditor.pas' {GLSceneEditorForm},
+  VKS.RegisterXCollection in '..\..\Source\DesignTime\VKS.RegisterXCollection.pas',
   VKS.SceneRegister in '..\..\Source\DesignTime\VKS.SceneRegister.pas';
 
 end.

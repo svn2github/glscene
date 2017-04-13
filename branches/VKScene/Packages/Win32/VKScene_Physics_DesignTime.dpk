@@ -1,8 +1,8 @@
 package VKScene_Physics_DesignTime;
 
 {$R *.res}
-{$R '..\..\Resources\GLSceneODE.dcr'}
-{$R '..\..\Resources\GLSceneNGD.dcr'}
+{$R '..\..\Resources\VKSceneODE.dcr'}
+{$R '..\..\Resources\VKSceneNGD.dcr'}
 {$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
 {$ALIGN 8}
 {$ASSERTIONS ON}

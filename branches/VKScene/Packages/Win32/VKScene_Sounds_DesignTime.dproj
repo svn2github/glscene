@@ -113,9 +113,9 @@
         <DelphiCompile Include="$(MainSource)">
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
-        <DCCReference Include="..\..\Resources\GLSceneBass.dcr"/>
-        <DCCReference Include="..\..\Resources\GLSceneFMod.dcr"/>
-        <DCCReference Include="..\..\Resources\GLSceneOpenAL.dcr"/>
+        <DCCReference Include="..\..\Resources\VKSceneBass.dcr"/>
+        <DCCReference Include="..\..\Resources\VKSceneFMod.dcr"/>
+        <DCCReference Include="..\..\Resources\VKSceneOpenAL.dcr"/>
         <DCCReference Include="rtl.dcp"/>
         <DCCReference Include="fmx.dcp"/>
         <DCCReference Include="VKScene_DesignTime.dcp"/>

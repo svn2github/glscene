@@ -10,7 +10,8 @@ uses
   FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.StdCtrls,
   FMX.TabControl, FMX.Layouts, FMX.ListBox, FMX.Memo,
   
-  VKS.Scene, Winapi.OpenGL, Winapi.OpenGLext,  VKS.Context;
+  VKS.Scene, Winapi.OpenGL, Winapi.OpenGLext,  VKS.Context, FMX.ScrollBox,
+  FMX.Controls.Presentation;
 
 type
   TInfoForm = class(TForm)

@@ -1,9 +1,9 @@
 package VKScene_Sounds_DesignTime;
 
 {$R *.res}
-{$R '..\..\Resources\GLSceneBass.dcr'}
-{$R '..\..\Resources\GLSceneFMod.dcr'}
-{$R '..\..\Resources\GLSceneOpenAL.dcr'}
+{$R '..\..\Resources\VKSceneBass.dcr'}
+{$R '..\..\Resources\VKSceneFMod.dcr'}
+{$R '..\..\Resources\VKSceneOpenAL.dcr'}
 {$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
 {$ALIGN 8}
 {$ASSERTIONS ON}
