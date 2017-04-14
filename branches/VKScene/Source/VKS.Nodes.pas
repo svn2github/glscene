@@ -20,8 +20,9 @@ uses
   VKS.BaseClasses,
   VKS.Coordinates,
   VKS.Spline,
-  XOpenGL,
-  VKS.VectorTypes;
+  VKS.VectorTypes,
+  uXOpenGL;
+
 
 
 {$I VKScene.inc}

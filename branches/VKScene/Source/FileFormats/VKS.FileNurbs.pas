@@ -1,180 +1,185 @@
 //
-// VKScene Component Library, based on GLScene http://glscene.sourceforge.net 
+// VKScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
 {
-	Nurbs surfaces vector file loading. 
- }
+  Nurbs surfaces vector file loading.
+}
 unit VKS.FileNurbs;
 
 interface
 
 uses
-  System.Classes, System.SysUtils, 
-  VKS.VectorFileObjects, VKS.VectorGeometry, VKS.VectorLists, 
-  VKS.ApplicationFileIO, VKS.ParametricSurfaces, VKS.Utils;
+  System.Classes,
+  System.SysUtils,
+  VKS.VectorFileObjects,
+  VKS.VectorGeometry,
+  VKS.VectorLists,
+  VKS.ApplicationFileIO,
+  VKS.ParametricSurfaces,
+  VKS.Utils;
 
 type
 
-   // TVKNurbsSurface
-   //
-   TVKNurbsVectorFile = class(TVKVectorFile)
-      public
-         
-         class function Capabilities : TVKDataFileCapabilities; override;
-         procedure LoadFromStream(stream : TStream); override;
-   end;
+  TVKNurbsVectorFile = class(TVKVectorFile)
+  public
+    class function Capabilities: TVKDataFileCapabilities; override;
+    procedure LoadFromStream(stream: TStream); override;
+  end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 // ------------------
 // ------------------ TVKNurbsVectorFile ------------------
 // ------------------
 
-// Capabilities
-//
-class function TVKNurbsVectorFile.Capabilities : TVKDataFileCapabilities;
+class function TVKNurbsVectorFile.Capabilities: TVKDataFileCapabilities;
 begin
-  Result:=[dfcRead];
+  Result := [dfcRead];
 end;
 
-// LoadFromStream
-//
-procedure TVKNurbsVectorFile.LoadFromStream(stream : TStream);
+procedure TVKNurbsVectorFile.LoadFromStream(stream: TStream);
 
-   function CleanupLine(const line : String) : String;
-   var
-      p : Integer;
-   begin
-      p:=Pos('#', line);
-      if p>0 then
-         Result:=LowerCase(Trim(Copy(line, 1, p-1)))
-      else Result:=LowerCase(Trim(line));
-   end;
+  function CleanupLine(const line: String): String;
+  var
+    p: Integer;
+  begin
+    p := Pos('#', line);
+    if p > 0 then
+      Result := LowerCase(Trim(Copy(line, 1, p - 1)))
+    else
+      Result := LowerCase(Trim(line));
+  end;
 
-   function ReadSingleArray(sl : TStrings; idx : Integer; list : TSingleList) : Integer;
-   var
-      k : Integer;
-      buf : String;
-      vals : TStringList;
-   begin
-      vals:=TStringList.Create;
-      try
-         while idx<sl.Count do begin
-            buf:=CleanupLine(sl[idx]);
-            if buf=']' then Break;
-            vals.CommaText:=buf;
-            for k:=0 to vals.Count-1 do if vals[k]<>'' then
-               list.Add(VKS.Utils.StrToFloatDef(vals[k],0));
-            Inc(idx);
-         end;
-         Result:=idx;
-      finally
-         vals.Free;
+  function ReadSingleArray(sl: TStrings; idx: Integer;
+    list: TSingleList): Integer;
+  var
+    k: Integer;
+    buf: String;
+    vals: TStringList;
+  begin
+    vals := TStringList.Create;
+    try
+      while idx < sl.Count do
+      begin
+        buf := CleanupLine(sl[idx]);
+        if buf = ']' then
+          Break;
+        vals.CommaText := buf;
+        for k := 0 to vals.Count - 1 do
+          if vals[k] <> '' then
+            list.Add(VKS.Utils.StrToFloatDef(vals[k], 0));
+        Inc(idx);
       end;
-   end;
+      Result := idx;
+    finally
+      vals.Free;
+    end;
+  end;
 
-   function ReadVectorArray(sl : TStrings; idx : Integer; list : TAffineVectorList) : Integer;
-   var
-      buf : String;
-      vals : TStringList;
-   begin
-      vals:=TStringList.Create;
-      try
-         while idx<sl.Count do begin
-            buf:=CleanupLine(sl[idx]);
-            if buf=']' then Break;
-            vals.CommaText:=buf;
-            if vals.Count>=3 then
-               list.Add(VKS.Utils.StrToFloatDef(vals[0],0), VKS.Utils.StrToFloatDef(vals[1],0), VKS.Utils.StrToFloatDef(vals[2],0));
-            Inc(idx);
-         end;
-         Result:=idx;
-      finally
-         vals.Free;
+  function ReadVectorArray(sl: TStrings; idx: Integer;
+    list: TAffineVectorList): Integer;
+  var
+    buf: String;
+    vals: TStringList;
+  begin
+    vals := TStringList.Create;
+    try
+      while idx < sl.Count do
+      begin
+        buf := CleanupLine(sl[idx]);
+        if buf = ']' then
+          Break;
+        vals.CommaText := buf;
+        if vals.Count >= 3 then
+          list.Add(VKS.Utils.StrToFloatDef(vals[0], 0),
+            VKS.Utils.StrToFloatDef(vals[1], 0),
+            VKS.Utils.StrToFloatDef(vals[2], 0));
+        Inc(idx);
       end;
-   end;
+      Result := idx;
+    finally
+      vals.Free;
+    end;
+  end;
 
 var
-   sl, buf : TStringList;
-   ss : TStringStream;
-   i,j : Integer;
-   surface : TMOParametricSurface;
-   invert : Boolean;
-   invControlPoints : TAffineVectorList;
+  sl, buf: TStringList;
+  ss: TStringStream;
+  i, j: Integer;
+  surface: TMOParametricSurface;
+  invert: Boolean;
+  invControlPoints: TAffineVectorList;
 begin
-   ss:=TStringStream.Create('');
-   sl:=TStringList.Create;
-   buf:=TStringList.Create;
+  ss := TStringStream.Create('');
+  sl := TStringList.Create;
+  buf := TStringList.Create;
 
-   surface:=TMOParametricSurface.CreateOwned(Owner.MeshObjects);
-   with surface do begin
-      Name:='Nurbs'+IntToStr(Owner.IndexOf(surface));
-      Basis:=psbBSpline;
-      Renderer := psrVulkan;
-      AutoKnots:=False;
-   end;
-   
-   invert:=False;
+  surface := TMOParametricSurface.CreateOwned(Owner.MeshObjects);
+  with surface do
+  begin
+    Name := 'Nurbs' + IntToStr(Owner.IndexOf(surface));
+    Basis := psbBSpline;
+    Renderer := psrVulkan;
+    AutoKnots := False;
+  end;
 
-   try
-      ss.CopyFrom(stream, stream.Size-stream.Position);
-      sl.Text:=ss.DataString;
+  invert := False;
 
-      i:=0; while i<sl.Count do begin
-         buf.CommaText:=CleanupLine(sl[i]);
-         if buf.Count>1 then begin
-            if buf[0]='uorder' then
-               surface.OrderU:=StrToIntDef(buf[1], 2)
-            else if buf[0]='vorder' then
-               surface.OrderV:=StrToIntDef(buf[1], 2)
-            else if buf[0]='uknot' then
-               i:=ReadSingleArray(sl, i+1, surface.KnotsU)
-            else if buf[0]='vknot' then
-               i:=ReadSingleArray(sl, i+1, surface.KnotsV)
-            else if buf[0]='weight' then
-               i:=ReadSingleArray(sl, i+1, surface.Weights)
-            else if buf[0]='udimension' then
-               surface.CountU:=StrToIntDef(buf[1], 0)
-            else if buf[0]='vdimension' then
-               surface.CountV:=StrToIntDef(buf[1], 0)
-            else if buf[0]='controlpoint' then
-               i:=ReadVectorArray(sl, i+1, Surface.ControlPoints)
-            else if buf[0]='ccw' then
-               invert:=(buf[1]='false');
-         end;
-         Inc(i);
+  try
+    ss.CopyFrom(stream, stream.Size - stream.Position);
+    sl.Text := ss.DataString;
+
+    i := 0;
+    while i < sl.Count do
+    begin
+      buf.CommaText := CleanupLine(sl[i]);
+      if buf.Count > 1 then
+      begin
+        if buf[0] = 'uorder' then
+          surface.OrderU := StrToIntDef(buf[1], 2)
+        else if buf[0] = 'vorder' then
+          surface.OrderV := StrToIntDef(buf[1], 2)
+        else if buf[0] = 'uknot' then
+          i := ReadSingleArray(sl, i + 1, surface.KnotsU)
+        else if buf[0] = 'vknot' then
+          i := ReadSingleArray(sl, i + 1, surface.KnotsV)
+        else if buf[0] = 'weight' then
+          i := ReadSingleArray(sl, i + 1, surface.Weights)
+        else if buf[0] = 'udimension' then
+          surface.CountU := StrToIntDef(buf[1], 0)
+        else if buf[0] = 'vdimension' then
+          surface.CountV := StrToIntDef(buf[1], 0)
+        else if buf[0] = 'controlpoint' then
+          i := ReadVectorArray(sl, i + 1, surface.ControlPoints)
+        else if buf[0] = 'ccw' then
+          invert := (buf[1] = 'false');
       end;
-      
-      if invert then begin
-         invControlPoints:=TAffineVectorList.Create;
-         for i:=surface.CountV-1 downto 0 do
-           for j:=0 to surface.CountU-1 do
-             invControlPoints.Add(surface.ControlPoints[i*surface.CountU+j]);
-         surface.ControlPoints.Assign(invControlPoints);
-         invControlPoints.Free;
-      end;
-      
-   finally
-      buf.Free;
-      sl.Free;
-      ss.Free;
-   end;
+      Inc(i);
+    end;
+
+    if invert then
+    begin
+      invControlPoints := TAffineVectorList.Create;
+      for i := surface.CountV - 1 downto 0 do
+        for j := 0 to surface.CountU - 1 do
+          invControlPoints.Add(surface.ControlPoints[i * surface.CountU + j]);
+      surface.ControlPoints.Assign(invControlPoints);
+      invControlPoints.Free;
+    end;
+
+  finally
+    buf.Free;
+    sl.Free;
+    ss.Free;
+  end;
 end;
 
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 initialization
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 
-   RegisterVectorFileFormat('nurbs', 'Nurbs model files', TVKNurbsVectorFile);
+RegisterVectorFileFormat('nurbs', 'Nurbs model files', TVKNurbsVectorFile);
 
 end.

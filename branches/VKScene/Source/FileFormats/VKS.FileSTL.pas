@@ -13,10 +13,12 @@ interface
 uses
   System.Classes,
   System.SysUtils,
-  // GLS
-  VKS.VectorGeometry, VKS.VectorLists,
-  VKS.VectorFileObjects, VKS.ApplicationFileIO,
-  VKS.Utils, VKS.CrossPlatform;
+  VKS.VectorGeometry,
+  VKS.VectorLists,
+  VKS.VectorFileObjects,
+  VKS.ApplicationFileIO,
+  VKS.Utils,
+  VKS.CrossPlatform;
 
 type
   TSTLHeader = packed record
@@ -40,8 +42,6 @@ type
   end;
 
 type
-  // TVKSTLVectorFile
-  //
   { The STL vector file (stereolithography format).
     It is a list of the triangular surfaces that describe a computer generated
     solid model. This is the standard input for most rapid prototyping machines.
@@ -50,20 +50,13 @@ type
     Original Binary importer code by Paul M. Bearne, Text importer by Adem. }
   TVKSTLVectorFile = class(TVKVectorFile)
   public
-    
     class function Capabilities: TVKDataFileCapabilities; override;
-
     procedure LoadFromStream(aStream: TStream); override;
     procedure SaveToStream(aStream: TStream); override;
   end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
-
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 const
@@ -80,15 +73,11 @@ const
   // ------------------ TVKSTLVectorFile ------------------
   // ------------------
 
-  // Capabilities
-  //
 class function TVKSTLVectorFile.Capabilities: TVKDataFileCapabilities;
 begin
   Result := [dfcRead, dfcWrite];
 end;
 
-// LoadFromStream
-//
 procedure TVKSTLVectorFile.LoadFromStream(aStream: TStream);
 var
   sl: TStringList;
@@ -251,8 +240,6 @@ begin
   end;
 end;
 
-// SaveToStream
-//
 procedure TVKSTLVectorFile.SaveToStream(aStream: TStream);
 var
   i: Integer;
@@ -284,12 +271,7 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 RegisterVectorFileFormat('stl', 'Stereolithography files', TVKSTLVectorFile);

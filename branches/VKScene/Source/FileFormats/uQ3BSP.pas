@@ -3,7 +3,6 @@
 //
 {
 	Simple Quake III BSP file loader. 
- 
 }
 unit uQ3BSP;
 
@@ -89,15 +88,13 @@ type
       imageBits : array [0..49151] of Byte;     // The RGB data in a 128x128 image
    end;
    PBSPLightmap = ^TBSPLightmap;
-   
+
    TBSPVisData = record
       numOfClusters : Integer;
       bytesPerCluster : Integer;
       bitSets : array of Byte;
    end;
 
-   // TQ3BSP
-   //
    TQ3BSP = class (TObject)
       public
          
@@ -118,7 +115,6 @@ type
          Textures       : array of TBSPTexture; // texture names (without extension)
          Lightmaps      : array of TBSPLightmap;
          VisData        : TBSPVisData;
-
          constructor Create(bspStream : TStream);
    end;
 
@@ -142,16 +138,14 @@ const
    kVisData     = 16;           // Stores PVS and cluster info (visibility)
    kMaxLumps    = 17;           // A constant to store the number of lumps
 
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
+//==========================================================================
 implementation
+//==========================================================================
+
 // ------------------
 // ------------------ TQ3BSP ------------------
 // ------------------
 
-// Create
-//
 constructor TQ3BSP.Create(bspStream : TStream);
 begin
    SetLength(Lumps, kMaxLumps);

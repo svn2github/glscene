@@ -3,7 +3,7 @@
 //
 {
   Base classes for VKScene
-  The history is logged in a former GLS version of the unit.
+  The history is logged in a former version of the unit.
 }
 unit VKS.BaseClasses;
 
@@ -19,14 +19,10 @@ uses
 
 type
 
-  // TProgressTimes
-  //
   TProgressTimes = record
     deltaTime, newTime: Double
   end;
 
-  // TVKProgressEvent
-  //
   { Progression event for time-base animations/simulations.
      deltaTime is the time delta since last progress and newTime is the new
      time after the progress event is completed. }
@@ -42,83 +38,58 @@ type
     procedure DoProgress(const progressTime: TProgressTimes);
   end;
 
-  // TVKUpdateAbleObject
-  //
   { An abstract class describing the "update" interface.  }
   TVKUpdateAbleObject = class(TVKInterfacedPersistent, IVKNotifyAble)
   private
-    
     FOwner: TPersistent;
     FUpdating: Integer;
     FOnNotifyChange: TNotifyEvent;
-
   public
-    
     constructor Create(AOwner: TPersistent); virtual;
-
     procedure NotifyChange(Sender: TObject); virtual;
     procedure Notification(Sender: TObject; Operation: TOperation); virtual;
     function GetOwner: TPersistent; override;
-
     property Updating: Integer read FUpdating;
     procedure BeginUpdate;
     procedure EndUpdate;
-
     property Owner: TPersistent read FOwner;
     property OnNotifyChange: TNotifyEvent read FOnNotifyChange write FOnNotifyChange;
   end;
 
-  // TVKCadenceAbleComponent
-  //
   { A base class describing the "cadenceing" interface.  }
   TVKCadenceAbleComponent = class(TVKComponent, IVKProgessAble)
   public
-    
     procedure DoProgress(const progressTime: TProgressTimes); virtual;
   end;
 
-  // TVKUpdateAbleComponent
-  //
   { A base class describing the "update" interface.  }
   TVKUpdateAbleComponent = class(TVKCadenceAbleComponent, IVKNotifyAble)
   public
-    
     procedure NotifyChange(Sender: TObject); virtual;
   end;
 
-  // TVKNotifyCollection
-  //
   TVKNotifyCollection = class(TOwnedCollection)
   private
-    
     FOnNotifyChange: TNotifyEvent;
-
   protected
-    
     procedure Update(item: TCollectionItem); override;
-
   public
-    
     constructor Create(AOwner: TPersistent; AItemClass: TCollectionItemClass);
     property OnNotifyChange: TNotifyEvent read FOnNotifyChange write FOnNotifyChange;
   end;
 
+//==================================================================
 implementation
+//==================================================================
 
 {$IFDEF VKS_REGIONS}{$REGION 'TVKUpdateAbleObject'}{$ENDIF}
 //---------------------- TVKUpdateAbleObject -----------------------------------------
-
-// Create
-//
 
 constructor TVKUpdateAbleObject.Create(AOwner: TPersistent);
 begin
   inherited Create;
   FOwner := AOwner;
 end;
-
-// NotifyChange
-//
 
 procedure TVKUpdateAbleObject.NotifyChange(Sender: TObject);
 begin
@@ -136,31 +107,19 @@ begin
   end;
 end;
 
-// Notification
-//
-
 procedure TVKUpdateAbleObject.Notification(Sender: TObject; Operation: TOperation);
 begin
 end;
-
-// GetOwner
-//
 
 function TVKUpdateAbleObject.GetOwner: TPersistent;
 begin
   Result := Owner;
 end;
 
-// BeginUpdate
-//
-
 procedure TVKUpdateAbleObject.BeginUpdate;
 begin
   Inc(FUpdating);
 end;
-
-// EndUpdate
-//
 
 procedure TVKUpdateAbleObject.EndUpdate;
 begin
@@ -178,9 +137,6 @@ end;
 // ------------------ TVKCadenceAbleComponent ------------------
 // ------------------
 
-// DoProgress
-//
-
 procedure TVKCadenceAbleComponent.DoProgress(const progressTime: TProgressTimes);
 begin
   // nothing
@@ -189,9 +145,6 @@ end;
 // ------------------
 // ------------------ TVKUpdateAbleObject ------------------
 // ------------------
-
-// NotifyChange
-//
 
 procedure TVKUpdateAbleComponent.NotifyChange(Sender: TObject);
 begin
@@ -206,18 +159,12 @@ end;
 // ------------------ TVKNotifyCollection ------------------
 // ------------------
 
-// Create
-//
-
 constructor TVKNotifyCollection.Create(AOwner: TPersistent; AItemClass: TCollectionItemClass);
 begin
   inherited Create(AOwner, AItemClass);
   if Assigned(AOwner) and (AOwner is TVKUpdateAbleComponent) then
     OnNotifyChange := TVKUpdateAbleComponent(AOwner).NotifyChange;
 end;
-
-// Update
-//
 
 procedure TVKNotifyCollection.Update(Item: TCollectionItem);
 begin
@@ -228,4 +175,5 @@ end;
 {$IFDEF VKS_REGIONS}{$ENDREGION 'TVKNotifyCollection'}{$ENDIF}
 
 end.
+
 

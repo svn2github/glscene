@@ -1,5 +1,5 @@
 //
-// VKScene Component Library, based on GLScene http://glscene.sourceforge.net 
+// VKScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
 {
    Support-code to load Lightwave LWO Files (v6.0+, partial support).
@@ -10,10 +10,17 @@ interface
 
 {$I VKScene.inc}
 
-uses 
-  System.SysUtils, System.Classes, System.Math,
+uses
+  System.SysUtils,
+  System.Classes,
+  System.Math,
   VKS.VectorFileObjects,
-  LWObjects;
+  VKS.VectorGeometry,
+  VKS.Texture,
+  VKS.Material,
+  VKS.VectorTypes,
+
+  uLWObjects;
 
 type
   TVKLWOVectorFile = class(TVKVectorFile)
@@ -29,13 +36,9 @@ type
     procedure LoadFromStream(aStream: TStream); override;
   end;
 
+//=============================================================================
 implementation
-
-uses
-  VKS.VectorGeometry,
-  VKS.Texture,
-  VKS.Material,
-  VKS.VectorTypes;
+//=============================================================================
 
 type
   PVector3f = ^TVector3f;

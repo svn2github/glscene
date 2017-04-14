@@ -21,6 +21,7 @@ uses
   System.SysUtils,
   
   uOpenGLAdapter,
+  uXOpenGL,
   VKS.Scene,
   VKS.HeightData,
   VKS.Material,
@@ -29,7 +30,6 @@ uses
   VKS.ROAMPatch,
   VKS.VectorLists,
   VKS.RenderContextInfo,
-  XOpenGL,
   VKS.Utils,
   VKS.VectorTypes;
 

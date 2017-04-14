@@ -21,9 +21,9 @@ uses
   System.SysUtils,
   
   uOpenGLAdapter,
-  VKS.Strings,  
-  XOpenGL,
-  VKS.Context,  
+  uXOpenGL,
+  VKS.Strings,
+  VKS.Context,
   VKS.Scene,
   VKS.VectorGeometry,   
   VKS.State,

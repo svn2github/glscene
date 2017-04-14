@@ -17,11 +17,11 @@ uses
   System.SysUtils,
   
   uOpenGLAdapter,
+  uXOpenGL,
   VKS.Texture,
   VKS.Material,
   VKS.RenderContextInfo,
   VKS.TextureCombiners,
-  XOpenGL,
   VKS.Context,
   VKS.CrossPlatform,
   VKS.Utils;

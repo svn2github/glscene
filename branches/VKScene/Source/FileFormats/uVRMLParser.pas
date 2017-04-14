@@ -222,30 +222,22 @@ begin
   inherited;
 end;
 
-// GetNode
-//
 function TVRMLNode.GetNode(index : Integer) : TVRMLNode;
 begin
   Result:=TVRMLNode(FNodes[index]);
 end;
 
-// Count
-//
 function TVRMLNode.Count : Integer;
 begin
   Result:=FNodes.Count;
 end;
 
-// Clear
-//
 procedure TVRMLNode.Clear;
 begin
   while FNodes.Count>0 do
     Delete(0);
 end;
 
-// Add
-//
 procedure TVRMLNode.Add(node : TVRMLNode);
 begin
   if not Assigned(node) then exit;
@@ -255,8 +247,6 @@ begin
   node.FParent:=Self;
 end;
 
-// Remove
-//
 procedure TVRMLNode.Remove(node : TVRMLNode);
 begin
   if not Assigned(node) then exit;
@@ -264,8 +254,6 @@ begin
   node.Free;
 end;
 
-// Delete
-//
 procedure TVRMLNode.Delete(index : Integer);
 begin
   if (index<0) or (index>=Count) then exit;
@@ -295,16 +283,12 @@ end;
 // --------------- TVRMLIntegerArray ---------------
 // ---------------
 
-// Create
-//
 constructor TVRMLIntegerArray.Create;
 begin
   inherited;
   FValues:=TIntegerList.Create;
 end;
 
-// Destroy
-//
 destructor TVRMLIntegerArray.Destroy;
 begin
   FValues.Free;
@@ -370,8 +354,6 @@ begin
     Result:='';
 end;
 
-// ReadUnknownArray
-//
 procedure TVRMLParser.ReadUnknownArray(defname : String );
 var
   token : String;
@@ -389,8 +371,6 @@ begin
     FCurrentNode:=FCurrentNode.Parent;
 end;
 
-// ReadUnknownHeirachy
-//
 procedure TVRMLParser.ReadUnknownHeirachy(defname : String );
 var
   token : String;
@@ -410,8 +390,6 @@ begin
     FCurrentNode:=FCurrentNode.Parent;
 end;
 
-// ReadUnknown
-//
 procedure TVRMLParser.ReadUnknown(unknown_token : String; defname : String);
 begin
   if unknown_token = '{' then
@@ -423,15 +401,11 @@ begin
   end;
 end;
 
-// ReadSingle
-//
 function TVRMLParser.ReadSingle : Single;
 begin
   Result:= VKS.Utils.StrToFloatDef(ReadToken,0);
 end;
 
-// ReadVector3f
-//
 function TVRMLParser.ReadVector3f : TVector3f;
 begin
   Result.X:=ReadSingle;
@@ -439,8 +413,6 @@ begin
   Result.Z:=ReadSingle;
 end;
 
-// ReadVector4f
-//
 function TVRMLParser.ReadVector4f : TVector4f;
 begin
   Result.X:=ReadSingle;
@@ -449,8 +421,6 @@ begin
   Result.W:=ReadSingle;
 end;
 
-// ReadPointArray
-//
 procedure TVRMLParser.ReadPointArray(defname : String );
 var
   token : String;
@@ -474,8 +444,6 @@ begin
   FCurrentNode:=FCurrentNode.Parent;
 end;
 
-// ReadCoordIndexArray
-//
 procedure TVRMLParser.ReadCoordIndexArray(defname : String = '');
 var
   token : String;
@@ -500,8 +468,6 @@ begin
   FCurrentNode:=FCurrentNode.Parent;
 end;
 
-// ReadNormalIndexArray
-//
 procedure TVRMLParser.ReadNormalIndexArray(defname : String = '');
 var
   token : String;
@@ -526,8 +492,6 @@ begin
   FCurrentNode:=FCurrentNode.Parent;
 end;
 
-// ReadTextureCoordIndexArray
-//
 procedure TVRMLParser.ReadTextureCoordIndexArray(defname : String = '');
 var
   token : String;
@@ -552,8 +516,6 @@ begin
   FCurrentNode:=FCurrentNode.Parent;
 end;
 
-// ReadMaterial
-//
 procedure TVRMLParser.ReadMaterial(defname : String);
 var
   token : String;
@@ -598,8 +560,6 @@ begin
   FCurrentNode:=FCurrentNode.Parent;
 end;
 
-// ReadCoordinate3
-//
 procedure TVRMLParser.ReadCoordinate3(defname : String = '');
 var
   token : String;
@@ -626,8 +586,6 @@ begin
   FCurrentNode:=FCurrentNode.Parent;
 end;
 
-// ReadNormal
-//
 procedure TVRMLParser.ReadNormal(defname : String = '');
 var
   token : String;
@@ -654,8 +612,6 @@ begin
   FCurrentNode:=FCurrentNode.Parent;
 end;
 
-// ReadTextureCoordinate2
-//
 procedure TVRMLParser.ReadTextureCoordinate2(defname : String = '');
 var
   token : String;
@@ -682,8 +638,6 @@ begin
   FCurrentNode:=FCurrentNode.Parent;
 end;
 
-// ReadIndexedFaceSet
-//
 procedure TVRMLParser.ReadIndexedFaceSet(defname : String = '');
 var
   token : String;
@@ -714,8 +668,6 @@ begin
   FCurrentNode:=FCurrentNode.Parent;
 end;
 
-// ReadTransform
-//
 procedure TVRMLParser.ReadTransform(defname : String);
 var
   token : String;
@@ -748,8 +700,6 @@ begin
   FCurrentNode:=FCurrentNode.Parent;
 end;
 
-// ReadShapeHints
-//
 procedure TVRMLParser.ReadShapeHints(defname : String = '');
 var
   token : String;
@@ -776,8 +726,6 @@ begin
   FCurrentNode:=FCurrentNode.Parent;
 end;
 
-// ReadSeparator
-//
 procedure TVRMLParser.ReadSeparator(defname : String = '');
 var
   token : String;
@@ -824,8 +772,6 @@ begin
   FCurrentNode:=FCurrentNode.Parent;
 end;
 
-// ReadGroup
-//
 procedure TVRMLParser.ReadGroup(defname : String = '');
 var
   token : String;
@@ -868,8 +814,6 @@ begin
   FCurrentNode:=FCurrentNode.Parent;
 end;
 
-// ReadDef
-//
 procedure TVRMLParser.ReadDef;
 var
   defname, token : String;
@@ -900,8 +844,6 @@ begin
   end;
 end;
 
-// Parse
-//
 procedure TVRMLParser.Parse(Text : String);
 var
   token : String;

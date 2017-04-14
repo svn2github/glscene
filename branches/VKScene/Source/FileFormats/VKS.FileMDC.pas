@@ -16,9 +16,12 @@ interface
 {$I VKScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
-  
-  VKS.VectorFileObjects, VKS.Material, VKS.ApplicationFileIO,
+  System.Classes,
+  System.SysUtils,
+
+  VKS.VectorFileObjects,
+  VKS.Material,
+  VKS.ApplicationFileIO,
   VKS.VectorGeometry;
 
 const
@@ -120,28 +123,19 @@ type
     procedure LoadFromStream(AStream: TStream); override;
   end;
 
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
 implementation
-
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 // ------------------
 // ------------------ TVKMDCVectorFile ------------------
 // ------------------
 
-// Capabilities
-//
 class function TVKMDCVectorFile.Capabilities: TVKDataFileCapabilities;
 begin
   Result := [DfcRead];
 end;
 
-// LoadFromStream
-//
 procedure TVKMDCVectorFile.LoadFromStream(AStream: TStream);
 
 type
@@ -350,12 +344,7 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 RegisterVectorFileFormat('mdc', 'MDC files', TVKMDCVectorFile);

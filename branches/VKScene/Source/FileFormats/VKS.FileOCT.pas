@@ -20,18 +20,22 @@ uses
   VKS.VectorFileObjects,
   VKS.VectorGeometry,
   VKS.ApplicationFileIO,
+  VKS.Texture,
+  VKS.Material,
+  VKS.Graphics,
+  VKS.CrossPlatform,
+  VKS.State,
+  VKS.Utils,
+  VKS.TextureFormat,
+
   uFileOCT;
 
 type
 
-  // TVKOCTVKVectorFile
-
   { The OCT vector file (FSRad output).  }
   TVKOCTVKVectorFile = class(TVKVectorFile)
   public
-    
     class function Capabilities: TVKDataFileCapabilities; override;
-
     procedure LoadFromStream(aStream: TStream); override;
   end;
 
@@ -44,16 +48,8 @@ var
 // Mrqzzz : Flag to avoid loading materials (useful for IDE Extensions or scene editors)
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-
-uses
-  VKS.Texture, VKS.Material, VKS.Graphics, VKS.CrossPlatform, VKS.State,
-  VKS.Utils, VKS.TextureFormat;
 
 // ------------------
 // ------------------ TVKOCTVKVectorFile ------------------

@@ -11,11 +11,19 @@ interface
 {$I VKScene.inc}
 
 uses
-  System.Classes, System.SysUtils, System.Math,
-  
-  VKS.CrossPlatform, VKS.VectorFileObjects,
-  VKS.VectorTypes, VKS.Material, VKS.Color, VKS.Texture,
-  VKS.VectorGeometry, VKS.VectorLists, VKS.ApplicationFileIO;
+  System.Classes,
+  System.SysUtils,
+  System.Math,
+
+  VKS.CrossPlatform,
+  VKS.VectorFileObjects,
+  VKS.VectorTypes,
+  VKS.Material,
+  VKS.Color,
+  VKS.Texture,
+  VKS.VectorGeometry,
+  VKS.VectorLists,
+  VKS.ApplicationFileIO;
 
 const
   MAX_MS3D_VERTICES  = 8192;
@@ -189,8 +197,6 @@ type
   PMS3DJointArray = ^TMS3DJointArray;
   TMS3DJointArray = array[0..MAX_MS3D_JOINTS - 1] of TMS3DJoint;
 
-
-
   TMS3DComment=record
       index: Integer;
       commentLength: integer;
@@ -227,15 +233,11 @@ type
     destructor Destroy; override;
     property Weight[idx: Integer]: pMS3D_vertex_ex_t read GetWeight;
     property subVersion: Integer read FsubVersion write SetsubVersion;
-
   end;
 
 
-
 type
-  // TVKMS3DVectorFile
-  //
-  { The MilkShape vector file. 
+  { The MilkShape vector file.
      By Mattias Fagerlund, mattias@cambrianlabs.com. Yada yada. Eric rules! }
 
   TVKMS3DVectorFile = class(TVKVectorFile)
@@ -247,24 +249,16 @@ type
   {$A+}
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 { TMS3DGroup }
 
-// create
-//
 constructor TMS3DGroup.Create;
 begin
   TriangleIndices := TList.Create;
 end;
 
-// destroy
-//
 destructor TMS3DGroup.Destroy;
 begin
   TriangleIndices.Free;
@@ -331,16 +325,10 @@ end;
 
 { TVKMS3DVectorFile }
 
-// capabilities
-//
-
 class function TVKMS3DVectorFile.Capabilities: TVKDataFileCapabilities;
 begin
   Result := [dfcRead];
 end;
-
-// loadfromstream
-//
 
 procedure TVKMS3DVectorFile.LoadFromStream(aStream: TStream);
 var

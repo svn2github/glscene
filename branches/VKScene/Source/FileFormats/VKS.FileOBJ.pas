@@ -23,7 +23,7 @@ uses
   System.SysUtils,
 
   uOpenGLAdapter,
-  XOpenGL,
+  uXOpenGL,
   VKS.VectorTypes,
   VKS.Strings,
   VKS.Context,

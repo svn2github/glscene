@@ -9,11 +9,18 @@ interface
 {$I VKScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
+  System.Classes,
+  System.SysUtils,
   FMX.Graphics,
 
-  VKS.VectorFileObjects, VKS.ApplicationFileIO, VKS.VectorLists, VKS.VectorGeometry,
-  VKS.Texture, VKS.PersistentClasses, VKS.Graphics, VKS.Material;
+  VKS.VectorFileObjects,
+  VKS.ApplicationFileIO,
+  VKS.VectorLists,
+  VKS.VectorGeometry,
+  VKS.Texture,
+  VKS.PersistentClasses,
+  VKS.Graphics,
+  VKS.Material;
 
 const
   C_LMTS_ID = $53544D4C;
@@ -90,13 +97,13 @@ type
   TVKLMTSVectorFile = class(TVKVectorFile)
   public
     class function Capabilities: TVKDataFileCapabilities; override;
-
     procedure LoadFromStream(aStream: TStream); override;
     procedure SaveToStream(aStream: TStream); override;
-
   end;
 
+//====================================================================
 implementation
+//====================================================================
 
 uses
   VKS.TextureFormat;
@@ -105,16 +112,10 @@ uses
 // ------------------ TVKLMTSVectorFile ------------------
 // ------------------
 
-// Capabilities
-//
-
 class function TVKLMTSVectorFile.Capabilities: TVKDataFileCapabilities;
 begin
   Result := [dfcRead, dfcWrite];
 end;
-
-// LoadFromStream
-//
 
 procedure TVKLMTSVectorFile.LoadFromStream(aStream: TStream);
 var
@@ -413,9 +414,6 @@ begin
   end;
 end;
 
-// SaveToStream
-//
-
 procedure TVKLMTSVectorFile.SaveToStream(aStream: TStream);
 var
   MO: TVKMeshObject;
@@ -686,7 +684,9 @@ begin
   setlength(Matinfo, 0);
 end;
 
+//----------------------------------------------------------------
 initialization
+//----------------------------------------------------------------
 
 RegisterVectorFileFormat('lmts', 'Pulsar Studio LMTS File Format',
   TVKLMTSVectorFile);

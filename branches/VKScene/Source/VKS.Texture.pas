@@ -32,6 +32,7 @@ uses
   VKS.TextureFormat,
   VKS.ApplicationFileIO,
   VKS.Utils,
+  VKS.VectorTypes,
   VKS.Strings;
 
 const
@@ -690,18 +691,13 @@ procedure RegisterTGraphicClassFileExtension(const extension: string;
 function CreateGraphicFromFile(const fileName: string): TVKGraphic;
 
 //------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
 implementation
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
 uses
   VKS.Scene, // TODO: remove dependancy on VKScene.pas unit (related to tmmCubeMapLight0)
-  XOpenGL,
   VKS.PictureRegisteredFormats,
-  VKS.VectorTypes;
+  uXOpenGL;
 
 const
   cTextureMode: array[tmDecal..tmAdd] of Cardinal =

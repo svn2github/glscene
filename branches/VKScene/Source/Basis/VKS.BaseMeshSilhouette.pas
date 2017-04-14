@@ -20,29 +20,21 @@ uses
   VKS.Silhouette;
 
 type
-  // TVKFaceGroupConnectivity
-  //
   TVKFaceGroupConnectivity = class(TConnectivity)
   private
     FMeshObject: TVKMeshObject;
     FOwnsVertices: boolean;
     procedure SetMeshObject(const Value: TVKMeshObject);
-
   public
     procedure Clear; override;
-
     { Builds the connectivity information. }
     procedure RebuildEdgeList;
-
     property MeshObject: TVKMeshObject read FMeshObject write SetMeshObject;
-
     constructor Create(APrecomputeFaceNormal: boolean); override;
     constructor CreateFromMesh(aMeshObject: TVKMeshObject; APrecomputeFaceNormal: boolean);
     destructor Destroy; override;
   end;
 
-  // TVKBaseMeshConnectivity
-  //
   TVKBaseMeshConnectivity = class(TBaseConnectivity)
   private
     FVKBaseMesh: TVKBaseMesh;
@@ -50,31 +42,25 @@ type
     function GetFaceGroupConnectivity(i: integer): TVKFaceGroupConnectivity;
     function GetConnectivityCount: integer;
     procedure SetVKBaseMesh(const Value: TVKBaseMesh);
-
   protected
     function GetEdgeCount: integer; override;
     function GetFaceCount: integer; override;
-
   public
     property ConnectivityCount: integer read GetConnectivityCount;
     property FaceGroupConnectivity[i: integer]: TVKFaceGroupConnectivity read GetFaceGroupConnectivity;
     property VKBaseMesh: TVKBaseMesh read FVKBaseMesh write SetVKBaseMesh;
-
     procedure Clear(SaveFaceGroupConnectivity: boolean);
-
     { Builds the connectivity information. }
     procedure RebuildEdgeList;
-
     procedure CreateSilhouette(const silhouetteParameters: TVKSilhouetteParameters; var aSilhouette: TVKSilhouette; AddToSilhouette: boolean); override;
-
     constructor Create(APrecomputeFaceNormal: boolean); override;
     constructor CreateFromMesh(aVKBaseMesh: TVKBaseMesh);
     destructor Destroy; override;
   end;
 
+//==================================================================
 implementation
-
-{ TVKFaceGroupConnectivity }
+//==================================================================
 
 // ------------------
 // ------------------ TVKFaceGroupConnectivity ------------------

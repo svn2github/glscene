@@ -41,15 +41,14 @@ type
       const intFormat: TVKInternalFormat); reintroduce;
   end;
 
+//==============================================================
 implementation
+//==============================================================
 
 
 // ------------------
 // ------------------ TVKPNGImage ------------------
 // ------------------
-
-// LoadFromFile
-//
 
 procedure TVKPNGImage.LoadFromFile(const filename: string);
 var
@@ -69,9 +68,6 @@ begin
     raise EInvalidRasterFile.CreateFmt('File %s not found', [filename]);
 end;
 
-// SaveToFile
-//
-
 procedure TVKPNGImage.SaveToFile(const filename: string);
 var
   fs: TStream;
@@ -85,24 +81,15 @@ begin
   ResourceName := filename;
 end;
 
-// LoadFromStream
-//
-
 procedure TVKPNGImage.LoadFromStream(stream: TStream);
 begin
   //Do nothing
 end;
 
-// SaveToStream
-//
-
 procedure TVKPNGImage.SaveToStream(stream: TStream);
 begin
   //Do nothing
 end;
-
-// AssignFromTexture
-//
 
 procedure TVKPNGImage.AssignFromTexture(textureContext: TVKContext;
   const textureHandle: GLuint;
@@ -170,16 +157,16 @@ begin
   end;
 end;
 
-// Capabilities
-//
-
 class function TVKPNGImage.Capabilities: TVKDataFileCapabilities;
 begin
   Result := [dfcRead, dfcWrite];
 end;
 
+//----------------------------------------------------------
 initialization
-  { Register this Fileformat-Handler with GLScene }
+//----------------------------------------------------------
+
+  { Register this Fileformat-Handler with VKScene }
   RegisterRasterFormat('png', 'Portable Network Graphic', TVKPNGImage);
 
 end.

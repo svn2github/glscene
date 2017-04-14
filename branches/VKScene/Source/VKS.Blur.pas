@@ -18,8 +18,9 @@ uses
   System.SysUtils,
   System.UITypes,
   FMX.Graphics,
-  
+
   uOpenGLAdapter,
+  uXOpenGL,
   VKS.Scene,
   VKS.VectorGeometry,
   VKS.Objects,
@@ -30,7 +31,6 @@ uses
   VKS.Color,
   VKS.Graphics,
   VKS.Context,
-  XOpenGL,
   VKS.State,
   VKS.TextureFormat,
   VKS.BaseClasses,

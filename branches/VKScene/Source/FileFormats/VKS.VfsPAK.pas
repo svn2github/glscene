@@ -18,7 +18,9 @@ unit VKS.VfsPAK;
 interface
 
 uses
-  System.Classes, System.Contnrs, System.SysUtils,
+  System.Classes,
+  System.Contnrs,
+  System.SysUtils,
   VKS.ApplicationFileIO;
 
 const
@@ -41,8 +43,6 @@ type
       FileLength: integer;
    end;
 
-   // TVKVfsPAK
-   //
    TVKVfsPAK = class (TComponent)
    private
       FPakFiles: TStringList;
@@ -57,48 +57,37 @@ type
       FFileName: string;
       FCompressionLevel: TZCompressedMode;
       FCompressed: Boolean;
-
       function GetFileCount: integer;
       procedure MakeFileList;
-
       function GetStreamNumber: integer;
       procedure SetStreamNumber(i:integer);
-
    public
       property PakFiles: TStringList read FPakFiles;
       property Files: TStrings read FFiles;
       property ActivePakNum: integer read GetStreamNumber write SetStreamNumber;
       property FileCount: integer Read GetFileCount;
       property PakFileName: string Read FFileName;
-
       property Compressed: Boolean read FCompressed;
       property CompressionLevel: TZCompressedMode read FCompressionLevel;
       constructor Create(AOwner : TComponent); overload; override;
       constructor Create(AOwner : TComponent; const CbrMode: TZCompressedMode); reintroduce; overload;
       destructor Destroy; override;
-
       // for Mode value search Delphi Help for "File open mode constants"
       procedure LoadFromFile(FileName: string; Mode: word);
       procedure ClearPakFiles;
-
       function FileExists(FileName: string): boolean;
-
       function GetFile(index: integer): TStream; overload;
       function GetFile(FileName: string): TStream; overload;
 
       function GetFileSize(index: integer): integer; overload;
       function GetFileSize(FileName: string): integer; overload;
-
       procedure AddFromStream(FileName, Path: string; F: TStream);
       procedure AddFromFile(FileName, Path: string);
       procedure AddEmptyFile(FileName, Path: string);
-
       procedure RemoveFile(index: integer); overload;
       procedure RemoveFile(FileName: string); overload;
-
       procedure Extract(index: integer; NewName: string); overload;
       procedure Extract(FileName, NewName: string); overload;
-
    end;
 
 // VKS.ApplicationFileIO
@@ -108,7 +97,9 @@ function PAKFileStreamExists(const fileName: string): boolean;
 var
    ActiveVfsPAK: TVKVfsPak;
 
+//===================================================================
 implementation
+//===================================================================
 
 var
    Dir: TFileSection;
@@ -158,7 +149,7 @@ begin
       Result := TFileStream.Create(FileName, fmCreate or fmShareDenyWrite);
       Exit;
    end;
-   
+
    Result:=nil;
 end;
 
@@ -176,6 +167,7 @@ begin
    end;
    Result := FileExists(fileName);
 end;
+
 // VKS.ApplicationFileIO end
 
 function TVKVfsPAK.GetStreamNumber: integer;
@@ -188,8 +180,6 @@ begin
    FStream:=TFileStream(FStreamList[i]);
 end;
 
-// TVKVfsPAK.Create
-//
 constructor TVKVfsPAK.Create(AOwner : TComponent);
 begin
    inherited Create(AOwner);
@@ -203,8 +193,6 @@ begin
    FCompressed := False;
 end;
 
-// TVKVfsPAK.Create
-//
 constructor TVKVfsPAK.Create(AOwner : TComponent; const CbrMode: TZCompressedMode);
 begin
    Self.Create(AOwner);
@@ -212,8 +200,6 @@ begin
    FCompressed := FCompressionLevel <> None;
 end;
 
-// TVKVfsPAK.Destroy
-//
 destructor TVKVfsPAK.Destroy;
 begin
    vAFIOCreateFileStream := nil;

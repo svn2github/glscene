@@ -39,7 +39,7 @@ function IsKeyDown(c : Char) : Boolean; overload;
 { Check if the given virtual key is down. 
    This function is just a wrapper for GetAsyncKeyState. }
 function IsKeyDown(vk : TVirtualKeyCode) : Boolean; overload;
-{ Returns the first pressed key whose virtual key code is >= to minVkCode. 
+{ Returns the first pressed key whose virtual key code is >= to minVkCode.
    If no key is pressed, the return value is -1, this function does NOT
    wait for user input. 
    If you don't care about multiple key presses, just don't use the parameter. }
@@ -67,11 +67,7 @@ var
    vLastWheelDelta : Integer;
 
 // ---------------------------------------------------------------------
-// ---------------------------------------------------------------------
-// ---------------------------------------------------------------------
 implementation
-// ---------------------------------------------------------------------
-// ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
 
 const
@@ -112,9 +108,6 @@ const
    c7 = '/';
    c8 = '\';
 
-
-// IsKeyDown
-//
 function IsKeyDown(c : Char) : Boolean;
 {$IFDEF MSWINDOWS}
 var
@@ -132,9 +125,6 @@ end;
   end;
 {$ENDIF}
 
-
-// IsKeyDown
-//
 function IsKeyDown(vk : TVirtualKeyCode) : Boolean;
 begin
    case vk of
@@ -160,8 +150,6 @@ begin
    end;
 end;
 
-// KeyPressed
-//
 function KeyPressed(minVkCode : TVirtualKeyCode = 0) : TVirtualKeyCode;
 {$IFDEF MSWINDOWS}
 var
@@ -191,8 +179,8 @@ begin
 end;
 {$ENDIF}
 
-// VirtualKeyCodeToKeyName
-//
+//------------------------------------------------------------------
+
 function VirtualKeyCodeToKeyName(vk : TVirtualKeyCode) : String;
 {$IFDEF MSWINDOWS}
 var
@@ -250,8 +238,6 @@ begin
    end;
 end;
 
-// KeyNameToVirtualKeyCode
-//
 function KeyNameToVirtualKeyCode(const keyName : String) : TVirtualKeyCode;
 {$IFDEF MSWINDOWS}
 var
@@ -293,8 +279,6 @@ begin
 end;
 {$ENDIF}
 
-// CharToVirtualKeyCode
-//
 function CharToVirtualKeyCode(c : Char) : TVirtualKeyCode;
 begin
 {$IFDEF MSWINDOWS}
@@ -305,8 +289,6 @@ begin
 {$ENDIF}
 end;
 
-// KeyboardNotifyWheelMoved
-//
 procedure KeyboardNotifyWheelMoved(wheelDelta : Integer);
 begin
    vLastWheelDelta:=wheelDelta;

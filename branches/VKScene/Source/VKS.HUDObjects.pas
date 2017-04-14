@@ -15,6 +15,7 @@ uses
   Winapi.OpenGLext,
   System.Classes,
 
+  uXOpenGL,
   VKS.Scene,
   VKS.VectorGeometry,
   VKS.Objects,
@@ -23,8 +24,7 @@ uses
   VKS.Color,
   VKS.RenderContextInfo,
   VKS.Context,
-  VKS.State,
-  XOpenGL;
+  VKS.State;
 
 type
 

@@ -16,9 +16,9 @@ uses
   System.Classes,
   System.SysUtils,
   
+  uXOpenGL,
   VKS.Scene,
   VKS.Context,
-  XOpenGL,
   VKS.VectorGeometry,
   VKS.Material,
   VKS.Objects,

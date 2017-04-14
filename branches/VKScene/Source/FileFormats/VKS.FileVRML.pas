@@ -17,8 +17,9 @@ uses
   VKS.VectorTypes, 
   VKS.VectorGeometry, 
   VKS.VectorLists, 
-  uVRMLParser, 
-  VKS.MeshUtils;
+  VKS.MeshUtils,
+
+  uVRMLParser;
 
 type
 

@@ -33,10 +33,10 @@ uses
   VKS.State,
   VKS.TextureFormat,
   VKS.Strings,
-  XOpenGL,
   VKS.ApplicationFileIO,
   VKS.Graphics,
-  VKS.Utils;
+  VKS.Utils,
+  uXOpenGL;
 
 {$UNDEF VKS_MULTITHREAD}
 type

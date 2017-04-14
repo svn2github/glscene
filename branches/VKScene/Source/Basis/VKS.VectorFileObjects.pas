@@ -17,8 +17,9 @@ uses
   System.Classes,
   System.SysUtils,
   System.Types,
-  
+
   uOpenGLAdapter,
+  uXOpenGL,
   VKS.Scene,
   VKS.VectorGeometry,
   VKS.Texture,
@@ -36,80 +37,67 @@ uses
   VKS.Coordinates,
   VKS.BaseClasses,
   VKS.Strings,
-  VKS.TextureFormat;
+  VKS.TextureFormat,
+  VKS.VectorTypes,
+  VKS.State,
+  VKS.Utils;
+
 
 type
 
   TVKMeshObjectList = class;
   TVKFaceGroups = class;
 
-  // TVKMeshAutoCentering
-  //
   TVKMeshAutoCentering = (macCenterX, macCenterY, macCenterZ, macUseBarycenter, macRestorePosition);
   TVKMeshAutoCenterings = set of TVKMeshAutoCentering;
 
-  // TVKMeshObjectMode
-  //
   TVKMeshObjectMode = (momTriangles, momTriangleStrip, momFaceGroups);
 
-  // TBaseMeshObject
-  //
   { A base class for mesh objects.
      The class introduces a set of vertices and normals for the object but
      does no rendering of its own. }
   TVKBaseMeshObject = class(TPersistentObject)
   private
-    
     FName: string;
     FVertices: TAffineVectorList;
     FNormals: TAffineVectorList;
     FVisible: Boolean;
-
   protected
-    
     procedure SetVertices(const val: TAffineVectorList);
     procedure SetNormals(const val: TAffineVectorList);
-
     procedure ContributeToBarycenter(var currentSum: TAffineVector;
       var nb: Integer); dynamic;
-
   public
-    
     constructor Create; override;
     destructor Destroy; override;
-
     procedure Assign(Source: TPersistent); override;
-
     procedure WriteToFiler(writer: TVirtualWriter); override;
     procedure ReadFromFiler(reader: TVirtualReader); override;
-
     { Clears all mesh object data, submeshes, facegroups, etc. }
     procedure Clear; dynamic;
-
     { Translates all the vertices by the given delta. }
     procedure Translate(const delta: TAffineVector); dynamic;
-    { Builds (smoothed) normals for the vertex list. 
+    { Builds (smoothed) normals for the vertex list.
        If normalIndices is nil, the method assumes a bijection between
        vertices and normals sets, and when performed, Normals and Vertices
        list will have the same number of items (whatever previously was in
-       the Normals list is ignored/removed). 
+       the Normals list is ignored/removed).
        If normalIndices is defined, normals will be added to the list and
        their indices will be added to normalIndices. Already defined
-       normals and indices are preserved. 
+       normals and indices are preserved.
        The only valid modes are currently momTriangles and momTriangleStrip
        (ie. momFaceGroups not supported). }
     procedure BuildNormals(vertexIndices: TIntegerList; mode: TVKMeshObjectMode;
       normalIndices: TIntegerList = nil);
-    { Extracts all mesh triangles as a triangles list. 
+    { Extracts all mesh triangles as a triangles list.
        The resulting list size is a multiple of 3, each group of 3 vertices
-       making up and independant triangle. 
+       making up and independant triangle.
        The returned list can be used independantly from the mesh object
-       (all data is duplicated) and should be freed by caller. 
+       (all data is duplicated) and should be freed by caller.
        If texCoords is specified, per vertex texture coordinates will be
        placed there, when available. }
     function ExtractTriangles(texCoords: TAffineVectorList = nil;
       normals: TAffineVectorList = nil): TAffineVectorList; dynamic;
-
     property Name: string read FName write FName;
     property Visible: Boolean read FVisible write FVisible;
     property Vertices: TAffineVectorList read FVertices write SetVertices;
@@ -120,15 +108,12 @@ type
 
   TVKSkeletonFrameTransform = (sftRotation, sftQuaternion);
 
-  // TVKSkeletonFrame
-  //
-    { Stores position and rotation for skeleton joints. 
+    { Stores position and rotation for skeleton joints.
        If you directly alter some values, make sure to call FlushLocalMatrixList
        so that the local matrices will be recalculated (the call to Flush does
        not recalculate the matrices, but marks the current ones as dirty). }
   TVKSkeletonFrame = class(TPersistentObject)
   private
-    
     FOwner: TVKSkeletonFrameList;
     FName: string;
     FPosition: TAffineVectorList;
@@ -136,22 +121,16 @@ type
     FQuaternion: TQuaternionList;
     FLocalMatrixList: PMatrixArray;
     FTransformMode: TVKSkeletonFrameTransform;
-
   protected
-    
     procedure SetPosition(const val: TAffineVectorList);
     procedure SetRotation(const val: TAffineVectorList);
     procedure SetQuaternion(const val: TQuaternionList);
-
   public
-    
     constructor CreateOwned(aOwner: TVKSkeletonFrameList);
     constructor Create; override;
     destructor Destroy; override;
-
     procedure WriteToFiler(writer: TVirtualWriter); override;
     procedure ReadFromFiler(reader: TVirtualReader); override;
-
     property Owner: TVKSkeletonFrameList read FOwner;
     property Name: string read FName write FName;
     { Position values for the joints. }
@@ -165,13 +144,12 @@ type
        the local transform matrices. }
     property TransformMode: TVKSkeletonFrameTransform read FTransformMode write
       FTransformMode;
-
     { Calculate or retrieves an array of local bone matrices.
        This array is calculated on the first call after creation, and the
        first call following a FlushLocalMatrixList. Subsequent calls return
        the same arrays. }
     function LocalMatrixList: PMatrixArray;
-    { Flushes (frees) then LocalMatrixList data. 
+    { Flushes (frees) then LocalMatrixList data.
        Call this function to allow a recalculation of local matrices. }
     procedure FlushLocalMatrixList;
     // As the name states; Convert Quaternions to Rotations or vice-versa.
@@ -179,31 +157,21 @@ type
     procedure ConvertRotationsToQuaternions(KeepRotations: Boolean = True);
   end;
 
-  // TVKSkeletonFrameList
-  //
   { A list of TVKSkeletonFrame objects. }
   TVKSkeletonFrameList = class(TPersistentObjectList)
   private
-    
     FOwner: TPersistent;
-
   protected
-    
     function GetSkeletonFrame(Index: Integer): TVKSkeletonFrame;
-
   public
-    
     constructor CreateOwned(AOwner: TPersistent);
     destructor Destroy; override;
-
     procedure ReadFromFiler(reader: TVirtualReader); override;
-
     // As the name states; Convert Quaternions to Rotations or vice-versa.
     procedure ConvertQuaternionsToRotations(
       KeepQuaternions: Boolean = True; SetTransformMode: Boolean = True);
     procedure ConvertRotationsToQuaternions(
       KeepRotations: Boolean = True; SetTransformMode: Boolean = True);
-
     property Owner: TPersistent read FOwner;
     procedure Clear; override;
     property Items[Index: Integer]: TVKSkeletonFrame read GetSkeletonFrame;
@@ -213,149 +181,104 @@ type
   TVKSkeleton = class;
   TVKSkeletonBone = class;
 
-  // TVKSkeletonBoneList
-  //
-    { A list of skeleton bones.  }
+  { A list of skeleton bones.  }
   TVKSkeletonBoneList = class(TPersistentObjectList)
   private
-    
     FSkeleton: TVKSkeleton; // not persistent
-
   protected
-    
     FGlobalMatrix: TMatrix;
-
     function GetSkeletonBone(Index: Integer): TVKSkeletonBone;
     procedure AfterObjectCreatedByReader(Sender: TObject); override;
-
   public
-    
     constructor CreateOwned(aOwner: TVKSkeleton);
     constructor Create; override;
     destructor Destroy; override;
-
     procedure WriteToFiler(writer: TVirtualWriter); override;
     procedure ReadFromFiler(reader: TVirtualReader); override;
-
     property Skeleton: TVKSkeleton read FSkeleton;
     property Items[Index: Integer]: TVKSkeletonBone read GetSkeletonBone; default;
-
     { Returns a bone by its BoneID, nil if not found. }
     function BoneByID(anID: Integer): TVKSkeletonBone; virtual;
     { Returns a bone by its Name, nil if not found. }
     function BoneByName(const aName: string): TVKSkeletonBone; virtual;
     { Number of bones (including all children and self). }
-
     function BoneCount: Integer;
-
     // Render skeleton wireframe
     procedure BuildList(var mrci: TVKRenderContextInfo); virtual; abstract;
     procedure PrepareGlobalMatrices; virtual;
   end;
 
-  // TVKSkeletonRootBoneList
-  //
-    { This list store skeleton root bones exclusively.  }
+  { This list store skeleton root bones exclusively.  }
   TVKSkeletonRootBoneList = class(TVKSkeletonBoneList)
-  private
-    
-
-  protected
-    
-
   public
-    
     procedure WriteToFiler(writer: TVirtualWriter); override;
     procedure ReadFromFiler(reader: TVirtualReader); override;
-
     // Render skeleton wireframe
     procedure BuildList(var mrci: TVKRenderContextInfo); override;
-
     property GlobalMatrix: TMatrix read FGlobalMatrix write FGlobalMatrix;
   end;
 
-  // TVKSkeletonBone
-  //
-    { A skeleton bone or node and its children. 
+  { A skeleton bone or node and its children.
        This class is the base item of the bones hierarchy in a skeletal model.
        The joint values are stored in a TVKSkeletonFrame, but the calculated bone
        matrices are stored here. }
   TVKSkeletonBone = class(TVKSkeletonBoneList)
   private
-    
     FOwner: TVKSkeletonBoneList; // indirectly persistent
     FBoneID: Integer;
     FName: string;
     FColor: Cardinal;
-
   protected
-    
     function GetSkeletonBone(Index: Integer): TVKSkeletonBone;
     procedure SetColor(const val: Cardinal);
-
   public
-    
     constructor CreateOwned(aOwner: TVKSkeletonBoneList);
     constructor Create; override;
     destructor Destroy; override;
-
     procedure WriteToFiler(writer: TVirtualWriter); override;
     procedure ReadFromFiler(reader: TVirtualReader); override;
-
     // Render skeleton wireframe
     procedure BuildList(var mrci: TVKRenderContextInfo); override;
-
     property Owner: TVKSkeletonBoneList read FOwner;
     property Name: string read FName write FName;
     property BoneID: Integer read FBoneID write FBoneID;
     property Color: Cardinal read FColor write SetColor;
     property Items[Index: Integer]: TVKSkeletonBone read GetSkeletonBone; default;
-
     { Returns a bone by its BoneID, nil if not found. }
     function BoneByID(anID: Integer): TVKSkeletonBone; override;
     function BoneByName(const aName: string): TVKSkeletonBone; override;
-
     { Set the bone's matrix. Becareful using this. }
     procedure SetGlobalMatrix(Matrix: TMatrix); // Ragdoll
     { Set the bone's GlobalMatrix. Used for Ragdoll. }
     procedure SetGlobalMatrixForRagDoll(RagDollMatrix: TMatrix); // Ragdoll
-
-    { Calculates the global matrix for the bone and its sub-bone. 
+    { Calculates the global matrix for the bone and its sub-bone.
        Call this function directly only the RootBone. }
     procedure PrepareGlobalMatrices; override;
     { Global Matrix for the bone in the current frame.
        Global matrices must be prepared by invoking PrepareGlobalMatrices
        on the root bone. }
     property GlobalMatrix: TMatrix read FGlobalMatrix;
-
     { Free all sub bones and reset BoneID and Name. }
     procedure Clean; override;
   end;
 
   TVKSkeletonColliderList = class;
 
-  // TVKSkeletonCollider
-  //
   { A general class storing the base level info required for skeleton
      based collision methods. This class is meant to be inherited from
      to create skeleton driven Verlet Constraints, ODE Geoms, etc.
      Overriden classes should be named as TSCxxxxx. }
   TVKSkeletonCollider = class(TPersistentObject)
   private
-    
     FOwner: TVKSkeletonColliderList;
     FBone: TVKSkeletonBone;
     FBoneID: Integer;
     FLocalMatrix, FGlobalMatrix: TMatrix;
     FAutoUpdate: Boolean;
-
   protected
-    
     procedure SetBone(const val: TVKSkeletonBone);
     procedure SetLocalMatrix(const val: TMatrix);
-
   public
-    
     constructor Create; override;
     constructor CreateOwned(AOwner: TVKSkeletonColliderList);
     procedure WriteToFiler(writer: TVirtualWriter); override;
@@ -364,7 +287,6 @@ type
        derived objects to their associated skeleton bone.
        Override to set up descendant class alignment properties. }
     procedure AlignCollider; virtual;
-
     property Owner: TVKSkeletonColliderList read FOwner;
     // The bone that this collider associates with.
     property Bone: TVKSkeletonBone read FBone write SetBone;
@@ -377,28 +299,19 @@ type
     property AutoUpdate: Boolean read FAutoUpdate write FAutoUpdate;
   end;
 
-  // TVKSkeletonColliderList
-  //
   { List class for storing TVKSkeletonCollider objects. }
   TVKSkeletonColliderList = class(TPersistentObjectList)
   private
-    
     FOwner: TPersistent;
-
   protected
-    
     function GetSkeletonCollider(index: Integer): TVKSkeletonCollider;
-
   public
-    
     constructor CreateOwned(AOwner: TPersistent);
     destructor Destroy; override;
-
     procedure ReadFromFiler(reader: TVirtualReader); override;
     procedure Clear; override;
     { Calls AlignCollider for each collider in the list. }
     procedure AlignColliders;
-
     property Owner: TPersistent read FOwner;
     property Items[Index: Integer]: TVKSkeletonCollider read GetSkeletonCollider;
       default;
@@ -406,8 +319,6 @@ type
 
   TVKBaseMesh = class;
 
-  // TBlendedLerpInfo
-  //
   { Small structure to store a weighted lerp for use in blending. }
   TVKBlendedLerpInfo = record
     frameIndex1, frameIndex2: Integer;
@@ -418,15 +329,12 @@ type
     externalQuaternions: TQuaternionList;
   end;
 
-  // TVKSkeleton
-  //
-    { Main skeleton object. 
-       This class stores the bones hierarchy and animation frames. 
+  { Main skeleton object.
+       This class stores the bones hierarchy and animation frames.
        It is also responsible for maintaining the "CurrentFrame" and allowing
        various frame blending operations. }
   TVKSkeleton = class(TPersistentObject)
   private
-    
     FOwner: TVKBaseMesh;
     FRootBones: TVKSkeletonRootBoneList;
     FFrames: TVKSkeletonFrameList;
@@ -435,24 +343,18 @@ type
     FColliders: TVKSkeletonColliderList;
     FRagDollEnabled: Boolean; // ragdoll
     FMorphInvisibleParts: Boolean;
-
   protected
-    
     procedure SetRootBones(const val: TVKSkeletonRootBoneList);
     procedure SetFrames(const val: TVKSkeletonFrameList);
     function GetCurrentFrame: TVKSkeletonFrame;
     procedure SetCurrentFrame(val: TVKSkeletonFrame);
     procedure SetColliders(const val: TVKSkeletonColliderList);
-
   public
-    
     constructor CreateOwned(AOwner: TVKBaseMesh);
     constructor Create; override;
     destructor Destroy; override;
-
     procedure WriteToFiler(writer: TVirtualWriter); override;
     procedure ReadFromFiler(reader: TVirtualReader); override;
-
     property Owner: TVKBaseMesh read FOwner;
     property RootBones: TVKSkeletonRootBoneList read FRootBones write
       SetRootBones;
@@ -461,34 +363,29 @@ type
       SetCurrentFrame;
     property Colliders: TVKSkeletonColliderList read FColliders write
       SetColliders;
-
     procedure FlushBoneByIDCache;
     function BoneByID(anID: Integer): TVKSkeletonBone;
     function BoneByName(const aName: string): TVKSkeletonBone;
     function BoneCount: Integer;
-
     procedure MorphTo(frameIndex: Integer); overload;
     procedure MorphTo(frame: TVKSkeletonFrame); overload;
     procedure Lerp(frameIndex1, frameIndex2: Integer;
       lerpFactor: Single);
     procedure BlendedLerps(const lerpInfos: array of TVKBlendedLerpInfo);
-
     { Linearly removes the translation component between skeletal frames.
        This function will compute the translation of the first bone (index 0)
        and linearly subtract this translation in all frames between startFrame
        and endFrame. Its purpose is essentially to remove the 'slide' that
        exists in some animation formats (f.i. SMD). }
     procedure MakeSkeletalTranslationStatic(startFrame, endFrame: Integer);
-    { Removes the absolute rotation component of the skeletal frames. 
+    { Removes the absolute rotation component of the skeletal frames.
        Some formats will store frames with absolute rotation information,
-       if this correct if the animation is the "main" animation. 
+       if this correct if the animation is the "main" animation.
        This function removes that absolute information, making the animation
        frames suitable for blending purposes. }
     procedure MakeSkeletalRotationDelta(startFrame, endFrame: Integer);
-
     { Applies current frame to morph all mesh objects. }
     procedure MorphMesh(normalize: Boolean);
-
     { Copy bone rotations from reference skeleton. }
     procedure Synchronize(reference: TVKSkeleton);
     { Release bones and frames info. }
@@ -497,7 +394,6 @@ type
     procedure StartRagdoll; // ragdoll
     { Restore the BoneMatrixInvertedMeshes to stop the ragdoll }
     procedure StopRagdoll; // ragdoll
-
     { Turning this option off (by default) alows to increase FPS,
        but may break backwards-compatibility, because some may choose to
        attach other objects to invisible parts. }
@@ -505,15 +401,11 @@ type
       FMorphInvisibleParts;
   end;
 
-  // TVKMeshObjectRenderingOption
-  //
-  { Rendering options per TVKMeshObject. 
-   
+  { Rendering options per TVKMeshObject.
    moroGroupByMaterial : if set, the facegroups will be rendered by material
      in batchs, this will optimize rendering by reducing material switches, but
      also implies that facegroups will not be rendered in the order they are in
-     the list.
-    }
+     the list. }
   TVKMeshObjectRenderingOption = (moroGroupByMaterial);
   TVKMeshObjectRenderingOptions = set of TVKMeshObjectRenderingOption;
 
@@ -522,14 +414,11 @@ type
     vbTexCoordsEx);
   TVBOBuffers = set of TVBOBuffer;
 
-  // TVKMeshObject
-  //
-  { Base mesh class. 
-     Introduces base methods and properties for mesh objects. 
+  { Base mesh class.
+     Introduces base methods and properties for mesh objects.
      Subclasses are named "TMOxxx". }
   TVKMeshObject = class(TVKBaseMeshObject)
   private
-    
     FOwner: TVKMeshObjectList;
     FExtentCacheRevision: Cardinal;
     FTexCoords: TAffineVectorList; // provision for 3D textures
@@ -553,94 +442,71 @@ type
     FLightmapTexCoordsVBO: TVKVBOHandle;
     FValidBuffers: TVBOBuffers;
     FExtentCache: TAABB;
-
     procedure SetUseVBO(const Value: boolean);
     procedure SetValidBuffers(Value: TVBOBuffers);
   protected
-    
     procedure SetTexCoords(const val: TAffineVectorList);
     procedure SetLightmapTexCoords(const val: TAffineVectorList);
     procedure SetColors(const val: TVectorList);
-
     procedure BufferArrays;
-
     procedure DeclareArraysToOpenGL(var mrci: TVKRenderContextInfo;
       evenIfAlreadyDeclared: Boolean = False);
     procedure DisableOpenGLArrays(var mrci: TVKRenderContextInfo);
-
     procedure EnableLightMapArray(var mrci: TVKRenderContextInfo);
     procedure DisableLightMapArray(var mrci: TVKRenderContextInfo);
-
     procedure SetTexCoordsEx(index: Integer; const val: TVectorList);
     function GetTexCoordsEx(index: Integer): TVectorList;
-
     procedure SetBinormals(const val: TVectorList);
     function GetBinormals: TVectorList;
     procedure SetBinormalsTexCoordIndex(const val: Integer);
     procedure SetTangents(const val: TVectorList);
     function GetTangents: TVectorList;
     procedure SetTangentsTexCoordIndex(const val: Integer);
-
     property ValidBuffers: TVBOBuffers read FValidBuffers write SetValidBuffers;
   public
-    
     { Creates, assigns Owner and adds to list. }
     constructor CreateOwned(AOwner: TVKMeshObjectList);
     constructor Create; override;
     destructor Destroy; override;
-
     procedure Assign(Source: TPersistent); override;
-
     procedure WriteToFiler(writer: TVirtualWriter); override;
     procedure ReadFromFiler(reader: TVirtualReader); override;
-
     procedure Clear; override;
-
     function ExtractTriangles(texCoords: TAffineVectorList = nil;
       normals: TAffineVectorList = nil): TAffineVectorList; override;
     { Returns number of triangles in the mesh object. }
     function TriangleCount: Integer; dynamic;
-
     procedure PrepareMaterialLibraryCache(matLib: TVKMaterialLibrary);
     procedure DropMaterialLibraryCache;
-
-    { Prepare the texture and materials before rendering. 
+    { Prepare the texture and materials before rendering.
        Invoked once, before building the list and NOT while building the list. }
     procedure PrepareBuildList(var mrci: TVKRenderContextInfo); virtual;
     // Similar to regular scene object's BuildList method
     procedure BuildList(var mrci: TVKRenderContextInfo); virtual;
-
     // The extents of the object (min and max coordinates)
     procedure GetExtents(out min, max: TAffineVector); overload; virtual;
     procedure GetExtents(out aabb: TAABB); overload; virtual;
-
     // Barycenter from vertices data
     function GetBarycenter: TVector;
-
     // Precalculate whatever is needed for rendering, called once
     procedure Prepare; dynamic;
-
     function PointInObject(const aPoint: TAffineVector): Boolean; virtual;
-
     // Returns the triangle data for a given triangle
     procedure GetTriangleData(tri: Integer; list: TAffineVectorList;
       var v0, v1, v2: TAffineVector); overload;
     procedure GetTriangleData(tri: Integer; list: TVectorList;
       var v0, v1, v2: TVector); overload;
-
     // Sets the triangle data of a given triangle
     procedure SetTriangleData(tri: Integer; list: TAffineVectorList;
       const v0, v1, v2: TAffineVector); overload;
     procedure SetTriangleData(tri: Integer; list: TVectorList;
       const v0, v1, v2: TVector); overload;
-
     { Build the tangent space from the mesh object's vertex, normal
        and texcoord data, filling the binormals and tangents where
        specified. }
     procedure BuildTangentSpace(
       buildBinormals: Boolean = True;
       buildTangents: Boolean = True);
-
     property Owner: TVKMeshObjectList read FOwner;
     property Mode: TVKMeshObjectMode read FMode write FMode;
     property TexCoords: TAffineVectorList read FTexCoords write SetTexCoords;
@@ -650,13 +516,10 @@ type
     property FaceGroups: TVKFaceGroups read FFaceGroups;
     property RenderingOptions: TVKMeshObjectRenderingOptions read FRenderingOptions
       write FRenderingOptions;
-
     { If set, rendering will use VBO's instead of vertex arrays. }
     property UseVBO: boolean read FUseVBO write SetUseVBO;
-
     { The TexCoords Extension is a list of vector lists that are used
-       to extend the vertex data applied during rendering. 
-
+       to extend the vertex data applied during rendering.
        The lists are applied to the GL_TEXTURE0_ARB + index texture
        environment. This means that if TexCoordsEx 0 or 1 have data it
        will override the TexCoords or LightMapTexCoords repectively.
@@ -666,7 +529,6 @@ type
        they contain data. }
     property TexCoordsEx[index: Integer]: TVectorList read GetTexCoordsEx write
       SetTexCoordsEx;
-
     { A TexCoordsEx list wrapper for binormals usage,
        returns TexCoordsEx[BinormalsTexCoordIndex]. }
     property Binormals: TVectorList read GetBinormals write SetBinormals;
@@ -679,68 +541,50 @@ type
     // Specify the texcoord extension index for tangents (default = 3)
     property TangentsTexCoordIndex: Integer read FTangentsTexCoordIndex write
       SetTangentsTexCoordIndex;
-
   end;
 
-  // TVKMeshObjectList
-  //
   { A list of TVKMeshObject objects. }
   TVKMeshObjectList = class(TPersistentObjectList)
   private
-    
     FOwner: TVKBaseMesh;
-
     { Resturns True if all its MeshObjects use VBOs. }
     function GetUseVBO: Boolean;
     procedure SetUseVBO(const Value: Boolean);
   protected
-    
     function GetMeshObject(Index: Integer): TVKMeshObject;
-
   public
-    
     constructor CreateOwned(aOwner: TVKBaseMesh);
     destructor Destroy; override;
-
     procedure ReadFromFiler(reader: TVirtualReader); override;
-
     procedure PrepareMaterialLibraryCache(matLib: TVKMaterialLibrary);
     procedure DropMaterialLibraryCache;
-
-    { Prepare the texture and materials before rendering. 
+    { Prepare the texture and materials before rendering.
        Invoked once, before building the list and NOT while building the list. }
     procedure PrepareBuildList(var mrci: TVKRenderContextInfo); virtual;
     // Similar to regular scene object's BuildList method
     procedure BuildList(var mrci: TVKRenderContextInfo); virtual;
-
     procedure MorphTo(morphTargetIndex: Integer);
     procedure Lerp(morphTargetIndex1, morphTargetIndex2: Integer;
       lerpFactor: Single);
     function MorphTargetCount: Integer;
-
     procedure GetExtents(out min, max: TAffineVector);
     procedure Translate(const delta: TAffineVector);
     function ExtractTriangles(texCoords: TAffineVectorList = nil;
       normals: TAffineVectorList = nil): TAffineVectorList;
     { Returns number of triangles in the meshes of the list. }
     function TriangleCount: Integer;
-
     { Build the tangent space from the mesh object's vertex, normal
        and texcoord data, filling the binormals and tangents where
        specified. }
     procedure BuildTangentSpace(
       buildBinormals: Boolean = True;
       buildTangents: Boolean = True);
-
     { If set, rendering will use VBO's instead of vertex arrays.
        Resturns True if all its MeshObjects use VBOs. }
     property UseVBO: Boolean read GetUseVBO write SetUseVBO;
-
     // Precalculate whatever is needed for rendering, called once
     procedure Prepare; dynamic;
-
     function FindMeshByName(MeshName: string): TVKMeshObject;
-
     property Owner: TVKBaseMesh read FOwner;
     procedure Clear; override;
     property Items[Index: Integer]: TVKMeshObject read GetMeshObject; default;
@@ -750,89 +594,54 @@ type
 
   TVKMeshMorphTargetList = class;
 
-  // TVKMeshMorphTarget
-  //
   { A morph target, stores alternate lists of vertices and normals. }
   TVKMeshMorphTarget = class(TVKBaseMeshObject)
   private
-    
     FOwner: TVKMeshMorphTargetList;
-
-  protected
-    
-
   public
-    
     constructor CreateOwned(AOwner: TVKMeshMorphTargetList);
     destructor Destroy; override;
-
     procedure WriteToFiler(writer: TVirtualWriter); override;
     procedure ReadFromFiler(reader: TVirtualReader); override;
-
     property Owner: TVKMeshMorphTargetList read FOwner;
   end;
 
-  // TVKMeshMorphTargetList
-  //
   { A list of TVKMeshMorphTarget objects. }
   TVKMeshMorphTargetList = class(TPersistentObjectList)
   private
-    
     FOwner: TPersistent;
-
   protected
-    
     function GeTVKMeshMorphTarget(Index: Integer): TVKMeshMorphTarget;
-
   public
-    
     constructor CreateOwned(AOwner: TPersistent);
     destructor Destroy; override;
-
     procedure ReadFromFiler(reader: TVirtualReader); override;
-
     procedure Translate(const delta: TAffineVector);
-
     property Owner: TPersistent read FOwner;
     procedure Clear; override;
     property Items[Index: Integer]: TVKMeshMorphTarget read GeTVKMeshMorphTarget;
       default;
   end;
 
-  // TVKMorphableMeshObject
-  //
-  { Mesh object with support for morph targets. 
+  { Mesh object with support for morph targets.
      The morph targets allow to change vertices and normals according to pre-
      existing "morph targets". }
   TVKMorphableMeshObject = class(TVKMeshObject)
   private
-    
     FMorphTargets: TVKMeshMorphTargetList;
-
-  protected
-    
-
   public
-    
     constructor Create; override;
     destructor Destroy; override;
-
     procedure WriteToFiler(writer: TVirtualWriter); override;
     procedure ReadFromFiler(reader: TVirtualReader); override;
-
     procedure Clear; override;
-
     procedure Translate(const delta: TAffineVector); override;
-
     procedure MorphTo(morphTargetIndex: Integer); virtual;
     procedure Lerp(morphTargetIndex1, morphTargetIndex2: Integer;
       lerpFactor: Single); virtual;
-
     property MorphTargets: TVKMeshMorphTargetList read FMorphTargets;
   end;
 
-  // TVertexBoneWeight
-  //
   TVertexBoneWeight = packed record
     BoneID: Integer;
     Weight: Single;
@@ -844,18 +653,15 @@ type
   PVerticesBoneWeights = ^TVerticesBoneWeights;
   TVertexBoneWeightDynArray = array of TVertexBoneWeight;
 
-  // TVKSkeletonMeshObject
-  //
-    { A mesh object with vertice bone attachments.
-       The class adds per vertex bone weights to the standard morphable mesh. 
+  { A mesh object with vertice bone attachments.
+       The class adds per vertex bone weights to the standard morphable mesh.
        The TVertexBoneWeight structures are accessed via VerticesBonesWeights,
        they must be initialized by adjusting the BonesPerVertex and
        VerticeBoneWeightCount properties, you can also add vertex by vertex
-       by using the AddWeightedBone method. 
+       by using the AddWeightedBone method.
        When BonesPerVertex is 1, the weight is ignored (set to 1.0). }
   TVKSkeletonMeshObject = class(TVKMorphableMeshObject)
   private
-    
     FVerticesBonesWeights: PVerticesBoneWeights;
     FVerticeBoneWeightCount, FVerticeBoneWeightCapacity: Integer;
     FBonesPerVertex: Integer;
@@ -865,22 +671,16 @@ type
     procedure BackupBoneMatrixInvertedMeshes; // ragdoll
     procedure RestoreBoneMatrixInvertedMeshes; // ragdoll
   protected
-    
     procedure SetVerticeBoneWeightCount(const val: Integer);
     procedure SetVerticeBoneWeightCapacity(const val: Integer);
     procedure SetBonesPerVertex(const val: Integer);
     procedure ResizeVerticesBonesWeights;
-
   public
-    
     constructor Create; override;
     destructor Destroy; override;
-
     procedure WriteToFiler(writer: TVirtualWriter); override;
     procedure ReadFromFiler(reader: TVirtualReader); override;
-
     procedure Clear; override;
-
     property VerticesBonesWeights: PVerticesBoneWeights read
       FVerticesBonesWeights;
     property VerticeBoneWeightCount: Integer read FVerticeBoneWeightCount write
@@ -889,57 +689,43 @@ type
       write SetVerticeBoneWeightCapacity;
     property BonesPerVertex: Integer read FBonesPerVertex write
       SetBonesPerVertex;
-
     function FindOrAdd(boneID: Integer;
       const vertex, normal: TAffineVector): Integer; overload;
     function FindOrAdd(const boneIDs: TVertexBoneWeightDynArray;
       const vertex, normal: TAffineVector): Integer; overload;
-
     procedure AddWeightedBone(aBoneID: Integer; aWeight: Single);
     procedure AddWeightedBones(const boneIDs: TVertexBoneWeightDynArray);
     procedure PrepareBoneMatrixInvertedMeshes;
     procedure ApplyCurrentSkeletonFrame(normalize: Boolean);
-
   end;
 
-  // TVKFaceGroup
-  //
-  { Describes a face group of a TVKMeshObject. 
+  { Describes a face group of a TVKMeshObject.
      Face groups should be understood as "a way to use mesh data to render
-     a part or the whole mesh object". 
+     a part or the whole mesh object".
      Subclasses implement the actual behaviours, and should have at least
      one "Add" method, taking in parameters all that is required to describe
      a single base facegroup element. }
   TVKFaceGroup = class(TPersistentObject)
   private
-    
     FOwner: TVKFaceGroups;
     FMaterialName: string;
     FMaterialCache: TVKLibMaterial;
     FLightMapIndex: Integer;
     FRenderGroupID: Integer;
       // NOT Persistent, internal use only (rendering options)
-
   protected
-    
     procedure AttachLightmap(lightMap: TVKTexture; var mrci:
       TVKRenderContextInfo);
     procedure AttachOrDetachLightmap(var mrci: TVKRenderContextInfo);
-
   public
-    
     constructor CreateOwned(AOwner: TVKFaceGroups); virtual;
     destructor Destroy; override;
-
     procedure WriteToFiler(writer: TVirtualWriter); override;
     procedure ReadFromFiler(reader: TVirtualReader); override;
-
     procedure PrepareMaterialLibraryCache(matLib: TVKMaterialLibrary);
     procedure DropMaterialLibraryCache;
-
     procedure BuildList(var mrci: TVKRenderContextInfo); virtual; abstract;
-
-    { Add to the list the triangles corresponding to the facegroup. 
+    { Add to the list the triangles corresponding to the facegroup.
        This function is used by TVKMeshObjects ExtractTriangles to retrieve
        all the triangles in a mesh. }
     procedure AddToTriangles(aList: TAffineVectorList;
@@ -947,13 +733,11 @@ type
       aNormals: TAffineVectorList = nil); dynamic;
     { Returns number of triangles in the facegroup. }
     function TriangleCount: Integer; dynamic; abstract;
-    { Reverses the rendering order of faces. 
+    { Reverses the rendering order of faces.
        Default implementation does nothing }
     procedure Reverse; dynamic;
-
     // Precalculate whatever is needed for rendering, called once
     procedure Prepare; dynamic;
-
     property Owner: TVKFaceGroups read FOwner write FOwner;
     property MaterialName: string read FMaterialName write FMaterialName;
     property MaterialCache: TVKLibMaterial read FMaterialCache;
@@ -961,235 +745,167 @@ type
     property LightMapIndex: Integer read FLightMapIndex write FLightMapIndex;
   end;
 
-  // TVKFaceGroupMeshMode
-  //
-  { Known descriptions for face group mesh modes. 
-     - fgmmTriangles : issue all vertices with GL_TRIANGLES. 
-     - fgmmTriangleStrip : issue all vertices with GL_TRIANGLE_STRIP. 
+  { Known descriptions for face group mesh modes.
+     - fgmmTriangles : issue all vertices with GL_TRIANGLES.
+     - fgmmTriangleStrip : issue all vertices with GL_TRIANGLE_STRIP.
      - fgmmFlatTriangles : same as fgmmTriangles, but take advantage of having
-        the same normal for all vertices of a triangle. 
-     - fgmmTriangleFan : issue all vertices with GL_TRIANGLE_FAN. 
+        the same normal for all vertices of a triangle.
+     - fgmmTriangleFan : issue all vertices with GL_TRIANGLE_FAN.
      - fgmmQuads : issue all vertices with GL_QUADS. }
   TVKFaceGroupMeshMode = (fgmmTriangles, fgmmTriangleStrip, fgmmFlatTriangles,
     fgmmTriangleFan, fgmmQuads);
 
-  // TFGVertexIndexList
-  //
-  { A face group based on an indexlist. 
+  { A face group based on an indexlist.
      The index list refers to items in the mesh object (vertices, normals, etc.),
      that are all considered in sync, the render is obtained issueing the items
      in the order given by the vertices.  }
   TFGVertexIndexList = class(TVKFaceGroup)
   private
-    
     FVertexIndices: TIntegerList;
     FIndexVBO: TVKVBOElementArrayHandle;
     FMode: TVKFaceGroupMeshMode;
-
     procedure SetupVBO;
     procedure InvalidateVBO;
   protected
-    
     procedure SetVertexIndices(const val: TIntegerList);
-
     procedure AddToList(source, destination: TAffineVectorList;
       indices: TIntegerList);
-
   public
-    
     constructor Create; override;
     destructor Destroy; override;
-
     procedure WriteToFiler(writer: TVirtualWriter); override;
     procedure ReadFromFiler(reader: TVirtualReader); override;
-
     procedure BuildList(var mrci: TVKRenderContextInfo); override;
     procedure AddToTriangles(aList: TAffineVectorList;
       aTexCoords: TAffineVectorList = nil;
       aNormals: TAffineVectorList = nil); override;
     function TriangleCount: Integer; override;
     procedure Reverse; override;
-
     procedure Add(idx: Integer);
     procedure GetExtents(var min, max: TAffineVector);
     { If mode is strip or fan, convert the indices to triangle list indices. }
     procedure ConvertToList;
-
     // Return the normal from the 1st three points in the facegroup
     function GetNormal: TAffineVector;
-
     property Mode: TVKFaceGroupMeshMode read FMode write FMode;
     property VertexIndices: TIntegerList read FVertexIndices write
       SetVertexIndices;
   end;
 
-  // TFGVertexNormalTexIndexList
-  //
-  { Adds normals and texcoords indices. 
+  { Adds normals and texcoords indices.
      Allows very compact description of a mesh. The Normals ad TexCoords
      indices are optionnal, if missing (empty), VertexIndices will be used. }
   TFGVertexNormalTexIndexList = class(TFGVertexIndexList)
   private
-    
     FNormalIndices: TIntegerList;
     FTexCoordIndices: TIntegerList;
-
   protected
-    
     procedure SetNormalIndices(const val: TIntegerList);
     procedure SetTexCoordIndices(const val: TIntegerList);
-
   public
-    
     constructor Create; override;
     destructor Destroy; override;
-
     procedure WriteToFiler(writer: TVirtualWriter); override;
     procedure ReadFromFiler(reader: TVirtualReader); override;
-
     procedure BuildList(var mrci: TVKRenderContextInfo); override;
     procedure AddToTriangles(aList: TAffineVectorList;
       aTexCoords: TAffineVectorList = nil;
       aNormals: TAffineVectorList = nil); override;
-
     procedure Add(vertexIdx, normalIdx, texCoordIdx: Integer);
-
     property NormalIndices: TIntegerList read FNormalIndices write
       SetNormalIndices;
     property TexCoordIndices: TIntegerList read FTexCoordIndices write
       SetTexCoordIndices;
   end;
 
-  // TFGIndexTexCoordList
-  //
-  { Adds per index texture coordinates to its ancestor. 
+  { Adds per index texture coordinates to its ancestor.
      Per index texture coordinates allows having different texture coordinates
      per triangle, depending on the face it is used in. }
   TFGIndexTexCoordList = class(TFGVertexIndexList)
   private
-    
     FTexCoords: TAffineVectorList;
-
   protected
-    
     procedure SetTexCoords(const val: TAffineVectorList);
-
   public
-    
     constructor Create; override;
     destructor Destroy; override;
-
     procedure WriteToFiler(writer: TVirtualWriter); override;
     procedure ReadFromFiler(reader: TVirtualReader); override;
-
     procedure BuildList(var mrci: TVKRenderContextInfo); override;
     procedure AddToTriangles(aList: TAffineVectorList;
       aTexCoords: TAffineVectorList = nil;
       aNormals: TAffineVectorList = nil); override;
-
     procedure Add(idx: Integer; const texCoord: TAffineVector); overload;
     procedure Add(idx: Integer; const s, t: Single); overload;
-
     property TexCoords: TAffineVectorList read FTexCoords write SetTexCoords;
   end;
 
-  // TVKFaceGroups
-  //
   { A list of TVKFaceGroup objects. }
   TVKFaceGroups = class(TPersistentObjectList)
   private
-    
     FOwner: TVKMeshObject;
-
   protected
-    
     function GetFaceGroup(Index: Integer): TVKFaceGroup;
-
   public
-    
     constructor CreateOwned(AOwner: TVKMeshObject);
     destructor Destroy; override;
-
     procedure ReadFromFiler(reader: TVirtualReader); override;
-
     procedure PrepareMaterialLibraryCache(matLib: TVKMaterialLibrary);
     procedure DropMaterialLibraryCache;
-
     property Owner: TVKMeshObject read FOwner;
     procedure Clear; override;
     property Items[Index: Integer]: TVKFaceGroup read GetFaceGroup; default;
-
     procedure AddToTriangles(aList: TAffineVectorList;
       aTexCoords: TAffineVectorList = nil;
       aNormals: TAffineVectorList = nil);
-
     { Material Library of the owner TVKBaseMesh. }
     function MaterialLibrary: TVKMaterialLibrary;
-    { Sort faces by material. 
+    { Sort faces by material.
        Those without material first in list, followed by opaque materials,
        then transparent materials. }
     procedure SortByMaterial;
   end;
 
-  // TMeshNormalsOrientation
-  //
-  { Determines how normals orientation is defined in a mesh. 
-     - mnoDefault : uses default orientation 
-     - mnoInvert : inverse of default orientation 
-     - mnoAutoSolid : autocalculate to make the mesh globally solid 
+  { Determines how normals orientation is defined in a mesh.
+     - mnoDefault : uses default orientation
+     - mnoInvert : inverse of default orientation
+     - mnoAutoSolid : autocalculate to make the mesh globally solid
      - mnoAutoHollow : autocalculate to make the mesh globally hollow  }
-  TMeshNormalsOrientation = (mnoDefault, mnoInvert);
-    //, mnoAutoSolid, mnoAutoHollow);
+  TMeshNormalsOrientation = (mnoDefault, mnoInvert); //, mnoAutoSolid, mnoAutoHollow);
 
-  // TVKVectorFile
-  //
-  { Abstract base class for different vector file formats. 
+  { Abstract base class for different vector file formats.
      The actual implementation for these files (3DS, DXF..) must be done
      seperately. The concept for TVKVectorFile is very similar to TGraphic
      (see Delphi Help). }
   TVKVectorFile = class(TVKDataFile)
   private
-    
     FNormalsOrientation: TMeshNormalsOrientation;
-
   protected
-    
     procedure SetNormalsOrientation(const val: TMeshNormalsOrientation);
       virtual;
-
   public
-    
     constructor Create(AOwner: TPersistent); override;
-
     function Owner: TVKBaseMesh;
-
     property NormalsOrientation: TMeshNormalsOrientation read FNormalsOrientation
       write SetNormalsOrientation;
   end;
 
   TVKVectorFileClass = class of TVKVectorFile;
 
-  // TVKGLSMVectorFile
-  //
-  { GLSM (GLScene Mesh) vector file.
+  { GLSM ( VKScene Mesh) vector file.
      This corresponds to the 'native' GLScene format, and object persistence
      stream, which should be the 'fastest' of all formats to load, and supports
-     all of GLScene features. }
+     all of VKScene features. }
   TVKGLSMVectorFile = class(TVKVectorFile)
   public
-    
     class function Capabilities: TVKDataFileCapabilities; override;
-
     procedure LoadFromStream(aStream: TStream); override;
     procedure SaveToStream(aStream: TStream); override;
   end;
 
-  // TVKBaseMesh
-  //
   { Base class for mesh objects. }
   TVKBaseMesh = class(TVKSceneObject)
   private
-    
     FNormalsOrientation: TMeshNormalsOrientation;
     FMaterialLibrary: TVKMaterialLibrary;
     FLightmapLibrary: TVKMaterialLibrary;
@@ -1204,9 +920,7 @@ type
     FMaterialLibraryCachesPrepared: Boolean;
     FConnectivity: TObject;
     FLastLoadedFilename: string;
-
   protected
-    
     FMeshObjects: TVKMeshObjectList; // a list of mesh objects
     FSkeleton: TVKSkeleton; // skeleton data & frames
     procedure SetUseMeshMaterials(const val: Boolean);
@@ -1216,183 +930,155 @@ type
     procedure SetOverlaySkeleton(const val: Boolean);
     procedure SetAutoScaling(const Value: TVKCoordinates);
     procedure DestroyHandle; override;
-
-    { Invoked after creating a TVKVectorFile and before loading. 
-       Triggered by LoadFromFile/Stream and AddDataFromFile/Stream. 
+    { Invoked after creating a TVKVectorFile and before loading.
+       Triggered by LoadFromFile/Stream and AddDataFromFile/Stream.
        Allows to adjust/transfer subclass-specific features. }
     procedure PrepareVectorFile(aFile: TVKVectorFile); dynamic;
-
-    { Invoked after a mesh has been loaded/added. 
+    { Invoked after a mesh has been loaded/added.
        Triggered by LoadFromFile/Stream and AddDataFromFile/Stream.
        Allows to adjust/transfer subclass-specific features. }
     procedure PrepareMesh; dynamic;
-
-    { Recursively propagated to mesh object and facegroups. 
+    { Recursively propagated to mesh object and facegroups.
        Notifies that they all can establish their material library caches. }
     procedure PrepareMaterialLibraryCache;
-    { Recursively propagated to mesh object and facegroups. 
+    { Recursively propagated to mesh object and facegroups.
        Notifies that they all should forget their material library caches. }
     procedure DropMaterialLibraryCache;
-
-    { Prepare the texture and materials before rendering. 
+    { Prepare the texture and materials before rendering.
        Invoked once, before building the list and NOT while building the list,
        MaterialLibraryCache can be assumed to having been prepared if materials
        are active. Default behaviour is to prepare build lists for the
        meshobjects. }
     procedure PrepareBuildList(var mrci: TVKRenderContextInfo); dynamic;
-
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
     procedure Notification(AComponent: TComponent; Operation: TOperation);
       override;
-
     function AxisAlignedDimensionsUnscaled: TVector; override;
     function BarycenterOffset: TVector;
     function BarycenterPosition: TVector;
     function BarycenterAbsolutePosition: TVector; override;
-
     procedure BuildList(var rci: TVKRenderContextInfo); override;
     procedure DoRender(var rci: TVKRenderContextInfo;
       renderSelf, renderChildren: Boolean); override;
     procedure StructureChanged; override;
-    { Notifies that geometry data changed, but no re-preparation is needed. 
+    { Notifies that geometry data changed, but no re-preparation is needed.
        Using this method will usually be faster, but may result in incorrect
        rendering, reduced performance and/or invalid bounding box data
        (ie. invalid collision detection). Use with caution. }
     procedure StructureChangedNoPrepare;
-
     { BEWARE! Utterly inefficient implementation! }
     function RayCastIntersect(const rayStart, rayVector: TVector;
       intersectPoint: PVector = nil;
       intersectNormal: PVector = nil): Boolean; override;
     function GenerateSilhouette(const silhouetteParameters:
       TVKSilhouetteParameters): TVKSilhouette; override;
-
     { This method allows fast shadow volumes for GLActors.
        If your actor/mesh doesn't change, you don't need to call this.
        It basically caches the connectivity data.}
     procedure BuildSilhouetteConnectivityData;
-
     property MeshObjects: TVKMeshObjectList read FMeshObjects;
     property Skeleton: TVKSkeleton read FSkeleton;
-
     { Computes the extents of the mesh.  }
     procedure GetExtents(out min, max: TAffineVector);
     { Computes the barycenter of the mesh.  }
     function GetBarycenter: TAffineVector;
-    { Invoked after a mesh has been loaded. 
+    { Invoked after a mesh has been loaded.
        Should auto-center according to the AutoCentering property. }
     procedure PerformAutoCentering; dynamic;
-    { Invoked after a mesh has been loaded. 
+    { Invoked after a mesh has been loaded.
        Should auto-scale the vertices of the meshobjects to AutoScaling the property. }
     procedure PerformAutoScaling; dynamic;
-    { Loads a vector file. 
+    { Loads a vector file.
        A vector files (for instance a ".3DS") stores the definition of
-       a mesh as well as materials property. 
+       a mesh as well as materials property.
        Loading a file replaces the current one (if any). }
     procedure LoadFromFile(const filename: string); dynamic;
-    { Loads a vector file from a stream. 
-       See LoadFromFile. 
+    { Loads a vector file from a stream.
+       See LoadFromFile.
        The filename attribute is required to identify the type data you're
        streaming (3DS, OBJ, etc.) }
     procedure LoadFromStream(const filename: string; aStream: TStream); dynamic;
-    { Saves to a vector file. 
+    { Saves to a vector file.
        Note that only some of the vector files formats can be written to
        by GLScene. }
     procedure SaveToFile(const fileName: string); dynamic;
-    { Saves to a vector file in a stream. 
+    { Saves to a vector file in a stream.
        Note that only some of the vector files formats can be written to
        by GLScene. }
     procedure SaveToStream(const fileName: string; aStream: TStream); dynamic;
-
-    { Loads additionnal data from a file. 
-       Additionnal data could be more animation frames or morph target. 
+    { Loads additionnal data from a file.
+       Additionnal data could be more animation frames or morph target.
        The VectorFile importer must be able to handle addition of data
        flawlessly. }
     procedure AddDataFromFile(const filename: string); dynamic;
-    { Loads additionnal data from stream. 
+    { Loads additionnal data from stream.
        See AddDataFromFile. }
     procedure AddDataFromStream(const filename: string; aStream: TStream);
       dynamic;
-
     { Returns the filename of the last loaded file, or a blank string if not
        file was loaded (or if the mesh was dinamically built). This does not
        take into account the data added to the mesh (through AddDataFromFile)
        or saved files.}
     function LastLoadedFilename: string;
-
-    { Determines if a mesh should be centered and how. 
+    { Determines if a mesh should be centered and how.
        AutoCentering is performed  only  after loading a mesh, it has
-       no effect on already loaded mesh data or when adding from a file/stream. 
+       no effect on already loaded mesh data or when adding from a file/stream.
        If you want to alter mesh data, use direct manipulation methods
        (on the TVKMeshObjects). }
     property AutoCentering: TVKMeshAutoCenterings read FAutoCentering write
       FAutoCentering default [];
-
-    { Scales vertices to a AutoScaling. 
+    { Scales vertices to a AutoScaling.
        AutoScaling is performed  only  after loading a mesh, it has
-       no effect on already loaded mesh data or when adding from a file/stream. 
+       no effect on already loaded mesh data or when adding from a file/stream.
        If you want to alter mesh data, use direct manipulation methods
        (on the TVKMeshObjects). }
     property AutoScaling: TVKCoordinates read FAutoScaling write FAutoScaling;
-
-    { Material library where mesh materials will be stored/retrieved. 
+    { Material library where mesh materials will be stored/retrieved.
        If this property is not defined or if UseMeshMaterials is false,
        only the FreeForm's material will be used (and the mesh's materials
        will be ignored. }
     property MaterialLibrary: TVKMaterialLibrary read FMaterialLibrary write
       SetMaterialLibrary;
-    { Defines wether materials declared in the vector file mesh are used. 
+    { Defines wether materials declared in the vector file mesh are used.
        You must also define the MaterialLibrary property. }
     property UseMeshMaterials: Boolean read FUseMeshMaterials write
       SetUseMeshMaterials default True;
-    { LightMap library where lightmaps will be stored/retrieved. 
+    { LightMap library where lightmaps will be stored/retrieved.
        If this property is not defined, lightmaps won't be used.
        Lightmaps currently *always* use the second texture unit (unit 1),
        and may interfere with multi-texture materials. }
     property LightmapLibrary: TVKMaterialLibrary read FLightmapLibrary write
       SetLightmapLibrary;
-    { If True, exceptions about missing textures will be ignored. 
+    { If True, exceptions about missing textures will be ignored.
        Implementation is up to the file loader class (ie. this property
        may be ignored by some loaders) }
     property IgnoreMissingTextures: Boolean read FIgnoreMissingTextures write
       FIgnoreMissingTextures default False;
-
     { Normals orientation for owned mesh.  }
     property NormalsOrientation: TMeshNormalsOrientation read FNormalsOrientation
       write SetNormalsOrientation default mnoDefault;
-
     { Request rendering of skeleton bones over the mesh. }
     property OverlaySkeleton: Boolean read FOverlaySkeleton write
       SetOverlaySkeleton default False;
-
   end;
 
-  // TVKFreeForm
-  //
   { Container objects for a vector file mesh.
      FreeForms allows loading and rendering vector files (like 3DStudio
      ".3DS" file) in GLScene.  Meshes can be loaded with the LoadFromFile
-     method. 
+     method.
      A FreeForm may contain more than one mesh, but they will all be handled
      as a single object in a scene. }
   TVKFreeForm = class(TVKBaseMesh)
   private
-    
     FOctree: TVKOctree;
-
   protected
-    
     function GetOctree: TVKOctree;
-
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
     function OctreeRayCastIntersect(const rayStart, rayVector: TVector;
       intersectPoint: PVector = nil;
       intersectNormal: PVector = nil): Boolean;
@@ -1407,14 +1093,11 @@ type
     function OctreeAABBIntersect(const AABB: TAABB; objMatrix, invObjMatrix:
       TMatrix; triangles: TAffineVectorList = nil): boolean;
     //         TODO:  function OctreeSphereIntersect
-
-             { Octree support *experimental*. 
-                Use only if you understand what you're doing! }
+    { Octree support *experimental*.
+      Use only if you understand what you're doing! }
     property Octree: TVKOctree read GetOctree;
     procedure BuildOctree(TreeDepth: integer = 3);
-
   published
-    
     property AutoCentering;
     property AutoScaling;
     property MaterialLibrary;
@@ -1423,14 +1106,10 @@ type
     property NormalsOrientation;
   end;
 
-  // TVKActorOption
-  //
-  { Miscellanious actor options. 
-      
+  { Miscellanious actor options.
       aoSkeletonNormalizeNormals : if set the normals of a skeleton-animated
-         mesh will be normalized, this is not required if no normals-based texture
-         coordinates generation occurs, and thus may be unset to improve performance.
-       }
+      mesh will be normalized, this is not required if no normals-based texture
+      coordinates generation occurs, and thus may be unset to improve performance. }
   TVKActorOption = (aoSkeletonNormalizeNormals);
   TVKActorOptions = set of TVKActorOption;
 
@@ -1441,13 +1120,9 @@ type
 
   TVKActor = class;
 
-  // TVKActorAnimationReference
-  //
   TVKActorAnimationReference = (aarMorph, aarSkeleton, aarNone);
 
-  // TVKActorAnimation
-  //
-    { An actor animation sequence.
+  { An actor animation sequence.
        An animation sequence is a named set of contiguous frames that can be used
        for animating an actor. The referred frames can be either morph or skeletal
        frames (choose which via the Reference property).
@@ -1455,14 +1130,11 @@ type
        SwitchAnimation, and can also be "blended" via a TVKAnimationControler. }
   TVKActorAnimation = class(TCollectionItem)
   private
-    
     FName: string;
     FStartFrame: Integer;
     FEndFrame: Integer;
     FReference: TVKActorAnimationReference;
-
   protected
-    
     function GetDisplayName: string; override;
     function FrameCount: Integer;
     procedure SetStartFrame(const val: Integer);
@@ -1470,32 +1142,25 @@ type
     procedure SetReference(val: TVKActorAnimationReference);
     procedure SetAsString(const val: string);
     function GetAsString: string;
-
   public
-    
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
-
     property AsString: string read GetAsString write SetAsString;
-
     function OwnerActor: TVKActor;
-
-    { Linearly removes the translation component between skeletal frames. 
+    { Linearly removes the translation component between skeletal frames.
        This function will compute the translation of the first bone (index 0)
        and linearly subtract this translation in all frames between startFrame
        and endFrame. Its purpose is essentially to remove the 'slide' that
        exists in some animation formats (f.i. SMD). }
     procedure MakeSkeletalTranslationStatic;
-    { Removes the absolute rotation component of the skeletal frames. 
+    { Removes the absolute rotation component of the skeletal frames.
        Some formats will store frames with absolute rotation information,
-       if this correct if the animation is the "main" animation. 
+       if this correct if the animation is the "main" animation.
        This function removes that absolute information, making the animation
        frames suitable for blending purposes. }
     procedure MakeSkeletalRotationDelta;
-
   published
-    
     property Name: string read FName write FName;
     { Index of the initial frame of the animation. }
     property StartFrame: Integer read FStartFrame write SetStartFrame;
@@ -1508,73 +1173,52 @@ type
 
   TVKActorAnimationName = string;
 
-  // TVKActorAnimations
-  //
     { Collection of actor animations sequences. }
   TVKActorAnimations = class(TCollection)
   private
-    
     FOwner: TVKActor;
-
   protected
-    
     function GetOwner: TPersistent; override;
     procedure SetItems(index: Integer; const val: TVKActorAnimation);
     function GetItems(index: Integer): TVKActorAnimation;
-
   public
-    
     constructor Create(AOwner: TVKActor);
     function Add: TVKActorAnimation;
     function FindItemID(ID: Integer): TVKActorAnimation;
     function FindName(const aName: string): TVKActorAnimation;
     function FindFrame(aFrame: Integer; aReference: TVKActorAnimationReference):
       TVKActorAnimation;
-
     procedure SetToStrings(aStrings: TStrings);
     procedure SaveToStream(aStream: TStream);
     procedure LoadFromStream(aStream: TStream);
     procedure SaveToFile(const fileName: string);
     procedure LoadFromFile(const fileName: string);
-
     property Items[index: Integer]: TVKActorAnimation read GetItems write
       SetItems; default;
     function Last: TVKActorAnimation;
   end;
 
-  // TVKBaseAnimationControler
-  //
-    { Base class for skeletal animation control.  }
+  { Base class for skeletal animation control.  }
   TVKBaseAnimationControler = class(TComponent)
   private
-    
     FEnabled: Boolean;
     FActor: TVKActor;
-
   protected
-    
     procedure Notification(AComponent: TComponent; Operation: TOperation);
       override;
     procedure SetEnabled(const val: Boolean);
     procedure SetActor(const val: TVKActor);
-
     procedure DoChange; virtual;
     function Apply(var lerpInfo: TVKBlendedLerpInfo): Boolean; virtual;
-
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
   published
-    
     property Enabled: Boolean read FEnabled write SetEnabled default True;
     property Actor: TVKActor read FActor write SetActor;
   end;
 
-  // TVKAnimationControler
-  //
-    { Controls the blending of an additionnal skeletal animation into an actor. 
+  { Controls the blending of an additionnal skeletal animation into an actor.
        The animation controler allows animating an actor with several animations
        at a time, for instance, you could use a "run" animation as base animation
        (in TVKActor), blend an animation that makes the arms move differently
@@ -1582,35 +1226,24 @@ type
        make the head turn toward a target. }
   TVKAnimationControler = class(TVKBaseAnimationControler)
   private
-    
     FAnimationName: TVKActorAnimationName;
     FRatio: Single;
-
   protected
-    
     procedure SetAnimationName(const val: TVKActorAnimationName);
     procedure SetRatio(const val: Single);
-
     procedure DoChange; override;
     function Apply(var lerpInfo: TVKBlendedLerpInfo): Boolean; override;
-
   published
-    
     property AnimationName: string read FAnimationName write SetAnimationName;
     property Ratio: Single read FRatio write SetRatio;
   end;
 
-  // TActorFrameInterpolation
-  //
-  { Actor frame-interpolation mode. 
-     - afpNone : no interpolation, display CurrentFrame only 
+  { Actor frame-interpolation mode.
+     - afpNone : no interpolation, display CurrentFrame only
      - afpLinear : perform linear interpolation between current and next frame }
   TActorFrameInterpolation = (afpNone, afpLinear);
 
-  // TActorActionMode
-  //
-  { Defines how an actor plays between its StartFrame and EndFrame. 
-      
+  { Defines how an actor plays between its StartFrame and EndFrame.
       aamNone : no animation is performed
       aamPlayOnce : play from current frame to EndFrame, once end frame has
         been reached, switches to aamNone
@@ -1620,20 +1253,16 @@ type
         has been reached, switches to aamBounceBackward
       aamBounceBackward : play from current frame to StartFrame, once start
         frame has been reached, switches to aamBounceForward
-      aamExternal : Allows for external animation control
-       }
+      aamExternal : Allows for external animation control }
   TVKActorAnimationMode = (aamNone, aamPlayOnce, aamLoop, aamBounceForward,
     aamBounceBackward, aamLoopBackward, aamExternal);
 
-  // TVKActor
-  //
-  { Mesh class specialized in animated meshes. 
+  { Mesh class specialized in animated meshes.
      The TVKActor provides a quick interface to animated meshes based on morph
      or skeleton frames, it is capable of performing frame interpolation and
      animation blending (via TVKAnimationControler components). }
   TVKActor = class(TVKBaseMesh)
   private
-    
     FStartFrame, FEndFrame: Integer;
     FReference: TVKActorAnimationReference;
     FCurrentFrame: Integer;
@@ -1647,9 +1276,7 @@ type
     FTargetSmoothAnimation: TVKActorAnimation;
     FControlers: TList;
     FOptions: TVKActorOptions;
-
   protected
-    
     procedure SetCurrentFrame(val: Integer);
     procedure SetStartFrame(val: Integer);
     procedure SetEndFrame(val: Integer);
@@ -1657,27 +1284,19 @@ type
     procedure SetAnimations(const val: TVKActorAnimations);
     function StoreAnimations: Boolean;
     procedure SetOptions(const val: TVKActorOptions);
-
     procedure PrepareMesh; override;
     procedure PrepareBuildList(var mrci: TVKRenderContextInfo); override;
     procedure DoAnimate; virtual;
-
     procedure RegisterControler(aControler: TVKBaseAnimationControler);
     procedure UnRegisterControler(aControler: TVKBaseAnimationControler);
-
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
-
     procedure BuildList(var rci: TVKRenderContextInfo); override;
-
     procedure DoProgress(const progressTime: TProgressTimes); override;
-
     procedure LoadFromStream(const filename: string; aStream: TStream);
       override;
-
     procedure SwitchToAnimation(anAnimation: TVKActorAnimation; smooth: Boolean =
       False); overload;
     procedure SwitchToAnimation(const animationName: string; smooth: Boolean =
@@ -1685,37 +1304,27 @@ type
     procedure SwitchToAnimation(animationIndex: Integer; smooth: Boolean =
       False); overload;
     function CurrentAnimation: string;
-
-    { Synchronize self animation with an other actor. 
+    { Synchronize self animation with an other actor.
        Copies Start/Current/End Frame values, CurrentFrameDelta,
        AnimationMode and FrameInterpolation. }
     procedure Synchronize(referenceActor: TVKActor);
-
     { Provides a direct access to FCurrentFrame without any checks.
        Used in TVKActorProxy. }
     procedure SetCurrentFrameDirect(const Value: Integer);
-
     function NextFrameIndex: Integer;
-
     procedure NextFrame(nbSteps: Integer = 1);
     procedure PrevFrame(nbSteps: Integer = 1);
-
     function FrameCount: Integer;
-
     { Indicates whether the actor is currently swithing animations (with
        smooth interpolation).}
     function isSwitchingAnimation: boolean;
-
   published
-    
     property StartFrame: Integer read FStartFrame write SetStartFrame default 0;
     property EndFrame: Integer read FEndFrame write SetEndFrame default 0;
-
-    { Reference Frame Animation mode. 
+    { Reference Frame Animation mode.
        Allows specifying if the model is primarily morph or skeleton based. }
     property Reference: TVKActorAnimationReference read FReference write FReference
       default aarMorph;
-
     { Current animation frame. }
     property CurrentFrame: Integer read FCurrentFrame write SetCurrentFrame
       default 0;
@@ -1725,7 +1334,6 @@ type
     { Frame interpolation mode (afpNone/afpLinear). }
     property FrameInterpolation: TActorFrameInterpolation read
       FFrameInterpolation write FFrameInterpolation default afpLinear;
-
     { See TVKActorAnimationMode.  }
     property AnimationMode: TVKActorAnimationMode read FAnimationMode write
       FAnimationMode default aamNone;
@@ -1734,7 +1342,6 @@ type
     { Actor and animation miscellanious options. }
     property Options: TVKActorOptions read FOptions write SetOptions default
       cDefaultActorOptions;
-
     { Triggered after each CurrentFrame change. }
     property OnFrameChanged: TNotifyEvent read FOnFrameChanged write
       FOnFrameChanged;
@@ -1744,11 +1351,9 @@ type
     { Triggered after StartFrame has been reached by progression or "nextframe" }
     property OnStartFrameReached: TNotifyEvent read FOnStartFrameReached write
       FOnStartFrameReached;
-
     { Collection of animations sequences. }
     property Animations: TVKActorAnimations read FAnimations write SetAnimations
       stored StoreAnimations;
-
     property AutoCentering;
     property MaterialLibrary;
     property LightmapLibrary;
@@ -1757,8 +1362,6 @@ type
     property OverlaySkeleton;
   end;
 
-  // TVKVectorFileFormat
-  //
   TVKVectorFileFormat = class
   public
     VectorFileClass: TVKVectorFileClass;
@@ -1767,14 +1370,10 @@ type
     DescResID: Integer;
   end;
 
-  // TVKVectorFileFormatsList
-  //
   { Stores registered vector file formats. }
   TVKVectorFileFormatsList = class(TPersistentObjectList)
   public
-    
     destructor Destroy; override;
-
     procedure Add(const Ext, Desc: string; DescID: Integer; AClass:
       TVKVectorFileClass);
     function FindExt(ext: string): TVKVectorFileClass;
@@ -1791,13 +1390,13 @@ type
 
   EInvalidVectorFile = class(Exception);
 
-  // Read access to the list of registered vector file formats
+// Read access to the list of registered vector file formats
 function GetVectorFileFormats: TVKVectorFileFormatsList;
 // A file extension filter suitable for dialog's 'Filter' property
 function VectorFileFormatsFilter: string;
 // A file extension filter suitable for a savedialog's 'Filter' property
 function VectorFileFormatsSaveFilter: string;
-{ Returns an extension by its index in the vector files dialogs filter. 
+{ Returns an extension by its index in the vector files dialogs filter.
    Use VectorFileFormatsFilter to obtain the filter. }
 function VectorFileFormatExtensionByIndex(index: Integer): string;
 
@@ -1815,13 +1414,9 @@ implementation
 //===========================================================================
 
 uses
-  XOpenGL,
   VKS.CrossPlatform,
   VKS.MeshUtils,
-  VKS.State,
-  VKS.Utils,
-  VKS.BaseMeshSilhouette,
-  VKS.VectorTypes;
+  VKS.BaseMeshSilhouette;
 
 var
   vVectorFileFormats: TVKVectorFileFormatsList;

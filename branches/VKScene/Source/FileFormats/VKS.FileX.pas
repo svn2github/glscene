@@ -33,9 +33,8 @@ type
     procedure LoadFromStream(aStream: TStream); override;
   end;
 
-  // ==========================================================
+// ==========================================================
 implementation
-
 // ==========================================================
 
 class function TVKXVectorFile.Capabilities: TVKDataFileCapabilities;

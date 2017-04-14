@@ -17,13 +17,13 @@ uses
   System.SysUtils,
   
   uOpenGLAdapter,
+  uXOpenGL,
   VKS.VectorGeometry,
   VKS.HeightData,
   VKS.Contouring,
   VKS.VectorLists,
   VKS.CrossPlatform,
-  VKS.Context,
-  XOpenGL;
+  VKS.Context;
 
 type
 

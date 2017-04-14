@@ -1,5 +1,5 @@
 //
-// VKScene Component Library, based on GLScene http://glscene.sourceforge.net 
+// VKScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
 {
   VKS.FileNMF - NormalMapper loading into GLScene FreeForms/Actors
@@ -10,115 +10,114 @@ interface
 
 uses
   System.Classes,
-  
-  VKS.VectorFileObjects, VKS.VectorGeometry,
-  VKS.VectorLists, VKS.ApplicationFileIO;
 
+  VKS.VectorFileObjects,
+  VKS.VectorGeometry,
+  VKS.VectorLists,
+  VKS.ApplicationFileIO;
 
 const
-  NMF_HEADER_TAG   = 'NMF ';
+  NMF_HEADER_TAG = 'NMF ';
   NMF_TRIANGLE_TAG = 'TRIS';
 
 type
   TNmHeader = record
-    hdr  : array[0..3] of AnsiChar;
-    size : cardinal;
+    hdr: array [0 .. 3] of AnsiChar;
+    size: cardinal;
   end;
 
   TNmRawTriangle = record
-    vert,
-    norm     : array[0..2] of TAffineVector;
-    texCoord : array[0..2] of TTexPoint;
+    vert, norm: array [0 .. 2] of TAffineVector;
+    texCoord: array [0 .. 2] of TTexPoint;
   end;
 
   TFileNMF = class
-    public
-      FileHeader,
-      TrisHeader   : TNmHeader;
-      NumTris      : Integer;
-      RawTriangles : array of TNmRawTriangle;
+  public
+    FileHeader, TrisHeader: TNmHeader;
+    NumTris: Integer;
+    RawTriangles: array of TNmRawTriangle;
 
-      procedure LoadFromStream(Stream : TStream);
-      procedure SaveToStream(Stream : TStream);
+    procedure LoadFromStream(Stream: TStream);
+    procedure SaveToStream(Stream: TStream);
   end;
 
 type
-  TVKNMFVectorFile = class (TVKVectorFile)
-    public
-      class function Capabilities : TVKDataFileCapabilities; override;
-      procedure LoadFromStream(aStream : TStream); override;
-      procedure SaveToStream(aStream : TStream); override;
+  TVKNMFVectorFile = class(TVKVectorFile)
+  public
+    class function Capabilities: TVKDataFileCapabilities; override;
+    procedure LoadFromStream(aStream: TStream); override;
+    procedure SaveToStream(aStream: TStream); override;
   end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 
-procedure TFileNMF.LoadFromStream(Stream : TStream);
+procedure TFileNMF.LoadFromStream(Stream: TStream);
 var
-  Done : Boolean;
+  Done: Boolean;
 begin
   Stream.Read(FileHeader, SizeOf(TNmHeader));
-  if FileHeader.hdr<>NMF_HEADER_TAG then exit;
+  if FileHeader.hdr <> NMF_HEADER_TAG then
+    exit;
 
-  Done:=False;
-  while not Done do begin
+  Done := False;
+  while not Done do
+  begin
     Stream.Read(TrisHeader, SizeOf(TNmHeader));
-    if TrisHeader.hdr=NMF_TRIANGLE_TAG then begin
+    if TrisHeader.hdr = NMF_TRIANGLE_TAG then
+    begin
       Stream.Read(NumTris, SizeOf(NumTris));
-      if NumTris<0 then exit;
-      SetLength(RawTriangles,NumTris);
-      Stream.Read(RawTriangles[0],SizeOf(TNmRawTriangle)*NumTris);
-      Done:=True;
+      if NumTris < 0 then
+        exit;
+      SetLength(RawTriangles, NumTris);
+      Stream.Read(RawTriangles[0], SizeOf(TNmRawTriangle) * NumTris);
+      Done := True;
     end;
   end;
 end;
 
-procedure TFileNMF.SaveToStream(Stream : TStream);
+procedure TFileNMF.SaveToStream(Stream: TStream);
 begin
-  NumTris:=Length(RawTriangles);
-  TrisHeader.hdr:=NMF_TRIANGLE_TAG;
-  TrisHeader.size:=SizeOf(TNmRawTriangle)*NumTris+SizeOf(FileHeader);
-  FileHeader.hdr:=NMF_HEADER_TAG;
-  FileHeader.size:=TrisHeader.size+SizeOf(TrisHeader);
+  NumTris := Length(RawTriangles);
+  TrisHeader.hdr := NMF_TRIANGLE_TAG;
+  TrisHeader.size := SizeOf(TNmRawTriangle) * NumTris + SizeOf(FileHeader);
+  FileHeader.hdr := NMF_HEADER_TAG;
+  FileHeader.size := TrisHeader.size + SizeOf(TrisHeader);
 
   Stream.Write(FileHeader, SizeOf(TNmHeader));
   Stream.Write(TrisHeader, SizeOf(TNmHeader));
-  NumTris:=Length(RawTriangles);
+  NumTris := Length(RawTriangles);
   Stream.Write(NumTris, SizeOf(NumTris));
-  Stream.Write(RawTriangles[0], SizeOf(TNmRawTriangle)*NumTris);
+  Stream.Write(RawTriangles[0], SizeOf(TNmRawTriangle) * NumTris);
 end;
 
 // ------------------
 // ------------------ TVKNMFVectorFile ------------------
 // ------------------
 
-// Capabilities
-//
-class function TVKNMFVectorFile.Capabilities : TVKDataFileCapabilities;
+class function TVKNMFVectorFile.Capabilities: TVKDataFileCapabilities;
 begin
-  Result:=[dfcRead, dfcWrite];
+  Result := [dfcRead, dfcWrite];
 end;
 
 // LoadFromStream
 //
-procedure TVKNMFVectorFile.LoadFromStream(aStream : TStream);
+procedure TVKNMFVectorFile.LoadFromStream(aStream: TStream);
 var
-  i,j  : Integer;
-  mesh : TVKMeshObject;
-  nmf  : TFileNMF;
+  i, j: Integer;
+  mesh: TVKMeshObject;
+  nmf: TFileNMF;
 begin
-  nmf:=TFileNMF.Create;
+  nmf := TFileNMF.Create;
   try
     nmf.LoadFromStream(aStream);
-    mesh:=TVKMeshObject.CreateOwned(Owner.MeshObjects);
-    mesh.Mode:=momTriangles;
-    for i:=0 to nmf.NumTris-1 do begin
-      for j:=0 to 2 do begin
+    mesh := TVKMeshObject.CreateOwned(Owner.MeshObjects);
+    mesh.Mode := momTriangles;
+    for i := 0 to nmf.NumTris - 1 do
+    begin
+      for j := 0 to 2 do
+      begin
         mesh.Vertices.Add(nmf.RawTriangles[i].vert[j]);
         mesh.Normals.Add(nmf.RawTriangles[i].norm[j]);
         mesh.TexCoords.Add(nmf.RawTriangles[i].texCoord[j]);
@@ -131,34 +130,34 @@ end;
 
 // SaveToStream
 //
-procedure TVKNMFVectorFile.SaveToStream(aStream : TStream);
+procedure TVKNMFVectorFile.SaveToStream(aStream: TStream);
 var
-  i,j  : Integer;
-  nmf  : TFileNMF;
-  Vertices,
-  TempVertices,
-  Normals,
-  TexCoords : TAffineVectorList;
+  i, j: Integer;
+  nmf: TFileNMF;
+  Vertices, TempVertices, Normals, TexCoords: TAffineVectorList;
 begin
-  nmf:=TFileNMF.Create;
-  Vertices:=TAffineVectorList.Create;
-  Normals:=TAffineVectorList.Create;
-  TexCoords:=TAffineVectorList.Create;
+  nmf := TFileNMF.Create;
+  Vertices := TAffineVectorList.Create;
+  Normals := TAffineVectorList.Create;
+  TexCoords := TAffineVectorList.Create;
   try
-    for i:=0 to Owner.MeshObjects.Count-1 do begin
-      TempVertices:=Owner.MeshObjects[i].ExtractTriangles(TexCoords,Normals);
+    for i := 0 to Owner.MeshObjects.Count - 1 do
+    begin
+      TempVertices := Owner.MeshObjects[i].ExtractTriangles(TexCoords, Normals);
       Vertices.Add(TempVertices);
       TempVertices.Free;
     end;
 
-    nmf.NumTris:=(Vertices.count div 3);
-    SetLength(nmf.RawTriangles,nmf.NumTris);
-    for i:=0 to nmf.NumTris-1 do begin
-      for j:=0 to 2 do begin
-        nmf.RawTriangles[i].vert[j]:=Vertices[3*i+j];
-        nmf.RawTriangles[i].norm[j]:=Normals[3*i+j];
-        nmf.RawTriangles[i].texCoord[j].S:=TexCoords[3*i+j].X;
-        nmf.RawTriangles[i].texCoord[j].T:=TexCoords[3*i+j].Y;
+    nmf.NumTris := (Vertices.Count div 3);
+    SetLength(nmf.RawTriangles, nmf.NumTris);
+    for i := 0 to nmf.NumTris - 1 do
+    begin
+      for j := 0 to 2 do
+      begin
+        nmf.RawTriangles[i].vert[j] := Vertices[3 * i + j];
+        nmf.RawTriangles[i].norm[j] := Normals[3 * i + j];
+        nmf.RawTriangles[i].texCoord[j].S := TexCoords[3 * i + j].X;
+        nmf.RawTriangles[i].texCoord[j].T := TexCoords[3 * i + j].Y;
       end;
     end;
     nmf.SaveToStream(aStream);
@@ -174,10 +173,11 @@ end;
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 initialization
+
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-  RegisterVectorFileFormat('nmf', 'NormalMapper files', TVKNMFVectorFile);
-  
+RegisterVectorFileFormat('nmf', 'NormalMapper files', TVKNMFVectorFile);
+
 end.

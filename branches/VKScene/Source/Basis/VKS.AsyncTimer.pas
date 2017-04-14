@@ -13,7 +13,9 @@ interface
 {$I VKScene.inc}
 
 uses
-  System.Classes, System.SysUtils, System.SyncObjs,
+  System.Classes,
+  System.SysUtils,
+  System.SyncObjs,
   VKS.CrossPlatform;
 
 
@@ -22,13 +24,11 @@ const
 
 type
 
-  // TVKAsyncTimer
-  //
-  { Asynchronous timer component (actual 1 ms resolution, if CPU fast enough). 
+  { Asynchronous timer component (actual 1 ms resolution, if CPU fast enough).
     Keep in mind timer resolution is obtained <i>in-between</i> events, but
     events are not triggered every x ms. For instance if you set the interval to
     5 ms, and your Timer event takes 1 ms to complete, Timer events will actually
-    be triggered every 5+1=6 ms (that's why it's "asynchronous"). 
+    be triggered every 5+1=6 ms (that's why it's "asynchronous").
     This component is based on ThreadedTimer by Carlos Barbosa. }
   TVKAsyncTimer = class(TComponent)
   private
@@ -57,19 +57,12 @@ type
       write SetThreadPriority default tpTimeCritical;
   end;
 
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
 implementation
-
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 type
 
-  // TTimerThread
-  //
   TTimerThread = class(TThread)
   private
     FOwner: TVKAsyncTimer;
@@ -80,15 +73,11 @@ type
     constructor Create(CreateSuspended: Boolean); virtual;
   end;
 
-  // Create
-  //
 constructor TTimerThread.Create(CreateSuspended: Boolean);
 begin
   inherited Create(CreateSuspended);
 end;
 
-// Execute
-//
 procedure TTimerThread.Execute;
 var
   lastTick, nextTick, curTick, perfFreq: Int64;
@@ -122,10 +111,10 @@ begin
   end;
 end;
 
+//-----------------------------------------
 { TVKAsyncTimer }
+//-----------------------------------------
 
-// Create
-//
 constructor TVKAsyncTimer.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
@@ -143,8 +132,6 @@ begin
   end;
 end;
 
-// Destroy
-//
 destructor TVKAsyncTimer.Destroy;
 begin
   Enabled := False;
@@ -158,16 +145,12 @@ begin
   inherited Destroy;
 end;
 
-// DoTimer
-//
 procedure TVKAsyncTimer.DoTimer;
 begin
   if Enabled and Assigned(FOnTimer) then
     FOnTimer(Self);
 end;
 
-// SetEnabled
-//
 procedure TVKAsyncTimer.SetEnabled(Value: Boolean);
 begin
   if Value <> FEnabled then
@@ -207,7 +190,9 @@ begin
   FTimerThread.Priority := Value;
 end;
 
+//---------------------------------------------------------------------
 initialization
+//---------------------------------------------------------------------
 
   RegisterClass(TVKAsyncTimer);
 

@@ -15,6 +15,7 @@ uses
   System.SysUtils,
   
   uOpenGLAdapter,
+  VKS.VectorGeometry,
   VKS.CrossPlatform,
   VKS.Context,
   VKS.Graphics,
@@ -39,10 +40,9 @@ type
       const intFormat: TVKInternalFormat); reintroduce;
   end;
 
+//=============================================================
 implementation
-
-uses
-  VKS.VectorGeometry;
+//=============================================================
 
 const
   O3_TC_RGB_S3TC_DXT1 = 1;
@@ -94,9 +94,6 @@ type
   // ------------------ TVKO3TCImage ------------------
   // ------------------
 
-  // LoadFromFile
-  //
-
 procedure TVKO3TCImage.LoadFromFile(const filename: string);
 var
   fs: TStream;
@@ -115,9 +112,6 @@ begin
     raise EInvalidRasterFile.CreateFmt('File %s not found.', [filename]);
 end;
 
-// SaveToFile
-//
-
 procedure TVKO3TCImage.SaveToFile(const filename: string);
 var
   fs: TStream;
@@ -130,9 +124,6 @@ begin
   end;
   ResourceName := filename;
 end;
-
-// LoadFromStream
-//
 
 procedure TVKO3TCImage.LoadFromStream(stream: TStream);
 type
@@ -203,9 +194,6 @@ begin
   // Read raw data
   stream.Read(fData^, ChunkHeader.Size);
 end;
-
-// SaveFromStream
-//
 
 procedure TVKO3TCImage.SaveToStream(stream: TStream);
 const
@@ -413,15 +401,15 @@ begin
   end;
 end;
 
-// Capabilities
-//
-
 class function TVKO3TCImage.Capabilities: TVKDataFileCapabilities;
 begin
   Result := [dfcRead, dfcWrite];
 end;
 
+//--------------------------------------------------------------
 initialization
+//--------------------------------------------------------------
+
   { Register this Fileformat-Handler with GLScene }
   RegisterRasterFormat('o3tc', 'oZone3D Texture Compression', TVKO3TCImage);
 

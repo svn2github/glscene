@@ -14,6 +14,8 @@ uses
   Winapi.OpenGL,
   Winapi.OpenGLext,
   System.Classes,
+
+  uXOpenGL,
   VKS.Scene,
   VKS.VectorGeometry,
   VKS.Context,
@@ -22,8 +24,7 @@ uses
   VKS.CrossPlatform,
   VKS.PersistentClasses,
   VKS.VectorLists,
-  VKS.RenderContextInfo,
-  XOpenGL;
+  VKS.RenderContextInfo;
 
 type
 

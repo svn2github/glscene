@@ -38,22 +38,21 @@ type
     fProgramType: string[16];
   public
     class function Capabilities: TVKDataFileCapabilities; override;
-
     procedure LoadFromFile(const filename: string); override;
     procedure LoadFromStream(stream: TStream); override;
-
     procedure AssignFromTexture(textureContext: TVKContext;
       const textureHandle: GLuint;
       textureTarget: TVKTextureTarget;
       const CurrentFormat: Boolean;
       const intFormat: TVKInternalFormat); reintroduce;
-
     property Gamma: Single read fGamma;
     property Exposure: Single read fExposure;
     property ProgramType: Ansistring read GetProgramType write SetProgramType;
   end;
 
+//====================================================================
 implementation
+//====================================================================
 
 uses
   VKS.RGBE,
@@ -63,9 +62,6 @@ uses
 // ------------------
 // ------------------ TVKHDRImage ------------------
 // ------------------
-
-// LoadFromFile
-//
 
 procedure TVKHDRImage.LoadFromFile(const filename: string);
 var
@@ -237,9 +233,6 @@ begin
     fProgramType[i] := aval[i];
 end;
 
-// AssignFromTexture
-//
-
 procedure TVKHDRImage.AssignFromTexture(textureContext: TVKContext;
   const textureHandle: GLuint;
   textureTarget: TVKTextureTarget;
@@ -307,15 +300,15 @@ begin
   end;
 end;
 
-// Capabilities
-//
-
 class function TVKHDRImage.Capabilities: TVKDataFileCapabilities;
 begin
   Result := [dfcRead {, dfcWrite}];
 end;
 
+//-------------------------------------------------------------------
 initialization
+//-------------------------------------------------------------------
+
   { Register this Fileformat-Handler with GLScene }
   RegisterRasterFormat('hdr', 'High Dynamic Range Image', TVKHDRImage);
 

@@ -31,6 +31,8 @@ uses
   Winapi.OpenGLext,
   System.Classes,
   System.SysUtils,
+
+  uXOpenGL,
   VKS.Scene,
   VKS.VectorGeometry,
   VKS.Graphics,
@@ -41,7 +43,6 @@ uses
   VKS.RenderContextInfo,
   VKS.State,
   VKS.TextureFormat,
-  XOpenGL,
   VKS.VectorTypes;
 
 

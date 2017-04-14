@@ -26,8 +26,9 @@ uses
   System.Classes,
   System.SysUtils,
   FMX.Dialogs,
-  
+
   uOpenGLAdapter,
+  uXOpenGL,
   VKS.RenderContextInfo,
   VKS.BaseClasses,
   VKS.Context,
@@ -48,8 +49,7 @@ uses
   VKS.ApplicationFileIO,
   VKS.Strings,
   VKS.ImageUtils,
-  VKS.Utils,
-  XOpenGL;
+  VKS.Utils;
 
 type
 

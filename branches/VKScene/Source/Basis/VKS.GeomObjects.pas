@@ -17,7 +17,8 @@ uses
   Winapi.OpenGLext,
   System.Classes,
   
-//  uOpenGLAdapter,
+  uOpenGLAdapter,
+  uXOpenGL,
   VKS.Scene,
   VKS.VectorGeometry,
   VKS.Context,
@@ -26,8 +27,7 @@ uses
   VKS.VectorTypes,
   VKS.GeometryBB,
   VKS.RenderContextInfo,
-  VKS.Polynomials,
-  XOpenGL;
+  VKS.Polynomials;
 
 type
   { A Disk object.

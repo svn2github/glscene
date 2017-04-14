@@ -30,6 +30,7 @@ uses
   System.SysUtils,
 
   uOpenGLAdapter,
+  uXOpenGL,
   VKS.Scene,
   VKS.Material,
   VKS.VectorGeometry,
@@ -37,7 +38,6 @@ uses
   VKS.VectorFileObjects,
   VKS.ApplicationFileIO,
   VKS.RenderContextInfo,
-  XOpenGL,
   VKS.Context,
   VKS.VectorTypes;
 

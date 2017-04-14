@@ -105,20 +105,14 @@ type
       procedure LoadFromStream(aStream : TStream);
   end;
 
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
+//===================================================================
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
+//===================================================================
 
 // ------------------
 // ------------------ TFileMD3 ------------------
 // ------------------
 
-// LoadFromStream
-//
 procedure TFileMD3.LoadFromStream(aStream : TStream);
 var
   i : Integer;
@@ -136,7 +130,7 @@ begin
 
   // Read in the Tags
   SetLength(Tags,ModelHeader.numFrames*ModelHeader.numTags);
-  if ModelHeader.numTags > 0 then 
+  if ModelHeader.numTags > 0 then
      aStream.Read(Tags[0],sizeof(TMD3Tag)*ModelHeader.numFrames*ModelHeader.numTags);
 
   // Read in the Mesh data

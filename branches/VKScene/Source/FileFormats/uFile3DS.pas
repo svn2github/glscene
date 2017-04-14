@@ -13,8 +13,8 @@
   which must stay valid either during the entire lifetime of TFile3DS or at least
   'til all chunks have been read (by accessing them all once).
 
-   
-     
+
+
 }
 unit uFile3DS;
 
@@ -25,9 +25,11 @@ interface
 {$MINENUMSIZE 4}
 {$RANGECHECKS OFF}
 
-uses 
+uses
+  System.SysUtils,
   System.Classes,
   uTypes3DS,
+  VKS.ApplicationFileIO,
   VKS.CrossPlatform;
 
 type
@@ -182,7 +184,6 @@ type
     procedure DumpDataBase(Strings: TStrings; DumpLevel: TDumpLevel);
     procedure LoadFromFile(const FileName: String);
     procedure LoadFromStream(const aStream: TStream);
-
     // basic access methods
     function ReadByte: Byte;
     function ReadCardinal: Cardinal;
@@ -200,12 +201,10 @@ type
     function ReadTexVert: TTexVert3DS;
     function ReadTrackHeader: TTrackHeader3DS;
     function ReadWord: Word;
-
     procedure FinishHeader(StartPos, EndPos: Cardinal);
     function InitChunkData(Chunk: PChunk3DS): Pointer;
     procedure SeekChild(Chunk: PChunk3DS);
     procedure Skip(AValue: Integer);
-
     procedure WriteByte(AValue: Byte);
     procedure WriteCardinal(AValue: Cardinal);
     procedure WriteData(Size: Integer; Data: Pointer);
@@ -222,7 +221,6 @@ type
     procedure WriteTexVertex(T: TTexVert3DS);
     procedure WriteTrackHeader(T: TTrackHeader3DS);
     procedure WriteWord(AValue: Word);
-
     property Atmosphere: TAtmosphere3DS read GetAtmosphereData;
     property Background: TBackground3DS read GetBackgroundData;
     property DatabaseRelease: TReleaseLevel read GetDatabaseRelease;
@@ -245,11 +243,8 @@ implementation
 // ---------------------------------------------------------------------------------------------------------------------
 
 uses
-  System.SysUtils,
- 
   uConst3DS,
-  uUtils3DS,
-  VKS.ApplicationFileIO;
+  uUtils3DS;
 
 function StrPasFree(P: PChar3DS): String;
 begin

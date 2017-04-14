@@ -2,7 +2,7 @@
 // VKScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
 {
-	 ASE (ASCI Scene Export) file format support for GLScene
+	 ASE (ASCI Scene Export) file format support for VKScene
 }
 unit VKS.FileASE;
 
@@ -11,10 +11,16 @@ interface
 {$I VKScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
-  VKS.VectorFileObjects, VKS.ApplicationFileIO,
-  VKS.VectorTypes, VKS.VectorGeometry, VKS.VectorLists,
-  VKS.CrossPlatform, VKS.Texture, VKS.Material;
+  System.Classes,
+  System.SysUtils,
+  VKS.VectorFileObjects,
+  VKS.ApplicationFileIO,
+  VKS.VectorTypes,
+  VKS.VectorGeometry,
+  VKS.VectorLists,
+  VKS.CrossPlatform,
+  VKS.Texture,
+  VKS.Material;
 
 const
   GL_ASE_MAX_TEXURE_CHANNELS = 12; // maximum texture channels
@@ -23,12 +29,12 @@ const
   GL_ASE_MAX_TEXTURE_MAPS =    12; // maximum texture maps
 
 type
-  // face texture channel indices
+  { face texture channel indices}
   TVKASEFaceTexure = record
     Idx0, Idx1, Idx2: Integer;
   end;
 
-  // face texture channels
+  { face texture channels }
   TVKASEFaceTexureChannels = record
     Count: Integer;
     ChanelTexture: array [0..GL_ASE_MAX_TEXURE_CHANNELS - 1] of TVKASEFaceTexure;
@@ -39,7 +45,7 @@ type
     Groups: array [0..GL_ASE_MAX_SMOOTH_GROUPS] of Integer;
   end;
 
-  // ASE mesh face
+  { ASE mesh face }
   TVKASEFace = class(TObject)
   private
     FV: array [0..2] of Integer;
@@ -62,7 +68,7 @@ type
     property SubMaterialID: Integer read FSubMaterialID; // submaterial ID
   end;
 
-  // ASE mesh faces list
+  { ASE mesh faces list }
   TVKASEFaceList = class(TObject)
   private
     FItems: TList;
@@ -78,10 +84,11 @@ type
     property Count: Integer read GetCount;
   end;
 
-  // ASE geom object, represents single mesh object;
-  // contains: vertices, faces, verice indices, faces and vertices normals,
-  // channels of texture coordinates and indices, scaling and location info;
-  // this object used only to store ASE data temporary to copy supported piece of it into GLScene TVKMeshObject
+  { ASE geom object, represents single mesh object;
+   contains: vertices, faces, verice indices, faces and vertices normals,
+   channels of texture coordinates and indices, scaling and location info;
+   this object used only to store ASE data temporary to copy supported
+   piece of it into GLScene TVKMeshObject }
   TVKASEMeshObject = class(TObject)
   private
     FFaces: TVKASEFaceList;
@@ -208,7 +215,7 @@ type
   end;
 
 
-  // ASE vector file parser
+  { ASE vector file parser }
   TVKASEVectorFile = class(TVKVectorFile)
   private
     FStringData: TStringList;
@@ -256,7 +263,6 @@ type
     destructor Destroy; override;
     procedure LoadFromStream(aStream: TStream); override;
     class function Capabilities: TVKDataFileCapabilities; override;
-
     property Header: string read FHeader;
     property Comment: string read FComment;
     property MotionBlur: Boolean read FMotionBlur;
@@ -267,15 +273,17 @@ type
   TASETextureMap = (tmGeneric, tmAmbient, tmDiffuse, tmSpecular, tmShine, tmShinestrength,
     tmSelfillum, tmOpacity, tmFiltercolor, tmBump, tmReflect, tmRefract);
 
-  // use this functions to select texture and lightmap from ASE file
-  // aSubMaterialIndex = -1 - means main material maps
-  // Default are:
-  // Texture  - main material Diffuse map
-  // Lightmap - main material Ambient map
+  { Use this functions to select texture and lightmap from ASE file
+   aSubMaterialIndex = -1 - means main material maps
+   Default are:
+   Texture  - main material Diffuse map
+   Lightmap - main material Ambient map }
   procedure ASESetPreferredTexture(aMap: TASETextureMap; aSubMaterialIndex: Integer = -1);
   procedure ASESetPreferredLightmap(aMap: TASETextureMap; aSubMaterialIndex: Integer = -1);
 
+//================================================================
 implementation
+//================================================================
 
 // ASE file tags
 const

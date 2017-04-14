@@ -1,7 +1,7 @@
 ﻿//
 // VKScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
-{  The history is logged in a former GLS version of the unit }
+{  The history is logged in GLS version of the unit }
 
 unit VKS.ArchiveManager;
 

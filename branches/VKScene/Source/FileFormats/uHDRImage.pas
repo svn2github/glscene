@@ -4,7 +4,6 @@
 {
     Good for preview picture in OpenDialog,
     so you may include both HDRImage (preview) and GLFileHDR (loading)
-      
 }
 
 unit uHDRImage;
@@ -28,15 +27,14 @@ type
 
   THDRImage = class(TBitmap)
   public
-    
     { TODO : E2170 Cannot override a non-virtual method }
-
     procedure LoadFromStream(stream: TStream); //in VCL override;
     procedure SaveToStream(stream: TStream); //in VCL override;
-
   end;
 
+//============================================================================
 implementation
+//============================================================================
 
 uses
   VKS.FileHDR,
@@ -45,9 +43,6 @@ uses
 // ------------------
 // ------------------ THDRImage ------------------
 // ------------------
-
-// LoadFromStream
-//
 
 procedure THDRImage.LoadFromStream(stream: TStream);
 var
@@ -62,9 +57,7 @@ begin
     FullHDR.Free;
     raise;
   end;
-
   FullHDR.Narrow;
-
   Width := FullHDR.LevelWidth[0];
   Height := FullHDR.LevelHeight[0];
   { TODO : E2064 Left side cannot be assigned to }
@@ -84,31 +77,22 @@ begin
   FullHDR.Free;
 end;
 
-// SaveToStream
-//
-
 procedure THDRImage.SaveToStream(stream: TStream);
 begin
   Assert(False, 'Not supported');
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
+
   { TODO : E2003 Undeclared identifier: 'RegisterFileFormat', it needs to be added }
   (*TPicture.RegisterFileFormat('HDR', 'High Dynamic Range Image', THDRImage);*)
 
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
 finalization
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
+
   { TODO : E2003 Undeclared identifier: 'UnregisterFileFormat', it needs to be added }
   (*TPicture.UnregisterGraphicClass(THDRImage);*)
 

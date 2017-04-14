@@ -17,11 +17,11 @@ uses
   Winapi.OpenGLext,
   System.Classes,
 
+  uXOpenGL,
   VKS.Scene,
   VKS.Material,
   VKS.VectorGeometry,
-  XOpenGL,
-  VKS.RenderContextInfo, 
+  VKS.RenderContextInfo,
   VKS.VectorTypes;
 
 type

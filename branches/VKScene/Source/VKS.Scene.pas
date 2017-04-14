@@ -43,10 +43,10 @@ uses
   VKS.TextureFormat,
   VKS.Selection,
   VKS.Strings,
-  XOpenGL,
   VKS.VectorTypes,
   VKS.ApplicationFileIO,
-  VKS.Utils;
+  VKS.Utils,
+  uXOpenGL;
 
 
 type

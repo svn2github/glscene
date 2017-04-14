@@ -11,7 +11,7 @@
   units where they can grow and prosper untammed. "Generic" geometrical
   objects can be found VKS.GeomObjects.
 
-   
+
 }
 unit VKS.Objects;
 
@@ -26,10 +26,11 @@ uses
   System.SysUtils,
   System.Math,
 
+  uOpenGLAdapter,
+  uXOpenGL,
   VKS.VectorGeometry,
   VKS.VectorTypes,
   VKS.Scene,
-  uOpenGLAdapter,
   VKS.VectorLists,
   VKS.CrossPlatform,
   VKS.Context,
@@ -692,7 +693,6 @@ implementation
 
 uses
   VKS.Spline,
-  XOpenGL,
   VKS.State;
 
 const

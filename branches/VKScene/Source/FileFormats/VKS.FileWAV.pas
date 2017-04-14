@@ -1,9 +1,9 @@
 //
-// VKScene Component Library, based on GLScene http://glscene.sourceforge.net 
+// VKScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
 {
-	Support for Windows WAV format. 
-   
+  Support for Windows WAV format.
+
 }
 unit VKS.FileWAV;
 
@@ -12,208 +12,201 @@ interface
 {$I VKScene.inc}
 
 uses
-  System.Classes, VKS.ApplicationFileIO, VKS.SoundFileObjects{$IFDEF MSWINDOWS} ,MMSystem{$ENDIF};
+  System.Classes,
+{$IFDEF MSWINDOWS} MMSystem, {$ENDIF}
+  VKS.ApplicationFileIO,
+  VKS.SoundFileObjects;
 
 type
 
-   // TVKWAVFile
-   //
-   { Support for Windows WAV format. }
-   TVKWAVFile = class (TVKSoundFile)
-      private
-         
-         {$IFDEF MSWINDOWS}
-         waveFormat : TWaveFormatEx;
-         pcmOffset : Integer;
-         {$ENDIF}
-         FPCMDataLength: Integer;
-         data : array of Byte; // used to store WAVE bitstream
+  { Support for Windows WAV format. }
+  TVKWAVFile = class(TVKSoundFile)
+  private
+{$IFDEF MSWINDOWS}
+    waveFormat: TWaveFormatEx;
+    pcmOffset: Integer;
+{$ENDIF}
+    FPCMDataLength: Integer;
+    data: array of Byte; // used to store WAVE bitstream
+  protected
+  public
+    function CreateCopy(AOwner: TPersistent): TVKDataFile; override;
+    class function Capabilities: TVKDataFileCapabilities; override;
+    procedure LoadFromStream(Stream: TStream); override;
+    procedure SaveToStream(Stream: TStream); override;
+    procedure PlayOnWaveOut; override;
+    function WAVData: Pointer; override;
+    function WAVDataSize: Integer; override;
+    function PCMData: Pointer; override;
+    function LengthInBytes: Integer; override;
+  end;
 
-      protected
-         
-
-      public
-         
-         function CreateCopy(AOwner: TPersistent) : TVKDataFile; override;
-
-         class function Capabilities : TVKDataFileCapabilities; override;
-
-         procedure LoadFromStream(Stream: TStream); override;
-         procedure SaveToStream(Stream: TStream); override;
-
-         procedure PlayOnWaveOut; override;
-
-	      function WAVData : Pointer; override;
-         function WAVDataSize : Integer; override;
-	      function PCMData : Pointer; override;
-	      function LengthInBytes : Integer; override;
-   end;
-
+//=================================================================
 implementation
+//=================================================================
 
- {$IFDEF MSWINDOWS}
+{$IFDEF MSWINDOWS}
+
 type
-   TRIFFChunkInfo = packed record
-      ckID : FOURCC;
-      ckSize : LongInt;
-   end;
+  TRIFFChunkInfo = packed record
+    ckID: FOURCC;
+    ckSize: LongInt;
+  end;
 
 const
   WAVE_Format_ADPCM = 2;
-  {$ENDIF}
-// ------------------
-// ------------------ TVKWAVFile ------------------
-// ------------------
+{$ENDIF}
 
-// CreateCopy
-//
-function TVKWAVFile.CreateCopy(AOwner: TPersistent) : TVKDataFile;
+  // ------------------
+  // ------------------ TVKWAVFile ------------------
+  // ------------------
+
+function TVKWAVFile.CreateCopy(AOwner: TPersistent): TVKDataFile;
 begin
-   Result:=inherited CreateCopy(AOwner);
-   if Assigned(Result) then begin
-      {$IFDEF MSWINDOWS}
-      TVKWAVFile(Result).waveFormat:=waveFormat;
-      {$ENDIF}
-      TVKWAVFile(Result).data := Copy(data);
-   end;
+  Result := inherited CreateCopy(AOwner);
+  if Assigned(Result) then
+  begin
+{$IFDEF MSWINDOWS}
+    TVKWAVFile(Result).waveFormat := waveFormat;
+{$ENDIF}
+    TVKWAVFile(Result).data := Copy(data);
+  end;
 end;
 
-// Capabilities
-//
-class function TVKWAVFile.Capabilities : TVKDataFileCapabilities;
+class function TVKWAVFile.Capabilities: TVKDataFileCapabilities;
 begin
-   Result:=[dfcRead, dfcWrite];
+  Result := [dfcRead, dfcWrite];
 end;
 
-// LoadFromStream
-//
-procedure TVKWAVFile.LoadFromStream(stream : TStream);
+procedure TVKWAVFile.LoadFromStream(Stream: TStream);
 {$IFDEF MSWINDOWS}
 var
-   ck : TRIFFChunkInfo;
-   dw, bytesToGo, startPosition, totalSize : Integer;
-   id : Cardinal;
-   dwDataOffset, dwDataSamples, dwDataLength : Integer;
+  ck: TRIFFChunkInfo;
+  dw, bytesToGo, startPosition, totalSize: Integer;
+  id: Cardinal;
+  dwDataOffset, dwDataSamples, dwDataLength: Integer;
 begin
-   // this WAVE loading code is an adaptation of the 'minimalist' sample from
-   // the Microsoft DirectX SDK.
-   Assert(Assigned(stream));
-   dwDataOffset:=0;
-   dwDataLength:=0;
-   // Check RIFF Header
-   startPosition:=stream.Position;
-   stream.Read(ck, SizeOf(TRIFFChunkInfo));
-   Assert((ck.ckID=mmioStringToFourCC('RIFF',0)), 'RIFF required');
-   totalSize:=ck.ckSize+SizeOf(TRIFFChunkInfo);
-   stream.Read(id, SizeOf(Integer));
-   Assert((id=mmioStringToFourCC('WAVE',0)), 'RIFF-WAVE required');
-   // lookup for 'fmt '
-   repeat
-      stream.Read(ck, SizeOf(TRIFFChunkInfo));
-      bytesToGo:=ck.ckSize;
-      if (ck.ckID = mmioStringToFourCC('fmt ',0)) then begin
-         if waveFormat.wFormatTag=0 then begin
-            dw:=ck.ckSize;
-            if dw>SizeOf(TWaveFormatEx) then
-               dw:=SizeOf(TWaveFormatEx);
-            stream.Read(waveFormat, dw);
-            bytesToGo:=ck.ckSize-dw;
-         end;
-         // other 'fmt ' chunks are ignored (?)
-      end else if (ck.ckID = mmioStringToFourCC('fact',0)) then begin
-         if (dwDataSamples = 0) and (waveFormat.wFormatTag = WAVE_Format_ADPCM) then begin
-            stream.Read(dwDataSamples, SizeOf(LongInt));
-            Dec(bytesToGo, SizeOf(LongInt));
-         end;
-         // other 'fact' chunks are ignored (?)
-      end else if (ck.ckID = mmioStringToFourCC('data',0)) then begin
-         dwDataOffset:=stream.Position-startPosition;
-         dwDataLength := ck.ckSize;
-         Break;
+  // this WAVE loading code is an adaptation of the 'minimalist' sample from
+  // the Microsoft DirectX SDK.
+  Assert(Assigned(Stream));
+  dwDataOffset := 0;
+  dwDataLength := 0;
+  // Check RIFF Header
+  startPosition := Stream.Position;
+  Stream.Read(ck, SizeOf(TRIFFChunkInfo));
+  Assert((ck.ckID = mmioStringToFourCC('RIFF', 0)), 'RIFF required');
+  totalSize := ck.ckSize + SizeOf(TRIFFChunkInfo);
+  Stream.Read(id, SizeOf(Integer));
+  Assert((id = mmioStringToFourCC('WAVE', 0)), 'RIFF-WAVE required');
+  // lookup for 'fmt '
+  repeat
+    Stream.Read(ck, SizeOf(TRIFFChunkInfo));
+    bytesToGo := ck.ckSize;
+    if (ck.ckID = mmioStringToFourCC('fmt ', 0)) then
+    begin
+      if waveFormat.wFormatTag = 0 then
+      begin
+        dw := ck.ckSize;
+        if dw > SizeOf(TWaveFormatEx) then
+          dw := SizeOf(TWaveFormatEx);
+        Stream.Read(waveFormat, dw);
+        bytesToGo := ck.ckSize - dw;
       end;
-      // all other sub-chunks are ignored, move to the next chunk
-      stream.Seek(bytesToGo, soFromCurrent);
-   until Stream.Position = 2048; // this should never be reached
-   // Only PCM wave format is recognized
-//   Assert((waveFormat.wFormatTag=Wave_Format_PCM), 'PCM required');
-   // seek start of data
-   pcmOffset:=dwDataOffset;
-   FPCMDataLength:=dwDataLength;
-   SetLength(data, totalSize);
-   stream.Position:=startPosition;
-   if totalSize>0 then
-      stream.Read(data[0], totalSize);
-   // update Sampling data
-   with waveFormat do begin
-      Sampling.Frequency:=nSamplesPerSec;
-      Sampling.NbChannels:=nChannels;
-      Sampling.BitsPerSample:=wBitsPerSample;
-   end;
+      // other 'fmt ' chunks are ignored (?)
+    end
+    else if (ck.ckID = mmioStringToFourCC('fact', 0)) then
+    begin
+      if (dwDataSamples = 0) and (waveFormat.wFormatTag = WAVE_Format_ADPCM)
+      then
+      begin
+        Stream.Read(dwDataSamples, SizeOf(LongInt));
+        Dec(bytesToGo, SizeOf(LongInt));
+      end;
+      // other 'fact' chunks are ignored (?)
+    end
+    else if (ck.ckID = mmioStringToFourCC('data', 0)) then
+    begin
+      dwDataOffset := Stream.Position - startPosition;
+      dwDataLength := ck.ckSize;
+      Break;
+    end;
+    // all other sub-chunks are ignored, move to the next chunk
+    Stream.Seek(bytesToGo, soFromCurrent);
+  until Stream.Position = 2048; // this should never be reached
+  // Only PCM wave format is recognized
+  // Assert((waveFormat.wFormatTag=Wave_Format_PCM), 'PCM required');
+  // seek start of data
+  pcmOffset := dwDataOffset;
+  FPCMDataLength := dwDataLength;
+  SetLength(data, totalSize);
+  Stream.Position := startPosition;
+  if totalSize > 0 then
+    Stream.Read(data[0], totalSize);
+  // update Sampling data
+  with waveFormat do
+  begin
+    Sampling.Frequency := nSamplesPerSec;
+    Sampling.NbChannels := nChannels;
+    Sampling.BitsPerSample := wBitsPerSample;
+  end;
 {$ELSE}
+
 begin
-   Assert(Assigned(stream));
-   SetLength(data, stream.Size);
-   if Length(data)>0 then
-      stream.Read(data[0], Length(data));
+  Assert(Assigned(Stream));
+  SetLength(data, Stream.Size);
+  if Length(data) > 0 then
+    Stream.Read(data[0], Length(data));
 {$ENDIF}
 end;
 
-// SaveToStream
-//
-procedure TVKWAVFile.SaveToStream(stream: TStream);
+procedure TVKWAVFile.SaveToStream(Stream: TStream);
 begin
-   if Length(data)>0 then
-      stream.Write(data[0], Length(data));
+  if Length(data) > 0 then
+    Stream.Write(data[0], Length(data));
 end;
 
-// PlayOnWaveOut
-//
 procedure TVKWAVFile.PlayOnWaveOut;
 begin
 {$IFDEF MSWINDOWS}
-   PlaySound(WAVData, 0, SND_ASYNC+SND_MEMORY);
+  PlaySound(WAVData, 0, SND_ASYNC + SND_MEMORY);
 {$ENDIF}
-//   GLSoundFileObjects.PlayOnWaveOut(PCMData, LengthInBytes, waveFormat);
+  // GLSoundFileObjects.PlayOnWaveOut(PCMData, LengthInBytes, waveFormat);
 end;
 
-// WAVData
-//
-function TVKWAVFile.WAVData : Pointer;
+function TVKWAVFile.WAVData: Pointer;
 begin
-   if Length(data)>0 then
-      Result:=@data[0]
-   else Result:=nil;
+  if Length(data) > 0 then
+    Result := @data[0]
+  else
+    Result := nil;
 end;
 
-// WAVDataSize
-//
-function TVKWAVFile.WAVDataSize : Integer;
+function TVKWAVFile.WAVDataSize: Integer;
 begin
-   Result:=Length(data);
+  Result := Length(data);
 end;
 
-// PCMData
-//
-function TVKWAVFile.PCMData : Pointer;
+function TVKWAVFile.PCMData: Pointer;
 begin
 {$IFDEF MSWINDOWS}
-   if Length(data)>0 then
-      Result:=@data[pcmOffset]
-   else Result:=nil;
+  if Length(data) > 0 then
+    Result := @data[pcmOffset]
+  else
+    Result := nil;
 {$ELSE}
-   Result:=nil;
+  Result := nil;
 {$ENDIF}
 end;
 
-// LengthInBytes
-//
-function TVKWAVFile.LengthInBytes : Integer;
+function TVKWAVFile.LengthInBytes: Integer;
 begin
-   Result:=FPCMDataLength;
+  Result := FPCMDataLength;
 end;
 
+//-------------------------------------------------
 initialization
+//-------------------------------------------------
 
-  RegisterSoundFileFormat('wav', 'Windows WAV files', TVKWAVFile);
+RegisterSoundFileFormat('wav', 'Windows WAV files', TVKWAVFile);
 
 end.

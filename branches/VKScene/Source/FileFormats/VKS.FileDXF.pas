@@ -16,10 +16,16 @@ unit VKS.FileDXF;
 interface
 
 uses
-  System.Classes, System.SysUtils,
-  
-  VKS.ApplicationFileIO, VKS.VectorGeometry, VKS.VectorLists, VKS.Scene, VKS.Texture,
-  VKS.VectorFileObjects, VKS.Material;
+  System.Classes,
+  System.SysUtils,
+
+  VKS.ApplicationFileIO,
+  VKS.VectorGeometry,
+  VKS.VectorLists,
+  VKS.Scene,
+  VKS.Texture,
+  VKS.VectorFileObjects,
+  VKS.Material;
 
 type
   TVKDXFVectorFile = class(TVKVectorFile)
@@ -59,13 +65,14 @@ type
     procedure ReadEntity3Dface(basemesh: TVKBaseMesh);
     procedure ReadEntityPolyLine(basemesh: TVKBaseMesh);
     procedure ReadEntities(basemesh: TVKBaseMesh);
-
   public
     class function Capabilities: TVKDataFileCapabilities; override;
     procedure LoadFromStream(aStream: TStream); override;
   end;
 
+//========================================================================
 implementation
+//========================================================================
 
 procedure BuildNormals(m: TVKMeshObject); FORWARD;
 

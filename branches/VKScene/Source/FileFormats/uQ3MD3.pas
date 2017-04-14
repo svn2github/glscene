@@ -13,16 +13,16 @@ uses
   System.Classes, 
   System.SysUtils,
   VKS.ApplicationFileIO, 
-  VKS.VectorGeometry, 
+  VKS.VectorGeometry,
   VKS.VectorFileObjects,
   VKS.VectorLists, 
   VKS.Material, 
   uFileMD3;
 
 type
-  // This class is used to extract the tag transform information
-  // stored in the MD3 files. The data is used to offset each
-  // part of the model based on the parent parts animation state.
+  { This class is used to extract the tag transform information
+   stored in the MD3 files. The data is used to offset each
+   part of the model based on the parent parts animation state.}
   TMD3TagList = class
     private
       FTags : array of TMD3Tag;
@@ -38,27 +38,25 @@ type
       property Tags[index:integer]:TMD3Tag read GetTag;
   end;
 
-// These procedures are helpers to load the Quake3 animation file data
-// into an animation list. The NamePrefix parameter is used to determine
-// which class of animation is extracted. eg NamePrefix='TORSO' will load
-// all animations starting with 'TORSO_' like 'TORSO_STAND'
+{ These procedures are helpers to load the Quake3 animation file data
+ into an animation list. The NamePrefix parameter is used to determine
+ which class of animation is extracted. eg NamePrefix='TORSO' will load
+ all animations starting with 'TORSO_' like 'TORSO_STAND' }
 procedure LoadQ3Anims(Animations:TVKActorAnimations;
             FileName:string; NamePrefix:string); overload;
 procedure LoadQ3Anims(Animations:TVKActorAnimations;
             Strings:TStrings; NamePrefix:string); overload;
 
-// Quake3 Skin loading procedure. Use this procedure to apply textures
-// to a GLActor. This doens't use the actors original preloaded materials so
-// it may be a good idea to clear the actors material library before
-// running this to keep everything nice and clean.
+{ Quake3 Skin loading procedure. Use this procedure to apply textures
+ to a GLActor. This doens't use the actors original preloaded materials so
+ it may be a good idea to clear the actors material library before
+ running this to keep everything nice and clean.}
 procedure LoadQ3Skin(FileName:string; Actor:TVKActor);
 
 //---------------------------------------------------------------------------
 implementation
 //---------------------------------------------------------------------------
 
-// LoadQ3Anims
-//
 procedure LoadQ3Anims(Animations:TVKActorAnimations;
             FileName:string; NamePrefix:string);
 var
@@ -154,8 +152,6 @@ begin
   anim.Free;
 end;
 
-// LoadQ3Skin
-//
 procedure LoadQ3Skin(FileName:string; Actor:TVKActor);
 const
   // This list can be expanded if necessary
@@ -239,8 +235,6 @@ end;
 // ------------------ TMD3TagList ------------------
 // ------------------
 
-// LoadFromFile
-//
 procedure TMD3TagList.LoadFromFile(FileName:String);
 var
   fs : TStream;
@@ -255,8 +249,6 @@ begin
   end;
 end;
 
-// LoadFromStream
-//
 procedure TMD3TagList.LoadFromStream(aStream:TStream);
 var
   MD3Header : TMD3Header;
@@ -276,15 +268,11 @@ begin
   aStream.Read(FTags[0],FNumTags*FNumFrames*SizeOf(TMD3Tag));
 end;
 
-// GetTag
-//
 function TMD3TagList.GetTag(index: integer): TMD3Tag;
 begin
   Result:=FTags[index];
 end;
 
-// GetTransform
-//
 function TMD3TagList.GetTransform(TagName: string;
   Frame: integer): TMatrix;
 var

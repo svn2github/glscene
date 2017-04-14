@@ -4,7 +4,7 @@
 {
    Components and functions that abstract file I/O access for an application.
    Allows re-routing file reads to reads from a single archive file f.i.
-   The history is logged in a former GLS version of the unit.
+   The history is logged in a former version of the unit.
 }
 unit VKS.ApplicationFileIO;
 

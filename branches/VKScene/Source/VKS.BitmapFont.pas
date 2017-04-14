@@ -22,6 +22,7 @@ uses
   FMX.Graphics,
   FMX.Types,
 
+  uXOpenGL,
   VKS.Scene,
   VKS.VectorGeometry,
   VKS.Context,
@@ -34,7 +35,6 @@ uses
   VKS.BaseClasses,
   VKS.RenderContextInfo,
   VKS.TextureFormat,
-  XOpenGL,
   VKS.VectorTypes;
 
 type
