@@ -2,7 +2,7 @@
 // VKScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
 {
-   Imposter building and rendering implementation for GLScene.
+   Imposter building and rendering implementation.
 }
 unit VKS.Imposter;
 
@@ -111,8 +111,6 @@ type
     property Modulated: Boolean read FModulated write FModulated;
   end;
 
-   // Imposter loading events
-   //
    TLoadingImposterEvent = function (Sender : TObject; impostoredObject :
      TVKBaseSceneObject; destImposter : TImposter) : TVKBitmap32 of object;
    {$NODEFINE TLoadingImposterEvent}

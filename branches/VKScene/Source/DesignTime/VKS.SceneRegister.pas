@@ -2,7 +2,7 @@
 // VKScene Component Library, based on GLScene http://glscene.sourceforge.net 
 //
 {
-  Registration unit for GLScene library components, property editors and
+  Registration unit for library components, property editors and
   IDE experts. 
   
 }
@@ -202,7 +202,7 @@ type
     procedure RequiresUnits(Proc: TGetStrProc); override;
   end;
 
-  { Editor for GLScene Archive Manager.  }
+  { Editor for Archive Manager.  }
   TVKSArchiveManagerEditor = class(TReuseableDefaultEditor, IDefaultEditor)
   protected
     procedure EditProperty(const Prop: IProperty;
@@ -511,20 +511,15 @@ end;
 
 {$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
 {$IFDEF VKS_REGION}{$REGION 'TVKSceneEditor'}{$ENDIF}
-// Edit
-//
 
 procedure TVKSceneEditor.Edit;
 begin
-  with GLSceneEditorForm do
+  with VKSceneEditorForm do
   begin
     SetScene(Self.Component as TVKScene, Self.Designer);
     Show;
   end;
 end;
-
-// ExecuteVerb
-//
 
 procedure TVKSceneEditor.ExecuteVerb(Index: Integer);
 begin
@@ -534,9 +529,6 @@ begin
   end;
 end;
 
-// GetVerb
-//
-
 function TVKSceneEditor.GetVerb(Index: Integer): string;
 begin
   case Index of
@@ -545,9 +537,6 @@ begin
   end;
 end;
 
-// GetVerbCount
-//
-
 function TVKSceneEditor.GetVerbCount: Integer;
 begin
   Result := 1;
@@ -555,24 +544,17 @@ end;
 
 {$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
 {$IFDEF VKS_REGION}{$REGION 'TResolutionProperty'}{$ENDIF}
-// GetAttributes
-//
 
 function TResolutionProperty.GetAttributes: TPropertyAttributes;
 begin
   Result := [paValueList];
 end;
 
-// GetValue
-//
 
 function TResolutionProperty.GetValue: string;
 begin
   Result := vVideoModes[GetOrdValue].Description;
 end;
-
-// GetValues
-//
 
 procedure TResolutionProperty.GetValues(Proc: TGetStrProc);
 var
@@ -581,9 +563,6 @@ begin
   for i := 0 to vNumberVideoModes - 1 do
     Proc(vVideoModes[i].Description);
 end;
-
-// SetValue
-//
 
 procedure TResolutionProperty.SetValue(const Value: string);
 
@@ -655,25 +634,17 @@ begin
 end;
 
 {$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF VKS_REGION}{$REGION 'TVKTextureProperty'}{$ENDIF}
 
 function TVKTextureProperty.GetAttributes: TPropertyAttributes;
 begin
   Result := [paSubProperties];
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF VKS_REGION}{$REGION 'TVKTextureImageProperty'}{$ENDIF}
-// GetAttributes
-//
 
 function TVKTextureImageProperty.GetAttributes: TPropertyAttributes;
 begin
   Result := [paDialog];
 end;
-
-// Edit
-//
 
 procedure TVKTextureImageProperty.Edit;
 begin
@@ -681,18 +652,12 @@ begin
     Designer.Modified;
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
 {$IFDEF VKS_REGION}{$REGION 'TVKImageClassProperty'}{$ENDIF}
-// GetAttributes
-//
 
 function TVKImageClassProperty.GetAttributes: TPropertyAttributes;
 begin
   Result := [paValueList];
 end;
-
-// GetValues
-//
 
 procedure TVKImageClassProperty.GetValues(Proc: TGetStrProc);
 var
@@ -708,16 +673,10 @@ begin
   end;
 end;
 
-// GetValue
-//
-
 function TVKImageClassProperty.GetValue: string;
 begin
   Result := FindGLTextureImageClass(GetStrValue).FriendlyName;
 end;
-
-// SetValue
-//
 
 procedure TVKImageClassProperty.SetValue(const Value: string);
 var
@@ -776,9 +735,6 @@ begin
   TVKColor(GetOrdValue).Color := ColorManager.GetColor(Value);
   Modified;
 end;
-
-// ColorToBorderColor
-//
 
 function TVKColorProperty.ColorToBorderColor(aColor: TColorVector;
   selected: Boolean): TColor;
@@ -850,16 +806,11 @@ end;
 
 {$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
 {$IFDEF VKS_REGION}{$REGION 'TSoundFileProperty'}{$ENDIF}
-// GetAttributes
-//
 
 function TSoundFileProperty.GetAttributes: TPropertyAttributes;
 begin
   Result := [paDialog];
 end;
-
-// GetValue
-//
 
 function TSoundFileProperty.GetValue: string;
 var
@@ -872,8 +823,6 @@ begin
     Result := '(empty)';
 end;
 
-// Edit
-//
 
 procedure TSoundFileProperty.Edit;
 var

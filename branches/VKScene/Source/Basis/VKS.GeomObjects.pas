@@ -18,7 +18,7 @@ uses
   System.Classes,
   
   uOpenGLAdapter,
-  uXOpenGL,
+  VKS.XOpenGL,
   VKS.Scene,
   VKS.VectorGeometry,
   VKS.Context,

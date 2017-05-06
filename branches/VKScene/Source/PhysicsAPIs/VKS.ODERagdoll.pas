@@ -10,8 +10,13 @@ unit VKS.ODERagdoll;
 interface
 
 uses
-  ODEImport, ODEGL,
-  VKS.Ragdoll, VKS.Scene, VKS.Objects, VKS.VectorGeometry,  VKS.Texture,
+  ODEImport,
+  VKS.ODEGL,
+  VKS.Ragdoll,
+  VKS.Scene,
+  VKS.Objects,
+  VKS.VectorGeometry,
+  VKS.Texture,
   VKS.VectorFileObjects;
 
 const
@@ -104,12 +109,12 @@ type
   TODERagdoll = class(TVKRagdoll)
   private
     FODEWorld: TODERagdollWorld;
-    FGLSceneRoot: TVKBaseSceneObject;
+    FVKSceneRoot: TVKBaseSceneObject;
     FShowBoundingBoxes: Boolean;
   public
     constructor Create(AOwner : TVKBaseMesh);
     property ODEWorld: TODERagdollWorld read FODEWorld write FODEWorld;
-    property GLSceneRoot: TVKBaseSceneObject read FGLSceneRoot write FGLSceneRoot;
+    property VKSceneRoot: TVKBaseSceneObject read FVKSceneRoot write FVKSceneRoot;
     property ShowBoundingBoxes: Boolean read FShowBoundingBoxes write FShowBoundingBoxes;
   end;
 
@@ -288,7 +293,7 @@ begin
   AlignBodyToMatrix(ReferenceMatrix);
 
   FGeom := dCreateBox(FRagdoll.ODEWorld.Space, BoneSize.X, BoneSize.Y, BoneSize.Z);
-  FGeom.data := FRagdoll.GLSceneRoot.AddNewChild(TODERagdollCube);
+  FGeom.data := FRagdoll.VKSceneRoot.AddNewChild(TODERagdollCube);
   if (Joint is TODERagdollDummyJoint) then
     dGeomSetBody(FGeom, FOwner.Body)
   else
@@ -350,7 +355,7 @@ begin
   if Assigned(FGeom.data) then
   begin
        o:=TVKBaseSceneObject(FGeom.data);
-       FRagdoll.GLSceneRoot.Remove(o, false);
+       FRagdoll.VKSceneRoot.Remove(o, false);
        o.free;
   end;
 

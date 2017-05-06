@@ -7,12 +7,8 @@
    Direct solving is supported for polynoms up to the 4th degree. 
    Polynom solving code based on Jochen Schwarze (schwarze@isa.de) solver
    published in Graphics Gem (1990). 
-   Adapted to pascal by Eric Grange (egrange@glscene.org), if you find
-   errors, they are probably mine. Note that contrary to the original code,
+   Adapted to pascal by Eric Grange. Note that contrary to the original code,
    the functions accept 'zero' values for any of the parameters. 
-   I also made some changes for certain limit cases that (seemingly) weren't
-   properly handled, these are marked by comments in the code. 
-     
 }
 unit VKS.Polynomials;
 
@@ -76,8 +72,6 @@ begin
    Result:=(Abs(v)<=cEpsilon);
 end;
 
-// EvalPolynom
-//
 function EvalPolynom(const poly : TDoubleArray; const x : Double) : Double;
 var
    i, n : Integer;
@@ -90,8 +84,6 @@ begin
    end else Result:=0;
 end;
 
-// DerivatedPolynom
-//
 function DerivatedPolynom(const poly : TDoubleArray) : TDoubleArray;
 var
    n, i : Integer;
@@ -107,8 +99,6 @@ begin
    end;
 end;
 
-// FindRoot
-//
 function FindRoot(const poly : TDoubleArray; min, max, epsilon : Double) : Double;
 var
    evMin, evMax, mid, evMid : Double;
@@ -147,8 +137,6 @@ begin
    Result:=(max+min)*cHalf;
 end;
 
-// MinPositiveCoef
-//
 function MinPositiveCoef(const coefs : TDoubleArray; var aMin : Double) : Boolean;
 var
    n, i, j : Integer;
@@ -190,8 +178,6 @@ begin
    end;
 end;
 
-// cbrt
-//
 function cbrt(const x : Double) : Double;
 begin
    if x>0 then
@@ -201,8 +187,6 @@ begin
    else Result:=0;
 end;
 
-// SolveQuadric
-//
 function SolveQuadric(const c : PDoubleArray) : TDoubleArray;
 var
    p, q, D, sqrt_D : Double;
@@ -228,8 +212,6 @@ begin
    end;
 end;
 
-// SolveCubic
-//
 function SolveCubic(const c : PDoubleArray) : TDoubleArray;
 var
    i : Integer;
@@ -296,8 +278,6 @@ begin
 	   Result[i]:=Result[i]-sub;
 end;
 
-// SolveQuartic
-//
 function SolveQuartic(const c : PDoubleArray) : TDoubleArray;
 var
    coeffs : array [0..3] of Double;

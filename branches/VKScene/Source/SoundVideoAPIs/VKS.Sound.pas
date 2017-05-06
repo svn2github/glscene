@@ -432,7 +432,7 @@ type
        (if you're using DoProgress or connected the manager to a cadencer). 
        If this property is nil, the listener is assumed to be static at
        the NullPoint coordinate, facing Z axis, with up being Y (ie. the
-       default GLScene orientation). }
+       default orientation). }
     property Listener: TVKBaseSceneObject read FListener write SetListener;
     { Currently active and playing sound sources. }
     property Sources: TVKSoundSources read FSources write SetSources;

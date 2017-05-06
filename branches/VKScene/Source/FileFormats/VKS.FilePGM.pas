@@ -182,7 +182,7 @@ end;
 
 initialization
 
-{ Register this Fileformat-Handler with GLScene }
+{ Register this Fileformat-Handler }
 RegisterRasterFormat('pgm', 'Portable Graymap', TVKPGMImage);
 
 end.

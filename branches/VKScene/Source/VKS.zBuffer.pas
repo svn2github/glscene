@@ -32,7 +32,7 @@ uses
   System.Classes,
   System.SysUtils,
 
-  uXOpenGL,
+  VKS.XOpenGL,
   VKS.Scene,
   VKS.VectorGeometry,
   VKS.Graphics,

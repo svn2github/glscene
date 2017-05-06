@@ -2,10 +2,10 @@
 // VKScene Component Library, based on GLScene http://glscene.sourceforge.net 
 //
 {
-   Cross platform support functions and types for GLScene.  
+   Cross platform support functions and types.  
 
    Ultimately, *no* cross-platform or cross-version defines should be present
-   in the core GLScene units, and have all moved here instead. 
+   in the core units, and have all moved here instead. 
           
 }
 unit VKS.CrossPlatform;

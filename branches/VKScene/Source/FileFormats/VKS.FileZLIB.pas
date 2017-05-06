@@ -330,6 +330,6 @@ end;
 
 initialization
   // Файл использующий Алгоритм сжатия zlib
-  RegisterArchiveFormat('zlib', 'GLScene file uses the zlib compression algorithm', TZLibArchive);
+  RegisterArchiveFormat('zlib', 'using the zlib compression algorithm', TZLibArchive);
 
 end.

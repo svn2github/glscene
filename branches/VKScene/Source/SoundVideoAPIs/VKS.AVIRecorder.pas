@@ -2,7 +2,7 @@
 // VKScene Component Library, based on GLScene http://glscene.sourceforge.net 
 //
 {
-  Component to make it easy to record GLScene frames into an AVI file 
+  Component to make it easy to record frames into an AVI file 
 
 }
 
@@ -37,8 +37,6 @@ type
 
   PAVIStream = ^IAVIStream;
 
-  // TAVISizeRestriction
-  //
   { Frame size restriction. 
     Forces frame dimensions to be a multiple of 2, 4, or 8. Some compressors
     require this. e.g. DivX 5.2.1 requires mutiples of 2. }
@@ -47,8 +45,6 @@ type
 
   TAVIRecorderState = (rsNone, rsRecording);
 
-  // TAVIImageRetrievalMode
-  //
   { Image retrieval mode for frame capture. 
     Following modes are supported: 
      irmSnapShot : retrieve OpenGL framebuffer content using glReadPixels
@@ -62,29 +58,20 @@ type
   TAVIRecorderPostProcessEvent = procedure(Sender: TObject; frame: TBitmap)
     of object;
 
-  // TVKAVIRecorder
-  //
   { Component to make it easy to record GLScene frames into an AVI file. }
   TVKAVIRecorder = class(TComponent)
   private
-    
     AVIBitmap: TBitmap;
     AVIFrameIndex: integer;
-
     AVI_DPI: integer;
-
     asi: TAVIStreamInfo;
-
     pfile: IAVIFile;
     Stream, Stream_c: IAVIStream; // AVI stream and stream to be compressed
-
     FBitmapInfo: PBitmapInfoHeader;
     FBitmapBits: Pointer;
     FBitmapSize: Dword;
-
     FTempName: String;
     // so that we know the filename to delete case of user abort
-
     FAVIFilename: string;
     FFPS: byte;
     FWidth: integer;
@@ -93,22 +80,20 @@ type
     FImageRetrievalMode: TAVIImageRetrievalMode;
     RecorderState: TAVIRecorderState;
     FOnPostProcessEvent: TAVIRecorderPostProcessEvent;
-
     FBuffer: TVKSceneBuffer;
-
     procedure SetHeight(const val: integer);
     procedure SetWidth(const val: integer);
     procedure SetSizeRestriction(const val: TAVISizeRestriction);
-    procedure SetGLSceneViewer(const Value: TVKSceneViewer);
-    procedure SetGLNonVisualViewer(const Value: TVKNonVisualViewer);
+    procedure SetVKSceneViewer(const Value: TVKSceneViewer);
+    procedure SetVKNonVisualViewer(const Value: TVKNonVisualViewer);
 
   protected
     
     // Now, TAVIRecorder is tailored for GLScene.  Maybe we should make a generic
     // TAVIRecorder, and then sub-class it to use with GLScene
-    FGLSceneViewer: TVKSceneViewer;
+    FVKSceneViewer: TVKSceneViewer;
     // FGLNonVisualViewer accepts GLNonVisualViewer and GLFullScreenViewer
-    FGLNonVisualViewer: TVKNonVisualViewer;
+    FVKNonVisualViewer: TVKNonVisualViewer;
     // FCompressor determines if the user is to choose a compressor via a dialog box, or
     // just use a default compressor without showing a dialog box.
     FCompressor: TAVICompressor;
@@ -121,27 +106,21 @@ type
     // ( BTW, VirtualDub is an excellent freeware for editing your AVI. For
     // converting AVI into MPG, try AVI2MPG1 - http://www.mnsi.net/~jschlic1 )
     function Restricted(s: integer): integer;
-
     procedure InternalAddAVIFrame;
-
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
     function CreateAVIFile(DPI: integer = 0): boolean;
     procedure AddAVIFrame; overload;
     procedure AddAVIFrame(bmp: TBitmap); overload;
     procedure CloseAVIFile(UserAbort: boolean = false);
     function Recording: boolean;
-
   published
-    
     property FPS: byte read FFPS write FFPS default 25;
-    property GLSceneViewer: TVKSceneViewer read FGLSceneViewer
-      write SetGLSceneViewer;
-    property GLNonVisualViewer: TVKNonVisualViewer read FGLNonVisualViewer
-      write SetGLNonVisualViewer;
+    property VKSceneViewer: TVKSceneViewer read FVKSceneViewer
+      write SetVKSceneViewer;
+    property VKNonVisualViewer: TVKNonVisualViewer read FVKNonVisualViewer
+      write SetVKNonVisualViewer;
     property Width: integer read FWidth write SetWidth;
     property Height: integer read FHeight write SetHeight;
     property Filename: String read FAVIFilename write FAVIFilename;
@@ -151,17 +130,14 @@ type
       write SetSizeRestriction default srForceBlock8x8;
     property ImageRetrievalMode: TAVIImageRetrievalMode read FImageRetrievalMode
       write FImageRetrievalMode default irmBitBlt;
-
     property OnPostProcessEvent: TAVIRecorderPostProcessEvent
       read FOnPostProcessEvent write FOnPostProcessEvent;
-
   end;
 
-  // ---------------------------------------------------------------------
-  // ---------------------------------------------------------------------
-  // ---------------------------------------------------------------------
+ // ---------------------------------------------------------------------
+ // ---------------------------------------------------------------------
+ // ---------------------------------------------------------------------
 implementation
-
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
@@ -547,20 +523,20 @@ begin
   Result := (RecorderState = rsRecording);
 end;
 
-procedure TVKAVIRecorder.SetGLSceneViewer(const Value: TVKSceneViewer);
+procedure TVKAVIRecorder.SetVKSceneViewer(const Value: TVKSceneViewer);
 begin
-  FGLSceneViewer := Value;
-  if Assigned(FGLSceneViewer) then
-    FBuffer := FGLSceneViewer.Buffer
+  FVKSceneViewer := Value;
+  if Assigned(FVKSceneViewer) then
+    FBuffer := FVKSceneViewer.Buffer
   else
     FBuffer := nil;
 end;
 
-procedure TVKAVIRecorder.SetGLNonVisualViewer(const Value: TVKNonVisualViewer);
+procedure TVKAVIRecorder.SetVKNonVisualViewer(const Value: TVKNonVisualViewer);
 begin
-  FGLNonVisualViewer := Value;
-  if Assigned(FGLNonVisualViewer) then
-    FBuffer := FGLNonVisualViewer.Buffer
+  FVKNonVisualViewer := Value;
+  if Assigned(FVKNonVisualViewer) then
+    FBuffer := FVKNonVisualViewer.Buffer
   else
     FBuffer := nil;
 end;

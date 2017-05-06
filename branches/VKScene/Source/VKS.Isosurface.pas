@@ -24,14 +24,6 @@ Lookuptables
 Overall
  - Simple Data Structures to store Mesh. Vertices are calculated and stored twice
    or even more often.
-
-  History :
-   15/03/16 - RB - TVKMarchingCube class implementation based on a Thomas Lewiner algorithm
-                   from http://www.acm.org/jgt/papers/LewinerEtAl03
-   10/12/15 - PW - Implemented a polished mode of interpolation by Chris Rorden
-   05/08/12 - PW - Adapted to use with GLScene v.1.2 and later
-   12/06/04 - Wolf Blecher - Created, the first implementation
-   
 }
 
 unit VKS.Isosurface;

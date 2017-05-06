@@ -177,7 +177,7 @@ type
      take care of properly converting to bitmap. }
     function GetBitmap32: TVKImage; virtual;
     {Request for unloading bitmapData, to free some memory.
-     This one is invoked when GLScene no longer needs the Bitmap data
+     This one is invoked when one no longer needs the Bitmap data
      it got through a call to GetHBitmap.
      Subclasses may ignore this call if the HBitmap was obtained at
      no particular memory cost. }
@@ -697,7 +697,7 @@ implementation
 uses
   VKS.Scene, // TODO: remove dependancy on VKScene.pas unit (related to tmmCubeMapLight0)
   VKS.PictureRegisteredFormats,
-  uXOpenGL;
+  VKS.XOpenGL;
 
 const
   cTextureMode: array[tmDecal..tmAdd] of Cardinal =

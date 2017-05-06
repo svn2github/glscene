@@ -85,10 +85,10 @@ type
   end;
 
   { ASE geom object, represents single mesh object;
-   contains: vertices, faces, verice indices, faces and vertices normals,
+   contains: vertices, faces, vertex indices, faces and vertices normals,
    channels of texture coordinates and indices, scaling and location info;
    this object used only to store ASE data temporary to copy supported
-   piece of it into GLScene TVKMeshObject }
+   piece of it into TVKMeshObject }
   TVKASEMeshObject = class(TObject)
   private
     FFaces: TVKASEFaceList;
@@ -633,7 +633,7 @@ begin
 end;
 
 
-// here ASE geom object is converted to GLScene mesh
+// here ASE geom object is converted to mesh
 procedure CopyASEToMesh(aASEMesh: TVKASEMeshObject; aMesh: TVKMeshObject; aASEMaterials: TVKASEMaterialList);
 
   const

@@ -32,7 +32,7 @@ implementation
 //
 procedure Register;
 begin
-  RegisterComponents('GLScene',[TVKSMBASS,TVKSMFMOD,TVKSMOpenAL,TVKSMWaveOut]);
+  RegisterComponents('VKScene',[TVKSMBASS,TVKSMFMOD,TVKSMOpenAL,TVKSMWaveOut]);
 end;
 
 end.

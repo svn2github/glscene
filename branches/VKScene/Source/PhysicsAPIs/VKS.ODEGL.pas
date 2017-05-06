@@ -1,24 +1,25 @@
 //
-// VKScene Component Library, based on GLScene http://glscene.sourceforge.net 
+// VKScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
 
-unit ODEGL;
+unit VKS.ODEGL;
 
 interface
 
 {
   Here are collected random functions and procedures that were found useful when
-  integrating ODE into GLScene. If you don't use VKS.Scene, this unit won't be
+  integrating ODE. If you don't use VKS.Scene, this unit won't be
   very useful to you. The unit is not intended as a sorted toolbox, but more
   as a place to put stuff until we figure out how to organize the integration.
   Mattias Fagerlund, 2002-09-26
 }
 
 uses
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
   System.SysUtils,
 
   ODEImport,
-  Winapi.OpenGL, Winapi.OpenGLext, 
   VKS.Context,
   VKS.VectorGeometry,
   VKS.Scene,
@@ -33,14 +34,14 @@ procedure setTransform(pos: TdVector3; R: TdMatrix3);
 procedure dsDrawBox(pos: PdVector3; R: PdMatrix3; Sides: TdVector3); overload;
 procedure dsDrawBox(pos: TdVector3; R: TdMatrix3; Sides: TdVector3); overload;
 
-procedure ODERToGLSceneMatrix(var m: TMatrix; R: TdMatrix3; pos: TdVector3);
+procedure ODERToVKSceneMatrix(var m: TMatrix; R: TdMatrix3; pos: TdVector3);
 overload;
-procedure ODERToGLSceneMatrix(var m: TMatrix; R: PdMatrix3; pos: PdVector3);
+procedure ODERToVKSceneMatrix(var m: TMatrix; R: PdMatrix3; pos: PdVector3);
 overload;
-procedure ODERToGLSceneMatrix(var m: TMatrix; R: TdMatrix3_As3x4; pos:  TdVector3); overload;
-function GLSceneMatrixToODER(m: TMatrix): TdMatrix3;
+procedure ODERToVKSceneMatrix(var m: TMatrix; R: TdMatrix3_As3x4; pos:  TdVector3); overload;
+function VKSceneMatrixToODER(m: TMatrix): TdMatrix3;
 
-// Converting between ODE and GLScene formats
+// Converting between ODE and Scene formats
 function ConvertdVector3ToVector3f(R: TdVector3): TVector3f; overload;
 function ConvertdVector3ToVector3f(R: PdVector3): TVector3f; overload;
 function ConvertdVector3ToVector4f(R: TdVector3): TVector4f; overload;
@@ -51,7 +52,7 @@ function ConvertdVector3ToAffineVector(R: TdVector3): TAffineVector; overload;
 
 function GetBodyPositionAsAffineVector(Body: PdxBody): TAffineVector;
 
-// Converting between GLScene and ODE formats
+// Converting between Scene and ODE formats
 function ConvertVector3fTodVector3(R: TVector3f): TdVector3;
 function ConvertVector3fToPdVector3(R: TVector3f): PdVector3;
 function ConvertVector4fTodVector3(R: TVector4f): TdVector3;
@@ -62,8 +63,8 @@ function dVector3Length(R: PdVector3): single; overload;
 
 function dBodyToBodyDistance(Body1, Body2: PdxBody): TdReal;
 
-procedure CopyPosFromGeomToGL(Geom: PdxGeom; GLBaseSceneObject:  TVKBaseSceneObject);
-procedure PositionSceneObject(GLBaseSceneObject: TVKBaseSceneObject; Geom: PdxGeom);
+procedure CopyPosFromGeomToVK(Geom: PdxGeom; VKBaseSceneObject:  TVKBaseSceneObject);
+procedure PositionSceneObject(VKBaseSceneObject: TVKBaseSceneObject; Geom: PdxGeom);
 procedure PositionSceneObjectForGeom(Geom: PdxGeom);
 
 procedure CopyCubeSizeFromBox(Cube: TVKCube; Geom: PdxGeom);
@@ -80,10 +81,10 @@ function CreateTriMeshFromBaseMesh(
   var Vertices: PdVector3Array;
   var Indices: PdIntegerArray): PdxGeom;
 
-function GLMatrixFromGeom(Geom: PdxGeom): TMatrix;
-function GLDirectionFromGeom(Geom: PdxGeom): TVector;
+function VKMatrixFromGeom(Geom: PdxGeom): TMatrix;
+function VKDirectionFromGeom(Geom: PdxGeom): TVector;
 
-function CreateODEPlaneFromGLPlane(Plane: TVKPlane; Space: PdxSpace): PdxGeom;
+function CreateODEPlaneFromVKPlane(Plane: TVKPlane; Space: PdxSpace): PdxGeom;
 
 procedure RenderGeomList(GeomList: TGeomList);
 
@@ -93,7 +94,7 @@ function RandomColorVector: TVector;
 
 implementation
 
-procedure ODERToGLSceneMatrix(var m: TMatrix; R: TdMatrix3_As3x4; pos: TdVector3); overload;
+procedure ODERToVKSceneMatrix(var m: TMatrix; R: TdMatrix3_As3x4; pos: TdVector3); overload;
 begin
   m.X.X := r[0][0];
   m.X.Y := r[0][1];
@@ -116,14 +117,14 @@ begin
   m.W.W := 1; //}
 end;
 
-procedure ODERToGLSceneMatrix(var m: TMatrix; R: PdMatrix3; pos: PdVector3);
+procedure ODERToVKSceneMatrix(var m: TMatrix; R: PdMatrix3; pos: PdVector3);
 begin
-  ODERToGLSceneMatrix(m, TdMatrix3_As3x4(R^), pos^);
+  ODERToVKSceneMatrix(m, @R, @pos);
 end;
 
-procedure ODERToGLSceneMatrix(var m: TMatrix; R: TdMatrix3; pos: TdVector3);
+procedure ODERToVKSceneMatrix(var m: TMatrix; R: TdMatrix3; pos: TdVector3);
 begin
-  ODERToGLSceneMatrix(m, TdMatrix3_As3x4(R), pos);
+  ODERToVKSceneMatrix(m, TdMatrix3_As3x4(R), pos);
 end;
 
 procedure DrawBox(Sides: TdVector3);
@@ -171,7 +172,7 @@ begin
   glEnd();
 end;
 
-function GLSceneMatrixToODER(m: TMatrix): TdMatrix3;
+function VKSceneMatrixToODER(m: TMatrix): TdMatrix3;
 begin
   TransposeMatrix(m);
   Result[0] := m.X.X;
@@ -310,7 +311,7 @@ begin
     PositionSceneObject(TVKBaseSceneObject(Geom.Data), Geom);
 end;
 
-function GLMatrixFromGeom(Geom: PdxGeom): TMatrix;
+function VKMatrixFromGeom(Geom: PdxGeom): TMatrix;
 var
   pos, Pos2: PdVector3;
   R, R2: PdMatrix3;
@@ -344,30 +345,30 @@ begin
     actual_pos := Vector3ADD(actual_pos, pos^);
     dMULTIPLY0_333(actual_R, R^, R2^);
 
-    ODERToGLSceneMatrix(result, actual_R, actual_pos);
+    ODERToVKSceneMatrix(result, actual_R, actual_pos);
   end
   else
   begin
-    ODERToGLSceneMatrix(result, R, pos);
+    ODERToVKSceneMatrix(result, R, pos);
   end;
 end;
 
-function GLDirectionFromGeom(Geom: PdxGeom): TVector;
+function VKDirectionFromGeom(Geom: PdxGeom): TVector;
 var
   m: TMatrix;
 begin
-  m := GLMatrixFromGeom(Geom);
+  m := VKMatrixFromGeom(Geom);
 
   result := VectorNormalize(m.Z);
 end;
 
-procedure PositionSceneObject(GLBaseSceneObject: TVKBaseSceneObject; Geom: PdxGeom);
+procedure PositionSceneObject(VKBaseSceneObject: TVKBaseSceneObject; Geom: PdxGeom);
 var
   Scale: TAffineVector;
 begin
-  Scale := GLBaseSceneObject.Scale.AsAffineVector;
-  GLBaseSceneObject.Matrix := GLMatrixFromGeom(Geom);
-  GLBaseSceneObject.Scale.AsAffineVector := Scale;
+  Scale := VKBaseSceneObject.Scale.AsAffineVector;
+  VKBaseSceneObject.Matrix := VKMatrixFromGeom(Geom);
+  VKBaseSceneObject.Scale.AsAffineVector := Scale;
 end;
 
 procedure CopyCubeSizeFromBox(Cube: TVKCube; Geom: PdxGeom);
@@ -381,7 +382,7 @@ begin
   Cube.CubeDepth := Sides[2]; // 2
 end;
 
-procedure CopyPosFromGeomToGL(Geom: PdxGeom; GLBaseSceneObject: TVKBaseSceneObject);
+procedure CopyPosFromGeomToVK(Geom: PdxGeom; VKBaseSceneObject: TVKBaseSceneObject);
 var
   v: TVector;
   m: TMatrix;
@@ -389,14 +390,14 @@ var
   R: PdMatrix3;
   pos: PdVector3;
 begin
-  v := GLBaseSceneObject.AbsolutePosition;
+  v := VKBaseSceneObject.AbsolutePosition;
 
   dGeomSetPosition(Geom, v.X, v.Y, v.Z);
 
   R := dGeomGetRotation(Geom);
   pos := dgeomGetPosition(Geom);
 
-  m := GLBaseSceneObject.AbsoluteMatrix;
+  m := VKBaseSceneObject.AbsoluteMatrix;
   R[0] := m.X.X;
   R[4] := m.X.Y;
   R[8] := m.X.Z;
@@ -418,7 +419,7 @@ var
   Geom: PdxGeom;
 begin
   Geom := dCreateBox(Space, Cube.CubeWidth, Cube.CubeHeight, Cube.CubeDepth);
-  CopyPosFromGeomToGL(Geom, Cube);
+  CopyPosFromGeomToVK(Geom, Cube);
 
   result := Geom;
 end;
@@ -529,7 +530,7 @@ begin
   Geom := CreateGeomFromCube(Cube, Space);
   dGeomSetBody(Geom, Body);
 
-  CopyPosFromGeomToGL(Geom, Cube);
+  CopyPosFromGeomToVK(Geom, Cube);
 
   Geom.data := Cube;
 end;
@@ -558,7 +559,7 @@ begin
       PositionSceneObject(TVKBaseSceneObject(GeomList[i].data), GeomList[i]);
 end;
 
-function CreateODEPlaneFromGLPlane(Plane: TVKPlane; Space: PdxSpace): PdxGeom;
+function CreateODEPlaneFromVKPlane(Plane: TVKPlane; Space: PdxSpace): PdxGeom;
 var
   Pos, Direction: TVector;
   d: single;
@@ -569,7 +570,6 @@ begin
   d := (Direction.X * Pos.X +
         Direction.Y * Pos.Y +
         Direction.Z * Pos.Z);
-
   result := dCreatePlane(space, Direction.X, Direction.Y, Direction.Z, d);
 end;
 

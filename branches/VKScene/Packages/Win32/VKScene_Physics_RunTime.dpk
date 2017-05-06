@@ -39,7 +39,7 @@ contains
   VKS.ODECustomColliders in '..\..\Source\PhysicsAPIs\VKS.ODECustomColliders.pas',
   VKS.ODESkeletonColliders in '..\..\Source\PhysicsAPIs\VKS.ODESkeletonColliders.pas',
   ODEImport in '..\..\Source\PhysicsAPIs\ODEImport.pas',
-  ODEGL in '..\..\Source\PhysicsAPIs\ODEGL.pas',
+  VKS.ODEGL in '..\..\Source\PhysicsAPIs\VKS.ODEGL.pas',
   VKS.ODERagdoll in '..\..\Source\PhysicsAPIs\VKS.ODERagdoll.pas',
   VKS.ModuleLoader in '..\..\Source\PhysicsAPIs\VKS.ModuleLoader.pas',
   VKS.NGDManager in '..\..\Source\PhysicsAPIs\VKS.NGDManager.pas',

@@ -34,7 +34,6 @@ type
     Handles dynamic default values to save resource file space.  }
   TVKCustomCoordinates = class(TVKUpdateAbleObject)
   private
-    
     FCoords: TVector;
     FStyle: TVKCoordinatesStyle; // NOT Persistent
     FPDefaultCoords: PVector;
@@ -157,30 +156,29 @@ type
 
   TVKCoordinates = TVKCoordinates3;
 
-  // Actually Sender should be TVKCustomCoordinates, but that would require
-  // changes in a some other GLScene units and some other projects that use
-  // TVKCoordinatesUpdateAbleComponent
+  { Actually Sender should be TVKCustomCoordinates, but that would require
+   changes in a some other VKScene units and some other projects that use
+   TVKCoordinatesUpdateAbleComponent }
   IGLCoordinatesUpdateAble = interface(IInterface)
     ['{ACB98D20-8905-43A7-AFA5-225CF5FA6FF5}']
     procedure CoordinateChanged(Sender: TVKCustomCoordinates);
   end;
 
-  // TVKCoordinatesUpdateAbleComponent
-  //
   TVKCoordinatesUpdateAbleComponent = class(TVKUpdateAbleComponent,
     IGLCoordinatesUpdateAble)
   public
-    
     procedure CoordinateChanged(Sender: TVKCustomCoordinates); virtual;
       abstract;
   end;
 
 var
-  // Specifies if TVKCustomCoordinates should allocate memory for
-  // their default values (ie. design-time) or not (run-time)
+  { Specifies if TVKCustomCoordinates should allocate memory for
+   their default values (ie. design-time) or not (run-time) }
   VUseDefaultCoordinateSets: Boolean = False;
 
+//==================================================================  
 implementation
+//==================================================================  
 
 const
   CsVectorHelp =
@@ -194,8 +192,6 @@ const
   // ------------------ TVKCustomCoordinates ------------------
   // ------------------
 
-  // CreateInitialized
-  //
 constructor TVKCustomCoordinates.CreateInitialized(AOwner: TPersistent;
   const AValue: TVector; const AStyle: TVKCoordinatesStyle = CsUnknown);
 begin
@@ -213,8 +209,6 @@ begin
   inherited;
 end;
 
-// Initialize
-//
 procedure TVKCustomCoordinates.Initialize(const Value: TVector);
 begin
   FCoords := Value;
@@ -226,8 +220,6 @@ begin
   end;
 end;
 
-// Assign
-//
 procedure TVKCustomCoordinates.Assign(Source: TPersistent);
 begin
   if Source is TVKCustomCoordinates then
@@ -236,8 +228,6 @@ begin
     inherited;
 end;
 
-// WriteToFiler
-//
 procedure TVKCustomCoordinates.WriteToFiler(Writer: TWriter);
 var
   WriteCoords: Boolean;
@@ -255,8 +245,6 @@ begin
   end;
 end;
 
-// ReadFromFiler
-//
 procedure TVKCustomCoordinates.ReadFromFiler(Reader: TReader);
 var
   N: Integer;
@@ -275,8 +263,6 @@ begin
   end;
 end;
 
-// DefineProperties
-//
 procedure TVKCustomCoordinates.DefineProperties(Filer: TFiler);
 begin
   inherited;
@@ -284,22 +270,16 @@ begin
     not(Assigned(FPDefaultCoords) and VectorEquals(FPDefaultCoords^, FCoords)));
 end;
 
-// ReadData
-//
 procedure TVKCustomCoordinates.ReadData(Stream: TStream);
 begin
   Stream.Read(FCoords, SizeOf(FCoords));
 end;
 
-// WriteData
-//
 procedure TVKCustomCoordinates.WriteData(Stream: TStream);
 begin
   Stream.Write(FCoords, SizeOf(FCoords));
 end;
 
-// NotifyChange
-//
 procedure TVKCustomCoordinates.NotifyChange(Sender: TObject);
 var
   Int: IGLCoordinatesUpdateAble;
@@ -309,8 +289,6 @@ begin
   inherited NotifyChange(Sender);
 end;
 
-// Translate
-//
 procedure TVKCustomCoordinates.Translate(const TranslationVector: TVector);
 begin
   FCoords.X := FCoords.X + TranslationVector.X;
@@ -319,8 +297,6 @@ begin
   NotifyChange(Self);
 end;
 
-// Translate
-//
 procedure TVKCustomCoordinates.Translate(const TranslationVector
   : TAffineVector);
 begin
@@ -330,8 +306,6 @@ begin
   NotifyChange(Self);
 end;
 
-// AddScaledVector (hmg)
-//
 procedure TVKCustomCoordinates.AddScaledVector(const Factor: Single;
   const TranslationVector: TVector);
 var
@@ -342,8 +316,6 @@ begin
   NotifyChange(Self);
 end;
 
-// AddScaledVector (affine)
-//
 procedure TVKCustomCoordinates.AddScaledVector(const Factor: Single;
   const TranslationVector: TAffineVector);
 var
@@ -354,8 +326,6 @@ begin
   NotifyChange(Self);
 end;
 
-// Rotate (affine)
-//
 procedure TVKCustomCoordinates.Rotate(const AnAxis: TAffineVector;
   AnAngle: Single);
 begin
@@ -363,68 +333,50 @@ begin
   NotifyChange(Self);
 end;
 
-// Rotate (hmg)
-//
 procedure TVKCustomCoordinates.Rotate(const AnAxis: TVector; AnAngle: Single);
 begin
   RotateVector(FCoords, AnAxis, AnAngle);
   NotifyChange(Self);
 end;
 
-// Normalize
-//
 procedure TVKCustomCoordinates.Normalize;
 begin
   NormalizeVector(FCoords);
   NotifyChange(Self);
 end;
 
-// Invert
-//
 procedure TVKCustomCoordinates.Invert;
 begin
   NegateVector(FCoords);
   NotifyChange(Self);
 end;
 
-// Scale
-//
 procedure TVKCustomCoordinates.Scale(Factor: Single);
 begin
   ScaleVector(PAffineVector(@FCoords)^, Factor);
   NotifyChange(Self);
 end;
 
-// VectorLength
-//
 function TVKCustomCoordinates.VectorLength: GLfloat;
 begin
   Result := VKS.VectorGeometry.VectorLength(FCoords);
 end;
 
-// VectorNorm
-//
 function TVKCustomCoordinates.VectorNorm: GLfloat;
 begin
   Result := VKS.VectorGeometry.VectorNorm(FCoords);
 end;
 
-// MaxXYZ
-//
 function TVKCustomCoordinates.MaxXYZ: Single;
 begin
   Result := VKS.VectorGeometry.MaxXYZComponent(FCoords);
 end;
 
-// Equals
-//
 function TVKCustomCoordinates.Equals(const AVector: TVector): Boolean;
 begin
   Result := VectorEquals(FCoords, AVector);
 end;
 
-// SetVector (affine)
-//
 procedure TVKCustomCoordinates.SetVector(const X, Y: Single; Z: Single = 0);
 begin
   Assert(FStyle = CsVector, CsVectorHelp);
@@ -432,8 +384,6 @@ begin
   NotifyChange(Self);
 end;
 
-// SetVector (TAffineVector)
-//
 procedure TVKCustomCoordinates.SetVector(const V: TAffineVector);
 begin
   Assert(FStyle = CsVector, CsVectorHelp);
@@ -441,8 +391,6 @@ begin
   NotifyChange(Self);
 end;
 
-// SetVector (TVector)
-//
 procedure TVKCustomCoordinates.SetVector(const V: TVector);
 begin
   Assert(FStyle = CsVector, CsVectorHelp);
@@ -450,8 +398,6 @@ begin
   NotifyChange(Self);
 end;
 
-// SetVector (hmg)
-//
 procedure TVKCustomCoordinates.SetVector(const X, Y, Z, W: Single);
 begin
   Assert(FStyle = CsVector, CsVectorHelp);
@@ -459,8 +405,6 @@ begin
   NotifyChange(Self);
 end;
 
-// SetDirectVector
-//
 procedure TVKCustomCoordinates.SetDirectCoordinate(const Index: Integer;
   const AValue: GLfloat);
 begin
@@ -475,8 +419,6 @@ begin
   FCoords.W := V.W;
 end;
 
-// SetToZero
-//
 procedure TVKCustomCoordinates.SetToZero;
 begin
   FCoords.X := 0;
@@ -489,8 +431,6 @@ begin
   NotifyChange(Self);
 end;
 
-// SetPoint
-//
 procedure TVKCustomCoordinates.SetPoint(const X, Y, Z: Single);
 begin
   Assert(FStyle = CsPoint, CsPointHelp);
@@ -498,8 +438,6 @@ begin
   NotifyChange(Self);
 end;
 
-// SetPoint (TAffineVector)
-//
 procedure TVKCustomCoordinates.SetPoint(const V: TAffineVector);
 begin
   Assert(FStyle = CsPoint, CsPointHelp);
@@ -507,8 +445,6 @@ begin
   NotifyChange(Self);
 end;
 
-// SetPoint (TVector)
-//
 procedure TVKCustomCoordinates.SetPoint(const V: TVector);
 begin
   Assert(FStyle = CsPoint, CsPointHelp);
@@ -516,8 +452,6 @@ begin
   NotifyChange(Self);
 end;
 
-// SetPoint2D
-//
 procedure TVKCustomCoordinates.SetPoint2D(const X, Y: Single);
 begin
   Assert(FStyle = CsPoint2D, CsPoint2DHelp);
@@ -525,8 +459,6 @@ begin
   NotifyChange(Self);
 end;
 
-// SetPoint2D (TAffineVector)
-//
 procedure TVKCustomCoordinates.SetPoint2D(const Vector: TAffineVector);
 begin
   Assert(FStyle = CsPoint2D, CsPoint2DHelp);
@@ -534,8 +466,6 @@ begin
   NotifyChange(Self);
 end;
 
-// SetPoint2D (TVector)
-//
 procedure TVKCustomCoordinates.SetPoint2D(const Vector: TVector);
 begin
   Assert(FStyle = CsPoint2D, CsPoint2DHelp);
@@ -543,8 +473,6 @@ begin
   NotifyChange(Self);
 end;
 
-// SetPoint2D (TVector2f)
-//
 procedure TVKCustomCoordinates.SetPoint2D(const Vector: TVector2f);
 begin
   Assert(FStyle = CsPoint2D, CsPoint2DHelp);
@@ -552,15 +480,11 @@ begin
   NotifyChange(Self);
 end;
 
-// AsAddress
-//
 function TVKCustomCoordinates.AsAddress: PGLFloat;
 begin
   Result := @FCoords;
 end;
 
-// SetAsVector
-//
 procedure TVKCustomCoordinates.SetAsVector(const Value: TVector);
 begin
   FCoords := Value;
@@ -580,8 +504,6 @@ begin
   NotifyChange(Self);
 end;
 
-// SetAsAffineVector
-//
 procedure TVKCustomCoordinates.SetAsAffineVector(const Value: TAffineVector);
 begin
   case FStyle of
@@ -597,8 +519,6 @@ begin
   NotifyChange(Self);
 end;
 
-// SetAsPoint2D
-//
 procedure TVKCustomCoordinates.SetAsPoint2D(const Value: TVector2f);
 begin
   case FStyle of
@@ -615,23 +535,17 @@ begin
   NotifyChange(Self);
 end;
 
-// GetAsAffineVector
-//
 function TVKCustomCoordinates.GetAsAffineVector: TAffineVector;
 begin
   VKS.VectorGeometry.SetVector(Result, FCoords);
 end;
 
-// GetAsPoint2D
-//
 function TVKCustomCoordinates.GetAsPoint2D: TVector2f;
 begin
   Result.X := FCoords.X;
   Result.Y := FCoords.Y;
 end;
 
-// SetCoordinate
-//
 procedure TVKCustomCoordinates.SetCoordinate(const AIndex: Integer;
   const AValue: GLfloat);
 begin
@@ -639,8 +553,6 @@ begin
   NotifyChange(Self);
 end;
 
-// GetCoordinate
-//
 function TVKCustomCoordinates.GetCoordinate(const AIndex: Integer): GLfloat;
 begin
   Result := FCoords.V[AIndex];
@@ -652,8 +564,6 @@ begin
   Result := FCoords.V[index]
 end;
 
-// GetAsString
-//
 function TVKCustomCoordinates.GetAsString: String;
 begin
   case Style of
@@ -669,7 +579,9 @@ begin
   end;
 end;
 
+//===================================================
 initialization
+//===================================================
 
 RegisterClasses([TVKCoordinates2, TVKCoordinates3, TVKCoordinates4]);
 

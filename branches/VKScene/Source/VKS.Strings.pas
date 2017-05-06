@@ -21,7 +21,7 @@ resourcestring
   strUnknownArchiveVersion = 'Unknown archive version: ';
 
   // SceneEdit
-  strGLSceneEditor = 'GLScene Editor';
+  strVKSceneEditor = 'VKScene Editor';
 
   // SceneViewer
   strNoRenderingContext = 'Could not create a rendering context';
@@ -203,7 +203,7 @@ resourcestring
   strOnlyHostData = 'Only host data or mapped device or array data can be written/read';
   strOutOfRange = 'Indexes out of range';
   strSizeMismatch = 'Element size mismatch';
-  strCUDAEditor = 'GLScene CUDA Component Editor';
+  strCUDAEditor = 'VKScene CUDA Component Editor';
   strRequireFreeThread = 'CUFFT functions require context-free thread';
   strBadPlanSize = 'MemData size less then Plan size';
   strContextNotInit = 'Context not initialized';

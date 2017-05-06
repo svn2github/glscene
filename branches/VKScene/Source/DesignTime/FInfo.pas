@@ -32,7 +32,7 @@ uses
 type
   TInfoForm = class(TForm)
     TabControl: TTabControl;
-    TabItemGLScene: TTabItem;
+    TabItemVKScene: TTabItem;
     TabItemInformation: TTabItem;
     TabItemExtensions: TTabItem;
     TabItemContributors: TTabItem;
@@ -154,12 +154,12 @@ end;
 
 procedure TInfoForm.FormCreate(Sender: TObject);
 begin
-  TabControl.ActiveTab := TabItemGLScene;
+  TabControl.ActiveTab := TabItemVKScene;
 end;
 
 procedure TInfoForm.FormShow(Sender: TObject);
 begin
-  TabControl.ActiveTab := TabItemGLScene;
+  TabControl.ActiveTab := TabItemVKScene;
 end;
 
 procedure TInfoForm.GetInfoFrom(aSceneBuffer: TVKSceneBuffer);
@@ -345,7 +345,7 @@ begin
   // In the future, will be loaded from a file
 
   { ContributorsFileName:=
-    // 'GLSceneContributors.txt';
+    // 'Contributors.txt';
 
     if FileExistsUTF8(ContributorsFileName) then
     MemoContributors.Lines.LoadFromFile(UTF8ToSys(ContributorsFileName))
@@ -358,24 +358,24 @@ end;
 
 function TInfoForm.GetSceneVersion: string;
 var
-  FExePath, FGLSceneRevision: string;
+  FExePath, FVKSceneRevision: string;
 begin
-  FGLSceneRevision := Copy(GLSCENE_REVISION, 12, 4);
+  FVKSceneRevision := Copy(VKSCENE_REVISION, 12, 4);
   FExePath := ExtractFilePath(ParamStr(0));
-  if FileExists(FExePath + 'GLSceneRevision') then
+  if FileExists(FExePath + 'VKSceneRevision') then
   try
     with TStringList.Create do
     try
-      LoadFromFile(FExePath + 'GLSceneRevision');
+      LoadFromFile(FExePath + 'VKSceneRevision');
       if (Count >= 1) and (trim(Strings[0]) <> '') then
-        FGLSceneRevision:= trim(Strings[0]);
+        FVKSceneRevision:= trim(Strings[0]);
     finally
       Free;
     end;
   except
   end;
 
-  Result := Format(GLSCENE_VERSION, [FGLSceneRevision]);
+  Result := Format(VKSCENE_VERSION, [FVKSceneRevision]);
 end;
 
 

@@ -30,7 +30,7 @@ uses
   System.SysUtils,
 
   uOpenGLAdapter,
-  uXOpenGL,
+  VKS.XOpenGL,
   VKS.Scene,
   VKS.Material,
   VKS.VectorGeometry,

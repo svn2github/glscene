@@ -2,7 +2,7 @@
 // VKScene Component Library, based on GLScene http://glscene.sourceforge.net 
 //
 {
-    Mesh optimization for GLScene
+    Mesh optimization
  
 }
 unit VKS.MeshOptimizer;
@@ -10,15 +10,17 @@ unit VKS.MeshOptimizer;
 interface
 
 uses
-  System.Classes, System.SysUtils,
+  System.Classes, 
+  System.SysUtils,
   
-  VKS.VectorGeometry, VKS.VectorFileObjects, VKS.PersistentClasses,
-  VKS.VectorLists, VKS.MeshUtils;
+  VKS.VectorGeometry, 
+  VKS.VectorFileObjects, 
+  VKS.PersistentClasses,
+  VKS.VectorLists, 
+  VKS.MeshUtils;
 
 
 type
-   // TMeshOptimizerOptions
-   //
    TMeshOptimizerOption = (mooStandardize, mooVertexCache, mooSortByMaterials,
                            mooMergeObjects);
    TMeshOptimizerOptions = set of TMeshOptimizerOption;
@@ -42,8 +44,6 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-// OptimizeMesh (list, default options)
-//
 procedure OptimizeMesh(aList : TVKMeshObjectList);
 begin
    OptimizeMesh(aList, vDefaultMeshOptimizerOptions);

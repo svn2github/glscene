@@ -19,7 +19,7 @@ uses
   System.Types,
 
   uOpenGLAdapter,
-  uXOpenGL,
+  VKS.XOpenGL,
   VKS.Scene,
   VKS.VectorGeometry,
   VKS.Texture,
@@ -893,7 +893,7 @@ type
   TVKVectorFileClass = class of TVKVectorFile;
 
   { GLSM ( VKScene Mesh) vector file.
-     This corresponds to the 'native' GLScene format, and object persistence
+     This corresponds to the 'native' Scene format, and object persistence
      stream, which should be the 'fastest' of all formats to load, and supports
      all of VKScene features. }
   TVKGLSMVectorFile = class(TVKVectorFile)
@@ -1002,12 +1002,10 @@ type
        streaming (3DS, OBJ, etc.) }
     procedure LoadFromStream(const filename: string; aStream: TStream); dynamic;
     { Saves to a vector file.
-       Note that only some of the vector files formats can be written to
-       by GLScene. }
+      Note that only some of the vector files formats can be written. }
     procedure SaveToFile(const fileName: string); dynamic;
     { Saves to a vector file in a stream.
-       Note that only some of the vector files formats can be written to
-       by GLScene. }
+       Note that only some of the vector files formats can be written. }
     procedure SaveToStream(const fileName: string; aStream: TStream); dynamic;
     { Loads additionnal data from a file.
        Additionnal data could be more animation frames or morph target.

@@ -124,8 +124,8 @@ var
 begin
   if Items_list.ItemIndex = -1 then
     Exit;
-  { TODO : E2003 Undeclared identifier: 'GLGuiLayout1' - GLScene not installed}
-  (*Name_edit.Text := GLGuiLayout1.GuiComponents[Items_list.ItemIndex].Name;*)
+  { TODO : E2003 Undeclared identifier: 'VKGuiLayout1' - VKScene not installed}
+  (*Name_edit.Text := VKGuiLayout1.GuiComponents[Items_list.ItemIndex].Name;*)
   Elements_grid.Selected := 0;    //in VCL Row
   Elements_grid.ColumnIndex := 0; //in VCL Col
   for i := 0 to Length(Sorted_elements) - 1 do

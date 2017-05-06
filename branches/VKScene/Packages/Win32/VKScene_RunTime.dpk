@@ -270,8 +270,9 @@ contains
   uTypes3DS in '..\..\Source\FileFormats\uTypes3DS.pas',
   uUtils3DS in '..\..\Source\FileFormats\uUtils3DS.pas',
   uVRMLParser in '..\..\Source\FileFormats\uVRMLParser.pas',
-  uXOpenGL in '..\..\Source\Basis\uXOpenGL.pas',
-  Vulkan in '..\..\Source\Basis\Vulkan.pas';
+  VKS.XOpenGL in '..\..\Source\Basis\VKS.XOpenGL.pas',
+  VKS.Vulkan in '..\..\Source\Basis\VKS.Vulkan.pas',
+  VKS.FMXOpenGL in '..\..\Source\Basis\VKS.FMXOpenGL.pas';
 
 end.
 

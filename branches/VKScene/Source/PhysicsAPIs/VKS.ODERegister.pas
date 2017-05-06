@@ -22,12 +22,10 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-// Register
-//
 procedure Register;
 begin
   RegisterClasses([TVKODEManager, TVKODEJointList, TODEJoints, TODEElements]);
-  RegisterComponents('GLScene',[TVKODEManager,TVKODEJointList]);
+  RegisterComponents('VKScene',[TVKODEManager,TVKODEJointList]);
 end;
 
 end.

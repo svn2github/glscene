@@ -2,7 +2,7 @@
 // VKScene Component Library, based on GLScene http://glscene.sourceforge.net 
 //
 {
-   HDR File support for GLScene. 
+   HDR File support. 
 }
 unit VKS.FileHDR;
 
@@ -309,7 +309,7 @@ end;
 initialization
 //-------------------------------------------------------------------
 
-  { Register this Fileformat-Handler with GLScene }
+  { Register this Fileformat-Handler }
   RegisterRasterFormat('hdr', 'High Dynamic Range Image', TVKHDRImage);
 
 end.

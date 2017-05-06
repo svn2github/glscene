@@ -10,7 +10,12 @@ object VKShaderMemoForm: TVKShaderMemoForm
   OnCreate = FormCreate
   DesignerMasterStyle = 0
   object ToolBar1: TToolBar
-    Size.Width = 471.000000000000000000
+    Margins.Left = 10.000000000000000000
+    Margins.Top = 10.000000000000000000
+    Margins.Right = 10.000000000000000000
+    Position.X = 10.000000000000000000
+    Position.Y = 10.000000000000000000
+    Size.Width = 451.000000000000000000
     Size.Height = 40.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 0
@@ -69,7 +74,7 @@ object VKShaderMemoForm: TVKShaderMemoForm
               26788D83F6F47A074A11EAE32A1A93BA8934CAE51284B037A6294050E08A10DC
               5806220265994F3EF024705B28CCEB8A1432CA9C4808BF038BDD8361DE59B930
               C470D3F34EFEFF1F005C003749849CB1BC2E190000000049454E44AE426082}
-            FileName = 'D:\Library\GLScene_FMX\Source\Resources\bitmaps\Save1.bmp'
+            FileName = 'D:\VKScene\Resources\bitmaps\Save1.bmp'
           end>
         Align = Client
         Size.Width = 41.000000000000000000
@@ -101,7 +106,7 @@ object VKShaderMemoForm: TVKShaderMemoForm
               580209068034DBD93230FCFCC9C070F2144618E03700A4D9D28281E1D72F0686
               B3E7B006201394C60DBE7EC3A999388016EA5407F89DE5BC1261FBDE70AC6A09
               87C120070C0C005FEB47B75B2269BF0000000049454E44AE426082}
-            FileName = 'D:\Library\GLScene_FMX\Source\Resources\bitmaps\Help.bmp'
+            FileName = 'D:\VKScene\Resources\bitmaps\Help.bmp'
           end>
         Align = Client
         Size.Width = 41.000000000000000000
@@ -112,8 +117,12 @@ object VKShaderMemoForm: TVKShaderMemoForm
   end
   object Panel1: TPanel
     Align = Bottom
-    Position.Y = 491.000000000000000000
-    Size.Width = 471.000000000000000000
+    Margins.Left = 10.000000000000000000
+    Margins.Right = 10.000000000000000000
+    Margins.Bottom = 10.000000000000000000
+    Position.X = 10.000000000000000000
+    Position.Y = 481.000000000000000000
+    Size.Width = 451.000000000000000000
     Size.Height = 56.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 1
@@ -197,24 +206,28 @@ object VKShaderMemoForm: TVKShaderMemoForm
     Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
     DataDetectorTypes = []
     Align = Bottom
-    Position.Y = 408.000000000000000000
-    Size.Width = 471.000000000000000000
+    Margins.Left = 10.000000000000000000
+    Margins.Right = 10.000000000000000000
+    Position.X = 10.000000000000000000
+    Position.Y = 398.000000000000000000
+    Size.Width = 451.000000000000000000
     Size.Height = 83.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 2
-    Viewport.Width = 467.000000000000000000
+    Viewport.Width = 447.000000000000000000
     Viewport.Height = 79.000000000000000000
   end
   object GLSLMemo: TMemo
     Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
     DataDetectorTypes = []
-    Position.X = 16.000000000000000000
-    Position.Y = 56.000000000000000000
-    Size.Width = 441.000000000000000000
-    Size.Height = 329.000000000000000000
+    Align = Client
+    Margins.Left = 10.000000000000000000
+    Margins.Right = 10.000000000000000000
+    Size.Width = 451.000000000000000000
+    Size.Height = 348.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 3
-    Viewport.Width = 437.000000000000000000
-    Viewport.Height = 325.000000000000000000
+    Viewport.Width = 447.000000000000000000
+    Viewport.Height = 344.000000000000000000
   end
 end

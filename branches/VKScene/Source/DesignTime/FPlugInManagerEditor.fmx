@@ -37,7 +37,7 @@ object VKPlugInManagerEditor: TVKPlugInManagerEditor
               AD214C8A8EEB0491198A743103EEB0987F00BCD98620FC3AAA0101182EACE655
               3DB64203EE6693BA45AEA0DC6664B5D6B63A8313A08CB553D356D1C72EC32FF3
               7CD125F5816F3FE89D944E66519EDE7304D7620000000049454E44AE426082}
-            FileName = 'D:\Library\GLScene_FMX\Source\Resources\bitmaps\Load.bmp'
+            FileName = 'D:\VKScene\Resources\bitmaps\Load.bmp'
           end>
         Align = Client
         Size.Width = 41.000000000000000000
@@ -67,7 +67,7 @@ object VKPlugInManagerEditor: TVKPlugInManagerEditor
               61A6E2AC5D82D50ED617B10E0740DC33E008BB2277BC901DB5C50812FD110AB6
               0D702FA66B046AD21B39411A5C5D19E759D507A951D608739F8EB012FFFD91BA
               989DB63818FE5F5FE5890000000049454E44AE426082}
-            FileName = 'D:\Library\GLScene_FMX\Source\Resources\bitmaps\UnLoad.bmp'
+            FileName = 'D:\VKScene\Resources\bitmaps\UnLoad.bmp'
           end>
         Align = Client
         Size.Width = 41.000000000000000000
@@ -98,7 +98,7 @@ object VKPlugInManagerEditor: TVKPlugInManagerEditor
               11479495C5CCA62B62628DE46EDF3CD4158D03D974DDC1D3318F1830886C926C
               7A23FC856390C2DDC9DF20BA013DE72DF3DB23A1F60000000049454E44AE4260
               82}
-            FileName = 'D:\Library\GLScene_FMX\Source\Resources\bitmaps\Ok.bmp'
+            FileName = 'D:\VKScene\Resources\bitmaps\Ok.bmp'
           end>
         Align = Client
         Size.Width = 41.000000000000000000

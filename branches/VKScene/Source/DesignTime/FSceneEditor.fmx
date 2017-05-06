@@ -56,7 +56,7 @@ object VKSceneEditorForm: TVKSceneEditorForm
               8FC178F704F92FE3881F9FF0BA4BB88E1431DE9D82B392417EE2A51B90585928
               C0AA9490E8CDFA8AD6C223E0C166EA5644A26FF2AFC9FF01C02FAEAEC2C51813
               29BF0000000049454E44AE426082}
-            FileName = 'D:\Library\GLScene_FMX\Source\Resources\bitmaps\LoadScene.bmp'
+            FileName = 'D:\VKScene\Resources\bitmaps\LoadScene.bmp'
           end>
         Align = Client
         HitTest = False
@@ -95,7 +95,7 @@ object VKSceneEditorForm: TVKSceneEditorForm
               580209068034DBD93230FCFCC9C070F2144618E03700A4D9D28281E1D72F0686
               B3E7B006201394C60DBE7EC3A999388016EA5407F89DE5BC1261FBDE70AC6A09
               87C120070C0C005FEB47B75B2269BF0000000049454E44AE426082}
-            FileName = 'D:\Library\GLScene_FMX\Source\Resources\bitmaps\Help.bmp'
+            FileName = 'D:\VKScene\Resources\bitmaps\Help.bmp'
           end>
         Align = Client
         HitTest = False
@@ -147,7 +147,7 @@ object VKSceneEditorForm: TVKSceneEditorForm
               F06BAD0E7B957B41988918B2BB2C0C67BB30B49BEC3331420EA4BB91E0896DA2
               E3D36C7ECEF7976FEAFA7F98BB3B6BFC0521500765EA24DF030000000049454E
               44AE426082}
-            FileName = 'D:\Library\GLScene_FMX\Source\Resources\bitmaps\Paste.bmp'
+            FileName = 'D:\VKScene\Resources\bitmaps\Paste.bmp'
           end>
         Align = Client
         HitTest = False
@@ -194,7 +194,7 @@ object VKSceneEditorForm: TVKSceneEditorForm
               09E57C51ACE5086E39990C44CBE8692CA1BBA1487B45EAECF73E4F032793D698
               1FED143BD4209AA2218423757655F5D9B9643E92BBEBB4BDF2D6C9F1A6F20382
               98F517BEF7633B0000000049454E44AE426082}
-            FileName = 'D:\Library\GLScene_FMX\Source\Resources\bitmaps\Copy.bmp'
+            FileName = 'D:\VKScene\Resources\bitmaps\Copy.bmp'
           end>
         Align = Client
         HitTest = False
@@ -240,7 +240,7 @@ object VKSceneEditorForm: TVKSceneEditorForm
               C36EE17F768FD52886205C0014FEB907299AB0A4BA1F87E219FFA368C7128D20
               C0EE06B11D0C802C36CF75083E168329000C0C00A5CE7A2373D9156500000000
               49454E44AE426082}
-            FileName = 'D:\Library\GLScene_FMX\Source\Resources\bitmaps\Cut.bmp'
+            FileName = 'D:\VKScene\Resources\bitmaps\Cut.bmp'
           end>
         Align = Client
         HitTest = False
@@ -281,7 +281,7 @@ object VKSceneEditorForm: TVKSceneEditorForm
               1EED9A7279AB183E61C36AFFEA8CAD046C7F7DA1204555C44E52F844F40A43C5
               848A99EB74DEE05BB1C216192CE8A31100F800F2206AC2FBD595600000000049
               454E44AE426082}
-            FileName = 'D:\Library\GLScene_FMX\Source\Resources\bitmaps\DeleteObject.bmp'
+            FileName = 'D:\VKScene\Resources\bitmaps\DeleteObject.bmp'
           end>
         Align = Client
         HitTest = False
@@ -319,7 +319,7 @@ object VKSceneEditorForm: TVKSceneEditorForm
               1B804B805C804D212E9761A8A59917F0391F04E092A09898DBDB8AA29868E783
               004DBC40C8F9200057801E0B24399F7CC0C00000BA8A48298AEA8CCF00000000
               49454E44AE426082}
-            FileName = 'D:\Library\GLScene_FMX\Source\Resources\bitmaps\ExpandTree.bmp'
+            FileName = 'D:\VKScene\Resources\bitmaps\ExpandTree.bmp'
           end>
         Align = Client
         HitTest = False
@@ -371,7 +371,7 @@ object VKSceneEditorForm: TVKSceneEditorForm
               A07DB321D1F1255460600207D3DC589AECFC1BE936E337CAD97F7B9773F4B368
               414E65E08CFBA3D6CD62082C1EE9BFB9FF4580DFA932809A33856F0000000000
               49454E44AE426082}
-            FileName = 'D:\Library\GLScene_FMX\Source\Resources\bitmaps\DownObject.bmp'
+            FileName = 'D:\VKScene\Resources\bitmaps\DownObject.bmp'
           end>
         Align = Client
         HitTest = False
@@ -423,7 +423,7 @@ object VKSceneEditorForm: TVKSceneEditorForm
               23BCA99B9D580E04664A1182AA40C079A524512B4BA880C9E26153591C9AEBF4
               2BED9C975C14DF707EB573FCB368C14D65E08CFB23D6DF6148160FF4DFB6FF05
               C04F5EEA800C88E9B1530000000049454E44AE426082}
-            FileName = 'D:\Library\GLScene_FMX\Source\Resources\bitmaps\UpObject.bmp'
+            FileName = 'D:\VKScene\Resources\bitmaps\UpObject.bmp'
           end>
         Align = Client
         HitTest = False
@@ -463,7 +463,7 @@ object VKSceneEditorForm: TVKSceneEditorForm
               421EF2F27FB05E87A38FE93F92643FF9355F00F806FB8E91035AB08710000000
               0049454E44AE426082}
             FileName = 
-              'D:\Library\GLScene_FMX\Source\Resources\bitmaps\CharacterPanels.' +
+              'D:\VKScene\Resources\bitmaps\CharacterPanels.' +
               'bmp'
           end>
         Align = Client
@@ -502,7 +502,7 @@ object VKSceneEditorForm: TVKSceneEditorForm
               064DAC042377A1D69EF53A21A5240D490C9013F41602847A3CC14D66F06B44A1
               29067E02CDD67F309BA0731B305DE347882EC4262D8FDB271B7D000000004945
               4E44AE426082}
-            FileName = 'D:\Library\GLScene_FMX\Source\Resources\bitmaps\Gallery.bmp'
+            FileName = 'D:\VKScene\Resources\bitmaps\Gallery.bmp'
           end>
         Align = Client
         HitTest = False
@@ -547,7 +547,7 @@ object VKSceneEditorForm: TVKSceneEditorForm
               AAAAB21E14705E322CAF802C0BBA63001C8F47AB6181FF22D49F1DC1A30F1F85
               4987B9EFFBF83502B2BC6B7B5062B3CF150158D1E07F1051F01F67FF44D8CCCF
               F5F4F315CE3D0069F812FD036C0F220000000049454E44AE426082}
-            FileName = 'D:\Library\GLScene_FMX\Source\Resources\bitmaps\AddObject.bmp'
+            FileName = 'D:\VKScene\Resources\bitmaps\AddObject.bmp'
           end>
         Align = Left
         HitTest = False
@@ -568,7 +568,7 @@ object VKSceneEditorForm: TVKSceneEditorForm
               004649444154384FEDD1310A00200C43D17AFF432B810EA26D8DE022E42D9DF2
               979AC8079ADF55F7CBD81A59149870B8AFA25085D3ED290A51B8DC315198C3EC
               8672F33C9177CC0636600605DA3E83780000000049454E44AE426082}
-            FileName = 'D:\Library\GLScene_FMX\Source\Resources\bitmaps\ArrowDown.bmp'
+            FileName = 'D:\VKScene\Resources\bitmaps\ArrowDown.bmp'
           end>
         Align = Right
         HitTest = False
@@ -611,7 +611,7 @@ object VKSceneEditorForm: TVKSceneEditorForm
               CB7E32C20D4007DD51ECFF8DD579C11AEE3E66878A3230087032820D0389810C
               C01B8830CD208530FCE1FB7F86B76F38A02A08C4024C33940B06304346010C30
               3000008BCE84787F9BBEEA0000000049454E44AE426082}
-            FileName = 'D:\Library\GLScene_FMX\Source\Resources\bitmaps\StayOnTop.bmp'
+            FileName = 'D:\VKScene\Resources\bitmaps\StayOnTop.bmp'
           end>
         Align = Client
         HitTest = False
@@ -651,7 +651,7 @@ object VKSceneEditorForm: TVKSceneEditorForm
               26788D83F6F47A074A11EAE32A1A93BA8934CAE51284B037A6294050E08A10DC
               5806220265994F3EF024705B28CCEB8A1432CA9C4808BF038BDD8361DE59B930
               C470D3F34EFEFF1F005C003749849CB1BC2E190000000049454E44AE426082}
-            FileName = 'D:\Library\GLScene_FMX\Source\Resources\bitmaps\SaveScene.bmp'
+            FileName = 'D:\VKScene\Resources\bitmaps\SaveScene.bmp'
           end>
         Align = Client
         HitTest = False
@@ -740,7 +740,7 @@ object VKSceneEditorForm: TVKSceneEditorForm
                   004649444154384FEDD1310A00200C43D17AFF432B810EA26D8DE022E42D9DF2
                   979AC8079ADF55F7CBD81A59149870B8AFA25085D3ED290A51B8DC315198C3EC
                   8672F33C9177CC0636600605DA3E83780000000049454E44AE426082}
-                FileName = 'D:\Library\GLScene_FMX\Source\Resources\bitmaps\ArrowDown.bmp'
+                FileName = 'D:\VKScene\Resources\bitmaps\ArrowDown.bmp'
               end>
             Align = Right
             HitTest = False
@@ -824,7 +824,7 @@ object VKSceneEditorForm: TVKSceneEditorForm
                   004649444154384FEDD1310A00200C43D17AFF432B810EA26D8DE022E42D9DF2
                   979AC8079ADF55F7CBD81A59149870B8AFA25085D3ED290A51B8DC315198C3EC
                   8672F33C9177CC0636600605DA3E83780000000049454E44AE426082}
-                FileName = 'D:\Library\GLScene_FMX\Source\Resources\bitmaps\ArrowDown.bmp'
+                FileName = 'D:\VKScene\Resources\bitmaps\ArrowDown.bmp'
               end>
             Align = Right
             HitTest = False

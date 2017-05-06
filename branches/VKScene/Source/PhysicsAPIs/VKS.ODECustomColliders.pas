@@ -20,8 +20,8 @@ uses
   System.Classes,
   System.SysUtils,
 
-  ODEGL,
   ODEImport,
+  VKS.ODEGL,
   VKS.ODEManager,
   VKS.VectorGeometry,
   VKS.VectorLists,
@@ -225,7 +225,7 @@ begin
 
   pos := dGeomGetPosition(o2);
   R := dGeomGetRotation(o2);
-  ODEGL.ODERToGLSceneMatrix(mat, R^, pos^);
+  ODERToVKSceneMatrix(mat, R^, pos^);
   Collider.SetTransform(mat);
 
   rad := dGeomSphereGetRadius(o2);
@@ -275,7 +275,7 @@ begin
 
   pos := dGeomGetPosition(o2);
   R := dGeomGetRotation(o2);
-  ODEGL.ODERToGLSceneMatrix(mat, R^, pos^);
+  ODERToVKSceneMatrix(mat, R^, pos^);
   Collider.SetTransform(mat);
 
   dGeomBoxGetLengths(o2, s);
@@ -363,7 +363,7 @@ begin
 
   pos := dGeomGetPosition(o2);
   R := dGeomGetRotation(o2);
-  ODEGL.ODERToGLSceneMatrix(mat, R^, pos^);
+  ODERToVKSceneMatrix(mat, R^, pos^);
   Collider.SetTransform(mat);
 
   dGeomCapsuleGetParams(o2, rad, len);
@@ -421,7 +421,7 @@ begin
 
   pos := dGeomGetPosition(o2);
   R := dGeomGetRotation(o2);
-  ODEGL.ODERToGLSceneMatrix(mat, R^, pos^);
+  ODERToVKSceneMatrix(mat, R^, pos^);
   Collider.SetTransform(mat);
 
   dGeomCylinderGetParams(o2, rad, len);

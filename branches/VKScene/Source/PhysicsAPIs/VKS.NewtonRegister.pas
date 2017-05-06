@@ -14,14 +14,14 @@ uses
 
 procedure register;
 
+//=========================================================
 implementation
+//=========================================================
 
-// Register
-//
 procedure register;
 begin
   RegisterClasses([TVKNGDManager, TVKNGDDynamic, TVKNGDStatic]);
-  RegisterComponents('GLScene', [TVKNGDManager]);
+  RegisterComponents('VKScene', [TVKNGDManager]);
 end;
 
 end.

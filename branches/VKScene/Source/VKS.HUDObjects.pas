@@ -2,7 +2,7 @@
 // VKScene Component Library, based on GLScene http://glscene.sourceforge.net 
 //
 {
-  GLScene objects that get rendered in 2D coordinates 
+  Objects that get rendered in 2D coordinates 
 }
 unit VKS.HUDObjects;
 
@@ -15,7 +15,7 @@ uses
   Winapi.OpenGLext,
   System.Classes,
 
-  uXOpenGL,
+  VKS.XOpenGL,
   VKS.Scene,
   VKS.VectorGeometry,
   VKS.Objects,

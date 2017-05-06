@@ -39,7 +39,7 @@ type
      TVKParticles may also maintain an internal, non-persistent
    ("freezed") set of objects : the allocated objects pool. Why ? Creating
    and freeing objects takes cpu-cycles, especially for the TComponent class,
-   and GLScene objects are TComponent. To reduce this load (and at the expense
+   and objects are TComponent. To reduce this load (and at the expense
    of memory space), the particle systems can move "dead" particles to a pool
    instead of freeing them, and will pick in the pool instead of creating
    new objects when new particles are requested. To take advantage of this

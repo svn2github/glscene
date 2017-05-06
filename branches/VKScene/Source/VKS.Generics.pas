@@ -2,7 +2,7 @@
 // VKScene Component Library, based on GLScene http://glscene.sourceforge.net 
 //
 {
-   GLScene cross IDE generic classes collection. 
+   Cross IDE generic classes collection. 
    
 }
 
@@ -23,8 +23,7 @@ const
 
 type
 
-  // GList
-  //
+  
 {$IFDEF VKS_GENERIC_PREFIX}
   generic
 {$ENDIF}
@@ -71,8 +70,6 @@ type
     property OnChange: TNotifyEvent read FOnChange write FOnChange;
   end;
 
-  // GThreadList
-  //
 {$IFDEF VKS_GENERIC_PREFIX}
   generic
 {$ENDIF}
@@ -94,8 +91,6 @@ type
     procedure UnlockList;
   end;
 
-  // GOrderedList
-  //
 {$IFDEF VKS_GENERIC_PREFIX}
   generic
 {$ENDIF}
@@ -121,8 +116,6 @@ type
     function Peek: T;
   end;
 
-  // GStack
-  //
 {$IFDEF VKS_GENERIC_PREFIX}
   generic
 {$ENDIF}
@@ -131,8 +124,6 @@ type
     procedure PushItem(AItem: T); override;
   end;
 
-  // GQueue
-  //
 {$IFDEF VKS_GENERIC_PREFIX}
   generic
 {$ENDIF}
@@ -141,7 +132,9 @@ type
     procedure PushItem(AItem: T); override;
   end;
 
+//=======================================================  
 implementation
+//=======================================================  
 
 {$REGION 'GList'}
 

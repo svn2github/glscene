@@ -223,7 +223,7 @@ type
      (opaque objects or lights) must be explicitly specified in the Casters
      collection. 
      Shadow volumes require that the buffer allows stencil buffers,
-     GLSceneViewer.Buffer.ContextOptions contain roStencinBuffer. Without stencil
+     VKSceneViewer.Buffer.ContextOptions contain roStencinBuffer. Without stencil
      buffers, shadow volumes will not work properly. 
      Another issue to look out for is the fact that shadow volume capping requires
      that the camera depth of view is either very high (fi 1e9) or that the

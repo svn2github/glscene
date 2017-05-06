@@ -5,12 +5,12 @@
    "Alternate" OpenGL functions to handle multi-texturing.
    Using this functions allows specifying none/one/multiple ARB multi-texture
    coordinates with standard texture specification call.
-   Before using any of the xglTexCoordXxxx fonctions, call one of the
+   Before using any of the xglTexCoordXxxx functions, call one of the
    xglMapTexCoordToXxxx functions to establish the redirectors.
    This unit is Open-Source under MPL
    The history is logged in a former GLS version of the unit.
 }
-unit uXOpenGL;
+unit VKS.XOpenGL;
 
 interface
 
@@ -52,28 +52,28 @@ type
 
     // TexGen texture coordinates specification
     TexGenf: procedure(coord, pname: GLEnum; param: GLfloat);
-{$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF unix} cdecl;{$ENDIF}
+{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
     TexGenfv: procedure(coord, pname: GLEnum; params: PGLfloat);
-{$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF unix} cdecl;{$ENDIF}
+{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
     TexGeni: procedure(coord, pname: GLEnum; param: GLint);
-{$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF unix} cdecl;{$ENDIF}
+{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
     TexGeniv: procedure(coord, pname: GLEnum; params: PGLint);
-{$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF unix} cdecl;{$ENDIF}
+{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
 
     // Vertex Arrays texture coordinates specification
     TexCoordPointer: procedure(size: GLint; atype: GLEnum; stride: GLsizei;
       data: pointer);
-{$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF unix} cdecl;{$ENDIF}
+{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
     EnableClientState: procedure(aarray: GLEnum);
-{$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF unix} cdecl;{$ENDIF}
+{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
     DisableClientState: procedure(aarray: GLEnum);
-{$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF unix} cdecl;{$ENDIF}
+{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
 
     // Misc
     Enable: procedure(cap: GLEnum);
-{$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF unix} cdecl;{$ENDIF}
+{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
     Disable: procedure(cap: GLEnum);
-{$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF unix} cdecl;{$ENDIF}
+{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
 
     constructor Create(AOwner: TVKContext); override;
 
@@ -191,7 +191,7 @@ begin
 end;
 
 procedure TexGenf_Arbitrary(coord, pname: GLEnum; param: GLfloat);
-{$IFDEF MSWINDOWS} stdcall; {$ENDIF}{$IFDEF unix} cdecl; {$ENDIF}
+{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 var
   i: Integer;
 begin
@@ -203,7 +203,7 @@ begin
 end;
 
 procedure TexGenfv_Arbitrary(coord, pname: GLEnum; params: PGLfloat);
-{$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF unix} cdecl;{$ENDIF}
+{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
 var
   i: Integer;
 begin
@@ -215,7 +215,7 @@ begin
 end;
 
 procedure TexGeni_Arbitrary(coord, pname: GLEnum; param: GLint);
-{$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF unix} cdecl;{$ENDIF}
+{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
 var
   i: Integer;
 begin
@@ -227,7 +227,7 @@ begin
 end;
 
 procedure TexGeniv_Arbitrary(coord, pname: GLEnum; params: PGLint);
-{$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF unix} cdecl;{$ENDIF}
+{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
 var
   i: Integer;
 begin
@@ -239,7 +239,7 @@ begin
 end;
 
 procedure Enable_Arbitrary(cap: GLEnum);
-{$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF unix} cdecl;{$ENDIF}
+{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
 var
   i: Integer;
 begin
@@ -251,7 +251,7 @@ begin
 end;
 
 procedure Disable_Arbitrary(cap: GLEnum);
-{$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF unix} cdecl;{$ENDIF}
+{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
 var
   i: Integer;
 begin
@@ -264,7 +264,7 @@ end;
 
 procedure TexCoordPointer_Arbitrary(size: GLint; atype: GLEnum; stride:
   GLsizei; data: pointer);
-{$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF unix} cdecl;{$ENDIF}
+{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
 var
   i: Integer;
 begin
@@ -276,7 +276,7 @@ begin
 end;
 
 procedure EnableClientState_Arbitrary(aArray: GLEnum);
-{$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF unix} cdecl;{$ENDIF}
+{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
 var
   i: Integer;
 begin
@@ -288,7 +288,7 @@ begin
 end;
 
 procedure DisableClientState_Arbitrary(aArray: GLEnum);
-{$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF unix} cdecl;{$ENDIF}
+{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
 var
   i: Integer;
 begin
@@ -302,78 +302,78 @@ end;
 // --------- Second unit Texturing
 
 procedure TexCoord2f_Second(s, t: GLfloat);
-{$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF unix} cdecl;{$ENDIF}
+{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
 begin
   glMultiTexCoord2f(GL_TEXTURE1, s, t);
 end;
 
 procedure TexCoord2fv_Second(v: PGLfloat);
-{$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF unix} cdecl;{$ENDIF}
+{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
 begin
   glMultiTexCoord2fv(GL_TEXTURE1, v);
 end;
 
 procedure TexCoord3f_Second(s, t, r: GLfloat);
-{$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF unix} cdecl;{$ENDIF}
+{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
 begin
   glMultiTexCoord3f(GL_TEXTURE1, s, t, r);
 end;
 
 procedure TexCoord3fv_Second(v: PGLfloat);
-{$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF unix} cdecl;{$ENDIF}
+{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
 begin
   glMultiTexCoord3fv(GL_TEXTURE1, v);
 end;
 
 procedure TexCoord4f_Second(s, t, r, q: GLfloat);
-{$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF unix} cdecl;{$ENDIF}
+{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
 begin
   glMultiTexCoord4f(GL_TEXTURE1, s, t, r, q);
 end;
 
 procedure TexCoord4fv_Second(v: PGLfloat);
-{$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF unix} cdecl;{$ENDIF}
+{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
 begin
   glMultiTexCoord4fv(GL_TEXTURE1, v);
 end;
 
 procedure TexGenf_Second(coord, pname: GLEnum; param: GLfloat);
-{$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF unix} cdecl;{$ENDIF}
+{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
 begin
   CurrentVKContext.VKStates.ActiveTexture := 1;
   glTexGenf(coord, pname, param);
 end;
 
 procedure TexGenfv_Second(coord, pname: GLEnum; params: PGLfloat);
-{$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF unix} cdecl;{$ENDIF}
+{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
 begin
   CurrentVKContext.VKStates.ActiveTexture := 1;
   glTexGenfv(coord, pname, params);
 end;
 
 procedure TexGeni_Second(coord, pname: GLEnum; param: GLint);
-{$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF unix} cdecl;{$ENDIF}
+{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
 begin
   CurrentVKContext.VKStates.ActiveTexture := 1;
   glTexGeni(coord, pname, param);
 end;
 
 procedure TexGeniv_Second(coord, pname: GLEnum; params: PGLint);
-{$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF unix} cdecl;{$ENDIF}
+{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
 begin
   CurrentVKContext.VKStates.ActiveTexture := 1;
   glTexGeniv(coord, pname, params);
 end;
 
 procedure Enable_Second(cap: GLEnum);
-{$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF unix} cdecl;{$ENDIF}
+{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
 begin
   CurrentVKContext.VKStates.ActiveTexture := 1;
   glEnable(cap);
 end;
 
 procedure Disable_Second(cap: GLEnum);
-{$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF unix} cdecl;{$ENDIF}
+{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
 begin
   CurrentVKContext.VKStates.ActiveTexture := 1;
   glDisable(cap);
@@ -381,7 +381,7 @@ end;
 
 procedure TexCoordPointer_Second(size: GLint; atype: GLEnum; stride:
   GLsizei; data: pointer);
-{$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF unix} cdecl;{$ENDIF}
+{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
 begin
   glClientActiveTexture(GL_TEXTURE1);
   glTexCoordPointer(size, atype, stride, data);
@@ -389,7 +389,7 @@ begin
 end;
 
 procedure EnableClientState_Second(aArray: GLEnum);
-{$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF unix} cdecl;{$ENDIF}
+{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
 begin
   glClientActiveTexture(GL_TEXTURE1);
   glEnableClientState(aArray);
@@ -397,7 +397,7 @@ begin
 end;
 
 procedure DisableClientState_Second(aArray: GLEnum);
-{$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF unix} cdecl;{$ENDIF}
+{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
 begin
   glClientActiveTexture(GL_TEXTURE1);
   glDisableClientState(aArray);
@@ -407,49 +407,49 @@ end;
 // --------- Dual Texturing
 
 procedure TexCoord2f_Dual(s, t: GLfloat);
-{$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF unix} cdecl;{$ENDIF}
+{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
 begin
   glTexCoord2f(s, t);
   glMultiTexCoord2f(GL_TEXTURE1, s, t);
 end;
 
 procedure TexCoord2fv_Dual(v: PGLfloat);
-{$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF unix} cdecl;{$ENDIF}
+{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
 begin
   glTexCoord2fv(v);
   glMultiTexCoord2fv(GL_TEXTURE1, v);
 end;
 
 procedure TexCoord3f_Dual(s, t, r: GLfloat);
-{$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF unix} cdecl;{$ENDIF}
+{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
 begin
   glTexCoord3f(s, t, r);
   glMultiTexCoord3f(GL_TEXTURE1, s, t, r);
 end;
 
 procedure TexCoord3fv_Dual(v: PGLfloat);
-{$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF unix} cdecl;{$ENDIF}
+{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
 begin
   glTexCoord3fv(v);
   glMultiTexCoord3fv(GL_TEXTURE1, v);
 end;
 
 procedure TexCoord4f_Dual(s, t, r, q: GLfloat);
-{$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF unix} cdecl;{$ENDIF}
+{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
 begin
   glTexCoord4f(s, t, r, q);
   glMultiTexCoord4f(GL_TEXTURE1, s, t, r, q);
 end;
 
 procedure TexCoord4fv_Dual(v: PGLfloat);
-{$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF unix} cdecl;{$ENDIF}
+{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
 begin
   glTexCoord4fv(v);
   glMultiTexCoord4fv(GL_TEXTURE1, v);
 end;
 
 procedure TexGenf_Dual(coord, pname: GLEnum; param: GLfloat);
-{$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF unix} cdecl;{$ENDIF}
+{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
 begin
   with CurrentVKContext.VKStates do
   begin

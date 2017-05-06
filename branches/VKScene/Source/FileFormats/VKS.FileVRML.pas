@@ -2,7 +2,7 @@
 // VKScene Component Library, based on GLScene http://glscene.sourceforge.net 
 //
 {
-   Preliminary VRML vector file support for GLScene.
+   Preliminary VRML vector file support.
 }
 unit VKS.FileVRML;
 

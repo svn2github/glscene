@@ -8,7 +8,7 @@
 
   This unit is still under development. 
 }
-unit dws2VKS.OpenGLAdapter;
+unit DwsVKS.OpenGLAdapter;
 
 interface
 
@@ -17,10 +17,10 @@ interface
 uses
   Winapi.OpenGL,
   System.Classes, System.Variants,
-  dws2Exprs, dws2Symbols, dws2Comp;
+  DwsExprs, DwsSymbols, DwsComp;
 
 type
-  Tdws2OpenGLUnit = class(Tdws2UnitComponent)
+  TDwsOpenGLUnit = class(TDwsUnitComponent)
     protected
       procedure AddExtensionUnitSymbols(SymbolTable: TSymbolTable);
       procedure AddUnitSymbols(SymbolTable: TSymbolTable); override;
@@ -38,7 +38,7 @@ procedure Register;
 implementation
 
 uses
-  dws2Functions, Winapi.OpenGL, Winapi.OpenGLext,  uOpenGLAdapter, VKS.Context, VKS.VectorGeometry;
+  DwsFunctions, Winapi.OpenGL, Winapi.OpenGLext,  uOpenGLAdapter, VKS.Context, VKS.VectorGeometry;
 
 type
   TglPushAttrib = class(TInternalFunction)
@@ -281,7 +281,7 @@ type
 //
 procedure Register;
 begin
-  RegisterComponents('GLScene DWS2', [Tdws2OpenGLUnit]);
+  RegisterComponents('VKScene DWS', [TDwsOpenGLUnit]);
 end;
 
 // GetMatrixFromInfo
@@ -298,10 +298,10 @@ begin
 end;
 
 // ----------
-// ---------- Tdws2OpenGLUnit ----------
+// ---------- TDwsOpenGLUnit ----------
 // ----------
 
-procedure Tdws2OpenGLUnit.AddUnitSymbols(SymbolTable: TSymbolTable);
+procedure TDwsOpenGLUnit.AddUnitSymbols(SymbolTable: TSymbolTable);
 var
   CardinalSymbol,
   ByteSymbol : TSymbol;
@@ -1090,7 +1090,7 @@ begin
   TglLogicOp.Create(SymbolTable, 'glLogicOp', ['opcode', 'Cardinal'], '');
 end;
 
-procedure Tdws2OpenGLUnit.AddExtensionUnitSymbols(SymbolTable: TSymbolTable);
+procedure TDwsOpenGLUnit.AddExtensionUnitSymbols(SymbolTable: TSymbolTable);
 var
   CardinalSymbol,
   ByteSymbol : TSymbol;
@@ -2016,7 +2016,7 @@ begin
 
 end;
 
-constructor Tdws2OpenGLUnit.Create(AOwner: TComponent);
+constructor TDwsOpenGLUnit.Create(AOwner: TComponent);
 begin
   inherited;
   FUnitName := 'OpenGLAdapter';

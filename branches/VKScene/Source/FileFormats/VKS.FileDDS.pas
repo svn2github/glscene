@@ -2,7 +2,7 @@
 // VKScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
 {
-   DDS File support for GLScene.
+   DDS File support.
 }
 unit VKS.FileDDS;
 

@@ -154,7 +154,7 @@
         <DCCReference Include="..\..\Source\PhysicsAPIs\VKS.ODECustomColliders.pas"/>
         <DCCReference Include="..\..\Source\PhysicsAPIs\VKS.ODESkeletonColliders.pas"/>
         <DCCReference Include="..\..\Source\PhysicsAPIs\ODEImport.pas"/>
-        <DCCReference Include="..\..\Source\PhysicsAPIs\ODEGL.pas"/>
+        <DCCReference Include="..\..\Source\PhysicsAPIs\VKS.ODEGL.pas"/>
         <DCCReference Include="..\..\Source\PhysicsAPIs\VKS.ODERagdoll.pas"/>
         <DCCReference Include="..\..\Source\PhysicsAPIs\VKS.ModuleLoader.pas"/>
         <DCCReference Include="..\..\Source\PhysicsAPIs\VKS.NGDManager.pas"/>

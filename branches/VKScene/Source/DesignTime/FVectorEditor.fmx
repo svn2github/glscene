@@ -226,7 +226,7 @@ object GLVectorEditorForm: TVKVectorEditorForm
             026D9BAA3E4E8F77599E19AD6C416B86363DAC7CDBA4B9BD0130C8D92DBFB397
             3CC9805458CC3A2354B0338CE500C208E1345DD2660195E19FB4BB3964D334B9
             0908B7C5BF638C0756E6577F8D03BECA0000000049454E44AE426082}
-          FileName = 'D:\Library\GLScene\Source\Resources\bitmaps\Cancel1.bmp'
+          FileName = 'D:\VKScene\Resources\bitmaps\Cancel1.bmp'
         end>
       Align = FitLeft
       Size.Width = 25.000000000000000000
@@ -251,7 +251,7 @@ object GLVectorEditorForm: TVKVectorEditorForm
           B2721E8743B446E50F3BD70DB0E95C726669171F0759FFFFCD2322DCF064E0D9
           0F8B8A6FF2DA95F3CCEF11315130DE27DB1CB59295335038D4C1B21226A06A94
           C59718E30B2AF73825833DF5B20000000049454E44AE426082}
-        FileName = 'D:\Library\GLScene\Source\Resources\bitmaps\Exclamation.bmp'
+        FileName = 'D:\VKScene\Resources\bitmaps\Exclamation.bmp'
       end>
     Position.X = 176.000000000000000000
     Position.Y = 120.000000000000000000
@@ -276,7 +276,7 @@ object GLVectorEditorForm: TVKVectorEditorForm
           B2721E8743B446E50F3BD70DB0E95C726669171F0759FFFFCD2322DCF064E0D9
           0F8B8A6FF2DA95F3CCEF11315130DE27DB1CB59295335038D4C1B21226A06A94
           C59718E30B2AF73825833DF5B20000000049454E44AE426082}
-        FileName = 'D:\Library\GLScene\Source\Resources\bitmaps\Exclamation.bmp'
+        FileName = 'D:\VKScene\Resources\bitmaps\Exclamation.bmp'
       end>
     Position.X = 176.000000000000000000
     Position.Y = 144.000000000000000000
@@ -301,7 +301,7 @@ object GLVectorEditorForm: TVKVectorEditorForm
           B2721E8743B446E50F3BD70DB0E95C726669171F0759FFFFCD2322DCF064E0D9
           0F8B8A6FF2DA95F3CCEF11315130DE27DB1CB59295335038D4C1B21226A06A94
           C59718E30B2AF73825833DF5B20000000049454E44AE426082}
-        FileName = 'D:\Library\GLScene\Source\Resources\bitmaps\Exclamation.bmp'
+        FileName = 'D:\VKScene\Resources\bitmaps\Exclamation.bmp'
       end>
     Position.X = 176.000000000000000000
     Position.Y = 168.000000000000000000

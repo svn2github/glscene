@@ -229,7 +229,7 @@ type
       FNewtonJointGroup;
   end;
 
-  { Basis structures for GLScene behaviour style implementations. }
+  { Basis structures for behaviour style implementations. }
   TVKNGDBehaviour = class(TVKBehaviour)
   private
     FManager: TVKNGDManager;
@@ -674,7 +674,7 @@ function GetNGDStatic(Obj: TVKBaseSceneObject): TVKNGDStatic;
 function GetOrCreateNGDStatic(Obj: TVKBaseSceneObject): TVKNGDStatic;
 function GetNGDDynamic(Obj: TVKBaseSceneObject): TVKNGDDynamic;
 function GetOrCreateNGDDynamic(Obj: TVKBaseSceneObject): TVKNGDDynamic;
-function GetBodyFromGLSceneObject(Obj: TVKBaseSceneObject): PNewtonBody;
+function GetBodyFromVKSceneObject(Obj: TVKBaseSceneObject): PNewtonBody;
 
 //=======================================================================
 implementation
@@ -703,7 +703,7 @@ begin
   Result := TVKNGDDynamic(Obj.GetOrCreateBehaviour(TVKNGDDynamic));
 end;
 
-function GetBodyFromGLSceneObject(Obj: TVKBaseSceneObject): PNewtonBody;
+function GetBodyFromVKSceneObject(Obj: TVKBaseSceneObject): PNewtonBody;
 var
   Behaviour: TVKNGDBehaviour;
 begin
@@ -1028,8 +1028,8 @@ procedure TVKNGDManager.RebuildAllJoint(Sender: TObject);
       begin
         FNewtonJoint := NewtonConstraintCreateBall(FNewtonWorld,
           @(FBallAndSocketOptions.FPivotPoint.AsVector),
-          GetBodyFromGLSceneObject(FChildObject),
-          GetBodyFromGLSceneObject(FParentObject));
+          GetBodyFromVKSceneObject(FChildObject),
+          GetBodyFromVKSceneObject(FParentObject));
         NewtonJointSetCollisionState(FNewtonJoint, Ord(FCollisionState));
         NewtonJointSetStiffness(FNewtonJoint, FStiffness);
       end;
@@ -1043,8 +1043,8 @@ procedure TVKNGDManager.RebuildAllJoint(Sender: TObject);
         FNewtonJoint := NewtonConstraintCreateHinge(FNewtonWorld,
           @(FHingeOptions.FPivotPoint.AsVector),
           @(FHingeOptions.FPinDirection.AsVector),
-          GetBodyFromGLSceneObject(FChildObject),
-          GetBodyFromGLSceneObject(FParentObject));
+          GetBodyFromVKSceneObject(FChildObject),
+          GetBodyFromVKSceneObject(FParentObject));
         NewtonJointSetCollisionState(FNewtonJoint, Ord(FCollisionState));
         NewtonJointSetStiffness(FNewtonJoint, FStiffness);
       end;
@@ -1058,8 +1058,8 @@ procedure TVKNGDManager.RebuildAllJoint(Sender: TObject);
         FNewtonJoint := NewtonConstraintCreateSlider(FNewtonWorld,
           @(FSliderOptions.FPivotPoint.AsVector),
           @(FSliderOptions.FPinDirection.AsVector),
-          GetBodyFromGLSceneObject(FChildObject),
-          GetBodyFromGLSceneObject(FParentObject));
+          GetBodyFromVKSceneObject(FChildObject),
+          GetBodyFromVKSceneObject(FParentObject));
         NewtonJointSetCollisionState(FNewtonJoint, Ord(FCollisionState));
         NewtonJointSetStiffness(FNewtonJoint, FStiffness);
       end;
@@ -1073,8 +1073,8 @@ procedure TVKNGDManager.RebuildAllJoint(Sender: TObject);
         FNewtonJoint := NewtonConstraintCreateCorkscrew(FNewtonWorld,
           @(FCorkscrewOptions.FPivotPoint.AsVector),
           @(FCorkscrewOptions.FPinDirection.AsVector),
-          GetBodyFromGLSceneObject(FChildObject),
-          GetBodyFromGLSceneObject(FParentObject));
+          GetBodyFromVKSceneObject(FChildObject),
+          GetBodyFromVKSceneObject(FParentObject));
         NewtonJointSetCollisionState(FNewtonJoint, Ord(FCollisionState));
         NewtonJointSetStiffness(FNewtonJoint, FStiffness);
       end;
@@ -1089,8 +1089,8 @@ procedure TVKNGDManager.RebuildAllJoint(Sender: TObject);
           @(FUniversalOptions.FPivotPoint.AsVector),
           @(FUniversalOptions.FPinDirection.AsVector),
           @(FUniversalOptions.FPinDirection2.AsVector),
-          GetBodyFromGLSceneObject(FChildObject),
-          GetBodyFromGLSceneObject(FParentObject));
+          GetBodyFromVKSceneObject(FChildObject),
+          GetBodyFromVKSceneObject(FParentObject));
         NewtonJointSetCollisionState(FNewtonJoint, Ord(FCollisionState));
         NewtonJointSetStiffness(FNewtonJoint, FStiffness);
       end;
@@ -1106,8 +1106,8 @@ procedure TVKNGDManager.RebuildAllJoint(Sender: TObject);
         pinAndPivot := IdentityHmgMatrix;
         pinAndPivot.W := FCustomBallAndSocketOptions.FPivotPoint.AsVector;
         FNewtonUserJoint := CreateCustomBallAndSocket(@pinAndPivot,
-          GetBodyFromGLSceneObject(FChildObject),
-          GetBodyFromGLSceneObject(FParentObject));
+          GetBodyFromVKSceneObject(FChildObject),
+          GetBodyFromVKSceneObject(FParentObject));
         BallAndSocketSetConeAngle(FNewtonUserJoint,
           DegToRad(FCustomBallAndSocketOptions.FConeAngle));
         BallAndSocketSetTwistAngle(FNewtonUserJoint,
@@ -1143,8 +1143,8 @@ procedure TVKNGDManager.RebuildAllJoint(Sender: TObject);
         bso.Free;
 
         FNewtonUserJoint := CreateCustomHinge(@pinAndPivot,
-          GetBodyFromGLSceneObject(FChildObject),
-          GetBodyFromGLSceneObject(FParentObject));
+          GetBodyFromVKSceneObject(FChildObject),
+          GetBodyFromVKSceneObject(FParentObject));
         HingeEnableLimits(FNewtonUserJoint, 1);
         HingeSetLimits(FNewtonUserJoint,
           DegToRad(FCustomHingeOptions.FMinAngle),
@@ -1181,7 +1181,7 @@ procedure TVKNGDManager.RebuildAllJoint(Sender: TObject);
         pinAndPivot.Z := bso.AbsoluteMatrix.X;
         bso.Free;
 
-        FNewtonUserJoint := CreateCustomSlider(@pinAndPivot, GetBodyFromGLSceneObject(FChildObject), GetBodyFromGLSceneObject(FParentObject));
+        FNewtonUserJoint := CreateCustomSlider(@pinAndPivot, GetBodyFromVKSceneObject(FChildObject), GetBodyFromVKSceneObject(FParentObject));
         SliderEnableLimits(FNewtonUserJoint, 1);
         SliderSetLimits(FNewtonUserJoint, FCustomSliderOptions.FMinDistance, FCustomSliderOptions.FMaxDistance);
         NewtonJointSetStiffness(CustomGetNewtonJoint(FNewtonUserJoint),0);
@@ -1198,7 +1198,7 @@ procedure TVKNGDManager.RebuildAllJoint(Sender: TObject);
       begin
         FNewtonJoint := NewtonConstraintCreateUpVector(FNewtonWorld,
           @FUPVectorDirection.AsVector,
-          GetBodyFromGLSceneObject(FParentObject));
+          GetBodyFromVKSceneObject(FParentObject));
       end;
   end;
 
@@ -2473,7 +2473,7 @@ var
   epsi: Single;
 begin
   // The Newton API does not support scale [scale modifie value in matrix],
-  // so this line reset scale of the glsceneObject to (1,1,1)
+  // so this line reset scale of the VKSceneObject to (1,1,1)
   // to avoid crashing the application
   epsi := 0.0001;
   with FOwnerBaseSceneObject do

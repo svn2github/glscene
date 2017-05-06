@@ -2,7 +2,7 @@
 // VKScene Component Library, based on GLScene http://glscene.sourceforge.net 
 //
 {
-  An interface unit to GLScene plug-ins. 
+  An interface unit to plug-ins. 
   For more information see help file for writing plug-ins. 
   
 }

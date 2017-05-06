@@ -95,7 +95,7 @@ begin
           else
         else
           MessageDlg(Format('Error while loading %s' + #13 +
-            'not a valid GLScene plug-in', [Files[I]]),
+            'not a valid plug-in', [Files[I]]),
             TMsgDlgType.mtError, [TMsgDlgBtn.mbOK], 0);
       end;
 end;

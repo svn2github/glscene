@@ -3,31 +3,30 @@
 //
 
 {
-  Base classes and logic for DelphiWebScriptII enabled
-  objects in GLScene 
+  Base classes and logic for DelphiWebScriptII enabled objects 
     
 }
-unit VKS.DWS2Objects;
+unit VKS.DwsObjects;
 
 interface
 
 uses
   System.Classes, System.SysUtils, 
-  dws2Comp, dws2Exprs, dws2Symbols,
-  VKS.Scene, VKS.XCollection, VKS.ScriptDWS2, VKS.BaseClasses, VKS.Manager;
+  DwsComp, DwsExprs, DwsSymbols,
+  VKS.Scene, VKS.XCollection, VKS.ScriptDws, VKS.BaseClasses, VKS.Manager;
 
 type
-  // TVKDWS2ActiveBehaviour
+  // TVKDwsActiveBehaviour
   //
   { A DelphiWebScriptII enabled behaviour. This behaviour also calls
     on the OnProgress and OnBeginProgram procedures in the script if
     they are found. Once compiled and executed the program remains
     active until killed, deactivated or the script is invalidated. }
-  TVKDWS2ActiveBehaviour = class (TVKBehaviour)
+  TVKDwsActiveBehaviour = class (TVKBehaviour)
     private
       FActive : Boolean;
       FScript : TStringList;
-      FDWS2Program : TProgram;
+      FDwsProgram : TProgram;
       FCompiler : TVKDelphiWebScriptII;
       FCompilerName : String;
 
@@ -52,7 +51,7 @@ type
       procedure DoProgress(const ProgressTimes : TProgressTimes); override;
       procedure InvalidateScript;
 
-      property DWS2Program : TProgram read FDWS2Program;
+      property DwsProgram : TProgram read FDwsProgram;
 
     published
       property Active : Boolean read FActive write SetActive;
@@ -76,17 +75,17 @@ implementation
 
 procedure Register;
 begin
-  RegisterClasses([TVKDWS2ActiveBehaviour]);
+  RegisterClasses([TVKDwsActiveBehaviour]);
 end;
 
 
 // ----------
-// ---------- TVKDWS2ActiveBehaviour ----------
+// ---------- TVKDwsActiveBehaviour ----------
 // ----------
 
 // Create
 //
-constructor TVKDWS2ActiveBehaviour.Create(AOwner: TVKXCollection);
+constructor TVKDwsActiveBehaviour.Create(AOwner: TVKXCollection);
 begin
   inherited;
   FScript:=TStringList.Create;
@@ -94,7 +93,7 @@ end;
 
 // Destroy
 //
-destructor TVKDWS2ActiveBehaviour.Destroy;
+destructor TVKDwsActiveBehaviour.Destroy;
 begin
   KillProgram;
   FScript.Free;
@@ -103,31 +102,31 @@ end;
 
 // FriendlyName
 //
-class function TVKDWS2ActiveBehaviour.FriendlyName: String;
+class function TVKDwsActiveBehaviour.FriendlyName: String;
 begin
-  Result:='DWS2 Active Script';
+  Result:='Dws Active Script';
 end;
 
 // DoProgress
 //
-procedure TVKDWS2ActiveBehaviour.DoProgress(const ProgressTimes: TProgressTimes);
+procedure TVKDwsActiveBehaviour.DoProgress(const ProgressTimes: TProgressTimes);
 var
   Symbol : TSymbol;
 begin
   inherited;
-  if Assigned(FDWS2Program) then begin
-    if FDWS2Program.ProgramState = psRunning then begin
-      Symbol:=DWS2Program.Table.FindSymbol('OnProgress');
+  if Assigned(FDwsProgram) then begin
+    if FDwsProgram.ProgramState = psRunning then begin
+      Symbol:=DwsProgram.Table.FindSymbol('OnProgress');
       if Assigned(Symbol) then
         if Symbol is TFuncSymbol then
-          DWS2Program.Info.Func['OnProgress'].Call([ProgressTimes.newTime, ProgressTimes.deltaTime]);
+          DwsProgram.Info.Func['OnProgress'].Call([ProgressTimes.newTime, ProgressTimes.deltaTime]);
     end;
   end;
 end;
 
 // Loaded
 //
-procedure TVKDWS2ActiveBehaviour.Loaded;
+procedure TVKDwsActiveBehaviour.Loaded;
 var
   temp : TComponent;
 begin
@@ -144,7 +143,7 @@ end;
 
 // ReadFromFiler
 //
-procedure TVKDWS2ActiveBehaviour.ReadFromFiler(reader: TReader);
+procedure TVKDwsActiveBehaviour.ReadFromFiler(reader: TReader);
 begin
   inherited;
   with reader do begin
@@ -157,7 +156,7 @@ end;
 
 // WriteToFiler
 //
-procedure TVKDWS2ActiveBehaviour.WriteToFiler(writer: TWriter);
+procedure TVKDwsActiveBehaviour.WriteToFiler(writer: TWriter);
 begin
   inherited;
   with writer do begin
@@ -172,11 +171,11 @@ end;
 
 // CompileProgram
 //
-procedure TVKDWS2ActiveBehaviour.CompileProgram;
+procedure TVKDwsActiveBehaviour.CompileProgram;
 begin
   if Assigned(Compiler) then begin
     KillProgram;
-    FDWS2Program:=Compiler.Compile(Script.Text);
+    FDwsProgram:=Compiler.Compile(Script.Text);
     if Active then
       BeginProgram;
   end;
@@ -184,23 +183,23 @@ end;
 
 // BeginProgram
 //
-procedure TVKDWS2ActiveBehaviour.BeginProgram;
+procedure TVKDwsActiveBehaviour.BeginProgram;
 var
   Symbol : TSymbol;
   ObjectID : Variant;
   Obj : TVKBaseSceneObject;
 begin
-  if Assigned(DWS2Program) then begin
-    if DWS2Program.ProgramState = psReadyToRun then begin
-      DWS2Program.BeginProgram;
-      if FDWS2Program.ProgramState = psRunning then begin
-        Symbol:=DWS2Program.Table.FindSymbol('OnBeginProgram');
+  if Assigned(DwsProgram) then begin
+    if DwsProgram.ProgramState = psReadyToRun then begin
+      DwsProgram.BeginProgram;
+      if FDwsProgram.ProgramState = psRunning then begin
+        Symbol:=DwsProgram.Table.FindSymbol('OnBeginProgram');
         if Assigned(Symbol) then
           if Symbol is TFuncSymbol then begin
             Obj:=OwnerBaseSceneObject;
             if Assigned(Obj) then begin
-              ObjectID:=DWS2Program.Info.RegisterExternalObject(Obj, False, False);
-              DWS2Program.Info.Func['OnBeginProgram'].Call([ObjectID]);
+              ObjectID:=DwsProgram.Info.RegisterExternalObject(Obj, False, False);
+              DwsProgram.Info.Func['OnBeginProgram'].Call([ObjectID]);
             end;
           end;
       end;
@@ -210,27 +209,27 @@ end;
 
 // EndProgram
 //
-procedure TVKDWS2ActiveBehaviour.EndProgram;
+procedure TVKDwsActiveBehaviour.EndProgram;
 begin
-  if Assigned(DWS2Program) then begin
-    if DWS2Program.ProgramState = psRunning then
-      DWS2Program.EndProgram;
+  if Assigned(DwsProgram) then begin
+    if DwsProgram.ProgramState = psRunning then
+      DwsProgram.EndProgram;
   end;
 end;
 
 // KillProgram
 //
-procedure TVKDWS2ActiveBehaviour.KillProgram;
+procedure TVKDwsActiveBehaviour.KillProgram;
 begin
-  if Assigned(DWS2Program) then begin
+  if Assigned(DwsProgram) then begin
     EndProgram;
-    FreeAndNil(FDWS2Program);
+    FreeAndNil(FDwsProgram);
   end;
 end;
 
 // InvalidateScript
 //
-procedure TVKDWS2ActiveBehaviour.InvalidateScript;
+procedure TVKDwsActiveBehaviour.InvalidateScript;
 begin
   KillProgram;
   CompileProgram;
@@ -238,7 +237,7 @@ end;
 
 // SetActive
 //
-procedure TVKDWS2ActiveBehaviour.SetActive(const Value: Boolean);
+procedure TVKDwsActiveBehaviour.SetActive(const Value: Boolean);
 begin
   if Value<>FActive then begin
     EndProgram;
@@ -250,7 +249,7 @@ end;
 
 // SetScript
 //
-procedure TVKDWS2ActiveBehaviour.SetScript(const Value: TStringList);
+procedure TVKDwsActiveBehaviour.SetScript(const Value: TStringList);
 begin
   if Assigned(Value) then begin
     KillProgram;
@@ -264,7 +263,7 @@ end;
 
 // SetCompiler
 //
-procedure TVKDWS2ActiveBehaviour.SetCompiler(const Value: TVKDelphiWebScriptII);
+procedure TVKDwsActiveBehaviour.SetCompiler(const Value: TVKDelphiWebScriptII);
 begin
   if Value<>FCompiler then begin
     if Assigned(FCompiler) then
@@ -287,7 +286,7 @@ initialization
 // --------------------------------------------------
 // --------------------------------------------------
 
-  RegisterXCollectionItemClass(TVKDWS2ActiveBehaviour);
+  RegisterXCollectionItemClass(TVKDwsActiveBehaviour);
 
 // --------------------------------------------------
 // --------------------------------------------------
@@ -297,6 +296,6 @@ finalization
 // --------------------------------------------------
 // --------------------------------------------------
 
-  UnregisterXCollectionItemClass(TVKDWS2ActiveBehaviour);
+  UnregisterXCollectionItemClass(TVKDwsActiveBehaviour);
 
 end.

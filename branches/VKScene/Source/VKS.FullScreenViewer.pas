@@ -222,7 +222,7 @@ const
 
 procedure Register;
 begin
-  RegisterComponents('GLScene', [TVKFullScreenViewer]);
+  RegisterComponents('VKScene', [TVKFullScreenViewer]);
 end;
 
 // ------------------

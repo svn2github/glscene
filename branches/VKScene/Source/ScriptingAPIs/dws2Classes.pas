@@ -290,7 +290,7 @@ end;
 
 procedure Register;
 begin
-  RegisterComponents('GLScene DWS2', [Tdws2ClassesUnit]);
+  RegisterComponents('VKScene DWS', [TDwsClassesUnit]);
 end;
 
 

@@ -36,7 +36,7 @@ uses
   VKS.ApplicationFileIO,
   VKS.Graphics,
   VKS.Utils,
-  uXOpenGL;
+  VKS.XOpenGL;
 
 {$UNDEF VKS_MULTITHREAD}
 type

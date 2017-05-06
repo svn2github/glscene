@@ -9,8 +9,7 @@
   *EVEN* through the use of conditionnals. 
   SDL-specifics should also be avoided in the "interface" section. 
 
-  Written and maintained by Eric Grange (http://glscene.org),
-  this component uses JEDI-SDL conversion (http://delphi-jedi.org),
+  This component uses JEDI-SDL conversion (http://delphi-jedi.org),
   which is a Delphi header conversion for SDL (http://libsdl.org) 
  
 }
@@ -221,11 +220,9 @@ type
 
 procedure Register;
 begin
-  RegisterComponents('GLScene Utils', [TSDLWindow]);
+  RegisterComponents('VKScene Utils', [TSDLWindow]);
 end;
 
-// RaiseSDLError
-//
 procedure RaiseSDLError(const msg: String = '');
 begin
   if msg <> '' then

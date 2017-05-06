@@ -296,6 +296,6 @@ end;
 
 initialization
 
-RegisterArchiveFormat('pak', 'GLScene PAK File', TPAKArchive);
+RegisterArchiveFormat('pak', 'VKScene PAK File', TPAKArchive);
 
 end.

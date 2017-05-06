@@ -143,7 +143,7 @@ type
 
 procedure Register;
 begin
-  RegisterComponents('GLScene DWS2', [Tdws2VectorGeometryUnit]);
+  RegisterComponents('VKScene DWS', [TDwsVectorGeometryUnit]);
 end;
 
 function GetVectorFromInfo(Info : IInfo) : TVector;

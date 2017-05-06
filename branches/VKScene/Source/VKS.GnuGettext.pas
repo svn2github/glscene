@@ -27,7 +27,7 @@ unit VKS.GnuGettext;
  (**************************************************************)
 
 {*------------------------------------------------------------------------------
-  NOTE ON GLSCENE INTEGRATION:
+  NOTE ON INTEGRATION:
   
   The original file name is "gnugexttext.pas" but has been renamed to 
   GLGnuGettext.pas so as to not conflict with other packages that might

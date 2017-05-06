@@ -149,7 +149,7 @@ type
 
 { Returns or creates the TVKBInertia within the given behaviours.<p>
   This helper function is convenient way to access a TVKBInertia. }
-function GetInertia(const AGLSceneObject: TVKBaseSceneObject): TVKBInertia;
+function GetInertia(const AVKSceneObject: TVKBaseSceneObject): TVKBInertia;
 function GetOrCreateInertia(behaviours: TVKBehaviours): TVKBInertia; overload;
 function GetOrCreateInertia(obj: TVKBaseSceneObject): TVKBInertia; overload;
 
@@ -167,13 +167,13 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-function GetInertia(const AGLSceneObject: TVKBaseSceneObject): TVKBInertia;
+function GetInertia(const AVKSceneObject: TVKBaseSceneObject): TVKBInertia;
 var
   i: integer;
 begin
-  i := AGLSceneObject.behaviours.IndexOfClass(TVKBInertia);
+  i := AVKSceneObject.behaviours.IndexOfClass(TVKBInertia);
   if i >= 0 then
-    Result := TVKBInertia(AGLSceneObject.behaviours[i])
+    Result := TVKBInertia(AVKSceneObject.behaviours[i])
   else
     Result := nil;
 end;

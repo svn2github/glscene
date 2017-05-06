@@ -129,7 +129,7 @@ end;
 initialization
 //------------------------------------------------------------------
 
-  { Register this Fileformat-Handler with GLScene }
+  { Register this Fileformat-Handler }
   RegisterRasterFormat('jpg', 'Joint Photographic Experts Group Image',
     TVKJPEGImage);
   RegisterRasterFormat('jpeg', 'Joint Photographic Experts Group Image',

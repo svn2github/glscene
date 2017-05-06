@@ -2,7 +2,7 @@
 // VKScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
 {
-   GLScene cross-platform viewer.
+   Cross-platform viewer.
 }
 
 unit VKS.Win64Viewer;
@@ -43,20 +43,17 @@ type
 
   TTouchEvent = procedure(X, Y, TouchWidth, TouchHeight : integer; TouchID : Cardinal; MultiTouch : boolean) of object;
 
-  // TVKSceneViewer
-  //
-  { Component where the GLScene objects get rendered. 
+  { Component where the GLScene objects get rendered.
      This component delimits the area where Vulkan renders the scene,
      it represents the 3D scene viewed from a camera (specified in the
      camera property). This component can also render to a file or to a bitmap.
      It is primarily a windowed component, but it can handle full-screen
      operations : simply make this component fit the whole screen (use a
-     borderless form). 
+     borderless form).
      This viewer also allows to define rendering options such a fog, face culling,
      depth testing, etc. and can take care of framerate calculation.  }
   TVKSceneViewer = class(TViewPort3D)
   private
-    
     FBuffer: TVKSceneBuffer;
     FVSync: TVSyncMode;
     FOwnDC: HDC;
@@ -77,13 +74,10 @@ type
     procedure CMMouseEnter(var msg: TMessage);
     { TODO -oPW -cMessages :  Convert message CM_MOUSELEAVE;  to FMX }
     procedure CMMouseLeave(var msg: TMessage);
-
     function GetFieldOfView: single;
     procedure SetFieldOfView(const Value: single);
     function GetIsRenderingContextAvailable: Boolean;
-
   protected
-    
     procedure SetBeforeRender(const val: TNotifyEvent);
     function GetBeforeRender: TNotifyEvent;
     procedure SetPostRender(const val: TNotifyEvent);
@@ -93,7 +87,6 @@ type
     procedure SetCamera(const val: TVKCamera);
     function GetCamera: TVKCamera;
     procedure SetBuffer(const val: TVKSceneBuffer);
-
     procedure CreateParams(var Params: TCreateParams); /// Vcl - override;
     procedure CreateWnd; /// Vcl - override;
     procedure DestroyWnd; /// Vcl - override;
@@ -101,74 +94,56 @@ type
     procedure DoBeforeRender(Sender: TObject); dynamic;
     procedure DoBufferChange(Sender: TObject); virtual;
     procedure DoBufferStructuralChange(Sender: TObject); dynamic;
-
     procedure MouseMove(Shift: TShiftState; X, Y: Integer); /// Vcl - override;
-
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
     { Makes TWinControl's RecreateWnd public. 
        This procedure allows to work around limitations in some Vulkan
        drivers (like MS Software Vulkan) that are not able to share lists
        between RCs that already have display lists. }
     procedure RecreateWnd;
-
     property IsRenderingContextAvailable: Boolean read GetIsRenderingContextAvailable;
-
     function LastFrameTime: Single;
     function FramesPerSecond: Single;
     function FramesPerSecondText(decimals: Integer = 1): string;
     procedure ResetPerformanceMonitor;
-
     function CreateSnapShotBitmap: TBitmap;
-
     procedure RegisterTouch;
     procedure UnregisterTouch;
-
     property RenderDC: HDC read FOwnDC;
     property MouseInControl: Boolean read FMouseInControl;
-
   published
-    
     { Camera from which the scene is rendered. }
     property Camera: TVKCamera read GetCamera write SetCamera;
-
-    { Specifies if the refresh should be synchronized with the VSync signal. 
+    { Specifies if the refresh should be synchronized with the VSync signal.
        If the underlying Vulkan ICD does not support the WGL_EXT_swap_control
        extension, this property is ignored.  }
     property VSync: TVSyncMode read FVSync write FVSync default vsmNoSync;
-
-    { Triggered before the scene's objects get rendered. 
+    { Triggered before the scene's objects get rendered.
        You may use this event to execute your own Vulkan rendering. }
     property BeforeRender: TNotifyEvent read GetBeforeRender write SetBeforeRender;
-    { Triggered just after all the scene's objects have been rendered. 
+    { Triggered just after all the scene's objects have been rendered.
        The Vulkan context is still active in this event, and you may use it
        to execute your own Vulkan rendering.  }
     property PostRender: TNotifyEvent read GetPostRender write SetPostRender;
-    { Called after rendering. 
+    { Called after rendering.
        You cannot issue Vulkan calls in this event, if you want to do your own
        Vulkan stuff, use the PostRender event. }
     property AfterRender: TNotifyEvent read GetAfterRender write SetAfterRender;
-
     { Access to buffer properties. }
     property Buffer: TVKSceneBuffer read FBuffer write SetBuffer;
-
-    { Returns or sets the field of view for the viewer, in degrees. 
+    { Returns or sets the field of view for the viewer, in degrees.
     This value depends on the camera and the width and height of the scene.
     The value isn't persisted, if the width/height or camera.focallength is
     changed, FieldOfView is changed also. }
     property FieldOfView: single read GetFieldOfView write SetFieldOfView;
-
     property OnMouseLeave: TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
     property OnMouseEnter: TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
-
     property OnTouchMove: TTouchEvent read FOnTouchMove write FOnTouchMove;
     property OnTouchUp: TTouchEvent read FOnTouchUp write FOnTouchUp;
     property OnTouchDown: TTouchEvent read FOnTouchDown write FOnTouchDown;
-
     property Align;
     property Anchors;
 ///    property DragCursor; - Vcl
@@ -178,7 +153,6 @@ type
     property Hint;
     property PopupMenu;
     property Visible;
-
     property OnClick;
     property OnDblClick;
     property OnDragDrop;
@@ -188,14 +162,11 @@ type
     property OnMouseDown;
     property OnMouseMove;
     property OnMouseUp;
-
     property OnMouseWheel;
 ///    property OnMouseWheelDown; - Vcl
 ///    property OnMouseWheelUp; - Vcl
-
     property OnKeyDown;
     property OnKeyUp;
-
 ///    property OnContextPopup; - Vcl
     property TabStop;
     property TabOrder;
@@ -219,7 +190,6 @@ implementation
 // ------------------ TVKSceneViewerFMX ------------------
 // ------------------
 
-
 procedure SetupVSync(const AVSyncMode : TVSyncMode);
 var
   I: Integer;
@@ -238,9 +208,6 @@ begin
   end;
 end;
 
-
-// Create
-//
 constructor TVKSceneViewer.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
@@ -259,8 +226,6 @@ begin
   FBuffer.OnStructuralChange := DoBufferStructuralChange;
 end;
 
-// Destroy
-//
 destructor TVKSceneViewer.Destroy;
 begin
   FBuffer.Free;
@@ -268,8 +233,6 @@ begin
   inherited Destroy;
 end;
 
-// Notification
-//
 procedure TVKSceneViewer.Notification(AComponent: TComponent; Operation: TOperation);
 begin
   if (Operation = opRemove) and (FBuffer <> nil) then
@@ -279,9 +242,6 @@ begin
   end;
   inherited;
 end;
-
-// RecreateWnd
-//
 
 procedure TVKSceneViewer.RecreateWnd;
 begin
@@ -293,22 +253,16 @@ begin
   /// RegisterTouchWindow(Handle, 0); - Vcl Handle
 end;
 
-// SetBeforeRender
-//
 procedure TVKSceneViewer.SetBeforeRender(const val: TNotifyEvent);
 begin
   FBuffer.BeforeRender := val;
 end;
 
-// GetBeforeRender
-//
 function TVKSceneViewer.GetBeforeRender: TNotifyEvent;
 begin
   Result := FBuffer.BeforeRender;
 end;
 
-// SetPostRender
-//
 procedure TVKSceneViewer.SetPostRender(const val: TNotifyEvent);
 begin
   FBuffer.PostRender := val;
@@ -319,50 +273,35 @@ begin
 ///  UnregisterTouchWindow(Handle); - Vcl Handle
 end;
 
-// GetPostRender
-//
 function TVKSceneViewer.GetPostRender: TNotifyEvent;
 begin
   Result := FBuffer.PostRender;
 end;
 
-// SetAfterRender
-//
 procedure TVKSceneViewer.SetAfterRender(const val: TNotifyEvent);
 begin
   FBuffer.AfterRender := val;
 end;
 
-// GetAfterRender
-//
 function TVKSceneViewer.GetAfterRender: TNotifyEvent;
 begin
   Result := FBuffer.AfterRender;
 end;
 
-// SetCamera
-//
 procedure TVKSceneViewer.SetCamera(const val: TVKCamera);
 begin
   FBuffer.Camera := val;
 end;
 
-// GetCamera
-//
 function TVKSceneViewer.GetCamera: TVKCamera;
 begin
   Result := FBuffer.Camera;
 end;
 
-// SetBuffer
-//
 procedure TVKSceneViewer.SetBuffer(const val: TVKSceneBuffer);
 begin
   FBuffer.Assign(val);
 end;
-
-// CreateParams
-//
 
 procedure TVKSceneViewer.CreateParams(var Params: TCreateParams);
 begin
@@ -375,8 +314,6 @@ begin
   end;
 end;
 
-// CreateWnd
-//
 procedure TVKSceneViewer.CreateWnd;
 begin
   inherited;  /// Vcl -  inherited CreateWnd;
@@ -387,8 +324,6 @@ begin
   FBuffer.CreateRC(FOwnDC, False);
 end;
 
-// DestroyWnd
-//
 procedure TVKSceneViewer.DestroyWnd;
 begin
   FBuffer.DestroyRC;
@@ -401,8 +336,6 @@ begin
   inherited;
 end;
 
-// WMEraseBkgnd
-//
 procedure TVKSceneViewer.WMEraseBkgnd(var Message: TWMEraseBkgnd);
 begin
   if IsRenderingContextAvailable then
@@ -411,9 +344,6 @@ begin
     inherited;
 end;
 
-
-// WMSize
-//
 procedure TVKSceneViewer.WMSize(var Message: TWMSize);
 begin
   inherited;
@@ -421,7 +351,6 @@ begin
 end;
 
 procedure TVKSceneViewer.WMTouch(var Message: TMessage);
-
   function TouchPointToPoint(const TouchPoint: TTouchInput): TPoint;
   begin
     Result := Point(TOUCH_COORD_TO_PIXEL(TouchPoint.X), TOUCH_COORD_TO_PIXEL(TouchPoint.Y));
@@ -475,8 +404,6 @@ begin
   end;
 end;
 
-// WMPaint
-//
 procedure TVKSceneViewer.WMPaint(var Message: TWMPaint);
 var
   PS: TPaintStruct;
@@ -502,16 +429,11 @@ begin
   end;
 end;
 
-
-// WMGetDglCode
-//
 procedure TVKSceneViewer.WMGetDglCode(var Message: TMessage);
 begin
   Message.Result := Message.Result or DLGC_WANTARROWS;
 end;
 
-// WMDestroy
-//
 procedure TVKSceneViewer.WMDestroy(var Message: TWMDestroy);
 begin
   if Assigned(FBuffer) then
@@ -526,8 +448,6 @@ begin
   inherited;
 end;
 
-// CMMouseEnter
-//
 procedure TVKSceneViewer.CMMouseEnter(var msg: TMessage);
 begin
   inherited;
@@ -535,9 +455,6 @@ begin
   if Assigned(FOnMouseEnter) then
     FOnMouseEnter(Self);
 end;
-
-// CMMouseLeave
-//
 
 procedure TVKSceneViewer.CMMouseLeave(var msg: TMessage);
 begin
@@ -547,8 +464,6 @@ begin
     FOnMouseLeave(Self);
 end;
 
-// Loaded
-//
 procedure TVKSceneViewer.Loaded;
 begin
   inherited Loaded;
@@ -557,15 +472,11 @@ begin
   ///HandleNeeded;
 end;
 
-// DoBeforeRender
-//
 procedure TVKSceneViewer.DoBeforeRender(Sender: TObject);
 begin
   SetupVSync(VSync);
 end;
 
-// DoBufferChange
-//
 procedure TVKSceneViewer.DoBufferChange(Sender: TObject);
 begin
   if (not Buffer.Rendering) and (not Buffer.Freezed) then
@@ -573,8 +484,6 @@ begin
   ///  Invalidate;
 end;
 
-// DoBufferStructuralChange
-//
 procedure TVKSceneViewer.DoBufferStructuralChange(Sender: TObject);
 begin
   RecreateWnd;
@@ -587,36 +496,26 @@ begin
 ///  if csDesignInteractive in ControlStyle then FBuffer.NotifyMouseMove(Shift, X, Y);
 end;
 
-// LastFrameTime
-//
 function TVKSceneViewer.LastFrameTime: Single;
 begin
   Result := FBuffer.LastFrameTime;
 end;
 
-// FramesPerSecond
-//
 function TVKSceneViewer.FramesPerSecond: Single;
 begin
   Result := FBuffer.FramesPerSecond;
 end;
 
-// FramesPerSecondText
-//
 function TVKSceneViewer.FramesPerSecondText(decimals: Integer = 1): string;
 begin
   Result := Format('%.*f FPS', [decimals, FBuffer.FramesPerSecond]);
 end;
 
-// ResetPerformanceMonitor
-//
 procedure TVKSceneViewer.ResetPerformanceMonitor;
 begin
   FBuffer.ResetPerformanceMonitor;
 end;
 
-// CreateSnapShotBitmap
-//
 function TVKSceneViewer.CreateSnapShotBitmap: TBitmap;
 begin
   Result := TBitmap.Create;
@@ -628,36 +527,27 @@ begin
 ///  BitBlt(Result.Canvas.Handle, 0, 0, Width, Height, RenderDC, 0, 0, SRCCOPY);
 end;
 
-// GetFieldOfView
-//
 function TVKSceneViewer.GetFieldOfView: single;
 begin
   if not Assigned(Camera) then
     result := 0
-
   else if Width < Height then
     result := Camera.GetFieldOfView(Width)
-
   else
     result := Camera.GetFieldOfView(Height);
 end;
 
-// GetIsRenderingContextAvailable
-//
 function TVKSceneViewer.GetIsRenderingContextAvailable: Boolean;
 begin
   Result := FBuffer.RCInstantiated and FBuffer.RenderingContext.IsValid;
 end;
 
-// SetFieldOfView
-//
 procedure TVKSceneViewer.SetFieldOfView(const Value: single);
 begin
   if Assigned(Camera) then
   begin
     if Width < Height then
       Camera.SetFieldOfView(Value, Width)
-
     else
       Camera.SetFieldOfView(Value, Height);
   end;

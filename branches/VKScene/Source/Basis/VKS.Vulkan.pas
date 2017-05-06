@@ -22,7 +22,7 @@
 ** This header is generated from the Khronos Vulkan XML API Registry.
 *)
 
-unit Vulkan;
+unit VKS.Vulkan;
 
 interface
 

@@ -2,7 +2,7 @@
 // VKScene Component Library, based on GLScene http://glscene.sourceforge.net 
 //
 {
-    Support-code to load Q3BSP Files into TVKFreeForm-Components in GLScene.  
+    Support-code to load Q3BSP Files into TVKFreeForm-Components.  
     Note that you must manually add this unit to one of your project's uses
     to enable support for OBJ & OBJF at run-time. 
 

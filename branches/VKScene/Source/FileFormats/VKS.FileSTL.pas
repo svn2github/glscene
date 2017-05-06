@@ -2,7 +2,7 @@
 // VKScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
 {
-  Support-code to load STL Files into TVKFreeForm-Components in GLScene.
+  Support-code to load STL Files into TVKFreeForm-Components.
   Note that you must manually add this unit to one of your project's uses
   to enable support for STL files at run-time.
 }
@@ -247,7 +247,7 @@ var
   dataFace: TSTLFace;
   list: TAffineVectorList;
 const
-  cHeaderTag = 'GLScene STL export';
+  cHeaderTag = 'VKScene STL export';
 begin
   list := Owner.MeshObjects.ExtractTriangles;
   try

@@ -2,9 +2,8 @@
 // VKScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
 {
-  Extrusion objects for GLScene.  Extrusion objects are solids defined by the
+  Extrusion objects are solids defined by the
   surface described by a moving curve.
-
 }
 { TODO
 
@@ -25,7 +24,7 @@ uses
   System.SysUtils,
   System.Classes,
 
-  uXOpenGL,
+  VKS.XOpenGL,
   VKS.Context,
   VKS.Objects,
   VKS.Scene,

@@ -2,7 +2,7 @@
 // VKScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
 {
-  Collision-detection management for GLScene
+  Collision-detection management
 
 }
 unit VKS.Collision;

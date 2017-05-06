@@ -46,7 +46,7 @@ uses
   VKS.VectorTypes,
   VKS.ApplicationFileIO,
   VKS.Utils,
-  uXOpenGL;
+  VKS.XOpenGL;
 
 
 type
@@ -60,8 +60,8 @@ type
 
 const
   cDefaultProxyOptions = [pooEffects, pooObjects, pooTransformation];
-  GLSCENE_REVISION = '$Revision: 6850$';
-  GLSCENE_VERSION = '1.5.0.%s';
+  VKSCENE_REVISION = '$Revision: 6850$';
+  VKSCENE_VERSION = '1.5.0.%s';
 
 type
 
@@ -123,7 +123,7 @@ type
   TVKObjectEffects = class;
   TVKSceneBuffer = class;
 
-  { Possible styles/options for a GLScene object.
+  { Possible styles/options for objects.
      Allowed styles are:
       osDirectDraw : object shall not make use of compiled call lists, but issue
         direct calls each time a render should be performed.
@@ -694,7 +694,7 @@ type
     function CanAdd(aClass: TVKXCollectionItemClass): Boolean; override;
     procedure DoProgress(const progressTime: TProgressTimes);
     procedure RenderPreEffects(var rci: TVKRenderContextInfo);
-    { Also take care of registering after effects with the GLSceneViewer. }
+    { Also take care of registering after effects with the VKSceneViewer. }
     procedure RenderPostEffects(var rci: TVKRenderContextInfo);
   end;
 
@@ -824,7 +824,7 @@ type
     function AxisAlignedDimensionsUnscaled: TVector; override;
   published
     { Specifies if a build list be made.
-       If True, GLScene will generate a build list (Vulkan-side cache),
+       If True, VKScene will generate a build list (side cache),
        ie. OnRender will only be invoked once for the first render, or after
        a StructureChanged call. This is suitable for "static" geometry and
        will usually speed up rendering of things that don't change.
@@ -925,7 +925,7 @@ type
   TLightStyle = (lsSpot, lsOmni, lsParallel, lsParallelSpot);
 
   { Standard light source.
-     The standard GLScene light source covers spotlights, omnidirectionnal and
+     The standard light source covers spotlights, omnidirectionnal and
      parallel sources (see TLightStyle).
      Lights are colored, have distance attenuation parameters and are turned
      on/off through their Shining property.

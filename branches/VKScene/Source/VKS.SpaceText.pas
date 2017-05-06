@@ -219,14 +219,12 @@ implementation
 // ------------------------------------------------------------------
 
 const
-  cFontManagerMsg = 'GLScene FontManagerMessage';
+  cFontManagerMsg = 'VKScene FontManagerMessage';
 
 var
   vFontManager: TFontManager;
 
-  // FontManager
-  //
-
+  
 function FontManager: TFontManager;
 begin
   if not Assigned(vFontManager) then

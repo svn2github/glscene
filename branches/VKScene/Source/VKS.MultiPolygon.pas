@@ -30,7 +30,7 @@ uses
   System.SysUtils,
 
   uOpenGLAdapter,
-  uXOpenGL,
+  VKS.XOpenGL,
   VKS.Spline,
   VKS.Context,
   VKS.VectorTypes,

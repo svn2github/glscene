@@ -3,17 +3,16 @@
 //
 {
    Parametric surface implementation (like Bezier and BSpline surfaces)
-   for GLScene.  
 
    Notes:
    The MOParametricSurface is a TVKMeshObject descendant that can be used
    to render parametric surfaces. The Renderer property defines if the
-   surface should be rendered using Vulkan mesh evaluators (through GLU
+   surface should be rendered using mesh evaluators (through GLU
    Nurbs for BSplines) or through GLScene using the CurvesAndSurfaces.pas
    routines to generate the mesh vertices and then rendered through the
    standard TVKMeshObject render routine. Please note that BSplines aren't
    correctly handled yet in the CurvesAndSurfaces unit so the output mesh
-   in GLScene rendering mode is wrong. I'll have it fixed when I know
+   in rendering mode is wrong. I'll have it fixed when I know
    what's going wrong. The GLU Nurbs and glMeshEval Beziers work well
    though. 
 
@@ -91,7 +90,7 @@ type
     procedure Clear; override;
     { Generates a mesh approximation of the surface defined by the
        properties below. This is used to construct the mesh when using
-       Renderer = psrGLScene. If you want to render using OpenGL calls
+       Renderer = psrVKScene. If you want to render using OpenGL calls
        but would like to obtain the mesh data also use this call to
        generate the mesh data. Fills in Vertices, Normals, etc. }
     procedure GenerateMesh;

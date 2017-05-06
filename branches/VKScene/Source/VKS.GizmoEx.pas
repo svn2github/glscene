@@ -3,7 +3,7 @@
 //
 {
    Invisible component for helping to Move, Rotate and Scale an Object
-   under GLScene (usefull for an Editor).
+   (usefull for an Editor).
 
    This is an enhanced version of TVKGizmo, which was originally created and
    modified by Adirex, J.Delauney, Degiovani, Marcus Oblak and Da Stranger

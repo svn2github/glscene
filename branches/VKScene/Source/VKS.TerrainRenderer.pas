@@ -2,7 +2,7 @@
 // VKScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
 {
-  GLScene's brute-force terrain renderer.
+  The Brute-force terrain renderer.
 
   NOTA : multi-materials terrain support is not yet optimized to minimize
   texture switches (in case of resued tile textures).
@@ -21,7 +21,7 @@ uses
   System.SysUtils,
   
   uOpenGLAdapter,
-  uXOpenGL,
+  VKS.XOpenGL,
   VKS.Scene,
   VKS.HeightData,
   VKS.Material,

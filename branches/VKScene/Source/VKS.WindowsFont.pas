@@ -41,8 +41,8 @@ type
   { A bitmap font automatically built from a TFont. 
      It works like a TVKBitmapfont, you set ranges and which chars are assigned
      to which indexes, however here you also set the Font property to any TFont
-     available to the system and it renders in GLScene as close to that font
-     as posible, on some font types this is 100% on some a slight difference
+     available to the system and it renders as close to that font
+     as possible, on some font types this is 100% on some a slight difference
      in spacing can occur at most 1 pixel per char on some char combinations. 
      Ranges must be sorted in ascending ASCII order and should not overlap.
      As the font texture is automatically layed out, the Ranges StartGlyphIdx

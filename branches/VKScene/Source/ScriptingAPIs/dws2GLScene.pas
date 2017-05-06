@@ -773,7 +773,7 @@ end;
 
 procedure Register;
 begin
-  RegisterComponents('GLScene DWS2', [Tdws2GLSceneUnit]);
+  RegisterComponents('VKScene DWS', [TDwsVKSceneUnit]);
 end;
 
 
@@ -786,7 +786,7 @@ end;
 constructor Tdws2GLSceneUnit.Create(AOwner: TComponent);
 begin
   inherited;
-  FUnitName:='GLScene';
+  FUnitName:='VKScene';
   with FDependencies do begin
     Add('Classes');
     Add('VKS.VectorGeometry');

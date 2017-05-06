@@ -2,7 +2,7 @@
 // VKScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
 {
-  Base classes and structures for GLScene.
+  Base classes and structures.
 
   Most common functions/procedures come in various flavours (using overloads),
   the naming convention is :

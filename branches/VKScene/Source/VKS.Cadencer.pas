@@ -2,7 +2,7 @@
 // VKScene Component Library, based on GLScene http://glscene.sourceforge.net 
 //
 {
-   Cadencing composant for GLScene (ease Progress processing) 
+   Cadencing composant for ease Progress processing 
           
 }
 unit VKS.Cadencer;
@@ -12,10 +12,16 @@ interface
 {$I VKScene.inc}
 
 uses
-  Winapi.Windows, Winapi.Messages,
-  System.Classes, System.Types, System.SysUtils, FMX.Forms,
-
-  VKS.Scene, VKS.CrossPlatform, VKS.BaseClasses;
+  Winapi.Windows, 
+  Winapi.Messages,
+  System.Classes, 
+  System.Types, 
+  System.SysUtils, 
+  FMX.Forms,
+  
+  VKS.Scene, 
+  VKS.CrossPlatform, 
+  VKS.BaseClasses;
 
 //**************************************
 

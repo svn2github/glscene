@@ -5,22 +5,21 @@
    A pretty particle mask effect manager. 
    Original Header:
 
-   GLEParticleMasksManager.pas
    This unit is part of GLE - GLScene Game Utilities Engine set by Kenneth Poulter difacane@telkomsa.net
    Module Number: 37
 
    Description: This is merely an addon to VKS.Scene, since i don't want to edit GLScene's source code directly
-                and make changes (since GLScene's source code constantly changes). What the manager does
+                and make changes (since VKScene's source code constantly changes). What the manager does
                 is to provide a basic tool for newly created particles to be modified (their position currently).
                 Their position is set from 3 different masks, which create a "virtual" 3d object... meaning,
                 an actual 3d object is not created, but an outline for particles or any other objects are positioned.
 
    ActualUsage: Create the component, create a new ParticleMask, set the material library, set the materials,
-                and use the procedures provided in the managers root. positioning and scaling applicable aswell.
+                and use the procedures provided in the managers root. positioning and scaling applicable as well.
 
                 The images should be
 
-   Licenses: Removed. Donated to GLScene's Code Base as long as the author (Kenneth Poulter) is not altered in this file.
+   Licenses: Removed. Donated to VKScene's Code Base as long as the author (Kenneth Poulter) is not altered in this file.
              Theft of code also is not allowed, although alterations are allowed.
 
 }
@@ -32,12 +31,20 @@ interface
 {$I VKScene.inc}
 
 uses
-  // System
-  System.SysUtils, System.Classes, System.UITypes,
+  System.SysUtils, 
+  System.Classes, 
+  System.UITypes,
   FMX.Graphics,
 
-  VKS.Color, VKS.Texture, VKS.Material, VKS.Scene, VKS.VectorGeometry,
-  VKS.VectorTypes, VKS.ParticleFX, VKS.CrossPlatform, VKS.Coordinates;
+  VKS.Color, 
+  VKS.Texture, 
+  VKS.Material, 
+  VKS.Scene, 
+  VKS.VectorGeometry,
+  VKS.VectorTypes, 
+  VKS.ParticleFX, 
+  VKS.CrossPlatform, 
+  VKS.Coordinates;
 
 type
 

@@ -2,7 +2,7 @@
 // VKScene Component Library, based on GLScene http://glscene.sourceforge.net 
 //
 {
-  Added GLScene's toolbar to Delphi IDE. 
+  Added a toolbar to Delphi IDE. 
   
 }
 
@@ -28,7 +28,7 @@ uses
   VKS.Generics;
 
 const
-  cGLSceneViewerToolbar = 'GLSceneViewerToolbar';
+  cVKSceneViewerToolbar = 'VKSceneViewerToolbar';
 
 type
 
@@ -75,7 +75,7 @@ procedure AddGLSceneToolbar;
         Act.Tag := T;
         Act.OnExecute := vReciver.OnClick;
 
-        with Services.AddToolButton(cGLSceneViewerToolbar, 'GLSButton' + IntToStr(T), Act) do
+        with Services.AddToolButton(cVKSceneViewerToolbar, 'GLSButton' + IntToStr(T), Act) do
           Action := Act;
         Act.Enabled := True;
 
@@ -87,23 +87,23 @@ procedure AddGLSceneToolbar;
     if not Supports(BorlandIDEServices, INTAServices, Services) then
       exit;
 
-    GLToolbar := Services.ToolBar[cGLSceneViewerToolbar];
+    GLToolbar := Services.ToolBar[cVKSceneViewerToolbar];
     vReciver := TVKSToolButtonReceiver.Create;
     T := 0;
 
     if not Assigned(GLToolbar) then
     begin
-      GLToolbar := Services.NewToolbar(cGLSceneViewerToolbar, 'GLScene Viewer Control');
+      GLToolbar := Services.NewToolbar(cVKSceneViewerToolbar, 'VKScene Viewer Control');
       if Assigned(GLToolbar) then
         with GLToolbar do
         begin
-          AddButton('GLSceneViewer default control mode', 'GLSceneViewerControlToolbarDefault');
-          AddButton('GLSceneViewer navigation mode', 'GLSceneViewerControlToolbarNavigation');
-          AddButton('GLSceneViewer gizmo mode', 'GLSceneViewerControlToolbarGizmo');
-          AddButton('Reset view to GLSceneViewer camera', 'GLSceneViewerControlToolbarCameraReset');
+          AddButton('VKSceneViewer default control mode', 'VKSceneViewerControlToolbarDefault');
+          AddButton('VKSceneViewer navigation mode', 'VKSceneViewerControlToolbarNavigation');
+          AddButton('VKSceneViewer gizmo mode', 'VKSceneViewerControlToolbarGizmo');
+          AddButton('Reset view to VKSceneViewer camera', 'VKSceneViewerControlToolbarCameraReset');
           Visible := True;
         end;
-      MsgServices.AddTitleMessage('GLScene Toolbar created');
+      MsgServices.AddTitleMessage('VKScene Toolbar created');
     end
     else
     begin
@@ -112,7 +112,7 @@ procedure AddGLSceneToolbar;
         GLToolbar.Buttons[T].Action.OnExecute := vReciver.OnClick;
         vReciver.FActionList.Add(GLToolbar.Buttons[T].Action);
       end;
-      MsgServices.AddTitleMessage('GLScene Toolbar activated');
+      MsgServices.AddTitleMessage('VKScene Toolbar activated');
     end;
     Services.ToolbarModified(GLToolbar);
   end;
@@ -120,7 +120,7 @@ procedure AddGLSceneToolbar;
 constructor TVKSToolButtonReceiver.Create;
 begin
   FActionList := GList<TBasicAction>.Create;
-  vGLSceneViewerMode := svmDefault;
+  vVKSceneViewerMode := svmDefault;
 end;
 
 destructor TVKSToolButtonReceiver.Destroy;
@@ -130,7 +130,7 @@ begin
   for I := 0 to FActionList.Count - 1 do
     FActionList[I].OnExecute := nil;
   FActionList.Destroy;
-  vGLSceneViewerMode := svmDisabled;
+  vVKSceneViewerMode := svmDisabled;
 end;
 
 procedure TVKSToolButtonReceiver.OnClick(Sender: TObject);
@@ -143,8 +143,8 @@ procedure TVKSToolButtonReceiver.OnClick(Sender: TObject);
     T := TComponent(Sender).Tag;
     if T < 3 then
     begin
-      vGLSceneViewerMode := TVKSceneViewerMode(T+1);
-      MsgServices.AddTitleMessage(Format('GLSceneViewer %s mode', [cMode[vGLSceneViewerMode]]));
+      vVKSceneViewerMode := TVKSceneViewerMode(T+1);
+      MsgServices.AddTitleMessage(Format('VKSceneViewer %s mode', [cMode[vVKSceneViewerMode]]));
     end
     else
       vResetDesignView := True;

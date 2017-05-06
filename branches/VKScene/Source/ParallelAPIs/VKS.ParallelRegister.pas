@@ -2,7 +2,7 @@
 // VKScene Component Library, based on GLScene http://glscene.sourceforge.net 
 //
 {
-   Registration unit for GLScene GPU Computing package. 
+   Registration unit for GPU Computing package. 
   
 }
 unit VKS.ParallelRegister;
@@ -434,7 +434,7 @@ end;
 
 procedure Register;
 begin
-  RegisterComponents('GLScene GPU Computing', [TVKSCUDA, TVKSCUDADevice,
+  RegisterComponents('GPU Computing', [TVKSCUDA, TVKSCUDADevice,
     TVKSCUDACompiler]);
   RegisterComponentEditor(TVKSCUDA, TVKSCUDAEditor);
   RegisterComponentEditor(TVKSCUDACompiler, TVKSCUDACompilerEditor);

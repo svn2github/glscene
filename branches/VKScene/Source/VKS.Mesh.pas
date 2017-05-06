@@ -2,7 +2,7 @@
 // VKScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
 { 
-  Raw Mesh support in GLScene.
+  Raw Mesh support.
 
   This unit is for simple meshes and legacy support, VKS.VectorFileObjects
   implements more efficient (though more complex) mesh tools.
@@ -21,7 +21,7 @@ uses
   System.SysUtils,
   
   uOpenGLAdapter,
-  uXOpenGL,
+  VKS.XOpenGL,
   VKS.Strings,
   VKS.Context,
   VKS.Scene,

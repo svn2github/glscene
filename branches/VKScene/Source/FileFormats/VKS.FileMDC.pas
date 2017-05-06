@@ -2,7 +2,7 @@
 // VKScene Component Library, based on GLScene http://glscene.sourceforge.net 
 //
 { 
-  Code for loading animated MDC files into GLScene FreeForms
+  Code for loading animated MDC files into FreeForms
   and Actors.
   This file format uses in Return To Castle Wolfenstein instead
   of MD3 files. It has got all MD3 features (such as Tag frames)

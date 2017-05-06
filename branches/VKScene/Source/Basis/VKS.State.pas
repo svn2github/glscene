@@ -2,21 +2,21 @@
 // VKScene Component Library, based on GLScene http://glscene.sourceforge.net 
 //
 {
-   Tools for managing an application-side cache of Vulkan state.
+   Tools for managing an application-side cache of OpenGL state.
 }
 
-// TODO: Proper client-side pushing + popping of state, in Vulkan 3+ contexts,
+// TODO: Proper client-side pushing + popping of state, in OpenGL 3+ contexts,
 //       rather than using glPushAttrib + glPopAttrib.
 // TODO: Proper support for textures, taking into account that they probably
-//       won't be linked to texture units in some future version of Vulkan.
+//       won't be linked to texture units in some future version of OpenGL.
 // TODO: Once more of GLScene is cache-aware, enable some of the checks before
-//       changing Vulkan state (where we will gain a speed increase).
+//       changing OpenGL state (where we will gain a speed increase).
 // DONE: Cache some relevant legacy state
 // TODO: improve binding objects to binding points
 // TODO: decide how to implement the new Enable* options (without going above
 //       32 elements in sets if possible, which would be slower in 32bit Delphi)
 // DONE: remove stTexture1D, 2D, etc from TVKState if possible, since they are
-//       per texture-unit + also deprecated in Vulkan 3+
+//       per texture-unit + also deprecated in OpenGL 3+
 
 unit VKS.State;
 

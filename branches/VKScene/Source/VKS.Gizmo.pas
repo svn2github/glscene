@@ -283,7 +283,7 @@ type
     { Indicates whether the gizmo is enabled or not.
       WARNING: When loading/editing (possibly whenever a structureChanged
       call is made) a model, sometimes the gizmo will trigger a
-      bug if the mouse is inside the glscene Viewer. To prevent that,
+      bug if the mouse is inside the Viewer. To prevent that,
       remember to disable the gizmo before loading, then process windows
       messages (i.e. application.processMessage) and then enable the gizmo
       again. }

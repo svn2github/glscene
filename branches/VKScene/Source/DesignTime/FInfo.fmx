@@ -1,7 +1,7 @@
 object InfoForm: TInfoForm
   Left = 0
   Top = 0
-  Caption = 'GLScene Info'
+  Caption = 'VKScene Info'
   ClientHeight = 419
   ClientWidth = 540
   FormFactor.Width = 320
@@ -31,7 +31,7 @@ object InfoForm: TInfoForm
       335s
       540s
       335s)
-    object TabItemGLScene: TTabItem
+    object TabItemVKScene: TTabItem
       CustomIcon = <
         item
         end>
@@ -41,7 +41,7 @@ object InfoForm: TInfoForm
       Size.PlatformDefault = False
       StyleLookup = ''
       TabOrder = 0
-      Text = 'GLScene'
+      Text = 'VKScene'
       ExplicitSize.cx = 65.000000000000000000
       ExplicitSize.cy = 24.000000000000000000
       object ImageControl1: TImageControl

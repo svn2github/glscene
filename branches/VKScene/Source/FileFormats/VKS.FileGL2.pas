@@ -2,8 +2,7 @@
 // VKScene Component Library, based on GLScene http://glscene.sourceforge.net 
 //
 {
-	Vector file object loading of Ghoul2 model and animation
-	files into GLScene.
+	Vector file object loading of Ghoul2 model and animation files.
 }
 unit VKS.FileGL2;
 

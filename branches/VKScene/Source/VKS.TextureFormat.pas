@@ -213,7 +213,7 @@ var
 const
   cDefaultSwizzleVector: TSwizzleVector = (tswRed, tswGreen, tswBlue, tswAlpha);
 
-{Give a Vulkan texture format from GLScene texture format. }
+{Give a Vulkan texture format from texture format. }
 function InternalFormatToVulkanFormat(intFormat: TVKInternalFormat): Cardinal;
 {Give a VKScene texture format from Vulkan texture format. }
 function VulkanFormatToInternalFormat(glFormat: Cardinal): TVKInternalFormat;

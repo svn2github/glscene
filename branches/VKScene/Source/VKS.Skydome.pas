@@ -741,12 +741,9 @@ begin
   end;
   glEnd;
 
-  // restore default GLScene AlphaFunc
+  // restore default AlphaFunc
   rci.VKStates.SetAlphaFunction(cfGreater, 0);
 end;
-
-// AddRandomStars
-//
 
 procedure TVKSkyDomeStars.AddRandomStars(const nb: Integer; const color: TColor;
   const limitToTopDome: Boolean = False);

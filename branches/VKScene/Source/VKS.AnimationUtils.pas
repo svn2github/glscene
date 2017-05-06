@@ -14,9 +14,12 @@ interface
 {$I VKScene.inc}
 
 uses
-  System.SysUtils, System.Classes, System.Math,
-  
-  VKS.CrossPlatform, VKS.VectorTypes, VKS.VectorGeometry;
+  System.SysUtils, 
+  System.Classes, 
+  System.Math,
+  VKS.CrossPlatform, 
+  VKS.VectorTypes, 
+  VKS.VectorGeometry;
 
 type
 

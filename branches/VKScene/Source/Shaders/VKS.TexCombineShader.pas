@@ -17,7 +17,7 @@ uses
   System.SysUtils,
   
   uOpenGLAdapter,
-  uXOpenGL,
+  VKS.XOpenGL,
   VKS.Texture,
   VKS.Material,
   VKS.RenderContextInfo,

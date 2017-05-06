@@ -28,7 +28,7 @@ uses
   FMX.Dialogs,
 
   uOpenGLAdapter,
-  uXOpenGL,
+  VKS.XOpenGL,
   VKS.RenderContextInfo,
   VKS.BaseClasses,
   VKS.Context,

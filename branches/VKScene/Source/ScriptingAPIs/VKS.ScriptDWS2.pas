@@ -94,7 +94,7 @@ implementation
 procedure Register;
 begin
   RegisterClasses([TVKDelphiWebScriptII, TVKScriptDWS2]);
-  RegisterComponents('GLScene DWS2', [TVKDelphiWebScriptII]);
+  RegisterComponents('VKScene DWS2', [TVKDelphiWebScriptII]);
 end;
 
 

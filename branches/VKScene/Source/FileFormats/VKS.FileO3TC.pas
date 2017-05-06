@@ -410,7 +410,7 @@ end;
 initialization
 //--------------------------------------------------------------
 
-  { Register this Fileformat-Handler with GLScene }
+  { Register this Fileformat-Handler }
   RegisterRasterFormat('o3tc', 'oZone3D Texture Compression', TVKO3TCImage);
 
 end.

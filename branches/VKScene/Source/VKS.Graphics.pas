@@ -1404,7 +1404,7 @@ begin
     Exit;
 
   UnMipmap;
-  // Use GLScene image utils
+  // Use image utils
   size := GetWidth * GetHeight * 4;
   GetMem(newData, size);
   try

@@ -2,8 +2,7 @@
 // VKScene Component Library, based on GLScene http://glscene.sourceforge.net 
 //
 {
-   Spatial partitioning related code that also uses GLScene objects
-   
+   Spatial partitioning related code that also uses scene objects
 }
 
 unit VKS.SpatialPartitioning;
@@ -22,8 +21,8 @@ uses
   VKS.State;
 
 type
-  { Object for holding glscene objects in a spatial partitioning }
-  TSceneObj = class(TSpacePartitionLeaf)
+  { Object for holding scene objects in a spatial partitioning }
+  TVKSceneObj = class(TSpacePartitionLeaf)
   public
     Obj: TVKBaseSceneObject;
     procedure UpdateCachedAABBAndBSphere; override;
@@ -31,18 +30,18 @@ type
     destructor Destroy; override;
   end;
 
-  { Render a spacial partitioning descending from TSectoredSpacePartition
+{ Render a spacial partitioning descending from TSectoredSpacePartition
   (octree and quadtree) as a grid - great for debugging and visualisation }
 procedure RenderSpatialPartitioning(var rci: TVKRenderContextInfo;
   const Space: TSectoredSpacePartition);
 
-{ Create an extended frustum from a GLSceneViewer - this makes the unit
+{ Create an extended frustum from a SceneViewer - this makes the unit
 specific to the windows platform!}
 function ExtendedFrustumMakeFromSceneViewer(const AFrustum: TFrustum;
-  const vWidth, vHeight: integer; AGLCamera: TVKCamera): TExtendedFrustum; overload;
+  const vWidth, vHeight: integer; AVKCamera: TVKCamera): TExtendedFrustum; overload;
 
 function ExtendedFrustumMakeFromSceneViewer(const AFrustum: TFrustum;
-  const AGLSceneViewer: TVKSceneViewer): TExtendedFrustum; overload;
+  const AVKSceneViewer: TVKSceneViewer): TExtendedFrustum; overload;
 
 { Renders an AABB as a line }
 procedure RenderAABB(var rci: TVKRenderContextInfo; AABB: TAABB; w, r, g, b: single); overload;
@@ -55,6 +54,7 @@ implementation
 //-------------------------------------------------------------------
 //-------------------------------------------------------------------
 //-------------------------------------------------------------------
+
 uses
   VKS.VectorTypes,
   VKS.Context;
@@ -95,8 +95,6 @@ begin
   glEnd;
 end;
 
-// RenderSpatialPartitioning
-//
 procedure RenderSpatialPartitioning(var rci: TVKRenderContextInfo;
   const Space: TSectoredSpacePartition);
 
@@ -108,12 +106,10 @@ procedure RenderSpatialPartitioning(var rci: TVKRenderContextInfo;
     if Node.NoChildren then
     begin
       AABB := Node.AABB;
-
       if Node.RecursiveLeafCount > 0 then
         RenderAABB(rci, AABB, 1, 0, 0, 0)
       else
         RenderAABB(rci, AABB, 1, 0.8, 0.8, 0.8) //}
-
     end
     else
     begin
@@ -127,48 +123,47 @@ begin
 end;
 
 function ExtendedFrustumMakeFromSceneViewer(const AFrustum: TFrustum;
-  const AGLSceneViewer: TVKSceneViewer): TExtendedFrustum; //old version
+  const AVKSceneViewer: TVKSceneViewer): TExtendedFrustum; //old version
 begin
-  Assert(Assigned(AGLSceneViewer.Camera), 'GLSceneViewer must have camera specified!');
+  Assert(Assigned(AVKSceneViewer.Camera), 'VKSceneViewer must have camera specified!');
   result := ExtendedFrustumMake(AFrustum,
-    AGLSceneViewer.Camera.NearPlane,
-    AGLSceneViewer.Camera.DepthOfView,
-    AGLSceneViewer.FieldOfView,
-    AGLSceneViewer.Camera.Position.AsAffineVector,
-    AGLSceneViewer.Camera.Direction.AsAffineVector);
+    AVKSceneViewer.Camera.NearPlane,
+    AVKSceneViewer.Camera.DepthOfView,
+    AVKSceneViewer.FieldOfView,
+    AVKSceneViewer.Camera.Position.AsAffineVector,
+    AVKSceneViewer.Camera.Direction.AsAffineVector);
 end;
 
 function ExtendedFrustumMakeFromSceneViewer(const AFrustum: TFrustum;
-  const vWidth, vHeight: integer; AGLCamera: TVKCamera): TExtendedFrustum; //changed version
+  const vWidth, vHeight: integer; AVKCamera: TVKCamera): TExtendedFrustum; //changed version
 var
   buffov: single;
 begin
   if vWidth < vHeight then
-    buffov := AGLCamera.GetFieldOfView(vWidth)
+    buffov := AVKCamera.GetFieldOfView(vWidth)
   else
-    buffov := AGLCamera.GetFieldOfView(vHeight);
+    buffov := AVKCamera.GetFieldOfView(vHeight);
   result := ExtendedFrustumMake(AFrustum,
-    AGLCamera.NearPlane,
-    AGLCamera.DepthOfView,
+    AVKCamera.NearPlane,
+    AVKCamera.DepthOfView,
     buffov,
-    AGLCamera.Position.AsAffineVector,
-    AGLCamera.Direction.AsAffineVector);
+    AVKCamera.Position.AsAffineVector,
+    AVKCamera.Direction.AsAffineVector);
 end;
 
-{ TSceneObj }
-
-constructor TSceneObj.CreateObj(Owner: TSectoredSpacePartition; aObj: TVKBaseSceneObject);
+//--------- TVKSceneObj ------------
+constructor TVKSceneObj.CreateObj(Owner: TSectoredSpacePartition; aObj: TVKBaseSceneObject);
 begin
   Obj := aObj;
   inherited CreateOwned(Owner);
 end;
 
-destructor TSceneObj.Destroy;
+destructor TVKSceneObj.Destroy;
 begin
   inherited;
 end;
 
-procedure TSceneObj.UpdateCachedAABBAndBSphere;
+procedure TVKSceneObj.UpdateCachedAABBAndBSphere;
 begin
   FCachedAABB := Obj.AxisAlignedBoundingBox;
   FCachedAABB.min := Obj.LocalToAbsolute(FCachedAABB.min);

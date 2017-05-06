@@ -83,7 +83,7 @@ type
   private
     FTimer: TTimer;
     FForm: TCustomForm;
-    FGLSceneViewer: TVKSceneViewer;
+    FVKSceneViewer: TVKSceneViewer;
 
     FOldX, FOldY: Single;
     FFormCaption: string;
@@ -99,7 +99,7 @@ type
     procedure ViewerMouseWheel(Sender: TObject; Shift: TShiftState;
       WheelDelta: Integer; MousePos: TVKPoint; var Handled: Boolean);
 
-    procedure SetGLSceneViewer(const Value: TVKSceneViewer);
+    procedure SetVKSceneViewer(const Value: TVKSceneViewer);
     procedure SetForm(const Value: TCustomForm);
     function StoreFormCaption: Boolean;
     function StoreMoveAroundTargetSpeed: Boolean;
@@ -115,7 +115,7 @@ type
     procedure Assign(Source: TPersistent); override;
   published
     property Form: TCustomForm read FForm write SetForm;
-    property GLSceneViewer: TVKSceneViewer read FGLSceneViewer write SetGLSceneViewer;
+    property VKSceneViewer: TVKSceneViewer read FVKSceneViewer write SetVKSceneViewer;
 
     property ZoomSpeed: Single read FZoomSpeed write FZoomSpeed stored StoreZoomSpeed;
     property MoveAroundTargetSpeed: Single read FMoveAroundTargetSpeed write FMoveAroundTargetSpeed stored StoreMoveAroundTargetSpeed;
@@ -142,7 +142,7 @@ begin
   begin
     { Don't do that, because that might overide the original component's event handlers
     SetForm(TVKSimpleNavigation(Source).FForm);
-    SetGLSceneViewer(TVKSimpleNavigation(Source).FGLSceneViewer);
+    SetVKSceneViewer(TVKSimpleNavigation(Source).FVKSceneViewer);
     }
     FZoomSpeed := TVKSimpleNavigation(Source).FZoomSpeed;
     FMoveAroundTargetSpeed := TVKSimpleNavigation(Source).FMoveAroundTargetSpeed;
@@ -186,7 +186,7 @@ begin
       for I := 0 to FForm.ComponentCount - 1 do
         if FForm.Components[I] is TVKSceneViewer then
         begin
-          SetGLSceneViewer(TVKSceneViewer(FForm.Components[I]));
+          SetVKSceneViewer(TVKSceneViewer(FForm.Components[I]));
           Exit;
         end;
   end;
@@ -200,8 +200,8 @@ begin
   if FForm <> nil then
     TForm(FForm).OnMouseWheel := nil;
 
-  if FGLSceneViewer <> nil then
-    FGLSceneViewer.OnMouseMove := nil;
+  if FVKSceneViewer <> nil then
+    FVKSceneViewer.OnMouseMove := nil;
 
   inherited;
 end;
@@ -220,9 +220,9 @@ begin
   else
     Sign := -1;
 
-  if FGLSceneViewer <> nil then
-    if FGLSceneViewer.Camera <> nil then
-      FGLSceneViewer.Camera.AdjustDistanceToTarget(
+  if FVKSceneViewer <> nil then
+    if FVKSceneViewer.Camera <> nil then
+      FVKSceneViewer.Camera.AdjustDistanceToTarget(
                       Power(FZoomSpeed, Sign * WheelDelta div Abs(WheelDelta)));
 
   Handled := snoMouseWheelHandled in FOptions;
@@ -239,7 +239,7 @@ procedure TVKSimpleNavigation.ViewerMouseMove(Sender: TObject;
       Sign := -1
     else
       Sign := 1;
-    FGLSceneViewer.Camera.AdjustDistanceToTarget(
+    FVKSceneViewer.Camera.AdjustDistanceToTarget(
                                     Power(FZoomSpeed, Sign * (Y - FOldY) / 20));
   end;
 
@@ -258,7 +258,7 @@ procedure TVKSimpleNavigation.ViewerMouseMove(Sender: TObject;
     else
       SignY := 1;
 
-    FGLSceneViewer.Camera.MoveAroundTarget(SignX * FMoveAroundTargetSpeed * (FOldY - Y),
+    FVKSceneViewer.Camera.MoveAroundTarget(SignX * FMoveAroundTargetSpeed * (FOldY - Y),
                                            SignY * FMoveAroundTargetSpeed * (FOldX - X));
   end;
 
@@ -277,7 +277,7 @@ procedure TVKSimpleNavigation.ViewerMouseMove(Sender: TObject;
     else
       SignY := 1;
 
-    FGLSceneViewer.Camera.RotateTarget(SignY * FRotateTargetSpeed * (FOldY - Y),
+    FVKSceneViewer.Camera.RotateTarget(SignY * FRotateTargetSpeed * (FOldY - Y),
                                        SignX * FRotateTargetSpeed * (FOldX - X));
   end;
 
@@ -288,8 +288,8 @@ begin
   if csDesigning in ComponentState then
     exit;
 
-  if FGLSceneViewer <> nil then
-    if FGLSceneViewer.Camera <> nil then
+  if FVKSceneViewer <> nil then
+    if FVKSceneViewer.Camera <> nil then
     begin
     if FKeyCombinations.Count <> 0 then
       for I := 0 to FKeyCombinations.Count - 1 do
@@ -320,8 +320,8 @@ procedure TVKSimpleNavigation.Notification(AComponent: TComponent;
   Operation: TOperation);
 begin
   inherited;
-  if (AComponent = FGLSceneViewer) and (Operation = opRemove) then
-    FGLSceneViewer := nil;
+  if (AComponent = FVKSceneViewer) and (Operation = opRemove) then
+    FVKSceneViewer := nil;
   if (AComponent = FForm) and (Operation = opRemove) then
     FForm := nil;
 end;
@@ -347,21 +347,21 @@ begin
 
 end;
 
-procedure TVKSimpleNavigation.SetGLSceneViewer(
+procedure TVKSimpleNavigation.SetVKSceneViewer(
   const Value: TVKSceneViewer);
 begin
-  if FGLSceneViewer <> nil then
+  if FVKSceneViewer <> nil then
   begin
-    FGLSceneViewer.RemoveFreeNotification(Self);
-    FGLSceneViewer.OnMouseMove := nil;
+    FVKSceneViewer.RemoveFreeNotification(Self);
+    FVKSceneViewer.OnMouseMove := nil;
   end;
 
-  FGLSceneViewer := Value;
+  FVKSceneViewer := Value;
 
-  if FGLSceneViewer <> nil then
+  if FVKSceneViewer <> nil then
   begin
-    FGLSceneViewer.OnMouseMove := ViewerMouseMove;
-    FGLSceneViewer.FreeNotification(Self);
+    FVKSceneViewer.OnMouseMove := ViewerMouseMove;
+    FVKSceneViewer.FreeNotification(Self);
   end;
 end;
 
@@ -370,7 +370,7 @@ var
   Index: Integer;
   Temp: string;
 begin
-  if (FGLSceneViewer <> nil) and
+  if (FVKSceneViewer <> nil) and
      (FForm <> nil) and
      not(csDesigning in ComponentState) and
      (snoShowFPS in FOptions) then
@@ -380,10 +380,10 @@ begin
     if Index <> 0 then
     begin
       Delete(Temp, Index, Length(vFPSString));
-      Insert(FGLSceneViewer.FramesPerSecondText, Temp, Index);
+      Insert(FVKSceneViewer.FramesPerSecondText, Temp, Index);
     end;
     FForm.Caption := Temp;
-    FGLSceneViewer.ResetPerformanceMonitor;
+    FVKSceneViewer.ResetPerformanceMonitor;
   end;
 end;
 

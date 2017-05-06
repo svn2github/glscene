@@ -21,7 +21,7 @@ uses
   VKS.Coordinates,
   VKS.Spline,
   VKS.VectorTypes,
-  uXOpenGL;
+  VKS.XOpenGL;
 
 
 

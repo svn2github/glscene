@@ -19,12 +19,12 @@ uses
   System.Classes,
   System.SysUtils,
 
-  ODEGL,
   ODEImport,
+  VKS.ODEGL,
   VKS.Scene,
   VKS.VectorGeometry,
   VKS.Texture,
-  XOpenGL,
+  VKS.XOpenGL,
   VKS.Objects,
   VKS.XCollection,
   VKS.PersistentClasses,
@@ -178,7 +178,7 @@ type
 
   TODEElementClass = class of TODEElementBase;
 
-  { Basis structures for GLScene behaviour style implementations. }
+  { Basis structures for behaviour style implementations. }
   TVKODEBehaviour = class(TVKBehaviour)
   private
     FManager: TVKODEManager;
@@ -772,13 +772,13 @@ procedure nearCallBack(Data: Pointer; o1, o2: PdxGeom); cdecl;
 { Helper functions for extracting data from objects with different
   inheritance. }
 function GetBodyFromObject(anObject: TObject): PdxBody;
-function GetBodyFromGLSceneObject(anObject: TVKBaseSceneObject): PdxBody;
+function GetBodyFromVKSceneObject(anObject: TVKBaseSceneObject): PdxBody;
 function GetSurfaceFromObject(anObject: TObject): TODECollisionSurface;
 
 // GLODEObject register methods (used for joint object persistence)
-procedure RegisterGLSceneObject(anObject: TVKBaseSceneObject);
-procedure UnregisterGLSceneObject(anObject: TVKBaseSceneObject);
-function GetGLSceneObject(anObjectName: String): TVKBaseSceneObject;
+procedure RegisterVKSceneObject(anObject: TVKBaseSceneObject);
+procedure UnregisterVKSceneObject(anObject: TVKBaseSceneObject);
+function GetVKSceneObject(anObjectName: String): TVKBaseSceneObject;
 
 // Get and GetOrCreate functions for ode behaviours
 function GetOdeStatic(Obj: TVKBaseSceneObject): TVKODEStatic;
@@ -809,7 +809,7 @@ begin
       Result := TVKODEDynamic(anObject).Body;
 end;
 
-function GetBodyFromGLSceneObject(anObject: TVKBaseSceneObject): PdxBody;
+function GetBodyFromVKSceneObject(anObject: TVKBaseSceneObject): PdxBody;
 var
   temp: TVKODEDynamic;
 begin
@@ -854,18 +854,18 @@ begin
   end;
 end;
 
-procedure RegisterGLSceneObject(anObject: TVKBaseSceneObject);
+procedure RegisterVKSceneObject(anObject: TVKBaseSceneObject);
 begin
   if vGLODEObjectRegister.IndexOf(anObject) = -1 then
     vGLODEObjectRegister.Add(anObject);
 end;
 
-procedure UnregisterGLSceneObject(anObject: TVKBaseSceneObject);
+procedure UnregisterVKSceneObject(anObject: TVKBaseSceneObject);
 begin
   vGLODEObjectRegister.Remove(anObject);
 end;
 
-function GetGLSceneObject(anObjectName: String): TVKBaseSceneObject;
+function GetVKSceneObject(anObjectName: String): TVKBaseSceneObject;
 var
   i: Integer;
 begin
@@ -1556,7 +1556,7 @@ begin
   FInitialized := False;
   FOwnerBaseSceneObject := OwnerBaseSceneObject;
   if Assigned(FOwnerBaseSceneObject) then
-    RegisterGLSceneObject(OwnerBaseSceneObject);
+    RegisterVKSceneObject(OwnerBaseSceneObject);
 end;
 
 // Destroy
@@ -1566,7 +1566,7 @@ begin
   if Assigned(Manager) then
     Manager := nil;
   if Assigned(FOwnerBaseSceneObject) then
-    UnregisterGLSceneObject(FOwnerBaseSceneObject);
+    UnregisterVKSceneObject(FOwnerBaseSceneObject);
   FSurface.Free;
   inherited;
 end;
@@ -1867,7 +1867,7 @@ var
 begin
   Pos := dBodyGetPosition(Body);
   R := dBodyGetRotation(Body);
-  ODEGL.ODERToGLSceneMatrix(m, R^, Pos^);
+  ODERToVKSceneMatrix(m, R^, Pos^);
   if OwnerBaseSceneObject.Parent is TVKBaseSceneObject then
     m := MatrixMultiply(m, OwnerBaseSceneObject.Parent.InvAbsoluteMatrix);
   OwnerBaseSceneObject.Matrix := m;
@@ -3852,8 +3852,8 @@ begin
 
   if Enabled then
   begin
-    Body1 := GetBodyFromGLSceneObject(FObject1);
-    Body2 := GetBodyFromGLSceneObject(FObject2);
+    Body1 := GetBodyFromVKSceneObject(FObject1);
+    Body2 := GetBodyFromVKSceneObject(FObject2);
   end
   else
   begin
@@ -3958,14 +3958,14 @@ begin
   end;
   if FObject1Name <> '' then
   begin
-    Obj := GetGLSceneObject(FObject1Name);
+    Obj := GetVKSceneObject(FObject1Name);
     if Assigned(Obj) then
       Object1 := Obj;
     FObject1Name := '';
   end;
   if FObject2Name <> '' then
   begin
-    Obj := GetGLSceneObject(FObject2Name);
+    Obj := GetVKSceneObject(FObject2Name);
     if Assigned(Obj) then
       Object2 := Obj;
     FObject2Name := '';

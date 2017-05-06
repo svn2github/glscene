@@ -248,7 +248,7 @@ type
     procedure SetToTextureOf(const LibMaterial: TVKLibMaterial; const TextureIndex: Integer); overload;
     procedure SetToTextureOf(const Texture: TVKTexture; const TextureIndex: Integer); overload;
 
-    // GLScene-friendly properties.
+    // friendly properties.
     property AsVector: TVector read GetAsVector4f write SetAsVector4f;
     property AsAffineVector: TAffineVector read GetAsVector3f write SetAsVector3f;
 

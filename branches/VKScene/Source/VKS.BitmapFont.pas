@@ -22,7 +22,7 @@ uses
   FMX.Graphics,
   FMX.Types,
 
-  uXOpenGL,
+  VKS.XOpenGL,
   VKS.Scene,
   VKS.VectorGeometry,
   VKS.Context,

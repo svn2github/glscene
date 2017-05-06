@@ -16,7 +16,7 @@ uses
   Winapi.OpenGLext,
   System.Classes,
 
-  uXOpenGL,
+  VKS.XOpenGL,
   VKS.Scene,
   VKS.Texture,
   VKS.VectorGeometry,

@@ -3,7 +3,7 @@
 //
 {
    Time based events mannager using the Cadencer 
-   can be useful to make animations with GLScene 
+   can be useful to make animations 
 }
 
 unit VKS.TimeEventsMgr;
@@ -11,9 +11,11 @@ unit VKS.TimeEventsMgr;
 interface
 
 uses
-  System.Classes, System.SysUtils,
+  System.Classes, 
+  System.SysUtils,
 
-  VKS.Cadencer,  VKS.BaseClasses;
+  VKS.Cadencer,  
+  VKS.BaseClasses;
 
 type
 

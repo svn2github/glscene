@@ -1322,7 +1322,7 @@ begin
   with FCommands.Add do
   begin
     FCommandName := 'Viewer.FPS';
-    FShortHelp := 'displays GLSceneViewer FPS';
+    FShortHelp := 'displays VKSceneViewer FPS';
     FLongHelp.Add(FShortHelp);
     FOnCommand := ProcessInternalCommandViewerFPS;
   end;
@@ -1330,7 +1330,7 @@ begin
   with FCommands.Add do
   begin
     FCommandName := 'Viewer.ResetPerformanceMonitor';
-    FShortHelp := 'resets GLSceneViewer FPS monitor';
+    FShortHelp := 'resets VKSceneViewer FPS monitor';
     FLongHelp.Add(FShortHelp);
     FOnCommand := ProcessInternalCommandViewerResetPerformanceMonitor;
   end;
@@ -1338,7 +1338,7 @@ begin
   with FCommands.Add do
   begin
     FCommandName := 'Viewer.VSync';
-    FShortHelp := 'displays and allows to change GLSceneViewer VSync';
+    FShortHelp := 'displays and allows to change VKSceneViewer VSync';
     FLongHelp.Add(FShortHelp);
     FOnCommand := ProcessInternalCommandViewerVSync;
   end;
@@ -1346,7 +1346,7 @@ begin
   with FCommands.Add do
   begin
     FCommandName := 'Viewer.AntiAliasing';
-    FShortHelp := 'displays and allows to change GLSceneViewer AntiAliasing';
+    FShortHelp := 'displays and allows to change VKSceneViewer AntiAliasing';
     FLongHelp.Add(FShortHelp);
     FOnCommand := ProcessInternalCommandViewerAntiAliasing;
   end;

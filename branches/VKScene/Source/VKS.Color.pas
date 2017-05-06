@@ -121,7 +121,7 @@ procedure UnRegisterColor(const aName: String);
 function GetRValue(RGB: DWORD): Byte; {$NODEFINE GetRValue}
 function GetGValue(RGB: DWORD): Byte; {$NODEFINE GetGValue}
 function GetBValue(RGB: DWORD): Byte; {$NODEFINE GetBValue}
-procedure InitGLSceneColors;
+procedure InitVKSceneColors;
 { Converts a delphi color into its RGB fragments and correct range. }
 function ConvertWinColor(aColor: TColor; alpha: Single = 1): TColorVector;
 
@@ -450,9 +450,9 @@ begin
   Result := Byte(RGB shr 16);
 end;
 
-// InitGLSceneColors
+// InitVKSceneColors
 //
-procedure InitGLSceneColors;
+procedure InitVKSceneColors;
 begin
   clrScrollBar := ConvertWinColor(TColorRec.cSCROLLBAR);
   clrActiveCaption := ConvertWinColor(TColorRec.cACTIVECAPTION);
@@ -1136,9 +1136,11 @@ begin
   ColorManager.RemoveColor(aName);
 end;
 
+//====================================================
 initialization
+//====================================================
 
-InitGLSceneColors;
+InitVKSceneColors;
 
 finalization
 
