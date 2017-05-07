@@ -1,12 +1,6 @@
-﻿//
-// VKScene Component Library, based on GLScene http://glscene.sourceforge.net
-//
-{
-  OpenGL for FireMonkey
-  Adapted from https://github.com/LUXOPHIA
-}
-
-unit VKS.FMXOpenGL;
+﻿unit FMX.OpenGL;
+{ OpenGL for FireMonkey
+  Adapted from https://github.com/LUXOPHIA }
 
 interface
 
@@ -50,7 +44,7 @@ type
   end;
 
 //-----------------------------------------------------------------------
-  TVKShader = class
+  TFMXShader = class
   private
   protected
     _ID: GLuint;
@@ -63,7 +57,7 @@ type
 
 //-----------------------------------------------------------------------
 
-  TVKShaderV = class(TVKShader)
+  TFMXShaderV = class(TFMXShader)
   private
   protected
   public
@@ -73,7 +67,7 @@ type
 
 //-----------------------------------------------------------------------
 
-  TVKShaderG = class(TVKShader)
+  TFMXShaderG = class(TFMXShader)
   private
   protected
   public
@@ -83,7 +77,7 @@ type
 
 //-----------------------------------------------------------------------
 
-  TVKShaderF = class(TVKShader)
+  TFMXShaderF = class(TFMXShader)
   private
   protected
   public
@@ -93,22 +87,22 @@ type
 
 //-----------------------------------------------------------------------
 
-  TVKProgram = class
+  TFMXProgram = class
   private
   protected
     _ID: GLuint;
   public
     constructor Create;
     destructor Destroy; override;
-    procedure Attach(const Shader_: TVKShader);
-    procedure Detach(const Shader_: TVKShader);
+    procedure Attach(const Shader_: TFMXShader);
+    procedure Detach(const Shader_: TFMXShader);
     procedure Link;
     procedure Use;
   end;
 
 //-----------------------------------------------------------------------
 
-  TVKBuffer<_TYPE_: record > = class
+  TFMXBuffer<_TYPE_: record > = class
   public type
     _PValue_ = ^_TYPE_;
   private
@@ -131,7 +125,7 @@ type
 
 //-----------------------------------------------------------------------
 
-  TVKBufferV<_TYPE_: record > = class(TVKBuffer<_TYPE_>)
+  TFMXBufferV<_TYPE_: record > = class(TFMXBuffer<_TYPE_>)
   private
   protected
   public
@@ -141,7 +135,7 @@ type
 
 //-----------------------------------------------------------------------
 
-  TVKBufferI<_TYPE_: record > = class(TVKBuffer<_TYPE_>)
+  TFMXBufferI<_TYPE_: record > = class(TFMXBuffer<_TYPE_>)
   private
   protected
   public
@@ -151,7 +145,7 @@ type
 
 //-----------------------------------------------------------------------
 
-  TVKBufferU<_TYPE_: record > = class(TVKBuffer<_TYPE_>)
+  TFMXBufferU<_TYPE_: record > = class(TFMXBuffer<_TYPE_>)
   private
   protected
   public
@@ -161,7 +155,7 @@ type
 
 //-----------------------------------------------------------------------
 
-  TVKArray = class
+  TFMXArray = class
   private
   protected
     _ID: GLuint;
@@ -343,14 +337,14 @@ end;
 
 // ------------------------------------------------------------------------------
 
-constructor TVKShader.Create(const Kind_: GLenum);
+constructor TFMXShader.Create(const Kind_: GLenum);
 begin
   inherited Create;
 
   _ID := glCreateShader(Kind_);
 end;
 
-destructor TVKShader.Destroy;
+destructor TFMXShader.Destroy;
 begin
   glDeleteShader(_ID);
   inherited;
@@ -358,7 +352,7 @@ end;
 
 // ------------------------------------------------------------------------------
 
-procedure TVKShader.SetSource(const Source_: String);
+procedure TFMXShader.SetSource(const Source_: String);
 var
   P: PAnsiChar;
   N: GLint;
@@ -382,49 +376,49 @@ end;
 
 // ------------------------------------------------------------------------------
 
-constructor TVKShaderV.Create;
+constructor TFMXShaderV.Create;
 begin
   inherited Create(GL_VERTEX_SHADER);
 end;
 
-destructor TVKShaderV.Destroy;
+destructor TFMXShaderV.Destroy;
 begin
   inherited;
 end;
 
 // ------------------------------------------------------------------------------
 
-constructor TVKShaderG.Create;
+constructor TFMXShaderG.Create;
 begin
   inherited Create(GL_GEOMETRY_SHADER);
 end;
 
-destructor TVKShaderG.Destroy;
+destructor TFMXShaderG.Destroy;
 begin
   inherited;
 end;
 
 // ------------------------------------------------------------------------------
 
-constructor TVKShaderF.Create;
+constructor TFMXShaderF.Create;
 begin
   inherited Create(GL_FRAGMENT_SHADER);
 end;
 
-destructor TVKShaderF.Destroy;
+destructor TFMXShaderF.Destroy;
 begin
   inherited;
 end;
 
 // ------------------------------------------------------------------------------
 
-constructor TVKProgram.Create;
+constructor TFMXProgram.Create;
 begin
   inherited;
   _ID := glCreateProgram;
 end;
 
-destructor TVKProgram.Destroy;
+destructor TFMXProgram.Destroy;
 begin
   glDeleteProgram(_ID);
   inherited;
@@ -432,33 +426,33 @@ end;
 
 // ------------------------------------------------------------------------------
 
-procedure TVKProgram.Attach(const Shader_: TVKShader);
+procedure TFMXProgram.Attach(const Shader_: TFMXShader);
 begin
   glAttachShader(_ID, Shader_.ID);
 end;
 
-procedure TVKProgram.Detach(const Shader_: TVKShader);
+procedure TFMXProgram.Detach(const Shader_: TFMXShader);
 begin
   glDetachShader(_ID, Shader_.ID);
 end;
 
 // ------------------------------------------------------------------------------
 
-procedure TVKProgram.Link;
+procedure TFMXProgram.Link;
 begin
   glLinkProgram(_ID);
 end;
 
 // ------------------------------------------------------------------------------
 
-procedure TVKProgram.Use;
+procedure TFMXProgram.Use;
 begin
   glUseProgram(_ID);
 end;
 
 // ------------------------------------------------------------------------------
 
-procedure TVKBuffer<_TYPE_>.SetCount(const Count_: Integer);
+procedure TFMXBuffer<_TYPE_>.SetCount(const Count_: Integer);
 begin
   _Count := Count_;
   Bind;
@@ -468,7 +462,7 @@ end;
 
 // ------------------------------------------------------------------------------
 
-constructor TVKBuffer<_TYPE_>.Create(const Kind_: GLenum);
+constructor TFMXBuffer<_TYPE_>.Create(const Kind_: GLenum);
 begin
   inherited Create;
   glGenBuffers(1, @_ID);
@@ -476,7 +470,7 @@ begin
   Count := 0;
 end;
 
-destructor TVKBuffer<_TYPE_>.Destroy;
+destructor TFMXBuffer<_TYPE_>.Destroy;
 begin
   glDeleteBuffers(1, @_ID);
   inherited;
@@ -484,73 +478,73 @@ end;
 
 // ------------------------------------------------------------------------------
 
-procedure TVKBuffer<_TYPE_>.Bind;
+procedure TFMXBuffer<_TYPE_>.Bind;
 begin
   glBindBuffer(_Kind, _ID);
 end;
 
-procedure TVKBuffer<_TYPE_>.Unbind;
+procedure TFMXBuffer<_TYPE_>.Unbind;
 begin
   glBindBuffer(_Kind, 0);
 end;
 
 // ------------------------------------------------------------------------------
 
-procedure TVKBuffer<_TYPE_>.Map;
+procedure TFMXBuffer<_TYPE_>.Map;
 begin
   Bind;
   _Head := glMapBuffer(_Kind, GL_READ_WRITE);
 end;
 
-procedure TVKBuffer<_TYPE_>.Unmap;
+procedure TFMXBuffer<_TYPE_>.Unmap;
 begin
   glUnmapBuffer(_Kind);
   Unbind;
 end;
 
-constructor TVKBufferV<_TYPE_>.Create;
+constructor TFMXBufferV<_TYPE_>.Create;
 begin
   inherited Create(GL_ARRAY_BUFFER);
 end;
 
-destructor TVKBufferV<_TYPE_>.Destroy;
+destructor TFMXBufferV<_TYPE_>.Destroy;
 begin
   inherited;
 end;
 
 // ------------------------------------------------------------------------------
 
-constructor TVKBufferI<_TYPE_>.Create;
+constructor TFMXBufferI<_TYPE_>.Create;
 begin
   inherited Create(GL_ELEMENT_ARRAY_BUFFER);
 end;
 
-destructor TVKBufferI<_TYPE_>.Destroy;
+destructor TFMXBufferI<_TYPE_>.Destroy;
 begin
   inherited;
 end;
 
 // ------------------------------------------------------------------------------
 
-constructor TVKBufferU<_TYPE_>.Create;
+constructor TFMXBufferU<_TYPE_>.Create;
 begin
   inherited Create(GL_UNIFORM_BUFFER);
 end;
 
-destructor TVKBufferU<_TYPE_>.Destroy;
+destructor TFMXBufferU<_TYPE_>.Destroy;
 begin
   inherited;
 end;
 
 // ------------------------------------------------------------------------------
 
-constructor TVKArray.Create;
+constructor TFMXArray.Create;
 begin
   inherited Create;
   glGenVertexArrays(1, @_ID);
 end;
 
-destructor TVKArray.Destroy;
+destructor TFMXArray.Destroy;
 begin
   glDeleteVertexArrays(1, @_ID);
   inherited;
@@ -558,12 +552,12 @@ end;
 
 // ------------------------------------------------------------------------------
 
-procedure TVKArray.BeginBind;
+procedure TFMXArray.BeginBind;
 begin
   glBindVertexArray(_ID);
 end;
 
-procedure TVKArray.EndBind;
+procedure TFMXArray.EndBind;
 begin
   glBindVertexArray(0);
 end;

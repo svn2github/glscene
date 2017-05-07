@@ -294,7 +294,8 @@ contains
   Types3DS in '..\..\Source\FileFormats\Types3DS.pas',
   Utils3DS in '..\..\Source\FileFormats\Utils3DS.pas',
   VRMLParser in '..\..\Source\FileFormats\VRMLParser.pas',
-  XOpenGL in '..\..\Source\Basis\XOpenGL.pas';
+  XOpenGL in '..\..\Source\Basis\XOpenGL.pas',
+  OpenGLVCL in '..\..\Source\Basis\OpenGLVCL.pas';
 
 end.
 

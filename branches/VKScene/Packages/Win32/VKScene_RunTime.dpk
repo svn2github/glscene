@@ -272,7 +272,7 @@ contains
   uVRMLParser in '..\..\Source\FileFormats\uVRMLParser.pas',
   VKS.XOpenGL in '..\..\Source\Basis\VKS.XOpenGL.pas',
   VKS.Vulkan in '..\..\Source\Basis\VKS.Vulkan.pas',
-  VKS.FMXOpenGL in '..\..\Source\Basis\VKS.FMXOpenGL.pas';
+  FMX.OpenGL in '..\..\Source\Basis\FMX.OpenGL.pas';
 
 end.
 
