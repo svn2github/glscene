@@ -155,7 +155,6 @@
         <DCCReference Include="..\..\Source\FileFormats\uFileOCT.pas"/>
         <DCCReference Include="..\..\Source\FileFormats\uFileTGA.pas"/>
         <DCCReference Include="..\..\Source\FileFormats\uFileX.pas"/>
-        <DCCReference Include="..\..\Source\Basis\uOpenGLAdapter.pas"/>
         <DCCReference Include="..\..\Source\SoundVideoAPIs\VKS.AVIRecorder.pas"/>
         <DCCReference Include="..\..\Source\VKS.AnimatedSprite.pas"/>
         <DCCReference Include="..\..\Source\VKS.AnimationUtils.pas"/>
@@ -288,6 +287,8 @@
         <DCCReference Include="..\..\Source\VKS.ObjectManager.pas"/>
         <DCCReference Include="..\..\Source\VKS.Objects.pas"/>
         <DCCReference Include="..\..\Source\Basis\VKS.Octree.pas"/>
+        <DCCReference Include="..\..\Source\Basis\VKS.OpenGLAdapter.pas"/>
+        <DCCReference Include="..\..\Source\Basis\VKS.OpenGLFMX.pas"/>
         <DCCReference Include="..\..\Source\VKS.OutlineShader.pas"/>
         <DCCReference Include="..\..\Source\VKS.ParametricSurfaces.pas"/>
         <DCCReference Include="..\..\Source\VKS.ParticleFX.pas"/>
@@ -379,9 +380,8 @@
         <DCCReference Include="..\..\Source\FileFormats\uTypes3DS.pas"/>
         <DCCReference Include="..\..\Source\FileFormats\uUtils3DS.pas"/>
         <DCCReference Include="..\..\Source\FileFormats\uVRMLParser.pas"/>
-        <DCCReference Include="..\..\Source\Basis\VKS.XOpenGL.pas"/>
         <DCCReference Include="..\..\Source\Basis\VKS.Vulkan.pas"/>
-        <DCCReference Include="..\..\Source\Basis\FMX.OpenGL.pas"/>
+        <DCCReference Include="..\..\Source\Basis\VKS.XOpenGL.pas"/>
         <BuildConfiguration Include="Debug">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

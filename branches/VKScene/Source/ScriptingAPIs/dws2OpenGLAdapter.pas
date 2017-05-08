@@ -38,7 +38,7 @@ procedure Register;
 implementation
 
 uses
-  DwsFunctions, Winapi.OpenGL, Winapi.OpenGLext,  uOpenGLAdapter, VKS.Context, VKS.VectorGeometry;
+  DwsFunctions, Winapi.OpenGL, Winapi.OpenGLext,  VKS.OpenGLAdapter, VKS.Context, VKS.VectorGeometry;
 
 type
   TglPushAttrib = class(TInternalFunction)

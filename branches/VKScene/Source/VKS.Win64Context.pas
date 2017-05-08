@@ -20,7 +20,7 @@ uses
   FMX.Forms,
   FMX.Dialogs,
 ///  FMX.Platform.Win,
-  uOpenGLAdapter,
+  VKS.OpenGLAdapter,
   VKS.Context,
   VKS.CrossPlatform,
   VKS.State,

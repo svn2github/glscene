@@ -22,7 +22,7 @@ uses
   System.Classes,
   System.SysUtils,
 
-  uOpenGLAdapter,
+  VKS.OpenGLAdapter,
   VKS.XOpenGL,
   VKS.VectorTypes,
   VKS.Strings,

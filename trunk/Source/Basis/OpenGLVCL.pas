@@ -1,5 +1,5 @@
 ﻿unit OpenGLVCL;
-{ OpenGL for VCL
+{ OpenGL for Vcl
   Adapted from https://github.com/LUXOPHIA }
 
 interface
@@ -11,7 +11,7 @@ uses
   Vcl.Forms;
 
 type
-  TVCLOpenGL = class
+  TGLOpenGL = class
   private
     _Form: TCustomForm;
     _WND: HWND;
@@ -149,7 +149,7 @@ type
   end;
 
 var
-  VCLOpenGL: TVCLOpenGL;
+  GLOpenGL: TGLOpenGL;
 
 //=====================================================================
 implementation
@@ -158,7 +158,7 @@ implementation
 uses
   System.SysUtils;
 
-procedure TVCLOpenGL.SetPFD(const PFD_: TPixelFormatDescriptor);
+procedure TGLOpenGL.SetPFD(const PFD_: TPixelFormatDescriptor);
 begin
   DestroyRC;
   DestroyDC;
@@ -167,7 +167,7 @@ begin
   CreateRC;
 end;
 
-procedure TVCLOpenGL.SetPFI(const PFI_: Integer);
+procedure TGLOpenGL.SetPFI(const PFI_: Integer);
 begin
   DestroyRC;
   DestroyDC;
@@ -176,20 +176,20 @@ begin
   CreateRC;
 end;
 
-procedure TVCLOpenGL.CreateWindow;
+procedure TGLOpenGL.CreateWindow;
 begin
   _Form := TCustomForm.CreateNew(nil);
   _WND := _Form.Handle;
 end;
 
-procedure TVCLOpenGL.DestroyWindow;
+procedure TGLOpenGL.DestroyWindow;
 begin
   _Form.Free;
 end;
 
 // ------------------------------------------------------------------------------
 
-procedure TVCLOpenGL.ValidatePFD(const PFD_: TPixelFormatDescriptor);
+procedure TGLOpenGL.ValidatePFD(const PFD_: TPixelFormatDescriptor);
 var
   I: Integer;
 begin
@@ -199,7 +199,7 @@ begin
   ValidatePFI(I);
 end;
 
-procedure TVCLOpenGL.ValidatePFI(const PFI_: Integer);
+procedure TGLOpenGL.ValidatePFI(const PFI_: Integer);
 begin
   _PFI := PFI_;
   Assert(DescribePixelFormat(_DC, _PFI, SizeOf(TPixelFormatDescriptor), _PFD),
@@ -208,30 +208,30 @@ end;
 
 // ------------------------------------------------------------------------------
 
-procedure TVCLOpenGL.CreateDC;
+procedure TGLOpenGL.CreateDC;
 begin
   _DC := GetDC(_WND);
 end;
 
-procedure TVCLOpenGL.DestroyDC;
+procedure TGLOpenGL.DestroyDC;
 begin
   ReleaseDC(0, _DC);
 end;
 
 // ------------------------------------------------------------------------------
 
-procedure TVCLOpenGL.CreateRC;
+procedure TGLOpenGL.CreateRC;
 begin
   ApplyPixelFormat(_DC);
   _RC := wglCreateContext(_DC);
 end;
 
-procedure TVCLOpenGL.DestroyRC;
+procedure TGLOpenGL.DestroyRC;
 begin
   wglDeleteContext(_RC);
 end;
 
-constructor TVCLOpenGL.Create;
+constructor TGLOpenGL.Create;
 begin
   inherited;
   CreateWindow;
@@ -241,7 +241,7 @@ begin
   InitOpenGL;
 end;
 
-destructor TVCLOpenGL.Destroy;
+destructor TGLOpenGL.Destroy;
 begin
   DestroyRC;
   DestroyDC;
@@ -249,7 +249,7 @@ begin
   inherited;
 end;
 
-class function TVCLOpenGL.DefaultPFD: TPixelFormatDescriptor;
+class function TGLOpenGL.DefaultPFD: TPixelFormatDescriptor;
 begin
   with Result do
   begin
@@ -282,19 +282,19 @@ begin
   end;
 end;
 
-procedure TVCLOpenGL.BeginGL;
+procedure TGLOpenGL.BeginGL;
 begin
   wglMakeCurrent(_DC, _RC);
 end;
 
-procedure TVCLOpenGL.EndGL;
+procedure TGLOpenGL.EndGL;
 begin
   wglMakeCurrent(_DC, 0);
 end;
 
 // ------------------------------------------------------------------------------
 
-procedure TVCLOpenGL.InitOpenGL;
+procedure TGLOpenGL.InitOpenGL;
 begin
   BeginGL;
   glEnable(GL_DEPTH_TEST);
@@ -304,7 +304,7 @@ end;
 
 // ------------------------------------------------------------------------------
 
-procedure TVCLOpenGL.ApplyPixelFormat(const DC_: HDC);
+procedure TGLOpenGL.ApplyPixelFormat(const DC_: HDC);
 begin
   Assert(SetPixelFormat(DC_, _PFI, @_PFD), 'SetPixelFormat() is failed!');
 end;
@@ -515,13 +515,13 @@ end;
 initialization
 // ====================================================================
 
-VCLOpenGL := TVCLOpenGL.Create;
-VCLOpenGL.BeginGL;
+GLOpenGL := TGLOpenGL.Create;
+GLOpenGL.BeginGL;
 InitOpenGLext;
 
 finalization
 
-VCLOpenGL.EndGL;
-VCLOpenGL.Free;
+GLOpenGL.EndGL;
+GLOpenGL.Free;
 
 end.

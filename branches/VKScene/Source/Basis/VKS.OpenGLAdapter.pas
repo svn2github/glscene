@@ -4,7 +4,7 @@
 {
   OpenGL adapter
 }
-unit uOpenGLAdapter;
+unit VKS.OpenGLAdapter;
 
 interface
 

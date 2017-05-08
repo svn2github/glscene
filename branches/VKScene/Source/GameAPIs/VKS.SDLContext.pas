@@ -92,7 +92,7 @@ implementation
 // ------------------------------------------------------------------
 
 uses
-  uOpenGLAdapter,
+  VKS.OpenGLAdapter,
   VKS.CrossPlatform,
   XOpenGL;
 

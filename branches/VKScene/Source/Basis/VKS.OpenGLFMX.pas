@@ -1,5 +1,5 @@
-﻿unit FMX.OpenGL;
-{ OpenGL for FireMonkey
+﻿unit VKS.OpenGLFMX;
+{ OpenGL for FMX
   Adapted from https://github.com/LUXOPHIA }
 
 interface
@@ -11,7 +11,7 @@ uses
   FMX.Forms;
 
 type
-  TFMXOpenGL = class
+  TVKOpenGL = class
   private
     _Form: TCommonCustomForm;
     _WND: HWND;
@@ -44,7 +44,7 @@ type
   end;
 
 //-----------------------------------------------------------------------
-  TFMXShader = class
+  TVKShader = class
   private
   protected
     _ID: GLuint;
@@ -57,7 +57,7 @@ type
 
 //-----------------------------------------------------------------------
 
-  TFMXShaderV = class(TFMXShader)
+  TVKShaderV = class(TVKShader)
   private
   protected
   public
@@ -67,7 +67,7 @@ type
 
 //-----------------------------------------------------------------------
 
-  TFMXShaderG = class(TFMXShader)
+  TVKShaderG = class(TVKShader)
   private
   protected
   public
@@ -77,7 +77,7 @@ type
 
 //-----------------------------------------------------------------------
 
-  TFMXShaderF = class(TFMXShader)
+  TVKShaderF = class(TVKShader)
   private
   protected
   public
@@ -87,22 +87,22 @@ type
 
 //-----------------------------------------------------------------------
 
-  TFMXProgram = class
+  TVKProgram = class
   private
   protected
     _ID: GLuint;
   public
     constructor Create;
     destructor Destroy; override;
-    procedure Attach(const Shader_: TFMXShader);
-    procedure Detach(const Shader_: TFMXShader);
+    procedure Attach(const Shader_: TVKShader);
+    procedure Detach(const Shader_: TVKShader);
     procedure Link;
     procedure Use;
   end;
 
 //-----------------------------------------------------------------------
 
-  TFMXBuffer<_TYPE_: record > = class
+  TVKBuffer<_TYPE_: record > = class
   public type
     _PValue_ = ^_TYPE_;
   private
@@ -125,7 +125,7 @@ type
 
 //-----------------------------------------------------------------------
 
-  TFMXBufferV<_TYPE_: record > = class(TFMXBuffer<_TYPE_>)
+  TVKBufferV<_TYPE_: record > = class(TVKBuffer<_TYPE_>)
   private
   protected
   public
@@ -135,7 +135,7 @@ type
 
 //-----------------------------------------------------------------------
 
-  TFMXBufferI<_TYPE_: record > = class(TFMXBuffer<_TYPE_>)
+  TVKBufferI<_TYPE_: record > = class(TVKBuffer<_TYPE_>)
   private
   protected
   public
@@ -145,7 +145,7 @@ type
 
 //-----------------------------------------------------------------------
 
-  TFMXBufferU<_TYPE_: record > = class(TFMXBuffer<_TYPE_>)
+  TVKBufferU<_TYPE_: record > = class(TVKBuffer<_TYPE_>)
   private
   protected
   public
@@ -155,7 +155,7 @@ type
 
 //-----------------------------------------------------------------------
 
-  TFMXArray = class
+  TVKArray = class
   private
   protected
     _ID: GLuint;
@@ -168,7 +168,7 @@ type
   end;
 
 var
-  FMXOpenGL: TFMXOpenGL;
+  VKOpenGL: TVKOpenGL;
 
 //-----------------------------------------------------------------------
 implementation
@@ -178,7 +178,7 @@ uses
   System.SysUtils,
   FMX.Platform.Win;
 
-procedure TFMXOpenGL.SetPFD(const PFD_: TPixelFormatDescriptor);
+procedure TVKOpenGL.SetPFD(const PFD_: TPixelFormatDescriptor);
 begin
   DestroyRC;
   DestroyDC;
@@ -187,7 +187,7 @@ begin
   CreateRC;
 end;
 
-procedure TFMXOpenGL.SetPFI(const PFI_: Integer);
+procedure TVKOpenGL.SetPFI(const PFI_: Integer);
 begin
   DestroyRC;
   DestroyDC;
@@ -197,20 +197,20 @@ begin
 end;
 
 // ------------------------------------------------------------------------------
-procedure TFMXOpenGL.CreateWindow;
+procedure TVKOpenGL.CreateWindow;
 begin
   _Form := TCommonCustomForm.Create(nil);
   _WND := WindowHandleToPlatform(_Form.Handle).Wnd;
 end;
 
-procedure TFMXOpenGL.DestroyWindow;
+procedure TVKOpenGL.DestroyWindow;
 begin
   _Form.Free;
 end;
 
 // ------------------------------------------------------------------------------
 
-procedure TFMXOpenGL.ValidatePFD(const PFD_: TPixelFormatDescriptor);
+procedure TVKOpenGL.ValidatePFD(const PFD_: TPixelFormatDescriptor);
 var
   I: Integer;
 begin
@@ -220,7 +220,7 @@ begin
   ValidatePFI(I);
 end;
 
-procedure TFMXOpenGL.ValidatePFI(const PFI_: Integer);
+procedure TVKOpenGL.ValidatePFI(const PFI_: Integer);
 begin
   _PFI := PFI_;
   Assert(DescribePixelFormat(_DC, _PFI, SizeOf(TPixelFormatDescriptor), _PFD),
@@ -229,31 +229,31 @@ end;
 
 // ------------------------------------------------------------------------------
 
-procedure TFMXOpenGL.CreateDC;
+procedure TVKOpenGL.CreateDC;
 begin
   _DC := GetDC(_WND);
 end;
 
-procedure TFMXOpenGL.DestroyDC;
+procedure TVKOpenGL.DestroyDC;
 begin
   ReleaseDC(0, _DC);
 end;
 
 // ------------------------------------------------------------------------------
 
-procedure TFMXOpenGL.CreateRC;
+procedure TVKOpenGL.CreateRC;
 begin
   ApplyPixelFormat(_DC);
 
   _RC := wglCreateContext(_DC);
 end;
 
-procedure TFMXOpenGL.DestroyRC;
+procedure TVKOpenGL.DestroyRC;
 begin
   wglDeleteContext(_RC);
 end;
 
-constructor TFMXOpenGL.Create;
+constructor TVKOpenGL.Create;
 begin
   inherited;
   CreateWindow;
@@ -263,7 +263,7 @@ begin
   InitOpenGL;
 end;
 
-destructor TFMXOpenGL.Destroy;
+destructor TVKOpenGL.Destroy;
 begin
   DestroyRC;
   DestroyDC;
@@ -273,7 +273,7 @@ end;
 
 // ------------------------------------------------------------------------------
 
-class function TFMXOpenGL.DefaultPFD: TPixelFormatDescriptor;
+class function TVKOpenGL.DefaultPFD: TPixelFormatDescriptor;
 begin
   with Result do
   begin
@@ -308,19 +308,19 @@ end;
 
 // ------------------------------------------------------------------------------
 
-procedure TFMXOpenGL.BeginGL;
+procedure TVKOpenGL.BeginGL;
 begin
   wglMakeCurrent(_DC, _RC);
 end;
 
-procedure TFMXOpenGL.EndGL;
+procedure TVKOpenGL.EndGL;
 begin
   wglMakeCurrent(_DC, 0);
 end;
 
 // ------------------------------------------------------------------------------
 
-procedure TFMXOpenGL.InitOpenGL;
+procedure TVKOpenGL.InitOpenGL;
 begin
   BeginGL;
   glEnable(GL_DEPTH_TEST);
@@ -330,21 +330,21 @@ end;
 
 // ------------------------------------------------------------------------------
 
-procedure TFMXOpenGL.ApplyPixelFormat(const DC_: HDC);
+procedure TVKOpenGL.ApplyPixelFormat(const DC_: HDC);
 begin
   Assert(SetPixelFormat(DC_, _PFI, @_PFD), 'SetPixelFormat() is failed!');
 end;
 
 // ------------------------------------------------------------------------------
 
-constructor TFMXShader.Create(const Kind_: GLenum);
+constructor TVKShader.Create(const Kind_: GLenum);
 begin
   inherited Create;
 
   _ID := glCreateShader(Kind_);
 end;
 
-destructor TFMXShader.Destroy;
+destructor TVKShader.Destroy;
 begin
   glDeleteShader(_ID);
   inherited;
@@ -352,7 +352,7 @@ end;
 
 // ------------------------------------------------------------------------------
 
-procedure TFMXShader.SetSource(const Source_: String);
+procedure TVKShader.SetSource(const Source_: String);
 var
   P: PAnsiChar;
   N: GLint;
@@ -376,49 +376,49 @@ end;
 
 // ------------------------------------------------------------------------------
 
-constructor TFMXShaderV.Create;
+constructor TVKShaderV.Create;
 begin
   inherited Create(GL_VERTEX_SHADER);
 end;
 
-destructor TFMXShaderV.Destroy;
+destructor TVKShaderV.Destroy;
 begin
   inherited;
 end;
 
 // ------------------------------------------------------------------------------
 
-constructor TFMXShaderG.Create;
+constructor TVKShaderG.Create;
 begin
   inherited Create(GL_GEOMETRY_SHADER);
 end;
 
-destructor TFMXShaderG.Destroy;
+destructor TVKShaderG.Destroy;
 begin
   inherited;
 end;
 
 // ------------------------------------------------------------------------------
 
-constructor TFMXShaderF.Create;
+constructor TVKShaderF.Create;
 begin
   inherited Create(GL_FRAGMENT_SHADER);
 end;
 
-destructor TFMXShaderF.Destroy;
+destructor TVKShaderF.Destroy;
 begin
   inherited;
 end;
 
 // ------------------------------------------------------------------------------
 
-constructor TFMXProgram.Create;
+constructor TVKProgram.Create;
 begin
   inherited;
   _ID := glCreateProgram;
 end;
 
-destructor TFMXProgram.Destroy;
+destructor TVKProgram.Destroy;
 begin
   glDeleteProgram(_ID);
   inherited;
@@ -426,33 +426,33 @@ end;
 
 // ------------------------------------------------------------------------------
 
-procedure TFMXProgram.Attach(const Shader_: TFMXShader);
+procedure TVKProgram.Attach(const Shader_: TVKShader);
 begin
   glAttachShader(_ID, Shader_.ID);
 end;
 
-procedure TFMXProgram.Detach(const Shader_: TFMXShader);
+procedure TVKProgram.Detach(const Shader_: TVKShader);
 begin
   glDetachShader(_ID, Shader_.ID);
 end;
 
 // ------------------------------------------------------------------------------
 
-procedure TFMXProgram.Link;
+procedure TVKProgram.Link;
 begin
   glLinkProgram(_ID);
 end;
 
 // ------------------------------------------------------------------------------
 
-procedure TFMXProgram.Use;
+procedure TVKProgram.Use;
 begin
   glUseProgram(_ID);
 end;
 
 // ------------------------------------------------------------------------------
 
-procedure TFMXBuffer<_TYPE_>.SetCount(const Count_: Integer);
+procedure TVKBuffer<_TYPE_>.SetCount(const Count_: Integer);
 begin
   _Count := Count_;
   Bind;
@@ -462,7 +462,7 @@ end;
 
 // ------------------------------------------------------------------------------
 
-constructor TFMXBuffer<_TYPE_>.Create(const Kind_: GLenum);
+constructor TVKBuffer<_TYPE_>.Create(const Kind_: GLenum);
 begin
   inherited Create;
   glGenBuffers(1, @_ID);
@@ -470,7 +470,7 @@ begin
   Count := 0;
 end;
 
-destructor TFMXBuffer<_TYPE_>.Destroy;
+destructor TVKBuffer<_TYPE_>.Destroy;
 begin
   glDeleteBuffers(1, @_ID);
   inherited;
@@ -478,73 +478,73 @@ end;
 
 // ------------------------------------------------------------------------------
 
-procedure TFMXBuffer<_TYPE_>.Bind;
+procedure TVKBuffer<_TYPE_>.Bind;
 begin
   glBindBuffer(_Kind, _ID);
 end;
 
-procedure TFMXBuffer<_TYPE_>.Unbind;
+procedure TVKBuffer<_TYPE_>.Unbind;
 begin
   glBindBuffer(_Kind, 0);
 end;
 
 // ------------------------------------------------------------------------------
 
-procedure TFMXBuffer<_TYPE_>.Map;
+procedure TVKBuffer<_TYPE_>.Map;
 begin
   Bind;
   _Head := glMapBuffer(_Kind, GL_READ_WRITE);
 end;
 
-procedure TFMXBuffer<_TYPE_>.Unmap;
+procedure TVKBuffer<_TYPE_>.Unmap;
 begin
   glUnmapBuffer(_Kind);
   Unbind;
 end;
 
-constructor TFMXBufferV<_TYPE_>.Create;
+constructor TVKBufferV<_TYPE_>.Create;
 begin
   inherited Create(GL_ARRAY_BUFFER);
 end;
 
-destructor TFMXBufferV<_TYPE_>.Destroy;
+destructor TVKBufferV<_TYPE_>.Destroy;
 begin
   inherited;
 end;
 
 // ------------------------------------------------------------------------------
 
-constructor TFMXBufferI<_TYPE_>.Create;
+constructor TVKBufferI<_TYPE_>.Create;
 begin
   inherited Create(GL_ELEMENT_ARRAY_BUFFER);
 end;
 
-destructor TFMXBufferI<_TYPE_>.Destroy;
+destructor TVKBufferI<_TYPE_>.Destroy;
 begin
   inherited;
 end;
 
 // ------------------------------------------------------------------------------
 
-constructor TFMXBufferU<_TYPE_>.Create;
+constructor TVKBufferU<_TYPE_>.Create;
 begin
   inherited Create(GL_UNIFORM_BUFFER);
 end;
 
-destructor TFMXBufferU<_TYPE_>.Destroy;
+destructor TVKBufferU<_TYPE_>.Destroy;
 begin
   inherited;
 end;
 
 // ------------------------------------------------------------------------------
 
-constructor TFMXArray.Create;
+constructor TVKArray.Create;
 begin
   inherited Create;
   glGenVertexArrays(1, @_ID);
 end;
 
-destructor TFMXArray.Destroy;
+destructor TVKArray.Destroy;
 begin
   glDeleteVertexArrays(1, @_ID);
   inherited;
@@ -552,12 +552,12 @@ end;
 
 // ------------------------------------------------------------------------------
 
-procedure TFMXArray.BeginBind;
+procedure TVKArray.BeginBind;
 begin
   glBindVertexArray(_ID);
 end;
 
-procedure TFMXArray.EndBind;
+procedure TVKArray.EndBind;
 begin
   glBindVertexArray(0);
 end;
@@ -566,13 +566,13 @@ end;
 initialization
 //==========================================================================
 
- FMXOpenGL := TFMXOpenGL.Create;
- FMXOpenGL.BeginGL;
+VKOpenGL := TVKOpenGL.Create;
+VKOpenGL.BeginGL;
 InitOpenGLext;
 
 finalization
 
-FMXOpenGL.EndGL;
-FMXOpenGL.Free;
+VKOpenGL.EndGL;
+VKOpenGL.Free;
 
 end.

@@ -178,7 +178,7 @@ contains
   VKS.ObjectManager in '..\..\Source\VKS.ObjectManager.pas',
   VKS.Objects in '..\..\Source\VKS.Objects.pas',
   VKS.Octree in '..\..\Source\Basis\VKS.Octree.pas',
-  uOpenGLAdapter in '..\..\Source\Basis\uOpenGLAdapter.pas',
+  VKS.OpenGLAdapter in '..\..\Source\Basis\VKS.OpenGLAdapter.pas',
   VKS.OutlineShader in '..\..\Source\VKS.OutlineShader.pas',
   VKS.ParametricSurfaces in '..\..\Source\VKS.ParametricSurfaces.pas',
   VKS.ParticleFX in '..\..\Source\VKS.ParticleFX.pas',
@@ -272,7 +272,7 @@ contains
   uVRMLParser in '..\..\Source\FileFormats\uVRMLParser.pas',
   VKS.XOpenGL in '..\..\Source\Basis\VKS.XOpenGL.pas',
   VKS.Vulkan in '..\..\Source\Basis\VKS.Vulkan.pas',
-  FMX.OpenGL in '..\..\Source\Basis\FMX.OpenGL.pas';
+  VKS.OpenGLFMX in '..\..\Source\Basis\VKS.OpenGLFMX.pas';
 
 end.
 

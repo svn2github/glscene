@@ -16,7 +16,7 @@ uses
   System.Classes,
   System.SysUtils,
   
-  uOpenGLAdapter,
+  VKS.OpenGLAdapter,
   VKS.VectorGeometry,
   VKS.VectorTypes,
   VKS.Texture,
@@ -52,13 +52,11 @@ type
     FParam: TVKGLSLShaderParameter;
     FActiveVarying: TStrings;
     FTransformFeedBackMode: TVKTransformFeedBackMode;
-
     FOnInitialize: TVKGLSLShaderEvent;
     FOnApply: TVKGLSLShaderEvent;
     FOnUnApply: TVKGLSLShaderUnApplyEvent;
     FOnInitializeEx: TVKGLSLShaderEventEx;
     FOnApplyEx: TVKGLSLShaderEventEx;
-
     function GetParam(const Index: string): TVKGLSLShaderParameter;
     function GetDirectParam(const Index: Cardinal): TVKGLSLShaderParameter;
     procedure OnChangeActiveVarying(Sender: TObject);
@@ -68,7 +66,6 @@ type
     property OnInitialize: TVKGLSLShaderEvent read FOnInitialize write FOnInitialize;
     property OnInitializeEx: TVKGLSLShaderEventEx read FOnInitializeEx write FOnInitializeEx;
     property OnApplyEx: TVKGLSLShaderEventEx read FOnApplyEx write FOnApplyEx;
-
     function GetGLSLProg: TVKProgramHandle; virtual;
     function GetCurrentParam: TVKGLSLShaderParameter; virtual;
     procedure SetActiveVarying(const Value: TStrings);
@@ -83,67 +80,54 @@ type
     procedure Assign(Source: TPersistent); override;
     function ShaderSupported: Boolean; override;
     function GetActiveAttribs: TVKActiveAttribArray;
-
     property Param[const Index: string]: TVKGLSLShaderParameter read GetParam;
     property DirectParam[const Index: Cardinal]: TVKGLSLShaderParameter read GetDirectParam;
     property ActiveVarying: TStrings read FActiveVarying write SetActiveVarying;
     property TransformFeedBackMode: TVKTransformFeedBackMode read FTransformFeedBackMode write SetTransformFeedBackMode default tfbmInterleaved;
   end;
 
-
   { Wrapper around a parameter of a GLSL program. }
   TVKGLSLShaderParameter = class(TVKCustomShaderParameter)
   private
-    
     FGLSLProg: TVKProgramHandle;
     FParameterID: GLInt;
   protected
-    
     function GetAsVector1f: Single; override;
     function GetAsVector2f: TVector2f; override;
     function GetAsVector3f: TVector3f; override;
     function GetAsVector4f: TVector; override;
-
     function GetAsVector1i: Integer; override;
     function GetAsVector2i: TVector2i; override;
     function GetAsVector3i: TVector3i; override;
     function GetAsVector4i: TVector4i; override;
-
     function GetAsVector1ui: GLuint; override;
     function GetAsVector2ui: TVector2ui; override;
     function GetAsVector3ui: TVector3ui; override;
     function GetAsVector4ui: TVector4ui; override;
-
     procedure SetAsVector1f(const Value: Single); override;
     procedure SetAsVector2f(const Value: TVector2f); override;
     procedure SetAsVector3f(const Value: TVector3f); override;
     procedure SetAsVector4f(const Value: TVector4f); override;
-
     procedure SetAsVector1i(const Value: Integer); override;
     procedure SetAsVector2i(const Value: TVector2i); override;
     procedure SetAsVector3i(const Value: TVector3i); override;
     procedure SetAsVector4i(const Value: TVector4i); override;
-
     procedure SetAsVector1ui(const Value: GLuint); override;
     procedure SetAsVector2ui(const Value: TVector2ui); override;
     procedure SetAsVector3ui(const Value: TVector3ui); override;
     procedure SetAsVector4ui(const Value: TVector4ui); override;
-
     function GetAsMatrix2f: TMatrix2f; override;
     function GetAsMatrix3f: TMatrix3f; override;
     function GetAsMatrix4f: TMatrix4f; override;
     procedure SetAsMatrix2f(const Value: TMatrix2f); override;
     procedure SetAsMatrix3f(const Value: TMatrix3f); override;
     procedure SetAsMatrix4f(const Value: TMatrix4f); override;
-
     function GetAsCustomTexture(const TextureIndex: Integer;
       TextureTarget: TVKTextureTarget): Cardinal; override;
     procedure SetAsCustomTexture(const TextureIndex: Integer;
       TextureTarget: TVKTextureTarget; const Value: Cardinal); override;
-
     function GetAsUniformBuffer: GLenum; override;
     procedure SetAsUniformBuffer( UBO: GLenum); override;
-
    public
      // Nothing here ...yet.
    end;
@@ -152,23 +136,22 @@ type
   published
     property FragmentProgram;
     property VertexProgram;
-    property GeometryProgram;    
-
+    property GeometryProgram;
     property OnApply;
     property OnApplyEx;
     property OnUnApply;
     property OnInitialize;
     property OnInitializeEx;
-
     property ShaderStyle;
     property FailedInitAction;
-
     property ActiveVarying;
     property TransformFeedBackMode;
   end;
 
 
+//=============================================================
 implementation
+//=============================================================
 
 uses
   VKS.State;
@@ -183,7 +166,6 @@ begin
   if Assigned(FOnApplyEx) then
     FOnApplyEx(Self, Sender);
 end;
-
 
 procedure TVKCustomGLSLShader.DoInitialize(var rci: TVKRenderContextInfo; Sender: TObject);
 const
@@ -434,7 +416,9 @@ begin
   NotifyChange(Self);
 end;
 
+//------------------------------------------------------------
 { TVKGLSLShaderParameter }
+//------------------------------------------------------------
 
 function TVKGLSLShaderParameter.GetAsCustomTexture(
   const TextureIndex: Integer; TextureTarget: TVKTextureTarget): Cardinal;
@@ -611,7 +595,9 @@ begin
   glUniformBufferEXT(FGLSLProg.Handle, FParameterID, UBO);
 end;
 
+//=======================================================
 initialization
+//=======================================================
   RegisterClasses([TVKCustomGLSLShader, TVKGLSLShader]);
 
 end.

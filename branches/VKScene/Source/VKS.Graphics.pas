@@ -37,7 +37,7 @@ uses
 {$IFDEF VKS_Graphics32_SUPPORT}
   GR32,
 {$ENDIF}
-  uOpenGLAdapter,
+  VKS.OpenGLAdapter,
   VKS.ApplicationFileIO,
   VKS.PersistentClasses,
   VKS.Context,

@@ -28,18 +28,23 @@ uses
   System.Classes,
   System.SysUtils,
   
-  uOpenGLAdapter,
-  VKS.CrossPlatform, VKS.Scene, VKS.Texture, VKS.VectorGeometry, VKS.Context,
-  VKS.Color, VKS.RenderContextInfo, VKS.TextureFormat, VKS.VectorTypes;
+  VKS.OpenGLAdapter,
+  VKS.CrossPlatform,
+  VKS.Scene,
+  VKS.Texture,
+  VKS.VectorGeometry,
+  VKS.Context,
+  VKS.Color,
+  VKS.RenderContextInfo,
+  VKS.TextureFormat,
+  VKS.VectorTypes;
 
 type
   TVKSLProjectedTexturesStyle = (ptsLight, ptsShadow);
 
   TVKSLProjectedTextures = class;
 
-  // TVKSLTextureEmmiter
-  //
-  { A projected texture emitter. 
+  { A projected texture emitter.
      Can be places anywhere in the scene.
      Used to generate a modelview and texture matrix for the shader}
   TVKSLTextureEmitter = class(TVKBaseSceneObject)
@@ -94,8 +99,6 @@ type
     property Effects;
   end;
 
-  // TVKSLTextureEmitterItem
-  //
   { Specifies an item on the TVKSLTextureEmitters collection. }
   TVKSLTextureEmitterItem = class(TCollectionItem)
   private
@@ -111,8 +114,6 @@ type
     property Emitter: TVKSLTextureEmitter read FEmitter write SetEmitter;
   end;
 
-  // TVKSLTextureEmitters
-  //
   { Collection of TVKSLTextureEmitter. }
   TVKSLTextureEmitters = class(TCollection)
   private
@@ -126,9 +127,7 @@ type
     property Items[index: Integer]: TVKSLTextureEmitterItem read GetItems; default;
   end;
 
-  // TVKSLProjectedTextures
-  //
-  { Projected Texture Manager. 
+  { Projected Texture Manager.
      Specifies active Emitters and receivers (children of this object).
      At the moment, only 1 texture can be used.}
   TVKSLProjectedTextures = class(TVKSceneObject)
@@ -161,13 +160,9 @@ type
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 implementation
-
 // ------------------
 // ------------------ TVKSLTextureEmitter ------------------
 // ------------------
-
-// Create
-//
 
 constructor TVKSLTextureEmitter.Create(aOwner: TComponent);
 begin
@@ -188,8 +183,6 @@ begin
   FColor.Free;
   inherited;
 end;
-// SetupTexMatrix
-//
 
 procedure TVKSLTextureEmitter.DoRender(var rci: TVKRenderContextInfo;
   renderSelf, renderChildren: boolean);
@@ -244,16 +237,10 @@ end;
 // ------------------ TVKSLTextureEmitterItem ------------------
 // ------------------
 
-// Create
-//
-
 constructor TVKSLTextureEmitterItem.Create(Collection: TCollection);
 begin
   inherited Create(Collection);
 end;
-
-// Assign
-//
 
 procedure TVKSLTextureEmitterItem.Assign(Source: TPersistent);
 begin
@@ -265,9 +252,6 @@ begin
   inherited;
 end;
 
-// SetCaster
-//
-
 procedure TVKSLTextureEmitterItem.SetEmitter(const val: TVKSLTextureEmitter);
 begin
   if FEmitter <> val then
@@ -277,17 +261,11 @@ begin
   end;
 end;
 
-// RemoveNotification
-//
-
 procedure TVKSLTextureEmitterItem.RemoveNotification(aComponent: TComponent);
 begin
   if aComponent = FEmitter then
     FEmitter := nil;
 end;
-
-// GetDisplayName
-//
 
 function TVKSLTextureEmitterItem.GetDisplayName: string;
 begin
@@ -303,24 +281,15 @@ end;
 // ------------------ TVKSLTextureEmitters ------------------
 // ------------------
 
-// GetOwner
-//
-
 function TVKSLTextureEmitters.GetOwner: TPersistent;
 begin
   Result := FOwner;
 end;
 
-// GetItems
-//
-
 function TVKSLTextureEmitters.GetItems(index: Integer): TVKSLTextureEmitterItem;
 begin
   Result := TVKSLTextureEmitterItem(inherited Items[index]);
 end;
-
-// RemoveNotification
-//
 
 procedure TVKSLTextureEmitters.RemoveNotification(aComponent: TComponent);
 var
@@ -332,9 +301,6 @@ begin
     TVKSLProjectedTextures(GetOwner).shaderChanged := true;
   end;
 end;
-
-// AddEmitter
-//
 
 procedure TVKSLTextureEmitters.AddEmitter(texEmitter: TVKSLTextureEmitter);
 var
@@ -350,9 +316,6 @@ end;
 // ------------------ TVKSLProjectedTextures ------------------
 // ------------------
 
-// Create
-//
-
 constructor TVKSLProjectedTextures.Create(AOwner: TComponent);
 begin
   inherited Create(aOWner);
@@ -364,16 +327,12 @@ begin
   ambient.SetColor(0.5, 0.5, 0.5, 0.5);
 end;
 
-// Destroy
-//
-
 destructor TVKSLProjectedTextures.Destroy;
 begin
   if assigned(shader) then
     Shader.free;
   FEmitters.Free;
   Ambient.Free;
-
   inherited destroy;
 end;
 
@@ -538,9 +497,6 @@ begin
     raise Exception.Create(Shader.InfoLog);
 end;
 
-// DoRender
-//
-
 procedure TVKSLProjectedTextures.DoRender(var rci: TVKRenderContextInfo;
   renderSelf, renderChildren: boolean);
 var
@@ -605,7 +561,9 @@ begin
   shaderchanged := true;
 end;
 
+//===========================================================
 initialization
+//===========================================================
 
   RegisterClasses([TVKSLTextureEmitter, TVKSLProjectedTextures]);
 

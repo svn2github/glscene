@@ -16,7 +16,7 @@ uses
   VKS.VectorFileObjects,
   VKS.VectorLists,
   VKS.VectorGeometry,
-  uOpenGLAdapter,
+  VKS.OpenGLAdapter,
   Winapi.OpenGL, Winapi.OpenGLext, 
   VKS.VectorTypes;
 

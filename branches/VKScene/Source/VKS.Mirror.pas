@@ -16,7 +16,7 @@ interface
 
 uses
   System.Classes,
-  VKS.Scene, VKS.VectorGeometry, uOpenGLAdapter, Winapi.OpenGL, Winapi.OpenGLext, 
+  VKS.Scene, VKS.VectorGeometry, VKS.OpenGLAdapter, Winapi.OpenGL, Winapi.OpenGLext, 
   VKS.Context, VKS.Material, VKS.Color, VKS.RenderContextInfo,
   VKS.State, VKS.VectorTypes;
 

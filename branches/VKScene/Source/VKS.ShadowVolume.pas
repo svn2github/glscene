@@ -20,7 +20,7 @@ uses
   Winapi.OpenGLext,
   System.Classes,
   
-  uOpenGLAdapter,
+  VKS.OpenGLAdapter,
   VKS.Scene,
   VKS.VectorGeometry,
   VKS.Context,

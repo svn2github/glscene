@@ -388,13 +388,13 @@
         <DCCReference Include="..\..\Source\Basis\OpenGL1x.pas"/>
         <DCCReference Include="..\..\Source\Basis\OpenGLAdapter.pas"/>
         <DCCReference Include="..\..\Source\Basis\OpenGLTokens.pas"/>
+        <DCCReference Include="..\..\Source\Basis\OpenGLVCL.pas"/>
         <DCCReference Include="..\..\Source\FileFormats\Q3BSP.pas"/>
         <DCCReference Include="..\..\Source\FileFormats\Q3MD3.pas"/>
         <DCCReference Include="..\..\Source\FileFormats\Types3DS.pas"/>
         <DCCReference Include="..\..\Source\FileFormats\Utils3DS.pas"/>
         <DCCReference Include="..\..\Source\FileFormats\VRMLParser.pas"/>
         <DCCReference Include="..\..\Source\Basis\XOpenGL.pas"/>
-        <DCCReference Include="..\..\Source\Basis\OpenGLVCL.pas"/>
         <BuildConfiguration Include="Debug">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

@@ -23,7 +23,7 @@ uses
   FMX.Controls,
   FMX.Menus,
   
-  uOpenGLAdapter,
+  VKS.OpenGLAdapter,
   VKS.Scene,
   VKS.Context,
   VKS.Win64Viewer,

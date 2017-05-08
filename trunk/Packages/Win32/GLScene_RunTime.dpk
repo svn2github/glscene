@@ -289,13 +289,13 @@ contains
   OpenGL1x in '..\..\Source\Basis\OpenGL1x.pas',
   OpenGLAdapter in '..\..\Source\Basis\OpenGLAdapter.pas',
   OpenGLTokens in '..\..\Source\Basis\OpenGLTokens.pas',
+  OpenGLVCL in '..\..\Source\Basis\OpenGLVCL.pas',
   Q3BSP in '..\..\Source\FileFormats\Q3BSP.pas',
   Q3MD3 in '..\..\Source\FileFormats\Q3MD3.pas',
   Types3DS in '..\..\Source\FileFormats\Types3DS.pas',
   Utils3DS in '..\..\Source\FileFormats\Utils3DS.pas',
   VRMLParser in '..\..\Source\FileFormats\VRMLParser.pas',
-  XOpenGL in '..\..\Source\Basis\XOpenGL.pas',
-  OpenGLVCL in '..\..\Source\Basis\OpenGLVCL.pas';
+  XOpenGL in '..\..\Source\Basis\XOpenGL.pas';
 
 end.
 

@@ -17,7 +17,7 @@ uses
   System.Classes,
   System.SysUtils,
   
-  uOpenGLAdapter,
+  VKS.OpenGLAdapter,
   VKS.Texture, 
   VKS.VectorGeometry, 
   VKS.VectorLists, 

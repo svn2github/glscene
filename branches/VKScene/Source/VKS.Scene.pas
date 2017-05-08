@@ -23,7 +23,7 @@ uses
   FMX.Types,
   FMX.Dialogs,
   
-  uOpenGLAdapter,
+  VKS.OpenGLAdapter,
   VKS.Context,
   VKS.VectorGeometry,
   VKS.XCollection,

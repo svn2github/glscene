@@ -22,7 +22,7 @@ interface
 uses
   System.Classes, System.SysUtils, System.SyncObjs,
  
-  VKS.SDL, uOpenGLAdapter;
+  VKS.SDL, VKS.OpenGLAdapter;
 
 type
   // TSDLWindowPixelDepth

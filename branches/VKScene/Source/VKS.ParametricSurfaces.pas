@@ -31,14 +31,16 @@ interface
 {$I VKScene.inc}
 
 uses
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
+
   VKS.VectorFileObjects,
   VKS.CurvesAndSurfaces,
   VKS.VectorGeometry,
   VKS.VectorLists,
   VKS.PersistentClasses,
   VKS.Texture,
-  Winapi.OpenGL, Winapi.OpenGLext, 
-  uOpenGLAdapter,
+  VKS.OpenGLAdapter,
   VKS.State,
   VKS.Context,
   VKS.RenderContextInfo;

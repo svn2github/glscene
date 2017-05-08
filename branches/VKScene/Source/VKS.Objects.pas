@@ -26,7 +26,7 @@ uses
   System.SysUtils,
   System.Math,
 
-  uOpenGLAdapter,
+  VKS.OpenGLAdapter,
   VKS.XOpenGL,
   VKS.VectorGeometry,
   VKS.VectorTypes,

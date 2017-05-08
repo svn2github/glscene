@@ -37,7 +37,7 @@ uses
   System.Classes,
   System.SysUtils,
   
-  uOpenGLAdapter,
+  VKS.OpenGLAdapter,
   VKS.Material,
   VKS.Graphics,
   VKS.Utils,

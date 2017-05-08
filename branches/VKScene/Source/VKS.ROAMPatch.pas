@@ -16,7 +16,7 @@ uses
   Winapi.OpenGLext,
   System.SysUtils,
   
-  uOpenGLAdapter,
+  VKS.OpenGLAdapter,
   VKS.XOpenGL,
   VKS.VectorGeometry,
   VKS.HeightData,
