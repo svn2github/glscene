@@ -1,0 +1,14 @@
+Samples/Demos of VXScene using with Delphi & C++Builder
+
+It's supposed that for all this demos there are next directories:   
+- sample projects in $(VXSCENEDIR)\Samples\
+- media files in $(VXSCENEDIR)\Samples\media\
+- CPP header files in $(VXSCENEDIR)\include\$(Platform)
+- CPP lib/bpi files in $(VXSCENEDIR)\lib\$(Platform)
+
+Additional Dynamic libraries, dll with Setup.bat are in the folder $(VXSCENEDIR)\external\
+
+All demos are released under Mozilla PL (MPL).
+
+http://glscene.org
+http://sourceforge.net/projects/glscene/branches/vxscene

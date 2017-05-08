@@ -1,0 +1,120 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{CA88E812-B9BB-4FD2-812F-5BC40027F9F7}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="Win32\VXScene_RT.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Win32\VXScene_DT.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Win32\VXScene_Sounds_RT.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Win32\VXScene_Sounds_DT.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Win32\VXScene_Physics_DT.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Win32\VXScene_Physics_RT.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Win32\VXScene_Parallel_RT.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Win32\VXScene_Parallel_DT.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="VXScene_RT">
+        <MSBuild Projects="Win32\VXScene_RT.dproj"/>
+    </Target>
+    <Target Name="VXScene_RT:Clean">
+        <MSBuild Projects="Win32\VXScene_RT.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="VXScene_RT:Make">
+        <MSBuild Projects="Win32\VXScene_RT.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="VXScene_DT">
+        <MSBuild Projects="Win32\VXScene_DT.dproj"/>
+    </Target>
+    <Target Name="VXScene_DT:Clean">
+        <MSBuild Projects="Win32\VXScene_DT.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="VXScene_DT:Make">
+        <MSBuild Projects="Win32\VXScene_DT.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="VXScene_Sounds_RT">
+        <MSBuild Projects="Win32\VXScene_Sounds_RT.dproj"/>
+    </Target>
+    <Target Name="VXScene_Sounds_RT:Clean">
+        <MSBuild Projects="Win32\VXScene_Sounds_RT.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="VXScene_Sounds_RT:Make">
+        <MSBuild Projects="Win32\VXScene_Sounds_RT.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="VXScene_Sounds_DT">
+        <MSBuild Projects="Win32\VXScene_Sounds_DT.dproj"/>
+    </Target>
+    <Target Name="VXScene_Sounds_DT:Clean">
+        <MSBuild Projects="Win32\VXScene_Sounds_DT.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="VXScene_Sounds_DT:Make">
+        <MSBuild Projects="Win32\VXScene_Sounds_DT.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="VXScene_Physics_DT">
+        <MSBuild Projects="Win32\VXScene_Physics_DT.dproj"/>
+    </Target>
+    <Target Name="VXScene_Physics_DT:Clean">
+        <MSBuild Projects="Win32\VXScene_Physics_DT.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="VXScene_Physics_DT:Make">
+        <MSBuild Projects="Win32\VXScene_Physics_DT.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="VXScene_Physics_RT">
+        <MSBuild Projects="Win32\VXScene_Physics_RT.dproj"/>
+    </Target>
+    <Target Name="VXScene_Physics_RT:Clean">
+        <MSBuild Projects="Win32\VXScene_Physics_RT.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="VXScene_Physics_RT:Make">
+        <MSBuild Projects="Win32\VXScene_Physics_RT.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="VXScene_Parallel_RT">
+        <MSBuild Projects="Win32\VXScene_Parallel_RT.dproj"/>
+    </Target>
+    <Target Name="VXScene_Parallel_RT:Clean">
+        <MSBuild Projects="Win32\VXScene_Parallel_RT.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="VXScene_Parallel_RT:Make">
+        <MSBuild Projects="Win32\VXScene_Parallel_RT.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="VXScene_Parallel_DT">
+        <MSBuild Projects="Win32\VXScene_Parallel_DT.dproj"/>
+    </Target>
+    <Target Name="VXScene_Parallel_DT:Clean">
+        <MSBuild Projects="Win32\VXScene_Parallel_DT.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="VXScene_Parallel_DT:Make">
+        <MSBuild Projects="Win32\VXScene_Parallel_DT.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="VXScene_RT;VXScene_DT;VXScene_Sounds_RT;VXScene_Sounds_DT;VXScene_Physics_DT;VXScene_Physics_RT;VXScene_Parallel_RT;VXScene_Parallel_DT"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="VXScene_RT:Clean;VXScene_DT:Clean;VXScene_Sounds_RT:Clean;VXScene_Sounds_DT:Clean;VXScene_Physics_DT:Clean;VXScene_Physics_RT:Clean;VXScene_Parallel_RT:Clean;VXScene_Parallel_DT:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="VXScene_RT:Make;VXScene_DT:Make;VXScene_Sounds_RT:Make;VXScene_Sounds_DT:Make;VXScene_Physics_DT:Make;VXScene_Physics_RT:Make;VXScene_Parallel_RT:Make;VXScene_Parallel_DT:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

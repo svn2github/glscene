@@ -1,0 +1,114 @@
+vxs_camera BITMAP objects\vxs_camera.bmp
+vxs_lights BITMAP objects\vxs_lights.bmp
+vxs_objects BITMAP objects\vxs_objects.bmp
+vxs_root BITMAP objects\vxs_root.bmp
+vxs_cross BITMAP objects\vxs_cross.bmp
+
+TVXCamera BITMAP objects\TVXCamera.bmp
+TVXDirectOpenGL BITMAP objects\TVXDirectOpenGL.bmp
+TVXDummyCube BITMAP objects\TVXDummyCube.bmp
+TVXLightSource BITMAP objects\TVXLightSource.bmp
+
+TVXFeedback BITMAP objects\TVXFeedback.bmp
+TVXImposter BITMAP objects\TVXImposter.bmp
+TVXRenderPoint BITMAP objects\TVXRenderPoint.bmp
+TVXFBORenderer BITMAP objects\TVXFBORenderer.bmp
+
+TVXHUDSprite BITMAP objects\hud_objects\TVXHUDSprite.bmp
+TVXHUDText BITMAP objects\hud_objects\TVXHUDText.bmp
+TVXResolutionIndependantHUDText BITMAP objects\hud_objects\TVXResolutionIndependantHUDText.bmp
+TVXAbsoluteHUDText BITMAP objects\hud_objects\TVXAbsoluteHUDText.bmp
+TVXConsole BITMAP objects\hud_objects\TVXConsole.bmp
+TVXGameMenu BITMAP objects\hud_objects\TVXGameMenu.bmp
+
+TVXAdvancedLabel BITMAP objects\gui_objects\TVXAdvancedLabel.bmp
+TVXBaseControl BITMAP objects\gui_objects\TVXBaseControl.bmp
+TVXButton BITMAP objects\gui_objects\TVXButton.bmp
+TVXCheckBox BITMAP objects\gui_objects\TVXCheckBox.bmp
+TVXCustomControl BITMAP objects\gui_objects\TVXCustomControl.bmp
+TVXEdit BITMAP objects\gui_objects\TVXEdit.bmp
+TVXForm BITMAP objects\gui_objects\TVXForm.bmp
+TVXLabel BITMAP objects\gui_objects\TVXLabel.bmp
+TVXPanel BITMAP objects\gui_objects\TVXPanel.bmp
+TVXPopupMenu BITMAP objects\gui_objects\TVXPopupMenu.bmp
+TVXScrollBar BITMAP objects\gui_objects\TVXScrollBar.bmp
+TVXStringGrid BITMAP objects\gui_objects\TVXStringGrid.bmp
+
+TVXCone BITMAP objects\basic_geometry\TVXCone.bmp
+TVXCube BITMAP objects\basic_geometry\TVXCube.bmp
+TVXCylinder BITMAP objects\basic_geometry\TVXCylinder.bmp
+TVXDisk BITMAP objects\basic_geometry\TVXDisk.bmp
+TVXDodecahedron BITMAP objects\basic_geometry\TVXDodecahedron.bmp
+TVXFrustrum BITMAP objects\basic_geometry\TVXFrustrum.bmp
+TVXHexahedron BITMAP objects\basic_geometry\TVXHexahedron.bmp
+TVXIcosahedron BITMAP objects\basic_geometry\TVXIcosahedron.bmp
+TVXTetrahedron BITMAP objects\basic_geometry\TVXTetrahedron.bmp
+TVXOctahedron BITMAP objects\basic_geometry\TVXOctahedron.bmp
+TVXLines BITMAP objects\basic_geometry\TVXLines.bmp
+TVXPlane BITMAP objects\basic_geometry\TVXPlane.bmp
+TVXPoints BITMAP objects\basic_geometry\TVXPoints.bmp
+TVXPolygon BITMAP objects\basic_geometry\TVXPolygon.bmp
+TVXSphere BITMAP objects\basic_geometry\TVXSphere.bmp
+TVXSprite BITMAP objects\basic_geometry\TVXSprite.bmp
+TVXCapsule BITMAP objects\basic_geometry\TVXCapsule.bmp
+TVXSuperellipsoid BITMAP objects\basic_geometry\TVXSuperellipsoid.bmp
+
+TVXAnimatedSprite BITMAP objects\advanced_geometry\TVXAnimatedSprite.bmp
+TVXAnnulus BITMAP objects\advanced_geometry\TVXAnnulus.bmp
+TVXArrowLine BITMAP objects\advanced_geometry\TVXArrowLine.bmp
+TVXArrowArc BITMAP objects\advanced_geometry\TVXArrowArc.bmp
+TVXExtrusionSolid BITMAP objects\advanced_geometry\TVXExtrusionSolid.bmp
+TVXMultiPolygon BITMAP objects\advanced_geometry\TVXMultiPolygon.bmp
+TVXPipe BITMAP objects\advanced_geometry\TVXPipe.bmp
+TVXRevolutionSolid BITMAP objects\advanced_geometry\TVXRevolutionSolid.bmp
+TVXTorus BITMAP objects\advanced_geometry\TVXTorus.bmp
+TVXGeoSphere BITMAP objects\advanced_geometry\TVXGeoSphere.bmp
+
+TVXActor BITMAP objects\mesh_objects\TVXActor.bmp
+TVXFreeForm BITMAP objects\mesh_objects\TVXFreeForm.bmp
+TVXMesh BITMAP objects\mesh_objects\TVXMesh.bmp
+TVXPortal BITMAP objects\mesh_objects\TVXPortal.bmp
+TVXTerrainRenderer BITMAP objects\mesh_objects\TVXTerrainRenderer.bmp
+TVXTilePlane BITMAP objects\mesh_objects\TVXTilePlane.bmp
+
+TVXFlatText BITMAP objects\graph_plotting_objects\TVXFlatText.bmp
+TVXHeightfield BITMAP objects\graph_plotting_objects\TVXHeightfield.bmp
+TVXXYZGrid BITMAP objects\graph_plotting_objects\TVXXYZGrid.bmp
+
+TVXParticleFXRenderer BITMAP objects\particle_systems\TVXParticleFXRenderer.bmp
+TVXParticles BITMAP objects\particle_systems\TVXParticles.bmp
+
+TVXEarthSkyDome BITMAP objects\environment_objects\TVXEarthSkyDome.bmp
+TVXSkyDome BITMAP objects\environment_objects\TVXSkyDome.bmp
+TVXAtmosphere BITMAP objects\environment_objects\TVXAtmosphere.bmp
+TVXSkyBox BITMAP objects\environment_objects\TVXSkyBox.bmp
+
+TVXSpaceText BITMAP objects\doodad_objects\TVXSpaceText.bmp
+TVXTeapot BITMAP objects\doodad_objects\TVXTeapot.bmp
+TVXTree BITMAP objects\doodad_objects\TVXTree.bmp
+TVXWaterplane BITMAP objects\doodad_objects\TVXWaterplane.bmp
+
+TVXBlur BITMAP objects\special_objects\TVXBlur.bmp
+TVXMotionBlur BITMAP objects\special_objects\TVXMotionBlur.bmp
+TVXLensflare BITMAP objects\special_objects\TVXLensflare.bmp
+TVXMirror BITMAP objects\special_objects\TVXMirror.bmp
+TVXShadowPlane BITMAP objects\special_objects\TVXShadowPlane.bmp
+TVXShadowVolume BITMAP objects\special_objects\TVXShadowVolume.bmp
+TVXZShadows BITMAP objects\special_objects\TVXZShadows.bmp
+TVXTrail BITMAP objects\special_objects\TVXTrail.bmp
+TVXTextureLensFlare BITMAP objects\special_objects\TVXTextureLensFlare.bmp
+TVXTextureEmitter BITMAP objects\special_objects\TVXTextureEmitter.bmp
+TVXSLTextureEmitter BITMAP objects\special_objects\TVXSLTextureEmitter.bmp
+TVXProjectedTextures BITMAP objects\special_objects\TVXProjectedTextures.bmp
+TVXSLProjectedTextures BITMAP objects\special_objects\TVXSLProjectedTextures.bmp
+TVXPostShaderHolder BITMAP objects\special_objects\TVXPostShaderHolder.bmp
+TVXPostEffect BITMAP objects\special_objects\TVXPostEffect.bmp
+
+TVXActorProxy BITMAP objects\proxy_objects\TVXActorProxy.bmp
+TVXColorProxy BITMAP objects\proxy_objects\TVXColorProxy.bmp
+TVXFreeFormProxy BITMAP objects\proxy_objects\TVXFreeFormProxy.bmp
+TVXMaterialProxy BITMAP objects\proxy_objects\TVXMaterialProxy.bmp
+TVXMaterialMultiProxy BITMAP objects\proxy_objects\TVXMaterialMultiProxy.bmp
+TVXMultiProxy BITMAP objects\proxy_objects\TVXMultiProxy.bmp
+TVXProxyObject BITMAP objects\proxy_objects\TVXProxyObject.bmp
+

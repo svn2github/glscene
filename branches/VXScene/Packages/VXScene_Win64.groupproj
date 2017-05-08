@@ -1,0 +1,72 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{CA88E812-B9BB-4FD2-812F-5BC40027F9F7}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="Win64\VXScene_RT.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Win64\VXScene_Sounds_RT.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Win64\VXScene_Physics_RT.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Win64\VXScene_Parallel_RT.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="VXScene_RT">
+        <MSBuild Projects="Win64\VXScene_RT.dproj"/>
+    </Target>
+    <Target Name="VXScene_RT:Clean">
+        <MSBuild Projects="Win64\VXScene_RT.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="VXScene_RT:Make">
+        <MSBuild Projects="Win64\VXScene_RT.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="VXScene_Sounds_RT">
+        <MSBuild Projects="Win64\VXScene_Sounds_RT.dproj"/>
+    </Target>
+    <Target Name="VXScene_Sounds_RT:Clean">
+        <MSBuild Projects="Win64\VXScene_Sounds_RT.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="VXScene_Sounds_RT:Make">
+        <MSBuild Projects="Win64\VXScene_Sounds_RT.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="VXScene_Physics_RT">
+        <MSBuild Projects="Win64\VXScene_Physics_RT.dproj"/>
+    </Target>
+    <Target Name="VXScene_Physics_RT:Clean">
+        <MSBuild Projects="Win64\VXScene_Physics_RT.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="VXScene_Physics_RT:Make">
+        <MSBuild Projects="Win64\VXScene_Physics_RT.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="VXScene_Parallel_RT">
+        <MSBuild Projects="Win64\VXScene_Parallel_RT.dproj"/>
+    </Target>
+    <Target Name="VXScene_Parallel_RT:Clean">
+        <MSBuild Projects="Win64\VXScene_Parallel_RT.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="VXScene_Parallel_RT:Make">
+        <MSBuild Projects="Win64\VXScene_Parallel_RT.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="VXScene_RT;VXScene_Sounds_RT;VXScene_Physics_RT;VXScene_Parallel_RT"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="VXScene_RT:Clean;VXScene_Sounds_RT:Clean;VXScene_Physics_RT:Clean;VXScene_Parallel_RT:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="VXScene_RT:Make;VXScene_Sounds_RT:Make;VXScene_Physics_RT:Make;VXScene_Parallel_RT:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

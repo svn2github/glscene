@@ -1,0 +1,52 @@
+package VXScene_Parallel_RT;
+
+{$R *.res}
+{$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
+{$ALIGN 8}
+{$ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{$DEBUGINFO OFF}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA ON}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS ON}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION OFF}
+{$OVERFLOWCHECKS OFF}
+{$RANGECHECKS OFF}
+{$REFERENCEINFO ON}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES ON}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST OFF}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$DEFINE DEBUG}
+{$ENDIF IMPLICITBUILDING}
+{$DESCRIPTION 'VKScene GPU Computing'}
+{$RUNONLY}
+{$IMPLICITBUILD ON}
+
+requires
+  rtl,
+  fmx,
+  VKScene_RunTime;
+
+contains
+  CL in '..\..\Source\ParallelAPIs\CL.pas',
+  CL_GL in '..\..\Source\ParallelAPIs\CL_GL.pas',
+  VXS.CUDARunTime in '..\..\Source\ParallelAPIs\VXS.CUDARunTime.pas',
+  VXS.CUDAFourierTransform in '..\..\Source\ParallelAPIs\VXS.CUDAFourierTransform.pas',
+  VXS.CUDAUtility in '..\..\Source\ParallelAPIs\VXS.CUDAUtility.pas',
+  VXS.CUDA in '..\..\Source\ParallelAPIs\VXS.CUDA.pas',
+  VXS.CUDACompiler in '..\..\Source\ParallelAPIs\VXS.CUDACompiler.pas',
+  VXS.CUDAContext in '..\..\Source\ParallelAPIs\VXS.CUDAContext.pas',
+  VXS.CUDAFFTPlan in '..\..\Source\ParallelAPIs\VXS.CUDAFFTPlan.pas',
+  VXS.CUDAGraphics in '..\..\Source\ParallelAPIs\VXS.CUDAGraphics.pas',
+  VXS.CUDAParser in '..\..\Source\ParallelAPIs\VXS.CUDAParser.pas',
+  VXS.CUDADataAccess in '..\..\Source\ParallelAPIs\VXS.CUDADataAccess.pas',
+  VXS.CUDAApi in '..\..\Source\ParallelAPIs\VXS.CUDAApi.pas';
+
+end.

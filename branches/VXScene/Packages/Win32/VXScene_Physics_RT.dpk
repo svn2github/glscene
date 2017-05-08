@@ -1,0 +1,51 @@
+package VXScene_Physics_RT;
+
+{$R *.res}
+{$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
+{$ALIGN 8}
+{$ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{$DEBUGINFO OFF}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA ON}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS ON}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION OFF}
+{$OVERFLOWCHECKS OFF}
+{$RANGECHECKS OFF}
+{$REFERENCEINFO ON}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES ON}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST OFF}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$DEFINE DEBUG}
+{$ENDIF IMPLICITBUILDING}
+{$DESCRIPTION 'VKScene Physics Managers'}
+{$RUNONLY}
+{$IMPLICITBUILD ON}
+
+requires
+  rtl,
+  fmx,
+  VKScene_RunTime;
+
+contains
+  VXS.ODEManager in '..\..\Source\PhysicsAPIs\VXS.ODEManager.pas',
+  VXS.ODECustomColliders in '..\..\Source\PhysicsAPIs\VXS.ODECustomColliders.pas',
+  VXS.ODESkeletonColliders in '..\..\Source\PhysicsAPIs\VXS.ODESkeletonColliders.pas',
+  ODEImport in '..\..\Source\PhysicsAPIs\ODEImport.pas',
+  VXS.ODEGL in '..\..\Source\PhysicsAPIs\VXS.ODEGL.pas',
+  VXS.ODERagdoll in '..\..\Source\PhysicsAPIs\VXS.ODERagdoll.pas',
+  VXS.ModuleLoader in '..\..\Source\PhysicsAPIs\VXS.ModuleLoader.pas',
+  VXS.NGDManager in '..\..\Source\PhysicsAPIs\VXS.NGDManager.pas',
+  NewtonImport in '..\..\Source\PhysicsAPIs\NewtonImport.pas',
+  NewtonImport_JointLibrary in '..\..\Source\PhysicsAPIs\NewtonImport_JointLibrary.pas',
+  VXS.PhysX in '..\..\Source\PhysicsAPIs\VXS.PhysX.pas';
+
+end.
+
