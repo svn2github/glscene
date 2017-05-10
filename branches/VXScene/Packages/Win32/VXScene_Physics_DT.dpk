@@ -1,8 +1,8 @@
 package VXScene_Physics_DT;
 
 {$R *.res}
-{$R '..\..\Resources\VKSceneODE.dcr'}
-{$R '..\..\Resources\VKSceneNGD.dcr'}
+{$R '..\..\Resources\VXSceneODE.dcr'}
+{$R '..\..\Resources\VXSceneNGD.dcr'}
 {$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
 {$ALIGN 8}
 {$ASSERTIONS ON}
@@ -27,15 +27,15 @@ package VXScene_Physics_DT;
 {$IMAGEBASE $400000}
 {$DEFINE DEBUG}
 {$ENDIF IMPLICITBUILDING}
-{$DESCRIPTION 'VKScene Physics Managers'}
+{$DESCRIPTION 'VXScene Physics Managers'}
 {$DESIGNONLY}
 {$IMPLICITBUILD ON}
 
 requires
   rtl,
   fmx,
-  VKScene_RunTime,
-  VKScene_Physics_RunTime;
+  VKScene_RT,
+  VKScene_Physics_RT;
 
 contains
   VXS.ODERegister in '..\..\Source\PhysicsAPIs\VXS.ODERegister.pas',

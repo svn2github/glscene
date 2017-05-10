@@ -128,10 +128,10 @@
     <PropertyGroup Condition="'$(Cfg_1_Win64)'!=''">
         <DCC_UnitSearchPath>$(VXSCENEDIR)\Source;$(VXSCENEDIR)\Source\Basis;$(VXSCENEDIR)\Source\DesignTime;$(VXSCENEDIR)\Source\FileFormats;$(VXSCENEDIR)\Source\GameAPIs;$(VXSCENEDIR)\Source\ParallelAPIs;$(VXSCENEDIR)\Source\PhysicsAPIs;$(VXSCENEDIR)\Source\ScriptingAPIs;$(VXSCENEDIR)\Source\Shaders;$(VXSCENEDIR)\Source\SoundVideoAPIs;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
         <DCC_DcpOutput>$(VXSCENEDIR)\lib\Win64</DCC_DcpOutput>
-        <DCC_Description>VKScene Sound Managers</DCC_Description>
-        <DCC_ObjOutput>$(VKSCENEDIR)\lib\Win64</DCC_ObjOutput>
-        <DCC_BpiOutput>$(VKSCENEDIR)\lib\Win64</DCC_BpiOutput>
-        <DCC_HppOutput>$(VKSCENEDIR)\include\Win64</DCC_HppOutput>
+        <DCC_Description>VXScene Sound Managers</DCC_Description>
+        <DCC_ObjOutput>$(VXSCENEDIR)\lib\Win64</DCC_ObjOutput>
+        <DCC_BpiOutput>$(VXSCENEDIR)\lib\Win64</DCC_BpiOutput>
+        <DCC_HppOutput>$(VXSCENEDIR)\include\Win64</DCC_HppOutput>
         <DCC_DcuOutput>$(VXSCENEDIR)\lib\Win64</DCC_DcuOutput>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Locale>1033</VerInfo_Locale>
@@ -163,7 +163,7 @@
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
         <DCCReference Include="rtl.dcp"/>
-        <DCCReference Include="VKScene_RunTime.dcp"/>
+        <DCCReference Include="VXScene_RT.dcp"/>
         <DCCReference Include="..\..\Source\SoundVideoAPIs\Bass.pas"/>
         <DCCReference Include="..\..\Source\SoundVideoAPIs\fmod.pas"/>
         <DCCReference Include="..\..\Source\SoundVideoAPIs\fmoddyn.pas"/>

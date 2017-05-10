@@ -25,13 +25,13 @@ package VXScene_Sounds_RT;
 {$IMAGEBASE $400000}
 {$DEFINE DEBUG}
 {$ENDIF IMPLICITBUILDING}
-{$DESCRIPTION 'VKScene Sound Managers'}
+{$DESCRIPTION 'VXScene Sound Managers'}
 {$RUNONLY}
 {$IMPLICITBUILD ON}
 
 requires
   rtl,
-  VKScene_RunTime;
+  VXScene_RT;
 
 contains
   Bass in '..\..\Source\SoundVideoAPIs\Bass.pas',

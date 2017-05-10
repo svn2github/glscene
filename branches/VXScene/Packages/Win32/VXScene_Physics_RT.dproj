@@ -116,17 +116,17 @@
         <BT_BuildType>Debug</BT_BuildType>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
-        <DCC_HppOutput>$(VKSCENEDIR)\include\Win32</DCC_HppOutput>
-        <DCC_BpiOutput>$(VKSCENEDIR)\lib\Win32</DCC_BpiOutput>
+        <DCC_HppOutput>$(VXSCENEDIR)\include\Win32</DCC_HppOutput>
+        <DCC_BpiOutput>$(VXSCENEDIR)\lib\Win32</DCC_BpiOutput>
         <DCC_CBuilderOutput>All</DCC_CBuilderOutput>
-        <DCC_ObjOutput>$(VKSCENEDIR)\lib\Win32</DCC_ObjOutput>
+        <DCC_ObjOutput>$(VXSCENEDIR)\lib\Win32</DCC_ObjOutput>
         <DCC_UnitSearchPath>$(VXSCENEDIR)\Source;$(VXSCENEDIR)\Source\Basis;$(VXSCENEDIR)\Source\DesignTime;$(VXSCENEDIR)\Source\FileFormats;$(VXSCENEDIR)\Source\GameAPIs;$(VXSCENEDIR)\Source\ParallelAPIs;$(VXSCENEDIR)\Source\PhysicsAPIs;$(VXSCENEDIR)\Source\ScriptingAPIs;$(VXSCENEDIR)\Source\Shaders;$(VXSCENEDIR)\Source\SoundVideoAPIs;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
         <DCC_DcuOutput>$(VXSCENEDIR)\lib\Win32</DCC_DcuOutput>
         <DCC_DcpOutput>$(VXSCENEDIR)\lib\Win32</DCC_DcpOutput>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <VerInfo_Keys>CompanyName=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductVersion=1.0.0.0;Comments=;ProgramID=com.embarcadero.$(MSBuildProjectName);FileDescription=$(MSBuildProjectName);ProductName=$(MSBuildProjectName)</VerInfo_Keys>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
-        <DCC_Description>VKScene Physics Managers</DCC_Description>
+        <DCC_Description>VXScene Physics Managers</DCC_Description>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win64)'!=''">
         <DCC_DcpOutput>$(VKSCENEDIR)\lib\Win32</DCC_DcpOutput>
@@ -149,7 +149,7 @@
         </DelphiCompile>
         <DCCReference Include="rtl.dcp"/>
         <DCCReference Include="fmx.dcp"/>
-        <DCCReference Include="VKScene_RunTime.dcp"/>
+        <DCCReference Include="VXScene_RT.dcp"/>
         <DCCReference Include="..\..\Source\PhysicsAPIs\VXS.ODEManager.pas"/>
         <DCCReference Include="..\..\Source\PhysicsAPIs\VXS.ODECustomColliders.pas"/>
         <DCCReference Include="..\..\Source\PhysicsAPIs\VXS.ODESkeletonColliders.pas"/>

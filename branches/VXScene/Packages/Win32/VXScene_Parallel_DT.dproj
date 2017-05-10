@@ -116,10 +116,10 @@
         <DCC_UnitSearchPath>$(VXSCENEDIR)\Source;$(VXSCENEDIR)\Source\Basis;$(VXSCENEDIR)\Source\DesignTime;$(VXSCENEDIR)\Source\FileFormats;$(VXSCENEDIR)\Source\GameAPIs;$(VXSCENEDIR)\Source\ParallelAPIs;$(VXSCENEDIR)\Source\PhysicsAPIs;$(VXSCENEDIR)\Source\ScriptingAPIs;$(VXSCENEDIR)\Source\Shaders;$(VXSCENEDIR)\Source\SoundVideoAPIs;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
         <DCC_DcpOutput>$(VXSCENEDIR)\lib\Win32</DCC_DcpOutput>
         <DCC_DcuOutput>$(VXSCENEDIR)\lib\Win32</DCC_DcuOutput>
-        <DCC_Description>VKScene GPU Computing</DCC_Description>
-        <DCC_HppOutput>$(VKSCENEDIR)\lib\Win32</DCC_HppOutput>
-        <DCC_BpiOutput>$(VKSCENEDIR)\lib\Win32</DCC_BpiOutput>
-        <DCC_ObjOutput>$(VKSCENEDIR)\lib\Win32</DCC_ObjOutput>
+        <DCC_Description>VXScene GPU Computing</DCC_Description>
+        <DCC_HppOutput>$(VXSCENEDIR)\include\Win32</DCC_HppOutput>
+        <DCC_BpiOutput>$(VXSCENEDIR)\lib\Win32</DCC_BpiOutput>
+        <DCC_ObjOutput>$(VXSCENEDIR)\lib\Win32</DCC_ObjOutput>
         <DCC_RemoteDebug>false</DCC_RemoteDebug>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win64)'!=''">
@@ -138,11 +138,11 @@
         <DelphiCompile Include="$(MainSource)">
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
-        <DCCReference Include="..\..\Resources\VKSceneCUDA.dcr"/>
+        <DCCReference Include="..\..\Resources\VXSceneCUDA.dcr"/>
         <DCCReference Include="rtl.dcp"/>
         <DCCReference Include="fmx.dcp"/>
-        <DCCReference Include="VKScene_Parallel_RunTime.dcp"/>
-        <DCCReference Include="VKScene_DesignTime.dcp"/>
+        <DCCReference Include="VKScene_Parallel_RT.dcp"/>
+        <DCCReference Include="VKScene_DT.dcp"/>
         <DCCReference Include="..\..\Source\FCUDAEditor.pas">
             <Form>GLSCUDAEditorForm</Form>
         </DCCReference>

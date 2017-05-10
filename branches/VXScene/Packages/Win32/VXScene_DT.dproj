@@ -104,11 +104,11 @@
     <PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
         <DCC_UnitSearchPath>$(VXSCENEDIR)\Source;$(VXSCENEDIR)\Source\Basis;$(VXSCENEDIR)\Source\DesignTime;$(VXSCENEDIR)\Source\FileFormats;$(VXSCENEDIR)\Source\GameAPIs;$(VXSCENEDIR)\Source\ParallelAPIs;$(VXSCENEDIR)\Source\PhysicsAPIs;$(VXSCENEDIR)\Source\ScriptingAPIs;$(VXSCENEDIR)\Source\Shaders;$(VXSCENEDIR)\Source\SoundVideoAPIs;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
         <DCC_DcpOutput>$(VXSCENEDIR)\lib\Win32</DCC_DcpOutput>
-        <DCC_BpiOutput>$(VKSCENEDIR)\lib\Win32</DCC_BpiOutput>
-        <DCC_HppOutput>$(VKSCENEDIR)\include\Win32</DCC_HppOutput>
-        <DCC_ObjOutput>$(VKSCENEDIR)\lib\Win32</DCC_ObjOutput>
+        <DCC_BpiOutput>$(VXSCENEDIR)\lib\Win32</DCC_BpiOutput>
+        <DCC_HppOutput>$(VXSCENEDIR)\include\Win32</DCC_HppOutput>
+        <DCC_ObjOutput>$(VXSCENEDIR)\lib\Win32</DCC_ObjOutput>
         <DCC_DcuOutput>$(VXSCENEDIR)\lib\Win32</DCC_DcuOutput>
-        <DCC_Description>VKScene 3D library</DCC_Description>
+        <DCC_Description>VXScene Components</DCC_Description>
         <DCC_K>false</DCC_K>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <GenDll>true</GenDll>
@@ -128,12 +128,12 @@
         <DelphiCompile Include="$(MainSource)">
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
-        <DCCReference Include="..\..\Resources\VKSceneObjects.dcr"/>
-        <DCCReference Include="..\..\Resources\VKScene.dcr"/>
-        <DCCReference Include="..\..\Resources\nonVKScene.dcr"/>
+        <DCCReference Include="..\..\Resources\VXSceneObjects.dcr"/>
+        <DCCReference Include="..\..\Resources\VXScene.dcr"/>
+        <DCCReference Include="..\..\Resources\nonVXScene.dcr"/>
         <DCCReference Include="rtl.dcp"/>
         <DCCReference Include="fmx.dcp"/>
-        <DCCReference Include="VKScene_RunTime.dcp"/>
+        <DCCReference Include="VXScene_RT.dcp"/>
         <DCCReference Include="..\..\Source\DesignTime\FGUILayoutEditor.pas">
             <Form>Layouts_Form</Form>
         </DCCReference>

@@ -1,7 +1,7 @@
 package VXScene_Parallel_DT;
 
 {$R *.res}
-{$R '..\..\Resources\VKSceneCUDA.dcr'}
+{$R '..\..\Resources\VXSceneCUDA.dcr'}
 {$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
 {$ALIGN 8}
 {$ASSERTIONS ON}
@@ -26,15 +26,15 @@ package VXScene_Parallel_DT;
 {$IMAGEBASE $400000}
 {$DEFINE DEBUG}
 {$ENDIF IMPLICITBUILDING}
-{$DESCRIPTION 'VKScene GPU Computing'}
+{$DESCRIPTION 'VXScene GPU Computing'}
 {$DESIGNONLY}
 {$IMPLICITBUILD ON}
 
 requires
   rtl,
   fmx,
-  VKScene_Parallel_RunTime,
-  VKScene_DesignTime;
+  VKScene_Parallel_RT,
+  VKScene_DT;
 
 contains
   FCUDAEditor in '..\..\Source\FCUDAEditor.pas' {GLSCUDAEditorForm},

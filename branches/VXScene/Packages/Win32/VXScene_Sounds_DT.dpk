@@ -1,9 +1,9 @@
 package VXScene_Sounds_DT;
 
 {$R *.res}
-{$R '..\..\Resources\VKSceneBass.dcr'}
-{$R '..\..\Resources\VKSceneFMod.dcr'}
-{$R '..\..\Resources\VKSceneOpenAL.dcr'}
+{$R '..\..\Resources\VXSceneBass.dcr'}
+{$R '..\..\Resources\VXSceneFMod.dcr'}
+{$R '..\..\Resources\VXSceneOpenAL.dcr'}
 {$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
 {$ALIGN 8}
 {$ASSERTIONS ON}
@@ -28,15 +28,15 @@ package VXScene_Sounds_DT;
 {$IMAGEBASE $400000}
 {$DEFINE DEBUG}
 {$ENDIF IMPLICITBUILDING}
-{$DESCRIPTION 'VKScene Sound Managers'}
+{$DESCRIPTION 'VXScene Sound Managers'}
 {$DESIGNONLY}
 {$IMPLICITBUILD ON}
 
 requires
   rtl,
   fmx,
-  VKScene_DesignTime,
-  VKScene_Sounds_RunTime;
+  VXScene_DT,
+  VXScene_Sounds_RT;
 
 contains
   VXS.SoundRegister in '..\..\Source\SoundVideoAPIs\VXS.SoundRegister.pas';

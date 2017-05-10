@@ -111,7 +111,10 @@
         <DCC_DcuOutput>$(VXSCENEDIR)\lib\Win32</DCC_DcuOutput>
         <VerInfo_Keys>CompanyName=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductVersion=1.0.0.0;Comments=;ProgramID=com.embarcadero.$(MSBuildProjectName);FileDescription=$(MSBuildProjectName);ProductName=$(MSBuildProjectName)</VerInfo_Keys>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
-        <DCC_Description>VKScene GPU Computing</DCC_Description>
+        <DCC_Description>VXScene GPU Computing</DCC_Description>
+        <DCC_HppOutput>$(VXSCENEDIR)\include\Win32</DCC_HppOutput>
+        <DCC_BpiOutput>$(VXSCENEDIR)\lib\Win32</DCC_BpiOutput>
+        <DCC_ObjOutput>$(VXSCENEDIR)\lib\Win32</DCC_ObjOutput>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win64)'!=''">
         <DCC_UnitSearchPath>$(VKSCENEDIR)\Source;$(VKSCENEDIR)\Source\Basis;$(VKSCENEDIR)\Source\DesignTime;$(VKSCENEDIR)\Source\FileFormats;$(VKSCENEDIR)\Source\GameAPIs;$(VKSCENEDIR)\Source\ParallelAPIs;$(VKSCENEDIR)\Source\PhysicsAPIs;$(VKSCENEDIR)\Source\ScriptingAPIs;$(VKSCENEDIR)\Source\Shaders;$(VKSCENEDIR)\Source\SoundVideoAPIs;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
@@ -132,7 +135,7 @@
         </DelphiCompile>
         <DCCReference Include="rtl.dcp"/>
         <DCCReference Include="fmx.dcp"/>
-        <DCCReference Include="VKScene_RunTime.dcp"/>
+        <DCCReference Include="VXScene_RT.dcp"/>
         <DCCReference Include="..\..\Source\ParallelAPIs\CL.pas"/>
         <DCCReference Include="..\..\Source\ParallelAPIs\CL_GL.pas"/>
         <DCCReference Include="..\..\Source\ParallelAPIs\CL_Platform.pas"/>

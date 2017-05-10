@@ -25,14 +25,14 @@ package VXScene_Parallel_RT;
 {$IMAGEBASE $400000}
 {$DEFINE DEBUG}
 {$ENDIF IMPLICITBUILDING}
-{$DESCRIPTION 'VKScene GPU Computing'}
+{$DESCRIPTION 'VXScene GPU Computing'}
 {$RUNONLY}
 {$IMPLICITBUILD ON}
 
 requires
   rtl,
   fmx,
-  VKScene_RunTime;
+  VXScene_RT;
 
 contains
   CL in '..\..\Source\ParallelAPIs\CL.pas',

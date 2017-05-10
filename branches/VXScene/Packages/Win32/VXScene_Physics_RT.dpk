@@ -25,14 +25,14 @@ package VXScene_Physics_RT;
 {$IMAGEBASE $400000}
 {$DEFINE DEBUG}
 {$ENDIF IMPLICITBUILDING}
-{$DESCRIPTION 'VKScene Physics Managers'}
+{$DESCRIPTION 'VXScene Physics Managers'}
 {$RUNONLY}
 {$IMPLICITBUILD ON}
 
 requires
   rtl,
   fmx,
-  VKScene_RunTime;
+  VXScene_RT;
 
 contains
   VXS.ODEManager in '..\..\Source\PhysicsAPIs\VXS.ODEManager.pas',

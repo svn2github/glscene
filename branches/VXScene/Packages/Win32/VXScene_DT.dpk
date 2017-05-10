@@ -1,9 +1,9 @@
 package VXScene_DT;
 
 {$R *.res}
-{$R '..\..\Resources\VKSceneObjects.dcr'}
-{$R '..\..\Resources\VKScene.dcr'}
-{$R '..\..\Resources\nonVKScene.dcr'}
+{$R '..\..\Resources\VXSceneObjects.dcr'}
+{$R '..\..\Resources\VXScene.dcr'}
+{$R '..\..\Resources\nonVXScene.dcr'}
 {$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
 {$ALIGN 8}
 {$ASSERTIONS ON}
@@ -28,14 +28,14 @@ package VXScene_DT;
 {$IMAGEBASE $400000}
 {$DEFINE DEBUG}
 {$ENDIF IMPLICITBUILDING}
-{$DESCRIPTION 'VKScene 3D library'}
+{$DESCRIPTION 'VXScene Components'}
 {$RUNONLY}
 {$IMPLICITBUILD ON}
 
 requires
   rtl,
   fmx,
-  VKScene_RunTime;
+  VXScene_RT;
 
 contains
   FGUILayoutEditor in '..\..\Source\DesignTime\FGUILayoutEditor.pas' {Layouts_Form},
