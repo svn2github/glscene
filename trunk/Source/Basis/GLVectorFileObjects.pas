@@ -6512,7 +6512,44 @@ begin
   // BEWARE! Utterly inefficient implementation!
   tris := MeshObjects.ExtractTriangles;
   try
+  {
+  // Code of ELR
     SetVector(locRayStart, AbsoluteToLocal(rayStart));
+    SetVector(locRayVector, AbsoluteToLocal(rayVector));
+    minD := -1;
+    // Schleife über untergeornete Objekte
+    for j := 0 to MeshObjects.Count - 1 do
+    begin
+    obj := MeshObjects.GetMeshObject(j);
+    if not obj.Visible then
+    continue;
+    Tris := obj.ExtractTriangles(NIL, NIL); //objTexCoords, objNormals);
+    try
+      i := 0;
+      while i < tris.Count do
+      begin
+        if RayCastTriangleIntersect(locRayStart, locRayVector,
+          tris.List^[i], tris.List^[i + 1], tris.List^[i + 2],
+          @iPoint, @iNormal) then
+          begin
+            d := VectorDistance2(locRayStart, iPoint);
+            if (d < minD) or (minD < 0) then
+              begin
+                minD := d;
+                if intersectPoint <> nil then
+                  intersectPoint^ := iPoint;
+                if intersectNormal <> nil then
+                  intersectNormal^ := iNormal;
+              end;
+           end;
+          Inc(i, 3);
+        end;
+     finally
+        tris.Free;
+      end;
+    end;
+  }
+  SetVector(locRayStart, AbsoluteToLocal(rayStart));
     SetVector(locRayVector, AbsoluteToLocal(rayVector));
     minD := -1;
     i := 0;
