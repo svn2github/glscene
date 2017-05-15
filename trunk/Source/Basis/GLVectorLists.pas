@@ -796,7 +796,7 @@ begin
   if Val > FCapacity then
     SetCapacity(Val);
   if (Val > FCount) and (bloSetCountResetsMemory in FOptions) then
-    FillChar(FBaseList[FItemSize * FCount], SizeOf(FBaseList[FItemSize * FCount]), Byte(0));
+    FillChar(FBaseList[FItemSize * FCount], (Val - FCount) * FItemSize, 0);
   FCount := Val;
   Inc(FRevision);
 end;
