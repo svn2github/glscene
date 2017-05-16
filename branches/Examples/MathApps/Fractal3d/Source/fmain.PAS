@@ -3165,7 +3165,7 @@ begin
     end
     else if ImageDoneVoices.Checked then
     begin
-      PathS := ExtractFilePath(Application.EXEName) + 'DONE.WAV';
+      PathS := ExtractFilePath(ParamStr(0)) + 'DONE.WAV';
       PlaySound(PathS);
     end;
   end;

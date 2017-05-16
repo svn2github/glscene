@@ -11,7 +11,7 @@ uses
   Vcl.Controls,
   Vcl.Forms,
   Vcl.Graphics,
-  //GLS
+   
   GLTexture,
   GLTextureFormat,
   GLScene,

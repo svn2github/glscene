@@ -1033,7 +1033,7 @@ end;
 procedure TFormMaster.ReadIniFile;
 begin
   inherited;
-  IniFile := TIniFile.Create(ChangeFileExt(Application.ExeName, '.ini'));
+  IniFile := TIniFile.Create(ChangeFileExt(ParamStr(0), '.ini'));
   with IniFile do
     try
       Top := ReadInteger(Name, 'Top', 100);
@@ -1051,7 +1051,7 @@ end;
 
 procedure TFormMaster.WriteIniFile;
 begin
-  IniFile := TIniFile.Create(ChangeFileExt(Application.ExeName, '.ini'));
+  IniFile := TIniFile.Create(ChangeFileExt(ParamStr(0), '.ini'));
   with IniFile do
     try
       WriteInteger(Name, 'Top', Top);

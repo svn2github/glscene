@@ -287,14 +287,14 @@ object Form1: TForm1
     DefaultExt = '*.bmp'
     Filter = 'Array|*.bmp'
     InitialDir = 'maps'
-    Left = 128
-    Top = 32
+    Left = 488
+    Top = 8
   end
   object savedlg: TSavePictureDialog
     DefaultExt = '*.bmp'
     Filter = 'Array|*.bmp'
     InitialDir = 'maps'
-    Left = 128
-    Top = 64
+    Left = 560
+    Top = 8
   end
 end

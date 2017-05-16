@@ -43,9 +43,9 @@ type
     procedure PaintBox1MouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
   end;
 
 var

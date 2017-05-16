@@ -67,7 +67,7 @@ end;
 procedure TOptionsForm.ReadIniFile;
 begin
   inherited;
-  IniFile := TIniFile.Create(ChangeFileExt(Application.ExeName, '.ini'));
+  IniFile := TIniFile.Create(ChangeFileExt(ParamStr(0), '.ini'));
   with IniFile do
     try
       CheckBoxAxis.Checked := ReadBool(Name, CheckBoxAxis.Name, True);
@@ -104,7 +104,7 @@ end;
 
 procedure TOptionsForm.WriteIniFile;
 begin
-  IniFile := TIniFile.Create(ChangeFileExt(Application.ExeName, '.ini'));
+  IniFile := TIniFile.Create(ChangeFileExt(ParamStr(0), '.ini'));
   with IniFile do
     try
       WriteBool(Name, CheckBoxAxis.Name, CheckBoxAxis.Checked);
@@ -147,7 +147,7 @@ begin
   begin
     MessageDlg(_('Reload to change language'),
       mtInformation, [mbOK], 0);
-    FileName := ChangeFileExt(Application.ExeName, '.ini');
+    FileName := ChangeFileExt(ParamStr(0), '.ini');
     if FileExists(UpperCase(FileName)) then
       DeleteFile(UpperCase(FileName)); //to exclude dublicated sections for each language
   end;

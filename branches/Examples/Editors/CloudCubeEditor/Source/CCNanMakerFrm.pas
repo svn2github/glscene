@@ -140,7 +140,7 @@ begin
   SaveDialog1.Filter := 'Cloud Images (*.bmp)|*.bmp';
   //'CA Cloud image (*.bmp)|*.bmp';
   SaveDialog1.InitialDir:=ImagePath;
-  //ExtractFilePath(Application.Exename);
+  //ExtractFilePath(ParamStr(0));
   SaveDialog1.DefaultExt:='bmp';
   SaveDialog1.Filename:='*.bmp' ;
   If SaveDialog1.Execute then
@@ -152,10 +152,10 @@ begin
 ShellExecute(
 Application.Handle, // handle to parent window
 'open',             // pointer to string that specifies operation to perform
-PChar(ExtractFilePath(Application.Exename)+'MFClouds.htm'),// pointer to filename or folder name string
+PChar(ExtractFilePath(ParamStr(0))+'MFClouds.htm'),// pointer to filename or folder name string
 '',// pointer to string that specifies executable-file parameters
                                   //+'help'
- PChar(ExtractFilePath(Application.Exename)),// pointer to string that specifies default directory
+ PChar(ExtractFilePath(ParamStr(0))),// pointer to string that specifies default directory
 SW_SHOWNORMAL);
 end;
 

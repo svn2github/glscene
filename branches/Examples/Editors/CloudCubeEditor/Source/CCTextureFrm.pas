@@ -132,7 +132,7 @@ end;
 
 procedure TATextureCombinerForm.Image1Click(Sender: TObject);
 begin
-   OpenPictureDialog.InitialDir:=ImagePath;//ExtractFilePath(Application.Exename);
+   OpenPictureDialog.InitialDir:=ImagePath;//ExtractFilePath(ParamStr(0));
    if OpenPictureDialog.Execute then
    begin
       try
@@ -152,7 +152,7 @@ end;
 
 procedure TATextureCombinerForm.Image2Click(Sender: TObject);
 begin
-   OpenPictureDialog.InitialDir:=ImagePath;//ExtractFilePath(Application.Exename);
+   OpenPictureDialog.InitialDir:=ImagePath;//ExtractFilePath(ParamStr(0));
    if OpenPictureDialog.Execute then begin
    Image2.Picture.Bitmap.LoadFromFile(OpenPictureDialog.FileName);
    Image2.Picture.Bitmap.PixelFormat:=pf32bit;
@@ -161,7 +161,7 @@ end;
 
 procedure TATextureCombinerForm.Image3Click(Sender: TObject);
 begin
-   OpenPictureDialog.InitialDir:=ImagePath;//ExtractFilePath(Application.Exename);
+   OpenPictureDialog.InitialDir:=ImagePath;//ExtractFilePath(ParamStr(0));
    if OpenPictureDialog.Execute then begin
    Image3.Picture.Bitmap.LoadFromFile(OpenPictureDialog.FileName);
    Image3.Picture.Bitmap.PixelFormat:=pf32bit;
@@ -170,7 +170,7 @@ end;
 
 procedure TATextureCombinerForm.Image4Click(Sender: TObject);
 begin
-   OpenPictureDialog.InitialDir:=ImagePath;//ExtractFilePath(Application.Exename);
+   OpenPictureDialog.InitialDir:=ImagePath;//ExtractFilePath(ParamStr(0));
    if OpenPictureDialog.Execute then begin
    Image4.Picture.Bitmap.LoadFromFile(OpenPictureDialog.FileName);
    Image4.Picture.Bitmap.PixelFormat:=pf32bit;
@@ -179,7 +179,7 @@ end;
 
 procedure TATextureCombinerForm.Image5Click(Sender: TObject);
 begin
-   OpenPictureDialog.InitialDir:=ImagePath;//ExtractFilePath(Application.Exename);
+   OpenPictureDialog.InitialDir:=ImagePath;//ExtractFilePath(ParamStr(0));
    if OpenPictureDialog.Execute then begin
    Image5.Picture.Bitmap.LoadFromFile(OpenPictureDialog.FileName);
    Image5.Picture.Bitmap.PixelFormat:=pf32bit;
@@ -188,7 +188,7 @@ end;
 
 procedure TATextureCombinerForm.Image6Click(Sender: TObject);
 begin
-   OpenPictureDialog.InitialDir:=ImagePath;//ExtractFilePath(Application.Exename);
+   OpenPictureDialog.InitialDir:=ImagePath;//ExtractFilePath(ParamStr(0));
    if OpenPictureDialog.Execute then begin
    Image6.Picture.Bitmap.LoadFromFile(OpenPictureDialog.FileName);
    Image6.Picture.Bitmap.PixelFormat:=pf32bit;
@@ -197,7 +197,7 @@ end;
 
 procedure TATextureCombinerForm.Image7Click(Sender: TObject);
 begin
-   OpenPictureDialog.InitialDir:=ImagePath;//ExtractFilePath(Application.Exename);
+   OpenPictureDialog.InitialDir:=ImagePath;//ExtractFilePath(ParamStr(0));
    if OpenPictureDialog.Execute then begin
    Image7.Picture.Bitmap.LoadFromFile(OpenPictureDialog.FileName);
    Image7.Picture.Bitmap.PixelFormat:=pf32bit;
@@ -206,7 +206,7 @@ end;
 
 procedure TATextureCombinerForm.Image8Click(Sender: TObject);
 begin
-   OpenPictureDialog.InitialDir:=ImagePath;//ExtractFilePath(Application.Exename);
+   OpenPictureDialog.InitialDir:=ImagePath;//ExtractFilePath(ParamStr(0));
    if OpenPictureDialog.Execute then begin
    Image8.Picture.Bitmap.LoadFromFile(OpenPictureDialog.FileName);
    Image8.Picture.Bitmap.PixelFormat:=pf32bit;
@@ -215,7 +215,7 @@ end;
 
 procedure TATextureCombinerForm.Image9Click(Sender: TObject);
 begin
-   OpenPictureDialog.InitialDir:=ImagePath;//ExtractFilePath(Application.Exename);
+   OpenPictureDialog.InitialDir:=ImagePath;//ExtractFilePath(ParamStr(0));
    if OpenPictureDialog.Execute then begin
    Image9.Picture.Bitmap.LoadFromFile(OpenPictureDialog.FileName);
    Image9.Picture.Bitmap.PixelFormat:=pf32bit;
@@ -224,7 +224,7 @@ end;
 
 procedure TATextureCombinerForm.Image10Click(Sender: TObject);
 begin
-   OpenPictureDialog.InitialDir:=ImagePath;//ExtractFilePath(Application.Exename);
+   OpenPictureDialog.InitialDir:=ImagePath;//ExtractFilePath(ParamStr(0));
    if OpenPictureDialog.Execute then begin
    Image10.Picture.Bitmap.LoadFromFile(OpenPictureDialog.FileName);
    Image10.Picture.Bitmap.PixelFormat:=pf32bit;
@@ -233,7 +233,7 @@ end;
 
 procedure TATextureCombinerForm.Image11Click(Sender: TObject);
 begin
-   OpenPictureDialog.InitialDir:=ImagePath;//ExtractFilePath(Application.Exename);
+   OpenPictureDialog.InitialDir:=ImagePath;//ExtractFilePath(ParamStr(0));
    if OpenPictureDialog.Execute then begin
    Image11.Picture.Bitmap.LoadFromFile(OpenPictureDialog.FileName);
    Image11.Picture.Bitmap.PixelFormat:=pf32bit;
@@ -242,7 +242,7 @@ end;
 
 procedure TATextureCombinerForm.Image12Click(Sender: TObject);
 begin
-   OpenPictureDialog.InitialDir:=ImagePath;//ExtractFilePath(Application.Exename);
+   OpenPictureDialog.InitialDir:=ImagePath;//ExtractFilePath(ParamStr(0));
    if OpenPictureDialog.Execute then begin
    Image12.Picture.Bitmap.LoadFromFile(OpenPictureDialog.FileName);
    Image12.Picture.Bitmap.PixelFormat:=pf32bit;
@@ -251,7 +251,7 @@ end;
 
 procedure TATextureCombinerForm.Image13Click(Sender: TObject);
 begin
-   OpenPictureDialog.InitialDir:=ImagePath;//ExtractFilePath(Application.Exename);
+   OpenPictureDialog.InitialDir:=ImagePath;//ExtractFilePath(ParamStr(0));
    if OpenPictureDialog.Execute then begin
    Image13.Picture.Bitmap.LoadFromFile(OpenPictureDialog.FileName);
    Image13.Picture.Bitmap.PixelFormat:=pf32bit;
@@ -260,7 +260,7 @@ end;
 
 procedure TATextureCombinerForm.Image14Click(Sender: TObject);
 begin
-   OpenPictureDialog.InitialDir:=ImagePath;//ExtractFilePath(Application.Exename);
+   OpenPictureDialog.InitialDir:=ImagePath;//ExtractFilePath(ParamStr(0));
    if OpenPictureDialog.Execute then begin
    Image14.Picture.Bitmap.LoadFromFile(OpenPictureDialog.FileName);
    Image14.Picture.Bitmap.PixelFormat:=pf32bit;
@@ -269,7 +269,7 @@ end;
 
 procedure TATextureCombinerForm.Image15Click(Sender: TObject);
 begin
-   OpenPictureDialog.InitialDir:=ImagePath;//ExtractFilePath(Application.Exename);
+   OpenPictureDialog.InitialDir:=ImagePath;//ExtractFilePath(ParamStr(0));
    if OpenPictureDialog.Execute then begin
    Image15.Picture.Bitmap.LoadFromFile(OpenPictureDialog.FileName);
    Image15.Picture.Bitmap.PixelFormat:=pf32bit;
@@ -278,7 +278,7 @@ end;
 
 procedure TATextureCombinerForm.Image16Click(Sender: TObject);
 begin
-   OpenPictureDialog.InitialDir:=ImagePath;//ExtractFilePath(Application.Exename);
+   OpenPictureDialog.InitialDir:=ImagePath;//ExtractFilePath(ParamStr(0));
    if OpenPictureDialog.Execute then begin
    Image16.Picture.Bitmap.LoadFromFile(OpenPictureDialog.FileName);
    Image16.Picture.Bitmap.PixelFormat:=pf32bit;
@@ -299,7 +299,7 @@ begin
   //Should check the all...
   if Image1.Picture.Graphic.Empty then Exit;
   SaveDialog1.Filter := 'Cloud image (*.bmp;*.tga)|*.bmp;*.tga';
-  SaveDialog1.InitialDir:=ImagePath;//ExtractFilePath(Application.Exename);
+  SaveDialog1.InitialDir:=ImagePath;//ExtractFilePath(ParamStr(0));
   SaveDialog1.DefaultExt:='bmp';
   SaveDialog1.Filename:='';//'*.bmp' ;
   If SaveDialog1.Execute then
@@ -456,28 +456,28 @@ end;
 
 procedure TATextureCombinerForm.CombineTex1BtnClick(Sender: TObject);
 begin
-   OpenDialog1.InitialDir:=ImagePath;//ExtractFilePath(Application.Exename);
+   OpenDialog1.InitialDir:=ImagePath;//ExtractFilePath(ParamStr(0));
   if OpenDialog1.Execute then    { Display Open dialog box }
     CombineTex1Edit.Text := OpenDialog1.FileName;
 end;
 
 procedure TATextureCombinerForm.CombineTex2BtnClick(Sender: TObject);
 begin
-   OpenDialog1.InitialDir:=ImagePath;//ExtractFilePath(Application.Exename);
+   OpenDialog1.InitialDir:=ImagePath;//ExtractFilePath(ParamStr(0));
   if OpenDialog1.Execute then    { Display Open dialog box }
     CombineTex2Edit.Text := OpenDialog1.FileName;
 end;
 
 procedure TATextureCombinerForm.CombineTex3BtnClick(Sender: TObject);
 begin
-   OpenDialog1.InitialDir:=ImagePath;//ExtractFilePath(Application.Exename);
+   OpenDialog1.InitialDir:=ImagePath;//ExtractFilePath(ParamStr(0));
   if OpenDialog1.Execute then    { Display Open dialog box }
     CombineTex3Edit.Text := OpenDialog1.FileName;
 end;
 
 procedure TATextureCombinerForm.CombineTex4BtnClick(Sender: TObject);
 begin
-   OpenDialog1.InitialDir:=ImagePath;//ExtractFilePath(Application.Exename);
+   OpenDialog1.InitialDir:=ImagePath;//ExtractFilePath(ParamStr(0));
   if OpenDialog1.Execute then    { Display Open dialog box }
     CombineTex4Edit.Text := OpenDialog1.FileName;
 end;
@@ -506,7 +506,7 @@ begin
   if CombineTex4Edit.Text='' then Exit;
 //  SaveDialog1.Filter := 'Cloud image (*.tga)|*.tga';
   SaveDialog1.Filter := 'Cloud image (*.bmp;*.tga)|*.bmp;*.tga';
-  SaveDialog1.InitialDir:=ImagePath;//ExtractFilePath(Application.Exename);
+  SaveDialog1.InitialDir:=ImagePath;//ExtractFilePath(ParamStr(0));
   SaveDialog1.DefaultExt:='bmp';
   SaveDialog1.Filename:='';//'*.tga' ;
 Case ImageSizeRG.ItemIndex of

@@ -3,10 +3,10 @@ unit StereoFrm;
 interface
 
 uses
-  Winapi.Windows,
-  Winapi.Messages,
   Winapi.OpenGL,
   Winapi.OpenGLext,
+  Winapi.Windows,
+  Winapi.Messages,
   System.Classes,
   System.SysUtils,
   System.Math,
@@ -100,12 +100,10 @@ type
     procedure FormCanResize(Sender: TObject; var NewWidth, NewHeight: Integer; var Resize: Boolean);
     procedure GLSceneViewer1DblClick(Sender: TObject);
   private
-     
     StereoCapable, MemCapable, Switcheroo: Boolean;
     StereoMode, mdx, mdy: Integer;
     pseye: Double;
   public
-     
     RenderPass, RenderPassLeft, RenderPassRight: Integer;
   end;
 
@@ -293,12 +291,9 @@ procedure TAaStereoForm.SetupRender(Sender: TObject;
   var rci: TGLRenderContextInfo);
 begin
   case RenderPass of
-    1:
-      glColorMask(1, 0, 0, 1);
-    2:
-      glColorMask(0, 1, 0, 1);
-    3:
-      glColorMask(0, 0, 1, 1);
+    1: glColorMask(1, 0, 0, 1);
+    2: glColorMask(0, 1, 0, 1);
+    3: glColorMask(0, 0, 1, 1);
   else
     glColorMask(1, 1, 1, 1);
   end;

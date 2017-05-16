@@ -160,7 +160,6 @@ type
     procedure TranslateItems(Index: Integer; const delta: TAffineVector; nb: Integer);
     // Combines the given item
     procedure CombineItem(Index: Integer; const vector: TAffineVector; const f: Single);
-
         {Transforms all items by the matrix as if they were points. 
            ie. the translation component of the matrix is honoured. }
     procedure TransformAsPoints(const matrix: TMatrix);
@@ -252,7 +251,6 @@ type
   public
     constructor Create; override;
     procedure Assign(src: TPersistent); override;
-
     function Add(const item: Integer): Integer; overload;
     function AddNC(const item: Integer): Integer; overload;
     procedure Add(const i1, i2: Integer); overload;
@@ -263,10 +261,8 @@ type
     procedure Insert(Index: Integer; const item: Integer);
     procedure Remove(const item: Integer);
     function IndexOf(item: Integer): Integer;
-
     property Items[Index: Integer]: Integer read Get write Put; default;
     property List: PIntegerArray read FList;
-
     {Adds count items in an arithmetic serie.
      Items are (aBase), (aBase+aDelta) ... (aBase+(aCount-1)*aDelta) }
     procedure AddSerie(aBase, aDelta, aCount: Integer);
@@ -276,7 +272,6 @@ type
     procedure AddIntegers(const aList: TIntegerList); overload;
     {Add all integers from anArray into the list. }
     procedure AddIntegers(const anArray: array of Integer); overload;
-
     {Returns the minimum integer item, zero if list is empty. }
     function MinInteger: Integer;
     {Returns the maximum integer item, zero if list is empty. }
@@ -285,7 +280,6 @@ type
     procedure Sort;
     {Sort items in ascending order and remove duplicated integers. }
     procedure SortAndRemoveDuplicates;
-
     {Locate a value in a sorted list. }
     function BinarySearch(const Value: Integer): Integer; overload;
     {Locate a value in a sorted list.
@@ -299,7 +293,6 @@ type
     function AddSorted(const Value: Integer; const ignoreDuplicates: Boolean = False): Integer;
     {Removes an integer from a sorted list.  }
     procedure RemoveSorted(const Value: Integer);
-
     {Adds delta to all items in the list. }
     procedure Offset(delta: Integer); overload;
     procedure Offset(delta: Integer; const base, nb: Integer); overload;
@@ -319,7 +312,6 @@ type
     procedure Put(Index: Integer; const item: Single);
     procedure SetCapacity(NewCapacity: Integer); override;
   public
-
     constructor Create; override;
     procedure Assign(Src: TPersistent); override;
     function Add(const item: Single): Integer; overload;
@@ -364,19 +356,15 @@ type
     procedure Put(Index: Integer; const item: Double);
     procedure SetCapacity(NewCapacity: Integer); override;
   public
-
     constructor Create; override;
     procedure Assign(Src: TPersistent); override;
     function Add(const item: Double): Integer;
     procedure Push(const Val: Double);
     function Pop: Double;
     procedure Insert(Index: Integer; const item: Double);
-
     property Items[Index: Integer]: Double read Get write Put; default;
     property List: PDoubleArrayList read FList;
-
     procedure AddSerie(aBase, aDelta: Double; aCount: Integer);
-
     {Adds delta to all items in the list. }
     procedure Offset(delta: Double); overload;
         {Adds to each item the corresponding item in the delta list.
@@ -389,10 +377,8 @@ type
     procedure Sqr;
     {SquareRoot all items. }
     procedure Sqrt;
-
     {Computes the sum of all elements. }
     function Sum: Double;
-
     function Min: Single;
     function Max: Single;
   end;
@@ -401,10 +387,8 @@ type
    Similar to TList, but using Byte as items.  }
   TByteList = class(TBaseList)
   private
-     
     FList: PByteArray;
   protected
-
     function Get(Index: Integer): Byte;
     procedure Put(Index: Integer; const item: Byte);
     procedure SetCapacity(NewCapacity: Integer); override;
@@ -422,7 +406,6 @@ type
         The list has stack-like push/pop methods. }
   TQuaternionList = class(TBaseVectorList)
   private
-
     FList: PQuaternionArray;
   protected
     function Get(Index: Integer): TQuaternion;
@@ -471,7 +454,6 @@ type
     procedure Put(Index: Integer; const item: T4ByteData);
     procedure SetCapacity(NewCapacity: Integer); override;
   public
-
     constructor Create; override;
     procedure Assign(Src: TPersistent); override;
     function  Add(const item: T4ByteData): Integer; overload;
@@ -497,18 +479,14 @@ type
 
   TLongWordList = class(TBaseList)
   private
-
     FList: PLongWordArray;
   protected
-
     function Get(Index: Integer): LongWord;
     procedure Put(Index: Integer; const item: LongWord);
     procedure SetCapacity(newCapacity: Integer); override;
   public
-    
     constructor Create; override;
     procedure Assign(src: TPersistent); override;
-
     function Add(const item: LongWord): Integer; overload;
     function AddNC(const item: LongWord): Integer; overload;
     procedure Add(const i1, i2: LongWord); overload;
@@ -522,7 +500,6 @@ type
 
     property Items[Index: Integer]: LongWord read Get write Put; default;
     property List: PLongWordArray read FList;
-
     {Add n integers at the address starting at (and including) first. }
     procedure AddLongWords(const First: PLongWord; n: Integer); overload;
     {Add all integers from aList into the list. }

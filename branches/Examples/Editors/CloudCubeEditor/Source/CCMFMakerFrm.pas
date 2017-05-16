@@ -93,7 +93,7 @@ begin
   Image32_Terrain.Bitmap.SetSize(Image32_Terrain.Width, Image32_Terrain.Height);
   Heightmap := THeightMap.Create(Image32_Terrain.Width, Image32_Terrain.Height);
   Button_GO.Click;
-  //StartPath := ExtractFilePath(Application.ExeName);
+  //StartPath := ExtractFilePath(ParamStr(0));
   StartPath := GetCurrentDir+'\';
 
   DoRender;
@@ -114,10 +114,10 @@ begin
 ShellExecute(
 Application.Handle, // handle to parent window
 'open',             // pointer to string that specifies operation to perform
-PChar(ExtractFilePath(Application.Exename)+'MFClouds.htm'),// pointer to filename or folder name string
+PChar(ExtractFilePath(ParamStr(0))+'MFClouds.htm'),// pointer to filename or folder name string
 '',// pointer to string that specifies executable-file parameters
                                   //+'help'
- PChar(ExtractFilePath(Application.Exename)),// pointer to string that specifies default directory
+ PChar(ExtractFilePath(ParamStr(0))),// pointer to string that specifies default directory
 SW_SHOWNORMAL);
 end;
 
@@ -274,7 +274,7 @@ begin
 //  Image1
 //  SaveDialog1.Filter := 'MF Cloud image (*.bmp)|*.bmp';
   SaveDialog1.Filter := 'MF Cloud image (*.bmp;*.tga)|*.bmp;*.tga';
-  SaveDialog1.InitialDir:=ImagePath;//ExtractFilePath(Application.Exename);
+  SaveDialog1.InitialDir:=ImagePath;//ExtractFilePath(ParamStr(0));
   SaveDialog1.DefaultExt:='bmp';
   SaveDialog1.Filename:='';//'*.bmp' ;
   If SaveDialog1.Execute then

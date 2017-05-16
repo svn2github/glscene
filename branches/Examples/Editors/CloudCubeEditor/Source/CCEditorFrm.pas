@@ -1066,7 +1066,7 @@ begin
   FirstParticle := True;
   AnyTexturesLoaded := False;
   Randomize;
-  ImagePath := ExtractFilePath(Application.Exename) + 'Images';
+  ImagePath := ExtractFilePath(ParamStr(0)) + 'Images';
 end;
 
 procedure TACloudDemoForm.FormShow(Sender: TObject);
@@ -1228,10 +1228,10 @@ procedure TACloudDemoForm.HelpBtnClick(Sender: TObject);
 begin // +'help'
   ShellExecute(Application.Handle, // handle to parent window
     'open', // pointer to string that specifies operation to perform
-    PChar(ExtractFilePath(Application.Exename) + 'CloudsEditor.htm'),
+    PChar(ExtractFilePath(ParamStr(0)) + 'CloudsEditor.htm'),
     // pointer to filename or folder name string
     '', // pointer to string that specifies executable-file parameters
-    PChar(ExtractFilePath(Application.Exename)),
+    PChar(ExtractFilePath(ParamStr(0))),
     // pointer to string that specifies default directory
     SW_SHOWNORMAL);
 end;
@@ -1830,7 +1830,7 @@ begin
   OpenDialog1.Filter := 'Cloud data (*.dat)|*.dat';
   OpenDialog1.DefaultExt := 'dat';
   OpenDialog1.FileName := '*.dat';
-  OpenDialog1.InitialDir := ExtractFilePath(Application.Exename);
+  OpenDialog1.InitialDir := ExtractFilePath(ParamStr(0));
   if OpenDialog1.Execute then { Display Open dialog box }
   begin
     ClearAll;
@@ -2343,7 +2343,7 @@ var
   I, J: Integer;
 begin
   SaveDialog1.Filter := 'Cloud data (*.dat)|*.dat';
-  SaveDialog1.InitialDir := ExtractFilePath(Application.Exename);
+  SaveDialog1.InitialDir := ExtractFilePath(ParamStr(0));
   SaveDialog1.DefaultExt := 'dat';
   SaveDialog1.FileName := '*.dat';
   if SaveDialog1.Execute then { Display SaveDialog1 box }
@@ -4418,10 +4418,10 @@ procedure TACloudDemoForm.GenerateNinianeClouds(Regenerate: Boolean;
 Begin
   ShellExecute(Application.Handle, // handle to parent window
     'open', // pointer to string that specifies operation to perform
-    PChar(ExtractFilePath(Application.Exename) + 'GenerateNinianeClouds.htm'),
+    PChar(ExtractFilePath(ParamStr(0)) + 'GenerateNinianeClouds.htm'),
     // pointer to filename or folder name string
     '', // pointer to string that specifies executable-file parameters
-    PChar(ExtractFilePath(Application.Exename)),
+    PChar(ExtractFilePath(ParamStr(0))),
     // pointer to string that specifies default directory
     SW_SHOWNORMAL);
 end;
@@ -4431,10 +4431,10 @@ procedure TACloudDemoForm.GenerateRealSlow(Regenerate: Boolean; I: Integer);
 Begin
   ShellExecute(Application.Handle, // handle to parent window
     'open', // pointer to string that specifies operation to perform
-    PChar(ExtractFilePath(Application.Exename) + 'RealSlow.htm'),
+    PChar(ExtractFilePath(ParamStr(0)) + 'RealSlow.htm'),
     // pointer to filename or folder name string
     '', // pointer to string that specifies executable-file parameters
-    PChar(ExtractFilePath(Application.Exename)),
+    PChar(ExtractFilePath(ParamStr(0))),
     // pointer to string that specifies default directory
     SW_SHOWNORMAL);
 end;
@@ -4447,7 +4447,7 @@ procedure TACloudDemoForm.AddShapeBtnClick(Sender: TObject);
 begin
   OpenDialog1.Filter := 'Cloud shape data (*.glsm)|*.glsm;*.dxf';
   OpenDialog1.FileName := ''; // '*.glsm' ;//'*.glsm' ;
-  OpenDialog1.InitialDir := ExtractFilePath(Application.Exename);
+  OpenDialog1.InitialDir := ExtractFilePath(ParamStr(0));
   if OpenDialog1.Execute then { Display Open dialog box }
   begin
     Application.ProcessMessages; // Let the dialog go away...
@@ -5788,7 +5788,7 @@ begin
       End;
   end;
   SaveDialog1.Filter := 'Cloud Cube Editor (*.bmp)|*.bmp';
-  SaveDialog1.InitialDir := ImagePath; // ExtractFilePath(Application.Exename);
+  SaveDialog1.InitialDir := ImagePath; // ExtractFilePath(ParamStr(0));
   SaveDialog1.DefaultExt := 'bmp';
   SaveDialog1.FileName := 'CCE.bmp';
   If SaveDialog1.Execute then
@@ -6369,7 +6369,7 @@ end;
 procedure TACloudDemoForm.CirrusFilenameSaveBtnClick(Sender: TObject);
 begin
   SaveDialog1.Filter := 'Cloud Cirrus File (*.ccf)|*.ccf';
-  SaveDialog1.InitialDir := ImagePath; // ExtractFilePath(Application.Exename);
+  SaveDialog1.InitialDir := ImagePath; // ExtractFilePath(ParamStr(0));
   SaveDialog1.DefaultExt := 'ccf';
   SaveDialog1.FileName := CirrusFilenameEdit.text;
   If SaveDialog1.Execute then

@@ -6500,80 +6500,52 @@ begin
   inherited StructureChanged;
 end;
 
-function TGLBaseMesh.RayCastIntersect(const rayStart, rayVector: TVector;
-  intersectPoint: PVector = nil;
-  intersectNormal: PVector = nil): Boolean;
+function TGLBaseMesh.RayCastIntersect (const rayStart, rayVector: TVector;
+intersectPoint: PVector = nil;
+intersectNormal: PVector = nil): Boolean;
+
 var
-  i: Integer;
-  tris: TAffineVectorList;
+  i,j: Integer;
+  Obj: TMeshObject;
+  Tris: TAffineVectorList;
   locRayStart, locRayVector, iPoint, iNormal: TVector;
   d, minD: Single;
+
 begin
-  // BEWARE! Utterly inefficient implementation!
-  tris := MeshObjects.ExtractTriangles;
-  try
-  {
-  // Code of ELR
-    SetVector(locRayStart, AbsoluteToLocal(rayStart));
-    SetVector(locRayVector, AbsoluteToLocal(rayVector));
-    minD := -1;
-    // Schleife über untergeornete Objekte
-    for j := 0 to MeshObjects.Count - 1 do
-    begin
-    obj := MeshObjects.GetMeshObject(j);
-    if not obj.Visible then
-    continue;
-    Tris := obj.ExtractTriangles(NIL, NIL); //objTexCoords, objNormals);
+  SetVector(locRayStart, AbsoluteToLocal(rayStart));
+  SetVector(locRayVector, AbsoluteToLocal(rayVector));
+  minD := -1;
+
+  for j := 0 to MeshObjects.Count - 1 do
+  begin
+    Obj := MeshObjects.GetMeshObject(j);
+    if not Obj.Visible then
+      Continue;
+    Tris := Obj.ExtractTriangles(NIL, NIL); //objTexCoords & objNormals
     try
       i := 0;
-      while i < tris.Count do
+      while i < Tris.Count do
       begin
-        if RayCastTriangleIntersect(locRayStart, locRayVector,
-          tris.List^[i], tris.List^[i + 1], tris.List^[i + 2],
-          @iPoint, @iNormal) then
-          begin
-            d := VectorDistance2(locRayStart, iPoint);
-            if (d < minD) or (minD < 0) then
-              begin
-                minD := d;
-                if intersectPoint <> nil then
-                  intersectPoint^ := iPoint;
-                if intersectNormal <> nil then
-                  intersectNormal^ := iNormal;
-              end;
-           end;
-          Inc(i, 3);
-        end;
-     finally
-        tris.Free;
-      end;
-    end;
-  }
-  SetVector(locRayStart, AbsoluteToLocal(rayStart));
-    SetVector(locRayVector, AbsoluteToLocal(rayVector));
-    minD := -1;
-    i := 0;
-    while i < tris.Count do
-    begin
-      if RayCastTriangleIntersect(locRayStart, locRayVector,
-        tris.List^[i], tris.List^[i + 1], tris.List^[i + 2],
-        @iPoint, @iNormal) then
-      begin
-        d := VectorDistance2(locRayStart, iPoint);
-        if (d < minD) or (minD < 0) then
+        if RayCastTriangleIntersect(locRayStart, locRayVector, Tris.List^[i],
+          Tris.List^[i + 1], Tris.List^[i + 2], @iPoint, @iNormal) then
         begin
-          minD := d;
-          if intersectPoint <> nil then
-            intersectPoint^ := iPoint;
-          if intersectNormal <> nil then
-            intersectNormal^ := iNormal;
+          d := VectorDistance2(locRayStart, iPoint);
+          if (d < minD) or (minD < 0) then
+            begin
+              minD := d;
+              if intersectPoint <> nil then
+                intersectPoint^ := iPoint;
+              if intersectNormal <> nil then
+                intersectNormal^ := iNormal;
+            end;
         end;
+        Inc(i, 3);
       end;
-      Inc(i, 3);
+    finally
+      Tris.Free;
     end;
-  finally
-    tris.Free;
   end;
+
   Result := (minD >= 0);
   if Result then
   begin

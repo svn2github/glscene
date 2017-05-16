@@ -162,7 +162,7 @@ begin
   OpenDialog1.Filter := 'Cloud Texture (*.bmp)|*.bmp';
   OpenDialog1.DefaultExt := 'bmp';
   OpenDialog1.Filename := '*.bmp';
-  OpenDialog1.InitialDir := ImagePath; // ExtractFilePath(Application.Exename);
+  OpenDialog1.InitialDir := ImagePath; // ExtractFilePath(ParamStr(0));
   if OpenDialog1.Execute then
   begin
     MaskFilenameEdit.Text := OpenDialog1.Filename;
@@ -582,7 +582,7 @@ begin
   Processing := True;
   ATextureEditorForm.cursor := crhourglass;
   SaveDialog1.Filter := 'Clouds (*.bmp;*.tga)|*.tga;*.bmp';
-  SaveDialog1.InitialDir := ImagePath; // ExtractFilePath(Application.Exename);
+  SaveDialog1.InitialDir := ImagePath; // ExtractFilePath(ParamStr(0));
   SaveDialog1.DefaultExt := 'bmp';
   SaveDialog1.Filename := MaskFilenameEdit.Text;
   if SaveDialog1.Execute then

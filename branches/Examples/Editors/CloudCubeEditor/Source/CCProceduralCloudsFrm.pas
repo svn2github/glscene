@@ -137,10 +137,10 @@ begin
 ShellExecute(
 Application.Handle, // handle to parent window
 'open',             // pointer to string that specifies operation to perform
-PChar(ExtractFilePath(Application.Exename)+'ProceduralClouds.htm'),// pointer to filename or folder name string
+PChar(ExtractFilePath(ParamStr(0))+'ProceduralClouds.htm'),// pointer to filename or folder name string
 '',// pointer to string that specifies executable-file parameters
                                   //+'help'
- PChar(ExtractFilePath(Application.Exename)),// pointer to string that specifies default directory
+ PChar(ExtractFilePath(ParamStr(0))),// pointer to string that specifies default directory
 SW_SHOWNORMAL);
 end;
 
@@ -237,7 +237,7 @@ end;
 procedure TProceduralCloudsForm.CloudFileOpenBtnClick(Sender: TObject);
 begin
   OpenDialog1.Filter := 'Cloud base (*.clb)|*.clb';
-  OpenDialog1.InitialDir := ExtractFilePath(Application.Exename);
+  OpenDialog1.InitialDir := ExtractFilePath(ParamStr(0));
   OpenDialog1.Filename:='*.clb' ;
   if OpenDialog1.execute then
   begin
@@ -284,7 +284,7 @@ begin
 end;
 begin
   SaveDialog1.Filter := 'Cloud base (*.clb)|*.clb';
-  SaveDialog1.InitialDir:=ExtractFilePath(Application.Exename);
+  SaveDialog1.InitialDir:=ExtractFilePath(ParamStr(0));
   SaveDialog1.DefaultExt:='rnd';
   SaveDialog1.Filename:='*.clb' ;
   if (SaveDialog1.Execute) then
@@ -319,7 +319,7 @@ var
 begin
   //SaveDialog1.Filter := 'Cloud image (*.bmp)|*.bmp';
   SaveDialog1.Filter := 'Cloud image (*.bmp;*.tga)|*.bmp;*.tga';
-  SaveDialog1.InitialDir:=ImagePath;//ExtractFilePath(Application.Exename);
+  SaveDialog1.InitialDir:=ImagePath;//ExtractFilePath(ParamStr(0));
   SaveDialog1.DefaultExt:='bmp';
   SaveDialog1.Filename:='';//'*.bmp' ;
   If SaveDialog1.Execute then

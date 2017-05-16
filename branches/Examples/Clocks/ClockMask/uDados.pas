@@ -59,11 +59,11 @@ type
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure Close1Click(Sender: TObject);
   private
-    { Private declarations }
+     
     FRegion: THandle;
     function CreateRegion(Bmp: TBitmap): THandle;
   public
-    { Public declarations }
+     
   end;
 
 var
@@ -80,7 +80,7 @@ procedure TForm1.CarregarConfig;
 var
   IniFile: TIniFile;
 begin
-  IniFile := TIniFile.Create(ExtractFilePath(Application.ExeName) +
+  IniFile := TIniFile.Create(ExtractFilePath(ParamStr(0)) +
     'Configs.ini'); // Carrega Conteúdo
   Form1.Top := Strtoint(IniFile.ReadString('CONFIG', 'Top', ''));
   Form1.Left := Strtoint(IniFile.ReadString('CONFIG', 'Left', ''));
@@ -90,7 +90,7 @@ procedure TForm1.SalvarConfig;
 var
   IniFile: TIniFile;
 begin
-  IniFile := TIniFile.Create(ExtractFilePath(Application.ExeName) +
+  IniFile := TIniFile.Create(ExtractFilePath(ParamStr(0)) +
     'Configs.ini'); // Salva Conteúdos
   IniFile.WriteString('CONFIG', 'Top', inttostr(Form1.Top)); // novo
   IniFile.WriteString('CONFIG', 'Left', inttostr(Form1.Left));

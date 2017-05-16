@@ -147,7 +147,7 @@ procedure TdtmGlForm.FormCreate(Sender: TObject);
 begin
   top :=XYZGLY;{ DTMGLFormY;}
   left :=XYZGLX;{ DTMGLFormX;}
-  SetCurrentDir(ExtractFilePath(Application.ExeName));
+  SetCurrentDir(ExtractFilePath(ParamStr(0)));
   ReadytoGo:=False;
   Timer1.Enabled:=False;
   GLCadencer1.Enabled:=False;

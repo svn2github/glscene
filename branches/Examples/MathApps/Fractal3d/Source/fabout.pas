@@ -80,10 +80,10 @@ var
   VerValue: PVSFixedFileInfo;
   Dummy: DWord;
 begin
-  VerInfoSize := GetFileVersionInfoSize(PChar(Application.ExeName),
+  VerInfoSize := GetFileVersionInfoSize(PChar(ParamStr(0)),
     dummy);
   GetMem(VerInfo, VerInfoSize);
-  GetFileVersionInfo(PChar(Application.ExeName), 0, VerInfoSize,
+  GetFileVersionInfo(PChar(ParamStr(0)), 0, VerInfoSize,
     VerInfo);
   VerQueryValue(VerInfo, '\', Pointer(VerValue), VerValueSize);
   with VerValue^ do

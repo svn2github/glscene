@@ -17,7 +17,7 @@ uses
   Vcl.Buttons,
   Vcl.Forms,
   Vcl.Dialogs,
-  //GLS
+   
   GLWin32Viewer,
   GLCrossPlatform,
   GLBaseClasses,
