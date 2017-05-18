@@ -89,6 +89,7 @@ contains
   GLFBORenderer in '..\..\Source\GLFBORenderer.pas',
   GLFPSMovement in '..\..\Source\GLFPSMovement.pas',
   GLFeedback in '..\..\Source\GLFeedback.pas',
+  GLFile3DPDF in '..\..\Source\FileFormats\GLFile3DPDF.pas',
   GLFile3DS in '..\..\Source\FileFormats\GLFile3DS.pas',
   GLFile3DSSceneObjects in '..\..\Source\FileFormats\GLFile3DSSceneObjects.pas',
   GLFileASE in '..\..\Source\FileFormats\GLFileASE.pas',

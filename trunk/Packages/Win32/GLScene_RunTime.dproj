@@ -188,6 +188,7 @@
         <DCCReference Include="..\..\Source\GLFBORenderer.pas"/>
         <DCCReference Include="..\..\Source\GLFPSMovement.pas"/>
         <DCCReference Include="..\..\Source\GLFeedback.pas"/>
+        <DCCReference Include="..\..\Source\FileFormats\GLFile3DPDF.pas"/>
         <DCCReference Include="..\..\Source\FileFormats\GLFile3DS.pas"/>
         <DCCReference Include="..\..\Source\FileFormats\GLFile3DSSceneObjects.pas"/>
         <DCCReference Include="..\..\Source\FileFormats\GLFileASE.pas"/>
@@ -236,7 +237,6 @@
         <DCCReference Include="..\..\Source\Basis\GLGeometryCoordinates.pas"/>
         <DCCReference Include="..\..\Source\GLGizmo.pas"/>
         <DCCReference Include="..\..\Source\GLGizmoEx.pas"/>
-        <DCCReference Include="..\..\Source\GLGnuGettext.pas"/>
         <DCCReference Include="..\..\Source\GLGraph.pas"/>
         <DCCReference Include="..\..\Source\GLGraphics.pas"/>
         <DCCReference Include="..\..\Source\GLGui.pas"/>
@@ -416,6 +416,7 @@
                     <Source Name="MainSource">GLScene_RunTime.dpk</Source>
                 </Source>
                 <Excluded_Packages>
+                    <Excluded_Packages Name="C:\Users\Public\Documents\Embarcadero\Studio\19.0\Bpl\dclfgx240.bpl">Extensions for FM (FireMonkey) - Designtime</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\bcboffice2k250.bpl">Embarcadero C++Builder Office 2000 Servers Package</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\bcbofficexp250.bpl">Embarcadero C++Builder Office XP Servers Package</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\dcloffice2k250.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>

@@ -1,10 +1,14 @@
-//
+﻿//
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
    Vector File related objects for GLScene
    History :
      09/02/00 - EG - Creation from split of GLObjects,
+     07/07/14 - ELR - Added AdjustCapacityToAtLeast to TGLMeshObjectList.ExtractTriangles
+                Originally the list of triangles increased  very often in size
+                and leads sometimes to "OutOfMemory"-Exceptions.
+                Solution: Set a reasonable size right in the beginning
      The whole history is logged in previous version of the unit
 }
 unit GLVectorFileObjects;
@@ -4378,6 +4382,7 @@ var
   objNormals: TAffineVectorList;
 begin
   Result := TAffineVectorList.Create;
+  Result.AdjustCapacityToAtLeast (Self.TriangleCount*3);
   if Assigned(texCoords) then
     objTexCoords := TAffineVectorList.Create
   else

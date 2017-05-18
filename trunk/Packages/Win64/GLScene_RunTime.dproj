@@ -197,6 +197,7 @@
         <DCCReference Include="..\..\Source\GLFBORenderer.pas"/>
         <DCCReference Include="..\..\Source\GLFPSMovement.pas"/>
         <DCCReference Include="..\..\Source\GLFeedback.pas"/>
+        <DCCReference Include="..\..\Source\FileFormats\GLFile3DPDF.pas"/>
         <DCCReference Include="..\..\Source\FileFormats\GLFile3DS.pas"/>
         <DCCReference Include="..\..\Source\FileFormats\GLFile3DSSceneObjects.pas"/>
         <DCCReference Include="..\..\Source\FileFormats\GLFileASE.pas"/>
@@ -442,7 +443,7 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="C:\Users\Public\Documents\Embarcadero\Studio\18.0\Bpl\Win64\GLScene_RunTime.bpl" Configuration="Debug" Class="ProjectOutput">
+                <DeployFile LocalName="C:\Users\Public\Documents\Embarcadero\Studio\19.0\Bpl\Win64\GLScene_RunTime.bpl" Configuration="Debug" Class="ProjectOutput">
                     <Platform Name="Win64">
                         <RemoteName>GLScene_RunTime.bpl</RemoteName>
                         <Overwrite>true</Overwrite>

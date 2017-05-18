@@ -2,11 +2,6 @@
 // This unit is part of the GLSceneViewer, http://sourceforge.net/projects/glscene
 //------------------------------------------------------------------------------
 {! The fGLForm unit for TGLForm class as parent for all child forms of GLSceneViewer project}
-{
-  History :
-     25/12/15 - PW - Fixed localization using gnugettext
-     01/04/09 - PW - Created
-}
 
 unit fGLForm;
 
