@@ -1,7 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{  Activate GLS_LOGGING in "GLSCene.inc" to turn on inner GLScene logger.
+{
+  Activate GLS_LOGGING in "GLSCene.inc" to turn on inner GLScene logger.
   You may have only one instance of TGLSLogger
   To obtain it, call UserLog() function from any unit.
 
@@ -154,9 +155,7 @@ type
     FDisplayLogOnExitIfItContains: TLogLevels;
     FWriteInternalMessages: Boolean;
     FDisplayErrorDialogs: Boolean;
-{$IFNDEF GLS_LOGGING}
-    constructor OnlyCreate;
-{$ENDIF}
+
     procedure SetBuffered(const Value: Boolean);
     procedure SetMode(const NewMode: TLogLevels);
     procedure ChangeBufferedState();
@@ -182,6 +181,9 @@ type
     { Resets log. Returns True if everything went ok.}
     function DoResetLog: Boolean; virtual;
   public
+  {$IFNDEF GLS_LOGGING}
+      constructor OnlyCreate;
+  {$ENDIF}
     { Initializes a log session with the specified log file name, time and level settings }
     constructor Init(const AFileName: string;
       const ATimeFormat: TLogTimeFormat; const ALevels: TLogLevels;
@@ -457,7 +459,7 @@ begin
   Result := Copy(Result, 1, lExtIndex - 1);
 end;
 
-{$IFDEF FPC}
+
 
 procedure LogedAssert(const Message, FileName: ShortString; LineNumber: Integer;
   ErrorAddr: Pointer);
@@ -466,16 +468,7 @@ begin
     IntToStr(LineNumber), lkError);
   Abort;
 end;
-{$ELSE}
 
-procedure LogedAssert(const Message, FileName: string; LineNumber: Integer;
-  ErrorAddr: Pointer);
-begin
-  UserLog.Log(Message + ': in ' + FileName + ' at line ' +
-    IntToStr(LineNumber), lkError);
-  Abort;
-end;
-{$ENDIF}
 
 function FileSize(const aFilename: String): Integer;
 var
@@ -601,15 +594,10 @@ var
       lErrorMessage := 'Renaming of "%s" failed with error : %d. Try again?';
       while not RenameFile(lLogOriginalDir + sRec.Name, lLogSaveDir + sRec.Name) do
       begin
-        {$IFDEF FPC}
+
         if MessageDlg(Format(lErrorMessage, [lLogOriginalDir + sRec.Name,
-           GetLastOSError]), mtWarning, mbYesNo, -1) = mrNo
-           then Break;
-        {$ELSE}
-        if MessageDlg(Format(lErrorMessage, [lLogOriginalDir + sRec.Name,
-          GetLastError]), mtWarning, [mbNo], 0) = mrNo
-          then Break;
-        {$ENDIF}
+           GetLastOSError]), mtWarning, mbYesNo, -1) = mrNo then Break;
+
         AssignFile(lFile, lLogOriginalDir + sRec.Name);
         CloseFile(lFile);
       end;
@@ -1294,4 +1282,4 @@ finalization
   if (v_GLSLogger <> nil) then v_GLSLogger.Destroy;
   
 
-end.
+end.

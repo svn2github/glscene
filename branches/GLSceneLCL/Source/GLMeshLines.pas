@@ -85,9 +85,10 @@ type
     procedure DoChanged; virtual;
   public
     property Data: Pointer read FData write FData;
-  published
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
+  published
+
     property Hide: Boolean read FHide write SetHide;
     property Name: String read FName write FName;
     property TextureCorrection: Boolean read FTextureCorrection write SetTextureCorrection;
@@ -168,8 +169,10 @@ type
   protected
     procedure Loaded; override;
   public
-    procedure BeginUpdate;
-    procedure EndUpdate;
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
+    procedure BeginUpdate; override;
+    procedure EndUpdate; override;
     procedure Clear;
     function SelectLineItem(const X,Z: Single; Tolerance: single = 1): TLineItem; overload;
     function SelectLineItem(LineItem: TLineItem): TLineItem; overload;
@@ -184,8 +187,7 @@ type
     property Node1: TLineNode read FNode1;
     property Node2: TLineNode read FNode2;
   published
-    constructor Create(AOwner: TComponent); override;
-    destructor Destroy; override;
+
     property Updating: Boolean Read GetUpdating;
     property Lines: TLineCollection read FLines;
     property Material;
@@ -695,16 +697,16 @@ var
   i: Integer;
   lStartPoint: Integer;
   lNode: TLineNode;
-  lNodeWasSelected: Boolean;
+
 begin
   Result := nil;
-  if Assigned(FSelectedLineItem) and not lNodeWasSelected then
+  if Assigned(FSelectedLineItem) then
     lStartPoint := FSelectedLineItem.ID + 1
   else
     lStartPoint := 0;
   for i := lStartPoint to FLines.Count - 1 do
   begin
-    if (FLines[i] <> FSelectedLineItem) or lNodeWasSelected then
+    if (FLines[i] <> FSelectedLineItem)  then
     begin
       if PointNearLine(FLines[i],X,Z,Tolerance) then
       begin

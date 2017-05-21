@@ -155,9 +155,7 @@ unit SDL;
 
 {$ALIGN ON}
 
-{$IFDEF FPC}
 {$PACKRECORDS 4}
-{$ENDIF FPC}
 
 interface
 

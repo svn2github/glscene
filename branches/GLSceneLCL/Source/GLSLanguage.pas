@@ -24,17 +24,13 @@ uses
   Classes, IniFiles, SysUtils;
 
 type
-{$IFNDEF FPC}
-  UTF8String = AnsiString;
-{$ENDIF}
-{$IFDEF FPC}
+
+
   TConvertEncodingList = (celAutomatic, celISO_8859_1ToUTF8,
     celISO_8859_2ToUTF8, celCP1250ToUTF8, celCP1251ToUTF8, celCP1252ToUTF8,
     celCP1253ToUTF8, celCP1254ToUTF8, celCP1255ToUTF8, celCP1256ToUTF8,
     celCP1257ToUTF8, celCP1258ToUTF8, celCP437ToUTF8, celCP850ToUTF8,
-    celCP866ToUTF8, celCP874ToUTF8, celKOI8ToUTF8, celUCS2LEToUTF8,
-    celUCS2BEToUTF8);
-{$ENDIF}
+    celCP866ToUTF8, celCP874ToUTF8, celKOI8ToUTF8, celUCS2LEToUTF8,celUCS2BEToUTF8);
 
   TGLLanguageEntry = record
     ID: AnsiString; // **< identifier (ASCII)
@@ -51,19 +47,19 @@ type
   private
     FCurrentLanguageFile: UTF8String;
     Entry: TGLLanguageEntryArray; // **< Entrys of Chosen Language
-{$IFDEF FPC}
+
     FConvertEncodingList: TConvertEncodingList;
-{$ENDIF}
+
     function EncodeToUTF8(aValue: AnsiString): UTF8String;
   public
     function FindID(const ID: AnsiString): integer;
     function Translate(const ID: AnsiString): UTF8String;
     procedure LoadLanguageFromFile(const Language: UTF8String);
     property CurrentLanguageFile: UTF8String read FCurrentLanguageFile;
-{$IFDEF FPC}
+
     property ConvertEncodingList: TConvertEncodingList read FConvertEncodingList
       write FConvertEncodingList default celAutomatic;
-{$ENDIF}
+
   end;
 
   { *
@@ -91,10 +87,10 @@ type
   private
     FLanguage: TGLLanguageExt;
     FLanguageList: TStrings;
-{$IFDEF FPC}
+
     function GetEncodingList: TConvertEncodingList;
     procedure SetEncodingList(aList: TConvertEncodingList);
-{$ENDIF}
+
     procedure SetLanguage(aValue: TGLLanguageExt);
   public
     constructor Create(AOwner: TComponent); override;
@@ -104,19 +100,18 @@ type
     procedure SaveLanguageFromFile; overload;
     function Translate(const ID: AnsiString): UTF8String;
     property Language: TGLLanguageExt read FLanguage write SetLanguage;
-{$IFDEF FPC}
+
   Published
     property ConvertEncodingList: TConvertEncodingList read GetEncodingList
       write SetEncodingList;
-{$ENDIF}
+
   end;
 
 implementation
 
 uses
-{$IFDEF FPC}
-  FileUtil, LConvEncoding,
-{$ENDIF}
+
+  LazFileUtils, LConvEncoding,
   GLCrossPlatform, GLSLog;
 
 { TGLLanguage }

@@ -82,4 +82,4 @@
   {$H+} // use long strings
   {$PACKRECORDS C}
     {$define Version2005Plus}
-{$endif}
+{$endif}

@@ -30,14 +30,12 @@ interface
 
 uses
   GLContext,
-  {$IFDEF GLS_DELPHI_OR_CPPB} GLWin32Viewer; {$ENDIF}
-  {$IFDEF FPC}                GLLCLViewer;   {$ENDIF}
+
+  GLLCLViewer;
 type
-{$IFDEF FPC}
+
   TGLSceneViewer = GLLCLViewer.TGLSceneViewer;
-{$ELSE}
-  TGLSceneViewer = GLWin32Viewer.TGLSceneViewer;
-{$ENDIF FPC}
+
 
 procedure SetupVSync(const AVSyncMode : TVSyncMode);
 

@@ -605,8 +605,7 @@ end;
 // FindFromStream
 //
 
-function TRasterFileFormatsList.FindFromStream(const AStream: TStream):
-  TGLBaseImageClass;
+function TRasterFileFormatsList.FindFromStream(const AStream: TStream): TGLBaseImageClass;
 var
   ext: string;
   magic: array[0..1] of LongWord;
@@ -627,10 +626,10 @@ begin
   else if (magic[0] = $E0FFD8FF) and (magic[1] = $464A1000) then
     ext := 'JPG';
 
-  {Result := FindExt(ext);
+  Result := FindExt(ext);
   if not Assigned(Result) then
     raise EInvalidRasterFile.CreateFmt(glsUnknownExtension,
-      [ext, 'GLFile' + UpperCase(ext)]); }
+      [ext, 'GLFile' + UpperCase(ext)]);
 end;
 
 // Remove
@@ -2365,26 +2364,11 @@ begin
   end
   else if Source is TGLGraphic then
   begin
-    if (Source is TGLBitmap)
-{$IFNDEF FPC}
-    and (TGLBitmap(Source).PixelFormat in [glpf24bit, glpf32bit])
-{$ENDIF}
-    and (((TGLBitmap(Source).Width and 3) = 0) or GL.EXT_bgra) then
+    if (Source is TGLBitmap) and (((TGLBitmap(Source).Width and 3) = 0) or GL.EXT_bgra) then
     begin
-{$IFDEF FPC}
       // in FPC this is pixel wize and reads all pixelFormats.
       AssignFrom24BitsBitmap(TGLBitmap(Source));
-{$ELSE}
-      if TGLBitmap(Source).PixelFormat = glpf24bit then
-        AssignFrom24BitsBitmap(TGLBitmap(Source))
-      else
-        AssignFrom32BitsBitmap(TGLBitmap(Source))
-{$ENDIF}
     end
-{$IFDEF GLS_PngImage_SUPPORT}
-    else if Source is TPngImage then
-      AssignFromPngImage(TPngImage(Source))
-{$ENDIF}
     else
     begin
       graphic := TGLGraphic(Source);
@@ -2415,13 +2399,6 @@ begin
         bmp.Free;
       end;
     end;
-{$IFDEF GLS_Graphics32_SUPPORT}
-  end
-  else if Source is TBitmap32 then
-  begin
-    Narrow;
-    AssignFromBitmap32(TBitmap32(Source));
-{$ENDIF}
   end
   else
     inherited;
@@ -2429,7 +2406,6 @@ end;
 
 // AssignFrom24BitsBitmap
 //
-{$IFDEF FPC}
 
 procedure TGLImage.AssignFrom24BitsBitmap(aBitmap: TGLBitmap);
 var
@@ -2490,85 +2466,6 @@ begin
     IntfImg.Free;
   end;
 end;
-{$ELSE}
-
-procedure TGLImage.AssignFrom24BitsBitmap(aBitmap: TGLBitmap);
-var
-  y, lineSize: Integer;
-  rowOffset: Int64;
-  pSrc, pDest: PAnsiChar;
-begin
-  Assert(aBitmap.PixelFormat = glpf24bit);
-  UnMipmap;
-  FLOD[0].Width := aBitmap.Width;
-  FLOD[0].Height := aBitmap.Height;
-  FLOD[0].Depth := 0;
-  if GL.EXT_bgra then
-  begin
-    fColorFormat := GL_BGR;
-    fElementSize := 3;
-  end
-  else
-  begin
-    Assert((aBitmap.Width and 3) = 0);
-    fColorFormat := GL_RGBA;
-    fElementSize := 4;
-  end;
-  fInternalFormat := tfRGBA8;
-  fDataType := GL_UNSIGNED_BYTE;
-  fCubeMap := false;
-  fTextureArray := false;
-  ReallocMem(FData, DataSize);
-  FBlank := false;
-  lineSize := GetWidth * fElementSize;
-  if Height > 0 then
-  begin
-    pDest := @PAnsiChar(FData)[GetWidth * fElementSize * (GetHeight - 1)];
-    if Height = 1 then
-    begin
-      if GL.EXT_bgra then
-      begin
-        pSrc := BitmapScanLine(aBitmap, 0);
-        Move(pSrc^, pDest^, lineSize);
-      end
-      else
-        BGR24ToRGBA32(BitmapScanLine(aBitmap, 0), pDest, GetWidth);
-    end
-    else
-    begin
-      if VerticalReverseOnAssignFromBitmap then
-      begin
-        pSrc := BitmapScanLine(aBitmap, GetHeight - 1);
-        rowOffset := Integer(BitmapScanLine(aBitmap, GetHeight - 2)) -
-          Integer(pSrc);
-      end
-      else
-      begin
-        pSrc := BitmapScanLine(aBitmap, 0);
-        rowOffset := Int64(BitmapScanLine(aBitmap, 1)) - Int64(pSrc);
-      end;
-      if GL.EXT_bgra then
-      begin
-        for y := 0 to Height - 1 do
-        begin
-          Move(pSrc^, pDest^, lineSize);
-          Dec(pDest, lineSize);
-          Inc(pSrc, rowOffset);
-        end;
-      end
-      else
-      begin
-        for y := 0 to Height - 1 do
-        begin
-          BGR24ToRGBA32(pSrc, pDest, Width);
-          Dec(pDest, lineSize);
-          Inc(pSrc, rowOffset);
-        end;
-      end;
-    end;
-  end;
-end;
-{$ENDIF}
 
 // AssignFromBitmap24WithoutRGBSwap
 //
@@ -2698,42 +2595,6 @@ begin
   end;
 end;
 
-{$IFDEF GLS_Graphics32_SUPPORT}
-// AssignFromBitmap32
-//
-
-procedure TGLImage.AssignFromBitmap32(aBitmap32: TBitmap32);
-var
-  y: Integer;
-  pSrc, pDest: PAnsiChar;
-begin
-  UnMipmap;
-  FLOD[0].Width := aBitmap32.Width;
-  FLOD[0].Height := aBitmap32.Height;
-  FLOD[0].Depth := 0;
-  fColorFormat := GL_RGBA;
-  fInternalFormat := tfRGBA8;
-  fDataType := GL_UNSIGNED_BYTE;
-  fElementSize := 4;
-  fCubeMap := false;
-  fTextureArray := false;
-  ReallocMem(FData, DataSize);
-  FBlank := false;
-  if Height > 0 then
-  begin
-    pDest := @PAnsiChar(FData)[Width * 4 * (Height - 1)];
-    for y := 0 to Height - 1 do
-    begin
-      if VerticalReverseOnAssignFromBitmap then
-        pSrc := PAnsiChar(aBitmap32.ScanLine[Height - 1 - y])
-      else
-        pSrc := PAnsiChar(aBitmap32.ScanLine[y]);
-      BGRA32ToRGBA32(pSrc, pDest, Width);
-      Dec(pDest, Width * 4);
-    end;
-  end;
-end;
-{$ENDIF}
 
 {$IFDEF GLS_PngImage_SUPPORT}
 // AlphaChannel Support
@@ -2889,12 +2750,7 @@ end;
 
 function TGLImage.Create32BitsBitmap: TGLBitmap;
 var
-{$IFDEF FPC}
   RIMG: TRawImage;
-{$ELSE}
-  y, x, x4: Integer;
-  pSrc, pDest: PAnsiChar;
-{$ENDIF}
 begin
   if FBlank then
   begin
@@ -2910,7 +2766,7 @@ begin
 
   if Height > 0 then
   begin
-{$IFDEF FPC}
+
     RIMG.Init;
     rimg.Description.Init_BPP32_B8G8R8A8_BIO_TTB(Width, Height);
     rimg.Description.RedShift := 0;
@@ -2934,22 +2790,7 @@ begin
           FreeAndNil(LIntfImg);
         end;
       -- End of "Workaround for older Lazarus " }
-{$ELSE}
-    pSrc := @PAnsiChar(FData)[Width * 4 * (Height - 1)];
-    for y := 0 to Height - 1 do
-    begin
-      pDest := BitmapScanLine(Result, y);
-      for x := 0 to Width - 1 do
-      begin
-        x4 := x * 4;
-        pDest[x4 + 0] := pSrc[x4 + 2];
-        pDest[x4 + 1] := pSrc[x4 + 1];
-        pDest[x4 + 2] := pSrc[x4 + 0];
-        pDest[x4 + 3] := pSrc[x4 + 3];
-      end;
-      Dec(pSrc, Width * 4);
-    end;
-{$ENDIF}
+
   end;
 end;
 

@@ -35,14 +35,9 @@ uses
   Classes, Graphics,
   GLCrossPlatform;
 
-{$ifdef GLS_DELPHI_7} {$define PRF_HACK_PASSES}  {$endif}// Delphi 7
-// skip Delphi 8
-{$ifdef GLS_DELPHI_2005_UP} {$define PRF_HACK_PASSES} {$endif}// Delphi 2005+
-{$ifdef FPC}            {$define PRF_HACK_PASSES}  {$endif}// FPC
 
-{$ifndef PRF_HACK_PASSES}
-  {$Message Warn 'PRF hack not tested for this Delphi version!'}
-{$endif}
+ {$define PRF_HACK_PASSES} // FPC
+
 
 { Returns the TGraphicClass associated to the extension, if any.
    Accepts anExtension with or without the '.' }
@@ -68,10 +63,7 @@ type
 
 function GraphicClassForExtension(const anExtension: string): TGraphicClass;
 var
-{$IFNDEF FPC}
-  i: integer;
-  sl: TStringList;
-{$ENDIF}
+
   buf: string;
 begin
   Result := nil;
@@ -81,19 +73,7 @@ begin
     buf := Copy(anExtension, 2, MaxInt)
   else
     buf := anExtension;
-  {$IFDEF FPC}
   Result := TPicture.Create.FindGraphicClassWithFileExt(buf, False);
-  {$ELSE}
-  sl := TStringList.Create;
-  try
-    HackTPictureRegisteredFormats(sl);
-    i := sl.IndexOfName(buf);
-    if i >= 0 then
-      Result := TGraphicClass(sl.Objects[i]);
-  finally
-    sl.Free;
-  end;
-  {$ENDIF}
 end;
 
 type

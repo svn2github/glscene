@@ -8458,11 +8458,9 @@ asm
 {$else}
 begin
    {$HINTS OFF}
-   {$IFDEF FPC}
    if Abs(X) > 1.0 then
      Result := Math.ArcCos(Sign(X))
    else
-   {$ENDIF}
    Result:=Math.ArcCos(X);
    {$HINTS ON}
 {$endif}

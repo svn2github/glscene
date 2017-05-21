@@ -17,9 +17,7 @@ interface
 {$I GLScene.inc}
 
 uses
-{$IFDEF FPC}
   LCLVersion,
-{$ENDIF}
   SysUtils,
   Classes,
   SyncObjs,
@@ -128,27 +126,6 @@ type
     function Peek: T;
   end;
 
-  // GStack
-  //
-{$IFNDEF FPC}
-{$IFDEF GLS_GENERIC_PREFIX}
-  generic
-{$ENDIF}
-  GStack<T> = class({$IFDEF GLS_GENERIC_PREFIX} specialize {$ENDIF} GOrderedList<T>)
-  protected
-    procedure PushItem(AItem: T); override;
-  end;
-
-  // GQueue
-  //
-{$IFDEF GLS_GENERIC_PREFIX}
-  generic
-{$ENDIF}
-  GQueue<T> = class(GOrderedList<T>)
-  protected
-    procedure PushItem(AItem: T); override;
-  end;
-{$ENDIF}
 
 implementation
 
@@ -439,20 +416,6 @@ end;
 
 {$ENDREGION}
 
-{$IFNDEF FPC}
-{$REGION 'GStack'}
-procedure GStack{$IFNDEF GLS_GENERIC_PREFIX}<T>{$ENDIF}.PushItem(AItem: T);
-begin
-  List.Add(AItem);
-end;
-{$ENDREGION 'GStack'}
 
-{$REGION 'GQueue'}
-procedure GQueue{$IFNDEF GLS_GENERIC_PREFIX}<T>{$ENDIF}.PushItem(AItem: T);
-begin
-  List.Insert(0, AItem);
-end;
-{$ENDREGION 'GQueue'}
-{$ENDIF}
 
 end.

@@ -20,12 +20,7 @@ interface
 
 uses
   Classes, GLXCollection,
-  {$IFDEF FPC}
-     componenteditors, propedits
-  {$ELSE}
-     DesignEditors, DesignIntf
-  {$ENDIF}
-   ;
+     componenteditors, propedits;
 
 type
 
@@ -69,11 +64,7 @@ end;
 procedure TGLXCollectionProperty.Edit;
 begin
    with XCollectionEditor do begin
-   {$IFDEF FPC}
       SetXCollection(TGLXCollection(GetObjectValue));
-   {$ELSE}
-      SetXCollection(TGLXCollection(GetOrdValue), Self.Designer);
-   {$ENDIF}
       Show;
    end;
 end;

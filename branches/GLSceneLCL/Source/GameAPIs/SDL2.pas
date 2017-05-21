@@ -45,19 +45,14 @@ const
     {$IFDEF DARWIN}
       SDL_LibName = 'libSDL2.dylib';
     {$ELSE}
-      {$IFDEF FPC}
         SDL_LibName = 'libSDL2.so';
-      {$ELSE}
-        SDL_LibName = 'libSDL2.so.0';
       {$ENDIF}
     {$ENDIF}
   {$ENDIF}
 
   {$IFDEF MACOS}
     SDL_LibName = 'SDL2';
-    {$IFDEF FPC}
       {$linklib libSDL2}
-    {$ENDIF}
   {$ENDIF}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -5642,13 +5637,11 @@ type
       TSDL_SysWMmsg = record
         version : TSDL_Version;
         subsystem : TSDL_SysWm;
-        {$IFDEF FPC}
+
           {$IFNDEF DARWIN}
           event : TXEvent;
           {$ENDIF}
-        {$ELSE}
-          event : XEvent;
-        {$ENDIF}
+
       end;
     {$ELSE}
       { The generic custom event structure }
@@ -6127,9 +6120,9 @@ type
       Renderer : PSDL_Renderer;
    end;
 
-   {$IFDEF FPC}
-      EinvalidContainer=class(Exception);
-   {$ENDIF}
+
+   EinvalidContainer=class(Exception);
+
 
 function SDL_Swap32(D: Uint32): Uint32;
 function SDLStreamSetup( stream : TStream ) : PSDL_RWops;
@@ -6353,7 +6346,7 @@ begin
 end;
 
 //******************************************************************************
-function SdlStreamSeek( context : PSDL_RWops; offset : SInt64; whence : SInt32 ) : SInt64; cdecl;
+function SdlStreamSeek( context : PSDL_RWops; offset : SInt64; whence : SInt32 ) : SInt64; cdecl;
 var
    stream : TStream;
    origin : Word;

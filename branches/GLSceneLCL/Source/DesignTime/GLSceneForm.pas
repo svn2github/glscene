@@ -111,14 +111,7 @@ type
     function GetFieldOfView: single;
     procedure SetFieldOfView(const Value: single);
     function GetIsRenderingContextAvailable: Boolean;
-{$IFDEF GLS_DELPHI_OR_CPPB}
-    procedure WMEraseBkgnd(var Message: TWMEraseBkgnd); message WM_ERASEBKGND;
-    procedure WMPaint(var Message: TWMPaint); message WM_PAINT;
-    procedure WMSize(var Message: TWMSize); message WM_SIZE;
-    procedure WMDestroy(var Message: TWMDestroy); message WM_DESTROY;
-    procedure LastFocus(var Mess: TMessage); message WM_ACTIVATE;
-{$ENDIF}
-{$IFDEF FPC}
+
     procedure LMEraseBkgnd(var Message: TLMEraseBkgnd); message LM_ERASEBKGND;
     procedure LMPaint(var Message: TLMPaint); message LM_PAINT;
     procedure LMSize(var Message: TLMSize); message LM_SIZE;
@@ -127,7 +120,7 @@ type
 {$IF (lcl_major <= 0) and (lcl_minor <= 9) and (lcl_release < 31)}
     procedure LastFocus(var Mess: TLMessage); message LM_DEACTIVATE;
 {$IFEND}
-{$ENDIF}
+
     procedure SetFullScreenVideoMode(AValue: TGLFullScreenVideoMode);
     procedure StartupFS;
     procedure ShutdownFS;
@@ -187,7 +180,7 @@ type
       FFullScreenVideoMode
       write SetFullScreenVideoMode;
   end;
-{$IFDEF FPC}
+
   // Code created to workaround black screen and blinking when Manifest is enabled
   // Код создан для обхода черного экрана и мерцания при включенном Manifest'е
 {$IF DEFINED(LCLwin32) or DEFINED(LCLwin64)}
@@ -200,7 +193,7 @@ type
 
 procedure GLRegisterWSComponent(aControl: TComponentClass);
 {$IFEND}
-{$ENDIF}
+
 
 implementation
 
@@ -284,87 +277,6 @@ begin
       StartupFS;
   end;
 end;
-
-{$IFDEF GLS_DELPHI_OR_CPPB}
-// WMEraseBkgnd
-//
-
-procedure TGLSceneForm.WMEraseBkgnd(var Message: TWMEraseBkgnd);
-begin
-  if GetIsRenderingContextAvailable then
-    Message.Result := 1
-  else
-    inherited;
-end;
-
-// WMSize
-//
-
-procedure TGLSceneForm.WMSize(var Message: TWMSize);
-begin
-  inherited;
-  if Assigned(FBuffer) then
-    FBuffer.Resize(0, 0, Message.Width, Message.Height);
-end;
-
-// WMPaint
-//
-
-procedure TGLSceneForm.WMPaint(var Message: TWMPaint);
-var
-  PS: TPaintStruct;
-begin
-  BeginPaint(Handle, PS);
-  try
-    if GetIsRenderingContextAvailable and (Width > 0) and (Height > 0) then
-      FBuffer.Render;
-  finally
-    EndPaint(Handle, PS);
-    Message.Result := 0;
-  end;
-end;
-
-// WMDestroy
-//
-
-procedure TGLSceneForm.WMDestroy(var Message: TWMDestroy);
-begin
-  if Assigned(FBuffer) then
-  begin
-    FBuffer.DestroyRC;
-    if FOwnDC <> 0 then
-    begin
-      ReleaseDC(Handle, FOwnDC);
-      FOwnDC := 0;
-    end;
-  end;
-  inherited;
-end;
-
-// LastFocus
-//
-
-procedure TGLSceneForm.LastFocus(var Mess: TMessage);
-begin
-  if not (csDesigning in ComponentState)
-    and FFullScreenVideoMode.FEnabled
-    and FFullScreenVideoMode.FAltTabSupportEnable then
-    begin
-      if Mess.wParam = WA_INACTIVE then
-      begin
-        ShutdownFS;
-      end
-      else
-      begin
-        StartupFS;
-      end;
-    end;
-  inherited;
-end;
-
-{$ENDIF GLS_DELPHI_OR_CPPB}
-
-{$IFDEF FPC}
 
 procedure TGLSceneForm.LMEraseBkgnd(var Message: TLMEraseBkgnd);
 begin
@@ -555,12 +467,8 @@ end;
 
 procedure TGLSceneForm.DoBufferStructuralChange(Sender: TObject);
 begin
-{$IFNDEF FPC}
-  RecreateWnd;
-{$ELSE}
   DestroyWnd;
   CreateWnd;
-{$ENDIF}
 end;
 
 procedure TGLSceneForm.MouseMove(Shift: TShiftState; X, Y: Integer);
@@ -885,8 +793,7 @@ procedure GLRegisterWSComponent(aControl: TComponentClass);
 begin
   RegisterWSComponent(aControl, TGLSOpenGLForm);
 end;
-{$IFEND}
-{$ENDIF}
+
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -898,7 +805,7 @@ initialization
   // ------------------------------------------------------------------
 
   RegisterClass(TGLSceneForm);
-{$IFDEF FPC}
+
 {$IF DEFINED(LCLwin32) or DEFINED(LCLwin64)}
   // Code created to workaround black screen and blinking when Manifest is enabled
   // You may comment it for Win2000\98
@@ -906,6 +813,6 @@ initialization
   // Можно закоментировать для Win2000\98
   GLRegisterWSComponent(TGLSceneForm);
 {$IFEND}
-{$ENDIF}
+
 
 end.

@@ -45,9 +45,7 @@ interface
 {$I GLScene.inc}
 
 uses
-{$IFDEF FPC}
   LCLVersion,
-{$ENDIF}
   Classes, GLCrossPlatform;
 
 type
@@ -146,8 +144,7 @@ begin
   end
 end;
 
-constructor GRedBlackTree
-{$IFNDEF FPC} < TKey, TValue > {$ENDIF}.Create(KeyCompare: TKeyCompareFunc; ValueCompare: TValueCompareFunc);
+constructor GRedBlackTree.Create(KeyCompare: TKeyCompareFunc; ValueCompare: TValueCompareFunc);
 begin
   inherited Create;
   Assert(Assigned(KeyCompare));
@@ -159,15 +156,13 @@ begin
   FDuplicateKeys := Assigned(ValueCompare);
 end;
 
-destructor GRedBlackTree
-{$IFNDEF FPC} < TKey, TValue > {$ENDIF}.Destroy;
+destructor GRedBlackTree.Destroy;
 begin
   Clear;
   inherited Destroy;
 end;
 
-class procedure GRedBlackTree
-{$IFNDEF FPC} < TKey, TValue > {$ENDIF}.FastErase(x: TRBNode);
+class procedure GRedBlackTree.FastErase(x: TRBNode);
 var
   y: TRBNode;
 begin
@@ -178,16 +173,13 @@ begin
   repeat
     y := x;
     x := x.Twin;
-{$IFDEF FPC}
+
     Dispose(y);
-{$ELSE}
-    y.Destroy;
-{$ENDIF}
+
   until x = nil;
 end;
 
-procedure GRedBlackTree
-{$IFNDEF FPC} < TKey, TValue > {$ENDIF}.Clear;
+procedure GRedBlackTree.Clear;
 begin
   if (FRoot <> nil) then
     FastErase(FRoot);
@@ -199,8 +191,7 @@ begin
     FOnChange(Self);
 end;
 
-function GRedBlackTree
-{$IFNDEF FPC} < TKey, TValue > {$ENDIF}.Find(const key: TKey; out Value: TValue): Boolean;
+function GRedBlackTree.Find(const key: TKey; out Value: TValue): Boolean;
 begin
   FLastFound := FindNode(key);
   Result := Assigned(FLastFound);
@@ -208,8 +199,7 @@ begin
     Value := FLastFound.Value;
 end;
 
-function GRedBlackTree
-{$IFNDEF FPC} < TKey, TValue > {$ENDIF}.FindNode(const key: TKey): TRBNode;
+function GRedBlackTree.FindNode(const key: TKey): TRBNode;
 var
   cmp: integer;
 begin
@@ -232,8 +222,7 @@ begin
   end;
 end;
 
-function GRedBlackTree
-{$IFNDEF FPC} < TKey, TValue > {$ENDIF}.NextDublicate(out Value: TValue): Boolean;
+function GRedBlackTree.NextDublicate(out Value: TValue): Boolean;
 begin
   if Assigned(FLastFound) then
   begin
@@ -247,8 +236,7 @@ begin
   Result := False;
 end;
 
-procedure GRedBlackTree
-{$IFNDEF FPC} < TKey, TValue > {$ENDIF}.RotateLeft(var x: TRBNode);
+procedure GRedBlackTree.RotateLeft(var x: TRBNode);
 var
   y: TRBNode;
 begin
@@ -275,8 +263,7 @@ begin
   x.parent := y;
 end;
 
-procedure GRedBlackTree
-{$IFNDEF FPC} < TKey, TValue > {$ENDIF}.RotateRight(var x: TRBNode);
+procedure GRedBlackTree.RotateRight(var x: TRBNode);
 var
   y: TRBNode;
 begin
@@ -303,33 +290,27 @@ begin
   x.parent := y;
 end;
 
-function GRedBlackTree
-{$IFNDEF FPC} < TKey, TValue > {$ENDIF}.Minimum(var x: TRBNode): TRBNode;
+function GRedBlackTree.Minimum(var x: TRBNode): TRBNode;
 begin
   Result := x;
   while (Result.left <> nil) do
     Result := Result.left;
 end;
 
-function GRedBlackTree
-{$IFNDEF FPC} < TKey, TValue > {$ENDIF}.Maximum(var x: TRBNode): TRBNode;
+function GRedBlackTree.Maximum(var x: TRBNode): TRBNode;
 begin
   Result := x;
   while (Result.right <> nil) do
     Result := Result.right;
 end;
 
-procedure GRedBlackTree
-{$IFNDEF FPC} < TKey, TValue > {$ENDIF}.Add(const key: TKey; const Value: TValue);
+procedure GRedBlackTree.Add(const key: TKey; const Value: TValue);
 var
   x, y, z, zpp: TRBNode;
   cmp: Integer;
 begin
-  {$IFDEF FPC}
+
   New(z);
-  {$ELSE}
-  z := TRBNode.Create;
-  {$ENDIF}
 
   { Initialize fields in new node z }
   z.Key := key;
@@ -386,11 +367,9 @@ begin
         end;
         { Value already exists in tree. }
       end;
-{$IFDEF FPC}
+
       Dispose(z);
-{$ELSE}
-      z.Destroy;
-{$ENDIF}
+
       //a jzombi: memory leak: if we don't put it in the tree, we shouldn't hold it in the memory
       exit;
     end;
@@ -464,8 +443,7 @@ begin
     FOnChange(Self);
 end;
 
-procedure GRedBlackTree
-{$IFNDEF FPC} < TKey, TValue > {$ENDIF}.Delete(const key: TKey);
+procedure GRedBlackTree.Delete(const key: TKey);
 var
   w, x, y, z, x_parent: TRBNode;
   tmpcol: TRBColor;
@@ -678,24 +656,19 @@ begin
   begin
     z := y;
     y := y.Twin;
-{$IFDEF FPC}
+
     Dispose(z);
-{$ELSE}
-    z.Destroy;
-{$ENDIF}
+
   end;
-{$IFDEF FPC}
+
   Dispose(y);
-{$ELSE}
-  y.Destroy;
-{$ENDIF}
+
   Dec(FCount);
   if Assigned(FOnChange) then
     FOnChange(Self);
 end;
 
-function GRedBlackTree
-{$IFNDEF FPC} < TKey, TValue > {$ENDIF}.NextKey(var key: TKey; out Value: TValue): Boolean;
+function GRedBlackTree.NextKey(var key: TKey; out Value: TValue): Boolean;
 var
   x, y: TRBNode;
 begin
@@ -734,8 +707,7 @@ begin
   Result := True;
 end;
 
-function GRedBlackTree
-{$IFNDEF FPC} < TKey, TValue > {$ENDIF}.PrevKey(var key: TKey; out Value: TValue): Boolean;
+function GRedBlackTree.PrevKey(var key: TKey; out Value: TValue): Boolean;
 var
   x, y: TRBNode;
 begin
@@ -774,20 +746,17 @@ begin
   Result := True;
 end;
 
-function GRedBlackTree
-{$IFNDEF FPC} < TKey, TValue > {$ENDIF}.GetFirst: TKey;
+function GRedBlackTree.GetFirst: TKey;
 begin
   Result := FLeftMost.Key;
 end;
 
-function GRedBlackTree
-{$IFNDEF FPC} < TKey, TValue > {$ENDIF}.GetLast: TKey;
+function GRedBlackTree.GetLast: TKey;
 begin
   Result := FRightMost.Key;
 end;
 
-procedure GRedBlackTree
-{$IFNDEF FPC} < TKey, TValue > {$ENDIF}.ForEach(AProc: TForEachProc);
+procedure GRedBlackTree.ForEach(AProc: TForEachProc);
 var
   x, y, z: TRBNode;
   cont: Boolean;
@@ -831,8 +800,7 @@ begin
   end;
 end;
 
-procedure GRedBlackTree
-{$IFNDEF FPC} < TKey, TValue > {$ENDIF}.SetDuplicateKeys(Value: Boolean);
+procedure GRedBlackTree.SetDuplicateKeys(Value: Boolean);
 begin
   if Value and Assigned(FValueCompareFunc) then
     FDuplicateKeys := True

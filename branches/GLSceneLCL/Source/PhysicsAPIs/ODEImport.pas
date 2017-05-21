@@ -143,7 +143,7 @@ uses
 {$ENDIF}
 
 {$IFDEF UNIX}
-  {$IFDEF FPC}
+
     {$IFDEF Ver1_0}
     linux,
     {$ELSE}
@@ -158,7 +158,7 @@ uses
   Libc,
   Xlib,
   {$ENDIF}
-{$ENDIF}
+
 
 {$IFDEF __MACH__}
   GPCMacOSAll,

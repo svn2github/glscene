@@ -615,9 +615,9 @@ begin
           PInteger(@Header[0])^ := ReadInteger
         else
         begin
-{$IFDEF FPC}
+
           // Read(Header[0], Length(Header));  // Skip type
-{$ENDIF}
+
           Read(Header[0], Length(Header));
         end;
       except

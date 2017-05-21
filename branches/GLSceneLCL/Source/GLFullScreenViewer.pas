@@ -38,10 +38,7 @@ interface
 
 uses
   Forms, Controls, Menus,
-  Classes, Messages, GLViewer, GLScene, GLContext
-{$IFDEF FPC}
-    , LcLtype, LCLIntf
-{$ENDIF}
+  Classes, Messages, GLViewer, GLScene, GLContext,LcLtype, LCLIntf
 {$IFDEF MSWindows}
     , Windows
 {$ENDIF}
@@ -231,7 +228,7 @@ implementation
 // ------------------------------------------------------------------
 
 uses OpenGLTokens, OpenGLAdapter, SysUtils, GLCrossPlatform, GLScreen
-{$IFDEF FPC}
+
  {$IFDEF Linux}
    {$IFDEF LCLGTK2}
     , gtk2proc
@@ -258,9 +255,7 @@ uses OpenGLTokens, OpenGLAdapter, SysUtils, GLCrossPlatform, GLScreen
  {$IFDEF LCLQT}
    {$ERROR unimplemented QT context}
  {$ENDIF}
-{$ELSE}
-    , GLWin32Context
-{$ENDIF}
+
     ;
 
 const
@@ -585,25 +580,20 @@ end;
 
 procedure TGLFullScreenViewer.DoActivate(Sender: TObject);
 begin
-  (* If not Active and (Form <> nil) then begin
-    {$IFDEF FPC}
+   If not Active and (Form <> nil) then
+   begin
     Application.Restore;
-    {$ENDIF}
-    Startup;
-    end; *)
+    end;
 end;
 
 procedure TGLFullScreenViewer.DoDeactivate(Sender: TObject);
 begin
-  (* If Active and (Form <> nil) then begin
+  If Active and (Form <> nil) then
+  begin
     Shutdown;
-    {$IFDEF FPC}
+
     Application.Minimize;
-    {$ELSE}
-    Form.Height:=0;
-    Form.Width:=0;
-    {$ENDIF}
-    end; *)
+  end;
 end;
 
 procedure TGLFullScreenViewer.DoFormDestroy(Sender: TObject);

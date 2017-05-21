@@ -88,11 +88,8 @@ uses
   Windows,
   {$ENDIF}
   Classes, SysUtils, Types, Forms, Controls,
-  {$IFDEF FPC}
+
   LCLVersion, LCLType,
-  {$ELSE}
-  Consts,
-  {$ENDIF}
 
   SyncObjs,
 {$IFDEF GLS_SERVICE_CONTEXT}
@@ -1225,7 +1222,7 @@ type
 {$IFDEF GLS_SERVICE_CONTEXT}
     { Create a special service and resource-keeper context. }
     procedure CreateServiceContext;
-    procedure QueueTaskDepleted; {$IFDEF FPC}register;{$ENDIF}
+    procedure QueueTaskDepleted; register;
     property ServiceStarter: TEvent read FServiceStarter;
 {$ENDIF}
     property ServiceContext: TGLContext read FServiceContext;
@@ -4450,10 +4447,9 @@ end;
 procedure OnApplicationInitialize;
 begin
   InitProc := OldInitProc;
-{$IFDEF FPC}
-  if Assigned(InitProc) then
-    TProcedure(InitProc);
-{$ENDIF}
+
+  if Assigned(InitProc) then TProcedure(InitProc);
+
   Application.Initialize;
   GLContextManager.CreateServiceContext;
 end;
@@ -4765,7 +4761,7 @@ end;
 
 constructor TServiceContextThread.Create;
 begin
-  FWindow := TForm.CreateNew({$IFDEF FPC}Application{$ELSE}nil{$ENDIF});
+  FWindow := TForm.CreateNew(Application);
   FWindow.Hide;
   FWindow.Position := poScreenCenter;
   FWindow.Width := 1;
@@ -4785,10 +4781,6 @@ end;
 
 destructor TServiceContextThread.Destroy;
 begin
-{$IFNDEF FPC}
-  ReleaseDC(FWindow.Handle, FDC);
-  FWindow.Free;
-{$ENDIF}
   inherited;
 end;
 

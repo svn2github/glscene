@@ -19,14 +19,9 @@ interface
 uses
   // VCL
   Classes,
-  {$IFDEF FPC}
-    propedits, GLSceneRegisterLCL,
-  {$ELSE}
-    DesignIntf, DesignEditors, VCLEditors,
-    GLSceneRegister,
-  {$ENDIF}
 
-   cene
+  propedits, GLSceneRegisterLCL,
+  GLScene
   GLMaterial,
 
   // CG

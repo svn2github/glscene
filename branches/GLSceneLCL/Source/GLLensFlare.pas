@@ -561,7 +561,7 @@ var
   posVector, v, rv: TAffineVector;
   screenPos: TAffineVector;
   flareInViewPort, dynamicSize: Boolean;
-  oldSeed: {$IFDEF FPC}LongWord{$ELSE}LongInt{$ENDIF};
+  oldSeed: LongWord;
   projMatrix: TMatrix;
   CurrentBuffer: TGLSceneBuffer;
 begin

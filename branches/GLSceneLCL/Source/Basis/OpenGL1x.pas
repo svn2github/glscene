@@ -5061,11 +5061,8 @@ begin
 
    // This procedure will probably need changing, as totally untested
    // This might only work if GLX functions/procedures are loaded dynamically
-   {$IFDEF FPC}
+
    if Assigned(@glXQueryExtensionsString) then
-   {$ELSE}
-   if Assigned(glXQueryExtensionsString) then
-   {$ENDIF}
      Buffer := glXQueryExtensionsString(Dpy, 0)  //guess at a valid screen
    else
      Buffer:='';

@@ -75,7 +75,6 @@ uses
 {$ENDIF}
 
 {$IFDEF UNIX}
-{$IFDEF FPC}
   LCLType,
 {$IFDEF Ver1_0}
   linux,
@@ -90,7 +89,6 @@ uses
   Types,
   Libc,
   Xlib,
-{$ENDIF}
 {$ENDIF}
 
 {$IFDEF __MACH__}

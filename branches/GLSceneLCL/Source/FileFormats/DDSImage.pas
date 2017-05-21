@@ -53,9 +53,8 @@ type
 implementation
 
 uses
-{$IFDEF FPC}graphtype,
+  graphtype,
   LCLType,
-{$ENDIF}
   DXTC,
   GLFileDDS,
   GLTextureFormat;
@@ -70,12 +69,7 @@ procedure TDDSImage.LoadFromStream(stream: TStream);
 var
   FullDDS: TGLDDSImage;
   bCubeMap: Boolean;
-{$IFNDEF FPC}
-  src, dst: PGLubyte;
-  y: integer;
-{$ELSE}
   RIMG: TRawImage;
-{$ENDIF}
 begin
   FullDDS := TGLDDSImage.Create;
   try
@@ -93,23 +87,7 @@ begin
   Width := FullDDS.LevelWidth[0];
   Height := FullDDS.LevelHeight[0];
 
-{$IFNDEF FPC}
-  src := PGLubyte(FullDDS.Data);
-  if bCubeMap then
-    for y := 0 to Height - 1 do
-    begin
-      dst := ScanLine[y];
-      BGRA32ToRGBA32(src, dst, Width);
-      Inc(src, Width * 4);
-    end
-  else
-    for y := 0 to Height - 1 do
-    begin
-      dst := ScanLine[Height - 1 - y];
-      BGRA32ToRGBA32(src, dst, Width);
-      Inc(src, Width * 4);
-    end;
-{$ELSE}
+
   RIMG.Init;
   rimg.Description.Init_BPP32_B8G8R8A8_BIO_TTB(Width, Height);
   rimg.Description.RedShift := 16;
@@ -121,7 +99,7 @@ begin
   RIMG.DataSize := Width * Height * 4;
   rimg.Data := PByte(FullDDS.Data);
   LoadFromRawImage(rimg, false);
-{$ENDIF}
+
   FullDDS.Free;
 end;
 

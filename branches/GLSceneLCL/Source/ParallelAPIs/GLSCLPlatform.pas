@@ -39,15 +39,11 @@ interface
 {$I GLScene.inc}
 
 type
-{$IFDEF FPC}
+
   TSize_T = SizeInt;
   Psize_t = PSizeInt;
   intptr_t = PtrInt;
-{$ELSE}
-  TSize_T = NativeUInt; // 32 or 64 bit unsigned integer
-  Psize_t = ^TSize_T;
-  intptr_t = NativeUInt;
-{$ENDIF}
+
   // Pintptr_t = ^intptr_t;
 
   // scalar types

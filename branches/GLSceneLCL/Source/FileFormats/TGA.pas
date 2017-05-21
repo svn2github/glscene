@@ -58,11 +58,7 @@ implementation
 // ------------------------------------------------------------------
 
 uses
-  GLGraphics
-{$IFDEF FPC}
-  ,GraphType, LCLType
-{$ENDIF}
-  ;
+  GLGraphics,GraphType, LCLType ;
 
 type
 
@@ -187,18 +183,13 @@ var
    y, rowSize, bufSize : Integer;
    verticalFlip : Boolean;
    unpackBuf : PAnsiChar;
-   {$IFDEF FPC}
+
    rimg: TRawImage;
-   {$ENDIF}
+
 
    function GetLineAddress(ALine: Integer): PByte;
    begin
-     {$IFDEF GLS_DELPHI_OR_CPPB}
-     Result := PByte(ScanLine[ALine]);
-     {$ENDIF}
-     {$IFDEF FPC}
      Result := PByte(@PGLPixel32Array(rimg.Data)[ALine*Width]);
-     {$ENDIF}
    end;
 
 begin

@@ -24,13 +24,12 @@
 
 unit fmodtypes;
 
-{$IFDEF FPC}
-  {$MODE DELPHI}
+
   {$IFDEF WIN32}
     {$DEFINE MSWINDOWS}
   {$ENDIF}
   {$PACKRECORDS C}
-{$ENDIF}
+
 
 interface
 

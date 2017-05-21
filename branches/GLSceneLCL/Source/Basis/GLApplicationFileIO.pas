@@ -27,22 +27,15 @@ interface
 uses
   Classes,
   SysUtils,
-  GLBaseClasses
-  {$IFDEF FPC}
-  ,
-  LResources
-  {$ELSE}
-  ,
-  Windows
-  {$ENDIF}
-  , GLSLog;
+  GLBaseClasses,
+  LResources,GLSLog;
 
 
 const
-  GLS_RC_DDS_Type = {$IFNDEF FPC}RT_RCDATA{$ELSE} 'DDS'{$ENDIF};
-  GLS_RC_JPG_Type = {$IFNDEF FPC}RT_RCDATA{$ELSE} 'JPG'{$ENDIF};
-  GLS_RC_XML_Type = {$IFNDEF FPC}RT_RCDATA{$ELSE} 'XML'{$ENDIF};
-  GLS_RC_String_Type = {$IFNDEF FPC}RT_RCDATA{$ELSE} 'STR'{$ENDIF};
+  GLS_RC_DDS_Type =  'DDS';
+  GLS_RC_JPG_Type =  'JPG';
+  GLS_RC_XML_Type = 'XML';
+  GLS_RC_String_Type = 'STR';
 
 type
 
@@ -215,11 +208,7 @@ begin
 end;
 
 function CreateResourceStream(const ResName: string; ResType: PChar): TGLSResourceStream;
-{$IFNDEF FPC}
-var
-  InfoBlock: HRSRC;
-{$ELSE}
-  {$ifndef ver2_2}
+
 var
   FPResource: TFPResourceHandle;
   function IsResourceExist: Boolean;
@@ -227,22 +216,16 @@ var
     FPResource := FindResource(HInstance, PChar(ResName), ResType);
     Result := FPResource <> 0;
   end;
-  {$ENDIF}
-{$ENDIF}
+
 begin
   Result := nil;
-{$IFNDEF FPC}
-  InfoBlock := FindResource(HInstance, PChar(ResName), ResType);
-  if InfoBlock <> 0 then
-    Result := TResourceStream.Create(HInstance, ResName, ResType)
-{$ELSE}
+
   if LazarusResources.Find(ResName, ResType) <> nil then
     Result := TLazarusResourceStream.Create(ResName, ResType)
-  {$ifndef ver2_2}
+
   else if IsResourceExist then
     Result := TLazarusResourceStream.CreateFromHandle(HInstance, FPResource)
-  {$ENDIF}
-{$ENDIF}
+
   else
     GLSLogger.LogError(Format('Can''t create stream of application resource "%s"', [ResName]));
 end;

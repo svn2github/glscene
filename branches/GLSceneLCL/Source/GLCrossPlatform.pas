@@ -94,34 +94,13 @@ uses
   xlib,
 {$ENDIF}
   Types,
-{$IFNDEF FPC}
-   Consts,
-{$ENDIF}
    Classes, SysUtils, StrUtils, Graphics,  Controls,
-   Forms,  Dialogs
+   Forms,  Dialogs,LCLVersion,  LCLType,  LazFileUtils;
 
-{$IFDEF FPC}
-    ,LCLVersion,  LCLType,  FileUtil
-{$ENDIF}
-  ;
 
-{$IFNDEF FPC}
-const
-  FPC_VERSION = 0;
-  FPC_RELEASE = 0;
-  FPC_PATCH = 0;
-  LCL_RELEASE = 0;
-{$ENDIF}
 
 type
-{$IFNDEF FPC}
-  // These new types were added to be able to cast pointers to integers
-  // in 64 bit mode, because in FPC "Integer" type is always 32 bit
-  // (or 16 bit in Pascal mode), but in Delphi it is platform-specific and
-  // can be 16, 32 or 64 bit.
-  ptrInt = Integer;
-  PtrUInt = Cardinal;
-{$ENDIF}
+
 
   // Several aliases to shield us from the need of ifdef'ing between
   // the "almost cross-platform" units like Graphics/QGraphics etc.
@@ -193,28 +172,17 @@ type
     );
 
   EGLOSError = EOSError;
-  //   {$IFDEF FPC}
-  //      EGLOSError = EWin32Error;
-  //   {$ELSE}
-  //      EGLOSError = EOSError;
-  //   {$ENDIF}
+
+
 
   TGLComponent = class(TComponent);
 
-{$IFDEF FPC}
   DWORD = System.DWORD;
   TPoint = Types.TPoint;
   PPoint = ^TPoint;
   TRect = Types.TRect;
   PRect = ^TRect;
 
-{$ELSE}
-  DWORD = Types.DWORD; {$NODEFINE DWORD}
-  TPoint = Types.TPoint;{$NODEFINE TPoint}
-  PPoint = Types.PPoint;{$NODEFINE PPoint}
-  TRect = Types.TRect;  {$NODEFINE TRect}
-  PRect = Types.PRect;  {$NODEFINE PRect}
-{$ENDIF}
 
   TProjectTargetNameFunc = function(): string;
 
@@ -252,24 +220,16 @@ const
   glKey_CONTROL = VK_CONTROL;
 
   // TPenStyle.
-{$IFDEF FPC}
   //FPC doesn't support TPenStyle "psInsideFrame", so provide an alternative
   psInsideFrame = psSolid;
-{$ENDIF}
+
 
   // Several define from unit Consts
 const
-{$IFDEF FPC}
-  glsAllFilter: string = 'All';
-{$ELSE}
-  glsAllFilter: string = sAllFilter;
-{$ENDIF}
 
-{$IFDEF GLS_COMPILER_2009_UP}
-  GLS_FONT_CHARS_COUNT = 2024;
-{$ELSE}
+  glsAllFilter: string = 'All';
   GLS_FONT_CHARS_COUNT = 256;
-{$ENDIF}
+
 
 var
   IsDesignTime: Boolean = False;
@@ -417,7 +377,7 @@ end;
 function GLGetTickCount: int64;
 begin
 {$IFDEF MSWINDOWS}
-  result := GetTickCount;
+  result := GetTickCount64;
 {$ENDIF}
 {$IFDEF UNIX}
   QueryPerformanceCounter(result);
@@ -514,11 +474,8 @@ procedure RaiseLastOSError;
 var
   e: EGLOSError;
 begin
-{$IFDEF FPC}
+
   e := EGLOSError.Create('OS Error : ' + SysErrorMessage(GetLastOSError));
-{$ELSE}
-  e := EGLOSError.Create('OS Error : ' + SysErrorMessage(GetLastError));
-{$ENDIF}
   raise e;
 end;
 
@@ -649,13 +606,8 @@ begin
   end
   else
   begin
-{$IFNDEF FPC}
     path := ExtractFilePath(ParamStr(0));
     path := IncludeTrailingPathDelimiter(path);
-{$ELSE}
-    path := ExtractFilePath(ParamStrUTF8(0));
-    path := IncludeTrailingPathDelimiter(path);
-{$ENDIF}
   end;
   if Pos(path, S) = 1 then
     Delete(Result, 1, Length(path));
@@ -907,43 +859,21 @@ begin
   end
   else
   begin
-{$IFNDEF FPC}
+
     path := ExtractFilePath(ParamStr(0));
     path := IncludeTrailingPathDelimiter(path);
-    SetCurrentDir(path);
-{$ELSE}
-    path := ExtractFilePath(ParamStrUTF8(0));
-    path := IncludeTrailingPathDelimiter(path);
     SetCurrentDirUTF8(path);
-{$ENDIF}
   end;
 end;
 
 function GetDecimalSeparator: Char;
 begin
-  Result :=
-{$IFDEF FPC}
-  {$IF (lcl_release > 29) }
-  DefaultFormatSettings.
-  {$IFEND}
-{$ENDIF}
-{$IFDEF GLS_DELPHI_XE_UP}
-  FormatSettings.
-  {$ENDIF}
-  DecimalSeparator;
+  Result := DefaultFormatSettings.DecimalSeparator;
 end;
 
 procedure SetDecimalSeparator(AValue: Char);
 begin
-{$IFDEF FPC}
-  {$IF (lcl_release > 29) }
-  DefaultFormatSettings.
-  {$IFEND}
-{$ENDIF}
-{$IFDEF GLS_DELPHI_XE_UP}
-  FormatSettings.
-{$ENDIF}
-  DecimalSeparator := AValue;
+ DefaultFormatSettings.DecimalSeparator := AValue;
 end;
 
 function HalfToFloat(Half: THalfFloat): Single;

@@ -35,10 +35,7 @@ uses
   Menus,
    
   GLCrossPlatform,
-  GLScene
-{$IFDEF FPC}
-  ,LResources
-{$ENDIF};
+  GLScene,LResources;
 
 type
 
@@ -78,24 +75,17 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
-{$IFNDEF FPC}
-    procedure CreateDefaultObjectIcons(ResourceModule: Cardinal);
-{$ELSE}
+
     procedure CreateDefaultObjectIcons;
-{$ENDIF}
+
     function GetClassFromIndex(Index: Integer): TGLSceneObjectClass;
     function GetImageIndex(ASceneObject: TGLSceneObjectClass): Integer;
     function GetCategory(ASceneObject: TGLSceneObjectClass): string;
     procedure GetRegisteredSceneObjects(ObjectList: TStringList);
     procedure PopulateMenuWithRegisteredSceneObjects(AMenuItem: TMenuItem; aClickEvent: TNotifyEvent);
     // Registers a stock object and adds it to the stock object list
-{$IFNDEF FPC}
-    procedure RegisterSceneObject(ASceneObject: TGLSceneObjectClass; const aName, aCategory: string); overload;
-    procedure RegisterSceneObject(ASceneObject: TGLSceneObjectClass; const aName, aCategory: string; aBitmap: TBitmap); overload;
     procedure RegisterSceneObject(ASceneObject: TGLSceneObjectClass; const aName, aCategory: string; ResourceModule: Cardinal; ResourceName: string = ''); overload;
-{$ELSE}
-    procedure RegisterSceneObject(ASceneObject: TGLSceneObjectClass; const aName, aCategory: string; ResourceModule: Cardinal; ResourceName: string = ''); overload;
-{$ENDIF}
+
     // Unregisters a stock object and removes it from the stock object list
     procedure UnRegisterSceneObject(ASceneObject: TGLSceneObjectClass);
 
@@ -123,9 +113,9 @@ begin
   FSceneObjectList := TList.Create;
   // FObjectIcons Width + Height are set when you add the first bitmap
   FObjectIcons := TImageList.CreateSize(16, 16);
-{$IFDEF FPC}
+
   CreateDefaultObjectIcons;
-{$ENDIF}
+
 end;
 
 // Destroy
@@ -442,36 +432,7 @@ end;
 
 // CreateDefaultObjectIcons
 //
-{$IFNDEF FPC}
 
-procedure TGLObjectManager.CreateDefaultObjectIcons(ResourceModule: Cardinal);
-var
-  bmp: TBitmap;
-begin
-  bmp := TBitmap.Create;
-  with FObjectIcons, bmp.Canvas do
-  begin
-    try
-      // There's a more direct way for loading images into the image list, but
-      // the image quality suffers too much
-{$IFDEF WIN32}
-      GLLoadBitmapFromInstance(ResourceModule, bmp, 'gls_cross');
-      FOverlayIndex := AddMasked(bmp, Pixels[0, 0]);
-      Overlay(FOverlayIndex, 0); // used as indicator for disabled objects
-{$ENDIF}
-      GLLoadBitmapFromInstance(ResourceModule, bmp, 'gls_root');
-      FSceneRootIndex := AddMasked(bmp, Pixels[0, 0]);
-      GLLoadBitmapFromInstance(ResourceModule, bmp, 'gls_camera');
-      FCameraRootIndex := AddMasked(bmp, Pixels[0, 0]);
-      GLLoadBitmapFromInstance(ResourceModule, bmp, 'gls_lights');
-      FLightsourceRootIndex := AddMasked(bmp, Pixels[0, 0]);
-      GLLoadBitmapFromInstance(ResourceModule, bmp, 'gls_objects');
-      FObjectRootIndex := AddMasked(bmp, Pixels[0, 0]);
-    finally
-      bmp.Free;
-    end;
-  end;
-{$ELSE}
 
 procedure TGLObjectManager.CreateDefaultObjectIcons;
 begin
@@ -513,7 +474,6 @@ begin
       except
       end;
   end;
-{$ENDIF}
 end;
 
 // DestroySceneObjectList
@@ -532,9 +492,9 @@ begin
 end;
 
 initialization
-{$IFDEF FPC}
+
 {$I ../../resources/GLSceneObjects.lrs}
-{$ENDIF}
+
 
 end.
 

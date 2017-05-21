@@ -47,14 +47,7 @@ interface
 
 uses
   GLScene, GLCrossPlatform, GLBaseClasses,
-  Classes, Types, Forms
-
-{$IFDEF FPC}
-  , lmessages, SyncObjs
-{$ELSE}
-  , Windows, Messages
-{$ENDIF}
-  ;
+  Classes, Types, Forms, lmessages, SyncObjs;
 //**************************************
 
 type
@@ -262,14 +255,11 @@ implementation
 uses SysUtils;
 
 const
-{$IFDEF FPC}
   LM_GLTIMER = LM_INTERFACELAST + 326;
-{$ELSE}
-  cTickGLCadencer = 'TickGLCadencer';
-{$ENDIF}
+
 
 type
-{$IFDEF FPC}
+
   TASAPHandler = class;
   // TTimerThread
   //
@@ -282,33 +272,26 @@ type
   public
     constructor Create(CreateSuspended: Boolean); virtual;
   end;
-{$ENDIF}
+
 
   { TASAPHandler }
   TASAPHandler = class
   private
-{$IFNDEF FPC}
-    FTooFastCounter: Integer;
-    FTimer: Cardinal;
-    FWindowHandle: HWND;
-    procedure WndProc(var Msg: TMessage);
-{$ELSE}
+
     FTimerThread: TThread;
     FMutex: TCriticalSection;
-{$ENDIF}
+
   public
-{$IFDEF FPC}
+
     procedure TimerProc;
     procedure Cadence(var Msg: TLMessage); message LM_GLTIMER;
-{$ENDIF}
+
     constructor Create;
     destructor Destroy; override;
   end;
 
 var
-{$IFNDEF FPC}
-  vWMTickCadencer: Cardinal;
-{$ENDIF}
+
   vASAPCadencerList: TList;
   vHandler: TASAPHandler;
   vCounterFrequency: Int64;
@@ -353,9 +336,6 @@ begin
     Application.OnIdle := nil;
 end;
 
-{$IFDEF FPC}
-// Create
-//
 
 constructor TTimerThread.Create(CreateSuspended: Boolean);
 begin
@@ -397,7 +377,7 @@ begin
     end;
   end;
 end;
-{$ENDIF}
+
 // ------------------
 // ------------------ TASAPHandler ------------------
 // ------------------
@@ -408,7 +388,7 @@ end;
 constructor TASAPHandler.Create;
 begin
   inherited Create;
-{$IFDEF FPC}
+
   // create timer thread
   FMutex := TCriticalSection.Create;
   FMutex.Acquire;
@@ -422,10 +402,7 @@ begin
     FInterval := 1;
     FMutex.Release;
   end;
-{$ELSE}
-  FWindowHandle := AllocateHWnd(WndProc);
-  PostMessage(FWindowHandle, vWMTickCadencer, 0, 0);
-{$ENDIF} // FPC
+
 end;
 
 // Destroy
@@ -433,7 +410,6 @@ end;
 
 destructor TASAPHandler.Destroy;
 begin
-{$IFDEF FPC}
   FMutex.Acquire;
   FTimerThread.Terminate;
   CheckSynchronize;
@@ -441,111 +417,9 @@ begin
   FTimerThread.WaitFor;
   FTimerThread.Free;
   FMutex.Free;
-{$ELSE}
-  if FTimer <> 0 then
-    KillTimer(FWindowHandle, FTimer);
-  DeallocateHWnd(FWindowHandle);
 
-{$ENDIF}
   inherited Destroy;
 end;
-
-{$IFNDEF FPC}
-var
-  vWndProcInLoop: Boolean;
-{$ENDIF}
-
-{$IFNDEF FPC}
-{$IFDEF MSWINDOWS}
-  // WndProc
-  //
-
-procedure TASAPHandler.WndProc(var Msg: TMessage);
-var
-  i: Integer;
-  cad: TGLCadencer;
-begin
-  //   Windows.Beep(440, 10);
-  with Msg do
-  begin
-    if Msg = WM_TIMER then
-    begin
-      KillTimer(FWindowHandle, FTimer);
-      FTimer := 0;
-    end;
-    if (Msg <> WM_TIMER) and (Cardinal(GetMessageTime) = GetTickCount) then
-    begin
-      // if we're going too fast, "sleep" for 1 msec
-      Inc(FTooFastCounter);
-      if FTooFastCounter > 5000 then
-      begin
-        if FTimer = 0 then
-          FTimer := SetTimer(FWindowHandle, 1, 1, nil);
-        FTooFastCounter := 0;
-      end;
-    end
-    else
-      FTooFastCounter := 0;
-    if FTimer <> 0 then
-    begin
-      Result := 0;
-      Exit;
-    end;
-    if not vWndProcInLoop then
-    begin
-      vWndProcInLoop := True;
-      try
-        if (Msg = vWMTickCadencer) or (Msg = WM_TIMER) then
-        begin
-          // Progress
-          for i := vASAPCadencerList.Count - 1 downto 0 do
-          begin
-            cad := TGLCadencer(vASAPCadencerList[i]);
-            if Assigned(cad) and (cad.Mode = cmASAP)
-              and cad.Enabled and (cad.FProgressing = 0) then
-            begin
-              if Application.Terminated then
-              begin
-                // force stop
-                cad.Enabled := False
-              end
-              else
-              begin
-                try
-                  // do stuff
-                  cad.Progress;
-                except
-                  Application.HandleException(Self);
-                  // it faulted, stop it
-                  cad.Enabled := False
-                end
-              end;
-            end;
-          end;
-          // care for nils
-          vASAPCadencerList.Pack;
-          if vASAPCadencerList.Count = 0 then
-          begin
-            vASAPCadencerList.Free;
-            vASAPCadencerList := nil;
-            vHandler.Free;
-            vHandler := nil;
-          end
-          else
-          begin
-            // Prepare the return of the infernal loop...
-            PostMessage(FWindowHandle, vWMTickCadencer, 0, 0);
-          end;
-        end;
-      finally
-        vWndProcInLoop := False;
-      end;
-    end;
-    Result := 0;
-  end;
-end;
-{$ENDIF}
-{$ELSE}
 
 procedure TASAPHandler.TimerProc;
 var
@@ -587,7 +461,6 @@ begin
       end;
     end;
 end;
-{$ENDIF}
 
 // ------------------
 // ------------------ TGLCadencer ------------------
@@ -1007,10 +880,6 @@ initialization
 
   RegisterClasses([TGLCadencer]);
 
-  // Get our Windows message ID
-{$IFNDEF FPC}
-  vWMTickCadencer := RegisterWindowMessage(cTickGLCadencer);
-{$ENDIF}
 
   // Preparation for high resolution timer
   if not QueryPerformanceFrequency(vCounterFrequency) then

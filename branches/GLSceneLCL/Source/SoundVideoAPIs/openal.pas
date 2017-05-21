@@ -40,9 +40,8 @@
 
 unit openal;
 
-{$IFDEF FPC}
- // Added by bero
- {$MODE Delphi}
+
+
  {$IFDEF CPUI386}
   {$DEFINE CPU386}
   {$ASMMODE INTEL}
@@ -50,7 +49,7 @@ unit openal;
  {$IFNDEF MSWINDOWS}
   {$LINKLIB c}
  {$ENDIF}
-{$ENDIF}
+
 
 interface
 
@@ -1935,8 +1934,7 @@ const
   WAV_IMA_ADPCM = $0011;
   WAV_MP3       = $0055;
 
-{$IFDEF FPC}
-{$IFNDEF MSWINDOWS}
+{$IFNDEF WINDOWS}
 // Added by bero
 const
   RTLD_LAZY         = $001;
@@ -1965,7 +1963,6 @@ begin
   else
    Result := FreeLibraryEx(Pointer(LibHandle)) = 0;
 end;
-{$ENDIF}
 {$ENDIF}
 
 //ProcName can be case sensitive !!!

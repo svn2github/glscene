@@ -142,11 +142,9 @@ const
       (BASS_3DALG_DEFAULT, BASS_3DALG_OFF, BASS_3DALG_FULL, BASS_3DALG_LIGHT);
 begin
    Assert(bass_isloaded,'BASS DLL is not present');
-   {$IFDEF FPC}
+
    if not BASS_Init(1, OutputFrequency, BASS_DEVICE_3D, Pointer(TWinControl(Owner).Handle), nil) then
-   {$ELSE}
-   if not BASS_Init(1, OutputFrequency, BASS_DEVICE_3D, Application.Handle,nil) then
-   {$ENDIF}
+
    begin
       Result:=False;
       Exit;

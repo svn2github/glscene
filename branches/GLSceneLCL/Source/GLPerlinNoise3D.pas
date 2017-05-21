@@ -81,7 +81,7 @@ end;
 //
 procedure TGLPerlin3DNoise.Initialize(randomSeed : Integer);
 var
-   seedBackup : {$IFDEF FPC}Cardinal{$ELSE}Integer{$ENDIF};
+   seedBackup : Cardinal;
    i, t, j : Integer;
    z, r : Single;
 begin

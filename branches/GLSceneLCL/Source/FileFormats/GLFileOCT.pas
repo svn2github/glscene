@@ -22,10 +22,7 @@ interface
 
 uses
   Classes, GLVectorFileObjects, GLVectorGeometry, GLApplicationFileIO,
-  FileOCT
-  {$IFDEF FPC}
-  , intfgraphics
-  {$ENDIF} ;
+  FileOCT, intfgraphics;
 
 type
 
@@ -83,9 +80,7 @@ var
   fg: TFGVertexIndexList;
   lightmapLib: TGLMaterialLibrary;
   lightmapBmp: TGLBitmap;
-{$IFDEF FPC}
   lightbitInfo: TLazIntfImage;
-{$ENDIF}
   libMat: TGLLibMaterial;
 begin
   oct := TOCTFile.Create(aStream);
@@ -117,16 +112,14 @@ begin
               lightmapBmp.Width * lightmapBmp.Height,
               vGLFileOCTLightmapGammaCorrection);
           // convert RAW RGB to BMP
-{$IFDEF FPC}
+
           lightbitInfo := TLazIntfImage.Create(lightmapBmp.RawImage, True);
-{$ENDIF}
+
           for y := 0 to 127 do
-{$IFDEF FPC}
+
             Move(octLightmap.map[y * 128 * 3],
               lightbitInfo.GetDataLineStart(127 - y)^, 128 * 3);
-{$ELSE}
-          Move(octLightmap.map[y * 128 * 3], lightmapBmp.ScanLine[127 - y]^, 128 * 3);
-{$ENDIF}
+
           // spawn lightmap
           libMat := lightmapLib.AddTextureMaterial(IntToStr(i), lightmapBmp);
           with libMat.Material.Texture do

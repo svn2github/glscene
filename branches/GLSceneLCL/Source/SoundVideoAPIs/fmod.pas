@@ -34,12 +34,11 @@
 }
 { =============================================================================================== }
 
-{$IFDEF FPC}
-  {$MODE DELPHI}
+
   {$IFDEF WIN32}
     {$DEFINE MSWINDOWS}
   {$ENDIF}
-{$ENDIF}
+
 
 unit fmod;
 
@@ -777,22 +776,12 @@ function FMUSIC_GetTime; external FMOD_DLL {$IFDEF MSWINDOWS} name '_FMUSIC_GetT
 function FMUSIC_GetRealChannel; external FMOD_DLL {$IFDEF MSWINDOWS} name '_FMUSIC_GetRealChannel@8' {$ENDIF};
 function FMUSIC_GetUserData; external FMOD_DLL {$IFDEF MSWINDOWS} name '_FMUSIC_GetUserData@4' {$ENDIF};
 
-{$ifndef FPC}
-var
-  Saved8087CW: Word;
-{$endif}
+
 
 initialization
 
-{$ifndef FPC}
-  { Save the current FPU state and then disable FPU exceptions }
-  Saved8087CW := Default8087CW;
-  Set8087CW($133f); { Disable all fpu exceptions }
-{$endif}
+
 
 finalization
-{$ifndef FPC}
-  { Reset the FPU to the previous state }
-  Set8087CW(Saved8087CW);
-{$endif}
+
 end.

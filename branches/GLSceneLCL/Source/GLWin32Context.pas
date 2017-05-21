@@ -79,8 +79,6 @@ uses
   GLVectorGeometry;
 
 
-
-{$IFDEF FPC}
 const
   WGL_SWAP_MAIN_PLANE = $00000001;
   WGL_SWAP_OVERLAY1 = $00000002;
@@ -113,7 +111,7 @@ const
   WGL_SWAP_UNDERLAY13 = $10000000;
   WGL_SWAP_UNDERLAY14 = $20000000;
   WGL_SWAP_UNDERLAY15 = $40000000;
-{$ENDIF}
+
 
 type
 
@@ -156,10 +154,9 @@ type
     procedure DoDeactivate; override;
     { DoGetHandles must be implemented in child classes,
        and return the display + window }
-{$IFDEF FPC}
-    procedure DoGetHandles(outputDevice: HWND; out XWin: HDC); virtual;
-      abstract;
-{$ENDIF}
+
+    procedure DoGetHandles(outputDevice: HWND; out XWin: HDC); virtual; abstract;
+
   public
      
     constructor Create; override;
@@ -873,9 +870,8 @@ var
 var
   i, iAttrib, iValue: Integer;
 begin
-{$IFDEF FPC}
+
   DoGetHandles(HWND(ADeviceHandle), ADeviceHandle);
-{$ENDIF}
 
   if vUseWindowTrackingHook and not FLegacyContextsOnly then
     TrackWindow(WindowFromDC(ADeviceHandle), DestructionEarlyWarning);
@@ -1445,8 +1441,5 @@ initialization
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
 
-{$IFNDEF FPC}
-  RegisterGLContextClass(TGLWin32Context);
-{$ENDIF}
 
 end.

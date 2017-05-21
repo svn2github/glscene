@@ -70,7 +70,7 @@ uses
 {$IFDEF MSWINDOWS}
   Windows, // for CreateMonochromeBitmap
 {$ENDIF}
-{$IFDEF FPC}IntfGraphics, {$ENDIF}
+  IntfGraphics,
   GLApplicationFileIO, GLUtils,
   GLVectorGeometry, GLCrossPlatform, GLMaterial, GLBaseClasses;
 
@@ -490,9 +490,9 @@ type
      
     FScanLineCache: array of PByteArray;
     FBitmap: TGLBitmap;
-{$IFDEF FPC}
+
     IntfImg1: TLazIntfImage;
-{$ENDIF}
+
     FPicture: TGLPicture;
     FInfiniteWrap: boolean;
     FInverted: boolean;
@@ -1970,10 +1970,10 @@ begin
   finally
     Picture.OnChange := OnPictureChanged;
   end;
-{$IFDEF FPC}
+
   IntfImg1 := TLazIntfImage.Create(0, 0);
   IntfImg1.LoadFromBitmap(FBitmap.Handle, FBitmap.MaskHandle);
-{$ENDIF}
+
   SetLength(FScanLineCache, 0); // clear the cache
   SetLength(FScanLineCache, size);
 end;
@@ -1991,10 +1991,10 @@ begin
   SetLength(FScanLineCache, 0);
   FBitmap.Free;
   FBitmap := nil;
-{$IFDEF FPC}
+
   IntfImg1.Free;
   IntfImg1 := nil;
-{$ENDIF}
+
 end;
 
 // GetScanLine
@@ -2004,11 +2004,7 @@ begin
   Result := FScanLineCache[y];
   if not Assigned(Result) then
   begin
-{$IFNDEF FPC}
-    Result := BitmapScanLine(FBitmap, y); // FBitmap.ScanLine[y];
-{$ELSE}
     Result := IntfImg1.GetDataLineStart(y);
-{$ENDIF}
     FScanLineCache[y] := Result;
   end;
 end;

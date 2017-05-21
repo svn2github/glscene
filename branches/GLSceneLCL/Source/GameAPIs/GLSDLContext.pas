@@ -25,9 +25,7 @@ uses
 {$IFDEF MSWINDOWS}
   Windows,
 {$ENDIF}
-{$IFDEF FPC}
   LCLType,
-{$ENDIF}
   Classes,
   SysUtils,
   GLContext,

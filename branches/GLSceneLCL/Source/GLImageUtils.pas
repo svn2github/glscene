@@ -3015,7 +3015,7 @@ begin
 
   contrib := nil;
   tempW := ASrcWidth;
-  tempH := ADstHeight;
+  tempH := ASrcHeight;
 
   try
     // Downsampling

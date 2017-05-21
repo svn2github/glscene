@@ -107,6 +107,7 @@ begin
    Assert(Assigned(stream));
    dwDataOffset:=0;
    dwDataLength:=0;
+   dwDataSamples := 0;
    // Check RIFF Header
    startPosition:=stream.Position;
    stream.Read(ck, SizeOf(TRIFFChunkInfo));

@@ -45,7 +45,7 @@ uses
   MacOSAll,
 {$ENDIF}
 
-{$IFDEF FPC} Math, {$ENDIF}
+  Math,
   GLSLog,
   OpenGLTokens,
   GLVectorGeometry,
@@ -6647,11 +6647,8 @@ begin
 
   // This procedure will probably need changing, as totally untested
   // This might only work if GLX functions/procedures are loaded dynamically
-  {$IFDEF FPC}
+
   if Assigned(@glXQueryExtensionsString) then
-  {$ELSE}
-  if Assigned(glXQueryExtensionsString) then
-  {$ENDIF}
     FBuffer := glXQueryExtensionsString(dpy, 0) // guess at a valid screen
   else
     FBuffer := '';
@@ -7180,7 +7177,7 @@ end;
 
 initialization
 
-{$IFDEF FPC}
+
   { according to bug 7570, this is necessary on all x86 platforms,
     maybe we've to fix the sse control word as well }
   { Yes, at least for darwin/x86_64 (JM) }
@@ -7188,9 +7185,7 @@ initialization
   SetExceptionMask([exInvalidOp, exDenormalized, exZeroDivide,
     exOverflow, exUnderflow, exPrecision]);
   {$IFEND}
-{$ELSE}
-  Set8087CW($133F);
-{$ENDIF}
+
 
 finalization
 

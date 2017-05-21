@@ -695,9 +695,6 @@ begin
   colorDialog := TColorDialog.Create(nil);
   try
     glColor := TGLColor(GetObjectValue);
-{$IFNDEF FPC}{$IFDEF WIN32}
-    colorDialog.Options := [cdFullOpen];
-{$ENDIF}{$ENDIF}
     colorDialog.Color := ConvertColorVector(glColor.Color);
     if colorDialog.Execute then
     begin

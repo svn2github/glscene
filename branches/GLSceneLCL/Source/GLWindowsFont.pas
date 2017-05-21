@@ -278,7 +278,7 @@ procedure TGLWindowsBitmapFont.LoadWindowsFont;
   function GetTextSize(DC: HDC; Str: PWideChar; Count: Integer): TSize;
 
     {$IFDEF MSWINDOWS}
-    var tm: LPTEXTMETRIC; //W;
+    var tm: LPTEXTMETRICW;
     {$ELSE}
     var LString: array[0..5] of char; //here we always have 1 char, so it's safe
       i : SizeUInt;
