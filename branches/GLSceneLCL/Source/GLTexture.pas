@@ -342,9 +342,9 @@ type
     class function IsSelfLoading: Boolean; virtual;
     procedure LoadTexture(AInternalFormat: TGLInternalFormat); virtual;
     function GetTextureTarget: TGLTextureTarget; virtual; abstract;
-    function GetHeight: Integer; virtual; {$IFNDEF GLS_CPPB}abstract;{$ENDIF}
-    function GetWidth: Integer; virtual; {$IFNDEF GLS_CPPB}abstract;{$ENDIF}
-    function GetDepth: Integer; virtual; {$IFNDEF GLS_CPPB}abstract;{$ENDIF}
+    function GetHeight: Integer; virtual; abstract;
+    function GetWidth: Integer; virtual; abstract;
+    function GetDepth: Integer; virtual; abstract;
 
     property OnTextureNeeded: TTextureNeededEvent read FOnTextureNeeded write
       FOnTextureNeeded;
@@ -359,7 +359,7 @@ type
     { Save textureImage to file.
      This may not save a picture, but for instance, parameters, if the
      textureImage is a procedural texture. }
-    procedure SaveToFile(const fileName: string); dynamic;{$IFNDEF GLS_CPPB}abstract;{$ENDIF}
+    procedure SaveToFile(const fileName: string); dynamic;abstract;
     { Load textureImage from a file.
      This may not load a picture, but for instance, parameters, if the
      textureImage is a procedural texture. 
@@ -369,7 +369,7 @@ type
     { Returns a user-friendly denomination for the class.
      This denomination is used for picking a texture image class
      in the IDE expert. }
-    class function FriendlyName: string; virtual;{$IFNDEF GLS_CPPB}abstract;{$ENDIF}
+    class function FriendlyName: string; virtual;abstract;
     { Returns a user-friendly description for the class.
      This denomination is used for helping the user when picking a
      texture image class in the IDE expert. If it's not overriden,
@@ -382,7 +382,7 @@ type
     { Returns image's bitmap handle.
      If the actual image is not a windows bitmap (BMP), descendants should
      take care of properly converting to bitmap. }
-    function GetBitmap32: TGLImage; virtual; {$IFNDEF GLS_CPPB}abstract;{$ENDIF}
+    function GetBitmap32: TGLImage; virtual; abstract;
     { Request for unloading bitmapData, to free some memory.
      This one is invoked when GLScene no longer needs the Bitmap data
      it got through a call to GetHBitmap. 
@@ -929,15 +929,10 @@ type
 
     //implementing IInterface
 
-      {$IF (FPC_VERSION = 2) and (FPC_RELEASE < 5)}
-      function QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
-      function _AddRef: Integer; stdcall;
-      function _Release: Integer; stdcall;
-      {$ELSE}
+
       function QueryInterface(constref IID: TGUID; out Obj): HResult; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
       function _AddRef: Integer; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
       function _Release: Integer; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
-      {$IFEND}
 
   protected
     { Protected Decalarations }
@@ -1064,42 +1059,9 @@ var
 type
   TFriendlyImage = class(TGLBaseImage);
 
-{$IFDEF GLS_CPPB}
-  // Dummy methods for CPP
-  //
-function TGLTextureImage.GetHeight: Integer;
-begin
-  Result := 0;
-end;
-
-function TGLTextureImage.GetWidth: Integer;
-begin
-  Result := 0;
-end;
-
-function TGLTextureImage.GetDepth: Integer;
-begin
-  Result := 0;
-end;
 
 
-procedure TGLTextureImage.SaveToFile(const FileName: String);
-begin
-end;
-
-class function TGLTextureImage.FriendlyName: String;
-begin
-  Result := '';
-end;
-
-function TGLTextureImage.GetBitmap32: TGLImage;
-begin
-  Result := nil;
-end;
-{$ENDIF}
-
-
-{$IFDEF GLS_REGIONS}{$REGION 'Helper functions'}{$ENDIF}
+{%region%=====  'Helper functions ================================}
 
   // RegisterTGraphicClassFileExtension
   //
@@ -1244,13 +1206,9 @@ begin
   SetGLTextureImageClassesToStrings(Result);
 end;
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{%endregion%}
 
-// ------------------
-// ------------------ TGLTextureImage ------------------
-// ------------------
-
-{$IFDEF GLS_REGIONS}{$REGION 'TGLTextureImage'}{$ENDIF}
+{%region%=====  'TGLTextureImage ================================}
 
 // Create
 //
@@ -1355,16 +1313,10 @@ procedure TGLTextureImage.LoadTexture(AInternalFormat: TGLInternalFormat);
 begin
 end;
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{%endregion%}
 
-// ------------------
-// ------------------ TGLBlankImage ------------------
-// ------------------
+{%region%=====  'TGLBlankImage ================================}
 
-{$IFDEF GLS_REGIONS}{$REGION 'TGLBlankImage'}{$ENDIF}
-
-// Create
-//
 
 constructor TGLBlankImage.Create(AOwner: TPersistent);
 begin
@@ -1375,17 +1327,11 @@ begin
   fColorFormat := GL_RGBA;
 end;
 
-// Destroy
-//
-
 destructor TGLBlankImage.Destroy;
 begin
   ReleaseBitmap32;
   inherited Destroy;
 end;
-
- 
-//
 
 procedure TGLBlankImage.Assign(Source: TPersistent);
 var
@@ -1413,9 +1359,6 @@ begin
     inherited;
 end;
 
-// SetWidth
-//
-
 procedure TGLBlankImage.SetWidth(val: Integer);
 begin
   if val <> FWidth then
@@ -1427,16 +1370,10 @@ begin
   end;
 end;
 
-// GetWidth
-//
-
 function TGLBlankImage.GetWidth: Integer;
 begin
   Result := FWidth;
 end;
-
-// SetHeight
-//
 
 procedure TGLBlankImage.SetHeight(val: Integer);
 begin
@@ -1449,16 +1386,10 @@ begin
   end;
 end;
 
-// GetHeight
-//
-
 function TGLBlankImage.GetHeight: Integer;
 begin
   Result := FHeight;
 end;
-
-// SetDepth
-//
 
 procedure TGLBlankImage.SetDepth(val: Integer);
 begin
@@ -1471,16 +1402,10 @@ begin
   end;
 end;
 
-// GetDepth
-//
-
 function TGLBlankImage.GetDepth: Integer;
 begin
   Result := fDepth;
 end;
-
-// SetCubeMap
-//
 
 procedure TGLBlankImage.SetCubeMap(const val: Boolean);
 begin
@@ -1491,9 +1416,6 @@ begin
   end;
 end;
 
-// SetArray
-//
-
 procedure TGLBlankImage.SetArray(const val: Boolean);
 begin
   if val <> fArray then
@@ -1502,9 +1424,6 @@ begin
     Invalidate;
   end;
 end;
-
-// GetBitmap32
-//
 
 function TGLBlankImage.GetBitmap32: TGLImage;
 begin
@@ -1521,9 +1440,6 @@ begin
   Result := FBitmap;
 end;
 
-// ReleaseBitmap32
-//
-
 procedure TGLBlankImage.ReleaseBitmap32;
 begin
   if Assigned(FBitmap) then
@@ -1533,9 +1449,6 @@ begin
   end;
 end;
 
-// SaveToFile
-//
-
 procedure TGLBlankImage.SaveToFile(const fileName: string);
 begin
   SaveAnsiStringToFile(fileName, AnsiString(
@@ -1543,9 +1456,6 @@ begin
     #13#10'Height=' + IntToStr(Height) +
     #13#10'Depth=' + IntToStr(Depth)));
 end;
-
- 
-//
 
 procedure TGLBlankImage.LoadFromFile(const fileName: string);
 var
@@ -1577,24 +1487,15 @@ begin
   end;
 end;
 
- 
-//
-
 class function TGLBlankImage.FriendlyName: string;
 begin
   Result := 'Blank Image';
 end;
 
-// FriendlyDescription
-//
-
 class function TGLBlankImage.FriendlyDescription: string;
 begin
   Result := 'Blank Image (Width x Height x Depth)';
 end;
-
-// GetTextureTarget
-//
 
 function TGLBlankImage.GetTextureTarget: TGLTextureTarget;
 begin
@@ -1633,13 +1534,9 @@ begin
   end;
 end;
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{%endregion%}
 
-// ------------------
-// ------------------ TGLPictureImage ------------------
-// ------------------
-
-{$IFDEF GLS_REGIONS}{$REGION 'TGLPictureImage'}{$ENDIF}
+{%region%=====  'TGLPictureImage ================================}
 
 // Create
 //
@@ -1812,13 +1709,9 @@ begin
   Result := ttTexture2D;
 end;
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{%endregion%}
 
-// ------------------
-// ------------------ TGLPersistentImage ------------------
-// ------------------
-
-{$IFDEF GLS_REGIONS}{$REGION 'TGLPersistentImage'}{$ENDIF}
+{%region%=====  'TGLPersistentImage ================================}
 
 // Create
 //
@@ -1893,13 +1786,10 @@ begin
     + 'ie. in the DFM at design-time, and embedded in the EXE at run-time.';
 end;
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{%endregion%}
 
-// ------------------
-// ------------------ TGLPicFileImage ------------------
-// ------------------
 
-{$IFDEF GLS_REGIONS}{$REGION 'TGLPicFileImage'}{$ENDIF}
+{%region%=====  'TGLPicFileImage ================================}
 
 // Create
 //
@@ -2063,13 +1953,9 @@ begin
   Result := 'Image data is retrieved from a file.';
 end;
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{%endregion%}
 
-// ------------------
-// ------------------ TGLCubeMapImage ------------------
-// ------------------
-
-{$IFDEF GLS_REGIONS}{$REGION 'TGLCubeMapImage'}{$ENDIF}
+{%region%=====  'TGLCubeMapImage ================================}
 
 // Create
 //
@@ -2317,24 +2203,16 @@ begin
   FPicture[index].Assign(val);
 end;
 
-// GetPicture
-//
-
 function TGLCubeMapImage.GetPicture(index: TGLCubeMapTarget): TGLPicture;
 begin
   Result := FPicture[index];
 end;
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{%endregion%}
 
-// ------------------
-// ------------------ TGLTexture ------------------
-// ------------------
 
-{$IFDEF GLS_REGIONS}{$REGION 'TGLTexture'}{$ENDIF}
+{%region%=====  'TGLTexture ================================}
 
-// Create
-//
 
 constructor TGLTexture.Create(AOwner: TPersistent);
 begin
@@ -2365,9 +2243,6 @@ begin
   FKeepImageAfterTransfer := False;
 end;
 
-// Destroy
-//
-
 destructor TGLTexture.Destroy;
 begin
   FEnvColor.Free;
@@ -2382,9 +2257,6 @@ begin
   FImage.Free;
   inherited Destroy;
 end;
-
- 
-//
 
 procedure TGLTexture.Assign(Source: TPersistent);
 begin
@@ -2438,9 +2310,6 @@ begin
   end;
 end;
 
-// NotifyChange
-//
-
 procedure TGLTexture.NotifyChange(Sender: TObject);
 begin
   if Assigned(Owner) then
@@ -2454,26 +2323,17 @@ begin
   inherited;
 end;
 
-// NotifyImageChange
-//
-
 procedure TGLTexture.NotifyImageChange;
 begin
   FTextureHandle.NotifyChangesOfData;
   NotifyChange(Self);
 end;
 
-// NotifyParamsChange
-//
-
 procedure TGLTexture.NotifyParamsChange;
 begin
   FSamplerHandle.NotifyChangesOfData;
   NotifyChange(Self);
 end;
-
-// SetImage
-//
 
 procedure TGLTexture.SetImage(AValue: TGLTextureImage);
 begin
@@ -2495,9 +2355,6 @@ begin
   end;
 end;
 
-// SetImageClassName
-//
-
 procedure TGLTexture.SetImageClassName(const val: string);
 var
   newImage: TGLTextureImage;
@@ -2518,16 +2375,10 @@ begin
     end;
 end;
 
-// GetImageClassName
-//
-
 function TGLTexture.GetImageClassName: string;
 begin
   Result := FImage.ClassName;
 end;
-
-// TextureImageRequiredMemory
-//
 
 function TGLTexture.TextureImageRequiredMemory: Integer;
 var
@@ -2567,9 +2418,6 @@ begin
   Result := FRequiredMemorySize;
 end;
 
-// SetImageAlpha
-//
-
 procedure TGLTexture.SetImageAlpha(const val: TGLTextureImageAlpha);
 begin
   if FImageAlpha <> val then
@@ -2578,9 +2426,6 @@ begin
     NotifyImageChange;
   end;
 end;
-
-// SetImageBrightness
-//
 
 procedure TGLTexture.SetImageBrightness(const val: Single);
 begin
@@ -2591,16 +2436,10 @@ begin
   end;
 end;
 
-// StoreBrightness
-//
-
 function TGLTexture.StoreBrightness: Boolean;
 begin
   Result := (FImageBrightness <> 1.0);
 end;
-
-// SetImageGamma
-//
 
 procedure TGLTexture.SetImageGamma(const val: Single);
 begin
@@ -2611,16 +2450,10 @@ begin
   end;
 end;
 
-// StoreGamma
-//
-
 function TGLTexture.StoreGamma: Boolean;
 begin
   Result := (FImageGamma <> 1.0);
 end;
-
-// SetMagFilter
-//
 
 procedure TGLTexture.SetMagFilter(AValue: TGLMagFilter);
 begin
@@ -2631,9 +2464,6 @@ begin
   end;
 end;
 
-// SetMinFilter
-//
-
 procedure TGLTexture.SetMinFilter(AValue: TGLMinFilter);
 begin
   if AValue <> FMinFilter then
@@ -2643,9 +2473,6 @@ begin
   end;
 end;
 
-// SetTextureMode
-//
-
 procedure TGLTexture.SetTextureMode(AValue: TGLTextureMode);
 begin
   if AValue <> FTextureMode then
@@ -2654,9 +2481,6 @@ begin
     NotifyParamsChange;
   end;
 end;
-
-// SetDisabled
-//
 
 procedure TGLTexture.SetDisabled(AValue: Boolean);
 var
@@ -2672,24 +2496,15 @@ begin
   end;
 end;
 
-// SetEnabled
-//
-
 procedure TGLTexture.SetEnabled(const val: Boolean);
 begin
   Disabled := not val;
 end;
 
-// GetEnabled
-//
-
 function TGLTexture.GetEnabled: Boolean;
 begin
   Result := not Disabled;
 end;
-
-// SetEnvColor
-//
 
 procedure TGLTexture.SetEnvColor(const val: TGLColor);
 begin
@@ -2697,17 +2512,11 @@ begin
   NotifyParamsChange;
 end;
 
-// SetBorederColor
-//
-
 procedure TGLTexture.SetBorderColor(const val: TGLColor);
 begin
   FBorderColor.Assign(val);
   NotifyParamsChange;
 end;
-
-// SetNormalMapScale
-//
 
 procedure TGLTexture.SetNormalMapScale(const val: Single);
 begin
@@ -2719,16 +2528,10 @@ begin
   end;
 end;
 
-// StoreNormalMapScale
-//
-
 function TGLTexture.StoreNormalMapScale: Boolean;
 begin
   Result := (FNormalMapScale <> cDefaultNormalMapScale);
 end;
-
-// SetTextureWrap
-//
 
 procedure TGLTexture.SetTextureWrap(AValue: TGLTextureWrap);
 begin
@@ -2739,9 +2542,6 @@ begin
   end;
 end;
 
-// SetTextureWrapS
-//
-
 procedure TGLTexture.SetTextureWrapS(AValue: TGLSeparateTextureWrap);
 begin
   if AValue <> FTextureWrapS then
@@ -2750,9 +2550,6 @@ begin
     NotifyParamsChange;
   end;
 end;
-
-// SetTextureWrapT
-//
 
 procedure TGLTexture.SetTextureWrapT(AValue: TGLSeparateTextureWrap);
 begin
@@ -2763,9 +2560,6 @@ begin
   end;
 end;
 
-// SetTextureWrapR
-//
-
 procedure TGLTexture.SetTextureWrapR(AValue: TGLSeparateTextureWrap);
 begin
   if AValue <> FTextureWrapR then
@@ -2774,9 +2568,6 @@ begin
     NotifyParamsChange;
   end;
 end;
-
-// GetTextureFormat
-//
 
 function TGLTexture.GetTextureFormat: TGLTextureFormat;
 var
@@ -2798,9 +2589,6 @@ begin
   Result := tfExtended;
 end;
 
-// SetTextureFormat
-//
-
 procedure TGLTexture.SetTextureFormat(const val: TGLTextureFormat);
 begin
   if val = tfDefault then
@@ -2813,9 +2601,6 @@ begin
   end;
 end;
 
-// SetTextureFormat
-//
-
 procedure TGLTexture.SetTextureFormatEx(const val: TGLInternalFormat);
 begin
   if val <> FTextureFormat then
@@ -2825,16 +2610,10 @@ begin
   end;
 end;
 
-// StoreTextureFormatEx
-//
-
 function TGLTexture.StoreTextureFormatEx: Boolean;
 begin
   Result := GetTextureFormat >= tfExtended;
 end;
-
-// SetCompression
-//
 
 procedure TGLTexture.SetCompression(const val: TGLTextureCompression);
 begin
@@ -2845,9 +2624,6 @@ begin
   end;
 end;
 
-// SetFilteringQuality
-//
-
 procedure TGLTexture.SetFilteringQuality(const val: TGLTextureFilteringQuality);
 begin
   if val <> FFilteringQuality then
@@ -2856,9 +2632,6 @@ begin
     NotifyParamsChange;
   end;
 end;
-
-// SetMappingMode
-//
 
 procedure TGLTexture.SetMappingMode(const val: TGLTextureMappingMode);
 var
@@ -2882,16 +2655,10 @@ begin
   end;
 end;
 
-// SetMappingSCoordinates
-//
-
 procedure TGLTexture.SetMappingSCoordinates(const val: TGLCoordinates4);
 begin
   MappingSCoordinates.Assign(val);
 end;
-
-// GetMappingSCoordinates
-//
 
 function TGLTexture.GetMappingSCoordinates: TGLCoordinates4;
 begin
@@ -2901,8 +2668,6 @@ begin
   Result := FMapSCoordinates;
 end;
 
-// StoreMappingSCoordinates
-//
 
 function TGLTexture.StoreMappingSCoordinates: Boolean;
 begin
@@ -2912,16 +2677,10 @@ begin
     Result := false;
 end;
 
-// SetMappingTCoordinates
-//
-
 procedure TGLTexture.SetMappingTCoordinates(const val: TGLCoordinates4);
 begin
   MappingTCoordinates.Assign(val);
 end;
-
-// GetMappingTCoordinates
-//
 
 function TGLTexture.GetMappingTCoordinates: TGLCoordinates4;
 begin
@@ -2931,9 +2690,6 @@ begin
   Result := FMapTCoordinates;
 end;
 
-// StoreMappingTCoordinates
-//
-
 function TGLTexture.StoreMappingTCoordinates: Boolean;
 begin
   if Assigned(FMapTCoordinates) then
@@ -2942,16 +2698,11 @@ begin
     Result := false;
 end;
 
-// SetMappingRCoordinates
-//
 
 procedure TGLTexture.SetMappingRCoordinates(const val: TGLCoordinates4);
 begin
   MappingRCoordinates.Assign(val);
 end;
-
-// GetMappingRCoordinates
-//
 
 function TGLTexture.GetMappingRCoordinates: TGLCoordinates4;
 begin
@@ -2961,9 +2712,6 @@ begin
   Result := FMapRCoordinates;
 end;
 
-// StoreMappingRCoordinates
-//
-
 function TGLTexture.StoreMappingRCoordinates: Boolean;
 begin
   if Assigned(FMapRCoordinates) then
@@ -2972,16 +2720,10 @@ begin
     Result := false;
 end;
 
-// SetMappingQCoordinates
-//
-
 procedure TGLTexture.SetMappingQCoordinates(const val: TGLCoordinates4);
 begin
   MappingQCoordinates.Assign(val);
 end;
-
-// GetMappingQCoordinates
-//
 
 function TGLTexture.GetMappingQCoordinates: TGLCoordinates4;
 begin
@@ -2991,9 +2733,6 @@ begin
   Result := FMapQCoordinates;
 end;
 
-// StoreMappingQCoordinates
-//
-
 function TGLTexture.StoreMappingQCoordinates: Boolean;
 begin
   if Assigned(FMapQCoordinates) then
@@ -3002,16 +2741,10 @@ begin
     Result := false;
 end;
 
-// StoreImageClassName
-//
-
 function TGLTexture.StoreImageClassName: Boolean;
 begin
   Result := (FImage.ClassName <> TGLPersistentImage.ClassName);
 end;
-
-// SetTextureCompareMode
-//
 
 procedure TGLTexture.SetTextureCompareMode(const val: TGLTextureCompareMode);
 begin
@@ -3022,9 +2755,6 @@ begin
   end;
 end;
 
-// SetTextureCompareFunc
-//
-
 procedure TGLTexture.SetTextureCompareFunc(const val: TGLDepthCompareFunc);
 begin
   if val <> fTextureCompareFunc then
@@ -3033,9 +2763,6 @@ begin
     NotifyParamsChange;
   end;
 end;
-
-// SetDepthTextureMode
-//
 
 procedure TGLTexture.SetDepthTextureMode(const val: TGLDepthTextureMode);
 begin
@@ -3046,16 +2773,11 @@ begin
   end;
 end;
 
-// PrepareBuildList
-//
-
 procedure TGLTexture.PrepareBuildList;
 begin
   GetHandle;
 end;
 
-// ApplyMappingMode
-//
 
 procedure TGLTexture.ApplyMappingMode;
 var
@@ -3134,9 +2856,6 @@ begin
   end;
 end;
 
-// ApplyMappingMode
-//
-
 procedure TGLTexture.UnApplyMappingMode;
 begin
   if MappingMode <> tmmUser then
@@ -3150,9 +2869,6 @@ begin
     end;
   end;
 end;
-
-// Apply
-//
 
 procedure TGLTexture.Apply(var rci: TGLRenderContextInfo);
 
@@ -3232,9 +2948,6 @@ begin
   end;
 end;
 
-// UnApply
-//
-
 procedure TGLTexture.UnApply(var rci: TGLRenderContextInfo);
 begin
   if not Disabled
@@ -3254,26 +2967,17 @@ begin
   end;
 end;
 
-// ApplyAsTexture2
-//
-
 procedure TGLTexture.ApplyAsTexture2(var rci: TGLRenderContextInfo; textureMatrix:
   PMatrix = nil);
 begin
   ApplyAsTextureN(2, rci, textureMatrix);
 end;
 
-// UnApplyAsTexture2
-//
-
 procedure TGLTexture.UnApplyAsTexture2(var rci: TGLRenderContextInfo;
   reloadIdentityTextureMatrix: boolean);
 begin
   UnApplyAsTextureN(2, rci, reloadIdentityTextureMatrix);
 end;
-
-// ApplyAsTextureN
-//
 
 procedure TGLTexture.ApplyAsTextureN(n: Integer; var rci: TGLRenderContextInfo;
   textureMatrix: PMatrix = nil);
@@ -3312,9 +3016,6 @@ begin
   end;
 end;
 
-// UnApplyAsTextureN
-//
-
 procedure TGLTexture.UnApplyAsTextureN(n: Integer; var rci: TGLRenderContextInfo;
   reloadIdentityTextureMatrix: boolean);
 begin
@@ -3335,9 +3036,6 @@ begin
     end;
   end;
 end;
-
-// AllocateHandle
-//
 
 function TGLTexture.AllocateHandle: TGLuint;
 var
@@ -3377,16 +3075,11 @@ begin
     Result := 0;
 end;
 
-// IsHandleAllocated
-//
-
 function TGLTexture.IsHandleAllocated: Boolean;
 begin
   Result := (FTextureHandle.Handle <> 0);
 end;
 
-// GetHandle
-//
 
 function TGLTexture.GetHandle: TGLuint;
 var
@@ -3442,9 +3135,6 @@ begin
   end;
 end;
 
-// DestroyHandles
-//
-
 procedure TGLTexture.DestroyHandles;
 begin
   FTextureHandle.DestroyHandle;
@@ -3452,16 +3142,10 @@ begin
   FRequiredMemorySize := -1;
 end;
 
-// IsFloatType
-//
-
 function TGLTexture.IsFloatType: Boolean;
 begin
   Result := IsFloatFormat(TextureFormatEx);
 end;
-
-// OpenGLTextureFormat
-//
 
 function TGLTexture.OpenGLTextureFormat: Integer;
 var
@@ -3498,9 +3182,6 @@ begin
   else
     Result := InternalFormatToOpenGLFormat(TextureFormatEx);
 end;
-
-// PrepareImage
-//
 
 procedure TGLTexture.PrepareImage(target: TGLUInt);
 var
@@ -3626,9 +3307,6 @@ begin
   end;
 end;
 
-// PrepareParams
-//
-
 procedure TGLTexture.PrepareParams(target: TGLUInt);
 const
   cTextureSWrap: array[twBoth..twHorizontal] of TGLEnum =
@@ -3732,9 +3410,6 @@ begin
   end;
 end;
 
-// DoOnTextureNeeded
-//
-
 procedure TGLTexture.DoOnTextureNeeded(Sender: TObject; var textureFileName:
   string);
 begin
@@ -3772,16 +3447,9 @@ begin
 end;
 
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{%endregion%}
 
-// ---------------
-// --------------- TGLTextureExItem ---------------
-// ---------------
-
-{$IFDEF GLS_REGIONS}{$REGION 'TGLTextureExItem'}{$ENDIF}
-
-// Create
-//
+{%region%=====  'TGLTextureExItem ================================}
 
 constructor TGLTextureExItem.Create(ACollection: TCollection);
 begin
@@ -3806,8 +3474,6 @@ begin
       }
 end;
 
-// Destroy
-//
 
 destructor TGLTextureExItem.Destroy;
 begin
@@ -3819,16 +3485,8 @@ begin
 end;
 
 
-
-// QueryInterface
-//
-
-
-{$IF (FPC_VERSION = 2) and (FPC_RELEASE < 5)}
-  function TGLTextureExItem.QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
-{$ELSE}
   function TGLTextureExItem.QueryInterface(constref IID: TGUID; out Obj): HResult; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
-{$IFEND}
+
 
 begin
   if GetInterface(IID, Obj) then
@@ -3837,34 +3495,20 @@ begin
     Result := E_NOINTERFACE;
 end;
 
-// _AddRef
-//
 
-{$IF (FPC_VERSION = 2) and (FPC_RELEASE < 5)}
-  function TGLTextureExItem._AddRef: Integer; stdcall;
-{$ELSE}
   function TGLTextureExItem._AddRef: Integer; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
-{$IFEND}
+
 
 begin
   Result := -1; //ignore
 end;
 
-// _Release
-//
-
-{$IF (FPC_VERSION = 2) and (FPC_RELEASE < 5)}
-  function TGLTextureExItem._Release: Integer; stdcall;
-{$ELSE}
   function TGLTextureExItem._Release: Integer; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
-{$IFEND}
+
 
 begin
   Result := -1; //ignore
 end;
-
- 
-//
 
 procedure TGLTextureExItem.Assign(Source: TPersistent);
 begin
@@ -3880,17 +3524,11 @@ begin
     inherited;
 end;
 
-// NotifyChange
-//
-
 procedure TGLTextureExItem.NotifyChange(Sender: TObject);
 begin
   if Assigned(Collection) then
     TGLTextureEx(Collection).NotifyChange(Self);
 end;
-
-// Apply
-//
 
 procedure TGLTextureExItem.Apply(var rci: TGLRenderContextInfo);
 begin
@@ -3916,9 +3554,6 @@ begin
   end;
 end;
 
-// UnApply
-//
-
 procedure TGLTextureExItem.UnApply(var rci: TGLRenderContextInfo);
 begin
   if FApplied then
@@ -3938,24 +3573,15 @@ begin
   end;
 end;
 
-// GetDisplayName
-//
-
 function TGLTextureExItem.GetDisplayName: string;
 begin
   Result := Format('Tex [%d]', [FTextureIndex]);
 end;
 
-// GetOwner
-//
-
 function TGLTextureExItem.GetOwner: TPersistent;
 begin
   Result := Collection;
 end;
-
-// NotifyTexMapChange
-//
 
 procedure TGLTextureExItem.NotifyTexMapChange(Sender: TObject);
 var
@@ -3966,17 +3592,11 @@ begin
     intf.NotifyTexMapChange(Sender);
 end;
 
-// SetTexture
-//
-
 procedure TGLTextureExItem.SetTexture(const Value: TGLTexture);
 begin
   FTexture.Assign(Value);
   NotifyChange(Self);
 end;
-
-// SetTextureIndex
-//
 
 procedure TGLTextureExItem.SetTextureIndex(const Value: Integer);
 var
@@ -3992,26 +3612,17 @@ begin
   end;
 end;
 
-// SetTextureOffset
-//
-
 procedure TGLTextureExItem.SetTextureOffset(const Value: TGLCoordinates);
 begin
   FTextureOffset.Assign(Value);
   NotifyChange(Self);
 end;
 
-// SetTextureScale
-//
-
 procedure TGLTextureExItem.SetTextureScale(const Value: TGLCoordinates);
 begin
   FTextureScale.Assign(Value);
   NotifyChange(Self);
 end;
-
-// CalculateTextureMatrix
-//
 
 procedure TGLTextureExItem.CalculateTextureMatrix;
 begin
@@ -4026,24 +3637,15 @@ begin
   NotifyChange(Self);
 end;
 
-// OnNotifyChange
-//
-
 procedure TGLTextureExItem.OnNotifyChange(Sender: TObject);
 begin
   CalculateTextureMatrix;
 end;
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{%endregion%}
 
-// ---------------
-// --------------- TGLTextureEx ---------------
-// ---------------
+{%region%===== TGLTextureEx ================================}
 
-{$IFDEF GLS_REGIONS}{$REGION 'TGLTextureEx'}{$ENDIF}
-
-// Create
-//
 
 constructor TGLTextureEx.Create(AOwner: TGLUpdateAbleObject);
 begin
@@ -4052,8 +3654,6 @@ begin
   FOwner := AOwner;
 end;
 
-// NotifyChange
-//
 
 procedure TGLTextureEx.NotifyChange(Sender: TObject);
 begin
@@ -4061,8 +3661,6 @@ begin
     FOwner.NotifyChange(Self);
 end;
 
-// Apply
-//
 
 procedure TGLTextureEx.Apply(var rci: TGLRenderContextInfo);
 var
@@ -4089,8 +3687,6 @@ begin
     xgl.MapTexCoordToArbitraryAdd(units);
 end;
 
-// UnApply
-//
 
 procedure TGLTextureEx.UnApply(var rci: TGLRenderContextInfo);
 var
@@ -4102,16 +3698,10 @@ begin
     Items[i].UnApply(rci);
 end;
 
-// Add
-//
-
 function TGLTextureEx.Add: TGLTextureExItem;
 begin
   Result := TGLTextureExItem(inherited Add);
 end;
-
-// Loaded
-//
 
 procedure TGLTextureEx.Loaded;
 var
@@ -4121,32 +3711,20 @@ begin
     Items[i].CalculateTextureMatrix;
 end;
 
-// GetOwner
-//
-
 function TGLTextureEx.GetOwner: TPersistent;
 begin
   Result := FOwner;
 end;
-
-// SetItems
-//
 
 procedure TGLTextureEx.SetItems(index: Integer; const Value: TGLTextureExItem);
 begin
   inherited SetItem(index, Value);
 end;
 
-// GetItems
-//
-
 function TGLTextureEx.GetItems(index: Integer): TGLTextureExItem;
 begin
   Result := TGLTextureExItem(inherited GetItem(index));
 end;
-
-// IsTextureEnabled
-//
 
 function TGLTextureEx.IsTextureEnabled(Index: Integer): Boolean;
 var
@@ -4160,12 +3738,9 @@ begin
       Result := Result or Items[i].Texture.Enabled;
 end;
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{%endregion%}
 
 initialization
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
 
   RegisterGLTextureImageClass(TGLBlankImage);
   RegisterGLTextureImageClass(TGLPersistentImage);

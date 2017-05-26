@@ -1,79 +1,191 @@
 object Form1: TForm1
   Left = 236
+  Height = 416
   Top = 172
+  Width = 572
   Caption = 'Form1'
   ClientHeight = 416
   ClientWidth = 572
   Color = clBtnFace
-  Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
-  Font.Style = []
-  OldCreateOrder = False
-  WindowState = wsMaximized
   OnClose = FormClose
   OnCreate = FormCreate
-  PixelsPerInch = 96
-  TextHeight = 13
+  LCLVersion = '1.8.0.1'
+  WindowState = wsMaximized
   object vp: TGLSceneViewer
     Left = 0
+    Height = 416
     Top = 0
     Width = 572
-    Height = 416
     Camera = cam
     VSync = vsmSync
     Buffer.BackgroundColor = clBlack
+    Buffer.AmbientColor.Red = 0.200000002980232
+    Buffer.AmbientColor.Green = 0.200000002980232
+    Buffer.AmbientColor.Blue = 0.200000002980232
+    Buffer.AmbientColor.Alpha = 1
     Buffer.ContextOptions = [roDoubleBuffer, roDestinationAlpha]
     Buffer.DepthPrecision = dp32bits
     Buffer.ColorDepth = cd16bits
-    FieldOfView = 140.343734741210900000
+    FieldOfView = 140.343734741211
     Align = alClient
     OnMouseDown = vpMouseDown
     TabOrder = 0
   end
   object GLScene1: TGLScene
-    Left = 8
-    Top = 8
+    left = 8
+    top = 8
     object ff: TGLFreeForm
-      Material.FrontProperties.Ambient.Color = {0000000000000000000000000000803F}
-      Material.FrontProperties.Diffuse.Color = {0000000000000000000000000000803F}
-      Material.FrontProperties.Emission.Color = {0000803F0000803F0000803F0000803F}
+      TagFloat = 0
+      Material.BackProperties.Ambient.Red = 0.200000002980232
+      Material.BackProperties.Ambient.Green = 0.200000002980232
+      Material.BackProperties.Ambient.Blue = 0.200000002980232
+      Material.BackProperties.Ambient.Alpha = 1
+      Material.BackProperties.Diffuse.Red = 0.800000011920929
+      Material.BackProperties.Diffuse.Green = 0.800000011920929
+      Material.BackProperties.Diffuse.Blue = 0.800000011920929
+      Material.BackProperties.Diffuse.Alpha = 1
+      Material.BackProperties.Emission.Red = 0
+      Material.BackProperties.Emission.Green = 0
+      Material.BackProperties.Emission.Blue = 0
+      Material.BackProperties.Emission.Alpha = 1
+      Material.BackProperties.Specular.Red = 0
+      Material.BackProperties.Specular.Green = 0
+      Material.BackProperties.Specular.Blue = 0
+      Material.BackProperties.Specular.Alpha = 1
+      Material.FrontProperties.Ambient.Red = 0
+      Material.FrontProperties.Ambient.Green = 0
+      Material.FrontProperties.Ambient.Blue = 0
+      Material.FrontProperties.Ambient.Alpha = 1
+      Material.FrontProperties.Ambient.Color = {
+        0000000000000000000000000000803F
+      }
+      Material.FrontProperties.Diffuse.Red = 0
+      Material.FrontProperties.Diffuse.Green = 0
+      Material.FrontProperties.Diffuse.Blue = 0
+      Material.FrontProperties.Diffuse.Alpha = 1
+      Material.FrontProperties.Diffuse.Color = {
+        0000000000000000000000000000803F
+      }
+      Material.FrontProperties.Emission.Red = 1
+      Material.FrontProperties.Emission.Green = 1
+      Material.FrontProperties.Emission.Blue = 1
+      Material.FrontProperties.Emission.Alpha = 1
+      Material.FrontProperties.Emission.Color = {
+        0000803F0000803F0000803F0000803F
+      }
+      Material.FrontProperties.Specular.Red = 0
+      Material.FrontProperties.Specular.Green = 0
+      Material.FrontProperties.Specular.Blue = 0
+      Material.FrontProperties.Specular.Alpha = 1
       Material.MaterialOptions = [moIgnoreFog, moNoLighting]
       Material.Texture.ImageClassName = 'TGLPicFileImage'
       Material.Texture.Image.PictureFileName = 'gold.jpg'
-      Material.Texture.ImageGamma = 1.200000047683716000
+      Material.Texture.ImageGamma = 1.20000004768372
       Material.Texture.Compression = tcHighSpeed
       Material.Texture.MappingMode = tmmCubeMapCamera
+      Material.Texture.EnvColor.Red = 0
+      Material.Texture.EnvColor.Green = 0
+      Material.Texture.EnvColor.Blue = 0
+      Material.Texture.EnvColor.Alpha = 0
+      Material.Texture.BorderColor.Red = 0
+      Material.Texture.BorderColor.Green = 0
+      Material.Texture.BorderColor.Blue = 0
+      Material.Texture.BorderColor.Alpha = 0
       Material.Texture.Disabled = False
-      Direction.Coordinates = {000000000000803F0000000000000000}
-      Up.Coordinates = {0000000000000000000080BF00000000}
+      Direction.Coordinates = {
+        000000000000803F0000000000000000
+      }
+      PitchAngle = 0
+      RollAngle = 0
+      TurnAngle = 0
+      Up.Coordinates = {
+        0000000000000000000080BF00000000
+      }
       object points2: TGLPoints
+        TagFloat = 0
+        PitchAngle = 0
+        RollAngle = 0
+        TurnAngle = 0
         NoZWrite = False
         Static = False
-        Size = 5.000000000000000000
+        Size = 5
       end
     end
     object dc: TGLDummyCube
-      Position.Coordinates = {0000000000004040000000000000803F}
-      CubeSize = 1.000000000000000000
+      TagFloat = 0
+      PitchAngle = 0
+      Position.Coordinates = {
+        0000000000004040000000000000803F
+      }
+      RollAngle = 0
+      TurnAngle = 0
+      CubeSize = 1
+      EdgeColor.Red = 1
+      EdgeColor.Green = 1
+      EdgeColor.Blue = 1
+      EdgeColor.Alpha = 1
       object cam: TGLCamera
-        DepthOfView = 100.000000000000000000
-        FocalLength = 75.000000000000000000
+        TagFloat = 0
+        DepthOfView = 100
+        FocalLength = 75
         TargetObject = dc
-        Position.Coordinates = {00000000000040400000E0400000803F}
+        Position.Coordinates = {
+          00000000000040400000E0400000803F
+        }
       end
     end
     object points1: TGLPoints
+      TagFloat = 0
+      PitchAngle = 0
+      RollAngle = 0
+      TurnAngle = 0
       NoZWrite = False
       Static = False
-      Size = 5.000000000000000000
+      Size = 5
       Style = psRound
     end
     object poly: TGLPolygon
-      Material.FrontProperties.Emission.Color = {ACC8483ECDCC4C3FACC8483E0000803F}
+      TagFloat = 0
+      Material.BackProperties.Ambient.Red = 0.200000002980232
+      Material.BackProperties.Ambient.Green = 0.200000002980232
+      Material.BackProperties.Ambient.Blue = 0.200000002980232
+      Material.BackProperties.Ambient.Alpha = 1
+      Material.BackProperties.Diffuse.Red = 0.800000011920929
+      Material.BackProperties.Diffuse.Green = 0.800000011920929
+      Material.BackProperties.Diffuse.Blue = 0.800000011920929
+      Material.BackProperties.Diffuse.Alpha = 1
+      Material.BackProperties.Emission.Red = 0
+      Material.BackProperties.Emission.Green = 0
+      Material.BackProperties.Emission.Blue = 0
+      Material.BackProperties.Emission.Alpha = 1
+      Material.BackProperties.Specular.Red = 0
+      Material.BackProperties.Specular.Green = 0
+      Material.BackProperties.Specular.Blue = 0
+      Material.BackProperties.Specular.Alpha = 1
+      Material.FrontProperties.Ambient.Red = 0.200000002980232
+      Material.FrontProperties.Ambient.Green = 0.200000002980232
+      Material.FrontProperties.Ambient.Blue = 0.200000002980232
+      Material.FrontProperties.Ambient.Alpha = 1
+      Material.FrontProperties.Diffuse.Red = 0.800000011920929
+      Material.FrontProperties.Diffuse.Green = 0.800000011920929
+      Material.FrontProperties.Diffuse.Blue = 0.800000011920929
+      Material.FrontProperties.Diffuse.Alpha = 1
+      Material.FrontProperties.Emission.Red = 0.19607800245285
+      Material.FrontProperties.Emission.Green = 0.800000011920929
+      Material.FrontProperties.Emission.Blue = 0.19607800245285
+      Material.FrontProperties.Emission.Alpha = 1
+      Material.FrontProperties.Emission.Color = {
+        ACC8483ECDCC4C3FACC8483E0000803F
+      }
+      Material.FrontProperties.Specular.Red = 0
+      Material.FrontProperties.Specular.Green = 0
+      Material.FrontProperties.Specular.Blue = 0
+      Material.FrontProperties.Specular.Alpha = 1
       Material.Texture.Image.Picture.Data = {
-        0A544A504547496D6167656F1B0000FFD8FFE000104A46494600010101006000
+        0A544A706567496D6167656F1B0000FFD8FFE000104A46494600010101006000
         600000FFDB004300080606070605080707070909080A0C140D0C0B0B0C191213
         0F141D1A1F1E1D1A1C1C20242E2720222C231C1C2837292C30313434341F2739
         3D38323C2E333432FFDB0043010909090C0B0C180D0D1832211C213232323232
@@ -292,15 +404,30 @@ object Form1: TForm1
         BB8F327C0B5255BFFC956FB939006B491F0F6EB1061C8CBA45AE9DFF002E8F70
         94C3BD9077148DBC5187759E2273164F593DA1B211BCD91B36E062D45B78C760
         B7E64DCA09B0674B476FE885B0BE9C8CF12F1AC0F49D0190481DC36F4B374926
-        F080A2C116BD496610EFAB5F76CBD36C30721335754F33A1AC8EF3B7FFD9}
+        F080A2C116BD496610EFAB5F76CBD36C30721335754F33A1AC8EF3B7FFD9
+      }
+      Material.Texture.EnvColor.Red = 0
+      Material.Texture.EnvColor.Green = 0
+      Material.Texture.EnvColor.Blue = 0
+      Material.Texture.EnvColor.Alpha = 0
+      Material.Texture.BorderColor.Red = 0
+      Material.Texture.BorderColor.Green = 0
+      Material.Texture.BorderColor.Blue = 0
+      Material.Texture.BorderColor.Alpha = 0
+      PitchAngle = 0
+      RollAngle = 0
+      TurnAngle = 0
       Nodes = <>
     end
   end
   object cad: TGLCadencer
     Scene = GLScene1
+    MaxDeltaTime = 0
+    MinDeltaTime = 0
+    FixedDeltaTime = 0
     SleepLength = 0
     OnProgress = cadProgress
-    Left = 8
-    Top = 40
+    left = 8
+    top = 40
   end
 end

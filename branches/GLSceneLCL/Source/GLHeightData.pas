@@ -1278,8 +1278,7 @@ begin
     FThread.WaitFor;
   end;
 
-  if Assigned(FOnDestroy) then
-    FOnDestroy(self);
+//  if Assigned(FOnDestroy) then  FOnDestroy(self);   Assertion Occurs
   case DataType of
     hdtByte:
       begin

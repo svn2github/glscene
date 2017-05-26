@@ -69,7 +69,7 @@ begin
   Randomize;
   ff.LoadFromFile('horse.3ds');
   ff.scale.scale(2 / ff.BoundingSphereRadius);
-
+//  ff.Material.BackProperties.Ambient;
   for i := 0 to high(lst) do
   begin
     SetVector(lst[i].pos, round(Random * 40 - 20), 0, round(Random * 40));

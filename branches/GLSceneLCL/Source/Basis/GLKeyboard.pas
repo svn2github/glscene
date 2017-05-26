@@ -31,12 +31,8 @@ interface
 {$I GLScene.inc}
 
 uses
-{$IFDEF MSWINDOWS}
-  Windows;
-{$ELSE}
-    // Non-windows platforms are supported only via FPC.
+    {$IFDEF WINDOWS} Windows, {$ENDIF}
     lcltype, lclintf;
-{$ENDIF}
 
 type
    TVirtualKeyCode = Integer;

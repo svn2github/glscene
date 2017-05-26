@@ -740,7 +740,7 @@ end;
 
 procedure TGUISkinEditor.EditKeyPress(Sender: TObject; var Key: Char);
 begin
-  if (Key > #32) and Not (Key in ['0'..'9', DecimalSeparator]) then
+  if (Key > #32) and Not (Key in ['0'..'9', DefaultFormatSettings.DecimalSeparator]) then
     Key := #0;
 end;
 

@@ -56,7 +56,7 @@ end;
 procedure TForm1.FormClose(Sender: TObject; var aAction: TCloseAction);
 begin
   cad.Enabled := false;
-  vp.Free;
+
 end;
 
 procedure TForm1.cadProgress(Sender: TObject; const dt, nt: Double);

@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="10"/>
+    <BuildModes Active="Default"/>
+    <Units Count="5">
+      <Unit0>
+        <Filename Value="Atomics.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <TopLine Value="18"/>
+        <CursorPos X="20" Y="31"/>
+        <UsageCount Value="20"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="AtomsFrm.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="AAtomForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="348"/>
+        <CursorPos X="8" Y="291"/>
+        <FoldState Value=" T3vR0{l3 plDoY0Q3111221 pihPipH0~I10"/>
+        <UsageCount Value="20"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="AboutFrm.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="AboutBox"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <EditorIndex Value="3"/>
+        <CursorPos X="20" Y="3"/>
+        <UsageCount Value="20"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="AtomicRotationFrm.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="AtomicRotationForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <EditorIndex Value="4"/>
+        <CursorPos X="20" Y="3"/>
+        <UsageCount Value="20"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="C:\lazarus32\components\glscene\Source\Basis\GLXCollection.pas"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="677"/>
+        <CursorPos Y="692"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit4>
+    </Units>
+    <JumpHistory Count="15" HistoryIndex="14">
+      <Position1>
+        <Filename Value="Atomics.lpr"/>
+        <Caret Line="31" Column="20" TopLine="18"/>
+      </Position1>
+      <Position2>
+        <Filename Value="AtomsFrm.pas"/>
+        <Caret Line="3655" Column="5" TopLine="3271"/>
+      </Position2>
+      <Position3>
+        <Filename Value="AtomsFrm.pas"/>
+        <Caret Line="217" Column="67" TopLine="203"/>
+      </Position3>
+      <Position4>
+        <Filename Value="AtomsFrm.pas"/>
+        <Caret Line="387" Column="54" TopLine="381"/>
+      </Position4>
+      <Position5>
+        <Filename Value="AboutFrm.pas"/>
+        <Caret Line="51" Column="4" TopLine="36"/>
+      </Position5>
+      <Position6>
+        <Filename Value="AboutFrm.pas"/>
+        <Caret Line="50" Column="4" TopLine="35"/>
+      </Position6>
+      <Position7>
+        <Filename Value="AboutFrm.pas"/>
+        <Caret Line="49" Column="4" TopLine="34"/>
+      </Position7>
+      <Position8>
+        <Filename Value="AboutFrm.pas"/>
+        <Caret Line="48" Column="4" TopLine="33"/>
+      </Position8>
+      <Position9>
+        <Filename Value="AtomsFrm.pas"/>
+        <Caret Line="16" Column="63" TopLine="88"/>
+      </Position9>
+      <Position10>
+        <Filename Value="AtomsFrm.pas"/>
+        <Caret Line="15" Column="72" TopLine="178"/>
+      </Position10>
+      <Position11>
+        <Filename Value="AtomsFrm.pas"/>
+        <Caret Line="288" Column="3" TopLine="288"/>
+      </Position11>
+      <Position12>
+        <Filename Value="AtomsFrm.pas"/>
+        <Caret Line="436" Column="80" TopLine="183"/>
+      </Position12>
+      <Position13>
+        <Filename Value="AtomsFrm.pas"/>
+        <Caret Line="443" Column="18" TopLine="423"/>
+      </Position13>
+      <Position14>
+        <Filename Value="AtomsFrm.pas"/>
+        <Caret Line="486" TopLine="486"/>
+      </Position14>
+      <Position15>
+        <Filename Value="AtomsFrm.pas"/>
+        <Caret Line="1199" Column="24" TopLine="1196"/>
+      </Position15>
+    </JumpHistory>
+  </ProjectSession>
+  <SkipCheckLCLInterfaces Value="True"/>
+</CONFIG>

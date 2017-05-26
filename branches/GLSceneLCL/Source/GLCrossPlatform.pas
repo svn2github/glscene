@@ -564,12 +564,8 @@ end;
 
 function BitmapScanLine(aBitmap: TGLBitmap; aRow: Integer): Pointer;
 begin
-{$IFDEF FPC}
   Assert(False, 'BitmapScanLine unsupported');
   Result := nil;
-{$ELSE}
-  Result := aBitmap.ScanLine[aRow];
-{$ENDIF}
 end;
 
 procedure FixPathDelimiter(var S: string);
@@ -583,11 +579,8 @@ end;
 
 function RelativePath(const S: string): string;
 var
-{$IFNDEF FPC}
-  path: string;
-{$ELSE}
   path: UTF8String;
-{$ENDIF}
+
 begin
   Result := S;
   if IsDesignTime then
@@ -754,18 +747,13 @@ end;
 // RDTSC
 //
 function RDTSC: Int64;
-{$IFDEF FPC}
+
 begin
   raise exception.create('Using GLCrossPlatform.RDTSC is a bad idea!');
   Result := 0;
 end;
-{$ELSE}
-asm
-   db $0f, $31
-end;
-{$ENDIF}
 
-{$IFNDEF GLS_COMPILER_2009_UP}
+
 type
   PClassData = ^TClassData;
   TClassData = record
@@ -774,17 +762,10 @@ type
     PropCount: SmallInt;
     UnitName: ShortString;
   end;
-{$ENDIF}
+
 
 function FindUnitName(anObject: TObject): string;
-{$IFDEF GLS_COMPILER_2009_UP}
-begin
-  if Assigned(anObject) then
-    Result := anObject.UnitName
-  else
-    Result := '';
-end;
-{$ELSE}
+
 var
   LClassInfo: Pointer;
 begin
@@ -796,17 +777,10 @@ begin
   if LClassInfo <> nil then
    Result := string(PClassData(Integer(LClassInfo) + 2 + PByte(Integer(LClassInfo) + 1)^).UnitName);
 end;
-{$ENDIF}
+
 
 function FindUnitName(aClass: TClass): string;
-{$IFDEF GLS_COMPILER_2009_UP}
-begin
-  if Assigned(aClass) then
-    Result := aClass.UnitName
-  else
-    Result := '';
-end;
-{$ELSE}
+
 var
   LClassInfo: Pointer;
 begin
@@ -818,9 +792,8 @@ begin
   if LClassInfo <> nil then
     Result := string(PClassData(Integer(LClassInfo) + 2 + PByte(Integer(LClassInfo) + 1)^).UnitName);
 end;
-{$ENDIF}
 
-{$IFNDEF GLS_COMPILER_2009_UP}
+
 function CharInSet(C: AnsiChar; const CharSet: TSysCharSet): Boolean;
 begin
   Result := C in CharSet;
@@ -830,15 +803,11 @@ function CharInSet(C: WideChar; const CharSet: TSysCharSet): Boolean;
 begin
   Result := (C < #$0100) and (AnsiChar(C) in CharSet);
 end;
-{$ENDIF}
 
 procedure SetExeDirectory;
 var
-{$IFNDEF FPC}
-  path: string;
-{$ELSE}
   path: UTF8String;
-{$ENDIF}
+
 begin
   if IsDesignTime then
   begin
@@ -850,11 +819,7 @@ begin
       else
         vLastProjectTargetName := path;
       path := IncludeTrailingPathDelimiter(ExtractFilePath(path));
-{$IFNDEF FPC}
-      SetCurrentDir(path);
-{$ELSE}
       SetCurrentDirUTF8(path);
-{$ENDIF}
     end;
   end
   else
@@ -1259,9 +1224,9 @@ end;
 
 initialization
   vGLSStartTime := GLSTime;
-{$IFDEF FPC}
+
 {$IFDEF UNIX}
   Init_vProgStartSecond;
 {$ENDIF}
-{$ENDIF}
+
 end.

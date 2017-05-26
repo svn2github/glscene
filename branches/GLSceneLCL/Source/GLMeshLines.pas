@@ -600,8 +600,8 @@ begin
     GL.PushMatrix;
     GL.Scalef(lNodeSize, lNodeSize, lNodeSize);
 ///    rci.GLStates.UnSetGLState(stTexture2D);
-    rci.GLStates.UnSetGLState(stColorMaterial);
-    rci.GLStates.UnSetGLState(stBlend);
+   // rci.GLStates.UnSetGLState(stColorMaterial);
+  //  rci.GLStates.UnSetGLState(stBlend);
     if Node = FSelectedNode then
       rci.GLStates.SetGLMaterialColors(cmFRONT, clrBlack, clrGray20, clrYellow, clrBlack, 0)
     else
@@ -924,8 +924,8 @@ begin
       end;
       if i > 0 then
       begin
-        Seg1 := Seg2;
         Seg2 := VectorSubtract(N3,N2);
+        Seg1 := Seg2;
       end;
       if (i = 1) and not VectorEQuals(Seg2,NullVector)then
       begin

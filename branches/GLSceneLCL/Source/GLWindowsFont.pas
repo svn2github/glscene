@@ -278,7 +278,9 @@ procedure TGLWindowsBitmapFont.LoadWindowsFont;
   function GetTextSize(DC: HDC; Str: PWideChar; Count: Integer): TSize;
 
     {$IFDEF MSWINDOWS}
-    var tm: LPTEXTMETRICW;
+
+     var tm: LPTEXTMETRICW;
+
     {$ELSE}
     var LString: array[0..5] of char; //here we always have 1 char, so it's safe
       i : SizeUInt;
@@ -288,6 +290,7 @@ procedure TGLWindowsBitmapFont.LoadWindowsFont;
     Result.cx := 0;
     Result.cy := 0;
 {$IFDEF MSWINDOWS}
+
     GetTextExtentPoint32W(DC, Str, Count, Result);
     if not Win32PlatformIsUnicode then
     begin
