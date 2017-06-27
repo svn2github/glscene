@@ -126,13 +126,13 @@ begin
   positionBackup := aStream.Position;
   aStream.Read(headerBuf[0], cFULL_HEADER_LEN);
   aStream.Position := positionBackup;
-  isBinary := True;
+  isBinary := False;
   i := 0;
   while i < 80 do
   begin
     if (headerBuf[i] < #32) and (headerBuf[i] <> #0) then
     begin
-      isBinary := False;
+      isBinary := True;
       Break;
     end;
     Inc(i);
