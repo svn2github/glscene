@@ -7,6 +7,7 @@
   to enable support for STL files at run-time. 
 
   History :
+  29/06/17 - DirkC - fix ASCII/binary format detection
   16/10/08 - UweR - Compatibility fix for Delphi 2009
   22/11/02 - EG - Write capability now properly declared
   17/10/02 - EG - Created from split of GLVectorFileObjects,
@@ -111,10 +112,33 @@ var
     end;
   end;
 
+  function ReadLine(Stream: TStream; var Line: String): boolean;
+  var
+    ch: AnsiChar;
+    StartPos, LineLen: integer;
+    LineBuf: AnsiString;
+  begin
+    result := False;
+    StartPos := Stream.Position;
+    ch := #0;
+    while (Stream.Read( ch, 1) = 1) and (ch <> #13) and (ch <> #10) do;
+    LineLen := Stream.Position - StartPos;
+    Stream.Position := StartPos;
+    SetString(LineBuf, NIL, LineLen);
+    Stream.ReadBuffer(LineBuf[1], LineLen);
+    Line:= String(LineBuf);
+    if (ch = #13) or (ch = #10) then
+      begin
+        result := True;
+        if (Stream.Read( ch, 1) = 1) and (ch <> #10) then
+          Stream.Seek(-1, soCurrent) // unread it if not LF character.
+      end
+  end;
+
 var
   isBinary: Boolean;
-  headerBuf: array [0 .. cFULL_HEADER_LEN - 1] of AnsiChar;
-  positionBackup: Integer;
+  ASCIIHeaderBuf: Array[0..5] of AnsiChar;
+  positionBackup, StreamSize: Int64;
   fileContent: TStringList;
   curLine: String;
   i: Integer;
@@ -124,26 +148,49 @@ var
   calcNormal: TAffineVector;
 begin
   positionBackup := aStream.Position;
-  aStream.Read(headerBuf[0], cFULL_HEADER_LEN);
-  aStream.Position := positionBackup;
-  isBinary := False;
-  i := 0;
-  while i < 80 do
-  begin
-    if (headerBuf[i] < #32) and (headerBuf[i] <> #0) then
+  StreamSize:= aStream.Size;
+
+  // check format is ASCII or binary:
+  // see https://stackoverflow.com/questions/26171521/verifying-that-an-stl-file-is-ascii-or-binary
+  isBinary := True;
+
+  // Minimal STL must be at least 16 Bytes
+  if StreamSize < 16 then
+    raise Exception.CreateFmt('The STL file is not long enough (%d bytes).', [StreamSize]);
+
+  // test for valid ASCII format
+  aStream.Read(ASCIIHeaderBuf[0], 6);
+  if ASCIIHeaderBuf = 'solid ' then
     begin
-      isBinary := True;
-      Break;
+      // test for ASCII format
+      if ReadLine(aStream, curLine) then
+        if ReadLine(aStream, curLine) then
+          if (Pos('facet ', curLine) > 0) or (Pos('endsolid ', curLine) > 0) then
+            begin
+              isBinary := False;
+              aStream.Position := positionBackup;
+            end;
     end;
-    Inc(i);
-  end;
+
+  // test for valid binary
+  if isBinary then
+    begin
+      // test for binary format
+      if StreamSize < 84 then
+        raise Exception.CreateFmt('The STL file is not long enough (%d bytes).', [StreamSize]);
+      aStream.Position:= positionBackup;
+      aStream.Read(header, SizeOf(TSTLHeader));
+      // Verify that file size equals the sum of header + nTriangles value + all triangles
+      if StreamSize < (84 + (header.nbFaces * 50)) then
+        raise Exception.CreateFmt('The STL file is not long enough (%d bytes).', [StreamSize]);
+    end;
+
 
   mesh := TMeshObject.CreateOwned(Owner.MeshObjects);
   try
     mesh.Mode := momTriangles;
     if isBinary then
     begin
-      aStream.Read(header, SizeOf(TSTLHeader));
       for i := 0 to header.nbFaces - 1 do
       begin
         aStream.Read(dataFace, SizeOf(TSTLFace));
