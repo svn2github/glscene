@@ -2,14 +2,14 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Vector File related objects for GLScene
+   Vector File related objects
    History :
-     09/02/00 - EG - Creation from split of GLObjects,
+     The whole history is logged in previous version of the unit
      07/07/14 - ELR - Added AdjustCapacityToAtLeast to TGLMeshObjectList.ExtractTriangles
                 Originally the list of triangles increased  very often in size
                 and leads sometimes to "OutOfMemory"-Exceptions.
                 Solution: Set a reasonable size right in the beginning
-     The whole history is logged in previous version of the unit
+     09/02/00 - EG - Creation from split of GLObjects,
 }
 unit GLVectorFileObjects;
 
@@ -6699,12 +6699,13 @@ begin
   if not PointInObject(Point) then
     exit;
 
-  BRad := BoundingSphereRadius;
+  BRad := 2*BoundingSphereRadius;
 
-  // This could be a fixed vector, but a fixed vector could have a systemic
+  // This could be a fixed vector, but a fixed vector could have a systematic
   // bug on an non-closed mesh, making it fail constantly for one or several
   // faces.
   rayVector := VectorMake(2 * random - 1, 2 * random - 1, 2 * random - 1);
+  NormalizeVector(rayVector);
   rayStart := VectorAdd(VectorScale(rayVector, -BRad), Point);
 
   HitCount := 0;
