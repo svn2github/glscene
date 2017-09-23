@@ -5,6 +5,9 @@
 //---------------------------------------------------------------------------
 #include <vcl.h>
 #include <tchar.h>
+#include <gl.h>
+#include <glext.h>
+
 //---------------------------------------------------------------------------
 #include <System.Classes.hpp>
 #include <Vcl.Controls.hpp>
@@ -21,7 +24,6 @@
 #include "GLColor.hpp"
 #include "GLContext.hpp"
 #include "GLTexture.hpp"
-#include "OpenGL1x.hpp"
 
 
 //---------------------------------------------------------------------------

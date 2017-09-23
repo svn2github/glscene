@@ -65,10 +65,7 @@ type
     procedure TrackBar_LeafThresholdChange(Sender: TObject);
     procedure Button_ResetOctreeSizeClick(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-  private
-     
   public
-     
     Octree : TOctreeSpacePartition;
     procedure CreateBox;
     procedure VerifySpacialMisc;

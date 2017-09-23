@@ -246,7 +246,6 @@
         <DCCReference Include="..\..\Source\Basis\GLGeometryCoordinates.pas"/>
         <DCCReference Include="..\..\Source\GLGizmo.pas"/>
         <DCCReference Include="..\..\Source\GLGizmoEx.pas"/>
-        <DCCReference Include="..\..\Source\GLGnuGettext.pas"/>
         <DCCReference Include="..\..\Source\GLGraph.pas"/>
         <DCCReference Include="..\..\Source\GLGraphics.pas"/>
         <DCCReference Include="..\..\Source\GLGui.pas"/>

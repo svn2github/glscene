@@ -7,6 +7,8 @@
 
 #include <vcl.h>
 #include <tchar.h>
+#include <gl.h>
+#include <glext.h>
 
 #include <System.Classes.hpp>
 #include <Vcl.Controls.hpp>
@@ -24,7 +26,6 @@
 #include "GLTeapot.hpp"
 #include "GLWin32Viewer.hpp"
 #include "GLTexture.hpp"
-#include "OpenGL1x.hpp"
 
 //---------------------------------------------------------------------------
 class TForm1 : public TForm

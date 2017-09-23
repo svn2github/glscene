@@ -9,6 +9,7 @@
 #include <Vcl.StdCtrls.hpp>
 #include <Vcl.Forms.hpp>
 #include <Vcl.ExtCtrls.hpp>
+#include <Vcl.Menus.hpp>
 
 #include "GLBaseClasses.hpp"
 #include "GLBitmapFont.hpp"
@@ -35,7 +36,6 @@
 #include "GLFileMP3.hpp"
 #include "GLThorFX.hpp"
 #include "GLFireFX.hpp"
-#include <Vcl.Menus.hpp>
 
 //---------------------------------------------------------------------------
 class TForm1 : public TForm

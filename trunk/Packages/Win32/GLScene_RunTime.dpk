@@ -266,7 +266,6 @@ contains
   GLTypes in '..\..\Source\Basis\GLTypes.pas',
   GLUserShader in '..\..\Source\Shaders\GLUserShader.pas',
   GLUtils in '..\..\Source\Basis\GLUtils.pas',
-  GLVectorFileObjects in '..\..\Source\Basis\GLVectorFileObjects.pas',
   GLVectorGeometry in '..\..\Source\Basis\GLVectorGeometry.pas',
   GLVectorLists in '..\..\Source\Basis\GLVectorLists.pas',
   GLVectorTypes in '..\..\Source\Basis\GLVectorTypes.pas',

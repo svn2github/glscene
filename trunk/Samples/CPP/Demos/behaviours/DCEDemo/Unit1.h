@@ -5,6 +5,9 @@
 //---------------------------------------------------------------------------
 #include <vcl.h>
 #include <tchar.h>
+#include <gl.h>
+#include <glext.h>
+
 //---------------------------------------------------------------------------
 #include <System.Classes.hpp>
 #include <Vcl.Controls.hpp>
@@ -32,9 +35,6 @@
 #include "GLRenderContextInfo.hpp"
 #include "GLKeyBoard.hpp"
 #include "GLState.hpp"
-
-#include "OpenGL1x.hpp"
-
 #include "GLVectorGeometry.hpp"
 #include "GLContext.hpp"
 #include "GLEllipseCollision.hpp"

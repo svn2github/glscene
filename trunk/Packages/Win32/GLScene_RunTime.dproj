@@ -365,7 +365,6 @@
         <DCCReference Include="..\..\Source\Basis\GLTypes.pas"/>
         <DCCReference Include="..\..\Source\Shaders\GLUserShader.pas"/>
         <DCCReference Include="..\..\Source\Basis\GLUtils.pas"/>
-        <DCCReference Include="..\..\Source\Basis\GLVectorFileObjects.pas"/>
         <DCCReference Include="..\..\Source\Basis\GLVectorGeometry.pas"/>
         <DCCReference Include="..\..\Source\Basis\GLVectorLists.pas"/>
         <DCCReference Include="..\..\Source\Basis\GLVectorTypes.pas"/>

@@ -115,7 +115,7 @@ void __fastcall TForm1::GLSceneViewer1MouseMove(TObject *Sender,
 void __fastcall TForm1::FormMouseWheel(TObject *Sender, TShiftState Shift, int WheelDelta,
           TPoint &MousePos, bool &Handled)
 {
-  TrackBar1->Position = TrackBar1->Position+Round(2*WheelDelta/120);
+  TrackBar1->Position = TrackBar1->Position+(int)(2*WheelDelta/120);
 }
 //---------------------------------------------------------------------------
 

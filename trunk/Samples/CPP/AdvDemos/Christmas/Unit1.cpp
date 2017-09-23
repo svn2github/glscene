@@ -1,6 +1,8 @@
 // ---------------------------------------------------------------------------
 
+#include <system.hpp>
 #include <vcl.h>
+#include <math.h>
 #include <tchar.h>
 #pragma hdrstop
 
@@ -102,8 +104,8 @@ void __fastcall TForm1::TimerTimer(TObject *Sender) {
 	if (((double)t < 1) && ((double)t > -1))
 		DCGifts->Visible = true;
 	if ((double)t >= 2) {
-		buf = IntToStr(Trunc((double)t)) + " days, ";
-		i = Round(System::Frac((double)t) * 24);
+		buf = IntToStr(Floor((double)t)) + " days, ";
+		i = (Int)(Frac((double)t) * 24);
 		if (i > 1)
 			buf = buf + IntToStr(i) + " hours...";
 		else
@@ -113,8 +115,8 @@ void __fastcall TForm1::TimerTimer(TObject *Sender) {
 	else {
 		t = (double)t * 24;
 		if ((double)t > 1) {
-			buf = IntToStr(Round((double)t)) + " hours, ";
-			i = Round(System::Frac((double)t) * 60);
+			buf = IntToStr((int)t) + " hours, ";
+			i = RoundInt(Frac((double)t) * 60);
 			if (i > 1)
 				buf = buf + IntToStr(i) + " minutes...";
 			else
@@ -123,8 +125,9 @@ void __fastcall TForm1::TimerTimer(TObject *Sender) {
 		}
 		else {
 			t = (double)t * 60;
-			FTCountDown->Text = IntToStr(Trunc((double)t)) + " minutes, " +
-				IntToStr(Round(System::Frac((double)t) * 60)) + " seconds...";
+			i = RoundInt(((double)t - Floor(t)) * 60);
+			FTCountDown->Text = IntToStr((int)t) + " minutes, " +
+				IntToStr(i) + " seconds...";
 		}
 	}
 }

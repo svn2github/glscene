@@ -96,8 +96,8 @@ begin
   Map1.BuildOctree();
   Map1.Up.SetVector(0, 1, 0);
 
-  map2.LoadFromFile('beer.3ds');
-  map2.BuildOctree;
+  Map2.LoadFromFile('beer.3ds');
+  Map2.BuildOctree;
 
   ShowCursor(false);
   SetCursorPos(screen.width div 2, screen.Height div 2);

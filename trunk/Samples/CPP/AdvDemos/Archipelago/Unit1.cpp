@@ -315,12 +315,12 @@ void __fastcall TForm1::FormKeyPress(TObject *Sender, System::WideChar &Key) {
 	case '*':
 		if (TerrainRenderer->CLODPrecision > 1)
 			TerrainRenderer->CLODPrecision =
-				Round(TerrainRenderer->CLODPrecision * 0.8);
+				(int)(TerrainRenderer->CLODPrecision * 0.8);
 		break;
 	case '/':
 		if (TerrainRenderer->CLODPrecision < 1000)
 			TerrainRenderer->CLODPrecision =
-				Round(TerrainRenderer->CLODPrecision * 1.2 + 1);
+				(int)(TerrainRenderer->CLODPrecision * 1.2 + 1);
 		break;
 	}
 	Key = 0x0;

@@ -53,27 +53,27 @@ type
   public
     constructor Create(AOwner: TPersistent); override;
     constructor CreateInitialized(AOwner: TPersistent;
-      const color: TColorVector; changeEvent: TNotifyEvent = nil);
+      const Color: TColorVector; changeEvent: TNotifyEvent = nil);
     destructor Destroy; override;
     procedure NotifyChange(Sender: TObject); override;
     procedure Assign(Source: TPersistent); override;
     procedure Initialize(const color: TColorVector);
     function AsAddress: PSingle;
     procedure RandomColor;
-    procedure SetColor(red, green, blue: Single; alpha: Single = 1); overload;
-    property color: TColorVector read FColor write SetColorVector;
+    procedure SetColor(Red, Green, Blue: Single; Alpha: Single = 1); overload;
+    property Color: TColorVector read FColor write SetColorVector;
     property DirectColor: TColorVector read FColor write SetDirectColorVector;
     property AsWinColor: TColor read GetAsWinColor write SetAsWinColor;
     property hsva: TVector read GetHSVA write SetHSVA;
     property DefaultColor: TColorVector read FColor;
   published
-    property red: Single index 0 read GetColorComponent write SetColorComponent
+    property Red: Single index 0 read GetColorComponent write SetColorComponent
       stored False;
-    property green: Single index 1 read GetColorComponent
+    property Green: Single index 1 read GetColorComponent
       write SetColorComponent stored False;
-    property blue: Single index 2 read GetColorComponent write SetColorComponent
+    property Blue: Single index 2 read GetColorComponent write SetColorComponent
       stored False;
-    property alpha: Single index 3 read GetColorComponent
+    property Alpha: Single index 3 read GetColorComponent
       write SetColorComponent stored False;
   end;
 
@@ -91,7 +91,7 @@ type
     procedure EnumColors(Proc: TGetStrProc); overload;
     procedure EnumColors(AValues: TStrings); overload;
     function FindColor(const aName: String): TColorVector;
-    { Convert a clrXxxx or a '<red green blue alpha> to a color vector }
+    { Convert a clrXxxx or a '<Red Green Blue Alpha> to a color vector }
     function GetColor(const aName: String): TColorVector;
     function GetColorName(const aColor: TColorVector): String;
     procedure RegisterDefaultColors;
@@ -106,7 +106,7 @@ function GetGValue(rgb: DWORD): Byte; {$NODEFINE GetGValue}
 function GetBValue(rgb: DWORD): Byte; {$NODEFINE GetBValue}
 procedure InitGLSceneColors;
 { Converts a delphi color into its RGB fragments and correct range. }
-function ConvertWinColor(aColor: TColor; alpha: Single = 1): TColorVector;
+function ConvertWinColor(aColor: TColor; Alpha: Single = 1): TColorVector;
 // Converts a color vector (containing float values)
 function ConvertColorVector(const aColor: TColorVector): TColor; overload;
 { Converts a color vector (containing float values) and alter intensity.
@@ -600,12 +600,12 @@ begin
   blue := Random;
 end;
 
-procedure TGLColor.SetColor(red, green, blue: Single; alpha: Single = 1);
+procedure TGLColor.SetColor(Red, Green, Blue: Single; Alpha: Single = 1);
 begin
-  FColor.X := red;
-  FColor.Y := green;
-  FColor.Z := blue;
-  FColor.W := alpha;
+  FColor.X := Red;
+  FColor.Y := Green;
+  FColor.Z := Blue;
+  FColor.W := Alpha;
   NotifyChange(Self);
 end;
 
@@ -642,7 +642,7 @@ begin
     if Result.V[H] < 0 then // normalize H
       Result.V[H] := Result.V[H] + 360;
   end;
-  Result.W := alpha;
+  Result.W := Alpha;
 end;
 
 procedure TGLColor.SetHSVA(const hsva: TVector);
@@ -796,10 +796,10 @@ var
 begin
   for i := 0 to Count - 1 do
     with TColorEntry(Items[i]^) do
-      if (Abs(color.X - aColor.X) < MinDiff) and
-        (Abs(color.Y - aColor.Y) < MinDiff) and
-        (Abs(color.Z - aColor.Z) < MinDiff) and
-        (Abs(color.W - aColor.W) < MinDiff) then
+      if (Abs(Color.X - aColor.X) < MinDiff) and
+        (Abs(Color.Y - aColor.Y) < MinDiff) and
+        (Abs(Color.Z - aColor.Z) < MinDiff) and
+        (Abs(Color.W - aColor.W) < MinDiff) then
         Break;
   if i < Count then
     Result := string(TColorEntry(Items[i]^).Name)

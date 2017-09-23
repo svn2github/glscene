@@ -14,11 +14,29 @@ uses
   Vcl.ExtCtrls,
 
   
-  GLScene, GLObjects, GLWin32Viewer, GLCrossPlatform, GLCoordinates,
-  GLBaseClasses, GLBitmapFont, GLWindowsFont, GLMaterial,
-  GLCustomShader, GLSLShader, GLCadencer, GLHUDObjects, GLGeomObjects,
-  GLFBORenderer, GLVectorGeometry, GLVectorTypes, GLTexture, GLSimpleNavigation,
-  GLState, GLContext, GLKeyboard, GLMultisampleImage;
+  GLScene,
+  GLObjects,
+  GLWin32Viewer,
+  GLCrossPlatform,
+  GLCoordinates,
+  GLBaseClasses,
+  GLBitmapFont,
+  GLWindowsFont,
+  GLMaterial,
+  GLCustomShader,
+  GLSLShader,
+  GLCadencer,
+  GLHUDObjects,
+  GLGeomObjects,
+  GLFBORenderer,
+  GLVectorGeometry,
+  GLVectorTypes,
+  GLTexture,
+  GLSimpleNavigation,
+  GLState,
+  GLContext,
+  GLKeyboard,
+  GLMultisampleImage;
 
 type
   TGLDemoForm = class(TForm)
