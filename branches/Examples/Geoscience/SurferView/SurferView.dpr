@@ -1,3 +1,9 @@
+{ -----------------------------------------------------------------------------
+  Unit Name: main
+  Author:    Aaron Hochwimmer (hochwimmera@pbworld.com)
+  Purpose:   Simple demo for viewing Surfer Grid files
+  ----------------------------------------------------------------------------- }
+
 program surferview;
 
 uses

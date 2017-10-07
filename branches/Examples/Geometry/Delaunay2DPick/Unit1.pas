@@ -10,7 +10,7 @@ uses
   System.Classes,
   Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls,
-  //GLS
+   
   GLTriangulation,
   GLWin32Viewer, GLCrossPlatform, GLBaseClasses, GLScene;
 
@@ -22,14 +22,14 @@ type
     procedure FormMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
   private
-    { Private declarations }
+     
     Z, U, V : Single;
     MatIndex : Integer;
     TempBuffer: TBitmap;
     procedure ClearBackPage;
     procedure FlipBackPage;
   public
-    { Public declarations }
+     
     TheMesh: TGLDelaunay2D;
     procedure Draw;
   end;

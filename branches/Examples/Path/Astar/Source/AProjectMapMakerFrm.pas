@@ -398,7 +398,7 @@ end;
 /// /////////////////////////////////////////////////////////
 function TAProjectMapMakerForm.ExePath: String;
 begin
-  result := ExtractFilePath(Application.ExeName);
+  result := ExtractFilePath(ParamStr(0));
 end;
 
 procedure TAProjectMapMakerForm.FormCreate(Sender: TObject);

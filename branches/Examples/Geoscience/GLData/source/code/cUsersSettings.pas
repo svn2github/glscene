@@ -565,7 +565,7 @@ begin
   fColourMode := ReadRegInteger(myReg, 'colourmode', 1);
   fTwoSidedMesh := ReadRegBool(myReg, 'twosidedmesh', true);
   fDefaultDir := ReadRegString(myReg, 'defaultdir',
-    ExtractFilePath(Application.ExeName) + 'samples\' + fName + '\');
+    ExtractFilePath(ParamStr(0)) + 'samples\' + fName + '\');
   fSilentImport := ReadRegBool(myReg, 'silentimport', false);
   fSilentLoad := ReadRegBool(myReg, 'silentload', true);
 

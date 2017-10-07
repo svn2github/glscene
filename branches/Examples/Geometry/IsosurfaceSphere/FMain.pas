@@ -17,7 +17,7 @@ uses
   Vcl.ExtCtrls,
   Vcl.Menus,
   Vcl.ComCtrls,
-  // GLS
+   
   GLScene,
   GLWin32Viewer,
   GLObjects,
@@ -84,7 +84,7 @@ type
     SingleData: TSingle3DArray; // array of array of array of Single
     mdx, mdy: Integer;
   public
-    { Public declarations }
+     
   end;
 
 var

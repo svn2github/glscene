@@ -284,10 +284,10 @@ begin
   Timer1.Enabled:=False;
   GLCadencer1.Enabled:=False;
   GLSphereRed.Visible:=False;
-  if FileExists(ExtractFilePath(Application.EXEName)
+  if FileExists(ExtractFilePath(ParamStr(0))
                 +  'sphere.3ds') then
   begin               //Needs app directory to load a mesh
-     DropMesh.LoadFromFile(ExtractFilePath(Application.EXEName)
+     DropMesh.LoadFromFile(ExtractFilePath(ParamStr(0))
                            + 'sphere.3ds');
      cache:= TGLMeshObjectList.Create;        //cache information
      cache.Assign(DropMesh.MeshObjects);

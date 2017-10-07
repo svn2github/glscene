@@ -1,10 +1,10 @@
-program GridGLS;
+program FBOPostEffect;
 
 uses
   Forms,
-  main in 'main.pas' {Form1};
+  uMain in 'uMain.pas' {Form1};
 
-{$R *.RES}
+{$R *.res}
 
 begin
   Application.Initialize;

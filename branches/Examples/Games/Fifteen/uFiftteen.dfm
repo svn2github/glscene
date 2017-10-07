@@ -126,6 +126,8 @@ object Form1: TForm1
     000100000007C000000FF000003FF80000FFFF0001FFFFC007FFFFF81FFFFFFE
     3FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF}
   OldCreateOrder = False
+  Position = poScreenCenter
+  WindowState = wsMaximized
   OnCreate = FormCreate
   OnMouseWheel = FormMouseWheel
   PixelsPerInch = 96

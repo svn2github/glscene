@@ -17,7 +17,7 @@ uses
   Vcl.StdCtrls,
   Vcl.ExtCtrls,
 
-  GLGnuGettext,
+  GnuGettext,
 
   dDialogs,
   fInitial,
@@ -44,7 +44,9 @@ type
 var
   OptionsForm: TOptionsForm;
 
+//=================================================================
 implementation
+//=================================================================
 
 {$R *.dfm}
 
@@ -119,9 +121,9 @@ end;
 procedure TOptionsForm.CheckBoxAxisClick(Sender: TObject);
 begin
   if CheckBoxAxis.Checked then
-    FormMaster.DCAxis.Visible := True
+    fmSceneMaster.DCAxis.Visible := True
   else
-    FormMaster.DCAxis.Visible := False;
+    fmSceneMaster.DCAxis.Visible := False;
 end;
 
 
@@ -135,7 +137,7 @@ begin
    if DMDialogs.ColorDialog.Execute then
    begin
      PanelBackground.Color :=  DMDialogs.ColorDialog.Color;
-     FormMaster.ApplyBgColor;
+     fmSceneMaster.ApplyBgColor;
    end;
 end;
 

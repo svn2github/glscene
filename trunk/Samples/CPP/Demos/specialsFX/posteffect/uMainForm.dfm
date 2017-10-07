@@ -31,7 +31,6 @@ object MainForm: TMainForm
     Height = 33
     Align = alTop
     TabOrder = 0
-    ExplicitWidth = 487
     object Label2: TLabel
       Left = 8
       Top = 10

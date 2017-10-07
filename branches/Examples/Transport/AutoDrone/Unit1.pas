@@ -119,7 +119,9 @@ var
   CameraType: Byte;
   lastx, lasty: integer;
 
+//===============================================================
 implementation
+//===============================================================
 
 const
   speed = 3;
@@ -134,12 +136,13 @@ procedure SetTexImageName(ml: TGLMaterialLibrary;
   const matName, filename: string);
 var
   libMat: TGLLibMaterial;
-  img: TGLPicFileImage;
+//  img: TGLPicFileImage;
 begin
   libMat := ml.LibMaterialByName(matName);
-  libMat.Material.Texture.ImageClassName := TGLPicFileImage.ClassName;
-  img := TGLPicFileImage(libMat.Material.Texture.Image);
-  img.PictureFileName := filename;
+//  libMat.Material.Texture.ImageClassName := TGLPicFileImage.ClassName;
+//  img := TGLPicFileImage(libMat.Material.Texture.Image);
+//  img.PictureFileName := filename;
+  libMat.Material.Texture.Image.LoadFromFile(filename);
 end;
 
 procedure TForm1.FormCreate(Sender: TObject);
@@ -387,7 +390,7 @@ begin
     Path := ExtractFilePath(OD.filename) + Objects[i].ModelName;
     if not FileExists(Path) then
     begin
-      Path := ExtractFilePath(Application.ExeName) + 'Resourses\Models\' +
+      Path := ExtractFilePath(ParamStr(0)) + 'Resourses\Models\' +
         Objects[i].ModelName;
       if not FileExists(Path) then
       begin

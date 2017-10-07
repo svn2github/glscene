@@ -4,14 +4,27 @@ interface
 
 uses
   Winapi.Windows,
-  System.SysUtils, System.Classes,
-  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls,
+  System.SysUtils,
+  System.Classes,
+  Vcl.Graphics,
+  Vcl.Controls,
+  Vcl.Forms,
+  Vcl.Dialogs,
+  Vcl.StdCtrls,
   Vcl.Imaging.JPEG,
 
-  GLWin32Viewer, GLCrossPlatform, GLBaseClasses, GLScene, GLVectorFileObjects,
-  GLCoordinates, GLObjects, GLCadencer, GLRenderContextInfo, GLVectorGeometry,
-
-  GLFileMD3, GLAsyncTimer;
+  GLWin32Viewer,
+  GLCrossPlatform,
+  GLBaseClasses,
+  GLScene,
+  GLVectorFileObjects,
+  GLCoordinates,
+  GLObjects,
+  GLCadencer,
+  GLRenderContextInfo,
+  GLVectorGeometry,
+  GLFileMD3,
+  GLAsyncTimer;
 
 
 type
@@ -38,34 +51,19 @@ implementation
 
 {$R *.dfm}
 
-
-//
-// FormCreate
-//
 procedure TForm1.FormCreate;
 begin
-
   ff.LoadFromFile('gus.md3');
-
+///  ff.Material.Texture.LoadFromFile = 'gus.jpg';
 end;
 
 
-//
-// cadProcess
-//
 procedure TForm1.cadProgress;
 begin
-
   vp.Invalidate;
-
 end;
 
-
-//
-// doglRender
-//
 procedure TForm1.doglRender;
-
   procedure doMorph(mol:TGLMeshObjectList; offset,spd:single);
   var t:single; c:integer;
   begin
@@ -75,27 +73,18 @@ procedure TForm1.doglRender;
     end;
 
 begin
-
   ff.Position.SetPoint(-1.5, 0, 0);
   doMorph(ff.MeshObjects, 0, 25);
   ff.Render(rci);
-
   ff.Position.SetPoint(1.5, 0, 0);
   doMorph(ff.MeshObjects, 0.5, 50);
   ff.Render(rci);
-
 end;
 
-
-//
-// atTimer
-//
 procedure TForm1.atTimer(Sender: TObject);
 begin
-
   caption := vp.FramesPerSecondText(2);
   vp.ResetPerformanceMonitor;
-
 end;
 
 end.

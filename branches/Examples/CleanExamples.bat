@@ -30,6 +30,8 @@ del *.otares /s
 del *.tvsconfig /s
 del *.stat /s
 del *.db /s
+del *.~dbg /s
+del *.spider /s
 
 rem delete cpp builder files
 
@@ -51,13 +53,18 @@ echo             Don't delete some files
 echo ************************************************
 echo _
 
-rem del *.res /s  - don't remove resources like cursors.res
-rem del *.ico /s  - some projects have own icos
-rem del *.obj /s  - obj models and resources for lazarus
+attrib +R "AdvDemos/Q3Demo/Model/animation.cfg"
 rem del *.cfg /s  - there are quake's animations
+attrib -R "AdvDemos/Q3Demo/Model/animation.cfg"
+
+rem del *.res /s
+rem del *.ico /s  - some projects have own icos
+rem del *.cur /s  - cursors
+rem del *.obj /s  - obj models and resources for lazarus
 
 
-echo --------------------------------------------------------
+
+
 echo delete all .svn directories with subdirectories and files 
 for /r %1 %%R in (.svn) do if exist "%%R" (rd /s /q "%%R")
 echo---------------------------------------------------------
@@ -68,3 +75,4 @@ for /r %1 %%R in (Debug_Build) do if exist "%%R" (rd /s /q "%%R")
 for /r %1 %%R in (Release_Build) do if exist "%%R" (rd /s /q "%%R")
 for /r %1 %%R in (__history) do if exist "%%R" (rd /s /q "%%R")
 for /r %1 %%R in (__recovery) do if exist "%%R" (rd /s /q "%%R")
+for /r %1 %%R in (__astcache) do if exist "%%R" (rd /s /q "%%R")

@@ -88,16 +88,12 @@ type
     constructor Create(AOwner: TComponent);
     function Add: TGLSoundSample;
     function FindItemID(ID: Integer): TGLSoundSample;
-    property Items[index: Integer]: TGLSoundSample read GetItems write SetItems;
-      default;
+    property Items[index: Integer]: TGLSoundSample read GetItems write SetItems; default;
     function GetByName(const aName: string): TGLSoundSample;
 
-    function AddFile(const fileName: string; const sampleName: string = ''):
-      TGLSoundSample;
+    function AddFile(const fileName: string; const sampleName: string = ''): TGLSoundSample;
   end;
 
-  // TGLSoundLibrary
-  //
   TGLSoundLibrary = class(TComponent)
   private
      
@@ -107,8 +103,7 @@ type
     
     procedure SetSamples(const val: TGLSoundSamples);
 
-    procedure Notification(AComponent: TComponent; Operation: TOperation);
-      override;
+    procedure Notification(AComponent: TComponent; Operation: TOperation); override;
 
   public
     
@@ -197,8 +192,7 @@ type
 
   published
     
-    property SoundLibrary: TGLSoundLibrary read GetSoundLibrary write
-      SetSoundLibrary;
+    property SoundLibrary: TGLSoundLibrary read GetSoundLibrary write SetSoundLibrary;
     property SoundName: string read FSoundName write SetSoundName;
 
     {Volume of the source, [0.0; 1.0] range }
@@ -226,18 +220,15 @@ type
     {Inside cone angle, [0°; 360°].
        Sound volume is maximal within this cone.
        See DirectX SDK for details. }
-    property InsideConeAngle: Single read FInsideConeAngle write
-      SetInsideConeAngle;
+    property InsideConeAngle: Single read FInsideConeAngle write SetInsideConeAngle;
     {Outside cone angle, [0°; 360°].
        Between inside and outside cone, sound volume decreases between max
        and cone outside volume.
        See DirectX SDK for details. }
-    property OutsideConeAngle: Single read FOutsideConeAngle write
-      SetOutsideConeAngle;
+    property OutsideConeAngle: Single read FOutsideConeAngle write SetOutsideConeAngle;
     {Cone outside volume, [0.0; 1.0] range.
        See DirectX SDK for details. }
-    property ConeOutsideVolume: Single read FConeOutsideVolume write
-      SetConeOutsideVolume;
+    property ConeOutsideVolume: Single read FConeOutsideVolume write SetConeOutsideVolume;
     {Sample custom playback frequency.
        Values null or negative are interpreted as 'default frequency'. }
     property Frequency: Integer read FFrequency write SetFrequency default -1;
@@ -276,8 +267,7 @@ type
     
     constructor Create(AOwner: TComponent);
 
-    property Items[index: Integer]: TGLSoundSource read GetItems write SetItems;
-      default;
+    property Items[index: Integer]: TGLSoundSource read GetItems write SetItems; default;
   end;
 
   // TGLSoundEnvironment
@@ -328,8 +318,7 @@ type
 
   protected
     
-    procedure Notification(AComponent: TComponent; Operation: TOperation);
-      override;
+    procedure Notification(AComponent: TComponent; Operation: TOperation); override;
     procedure SetSources(const val: TGLSoundSources);
     procedure SetMasterVolume(const val: Single);
     procedure SetListener(const val: TGLBaseSceneObject);
@@ -381,8 +370,7 @@ type
        Default implementation just clears the "Changes" flags. }
     procedure UpdateSource(aSource: TGLBaseSoundSource); virtual;
     procedure MuteSource(aSource: TGLBaseSoundSource; muted: Boolean); virtual;
-    procedure PauseSource(aSource: TGLBaseSoundSource; paused: Boolean);
-      virtual;
+    procedure PauseSource(aSource: TGLBaseSoundSource; paused: Boolean); virtual;
 
   public
     
@@ -423,8 +411,7 @@ type
        Note that most driver cannot dynamically adjust the output frequency
        (you need to de-ativate and re-activate the manager for this property
        to be taken into account). }
-    property OutputFrequency: Integer read FOutputFrequency write
-      SetOutputFrequency default 44100;
+    property OutputFrequency: Integer read FOutputFrequency write SetOutputFrequency default 44100;
 
     {Request to mute all sounds. 
        All sound requests should be handled as if sound is unmuted though,
@@ -451,29 +438,24 @@ type
 
     {Update frequency for time-based control (DoProgress). 
        Default value is 10 Hz (frequency is clamped in the 1Hz-60Hz range). }
-    property UpdateFrequency: Single read FUpdateFrequency write
-      SetUpdateFrequency stored StoreUpdateFrequency;
+    property UpdateFrequency: Single read FUpdateFrequency write SetUpdateFrequency stored StoreUpdateFrequency;
     {Cadencer for time-based control.  }
     property Cadencer: TGLCadencer read FCadencer write SetCadencer;
     {Engine relative distance factor, compared to 1.0 meters.
        Equates to 'how many units per meter' your engine has. }
-    property DistanceFactor: Single read FDistanceFactor write SetDistanceFactor
-      stored StoreDistanceFactor;
+    property DistanceFactor: Single read FDistanceFactor write SetDistanceFactor stored StoreDistanceFactor;
     {Sets the global attenuation rolloff factor. 
        Normally volume for a sample will scale at 1 / distance.
        This gives a logarithmic attenuation of volume as the source gets
        further away (or closer).
        Setting this value makes the sound drop off faster or slower.
        The higher the value, the faster volume will fall off. }
-    property RollOffFactor: Single read FRollOffFactor write SetRollOffFactor
-      stored StoreRollOffFactor;
+    property RollOffFactor: Single read FRollOffFactor write SetRollOffFactor stored StoreRollOffFactor;
     {Engine relative Doppler factor, compared to 1.0 meters. 
        Equates to 'how many units per meter' your engine has. }
-    property DopplerFactor: Single read FDopplerFactor write SetDopplerFactor
-      stored False;
+    property DopplerFactor: Single read FDopplerFactor write SetDopplerFactor stored False;
     {Sound environment (requires EAX compatible soundboard). }
-    property Environment: TGLSoundEnvironment read FSoundEnvironment write
-      SetSoundEnvironment default seDefault;
+    property Environment: TGLSoundEnvironment read FSoundEnvironment write SetSoundEnvironment default seDefault;
   end;
 
   // TGLBSoundEmitter
@@ -507,8 +489,8 @@ type
 
     procedure Assign(Source: TPersistent); override;
 
-    class function FriendlyName: string; override;
-    class function FriendlyDescription: string; override;
+    class function FriendlyName: String; override;
+    class function FriendlyDescription: String; override;
     class function UniqueItem: Boolean; override;
 
     procedure DoProgress(const progressTime: TProgressTimes); override;
@@ -525,10 +507,8 @@ type
 function ActiveSoundManager: TGLSoundManager;
 function GetSoundLibraryByName(const aName: string): TGLSoundLibrary;
 
-function GetOrCreateSoundEmitter(behaviours: TGLBehaviours): TGLBSoundEmitter;
-  overload;
-function GetOrCreateSoundEmitter(obj: TGLBaseSceneObject): TGLBSoundEmitter;
-  overload;
+function GetOrCreateSoundEmitter(behaviours: TGLBehaviours): TGLBSoundEmitter;  overload;
+function GetOrCreateSoundEmitter(obj: TGLBaseSceneObject): TGLBSoundEmitter;  overload;
 
 var
   // If this variable is true, errors in GLSM may be displayed to the user
@@ -546,16 +526,12 @@ var
   vActiveSoundManager: TGLSoundManager;
   vSoundLibraries: TList;
 
-  // ActiveSoundManager
-  //
 
 function ActiveSoundManager: TGLSoundManager;
 begin
   Result := vActiveSoundManager;
 end;
 
-// GetSoundLibraryByName
-//
 
 function GetSoundLibraryByName(const aName: string): TGLSoundLibrary;
 var
@@ -571,8 +547,6 @@ begin
       end;
 end;
 
-// GetOrCreateSoundEmitter (TGLBehaviours)
-//
 
 function GetOrCreateSoundEmitter(behaviours: TGLBehaviours): TGLBSoundEmitter;
 var
@@ -585,8 +559,6 @@ begin
     Result := TGLBSoundEmitter.Create(behaviours);
 end;
 
-// GetOrCreateSoundEmitter (TGLBaseSceneObject)
-//
 
 function GetOrCreateSoundEmitter(obj: TGLBaseSceneObject): TGLBSoundEmitter;
 begin
@@ -598,7 +570,6 @@ end;
 // ------------------
 
  
-//
 
 constructor TGLSoundSample.Create(Collection: TCollection);
 begin
@@ -606,7 +577,6 @@ begin
 end;
 
  
-//
 
 destructor TGLSoundSample.Destroy;
 begin
@@ -614,8 +584,6 @@ begin
   inherited Destroy;
 end;
 
-// Assign
-//
 
 procedure TGLSoundSample.Assign(Source: TPersistent);
 begin
@@ -629,16 +597,12 @@ begin
     inherited Assign(Source); // Assign error
 end;
 
-// DefineProperties
-//
 
 procedure TGLSoundSample.DefineProperties(Filer: TFiler);
 begin
   Filer.DefineBinaryProperty('BinData', ReadData, WriteData, Assigned(FData));
 end;
 
-// ReadData
-//
 
 procedure TGLSoundSample.ReadData(Stream: TStream);
 var
@@ -656,8 +620,6 @@ begin
   end;
 end;
 
-// WriteData
-//
 
 procedure TGLSoundSample.WriteData(Stream: TStream);
 var
@@ -675,8 +637,6 @@ begin
   end;
 end;
 
-// GetDisplayName
-//
 
 function TGLSoundSample.GetDisplayName: string;
 var
@@ -698,7 +658,6 @@ begin
 end;
 
  
-//
 
 procedure TGLSoundSample.LoadFromFile(const fileName: string);
 var
@@ -718,8 +677,6 @@ begin
   Name := ExtractFileName(fileName);
 end;
 
-// PlayOnWaveOut
-//
 
 procedure TGLSoundSample.PlayOnWaveOut;
 begin
@@ -727,8 +684,6 @@ begin
     FData.PlayOnWaveOut;
 end;
 
-// TGLSoundSample
-//
 
 function TGLSoundSample.Sampling: TGLSoundSampling;
 begin
@@ -738,8 +693,6 @@ begin
     Result := nil;
 end;
 
-// LengthInBytes
-//
 
 function TGLSoundSample.LengthInBytes: Integer;
 begin
@@ -749,8 +702,6 @@ begin
     Result := 0;
 end;
 
-// LengthInSamples
-//
 
 function TGLSoundSample.LengthInSamples: Integer;
 begin
@@ -760,8 +711,6 @@ begin
     Result := 0;
 end;
 
-// LengthInSec
-//
 
 function TGLSoundSample.LengthInSec: Single;
 begin
@@ -771,8 +720,6 @@ begin
     Result := 0;
 end;
 
-// SetData
-//
 
 procedure TGLSoundSample.SetData(const val: TGLSoundFile);
 begin
@@ -864,8 +811,6 @@ begin
   inherited Destroy;
 end;
 
-// Notification
-//
 
 procedure TGLSoundLibrary.Notification(AComponent: TComponent; Operation:
   TOperation);
@@ -873,8 +818,6 @@ begin
   inherited;
 end;
 
-// SetSamples
-//
 
 procedure TGLSoundLibrary.SetSamples(const val: TGLSoundSamples);
 begin
@@ -885,8 +828,6 @@ end;
 // ------------------ TGLBaseSoundSource ------------------
 // ------------------
 
- 
-//
 
 constructor TGLBaseSoundSource.Create(Collection: TCollection);
 begin
@@ -902,24 +843,18 @@ begin
   FFrequency := -1;
 end;
 
- 
-//
 
 destructor TGLBaseSoundSource.Destroy;
 begin
   inherited Destroy;
 end;
 
-// GetDisplayName
-//
 
 function TGLBaseSoundSource.GetDisplayName: string;
 begin
   Result := Format('%s', [FSoundName]);
 end;
 
-// Assign
-//
 
 procedure TGLBaseSoundSource.Assign(Source: TPersistent);
 begin
@@ -946,8 +881,6 @@ begin
     inherited Assign(Source);
 end;
 
-// WriteToFiler
-//
 
 procedure TGLBaseSoundSource.WriteToFiler(writer: TWriter);
 begin
@@ -974,8 +907,6 @@ begin
   end;
 end;
 
-// ReadFromFiler
-//
 
 procedure TGLBaseSoundSource.ReadFromFiler(reader: TReader);
 begin
@@ -1001,8 +932,6 @@ begin
   end;
 end;
 
-// Sample
-//
 
 function TGLBaseSoundSource.Sample: TGLSoundSample;
 begin
@@ -1012,8 +941,6 @@ begin
     Result := nil;
 end;
 
-// SetPriority
-//
 
 procedure TGLBaseSoundSource.SetPriority(const val: Integer);
 begin
@@ -1024,8 +951,6 @@ begin
   end;
 end;
 
-// SetOrigin
-//
 
 procedure TGLBaseSoundSource.SetOrigin(const val: TGLBaseSceneObject);
 begin
@@ -1036,8 +961,6 @@ begin
   end;
 end;
 
-// SetVolume
-//
 
 procedure TGLBaseSoundSource.SetVolume(const val: Single);
 begin
@@ -1048,8 +971,6 @@ begin
   end;
 end;
 
-// SetMinDistance
-//
 
 procedure TGLBaseSoundSource.SetMinDistance(const val: Single);
 begin
@@ -1060,8 +981,6 @@ begin
   end;
 end;
 
-// SetMaxDistance
-//
 
 procedure TGLBaseSoundSource.SetMaxDistance(const val: Single);
 begin
@@ -1072,8 +991,6 @@ begin
   end;
 end;
 
-// SetInsideConeAngle
-//
 
 procedure TGLBaseSoundSource.SetInsideConeAngle(const val: Single);
 begin
@@ -1084,8 +1001,6 @@ begin
   end;
 end;
 
-// SetOutsideConeAngle
-//
 
 procedure TGLBaseSoundSource.SetOutsideConeAngle(const val: Single);
 begin
@@ -1096,8 +1011,6 @@ begin
   end;
 end;
 
-// SetConeOutsideVolume
-//
 
 procedure TGLBaseSoundSource.SetConeOutsideVolume(const val: Single);
 begin
@@ -1108,8 +1021,6 @@ begin
   end;
 end;
 
-// GetSoundLibrary
-//
 
 function TGLBaseSoundSource.GetSoundLibrary: TGLSoundLibrary;
 begin
@@ -1118,8 +1029,6 @@ begin
   Result := FSoundLibrary;
 end;
 
-// SetSoundLibrary
-//
 
 procedure TGLBaseSoundSource.SetSoundLibrary(const val: TGLSoundLibrary);
 begin
@@ -1134,8 +1043,6 @@ begin
   end;
 end;
 
-// SetSoundName
-//
 
 procedure TGLBaseSoundSource.SetSoundName(const val: string);
 begin
@@ -1146,8 +1053,6 @@ begin
   end;
 end;
 
-// SetPause
-//
 
 procedure TGLBaseSoundSource.SetPause(const val: Boolean);
 begin
@@ -1155,13 +1060,10 @@ begin
   begin
     FPause := val;
     if Collection <> nil then
-      TGLSoundManager(TGLSoundSources(Collection).owner).PauseSource(Self,
-        FPause);
+      TGLSoundManager(TGLSoundSources(Collection).owner).PauseSource(Self, FPause);
   end;
 end;
 
-// SetNbLoops
-//
 
 procedure TGLBaseSoundSource.SetNbLoops(const val: Integer);
 begin
@@ -1172,8 +1074,6 @@ begin
   end;
 end;
 
-// SetFrequency
-//
 
 procedure TGLBaseSoundSource.SetFrequency(const val: integer);
 begin
@@ -1184,8 +1084,6 @@ begin
   end;
 end;
 
-// SetMute
-//
 
 procedure TGLBaseSoundSource.SetMute(const val: Boolean);
 begin
@@ -1202,8 +1100,6 @@ end;
 // ------------------ TGLSoundSource ------------------
 // ------------------
 
- 
-//
 
 destructor TGLSoundSource.Destroy;
 begin
@@ -1253,8 +1149,6 @@ end;
 // ------------------ TGLSoundManager ------------------
 // ------------------
 
- 
-//
 
 constructor TGLSoundManager.Create(AOwner: TComponent);
 begin
@@ -1270,8 +1164,6 @@ begin
   FDopplerFactor := 1.0;
 end;
 
- 
-//
 
 destructor TGLSoundManager.Destroy;
 begin
@@ -1280,9 +1172,6 @@ begin
   FSources.Free;
   inherited Destroy;
 end;
-
-// Notification
-//
 
 procedure TGLSoundManager.Notification(AComponent: TComponent; Operation:
   TOperation);
@@ -1296,9 +1185,6 @@ begin
   end;
   inherited;
 end;
-
-// SetActive
-//
 
 procedure TGLSoundManager.SetActive(const val: Boolean);
 begin
@@ -1329,24 +1215,18 @@ begin
   end;
 end;
 
-// Activate
-//
 
 function TGLSoundManager.DoActivate: Boolean;
 begin
   Result := True;
 end;
 
-// DeActivate
-//
 
 procedure TGLSoundManager.DoDeActivate;
 begin
   StopAllSources;
 end;
 
-// SetMute
-//
 
 procedure TGLSoundManager.SetMute(const val: Boolean);
 begin
@@ -1365,8 +1245,6 @@ begin
   end;
 end;
 
-// DoMute
-//
 
 function TGLSoundManager.DoMute: Boolean;
 var
@@ -1378,8 +1256,6 @@ begin
   Result := True;
 end;
 
-// DoUnMute
-//
 
 procedure TGLSoundManager.DoUnMute;
 var
@@ -1390,8 +1266,6 @@ begin
       MuteSource(Sources[i], False);
 end;
 
-// SetPause
-//
 
 procedure TGLSoundManager.SetPause(const val: Boolean);
 begin
@@ -1410,8 +1284,6 @@ begin
   end;
 end;
 
-// Loaded
-//
 
 procedure TGLSoundManager.Loaded;
 begin
@@ -1423,8 +1295,6 @@ begin
   end;
 end;
 
-// DefineProperties
-//
 
 procedure TGLSoundManager.DefineProperties(Filer: TFiler);
 begin
@@ -1433,24 +1303,18 @@ begin
     1));
 end;
 
-// WriteDoppler
-//
 
 procedure TGLSoundManager.WriteDoppler(writer: TWriter);
 begin
   writer.WriteFloat(DopplerFactor);
 end;
 
-// ReadDoppler
-//
 
 procedure TGLSoundManager.ReadDoppler(reader: TReader);
 begin
   FDopplerFactor := reader.ReadFloat;
 end;
 
-// DoPause
-//
 
 function TGLSoundManager.DoPause: Boolean;
 var
@@ -1462,8 +1326,6 @@ begin
   Result := True;
 end;
 
-// DoUnPause
-//
 
 procedure TGLSoundManager.DoUnPause;
 var
@@ -1474,8 +1336,6 @@ begin
       PauseSource(Sources[i], False);
 end;
 
-// SetMasterVolume
-//
 
 procedure TGLSoundManager.SetMasterVolume(const val: Single);
 begin
@@ -1488,8 +1348,6 @@ begin
   NotifyMasterVolumeChange;
 end;
 
-// SetMaxChannels
-//
 
 procedure TGLSoundManager.SetMaxChannels(const val: Integer);
 begin
@@ -1502,8 +1360,6 @@ begin
   end;
 end;
 
-// SetOutputFrequency
-//
 
 procedure TGLSoundManager.SetOutputFrequency(const val: Integer);
 begin
@@ -1516,24 +1372,18 @@ begin
   end;
 end;
 
-// SetUpdateFrequency
-//
 
 procedure TGLSoundManager.SetUpdateFrequency(const val: Single);
 begin
   FUpdateFrequency := ClampValue(val, 1, 60);
 end;
 
-// StoreUpdateFrequency
-//
 
 function TGLSoundManager.StoreUpdateFrequency: Boolean;
 begin
   Result := (FUpdateFrequency <> 10);
 end;
 
-// SetCadencer
-//
 
 procedure TGLSoundManager.SetCadencer(const val: TGLCadencer);
 begin
@@ -1547,8 +1397,6 @@ begin
   end;
 end;
 
-// SetDistanceFactor
-//
 
 procedure TGLSoundManager.SetDistanceFactor(const val: Single);
 begin
@@ -1559,16 +1407,12 @@ begin
   Notify3DFactorsChanged;
 end;
 
-// StoreDistanceFactor
-//
 
 function TGLSoundManager.StoreDistanceFactor: Boolean;
 begin
   Result := (FDistanceFactor <> 1);
 end;
 
-// SetRollOffFactor
-//
 
 procedure TGLSoundManager.SetRollOffFactor(const val: Single);
 begin
@@ -1579,16 +1423,12 @@ begin
   Notify3DFactorsChanged;
 end;
 
-// StoreRollOffFactor
-//
 
 function TGLSoundManager.StoreRollOffFactor: Boolean;
 begin
   Result := (FRollOffFactor <> 1);
 end;
 
-// SetDopplerFactor
-//
 
 procedure TGLSoundManager.SetDopplerFactor(const val: Single);
 begin
@@ -1601,8 +1441,6 @@ begin
   Notify3DFactorsChanged;
 end;
 
-// SetSoundEnvironment
-//
 
 procedure TGLSoundManager.SetSoundEnvironment(const val: TGLSoundEnvironment);
 begin
@@ -1613,8 +1451,6 @@ begin
   end;
 end;
 
-// ListenerCoordinates
-//
 
 procedure TGLSoundManager.ListenerCoordinates(var position, velocity, direction,
   up: TVector);
@@ -1655,32 +1491,24 @@ begin
   end;
 end;
 
-// NotifyMasterVolumeChange
-//
 
 procedure TGLSoundManager.NotifyMasterVolumeChange;
 begin
   // nothing
 end;
 
-// Notify3DFactorsChanged
-//
 
 procedure TGLSoundManager.Notify3DFactorsChanged;
 begin
   // nothing
 end;
 
-// NotifyEnvironmentChanged
-//
 
 procedure TGLSoundManager.NotifyEnvironmentChanged;
 begin
   // nothing
 end;
 
-// SetListener
-//
 
 procedure TGLSoundManager.SetListener(const val: TGLBaseSceneObject);
 begin
@@ -1691,50 +1519,36 @@ begin
     FListener.FreeNotification(Self);
 end;
 
-// SetSources
-//
 
 procedure TGLSoundManager.SetSources(const val: TGLSoundSources);
 begin
   FSources.Assign(val);
 end;
 
-// KillSource
-//
 
 procedure TGLSoundManager.KillSource(aSource: TGLBaseSoundSource);
 begin
   // nothing
 end;
 
-// UpdateSource
-//
 
 procedure TGLSoundManager.UpdateSource(aSource: TGLBaseSoundSource);
 begin
   aSource.FChanges := [];
 end;
 
-// MuteSource
-//
 
-procedure TGLSoundManager.MuteSource(aSource: TGLBaseSoundSource; muted:
-  Boolean);
+procedure TGLSoundManager.MuteSource(aSource: TGLBaseSoundSource; muted: Boolean);
 begin
   // nothing
 end;
 
-// PauseSource
-//
 
-procedure TGLSoundManager.PauseSource(aSource: TGLBaseSoundSource; paused:
-  Boolean);
+procedure TGLSoundManager.PauseSource(aSource: TGLBaseSoundSource; paused: Boolean);
 begin
   // nothing
 end;
 
-// UpdateSources
-//
 
 procedure TGLSoundManager.UpdateSources;
 var
@@ -1744,8 +1558,6 @@ begin
     UpdateSource(Sources[i]);
 end;
 
-// StopAllSources
-//
 
 procedure TGLSoundManager.StopAllSources;
 var
@@ -1754,9 +1566,6 @@ begin
   for i := Sources.Count - 1 downto 0 do
     Sources.Delete(i);
 end;
-
-// DoProgress
-//
 
 procedure TGLSoundManager.DoProgress(const progressTime: TProgressTimes);
 begin
@@ -1771,16 +1580,11 @@ begin
     end;
 end;
 
-// CPUUsagePercent
-//
-
 function TGLSoundManager.CPUUsagePercent: Single;
 begin
   Result := -1;
 end;
 
-// EAXSupported
-//
 
 function TGLSoundManager.EAXSupported: Boolean;
 begin
@@ -1791,8 +1595,6 @@ end;
 // ------------------ TGLBSoundEmitter ------------------
 // ------------------
 
- 
-//
 
 constructor TGLBSoundEmitter.Create(aOwner: TGLXCollection);
 begin
@@ -1801,7 +1603,6 @@ begin
 end;
 
  
-//
 
 destructor TGLBSoundEmitter.Destroy;
 begin
@@ -1811,9 +1612,6 @@ begin
   inherited Destroy;
 end;
 
-// Assign
-//
-
 procedure TGLBSoundEmitter.Assign(Source: TPersistent);
 begin
   if Source is TGLBSoundEmitter then
@@ -1822,9 +1620,6 @@ begin
   end;
   inherited Assign(Source);
 end;
-
-// WriteToFiler
-//
 
 procedure TGLBSoundEmitter.WriteToFiler(writer: TWriter);
 begin
@@ -1837,8 +1632,6 @@ begin
   end;
 end;
 
-// ReadFromFiler
-//
 
 procedure TGLBSoundEmitter.ReadFromFiler(reader: TReader);
 begin
@@ -1851,8 +1644,6 @@ begin
   end;
 end;
 
-// Loaded
-//
 
 procedure TGLBSoundEmitter.Loaded;
 begin
@@ -1862,47 +1653,34 @@ begin
 end;
 
  
-//
-
 class function TGLBSoundEmitter.FriendlyName: string;
 begin
   Result := 'Sound Emitter';
 end;
 
-// FriendlyDescription
-//
 
 class function TGLBSoundEmitter.FriendlyDescription: string;
 begin
   Result := 'A simple sound emitter behaviour';
 end;
 
-// UniqueBehaviour
-//
-
 class function TGLBSoundEmitter.UniqueItem: Boolean;
 begin
   Result := False;
 end;
 
-// DoProgress
-//
 
 procedure TGLBSoundEmitter.DoProgress(const progressTime: TProgressTimes);
 begin
   // nothing, yet
 end;
 
-// SetSource
-//
 
 procedure TGLBSoundEmitter.SetSource(const val: TGLBaseSoundSource);
 begin
   FSource.Assign(val);
 end;
 
-// SetPlaying
-//
 
 procedure TGLBSoundEmitter.SetPlaying(const val: Boolean);
 begin
@@ -1927,8 +1705,6 @@ begin
     InformationDlg('No Active Sound Manager.'#13#10'Make sure manager is created before emitter');
 end;
 
-// GetPlaying
-//
 
 function TGLBSoundEmitter.GetPlaying: Boolean;
 begin
@@ -1938,8 +1714,6 @@ begin
     Result := Assigned(FPlayingSource);
 end;
 
-// NotifySourceDestruction
-//
 
 procedure TGLBSoundEmitter.NotifySourceDestruction(aSource: TGLSoundSource);
 begin

@@ -599,7 +599,7 @@ procedure TGEExportFile.LoadFilePath;
 begin
   Reg.OpenKey(RegPath,true);
   FilePath := Reg.ReadString(SubRegPath,Identifier+'.FilePath',
-    ExtractFilePath(Application.ExeName));
+    ExtractFilePath(ParamStr(0)));
   Reg.CloseKey;
 end;
 //------ TGEExportFile.LoadRegistrySettings ----------------------------------

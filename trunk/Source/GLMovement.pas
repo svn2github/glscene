@@ -22,7 +22,7 @@ uses
   System.Classes,
   System.SysUtils,
 
-  
+
   OpenGLTokens,
   GLScene,
   GLVectorGeometry,
@@ -35,32 +35,24 @@ uses
 
 type
 
-  // TGLPathNode
-  //
   TGLPathNode = class (TCollectionItem)
   private
     FPosition: TVector;
     FScale: TVector;
     FRotation: TVector;
-    
     FDirection: TVector;
     FUp: TVector;
-
     FSpeed: single;
-
     procedure SetPositionAsVector(const Value: TVector);
     procedure SetRotationAsVector(const Value: TVector);
     procedure SetScaleAsVector(const Value: TVector);
-
     function GetPositionCoordinate(const Index: Integer): TGLFloat;
     procedure SetPositionCoordinate(const Index: integer; const AValue: TGLFloat);
     function GetRotationCoordinate(const Index: Integer): TGLFloat;
     procedure SetRotationCoordinate(const Index: integer; const AValue: TGLFloat);
     function GetScaleCoordinate(const Index: Integer): TGLFloat;
     procedure SetScaleCoordinate(const Index: integer; const AValue: TGLFloat);
-
     procedure SetSpeed(const Value: single);
-
     function GetDirectionCoordinate(const Index: Integer): TGLFloat;
     procedure SetDirectionCoordinate(const Index: integer; const AValue: TGLFloat);
     function GetUpCoordinate(const Index: Integer): TGLFloat;
@@ -72,30 +64,23 @@ type
   public
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
-
     function PositionAsAddress: PGLFloat;
     function RotationAsAddress: PGLFloat;
     function ScaleAsAddress: PGLFloat;
-
     procedure Assign(Source: TPersistent); override;
-
     procedure InitializeByObject(const Obj: TGLBaseSceneObject);
-
     {Warning: does not take speed into account. }
     function EqualNode(const aNode: TGLPathNode): boolean;
-
     {Rotation.X means PitchAngle, Rotation.Y means TurnAngle, Rotation.Z means RollAngle.}
     property RotationAsVector: TVector Read FRotation Write SetRotationAsVector;
     property PositionAsVector: TVector Read FPosition Write SetPositionAsVector;
     property ScaleAsVector: TVector Read FScale Write SetScaleAsVector;
     property UpAsVector: TVector read FUp write FUp;
     property DirectionAsVector: TVector read FDirection write FDirection;
-
   published
     property X: TGLFloat index 0 Read GetPositionCoordinate Write SetPositionCoordinate;
     property Y: TGLFloat index 1 Read GetPositionCoordinate Write SetPositionCoordinate;
     property Z: TGLFloat index 2 Read GetPositionCoordinate Write SetPositionCoordinate;
-
     //Rotation.X means PitchAngle;
     //Rotation.Y means TurnAngle;
     //Rotation.Z means RollAngle;
@@ -118,14 +103,10 @@ type
     property Speed: single Read FSpeed Write SetSpeed;
   end;
 
-
   TGLMovementRotationMode = (rmTurnPitchRoll, rmUpDirection);
-
 
   TGLMovementPath = class;
 
-  // TGLPathNodes
-  //
   TGLPathNodes = class (TOwnedCollection)
   protected
     procedure SetItems(const index: integer; const val: TGLPathNode);
@@ -168,17 +149,13 @@ type
     DirectionSplineControl: TCubicSpline;
     UpSplineControl: TCubicSpline;
 
-
     FOnTravelStart: TNotifyEvent;
     FOnTravelStop: TNotifyEvent;
 
     FCurrentNodeIndex: integer;
-
     function GetNodeCount: integer;
     procedure SetStartTime(const Value: double);
-
     procedure SetCurrentNodeIndex(const Value: integer);
-
     procedure SetShowPath(const Value: Boolean);
     procedure SetPathSplineMode(const Value: TGLLineSplineMode);
   protected
@@ -189,39 +166,28 @@ type
   public
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
-
     procedure Assign(Source: TPersistent); override;
     function GetMovement: TGLMovement;
-
     function AddNode: TGLPathNode; overload;
     function AddNode(const Node: TGLPathNode): TGLPathNode; overload;
-
     function AddNodeFromObject(const Obj: TGLBaseSceneObject): TGLPathNode;
     function InsertNodeFromObject(const Obj: TGLBaseSceneObject; const Index: integer): TGLPathNode;
-
     function InsertNode(const Node: TGLPathNode; const Index: integer): TGLPathNode; overload;
     function InsertNode(const Index: integer): TGLPathNode; overload;
     function DeleteNode(const Index: integer): TGLPathNode; overload;
     function DeleteNode(const Node: TGLPathNode): TGLPathNode; overload;
     procedure ClearNodes;
     procedure UpdatePathLine;
-
     function NodeDistance(const Node1, Node2: TGLPathNode): double;
-
     procedure CalculateState(const CurrentTime: double);
-
     procedure TravelPath(const Start: boolean); overload;
     procedure TravelPath(const Start: boolean; const aStartTime: double); overload;
-
     property NodeCount: integer Read GetNodeCount;
     property CurrentNode: TGLPathNode Read FCurrentNode;
     property InTravel: boolean Read FInTravel;
-
     function PrevNode: integer;
     function NextNode: integer;
-
     property CurrentNodeIndex: integer Read FCurrentNodeIndex Write SetCurrentNodeIndex;
-
     property OnTravelStart: TNotifyEvent Read FOnTravelStart Write FOnTravelStart;
     property OnTravelStop: TNotifyEvent Read FOnTravelStop Write FOnTravelStop;
   published
@@ -233,7 +199,6 @@ type
 
     property StartTime: double Read FStartTime Write SetStartTime;
     property EstimateTime: double Read FEstimateTime;
-
     property Looped: boolean Read FLooped Write FLooped;
     property Nodes: TGLPathNodes Read FNodes;
     property ShowPath: Boolean read FShowPath write SetShowPath;
@@ -252,9 +217,8 @@ type
     procedure NotifyChange; virtual;
   end;
 
-
   //Event for path related event
-  TPathTravelStartEvent = procedure (Sender: TObject; 
+  TPathTravelStartEvent = procedure (Sender: TObject;
     Path: TGLMovementPath) of object;
   TPathTravelStopEvent = procedure (Sender: TObject;
     Path: TGLMovementPath; var Looped: boolean) of object;
@@ -282,7 +246,6 @@ type
     procedure ReadFromFiler(reader : TReader); override;
     procedure PathTravelStart(Sender: TObject);
     procedure PathTravelStop(Sender: TObject);
-
     function GetSceneObject: TGLBaseSceneObject;
   public
     constructor Create(aOwner: TGLXCollection); override;
@@ -307,17 +270,13 @@ type
 
     procedure StartPathTravel;
     procedure StopPathTravel;
-
     procedure DoProgress(const progressTime : TProgressTimes); override;
-
     function NextPath: integer;
     function PrevPath: integer;
     function FirstPath: integer;
     function LastPath: integer;
-
       //property Paths[index: Integer]: TGLMovementPath read GetMovementPath write SetMovementPath;
     property PathCount: integer Read GetPathCount;
-
     //why do these property can't be saved in IDE ?
     property OnAllPathTravelledOver: TNotifyEvent Read FOnAllPathTravelledOver Write FOnAllPathTravelledOver;
     property OnPathTravelStart: TPathTravelStartEvent Read FOnPathTravelStart Write FOnPathTravelStart;
@@ -345,7 +304,8 @@ implementation
 // ------------------------------------------------------------------
 uses
   GLVectorTypes;
-//----------------------------- TGLPathNode ------------------------------------
+
+ //----------------------------- TGLPathNode ------------------------------------
 constructor TGLPathNode.Create(Collection: TCollection);
 begin
   inherited Create(Collection);

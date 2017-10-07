@@ -13,11 +13,28 @@ uses
   Vcl.ExtCtrls,
   Vcl.FileCtrl,
   Vcl.Imaging.Jpeg,
-  
-  GLMaterial, GLTexCombineShader, GLCadencer, GLLensFlare,
-  GLScene, GLObjects, GLCoordinates, GLSkydome, GLCrossPlatform, GLBaseClasses,
-  GLWin32Viewer, GLTexture, GLRenderContextInfo, GLColor, GLState,
-  GLUtils, OpenGLTokens, OpenGL1x, GLVectorGeometry, GLContext, GLTextureFormat;
+
+  OpenGLTokens,
+  OpenGL1x,
+  GLMaterial,
+  GLTexCombineShader,
+  GLCadencer,
+  GLLensFlare,
+  GLScene,
+  GLObjects,
+  GLCoordinates,
+  GLSkydome,
+  GLCrossPlatform,
+  GLBaseClasses,
+  GLWin32Viewer,
+  GLTexture,
+  GLRenderContextInfo,
+  GLColor,
+  GLState,
+  GLUtils,
+  GLVectorGeometry,
+  GLContext,
+  GLTextureFormat;
 
 
 type

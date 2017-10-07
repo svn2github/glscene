@@ -58,7 +58,7 @@ begin
     LoadFromRegistry;
     if (fRelativeTipFile <> '') then
     begin
-      sTipFile := ExtractFilePath(Application.ExeName)+fRelativeTipFile;
+      sTipFile := ExtractFilePath(ParamStr(0))+fRelativeTipFile;
       if FileExists(sTipFile) then
         Tips.LoadFromFile(sTipFile);
     end;

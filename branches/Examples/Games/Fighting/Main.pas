@@ -7,7 +7,7 @@ uses
   System.SysUtils, System.Classes, System.Math,
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
   Vcl.Buttons, Vcl.ComCtrls, Vcl.ExtCtrls, Vcl.StdCtrls, Vcl.Imaging.Jpeg,
-  // GLS
+   
   GLScene, GLObjects, GLCadencer, GLVectorFileObjects,
   GLKeyboard, GLVectorGeometry, GLTexture, GLWin32Viewer, GLBehaviours,
   GLFireFX, GLGeomObjects, GLFileMD2, GLHUDObjects, GLBitmapFont,
@@ -48,9 +48,9 @@ type
     procedure Button1Click(Sender: TObject);
     procedure EsferaProgress(Sender: TObject; const deltaTime, newTime: Double);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
   end;
 
 var
@@ -68,7 +68,7 @@ implementation
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
-  SetCurrentDir(ExtractFilePath(Application.ExeName));
+  SetCurrentDir(ExtractFilePath(ParamStr(0)));
 
   // loading the actor
   Actor1.LoadFromFile('.\Beast.md2');

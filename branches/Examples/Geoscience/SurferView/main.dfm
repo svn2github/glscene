@@ -2,8 +2,8 @@ object Form1: TForm1
   Left = 280
   Top = 266
   Caption = 'GridGLS Viewer'
-  ClientHeight = 388
-  ClientWidth = 673
+  ClientHeight = 394
+  ClientWidth = 676
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -23,9 +23,10 @@ object Form1: TForm1
     Left = 0
     Top = 0
     Width = 207
-    Height = 388
+    Height = 394
     Align = alLeft
     TabOrder = 0
+    ExplicitHeight = 388
     object lblVerticalExaggeration: TLabel
       Left = 10
       Top = 8
@@ -156,19 +157,19 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 207
     Top = 0
-    Width = 466
-    Height = 388
+    Width = 469
+    Height = 394
     Camera = GLCamera
     Buffer.BackgroundColor = clHighlightText
-    FieldOfView = 151.095138549804700000
+    FieldOfView = 151.517288208007800000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
     TabOrder = 1
   end
   object MainMenu1: TMainMenu
-    Left = 6
-    Top = 368
+    Left = 382
+    Top = 16
     object miFile: TMenuItem
       Caption = 'File'
       object miOpenSurfer: TMenuItem
@@ -192,17 +193,17 @@ object Form1: TForm1
     end
   end
   object GLScene1: TGLScene
-    Left = 38
-    Top = 368
+    Left = 254
+    Top = 16
     object HeightField1: TGLHeightField
       Material.FrontProperties.Diffuse.Color = {CDCC4C3FCDCC4C3FCDCC4C3F39B4283F}
       Material.BlendingMode = bmTransparency
+      ShowAxes = True
       XSamplingScale.Step = 0.100000001490116100
       YSamplingScale.Step = 0.100000001490116100
       ColorMode = hfcmDiffuse
     end
     object DummyCube: TGLDummyCube
-      ShowAxes = True
       CubeSize = 1.000000000000000000
       object GLLightSource1: TGLLightSource
         ConstAttenuation = 1.000000000000000000
@@ -226,11 +227,11 @@ object Form1: TForm1
     DefaultExt = '*.grd'
     Filter = 'Surfer Grid|*.grd|All Files|*.*'
     Title = 'Open Surfer Grid'
-    Left = 568
-    Top = 368
+    Left = 536
+    Top = 80
   end
   object ColorDialog: TColorDialog
-    Left = 136
-    Top = 352
+    Left = 536
+    Top = 16
   end
 end

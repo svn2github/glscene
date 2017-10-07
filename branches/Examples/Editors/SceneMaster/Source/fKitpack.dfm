@@ -1,10 +1,10 @@
-object KitpackForm: TKitpackForm
+object fmKitpack: TfmKitpack
   Left = 0
   Top = 0
-  BorderStyle = bsDialog
+  BorderStyle = bsSizeToolWin
   Caption = 'Kitpack'
-  ClientHeight = 429
-  ClientWidth = 258
+  ClientHeight = 419
+  ClientWidth = 248
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -13,14 +13,13 @@ object KitpackForm: TKitpackForm
   Font.Style = []
   FormStyle = fsStayOnTop
   OldCreateOrder = False
-  Position = poDesigned
   Visible = True
   PixelsPerInch = 96
   TextHeight = 13
   object twBasicGeometry: TTreeView
     Left = 0
     Top = 41
-    Width = 258
+    Width = 248
     Height = 112
     Align = alTop
     AutoExpand = True
@@ -35,15 +34,17 @@ object KitpackForm: TKitpackForm
       FF00000000000000000000000001065300700068006500720065003400000002
       00000000000000FFFFFFFFFFFFFFFF000000000000000000000000010B540065
       0074007200610068006500640072006F006E00}
+    ExplicitWidth = 258
   end
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 258
+    Width = 248
     Height = 41
     Align = alTop
     Caption = 'Objects'
     TabOrder = 1
+    ExplicitWidth = 258
   end
   object TreeView2: TTreeView
     Left = 0

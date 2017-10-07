@@ -1,0 +1,24 @@
+echo off
+del *.dcu /s
+del *.ddp /s
+del *.dof /s
+del *.cfg /s
+del *.ppu /s
+del *.o /s
+del *.~* /s
+del *.log /s
+del *.dsk /s
+del *.bk? /s
+del *.mps /s
+del *.rst /s
+del *.s /s
+del *.a /s
+del *.rsm /s
+del *.drc /s
+del *.2007 /s
+del *.local /s
+del *.compiled /s
+del *.identcache /s
+del *.dbg /s
+del *.lps /s
+del *.or /s

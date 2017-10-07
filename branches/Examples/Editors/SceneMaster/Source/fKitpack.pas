@@ -20,7 +20,7 @@ uses
   fInitial;
 
 type
-  TKitpackForm = class(TInitialForm)
+  TfmKitpack = class(TInitialForm)
     twBasicGeometry: TTreeView;
     Panel1: TPanel;
     TreeView2: TTreeView;
@@ -31,7 +31,7 @@ type
   end;
 
 var
-  KitpackForm: TKitpackForm;
+  fmKitpack: TfmKitpack;
 
 implementation
 

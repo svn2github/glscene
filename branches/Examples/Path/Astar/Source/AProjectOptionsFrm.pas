@@ -1536,7 +1536,7 @@ procedure TAProjectOptionsForm.Openaff1BtnClick(Sender: TObject);
 begin
   OpenDialog.Filter:= 'astar unit flag jpg bmp|*.jpg;*.bmp';
   OpenDialog.InitialDir:=//ProjectDirectory;
-          ExtractFilePath(Application.ExeName)+'Flags';
+          ExtractFilePath(ParamStr(0))+'Flags';
   OpenDialog.FileName:='';//'*.bmp';
   if OpenDialog.Execute then
   case TComponent(Sender).Tag of
@@ -1553,7 +1553,7 @@ procedure TAProjectOptionsForm.Openamd1BtnClick(Sender: TObject);
 begin                     //actors
   OpenDialog.Filter:= 'astar Actor md2|*.md2';
   OpenDialog.InitialDir:=//ProjectDirectory;
-          ExtractFilePath(Application.ExeName)+'Actors';
+          ExtractFilePath(ParamStr(0))+'Actors';
   OpenDialog.FileName:='*.md2';
   if OpenDialog.Execute then
   case TComponent(Sender).Tag of
@@ -1570,7 +1570,7 @@ procedure TAProjectOptionsForm.Openajp1BtnClick(Sender: TObject);
 begin
   OpenDialog.Filter:= 'astar Actor jpg bmp|*.jpg;*.bmp';
   OpenDialog.InitialDir:=//ProjectDirectory;
-          ExtractFilePath(Application.ExeName)+'Actors';
+          ExtractFilePath(ParamStr(0))+'Actors';
   OpenDialog.FileName:='';
   if OpenDialog.Execute then
   case TComponent(Sender).Tag of
@@ -1591,7 +1591,7 @@ procedure TAProjectOptionsForm.OpenTexture6BtnClick(Sender: TObject);
 begin
   OpenDialog.Filter:= 'astar Actor Weapon Texture jpg bmp|*.jpg;*.bmp';
   OpenDialog.InitialDir:=//ProjectDirectory;
-          ExtractFilePath(Application.ExeName)+'Actors';
+          ExtractFilePath(ParamStr(0))+'Actors';
   OpenDialog.FileName:='';
   if OpenDialog.Execute then
   case TComponent(Sender).Tag of
@@ -1608,7 +1608,7 @@ procedure TAProjectOptionsForm.OpenWpn1BtnClick(Sender: TObject);
 begin
   OpenDialog.Filter:= 'astar Actor Weapon md2|*.md2';
   OpenDialog.InitialDir:=//ProjectDirectory;
-          ExtractFilePath(Application.ExeName)+'Actors';
+          ExtractFilePath(ParamStr(0))+'Actors';
   OpenDialog.FileName:='*.md2';
   if OpenDialog.Execute then
   case TComponent(Sender).Tag of

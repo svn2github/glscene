@@ -253,19 +253,19 @@ var
   sFileName :string;
 
 begin
-  sFileName := ExtractFilePath(Application.ExeName)+'ChangeLog.txt';
+  sFileName := ExtractFilePath(ParamStr(0))+'ChangeLog.txt';
   if FileExists(sFileName) then
     memChanges.Lines.LoadFromFile(sFileName)
   else
     tsChanges.TabVisible := false;
 
-  sFileName := ExtractFilePath(Application.ExeName)+'MPL-1_1.txt';
+  sFileName := ExtractFilePath(ParamStr(0))+'MPL-1_1.txt';
   if FileExists(sFileName) then
     memLicence.Lines.LoadFromFile(sFileName)
   else
     tsLicence.TabVisible := false;
 
-  ai := TAboutInfo.Create(Application.ExeName);
+  ai := TAboutInfo.Create(ParamStr(0));
   lblVersion.Caption := 'Pre-Release v' + ai.FileVersion;
   lblBuildDate.Caption := 'Built: ' + ai.FileBuildDate;
   ai.Free;

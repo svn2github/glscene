@@ -50,7 +50,7 @@ implementation
 {$R *.dfm}
 
 uses
-  GLGnuGettext, 
+  GnuGettext,
   fMain;
 
 

@@ -102,7 +102,7 @@ implementation
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
-  SetCurrentDir(ExtractFilePath(Application.ExeName));
+  SetCurrentDir(ExtractFilePath(ParamStr(0)));
   // ----Load the main Actor and skin----
   Actor1.LoadFromFile('.\alita\tris.md2');
   Actor1.Material.Texture.Image.LoadFromFile('.\alita\alita2.jpg');

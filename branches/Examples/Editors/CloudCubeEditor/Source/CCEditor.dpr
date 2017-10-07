@@ -22,7 +22,7 @@ uses
 
 begin
   Application.Initialize;
-  Application.Title := 'Gls Cloud Cube Editor';
+  Application.Title := 'GLS Cloud Cube Editor';
   Application.CreateForm(TACloudDemoForm, ACloudDemoForm);
   Application.CreateForm(TATextureCombinerForm, ATextureCombinerForm);
   Application.CreateForm(TProceduralCloudsForm, ProceduralCloudsForm);

@@ -159,7 +159,7 @@ end;
 procedure TAStarAboutForm.HelpBtnClick(Sender: TObject);
 var PathS: string;
 begin
-  PathS := ExtractFilePath(Application.EXEName);
+  PathS := ExtractFilePath(ParamStr(0));
   if FileExists(PathS + 'astar1.html') then
     ExecuteFile('astar1.html', '', PathS, SW_SHOW)
    //HelpBtn    Application.HelpContext(222);
@@ -169,7 +169,7 @@ end;
 procedure TAStarAboutForm.ProgramIconClick(Sender: TObject);
 var PathS: string;
 begin
-  PathS := ExtractFilePath(Application.EXEName);
+  PathS := ExtractFilePath(ParamStr(0));
   if FileExists(PathS + 'astarabout.html') then
     ExecuteFile('astarabout.html', '', PathS, SW_SHOW)
 //    else DoMessages(20003);{20003, "Readme.txt Files not found"}
@@ -179,7 +179,7 @@ end;
 procedure TAStarAboutForm.LicenseBtnClick(Sender: TObject);
 //var PathS: string;
 begin
-  {PathS := ExtractFilePath(Application.EXEName);
+  {PathS := ExtractFilePath(ParamStr(0));
   if FileExists(PathS + 'license.doc') then
     ExecuteFile('license.doc', '', PathS, SW_SHOW) else
     DoMessages(20002);}
@@ -189,7 +189,7 @@ end;
 procedure TAStarAboutForm.RegisterBtnClick(Sender: TObject);
 //var PathS: string;
 begin
-  {PathS := ExtractFilePath(Application.EXEName);
+  {PathS := ExtractFilePath(ParamStr(0));
   if FileExists(PathS + 'order.txt') then
     ExecuteFile('order.txt', '', PathS, SW_SHOW) else
     DoMessages(20001); }
@@ -246,10 +246,10 @@ var
   VerValue: PVSFixedFileInfo;
   Dummy: DWord;
 begin
-  VerInfoSize := GetFileVersionInfoSize(PChar(Application.ExeName),
+  VerInfoSize := GetFileVersionInfoSize(PChar(ParamStr(0)),
     dummy);
   GetMem(VerInfo, VerInfoSize);
-  GetFileVersionInfo(PChar(Application.ExeName), 0, VerInfoSize,
+  GetFileVersionInfo(PChar(ParamStr(0)), 0, VerInfoSize,
     VerInfo);
   VerQueryValue(VerInfo, '\', Pointer(VerValue), VerValueSize);
   with VerValue^ do

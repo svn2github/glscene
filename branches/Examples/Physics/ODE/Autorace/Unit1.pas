@@ -304,11 +304,11 @@ begin
   Cube := TGLDummyCube(Frm.CarsBox.AddNewChild(TGLDummyCube));
   CarAct:= TGLActor(Frm.CarsBox.AddNewChild(TGLActor));
   CarAct.Parent:= Cube;
-  CarAct.LoadFromFile(ExtractFilePath(Application.ExeName)+'slingshot\body.md3');
+  CarAct.LoadFromFile(ExtractFilePath(ParamStr(0))+'slingshot\body.md3');
   CarAct.MaterialLibrary:= Frm.GLMaterialLibrary1;
   CarAct.LightmapLibrary:= Frm.GLMaterialLibrary1;
   CarAct.Material.FrontProperties.Specular.AsWinColor:= clwhite;
-  LoadQ3Skin(ExtractFilePath(Application.ExeName)+'slingshot\'+IntToStr(Modelcar)+'.skin',CarAct);
+  LoadQ3Skin(ExtractFilePath(ParamStr(0))+'slingshot\'+IntToStr(Modelcar)+'.skin',CarAct);
   with CarAct.Scale do
   begin
     X:= 0.03;
@@ -344,7 +344,7 @@ begin
     dGeomSetData(Geoms[i - 1], DummyCube);
 //    Geoms[i-1].data:= DummyCube;
     roueact:= TGLActor(Frm.CarsBox.AddNewChild(TGLActor));
-    roueact.LoadFromFile(ExtractFilePath(Application.ExeName)+'slingshot\wheel.md3');
+    roueact.LoadFromFile(ExtractFilePath(ParamStr(0))+'slingshot\wheel.md3');
     roueact.MaterialLibrary:= Frm.GLMaterialLibrary1;
     roueact.LightmapLibrary:= Frm.GLMaterialLibrary1;
     roueact.Material.FrontProperties.Specular.AsWinColor:= clWhite;
@@ -366,7 +366,7 @@ begin
       roueact.RollAngle:=180;
     if i = 4 then
       roueact.RollAngle:=180;
-  LoadQ3Skin(ExtractFilePath(Application.ExeName)+'slingshot\mag'+IntToStr(Modelcar)+'.skin',roueact);
+  LoadQ3Skin(ExtractFilePath(ParamStr(0))+'slingshot\mag'+IntToStr(Modelcar)+'.skin',roueact);
   end;
   dBodySetPosition(body[1],   0.4*cLENGTH-0.1+10,    cWIDTH*0.7-110,    cSTARTZ-cHEIGHT*0.5-cWHEEL_OFFSET+10);
   dBodySetPosition(body[2],   0.4*cLENGTH-0.1+10,   -cWIDTH*0.7-110,    cSTARTZ-cHEIGHT*0.5-cWHEEL_OFFSET+10);

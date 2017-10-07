@@ -128,7 +128,6 @@ implementation
 // -------------------------------------------------------------------------
 // -------------------------------------------------------------------------
 
-// ----- TColourSpectrum.Add ---------------------------------------------------
 procedure TColourSpectrum.Add(dPercent: double; Red, Green, Blue: byte);
 
 var
@@ -144,7 +143,6 @@ begin
   Entries.Add(Entry);
 end;
 
-// ----- TColourSpectrum.ClearEntries ------------------------------------------
 procedure TColourSpectrum.ClearEntries;
 var
   i: integer;
@@ -155,7 +153,6 @@ begin
   Entries.Clear;
 end;
 
-// ----- TColourSpectrum.DrawBorder --------------------------------------------
 procedure TColourSpectrum.DrawBorder;
 
 begin
@@ -171,21 +168,18 @@ begin
   end;
 end;
 
-// ----- TColourSpectrum.GetCount ----------------------------------------------
 function TColourSpectrum.GetCount: integer;
 
 begin
   result := Entries.Count;
 end;
 
-// ----- TColourSpectrum.GetEntry ----------------------------------------------
 function TColourSpectrum.GetEntry(iIndex: integer): TColourSpectrumEntry;
 
 begin
   result := pColourSpectrumEntry(Entries.Items[iIndex])^;
 end;
 
-// ----- TColourSpectrum.GFillRect ---------------------------------------------
 procedure TColourSpectrum.GFillRect(const canvas: TCanvas;
   start_colour, end_colour: TRGBTriple; rLeft, rTop, rRight, rBottom: integer);
 
@@ -218,7 +212,6 @@ begin
   GradientFill(canvas.Handle, @vert[0], 2, @gRect, 1, GRADIENT_FILL_RECT_V);
 end;
 
-// ----- TColourSpectrum.MakeRGB -----------------------------------------------
 function TColourSpectrum.MakeRGB(r, g, b: byte): TRGBTriple;
 
 begin
@@ -234,7 +227,6 @@ begin
   fCLRLegend := bLegend;
 end;
 
-// ----- TColourSpectrum.SetEntry ----------------------------------------------
 procedure TColourSpectrum.SetEntry(Index: integer; value: TColourSpectrumEntry);
 
 begin
@@ -245,14 +237,12 @@ begin
   end;
 end;
 
-// ----- TColourSpectrum.SetSpectrumFile ---------------------------------------
 procedure TColourSpectrum.SetSpectrumFile(sFile: string);
 
 begin
   fSpectrumFile := sFile;
 end;
 
-// ----- TColourSpectrum.SetSpectrumMode ---------------------------------------
 procedure TColourSpectrum.SetSpectrumMode(iMode: integer);
 
 var
@@ -308,7 +298,7 @@ begin
   end;
 end;
 
-// ----- TColourSpectrum.Create ------------------------------------------------
+
 constructor TColourSpectrum.Create;
 
 begin
@@ -340,7 +330,6 @@ begin
   SpectrumMode := 2; // safe
 end;
 
-// ----- TColourSpectrum.Destroy -----------------------------------------------
 destructor TColourSpectrum.Destroy;
 
 begin
@@ -354,7 +343,6 @@ begin
   inherited Destroy;
 end;
 
-// ----- TColourSpectrum.GetColours --------------------------------------------
 procedure TColourSpectrum.GetColours(const dValue: double;
   const bForward: boolean; var col1, col2: TColor; var dRatio: double);
 
@@ -419,7 +407,6 @@ begin
   end;
 end;
 
-// ----- TColourSpectrum.GetColourVector ---------------------------------------
 function TColourSpectrum.GetColourVector(const dValue: double;
   const bForward: boolean): TColorVector;
 
@@ -434,7 +421,6 @@ begin
   VectorLerp(glCol_Bottom.Color, glCol_Top.Color, rstar, result);
 end;
 
-// ----- TColourSpectrum.WriteLabel --------------------------------------------
 procedure TColourSpectrum.WriteLabel(dValue: double; iLeft, iTop: integer);
 
 var
@@ -448,7 +434,6 @@ begin
   Scalepalette.canvas.TextOut(iLeft, iTop - (csize.cy div 2), sLegendString)
 end;
 
-// ----- TColourSpectrum.GenerateLegend ----------------------------------------
 procedure TColourSpectrum.GenerateLegend(iLeft, iTop: integer);
 
 var
@@ -539,7 +524,6 @@ begin
   end;
 end;
 
-// ----- TColourSpectrum.MakePalette -------------------------------------------
 procedure TColourSpectrum.MakePalette;
 
 const
@@ -692,7 +676,6 @@ begin
   end;
 end;
 
-// ----- TColourSpectrum.ReadCLRFile -------------------------------------------
 procedure TColourSpectrum.ReadCLRFile;
 
 var

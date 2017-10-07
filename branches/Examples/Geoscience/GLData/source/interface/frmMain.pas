@@ -1439,7 +1439,7 @@ end;
 procedure TformMain.acRenderBitmapExecute(Sender: TObject);
 
 begin
-  SaveDialog.InitialDir := ExtractFilePath(Application.ExeName) + 'photos';
+  SaveDialog.InitialDir := ExtractFilePath(ParamStr(0)) + 'photos';
   // Render at viewer resolution (scale = 1, DPI = 96)
   RenderToBitMap(1.0);
 end;
@@ -1448,7 +1448,7 @@ end;
 procedure TformMain.acRenderBitmap2Execute(Sender: TObject);
 
 begin
-  SaveDialog.InitialDir := ExtractFilePath(Application.ExeName) + 'photos';
+  SaveDialog.InitialDir := ExtractFilePath(ParamStr(0)) + 'photos';
   // Render at twice viewer resolution (scale = 2, DPI = 192 = 96x2)
   RenderToBitMap(2.0);
 end;
@@ -1456,7 +1456,7 @@ end;
 // ----- TformMain.acRenderBitmap300Execute ------------------------------------
 procedure TformMain.acRenderBitmap300Execute(Sender: TObject);
 begin
-  SaveDialog.InitialDir := ExtractFilePath(Application.ExeName) + 'photos';
+  SaveDialog.InitialDir := ExtractFilePath(ParamStr(0)) + 'photos';
   // Screen is "magic" 96 dpi, this gives us our scale
   RenderToBitMap(300 / 96);
 end;
@@ -1464,7 +1464,7 @@ end;
 // ----- TformMain.acRenderBitmap600Execute ------------------------------------
 procedure TformMain.acRenderBitmap600Execute(Sender: TObject);
 begin
-  SaveDialog.InitialDir := ExtractFilePath(Application.ExeName) + 'photos';
+  SaveDialog.InitialDir := ExtractFilePath(ParamStr(0)) + 'photos';
   // Screen is "magic" 96 dpi, this gives us our scale
   RenderToBitMap(600 / 96);
 end;
@@ -1482,7 +1482,7 @@ begin
   bmp32 := GLSceneViewer.Buffer.CreateSnapShot;
   bmp := bmp32.Create32BitsBitmap;
 
-  SaveDialog.InitialDir := ExtractFilePath(Application.ExeName) + 'photos';
+  SaveDialog.InitialDir := ExtractFilePath(ParamStr(0)) + 'photos';
   if SaveDialog.Execute then
     bmp.SaveToFile(SaveDialog.FileName);
 
@@ -2398,7 +2398,7 @@ begin
 
   if usersettings.SurferGrid.Modified then
   begin
-    sApp := ExtractFilePath(Application.ExeName);
+    sApp := ExtractFilePath(ParamStr(0));
     if DirectoryExists(usersettings.SurferGrid.DefaultDir) then
       OpenSurfer.InitialDir := usersettings.SurferGrid.DefaultDir
     else if DirectoryExists(sApp + 'samples\surfer') then
@@ -2412,7 +2412,7 @@ begin
 
   if usersettings.ArcInfoGrid.Modified then
   begin
-    sApp := ExtractFilePath(Application.ExeName);
+    sApp := ExtractFilePath(ParamStr(0));
     if DirectoryExists(usersettings.ArcInfoGrid.DefaultDir) then
       OpenArcInfo.InitialDir := usersettings.ArcInfoGrid.DefaultDir
     else if DirectoryExists(sApp + 'samples\arcinfo') then
@@ -2729,7 +2729,7 @@ end;
 function TformMain.HasHelp: Boolean;
 
 begin
-  result := Fileexists(ExtractFilePath(Application.ExeName) + 'glData.chm');
+  result := Fileexists(ExtractFilePath(ParamStr(0)) + 'glData.chm');
 end;
 
 // ----- TformMain.MouseWorldPos -----------------------------------------------
@@ -2745,9 +2745,8 @@ begin
     if bMoveOnZ then
     begin
       // broken ?
-      // SetVector(v,x,y,0);
-       ceneViewer.Buffer.ScreenVectorIntersectWithPlaneYZ(v,moveproxy.Position.X,
-      // result)
+       SetVector(v,x,y,0);
+       GLSceneViewer.Buffer.ScreenVectorIntersectWithPlaneYZ(v,moveproxy.Position.X, Result)
     end
     else
     begin
@@ -3090,7 +3089,7 @@ procedure TformMain.ShowHelp;
 var
   sFile: string;
 begin
-  sFile := ExtractFilePath(Application.ExeName) + 'glData.chm';
+  sFile := ExtractFilePath(ParamStr(0)) + 'glData.chm';
   if Fileexists(sFile) then
     ShellExecute(formMain.Handle, pchar('open'), pchar(sFile), nil, nil,
       SW_NORMAL)

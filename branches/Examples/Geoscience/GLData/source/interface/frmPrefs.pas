@@ -591,7 +591,7 @@ begin
   bLoading := true;
 
 // set up the spectrum path - where the CLR files should be
-  sExePath := ExtractFilePath(Application.ExeName);
+  sExePath := ExtractFilePath(ParamStr(0));
   sCLRpath := sExePath + '\spectrums';
   if DirectoryExists(sCLRPath) then
     OpenDialogCLR.InitialDir := sCLRPath

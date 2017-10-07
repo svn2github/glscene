@@ -1,4 +1,4 @@
-object FormMaster: TFormMaster
+object fmSceneMaster: TfmSceneMaster
   Left = 188
   Top = 87
   Caption = 'Scene Master'

@@ -98,7 +98,7 @@ procedure TMainForm.FormCreate(Sender: TObject);
 begin
   fullScreen := false;
   dspeed := 0;
-  SetCurrentDir(ExtractFilePath(Application.ExeName) + '\models');
+  SetCurrentDir(ExtractFilePath(ParamStr(0)) + '\models');
   FreeForm8.LoadFromFile('fatsub.3ds');
   FreeForm9.LoadFromFile('kokpit2.3ds');
   FreeForm8.Material.Texture.Image.LoadFromFile('podmorni.jpg');

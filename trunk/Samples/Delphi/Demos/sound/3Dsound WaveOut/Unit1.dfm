@@ -101,6 +101,7 @@ object Form1: TForm1
     MasterVolume = 1.000000000000000000
     Listener = Mickey
     Sources = <>
+    UpdateFrequency = 1.000000000000000000
     Cadencer = GLCadencer1
     Left = 8
     Top = 144
@@ -211,6 +212,6 @@ object Form1: TForm1
   object Timer: TTimer
     OnTimer = TimerTimer
     Left = 8
-    Top = 224
+    Top = 232
   end
 end

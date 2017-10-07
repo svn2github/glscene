@@ -535,7 +535,7 @@ procedure TGEImportFile.LoadFilePath;
 begin
   Reg.OpenKey(RegPath,true);
   fFilePath := Reg.ReadString(sIMPORT,Identifier+'.FilePath',
-    ExtractFilePath(Application.ExeName));
+    ExtractFilePath(ParamStr(0)));
   Reg.CloseKey;
 end;
 // ----- TGEImportFile.LoadHeaderSkip ------------------------------------------

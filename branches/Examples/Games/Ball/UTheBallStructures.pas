@@ -29,7 +29,7 @@ type
          procedure SetItems(index : Integer; val : TTheBallStructure);
 
 	   public
-	      { Public Declarations }
+	       
          property Items[index : Integer] : TTheBallStructure read GetItems write SetItems; default;
 
          function StructureByName(const aName : String) : TTheBallStructure;
@@ -39,7 +39,7 @@ type
 	//
 	TTheBallStructure = class (TPersistent)
 	   private
-	      { Private Declarations }
+	       
          FOwner : TTheBallStructures;
          FName : String;
 
@@ -48,7 +48,7 @@ type
          function ParentObject : TGLBaseSceneObject; dynamic;
 
 	   public
-	      { Public Declarations }
+	       
 	      constructor Create(aOwner : TTheBallStructures); virtual;
          destructor Destroy; override;
 
@@ -68,7 +68,7 @@ type
 	//
 	TTBTableText = class (TTheBallStructure)
 	   private
-	      { Private Declarations }
+	       
          FFlatText : TGLFlatText;
          FPosition : TAffineVector;
          FOrientation : TAffineVector;
@@ -80,7 +80,7 @@ type
 	      { Protected Declarations }
 
 	   public
-	      { Public Declarations }
+	       
 	      constructor Create(aOwner : TTheBallStructures); override;
          destructor Destroy; override;
 
@@ -93,7 +93,7 @@ type
 	//
 	TTBCubeArea = class (TTheBallStructure)
 	   private
-	      { Private Declarations }
+	       
          FPosition : TAffineVector;
          FSize : TAffineVector;
 
@@ -101,7 +101,7 @@ type
 	      { Protected Declarations }
 
 	   public
-	      { Public Declarations }
+	       
 	      constructor Create(aOwner : TTheBallStructures); override;
          destructor Destroy; override;
 
@@ -122,11 +122,11 @@ type
 	//
 	TTBBallExit = class (TTBCubeArea)
 	   private
-	      { Private Declarations }
+	       
          FDummy : TGLDummyCube;
          
 	   public
-	      { Public Declarations }
+	       
          procedure Instantiate; override;
          procedure Release; override;
          procedure Progress(const progressTime : TProgressTimes); override;
@@ -136,12 +136,12 @@ type
 	//
 	TTBSpikes = class (TTBCubeArea)
 	   private
-	      { Private Declarations }
+	       
          FNB : Integer;
          FDummy : TGLDummyCube;
          
 	   public
-	      { Public Declarations }
+	       
          procedure Parse(const vals : TStringList); override;
          procedure Instantiate; override;
          procedure Release; override;
@@ -152,11 +152,11 @@ type
 	//
 	TTBFire = class (TTBCubeArea)
 	   private
-	      { Private Declarations }
+	       
          FDisk : TGLDisk;
          
 	   public
-	      { Public Declarations }
+	       
          procedure Parse(const vals : TStringList); override;
          procedure Instantiate; override;
          procedure Release; override;
@@ -167,13 +167,13 @@ type
 	//
 	TTBSteam = class (TTBCubeArea)
 	   private
-	      { Private Declarations }
+	       
          FPlane : TGLPlane;
          FTimeOffset, FTimeOn, FTimeOff : Single;
          FStrength : Single;
 
 	   public
-	      { Public Declarations }
+	       
          procedure Parse(const vals : TStringList); override;
          procedure Instantiate; override;
          procedure Release; override;
@@ -184,13 +184,13 @@ type
 	//
 	TTBTrigger = class (TTBCubeArea)
 	   private
-	      { Private Declarations }
+	       
          FActionStartTime : Double;
          FDisk : TGLDisk;
          FTarget, FAction, FSound : String;
 
 	   public
-	      { Public Declarations }
+	       
          procedure Parse(const vals : TStringList); override;
          procedure Instantiate; override;
          procedure Release; override;
@@ -201,7 +201,7 @@ type
 	//
 	TTBBlock = class (TTBCubeArea)
 	   private
-	      { Private Declarations }
+	       
          FBlock : TGLCube;
          FBlockGeom : PdxGeom;
 
@@ -209,7 +209,7 @@ type
 	      { Protected Declarations }
 
 	   public
-	      { Public Declarations }
+	       
 	      constructor Create(aOwner : TTheBallStructures); override;
          destructor Destroy; override;
 
@@ -223,7 +223,7 @@ type
 	//
 	TTBMarbleBlock = class (TTBBlock)
 	   public
-	      { Public Declarations }
+	       
          procedure Instantiate; override;
 	end;
 
@@ -231,7 +231,7 @@ type
 	//
 	TTBTransparentBlock = class (TTBBlock)
 	   private
-	      { Private Declarations }
+	       
          FInitialAlpha : Single;
 
 	   protected
@@ -239,7 +239,7 @@ type
          function ParentObject : TGLBaseSceneObject; override;
          
 	   public
-	      { Public Declarations }
+	       
          procedure SetTransparency(alpha : Single); override;
 	end;
 
@@ -247,7 +247,7 @@ type
 	//
 	TTBGlassBlock = class (TTBTransparentBlock)
 	   public
-	      { Public Declarations }
+	       
          procedure Instantiate; override;
 	end;
 

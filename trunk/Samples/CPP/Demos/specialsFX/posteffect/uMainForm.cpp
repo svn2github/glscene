@@ -64,12 +64,12 @@ void __fastcall TMainForm::ComboBox1Change(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 void __fastcall TMainForm::GLPostEffect1CustomEffect(TObject *Sender, TGLRenderContextInfo &rci,
-          TGLPostEffectBuffer &Buffer)
+		  TGLPostEffectBuffer &Buffer)
 {
   int i;
 
   for (i = 0; i <= 7; i++) {
-	Buffer[i]->r = Round(Buffer[i + 5]->r * 2);
+	Buffer[i]->r = (int)(Buffer[i + 5]->r * 2);
 	Buffer[i]->g = Round(Buffer[i]->g * 1.5);
 	Buffer[i]->b = Round(Buffer[i + 5]->b * 1.5);
   }

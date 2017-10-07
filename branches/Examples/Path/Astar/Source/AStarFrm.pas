@@ -578,7 +578,7 @@ procedure TAStarForm.Main1Click(Sender: TObject);
 var
   PathS: string;
 begin
-  PathS := ExtractFilePath(Application.EXEName);
+  PathS := ExtractFilePath(ParamStr(0));
   if FileExists(PathS + 'astar1.html') then
     ExecuteFile('astar1.html', '', PathS, SW_SHOW)
 end;

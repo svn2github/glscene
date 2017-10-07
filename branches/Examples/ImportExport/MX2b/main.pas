@@ -82,7 +82,7 @@ begin
      FrameInterpolation := afpLinear;
      AnimationMode := aamBounceForward;
     end;
-  GLMaterialLibrary1.TexturePaths:=ExtractFilePath(Application.ExeName)+'Images\';
+  GLMaterialLibrary1.TexturePaths:=ExtractFilePath(ParamStr(0))+'Images\';
 end;
 
 procedure TForm1.FormMouseWheel(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);

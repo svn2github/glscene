@@ -61,7 +61,6 @@ object Main: TMain
     end
     object DCTable: TGLDummyCube
       ObjectsSorting = osNone
-      Direction.Coordinates = {00000000000000800000803F00000000}
       CubeSize = 1.000000000000000000
       object Mirror: TGLMirror
         Material.FrontProperties.Ambient.Color = {0000000000000000000000000000803F}

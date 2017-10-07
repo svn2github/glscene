@@ -17,27 +17,24 @@ type
     function GetText: String;
     procedure SetItems(Value: TStringList);
     procedure SetText(Value: String);
-     
   protected
     procedure Loaded; override;
-    { Protected declarations }
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     function IsIn(S: String): Boolean;
-     
   published
     property Delimiter: string read fDelimiter write fDelimiter;
     property Items: TStringList read fItems write SetItems;
     property Text: string read GetText write SetText;
-     
   end;
 
 procedure Register;
 
+//============================================================
 implementation
+//============================================================
 
-//------ TCommaSplitter.GetText ------------------------------------------------
 function TCommaSplitter.GetText: String;
 
 var
@@ -49,12 +46,12 @@ begin
     Result := Format('%s%s%s',[Result,Delimiter,fItems.Strings[i]]);
   Result := Copy(Result,Length(Delimiter)+1,Length(Result));
 end;
-//------ TCommaSplitter.SetItems -----------------------------------------------
+
 procedure TCommaSplitter.SetItems(Value:TStringList);
 begin
  fItems.Assign(Value);
 end;
-//------ TCommaSplitter.SetText ------------------------------------------------
+
 procedure TCommaSplitter.SetText(Value: String);
 
 var
@@ -78,7 +75,8 @@ begin
    fItems.Add(s2);
  end;
 end;
-//------ TCommaSplitter.Loaded -------------------------------------------------
+
+
 procedure TCommaSplitter.Loaded;
 begin
  inherited Loaded;
@@ -86,25 +84,24 @@ begin
  if (Delimiter = '') then
    Delimiter := ',';
 end;
-//------ TCommaSplitter.Create -------------------------------------------------
+
 constructor TCommaSplitter.Create(AOwner: TComponent);
 begin
  inherited Create(AOwner);
  fItems := TStringList.Create;
  fDelimiter := ',';
 end;
-//------ TCommaSplitter.Destroy ------------------------------------------------
+
 destructor TCommaSplitter.Destroy;
 begin
   fItems.Free;
   inherited Destroy;
 end;
-//------ TCommaSplitter.IsIn ---------------------------------------------------
-function TCommaSplitter.IsIn(S: String): Boolean;
 
+
+function TCommaSplitter.IsIn(S: String): Boolean;
 var
  i: integer;
-
 begin
  result:=false;
  for i := 0 to fItems.Count - 1 do
@@ -117,7 +114,6 @@ begin
  end;
 end;
 
-//------ Register --------------------------------------------------------------
 procedure Register;
 begin
   RegisterComponents('PB Power', [TCommaSplitter]);

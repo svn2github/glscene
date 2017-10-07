@@ -2,15 +2,20 @@ inherited GLOptions: TGLOptions
   HelpContext = 0
   Caption = 'Options'
   OnClose = FormClose
+  ExplicitWidth = 320
+  ExplicitHeight = 240
   PixelsPerInch = 96
   TextHeight = 16
   inherited PanelMiddle: TPanel
-    object Label1: TLabel
+    object Label1: TLabel [0]
       Left = 296
       Top = 33
       Width = 73
       Height = 16
       Caption = 'Background'
+    end
+    inherited Memo: TMemo
+      TabOrder = 3
     end
     object CheckBoxAxis: TCheckBox
       Left = 96

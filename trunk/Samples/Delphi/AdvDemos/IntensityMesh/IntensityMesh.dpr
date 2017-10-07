@@ -9,7 +9,7 @@
    wireframe using smoothed lines.<p>
 
    Sample Data represents the Von Mises Stress (usually is used to predict
-   steel yelding) over the strucutre of a tubular tower for electrical
+   steel yielding) over the structure of a tubular tower for electrical
    power lines. That stress is the result of the loads from cables,
    transversal wind and self weigth.
 

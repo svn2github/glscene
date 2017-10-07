@@ -415,7 +415,7 @@ begin
   HeightMap := THeightMap.Create(Image32_Terrain.Width, Image32_Terrain.Height);
   Button_GO.Click;
 
-  StartPath := ExtractFilePath(Application.ExeName);
+  StartPath := ExtractFilePath(ParamStr(0));
   // showmessage(StartPath);
   // StartPath := GetCurrentDir+'\';
   If FileExists(StartPath + 'Textures\ssand.jpg') then

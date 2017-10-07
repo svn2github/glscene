@@ -55,7 +55,7 @@ uses
   GLPersistentClasses,
   GLMeshUtils,
   GLVectorTypes,
-  GLGnuGettext,
+  GnuGettext,
   GLAsyncTimer,
   GLGraph,
 

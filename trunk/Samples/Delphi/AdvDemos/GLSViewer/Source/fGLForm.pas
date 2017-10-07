@@ -15,7 +15,8 @@ uses
   Vcl.Graphics,
   Vcl.Menus,
   Vcl.Actnlist,
-  GLGnuGettext;
+
+  GnuGettext;
 
 type
   TGLForm = class(TForm)

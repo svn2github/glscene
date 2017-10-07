@@ -3,10 +3,19 @@ unit FMain;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, ExtCtrls, StdCtrls, Jpeg,
+  Winapi.Windows,
+  Winapi.Messages,
+  System.SysUtils,
+  System.Classes,
+  Vcl.Graphics,
+  Vcl.Controls,
+  Vcl.Forms,
+  Vcl.Dialogs,
+  Vcl.ExtCtrls,
+  Vcl.StdCtrls,
+  Vcl.Imaging.Jpeg,
 
-  //GLScene
+   
   GLScene,  GLObjects, GLShadowPlane, GLWin32Viewer, GLTexture, GLMirror,
   ODEimport, ODEgl, GLCadencer,  GLVectorGeometry, GLSkydome,
   GLBitmapFont, GLWindowsFont, GLHUDObjects, UTheBallStructures,
@@ -61,9 +70,9 @@ type
     procedure MirrorBeginRenderingMirrors(Sender: TObject);
     procedure MirrorEndRenderingMirrors(Sender: TObject);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
     world : PdxWorld;
     space : PdxSpace;
     contactGroup, jointGroup : TdJointGroupID;
@@ -143,7 +152,7 @@ begin
       dBoxClass:=dGeomGetClass(planeGeom);
 
    currentLevelIdx:=1;
-   LoadLevel(ExtractFilePath(Application.ExeName)+Format('Level%.2d.txt', [currentLevelIdx]));
+   LoadLevel(ExtractFilePath(ParamStr(0))+Format('Level%.2d.txt', [currentLevelIdx]));
 end;
 
 procedure TMain.FormDestroy(Sender: TObject);
@@ -531,7 +540,7 @@ begin
       if d>=5 then begin
          if gameStatus=gsLevelWon then
             Inc(currentLevelIdx);
-         LoadLevel(ExtractFilePath(Application.ExeName)+Format('Level%.2d.txt', [currentLevelIdx]));
+         LoadLevel(ExtractFilePath(ParamStr(0))+Format('Level%.2d.txt', [currentLevelIdx]));
       end;
    end else if gameStatus=gsPlaying then
        HTTimer.Text:=FormatDateTime('nn:ss.zzz', Now-spawnTime);

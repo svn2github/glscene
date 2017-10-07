@@ -13,8 +13,16 @@ uses
   Vcl.ExtCtrls,
   Vcl.StdCtrls,
   
-  GLVectorTypes, GLScene, GLObjects, GLCadencer, GLFireFX, GLBehaviours,
-  GLVectorGeometry, GLWin32Viewer, GLCrossPlatform, GLCoordinates,
+  GLVectorTypes,
+  GLScene,
+  GLObjects,
+  GLCadencer,
+  GLFireFX,
+  GLBehaviours,
+  GLVectorGeometry,
+  GLWin32Viewer,
+  GLCrossPlatform,
+  GLCoordinates,
   GLBaseClasses;
 
 type

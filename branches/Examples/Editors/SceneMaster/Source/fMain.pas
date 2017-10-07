@@ -55,7 +55,6 @@ uses
   GLPersistentClasses,
   GLMeshUtils,
   GLVectorTypes,
-  GLGnuGettext,
   GLAsyncTimer,
   GLGraph,
 
@@ -64,13 +63,15 @@ uses
   fAbout,
   fOptions,
   fDialog,
+  fKitPack,
   uGlobals,
   uNavCube,
+  GnuGettext,
 
   fInitial;
 
 type
-  TFormMaster = class(TInitialForm)
+  TfmSceneMaster = class(TInitialForm)
     StatusBar: TStatusBar;
     Scene: TGLScene;
     ffObject: TGLFreeForm;
@@ -188,6 +189,16 @@ type
     procedure AsyncTimerTimer(Sender: TObject);
     procedure acNavCubeExecute(Sender: TObject);
     procedure acToolsInfoExecute(Sender: TObject);
+  public
+    md, nthShow: Boolean;
+    mx, my: Integer;
+    hlShader: TGLShader;
+    lastFileName: String;
+    lastLoadWithTextures: Boolean;
+    Points: TGLPoints;
+    procedure ApplyBgColor;
+    procedure ReadIniFile; override;
+    procedure WriteIniFile; override;
   private
     AtStart: Boolean;
     procedure DoResetCamera;
@@ -199,20 +210,11 @@ type
     procedure ApplyTexturing;
     procedure ApplyFPS;
     procedure DoOpen(const FileName: String);
-  public
-    md, nthShow: Boolean;
-    mx, my: Integer;
-    hlShader: TGLShader;
-    lastFileName: String;
-    lastLoadWithTextures: Boolean;
-    Points: TGLPoints;
-    procedure ApplyBgColor;
-    procedure ReadIniFile; override;
-    procedure WriteIniFile; override;
+    procedure DefaultLayout;
   end;
 
 var
-  FormMaster: TFormMaster;
+  fmSceneMaster: TfmSceneMaster;
   NavCube: TGLNavCube;
 
 const
@@ -292,7 +294,7 @@ end;
 
 //------------------------------------------------------
 
-procedure TFormMaster.FormCreate(Sender: TObject);
+procedure TfmSceneMaster.FormCreate(Sender: TObject);
 var
   S: String;
   aFolder: TFileName;
@@ -325,15 +327,13 @@ begin
   Screen.Cursors[crSlidezy] := LoadCursor(HInstance, 'SLIDEZY');
   AtStart := True;
 
-  
-
  // instantiate our specific hidden-lines shader
   hlShader := THiddenLineShader.Create(Self);
   ffObject.IgnoreMissingTextures := True;
 end;
 
 
-procedure TFormMaster.FormShow(Sender: TObject);
+procedure TfmSceneMaster.FormShow(Sender: TObject);
 var
   i: Integer;
 begin
@@ -348,20 +348,24 @@ begin
       DoOpen(ParamStr(1));
     nthShow := True;
   end;
+  // Default Layout
+  fmKitpack.Left := 1;
+  fmKitpack.Top := 110;
+
 end;
 
-procedure TFormMaster.acFileExitExecute(Sender: TObject);
+procedure TfmSceneMaster.acFileExitExecute(Sender: TObject);
 begin
   Close;
 end;
 
-procedure TFormMaster.acFileOpenExecute(Sender: TObject);
+procedure TfmSceneMaster.acFileOpenExecute(Sender: TObject);
 begin
   if DMDialogs.OpenDialog.Execute then
     DoOpen(DMDialogs.OpenDialog.fileName);
 end;
 
-procedure TFormMaster.acFileOpenTexLibExecute(Sender: TObject);
+procedure TfmSceneMaster.acFileOpenTexLibExecute(Sender: TObject);
 var
   I: Integer;
 begin
@@ -377,7 +381,7 @@ begin
     end;
 end;
 
-procedure TFormMaster.acFilePickExecute(Sender: TObject);
+procedure TfmSceneMaster.acFilePickExecute(Sender: TObject);
 begin
   if DMDialogs.opDialog.Execute then
   begin
@@ -395,7 +399,7 @@ begin
   end;
 end;
 
-procedure TFormMaster.acFileSaveAsExecute(Sender: TObject);
+procedure TfmSceneMaster.acFileSaveAsExecute(Sender: TObject);
 var
   ext : String;
 begin
@@ -415,14 +419,14 @@ begin
   end;
 end;
 
-procedure TFormMaster.acFileSaveTexturesExecute(Sender: TObject);
+procedure TfmSceneMaster.acFileSaveTexturesExecute(Sender: TObject);
 begin
   if DMDialogs.SDTextures.Execute then
     MaterialLib.SaveToFile(DMDialogs.SDTextures.fileName);
 end;
 
 
-procedure TFormMaster.snViewerBeforeRender(Sender: TObject);
+procedure TfmSceneMaster.snViewerBeforeRender(Sender: TObject);
 begin
   THiddenLineShader(hlShader).LinesColor := VectorMake(107 / 256, 123 / 256,
     173 / 256, 1);
@@ -440,13 +444,13 @@ begin
   end;
 end;
 
-procedure TFormMaster.snViewerAfterRender(Sender: TObject);
+procedure TfmSceneMaster.snViewerAfterRender(Sender: TObject);
 begin
   ApplyFSAA;
   Screen.Cursor := crDefault;
 end;
 
-procedure TFormMaster.DoResetCamera;
+procedure TfmSceneMaster.DoResetCamera;
 var
   objSize: Single;
 begin
@@ -471,7 +475,7 @@ begin
   end;
 end;
 
-procedure TFormMaster.ApplyShadeModeToMaterial(aMaterial: TGLMaterial);
+procedure TfmSceneMaster.ApplyShadeModeToMaterial(aMaterial: TGLMaterial);
 begin
   if acViewSmoothShading.Checked then
   begin
@@ -505,7 +509,7 @@ begin
   end;
 end;
 
-procedure TFormMaster.ApplyShadeMode;
+procedure TfmSceneMaster.ApplyShadeMode;
 var
   i: Integer;
 begin
@@ -522,7 +526,7 @@ begin
   ffObject.StructureChanged;
 end;
 
-procedure TFormMaster.ApplyFSAA;
+procedure TfmSceneMaster.ApplyFSAA;
 begin
   with snViewer.Buffer do
   begin
@@ -543,7 +547,7 @@ begin
   end;
 end;
 
-procedure TFormMaster.ApplyFaceCull;
+procedure TfmSceneMaster.ApplyFaceCull;
 begin
   with snViewer.Buffer do
   begin
@@ -560,7 +564,7 @@ begin
   end;
 end;
 
-procedure TFormMaster.ApplyBgColor;
+procedure TfmSceneMaster.ApplyBgColor;
 var
   bmp: TBitmap;
   col: TColor;
@@ -582,7 +586,7 @@ begin
   end;
 end;
 
-procedure TFormMaster.ApplyTexturing;
+procedure TfmSceneMaster.ApplyTexturing;
 var
   i: Integer;
 begin
@@ -600,13 +604,13 @@ begin
   ffObject.StructureChanged;
 end;
 
-procedure TFormMaster.AsyncTimerTimer(Sender: TObject);
+procedure TfmSceneMaster.AsyncTimerTimer(Sender: TObject);
 begin
   Caption := 'NavCube: ' + snViewer.FramesPerSecondText(2);
   snViewer.ResetPerformanceMonitor;
 end;
 
-procedure TFormMaster.ApplyFPS;
+procedure TfmSceneMaster.ApplyFPS;
 begin
   if acToolsShowFPS.Checked then
   begin
@@ -621,7 +625,7 @@ begin
   end;
 end;
 
-procedure TFormMaster.SetupFreeFormShading;
+procedure TfmSceneMaster.SetupFreeFormShading;
 var
   i: Integer;
   LibMat: TGLLibMaterial;
@@ -641,7 +645,12 @@ begin
   ApplyFPS;
 end;
 
-procedure TFormMaster.DoOpen(const FileName: String);
+procedure TfmSceneMaster.DefaultLayout;
+begin
+  //
+end;
+
+procedure TfmSceneMaster.DoOpen(const FileName: String);
 var
   min, max: TAffineVector;
 begin
@@ -671,7 +680,7 @@ begin
   DoResetCamera;
 end;
 
-procedure TFormMaster.snViewerMouseDown(Sender: TObject; Button: TMouseButton;
+procedure TfmSceneMaster.snViewerMouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
   mx := X;
@@ -679,7 +688,7 @@ begin
   md := True;
 end;
 
-procedure TFormMaster.snViewerMouseMove(Sender: TObject; Shift: TShiftState;
+procedure TfmSceneMaster.snViewerMouseMove(Sender: TObject; Shift: TShiftState;
   X, Y: Integer);
 var
   d: Single;
@@ -714,13 +723,13 @@ begin
   end;
 end;
 
-procedure TFormMaster.snViewerMouseUp(Sender: TObject; Button: TMouseButton;
+procedure TfmSceneMaster.snViewerMouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
   md := False;
 end;
 
-procedure TFormMaster.FormMouseWheel(Sender: TObject; Shift: TShiftState;
+procedure TfmSceneMaster.FormMouseWheel(Sender: TObject; Shift: TShiftState;
   WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
 begin
   if ffObject.MeshObjects.Count > 0 then
@@ -732,14 +741,14 @@ begin
   Handled := True;
 end;
 
-procedure TFormMaster.MaterialLibTextureNeeded(Sender: TObject;
+procedure TfmSceneMaster.MaterialLibTextureNeeded(Sender: TObject;
   var textureFileName: String);
 begin
   if not acToolsTexturing.Enabled then
     textureFileName := '';
 end;
 
-procedure TFormMaster.acInvertNormalsExecute(Sender: TObject);
+procedure TfmSceneMaster.acInvertNormalsExecute(Sender: TObject);
 var
   i: Integer;
 begin
@@ -749,7 +758,7 @@ begin
   ffObject.StructureChanged;
 end;
 
-procedure TFormMaster.acReverseRenderingOrderExecute(Sender: TObject);
+procedure TfmSceneMaster.acReverseRenderingOrderExecute(Sender: TObject);
 var
   i, j, n: Integer;
   fg: TGLFaceGroup;
@@ -778,12 +787,12 @@ begin
   ffObject.StructureChanged;
 end;
 
-procedure TFormMaster.acSaveAsUpdate(Sender: TObject);
+procedure TfmSceneMaster.acSaveAsUpdate(Sender: TObject);
 begin
   acFileSaveAs.Enabled := (ffObject.MeshObjects.Count > 0);
 end;
 
-procedure TFormMaster.acHelpAboutExecute(Sender: TObject);
+procedure TfmSceneMaster.acHelpAboutExecute(Sender: TObject);
 begin
   with TAboutForm.Create(Self) do
     try
@@ -793,13 +802,13 @@ begin
     end;
 end;
 
-procedure TFormMaster.acAADefaultExecute(Sender: TObject);
+procedure TfmSceneMaster.acAADefaultExecute(Sender: TObject);
 begin
   (Sender as TAction).Checked := True;
   ApplyFSAA;
 end;
 
-procedure TFormMaster.acConvertToIndexedTrianglesExecute(Sender: TObject);
+procedure TfmSceneMaster.acConvertToIndexedTrianglesExecute(Sender: TObject);
 var
   v: TAffineVectorList;
   i: TIntegerList;
@@ -832,7 +841,7 @@ begin
   SetupFreeFormShading;
 end;
 
-procedure TFormMaster.acStripifyExecute(Sender: TObject);
+procedure TfmSceneMaster.acStripifyExecute(Sender: TObject);
 var
   i: Integer;
   mo: TMeshObject;
@@ -859,58 +868,58 @@ begin
   end;
 end;
 
-procedure TFormMaster.acViewFlatShadingExecute(Sender: TObject);
+procedure TfmSceneMaster.acViewFlatShadingExecute(Sender: TObject);
 begin
   ApplyShadeMode;
 end;
 
-procedure TFormMaster.acViewHiddenLinesExecute(Sender: TObject);
+procedure TfmSceneMaster.acViewHiddenLinesExecute(Sender: TObject);
 begin
   ApplyShadeMode;
 end;
 
-procedure TFormMaster.acViewResetExecute(Sender: TObject);
+procedure TfmSceneMaster.acViewResetExecute(Sender: TObject);
 begin
   DoResetCamera;
 end;
 
-procedure TFormMaster.acViewFlatLinesExecute(Sender: TObject);
+procedure TfmSceneMaster.acViewFlatLinesExecute(Sender: TObject);
 begin
   ApplyShadeMode;
 end;
 
-procedure TFormMaster.acViewSmoothShadingExecute(Sender: TObject);
+procedure TfmSceneMaster.acViewSmoothShadingExecute(Sender: TObject);
 begin
   ApplyShadeMode;
 end;
 
-procedure TFormMaster.acViewWireFrameExecute(Sender: TObject);
+procedure TfmSceneMaster.acViewWireFrameExecute(Sender: TObject);
 begin
   ApplyShadeMode;
 end;
 
-procedure TFormMaster.acViewZoomInExecute(Sender: TObject);
+procedure TfmSceneMaster.acViewZoomInExecute(Sender: TObject);
 var
   h: Boolean;
 begin
   FormMouseWheel(Self, [], -120 * 4, Point(0, 0), h);
 end;
 
-procedure TFormMaster.acViewZoomOutExecute(Sender: TObject);
+procedure TfmSceneMaster.acViewZoomOutExecute(Sender: TObject);
 var
   h: Boolean;
 begin
   FormMouseWheel(Self, [], 120 * 4, Point(0, 0), h);
 end;
 
-procedure TFormMaster.acOptimizeExecute(Sender: TObject);
+procedure TfmSceneMaster.acOptimizeExecute(Sender: TObject);
 begin
   OptimizeMesh(ffObject.MeshObjects, [mooVertexCache, mooSortByMaterials]);
   ffObject.StructureChanged;
   SetupFreeFormShading;
 end;
 
-procedure TFormMaster.acToolsOptionsExecute(Sender: TObject);
+procedure TfmSceneMaster.acToolsOptionsExecute(Sender: TObject);
 begin
   with TOptionsForm.Create(Self) do
     try
@@ -920,13 +929,13 @@ begin
     end;
 end;
 
-procedure TFormMaster.acToolsFaceCullingExecute(Sender: TObject);
+procedure TfmSceneMaster.acToolsFaceCullingExecute(Sender: TObject);
 begin
   acToolsFaceCulling.Checked := not acToolsFaceCulling.Checked;
   ApplyFaceCull;
 end;
 
-procedure TFormMaster.acToolsInfoExecute(Sender: TObject);
+procedure TfmSceneMaster.acToolsInfoExecute(Sender: TObject);
 begin
   with TFormDialog.Create(Self) do
   try
@@ -939,20 +948,20 @@ begin
    end;
 end;
 
-procedure TFormMaster.acToolsLightingExecute(Sender: TObject);
+procedure TfmSceneMaster.acToolsLightingExecute(Sender: TObject);
 begin
   acToolsLighting.Checked := not acToolsLighting.Checked;
   // TBLighting
   ApplyShadeMode;
 end;
 
-procedure TFormMaster.acToolsShowFPSExecute(Sender: TObject);
+procedure TfmSceneMaster.acToolsShowFPSExecute(Sender: TObject);
 begin
   acToolsShowFPS.Checked := not acToolsShowFPS.Checked;
   ApplyFPS;
 end;
 
-procedure TFormMaster.acToolsTexturingExecute(Sender: TObject);
+procedure TfmSceneMaster.acToolsTexturingExecute(Sender: TObject);
 begin
   acToolsTexturing.Checked := not acToolsTexturing.Checked;
   if acToolsTexturing.Checked then
@@ -967,7 +976,7 @@ begin
 end;
 
 // Show Base and Additional Objects
-procedure TFormMaster.acObjectsExecute(Sender: TObject);
+procedure TfmSceneMaster.acObjectsExecute(Sender: TObject);
 var
   i: Integer;
   Color : TVector3f;
@@ -989,7 +998,7 @@ begin
   end;
 end;
 
-procedure TFormMaster.CadencerProgress(Sender: TObject; const deltaTime, newTime: Double);
+procedure TfmSceneMaster.CadencerProgress(Sender: TObject; const deltaTime, newTime: Double);
 begin
 {
   if NavCube.InactiveTime > 5 then
@@ -1005,7 +1014,7 @@ begin
     snViewer.Invalidate;
 end;
 
-procedure TFormMaster.acNavCubeExecute(Sender: TObject);
+procedure TfmSceneMaster.acNavCubeExecute(Sender: TObject);
 begin
   acNavCube.Checked := not acNavCube.Checked;
 
@@ -1024,13 +1033,13 @@ begin
 
 end;
 
-procedure TFormMaster.TimerTimer(Sender: TObject);
+procedure TfmSceneMaster.TimerTimer(Sender: TObject);
 begin
   StatusBar.Panels[3].Text := Format('%.1f  FPS', [snViewer.FramesPerSecond]);
   snViewer.ResetPerformanceMonitor;
 end;
 
-procedure TFormMaster.ReadIniFile;
+procedure TfmSceneMaster.ReadIniFile;
 begin
   inherited;
   IniFile := TIniFile.Create(ChangeFileExt(ParamStr(0), '.ini'));
@@ -1049,7 +1058,7 @@ begin
     end;
 end;
 
-procedure TFormMaster.WriteIniFile;
+procedure TfmSceneMaster.WriteIniFile;
 begin
   IniFile := TIniFile.Create(ChangeFileExt(ParamStr(0), '.ini'));
   with IniFile do

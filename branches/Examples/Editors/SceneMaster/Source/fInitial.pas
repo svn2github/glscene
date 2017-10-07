@@ -10,7 +10,7 @@ uses
   Vcl.Graphics,
   Vcl.Menus,
   Vcl.Actnlist,
-  GLGnuGettext;
+  GnuGettext;
 
 type
   TInitialForm = class(TForm)

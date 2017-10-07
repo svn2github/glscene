@@ -454,7 +454,7 @@ var
   Alpha: Boolean;
 begin
 
-  expDlg.InitialDir := extractfiledir(application.ExeName);
+  expDlg.InitialDir := extractfiledir(ParamStr(0));
   if expDlg.Execute then
   begin
 

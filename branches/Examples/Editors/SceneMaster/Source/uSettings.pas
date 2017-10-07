@@ -13,7 +13,7 @@ uses
   Vcl.Graphics,
   Vcl.ActnList,
 
-  GLGnuGettext;
+  GnuGettext;
 
 procedure InitGeneralRegistry;
 

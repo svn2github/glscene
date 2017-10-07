@@ -124,7 +124,7 @@ end;
 
 procedure TMainFrm.FormCreate(Sender: TObject);
 begin
-  OD.InitialDir:=ExtractFilePath(application.ExeName);
+  OD.InitialDir:=ExtractFilePath(ParamStr(0));
 end;
 
 end.

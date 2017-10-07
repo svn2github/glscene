@@ -573,7 +573,7 @@ object Form1: TForm1
     Height = 436
     Camera = GLCamera1
     Buffer.BackgroundColor = clBlack
-    FieldOfView = 154.164367675781300000
+    FieldOfView = 154.164367675781200000
     Align = alClient
     TabOrder = 0
   end
@@ -598,7 +598,6 @@ object Form1: TForm1
       Blend = False
       object ff: TGLFreeForm
         Material.Texture.ImageClassName = 'TGLPicFileImage'
-        Material.Texture.Image.PictureFileName = 'gus.jpg'
         Material.Texture.Disabled = False
         Direction.Coordinates = {000000000000803F0000000000000000}
         Up.Coordinates = {0000000000000000000080BF00000000}

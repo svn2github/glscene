@@ -5,6 +5,7 @@ interface
 uses
   Winapi.Windows,
   Winapi.Messages,
+  Winapi.OpenGL,
   System.SysUtils,
   System.Variants,
   System.Classes,
@@ -25,11 +26,9 @@ uses
   GLObjects,
   GLVectorGeometry,
   GLVectorFileObjects,
-  OpenGL1x,
   GLPersistentClasses,
   GLVectorLists,
   GLKeyboard,
-  GLTriangulation,
   GLRenderContextInfo,
   GLContext,
   GLState,
@@ -80,7 +79,6 @@ type
     ptVertex: array of array [0 .. 2] of Single; // Contour Data Array
     ptDT: array of array [0 .. 2] of Single; // Delaunay Triangulated Data Array
     Group: array [0 .. 10000] of Integer; // Contour Line Group
-    TheMesh: TGLDelaunay2D;
     TerrainMesh: TGLMesh;
   end;
 
@@ -242,12 +240,14 @@ var
   I, nRemainder: Integer;
   Devider: Integer;
   XSize, YSize: Single;
+  CurrentDir: TFileName;
 
 begin
   NumGroup := 0;
   NumVertexY := 0;
 
-  LoadVerticesFromFile(Format('%s\%s', [GetCurrentDir(), MeshFileName]));
+  CurrentDir := GetCurrentDir();
+  LoadVerticesFromFile(Format('%s\%s', [CurrentDir, MeshFileName]));
   TerrainMesh := TGLMesh(World.AddNewChild(TGLMesh));
   MapImage.Visible := FALSE;
 
@@ -255,10 +255,9 @@ begin
   begin
     Material.PolygonMode := pmFill; // pmLines;
     Material.FaceCulling := fcNoCull;
-    Material.Texture.Disabled := TRUE;
-    Material.Texture.MappingMode := tmmUser; // tmmObjectLinear tmmEyeLinear
-    Material.Texture.Image.LoadFromFile
-      (Format('%s\%s', [GetCurrentDir(), MapFileName]));
+    Material.Texture.MappingMode := tmmObjectLinear; // tmmEyeLinear, tmmUser - no texture
+    Material.Texture.Image.LoadFromFile(CurrentDir + '\' + MapFileName);
+    Material.Texture.Disabled := False;
 
     Mode := mmTriangles;
     Vertices.Clear;
@@ -297,14 +296,10 @@ begin
     begin
       // Caption := 'Error';
     end;
-
     CalcNormals(fwCounterClockWise);
-
     /// Overlay MapFileName
-
     StructureChanged;
   end;
-
 end;
 
 procedure TMainForm.FormCreate(Sender: TObject);

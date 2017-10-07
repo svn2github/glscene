@@ -99,7 +99,7 @@ implementation
 procedure TForm1.FormCreate(Sender: TObject);
 begin
   fullScreen := false;
-  SetCurrentDir(ExtractFilePath(Application.ExeName));
+  SetCurrentDir(ExtractFilePath(ParamStr(0)));
   // 8 MB height data cache
   // Note this is the data size in terms of elevation samples, it does not
   // take into account all the data required/allocated by the renderer

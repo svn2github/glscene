@@ -1,8 +1,3 @@
-{ -----------------------------------------------------------------------------
-  Unit Name: main
-  Author:    Aaron Hochwimmer (hochwimmera@pbworld.com)
-  Purpose:   Simple demo for viewing Surfer Grid files
-  ----------------------------------------------------------------------------- }
 unit Main;
 
 interface
@@ -13,6 +8,7 @@ uses
   Winapi.Messages,
   System.SysUtils,
   System.Classes,
+  System.UITypes,
   System.Math,
   Vcl.Graphics,
   Vcl.Controls,
@@ -34,7 +30,7 @@ uses
   GLCoordinates,
   GLCrossPlatform,
   GLBaseClasses,
-  //
+
   GridImportfn,
   Commasplit;
 
@@ -106,7 +102,6 @@ implementation
 
 {$R *.DFM}
 
-// ------ TForm1.FormCreate ----------------------------------------------------
 procedure TForm1.FormCreate(Sender: TObject);
 begin
   glColour1 := TGLColor.Create(nil);
@@ -117,7 +112,6 @@ begin
   vscale := 10.0;
 end;
 
-// ------ Tform1.ContourZ ------------------------------------------------------
 { ** provides z as a function of x and y. This uses the xscale and yscale vectors
   to "lookup" the correct indices of the points array }
 procedure TForm1.ContourZ(const X, Y: single; var z: single;
@@ -162,7 +156,6 @@ begin
   z := contourdata.points[i, j] * vscale;
 end;
 
-// ------ Tform1.OpenSurferFile ------------------------------------------------
 procedure TForm1.OpenSurferFile(sFileName: string);
 
 begin
@@ -221,20 +214,17 @@ begin
   end;
 end;
 
-// ------ TForm1.miCloseClick --------------------------------------------------
 procedure TForm1.miCloseClick(Sender: TObject);
 begin
   self.close;
 end;
 
-// ------ TForm1.miOpenSurferClick ---------------------------------------------
 procedure TForm1.miOpenSurferClick(Sender: TObject);
 begin
   if OpenSurfer.Execute then
     OpenSurferFile(OpenSurfer.Filename);
 end;
 
-// ------ TForm1.FormDestroy ---------------------------------------------------
 procedure TForm1.FormDestroy(Sender: TObject);
 begin
   glColour1.free;
@@ -256,7 +246,6 @@ begin
   mdy := Y;
 end;
 
-// ------ TForm1.GLSceneViewer1MouseMove ---------------------------------------
 procedure TForm1.GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
   X, Y: Integer);
 var
@@ -294,7 +283,6 @@ begin
   GLSceneViewer1.SetFocus;
 end;
 
-// ------ TForm1.TrackBarzChange -----------------------------------------------
 procedure TForm1.TrackBarzChange(Sender: TObject);
 begin
   DummyCube.Position.z := TrackBarz.Position;
@@ -308,14 +296,12 @@ begin
   GLCamera.TransformationChanged;
 end;
 
-// ------ TForm1.TrackBaryChange -----------------------------------------------
 procedure TForm1.TrackBaryChange(Sender: TObject);
 begin
   DummyCube.Position.Y := TrackBary.Position;
   GLCamera.TransformationChanged;
 end;
 
-// ------ TForm1.pnlMaxClick ---------------------------------------------------
 procedure TForm1.pnlMaxClick(Sender: TObject);
 begin
   ColorDialog.color := pnlMax.color;
@@ -327,7 +313,6 @@ begin
   end;
 end;
 
-// ------ TForm1.pnlMinClick ---------------------------------------------------
 procedure TForm1.pnlMinClick(Sender: TObject);
 begin
   ColorDialog.color := pnlMin.color;
@@ -339,7 +324,6 @@ begin
   end;
 end;
 
-// ------ TForm1.miAboutClick --------------------------------------------------
 procedure TForm1.miAboutClick(Sender: TObject);
 begin
   MessageDlg('GridGLS Viewer' + #13 + #10 +
