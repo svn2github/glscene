@@ -1,0 +1,588 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{AB49222C-25B3-4670-82B8-F7A91FF9814E}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="spaceship02source\AsteroidField.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="avi\AviDemo.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="bubbles\bubbles.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="clickpoly\ClickPoly.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="clockflash\clockflash.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="crimea\crimea.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="cubemap\CubeMap.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="dragobject\DragObject.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="forest\forest.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="ghosts\Ghosts.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="GLScenePlanet\GLScenePlanet.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Graph3D\Graph3D.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="grass\Grass.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="hudsea2\HudSea2.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="imposters\Imposters.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="land\land.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="lightmap\LightMap.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="4klines\Lines4k.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="logoedit\LogoEdit.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="md3sample\md3sample.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="megacube\MegaCube.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="megacube2\MegaCube2.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="meshmorph\MeshMorph.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="monsters\Monsters.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="multifreeform\MultiFreeForm.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="navicube\naviCube.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="nodesystem\NodeSystem.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="pathfinder\PathFinder.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="pathmotion\PathMotion.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="pfxcursor\PfxCursor.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="pickproxy\PickProxy.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="pointhead\PointHead.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="radar\Radar.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="rayfire\rayfire.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="runtime\runTime.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="scenenav\scenenav.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="shadertoy\shadertoy.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="simon3d\Simon3D.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="simpleshadow\simpleshadow.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="skydome\SkyDome.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="GLSL_SkyBox\GLSLSkyBox.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="spaceship02source\SpaceShip.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="staticao\Staticao.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="tiles\tiles.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="txtdirect\TxtDirect.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Village\Village.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="wires\Wires.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="AsteroidField">
+        <MSBuild Projects="spaceship02source\AsteroidField.dproj"/>
+    </Target>
+    <Target Name="AsteroidField:Clean">
+        <MSBuild Projects="spaceship02source\AsteroidField.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="AsteroidField:Make">
+        <MSBuild Projects="spaceship02source\AsteroidField.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="AviDemo">
+        <MSBuild Projects="avi\AviDemo.dproj"/>
+    </Target>
+    <Target Name="AviDemo:Clean">
+        <MSBuild Projects="avi\AviDemo.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="AviDemo:Make">
+        <MSBuild Projects="avi\AviDemo.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="bubbles">
+        <MSBuild Projects="bubbles\bubbles.dproj"/>
+    </Target>
+    <Target Name="bubbles:Clean">
+        <MSBuild Projects="bubbles\bubbles.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="bubbles:Make">
+        <MSBuild Projects="bubbles\bubbles.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="ClickPoly">
+        <MSBuild Projects="clickpoly\ClickPoly.dproj"/>
+    </Target>
+    <Target Name="ClickPoly:Clean">
+        <MSBuild Projects="clickpoly\ClickPoly.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ClickPoly:Make">
+        <MSBuild Projects="clickpoly\ClickPoly.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="clockflash">
+        <MSBuild Projects="clockflash\clockflash.dproj"/>
+    </Target>
+    <Target Name="clockflash:Clean">
+        <MSBuild Projects="clockflash\clockflash.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="clockflash:Make">
+        <MSBuild Projects="clockflash\clockflash.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="crimea">
+        <MSBuild Projects="crimea\crimea.dproj"/>
+    </Target>
+    <Target Name="crimea:Clean">
+        <MSBuild Projects="crimea\crimea.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="crimea:Make">
+        <MSBuild Projects="crimea\crimea.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="CubeMap">
+        <MSBuild Projects="cubemap\CubeMap.dproj"/>
+    </Target>
+    <Target Name="CubeMap:Clean">
+        <MSBuild Projects="cubemap\CubeMap.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="CubeMap:Make">
+        <MSBuild Projects="cubemap\CubeMap.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="DragObject">
+        <MSBuild Projects="dragobject\DragObject.dproj"/>
+    </Target>
+    <Target Name="DragObject:Clean">
+        <MSBuild Projects="dragobject\DragObject.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="DragObject:Make">
+        <MSBuild Projects="dragobject\DragObject.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="forest">
+        <MSBuild Projects="forest\forest.dproj"/>
+    </Target>
+    <Target Name="forest:Clean">
+        <MSBuild Projects="forest\forest.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="forest:Make">
+        <MSBuild Projects="forest\forest.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Ghosts">
+        <MSBuild Projects="ghosts\Ghosts.dproj"/>
+    </Target>
+    <Target Name="Ghosts:Clean">
+        <MSBuild Projects="ghosts\Ghosts.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Ghosts:Make">
+        <MSBuild Projects="ghosts\Ghosts.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="GLScenePlanet">
+        <MSBuild Projects="GLScenePlanet\GLScenePlanet.dproj"/>
+    </Target>
+    <Target Name="GLScenePlanet:Clean">
+        <MSBuild Projects="GLScenePlanet\GLScenePlanet.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="GLScenePlanet:Make">
+        <MSBuild Projects="GLScenePlanet\GLScenePlanet.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Graph3D">
+        <MSBuild Projects="Graph3D\Graph3D.dproj"/>
+    </Target>
+    <Target Name="Graph3D:Clean">
+        <MSBuild Projects="Graph3D\Graph3D.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Graph3D:Make">
+        <MSBuild Projects="Graph3D\Graph3D.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Grass">
+        <MSBuild Projects="grass\Grass.dproj"/>
+    </Target>
+    <Target Name="Grass:Clean">
+        <MSBuild Projects="grass\Grass.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Grass:Make">
+        <MSBuild Projects="grass\Grass.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="HudSea2">
+        <MSBuild Projects="hudsea2\HudSea2.dproj"/>
+    </Target>
+    <Target Name="HudSea2:Clean">
+        <MSBuild Projects="hudsea2\HudSea2.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="HudSea2:Make">
+        <MSBuild Projects="hudsea2\HudSea2.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Imposters">
+        <MSBuild Projects="imposters\Imposters.dproj"/>
+    </Target>
+    <Target Name="Imposters:Clean">
+        <MSBuild Projects="imposters\Imposters.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Imposters:Make">
+        <MSBuild Projects="imposters\Imposters.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="land">
+        <MSBuild Projects="land\land.dproj"/>
+    </Target>
+    <Target Name="land:Clean">
+        <MSBuild Projects="land\land.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="land:Make">
+        <MSBuild Projects="land\land.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="LightMap">
+        <MSBuild Projects="lightmap\LightMap.dproj"/>
+    </Target>
+    <Target Name="LightMap:Clean">
+        <MSBuild Projects="lightmap\LightMap.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="LightMap:Make">
+        <MSBuild Projects="lightmap\LightMap.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Lines4k">
+        <MSBuild Projects="4klines\Lines4k.dproj"/>
+    </Target>
+    <Target Name="Lines4k:Clean">
+        <MSBuild Projects="4klines\Lines4k.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Lines4k:Make">
+        <MSBuild Projects="4klines\Lines4k.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="LogoEdit">
+        <MSBuild Projects="logoedit\LogoEdit.dproj"/>
+    </Target>
+    <Target Name="LogoEdit:Clean">
+        <MSBuild Projects="logoedit\LogoEdit.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="LogoEdit:Make">
+        <MSBuild Projects="logoedit\LogoEdit.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="md3sample">
+        <MSBuild Projects="md3sample\md3sample.dproj"/>
+    </Target>
+    <Target Name="md3sample:Clean">
+        <MSBuild Projects="md3sample\md3sample.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="md3sample:Make">
+        <MSBuild Projects="md3sample\md3sample.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="MegaCube">
+        <MSBuild Projects="megacube\MegaCube.dproj"/>
+    </Target>
+    <Target Name="MegaCube:Clean">
+        <MSBuild Projects="megacube\MegaCube.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="MegaCube:Make">
+        <MSBuild Projects="megacube\MegaCube.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="MegaCube2">
+        <MSBuild Projects="megacube2\MegaCube2.dproj"/>
+    </Target>
+    <Target Name="MegaCube2:Clean">
+        <MSBuild Projects="megacube2\MegaCube2.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="MegaCube2:Make">
+        <MSBuild Projects="megacube2\MegaCube2.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="MeshMorph">
+        <MSBuild Projects="meshmorph\MeshMorph.dproj"/>
+    </Target>
+    <Target Name="MeshMorph:Clean">
+        <MSBuild Projects="meshmorph\MeshMorph.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="MeshMorph:Make">
+        <MSBuild Projects="meshmorph\MeshMorph.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Monsters">
+        <MSBuild Projects="monsters\Monsters.dproj"/>
+    </Target>
+    <Target Name="Monsters:Clean">
+        <MSBuild Projects="monsters\Monsters.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Monsters:Make">
+        <MSBuild Projects="monsters\Monsters.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="MultiFreeForm">
+        <MSBuild Projects="multifreeform\MultiFreeForm.dproj"/>
+    </Target>
+    <Target Name="MultiFreeForm:Clean">
+        <MSBuild Projects="multifreeform\MultiFreeForm.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="MultiFreeForm:Make">
+        <MSBuild Projects="multifreeform\MultiFreeForm.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="naviCube">
+        <MSBuild Projects="navicube\naviCube.dproj"/>
+    </Target>
+    <Target Name="naviCube:Clean">
+        <MSBuild Projects="navicube\naviCube.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="naviCube:Make">
+        <MSBuild Projects="navicube\naviCube.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="NodeSystem">
+        <MSBuild Projects="nodesystem\NodeSystem.dproj"/>
+    </Target>
+    <Target Name="NodeSystem:Clean">
+        <MSBuild Projects="nodesystem\NodeSystem.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="NodeSystem:Make">
+        <MSBuild Projects="nodesystem\NodeSystem.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="PathFinder">
+        <MSBuild Projects="pathfinder\PathFinder.dproj"/>
+    </Target>
+    <Target Name="PathFinder:Clean">
+        <MSBuild Projects="pathfinder\PathFinder.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="PathFinder:Make">
+        <MSBuild Projects="pathfinder\PathFinder.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="PathMotion">
+        <MSBuild Projects="pathmotion\PathMotion.dproj"/>
+    </Target>
+    <Target Name="PathMotion:Clean">
+        <MSBuild Projects="pathmotion\PathMotion.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="PathMotion:Make">
+        <MSBuild Projects="pathmotion\PathMotion.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="PfxCursor">
+        <MSBuild Projects="pfxcursor\PfxCursor.dproj"/>
+    </Target>
+    <Target Name="PfxCursor:Clean">
+        <MSBuild Projects="pfxcursor\PfxCursor.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="PfxCursor:Make">
+        <MSBuild Projects="pfxcursor\PfxCursor.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="PickProxy">
+        <MSBuild Projects="pickproxy\PickProxy.dproj"/>
+    </Target>
+    <Target Name="PickProxy:Clean">
+        <MSBuild Projects="pickproxy\PickProxy.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="PickProxy:Make">
+        <MSBuild Projects="pickproxy\PickProxy.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="PointHead">
+        <MSBuild Projects="pointhead\PointHead.dproj"/>
+    </Target>
+    <Target Name="PointHead:Clean">
+        <MSBuild Projects="pointhead\PointHead.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="PointHead:Make">
+        <MSBuild Projects="pointhead\PointHead.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Radar">
+        <MSBuild Projects="radar\Radar.dproj"/>
+    </Target>
+    <Target Name="Radar:Clean">
+        <MSBuild Projects="radar\Radar.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Radar:Make">
+        <MSBuild Projects="radar\Radar.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="rayfire">
+        <MSBuild Projects="rayfire\rayfire.dproj"/>
+    </Target>
+    <Target Name="rayfire:Clean">
+        <MSBuild Projects="rayfire\rayfire.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="rayfire:Make">
+        <MSBuild Projects="rayfire\rayfire.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="runTime">
+        <MSBuild Projects="runtime\runTime.dproj"/>
+    </Target>
+    <Target Name="runTime:Clean">
+        <MSBuild Projects="runtime\runTime.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="runTime:Make">
+        <MSBuild Projects="runtime\runTime.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="scenenav">
+        <MSBuild Projects="scenenav\scenenav.dproj"/>
+    </Target>
+    <Target Name="scenenav:Clean">
+        <MSBuild Projects="scenenav\scenenav.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="scenenav:Make">
+        <MSBuild Projects="scenenav\scenenav.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="shadertoy">
+        <MSBuild Projects="shadertoy\shadertoy.dproj"/>
+    </Target>
+    <Target Name="shadertoy:Clean">
+        <MSBuild Projects="shadertoy\shadertoy.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="shadertoy:Make">
+        <MSBuild Projects="shadertoy\shadertoy.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Simon3D">
+        <MSBuild Projects="simon3d\Simon3D.dproj"/>
+    </Target>
+    <Target Name="Simon3D:Clean">
+        <MSBuild Projects="simon3d\Simon3D.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Simon3D:Make">
+        <MSBuild Projects="simon3d\Simon3D.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="simpleshadow">
+        <MSBuild Projects="simpleshadow\simpleshadow.dproj"/>
+    </Target>
+    <Target Name="simpleshadow:Clean">
+        <MSBuild Projects="simpleshadow\simpleshadow.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="simpleshadow:Make">
+        <MSBuild Projects="simpleshadow\simpleshadow.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="SkyDome">
+        <MSBuild Projects="skydome\SkyDome.dproj"/>
+    </Target>
+    <Target Name="SkyDome:Clean">
+        <MSBuild Projects="skydome\SkyDome.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="SkyDome:Make">
+        <MSBuild Projects="skydome\SkyDome.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="GLSLSkyBox">
+        <MSBuild Projects="GLSL_SkyBox\GLSLSkyBox.dproj"/>
+    </Target>
+    <Target Name="GLSLSkyBox:Clean">
+        <MSBuild Projects="GLSL_SkyBox\GLSLSkyBox.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="GLSLSkyBox:Make">
+        <MSBuild Projects="GLSL_SkyBox\GLSLSkyBox.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="SpaceShip">
+        <MSBuild Projects="spaceship02source\SpaceShip.dproj"/>
+    </Target>
+    <Target Name="SpaceShip:Clean">
+        <MSBuild Projects="spaceship02source\SpaceShip.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="SpaceShip:Make">
+        <MSBuild Projects="spaceship02source\SpaceShip.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Staticao">
+        <MSBuild Projects="staticao\Staticao.dproj"/>
+    </Target>
+    <Target Name="Staticao:Clean">
+        <MSBuild Projects="staticao\Staticao.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Staticao:Make">
+        <MSBuild Projects="staticao\Staticao.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="tiles">
+        <MSBuild Projects="tiles\tiles.dproj"/>
+    </Target>
+    <Target Name="tiles:Clean">
+        <MSBuild Projects="tiles\tiles.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="tiles:Make">
+        <MSBuild Projects="tiles\tiles.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="TxtDirect">
+        <MSBuild Projects="txtdirect\TxtDirect.dproj"/>
+    </Target>
+    <Target Name="TxtDirect:Clean">
+        <MSBuild Projects="txtdirect\TxtDirect.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="TxtDirect:Make">
+        <MSBuild Projects="txtdirect\TxtDirect.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Village">
+        <MSBuild Projects="Village\Village.dproj"/>
+    </Target>
+    <Target Name="Village:Clean">
+        <MSBuild Projects="Village\Village.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Village:Make">
+        <MSBuild Projects="Village\Village.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Wires">
+        <MSBuild Projects="wires\Wires.dproj"/>
+    </Target>
+    <Target Name="Wires:Clean">
+        <MSBuild Projects="wires\Wires.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Wires:Make">
+        <MSBuild Projects="wires\Wires.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="AsteroidField;AviDemo;bubbles;ClickPoly;clockflash;crimea;CubeMap;DragObject;forest;Ghosts;GLScenePlanet;Graph3D;Grass;HudSea2;Imposters;land;LightMap;Lines4k;LogoEdit;md3sample;MegaCube;MegaCube2;MeshMorph;Monsters;MultiFreeForm;naviCube;NodeSystem;PathFinder;PathMotion;PfxCursor;PickProxy;PointHead;Radar;rayfire;runTime;scenenav;shadertoy;Simon3D;simpleshadow;SkyDome;GLSLSkyBox;SpaceShip;Staticao;tiles;TxtDirect;Village;Wires"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="AsteroidField:Clean;AviDemo:Clean;bubbles:Clean;ClickPoly:Clean;clockflash:Clean;crimea:Clean;CubeMap:Clean;DragObject:Clean;forest:Clean;Ghosts:Clean;GLScenePlanet:Clean;Graph3D:Clean;Grass:Clean;HudSea2:Clean;Imposters:Clean;land:Clean;LightMap:Clean;Lines4k:Clean;LogoEdit:Clean;md3sample:Clean;MegaCube:Clean;MegaCube2:Clean;MeshMorph:Clean;Monsters:Clean;MultiFreeForm:Clean;naviCube:Clean;NodeSystem:Clean;PathFinder:Clean;PathMotion:Clean;PfxCursor:Clean;PickProxy:Clean;PointHead:Clean;Radar:Clean;rayfire:Clean;runTime:Clean;scenenav:Clean;shadertoy:Clean;Simon3D:Clean;simpleshadow:Clean;SkyDome:Clean;GLSLSkyBox:Clean;SpaceShip:Clean;Staticao:Clean;tiles:Clean;TxtDirect:Clean;Village:Clean;Wires:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="AsteroidField:Make;AviDemo:Make;bubbles:Make;ClickPoly:Make;clockflash:Make;crimea:Make;CubeMap:Make;DragObject:Make;forest:Make;Ghosts:Make;GLScenePlanet:Make;Graph3D:Make;Grass:Make;HudSea2:Make;Imposters:Make;land:Make;LightMap:Make;Lines4k:Make;LogoEdit:Make;md3sample:Make;MegaCube:Make;MegaCube2:Make;MeshMorph:Make;Monsters:Make;MultiFreeForm:Make;naviCube:Make;NodeSystem:Make;PathFinder:Make;PathMotion:Make;PfxCursor:Make;PickProxy:Make;PointHead:Make;Radar:Make;rayfire:Make;runTime:Make;scenenav:Make;shadertoy:Make;Simon3D:Make;simpleshadow:Make;SkyDome:Make;GLSLSkyBox:Make;SpaceShip:Make;Staticao:Make;tiles:Make;TxtDirect:Make;Village:Make;Wires:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

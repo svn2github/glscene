@@ -1,0 +1,48 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{D00C385C-F798-4771-861B-688FA54B08FE}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="VERLET\Verlet.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Billiards\billiards.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="Verlet">
+        <MSBuild Projects="VERLET\Verlet.dproj"/>
+    </Target>
+    <Target Name="Verlet:Clean">
+        <MSBuild Projects="VERLET\Verlet.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Verlet:Make">
+        <MSBuild Projects="VERLET\Verlet.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="billiards">
+        <MSBuild Projects="Billiards\billiards.dproj"/>
+    </Target>
+    <Target Name="billiards:Clean">
+        <MSBuild Projects="Billiards\billiards.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="billiards:Make">
+        <MSBuild Projects="Billiards\billiards.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="Verlet;billiards"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="Verlet:Clean;billiards:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="Verlet:Make;billiards:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

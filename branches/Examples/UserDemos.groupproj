@@ -1,0 +1,660 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{3A95D3E1-7358-42D2-B6F6-C24D6EED4A6D}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="AnimatedSprite\AnimatedSprite\AnimatedSprite.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="AnimatedTexture\AnimatedTexture\AnimatedTexture.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="AntiZFightShader\AntiZFightShader\AntiZFightShader.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="AviPlane\AviPlane\AviPlane.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Benchmark\Benchmark\Benchmark.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Bomb\Bomb\Bomb.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Build_TGLFreeForm\Build_TGLFreeForm\Build_TGLFreeForm.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Build_TGLMesh\Build_TGLMesh\Build_TGLMesh.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Cg_BlendedTerrain\Cg_BlendedTerrain\Cg_BlendedTerrain.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Cg_BlinnSheen\Cg_BlinnSheen\Cg_BlinnSheen.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Cg_BumpMapping\Cg_BumpMapping\Cg_BumpMapping.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Cg_Grayscale\Cg_Grayscale\Cg_Grayscale.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Cg_Reflect\Cg_Reflect\Cg_Reflect.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="ClockMask\ClockMask\ClockMask.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="CustomFreeForm\CustomFreeForm\CustomFreeForm.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Desktop\Desktop\Desktop.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Fifteen\Fifteen\Fifteen.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Fighting\Fighting\Fighting.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="FireDemo\FireDemo\FireDemo.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="FireEffect\FireEffect\FireEffect.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="FireEffects\FireEffects\FireEffects.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="FishTank\FishTank\FishTank.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Flashlight\Flashlight\Flashlight.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="FPSShooting\FPSShooting\FPSShooting.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="GameMenuTest\GameMenuTest\GameMenuTest.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="GLSL_BumpEarth\GLSL_BumpEarth\GLSL_BumpEarth.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="GLSL_Erosion\GLSL_Erosion\GLSL_Erosion.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="GLSL_GlassLattice\GLSL_GlassLattice\GLSL_GlassLattice.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="GLSL_Morph\GLSL_Morph\GLSL_Morph.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="GLSL_VideoEffects\GLSL_VideoEffects\GLSL_VideoEffects.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Grass\Grass\Grass.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="MD3Move\MD3Move\MD3Move.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="MeshSource\MeshSource\MeshSource.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="ModelFromDll\ModelFromDll\ModelFromDLL.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="NodeSystem3ds\NodeSystem3ds\NodeSystem3ds.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="ObjectsMoving\ObjectsMoving\ObjectsMoving.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="ParticleFountain\ParticleFountain\ParticleFountain.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="PointInMesh\PointInMesh\PointInMesh.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="ProjectedTextures\ProjectedTextures\ProjectedTextures.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="ReflectionDemo\ReflectionDemo\ReflectionDemo.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="RTCW_Zombie\RTCW_Zombie\RTCWZombie.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="ScalableMaterial\ScalableMaterial\ScalableMaterial.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="SelectionRect\SelectionRect\SelectionRect.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="ShadedTerrainLab\ShadedTerrainLab\ShadedTerrainLab.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="SphereSweep\SphereSweep\SphereSweep.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="StereoRendering\StereoRendering\StereoRendering.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="TerrainMorphing\TerrainMorphing\TerrainMorphing.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="TerrainPainter\TerrainPainter\Paint3D\TerrainPainter.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="TextToTexture\TextToTexture\TextToTexture.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Texture3D\Texture3D\Texture3D.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="UvMapping\UvMapping\UvMapping.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Wave\Wave\Wave.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="WeatherEffects\WeatherEffects\WeatherEffects.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="AnimatedSprite">
+        <MSBuild Projects="AnimatedSprite\AnimatedSprite\AnimatedSprite.dproj"/>
+    </Target>
+    <Target Name="AnimatedSprite:Clean">
+        <MSBuild Projects="AnimatedSprite\AnimatedSprite\AnimatedSprite.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="AnimatedSprite:Make">
+        <MSBuild Projects="AnimatedSprite\AnimatedSprite\AnimatedSprite.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="AnimatedTexture">
+        <MSBuild Projects="AnimatedTexture\AnimatedTexture\AnimatedTexture.dproj"/>
+    </Target>
+    <Target Name="AnimatedTexture:Clean">
+        <MSBuild Projects="AnimatedTexture\AnimatedTexture\AnimatedTexture.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="AnimatedTexture:Make">
+        <MSBuild Projects="AnimatedTexture\AnimatedTexture\AnimatedTexture.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="AntiZFightShader">
+        <MSBuild Projects="AntiZFightShader\AntiZFightShader\AntiZFightShader.dproj"/>
+    </Target>
+    <Target Name="AntiZFightShader:Clean">
+        <MSBuild Projects="AntiZFightShader\AntiZFightShader\AntiZFightShader.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="AntiZFightShader:Make">
+        <MSBuild Projects="AntiZFightShader\AntiZFightShader\AntiZFightShader.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="AviPlane">
+        <MSBuild Projects="AviPlane\AviPlane\AviPlane.dproj"/>
+    </Target>
+    <Target Name="AviPlane:Clean">
+        <MSBuild Projects="AviPlane\AviPlane\AviPlane.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="AviPlane:Make">
+        <MSBuild Projects="AviPlane\AviPlane\AviPlane.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Benchmark">
+        <MSBuild Projects="Benchmark\Benchmark\Benchmark.dproj"/>
+    </Target>
+    <Target Name="Benchmark:Clean">
+        <MSBuild Projects="Benchmark\Benchmark\Benchmark.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Benchmark:Make">
+        <MSBuild Projects="Benchmark\Benchmark\Benchmark.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Bomb">
+        <MSBuild Projects="Bomb\Bomb\Bomb.dproj"/>
+    </Target>
+    <Target Name="Bomb:Clean">
+        <MSBuild Projects="Bomb\Bomb\Bomb.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Bomb:Make">
+        <MSBuild Projects="Bomb\Bomb\Bomb.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build_TGLFreeForm">
+        <MSBuild Projects="Build_TGLFreeForm\Build_TGLFreeForm\Build_TGLFreeForm.dproj"/>
+    </Target>
+    <Target Name="Build_TGLFreeForm:Clean">
+        <MSBuild Projects="Build_TGLFreeForm\Build_TGLFreeForm\Build_TGLFreeForm.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Build_TGLFreeForm:Make">
+        <MSBuild Projects="Build_TGLFreeForm\Build_TGLFreeForm\Build_TGLFreeForm.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build_TGLMesh">
+        <MSBuild Projects="Build_TGLMesh\Build_TGLMesh\Build_TGLMesh.dproj"/>
+    </Target>
+    <Target Name="Build_TGLMesh:Clean">
+        <MSBuild Projects="Build_TGLMesh\Build_TGLMesh\Build_TGLMesh.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Build_TGLMesh:Make">
+        <MSBuild Projects="Build_TGLMesh\Build_TGLMesh\Build_TGLMesh.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Cg_BlendedTerrain">
+        <MSBuild Projects="Cg_BlendedTerrain\Cg_BlendedTerrain\Cg_BlendedTerrain.dproj"/>
+    </Target>
+    <Target Name="Cg_BlendedTerrain:Clean">
+        <MSBuild Projects="Cg_BlendedTerrain\Cg_BlendedTerrain\Cg_BlendedTerrain.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Cg_BlendedTerrain:Make">
+        <MSBuild Projects="Cg_BlendedTerrain\Cg_BlendedTerrain\Cg_BlendedTerrain.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Cg_BlinnSheen">
+        <MSBuild Projects="Cg_BlinnSheen\Cg_BlinnSheen\Cg_BlinnSheen.dproj"/>
+    </Target>
+    <Target Name="Cg_BlinnSheen:Clean">
+        <MSBuild Projects="Cg_BlinnSheen\Cg_BlinnSheen\Cg_BlinnSheen.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Cg_BlinnSheen:Make">
+        <MSBuild Projects="Cg_BlinnSheen\Cg_BlinnSheen\Cg_BlinnSheen.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Cg_BumpMapping">
+        <MSBuild Projects="Cg_BumpMapping\Cg_BumpMapping\Cg_BumpMapping.dproj"/>
+    </Target>
+    <Target Name="Cg_BumpMapping:Clean">
+        <MSBuild Projects="Cg_BumpMapping\Cg_BumpMapping\Cg_BumpMapping.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Cg_BumpMapping:Make">
+        <MSBuild Projects="Cg_BumpMapping\Cg_BumpMapping\Cg_BumpMapping.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Cg_Grayscale">
+        <MSBuild Projects="Cg_Grayscale\Cg_Grayscale\Cg_Grayscale.dproj"/>
+    </Target>
+    <Target Name="Cg_Grayscale:Clean">
+        <MSBuild Projects="Cg_Grayscale\Cg_Grayscale\Cg_Grayscale.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Cg_Grayscale:Make">
+        <MSBuild Projects="Cg_Grayscale\Cg_Grayscale\Cg_Grayscale.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Cg_Reflect">
+        <MSBuild Projects="Cg_Reflect\Cg_Reflect\Cg_Reflect.dproj"/>
+    </Target>
+    <Target Name="Cg_Reflect:Clean">
+        <MSBuild Projects="Cg_Reflect\Cg_Reflect\Cg_Reflect.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Cg_Reflect:Make">
+        <MSBuild Projects="Cg_Reflect\Cg_Reflect\Cg_Reflect.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="ClockMask">
+        <MSBuild Projects="ClockMask\ClockMask\ClockMask.dproj"/>
+    </Target>
+    <Target Name="ClockMask:Clean">
+        <MSBuild Projects="ClockMask\ClockMask\ClockMask.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ClockMask:Make">
+        <MSBuild Projects="ClockMask\ClockMask\ClockMask.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="CustomFreeForm">
+        <MSBuild Projects="CustomFreeForm\CustomFreeForm\CustomFreeForm.dproj"/>
+    </Target>
+    <Target Name="CustomFreeForm:Clean">
+        <MSBuild Projects="CustomFreeForm\CustomFreeForm\CustomFreeForm.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="CustomFreeForm:Make">
+        <MSBuild Projects="CustomFreeForm\CustomFreeForm\CustomFreeForm.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Desktop">
+        <MSBuild Projects="Desktop\Desktop\Desktop.dproj"/>
+    </Target>
+    <Target Name="Desktop:Clean">
+        <MSBuild Projects="Desktop\Desktop\Desktop.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Desktop:Make">
+        <MSBuild Projects="Desktop\Desktop\Desktop.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Fifteen">
+        <MSBuild Projects="Fifteen\Fifteen\Fifteen.dproj"/>
+    </Target>
+    <Target Name="Fifteen:Clean">
+        <MSBuild Projects="Fifteen\Fifteen\Fifteen.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Fifteen:Make">
+        <MSBuild Projects="Fifteen\Fifteen\Fifteen.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Fighting">
+        <MSBuild Projects="Fighting\Fighting\Fighting.dproj"/>
+    </Target>
+    <Target Name="Fighting:Clean">
+        <MSBuild Projects="Fighting\Fighting\Fighting.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Fighting:Make">
+        <MSBuild Projects="Fighting\Fighting\Fighting.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="FireDemo">
+        <MSBuild Projects="FireDemo\FireDemo\FireDemo.dproj"/>
+    </Target>
+    <Target Name="FireDemo:Clean">
+        <MSBuild Projects="FireDemo\FireDemo\FireDemo.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="FireDemo:Make">
+        <MSBuild Projects="FireDemo\FireDemo\FireDemo.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="FireEffect">
+        <MSBuild Projects="FireEffect\FireEffect\FireEffect.dproj"/>
+    </Target>
+    <Target Name="FireEffect:Clean">
+        <MSBuild Projects="FireEffect\FireEffect\FireEffect.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="FireEffect:Make">
+        <MSBuild Projects="FireEffect\FireEffect\FireEffect.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="FireEffects">
+        <MSBuild Projects="FireEffects\FireEffects\FireEffects.dproj"/>
+    </Target>
+    <Target Name="FireEffects:Clean">
+        <MSBuild Projects="FireEffects\FireEffects\FireEffects.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="FireEffects:Make">
+        <MSBuild Projects="FireEffects\FireEffects\FireEffects.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="FishTank">
+        <MSBuild Projects="FishTank\FishTank\FishTank.dproj"/>
+    </Target>
+    <Target Name="FishTank:Clean">
+        <MSBuild Projects="FishTank\FishTank\FishTank.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="FishTank:Make">
+        <MSBuild Projects="FishTank\FishTank\FishTank.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Flashlight">
+        <MSBuild Projects="Flashlight\Flashlight\Flashlight.dproj"/>
+    </Target>
+    <Target Name="Flashlight:Clean">
+        <MSBuild Projects="Flashlight\Flashlight\Flashlight.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Flashlight:Make">
+        <MSBuild Projects="Flashlight\Flashlight\Flashlight.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="FPSShooting">
+        <MSBuild Projects="FPSShooting\FPSShooting\FPSShooting.dproj"/>
+    </Target>
+    <Target Name="FPSShooting:Clean">
+        <MSBuild Projects="FPSShooting\FPSShooting\FPSShooting.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="FPSShooting:Make">
+        <MSBuild Projects="FPSShooting\FPSShooting\FPSShooting.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="GameMenuTest">
+        <MSBuild Projects="GameMenuTest\GameMenuTest\GameMenuTest.dproj"/>
+    </Target>
+    <Target Name="GameMenuTest:Clean">
+        <MSBuild Projects="GameMenuTest\GameMenuTest\GameMenuTest.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="GameMenuTest:Make">
+        <MSBuild Projects="GameMenuTest\GameMenuTest\GameMenuTest.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="GLSL_BumpEarth">
+        <MSBuild Projects="GLSL_BumpEarth\GLSL_BumpEarth\GLSL_BumpEarth.dproj"/>
+    </Target>
+    <Target Name="GLSL_BumpEarth:Clean">
+        <MSBuild Projects="GLSL_BumpEarth\GLSL_BumpEarth\GLSL_BumpEarth.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="GLSL_BumpEarth:Make">
+        <MSBuild Projects="GLSL_BumpEarth\GLSL_BumpEarth\GLSL_BumpEarth.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="GLSL_Erosion">
+        <MSBuild Projects="GLSL_Erosion\GLSL_Erosion\GLSL_Erosion.dproj"/>
+    </Target>
+    <Target Name="GLSL_Erosion:Clean">
+        <MSBuild Projects="GLSL_Erosion\GLSL_Erosion\GLSL_Erosion.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="GLSL_Erosion:Make">
+        <MSBuild Projects="GLSL_Erosion\GLSL_Erosion\GLSL_Erosion.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="GLSL_GlassLattice">
+        <MSBuild Projects="GLSL_GlassLattice\GLSL_GlassLattice\GLSL_GlassLattice.dproj"/>
+    </Target>
+    <Target Name="GLSL_GlassLattice:Clean">
+        <MSBuild Projects="GLSL_GlassLattice\GLSL_GlassLattice\GLSL_GlassLattice.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="GLSL_GlassLattice:Make">
+        <MSBuild Projects="GLSL_GlassLattice\GLSL_GlassLattice\GLSL_GlassLattice.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="GLSL_Morph">
+        <MSBuild Projects="GLSL_Morph\GLSL_Morph\GLSL_Morph.dproj"/>
+    </Target>
+    <Target Name="GLSL_Morph:Clean">
+        <MSBuild Projects="GLSL_Morph\GLSL_Morph\GLSL_Morph.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="GLSL_Morph:Make">
+        <MSBuild Projects="GLSL_Morph\GLSL_Morph\GLSL_Morph.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="GLSL_VideoEffects">
+        <MSBuild Projects="GLSL_VideoEffects\GLSL_VideoEffects\GLSL_VideoEffects.dproj"/>
+    </Target>
+    <Target Name="GLSL_VideoEffects:Clean">
+        <MSBuild Projects="GLSL_VideoEffects\GLSL_VideoEffects\GLSL_VideoEffects.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="GLSL_VideoEffects:Make">
+        <MSBuild Projects="GLSL_VideoEffects\GLSL_VideoEffects\GLSL_VideoEffects.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Grass">
+        <MSBuild Projects="Grass\Grass\Grass.dproj"/>
+    </Target>
+    <Target Name="Grass:Clean">
+        <MSBuild Projects="Grass\Grass\Grass.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Grass:Make">
+        <MSBuild Projects="Grass\Grass\Grass.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="MD3Move">
+        <MSBuild Projects="MD3Move\MD3Move\MD3Move.dproj"/>
+    </Target>
+    <Target Name="MD3Move:Clean">
+        <MSBuild Projects="MD3Move\MD3Move\MD3Move.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="MD3Move:Make">
+        <MSBuild Projects="MD3Move\MD3Move\MD3Move.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="MeshSource">
+        <MSBuild Projects="MeshSource\MeshSource\MeshSource.dproj"/>
+    </Target>
+    <Target Name="MeshSource:Clean">
+        <MSBuild Projects="MeshSource\MeshSource\MeshSource.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="MeshSource:Make">
+        <MSBuild Projects="MeshSource\MeshSource\MeshSource.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="ModelFromDLL">
+        <MSBuild Projects="ModelFromDll\ModelFromDll\ModelFromDLL.dproj"/>
+    </Target>
+    <Target Name="ModelFromDLL:Clean">
+        <MSBuild Projects="ModelFromDll\ModelFromDll\ModelFromDLL.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ModelFromDLL:Make">
+        <MSBuild Projects="ModelFromDll\ModelFromDll\ModelFromDLL.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="NodeSystem3ds">
+        <MSBuild Projects="NodeSystem3ds\NodeSystem3ds\NodeSystem3ds.dproj"/>
+    </Target>
+    <Target Name="NodeSystem3ds:Clean">
+        <MSBuild Projects="NodeSystem3ds\NodeSystem3ds\NodeSystem3ds.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="NodeSystem3ds:Make">
+        <MSBuild Projects="NodeSystem3ds\NodeSystem3ds\NodeSystem3ds.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="ObjectsMoving">
+        <MSBuild Projects="ObjectsMoving\ObjectsMoving\ObjectsMoving.dproj"/>
+    </Target>
+    <Target Name="ObjectsMoving:Clean">
+        <MSBuild Projects="ObjectsMoving\ObjectsMoving\ObjectsMoving.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ObjectsMoving:Make">
+        <MSBuild Projects="ObjectsMoving\ObjectsMoving\ObjectsMoving.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="ParticleFountain">
+        <MSBuild Projects="ParticleFountain\ParticleFountain\ParticleFountain.dproj"/>
+    </Target>
+    <Target Name="ParticleFountain:Clean">
+        <MSBuild Projects="ParticleFountain\ParticleFountain\ParticleFountain.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ParticleFountain:Make">
+        <MSBuild Projects="ParticleFountain\ParticleFountain\ParticleFountain.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="PointInMesh">
+        <MSBuild Projects="PointInMesh\PointInMesh\PointInMesh.dproj"/>
+    </Target>
+    <Target Name="PointInMesh:Clean">
+        <MSBuild Projects="PointInMesh\PointInMesh\PointInMesh.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="PointInMesh:Make">
+        <MSBuild Projects="PointInMesh\PointInMesh\PointInMesh.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="ProjectedTextures">
+        <MSBuild Projects="ProjectedTextures\ProjectedTextures\ProjectedTextures.dproj"/>
+    </Target>
+    <Target Name="ProjectedTextures:Clean">
+        <MSBuild Projects="ProjectedTextures\ProjectedTextures\ProjectedTextures.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ProjectedTextures:Make">
+        <MSBuild Projects="ProjectedTextures\ProjectedTextures\ProjectedTextures.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="ReflectionDemo">
+        <MSBuild Projects="ReflectionDemo\ReflectionDemo\ReflectionDemo.dproj"/>
+    </Target>
+    <Target Name="ReflectionDemo:Clean">
+        <MSBuild Projects="ReflectionDemo\ReflectionDemo\ReflectionDemo.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ReflectionDemo:Make">
+        <MSBuild Projects="ReflectionDemo\ReflectionDemo\ReflectionDemo.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="RTCWZombie">
+        <MSBuild Projects="RTCW_Zombie\RTCW_Zombie\RTCWZombie.dproj"/>
+    </Target>
+    <Target Name="RTCWZombie:Clean">
+        <MSBuild Projects="RTCW_Zombie\RTCW_Zombie\RTCWZombie.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="RTCWZombie:Make">
+        <MSBuild Projects="RTCW_Zombie\RTCW_Zombie\RTCWZombie.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="ScalableMaterial">
+        <MSBuild Projects="ScalableMaterial\ScalableMaterial\ScalableMaterial.dproj"/>
+    </Target>
+    <Target Name="ScalableMaterial:Clean">
+        <MSBuild Projects="ScalableMaterial\ScalableMaterial\ScalableMaterial.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ScalableMaterial:Make">
+        <MSBuild Projects="ScalableMaterial\ScalableMaterial\ScalableMaterial.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="SelectionRect">
+        <MSBuild Projects="SelectionRect\SelectionRect\SelectionRect.dproj"/>
+    </Target>
+    <Target Name="SelectionRect:Clean">
+        <MSBuild Projects="SelectionRect\SelectionRect\SelectionRect.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="SelectionRect:Make">
+        <MSBuild Projects="SelectionRect\SelectionRect\SelectionRect.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="ShadedTerrainLab">
+        <MSBuild Projects="ShadedTerrainLab\ShadedTerrainLab\ShadedTerrainLab.dproj"/>
+    </Target>
+    <Target Name="ShadedTerrainLab:Clean">
+        <MSBuild Projects="ShadedTerrainLab\ShadedTerrainLab\ShadedTerrainLab.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ShadedTerrainLab:Make">
+        <MSBuild Projects="ShadedTerrainLab\ShadedTerrainLab\ShadedTerrainLab.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="SphereSweep">
+        <MSBuild Projects="SphereSweep\SphereSweep\SphereSweep.dproj"/>
+    </Target>
+    <Target Name="SphereSweep:Clean">
+        <MSBuild Projects="SphereSweep\SphereSweep\SphereSweep.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="SphereSweep:Make">
+        <MSBuild Projects="SphereSweep\SphereSweep\SphereSweep.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="StereoRendering">
+        <MSBuild Projects="StereoRendering\StereoRendering\StereoRendering.dproj"/>
+    </Target>
+    <Target Name="StereoRendering:Clean">
+        <MSBuild Projects="StereoRendering\StereoRendering\StereoRendering.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="StereoRendering:Make">
+        <MSBuild Projects="StereoRendering\StereoRendering\StereoRendering.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="TerrainMorphing">
+        <MSBuild Projects="TerrainMorphing\TerrainMorphing\TerrainMorphing.dproj"/>
+    </Target>
+    <Target Name="TerrainMorphing:Clean">
+        <MSBuild Projects="TerrainMorphing\TerrainMorphing\TerrainMorphing.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="TerrainMorphing:Make">
+        <MSBuild Projects="TerrainMorphing\TerrainMorphing\TerrainMorphing.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="TerrainPainter">
+        <MSBuild Projects="TerrainPainter\TerrainPainter\Paint3D\TerrainPainter.dproj"/>
+    </Target>
+    <Target Name="TerrainPainter:Clean">
+        <MSBuild Projects="TerrainPainter\TerrainPainter\Paint3D\TerrainPainter.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="TerrainPainter:Make">
+        <MSBuild Projects="TerrainPainter\TerrainPainter\Paint3D\TerrainPainter.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="TextToTexture">
+        <MSBuild Projects="TextToTexture\TextToTexture\TextToTexture.dproj"/>
+    </Target>
+    <Target Name="TextToTexture:Clean">
+        <MSBuild Projects="TextToTexture\TextToTexture\TextToTexture.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="TextToTexture:Make">
+        <MSBuild Projects="TextToTexture\TextToTexture\TextToTexture.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Texture3D">
+        <MSBuild Projects="Texture3D\Texture3D\Texture3D.dproj"/>
+    </Target>
+    <Target Name="Texture3D:Clean">
+        <MSBuild Projects="Texture3D\Texture3D\Texture3D.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Texture3D:Make">
+        <MSBuild Projects="Texture3D\Texture3D\Texture3D.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="UvMapping">
+        <MSBuild Projects="UvMapping\UvMapping\UvMapping.dproj"/>
+    </Target>
+    <Target Name="UvMapping:Clean">
+        <MSBuild Projects="UvMapping\UvMapping\UvMapping.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="UvMapping:Make">
+        <MSBuild Projects="UvMapping\UvMapping\UvMapping.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Wave">
+        <MSBuild Projects="Wave\Wave\Wave.dproj"/>
+    </Target>
+    <Target Name="Wave:Clean">
+        <MSBuild Projects="Wave\Wave\Wave.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Wave:Make">
+        <MSBuild Projects="Wave\Wave\Wave.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="WeatherEffects">
+        <MSBuild Projects="WeatherEffects\WeatherEffects\WeatherEffects.dproj"/>
+    </Target>
+    <Target Name="WeatherEffects:Clean">
+        <MSBuild Projects="WeatherEffects\WeatherEffects\WeatherEffects.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="WeatherEffects:Make">
+        <MSBuild Projects="WeatherEffects\WeatherEffects\WeatherEffects.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="AnimatedSprite;AnimatedTexture;AntiZFightShader;AviPlane;Benchmark;Bomb;Build_TGLFreeForm;Build_TGLMesh;Cg_BlendedTerrain;Cg_BlinnSheen;Cg_BumpMapping;Cg_Grayscale;Cg_Reflect;ClockMask;CustomFreeForm;Desktop;Fifteen;Fighting;FireDemo;FireEffect;FireEffects;FishTank;Flashlight;FPSShooting;GameMenuTest;GLSL_BumpEarth;GLSL_Erosion;GLSL_GlassLattice;GLSL_Morph;GLSL_VideoEffects;Grass;MD3Move;MeshSource;ModelFromDLL;NodeSystem3ds;ObjectsMoving;ParticleFountain;PointInMesh;ProjectedTextures;ReflectionDemo;RTCWZombie;ScalableMaterial;SelectionRect;ShadedTerrainLab;SphereSweep;StereoRendering;TerrainMorphing;TerrainPainter;TextToTexture;Texture3D;UvMapping;Wave;WeatherEffects"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="AnimatedSprite:Clean;AnimatedTexture:Clean;AntiZFightShader:Clean;AviPlane:Clean;Benchmark:Clean;Bomb:Clean;Build_TGLFreeForm:Clean;Build_TGLMesh:Clean;Cg_BlendedTerrain:Clean;Cg_BlinnSheen:Clean;Cg_BumpMapping:Clean;Cg_Grayscale:Clean;Cg_Reflect:Clean;ClockMask:Clean;CustomFreeForm:Clean;Desktop:Clean;Fifteen:Clean;Fighting:Clean;FireDemo:Clean;FireEffect:Clean;FireEffects:Clean;FishTank:Clean;Flashlight:Clean;FPSShooting:Clean;GameMenuTest:Clean;GLSL_BumpEarth:Clean;GLSL_Erosion:Clean;GLSL_GlassLattice:Clean;GLSL_Morph:Clean;GLSL_VideoEffects:Clean;Grass:Clean;MD3Move:Clean;MeshSource:Clean;ModelFromDLL:Clean;NodeSystem3ds:Clean;ObjectsMoving:Clean;ParticleFountain:Clean;PointInMesh:Clean;ProjectedTextures:Clean;ReflectionDemo:Clean;RTCWZombie:Clean;ScalableMaterial:Clean;SelectionRect:Clean;ShadedTerrainLab:Clean;SphereSweep:Clean;StereoRendering:Clean;TerrainMorphing:Clean;TerrainPainter:Clean;TextToTexture:Clean;Texture3D:Clean;UvMapping:Clean;Wave:Clean;WeatherEffects:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="AnimatedSprite:Make;AnimatedTexture:Make;AntiZFightShader:Make;AviPlane:Make;Benchmark:Make;Bomb:Make;Build_TGLFreeForm:Make;Build_TGLMesh:Make;Cg_BlendedTerrain:Make;Cg_BlinnSheen:Make;Cg_BumpMapping:Make;Cg_Grayscale:Make;Cg_Reflect:Make;ClockMask:Make;CustomFreeForm:Make;Desktop:Make;Fifteen:Make;Fighting:Make;FireDemo:Make;FireEffect:Make;FireEffects:Make;FishTank:Make;Flashlight:Make;FPSShooting:Make;GameMenuTest:Make;GLSL_BumpEarth:Make;GLSL_Erosion:Make;GLSL_GlassLattice:Make;GLSL_Morph:Make;GLSL_VideoEffects:Make;Grass:Make;MD3Move:Make;MeshSource:Make;ModelFromDLL:Make;NodeSystem3ds:Make;ObjectsMoving:Make;ParticleFountain:Make;PointInMesh:Make;ProjectedTextures:Make;ReflectionDemo:Make;RTCWZombie:Make;ScalableMaterial:Make;SelectionRect:Make;ShadedTerrainLab:Make;SphereSweep:Make;StereoRendering:Make;TerrainMorphing:Make;TerrainPainter:Make;TextToTexture:Make;Texture3D:Make;UvMapping:Make;Wave:Make;WeatherEffects:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

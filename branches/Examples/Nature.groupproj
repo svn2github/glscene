@@ -1,0 +1,72 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{128D9342-C8C0-4608-9FC9-1A2CF530990C}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="Grass\Grass\Grass.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="FishTank\FishTank\FishTank.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Texture3D\Texture3D\Texture3D.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="WeatherEffects\WeatherEffects\WeatherEffects.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="Grass">
+        <MSBuild Projects="Grass\Grass\Grass.dproj"/>
+    </Target>
+    <Target Name="Grass:Clean">
+        <MSBuild Projects="Grass\Grass\Grass.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Grass:Make">
+        <MSBuild Projects="Grass\Grass\Grass.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="FishTank">
+        <MSBuild Projects="FishTank\FishTank\FishTank.dproj"/>
+    </Target>
+    <Target Name="FishTank:Clean">
+        <MSBuild Projects="FishTank\FishTank\FishTank.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="FishTank:Make">
+        <MSBuild Projects="FishTank\FishTank\FishTank.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Texture3D">
+        <MSBuild Projects="Texture3D\Texture3D\Texture3D.dproj"/>
+    </Target>
+    <Target Name="Texture3D:Clean">
+        <MSBuild Projects="Texture3D\Texture3D\Texture3D.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Texture3D:Make">
+        <MSBuild Projects="Texture3D\Texture3D\Texture3D.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="WeatherEffects">
+        <MSBuild Projects="WeatherEffects\WeatherEffects\WeatherEffects.dproj"/>
+    </Target>
+    <Target Name="WeatherEffects:Clean">
+        <MSBuild Projects="WeatherEffects\WeatherEffects\WeatherEffects.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="WeatherEffects:Make">
+        <MSBuild Projects="WeatherEffects\WeatherEffects\WeatherEffects.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="Grass;FishTank;Texture3D;WeatherEffects"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="Grass:Clean;FishTank:Clean;Texture3D:Clean;WeatherEffects:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="Grass:Make;FishTank:Make;Texture3D:Make;WeatherEffects:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>
