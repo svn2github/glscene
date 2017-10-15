@@ -38,16 +38,16 @@ type
     Panel1: TPanel;
     GLODEManager1: TGLODEManager;
     Spawn: TButton;
-    ComboBox1: TComboBox;
+    cbObjects: TComboBox;
     Label1: TLabel;
     GLRenderPoint1: TGLRenderPoint;
     GLHeightField1: TGLHeightField;
-    CheckBox1: TCheckBox;
-    CheckBox2: TCheckBox;
+    chbElements: TCheckBox;
+    chbContacts: TCheckBox;
     TrackBar1: TTrackBar;
     Label2: TLabel;
     GLPlane1: TGLPlane;
-    ComboBox2: TComboBox;
+    cbSurface: TComboBox;
     Label3: TLabel;
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
@@ -58,17 +58,13 @@ type
     procedure SpawnClick(Sender: TObject);
     procedure GLHeightField1GetHeight(const x, y: Single; var z: Single;
       var Color: TVector4f; var TexPoint: TTexPoint);
-    procedure CheckBox1Click(Sender: TObject);
-    procedure CheckBox2Click(Sender: TObject);
     procedure TrackBar1Change(Sender: TObject);
-    procedure ComboBox2Change(Sender: TObject);
-    procedure FormCreate(Sender: TObject);
+    procedure cbSurfaceChange(Sender: TObject);
+    procedure chbElementsClick(Sender: TObject);
+    procedure chbContactsClick(Sender: TObject);
   private
-     
   public
-     
     mx, my: Integer;
-
     procedure DoSphere;
     procedure DoBox;
     procedure DoCapsule;
@@ -84,13 +80,14 @@ implementation
 
 {$R *.dfm}
 
-procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime, 
+procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
   newTime: Double);
 begin
   GLODEManager1.Step(deltaTime);
 end;
 
-procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject; 
+
+procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
   mx := X;
@@ -108,7 +105,7 @@ end;
 
 procedure TForm1.SpawnClick(Sender: TObject);
 begin
-  case ComboBox1.ItemIndex of
+  case cbObjects.ItemIndex of
     0: DoSphere;
     1: DoBox;
     2: DoCapsule;
@@ -126,15 +123,10 @@ begin
   sphere.Position.SetPoint(5 * random - 2.5, 2, 5 * random - 2.5);
   sphere.Radius := 0.3 * (random + 1);
   dyn := TGLODEDynamic.Create(sphere.Behaviours);
-  with TODEElementSphere(dyn.AddNewElement(TODEElementSphere)) do
   // ELEMENTS MUST BE ADDED BEFORE SETTING MANAGER
+  with TODEElementSphere(dyn.AddNewElement(TODEElementSphere)) do
     Radius := sphere.Radius;
-  dyn.Manager := GLODEManager1;
-end;
-
-procedure TForm1.FormCreate(Sender: TObject);
-begin
-  ComboBox2Change(Sender);
+   dyn.Manager := GLODEManager1;
 end;
 
 procedure TForm1.DoBox;
@@ -148,8 +140,9 @@ begin
   cube.CubeHeight := 0.5 * (random + 1);
   cube.CubeDepth := 0.5 * (random + 1);
   dyn := TGLODEDynamic.Create(cube.Behaviours);
+  // ELEMENTS MUST BE ADDED BEFORE SETTING MANAGER
   with TODEElementBox(dyn.AddNewElement(TODEElementBox)) do
-  begin // ELEMENTS MUST BE ADDED BEFORE SETTING MANAGER
+  begin 
     BoxWidth := cube.CubeWidth;
     BoxHeight := cube.CubeHeight;
     BoxDepth := cube.CubeDepth;
@@ -184,8 +177,9 @@ begin
     end;
   end;
   dyn := TGLODEDynamic.Create(capsule.Behaviours);
+  // ELEMENTS MUST BE ADDED BEFORE SETTING MANAGER
   with TODEElementCapsule(dyn.AddNewElement(TODEElementCapsule)) do
-  begin // ELEMENTS MUST BE ADDED BEFORE SETTING MANAGER
+  begin 
     Radius := capsule.BottomRadius;
     Length := capsule.Height;
     Direction.SetVector(0, 1, 0);
@@ -208,8 +202,9 @@ begin
     Height := random + 1;
   end;
   dyn := TGLODEDynamic.Create(cylinder.Behaviours);
+  // ELEMENTS MUST BE ADDED BEFORE SETTING MANAGER
   with TODEElementCylinder(dyn.AddNewElement(TODEElementCylinder)) do
-  begin // ELEMENTS MUST BE ADDED BEFORE SETTING MANAGER
+  begin 
     Radius := cylinder.BottomRadius;
     Length := cylinder.Height;
   end;
@@ -240,20 +235,23 @@ end;
   end;
   end;
 }
+
 procedure TForm1.GLHeightField1GetHeight(const x, y: Single; var z: Single;
   var Color: TVector4f; var TexPoint: TTexPoint);
 begin
-  z := 0.5 * cos(X) * sin(Y);
+  z := 0.5 * cos(x) * sin(y);
 end;
 
-procedure TForm1.CheckBox1Click(Sender: TObject);
+
+
+procedure TForm1.chbContactsClick(Sender: TObject);
 begin
-  GLODEManager1.Visible:=CheckBox1.Checked;
+  GLODEManager1.Visible := chbContacts.Checked;
 end;
 
-procedure TForm1.CheckBox2Click(Sender: TObject);
+procedure TForm1.chbElementsClick(Sender: TObject);
 begin
-  TGLODEHeightField(GLHeightField1.Behaviours[0]).RenderContacts:=CheckBox2.Checked;
+  TGLODEHeightField(GLHeightField1.Behaviours[0]).RenderContacts := chbElements.Checked;
 end;
 
 procedure TForm1.TrackBar1Change(Sender: TObject);
@@ -262,12 +260,12 @@ begin
     ContactResolution := 0.25 + (10 - TrackBar1.Position) / 20;
 end;
 
-procedure TForm1.ComboBox2Change(Sender: TObject);
+procedure TForm1.cbSurfaceChange(Sender: TObject);
 begin
-  if ComboBox2.ItemIndex = 0 then
+  if cbSurface.ItemIndex = 0 then
   begin
     GLPlane1.Visible := True;
-    CheckBox2.Enabled := False;
+    chbElements.Enabled := False;
     GetODEStatic(GLPlane1).Manager := GLODEManager1;
   end
   else
@@ -276,16 +274,16 @@ begin
     GetODEStatic(GLPlane1).Manager := nil;
   end;
 
-  if ComboBox2.ItemIndex = 1 then
+  if cbSurface.ItemIndex = 1 then
   begin
     GLHeightField1.Visible := True;
-    CheckBox2.Enabled := True;
+    chbContacts.Enabled := True;
     GetGLODEHeightField(GLHeightField1).Manager := GLODEManager1;
   end
   else
   begin
     GLHeightField1.Visible := False;
-    CheckBox2.Enabled := False;
+    chbContacts.Enabled := False;
     GetGLODEHeightField(GLHeightField1).Manager := nil;
   end;
 end;

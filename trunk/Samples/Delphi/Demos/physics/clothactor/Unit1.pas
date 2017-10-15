@@ -49,7 +49,7 @@ type
     ActorDummy: TGLDummyCube;
     Timer1: TTimer;
     OctreeRenderer: TGLDirectOpenGL;
-    CheckBox_ShowOctree: TCheckBox;
+    cbShowOctree: TCheckBox;
     GLLightSource1: TGLLightSource;
     GLPlane1: TGLPlane;
     GLShadowVolume1: TGLShadowVolume;
@@ -68,9 +68,7 @@ type
     procedure OctreeRendererRender(Sender: TObject;
       var rci: TGLRenderContextInfo);
   private
-     
   public
-     
     mx, my: Integer;
     VerletWorld: TGLVerletWorld;
     EdgeDetector: TEdgeDetector;
@@ -302,7 +300,7 @@ procedure TForm1.OctreeRendererRender(Sender: TObject;
   end;
 
 begin
-  if CheckBox_ShowOctree.Checked then
+  if cbShowOctree.Checked then
   begin
     if VerletWorld.SpacePartition is TOctreeSpacePartition then
     begin
@@ -310,8 +308,7 @@ begin
         GL_COLOR_BUFFER_BIT);
       glDisable(GL_LIGHTING);
 
-      RenderOctreeNode(TOctreeSpacePartition(VerletWorld.SpacePartition)
-        .RootNode);
+      RenderOctreeNode(TOctreeSpacePartition(VerletWorld.SpacePartition).RootNode);
       glPopAttrib;
     end;
   end;

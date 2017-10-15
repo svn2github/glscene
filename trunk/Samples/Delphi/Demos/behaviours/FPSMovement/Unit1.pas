@@ -15,7 +15,7 @@ uses
   Vcl.ExtCtrls,
   Vcl.StdCtrls,
 
-  
+
   GLScene,
   GLTexture,
   GLCadencer,
@@ -67,9 +67,7 @@ type
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
   private
-     
   public
-     
   end;
 
 var

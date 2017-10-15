@@ -41,7 +41,7 @@ object Form1: TForm1
     OnMouseMove = GLSceneViewer1MouseMove
     TabOrder = 0
   end
-  object CheckBox_ShowOctree: TCheckBox
+  object cbShowOctree: TCheckBox
     Left = 8
     Top = 1
     Width = 97
@@ -123,6 +123,8 @@ object Form1: TForm1
       end
     end
     object OctreeRenderer: TGLDirectOpenGL
+      Visible = False
+      OnProgress = GLCadencer1Progress
       UseBuildList = False
       OnRender = OctreeRendererRender
       Blend = False

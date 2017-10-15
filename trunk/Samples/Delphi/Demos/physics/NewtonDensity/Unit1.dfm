@@ -181,10 +181,10 @@ object Form1: TForm1
         F83F1200000000}
       CubeSize = {000048420000803F00004842}
     end
-    object HTWaterDensity: TGLHUDText
+    object HTLiquidDensity: TGLHUDText
       Position.Coordinates = {000070410000AA42000000000000803F}
       BitmapFont = GLWindowsBitmapFont1
-      Text = 'Water Density'
+      Text = 'Liquid Density'
       Rotation = 0.000000000000000000
       ModulateColor.Color = {0000000000000000000000000000803F}
     end

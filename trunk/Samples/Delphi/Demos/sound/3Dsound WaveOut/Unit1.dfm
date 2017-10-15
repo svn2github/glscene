@@ -103,13 +103,13 @@ object Form1: TForm1
     Sources = <>
     UpdateFrequency = 1.000000000000000000
     Cadencer = GLCadencer1
-    Left = 8
-    Top = 144
+    Left = 248
+    Top = 64
   end
   object GLSoundLibrary: TGLSoundLibrary
     Samples = <>
-    Left = 8
-    Top = 104
+    Left = 160
+    Top = 64
   end
   object GLScene: TGLScene
     Left = 8
@@ -206,12 +206,12 @@ object Form1: TForm1
   object GLCadencer1: TGLCadencer
     Scene = GLScene
     SleepLength = 1
-    Left = 8
-    Top = 184
+    Left = 72
+    Top = 64
   end
   object Timer: TTimer
     OnTimer = TimerTimer
-    Left = 8
-    Top = 232
+    Left = 336
+    Top = 64
   end
 end

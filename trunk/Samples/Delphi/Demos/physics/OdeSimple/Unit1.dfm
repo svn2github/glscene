@@ -12,7 +12,6 @@ object Form1: TForm1
   Font.Style = []
   OldCreateOrder = False
   Position = poScreenCenter
-  OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
   object GLSceneViewer1: TGLSceneViewer
@@ -67,7 +66,7 @@ object Form1: TForm1
       TabOrder = 0
       OnClick = SpawnClick
     end
-    object ComboBox1: TComboBox
+    object cbObjects: TComboBox
       Left = 8
       Top = 80
       Width = 137
@@ -83,16 +82,16 @@ object Form1: TForm1
         'Cylinder'
         'Cone')
     end
-    object CheckBox1: TCheckBox
+    object chbElements: TCheckBox
       Left = 8
       Top = 144
       Width = 129
       Height = 17
       Caption = 'Show ODE Elements'
       TabOrder = 2
-      OnClick = CheckBox1Click
+      OnClick = chbElementsClick
     end
-    object CheckBox2: TCheckBox
+    object chbContacts: TCheckBox
       Left = 8
       Top = 168
       Width = 129
@@ -100,7 +99,7 @@ object Form1: TForm1
       Caption = 'Show HeightField Contacts'
       TabOrder = 3
       WordWrap = True
-      OnClick = CheckBox2Click
+      OnClick = chbContactsClick
     end
     object TrackBar1: TTrackBar
       Left = 10
@@ -112,7 +111,7 @@ object Form1: TForm1
       TickMarks = tmBoth
       OnChange = TrackBar1Change
     end
-    object ComboBox2: TComboBox
+    object cbSurface: TComboBox
       Left = 8
       Top = 24
       Width = 137
@@ -121,7 +120,7 @@ object Form1: TForm1
       ItemIndex = 0
       TabOrder = 5
       Text = 'Plane'
-      OnChange = ComboBox2Change
+      OnChange = cbSurfaceChange
       Items.Strings = (
         'Plane'
         'HeightField')
@@ -159,13 +158,11 @@ object Form1: TForm1
       OnGetHeight = GLHeightField1GetHeight
       BehavioursData = {
         0458434F4C02010201060C54474C4F4445537461746963020012000000000200
-        0200060D474C4F44454D616E616765723102000500000000006F1283F53F0801
+        0200060D474C4F44454D616E616765723102000500000000006F1283F53F0800
         000500000000000000FA08400500000000000000000000050000000000000000
         0000050000000000000000000005000000000000000000000500000000000000
         0000000500000000000000000000050000000000000000000005000000000000
-        00000000050000000000000000000002000458434F4C020102010610544F4445
-        456C656D656E74506C616E650201020012000000000200020008020008020008
-        050000000000000080FF3F}
+        00000000050000000000000000000002000458434F4C02010200}
     end
     object GLPlane1: TGLPlane
       Direction.Coordinates = {000000000000803F0000000000000000}
@@ -178,9 +175,7 @@ object Form1: TForm1
         000500000000000000FA08400500000000000000000000050000000000000000
         0000050000000000000000000005000000000000000000000500000000000000
         0000000500000000000000000000050000000000000000000005000000000000
-        00000000050000000000000000000002000458434F4C020102010610544F4445
-        456C656D656E74506C616E650201020012000000000200020008020008020008
-        050000000000000080FF3F}
+        00000000050000000000000000000002000458434F4C02010200}
     end
     object ODEObjects: TGLDummyCube
       CubeSize = 1.000000000000000000
@@ -192,7 +187,7 @@ object Form1: TForm1
     Scene = GLScene1
     MaxDeltaTime = 0.020000000000000000
     OnProgress = GLCadencer1Progress
-    Left = 200
+    Left = 256
     Top = 8
   end
   object GLODEManager1: TGLODEManager

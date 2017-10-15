@@ -13,14 +13,36 @@ uses
   Vcl.ExtCtrls,
   Vcl.StdCtrls,
   Vcl.ComCtrls,
-  
-  GLObjects, GLScene, GLVectorFileObjects, GLWin32Viewer,
-  GLFileMS3D, GLVerletTypes, GLVectorTypes, GLVectorLists, GLVectorGeometry,
-  GLTexture, OpenGLTokens, GLFileSMD, GLCadencer, GLShadowPlane,
-  GLVerletClothify, GLFile3DS, ODEImport, ODEGL,
-  GLGeometryBB, GLSpacePartition, GLGeomObjects, GLShadowVolume, GLUtils,
-  GLCrossPlatform, GLMaterial, GLCoordinates, GLRenderContextInfo,
-  GLState, GLContext, GLBaseClasses;
+
+  GLObjects,
+  GLScene,
+  GLVectorFileObjects,
+  GLWin32Viewer,
+  GLFileMS3D,
+  GLVerletTypes,
+  GLVectorTypes,
+  GLVectorLists,
+  GLVectorGeometry,
+  GLTexture,
+  GLFileSMD,
+  GLCadencer,
+  GLShadowPlane,
+  GLVerletClothify,
+  GLFile3DS,
+  ODEImport,
+  ODEGL,
+  GLGeometryBB,
+  GLSpacePartition,
+  GLGeomObjects,
+  GLShadowVolume,
+  GLUtils,
+  GLCrossPlatform,
+  GLMaterial,
+  GLCoordinates,
+  GLRenderContextInfo,
+  GLState,
+  GLContext,
+  GLBaseClasses;
 
 type
   TfrmClothify = class(TForm)
@@ -93,22 +115,16 @@ type
     procedure Button_CancelLoadClick(Sender: TObject);
     procedure ComboBox_ShadowChange(Sender: TObject);
   private
-     
   public
-     
     mx, my : integer;
-
     VerletWorld : TGLVerletWorld;
     EdgeDetector : TEdgeDetector;
-
     world : PdxWorld;
     space : PdxSpace;
     ODESphere: PdxGeom;
     body : PdxBody;
     contactgroup : TdJointGroupID;
-
     VCSphere : TVCSphere;
-
   end;
 
   procedure RecalcMeshNormals(BaseMesh : TGLBaseMesh);
@@ -127,12 +143,9 @@ begin
   ComboBox_MeshName.ItemIndex:=0;
   ComboBox_ConstraintType.ItemIndex:=0;
   ComboBox_Collider.ItemIndex:=3;
-
   ComboBox_ShadowChange(nil);
-
   Button_LoadMesh.Click;
   TrackBar_IterationsChange(nil);
-
   GLShadowVolume1.Occluders.AddCaster(GLActor1);
 end;
 
@@ -156,7 +169,6 @@ begin
         end;
      end;
   end;
-
   BaseMesh.StructureChanged;
 end;
 
@@ -442,12 +454,10 @@ begin
       if world <> nil then begin
          PositionSceneObjectForGeom(ODESphere);
          VCSphere.Location := GLSphere1.Position.AsAffineVector;
-
          dBodyAddForce(dGeomGetBody(ODESphere),
                        VCSphere.KickbackForce.X,
                        VCSphere.KickbackForce.Y,
                        VCSphere.KickbackForce.Z);
-
          dSpaceCollide (space,nil,nearCallback);
          dWorldStep(World, VerletWorld.MaxDeltaTime);
          dJointGroupEmpty (contactgroup);

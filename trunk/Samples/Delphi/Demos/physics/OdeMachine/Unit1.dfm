@@ -21,13 +21,11 @@ object Form1: TForm1
     Width = 688
     Height = 436
     Camera = GLCamera1
-    FieldOfView = 154.164367675781300000
+    FieldOfView = 154.164367675781200000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
     TabOrder = 0
-    ExplicitLeft = 48
-    ExplicitTop = -8
   end
   object GLScene1: TGLScene
     Left = 8
@@ -47,12 +45,10 @@ object Form1: TForm1
       end
     end
     object Machine: TGLDummyCube
-      Up.Coordinates = {000000000000803F0000008000000000}
       CubeSize = 1.000000000000000000
       object Wheel: TGLCylinder
         Material.FrontProperties.Diffuse.Color = {938C0C3E938C0C3E938E0E3F0000803F}
         Position.Coordinates = {000020C000000000000000000000803F}
-        Up.Coordinates = {000000000000803F0000008000000000}
         BottomRadius = 2.000000000000000000
         Height = 0.500000000000000000
         Slices = 32
@@ -80,7 +76,6 @@ object Form1: TForm1
         object Axle: TGLCylinder
           Material.FrontProperties.Diffuse.Color = {938C0C3EDCD6D63E938E0E3F0000803F}
           Position.Coordinates = {00000000000000C0000000000000803F}
-          Up.Coordinates = {000000000000803F0000008000000000}
           BottomRadius = 0.500000000000000000
           Height = 5.000000000000000000
           TopRadius = 0.500000000000000000
@@ -129,6 +124,14 @@ object Form1: TForm1
       object Slider: TGLCube
         Material.FrontProperties.Diffuse.Color = {1F856B3F14AE473F52B81E3F0000803F}
         Position.Coordinates = {00005040000000000000C0BF0000803F}
+        BehavioursData = {
+          0458434F4C02010201060D54474C4F444544796E616D69630200060A4F444520
+          536C6964657202000200060D474C4F44454D616E616765723102000500000000
+          006F1283F53F0800000500000000000000FA0840050000000000000000000005
+          0000000000000000000005000000000000000000000500000000000000000000
+          0500000000000000000000050000000000000000000005000000000000000000
+          000500000000000000000000050000000000000000000002010458434F4C0201
+          020009}
         CubeSize = {000080400000003F0000803F}
       end
     end

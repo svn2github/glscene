@@ -4,13 +4,29 @@ interface
 
 uses
   Winapi.Windows,
-  System.SysUtils, System.Variants, System.Classes,
-  Vcl.Graphics, Vcl.Forms, Vcl.Dialogs,
-  
-  GLNGDManager, GLScene, GLObjects, GLCoordinates, GLCadencer,
-  GLWin32Viewer, GLCrossPlatform, GLBaseClasses, GLVectorGeometry,
-  GLSimpleNavigation, GLKeyboard, GLGeomObjects, GLHUDObjects, GLBitmapFont,
-  GLWindowsFont,Controls;
+  System.SysUtils,
+  System.Variants,
+  System.Classes,
+  Vcl.Graphics,
+  Vcl.Forms,
+  Vcl.Dialogs,
+  Vcl.Controls,
+
+  GLNGDManager,
+  GLScene,
+  GLObjects,
+  GLCoordinates,
+  GLCadencer,
+  GLWin32Viewer,
+  GLCrossPlatform,
+  GLBaseClasses,
+  GLVectorGeometry,
+  GLSimpleNavigation,
+  GLKeyboard,
+  GLGeomObjects,
+  GLHUDObjects,
+  GLBitmapFont,
+  GLWindowsFont;
 
 type
   TForm1 = class(TForm)
@@ -98,7 +114,7 @@ procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject; Button: TMouseButton;
 var
   pickedobj: TGLBaseSceneObject;
 begin
-  if Button = mbLeft then
+  if Button = TMouseButton(mbLeft) then
   begin
 
     pickedobj := GLSceneViewer1.Buffer.GetPickedObject(X, Y);
@@ -124,7 +140,7 @@ procedure TForm1.GLSceneViewer1MouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
   // Detach the body
-  if Button = mbLeft then
+  if Button = TMouseButton(mbLeft) then
     PickJoint.KinematicControllerPick(NullHmgVector, paDetach);
 end;
 

@@ -16,9 +16,19 @@ uses
   
   GLNGDManager,
   GLObjects,
-  GLScene, GLCoordinates, GLSimpleNavigation, GLCadencer,
-  GLWin32Viewer, GLCrossPlatform, GLBaseClasses, GLVectorGeometry,
-  GLHUDObjects, GLBitmapFont, GLWindowsFont, NewtonImport, GLGeomObjects;
+  GLScene,
+  GLCoordinates,
+  GLSimpleNavigation,
+  GLCadencer,
+  GLWin32Viewer,
+  GLCrossPlatform,
+  GLBaseClasses,
+  GLVectorGeometry,
+  GLHUDObjects,
+  GLBitmapFont,
+  GLWindowsFont,
+  NewtonImport,
+  GLGeomObjects;
 
 type
   TForm1 = class(TForm)
@@ -35,7 +45,7 @@ type
     GLLeadSphere: TGLSphere;
     GLCube1: TGLCube;
     SpinEdit1: TSpinEdit;
-    HTWaterDensity: TGLHUDText;
+    HTLiquidDensity: TGLHUDText;
     GLNGDManager1: TGLNGDManager;
     SpinEdit2: TSpinEdit;
     HTLinearViscosity: TGLHUDText;
@@ -53,12 +63,9 @@ type
     procedure GLSceneViewer1MouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
   private
-     
   public
-     
     procedure MyForceAndTorqueDensity(const cbody: PNewtonBody;
       timestep: NGDFloat; threadIndex: Integer);
-
     procedure Shoot;
   end;
 
@@ -89,9 +96,7 @@ begin
   PlaneEquation := MyForm.GLPlane1.Direction.AsVector;
   // the distance along this normal, to the origin.
   PlaneEquation.W := MyForm.GLPlane1.Position.Y;
-
   PVector(globalSpacePlane)^ := PlaneEquation;
-
   Result := 1;
 end;
 

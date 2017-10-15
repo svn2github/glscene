@@ -102,12 +102,12 @@ object Form1: TForm1
     Listener = Mickey
     Sources = <>
     Cadencer = GLCadencer1
-    Left = 232
+    Left = 256
     Top = 72
   end
   object GLSoundLibrary: TGLSoundLibrary
     Samples = <>
-    Left = 296
+    Left = 176
     Top = 72
   end
   object GLScene: TGLScene
@@ -210,7 +210,7 @@ object Form1: TForm1
   end
   object Timer: TTimer
     OnTimer = TimerTimer
-    Left = 168
+    Left = 328
     Top = 72
   end
 end
