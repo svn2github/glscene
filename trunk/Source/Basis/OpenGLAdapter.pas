@@ -18,46 +18,18 @@ interface
 
 uses
   System.SysUtils,
-{$IFDEF MSWINDOWS}
   Winapi.Windows,
-{$ENDIF }
-{$IFDEF UNIX}
-  Types, LCLType, dynlibs,
-{$ENDIF}
-{$IFDEF GLS_X11_SUPPORT}
-  Xlib, X, XUtil,
-{$ENDIF}
-{$IFDEF DARWIN}
-  MacOSAll,
-{$ENDIF}
-  GLStrings, 
+  GLStrings,
   GLSLog,
   OpenGLTokens,
   GLVectorGeometry,
   GLVectorTypes;
 
 const
-{$IFDEF MSWINDOWS}
   opengl32 = 'OpenGL32.dll';
   glu32 = 'GLU32.dll';
   libEGL = 'libEGL.dll';
   libGLES2 = 'libGLESv2.dll';
-{$ENDIF}
-
-{$IFDEF Linux}
-  opengl32 = 'libGL.so';
-  glu32 = 'libGLU.so';
-  libEGL = 'libEGL.so';
-  libGLES2 = 'libGLESv2.so';
-{$ENDIF}
-
-{$IFDEF DARWIN}
-  opengl32  = '/System/Library/Frameworks/OpenGL.framework/Libraries/libGL.dylib';
-  glu32 = '/System/Library/Frameworks/OpenGL.framework/Libraries/libGLU.dylib';
-  libAGL = '/System/Library/Frameworks/AGL.framework/AGL';
-  libdl = '/usr/lib/libdl.dylib';
-  libGLES2 = '/System/Library/Frameworks/OpenGLES.framework/OpenGLES';
-{$ENDIF}
 
 type
   EOpenGLError = class(Exception);
@@ -76,10 +48,6 @@ type
 {$IFDEF SUPPORT_GLX}
     procedure ReadGLXExtensions;
     procedure ReadGLXImplementationProperties;
-{$ENDIF}
-{$IFDEF DARWIN}
-    procedure ReadAGLExtensions;
-    procedure ReadAGLImplementationProperties;
 {$ENDIF}
 {$IFDEF EGL_SUPPORT}
     procedure ReadEGLExtensions;
@@ -826,7 +794,7 @@ type
       Data: Pointer);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
 
- 
+
 // --------- New core function/procedure definitions in OpenGL 1.2'}
     BlendColor: PFNGLBLENDCOLORPROC;
     BlendEquation: PFNGLBLENDEQUATIONPROC;
@@ -1337,7 +1305,7 @@ type
     TextureView: PFNGLTextureView;
 
      
-    // ------------------------------ Direct access 
+    // ------------------------------ Direct access
     ClientAttribDefault: PFNGLCLIENTATTRIBDEFAULTEXTPROC;
     PushClientAttribDefault: PFNGLPUSHCLIENTATTRIBDEFAULTEXTPROC;
     MatrixLoadf: PFNGLMATRIXLOADFEXTPROC;
@@ -1439,26 +1407,19 @@ type
     NamedProgramLocalParameter4dv: PFNGLNAMEDPROGRAMLOCALPARAMETER4DVEXTPROC;
     NamedProgramLocalParameter4f: PFNGLNAMEDPROGRAMLOCALPARAMETER4FEXTPROC;
     NamedProgramLocalParameter4fv: PFNGLNAMEDPROGRAMLOCALPARAMETER4FVEXTPROC;
-    GetNamedProgramLocalParameterdv
-      : PFNGLGETNAMEDPROGRAMLOCALPARAMETERDVEXTPROC;
-    GetNamedProgramLocalParameterfv
-      : PFNGLGETNAMEDPROGRAMLOCALPARAMETERFVEXTPROC;
+    GetNamedProgramLocalParameterdv : PFNGLGETNAMEDPROGRAMLOCALPARAMETERDVEXTPROC;
+    GetNamedProgramLocalParameterfv : PFNGLGETNAMEDPROGRAMLOCALPARAMETERFVEXTPROC;
     GetNamedProgramiv: PFNGLGETNAMEDPROGRAMIVEXTPROC;
     GetNamedProgramString: PFNGLGETNAMEDPROGRAMSTRINGEXTPROC;
     NamedProgramLocalParameters4fv: PFNGLNAMEDPROGRAMLOCALPARAMETERS4FVEXTPROC;
     NamedProgramLocalParameterI4i: PFNGLNAMEDPROGRAMLOCALPARAMETERI4IEXTPROC;
     NamedProgramLocalParameterI4iv: PFNGLNAMEDPROGRAMLOCALPARAMETERI4IVEXTPROC;
-    NamedProgramLocalParametersI4iv
-      : PFNGLNAMEDPROGRAMLOCALPARAMETERSI4IVEXTPROC;
+    NamedProgramLocalParametersI4iv : PFNGLNAMEDPROGRAMLOCALPARAMETERSI4IVEXTPROC;
     NamedProgramLocalParameterI4ui: PFNGLNAMEDPROGRAMLOCALPARAMETERI4UIEXTPROC;
-    NamedProgramLocalParameterI4uiv
-      : PFNGLNAMEDPROGRAMLOCALPARAMETERI4UIVEXTPROC;
-    NamedProgramLocalParametersI4uiv
-      : PFNGLNAMEDPROGRAMLOCALPARAMETERSI4UIVEXTPROC;
-    GetNamedProgramLocalParameterIiv
-      : PFNGLGETNAMEDPROGRAMLOCALPARAMETERIIVEXTPROC;
-    GetNamedProgramLocalParameterIuiv
-      : PFNGLGETNAMEDPROGRAMLOCALPARAMETERIUIVEXTPROC;
+    NamedProgramLocalParameterI4uiv: PFNGLNAMEDPROGRAMLOCALPARAMETERI4UIVEXTPROC;
+    NamedProgramLocalParametersI4uiv: PFNGLNAMEDPROGRAMLOCALPARAMETERSI4UIVEXTPROC;
+    GetNamedProgramLocalParameterIiv: PFNGLGETNAMEDPROGRAMLOCALPARAMETERIIVEXTPROC;
+    GetNamedProgramLocalParameterIuiv: PFNGLGETNAMEDPROGRAMLOCALPARAMETERIUIVEXTPROC;
     TextureParameterIiv: PFNGLTEXTUREPARAMETERIIVEXTPROC;
     TextureParameterIuiv: PFNGLTEXTUREPARAMETERIUIVEXTPROC;
     GetTextureParameterIiv: PFNGLGETTEXTUREPARAMETERIIVEXTPROC;
@@ -1504,8 +1465,8 @@ type
     NamedFramebufferTextureFace: PFNGLNAMEDFRAMEBUFFERTEXTUREFACEEXTPROC;
     TextureRenderbuffer: PFNGLTEXTURERENDERBUFFEREXTPROC;
     MultiTexRenderbuffer: PFNGLMULTITEXRENDERBUFFEREXTPROC;
-    
-   // ------------------------------ Debugging 
+
+   // ------------------------------ Debugging
     // Special Gremedy debugger extension
     FrameTerminatorGREMEDY: PFNGLFRAMETERMINATORGREMEDYPROC;
     StringMarkerGREMEDY: PFNGLSTRINGMARKERGREMEDYPROC;
@@ -1518,40 +1479,25 @@ type
     GetObjectLabel: PFNGLGetObjectLabel;
     ObjectPtrLabel: PFNGLObjectPtrLabel;
     GetObjectPtrLabel: PFNGLGetObjectPtrLabel;
-    DebugMessageCallbackAMDX: procedure(callback: TDebugProcAMD;
-      userParam: Pointer);
-   {$IFDEF MSWINDOWS} stdcall;
-   {$ELSE} cdecl;
-   {$ENDIF}
+    DebugMessageCallbackAMDX: procedure(callback: TDebugProcAMD; userParam: Pointer);
+   {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
     DebugMessageControl: procedure(type_: Cardinal; Source: Cardinal;
       severity: Cardinal; Count: TGLsizei; var ids: Cardinal; Enabled: boolean);
-   {$IFDEF MSWINDOWS} stdcall;
-   {$ELSE} cdecl;
-   {$ENDIF}
+   {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
     DebugMessageInsert: procedure(Source: Cardinal; severity: Cardinal; id: Cardinal;
       length: TGLsizei; const buf: PAnsiChar);
-   {$IFDEF MSWINDOWS} stdcall;
-   {$ELSE} cdecl;
-   {$ENDIF}
+   {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
     DebugMessageCallback: procedure(callback: TDebugProc; userParam: Pointer);
-   {$IFDEF MSWINDOWS} stdcall;
-   {$ELSE} cdecl;
-   {$ENDIF}
+   {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
     GetDebugMessageLog: function(Count: Cardinal; bufSize: TGLsizei;
       var severity: Cardinal; var severities: Cardinal; var ids: Cardinal;
       var lengths: TGLsizei; messageLog: PAnsiChar): Cardinal;
-   {$IFDEF MSWINDOWS} stdcall;
-   {$ELSE} cdecl;
-   {$ENDIF}
-    
-   // ------------------------------ Interrop 
+   {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
+
+   // ------------------------------ Interrop
     CreateSyncFromCLevent: PFNGLCreateSyncFromCLevent;
-   {$IFDEF LINUX}
-    VDPAUInitNV: procedure(const vdpDevice: Pointer;
-      const getProcAddress: Pointer);
-   {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    VDPAUFiniNV: procedure();
-   {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
+    VDPAUInitNV: procedure(const vdpDevice: Pointer; const getProcAddress: Pointer); {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
+    VDPAUFiniNV: procedure(); {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     VDPAURegisterVideoSurfaceNV: function(const vdpSurface: Pointer;
       target: Cardinal; numTextureNames: TGLsizei; const textureNames: PGLuint)
       : TGLvdpauSurfaceNV;
@@ -1576,9 +1522,8 @@ type
     VDPAUUnmapSurfacesNV: procedure(numSurface: TGLsizei;
       const surfaces: PGLvdpauSurfaceNV);
    {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-   {$ENDIF LINUX}
-   
-   // ------------------------------ Path rendering 
+
+   // ------------------------------ Path rendering
     GenPathsNV: PFNGLGENPATHSNVPROC;
     DeletePathsNV: PFNGLDELETEPATHSNVPROC;
     IsPathNV: PFNGLISPATHNVPROC;
@@ -2058,7 +2003,7 @@ type
     property DebugMode: boolean read FDebug write FDebug;
   end;
 
-// ------------------------------ Windows OpenGL (WGL) support functions 
+// ------------------------------ Windows OpenGL (WGL) support functions
 
 {$IFDEF SUPPORT_WGL}
 function wglGetProcAddress(ProcName: PAnsiChar): Pointer; stdcall; external opengl32;
@@ -2150,120 +2095,120 @@ function aglSetCurrentContext(ctx: TAGLContext): GLboolean; cdecl; external libA
 function aglSetDrawable(ctx: TAGLContext; draw: TAGLDrawable): GLboolean; cdecl; external libAGL;{$ENDIF}
 
  
-function gluErrorString(errCode: Cardinal): PAnsiChar; {$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external glu32;
-function gluGetString(Name: Cardinal): PAnsiChar; {$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external glu32;
+function gluErrorString(errCode: Cardinal): PAnsiChar; {$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$ELSE} cdecl; {$ENDIF} external glu32;
+function gluGetString(Name: Cardinal): PAnsiChar; {$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$ELSE} cdecl; {$ENDIF} external glu32;
 procedure gluOrtho2D(left, right, bottom, top: TGLdouble);
-{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl;{$ENDIF} external glu32;
-procedure gluPerspective(fovy, aspect, zNear, zFar: TGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl;{$ENDIF} external glu32;
+{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$ELSE} cdecl;{$ENDIF} external glu32;
+procedure gluPerspective(fovy, aspect, zNear, zFar: TGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$ELSE} cdecl;{$ENDIF} external glu32;
 procedure gluPickMatrix(X, y, Width, Height: TGLdouble; const Viewport: TVector4i);
-{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl;{$ENDIF} external glu32;
+{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$ELSE} cdecl;{$ENDIF} external glu32;
 procedure gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz: TGLdouble);
-{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl;{$ENDIF} external glu32;
+{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$ELSE} cdecl;{$ENDIF} external glu32;
 function gluProject(objx, objy, objz: TGLdouble; const modelMatrix: TMatrix4d;
   const projMatrix: TMatrix4d; const Viewport: TVector4i;
   winx, winy, winz: PGLdouble): TGLint; 
-{$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external glu32;
+{$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$ELSE} cdecl; {$ENDIF} external glu32;
 function gluUnProject(winx, winy, winz: TGLdouble; const modelMatrix: TMatrix4d;
   const projMatrix: TMatrix4d; const Viewport: TVector4i;
   objx, objy, objz: PGLdouble): TGLint; 
-{$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external glu32;
+{$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$ELSE} cdecl; {$ENDIF} external glu32;
 function gluScaleImage(format: Cardinal; widthin, heightin: TGLint;
   typein: Cardinal; datain: Pointer; widthout, heightout: TGLint;
-  typeout: Cardinal; dataout: Pointer): TGLint; {$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external glu32;
+  typeout: Cardinal; dataout: Pointer): TGLint; {$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$ELSE} cdecl; {$ENDIF} external glu32;
 function gluBuild1DMipmaps(target: Cardinal; Components, Width: TGLint;
-  format, atype: Cardinal; Data: Pointer): TGLint; {$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external glu32;
+  format, atype: Cardinal; Data: Pointer): TGLint; {$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$ELSE} cdecl; {$ENDIF} external glu32;
 function gluBuild2DMipmaps(target: Cardinal; Components, Width, Height: TGLint;
-  format, atype: Cardinal; Data: Pointer): TGLint; {$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external glu32;
-function gluNewQuadric: PGLUquadric; {$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external glu32;
+  format, atype: Cardinal; Data: Pointer): TGLint; {$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$ELSE} cdecl; {$ENDIF} external glu32;
+function gluNewQuadric: PGLUquadric; {$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$ELSE} cdecl; {$ENDIF} external glu32;
 procedure gluDeleteQuadric(state: PGLUquadric); 
-{$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external glu32;
+{$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$ELSE} cdecl; {$ENDIF} external glu32;
 procedure gluQuadricNormals(quadObject: PGLUquadric; normals: Cardinal);
-{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl;{$ENDIF} external glu32;
+{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$ELSE} cdecl;{$ENDIF} external glu32;
 procedure gluQuadricTexture(quadObject: PGLUquadric; textureCoords: TGLboolean);
-{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl;{$ENDIF} external glu32;
+{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$ELSE} cdecl;{$ENDIF} external glu32;
 procedure gluQuadricOrientation(quadObject: PGLUquadric; orientation: Cardinal);
-{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl;{$ENDIF} external glu32;
+{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$ELSE} cdecl;{$ENDIF} external glu32;
 procedure gluQuadricDrawStyle(quadObject: PGLUquadric; drawStyle: Cardinal);
-{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl;{$ENDIF} external glu32;
+{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$ELSE} cdecl;{$ENDIF} external glu32;
 procedure gluCylinder(quadObject: PGLUquadric;
   baseRadius, topRadius, Height: TGLdouble; slices, stacks: TGLint);
-{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl;{$ENDIF} external glu32;
+{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$ELSE} cdecl;{$ENDIF} external glu32;
 procedure gluDisk(quadObject: PGLUquadric; innerRadius, outerRadius: TGLdouble;
   slices, loops: TGLint); 
-{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl;{$ENDIF} external glu32;
+{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$ELSE} cdecl;{$ENDIF} external glu32;
 procedure gluPartialDisk(quadObject: PGLUquadric;
   innerRadius, outerRadius: TGLdouble; slices, loops: TGLint;
   startAngle, sweepAngle: TGLdouble);
-{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl;{$ENDIF} external glu32;
+{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$ELSE} cdecl;{$ENDIF} external glu32;
 procedure gluSphere(quadObject: PGLUquadric; radius: TGLdouble;
   slices, stacks: TGLint);
-{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl;{$ENDIF} external glu32;
+{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$ELSE} cdecl;{$ENDIF} external glu32;
 procedure gluQuadricCallback(quadObject: PGLUquadric; which: Cardinal;
-  fn: TGLUQuadricErrorProc); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl;
+  fn: TGLUQuadricErrorProc); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$ELSE} cdecl;
 {$ENDIF} external glu32;
-function gluNewTess: PGLUtesselator; {$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external glu32;
+function gluNewTess: PGLUtesselator; {$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$ELSE} cdecl; {$ENDIF} external glu32;
 procedure gluDeleteTess(tess: PGLUtesselator); 
-{$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external glu32;
+{$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$ELSE} cdecl; {$ENDIF} external glu32;
 procedure gluTessBeginPolygon(tess: PGLUtesselator; polygon_data: Pointer);
-{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl;
+{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$ELSE} cdecl;
 {$ENDIF} external glu32;
-procedure gluTessBeginContour(tess: PGLUtesselator); {$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external glu32;
+procedure gluTessBeginContour(tess: PGLUtesselator); {$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$ELSE} cdecl; {$ENDIF} external glu32;
 procedure gluTessVertex(tess: PGLUtesselator; const coords: TVector3d;
   Data: Pointer);
-{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl;{$ENDIF} external glu32;
+{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$ELSE} cdecl;{$ENDIF} external glu32;
 procedure gluTessEndContour(tess: PGLUtesselator); {$IFDEF MSWINDOWS} stdcall;
-{$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external glu32;
+{$ENDIF} {$ELSE} cdecl; {$ENDIF} external glu32;
 procedure gluTessEndPolygon(tess: PGLUtesselator); 
-{$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external glu32;
+{$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$ELSE} cdecl; {$ENDIF} external glu32;
 procedure gluTessProperty(tess: PGLUtesselator; which: Cardinal;
   Value: TGLdouble);
-{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl;{$ENDIF} external glu32;
+{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$ELSE} cdecl;{$ENDIF} external glu32;
 procedure gluTessNormal(tess: PGLUtesselator; X, y, z: TGLdouble);
-{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl;{$ENDIF} external glu32;
+{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$ELSE} cdecl;{$ENDIF} external glu32;
 procedure gluTessCallback(tess: PGLUtesselator; which: Cardinal; fn: Pointer);
-{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl;{$ENDIF} external glu32;
+{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$ELSE} cdecl;{$ENDIF} external glu32;
 procedure gluGetTessProperty(tess: PGLUtesselator; which: Cardinal; Value: PGLdouble);
-{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl;{$ENDIF} external glu32;
-function gluNewNurbsRenderer: PGLUnurbs; {$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external glu32;
+{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$ELSE} cdecl;{$ENDIF} external glu32;
+function gluNewNurbsRenderer: PGLUnurbs; {$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$ELSE} cdecl; {$ENDIF} external glu32;
 procedure gluDeleteNurbsRenderer(nobj: PGLUnurbs); 
-{$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external glu32;
+{$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$ELSE} cdecl; {$ENDIF} external glu32;
 procedure gluBeginSurface(nobj: PGLUnurbs); 
-{$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external glu32;
+{$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$ELSE} cdecl; {$ENDIF} external glu32;
 procedure gluBeginCurve(nobj: PGLUnurbs); 
-{$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external glu32;
+{$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$ELSE} cdecl; {$ENDIF} external glu32;
 procedure gluEndCurve(nobj: PGLUnurbs); 
-{$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external glu32;
+{$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$ELSE} cdecl; {$ENDIF} external glu32;
 procedure gluEndSurface(nobj: PGLUnurbs); 
-{$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external glu32;
+{$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$ELSE} cdecl; {$ENDIF} external glu32;
 procedure gluBeginTrim(nobj: PGLUnurbs); 
-{$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external glu32;
+{$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$ELSE} cdecl; {$ENDIF} external glu32;
 procedure gluEndTrim(nobj: PGLUnurbs); 
-{$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external glu32;
+{$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$ELSE} cdecl; {$ENDIF} external glu32;
 procedure gluPwlCurve(nobj: PGLUnurbs; Count: TGLint; points: PGLfloat; stride: TGLint; atype: Cardinal);
-{$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external glu32;
+{$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$ELSE} cdecl; {$ENDIF} external glu32;
 procedure gluNurbsCurve(nobj: PGLUnurbs; nknots: TGLint; knot: PGLfloat;
   stride: TGLint; ctlarray: PGLfloat; order: TGLint; atype: Cardinal);
-{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl;{$ENDIF} external glu32;
+{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$ELSE} cdecl;{$ENDIF} external glu32;
 procedure gluNurbsSurface(nobj: PGLUnurbs; sknot_count: TGLint; sknot: PGLfloat;
   tknot_count: TGLint; tknot: PGLfloat; s_stride, t_stride: TGLint;
   ctlarray: PGLfloat; sorder, torder: TGLint; atype: Cardinal);
-{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl;{$ENDIF} external glu32;
+{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$ELSE} cdecl;{$ENDIF} external glu32;
 procedure gluLoadSamplingMatrices(nobj: PGLUnurbs; const modelMatrix: TMatrix4f;
   const projMatrix: TMatrix4f; const Viewport: TVector4i);
-{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl;{$ENDIF} external glu32;
+{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$ELSE} cdecl;{$ENDIF} external glu32;
 procedure gluNurbsProperty(nobj: PGLUnurbs; aproperty: Cardinal; Value: TGLfloat);
-{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl;{$ENDIF} external glu32;
+{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$ELSE} cdecl;{$ENDIF} external glu32;
 procedure gluGetNurbsProperty(nobj: PGLUnurbs; aproperty: Cardinal; Value: PGLfloat);
-{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl;{$ENDIF} external glu32;
+{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$ELSE} cdecl;{$ENDIF} external glu32;
 procedure gluNurbsCallback(nobj: PGLUnurbs; which: Cardinal;
   fn: TGLUNurbsErrorProc);
-{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl;{$ENDIF} external glu32;
+{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$ELSE} cdecl;{$ENDIF} external glu32;
 procedure gluBeginPolygon(tess: PGLUtesselator); 
-{$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external glu32;
+{$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$ELSE} cdecl; {$ENDIF} external glu32;
 procedure gluNextContour(tess: PGLUtesselator; atype: Cardinal);
-{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl;{$ENDIF} external glu32;
+{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$ELSE} cdecl;{$ENDIF} external glu32;
 procedure gluEndPolygon(tess: PGLUtesselator); 
-{$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external glu32;
+{$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$ELSE} cdecl; {$ENDIF} external glu32;
 
 {$IFDEF GLS_REGIONS} {$ENDREGION} {$ENDIF}
 function GetProcAddressGLLib(ProcName: PAnsiChar): Pointer;
@@ -2320,93 +2265,12 @@ begin
 end;
 
 {$IFDEF EGL_SUPPORT}
-
 function GetProcAddressEGL(ProcName: PAnsiChar): Pointer;
 begin
   Result := getProcAddress(EGLHandle, ProcName);
 end;
 {$ENDIF}
 {$ENDIF}
-// ************** UNIX specific ********************
-{$IFDEF UNIX}
-
-const
-  INVALID_MODULEHANDLE = 0; // nil;
-
-var
-  GLHandle: TLibHandle = 0; // Pointer;
-  GLUHandle: TLibHandle = 0; // Pointer;
-{$IFDEF EGL_SUPPORT}
-  EGLHandle: TLibHandle = 0;
-  EGL2Handle: TLibHandle = 0;
-{$ENDIF}
-{$IFDEF DARWIN}
-  AGLHandle: TLibHandle = 0;
-  dlHandle: TLibHandle = 0;
-{$IFDEF EGL_SUPPORT}
-  EGL2Handle: TLibHandle = 0;
-{$ENDIF}
-{$ENDIF}
-{$IFDEF DARWIN}
-function NSIsSymbolNameDefined(s: pchar): BOOL; cdecl; external libdl;
-function NSLookupAndBindSymbol(s: pchar): PtrInt; cdecl; external libdl;
-function NSAddressOfSymbol(Lib: Pointer): PtrInt; cdecl; external libdl;
-
-function getProcAddress(Lib: TLibHandle; ProcName: AnsiString): Pointer;
-var
-  fname: pchar;
-  symbol: PtrInt;
-begin
-  fname := pchar('_' + ProcName);
-  if not NSIsSymbolNameDefined(fname) then
-    exit(nil);
-
-  symbol := NSLookupAndBindSymbol(fname);
-  if symbol <> 0 then
-    symbol := NSAddressOfSymbol(Pointer(symbol));
-
-  Result := Pointer(symbol);
-end;
-{$ENDIF}
-
-function GetProcAddressGLS(ProcName: PAnsiChar): Pointer;
-begin
-{$IFNDEF EGL_SUPPORT}
-{$IFDEF SUPPORT_GLX}
-  if @glXGetProcAddress <> nil then
-    Result := glXGetProcAddress(ProcName);
-
-  if Result <> nil then
-    exit;
-
-  if @glXGetProcAddressARB <> nil then
-    Result := glXGetProcAddressARB(ProcName);
-
-  if Result <> nil then
-    exit;
-{$ENDIF}
-  Result := getProcAddress(GLHandle, ProcName);
-{$ELSE}
-  Result := getProcAddress(EGL2Handle, ProcName);
-{$ENDIF}
-end;
-
-{$IFDEF DARWIN}
-
-function GetProcAddressAGL(ProcName: PAnsiChar): Pointer;
-begin
-  Result := getProcAddress(AGLHandle, ProcName);
-end;
-{$ELSE}
-{$IFDEF EGL_SUPPORT}
-
-function GetProcAddressEGL(ProcName: PAnsiChar): Pointer;
-begin
-  Result := getProcAddress(EGLHandle, ProcName);
-end;
-{$ENDIF}
-{$ENDIF DARWIN}
-{$ENDIF UNIX}
 
 function GetProcAddressGLLib(ProcName: PAnsiChar): Pointer;
 begin
@@ -2454,15 +2318,6 @@ var
 begin
   vName := glPrefix + ProcName;
   Result := GetProcAddressGLS(PAnsiChar(AnsiString(vName)));
-{$IFDEF DARWIN}
-  if Result = nil then
-  begin
-    Result := GetProcAddressAGL(PAnsiChar(AnsiString(vName)));
-    if Result = nil then
-    begin
-      vName := glPrefix + ProcName + 'APPLE';
-      Result := GetProcAddressGLS(PAnsiChar(AnsiString(vName)));
-{$ENDIF}
       if Result = nil then
       begin
         vName := glPrefix + ProcName + 'ARB';
@@ -2495,10 +2350,6 @@ begin
           end;
         end;
       end;
-{$IFDEF DARWIN}
-    end;
-  end;
-{$ENDIF}
 {$IFDEF GLS_OPENGL_DEBUG}
   if Result <> @glCap then
     GLSLogger.LogDebug('Finded entry point of ' + vName)
@@ -2612,10 +2463,6 @@ begin
 {$IFDEF SUPPORT_GLX}
   ReadGLXExtensions;
   ReadGLXImplementationProperties;
-{$ENDIF}
-{$IFDEF DARWIN}
-  ReadAGLExtensions;
-  ReadAGLImplementationProperties;
 {$ENDIF}
 {$IFDEF EGL_SUPPORT}
   ReadEGLExtensions;
@@ -4011,20 +3858,6 @@ begin
 
   CreateSyncFromCLevent := GetAddress('CreateSyncFromCLevent');
 
-{$IFDEF LINUX}
-  VDPAUInitNV := GetAddressNoSuffixes('VDPAUInitNV');
-  VDPAUFiniNV := GetAddressNoSuffixes('VDPAUFiniNV');
-  VDPAURegisterVideoSurfaceNV := GetAddressNoSuffixes
-    ('VDPAURegisterVideoSurfaceNV');
-  VDPAURegisterOutputSurfaceNV := GetAddressNoSuffixes
-    ('VDPAURegisterOutputSurfaceNV');
-  VDPAUIsSurfaceNV := GetAddressNoSuffixes('VDPAUIsSurfaceNV');
-  VDPAUUnregisterSurfaceNV := GetAddressNoSuffixes('VDPAUUnregisterSurfaceNV');
-  VDPAUGetSurfaceivNV := GetAddressNoSuffixes('VDPAUGetSurfaceivNV');
-  VDPAUSurfaceAccessNV := GetAddressNoSuffixes('VDPAUSurfaceAccessNV');
-  VDPAUMapSurfacesNV := GetAddressNoSuffixes('VDPAUMapSurfacesNV');
-  VDPAUUnmapSurfacesNV := GetAddressNoSuffixes('VDPAUUnmapSurfacesNV');
-{$ENDIF LINUX}
   GenPathsNV := GetAddressNoSuffixes('GenPathsNV');
   DeletePathsNV := GetAddressNoSuffixes('DeletePathsNV');
   IsPathNV := GetAddressNoSuffixes('IsPathNV');
@@ -5560,6 +5393,7 @@ begin
 end;
 
 {$ENDIF}
+
 {$IFDEF SUPPORT_GLX}
 // ReadGLXImplementationProperties
 
@@ -5620,8 +5454,6 @@ begin
   X_SGIX_hyperpipe := CheckExtension('GLX_SGIX_hyperpipe');
   X_NV_multisample_coverage := CheckExtension('GLX_NV_multisample_coverage');
 end;
-
-// ReadGLXExtensions
 
 procedure TGLExtensionsAndEntryPoints.ReadGLXExtensions;
 begin
@@ -5756,104 +5588,7 @@ begin
 end;
 
 {$ENDIF}
-{$IFDEF DARWIN}
-// ReadAGLImplementationProperties
 
-procedure TGLExtensionsAndEntryPoints.ReadAGLImplementationProperties;
-var
-  MajorVersion, MinorVersion: integer;
-begin
-  // This procedure will probably need changing, as totally untested
-  // This might only work if AGL functions/procedures are loaded dynamically
-  if Assigned(GetString) then
-    FBuffer := string(GetString(GL_EXTENSIONS))
-  else
-    FBuffer := '';
-
-  A_aux_depth_stencil := CheckExtension('GL_APPLE_aux_depth_stencil');
-  A_client_storage := CheckExtension('GL_APPLE_client_storage');
-  A_element_array := CheckExtension('GL_APPLE_element_array');
-  A_fence := CheckExtension('GL_APPLE_fence');
-  A_float_pixels := CheckExtension('GL_APPLE_float_pixels');
-  A_flush_buffer_range := CheckExtension('GL_APPLE_flush_buffer_range');
-  A_flush_render := CheckExtension('GL_APPLE_flush_render');
-  A_object_purgeable := CheckExtension('GL_APPLE_object_purgeable');
-  A_packed_pixels := CheckExtension('GL_APPLE_packed_pixels');
-  A_pixel_buffer := CheckExtension('GL_APPLE_pixel_buffer');
-  A_rgb_422 := CheckExtension('GL_APPLE_rgb_422');
-  A_specular_vector := CheckExtension('GL_APPLE_specular_vector');
-  A_texture_range := CheckExtension('GL_APPLE_texture_range');
-  A_transform_hint := CheckExtension('GL_APPLE_transform_hint');
-  A_vertex_array_object := CheckExtension('GL_APPLE_vertex_array_object');
-  A_vertex_array_range := CheckExtension('GL_APPLE_vertex_array_range');
-  A_vertex_program_evaluators :=
-    CheckExtension('GL_APPLE_vertex_program_evaluators');
-  A_ycbcr_422 := CheckExtension('GL_APPLE_ycbcr_422');
-end;
-
-procedure TGLExtensionsAndEntryPoints.ReadAGLExtensions;
-begin
-  // Managing pixel format object
-  aglCreatePixelFormat := GetProcAddressAGL('aglCreatePixelFormat');
-  aglChoosePixelFormat := GetProcAddressAGL('aglChoosePixelFormat');
-  aglDestroyPixelFormat := GetProcAddressAGL('aglDestroyPixelFormat');
-  aglDescribePixelFormat := GetProcAddressAGL('aglDescribePixelFormat');
-  aglDestroyPixelFormat := GetProcAddressAGL('aglDestroyPixelFormat');
-  aglGetCGLPixelFormat := GetProcAddressAGL('aglGetCGLPixelFormat');
-  aglDisplaysOfPixelFormat := GetProcAddressAGL('aglDisplaysOfPixelFormat');
-  aglNextPixelFormat := GetProcAddressAGL('aglNextPixelFormat');
-  // Managing context
-  aglCreateContext := GetProcAddressAGL('aglCreateContext');
-  aglCopyContext := GetProcAddressAGL('aglCopyContext');
-  aglDestroyContext := GetProcAddressAGL('aglDestroyContext');
-  aglUpdateContext := GetProcAddressAGL('aglUpdateContext');
-  aglSetCurrentContext := GetProcAddressAGL('aglSetCurrentContext');
-  aglGetCGLContext := GetProcAddressAGL('aglGetCGLContext');
-  aglGetCurrentContext := GetProcAddressAGL('aglGetCurrentContext');
-  aglSwapBuffers := GetProcAddressAGL('aglSwapBuffers');
-  aglUpdateContext := GetProcAddressAGL('aglUpdateContext');
-  // Managing Pixel Buffers
-  aglCreatePBuffer := GetProcAddressAGL('aglCreatePBuffer');
-  aglDestroyPBuffer := GetProcAddressAGL('aglDestroyPBuffer');
-  aglDescribePBuffer := GetProcAddressAGL('aglDescribePBuffer');
-  aglGetPBuffer := GetProcAddressAGL('aglGetPBuffer');
-  aglSetPBuffer := GetProcAddressAGL('aglSetPBuffer');
-  aglTexImagePBuffer := GetProcAddressAGL('aglTexImagePBuffer');
-  // Managing Drawable Objects
-  aglSetDrawable := GetProcAddressAGL('aglSetDrawable'); // deprecated
-  aglGetDrawable := GetProcAddressAGL('aglGetDrawable'); // deprecated
-  aglSetFullScreen := GetProcAddressAGL('aglSetFullScreen');
-  aglSetOffScreen := GetProcAddressAGL('aglSetOffScreen');
-  // Getting and Setting Context Options
-  aglEnable := GetProcAddressAGL('aglEnable');
-  aglDisable := GetProcAddressAGL('aglDisable');
-  aglIsEnabled := GetProcAddressAGL('aglIsEnabled');
-  aglSetInteger := GetProcAddressAGL('aglSetInteger');
-  aglGetInteger := GetProcAddressAGL('aglGetInteger');
-  // Getting and Setting Global Information
-  aglConfigure := GetProcAddressAGL('aglConfigure');
-  aglGetVersion := GetProcAddressAGL('aglGetVersion');
-  aglResetLibrary := GetProcAddressAGL('aglResetLibrary');
-  // Getting Renderer Information
-  aglDescribeRenderer := GetProcAddressAGL('aglDescribeRenderer');
-  aglDestroyRendererInfo := GetProcAddressAGL('aglDestroyRendererInfo');
-  aglNextRendererInfo := GetProcAddressAGL('aglNextRendererInfo');
-  aglQueryRendererInfoForCGDirectDisplayIDs :=
-    GetProcAddressAGL('aglQueryRendererInfoForCGDirectDisplayIDs');
-  // Managing Virtual Screens
-  aglGetVirtualScreen := GetProcAddressAGL('aglGetVirtualScreen');
-  aglSetVirtualScreen := GetProcAddressAGL('aglSetVirtualScreen');
-  // Getting and Setting Windows
-  aglSetWindowRef := GetProcAddressAGL('aglSetWindowRef');
-  aglGetWindowRef := GetProcAddressAGL('aglGetWindowRef');
-  // Getting and Setting HIView Objects
-  aglSetHIViewRef := GetProcAddressAGL('aglSetHIViewRef');
-  aglGetHIViewRef := GetProcAddressAGL('aglGetHIViewRef');
-  // Getting Error Information
-  aglGetError := GetProcAddressAGL('aglGetError');
-  aglErrorString := GetProcAddressAGL('aglErrorString');
-end;
-{$ENDIF}
 {$IFDEF EGL_SUPPORT}
 
 procedure TGLExtensionsAndEntryPoints.ReadEGLImplementationProperties;
@@ -5923,8 +5658,6 @@ begin
 end;
 {$ENDIF}
 
-// TrimAndSplitVersionString
-//
 procedure TrimAndSplitVersionString(buffer: string; var max, min: integer);
 // Peels out the X.Y form from the given Buffer which must contain a version string like "text Minor.Major.Build text"
 // at least however "Major.Minor".
@@ -5975,8 +5708,6 @@ begin
     (actualMinorVersion >= MinorVersion));
 end;
 
-// InitOpenGL
-
 function InitOpenGL: boolean;
 begin
 {$IFNDEF EGL_SUPPORT}
@@ -5997,8 +5728,6 @@ begin
 {$ENDIF}
 end;
 
-// InitOpenGLFromLibrary
-
 function InitOpenGLFromLibrary(const GLName, GLUName: string): boolean;
 begin
   Result := False;
@@ -6006,16 +5735,6 @@ begin
 
   GLHandle := LoadLibrary(pchar(GLName));
   GLUHandle := LoadLibrary(pchar(GLUName));
-{$IFDEF Linux}   // make it work when mesa-dev is not installed and only libGL.so.1 is available
-  if (GLHandle = INVALID_MODULEHANDLE) then
-    GLHandle := LoadLibrary(pchar(GLName + '.1'));
-  if (GLUHandle = INVALID_MODULEHANDLE) then
-    GLUHandle := LoadLibrary(pchar(GLUName + '.1'));
-{$ENDIF}
-{$IFDEF DARWIN}
-  AGLHandle := LoadLibrary(pchar(libAGL));
-  dlHandle := LoadLibrary(pchar(libdl));
-{$ENDIF}
   if (GLHandle <> INVALID_MODULEHANDLE) and (GLUHandle <> INVALID_MODULEHANDLE)
   then
   begin
@@ -6025,14 +5744,10 @@ begin
     CloseOpenGL;
 end;
 
-// IsOpenGLInitialized
-
 function IsOpenGLInitialized: boolean;
 begin
   Result := {$IFNDEF EGL_SUPPORT}(GLHandle <> INVALID_MODULEHANDLE){$ELSE}(EGL2Handle <> INVALID_MODULEHANDLE){$ENDIF};
 end;
-
-// CloseOpenGL
 
 procedure CloseOpenGL;
 begin
@@ -6049,18 +5764,6 @@ begin
     GLUHandle := INVALID_MODULEHANDLE;
   end;
 
-{$IFDEF DARWIN}
-  if AGLHandle <> INVALID_MODULEHANDLE then
-  begin
-    FreeLibrary(AGLHandle);
-    AGLHandle := INVALID_MODULEHANDLE;
-  end;
-  if dlHandle <> INVALID_MODULEHANDLE then
-  begin
-    FreeLibrary(dlHandle);
-    dlHandle := INVALID_MODULEHANDLE;
-  end;
-{$ENDIF}
 {$ELSE}
 {$IFNDEF DARWIN}
   if EGLHandle <> INVALID_MODULEHANDLE then
@@ -6077,35 +5780,25 @@ begin
 {$ENDIF}
 end;
 
-// UnloadOpenGL
-
 procedure UnloadOpenGL;
 begin
   CloseOpenGL;
 end;
-
-// LoadOpenGL
 
 function LoadOpenGL: boolean;
 begin
   Result := InitOpenGL;
 end;
 
-// LoadOpenGLFromLibrary
-
 function LoadOpenGLFromLibrary(GLName, GLUName: string): boolean;
 begin
   Result := InitOpenGLFromLibrary(GLName, GLUName);
 end;
 
-// IsOpenGLLoaded
-
 function IsOpenGLLoaded: boolean;
 begin
   Result := IsOpenGLInitialized();
 end;
-
-// IsMesaGL
 
 function IsMesaGL: boolean;
 begin

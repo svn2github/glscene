@@ -40,9 +40,7 @@ type
     Normal : TAffineVector;
     MeshObject : TMeshObject;
     Active : boolean;
-
     procedure UpdateNormal;
-
     constructor Create(aMeshObject : TMeshObject);
   end;
 
@@ -297,8 +295,9 @@ begin
   FWeldDistance := Value;
 end;
 
-
+//------------------
 { TFaceList }
+//------------------
 
 function TFaceList.GetItems(i: integer): TFace;
 begin
@@ -310,7 +309,9 @@ begin
   Put(i, Value);
 end;
 
+//------------------
 { TEdgeList }
+//------------------
 
 function TEdgeList.GetItems(i: integer): TEdge;
 begin
@@ -356,7 +357,9 @@ begin
   Sort(@EdgeLength);
 end;
 
+//--------------------------
 { TMeshObjectVerletNode }
+//--------------------------
 
 constructor TMeshObjectVerletNode.CreateOwned(const aOwner: TGLVerletWorld);
 begin
@@ -379,7 +382,9 @@ begin
     MeshObject.Vertices[VertexIndices[i]] := MeshObject.Owner.Owner.AbsoluteToLocal(Location);
 end;
 
+//--------------------------
 { TEdgeDetector }
+//--------------------------
 
 procedure TEdgeDetector.Clear;
 var
@@ -758,7 +763,9 @@ begin
   end;
 end;
 
+//--------------------------
 { TFace }
+//--------------------------
 
 constructor TFace.Create(aMeshObject: TMeshObject);
 begin

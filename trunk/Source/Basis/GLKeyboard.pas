@@ -14,6 +14,7 @@
   03/08/00 - Egg - Creation, partly based Silicon Commander code
   The whole history is logged in previous version of the unit
 }
+
 unit GLKeyboard;
 
 interface
@@ -116,7 +117,6 @@ const
   c8 = '\';
 
 function IsKeyDown(c: Char): Boolean;
-{$IFDEF MSWINDOWS}
 var
   vk: Integer;
 begin
@@ -127,13 +127,6 @@ begin
   else
     Result := False;
 end;
-{$ELSE}
-
-begin
-  raise Exception.Create
-    ('GLKeyboard.IsKeyDown(c : Char) not yet implemented for your platform!');
-end;
-{$ENDIF}
 
 function IsKeyDown(vk: TVirtualKeyCode): Boolean;
 begin
@@ -152,17 +145,11 @@ begin
           vLastWheelDelta := 0;
       end;
   else
-{$IFDEF MSWINDOWS}
     Result := (GetAsyncKeyState(vk) < 0);
-{$ELSE}
-    raise Exception.Create
-      ('GLKeyboard.IsKeyDown(vk : TVirtualKeyCode) not fully yet implemented for your platform!');
-{$ENDIF}
   end;
 end;
 
 function KeyPressed(minVkCode: TVirtualKeyCode = 0): TVirtualKeyCode;
-{$IFDEF MSWINDOWS}
 var
   i: Integer;
   buf: TKeyboardState;
@@ -189,19 +176,10 @@ begin
     vLastWheelDelta := 0;
   end;
 end;
-{$ELSE}
-
-begin
-  raise Exception.Create
-    ('GLKeyboard.KeyPressed not yet implemented for your platform!');
-end;
-{$ENDIF}
 
 function VirtualKeyCodeToKeyName(vk: TVirtualKeyCode): String;
-{$IFDEF MSWINDOWS}
 var
   nSize: Integer;
-{$ENDIF}
 begin
   // Win32 API can't translate mouse button virtual keys to string
   case vk of
@@ -232,62 +210,38 @@ begin
     VK_MOUSEWHEELDOWN:
       Result := cMOUSEWHEELDOWN;
 
-    VK_PAUSE:
-      Result := cPAUSE;
-    VK_SNAPSHOT:
-      Result := cSNAPSHOT;
-    VK_NUMLOCK:
-      Result := cNUMLOCK;
-    VK_INSERT:
-      Result := cINSERT;
-    VK_DELETE:
-      Result := cDELETE;
+    VK_PAUSE:         Result := cPAUSE;
+    VK_SNAPSHOT:      Result := cSNAPSHOT;
+    VK_NUMLOCK:       Result := cNUMLOCK;
+    VK_INSERT:        Result := cINSERT;
+    VK_DELETE:        Result := cDELETE;
 
-    VK_DIVIDE:
-      Result := cDIVIDE;
+    VK_DIVIDE:        Result := cDIVIDE;
 
-    VK_LWIN:
-      Result := cLWIN;
-    VK_RWIN:
-      Result := cRWIN;
-    VK_APPS:
-      Result := cAPPS;
+    VK_LWIN:          Result := cLWIN;
+    VK_RWIN:          Result := cRWIN;
+    VK_APPS:          Result := cAPPS;
 
-    192:
-      Result := c0;
-    219:
-      Result := c1;
-    221:
-      Result := c2;
-    186:
-      Result := c3;
-    222:
-      Result := c4;
-    188:
-      Result := c5;
-    190:
-      Result := c6;
-    191:
-      Result := c7;
-    220:
-      Result := c8;
+    192:  Result := c0;
+    219:  Result := c1;
+    221:  Result := c2;
+    186:  Result := c3;
+    222:  Result := c4;
+    188:  Result := c5;
+    190:  Result := c6;
+    191:  Result := c7;
+    220:  Result := c8;
 
   else
-{$IFDEF MSWINDOWS}
     nSize := 32; // should be enough
     SetLength(Result, nSize);
     vk := MapVirtualKey(vk, 0);
     nSize := GetKeyNameText((vk and $FF) shl 16, PChar(Result), nSize);
     SetLength(Result, nSize);
-{$ELSE}
-    raise Exception.Create
-      ('GLKeyboard.VirtualKeyCodeToKeyName not yet fully implemented for your platform!');
-{$ENDIF}
   end;
 end;
 
 function KeyNameToVirtualKeyCode(const keyName: String): TVirtualKeyCode;
-{$IFDEF MSWINDOWS}
 var
   i: Integer;
 begin
@@ -302,43 +256,12 @@ begin
     end;
   end;
 end;
-{$ELSE}
-
-var
-  i: Integer;
-  lExceptionWasRaised: Boolean;
-begin
-  // ok, I admit this is plain ugly. 8)
-  Result := -1;
-  lExceptionWasRaised := False;
-  for i := 0 to 255 do
-    try
-      if SameText(VirtualKeyCodeToKeyName(i), keyName) then
-      begin
-        Result := i;
-        Exit;
-      end;
-    finally
-      lExceptionWasRaised := True;
-      // DaStr: Since VirtualKeyCodeToKeyName is not fully implemented in non-Unix
-      // systems, this function can thow exceptions, which we need to catch here.
-    end;
-  if (Result = -1) and lExceptionWasRaised then
-    raise Exception.Create
-      ('GLKeyboard.KeyNameToVirtualKeyCode not yet fully implemented for your platform or keyName wasn''t found!');
-end;
-{$ENDIF}
 
 function CharToVirtualKeyCode(c: Char): TVirtualKeyCode;
 begin
-{$IFDEF MSWINDOWS}
   Result := VkKeyScan(c) and $FF;
   if Result = $FF then
     Result := -1;
-{$ELSE}
-  raise Exception.Create
-    ('GLKeyboard.CharToVirtualKeyCode not yet implemented for your platform!');
-{$ENDIF}
 end;
 
 procedure KeyboardNotifyWheelMoved(wheelDelta: Integer);

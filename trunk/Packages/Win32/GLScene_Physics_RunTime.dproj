@@ -165,7 +165,6 @@
         <DCCReference Include="..\..\Source\PhysicsAPIs\GLSModuleLoader.pas"/>
         <DCCReference Include="..\..\Source\PhysicsAPIs\GLNGDManager.pas"/>
         <DCCReference Include="..\..\Source\PhysicsAPIs\NewtonImport.pas"/>
-        <DCCReference Include="..\..\Source\PhysicsAPIs\NewtonImport_JointLibrary.pas"/>
         <DCCReference Include="..\..\Source\PhysicsAPIs\GLPhysX.pas"/>
         <BuildConfiguration Include="Debug">
             <Key>Cfg_2</Key>
@@ -203,7 +202,7 @@
                 <Platform value="Win64">False</Platform>
             </Platforms>
             <Deployment Version="3">
-                <DeployFile LocalName="C:\Users\Public\Documents\Embarcadero\Studio\18.0\Bpl\GLScene_Physics_RunTime.bpl" Configuration="Debug" Class="ProjectOutput">
+                <DeployFile LocalName="C:\Users\Public\Documents\Embarcadero\Studio\19.0\Bpl\GLScene_Physics_RunTime.bpl" Configuration="Debug" Class="ProjectOutput">
                     <Platform Name="Win32">
                         <RemoteName>GLScene_Physics_RunTime.bpl</RemoteName>
                         <Overwrite>true</Overwrite>
