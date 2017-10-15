@@ -20,7 +20,7 @@ copy bass.dll %SystemRoot%\SysWOW64\
 copy fmod.dll %SystemRoot%\SysWOW64\
 copy OpenAL32.dll %SystemRoot%\SysWOW64\
 rem win64
-copy bass.dll %SystemRoot%\System32\
+copy bass64.dll %SystemRoot%\System32\
 copy fmod.dll %SystemRoot%\System32\
 copy OpenAL64.dll %SystemRoot%\System32\
 
