@@ -14,7 +14,6 @@ unit GLSMWaveOut;
 interface
 
 {$I GLScene.inc}
-{$IFDEF UNIX}{$MESSAGE Error 'Unit not supported'} {$ENDIF}
 
 uses
   Winapi.MMSystem,
