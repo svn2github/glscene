@@ -44,7 +44,8 @@ contains
   GLSModuleLoader in '..\..\Source\PhysicsAPIs\GLSModuleLoader.pas',
   GLNGDManager in '..\..\Source\PhysicsAPIs\GLNGDManager.pas',
   NewtonImport in '..\..\Source\PhysicsAPIs\NewtonImport.pas',
-  GLPhysX in '..\..\Source\PhysicsAPIs\GLPhysX.pas';
+  GLPhysX in '..\..\Source\PhysicsAPIs\GLPhysX.pas',
+  NewtonImport_JointLibrary in '..\..\Source\PhysicsAPIs\NewtonImport_JointLibrary.pas';
 
 end.
 

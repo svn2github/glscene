@@ -4,13 +4,31 @@ interface
 
 uses
   Winapi.Windows,
-  System.SysUtils, System.Variants, System.Classes,
-  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
-  
-  GLScene, GLObjects, GLCoordinates, GLCadencer, GLNGDManager,
-  GLSimpleNavigation, GLWin32Viewer, GLCrossPlatform, GLBaseClasses,
-  GLVectorFileObjects, GLGeomObjects, GLHUDObjects,
-  GLFile3ds, GLVectorGeometry, GlMaterial, GLKeyboard, GLUtils;
+  System.SysUtils,
+  System.Variants,
+  System.Classes,
+  Vcl.Graphics,
+  Vcl.Controls,
+  Vcl.Forms,
+  Vcl.Dialogs,
+
+  GLScene,
+  GLObjects,
+  GLCoordinates,
+  GLCadencer,
+  GLNGDManager,
+  GLSimpleNavigation,
+  GLWin32Viewer,
+  GLCrossPlatform,
+  GLBaseClasses,
+  GLVectorFileObjects,
+  GLGeomObjects,
+  GLHUDObjects,
+  GLFile3ds,
+  GLVectorGeometry,
+  GlMaterial,
+  GLKeyboard,
+  GLUtils;
 
 
 type
@@ -41,12 +59,10 @@ type
     procedure GLSceneViewer1MouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
   private
-     
     procedure ScaleMesh(freeform: TGLFreeForm; val: Single);
     procedure MoveCam(const deltaTime, newTime: Double);
     procedure MoveGrab;
   public
-    { Publiques declarations }
     grabJoint: TGLNGDJoint;
   end;
 

@@ -45,7 +45,7 @@ uses
   GLVectorTypes;
 
 type
-  NGDFloat = NewtonImport.Float;
+  NGDFloat = NewtonImport.dFloat;
   PNGDFloat = ^NGDFloat;
 
   TGLNGDHeightField = record

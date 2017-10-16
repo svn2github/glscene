@@ -31,85 +31,56 @@
 
 unit NewtonImport;
 
-{$I delphinewton.inc}
+{== Local Defines ==
+  __NONDELPHI__            - Enables compatiblity with compilers other than Delphi.
+                             Note that pascaldefines.inc and newtonpascal.inc
+                             are protected under the Mozilla Public License.
 
-// Note: Declare the following in Projects->Options->Conditionals not in this unit! 
-//{$DEFINE NEWTON_DOUBLE_PRECISION} // This is needed when you want to use double precision
+ == Conditionals ==
+ Declare the Following in Projects->Options->Conditionals to enable them:
+  __USE_DOUBLE_PRECISION__ - Toggles Double Precision. DLL used must match this setting.
+
+ == Local Defines ==}
+ //{$DEFINE __NONDELPHI__}
+
+
+
+{$IFDEF __NONDELPHI__}
+ {$I pascaldefines.inc}
+{$ENDIF}
 
 interface
-                                                        
-uses
-{$IFDEF __GPC__}
-  system,
-  gpc,
-{$ENDIF}
-
-{$IFDEF UNIX}
-  Types,
-  Libc,
-  Xlib,
-{$ENDIF}
-
-{$IFDEF __MACH__}
-  GPCMacOSAll,
-{$ENDIF}
-  Classes;
 
 const
 {$IFDEF WIN32}
    NewtonDLL = 'Newton.dll';
 {$ENDIF}
-
 {$IFDEF WIN64}
    NewtonDLL = 'Newton64.dll';
 {$ENDIF}
 
-{$IFDEF UNIX}
-{$IFDEF DARWIN} // MacOS X
-  NewtonDLL = 'libnewton.dylib';
-{$ELSE}
-  NewtonDLL = 'libNewton.so';
-{$ENDIF}
-{$ENDIF}
-
-{$IFDEF MACOS}
-  NewtonDLL = 'libnewton';
-{$ENDIF}
-
-// Note: Declare the following in Projects->Options->Conditionals not in this unit! - Stucuk
-//{$DEFINE NEWTON_DOUBLE_PRECISION} // This is needed when you want to use double precision
-
-const
-NEWTON_MAJOR_VERSION                            =  3;
-NEWTON_MINOR_VERSION                            = 14;
-
-NEWTON_PROFILER_WORLD_UPDATE                    =  0;
-NEWTON_PROFILER_COLLISION_UPDATE                =  1;
-NEWTON_PROFILER_COLLISION_UPDATE_BROAD_PHASE    =  2;
-NEWTON_PROFILER_COLLISION_UPDATE_NARROW_PHASE   =  3;
-NEWTON_PROFILER_DYNAMICS_UPDATE                 =  4;
-NEWTON_PROFILER_DYNAMICS_CONSTRAINT_GRAPH       =  5;
-NEWTON_PROFILER_FORCE_CALLBACK_UPDATE           =  6;
-NEWTON_PROFILER_DYNAMICS_SOLVE_CONSTRAINT_GRAPH =  7;
-
-SERIALIZE_ID_BOX                                =  0;
-SERIALIZE_ID_CONE                               =  1;
-SERIALIZE_ID_SPHERE                             =  2;
-SERIALIZE_ID_CAPSULE                            =  3;
-SERIALIZE_ID_CYLINDER                           =  4;
-SERIALIZE_ID_COMPOUND                           =  5;
-SERIALIZE_ID_CONVEXHULL                         =  6;
-SERIALIZE_ID_CONVEXMODIFIER                     =  7;
-SERIALIZE_ID_CHAMFERCYLINDER                    =  8;
-SERIALIZE_ID_TREE                               =  9;
-SERIALIZE_ID_NULL                               = 10;
-SERIALIZE_ID_HEIGHTFIELD                        = 11;
-SERIALIZE_ID_USERMESH                           = 12;
-SERIALIZE_ID_SCENE                              = 13;
-SERIALIZE_ID_COMPOUND_BREAKABLE                 = 14;
-
-(*Comment this line if you get weird errors*)
-{$DEFINE NICE_CODE_PARAMS}
+ NEWTON_MAJOR_VERSION = 3;
+ NEWTON_MINOR_VERSION = 14;
+ NEWTON_BROADPHASE_DEFAULT = 0;
+ NEWTON_BROADPHASE_PERSINTENT = 1;
+ NEWTON_DYNAMIC_BODY = 0;
+ NEWTON_KINEMATIC_BODY = 1;
+ SERIALIZE_ID_SPHERE = 0;
+ SERIALIZE_ID_CAPSULE = 1;
+ SERIALIZE_ID_CYLINDER = 2;
+ SERIALIZE_ID_CHAMFERCYLINDER = 3;
+ SERIALIZE_ID_BOX = 4;
+ SERIALIZE_ID_CONE = 5;
+ SERIALIZE_ID_CONVEXHULL = 6;
+ SERIALIZE_ID_NULL = 7;
+ SERIALIZE_ID_COMPOUND = 8;
+ SERIALIZE_ID_TREE = 9;
+ SERIALIZE_ID_HEIGHTFIELD = 10;
+ SERIALIZE_ID_CLOTH_PATCH = 11;
+ SERIALIZE_ID_DEFORMABLE_SOLID = 12;
+ SERIALIZE_ID_USERMESH = 13;
+ SERIALIZE_ID_SCENE = 14;
+ SERIALIZE_ID_FRACTURED_COMPOUND = 15;
 
 type
 // *****************************************************************************************************************************
@@ -123,12 +94,12 @@ type
 (C++ types just do a simple find and replace =)}
 
 {$IFDEF NEWTON_DOUBLE_PRECISION}
-   Float = Double;
+   dFloat = Double;
   {$ELSE}
-   Float = Single;
+   dFloat = Single;
   {$ENDIF}
   Long_double = Extended;
-
+  dFloat64 = Double;
   Int = Integer;
   __int8 = ShortInt;
   __int16 = SmallInt;
@@ -139,11 +110,14 @@ type
   Short = SmallInt;
   Unsigned_short = Word;
   Long = LongInt;
+  dLong = ^Int64;
   Unsigned_long = LongWord;
   Unsigned_int = Cardinal;
   size_t = Cardinal;
   CharArray = Array [0..255] of Char;
-
+  PdFloat                      = ^dFloat;
+  PdFloat64  = ^dFloat64;
+  PdLong = ^dLong;
   PInt = ^Int;
   P__int8 = ^__int8;
   P__int16 = ^__int16;
@@ -157,7 +131,7 @@ type
   PUnsigned_long = ^Unsigned_long;
   PUnsigned_int = ^Unsigned_int;
   Psize_t = ^size_t;
-  PFloat = ^Float;
+  PFloat = ^dFloat;
   PLong_double = ^Long_double;
   PCharArray = ^CharArray;
 
@@ -185,7 +159,7 @@ type
   PNewtonContact = ^Pointer;
   PNewtonMaterial = ^Pointer;
   PNewtonCollision = ^Pointer;
-  PNewtonSceneProxy = ^Pointer;
+  //PNewtonSceneProxy = ^Pointer;
   PNewtonBreakableComponentMesh = ^Pointer;
   PNewtonMeshVertex = ^Pointer;
   PNewtonMeshEdge = ^Pointer;
@@ -223,35 +197,35 @@ type
       TNewtonBoxParam = packed record
              m_x,
              m_y,
-             m_z: float;
+             m_z: dfloat;
       end;
 
        TNewtonSphereParam = packed record
              m_r0,
              m_r1,
-             m_r2: float;
+             m_r2: dfloat;
       end;
 
       TNewtonCylinderParam = packed record
           m_r0,
           m_r1,
-        m_height: float;
+        m_height: dfloat;
       end;
 
       TNewtonCapsuleParam = packed record
           m_r0,
           m_r1,
-        m_height: float;
+        m_height: dfloat;
       end;
 
       TNewtonConeParam = packed record
           m_r,
-          m_height: float;
+          m_height: dfloat;
       end;
 
       TNewtonChamferCylinderParam = packed record
              m_r,
-             m_height: float;
+             m_height: dfloat;
       end;
 
       TNewtonConvexHullParam = packed record
@@ -265,25 +239,39 @@ type
          m_chidren: PNewtonCollision;
       end;
 
-      TNewtonCompoundCollisionParam = packed record
-         m_chidrenCount: integer;
-        m_chidren: pointer; // pointer to array of pnewtoncollisions
-      end;
+ TNewtonCompoundCollisionParam = Packed Record
+  m_chidrenCount         : Integer;
+ end;
 
-      TNewtonCollisionTreeParam = packed record
-         m_vertexCount,
-	 m_indexCount  : Integer;
-      end;
 
-      TNewtonHeightFieldCollisionParam = packed record
-             m_width,
-             m_height,
-             m_gridsDiagonals: integer;
-             m_horizonalScale,
-             m_verticalScale: float;
-             m_elevation: pointer; //unsigned short *m_elevation;
-             m_atributes: pchar;
-      end;
+ TNewtonCollisionTreeParam = Packed Record
+  m_vertexCount,
+  m_indexCount           : Integer;
+ end;
+
+ TNewtonDeformableMeshParam = Packed Record
+  m_vertexCount,
+  m_triangleCount,
+  m_vertexStrideInBytes  : Integer;
+  m_indexList            : PWord;
+  m_vertexList           : PFloat;
+ end;
+
+
+ TNewtonHeightFieldCollisionParam = Packed Record
+  m_width,
+  m_height,
+  m_gridsDiagonals,
+  m_elevationDataType     : Integer;// 0 = 32 bit floats, 1 = unsigned 16 bit integers
+  m_verticalScale         : dFloat;
+  m_horizonalScale_x : dFloat;
+  m_horizonalScale_z : dFloat;
+  m_horizonalDisplacementScale_x : dFloat;
+  m_horizonalDisplacementScale_z : dFloat;
+  m_vertialElevation      : Pointer;
+  m_horizotalDisplacement : PSmallInt;
+  m_atributes             : PShortInt;
+ end;
 
       TNewtonSceneCollisionParam = packed record
           m_childrenProxyCount: integer;
@@ -294,54 +282,40 @@ type
       end;
 
       TNewtonCollisionInfoRecord = packed record
-    m_offsetMatrix: array[0..3,0..3] of float;
+    m_offsetMatrix: array[0..3,0..3] of dfloat;
       m_collisionType,                 // tag id to identify the collision primitive
       m_referenceCount: integer;       // the current reference count for this collision
     m_collisionUserID: integer;
-  Case integer of
-       SERIALIZE_ID_BOX :
-         (shapedatabox: TNewtonBoxParam );
-       SERIALIZE_ID_CONE :
-         (shapedata: TNewtonConeParam );
-        SERIALIZE_ID_SPHERE :
-         (shapedatasphere: TNewtonSphereParam );
-        SERIALIZE_ID_CAPSULE :
-         (shapedatacapsule: TNewtonCapsuleParam );
-        SERIALIZE_ID_CYLINDER :
-         (shapedatacylinder: TNewtonCylinderParam );
-       SERIALIZE_ID_COMPOUND :
-         (shapedatacompound: TNewtonCompoundCollisionParam );
-        SERIALIZE_ID_CONVEXHULL :
-         (shapedataconvexhull: TNewtonConvexHullParam);
-        SERIALIZE_ID_CONVEXMODIFIER :
-         (shapedataxonvexhull: TNewtonConvexHullModifierParam );
-        SERIALIZE_ID_CHAMFERCYLINDER :
-         (shapedatachamfercylinder: TNewtonChamferCylinderParam );
-        SERIALIZE_ID_TREE :
-         (shapedatatree: TNewtonCollisionTreeParam );
-        SERIALIZE_ID_NULL :
-         (shapedatanull: TNewtonCollisionNullParam );
-        SERIALIZE_ID_HEIGHTFIELD :
-         (shapedataheightfield: TNewtonHeightFieldCollisionParam );
-       SERIALIZE_ID_USERMESH :
-         (m_paramArray: array[0..63] of float);
-        SERIALIZE_ID_SCENE :
-         (shapedatascenecollision: TNewtonSceneCollisionParam);
+  case Integer of
+       SERIALIZE_ID_SPHERE           : (sdSphere             : TNewtonSphereParam);
+       SERIALIZE_ID_CAPSULE          : (sdCapsule            : TNewtonCapsuleParam);
+	   SERIALIZE_ID_CYLINDER         : (sdCylinder           : TNewtonCylinderParam);
+       SERIALIZE_ID_CHAMFERCYLINDER  : (sdChamferCylinder    : TNewtonChamferCylinderParam);
+       SERIALIZE_ID_BOX              : (sdBox                : TNewtonBoxParam);
+       SERIALIZE_ID_CONE             : (sdCone               : TNewtonConeParam);
+       SERIALIZE_ID_CONVEXHULL       : (sdConvexHull         : TNewtonConvexHullParam);
+       SERIALIZE_ID_NULL             : (sdNull               : TNewtonCollisionNullParam);
+       SERIALIZE_ID_COMPOUND         : (sdCompound           : TNewtonCompoundCollisionParam);
+       SERIALIZE_ID_TREE             : (sdTree               : TNewtonCollisionTreeParam);
+       SERIALIZE_ID_HEIGHTFIELD      : (sdHeightField        : TNewtonHeightFieldCollisionParam);
+       SERIALIZE_ID_DEFORMABLE_SOLID : (sdDeformableMesh     : TNewtonDeformableMeshParam);
+       SERIALIZE_ID_USERMESH         : (sdUserMesh           : Array[0..63] of dFloat);
+       SERIALIZE_ID_SCENE            : (sdSceneCollision     : TNewtonSceneCollisionParam);
   end;
 
   PNewtonCollisionInfoRecord = ^TNewtonCollisionInfoRecord;
 
   PNewtonJointRecord = ^NewtonJointRecord;
   NewtonJointRecord = record
-    m_attachmenMatrix_0 : array[ 0..3,0..3 ] of float;
-    m_attachmenMatrix_1 : array[ 0..3,0..3 ] of float;
-    m_minLinearDof      : array[ 0..2 ] of float;
-    m_maxLinearDof      : array[ 0..2 ] of float;
-    m_minAngularDof     : array[ 0..2 ] of float;
-    m_maxAngularDof     : array[ 0..2 ] of float;
+    m_attachmenMatrix_0 : array[ 0..3,0..3 ] of dfloat;
+    m_attachmenMatrix_1 : array[ 0..3,0..3 ] of dfloat;
+    m_minLinearDof      : array[ 0..2 ] of dfloat;
+    m_maxLinearDof      : array[ 0..2 ] of dfloat;
+    m_minAngularDof     : array[ 0..2 ] of dfloat;
+    m_maxAngularDof     : array[ 0..2 ] of dfloat;
     m_attachBody_0      : PNewtonBody;
     m_attachBody_1      : PNewtonBody;
-    m_extraParameters   : array[ 0..15 ] of float;
+    m_extraParameters   : array[ 0..15 ] of dfloat;
     m_bodiesCollisionOn : int;
     m_descriptionType   : array[ 0..31 ] of NChar;
   end;
@@ -349,13 +323,13 @@ type
 
   PNewtonUserMeshCollisionCollideDesc = ^NewtonUserMeshCollisionCollideDesc;
   NewtonUserMeshCollisionCollideDesc = record
-    m_boxP0               : array[ 0..3 ] of float; // lower bounding box of intersection query in local space
-    m_boxP1               : array[ 0..3 ] of float; // upper bounding box of intersection query in local space
+    m_boxP0               : array[ 0..3 ] of dfloat; // lower bounding box of intersection query in local space
+    m_boxP1               : array[ 0..3 ] of dfloat; // upper bounding box of intersection query in local space
     m_threadNumber        : int;                    // current thread executing this query
     m_faceCount           : int;                    // the application should set here how many polygons intersect the query box
     m_vertexStrideInBytes : int;                    // the application should set here the size of each vertex
     m_userData            : Pointer;                // user data passed to the collision geometry at creation time
-    m_vertex              : ^float;                 // the application should the pointer to the vertex array.
+    m_vertex              : ^dfloat;                 // the application should the pointer to the vertex array.
     m_userAttribute       : ^int;                   // the application should set here the pointer to the user data, one for each face
     m_faceIndexCount      : ^int;                   // the application should set here the pointer to the vertex count of each face.
     m_faceVertexIndex     : ^int;                   // the application should set here the pointer index array for each vertex on a face.
@@ -365,20 +339,20 @@ type
 
   PNewtonWorldConvexCastReturnInfo = ^NewtonWorldConvexCastReturnInfo;
   NewtonWorldConvexCastReturnInfo = record
-    m_point            : array[ 0..3 ] of float; // collision point in global space
-    m_normal           : array[ 0..3 ] of float; // surface normal at collision point in global space
-    m_normalOnHitPoint : array[ 0..3 ] of float; // surface normal at the surface of the hit body,
+    m_point            : array[ 0..3 ] of dfloat; // collision point in global space
+    m_normal           : array[ 0..3 ] of dfloat; // surface normal at collision point in global space
+    m_normalOnHitPoint : array[ 0..3 ] of dfloat; // surface normal at the surface of the hit body,
 					         // is the same as the normal calculated by a ray cast hitting the body at the hit poi
-    m_penetration      : float;                  // contact penetration at collision point
+    m_penetration      : dfloat;                  // contact penetration at collision point
     m_contactID        : int;                    // collision ID at contact point
     m_hitBody          : PNewtonBody;            // body hit at contact point
   end;
 
   PNewtonUserMeshCollisionRayHitDesc = ^NewtonUserMeshCollisionRayHitDesc;
   NewtonUserMeshCollisionRayHitDesc = record
-    m_p0        : array[ 0..3 ] of float; // ray origin in collision local space
-    m_p1        : array[ 0..3 ] of float; // ray destination in collision local space
-    m_normalOut : array[ 0..3 ] of float; // copy here the normal at the ray intersection
+    m_p0        : array[ 0..3 ] of dfloat; // ray origin in collision local space
+    m_p1        : array[ 0..3 ] of dfloat; // ray destination in collision local space
+    m_normalOut : array[ 0..3 ] of dfloat; // copy here the normal at the ray intersection
     m_userIdOut : int;                    // copy here a user defined id for further feedback
     m_userData  : Pointer;                // user data passed to the collision geometry at creation time
   end;
@@ -386,17 +360,50 @@ type
 
   PNewtonHingeSliderUpdateDesc = ^NewtonHingeSliderUpdateDesc;
   NewtonHingeSliderUpdateDesc = record
-    m_accel       : float;
-    m_minFriction : float;
-    m_maxFriction : float;
-    m_timestep    : float;
+    m_accel       : dfloat;
+    m_minFriction : dfloat;
+    m_maxFriction : dfloat;
+    m_timestep    : dfloat;
   end;
 
-// *****************************************************************************************************************************
-//
-//  Callbacks
-//
-// *****************************************************************************************************************************
+ NewtonUserContactPoint = ^TNewtonUserContactPoint;
+ TNewtonUserContactPoint = Packed Record
+  m_point,
+  m_normal               : Array [0..3] of dFloat;
+  m_shapeId0             : dLong;
+  m_shapeId1             : dLong;
+  m_penetration          : dFloat;
+  m_unused               : Array [0..2] of Integer;
+ end;
+
+ // data structure for interfacing with NewtonMesh
+ NewtonMeshDoubleData = ^TNewtonMeshDoubleData;
+ TNewtonMeshDoubleData = Packed Record
+  m_data          : PdFloat64;
+  m_indexList     : PInteger;
+  m_strideInBytes : Integer;
+ end;
+ 
+ NewtonMeshFloatData = ^TNewtonMeshFloatData;
+ TNewtonMeshFloatData = Packed Record
+  m_data          : PdFloat;
+  m_indexList     : PInteger;
+  m_strideInBytes : Integer;
+ end;
+ 
+ NewtonMeshVertexFormat = ^TNewtonMeshVertexFormat;
+ TNewtonMeshVertexFormat = Packed Record
+  m_faceCount : Integer;
+  m_faceIndexCount : PInteger;
+  m_faceMaterial : PInteger;
+  m_vertex : NewtonMeshDoubleData;
+  m_normal : NewtonMeshFloatData;
+  m_binormal : NewtonMeshFloatData;
+  m_uv0 : NewtonMeshFloatData;
+  m_uv1 : NewtonMeshFloatData;
+  m_vertexColor : NewtonMeshFloatData;
+ end;
+ // Newton callback functions
 PNewtonAllocMemory                        = ^NewtonAllocMemory;
 NewtonAllocMemory                         = function( sizeInBytes : int ) : Pointer; cdecl;
 
@@ -432,10 +439,10 @@ NewtonUserMeshCollisionGetFacesInAABB     = function( userData : Pointer; const 
                                                       vertexStrideInBytes : pint; const indexList : pint; maxIndexCount : int; const userDataList : pint ) : int; cdecl;
 
 PNewtonCollisionTreeRayCastCallback       = ^NewtonCollisionTreeRayCastCallback;
-NewtonCollisionTreeRayCastCallback        = function(const Body : PNewtonBody; const TreeCollision : PNewtonCollision; interception : Float; normal : PFloat; faceId : int; usedData : Pointer) : Float; cdecl;
+NewtonCollisionTreeRayCastCallback        = function(const Body : PNewtonBody; const TreeCollision : PNewtonCollision; interception : dFloat; normal : PFloat; faceId : int; usedData : Pointer) : dFloat; cdecl;
 
 PNewtonHeightFieldRayCastCallback         = ^NewtonHeightFieldRayCastCallback;
-NewtonHeightFieldRayCastCallback          = function(const Body : PNewtonBody; const HeightFieldCollision : PNewtonCollision; Interception : Float; Row, Col : Int; Normal : PFloat; FaceID : Int; UsedData : Pointer) : Float; cdecl;
+NewtonHeightFieldRayCastCallback          = function(const Body : PNewtonBody; const HeightFieldCollision : PNewtonCollision; Interception : dFloat; Row, Col : Int; Normal : PFloat; FaceID : Int; UsedData : Pointer) : dFloat; cdecl;
 
 PNewtonTreeCollisionCallback              = ^NewtonTreeCollisionCallback;
 NewtonTreeCollisionCallback               = procedure( const bodyWithTreeCollision : PNewtonBody; const body : PNewtonBody; faceID : int;
@@ -445,7 +452,7 @@ PNewtonBodyDestructor                     = ^NewtonBodyDestructor;
 NewtonBodyDestructor                      = procedure( const body : PNewtonBody ); cdecl;
 
 PNewtonApplyForceAndTorque                = ^NewtonApplyForceAndTorque;
-NewtonApplyForceAndTorque                 = procedure( const body : PNewtonBody; timestep : Float; threadIndex : int ); cdecl;
+NewtonApplyForceAndTorque                 = procedure( const body : PNewtonBody; timestep : dFloat; threadIndex : int ); cdecl;
 
 PNewtonSetTransform                       = ^NewtonSetTransform;
 NewtonSetTransform                        = procedure( const body : PNewtonBody; const matrix : PFloat; threadIndex : int ); cdecl;
@@ -472,13 +479,13 @@ PNewtonWorldRayPrefilterCallback          = ^NewtonWorldRayPrefilterCallback;
 NewtonWorldRayPrefilterCallback           = function (const body : PNewtonBody; const collision : PNewtonCollision; userData : Pointer) : cardinal; cdecl;
 
 PNewtonWorldRayFilterCallback             = ^NewtonWorldRayFilterCallback;
-NewtonWorldRayFilterCallback              = function( const body : PNewtonBody; const hitNormal: PFloat; collisionID : Int; userData: Pointer; intersetParam: Float ) : Float; cdecl;
+NewtonWorldRayFilterCallback              = function( const body : PNewtonBody; const hitNormal: PFloat; collisionID : Int; userData: Pointer; intersetParam: dFloat ) : dFloat; cdecl;
 
 PNewtonOnAABBOverlap                      = ^NewtonOnAABBOverlap;
 NewtonOnAABBOverlap                       = function( const material : PNewtonMaterial; const body0 : PNewtonBody; const body1 : PNewtonBody; threadIndex : int ) : int; cdecl;
 
 PNewtonContactsProcess                    = ^NewtonContactsProcess;
-NewtonContactsProcess                     = procedure( const contact : PNewtonJoint; timestep : Float; threadIndex : int ); cdecl;
+NewtonContactsProcess                     = procedure( const contact : PNewtonJoint; timestep : dFloat; threadIndex : int ); cdecl;
 
 PNewtonBodyIterator                       = ^NewtonBodyIterator;
 NewtonBodyIterator                        = procedure( const body : PNewtonBody; userData : Pointer ); cdecl;
@@ -490,7 +497,7 @@ PNewtonCollisionIterator                  = ^NewtonCollisionIterator;
 NewtonCollisionIterator                   = procedure( userData : Pointer; vertexCount : int; const FaceArray : PFloat; faceId : int ); cdecl;
 
 PNewtonBallCallBack                       = ^NewtonBallCallBack;
-NewtonBallCallBack                        = procedure( const ball : PNewtonJoint; timestep : Float ); cdecl;
+NewtonBallCallBack                        = procedure( const ball : PNewtonJoint; timestep : dFloat ); cdecl;
 
 PNewtonHingeCallBack                      = ^NewtonHingeCallBack;
 NewtonHingeCallBack                       = function( const hinge : PNewtonJoint; desc : PNewtonHingeSliderUpdateDesc ) : Unsigned_int; cdecl;
@@ -505,7 +512,7 @@ PNewtonCorkscrewCallBack                  = ^NewtonCorkscrewCallBack;
 NewtonCorkscrewCallBack                   = function( const corkscrew : PNewtonJoint; desc : PNewtonHingeSliderUpdateDesc ) : Unsigned_int; cdecl;
 
 PNewtonUserBilateralCallBack              = ^NewtonUserBilateralCallBack;
-NewtonUserBilateralCallBack               = procedure( const userJoint: PNewtonJoint; timestep : Float; threadIndex : int); cdecl;
+NewtonUserBilateralCallBack               = procedure( const userJoint: PNewtonJoint; timestep : dFloat; threadIndex : int); cdecl;
 
 PNewtonUserBilateralGetInfoCallBack       = ^NewtonUserBilateralGetInfoCallBack;
 NewtonUserBilateralGetInfoCallBack        = procedure( const userJoint : PNewtonJoint; info : PNewtonJointRecord ); cdecl;
@@ -531,7 +538,7 @@ function  NewtonGetMemoryUsed() : int;                                          
 
 procedure NewtonSetMemorySystem( malloc : NewtonAllocMemory; mfree : NewtonFreeMemory );                                                         cdecl; external{$IFDEF __GPC__}name 'NewtonCreate'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 
-procedure NewtonUpdate( const newtonWorld : PNewtonWorld; timestep : float );                                                                    cdecl; external{$IFDEF __GPC__}name 'NewtonUpdate'{$ELSE}NewtonDLL{$ENDIF __GPC__};
+procedure NewtonUpdate( const newtonWorld : PNewtonWorld; timestep : dfloat );                                                                    cdecl; external{$IFDEF __GPC__}name 'NewtonUpdate'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 
 procedure NewtonInvalidateCache( const newtonWorld : PNewtonWorld);                                                                              cdecl; external{$IFDEF __GPC__}name 'NewtonInvalidateCache'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 
@@ -564,7 +571,7 @@ function NewtonGetMaxThreadsCount (const NewtonWorld : PNewtonWorld) : int;     
 
 procedure NewtonSetFrictionModel(const NewtonWorld : PNewtonWorld; Model : Int);                                                                 cdecl; external{$IFDEF __GPC__}name 'NewtonSetFrictionModel'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 
-procedure NewtonSetMinimumFrameRate( const newtonWorld : PNewtonWorld; frameRate : float );                                                      cdecl; external{$IFDEF __GPC__}name 'NewtonSetMinimumFrameRate'{$ELSE}NewtonDLL{$ENDIF __GPC__};
+procedure NewtonSetMinimumFrameRate( const newtonWorld : PNewtonWorld; frameRate : dfloat );                                                      cdecl; external{$IFDEF __GPC__}name 'NewtonSetMinimumFrameRate'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 procedure NewtonSetBodyLeaveWorldEvent( const newtonWorld : PNewtonWorld; callback : PNewtonBodyLeaveWorld );                                    cdecl; external{$IFDEF __GPC__}name 'NewtonSetBodyLeaveWorldEvent'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 procedure NewtonSetWorldSize( const newtonWorld : PNewtonWorld; const minPoint : PFloat; const maxPoint : PFloat );                              cdecl; external{$IFDEF __GPC__}name 'NewtonSetWorldSize'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 
@@ -620,17 +627,17 @@ procedure NewtonMaterialDestroyAllGroupID( const newtonWorld : PNewtonWorld );  
 
 function  NewtonMaterialGetUserData( const NewtonWorld: PNewtonWorld; id0: int; id1: int): Pointer;                                              cdecl; external{$IFDEF __GPC__}name 'NewtonMaterialGetUserData'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 
-procedure NewtonMaterialSetSurfaceThickness( const newtonWorld : PNewtonWorld; id0 : int; id1 : int; thickness : Float);                         cdecl; external{$IFDEF __GPC__}name 'NewtonMaterialSetSurfaceThickness'{$ELSE}NewtonDLL{$ENDIF __GPC__};
+procedure NewtonMaterialSetSurfaceThickness( const newtonWorld : PNewtonWorld; id0 : int; id1 : int; thickness : dFloat);                         cdecl; external{$IFDEF __GPC__}name 'NewtonMaterialSetSurfaceThickness'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 procedure NewtonMaterialSetContinuousCollisionMode (const newtonWorld : PNewtonWOrld; id0, id1, state : int);                                    cdecl; external{$IFDEF __GPC__}name 'NewtonMaterialSetContinuousCollisionMode'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 
 procedure NewtonMaterialSetCollisionCallback( const newtonWorld : PNewtonWorld; id0 : int; id1 : int; userData : Pointer;
                                               AABBOverlap : PNewtonOnAABBOverlap; process : PNewtonContactsProcess );                            cdecl; external{$IFDEF __GPC__}name 'NewtonMaterialSetCollisionCallback'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 
-procedure NewtonMaterialSetDefaultSoftness( const newtonWorld : PNewtonWorld; id0 : int; id1 : int; value : float );                             cdecl; external{$IFDEF __GPC__}name 'NewtonMaterialSetDefaultSoftness'{$ELSE}NewtonDLL{$ENDIF __GPC__};
-procedure NewtonMaterialSetDefaultElasticity( const newtonWorld : PNewtonWorld; id0 : int; id1 : int; elasticCoef : float );                     cdecl; external{$IFDEF __GPC__}name 'NewtonMaterialSetDefaultElasticity'{$ELSE}NewtonDLL{$ENDIF __GPC__};
+procedure NewtonMaterialSetDefaultSoftness( const newtonWorld : PNewtonWorld; id0 : int; id1 : int; value : dfloat );                             cdecl; external{$IFDEF __GPC__}name 'NewtonMaterialSetDefaultSoftness'{$ELSE}NewtonDLL{$ENDIF __GPC__};
+procedure NewtonMaterialSetDefaultElasticity( const newtonWorld : PNewtonWorld; id0 : int; id1 : int; elasticCoef : dfloat );                     cdecl; external{$IFDEF __GPC__}name 'NewtonMaterialSetDefaultElasticity'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 procedure NewtonMaterialSetDefaultCollidable( const newtonWorld : PNewtonWorld; id0 : int; id1 : int; state : int );                             cdecl; external{$IFDEF __GPC__}name 'NewtonMaterialSetDefaultCollidable'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 procedure NewtonMaterialSetDefaultFriction( const newtonWorld : PNewtonWorld; id0 : int; id1 : int;
-                                            staticFriction : float; kineticFriction : float );                                                   cdecl; external{$IFDEF __GPC__}name 'NewtonMaterialSetDefaultFriction'{$ELSE}NewtonDLL{$ENDIF __GPC__};
+                                            staticFriction : dfloat; kineticFriction : dfloat );                                                   cdecl; external{$IFDEF __GPC__}name 'NewtonMaterialSetDefaultFriction'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 
 
 function  NewtonWorldGetFirstMaterial( const NewtonWorld: PNewtonWorld): PNewtonMaterial;                                                        cdecl; external{$IFDEF __GPC__}name 'NewtonWorldGetFirstMaterial'{$ELSE}NewtonDLL{$ENDIF __GPC__};
@@ -651,23 +658,23 @@ function  NewtonMaterialGetMaterialPairUserData( const material : PNewtonMateria
 function  NewtonMaterialGetContactFaceAttribute( const material : PNewtonMaterial) : Unsigned_int;                                               cdecl; external{$IFDEF __GPC__}name 'NewtonMaterialGetContactFaceAttribute'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 function  NewtonMaterialGetBodyCollisionID( const material : PNewtonMaterial; body : PNewtonBody) : Unsigned_int;                                cdecl; external{$IFDEF __GPC__}name 'NewtonMaterialGetBodyCollisionID'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 
-function  NewtonMaterialGetContactNormalSpeed( const material : PNewtonMaterial ) : float;                                                       cdecl; external{$IFDEF __GPC__}name 'NewtonMaterialGetContactNormalSpeed'{$ELSE}NewtonDLL{$ENDIF __GPC__};
+function  NewtonMaterialGetContactNormalSpeed( const material : PNewtonMaterial ) : dfloat;                                                       cdecl; external{$IFDEF __GPC__}name 'NewtonMaterialGetContactNormalSpeed'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 procedure NewtonMaterialGetContactForce(const Material : PNewtonMaterial; const Body : PNEwtonBody; Force : PFloat);                             cdecl; external{$IFDEF __GPC__}name 'NewtonMaterialGetContactForce'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 procedure NewtonMaterialGetContactPositionAndNormal(const Material : PNewtonMaterial; const Body : PNewtonBody; const Posit, Normal : PFloat);   cdecl; external{$IFDEF __GPC__}name 'NewtonMaterialGetContactPositionAndNormal'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 procedure NewtonMaterialGetContactTangentDirections(const Material : PNewtonMaterial; const Body : PNewtonBody; const Dir0, Dir1 : PFloat);      cdecl; external{$IFDEF __GPC__}name 'NewtonMaterialGetContactTangentDirections'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 
-function  NewtonMaterialGetContactTangentSpeed( const material : PNewtonMaterial; index : int ) : float;                                         cdecl; external{$IFDEF __GPC__}name 'NewtonMaterialGetContactTangentSpeed'{$ELSE}NewtonDLL{$ENDIF __GPC__};
+function  NewtonMaterialGetContactTangentSpeed( const material : PNewtonMaterial; index : int ) : dfloat;                                         cdecl; external{$IFDEF __GPC__}name 'NewtonMaterialGetContactTangentSpeed'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 
-procedure NewtonMaterialSetContactSoftness( const material : PNewtonMaterial; softness : float );                                                cdecl; external{$IFDEF __GPC__}name 'NewtonMaterialSetContactSoftness'{$ELSE}NewtonDLL{$ENDIF __GPC__};
-procedure NewtonMaterialSetContactElasticity( const material : PNewtonMaterial; restitution : float );                                           cdecl; external{$IFDEF __GPC__}name 'NewtonMaterialSetContactElasticity'{$ELSE}NewtonDLL{$ENDIF __GPC__};
+procedure NewtonMaterialSetContactSoftness( const material : PNewtonMaterial; softness : dfloat );                                                cdecl; external{$IFDEF __GPC__}name 'NewtonMaterialSetContactSoftness'{$ELSE}NewtonDLL{$ENDIF __GPC__};
+procedure NewtonMaterialSetContactElasticity( const material : PNewtonMaterial; restitution : dfloat );                                           cdecl; external{$IFDEF __GPC__}name 'NewtonMaterialSetContactElasticity'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 procedure NewtonMaterialSetContactFrictionState( const material : PNewtonMaterial; state : int; index : int );                                   cdecl; external{$IFDEF __GPC__}name 'NewtonMaterialSetContactFrictionState'{$ELSE}NewtonDLL{$ENDIF __GPC__};
-procedure NewtonMaterialSetContactFrictionCoef( const material : PNewtonMaterial; staticFrictionCoef,kineticFrictionCoef : float;
+procedure NewtonMaterialSetContactFrictionCoef( const material : PNewtonMaterial; staticFrictionCoef,kineticFrictionCoef : dfloat;
                                                index : int );                                                                                    cdecl; external{$IFDEF __GPC__}name 'NewtonMaterialSetContactStaticFrictionCoef'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 
-procedure NewtonMaterialSetContactNormalAcceleration (const material : PNewtonMaterial; accel : float);                                          cdecl; external{$IFDEF __GPC__}name 'NewtonMaterialSetContactNormalAcceleration'{$ELSE}NewtonDLL{$ENDIF __GPC__};
+procedure NewtonMaterialSetContactNormalAcceleration (const material : PNewtonMaterial; accel : dfloat);                                          cdecl; external{$IFDEF __GPC__}name 'NewtonMaterialSetContactNormalAcceleration'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 procedure NewtonMaterialSetContactNormalDirection(const material : PNewtonMaterial; directionVector : PFloat);                                   cdecl; external{$IFDEF __GPC__}name 'NewtonMaterialSetContactNormalDirection'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 
-procedure NewtonMaterialSetContactTangentAcceleration( const material : PNewtonMaterial; accel : float; index : int );                           cdecl; external{$IFDEF __GPC__}name 'NewtonMaterialSetContactTangentAcceleration'{$ELSE}NewtonDLL{$ENDIF __GPC__};
+procedure NewtonMaterialSetContactTangentAcceleration( const material : PNewtonMaterial; accel : dfloat; index : int );                           cdecl; external{$IFDEF __GPC__}name 'NewtonMaterialSetContactTangentAcceleration'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 procedure NewtonMaterialContactRotateTangentDirections( const material : PNewtonMaterial; const directionVector : PFloat );                      cdecl; external{$IFDEF __GPC__}name 'NewtonMaterialContactRotateTangentDirections'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 
 
@@ -678,14 +685,14 @@ procedure NewtonMaterialContactRotateTangentDirections( const material : PNewton
 // *****************************************************************************************************************************
 
 function  NewtonCreateNull( const newtonWorld : PNewtonWorld) : PNewtonCollision;                                                                                                                                    cdecl; external{$IFDEF __GPC__}name 'NewtonCreateNull'{$ELSE}NewtonDLL{$ENDIF __GPC__};
-function  NewtonCreateSphere( const newtonWorld : PNewtonWorld; radiusX, radiusY, radiusZ : float; shapeID : int; const offsetMatrix : PFloat ) : PNewtonCollision;                                                  cdecl; external{$IFDEF __GPC__}name 'NewtonCreateSphere'{$ELSE}NewtonDLL{$ENDIF __GPC__};
-function  NewtonCreateBox( const newtonWorld : PNewtonWorld; dx : float; dy : float; dz : float; shapeID : int; const offsetMatrix : PFloat ) : PNewtonCollision;                                                    cdecl; external{$IFDEF __GPC__}name 'NewtonCreateBox'{$ELSE}NewtonDLL{$ENDIF __GPC__};
-function  NewtonCreateCone( const newtonWorld : PNewtonWorld; radius : Float; height : Float; shapeID : int; const offsetMatrix : PFloat) : PNewtonCollision;                                                        cdecl; external{$IFDEF __GPC__}name 'NewtonCreateCone'{$ELSE}NewtonDLL{$ENDIF __GPC__};
-function  NewtonCreateCapsule( const newtonWorld : PNewtonWorld; radius : Float; height : Float; shapeID : int; const offsetMatrix : PFloat) : PNewtonCollision;                                                     cdecl; external{$IFDEF __GPC__}name 'NewtonCreateCapsule'{$ELSE}NewtonDLL{$ENDIF __GPC__};
-function  NewtonCreateCylinder( const newtonWorld : PNewtonWorld; radius : Float; height : Float; shapeID : int; const offsetMatrix : PFloat) : PNewtonCollision;                                                    cdecl; external{$IFDEF __GPC__}name 'NewtonCreateCylinder'{$ELSE}NewtonDLL{$ENDIF __GPC__};
-function  NewtonCreateChamferCylinder( const newtonWorld : PNewtonWorld; raduis : Float; height : Float; shapeID : int; const offsetMatrix : PFloat) : PNewtonCollision;                                             cdecl; external{$IFDEF __GPC__}name 'NewtonCreateChamferCylinder'{$ELSE}NewtonDLL{$ENDIF __GPC__};
-function  NewtonCreateConvexHull( const newtonWorld : PNewtonWorld; count : int; const vertexCloud : PFloat; strideInBytes : int; tolerance : float; shapeID : int; const offsetMatrix : PFloat) : PNewtonCollision; cdecl; external{$IFDEF __GPC__}name 'NewtonCreateConvexHull'{$ELSE}NewtonDLL{$ENDIF __GPC__};
-function  NewtonCreateConvexHullFromMesh( const newtonWorld : PNewtonWorld; mesh : PNewtonMesh; tolerance : Float; shapeID : int ) : PNewtonCollision;                                                               cdecl; external{$IFDEF __GPC__}name 'NewtonCreateConvexHullFromMesh'{$ELSE}NewtonDLL{$ENDIF __GPC__};
+function  NewtonCreateSphere( const newtonWorld : PNewtonWorld; radiusX, radiusY, radiusZ : dfloat; shapeID : int; const offsetMatrix : PFloat ) : PNewtonCollision;                                                  cdecl; external{$IFDEF __GPC__}name 'NewtonCreateSphere'{$ELSE}NewtonDLL{$ENDIF __GPC__};
+function  NewtonCreateBox( const newtonWorld : PNewtonWorld; dx : dfloat; dy : dfloat; dz : dfloat; shapeID : int; const offsetMatrix : PFloat ) : PNewtonCollision;                                                    cdecl; external{$IFDEF __GPC__}name 'NewtonCreateBox'{$ELSE}NewtonDLL{$ENDIF __GPC__};
+function  NewtonCreateCone( const newtonWorld : PNewtonWorld; radius : dFloat; height : dFloat; shapeID : int; const offsetMatrix : PFloat) : PNewtonCollision;                                                        cdecl; external{$IFDEF __GPC__}name 'NewtonCreateCone'{$ELSE}NewtonDLL{$ENDIF __GPC__};
+function  NewtonCreateCapsule( const newtonWorld : PNewtonWorld; radius : dFloat; height : dFloat; shapeID : int; const offsetMatrix : PFloat) : PNewtonCollision;                                                     cdecl; external{$IFDEF __GPC__}name 'NewtonCreateCapsule'{$ELSE}NewtonDLL{$ENDIF __GPC__};
+function  NewtonCreateCylinder( const newtonWorld : PNewtonWorld; radius : dFloat; height : dFloat; shapeID : int; const offsetMatrix : PFloat) : PNewtonCollision;                                                    cdecl; external{$IFDEF __GPC__}name 'NewtonCreateCylinder'{$ELSE}NewtonDLL{$ENDIF __GPC__};
+function  NewtonCreateChamferCylinder( const newtonWorld : PNewtonWorld; raduis : dFloat; height : dFloat; shapeID : int; const offsetMatrix : PFloat) : PNewtonCollision;                                             cdecl; external{$IFDEF __GPC__}name 'NewtonCreateChamferCylinder'{$ELSE}NewtonDLL{$ENDIF __GPC__};
+function  NewtonCreateConvexHull( const newtonWorld : PNewtonWorld; count : int; const vertexCloud : PFloat; strideInBytes : int; tolerance : dfloat; shapeID : int; const offsetMatrix : PFloat) : PNewtonCollision; cdecl; external{$IFDEF __GPC__}name 'NewtonCreateConvexHull'{$ELSE}NewtonDLL{$ENDIF __GPC__};
+function  NewtonCreateConvexHullFromMesh( const newtonWorld : PNewtonWorld; mesh : PNewtonMesh; tolerance : dFloat; shapeID : int ) : PNewtonCollision;                                                               cdecl; external{$IFDEF __GPC__}name 'NewtonCreateConvexHullFromMesh'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 
 function  NewtonCreateConvexHullModifier( const newtonWorld : PNewtonWorld; const convexHullCollision : PNewtonCollision; shapeID : int): PNewtonCollision;                                                          cdecl; external{$IFDEF __GPC__}name 'NewtonCreateConvexHullModifier'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 procedure NewtonConvexHullModifierGetMatrix(const convexHullCollision : PNewtonCollision; matrix : PFloat);                                                                                                          cdecl; external{$IFDEF __GPC__}name 'NewtonConvexHullModifierGetMatrix'{$ELSE}NewtonDLL{$ENDIF __GPC__};
@@ -694,14 +701,14 @@ procedure NewtonConvexHullModifierSetMatrix(const convexHullCollision : PNewtonC
 function  NewtonCollisionIsTriggerVolume( const convexCollision : PNewtonCollision): int;                                                                                                                            cdecl; external{$IFDEF __GPC__}name 'NewtonCollisionIsTriggerVolume'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 procedure NewtonCollisionSetAsTriggerVolume( const convexCollision : PNewtonCollision; trigger : int );                                                                                                              cdecl; external{$IFDEF __GPC__}name 'NewtonCollisionSetAsTriggerVolume'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 
-procedure NewtonCollisionSetMaxBreakImpactImpulse( const convexHullCollision : PNewtonCollision; maxImpactImpulse : Float );                                                                                         cdecl; external{$IFDEF __GPC__}name 'NewtonCollisionSetMaxBreakImpactImpulse'{$ELSE}NewtonDLL{$ENDIF __GPC__};
-function  NewtonCollisionGetMaxBreakImpactImpulse( const convexHullCollision : PNewtonCollision) : Float;                                                                                                            cdecl; external{$IFDEF __GPC__}name 'NewtonCollisionGetMaxBreakImpactImpulse'{$ELSE}NewtonDLL{$ENDIF __GPC__};
+procedure NewtonCollisionSetMaxBreakImpactImpulse( const convexHullCollision : PNewtonCollision; maxImpactImpulse : dFloat );                                                                                         cdecl; external{$IFDEF __GPC__}name 'NewtonCollisionSetMaxBreakImpactImpulse'{$ELSE}NewtonDLL{$ENDIF __GPC__};
+function  NewtonCollisionGetMaxBreakImpactImpulse( const convexHullCollision : PNewtonCollision) : dFloat;                                                                                                            cdecl; external{$IFDEF __GPC__}name 'NewtonCollisionGetMaxBreakImpactImpulse'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 
 procedure NewtonCollisionSetUserID( const convexCollision : PNewtonCollision; id : unsigned_int );                                                                                                                   cdecl; external{$IFDEF __GPC__}name 'NewtonCollisionSetUserID'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 function  NewtonCollisionGetUserID( const convexCollision : PNewtonCollision) : unsigned_int;                                                                                                                        cdecl; external{$IFDEF __GPC__}name 'NewtonCollisionGetUserID'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 
 function  NewtonConvexHullGetFaceIndices( const convexHullCollision : PNewtonCollision; face : int; faceIndices : PInt) : int;                                                                                       cdecl; external{$IFDEF __GPC__}name 'NewtonConvexHullGetFaceIndices'{$ELSE}NewtonDLL{$ENDIF __GPC__};
-function  NewtonConvexCollisionCalculateVolume(const convexCollision : PNewtonCollision) : Float;                                                                                                                    cdecl; external{$IFDEF __GPC__}name 'NewtonConvexCollisionCalculateVolume'{$ELSE}NewtonDLL{$ENDIF __GPC__};
+function  NewtonConvexCollisionCalculateVolume(const convexCollision : PNewtonCollision) : dFloat;                                                                                                                    cdecl; external{$IFDEF __GPC__}name 'NewtonConvexCollisionCalculateVolume'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 procedure NewtonConvexCollisionCalculateInertialMatrix (const convexCollision : PNewtonCollision; inertia, origin : PFloat);                                                                                         cdecl; external{$IFDEF __GPC__}name 'NewtonConvexCollisionCalculateInertialMatrix'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 
 procedure NewtonCollisionMakeUnique (const newtonWorld : PNewtonWorld; const collision : PNewtonCollision);                                                                                                          cdecl; external{$IFDEF __GPC__}name 'NewtonCollisionMakeUnique'{$ELSE}NewtonDLL{$ENDIF __GPC__};
@@ -752,7 +759,7 @@ procedure NewtonSceneCollisionOptimize( scene : PNewtonCollision );             
 // complex breakable collision primitives interface
 //
 // **********************************************************************************************
-function NewtonCreateCompoundBreakable( const NewtonWorld : PNewtonWorld; meshCount : int; const SolidsArray : PNewtonMesh; const ShapeIDArray : PInt; Densities : PFloat; internalFaceMaterial : PInt; ShapeID : Int; debrisID : Int; DebrisSeparationGap : Float ) : PNewtonCollision; cdecl; external{$IFDEF __GPC__}name 'NewtonCreateCompoundBreakable'{$ELSE}NewtonDLL{$ENDIF __GPC__};
+function NewtonCreateCompoundBreakable( const NewtonWorld : PNewtonWorld; meshCount : int; const SolidsArray : PNewtonMesh; const ShapeIDArray : PInt; Densities : PFloat; internalFaceMaterial : PInt; ShapeID : Int; debrisID : Int; DebrisSeparationGap : dFloat ) : PNewtonCollision; cdecl; external{$IFDEF __GPC__}name 'NewtonCreateCompoundBreakable'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 
 procedure NewtonCompoundBreakableResetAnchoredPieces( const compoundBreakable : PNewtonCollision );                                                                                                                                                                                      cdecl; external{$IFDEF __GPC__}name 'NewtonCompoundBreakableResetAnchoredPieces'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 procedure NewtonCompoundBreakableSetAnchoredPieces( const compoundBreakable : PNewtonCollision; fixshapesCount : Int; matrixPallete : PFloat; fixedShapesArray : PNewtonCollision );                                                                                                     cdecl; external{$IFDEF __GPC__}name 'NewtonCompoundBreakableSetAnchoredPieces'{$ELSE}NewtonDLL{$ENDIF __GPC__};
@@ -769,7 +776,7 @@ function  NewtonBreakableCreateDebrieBody( const compoundBreakable : PNewtonColl
 procedure NewtonBreakableDeleteComponent( const compoundBreakable : PNewtonCollision; const component : PNewtonBreakableComponentMesh );                                                                                                                                                 cdecl; external{$IFDEF __GPC__}name 'NewtonBreakableDeleteComponent'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 procedure NewtonBreakableEndDelete( const compoundBreakable : PNewtonCollision );                                                                                                                                                                                                        cdecl; external{$IFDEF __GPC__}name 'NewtonBreakableBeginDelete'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 
-function  NewtonBreakableGetComponentsInRadius( const compoundBreakable : PNewtonCollision; const position : PFloat; radius : Float; Segments : PNewtonBreakableComponentMesh; maxCount : Int ) : Int;                                                                                   cdecl; external{$IFDEF __GPC__}name 'NewtonBreakableGetComponentsInRadius'{$ELSE}NewtonDLL{$ENDIF __GPC__};
+function  NewtonBreakableGetComponentsInRadius( const compoundBreakable : PNewtonCollision; const position : PFloat; radius : dFloat; Segments : PNewtonBreakableComponentMesh; maxCount : Int ) : Int;                                                                                   cdecl; external{$IFDEF __GPC__}name 'NewtonBreakableGetComponentsInRadius'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 
 function  NewtonBreakableGetFirstSegment( const BreakableComponent : PNewtonBreakableComponentMesh ) : Pointer;                                                                                                                                                                          cdecl; external{$IFDEF __GPC__}name 'NewtonBreakableGetFirstSegment'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 function  NewtonBreakableGetNextSegment( const Segment : Pointer ) : Pointer;                                                                                                                                                                                                            cdecl; external{$IFDEF __GPC__}name 'NewtonBreakableGetNextSegment'{$ELSE}NewtonDLL{$ENDIF __GPC__};
@@ -798,7 +805,7 @@ procedure NewtonCollisionGetInfo( const collision : PNewtonCollision; collisionI
 //
 // **********************************************************************************************
 
-function  NewtonCreateHeightFieldCollision( const newtonWorld : PNewtonWorld; width, height, gridDiagonals : int; elevationMap : PUnsigned_short; attributeMap : P2Char; horizontalScale,verticalScale : Float; shapeID : Int) : PNewtonCollision; cdecl; external{$IFDEF __GPC__}name 'NewtonCreateHeightFieldCollision'{$ELSE}NewtonDLL{$ENDIF __GPC__};
+function  NewtonCreateHeightFieldCollision( const newtonWorld : PNewtonWorld; width, height, gridDiagonals : int; elevationMap : PUnsigned_short; attributeMap : P2Char; horizontalScale,verticalScale : dFloat; shapeID : Int) : PNewtonCollision; cdecl; external{$IFDEF __GPC__}name 'NewtonCreateHeightFieldCollision'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 
 procedure NewtonHeightFieldSetUserRayCastCallback (const TreeCollision : PNewtonCollision; RayHitCallBack : PNewtonHeightFieldRayCastCallback); cdecl; external{$IFDEF __GPC__}name 'NewtonHeightFieldSetUserRayCastCallback'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 
@@ -839,16 +846,16 @@ function  NewtonCollisionCollide (const newtonWorld : PNewtonWorld; maxSize : In
                                   const matrixA : PFloat; const collisionB : PNewtonCollision; const matrixB : PFloat;
                                   contacts, normals, penetration : PFloat; threadIndex : int) : Int;                                             cdecl; external{$IFDEF __GPC__}name 'NewtonCollisionCollide'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 
-function NewtonCollisionCollideContinue(const newtonWorld : PNewtonWorld; maxSize : Int; const timestep : Float;
-		                                    const collsionA : PNewtonCollision; const matrixA : PFloat; const velocA : PFloat; const omegaA : Float;
-		                                    const collsionB : PNewtonCollision; const matrixB : PFloat; const velocB : PFloat; const omegaB : Float;
+function NewtonCollisionCollideContinue(const newtonWorld : PNewtonWorld; maxSize : Int; const timestep : dFloat;
+		                                    const collsionA : PNewtonCollision; const matrixA : PFloat; const velocA : PFloat; const omegaA : dFloat;
+		                                    const collsionB : PNewtonCollision; const matrixB : PFloat; const velocB : PFloat; const omegaB : dFloat;
 		                                    timeOfImpact : PFloat; contacts : PFloat; normals : PFloat;
                                         penetration : PFloat; threadIndex : int) : Int;                                                          cdecl; external{$IFDEF __GPC__}name 'NewtonCollisionCollideContinue'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 
 
 procedure NewtonCollisionSupportVertex( const collision : PNewtonCollision; const dir : PFloat; vertex : PFloat);                                cdecl; external{$IFDEF __GPC__}name 'NewtonCollisionSupportVertex'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 function  NewtonCollisionRayCast(const collision : PNewtonCollision; const p0: PFloat; const p1: PFloat;
-                                 normals: PFloat; attribute: pint): float;                                                                       cdecl; external{$IFDEF __GPC__}name 'NewtonCollisionRayCast'{$ELSE}NewtonDLL{$ENDIF __GPC__};
+                                 normals: PFloat; attribute: pint): dfloat;                                                                       cdecl; external{$IFDEF __GPC__}name 'NewtonCollisionRayCast'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 procedure NewtonCollisionCalculateAABB( const collision : PNewtonCollision; const matrix : PFloat; p0 : PFloat; p1 : PFloat );                   cdecl; external{$IFDEF __GPC__}name 'NewtonCollisionCalculateAABB'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 
 procedure NewtonCollisionForEachPolygonDo (const collision : PNewtonCollision; const matrix : PFloat; callback : NewtonCollisionIterator;
@@ -863,7 +870,7 @@ procedure NewtonCollisionForEachPolygonDo (const collision : PNewtonCollision; c
 procedure NewtonGetEulerAngle( const matrix : PFloat; eulersAngles : PFloat );                                                                   cdecl; external{$IFDEF __GPC__}name 'NewtonGetEulerAngle'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 procedure NewtonSetEulerAngle( const eulersAngles : PFloat; matrix : PFloat );                                                                   cdecl; external{$IFDEF __GPC__}name 'NewtonSetEulerAngle'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 
-function  NewtonCalculateSpringDamperAcceleration(dt, ks, x, kd, s : Float): float;                                                              cdecl; external{$IFDEF __GPC__}name 'NewtonCalculateSpringDamperAcceleration'{$ELSE}NewtonDLL{$ENDIF __GPC__};
+function  NewtonCalculateSpringDamperAcceleration(dt, ks, x, kd, s : dFloat): dfloat;                                                              cdecl; external{$IFDEF __GPC__}name 'NewtonCalculateSpringDamperAcceleration'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 
 // *****************************************************************************************************************************
 //
@@ -876,11 +883,11 @@ procedure NewtonDestroyBody( const newtonWorld : PNewtonWorld; const body : PNew
 procedure NewtonBodyAddForce( const body : PNewtonBody; const force : PFloat );                                                                  cdecl; external{$IFDEF __GPC__}name 'NewtonBodyAddForce'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 procedure NewtonBodyAddTorque( const body : PNewtonBody; const torque : PFloat );                                                                cdecl; external{$IFDEF __GPC__}name 'NewtonBodyAddTorque'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 
-procedure NewtonBodyCalculateInverseDynamicsForce(const body : PNewtonBody; timestep : Float; const desiredVeloc : PFloat; forceOut : PFloat );  cdecl; external{$IFDEF __GPC__}name 'NewtonBodyCalculateInverseDynamicsForce'{$ELSE}NewtonDLL{$ENDIF __GPC__};
+procedure NewtonBodyCalculateInverseDynamicsForce(const body : PNewtonBody; timestep : dFloat; const desiredVeloc : PFloat; forceOut : PFloat );  cdecl; external{$IFDEF __GPC__}name 'NewtonBodyCalculateInverseDynamicsForce'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 
 procedure NewtonBodySetMatrix( const body : PNewtonBody; const matrix : PFloat );                                                                cdecl; external{$IFDEF __GPC__}name 'NewtonBodySetMatrix'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 procedure NewtonBodySetMatrixRecursive( const body : PNewtonBody; const matrix : PFloat );                                                       cdecl; external{$IFDEF __GPC__}name 'NewtonBodySetMatrixRecursive'{$ELSE}NewtonDLL{$ENDIF __GPC__};
-procedure NewtonBodySetMassMatrix( const body : PNewtonBody; mass : float; Ixx : float; Iyy : float; Izz : float );                              cdecl; external{$IFDEF __GPC__}name 'NewtonBodySetMassMatrix'{$ELSE}NewtonDLL{$ENDIF __GPC__};
+procedure NewtonBodySetMassMatrix( const body : PNewtonBody; mass : dfloat; Ixx : dfloat; Iyy : dfloat; Izz : dfloat );                              cdecl; external{$IFDEF __GPC__}name 'NewtonBodySetMassMatrix'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 procedure NewtonBodySetMaterialGroupID( const body : PNewtonBody; id : int );                                                                    cdecl; external{$IFDEF __GPC__}name 'NewtonBodySetMaterialGroupID'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 procedure NewtonBodySetContinuousCollisionMode(const body : PNewtonbody; state : int);                                                           cdecl; external{$IFDEF __GPC__}name 'NewtonBodySetContinuousCollisionMode'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 procedure NewtonBodySetJointRecursiveCollision( const body : PNewtonBody; state : unsigned_int );                                                cdecl; external{$IFDEF __GPC__}name 'NewtonBodySetJointRecursiveCollision'{$ELSE}NewtonDLL{$ENDIF __GPC__};
@@ -890,7 +897,7 @@ procedure NewtonBodySetForce( const body : PNewtonBody; const force : PFloat ); 
 procedure NewtonBodySetTorque( const body : PNewtonBody; const torque : PFloat );                                                                cdecl; external{$IFDEF __GPC__}name 'NewtonBodySetTorque'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 
 procedure NewtonBodySetCentreOfMass(const body : PNewtonBody; const com : PFloat);                                                               cdecl; external{$IFDEF __GPC__}name 'NewtonBodySetCentreOfMass'{$ELSE}NewtonDLL{$ENDIF __GPC__};
-procedure NewtonBodySetLinearDamping( const body : PNewtonBody; linearDamp : float );                                                            cdecl; external{$IFDEF __GPC__}name 'NewtonBodySetLinearDamping'{$ELSE}NewtonDLL{$ENDIF __GPC__};
+procedure NewtonBodySetLinearDamping( const body : PNewtonBody; linearDamp : dfloat );                                                            cdecl; external{$IFDEF __GPC__}name 'NewtonBodySetLinearDamping'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 procedure NewtonBodySetAngularDamping( const body : PNewtonBody; const angularDamp : PFloat );                                                   cdecl; external{$IFDEF __GPC__}name 'NewtonBodySetAngularDamping'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 procedure NewtonBodySetUserData( const body : PNewtonBody; userData : Pointer );                                                                 cdecl; external{$IFDEF __GPC__}name 'NewtonBodySetUserData'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 
@@ -936,7 +943,7 @@ procedure NewtonBodyGetForceAcc( const body : PNewtonBody; vector : PFloat );   
 procedure NewtonBodyGetTorqueAcc( const body : PNewtonBody; vector : PFloat );                                                                   cdecl; external{$IFDEF __GPC__}name 'NewtonBodyGetTorqueAcc'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 procedure NewtonBodyGetCentreOfMass(const body : PNewtonBody; com : PFloat);                                                                     cdecl; external{$IFDEF __GPC__}name 'NewtonBodyGetCentreOfMass'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 
-function  NewtonBodyGetLinearDamping( const body : PNewtonBody ) : float;                                                                        cdecl; external{$IFDEF __GPC__}name 'NewtonBodyGetLinearDamping'{$ELSE}NewtonDLL{$ENDIF __GPC__};
+function  NewtonBodyGetLinearDamping( const body : PNewtonBody ) : dfloat;                                                                        cdecl; external{$IFDEF __GPC__}name 'NewtonBodyGetLinearDamping'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 procedure NewtonBodyGetAngularDamping( const body : PNewtonBody; vector : PFloat );                                                              cdecl; external{$IFDEF __GPC__}name 'NewtonBodyGetAngularDamping'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 procedure NewtonBodyGetAABB( const body : PNewtonBody; p0 : PFloat; p1 : PFloat );                                                               cdecl; external{$IFDEF __GPC__}name 'NewtonBodyGetAABB'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 
@@ -955,7 +962,7 @@ procedure NewtonContactJointRemoveContact( const contactJoint : PNewtonJoint; co
 
 function NewtonContactGetMaterial( const contact : Pointer ) : PNewtonMaterial;                                                                  cdecl; external{$IFDEF __GPC__}name 'NewtonContactGetMaterial'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 
-procedure NewtonBodyAddBuoyancyForce( const body : PNewtonBody; fluidDensity : float; fluidLinearViscosity, fluidAngularViscosity : float;
+procedure NewtonBodyAddBuoyancyForce( const body : PNewtonBody; fluidDensity : dfloat; fluidLinearViscosity, fluidAngularViscosity : dfloat;
                                       const gravityVector : PFloat; buoyancyPlane : NewtonGetBuoyancyPlane; context : Pointer );                 cdecl; external{$IFDEF __GPC__}name 'NewtonBodyAddBuoyancyForce'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 
 procedure NewtonBodyAddImpulse(const body : PNewtonBody; const pointDeltaVeloc : PFloat; const pointPosit : PFloat );                            cdecl; external{$IFDEF __GPC__}name 'NewtonAddBodyImpulse'{$ELSE}NewtonDLL{$ENDIF __GPC__};
@@ -978,8 +985,8 @@ procedure NewtonJointGetInfo( const joint : PNewtonJoint; info : PNewtonJointRec
 function  NewtonJointGetCollisionState( const joint : PNewtonJoint ) : int;                                                                      cdecl; external{$IFDEF __GPC__}name 'NewtonJointGetCollisionState'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 procedure NewtonJointSetCollisionState( const joint : PNewtonJoint; state : int );                                                               cdecl; external{$IFDEF __GPC__}name 'NewtonJointSetCollisionState'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 
-function  NewtonJointGetStiffness( const joint : PNewtonJoint): float;                                                                           cdecl; external{$IFDEF __GPC__}name 'NewtonJointGetStiffness'{$ELSE}NewtonDLL{$ENDIF __GPC__};
-procedure NewtonJointSetStiffness( const joint: PNewtonJoint; state: float);                                                                     cdecl; external{$IFDEF __GPC__}name 'NewtonJointSetStiffness'{$ELSE}NewtonDLL{$ENDIF __GPC__};
+function  NewtonJointGetStiffness( const joint : PNewtonJoint): dfloat;                                                                           cdecl; external{$IFDEF __GPC__}name 'NewtonJointGetStiffness'{$ELSE}NewtonDLL{$ENDIF __GPC__};
+procedure NewtonJointSetStiffness( const joint: PNewtonJoint; state: dfloat);                                                                     cdecl; external{$IFDEF __GPC__}name 'NewtonJointSetStiffness'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 
 procedure NewtonDestroyJoint( const newtonWorld : PNewtonWorld; const joint : PNewtonJoint );                                                    cdecl; external{$IFDEF __GPC__}name 'NewtonDestroyJoint'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 procedure NewtonJointSetDestructor( const joint : PNewtonJoint; _destructor : NewtonConstraintDestructor );                                      cdecl; external{$IFDEF __GPC__}name 'NewtonJointSetDestructor'{$ELSE}NewtonDLL{$ENDIF __GPC__};
@@ -995,7 +1002,7 @@ procedure NewtonBallSetUserCallback( const ball : PNewtonJoint; callback : Newto
 procedure NewtonBallGetJointAngle( const ball : PNewtonJoint; angle : PFloat );                                                                  cdecl; external{$IFDEF __GPC__}name 'NewtonBallGetJointAngle'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 procedure NewtonBallGetJointOmega( const ball : PNewtonJoint; omega : PFloat );                                                                  cdecl; external{$IFDEF __GPC__}name 'NewtonBallGetJointOmega'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 procedure NewtonBallGetJointForce( const ball : PNewtonJoint; force : PFloat );                                                                  cdecl; external{$IFDEF __GPC__}name 'NewtonBallGetJointForce'{$ELSE}NewtonDLL{$ENDIF __GPC__};
-procedure NewtonBallSetConeLimits( const ball : PNewtonJoint; const pin : PFloat; maxConeAngle : float; maxTwistAngle : float );                 cdecl; external{$IFDEF __GPC__}name 'NewtonBallSetConeLimits'{$ELSE}NewtonDLL{$ENDIF __GPC__};
+procedure NewtonBallSetConeLimits( const ball : PNewtonJoint; const pin : PFloat; maxConeAngle : dfloat; maxTwistAngle : dfloat );                 cdecl; external{$IFDEF __GPC__}name 'NewtonBallSetConeLimits'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 
 // *****************************************************************************************************************************
 //
@@ -1006,10 +1013,10 @@ function  NewtonConstraintCreateHinge( const newtonWorld : PNewtonWorld;
                                        const pivotPoint : PFloat; const pinDir : PFloat;
                                        const childBody : PNewtonBody; const parentBody : PNewtonBody ) : PNewtonJoint;                           cdecl; external{$IFDEF __GPC__}name 'NewtonConstraintCreateHinge'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 procedure NewtonHingeSetUserCallback( const hinge : PNewtonJoint; callback : NewtonHingeCallBack );                                              cdecl; external{$IFDEF __GPC__}name 'NewtonHingeSetUserCallback'{$ELSE}NewtonDLL{$ENDIF __GPC__};
-function  NewtonHingeGetJointAngle( const hinge : PNewtonJoint ) : float;                                                                        cdecl; external{$IFDEF __GPC__}name 'NewtonHingeGetJointAngle'{$ELSE}NewtonDLL{$ENDIF __GPC__};
-function  NewtonHingeGetJointOmega( const hinge : PNewtonJoint ) : float;                                                                        cdecl; external{$IFDEF __GPC__}name 'NewtonHingeGetJointOmega'{$ELSE}NewtonDLL{$ENDIF __GPC__};
+function  NewtonHingeGetJointAngle( const hinge : PNewtonJoint ) : dfloat;                                                                        cdecl; external{$IFDEF __GPC__}name 'NewtonHingeGetJointAngle'{$ELSE}NewtonDLL{$ENDIF __GPC__};
+function  NewtonHingeGetJointOmega( const hinge : PNewtonJoint ) : dfloat;                                                                        cdecl; external{$IFDEF __GPC__}name 'NewtonHingeGetJointOmega'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 procedure NewtonHingeGetJointForce( const hinge : PNewtonJoint; force : PFloat );                                                                cdecl; external{$IFDEF __GPC__}name 'NewtonHingeGetJointForce'{$ELSE}NewtonDLL{$ENDIF __GPC__};
-function  NewtonHingeCalculateStopAlpha( const hinge : PNewtonJoint; const desc : PNewtonHingeSliderUpdateDesc; angle : float ) : float;         cdecl; external{$IFDEF __GPC__}name 'NewtonHingeCalculateStopAlpha'{$ELSE}NewtonDLL{$ENDIF __GPC__};
+function  NewtonHingeCalculateStopAlpha( const hinge : PNewtonJoint; const desc : PNewtonHingeSliderUpdateDesc; angle : dfloat ) : dfloat;         cdecl; external{$IFDEF __GPC__}name 'NewtonHingeCalculateStopAlpha'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 
 // *****************************************************************************************************************************
 //
@@ -1020,10 +1027,10 @@ function  NewtonConstraintCreateSlider( const newtonWorld : PNewtonWorld;
                                         const pivotPoint : PFloat; const pinDir : PFloat;
                                         const childBody : PNewtonBody; const parentBody : PNewtonBody ) : PNewtonJoint;                          cdecl; external{$IFDEF __GPC__}name 'NewtonConstraintCreateSlider'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 procedure NewtonSliderSetUserCallback( const slider : PNewtonJoint; callback : NewtonSliderCallBack );                                           cdecl; external{$IFDEF __GPC__}name 'NewtonSliderSetUserCallback'{$ELSE}NewtonDLL{$ENDIF __GPC__};
-function  NewtonSliderGetJointPosit( const slider : PNewtonJoint ) : float;                                                                      cdecl; external{$IFDEF __GPC__}name 'NewtonSliderGetJointPosit'{$ELSE}NewtonDLL{$ENDIF __GPC__};
-function  NewtonSliderGetJointVeloc( const slider : PNewtonJoint ) : float;                                                                      cdecl; external{$IFDEF __GPC__}name 'NewtonSliderGetJointVeloc'{$ELSE}NewtonDLL{$ENDIF __GPC__};
+function  NewtonSliderGetJointPosit( const slider : PNewtonJoint ) : dfloat;                                                                      cdecl; external{$IFDEF __GPC__}name 'NewtonSliderGetJointPosit'{$ELSE}NewtonDLL{$ENDIF __GPC__};
+function  NewtonSliderGetJointVeloc( const slider : PNewtonJoint ) : dfloat;                                                                      cdecl; external{$IFDEF __GPC__}name 'NewtonSliderGetJointVeloc'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 procedure NewtonSliderGetJointForce( const slider : PNewtonJoint; force : PFloat );                                                              cdecl; external{$IFDEF __GPC__}name 'NewtonSliderGetJointForce'{$ELSE}NewtonDLL{$ENDIF __GPC__};
-function  NewtonSliderCalculateStopAccel( const slider : PNewtonJoint; const desc : PNewtonHingeSliderUpdateDesc; position : float ) : float;    cdecl; external{$IFDEF __GPC__}name 'NewtonSliderCalculateStopAccel'{$ELSE}NewtonDLL{$ENDIF __GPC__};
+function  NewtonSliderCalculateStopAccel( const slider : PNewtonJoint; const desc : PNewtonHingeSliderUpdateDesc; position : dfloat ) : dfloat;    cdecl; external{$IFDEF __GPC__}name 'NewtonSliderCalculateStopAccel'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 
 
 // *****************************************************************************************************************************
@@ -1035,13 +1042,13 @@ function  NewtonConstraintCreateCorkscrew( const newtonWorld : PNewtonWorld;
                                            const pivotPoint : PFloat; const pinDir : PFloat;
                                            const childBody : PNewtonBody; const parentBody : PNewtonBody ) : PNewtonJoint;                       cdecl; external{$IFDEF __GPC__}name 'NewtonConstraintCreateCorkscrew'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 procedure NewtonCorkscrewSetUserCallback( const corkscrew : PNewtonJoint; callback : NewtonCorkscrewCallBack );                                  cdecl; external{$IFDEF __GPC__}name 'NewtonCorkscrewSetUserCallback'{$ELSE}NewtonDLL{$ENDIF __GPC__};
-function  NewtonCorkscrewGetJointPosit( const corkscrew : PNewtonJoint ) : float;                                                                cdecl; external{$IFDEF __GPC__}name 'NewtonCorkscrewGetJointPosit'{$ELSE}NewtonDLL{$ENDIF __GPC__};
-function  NewtonCorkscrewGetJointAngle( const corkscrew : PNewtonJoint ) : float;                                                                cdecl; external{$IFDEF __GPC__}name 'NewtonCorkscrewGetJointAngle'{$ELSE}NewtonDLL{$ENDIF __GPC__};
-function  NewtonCorkscrewGetJointVeloc( const corkscrew : PNewtonJoint ) : float;                                                                cdecl; external{$IFDEF __GPC__}name 'NewtonCorkscrewGetJointVeloc'{$ELSE}NewtonDLL{$ENDIF __GPC__};
-function  NewtonCorkscrewGetJointOmega( const corkscrew : PNewtonJoint ) : float;                                                                cdecl; external{$IFDEF __GPC__}name 'NewtonCorkscrewGetJointOmega'{$ELSE}NewtonDLL{$ENDIF __GPC__};
+function  NewtonCorkscrewGetJointPosit( const corkscrew : PNewtonJoint ) : dfloat;                                                                cdecl; external{$IFDEF __GPC__}name 'NewtonCorkscrewGetJointPosit'{$ELSE}NewtonDLL{$ENDIF __GPC__};
+function  NewtonCorkscrewGetJointAngle( const corkscrew : PNewtonJoint ) : dfloat;                                                                cdecl; external{$IFDEF __GPC__}name 'NewtonCorkscrewGetJointAngle'{$ELSE}NewtonDLL{$ENDIF __GPC__};
+function  NewtonCorkscrewGetJointVeloc( const corkscrew : PNewtonJoint ) : dfloat;                                                                cdecl; external{$IFDEF __GPC__}name 'NewtonCorkscrewGetJointVeloc'{$ELSE}NewtonDLL{$ENDIF __GPC__};
+function  NewtonCorkscrewGetJointOmega( const corkscrew : PNewtonJoint ) : dfloat;                                                                cdecl; external{$IFDEF __GPC__}name 'NewtonCorkscrewGetJointOmega'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 procedure NewtonCorkscrewGetJointForce( const corkscrew : PNewtonJoint; force : PFloat );                                                        cdecl; external{$IFDEF __GPC__}name 'NewtonCorkscrewGetJointForce'{$ELSE}NewtonDLL{$ENDIF __GPC__};
-function  NewtonCorkscrewCalculateStopAlpha(const corkscrew : PNewtonJoint;const desc : PNewtonHingeSliderUpdateDesc;angle : float) : float;     cdecl; external{$IFDEF __GPC__}name 'NewtonCorkscrewCalculateStopAlpha'{$ELSE}NewtonDLL{$ENDIF __GPC__};
-function  NewtonCorkscrewCalculateStopAccel(const corkscrew : PNewtonJoint;const desc : PNewtonHingeSliderUpdateDesc;position : float) : float;  cdecl; external{$IFDEF __GPC__}name 'NewtonCorkscrewCalculateStopAccel'{$ELSE}NewtonDLL{$ENDIF __GPC__};
+function  NewtonCorkscrewCalculateStopAlpha(const corkscrew : PNewtonJoint;const desc : PNewtonHingeSliderUpdateDesc;angle : dfloat) : dfloat;     cdecl; external{$IFDEF __GPC__}name 'NewtonCorkscrewCalculateStopAlpha'{$ELSE}NewtonDLL{$ENDIF __GPC__};
+function  NewtonCorkscrewCalculateStopAccel(const corkscrew : PNewtonJoint;const desc : PNewtonHingeSliderUpdateDesc;position : dfloat) : dfloat;  cdecl; external{$IFDEF __GPC__}name 'NewtonCorkscrewCalculateStopAccel'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 
 
 // *****************************************************************************************************************************
@@ -1052,13 +1059,13 @@ function  NewtonCorkscrewCalculateStopAccel(const corkscrew : PNewtonJoint;const
 function  NewtonConstraintCreateUniversal( const newtonWorld: PNewtonWorld; const pivotPoint: PFloat; const pinDir0: PFloat;
                                           const pinDir1: PFloat; const childBody: PNewtonBody; const parentBody: PNewtonBody): PNewtonJoint;     cdecl; external{$IFDEF __GPC__}name 'NewtonConstraintCreateUniversal'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 procedure NewtonUniversalSetUserCallback(const universal: PNewtonJoint; callback: NewtonUniversalCallback);                                      cdecl; external{$IFDEF __GPC__}name 'NewtonUniversalSetUserCallback'{$ELSE}NewtonDLL{$ENDIF __GPC__};
-function  NewtonUniversalGetJointAngle0(const universal: PNewtonJoint):float;                                                                    cdecl; external{$IFDEF __GPC__}name 'NewtonUniversalGetJointAngle0'{$ELSE}NewtonDLL{$ENDIF __GPC__};
-function  NewtonUniversalGetJointAngle1(const universal: PNewtonJoint):float;                                                                    cdecl; external{$IFDEF __GPC__}name 'NewtonUniversalGetJointAngle1'{$ELSE}NewtonDLL{$ENDIF __GPC__};
-function  NewtonUniversalGetJointOmega0(const universal: PNewtonJoint):float;                                                                    cdecl; external{$IFDEF __GPC__}name 'NewtonUniversalGetJointOmega0'{$ELSE}NewtonDLL{$ENDIF __GPC__};
-function  NewtonUniversalGetJointOmega1(const universal: PNewtonJoint):float;                                                                    cdecl; external{$IFDEF __GPC__}name 'NewtonUniversalGetJointOmega1'{$ELSE}NewtonDLL{$ENDIF __GPC__};
+function  NewtonUniversalGetJointAngle0(const universal: PNewtonJoint):dfloat;                                                                    cdecl; external{$IFDEF __GPC__}name 'NewtonUniversalGetJointAngle0'{$ELSE}NewtonDLL{$ENDIF __GPC__};
+function  NewtonUniversalGetJointAngle1(const universal: PNewtonJoint):dfloat;                                                                    cdecl; external{$IFDEF __GPC__}name 'NewtonUniversalGetJointAngle1'{$ELSE}NewtonDLL{$ENDIF __GPC__};
+function  NewtonUniversalGetJointOmega0(const universal: PNewtonJoint):dfloat;                                                                    cdecl; external{$IFDEF __GPC__}name 'NewtonUniversalGetJointOmega0'{$ELSE}NewtonDLL{$ENDIF __GPC__};
+function  NewtonUniversalGetJointOmega1(const universal: PNewtonJoint):dfloat;                                                                    cdecl; external{$IFDEF __GPC__}name 'NewtonUniversalGetJointOmega1'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 procedure NewtonUniversalGetJointForce(const universal: PNewtonJoint; force: PFloat);                                                            cdecl; external{$IFDEF __GPC__}name 'NewtonUniversalGetJointForce'{$ELSE}NewtonDLL{$ENDIF __GPC__};
-function  NewtonUniversalCalculateStopAlpha0(const universal : PNewtonJoint; const desc: PNewtonHingeSliderUpdateDesc; angle: float): float;     cdecl; external{$IFDEF __GPC__}name 'NewtonUniversalCalculateStopAlpha0'{$ELSE}NewtonDLL{$ENDIF __GPC__};
-function  NewtonUniversalCalculateStopAlpha1(const universal : PNewtonJoint; const desc: PNewtonHingeSliderUpdateDesc; angle: float): float;     cdecl; external{$IFDEF __GPC__}name 'NewtonUniversalCalculateStopAlpha1'{$ELSE}NewtonDLL{$ENDIF __GPC__};
+function  NewtonUniversalCalculateStopAlpha0(const universal : PNewtonJoint; const desc: PNewtonHingeSliderUpdateDesc; angle: dfloat): dfloat;     cdecl; external{$IFDEF __GPC__}name 'NewtonUniversalCalculateStopAlpha0'{$ELSE}NewtonDLL{$ENDIF __GPC__};
+function  NewtonUniversalCalculateStopAlpha1(const universal : PNewtonJoint; const desc: PNewtonHingeSliderUpdateDesc; angle: dfloat): dfloat;     cdecl; external{$IFDEF __GPC__}name 'NewtonUniversalCalculateStopAlpha1'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 
 // *****************************************************************************************************************************
 //
@@ -1079,14 +1086,14 @@ function  NewtonConstraintCreateUserJoint(const NewtonWorld : PNewtonWorld; MaxD
                                           const parentBody: PNewtonBody): PNewtonJoint;                                                          cdecl; external{$IFDEF __GPC__}name 'NewtonConstraintCreateUserJoint'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 procedure NewtonUserJointSetFeedbackCollectorCallback(const Joint : PNewtonJoint; GetFeedback : PNewtonUserBilateralCallBack);                   cdecl; external{$IFDEF __GPC__}name 'NewtonUserJointSetFeedbackCollectorCallback'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 procedure NewtonUserJointAddLinearRow(const Joint : PNewtonJoint; const pivot0 : PFloat; const pivot1 : PFloat; const Dir : PFloat);             cdecl; external{$IFDEF __GPC__}name 'NewtonUserJointAddLinearRow'{$ELSE}NewtonDLL{$ENDIF __GPC__};
-procedure NewtonUserJointAddAngularRow(const Joint : PNewtonJoint; RelativeAngle : Float; const Dir : PFloat);                                   cdecl; external{$IFDEF __GPC__}name 'NewtonUserJointAddAngularRow'{$ELSE}NewtonDLL{$ENDIF __GPC__};
+procedure NewtonUserJointAddAngularRow(const Joint : PNewtonJoint; RelativeAngle : dFloat; const Dir : PFloat);                                   cdecl; external{$IFDEF __GPC__}name 'NewtonUserJointAddAngularRow'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 procedure NewtonUserJointAddGeneralRow(const Joint : PNewtonJoint; const Jacobian0 : PFloat; const Jacobian1 : PFloat);                          cdecl; external{$IFDEF __GPC__}name 'NewtonUserJointAddGeneralRow'{$ELSE}NewtonDLL{$ENDIF __GPC__};
-procedure NewtonUserJointSetRowMinimumFriction(const Joint : PNewtonJoint; Friction : Float);                                                    cdecl; external{$IFDEF __GPC__}name 'NewtonUserJointSetRowMinimumFriction'{$ELSE}NewtonDLL{$ENDIF __GPC__};
-procedure NewtonUserJointSetRowMaximumFriction(const Joint : PNewtonJoint; Friction : Float);                                                    cdecl; external{$IFDEF __GPC__}name 'NewtonUserJointSetRowMaximumFriction'{$ELSE}NewtonDLL{$ENDIF __GPC__};
-procedure NewtonUserJointSetRowAcceleration(const Joint : PNewtonJoint; Acceleration : Float);                                                   cdecl; external{$IFDEF __GPC__}name 'NewtonUserJointSetRowAcceleration'{$ELSE}NewtonDLL{$ENDIF __GPC__};
-procedure NewtonUserJointSetRowSpringDamperAcceleration(const joint : PNewtonJoint; springK : Float; springD : Float);                           cdecl; external{$IFDEF __GPC__}name 'NewtonUserJointSetRowSpringDamperAcceleration'{$ELSE}NewtonDLL{$ENDIF __GPC__};
-procedure NewtonUserJointSetRowStiffness(const Joint : PNewtonJoint; Stiffness : Float);                                                         cdecl; external{$IFDEF __GPC__}name 'NewtonUserJointSetRowStiffness'{$ELSE}NewtonDLL{$ENDIF __GPC__};
-function  NewtonUserJointGetRowForce (const Joint : PNewtonJoint; Row : Int) : Float;                                                            cdecl; external{$IFDEF __GPC__}name 'NewtonUserJointGetRowForce'{$ELSE}NewtonDLL{$ENDIF __GPC__};
+procedure NewtonUserJointSetRowMinimumFriction(const Joint : PNewtonJoint; Friction : dFloat);                                                    cdecl; external{$IFDEF __GPC__}name 'NewtonUserJointSetRowMinimumFriction'{$ELSE}NewtonDLL{$ENDIF __GPC__};
+procedure NewtonUserJointSetRowMaximumFriction(const Joint : PNewtonJoint; Friction : dFloat);                                                    cdecl; external{$IFDEF __GPC__}name 'NewtonUserJointSetRowMaximumFriction'{$ELSE}NewtonDLL{$ENDIF __GPC__};
+procedure NewtonUserJointSetRowAcceleration(const Joint : PNewtonJoint; Acceleration : dFloat);                                                   cdecl; external{$IFDEF __GPC__}name 'NewtonUserJointSetRowAcceleration'{$ELSE}NewtonDLL{$ENDIF __GPC__};
+procedure NewtonUserJointSetRowSpringDamperAcceleration(const joint : PNewtonJoint; springK : dFloat; springD : dFloat);                           cdecl; external{$IFDEF __GPC__}name 'NewtonUserJointSetRowSpringDamperAcceleration'{$ELSE}NewtonDLL{$ENDIF __GPC__};
+procedure NewtonUserJointSetRowStiffness(const Joint : PNewtonJoint; Stiffness : dFloat);                                                         cdecl; external{$IFDEF __GPC__}name 'NewtonUserJointSetRowStiffness'{$ELSE}NewtonDLL{$ENDIF __GPC__};
+function  NewtonUserJointGetRowForce (const Joint : PNewtonJoint; Row : Int) : dFloat;                                                            cdecl; external{$IFDEF __GPC__}name 'NewtonUserJointGetRowForce'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 
 // **********************************************************************************************
 //
@@ -1098,8 +1105,8 @@ function  NewtonMeshCreate (const World : PNewtonWorld) : PNewtonMesh;          
 function  NewtonMeshCreateFromMesh(const Mesh : PNewtonMesh) : PNewtonMesh;                                                                      cdecl; external{$IFDEF __GPC__}name 'NewtonMeshCreateFromMesh'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 function  NewtonMeshCreateFromCollision (const collision : PNewtonCollision) : PNewtonMesh;                                                      cdecl; external{$IFDEF __GPC__}name 'NewtonMeshCreateFromCollision'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 function  NewtonMeshConvexHull (const NewtonWorld : PNewtonWorld; count : int; const vertexCloud : PFloat; strideInBytes : int;
-                                tolerance : float) : PNewtonMesh;                                                                                cdecl; external{$IFDEF __GPC__}name 'NewtonMeshConvexHull'{$ELSE}NewtonDLL{$ENDIF __GPC__};
-function  NewtonMeshCreatePlane (const World : PNewtonWorld; const locationMatrix : PFloat; width : Float; breadth : Float; material : Int;
+                                tolerance : dfloat) : PNewtonMesh;                                                                                cdecl; external{$IFDEF __GPC__}name 'NewtonMeshConvexHull'{$ELSE}NewtonDLL{$ENDIF __GPC__};
+function  NewtonMeshCreatePlane (const World : PNewtonWorld; const locationMatrix : PFloat; width : dFloat; breadth : dFloat; material : Int;
                                  const textureMatrix0 : PFloat; const textureMatrix1) : PNewtonMesh;                                             cdecl; external{$IFDEF __GPC__}name 'NewtonMeshCreatePlane'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 
 procedure NewtonMeshDestroy(const mesh : PNewtonMesh);                                                                                           cdecl; external{$IFDEF __GPC__}name 'NewtonMeshDestroy'{$ELSE}NewtonDLL{$ENDIF __GPC__};
@@ -1108,7 +1115,7 @@ procedure NewtonMeshCalculateOOBB(const mesh : PNewtonMesh; const matrix : PFloa
 
 procedure NewtonMesApplyTransform (const Mesh : PNewtonMesh; const Matrix : PFloat);                                                             cdecl; external{$IFDEF __GPC__}name 'NewtonMesApplyTransform'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 
-procedure NewtonMeshCalculateVertexNormals(const mesh : PNewtonMesh; angleInRadians : Float);                                                    cdecl; external{$IFDEF __GPC__}name 'NewtonMeshCalculateVertexNormals'{$ELSE}NewtonDLL{$ENDIF __GPC__};
+procedure NewtonMeshCalculateVertexNormals(const mesh : PNewtonMesh; angleInRadians : dFloat);                                                    cdecl; external{$IFDEF __GPC__}name 'NewtonMeshCalculateVertexNormals'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 procedure NewtonMeshApplySphericalMapping(const mesh : PNewtonMesh; material : int);                                                             cdecl; external{$IFDEF __GPC__}name 'NewtonMeshApplySphericalMapping'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 procedure NewtonMeshApplyBoxMapping(const mesh : PNewtonMesh; front,side,top : int);                                                             cdecl; external{$IFDEF __GPC__}name 'NewtonMeshApplyBoxMapping'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 procedure NewtonMeshApplyCylindricalMapping(const mesh : PNewtonMesh; cylinderMaterial,capMaterial : int);                                       cdecl; external{$IFDEF __GPC__}name 'NewtonMeshApplyCylindricalMapping'{$ELSE}NewtonDLL{$ENDIF __GPC__};

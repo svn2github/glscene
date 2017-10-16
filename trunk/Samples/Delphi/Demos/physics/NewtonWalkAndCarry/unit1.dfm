@@ -69,14 +69,27 @@ object Form1: TForm1
       Slices = 4
       Stacks = 4
       Radius = 0.500000000000000000
+      BehavioursData = {
+        0458434F4C02010201060C54474C4E47445374617469630200060A4E47442053
+        746174696302000201060D474C4E47444D616E61676572310800090500000000
+        000AD7A3F83F1200000000}
     end
     object Player_Cube: TGLDummyCube
-      Direction.Coordinates = {00000080000000000000803F00000000}
       CubeSize = 1.000000000000000000
+      BehavioursData = {
+        0458434F4C02010201060D54474C4E474444796E616D69630200060B4E474420
+        44796E616D696302000201060D474C4E47444D616E6167657231080009050000
+        0000000AD7A3F83F1200000000020109050000000000CDCCCCFB3F0500000000
+        00000080FF3F0905000000000000000000000200080200080200090000000000
+        000000000000000000803F020008}
       object GLCube3: TGLCube
         Direction.Coordinates = {000000000000803F0000000000000000}
         Position.Coordinates = {00000000CDCCCCBF000000000000803F}
         Up.Coordinates = {0000000000000000000080BF00000000}
+        BehavioursData = {
+          0458434F4C02010201060C54474C4E47445374617469630200060A4E47442053
+          746174696302000201060D474C4E47444D616E61676572310800090500000000
+          000AD7A3F83F1200000000}
         CubeSize = {0000003F0000003F0000803F}
       end
       object Cam_Cube: TGLDummyCube
@@ -101,12 +114,20 @@ object Form1: TForm1
         Direction.Coordinates = {000000000000803F0000000000000000}
         Position.Coordinates = {0000000000000000000020410000803F}
         Up.Coordinates = {0000000000000000000080BF00000000}
+        BehavioursData = {
+          0458434F4C02010201060C54474C4E47445374617469630200060A4E47442053
+          746174696302000201060D474C4E47444D616E61676572310800090500000000
+          000AD7A3F83F1200000000}
       end
       object GLSphere1: TGLSphere
         Tag = 1
         Radius = 0.500000000000000000
         Slices = 32
         Stacks = 32
+        BehavioursData = {
+          0458434F4C02010201060C54474C4E47445374617469630200060A4E47442053
+          746174696302000201060D474C4E47444D616E61676572310800090500000000
+          000AD7A3F83F1200000000}
       end
     end
     object GLHUDSprite1: TGLHUDSprite
@@ -231,7 +252,84 @@ object Form1: TForm1
     end
     object GLLines1: TGLLines
       Pickable = False
-      Nodes = <>
+      Nodes = <
+        item
+          Color.Color = {0000803F0000803F000000000000803F}
+        end
+        item
+          Color.Color = {0000803F0000803F000000000000803F}
+        end
+        item
+          Color.Color = {0000803F0000803F000000000000803F}
+        end
+        item
+          Color.Color = {0000803F0000803F000000000000803F}
+        end
+        item
+          Color.Color = {0000803F0000803F000000000000803F}
+        end
+        item
+          Color.Color = {0000803F0000803F000000000000803F}
+        end
+        item
+          Color.Color = {0000803F0000803F000000000000803F}
+        end
+        item
+          Color.Color = {0000803F0000803F000000000000803F}
+        end
+        item
+          Color.Color = {0000803F0000803F000000000000803F}
+        end
+        item
+          Color.Color = {0000803F0000803F000000000000803F}
+        end
+        item
+          Color.Color = {0000803F0000803F000000000000803F}
+        end
+        item
+          Color.Color = {0000803F0000803F000000000000803F}
+        end
+        item
+          Color.Color = {0000803F0000803F000000000000803F}
+        end
+        item
+          Color.Color = {0000803F0000803F000000000000803F}
+        end
+        item
+          Color.Color = {0000803F0000803F000000000000803F}
+        end
+        item
+          Color.Color = {0000803F0000803F000000000000803F}
+        end
+        item
+          Color.Color = {0000803F0000803F000000000000803F}
+        end
+        item
+          Color.Color = {0000803F0000803F000000000000803F}
+        end
+        item
+          Color.Color = {0000803F0000803F000000000000803F}
+        end
+        item
+          Color.Color = {0000803F0000803F000000000000803F}
+        end
+        item
+          Color.Color = {0000803F0000803F000000000000803F}
+        end
+        item
+          Color.Color = {0000803F0000803F000000000000803F}
+        end
+        item
+          Color.Color = {0000803F0000803F000000000000803F}
+        end
+        item
+          Color.Color = {0000803F0000803F000000000000803F}
+        end
+        item
+        end
+        item
+          Y = 1.000000000000000000
+        end>
       NodesAspect = lnaInvisible
       SplineMode = lsmSegments
       Options = [loUseNodeColorForLines]
