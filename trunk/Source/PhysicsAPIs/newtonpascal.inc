@@ -87,3 +87,6 @@ const
   {$ENDIF}
  {$ENDIF}
 {$ENDIF}
+{$IFDEF WIN64}
+ NEWTON_API = 'newton64'+NEWTON_API_PRECISION+'.dll';
+{$ENDIF}

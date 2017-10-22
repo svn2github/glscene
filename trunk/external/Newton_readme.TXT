@@ -1,18 +1,44 @@
-From Franck Papouin (17/09/2010)
+Newton dynamics is a realistic, cross-platform physics simulation library. 
+It can easily be integrated into games and game engines and provides top of its class performance and simulation stability.
 
-LICENSE AGREEMENT
-As the Newton Game Dynamics Physics Engine 2.0 is not released as a stable software,
-NGD's copyrights holder have not yet decided and written the licence agreement.
+Ongoing development and a permissive license makes Newton Dynamics a top choice for all kinds of projects from scientific projects to game engines.
 
-CURRENT STATUS
-From the NGD's forum, you can read :
-"You may use and distribute the files contained in the Newton Game Dynamics SDK in 
-anyway you see fit, as long as the usage is within the confines of the Law."
 
-DOWNLOAD
-In order to respect the GLScene's MPL license we have decided to not include these DLL
-into the repository. But you can download them at:
-http://newtondynamics.com/forum/viewtopic.php?f=9&t=4922&start=0
+* Links to **demos**, **tutorial**, **FAQ**, etc: <https://github.com/MADEAPPS/newton-dynamics/wiki>
+* 
+Main project page: <http://newtondynamics.com>
+* 
+Forums and public discussion: <http://newtondynamics.com/forum/index.php>
 
-An archive that contains only usefull data can be downloaded at:
-http://ftpmerou.free.fr/delphi/NGD/
+
+
+Compiling Newton
+Windows 
+Project files for Visual Studio are provided, mainly
+
+* Newton Core and packages: 
+[sdk/projects/](sdk/projects/)
+* 
+demo sandbox: [applications/demosSandbox/projects/](applications/demosSandbox/projects/)
+
+
+
+Newton Core does not have any third party dependencies.
+
+
+
+
+
+
+License
+
+
+Newton Dynamics is licensed under the zlib open source license, with little if any practical difference between them.
+
+
+See `LICENSE` for the full content of the licenses.
+
+
+Authors
+
+Newton Dynamics is a project of Julio Jerez and Alain Suero. See `AUTHORS` for a full list of contributors.
