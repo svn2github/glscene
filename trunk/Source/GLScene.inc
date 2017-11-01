@@ -13,7 +13,8 @@
 // Additionnal support & dependencies
 //
 
-// Activate support for Alex Denissov's Graphics32 library (http://www.g32.org)
+// Activate support for Graphics32 library
+// Can be found at https://github.com/graphics32
 {.$DEFINE GLS_Graphics32_SUPPORT}
 
 // Activate support for some optimizations by disabling checks that occur very often
@@ -31,6 +32,10 @@
 
 // Activate Logging
 {$DEFINE GLS_LOGGING}
+
+// Activate support for FastMath library
+// Use https://github.com/neslib/FastMath by Erik van Bilsen
+{.$DEFINE GLS_FASTMATH}
 
 // Activate OpenGL debug mode
 {.$DEFINE GLS_OPENGL_DEBUG}
@@ -103,11 +108,6 @@
   Error: unsupported version, requires at least Delphi XE2
 {$ENDIF}
 
-{$IFDEF GLS_ASM}
-  {$IFDEF GLS_INLINE}
-    {$DEFINE GLS_INLINE_VICE_ASM}
-  {$ENDIF}
-{$ENDIF}
 
 {$IFNDEF GLS_NO_REGIONS}
   {$DEFINE GLS_REGIONS}

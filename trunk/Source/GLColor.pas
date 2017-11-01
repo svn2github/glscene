@@ -17,6 +17,7 @@ interface
 uses
   System.SysUtils,
   System.Classes,
+  System.UITypes,
   Vcl.Dialogs,
   Vcl.Graphics,
 
