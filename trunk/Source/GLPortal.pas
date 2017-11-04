@@ -20,125 +20,75 @@ uses
   System.Classes,
   System.SysUtils,
 
-  GLVectorFileObjects, GLScene, GLMaterial, GLVectorGeometry,
+  GLVectorTypes,
+  GLVectorFileObjects,
+  GLScene,
+  GLMaterial,
+  GLVectorGeometry,
   GLRenderContextInfo;
 
 type
 
-  // TPortalMeshObjectList
-  //
   { A mesh object list that handles portal rendering.
     The items are treated as being sectors. }
   TPortalMeshObjectList = class(TGLMeshObjectList)
-  private
-     
-
-  protected
-    
-
   public
-    
     constructor CreateOwned(AOwner: TGLBaseMesh);
     destructor Destroy; override;
-
     procedure BuildList(var mrci: TGLRenderContextInfo); override;
   end;
 
-  // TSectorMeshObject
-  //
   { A portal renderer sector. }
   TSectorMeshObject = class(TGLMorphableMeshObject)
   private
-     
     FRenderDone: Boolean;
-
-  protected
-    
-
   public
-    
     constructor CreateOwned(AOwner: TGLMeshObjectList);
     destructor Destroy; override;
-
     procedure BuildList(var mrci: TGLRenderContextInfo); override;
     procedure Prepare; override;
-
     property RenderDone: Boolean read FRenderDone write FRenderDone;
   end;
 
-  // TFGPolygon
-  //
   { A portal polygon.
     This is the base class for portal polygons, the TFGPortalPolygon class
     implements the portal. }
   TFGPolygon = class(TFGVertexNormalTexIndexList)
-  private
-     
-
-  protected
-    
-
   public
-    
     constructor CreateOwned(AOwner: TGLFaceGroups); override;
     destructor Destroy; override;
-
     procedure Prepare; override;
   end;
 
-  // TFGPolygon
-  //
-  { A portal polygon.
-    This is the base class for portal polygons, the TFGPortalPolygon class
-    implements the portal. }
+  { A portal polygon. This is the base class for portal polygons,
+    the TFGPortalPolygon class implements the portal. }
   TFGPortalPolygon = class(TFGPolygon)
   private
-     
     FDestinationSectorIndex: Integer;
     FCenter, FNormal: TAffineVector;
     FRadius: Single;
-
-  protected
-    
-
   public
-    
     constructor CreateOwned(AOwner: TGLFaceGroups); override;
     destructor Destroy; override;
-
     procedure BuildList(var mrci: TGLRenderContextInfo); override;
-
     procedure Prepare; override;
-
     property DestinationSectorIndex: Integer read FDestinationSectorIndex
       write FDestinationSectorIndex;
   end;
 
-  // TGLPortal
-  //
   { Portal Renderer class. }
   TGLPortal = class(TGLBaseMesh)
-  private
-     
-
-  protected
-    
-
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
   published
-    
     property MaterialLibrary;
   end;
 
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
 implementation
-
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -147,22 +97,16 @@ implementation
 // ------------------ TPortalMeshObjectList ------------------
 // ------------------
 
-// CreateOwned
-//
 constructor TPortalMeshObjectList.CreateOwned(AOwner: TGLBaseMesh);
 begin
   inherited CreateOwned(AOwner);
 end;
 
- 
-//
 destructor TPortalMeshObjectList.Destroy;
 begin
   inherited;
 end;
 
-// BuildList
-//
 procedure TPortalMeshObjectList.BuildList(var mrci: TGLRenderContextInfo);
 var
   i: Integer;
@@ -192,23 +136,17 @@ end;
 // ------------------ TSectorMeshObject ------------------
 // ------------------
 
-// CreateOwned
-//
 constructor TSectorMeshObject.CreateOwned(AOwner: TGLMeshObjectList);
 begin
   inherited;
   Mode := momFaceGroups;
 end;
 
- 
-//
 destructor TSectorMeshObject.Destroy;
 begin
   inherited;
 end;
 
-// BuildList
-//
 procedure TSectorMeshObject.BuildList(var mrci: TGLRenderContextInfo);
 var
   i: Integer;
@@ -247,8 +185,6 @@ begin
   end;
 end;
 
-// Prepare
-//
 procedure TSectorMeshObject.Prepare;
 var
   i: Integer;
@@ -262,23 +198,17 @@ end;
 // ------------------ TFGPolygon ------------------
 // ------------------
 
-// CreateOwned
-//
 constructor TFGPolygon.CreateOwned(AOwner: TGLFaceGroups);
 begin
   inherited;
   Mode := fgmmTriangleFan;
 end;
 
- 
-//
 destructor TFGPolygon.Destroy;
 begin
   inherited;
 end;
 
-// Prepare
-//
 procedure TFGPolygon.Prepare;
 begin
   // nothing, ain't no portal !
@@ -288,22 +218,16 @@ end;
 // ------------------ TFGPortalPolygon ------------------
 // ------------------
 
-// CreateOwned
-//
 constructor TFGPortalPolygon.CreateOwned(AOwner: TGLFaceGroups);
 begin
   inherited;
 end;
 
- 
-//
 destructor TFGPortalPolygon.Destroy;
 begin
   inherited;
 end;
 
-// BuildList
-//
 procedure TFGPortalPolygon.BuildList(var mrci: TGLRenderContextInfo);
 var
   dir: TAffineVector;
@@ -319,8 +243,6 @@ begin
   end;
 end;
 
-// Prepare
-//
 procedure TFGPortalPolygon.Prepare;
 var
   min, max: TAffineVector;
@@ -346,8 +268,6 @@ begin
   UseMeshMaterials := True;
 end;
 
- 
-//
 destructor TGLPortal.Destroy;
 begin
   inherited;

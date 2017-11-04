@@ -41,8 +41,7 @@ type
     Handles dynamic default values to save resource file space.  }
   TGLCustomCoordinates = class(TGLUpdateAbleObject)
   private
-     
-    FCoords: TVector;
+   FCoords: TVector;
     FStyle: TGLCoordinatesStyle; // NOT Persistent
     FPDefaultCoords: PVector;
     procedure SetAsPoint2D(const Value: TVector2f);
@@ -56,7 +55,6 @@ type
     function GetDirectCoordinate(const Index: Integer): TGLFloat;
     procedure SetDirectCoordinate(const Index: Integer; const AValue: TGLFloat);
   protected
-    
     procedure SetDirectVector(const V: TVector);
     procedure DefineProperties(Filer: TFiler); override;
     procedure ReadData(Stream: TStream);
@@ -70,7 +68,6 @@ type
     procedure ReadFromFiler(Reader: TReader);
     procedure Initialize(const Value: TVector);
     procedure NotifyChange(Sender: TObject); override;
-
     { Identifies the coordinates styles.
       The property is NOT persistent, csUnknown by default, and should be
       managed by owner object only (internally). 
@@ -106,12 +103,10 @@ type
     procedure SetPoint2D(const Vector: TVector2f); overload;
     procedure SetToZero;
     function AsAddress: PGLFloat;
-
-    {  The coordinates viewed as a vector. 
+    {  The coordinates viewed as a vector.
       Assigning a value to this property will trigger notification events,
       if you don't want so, use DirectVector instead. }
     property AsVector: TVector read FCoords write SetAsVector;
-
     { The coordinates viewed as an affine vector.
       Assigning a value to this property will trigger notification events,
       if you don't want so, use DirectVector instead.
@@ -123,18 +118,14 @@ type
       Assigning a value to this property will trigger notification events,
       if you don't want so, use DirectVector instead. }
     property AsPoint2D: TVector2f read GetAsPoint2D write SetAsPoint2D;
-
     property X: TGLFloat index 0 read GetCoordinate write SetCoordinate;
     property Y: TGLFloat index 1 read GetCoordinate write SetCoordinate;
     property Z: TGLFloat index 2 read GetCoordinate write SetCoordinate;
     property W: TGLFloat index 3 read GetCoordinate write SetCoordinate;
-
     property Coordinate[const AIndex: Integer]: TGLFloat read GetCoordinate
       write SetCoordinate; default;
-
     {  The coordinates, in-between brackets, separated by semi-colons. }
     property AsString: String read GetAsString;
-
     // Similar to AsVector but does not trigger notification events
     property DirectVector: TVector read FCoords write SetDirectVector;
     property DirectX: TGLFloat index 0 read GetDirectCoordinate

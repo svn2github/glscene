@@ -3,8 +3,7 @@
 //
 {
    Base classes and interface for GLScene Sound System 
-
-   History :  
+   History :
      04/06/00 - EG - Creation
     The whole history is logged in previous version of the unit
 
@@ -18,6 +17,7 @@ uses
   System.SysUtils,
   System.Types,
 
+  GLVectorTypes,
   GLSoundFileObjects,
   GLScene,
   GLXCollection,
@@ -31,103 +31,71 @@ uses
 
 type
 
-  // TGLSoundSample
-  //
-    {Stores a single PCM coded sound sample. }
+  {Stores a single PCM coded sound sample. }
   TGLSoundSample = class(TCollectionItem)
   private
-     
     FName: string;
     FData: TGLSoundFile;
     FTag: Integer;
-
   protected
-    
     procedure DefineProperties(Filer: TFiler); override;
     procedure ReadData(Stream: TStream); virtual;
     procedure WriteData(Stream: TStream); virtual;
     function GetDisplayName: string; override;
     procedure SetData(const val: TGLSoundFile);
-
   public
-    
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
-
     procedure LoadFromFile(const fileName: string);
-
     procedure PlayOnWaveOut;
-
     function Sampling: TGLSoundSampling;
     function LengthInBytes: Integer;
     function LengthInSamples: Integer;
     function LengthInSec: Single;
-
     // This Tag is reserved for sound manager use only
     property ManagerTag: Integer read FTag write FTag;
-
   published
-    
     property Name: string read FName write FName;
     property Data: TGLSoundFile read FData write SetData stored False;
   end;
 
-  // TGLSoundSamples
-  //
   TGLSoundSamples = class(TCollection)
   protected
-    
     owner: TComponent;
     function GetOwner: TPersistent; override;
     procedure SetItems(index: Integer; const val: TGLSoundSample);
     function GetItems(index: Integer): TGLSoundSample;
-
   public
-    
     constructor Create(AOwner: TComponent);
     function Add: TGLSoundSample;
     function FindItemID(ID: Integer): TGLSoundSample;
     property Items[index: Integer]: TGLSoundSample read GetItems write SetItems; default;
     function GetByName(const aName: string): TGLSoundSample;
-
     function AddFile(const fileName: string; const sampleName: string = ''): TGLSoundSample;
   end;
 
   TGLSoundLibrary = class(TComponent)
   private
-     
     FSamples: TGLSoundSamples;
-
   protected
-    
     procedure SetSamples(const val: TGLSoundSamples);
-
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
-
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
   published
-    
+
     property Samples: TGLSoundSamples read FSamples write SetSamples;
   end;
 
-  // TGLSoundSource
-  //
   TGLSoundSourceChange = (sscTransformation, sscSample, sscStatus);
   TGLSoundSourceChanges = set of TGLSoundSourceChange;
-
   TGLBSoundEmitter = class;
 
-  // TGLBaseSoundSource
-  //
-    {Base class for origin of sound playback. }
+  {Base class for origin of sound playback. }
   TGLBaseSoundSource = class(TCollectionItem)
   private
-     
     FBehaviourToNotify: TGLBSoundEmitter;
       // private only, NOT persistent, not assigned
     FPriority: Integer;
@@ -145,12 +113,9 @@ type
     FNbLoops: Integer;
     FTag: PtrUInt; // NOT persistent, not assigned
     FFrequency: Integer;
-
   protected
-    
     procedure WriteToFiler(writer: TWriter);
     procedure ReadFromFiler(reader: TReader);
-
     function GetDisplayName: string; override;
     procedure SetPriority(const val: Integer);
     procedure SetOrigin(const val: TGLBaseSceneObject);
@@ -167,20 +132,14 @@ type
     procedure SetPause(const val: Boolean);
     procedure SetNbLoops(const val: Integer);
     procedure SetFrequency(const val: Integer);
-
   public
-    
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
-
     property Changes: TGLSoundSourceChanges read FChanges;
-
     function Sample: TGLSoundSample;
-
     // This Tag is reserved for sound manager use only
     property ManagerTag: PtrUInt read FTag write FTag;
-
     {Origin object for the sound sources.
        Absolute object position/orientation are taken into account, the
        object's TGLBInertia is considered if any.
@@ -189,34 +148,27 @@ type
        scheme, it is up to the Origin object to take care of updating this
        property prior to release/destruction. }
     property Origin: TGLBaseSceneObject read FOrigin write SetOrigin;
-
   published
-    
     property SoundLibrary: TGLSoundLibrary read GetSoundLibrary write SetSoundLibrary;
     property SoundName: string read FSoundName write SetSoundName;
-
     {Volume of the source, [0.0; 1.0] range }
     property Volume: Single read FVolume write SetVolume;
     {Nb of playing loops. }
     property NbLoops: Integer read FNbLoops write SetNbLoops default 1;
-
     property Mute: Boolean read FMute write SetMute default False;
     property Pause: Boolean read FPause write SetPause default False;
-
     {Sound source priority, the higher the better.
        When maximum number of sound sources is reached, only the sources
        with the highest priority will continue to play, however, even
        non-playing sources should be tracked by the manager, thus allowing
        an "unlimited" amount of sources from the application point of view. }
     property Priority: Integer read FPriority write SetPriority default 0;
-
     {Min distance before spatial attenuation occurs.
        1.0 by default }
     property MinDistance: Single read FMinDistance write SetMinDistance;
     {Max distance, if source is further away, it will not be heard.
        100.0 by default }
     property MaxDistance: Single read FMaxDistance write SetMaxDistance;
-
     {Inside cone angle, [0°; 360°].
        Sound volume is maximal within this cone.
        See DirectX SDK for details. }
@@ -234,44 +186,29 @@ type
     property Frequency: Integer read FFrequency write SetFrequency default -1;
   end;
 
-  // TGLSoundSource
-  //
-    {Origin of sound playback.
-       Just publishes the 'Origin' property.
-       Note that the "orientation" is the the source's Direction, ie. the "Z"
-       vector. }
+  {Origin of sound playback.
+   Just publishes the 'Origin' property.
+   Note that the "orientation" is the the source's Direction, ie. the "Z" vector. }
   TGLSoundSource = class(TGLBaseSoundSource)
   public
-    
     destructor Destroy; override;
-
   published
-    
     property Origin;
   end;
 
-  // TGLSoundSources
-  //
   TGLSoundSources = class(TCollection)
   protected
-    
     owner: TComponent;
     function GetOwner: TPersistent; override;
     procedure SetItems(index: Integer; const val: TGLSoundSource);
     function GetItems(index: Integer): TGLSoundSource;
-
     function Add: TGLSoundSource;
     function FindItemID(ID: Integer): TGLSoundSource;
-
   public
-    
     constructor Create(AOwner: TComponent);
-
     property Items[index: Integer]: TGLSoundSource read GetItems write SetItems; default;
   end;
 
-  // TGLSoundEnvironment
-  //
   {EAX standard sound environments. }
   TGLSoundEnvironment = (seDefault, sePaddedCell, seRoom, seBathroom,
     seLivingRoom, seStoneroom, seAuditorium,
@@ -281,19 +218,16 @@ type
     sePlain, seParkingLot, seSewerPipe, seUnderWater,
     seDrugged, seDizzy, sePsychotic);
 
-  // TGLSoundManager
-  //
-    {Base class for sound manager components.
-       The sound manager component is the interface to a low-level audio API
-       (like DirectSound), there can only be one active manager at any time
-       (this class takes care of this).
-       Subclass should override the DoActivate and DoDeActivate protected methods
-       to "initialize/unitialize" their sound layer, actual data releases should
-       occur in destructor however. }
+  {Base class for sound manager components.
+   The sound manager component is the interface to a low-level audio API
+   (like DirectSound), there can only be one active manager at any time
+   (this class takes care of this).
+   Subclass should override the DoActivate and DoDeActivate protected methods
+   to "initialize/unitialize" their sound layer, actual data releases should
+   occur in destructor however. }
   TGLSoundManager = class(TGLCadenceAbleComponent)
   private
-     
-    FActive: Boolean;
+   FActive: Boolean;
     FMute: Boolean;
     FPause: Boolean;
     FMasterVolume: Single;
@@ -315,9 +249,7 @@ type
     procedure SetPause(const val: Boolean);
     procedure WriteDoppler(writer: TWriter);
     procedure ReadDoppler(reader: TReader);
-
   protected
-    
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
     procedure SetSources(const val: TGLSoundSources);
     procedure SetMasterVolume(const val: Single);
@@ -333,13 +265,9 @@ type
     function StoreRollOffFactor: Boolean;
     procedure SetDopplerFactor(const val: Single);
     procedure SetSoundEnvironment(const val: TGLSoundEnvironment);
-
     procedure Loaded; override;
     procedure DefineProperties(Filer: TFiler); override;
-
-    procedure ListenerCoordinates(var position, velocity, direction, up:
-      TVector);
-
+    procedure ListenerCoordinates(var position, velocity, direction, up: TVector);
     function DoActivate: Boolean; dynamic;
     // Invoked AFTER all sources have been stopped
     procedure DoDeActivate; dynamic;
@@ -359,11 +287,9 @@ type
        Default implementation call PauseSource for all non-paused sources
        with "True" as parameter. }
     procedure DoUnPause; dynamic;
-
     procedure NotifyMasterVolumeChange; dynamic;
     procedure Notify3DFactorsChanged; dynamic;
     procedure NotifyEnvironmentChanged; dynamic;
-
     // Called when a source will be freed
     procedure KillSource(aSource: TGLBaseSoundSource); virtual;
     {Request to update source's data in low-level sound API.
@@ -371,72 +297,60 @@ type
     procedure UpdateSource(aSource: TGLBaseSoundSource); virtual;
     procedure MuteSource(aSource: TGLBaseSoundSource; muted: Boolean); virtual;
     procedure PauseSource(aSource: TGLBaseSoundSource; paused: Boolean); virtual;
-
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
     {Manual request to update all sources to reflect changes.
        Default implementation invokes UpdateSource for all known sources. }
     procedure UpdateSources; virtual;
     {Stop and free all sources. }
     procedure StopAllSources;
-
     {Progress notification for time synchronization.
        This method will call UpdateSources depending on the last time
        it was performed and the value of the UpdateFrequency property. }
     procedure DoProgress(const progressTime: TProgressTimes); override;
-
     {Sound manager API reported CPU Usage.
        Returns -1 when unsupported. }
     function CPUUsagePercent: Single; virtual;
     {True if EAX is supported. }
     function EAXSupported: Boolean; dynamic;
-
   published
-    
       {Activation/deactivation of the low-level sound API }
     property Active: Boolean read FActive write SetActive default False;
-
-    {Maximum number of sound output channels. 
+    {Maximum number of sound output channels.
        While some drivers will just ignore this value, others cannot
        dynamically adjust the maximum number of channels (you need to
        de-activate and re-activate the manager for this property to be
        taken into account). }
-    property MaxChannels: Integer read FMaxChannels write SetMaxChannels default
-      8;
-    {Sound output mixing frequency. 
-       Commonly used values ar 11025, 22050 and 44100. 
+    property MaxChannels: Integer read FMaxChannels write SetMaxChannels default 8;
+    {Sound output mixing frequency.
+       Commonly used values ar 11025, 22050 and 44100.
        Note that most driver cannot dynamically adjust the output frequency
        (you need to de-ativate and re-activate the manager for this property
        to be taken into account). }
     property OutputFrequency: Integer read FOutputFrequency write SetOutputFrequency default 44100;
-
-    {Request to mute all sounds. 
+    {Request to mute all sounds.
        All sound requests should be handled as if sound is unmuted though,
        however drivers should try to take a CPU advantage of mute over
        MasterVolume=0 }
     property Mute: Boolean read FMute write SetMute default False;
-    {Request to pause all sound, sound output should be muted too. 
+    {Request to pause all sound, sound output should be muted too.
        When unpausing, all sound should resume at the point they were paused. }
     property Pause: Boolean read FPause write SetPause default False;
-    {Master Volume adjustement in the [0.0; 1.0] range. 
+    {Master Volume adjustement in the [0.0; 1.0] range.
        Driver should take care of properly clamping the master volume. }
     property MasterVolume: Single read FMasterVolume write SetMasterVolume;
-
-    {Scene object that materializes the listener. 
+    {Scene object that materializes the listener.
        The sceneobject's AbsolutePosition and orientation are used to define
        the listener coordinates, velocity is automatically calculated
-       (if you're using DoProgress or connected the manager to a cadencer). 
+       (if you're using DoProgress or connected the manager to a cadencer).
        If this property is nil, the listener is assumed to be static at
        the NullPoint coordinate, facing Z axis, with up being Y (ie. the
        default GLScene orientation). }
     property Listener: TGLBaseSceneObject read FListener write SetListener;
     {Currently active and playing sound sources. }
     property Sources: TGLSoundSources read FSources write SetSources;
-
-    {Update frequency for time-based control (DoProgress). 
+    {Update frequency for time-based control (DoProgress).
        Default value is 10 Hz (frequency is clamped in the 1Hz-60Hz range). }
     property UpdateFrequency: Single read FUpdateFrequency write SetUpdateFrequency stored StoreUpdateFrequency;
     {Cadencer for time-based control.  }
@@ -444,69 +358,51 @@ type
     {Engine relative distance factor, compared to 1.0 meters.
        Equates to 'how many units per meter' your engine has. }
     property DistanceFactor: Single read FDistanceFactor write SetDistanceFactor stored StoreDistanceFactor;
-    {Sets the global attenuation rolloff factor. 
+    {Sets the global attenuation rolloff factor.
        Normally volume for a sample will scale at 1 / distance.
        This gives a logarithmic attenuation of volume as the source gets
        further away (or closer).
        Setting this value makes the sound drop off faster or slower.
        The higher the value, the faster volume will fall off. }
     property RollOffFactor: Single read FRollOffFactor write SetRollOffFactor stored StoreRollOffFactor;
-    {Engine relative Doppler factor, compared to 1.0 meters. 
+    {Engine relative Doppler factor, compared to 1.0 meters.
        Equates to 'how many units per meter' your engine has. }
     property DopplerFactor: Single read FDopplerFactor write SetDopplerFactor stored False;
     {Sound environment (requires EAX compatible soundboard). }
     property Environment: TGLSoundEnvironment read FSoundEnvironment write SetSoundEnvironment default seDefault;
   end;
 
-  // TGLBSoundEmitter
-  //
   {A sound emitter behaviour, plug it on any object to make it noisy.
-       This behaviour is just an interface to a TGLSoundSource, for editing
-       convenience. }
+   This behaviour is just an interface to a TGLSoundSource, for editing convenience. }
   TGLBSoundEmitter = class(TGLBehaviour)
   private
-     
     FPlaying: Boolean; // used at design-time ONLY
     FSource: TGLBaseSoundSource;
     FPlayingSource: TGLSoundSource;
-
   protected
-    
     procedure WriteToFiler(writer: TWriter); override;
     procedure ReadFromFiler(reader: TReader); override;
     procedure Loaded; override;
-
     procedure SetSource(const val: TGLBaseSoundSource);
     procedure SetPlaying(const val: Boolean);
     function GetPlaying: Boolean;
-
     procedure NotifySourceDestruction(aSource: TGLSoundSource);
-
   public
-    
     constructor Create(aOwner: TGLXCollection); override;
     destructor Destroy; override;
-
     procedure Assign(Source: TPersistent); override;
-
     class function FriendlyName: String; override;
     class function FriendlyDescription: String; override;
     class function UniqueItem: Boolean; override;
-
     procedure DoProgress(const progressTime: TProgressTimes); override;
-
     property PlayingSource: TGLSoundSource read FPlayingSource;
-
   published
-    
     property Source: TGLBaseSoundSource read FSource write SetSource;
     property Playing: Boolean read GetPlaying write SetPlaying default False;
-
   end;
 
 function ActiveSoundManager: TGLSoundManager;
 function GetSoundLibraryByName(const aName: string): TGLSoundLibrary;
-
 function GetOrCreateSoundEmitter(behaviours: TGLBehaviours): TGLBSoundEmitter;  overload;
 function GetOrCreateSoundEmitter(obj: TGLBaseSceneObject): TGLBSoundEmitter;  overload;
 
@@ -514,9 +410,9 @@ var
   // If this variable is true, errors in GLSM may be displayed to the user
   vVerboseGLSMErrors: Boolean = True;
 
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
 implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -568,15 +464,10 @@ end;
 // ------------------
 // ------------------ TGLSoundSample ------------------
 // ------------------
-
- 
-
 constructor TGLSoundSample.Create(Collection: TCollection);
 begin
   inherited Create(Collection);
 end;
-
- 
 
 destructor TGLSoundSample.Destroy;
 begin
@@ -656,8 +547,6 @@ begin
   else
     Result := Format('%s (empty)', [Name]);
 end;
-
- 
 
 procedure TGLSoundSample.LoadFromFile(const fileName: string);
 var
@@ -765,9 +654,6 @@ begin
   Result := (inherited FindItemID(ID)) as TGLSoundSample;
 end;
 
-// GetByName
-//
-
 function TGLSoundSamples.GetByName(const aName: string): TGLSoundSample;
 var
   i: Integer;
@@ -780,9 +666,6 @@ begin
       Break;
     end;
 end;
-
-// AddFile
-//
 
 function TGLSoundSamples.AddFile(const fileName: string; const sampleName: string
   = ''): TGLSoundSample;
@@ -1725,23 +1608,23 @@ end;
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 initialization
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
 
    // class registrations
   RegisterClasses([TGLSoundLibrary]);
   RegisterXCollectionItemClass(TGLBSoundEmitter);
   vSoundLibraries := TList.Create;
 
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
 
 finalization
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
 
   if Assigned(vActiveSoundManager) then
     vActiveSoundManager.Active := False;

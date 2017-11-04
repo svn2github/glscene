@@ -23,7 +23,8 @@ uses
   System.SysUtils,
   System.Math,
    
-  GLScene, 
+  GLScene,
+  GLVectorTypes,
   GLVectorGeometry, 
   OpenGLTokens, 
   GLMaterial,

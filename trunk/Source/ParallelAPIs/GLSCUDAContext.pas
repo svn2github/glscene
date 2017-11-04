@@ -2,7 +2,8 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {  
-   CUDA context  
+   CUDA context
+   The whole history is logged in previous version of the unit
 }
 
 unit GLSCUDAContext;
@@ -26,7 +27,6 @@ type
 
   TCUDADimensions = class(TGLUpdateAbleObject)
   private
-     
     FXYZ: TDim3;
     FMaxXYZ: TDim3;
     FReadOnly: Boolean;
@@ -35,7 +35,6 @@ type
     function GetMaxDimComponent(index: Integer): Integer;
     procedure SetMaxDimComponent(index: Integer; Value: Integer);
   public
-    
     constructor Create(AOwner: TPersistent); override;
     procedure Assign(Source: TPersistent); override;
     property MaxSizeX: Integer index 0 read GetMaxDimComponent
@@ -56,12 +55,10 @@ type
   end;
 
   TCUDAContext = class;
-
   TOnOpenGLInteropInit = procedure(out Context: TGLContext) of object;
 
   TCUDADevice = class(TPersistent)
   private
-     
     fID: Integer;
     fHandle: TCUdevice;
     fGFlops: Integer;
@@ -71,10 +68,8 @@ type
     fMaxThreadsDim: TCUDADimensions;
     fMaxGridSize: TCUDADimensions;
   protected
-    
     function GetName: string;
   public
-    
     constructor Create; reintroduce;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -82,7 +77,6 @@ type
       available on the device dev in bytes. }
     function TotalMemory: Cardinal;
   published
-    
     property Name: string read GetName;
     property TotalGlobalMem: NativeUInt read fDeviceProperties.TotalGlobalMem;
     property SharedMemPerBlock: NativeUInt read fDeviceProperties.SharedMemPerBlock;
@@ -105,18 +99,15 @@ type
 
   TGLSCUDADevice = class(TComponent)
   private
-     
     FSelectDeviceName: string;
     function GetDevice: TCUDADevice;
     procedure SetDevice(AValue: TCUDADevice);
     procedure SetDeviceName(const AName: string);
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     function Suitable: Boolean;
   published
-    
     property SelectDevice: string read FSelectDeviceName write SetDeviceName;
     property Device: TCUDADevice read GetDevice write SetDevice;
   end;
@@ -132,26 +123,20 @@ type
 
   TCUDAContext = class(TObject)
   private
-     
     fHandle: PCUcontext;
     FDevice: TCUDADevice;
     FOnOpenGLInteropInit: TOnOpenGLInteropInit;
     FHandleList: TCUDAHandleList;
     procedure SetDevice(ADevice: TCUDADevice);
-  protected
-    
   public
-    
     constructor Create;
     destructor Destroy; override;
-
     {  Destroy all handles based of this context. }
     procedure DestroyAllHandles;
     {  Pushes context onto CPU thread’s stack of current contexts. }
     procedure Requires;
     {  Pops context from current CPU thread. }
     procedure Release;
-
     function IsValid: Boolean; inline;
     property Device: TCUDADevice read FDevice write SetDevice;
     property OnOpenGLInteropInit: TOnOpenGLInteropInit read FOnOpenGLInteropInit
@@ -162,17 +147,12 @@ type
   TCUDAContextList = GList<TCUDAContext>;
 
   {  Static class of CUDA contexts manager. }
-
-  CUDAContextManager = class
+   CUDAContextManager = class
   private
-     
     class var fDeviceList: TCUDADeviceList;
-
-  class var
-    fContextList: TCUDAContextList;
+    class var fContextList: TCUDAContextList;
     class var FContextStacks: array of TCUDAContextList;
   protected
-    
     class function GetDevice(i: Integer): TCUDADevice;
     class function GetNextUnusedDevice: TCUDADevice;
     class procedure RegisterContext(aContext: TCUDAContext);
@@ -180,7 +160,6 @@ type
     class function GetThreadStack: TCUDAContextList;
     class function GetContext(i: Integer): TCUDAContext;
   public
-    
     {  Managment. }
     class procedure Init;
     class procedure Done;
@@ -807,9 +786,6 @@ begin
     LList.Add(Self);
   GetContext.FHandleList.UnlockList;
 end;
-
-// DestroyHandles
-//
 
 procedure TCUDAHandlesMaster.DestroyHandles;
 begin

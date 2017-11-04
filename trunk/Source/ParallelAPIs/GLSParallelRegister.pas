@@ -5,19 +5,20 @@
    Registration unit for GLScene GPU Computing package. 
 
    History :  
-       05/03/11 - Yar - Added TCUDAConstant, TCUDAFuncParam
-       22/08/10 - Yar - Some improvements for FPC (thanks Predator)
-       09/06/10 - Yar - Added dropdown list ProjectModule for TGLSCUDACompiler
-       19/03/10 - Yar - Creation
-	 
+      19/03/10 - Yar - Creation
+      The whole history is logged in previous version of the unit
 }
 unit GLSParallelRegister;
 
 interface
 
 uses
-  System.Classes, System.SysUtils,
-  DesignIntf, DesignEditors, StrEdit, ToolsAPI,
+  System.Classes,
+  System.SysUtils,
+  DesignIntf,
+  DesignEditors,
+  StrEdit,
+  ToolsAPI,
    
   GLSceneRegister;
 

@@ -5,19 +5,20 @@
   Mesh optimization for GLScene.
 
   History :
-  27/11/07 - mrqzzz - added FacesSmooth InvertNormals parameter. Now smoothes correctly.
-  21/08/03 - EG - Added basic mooStandardize support
   03/06/03 - EG - Creation
-
+  The whole history is logged in previous version of the unit
 }
 unit GLMeshOptimizer;
 
 interface
 
 uses
-  System.Classes, System.Sysutils,
-  
-  GLVectorGeometry, GLVectorFileObjects;
+  System.Classes,
+  System.Sysutils,
+
+  GLVectorTypes,
+  GLVectorGeometry,
+  GLVectorFileObjects;
 
 type
 

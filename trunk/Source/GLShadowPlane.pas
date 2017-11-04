@@ -22,6 +22,7 @@ uses
   System.Classes,
   
   OpenGLTokens,
+  GLVectorTypes,
   GLScene,
   GLVectorGeometry,
   GLObjects,

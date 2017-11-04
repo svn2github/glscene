@@ -3,8 +3,7 @@
 //
 {
    An ARBvp1.0 + ARBfp1.0 shader that implements phong shading. 
-
-    History :  
+    History :
       11/10/04 - SG - Creation.
       The whole history is logged in previous version of the unit.
 }
@@ -15,10 +14,19 @@ interface
 {$I GLScene.inc }
 
 uses
-  System.Classes, System.SysUtils,
-  
-  GLTexture, GLVectorGeometry, GLVectorLists, OpenGLTokens, GLContext,
-  GLAsmShader, GLRenderContextInfo, GLCustomShader, GLState;
+  System.Classes,
+  System.SysUtils,
+
+  GLTexture,
+  GLVectorTypes,
+  GLVectorGeometry,
+  GLVectorLists,
+  OpenGLTokens,
+  GLContext,
+  GLAsmShader,
+  GLRenderContextInfo,
+  GLCustomShader,
+  GLState;
 
 type
   TGLPhongShader = class(TGLCustomAsmShader)
@@ -28,7 +36,6 @@ type
     FAmbientPass: Boolean;
     procedure SetDesignTimeEnabled(const Value: Boolean);
   protected
-    
     procedure DoLightPass(lightID: Cardinal); virtual;
     procedure DoAmbientPass(var rci: TGLRenderContextInfo); virtual;
     procedure UnApplyLights(var rci: TGLRenderContextInfo); virtual;
@@ -37,19 +44,21 @@ type
     function DoUnApply(var rci: TGLRenderContextInfo): Boolean; override;
     procedure DoInitialize(var rci : TGLRenderContextInfo; Sender : TObject); override;
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     function ShaderSupported: Boolean; override;
   published
-    
     property DesignTimeEnabled: Boolean read FDesignTimeEnabled write SetDesignTimeEnabled default False;
   end;
 
+//---------------------------------------------------------------
+//---------------------------------------------------------------
+//---------------------------------------------------------------
 implementation
+//---------------------------------------------------------------
+//---------------------------------------------------------------
+//---------------------------------------------------------------
 
-// DoApply
-//
 procedure TGLPhongShader.DoApply(var rci: TGLRenderContextInfo; Sender: TObject);
 begin
   if (csDesigning in ComponentState) and not DesignTimeEnabled then Exit;
@@ -71,8 +80,6 @@ begin
   end;
 end;
 
-// DoUnApply
-//
 function TGLPhongShader.DoUnApply(var rci: TGLRenderContextInfo): Boolean;
 begin
   Result := False;
@@ -100,16 +107,12 @@ begin
   rci.GLStates.DepthFunc := cfLEqual;
 end;
 
-// DoInitialize
-//
 procedure TGLPhongShader.DoInitialize(var rci : TGLRenderContextInfo; Sender : TObject);
 begin
   if (csDesigning in ComponentState) and not DesignTimeEnabled then Exit;
   inherited;
 end;
 
-// SetDesignTimeEnabled
-//
 procedure TGLPhongShader.SetDesignTimeEnabled(const Value: Boolean);
 begin
   if Value <> FDesignTimeEnabled then
@@ -119,8 +122,6 @@ begin
   end;
 end;
 
- 
-//
 constructor TGLPhongShader.Create(AOwner: TComponent);
 begin
   inherited;
@@ -193,8 +194,6 @@ begin
   FLightIDs := TIntegerList.Create;
 end;
 
-// ShaderSupported
-//
 function TGLPhongShader.ShaderSupported: Boolean;
 var
   MaxTextures: Integer;
@@ -205,8 +204,6 @@ begin
   Result := Result and (maxTextures > 2);
 end;
 
-// UnApplyLights
-//
 procedure TGLPhongShader.UnApplyLights(var rci: TGLRenderContextInfo);
 begin
   rci.GLStates.DepthFunc := cfLEqual;

@@ -18,7 +18,6 @@
    
 
   (c) 2004-2006 Jörn Daub http://www.daubnet.com 
-
   surrendered to Mozilla Public License for use in GLScene.
   Original author (Jörn Daub) retains the right to make changes without
   surrendering  the modified code.
@@ -29,10 +28,17 @@ unit GLFileDXF;
 interface
 
 uses
-  System.Classes, System.SysUtils,
-  
-  GLApplicationFileIO, GLVectorGeometry, GLVectorLists, GLScene, GLTexture,
-  GLVectorFileObjects, GLMaterial;
+  System.Classes,
+  System.SysUtils,
+
+  GLVectorTypes,
+  GLApplicationFileIO,
+  GLVectorGeometry,
+  GLVectorLists,
+  GLScene,
+  GLTexture,
+  GLVectorFileObjects,
+  GLMaterial;
 
 type
   TGLDXFVectorFile = class(TGLVectorFile)

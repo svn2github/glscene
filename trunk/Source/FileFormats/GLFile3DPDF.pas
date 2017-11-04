@@ -19,6 +19,7 @@ uses
   System.SysUtils,
   System.StrUtils,
 
+  GLVectorTypes,
   GLVectorGeometry,
   GLVectorLists,
   GLVectorFileObjects,

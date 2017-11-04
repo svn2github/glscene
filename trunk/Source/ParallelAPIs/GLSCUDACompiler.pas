@@ -7,11 +7,8 @@
   To work requires the presence of CUDA Toolkit 3.X and MS Visual Studio C++.
 
    History :
-   22/03/12 - Maverick - Added Visual Studio 8 & 10 paths
-   10/02/11 - Yar - Added capturing message from NVCC
-   22/08/10 - Yar - Some improvements for FPC (thanks Predator)
-   08/06/10 - Yar - Added ProjectModule property
    19/03/10 - Yar - Creation
+   The whole history is logged in previous version of the unit
 
 }
 unit GLSCUDACompiler;
@@ -37,22 +34,15 @@ uses
 type
   TGLSCUDACompilerOutput = (codeUndefined, codePtx, codeCubin, codeGpu);
 
-  // TGLSCUDAVirtArch
-  //
-
-  {
+  (*
     compute_10 Basic features
     compute_11 + atomic memory operations on global memory
     compute_12 + atomic memory operations on shared memory
                + vote instructions
     compute_13 + double precision floating point support
     Compute_20 + FERMI support
-  }
-
+  *)
   TGLSCUDAVirtArch = (compute_10, compute_11, compute_12, compute_13, compute_20);
-
-  // TGLSCUDAGPUGeneration
-  //
 
   (*
     sm_10 ISA_1 Basic features
@@ -63,13 +53,11 @@ type
     sm_20 + FERMI support.
     sm_21 + Unknown
   *)
-
   TGLSCUDARealArch = (sm_10, sm_11, sm_12, sm_13, sm_20, sm_21);
   TGLSCUDARealArchs = set of TGLSCUDARealArch;
 
   TGLSCUDACompiler = class(TComponent)
   private
-     
     FNVCCPath: string;
     FCppCompilerPath: string;
     FProduct: TStringList;
@@ -88,24 +76,18 @@ type
     procedure SetNVCCPath(const AValue: string);
     procedure SetCppCompilerPath(const AValue: string);
   protected
-    
     procedure Loaded; override;
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
-
     procedure SetSourceCodeFile(const AFileName: string);
-
     function Compile: Boolean;
     {  Product of compilation. }
     property Product: TStringList read FProduct write FProduct;
-
     property ModuleInfo: TCUDAModuleInfo read FModuleInfo;
     property ConsoleContent: string read FConsoleContent;
   published
-    
     {  NVidia CUDA Compiler. }
     property NVCCPath: string read FNVCCPath write SetNVCCPath;
     {  Microsoft Visual Studio Compiler.
@@ -186,25 +168,7 @@ begin
       if FileExists(path + 'cl.exe') then
         FCppCompilerPath := path
       else
-      begin
-        path := 'C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\bin\';
-        if FileExists(path + 'cl.exe') then
-          FCppCompilerPath := path
-        else
-        begin
-          path := 'C:\Program Files\Microsoft Visual Studio 8\VC\bin\';
-          if FileExists(path + 'cl.exe') then
-            FCppCompilerPath := path
-          else
-          begin
-            path := 'C:\Program Files (x86)\Microsoft Visual Studio 8\VC\bin\';
-            if FileExists(path + 'cl.exe') then
-              FCppCompilerPath := path
-            else
-              FCppCompilerPath := '';
-          end;
-        end;
-      end;
+        FCppCompilerPath := '';
     end;
   end;
   FProjectModule := 'none';
@@ -354,7 +318,6 @@ begin
       start.wShowWindow := SW_HIDE;
 
       // Creates a Console Child Process with redirected input and output
-
       if CreateProcess(nil, PChar(nvcc+commands), @Security, @Security, true,
         CREATE_NO_WINDOW or NORMAL_PRIORITY_CLASS, nil, nil, start,
         ProcessInfo) then

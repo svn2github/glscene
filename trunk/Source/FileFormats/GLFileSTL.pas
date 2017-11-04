@@ -7,11 +7,9 @@
   to enable support for STL files at run-time. 
 
   History :
-  29/06/17 - DirkC - fix ASCII/binary format detection
-  16/10/08 - UweR - Compatibility fix for Delphi 2009
-  22/11/02 - EG - Write capability now properly declared
   17/10/02 - EG - Created from split of GLVectorFileObjects,
   ASCII STL support (Adem)
+  The whole history is logged in previous version of the unit
 }
 unit GLFileSTL;
 
@@ -21,6 +19,7 @@ uses
   System.Classes,
   System.SysUtils,
 
+  GLVectorTypes,
   GLVectorGeometry,
   GLVectorLists,
   GLVectorFileObjects,

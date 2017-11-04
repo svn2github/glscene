@@ -6,7 +6,7 @@
    from http://www.khronos.org/registry/cl/.
 }
 (****************************************************************************
- * Copyright (c) 2008-2015 The Khronos Group Inc.
+ * Copyright (c) 2008-2017 The Khronos Group Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and/or associated documentation files (the
@@ -44,7 +44,9 @@ uses
 const
   {$IFDEF MSWINDOWS}
   LibOpenCL = 'OpenCL.dll';
- {$ELSE}
+ {$ENDIF}
+ 
+ {$IFDEF UNIX}
   LibOpenCL = 'OpenCL.so';
  {$ENDIF}
 
@@ -177,13 +179,13 @@ type
   Pcl_kernel_exec_info = ^Tcl_kernel_exec_info;
 
 type
-  Tcl_image_format = record
+  Tcl_image_format = packed record
     image_channel_order: Tcl_channel_order;
     image_channel_data_type: Tcl_channel_type;
   end;
   Pcl_image_format = ^Tcl_image_format;
 
-  Tcl_image_desc = record
+  Tcl_image_desc = packed record
     image_type: Tcl_mem_object_type;
     image_width: NativeUInt;
     image_height: NativeUInt;
@@ -199,7 +201,7 @@ type
   end;
   Pcl_image_desc = ^Tcl_image_desc;
 
-  Tcl_buffer_region = record
+  Tcl_buffer_region = packed record
     origin: NativeUInt;
     size: NativeUInt;
   end;
@@ -272,6 +274,8 @@ const
   CL_INVALID_DEVICE_PARTITION_COUNT =            -68;
   CL_INVALID_PIPE_SIZE =                         -69;
   CL_INVALID_DEVICE_QUEUE =                      -70;
+  CL_INVALID_SPEC_ID =                           -71;
+  CL_MAX_SIZE_RESTRICTION_EXCEEDED =             -72;
 
   (* OpenCL Version *)
   CL_VERSION_1_0 =                                 1;
@@ -1495,6 +1499,9 @@ type
    // clEnqueueBarrier();
    // clUnloadCompiler();
    // clGetExtensionFunctionAddress();
+   
+   //* Deprecated OpenCL 2.0 APIs *//
+   
    // clCreateCommandQueue();
    // clCreateSampler();
    // clEnqueueTask();
@@ -1521,19 +1528,21 @@ const
 var
   CLHandle: HINST;
 {$ENDIF}
+
 // ************** UNIX specific ********************
 {$IFDEF UNIX}
 var
   CLHandle: TLibHandle;
 {$ENDIF}
 
+//---------------------------------------------------
+
 function GetProcAddressOpenCL(ProcName: PAnsiChar): Pointer;
 begin
   result := GetProcAddress(Cardinal(CLHandle), ProcName);
 end;
 
-// InitOpenCL
-//
+
 
 function InitOpenCL: Boolean;
 begin
@@ -1543,8 +1552,6 @@ begin
     Result := True;
 end;
 
-// CloseOpenCL
-//
 
 procedure CloseOpenCL;
 begin
@@ -1555,8 +1562,6 @@ begin
   end;
 end;
 
-// InitOpenCLFromLibrary
-//
 
 function InitFromLibraryOpenCL(const CLName: WideString): Boolean;
 begin
@@ -1570,8 +1575,6 @@ begin
   Result := True;
 end;
 
-// IsOpenCLInitialized
-//
 
 function IsInitializedOpenCL: Boolean;
 begin

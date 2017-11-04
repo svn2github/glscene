@@ -21,6 +21,7 @@ uses
   Vcl.Graphics,
   
   OpenGLTokens,
+  GLVectorTypes,
   GLContext,
   GLCrossPlatform,
   GLVectorGeometry,

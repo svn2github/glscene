@@ -3,12 +3,8 @@
 //
 { 
    CUDA Fourier Transform 
-
-   History :  
-   13/12/13 - PW - Added GLScene.inc and IFDEF GLS_LOGGING
-   14/02/11 - Yar - Added debug mode
    28/01/10 - Yar - Creation
-   
+   The whole history is logged in previous version of the unit
 }
 
 /// *
@@ -169,69 +165,43 @@ type
 
   TcufftPlan1d = function(out plan: TcufftHandle; nx: Integer;
     atype: TcufftType; batch: Integer): TcufftResult;
-{$IFDEF CUDA_STDCALL}stdcall;
-{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}
+{$IFDEF MSWINDOWS}stdcall;{$ENDIF}{$IFDEF UNIX}cdecl;{$ENDIF}
   TcufftPlan2d = function(out plan: TcufftHandle; nx: Integer; ny: Integer;
     atype: TcufftType): TcufftResult;
-{$IFDEF CUDA_STDCALL}stdcall;
-{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}
+{$IFDEF MSWINDOWS}stdcall;{$ENDIF}{$IFDEF UNIX}cdecl;{$ENDIF}
   TcufftPlan3d = function(out plan: TcufftHandle; nx: Integer; ny: Integer;
     nz: Integer; atype: TcufftType): TcufftResult;
-{$IFDEF CUDA_STDCALL}stdcall;
-{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}
+{$IFDEF MSWINDOWS}stdcall;{$ENDIF}{$IFDEF UNIX}cdecl;{$ENDIF}
   TcufftDestroy = function(plan: TcufftHandle): TcufftResult;
-{$IFDEF CUDA_STDCALL}stdcall;
-{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}
+{$IFDEF MSWINDOWS}stdcall;{$ENDIF}{$IFDEF UNIX}cdecl;{$ENDIF}
   TcufftPlanMany = function(out plan: TcufftHandle; rank: Integer;
     var n: Integer; var inembed: Integer; istride, idist: Integer;
     var onembed: Integer; ostride, odist: Integer; ctype: TcufftType;
     batch: Integer): TcufftResult;
-{$IFDEF CUDA_STDCALL}stdcall;
-{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}
+{$IFDEF MSWINDOWS}stdcall;{$ENDIF}{$IFDEF UNIX}cdecl;{$ENDIF}
   TcufftExecC2C = function(plan: TcufftHandle; idata: PcufftComplex;
     odata: PcufftComplex; direction: Integer): TcufftResult;
-{$IFDEF CUDA_STDCALL}stdcall;
-{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}
+{$IFDEF MSWINDOWS}stdcall;{$ENDIF}{$IFDEF UNIX}cdecl;{$ENDIF}
   TcufftExecR2C = function(plan: TcufftHandle; idata: PcufftReal;
     odata: PcufftComplex): TcufftResult;
-{$IFDEF CUDA_STDCALL}stdcall;
-{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}
+{$IFDEF MSWINDOWS}stdcall;{$ENDIF}{$IFDEF UNIX}cdecl;{$ENDIF}
   TcufftExecC2R = function(plan: TcufftHandle; idata: PcufftComplex;
     odata: PcufftReal): TcufftResult;
-{$IFDEF CUDA_STDCALL}stdcall;
-{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}
+{$IFDEF MSWINDOWS}stdcall;{$ENDIF}{$IFDEF UNIX}cdecl;{$ENDIF}
   TcufftExecZ2Z = function(plan: TcufftHandle; idata: PcufftDoubleComplex;
     odata: PcufftDoubleComplex; direction: Integer): TcufftResult;
-{$IFDEF CUDA_STDCALL}stdcall;
-{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}
+{$IFDEF MSWINDOWS}stdcall;{$ENDIF}{$IFDEF UNIX}cdecl;{$ENDIF}
   TcufftExecD2Z = function(plan: TcufftHandle; idata: PcufftDoubleReal;
     odata: PcufftDoubleComplex): TcufftResult;
-{$IFDEF CUDA_STDCALL}stdcall;
-{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}
+{$IFDEF MSWINDOWS}stdcall;{$ENDIF}{$IFDEF UNIX}cdecl;{$ENDIF}
   TcufftExecZ2D = function(plan: TcufftHandle; idata: PcufftDoubleComplex;
     odata: PcufftDoubleReal): TcufftResult;
-{$IFDEF CUDA_STDCALL}stdcall;
-{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}
+{$IFDEF MSWINDOWS}stdcall;{$ENDIF}{$IFDEF UNIX}cdecl;{$ENDIF}
   TcufftSetStream = function(p: TcufftHandle; stream: Integer): TcufftResult;
-{$IFDEF CUDA_STDCALL}stdcall;
-{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}
+{$IFDEF MSWINDOWS}stdcall;{$ENDIF}{$IFDEF UNIX}cdecl;{$ENDIF}
   TcufftSetCompatibilityMode = function(plan: TcufftHandle;
     mode: TcufftCompatibility): TcufftResult;
-{$IFDEF CUDA_STDCALL}stdcall;
-{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}
+{$IFDEF MSWINDOWS}stdcall;{$ENDIF}{$IFDEF UNIX}cdecl;{$ENDIF}
 
 var
   cufftPlan1d: TcufftPlan1d;
@@ -306,9 +276,7 @@ var
 
 function cufftPlan1dShell(out plan: TcufftHandle; nx: Integer;
   atype: TcufftType; batch: Integer): TcufftResult;
-{$IFDEF CUDA_STDCALL}stdcall;
-{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}
+{$IFDEF MSWINDOWS}stdcall;{$ENDIF}{$IFDEF UNIX}cdecl;{$ENDIF}
 begin
   Result := cufftPlan1d_(plan, nx, atype, batch);
   if Result <> CUFFT_SUCCESS then
@@ -318,9 +286,7 @@ end;
 
 function cufftPlan2dShell(out plan: TcufftHandle; nx: Integer; ny: Integer;
   atype: TcufftType): TcufftResult;
-{$IFDEF CUDA_STDCALL}stdcall;
-{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}
+{$IFDEF MSWINDOWS}stdcall;{$ENDIF}{$IFDEF UNIX}cdecl;{$ENDIF}
 begin
   Result := cufftPlan2d_(plan, nx, ny, atype);
   if Result <> CUFFT_SUCCESS then
@@ -330,9 +296,7 @@ end;
 
 function cufftPlan3dShell(out plan: TcufftHandle; nx: Integer; ny: Integer;
   nz: Integer; atype: TcufftType): TcufftResult;
-{$IFDEF CUDA_STDCALL}stdcall;
-{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}
+{$IFDEF MSWINDOWS}stdcall;{$ENDIF}{$IFDEF UNIX}cdecl;{$ENDIF}
 begin
   Result := cufftPlan3d_(plan, nx, ny, nz, atype);
   if Result <> CUFFT_SUCCESS then
@@ -341,9 +305,7 @@ begin
 end;
 
 function cufftDestroyShell(plan: TcufftHandle): TcufftResult;
-{$IFDEF CUDA_STDCALL}stdcall;
-{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}
+{$IFDEF MSWINDOWS}stdcall;{$ENDIF}{$IFDEF UNIX}cdecl;{$ENDIF}
 begin
   Result := cufftDestroy_(plan);
   if Result <> CUFFT_SUCCESS then
@@ -355,9 +317,7 @@ function cufftPlanManyShell(out plan: TcufftHandle; rank: Integer;
   var n: Integer; var inembed: Integer; istride, idist: Integer;
   var onembed: Integer; ostride, odist: Integer; ctype: TcufftType;
   batch: Integer): TcufftResult;
-{$IFDEF CUDA_STDCALL}stdcall;
-{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}
+{$IFDEF MSWINDOWS}stdcall;{$ENDIF}{$IFDEF UNIX}cdecl;{$ENDIF}
 begin
   Result := cufftPlanMany_(plan, rank, n, inembed, istride, idist, onembed,
     ostride, odist, ctype, batch);
@@ -368,9 +328,7 @@ end;
 
 function cufftExecC2CShell(plan: TcufftHandle; idata: PcufftComplex;
   odata: PcufftComplex; direction: Integer): TcufftResult;
-{$IFDEF CUDA_STDCALL}stdcall;
-{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}
+{$IFDEF MSWINDOWS}stdcall;{$ENDIF}{$IFDEF UNIX}cdecl;{$ENDIF}
 begin
   Result := cufftExecC2C_(plan, idata, odata, direction);
   if Result <> CUFFT_SUCCESS then
@@ -380,9 +338,7 @@ end;
 
 function cufftExecR2CShell(plan: TcufftHandle; idata: PcufftReal;
   odata: PcufftComplex): TcufftResult;
-{$IFDEF CUDA_STDCALL}stdcall;
-{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}
+{$IFDEF MSWINDOWS}stdcall;{$ENDIF}{$IFDEF UNIX}cdecl;{$ENDIF}
 begin
   Result := cufftExecR2C_(plan, idata, odata);
   if Result <> CUFFT_SUCCESS then
@@ -392,9 +348,7 @@ end;
 
 function cufftExecC2RShell(plan: TcufftHandle; idata: PcufftComplex;
   odata: PcufftReal): TcufftResult;
-{$IFDEF CUDA_STDCALL}stdcall;
-{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}
+{$IFDEF MSWINDOWS}stdcall;{$ENDIF}{$IFDEF UNIX}cdecl;{$ENDIF}
 begin
   Result := cufftExecC2R_(plan, idata, odata);
   if Result <> CUFFT_SUCCESS then
@@ -404,9 +358,7 @@ end;
 
 function cufftExecZ2ZShell(plan: TcufftHandle; idata: PcufftDoubleComplex;
   odata: PcufftDoubleComplex; direction: Integer): TcufftResult;
-{$IFDEF CUDA_STDCALL}stdcall;
-{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}
+{$IFDEF MSWINDOWS}stdcall;{$ENDIF}{$IFDEF UNIX}cdecl;{$ENDIF}
 begin
   Result := cufftExecZ2Z_(plan, idata, odata, direction);
   if Result <> CUFFT_SUCCESS then
@@ -416,9 +368,7 @@ end;
 
 function cufftExecD2ZShell(plan: TcufftHandle; idata: PcufftDoubleReal;
   odata: PcufftDoubleComplex): TcufftResult;
-{$IFDEF CUDA_STDCALL}stdcall;
-{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}
+{$IFDEF MSWINDOWS}stdcall;{$ENDIF}{$IFDEF UNIX}cdecl;{$ENDIF}
 begin
   Result := cufftExecD2Z_(plan, idata, odata);
   if Result <> CUFFT_SUCCESS then
@@ -428,9 +378,7 @@ end;
 
 function cufftExecZ2DShell(plan: TcufftHandle; idata: PcufftDoubleComplex;
   odata: PcufftDoubleReal): TcufftResult;
-{$IFDEF CUDA_STDCALL}stdcall;
-{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}
+{$IFDEF MSWINDOWS}stdcall;{$ENDIF}{$IFDEF UNIX}cdecl;{$ENDIF}
 begin
   Result := cufftExecZ2D_(plan, idata, odata);
   if Result <> CUFFT_SUCCESS then
@@ -439,9 +387,7 @@ begin
 end;
 
 function cufftSetStreamShell(p: TcufftHandle; stream: Integer): TcufftResult;
-{$IFDEF CUDA_STDCALL}stdcall;
-{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}
+{$IFDEF MSWINDOWS}stdcall;{$ENDIF}{$IFDEF UNIX}cdecl;{$ENDIF}
 begin
   Result := cufftSetStream_(p, stream);
   if Result <> CUFFT_SUCCESS then
@@ -451,9 +397,7 @@ end;
 
 function cufftSetCompatibilityModeShell(plan: TcufftHandle;
   mode: TcufftCompatibility): TcufftResult;
-{$IFDEF CUDA_STDCALL}stdcall;
-{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}
+{$IFDEF MSWINDOWS}stdcall;{$ENDIF}{$IFDEF UNIX}cdecl;{$ENDIF}
 begin
   Result := cufftSetCompatibilityMode_(plan, mode);
   if Result <> CUFFT_SUCCESS then

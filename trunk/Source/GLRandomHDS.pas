@@ -69,7 +69,8 @@ uses
   Vcl.Forms,
 
   OpenGLTokens,
-  GLScene, 
+  GLScene,
+  GLVectorTypes,
   GLVectorGeometry, 
   GLHeightData, 
   GLTerrainRenderer, 

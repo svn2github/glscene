@@ -2,17 +2,19 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Unit to interface with simple star records aimed for background skies. 
-  
-   History :  
+   Unit to interface with simple star records aimed for background skies.
+
+   History :
 	    05/07/03 - EG - Creation
-	 
+
 }
 unit GLStarRecord;
 
 interface
 
 uses
+  System.Math,
+  GLVectorTypes,
   GLVectorGeometry;
 
 type
@@ -35,15 +37,10 @@ function StarRecordColor(const starRecord : TGLStarRecord; bias : Single) : TVec
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 implementation
-
-uses
-  GLVectorTypes;
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-// StarRecordPositionYUp
-//
 function StarRecordPositionYUp(const starRecord : TGLStarRecord) : TAffineVector;
 var
    f : Single;
@@ -52,8 +49,6 @@ begin
    SinCosine(starRecord.RA*(0.01*PI/180), f, Result.X, Result.Z);
 end;
 
-// StarRecordPositionZUp
-//
 function StarRecordPositionZUp(const starRecord : TGLStarRecord) : TAffineVector;
 var
    f : Single;
@@ -62,8 +57,6 @@ begin
    SinCosine(starRecord.RA*(0.01*PI/180), f, Result.X, Result.Y);
 end;
 
-// StarRecordColor
-//
 function StarRecordColor(const starRecord : TGLStarRecord; bias : Single) : TVector;
 const
    // very *rough* approximation
