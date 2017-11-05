@@ -141,8 +141,9 @@ content="Borland, Delphi, OpenGL, GLScene, graphics, tridimensional, 3D, program
  style='width:90.0%'>
  <tr>
   <td width="100%" style='width:100.0%;padding:.75pt .75pt .75pt .75pt'>
-  <p><span lang=EN-US>The Instruction for installing GLScene library into Embarcadero
-  RAD Studio to work with Delphi &amp; C++Builder has include the next steps: </span></p>
+  <p><span lang=EN-US>The installation of GLScene library packages into
+  Embarcadero RAD Studio to work with Delphi &amp; C++Builder has included next
+  steps: </span></p>
   </td>
  </tr>
 </table>
@@ -170,23 +171,24 @@ content="Borland, Delphi, OpenGL, GLScene, graphics, tridimensional, 3D, program
   From Version Control… to check out the code.</span></p>
   <p class=MsoNormal style='margin-left:18.0pt'><span lang=EN-US>You may also
   get the whole current Snapshot of the trunk from code page
-  http://sourceforge.net/p/glscene/code/HEAD/tree/&nbsp; or download archive
-  zip files with previous releases of GLScene project at the page <a
+  http://sourceforge.net/p/glscene/code/HEAD/tree/&nbsp; or download archive zip
+  files with previous releases of GLScene project at the page <a
   href="http://sourceforge.net/projects/glscene/files/">http://sourceforge.net/projects/glscene/files/</a></span></p>
   <p class=MsoNormal style='margin-left:18.0pt'><span lang=EN-US>&nbsp;</span></p>
   <p class=MsoListParagraph style='text-indent:-18.0pt'><span lang=EN-US>2.
-  Make a copy of the trunk in a separate directory, e.g. in the working
-  directory D:\GLScene, to prevent original sources from occasional changes.
-  You may skip this step if you don’t need to update the code from SVN
-  repository further.</span></p>
+  Make a copy of the trunk in a separate directory, e.g. in the working directory
+  D:\GLScene, to prevent original sources from occasional changes. You may skip
+  the step if you don’t need to update your copy of code from SVN repository
+  further.</span></p>
   <p class=MsoNormal style='margin-left:18.0pt'><span lang=EN-US>&nbsp;</span></p>
   <p class=MsoListParagraph style='text-indent:-18.0pt'><span lang=EN-US>3.</span><span
-  lang=EN-US style='font-size:7.0pt'> </span><span lang=EN-US>Run SetupDLLs.bat
-  in&nbsp;..\GLScene\external directory as administrator to copy auxiliary
-  dynamic libraries into C:\Windows\System32 and C:\Windows\SysWOW64
-  directories to support 3D sounds, shaders and physics (BASS, FMOD, OpenAL,
-  SDL, CG, ODE, Newton). Otherwise you will need to have ones in your
-  application directory if exe file is calling an appropriate dll.</span></p>
+  lang=EN-US style='font-size:7.0pt'> </span><span lang=EN-US>Before
+  installation of packages run SetupDLLs.bat in&nbsp;..\GLScene\external
+  directory as administrator to copy auxiliary dynamic libraries into
+  C:\Windows\System32 and C:\Windows\SysWOW64 directories to support 3D sounds
+  (BASS, FMOD, OpenAL), game API (SDL2), nVidia CG shaders and physics (ODE,
+  Newton). In other case you will need to have ones in your application
+  directory while exe file is calling a proper dll.</span></p>
   <p class=MsoListParagraph><span lang=EN-US>&nbsp;</span></p>
   <p class=MsoListParagraph style='text-indent:-18.0pt'><span lang=EN-US>4. If
   you are installing GLScene in RAD Studio for the first time it’s necessary to
@@ -247,9 +249,15 @@ content="Borland, Delphi, OpenGL, GLScene, graphics, tridimensional, 3D, program
   Here” command. </span></p>
   <p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
   <p class=MsoNormal><span lang=EN-US>10. Then choose to “Install” every
-  DesignTime package in GLScene_Win32 group to RAD Studio component palette.
-  After installation you are ready to use GLScene library and run demos for
-  Delphi &amp; C++Builder in $(GLSCENEDIR)\Samples directory.</span></p>
+  DesignTime package in GLScene_Win32 group to RAD Studio component
+  palette.&nbsp; For GLScene_DesignTime.bpl you should get an information as
+  shown below</span></p>
+  <p class=MsoNormal><img border=0 width=492 height=483
+  src=FinalInformation.jpg></p>
+  <p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
+  <p class=MsoNormal><span lang=EN-US>After installation you are ready to use
+  GLScene library and run demos for Delphi &amp; C++Builder in
+  $(GLSCENEDIR)\Samples directory.</span></p>
   </td>
  </tr>
  <tr>
