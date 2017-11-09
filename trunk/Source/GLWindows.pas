@@ -22,6 +22,8 @@ uses
   System.Math,
 
   OpenGLTokens,
+  GLCoordinates,
+  GLVectorTypes,
   GLObjects,
   GLState,
   GLUtils,

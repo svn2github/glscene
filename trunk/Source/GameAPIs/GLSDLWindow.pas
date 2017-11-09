@@ -376,7 +376,7 @@ begin
 	
     SDL_putenv('SDL_VIDEODRIVER=windib');
     envVal := 'SDL_WINDOWID=' + IntToStr(Integer(FWindowHandle));
-	
+
     SDL_putenv(PAnsiChar(AnsiString(envVal)));
   end;
 end;

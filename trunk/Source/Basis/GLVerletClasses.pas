@@ -14,15 +14,14 @@ unit GLVerletClasses;
 interface
 
 uses
-  GLVerletTypes, 
-  GLVectorGeometry, 
-  GLScene, 
-  GLObjects, 
+  GLCoordinates,
+  GLVerletTypes,
+  GLVectorGeometry,
+  GLScene,
+  GLObjects,
   GLVectorTypes;
 
 type
-  // TGLVerletNode
-  //
   {Specialized verlet node that can be anchored to a GLScene object. If it's
      anchored and has the property "NailedDown" set, it will remain in the same
      relative position to the GLScene object.}
@@ -35,7 +34,6 @@ type
     procedure SetLocation(const Value: TAffineVector);override;
   public
     procedure Verlet(const vpt : TVerletProgressTimes); override;
-
     property GLBaseSceneObject : TGLBaseSceneObject read FGLBaseSceneObject write SetGLBaseSceneObject;
     property RelativePosition : TAffineVector read FRelativePosition write FRelativePosition;
   end;
@@ -61,7 +59,9 @@ begin
   end;
 end;
 
+//----------------------------
 { TGLVerletNode }
+//----------------------------
 
 procedure TGLVerletNode.SetGLBaseSceneObject(
   const Value: TGLBaseSceneObject);

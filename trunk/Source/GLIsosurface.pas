@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-  Polygonising a scalar field by construction of isosurfaces  
+  Polygonising a scalar field by construction of isosurfaces
   Algorithms
   ----------
   Marching Cubes
@@ -30,7 +30,6 @@
    10/12/15 - PW - Implemented a polished mode of interpolation by Chris Rorden
    05/08/12 - PW - Adapted to use with GLScene v.1.2 and later
    12/06/04 - Wolf Blecher - Created, the first implementation
-   
 }
 
 unit GLIsosurface;
@@ -61,36 +60,28 @@ type
   private
     FIsoValue: TGLScalarValue;
     // sliceSize:Longword;
-
     PVertsX: PIntegerArray;
     PVertsY: PIntegerArray;
     PVertsZ: PIntegerArray;
-
     _Nverts: Integer;
     _Ntrigs: Integer;
     _Sverts: Integer;
     _Strigs: Integer;
-
     PVertices: PGLVertexArray;
     PTriangles: PGLTriangleArray;
-
     _i, _j, _k: Longword;
-
     _Cube: array [0 .. 7] of TGLVoxel;
     _lut_entry: Byte;
     // _case:Byte;
     // _config:Byte;
     // _subconfig:Byte;
-
     procedure Init_temps;
     procedure Init_all;
     procedure Init_space;
-
     procedure Clean_temps;
     procedure Clean_all(keepFacets: Boolean = False);
     procedure Clean_space;
     procedure Test_vertex_addiction;
-
   protected
     FOriginalMC: Boolean; // now only original MC is implemented
     FSizeX: Integer;
@@ -105,96 +96,74 @@ type
     FStepX: Single;
     FStepY: Single;
     FStepZ: Single;
-
     VoxelData: PGLVoxelData;
-
     procedure Process_cube;
     { function test_face(face:byte):Boolean;
       function test_interior(s:Byte):boolean }
-
     procedure Compute_Intersection_Points;
     procedure Add_Triangle(trig: array of Integer; N: Byte; v12: Integer = -1);
-
     function Add_x_vertex: Integer;
     function Add_y_vertex: Integer;
     function Add_z_vertex: Integer;
     function Add_c_vertex: Integer;
-
     function Get_x_grad(i, j, k: Integer): Single;
     function Get_y_grad(i, j, k: Integer): Single;
     function Get_z_grad(i, j, k: Integer): Single;
-
     function Get_x_vert(i, j, k: Integer): Integer;
     function Get_y_vert(i, j, k: Integer): Integer;
     function Get_z_vert(i, j, k: Integer): Integer;
-
     procedure Set_x_vert(a_val, i, j, k: Integer);
     procedure Set_y_vert(a_val, i, j, k: Integer);
     procedure Set_z_vert(a_val, i, j, k: Integer);
-
     function GetVoxelValue(i, j, k: Integer): TGLScalarValue;
     procedure SetVoxelValue(i, j, k: Integer; HfValue: TGLScalarValue);
-
     function GetVoxelData(i, j, k: Integer): TGLVoxel;
     function Voxel(i, j, k: Integer): PGLVoxel;
-
     function Calc_u(v1, v2: Single): Single; virtual;
   public
     ScalarField: TGLScalarField;
-
     constructor Create; overload; virtual;
     constructor Create(SizeX, SizeY, SizeZ: Integer;
       AIsoValue: TGLScalarValue = 0.0; xMin: Single = -0.5; xMax: Single = 0.5;
       yMin: Single = -0.5; yMax: Single = 0.5; zMin: Single = -0.5;
       zMax: Single = 0.5); overload; virtual;
-
     procedure ReDim(ASizeX, ASizeY, ASizeZ: Integer;
       xMin, xMax, yMin, yMax, zMin, zMax: Single); virtual;
-
     destructor Destroy; override;
-
     procedure Run; overload;
     procedure Run(IsoValue: TGLScalarValue); overload;
-
     function Internal(AValue: TGLScalarValue): Boolean; virtual;
-
     procedure FillVoxelData; overload; virtual;
     procedure FillVoxelData(AIsoValue: TGLScalarValue;
       AScalarField: TGLScalarField = nil); overload; virtual;
     procedure FillVoxelData(AIsoValue: TGLScalarValue;
       AScalarField: TGLScalarFieldInt); overload; virtual;
-
     procedure CalcVertices(Vertices: TGLVertexList; Alpha: Single = 1);
     procedure CalcMeshObject(AMeshObject: TMeshObject; Alpha: Single = 1);
-
     property IsoValue: TGLScalarValue read FIsoValue write FIsoValue;
     // TODO SetIsoValue to Run
   end;
 
-  // TIsoSurfaceExtractor
-  //
   { 3D isosurface extractor class. This class allows to calculate and exctract
-    isosurfaces from scalar field voxel models using a given isovalue.
-  }
+    isosurfaces from scalar field voxel models using a given isovalue }
   TIsoSurfaceExtractor = class(TObject)
   private
     Data: TSingle3DArray;
     Dimensions: array ['x' .. 'z'] of Integer;
-
+    { Build Index depending on whether the edges are outside or inside the surface }
     function BuildIndex(var ADatavals: array of Single; Isovalue: Single): word;
     function Interpolate(V0, V1: TAffineVector;
       var Val0, Val1, Isovalue: Single; isPolished: boolean): TVertex;
-
   public
     constructor Create(); overload;
     constructor Create(Xdim, Ydim, Zdim: Integer;
       var AData: TSingle3DArray); overload;
     destructor Destroy();
-
     procedure AssignData(Xdim, Ydim, Zdim: Integer; var AData: TSingle3DArray);
-
+    { Launch Marching Cubes }
     procedure MarchingCubes(Isovalue: Single; out Vertices: TVertexArray;
       out Triangles: TIntegerArray; isPolished: boolean);
+    { Launch Marching Tetrahedra }
     procedure MarchingTetrahedra(Isovalue: Single; out Vertices: TVertexArray;
       out Triangles: TIntegerArray; isPolished: boolean);
   end;
@@ -226,11 +195,10 @@ const
   IsoValue: 3.0), (ScalarField: SFToroidal; IsoValue: 3.0),
   (ScalarField: SFDoubleTorus; IsoValue: 0.015));
 
-  // -------------------------------------------------------------------------
-  // -------------------------------------------------------------------------
-  // -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 implementation
-
 // -------------------------------------------------------------------------
 // -------------------------------------------------------------------------
 // -------------------------------------------------------------------------
@@ -513,8 +481,8 @@ const
 );
 
 
-  // Marching Cube EdgeTable
-  //
+// Marching Cube EdgeTable
+//
 const
 
   MC_EDGETABLE: array [0 .. 11, 0 .. 1] of Integer = ((0, 1), (1, 2), (2, 3),
@@ -560,7 +528,6 @@ const
 
 // Test surface functions
 //
-
 function SFSphere(X, Y, Z: Single): TGLScalarValue;
 begin
   Result := sqr(X) + sqr(Y) + sqr(Z)
@@ -637,13 +604,11 @@ begin
     (sqr(X) - sqr(Y) - sqr(Z));
 end;
 
-  { -------------------------------------------------------------------------
-    Class IsoSurfaceExtractor
-    Purpose: Extract an Isosurface from volume dataset for given Isovalue
-    ------------------------------------------------------------------------- }
 
-  // Build Index depending on whether the edges are outside or inside the surface
-  //
+{ ----------------------------------------------------------------------
+  Class IsoSurfaceExtractor
+  Purpose: Extract an Isosurface from volume dataset for given Isovalue
+  ------------------------------------------------------------------------- }
 function TIsoSurfaceExtractor.BuildIndex(var ADatavals: array of Single;
   Isovalue: Single): word;
 var
@@ -706,8 +671,6 @@ begin
     Result := InterpolateRugged(V0, V1, Val0, Val1, Isovalue)
 end;
 
-// Launch Marching Tetrahedra
-//
 procedure TIsoSurfaceExtractor.MarchingTetrahedra(Isovalue: Single;
   out Vertices: TVertexArray; out Triangles: TIntegerArray; isPolished: boolean);
 var
@@ -831,8 +794,7 @@ begin
   Data := AData;
 end;
 
-// Launch Marching Cubes
-//
+//-----------------------------------------------------------------------
 procedure TIsoSurfaceExtractor.MarchingCubes(Isovalue: Single;
   out Vertices: TVertexArray; out Triangles: TIntegerArray; isPolished: boolean);
 var
@@ -916,9 +878,6 @@ begin
   end; // for i
 end;
 
-
-// TMarchingCube
-//
 
 function TGLMarchingCube.add_c_vertex: Integer;
 var
@@ -1005,7 +964,6 @@ var
   t, tmod3: Integer;
 
 begin
-
   for t := 0 to 3 * N - 1 do
   begin
     tmod3 := t mod 3;
@@ -1115,7 +1073,6 @@ var
   u: Single;
 begin
   test_vertex_addiction;
-
   u := calc_u(_Cube[0].Density, _Cube[4].Density);
 
   with PVertices^[_Nverts] do

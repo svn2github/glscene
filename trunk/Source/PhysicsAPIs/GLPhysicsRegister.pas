@@ -16,7 +16,8 @@ interface
 uses
   System.Classes,
   GLODEManager,
-  GLNGDManager;
+  GLNGDManager,
+  GLPhysics;
 
 procedure Register;
 
@@ -33,7 +34,7 @@ begin
   RegisterClasses([TGLODEManager, TGLODEJointList, TGLODEJoints, TGLODEElements,
                    TGLNGDManager, TGLNGDDynamic, TGLNGDStatic]);
   RegisterComponents('GLScene',[TGLODEManager,TGLODEJointList,
-                                TGLNGDManager]);
+                                TGLNGDManager, TGLPhysicsManager]);
 end;
 
 end.

@@ -35,6 +35,8 @@ uses
   System.Classes,
   System.SysUtils,
   System.Math,
+
+  OpenGLTokens,
   GLScene,
   GLVectorGeometry,
   GLGraphics,
@@ -45,9 +47,9 @@ uses
   GLRenderContextInfo,
   GLState,
   GLTextureFormat,
-  OpenGLTokens,
   XOpenGL,
-  GLVectorTypes;
+  GLVectorTypes,
+  GLCoordinates;
 
 
 type

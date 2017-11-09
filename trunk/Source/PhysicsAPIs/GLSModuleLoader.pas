@@ -38,7 +38,7 @@ unit GLSModuleLoader;
 
 interface
 
-{$I delphiode.inc}
+{$I pascaldefines.inc}
 {$WEAKPACKAGEUNIT ON}
 
 // each OS gets its own IFDEFed complete code block to make reading easier

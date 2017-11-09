@@ -10,7 +10,7 @@
   18/06/00 - EG - Creation from split of GLObjects,
                   TGLVertexList now uses TGLVertexData,
                   Rewrite of TGLMesh.CalcNormals (smaller & faster)
-             The whole history is logged in previous version of the unit
+  The whole history is logged in previous version of the unit
 }
 unit GLMesh;
 

@@ -97,8 +97,8 @@ type
 
   {  Holds a list of TGLXCollectionItem objects. 
     This class looks a lot like a polymorphic-enabled TCollection, it is
-    a much stripped down version of a proprietary TObjectList and persistence
-    classes (XClasses & XLists), if the copyrights are ever partially lifted
+    a much stripped down version of a proprietary TObjectList, 
+	if the copyrights are ever partially lifted
     on the originals, I'll base this code on them since they are way faster
     than Borland's lists and persistence mechanisms (and unlike Borland's,
     with polymorphism-support and full backward compatibility). }

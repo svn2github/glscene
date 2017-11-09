@@ -17,6 +17,7 @@ uses
   GLScene,
   GLVectorGeometry,
   GLVectorTypes,
+  GLCoordinates,
   GLContext,
   GLWin32Viewer,
   GLSpacePartition,

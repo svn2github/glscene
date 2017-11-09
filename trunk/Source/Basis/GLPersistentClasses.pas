@@ -9,9 +9,7 @@
    allowing for object-level versioning (100% backward compatibility) and full
    polymorphic persistence.
 
-   Internal Note: stripped down versions of XClasses & XLists.
-
-  History :
+   History :
      15/03/01 - EG - Creation
      The whole history is logged in previous version of the unit
 

@@ -5,7 +5,7 @@ Credits:
 Russell L. Smith is the original author of ODE
 
 ODE / Open Dynamics Engine
-Copyright (c) 2001, 2015 
+Copyright (c) 2001, 2017 
 http://ode.org/
 
 You can download the last version from

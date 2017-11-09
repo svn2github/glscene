@@ -49,6 +49,7 @@ uses
   System.SysUtils,
   System.TypInfo,
   Vcl.Graphics,
+
   GLScene,
   GLObjects,
   GLHUDObjects,
@@ -132,11 +133,9 @@ type
     //procedures
     procedure ShowHelp; virtual;
     procedure ShowShortHelp; virtual;
-
     procedure Assign(Source: TPersistent); override;
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
-
   published
     //properties
     property CommandName: string read FCommandName write SetCommandName;
@@ -166,11 +165,9 @@ type
     procedure SortCommands(const Ascending: Boolean = True);
     function CommandExists(const Command: string): Boolean;
     function GetCommandIndex(const Command: string): Integer;
-
     // General list stuff.
     function LastConsoleCommand: TGLConsoleCommand;
     function Add: TGLConsoleCommand; overload;
-
     // Standard stuff.
     constructor Create(const AOwner: TGLCustomConsole);
     destructor Destroy; override;
@@ -182,7 +179,6 @@ type
   TGLConsoleControls = class(TPersistent)
   private
     FOwner: TPersistent;
-
     FNavigatePageUp: Byte;
     FAutoCompleteCommand: Byte;
     FPreviousCommand: Byte;
@@ -221,7 +217,6 @@ type
     FHudSprite: TGLHudSprite;
     FHudText: TGLHudText;
     FSceneViewer: TGLSceneViewer;
-
     FInputLine: string;
     FStartLine: Integer;
     FCurrentCommand: Integer;
@@ -254,34 +249,27 @@ type
     function NumLines: Integer; virtual;
     procedure ShowConsoleHelp; virtual;
     procedure HandleUnknownCommand(const Command: string); virtual;
-
     {Auto Complete Command }
     procedure AutoCompleteCommand; overload; virtual;
     procedure AutoCompleteCommand(var MatchCount: Integer; var
       AdditionalCommandsMatchList: TGLConsoleMatchList; var CommandsMatchList:
       TGLConsoleMatchList); overload;
-
     {Command interpreters }
     procedure CommandIssued(var UserInputCommand: TGLUserInputCommand); virtual;
     procedure FixCommand(var UserInputCommand: TGLUserInputCommand); virtual;
     function ParseString(str, caract: string): TGLUserInputCommand; virtual;
     procedure ProcessInput; virtual;
-
     {Refreshes the Hud (clip lines outside the visible console). }
     procedure RefreshHud; virtual;
-
     // Register built-in commands (onCreate)
     procedure RegisterBuiltInCommands; virtual;
-
     // Internal command handlers:
-
     procedure ProcessInternalCommandHelp(const ConsoleCommand:
       TGLConsoleCommand; const Console: TGLCustomConsole; var Command:
       TGLUserInputCommand); virtual;
     procedure ProcessInternalCommandClearScreen(const ConsoleCommand:
       TGLConsoleCommand; const Console: TGLCustomConsole; var Command:
       TGLUserInputCommand); virtual;
-
     procedure ProcessInternalCommandConsoleHide(const ConsoleCommand:
       TGLConsoleCommand; const Console: TGLCustomConsole; var Command:
       TGLUserInputCommand); virtual;
@@ -314,10 +302,8 @@ type
     procedure ProcessInternalCommandViewerAntiAliasing(const ConsoleCommand:
       TGLConsoleCommand; const Console: TGLCustomConsole; var Command:
       TGLUserInputCommand); virtual;
-
     // Internal command help handlers:
     procedure GetHelpInternalCommandRename(Sender: TObject); virtual;
-
     procedure Notification(AComponent: TComponent; Operation: TOperation);
       override;
     procedure SetName(const Value: TComponentName); override;
@@ -326,13 +312,11 @@ type
     // User *must* call these methodsin his code.
     procedure ProcessKeyPress(const c: Char); virtual;
     procedure ProcessKeyDown(const key: word); virtual;
-
     // Navigation through code from outside
     procedure NavigateUp;
     procedure NavigateDown;
     procedure NavigatePageUp;
     procedure NavigatePageDown;
-
     {Refreshes the size of the hud to reflect changes on the viewer.
        Should be called whenever the viewer's size changes. }
     procedure RefreshHudSize; virtual;
@@ -340,10 +324,8 @@ type
     procedure AddLine(const str: string);
     {TypedCommands are cleared and current command index is reset. }
     procedure ClearTypedCommands;
-
     procedure ExecuteCommand(const Command: string);
     procedure ExecuteCommands(const Commands: TStrings);
-
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     {Properties. }
@@ -352,13 +334,10 @@ type
       False;
     property HUDSpriteColor: TColor read GetHUDSpriteColor write
       SetHUDSpriteColor stored False;
-
     // Where user enters his commands.
     property InputLine: string read FInputLine write FInputLine;
-
     // List of commands that user typed.
     property TypedCommands: TStringList read FTypedCommands;
-
     // Commands have events that are called when user types a sertauin command
     property Commands: TGLConsoleCommandList read FCommands;
     {Aditional commands can be registered to participate in command auto-completion.
@@ -368,7 +347,6 @@ type
     property Controls: TGLConsoleControls read FControls;
     {list of commands that user typed and console's responces. }
     property ColsoleLog: TStringList read FColsoleLog;
-
     {Allows to change consol's height from 0 to 1. }
     property Size: Single read FSize write SetSize;
     {Visual stuff. }
@@ -376,16 +354,13 @@ type
     property HudSprite: TGLHudSprite read FHudSprite;
     property HudText: TGLHudText read FHudText;
     property Font: TGLCustomBitmapFont read GetFont write SetFont stored False;
-
     property Options: TGLConsoleOptions read FOptions write FOptions;
-
     { Main event of the console. Happens whenever the enter key is pressed.
       First the input line is compared to all registered commands, then everything
       is parsed into a TGLUserInputCommand record and  sent to the event.
       Empty lines are  not  ignored (i.e. they also trigger events)}
     property OnCommandIssued: TGLlConsoleEvent read FOnCommandIssued write
       FOnCommandIssued;
-
     {Standard stuff }
     property Hint: string read FHint write FHint;
     property Visible default False;
@@ -407,7 +382,6 @@ type
     property Font;
     property Options;
     property OnCommandIssued;
-
     property Hint;
     property Tag;
     property ObjectsSorting;

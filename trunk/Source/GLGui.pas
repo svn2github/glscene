@@ -16,11 +16,20 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
+  System.Classes,
+  System.SysUtils,
 
-  
-  GLScene, GLBitmapFont, GLMaterial, GLCrossPlatform, OpenGLTokens, GLContext,
-  GLPersistentClasses, GLVectorGeometry, GLCoordinates, GLBaseClasses;
+  OpenGLTokens,
+  GLVectorTypes,
+  GLScene,
+  GLBitmapFont,
+  GLMaterial,
+  GLCrossPlatform,
+  GLContext,
+  GLPersistentClasses,
+  GLVectorGeometry,
+  GLCoordinates,
+  GLBaseClasses;
 
 type
 

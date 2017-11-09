@@ -24,52 +24,36 @@ uses
   GLSDLWindow,
   GLScene,
   GLCrossPlatform,
-  SDL{,
-  SDL2};
+  SDL2;
 
 type
-  // TGLSDLViewer
-  //
   {A viewer using SDL.
      Beware: only one at a time, no other viewers allowed!
      Will also close the application when the window is closed! }
   TGLSDLViewer = class(TGLNonVisualViewer)
   private
-     
     FCaption: string;
     FOnSDLEvent: TGLSDLEvent;
     FOnEventPollDone: TNotifyEvent;
     FOnResize: TNotifyEvent;
-
   protected
-    
     procedure SetCaption(const val: string);
-
     procedure DoOnOpen(sender: TObject);
     procedure DoOnClose(sender: TObject);
     procedure DoOnResize(sender: TObject);
     procedure DoOnSDLEvent(sender: TObject; const event: TSDL_Event);
     procedure DoOnEventPollDone(sender: TObject);
-
     procedure DoBufferStructuralChange(Sender: TObject); override;
     procedure PrepareGLContext; override;
-
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
     procedure Render(baseObject: TGLBaseSceneObject = nil); override;
-
     function Active: Boolean;
-
   published
-    
     property Caption: string read FCaption write SetCaption;
-
     property OnResize: TNotifyEvent read FOnResize write FOnResize;
-
-    {Fired whenever an SDL Event is polled. 
+    {Fired whenever an SDL Event is polled.
        SDL_QUITEV and SDL_VIDEORESIZE are not passed to this event handler,
        they are passed via OnClose and OnResize respectively. }
     property OnSDLEvent: TGLSDLEvent read FOnSDLEvent write FOnSDLEvent;
@@ -77,39 +61,27 @@ type
     property OnEventPollDone: TNotifyEvent read FOnEventPollDone write FOnEventPollDone;
   end;
 
-  // TGLSDLContext
-  //
-  {A context driver for OpenGL via SDL (libsdl.org). 
-     Due to limitations of SDL: 
-      you may have only one SDL window opened at any time (you cannot
-        have memory viewers)
-      closing the SDL window will terminate the application
-      }
+  {A context driver for OpenGL via SDL (libsdl.org).
+   Due to limitations of SDL:
+   you may have only one SDL window opened at any time (you cannot have memory viewers)
+   closing the SDL window will terminate the application   }
   TGLSDLContext = class(TGLScreenControlingContext)
   private
-     
     FSDLWin: TGLSDLWindow;
     FSimulatedValidity: Boolean; // Hack around SDL's post-notified destruction of context
-
   protected
-    
     procedure DoCreateContext(outputDevice: HDC); override;
     procedure DoCreateMemoryContext(outputDevice: HWND; width, height: Integer; BufferCount: integer); override;
     function DoShareLists(aContext: TGLContext): Boolean; override;
     procedure DoDestroyContext; override;
     procedure DoActivate; override;
     procedure DoDeactivate; override;
-
   public
-    
     constructor Create; override;
     destructor Destroy; override;
-
     function IsValid: Boolean; override;
     procedure SwapBuffers; override;
-
     function RenderOutputDevice: Pointer; override;
-
     property SDLWindow: TGLSDLWindow read FSDLWin;
   end;
 
@@ -132,9 +104,6 @@ end;
 // ------------------ TGLSDLViewer ------------------
 // ------------------
 
- 
-//
-
 constructor TGLSDLViewer.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
@@ -142,24 +111,15 @@ begin
   Height := 480;
 end;
 
- 
-//
-
 destructor TGLSDLViewer.Destroy;
 begin
   inherited Destroy;
 end;
 
-// DoBufferStructuralChange
-//
-
 procedure TGLSDLViewer.DoBufferStructuralChange(Sender: TObject);
 begin
   // ignore that, supporting it with SDL is not very praticable as of now...
 end;
-
-// PrepareGLContext
-//
 
 procedure TGLSDLViewer.PrepareGLContext;
 begin
@@ -179,9 +139,6 @@ begin
   end;
 end;
 
-// Render
-//
-
 procedure TGLSDLViewer.Render(baseObject: TGLBaseSceneObject = nil);
 begin
   LoadOpenGL;
@@ -192,16 +149,10 @@ begin
   Buffer.Render(baseObject);
 end;
 
-// Active
-//
-
 function TGLSDLViewer.Active: Boolean;
 begin
   Result := Assigned(Buffer.RenderingContext) and Buffer.RenderingContext.IsValid;
 end;
-
-// SetCaption
-//
 
 procedure TGLSDLViewer.SetCaption(const val: string);
 begin
@@ -215,24 +166,15 @@ begin
   end;
 end;
 
-// DoOnOpen
-//
-
 procedure TGLSDLViewer.DoOnOpen(sender: TObject);
 begin
   // nothing yet
 end;
 
-// DoOnClose
-//
-
 procedure TGLSDLViewer.DoOnClose(sender: TObject);
 begin
   // nothing yet
 end;
-
-// DoOnResize
-//
 
 procedure TGLSDLViewer.DoOnResize(sender: TObject);
 begin
@@ -246,17 +188,11 @@ begin
     FOnResize(Self);
 end;
 
-// DoOnSDLEvent
-//
-
 procedure TGLSDLViewer.DoOnSDLEvent(sender: TObject; const event: TSDL_Event);
 begin
   if Assigned(FOnSDLEvent) then
     FOnSDLEvent(sender, event);
 end;
-
-// DoOnEventPollDone
-//
 
 procedure TGLSDLViewer.DoOnEventPollDone(sender: TObject);
 begin
@@ -268,17 +204,11 @@ end;
 // ------------------ TGLSDLContext ------------------
 // ------------------
 
- 
-//
-
 constructor TGLSDLContext.Create;
 begin
   inherited Create;
   FSDLWin := TGLSDLWindow.Create(nil);
 end;
-
- 
-//
 
 destructor TGLSDLContext.Destroy;
 var
@@ -295,9 +225,6 @@ begin
   end;
   FreeAndNil(FSDLWin);
 end;
-
-// DoCreateContext
-//
 
 procedure TGLSDLContext.DoCreateContext(outputDevice: HDC);
 var
@@ -332,25 +259,16 @@ begin
   MakeGLCurrent;
 end;
 
-// DoCreateMemoryContext
-//
-
 procedure TGLSDLContext.DoCreateMemoryContext(outputDevice: HWND; width, height: Integer; BufferCount: integer);
 begin
   raise Exception.Create(ClassName + ': Memory contexts not supported');
 end;
-
-// DoShareLists
-//
 
 function TGLSDLContext.DoShareLists(aContext: TGLContext): Boolean;
 begin
   // nothing (only one context at all times... no need to share)
   Result := False;
 end;
-
-// DoDestroyContext
-//
 
 procedure TGLSDLContext.DoDestroyContext;
 begin
@@ -359,41 +277,26 @@ begin
   FSDLWin.Close;
 end;
 
-// DoActivate
-//
-
 procedure TGLSDLContext.DoActivate;
 begin
   if not FGL.IsInitialized then
     FGL.Initialize;
 end;
 
-// Deactivate
-//
-
 procedure TGLSDLContext.DoDeactivate;
 begin
   // nothing particular (only one context, always active)
 end;
-
-// IsValid
-//
 
 function TGLSDLContext.IsValid: Boolean;
 begin
   Result := (Assigned(FSDLWin) and (FSDLWin.Active)) or FSimulatedValidity;
 end;
 
-// SwapBuffers
-//
-
 procedure TGLSDLContext.SwapBuffers;
 begin
   FSDLWin.SwapBuffers;
 end;
-
-// RenderOutputDevice
-//
 
 function TGLSDLContext.RenderOutputDevice: Pointer;
 begin
@@ -405,9 +308,9 @@ end;
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 initialization
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
 
   RegisterClass(TGLSDLViewer);
   RegisterGLContextClass(TGLSDLContext);

@@ -23,7 +23,8 @@ uses
   System.SysUtils, 
   System.Types,
   
-  GLScene, 
+  GLScene,
+  GLCoordinates,
   GLHeightData, 
   GLMaterial, 
   GLVectorGeometry, 

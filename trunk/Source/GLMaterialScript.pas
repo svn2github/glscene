@@ -2,45 +2,10 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Material Script Batch loader for TGLMaterialLibrary for runtime. 
-
-   History :  
-       22/04/10 - Yar - Fixes after GLState revision
-       22/01/10 - Yar   - Added GLTextureFormat to uses
-       24/03/08 - DaStr - Moved TGLMinFilter and TGLMagFilter from GLUtils.pas
-                              to GLGraphics.pas (BugTracker ID = 1923844)
-       02/04/07 - DaStr - TGLMaterialScripter is now notified of
-                               DebugMemo's and MaterialLibrary's destruction
-                             TGLShaderItems and TGLMaterialLibraryItems now
-                               descent from TOwnedCollection
-                             Removed unused stuff from "uses" section
-                             Alligned and formated the "interface" section
-       29/01/07 - DaStr - Moved registration to GLSceneRegister.pas
-       09/06/04 - Mathx - Addition to GLScene (created by Kenneth Poulter)
-	 
-}
-{
-   Author : Kenneth Poulter (aka SpiriT aka Difacane)
-   Base : none, apart from glscene materiallibrary
-
+   Material Script Batch loader for TGLMaterialLibrary for runtime.
    History :
-   26/06/2004 - KP - started basic script idea using repeat statements
-   26/06/2004 - KP - script is now half functional and method proved to be effective
-   27/06/2004 - KP - finished script, but not dynamic, error handling needs some work
-   28/06/2004 - KP - cleaned it all up, nearly ready for realease
-   29/06/2004 - KP - Converted to a component class, ready for release
-   29/06/2004 - KP - Updated strtofloat to strtofloatdef and replaced "," with ";"
-   29/06/2004 - KP - Added MaterialLibraries and Shaders for use
-   06/07/2004 - KP - Added Append and Overwrite
-   
-   Future notes :
-   Implementation of variables
-   Implementation of constants
-
-   This source falls under the GNU GPL license, unless stated otherwise by the author(Kenneth Poulter).
-
-   Additions are welcome
-
+     09/06/04 - Mathx - Addition to GLScene (created by Kenneth Poulter)
+   The whole history is logged in previous version of the unit
 }
 
 unit GLMaterialScript;
@@ -50,12 +15,19 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.SysUtils, System.Classes,
+  System.SysUtils,
+  System.Classes,
   VCL.StdCtrls,
 
-  
-  GLTexture, GLTextureFormat, GLGraphics, GLUtils, GLColor, GLCoordinates,
-  GLMaterial, GLState;
+  GLVectorTypes,
+  GLTexture,
+  GLTextureFormat,
+  GLGraphics,
+  GLUtils,
+  GLColor,
+  GLCoordinates,
+  GLMaterial,
+  GLState;
 
 type
   TGLShaderItem = class(TCollectionItem)
@@ -64,35 +36,24 @@ type
     FName: string;
     procedure SetShader(const Value: TGLShader);
     procedure SetName(const Value: string);
-     
-
   protected
-    
     function GetDisplayName: string; override;
-
   public
-    
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
-
   published
-    
     property Shader: TGLShader read FShader write SetShader;
     property Name: string read FName write SetName;
   end;
 
   TGLShaderItems = class(TOwnedCollection)
   private
-    
     procedure SetItems(Index: Integer; const Val: TGLShaderItem);
     function GetItems(Index: Integer): TGLShaderItem;
-
   public
-    
     constructor Create(AOwner: TPersistent);
     property Items[Index: Integer]: TGLShaderItem read GetItems write SetItems; default;
-
   end;
 
   TGLMaterialLibraryItem = class(TCollectionItem)
@@ -101,32 +62,22 @@ type
     FName: string;
     procedure SetMaterialLibrary(const Value: TGLMaterialLibrary);
     procedure SetName(const Value: string);
-     
-
   protected
-    
     function GetDisplayName: string; override;
-
   public
-    
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
-
   published
-    
     property MaterialLibrary: TGLMaterialLibrary read FMaterialLibrary write SetMaterialLibrary;
     property Name: string read FName write SetName;
   end;
 
   TGLMaterialLibraryItems = class(TOwnedCollection)
   private
-    
     procedure SetItems(Index: Integer; const Val: TGLMaterialLibraryItem);
     function GetItems(Index: Integer): TGLMaterialLibraryItem;
-
   public
-    
     constructor Create(AOwner: TPersistent);
     property Items[Index: Integer]: TGLMaterialLibraryItem read GetItems write SetItems; default;
 
@@ -135,36 +86,28 @@ type
 
   TGLMaterialScripter = class(TComponent)
   private
-     
     FShaderItems: TGLShaderItems;
     FMaterialLibraryItems: TGLMaterialLibraryItems;
     FAppend: Boolean;
     FOverwrite: Boolean;
-
     FScript: TStrings;
     FMemo: TMemo;
     FMaterialLibrary: TGLMaterialLibrary;
-
     Count: Longint;
     infini: Longint;
     done: Boolean;
-
     NewMat: TGLLibMaterial;
-
     tmpcoords: TGLCoordinates;
     tmpcolor: TGLColor;
     tmpcoords4: TGLCoordinates4;
     tmpstr: string;
-
     procedure SeTGLShaderItems(const Value: TGLShaderItems);
     procedure SeTGLMaterialLibraryItems(const Value: TGLMaterialLibraryItems);
     procedure SetAppend(const Value: Boolean);
     procedure SetOverwrite(const Value: Boolean);
-
     procedure SetScript(const Value: TStrings);
     procedure SetMaterialLibrary(const Value: TGLMaterialLibrary);
     procedure SetMemo(const Value: TMemo);
-
     // error checking
     procedure CheckError;
     function ClassExists(arguement: string): Boolean;
@@ -230,28 +173,20 @@ type
     procedure XPictureNY;
     procedure XPicturePZ;
     procedure XPictureNZ;
-
   protected
-    
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
-
   public
-    
     property DebugMemo: TMemo read FMemo write SetMemo;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
     procedure CompileScript;
-
   published
-    
     property Script: TStrings read FScript write SetScript;
     property MaterialLibrary: TGLMaterialLibrary read FMaterialLibrary write SetMaterialLibrary;
     property Shaders: TGLShaderItems read FShaderItems write SeTGLShaderItems;
     property MaterialLibraries: TGLMaterialLibraryItems read FMaterialLibraryItems write SeTGLMaterialLibraryItems;
     property AppendToMaterialLibrary: Boolean read FAppend write SetAppend;
     property OverwriteToMaterialLibrary: Boolean read FOverwrite write SetOverwrite;
-
   end;
 
 //----------------------------------------------------------------------
@@ -299,7 +234,9 @@ begin
    Result := FName;
 end;
 
+//------------------------
 { TGLShaderItems }
+//------------------------
 
 constructor TGLShaderItems.Create(AOwner: TPersistent);
 begin

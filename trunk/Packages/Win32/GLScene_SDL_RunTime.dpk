@@ -35,9 +35,8 @@ requires
   GLScene_RunTime;
 
 contains
-  SDL in '..\..\Source\GameAPIs\SDL.pas',
-  SDL2 in '..\..\Source\GameAPIs\SDL2.pas',
-  GLSDLWindow in '..\..\Source\GameAPIs\GLSDLWindow.pas';
+  GLSDLWindow in '..\..\Source\GameAPIs\GLSDLWindow.pas',
+  SDL2 in '..\..\Source\GameAPIs\sdl2\SDL2.pas';
 
 end.
 
