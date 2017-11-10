@@ -12,12 +12,16 @@ uses
   GLScene,
   GLObjects,
   GLSDLContext,
-  SDL,
   GLTeapot,
   GLCrossPlatform,
   GLCoordinates,
   GLBaseClasses,
-  GLColor;
+  GLColor,
+  GLContext,
+  GLTexture,
+  GLUtils,
+
+  SDL2;
 
 type
   TDataModule1 = class(TDataModule)
@@ -29,10 +33,7 @@ type
     procedure DataModuleCreate(Sender: TObject);
     procedure GLSDLViewer1EventPollDone(Sender: TObject);
     procedure GLSDLViewer1Resize(Sender: TObject);
-  private
-     
   public
-     
     firstPassDone : Boolean;
   end;
 
@@ -43,14 +44,9 @@ implementation
 
 {$R *.dfm}
 
-uses
-  GLContext,
-  GLTexture,
-  GLUtils;
-
 procedure TDataModule1.DataModuleCreate(Sender: TObject);
 begin
-   // When using SDL, the standard VCL message queue is no longer operational,
+   // When using SDL2, the standard VCL message queue is no longer operational,
    // so you must have/make your own loop to prevent the application from
    // terminating immediately
    GLSDLViewer1.Render;

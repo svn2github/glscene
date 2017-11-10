@@ -28,8 +28,8 @@ uses
 
 type
   {A viewer using SDL.
-     Beware: only one at a time, no other viewers allowed!
-     Will also close the application when the window is closed! }
+   Beware: only one at a time, no other viewers allowed!
+   Will also close the application when the window is closed! }
   TGLSDLViewer = class(TGLNonVisualViewer)
   private
     FCaption: string;
@@ -54,8 +54,8 @@ type
     property Caption: string read FCaption write SetCaption;
     property OnResize: TNotifyEvent read FOnResize write FOnResize;
     {Fired whenever an SDL Event is polled.
-       SDL_QUITEV and SDL_VIDEORESIZE are not passed to this event handler,
-       they are passed via OnClose and OnResize respectively. }
+     SDL_QUITEV and SDL_VIDEORESIZE are not passed to this event handler,
+     they are passed via OnClose and OnResize respectively. }
     property OnSDLEvent: TGLSDLEvent read FOnSDLEvent write FOnSDLEvent;
     {Fired whenever an event polling completes with no events left to poll. }
     property OnEventPollDone: TNotifyEvent read FOnEventPollDone write FOnEventPollDone;
@@ -241,7 +241,7 @@ begin
   else
     FSDLWin.PixelDepth := vpd16bits;
 
-  sdlOpt := [voOpenGL, voHardwareAccel];
+  sdlOpt := [voOpenGL];
   if FullScreen then
     sdlOpt := sdlOpt + [voFullScreen]
   else
