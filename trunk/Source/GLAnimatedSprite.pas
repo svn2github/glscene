@@ -156,7 +156,7 @@ type
     function GetFrameRate: Single;
 
     // Implementing IGLMaterialLibrarySupported.
-    function GetMaterialLibrary: TGLAbstractMaterialLibrary; virtual;
+    function GetMaterialLibrary: TGLAbstractMaterialLibrary;
   public
     constructor Create(aOwner: TGLXCollection); override;
     destructor Destroy; override;

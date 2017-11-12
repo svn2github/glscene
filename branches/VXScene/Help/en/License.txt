@@ -1,6 +1,6 @@
-Licensing VXScene 
+License for VXScene 
 
-VXScene is distributed under Mozilla Public Licence (MPL 1.1), which means, in short, 
+VXScene is distributed under Mozilla Public Licence (MPL 2.0), which means, in short, 
 that it is free for both freeware and commercial use. 
 The code is still copyrighted (in that it isn't public domain), but you can use it in products with closed or open-source freely. 
 The only requirements are:
