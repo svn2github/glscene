@@ -3,9 +3,8 @@
 //
 {
    Pipeline transformations
-   History :  
+   History :
      13/12/13 - PW - Added GLSLog unit
-     11/05/11 - Yar - Ranamed TGLPipelineTransformation to TGLTransformation
      16/11/10 - Yar - Added NormalModelMatrix
      23/08/10 - Yar - Creation
   
@@ -64,68 +63,84 @@ type
 
   TOnMatricesPush = procedure() of object;
 
-  // TGLTransformation
-  //
   TGLTransformation = class(TObject)
   private
     FStackPos: Integer;
     FStack: array of TTransformationRec;
     FLoadMatricesEnabled: Boolean;
     FOnPush: TOnMatricesPush;
-    function GetModelMatrix: TMatrix;
-    function GetViewMatrix: TMatrix;
-    function GetProjectionMatrix: TMatrix;
-    function GetModelViewMatrix: TMatrix;
-    function GetInvModelViewMatrix: TMatrix;
-    function GetInvModelMatrix: TMatrix;
-    function GetNormalModelMatrix: TAffineMatrix;
-    function GetViewProjectionMatrix: TMatrix;
-    function GetFrustum: TFrustum;
-
-    procedure SetModelMatrix(const AMatrix: TMatrix);
-    procedure SetViewMatrix(const AMatrix: TMatrix);
-    procedure SetProjectionMatrix(const AMatrix: TMatrix);
+    function GetModelMatrix: PMatrix; inline;
+    function GetViewMatrix: PMatrix; inline;
+    function GetProjectionMatrix: PMatrix; inline;
+    function GetModelViewMatrix: PMatrix; inline;
+    function GetInvModelViewMatrix: PMatrix; inline;
+    function GetInvModelMatrix: PMatrix; inline;
+    function GetNormalModelMatrix: PAffineMatrix; inline;
+    function GetViewProjectionMatrix: PMatrix; inline;
+    function GetFrustum: TFrustum; inline;
   protected
-    procedure LoadModelViewMatrix; {$IFDEF GLS_INLINE} inline; {$ENDIF}
-    procedure LoadProjectionMatrix; {$IFDEF GLS_INLINE} inline; {$ENDIF}
-    procedure DoMatrcesLoaded; {$IFDEF GLS_INLINE} inline; {$ENDIF}
+    procedure LoadModelViewMatrix; inline;
+    procedure LoadProjectionMatrix; inline;
+    procedure DoMatrcesLoaded; inline;
     property OnPush: TOnMatricesPush read FOnPush write FOnPush;
   public
     constructor Create;
-
-    procedure IdentityAll;
-    procedure Push(AValue: PTransformationRec = nil);
+    procedure SetModelMatrix(const AMatrix: TMatrix); inline;
+    procedure SetViewMatrix(const AMatrix: TMatrix); inline;
+    procedure SetProjectionMatrix(const AMatrix: TMatrix); inline;
+    procedure IdentityAll; inline;
+    procedure Push(AValue: PTransformationRec); overload;
+    procedure Push(); overload; inline;
     procedure Pop;
     procedure ReplaceFromStack;
-    function StackTop: TTransformationRec;
-
-    property ModelMatrix: TMatrix read GetModelMatrix write SetModelMatrix;
-    property ViewMatrix: TMatrix read GetViewMatrix write SetViewMatrix;
-    property ProjectionMatrix: TMatrix read GetProjectionMatrix write SetProjectionMatrix;
-
-    property InvModelMatrix: TMatrix read GetInvModelMatrix;
-    property ModelViewMatrix: TMatrix read GetModelViewMatrix;
-    property NormalModelMatrix: TAffineMatrix read GetNormalModelMatrix;
-    property InvModelViewMatrix: TMatrix read GetInvModelViewMatrix;
-    property ViewProjectionMatrix: TMatrix read GetViewProjectionMatrix;
+    function StackTop: TTransformationRec; inline;
+    property ModelMatrix: PMatrix read GetModelMatrix;
+    property ViewMatrix: PMatrix read GetViewMatrix;
+    property ProjectionMatrix: PMatrix read GetProjectionMatrix;
+    property InvModelMatrix: PMatrix read GetInvModelMatrix;
+    property ModelViewMatrix: PMatrix read GetModelViewMatrix;
+    property NormalModelMatrix: PAffineMatrix read GetNormalModelMatrix;
+    property InvModelViewMatrix: PMatrix read GetInvModelViewMatrix;
+    property ViewProjectionMatrix: PMatrix read GetViewProjectionMatrix;
     property Frustum: TFrustum read GetFrustum;
-
     property LoadMatricesEnabled: Boolean read FLoadMatricesEnabled write FLoadMatricesEnabled;
   end;
 
-// Prevent Lazaruses issue with checksumm chenging!
-type
-  TGLCall = function(): TGLExtensionsAndEntryPoints;
-var
-  vLocalGL: TGLCall;
-
+//=====================================================================
 implementation
+//=====================================================================
+
+uses
+  GLContext;
 
 constructor TGLTransformation.Create;
 begin
   FStackPos := 0;
-  SetLength(FStack, 1);
+  SetLength(FStack, MAX_MATRIX_STACK_DEPTH);
   IdentityAll;
+end;
+
+procedure TGLTransformation.LoadProjectionMatrix;
+begin
+  GL.MatrixMode(GL_PROJECTION);
+  GL.LoadMatrixf(PGLFloat(@FStack[FStackPos].FProjectionMatrix));
+  GL.MatrixMode(GL_MODELVIEW);
+end;
+
+function TGLTransformation.GetModelViewMatrix: PMatrix;
+begin
+  if trsModelViewChanged in FStack[FStackPos].FStates then
+  begin
+    FStack[FStackPos].FModelViewMatrix :=
+      MatrixMultiply(FStack[FStackPos].FModelMatrix, FStack[FStackPos].FViewMatrix);
+    Exclude(FStack[FStackPos].FStates, trsModelViewChanged);
+  end;
+  Result := @FStack[FStackPos].FModelViewMatrix;
+end;
+
+procedure TGLTransformation.LoadModelViewMatrix;
+begin
+  GL.LoadMatrixf(PGLFloat(GetModelViewMatrix));
 end;
 
 procedure TGLTransformation.IdentityAll;
@@ -144,19 +159,34 @@ begin
   end;
 end;
 
+procedure TGLTransformation.DoMatrcesLoaded;
+begin
+  if Assigned(FOnPush) then
+    FOnPush();
+end;
+
+procedure TGLTransformation.Push;
+var
+  prevPos: Integer;
+begin
+  prevPos := FStackPos;
+  Inc(FStackPos);
+  FStack[FStackPos] := FStack[prevPos];
+end;
+
 procedure TGLTransformation.Push(AValue: PTransformationRec);
 var
   prevPos: Integer;
 begin
+  {$IFDEF GLS_LOGGING}
   if FStackPos > MAX_MATRIX_STACK_DEPTH then
   begin
     GLSLogger.LogWarningFmt('Transformation stack overflow, more then %d values',
       [MAX_MATRIX_STACK_DEPTH]);
   end;
+  {$ENDIF}
   prevPos := FStackPos;
   Inc(FStackPos);
-  if High(FStack) < FStackPos then
-    SetLength(FStack, FStackPos+1);
 
   if Assigned(AValue) then
   begin
@@ -174,11 +204,13 @@ end;
 
 procedure TGLTransformation.Pop;
 begin
+  {$IFDEF GLS_LOGGING}
   if FStackPos = 0 then
   begin
     GLSLogger.LogError('Transformation stack underflow');
     exit;
   end;
+  {$ENDIF}
 
   Dec(FStackPos);
   if LoadMatricesEnabled then
@@ -188,15 +220,19 @@ begin
   end;
 end;
 
+
+
 procedure TGLTransformation.ReplaceFromStack;
 var
   prevPos: Integer;
 begin
+  {$IFDEF GLS_LOGGING}
   if FStackPos = 0 then
   begin
     GLSLogger.LogError('Transformation stack underflow');
     exit;
   end;
+  {$ENDIF}
   prevPos := FStackPos - 1;
   FStack[FStackPos].FModelMatrix := FStack[prevPos].FModelMatrix;
   FStack[FStackPos].FViewMatrix:= FStack[prevPos].FViewMatrix;
@@ -209,37 +245,21 @@ begin
   end;
 end;
 
-procedure TGLTransformation.LoadModelViewMatrix;
-var
-  M: TMatrix;
+
+
+function TGLTransformation.GetModelMatrix: PMatrix;
 begin
-  M := GetModelViewMatrix;
-  vLocalGL.LoadMatrixf(PGLFloat(@M));
+  Result := @FStack[FStackPos].FModelMatrix;
 end;
 
-procedure TGLTransformation.LoadProjectionMatrix;
+function TGLTransformation.GetViewMatrix: PMatrix;
 begin
-  with vLocalGL do
-  begin
-    MatrixMode(GL_PROJECTION);
-    LoadMatrixf(PGLFloat(@FStack[FStackPos].FProjectionMatrix));
-    MatrixMode(GL_MODELVIEW);
-  end;
+  Result := @FStack[FStackPos].FViewMatrix;
 end;
 
-function TGLTransformation.GetModelMatrix: TMatrix;
+function TGLTransformation.GetProjectionMatrix: PMatrix;
 begin
-  Result := FStack[FStackPos].FModelMatrix;
-end;
-
-function TGLTransformation.GetViewMatrix: TMatrix;
-begin
-  Result := FStack[FStackPos].FViewMatrix;
-end;
-
-function TGLTransformation.GetProjectionMatrix: TMatrix;
-begin
-  Result := FStack[FStackPos].FProjectionMatrix;
+  Result := @FStack[FStackPos].FProjectionMatrix;
 end;
 
 procedure TGLTransformation.SetModelMatrix(const AMatrix: TMatrix);
@@ -274,39 +294,29 @@ begin
     LoadProjectionMatrix;
 end;
 
-function TGLTransformation.GetModelViewMatrix: TMatrix;
-begin
-  if trsModelViewChanged in FStack[FStackPos].FStates then
-  begin
-    FStack[FStackPos].FModelViewMatrix :=
-      MatrixMultiply(FStack[FStackPos].FModelMatrix, FStack[FStackPos].FViewMatrix);
-    Exclude(FStack[FStackPos].FStates, trsModelViewChanged);
-  end;
-  Result := FStack[FStackPos].FModelViewMatrix;
-end;
 
-function TGLTransformation.GetInvModelViewMatrix: TMatrix;
+function TGLTransformation.GetInvModelViewMatrix: PMatrix;
 begin
   if trsInvModelViewChanged in FStack[FStackPos].FStates then
   begin
-    FStack[FStackPos].FInvModelViewMatrix := GetModelViewMatrix;
+    FStack[FStackPos].FInvModelViewMatrix := GetModelViewMatrix^;
     InvertMatrix(FStack[FStackPos].FInvModelViewMatrix);
     Exclude(FStack[FStackPos].FStates, trsInvModelViewChanged);
   end;
-  Result := FStack[FStackPos].FInvModelViewMatrix;
+  Result := @FStack[FStackPos].FInvModelViewMatrix;
 end;
 
-function TGLTransformation.GetInvModelMatrix: TMatrix;
+function TGLTransformation.GetInvModelMatrix: PMatrix;
 begin
   if trsInvModelChanged in FStack[FStackPos].FStates then
   begin
     FStack[FStackPos].FInvModelMatrix := MatrixInvert(FStack[FStackPos].FModelMatrix);
     Exclude(FStack[FStackPos].FStates, trsInvModelChanged);
   end;
-  Result := FStack[FStackPos].FInvModelMatrix;
+  Result := @FStack[FStackPos].FInvModelMatrix;
 end;
 
-function TGLTransformation.GetNormalModelMatrix: TAffineMatrix;
+function TGLTransformation.GetNormalModelMatrix: PAffineMatrix;
 var
   M: TMatrix;
 begin
@@ -317,10 +327,10 @@ begin
     SetMatrix(FStack[FStackPos].FNormalModelMatrix, M);
     Exclude(FStack[FStackPos].FStates, trsNormalModelChanged);
   end;
-  Result := FStack[FStackPos].FNormalModelMatrix;
+  Result := @FStack[FStackPos].FNormalModelMatrix;
 end;
 
-function TGLTransformation.GetViewProjectionMatrix: TMatrix;
+function TGLTransformation.GetViewProjectionMatrix: PMatrix;
 begin
   if trsViewProjChanged in FStack[FStackPos].FStates then
   begin
@@ -328,20 +338,14 @@ begin
       MatrixMultiply(FStack[FStackPos].FViewMatrix, FStack[FStackPos].FProjectionMatrix);
     Exclude(FStack[FStackPos].FStates, trsViewProjChanged);
   end;
-  Result := FStack[FStackPos].FViewProjectionMatrix;
-end;
-
-procedure TGLTransformation.DoMatrcesLoaded;
-begin
-  if Assigned(FOnPush) then
-    FOnPush();
+  Result := @FStack[FStackPos].FViewProjectionMatrix;
 end;
 
 function TGLTransformation.GetFrustum: TFrustum;
 begin
   if trsFrustum in FStack[FStackPos].FStates then
   begin
-    FStack[FStackPos].FFrustum := ExtractFrustumFromModelViewProjection(GetViewProjectionMatrix);
+    FStack[FStackPos].FFrustum := ExtractFrustumFromModelViewProjection(GetViewProjectionMatrix^);
     Exclude(FStack[FStackPos].FStates, trsFrustum);
   end;
   Result := FStack[FStackPos].FFrustum;

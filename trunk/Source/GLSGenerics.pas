@@ -27,8 +27,6 @@ const
 
 type
 
-  // GList
-  //
 {$IFDEF GLS_GENERIC_PREFIX}
   generic
 {$ENDIF}
@@ -56,7 +54,6 @@ type
     procedure Notify(const Item: T; Action: TListNotification); virtual;
   public
     destructor Destroy; override;
-
     procedure Clear;
     function Add(AItem: T): Integer;
     procedure Delete(Index: Integer);
@@ -75,8 +72,6 @@ type
     property OnChange: TNotifyEvent read FOnChange write FOnChange;
   end;
 
-  // GThreadList
-  //
 {$IFDEF GLS_GENERIC_PREFIX}
   generic
 {$ENDIF}
@@ -98,8 +93,6 @@ type
     procedure UnlockList;
   end;
 
-  // GOrderedList
-  //
 {$IFDEF GLS_GENERIC_PREFIX}
   generic
 {$ENDIF}
@@ -125,8 +118,6 @@ type
     function Peek: T;
   end;
 
-  // GStack
-  //
   {$IFDEF GLS_GENERIC_PREFIX}
     generic
   {$ENDIF}
@@ -135,8 +126,6 @@ type
     procedure PushItem(AItem: T); override;
   end;
 
-  // GQueue
-  //
   {$IFDEF GLS_GENERIC_PREFIX}
   generic
   {$ENDIF}
@@ -147,7 +136,6 @@ type
 
 implementation
 
-{$REGION 'GList'}
 
 destructor GList{$IFNDEF GLS_GENERIC_PREFIX}<T>{$ENDIF}.Destroy;
 begin
@@ -319,9 +307,9 @@ begin
       Delta := 4;
   SetCapacity(FCapacity + Delta);
 end;
-{$ENDREGION}
 
-{$REGION 'GThreadList'}
+
+
 constructor GThreadList{$IFNDEF GLS_GENERIC_PREFIX}<T>{$ENDIF}.Create;
 begin
   inherited Create;
@@ -381,9 +369,9 @@ procedure GThreadList{$IFNDEF GLS_GENERIC_PREFIX}<T>{$ENDIF}.UnlockList;
 begin
   FLock.Leave;
 end;
-{$ENDREGION 'GThreadList'}
 
-{$REGION 'GOrderedList'}
+
+
 
 constructor GOrderedList{$IFNDEF GLS_GENERIC_PREFIX}<T>{$ENDIF}.Create;
 begin
@@ -432,21 +420,21 @@ begin
   Result := List.Count;
 end;
 
-{$ENDREGION}
 
 
-{$REGION 'GStack'}
+
+
 procedure GStack{$IFNDEF GLS_GENERIC_PREFIX}<T>{$ENDIF}.PushItem(AItem: T);
 begin
   List.Add(AItem);
 end;
-{$ENDREGION 'GStack'}
 
-{$REGION 'GQueue'}
+
+
 procedure GQueue{$IFNDEF GLS_GENERIC_PREFIX}<T>{$ENDIF}.PushItem(AItem: T);
 begin
   List.Insert(0, AItem);
 end;
-{$ENDREGION 'GQueue'}
+
 
 end.

@@ -39,8 +39,6 @@ uses
 
 type
 
-  // TGLWindowsBitmapFont
-  //
   {A bitmap font automatically built from a TFont. 
      It works like a TGLBitmapfont, you set ranges and which chars are assigned
      to which indexes, however here you also set the Font property to any TFont
@@ -52,39 +50,28 @@ type
      property is ignored and replaced appropriately. }
   TGLWindowsBitmapFont = class(TGLCustomBitmapFont)
   private
-     
     FFont: TFont;
     procedure SetList(const AList : TIntegerList);
   protected
-    
     procedure SetFont(value: TFont);
     procedure LoadWindowsFont; virtual;
     function  StoreRanges: Boolean;
-
     procedure PrepareImage(var ARci: TGLRenderContextInfo); override;
     function  TextureFormat: Integer; override;
     procedure StreamlineRanges;
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
     procedure NotifyChange(Sender: TObject); override;
-
     function FontTextureWidth: Integer;
     function FontTextureHeight: Integer;
-
     procedure EnsureString(const s : String); overload;
     procedure EnsureChars(const AStart, AEnd: widechar);
-
     property Glyphs;
-
   published
-    
-      {The font used to prepare the texture. 
-         Note: the font color is ignored. }
+   {The font used to prepare the texture. 
+     Note: the font color is ignored. }
     property Font: TFont read FFont write SetFont;
-
     property HSpace;
     property VSpace;
     property MagFilter;
@@ -92,12 +79,8 @@ type
     property Ranges stored StoreRanges;
   end;
 
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 const
@@ -110,8 +93,6 @@ var
 // ------------------ TGLWindowsBitmapFont ------------------
 // ------------------
 
- 
-//
 
 constructor TGLWindowsBitmapFont.Create(AOwner: TComponent);
 begin
@@ -124,8 +105,6 @@ begin
   EnsureChars(' ', cDefaultLast);
 end;
 
- 
-//
 
 destructor TGLWindowsBitmapFont.Destroy;
 begin
@@ -134,32 +113,23 @@ begin
   inherited;
 end;
 
-// FontTextureWidth
-//
 
 function TGLWindowsBitmapFont.FontTextureWidth: Integer;
 begin
   Result := Glyphs.Width;
 end;
 
-// FontTextureHeight
-//
-
 function TGLWindowsBitmapFont.FontTextureHeight: Integer;
 begin
   Result := Glyphs.Height;
 end;
 
-// SetFont
-//
 
 procedure TGLWindowsBitmapFont.SetFont(value: TFont);
 begin
   FFont.Assign(value);
 end;
 
-// NotifyChange
-//
 
 procedure TGLWindowsBitmapFont.NotifyChange(Sender: TObject);
 begin
@@ -169,8 +139,6 @@ begin
   inherited;
 end;
 
-// LoadWindowsFont
-//
 
 procedure TGLWindowsBitmapFont.LoadWindowsFont;
 
@@ -320,8 +288,6 @@ begin
   Glyphs.OnChange := OnGlyphsChanged;
 end;
 
-// StoreRanges
-//
 
 function TGLWindowsBitmapFont.StoreRanges: Boolean;
 begin
@@ -405,8 +371,6 @@ begin
   ACharList.Free;
 end;
 
-// PrepareImage
-//
 
 procedure TGLWindowsBitmapFont.PrepareImage(var ARci: TGLRenderContextInfo);
 begin
@@ -414,18 +378,15 @@ begin
   inherited PrepareImage(ARci);
 end;
 
-// TextureFormat
-//
 
 function TGLWindowsBitmapFont.TextureFormat: Integer;
 begin
   Result := GL_ALPHA;
 end;
 
+// ------------------------------------------------------------------
 initialization
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
   Win32PlatformIsUnicode := (Win32Platform = VER_PLATFORM_WIN32_NT);
 
    // class registrations

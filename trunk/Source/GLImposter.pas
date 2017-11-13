@@ -26,6 +26,7 @@ uses
   GLVectorTypes,
   GLVectorGeometry,
   GLPersistentClasses,
+  GLPipelineTransformation,
   GLCrossPlatform,
   GLGraphics,
   GLColor,
@@ -472,7 +473,7 @@ begin
     else
       GL.TexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 
-    mat := rci.PipelineTransformation.ModelViewMatrix;
+    mat := rci.PipelineTransformation.ModelViewMatrix^;
     FVx.X := mat.X.X;
     FVx.Y := mat.Y.X;
     FVx.Z := mat.Z.X;
@@ -1166,8 +1167,8 @@ begin
   fx := radius * rci.GLStates.ViewPort.Z / SampleSize;
   fy := radius * rci.GLStates.ViewPort.W / SampleSize;
   yOffset := cReferenceToPos[ImposterReference] * radius;
-  rci.PipelineTransformation.ProjectionMatrix :=
-    CreateOrthoMatrix(-fx, fx, yOffset - fy, yOffset + fy, radius * 0.5, radius * 5);
+  rci.PipelineTransformation.SetProjectionMatrix(
+    CreateOrthoMatrix(-fx, fx, yOffset - fy, yOffset + fy, radius * 0.5, radius * 5));
   xSrc := (rci.GLStates.ViewPort.Z - SampleSize) div 2;
   ySrc := (rci.GLStates.ViewPort.W - SampleSize) div 2;
 
@@ -1202,8 +1203,8 @@ begin
       LM := CreateLookAtMatrix(cameraOffset, NullHmgVector, YHmgVector);
       if Lighting = siblStaticLighting then
         (rci.scene as TGLScene).SetupLights(rci.GLStates.MaxLights);
-      rci.PipelineTransformation.ViewMatrix := MatrixMultiply(
-        CreateTranslationMatrix(FBuildOffset.AsVector), LM);
+      rci.PipelineTransformation.SetViewMatrix(MatrixMultiply(
+        CreateTranslationMatrix(FBuildOffset.AsVector), LM));
       impostoredObject.Render(rci);
       GL.CheckError;
 

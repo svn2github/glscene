@@ -16,9 +16,12 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
-    
+  System.Classes,
+  System.SysUtils,
+
   GLScene,
+  GLXCollection,
+  GLPersistentClasses,
   GLVectorGeometry,
   OpenGLTokens,
   GLContext,
@@ -142,8 +145,6 @@ implementation
 //----------------- TGLParticles -----------------------------------------------------
 
  
-//
-
 constructor TGLParticles.Create(AOwner: TComponent);
 begin
   inherited;
@@ -155,8 +156,6 @@ begin
 end;
 
  
-//
-
 destructor TGLParticles.Destroy;
 begin
   FEdgeColor.Free;
@@ -164,9 +163,6 @@ begin
   particlePool.Free;
   inherited;
 end;
-
-// Assign
-//
 
 procedure TGLParticles.Assign(Source: TPersistent);
 begin
@@ -184,9 +180,6 @@ begin
   end;
   inherited Assign(Source);
 end;
-
-// ClearParticlePool
-//
 
 procedure TGLParticles.ClearParticlePool;
 var
@@ -208,8 +201,6 @@ begin
   particlePool.Clear;
 end;
 
-// BuildList
-//
 
 procedure TGLParticles.BuildList(var ARci: TGLRenderContextInfo);
 var
@@ -255,8 +246,6 @@ begin
   GL.End_;
 end;
 
-// DoRender
-//
 
 procedure TGLParticles.DoRender(var ARci: TGLRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);
@@ -281,8 +270,6 @@ begin
     FOnAfterRenderParticles(Self, ARci);
 end;
 
-// DoProgress
-//
 
 procedure TGLParticles.DoProgress(const progressTime: TProgressTimes);
 var
@@ -296,8 +283,6 @@ begin
       OnProgress(Self, deltaTime, newTime);
 end;
 
-// SetCubeSize
-//
 
 procedure TGLParticles.SetCubeSize(const val: TGLFloat);
 begin
@@ -308,8 +293,6 @@ begin
   end;
 end;
 
-// SetEdgeColor
-//
 
 procedure TGLParticles.SetEdgeColor(const val: TGLColor);
 begin
@@ -320,8 +303,6 @@ begin
   end;
 end;
 
-// SetVisibleAtRunTime
-//
 
 procedure TGLParticles.SetVisibleAtRunTime(const val: Boolean);
 begin
@@ -332,8 +313,6 @@ begin
   end;
 end;
 
-// SetParticlePoolSize
-//
 
 procedure TGLParticles.SetParticlePoolSize(val: Integer);
 var
@@ -356,8 +335,6 @@ begin
   end;
 end;
 
-// CreateParticle
-//
 
 function TGLParticles.CreateParticle: TGLBaseSceneObject;
 begin
@@ -384,8 +361,6 @@ begin
     Result := nil;
 end;
 
-// KillParticle
-//
 
 procedure TGLParticles.KillParticle(aParticle: TGLBaseSceneObject);
 begin
@@ -405,8 +380,6 @@ begin
   end;
 end;
 
-// KillParticles
-//
 
 procedure TGLParticles.KillParticles;
 begin
@@ -418,9 +391,9 @@ end;
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 initialization
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
 
   RegisterClass(TGLParticles);
 

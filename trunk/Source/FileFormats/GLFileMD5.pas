@@ -17,9 +17,16 @@ unit GLFileMD5;
 interface
 
 uses
-  System.Classes, System.SysUtils, 
-  GLVectorFileObjects, GLUtils, GLApplicationFileIO,
-  GLVectorTypes, GLVectorGeometry, GLVectorLists;
+  System.Classes,
+  System.SysUtils,
+
+  GLVectorFileObjects,
+  GLPersistentClasses,
+  GLUtils,
+  GLApplicationFileIO,
+  GLVectorTypes,
+  GLVectorGeometry,
+  GLVectorLists;
 
 type
 

@@ -50,12 +50,23 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils, System.Types,
+  System.Classes, 
+  System.SysUtils, 
+  System.Types,
    
-  GLScene, GLXCollection, GLVectorGeometry, GLVectorLists, GLVectorFileObjects,
-  GLCrossPlatform, GLDCEMisc, GLEllipseCollision,
-  GLTerrainRenderer, GLCoordinates, GLBaseClasses,
-  GLManager, GLVectorTypes;
+  GLScene, 
+  GLXCollection, 
+  GLVectorGeometry, 
+  GLVectorLists, 
+  GLVectorFileObjects,
+  GLCrossPlatform, 
+  GLDCEMisc, 
+  GLEllipseCollision,
+  GLTerrainRenderer, 
+  GLCoordinates, 
+  GLBaseClasses,
+  GLManager, 
+  GLVectorTypes;
 
 type
   {Only csEllipsoid can have dynamic behaviour}
@@ -262,7 +273,7 @@ function GetOrCreateDCEDynamic(obj : TGLBaseSceneObject) : TGLDCEDynamic; overlo
 
 implementation
 
-function RotateVectorByObject(Obj: TGLBaseSceneObject; v: TAffineVector): TAffineVector;
+function RotateVectorByObject(Obj: TGLBaseSceneObject; const v: TAffineVector): TAffineVector;
 var v2: TVector;
 begin
   SetVector(v2,v);
@@ -283,8 +294,6 @@ begin
   RegisterManager(Self);
 end;
 
- 
-//
 destructor TGLDCEManager.Destroy;
 begin
 	DeRegisterAllStatics;
@@ -432,9 +441,9 @@ begin
     //Check if it is static or dynamic
     if oi < 0 then
     begin
-      tFriction := TGLDCEDynamic(FDynamics[abs(oi) - 1]).Friction;
-      tBounceFactor := TGLDCEDynamic(FDynamics[abs(oi) - 1]).BounceFactor;
-      tObject := TGLDCEDynamic(FDynamics[abs(oi) - 1]).OwnerBaseSceneObject;
+      tFriction := TGLDCEDynamic(FDynamics[System.abs(oi) - 1]).Friction;
+      tBounceFactor := TGLDCEDynamic(FDynamics[System.abs(oi) - 1]).BounceFactor;
+      tObject := TGLDCEDynamic(FDynamics[System.abs(oi) - 1]).OwnerBaseSceneObject;
     end else
     begin
       tFriction := TGLDCEStatic(FStatics[oi]).Friction;

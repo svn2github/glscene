@@ -32,8 +32,6 @@ type
   // window-to-screen fitting
   TWindowFitting = (wfDefault, wfFitWindowToScreen, wfFitScreenToWindow);
 
-  // TGLDisplayOptions
-  //
   TGLDisplayOptions = class(TPersistent)
   private
     FFullScreen: Boolean;
@@ -64,15 +62,14 @@ type
   PVideoMode = ^TVideoMode;
 
 function GetIndexFromResolution(XRes, YRes, BPP: Integer): TResolution;
-
 procedure ReadVideoModes;
 
-// : Changes to the video mode given by 'Index'
+// Changes to the video mode given by 'Index'
 function SetFullscreenMode(modeIndex: TResolution;
   displayFrequency: Integer = 0): Boolean;
 
 procedure ReadScreenImage(Dest: HDC; DestLeft, DestTop: Integer;
-  SrcRect: TRectangle);
+  const SrcRect: TRectangle);
 procedure RestoreDefaultMode;
 
 procedure GLShowCursor(AShow: Boolean);
@@ -115,8 +112,6 @@ const
     (Width: 512; Height: 384; ColorDepth: 16), (Width: 512; Height: 384;
     ColorDepth: 24), (Width: 512; Height: 384; ColorDepth: 32));
 
-  // Assign
-  //
 procedure TGLDisplayOptions.Assign(Source: TPersistent);
 begin
   if Source is TGLDisplayOptions then
@@ -130,8 +125,6 @@ begin
     inherited Assign(Source);
 end;
 
-// GetIndexFromResolution
-//
 function GetIndexFromResolution(XRes, YRes, BPP: Integer): TResolution;
 
 // Determines the index of a screen resolution nearest to the
@@ -167,8 +160,6 @@ begin
     end;
 end;
 
-// TryToAddToList
-//
 procedure TryToAddToList(deviceMode: TDevMode);
 // Adds a video mode to the list if it's not a duplicate and can actually be set.
 var
@@ -210,8 +201,6 @@ begin
   Inc(vNumberVideoModes);
 end;
 
-// ReadVideoModes
-//
 procedure ReadVideoModes;
 var
   I, ModeNumber: Integer;
@@ -276,8 +265,6 @@ begin
   end;
 end;
 
-// SetFullscreenMode
-//
 function SetFullscreenMode(modeIndex: TResolution;
   displayFrequency: Integer = 0): Boolean;
 var
@@ -306,10 +293,8 @@ begin
     vCurrentVideoMode := modeIndex;
 end;
 
-// ReadScreenImage
-//
 procedure ReadScreenImage(Dest: HDC; DestLeft, DestTop: Integer;
-  SrcRect: TRectangle);
+  const SrcRect: TRectangle);
 var
   screenDC: HDC;
 begin
@@ -323,8 +308,6 @@ begin
   end;
 end;
 
-// RestoreDefaultMode
-//
 procedure RestoreDefaultMode;
 var
   t: PDevMode;
@@ -362,7 +345,6 @@ end;
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 initialization
-
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------

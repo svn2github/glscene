@@ -23,6 +23,8 @@ uses
   
   OpenGLTokens,
   GLScene,
+  GLPersistentClasses,
+  GLPipelineTransformation,
   GLVectorGeometry,
   GLObjects,
   GLContext,
@@ -690,8 +692,8 @@ begin
   begin
     stateCache := GLStates;
     PipelineTransformation.Push;
-    PipelineTransformation.ProjectionMatrix := CreateOrthoMatrix(0, activeBuffer.Width, 0, activeBuffer.Height, -1, 1);
-    PipelineTransformation.ViewMatrix := IdentityHmgMatrix;
+    PipelineTransformation.SetProjectionMatrix(CreateOrthoMatrix(0, activeBuffer.Width, 0, activeBuffer.Height, -1, 1));
+    PipelineTransformation.SetViewMatrix(IdentityHmgMatrix);
   end;
   SetupRenderingOptions(stateCache);
 

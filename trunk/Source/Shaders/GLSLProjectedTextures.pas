@@ -7,7 +7,6 @@
    History :
      22/03/07 - fig -    Initial version.
      The whole history is logged in previous version of the unit.
-    
 }
 
 {; Known bugs/limitations
@@ -30,19 +29,27 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
-   
-  GLCrossPlatform, GLScene, GLTexture, GLVectorGeometry, GLContext,
-  GLColor, GLRenderContextInfo, GLTextureFormat, GLVectorTypes;
+  System.Classes,
+  System.SysUtils,
+
+  GLPipelineTransformation,
+  GLCrossPlatform,
+  GLScene,
+  GLPersistentClasses,
+  GLTexture,
+  GLVectorGeometry,
+  GLContext,
+  GLColor,
+  GLRenderContextInfo,
+  GLTextureFormat,
+  GLVectorTypes;
 
 type
   TGLSLProjectedTexturesStyle = (ptsLight, ptsShadow);
 
   TGLSLProjectedTextures = class;
 
-  // TGLSLTextureEmmiter
-  //
-  {A projected texture emmiter. 
+  {A projected texture emmiter.
      Can be places anywhere in the scene.
      Used to generate a modelview and texture matrix for the shader}
   TGLSLTextureEmitter = class(TGLBaseSceneObject)
@@ -80,7 +87,6 @@ type
     property UseAttenuation: boolean read FUseAttenuation write SetUseAttenuation;
     property UseQuadraticAttenuation: Boolean read FUseQuadraticAttenuation write SetUseQuadraticAttenuation;
     property AllowReverseProjection: boolean read FAllowReverseProjection write SetAllowReverseProjection;
-
     property ObjectsSorting;
     property VisibilityCulling;
     property Direction;
@@ -97,8 +103,6 @@ type
     property Effects;
   end;
 
-  // TGLSLTextureEmitterItem
-  //
   {Specifies an item on the TGLSLTextureEmitters collection. }
   TGLSLTextureEmitterItem = class(TCollectionItem)
   private
@@ -114,8 +118,6 @@ type
     property Emitter: TGLSLTextureEmitter read FEmitter write SetEmitter;
   end;
 
-  // TGLSLTextureEmitters
-  //
   {Collection of TGLSLTextureEmitter. }
   TGLSLTextureEmitters = class(TCollection)
   private
@@ -129,9 +131,7 @@ type
     property Items[index: Integer]: TGLSLTextureEmitterItem read GetItems; default;
   end;
 
-  // TGLSLProjectedTextures
-  //
-  {Projected Texture Manager. 
+  {Projected Texture Manager.
      Specifies active Emitters and receivers (children of this object).
      At the moment, only 1 texture can be used.}
   TGLSLProjectedTextures = class(TGLSceneObject)
@@ -167,7 +167,6 @@ implementation
 // ------------------
 
  
-//
 
 constructor TGLSLTextureEmitter.Create(aOwner: TComponent);
 begin
@@ -188,8 +187,6 @@ begin
   FColor.free;
   inherited;
 end;
-// SetupTexMatrix
-//
 
 procedure TGLSLTextureEmitter.DoRender(var rci: TGLRenderContextInfo;
   renderSelf, renderChildren: boolean);
@@ -209,7 +206,7 @@ begin
   TexMatrix := MatrixMultiply(
     CreatePerspectiveMatrix(FFOV, FAspect, 0.1, 1), cBaseMat);
   TexMatrix := MatrixMultiply(
-    CurrentGLContext.PipelineTransformation.InvModelViewMatrix, TexMatrix);
+    CurrentGLContext.PipelineTransformation.InvModelViewMatrix^, TexMatrix);
 end;
 
 procedure TGLSLTextureEmitter.SetAllowReverseProjection(val: boolean);
@@ -244,16 +241,12 @@ end;
 // ------------------ TGLSLTextureEmitterItem ------------------
 // ------------------
 
- 
-//
 
 constructor TGLSLTextureEmitterItem.Create(Collection: TCollection);
 begin
   inherited Create(Collection);
 end;
 
-// Assign
-//
 
 procedure TGLSLTextureEmitterItem.Assign(Source: TPersistent);
 begin
@@ -265,8 +258,6 @@ begin
   inherited;
 end;
 
-// SetCaster
-//
 
 procedure TGLSLTextureEmitterItem.SetEmitter(const val: TGLSLTextureEmitter);
 begin
@@ -277,8 +268,6 @@ begin
   end;
 end;
 
-// RemoveNotification
-//
 
 procedure TGLSLTextureEmitterItem.RemoveNotification(aComponent: TComponent);
 begin
@@ -286,8 +275,6 @@ begin
     FEmitter := nil;
 end;
 
-// GetDisplayName
-//
 
 function TGLSLTextureEmitterItem.GetDisplayName: string;
 begin
@@ -303,24 +290,18 @@ end;
 // ------------------ TGLSLTextureEmitters ------------------
 // ------------------
 
-// GetOwner
-//
 
 function TGLSLTextureEmitters.GetOwner: TPersistent;
 begin
   Result := FOwner;
 end;
 
-// GetItems
-//
 
 function TGLSLTextureEmitters.GetItems(index: Integer): TGLSLTextureEmitterItem;
 begin
   Result := TGLSLTextureEmitterItem(inherited Items[index]);
 end;
 
-// RemoveNotification
-//
 
 procedure TGLSLTextureEmitters.RemoveNotification(aComponent: TComponent);
 var
@@ -333,8 +314,6 @@ begin
   end;
 end;
 
-// AddEmitter
-//
 
 procedure TGLSLTextureEmitters.AddEmitter(texEmitter: TGLSLTextureEmitter);
 var
@@ -350,8 +329,6 @@ end;
 // ------------------ TGLSLProjectedTextures ------------------
 // ------------------
 
- 
-//
 
 constructor TGLSLProjectedTextures.Create(AOwner: TComponent);
 begin
@@ -364,8 +341,6 @@ begin
   ambient.SetColor(0.5, 0.5, 0.5, 0.5);
 end;
 
- 
-//
 
 destructor TGLSLProjectedTextures.Destroy;
 begin
@@ -538,8 +513,6 @@ begin
     raise Exception.Create(Shader.InfoLog);
 end;
 
-// DoRender
-//
 
 procedure TGLSLProjectedTextures.DoRender(var rci: TGLRenderContextInfo;
   renderSelf, renderChildren: boolean);

@@ -68,7 +68,9 @@ interface
 uses
   System.Classes,
   System.SysUtils,
+
   GLScene,
+  GLPersistentClasses,
   GLColor,
   GLObjects,
   GLVectorGeometry,

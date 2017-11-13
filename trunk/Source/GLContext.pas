@@ -35,6 +35,7 @@ uses
   GLStrings,
   GLVectorTypes,
   GLState,
+  XOpenGL,
   GLPipelineTransformation,
   GLTextureFormat;
 
@@ -64,17 +65,7 @@ type
     GThreadList < TServiceContextTask > ;
 {$ENDIF GLS_SERVICE_CONTEXT}
 
-  TGLContext = class;
   TGLContextManager = class;
-
-  TAbstractMultitextureCoordinator = class(TObject)
-  protected
-    FOwner: TGLContext;
-  public
-    constructor Create(AOwner: TGLContext); virtual;
-  end;
-
-  TAbstractMultitextureCoordinatorClass = class of TAbstractMultitextureCoordinator;
 
   TGLContextAcceleration = (chaUnknown, chaHardware, chaSoftware);
 
@@ -95,7 +86,6 @@ type
     subclasses must be used. All rendering context share the same lists. }
   TGLContext = class
   private
-     
     FColorBits, FAlphaBits: Integer;
     FDepthBits: Integer;
     FStencilBits: Integer;
@@ -108,22 +98,22 @@ type
     FActivationCount: Integer;
     FOwnedHandlesCount: Integer;
     FIsPraparationNeed: Boolean;
-    procedure SetColorBits(const aColorBits: Integer);
-    procedure SetAlphaBits(const aAlphaBits: Integer);
-    procedure SetDepthBits(const val: Integer);
-    procedure SetStencilBits(const aStencilBits: Integer);
-    procedure SetAccumBits(const aAccumBits: Integer);
-    procedure SetAuxBuffers(const aAuxBuffers: Integer);
-    procedure SetOptions(const aOptions: TGLRCOptions);
-    procedure SetAntiAliasing(const val: TGLAntiAliasing);
-    procedure SetAcceleration(const val: TGLContextAcceleration);
-    function GetActive: Boolean;
-    procedure SetActive(const aActive: Boolean);
-    procedure SetLayer(const Value: TGLContextLayer);
+    procedure SetColorBits(const aColorBits: Integer); inline;
+    procedure SetAlphaBits(const aAlphaBits: Integer); inline;
+    procedure SetDepthBits(const val: Integer); inline;
+    procedure SetStencilBits(const aStencilBits: Integer); inline;
+    procedure SetAccumBits(const aAccumBits: Integer); inline;
+    procedure SetAuxBuffers(const aAuxBuffers: Integer); inline;
+    procedure SetOptions(const aOptions: TGLRCOptions); inline;
+    procedure SetAntiAliasing(const val: TGLAntiAliasing); inline;
+    procedure SetAcceleration(const val: TGLContextAcceleration); inline;
+    function GetActive: Boolean; inline;
+    procedure SetActive(const aActive: Boolean); inline;
+    procedure SetLayer(const Value: TGLContextLayer); inline;
   protected
     
     FGL: TGLExtensionsAndEntryPoints;
-    FXGL: TAbstractMultitextureCoordinator;
+    FXGL: TGLMultitextureCoordinator;
     FGLStates: TGLStateCache;
     FTransformation: TGLTransformation;
     FAcceleration: TGLContextAcceleration;
@@ -145,7 +135,6 @@ type
     procedure DoDeactivate; virtual; abstract;
     class function ServiceContext: TGLContext;
     procedure MakeGLCurrent;
-    function GetXGL: TAbstractMultitextureCoordinator;
   public
     
     constructor Create; virtual;
@@ -229,7 +218,7 @@ type
     function RenderOutputDevice: Pointer; virtual; abstract;
     {Access to OpenGL command and extension. }
     property GL: TGLExtensionsAndEntryPoints read FGL;
-    property MultitextureCoordinator: TAbstractMultitextureCoordinator read GetXGL;
+    property MultitextureCoordinator: TGLMultitextureCoordinator read FXGL;
     property IsPraparationNeed: Boolean read FIsPraparationNeed;
   end;
 
@@ -242,16 +231,12 @@ type
      but most of the time they will be accessed through a specific viewer
      class/subclass. }
   TGLScreenControlingContext = class(TGLContext)
-  private
-     
+  strict private
     FWidth, FHeight: Integer;
     FFullScreen: Boolean;
-
   protected
-
-
   public
-    
+
     property Width: Integer read FWidth write FWidth;
     property Height: Integer read FHeight write FHeight;
     property FullScreen: Boolean read FFullScreen write FFullScreen;
@@ -272,11 +257,11 @@ type
      use the TGLListHandle and TGLTextureHandle subclasses. }
   TGLContextHandle = class
   private
-     
+
     FHandles: TList;
     FLastHandle : PGLRCHandle;
     FOnPrepare: TOnPrepareHandleData;
-    function GetHandle: Cardinal;
+    function GetHandle: Cardinal; inline;
     function GetContext: TGLContext;
     function SearchRC(AContext: TGLContext): PGLRCHandle;
     function RCItem(AIndex: integer): PGLRCHandle; {$IFDEF GLS_INLINE}inline;{$ENDIF}
@@ -299,13 +284,13 @@ type
        or first context where handle is allocated. }
     property RenderingContext: TGLContext read GetContext;
     {Return True is data need update in current context. }
-    function IsDataNeedUpdate: Boolean;
+    function IsDataNeedUpdate: Boolean; inline;
     {Return True if data updated in all contexts. }
     function IsDataComplitelyUpdated: Boolean;
     {Notify the data was updated in current context. }
     procedure NotifyDataUpdated;
     { Notify the data was changed through all context. }
-    procedure NotifyChangesOfData;
+    procedure NotifyChangesOfData; inline;
     // Checks if required extensions / OpenGL version are met
     class function IsSupported: Boolean; virtual;
     function IsAllocatedForContext(AContext: TGLContext = nil): Boolean;
@@ -348,9 +333,9 @@ type
     procedure DoDestroyHandle(var AHandle: Cardinal); override;
     class function IsValid(const ID: Cardinal): Boolean; override;
   public
-    procedure NewList(mode: Cardinal);
-    procedure EndList;
-    procedure CallList;
+    procedure NewList(mode: Cardinal); inline;
+    procedure EndList; inline;
+    procedure CallList; inline;
   end;
 
   {Manages a handle to a texture. }
@@ -755,7 +740,7 @@ type
     class function IsValid(const ID: Cardinal): Boolean; override;
     class function GetTarget: Cardinal; virtual; abstract;
   public
-    procedure LoadARBProgram(AText: string);
+    procedure LoadARBProgram(const AText: string);
     procedure Enable;
     procedure Disable;
     procedure Bind;
@@ -1027,9 +1012,8 @@ type
 procedure RegisterGLContextClass(aGLContextClass: TGLContextClass);
 {The TGLContext that is the currently active context, if any.
    Returns nil if no context is active. }
-function CurrentGLContext: TGLContext;
-function SafeCurrentGLContext: TGLContext;
-function GL: TGLExtensionsAndEntryPoints;
+function CurrentGLContext: TGLContext; inline;
+function SafeCurrentGLContext: TGLContext; inline;
 function IsMainThread: Boolean;
 function IsServiceContextAvaible: Boolean;
 function GetServiceWindow: TForm;
@@ -1041,11 +1025,23 @@ var
   GLContextManager: TGLContextManager;
   vIgnoreOpenGLErrors: Boolean = False;
   vContextActivationFailureOccurred: Boolean = false;
-  vMultitextureCoordinatorClass: TAbstractMultitextureCoordinatorClass;
 
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+{$IFNDEF GLS_MULTITHREAD}
+var
+{$ELSE}
+threadvar
+{$ENDIF}
+
+  vCurrentGLContext: TGLContext;
+  GL: TGLExtensionsAndEntryPoints;
+  xgl: TGLMultitextureCoordinator;
+  vMainThread: Boolean;
+  GLwithoutContext: TGLExtensionsAndEntryPoints;
+
+
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
 implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -1072,30 +1068,19 @@ type
 
 var
   vContextClasses: TList;
-  GLwithoutContext: TGLExtensionsAndEntryPoints;
   vServiceWindow: TForm;
 {$IFDEF GLS_SERVICE_CONTEXT}
   OldInitProc: Pointer;
 {$ENDIF}
 
-{$IFNDEF GLS_MULTITHREAD}
-var
-{$ELSE}
-threadvar
-{$ENDIF}
-  vGL: TGLExtensionsAndEntryPoints;
-  vCurrentGLContext: TGLContext;
-  vMainThread: Boolean;
 
-  // CurrentGLContext
-  //
 
-function CurrentGLContext: TGLContext;
+function CurrentGLContext: TGLContext; inline;
 begin
   Result := vCurrentGLContext;
 end;
 
-function SafeCurrentGLContext: TGLContext;
+function SafeCurrentGLContext: TGLContext; inline;
 begin
   Result := CurrentGLContext;
   if not Assigned(Result) then
@@ -1105,11 +1090,6 @@ begin
    {$ENDIF}
     Abort;
   end;
-end;
-
-function GL: TGLExtensionsAndEntryPoints;
-begin
-  Result := vGL;
 end;
 
 function IsMainThread: Boolean;
@@ -1128,8 +1108,6 @@ begin
 end;
 
 
-// RegisterGLContextClass
-//
 
 procedure RegisterGLContextClass(aGLContextClass: TGLContextClass);
 begin
@@ -1138,17 +1116,10 @@ begin
   vContextClasses.Add(aGLContextClass);
 end;
 
-constructor TAbstractMultitextureCoordinator.Create(AOwner: TGLContext);
-begin
-  FOwner := AOwner;
-end;
-
 // ------------------
 // ------------------ TGLContext ------------------
 // ------------------
 
- 
-//
 
 constructor TGLContext.Create;
 begin
@@ -1175,11 +1146,11 @@ begin
   FTransformation.LoadMatricesEnabled := True;
   GLContextManager.RegisterContext(Self);
   FIsPraparationNeed := True;
+  FXGL := TGLMultitextureCoordinator.Create;
 end;
 
- 
-//
 
+//
 destructor TGLContext.Destroy;
 begin
   if IsValid then
@@ -1547,7 +1518,8 @@ begin
     except
       vContextActivationFailureOccurred := True;
     end;
-    vGL := FGL;
+    GLContext.GL := FGL;
+    XGL := FXGL;
     vCurrentGLContext := Self;
   end
   else
@@ -1566,7 +1538,8 @@ begin
     if not vContextActivationFailureOccurred then
       DoDeactivate;
     vCurrentGLContext := nil;
-    vGL := GLwithoutContext;
+    GLContext.GL := GLwithoutContext;
+    XGL := nil;
   end
   else if FActivationCount < 0 then
     raise EGLContext.Create(strUnbalancedContexActivations);
@@ -1609,15 +1582,9 @@ end;
 
 procedure TGLContext.MakeGLCurrent;
 begin
-  vGL := FGL;
+  GLContext.GL := FGL;
 end;
 
-function TGLContext.GetXGL: TAbstractMultitextureCoordinator;
-begin
-  if FXGL = nil then
-    FXGL := vMultitextureCoordinatorClass.Create(Self);
-  Result := FXGL;
-end;
 
 // ------------------
 // ------------------ TGLContextHandle ------------------
@@ -1671,7 +1638,9 @@ begin
 
   if vCurrentGLContext = nil then
   begin
+    {$IFDEF GLS_LOGGING}
     GLSLogger.LogError('Failed to allocate OpenGL identifier - no active rendering context!');
+    {$ENDIF}
     exit;
   end;
 
@@ -1945,8 +1914,10 @@ begin
   {$ENDIF}
     end;
   end
+   {$IFDEF GLS_LOGGING}
   else
     GLSLogger.LogError(strNoActiveRC);
+    {$ENDIF}
 end;
 
 function TGLContextHandle.RCItem(AIndex: integer): PGLRCHandle;
@@ -3210,7 +3181,7 @@ begin
   Result := GL.IsProgram(ID);
 end;
 
-procedure TGLARBProgramHandle.LoadARBProgram(AText: string);
+procedure TGLARBProgramHandle.LoadARBProgram(const AText: string);
 const
   cProgType: array[0..2] of string =
     ('ARB vertex', 'ARB fragment', 'NV geometry');
@@ -3562,8 +3533,6 @@ begin
   Result := (validated <> 0);
 end;
 
-// GetAttribLocation
-//
 
 function TGLProgramHandle.GetAttribLocation(const aName: string): Integer;
 begin
@@ -3571,8 +3540,6 @@ begin
   Assert(Result >= 0, Format(strUnknownParam, ['attrib', aName, Name]));
 end;
 
-// GetUniformLocation
-//
 
 function TGLProgramHandle.GetUniformLocation(const aName: string): Integer;
 begin
@@ -3580,8 +3547,6 @@ begin
   Assert(Result >= 0, Format(strUnknownParam, ['uniform', aName, Name]));
 end;
 
-// GetVaryingLocation
-//
 
 function TGLProgramHandle.GetVaryingLocation(const aName: string): Integer;
 begin
@@ -3589,16 +3554,12 @@ begin
   Assert(Result >= 0, Format(strUnknownParam, ['varying', aName, Name]));
 end;
 
-// AddActiveVarying
-//
 
 procedure TGLProgramHandle.AddActiveVarying(const aName: string);
 begin
   GL.ActiveVarying(GetHandle, PAnsiChar(AnsiString(aName)));
 end;
 
-// GetAttribLocation
-//
 
 procedure TGLProgramHandle.UseProgramObject;
 begin
@@ -3606,8 +3567,6 @@ begin
   vCurrentGLContext.GLStates.CurrentProgram := Handle;
 end;
 
-// GetAttribLocation
-//
 
 procedure TGLProgramHandle.EndUseProgramObject;
 begin
@@ -3615,64 +3574,48 @@ begin
   vCurrentGLContext.GLStates.CurrentProgram := 0;
 end;
 
-// GetUniform1i
-//
 
 function TGLProgramHandle.GetUniform1i(const index: string): Integer;
 begin
   GL.GetUniformiv(GetHandle, GetUniformLocation(index), @Result);
 end;
 
-// GetUniform2i
-//
 
 function TGLProgramHandle.GetUniform2i(const index: string): TVector2i;
 begin
   GL.GetUniformiv(GetHandle, GetUniformLocation(index), @Result);
 end;
 
-// GetUniform3i
-//
 
 function TGLProgramHandle.GetUniform3i(const index: string): TVector3i;
 begin
   GL.GetUniformiv(GetHandle, GetUniformLocation(index), @Result);
 end;
 
-// GetUniform4i
-//
 
 function TGLProgramHandle.GetUniform4i(const index: string): TVector4i;
 begin
   GL.GetUniformiv(GetHandle, GetUniformLocation(index), @Result);
 end;
 
-// SetUniform1f
-//
 
 procedure TGLProgramHandle.SetUniform1f(const index: string; val: Single);
 begin
   GL.Uniform1f(GetUniformLocation(index), val);
 end;
 
-// GetUniform1f
-//
 
 function TGLProgramHandle.GetUniform1f(const index: string): Single;
 begin
   GL.GetUniformfv(GetHandle, GetUniformLocation(index), @Result);
 end;
 
-// SetUniform1i
-//
 
 procedure TGLProgramHandle.SetUniform1i(const index: string; val: Integer);
 begin
   GL.Uniform1i(GetUniformLocation(index), val);
 end;
 
-// SetUniform2i
-//
 
 procedure TGLProgramHandle.SetUniform2i(const index: string;
   const Value: TVector2i);
@@ -3680,8 +3623,6 @@ begin
   GL.Uniform2i(GetUniformLocation(index), Value.X, Value.Y);
 end;
 
-// SetUniform3i
-//
 
 procedure TGLProgramHandle.SetUniform3i(const index: string;
   const Value: TVector3i);
@@ -3689,8 +3630,6 @@ begin
   GL.Uniform3i(GetUniformLocation(index), Value.X, Value.Y, Value.Z);
 end;
 
-// SetUniform4i
-//
 
 procedure TGLProgramHandle.SetUniform4i(const index: string;
   const Value: TVector4i);
@@ -3699,16 +3638,12 @@ begin
     Value.W);
 end;
 
-// GetUniform2f
-//
 
 function TGLProgramHandle.GetUniform2f(const index: string): TVector2f;
 begin
   GL.GetUniformfv(GetHandle, GetUniformLocation(index), @Result);
 end;
 
-// SetUniform2f
-//
 
 procedure TGLProgramHandle.SetUniform2f(const index: string; const val:
   TVector2f);
@@ -3716,16 +3651,12 @@ begin
   GL.Uniform2f(GetUniformLocation(index), val.X, val.Y);
 end;
 
-// GetUniform3f
-//
 
 function TGLProgramHandle.GetUniform3f(const index: string): TAffineVector;
 begin
   GL.GetUniformfv(GetHandle, GetUniformLocation(index), @Result);
 end;
 
-// SetUniform3f
-//
 
 procedure TGLProgramHandle.SetUniform3f(const index: string; const val:
   TAffineVector);
@@ -3733,16 +3664,12 @@ begin
   GL.Uniform3f(GetUniformLocation(index), val.X, val.Y, val.Z);
 end;
 
-// GetUniform4f
-//
 
 function TGLProgramHandle.GetUniform4f(const index: string): TVector;
 begin
   GL.GetUniformfv(GetHandle, GetUniformLocation(index), @Result);
 end;
 
-// SetUniform4f
-//
 
 procedure TGLProgramHandle.SetUniform4f(const index: string; const val:
   TVector);
@@ -3750,16 +3677,12 @@ begin
   GL.Uniform4f(GetUniformLocation(index), val.X, val.Y, val.Z, val.W);
 end;
 
-// GetUniformMatrix2fv
-//
 
 function TGLProgramHandle.GetUniformMatrix2fv(const index: string): TMatrix2f;
 begin
   GL.GetUniformfv(GetHandle, GetUniformLocation(index), @Result);
 end;
 
-// SetUniformMatrix2fv
-//
 
 procedure TGLProgramHandle.SetUniformMatrix2fv(const index: string; const val:
   TMatrix2f);
@@ -3767,16 +3690,12 @@ begin
   GL.UniformMatrix2fv(GetUniformLocation(index), 1, False, @val);
 end;
 
-// GetUniformMatrix3fv
-//
 
 function TGLProgramHandle.GetUniformMatrix3fv(const index: string): TMatrix3f;
 begin
   GL.GetUniformfv(GetHandle, GetUniformLocation(index), @Result);
 end;
 
-// SetUniformMatrix3fv
-//
 
 procedure TGLProgramHandle.SetUniformMatrix3fv(const index: string; const val:
   TMatrix3f);
@@ -3784,16 +3703,12 @@ begin
   GL.UniformMatrix3fv(GetUniformLocation(index), 1, False, @val);
 end;
 
-// GetUniformMatrix4fv
-//
 
 function TGLProgramHandle.GetUniformMatrix4fv(const index: string): TMatrix;
 begin
   GL.GetUniformfv(GetHandle, GetUniformLocation(index), @Result);
 end;
 
-// SetUniformMatrix4fv
-//
 
 procedure TGLProgramHandle.SetUniformMatrix4fv(const index: string; const val:
   TMatrix);
@@ -3801,8 +3716,6 @@ begin
   GL.UniformMatrix4fv(GetUniformLocation(index), 1, False, @val);
 end;
 
-// SetUniformf
-//
 
 procedure TGLProgramHandle.SetUniformf(const index: string;
   const val: single);
@@ -3810,8 +3723,6 @@ begin
   SetUniform1f(index, val);
 end;
 
-// SetUniformf
-//
 
 procedure TGLProgramHandle.SetUniformf(const index: string; const val:
   TVector2f);
@@ -3819,8 +3730,6 @@ begin
   SetUniform2f(index, val);
 end;
 
-// SetUniformf
-//
 
 procedure TGLProgramHandle.SetUniformf(const index: string;
   const val: TVector3f);
@@ -3828,8 +3737,6 @@ begin
   SetUniform3f(index, val);
 end;
 
-// SetUniformf
-//
 
 procedure TGLProgramHandle.SetUniformf(const index: string;
   const val: TVector4f);
@@ -3837,8 +3744,6 @@ begin
   SetUniform4f(index, val);
 end;
 
-// SetUniformf
-//
 
 procedure TGLProgramHandle.SetUniformi(const index: string;
   const val: integer);
@@ -3846,8 +3751,6 @@ begin
   SetUniform1f(index, val);
 end;
 
-// SetUniformf
-//
 
 procedure TGLProgramHandle.SetUniformi(const index: string; const val:
   TVector2i);
@@ -3855,8 +3758,6 @@ begin
   SetUniform2i(index, val);
 end;
 
-// SetUniformf
-//
 
 procedure TGLProgramHandle.SetUniformi(const index: string;
   const val: TVector3i);
@@ -3864,8 +3765,6 @@ begin
   SetUniform3i(index, val);
 end;
 
-// SetUniformf
-//
 
 procedure TGLProgramHandle.SetUniformi(const index: string;
   const val: TVector4i);
@@ -3873,8 +3772,6 @@ begin
   SetUniform4i(index, val);
 end;
 
-// GetUniformTextureHandle
-//
 
 function TGLProgramHandle.GetUniformTextureHandle(const index: string;
   const TextureIndex: Integer; const TextureTarget: TGLTextureTarget): Cardinal;
@@ -3882,8 +3779,6 @@ begin
   Result := GetUniform1i(index);
 end;
 
-// SetUniformTextureHandle
-//
 
 procedure TGLProgramHandle.SetUniformTextureHandle(const index: string;
   const TextureIndex: Integer; const TextureTarget: TGLTextureTarget;
@@ -3893,8 +3788,6 @@ begin
   SetUniform1i(index, TextureIndex);
 end;
 
-// SetUniformBuffer
-//
 
 procedure TGLProgramHandle.SetUniformBuffer(const index: string;
   Value: TGLUniformBufferHandle);
@@ -3902,24 +3795,18 @@ begin
   GL.UniformBuffer(Handle, GetUniformLocation(index), Value.Handle);
 end;
 
-// GetUniformBufferSize
-//
 
 function TGLProgramHandle.GetUniformBufferSize(const aName: string): Integer;
 begin
   Result := GL.GetUniformBufferSize(Handle, GetUniformLocation(aName));
 end;
 
-// GetUniformOffset
-//
 
 function TGLProgramHandle.GetUniformOffset(const aName: string): PGLInt;
 begin
   Result := GL.GetUniformOffset(Handle, GetUniformLocation(aName));
 end;
 
-// GetUniformBlockIndex
-//
 
 function TGLProgramHandle.GetUniformBlockIndex(const aName: string): Integer;
 begin
@@ -3949,8 +3836,6 @@ begin
 end;
 {$ENDIF}
 
- 
-//
 
 constructor TGLContextManager.Create;
 begin
@@ -3963,8 +3848,6 @@ begin
   FList := TThreadList.Create;
 end;
 
- 
-//
 
 destructor TGLContextManager.Destroy;
 begin
@@ -3973,8 +3856,6 @@ begin
   inherited Destroy;
 end;
 
-// CreateContext
-//
 
 function TGLContextManager.CreateContext(AClass: TGLContextClass): TGLContext;
 begin
@@ -4041,9 +3922,6 @@ end;
 {$ENDIF GLS_SERVICE_CONTEXT}
 
 
-// Lock
-//
-
 procedure TGLContextManager.Lock;
 begin
   FList.LockList;
@@ -4063,16 +3941,10 @@ begin
   end;
 end;
 
-// UnLock
-//
-
 procedure TGLContextManager.UnLock;
 begin
   FList.UnlockList;
 end;
-
-// ContextCount
-//
 
 function TGLContextManager.ContextCount: Integer;
 begin
@@ -4082,8 +3954,6 @@ begin
   FList.UnLockList;
 end;
 
-// RegisterContext
-//
 
 procedure TGLContextManager.RegisterContext(aContext: TGLContext);
 begin
@@ -4098,8 +3968,6 @@ begin
     end;
 end;
 
-// UnRegisterContext
-//
 
 procedure TGLContextManager.UnRegisterContext(aContext: TGLContext);
 begin
@@ -4114,8 +3982,6 @@ begin
     end;
 end;
 
-// ContextCreatedBy
-//
 
 procedure TGLContextManager.ContextCreatedBy(aContext: TGLContext);
 begin
@@ -4127,8 +3993,6 @@ begin
   end;
 end;
 
-// DestroyingContextBy
-//
 
 procedure TGLContextManager.DestroyingContextBy(aContext: TGLContext);
 var
@@ -4153,8 +4017,6 @@ begin
   end;
 end;
 
-// LastContextDestroyNotification
-//
 
 procedure TGLContextManager.LastContextDestroyNotification(
   anObject: TObject; anEvent: TNotifyEvent);
@@ -4172,8 +4034,6 @@ begin
   end;
 end;
 
-// RemoveNotification
-//
 
 procedure TGLContextManager.RemoveNotification(anObject: TObject);
 var
@@ -4206,8 +4066,6 @@ begin
   end;
 end;
 
-// Terminate
-//
 
 procedure TGLContextManager.Terminate;
 begin
@@ -4453,7 +4311,7 @@ initialization
   GLContextManager := TGLContextManager.Create;
   GLwithoutContext := TGLExtensionsAndEntryPoints.Create;
   GLwithoutContext.Close;
-  vLocalGL := @GL;
+  //vLocalGL := @GL;
 
 finalization
 

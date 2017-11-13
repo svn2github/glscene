@@ -21,6 +21,7 @@ uses
   
   OpenGLTokens,
   GLScene,
+  GLPipelineTransformation,
   GLXCollection,
   GLVectorGeometry,
   GLContext,
@@ -49,8 +50,6 @@ type
 
   TGLBFireFX = class;
 
-  // TGLFireFXManager
-  //
     {Fire special effect manager. 
        Defines the looks and behaviour of a particle system that can be made
        to look fire-like. }
@@ -222,8 +221,6 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-// GetOrCreateFireFX (TGLObjectEffects)
-//
 
 function GetOrCreateFireFX(effects: TGLObjectEffects): TGLBFireFX;
 var
@@ -236,8 +233,6 @@ begin
     Result := TGLBFireFX.Create(effects);
 end;
 
-// GetOrCreateFireFX (TGLBaseSceneObject)
-//
 
 function GetOrCreateFireFX(obj: TGLBaseSceneObject): TGLBFireFX;
 begin
@@ -248,8 +243,6 @@ end;
 // ------------------ TGLFireFXManager ------------------
 // ------------------
 
- 
-//
 
 constructor TGLFireFXManager.Create(AOwner: TComponent);
 begin
@@ -279,8 +272,6 @@ begin
   FireInit;
 end;
 
- 
-//
 
 destructor TGLFireFXManager.Destroy;
 begin
@@ -295,8 +286,6 @@ begin
   inherited Destroy;
 end;
 
-// RegisterClient
-//
 
 procedure TGLFireFXManager.RegisterClient(aClient: TGLBFireFX);
 begin
@@ -308,8 +297,6 @@ begin
     end;
 end;
 
-// DeRegisterClient
-//
 
 procedure TGLFireFXManager.DeRegisterClient(aClient: TGLBFireFX);
 begin
@@ -320,8 +307,6 @@ begin
   end;
 end;
 
-// DeRegisterAllClients
-//
 
 procedure TGLFireFXManager.DeRegisterAllClients;
 var
@@ -333,24 +318,18 @@ begin
   FClients.Clear;
 end;
 
-// SetFireDir
-//
 
 procedure TGLFireFXManager.SetFireDir(const val: TGLCoordinates);
 begin
   FFireDir.Assign(val);
 end;
 
-// SetInitialDir
-//
 
 procedure TGLFireFXManager.SetInitialDir(const val: TGLCoordinates);
 begin
   FInitialDir.Assign(val);
 end;
 
-// SetCadencer
-//
 
 procedure TGLFireFXManager.SetCadencer(const val: TGLCadencer);
 begin
@@ -364,16 +343,12 @@ begin
   end;
 end;
 
-// StoreParticleSize
-//
 
 function TGLFireFXManager.StoreParticleSize: Boolean;
 begin
   Result := (FParticleSize <> 1);
 end;
 
-// SetInnerColor
-//
 
 procedure TGLFireFXManager.SetInnerColor(const val: TGLcolor);
 begin
@@ -384,8 +359,6 @@ begin
   end;
 end;
 
-// SetOuterColor
-//
 
 procedure TGLFireFXManager.SetOuterColor(const val: TGLcolor);
 begin
@@ -396,8 +369,6 @@ begin
   end;
 end;
 
-// SetReference
-//
 
 procedure TGLFireFXManager.SetReference(const val: TGLBaseSceneObject);
 begin
@@ -405,8 +376,6 @@ begin
   FReference := val;
 end;
 
-// SetMaxParticles
-//
 
 procedure TGLFireFXManager.SetMaxParticles(const val: Integer);
 begin
@@ -422,8 +391,6 @@ begin
   end;
 end;
 
-// Notification
-//
 
 procedure TGLFireFXManager.Notification(AComponent: TComponent; Operation: TOperation);
 begin
@@ -437,8 +404,6 @@ begin
   inherited;
 end;
 
-// DoProgress
-//
 
 procedure TGLFireFXManager.DoProgress(const progressTime: TProgressTimes);
 var
@@ -454,8 +419,6 @@ begin
     TGLBFireFX(FClients[i]).OwnerBaseSceneObject.NotifyChange(TGLBFireFX(FClients[i]));
 end;
 
-// FireInit
-//
 
 procedure TGLFireFXManager.FireInit;
 begin
@@ -464,8 +427,6 @@ begin
   ReallocMem(FFireParticles, FMaxParticles * Sizeof(TFireParticle));
 end;
 
-// IsotropicExplosion
-//
 
 procedure TGLFireFXManager.IsotropicExplosion(minInitialSpeed, maxInitialSpeed, lifeBoostFactor: Single;
   nbParticles: Integer = -1);
@@ -500,8 +461,6 @@ begin
   end;
 end;
 
-// RingExplosion
-//
 
 procedure TGLFireFXManager.RingExplosion(minInitialSpeed, maxInitialSpeed, lifeBoostFactor: Single;
   const ringVectorX, ringVectorY: TAffineVector;
@@ -541,8 +500,6 @@ begin
   end;
 end;
 
-// CalcFire
-//
 
 procedure TGLFireFXManager.CalcFire(deltaTime: Double;
   particleInterval, particleLife: Single; fireAlpha: Single);
@@ -608,8 +565,6 @@ begin
   end;
 end;
 
-// AffParticle3d
-//
 
 procedure TGLFireFXManager.AffParticle3d(Color2: TColorVector; const mat: TMatrix);
 var
@@ -650,8 +605,6 @@ end;
 // ------------------ TGLBFireFX ------------------
 // ------------------
 
- 
-//
 
 constructor TGLBFireFX.Create(aOwner: TGLXCollection);
 begin
@@ -659,8 +612,6 @@ begin
 end;
 
  
-//
-
 destructor TGLBFireFX.Destroy;
 begin
   Manager := nil;
@@ -668,23 +619,17 @@ begin
 end;
 
  
-//
-
 class function TGLBFireFX.FriendlyName: string;
 begin
   Result := 'FireFX';
 end;
 
-// FriendlyDescription
-//
 
 class function TGLBFireFX.FriendlyDescription: string;
 begin
   Result := 'Fire FX';
 end;
 
-// WriteToFiler
-//
 
 procedure TGLBFireFX.WriteToFiler(writer: TWriter);
 begin
@@ -699,9 +644,6 @@ begin
       WriteString('');
   end;
 end;
-
-// ReadFromFiler
-//
 
 procedure TGLBFireFX.ReadFromFiler(reader: TReader);
 var
@@ -718,8 +660,6 @@ begin
   end;
 end;
 
-// Loaded
-//
 
 procedure TGLBFireFX.Loaded;
 var
@@ -735,8 +675,6 @@ begin
   end;
 end;
 
-// Assign
-//
 
 procedure TGLBFireFX.Assign(Source: TPersistent);
 begin
@@ -747,8 +685,6 @@ begin
   inherited Assign(Source);
 end;
 
-// SetManager
-//
 
 procedure TGLBFireFX.SetManager(const val: TGLFireFXManager);
 begin
@@ -761,8 +697,6 @@ begin
   end;
 end;
 
-// Render
-//
 
 procedure TGLBFireFX.Render(var rci: TGLRenderContextInfo);
 var
@@ -780,7 +714,7 @@ begin
   rci.PipelineTransformation.Push;
   // revert to the base model matrix in the case of a referenced fire
   if Assigned(Manager.Reference) then
-    rci.PipelineTransformation.ModelMatrix := IdentityHmgMatrix;
+    rci.PipelineTransformation.SetModelMatrix(IdentityHmgMatrix);
 
   rci.GLStates.CurrentProgram := 0;
   rci.GLStates.Disable(stCullFace);
@@ -818,7 +752,7 @@ begin
         SetVector(lastTr, fp^.Position);
         innerColor.W := fp^.Alpha * fp^.TimeToLive / Sqr(fp^.LifeLength);
         GL.Color4fv(@innerColor);
-        Manager.AffParticle3d(Manager.FOuterColor.Color, rci.PipelineTransformation.ViewMatrix);
+        Manager.AffParticle3d(Manager.FOuterColor.Color, rci.PipelineTransformation.ViewMatrix^);
       end;
 
     objList.Free;

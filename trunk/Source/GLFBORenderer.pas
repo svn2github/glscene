@@ -23,6 +23,7 @@ uses
   
   OpenGLTokens,
   GLVectorGeometry,
+  GLPipelineTransformation,
   GLScene,
   GLTexture,
   GLContext,
@@ -235,13 +236,13 @@ begin
       // 96 is default dpi
       FCamera.SceneScale := sc;
 
-      ViewMatrix := CreateScaleMatrix(Vector3fMake(1.0 / FAspect, 1.0, 1.0));
+      SetViewMatrix(CreateScaleMatrix(Vector3fMake(1.0 / FAspect, 1.0, 1.0)));
       FCamera.Apply;
     end
     else
     begin
-      ViewMatrix := MatrixMultiply(ViewMatrix,
-        CreateScaleMatrix(Vector3fMake(1.0 / FAspect, 1.0, 1.0)));
+      SetViewMatrix(MatrixMultiply(ViewMatrix^,
+        CreateScaleMatrix(Vector3fMake(1.0 / FAspect, 1.0, 1.0))));
     end;
   end;
 end;
@@ -753,8 +754,6 @@ begin
   end;
 end;
 
-// GetMaterialLibrary
-//
 
 function TGLFBORenderer.GetMaterialLibrary: TGLAbstractMaterialLibrary;
 begin
@@ -773,8 +772,6 @@ begin
   end;
 end;
 
-// SetUseLibraryAsMultiTarget
-//
 
 procedure TGLFBORenderer.SetUseLibraryAsMultiTarget(Value: Boolean);
 begin

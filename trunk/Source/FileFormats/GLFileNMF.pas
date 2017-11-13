@@ -19,8 +19,12 @@ interface
 uses
   System.Classes,
 
-  GLVectorFileObjects, GLVectorGeometry,
-  GLVectorLists, GLApplicationFileIO;
+  GLVectorTypes,
+  GLVectorFileObjects,
+  GLPersistentClasses,
+  GLVectorGeometry,
+  GLVectorLists,
+  GLApplicationFileIO;
 
 const
   NMF_HEADER_TAG = 'NMF ';

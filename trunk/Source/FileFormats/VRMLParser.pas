@@ -3,14 +3,12 @@
 //
 {
    VRML file format parser. 
-
-   History : 
+   History :
        02/04/07 - DaStr - Added $I GLScene.inc
        29/03/07 - DaStr - Added missing parameters in procedure's implementation
                               (thanks Burkhard Carstens) (Bugtracker ID = 1681409)
        25/01/05 - SG - Added ShapeHints (creaseAngle), Normal and TexCoord support
        14/01/05 - SG - Added to CVS
-    
 }
 unit VRMLParser;
 
@@ -19,9 +17,14 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils, System.Types,
-   
-  GLVectorTypes, GLVectorLists, GLUtils;
+  System.Classes,
+  System.SysUtils,
+  System.Types,
+
+  GLVectorTypes,
+  GLVectorGeometry,
+  GLVectorLists,
+  GLUtils;
 
 type
   TVRMLNode = class
@@ -30,20 +33,16 @@ type
       FParent : TVRMLNode;
       FName,
       FDefName : String;
-
       function GetNode(index : Integer) : TVRMLNode;
-
     public
       constructor Create; virtual;
       constructor CreateOwned(AParent : TVRMLNode);
       destructor Destroy; override;
-
       function Count : Integer;
       procedure Clear;
       procedure Add(node : TVRMLNode);
       procedure Remove(node : TVRMLNode);
       procedure Delete(index : Integer);
-
       property Nodes[index : Integer] : TVRMLNode read GetNode; default;
       property Parent : TVRMLNode read FParent;
       property Name : String read FName write FName;
@@ -82,17 +81,14 @@ type
       FHasEmissive,
       FHasTransparency,
       FHasShininess : Boolean;
-
     public
       constructor Create; override;
-
       property DiffuseColor : TVector3f read FDiffuseColor write FDiffuseColor;
       property AmbientColor : TVector3f read FAmbientColor write FAmbientColor;
       property SpecularColor : TVector3f read FSpecularColor write FSpecularColor;
       property EmissiveColor : TVector3f read FEmissiveColor write FEmissiveColor;
       property Transparency : Single read FTransparency write FTransparency;
       property Shininess : Single read FShininess write FShininess;
-
       property HasDiffuse : Boolean read FHasDiffuse write FHasDiffuse;
       property HasAmbient : Boolean read FHasAmbient write FHasAmbient;
       property HasSpecular : Boolean read FHasSpecular write FHasSpecular;
@@ -122,7 +118,6 @@ type
       FScaleFactor : TVector3f;
     public
       constructor Create; override;
-
       property Center : TVector3f read FCenter write FCenter;
       property Rotation : TVector4f read FRotation write FRotation;
       property ScaleFactor : TVector3f read FScaleFactor write FScaleFactor;
@@ -136,7 +131,6 @@ type
       FCurrentNode : TVRMLNode;
       FAllowUnknownNodes : Boolean;
       FDefines : TList;
-
     protected
       function ReadToken : String;
       function ReadSingle : Single;
@@ -161,16 +155,12 @@ type
       procedure ReadGroup(defname : String = '');
       procedure ReadDef;
       procedure ReadUse;
-
     public
       constructor Create;
       destructor Destroy; override;
-
       procedure Parse(Text : String);
-
       property RootNode : TVRMLNode read FRootNode;
       property AllowUnknownNodes : Boolean read FAllowUnknownNodes write FAllowUnknownNodes;
-
   end;
 
 //----------------------------------------------------------------------------

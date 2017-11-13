@@ -26,19 +26,24 @@ interface
 uses
   System.Classes,
   
-  GLTexture, GLScene, GLVectorGeometry, GLContext, GLMaterial,
-  GLSLShader, GLCustomShader, GLRenderContextInfo, GLTextureFormat,
+  OpenGLTokens,
+  GLTexture,
+  GLScene,
+  GLState,
+  GLVectorGeometry,
+  GLContext,
+  GLMaterial,
+  GLSLShader,
+  GLCustomShader,
+  GLRenderContextInfo,
+  GLTextureFormat,
   GLVectorTypes;
 
-  //TGLCustomGLSLPostBlurShader
-  //
-  {Custom class for GLSLPostBlurShader. 
-   A shader that blurs the entire scene }
 type
+  {Custom class for GLSLPostBlurShader. A shader that blurs the entire scene }
   TGLCustomGLSLPostBlurShader = class(TGLCustomGLSLShader, IGLPostShader)
   private
     FThreshold: Single;
-
     // Implementing IGLPostShader.
     procedure DoUseTempTexture(const TempTexture: TGLTextureHandle;
       TextureTarget: TGLTextureTarget);
@@ -49,7 +54,6 @@ type
     function DoUnApply(var rci: TGLRenderContextInfo): Boolean; override;
   public
     constructor Create(AOwner: TComponent); override;
-
     property Threshold: Single read FThreshold write FThreshold stored StoreThreshold;
   end;
 
@@ -58,33 +62,23 @@ type
     property Threshold;
   end;
 
-
-  //TGLCustomGLSLPostThermalVisionShader
-  //
-  {Custom class for GLSLPostThermalVisionShader. 
+  {Custom class for GLSLPostThermalVisionShader.
    A Shader that simulate a thermal vision of the entire scene }
-
-type
   {A shader that simulate a Thermal Vision of the entire scene}
   TGLCustomGLSLPostThermalVisionShader = class(TGLCustomGLSLShader, IGLPostShader)
   private
-
     FThreshold : Single;
     Fintensity : Single;
-
     // Implementing IGLPostShader.
     procedure DoUseTempTexture(const TempTexture: TGLTextureHandle;TextureTarget: TGLTextureTarget);
     function GetTextureTarget: TGLTextureTarget;
-
     function StoreThreshold: Boolean;
     function StoreIntensity: Boolean;
-
   protected
     procedure DoApply(var rci: TGLRenderContextInfo; Sender: TObject); override;
     function DoUnApply(var rci: TGLRenderContextInfo): Boolean; override;
   public
     constructor Create(AOwner: TComponent); override;
-
      property Threshold: Single read FThreshold write FThreshold stored StoreThreshold;
      property Intensity: Single read FIntensity write FIntensity stored StoreIntensity;
   end;
@@ -95,29 +89,20 @@ type
     property Intensity;
   end;
 
-
-  //TGLCustomGLSLPostDreamVisionShader
-  //
-  {Custom class for GLSLPostDreamVisionShader. 
+  {Custom class for GLSLPostDreamVisionShader.
    A shader that simulate a grayscale threshold vision (aka dream) of the entire scene}
-type
   TGLCustomGLSLPostDreamVisionShader = class(TGLCustomGLSLShader, IGLPostShader)
   private
-
     FThreshold : Single; // In percent 0..100;
-
     // Implementing IGLPostShader.
     procedure DoUseTempTexture(const TempTexture: TGLTextureHandle;TextureTarget: TGLTextureTarget);
     function GetTextureTarget: TGLTextureTarget;
-
-   function StoreThreshold: Boolean;
-
+    function StoreThreshold: Boolean;
   protected
     procedure DoApply(var rci: TGLRenderContextInfo; Sender: TObject); override;
     function DoUnApply(var rci: TGLRenderContextInfo): Boolean; override;
   public
     constructor Create(AOwner: TComponent); override;
-
      property Threshold: Single read FThreshold write FThreshold stored StoreThreshold;
   end;
 
@@ -126,18 +111,12 @@ type
     property Threshold;
   end;
 
-
-  //TGLCustomGLSLPostNightVisionShader
-  //
-  {Custom class for GLSLPostNightVisionShader. 
+  {Custom class for GLSLPostNightVisionShader.
    A shader that simulate a Night Vision of the scene throw a mask if enabled,
    or of the entire scene}
-
-type
   TGLCustomGLSLPostNightVisionShader = class(TGLCustomGLSLShader, IGLPostShader)
   private
     FMaterialLibrary: TGLAbstractMaterialLibrary;
-
     FLuminanceThreshold: Single;
     FColorAmplification:Single;
     FElapsedTime : Single;
@@ -146,38 +125,28 @@ type
     FMaskTex : TGLTexture;
     FNoiseTexName  : TGLLibMaterialName;
     FMaskTexName        : TGLLibMaterialName;
-
     // Implementing IGLPostShader.
     procedure DoUseTempTexture(const TempTexture: TGLTextureHandle;TextureTarget: TGLTextureTarget);
     function GetTextureTarget: TGLTextureTarget;
-
     function StoreLuminanceThreshold: Boolean;
     function StoreColorAmplification: Boolean;
-
     procedure SetMaskTexTexture(const Value: TGLTexture);
     procedure SetNoiseTexTexture(const Value: TGLTexture);
-
     function GetNoiseTexName: TGLLibMaterialName;
     procedure SetNoiseTexName(const Value: TGLLibMaterialName);
     function GetMaskTexName: TGLLibMaterialName;
     procedure SetMaskTexName(const Value: TGLLibMaterialName);
-
     function GetMaterialLibrary: TGLAbstractMaterialLibrary;
-
   protected
     procedure DoApply(var rci: TGLRenderContextInfo; Sender: TObject); override;
     function DoUnApply(var rci: TGLRenderContextInfo): Boolean; override;
-
     procedure SetMaterialLibrary(const Value: TGLAbstractMaterialLibrary); virtual;
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
-
   public
     constructor Create(AOwner: TComponent); override;
-
     property LuminanceThreshold: Single read FLuminanceThreshold write FLuminanceThreshold stored StoreLuminanceThreshold;
     property ColorAmplification: Single read FColorAmplification write FColorAmplification stored StoreColorAmplification;
     property ElapsedTime: Single read FElapsedTime write FElapsedTime stored false;
-
     property MaterialLibrary: TGLAbstractMaterialLibrary read getMaterialLibrary write SetMaterialLibrary;
     property NoiseTex: TGLTexture read FNoiseTex write SetNoiseTexTexture;
     property NoiseTexName: TGLLibMaterialName read GetNoiseTexName write SetNoiseTexName;
@@ -197,30 +166,22 @@ type
     property UseMask;
   end;
 
-  //TGLCustomGLSLPostPixelateShader
-  //
-  {Custom class for GLSLPostPixelateShader. 
+  {Custom class for GLSLPostPixelateShader.
    A shader that pixelate of the entire scene}
-type
   TGLCustomGLSLPostPixelateShader = class(TGLCustomGLSLShader, IGLPostShader)
   private
-
     FPixelWidth  : Single;
     FPixelHeight : Single;
-
     // Implementing IGLPostShader.
     procedure DoUseTempTexture(const TempTexture: TGLTextureHandle;TextureTarget: TGLTextureTarget);
     function GetTextureTarget: TGLTextureTarget;
-
     function StorePixelWidth: Boolean;
     function StorePixelHeight: Boolean;
-
   protected
     procedure DoApply(var rci: TGLRenderContextInfo; Sender: TObject); override;
     function DoUnApply(var rci: TGLRenderContextInfo): Boolean; override;
   public
     constructor Create(AOwner: TComponent); override;
-
      property PixelWidth: Single read FPixelWidth write FPixelWidth stored StorePixelWidth;
      property PixelHeight: Single read FPixelHeight write FPixelHeight stored StorePixelHeight;
   end;
@@ -231,30 +192,22 @@ type
     property PixelHeight;
   end;
 
-  //TGLCustomGLSLPostPosterizeShader
-  //
-  {Custom class for GLSLPostPosterizeShader. 
+  {Custom class for GLSLPostPosterizeShader.
    A shader that posterize of the entire scene}
-type
   TGLCustomGLSLPostPosterizeShader = class(TGLCustomGLSLShader, IGLPostShader)
   private
-
     FGamma  : Single;
     FNumColors : Single;
-
     // Implementing IGLPostShader.
     procedure DoUseTempTexture(const TempTexture: TGLTextureHandle;TextureTarget: TGLTextureTarget);
     function GetTextureTarget: TGLTextureTarget;
-
     function StoreGamma: Boolean;
     function StoreNumColors: Boolean;
-
   protected
     procedure DoApply(var rci: TGLRenderContextInfo; Sender: TObject); override;
     function DoUnApply(var rci: TGLRenderContextInfo): Boolean; override;
   public
     constructor Create(AOwner: TComponent); override;
-
      property Gamma: Single read FGamma write FGamma stored StoreGamma;
      property NumColors: Single read FNumColors write FNumColors stored StoreNumColors;
   end;
@@ -265,30 +218,22 @@ type
     property NumColors;
   end;
 
-  //TGLCustomGLSLPostFrostShader
-  //
-  {Custom class for GLSLPostFrostShader. 
+  {Custom class for GLSLPostFrostShader.
    A shader that frost of the entire scene}
-type
   TGLCustomGLSLPostFrostShader = class(TGLCustomGLSLShader, IGLPostShader)
   private
-
     FRandScale  : Single;
     FRandFactor : Single;
-
     // Implementing IGLPostShader.
     procedure DoUseTempTexture(const TempTexture: TGLTextureHandle;TextureTarget: TGLTextureTarget);
     function GetTextureTarget: TGLTextureTarget;
-
     function StoreRandScale: Boolean;
     function StoreRandFactor: Boolean;
-
   protected
     procedure DoApply(var rci: TGLRenderContextInfo; Sender: TObject); override;
     function DoUnApply(var rci: TGLRenderContextInfo): Boolean; override;
   public
     constructor Create(AOwner: TComponent); override;
-
      property RandScale: Single read FRandScale write FRandScale stored StoreRandScale;
      property RandFactor: Single read FRandFactor write FRandFactor stored StoreRandFactor;
   end;
@@ -299,54 +244,38 @@ type
     property RandFactor;
   end;
 
-  //TGLCustomGLSLPostTroubleShader
-  //
-  {Custom class for GLSLPostTroubleShader. 
-   A shader that trouble of the entire scene. v2  
+  {Custom class for GLSLPostTroubleShader. A shader that trouble of the entire scene. v2
    This Shader is experimental it can do smooth the scene or double the scene and it's
    depends of PixelX, PixelY and Freq values if they are less than 1 or greater
    the effects will be very different}
-type
   TGLCustomGLSLPostTroubleShader = class(TGLCustomGLSLShader, IGLPostShader)
   private
-
     FPixelX  : Single;
     FPixelY : Single;
     FFreq   : Single;
-
     FMaterialLibrary: TGLAbstractMaterialLibrary;
     FNoiseTex : TGLTexture;
     FNoiseTexName  : TGLLibMaterialName;
-
     // Implementing IGLPostShader.
     procedure DoUseTempTexture(const TempTexture: TGLTextureHandle;TextureTarget: TGLTextureTarget);
     function GetTextureTarget: TGLTextureTarget;
-
     procedure SetNoiseTexTexture(const Value: TGLTexture);
-
     function GetNoiseTexName: TGLLibMaterialName;
     procedure SetNoiseTexName(const Value: TGLLibMaterialName);
-
-
     function GetMaterialLibrary: TGLAbstractMaterialLibrary;
-
     function StorePixelX: Boolean;
     function StorePixelY: Boolean;
     function StoreFreq: Boolean;
-
   protected
     procedure DoApply(var rci: TGLRenderContextInfo; Sender: TObject); override;
     function DoUnApply(var rci: TGLRenderContextInfo): Boolean; override;
-
     procedure SetMaterialLibrary(const Value: TGLAbstractMaterialLibrary); virtual;
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
   public
     constructor Create(AOwner: TComponent); override;
-
      property PixelX: Single read FPixelX write FPixelX stored StorePixelX;
      property PixelY: Single read FPixelY write FPixelY stored StorePixelY;
      property Freq: Single read FFreq write FFreq stored StoreFreq;
-
      property MaterialLibrary: TGLAbstractMaterialLibrary read getMaterialLibrary write SetMaterialLibrary;
      property NoiseTex: TGLTexture read FNoiseTex write SetNoiseTexTexture;
      property NoiseTexName: TGLLibMaterialName read GetNoiseTexName write SetNoiseTexName;
@@ -380,16 +309,16 @@ begin
     Add('varying vec2 vTexCoord; ');
     Add(' ');
     Add('void main(void) ');
-    Add('{ '); 
-    Add(' '); 
-    Add('   // Clean up inaccuracies '); 
-    Add('   vec2 Position; '); 
-    Add('   Position.xy = sign(gl_Vertex.xy); '); 
-    Add(' '); 
-    Add('   gl_Position = vec4(Position.xy, 0.0, 1.0); '); 
-    Add('   vTexCoord = Position.xy *.5 + .5; '); 
+    Add('{ ');
+    Add(' ');
+    Add('   // Clean up inaccuracies ');
+    Add('   vec2 Position; ');
+    Add('   Position.xy = sign(gl_Vertex.xy); ');
+    Add(' ');
+    Add('   gl_Position = vec4(Position.xy, 0.0, 1.0); ');
+    Add('   vTexCoord = Position.xy *.5 + .5; ');
     Add('    ');
-    Add('} '); 
+    Add('} ');
   end;
 
   with FragmentProgram.Code do

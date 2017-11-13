@@ -24,13 +24,13 @@ interface
 
 uses
   OpenGLTokens,
-  GLContext;
+  GLState;
 
 type
   TMapTexCoordMode = (mtcmUndefined, mtcmNull, mtcmMain, mtcmDual, mtcmSecond,
     mtcmArbitrary);
 
-  TGLMultitextureCoordinator = class(TAbstractMultitextureCoordinator)
+  TGLMultitextureCoordinator = class
   private
     FMapTexCoordMode: TMapTexCoordMode;
     FSecondTextureUnitForbidden: Boolean;
@@ -64,7 +64,7 @@ type
     Enable: procedure(cap: Cardinal);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
     Disable: procedure(cap: Cardinal);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 
-    constructor Create(AOwner: TGLContext); override;
+    constructor Create;
 
     {TexCoord functions will be ignored. }
     procedure MapTexCoordToNull;
@@ -81,10 +81,10 @@ type
 
     {Defers Map calls execution until EndUpdate is met. 
        Calls to Begin/EndUpdate may be nested. }
-    procedure BeginUpdate;
-    {Applies Map calls if there were any since BeginUpdate was invoked. 
+    procedure BeginUpdate; inline;
+    {Applies Map calls if there were any since BeginUpdate was invoked.
        Calls to Begin/EndUpdate may be nested. }
-    procedure EndUpdate;
+    procedure EndUpdate; inline;
 
     {Saves XOpenGL State on the stack. }
     procedure PushState;
@@ -104,9 +104,6 @@ type
     property SecondTextureUnitForbidden: Boolean read FSecondTextureUnitForbidden;
   end;
 
-function Xgl(): TGLMultitextureCoordinator;
-procedure RemoveXgl(MTC: TAbstractMultitextureCoordinator);
-
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -115,34 +112,13 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-{$IFNDEF GLS_MULTITHREAD}
-var
-{$ELSE}
-threadvar
-{$ENDIF}
-  vMTC : TGLMultitextureCoordinator;
+uses
+  GLContext;
 
-function xgl(): TGLMultitextureCoordinator;
-var
-  RC: TGLContext;
-begin
-  RC := SafeCurrentGLContext;
-  if not Assigned(vMTC) or (vMTC.FOwner <> RC) then
-  begin
-    vMTC := TGLMultitextureCoordinator(RC.MultitextureCoordinator);
-  end;
-  Result := vMTC;
-end;
 
-procedure RemoveXgl(MTC: TAbstractMultitextureCoordinator);
-begin
-  if vMTC = MTC then
-    vMTC := nil;
-end;
-
-  // ------------------------------------------------------------------
-  // Multitexturing coordinates duplication functions
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// Multitexturing coordinates duplication functions
+// ------------------------------------------------------------------
 
   // --------- Complex (arbitrary) mapping
 
@@ -580,8 +556,6 @@ end;
 // Redirections management functions
 // ------------------------------------------------------------------
 
-// BeginUpdate
-//
 
 procedure TGLMultitextureCoordinator.BeginUpdate;
 begin
@@ -594,8 +568,6 @@ begin
     Inc(FUpdCount);
 end;
 
-// EndUpdate
-//
 
 procedure TGLMultitextureCoordinator.EndUpdate;
 begin
@@ -614,8 +586,6 @@ begin
   end;
 end;
 
-// PushState
-//
 
 procedure TGLMultitextureCoordinator.PushState;
 var
@@ -627,8 +597,6 @@ begin
   FStateStack[i] := MapTexCoordMode;
 end;
 
-// PopState
-//
 
 procedure TGLMultitextureCoordinator.PopState;
 var
@@ -649,31 +617,25 @@ begin
   SetLength(FStateStack, i);
 end;
 
-// ForbidSecondTextureUnit
-//
 
 procedure TGLMultitextureCoordinator.ForbidSecondTextureUnit;
 begin
   FSecondTextureUnitForbidden := True;
 end;
 
-// AllowSecondTextureUnit
-//
 
 procedure TGLMultitextureCoordinator.AllowSecondTextureUnit;
 begin
   FSecondTextureUnitForbidden := False;
 end;
 
-constructor TGLMultitextureCoordinator.Create(AOwner: TGLContext);
+constructor TGLMultitextureCoordinator.Create;
 begin
-  inherited Create(AOwner);
+  inherited;
   FMapTexCoordMode := mtcmUndefined;
   MapTexCoordToNull;
 end;
 
-// MapTexCoordToNull
-//
 
 procedure TGLMultitextureCoordinator.MapTexCoordToNull;
 begin
@@ -704,8 +666,6 @@ begin
   end;
 end;
 
-// TexCoordMapToMain
-//
 
 procedure TGLMultitextureCoordinator.MapTexCoordToMain;
 begin
@@ -736,8 +696,6 @@ begin
   end;
 end;
 
-// TexCoordMapToSecond
-//
 
 procedure TGLMultitextureCoordinator.MapTexCoordToSecond;
 begin
@@ -774,8 +732,6 @@ begin
   end;
 end;
 
-// TexCoordMapToDual
-//
 
 procedure TGLMultitextureCoordinator.MapTexCoordToDual;
 begin
@@ -812,8 +768,6 @@ begin
   end;
 end;
 
-// MapTexCoordToArbitrary (array)
-//
 
 procedure TGLMultitextureCoordinator.MapTexCoordToArbitrary(const units: array of Cardinal);
 var
@@ -861,8 +815,6 @@ begin
   end;
 end;
 
-// MapTexCoordToArbitrary (bitwise)
-//
 
 procedure TGLMultitextureCoordinator.MapTexCoordToArbitrary(const bitWiseUnits: Cardinal);
 var
@@ -888,8 +840,6 @@ begin
   MapTexCoordToArbitrary(units);
 end;
 
-// MapTexCoordToArbitrary (bitwise)
-//
 
 procedure TGLMultitextureCoordinator.MapTexCoordToArbitraryAdd(const bitWiseUnits: Cardinal);
 var
@@ -899,8 +849,6 @@ begin
   MapTexCoordToArbitrary(n or bitWiseUnits);
 end;
 
-// GetBitWiseMapping
-//
 
 function TGLMultitextureCoordinator.GetBitWiseMapping: Cardinal;
 var
@@ -928,8 +876,5 @@ begin
 end;
 
 initialization
-
-  // Register class
-  vMultitextureCoordinatorClass := TGLMultitextureCoordinator;
 
 end.

@@ -30,7 +30,10 @@ interface
 uses
    System.Classes, 
     
-   GLMaterial, GLRenderContextInfo, GLState;
+   GLMaterial,
+   GLContext,
+   GLRenderContextInfo,
+   GLState;
 
 type
    TGLMultiMaterialShader = class(TGLShader)

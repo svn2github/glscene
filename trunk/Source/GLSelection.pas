@@ -16,10 +16,15 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.SysUtils, System.Classes,
+  System.SysUtils, 
+  System.Classes,
    
-  OpenGLTokens, GLContext, GLVectorLists, GLVectorGeometry,
-  GLBaseClasses, GLPersistentClasses;
+  OpenGLTokens, 
+  GLContext, 
+  GLVectorLists, 
+  GLVectorGeometry,
+  GLBaseClasses, 
+  GLPersistentClasses;
 
  const
   MAX_OBJECT_STACK_DEPTH = 512;
@@ -37,8 +42,6 @@ type
 
   TPickSortType = (psDefault, psName, psMinDepth, psMaxDepth);
 
-  // TGLPickList
-  //
   {List class for object picking. 
      This list is used to store the results of a PickObjects call. }
   TGLPickList = class(TPersistentObjectList)
@@ -64,14 +67,11 @@ type
     property SubObjects[Index: Integer]: TPickSubObjects read GetSubObjects;
   end;
 
-  // TGLBaseSelectTechnique
-  //
-
   TGLBaseSelectTechnique = class
   protected
     FObjectStack: array of TObject;
     FNameStack: array[0..255] of Cardinal;
-    FCurrentName: Cardinal;
+    FCurrentName: Integer;
     FStackPosition: Integer;
     FObjectCountGuess: Integer;
     FHits: Integer;
@@ -97,8 +97,6 @@ type
 
   TGLBaseSelectTechniqueClass = class of TGLBaseSelectTechnique;
 
-  // TGLSelectRenderModeTechnique
-  //
 
   TGLSelectRenderModeTechnique = class(TGLBaseSelectTechnique)
   private
@@ -119,7 +117,7 @@ type
     property CurrentObject;
   end;
 
-function GetBestSelectorClass: TGLBaseSelectTechniqueClass;
+function GetBestSelectorClass: TGLBaseSelectTechniqueClass; inline;
 
 implementation
 
@@ -147,9 +145,6 @@ begin
   vPickListSortFlag := aSortType;
   inherited Create;
 end;
-
-// Comparefunction (for picklist sorting)
-//
 
 function Comparefunction(item1, item2: TObject): Integer;
 var
@@ -183,9 +178,6 @@ begin
   end;
 end;
 
-// AddHit
-//
-
 procedure TGLPickList.AddHit(obj: TObject;
   const subObj: TPickSubObjects; zMin, zMax: Single);
 var
@@ -201,8 +193,6 @@ begin
     Sort(@Comparefunction);
 end;
 
-// Clear
-//
 
 procedure TGLPickList.Clear;
 begin
@@ -210,8 +200,6 @@ begin
   inherited;
 end;
 
-// FindObject
-//
 
 function TGLPickList.FindObject(aObject: TObject): Integer;
 var
@@ -229,24 +217,18 @@ begin
     end;
 end;
 
-// GetFar
-//
 
 function TGLPickList.GetFar(aValue: Integer): Single;
 begin
   Result := TPickRecord(Items[AValue]).ZMax;
 end;
 
-// GetHit
-//
 
 function TGLPickList.GetHit(aValue: Integer): TObject;
 begin
   Result := TPickRecord(Items[AValue]).AObject;
 end;
 
-// GetNear
-//
 
 function TGLPickList.GetNear(aValue: Integer): Single;
 begin

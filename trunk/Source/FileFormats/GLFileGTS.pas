@@ -17,14 +17,15 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, 
+  System.Classes,
+
+  GLVectorGeometry,
+  GLVectorLists,
   GLVectorFileObjects, 
   GLApplicationFileIO;
 
 type
-   // TGLGTSVectorFile
-   //
-   {The GTS vector file (GNU Triangulated Surface library). 
+   {The GTS vector file (GNU Triangulated Surface library).
       It is a simple text format, with indexed vertices. The first line contains
       the number of vertices, the number of edges and the number of faces separated
       by spaces.
@@ -56,15 +57,11 @@ uses
 // ------------------ TGLGTSVectorFile ------------------
 // ------------------
 
-// Capabilities
-//
 class function TGLGTSVectorFile.Capabilities : TGLDataFileCapabilities;
 begin
    Result:=[dfcRead];
 end;
 
-// LoadFromStream
-//
 procedure TGLGTSVectorFile.LoadFromStream(aStream : TStream);
 var
    i, nv, ne, nf, k, ei : Integer;

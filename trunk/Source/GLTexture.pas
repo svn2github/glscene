@@ -33,6 +33,8 @@ uses
   GLColor,
   GLCoordinates,
   GLRenderContextInfo,
+  GLPersistentClasses,
+  GLPipelineTransformation,
   GLTextureFormat,
   GLApplicationFileIO,
   GLUtils,
@@ -445,7 +447,7 @@ type
     function StoreMappingQCoordinates: Boolean;
     procedure SetDisabled(AValue: Boolean);
     procedure SetEnabled(const val: Boolean);
-    function GetEnabled: Boolean;
+    function GetEnabled: Boolean; inline;
     procedure SetEnvColor(const val: TGLColor);
     procedure SetBorderColor(const val: TGLColor);
     procedure SetNormalMapScale(const val: Single);
@@ -454,7 +456,7 @@ type
     procedure SetDepthTextureMode(const val: TGLDepthTextureMode);
     function StoreNormalMapScale: Boolean;
     function StoreImageClassName: Boolean;
-    function GetHandle: Cardinal; virtual;
+    function GetHandle: Cardinal;
     // Load texture to OpenGL subsystem
     procedure PrepareImage(target: Cardinal); virtual;
     // Setup OpenGL texture parameters
@@ -645,8 +647,8 @@ type
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
     procedure NotifyChange(Sender: TObject);
-    procedure Apply(var rci: TGLRenderContextInfo);
-    procedure UnApply(var rci: TGLRenderContextInfo);
+    procedure Apply(var rci: TGLRenderContextInfo); inline;
+    procedure UnApply(var rci: TGLRenderContextInfo); inline;
   published
     property Texture: TGLTexture read FTexture write SetTexture;
     property TextureIndex: Integer read FTextureIndex write SetTextureIndex;
@@ -659,14 +661,14 @@ type
     FOwner: TGLUpdateAbleObject;
   protected
     procedure SetItems(index: Integer; const Value: TGLTextureExItem);
-    function GetItems(index: Integer): TGLTextureExItem;
+    function GetItems(index: Integer): TGLTextureExItem; inline;
     function GetOwner: TPersistent; override;
   public
     constructor Create(AOwner: TGLUpdateAbleObject);
     procedure NotifyChange(Sender: TObject);
     procedure Apply(var rci: TGLRenderContextInfo);
     procedure UnApply(var rci: TGLRenderContextInfo);
-    function IsTextureEnabled(Index: Integer): Boolean;
+    function IsTextureEnabled(Index: Integer): Boolean; inline;
     function Add: TGLTextureExItem;
     property Items[index: Integer]: TGLTextureExItem read GetItems write
     SetItems; default;
@@ -733,10 +735,17 @@ var
 type
   TFriendlyImage = class(TGLBaseImage);
 
+
+function xgl(): TGLMultitextureCoordinator; inline;
+begin
+  Result := TGLMultitextureCoordinator(vCurrentGLContext.MultitextureCoordinator);
+end;
+
 // Dummy methods for CPP
 //
 function TGLTextureImage.GetTextureTarget: TGLTextureTarget;
 begin
+  Result := ttNoShape;
 end;
 
 function TGLTextureImage.GetHeight: Integer;
@@ -2415,7 +2424,7 @@ procedure TGLTexture.Apply(var rci: TGLRenderContextInfo);
     case MappingMode of
       tmmCubeMapReflection, tmmCubeMapNormal:
         begin
-          m := rci.PipelineTransformation.ViewMatrix;
+          m := rci.PipelineTransformation.ViewMatrix^;
           NormalizeMatrix(m);
           TransposeMatrix(m);
           rci.GLStates.SetGLTextureMatrix(m);
@@ -2427,7 +2436,7 @@ procedure TGLTexture.Apply(var rci: TGLRenderContextInfo);
             begin
               m := TGLLightSource(Items[0]).AbsoluteMatrix;
               NormalizeMatrix(m);
-              mm := rci.PipelineTransformation.ViewMatrix;
+              mm := rci.PipelineTransformation.ViewMatrix^;
               NormalizeMatrix(mm);
               TransposeMatrix(mm);
               m := MatrixMultiply(m, mm);
@@ -2440,7 +2449,7 @@ procedure TGLTexture.Apply(var rci: TGLRenderContextInfo);
           m.Y := VectorNegate(rci.cameraDirection);
           m.Z := rci.cameraUp;
           m.W := WHmgPoint;
-          mm := rci.PipelineTransformation.ViewMatrix;
+          mm := rci.PipelineTransformation.ViewMatrix^;
           NormalizeMatrix(mm);
           TransposeMatrix(mm);
           m := MatrixMultiply(m, mm);
@@ -2466,7 +2475,7 @@ begin
       ActiveTextureEnabled[FTextureHandle.Target] := True;
     end;
 
-    if not rci.GLStates.ForwardContext then
+{    if not rci.GLStates.ForwardContext then}
     begin
       if FTextureHandle.Target = ttTextureCube then
         SetCubeMapTextureMatrix;
@@ -2477,7 +2486,7 @@ begin
       xgl.MapTexCoordToMain;
     end;
   end
-  else if not rci.GLStates.ForwardContext then
+  else {if not rci.GLStates.ForwardContext then}
   begin // default
     xgl.MapTexCoordToMain;
   end;
@@ -2486,7 +2495,7 @@ end;
 procedure TGLTexture.UnApply(var rci: TGLRenderContextInfo);
 begin
   if not Disabled
-    and not rci.GLStates.ForwardContext then
+    {and not rci.GLStates.ForwardContext} then
   begin
     // Multisample image do not work with FFP
     if FTextureHandle.Target in [ttNoShape, ttTexture2DMultisample, ttTexture2DMultisampleArray] then
@@ -2534,13 +2543,13 @@ begin
         SetGLTextureMatrix(textureMatrix^)
       else if FTextureHandle.Target = ttTextureCube then
       begin
-        m := rci.PipelineTransformation.ModelViewMatrix;
+        m := rci.PipelineTransformation.ModelViewMatrix^;
         NormalizeMatrix(m);
         TransposeMatrix(m);
         rci.GLStates.SetGLTextureMatrix(m);
       end;
 
-      if not ForwardContext then
+      {if not ForwardContext then}
       begin
         GL.TexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, cTextureMode[FTextureMode]);
         GL.TexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, FEnvColor.AsAddress);
@@ -2554,7 +2563,7 @@ end;
 procedure TGLTexture.UnApplyAsTextureN(n: Integer; var rci: TGLRenderContextInfo;
   reloadIdentityTextureMatrix: boolean);
 begin
-  if not rci.GLStates.ForwardContext then
+{  if not rci.GLStates.ForwardContext then}
   begin
     // Multisample image do not work with FFP
     if (FTextureHandle.Target = ttTexture2DMultisample) or
@@ -2938,7 +2947,7 @@ begin
       cTextureCompareMode[fTextureCompareMode]);
     GL.TexParameteri(target, GL_TEXTURE_COMPARE_FUNC,
       cGLComparisonFunctionToGLEnum[fTextureCompareFunc]);
-    if not FTextureHandle.RenderingContext.GLStates.ForwardContext then
+{    if not FTextureHandle.RenderingContext.GLStates.ForwardContext then}
       GL.TexParameteri(target, GL_DEPTH_TEXTURE_MODE,
         cDepthTextureMode[fDepthTextureMode]);
   end;

@@ -18,6 +18,8 @@ uses
   
   OpenGLTokens,
   GLScene,
+  GLPersistentClasses,
+  GLVectorTypes,
   GLTexture,
   GLVectorGeometry,
   GLRenderContextInfo,

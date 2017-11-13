@@ -32,6 +32,7 @@ uses
   System.SysUtils,
 
   GLVectorTypes,
+  GLPersistentClasses,
   GLApplicationFileIO,
   GLVectorGeometry,
   GLVectorLists,

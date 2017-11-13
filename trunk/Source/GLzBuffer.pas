@@ -49,7 +49,8 @@ uses
   GLTextureFormat,
   XOpenGL,
   GLVectorTypes,
-  GLCoordinates;
+  GLCoordinates,
+  GLPersistentClasses;
 
 
 type
@@ -118,7 +119,7 @@ type
 
     procedure Refresh;
     function FastScreenToVector(x, y: Integer): TAffineVector;
-    function FastVectorToScreen(vec: TAffineVector): TAffineVector;
+    function FastVectorToScreen(const vec: TAffineVector): TAffineVector;
 
     function PixelToWorld(const x, y: Integer): TAffineVector;
     function WorldToPixel(const aPoint: TAffineVector; out pixX, pixY: integer;
@@ -304,7 +305,7 @@ end;
 function TGLzBuffer.GetDepthBuffer(CalcVectors: Boolean; ContextIsActive:
   boolean): PZArray;
 begin
-  if ContextIsActive = True then
+  if ContextIsActive then
   begin
     GL.ReadPixels(0, 0, FWidth, FHeight, GL_DEPTH_COMPONENT, GL_FLOAT, FData);
   end
@@ -318,7 +319,7 @@ begin
     end;
   end;
 
-  if CalcVectors = True then
+  if CalcVectors then
     DoCalcVectors;
   Result := FData;
 end;
@@ -490,7 +491,7 @@ begin
   result.Z := lb.Z + riVec.Z * Rlerp + UpVec.Z * Ulerp;
 end;
 
-function TGLzBuffer.FastVectorToScreen(Vec: TAffineVector): TAffineVector;
+function TGLzBuffer.FastVectorToScreen(const Vec: TAffineVector): TAffineVector;
 var
   v0, v1, x, y, z: Single;
 begin
@@ -1130,10 +1131,10 @@ var
   d2, d4, d5, d6, d8: single;
   shad2, shad4, shad5, shad6, shad8: single;
 
-  function ComputeIlum: Integer;
+  function ComputeIlum: Integer; //PALOFF
   begin
     //---Lighting---
-    if FDepthFade = True then
+    if FDepthFade then
     begin
       Result := Round(SCol.a * (pixZ * 10 - 9));
       if Result < 0 then
@@ -1167,7 +1168,7 @@ begin
     begin
       ipixX := Trunc(pixX);
       ipixY := Trunc(pixY);
-      if (FSoft = True) and (ipixY > 0) then
+      if (FSoft ) and (ipixY > 0) then
       begin //---soft shadows---
         modx := Frac(pixX);
         //extract the fraction part only - used to interpolate soft shadow edges

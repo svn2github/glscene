@@ -22,6 +22,8 @@ uses
   System.Math,
 
   OpenGLTokens,
+  GLPersistentClasses,
+  GLStrings,
   GLCoordinates,
   GLVectorTypes,
   GLObjects,
@@ -52,18 +54,15 @@ type
     FRedrawAtOnce: Boolean;
     MoveX, MoveY: TGLFloat;
     FRenderStatus: TGUIDrawResult;
-
     FAlphaChannel: Single;
     FRotation: TGLFloat;
     FNoZWrite: Boolean;
-
     BlockRendering: Boolean;
     RenderingCount: Integer;
     BlockedCount: Integer;
     GuiDestroying: Boolean;
     FDoChangesOnProgress: Boolean;
     FAutosize: Boolean;
-
     procedure SetGUIRedraw(value: Boolean);
     procedure SetDoChangesOnProgress(const Value: Boolean);
     procedure SetAutosize(const Value: Boolean);
@@ -72,32 +71,24 @@ type
       renderChildren: Boolean);
     procedure RenderFooter(var rci: TGLRenderContextInfo; renderSelf,
       renderChildren: Boolean);
-
     procedure SetGuiLayout(NewGui: TGLGuiLayout); virtual;
-    procedure SetGuiLayoutName(NewName: TGLGuiComponentName);
-
+    procedure SetGuiLayoutName(const NewName: TGLGuiComponentName);
     procedure Notification(AComponent: TComponent; Operation: TOperation);
       override;
-
     procedure SetRotation(const val: TGLFloat);
     procedure SetAlphaChannel(const val: Single);
     function StoreAlphaChannel: Boolean;
     procedure SetNoZWrite(const val: Boolean);
-
   public
     procedure BlockRender;
     procedure UnBlockRender;
-
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
     procedure NotifyChange(Sender: TObject); override;
     procedure DoChanges; virtual;
     procedure MoveGUI(XRel, YRel: Single);
     procedure PlaceGUI(XPos, YPos: Single);
-
     procedure DoProgress(const progressTime: TProgressTimes); override;
-
     procedure DoRender(var rci: TGLRenderContextInfo; renderSelf, renderChildren:
       Boolean); override;
     procedure InternalRender(var rci: TGLRenderContextInfo; renderSelf,
@@ -110,7 +101,6 @@ type
     property GuiLayout: TGLGuiLayout read FGuiLayout write SetGuiLayout;
     property GuiLayoutName: TGLGuiComponentName read FGuiLayoutName write
       SetGuiLayoutName;
-
     {This the ON-SCREEN rotation of the GuiComponent. 
        Rotatation=0 is handled faster. }
     property Rotation: TGLFloat read FRotation write SetRotation;
@@ -120,7 +110,6 @@ type
     {If True, GuiComponent will not write to Z-Buffer. 
        GuiComponent will STILL be maskable by ZBuffer test. }
     property NoZWrite: Boolean read FNoZWrite write SetNoZWrite;
-
     property DoChangesOnProgress: Boolean read FDoChangesOnProgress write
       SetDoChangesOnProgress;
     property Visible;
@@ -414,7 +403,7 @@ type
       Y: Integer); override;
     procedure InternalMouseUp(Shift: TShiftState; Button: TGLMouseButton; X, Y:
       Integer); override;
-    procedure SetGuiLayoutNameChecked(newName: TGLGuiComponentName);
+    procedure SetGuiLayoutNameChecked(const newName: TGLGuiComponentName);
     procedure SetGuiLayout(NewGui: TGLGuiLayout); override;
     procedure SetGroup(const val: Integer);
   public
@@ -452,7 +441,7 @@ type
     procedure InternalKeyDown(var Key: Word; Shift: TShiftState); override;
     procedure InternalKeyUp(var Key: Word; Shift: TShiftState); override;
     procedure SetFocused(Value: Boolean); override;
-    procedure SetGuiLayoutNamePressed(newName: TGLGuiComponentName);
+    procedure SetGuiLayoutNamePressed(const newName: TGLGuiComponentName);
     procedure SetGuiLayout(NewGui: TGLGuiLayout); override;
     procedure SetBitBtn(AValue: TGLMaterial);
     procedure DestroyHandle; override;
@@ -553,15 +542,12 @@ type
     procedure SetPos(const val: Single);
     procedure SetPageSize(const val: Single);
     procedure SetHorizontal(const val: Boolean);
-    procedure SetGuiLayoutKnobName(newName: TGLGuiComponentName);
+    procedure SetGuiLayoutKnobName(const newName: TGLGuiComponentName);
     procedure SetGuiLayout(NewGui: TGLGuiLayout); override;
-
     function GetScrollPosY(ScrollPos: Single): Single;
     function GetYScrollPos(Y: Single): Single;
-
     function GetScrollPosX(ScrollPos: Single): Single;
     function GetXScrollPos(X: Single): Single;
-
     procedure InternalMouseDown(Shift: TShiftState; Button: TGLMouseButton; X,
       Y: Integer); override;
     procedure InternalMouseUp(Shift: TShiftState; Button: TGLMouseButton; X, Y:
@@ -569,7 +555,6 @@ type
     procedure InternalMouseMove(Shift: TShiftState; X, Y: Integer); override;
   public
     constructor Create(AOwner: TComponent); override;
-
     procedure StepUp;
     procedure StepDown;
     procedure PageUp;
@@ -631,7 +616,7 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Clear;
-    function Add(Data: array of string): Integer; overload;
+    function Add(const Data: array of string): Integer; overload;
     function Add(const Data: string): Integer; overload;
     procedure SetText(Data: string);
     procedure Notification(AComponent: TComponent; Operation: TOperation);
@@ -803,7 +788,7 @@ begin
   end;
 end;
 
-procedure TGLBaseComponent.SetGuiLayoutName(NewName: TGLGuiComponentName);
+procedure TGLBaseComponent.SetGuiLayoutName(const NewName: TGLGuiComponentName);
 
 begin
   if FGuiLayoutName <> NewName then
@@ -836,8 +821,6 @@ begin
   inherited;
 end;
 
-// SetRotation
-//
 
 procedure TGLBaseComponent.SetRotation(const val: TGLFloat);
 begin
@@ -848,8 +831,6 @@ begin
   end;
 end;
 
-// SetAlphaChannel
-//
 
 procedure TGLBaseComponent.SetAlphaChannel(const val: Single);
 begin
@@ -942,16 +923,12 @@ begin
   end;
 end;
 
-// StoreAlphaChannel
-//
 
 function TGLBaseComponent.StoreAlphaChannel: Boolean;
 begin
   Result := (FAlphaChannel <> 1);
 end;
 
-// SetNoZWrite
-//
 
 procedure TGLBaseComponent.SetNoZWrite(const val: Boolean);
 begin
@@ -1698,7 +1675,9 @@ begin
 
 end;
 
+//------------------------
 { base font control }
+//------------------------
 
 constructor TGLBaseFontControl.Create(AOwner: TComponent);
 
@@ -2398,7 +2377,7 @@ begin
   inherited;
 end;
 
-procedure TGLCheckBox.SetGuiLayoutNameChecked(newName: TGLGuiComponentName);
+procedure TGLCheckBox.SetGuiLayoutNameChecked(const newName: TGLGuiComponentName);
 
 begin
   if FGuiLayoutNameChecked <> NewName then
@@ -2574,7 +2553,7 @@ begin
     Pressed := False;
 end;
 
-procedure TGLButton.SetGuiLayoutNamePressed(newName: TGLGuiComponentName);
+procedure TGLButton.SetGuiLayoutNamePressed(const newName: TGLGuiComponentName);
 
 begin
   if FGuiLayoutNamePressed <> NewName then
@@ -3136,7 +3115,7 @@ begin
   end;
 end;
 
-procedure TGLScrollbar.SetGuiLayoutKnobName(newName: TGLGuiComponentName);
+procedure TGLScrollbar.SetGuiLayoutKnobName(const newName: TGLGuiComponentName);
 
 begin
   if newName <> FGuiLayoutKnobName then
@@ -3836,7 +3815,7 @@ begin
   NotifyChange(Self);
 end;
 
-function TGLStringGrid.Add(Data: array of string): Integer;
+function TGLStringGrid.Add(const Data: array of string): Integer;
 var
   XC: Integer;
 begin

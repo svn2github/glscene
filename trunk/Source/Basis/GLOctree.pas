@@ -134,7 +134,7 @@ type
     function GetTrianglesFromNodesIntersectingCube(const ObjAABB: TAABB;
       const ObjToSelf, SelfToObj: TMatrix): TAffineVectorList;
     {  Checks if an AABB intersects a face on the octree }
-    function AABBIntersect(const AABB: TAABB; M1to2, M2to1: TMatrix;
+    function AABBIntersect(const AABB: TAABB; const M1to2, M2to1: TMatrix;
       Triangles: TAffineVectorList = nil): Boolean;
     // function SphereIntersect(position:TAffineVector; radius:single);
   end;
@@ -172,7 +172,7 @@ end;
 // Notes : Triangle should be defined in clockwise order a,b,c
 // Return: TRUE if point is in triangle, FALSE if not.
 // -----------------------------------------------------------------------
-function CheckPointInTriangle(Point, A, B, C: TAffineVector): Boolean;
+function CheckPointInTriangle(const Point, A, B, C: TAffineVector): Boolean;
 var
   Total_angles: Single;
   V1, V2, V3: TAffineVector;
@@ -552,14 +552,14 @@ var
   B, C, Max: Single;
 
   procedure ISECT(VV0, VV1, VV2, D0, D1, D2: Single;
-    var Isect0, Isect1: Single);
+    out Isect0, Isect1: Single);
   begin
     Isect0 := VV0 + (VV1 - VV0) * D0 / (D0 - D1);
     Isect1 := VV0 + (VV2 - VV0) * D0 / (D0 - D2);
   end;
 
   function COMPUTE_INTERVALS(VV0, VV1, VV2, D0, D1, D2, D0D1, D0D2: Single;
-    var Isect0, Isect1: Single): Integer;
+    out Isect0, Isect1: Single): Integer;
   begin
     Result := 0;
     if (D0D1 > 0.0) then
@@ -1434,7 +1434,7 @@ begin
   end; // end for i nodes
 end;
 
-function TGLOctree.AABBIntersect(const AABB: TAABB; M1to2, M2to1: TMatrix;
+function TGLOctree.AABBIntersect(const AABB: TAABB; const M1to2, M2to1: TMatrix;
   Triangles: TAffineVectorList = nil): Boolean;
 var
   TriList: TAffineVectorList;

@@ -44,51 +44,41 @@ uses
   GLRenderContextInfo,
   GLBaseClasses,
   GLContext,
-  GLVectorTypes;
+  GLVectorTypes,
+  GLPipeLineTransformation;
 
 type
   TGLMaterialMultiProxy = class;
 
-  // TGLMaterialMultiProxyMaster
-  //
   {MasterObject description for a MultiProxy object. }
   TGLMaterialMultiProxyMaster = class(TGLInterfacedCollectionItem, IGLMaterialLibrarySupported)
   private
-     
     FMasterObject: TGLBaseSceneObject;
     FMasterLibMaterial: TGLLibMaterial;
     FTempLibMaterialName: TGLLibMaterialName;
     FDistanceMin2, FDistanceMax2: Single;
-
     procedure SetMasterLibMaterialName(const Value: TGLLibMaterialName);
     function GetMasterLibMaterialName: TGLLibMaterialName;
-
     // Implementing IGLMaterialLibrarySupported.
     function GetMaterialLibrary: TGLAbstractMaterialLibrary;
   protected
-    
     function GetDisplayName: string; override;
     procedure SetMasterObject(const Val: TGLBaseSceneObject);
     procedure SetDistanceMin(const Val: Single);
     procedure SetDistanceMax(const Val: Single);
     function GetDistanceMin: Single;
     function GetDistanceMax: Single;
-
   public
-    
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
-
     function OwnerObject: TGLMaterialMultiProxy;
     procedure NotifyChange;
-
     {Specifies the Material, that current master object will use.
        Provides a faster way to access FMasterLibMaterial, compared to
        MasterLibMaterialName }
     property MasterLibMaterial: TGLLibMaterial read FMasterLibMaterial write FMasterLibMaterial stored False;
   published
-    
     {Specifies the Master object which will be proxy'ed. }
     property MasterObject: TGLBaseSceneObject read FMasterObject write SetMasterObject;
     {Specifies the Material, that current master object will use. }
@@ -99,72 +89,52 @@ type
     property DistanceMax: Single read GetDistanceMax write SetDistanceMax;
   end;
 
-  // TGLMaterialMultiProxyMasters
-  //
   {Collection of TGLMaterialMultiProxyMaster. }
   TGLMaterialMultiProxyMasters = class(TOwnedCollection)
   private
-     
-
   protected
-    
     procedure SetItems(index: Integer; const Val: TGLMaterialMultiProxyMaster);
     function GetItems(index: Integer): TGLMaterialMultiProxyMaster;
     procedure Update(Item: TCollectionItem); override;
     procedure Notification(AComponent: TComponent); virtual;
   public
-    
     constructor Create(AOwner: TPersistent);
-
     function Add: TGLMaterialMultiProxyMaster; overload;
     function Add(Master: TGLBaseSceneObject; DistanceMin, DistanceMax: Single): TGLMaterialMultiProxyMaster; overload;
     function Add(Master: TGLBaseSceneObject; MasterLibMaterial: TGLLibMaterial; DistanceMin, DistanceMax: Single): TGLMaterialMultiProxyMaster; overload;
     property Items[index: Integer]: TGLMaterialMultiProxyMaster read GetItems write SetItems; default;
-
     procedure NotifyChange;
     procedure EndUpdate; override;
   end;
 
-  // TGLMaterialMultiProxy
-  //
-   {Multiple Proxy object. 
+   {Multiple Proxy object.
       This proxy has multiple Master objects, which are individually made visible
       depending on a Distance to the camera criterion. It can be used to implement
       discreet level of detail directly for static objects, or objects that
-      go through cyclic animation. 
+      go through cyclic animation.
       For dimensionsn raycasting and silhouette purposes, the first Master is used
       (item zero in the MasterObjects collection). }
   TGLMaterialMultiProxy = class(TGLBaseSceneObject)
   private
-     
     FMasterObjects: TGLMaterialMultiProxyMasters;
     FRendering: Boolean; // internal use (loop protection)
     FMaterialLibrary: TGLMaterialLibrary;
     procedure SetMaterialLibrary(const Value: TGLMaterialLibrary);
   protected
-    
     procedure SetMasterObjects(const Val: TGLMaterialMultiProxyMasters);
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
-
     function PrimaryMaster: TGLBaseSceneObject;
-
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
     procedure Assign(Source: TPersistent); override;
     procedure DoRender(var rci: TGLRenderContextInfo; renderSelf, renderChildren: Boolean); override;
-
     function AxisAlignedDimensionsUnscaled: TVector; override;
     function RayCastIntersect(const rayStart, rayVector: TVector; intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean; override;
     function GenerateSilhouette(const silhouetteParameters: TGLSilhouetteParameters): TGLSilhouette; override;
-
   published
-    
     property MasterObjects: TGLMaterialMultiProxyMasters read FMasterObjects write SetMasterObjects;
     property MaterialLibrary: TGLMaterialLibrary read FMaterialLibrary write SetMaterialLibrary;
-
     property ObjectsSorting;
     property Direction;
     property PitchAngle;
@@ -188,24 +158,18 @@ implementation
 // ------------------ TGLMaterialMultiProxyMaster ------------------
 // ------------------
 
- 
-//
 constructor TGLMaterialMultiProxyMaster.Create(Collection: TCollection);
 begin
   inherited Create(Collection);
 
 end;
 
- 
-//
 destructor TGLMaterialMultiProxyMaster.Destroy;
 begin
   MasterObject := nil;
   inherited Destroy;
 end;
 
-// Assign
-//
 procedure TGLMaterialMultiProxyMaster.Assign(Source: TPersistent);
 begin
   if Source is TGLMaterialMultiProxyMaster then
@@ -220,8 +184,6 @@ begin
     inherited;
 end;
 
-// OwnerObject
-//
 function TGLMaterialMultiProxyMaster.OwnerObject: TGLMaterialMultiProxy;
 begin
   if Collection = nil then
@@ -230,15 +192,11 @@ begin
     Result := TGLMaterialMultiProxy(TGLMaterialMultiProxyMasters(Collection).GetOwner);
 end;
 
-// NotifyChange
-//
 procedure TGLMaterialMultiProxyMaster.NotifyChange;
 begin
   TGLMaterialMultiProxyMasters(Collection).NotifyChange;
 end;
 
-// GetDisplayName
-//
 function TGLMaterialMultiProxyMaster.GetDisplayName: string;
 begin
   if MasterObject <> nil then
@@ -248,8 +206,6 @@ begin
   Result := Result + Format(' [%.2f; %.2f[', [DistanceMin, DistanceMax]);
 end;
 
-// SetMasterObject
-//
 procedure TGLMaterialMultiProxyMaster.SetMasterObject(const Val: TGLBaseSceneObject);
 begin
   if FMasterObject <> Val then
@@ -263,8 +219,6 @@ begin
   end;
 end;
 
-// SetDistanceMin
-//
 procedure TGLMaterialMultiProxyMaster.SetDistanceMin(const Val: Single);
 var
   tmp: Single;
@@ -277,8 +231,6 @@ begin
   end;
 end;
 
-// SetDistanceMax
-//
 procedure TGLMaterialMultiProxyMaster.SetDistanceMax(const Val: Single);
 var
   tmp: Single;
@@ -291,8 +243,6 @@ begin
   end;
 end;
 
-// GetMaterialLibrary
-//
 function TGLMaterialMultiProxyMaster.GetMaterialLibrary: TGLAbstractMaterialLibrary;
 begin
   if OwnerObject = nil then
@@ -301,22 +251,16 @@ begin
     Result := OwnerObject.FMaterialLibrary;
 end;
 
-// GetDistanceMax
-//
 function TGLMaterialMultiProxyMaster.GetDistanceMax: Single;
 begin
   Result := sqrt(FDistanceMax2);
 end;
 
-// GetDistanceMin
-//
 function TGLMaterialMultiProxyMaster.GetDistanceMin: Single;
 begin
   Result := sqrt(FDistanceMin2);
 end;
 
-// SetMasterLibMaterialName
-//
 procedure TGLMaterialMultiProxyMaster.SetMasterLibMaterialName(
   const Value: TGLLibMaterialName);
 begin
@@ -333,8 +277,6 @@ begin
   end;
 end;
 
-// GetMasterLibMaterialName
-//
 function TGLMaterialMultiProxyMaster.GetMasterLibMaterialName: TGLLibMaterialName;
 begin
   Result := OwnerObject.FMaterialLibrary.GetNameOfLibMaterial(FMasterLibMaterial);
@@ -347,45 +289,33 @@ end;
 // ------------------ TGLMaterialMultiProxyMasters ------------------
 // ------------------
 
- 
-//
 constructor TGLMaterialMultiProxyMasters.Create(AOwner: TPersistent);
 begin
   inherited Create(AOwner, TGLMaterialMultiProxyMaster);
 end;
 
-// SetItems
-//
 procedure TGLMaterialMultiProxyMasters.SetItems(index: Integer;
   const Val: TGLMaterialMultiProxyMaster);
 begin
   inherited Items[index] := Val;
 end;
 
-// GetItems
-//
 function TGLMaterialMultiProxyMasters.GetItems(index: Integer): TGLMaterialMultiProxyMaster;
 begin
   Result := TGLMaterialMultiProxyMaster(inherited Items[index]);
 end;
 
-// Update
-//
 procedure TGLMaterialMultiProxyMasters.Update(Item: TCollectionItem);
 begin
   inherited;
   NotifyChange;
 end;
 
-// Add (simple)
-//
 function TGLMaterialMultiProxyMasters.Add: TGLMaterialMultiProxyMaster;
 begin
   Result := (inherited Add) as TGLMaterialMultiProxyMaster;
 end;
 
-// Add (classic params)
-//
 function TGLMaterialMultiProxyMasters.Add(Master: TGLBaseSceneObject;
   DistanceMin, DistanceMax: Single): TGLMaterialMultiProxyMaster;
 begin
@@ -397,8 +327,6 @@ begin
   EndUpdate;
 end;
 
-// Notification
-//
 procedure TGLMaterialMultiProxyMasters.Notification(AComponent: TComponent);
 var
   I: Integer;
@@ -409,16 +337,12 @@ begin
         FMasterObject := nil;
 end;
 
-// NotifyChange
-//
 procedure TGLMaterialMultiProxyMasters.NotifyChange;
 begin
   if (UpdateCount = 0) and (GetOwner <> nil) and (GetOwner is TGLUpdateAbleComponent) then
     TGLUpdateAbleComponent(GetOwner).NotifyChange(Self);
 end;
 
-// EndUpdate
-//
 procedure TGLMaterialMultiProxyMasters.EndUpdate;
 begin
   inherited EndUpdate;
@@ -428,8 +352,6 @@ begin
 end;
 
 
-// Add
-//
 function TGLMaterialMultiProxyMasters.Add(Master: TGLBaseSceneObject;
   MasterLibMaterial: TGLLibMaterial;
   DistanceMin, DistanceMax: Single): TGLMaterialMultiProxyMaster;
@@ -447,8 +369,6 @@ end;
 // ------------------ TGLMaterialMultiProxy ------------------
 // ------------------
 
- 
-//
 constructor TGLMaterialMultiProxy.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
@@ -456,16 +376,12 @@ begin
   FMasterObjects := TGLMaterialMultiProxyMasters.Create(Self);
 end;
 
- 
-//
 destructor TGLMaterialMultiProxy.Destroy;
 begin
   inherited Destroy;
   FMasterObjects.Free;
 end;
 
-// Notification
-//
 procedure TGLMaterialMultiProxy.Notification(AComponent: TComponent; Operation: TOperation);
 begin
   if Operation = opRemove then
@@ -475,16 +391,12 @@ begin
   inherited;
 end;
 
-// SetMasterObjects
-//
 procedure TGLMaterialMultiProxy.SetMasterObjects(const Val: TGLMaterialMultiProxyMasters);
 begin
   FMasterObjects.Assign(Val);
   StructureChanged;
 end;
 
-// Assign
-//
 procedure TGLMaterialMultiProxy.Assign(Source: TPersistent);
 begin
   if Source is TGLMaterialMultiProxy then
@@ -492,8 +404,6 @@ begin
   inherited;
 end;
 
-// Render
-//
 procedure TGLMaterialMultiProxy.DoRender(var rci: TGLRenderContextInfo;
   renderSelf, renderChildren: Boolean);
 var
@@ -516,7 +426,7 @@ begin
         oldProxySubObject := rci.proxySubObject;
         rci.proxySubObject := True;
         with rci.PipelineTransformation do
-          ModelMatrix := MatrixMultiply(mpMaster.MasterObject.Matrix, ModelMatrix);
+          SetModelMatrix(MatrixMultiply(mpMaster.MasterObject.Matrix, ModelMatrix^));
         if (mpMaster.MasterObject is TGLCustomSceneObject) and (FMaterialLibrary <> nil) then
         begin
           TGLCustomSceneObject(mpMaster.MasterObject).Material.QuickAssignMaterial(
@@ -537,8 +447,6 @@ begin
   ClearStructureChanged;
 end;
 
-// PrimaryMaster
-//
 function TGLMaterialMultiProxy.PrimaryMaster: TGLBaseSceneObject;
 begin
   if MasterObjects.Count > 0 then
@@ -547,8 +455,6 @@ begin
     Result := nil;
 end;
 
-// AxisAlignedDimensions
-//
 function TGLMaterialMultiProxy.AxisAlignedDimensionsUnscaled: TVector;
 var
   Master: TGLBaseSceneObject;
@@ -560,8 +466,6 @@ begin
     Result := inherited AxisAlignedDimensionsUnscaled;
 end;
 
-// RayCastIntersect
-//
 function TGLMaterialMultiProxy.RayCastIntersect(const rayStart, rayVector: TVector;
   intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean;
 var
@@ -597,8 +501,6 @@ begin
     Result := False;
 end;
 
-// GenerateSilhouette
-//
 function TGLMaterialMultiProxy.GenerateSilhouette(
   const silhouetteParameters: TGLSilhouetteParameters): TGLSilhouette;
 var
@@ -611,8 +513,6 @@ begin
     Result := nil;
 end;
 
-// SetMaterialLibrary
-//
 procedure TGLMaterialMultiProxy.SetMaterialLibrary(
   const Value: TGLMaterialLibrary);
 var

@@ -103,11 +103,10 @@ type
     property LifeColors;
   end;
 
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
 implementation
-
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -116,8 +115,6 @@ implementation
 // ------------------ TGLPerlinPFXManager ------------------
 // ------------------
 
- 
-//
 constructor TGLPerlinPFXManager.Create(aOwner: TComponent);
 begin
   inherited;
@@ -131,15 +128,11 @@ begin
   ColorMode := scmInner;
 end;
 
- 
-//
 destructor TGLPerlinPFXManager.Destroy;
 begin
   inherited Destroy;
 end;
 
-// SetTexMapSize
-//
 procedure TGLPerlinPFXManager.SetTexMapSize(const val: Integer);
 begin
   if val <> FTexMapSize then
@@ -153,8 +146,6 @@ begin
   end;
 end;
 
-// SetNoiseSeed
-//
 procedure TGLPerlinPFXManager.SetNoiseSeed(const val: Integer);
 begin
   if val <> FNoiseSeed then
@@ -164,8 +155,6 @@ begin
   end;
 end;
 
-// SetNoiseScale
-//
 procedure TGLPerlinPFXManager.SetNoiseScale(const val: Integer);
 begin
   if val <> FNoiseScale then
@@ -175,8 +164,6 @@ begin
   end;
 end;
 
-// SetNoiseAmplitude
-//
 procedure TGLPerlinPFXManager.SetNoiseAmplitude(const val: Integer);
 begin
   if val <> FNoiseAmplitude then
@@ -190,8 +177,6 @@ begin
   end;
 end;
 
-// SetSmoothness
-//
 procedure TGLPerlinPFXManager.SetSmoothness(const val: Single);
 begin
   if FSmoothness <> val then
@@ -201,8 +186,6 @@ begin
   end;
 end;
 
-// SetBrightness
-//
 procedure TGLPerlinPFXManager.SetBrightness(const val: Single);
 begin
   if FBrightness <> val then
@@ -212,8 +195,6 @@ begin
   end;
 end;
 
-// SetGamma
-//
 procedure TGLPerlinPFXManager.SetGamma(const val: Single);
 begin
   if FGamma <> val then
@@ -223,8 +204,6 @@ begin
   end;
 end;
 
-// BindTexture
-//
 procedure TGLPerlinPFXManager.PrepareImage(bmp32: TGLBitmap32;
   var texFormat: Integer);
 

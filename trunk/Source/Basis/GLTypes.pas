@@ -196,7 +196,7 @@ type
       procedure Offset(const ADeltaX, ADeltaY, ADeltaZ: Single);
   end;
 
-//GL Point Arrays
+
   TGLPoint2DArray = array of TGLPoint2D;
   TGLPoint3DArray = array of TGLPoint3D;
 
@@ -324,9 +324,8 @@ type
     ///Vertices: array[0..2] of TGLPoint3D;
     ///function Area;
   end;
-
-  TGLTriangleArray = array [0 .. (MaxInt shr 8)] of TGLTriangle;
   PGLTriangleArray = ^TGLTriangleArray;
+  TGLTriangleArray = array [0 .. (MaxInt shr 8)] of TGLTriangle;
 
 
 
@@ -1105,7 +1104,7 @@ end;
 
 
 { TGLPoint2D }
-//
+
 function TGLPoint2D.Create(X, Y : Single): TGLPoint2D;
 begin
   Result.X := X;
@@ -1146,7 +1145,7 @@ begin
 end;
 
 { TGLPoint3D }
-//
+
 function TGLPoint3D.Create(X, Y, Z: Single): TGLPoint3D;
 begin
   Result.X := X;
@@ -1186,7 +1185,7 @@ begin
 end;
 
 { TGLVector2D }
-//
+
 function TGLVector2D.Create(const AX, AY, AW: Single): TGLVector2D;
 begin
   Result.X := AX;
@@ -1220,7 +1219,7 @@ end;
 
 function TGLVector2D.Norm: Single;
 begin
-  result := Sqr(Self.X) + Sqr(Self.Y);
+  Result := Sqr(Self.X) + Sqr(Self.Y);
 end;
 
 function TGLVector2D.Normalize: TGLVector2D;

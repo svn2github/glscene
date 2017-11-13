@@ -20,8 +20,11 @@ interface
 
 uses
   System.Classes,
+  System.Types,  
   
   OpenGLTokens,
+  GLPersistentClasses,
+  GLPipelineTransformation,
   GLVectorTypes,
   GLScene,
   GLVectorGeometry,
@@ -36,8 +39,6 @@ uses
 
 type
 
-  // TShadowPlaneOptions
-  //
   TShadowPlaneOption = (spoUseStencil, spoScissor, spoTransparent, spoIgnoreZ);
   TShadowPlaneOptions = set of TShadowPlaneOption;
 
@@ -46,8 +47,6 @@ const
 
 type
 
-  // TGLShadowPlane
-  //
   {A simple shadow plane.
      This mirror requires a stencil buffer for optimal rendering!
      The object is a mix between a plane and a proxy object, in that the plane
@@ -64,34 +63,25 @@ type
      }
   TGLShadowPlane = class(TGLPlane)
   private
-     
     FRendering: Boolean;
     FShadowingObject: TGLBaseSceneObject;
     FShadowedLight: TGLLightSource;
     FShadowColor: TGLColor;
     FShadowOptions: TShadowPlaneOptions;
     FOnBeginRenderingShadows, FOnEndRenderingShadows: TNotifyEvent;
-
   protected
-    
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
     procedure SetShadowingObject(const val: TGLBaseSceneObject);
     procedure SetShadowedLight(const val: TGLLightSource);
     procedure SetShadowColor(const val: TGLColor);
     procedure SetShadowOptions(const val: TShadowPlaneOptions);
-
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
     procedure DoRender(var ARci: TGLRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
-
     procedure Assign(Source: TPersistent); override;
-
   published
-    
           {Selects the object to mirror. 
              If nil, the whole scene is mirrored. }
     property ShadowingObject: TGLBaseSceneObject read FShadowingObject write SetShadowingObject;
@@ -103,7 +93,6 @@ type
     property ShadowColor: TGLColor read FShadowColor write SetShadowColor;
 
     {Controls rendering options. 
-       
         spoUseStencil: plane area is stenciled, prevents shadowing
           objects to be visible on the sides of the mirror (stencil buffer
           must be active in the viewer too). It also allows shadows to
@@ -124,9 +113,9 @@ type
     property OnEndRenderingShadows: TNotifyEvent read FOnEndRenderingShadows write FOnEndRenderingShadows;
   end;
 
-  //-------------------------------------------------------------
-  //-------------------------------------------------------------
-  //-------------------------------------------------------------
+//-------------------------------------------------------------
+//-------------------------------------------------------------
+//-------------------------------------------------------------
 implementation
 //-------------------------------------------------------------
 //-------------------------------------------------------------
@@ -135,8 +124,6 @@ implementation
 // ------------------ TGLShadowPlane ------------------
 // ------------------
 
- 
-//
 
 constructor TGLShadowPlane.Create(AOwner: Tcomponent);
 const
@@ -149,16 +136,12 @@ begin
 end;
 
  
-//
-
 destructor TGLShadowPlane.Destroy;
 begin
   inherited;
   FShadowColor.Free;
 end;
 
-// DoRender
-//
 
 procedure TGLShadowPlane.DoRender(var ARci: TGLRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);
@@ -241,10 +224,10 @@ begin
               ShadowedLight.AbsolutePosition);
           end;
 
-          ARci.PipelineTransformation.ViewMatrix := MatrixMultiply(
+          ARci.PipelineTransformation.SetViewMatrix(MatrixMultiply(
             shadowMat,
-            ARci.PipelineTransformation.ViewMatrix);
-          ARci.PipelineTransformation.ModelMatrix := IdentityHmgMatrix;
+            ARci.PipelineTransformation.ViewMatrix^));
+          ARci.PipelineTransformation.SetModelMatrix(IdentityHmgMatrix);
 
           Disable(stCullFace);
           Enable(stNormalize);
@@ -278,7 +261,7 @@ begin
             if FShadowingObject.Parent <> nil then
               MatrixMultiply(ModelMat, FShadowingObject.Parent.AbsoluteMatrix, ModelMat);
             MatrixMultiply(ModelMat, FShadowingObject.LocalMatrix^, ModelMat);
-            ARci.PipelineTransformation.ModelMatrix := ModelMat;
+            ARci.PipelineTransformation.SetModelMatrix(ModelMat);
             FShadowingObject.DoRender(ARci, True, (FShadowingObject.Count > 0));
           end
           else
@@ -309,8 +292,6 @@ begin
   end;
 end;
 
-// Notification
-//
 
 procedure TGLShadowPlane.Notification(AComponent: TComponent; Operation: TOperation);
 begin
@@ -324,8 +305,6 @@ begin
   inherited;
 end;
 
-// SetShadowingObject
-//
 
 procedure TGLShadowPlane.SetShadowingObject(const val: TGLBaseSceneObject);
 begin
@@ -340,8 +319,6 @@ begin
   end;
 end;
 
-// SetShadowedLight
-//
 
 procedure TGLShadowPlane.SetShadowedLight(const val: TGLLightSource);
 begin
@@ -356,16 +333,12 @@ begin
   end;
 end;
 
-// SetShadowColor
-//
 
 procedure TGLShadowPlane.SetShadowColor(const val: TGLColor);
 begin
   FShadowColor.Assign(val);
 end;
 
-// Assign
-//
 
 procedure TGLShadowPlane.Assign(Source: TPersistent);
 begin
@@ -379,8 +352,6 @@ begin
   inherited Assign(Source);
 end;
 
-// SetShadowOptions
-//
 
 procedure TGLShadowPlane.SetShadowOptions(const val: TShadowPlaneOptions);
 begin
@@ -395,9 +366,9 @@ end;
 //-------------------------------------------------------------
 //-------------------------------------------------------------
 initialization
-  //-------------------------------------------------------------
-  //-------------------------------------------------------------
-  //-------------------------------------------------------------
+//-------------------------------------------------------------
+//-------------------------------------------------------------
+//-------------------------------------------------------------
 
   RegisterClasses([TGLShadowPlane]);
 

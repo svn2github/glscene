@@ -20,6 +20,7 @@ uses
   System.Classes,
   System.SysUtils,
 
+  GLPersistentClasses,
   GLVectorTypes,
   GLVectorFileObjects,
   GLScene,
@@ -258,8 +259,6 @@ end;
 // ------------------ TGLPortal ------------------
 // ------------------
 
- 
-//
 constructor TGLPortal.Create(AOwner: TComponent);
 begin
   FMeshObjects := TPortalMeshObjectList.CreateOwned(Self);

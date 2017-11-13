@@ -168,9 +168,9 @@ var
   IsDesignTime: Boolean = False;
   vProjectTargetName: TProjectTargetNameFunc;
 
-function GLPoint(const x, y: Integer): TGLPoint;
+function GLPoint(const x, y: Integer): TGLPoint; inline;
 {Builds a TColor from Red Green Blue components. }
-function RGB(const r, g, b: Byte): TColor; {$NODEFINE RGB}
+function RGB(const r, g, b: Byte): TColor; {$NODEFINE RGB} inline;
 function GetGLRect(const aLeft, aTop, aRight, aBottom: Integer): TGLRect;
 { Increases or decreases the width and height of the specified rectangle.
    Adds dx units to the left and right ends of the rectangle and dy units to
@@ -200,23 +200,23 @@ function RelativePath(const S: string): string;
    If the platform has none, should return a value derived from the highest
    precision time reference available, avoiding, if possible, timers that
    allocate specific system resources. }
-procedure QueryPerformanceCounter(var val: Int64);
-{Returns the frequency of the counter used by QueryPerformanceCounter. 
+procedure QueryPerformanceCounter(out val: Int64);
+{Returns the frequency of the counter used by QueryPerformanceCounter.
    Return value is in ticks per second (Hz), returns False if no precision
    counter is available. }
-function QueryPerformanceFrequency(var val: Int64): Boolean;
+function QueryPerformanceFrequency(out val: Int64): Boolean;
 
-{Starts a precision timer. 
+{Starts a precision timer.
    Returned value should just be considered as 'handle', even if it ain't so.
    Default platform implementation is to use QueryPerformanceCounter and
    QueryPerformanceFrequency, if higher precision references are available,
    they should be used. The timer will and must be stopped/terminated/released
    with StopPrecisionTimer. }
 function StartPrecisionTimer: Int64;
-{Computes time elapsed since timer start. 
+{Computes time elapsed since timer start.
    Return time lap in seconds. }
 function PrecisionTimerLap(const precisionTimer: Int64): Double;
-{Computes time elapsed since timer start and stop timer. 
+{Computes time elapsed since timer start and stop timer.
    Return time lap in seconds. }
 function StopPrecisionTimer(const precisionTimer: Int64): Double;
 
@@ -228,8 +228,8 @@ function GLSTime: Double;
 function RDTSC: Int64;
 
 function GLOKMessageBox(const Text, Caption: string): Integer;
-procedure GLLoadBitmapFromInstance(Instance: LongInt; ABitmap: TBitmap; AName: string);
-procedure ShowHTMLUrl(Url: string);
+procedure GLLoadBitmapFromInstance(Instance: LongInt; ABitmap: TBitmap; const AName: string);
+procedure ShowHTMLUrl(const Url: string);
 function GLGetTickCount: int64;
 procedure SetExeDirectory;
 function GetDecimalSeparator: Char;
@@ -239,7 +239,7 @@ procedure SetDecimalSeparator(AValue: Char);
 function AnsiStartsText(const ASubText, AText: string): Boolean;
 
 // Classes.pas
-function IsSubComponent(const AComponent: TComponent): Boolean;
+function IsSubComponent(const AComponent: TComponent): Boolean; inline;
 procedure MakeSubComponent(const AComponent: TComponent; const Value: Boolean);
 
 function FindUnitName(anObject: TObject): string; overload;
@@ -298,7 +298,7 @@ begin
   Result := Application.MessageBox(PChar(Text), PChar(Caption), MB_OK);
 end;
 
-procedure GLLoadBitmapFromInstance(Instance: LongInt; ABitmap: TBitmap; AName: string);
+procedure GLLoadBitmapFromInstance(Instance: LongInt; ABitmap: TBitmap; const AName: string);
 begin
 {$IFDEF MSWINDOWS}
   ABitmap.Handle := LoadBitmap(Instance, PChar(AName));
@@ -318,7 +318,7 @@ begin
 {$ENDIF}
 end;
 
-procedure ShowHTMLUrl(Url: string);
+procedure ShowHTMLUrl(const Url: string);
 begin
 {$IFDEF MSWINDOWS}
   ShellExecute(0, 'open', PChar(Url), nil, nil, SW_SHOW);
@@ -328,7 +328,7 @@ begin
 {$ENDIF}
 end;
 
-function GLPoint(const x, y: Integer): TGLPoint;
+function GLPoint(const x, y: Integer): TGLPoint; inline;
 begin
   Result.X := x;
   Result.Y := y;
@@ -520,7 +520,7 @@ begin
 end;
 {$ENDIF}
 
-procedure QueryPerformanceCounter(var val: Int64);
+procedure QueryPerformanceCounter(out val: Int64);
 {$IFDEF MSWINDOWS}
 begin
   Windows.QueryPerformanceCounter(val);
@@ -537,7 +537,7 @@ begin
 end;
 {$ENDIF}
 
-function QueryPerformanceFrequency(var val: Int64): Boolean;
+function QueryPerformanceFrequency(out val: Int64): Boolean;
 {$IFDEF MSWINDOWS}
 begin
   Result := Boolean(Windows.QueryPerformanceFrequency(val));
@@ -591,7 +591,7 @@ begin
   with SystemTime do
     Result := (wHour * (MinsPerHour * SecsPerMin * MSecsPerSec) +
              wMinute * (SecsPerMin * MSecsPerSec) +
-             wSecond * MSecsPerSec +
+               wSecond * MSecsPerSec +
              wMilliSeconds) - vGLSStartTime;
   // Hack to fix time precession
   if Result - vLastTime = 0 then

@@ -20,33 +20,33 @@ interface
 uses
   System.Classes,
    
-  GLMaterial, OpenGLTokens, GLCrossPlatform, GLScene, GLColor,
-  GLBaseClasses, GLRenderContextInfo, GLState, GLContext;
+  GLMaterial, 
+  OpenGLTokens, 
+  GLCrossPlatform, 
+  GLScene, 
+  GLColor,
+  GLBaseClasses, 
+  GLRenderContextInfo, 
+  GLState, 
+  GLContext;
 
 type
   TGLLineSettings = class(TGLUpdateAbleObject)
   private
-     
     FColor: TGLColor;
     FWidth: Single;
     FPattern: TGLushort;
-
     FForceMaterial: Boolean;
-
     procedure SetPattern(const value: TGLushort);
     procedure SetColor(const v: TGLColor);
     procedure SetWidth(const Value: Single);
     procedure SetForceMaterial(v: boolean);
-
   public
-    
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
     procedure Apply(var rci: TGLRenderContextInfo);
     procedure UnApply(var rci: TGLRenderContextInfo);
-
   published
-    
     property Width: Single read FWidth write SetWidth;
     property Color: TGLColor read FColor write SetColor;
     property Pattern: TGLushort read FPattern write SetPattern default $FFFF;
@@ -59,35 +59,25 @@ type
   TGLHiddenLineShader = class(TGLShader)
   private
     FPassCount: integer;
-
     FLineSmooth: Boolean;
     FSolid: Boolean;
-
     FBackGroundColor: TGLColor;
-
     FFrontLine: TGLLineSettings;
     FBackLine: TGLLineSettings;
-
     FLighting: Boolean;
     FShadeModel: TGLShadeModel;
-
     procedure SetlineSmooth(v: boolean);
     procedure SetSolid(v: boolean);
     procedure SetBackgroundColor(AColor: TGLColor);
     procedure SetLighting(v: boolean);
     procedure SetShadeModel(const val: TGLShadeModel);
-
   protected
     procedure DoApply(var rci: TGLRenderContextInfo; Sender: TObject); override;
     function DoUnApply(var rci: TGLRenderContextInfo): Boolean; override;
-
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
   published
-    
     property FrontLine: TGLLineSettings read FFrontLine write FFrontLine;
     property BackLine: TGLLineSettings read FBackLine write FBackLine;
     {Line smoothing control }
@@ -114,8 +104,6 @@ implementation
 // ------------------ TGLLineSettings ------------------
 // ------------------
 
- 
-//
 
 constructor TGLLineSettings.Create(AOwner: TPersistent);
 begin
@@ -127,8 +115,6 @@ begin
   ForceMaterial := false;
 end;
 
- 
-//
 
 destructor TGLLineSettings.Destroy;
 begin
@@ -136,8 +122,6 @@ begin
   inherited;
 end;
 
-// SetPattern
-//
 
 procedure TGLLineSettings.SetPattern(const value: TGLushort);
 begin
@@ -148,8 +132,6 @@ begin
   end;
 end;
 
-// SetColor
-//
 
 procedure TGLLineSettings.SetColor(const v: TGLColor);
 begin
@@ -157,8 +139,6 @@ begin
   NotifyChange(Self);
 end;
 
-// SetWidth
-//
 
 procedure TGLLineSettings.SetWidth(const Value: Single);
 begin
@@ -169,8 +149,6 @@ end;
 var
   IgnoreMatSave: boolean;
 
-  // Apply
-  //
 
 procedure TGLLineSettings.Apply(var rci: TGLRenderContextInfo);
 begin
@@ -192,8 +170,6 @@ begin
   end;
 end;
 
-// UnApply
-//
 
 procedure TGLLineSettings.UnApply(var rci: TGLRenderContextInfo);
 begin
@@ -201,8 +177,6 @@ begin
     rci.ignoreMaterials := IgnoreMatSave;
 end;
 
-// SetForceMaterial
-//
 
 procedure TGLLineSettings.SetForceMaterial(v: boolean);
 begin
@@ -217,8 +191,6 @@ end;
 // ------------------ TGLHiddenLineShader ------------------
 // ------------------
 
- 
-//
 
 constructor TGLHiddenLineShader.Create(AOwner: TComponent);
 begin
@@ -235,8 +207,6 @@ begin
   FShadeModel := smDefault;
 end;
 
- 
-//
 
 destructor TGLHiddenLineShader.Destroy;
 begin
@@ -246,8 +216,6 @@ begin
   inherited;
 end;
 
-// DoApply
-//
 
 procedure TGLHiddenLineShader.DoApply(var rci: TGLRenderContextInfo; Sender:
   TObject);
@@ -291,8 +259,6 @@ begin
   rci.GLStates.SetPolygonOffset(1, 2);
 end;
 
-// DoUnApply
-//
 
 function TGLHiddenLineShader.DoUnApply(var rci: TGLRenderContextInfo): Boolean;
 
@@ -358,8 +324,6 @@ begin
   end;
 end;
 
-// SetBackgroundColor
-//
 
 procedure TGLHiddenLineShader.SetBackgroundColor(AColor: TGLColor);
 begin
@@ -367,8 +331,6 @@ begin
   NotifyChange(Self);
 end;
 
-// SetlineSmooth
-//
 
 procedure TGLHiddenLineShader.SetlineSmooth(v: boolean);
 begin
@@ -379,8 +341,6 @@ begin
   end;
 end;
 
-// SetLighting
-//
 
 procedure TGLHiddenLineShader.SetLighting(v: boolean);
 begin
@@ -391,8 +351,6 @@ begin
   end;
 end;
 
-// SetSolid
-//
 
 procedure TGLHiddenLineShader.SetSolid(v: boolean);
 begin
@@ -403,8 +361,6 @@ begin
   end;
 end;
 
-// SetShadeModel
-//
 
 procedure TGLHiddenLineShader.SetShadeModel(const val: TGLShadeModel);
 begin

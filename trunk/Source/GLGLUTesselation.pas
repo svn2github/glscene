@@ -19,6 +19,7 @@ uses
   
   OpenGLAdapter,
   OpenGLTokens,
+  GLPersistentClasses,
   GLVectorTypes,
   GLVectorFileObjects,
   GLVectorLists,

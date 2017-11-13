@@ -29,13 +29,14 @@ uses
   GLColor,
   GLRenderContextInfo,
   GLState,
-  GLVectorTypes;
+  GLVectorTypes,
+  GLPersistentClasses,
+  GLPipelineTransformation,
+  GLXCollection;
 
 
 type
 
-  // TMirrorOptions
-  //
   TGLMirrorOption = (moUseStencil, moOpaque, moMirrorPlaneClip, moClearZBuffer);
   TGLMirrorOptions = set of TGLMirrorOption;
 
@@ -44,11 +45,8 @@ const
 
 type
 
-  // TMirrorShapes  ORL
   TMirrorShapes = (msRect, msDisk);
 
-  // TGLMirror
-  //
   {A simple plane mirror. 
      This mirror requires a stencil buffer for optimal rendering! 
      The object is a mix between a plane and a proxy object, in that the plane
@@ -59,7 +57,6 @@ type
      materials/mirror demo before using this component. }
   TGLMirror = class(TGLSceneObject)
   private
-     
     FRendering: Boolean;
     FMirrorObject: TGLBaseSceneObject;
     FWidth, FHeight: Single;
@@ -69,42 +66,31 @@ type
     FShape: TMirrorShapes; //ORL
     FRadius: Single; //ORL
     FSlices: Integer; //ORL
-
   protected
-    
     procedure Notification(AComponent: TComponent; Operation: TOperation);
       override;
     procedure SetMirrorObject(const val: TGLBaseSceneObject);
     procedure SetMirrorOptions(const val: TGLMirrorOptions);
     procedure ClearZBufferArea(aBuffer: TGLSceneBuffer);
-
     procedure SetHeight(AValue: Single);
     procedure SetWidth(AValue: Single);
-
     procedure SetRadius(const aValue: Single); //ORL
     procedure SetSlices(const aValue: Integer); //ORL
     procedure SetShape(aValue: TMirrorShapes); //ORL
     function GetRadius: single; //ORL
     function GetSlices: Integer; //ORL
-
   public
-    
     constructor Create(AOwner: TComponent); override;
-
     procedure DoRender(var ARci: TGLRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
     procedure BuildList(var ARci: TGLRenderContextInfo); override;
-
     procedure Assign(Source: TPersistent); override;
     function AxisAlignedDimensionsUnscaled: TVector; override;
-
   published
-    
     { Selects the object to mirror. If nil, the whole scene is mirrored. }
     property MirrorObject: TGLBaseSceneObject read FMirrorObject write
       SetMirrorObject;
     {Controls rendering options. 
-       
         moUseStencil: mirror area is stenciled, prevents reflected
           objects to be visible on the sides of the mirror (stencil buffer
           must be active in the viewer)
@@ -119,26 +105,23 @@ type
     }
     property MirrorOptions: TGLMirrorOptions read FMirrorOptions write
       SetMirrorOptions default cDefaultMirrorOptions;
-
     property Height: Single read FHeight write SetHeight;
     property Width: Single read FWidth write SetWidth;
-
     {Fired before the object's mirror images are rendered. }
     property OnBeginRenderingMirrors: TNotifyEvent read FOnBeginRenderingMirrors
       write FOnBeginRenderingMirrors;
     {Fired after the object's mirror images are rendered. }
     property OnEndRenderingMirrors: TNotifyEvent read FOnEndRenderingMirrors
       write FOnEndRenderingMirrors;
-
     property Radius: Single read FRadius write SetRadius; //ORL
     property Slices: Integer read FSlices write SetSlices default 16; //ORL
     property Shape: TMirrorShapes read FShape write SetShape default msRect;
     //ORL
   end;
 
-  //-------------------------------------------------------------
-  //-------------------------------------------------------------
-  //-------------------------------------------------------------
+//-------------------------------------------------------------
+//-------------------------------------------------------------
+//-------------------------------------------------------------
 implementation
 //-------------------------------------------------------------
 //-------------------------------------------------------------
@@ -149,8 +132,6 @@ implementation
 // ------------------
 
  
-//
-
 constructor TGLMirror.Create(AOwner: Tcomponent);
 begin
   inherited Create(AOwner);
@@ -166,8 +147,6 @@ begin
   Shape := msRect; //ORL
 end;
 
-// DoRender
-//
 
 procedure TGLMirror.DoRender(var ARci: TGLRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);
@@ -232,7 +211,7 @@ begin
         end;
 
         ARci.PipelineTransformation.Push;
-        ARci.PipelineTransformation.ModelMatrix := IdentityHmgMatrix;
+        ARci.PipelineTransformation.SetModelMatrix(IdentityHmgMatrix);
 
         Disable(stCullFace);
         Enable(stNormalize);
@@ -249,8 +228,8 @@ begin
         refMat := MakeReflectionMatrix(
           AffineVectorMake(AbsolutePosition),
           AffineVectorMake(AbsoluteDirection));
-        curMat := MatrixMultiply(refMat, ARci.PipelineTransformation.ViewMatrix);
-        ARci.PipelineTransformation.ViewMatrix := curMat;
+        curMat := MatrixMultiply(refMat, ARci.PipelineTransformation.ViewMatrix^);
+        ARci.PipelineTransformation.SetViewMatrix(curMat);
         Scene.SetupLights(CurrentBuffer.LimitOf[limLights]);
 
         // mirror geometry and render master
@@ -269,7 +248,7 @@ begin
           if FMirrorObject.Parent <> nil then
             MatrixMultiply(ModelMat, FMirrorObject.Parent.AbsoluteMatrix, ModelMat);
           MatrixMultiply(ModelMat, FMirrorObject.LocalMatrix^, ModelMat);
-          ARci.PipelineTransformation.ModelMatrix := ModelMat;
+          ARci.PipelineTransformation.SetModelMatrix(ModelMat);
           FMirrorObject.DoRender(ARci, ARenderSelf, FMirrorObject.Count > 0);
         end
         else
@@ -313,8 +292,6 @@ begin
   end;
 end;
 
-// BuildList
-//
 
 procedure TGLMirror.BuildList(var ARci: TGLRenderContextInfo);
 var
@@ -340,8 +317,6 @@ begin
   end;
 end;
 
-// BuildList
-//
 
 procedure TGLMirror.ClearZBufferArea(aBuffer: TGLSceneBuffer);
 var
@@ -393,8 +368,6 @@ begin
   end;
 end;
 
-// Notification
-//
 
 procedure TGLMirror.Notification(AComponent: TComponent; Operation: TOperation);
 begin
@@ -403,8 +376,6 @@ begin
   inherited;
 end;
 
-// SetMirrorObject
-//
 
 procedure TGLMirror.SetMirrorObject(const val: TGLBaseSceneObject);
 begin
@@ -419,8 +390,6 @@ begin
   end;
 end;
 
-// SetWidth
-//
 
 procedure TGLMirror.SetWidth(AValue: Single);
 begin
@@ -431,8 +400,6 @@ begin
   end;
 end;
 
-// SetHeight
-//
 
 procedure TGLMirror.SetHeight(AValue: Single);
 begin
@@ -443,8 +410,6 @@ begin
   end;
 end;
 
-// Assign
-//
 
 procedure TGLMirror.Assign(Source: TPersistent);
 begin
@@ -458,8 +423,6 @@ begin
   inherited Assign(Source);
 end;
 
-// AxisAlignedDimensions
-//
 
 function TGLMirror.AxisAlignedDimensionsUnscaled: TVector;
 begin
@@ -467,8 +430,6 @@ begin
     0.5 * Abs(FHeight), 0);
 end;
 
-// SetMirrorOptions
-//
 
 procedure TGLMirror.SetMirrorOptions(const val: TGLMirrorOptions);
 begin
@@ -481,8 +442,6 @@ end;
 
 //ORL add-ons
 
-// SetRadius
-//
 
 procedure TGLMirror.SetRadius(const aValue: Single);
 begin
@@ -493,16 +452,12 @@ begin
   end;
 end;
 
-// GetRadius
-//
 
 function TGLMirror.GetRadius: single;
 begin
   result := FRadius;
 end;
 
-// SetSlices
-//
 
 procedure TGLMirror.SetSlices(const aValue: Integer);
 begin
@@ -517,16 +472,12 @@ begin
   end;
 end;
 
-// GetSlices
-//
 
 function TGLMirror.GetSlices: Integer;
 begin
   result := FSlices;
 end;
 
-// SetShape
-//
 
 procedure TGLMirror.SetShape(aValue: TMirrorShapes);
 begin
@@ -541,9 +492,9 @@ end;
 //-------------------------------------------------------------
 //-------------------------------------------------------------
 initialization
-  //-------------------------------------------------------------
-  //-------------------------------------------------------------
-  //-------------------------------------------------------------
+//-------------------------------------------------------------
+//-------------------------------------------------------------
+//-------------------------------------------------------------
 
   RegisterClasses([TGLMirror]);
 

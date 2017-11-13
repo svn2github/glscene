@@ -22,6 +22,7 @@ uses
   GLVectorFileObjects,
   GLVectorLists,
   GLMaterial,
+  GLPersistentClasses,
   FileMD3;
 
 type

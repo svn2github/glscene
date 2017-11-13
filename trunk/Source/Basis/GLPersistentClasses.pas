@@ -135,11 +135,11 @@ type
     FGrowthDelta: integer;
   protected
     procedure Error; virtual;
-    function Get(Index: Integer): TObject;
+    function Get(Index: Integer): TObject; inline;
     procedure Put(Index: Integer; Item: TObject);
-    procedure SetCapacity(newCapacity: Integer);
-    procedure SetCount(NewCount: Integer);
-    function GetFirst: TObject;
+    procedure SetCapacity(newCapacity: Integer); inline;
+    procedure SetCount(NewCount: Integer); inline;
+    function GetFirst: TObject; inline;
     procedure SetFirst(item: TObject);
     function GetLast: TObject;
     procedure SetLast(item: TObject);
@@ -153,7 +153,7 @@ type
     procedure ReadFromFiler(reader: TVirtualReader); override;
     procedure ReadFromFilerWithEvent(reader: TVirtualReader;
       afterSenderObjectCreated: TNotifyEvent);
-    function Add(const item: TObject): Integer;
+    function Add(const item: TObject): Integer; inline;
     procedure AddNils(nbVals: Cardinal);
     procedure Delete(index: Integer);
     procedure DeleteItems(index: Integer; nbVals: Cardinal);
@@ -179,9 +179,9 @@ type
        its TList eponymous. }
     procedure Pack;
     {Empty the list without freeing the objects. }
-    procedure Clear; dynamic;
+    procedure Clear; virtual;
     {Empty the list and free the objects. }
-    procedure Clean; dynamic;
+    procedure Clean; virtual;
     {Empty the list, free the objects and Free self. }
     procedure CleanFree;
     function IndexOf(Item: TObject): Integer;
@@ -287,9 +287,9 @@ type
   TGLInterfacedCollectionItem = class(TCollectionItem, IInterface)
   protected
     // Implementing IInterface.
-    function QueryInterface(const IID: TGUID; out Obj): HResult; virtual; stdcall;
-    function _AddRef: Integer; virtual; stdcall;
-    function _Release: Integer; virtual; stdcall;
+    function QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
+    function _AddRef: Integer; stdcall;
+    function _Release: Integer; stdcall;
   end;
 
   {Triggered when file signature does not match. }
@@ -316,7 +316,7 @@ uses
 
 
 const
-  cDefaultListGrowthDelta = 16;
+  cDefaultListGrowthDelta = 64;
 
 const
   cVTInteger = 'Int';
@@ -1361,6 +1361,7 @@ var
    C  :TExtended80Rec; // Temporary variable to store 10 bytes floating point number in a Win64 application
 {$ENDIF}
 begin
+  Result := 0.0;
   {$IFDEF WIN64}
   if ReadValue = vaExtended then
   begin

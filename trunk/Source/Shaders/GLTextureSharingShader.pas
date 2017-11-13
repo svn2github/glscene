@@ -9,9 +9,8 @@
     it uses that material's texture. The referenced material settings will be ignored,
     but the texture's settings (like TextureMode, ImageGamma, ImageBrightness) will be used.
     Instead the local material settings (listed in the collection) will be used.
-    </p>
 
-   History :  
+   History :
      14/03/08 - Pascal - Initial version (contributed to GLScene)
      The whole history is logged in previous version of the unit
 
@@ -22,11 +21,24 @@ unit GLTextureSharingShader;
 interface
 
 uses
-  System.Classes, System.SysUtils,
+  System.Classes, 
+  System.SysUtils,
   
-  GLScene, GLVectorGeometry, GlColor, GLMaterial, GLStrings,
-  GLVectorFileObjects, XOpenGL, GLState, GLPersistentClasses,
-  GlCrossPlatform, GLCoordinates, GLRenderContextInfo;
+  GLScene, 
+  GLContext,
+  GLTexture,
+  GLVectorTypes,
+  GLVectorGeometry,
+  GlColor,
+  GLMaterial, 
+  GLStrings,
+  GLVectorFileObjects, 
+  XOpenGL, 
+  GLState, 
+  GLPersistentClasses,
+  GlCrossPlatform, 
+  GLCoordinates, 
+  GLRenderContextInfo;
 
 type
   TGLTextureSharingShader = class;
@@ -36,7 +48,6 @@ type
     FTextureMatrix: TMatrix;
     FNeedToUpdateTextureMatrix: Boolean;
     FTextureMatrixIsUnitary: Boolean;
-
     FLibMaterial: TGLLibMaterial;
     FTexOffset: TGLCoordinates2;
     FTexScale: TGLCoordinates2;
@@ -48,7 +59,6 @@ type
     FShininess: TShininess;
     FMaterialLibrary: TGLMaterialLibrary;
     FLibMaterialName: TGLLibMaterialName;
-
     procedure SetAmbient(const Value: TGLColor);
     procedure SetDiffuse(const Value: TGLColor);
     procedure SetEmission(const Value: TGLColor);
@@ -60,31 +70,24 @@ type
     procedure SetLibMaterial(const Value: TGLLibMaterial);
     procedure SetTexOffset(const Value: TGLCoordinates2);
     procedure SetTexScale(const Value: TGLCoordinates2);
-
     function GetTextureMatrix: TMatrix;
     function GetTextureMatrixIsUnitary: Boolean;
   protected
     procedure coordNotifychange(Sender: TObject);
     procedure OtherNotifychange(Sender: TObject);
-
     function GetDisplayName: string; override;
     function GetTextureSharingShader: TGLTextureSharingShader;
-
     // Implementing IGLMaterialLibrarySupported.
     function GetMaterialLibrary: TGLAbstractMaterialLibrary; virtual;
-
   public
     procedure Apply(var rci: TGLRenderContextInfo);
     procedure UnApply(var rci: TGLRenderContextInfo);
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
-
     property LibMaterial: TGLLibMaterial read FLibMaterial write SetLibMaterial;
-
     property TextureMatrix: TMatrix read GetTextureMatrix;
     property TextureMatrixIsUnitary: Boolean read GetTextureMatrixIsUnitary;
   published
-
     property TexOffset: TGLCoordinates2 read FTexOffset write SetTexOffset;
     property TexScale: TGLCoordinates2 read FTexScale write SetTexScale;
     property BlendingMode: TGLBlendingMode read FBlendingMode write SetBlendingMode;
@@ -126,13 +129,9 @@ type
     property Materials: TGLTextureSharingShaderMaterials read FMaterials write SetMaterials;
   end;
 
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
+//================================================
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
+//================================================
 
 { TGLTextureSharingShaderMaterial }
 
@@ -603,8 +602,10 @@ begin
   inherited Items[AIndex] := Value;
 end;
 
-
+//================================================
 initialization
+//================================================
+
   RegisterClasses([TGLTextureSharingShader, TGLTextureSharingShaderMaterials,
                    TGLTextureSharingShaderMaterial]);
 

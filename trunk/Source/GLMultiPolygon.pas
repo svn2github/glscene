@@ -51,16 +51,12 @@ uses
 
 type
 
-  // TGLContourNodes
-  //
   TGLContourNodes = class(TGLNodes)
   public
     
     procedure NotifyChange; override;
   end;
 
-  // TGLContour
-  //
   TGLContour = class(TCollectionItem)
   private
     FNodes: TGLContourNodes;
@@ -73,7 +69,7 @@ type
     procedure SetDescription(const Value: string);
 
   protected
-    procedure CreateNodes; dynamic;
+    procedure CreateNodes;
     procedure NodesChanged(Sender: TObject);
     function GetDisplayName: string; override;
 
@@ -83,52 +79,43 @@ type
     procedure Assign(Source: TPersistent); override;
 
   published
-    
+
     property Description: string read FDescription write SetDescription;
     {The nodes list.  }
     property Nodes: TGLContourNodes read FNodes write SetNodes;
-    {Number of divisions for each segment in spline modes. 
+    {Number of divisions for each segment in spline modes.
       Minimum 1 (disabled), ignored in lsmLines mode. }
     property Division: Integer read FDivision write SetDivision default 10;
-    {Default spline drawing mode. 
+    {Default spline drawing mode.
       This mode is used only for the curve, not for the rotation path. }
     property SplineMode: TGLLineSplineMode read FSplineMode write SetSplineMode default lsmLines;
   end;
 
   TGLContourClass = class of TGLContour;
 
-  // TGLContours
-  //
   TGLContours = class(TGLNotifyCollection)
   private
     function GetItems(index: Integer): TGLContour;
     procedure SetItems(index: Integer; const Value: TGLContour);
   protected
-
   public
     constructor Create(AOwner: TComponent); overload;
-    function Add: TGLContour;
-    function FindItemID(ID: Integer): TGLContour;
+    function Add: TGLContour; inline;
+    function FindItemID(ID: Integer): TGLContour; inline;
     property Items[index: Integer]: TGLContour read GetItems write SetItems; default;
     procedure GetExtents(var min, max: TAffineVector);
-
   end;
 
-  // TPolygonList
-  //
   TPolygonList = class(TPersistentObjectList)
   private
     FAktList: TAffineVectorList;
     function GetList(I: Integer): TAffineVectorList;
-
   public
     procedure Add;
     property AktList: TAffineVectorList read FAktList;
     property List[I: Integer]: TAffineVectorList read GetList;
   end;
 
-  // TMultiPolygonBase
-  //
   {Multipolygon is defined with multiple contours. 
      The contours have to be in the X-Y plane, otherwise they are projected
      to it (this is done automatically by the tesselator).
@@ -145,7 +132,6 @@ type
      outline will be recalculated. The ouline in fact is a list of GLVectorLists. }
   TMultiPolygonBase = class(TGLSceneObject)
   private
-     
     FContours: TGLContours;
     FOutline: TPolygonList;
     FContoursNormal: TAffineVector;
@@ -155,40 +141,29 @@ type
     procedure SetPath(i: Integer; const value: TGLContourNodes);
     function GetOutline: TPolygonList;
     procedure SetContoursNormal(const Value: TAffineVector);
-
   protected
-    
     procedure RenderTesselatedPolygon(textured: Boolean;
       normal: PAffineVector; invertNormals: Boolean);
     procedure RetrieveOutline(List: TPolygonList);
     procedure ContourChanged(Sender: TObject); virtual;
     //property PNormal:PAffineVector read FPNormal;
-
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
-
     procedure AddNode(const i: Integer; const coords: TGLCoordinates); overload;
     procedure AddNode(const i: Integer; const X, Y, Z: TGLfloat); overload;
     procedure AddNode(const i: Integer; const value: TVector); overload;
     procedure AddNode(const i: Integer; const value: TAffineVector); overload;
-
     property Path[i: Integer]: TGLContourNodes read GetPath write SetPath;
     property Outline: TPolygonList read GetOutline;
     property ContoursNormal: TAffineVector read FContoursNormal write SetContoursNormal;
-
     function AxisAlignedDimensionsUnscaled: TVector; override;
     procedure StructureChanged; override;
-
   published
-    
     property Contours: TGLContours read FContours write SetContours;
   end;
 
-  // TGLMultiPolygon
-  //
   {A polygon that can have holes and multiple contours. 
      Use the Path property to access a contour or one of the AddNode methods
      to add a node to a contour (contours are allocated automatically). }
@@ -198,24 +173,18 @@ type
     FParts: TPolygonParts;
 
   protected
-    
     procedure SetParts(const value: TPolygonParts);
-
   public
-    
     constructor Create(AOwner: TComponent); override;
-
     procedure Assign(Source: TPersistent); override;
     procedure BuildList(var rci: TGLRenderContextInfo); override;
-
   published
-    
     property Parts: TPolygonParts read FParts write SetParts default [ppTop, ppBottom];
   end;
 
-  //-------------------------------------------------------------
-  //-------------------------------------------------------------
-  //-------------------------------------------------------------
+//-------------------------------------------------------------
+//-------------------------------------------------------------
+//-------------------------------------------------------------
 implementation
 //-------------------------------------------------------------
 //-------------------------------------------------------------
@@ -287,8 +256,6 @@ end;
 // ------------------ TPolygonList ------------------
 // ------------------
 
-// Add
-//
 
 procedure TPolygonList.Add;
 begin
@@ -296,8 +263,6 @@ begin
   inherited Add(FAktList);
 end;
 
-// GetList
-//
 
 function TPolygonList.GetList(i: Integer): TAffineVectorList;
 begin
@@ -410,8 +375,6 @@ begin
   inherited Items[index] := value;
 end;
 
-// GetExtents
-//
 
 procedure TGLContours.GetExtents(var min, max: TAffineVector);
 var
@@ -438,8 +401,6 @@ end;
 
 { TMultiPolygonBase }
 
- 
-//
 
 constructor TMultiPolygonBase.Create(AOwner: TComponent);
 begin
@@ -450,8 +411,6 @@ begin
   FAxisAlignedDimensionsCache.X := -1;
 end;
 
- 
-//
 
 destructor TMultiPolygonBase.Destroy;
 begin
@@ -464,8 +423,6 @@ begin
   inherited;
 end;
 
-// Assign
-//
 
 procedure TMultiPolygonBase.Assign(Source: TPersistent);
 begin
@@ -476,8 +433,6 @@ begin
   inherited;
 end;
 
-// ContourChanged
-//
 
 procedure TMultiPolygonBase.ContourChanged(Sender: TObject);
 begin
@@ -490,48 +445,36 @@ begin
   end;
 end;
 
-// AddNode (vector)
-//
 
 procedure TMultiPolygonBase.AddNode(const i: Integer; const value: TVector);
 begin
   Path[i].AddNode(value);
 end;
 
-// AddNode (float)
-//
 
 procedure TMultiPolygonBase.AddNode(const i: Integer; const x, y, z: TGLfloat);
 begin
   Path[i].AddNode(x, y, z);
 end;
 
-// AddNode (coords)
-//
 
 procedure TMultiPolygonBase.AddNode(const i: Integer; const coords: TGLCoordinates);
 begin
   Path[i].AddNode(coords);
 end;
 
-// AddNode (affine vector)
-//
 
 procedure TMultiPolygonBase.AddNode(const I: Integer; const value: TAffineVector);
 begin
   Path[i].AddNode(value);
 end;
 
-// Assign
-//
 
 procedure TMultiPolygonBase.SetContours(const Value: TGLContours);
 begin
   FContours.Assign(Value);
 end;
 
-// GetOutline
-//
 
 function TMultiPolygonBase.GetOutline: TPolygonList;
 begin
@@ -543,8 +486,6 @@ begin
   Result := FOutline;
 end;
 
-// GetContour
-//
 
 function TMultiPolygonBase.GetPath(i: Integer): TGLContourNodes;
 begin
@@ -554,8 +495,6 @@ begin
   Result := Contours[i].Nodes;
 end;
 
-// SetContour
-//
 
 procedure TMultiPolygonBase.SetPath(i: Integer; const value: TGLContourNodes);
 begin
@@ -724,8 +663,6 @@ begin
   end;
 end;
 
-// RenderTesselatedPolygon
-//
 
 procedure TMultiPolygonBase.RenderTesselatedPolygon(textured: Boolean;
   normal: PAffineVector;
@@ -801,8 +738,6 @@ end;
 // ------------------ TGLMultiPolygon ------------------
 // ------------------
 
- 
-//
 
 constructor TGLMultiPolygon.Create(AOwner: TComponent);
 begin
@@ -810,8 +745,6 @@ begin
   FParts := [ppTop, ppBottom];
 end;
 
-// Assign
-//
 
 procedure TGLMultiPolygon.Assign(Source: TPersistent);
 begin
@@ -822,8 +755,6 @@ begin
   inherited;
 end;
 
-// BuildList
-//
 
 procedure TGLMultiPolygon.BuildList(var rci: TGLRenderContextInfo);
 var
@@ -844,8 +775,6 @@ begin
   end;
 end;
 
-// SetParts
-//
 
 procedure TGLMultiPolygon.SetParts(const value: TPolygonParts);
 begin
@@ -856,16 +785,12 @@ begin
   end;
 end;
 
-// SetContoursNormal
-//
 
 procedure TMultiPolygonBase.SetContoursNormal(const Value: TAffineVector);
 begin
   FContoursNormal := Value;
 end;
 
-// AxisAlignedDimensionsUnscaled
-//
 
 function TMultiPolygonBase.AxisAlignedDimensionsUnscaled: TVector;
 var
@@ -881,8 +806,6 @@ begin
   SetVector(Result, FAxisAlignedDimensionsCache);
 end;
 
-// StructureChanged
-//
 
 procedure TMultiPolygonBase.StructureChanged;
 begin
@@ -894,8 +817,6 @@ end;
 // ------------------ TGLContourNodes ------------------
 // ------------------
 
-// NotifyChange
-//
 
 procedure TGLContourNodes.NotifyChange;
 begin
@@ -907,9 +828,9 @@ end;
 //-------------------------------------------------------------
 //-------------------------------------------------------------
 initialization
-  //-------------------------------------------------------------
-  //-------------------------------------------------------------
-  //-------------------------------------------------------------
+//-------------------------------------------------------------
+//-------------------------------------------------------------
+//-------------------------------------------------------------
 
   RegisterClass(TGLMultiPolygon);
 

@@ -18,6 +18,7 @@ interface
 uses
   System.Classes,
   System.SysUtils,
+  System.UITypes,
   System.Math,
   Vcl.Graphics,
 
@@ -1017,14 +1018,14 @@ begin
 
   if esoRotateOnTwelveHours in ExtendedOptions then // spining around blue orb
   begin
-    if (HH>=14) and (FMorning=true) then
+    if (HH>=14) and (FMorning) then
     begin
       roll(180);
       for i:=0 to Stars.Count-1 do stars[i].RA:=Stars[i].RA+180;
       FMorning:=false;
     end;
 
-    if (HH>=2) and (HH<14) and (FMorning=false) then
+    if (HH>=2) and (HH<14) and (not FMorning) then
     begin
       roll(180);
       for i:=0 to Stars.Count-1 do stars[i].RA:=Stars[i].RA+180;

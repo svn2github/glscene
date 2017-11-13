@@ -25,6 +25,7 @@ uses
 
   OpenGLTokens,
   GLScene,
+  GLPersistentClasses,
   GLVectorGeometry,
   GLXCollection,
   GLSpline,

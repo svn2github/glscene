@@ -43,6 +43,8 @@ uses
   XOpenGL,
   GLState;
 
+const
+  cDefaultPointSize: Single = 1.0;
 
 type
 
@@ -264,11 +266,11 @@ type
     FPointParameters: TGLPointParameters;
     FStatic, FNoZWrite: Boolean;
   protected
-    function StoreSize: Boolean;
+    function StoreSize: Boolean; inline;
     procedure SetNoZWrite(const val: Boolean);
     procedure SetStatic(const val: Boolean);
     procedure SetSize(const val: Single);
-    procedure SetPositions(const val: TAffineVectorList);
+    procedure SetPositions(const val: TAffineVectorList); inline;
     procedure SetColors(const val: TVectorList);
     procedure SetStyle(const val: TGLPointStyle);
     procedure SetPointParameters(const val: TGLPointParameters);
@@ -349,7 +351,7 @@ type
     procedure SetLineColor(const Value: TGLColor);
     procedure SetLinePattern(const Value: TGLushort);
     procedure SetLineWidth(const val: Single);
-    function StoreLineWidth: Boolean;
+    function StoreLineWidth: Boolean; inline;
     procedure SetAntiAliased(const val: Boolean);
     {  Setup OpenGL states according to line style.
       You must call RestoreLineStyle after drawing your lines.
@@ -469,16 +471,17 @@ type
   TGLCube = class(TGLSceneObject)
   private
     FCubeSize: TAffineVector;
+    FCubeHalfSize: TAffineVector;
     FParts: TCubeParts;
     FNormalDirection: TNormalDirection;
-    function GetCubeWHD(const Index: Integer): TGLFloat;
-    procedure SetCubeWHD(Index: Integer; AValue: TGLFloat);
-    procedure SetParts(aValue: TCubeParts);
-    procedure SetNormalDirection(aValue: TNormalDirection);
+    function GetCubeWHD(const Index: Integer): TGLFloat; inline;
+    procedure SetCubeWHD(Index: Integer; AValue: TGLFloat); inline;
+    procedure SetParts(aValue: TCubeParts); inline;
+    procedure SetNormalDirection(aValue: TNormalDirection); inline;
   protected
     procedure DefineProperties(Filer: TFiler); override;
-    procedure ReadData(Stream: TStream);
-    procedure WriteData(Stream: TStream);
+    procedure ReadData(Stream: TStream); inline;
+    procedure WriteData(Stream: TStream); inline;
   public
     constructor Create(AOwner: TComponent); override;
     function GenerateSilhouette(const silhouetteParameters
@@ -582,7 +585,7 @@ type
     FSplineMode: TGLLineSplineMode;
   protected
     FNodes: TGLNodes;
-    procedure CreateNodes; dynamic;
+    procedure CreateNodes; virtual;
     procedure SetSplineMode(const val: TGLLineSplineMode);
     procedure SetDivision(const Value: Integer);
     procedure SetNodes(const aNodes: TGLNodes);
@@ -660,9 +663,9 @@ procedure CubeWireframeBuildList(var rci: TGLRenderContextInfo; Size: TGLFloat;
   Stipple: Boolean; const Color: TColorVector);
 
 
-var
-  TangentAttributeName: AnsiString = 'Tangent';
-  BinormalAttributeName: AnsiString = 'Binormal';
+const
+  TangentAttributeName: PAnsiChar = 'Tangent';
+  BinormalAttributeName: PAnsiChar = 'Binormal';
 
 // -------------------------------------------------------------
 // -------------------------------------------------------------
@@ -673,8 +676,7 @@ implementation
 // -------------------------------------------------------------
 // -------------------------------------------------------------
 
-const
-  cDefaultPointSize: Single = 1.0;
+
 
 procedure CubeWireframeBuildList(var rci: TGLRenderContextInfo; Size: TGLFloat;
   Stipple: Boolean; const Color: TColorVector);
@@ -1006,7 +1008,7 @@ end;
 
 procedure TGLPlane.BuildList(var rci: TGLRenderContextInfo);
 
-  procedure EmitVertex(ptr: PVertexRec); {$IFDEF GLS_INLINE}inline;{$ENDIF}
+  procedure EmitVertex(ptr: PVertexRec); inline;
   begin
     XGL.TexCoord2fv(@ptr^.TexCoord);
     GL.Vertex3fv(@ptr^.Position);
@@ -1026,8 +1028,8 @@ begin
   GL.Normal3fv(@ZVector);
   if GL.ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
   begin
-    TanLoc := GL.GetAttribLocation(rci.GLStates.CurrentProgram, PAnsiChar(TangentAttributeName));
-    BinLoc := GL.GetAttribLocation(rci.GLStates.CurrentProgram, PAnsiChar(BinormalAttributeName));
+    TanLoc := GL.GetAttribLocation(rci.GLStates.CurrentProgram, TangentAttributeName);
+    BinLoc := GL.GetAttribLocation(rci.GLStates.CurrentProgram, BinormalAttributeName);
     if TanLoc > -1 then
       GL.VertexAttrib3fv(TanLoc, @XVector);
     if BinLoc > -1 then
@@ -1298,7 +1300,7 @@ begin
   if FAlphaChannel <> 1 then
     rci.GLStates.SetGLMaterialAlphaChannel(GL_FRONT, FAlphaChannel);
 
-  mat := rci.PipelineTransformation.ModelViewMatrix;
+  mat := rci.PipelineTransformation.ModelViewMatrix^;
   // extraction of the "vecteurs directeurs de la matrice"
   // (dunno how they are named in english)
   w := FWidth * 0.5;
@@ -2299,6 +2301,8 @@ constructor TGLCube.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   FCubeSize := XYZVector;
+  FCubeHalfSize := VectorScale(FCubeSize, 0.5);
+
   FParts := [cpTop, cpBottom, cpFront, cpBack, cpLeft, cpRight];
   FNormalDirection := ndOutside;
   ObjectStyle := ObjectStyle + [osDirectDraw];
@@ -2306,21 +2310,35 @@ end;
 
 procedure TGLCube.BuildList(var rci: TGLRenderContextInfo);
 var
-  hw, hh, hd, nd: TGLFloat;
+  x1, x2, y1, y2, z1, z2: TGLfloat;
+  x1d, x2d, y1d, y2d, z1d, z2d: TGLfloat;
+  nd: TGLFloat;
   TanLoc, BinLoc: Integer;
 begin
   if FNormalDirection = ndInside then
     nd := -1
   else
     nd := 1;
-  hw := FCubeSize.X * 0.5;
-  hh := FCubeSize.Y * 0.5;
-  hd := FCubeSize.Z * 0.5;
+
+  x1 := -FCubeHalfSize.X;
+  x2 := -x1;
+  x1d := x1*nd;
+  x2d := x2*nd;
+
+  y1 := -FCubeHalfSize.Y;
+  y2 := -y1;
+  y1d := y1*nd;
+  y2d := y2*nd;
+
+  z1 := -FCubeHalfSize.Z;
+  z2 := -z1;
+  z1d := z1*nd;
+  z2d := z2*nd;
 
   if GL.ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
   begin
-    TanLoc := GL.GetAttribLocation(rci.GLStates.CurrentProgram, PAnsiChar(TangentAttributeName));
-    BinLoc := GL.GetAttribLocation(rci.GLStates.CurrentProgram, PAnsiChar(BinormalAttributeName));
+    TanLoc := GL.GetAttribLocation(rci.GLStates.CurrentProgram, TangentAttributeName);
+    BinLoc := GL.GetAttribLocation(rci.GLStates.CurrentProgram, BinormalAttributeName);
   end
   else
   begin
@@ -2328,120 +2346,73 @@ begin
     BinLoc := -1;
   end;
 
-  GL.Begin_(GL_TRIANGLES);
+  GL.Begin_(GL_QUADS);
+
   if cpFront in FParts then
   begin
     GL.Normal3f(0, 0, nd);
-    if TanLoc > -1 then
-      GL.VertexAttrib3f(TanLoc, nd, 0, 0);
-    if BinLoc > -1 then
-      GL.VertexAttrib3f(BinLoc, 0, nd, 0);
-    xgl.TexCoord2fv(@XYTexPoint);
-    GL.Vertex3f(hw, hh, hd);
-    xgl.TexCoord2fv(@YTexPoint);
-    GL.Vertex3f(-hw * nd, hh * nd, hd);
-    xgl.TexCoord2fv(@NullTexPoint);
-    GL.Vertex3f(-hw, -hh, hd);
-    GL.Vertex3f(-hw, -hh, hd);
-    xgl.TexCoord2fv(@XTexPoint);
-    GL.Vertex3f(hw * nd, -hh * nd, hd);
-    xgl.TexCoord2fv(@XYTexPoint);
-    GL.Vertex3f(hw, hh, hd);
+    if TanLoc > -1 then GL.VertexAttrib3f(TanLoc, nd, 0, 0);
+    if BinLoc > -1 then GL.VertexAttrib3f(BinLoc, 0, nd, 0);
+
+    xgl.TexCoord2fv(@XYTexPoint);    GL.Vertex3f(x2,  y2,   z2);
+    xgl.TexCoord2fv(@YTexPoint);     GL.Vertex3f(x1d, y2d,  z2);
+    xgl.TexCoord2fv(@NullTexPoint);  GL.Vertex3f(x1,  y1,   z2);
+    xgl.TexCoord2fv(@XTexPoint);     GL.Vertex3f(x2d, y1d,  z2);
   end;
   if cpBack in FParts then
   begin
     GL.Normal3f(0, 0, -nd);
-    if TanLoc > -1 then
-      GL.VertexAttrib3f(TanLoc, -nd, 0, 0);
-    if BinLoc > -1 then
-      GL.VertexAttrib3f(BinLoc, 0, nd, 0);
-    xgl.TexCoord2fv(@YTexPoint);
-    GL.Vertex3f(hw, hh, -hd);
-    xgl.TexCoord2fv(@NullTexPoint);
-    GL.Vertex3f(hw * nd, -hh * nd, -hd);
-    xgl.TexCoord2fv(@XTexPoint);
-    GL.Vertex3f(-hw, -hh, -hd);
-    GL.Vertex3f(-hw, -hh, -hd);
-    xgl.TexCoord2fv(@XYTexPoint);
-    GL.Vertex3f(-hw * nd, hh * nd, -hd);
-    xgl.TexCoord2fv(@YTexPoint);
-    GL.Vertex3f(hw, hh, -hd);
+    if TanLoc > -1 then GL.VertexAttrib3f(TanLoc, -nd, 0, 0);
+    if BinLoc > -1 then GL.VertexAttrib3f(BinLoc, 0, nd, 0);
+
+    xgl.TexCoord2fv(@YTexPoint);    GL.Vertex3f(x2,   y2,   z1);
+    xgl.TexCoord2fv(@NullTexPoint); GL.Vertex3f(x2d,  y1d,  z1);
+    xgl.TexCoord2fv(@XTexPoint);    GL.Vertex3f(x1,   y1,   z1);
+    xgl.TexCoord2fv(@XYTexPoint);   GL.Vertex3f(x1d,  y2d,  z1);
   end;
   if cpLeft in FParts then
   begin
     GL.Normal3f(-nd, 0, 0);
-    if TanLoc > -1 then
-      GL.VertexAttrib3f(TanLoc, 0, 0, nd);
-    if BinLoc > -1 then
-      GL.VertexAttrib3f(BinLoc, 0, nd, 0);
-    xgl.TexCoord2fv(@XYTexPoint);
-    GL.Vertex3f(-hw, hh, hd);
-    xgl.TexCoord2fv(@YTexPoint);
-    GL.Vertex3f(-hw, hh * nd, -hd * nd);
-    xgl.TexCoord2fv(@NullTexPoint);
-    GL.Vertex3f(-hw, -hh, -hd);
-    GL.Vertex3f(-hw, -hh, -hd);
-    xgl.TexCoord2fv(@XTexPoint);
-    GL.Vertex3f(-hw, -hh * nd, hd * nd);
-    xgl.TexCoord2fv(@XYTexPoint);
-    GL.Vertex3f(-hw, hh, hd);
+    if TanLoc > -1 then GL.VertexAttrib3f(TanLoc, 0, 0, nd);
+    if BinLoc > -1 then GL.VertexAttrib3f(BinLoc, 0, nd, 0);
+
+    xgl.TexCoord2fv(@XYTexPoint);   GL.Vertex3f(x1,   y2,   z2);
+    xgl.TexCoord2fv(@YTexPoint);    GL.Vertex3f(x1,   y2d,  z1d);
+    xgl.TexCoord2fv(@NullTexPoint); GL.Vertex3f(x1,   y1,   z1);
+    xgl.TexCoord2fv(@XTexPoint);    GL.Vertex3f(x1,   y1d,  z2d);
   end;
   if cpRight in FParts then
   begin
     GL.Normal3f(nd, 0, 0);
-    if TanLoc > -1 then
-      GL.VertexAttrib3f(TanLoc, 0, 0, -nd);
-    if BinLoc > -1 then
-      GL.VertexAttrib3f(BinLoc, 0, nd, 0);
-    xgl.TexCoord2fv(@YTexPoint);
-    GL.Vertex3f(hw, hh, hd);
-    xgl.TexCoord2fv(@NullTexPoint);
-    GL.Vertex3f(hw, -hh * nd, hd * nd);
-    xgl.TexCoord2fv(@XTexPoint);
-    GL.Vertex3f(hw, -hh, -hd);
-    GL.Vertex3f(hw, -hh, -hd);
-    xgl.TexCoord2fv(@XYTexPoint);
-    GL.Vertex3f(hw, hh * nd, -hd * nd);
-    xgl.TexCoord2fv(@YTexPoint);
-    GL.Vertex3f(hw, hh, hd);
+    if TanLoc > -1 then GL.VertexAttrib3f(TanLoc, 0, 0, -nd);
+    if BinLoc > -1 then GL.VertexAttrib3f(BinLoc, 0, nd, 0);
+
+    xgl.TexCoord2fv(@YTexPoint);    GL.Vertex3f(x2,   y2,   z2);
+    xgl.TexCoord2fv(@NullTexPoint); GL.Vertex3f(x2,   y1d,  z2d);
+    xgl.TexCoord2fv(@XTexPoint);    GL.Vertex3f(x2,   y1,   z1);
+    xgl.TexCoord2fv(@XYTexPoint);   GL.Vertex3f(x2,   y2d,  z1d);
   end;
   if cpTop in FParts then
   begin
     GL.Normal3f(0, nd, 0);
-    if TanLoc > -1 then
-      GL.VertexAttrib3f(TanLoc, nd, 0, 0);
-    if BinLoc > -1 then
-      GL.VertexAttrib3f(BinLoc, 0, 0, -nd);
-    xgl.TexCoord2fv(@YTexPoint);
-    GL.Vertex3f(-hw, hh, -hd);
-    xgl.TexCoord2fv(@NullTexPoint);
-    GL.Vertex3f(-hw * nd, hh, hd * nd);
-    xgl.TexCoord2fv(@XTexPoint);
-    GL.Vertex3f(hw, hh, hd);
-    GL.Vertex3f(hw, hh, hd);
-    xgl.TexCoord2fv(@XYTexPoint);
-    GL.Vertex3f(hw * nd, hh, -hd * nd);
-    xgl.TexCoord2fv(@YTexPoint);
-    GL.Vertex3f(-hw, hh, -hd);
+    if TanLoc > -1 then GL.VertexAttrib3f(TanLoc, nd, 0, 0);
+    if BinLoc > -1 then GL.VertexAttrib3f(BinLoc, 0, 0, -nd);
+
+    xgl.TexCoord2fv(@YTexPoint);    GL.Vertex3f(x1,   y2,   z1);
+    xgl.TexCoord2fv(@NullTexPoint); GL.Vertex3f(x1d,  y2,   z2d);
+    xgl.TexCoord2fv(@XTexPoint);    GL.Vertex3f(x2,   y2,   z2);
+    xgl.TexCoord2fv(@XYTexPoint);   GL.Vertex3f(x2d,  y2,   z1d);
   end;
   if cpBottom in FParts then
   begin
     GL.Normal3f(0, -nd, 0);
-    if TanLoc > -1 then
-      GL.VertexAttrib3f(TanLoc, -nd, 0, 0);
-    if BinLoc > -1 then
-      GL.VertexAttrib3f(BinLoc, 0, 0, nd);
-    xgl.TexCoord2fv(@NullTexPoint);
-    GL.Vertex3f(-hw, -hh, -hd);
-    xgl.TexCoord2fv(@XTexPoint);
-    GL.Vertex3f(hw * nd, -hh, -hd * nd);
-    xgl.TexCoord2fv(@XYTexPoint);
-    GL.Vertex3f(hw, -hh, hd);
-    GL.Vertex3f(hw, -hh, hd);
-    xgl.TexCoord2fv(@YTexPoint);
-    GL.Vertex3f(-hw * nd, -hh, hd * nd);
-    xgl.TexCoord2fv(@NullTexPoint);
-    GL.Vertex3f(-hw, -hh, -hd);
+    if TanLoc > -1 then GL.VertexAttrib3f(TanLoc, -nd, 0, 0);
+    if BinLoc > -1 then GL.VertexAttrib3f(BinLoc, 0, 0, nd);
+
+    xgl.TexCoord2fv(@NullTexPoint); GL.Vertex3f(x1,   y1,   z1);
+    xgl.TexCoord2fv(@XTexPoint);    GL.Vertex3f(x2d,  y1,   z1d);
+    xgl.TexCoord2fv(@XYTexPoint);   GL.Vertex3f(x2,   y1,   z2);
+    xgl.TexCoord2fv(@YTexPoint);    GL.Vertex3f(x1d,  y1,   z2d);
   end;
   GL.End_;
 end;
@@ -2455,9 +2426,9 @@ var
 begin
   connectivity := TConnectivity.Create(True);
 
-  hw := FCubeSize.X * 0.5;
-  hh := FCubeSize.Y * 0.5;
-  hd := FCubeSize.Z * 0.5;
+  hw := FCubeHalfSize.X;
+  hh := FCubeHalfSize.Y;
+  hd := FCubeHalfSize.Z;
 
   if cpFront in FParts then
   begin
@@ -2512,6 +2483,7 @@ begin
   if AValue <> FCubeSize.V[index] then
   begin
     FCubeSize.V[index] := AValue;
+    FCubeHalfSize.V[index] := AValue*0.5;
     StructureChanged;
   end;
 end;
@@ -2539,6 +2511,7 @@ begin
   if Assigned(Source) and (Source is TGLCube) then
   begin
     FCubeSize := TGLCube(Source).FCubeSize;
+    FCubeHalfSize := TGLCube(Source).FCubeHalfSize;
     FParts := TGLCube(Source).FParts;
     FNormalDirection := TGLCube(Source).FNormalDirection;
   end;
@@ -2560,15 +2533,14 @@ var
   rv: TVector;
   rs, r: TVector;
   i: Integer;
-  t, e: Single;
+  t: Single;
   eSize: TAffineVector;
 begin
   rs := AbsoluteToLocal(rayStart);
   SetVector(rv, VectorNormalize(AbsoluteToLocal(rayVector)));
-  e := 0.5 + 0.0001; // Small value for floating point imprecisions
-  eSize.X := FCubeSize.X * e;
-  eSize.Y := FCubeSize.Y * e;
-  eSize.Z := FCubeSize.Z * e;
+  eSize.X := FCubeHalfSize.X + 0.0001;
+  eSize.Y := FCubeHalfSize.Y + 0.0001;
+  eSize.Z := FCubeHalfSize.Z + 0.0001;
   p[0] := XHmgVector;
   p[1] := YHmgVector;
   p[2] := ZHmgVector;

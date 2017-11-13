@@ -33,12 +33,9 @@ uses
 
 type
 
-  // TGLWin32Context
-  //
   {A context driver for standard Windows OpenGL (via MS OpenGL). }
   TGLWin32Context = class(TGLContext)
   protected
-    
     FDC: HDC;
     FRC: HGLRC;
     FShareContext: TGLWin32Context;
@@ -47,20 +44,16 @@ type
     FfAttribs: packed array of Single;
     FLegacyContextsOnly: Boolean;
     FSwapBufferSupported: Boolean;
-
     procedure SpawnLegacyContext(aDC: HDC); // used for WGL_pixel_format soup
     procedure CreateOldContext(aDC: HDC); dynamic;
     procedure CreateNewContext(aDC: HDC); dynamic;
-
     procedure ClearIAttribs;
     procedure AddIAttrib(attrib, value: Integer);
     procedure ChangeIAttrib(attrib, newValue: Integer);
     procedure DropIAttrib(attrib: Integer);
     procedure ClearFAttribs;
     procedure AddFAttrib(attrib, value: Single);
-
     procedure DestructionEarlyWarning(sender: TObject);
-
     procedure ChooseWGLFormat(DC: HDC; nMaxFormats: Cardinal; piFormats:
       PInteger; var nNumFormats: Integer; BufferCount: integer = 1);
     procedure DoCreateContext(ADeviceHandle: HDC); override;
@@ -73,7 +66,6 @@ type
     {DoGetHandles must be implemented in child classes,
        and return the display + window }
   public
-    
     constructor Create; override;
     destructor Destroy; override;
 
@@ -95,9 +87,9 @@ var
     destruction. }
   vUseWindowTrackingHook: Boolean = True;
 
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
 implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -143,7 +135,7 @@ begin
     Result := CallNextHookEx(vTrackingHook, nCode, wParam, lParam);
 end;
 
-procedure TrackWindow(h: HWND; notifyEvent: TNotifyEvent);
+procedure TrackWindow(h: HWND; notifyEvent: TNotifyEvent); inline;
 begin
   if not IsWindow(h) then
     Exit;
@@ -225,17 +217,13 @@ begin
 end;
 
  
-//
-
 destructor TGLWin32Context.Destroy;
 begin
   inherited Destroy;
 end;
 
-// SetupPalette
-//
 
-function SetupPalette(DC: HDC; PFD: TPixelFormatDescriptor): HPalette;
+function SetupPalette(DC: HDC; const PFD: TPixelFormatDescriptor): HPalette;
 var
   nColors, I: Integer;
   LogPalette: TMaxLogPalette;
@@ -269,8 +257,6 @@ begin
     RaiseLastOSError;
 end;
 
-// ClearIAttribs
-//
 
 procedure TGLWin32Context.ClearIAttribs;
 begin
@@ -278,8 +264,6 @@ begin
   FiAttribs[0] := 0;
 end;
 
-// AddIAttrib
-//
 
 procedure TGLWin32Context.AddIAttrib(attrib, value: Integer);
 var
@@ -292,8 +276,6 @@ begin
   FiAttribs[n + 1] := 0;
 end;
 
-// ChangeIAttrib
-//
 
 procedure TGLWin32Context.ChangeIAttrib(attrib, newValue: Integer);
 var
@@ -337,8 +319,6 @@ begin
   end;
 end;
 
-// ClearFAttribs
-//
 
 procedure TGLWin32Context.ClearFAttribs;
 begin
@@ -346,8 +326,6 @@ begin
   FfAttribs[0] := 0;
 end;
 
-// AddFAttrib
-//
 
 procedure TGLWin32Context.AddFAttrib(attrib, value: Single);
 var
@@ -360,8 +338,6 @@ begin
   FfAttribs[n + 1] := 0;
 end;
 
-// DestructionEarlyWarning
-//
 
 procedure TGLWin32Context.DestructionEarlyWarning(sender: TObject);
 begin
@@ -369,8 +345,6 @@ begin
     DestroyContext;
 end;
 
-// ChooseWGLFormat
-//
 procedure TGLWin32Context.ChooseWGLFormat(DC: HDC; nMaxFormats: Cardinal; piFormats:
   PInteger; var nNumFormats: Integer; BufferCount: integer);
 const
@@ -425,7 +399,7 @@ begin
     AddIAttrib(WGL_ACCUM_BITS_ARB, AccumBits);
   if AuxBuffers > 0 then
     AddIAttrib(WGL_AUX_BUFFERS_ARB, AuxBuffers);
-  if (AntiAliasing <> aaDefault) and GL.W_ARB_multisample then
+  if (AntiAliasing <> aaDefault) and FGL.W_ARB_multisample then
   begin
     if AntiAliasing = aaNone then
       AddIAttrib(WGL_SAMPLE_BUFFERS_ARB, GL_FALSE)
@@ -574,9 +548,9 @@ begin
       GLSLogger.LogWarning(strDriverNotSupportDebugRC);
     if rcoOGL_ES in Options then
       GLSLogger.LogWarning(strDriverNotSupportOESRC);
-    if GLStates.ForwardContext then
+{    if GLStates.ForwardContext then
       GLSLogger.LogWarning(strDriverNotSupportFRC);
-    GLStates.ForwardContext := False;
+    GLStates.ForwardContext := False;}
   end
   else
     GLSLogger.LogInfo(strTmpRC_Created);
@@ -592,7 +566,7 @@ begin
   try
     ClearIAttribs;
     // Initialize forward context
-    if GLStates.ForwardContext then
+    if false{GLStates.ForwardContext} then
     begin
       if FGL.VERSION_4_2 then
       begin
@@ -679,7 +653,7 @@ begin
       FRC := FGL.WCreateContextAttribsARB(aDC, 0, @FiAttribs[0]);
       if FRC = 0 then
       begin
-        if GLStates.ForwardContext then
+        if false{GLStates.ForwardContext} then
           GLSLogger.LogErrorFmt(strForwardContextFailed,
             [GetLastError, SysErrorMessage(GetLastError)])
         else
@@ -707,19 +681,17 @@ begin
     else
       GLStates.MultisampleFilterHint := hintDontCare;
 
-    if GLStates.ForwardContext then
-      GLSLogger.LogInfo(strFRC_created);
+    {if GLStates.ForwardContext then
+      GLSLogger.LogInfo(strFRC_created);}
     if bOES then
       GLSLogger.LogInfo(strOESRC_created);
     bSuccess := True;
   finally
-    GLStates.ForwardContext := GLStates.ForwardContext and bSuccess;
-    PipelineTransformation.LoadMatricesEnabled := not GLStates.ForwardContext;
+{    GLStates.ForwardContext := GLStates.ForwardContext and bSuccess;}
+    PipelineTransformation.LoadMatricesEnabled := true {not GLStates.ForwardContext};
   end;
 end;
 
-// DoCreateContext
-//
 
 procedure TGLWin32Context.DoCreateContext(ADeviceHandle: HDC);
 const
@@ -954,8 +926,6 @@ begin
   end;
 end;
 
-// SpawnLegacyContext
-//
 
 procedure TGLWin32Context.SpawnLegacyContext(aDC: HDC);
 begin
@@ -975,8 +945,6 @@ begin
   end;
 end;
 
-// DoCreateMemoryContext
-//
 
 procedure TGLWin32Context.DoCreateMemoryContext(outputDevice: HWND; width,
   height: Integer; BufferCount: integer);
@@ -1032,7 +1000,7 @@ begin
                 // Modern creation style
                 ClearIAttribs;
                 // Initialize forward context
-                if GLStates.ForwardContext then
+                if false {GLStates.ForwardContext} then
                 begin
                   if FGL.VERSION_4_2 then
                   begin
@@ -1104,7 +1072,7 @@ begin
                 if localRC = 0 then
                {$IFDEF GLS_LOGGING}
                 begin
-                  if GLStates.ForwardContext then
+                  if false {GLStates.ForwardContext} then
                     GLSLogger.LogErrorFmt(strForwardContextFailed,
                       [GetLastError, SysErrorMessage(GetLastError)])
                   else
@@ -1201,16 +1169,14 @@ begin
 
   Deactivate;
 
-  if GLStates.ForwardContext then
+{  if GLStates.ForwardContext then
     GLSLogger.LogInfo('PBuffer ' + strFRC_created);
   if bOES then
     GLSLogger.LogInfo('PBuffer ' + strOESRC_created);
   if not (GLStates.ForwardContext or bOES) then
-    GLSLogger.LogInfo(strPBufferRC_created);
+    GLSLogger.LogInfo(strPBufferRC_created);}
 end;
 
-// DoShareLists
-//
 
 function TGLWin32Context.DoShareLists(aContext: TGLContext): Boolean;
 begin
@@ -1226,8 +1192,6 @@ begin
     raise Exception.Create(strIncompatibleContexts);
 end;
 
-// DoDestroyContext
-//
 
 procedure TGLWin32Context.DoDestroyContext;
 begin
@@ -1251,8 +1215,6 @@ begin
   FShareContext := nil;
 end;
 
-// DoActivate
-//
 
 procedure TGLWin32Context.DoActivate;
 begin
@@ -1267,8 +1229,6 @@ begin
     FGL.Initialize(CurrentGLContext = nil);
 end;
 
-// Deactivate
-//
 
 procedure TGLWin32Context.DoDeactivate;
 begin
@@ -1280,16 +1240,12 @@ begin
   end;
 end;
 
-// IsValid
-//
 
 function TGLWin32Context.IsValid: Boolean;
 begin
   Result := (FRC <> 0);
 end;
 
-// SwapBuffers
-//
 
 procedure TGLWin32Context.SwapBuffers;
 begin
@@ -1308,8 +1264,6 @@ begin
       Winapi.Windows.SwapBuffers(FDC);
 end;
 
-// RenderOutputDevice
-//
 
 function TGLWin32Context.RenderOutputDevice: Pointer;
 begin

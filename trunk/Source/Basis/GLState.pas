@@ -209,7 +209,7 @@ type
     FListStates: array of TGLStateTypes;
     FCurrentList: Cardinal;
     FTextureMatrixIsIdentity: array[0..3] of Boolean;
-    FForwardContext: Boolean;
+//    FForwardContext: Boolean;
     FFFPLight: Boolean;
     // Vertex Array Data state
     FVertexArrayBinding: Cardinal;
@@ -354,195 +354,196 @@ type
     FOnLightsChanged: TOnLightsChanged;
   protected
     // Vertex Array Data state
-    procedure SetVertexArrayBinding(const Value: Cardinal);
-    function GetArrayBufferBinding: Cardinal;
-    procedure SetArrayBufferBinding(const Value: Cardinal);
-    function GetElementBufferBinding: Cardinal;
-    procedure SetElementBufferBinding(const Value: Cardinal);
-    function GetEnablePrimitiveRestart: TGLboolean;
-    function GetPrimitiveRestartIndex: Cardinal;
-    procedure SetEnablePrimitiveRestart(const enabled: TGLboolean);
-    procedure SetPrimitiveRestartIndex(const index: Cardinal);
-    procedure SetTextureBufferBinding(const Value: Cardinal);
+    procedure SetVertexArrayBinding(const Value: Cardinal); inline;
+    function GetArrayBufferBinding: Cardinal; inline;
+    procedure SetArrayBufferBinding(const Value: Cardinal); inline;
+    function GetElementBufferBinding: Cardinal; inline;
+    procedure SetElementBufferBinding(const Value: Cardinal); inline;
+    function GetEnablePrimitiveRestart: TGLboolean; inline;
+    function GetPrimitiveRestartIndex: Cardinal; inline;
+    procedure SetEnablePrimitiveRestart(const enabled: TGLboolean); inline;
+    procedure SetPrimitiveRestartIndex(const index: Cardinal); inline;
+    procedure SetTextureBufferBinding(const Value: Cardinal); inline;
     // Transformation state
-    procedure SetViewPort(const Value: TVector4i);
-    function GetEnableClipDistance(ClipDistance: Cardinal): TGLboolean;
-    procedure SetEnableClipDistance(Index: Cardinal; const Value: TGLboolean);
-    function GetDepthRangeFar:TGLclampd;
-    procedure SetDepthRangeFar(const Value: TGLclampd);
-    function GetDepthRangeNear:TGLclampd;
-    procedure SetDepthRangeNear(const Value: TGLclampd);
-    procedure SetEnableDepthClamp(const enabled: TGLboolean);
+    procedure SetViewPort(const Value: TVector4i); inline;
+    function GetEnableClipDistance(ClipDistance: Cardinal): TGLboolean; inline;
+    procedure SetEnableClipDistance(Index: Cardinal; const Value: TGLboolean); inline;
+    function GetDepthRangeFar:TGLclampd; inline;
+    procedure SetDepthRangeFar(const Value: TGLclampd); inline;
+    function GetDepthRangeNear:TGLclampd; inline;
+    procedure SetDepthRangeNear(const Value: TGLclampd); inline;
+    procedure SetEnableDepthClamp(const enabled: TGLboolean); inline;
     // Coloring state
-    procedure SetClampReadColor(const Value: Cardinal);
-    procedure SetProvokingVertex(const Value: Cardinal);
+    procedure SetClampReadColor(const Value: Cardinal); inline;
+    procedure SetProvokingVertex(const Value: Cardinal); inline;
     // Rasterization state
-    procedure SetPointSize(const Value: TGLfloat);
-    procedure SetPointFadeThresholdSize(const Value: TGLfloat);
-    procedure SetPointSpriteCoordOrigin(const Value: Cardinal);
-    procedure SetLineWidth(const Value: TGLfloat);
-    procedure SetLineStippleFactor(const Value: TGLint);
-    procedure SetLineStipplePattern(const Value: TGLushort);
+    procedure SetPointSize(const Value: TGLfloat); inline;
+    procedure SetPointFadeThresholdSize(const Value: TGLfloat); inline;
+    procedure SetPointSpriteCoordOrigin(const Value: Cardinal); inline;
+    procedure SetLineWidth(const Value: TGLfloat); inline;
+    procedure SetLineStippleFactor(const Value: TGLint); inline;
+    procedure SetLineStipplePattern(const Value: TGLushort); inline;
 
-    procedure SetEnableLineSmooth(const Value: TGLboolean);
-    procedure SetEnableCullFace(const Value: TGLboolean);
-    procedure SetCullFaceMode(const Value: TCullFaceMode);
-    procedure SetFrontFace(const Value: TFaceWinding);
-    procedure SetEnablePolygonSmooth(const Value: TGLboolean);
-    procedure SetPolygonMode(const Value: TPolygonMode);
-    procedure SetPolygonOffsetFactor(const Value: TGLfloat);
-    procedure SetPolygonOffsetUnits(const Value: TGLfloat);
-    procedure SetEnablePolygonOffsetPoint(const Value: TGLboolean);
-    procedure SetEnablePolygonOffsetLine(const Value: TGLboolean);
-    procedure SetEnablePolygonOffsetFill(const Value: TGLboolean);
+    procedure SetEnableLineSmooth(const Value: TGLboolean); inline;
+    procedure SetEnableCullFace(const Value: TGLboolean); inline;
+    procedure SetCullFaceMode(const Value: TCullFaceMode); inline;
+    procedure SetFrontFace(const Value: TFaceWinding); inline;
+    procedure SetEnablePolygonSmooth(const Value: TGLboolean); inline;
+    procedure SetPolygonMode(const Value: TPolygonMode); inline;
+    procedure SetPolygonOffsetFactor(const Value: TGLfloat); inline;
+    procedure SetPolygonOffsetUnits(const Value: TGLfloat); inline;
+    procedure SetEnablePolygonOffsetPoint(const Value: TGLboolean); inline;
+    procedure SetEnablePolygonOffsetLine(const Value: TGLboolean); inline;
+    procedure SetEnablePolygonOffsetFill(const Value: TGLboolean); inline;
     // Multisample state
-    procedure SetEnableMultisample(const Value: TGLboolean);
-    procedure SetEnableSampleAlphaToCoverage(const Value: TGLboolean);
-    procedure SetEnableSampleAlphaToOne(const Value: TGLboolean);
-    procedure SetEnableSampleCoverage(const Value: TGLboolean);
-    procedure SetSampleCoverageValue(const Value: TGLfloat);
-    procedure SetSampleCoverageInvert(const Value: TGLboolean);
-    procedure SetEnableSampleMask(const Value: TGLboolean);
-    function GetSampleMaskValue(Index: Integer): TGLbitfield;
-    procedure SetSampleMaskValue(Index: Integer; const Value: TGLbitfield);
+    procedure SetEnableMultisample(const Value: TGLboolean); inline;
+    procedure SetEnableSampleAlphaToCoverage(const Value: TGLboolean); inline;
+    procedure SetEnableSampleAlphaToOne(const Value: TGLboolean); inline;
+    procedure SetEnableSampleCoverage(const Value: TGLboolean); inline;
+    procedure SetSampleCoverageValue(const Value: TGLfloat); inline;
+    procedure SetSampleCoverageInvert(const Value: TGLboolean); inline;
+    procedure SetEnableSampleMask(const Value: TGLboolean); inline;
+    function GetSampleMaskValue(Index: Integer): TGLbitfield; inline;
+    procedure SetSampleMaskValue(Index: Integer; const Value: TGLbitfield); inline;
     // Texture state
-    function GetMaxTextureSize: Cardinal;
-    function GetMax3DTextureSize: Cardinal;
-    function GetMaxCubeTextureSize: Cardinal;
-    function GetMaxArrayTextureSize: Cardinal;
-    function GetMaxTextureImageUnits: Cardinal;
-    function GetMaxTextureAnisotropy: Cardinal;
-    function GetMaxSamples: Cardinal;
+    function GetMaxTextureSize: Cardinal; inline;
+    function GetMax3DTextureSize: Cardinal; inline;
+    function GetMaxCubeTextureSize: Cardinal; inline;
+    function GetMaxArrayTextureSize: Cardinal; inline;
+    function GetMaxTextureImageUnits: Cardinal; inline;
+    function GetMaxTextureAnisotropy: Cardinal; inline;
+    function GetMaxSamples: Cardinal; inline;
     function GetTextureBinding(Index: Integer; target: TGLTextureTarget):
-      Cardinal;
+      Cardinal; inline;
     function GetTextureBindingTime(Index: Integer; target: TGLTextureTarget):
-      Double;
+      Double; inline;
     procedure SetTextureBinding(Index: Integer; target: TGLTextureTarget;
       const Value: Cardinal);
-    function GetActiveTextureEnabled(Target: TGLTextureTarget): Boolean;
+    function GetActiveTextureEnabled(Target: TGLTextureTarget): Boolean; inline;
     procedure SetActiveTextureEnabled(Target: TGLTextureTarget; const Value:
-      Boolean);
-    function GetSamplerBinding(Index: Cardinal): Cardinal;
-    procedure SetSamplerBinding(Index: Cardinal; const Value: Cardinal);
+      Boolean); inline;
+    function GetSamplerBinding(Index: Cardinal): Cardinal; inline;
+    procedure SetSamplerBinding(Index: Cardinal; const Value: Cardinal); inline;
     // Active texture
-    procedure SetActiveTexture(const Value: TGLint);
+    procedure SetActiveTexture(const Value: TGLint); inline;
     // Pixel operations
-    procedure SetEnableScissorTest(const Value: TGLboolean);
-    procedure SetScissorBox(const Value: TVector4i);
-    procedure SetEnableStencilTest(const Value: TGLboolean);
-    procedure SetEnableDepthTest(const Value: TGLboolean);
-    procedure SetDepthFunc(const Value: TDepthFunction);
-    function GetEnableBlend(Index: Integer): TGLboolean;
-    procedure SetEnableBlend(Index: Integer; const Value: TGLboolean);
-    procedure SetBlendColor(const Value: TVector);
-    procedure SetEnableFramebufferSRGB(const Value: TGLboolean);
-    procedure SetEnableDither(const Value: TGLboolean);
-    procedure SetEnableColorLogicOp(const Value: TGLboolean);
-    procedure SetLogicOpMode(const Value: TLogicOp);
+    procedure SetEnableScissorTest(const Value: TGLboolean); inline;
+    procedure SetScissorBox(const Value: TVector4i); inline;
+    procedure SetEnableStencilTest(const Value: TGLboolean); inline;
+    procedure SetEnableDepthTest(const Value: TGLboolean); inline;
+    procedure SetDepthFunc(const Value: TDepthFunction); inline;
+    function GetEnableBlend(Index: Integer): TGLboolean; inline;
+    procedure SetEnableBlend(Index: Integer; const Value: TGLboolean); inline;
+    procedure SetBlendColor(const Value: TVector); inline;
+    procedure SetEnableFramebufferSRGB(const Value: TGLboolean); inline;
+    procedure SetEnableDither(const Value: TGLboolean); inline;
+    procedure SetEnableColorLogicOp(const Value: TGLboolean); inline;
+    procedure SetLogicOpMode(const Value: TLogicOp); inline;
     // Framebuffer control
-    function GetColorWriteMask(Index: Integer): TColorMask;
-    procedure SetColorWriteMask(Index: Integer; const Value: TColorMask);
-    procedure SetDepthWriteMask(const Value: TGLboolean);
-    procedure SetStencilWriteMask(const Value: Cardinal);
-    procedure SetStencilBackWriteMask(const Value: Cardinal);
-    procedure SetColorClearValue(const Value: TVector);
-    procedure SetDepthClearValue(const Value: TGLfloat);
-    procedure SetStencilClearValue(const Value: Cardinal);
+    function GetColorWriteMask(Index: Integer): TColorMask; inline;
+    procedure SetColorWriteMask(Index: Integer; const Value: TColorMask); inline;
+    procedure SetDepthWriteMask(const Value: TGLboolean); inline;
+    procedure SetStencilWriteMask(const Value: Cardinal); inline;
+    procedure SetStencilBackWriteMask(const Value: Cardinal); inline;
+    procedure SetColorClearValue(const Value: TVector); inline;
+    procedure SetDepthClearValue(const Value: TGLfloat); inline;
+    procedure SetStencilClearValue(const Value: Cardinal); inline;
     // Framebuffer
-    procedure SetDrawFrameBuffer(const Value: Cardinal);
-    procedure SetReadFrameBuffer(const Value: Cardinal);
+    procedure SetDrawFrameBuffer(const Value: Cardinal); inline;
+    procedure SetReadFrameBuffer(const Value: Cardinal); inline;
     // Renderbuffer
-    procedure SetRenderBuffer(const Value: Cardinal);
+    procedure SetRenderBuffer(const Value: Cardinal); inline;
     // Pixels
-    procedure SetUnpackSwapBytes(const Value: TGLboolean);
-    procedure SetUnpackLSBFirst(const Value: TGLboolean);
-    procedure SetUnpackImageHeight(const Value: Cardinal);
-    procedure SetUnpackSkipImages(const Value: Cardinal);
-    procedure SetUnpackRowLength(const Value: Cardinal);
-    procedure SetUnpackSkipRows(const Value: Cardinal);
-    procedure SetUnpackSkipPixels(const Value: Cardinal);
-    procedure SetUnpackAlignment(const Value: Cardinal);
-    procedure SetPackSwapBytes(const Value: TGLboolean);
-    procedure SetPackLSBFirst(const Value: TGLboolean);
-    procedure SetPackImageHeight(const Value: Cardinal);
-    procedure SetPackSkipImages(const Value: Cardinal);
-    procedure SetPackRowLength(const Value: Cardinal);
-    procedure SetPackSkipRows(const Value: Cardinal);
-    procedure SetPackSkipPixels(const Value: Cardinal);
-    procedure SetPackAlignment(const Value: Cardinal);
+    procedure SetUnpackSwapBytes(const Value: TGLboolean); inline;
+    procedure SetUnpackLSBFirst(const Value: TGLboolean); inline;
+    procedure SetUnpackImageHeight(const Value: Cardinal); inline;
+    procedure SetUnpackSkipImages(const Value: Cardinal); inline;
+    procedure SetUnpackRowLength(const Value: Cardinal); inline;
+    procedure SetUnpackSkipRows(const Value: Cardinal); inline;
+    procedure SetUnpackSkipPixels(const Value: Cardinal); inline;
+    procedure SetUnpackAlignment(const Value: Cardinal); inline;
+    procedure SetPackSwapBytes(const Value: TGLboolean); inline;
+    procedure SetPackLSBFirst(const Value: TGLboolean); inline;
+    procedure SetPackImageHeight(const Value: Cardinal); inline;
+    procedure SetPackSkipImages(const Value: Cardinal); inline;
+    procedure SetPackRowLength(const Value: Cardinal); inline;
+    procedure SetPackSkipRows(const Value: Cardinal); inline;
+    procedure SetPackSkipPixels(const Value: Cardinal); inline;
+    procedure SetPackAlignment(const Value: Cardinal); inline;
     procedure SetPixelPackBufferBinding(const Value: Cardinal);
     procedure SetPixelUnpackBufferBinding(const Value: Cardinal);
     // Program
-    procedure SetCurrentProgram(const Value: Cardinal);
-    procedure SetUniformBufferBinding(const Value: Cardinal);
-    function GetMaxTextureUnits: Cardinal;
+    procedure SetCurrentProgram(const Value: Cardinal); inline;
+    procedure SetUniformBufferBinding(const Value: Cardinal); inline;
+    function GetMaxTextureUnits: Cardinal; inline;
     // Vector + Geometry Shader state
-    function GetCurrentVertexAttrib(Index: Integer): TVector;
-    procedure SetCurrentVertexAttrib(Index: Integer; const Value: TVector);
-    procedure SetEnableProgramPointSize(const Value: TGLboolean);
+    function GetCurrentVertexAttrib(Index: Integer): TVector; inline;
+    procedure SetCurrentVertexAttrib(Index: Integer; const Value: TVector); inline;
+    procedure SetEnableProgramPointSize(const Value: TGLboolean); inline;
     // Transform Feedback state
-    procedure SetTransformFeedbackBufferBinding(const Value: Cardinal);
+    procedure SetTransformFeedbackBufferBinding(const Value: Cardinal); inline;
     // Hints
-    procedure SetLineSmoothHint(const Value: THintType);
-    procedure SetPolygonSmoothHint(const Value: THintType);
-    procedure SetTextureCompressionHint(const Value: THintType);
-    procedure SetFragmentShaderDerivitiveHint(const Value: THintType);
-    procedure SetMultisampleFilterHint(const Value: THintType);
+    procedure SetLineSmoothHint(const Value: THintType); inline;
+    procedure SetPolygonSmoothHint(const Value: THintType); inline;
+    procedure SetTextureCompressionHint(const Value: THintType); inline;
+    procedure SetFragmentShaderDerivitiveHint(const Value: THintType); inline;
+    procedure SetMultisampleFilterHint(const Value: THintType); inline;
     // Misc
-    function GetCurrentQuery(Index: TQueryType): Cardinal;
+    function GetCurrentQuery(Index: TQueryType): Cardinal; inline;
     //    procedure SetCurrentQuery(Index: TQueryType; const Value: Cardinal);
-    procedure SetCopyReadBufferBinding(const Value: Cardinal);
-    procedure SetCopyWriteBufferBinding(const Value: Cardinal);
-    procedure SetEnableTextureCubeMapSeamless(const Value: TGLboolean);
+    procedure SetCopyReadBufferBinding(const Value: Cardinal); inline;
+    procedure SetCopyWriteBufferBinding(const Value: Cardinal); inline;
+    procedure SetEnableTextureCubeMapSeamless(const Value: TGLboolean); inline;
     // Ligting
-    procedure SetFFPLight(Value: Boolean);
-    function GetMaxLights: Integer;
-    function GetLightEnabling(I: Integer): Boolean;
-    procedure SetLightEnabling(I: Integer; Value: Boolean);
-    function GetLightPosition(I: Integer): TVector;
-    procedure SetLightPosition(I: Integer; const Value: TVector);
-    function GetLightSpotDirection(I: Integer): TAffineVector;
-    procedure SetLightSpotDirection(I: Integer; const Value: TAffineVector);
-    function GetLightAmbient(I: Integer): TVector;
-    procedure SetLightAmbient(I: Integer; const Value: TVector);
-    function GetLightDiffuse(I: Integer): TVector;
-    procedure SetLightDiffuse(I: Integer; const Value: TVector);
-    function GetLightSpecular(I: Integer): TVector;
-    procedure SetLightSpecular(I: Integer; const Value: TVector);
-    function GetSpotCutoff(I: Integer): Single;
-    procedure SetSpotCutoff(I: Integer; const Value: Single);
-    function GetSpotExponent(I: Integer): Single;
-    procedure SetSpotExponent(I: Integer; const Value: Single);
-    function GetConstantAtten(I: Integer): Single;
-    procedure SetConstantAtten(I: Integer; const Value: Single);
-    function GetLinearAtten(I: Integer): Single;
-    procedure SetLinearAtten(I: Integer; const Value: Single);
-    function GetQuadAtten(I: Integer): Single;
-    procedure SetQuadAtten(I: Integer; const Value: Single);
-    procedure SetForwardContext(Value: Boolean);
-    function GetMaterialAmbient(const aFace: TCullFaceMode): TVector;
-    function GetMaterialDiffuse(const aFace: TCullFaceMode): TVector;
-    function GetMaterialSpecular(const aFace: TCullFaceMode): TVector;
-    function GetMaterialEmission(const aFace: TCullFaceMode): TVector;
-    function GetMaterialShininess(const aFace: TCullFaceMode): Integer;
+    procedure SetFFPLight(Value: Boolean); inline;
+    function GetMaxLights: Integer; inline;
+    function GetLightEnabling(I: Integer): Boolean; inline;
+    procedure SetLightEnabling(I: Integer; Value: Boolean); inline;
+    function GetLightPosition(I: Integer): TVector; inline;
+    procedure SetLightPosition(I: Integer; const Value: TVector); inline;
+    function GetLightSpotDirection(I: Integer): TAffineVector; inline;
+    procedure SetLightSpotDirection(I: Integer; const Value: TAffineVector); inline;
+    function GetLightAmbient(I: Integer): TVector; inline;
+    procedure SetLightAmbient(I: Integer; const Value: TVector); inline;
+    function GetLightDiffuse(I: Integer): TVector; inline;
+    procedure SetLightDiffuse(I: Integer; const Value: TVector); inline;
+    function GetLightSpecular(I: Integer): TVector; inline;
+    procedure SetLightSpecular(I: Integer; const Value: TVector); inline;
+    function GetSpotCutoff(I: Integer): Single; inline;
+    procedure SetSpotCutoff(I: Integer; const Value: Single); inline;
+    function GetSpotExponent(I: Integer): Single; inline;
+    procedure SetSpotExponent(I: Integer; const Value: Single); inline;
+    function GetConstantAtten(I: Integer): Single; inline;
+    procedure SetConstantAtten(I: Integer; const Value: Single); inline;
+    function GetLinearAtten(I: Integer): Single; inline;
+    procedure SetLinearAtten(I: Integer; const Value: Single); inline;
+    function GetQuadAtten(I: Integer): Single; inline;
+    procedure SetQuadAtten(I: Integer; const Value: Single); inline;
+    procedure SetForwardContext(Value: Boolean); inline;
+    function GetMaterialAmbient(const aFace: TCullFaceMode): TVector; inline;
+    function GetMaterialDiffuse(const aFace: TCullFaceMode): TVector; inline;
+    function GetMaterialSpecular(const aFace: TCullFaceMode): TVector; inline;
+    function GetMaterialEmission(const aFace: TCullFaceMode): TVector; inline;
+    function GetMaterialShininess(const aFace: TCullFaceMode): Integer; inline;
   public
-    constructor Create; virtual;
+
+  	constructor Create; virtual;
     destructor Destroy; override;
-    procedure PushAttrib(stateTypes: TGLStateTypes);
-    procedure PopAttrib();
+    procedure PushAttrib(const stateTypes: TGLStateTypes); inline;
+    procedure PopAttrib(); inline;
     procedure Enable(const aState: TGLState);
     procedure Disable(const aState: TGLState);
-    procedure PerformEnable(const aState: TGLState);
-    procedure PerformDisable(const aState: TGLState);
-    procedure SetGLState(const aState : TGLState); deprecated;
-    procedure UnSetGLState(const aState : TGLState); deprecated;
-    procedure ResetGLPolygonMode; deprecated;
-    procedure ResetGLMaterialColors; deprecated;
-    procedure ResetGLTexture(const TextureUnit: Integer); deprecated;
+    procedure PerformEnable(const aState: TGLState); inline;
+    procedure PerformDisable(const aState: TGLState); inline;
+    procedure SetGLState(const aState : TGLState); deprecated; inline;
+    procedure UnSetGLState(const aState : TGLState); deprecated; inline;
+    procedure ResetGLPolygonMode; deprecated; inline;
+    procedure ResetGLMaterialColors; deprecated; inline;
+    procedure ResetGLTexture(const TextureUnit: Integer); deprecated; inline;
     procedure ResetGLCurrentTexture; deprecated;
     procedure ResetGLFrontFace; deprecated;
-    procedure SetGLFrontFaceCW; deprecated;
-    procedure ResetAll; deprecated;
+    procedure SetGLFrontFaceCW; deprecated; inline;
+    procedure ResetAll; deprecated; inline;
     {Adjusts material colors for a face. }
     procedure SetGLMaterialColors(const aFace: TCullFaceMode;
       const emission, ambient, diffuse, specular: TVector;
@@ -591,7 +592,7 @@ type
     property LightNumber: Integer read FLightNumber;
     property OnLightsChanged: TOnLightsChanged read FOnLightsChanged write FOnLightsChanged;
     {Blending states }
-    procedure SetGLAlphaFunction(func: TComparisonFunction; ref: Single);
+    procedure SetGLAlphaFunction(func: TComparisonFunction; ref: Single); inline;
     // Vertex Array Data state
     {The currently bound array buffer (calling glVertexAttribPointer
        locks this buffer to the currently bound VBO). }
@@ -616,7 +617,7 @@ type
     {The viewport. }
     property ViewPort: TVector4i read FViewPort write SetViewPort;
     {Modifies the near + far clipping planes. }
-    procedure SetDepthRange(const ZNear, ZFar: TGLclampd);
+    procedure SetDepthRange(const ZNear, ZFar: TGLclampd); inline;
     {The near clipping plane distance. }
     property DepthRangeNear: TGLclampd read GetDepthRangeNear write
       SetDepthRangeNear;
@@ -794,19 +795,19 @@ type
   {Used to set stencil Function, Reference + Mask values, for both front +
      back facing primitives. }
     procedure SetStencilFunc(const func: TStencilFunction; const ref: TGLint;
-      const mask: Cardinal);
+      const mask: Cardinal); inline;
     {Used to set stencil Function, Reference + Mask values for either the
        front or back facing primitives (or both, which is the same as calling
        SetStencilFunc). }
     procedure SetStencilFuncSeparate(const face: TCullFaceMode;
-      const func: TStencilFunction; const ref: TGLint; const mask: Cardinal);
+      const func: TStencilFunction; const ref: TGLint; const mask: Cardinal); inline;
     {Used to set the StencilFail, StencilPassDepthFail + StencilPassDepthPass
        in one go. }
-    procedure SetStencilOp(const fail, zfail, zpass: TStencilOp);
+    procedure SetStencilOp(const fail, zfail, zpass: TStencilOp); inline;
     {Used to set the StencilFail, StencilPassDepthFail + StencilPassDepthPass
        in one go, for either front or back facing primitives. }
     procedure SetStencilOpSeparate(const face: TCullFaceMode; const sfail,
-      dpfail, dppass: TStencilOp);
+      dpfail, dppass: TStencilOp); inline;
     {Enables/disables depth testing. }
     property EnableDepthTest: TGLboolean read FEnableDepthTest write
       SetEnableDepthTest;
@@ -830,12 +831,12 @@ type
     // write SetBlendDstAlpha;
   {Sets the weighting factors to be used by the blending equation, for
      both color + alpha. }
-    procedure SetBlendFunc(const Src: TBlendFunction; const Dst: TDstBlendFunction);
+    procedure SetBlendFunc(const Src: TBlendFunction; const Dst: TDstBlendFunction); inline;
     {Sets the weighting factors to be used by the blending equation, with
        separate values used for color + alpha components. }
     procedure SetBlendFuncSeparate(const SrcRGB: TBlendFunction;
       const DstRGB: TDstBlendFunction; const SrcAlpha: TBlendFunction;
-      const DstAlpha: TDstBlendFunction);
+      const DstAlpha: TDstBlendFunction); inline;
     {The blending equation.  Determines how the incoming source fragment's
        RGB are combined with the destination RGB. }
     property BlendEquationRGB: TBlendEquation read FBlendEquationRGB;
@@ -845,10 +846,10 @@ type
     property BlendEquationAlpha: TBlendEquation read FBlendEquationAlpha;
     // write SetBlendEquationAlpha;
   {Sets the blend equation for RGB + alpha to the same value. }
-    procedure SetBlendEquation(const mode: TBlendEquation);
+    procedure SetBlendEquation(const mode: TBlendEquation); inline;
     {Sets the blend equations for RGB + alpha separately. }
     procedure SetBlendEquationSeparate(const modeRGB, modeAlpha:
-      TBlendEquation);
+      TBlendEquation);  inline;
     {A constant blend color, that can be used in the blend equation. }
     property BlendColor: TVector read FBlendColor write SetBlendColor;
     {Enables/disables framebuffer SRGB. }
@@ -866,7 +867,7 @@ type
     property ColorWriteMask[Index: Integer]: TColorMask read GetColorWriteMask
     write SetColorWriteMask;
     {Set the color write mask for all draw buffers. }
-    procedure SetColorMask(mask: TColorMask);
+    procedure SetColorMask(mask: TColorMask);  inline;
     {The depth write mask. }
     property DepthWriteMask: TGLBoolean read FDepthWriteMask write
       SetDepthWriteMask;
@@ -892,7 +893,7 @@ type
     property ReadFrameBuffer: Cardinal read FReadFrameBuffer write
       SetReadFrameBuffer;
     {set both draw + read framebuffer. }
-    procedure SetFrameBuffer(const Value: Cardinal);
+    procedure SetFrameBuffer(const Value: Cardinal); inline;
     //property FrameBuffer: Cardinal read FDrawFrameBuffer write SetFrameBuffer;
     { Renderbuffer currently bound render buffer. }
     property RenderBuffer: Cardinal read FRenderBuffer write SetRenderBuffer;
@@ -947,8 +948,8 @@ type
     {Currently bound uniform buffer. }
     property UniformBufferBinding: Cardinal read FUniformBufferBinding
       write SetUniformBufferBinding;
-    procedure SetBufferIndexedBinding(const Value: Cardinal; ATarget: TGLBufferBindingTarget; AIndex: Cardinal; ABufferSize: TGLsizeiptr); overload;
-    procedure SetBufferIndexedBinding(const Value: Cardinal; ATarget: TGLBufferBindingTarget; AIndex: Cardinal; AOffset: TGLintptr; ARangeSize: TGLsizeiptr); overload;
+    procedure SetBufferIndexedBinding(const Value: Cardinal; ATarget: TGLBufferBindingTarget; AIndex: Cardinal; ABufferSize: TGLsizeiptr); overload; inline;
+    procedure SetBufferIndexedBinding(const Value: Cardinal; ATarget: TGLBufferBindingTarget; AIndex: Cardinal; AOffset: TGLintptr; ARangeSize: TGLsizeiptr); overload; inline;
     {Default values to be used when a vertex array is not used for that attribute. }
     property CurrentVertexAttrib[Index: Integer]: TVector
     read GetCurrentVertexAttrib write SetCurrentVertexAttrib;
@@ -974,9 +975,9 @@ type
     {Current queries. }
     property CurrentQuery[Index: TQueryType]: Cardinal read GetCurrentQuery;
     {Begins a query of "Target" type.  "Value" must be a valid query object. }
-    procedure BeginQuery(const Target: TQueryType; const Value: Cardinal);
+    procedure BeginQuery(const Target: TQueryType; const Value: Cardinal); inline;
     {Ends current query of type "Target". }
-    procedure EndQuery(const Target: TQueryType);
+    procedure EndQuery(const Target: TQueryType); inline;
     {The buffer currently bound to the copy read buffer binding point, this
        is an extra binding point provided so that you don't need to overwrite
        other binding points to copy between buffers. }
@@ -993,25 +994,25 @@ type
     {Indicates the current presence within the list. }
     property InsideList: Boolean read FInsideList;
     {Begin new display list. }
-    procedure NewList(list: Cardinal; mode: Cardinal);
+    procedure NewList(list: Cardinal; mode: Cardinal); inline;
     {End display list. }
-    procedure EndList;
+    procedure EndList; inline;
     {Call display list. }
-    procedure CallList(list: Cardinal);
+    procedure CallList(list: Cardinal); inline;
     {Defines the OpenGL texture matrix.
        Assumed texture mode is GL_MODELVIEW. }
-    procedure SetGLTextureMatrix(const matrix: TMatrix);
-    procedure ResetGLTextureMatrix;
-    procedure ResetAllGLTextureMatrix;
+    procedure SetGLTextureMatrix(const matrix: TMatrix); inline;
+    procedure ResetGLTextureMatrix; inline;
+    procedure ResetAllGLTextureMatrix; inline;
     // note: needs to change to per draw-buffer
-    procedure SetGLColorWriting(flag: Boolean);
+    procedure SetGLColorWriting(flag: Boolean); inline;
     {Inverts front face winding (CCW/CW). }
-    procedure InvertGLFrontFace;
+    procedure InvertGLFrontFace; inline;
     // read only properties
     property States: TGLStates read FStates;
     {True for ignore deprecated and removed features in OpenGL 3x }
-    property ForwardContext: Boolean read FForwardContext
-      write SetForwardContext;
+{    property ForwardContext: Boolean read FForwardContext
+      write SetForwardContext;}
   end;
 
 type
@@ -1116,7 +1117,8 @@ implementation
 //------------------------------------------------------
 
 uses
-  GLContext, GLColor;
+  GLContext, 
+  GLColor;
 
 
 // ------------------
@@ -1141,7 +1143,7 @@ var
   I: Integer;
 begin
   inherited;
-  SetLength(FListStates, 128);
+  SetLength(FListStates, $FFFFF);
   FCurrentList := 0;
 
   // Material colors
@@ -1183,7 +1185,7 @@ begin
 
   for I := High(FTextureMatrixIsIdentity) downto 0 do
     FTextureMatrixIsIdentity[I] := False;
-  FForwardContext := False;
+//  FForwardContext := False;
 
   // Vertex Array Data state
   FVertexArrayBinding := 0;
@@ -1355,8 +1357,8 @@ end;
 
 procedure TGLStateCache.Enable(const aState: TGLState);
 begin
-  if cGLStateToGLEnum[aState].GLDeprecated and FForwardContext then
-    exit;
+{  if cGLStateToGLEnum[aState].GLDeprecated and FForwardContext then
+    exit;}
   if not (aState in FStates) or FInsideList then
   begin
     if FInsideList then
@@ -1373,8 +1375,8 @@ end;
 
 procedure TGLStateCache.Disable(const aState: TGLState);
 begin
-  if cGLStateToGLEnum[aState].GLDeprecated and FForwardContext then
-    exit;
+{  if cGLStateToGLEnum[aState].GLDeprecated and FForwardContext then
+    exit;}
   if (aState in FStates) or FInsideList then
   begin
     if FInsideList then
@@ -1409,16 +1411,16 @@ end;
 
 procedure TGLStateCache.PerformEnable(const aState: TGLState);
 begin
-  if cGLStateToGLEnum[aState].GLDeprecated and FForwardContext then
-    exit;
+{  if cGLStateToGLEnum[aState].GLDeprecated and FForwardContext then
+    exit;}
   Include(FStates, aState);
   GL.Enable(cGLStateToGLEnum[aState].GLConst);
 end;
 
 procedure TGLStateCache.PerformDisable(const aState: TGLState);
 begin
-  if cGLStateToGLEnum[aState].GLDeprecated and FForwardContext then
-    exit;
+{  if cGLStateToGLEnum[aState].GLDeprecated and FForwardContext then
+    exit;}
   Exclude(FStates, aState);
   GL.Disable(cGLStateToGLEnum[aState].GLConst);
 end;
@@ -1429,7 +1431,7 @@ begin
   GL.PopAttrib();
 end;
 
-procedure TGLStateCache.PushAttrib(stateTypes: TGLStateTypes);
+procedure TGLStateCache.PushAttrib(const stateTypes: TGLStateTypes);
 var
   tempFlag: Cardinal;
   I: Integer;
@@ -1453,50 +1455,50 @@ var
   i: Integer;
   currentFace: Cardinal;
 begin
-  if FForwardContext then
-    exit;
+{  if FForwardContext then
+    exit;}
   Assert((aFace = cmFront) or (aFace = cmBack),
     'Only cmFront or cmBack supported');
   i := Integer(aFace);
   currentFace := cGLCullFaceModeToGLEnum[aFace];
 
-  if (FFrontBackShininess[i] <> shininess)
-    or FInsideList then
-  begin
-    GL.Materiali(currentFace, GL_SHININESS, shininess);
-    if not FInsideList then
-      FFrontBackShininess[i] := shininess;
-  end;
-  if not AffineVectorEquals(FFrontBackColors[i][0], emission)
-    or FInsideList then
-  begin
-    GL.Materialfv(currentFace, GL_EMISSION, @emission);
-    if not FInsideList then
-      SetVector(FFrontBackColors[i][0], emission);
-  end;
-  if not AffineVectorEquals(FFrontBackColors[i][1], ambient)
-    or FInsideList then
-  begin
-    GL.Materialfv(currentFace, GL_AMBIENT, @ambient);
-    if not FInsideList then
-      SetVector(FFrontBackColors[i][1], ambient);
-  end;
-  if not VectorEquals(FFrontBackColors[i][2], diffuse)
-    or FInsideList then
-  begin
-    GL.Materialfv(currentFace, GL_DIFFUSE, @diffuse);
-    if not FInsideList then
-      SetVector(FFrontBackColors[i][2], diffuse);
-  end;
-  if not AffineVectorEquals(FFrontBackColors[i][3], specular)
-    or FInsideList then
-  begin
-    GL.Materialfv(currentFace, GL_SPECULAR, @specular);
-    if not FInsideList then
-      SetVector(FFrontBackColors[i][3], specular);
-  end;
   if FInsideList then
+  begin
+
+    GL.Materiali(currentFace,  GL_SHININESS, shininess);
+    GL.Materialfv(currentFace, GL_EMISSION,  @emission);
+    GL.Materialfv(currentFace, GL_AMBIENT,   @ambient);
+    GL.Materialfv(currentFace, GL_DIFFUSE,   @diffuse);
+    GL.Materialfv(currentFace, GL_SPECULAR,  @specular);
     Include(FListStates[FCurrentList], sttLighting);
+  end
+  else begin
+    if (FFrontBackShininess[i] <> shininess) then
+    begin
+      GL.Materiali(currentFace, GL_SHININESS, shininess);
+      FFrontBackShininess[i] := shininess;
+    end;
+    if not AffineVectorEquals(FFrontBackColors[i][0], emission) then
+    begin
+      GL.Materialfv(currentFace, GL_EMISSION, @emission);
+      SetVector(FFrontBackColors[i][0], emission);
+    end;
+    if not AffineVectorEquals(FFrontBackColors[i][1], ambient) then
+    begin
+      GL.Materialfv(currentFace, GL_AMBIENT, @ambient);
+      SetVector(FFrontBackColors[i][1], ambient);
+    end;
+    if not VectorEquals(FFrontBackColors[i][2], diffuse) then
+    begin
+      GL.Materialfv(currentFace, GL_DIFFUSE, @diffuse);
+      SetVector(FFrontBackColors[i][2], diffuse);
+    end;
+    if not AffineVectorEquals(FFrontBackColors[i][3], specular) then
+    begin
+      GL.Materialfv(currentFace, GL_SPECULAR, @specular);
+      SetVector(FFrontBackColors[i][3], specular);
+    end;
+  end;
 end;
 
 procedure TGLStateCache.SetGLMaterialAlphaChannel(const aFace: Cardinal; const
@@ -1505,7 +1507,7 @@ var
   i: Integer;
   color: TVector4f;
 begin
-  if FForwardContext then Exit;
+{  if FForwardContext then Exit;}
 
   if not(stLighting in FStates) then
   begin
@@ -1538,7 +1540,7 @@ procedure TGLStateCache.SetGLMaterialDiffuseColor(const aFace: Cardinal; const d
 var
   i: Integer;
 begin
-  if FForwardContext then Exit;
+{  if FForwardContext then Exit;}
 
   if not(stLighting in FStates) then
   begin
@@ -1624,19 +1626,19 @@ begin
   if enabled <> FEnablePrimitiveRestart then
   begin
     FEnablePrimitiveRestart := enabled;
-    if FForwardContext then
-    begin
-      if enabled then
-        GL.Enable(GL_PRIMITIVE_RESTART)
-      else
-        GL.Disable(GL_PRIMITIVE_RESTART);
-    end
-    else if GL.NV_primitive_restart then
+    if GL.NV_primitive_restart then
     begin
       if enabled then
         GL.EnableClientState(GL_PRIMITIVE_RESTART_NV)
       else
         GL.DisableClientState(GL_PRIMITIVE_RESTART_NV);
+    end
+    else begin
+      if enabled then
+        GL.Enable(GL_PRIMITIVE_RESTART)
+      else
+        GL.Disable(GL_PRIMITIVE_RESTART);
+
     end;
   end;
 end;
@@ -1650,7 +1652,7 @@ procedure TGLStateCache.SetPrimitiveRestartIndex(const index: Cardinal);
 begin
   if index <> FPrimitiveRestartIndex then
   begin
-    if GL.NV_primitive_restart or FForwardContext then
+    if GL.NV_primitive_restart then
     begin
       FPrimitiveRestartIndex := index;
       GL.PrimitiveRestartIndex(index)
@@ -2129,8 +2131,8 @@ procedure TGLStateCache.SetGLAlphaFunction(func: TComparisonFunction;
 var I: Cardinal; E: Single;
 {$ENDIF}
 begin
-  if FForwardContext then
-    exit;
+{  if FForwardContext then
+    exit;}
 {$IFDEF GLS_CACHE_MISS_CHECK}
   GL.GetIntegerv(GL_ALPHA_TEST_FUNC, @I);
   if cGLComparisonFunctionToGLEnum[FAlphaFunc] <> I then
@@ -2302,8 +2304,8 @@ end;
 
 procedure TGLStateCache.SetGLTextureMatrix(const matrix: TMatrix);
 begin
-  if FForwardContext then
-    exit;
+{  if FForwardContext then
+   exit;}
   if FInsideList then
     Include(FListStates[FCurrentList], sttTransform)
   else
@@ -2315,8 +2317,8 @@ end;
 
 procedure TGLStateCache.ResetGLTextureMatrix;
 begin
-  if FForwardContext then
-    exit;
+{  if FForwardContext then
+    exit;}
   GL.MatrixMode(GL_TEXTURE);
   GL.LoadIdentity;
   FTextureMatrixIsIdentity[ActiveTexture] := True;
@@ -2328,8 +2330,8 @@ var
   I: Integer;
   lastActiveTexture: Cardinal;
 begin
-  if FForwardContext then
-    exit;
+{  if FForwardContext then
+    exit;}
   lastActiveTexture := ActiveTexture;
   GL.MatrixMode(GL_TEXTURE);
   for I := High(FTextureMatrixIsIdentity) downto 0 do
@@ -2947,7 +2949,7 @@ var
   glTarget: Cardinal;
 begin
   glTarget := DecodeGLTextureTarget(Target);
-  if FForwardContext or not IsTargetSupported(glTarget) then
+  if {FForwardContext or }not IsTargetSupported(glTarget) then
     exit;
   if (Value <> FActiveTextureEnabling[FActiveTexture][Target])
     or FInsideList then
@@ -3004,8 +3006,8 @@ begin
   Assert(mode = GL_COMPILE,
     'Compile & executing not supported by TGLStateCache');
   FCurrentList := list - 1;
-  while High(FListStates) < Integer(FCurrentList) do
-    SetLength(FListStates, 2 * Length(FListStates));
+//  while High(FListStates) < Integer(FCurrentList) do
+//    SetLength(FListStates, 2 * Length(FListStates));
 
   FListStates[FCurrentList] := [];
   FInsideList := True;
@@ -3031,8 +3033,8 @@ end;
 
 procedure TGLStateCache.CallList(list: Cardinal);
 begin
-  while High(FListStates) < Integer(list) do
-    SetLength(FListStates, 2 * Length(FListStates));
+//  while High(FListStates) < Integer(list) do
+//    SetLength(FListStates, 2 * Length(FListStates));
 
   if FListStates[list - 1] <> [] then
   begin
@@ -3191,15 +3193,15 @@ end;
 
 procedure TGLStateCache.SetFFPLight(Value: Boolean);
 begin
-  FFFPLight := Value and not FForwardContext;
+  FFFPLight := Value{ and not FForwardContext};
 end;
 
 function TGLStateCache.GetMaxLights: Integer;
 begin
   if FMaxLights = 0 then
-  if FForwardContext then
+{  if FForwardContext then
     FMaxLights := MAX_HARDWARE_LIGHT
-  else
+  else}
     GL.GetIntegerv(GL_MAX_LIGHTS, @FMaxLights);
   Result := FMaxLights;
 end;
@@ -3526,7 +3528,7 @@ end;
 
 procedure TGLStateCache.SetForwardContext(Value: Boolean);
 begin
-  if Value <> FForwardContext then
+{  if Value <> FForwardContext then
   begin
     FForwardContext := Value;
     if Value then
@@ -3534,6 +3536,7 @@ begin
       SetFFPlight(False);
     end;
   end;
+}
 end;
 
 

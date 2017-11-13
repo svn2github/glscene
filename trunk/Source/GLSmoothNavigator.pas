@@ -356,16 +356,16 @@ type
     procedure StrafeVertical(const Plus, Minus: Boolean; ADeltaTime: Double; const Accelerate: Boolean = False); virtual;
 
     // Uses MoveAroundParams. Returns True, if object was actually moved.
-    function MoveAroundTarget(const PitchDelta, TurnDelta : Single; const ADeltaTime: Double): Boolean; virtual;
-    function MoveObjectAround(const AObject: TGLBaseSceneObject; PitchDelta, TurnDelta : Single; ADeltaTime: Double): Boolean; virtual;
+    function MoveAroundTarget(const PitchDelta, TurnDelta : Single; const ADeltaTime: Double): Boolean;
+    function MoveObjectAround(const AObject: TGLBaseSceneObject; PitchDelta, TurnDelta : Single; ADeltaTime: Double): Boolean;
 
     // Uses AdjustDistanceParams.
-    function AdjustDistanceToPoint(const  APoint: TVector; const DistanceRatio : Single; ADeltaTime: Double): Boolean; virtual;
-    function AdjustDistanceToTarget(const DistanceRatio : Single; const ADeltaTime: Double): Boolean; virtual;
+    function AdjustDistanceToPoint(const  APoint: TVector; const DistanceRatio : Single; ADeltaTime: Double): Boolean;
+    function AdjustDistanceToTarget(const DistanceRatio : Single; const ADeltaTime: Double): Boolean;
 
     // Uses AdjustDistanceParamsEx.
-    function AdjustDistanceToPointEx(const  APoint: TVector; ADeltaTime: Double): Boolean; virtual;
-    function AdjustDistanceToTargetEx(const ADeltaTime: Double): Boolean; virtual;
+    function AdjustDistanceToPointEx(const  APoint: TVector; ADeltaTime: Double): Boolean;
+    function AdjustDistanceToTargetEx(const ADeltaTime: Double): Boolean;
 
     // Uses CustomAnimatedItems.
     procedure AnimateCustomItems(const ADeltaTime: Double); virtual;

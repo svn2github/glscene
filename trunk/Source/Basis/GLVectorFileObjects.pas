@@ -243,9 +243,9 @@ type
     function BoneByID(anID: Integer): TGLSkeletonBone; override;
     function BoneByName(const aName: string): TGLSkeletonBone; override;
     {Set the bone's matrix. Becareful using this. }
-    procedure SetGlobalMatrix(Matrix: TMatrix); // Ragdoll
+    procedure SetGlobalMatrix(const Matrix: TMatrix); // Ragdoll
     {Set the bone's GlobalMatrix. Used for Ragdoll. }
-    procedure SetGlobalMatrixForRagDoll(RagDollMatrix: TMatrix); // Ragdoll
+    procedure SetGlobalMatrixForRagDoll(const RagDollMatrix: TMatrix); // Ragdoll
     {Calculates the global matrix for the bone and its sub-bone.
        Call this function directly only the RootBone. }
     procedure PrepareGlobalMatrices; override;
@@ -529,7 +529,7 @@ type
     function GetUseVBO: Boolean;
     procedure SetUseVBO(const Value: Boolean);
   protected
-    function GetMeshObject(Index: Integer): TMeshObject;
+    function GetMeshObject(Index: Integer): TMeshObject; inline;
   public
     constructor CreateOwned(aOwner: TGLBaseMesh);
     destructor Destroy; override;
@@ -563,8 +563,8 @@ type
        Resturns True if all its MeshObjects use VBOs. }
     property UseVBO: Boolean read GetUseVBO write SetUseVBO;
     // Precalculate whatever is needed for rendering, called once
-    procedure Prepare; dynamic;
-    function FindMeshByName(MeshName: string): TMeshObject;
+    procedure Prepare; virtual;
+    function FindMeshByName(const MeshName: string): TMeshObject;
     property Owner: TGLBaseMesh read FOwner;
     procedure Clear; override;
     property Items[Index: Integer]: TMeshObject read GetMeshObject; default;
@@ -758,7 +758,7 @@ type
       aNormals: TAffineVectorList = nil); override;
     function TriangleCount: Integer; override;
     procedure Reverse; override;
-    procedure Add(idx: Integer);
+    procedure Add(idx: Integer); inline;
     procedure GetExtents(var min, max: TAffineVector);
     {If mode is strip or fan, convert the indices to triangle list indices. }
     procedure ConvertToList;
@@ -777,8 +777,8 @@ type
     FNormalIndices: TIntegerList;
     FTexCoordIndices: TIntegerList;
   protected
-    procedure SetNormalIndices(const val: TIntegerList);
-    procedure SetTexCoordIndices(const val: TIntegerList);
+    procedure SetNormalIndices(const val: TIntegerList); inline;
+    procedure SetTexCoordIndices(const val: TIntegerList); inline;
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -1044,8 +1044,6 @@ type
   TGLFreeForm = class(TGLBaseMesh)
   private
     FOctree: TGLOctree;
-  protected
-    function GetOctree: TGLOctree;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -1064,7 +1062,7 @@ type
       TMatrix; triangles: TAffineVectorList = nil): boolean;
     //  TODO:  function OctreeSphereIntersect
     {Octree support *experimental*. Use only if you understand what you're doing! }
-    property Octree: TGLOctree read GetOctree;
+    property Octree: TGLOctree read FOctree;
     procedure BuildOctree(TreeDepth: integer = 3);
   published
     property AutoCentering;
@@ -2350,12 +2348,12 @@ begin
   inherited;
 end;
 
-procedure TGLSkeletonBone.SetGlobalMatrix(Matrix: TMatrix); // ragdoll
+procedure TGLSkeletonBone.SetGlobalMatrix(const Matrix: TMatrix); // ragdoll
 begin
   FGlobalMatrix := Matrix;
 end;
 
-procedure TGLSkeletonBone.SetGlobalMatrixForRagDoll(RagDollMatrix: TMatrix);
+procedure TGLSkeletonBone.SetGlobalMatrixForRagDoll(const RagDollMatrix: TMatrix);
   // ragdoll
 begin
   FGlobalMatrix := MatrixMultiply(RagDollMatrix,
@@ -4490,7 +4488,7 @@ begin
     Items[i].Prepare;
 end;
 
-function TGLMeshObjectList.FindMeshByName(MeshName: string): TMeshObject;
+function TGLMeshObjectList.FindMeshByName(const MeshName: string): TMeshObject;
 var
   i: integer;
 begin
@@ -6629,13 +6627,6 @@ begin
   inherited Destroy;
 end;
 
-function TGLFreeForm.GetOctree: TGLOctree;
-begin
-  // if not Assigned(FOctree) then  //If auto-created, can never use "if Assigned(GLFreeform1.Octree)"
-  //   FOctree := TOctree.Create;   //moved this code to BuildOctree
-  Result := FOctree;
-end;
-
 procedure TGLFreeForm.BuildOctree(TreeDepth: integer = 3);
 var
   emin, emax: TAffineVector;
@@ -6699,13 +6690,12 @@ begin
   if not PointInObject(Point) then
     exit;
 
-  BRad := 2*BoundingSphereRadius;
+  BRad := BoundingSphereRadius;
 
-  // This could be a fixed vector, but a fixed vector could have a systematic
+  // This could be a fixed vector, but a fixed vector could have a systemic
   // bug on an non-closed mesh, making it fail constantly for one or several
   // faces.
   rayVector := VectorMake(2 * random - 1, 2 * random - 1, 2 * random - 1);
-  NormalizeVector(rayVector);
   rayStart := VectorAdd(VectorScale(rayVector, -BRad), Point);
 
   HitCount := 0;

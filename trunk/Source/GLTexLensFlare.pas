@@ -19,6 +19,7 @@ uses
   System.Classes,
   
   GLScene,
+  GLPersistentClasses,
   GLVectorGeometry,
   GLObjects,
   GLTexture,
@@ -31,11 +32,8 @@ uses
 
 type
 
-  // TGLTextureLensFlare
-  //
   TGLTextureLensFlare = class(TGLBaseSceneObject)
   private
-     
     FSize: integer;
     FCurrSize: Single;
     FNumSecs: integer;
@@ -53,18 +51,15 @@ type
     procedure SetImgSecondaries(const Value: TGLTexture);
     procedure SetSeed(const Value: Integer);
   protected
-    
     procedure SetSize(aValue: integer);
     procedure SetNumSecs(aValue: integer);
     procedure SetAutoZTest(aValue: boolean);
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure BuildList(var rci: TGLRenderContextInfo); override;
     procedure DoProgress(const progressTime: TProgressTimes); override;
   published
-    
     // MaxRadius of the flare.
     property Size: integer read FSize write SetSize default 50;
     // Random seed
@@ -79,7 +74,6 @@ type
     property ImgRays: TGLTexture read FImgRays write SetImgRays;
     property ImgRing: TGLTexture read FImgRing write SetImgRing;
     property ImgSecondaries: TGLTexture read FImgSecondaries write SetImgSecondaries;
-
     property ObjectsSorting;
     property Position;
     property Visible;
@@ -88,6 +82,7 @@ type
     property Effects;
   end;
 
+//==========================================================
 implementation
 
 // ------------------
@@ -132,8 +127,6 @@ begin
   end;
 end;
 
-// SetAutoZTest
-//
 
 procedure TGLTextureLensFlare.SetAutoZTest(aValue: boolean);
 begin
@@ -144,8 +137,6 @@ begin
   end;
 end;
 
-// BuildList
-//
 
 procedure TGLTextureLensFlare.BuildList(var rci: TGLRenderContextInfo);
 var
@@ -314,8 +305,6 @@ begin
     Self.RenderChildren(0, Count - 1, rci);
 end;
 
-// DoProgress
-//
 
 procedure TGLTextureLensFlare.DoProgress(const progressTime: TProgressTimes);
 begin
@@ -366,9 +355,9 @@ end;
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 initialization
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
 
   RegisterClasses([TGLTextureLensFlare]);
 

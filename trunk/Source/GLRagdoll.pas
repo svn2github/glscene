@@ -18,7 +18,7 @@ uses
   GLPersistentClasses, 
   GLVectorGeometry, 
   GLVectorFileObjects,
-  GLVectorLists, 
+  GLVectorLists,
   GLObjects;
 
 type
@@ -64,7 +64,7 @@ type
     FReferenceMatrix: TMatrix; //Stores the first bone matrix to be used as reference
     FAnchor: TAffineVector; //The position of the joint
     procedure CreateBoundingBox;
-    procedure SetAnchor(Anchor: TAffineVector);
+    procedure SetAnchor(const Anchor: TAffineVector);
     procedure AlignToSkeleton;
     procedure CreateBoundsChild;
     procedure StartChild;
@@ -101,20 +101,17 @@ type
 
   TGLRagdoll = class(TPersistentObject)
 	private
-     
+
     FOwner : TGLBaseMesh;
     FRootBone : TGLRagdolBone;
     FEnabled: Boolean;
     FBuilt: Boolean;
   protected
-    
+
   public
-    
+
     constructor Create(AOwner : TGLBaseMesh); reintroduce;
     destructor Destroy; override;
-
-    procedure WriteToFiler(writer : TVirtualWriter); override;
-    procedure ReadFromFiler(reader : TVirtualReader); override;
 
     {Must be set before build the ragdoll }
     procedure SetRootBone(RootBone: TGLRagdolBone);
@@ -331,7 +328,7 @@ begin
   for i := 0 to Count-1 do items[i].CreateBoundsChild;
 end;
 
-procedure TGLRagdolBone.SetAnchor(Anchor: TAffineVector);
+procedure TGLRagdolBone.SetAnchor(const Anchor: TAffineVector);
 begin
   FAnchor := Anchor;
 end;
@@ -357,11 +354,6 @@ destructor TGLRagdoll.Destroy;
 begin
   if FEnabled then Stop;
   inherited Destroy;
-end;
-
-procedure TGLRagdoll.ReadFromFiler(reader: TVirtualReader);
-begin
-  inherited;
 end;
 
 procedure TGLRagdoll.SetRootBone(RootBone: TGLRagdolBone);
@@ -401,11 +393,6 @@ begin
   FOwner.Skeleton.MorphMesh(true);
 end;
 
-procedure TGLRagdoll.WriteToFiler(writer: TVirtualWriter);
-begin
-  inherited;
-
-end;
 
 procedure TGLRagdoll.BuildRagdoll;
 begin

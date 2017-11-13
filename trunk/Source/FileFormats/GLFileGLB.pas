@@ -15,10 +15,12 @@ interface
 uses
   System.Classes, 
   System.SysUtils,
+
   GLVectorFileObjects, 
   GLTexture, 
   GLApplicationFileIO,
-  GLVectorTypes, 
+  GLVectorTypes,
+  GLVectorLists,
   GLVectorGeometry, 
   GLMaterial,
   GLUtils;

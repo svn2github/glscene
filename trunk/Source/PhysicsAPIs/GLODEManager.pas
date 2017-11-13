@@ -47,7 +47,8 @@ uses
   GLState,
   GLVectorTypes,
   ODEGL,
-  ODEImport;
+  ODEImport,
+  GLPipelineTransformation;
 
 type
   TGLODECustomCollisionEvent = procedure(Geom1, Geom2: PdxGeom) of object;
@@ -1701,7 +1702,7 @@ begin
   begin
     rci.PipelineTransformation.Push;
     Mat := TGLBaseSceneObject(Owner.Owner).AbsoluteMatrix;
-    rci.PipelineTransformation.ModelMatrix := Mat;
+    rci.PipelineTransformation.ModelMatrix^ := Mat;
   end;
 
   Elements.Render(rci);
@@ -1987,7 +1988,7 @@ begin
   begin
     rci.PipelineTransformation.Push;
     Mat := TGLBaseSceneObject(Owner.Owner).AbsoluteMatrix;
-    rci.PipelineTransformation.ModelMatrix := Mat;
+    rci.PipelineTransformation.ModelMatrix^ := Mat;
   end;
 
   Elements.Render(rci);

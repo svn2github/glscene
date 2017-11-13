@@ -42,6 +42,7 @@ interface
 
 uses
   GLVectorGeometry,
+  GLVectorLists,
   GLMesh,
   GLVectorFileObjects,
   GLVectorTypes,

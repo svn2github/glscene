@@ -17,10 +17,17 @@ unit GLFileGL2;
 interface
 
 uses
-  System.Classes, System.SysUtils,
-   
-  GLVectorFileObjects, GLApplicationFileIO, GLMaterial,
-  GLVectorGeometry, FileGL2, GLVectorTypes, GLVectorLists;
+  System.Classes,
+  System.SysUtils,
+
+  GLPersistentClasses,
+  GLVectorFileObjects,
+  GLApplicationFileIO,
+  GLMaterial,
+  GLVectorGeometry,
+  FileGL2,
+  GLVectorTypes,
+  GLVectorLists;
 
 type
 
@@ -54,15 +61,11 @@ implementation
 // ------------------ TGLMVectorFile ------------------
 // ------------------
 
-// Capabilities
-//
 class function TGLMVectorFile.Capabilities : TGLDataFileCapabilities;
 begin
   Result:=[dfcRead];
 end;
 
-// LoadFromStream
-//
 procedure TGLMVectorFile.LoadFromStream(aStream : TStream);
 var
   GLMFile     : TFileGLM;
@@ -166,15 +169,11 @@ end;
 // ------------------ TGLAVectorFile ------------------
 // ------------------
 
-// Capabilities
-//
 class function TGLAVectorFile.Capabilities : TGLDataFileCapabilities;
 begin
   Result:=[dfcRead];
 end;
 
-// LoadFromStream
-//
 procedure TGLAVectorFile.LoadFromStream(aStream : TStream);
 var
   GLAFile  : TFileGLA;

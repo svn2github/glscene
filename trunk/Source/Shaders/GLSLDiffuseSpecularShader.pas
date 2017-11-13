@@ -34,6 +34,7 @@ uses
   OpenGLTokens,
   GLTexture,
   GLScene,
+  GLPersistentClasses,
   GLVectorGeometry,
   GLStrings,
   GLCustomShader,

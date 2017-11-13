@@ -31,7 +31,7 @@
 {.$DEFINE GLS_NO_REGIONS}
 
 // Activate Logging
-{$DEFINE GLS_LOGGING}
+{.$DEFINE GLS_LOGGING}
 
 // Activate support for FastMath library
 // Use https://github.com/neslib/FastMath by Erik van Bilsen

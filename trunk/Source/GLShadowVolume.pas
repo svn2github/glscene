@@ -30,6 +30,7 @@ uses
   GLSilhouette,
   GLCrossPlatform,
   GLPersistentClasses,
+  GLPipelineTransformation,
   GLGeometryBB,
   GLColor,
   GLRenderContextInfo,
@@ -59,7 +60,6 @@ type
   TGLShadowVolumeCapping = (svcDefault, svcAlways, svcNever);
 
   {Determines when a caster should actually produce a shadow;
-  
     scmAlways : Caster always produces a shadow, ignoring visibility
     scmVisible : Caster casts shadow if the object has visible=true
     scmRecursivelyVisible : Caster casts shadow if ancestors up the hierarchy
@@ -121,7 +121,7 @@ type
   protected
     function GetLightSource: TGLLightSource;
     procedure SetLightSource(const ls: TGLLightSource);
-    function GetCachedSilhouette(AIndex: Integer): TGLSilhouette;
+    function GetCachedSilhouette(AIndex: Integer): TGLSilhouette; inline;
     procedure StoreCachedSilhouette(AIndex: Integer; ASil: TGLSilhouette);
     {Compute and setup scissor clipping rect for the light.
        Returns true if a scissor rect was setup }
@@ -408,7 +408,7 @@ begin
   end;
 
   // Calculate the window-space bounds of the light's bounding box.
-  mvp := rci.PipelineTransformation.ViewProjectionMatrix;
+  mvp := rci.PipelineTransformation.ViewProjectionMatrix^;
 
   clipRect := AABBToClipRect(aabb, mvp, rci.viewPortSize.cx,
     rci.viewPortSize.cy);
@@ -596,7 +596,7 @@ procedure TGLShadowVolume.DoRender(var ARci: TGLRenderContextInfo;
 //
 // This does _not_ mean that the object is actually visible on the screen
 
-function DirectHierarchicalVisibility(obj: TGLBaseSceneObject): boolean;
+  function DirectHierarchicalVisibility(obj: TGLBaseSceneObject; self: TGLShadowVolume): boolean; inline;
   var
     p: TGLBaseSceneObject;
   begin
@@ -679,9 +679,9 @@ begin
         (Caster.CastingMode = scmAlways) or
         ((Caster.CastingMode = scmVisible) and obj.Visible) or
         ((Caster.CastingMode = scmRecursivelyVisible) and
-        DirectHierarchicalVisibility(obj)) or
+        DirectHierarchicalVisibility(obj, Self)) or
         ((Caster.CastingMode = scmParentRecursivelyVisible) and
-        DirectHierarchicalVisibility(obj.Parent)) or
+        DirectHierarchicalVisibility(obj.Parent, Self)) or
         ((Caster.CastingMode = scmParentVisible) and (not Assigned(obj.Parent)
           or
         obj.Parent.Visible))
@@ -816,7 +816,7 @@ begin
           if Assigned(sil) then
             try
               // render the silhouette
-              ARci.PipelineTransformation.ModelMatrix := obj.AbsoluteMatrix;
+              ARci.PipelineTransformation.SetModelMatrix(obj.AbsoluteMatrix);
               GL.VertexPointer(4, GL_FLOAT, 0, sil.Vertices.List);
 
               if Boolean(PtrUInt(opaqueCapping[k])) then

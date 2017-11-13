@@ -27,7 +27,8 @@ uses
   GLVectorGeometry, 
   GLTexture,  
   GLRenderContextInfo,
-  GLState, 
+  GLState,
+  GLPersistentClasses,
   GLContext;
 
 

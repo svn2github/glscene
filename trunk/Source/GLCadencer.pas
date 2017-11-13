@@ -105,7 +105,7 @@ type
     procedure Progress;
 
     {Adjusts CurrentTime if necessary, then returns its value. }
-    function GetCurrenttime: Double;
+    function GetCurrenttime: Double; inline;
 
     {Returns True if a "Progress" is underway. 
        Be aware that as long as IsBusy is True, the Cadencer may be
@@ -234,7 +234,7 @@ type
     FTooFastCounter: Integer;
     FTimer: Cardinal;
     FWindowHandle: HWND;
-    procedure WndProc(var Msg: TMessage);
+    procedure WndProc(var Msg: TMessage); inline;
   public
     constructor Create;
     destructor Destroy; override;

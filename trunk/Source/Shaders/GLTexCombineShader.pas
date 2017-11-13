@@ -7,8 +7,8 @@
    History :  
      16/05/03 - EG - Creation
      The whole history is logged in previous version of the unit.
-    
 }
+
 unit GLTexCombineShader;
 
 interface
@@ -18,12 +18,13 @@ interface
 uses
   System.Classes,
   System.SysUtils,
-   
+
   GLTexture,
   GLMaterial,
   GLRenderContextInfo,
   GLTextureCombiners,
   OpenGLTokens,
+  GLState,
   XOpenGL,
   GLContext,
   GLCrossPlatform,
@@ -32,68 +33,52 @@ uses
 
 type
 
-  // TGLTexCombineShader
-  //
   {A shader that can setup the texture combiner.  }
   TGLTexCombineShader = class(TGLShader)
   private
-    
     FCombiners: TStringList;
     FCommandCache: TCombinerCache;
     FCombinerIsValid: Boolean; // to avoid reparsing invalid stuff
     FDesignTimeEnabled: Boolean;
-
     FMaterialLibrary: TGLMaterialLibrary;
     FLibMaterial3Name: TGLLibMaterialName;
     currentLibMaterial3: TGLLibMaterial;
     FLibMaterial4Name: TGLLibMaterialName;
     currentLibMaterial4: TGLLibMaterial;
-
     FApplied3, FApplied4: Boolean;
-
   protected
-    
     procedure SetCombiners(const val: TStringList);
     procedure SetDesignTimeEnabled(const val: Boolean);
     procedure SetMaterialLibrary(const val: TGLMaterialLibrary);
     procedure SetLibMaterial3Name(const val: TGLLibMaterialName);
     procedure SetLibMaterial4Name(const val: TGLLibMaterialName);
-
     procedure NotifyLibMaterial3Destruction;
     procedure NotifyLibMaterial4Destruction;
-
     procedure DoInitialize(var rci: TGLRenderContextInfo; Sender: TObject); override;
     procedure DoApply(var rci: TGLRenderContextInfo; Sender: TObject); override;
     function DoUnApply(var rci: TGLRenderContextInfo): Boolean; override;
     procedure DoFinalize; override;
-
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
     procedure NotifyChange(Sender: TObject); override;
-
   published
-    
     property Combiners: TStringList read FCombiners write SetCombiners;
     property DesignTimeEnabled: Boolean read FDesignTimeEnabled write SetDesignTimeEnabled;
-
     property MaterialLibrary: TGLMaterialLibrary read FMaterialLibrary write SetMaterialLibrary;
     property LibMaterial3Name: TGLLibMaterialName read FLibMaterial3Name write SetLibMaterial3Name;
     property LibMaterial4Name: TGLLibMaterialName read FLibMaterial4Name write SetLibMaterial4Name;
   end;
 
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
 implementation
 // ------------------
 // ------------------ TGLTexCombineShader ------------------
 // ------------------
 
- 
-//
 
 constructor TGLTexCombineShader.Create(AOwner: TComponent);
 begin
@@ -105,9 +90,6 @@ begin
   FCommandCache := nil;
 end;
 
- 
-//
-
 destructor TGLTexCombineShader.Destroy;
 begin
   if Assigned(currentLibMaterial3) then
@@ -117,9 +99,6 @@ begin
   inherited;
   FCombiners.Free;
 end;
-
-// Notification
-//
 
 procedure TGLTexCombineShader.Notification(AComponent: TComponent; Operation: TOperation);
 begin
@@ -132,9 +111,6 @@ begin
   inherited;
 end;
 
-// NotifyChange
-//
-
 procedure TGLTexCombineShader.NotifyChange(Sender: TObject);
 begin
   FCombinerIsValid := True;
@@ -142,8 +118,6 @@ begin
   inherited NotifyChange(Sender);
 end;
 
-// NotifyLibMaterial3Destruction
-//
 
 procedure TGLTexCombineShader.NotifyLibMaterial3Destruction;
 begin
@@ -151,8 +125,6 @@ begin
   currentLibMaterial3 := nil;
 end;
 
-// NotifyLibMaterial4Destruction
-//
 
 procedure TGLTexCombineShader.NotifyLibMaterial4Destruction;
 begin
@@ -160,8 +132,6 @@ begin
   currentLibMaterial4 := nil;
 end;
 
-// SetMaterialLibrary
-//
 
 procedure TGLTexCombineShader.SetMaterialLibrary(const val: TGLMaterialLibrary);
 begin
@@ -170,8 +140,6 @@ begin
   SetLibMaterial4Name(LibMaterial4Name);
 end;
 
-// SetLibMaterial3Name
-//
 
 procedure TGLTexCombineShader.SetLibMaterial3Name(const val: TGLLibMaterialName);
 var
@@ -197,8 +165,6 @@ begin
   end;
 end;
 
-// SetLibMaterial4Name
-//
 
 procedure TGLTexCombineShader.SetLibMaterial4Name(const val: TGLLibMaterialName);
 var
@@ -224,15 +190,11 @@ begin
   end;
 end;
 
-// DoInitialize
-//
 
 procedure TGLTexCombineShader.DoInitialize(var rci: TGLRenderContextInfo; Sender: TObject);
 begin
 end;
 
-// DoApply
-//
 
 procedure TGLTexCombineShader.DoApply(var rci: TGLRenderContextInfo; Sender: TObject);
 var
@@ -304,9 +266,6 @@ begin
   end;
 end;
 
-// DoUnApply
-//
-
 function TGLTexCombineShader.DoUnApply(var rci: TGLRenderContextInfo): Boolean;
 begin
   if FApplied3 then
@@ -318,15 +277,11 @@ begin
   Result := False;
 end;
 
-// DoFinalize
-//
 
 procedure TGLTexCombineShader.DoFinalize;
 begin
 end;
 
-// SetCombiners
-//
 
 procedure TGLTexCombineShader.SetCombiners(const val: TStringList);
 begin
@@ -337,8 +292,6 @@ begin
   end;
 end;
 
-// SetDesignTimeEnabled
-//
 
 procedure TGLTexCombineShader.SetDesignTimeEnabled(const val: Boolean);
 begin

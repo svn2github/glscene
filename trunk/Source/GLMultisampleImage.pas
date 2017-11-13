@@ -28,11 +28,8 @@ uses
   GLTextureFormat;
 
 type
-  // TGLMultisampleImage
-  //
   TGLMultisampleImage = class(TGLTextureImage)
   private
-     
     FBitmap: TGLBitmap32;
     FSamplesCount: Integer;
     FWidth, FHeight, FDepth: Integer;
@@ -43,32 +40,24 @@ type
     procedure SetSamplesCount(val: Integer);
     procedure SetFixedSamplesLocation(val: Boolean);
   protected
-    
     function GetWidth: Integer; override;
     function GetHeight: Integer; override;
     function GetDepth: Integer; override;
     function GetTextureTarget: TGLTextureTarget; override;
   public
-    
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
-
     procedure Assign(Source: TPersistent); override;
-
     class function IsSelfLoading: Boolean; override;
     procedure LoadTexture(AInternalFormat: TGLInternalFormat); override;
     function GetBitmap32: TGLBitmap32; override;
     procedure ReleaseBitmap32; override;
-
     procedure SaveToFile(const fileName: string); override;
     procedure LoadFromFile(const fileName: string); override;
     class function FriendlyName: string; override;
     class function FriendlyDescription: string; override;
-
     property NativeTextureTarget;
-
   published
-    
     {Width of the blank image (for memory allocation). }
     property Width: Integer read GetWidth write SetWidth default 256;
     {Width of the blank image (for memory allocation). }
@@ -99,7 +88,6 @@ begin
 end;
 
  
-//
 
 destructor TGLMultisampleImage.Destroy;
 begin
@@ -107,8 +95,6 @@ begin
   inherited Destroy;
 end;
 
-// Assign
-//
 
 procedure TGLMultisampleImage.Assign(Source: TPersistent);
 begin
@@ -129,8 +115,6 @@ begin
     inherited;
 end;
 
-// SetWidth
-//
 
 procedure TGLMultisampleImage.SetWidth(val: Integer);
 begin
@@ -143,16 +127,12 @@ begin
   end;
 end;
 
-// GetWidth
-//
 
 function TGLMultisampleImage.GetWidth: Integer;
 begin
   Result := FWidth;
 end;
 
-// SetHeight
-//
 
 procedure TGLMultisampleImage.SetHeight(val: Integer);
 begin
@@ -165,24 +145,18 @@ begin
   end;
 end;
 
-// GetHeight
-//
 
 function TGLMultisampleImage.GetHeight: Integer;
 begin
   Result := FHeight;
 end;
 
-// GetDepth
-//
 
 function TGLMultisampleImage.GetDepth: Integer;
 begin
   Result := FDepth;
 end;
 
-// SetHeight
-//
 
 procedure TGLMultisampleImage.SetDepth(val: Integer);
 begin
@@ -195,8 +169,6 @@ begin
   end;
 end;
 
-// SetSamplesCount
-//
 
 procedure TGLMultisampleImage.SetSamplesCount(val: Integer);
 begin
@@ -210,8 +182,6 @@ begin
   end;
 end;
 
-// SetFixedSamplesLocation
-//
 
 procedure TGLMultisampleImage.SetFixedSamplesLocation(val: Boolean);
 begin
@@ -222,8 +192,6 @@ begin
   end;
 end;
 
-// GetBitmap32
-//
 
 function TGLMultisampleImage.GetBitmap32: TGLBitmap32;
 begin
@@ -237,8 +205,6 @@ begin
   Result := FBitmap;
 end;
 
-// ReleaseBitmap32
-//
 
 procedure TGLMultisampleImage.ReleaseBitmap32;
 begin
@@ -246,38 +212,28 @@ begin
   FBitmap := nil;
 end;
 
-// SaveToFile
-//
 
 procedure TGLMultisampleImage.SaveToFile(const fileName: string);
 begin
 end;
 
- 
-//
 
 procedure TGLMultisampleImage.LoadFromFile(const fileName: string);
 begin
 end;
 
- 
-//
 
 class function TGLMultisampleImage.FriendlyName: string;
 begin
   Result := 'Multisample Image';
 end;
 
-// FriendlyDescription
-//
 
 class function TGLMultisampleImage.FriendlyDescription: string;
 begin
   Result := 'Image for rendering to texture with antialiasing';
 end;
 
-// GetTextureTarget
-//
 
 function TGLMultisampleImage.GetTextureTarget: TGLTextureTarget;
 begin

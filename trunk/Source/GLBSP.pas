@@ -115,7 +115,7 @@ type
     function AverageDepth: Single;
 
     {  Traverses the tree to the given point and returns the node index. }
-    function FindNodeByPoint(aPoint: TVector): TFGBSPNode;
+    function FindNodeByPoint(const aPoint: TVector): TFGBSPNode;
 
     {  Rendering sort mode. 
       This sort mode can currently *not* blend with the sort by materials
@@ -574,7 +574,7 @@ end;
 
 // FindNodeByPoint
 //
-function TBSPMeshObject.FindNodeByPoint(aPoint: TVector): TFGBSPNode;
+function TBSPMeshObject.FindNodeByPoint(const aPoint: TVector): TFGBSPNode;
 
   function Traverse(nodeIndex: Integer): Integer;
   var

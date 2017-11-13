@@ -38,7 +38,6 @@ type
     and SweepAngle properties). }
   TGLDisk = class(TGLQuadricObject)
   private
-
     FStartAngle, FSweepAngle, FOuterRadius, FInnerRadius: Single;
     FSlices, FLoops: Integer;
     procedure SetOuterRadius(const aValue: Single);
@@ -47,18 +46,14 @@ type
     procedure SetLoops(aValue: Integer);
     procedure SetStartAngle(const aValue: Single);
     procedure SetSweepAngle(const aValue: Single);
-
   public
-
     constructor Create(AOwner: TComponent); override;
     procedure BuildList(var rci: TGLRenderContextInfo); override;
-
     procedure Assign(Source: TPersistent); override;
     function AxisAlignedDimensionsUnscaled: TVector; override;
     function RayCastIntersect(const rayStart, rayVector: TVector;
       intersectPoint: PVector = nil; intersectNormal: PVector = nil)
       : Boolean; override;
-
   published
     {  Allows defining a "hole" in the disk. }
     property InnerRadius: Single read FInnerRadius write SetInnerRadius;
@@ -80,13 +75,10 @@ type
     Stacks property to 1. }
   TGLCylinderBase = class(TGLQuadricObject)
   private
-
     FBottomRadius: Single;
     FSlices, FStacks, FLoops: Integer;
     FHeight: Single;
-
   protected
-    
     procedure SetBottomRadius(const aValue: Single);
     procedure SetHeight(const aValue: Single);
     procedure SetSlices(aValue: Integer);
@@ -94,15 +86,11 @@ type
     procedure SetLoops(aValue: Integer);
     function GetTopRadius: Single; virtual;
   public
-    
     constructor Create(AOwner: TComponent); override;
-
     procedure Assign(Source: TPersistent); override;
-
     function GenerateSilhouette(const silhouetteParameters
       : TGLSilhouetteParameters): TGLSilhouette; override;
   published
-
     property BottomRadius: Single read FBottomRadius write SetBottomRadius;
     property Height: Single read FHeight write SetHeight;
     property Slices: Integer read FSlices write SetSlices default 16;
@@ -118,11 +106,9 @@ type
   TGLCone = class(TGLCylinderBase)
   private
     FParts: TConeParts;
-
   protected
     procedure SetParts(aValue: TConeParts);
     function GetTopRadius: Single; override;
-
   public
     constructor Create(AOwner: TComponent); override;
     procedure Assign(Source: TPersistent); override;
@@ -131,7 +117,6 @@ type
     function RayCastIntersect(const rayStart, rayVector: TVector;
       intersectPoint: PVector = nil; intersectNormal: PVector = nil)
       : Boolean; override;
-
   published
     property Parts: TConeParts read FParts write SetParts
       default [coSides, coBottom];
@@ -148,28 +133,22 @@ type
     FParts: TCylinderParts;
     FTopRadius: Single;
     FAlignment: TCylinderAlignment;
-
   protected
     procedure SetTopRadius(const aValue: Single);
     procedure SetParts(aValue: TCylinderParts);
     procedure SetAlignment(val: TCylinderAlignment);
     function GetTopRadius: Single; override;
-
   public
-    
     constructor Create(AOwner: TComponent); override;
     procedure Assign(Source: TPersistent); override;
-
     procedure BuildList(var rci: TGLRenderContextInfo); override;
     function AxisAlignedDimensionsUnscaled: TVector; override;
     function RayCastIntersect(const rayStart, rayVector: TVector;
       intersectPoint: PVector = nil; intersectNormal: PVector = nil)
       : Boolean; override;
-
     procedure Align(const startPoint, endPoint: TVector); overload;
     procedure Align(const startObj, endObj: TGLBaseSceneObject); overload;
     procedure Align(const startPoint, endPoint: TAffineVector); overload;
-
   published
     property TopRadius: Single read FTopRadius write SetTopRadius;
     property Parts: TCylinderParts read FParts write SetParts
@@ -181,7 +160,6 @@ type
   {  Capsule object, can also be used to make truncated cones }
   TGLCapsule = class(TGLSceneObject)
   private
-     
     FParts: TCylinderParts;
     FRadius: Single;
     FSlices: Integer;
@@ -189,7 +167,6 @@ type
     FHeight: Single;
     FAlignment: TCylinderAlignment;
   protected
-
     procedure SetHeight(const aValue: Single);
     procedure SetRadius(const aValue: Single);
     procedure SetSlices(const aValue: integer);
@@ -197,7 +174,6 @@ type
     procedure SetParts(aValue: TCylinderParts);
     procedure SetAlignment(val: TCylinderAlignment);
   public
-    
     constructor Create(AOwner: TComponent); override;
     procedure Assign(Source: TPersistent); override;
     procedure BuildList(var rci: TGLRenderContextInfo); override;
@@ -209,7 +185,6 @@ type
     procedure Align(const startObj, endObj: TGLBaseSceneObject); overload;
     procedure Align(const startPoint, endPoint: TAffineVector); overload;
   published
-    
     property Height: Single read FHeight write SetHeight;
     property Slices: Integer read FSlices write SetSlices;
     property Stacks: Integer read FStacks write SetStacks;
@@ -279,16 +254,12 @@ type
     procedure SetStartAngle(const aValue: Single);
     procedure SetStopAngle(const aValue: Single);
     procedure SetParts(aValue: TTorusParts);
-
   public
-    
     constructor Create(AOwner: TComponent); override;
-
     procedure BuildList(var rci: TGLRenderContextInfo); override;
     function AxisAlignedDimensionsUnscaled: TVector; override;
     function RayCastIntersect(const rayStart, rayVector: TVector;
       intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean; override;
-
   published
     property MajorRadius: Single read FMajorRadius write SetMajorRadius;
     property MinorRadius: Single read FMinorRadius write SetMinorRadius;
@@ -312,7 +283,6 @@ type
     By default the bottom arrow is off }
   TGLArrowLine = class(TGLCylinderBase)
   private
-
     FParts: TArrowLineParts;
     FTopRadius: Single;
     fTopArrowHeadHeight: Single;
@@ -330,15 +300,11 @@ type
     procedure SetBottomArrowHeadRadius(const aValue: Single);
     procedure SetParts(aValue: TArrowLineParts);
     procedure SetHeadStackingStyle(const val: TArrowHeadStackingStyle);
-
   public
-
     constructor Create(AOwner: TComponent); override;
     procedure BuildList(var rci: TGLRenderContextInfo); override;
     procedure Assign(Source: TPersistent); override;
-
   published
-
     property TopRadius: Single read FTopRadius write SetTopRadius;
     property HeadStackingStyle: TArrowHeadStackingStyle read FHeadStackingStyle
       write SetHeadStackingStyle default ahssStacked;
@@ -649,7 +615,7 @@ begin
         end;
       end;
     end;
-  if Result = true then
+  if Result then
     if Assigned(intersectNormal) then
       SetVector(intersectNormal^, AbsoluteUp);
 
@@ -1206,8 +1172,6 @@ begin
   FAlignment := caCenter;
 end;
 
-// BuildList
-//
 
 procedure TGLCapsule.BuildList(var rci: TGLRenderContextInfo);
 var
@@ -1342,8 +1306,6 @@ begin
   end;
 end;
 
-// SetRadius
-//
 
 procedure TGLCapsule.SetRadius(const aValue: Single);
 begin
@@ -1354,8 +1316,6 @@ begin
   end;
 end;
 
-// SetSlices
-//
 
 procedure TGLCapsule.SetSlices(const aValue: integer);
 begin
@@ -1366,8 +1326,6 @@ begin
   end;
 end;
 
-// SetStacks
-//
 
 procedure TGLCapsule.SetStacks(const aValue: integer);
 begin
@@ -1378,8 +1336,6 @@ begin
   end;
 end;
 
-// SetParts
-//
 
 procedure TGLCapsule.SetParts(aValue: TCylinderParts);
 begin
@@ -1390,8 +1346,6 @@ begin
   end;
 end;
 
-// SetAlignment
-//
 
 procedure TGLCapsule.SetAlignment(val: TCylinderAlignment);
 begin
@@ -1402,8 +1356,6 @@ begin
   end;
 end;
 
-// Assign
-//
 
 procedure TGLCapsule.Assign(Source: TPersistent);
 begin
@@ -1415,8 +1367,6 @@ begin
   inherited Assign(Source);
 end;
 
-// AxisAlignedDimensions
-//
 
 function TGLCapsule.AxisAlignedDimensionsUnscaled: TVector;
 var
@@ -1430,8 +1380,6 @@ begin
   // ScaleVector(Result, Scale.AsVector);
 end;
 
-// RayCastIntersect
-//
 
 function TGLCapsule.RayCastIntersect(const rayStart, rayVector: TVector;
   intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean;
@@ -1555,8 +1503,6 @@ begin
     SetLength(roots, 0);
 end;
 
-// Align
-//
 
 procedure TGLCapsule.Align(const startPoint, endPoint: TVector);
 var
@@ -1572,16 +1518,12 @@ begin
   Alignment := caCenter;
 end;
 
-// Align
-//
 
 procedure TGLCapsule.Align(const startObj, endObj: TGLBaseSceneObject);
 begin
   Align(startObj.AbsolutePosition, endObj.AbsolutePosition);
 end;
 
-// Align
-//
 
 procedure TGLCapsule.Align(const startPoint, endPoint: TAffineVector);
 begin
@@ -1592,8 +1534,6 @@ end;
 // ------------------ TGLAnnulus ------------------
 // ------------------
 
- 
-//
 
 constructor TGLAnnulus.Create(AOwner: TComponent);
 begin
@@ -1604,8 +1544,6 @@ begin
   FParts := [anInnerSides, anOuterSides, anBottom, anTop];
 end;
 
-// SetBottomInnerRadius
-//
 
 procedure TGLAnnulus.SetBottomInnerRadius(const aValue: Single);
 begin
@@ -1616,8 +1554,6 @@ begin
   end;
 end;
 
-// SetTopRadius
-//
 
 procedure TGLAnnulus.SetTopRadius(const aValue: Single);
 begin
@@ -1628,8 +1564,6 @@ begin
   end;
 end;
 
-// SetTopInnerRadius
-//
 
 procedure TGLAnnulus.SetTopInnerRadius(const aValue: Single);
 begin
@@ -1640,8 +1574,6 @@ begin
   end;
 end;
 
-// SetParts
-//
 
 procedure TGLAnnulus.SetParts(aValue: TAnnulusParts);
 begin
@@ -1652,8 +1584,6 @@ begin
   end;
 end;
 
-// BuildList
-//
 
 procedure TGLAnnulus.BuildList(var rci: TGLRenderContextInfo);
 var
@@ -1687,8 +1617,6 @@ begin
   GL.PopMatrix;
 end;
 
-// Assign
-//
 
 procedure TGLAnnulus.Assign(Source: TPersistent);
 begin
@@ -1703,8 +1631,6 @@ begin
   inherited Assign(Source);
 end;
 
-// AxisAlignedDimensions
-//
 
 function TGLAnnulus.AxisAlignedDimensionsUnscaled: TVector;
 var
@@ -1717,8 +1643,6 @@ begin
   Result := VectorMake(r, 0.5 * FHeight, r);
 end;
 
-// RayCastIntersect
-//
 
 function TGLAnnulus.RayCastIntersect(const rayStart, rayVector: TVector;
   intersectPoint, intersectNormal: PVector): Boolean;
@@ -1903,8 +1827,6 @@ end;
 // ------------------ TGLTorus ------------------
 // ------------------
 
- 
-//
 
 constructor TGLTorus.Create(AOwner: TComponent);
 begin
@@ -1918,8 +1840,6 @@ begin
   FParts := [toSides, toStartDisk, toStopDisk];
 end;
 
-// BuildList
-//
 
 procedure TGLTorus.BuildList(var rci: TGLRenderContextInfo);
 
@@ -2168,8 +2088,6 @@ begin
   end;
 end;
 
-// SetMajorRadius
-//
 
 procedure TGLTorus.SetMajorRadius(const aValue: Single);
 begin
@@ -2181,8 +2099,6 @@ begin
   end;
 end;
 
-// SetMinorRadius
-//
 
 procedure TGLTorus.SetMinorRadius(const aValue: Single);
 begin
@@ -2194,8 +2110,6 @@ begin
   end;
 end;
 
-// SetRings
-//
 
 procedure TGLTorus.SetRings(aValue: Cardinal);
 begin
@@ -2209,8 +2123,6 @@ begin
   end;
 end;
 
-// SetSides
-//
 
 procedure TGLTorus.SetSides(aValue: Cardinal);
 begin
@@ -2253,8 +2165,6 @@ begin
   end;
 end;
 
-// AxisAlignedDimensionsUnscaled
-//
 
 function TGLTorus.AxisAlignedDimensionsUnscaled: TVector;
 var
@@ -2265,8 +2175,6 @@ begin
   Result := VectorMake(r + r1, r + r1, r1); // Danb
 end;
 
-// RayCastIntersect
-//
 
 function TGLTorus.RayCastIntersect(const rayStart, rayVector: TVector;
   intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean;
@@ -2334,8 +2242,6 @@ end;
 // ------------------ TGLArrowLine ------------------
 // ------------------
 
- 
-//
 
 constructor TGLArrowLine.Create(AOwner: TComponent);
 begin
@@ -2353,8 +2259,6 @@ begin
   FParts := [alLine, alTopArrow];
 end;
 
-// SetTopRadius
-//
 
 procedure TGLArrowLine.SetTopRadius(const aValue: Single);
 begin
@@ -2365,8 +2269,6 @@ begin
   end;
 end;
 
-// SetTopArrowHeadHeight
-//
 
 procedure TGLArrowLine.SetTopArrowHeadHeight(const aValue: Single);
 begin
@@ -2377,8 +2279,6 @@ begin
   end;
 end;
 
-// SetTopArrowHeadRadius
-//
 
 procedure TGLArrowLine.SetTopArrowHeadRadius(const aValue: Single);
 begin
@@ -2389,8 +2289,6 @@ begin
   end;
 end;
 
-// SetBottomArrowHeadHeight
-//
 
 procedure TGLArrowLine.SetBottomArrowHeadHeight(const aValue: Single);
 begin
@@ -2401,8 +2299,6 @@ begin
   end;
 end;
 
-// SetBottomArrowHeadRadius
-//
 
 procedure TGLArrowLine.SetBottomArrowHeadRadius(const aValue: Single);
 begin
@@ -2413,8 +2309,6 @@ begin
   end;
 end;
 
-// SetParts
-//
 
 procedure TGLArrowLine.SetParts(aValue: TArrowLineParts);
 begin
@@ -2425,8 +2319,6 @@ begin
   end;
 end;
 
-// SetHeadStackingStyle
-//
 
 procedure TGLArrowLine.SetHeadStackingStyle(const val: TArrowHeadStackingStyle);
 begin
@@ -2437,8 +2329,6 @@ begin
   end;
 end;
 
-// BuildList
-//
 
 procedure TGLArrowLine.BuildList(var rci: TGLRenderContextInfo);
 var
@@ -2520,9 +2410,6 @@ begin
   gluDeleteQuadric(quadric);
 end;
 
-// Assign
-//
-
 procedure TGLArrowLine.Assign(Source: TPersistent);
 begin
   if Assigned(Source) and (Source is TGLArrowLine) then
@@ -2542,9 +2429,6 @@ end;
 // ------------------ TGLArrowArc ------------------
 // ------------------
 
- 
-//
-
 constructor TGLArrowArc.Create(AOwner: TComponent);
 begin
   inherited;
@@ -2562,8 +2446,6 @@ begin
   FParts := [aaArc, aaTopArrow];
 end;
 
-// SetArcRadius
-//
 
 procedure TGLArrowArc.SetArcRadius(const aValue: Single);
 begin
@@ -2575,8 +2457,6 @@ begin
   end;
 end;
 
-// SetStartAngle
-//
 
 procedure TGLArrowArc.SetStartAngle(const aValue: Single);
 begin
@@ -2588,8 +2468,6 @@ begin
   end;
 end;
 
-// SetStopAngle
-//
 
 procedure TGLArrowArc.SetStopAngle(const aValue: Single);
 begin
@@ -2601,8 +2479,6 @@ begin
   end;
 end;
 
-// SetTopRadius
-//
 
 procedure TGLArrowArc.SetTopRadius(const aValue: Single);
 begin
@@ -2614,8 +2490,6 @@ begin
   end;
 end;
 
-// SetTopArrowHeadHeight
-//
 
 procedure TGLArrowArc.SetTopArrowHeadHeight(const aValue: Single);
 begin
@@ -2627,8 +2501,6 @@ begin
   end;
 end;
 
-// SetTopArrowHeadRadius
-//
 
 procedure TGLArrowArc.SetTopArrowHeadRadius(const aValue: Single);
 begin
@@ -2640,8 +2512,6 @@ begin
   end;
 end;
 
-// SetBottomArrowHeadHeight
-//
 
 procedure TGLArrowArc.SetBottomArrowHeadHeight(const aValue: Single);
 begin
@@ -2653,8 +2523,6 @@ begin
   end;
 end;
 
-// SetBottomArrowHeadRadius
-//
 
 procedure TGLArrowArc.SetBottomArrowHeadRadius(const aValue: Single);
 begin
@@ -2666,8 +2534,6 @@ begin
   end;
 end;
 
-// SetParts
-//
 
 procedure TGLArrowArc.SetParts(aValue: TArrowArcParts);
 begin
@@ -2679,8 +2545,6 @@ begin
   end;
 end;
 
-// SetHeadStackingStyle
-//
 
 procedure TGLArrowArc.SetHeadStackingStyle(const val: TArrowHeadStackingStyle);
 begin
@@ -2692,8 +2556,6 @@ begin
   end;
 end;
 
-// BuildList
-//
 
 procedure TGLArrowArc.BuildList(var rci: TGLRenderContextInfo);
   procedure EmitVertex(ptr: PVertexRec; L1, L2: integer);
@@ -2773,6 +2635,8 @@ begin
           else
             StopOffset :=0;
         end ;
+      else
+        StartOffset := 0;
     end;
 
     // handle texture generation

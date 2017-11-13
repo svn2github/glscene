@@ -29,6 +29,7 @@ uses
   OpenGLTokens,
   GLScene,
   GLCrossPlatform,
+  GLPipelineTransformation,
   GLState,
   GLVectorTypes,
   GLPersistentClasses,
@@ -755,7 +756,8 @@ begin
 end;
 
 procedure RndVector(const dispersion: TGLSourcePFXDispersionMode;
-  var v: TAffineVector; var f: Single; dispersionRange: TGLCoordinates);
+  var v: TAffineVector; var f: Single;
+  dispersionRange: TGLCoordinates);
 
   function GetRandomVector(NotIsotropic : boolean) : TVector3f;
   // Isotropic gives constrainted vector within a radius
@@ -1430,7 +1432,7 @@ begin
     FLastSortTime := StopPrecisionTimer(timer) * 1000;
 
     rci.PipelineTransformation.Push;
-    rci.PipelineTransformation.ModelMatrix := IdentityHmgMatrix;
+    rci.PipelineTransformation.SetModelMatrix(IdentityHmgMatrix);
 
     rci.GLStates.Disable(stCullFace);
     rci.GLStates.ActiveTextureEnabled[ttTexture2D] := True;

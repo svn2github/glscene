@@ -9,26 +9,26 @@
        05/08/03 - SG - Initial, adapted LoadFromStream from earlier tests
                           with GLNurbsSurface (depricated), originally coded
                           by Eric Grange.
-	 
 }
 unit GLFileNurbs;
 
 interface
 
 uses
-  System.Classes, System.SysUtils,
-   
+  System.Classes,
+  System.SysUtils,
+
   GLVectorFileObjects,
-  GLVectorGeometry, GLVectorLists, GLApplicationFileIO,
-  GLParametricSurfaces, GLUtils;
+  GLVectorGeometry,
+  GLVectorLists,
+  GLApplicationFileIO,
+  GLParametricSurfaces,
+  GLUtils;
 
 type
 
-   // TGLNurbsSurface
-   //
    TGLNurbsVectorFile = class(TGLVectorFile)
       public
-         
          class function Capabilities : TGLDataFileCapabilities; override;
          procedure LoadFromStream(stream : TStream); override;
    end;
@@ -45,17 +45,12 @@ implementation
 // ------------------ TGLNurbsVectorFile ------------------
 // ------------------
 
-// Capabilities
-//
 class function TGLNurbsVectorFile.Capabilities : TGLDataFileCapabilities;
 begin
   Result:=[dfcRead];
 end;
 
-// LoadFromStream
-//
 procedure TGLNurbsVectorFile.LoadFromStream(stream : TStream);
-
    function CleanupLine(const line : String) : String;
    var
       p : Integer;
@@ -128,7 +123,7 @@ begin
       Renderer:=psrOpenGL;
       AutoKnots:=False;
    end;
-   
+
    invert:=False;
 
    try
@@ -159,7 +154,7 @@ begin
          end;
          Inc(i);
       end;
-      
+
       if invert then begin
          invControlPoints:=TAffineVectorList.Create;
          for i:=surface.CountV-1 downto 0 do
@@ -168,7 +163,7 @@ begin
          surface.ControlPoints.Assign(invControlPoints);
          invControlPoints.Free;
       end;
-      
+
    finally
       buf.Free;
       sl.Free;

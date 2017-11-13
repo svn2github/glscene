@@ -16,8 +16,11 @@ interface
 uses
   System.Classes, 
   System.SysUtils,
-  GLVectorFileObjects, 
-  GLTexture, 
+
+  GLVectorFileObjects,
+  GLVectorLists,
+  GLTexture,
+  GLPersistentClasses,
   GLApplicationFileIO,
   GLVectorTypes, 
   GLVectorGeometry, 

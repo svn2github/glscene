@@ -17,8 +17,7 @@ uses
    
   GLScene, 
   GLObjects, 
-  GLTexture, 
-  GLVectorFileObjects, 
+  GLTexture,
   GLCoordinates, 
   GLContext, 
   GLMaterial, 
@@ -28,7 +27,8 @@ uses
   GLVectorGeometry, 
   GLSpline,
   GLVectorTypes, 
-  GLVectorLists, 
+  GLVectorLists,
+  GLVectorFileObjects,
   GLRenderContextInfo;
 
 type
@@ -56,7 +56,7 @@ type
    public
      
      constructor Create(AOwner : TComponent); overload;
-     destructor destroy; override;
+     destructor Destroy; override;
      procedure NotifyChange; override;
      function IndexOf(LineNode: TLineNode): Integer;
    end;
@@ -159,7 +159,7 @@ type
     procedure SetLightmapBounds(const value: TLightmapBounds);
     procedure DoChanged;
     procedure AddIndex;
-    procedure AddVertices(Up, Inner, Outer: TAffineVector; S: Single; Correction: Single; UseDegenerate: Boolean; LineItem: TLineItem);
+    procedure AddVertices(const Up, Inner, Outer: TAffineVector; S: Single; Correction: Single; UseDegenerate: Boolean; LineItem: TLineItem);
     procedure BuildLineItem(LineItem: TLineItem);
     procedure BuildGeometry;
     procedure DrawNode(var rci : TGLRenderContextInfo; Node: TLineNode; LineWidth: Single);
@@ -598,8 +598,8 @@ begin
     GL.PushMatrix;
     GL.Scalef(lNodeSize, lNodeSize, lNodeSize);
 ///    rci.GLStates.UnSetGLState(stTexture2D);
-    rci.GLStates.UnSetGLState(stColorMaterial);
-    rci.GLStates.UnSetGLState(stBlend);
+    rci.GLStates.Disable(stColorMaterial);
+    rci.GLStates.Disable(stBlend);
     if Node = FSelectedNode then
       rci.GLStates.SetGLMaterialColors(cmFRONT, clrBlack, clrGray20, clrYellow, clrBlack, 0)
     else
@@ -698,10 +698,13 @@ var
   lNodeWasSelected: Boolean;
 begin
   Result := nil;
+  lNodeWasSelected := False;
+
   if Assigned(FSelectedLineItem) and not lNodeWasSelected then
     lStartPoint := FSelectedLineItem.ID + 1
   else
     lStartPoint := 0;
+
   for i := lStartPoint to FLines.Count - 1 do
   begin
     if (FLines[i] <> FSelectedLineItem) or lNodeWasSelected then
@@ -834,7 +837,7 @@ begin
   inc(FIndex);
 end;
 
-procedure TGLMeshLines.AddVertices(Up,Inner,Outer: TAffineVector; S: Single; Correction: Single; UseDegenerate: Boolean; LineItem: TLineItem);
+procedure TGLMeshLines.AddVertices(const Up,Inner,Outer: TAffineVector; S: Single; Correction: Single; UseDegenerate: Boolean; LineItem: TLineItem);
 begin
   if not LineItem.TextureCorrection then
     Correction := 0

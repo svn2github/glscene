@@ -36,8 +36,7 @@ type
      constant : use it for solid friction (will stop abruptly an object after
       decreasing its speed.
      linear : linear friction damping.
-     quadratic : expresses viscosity.
-      }
+     quadratic : expresses viscosity }
   TGLDamping = class(TGLUpdateAbleObject)
   private
     FConstant: single;

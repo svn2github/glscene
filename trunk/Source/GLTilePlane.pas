@@ -19,6 +19,7 @@ uses
   
   OpenGLTokens,
   GLScene,
+  GLState,
   GLVectorGeometry,
   GLContext,
   GLMaterial,

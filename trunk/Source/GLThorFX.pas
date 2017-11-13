@@ -32,6 +32,7 @@ uses
   GLBaseClasses,
   GLCoordinates,
   GLRenderContextInfo,
+  GLPipelineTransformation,
   GLManager,
   GLState,
   GLTextureFormat;
@@ -52,8 +53,6 @@ type
   TCalcPointEvent = procedure(Sender: TObject; PointNo: integer; var x: single;
     var y: single; var z: single) of object;
 
-  // TGLThorFXManager
-  //
   {  Thor special effect manager. }
   TGLThorFXManager = class(TGLCadenceAbleComponent)
   private
@@ -71,7 +70,6 @@ type
     FDisabled, FCore, FGlow: boolean;
     FOnCalcPoint: TCalcPointEvent;
   protected
-    
     procedure RegisterClient(aClient: TGLBThorFX);
     procedure DeRegisterClient(aClient: TGLBThorFX);
     procedure DeRegisterAllClients;
@@ -89,7 +87,6 @@ type
     procedure CalcThor;
     procedure CalcFrac(left, right: integer; lh, rh: single; xyz: integer);
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure DoProgress(const progressTime: TProgressTimes); override;
@@ -113,8 +110,6 @@ type
     property OnCalcPoint: TCalcPointEvent read FOnCalcPoint write FOnCalcPoint;
   end;
 
-  // TGLBThorFX
-  //
   {  Thor special effect }
   TGLBThorFX = class(TGLObjectPostEffect)
   private
@@ -123,14 +118,12 @@ type
     FManagerName: String; // NOT persistent, temporarily used for persistence
     FTarget: TGLCoordinates;
   protected
-    
     procedure SetManager(const val: TGLThorFXManager);
     procedure WriteToFiler(writer: TWriter); override;
     procedure ReadFromFiler(reader: TReader); override;
     procedure Loaded; override;
     procedure SetTarget(const val: TGLCoordinates);
   public
-    
     constructor Create(AOwner: TGLXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -138,7 +131,6 @@ type
     class function FriendlyDescription: String; override;
     procedure Render(var rci: TGLRenderContextInfo); override;
   published
-    
     {  Refers the collision manager. }
     property Manager: TGLThorFXManager read FManager write SetManager;
   end;
@@ -185,8 +177,6 @@ begin
   ThorInit;
 end;
 
- 
-//
 destructor TGLThorFXManager.Destroy;
 begin
   DeRegisterAllClients;
@@ -200,8 +190,6 @@ begin
   inherited Destroy;
 end;
 
-// RegisterClient
-//
 procedure TGLThorFXManager.RegisterClient(aClient: TGLBThorFX);
 begin
   if Assigned(aClient) then
@@ -212,8 +200,6 @@ begin
     end;
 end;
 
-// DeRegisterClient
-//
 procedure TGLThorFXManager.DeRegisterClient(aClient: TGLBThorFX);
 begin
   if Assigned(aClient) then
@@ -223,8 +209,6 @@ begin
   end;
 end;
 
-// DeRegisterAllClients
-//
 procedure TGLThorFXManager.DeRegisterAllClients;
 var
   i: integer;
@@ -241,8 +225,6 @@ begin
   ThorInit;
 end;
 
-// SetCadencer
-//
 procedure TGLThorFXManager.SetCadencer(const val: TGLCadencer);
 begin
   if FCadencer <> val then
@@ -255,8 +237,6 @@ begin
   end;
 end;
 
-// SetMaxpoints
-//
 procedure TGLThorFXManager.SetMaxpoints(const val: integer);
 begin
   if FMaxpoints <> val then
@@ -266,22 +246,16 @@ begin
   end;
 end;
 
-// StoreGlowSize
-//
 function TGLThorFXManager.StoreGlowSize: boolean;
 begin
   Result := (FGlowSize <> 1);
 end;
 
-// StoreGlowSize
-//
 function TGLThorFXManager.StoreVibrate: boolean;
 begin
   Result := (FVibrate <> 1);
 end;
 
-// SetInnerColor
-//
 procedure TGLThorFXManager.SetInnerColor(const val: TGLColor);
 begin
   if FInnerColor <> val then
@@ -291,8 +265,6 @@ begin
   end;
 end;
 
-// SetOuterColor
-//
 procedure TGLThorFXManager.SetOuterColor(const val: TGLColor);
 begin
   if FOuterColor <> val then
@@ -302,8 +274,6 @@ begin
   end;
 end;
 
-// SetOuterColor
-//
 procedure TGLThorFXManager.SetCoreColor(const val: TGLColor);
 begin
   if FCoreColor <> val then
@@ -313,8 +283,6 @@ begin
   end;
 end;
 
-// Notification
-//
 procedure TGLThorFXManager.Notification(AComponent: TComponent;
   Operation: TOperation);
 begin
@@ -323,8 +291,6 @@ begin
   inherited;
 end;
 
-// DoProgress
-//
 procedure TGLThorFXManager.DoProgress(const progressTime: TProgressTimes);
 var
   i: integer;
@@ -338,15 +304,11 @@ begin
       (TGLBThorFX(FClients[i]));
 end;
 
-// ThorInit
-//
 procedure TGLThorFXManager.ThorInit;
 begin
   ReallocMem(FThorpoints, FMaxpoints * Sizeof(TThorpoint));
 end;
 
-// CalcThor
-//
 procedure TGLThorFXManager.CalcThor;
 var
   N: integer;
@@ -425,8 +387,6 @@ end;
 // ------------------ TGLBThorFX ------------------
 // ------------------
 
- 
-//
 constructor TGLBThorFX.Create(AOwner: TGLXCollection);
 begin
   inherited Create(AOwner);
@@ -434,8 +394,6 @@ begin
   FTarget.Style := csPoint;
 end;
 
- 
-//
 destructor TGLBThorFX.Destroy;
 begin
   Manager := nil;
@@ -443,22 +401,16 @@ begin
   inherited Destroy;
 end;
 
- 
-//
 class function TGLBThorFX.FriendlyName: String;
 begin
   Result := 'ThorFX';
 end;
 
-// FriendlyDescription
-//
 class function TGLBThorFX.FriendlyDescription: String;
 begin
   Result := 'Thor FX';
 end;
 
-// WriteToFiler
-//
 procedure TGLBThorFX.WriteToFiler(writer: TWriter);
 begin
   with writer do
@@ -473,8 +425,6 @@ begin
   end;
 end;
 
-// ReadFromFiler
-//
 procedure TGLBThorFX.ReadFromFiler(reader: TReader);
 var
   archiveVersion: integer;
@@ -490,8 +440,6 @@ begin
   end;
 end;
 
-// Loaded
-//
 procedure TGLBThorFX.Loaded;
 var
   mng: TComponent;
@@ -507,8 +455,6 @@ begin
   end;
 end;
 
-// Assign
-//
 procedure TGLBThorFX.Assign(Source: TPersistent);
 begin
   if Source is TGLBThorFX then
@@ -518,15 +464,11 @@ begin
   inherited Assign(Source);
 end;
 
-// SetTarget
-//
 procedure TGLBThorFX.SetTarget(const val: TGLCoordinates);
 begin
   FTarget.Assign(val);
 end;
 
-// SetManager
-//
 procedure TGLBThorFX.SetManager(const val: TGLThorFXManager);
 begin
   if val <> FManager then
@@ -538,8 +480,6 @@ begin
   end;
 end;
 
-// Render
-//
 procedure TGLBThorFX.Render(var rci: TGLRenderContextInfo);
 var
   N: integer;
@@ -585,7 +525,7 @@ begin
     end;
     QuickSortLists(0, N - 1, distList, objList);
 
-    mat := rci.PipelineTransformation.ModelViewMatrix;
+    mat := rci.PipelineTransformation.ModelViewMatrix^;
     for m := 0 to 2 do
     begin
       vx.V[m] := mat.V[m].X * Manager.GlowSize;
@@ -671,8 +611,6 @@ begin
   rci.PipelineTransformation.Pop;
 end;
 
-// GetOrCreateThorFX
-//
 function GetOrCreateThorFX(obj: TGLBaseSceneObject; const name: String = '')
   : TGLBThorFX;
 var
