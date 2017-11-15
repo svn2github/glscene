@@ -116,10 +116,10 @@
         <BT_BuildType>Debug</BT_BuildType>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
-        <DCC_HppOutput>$(VXSCENEDIR)\include\Win32</DCC_HppOutput>
-        <DCC_BpiOutput>$(VXSCENEDIR)\lib\Win32</DCC_BpiOutput>
+        <DCC_HppOutput>$(VKSCENEDIR)\include\Win32</DCC_HppOutput>
+        <DCC_BpiOutput>$(VKSCENEDIR)\lib\Win32</DCC_BpiOutput>
         <DCC_CBuilderOutput>All</DCC_CBuilderOutput>
-        <DCC_ObjOutput>$(VXSCENEDIR)\lib\Win32</DCC_ObjOutput>
+        <DCC_ObjOutput>$(VKSCENEDIR)\lib\Win32</DCC_ObjOutput>
         <DCC_UnitSearchPath>$(VXSCENEDIR)\Source;$(VXSCENEDIR)\Source\Basis;$(VXSCENEDIR)\Source\DesignTime;$(VXSCENEDIR)\Source\FileFormats;$(VXSCENEDIR)\Source\GameAPIs;$(VXSCENEDIR)\Source\ParallelAPIs;$(VXSCENEDIR)\Source\PhysicsAPIs;$(VXSCENEDIR)\Source\ScriptingAPIs;$(VXSCENEDIR)\Source\Shaders;$(VXSCENEDIR)\Source\SoundVideoAPIs;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
         <DCC_DcuOutput>$(VXSCENEDIR)\lib\Win32</DCC_DcuOutput>
         <DCC_DcpOutput>$(VXSCENEDIR)\lib\Win32</DCC_DcpOutput>
@@ -149,7 +149,7 @@
         </DelphiCompile>
         <DCCReference Include="rtl.dcp"/>
         <DCCReference Include="fmx.dcp"/>
-        <DCCReference Include="VXScene_RT.dcp"/>
+        <DCCReference Include="VXScene_RunTime.dcp"/>
         <DCCReference Include="..\..\Source\PhysicsAPIs\VXS.ODEManager.pas"/>
         <DCCReference Include="..\..\Source\PhysicsAPIs\VXS.ODECustomColliders.pas"/>
         <DCCReference Include="..\..\Source\PhysicsAPIs\VXS.ODESkeletonColliders.pas"/>
@@ -182,7 +182,6 @@
                     <Source Name="MainSource">VXScene_Physics_RT.dpk</Source>
                 </Source>
                 <Excluded_Packages>
-                    <Excluded_Packages Name="C:\Users\Public\Documents\Embarcadero\Studio\19.0\Bpl\dclfgx240.bpl">Extensions for FM (FireMonkey) - Designtime</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\bcboffice2k250.bpl">Embarcadero C++Builder Office 2000 Servers Package</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\bcbofficexp250.bpl">Embarcadero C++Builder Office XP Servers Package</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\dcloffice2k250.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>

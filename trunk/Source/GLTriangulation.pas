@@ -78,6 +78,9 @@ type
   private
     function InCircle(Xp, Yp, X1, Y1, X2, Y2, X3, Y3: Single; out Xc,Yc, R:
       Single; j: Integer): Boolean;
+   (* Takes as input NVERT vertices in arrays Vertex()
+      Returned is a list of NTRI triangular faces in the array
+      Triangle(). These triangles are arranged in clockwise order.*)
     function Triangulate(nvert: Integer): Integer;
   public
     Vertex: TDVertex;
@@ -95,11 +98,7 @@ type
   end;
 
 //------------------------------------------------------------------------
-//------------------------------------------------------------------------
-//------------------------------------------------------------------------
 implementation
-//------------------------------------------------------------------------
-//------------------------------------------------------------------------
 //------------------------------------------------------------------------
 
 constructor TGLDelaunay2D.Create;
@@ -214,9 +213,6 @@ begin
 end;
 
 function TGLDelaunay2D.Triangulate(nvert: Integer): Integer;
-// Takes as input NVERT vertices in arrays Vertex()
-// Returned is a list of NTRI triangular faces in the array
-// Triangle(). These triangles are arranged in clockwise order.
 var
   Complete: TDComplete;
   Edges: TDEdges;
@@ -458,7 +454,7 @@ end;
 
 procedure TGLDelaunay2D.QuickSort(var A: TDVertex; Low, High: Integer);
 // Sort all points by x
-procedure DoQuickSort(var A: TDVertex; iLo, iHi: Integer);
+{sub}procedure DoQuickSort(var A: TDVertex; iLo, iHi: Integer);
 var
   Lo, Hi: Integer;
   Mid: Single;

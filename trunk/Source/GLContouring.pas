@@ -47,20 +47,20 @@ type
   TVectorL4I = array [0 .. 4] of Integer;
   TCastArray = array [0 .. 2, 0 .. 2, 0 .. 2] of Integer;
 
-  TGLIsoline2D = array [0 .. 32767] of TGLPoint2D;
-  PGLIsoline2D = ^TGLIsoline2D;
+  TxIsoline2D = array [0 .. 32767] of TxPoint2D;
+  PxIsoline2D = ^TxIsoline2D;
 
-  TGLIsoline = class (TObject)
+  PxIsoline = ^TxIsoline;
+  TxIsoline = class (TObject)
     NP: Integer;
-    Line: PGLIsoline2D;
+    Line: PxIsoline2D;
     constructor Create(LineSize: integer); virtual;
     destructor Destroy; override;
   end;
-  PGLIsoline = ^TGLIsoline;
 
-  TGLIsolineState = (ilsEmpty, ilsCalculating, ilsReady);
+  TxIsolineState = (ilsEmpty, ilsCalculating, ilsReady);
 
-  TGLIsolines = class (TGLLines)
+  TxIsolines = class (TGLLines)
   public
     IsoVertix: TAffineVector;
     GLSpaceTextSF: array of TGLSpaceText;
@@ -96,13 +96,13 @@ type
    private
      CoordRange: Integer;
      LineList: TList;
-     IsolineState: TGLIsolineState;
+     IsolineState: TxIsolineState;
   end;
 
 procedure Initialize_Contouring(var DataGrid: TGLMatrix;
   NXpoints, NYpoints: integer; CurrentIsoline: Single);
 procedure Release_Memory_Isoline;
-function GetNextIsoline(var Isoline: TGLIsoline): Boolean;
+function GetNextIsoline(var Isoline: TxIsoline): Boolean;
 
 {Defines contouring segments inside a triangle using elevations }
 procedure TriangleElevationSegments(const p1, p2, p3: TAffineVector;
@@ -205,8 +205,6 @@ begin
   end;
 end;
 
-// Intercept
-//
 procedure Intercept(const g: TGLMatrix; i, j, s: Integer; var x, y: Single);
 begin
   case s of
@@ -331,7 +329,7 @@ end;
 { LineX and LineY are (pointers to) zero-offset vectors, to which
   sufficient space has been allocated to store the coordinates of
   any feasible Isoline }
-function GetNextIsoline(var Isoline: TGLIsoline): Boolean;
+function GetNextIsoline(var Isoline: TxIsoline): Boolean;
 var
   OffGrid: boolean;
   Lexit: integer;
@@ -359,7 +357,7 @@ begin
             TraceIsoline(i, j, Lexit, NX, NY, Grid, Visited, LineX2, LineY2,
               np2, offgrid);
             // Copy both bits of line into Isoline
-            Isoline := TGLIsoline.Create(np1 + np2);
+            Isoline := TxIsoline.Create(np1 + np2);
             for k := 0 to np2 - 1 do
             begin
               Isoline.Line^[k].x := LineX2[np2 - k - 1];
@@ -374,7 +372,7 @@ begin
           else
           begin
             // Just copy the single Isoline loop into LineX & LineY
-            Isoline := TGLIsoline.Create(np1);
+            Isoline := TxIsoline.Create(np1);
             for k := 0 to np1 - 1 do
             begin
               Isoline.Line^[k].x := LineX1[k];
@@ -452,21 +450,21 @@ begin
   end;
 end;
 
-constructor TGLIsolines.Create(AOwner: TComponent);
+constructor TxIsolines.Create(AOwner: TComponent);
 begin
   LineList := TList.Create;
   IsolineState := ilsEmpty;
   Nodes.Create(Self);
 end;
 
-destructor TGLIsolines.Destroy;
+destructor TxIsolines.Destroy;
 begin
   FreeList;
   Nodes.Free;
   inherited;
 end;
 
-procedure TGLIsolines.FreeList;
+procedure TxIsolines.FreeList;
 var
   i: integer;
 begin
@@ -474,7 +472,7 @@ begin
   begin
     for i := LineList.Count - 1 downto 0 do
     begin
-      with TGLIsoline(LineList.Items[i]) do
+      with TxIsoline(LineList.Items[i]) do
         Free;
     end;
     LineList.Clear;
@@ -482,10 +480,10 @@ begin
   end;
 end;
 
-procedure TGLIsolines.MakeIsolines(var Depths: TGLMatrix; bmSize: integer;
+procedure TxIsolines.MakeIsolines(var Depths: TGLMatrix; bmSize: integer;
   StartDepth, EndDepth: Single; Interval: Integer);
 var
-  Isoline: TGLIsoline;
+  Isoline: TxIsoline;
 
 begin
   IsolineState := ilsCalculating;
@@ -503,14 +501,14 @@ begin
   IsolineState := ilsReady;
 end;
 
-constructor TGLIsoline.Create(LineSize: Integer);
+constructor TxIsoline.Create(LineSize: Integer);
 begin
   inherited Create;
   NP := LineSize;
   Getmem(Line, NP * 2 * Sizeof(Single));
 end;
 
-destructor TGLIsoline.Destroy;
+destructor TxIsoline.Destroy;
 begin
   inherited;
   if Assigned(Line) then
@@ -518,7 +516,7 @@ begin
   NP := 0;
 end;
 
-procedure TGLIsolines.Conrec(PlaneSFindex:Integer;PlaneSF:TGLfreeForm; Data: TGLMatrix; ilb, iub, jlb, jub: Integer;
+procedure TxIsolines.Conrec(PlaneSFindex:Integer;PlaneSF:TGLfreeForm; Data: TGLMatrix; ilb, iub, jlb, jub: Integer;
   X: TGLVector; Y: TGLVector;  NC: Integer; HgtL: TGLVector;
   Z_Kfix: Single; res3Dmax,res3Dmin: Single);
 // ------------------------------------------------------------------------------
@@ -555,7 +553,6 @@ var
 begin
  SetLength(GLSpaceTextSF, NC-1);
  IUniqueList := TList<Single>.Create;
-
  ScaleFont:= 0.025 * MaxValue(Y);      // 050515
 
   // set casting array

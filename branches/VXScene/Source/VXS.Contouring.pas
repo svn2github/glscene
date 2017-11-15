@@ -39,20 +39,20 @@ type
   TVectorL4I = array [0 .. 4] of Integer;
   TCastArray = array [0 .. 2, 0 .. 2, 0 .. 2] of Integer;
 
-  TVXIsoline2D = array [0 .. 32767] of TVXPoint2D;
-  PGLIsoline2D = ^TVXIsoline2D;
+  TxIsoline2D = array [0 .. 32767] of TxPoint2D;
+  PxIsoline2D = ^TxIsoline2D;
 
-  TVXIsoline = class (TObject)
+  PxIsoline = ^TxIsoline;
+  TxIsoline = class (TObject)
     NP: Integer;
-    Line: PGLIsoline2D;
+    Line: PxIsoline2D;
     constructor Create(LineSize: integer); virtual;
     destructor Destroy; override;
   end;
-  PGLIsoline = ^TVXIsoline;
 
-  TVXIsolineState = (ilsEmpty, ilsCalculating, ilsReady);
+  TxIsolineState = (ilsEmpty, ilsCalculating, ilsReady);
 
-  TVXIsolines = class (TVXLines)
+  TxIsolines = class (TVXLines)
   public
     IsoVertix: TAffineVector;
     GLSpaceTextSF: array of TVXSpaceText;
@@ -82,20 +82,19 @@ type
     NC - number of cut levels
     HgtL - values of cut levels
   }
-    procedure Conrec(PlaneSFindex:Integer; PlaneSF: TVXFreeForm; Data: TVXMatrix;
-         ilb, iub, jlb, jub: Integer;
+    procedure Conrec(PlaneSFindex:Integer; PlaneSF: TVXFreeForm; Data: TVXMatrix; ilb, iub, jlb, jub: Integer;
          X: TVXVector; Y: TVXVector; NC: Integer; HgtL: TVXVector; Z_Kfix: Single;
          res3Dmax, res3Dmin: Single);
    private
      CoordRange: Integer;
      LineList: TList;
-     IsolineState: TVXIsolineState;
+     IsolineState: TxIsolineState;
   end;
 
 procedure Initialize_Contouring(var DataGrid: TVXMatrix;
   NXpoints, NYpoints: integer; CurrentIsoline: Single);
 procedure Release_Memory_Isoline;
-function GetNextIsoline(var Isoline: TVXIsoline): Boolean;
+function GetNextIsoline(var Isoline: TxIsoline): Boolean;
 
 { Defines contouring segments inside a triangle using elevations }
 procedure TriangleElevationSegments(const p1, p2, p3: TAffineVector;
@@ -319,10 +318,10 @@ begin
   // Have finished loop
 end;
 
-function GetNextIsoline(var Isoline: TVXIsoline): Boolean;
 { LineX and LineY are (pointers to) zero-offset vectors, to which
   sufficient space has been allocated to store the coordinates of
   any feasible Isoline }
+function GetNextIsoline(var Isoline: TxIsoline): Boolean;
 var
   OffGrid: boolean;
   Lexit: integer;
@@ -350,7 +349,7 @@ begin
             TraceIsoline(i, j, Lexit, NX, NY, Grid, Visited, LineX2, LineY2,
               np2, offgrid);
             // Copy both bits of line into Isoline
-            Isoline := TVXIsoline.Create(np1 + np2);
+            Isoline := TxIsoline.Create(np1 + np2);
             for k := 0 to np2 - 1 do
             begin
               Isoline.Line^[k].x := LineX2[np2 - k - 1];
@@ -365,7 +364,7 @@ begin
           else
           begin
             // Just copy the single Isoline loop into LineX & LineY
-            Isoline := TVXIsoline.Create(np1);
+            Isoline := TxIsoline.Create(np1);
             for k := 0 to np1 - 1 do
             begin
               Isoline.Line^[k].x := LineX1[k];
@@ -443,21 +442,21 @@ begin
   end;
 end;
 
-constructor TVXIsolines.Create(AOwner: TComponent);
+constructor TxIsolines.Create(AOwner: TComponent);
 begin
   LineList := TList.Create;
   IsolineState := ilsEmpty;
   Nodes.Create(Self);
 end;
 
-destructor TVXIsolines.Destroy;
+destructor TxIsolines.Destroy;
 begin
   FreeList;
   Nodes.Free;
   inherited;
 end;
 
-procedure TVXIsolines.FreeList;
+procedure TxIsolines.FreeList;
 var
   i: integer;
 begin
@@ -465,7 +464,7 @@ begin
   begin
     for i := LineList.Count - 1 downto 0 do
     begin
-      with TVXIsoline(LineList.Items[i]) do
+      with TxIsoline(LineList.Items[i]) do
         Free;
     end;
     LineList.Clear;
@@ -473,10 +472,10 @@ begin
   end;
 end;
 
-procedure TVXIsolines.MakeIsolines(var Depths: TVXMatrix; bmSize: integer;
+procedure TxIsolines.MakeIsolines(var Depths: TVXMatrix; bmSize: integer;
   StartDepth, EndDepth: Single; Interval: Integer);
 var
-  Isoline: TVXIsoline;
+  Isoline: TxIsoline;
 
 begin
   IsolineState := ilsCalculating;
@@ -494,14 +493,14 @@ begin
   IsolineState := ilsReady;
 end;
 
-constructor TVXIsoline.Create(LineSize: Integer);
+constructor TxIsoline.Create(LineSize: Integer);
 begin
   inherited Create;
   NP := LineSize;
   Getmem(Line, NP * 2 * Sizeof(Single));
 end;
 
-destructor TVXIsoline.Destroy;
+destructor TxIsoline.Destroy;
 begin
   inherited;
   if Assigned(Line) then
@@ -509,11 +508,7 @@ begin
   NP := 0;
 end;
 
-//--------------------------------------------------------------------------
-{ Conrec }
-//--------------------------------------------------------------------------
-procedure TVXIsolines.Conrec(PlaneSFindex:Integer;PlaneSF:TVXfreeForm;
-  Data: TVXMatrix; ilb, iub, jlb, jub: Integer;
+procedure TxIsolines.Conrec(PlaneSFindex:Integer;PlaneSF:TVXfreeForm;  Data: TVXMatrix; ilb, iub, jlb, jub: Integer;
   X: TVXVector; Y: TVXVector;  NC: Integer; HgtL: TVXVector;
   Z_Kfix: Single; res3Dmax,res3Dmin: Single);
 // ------------------------------------------------------------------------------

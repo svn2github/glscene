@@ -7,7 +7,6 @@
        08/04/13 - PW - Fixed a bug in VertArr: decremented element numbers by one
        17/11/05 - PW - Added support for ascii TIN files with materials
        05/06/03 - SG - Separated from GLVectorFileObjects.pas
-	 
 }
 unit GLFileTIN;
 
@@ -18,48 +17,39 @@ interface
 uses
   System.Classes,
   System.SysUtils,
-  
+
   GLVectorTypes,
   GLVectorFileObjects,
-  GLApplicationFileIO;
+  GLApplicationFileIO,
+  GLVectorGeometry,
+  GLUtils,
+  GLTypes;
+
 
 type
-   // TGLTINVectorFile
-   //
-   {The TIN vector file (triangle irregular network). 
-      It is a simple text format, with one triangle record per line, no materials,
-      no texturing (there may be more, but I never saw anything in this files). 
-      This format is encountered in the DEM/DTED world and used in place of grids. }
+   (*The TIN vector file (triangle irregular network).
+     It is a simple text format, with one triangle record per line, no materials,
+     no texturing (there may be more, but I never saw anything in this files).
+     This format is encountered in the DEM/DTED world and used in place of grids. *)
    TGLTINVectorFile = class(TGLVectorFile)
       public
-         
-         class function Capabilities : TGLDataFileCapabilities; override;
-         procedure LoadFromStream(aStream : TStream); override;
+        class function Capabilities : TGLDataFileCapabilities; override;
+        procedure LoadFromStream(aStream : TStream); override;
    end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 
-uses
-  GLVectorGeometry, GLUtils, GLTypes;
 // ------------------
 // ------------------ TGLTINVectorFile ------------------
 // ------------------
 
-// Capabilities
-//
 class function TGLTINVectorFile.Capabilities : TGLDataFileCapabilities;
 begin
    Result:=[dfcRead];
 end;
 
-// LoadFromStream
-//
 procedure TGLTINVectorFile.LoadFromStream(aStream : TStream);
 var
    i, j : Integer;
@@ -71,7 +61,7 @@ var
    Tnam, S : string;
    Id_Mat, NVert, NTri : Integer;
 
-   VertArr :  TGLPoint3DArray;
+   VertArr :  TxPoint3DArray;
    n1, n2, n3 : Integer;
 
 

@@ -20,7 +20,9 @@ uses
   System.Classes, 
   System.SysUtils,
    
-  GLVectorGeometry, GLVectorLists;
+  GLVectorGeometry,
+  GLVectorTypes,
+  GLVectorLists;
 
 type
 

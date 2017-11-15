@@ -36,6 +36,7 @@ interface
 
 uses
   VXS.VectorGeometry,
+  VXS.VectorLists,
   VXS.Mesh,
   VXS.VectorFileObjects,
   VXS.VectorTypes,
@@ -52,38 +53,30 @@ type
 
   TVXMarchingCube = class(TObject)
   private
-    FIsoValue: TVXScalarValue;
+    FIsoValue: TxScalarValue;
     // sliceSize:Longword;
-
     PVertsX: PIntegerArray;
     PVertsY: PIntegerArray;
     PVertsZ: PIntegerArray;
-
     _Nverts: Integer;
     _Ntrigs: Integer;
     _Sverts: Integer;
     _Strigs: Integer;
-
-    PVertices: PVKVertexArray;
-    PTriangles: PVKTriangleArray;
-
+    PVertices: PxVertexArray;
+    PTriangles: PxTriangleArray;
     _i, _j, _k: Longword;
-
-    _Cube: array [0 .. 7] of TVXVoxel;
+    _Cube: array [0 .. 7] of TxVoxel;
     _lut_entry: Byte;
     // _case:Byte;
     // _config:Byte;
     // _subconfig:Byte;
-
     procedure Init_temps;
     procedure Init_all;
     procedure Init_space;
-
-    procedure clean_temps;
-    procedure clean_all(keepFacets: Boolean = False);
-    procedure clean_space;
-    procedure test_vertex_addiction;
-
+    procedure Clean_temps;
+    procedure Clean_all(keepFacets: Boolean = False);
+    procedure Clean_space;
+    procedure Test_vertex_addiction;
   protected
     FOriginalMC: Boolean; // now only original MC is implemented
     FSizeX: Integer;
@@ -98,134 +91,107 @@ type
     FStepX: Single;
     FStepY: Single;
     FStepZ: Single;
-
-    VoxelData: PVKVoxelData;
-
+    VoxelData: PxVoxelData;
     procedure Process_cube;
     { function test_face(face:byte):Boolean;
       function test_interior(s:Byte):boolean }
-
     procedure Compute_Intersection_Points;
     procedure Add_Triangle(trig: array of Integer; N: Byte; v12: Integer = -1);
-
     function Add_x_vertex: Integer;
     function Add_y_vertex: Integer;
     function Add_z_vertex: Integer;
     function Add_c_vertex: Integer;
-
     function Get_x_grad(i, j, k: Integer): Single;
     function Get_y_grad(i, j, k: Integer): Single;
     function Get_z_grad(i, j, k: Integer): Single;
-
     function Get_x_vert(i, j, k: Integer): Integer;
     function Get_y_vert(i, j, k: Integer): Integer;
     function Get_z_vert(i, j, k: Integer): Integer;
-
-    procedure set_x_vert(a_val, i, j, k: Integer);
-    procedure set_y_vert(a_val, i, j, k: Integer);
-    procedure set_z_vert(a_val, i, j, k: Integer);
-
-    function GetVoxelValue(i, j, k: Integer): TVXScalarValue;
-    procedure SetVoxelValue(i, j, k: Integer; HfValue: TVXScalarValue);
-
-    function GetVoxelData(i, j, k: Integer): TVXVoxel;
-    function Voxel(i, j, k: Integer): PVKVoxel;
-
+    procedure Set_x_vert(a_val, i, j, k: Integer);
+    procedure Set_y_vert(a_val, i, j, k: Integer);
+    procedure Set_z_vert(a_val, i, j, k: Integer);
+    function GetVoxelValue(i, j, k: Integer): TxScalarValue;
+    procedure SetVoxelValue(i, j, k: Integer; HfValue: TxScalarValue);
+    function GetVoxelData(i, j, k: Integer): TxVoxel;
+    function Voxel(i, j, k: Integer): PxVoxel;
     function calc_u(v1, v2: Single): Single; virtual;
   public
-    ScalarField: TVXScalarField;
-
+    ScalarField: TxScalarField;
     constructor Create; overload; virtual;
     constructor Create(SizeX, SizeY, SizeZ: Integer;
-      AIsoValue: TVXScalarValue = 0.0; xMin: Single = -0.5; xMax: Single = 0.5;
+      AIsoValue: TxScalarValue = 0.0; xMin: Single = -0.5; xMax: Single = 0.5;
       yMin: Single = -0.5; yMax: Single = 0.5; zMin: Single = -0.5;
       zMax: Single = 0.5); overload; virtual;
-
     procedure ReDim(ASizeX, ASizeY, ASizeZ: Integer;
       xMin, xMax, yMin, yMax, zMin, zMax: Single); virtual;
-
     destructor Destroy; override;
-
     procedure Run; overload;
-    procedure Run(IsoValue: TVXScalarValue); overload;
-
-    function Internal(AValue: TVXScalarValue): Boolean; virtual;
-
+    procedure Run(IsoValue: TxScalarValue); overload;
+    function Internal(AValue: TxScalarValue): Boolean; virtual;
     procedure FillVoxelData; overload; virtual;
-    procedure FillVoxelData(AIsoValue: TVXScalarValue;
-      AScalarField: TVXScalarField = nil); overload; virtual;
-    procedure FillVoxelData(AIsoValue: TVXScalarValue;
-      AScalarField: TVXScalarFieldInt); overload; virtual;
-
+    procedure FillVoxelData(AIsoValue: TxScalarValue;
+      AScalarField: TxScalarField = nil); overload; virtual;
+    procedure FillVoxelData(AIsoValue: TxScalarValue;
+      AScalarField: TxScalarFieldInt); overload; virtual;
     procedure CalcVertices(Vertices: TVXVertexList; Alpha: Single = 1);
     procedure CalcMeshObject(AMeshObject: TVXMeshObject; Alpha: Single = 1);
-
-    property IsoValue: TVXScalarValue read FIsoValue write FIsoValue;
-    // TODO SetIsoValue che chiama in automatico la Run
+    property IsoValue: TxScalarValue read FIsoValue write FIsoValue;
+    // TODO SetIsoValue to Run
   end;
 
-  // TIsoSurfaceExtractor
-  //
   { 3D isosurface extractor class. This class allows to calculate and exctract
-    isosurfaces from scalar field voxel models using a given isovalue.
-  }
+    isosurfaces from scalar field voxel models using a given isovalue. }
   TIsoSurfaceExtractor = class(TObject)
   private
     Data: TSingle3DArray;
     Dimensions: array ['x' .. 'z'] of Integer;
-
+    { Build Index depending on whether the edges are outside or inside the surface }
     function BuildIndex(var ADatavals: array of Single; Isovalue: Single): word;
     function Interpolate(V0, V1: TAffineVector;
       var Val0, Val1, Isovalue: Single; isPolished: boolean): TVertex;
-
   public
     constructor Create(); overload;
     constructor Create(Xdim, Ydim, Zdim: Integer;
       var AData: TSingle3DArray); overload;
     destructor Destroy();
-
     procedure AssignData(Xdim, Ydim, Zdim: Integer; var AData: TSingle3DArray);
-
+    { Launch Marching Cubes }
     procedure MarchingCubes(Isovalue: Single; out Vertices: TVertexArray;
       out Triangles: TIntegerArray; isPolished: boolean);
+    { Launch Marching Tetrahedra }
     procedure MarchingTetrahedra(Isovalue: Single; out Vertices: TVertexArray;
       out Triangles: TIntegerArray; isPolished: boolean);
   end;
 
 // Sphere surface
-function SFSphere(X, Y, Z: Single): TVXScalarValue;
+function SFSphere(X, Y, Z: Single): TxScalarValue;
 // Minkowski space (http://mathworld.wolfram.com)
-function SFMinkowski(X, Y, Z: Single): TVXScalarValue;
+function SFMinkowski(X, Y, Z: Single): TxScalarValue;
 // Klein Bottle (http://mathworld.wolfram.com)
-function SFKleinBottle(X, Y, Z: Single): TVXScalarValue;
+function SFKleinBottle(X, Y, Z: Single): TxScalarValue;
 // Chmutov-surface-1 (http://mathworld.wolfram.com)
-function SFChmutov1(X, Y, Z: Single): TVXScalarValue;
+function SFChmutov1(X, Y, Z: Single): TxScalarValue;
 // Chmutov-surface-2 (http://mathworld.wolfram.com)
-function SFChmutov2(X, Y, Z: Single): TVXScalarValue;
+function SFChmutov2(X, Y, Z: Single): TxScalarValue;
 // Toroidal surface (phantasy!)
-function SFToroidal(X, Y, Z: Single): TVXScalarValue;
+function SFToroidal(X, Y, Z: Single): TxScalarValue;
 // Double torus Surface (phantasy!)
-function SFDoubleTorus(X, Y, Z: Single): TVXScalarValue;
+function SFDoubleTorus(X, Y, Z: Single): TxScalarValue;
 
 const
   DemoScalarField: array [0 .. 6] of
   record
     // xMin, xMax, yMin, yMax, zMin, zMax:Single; // default -0.5..0.5
-    ScalarField: TVXScalarField;
-    IsoValue: TVXScalarValue
+    ScalarField: TxScalarField;
+    IsoValue: TxScalarValue
   end = ((ScalarField: SFSphere; IsoValue: 0.3), (ScalarField: SFMinkowski;
   IsoValue: 0.0), (ScalarField: SFKleinBottle; IsoValue: 0.0),
   (ScalarField: SFChmutov1; IsoValue: 3.0), (ScalarField: SFChmutov2;
   IsoValue: 3.0), (ScalarField: SFToroidal; IsoValue: 3.0),
   (ScalarField: SFDoubleTorus; IsoValue: 0.015));
 
-  // -------------------------------------------------------------------------
-  // -------------------------------------------------------------------------
-  // -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 implementation
-
-// -------------------------------------------------------------------------
-// -------------------------------------------------------------------------
 // -------------------------------------------------------------------------
 
 const
@@ -506,8 +472,8 @@ const
 );
 
 
-  // Marching Cube EdgeTable
-  //
+// Marching Cube EdgeTable
+//
 const
 
   MC_EDGETABLE: array [0 .. 11, 0 .. 1] of Integer = ((0, 1), (1, 2), (2, 3),
@@ -554,12 +520,12 @@ const
 // Test surface functions
 //
 
-function SFSphere(X, Y, Z: Single): TVXScalarValue;
+function SFSphere(X, Y, Z: Single): TxScalarValue;
 begin
   Result := sqr(X) + sqr(Y) + sqr(Z)
 end;
 
-function SFToroidal(X, Y, Z: Single): TVXScalarValue;
+function SFToroidal(X, Y, Z: Single): TxScalarValue;
 const
   FScale = 7;
   a = 2.5;
@@ -572,7 +538,7 @@ begin
     (sqr(sqrt(sqr(Z) + sqr(X)) - a) + sqr(Y));
 end;
 
-function SFDoubleTorus(X, Y, Z: Single): TVXScalarValue;
+function SFDoubleTorus(X, Y, Z: Single): TxScalarValue;
 const
   FScale = 2.25;
 begin
@@ -584,7 +550,7 @@ begin
     PowerInteger(Y, 4) + sqr(Z)
 end;
 
-function SFChmutov1(X, Y, Z: Single): TVXScalarValue;
+function SFChmutov1(X, Y, Z: Single): TxScalarValue;
 const
   FScale = 2.5;
 begin
@@ -595,7 +561,7 @@ begin
     (PowerInteger(X, 4) + PowerInteger(Y, 4) + PowerInteger(Z, 4));
 end;
 
-function SFChmutov2(X, Y, Z: Single): TVXScalarValue;
+function SFChmutov2(X, Y, Z: Single): TxScalarValue;
 const
   FScale = 2.5;
 begin
@@ -606,7 +572,7 @@ begin
     sqr(Z) * sqr(3 - 4 * sqr(Z)));
 end;
 
-function SFKleinBottle(X, Y, Z: Single): TVXScalarValue;
+function SFKleinBottle(X, Y, Z: Single): TxScalarValue;
 const
   FScale = 7.5;
 begin
@@ -618,7 +584,7 @@ begin
     (sqr(X) + sqr(Y) + sqr(Z) - 2 * Y - 1);
 end;
 
-function SFMinkowski(X, Y, Z: Single): TVXScalarValue;
+function SFMinkowski(X, Y, Z: Single): TxScalarValue;
 const
   FScale = 7;
 begin
@@ -635,8 +601,6 @@ end;
     Purpose: Extract an Isosurface from volume dataset for given Isovalue
     ------------------------------------------------------------------------- }
 
-  // Build Index depending on whether the edges are outside or inside the surface
-  //
 function TIsoSurfaceExtractor.BuildIndex(var ADatavals: array of Single;
   Isovalue: Single): word;
 var
@@ -699,8 +663,6 @@ begin
     Result := InterpolateRugged(V0, V1, Val0, Val1, Isovalue)
 end;
 
-// Launch Marching Tetrahedra
-//
 procedure TIsoSurfaceExtractor.MarchingTetrahedra(Isovalue: Single;
   out Vertices: TVertexArray; out Triangles: TIntegerArray; isPolished: boolean);
 var
@@ -824,8 +786,7 @@ begin
   Data := AData;
 end;
 
-// Launch Marching Cubes
-//
+//-----------------------------------------------------------------------
 procedure TIsoSurfaceExtractor.MarchingCubes(Isovalue: Single;
   out Vertices: TVertexArray; out Triangles: TIntegerArray; isPolished: boolean);
 var
@@ -909,9 +870,6 @@ begin
   end; // for i
 end;
 
-
-// TMarchingCube
-//
 
 function TVXMarchingCube.add_c_vertex: Integer;
 var
@@ -1026,7 +984,7 @@ begin
       if (_Ntrigs >= _Strigs) then
       begin
         _Strigs := 2 * _Strigs;
-        ReallocMem(PTriangles, _Strigs * SizeOf(TVXTriangle));
+        ReallocMem(PTriangles, _Strigs * SizeOf(TxTriangle));
       end;
 
       with PTriangles^[_Ntrigs] do
@@ -1268,7 +1226,7 @@ begin
 end;
 
 constructor TVXMarchingCube.Create(SizeX, SizeY, SizeZ: Integer;
-  AIsoValue: TVXScalarValue = 0.0; xMin: Single = -0.5; xMax: Single = 0.5;
+  AIsoValue: TxScalarValue = 0.0; xMin: Single = -0.5; xMax: Single = 0.5;
   yMin: Single = -0.5; yMax: Single = 0.5; zMin: Single = -0.5;
   zMax: Single = 0.5);
 begin
@@ -1291,12 +1249,12 @@ begin
   inherited;
 end;
 
-function TVXMarchingCube.getVoxelValue(i, j, k: Integer): TVXScalarValue;
+function TVXMarchingCube.getVoxelValue(i, j, k: Integer): TxScalarValue;
 begin
   Result := VoxelData^[i + j * FSizeX + k * FSizeX * FSizeY].Density
 end;
 
-function TVXMarchingCube.getVoxelData(i, j, k: Integer): TVXVoxel;
+function TVXMarchingCube.getVoxelData(i, j, k: Integer): TxVoxel;
 begin
   Result := VoxelData^[i + j * FSizeX + k * FSizeX * FSizeY]
 end;
@@ -1363,13 +1321,13 @@ begin
   _Sverts := ALLOC_SIZE;
   _Strigs := ALLOC_SIZE;
 
-  GetMem(PVertices, _Sverts * SizeOf(TVXVertex));
-  GetMem(PTriangles, _Strigs * SizeOf(TVXTriangle));
+  GetMem(PVertices, _Sverts * SizeOf(TxVertex));
+  GetMem(PTriangles, _Strigs * SizeOf(TxTriangle));
 end;
 
 procedure TVXMarchingCube.Init_space;
 begin
-  VoxelData := AllocMem(FSizeX * FSizeY * FSizeZ * SizeOf(TVXVoxel));
+  VoxelData := AllocMem(FSizeX * FSizeY * FSizeZ * SizeOf(TxVoxel));
 end;
 
 procedure TVXMarchingCube.Init_temps;
@@ -1386,7 +1344,7 @@ begin
   FillChar(PVertsZ^, spaceSize * SizeOf(Integer), -1);
 end;
 
-function TVXMarchingCube.Internal(AValue: TVXScalarValue): Boolean;
+function TVXMarchingCube.Internal(AValue: TxScalarValue): Boolean;
 begin
   Result := AValue <= FIsoValue
 end;
@@ -1444,13 +1402,13 @@ begin
   clean_temps;
 end;
 
-procedure TVXMarchingCube.Run(IsoValue: TVXScalarValue);
+procedure TVXMarchingCube.Run(IsoValue: TxScalarValue);
 begin
   FIsoValue := IsoValue;
   Run
 end;
 
-procedure TVXMarchingCube.setVoxelValue(i, j, k: Integer; HfValue: TVXScalarValue);
+procedure TVXMarchingCube.setVoxelValue(i, j, k: Integer; HfValue: TxScalarValue);
 begin
   VoxelData^[i + j * FSizeX + k * FSizeX * FSizeY].Density := HfValue
 end;
@@ -1475,11 +1433,11 @@ begin
   if _Nverts >= _Sverts then
   begin
     _Sverts := 2 * _Sverts;
-    ReallocMem(PVertices, _Sverts * SizeOf(TVXVertex))
+    ReallocMem(PVertices, _Sverts * SizeOf(TxVertex))
   end;
 end;
 
-function TVXMarchingCube.voxel(i, j, k: Integer): PVKVoxel;
+function TVXMarchingCube.voxel(i, j, k: Integer): PxVoxel;
 begin
   if (k >= FSizeZ) or (j >= FSizeY) or (i >= FSizeX) then
     Result := nil
@@ -1513,8 +1471,7 @@ begin
   end;
 end;
 
-procedure TVXMarchingCube.FillVoxelData(AIsoValue: TVXScalarValue;
-  AScalarField: TVXScalarField = nil);
+procedure TVXMarchingCube.FillVoxelData(AIsoValue: TxScalarValue; AScalarField: TxScalarField = nil);
 begin
   FIsoValue := AIsoValue;
   if Assigned(AScalarField) then
@@ -1522,8 +1479,7 @@ begin
   FillVoxelData;
 end;
 
-procedure TVXMarchingCube.FillVoxelData(AIsoValue: TVXScalarValue;
-  AScalarField: TVXScalarFieldInt);
+procedure TVXMarchingCube.FillVoxelData(AIsoValue: TxScalarValue; AScalarField: TxScalarFieldInt);
 var
   iX, iY, iZ: Integer;
   X, Y, Z: Single;
@@ -1584,7 +1540,7 @@ var
     Result.V[3] := 0.3
   end;
 
-  function GetColor(H: TVXScalarValue): TVector;
+  function GetColor(H: TxScalarValue): TVector;
   begin
     Result := VectorMake(0.890, 0.855, 0.788, Alpha)
     { if H <= 10 then Result:= VectorMake(0.922, 0.957, 0.980, 1.000)  //<=10

@@ -17,7 +17,7 @@ object InfoForm: TInfoForm
     Size.Width = 540.000000000000000000
     Size.Height = 361.000000000000000000
     Size.PlatformDefault = False
-    TabIndex = 0
+    TabIndex = 3
     TabOrder = 0
     TabPosition = PlatformDefault
     Sizes = (
@@ -35,7 +35,7 @@ object InfoForm: TInfoForm
       CustomIcon = <
         item
         end>
-      IsSelected = True
+      IsSelected = False
       Size.Width = 66.000000000000000000
       Size.Height = 26.000000000000000000
       Size.PlatformDefault = False
@@ -15464,7 +15464,7 @@ object InfoForm: TInfoForm
           AutoSize = True
           Position.X = 24.000000000000000000
           Position.Y = 32.000000000000000000
-          Size.Width = 82.000000000000000000
+          Size.Width = 90.000000000000000000
           Size.Height = 16.000000000000000000
           Size.PlatformDefault = False
           TextSettings.WordWrap = False
@@ -16116,7 +16116,7 @@ object InfoForm: TInfoForm
       CustomIcon = <
         item
         end>
-      IsSelected = False
+      IsSelected = True
       Size.Width = 87.000000000000000000
       Size.Height = 26.000000000000000000
       Size.PlatformDefault = False
@@ -16143,6 +16143,7 @@ object InfoForm: TInfoForm
           'Da Stranger'
           'Daniel Bartlett'
           'Dave Kerr'
+          'Davor Slutej'
           'Degiovani'
           'Eric Grange'
           'Eric Hardinge'

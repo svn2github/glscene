@@ -27,6 +27,7 @@ uses
   System.Math,
 
   GLPersistentClasses,
+  GLPipelineTransformation,
   GLVectorGeometry,
   GLVectorTypes,
   GLScene,

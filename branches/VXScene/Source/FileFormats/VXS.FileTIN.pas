@@ -53,7 +53,7 @@ var
   Tnam, S: string;
   Id_Mat, NVert, NTri: Integer;
 
-  VertArr: TVXPoint3DArray;
+  VertArr: TxPoint3DArray;
   n1, n2, n3: Integer;
 
 begin

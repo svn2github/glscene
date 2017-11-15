@@ -6,7 +6,6 @@
   History :
   10/07/03 - SG - Creation
   The whole history is logged in a former version of GLScene
-
 }
 
 unit GLCurvesAndSurfaces;
@@ -17,20 +16,17 @@ interface
 
 uses
   System.SysUtils,
+  GLVectorTypes,
   GLVectorGeometry,
   GLVectorLists;
 
 type
   TBSplineContinuity = (bscUniformNonPeriodic, bscUniformPeriodic);
 
-function BezierCurvePoint(t: single; n: integer; cp: PAffineVectorArray)
-  : TAffineVector;
-function BezierSurfacePoint(s, t: single; m, n: integer; cp: PAffineVectorArray)
-  : TAffineVector;
-procedure GenerateBezierCurve(Steps: integer;
-  ControlPoints, Vertices: TAffineVectorList);
-procedure GenerateBezierSurface(Steps, Width, Height: integer;
-  ControlPoints, Vertices: TAffineVectorList);
+function BezierCurvePoint(t: single; n: integer; cp: PAffineVectorArray): TAffineVector;
+function BezierSurfacePoint(s, t: single; m, n: integer; cp: PAffineVectorArray): TAffineVector;
+procedure GenerateBezierCurve(Steps: integer;  ControlPoints, Vertices: TAffineVectorList);
+procedure GenerateBezierSurface(Steps, Width, Height: integer; ControlPoints, Vertices: TAffineVectorList);
 
 function BSplinePoint(t: single; n, k: integer; knots: PSingleArray;
   cp: PAffineVectorArray): TAffineVector;
@@ -45,12 +41,7 @@ procedure GenerateKnotVector(KnotVector: TSingleList;
   NumberOfPoints, Order: integer; Continuity: TBSplineContinuity);
 
 // --------------------------------------------------------------------------
-// --------------------------------------------------------------------------
-// --------------------------------------------------------------------------
 implementation
-
-// --------------------------------------------------------------------------
-// --------------------------------------------------------------------------
 // --------------------------------------------------------------------------
 
 function Factorial(n: integer): single;

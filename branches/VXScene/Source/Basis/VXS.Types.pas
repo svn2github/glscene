@@ -1,11 +1,11 @@
 //
-// VXScene Component Library, based on GLScene http://glscene.sourceforge.net 
+// This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Defines vector types for geometry only aiming to imply
-   compatibility of GLScene for Delphi with C+Builder.
-   Do not include any other units in uses clause
-   The history is logged in a former GLS version of the unit.    
+   Defines vector types as advanced records.
+   History:
+     17/05/11 - PW - Creation.
+     The whole history is logged in previous version of the unit
 }
 unit VXS.Types;
 
@@ -123,11 +123,11 @@ type
     function ToMatrix: TxMatrix;
   end;
 
-  TVecHelper = record helper for TxVector
+  TxVecHelper = record helper for TxVector
     function ToDiagMatrix: TxMatrix;
   end;
 
-  TDim = class(TCustomAttribute)
+  TxDim = class(TCustomAttribute)
   private
     FRowCount: Integer;
     FColCount: Integer;
@@ -137,207 +137,206 @@ type
     property ColCount: Integer read FColCount;
   end;
 
-  function TVec(V: TAbstractVector): TxVector;
-  function TMat(M: TAbstractMatrix): TxMatrix;
-  function TQuat(Q: TAbstractVector): TxQuaternion;
+  function TxVec(V: TAbstractVector): TxVector;
+  function TxMat(M: TAbstractMatrix): TxMatrix;
+  function TxQuat(Q: TAbstractVector): TxQuaternion;
 
   procedure Init(Obj, TypeInfoOfObj: Pointer; Offset: Integer = 0);
 
 
 //-----------------------
-//VXPoint types
+// Point types
 //-----------------------
 type
-
-  TVXScalarValue = Single;
-  TVXScalarField = function(X, Y, Z: Single): TVXScalarValue;
+  TxScalarValue = Single;
+  TxScalarField = function(X, Y, Z: Single): TxScalarValue;
 
   // If data are made on integer XYZ index
-  TVXScalarFieldInt = function(iX, iY, iZ: Integer): TVXScalarValue of object;
+  TxScalarFieldInt = function(iX, iY, iZ: Integer): TxScalarValue of object;
 
-  TVXVertex = record
+  TxVertex = record
     P, N: TVector3f;  //Point and Normal
     Density: Single;
   end;
 
-  TVXFace = record
+  TxFace = record
     Normal: TVector3f;
     V1: TVector3f; // vertex 1
     V2: TVector3f; // vertex 2
     V3: TVector3f; // vertex 3
     Padding: array [0 .. 1] of Byte;
   end;
-  PVXPoint2D = ^TVXPoint2D;
-  TVXPoint2D = record
+  
+  PxPoint2D = ^TxPoint2D;
+  TxPoint2D = record
     X: Single;
     Y: Single;
     public
-      function Create(X, Y : Single): TVXPoint2D;
+      function Create(X, Y : Single): TxPoint2D;
       procedure SetPosition(const X, Y : Single);
-      function Add(const APoint2D: TVXPoint2D): TVXPoint2D;
+      function Add(const APoint2D: TxPoint2D): TxPoint2D;
       function Length: Single; //distance to origin
-      function Distance(const APoint2D : TVXPoint2D) : Single;
-      class function PointInCircle(const Point, Center: TVXPoint2D;
+      function Distance(const APoint2D : TxPoint2D) : Single;
+      class function PointInCircle(const Point, Center: TxPoint2D;
         const Radius: Integer):Boolean; static; inline;
       procedure Offset(const ADeltaX, ADeltaY : Single);
   end;
 
-  PVXPoint3D = ^TVXPoint3D;
-  TVXPoint3D = record
+  PxPoint3D = ^TxPoint3D;
+  TxPoint3D = record
     X: Single;
     Y: Single;
     Z: Single;
     public
-      function Create(X, Y, Z: Single): TVXPoint3D;
+      function Create(X, Y, Z: Single): TxPoint3D;
       procedure SetPosition(const X, Y, Z : Single);
-      function Add(const AGLPoint3D: TVXPoint3D): TVXPoint3D;
+      function Add(const AGLPoint3D: TxPoint3D): TxPoint3D;
       function Length: Single; //distance to origin
-      function Distance(const APoint3D : TVXPoint3D) : Single;
+      function Distance(const APoint3D : TxPoint3D) : Single;
       procedure Offset(const ADeltaX, ADeltaY, ADeltaZ : Single);
   end;
 
 
-  TVXPoint2DArray = array of TVXPoint2D;
-  TVXPoint3DArray = array of TVXPoint3D;
+  TxPoint2DArray = array of TxPoint2D;
+  TxPoint3DArray = array of TxPoint3D;
 
 
-// VXVoxel types
-  TVXVoxelStatus = (bpExternal, bpInternal);
-  TVXVoxel = record
+// Voxel types
+  TxVoxelStatus = (bpExternal, bpInternal);
+  TxVoxel = record
     P: TVector3f;
-    Density: TVXScalarValue;
-    Status: TVXVoxelStatus;
+    Density: TxScalarValue;
+    Status: TxVoxelStatus;
   end;
-  PVKVoxel = ^TVXVoxel;
+  PxVoxel = ^TxVoxel;
 
-  TVXVoxelData = array [0 .. (MaxInt shr 8)] of TVXVoxel;
-  PVKVoxelData = ^TVXVoxelData;
+  TxVoxelData = array [0 .. (MaxInt shr 8)] of TxVoxel;
+  PxVoxelData = ^TxVoxelData;
 
 
 //-----------------------
-// VXVector types
+// Vector types
 //-----------------------
 
-  TVXVector2DType = array [0..1] of Single;
-  TVXVector3DType = array [0..2] of Single;
+  TxVector2DType = array [0..1] of Single;
+  TxVector3DType = array [0..2] of Single;
 
-  TVXVector2D = record
-      function Create(const AX, AY, AW : Single): TVXVector2D;
-      function Add(const AVector2D: TVXVector2D): TVXVector2D;
+  TxVector2D = record
+      function Create(const AX, AY, AW : Single): TxVector2D;
+      function Add(const AVector2D: TxVector2D): TxVector2D;
       function Length: Single;
       function Norm: Single;
-      function Normalize: TVXVector2D;
-      function CrossProduct(const AVector: TVXVector2D): TVXVector2D;
-      function DotProduct(const AVector: TVXVector2D): Single;
+      function Normalize: TxVector2D;
+      function CrossProduct(const AVector: TxVector2D): TxVector2D;
+      function DotProduct(const AVector: TxVector2D): Single;
     case Integer of
-      0: (V: TVXVector2DType;);
+      0: (V: TxVector2DType;);
       1: (X: Single;
           Y: Single;
           W: Single;)
   end;
 
-  TVXVector3D = record
-      function Create(const AX, AY, AZ, AW : Single): TVXVector3D;
-      function Add(const AVector3D: TVXVector3D): TVXVector3D;
+  TxVector3D = record
+      function Create(const AX, AY, AZ, AW : Single): TxVector3D;
+      function Add(const AVector3D: TxVector3D): TxVector3D;
       function Length: Single;
       function Norm: Single;
-      function Normalize: TVXVector3D;
+      function Normalize: TxVector3D;
       function CrossProduct(const AVector3D: TVector3D): TVector3D;
       function DotProduct(const AVector3D: TVector3D): Single; inline;
     case Integer of
-      0: (V: TVXVector3DType;);
+      0: (V: TxVector3DType;);
       1: (X: Single;
           Y: Single;
           Z: Single;
           W: Single;)
   end;
 
-// VXVector Arrays
-  TVXVector2DArray = array of TVXVector2D;
-  TVXVector3DArray = array of TVXVector3D;
+// Vector Arrays
+  TxVector2DArray = array of TxVector2D;
+  TxVector3DArray = array of TxVector3D;
 
 //-----------------------
-// VXMatrix types
+// Matrix types
 //-----------------------
-  TVXMatrix2DType = array[0..3] of TVXVector2D;
-  {$NODEFINE TVXMatrix2DType}
+  TxMatrix2DType = array[0..3] of TxVector2D;
+  {$NODEFINE TxMatrix2DType}
   (*$HPPEMIT END OPENNAMESPACE*)
-  (*$HPPEMIT END 'typedef TVXVector2D TVXMatrix2DArray[4];'*)
+  (*$HPPEMIT END 'typedef TxVector2D TxMatrix2DArray[4];'*)
   (*$HPPEMIT END CLOSENAMESPACE*)
-  TVXMatrix3DType = array[0..3] of TVXVector3D;
-  {$NODEFINE TVXMatrix3DType}
+  TxMatrix3DType = array[0..3] of TxVector3D;
+  {$NODEFINE TxMatrix3DType}
   (*$HPPEMIT END OPENNAMESPACE*)
-  (*$HPPEMIT END 'typedef TVXVector3D TVXMatrix3DType[4];'*)
+  (*$HPPEMIT END 'typedef TxVector3D TxMatrix3DType[4];'*)
   (*$HPPEMIT END CLOSENAMESPACE*)
 
-  TVXMatrix2D = record
+  TxMatrix2D = record
   private
   public
     case Integer of
-      0: (M: TVXMatrix2DType;);
+      0: (M: TxMatrix2DType;);
       1: (e11, e12, e13: Single;
           e21, e22, e23: Single;
           e31, e32, e33: Single);
   end;
 
-  TVXMatrix3D = record
+  TxMatrix3D = record
   private
   public
     case Integer of
-      0: (M: TVXMatrix3DType;);
+      0: (M: TxMatrix3DType;);
       1: (e11, e12, e13, e14: Single;
           e21, e22, e23, e24: Single;
           e31, e32, e33, e34: Single;
           e41, e42, e43, e44: Single);
   end;
 
-  TVXMatrix2DArray = array of TVXMatrix2D;
-  TVXMatrix3DArray = array of TVXMatrix3D;
+// Matrix Arrays
+  TxMatrix2DArray = array of TxMatrix2D;
+  TxMatrix3DArray = array of TxMatrix3D;
 
 
 //-----------------------
-// VXPolygon types
+// Polygon types
 //-----------------------
 
-  TVXPolygon2D = TVXPoint2DArray;
+  TxPolygon2D = TxPoint2DArray;
 
-  TVXPolygon3D = TVXPoint3DArray;
+  TxPolygon3D = TxPoint3DArray;
 {
-  TVXPolygon3D = record
-    Vertices: array of TVXPoint3D;
+  TxPolygon3D = record
+    Vertices: array of TxPoint3D;
     function Area;
   end;
 }
 
 const
-   ClosedPolygon2D: TVXPoint2D = (X: $FFFF; Y: $FFFF);
-   ClosedPolygon3D: TVXPoint3D = (X: $FFFF; Y: $FFFF; Z: $FFFF);
+   ClosedPolygon2D: TxPoint2D = (X: $FFFF; Y: $FFFF);
+   ClosedPolygon3D: TxPoint3D = (X: $FFFF; Y: $FFFF; Z: $FFFF);
 
 type
-  TVXVertexArray = array [0 .. (MaxInt shr 8)] of TVXVertex;
-  PVXVertexArray = ^TVXVertexArray;
+  PxVertexArray = ^TxVertexArray;
+  TxVertexArray = array [0 .. (MaxInt shr 8)] of TxVertex;
 
 type
-  TVXTriangle = record
+  TxTriangle = record
     v1, v2, v3: Integer;
-    ///Vertices: array[0..2] of TVXPoint3D;
+    ///Vertices: array[0..2] of TxPoint3D;
     ///function Area;
   end;
 
-  PVXTriangleArray = ^TVXTriangleArray;
-  TVXTriangleArray = array [0 .. (MaxInt shr 8)] of TVXTriangle;
-
-
+  PxTriangleArray = ^TxTriangleArray;
+  TxTriangleArray = array [0 .. (MaxInt shr 8)] of TxTriangle;
 
 //-----------------------
-// VXPolyhedron types
+// Polyhedron types
 //-----------------------
 type
-  TVXPolyhedron = array of TGLPolygon3D;
+  TxPolyhedron = array of TxPolygon3D;
 
 {
-  TVXPolyhedron = record
-    Facets: array of TVXPolygon3D;
+  TxPolyhedron = record
+    Facets: array of TxPolygon3D;
     function NetLength;
     function Area;
     function Volume;
@@ -345,39 +344,38 @@ type
 }
 
 //--------------------------
-// VXMesh simple record types
+// Mesh simple record types
 //--------------------------
 type
-   TVXMesh2DVertex = record
+   TxMesh2DVertex = record
     X, Y: Single;
     NX, NY: Single;
     tU, tV: Single;
   end;
 
-   TVXMesh3DVertex = packed record
+   TxMesh3DVertex = packed record
     X, Y, Z: Single;
     NX, NY, NZ: Single;
     tU, tV: Single;
   end;
 
-  TVXMesh2D = array of TVXMesh2DVertex;
-  TVXMesh3D = array of TVXMesh3DVertex;
+  TxMesh2D = array of TxMesh2DVertex;
+  TxMesh3D = array of TxMesh3DVertex;
 
 //--------------------------
-// GLQuaternion record types
+// Quaternion record types
 //--------------------------
 type
-
-  TVXQuaternion3D = record
-    ImPart: TVXVector3D;
+  TxQuaternion3D = record
+    ImPart: TxVector3D;
     RePart: Single;
   end;
 
-  TVXQuaternionArray = array of TVXQuaternion;
+  TxQuaternionArray = array of TxQuaternion3D;
 
 
 type
-  TVXBox = record
+  TxBox = record
     ALeft, ATop, ANear, ARight, ABottom, AFar: Single;
   end;
 
@@ -389,25 +387,21 @@ const
   sSINGULAR = 'Singular matrix founded';
 
 //---------------------------------------------------------------
-//---------------------------------------------------------------
-//---------------------------------------------------------------
 implementation
 //---------------------------------------------------------------
-//---------------------------------------------------------------
-//---------------------------------------------------------------
 
 
-function TVec(V: TAbstractVector): TxVector;
+function TxVec(V: TAbstractVector): TxVector;
 begin
   Result.Create(V);
 end;
 
-function TMat(M: TAbstractMatrix): TxMatrix;
+function TxMat(M: TAbstractMatrix): TxMatrix;
 begin
   Result.Create(M);
 end;
 
-function TQuat(Q: TAbstractVector): TxQuaternion;
+function TxQuat(Q: TAbstractVector): TxQuaternion;
 begin
   Result.Create(Q);
 end;
@@ -418,7 +412,7 @@ begin
   Result := (PArr - 2)^ > 1;
 end;
 
-{ TMatrix }
+{ TxMatrix }
 
 // Removing i-th row and j-th col
 function TxMatrix.Del(A: TxMatrix; I, J: Integer; M: Integer): TxMatrix;
@@ -1017,9 +1011,9 @@ begin
   Result[3, 3] := Sqr(FData[0]) - Sqr(FData[1]) - Sqr(FData[2]) + Sqr(FData[3]);
 end;
 
-{ TVecHelper }
+{ TxVecHelper }
 
-function TVecHelper.ToDiagMatrix: TxMatrix;
+function TxVecHelper.ToDiagMatrix: TxMatrix;
 var
   I: Integer;
 begin
@@ -1051,8 +1045,8 @@ begin
       ColCount := DefaultColCount;
       for Dim in Field.GetAttributes do
       begin
-        RowCount := (Dim as TDim).RowCount;
-        ColCount := (Dim as TDim).ColCount;
+        RowCount := (Dim as TxDim).RowCount;
+        ColCount := (Dim as TxDim).ColCount;
       end;
       if Field.FieldType.TypeKind = tkArray then
       begin
@@ -1094,135 +1088,135 @@ begin
   end;
 end;
 
-{ TDim }
+{ TxDim }
 
-constructor TDim.Create(ARowCount: Integer; AColCount: Integer = 0);
+constructor TxDim.Create(ARowCount: Integer; AColCount: Integer = 0);
 begin
   FRowCount := ARowCount;
   FColCount := AColCount;
 end;
 
 
-{ TVXPoint2D }
+{ TxPoint2D }
 
-function TVXPoint2D.Create(X, Y : Single): TVXPoint2D;
+function TxPoint2D.Create(X, Y : Single): TxPoint2D;
 begin
   Result.X := X;
   Result.Y := Y;
 end;
 
-procedure TVXPoint2D.SetPosition(const X, Y: Single);
+procedure TxPoint2D.SetPosition(const X, Y: Single);
 begin
   Self.X := X;
   Self.Y := Y;
 end;
 
-function TVXPoint2D.Length: Single;
+function TxPoint2D.Length: Single;
 begin
   Result := Sqrt(Self.X * Self.X + Self.Y * Self.Y);
 end;
 
-function TVXPoint2D.Add(const APoint2D: TVXPoint2D): TVXPoint2D;
+function TxPoint2D.Add(const APoint2D: TxPoint2D): TxPoint2D;
 begin
   Result.SetPosition(Self.X + APoint2D.X, Self.Y + APoint2D.Y);
 end;
 
-function TVXPoint2D.Distance(const APoint2D: TVXPoint2D): Single;
+function TxPoint2D.Distance(const APoint2D: TxPoint2D): Single;
 begin
   Result := Sqrt(Sqr(Self.X - APoint2D.X) +  Sqr(Self.Y - APoint2D.Y));
 end;
 
-procedure TVXPoint2D.Offset(const ADeltaX, ADeltaY: Single);
+procedure TxPoint2D.Offset(const ADeltaX, ADeltaY: Single);
 begin
   Self.X := Self.X + ADeltaX;
   Self.Y := Self.Y + ADeltaY;
 end;
 
-class function TVXPoint2D.PointInCircle(const Point, Center: TVXPoint2D;
+class function TxPoint2D.PointInCircle(const Point, Center: TxPoint2D;
   const Radius: Integer): Boolean;
 begin
   Result := Point.Distance(Center) <= Radius;
 end;
 
-{ TGLPoint3D }
+{ TxPoint3D }
 
-function TGLPoint3D.Create(X, Y, Z: Single): TGLPoint3D;
+function TxPoint3D.Create(X, Y, Z: Single): TxPoint3D;
 begin
   Result.X := X;
   Result.Y := Y;
   Result.Z := Z;
 end;
 
-function TVXPoint3D.Add(const AGLPoint3D: TVXPoint3D): TVXPoint3D;
+function TxPoint3D.Add(const AGLPoint3D: TxPoint3D): TxPoint3D;
 begin
   Result.X := Self.X + AGLPoint3D.X;
   Result.Y := Self.Y + AGLPoint3D.Y;
   Result.Z := Self.Z + AGLPoint3D.Z;
 end;
 
-function TVXPoint3D.Distance(const APoint3D: TVXPoint3D): Single;
+function TxPoint3D.Distance(const APoint3D: TxPoint3D): Single;
 begin
   Result := Self.Length - APoint3D.Length;
 end;
 
-function TVXPoint3D.Length: Single;
+function TxPoint3D.Length: Single;
 begin
   Result := Sqrt(Self.X * Self.X + Self.Y * Self.Y + Self.Z * Self.Z);
 end;
 
-procedure TVXPoint3D.Offset(const ADeltaX, ADeltaY, ADeltaZ: Single);
+procedure TxPoint3D.Offset(const ADeltaX, ADeltaY, ADeltaZ: Single);
 begin
   Self.X := Self.X + ADeltaX;
   Self.Y := Self.Y + ADeltaY;
   Self.Z := Self.Z + ADeltaZ;
 end;
 
-procedure TVXPoint3D.SetPosition(const X, Y, Z: Single);
+procedure TxPoint3D.SetPosition(const X, Y, Z: Single);
 begin
   Self.X := X;
   Self.Y := Y;
   Self.Z := Z;
 end;
 
-{ TVXVector2D }
+{ TxVector2D }
 
-function TVXVector2D.Create(const AX, AY, AW: Single): TVXVector2D;
+function TxVector2D.Create(const AX, AY, AW: Single): TxVector2D;
 begin
   Result.X := AX;
   Result.Y := AY;
   Result.W := AW;
 end;
 
-function TVXVector2D.CrossProduct(const AVector: TVXVector2D): TVXVector2D;
+function TxVector2D.CrossProduct(const AVector: TxVector2D): TxVector2D;
 begin
   Result.X := (Self.Y * AVector.W) - (Self.W * AVector.Y);
   Result.Y := (Self.W * AVector.X) - (Self.X * AVector.W);
   Result.W := (Self.X * AVector.Y) - (Self.Y * AVector.X);
 end;
 
-function TVXVector2D.DotProduct(const AVector: TVXVector2D): Single;
+function TxVector2D.DotProduct(const AVector: TxVector2D): Single;
 begin
   Result := (Self.X * AVector.X) + (Self.Y * AVector.Y) + (Self.W * AVector.W);
 end;
 
-function TVXVector2D.Add(const AVector2D: TVXVector2D): TVXVector2D;
+function TxVector2D.Add(const AVector2D: TxVector2D): TxVector2D;
 begin
   Result.X := Self.X + AVector2D.X;
   Result.Y := Self.Y + AVector2D.Y;
   Result.W := 1.0;
 end;
 
-function TVXVector2D.Length: Single;
+function TxVector2D.Length: Single;
 begin
   Result := Sqrt((Self.X * Self.X) + (Self.Y * Self.Y));
 end;
 
-function TVXVector2D.Norm: Single;
+function TxVector2D.Norm: Single;
 begin
   Result := Sqr(Self.X) + Sqr(Self.Y);
 end;
 
-function TVXVector2D.Normalize: TVXVector2D;
+function TxVector2D.Normalize: TxVector2D;
 var
   invLen: Single;
   vn: Single;
@@ -1241,9 +1235,9 @@ begin
 end;
 
 //---------------------------------
-{ TVXVector3D }
+{ TxVector3D }
 //---------------------------------
-function TVXVector3D.Create(const AX, AY, AZ, AW: Single): TVXVector3D;
+function TxVector3D.Create(const AX, AY, AZ, AW: Single): TxVector3D;
 begin
   Result.X := AX;
   Result.Y := AY;
@@ -1251,7 +1245,7 @@ begin
   Result.W := AW;
 end;
 
-function TVXVector3D.Add(const AVector3D: TVXVector3D): TVXVector3D;
+function TxVector3D.Add(const AVector3D: TxVector3D): TxVector3D;
 begin
   Result.X := Self.X + AVector3D.X;
   Result.Y := Self.Y + AVector3D.Y;
@@ -1259,12 +1253,12 @@ begin
   Result.W := 1.0;
 end;
 
-function TVXVector3D.Norm: Single;
+function TxVector3D.Norm: Single;
 begin
   result := Self.X * Self.X + Self.Y * Self.Y + Self.Z * Self.Z;
 end;
 
-function TVXVector3D.Normalize: TVXVector3D;
+function TxVector3D.Normalize: TxVector3D;
 var
   invLen: Single;
   vn: Single;
@@ -1284,19 +1278,19 @@ begin
     Result := Self;
 end;
 
-function TVXVector3D.DotProduct(const AVector3D: TVector3D): Single;
+function TxVector3D.DotProduct(const AVector3D: TVector3D): Single;
 begin
   Result := (Self.X * AVector3D.X) + (Self.Y * AVector3D.Y) + (Self.Z * AVector3D.Z);
 end;
 
-function TVXVector3D.CrossProduct(const AVector3D: TVector3D): TVector3D;
+function TxVector3D.CrossProduct(const AVector3D: TVector3D): TVector3D;
 begin
   Result.X := (Self.Y * AVector3D.Z) - (Self.Z * AVector3D.Y);
   Result.Y := (Self.Z * AVector3D.X) - (Self.X * AVector3D.Z);
   Result.Z := (Self.X * AVector3D.Y) - (Self.Y * AVector3D.X);
 end;
 
-function TVXVector3D.Length: Single;
+function TxVector3D.Length: Single;
 begin
   Result := Sqrt((Self.X * Self.X) + (Self.Y * Self.Y) + (Self.Z * Self.Z));
 end;

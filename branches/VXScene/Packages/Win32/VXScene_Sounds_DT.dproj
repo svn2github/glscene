@@ -98,9 +98,9 @@
         <DCC_UnitSearchPath>$(VXSCENEDIR)\Source;$(VXSCENEDIR)\Source\Basis;$(VXSCENEDIR)\Source\DesignTime;$(VXSCENEDIR)\Source\FileFormats;$(VXSCENEDIR)\Source\GameAPIs;$(VXSCENEDIR)\Source\ParallelAPIs;$(VXSCENEDIR)\Source\PhysicsAPIs;$(VXSCENEDIR)\Source\ScriptingAPIs;$(VXSCENEDIR)\Source\Shaders;$(VXSCENEDIR)\Source\SoundVideoAPIs;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
         <DCC_DcpOutput>$(VXSCENEDIR)\lib\Win32</DCC_DcpOutput>
         <DCC_Description>VXScene Sound Managers</DCC_Description>
-        <DCC_BpiOutput>$(VXSCENEDIR)\lib\Win32</DCC_BpiOutput>
-        <DCC_HppOutput>$(VXSCENEDIR)\include\Win32</DCC_HppOutput>
-        <DCC_ObjOutput>$(VXSCENEDIR)\lib\Win32</DCC_ObjOutput>
+        <DCC_BpiOutput>$(VKSCENEDIR)\lib\Win32</DCC_BpiOutput>
+        <DCC_HppOutput>$(VKSCENEDIR)\include\Win32</DCC_HppOutput>
+        <DCC_ObjOutput>$(VKSCENEDIR)\lib\Win32</DCC_ObjOutput>
         <DCC_DcuOutput>$(VXSCENEDIR)\lib\Win32</DCC_DcuOutput>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Locale>1033</VerInfo_Locale>
@@ -113,13 +113,13 @@
         <DelphiCompile Include="$(MainSource)">
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
-        <DCCReference Include="..\..\Resources\VXSceneBass.dcr"/>
-        <DCCReference Include="..\..\Resources\VXSceneFMod.dcr"/>
-        <DCCReference Include="..\..\Resources\VXSceneOpenAL.dcr"/>
+        <DCCReference Include="..\..\Resources\VKSceneBass.dcr"/>
+        <DCCReference Include="..\..\Resources\VKSceneFMod.dcr"/>
+        <DCCReference Include="..\..\Resources\VKSceneOpenAL.dcr"/>
         <DCCReference Include="rtl.dcp"/>
         <DCCReference Include="fmx.dcp"/>
-        <DCCReference Include="VXScene_DT.dcp"/>
-        <DCCReference Include="VXScene_Sounds_RT.dcp"/>
+        <DCCReference Include="VXScene_DesignTime.dcp"/>
+        <DCCReference Include="VXScene_Sounds_RunTime.dcp"/>
         <DCCReference Include="..\..\Source\SoundVideoAPIs\VXS.SoundRegister.pas"/>
         <BuildConfiguration Include="Debug">
             <Key>Cfg_2</Key>
@@ -142,7 +142,6 @@
                     <Source Name="MainSource">VXScene_Sounds_DT.dpk</Source>
                 </Source>
                 <Excluded_Packages>
-                    <Excluded_Packages Name="C:\Users\Public\Documents\Embarcadero\Studio\19.0\Bpl\dclfgx240.bpl">Extensions for FM (FireMonkey) - Designtime</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\bcboffice2k250.bpl">Embarcadero C++Builder Office 2000 Servers Package</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\bcbofficexp250.bpl">Embarcadero C++Builder Office XP Servers Package</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\dcloffice2k250.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>

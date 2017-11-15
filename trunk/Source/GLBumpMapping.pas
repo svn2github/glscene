@@ -13,6 +13,7 @@ unit GLBumpMapping;
 interface
 
 uses
+  System.UITypes,
   Vcl.Graphics,
   GLVectorGeometry,
   GLVectorLists,

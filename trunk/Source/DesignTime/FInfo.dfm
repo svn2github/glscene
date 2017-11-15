@@ -30,7 +30,7 @@ object GLInfoForm: TGLInfoForm
     Top = 0
     Width = 460
     Height = 341
-    ActivePage = TabSheetGLScene
+    ActivePage = TabSheetContributors
     Align = alTop
     TabOrder = 0
     object TabSheetGLScene: TTabSheet
@@ -3498,6 +3498,7 @@ object GLInfoForm: TGLInfoForm
           'Da Stranger'
           'Daniel Bartlett'
           'Dave Kerr'
+          'Davor Slutej'
           'Degiovani'
           'Eric Grange'
           'Eric Hardinge'

@@ -32,7 +32,7 @@ package VXScene_Physics_RT;
 requires
   rtl,
   fmx,
-  VXScene_RT;
+  VXScene_RunTime;
 
 contains
   VXS.ODEManager in '..\..\Source\PhysicsAPIs\VXS.ODEManager.pas',

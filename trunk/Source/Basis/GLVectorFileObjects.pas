@@ -4430,7 +4430,7 @@ end;
 function TGLMeshObjectList.Area: Single;
 var
   i: Integer;
-  Tri: TGLFace;
+  Tri: TxFace;
   List: TAffineVectorList;
 
 begin
@@ -4456,7 +4456,7 @@ end;
 function TGLMeshObjectList.Volume: Single;
 var
   i: Integer;
-  Tri: TGLFace;
+  Tri: TxFace;
   List: TAffineVectorList;
 
 begin

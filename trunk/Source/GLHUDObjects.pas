@@ -7,7 +7,7 @@
   History :
     15/01/01 - EG - Creation
     The whole history is logged in previous version of the unit.
-   
+
 }
 unit GLHUDObjects;
 
@@ -19,6 +19,8 @@ uses
   System.Classes,
 
   GLScene,
+  GLVectorTypes,
+  GLCoordinates,
   GLPersistentClasses,
   GLVectorGeometry,
   GLObjects,

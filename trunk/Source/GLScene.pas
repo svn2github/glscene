@@ -20,6 +20,7 @@ uses
   Winapi.Windows,
   System.Classes,
   System.SysUtils,
+  System.UITypes,
   System.Math,
   Vcl.Graphics,
   Vcl.Controls,

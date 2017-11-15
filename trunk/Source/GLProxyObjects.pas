@@ -7,7 +7,6 @@
   History :
     06/12/03 - EG - Creation from GLScene.pas split
     The whole history is logged in previous version of the unit
-
 }
 unit GLProxyObjects;
 
@@ -19,9 +18,9 @@ uses
   System.Classes,
   System.SysUtils,
 
-  
   OpenGLTokens,
   GLScene,
+  GLXCollection,
   GLPipelineTransformation,
   GLVectorGeometry,
   GLTexture,
@@ -129,8 +128,8 @@ type
     BoneIndex: integer;
   end;
 
-  // pamLoop mode was too difficalt to implement, so it was discarded ...for now.
-  // pamPlayOnce only works if Actor.AnimationMode <> aamNone.
+  (* pamLoop mode was too difficalt to implement, so it was discarded ...for now.
+   pamPlayOnce only works if Actor.AnimationMode <> aamNone. *)
   TGLActorProxyAnimationMode = (pamInherited, pamNone, pamPlayOnce);
 
   {A proxy object specialized for Actors.  }
@@ -163,8 +162,7 @@ type
     procedure SetStoredBoneNames(const Value: TStrings);
     procedure SetOnBeforeRender(const Value: TGLProgressEvent);
   protected
-    procedure DoStoreBonesMatrices;
-      // stores matrices of bones of the current frame rendered
+    procedure DoStoreBonesMatrices; // stores matrices of bones of the current frame rendered
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -229,6 +227,9 @@ type
 
 //-------------------------------------------------------------
 implementation
+//-------------------------------------------------------------
+
+
 // ------------------
 // ------------------ TGLColorProxy ------------------
 // ------------------

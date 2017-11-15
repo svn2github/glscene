@@ -13,48 +13,19 @@
    to enable set boSpecularTexture3 in the BumpOptions property.
    The SpecularMode determines the specular highlight calculation
    (Blinn or Phong), smOff disables specular highlights in the
-   shader. 
+   shader.
 
    External tangent bump space expects tangent data under
-   GL_TEXTURE1_ARB and binormal data under GL_TEXTURE2_ARB. 
+   GL_TEXTURE1_ARB and binormal data under GL_TEXTURE2_ARB.
 
    The boUseSecondaryTexCoords bump option tells the shader to use
    the secondary texture coordinates for the diffuse and specular
-   texture lookups. 
+   texture lookups.
 
-    History :  
-       23/08/10 - Yar - Upgraded program hadles
-       22/04/10 - Yar - Fixes after GLState revision
-       05/03/10 - DanB - More state added to TGLStateCache
-       06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
-       31/03/07 - DaStr - Added $I GLScene.inc
-       25/02/07 - DaStr - Moved registration to GLSceneRegister.pas
-       15/04/05 - SG - Added parallax offset mapping for the BasicARBfp bump method (experimental)
-                          Height data is expected in the normal map alpha channel.
-       21/12/04 - SG - Added light attenutation support through the
-                          boLightAttenutation option in the BumpOptions property.
-       27/10/04 - SG - Added boUseSecondaryTexCoords option to BumpOptions
-       11/10/04 - SG - Added SpecularMode to define the specular highlight equation,
-                          Removed the boDisableSpecular bump option (depricated).
-       06/10/04 - SG - Added special functions for generating the ARB programs
-                          which replace the string constants.
-       02/10/04 - SG - Changed render order a little, minimum texture units
-                          is now 2 for dot3 texcombiner bump method.
-                          Changed vertex programs to accept local program
-                          params, now only 1 vertex and 1 fragment program is
-                          required for all lights.
-                          Vertex programs now apply the primary texture matrix.
-       30/09/04 - SG - Added fragment program logic,
-                          Added bmBasicARBFP bump method, bsTangentExternal
-                          bump space and associated ARB programs,
-                          Various name changes and fixes
-       28/09/04 - SG - Vertex programs now use ARB_position_invariant option.
-       29/06/04 - SG - Quaternion tangent space fix in tangent bump vertex
-                          program.
-       23/06/04 - SG - Added bsTangent option to TBumpSpace,
-                          Added tangent space light vector vertex program.
-       22/06/04 - SG - Creation.
-    
+    History :
+      22/06/04 - SG - Creation.
+      The whole history is logged in a former version of GLScene
+
 }
 unit GLBumpShader;
 
@@ -63,10 +34,20 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
-   
-  GLMaterial, GLGraphics, GLUtils, GLVectorGeometry, OpenGLTokens,
-  GLContext, GLVectorLists, GLColor, GLRenderContextInfo, GLState,
+  System.Classes,
+  System.SysUtils,
+
+  GLVectorTypes,
+  GLVectorGeometry,
+  GLMaterial,
+  GLGraphics,
+  GLUtils,
+  OpenGLTokens,
+  GLContext,
+  GLVectorLists,
+  GLColor,
+  GLRenderContextInfo,
+  GLState,
   GLTextureFormat;
 
 type
@@ -84,8 +65,6 @@ type
 
   TSpecularMode = (smOff, smBlinn, smPhong);
 
-  // TGLBumpShader
-  //
   {A generic bump shader.  }
   TGLBumpShader = class(TGLShader)
   private
@@ -103,11 +82,9 @@ type
     FVertexProgram: TStringList;
     FFragmentProgram: TStringList;
     FParallaxOffset: Single;
-
     function GenerateVertexProgram: string;
     function GenerateFragmentProgram: string;
     procedure DoLightPass(var rci: TGLRenderContextInfo; lightID: Cardinal);
-
   protected
     procedure SetBumpMethod(const Value: TBumpMethod);
     procedure SetBumpSpace(const Value: TBumpSpace);
@@ -118,14 +95,11 @@ type
     procedure Loaded; override;
     procedure DeleteVertexPrograms;
     procedure DeleteFragmentPrograms;
-
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
     procedure DoApply(var rci: TGLRenderContextInfo; Sender: TObject); override;
     function DoUnApply(var rci: TGLRenderContextInfo): Boolean; override;
-
   published
     property BumpMethod: TBumpMethod read FBumpMethod write SetBumpMethod;
     property BumpSpace: TBumpSpace read FBumpSpace write SetBumpSpace;
@@ -136,23 +110,15 @@ type
       SetDesignTimeEnabled;
     property ParallaxOffset: Single read FParallaxOffset write
       SetParallaxOffset;
-
   end;
 
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 // ------------------
 // ------------------ TGLBumpShader ------------------
 // ------------------
-
- 
-//
 
 constructor TGLBumpShader.Create(AOwner: TComponent);
 begin
@@ -169,8 +135,6 @@ begin
   FFragmentProgram := TStringList.Create;
 end;
 
- 
-//
 
 destructor TGLBumpShader.Destroy;
 begin
@@ -182,16 +146,10 @@ begin
   inherited;
 end;
 
-// Loaded
-//
-
 procedure TGLBumpShader.Loaded;
 begin
   inherited;
 end;
-
-// GenerateVertexProgram
-//
 
 function TGLBumpShader.GenerateVertexProgram: string;
 var
@@ -390,9 +348,6 @@ begin
   Result := VP.Text;
   VP.Free;
 end;
-
-// GenerateFragmentProgram
-//
 
 function TGLBumpShader.GenerateFragmentProgram: string;
 var
@@ -640,9 +595,6 @@ begin
   end;
 end;
 
-// DoApply
-//
-
 procedure TGLBumpShader.DoApply(var rci: TGLRenderContextInfo; Sender: TObject);
 var
   maxTextures, i: Integer;
@@ -740,9 +692,6 @@ begin
     end;
 end;
 
-// DoUnApply
-//
-
 function TGLBumpShader.DoUnApply(var rci: TGLRenderContextInfo): Boolean;
 var
   ambient, LMaterialAmbient: TVector;
@@ -829,9 +778,6 @@ begin
     FFragmentProgramHandle.Disable;
 end;
 
-// DeleteVertexPrograms
-//
-
 procedure TGLBumpShader.DeleteVertexPrograms;
 begin
   FVertexProgramHandle.Free;
@@ -839,18 +785,12 @@ begin
   FVertexProgram.Clear;
 end;
 
-// DeleteFragmentPrograms
-//
-
 procedure TGLBumpShader.DeleteFragmentPrograms;
 begin
   FFragmentProgramHandle.Free;
   FFragmentProgramHandle := nil;
   FFragmentProgram.Clear;
 end;
-
-// SetBumpMethod
-//
 
 procedure TGLBumpShader.SetBumpMethod(const Value: TBumpMethod);
 begin
@@ -863,9 +803,6 @@ begin
   end;
 end;
 
-// SetBumpSpace
-//
-
 procedure TGLBumpShader.SetBumpSpace(const Value: TBumpSpace);
 begin
   if Value <> FBumpSpace then
@@ -876,9 +813,6 @@ begin
     NotifyChange(Self);
   end;
 end;
-
-// SetBumpOptions
-//
 
 procedure TGLBumpShader.SetBumpOptions(const Value: TBumpOptions);
 begin
@@ -891,9 +825,6 @@ begin
   end;
 end;
 
-// SetSpecularMode
-//
-
 procedure TGLBumpShader.SetSpecularMode(const Value: TSpecularMode);
 begin
   if Value <> FSpecularMode then
@@ -905,9 +836,6 @@ begin
   end;
 end;
 
-// SetDesignTimeEnabled
-//
-
 procedure TGLBumpShader.SetDesignTimeEnabled(const Value: Boolean);
 begin
   if Value <> FDesignTimeEnabled then
@@ -916,9 +844,6 @@ begin
     NotifyChange(Self);
   end;
 end;
-
-// SetParallaxOffset
-//
 
 procedure TGLBumpShader.SetParallaxOffset(const Value: Single);
 begin

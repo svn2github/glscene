@@ -59,7 +59,7 @@ type
 
   TGLMarchingCube = class(TObject)
   private
-    FIsoValue: TGLScalarValue;
+    FIsoValue: TxScalarValue;
     // sliceSize:Longword;
     PVertsX: PIntegerArray;
     PVertsY: PIntegerArray;
@@ -68,10 +68,10 @@ type
     _Ntrigs: Integer;
     _Sverts: Integer;
     _Strigs: Integer;
-    PVertices: PGLVertexArray;
-    PTriangles: PGLTriangleArray;
+    PVertices: PxVertexArray;
+    PTriangles: PxTriangleArray;
     _i, _j, _k: Longword;
-    _Cube: array [0 .. 7] of TGLVoxel;
+    _Cube: array [0 .. 7] of TxVoxel;
     _lut_entry: Byte;
     // _case:Byte;
     // _config:Byte;
@@ -97,7 +97,7 @@ type
     FStepX: Single;
     FStepY: Single;
     FStepZ: Single;
-    VoxelData: PGLVoxelData;
+    VoxelData: PxVoxelData;
     procedure Process_cube;
     { function test_face(face:byte):Boolean;
       function test_interior(s:Byte):boolean }
@@ -116,32 +116,32 @@ type
     procedure Set_x_vert(a_val, i, j, k: Integer);
     procedure Set_y_vert(a_val, i, j, k: Integer);
     procedure Set_z_vert(a_val, i, j, k: Integer);
-    function GetVoxelValue(i, j, k: Integer): TGLScalarValue;
-    procedure SetVoxelValue(i, j, k: Integer; HfValue: TGLScalarValue);
-    function GetVoxelData(i, j, k: Integer): TGLVoxel;
-    function Voxel(i, j, k: Integer): PGLVoxel;
-    function Calc_u(v1, v2: Single): Single; virtual;
+    function GetVoxelValue(i, j, k: Integer): TxScalarValue;
+    procedure SetVoxelValue(i, j, k: Integer; HfValue: TxScalarValue);
+    function GetVoxelData(i, j, k: Integer): TxVoxel;
+    function Voxel(i, j, k: Integer): PxVoxel;
+    function calc_u(v1, v2: Single): Single; virtual;
   public
-    ScalarField: TGLScalarField;
+    ScalarField: TxScalarField;
     constructor Create; overload; virtual;
     constructor Create(SizeX, SizeY, SizeZ: Integer;
-      AIsoValue: TGLScalarValue = 0.0; xMin: Single = -0.5; xMax: Single = 0.5;
+      AIsoValue: TxScalarValue = 0.0; xMin: Single = -0.5; xMax: Single = 0.5;
       yMin: Single = -0.5; yMax: Single = 0.5; zMin: Single = -0.5;
       zMax: Single = 0.5); overload; virtual;
     procedure ReDim(ASizeX, ASizeY, ASizeZ: Integer;
       xMin, xMax, yMin, yMax, zMin, zMax: Single); virtual;
     destructor Destroy; override;
     procedure Run; overload;
-    procedure Run(IsoValue: TGLScalarValue); overload;
-    function Internal(AValue: TGLScalarValue): Boolean; virtual;
+    procedure Run(IsoValue: TxScalarValue); overload;
+    function Internal(AValue: TxScalarValue): Boolean; virtual;
     procedure FillVoxelData; overload; virtual;
-    procedure FillVoxelData(AIsoValue: TGLScalarValue;
-      AScalarField: TGLScalarField = nil); overload; virtual;
-    procedure FillVoxelData(AIsoValue: TGLScalarValue;
-      AScalarField: TGLScalarFieldInt); overload; virtual;
+    procedure FillVoxelData(AIsoValue: TxScalarValue;
+      AScalarField: TxScalarField = nil); overload; virtual;
+    procedure FillVoxelData(AIsoValue: TxScalarValue;
+      AScalarField: TxScalarFieldInt); overload; virtual;
     procedure CalcVertices(Vertices: TGLVertexList; Alpha: Single = 1);
     procedure CalcMeshObject(AMeshObject: TMeshObject; Alpha: Single = 1);
-    property IsoValue: TGLScalarValue read FIsoValue write FIsoValue;
+    property IsoValue: TxScalarValue read FIsoValue write FIsoValue;
     // TODO SetIsoValue to Run
   end;
 
@@ -170,26 +170,26 @@ type
   end;
 
 // Sphere surface
-function SFSphere(X, Y, Z: Single): TGLScalarValue;
+function SFSphere(X, Y, Z: Single): TxScalarValue;
 // Minkowski space (http://mathworld.wolfram.com)
-function SFMinkowski(X, Y, Z: Single): TGLScalarValue;
+function SFMinkowski(X, Y, Z: Single): TxScalarValue;
 // Klein Bottle (http://mathworld.wolfram.com)
-function SFKleinBottle(X, Y, Z: Single): TGLScalarValue;
+function SFKleinBottle(X, Y, Z: Single): TxScalarValue;
 // Chmutov-surface-1 (http://mathworld.wolfram.com)
-function SFChmutov1(X, Y, Z: Single): TGLScalarValue;
+function SFChmutov1(X, Y, Z: Single): TxScalarValue;
 // Chmutov-surface-2 (http://mathworld.wolfram.com)
-function SFChmutov2(X, Y, Z: Single): TGLScalarValue;
+function SFChmutov2(X, Y, Z: Single): TxScalarValue;
 // Toroidal surface (phantasy!)
-function SFToroidal(X, Y, Z: Single): TGLScalarValue;
+function SFToroidal(X, Y, Z: Single): TxScalarValue;
 // Double torus Surface (phantasy!)
-function SFDoubleTorus(X, Y, Z: Single): TGLScalarValue;
+function SFDoubleTorus(X, Y, Z: Single): TxScalarValue;
 
 const
   DemoScalarField: array [0 .. 6] of
   record
     // xMin, xMax, yMin, yMax, zMin, zMax:Single; // default -0.5..0.5
-    ScalarField: TGLScalarField;
-    IsoValue: TGLScalarValue
+    ScalarField: TxScalarField;
+    IsoValue: TxScalarValue
   end = ((ScalarField: SFSphere; IsoValue: 0.3), (ScalarField: SFMinkowski;
   IsoValue: 0.0), (ScalarField: SFKleinBottle; IsoValue: 0.0),
   (ScalarField: SFChmutov1; IsoValue: 3.0), (ScalarField: SFChmutov2;
@@ -529,12 +529,13 @@ const
 
 // Test surface functions
 //
-function SFSphere(X, Y, Z: Single): TGLScalarValue;
+
+function SFSphere(X, Y, Z: Single): TxScalarValue;
 begin
   Result := sqr(X) + sqr(Y) + sqr(Z)
 end;
 
-function SFToroidal(X, Y, Z: Single): TGLScalarValue;
+function SFToroidal(X, Y, Z: Single): TxScalarValue;
 const
   FScale = 7;
   a = 2.5;
@@ -547,7 +548,7 @@ begin
     (sqr(sqrt(sqr(Z) + sqr(X)) - a) + sqr(Y));
 end;
 
-function SFDoubleTorus(X, Y, Z: Single): TGLScalarValue;
+function SFDoubleTorus(X, Y, Z: Single): TxScalarValue;
 const
   FScale = 2.25;
 begin
@@ -559,7 +560,7 @@ begin
     PowerInteger(Y, 4) + sqr(Z)
 end;
 
-function SFChmutov1(X, Y, Z: Single): TGLScalarValue;
+function SFChmutov1(X, Y, Z: Single): TxScalarValue;
 const
   FScale = 2.5;
 begin
@@ -570,7 +571,7 @@ begin
     (PowerInteger(X, 4) + PowerInteger(Y, 4) + PowerInteger(Z, 4));
 end;
 
-function SFChmutov2(X, Y, Z: Single): TGLScalarValue;
+function SFChmutov2(X, Y, Z: Single): TxScalarValue;
 const
   FScale = 2.5;
 begin
@@ -581,7 +582,7 @@ begin
     sqr(Z) * sqr(3 - 4 * sqr(Z)));
 end;
 
-function SFKleinBottle(X, Y, Z: Single): TGLScalarValue;
+function SFKleinBottle(X, Y, Z: Single): TxScalarValue;
 const
   FScale = 7.5;
 begin
@@ -593,7 +594,7 @@ begin
     (sqr(X) + sqr(Y) + sqr(Z) - 2 * Y - 1);
 end;
 
-function SFMinkowski(X, Y, Z: Single): TGLScalarValue;
+function SFMinkowski(X, Y, Z: Single): TxScalarValue;
 const
   FScale = 7;
 begin
@@ -605,11 +606,11 @@ begin
     (sqr(X) - sqr(Y) - sqr(Z));
 end;
 
+  { -------------------------------------------------------------------------
+    Class IsoSurfaceExtractor
+    Purpose: Extract an Isosurface from volume dataset for given Isovalue
+    ------------------------------------------------------------------------- }
 
-{ ----------------------------------------------------------------------
-  Class IsoSurfaceExtractor
-  Purpose: Extract an Isosurface from volume dataset for given Isovalue
-  ------------------------------------------------------------------------- }
 function TIsoSurfaceExtractor.BuildIndex(var ADatavals: array of Single;
   Isovalue: Single): word;
 var
@@ -992,7 +993,7 @@ begin
       if (_Ntrigs >= _Strigs) then
       begin
         _Strigs := 2 * _Strigs;
-        ReallocMem(PTriangles, _Strigs * SizeOf(TGLTriangle));
+        ReallocMem(PTriangles, _Strigs * SizeOf(TxTriangle));
       end;
 
       with PTriangles^[_Ntrigs] do
@@ -1233,7 +1234,7 @@ begin
 end;
 
 constructor TGLMarchingCube.Create(SizeX, SizeY, SizeZ: Integer;
-  AIsoValue: TGLScalarValue = 0.0; xMin: Single = -0.5; xMax: Single = 0.5;
+  AIsoValue: TxScalarValue = 0.0; xMin: Single = -0.5; xMax: Single = 0.5;
   yMin: Single = -0.5; yMax: Single = 0.5; zMin: Single = -0.5;
   zMax: Single = 0.5);
 begin
@@ -1256,12 +1257,12 @@ begin
   inherited;
 end;
 
-function TGLMarchingCube.getVoxelValue(i, j, k: Integer): TGLScalarValue;
+function TGLMarchingCube.getVoxelValue(i, j, k: Integer): TxScalarValue;
 begin
   Result := VoxelData^[i + j * FSizeX + k * FSizeX * FSizeY].Density
 end;
 
-function TGLMarchingCube.getVoxelData(i, j, k: Integer): TGLVoxel;
+function TGLMarchingCube.getVoxelData(i, j, k: Integer): TxVoxel;
 begin
   Result := VoxelData^[i + j * FSizeX + k * FSizeX * FSizeY]
 end;
@@ -1328,13 +1329,13 @@ begin
   _Sverts := ALLOC_SIZE;
   _Strigs := ALLOC_SIZE;
 
-  GetMem(PVertices, _Sverts * SizeOf(TGLVertex));
-  GetMem(PTriangles, _Strigs * SizeOf(TGLTriangle));
+  GetMem(PVertices, _Sverts * SizeOf(TxVertex));
+  GetMem(PTriangles, _Strigs * SizeOf(TxTriangle));
 end;
 
 procedure TGLMarchingCube.Init_space;
 begin
-  VoxelData := AllocMem(FSizeX * FSizeY * FSizeZ * SizeOf(TGLVoxel));
+  VoxelData := AllocMem(FSizeX * FSizeY * FSizeZ * SizeOf(TxVoxel));
 end;
 
 procedure TGLMarchingCube.Init_temps;
@@ -1351,7 +1352,7 @@ begin
   FillChar(PVertsZ^, spaceSize * SizeOf(Integer), -1);
 end;
 
-function TGLMarchingCube.Internal(AValue: TGLScalarValue): Boolean;
+function TGLMarchingCube.Internal(AValue: TxScalarValue): Boolean;
 begin
   Result := AValue <= FIsoValue
 end;
@@ -1409,13 +1410,13 @@ begin
   clean_temps;
 end;
 
-procedure TGLMarchingCube.Run(IsoValue: TGLScalarValue);
+procedure TGLMarchingCube.Run(IsoValue: TxScalarValue);
 begin
   FIsoValue := IsoValue;
   Run
 end;
 
-procedure TGLMarchingCube.setVoxelValue(i, j, k: Integer; HfValue: TGLScalarValue);
+procedure TGLMarchingCube.setVoxelValue(i, j, k: Integer; HfValue: TxScalarValue);
 begin
   VoxelData^[i + j * FSizeX + k * FSizeX * FSizeY].Density := HfValue
 end;
@@ -1440,11 +1441,11 @@ begin
   if _Nverts >= _Sverts then
   begin
     _Sverts := 2 * _Sverts;
-    ReallocMem(PVertices, _Sverts * SizeOf(TGLVertex))
+    ReallocMem(PVertices, _Sverts * SizeOf(TxVertex))
   end;
 end;
 
-function TGLMarchingCube.voxel(i, j, k: Integer): PGLVoxel;
+function TGLMarchingCube.voxel(i, j, k: Integer): PxVoxel;
 begin
   if (k >= FSizeZ) or (j >= FSizeY) or (i >= FSizeX) then
     Result := nil
@@ -1478,8 +1479,7 @@ begin
   end;
 end;
 
-procedure TGLMarchingCube.FillVoxelData(AIsoValue: TGLScalarValue;
-  AScalarField: TGLScalarField = nil);
+procedure TGLMarchingCube.FillVoxelData(AIsoValue: TxScalarValue; AScalarField: TxScalarField = nil);
 begin
   FIsoValue := AIsoValue;
   if Assigned(AScalarField) then
@@ -1487,8 +1487,7 @@ begin
   FillVoxelData;
 end;
 
-procedure TGLMarchingCube.FillVoxelData(AIsoValue: TGLScalarValue;
-  AScalarField: TGLScalarFieldInt);
+procedure TGLMarchingCube.FillVoxelData(AIsoValue: TxScalarValue; AScalarField: TxScalarFieldInt);
 var
   iX, iY, iZ: Integer;
   X, Y, Z: Single;
@@ -1549,7 +1548,7 @@ var
     Result.V[3] := 0.3
   end;
 
-  function GetColor(H: TGLScalarValue): TVector;
+  function GetColor(H: TxScalarValue): TVector;
   begin
     Result := VectorMake(0.890, 0.855, 0.788, Alpha)
     { if H <= 10 then Result:= VectorMake(0.922, 0.957, 0.980, 1.000)  //<=10

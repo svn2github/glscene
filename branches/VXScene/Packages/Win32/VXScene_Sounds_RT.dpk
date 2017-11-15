@@ -31,7 +31,7 @@ package VXScene_Sounds_RT;
 
 requires
   rtl,
-  VXScene_RT;
+  VXScene_RunTime;
 
 contains
   Bass in '..\..\Source\SoundVideoAPIs\Bass.pas',
