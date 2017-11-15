@@ -319,15 +319,12 @@ type
   end;
 
 // -----------------------------------------------------------------------------
-// -----------------------------------------------------------------------------
-// -----------------------------------------------------------------------------
 implementation
+// -----------------------------------------------------------------------------
 // ----------
 // ---------- TSpriteAnimFrame ----------
 // ----------
 
-// DoChanged
-//
 
 procedure TSpriteAnimFrame.DoChanged;
 begin
@@ -340,23 +337,17 @@ begin
 end;
 
  
-//
-
 class function TSpriteAnimFrame.FriendlyName: string;
 begin
   Result := 'Frame';
 end;
 
-// FriendlyDescription
-//
 
 class function TSpriteAnimFrame.FriendlyDescription: string;
 begin
   Result := 'Sprite Animation Frame';
 end;
 
-// WriteToFiler
-//
 
 procedure TSpriteAnimFrame.WriteToFiler(writer: TWriter);
 begin
@@ -371,8 +362,6 @@ begin
   end;
 end;
 
-// ReadFromFiler
-//
 
 procedure TSpriteAnimFrame.ReadFromFiler(reader: TReader);
 var
@@ -390,8 +379,6 @@ begin
   end;
 end;
 
-// SetOffsetX
-//
 
 procedure TSpriteAnimFrame.SetOffsetX(const Value: Integer);
 begin
@@ -402,8 +389,6 @@ begin
   end;
 end;
 
-// SetOffsetY
-//
 
 procedure TSpriteAnimFrame.SetOffsetY(const Value: Integer);
 begin
@@ -414,8 +399,6 @@ begin
   end;
 end;
 
-// SetWidth
-//
 
 procedure TSpriteAnimFrame.SetWidth(const Value: Integer);
 begin
@@ -426,8 +409,6 @@ begin
   end;
 end;
 
-// SetHeight
-//
 
 procedure TSpriteAnimFrame.SetHeight(const Value: Integer);
 begin
@@ -442,16 +423,12 @@ end;
 // ---------- TSpriteAnimFrameList ----------
 // ----------
 
- 
-//
 
 constructor TSpriteAnimFrameList.Create(aOwner: TPersistent);
 begin
   inherited;
 end;
 
-// ItemsClass
-//
 
 class function TSpriteAnimFrameList.ItemsClass: TGLXCollectionItemClass;
 begin
@@ -462,8 +439,6 @@ end;
 // ---------- TSpriteAnimationMargins ----------
 // ----------
 
- 
-//
 
 constructor TSpriteAnimMargins.Create(Animation: TSpriteAnimation);
 begin
@@ -471,8 +446,6 @@ begin
   FOwner := Animation;
 end;
 
-// SetLeft
-//
 
 procedure TSpriteAnimMargins.SetLeft(const Value: Integer);
 begin
@@ -483,8 +456,6 @@ begin
   end;
 end;
 
-// SetTop
-//
 
 procedure TSpriteAnimMargins.SetTop(const Value: Integer);
 begin
@@ -495,8 +466,6 @@ begin
   end;
 end;
 
-// SetRight
-//
 
 procedure TSpriteAnimMargins.SetRight(const Value: Integer);
 begin
@@ -507,8 +476,6 @@ begin
   end;
 end;
 
-// SetBottom
-//
 
 procedure TSpriteAnimMargins.SetBottom(const Value: Integer);
 begin
@@ -519,8 +486,6 @@ begin
   end;
 end;
 
-// DoChanged
-//
 
 procedure TSpriteAnimMargins.DoChanged;
 begin
@@ -532,8 +497,6 @@ end;
 // ---------- TSpriteAnimation ----------
 // ----------
 
- 
-//
 
 constructor TSpriteAnimation.Create(aOwner: TGLXCollection);
 begin
@@ -542,8 +505,6 @@ begin
   FMargins := TSpriteAnimMargins.Create(Self);
 end;
 
- 
-//
 
 destructor TSpriteAnimation.Destroy;
 begin
@@ -552,8 +513,6 @@ begin
   inherited;
 end;
 
-// GetMaterialLibrary
-//
 
 function TSpriteAnimation.GetMaterialLibrary: TGLAbstractMaterialLibrary;
 begin
@@ -569,24 +528,18 @@ begin
   end;
 end;
 
- 
-//
 
 class function TSpriteAnimation.FriendlyName: string;
 begin
   Result := 'Animation';
 end;
 
-// FriendlyDescription
-//
 
 class function TSpriteAnimation.FriendlyDescription: string;
 begin
   Result := 'Sprite Animation';
 end;
 
-// WriteToFiler
-//
 
 procedure TSpriteAnimation.WriteToFiler(writer: TWriter);
 begin
@@ -615,8 +568,6 @@ begin
   end;
 end;
 
-// ReadFromFiler
-//
 
 procedure TSpriteAnimation.ReadFromFiler(reader: TReader);
 var
@@ -651,8 +602,6 @@ begin
   end;
 end;
 
-// DoChanged
-//
 
 procedure TSpriteAnimation.DoChanged;
 begin
@@ -664,8 +613,6 @@ begin
   end;
 end;
 
-// SetCurrentFrame
-//
 
 procedure TSpriteAnimation.SetCurrentFrame(const Value: Integer);
 begin
@@ -678,8 +625,6 @@ begin
   end;
 end;
 
-// SetFrameWidth
-//
 
 procedure TSpriteAnimation.SetFrameWidth(const Value: Integer);
 begin
@@ -690,8 +635,6 @@ begin
   end;
 end;
 
-// SetFrameHeight
-//
 
 procedure TSpriteAnimation.SetFrameHeight(const Value: Integer);
 begin
@@ -702,8 +645,6 @@ begin
   end;
 end;
 
-// SetDimensions
-//
 
 procedure TSpriteAnimation.SetDimensions(
   const Value: TSpriteFrameDimensions);
@@ -715,8 +656,6 @@ begin
   end;
 end;
 
-// SetLibMaterialName
-//
 
 procedure TSpriteAnimation.SetLibMaterialName(const val: TGLLibMaterialName);
 begin
@@ -727,8 +666,6 @@ begin
   end;
 end;
 
-// GetLibMaterialCached
-//
 
 function TSpriteAnimation.GetLibMaterialCached: TGLLibMaterial;
 begin
@@ -747,8 +684,6 @@ begin
   Result := FLibMaterialCached;
 end;
 
-// SetInterval
-//
 
 procedure TSpriteAnimation.SetInterval(const Value: Integer);
 begin
@@ -759,8 +694,6 @@ begin
   end;
 end;
 
-// SetFrameRate
-//
 
 procedure TSpriteAnimation.SetFrameRate(const Value: Single);
 begin
@@ -770,8 +703,6 @@ begin
     Interval := 0;
 end;
 
-// GetFrameRate
-//
 
 function TSpriteAnimation.GetFrameRate: Single;
 begin
@@ -785,16 +716,12 @@ end;
 // ---------- TSpriteAnimationList ----------
 // ----------
 
- 
-//
 
 constructor TSpriteAnimationList.Create(aOwner: TPersistent);
 begin
   inherited;
 end;
 
-// ItemsClass
-//
 
 class function TSpriteAnimationList.ItemsClass: TGLXCollectionItemClass;
 begin
@@ -805,8 +732,6 @@ end;
 // ---------- TGLAnimatedSprite ----------
 // ----------
 
- 
-//
 
 constructor TGLAnimatedSprite.Create(AOwner: TComponent);
 begin
@@ -823,8 +748,6 @@ begin
   ObjectStyle := [osDirectDraw];
 end;
 
- 
-//
 
 destructor TGLAnimatedSprite.Destroy;
 begin
@@ -833,8 +756,6 @@ begin
 end;
 
 {$WARNINGS Off}
-// BuildList
-//
 
 procedure TGLAnimatedSprite.BuildList(var rci: TGLRenderContextInfo);
 var
@@ -920,12 +841,12 @@ begin
         end;
 
         GL.GetFloatv(GL_MODELVIEW_MATRIX, @mat);
-        vx.X := mat.X.X;
-        vy.X := mat.X.Y;
-        vx.Y := mat.Y.X;
-        vy.Y := mat.Y.Y;
-        vx.Z := mat.Z.X;
-        vy.Z := mat.Z.Y;
+        vx.X := mat.V[0].X;
+        vy.X := mat.V[0].Y;
+        vx.Y := mat.V[1].X;
+        vy.Y := mat.V[1].Y;
+        vx.Z := mat.V[2].X;
+        vy.Z := mat.V[2].Y;
         ScaleVector(vx, w * VectorLength(vx));
         ScaleVector(vy, h * VectorLength(vy));
 
@@ -949,7 +870,7 @@ begin
         begin
           GL.MatrixMode(GL_MODELVIEW);
           GL.PushMatrix;
-          GL.Rotatef(FRotation, mat.X.Z, mat.Y.Z, mat.Z.Z);
+          GL.Rotatef(FRotation, mat.V[0].Z, mat.V[1].Z, mat.V[2].Z);
         end;
         GL.Begin_(GL_QUADS);
         GL.TexCoord2f(u1, v1);
@@ -976,8 +897,6 @@ begin
 end;
 {$WARNINGS On}
 
-// DoProgress
-//
 
 procedure TGLAnimatedSprite.DoProgress(const progressTime: TProgressTimes);
 var
@@ -1004,8 +923,6 @@ begin
   end;
 end;
 
-// Notification
-//
 
 procedure TGLAnimatedSprite.Notification(AComponent: TComponent; Operation:
   TOperation);
@@ -1015,8 +932,6 @@ begin
   inherited;
 end;
 
-// DefineProperties
-//
 
 procedure TGLAnimatedSprite.DefineProperties(Filer: TFiler);
 begin
@@ -1026,8 +941,6 @@ begin
     FAnimations.Count > 0);
 end;
 
-// WriteAnimations
-//
 
 procedure TGLAnimatedSprite.WriteAnimations(Stream: TStream);
 var
@@ -1041,8 +954,6 @@ begin
   end;
 end;
 
-// ReadAnimations
-//
 
 procedure TGLAnimatedSprite.ReadAnimations(Stream: TStream);
 var
@@ -1056,8 +967,6 @@ begin
   end;
 end;
 
-// NextFrame
-//
 
 procedure TGLAnimatedSprite.NextFrame;
 var
@@ -1138,8 +1047,6 @@ begin
   Anim.CurrentFrame := currentFrame;
 end;
 
-// SetInterval
-//
 
 procedure TGLAnimatedSprite.SetInterval(const val: Integer);
 begin
@@ -1150,8 +1057,6 @@ begin
   end;
 end;
 
-// SetFrameRate
-//
 
 procedure TGLAnimatedSprite.SetFrameRate(const Value: Single);
 begin
@@ -1161,8 +1066,6 @@ begin
     Interval := 0;
 end;
 
-// GetFrameRate
-//
 
 function TGLAnimatedSprite.GetFrameRate: Single;
 begin
@@ -1172,8 +1075,6 @@ begin
     Result := 0;
 end;
 
-// SetAnimationIndex
-//
 
 procedure TGLAnimatedSprite.SetAnimationIndex(const val: Integer);
 begin
@@ -1194,8 +1095,6 @@ begin
   end;
 end;
 
-// SetAnimationMode
-//
 
 procedure TGLAnimatedSprite.SetAnimationMode(const val: TSpriteAnimationMode);
 begin
@@ -1206,8 +1105,6 @@ begin
   end;
 end;
 
-// SetMaterialLibrary
-//
 
 procedure TGLAnimatedSprite.SetMaterialLibrary(const val: TGLMaterialLibrary);
 var
@@ -1226,8 +1123,6 @@ begin
   end;
 end;
 
-// SetPixelRatio
-//
 
 procedure TGLAnimatedSprite.SetPixelRatio(const val: Integer);
 begin
@@ -1238,8 +1133,6 @@ begin
   end;
 end;
 
-// SetRotation
-//
 
 procedure TGLAnimatedSprite.SetRotation(const val: Integer);
 begin
@@ -1250,8 +1143,6 @@ begin
   end;
 end;
 
-// SetMirrorU
-//
 
 procedure TGLAnimatedSprite.SetMirrorU(const val: Boolean);
 begin
@@ -1262,8 +1153,6 @@ begin
   end;
 end;
 
-// SetMirrorV
-//
 
 procedure TGLAnimatedSprite.SetMirrorV(const val: Boolean);
 begin
@@ -1275,12 +1164,8 @@ begin
 end;
 
 // -----------------------------------------------------------------------------
-// -----------------------------------------------------------------------------
-// -----------------------------------------------------------------------------
 initialization
-  // -----------------------------------------------------------------------------
-  // -----------------------------------------------------------------------------
-  // -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
   RegisterClasses([TGLAnimatedSprite,
     TSpriteAnimFrame, TSpriteAnimFrameList,

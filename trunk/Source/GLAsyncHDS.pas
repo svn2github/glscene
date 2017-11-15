@@ -30,16 +30,15 @@ uses
   System.Classes, 
   System.SysUtils,
    
-  GLHeightData, GLCrossPlatform;
+  GLHeightData, 
+  GLCrossPlatform;
 
 type
   TGLAsyncHDS = class;
   TIdleEvent = procedure(Sender:TGLAsyncHDS;TilesUpdated:boolean) of object;
   TNewTilePreparedEvent = procedure (Sender : TGLAsyncHDS; heightData : TGLHeightData) of object; //a tile was updated (called INSIDE the sub-thread?)
 
-  // TUseDirtyTiles
-  //
-  { TUseDirtyTiles determines if/how dirty tiles are displayed and when they are released.
+  (* TUseDirtyTiles determines if/how dirty tiles are displayed and when they are released.
      
       TUseDirtyTiles
       
@@ -52,23 +51,18 @@ type
        hdsUntilReplaced :    Dirty tiles are used, until the HDThread has finished preparing the queued replacement.
        hdsUntilAllReplaced : Waits until the HDSThread has finished preparing ALL queued tiles,
                              before allowing the renderer to switch over to the new set of tiles.
-                             (This prevents a fading checkerbox effect.)
-       }
+                             (This prevents a fading checkerbox effect.) *)
   TUseDirtyTiles=(dtNever,dtUntilReplaced,dtUntilAllReplaced);
 
 
 	 TGLAsyncHDS = class (TGLHeightDataSourceFilter)
-	   private
-	       
+     private
        FOnIdleEvent :TIdleEvent;
        FOnNewTilePrepared : TNewTilePreparedEvent;
        FUseDirtyTiles:TUseDirtyTiles;
        FTilesUpdated:boolean;
-	   protected
-	      
     public
       //TilesUpdated:boolean;
-	      
       constructor Create(AOwner: TComponent); override;
       destructor Destroy; override;
       procedure BeforePreparingData(heightData : TGLHeightData); override;
@@ -76,12 +70,16 @@ type
       procedure ThreadIsIdle; override;
       procedure NewTilePrepared(heightData:TGLHeightData);
       function  ThreadCount:integer;
+	  (*  Wait for all running threads to finish.
+          Should only be called after setting Active to false,
+          to prevent new threads from starting. *)
       procedure WaitFor(TimeOut:integer=2000);
       //procedure NotifyChange(Sender : TObject); override;
+      (* This function prevents the user from trying to write directly to this variable.
+        FTilesUpdated if NOT threadsafe and should only be reset with TilesUpdatedFlagReset. *)
       function  TilesUpdated:boolean;        //Returns true if tiles have been updated since the flag was last reset
       procedure TilesUpdatedFlagReset;       //sets the TilesUpdatedFlag to false; (is ThreadSafe)
-	   published
-	      
+    published
       property OnIdle : TIdleEvent read FOnIdleEvent write FOnIdleEvent;
       property OnNewTilePrepared : TNewTilePreparedEvent read FOnNewTilePrepared write FOnNewTilePrepared;
       property UseDirtyTiles :TUseDirtyTiles read FUseDirtyTiles write FUseDirtyTiles;
@@ -99,18 +97,13 @@ type
 
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
+
 // ------------------
 // ------------------ TGLAsyncHDS ------------------
 // ------------------
 
- 
-//
 constructor TGLAsyncHDS.Create(AOwner: TComponent);
 begin
 	 inherited Create(AOwner);
@@ -119,15 +112,11 @@ begin
   FTilesUpdated:=true;
 end;
 
- 
-//
 destructor TGLAsyncHDS.Destroy;
 begin
 	inherited Destroy;
 end;
 
-// BeforePreparingData
-//
 procedure TGLAsyncHDS.BeforePreparingData(heightData : TGLHeightData);
 begin
   if FUseDirtyTiles=dtNever then begin
@@ -139,8 +128,6 @@ begin
   if assigned(HeightDataSource) then HeightDataSource.BeforePreparingData(heightData);
 end;
 
-// StartPreparingData
-//
 procedure TGLAsyncHDS.StartPreparingData(heightData : TGLHeightData);
 var HDThread : TGLAsyncHDThread;
     HDS:TGLHeightDataSource;
@@ -172,8 +159,6 @@ begin
 end;
 
 
-//OnIdle event
-//
 procedure TGLAsyncHDS.ThreadIsIdle;
 var i:integer;
     lst:TList;
@@ -203,8 +188,6 @@ begin
   //--------------------------------------------
 end;
 
-//OnNewTilePrepared event
-//
 procedure TGLAsyncHDS.NewTilePrepared(heightData:TGLHeightData);
 var HD:TGLHeightData;
 begin
@@ -227,9 +210,6 @@ begin
   end;
 end;
 
-//ThreadCount
-//  Count the active threads
-//
 function TGLAsyncHDS.ThreadCount:integer;
 var lst: Tlist;
     i,TdCtr:integer;
@@ -246,14 +226,10 @@ begin
   result:=TdCtr;
 end;
 
-//WaitFor
-//  Wait for all running threads to finish.
-//  Should only be called after setting Active to false,
-//  to prevent new threads from starting.
 procedure TGLAsyncHDS.WaitFor(TimeOut:Integer=2000);
 var OutTime:TDateTime;
 begin
-  Assert(self.active=false);
+  Assert(not self.active);
   OutTime:=now+TimeOut;
   While ((now<OutTime)and(ThreadCount>0)) do begin
     sleep(0);
@@ -268,8 +244,6 @@ begin
 end;
 }
 
-// This function prevents the user from trying to write directly to this variable.
-// FTilesUpdated if NOT threadsafe and should only be reset with TilesUpdatedFlagReset.
 function TGLAsyncHDS.TilesUpdated:boolean;
 begin
   result:=FTilesUpdated;

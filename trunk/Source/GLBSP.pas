@@ -38,72 +38,48 @@ type
     radius: Single;
   end;
 
-  // TBSPRenderContextInfo
-  //
   TBSPRenderContextInfo = record
-    // : Local coordinates of the camera (can be a vector or point)
+    // Local coordinates of the camera (can be a vector or point)
     cameraLocal: TVector;
     rci: PRenderContextInfo;
     faceGroups: TList;
     cullingSpheres: array of TBSPCullingSphere;
   end;
 
-  // TBSPRenderSort
-  //
   TBSPRenderSort = (rsNone, rsBackToFront, rsFrontToBack);
 
-  // TBSPNodeVisibility
-  //
   TBSPClusterVisibility = class
   private
-     
     FData: PByteArray;
     FSize, FBytesPerCluster, FCount: Integer;
-
   protected
-    
     procedure SetCount(NumClusters: Integer);
     function GetVisibility(Source, Destination: Integer): Boolean;
     procedure SetVisibility(Source, Destination: Integer; const Value: Boolean);
-
   public
-    
     constructor Create;
     destructor Destroy; override;
-
     procedure SetData(Source: PByte; NumClusters: Integer);
-
     property Count: Integer read FCount write SetCount;
     property Visibility[src, dst: Integer]: Boolean read GetVisibility
       write SetVisibility;
-
   end;
 
   TFGBSPNode = class;
 
-  // TBSPMeshObject
-  //
-  { A BSP mesh object. 
+  (* A BSP mesh object. 
     Stores the geometry information, BSP rendering options and offers some
     basic BSP utility methods. Geometry information is indexed in the facegroups,
-    the 1st facegroup (of index 0) being the root node of the BSP tree. }
+    the 1st facegroup (of index 0) being the root node of the BSP tree. *)
   TBSPMeshObject = class(TMeshObject)
   private
-     
     FRenderSort: TBSPRenderSort;
     FClusterVisibility: TBSPClusterVisibility;
     FUseClusterVisibility: Boolean;
-
-  protected
-    
-
   public
-    
     constructor CreateOwned(AOwner: TGLMeshObjectList);
     destructor Destroy; override;
-
     procedure BuildList(var mrci: TGLRenderContextInfo); override;
-
     {  Drops all unused nodes from the facegroups list. 
       An unused node is a node that renders nothing and whose children
       render nothing. Indices are remapped in the process. }
@@ -113,21 +89,17 @@ type
       divides by the number of end nodes. This is a simple estimator
       of tree balancing (structurally speaking, not polygon-wise). }
     function AverageDepth: Single;
-
     {  Traverses the tree to the given point and returns the node index. }
     function FindNodeByPoint(const aPoint: TVector): TFGBSPNode;
-
     {  Rendering sort mode. 
       This sort mode can currently *not* blend with the sort by materials
       flag, default mode is rsBackToFront.
       Note that in rsNone mode, the hierarchical nature of the tree is
       still honoured (positive subnode, self, then negative subnode). }
     property RenderSort: TBSPRenderSort read FRenderSort write FRenderSort;
-
     {  Cluster visibility. 
       A property for defining node cluster-cluster visibility potential. }
     property ClusterVisibility: TBSPClusterVisibility read FClusterVisibility;
-
     {  Use cluster visibility. 
       Toggles the use of the visibility set for culling clusters of nodes
       when rendering. }
@@ -135,35 +107,26 @@ type
       write FUseClusterVisibility;
   end;
 
-  // TFGBSPNode
-  //
-  {  A node in the BSP tree. 
+  (*  A node in the BSP tree. 
     The description does not explicitly differentiates nodes and leafs,
-    nodes are referred by their index. }
+    nodes are referred by their index. *)
   TFGBSPNode = class(TFGVertexIndexList)
   private
-     
     FSplitPlane: THmgPlane;
     FPositiveSubNodeIndex: Integer;
     FNegativeSubNodeIndex: Integer;
     FCluster: Integer;
-
   protected
-    
     function AddLerp(iA, iB: Integer; fB, fA: Single): Integer;
     function AddLerpIfDistinct(iA, iB, iMid: Integer): Integer;
-
   public
-    
     constructor CreateOwned(AOwner: TGLFaceGroups); override;
     destructor Destroy; override;
-
     procedure IsCulled(const bsprci: TBSPRenderContextInfo;
       var positive, negative: Boolean);
     procedure CollectNoSort(var bsprci: TBSPRenderContextInfo);
     procedure CollectFrontToBack(var bsprci: TBSPRenderContextInfo);
     procedure CollectBackToFront(var bsprci: TBSPRenderContextInfo);
-
     {  Try to find a 'decent' split plane for the node. 
       Use this function to build a BSP tree, on leafy nodes. The split
       plane is chosen among the polygon planes, the coefficient are used
@@ -204,13 +167,8 @@ type
     property Cluster: Integer read FCluster write FCluster;
   end;
 
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
 implementation
-
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 const
@@ -221,15 +179,11 @@ const
   // ------------------ TBSPClusterVisibility ------------------
   // ------------------
 
-   
-  //
 constructor TBSPClusterVisibility.Create;
 begin
   inherited;
 end;
 
- 
-//
 destructor TBSPClusterVisibility.Destroy;
 begin
   if Assigned(FData) then
@@ -237,8 +191,6 @@ begin
   inherited;
 end;
 
-// SetCount
-//
 procedure TBSPClusterVisibility.SetCount(NumClusters: Integer);
 var
   NewSize: Integer;
@@ -273,8 +225,6 @@ begin
   end;
 end;
 
-// GetVisibility
-//
 function TBSPClusterVisibility.GetVisibility(Source,
   Destination: Integer): Boolean;
 var
@@ -287,8 +237,6 @@ begin
   Result := (FData^[ByteIdx] and (1 shl BitIdx)) > 0;
 end;
 
-// SetVisibility
-//
 procedure TBSPClusterVisibility.SetVisibility(Source, Destination: Integer;
   const Value: Boolean);
 var
@@ -315,8 +263,6 @@ end;
 // ------------------ TBSPMeshObject ------------------
 // ------------------
 
-// CreateOwned
-//
 constructor TBSPMeshObject.CreateOwned(AOwner: TGLMeshObjectList);
 begin
   inherited;
@@ -326,16 +272,12 @@ begin
   FUseClusterVisibility := False;
 end;
 
- 
-//
 destructor TBSPMeshObject.Destroy;
 begin
   FClusterVisibility.Free;
   inherited;
 end;
 
-// BuildList
-//
 procedure TBSPMeshObject.BuildList(var mrci: TGLRenderContextInfo);
 var
   i, j, k, n, camCluster: Integer;
@@ -449,8 +391,6 @@ begin
   DisableOpenGLArrays(mrci);
 end;
 
-// CleanupUnusedNodes
-//
 procedure TBSPMeshObject.CleanupUnusedNodes;
 var
   i, j, n: Integer;
@@ -533,8 +473,6 @@ begin
   end;
 end;
 
-// AverageDepth
-//
 function TBSPMeshObject.AverageDepth: Single;
 var
   depthSum, endNodesCount: Integer;
@@ -618,8 +556,6 @@ end;
 // ------------------ TFGBSPNode ------------------
 // ------------------
 
-// CreateOwned
-//
 constructor TFGBSPNode.CreateOwned(AOwner: TGLFaceGroups);
 begin
   inherited;
@@ -627,15 +563,11 @@ begin
   FNegativeSubNodeIndex := 0;
 end;
 
- 
-//
 destructor TFGBSPNode.Destroy;
 begin
   inherited;
 end;
 
-// IsCulled
-//
 procedure TFGBSPNode.IsCulled(const bsprci: TBSPRenderContextInfo;
   var positive, negative: Boolean);
 var
@@ -664,8 +596,6 @@ begin
   end;
 end;
 
-// CollectNoSort
-//
 procedure TFGBSPNode.CollectNoSort(var bsprci: TBSPRenderContextInfo);
 begin
   if (PositiveSubNodeIndex > 0) then
@@ -676,8 +606,6 @@ begin
     TFGBSPNode(Owner[NegativeSubNodeIndex]).CollectNoSort(bsprci);
 end;
 
-// CollectFrontToBack
-//
 procedure TFGBSPNode.CollectFrontToBack(var bsprci: TBSPRenderContextInfo);
 begin
   if PlaneEvaluatePoint(splitPlane, bsprci.cameraLocal) >= 0 then
@@ -700,8 +628,6 @@ begin
   end;
 end;
 
-// CollectBackToFront
-//
 procedure TFGBSPNode.CollectBackToFront(var bsprci: TBSPRenderContextInfo);
 begin
   if PlaneEvaluatePoint(splitPlane, bsprci.cameraLocal) >= 0 then
@@ -724,8 +650,6 @@ begin
   end;
 end;
 
-// FindSplitPlane
-//
 function TFGBSPNode.FindSplitPlane(triangleSplitCost: Single = 1;
   triangleImbalanceCost: Single = 0.5): THmgPlane;
 var
@@ -772,8 +696,6 @@ begin
     end;
 end;
 
-// EvaluateSplitPlane
-//
 procedure TFGBSPNode.EvaluateSplitPlane(const splitPlane: THmgPlane;
   var nbTriangleSplit: Integer; var nbPositiveTriangles: Integer;
   var nbNegativeTriangles: Integer);
@@ -828,8 +750,6 @@ begin
   end;
 end;
 
-// AddLerp
-//
 function TFGBSPNode.AddLerp(iA, iB: Integer; fB, fA: Single): Integer;
 begin
   with Owner.Owner do
@@ -851,8 +771,6 @@ begin
   end;
 end;
 
-// AddLerp
-//
 function TFGBSPNode.AddLerpIfDistinct(iA, iB, iMid: Integer): Integer;
 var
   midNormal: TAffineVector;
@@ -917,8 +835,6 @@ begin
   end;
 end;
 
-// PerformSplit
-//
 procedure TFGBSPNode.PerformSplit(const splitPlane: THmgPlane;
   const maxTrianglesPerLeaf: Integer = MaxInt);
 var
@@ -1131,8 +1047,6 @@ begin
   end;
 end;
 
-// FixTJunctions
-//
 procedure TFGBSPNode.FixTJunctions(const tJunctionsCandidates: TIntegerList);
 
   function FindTJunction(iA, iB, iC: Integer;
@@ -1156,10 +1070,10 @@ procedure TFGBSPNode.FixTJunctions(const tJunctionsCandidates: TIntegerList);
     // compute extent and its inversion
     vector := VectorSubtract(vB^, vA^);
     for i := 0 to 2 do
-      if vector.V[i] <> 0 then
-        invVector.V[i] := 1 / vector.V[i]
+      if vector.C[i] <> 0 then
+        invVector.C[i] := 1 / vector.C[i]
       else
-        invVector.V[i] := 0;
+        invVector.C[i] := 0;
     // lookup all candidates
     for i := 0 to candidatesList.Count - 1 do
     begin
@@ -1248,12 +1162,7 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 // class registrations

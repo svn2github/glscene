@@ -23,6 +23,7 @@ uses
   Vcl.Graphics,
 
   OpenGLTokens,
+  GLVectorTypes,
   GLRenderContextInfo,
   GLBaseClasses,
   GLContext,

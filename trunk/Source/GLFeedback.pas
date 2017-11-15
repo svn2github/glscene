@@ -30,6 +30,7 @@ uses
   OpenGLTokens,
   GLVectorGeometry,
   GLPersistentClasses,
+  GLPipelineTransformation,
   GLVectorLists,
   GLScene,
   GLVectorFileObjects,

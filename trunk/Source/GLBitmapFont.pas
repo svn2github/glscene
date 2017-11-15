@@ -33,7 +33,8 @@ uses
   GLRenderContextInfo,
   GLTextureFormat,
   XOpenGL,
-  GLVectorTypes;
+  GLVectorTypes,
+  GLPersistentClasses;
 
 type
 

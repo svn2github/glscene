@@ -20,6 +20,7 @@ uses
   System.StrUtils,
 
   GLVectorTypes,
+  GLPersistentClasses,
   GLVectorGeometry,
   GLVectorLists,
   GLVectorFileObjects,

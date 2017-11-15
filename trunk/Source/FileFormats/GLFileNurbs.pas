@@ -18,6 +18,7 @@ uses
   System.Classes,
   System.SysUtils,
 
+  GLVectorTypes,
   GLVectorFileObjects,
   GLVectorGeometry,
   GLVectorLists,

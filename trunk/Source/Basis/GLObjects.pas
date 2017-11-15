@@ -25,6 +25,8 @@ uses
   System.Classes,
   System.SysUtils,
   System.Math,
+
+  GLPersistentClasses,
   GLVectorGeometry,
   GLVectorTypes,
   GLScene,

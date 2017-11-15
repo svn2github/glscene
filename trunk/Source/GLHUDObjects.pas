@@ -19,6 +19,7 @@ uses
   System.Classes,
 
   GLScene,
+  GLPersistentClasses,
   GLVectorGeometry,
   GLObjects,
   GLBitmapFont,
@@ -28,15 +29,13 @@ uses
 
 type
 
-  // TGLHUDSprite
-  //
-  {  A rectangular area, NOT perspective projected. 
+  (*  A rectangular area, NOT perspective projected.
     (x, y) coordinates map directly to the viewport (in pixels) and refer
     the center of the area.
     The coordinate system is that of an equivalent TCanvas, ie. top-left
-    point is the origin (0, 0). 
-    The z component is ignored and Z-Buffer is disabled when rendering. 
-     Using TGLHUDSprite in 2D only scenes : 
+    point is the origin (0, 0).
+    The z component is ignored and Z-Buffer is disabled when rendering.
+     Using TGLHUDSprite in 2D only scenes :
     The most convenient way to use a TGLHUDSprite as a simple 2D sprite with
     blending capabilities (transparency or additive), is to set the texture
     mode to tmModulate, in FrontProperties, to use the Emission color to
@@ -44,29 +43,22 @@ type
     to control transparency (while setting the other RGB components to 0).
     You can also control aplha-blending by defining a <1 value in the sprite's
     AlphaChannel field. This provides you with hardware accelerated,
-    alpha-blended blitting. 
+    alpha-blended blitting.
     Note : since TGLHUDSprite works in absolute coordinates, TGLProxyObject
-    can't be used to duplicate an hud sprite. }
+    can't be used to duplicate an hud sprite. *)
   TGLHUDSprite = class(TGLSprite)
   private
-     
     FXTiles, FYTiles: Integer;
     function StoreWidth: Boolean;
     function StoreHeight: Boolean;
   protected
-    
     procedure SetXTiles(const val: Integer);
     procedure SetYTiles(const val: Integer);
-
   public
-    
     constructor Create(AOwner: TComponent); override;
-
     procedure DoRender(var rci: TGLRenderContextInfo;
       renderSelf, renderChildren: Boolean); override;
-
   published
-    
     property XTiles: Integer read FXTiles write SetXTiles default 1;
     property YTiles: Integer read FYTiles write SetYTiles default 1;
     // Redeclare them with new default values.
@@ -74,62 +66,51 @@ type
     property Height stored StoreHeight;
   end;
 
-  // TGLHUDText
-  //
-  {  A 2D text displayed and positionned in 2D coordinates. 
+  {  A 2D text displayed and positionned in 2D coordinates.
     The HUDText uses a character font defined and stored by a TGLBitmapFont
     component. The text can be scaled and rotated (2D), the layout and
     alignment can also be controled. }
   TGLHUDText = class(TGLImmaterialSceneObject)
   private
-     
     FBitmapFont: TGLCustomBitmapFont;
     FText: UnicodeString;
     FRotation: Single;
     FAlignment: TAlignment;
     FLayout: TGLTextLayout;
     FModulateColor: TGLColor;
-
   protected
-    
     procedure SetBitmapFont(const val: TGLCustomBitmapFont);
     procedure SetText(const val: UnicodeString);
     procedure SetRotation(const val: Single);
     procedure SetAlignment(const val: TAlignment);
     procedure SetLayout(const val: TGLTextLayout);
     procedure SetModulateColor(const val: TGLColor);
-
     procedure Notification(AComponent: TComponent;
       Operation: TOperation); override;
     procedure RenderTextAtPosition(const X, Y, Z: Single;
       var rci: TGLRenderContextInfo);
-
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
     procedure DoRender(var rci: TGLRenderContextInfo;
       renderSelf, renderChildren: Boolean); override;
-
   published
-    
-    {  Refers the bitmap font to use. 
+    {  Refers the bitmap font to use.
       The referred bitmap font component stores and allows access to
       individual character bitmaps. }
     property BitmapFont: TGLCustomBitmapFont read FBitmapFont
       write SetBitmapFont;
-    {  Text to render. 
+    {  Text to render.
       Be aware that only the characters available in the bitmap font will
       be rendered. CR LF sequences are allowed. }
     property Text: UnicodeString read FText write SetText;
     {  Rotation angle in degrees (2d). }
     property Rotation: Single read FRotation write SetRotation;
-    {  Controls the text alignment (horizontal). 
+    {  Controls the text alignment (horizontal).
       Possible values : taLeftJustify, taRightJustify, taCenter }
     property Alignment: TAlignment read FAlignment write SetAlignment
       default taLeftJustify;
-    {  Controls the text layout (vertical). 
+    {  Controls the text layout (vertical).
       Possible values : tlTop, tlCenter, tlBottom }
     property Layout: TGLTextLayout read FLayout write SetLayout default tlTop;
     {  Color modulation, can be used for fade in/out too. }
@@ -156,13 +137,8 @@ type
     constructor Create(AOwner: TComponent); override;
   end;
 
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
 implementation
-
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 uses
@@ -175,8 +151,6 @@ uses
 // ------------------ TGLHUDSprite ------------------
 // ------------------
 
- 
-//
 
 constructor TGLHUDSprite.Create(AOwner: TComponent);
 begin
@@ -188,9 +162,6 @@ begin
   FYTiles := 1;
 end;
 
-// SetXTiles
-//
-
 procedure TGLHUDSprite.SetXTiles(const val: Integer);
 begin
   if val <> FXTiles then
@@ -200,9 +171,6 @@ begin
   end;
 end;
 
-// SetYTiles
-//
-
 procedure TGLHUDSprite.SetYTiles(const val: Integer);
 begin
   if val <> FYTiles then
@@ -211,9 +179,6 @@ begin
     StructureChanged;
   end;
 end;
-
-// DoRender
-//
 
 procedure TGLHUDSprite.DoRender(var rci: TGLRenderContextInfo;
   renderSelf, renderChildren: Boolean);
@@ -303,16 +268,11 @@ begin
     Self.renderChildren(0, Count - 1, rci);
 end;
 
-// StoreHeight
-//
-
 function TGLHUDSprite.StoreHeight: Boolean;
 begin
   Result := Abs(Height - 16) > 0.001;
 end;
 
-// StoreWidth
-//
 
 function TGLHUDSprite.StoreWidth: Boolean;
 begin
@@ -323,9 +283,6 @@ end;
 // ------------------ TGLHUDText ------------------
 // ------------------
 
- 
-//
-
 constructor TGLHUDText.Create(AOwner: TComponent);
 begin
   inherited;
@@ -333,8 +290,6 @@ begin
   FModulateColor := TGLColor.CreateInitialized(Self, clrWhite);
 end;
 
- 
-//
 
 destructor TGLHUDText.Destroy;
 begin
@@ -343,9 +298,6 @@ begin
   inherited;
 end;
 
-// Notification
-//
-
 procedure TGLHUDText.Notification(AComponent: TComponent;
   Operation: TOperation);
 begin
@@ -353,9 +305,6 @@ begin
     BitmapFont := nil;
   inherited;
 end;
-
-// SetBitmapFont
-//
 
 procedure TGLHUDText.SetBitmapFont(const val: TGLCustomBitmapFont);
 begin
@@ -373,17 +322,11 @@ begin
   end;
 end;
 
-// SetText
-//
-
 procedure TGLHUDText.SetText(const val: UnicodeString);
 begin
   FText := val;
   StructureChanged;
 end;
-
-// SetRotation
-//
 
 procedure TGLHUDText.SetRotation(const val: Single);
 begin
@@ -391,17 +334,11 @@ begin
   StructureChanged;
 end;
 
-// SetAlignment
-//
-
 procedure TGLHUDText.SetAlignment(const val: TAlignment);
 begin
   FAlignment := val;
   StructureChanged;
 end;
-
-// SetLayout
-//
 
 procedure TGLHUDText.SetLayout(const val: TGLTextLayout);
 begin
@@ -409,16 +346,10 @@ begin
   StructureChanged;
 end;
 
-// SetModulateColor
-//
-
 procedure TGLHUDText.SetModulateColor(const val: TGLColor);
 begin
   FModulateColor.Assign(val);
 end;
-
-// RenderTextAtPosition
-//
 
 procedure TGLHUDText.RenderTextAtPosition(const X, Y, Z: Single;
   var rci: TGLRenderContextInfo);
@@ -454,9 +385,6 @@ begin
   end;
 end;
 
-// DoRender
-//
-
 procedure TGLHUDText.DoRender(var rci: TGLRenderContextInfo;
   renderSelf, renderChildren: Boolean);
 begin
@@ -469,18 +397,12 @@ end;
 // ------------------ TGLResolutionIndependantHUDText ------------------
 // ------------------
 
- 
-//
-
 constructor TGLResolutionIndependantHUDText.Create(AOwner: TComponent);
 begin
   inherited;
   Position.X := 0.5;
   Position.Y := 0.5;
 end;
-
-// DoRender
-//
 
 procedure TGLResolutionIndependantHUDText.DoRender(var rci: TGLRenderContextInfo;
   renderSelf, renderChildren: Boolean);
@@ -495,9 +417,6 @@ end;
 // ------------------ TGLAbsoluteHUDText ------------------
 // ------------------
 
-// DoRender
-//
-
 procedure TGLAbsoluteHUDText.DoRender(var rci: TGLRenderContextInfo;
   renderSelf, renderChildren: Boolean);
 var
@@ -511,12 +430,7 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 // class registrations

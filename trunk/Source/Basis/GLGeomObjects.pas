@@ -20,6 +20,7 @@ uses
   OpenGLTokens,
   OpenGLAdapter,
   GLScene,
+  GLPersistentClasses,
   GLVectorGeometry,
   GLContext,
   GLObjects,

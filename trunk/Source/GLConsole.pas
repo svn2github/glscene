@@ -51,6 +51,7 @@ uses
   Vcl.Graphics,
 
   GLScene,
+  GLCoordinates,
   GLObjects,
   GLHUDObjects,
   GLWin32Viewer,

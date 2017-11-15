@@ -35,6 +35,7 @@ type
     case Integer of
       0 : (V: array[0..1] of Single);
       1 : (X,Y: Single);
+      2 : (C: array[0..1] of Single);
   end;
   TVector2h = record
     case Integer of
@@ -92,6 +93,7 @@ type
     case Integer of
       0 : (V: array[0..2] of Single);
       1 : (X,Y,Z: Single);
+      2 : (C: array[0..2] of Single);
   end;
   TVector3h = record
     case Integer of
@@ -149,6 +151,7 @@ type
     case Integer of
       0 : (V: array[0..3] of Single);
       1 : (X,Y,Z,W: Single);
+      2 : (C: array[0..3] of Single);
   end;
   TVector4h = record
     case Integer of

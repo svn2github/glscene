@@ -29,7 +29,8 @@ interface
 uses
   System.Classes,
   
-  GLScene, 
+  GLScene,
+  GLPersistentClasses,
   GLVectorTypes, 
   GLNavigator, 
   GLVectorGeometry,

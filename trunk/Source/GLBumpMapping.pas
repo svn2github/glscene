@@ -43,8 +43,6 @@ function CreateTangentSpaceNormalMap(Width, Height : Integer;
 
 implementation
 
-// CalcObjectSpaceLightVectors
-//
 procedure CalcObjectSpaceLightVectors(Light : TAffineVector;
                                       Vertices: TAffineVectorList;
                                       Colors: TVectorList);
@@ -59,8 +57,6 @@ begin
   end;
 end;
 
-// SetupTangentSpace
-//
 procedure SetupTangentSpace(Vertices, Normals, TexCoords,
                             Tangents, BiNormals : TAffineVectorList);
 var
@@ -133,8 +129,6 @@ begin
   end;
 end;
 
-// CalcTangentSpaceLightVectors
-//
 procedure CalcTangentSpaceLightVectors(Light : TAffineVector;
                                        Vertices, Normals,
                                        Tangents, BiNormals : TAffineVectorList;
@@ -346,8 +340,6 @@ begin
   NormalMap.Free;
 end;
 
-// CreateTangentSpaceNormalMap
-//
 function CreateTangentSpaceNormalMap(Width, Height : Integer;
                                      HiNormals, HiTexCoords,
                                      LoNormals, LoTexCoords,

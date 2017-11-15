@@ -22,6 +22,7 @@ uses
   System.SyncObjs,
   
   OpenGLTokens,
+  GLCoordinates,
   GLHeightData,
   GLGraphics,
   GLVectorGeometry,
@@ -33,19 +34,14 @@ uses
 type
   TGLBumpmapHDS = class;
 
-  // TNewTilePreparedEvent
-  //
   TNewTilePreparedEvent = procedure(Sender: TGLBumpmapHDS;
     heightData: TGLHeightData; normalMapMaterial: TGLLibMaterial) of object;
 
-  // TGLBumpmapHDS
-  //
   {  An Height Data Source that generates elevation bumpmaps automatically. 
     The HDS must be connected to another HDS, which will provide the elevation
     data, and to a MaterialLibrary where bumpmaps will be placed. }
   TGLBumpmapHDS = class(TGLHeightDataSourceFilter)
   private
-     
     // FElevationHDS : TGLHeightDataSource;
     FBumpmapLibrary: TGLMaterialLibrary;
     FOnNewTilePrepared: TNewTilePreparedEvent;
@@ -54,14 +50,12 @@ type
     FMaxTextures: Integer;
     Uno: TCriticalSection;
   protected
-    
     procedure SetBumpmapLibrary(const val: TGLMaterialLibrary);
     procedure SetBumpScale(const val: Single);
     function StoreBumpScale: Boolean;
     procedure SetSubSampling(const val: Integer);
     procedure Trim(MaxTextureCount: Integer);
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Release(aHeightData: TGLHeightData); override;
@@ -69,11 +63,14 @@ type
       Operation: TOperation); override;
     procedure GenerateNormalMap(heightData: TGLHeightData; normalMap: TGLImage;
       scale: Single);
+	(* This will repeatedly delete the oldest unused texture from the TGLMaterialLibrary,
+      until the texture count drops to MaxTextureCount.
+      DONT use this if you used TGLHeightData.MaterialName to link your terrain textures.
+      Either use with TGLHeightData.LibMaterial, or manually delete unused Normal-Map textures.*)
     procedure TrimTextureCache(MaxTextureCount: Integer);
     // procedure  TileTextureCoordinates(heightData : TGLHeightData; TextureScale:TTexPoint; TextureOffset:TTexPoint);
     procedure PreparingData(heightData: TGLHeightData); override;
   published
-    
     property BumpmapLibrary: TGLMaterialLibrary read FBumpmapLibrary
       write SetBumpmapLibrary;
     property OnNewTilePrepared: TNewTilePreparedEvent read FOnNewTilePrepared
@@ -102,10 +99,10 @@ type
     property OnSourceDataFetched;
   end;
 
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
 implementation
+// ------------------------------------------------------------------
+
 
 // ------------------
 // ------------------ TGLBumpmapHDS ------------------
@@ -115,8 +112,6 @@ const
   cDefaultBumpScale = 0.01;
 
    
-  //
-
 constructor TGLBumpmapHDS.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
@@ -126,17 +121,12 @@ begin
 end;
 
  
-//
-
 destructor TGLBumpmapHDS.Destroy;
 begin
   BumpmapLibrary := nil;
   Uno.Free;
   inherited Destroy;
 end;
-
-// Notification
-//
 
 procedure TGLBumpmapHDS.Notification(AComponent: TComponent;
   Operation: TOperation);
@@ -149,9 +139,6 @@ begin
   inherited;
 end;
 
-// Release
-//
-
 procedure TGLBumpmapHDS.Release(aHeightData: TGLHeightData);
 var
   libMat: TGLLibMaterial;
@@ -163,13 +150,6 @@ begin
   inherited;
 end;
 
-// TrimTextureCache
-//
-// This will repeatedly delete the oldest unused texture from the TGLMaterialLibrary,
-// until the texture count drops to MaxTextureCount.
-// DONT use this if you used TGLHeightData.MaterialName to link your terrain textures.
-// Either use with TGLHeightData.LibMaterial, or manually delete unused Normal-Map textures.
-//
 
 procedure TGLBumpmapHDS.TrimTextureCache(MaxTextureCount: Integer);
 // Thread-safe Version
@@ -206,8 +186,6 @@ begin
   end;
 end;
 
-// PreparingData
-//
 
 procedure TGLBumpmapHDS.PreparingData(heightData: TGLHeightData);
 var
@@ -273,8 +251,6 @@ begin
   Uno.Release;
 end;
 
-// GenerateNormalMap
-//
 
 procedure TGLBumpmapHDS.GenerateNormalMap(heightData: TGLHeightData;
   normalMap: TGLImage; scale: Single);
@@ -312,8 +288,6 @@ begin
   end;
 end;
 
-// SetBumpmapLibrary
-//
 
 procedure TGLBumpmapHDS.SetBumpmapLibrary(const val: TGLMaterialLibrary);
 begin
@@ -328,8 +302,6 @@ begin
   end;
 end;
 
-// SetBumpScale
-//
 
 procedure TGLBumpmapHDS.SetBumpScale(const val: Single);
 begin
@@ -340,16 +312,12 @@ begin
   end;
 end;
 
-// StoreBumpScale
-//
 
 function TGLBumpmapHDS.StoreBumpScale: Boolean;
 begin
   Result := (FBumpScale <> cDefaultBumpScale);
 end;
 
-// SetSubSampling
-//
 
 procedure TGLBumpmapHDS.SetSubSampling(const val: Integer);
 begin
@@ -363,12 +331,7 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 // class registrations

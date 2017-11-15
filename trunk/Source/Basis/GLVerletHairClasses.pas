@@ -13,6 +13,8 @@ unit GLVerletHairClasses;
 
 interface
 
+{$I GLScene.inc}
+
 uses
   System.Classes, 
   System.SysUtils,

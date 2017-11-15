@@ -23,6 +23,7 @@ uses
   
   OpenGLTokens,
   GLVectorGeometry,
+  GLPersistentClasses,
   GLPipelineTransformation,
   GLScene,
   GLTexture,

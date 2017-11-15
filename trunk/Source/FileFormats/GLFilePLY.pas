@@ -16,32 +16,28 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
+  System.Classes,
+  System.SysUtils,
 
-  GLVectorFileObjects, GLApplicationFileIO;
+  GLVectorGeometry,
+  GLVectorLists,
+  GLVectorFileObjects,
+  GLApplicationFileIO;
 
 type
-  // TGLPLYVectorFile
-  //
-  { The PLY vector file aka Stanford Triangle Format.
+  (* The PLY vector file aka Stanford Triangle Format.
     This is a format for storing graphical objects that are described as a
     collection of polygons. The format is extensible, supports variations and
     subformats. This importer only works for the simplest variant (triangles
-    without specified normals, and will ignore most header specifications. }
+    without specified normals, and will ignore most header specifications. *)
   TGLPLYVectorFile = class(TGLVectorFile)
   public
-    
     class function Capabilities: TGLDataFileCapabilities; override;
     procedure LoadFromStream(aStream: TStream); override;
   end;
 
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
 implementation
-
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 uses
@@ -51,15 +47,11 @@ uses
 // ------------------ TGLPLYVectorFile ------------------
 // ------------------
 
-// Capabilities
-//
 class function TGLPLYVectorFile.Capabilities: TGLDataFileCapabilities;
 begin
   Result := [dfcRead];
 end;
 
-// LoadFromStream
-//
 procedure TGLPLYVectorFile.LoadFromStream(aStream: TStream);
 var
   i, nbVertices, nbFaces: Integer;
@@ -118,12 +110,7 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 RegisterVectorFileFormat('ply', 'Stanford triangle format', TGLPLYVectorFile);

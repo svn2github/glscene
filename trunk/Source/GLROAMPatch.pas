@@ -18,7 +18,8 @@ interface
 uses
   System.SysUtils,
   
-  GLVectorGeometry, 
+  GLVectorTypes,
+  GLVectorGeometry,
   GLHeightData, 
   GLVectorLists, 
   GLCrossPlatform, 

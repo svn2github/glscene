@@ -13,9 +13,11 @@ unit GLMultiProxy;
 interface
 
 uses
-  System.Classes, System.SysUtils,
-  
+  System.Classes,
+  System.SysUtils,
+
   OpenGLTokens,
+  GLPersistentClasses,
   GLContext,
   GLScene,
   GLVectorGeometry,
@@ -26,67 +28,48 @@ uses
 
 type
 
-   TGLMultiProxy = class;
+  TGLMultiProxy = class;
 
-	// TGLMultiProxyMaster
-	//
-   {MasterObject description for a MultiProxy object. }
+  (* MasterObject description for a MultiProxy object. *)
 	TGLMultiProxyMaster = class (TCollectionItem)
 	   private
-	       
          FMasterObject : TGLBaseSceneObject;
          FDistanceMin, FDistanceMin2 : Single;
          FDistanceMax, FDistanceMax2 : Single;
          FVisible : Boolean;
-
 	   protected
-	      
          function GetDisplayName : String; override;
          procedure SetMasterObject(const val : TGLBaseSceneObject);
          procedure SetDistanceMin(const val : Single);
          procedure SetDistanceMax(const val : Single);
          procedure SetVisible(const val : Boolean);
-
       public
-	      
 	      constructor Create(Collection : TCollection); override;
 	      destructor Destroy; override;
 	      procedure Assign(Source: TPersistent); override;
-
          function OwnerObject : TGLMultiProxy;
          procedure NotifyChange;
-
       published
-         
          {Specifies the Master object which will be proxy'ed. }
          property MasterObject : TGLBaseSceneObject read FMasterObject write SetMasterObject;
          {Minimum visibility distance (inclusive). }
          property DistanceMin : Single read FDistanceMin write SetDistanceMin;
          {Maximum visibility distance (exclusive). }
          property DistanceMax : Single read FDistanceMax write SetDistanceMax;
-         {Determines if the master object can be visible (proxy'ed). 
+         {Determines if the master object can be visible (proxy'ed).
             Note: the master object's distance also has to be within DistanceMin
             and DistanceMax.}
          property Visible : Boolean read FVisible write SetVisible default True;
    end;
 
-	// TGLMultiProxyMasters
-	//
    {Collection of TGLMultiProxyMaster. }
 	TGLMultiProxyMasters = class (TOwnedCollection)
-	   private
-	       
-
 	   protected
-	      
          procedure SetItems(index : Integer; const val : TGLMultiProxyMaster);
 	      function GetItems(index : Integer) : TGLMultiProxyMaster;
          procedure Update(Item: TCollectionItem); override;
-
       public
-	      
 	      constructor Create(AOwner : TPersistent);
-
          function Add : TGLMultiProxyMaster; overload;
          function Add(master : TGLBaseSceneObject; distanceMin, distanceMax : Single) : TGLMultiProxyMaster; overload;
 	      property Items[index : Integer] : TGLMultiProxyMaster read GetItems write SetItems; default;
@@ -99,7 +82,7 @@ type
 
    // TGLMultiProxy
    //
-   {Multiple Proxy object. 
+   {Multiple Proxy object.
       This proxy has multiple master objects, which are individually made visible
       depending on a distance to the camera criterion. It can be used to implement
       discreet level of detail directly for static objects, or objects that
@@ -108,36 +91,25 @@ type
       (item zero in the MasterObjects collection). }
    TGLMultiProxy = class (TGLSceneObject)
       private
-			 
          FMasterObjects : TGLMultiProxyMasters;
          FRendering : Boolean; // internal use (loop protection)
-
 	   protected
-	      
          procedure SetMasterObjects(const val : TGLMultiProxyMasters);
          procedure Notification(AComponent: TComponent; Operation: TOperation); override;
-
          function PrimaryMaster : TGLBaseSceneObject;
-
       public
-			
          constructor Create(AOwner: TComponent); override;
          destructor Destroy; override;
-
 	      procedure Assign(Source: TPersistent); override;
          procedure DoRender(var rci : TGLRenderContextInfo;
                             renderSelf, renderChildren : Boolean); override;
-                            
          function AxisAlignedDimensionsUnscaled : TVector; override;
          function RayCastIntersect(const rayStart, rayVector : TVector;
                                  intersectPoint : PVector = nil;
                                  intersectNormal : PVector = nil) : Boolean; override;
          function GenerateSilhouette(const silhouetteParameters : TGLSilhouetteParameters) : TGLSilhouette; override;
-
       published
-         
          property MasterObjects : TGLMultiProxyMasters read FMasterObjects write SetMasterObjects;
-         
          property ObjectsSorting;
          property Direction;
          property PitchAngle;
@@ -153,35 +125,25 @@ type
    end;
 
 //-------------------------------------------------------------
-//-------------------------------------------------------------
-//-------------------------------------------------------------
 implementation
-//-------------------------------------------------------------
-//-------------------------------------------------------------
 //-------------------------------------------------------------
 
 // ------------------
 // ------------------ TGLMultiProxyMaster ------------------
 // ------------------
 
- 
-//
 constructor TGLMultiProxyMaster.Create(Collection : TCollection);
 begin
 	inherited Create(Collection);
    FVisible:=True;
 end;
 
- 
-//
 destructor TGLMultiProxyMaster.Destroy;
 begin
    MasterObject:=nil;
 	inherited Destroy;
 end;
 
-// Assign
-//
 procedure TGLMultiProxyMaster.Assign(Source: TPersistent);
 begin
 	if Source is TGLMultiProxyMaster then begin
@@ -195,22 +157,16 @@ begin
 	end else inherited;
 end;
 
-// OwnerObject
-//
 function TGLMultiProxyMaster.OwnerObject : TGLMultiProxy;
 begin
    Result:=TGLMultiProxy(TGLMultiProxyMasters(Collection).GetOwner);
 end;
 
-// NotifyChange
-//
 procedure TGLMultiProxyMaster.NotifyChange;
 begin
    TGLMultiProxyMasters(Collection).NotifyChange;
 end;
 
-// GetDisplayName
-//
 function TGLMultiProxyMaster.GetDisplayName : String;
 begin
    if MasterObject<>nil then
@@ -221,8 +177,6 @@ begin
       Result:=Result+' (hidden)';
 end;
 
-// SetMasterObject
-//
 procedure TGLMultiProxyMaster.SetMasterObject(const val : TGLBaseSceneObject);
 begin
    if FMasterObject<>val then begin
@@ -235,8 +189,6 @@ begin
    end;
 end;
 
-// SetDistanceMin
-//
 procedure TGLMultiProxyMaster.SetDistanceMin(const val : Single);
 begin
    if FDistanceMin<>val then begin
@@ -246,8 +198,6 @@ begin
    end;
 end;
 
-// SetDistanceMax
-//
 procedure TGLMultiProxyMaster.SetDistanceMax(const val : Single);
 begin
    if FDistanceMax<>val then begin
@@ -257,8 +207,6 @@ begin
    end;
 end;
 
-// SetVisible
-//
 procedure TGLMultiProxyMaster.SetVisible(const val : Boolean);
 begin
    if FVisible<>val then begin
@@ -271,44 +219,32 @@ end;
 // ------------------ TGLMultiProxyMasters ------------------
 // ------------------
 
- 
-//
 constructor TGLMultiProxyMasters.Create(AOwner : TPersistent);
 begin
    inherited Create(AOwner, TGLMultiProxyMaster)
 end;
 
-// SetItems
-//
 procedure TGLMultiProxyMasters.SetItems(index : Integer; const val : TGLMultiProxyMaster);
 begin
 	inherited Items[index]:=val;
 end;
 
-// GetItems
-//
 function TGLMultiProxyMasters.GetItems(index : Integer) : TGLMultiProxyMaster;
 begin
 	Result:=TGLMultiProxyMaster(inherited Items[index]);
 end;
 
-// Update
-//
 procedure TGLMultiProxyMasters.Update(Item : TCollectionItem);
 begin
    inherited;
    NotifyChange;
 end;
 
-// Add (simple)
-//
 function TGLMultiProxyMasters.Add : TGLMultiProxyMaster;
 begin
 	Result:=(inherited Add) as TGLMultiProxyMaster;
 end;
 
-// Add (classic params)
-//
 function TGLMultiProxyMasters.Add(master : TGLBaseSceneObject; distanceMin, distanceMax : Single) : TGLMultiProxyMaster;
 begin
    BeginUpdate;
@@ -319,8 +255,6 @@ begin
    EndUpdate;
 end;
 
-// Notification
-//
 procedure TGLMultiProxyMasters.Notification(AComponent: TComponent);
 var
    i : Integer;
@@ -329,16 +263,12 @@ begin
       if FMasterObject=AComponent then FMasterObject:=nil;
 end;
 
-// NotifyChange
-//
 procedure TGLMultiProxyMasters.NotifyChange;
 begin
    if (UpdateCount=0) and (GetOwner<>nil) and (GetOwner is TGLUpdateAbleComponent) then
       TGLUpdateAbleComponent(GetOwner).NotifyChange(Self);
 end;
 
-// EndUpdate
-//
 procedure TGLMultiProxyMasters.EndUpdate;
 begin
    inherited EndUpdate;
@@ -350,8 +280,6 @@ end;
 // ------------------ TGLMultiProxy ------------------
 // ------------------
 
- 
-//
 constructor TGLMultiProxy.Create(AOwner: TComponent);
 begin
    inherited Create(AOwner);
@@ -359,16 +287,12 @@ begin
    FMasterObjects:=TGLMultiProxyMasters.Create(Self);
 end;
 
- 
-//
 destructor TGLMultiProxy.Destroy;
 begin
   inherited Destroy;
   FMasterObjects.Free;
 end;
 
-// Notification
-//
 procedure TGLMultiProxy.Notification(AComponent: TComponent; Operation: TOperation);
 begin
    if Operation=opRemove then
@@ -376,16 +300,12 @@ begin
    inherited;
 end;
 
-// SetMasterObjects
-//
 procedure TGLMultiProxy.SetMasterObjects(const val : TGLMultiProxyMasters);
 begin
    FMasterObjects.Assign(val);
    StructureChanged;
 end;
 
-// Assign
-//
 procedure TGLMultiProxy.Assign(Source: TPersistent);
 begin
    if Source is TGLMultiProxy then begin
@@ -394,8 +314,6 @@ begin
    inherited;
 end;
 
-// Render
-//
 procedure TGLMultiProxy.DoRender(var rci : TGLRenderContextInfo;
                                   renderSelf, renderChildren : Boolean);
 var
@@ -433,8 +351,6 @@ begin
    ClearStructureChanged;
 end;
 
-// PrimaryMaster
-//
 function TGLMultiProxy.PrimaryMaster : TGLBaseSceneObject;
 begin
    if MasterObjects.Count>0 then
@@ -442,8 +358,6 @@ begin
    else Result:=nil;
 end;
 
-// AxisAlignedDimensions
-//
 function TGLMultiProxy.AxisAlignedDimensionsUnscaled : TVector;
 var
    master : TGLBaseSceneObject;
@@ -454,8 +368,6 @@ begin
    end else Result:=inherited AxisAlignedDimensionsUnscaled;
 end;
 
-// RayCastIntersect
-//
 function TGLMultiProxy.RayCastIntersect(const rayStart, rayVector : TVector;
                                  intersectPoint : PVector = nil;
                                  intersectNormal : PVector = nil) : Boolean;
@@ -486,8 +398,6 @@ begin
    end else Result:=False;
 end;
 
-// GenerateSilhouette
-//
 function TGLMultiProxy.GenerateSilhouette(const silhouetteParameters : TGLSilhouetteParameters) : TGLSilhouette;
 var
    master : TGLBaseSceneObject;
@@ -499,11 +409,7 @@ begin
 end;
 
 //-------------------------------------------------------------
-//-------------------------------------------------------------
-//-------------------------------------------------------------
 initialization
-//-------------------------------------------------------------
-//-------------------------------------------------------------
 //-------------------------------------------------------------
 
    RegisterClasses([TGLMultiProxy]);
