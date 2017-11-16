@@ -260,15 +260,7 @@ type
 // Matrix types
 //-----------------------
   TxMatrix2DType = array[0..3] of TxVector2D;
-  {$NODEFINE TxMatrix2DType}
-  (*$HPPEMIT END OPENNAMESPACE*)
-  (*$HPPEMIT END 'typedef TxVector2D TxMatrix2DArray[4];'*)
-  (*$HPPEMIT END CLOSENAMESPACE*)
   TxMatrix3DType = array[0..3] of TxVector3D;
-  {$NODEFINE TxMatrix3DType}
-  (*$HPPEMIT END OPENNAMESPACE*)
-  (*$HPPEMIT END 'typedef TxVector3D TxMatrix3DType[4];'*)
-  (*$HPPEMIT END CLOSENAMESPACE*)
 
   TxMatrix2D = record
   private

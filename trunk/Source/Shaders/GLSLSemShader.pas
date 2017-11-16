@@ -42,12 +42,11 @@ uses
   GLSLShader,
   GLCustomShader;
 
-//TGLCustomGLSLSimpleSemShader
-//
-{Custom class for GLSLSEMShader. 
- SEM Shader : Spherical Environment Mapping }
 Type
-TGLCustomGLSLSemShader = class(TGLCustomGLSLShader)
+
+  {Custom class for GLSLSEMShader. 
+   SEM Shader : Spherical Environment Mapping }
+  TGLCustomGLSLSemShader = class(TGLCustomGLSLShader)
   private
     FAmbientColor: TGLColor;
 //    FDiffuseColor: TGLColor;
@@ -55,70 +54,55 @@ TGLCustomGLSLSemShader = class(TGLCustomGLSLShader)
     FAmbientFactor : Single;
     FDiffuseFactor : Single;
     FSpecularFactor : Single;
-
     FMaterialLibrary: TGLAbstractMaterialLibrary;
     FMainTexture: TGLTexture;
     FMainTexName   : TGLLibMaterialName;
-
 //    FSpecularPower: Single;
 //    FLightPower: Single;
-
     function GetMaterialLibrary: TGLAbstractMaterialLibrary;
-
     procedure SetMainTexTexture(const Value: TGLTexture);
     function GetMainTexName: TGLLibMaterialName;
     procedure SetMainTexName(const Value: TGLLibMaterialName);
-
     //procedure SetDiffuseColor(AValue: TGLColor);
     procedure SetAmbientColor(AValue: TGLColor);
     procedure SetSpecularColor(AValue: TGLColor);
-
   protected
     procedure DoApply(var rci : TGLRenderContextInfo; Sender : TObject); override;
     function DoUnApply(var rci: TGLRenderContextInfo): Boolean; override;
-
     procedure SetMaterialLibrary(const Value: TGLAbstractMaterialLibrary); virtual;
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
   public
     constructor Create(AOwner : TComponent); override;
     destructor Destroy; override;
-
 //    property DiffuseColor : TGLColor read FDiffuseColor Write setDiffuseColor;
     property SpecularColor : TGLColor Read FSpecularColor Write setSpecularColor;
     property AmbientColor : TGLColor Read FAmbientColor Write setAmbientColor;
-
     property AmbientFactor : Single Read FAmbientFactor Write FAmbientFactor;
     property DiffuseFactor : Single Read FDiffuseFactor Write FDiffuseFactor;
     property SpecularFactor : Single Read FSpecularFactor Write FSpecularFactor;
-
     property MaterialLibrary: TGLAbstractMaterialLibrary read getMaterialLibrary write SetMaterialLibrary;
     property MainTexture: TGLTexture read FMainTexture write SetMainTexTexture;
     property MainTextureName: TGLLibMaterialName read GetMainTexName write SetMainTexName;
-
 //    property SpecularPower: Single read FSpecularPower write FSpecularPower;
 //    property LightPower: Single read FLightPower write FLightPower;
-
   end;
 
   TGLSLSemShader = class(TGLCustomGLSLSemShader)
   published
-
-
     property AmbientColor;
 //    property DiffuseColor;
     property SpecularColor;
-
     property AmbientFactor;
     property DiffuseFactor;
     property SpecularFactor;
-
     property MaterialLibrary;
     property MainTexture;
     property MainTextureName;
-
-
   end;
+  
+//====================================================  
 implementation
+//====================================================  
 
 constructor TGLCustomGLSLSemShader.Create(AOwner: TComponent);
 begin
@@ -193,8 +177,6 @@ begin
   FAmbientFactor  := 0.8;
   FDiffuseFactor  :=0.9;
   FSpecularFactor :=0.8;
-
-
 end;
 
 destructor TGLCustomGLSLSemShader.Destroy;

@@ -13,7 +13,7 @@ unit GLSLToonShader;
 
 interface
 
-//{$I GLScene.inc}
+{$I GLScene.inc}
 
 uses
   System.Classes,
@@ -34,8 +34,6 @@ uses
   GLSLShader,
   GLCustomShader;
 
-//TGLCustomGLSLToonShader
-//
 {Custom class for GLSLToonShader. }
 type
   TGLCustomGLSLToonShader = class(TGLCustomGLSLShader)
@@ -49,32 +47,26 @@ type
     FMidSize : Single;
     FShadowSize : Single;
     FOutlineWidth : Single;
-
-
     procedure SetHighLightColor(AValue: TGLColor);
     procedure SetMidColor(AValue: TGLColor);
     procedure SetLightenShadowColor(AValue: TGLColor);
     procedure SetDarkenShadowColor(AValue: TGLColor);
     procedure SetOutlineColor(AValue: TGLColor);
-
   protected
     procedure DoApply(var rci : TGLRenderContextInfo; Sender : TObject); override;
     function DoUnApply(var rci: TGLRenderContextInfo): Boolean; override;
   public
     constructor Create(AOwner : TComponent); override;
     destructor Destroy; override;
-
     property HighlightColor : TGLColor read FHighlightColor Write setHighlightColor;
     property MidColor : TGLColor read FMidColor Write setMidColor;
     property LightenShadowColor : TGLColor Read FLightenShadowColor Write setLightenShadowColor;
     property DarkenShadowrColor : TGLColor Read FDarkenShadowColor Write setDarkenShadowColor;
     property OutlinetColor : TGLColor Read FOutlineColor Write setOutlineColor;
-
     property HighlightSize : Single read FHighlightSize write FHighlightSize;
     property MidSize : Single read FMidSize write FMidSize;
     property ShadowSize : Single read FShadowSize write FShadowSize;
     property OutlineWidth : Single read FOutlineWidth write FOutlineWidth;
-
   end;
 
 type
@@ -85,14 +77,15 @@ type
     property LightenShadowColor;
     property DarkenShadowrColor;
     property OutlinetColor;
-
     property HighlightSize;
     property MidSize;
     property ShadowSize;
     property OutlineWidth;
   end;
 
+//==============================================================
 implementation
+//==============================================================
 
 
 { TGLCustomGLSLToonShader }

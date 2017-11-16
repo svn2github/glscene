@@ -63,8 +63,8 @@ type
 
 const
   cDefaultProxyOptions = [pooEffects, pooObjects, pooTransformation];
-  GLSCENE_REVISION = '$Revision: 6695$';
-  GLSCENE_VERSION = '1.5.0.%s';
+  GLSCENE_REVISION = '$Revision: 7082$';
+  GLSCENE_VERSION = '1.8.0.%s';
 
 type
 
@@ -83,21 +83,21 @@ type
   TGLSceneOperation = (soAdd, soRemove, soMove, soRename, soSelect, soBeginUpdate,
     soEndUpdate);
 
-  {Options for the rendering context.
+  (*Options for the rendering context.
      roSoftwareMode: force software rendering.
      roDoubleBuffer: enables double-buffering.
      roRenderToWindows: ignored (legacy).
      roTwoSideLighting: enables two-side lighting model.
-     roStereo: enables stereo support in the driver (dunno if it works,
-         I don't have a stereo device to test...)
+     roStereo: enables stereo support in the driver
+       (dunno if it works, I don't have a stereo device to test...)
      roDestinationAlpha: request an Alpha channel for the rendered output
      roNoColorBuffer: don't request a color buffer (color depth setting ignored)
-     roNoColorBufferClear: do not clear the color buffer automatically, if the
-         whole viewer is fully repainted each frame, this can improve framerate
+     roNoColorBufferClear: do not clear the color buffer automatically,
+       if the whole viewer is fully repainted each frame, this can improve framerate
      roNoSwapBuffers: don't perform RenderingContext.SwapBuffers after rendering
-     roNoDepthBufferClear: do not clear the depth buffer automatically. Useful for
-         early-z culling.
-     roForwardContext: force OpenGL forward context }
+     roNoDepthBufferClear: do not clear the depth buffer automatically.
+       Useful for early-z culling.
+     roForwardContext: force OpenGL forward context *)
   TGLContextOption = (roSoftwareMode, roDoubleBuffer, roStencilBuffer,
     roRenderToWindow, roTwoSideLighting, roStereo,
     roDestinationAlpha, roNoColorBuffer, roNoColorBufferClear,
@@ -127,14 +127,13 @@ type
   TGLSceneBuffer = class;
 
   {Possible styles/options for a GLScene object.
-     Allowed styles are: 
+     Allowed styles are:
       osDirectDraw : object shall not make use of compiled call lists, but issue
         direct calls each time a render should be performed.
       osIgnoreDepthBuffer : object is rendered with depth test disabled,
         this is true for its children too.
       osNoVisibilityCulling : whatever the VisibilityCulling setting,
-        it will be ignored and the object rendered
-      }
+        it will be ignored and the object rendered  }
   TGLObjectStyle = (
     osDirectDraw,
     osIgnoreDepthBuffer,
@@ -1045,9 +1044,9 @@ type
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
     {Nearest clipping plane for the frustum.
-       This value depends on the FocalLength and DepthOfView fields and
-       is calculated to minimize Z-Buffer crawling as suggested by the
-       OpenGL documentation. }
+     This value depends on the FocalLength and DepthOfView fields and
+     is calculated to minimize Z-Buffer crawling as suggested by the
+     OpenGL documentation. }
     property NearPlane: Single read FNearPlane;
     // Apply camera transformation
     procedure Apply;
@@ -1608,7 +1607,7 @@ type
        This is an average value, to reset the counter, call
        ResetPerfomanceMonitor. }
     property FramesPerSecond: Single read FFramesPerSecond;
-    {Resets the perfomance monitor and begin a new statistics set. 
+    {Resets the perfomance monitor and begin a new statistics set.
        See FramesPerSecond. }
     procedure ResetPerformanceMonitor;
     {Retrieve one of the OpenGL limits for the current viewer.
@@ -1853,8 +1852,6 @@ implementation
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-
-
 
 function GetCurrentRenderingObject: TGLBaseSceneObject;
 begin

@@ -43,11 +43,9 @@ uses
   GLSLShader,
   GLCustomShader;
 
-//TGLCustomGLSLSimpleVertexDisplacementShader
-//
-{Custom class for GLSLVertexDisplacementShader. 
- VertexDisplacement Shader : Spherical Environment Mapping }
-Type
+type
+  (* Custom class for GLSLVertexDisplacementShader. 
+   VertexDisplacement Shader : Spherical Environment Mapping *)
   TGLCustomGLSLVertexDisplacementShader = class(TGLCustomGLSLShader)
   private
     FAmbientColor: TGLColor;
@@ -56,11 +54,9 @@ Type
     FAmbientFactor : Single;
     FDiffuseFactor : Single;
     FSpecularFactor : Single;
-
     FMaterialLibrary: TGLAbstractMaterialLibrary;
     FMainTexture: TGLTexture;
     FMainTexName   : TGLLibMaterialName;
-
     FElapsedTime : Single;
     FNoise : Single;
     FDisplacementScale : Single;
@@ -68,39 +64,30 @@ Type
     FTurbulenceFactor : Single;
     FNoisePeriod : Single;
     FTimeFactor : Single;
-
     function GetMaterialLibrary: TGLAbstractMaterialLibrary;
-
     procedure SetMainTexTexture(const Value: TGLTexture);
     function GetMainTexName: TGLLibMaterialName;
     procedure SetMainTexName(const Value: TGLLibMaterialName);
-
     //procedure SetDiffuseColor(AValue: TGLColor);
     procedure SetAmbientColor(AValue: TGLColor);
     procedure SetSpecularColor(AValue: TGLColor);
-
   protected
     procedure DoApply(var rci : TGLRenderContextInfo; Sender : TObject); override;
     function DoUnApply(var rci: TGLRenderContextInfo): Boolean; override;
-
     procedure SetMaterialLibrary(const Value: TGLAbstractMaterialLibrary); virtual;
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
   public
     constructor Create(AOwner : TComponent); override;
     destructor Destroy; override;
-
 //    property DiffuseColor : TGLColor read FDiffuseColor Write setDiffuseColor;
     property SpecularColor : TGLColor Read FSpecularColor Write setSpecularColor;
     property AmbientColor : TGLColor Read FAmbientColor Write setAmbientColor;
-
     property AmbientFactor : Single Read FAmbientFactor Write FAmbientFactor;
     property DiffuseFactor : Single Read FDiffuseFactor Write FDiffuseFactor;
     property SpecularFactor : Single Read FSpecularFactor Write FSpecularFactor;
-
     property MaterialLibrary: TGLAbstractMaterialLibrary read getMaterialLibrary write SetMaterialLibrary;
     property MainTexture: TGLTexture read FMainTexture write SetMainTexTexture;
     property MainTextureName: TGLLibMaterialName read GetMainTexName write SetMainTexName;
-
     property ElapsedTime: Single read FElapsedTime write FElapsedTime;
     property NoiseFactor : Single read FNoise write FNoise;
     property NoiseScale : Single read FNoiseScale write FNoiseScale;
@@ -112,20 +99,15 @@ Type
 
   TGLSLVertexDisplacementShader = class(TGLCustomGLSLVertexDisplacementShader)
   published
-
-
     property AmbientColor;
 //    property DiffuseColor;
     property SpecularColor;
-
     property AmbientFactor;
     property DiffuseFactor;
     property SpecularFactor;
-
     property MaterialLibrary;
     property MainTexture;
     property MainTextureName;
-
     property ElapsedTime;
     property NoiseFactor;
     property NoiseScale;
@@ -133,9 +115,11 @@ Type
     property NoisePeriod;
     property DisplacementScale;
     property TimeFactor;
-
   end;
+
+//=========================================================
 implementation
+//=========================================================
 
 constructor TGLCustomGLSLVertexDisplacementShader.Create(AOwner: TComponent);
 begin

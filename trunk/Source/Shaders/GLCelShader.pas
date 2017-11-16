@@ -6,19 +6,8 @@
    and shade definition texture. 
 
     History :  
-       23/08/10 - Yar - Upgraded program handles
-       22/04/10 - Yar - Fixes after GLState revision
-       05/03/10 - DanB - More state added to TGLStateCache
-       22/01/10 - Yar   - Added bmp32.Blank:=false for memory allocation
-       06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
-       31/03/07 - DaStr - Added $I GLScene.inc
-       21/03/07 - DaStr - Added explicit pointer dereferencing
-                             (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
-       25/02/07 - DaStr - Moved registration to GLSceneRegister.pas
-       28/09/04 - SG - Vertex program now uses ARB_position_invariant option.
-       09/06/04 - SG - Added OutlineColor, vertex programs now use GL state.
        28/05/04 - SG - Creation.
-    
+	   The whole history is logged in previous version of the unit.
 }
 unit GLCelShader;
 
@@ -27,31 +16,34 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
+  System.Classes, 
+  System.SysUtils,
    
-  GLTexture, GLContext, GLGraphics, GLUtils,
-  GLVectorGeometry, OpenGLTokens, GLColor, GLRenderContextInfo,
-  GLMaterial, GLState, GLTextureFormat;
+  OpenGLTokens,
+  GLTexture, 
+  GLContext, 
+  GLGraphics, 
+  GLUtils,
+  GLVectorGeometry, 
+  GLColor, 
+  GLRenderContextInfo,
+  GLMaterial, 
+  GLState, 
+  GLTextureFormat;
 
 type
-  // TGLCelShaderOption
-  //
-  {Cel shading options. 
+  (*Cel shading options. 
      csoOutlines: Render a second outline pass.
      csoTextured: Allows for a primary texture that the cel shading
                   is modulated with and forces the shade definition
-                  to render as a second texture. }
+                  to render as a second texture. *)
   TGLCelShaderOption = (csoOutlines, csoTextured, csoNoBuildShadeTexture);
   TGLCelShaderOptions = set of TGLCelShaderOption;
 
-  // TGLCelShaderGetIntensity
-  //
   // An event for user defined cel intensity.
   TGLCelShaderGetIntensity = procedure(Sender: TObject; var intensity: Byte) of
     object;
 
-  // TGLCelShader
-  //
   {A generic cel shader.  }
   TGLCelShader = class(TGLShader)
   private
@@ -70,16 +62,12 @@ type
     procedure BuildShadeTexture;
     procedure Loaded; override;
     function GenerateVertexProgram: string;
-
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
     procedure DoApply(var rci: TGLRenderContextInfo; Sender: TObject); override;
     function DoUnApply(var rci: TGLRenderContextInfo): Boolean; override;
-
     property ShadeTexture: TGLTexture read FShadeTexture;
-
   published
     property CelShaderOptions: TGLCelShaderOptions read FCelShaderOptions write
       SetCelShaderOptions;
@@ -90,15 +78,10 @@ type
   end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
 // ------------------
 // ------------------ TGLCelShader ------------------
 // ------------------
-
- 
-//
 
 constructor TGLCelShader.Create(AOwner: TComponent);
 begin
@@ -126,8 +109,6 @@ begin
 end;
 
  
-//
-
 destructor TGLCelShader.Destroy;
 begin
   FVPHandle.Free;
@@ -136,8 +117,6 @@ begin
   inherited;
 end;
 
-// Loaded
-//
 
 procedure TGLCelShader.Loaded;
 begin
@@ -145,8 +124,6 @@ begin
   BuildShadeTexture;
 end;
 
-// BuildShadeTexture
-//
 
 procedure TGLCelShader.BuildShadeTexture;
 var
@@ -192,8 +169,6 @@ begin
   end;
 end;
 
-// GenerateVertexProgram
-//
 
 function TGLCelShader.GenerateVertexProgram: string;
 var
@@ -238,8 +213,6 @@ begin
   VP.Free;
 end;
 
-// DoApply
-//
 
 procedure TGLCelShader.DoApply(var rci: TGLRenderContextInfo; Sender: TObject);
 var
@@ -273,8 +246,6 @@ begin
   FUnApplyShadeTexture := True;
 end;
 
-// DoUnApply
-//
 
 function TGLCelShader.DoUnApply(var rci: TGLRenderContextInfo): Boolean;
 begin
@@ -325,8 +296,6 @@ begin
 
 end;
 
-// SetCelShaderOptions
-//
 
 procedure TGLCelShader.SetCelShaderOptions(const val: TGLCelShaderOptions);
 begin
@@ -339,8 +308,6 @@ begin
   end;
 end;
 
-// SetOutlineWidth
-//
 
 procedure TGLCelShader.SetOutlineWidth(const val: Single);
 begin
@@ -351,8 +318,6 @@ begin
   end;
 end;
 
-// SetOutlineColor
-//
 
 procedure TGLCelShader.SetOutlineColor(const val: TGLColor);
 begin

@@ -20,7 +20,8 @@ interface
 uses
   System.Classes,
    
-  GLMaterial, GLRenderContextInfo;
+  GLMaterial, 
+  GLRenderContextInfo;
 
 type
   TOnDoApplyEvent = procedure (Sender : TObject; var rci : TGLRenderContextInfo) of Object;
@@ -41,19 +42,13 @@ type
   end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 // ------------------
 // ------------------ TGLUserShader ------------------
 // ------------------
 
-// DoApply
-//
 procedure TGLUserShader.DoApply(var rci: TGLRenderContextInfo; Sender : TObject);
 begin
   FPass:=1;
@@ -61,8 +56,6 @@ begin
     FOnDoApply(Self,rci);
 end;
 
-// DoUnApply
-//
 function TGLUserShader.DoUnApply(var rci: TGLRenderContextInfo): Boolean;
 begin
   Result:=False;

@@ -57,15 +57,12 @@ type
     FParam: TGLSLShaderParameter;
     FActiveVarying: TStrings;
     FTransformFeedBackMode: TGLTransformFeedBackMode;
-
     FOnInitialize: TGLSLShaderEvent;
     FOnApply: TGLSLShaderEvent;
     FOnUnApply: TGLSLShaderUnApplyEvent;
     FOnInitializeEx: TGLSLShaderEventEx;
     FOnApplyEx: TGLSLShaderEventEx;
-
     FNextTexIndex : integer; // for auto texture unit indicing
-
     function GetParam(const Index: string): TGLSLShaderParameter;
     function GetDirectParam(const Index: Cardinal): TGLSLShaderParameter;
     procedure OnChangeActiveVarying(Sender: TObject);
@@ -75,7 +72,6 @@ type
     property OnInitialize: TGLSLShaderEvent read FOnInitialize write FOnInitialize;
     property OnInitializeEx: TGLSLShaderEventEx read FOnInitializeEx write FOnInitializeEx;
     property OnApplyEx: TGLSLShaderEventEx read FOnApplyEx write FOnApplyEx;
-
     function GetGLSLProg: TGLProgramHandle; virtual;
     function GetCurrentParam: TGLSLShaderParameter; virtual;
     procedure SetActiveVarying(const Value: TStrings);
@@ -90,15 +86,13 @@ type
     procedure Assign(Source: TPersistent); override;
     function ShaderSupported: Boolean; override;
     function GetActiveAttribs: TGLActiveAttribArray;
-
     // SetTex() sets texture with automatic book-keeping of texture unit indices.
     // Users can just call SetTex() in the OnApply event without keeping track of texture unit indices.
     // Call from OnApply() only.
-    procedure SetTex(TexParamName : String; Tex : TGLTexture); overload;
-    procedure SetTex(TexParamName : String; Mat : TGLLibMaterial); overload;
+    procedure SetTex(const TexParamName : String; Tex : TGLTexture); overload;
+    procedure SetTex(const TexParamName : String; Mat : TGLLibMaterial); overload;
     procedure SetTex(TexParam : TGLSLShaderParameter; Tex : TGLTexture); overload;
     procedure SetTex(TexParam : TGLSLShaderParameter; Mat : TGLLibMaterial); overload;
-
     property Param[const Index: string]: TGLSLShaderParameter read GetParam;
     property DirectParam[const Index: Cardinal]: TGLSLShaderParameter read GetDirectParam;
     property ActiveVarying: TStrings read FActiveVarying write SetActiveVarying;
@@ -108,56 +102,45 @@ type
   {Wrapper around a parameter of a GLSL program. }
   TGLSLShaderParameter = class(TGLCustomShaderParameter)
   private
-     
     FGLSLProg: TGLProgramHandle;
     FParameterID: Integer;
   protected
-    
     function GetAsVector1f: Single; override;
     function GetAsVector2f: TVector2f; override;
     function GetAsVector3f: TVector3f; override;
     function GetAsVector4f: TVector; override;
-
     function GetAsVector1i: Integer; override;
     function GetAsVector2i: TVector2i; override;
     function GetAsVector3i: TVector3i; override;
     function GetAsVector4i: TVector4i; override;
-
     function GetAsVector1ui: Cardinal; override;
     function GetAsVector2ui: TVector2ui; override;
     function GetAsVector3ui: TVector3ui; override;
     function GetAsVector4ui: TVector4ui; override;
-
     procedure SetAsVector1f(const Value: Single); override;
     procedure SetAsVector2f(const Value: TVector2f); override;
     procedure SetAsVector3f(const Value: TVector3f); override;
     procedure SetAsVector4f(const Value: TVector4f); override;
-
     procedure SetAsVector1i(const Value: Integer); override;
     procedure SetAsVector2i(const Value: TVector2i); override;
     procedure SetAsVector3i(const Value: TVector3i); override;
     procedure SetAsVector4i(const Value: TVector4i); override;
-
     procedure SetAsVector1ui(const Value: Cardinal); override;
     procedure SetAsVector2ui(const Value: TVector2ui); override;
     procedure SetAsVector3ui(const Value: TVector3ui); override;
     procedure SetAsVector4ui(const Value: TVector4ui); override;
-
     function GetAsMatrix2f: TMatrix2f; override;
     function GetAsMatrix3f: TMatrix3f; override;
     function GetAsMatrix4f: TMatrix4f; override;
     procedure SetAsMatrix2f(const Value: TMatrix2f); override;
     procedure SetAsMatrix3f(const Value: TMatrix3f); override;
     procedure SetAsMatrix4f(const Value: TMatrix4f); override;
-
     function GetAsCustomTexture(const TextureIndex: Integer;
       TextureTarget: TGLTextureTarget): Cardinal; override;
     procedure SetAsCustomTexture(const TextureIndex: Integer;
       TextureTarget: TGLTextureTarget; const Value: Cardinal); override;
-
     function GetAsUniformBuffer: Cardinal; override;
     procedure SetAsUniformBuffer( UBO: Cardinal); override;
-
    public
      // Nothing here ...yet.
    end;
@@ -167,25 +150,19 @@ type
     property FragmentProgram;
     property VertexProgram;
     property GeometryProgram;    
-
     property OnApply;
     property OnApplyEx;
     property OnUnApply;
     property OnInitialize;
     property OnInitializeEx;
-
     property ShaderStyle;
     property FailedInitAction;
-
     property ActiveVarying;
     property TransformFeedBackMode;
   end;
-//------------------------------------------------------------------------
-//------------------------------------------------------------------------
+
 //------------------------------------------------------------------------
 implementation
-//------------------------------------------------------------------------
-//------------------------------------------------------------------------
 //------------------------------------------------------------------------
 
 { TGLCustomGLSLShader }
@@ -461,12 +438,12 @@ begin
   SetTex(TexParam, Mat.Material.Texture);
 end;
 
-procedure TGLCustomGLSLShader.SetTex(TexParamName: String; Tex: TGLTexture);
+procedure TGLCustomGLSLShader.SetTex(const TexParamName: String; Tex: TGLTexture);
 begin
   SetTex(Param[TexParamName], Tex);
 end;
 
-procedure TGLCustomGLSLShader.SetTex(TexParamName: String; Mat: TGLLibMaterial);
+procedure TGLCustomGLSLShader.SetTex(const TexParamName: String; Mat: TGLLibMaterial);
 begin
   SetTex(TexParamName, Mat.Material.Texture);
 end;
@@ -648,7 +625,10 @@ begin
   GL.UniformBuffer(FGLSLProg.Handle, FParameterID, UBO);
 end;
 
+//--------------------------------------------------
 initialization
+//--------------------------------------------------
+
   RegisterClasses([TGLCustomGLSLShader, TGLSLShader]);
 
 end.
