@@ -26,18 +26,13 @@ uses
 
 type
 
-  // TGLTGAImage
-  //
-
   TGLTGAImage = class(TGLBaseImage)
   public
-    
     procedure LoadFromFile(const filename: string); override;
     procedure SaveToFile(const filename: string); override;
     procedure LoadFromStream(stream: TStream); override;
     procedure SaveToStream(stream: TStream); override;
     class function Capabilities: TGLDataFileCapabilities; override;
-
     procedure AssignFromTexture(textureContext: TGLContext;
       const textureHandle: Cardinal;
       textureTarget: TGLTextureTarget;
@@ -45,12 +40,11 @@ type
       const intFormat: TGLInternalFormat); reintroduce;
   end;
 
+//===============================================================
 implementation
+//===============================================================
 
 type
-
-  // TTGAHeader
-  //
 
   TTGAFileHeader = packed record
     IDLength: Byte;
@@ -66,9 +60,6 @@ type
     PixelSize: Byte;
     ImageDescriptor: Byte;
   end;
-
-  // ReadAndUnPackRLETGA24
-  //
 
 procedure ReadAndUnPackRLETGA24(stream: TStream; destBuf: PAnsiChar;
   totalSize: Integer);
@@ -108,9 +99,6 @@ begin
   end;
 end;
 
-// ReadAndUnPackRLETGA32
-//
-
 procedure ReadAndUnPackRLETGA32(stream: TStream; destBuf: PAnsiChar;
   totalSize: Integer);
 type
@@ -149,9 +137,6 @@ begin
   end;
 end;
 
- 
-//
-
 procedure TGLTGAImage.LoadFromFile(const filename: string);
 var
   fs: TStream;
@@ -170,9 +155,6 @@ begin
     raise EInvalidRasterFile.CreateFmt('File %s not found', [filename]);
 end;
 
-// SaveToFile
-//
-
 procedure TGLTGAImage.SaveToFile(const filename: string);
 var
   fs: TStream;
@@ -185,9 +167,6 @@ begin
   end;
   ResourceName := filename;
 end;
-
-// LoadFromStream
-//
 
 procedure TGLTGAImage.LoadFromStream(stream: TStream);
 var
@@ -284,16 +263,10 @@ begin
   end;
 end;
 
-// SaveToStream
-//
-
 procedure TGLTGAImage.SaveToStream(stream: TStream);
 begin
 {$MESSAGE Hint 'TGLTGAImage.SaveToStream not yet implemented' }
 end;
-
-// AssignFromTexture
-//
 
 procedure TGLTGAImage.AssignFromTexture(textureContext: TGLContext;
   const textureHandle: Cardinal; textureTarget: TGLTextureTarget;

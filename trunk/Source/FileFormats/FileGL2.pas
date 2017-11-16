@@ -144,19 +144,15 @@ type
       procedure LoadFromStream(aStream : TStream);
   end;
 
-function G2_GetVertWeights(vert:TGLMVertex):Integer;
-function G2_GetVertBoneIndex(vert:TGLMVertex; iWeightNum:Integer):Integer;
-function G2_GetVertBoneWeight(vert:TGLMVertex; iWeightNum:Cardinal; 
+function G2_GetVertWeights(const vert:TGLMVertex):Integer;
+function G2_GetVertBoneIndex(const vert:TGLMVertex; iWeightNum:Integer):Integer;
+function G2_GetVertBoneWeight(const vert:TGLMVertex; iWeightNum:Cardinal;
   var fTotalWeight:Single; const iNumWeights:Cardinal):single;
 
 procedure MC_UnCompressQuat(var mat : TMatrix; const comp : TGLACompQuatBone);
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 // ------------------
@@ -168,19 +164,19 @@ implementation
 // static inline int G2_GetVertBoneIndex( const mdxmVertex_t *pVert, const int iWeightNum)
 // static inline float G2_GetVertBoneWeight( const mdxmVertex_t *pVert, const int iWeightNum, float &fTotalWeight, int iNumWeights )
 
-function G2_GetVertWeights(vert:TGLMVertex):Integer;
+function G2_GetVertWeights(const vert:TGLMVertex):Integer;
 begin
   // Get number of bones per vertex (0..3)+1 = (1..4)
   result:=(vert.uiNumWeightsAndBoneIndices shr 30)+1;
 end;
 
-function G2_GetVertBoneIndex(vert:TGLMVertex; iWeightNum:Integer):Integer;
+function G2_GetVertBoneIndex(const vert:TGLMVertex; iWeightNum:Integer):Integer;
 begin
   // Extract the bone reference array index, a 5-bit integer
   result:=(vert.uiNumWeightsAndBoneIndices shr (5*iWeightNum)) and 31;
 end;
 
-function G2_GetVertBoneWeight(vert:TGLMVertex; iWeightNum:Cardinal;
+function G2_GetVertBoneWeight(const vert:TGLMVertex; iWeightNum:Cardinal;
   var fTotalWeight:Single; const iNumWeights:Cardinal):single;
 var
   fBoneWeight : Single;
@@ -210,7 +206,7 @@ end;
 procedure MC_UnCompressQuat(var mat : TMatrix; const comp : TGLACompQuatBone);
 begin
   mat:=QuaternionToMatrix(QuaternionMake([comp[1]-32726,comp[2]-32726,comp[3]-32726],comp[0]-32726));
-  mat.W:=VectorMake(comp[4]/64-512,comp[5]/64-512,comp[6]/64-512,1);
+  mat.V[3]:=VectorMake(comp[4]/64-512,comp[5]/64-512,comp[6]/64-512,1);
 end;
 
 
@@ -218,8 +214,6 @@ end;
 // ------------------ TFileGLM ------------------
 // ------------------
 
-// LoadFromStream
-//
 procedure TFileGLM.LoadFromStream(aStream: TStream);
 var
   idstr   : array[0..3] of char;
@@ -292,8 +286,6 @@ end;
 // ------------------ TFileGLA ------------------
 // ------------------
 
-// GetCompressedMatrix
-//
 function TFileGLA.GetCompressedMatrix(Frame, Bone: Integer): TGLACompQuatBone;
 begin
   Result:=CompBonePool[BoneIndices[Frame*AnimHeader.numBones+Bone]];
@@ -306,8 +298,6 @@ begin
   MC_UnCompressQuat(Result,CompBonePool[BoneIndices[Frame*AnimHeader.numBones+Bone]]);
 end;
 
-// LoadFromStream
-//
 procedure TFileGLA.LoadFromStream(aStream: TStream);
 var
   idstr  : array[0..3] of char;

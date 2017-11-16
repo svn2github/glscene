@@ -29,7 +29,6 @@ type
 
   TGLBMPImage = class(TGLBaseImage)
   private
-     
     FTopDown: Boolean;
     RedMask, GreenMask, BlueMask: LongWord;
     RedShift, GreenShift, BlueShift: ShortInt;
@@ -60,7 +59,9 @@ type
       const intFormat: TGLInternalFormat); reintroduce;
   end;
 
+//========================================================
 implementation
+//========================================================
 
 const
 
@@ -112,8 +113,6 @@ type
   PBitMapInfoHeader = ^TBitMapInfoHeader;
 
  
-//
-
 procedure TGLBMPImage.LoadFromFile(const filename: string);
 var
   fs: TStream;
@@ -131,9 +130,6 @@ begin
   else
     raise EInvalidRasterFile.CreateFmt('File %s not found', [filename]);
 end;
-
-// SaveToFile
-//
 
 procedure TGLBMPImage.SaveToFile(const filename: string);
 var
@@ -217,9 +213,6 @@ function TGLBMPImage.Octochrome(N: Integer): Integer;
 begin
   Result := FLineBuffer[N];
 end;
-
-// LoadFromStream
-//
 
 procedure TGLBMPImage.LoadFromStream(stream: TStream);
 type
@@ -548,16 +541,10 @@ begin
   end;
 end;
 
-// SaveToStream
-//
-
 procedure TGLBMPImage.SaveToStream(stream: TStream);
 begin
   {$Message Hint 'TGLBMPImage.SaveToStream not yet implemented' }
 end;
-
-// AssignFromTexture
-//
 
 procedure TGLBMPImage.AssignFromTexture(textureContext: TGLContext;
   const textureHandle: Cardinal; textureTarget: TGLTextureTarget;
@@ -571,7 +558,9 @@ begin
   Result := [dfcRead {, dfcWrite}];
 end;
 
+//=============================================================
 initialization
+//=============================================================
 
   { Register this Fileformat-Handler with GLScene }
   RegisterRasterFormat('bmp', 'Bitmap Image File', TGLBMPImage);

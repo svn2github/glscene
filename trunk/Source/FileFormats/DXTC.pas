@@ -494,15 +494,13 @@ function FindDDSCompatibleDataFormat(const iFormat: TGLInternalFormat;
 
 implementation
 
-procedure DecodeColor565(col : Word; var r,g,b : Byte);
+procedure DecodeColor565(col : Word; out r,g,b : Byte);
 begin
    r:=col and $1F;
    g:=(col shr 5) and $3F;
    b:=(col shr 11) and $1F;
 end;
 
-// DecodeDXT1toBitmap32
-//
 procedure DecodeDXT1toBitmap32(
    encData, decData : PByteArray;
    w,h : Integer; var trans : Boolean);
@@ -572,8 +570,6 @@ begin
    end;
 end;
 
-// DecodeDXT3toBitmap32
-//
 procedure DecodeDXT3toBitmap32(encData, decData : PByteArray; w,h : Integer);
 var
    x,y,i,j,k,select : Integer;
@@ -643,8 +639,6 @@ begin
    end;
 end;
 
-// DecodeDXT5toBitmap32
-//
 procedure DecodeDXT5toBitmap32(encData, decData : PByteArray; w,h : Integer);
 var
    x,y,i,j,k,select : Integer;
@@ -740,7 +734,6 @@ begin
    end;
 end;
 
-// flip a DXT1 color block
 ////////////////////////////////////////////////////////////
 procedure flip_blocks_dxtc1( data : PGLubyte; numBlocks: integer);
 var
@@ -796,8 +789,6 @@ begin
   end;
 end;
 
-//
-// flip a DXT5 alpha block
 ////////////////////////////////////////////////////////////
 procedure flip_dxt5_alpha( block : PDXT5AlphaBlock);
 const
@@ -880,8 +871,6 @@ begin
   block.row[5] := (bits shr 16) and $FF;
 end;
 
-//
-// flip a DXT5 color block
 ////////////////////////////////////////////////////////////
 procedure flip_blocks_dxtc5( data: PGLubyte; numBlocks: integer );
 var

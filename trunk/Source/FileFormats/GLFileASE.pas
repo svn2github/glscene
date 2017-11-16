@@ -88,10 +88,10 @@ type
     property Count: Integer read GetCount;
   end;
 
-  // ASE geom object, represents single mesh object;
-  // contains: vertices, faces, verice indices, faces and vertices normals,
-  // channels of texture coordinates and indices, scaling and location info;
-  // this object used only to store ASE data temporary to copy supported piece of it into GLScene TMeshObject
+  (* ASE geom object, represents single mesh object;
+    contains: vertices, faces, verice indices, faces and vertices normals,
+    channels of texture coordinates and indices, scaling and location info;
+    this object used only to store ASE data temporary to copy supported piece of it into GLScene TMeshObject *)
   TGLASEMeshObject = class(TObject)
   private
     FFaces: TGLASEFaceList;
@@ -277,11 +277,11 @@ type
   TASETextureMap = (tmGeneric, tmAmbient, tmDiffuse, tmSpecular, tmShine, tmShinestrength,
     tmSelfillum, tmOpacity, tmFiltercolor, tmBump, tmReflect, tmRefract);
 
-  // use this functions to select texture and lightmap from ASE file
-  // aSubMaterialIndex = -1 - means main material maps
-  // Default are:
-  // Texture  - main material Diffuse map
-  // Lightmap - main material Ambient map
+  (* use this functions to select texture and lightmap from ASE file
+    aSubMaterialIndex = -1 - means main material maps
+    Default are:
+    Texture  - main material Diffuse map
+    Lightmap - main material Ambient map *)
   procedure ASESetPreferredTexture(aMap: TASETextureMap; aSubMaterialIndex: Integer = -1);
   procedure ASESetPreferredLightmap(aMap: TASETextureMap; aSubMaterialIndex: Integer = -1);
 
@@ -480,9 +480,9 @@ type
     Name: string;
   end;
 
-//  WARNING: if vTagIdx elements Names are substring one to each other, it must be arragned by Name length,
-//  for correct fast lookup. i.e.:
-//  MESH_FACE must be placed before MESH_FACE_LIST
+(*  WARNING: if vTagIdx elements Names are substring one to each other, it must be arragned by Name length,
+  for correct fast lookup. i.e.:
+  MESH_FACE must be placed before MESH_FACE_LIST *)
 const
   vTagIdx: array [0..88] of TTagIdx = (
     (Idx: ASCII_COMMENT_I;              Name: ASCII_COMMENT_S),

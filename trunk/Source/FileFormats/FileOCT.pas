@@ -66,8 +66,6 @@ type
 		intensity : Integer;			   // Intensity
 	end;
 
-   // TOCTFile
-   //
    TOCTFile = class (TObject)
       public
          
@@ -96,11 +94,7 @@ type
    end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 uses 
@@ -110,15 +104,11 @@ uses
 // ------------------ TOCTFile ------------------
 // ------------------
 
- 
-//
 constructor TOCTFile.Create;
 begin
    inherited Create;
 end;
 
- 
-//
 constructor TOCTFile.Create(octStream : TStream);
 begin
    inherited Create;
@@ -146,8 +136,6 @@ begin
    octStream.Read(PlayerPos, SizeOf(PlayerPos))
 end;
 
-// SaveToStream
-//
 procedure TOCTFile.SaveToStream(aStream : TStream);
 begin
    with Header, aStream do begin
@@ -167,8 +155,6 @@ begin
    end;
 end;
 
-// AddTriangles
-//
 procedure TOCTFile.AddTriangles(vertexCoords : TAffineVectorList;
                                 texMapCoords : TAffineVectorList;
                                 const textureName : String);
@@ -205,8 +191,6 @@ begin
    end;
 end;
 
-// AddLight
-//
 procedure TOCTFile.AddLight(const lightPos : TAffineVector;
                             const lightColor : TVector;
                             lightIntensity : Integer);

@@ -75,7 +75,7 @@ type
     property LineNo: Integer read FLineNo;
   end;
 
-  {A simple class that know how to extract infos from a mtl file. 
+  (*A simple class that know how to extract infos from a mtl file. 
      mtl files are companion files of the obj, they store material
      information. Guessed content (imported ones denoted with a '*',
      please help if you know more): 
@@ -91,8 +91,7 @@ type
       Ns defines the specular exponent or shininess or phong specular (?)
       Ni is the refraction index (greater than 1)
       *illum defines the illumination model (0 for no lighting, 1 for
-          ambient and diffuse, 2 for full lighting)
-      }
+          ambient and diffuse, 2 for full lighting)   *)
   TGLMTLFile = class(TStringList)
   public
     procedure Prepare;
@@ -108,11 +107,7 @@ var
   vGLFileOBJ_SplitMesh: boolean = False;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 uses
@@ -660,7 +655,7 @@ var
     while (FLine <> '') and (i < 4) do
     begin
       f := NextToken(FLine, ' ');
-      Val(f, hv.V[i], c);
+      Val(f, hv.C[i], c);
       if c <> 0 then
         Error(Format('''%s'' is not a valid floating-point constant.', [f]));
       Inc(i);
@@ -678,7 +673,7 @@ var
     while (FLine <> '') and (i < 3) do
     begin
       f := NextToken(FLine, ' ');
-      Val(f, av.V[i], c);
+      Val(f, av.C[i], c);
       if c <> 0 then
         Error(Format('''%s'' is not a valid floating-point constant.', [f]));
       inc(i);
@@ -1389,7 +1384,7 @@ begin
       Result := NullHmgVector;
       for i := 0 to 3 do
         if sl.Count > i then
-          Result.V[i] := GLUtils.StrToFloatDef(sl[i], 0)
+          Result.C[i] := GLUtils.StrToFloatDef(sl[i], 0)
         else
           Break;
     end

@@ -4,17 +4,15 @@
 {
    Doom3 MD5 mesh and animation vector file format implementation. 
    History : 
-       10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
-       24/03/07 - DaStr - Added explicit pointer dereferencing
-                             (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
-       02/12/04 - SG - Updated to support MD5 version 10,
-                          version 6 support has been dropped.
        01/06/04 - SG - Initial
+	   
     
 }
 unit GLFileMD5;
 
 interface
+
+{$I GLScene.inc}
 
 uses
   System.Classes,
@@ -56,15 +54,12 @@ var
   vMD5TextureExtensions : TStringList;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
+// ------------------------------------------------------------------
 // -----------
 // ----------- TGLMD5VectorFile -----------
 // -----------
 
-// ReadLine
-//
 function TGLMD5VectorFile.ReadLine : String;
 begin
   Result:='';
@@ -79,15 +74,11 @@ begin
   until (Result <> '') or (FCurrentPos>=FMD5String.Count);
 end;
 
-// Capabilities
-//
 class function TGLMD5VectorFile.Capabilities : TGLDataFileCapabilities;
 begin
   Result:=[dfcRead];
 end;
 
-// LoadFromStream
-//
 procedure TGLMD5VectorFile.LoadFromStream(aStream : TStream);
 
   procedure AllocateMaterial(var shader : String);
@@ -127,12 +118,12 @@ procedure TGLMD5VectorFile.LoadFromStream(aStream : TStream);
     rr : Single;
   begin
     with Result do begin
-      ImagPart.X:=ix;
-      ImagPart.Y:=iy;
-      ImagPart.Z:=iz;
+      X:=ix;
+      Y:=iy;
+      Z:=iz;
       rr:=1-(ix*ix)-(iy*iy)-(iz*iz);
-      if rr<0 then RealPart:=0
-      else RealPart:=sqrt(rr);
+      if rr<0 then W:=0
+      else W:=sqrt(rr);
     end;
   end;
 
@@ -170,13 +161,13 @@ procedure TGLMD5VectorFile.LoadFromStream(aStream : TStream);
         bone:=TGLSkeletonBone.CreateOwned(parentBone);
 
         mat:=QuaternionToMatrix(quat);
-        mat.W:=PointMake(pos);
+        mat.V[3]:=PointMake(pos);
         rmat:=QuaternionToMatrix(FFrameQuaternions[ParentBoneID]);
-        rmat.W:=PointMake(FFramePositions[ParentBoneID]);
+        rmat.V[3]:=PointMake(FFramePositions[ParentBoneID]);
         InvertMatrix(rmat);
         mat:=MatrixMultiply(mat, rmat);
 
-        pos:=AffineVectorMake(mat.W);
+        pos:=AffineVectorMake(mat.V[3]);
         quat:=QuaternionFromMatrix(mat);
       end;
       with bone do begin
@@ -399,19 +390,19 @@ procedure TGLMD5VectorFile.LoadFromStream(aStream : TStream);
         end;
 
         if FJointFlags[i] and 8 > 0 then begin
-          quat.ImagPart.X:=GLUtils.StrToFloatDef(FTempString[j]);
+          quat.X:=GLUtils.StrToFloatDef(FTempString[j]);
           Inc(j);
         end;
         if FJointFlags[i] and 16 > 0 then begin
-          quat.ImagPart.Y:=GLUtils.StrToFloatDef(FTempString[j]);
+          quat.Y:=GLUtils.StrToFloatDef(FTempString[j]);
           Inc(j);
         end;
         if FJointFlags[i] and 32 > 0 then
-          quat.ImagPart.Z:=GLUtils.StrToFloatDef(FTempString[j]);
+          quat.Z:=GLUtils.StrToFloatDef(FTempString[j]);
       end;
 
       pos:=AffineVectorMake(pos.X, pos.Z, pos.Y);
-      quat:=QuaternionMakeFromImag(quat.ImagPart.X, quat.ImagPart.Z, quat.ImagPart.Y);
+      quat:=QuaternionMakeFromImag(quat.X, quat.Z, quat.Y);
 
       frame.Position[i]:=pos;
       frame.Quaternion[i]:=quat;

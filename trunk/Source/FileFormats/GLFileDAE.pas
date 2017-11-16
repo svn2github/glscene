@@ -23,40 +23,29 @@ uses
   GLApplicationFileIO {, Fmx.FileDAE};
 
 type
-   // TGLDAEVectorFile
-   //
    {The DAE vector file (COLLADA actor file). 
       Stores a set of "frames" describing the different postures of the actor,
       it may be animated by TGLActor. The "Skin" must be loaded indepentendly
       (the whole mesh uses a single texture bitmap). }
    TGLDAEVectorFile = class(TGLVectorFile)
       public
-         
          class function Capabilities : TGLDataFileCapabilities; override;
          procedure LoadFromStream(aStream : TStream); override;
    end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 // ------------------
 // ------------------ TGLDAEVectorFile ------------------
 // ------------------
 
-// Capabilities
-//
 class function TGLDAEVectorFile.Capabilities : TGLDataFileCapabilities;
 begin
    Result:=[dfcRead];
 end;
 
-// LoadFromStream
-//
 procedure TGLMD2VectorFile.LoadFromStream(aStream : TStream);
 var
    i, j : Integer;
@@ -115,11 +104,7 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
    RegisterVectorFileFormat('dae', 'COLLADA model files', TGLDAEVectorFile);

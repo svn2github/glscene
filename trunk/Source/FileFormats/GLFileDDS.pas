@@ -38,12 +38,10 @@ type
     procedure flipSurface(chgData: PGLubyte; w, h, d: integer);
   public
     class function Capabilities: TGLDataFileCapabilities; override;
-
     procedure LoadFromFile(const filename: string); override;
     procedure SaveToFile(const filename: string); override;
     procedure LoadFromStream(stream: TStream); override;
     procedure SaveToStream(stream: TStream); override;
-
     {Assigns from any Texture.}
     procedure AssignFromTexture(textureContext: TGLContext;
       const textureHandle: Cardinal;
@@ -60,15 +58,14 @@ var
   vDDSDetailLevel: TGLDDSDetailLevels = ddsHighDet;
 
 //----------------------------------------------------------------------
-//----------------------------------------------------------------------
-//----------------------------------------------------------------------
 implementation
-// ------------------
-// ------------------ TGLDDSImage ------------------
-// ------------------
+//----------------------------------------------------------------------
 
 uses
   DXTC;
+// ------------------
+// ------------------ TGLDDSImage ------------------
+// ------------------
 
 procedure TGLDDSImage.LoadFromFile(const filename: string);
 var

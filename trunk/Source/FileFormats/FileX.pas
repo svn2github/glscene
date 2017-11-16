@@ -17,9 +17,14 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
+  System.Classes, 
+  System.SysUtils,
   
-  GLVectorTypes, GLVectorGeometry, GLVectorLists, GLPersistentClasses, GLUtils;
+  GLVectorTypes, 
+  GLVectorGeometry, 
+  GLVectorLists, 
+  GLPersistentClasses, 
+  GLUtils;
 
 type
   TDXNode = class;
@@ -38,7 +43,6 @@ type
       FTypeName : String;
       FOwner : TDXNode;
       function GetItem(index : Integer) : TDXNode;
-
     public
       constructor CreateOwned(AOwner : TDXNode);
       constructor Create; virtual;
@@ -47,7 +51,6 @@ type
       property TypeName : String read FTypeName write FTypeName;
       property Owner : TDXNode read FOwner;
       property Items[index : Integer] : TDXNode read GetItem;
-
   end;
 
   TDXMaterialList = class;
@@ -58,10 +61,8 @@ type
       FSpecular,
       FEmissive : TVector3f;
       FTexture : String;
-
     public
       constructor CreateOwned(AOwner : TDXMaterialList);
-
       property Diffuse : TVector4f read FDiffuse write FDiffuse;
       property SpecPower : Single read FSpecPower write FSpecPower;
       property Specular : TVector3f read FSpecular write FSpecular;
@@ -73,19 +74,15 @@ type
   TDXMaterialList = class (TDXNode)
     private
       function GetMaterial(index : Integer) : TDXMaterial;
-
     public
       property Items[index : Integer] : TDXMaterial read GetMaterial;
-
   end;
 
   TDXFrame = class (TDXNode)
     private
       FMatrix : TMatrix;
-
     public
       constructor Create; override;
-
       function GlobalMatrix : TMatrix;
       property Matrix : TMatrix read FMatrix write FMatrix;
 
@@ -101,11 +98,9 @@ type
       FMaterialIndices,
       FVertCountIndices : TIntegerList;
       FMaterialList : TDXMaterialList;
-
     public
       constructor Create; override;
       destructor Destroy; override;
-
       property Vertices : TAffineVectorList read FVertices;
       property Normals : TAffineVectorList read FNormals;
       property TexCoords : TAffineVectorList read FTexCoords;
@@ -120,36 +115,27 @@ type
     private
       FRootNode : TDXNode;
       FHeader : TDXFileHeader;
-
     protected
       procedure ParseText(Stream : TStream);
       procedure ParseBinary(Stream : TStream);
-
     public
       constructor Create;
       destructor Destroy; override;
       procedure LoadFromStream(Stream : TStream);
       //procedure SaveToStream(Stream : TStream);
-
       property Header : TDXFileHeader read FHeader;
       property RootNode : TDXNode read FRootNode;
 
   end;
 
 // ----------------------------------------------------------------------
-// ----------------------------------------------------------------------
-// ----------------------------------------------------------------------
 implementation
-// ----------------------------------------------------------------------
-// ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
 
 // ----------------------------------------------------------------------
 // Text parsing functions
 // ----------------------------------------------------------------------
 
-// RemoveComments
-//
 procedure RemoveComments(Text : TStringList);
 var
   i, comment : Integer;
@@ -169,15 +155,11 @@ end;
 // TDXFile
 // ----------------------------------------------------------------------
 
- 
-//
 constructor TDXFile.Create;
 begin
   FRootNode:=TDXNode.Create;
 end;
 
- 
-//
 destructor TDXFile.Destroy;
 begin
   FRootNode.Free;
@@ -185,8 +167,6 @@ begin
   inherited;
 end;
 
-// LoadFromStream
-//
 procedure TDXFile.LoadFromStream(Stream : TStream);
 begin
   Stream.Read(FHeader, SizeOf(TDXFileHeader));
@@ -218,17 +198,17 @@ var
   Cursor : Integer;
   Buffer : String;
 
-  function ContainsColon(Buffer : String) : Boolean;
+  function ContainsColon(const Buffer : String) : Boolean;
   begin
     Result:=Pos(';', Buffer)>0;
   end;
 
-  function ContainsBegin(Buffer : String) : Boolean;
+  function ContainsBegin(const Buffer : String) : Boolean;
   begin
     Result:=Pos('{', Buffer)>0;
   end;
 
-  function ContainsEnd(Buffer : String) : Boolean;
+  function ContainsEnd(const Buffer : String) : Boolean;
   begin
     Result:=Pos('}', Buffer)>0;
   end;
@@ -295,7 +275,7 @@ var
     try
       for j:=0 to 3 do
         for i:=0 to 3 do
-          Result.V[i].V[j]:=ReadSingle;
+          Result.V[i].C[j]:=ReadSingle;
     except
       on E:Exception do begin
         Result:=IdentityHMGMatrix;
@@ -577,8 +557,6 @@ end;
 // TDXMaterialList
 // ----------------------------------------------------------------------
 
-// GetMaterial
-//
 function TDXMaterialList.GetMaterial(index: Integer): TDXMaterial;
 begin
   Result:=TDXMaterial(Get(index));
@@ -589,8 +567,6 @@ end;
 // TDXMesh
 // ----------------------------------------------------------------------
 
- 
-//
 constructor TDXMesh.Create;
 begin
   inherited;
@@ -605,8 +581,6 @@ begin
   FMaterialList:=TDXMaterialList.Create;
 end;
 
- 
-//
 destructor TDXMesh.Destroy;
 begin
   FVertices.Free;
@@ -626,15 +600,11 @@ end;
 // TDXNode
 // ----------------------------------------------------------------------
 
- 
-//
 constructor TDXNode.Create;
 begin
   // Virtual
 end;
 
-// CreateOwned
-//
 constructor TDXNode.CreateOwned(AOwner: TDXNode);
 begin
   FOwner:=AOwner;
@@ -643,15 +613,11 @@ begin
     FOwner.Add(Self);
 end;
 
-// GetItem
-//
 function TDXNode.GetItem(index: Integer): TDXNode;
 begin
   Result:=TDXNode(Get(index));
 end;
 
-// Clear
-//
 procedure TDXNode.Clear;
 var
   i : integer;
@@ -667,16 +633,12 @@ end;
 // TDXFrame
 // ----------------------------------------------------------------------
 
- 
-//
 constructor TDXFrame.Create;
 begin
   inherited;
   FMatrix:=IdentityHMGMatrix;
 end;
 
-// GlobalMatrix
-//
 function TDXFrame.GlobalMatrix: TMatrix;
 begin
   if Owner is TDXFrame then
@@ -690,7 +652,6 @@ end;
 // TDXMaterial
 // ----------------------------------------------------------------------
 
-// CreateOwned
 constructor TDXMaterial.CreateOwned(AOwner: TDXMaterialList);
 begin
   Create;
