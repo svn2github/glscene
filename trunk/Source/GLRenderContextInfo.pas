@@ -32,7 +32,7 @@ type
   end;
 
   {Determines if objects are sorted, and how.
-     Sorting is done level by level (and not for all entities), values are :
+   Sorting is done level by level (and not for all entities), values are :
       osInherited : use inherited sorting mode, defaults to osRenderFarthestFirst
       osNone : do not sort objects.
   osRenderFarthestFirst : render objects whose Position is the farthest from
@@ -45,10 +45,9 @@ type
     osRenderFarthestFirst, osRenderBlendedLast,
     osRenderNearestFirst);
 
-  {Determines the visibility culling mode.
-     Culling is done level by level, allowed values are:
-      vcInherited : use inherited culling value, if selected for the root
-        level, defaults to vcNone
+  (*Determines the visibility culling mode.
+   Culling is done level by level, allowed values are:
+      vcInherited : use inherited culling value, if selected for the root level, defaults to vcNone
       vcNone : no visibility culling is performed
       vcObjectBased : culling is done on a per-object basis, each object may
         or may not be culled base on its own AxisAlignedDimensions,
@@ -56,10 +55,10 @@ type
       vcHierarchical : culling is performed hierarchically, using hierarchical
         bounding boxes, if a parent is culled, all of its children, whatever their
         culling options are invisible.
-      Depending on the structure of your scene the most efficient culling
+     Depending on the structure of your scene the most efficient culling
      method will be either vcObjectBased or vcHierarchical. Also note that if
      you use many objects with "static" geometry and have a T&amp;L graphics
-     board, it may be faster not to cull at all (ie. leave this to the hardware). }
+     board, it may be faster not to cull at all (ie. leave this to the hardware). *)
   TGLVisibilityCulling = (vcInherited, vcNone, vcObjectBased, vcHierarchical);
 
   TRenderContextClippingInfo = record
@@ -111,4 +110,5 @@ implementation
 //====================================================================
 
 end.
+
 

@@ -119,7 +119,7 @@ end;
 
 procedure TForm1.GLCamera1CustomPerspective(const viewport: TRectangle; Width, Height, DPI: Integer; var viewPortRadius: Single);
 begin
-  CurrentGLContext.PipelineTransformation.ProjectionMatrix :=
+  CurrentGLContext.PipelineTransformation.ProjectionMatrix^ :=
     CreatePerspectiveMatrix(GLCamera1.GetFieldOfView(Width)/2, Width / Height,
                             GLCamera1.NearPlaneBias, GLCamera1.DepthOfView);
 end;

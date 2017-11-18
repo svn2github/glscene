@@ -18,6 +18,8 @@ unit GLAnimatedSprite;
 
 interface
 
+{$I GLScene.inc}
+
 uses
   System.Classes, 
   System.SysUtils,

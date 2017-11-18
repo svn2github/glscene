@@ -1328,7 +1328,7 @@ function IntersectTriangleBox(const p1, p2, p3, aMinExtent, aMaxExtent: TAffineV
 
 { Compute intersection between a Sphere and a box.
   Up, Direction and Right must be normalized!
-  Use CubDepht, CubeHeight and CubeWidth to scale TGLCube. }
+  Use CubDepth, CubeHeight and CubeWidth to scale TGLCube. }
 function IntersectSphereBox(const SpherePos: TVector;
   const SphereRadius: Single; const BoxMatrix: TMatrix;
   const BoxScale: TAffineVector; intersectPoint: PAffineVector = nil;
@@ -2406,8 +2406,6 @@ begin
     DistortionDegree, InterpolationType);
 end;
 
-// InterpolateLn
-//
 function InterpolateLn(const start, stop, delta: Single;
   const DistortionDegree: Single): Single;
 begin
@@ -2485,14 +2483,12 @@ begin
   result := Sqrt(X * X + Y * Y + Z * Z);
 end;
 
-function VectorLength(const V: TVector2f): Single;
+function VectorLength(const  V: TVector2f): Single;
 begin
   result := Sqrt(VectorNorm(V.X, V.Y));
 end;
 
 function VectorLength(const V: TAffineVector): Single;
-// EAX contains address of V
-// result is passed in ST(0)
 begin
   result := Sqrt(VectorNorm(V));
 end;
@@ -2501,7 +2497,6 @@ function VectorLength(const V: TVector): Single;
 begin
   result := Sqrt(VectorNorm(V));
 end;
-
 
 function VectorNorm(const X, Y: Single): Single;
 begin
@@ -2516,6 +2511,7 @@ function VectorNorm(const V: TVector): Single;
 begin
   result := V.X * V.X + V.Y * V.Y + V.Z * V.Z;
 end;
+
 function VectorNorm(var V: array of Single): Single;
 var
   i: Integer;
@@ -2524,6 +2520,7 @@ begin
   for i := Low(V) to High(V) do
     result := result + V[i] * V[i];
 end;
+
 procedure NormalizeVector(var V: TVector2f);
 var
   invLen: Single;
@@ -2537,6 +2534,7 @@ begin
     V.Y := V.Y * invLen;
   end;
 end;
+
 procedure NormalizeVector(var V: TAffineVector);
 var
   invLen: Single;
@@ -2551,7 +2549,6 @@ begin
     V.Z := V.Z * invLen;
   end;
 end;
-
 
 function VectorNormalize(const V: TVector2f): TVector2f;
 var
@@ -2585,6 +2582,7 @@ begin
     result.Z := V.Z * invLen;
   end;
 end;
+
 procedure NormalizeVectorArray(list: PAffineVectorArray; n: Integer);
 var
   i: Integer;
@@ -2592,6 +2590,7 @@ begin
   for i := 0 to n - 1 do
     NormalizeVector(list^[i]);
 end;
+
 procedure NormalizeVector(var V: TVector);
 var
   invLen: Single;
@@ -2607,6 +2606,7 @@ begin
   end;
   V.W := 0;
 end;
+
 function VectorNormalize(const V: TVector): TVector;
 var
   invLen: Single;
@@ -2624,20 +2624,24 @@ begin
   end;
   result.W := 0;
 end;
+
 function VectorAngleCosine(const V1, V2: TAffineVector): Single;
 begin
   result := VectorDotProduct(V1, V2) / (VectorLength(V1) * VectorLength(V2));
 end;
+
 function VectorAngleCosine(const V1, V2: TVector): Single;
 begin
   result := VectorDotProduct(V1, V2) / (VectorLength(V1) * VectorLength(V2));
 end;
+
 function VectorNegate(const Vector: TAffineVector): TAffineVector;
 begin
   result.X := -Vector.X;
   result.Y := -Vector.Y;
   result.Z := -Vector.Z;
 end;
+
 function VectorNegate(const Vector: TVector): TVector;
 begin
   result.X := -Vector.X;
@@ -2645,12 +2649,14 @@ begin
   result.Z := -Vector.Z;
   result.W := -Vector.W;
 end;
+
 procedure NegateVector(var V: TAffineVector);
 begin
   V.X := -V.X;
   V.Y := -V.Y;
   V.Z := -V.Z;
 end;
+
 procedure NegateVector(var V: TVector);
 begin
   V.X := -V.X;
@@ -2658,6 +2664,7 @@ begin
   V.Z := -V.Z;
   V.W := -V.W;
 end;
+
 procedure NegateVector(var V: array of Single);
 var
   i: Integer;
@@ -2665,18 +2672,19 @@ begin
   for i := Low(V) to High(V) do
     V[i] := -V[i];
 end;
+
 procedure ScaleVector(var V: TVector2f; factor: Single);
 begin
   V.X := V.X * factor;
   V.Y := V.Y * factor;
 end;
+
 procedure ScaleVector(var V: TAffineVector; factor: Single);
 begin
   V.X := V.X * factor;
   V.Y := V.Y * factor;
   V.Z := V.Z * factor;
 end;
-
 
 procedure ScaleVector(var V: TVector; factor: Single);
 begin
@@ -2706,6 +2714,7 @@ begin
   result.X := V.X * factor;
   result.Y := V.Y * factor;
 end;
+
 function VectorScale(const V: TAffineVector; factor: Single): TAffineVector;
 begin
   result.X := V.X * factor;
@@ -2742,7 +2751,6 @@ begin
   vr.Y := V.Y * factor;
   vr.Z := V.Z * factor;
 end;
-
 
 function VectorScale(const V: TAffineVector; const factor: TAffineVector)
   : TAffineVector;
@@ -2814,11 +2822,11 @@ function VectorEquals(const V1, V2: TAffineVector): Boolean;
 begin
   result := (V1.X = V2.X) and (V1.Y = V2.Y) and (V1.Z = V2.Z);
 end;
+
 function AffineVectorEquals(const V1, V2: TVector): Boolean;
 begin
   result := (V1.X = V2.X) and (V1.Y = V2.Y) and (V1.Z = V2.Z);
 end;
-
 
 function VectorIsNull(const V: TVector): Boolean;
 begin
@@ -2834,16 +2842,19 @@ function VectorSpacing(const V1, V2: TTexPoint): Single; overload;
 begin
   result := Abs(V2.S - V1.S) + Abs(V2.T - V1.T);
 end;
+
 function VectorSpacing(const V1, V2: TAffineVector): Single;
 begin
   result := Abs(V2.X - V1.X) + Abs(V2.Y - V1.Y) +
     Abs(V2.Z - V1.Z);
 end;
+
 function VectorSpacing(const V1, V2: TVector): Single;
 begin
   result := Abs(V2.X - V1.X) + Abs(V2.Y - V1.Y) +
     Abs(V2.Z - V1.Z) + Abs(V2.W - V1.W);
 end;
+
 function VectorDistance(const V1, V2: TAffineVector): Single;
 begin
   result := Sqrt(Sqr(V2.X - V1.X) + Sqr(V2.Y - V1.Y) + Sqr(V2.Z - V1.Z));
@@ -2863,7 +2874,6 @@ function VectorDistance2(const V1, V2: TVector): Single;
 begin
   result := Sqr(V2.X - V1.X) + Sqr(V2.Y - V1.Y) + Sqr(V2.Z - V1.Z);
 end;
-
 
 function VectorPerpendicular(const V, n: TAffineVector): TAffineVector;
 var
@@ -3060,10 +3070,10 @@ end;
 
 procedure SetMatrixRow(var dest: TMatrix; rowNb: Integer; const aRow: TVector);
 begin
-  dest.X.V[rowNb] := aRow.X;
-  dest.Y.V[rowNb] := aRow.Y;
-  dest.Z.V[rowNb] := aRow.Z;
-  dest.W.V[rowNb] := aRow.W;
+  dest.V[X].C[rowNb] := aRow.X;
+  dest.V[Y].C[rowNb] := aRow.Y;
+  dest.V[Z].C[rowNb] := aRow.Z;
+  dest.V[W].C[rowNb] := aRow.W;
 end;
 
 function CreateScaleMatrix(const V: TAffineVector): TMatrix;
@@ -3599,14 +3609,15 @@ begin
     Exit;
   for i := 0 to 3 do
     for J := 0 to 3 do
-      LocMat.V[i].V[J] := LocMat.V[i].V[J] / LocMat.W.W;
+      LocMat.V[i].C[J] := LocMat.V[i].C[J] / LocMat.V[W].W;
 
   // pmat is used to solve for perspective, but it also provides
   // an easy way to test for singularity of the upper 3x3 component.
 
   pmat := LocMat;
   for i := 0 to 2 do
-    pmat.V[i].V[W] := 0;
+    pmat.V[i].C[W] := 0;
+
   pmat.V[W].W := 1;
 
   if MatrixDeterminant(pmat) = 0 then
@@ -3631,10 +3642,10 @@ begin
     psol := VectorTransform(prhs, invpmat);
 
     // stuff the answer away
-    Tran[ttPerspectiveX] := psol.V[X];
-    Tran[ttPerspectiveY] := psol.V[Y];
-    Tran[ttPerspectiveZ] := psol.V[Z];
-    Tran[ttPerspectiveW] := psol.V[W];
+    Tran[ttPerspectiveX] := psol.X;
+    Tran[ttPerspectiveY] := psol.Y;
+    Tran[ttPerspectiveZ] := psol.Z;
+    Tran[ttPerspectiveW] := psol.W;
 
     // clear the perspective partition
     LocMat.V[X].W := 0;
@@ -3654,8 +3665,8 @@ begin
   // next take care of translation (easy)
   for i := 0 to 2 do
   begin
-    Tran[TTransType(Ord(ttTranslateX) + i)] := LocMat.V[W].V[i];
-    LocMat.V[W].V[i] := 0;
+    Tran[TTransType(Ord(ttTranslateX) + i)] := LocMat.V[W].C[i];
+    LocMat.V[W].C[i] := 0;
   end;
 
   // now get scale and shear
@@ -3779,25 +3790,25 @@ end;
 function CreateOrthoMatrix(Left, Right, Bottom, Top, ZNear,
   ZFar: Single): TMatrix;
 begin
-  result.X.X := 2 / (Right - Left);
-  result.X.Y := 0;
-  result.X.Z := 0;
-  result.X.W := 0;
+  result.V[X].X := 2 / (Right - Left);
+  result.V[X].Y := 0;
+  result.V[X].Z := 0;
+  result.V[X].W := 0;
 
-  result.Y.X := 0;
-  result.Y.Y := 2 / (Top - Bottom);
-  result.Y.Z := 0;
-  result.Y.W := 0;
+  result.V[Y].X := 0;
+  result.V[Y].Y := 2 / (Top - Bottom);
+  result.V[Y].Z := 0;
+  result.V[Y].W := 0;
 
-  result.Z.X := 0;
-  result.Z.Y := 0;
-  result.Z.Z := -2 / (ZFar - ZNear);
-  result.Z.W := 0;
+  result.V[Z].X := 0;
+  result.V[Z].Y := 0;
+  result.V[Z].Z := -2 / (ZFar - ZNear);
+  result.V[Z].W := 0;
 
-  result.W.X := (Left + Right) / (Left - Right);
-  result.W.Y := (Bottom + Top) / (Bottom - Top);
-  result.W.Z := (ZNear + ZFar) / (ZNear - ZFar);
-  result.W.W := 1;
+  result.V[W].X := (Left + Right) / (Left - Right);
+  result.V[W].Y := (Bottom + Top) / (Bottom - Top);
+  result.V[W].Z := (ZNear + ZFar) / (ZNear - ZFar);
+  result.V[W].W := 1;
 end;
 
 function CreatePickMatrix(X, Y, deltax, deltay: Single;
@@ -3973,6 +3984,7 @@ begin
     (point.Y - planePoint.Y) * planeNormal.Y +
     (point.Z - planePoint.Z) * planeNormal.Z;
 end;
+
 function PointPlaneDistance(const point, planePoint,
   planeNormal: TAffineVector): Single;
 begin
@@ -3980,7 +3992,6 @@ begin
     (point.Y - planePoint.Y) * planeNormal.Y +
     (point.Z - planePoint.Z) * planeNormal.Z;
 end;
-
 
 function PointPlaneDistance(const point: TAffineVector;
   const plane: THmgPlane): Single;
@@ -4746,7 +4757,6 @@ begin
   result := Radians * c180divPI;
 end;
 
-
 function NormalizeAngle(angle: Single): Single;
 begin
   result := angle - Int(angle * cInv2PI) * c2PI;
@@ -4800,9 +4810,6 @@ end;
 {$IFDEF GLS_PLATFORM_HAS_EXTENDED}
 
 procedure SinCosine(const Theta, radius: Double; out Sin, Cos: Extended);
-// EAX contains address of Sin
-// EDX contains address of Cos
-// Theta is passed over the stack
 var
   S, c: Extended;
 begin
@@ -4927,7 +4934,6 @@ function RLength(X, Y: Single): Single;
 begin
   result := 1 / Sqrt(X * X + Y * Y);
 end;
-
 
 procedure RandomPointOnSphere(var p: TAffineVector);
 var
@@ -5066,6 +5072,7 @@ begin
   else
     result := V2;
 end;
+
 function MinFloat(const V1, V2: Double): Double;
 begin
   if V1 < V2 then
@@ -5236,6 +5243,7 @@ begin
   else
     result := V1;
 end;
+
 function MaxFloat(const V1, V2, V3: Double): Double;
 begin
   if V1 >= V2 then
@@ -5278,6 +5286,7 @@ begin
   else
     result := V2;
 end;
+
 function MinInteger(const V1, V2: Cardinal): Cardinal;
 begin
   if V1 < V2 then
@@ -6127,15 +6136,15 @@ begin
   // Find plane.
   result := True;
   for i := 0 to 2 do
-    if rayStart.V[i] < aMinExtent.V[i] then
+    if rayStart.C[i] < aMinExtent.C[i] then
     begin
-      plane.V[i] := aMinExtent.V[i];
+      plane.C[i] := aMinExtent.C[i];
       isMiddle[i] := False;
       result := False;
     end
-    else if rayStart.V[i] > aMaxExtent.V[i] then
+    else if rayStart.C[i] > aMaxExtent.C[i] then
     begin
-      plane.V[i] := aMaxExtent.V[i];
+      plane.C[i] := aMaxExtent.C[i];
       isMiddle[i] := False;
       result := False;
     end
@@ -6154,14 +6163,14 @@ begin
     // Distance to plane.
     planeInd := 0;
     for i := 0 to 2 do
-      if isMiddle[i] or (rayVector.V[i] = 0) then
-        MaxDist.V[i] := -1
+      if isMiddle[i] or (rayVector.C[i] = 0) then
+        MaxDist.C[i] := -1
       else
       begin
-        MaxDist.V[i] := (plane.V[i] - rayStart.V[i]) / rayVector.V[i];
-        if MaxDist.V[i] > 0 then
+        MaxDist.C[i] := (plane.C[i] - rayStart.C[i]) / rayVector.C[i];
+        if MaxDist.C[i] > 0 then
         begin
-          if MaxDist.V[planeInd] < MaxDist.V[i] then
+          if MaxDist.C[planeInd] < MaxDist.C[i] then
             planeInd := i;
           result := True;
         end;
@@ -6171,12 +6180,12 @@ begin
     begin
       for i := 0 to 2 do
         if planeInd = i then
-          ResAFV.V[i] := plane.V[i]
+          ResAFV.C[i] := plane.C[i]
         else
         begin
-          ResAFV.V[i] := rayStart.V[i] + MaxDist.V[planeInd] * rayVector.V[i];
-          result := (ResAFV.V[i] >= aMinExtent.V[i]) and
-            (ResAFV.V[i] <= aMaxExtent.V[i]);
+          ResAFV.C[i] := rayStart.C[i] + MaxDist.C[planeInd] * rayVector.C[i];
+          result := (ResAFV.C[i] >= aMinExtent.C[i]) and
+            (ResAFV.C[i] <= aMaxExtent.C[i]);
           if not result then
             Exit;
         end;
@@ -6313,8 +6322,8 @@ function IntersectSphereBox(const SpherePos: TVector;
   function dDOTByColumn(const V: TAffineVector; const M: TMatrix;
     const aColumn: Integer): Single;
   begin
-    result := V.X * M.X.V[aColumn] + V.Y * M.Y.V[aColumn] + V.Z *
-      M.Z.V[aColumn];
+    result := V.X * M.V[X].C[aColumn] + V.Y * M.V[Y].C[aColumn] + V.Z *
+      M.V[Z].C[aColumn];
   end;
 
   function dDotByRow(const V: TAffineVector; const M: TMatrix;
@@ -6360,16 +6369,16 @@ begin
   isSphereCenterInsideBox := True;
   for i := 0 to 2 do
   begin
-    l.V[i] := 0.5 * BoxScale.V[i];
-    T.V[i] := dDotByRow(p, BoxMatrix, i);
-    if T.V[i] < -l.V[i] then
+    l.C[i] := 0.5 * BoxScale.C[i];
+    T.C[i] := dDotByRow(p, BoxMatrix, i);
+    if T.C[i] < -l.C[i] then
     begin
-      T.V[i] := -l.V[i];
+      T.C[i] := -l.C[i];
       isSphereCenterInsideBox := False;
     end
-    else if T.V[i] > l.V[i] then
+    else if T.C[i] > l.C[i] then
     begin
-      T.V[i] := l.V[i];
+      T.C[i] := l.C[i];
       isSphereCenterInsideBox := False;
     end;
   end;
@@ -6381,7 +6390,7 @@ begin
     mini := 0;
     for i := 1 to 2 do
     begin
-      FaceDistance := l.V[i] - Abs(T.V[i]);
+      FaceDistance := l.C[i] - Abs(T.C[i]);
       if FaceDistance < MinDistance then
       begin
         MinDistance := FaceDistance;
@@ -6395,10 +6404,10 @@ begin
     if normal <> nil then
     begin
       tmp := NullVector;
-      if T.V[mini] > 0 then
-        tmp.V[mini] := 1
+      if T.C[mini] > 0 then
+        tmp.C[mini] := 1
       else
-        tmp.V[mini] := -1;
+        tmp.c[mini] := -1;
       normal^ := dDotMatrByRow(tmp, BoxMatrix);
     end;
 
@@ -6419,7 +6428,7 @@ begin
     else
     begin
       if intersectPoint <> nil then
-        intersectPoint^ := VectorAdd(Q, AffineVectorMake(BoxMatrix.W));
+        intersectPoint^ := VectorAdd(Q, AffineVectorMake(BoxMatrix.V[W]));
       if normal <> nil then
       begin
         normal^ := VectorNormalize(r);
@@ -6664,9 +6673,9 @@ begin
   n := VectorCrossProduct(e1, e2);
   AbsVector(n);
   a1 := 0;
-  if n.Y > n.V[a1] then
+  if n.Y > n.C[a1] then
     a1 := 1;
-  if n.Z > n.V[a1] then
+  if n.Z > n.C[a1] then
     a1 := 2;
 
   // use dominant axis for projection
@@ -6687,10 +6696,10 @@ begin
   end;
 
   // solve for u and v
-  u := (pt.V[a2] * e2.V[a1] - pt.V[a1] * e2.V[a2]) /
-    (e1.V[a2] * e2.V[a1] - e1.V[a1] * e2.V[a2]);
-  V := (pt.V[a2] * e1.V[a1] - pt.V[a1] * e1.V[a2]) /
-    (e2.V[a2] * e1.V[a1] - e2.V[a1] * e1.V[a2]);
+  u := (pt.C[a2] * e2.C[a1] - pt.C[a1] * e2.C[a2]) /
+    (e1.C[a2] * e2.C[a1] - e1.C[a1] * e2.C[a2]);
+  V := (pt.C[a2] * e1.C[a1] - pt.C[a1] * e1.C[a2]) /
+    (e2.C[a2] * e1.C[a1] - e2.C[a1] * e1.C[a2]);
 
   result := (u >= 0) and (V >= 0) and (u + V <= 1);
 end;
@@ -7887,12 +7896,7 @@ begin
 end;
 
 // --------------------------------------------------------------
-// --------------------------------------------------------------
-// --------------------------------------------------------------
 initialization
-
-// --------------------------------------------------------------
-// --------------------------------------------------------------
 // --------------------------------------------------------------
 
 vSIMD := 0;

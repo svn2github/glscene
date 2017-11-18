@@ -1826,7 +1826,7 @@ begin
   ODEGL.ODERToGLSceneMatrix(m, R^, Pos^);
   if OwnerBaseSceneObject.Parent is TGLBaseSceneObject then
     m := MatrixMultiply(m, OwnerBaseSceneObject.Parent.InvAbsoluteMatrix);
-  OwnerBaseSceneObject.Matrix := m;
+  OwnerBaseSceneObject.SetMatrix(m);
 end;
 
 procedure TGLODEDynamic.AlignBodyToMatrix(Mat: TMatrix);

@@ -9,9 +9,12 @@ uses
   Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.ComCtrls, Vcl.ImgList,
   Vcl.ToolWin, Vcl.Menus,
   //GR32
-  GR32_Image, GR32,
-  
-  GLHeightTileFile, GLVectorGeometry, GLUtils;
+  GR32_Image,
+  GR32,
+
+  GLHeightTileFile,
+  GLVectorGeometry,
+  GLUtils;
 
 type
   TViewerForm = class(TForm)

@@ -78,7 +78,6 @@ type
     procedure SetRenderWidth(const Value: Integer);
     procedure UpdateImageSettings;
     procedure SetPreset(const Value: TGLBlurPreset);
-
     function StoreBlurBottom: Boolean;
     function StoreBlurDeltaTime: Boolean;
     function StoreBlurRight: Boolean;
@@ -98,7 +97,6 @@ type
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
     procedure DoProgress(const progressTime: TProgressTimes); override;
     procedure DoRender(var ARci: TGLRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
@@ -125,11 +123,9 @@ type
     property OnAfterTargetRender: TNotifyEvent read FOnAfterTargetRender write SetOnAfterTargetRender;
   end;
 
-  {
-    This component blurs everything thatis rendered BEFORE it. So if you want part
+  (*This component blurs everything thatis rendered BEFORE it. So if you want part
     of your scene blured, the other not blured, make sure that the other part is
     rendered after this component. It is fast and does not require shaders.
-
     Note: it is FPS-dependant. Also also can produce a "blury trail effect", which
     stays on the screen until something new is rendered over it. It can be overcome
     by changing the Material.FrontProperties.Diffuse property. This, however, also
@@ -137,11 +133,9 @@ type
     your backgroud color is Black, set the Material.FrontProperties.Diffuse to White.
     If it is White, set Material.FrontProperties.Diffuse to Black. I haven't tried
     any others, but I hope you get the idea ;)
-
     I've seen this effect in different Bruring components, even in shaders, but if
     anyone knows another way to fix this issue - please post it on the glscene
-    newsgroup.
-  }
+    newsgroup. *)
   TGLMotionBlur = class(TGLCustomSceneObject, IGLInitializable)
   private
     FIntensity: Single;
@@ -158,7 +152,6 @@ type
   published
     // The more the intensity, the more blur you have.
     property Intensity: Single read FIntensity write FIntensity stored StoreIntensity;
-
     // From TGLBaseSceneObject.
     property Visible;
     property OnProgress;
@@ -168,9 +161,9 @@ type
   end;
 
 //------------------------------------------------------------------------
-//------------------------------------------------------------------------
-//------------------------------------------------------------------------
 implementation
+//------------------------------------------------------------------------
+
 
 uses
 
@@ -179,9 +172,6 @@ uses
   GLStrings,
   GLVectorTypes,
   OpenGLAdapter;
-//------------------------------------------------------------------------
-//------------------------------------------------------------------------
-//------------------------------------------------------------------------
 
 const
   EPS = 0.001;
@@ -852,12 +842,8 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
 
      // class registrations
   RegisterClass(TGLBlur);

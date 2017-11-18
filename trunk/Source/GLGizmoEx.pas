@@ -186,7 +186,6 @@ type
   TGLGizmoExPickMode = (pmGetPickedObjects, pmRayCast);
 
   //Gizmo objects
-
   TGLGizmoExUIFrustrum = class(TGLFrustrum)
   private
     FNoZWrite: Boolean;
@@ -347,13 +346,10 @@ type
     FCanRemoveObjFromSelectionList: Boolean;
     FSelectedObjects: TGLPickList;
     FAntiAliasedLines: Boolean;
-
     FShowAxisLabel: Boolean;
     FShowObjectInfos: Boolean;
     FShowBoundingBox: Boolean;
-
     FCanChangeWithChildren: Boolean;
-
 
     moving: Boolean;
     mx, my: Integer;
@@ -362,9 +358,7 @@ type
     fLastCursorPos: TGLPoint;
     fChangeRate: TAffineVector;   //total rotate angle
     FEnableLoopCursorMoving: Boolean;
-
     lastMousePos: TVector;
-
     FOnUpdate: TNotifyEvent;
     FOnSelect: TGLGizmoExAcceptEvent;
     FOnOperationChange: TNotifyEvent;
@@ -374,16 +368,13 @@ type
     FScaleCoef: Single;
     FGizmoThickness: Single;
     FPickMode: TGLGizmoExPickMode;
-
     FEnableHistory: Boolean;
     FHistory: TGLGizmoExActionHistoryCollection;
     FHistoryStepsCount: Integer;
     FLabelFont: TGLCustomBitmapFont;
-
     procedure SetRootGizmo(const AValue: TGLBaseSceneObject);
     procedure SetRootObjects(const AValue: TGLBaseSceneObject);
     procedure SetGizmoTmpRoot(const AValue: TGLBaseSceneObject);
-
     procedure SeTGLGizmoExVisibleInfoLabels(const AValue: TGLGizmoExVisibleInfoLabels);
     procedure SetBoundingBoxColor(const AValue: TGLColor);
     procedure SetSelectedColor(const AValue: TGLColor);
@@ -394,16 +385,13 @@ type
     procedure SetInfoLabelCoordType(aValue: TInfoLabelCoordType);
     procedure SetReferenceCoordSystem(aValue: TGLGizmoExReferenceCoordinateSystem);
     procedure SetHistoryStepsCount(aValue: Integer);
-
     procedure SetExcludeObjectsList(const AValue: TStrings);
     procedure SetExcludeClassNameList(const AValue: TStrings);
-
     function MouseWorldPos(const X, Y: Integer): TVector;
     function CheckObjectInExcludeList(const Obj: TGLBaseSceneObject): Boolean;
     function CheckClassNameInExcludeList(const Obj: TGLBaseSceneObject): Boolean;
     procedure UpdateVisibleInfoLabels;
     procedure SetGLGizmoExThickness(const Value: Single);
-
     procedure ActivatingElements(PickList: TGLPickList);
     procedure InterfaceRender(Sender: TObject; var rci: TGLRenderContextInfo);
     procedure InternalRender(Sender: TObject; var rci: TGLRenderContextInfo);
@@ -426,14 +414,12 @@ type
     procedure SetZoomFactor(const AValue: Single);
     procedure SetSelAxis(aValue: TGLGizmoExAxis);
     procedure SetPickMode(APickMode: TGLGizmoExPickMode);
-
     procedure AssignPickList(aList: TGLPickList; RemoveObj: Boolean = False);
     procedure AddObjToSelectionList(Obj: TGLBaseSceneObject);
     procedure RemoveObjFromSelectionList(Obj: TGLBaseSceneObject);
     procedure MultiSelMouseDown(X, Y: Integer);
     procedure MultiSelMouseUp(X, Y: Integer);
     procedure MultiSelMouseMove(X, Y: Integer);
-
     function GetPickList: TGLPickList;
     procedure SetPickList(aValue: TGLPickList);
     property SelAxis: TGLGizmoExAxis read FSelAxis write SetSelAxis;
@@ -446,63 +432,45 @@ type
     destructor Destroy; override;
     procedure Loaded; override;
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
-
     procedure ViewerMouseMove(const X, Y: Integer);
     procedure ViewerMouseDown(const X, Y: Integer);
     procedure ViewerMouseUp(const X, Y: Integer);
-
     procedure UpdateGizmo; overload;
-
     procedure LooseSelection; virtual;
-
     procedure UndoAdd(const AObject: TObject);
     procedure RemoveSelectedObjects;
-
     function Undo: TGLGizmoExActionHistoryItem;
     function Redo: TGLGizmoExActionHistoryItem;
-
     property CanAddObjToSelectionList: Boolean read FCanAddObjToSelectionList write FCanAddObjToSelectionList;
     property CanRemoveObjFromSelectionList: Boolean read FCanRemoveObjFromSelectionList write FCanRemoveObjFromSelectionList;
-
     procedure LooseCursorSelection;
     property CursorSelectingRegion: Boolean read FShowMultiSelecting;
-
     property RootObjects: TGLBaseSceneObject read FRootObjects write SetRootObjects;
     property RootGizmo: TGLBaseSceneObject read FRootGizmo write SetRootGizmo;
     property GizmoTmpRoot: TGLBaseSceneObject read FGizmoTmpRoot write SetGizmoTmpRoot;
     //--------------------------------------------------------------------
   published
     property Viewer: TGLSceneViewer read FViewer write SetViewer;
-
     property BoundingBoxColor: TGLColor read FBoundingBoxColor write SetBoundingBoxColor;
     property SelectedColor: TGLColor read FSelectedColor write SetSelectedColor;
     property SelectionRegionColor: TGLColor read FSelectionRegionColor write SetSelectionRegionColor;
-
     property SelectedObj: TGLBaseSceneObject read GetSelectedObj write SetSelectedObj;
     property SelectedObjects: TGLPickList read GetPickList write SetPickList;
-
     property OperationMode: TGLGizmoExOperationMode read FOperationMode write SetOperationMode default gomSelect;
-
     property ExcludeObjects: Boolean read FExcludeObjects write FExcludeObjects;
     property ExcludeObjectsList: TStrings read FExcludeObjectsList write SetExcludeObjectsList;
-
     property ExcludeClassname: Boolean read FExcludeClassname write FExcludeClassname;
     property ExcludeClassnameList: TStrings read FExcludeClassnameList write SetExcludeClassnameList;
-
     property VisibleInfoLabels: TGLGizmoExVisibleInfoLabels read FVisibleVisibleInfoLabels write SeTGLGizmoExVisibleInfoLabels;
     property VisibleInfoLabelsColor: TGLColor read FVisibleInfoLabelsColor write SetVisibleInfoLabelsColor;
-
     property AutoZoom: Boolean read FAutoZoom write FAutoZoom default True;
     property AutoZoomFactor: Single read FAutoZoomFactor write SetAutoZoomFactor;
     property ZoomFactor: Single read FZoomFactor write SetZoomFactor;
-
     property MoveCoef: Single read FMoveCoef write FMoveCoef;
     property RotationCoef: Single read FRotationCoef write FRotationCoef;
     property ScaleCoef: Single read FScaleCoef write FScaleCoef;
     property NoZWrite: Boolean read FNoZWrite write SetNoZWrite default True;
-
     property GizmoThickness: Single read FGizmoThickness write SeTGLGizmoExThickness;
-
     {Indicates whether the gizmo is enabled or not.
        WARNING: When loading/editing (possibly whenever a structureChanged
        call is made) a model, sometimes the gizmo will trigger a
@@ -514,12 +482,9 @@ type
     {Warning Enable is ReadOnly property if you set to False, Gizmo is not Hidden
       use Visible instead if you want to Hide, if you want to Hide but keep enabled
       see the VisibleGizmo property }
-
     {Use the property OperationMode=gomNone to unactivate gizmo and make it invisible}
     property Enabled: Boolean read FEnabled write FEnabled default True;
-
     property LabelFont: TGLCustomBitmapFont read FLabelFont write SetLabelFont default nil;
-
     property OnSelectionLost: TNotifyEvent read FOnSelectionLost write FOnSelectionLost;
     property OnOperationChange: TNotifyEvent read FOnOperationChange write FOnOperationChange;
     property OnOperationModeChange: TNotifyEvent read FOnOperationModeChange write FOnOperationModeChange;
@@ -527,19 +492,14 @@ type
     property OnAxisSelected: TGLGizmoExAxisSelected read FOnAxisSelected write FOnAxisSelected;
     property OnUpdate: TNotifyEvent read FOnUpdate write FOnUpdate;
     property PickMode: TGLGizmoExPickMode read FPickMode write SetPickMode default pmGetPickedObjects;
-
     property EnableActionHistory: Boolean read FEnableHistory write FEnableHistory default True;
     property HistoryStepsCount: Integer read FHistoryStepsCount write SetHistoryStepsCount;
-
     property EnableLoopCursorMoving: Boolean read FEnableLoopCursorMoving write SetEnableLoopCursorMoving default True;
     property EnableMultiSelection: Boolean read FEnableMultiSelection write SetEnableMultiSelection default True;
     property CanChangeWithChildren: Boolean read FCanChangeWithChildren write SetCanChangeWithChildren;
-
     property AntiAliasedLines: Boolean read FAntiAliasedLines write SetAALines default True;
     property InfoLabelCoordType: TInfoLabelCoordType read fInfoLabelCoordType write SetInfoLabelCoordType default ilcChangeRate;
-
     property SelectionRegion: TGLGizmoExSelectionRegion read FSelectionRegion write SetSelectionRegion default gsrRectangular;
-
     property ShowAxisLabel: Boolean read FShowAxisLabel write SetShowAxisLabel default True;
     property ShowObjectInfos: Boolean read FShowObjectInfos write SetShowObjectInfos default True;
     property ShowBoundingBox: Boolean read FShowBoundingBox write SetShowBoundingBox default True;
@@ -548,10 +508,11 @@ type
   end;
 
 
+//==================================================================
 implementation
+//==================================================================
 
 uses
-
   GLContext,
   GLPipelineTransformation,
 
@@ -881,9 +842,6 @@ begin
   end;
 
 
-  //For movement
-
-
   FUIMovementLineX := TGLGizmoExUILines(FUIRootMovement.addnewChild(TGLGizmoExUILines));
   with FUIMovementLineX do
   begin
@@ -1145,8 +1103,6 @@ begin
   end;
 
   //Rotate
-
-
   FUIRotateLineXY := TGLGizmoExUILines(FUIRootRotate.addnewChild(TGLGizmoExUILines));
   with FUIRotateLineXY do
   begin
@@ -2240,9 +2196,9 @@ procedure TGLGizmoEx.InternalRender(Sender: TObject; var rci: TGLRenderContextIn
     for I := 0 to 2 do
       for J := 0 to 2 do
         if I = J then
-          wm.V[I].V[J] := 1
+          wm.V[I].C[J] := 1
         else
-          wm.V[I].V[J] := 0;
+          wm.V[I].C[J] := 0;
     GL.LoadMatrixf(@wm);
 
     rci.GLStates.PolygonMode := pmFill;
@@ -3566,8 +3522,8 @@ var
       Exit;
     for I := 0 to 3 do
     begin
-      quantizedMousePos.V[I] := (Round(mousePos.V[I] / MoveCoef)) * MoveCoef;
-      quantizedMousePos2.V[I] := (Round(lastMousePos.V[I] / MoveCoef)) * MoveCoef;
+      quantizedMousePos.C[I] := (Round(mousePos.C[I] / MoveCoef)) * MoveCoef;
+      quantizedMousePos2.C[I] := (Round(lastMousePos.C[I] / MoveCoef)) * MoveCoef;
     end;
 
     case SelAxis of
@@ -3752,8 +3708,8 @@ var
 
     for t := 0 to 3 do
     begin
-      quantizedMousePos.V[t] := (Round(mousePos.V[t] / ScaleCoef)) * FScaleCoef;
-      quantizedMousePos2.V[t] := (Round(lastMousePos.V[t] / FScaleCoef)) * FScaleCoef;
+      quantizedMousePos.C[t] := (Round(mousePos.C[t] / ScaleCoef)) * FScaleCoef;
+      quantizedMousePos2.C[t] := (Round(lastMousePos.C[t] / FScaleCoef)) * FScaleCoef;
     end;
 
     case SelAxis of
@@ -4324,7 +4280,7 @@ begin
   if not AssignAndRemoveObj then
   begin
     EffectedObject := AObject;
-    SetOldMatrix(AObject.Matrix);
+    SetOldMatrix(AObject.Matrix^);
     if AObject is TGLFreeForm then
       FOldAutoScaling := TGLFreeForm(AObject).AutoScaling.AsVector;
   end
@@ -4373,7 +4329,7 @@ begin
 
   if not FReturnObject then
   begin
-    FEffectedObject.Matrix := FOldMatrix;
+    FEffectedObject.SetMatrix(FOldMatrix);
     if FEffectedObject is TGLFreeForm then
       TGLFreeForm(FEffectedObject).AutoScaling.AsVector := FOldAutoScaling;
   end

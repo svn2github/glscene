@@ -25,6 +25,7 @@ uses
 
   GLScene,
   GLCoordinates,
+  GLPersistentClasses,
   GLVectorGeometry,
   GLSmoothNavigator,
   GLVectorTypes;
@@ -67,11 +68,9 @@ type
   public
     constructor Create(const AJoblist : TGLCameraJobList); virtual;
     destructor Destroy; override;
-
     procedure Abort;
     procedure Step; virtual; abstract;
     procedure Init; virtual; abstract;
-
     property Running: Boolean read FRunning write FRunning;
     property ElapsedTime: Double read FElapsedTime write FElapsedTime;
     property StartTime: Double read FStartTime write FStartTime;
@@ -89,7 +88,6 @@ type
     Time : Double;
     procedure Step; override;
     procedure Init; override;
-
     // Properties.
     property InitialPos: TVector read FInitialPos;
     property FinalPos: TVector read FFinalPos;    
@@ -104,7 +102,6 @@ type
     Time : Double;
     procedure Step; override;
     procedure Init; override;
-
     // Properties.
     property InitialPos: TVector read FInitialPos;
     property FinalPos: TVector read FFinalPos;
@@ -115,7 +112,6 @@ type
     FFinalPos: TVector; // Yep, FFinalPos is stored in relative coordinates.
     FRotateSpeed: TVector2f;
     FCameraUpVector: TVector;
-
     // Absolute Coordinates, can even be not normalized by radius.
     // Procesed in Init, not used anywhere else.
     FTargetPosition: TVector;
@@ -123,7 +119,6 @@ type
   public
     procedure Step; override;
     procedure Init; override;
-
     // Properties.
     property RotateSpeed: TVector2f read FRotateSpeed;
     property CameraUpVector: TVector read FCameraUpVector;
@@ -151,7 +146,6 @@ type
     FFinalPos      : TVector;
     FInitialUp     : TVector;
     FInitialDir    : TVector;
-
     FRotAxis : TVector;
     FAngle   : Double;
   public
@@ -162,7 +156,6 @@ type
     PreferUpAxis : Boolean;
     procedure Step; override;
     procedure Init; override;
-
     // Properties.
     property InitialPos: TVector read FInitialPos;
     property InitialUp: TVector read FInitialUp;
@@ -188,20 +181,16 @@ type
     FCameraJobList : TGLCameraJobList;
     FCamera: TGLBaseSceneObject;
     FCameraTarget: TGLBaseSceneObject;
-
     // Events.
     FOnJobAdded: TGLCameraJobEvent;
     FOnJobFinished: TGLCameraJobEvent;
     FOnJobStep: TGLCameraJobEvent;
-
     //fields used by SafeOrbitAndZoomToPos
     FsoSafeDist, FsoTimeToSafePlacement, FsoTimeToOrbit, FsoTimeToZoomBackIn:double;
-
     //private methods
     //used to test whether camera and cadencer are assigned
     //Extended = true -> will test also for Camera.TargetObject
     procedure CheckAssignments(Extended: boolean);
-
     //after AdjustScene the Camera.DepthofView will be modified
     //if you want to zoom back in from GUI
     //you should use something like
@@ -217,68 +206,54 @@ type
     // Constructor.
     constructor Create(AOwner:TComponent); override;
     destructor Destroy; override;
-
-    //methods
-    //linear movement from current pos
+    (*linear movement from current pos *)
     function MoveToPos(x,y,z,time:double): TGLMoveToPosJob;
-
-    //orbiting from current pos to the pos where
-    //the camera points at the camera.targetObject TROUGH the given point
-    //it will not move to the given point(!), use SafeOrbitAndZoomToPos instead
-    //there has to be a camera.targetObject assigned!
+    (*orbiting from current pos to the pos where
+     the camera points at the camera.targetObject TROUGH the given point
+     it will not move to the given point(!), use SafeOrbitAndZoomToPos instead
+     there has to be a camera.targetObject assigned! *)
     function OrbitToPos(x,y,z,time:double): TGLOrbitToPosJob;
-
-    // Same as OrbitToPos(), but makes use of SmoothNavigator to make
-    // sure all camera movements are smooth.
+    (* Same as OrbitToPos(), but makes use of SmoothNavigator to make
+     sure all camera movements are smooth. *)
     function OrbitToPosSmooth(const ATargetPosition: TVector; const ATime: Double;
       const ASmoothNavigator: TGLNavigatorSmoothChangeVector; const AFNeedToRecalculateZoom: Boolean;
       const ACameraUpVector: PVector = nil): TGLSmoothOrbitToPos;
-
-    //Same function as OrbitToPos but support all camera states
-    //PreferUpAxis value is to setup if function use Camera Up based rotation axis
-    //instead of Camera direction based rotation axis when destination and camera
-    //position are opposite from Camera Target
+    (*Same function as OrbitToPos but support all camera states
+      PreferUpAxis value is to setup if function use Camera Up based rotation axis
+      instead of Camera direction based rotation axis when destination and camera
+      position are opposite from Camera Target *)
     function OrbitToPosAdvanced(x,y,z,time:double; PreferUpAxis: Boolean = True): TGLOrbitToPosAdvJob;
-
-
-    // Same as OrbitToPosAdvanced(), but makes use of SmoothNavigator to make
-    // sure all camera movements are smooth.
+    (* Same as OrbitToPosAdvanced(), but makes use of SmoothNavigator to make
+     sure all camera movements are smooth. *)
     function OrbitToPosAdvancedSmooth(const x,y,z, time: double;
       const ASmoothNavigator: TGLNavigatorSmoothChangeVector;
       const PreferUpAxis: Boolean = True): TGLSmoothOrbitToPosAdvJob;
-
-    //zooms in/out by moving to the given distance from camera.targetObject
-    //there has to be a camera.targetObject assigned!
+    (*zooms in/out by moving to the given distance from camera.targetObject
+     there has to be a camera.targetObject assigned! *)
     function ZoomToDistance(Distance,Time:double): TGLZoomToDistanceJob;
 
-    //google earth - like "fly-to"
-    // = zoom out to safe distance, orbit, and then zoom in to the given point
-    //there has to be a camera.targetObject assigned!
+    (*google earth - like "fly-to" = zoom out to safe distance, orbit, 
+	 and then zoom in to the given point
+    there has to be a camera.targetObject assigned! *)
     procedure SafeOrbitAndZoomToPos(x,y,z:double);
 
-    //Dan Bartlett said in the GLScene newsgroup that it might be a good idea
-    //to introduce ability to stop movement and return control to user
-    //here it is
+    (* It might be a good idea to introduce ability to stop movement 
+	and return control to user, here it is *)
     procedure StopMovement;
-
     // Called by the cadencer to animate the camera
     procedure Step(const deltaTime, newTime: Double);
-
     property CameraJobList: TGLCameraJobList read FCameraJobList;
   published
     // Assign a Moving object (usually a TGLCamera).
     property Camera: TGLBaseSceneObject read FCamera write SetCamera;
-
     // Assign a target, around which Moving object should rotate(usually TGLCamera.TargetObject).
     property CameraTarget: TGLBaseSceneObject read FCameraTarget write SetCameraTarget;
-
-    //specifies whether user should be able interract with the GLSceneViewer
-    //it is set to false while the camera is moving and
-    //coders should check this value and block GUI access to GLSceneViewer
-    //property AllowUserAction:boolean read FAllowUserAction;
-
-    //safe distance to avoid moving the camera trough the camera.targetObject
-    //while performing  SafeOrbitAndZoomToPos
+    (*specifies whether user should be able interract with the GLSceneViewer
+    it is set to false while the camera is moving and
+    coders should check this value and block GUI access to GLSceneViewer *)
+    //property AllowUserAction:boolean read FAllowUserAction; 
+    (*safe distance to avoid moving the camera trough the camera.targetObject
+     while performing  SafeOrbitAndZoomToPos *)
     property soSafeDistance:double read FsoSafeDist write FsoSafeDist;
     //time to zoom in/out to the safe position while performing  SafeOrbitAndZoomToPos
     property soTimeToSafePlacement:double read FsoTimeToSafePlacement write FsoTimeToSafePlacement;
@@ -286,18 +261,17 @@ type
     property soTimeToOrbit:double read FsoTimeToOrbit write FsoTimeToOrbit;
     //time to zoom in/out to the given final position while performing  SafeOrbitAndZoomToPos
     property soTimeToZoomBackIn:double read FsoTimeToZoomBackIn write FsoTimeToZoomBackIn;
-
     //this event is triggered when a job is init
     property OnJobAdded : TGLCameraJobEvent read FOnJobAdded write SetOnJobAdded;
-
     //this event is triggered when a job is step (like an OnMove)
     property OnJobStep : TGLCameraJobEvent read FOnJobStep write SetOnJobStep;
-
     //this event is triggered when a job is finished (not canceled)
     property OnJobFinished : TGLCameraJobEvent read FOnJobFinished write SetOnJobFinished;
   end;
 
+//====================================================================
 implementation
+//====================================================================
 
 
 const
@@ -428,7 +402,7 @@ begin
   Result.FTargetPosition := ATargetPosition;
   Result.FTime := ATime;
   Result.FSmoothNavigator := ASmoothNavigator;
-  Result.FShouldBeMatrix := FCameraJobList.FController.FCamera.Matrix;
+  Result.FShouldBeMatrix := FCameraJobList.FController.FCamera.Matrix^;
   Result.FNeedToRecalculateZoom := AFNeedToRecalculateZoom;
   if ACameraUpVector = nil then
     Result.FCameraUpVector := FCameraJobList.FController.FCamera.AbsoluteUp
@@ -955,7 +929,7 @@ begin
   if FElapsedTime < FProceedTime then
   begin
     // Save current matrix.
-    lCurrentMatrix := FJobList.FController.FCamera.Matrix;
+    lCurrentMatrix := FJobList.FController.FCamera.Matrix^;
 
     if FNeedToRecalculateZoom then
       lCurrentDistanceToTarget := FJobList.FController.FCamera.DistanceTo(FJobList.FController.FCameraTarget)
@@ -963,7 +937,7 @@ begin
       lCurrentDistanceToTarget := 0; // To avoid warning message.
 
     // Calculate the position, in which camera should have been.
-    FJobList.FController.FCamera.Matrix := FShouldBeMatrix;
+    FJobList.FController.FCamera.SetMatrix(FShouldBeMatrix);
 
     FJobList.FController.FCamera.AbsolutePosition := MoveObjectAround(
       FJobList.FController.FCamera.AbsolutePosition, FCameraUpVector,
@@ -974,10 +948,10 @@ begin
       RestoreDistanceToTarget();
 
     lTargetPosition := FJobList.FController.FCamera.AbsolutePosition;
-    FShouldBeMatrix := FJobList.FController.FCamera.Matrix;
+    FShouldBeMatrix := FJobList.FController.FCamera.Matrix^;
 
     // Restore Camera position and move it to the desired vector.
-    FJobList.FController.FCamera.Matrix := lCurrentMatrix;
+    FJobList.FController.FCamera.SetMatrix(lCurrentMatrix);
     SetTargetValueRelative(lTargetPosition);
   end
   else

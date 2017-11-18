@@ -320,7 +320,7 @@ procedure TfrmMain.GLDirectOpenGL1Render(Sender: TObject;
   var rci: TGLRenderContextInfo);
 begin
   // prepare shadow mapping matrix
-  FInvCameraMatrix := rci.PipelineTransformation.InvModelViewMatrix;
+  FInvCameraMatrix := rci.PipelineTransformation.InvModelViewMatrix^;
   // go from eye space to light's "eye" space
   FEyeToLightMatrix := MatrixMultiply(FInvCameraMatrix, FLightModelViewMatrix);
   // then to clip space
@@ -340,8 +340,8 @@ procedure TfrmMain.GLFrameBufferBeforeRender(Sender: TObject;
 begin
   with CurrentGLContext.PipelineTransformation do
   begin
-    FLightModelViewMatrix := ModelViewMatrix;
-    FLightProjMatrix := ProjectionMatrix;
+    FLightModelViewMatrix := ModelViewMatrix^;
+    FLightProjMatrix := ProjectionMatrix^;
   end;
   // push geometry back a bit, prevents false self-shadowing
   with CurrentGLContext.GLStates do

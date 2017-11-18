@@ -17,6 +17,7 @@ uses
 
   
   GLScene,
+  GLVectorTypes,
   GLWin32Viewer,
   GLVectorFileObjects,
   GLObjects,
@@ -140,8 +141,8 @@ procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
   newTime: Double);
 begin
      // Align object to hand
-     GLArrowLine1.Matrix := GLActorProxy1.BoneMatrix('Bip01 R Finger1');
-     GLArrowLine2.Matrix := GLActorProxy2.BoneMatrix('Bip01 R Finger1');
+     GLArrowLine1.Matrix^ := GLActorProxy1.BoneMatrix('Bip01 R Finger1');
+     GLArrowLine2.Matrix^ := GLActorProxy2.BoneMatrix('Bip01 R Finger1');
 
      // turn actors
      if cbActorsAreTurning.Checked then

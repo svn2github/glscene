@@ -334,7 +334,7 @@ begin
   M3 := CreateTranslationMatrix(Origin);
   M := MatrixMultiply(M1, M2);
   M := MatrixMultiply(M, M3);
-  AnObject.Matrix := MatrixMultiply(AnObject.Matrix, M);
+  AnObject.SetMatrix(MatrixMultiply(AnObject.Matrix^, M));
 
   // Just a workarround to Update angles...
   AnObject.Roll(0);
@@ -1283,8 +1283,8 @@ var
   begin
     for T := 0 to 3 do
     begin
-      QuantizedMousePos.V[T] := (Round(MousePos.V[T] / MoveCoef)) * MoveCoef;
-      QuantizedMousePos2.V[T] := (Round(LastMousePos.V[T] / MoveCoef)) * MoveCoef;
+      QuantizedMousePos.C[T] := (Round(MousePos.C[T] / MoveCoef)) * MoveCoef;
+      QuantizedMousePos2.C[T] := (Round(LastMousePos.C[T] / MoveCoef)) * MoveCoef;
     end;
     case SelAxis of
       GaX:
@@ -1408,8 +1408,8 @@ var
   begin
     for T := 0 to 3 do
     begin
-      QuantizedMousePos.V[T] := (Round(MousePos.V[T] / ScaleCoef)) * FScaleCoef;
-      QuantizedMousePos2.V[T] := (Round(LastMousePos.V[T] / FScaleCoef)) *
+      QuantizedMousePos.C[T] := (Round(MousePos.C[T] / ScaleCoef)) * FScaleCoef;
+      QuantizedMousePos2.C[T] := (Round(LastMousePos.C[T] / FScaleCoef)) *
         FScaleCoef;
     end;
     case SelAxis of
@@ -1636,7 +1636,7 @@ begin
   if GeObjectInfos in FGizmoElements then
     UpdateVisibleInfoLabels;
 
-  _GZOBoundingcube.Matrix := SelectedObj.AbsoluteMatrix;
+  _GZOBoundingcube.SetMatrix(SelectedObj.AbsoluteMatrix);
   _GZOBoundingcube.Position.SetPoint(0, 0, 0);
 
   // We must Update Color Of the BoundingBox And VisibleInfoLabels Here
@@ -1740,7 +1740,7 @@ procedure TGLGizmoUndoItem.AssignFromObject(const AObject
   : TGLCustomSceneObject);
 begin
   SetEffectedObject(AObject);
-  SetOldMatrix(AObject.Matrix);
+  SetOldMatrix(AObject.Matrix^);
   if AObject is TGLFreeForm then
   begin
     FOldAutoScaling.Assign(TGLFreeForm(AObject).AutoScaling);
@@ -1763,7 +1763,7 @@ end;
 
 procedure TGLGizmoUndoItem.DoUndo;
 begin
-  FEffectedObject.Matrix := FOldMatr;
+  FEffectedObject.SetMatrix(FOldMatr);
   if FEffectedObject is TGLFreeForm then
     TGLFreeForm(FEffectedObject).AutoScaling.Assign(FOldAutoScaling);
   FEffectedObject.Material.LibMaterialName := FOldLibMaterialName;

@@ -291,9 +291,7 @@ type
     fBottomArrowHeadHeight: Single;
     fBottomArrowHeadRadius: Single;
     FHeadStackingStyle: TArrowHeadStackingStyle;
-
   protected
-
     procedure SetTopRadius(const aValue: Single);
     procedure SetTopArrowHeadHeight(const aValue: Single);
     procedure SetTopArrowHeadRadius(const aValue: Single);
@@ -332,7 +330,6 @@ type
     By default the bottom arrow is off }
   TGLArrowArc = class(TGLCylinderBase)
   private
-
     fArcRadius: Single;
     FStartAngle: Single;
     FStopAngle: Single;
@@ -344,9 +341,7 @@ type
     fBottomArrowHeadRadius: Single;
     FHeadStackingStyle: TArrowHeadStackingStyle;
     FMesh: array of array of TVertexRec;
-
   protected
-
     procedure SetArcRadius(const aValue: Single);
     procedure SetStartAngle(const aValue: Single);
     procedure SetStopAngle(const aValue: Single);
@@ -357,15 +352,11 @@ type
     procedure SetBottomArrowHeadRadius(const aValue: Single);
     procedure SetParts(aValue: TArrowArcParts);
     procedure SetHeadStackingStyle(const val: TArrowHeadStackingStyle);
-
   public
-
     constructor Create(AOwner: TComponent); override;
     procedure BuildList(var rci: TGLRenderContextInfo); override;
     procedure Assign(Source: TPersistent); override;
-
   published
-
     property ArcRadius: Single read fArcRadius write SetArcRadius;
     property StartAngle: Single read FStartAngle write SetStartAngle;
     property StopAngle: Single read FStopAngle write SetStopAngle;
@@ -396,16 +387,13 @@ type
   TGLPolygon = class(TGLPolygonBase)
   private
     FParts: TPolygonParts;
-
   protected
     procedure SetParts(const val: TPolygonParts);
-
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
     procedure BuildList(var rci: TGLRenderContextInfo); override;
-
   published
     {  Parts of polygon.
       The 'top' of the polygon is the position were the curve describing
@@ -427,7 +415,6 @@ type
     Height cannot be greater than ApexHeight. }
   TGLFrustrum = class(TGLSceneObject)
   private
-
     FApexHeight, FBaseDepth, FBaseWidth, FHeight: Single;
     FParts: TFrustrumParts;
     FNormalDirection: TNormalDirection;
@@ -437,15 +424,11 @@ type
     procedure SetHeight(const aValue: Single);
     procedure SetParts(aValue: TFrustrumParts);
     procedure SetNormalDirection(aValue: TNormalDirection);
-
   protected
-    
     procedure DefineProperties(Filer: TFiler); override;
     procedure ReadData(Stream: TStream);
     procedure WriteData(Stream: TStream);
-
   public
-
     constructor Create(AOwner: TComponent); override;
     procedure BuildList(var rci: TGLRenderContextInfo); override;
     procedure Assign(Source: TPersistent); override;
@@ -454,7 +437,6 @@ type
     function AxisAlignedBoundingBoxUnscaled: TAABB;
     function AxisAlignedDimensionsUnscaled: TVector; override;
   published
-    
     property ApexHeight: Single read FApexHeight write SetApexHeight stored False;
     property BaseDepth: Single read FBaseDepth write SetBaseDepth stored False;
     property BaseWidth: Single read FBaseWidth write SetBaseWidth stored False;
@@ -465,9 +447,8 @@ type
   end;
 
 // -------------------------------------------------------------
-// -------------------------------------------------------------
-// -------------------------------------------------------------
 implementation
+// -------------------------------------------------------------
 // ------------------
 // ------------------ TGLDisk ------------------
 // ------------------
@@ -3324,7 +3305,7 @@ begin
   begin
     child := TGLBaseSceneObject(Children[i]);
     aabb := child.AxisAlignedBoundingBoxUnscaled;
-    AABBTransform(aabb, child.Matrix);
+    AABBTransform(aabb, child.Matrix^);
     AddAABB(Result, aabb);
   end;
 end;
@@ -3341,25 +3322,17 @@ end;
 // ------------------ TGLPolygon ------------------
 // ------------------
 
- 
-//
-
 constructor TGLPolygon.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   FParts := [ppTop, ppBottom];
 end;
 
- 
-//
 
 destructor TGLPolygon.Destroy;
 begin
   inherited Destroy;
 end;
-
-// SetParts
-//
 
 procedure TGLPolygon.SetParts(const val: TPolygonParts);
 begin
@@ -3412,13 +3385,7 @@ begin
 end;
 
 // -------------------------------------------------------------
-// -------------------------------------------------------------
-// -------------------------------------------------------------
-
 initialization
-
-// -------------------------------------------------------------
-// -------------------------------------------------------------
 // -------------------------------------------------------------
 
 RegisterClasses([TGLCylinder, TGLCone, TGLTorus, TGLDisk, TGLArrowLine,

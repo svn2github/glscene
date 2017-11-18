@@ -424,7 +424,7 @@ begin
   begin
     particle := TGLParticle(nearTrees[i]);
     TreeModelMatrix := MatrixMultiply(CreateTranslationMatrix(particle.Position),
-      rci.PipelineTransformation.ViewMatrix);
+      rci.PipelineTransformation.ViewMatrix^);
     TreeModelMatrix := MatrixMultiply(CreateScaleMatrix(VectorMake(10, 10, 10)),
       TreeModelMatrix);
     TreeModelMatrix := MatrixMultiply(CreateRotationMatrixY(DegToRad(-particle.Tag)),
@@ -522,8 +522,8 @@ begin
 
   // Mirror coordinates
   refMat := MakeReflectionMatrix(NullVector, YVector);
-  rci.PipelineTransformation.ViewMatrix :=
-    MatrixMultiply(refMat, rci.PipelineTransformation.ViewMatrix);
+  rci.PipelineTransformation.ViewMatrix^ :=
+    MatrixMultiply(refMat, rci.PipelineTransformation.ViewMatrix^);
 
   rci.GLStates.FrontFace := fwClockWise;
 
@@ -546,13 +546,13 @@ begin
     pFar := VectorTransform(pFar, refMat);
   end;
 
-  rci.PipelineTransformation.ViewMatrix := IdentityHmgMatrix;
+  rci.PipelineTransformation.ViewMatrix^ := IdentityHmgMatrix;
   Camera.Apply;
-  rci.PipelineTransformation.ViewMatrix :=
-    MatrixMultiply(refMat, rci.PipelineTransformation.ViewMatrix);
+  rci.PipelineTransformation.ViewMatrix^ :=
+    MatrixMultiply(refMat, rci.PipelineTransformation.ViewMatrix^);
 
   EarthSkyDome.DoRender(rci, True, False);
-  rci.PipelineTransformation.ModelMatrix := Terrain.AbsoluteMatrix;
+  rci.PipelineTransformation.ModelMatrix^ := Terrain.AbsoluteMatrix;
   Terrain.DoRender(rci, True, False);
 
   rci.cameraPosition := cameraPosBackup;
@@ -767,7 +767,7 @@ begin
   Result := CreateTranslationMatrix(VectorMake(w, h, 0));
   Result := MatrixMultiply(CreateScaleMatrix(VectorMake(w, h, 0)), Result);
   with CurrentGLContext.PipelineTransformation do
-    Result := MatrixMultiply(ViewProjectionMatrix, Result);
+    Result := MatrixMultiply(ViewProjectionMatrix^, Result);
 //  Camera.ApplyPerspective(SceneViewer.Buffer.ViewPort, SceneViewer.Width, SceneViewer.Height, 96);
 //  Camera.Apply;
   Result := MatrixMultiply(CreateScaleMatrix(VectorMake(1, -1, 1)), Result);

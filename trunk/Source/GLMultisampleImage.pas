@@ -76,8 +76,6 @@ implementation
 // ------------------
 
  
-//
-
 constructor TGLMultisampleImage.Create(AOwner: TPersistent);
 begin
   inherited;
@@ -86,8 +84,6 @@ begin
   FDepth := 0;
   FSamplesCount := 0;
 end;
-
- 
 
 destructor TGLMultisampleImage.Destroy;
 begin

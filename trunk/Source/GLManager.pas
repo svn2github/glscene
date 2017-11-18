@@ -18,19 +18,20 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.Types;
+  System.Classes, 
+  System.Types;
 
 procedure RegisterManager(aManager : TComponent);
 procedure DeRegisterManager(aManager : TComponent);
 function FindManager(classType : TComponentClass; const managerName : String) : TComponent;
 
+//------------------------------------------------------
 implementation
+//------------------------------------------------------
 
 var
    vManagers : TList;
 
-// RegisterManager
-//
 procedure RegisterManager(aManager : TComponent);
 begin
    if not Assigned(vManagers) then
@@ -39,16 +40,12 @@ begin
       vManagers.Add(aManager);
 end;
 
-// DeRegisterManager
-//
 procedure DeRegisterManager(aManager : TComponent);
 begin
    if Assigned(vManagers) then
       vManagers.Remove(aManager);
 end;
 
-// FindManager
-//
 function FindManager(classType : TComponentClass; const managerName : String) : TComponent;
 var
    i : Integer;
@@ -62,7 +59,9 @@ begin
          end;
 end;
 
+//============================================================
 initialization
+//============================================================
 
 finalization
 

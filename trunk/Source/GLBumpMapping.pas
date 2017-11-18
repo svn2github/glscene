@@ -68,17 +68,17 @@ var
 
   procedure SortVertexData(sortidx : Integer);
   begin
-    if t.X.V[sortidx]<t.Y.V[sortidx] then begin
+    if t.X.C[sortidx]<t.Y.C[sortidx] then begin
       vt:=v.X;   tt:=t.X;
       v.X:=v.Y; t.X:=t.Y;
       v.Y:=vt;   t.Y:=tt;
     end;
-    if t.X.V[sortidx]<t.Z.V[sortidx] then begin
+    if t.X.C[sortidx]<t.Z.C[sortidx] then begin
       vt:=v.X;   tt:=t.X;
       v.X:=v.Z; t.X:=t.Z;
       v.Z:=vt;   t.Z:=tt;
     end;
-    if t.Y.V[sortidx]<t.Z.V[sortidx] then begin
+    if t.Y.C[sortidx]<t.Z.C[sortidx] then begin
       vt:=v.Y;   tt:=t.Y;
       v.Y:=v.Z; t.Y:=t.Z;
       v.Z:=vt;   t.Z:=tt;

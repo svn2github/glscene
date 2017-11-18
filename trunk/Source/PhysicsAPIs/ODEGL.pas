@@ -375,7 +375,7 @@ var
   Scale: TAffineVector;
 begin
   Scale := GLBaseSceneObject.Scale.AsAffineVector;
-  GLBaseSceneObject.Matrix := GLMatrixFromGeom(Geom);
+  GLBaseSceneObject.SetMatrix(GLMatrixFromGeom(Geom));
   GLBaseSceneObject.Scale.AsAffineVector := Scale;
 end;
 

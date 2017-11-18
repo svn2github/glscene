@@ -15,9 +15,19 @@ uses
   Vcl.Imaging.JPeg,
   Vcl.Dialogs,
    
-  GLCadencer, GLScene, GLObjects, GLWin32Viewer, GLVectorFileObjects,
-  GLShadowPlane, GLVectorGeometry, GLTexture, GLParticleFX, GLMaterial,
-  GLCoordinates, GLCrossPlatform, GLBaseClasses,
+  GLCadencer,
+  GLScene,
+  GLObjects,
+  GLWin32Viewer,
+  GLVectorFileObjects,
+  GLShadowPlane,
+  GLVectorGeometry,
+  GLTexture,
+  GLParticleFX,
+  GLMaterial,
+  GLCoordinates,
+  GLCrossPlatform,
+  GLBaseClasses,
 
   GLFileMD3, // MD3 loading into GLScene
   Q3MD3; // Misc. Quake3 helper structures and functions
@@ -230,7 +240,7 @@ begin
   //
   WeaponTags := TMD3TagList.Create;
   WeaponTags.LoadFromFile('.\model\plasma.md3');
-  GunSmoke.Matrix := WeaponTags.GetTransform('tag_flash', 0);
+  GunSmoke.Matrix^ := WeaponTags.GetTransform('tag_flash', 0);
 
   // Apply textures to preloaded materials
   // The md3 file loader puts a material into the actors
@@ -287,21 +297,21 @@ begin
   // Set the transform for the torso
   m1 := LegsTags.GetTransform('tag_torso', Legs.CurrentFrame);
   m2 := LegsTags.GetTransform('tag_torso', Legs.NextFrameIndex);
-  Torso.Matrix := InterpolateMatrix(m1, m2, Legs.CurrentFrameDelta);
+  Torso.Matrix^ := InterpolateMatrix(m1, m2, Legs.CurrentFrameDelta);
   Torso.Roll(-TrackBar1.Position);
   Torso.Turn(-TrackBar2.Position);
 
   // Set the transform for the head
   m1 := TorsoTags.GetTransform('tag_head', Torso.CurrentFrame);
   m2 := TorsoTags.GetTransform('tag_head', Torso.NextFrameIndex);
-  Head.Matrix := InterpolateMatrix(m1, m2, Torso.CurrentFrameDelta);
+  Head.Matrix^ := InterpolateMatrix(m1, m2, Torso.CurrentFrameDelta);
   Head.Roll(-TrackBar3.Position);
   Head.Turn(-TrackBar4.Position);
 
   // Set the transform for the weapon
   m1 := TorsoTags.GetTransform('tag_weapon', Torso.CurrentFrame);
   m2 := TorsoTags.GetTransform('tag_weapon', Torso.NextFrameIndex);
-  Weapon.Matrix := InterpolateMatrix(m1, m2, Torso.CurrentFrameDelta);
+  Weapon.Matrix^ := InterpolateMatrix(m1, m2, Torso.CurrentFrameDelta);
 
   GLSceneViewer1.Invalidate;
 end;

@@ -27,6 +27,7 @@ uses
 {$IFDEF GLS_SERVICE_CONTEXT}
   GLSGenerics,
 {$ENDIF}
+  GLState,
   GLSLog,
   GLCrossPlatform,
   OpenGLTokens,
@@ -34,7 +35,6 @@ uses
   GLVectorGeometry,
   GLStrings,
   GLVectorTypes,
-  GLState,
   XOpenGL,
   GLPipelineTransformation,
   GLTextureFormat;

@@ -7,6 +7,7 @@ uses
   Winapi.Messages,
   Winapi.OpenGL,
   System.SysUtils,
+  System.Math,
   System.Variants,
   System.Classes,
   Vcl.Graphics,

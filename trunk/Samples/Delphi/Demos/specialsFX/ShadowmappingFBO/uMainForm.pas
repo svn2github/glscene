@@ -79,7 +79,7 @@ implementation
 procedure TForm1.PrepareShadowMappingRender(Sender: TObject; var rci: TGLRenderContextInfo);
 begin
   // prepare shadow mapping matrix
-  FInvCameraMatrix := rci.PipelineTransformation.InvModelViewMatrix;
+  FInvCameraMatrix := rci.PipelineTransformation.InvModelViewMatrix^;
   // go from eye space to light's "eye" space
   FEyeToLightMatrix := MatrixMultiply(FInvCameraMatrix, FLightModelViewMatrix);
   // then to clip space
@@ -206,8 +206,8 @@ begin
   // get the modelview and projection matrices from the light's "camera"
   with rci.PipelineTransformation do
   begin
-    FLightModelViewMatrix := ModelViewMatrix;
-    FLightProjMatrix := ProjectionMatrix;
+    FLightModelViewMatrix := ModelViewMatrix^;
+    FLightProjMatrix := ProjectionMatrix^;
   end;
 
   // push geometry back a bit, prevents false self-shadowing

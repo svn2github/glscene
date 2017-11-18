@@ -3,18 +3,29 @@ unit uDemo;
 interface
 
 uses
-  System.SysUtils, System.Variants, System.Classes,
-  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
+  System.SysUtils,
+  System.Variants,
+  System.Classes,
+  Vcl.Graphics,
+  Vcl.Controls,
+  Vcl.Forms, Vcl.Dialogs,
   Vcl.Imaging.Jpeg,
-  GLSJPG,
-  
-  GLScene, GLObjects, GLCoordinates, GLSimpleNavigation, GLMaterial,
+
+  OpenGLTokens,
+  GLScene,
+  GLObjects,
+  GLCoordinates,
+  GLFileJPEG,
+  GLSimpleNavigation,
+  GLMaterial,
   GLCadencer, GLCrossPlatform, GLBaseClasses, GLWin32Viewer, GLCustomShader,
   GLSLShader, GLTexture, GLFBORenderer, GLRenderContextInfo, GLGeomObjects,
   GLMesh, GLHUDObjects, GLBitmapFont, GLWindowsFont, GLVectorGeometry,
-  GLVectorTypes, GLContext, GLState, OpenGLTokens, GLColor, GLKeyBoard,
+  GLVectorTypes, GLContext, GLState,
+  GLColor,
+  GLKeyBoard,
   GLCompositeImage,
-  //GLFileJPEG,
+
   GLUtils;
 
 type

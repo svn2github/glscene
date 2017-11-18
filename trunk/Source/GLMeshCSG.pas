@@ -40,11 +40,7 @@ type
 procedure CSG_Operation(obj1, obj2: TMeshObject; Operation: TCSGOperation; Res: TMeshObject; const MaterialName1, MaterialName2: string);
 
 //-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
 implementation
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 
 const
@@ -542,7 +538,7 @@ begin
   n1 := TAffineVectorList.create;
   v1 := obj1.ExtractTriangles(t1, n1);
 
-  v1.TransformAsPoints(obj1.Owner.Owner.Matrix);
+  v1.TransformAsPoints(obj1.Owner.Owner.Matrix^);
 
   BSP1.Mode := momTriangles;
   BSP1.Vertices := v1;
@@ -553,7 +549,7 @@ begin
   t2 := TAffineVectorList.create;
   n2 := TAffineVectorList.create;
   v2 := obj2.ExtractTriangles(t2, n2);
-  v2.TransformAsPoints(obj2.Owner.Owner.Matrix);
+  v2.TransformAsPoints(obj2.Owner.Owner.Matrix^);
 
   BSP2.Mode := momTriangles;
   BSP2.Vertices := v2;

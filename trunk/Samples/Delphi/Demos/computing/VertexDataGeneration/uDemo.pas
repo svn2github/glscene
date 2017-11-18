@@ -85,7 +85,7 @@ procedure TForm1.GLSLShader1Apply(Shader: TGLCustomGLSLShader);
 begin
   with GLSceneViewer1.Buffer.RenderingContext.PipelineTransformation do
     Shader.Param['ModelViewProjectionMatrix'].AsMatrix4f :=
-      MatrixMultiply(ModelViewMatrix, ProjectionMatrix);
+      MatrixMultiply(ModelViewMatrix^, ProjectionMatrix^);
 end;
 
 procedure TForm1.MakeVertexBufferParameterSetup(Sender: TObject);

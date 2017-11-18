@@ -296,7 +296,7 @@ var
     local.position := Owner.Owner.AbsoluteToLocal(absPos);
     SetVector(v, absRadius, absRadius, absRadius, 0);
     v := Owner.Owner.AbsoluteToLocal(v);
-    local.radius := MaxFloat(v.V);
+    local.radius := MaxFloat(v.X, v.Y, v.Z);
   end;
 
 begin

@@ -18,9 +18,9 @@ uses
 
 type
   // TGLRigidBody=class;
+
   TGLParticleInertia = class(TGLBaseInertia)
   // modified from TGLBInertia by Dan Bartlett
-    { Private Declarations }
   private
     FMass: Single;
     FTranslationSpeed: TGLCoordinates;
@@ -83,7 +83,6 @@ type
   end;
 
   TGLRigidBodyInertia = class;
-
 
   (* Stores Inertia Tensor for TGLRigidBodyInertia model *)
   TGLInertiaTensor = class(TGLUpdateAbleObject)
@@ -195,11 +194,7 @@ const
   DebugMode = false;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 // ------------------
@@ -826,7 +821,7 @@ begin
   OwnerBaseSceneObject.BeginUpdate;
 
   SetMatrix(RMatrix, R);
-  OwnerBaseSceneObject.Matrix := RMatrix;
+  OwnerBaseSceneObject.SetMatrix(RMatrix);
   // OwnerBaseSceneObject.Matrix:=QuaternionToMatrix(AngularOrientation);
   OwnerBaseSceneObject.Scale.AsAffineVector := Scale;
 

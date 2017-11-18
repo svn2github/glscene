@@ -12,6 +12,8 @@ unit GLMultiProxy;
 
 interface
 
+{$I GLScene.inc}
+
 uses
   System.Classes,
   System.SysUtils,
@@ -73,15 +75,12 @@ type
          function Add : TGLMultiProxyMaster; overload;
          function Add(master : TGLBaseSceneObject; distanceMin, distanceMax : Single) : TGLMultiProxyMaster; overload;
 	      property Items[index : Integer] : TGLMultiProxyMaster read GetItems write SetItems; default;
-
          procedure Notification(AComponent: TComponent);
-         
+        
          procedure NotifyChange;
          procedure EndUpdate; override;
    end;
 
-   // TGLMultiProxy
-   //
    {Multiple Proxy object.
       This proxy has multiple master objects, which are individually made visible
       depending on a distance to the camera criterion. It can be used to implement
@@ -127,7 +126,6 @@ type
 //-------------------------------------------------------------
 implementation
 //-------------------------------------------------------------
-
 // ------------------
 // ------------------ TGLMultiProxyMaster ------------------
 // ------------------
@@ -334,7 +332,7 @@ begin
             if (master<>nil) and (d2>=mpMaster.FDistanceMin2) and (d2<mpMaster.FDistanceMax2) then begin
                oldProxySubObject:=rci.proxySubObject;
                rci.proxySubObject:=True;
-               GL.MultMatrixf(PGLFloat(master.MatrixAsAddress));
+               GL.MultMatrixf(PGLFloat(master.Matrix));
                master.DoRender(rci, renderSelf, (master.Count>0));
                rci.proxySubObject:=oldProxySubObject;
             end;

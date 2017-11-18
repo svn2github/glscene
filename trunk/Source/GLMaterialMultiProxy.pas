@@ -151,9 +151,9 @@ type
   end;
 
 //-------------------------------------------------------------
-//-------------------------------------------------------------
-//-------------------------------------------------------------
 implementation
+//-------------------------------------------------------------
+
 // ------------------
 // ------------------ TGLMaterialMultiProxyMaster ------------------
 // ------------------
@@ -426,7 +426,7 @@ begin
         oldProxySubObject := rci.proxySubObject;
         rci.proxySubObject := True;
         with rci.PipelineTransformation do
-          SetModelMatrix(MatrixMultiply(mpMaster.MasterObject.Matrix, ModelMatrix^));
+          SetModelMatrix(MatrixMultiply(mpMaster.MasterObject.Matrix^, ModelMatrix^));
         if (mpMaster.MasterObject is TGLCustomSceneObject) and (FMaterialLibrary <> nil) then
         begin
           TGLCustomSceneObject(mpMaster.MasterObject).Material.QuickAssignMaterial(
