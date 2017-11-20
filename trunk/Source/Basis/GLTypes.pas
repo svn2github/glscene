@@ -16,7 +16,6 @@ uses
   System.SysUtils,
   System.Rtti,
   System.Math,
-  System.Math.Vectors,
   GLVectorTypes;
 
 
