@@ -107,33 +107,10 @@ var
     end;
   end;
 
-  function ReadLine(Stream: TStream; var Line: String): boolean;
-  var
-    ch: AnsiChar;
-    StartPos, LineLen: integer;
-    LineBuf: AnsiString;
-  begin
-    result := False;
-    StartPos := Stream.Position;
-    ch := #0;
-    while (Stream.Read( ch, 1) = 1) and (ch <> #13) and (ch <> #10) do;
-    LineLen := Stream.Position - StartPos;
-    Stream.Position := StartPos;
-    SetString(LineBuf, NIL, LineLen);
-    Stream.ReadBuffer(LineBuf[1], LineLen);
-    Line:= String(LineBuf);
-    if (ch = #13) or (ch = #10) then
-      begin
-        result := True;
-        if (Stream.Read( ch, 1) = 1) and (ch <> #10) then
-          Stream.Seek(-1, soCurrent) // unread it if not LF character.
-      end
-  end;
-
 var
   isBinary: Boolean;
-  ASCIIHeaderBuf: Array[0..5] of AnsiChar;
-  positionBackup, StreamSize: Int64;
+  headerBuf: array [0 .. cFULL_HEADER_LEN - 1] of AnsiChar;
+  positionBackup: Integer;
   fileContent: TStringList;
   curLine: String;
   i: Integer;
@@ -143,43 +120,19 @@ var
   calcNormal: TAffineVector;
 begin
   positionBackup := aStream.Position;
-  StreamSize:= aStream.Size;
-
-  // check format is ASCII or binary:
-  // see https://stackoverflow.com/questions/26171521/verifying-that-an-stl-file-is-ascii-or-binary
+  aStream.Read(headerBuf[0], cFULL_HEADER_LEN);
+  aStream.Position := positionBackup;
   isBinary := True;
-
-  // Minimal STL must be at least 16 Bytes
-  if StreamSize < 16 then
-    raise Exception.CreateFmt('The STL file is not long enough (%d bytes).', [StreamSize]);
-
-  // test for valid ASCII format
-  aStream.Read(ASCIIHeaderBuf[0], 6);
-  if ASCIIHeaderBuf = 'solid ' then
+  i := 0;
+  while i < 80 do
+  begin
+    if (headerBuf[i] < #32) and (headerBuf[i] <> #0) then
     begin
-      // test for ASCII format
-      if ReadLine(aStream, curLine) then
-        if ReadLine(aStream, curLine) then
-          if (Pos('facet ', curLine) > 0) or (Pos('endsolid ', curLine) > 0) then
-            begin
-              isBinary := False;
-              aStream.Position := positionBackup;
-            end;
+      isBinary := False;
+      Break;
     end;
-
-  // test for valid binary
-  if isBinary then
-    begin
-      // test for binary format
-      if StreamSize < 84 then
-        raise Exception.CreateFmt('The STL file is not long enough (%d bytes).', [StreamSize]);
-      aStream.Position:= positionBackup;
-      aStream.Read(header, SizeOf(TSTLHeader));
-      // Verify that file size equals the sum of header + nTriangles value + all triangles
-      if StreamSize < (84 + (header.nbFaces * 50)) then
-        raise Exception.CreateFmt('The STL file is not long enough (%d bytes).', [StreamSize]);
-    end;
-
+    Inc(i);
+  end;
 
   mesh := TMeshObject.CreateOwned(Owner.MeshObjects);
   try
