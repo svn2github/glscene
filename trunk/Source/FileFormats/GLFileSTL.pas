@@ -24,7 +24,8 @@ uses
   GLVectorLists,
   GLVectorFileObjects,
   GLApplicationFileIO,
-  GLUtils, GLCrossPlatform;
+  GLUtils, 
+  GLCrossPlatform;
 
 type
   TSTLHeader = packed record
@@ -66,7 +67,7 @@ const
   cENDLOOP_LABEL = 'ENDLOOP';
   cENDFACET_LABEL = 'ENDFACET';
   cENDSOLID_LABEL = 'ENDSOLID';
-  cFULL_HEADER_LEN = 84;
+  cFULL_HEADER_LEN = 80;
 
 // ------------------
 // ------------------ TGLSTLVectorFile ------------------
@@ -114,9 +115,9 @@ var
   fileContent: TStringList;
   curLine: String;
   i: Integer;
-  mesh: TMeshObject;
-  header: TSTLHeader;
-  dataFace: TSTLFace;
+  Mesh: TMeshObject;
+  Header: TSTLHeader;
+  DataFace: TSTLFace;
   calcNormal: TAffineVector;
 begin
   positionBackup := aStream.Position;
@@ -124,7 +125,7 @@ begin
   aStream.Position := positionBackup;
   isBinary := True;
   i := 0;
-  while i < 80 do
+  while i < cFULL_HEADER_LEN-1 do
   begin
     if (headerBuf[i] < #32) and (headerBuf[i] <> #0) then
     begin
@@ -134,26 +135,27 @@ begin
     Inc(i);
   end;
 
-  mesh := TMeshObject.CreateOwned(Owner.MeshObjects);
+  Mesh := TMeshObject.CreateOwned(Owner.MeshObjects);
   try
-    mesh.Mode := momTriangles;
+    Mesh.Mode := momTriangles;
     if isBinary then
     begin
-      aStream.Read(header, SizeOf(TSTLHeader));
-      for i := 0 to header.nbFaces - 1 do
+         aStream.Seek(PositionBackup,soBeginning);
+      aStream.Read(Header, SizeOf(TSTLHeader));
+      for i := 0 to Header.nbFaces - 1 do
       begin
-        aStream.Read(dataFace, SizeOf(TSTLFace));
-        with dataFace, mesh do
+        aStream.Read(DataFace, SizeOf(TSTLFace));
+        with DataFace do
         begin
           // STL faces have a normal, but do not necessarily follow the winding rule,
           // so we must first determine if the triangle is properly oriented
           // and rewind it properly if not...
           calcNormal := CalcPlaneNormal(v1, v2, v3);
           if VectorDotProduct(calcNormal, normal) > 0 then
-            Vertices.Add(v1, v2, v3)
+            Mesh.Vertices.Add(v1, v2, v3)
           else
-            Vertices.Add(v3, v2, v1);
-          Normals.Add(normal, normal, normal);
+            Mesh.Vertices.Add(v3, v2, v1);
+          Mesh.Normals.Add(normal, normal, normal);
         end;
       end;
 
@@ -176,22 +178,22 @@ begin
           begin
             if Pos(cFACETNORMAL_LABEL, curLine) = 1 then
             begin
-              DecodeSTLNormals(curLine, dataFace.normal);
+              DecodeSTLNormals(curLine, DataFace.normal);
               Inc(i);
               curLine := Trim(UpperCase(fileContent[i]));
               if Pos(cOUTERLOOP_LABEL, curLine) = 1 then
               begin
                 Inc(i);
                 curLine := Trim(fileContent[i]);
-                DecodeSTLVertex(curLine, dataFace.v1);
+                DecodeSTLVertex(curLine, DataFace.v1);
 
                 Inc(i);
                 curLine := Trim(fileContent[i]);
-                DecodeSTLVertex(curLine, dataFace.v2);
+                DecodeSTLVertex(curLine, DataFace.v2);
 
                 Inc(i);
                 curLine := Trim(fileContent[i]);
-                DecodeSTLVertex(curLine, dataFace.v3);
+                DecodeSTLVertex(curLine, DataFace.v3);
               end;
               Inc(i);
               curLine := Trim(UpperCase(fileContent[i]));
@@ -199,14 +201,12 @@ begin
                 raise Exception.Create('End of Loop Not Found')
               else
               begin
-                calcNormal := CalcPlaneNormal(dataFace.v1, dataFace.v2,
-                  dataFace.v3);
-                if VectorDotProduct(calcNormal, dataFace.normal) > 0 then
-                  mesh.Vertices.Add(dataFace.v1, dataFace.v2, dataFace.v3)
+                calcNormal := CalcPlaneNormal(DataFace.v1, DataFace.v2, DataFace.v3);
+                if VectorDotProduct(calcNormal, DataFace.normal) > 0 then
+                  mesh.Vertices.Add(DataFace.v1, DataFace.v2, dataFace.v3)
                 else
-                  mesh.Vertices.Add(dataFace.v3, dataFace.v2, dataFace.v1);
-                mesh.Normals.Add(dataFace.normal, dataFace.normal,
-                  dataFace.normal);
+                  Mesh.Vertices.Add(DataFace.v3, DataFace.v2, DataFace.v1);
+                Mesh.Normals.Add(DataFace.normal, DataFace.normal, DataFace.normal);
               end;
             end;
             Inc(i);
@@ -227,7 +227,7 @@ begin
   except
     on E: Exception do
     begin
-      mesh.Free;
+      Mesh.Free;
     end;
   end;
 end;
@@ -235,30 +235,30 @@ end;
 procedure TGLSTLVectorFile.SaveToStream(aStream: TStream);
 var
   i: Integer;
-  header: TSTLHeader;
-  dataFace: TSTLFace;
-  list: TAffineVectorList;
+  Header: TSTLHeader;
+  DataFace: TSTLFace;
+  List: TAffineVectorList;
 const
   cHeaderTag = 'GLScene STL export';
 begin
-  list := Owner.MeshObjects.ExtractTriangles;
+  List := Owner.MeshObjects.ExtractTriangles;
   try
-    FillChar(header.dummy[0], SizeOf(header.dummy), 0);
-    Move(cHeaderTag, header.dummy[0], Length(cHeaderTag));
-    header.nbFaces := list.Count div 3;
-    aStream.Write(header, SizeOf(header));
+    FillChar(Header.dummy[0], SizeOf(Header.dummy), 0);
+    Move(cHeaderTag, Header.dummy[0], Length(cHeaderTag));
+    Header.nbFaces := List.Count div 3;
+    aStream.Write(Header, SizeOf(Header));
     i := 0;
     while i < list.Count do
     begin
-      dataFace.normal := CalcPlaneNormal(list[i], list[i + 1], list[i + 2]);
-      dataFace.v1 := list[i];
-      dataFace.v2 := list[i + 1];
-      dataFace.v3 := list[i + 2];
-      aStream.Write(dataFace, SizeOf(dataFace));
+      DataFace.normal := CalcPlaneNormal(List[i], List[i + 1], List[i + 2]);
+      DataFace.v1 := List[i];
+      DataFace.v2 := List[i + 1];
+      DataFace.v3 := List[i + 2];
+      aStream.Write(DataFace, SizeOf(DataFace));
       Inc(i, 3);
     end;
   finally
-    list.Free;
+    List.Free;
   end;
 end;
 
