@@ -32,10 +32,7 @@ uses
   GLRenderContextInfo;
 
 type
-   // TLineNode
-   //
-   {Specialized Node for use in a TGLLines objects. 
-      Adds a Width property }
+   {Specialized Node for use in a TGLLines objects. Adds a Width property }
    TLineNode = class(TGLNode)
    private
      FData: Pointer;
@@ -48,10 +45,7 @@ type
    published
    end;
 
-   // TLineNodes
-   //
-   {Specialized collection for Nodes in TGLMeshLines objects. 
-      Stores TLineNode items. }
+   {Specialized collection for Nodes in TGLMeshLines objects. Stores TLineNode items. }
    TLineNodes = class(TGLNodes)
    public
      
@@ -197,18 +191,12 @@ type
   end;
 
 //--------------------------------------------------------------------------
-//--------------------------------------------------------------------------
-//--------------------------------------------------------------------------
 implementation
-//--------------------------------------------------------------------------
-//--------------------------------------------------------------------------
 //--------------------------------------------------------------------------
 
 const
   CIRCLESEGMENTS = 32;
 
-// TLineNode
-//
 constructor TLineNode.Create(Collection : TCollection);
 begin
 	inherited Create(Collection);
@@ -228,8 +216,6 @@ begin
 	inherited;
 end;
 
-// TLineNodes
-//
 constructor TLineNodes.Create(AOwner : TComponent);
 begin
    inherited Create(AOwner, TLineNode);
@@ -265,8 +251,6 @@ begin
 end;
 
 
-// TLineCollection
-//
 function TLineCollection.GetItems(index: Integer): TLineItem;
 begin
    Result:=TLineItem(inherited Items[index]);
@@ -288,8 +272,6 @@ begin
   Result.Name := Name;
 end;
 
-// TMeshLine
-//
 constructor TLineItem.Create(Collection: TCollection);
 begin
   inherited;

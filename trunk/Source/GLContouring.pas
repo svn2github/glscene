@@ -67,7 +67,7 @@ type
     procedure MakeIsolines(var Depths: TGLMatrix; bmSize: Integer;
       StartDepth, EndDepth: Single; Interval: Integer);
     procedure FreeList;
-    constructor Create(AOwner: TComponent); virtual;
+    constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
   {  CONREC is a contouring routine for rectangular spaced data or regular 2D grids
@@ -109,11 +109,7 @@ procedure TriangleElevationSegments(const p1, p2, p3: TAffineVector;
   ElevationDelta: Single; Segments: TAffineVectorList);
 
 //----------------------------------------------------------------------
-//----------------------------------------------------------------------
-//----------------------------------------------------------------------
 implementation
-//----------------------------------------------------------------------
-//----------------------------------------------------------------------
 //----------------------------------------------------------------------
 
 var
@@ -529,13 +525,12 @@ var
   m1, m2, m3, Deside: Integer;
   dmin, dmax, x1, x2, y1, y2: Single;
   minY1, maxY1, minX1, maxX1, ScaleFont, ActualValue: Single;
-  I, J, K, V, lcnt, m: Integer;
+  I, J, K, lcnt, m: Integer;
   CastTab: TCastArray;
   h: TVectorL4D;
   sh: TVectorL4I;
   xh, yh: TVectorL4D;
   temp1, temp2: Single;
-  r: Byte;
   IUniqueList: TList<Single>;
 
   // ------- service xsec west east lin. interpol -------------------------------

@@ -24,15 +24,18 @@ uses
   System.SysUtils,
 
   GLScene,
+  GLSLog,
   GLVectorGeometry,
   OpenGLTokens,
   GLContext,
   GLSilhouette,
   GLCrossPlatform,
   GLPersistentClasses,
+  GLCoordinates,
   GLPipelineTransformation,
   GLGeometryBB,
   GLColor,
+  GLSelection,
   GLRenderContextInfo,
   GLVectorLists,
   GLState,
@@ -66,9 +69,7 @@ type
      all have visible=true
     scmParentVisible : Caster produces shadow if parent has visible=true
     scmParentRecursivelyVisible : Caster casts shadow if ancestors up the hierarchy
-     all have visible=true, starting from the parent (ignoring own visible setting)
-   }
-
+     all have visible=true, starting from the parent (ignoring own visible setting) }
   TGLShadowCastingMode = (scmAlways, scmVisible, scmRecursivelyVisible,
     scmParentVisible, scmParentRecursivelyVisible);
 
@@ -158,8 +159,7 @@ type
       svoScissorClips : use scissor clipping per light, beneficial when
         lights are attenuated and don't illuminate the whole scene
       svoWorldScissorClip : use scissor clipping for the world, beneficial
-        when shadow receivers don't cover the whole viewer surface
-      }
+        when shadow receivers don't cover the whole viewer surface }
   TGLShadowVolumeOption = (svoShowVolumes, svoCacheSilhouettes, svoScissorClips,
     svoWorldScissorClip, svoDesignVisible);
   TGLShadowVolumeOptions = set of TGLShadowVolumeOption;
@@ -170,8 +170,7 @@ type
       svmDarkening : renders the scene with lighting on as usual, then darkens
         shadowed areas (i.e. inaccurate lighting, but will "shadow" objects
         that don't honour to diffuse or specular lighting)
-      svmOff : no shadowing will take place
-      }
+      svmOff : no shadowing will take place }
   TGLShadowVolumeMode = (svmAccurate, svmDarkening, svmOff);
 
   {Simple shadow volumes.
@@ -183,8 +182,7 @@ type
      buffers, shadow volumes will not work properly. 
      Another issue to look out for is the fact that shadow volume capping requires
      that the camera depth of view is either very high (fi 1e9) or that the
-     camera style is csInfinitePerspective.
-      }
+     camera style is csInfinitePerspective. }
   TGLShadowVolume = class(TGLImmaterialSceneObject)
   private
     FActive: Boolean;
@@ -233,11 +231,7 @@ type
   end;
 
 //-------------------------------------------------------------
-//-------------------------------------------------------------
-//-------------------------------------------------------------
 implementation
-//-------------------------------------------------------------
-//-------------------------------------------------------------
 //-------------------------------------------------------------
 
 // ------------------
@@ -948,13 +942,8 @@ begin
 end;
 
 //-------------------------------------------------------------
-//-------------------------------------------------------------
-//-------------------------------------------------------------
-
 initialization
-  //-------------------------------------------------------------
-  //-------------------------------------------------------------
-  //-------------------------------------------------------------
+//-------------------------------------------------------------
 
   RegisterClasses([TGLShadowVolume]);
 

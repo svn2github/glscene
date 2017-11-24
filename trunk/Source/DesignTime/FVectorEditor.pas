@@ -18,11 +18,20 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
-  VCL.Forms, VCL.ComCtrls, VCL.StdCtrls, VCL.ToolWin,
-  VCL.ExtCtrls, VCL.Buttons, VCL.Graphics, VCL.Controls,
+  System.Classes, 
+  System.SysUtils,
+  VCL.Forms, 
+  VCL.ComCtrls, 
+  VCL.StdCtrls, 
+  VCL.ToolWin,
+  VCL.ExtCtrls, 
+  VCL.Buttons, 
+  VCL.Graphics, 
+  VCL.Controls,
    
-  GLVectorGeometry, GLUtils, GLVectorTypes;
+  GLVectorGeometry, 
+  GLUtils, 
+  GLVectorTypes;
 
 type
   TGLVectorEditorForm = class(TForm)
@@ -74,11 +83,7 @@ function GLVectorEditorForm : TGLVectorEditorForm;
 procedure ReleaseVectorEditorForm;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 {$R *.dfm}
@@ -100,8 +105,6 @@ begin
 	end;
 end;
 
-// Execute
-//
 function TGLVectorEditorForm.Execute(var x, y, z : Single) : Boolean;
 begin
    // setup dialog fields
@@ -213,11 +216,7 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 finalization

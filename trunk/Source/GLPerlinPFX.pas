@@ -27,8 +27,6 @@ uses
 
 type
 
-  // TGLPerlinPFXManager
-  //
   { A sprite-based particles FX manager using perlin-based sprites.
     This PFX manager is more suited for smoke or fire effects, and with proper
     tweaking of the texture and perlin parameters, may help render a convincing
@@ -37,19 +35,14 @@ type
     intensity and a perlin noise. }
   TGLPerlinPFXManager = class(TGLBaseSpritePFXManager)
   private
-     
     FTexMapSize: Integer;
     FNoiseSeed: Integer;
     FNoiseScale: Integer;
     FNoiseAmplitude: Integer;
     FSmoothness: Single;
     FBrightness, FGamma: Single;
-
   protected
-    
-    procedure PrepareImage(bmp32: TGLBitmap32; var texFormat: Integer);
-      override;
-
+    procedure PrepareImage(bmp32: TGLBitmap32; var texFormat: Integer); override;
     procedure SetTexMapSize(const val: Integer);
     procedure SetNoiseSeed(const val: Integer);
     procedure SetNoiseScale(const val: Integer);
@@ -57,14 +50,10 @@ type
     procedure SetSmoothness(const val: Single);
     procedure SetBrightness(const val: Single);
     procedure SetGamma(const val: Single);
-
   public
-    
     constructor Create(aOwner: TComponent); override;
     destructor Destroy; override;
-
   published
-    
     { Underlying texture map size, as a power of two.
       Min value is 3 (size=8), max value is 9 (size=512). }
     property TexMapSize: Integer read FTexMapSize write SetTexMapSize default 6;
@@ -87,14 +76,12 @@ type
     { Random seed to use for the perlin noise. }
     property NoiseSeed: Integer read FNoiseSeed write SetNoiseSeed default 0;
     { Scale applied to the perlin noise (stretching). }
-    property NoiseScale: Integer read FNoiseScale write SetNoiseScale
-      default 100;
+    property NoiseScale: Integer read FNoiseScale write SetNoiseScale default 100;
     { Amplitude applied to the perlin noise (intensity).
       This value represent the percentage of the sprite luminance affected by
       the perlin texture. }
     property NoiseAmplitude: Integer read FNoiseAmplitude
       write SetNoiseAmplitude default 50;
-
     property ColorMode default scmInner;
     property SpritesPerTexture default sptFour;
     property ParticleSize;
@@ -104,11 +91,7 @@ type
   end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 // ------------------
@@ -292,12 +275,7 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 // class registrations

@@ -22,6 +22,7 @@ uses
   GLScene,
   GLPersistentClasses,
   GLVectorGeometry,
+  GLVectorLists,
   GLContext,
   GLObjects,
   GLSilhouette,

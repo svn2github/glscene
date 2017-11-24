@@ -5,18 +5,8 @@
   Basic editing frame for TGLTexture 
 
    History :  
-   05/10/08 - DanB - Removed Kylix support
-   24/03/08 - DaStr - Moved TGLMinFilter and TGLMagFilter from GLUtils.pas
-  to GLGraphics.pas (BugTracker ID = 1923844)
-   29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
-   19/12/06 - DaStr - SBEditImageClick() now calls DoOnChange
-  TRTextureEdit.CBImageClassChange - TGLTextureImageClass(tic).Create()
-  now gets the correct variable as its owner (BugTracker ID = 1603743)
-  All comboboxes get their Items using RTTI
-  (thanks to dikoe Kenguru for the reminder and Roman Ganz for the code)
-   03/07/04 - LR  - Make change for Linux
-   17/03/00 - Egg - Added ImageAlpha combo
    13/03/00 - Egg - Creation
+   The whole history is logged in previous version of the unit
    
 }
 { TODO : Replace STImageClass with a dropdown (polymorphism) }
@@ -27,9 +17,18 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils, System.TypInfo, VCL.Forms, VCL.StdCtrls,
-  VCL.Buttons, VCL.Controls,
-  GLGraphics, GLTextureFormat, GLTexture, GLState, GLTextureImageEditors;
+  System.Classes, 
+  System.SysUtils, 
+  System.TypInfo, 
+  VCL.Forms, 
+  VCL.StdCtrls,
+  VCL.Buttons, 
+  VCL.Controls,
+  GLGraphics, 
+  GLTextureFormat, 
+  GLTexture, 
+  GLState, 
+  GLTextureImageEditors;
 
 type
   TRTextureEdit = class(TFrame)
@@ -58,32 +57,26 @@ type
     procedure CBImageClassChange(Sender: TObject);
     procedure CBImageAlphaChange(Sender: TObject);
     procedure CBFilteringQualityChange(Sender: TObject);
-
   private
-     
     FTexture: TGLTexture;
     FOnChange: TNotifyEvent;
     Changeing: Boolean;
   protected
-    
     procedure SetTexture(const val: TGLTexture);
     procedure DoOnChange; dynamic;
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
     property Texture: TGLTexture read FTexture write SetTexture;
     property OnChange: TNotifyEvent read FOnChange write FOnChange;
-
   end;
 
+//-------------------------------------------------------------
 implementation
+//-------------------------------------------------------------
 
 {$R *.dfm}
 
- 
-//
 constructor TRTextureEdit.Create(AOwner: TComponent);
 var
   I: Integer;
@@ -107,16 +100,12 @@ begin
     CBTextureWrap.Items.Add(GetEnumName(TypeInfo(TGLTextureWrap), I));
 end;
 
- 
-//
 destructor TRTextureEdit.Destroy;
 begin
   FTexture.Free;
   inherited;
 end;
 
-// SetTexture
-//
 procedure TRTextureEdit.SetTexture(const val: TGLTexture);
 begin
   FTexture.Assign(val);
@@ -137,16 +126,12 @@ begin
   end;
 end;
 
-// DoOnChange
-//
 procedure TRTextureEdit.DoOnChange;
 begin
   if (not changeing) and Assigned(FOnChange) then
     OnChange(Self);
 end;
 
-// CBImageClassChange
-//
 procedure TRTextureEdit.CBImageClassChange(Sender: TObject);
 var
   tic: TGLTextureImageClass;
@@ -166,8 +151,6 @@ begin
   end;
 end;
 
-// CBImageAlphaChange
-//
 procedure TRTextureEdit.CBImageAlphaChange(Sender: TObject);
 begin
   FTexture.ImageAlpha := TGLTextureImageAlpha(CBImageAlpha.ItemIndex);
@@ -182,40 +165,30 @@ begin
   DoOnChange;
 end;
 
-// CBMinFilterChange
-//
 procedure TRTextureEdit.CBMinFilterChange(Sender: TObject);
 begin
   FTexture.MinFilter := TGLMinFilter(CBMinFilter.ItemIndex);
   DoOnChange;
 end;
 
-// CBTextureModeChange
-//
 procedure TRTextureEdit.CBTextureModeChange(Sender: TObject);
 begin
   FTexture.TextureMode := TGLTextureMode(CBTextureMode.ItemIndex);
   DoOnChange;
 end;
 
-// CBTextureWrapChange
-//
 procedure TRTextureEdit.CBTextureWrapChange(Sender: TObject);
 begin
   FTexture.TextureWrap := TGLTextureWrap(CBTextureWrap.ItemIndex);
   DoOnChange;
 end;
 
-// CBDisabledClick
-//
 procedure TRTextureEdit.CBDisabledClick(Sender: TObject);
 begin
   FTexture.Disabled := CBDisabled.Checked;
   DoOnChange;
 end;
 
-// SBEditImageClick
-//
 procedure TRTextureEdit.SBEditImageClick(Sender: TObject);
 begin
   EditGLTextureImage(FTexture.Image);

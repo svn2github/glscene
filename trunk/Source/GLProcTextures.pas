@@ -73,12 +73,8 @@ type
     property NoiseRandSeed: Longint read FNoiseRandSeed write SetNoiseRandSeed;
   end;
 
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 constructor TGLProcTextureNoise.Create(AOwner: TPersistent);
@@ -202,15 +198,11 @@ begin
 end;
 
  
-//
-
 class function TGLProcTextureNoise.FriendlyName: string;
 begin
   Result := 'Procedural Noise';
 end;
 
-// FriendlyDescription
-//
 
 class function TGLProcTextureNoise.FriendlyDescription: string;
 begin
@@ -260,8 +252,6 @@ begin
   Result := 1;
 end;
 
-// GetTextureTarget
-//
 
 function TGLProcTextureNoise.GetTextureTarget: TGLTextureTarget;
 begin
@@ -733,12 +723,8 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
 
   RegisterGLTextureImageClass(TGLProcTextureNoise);
 

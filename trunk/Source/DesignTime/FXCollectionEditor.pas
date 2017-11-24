@@ -5,15 +5,8 @@
   Edits a TGLXCollection 
 
    History :  
-   20/01/11 - DanB - Collection items are now grouped by ItemCategory
-   16/06/10 - YP - Fixed IDE exception when item removed
-   05/10/08 - DanB - removed Kylix support + some other old ifdefs
-   29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
-   03/07/04 - LR - Make change for Linux
-   12/07/03 - DanB - Fixed crash when owner deleted
-   27/02/02 - Egg - Fixed crash after item deletion
-   11/04/00 - Egg - Fixed crashes in IDE
    06/04/00 - Egg - Creation
+   The whole history is logged in previous version of the unit
    
 }
 unit FXCollectionEditor;
@@ -78,7 +71,6 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure FormHide(Sender: TObject);
   private
-     
     FXCollection: TGLXCollection;
     // ownerComponent : TComponent;
     FDesigner: IDesigner;
@@ -100,11 +92,7 @@ function GLXCollectionEditorForm: TGLXCollectionEditorForm;
 procedure ReleaseXCollectionEditor;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 {$R *.dfm}
@@ -128,8 +116,6 @@ begin
   end;
 end;
 
-// FormCreate
-//
 procedure TGLXCollectionEditorForm.FormCreate(Sender: TObject);
 begin
   RegisterGLBehaviourNameChangeEvent(OnNameChanged);
@@ -137,8 +123,6 @@ begin
   RegisterXCollectionDestroyEvent(OnXCollectionDestroyed);
 end;
 
-// FormDestroy
-//
 procedure TGLXCollectionEditorForm.FormDestroy(Sender: TObject);
 begin
   DeRegisterGLBehaviourNameChangeEvent(OnNameChanged);
@@ -146,16 +130,12 @@ begin
   DeRegisterXCollectionDestroyEvent(OnXCollectionDestroyed);
 end;
 
-// FormHide
-//
 procedure TGLXCollectionEditorForm.FormHide(Sender: TObject);
 begin
   SetXCollection(nil, nil);
   ReleaseXCollectionEditor;
 end;
 
-// SetXCollection
-//
 procedure TGLXCollectionEditorForm.SetXCollection(aXCollection: TGLXCollection; designer: IDesigner);
 begin
   // if Assigned(ownerComponent) then
@@ -178,15 +158,11 @@ begin
   PrepareListView;
 end;
 
-// TBAddClick
-//
 procedure TGLXCollectionEditorForm.TBAddClick(Sender: TObject);
 begin
   TBAdd.CheckMenuDropdown;
 end;
 
-// ListViewChange
-//
 procedure TGLXCollectionEditorForm.ListViewChange(Sender: TObject; Item: TListItem;
   Change: TItemChange);
 var
@@ -209,8 +185,6 @@ begin
   end;
 end;
 
-// PrepareListView
-//
 procedure TGLXCollectionEditorForm.PrepareListView;
 var
   i: Integer;
@@ -253,8 +227,6 @@ begin
   ListViewChange(Self, nil, ctState);
 end;
 
-// PrepareXCollectionItemPopup
-//
 procedure TGLXCollectionEditorForm.PrepareXCollectionItemPopup(parent: TMenuItem);
 var
   i: Integer;
@@ -294,8 +266,6 @@ begin
   end;
 end;
 
-// OnNameChanged
-//
 procedure TGLXCollectionEditorForm.OnNameChanged(Sender: TObject);
 begin
   if TGLXCollectionItem(Sender).owner = FXCollection then
@@ -310,8 +280,6 @@ begin
     Close;
 end;
 
-// Notification
-//
 procedure TGLXCollectionEditorForm.Notification(AComponent: TComponent;
   Operation: TOperation);
 begin
@@ -324,8 +292,6 @@ begin
   inherited;
 end;
 
-// OnAddXCollectionItemClick
-//
 procedure TGLXCollectionEditorForm.OnAddXCollectionItemClick(Sender: TObject);
 var
   XCollectionItemClass: TGLXCollectionItemClass;
@@ -338,8 +304,6 @@ begin
   FDesigner.Modified;
 end;
 
-// ACRemoveExecute
-//
 procedure TGLXCollectionEditorForm.ACRemoveExecute(Sender: TObject);
 begin
   if ListView.Selected <> nil then
@@ -353,8 +317,6 @@ begin
   end;
 end;
 
-// ACMoveUpExecute
-//
 procedure TGLXCollectionEditorForm.ACMoveUpExecute(Sender: TObject);
 begin
   if ListView.Selected <> nil then
@@ -365,8 +327,6 @@ begin
   end;
 end;
 
-// ACMoveDownExecute
-//
 procedure TGLXCollectionEditorForm.ACMoveDownExecute(Sender: TObject);
 begin
   if ListView.Selected <> nil then
@@ -377,15 +337,11 @@ begin
   end;
 end;
 
-// PMToolBarPopup
-//
 procedure TGLXCollectionEditorForm.PMToolBarPopup(Sender: TObject);
 begin
   PrepareXCollectionItemPopup(PMToolBar.Items);
 end;
 
-// PMListViewPopup
-//
 procedure TGLXCollectionEditorForm.PMListViewPopup(Sender: TObject);
 begin
   PrepareXCollectionItemPopup(MIAdd);

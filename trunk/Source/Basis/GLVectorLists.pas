@@ -612,7 +612,7 @@ begin
   end;
 end;
 
-procedure FastInsertionSortLists(startIndex, endIndex: Integer; const ppl: PIntegerArray; const oppl: PPointerArray);
+procedure FastInsertionSortLists(startIndex, endIndex: Integer; const ppl: PIntegerArray; const oppl: PPointerArray); inline;
 var
   oTemp:  Pointer;
   I, J:   Integer;
@@ -1071,10 +1071,10 @@ begin
     for K := 0 to 2 do
     begin
       f := ref^[K];
-      if f < min.V[K] then
-        min.V[K] := f;
-      if f > max.V[K] then
-        max.V[K] := f;
+      if f < min.C[K] then
+        min.C[K] := f;
+      if f > max.C[K] then
+        max.C[K] := f;
     end;
   end;
 end;

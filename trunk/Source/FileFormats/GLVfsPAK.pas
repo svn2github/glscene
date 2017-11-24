@@ -8,22 +8,11 @@
    You can change current PAK file by ActivePak variable. 
 
 	 History : 
-       16/10/2008 - UweR - Compatibility fix for Delphi 2009
-       31/03/2007 - DaStr - Added $I GLScene.inc
-       29/01/2007 - DaStr - Moved registration to GLSceneRegister.pas
-       26/10/2006 - LC - Fixed memory leak in TGLVfsPAK.LoadFromFile. Bugtracker ID=1585215 (thanks Da Stranger)
-       18/10/2004 - Orchestraman - PAKCreateFileStream, Fixed an error when trying to load an image file in material editor during design time. It Loads the file from the Hard Disk. 
-       14/10/2004 - Orchestraman - PAKCreateFileStream, PAKFileStreamExists procedures redirect the streaming to hard disk if pack file does not exist.
-       04/10/2004 - Orchestraman - Fixed bug in LoadFromFile. The compressor object is created when the file is signed as compressed.
-       04/10/2004 - Orchestraman - Fixed bug in Constructor. The inherited constructor of TComponent didn't run when the component was created by the component pallete.
-       03/08/2004 - Orchestraman - Add LZRW1 compression.
+	   
        19/04/04 - PSz - Creation
+       The whole history is logged in previous version of the unit
 	 
-
 	 Notes on Compression feature : 
-
-	 
-
 }
 unit GLVfsPAK;
 
@@ -35,7 +24,9 @@ unit GLVfsPAK;
 interface
 
 uses
-  System.Classes, System.Contnrs, System.SysUtils,
+  System.Classes, 
+  System.Contnrs, 
+  System.SysUtils,
    
   GLApplicationFileIO
 {$IFDEF GLS_LZRW_SUPPORT},LZRW1{$ENDIF};
@@ -103,26 +94,26 @@ type
       destructor Destroy; override;
 
       // for Mode value search Delphi Help for "File open mode constants"
-      procedure LoadFromFile(FileName: string; Mode: word);
+      procedure LoadFromFile(const FileName: string; Mode: word);
       procedure ClearPakFiles;
 
-      function FileExists(FileName: string): boolean;
+      function FileExists(const FileName: string): boolean;
 
       function GetFile(index: integer): TStream; overload;
-      function GetFile(FileName: string): TStream; overload;
+      function GetFile(const FileName: string): TStream; overload;
 
       function GetFileSize(index: integer): integer; overload;
-      function GetFileSize(FileName: string): integer; overload;
+      function GetFileSize(const FileName: string): integer; overload;
 
-      procedure AddFromStream(FileName, Path: string; F: TStream);
-      procedure AddFromFile(FileName, Path: string);
-      procedure AddEmptyFile(FileName, Path: string);
+      procedure AddFromStream(const FileName, Path: string; F: TStream);
+      procedure AddFromFile(const FileName, Path: string);
+      procedure AddEmptyFile(const FileName, Path: string);
 
       procedure RemoveFile(index: integer); overload;
-      procedure RemoveFile(FileName: string); overload;
+      procedure RemoveFile(const FileName: string); overload;
 
-      procedure Extract(index: integer; NewName: string); overload;
-      procedure Extract(FileName, NewName: string); overload;
+      procedure Extract(index: integer; const NewName: string); overload;
+      procedure Extract(const FileName, NewName: string); overload;
 
    end;
 
@@ -138,7 +129,7 @@ implementation
 var
    Dir: TFileSection;
 
-function BackToSlash(s: string): string;
+function BackToSlash(const s: string): string;
 var
    i: integer;
 begin
@@ -281,7 +272,7 @@ begin
    end;
 end;
 
-procedure TGLVfsPAK.LoadFromFile(FileName: string; Mode: word);
+procedure TGLVfsPAK.LoadFromFile(const FileName: string; Mode: word);
 var
    l: integer;
 begin
@@ -388,12 +379,12 @@ begin
 {$ENDIF}
 end;
 
-function TGLVfsPAK.FileExists(FileName: string): boolean;
+function TGLVfsPAK.FileExists(const FileName: string): boolean;
 begin
    Result := (FFiles.IndexOf(FileName) > -1);
 end;
 
-function TGLVfsPAK.GetFile(FileName: string): TStream;
+function TGLVfsPAK.GetFile(const FileName: string): TStream;
 begin
    Result := nil;
    if Self.FileExists(FileName) then
@@ -407,7 +398,7 @@ begin
    Result := Dir.FileLength;
 end;
 
-function TGLVfsPAK.GetFileSize(FileName: string): integer;
+function TGLVfsPAK.GetFileSize(const FileName: string): integer;
 begin
    Result := -1;
    if Self.FileExists(FileName) then
@@ -415,7 +406,7 @@ begin
 end;
 
 {$WARNINGS OFF}
-procedure TGLVfsPAK.AddFromStream(FileName, Path: string; F: TStream);
+procedure TGLVfsPAK.AddFromStream(const FileName, Path: string; F: TStream);
 var
    Temp{$IFDEF GLS_LZRW_SUPPORT}, compressed{$ENDIF}: TMemoryStream;
 begin
@@ -465,7 +456,7 @@ end;
 
 {$WARNINGS ON}
 
-procedure TGLVfsPAK.AddFromFile(FileName, Path: string);
+procedure TGLVfsPAK.AddFromFile(const FileName, Path: string);
 var
    F: TFileStream;
 begin
@@ -479,7 +470,7 @@ begin
    end;
 end;
 
-procedure TGLVfsPAK.AddEmptyFile(FileName, Path: string);
+procedure TGLVfsPAK.AddEmptyFile(const FileName, Path: string);
 var
    F: TMemoryStream;
 begin
@@ -532,13 +523,13 @@ begin
    MakeFileList;
 end;
 
-procedure TGLVfsPAK.RemoveFile(FileName: string);
+procedure TGLVfsPAK.RemoveFile(const FileName: string);
 begin
    if Self.FileExists(FileName) then
       RemoveFile(FFiles.IndexOf(FileName));
 end;
 
-procedure TGLVfsPAK.Extract(index: integer; NewName: string);
+procedure TGLVfsPAK.Extract(index: integer; const NewName: string);
 var
    s: TFileStream;
 begin
@@ -551,7 +542,7 @@ begin
    s.Free;
 end;
 
-procedure TGLVfsPAK.Extract(FileName, NewName: string);
+procedure TGLVfsPAK.Extract(const FileName, NewName: string);
 begin
    if Self.FileExists(FileName) then
       Extract(FFiles.IndexOf(FileName), NewName);

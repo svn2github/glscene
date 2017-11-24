@@ -5,43 +5,7 @@
    Scene Editor, for adding + removing scene objects within the Delphi IDE. 
 
    History :  
-   06/12/14 - PW -  Reduced doubled Camera and Expand/Collapse buttons, added GalleryListView
-   20/01/10 - Yar - TGLSceneEditorForm.IsPastePossible now uses CharInSet
-   20/01/10 - Yar - Added Expand and Collapse buttons (thanks to lolo)
-   14/03/09 - DanB - Removed Cameras node, instead cameras are now placed into scene
-   19/03/08 - mrqzzz - Little change to "stay on top" (references self, not GLSceneEditorForm )
-   17/03/08 - mrqzzz - By dAlex: Added "stay on top" button
-   12/07/07 - DaStr - Improved cross-platform compatibility (BugTrackerID=1684432)
-   29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
-   25/03/07 - DaStr - Abstracted IsSubComponent for Delphi5 compatibility
-   17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTrackerID=1681585)
-   07/02/07 - DaStr - TGLSceneEditorForm.ACDeleteObjectExecute bugfixed
-                         TGLSceneEditorForm.AddNodes - removed warning (all for proper Subcomponent support)
-   20/01/07 - DaStr - TGLSceneEditorForm.ACCutExecute bugfixed
-   19/12/06 - DaStr - TGLSceneEditorForm.AddNodes bugfixed -
-                         SubComponents are no longer displayed in the Editor (BugTraker ID = 1585913)
-   24/06/06 - PvD - Fixed bug with DELETE key when editing name in Treeview
-   03/07/04 - LR - Updated for Linux
-   18/12/04 - PhP - Added support for deleting objects/effects/behaviours by pressing "Delete"
-   03/07/04 - LR - Make change for Linux
-   14/12/03 - EG - Paste fix (Mrqzzz)
-   31/06/03 - EG - Cosmetic changes, form position/state now saved to the registry
-   21/06/03 - DanB - Added behaviours/effects listviews
-   22/01/02 - EG - Fixed controls state after drag/drop (Anton Zhuchkov)
-   06/08/00 - EG - Added basic Clipboard support
-   14/05/00 - EG - Added workaround for VCL DesignInfo bug (thx Nelson Chu)
-   28/04/00 - EG - Fixed new objects not being immediately reco by IDE
-   26/04/00 - EG - Added support for objects categories
-   17/04/00 - EG - Added access to TInfoForm
-   16/04/00 - EG - Fixed occasionnal crash when rebuilding GLScene dpk while GLSceneEdit is visible
-   10/04/00 - EG - Minor Create/Release change
-   24/03/00 - EG - Fixed SetScene not updating enablings
-   13/03/00 - EG - Object names (ie. node text) is now properly adjusted
-                      when a GLScene object is renamed, Added Load/Save whole scene
-   07/02/00 - EG - Fixed notification logic
-   06/02/00 - EG - DragDrop now starts after moving the mouse a little,
-                      Form is now auto-creating, fixed Notification, Added actionlist and moveUp/moveDown
-   05/02/00 - EG - Fixed DragDrop, added root nodes auto-expansion
+   The whole history is logged in previous version of the unit
    
 }
 unit FSceneEditor;
@@ -158,14 +122,11 @@ type
     TBAddEffects: TToolButton;
     TBGalleryPanel: TToolButton;
     procedure FormCreate(Sender: TObject);
-    procedure TreeEditing(Sender: TObject; Node: TTreeNode;
-      var AllowEdit: Boolean);
-    procedure TreeDragOver(Sender, Source: TObject; X, Y: Integer;
-      State: TDragState; var Accept: Boolean);
+    procedure TreeEditing(Sender: TObject; Node: TTreeNode; var AllowEdit: Boolean);
+    procedure TreeDragOver(Sender, Source: TObject; X, Y: Integer; State: TDragState; var Accept: Boolean);
     procedure TreeDragDrop(Sender, Source: TObject; X, Y: Integer);
     procedure TreeChange(Sender: TObject; Node: TTreeNode);
-    procedure TreeMouseDown(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
+    procedure TreeMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure TreeEnter(Sender: TObject);
     procedure TreeMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
     procedure ACDeleteObjectExecute(Sender: TObject);
@@ -181,13 +142,11 @@ type
     procedure ACPasteExecute(Sender: TObject);
     procedure BehavioursListViewEnter(Sender: TObject);
     procedure EffectsListViewEnter(Sender: TObject);
-
     procedure ACAddBehaviourExecute(Sender: TObject);
     procedure DeleteBaseBehaviour(ListView: TListView);
     procedure PMBehavioursToolbarPopup(Sender: TObject);
     procedure PMEffectsToolbarPopup(Sender: TObject);
-    procedure BehavioursListViewSelectItem(Sender: TObject; Item: TListItem;
-      Selected: Boolean);
+    procedure BehavioursListViewSelectItem(Sender: TObject; Item: TListItem; Selected: Boolean);
     procedure ACAddEffectExecute(Sender: TObject);
     procedure PopupMenuPopup(Sender: TObject);
     procedure TBCharacterPanelsClick(Sender: TObject);
@@ -196,10 +155,8 @@ type
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure ACExpandExecute(Sender: TObject);
     procedure TBGalleryPanelClick(Sender: TObject);
-
   private
     FSelectedItems: Integer; //
-
     FScene: TGLScene;
     FObjectNode, FSceneObjects: TTreeNode;
     FCurrentDesigner: IDesigner;
@@ -215,10 +172,8 @@ type
     procedure AddBehaviourClick(Sender: TObject);
     procedure AddEffectClick(Sender: TObject);
     procedure SetObjectsSubItems(parent: TMenuItem);
-    procedure SetXCollectionSubItems(parent: TMenuItem;
-      XCollection: TGLXCollection; Event: TSetSubItemsEvent);
-    procedure SetBehavioursSubItems(parent: TMenuItem;
-      XCollection: TGLXCollection);
+    procedure SetXCollectionSubItems(parent: TMenuItem; XCollection: TGLXCollection; Event: TSetSubItemsEvent);
+    procedure SetBehavioursSubItems(parent: TMenuItem; XCollection: TGLXCollection);
     procedure SetEffectsSubItems(parent: TMenuItem; XCollection: TGLXCollection);
     procedure OnBaseSceneObjectNameChanged(Sender: TObject);
     function IsValidClipBoardNode: Boolean;
@@ -229,23 +184,17 @@ type
     procedure ShowBehavioursAndEffects(BaseSceneObject: TGLBaseSceneObject);
     procedure EnableAndDisableActions();
     function CanPaste(obj, destination: TGLBaseSceneObject): Boolean;
-    procedure CopyComponents(Root: TComponent;
-      const Components: IDesignerSelections);
-    procedure MethodError(Reader: TReader; const MethodName: string;
-      var Address: Pointer; var Error: Boolean);
-    function PasteComponents(AOwner, AParent: TComponent;
-      const Components: IDesignerSelections): Boolean;
-    procedure ReaderSetName(Reader: TReader; Component: TComponent;
-      var Name: string);
+    procedure CopyComponents(Root: TComponent; const Components: IDesignerSelections);
+    procedure MethodError(Reader: TReader; const MethodName: string; var Address: Pointer; var Error: Boolean);
+    function PasteComponents(AOwner, AParent: TComponent; const Components: IDesignerSelections): Boolean;
+    procedure ReaderSetName(Reader: TReader; Component: TComponent; var Name: string);
     procedure ComponentRead(Component: TComponent);
     function UniqueName(Component: TComponent): string;
-    // We can not use the IDE to define this event because the
-    // prototype is not the same between Delphi and Kylix !!
+    (* We can not use the IDE to define this event because the
+     prototype is not the same between Delphi and Kylix !! *)
     procedure TreeEdited(Sender: TObject; Node: TTreeNode; var S: string);
   protected
-    procedure Notification(AComponent: TComponent;
-      Operation: TOperation); override;
-
+    procedure Notification(AComponent: TComponent; Operation: TOperation); override;
   public
     procedure SetScene(Scene: TGLScene; Designer: IDesigner);
 
@@ -255,11 +204,7 @@ function GLSceneEditorForm: TGLSceneEditorForm;
 procedure ReleaseGLSceneEditorForm;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 {$R *.dfm}
@@ -294,9 +239,6 @@ begin
   else
     Result := defaultValue;
 end;
-
-// FindNodeByData
-//
 
 function FindNodeByData(treeNodes: TTreeNodes; data: Pointer;
   baseNode: TTreeNode = nil): TTreeNode;
@@ -345,9 +287,6 @@ begin
 end;
 
 // ----------------- TGLSceneEditorForm ---------------------------------------------------------------------------------
-
-// SetScene
-//
 
 procedure TGLSceneEditorForm.SetScene(Scene: TGLScene; Designer: IDesigner);
 begin
@@ -399,8 +338,6 @@ begin
   ShowBehavioursAndEffects(nil);
 end;
 
-// FormCreate
-//
 procedure TGLSceneEditorForm.FormCreate(Sender: TObject);
 var
   CurrentNode: TTreeNode;
@@ -463,9 +400,6 @@ begin
   Tree.OnEdited := TreeEdited;
 end;
 
-// FormDestroy
-//
-
 procedure TGLSceneEditorForm.FormDestroy(Sender: TObject);
 var
   reg: TRegistry;
@@ -495,7 +429,6 @@ begin
 end;
 
 // ----------------------------------------------------------------------------------------------------------------------
-//
 procedure TGLSceneEditorForm.ReadScene;
 
 var
@@ -518,7 +451,6 @@ begin
 end;
 
 // ----------------------------------------------------------------------------------------------------------------------
-//
 procedure TGLSceneEditorForm.ResetTree;
 begin
   // delete all subtrees (empty tree)
@@ -639,8 +571,6 @@ begin
   end;
 end;
 
-// SetBehavioursSubItems
-//
 
 procedure TGLSceneEditorForm.SetBehavioursSubItems(parent: TMenuItem;
   XCollection: TGLXCollection);
@@ -750,8 +680,6 @@ begin
   end;
 end;
 
-// Notification
-//
 procedure TGLSceneEditorForm.Notification(AComponent: TComponent;
   Operation: TOperation);
 begin
@@ -763,8 +691,6 @@ begin
   inherited;
 end;
 
-// OnBaseSceneObjectNameChanged
-//
 procedure TGLSceneEditorForm.OnBaseSceneObjectNameChanged(Sender: TObject);
 var
   n: TTreeNode;
@@ -774,8 +700,6 @@ begin
     n.Text := (Sender as TGLBaseSceneObject).Name;
 end;
 
-// TreeChange
-//
 procedure TGLSceneEditorForm.TreeChange(Sender: TObject; Node: TTreeNode);
 var
   // selNode : TTreeNode;
@@ -797,8 +721,6 @@ begin
   end;
 end;
 
-// TreeEditing
-//
 procedure TGLSceneEditorForm.TreeEditing(Sender: TObject; Node: TTreeNode;
   var AllowEdit: Boolean);
 begin
@@ -888,13 +810,9 @@ begin
   ShowGallery(BaseSceneObject);
 end;
 
-// TreeEdited
-//
-{$IFDEF MSWINDOWS}
 
 procedure TGLSceneEditorForm.TreeEdited(Sender: TObject; Node: TTreeNode;
   var S: string);
-{$ENDIF}
 var
   BaseSceneObject1: TGLBaseSceneObject;
 begin
@@ -916,16 +834,12 @@ begin
   end;
 end;
 
-// TreeMouseDown
-//
 procedure TGLSceneEditorForm.TreeMouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
   FLastMouseDownPos := Point(X, Y);
 end;
 
-// TreeMouseMove
-//
 procedure TGLSceneEditorForm.TreeMouseMove(Sender: TObject; Shift: TShiftState;
   X, Y: Integer);
 var
@@ -941,8 +855,6 @@ begin
   end;
 end;
 
-// TreeEnter
-//
 procedure TGLSceneEditorForm.TreeEnter(Sender: TObject);
 begin
   if Assigned(FCurrentDesigner) and Assigned(Tree.Selected) then
@@ -951,8 +863,6 @@ begin
   EnableAndDisableActions();
 end;
 
-// ACDeleteObjectExecute
-//
 procedure TGLSceneEditorForm.ACDeleteObjectExecute(Sender: TObject);
 var
   anObject: TGLBaseSceneObject;
@@ -985,7 +895,6 @@ begin
       buttons := [mbok, mbCancel];
       // are there children to care for?
       // mbAll exist only on Windows ...
-{$IFDEF MSWINDOWS}
       if (anObject.Count > 0) and (not anObject.HasSubChildren) then
       begin
         confirmMsg := confirmMsg + ' only or with ALL its children?';
@@ -993,15 +902,12 @@ begin
       end
       else
         confirmMsg := confirmMsg + '?';
-{$ENDIF}
       case Messagedlg(confirmMsg, mtConfirmation, buttons, 0) of
-{$IFDEF MSWINDOWS}
         mrAll:
           begin
             keepChildren := False;
             allowed := true;
           end;
-{$ENDIF}
         mrOK:
           begin
             keepChildren := true;
@@ -1050,8 +956,6 @@ begin
     end;
 end;
 
-// ACMoveUpExecute
-//
 procedure TGLSceneEditorForm.ACMoveUpExecute(Sender: TObject);
 var
   Node: TTreeNode;
@@ -1095,8 +999,6 @@ begin
   end;
 end;
 
-// ACMoveDownExecute
-//
 procedure TGLSceneEditorForm.ACMoveDownExecute(Sender: TObject);
 var
   Node: TTreeNode;
@@ -1140,8 +1042,6 @@ begin
   end;
 end;
 
-// ACAddObjectExecute
-//
 procedure TGLSceneEditorForm.ACAddObjectExecute(Sender: TObject);
 begin
   TBAddObjects.CheckMenuDropdown;
@@ -1155,16 +1055,12 @@ begin
     FormStyle := fsNormal;
 end;
 
-// ACSaveSceneExecute
-//
 procedure TGLSceneEditorForm.ACSaveSceneExecute(Sender: TObject);
 begin
   if SaveDialog.Execute then
     FScene.SaveToFile(SaveDialog.FileName);
 end;
 
-// ACLoadSceneExecute
-//
 procedure TGLSceneEditorForm.ACLoadSceneExecute(Sender: TObject);
 begin
   if OpenDialog.Execute then
@@ -1176,8 +1072,6 @@ begin
   end;
 end;
 
-// ACInfoExecute
-//
 procedure TGLSceneEditorForm.ACInfoExecute(Sender: TObject);
 var
   AScene: TGLSceneViewer;
@@ -1194,8 +1088,6 @@ begin
   end;
 end;
 
-// IsValidClipBoardNode
-//
 function TGLSceneEditorForm.IsValidClipBoardNode: Boolean;
 var
   selNode: TTreeNode;
@@ -1205,8 +1097,6 @@ begin
     (selNode.parent.parent <> nil));
 end;
 
-// IsPastePossible
-//
 function TGLSceneEditorForm.IsPastePossible: Boolean;
   function PossibleStream(const S: string): Boolean;
   var
@@ -1233,9 +1123,8 @@ begin
   selNode := Tree.Selected;
 
   if (selNode <> nil) and (selNode.parent <> nil)
-{$IFDEF MSWINDOWS}
     and (ClipBoard.HasFormat(CF_COMPONENT) or (ClipBoard.HasFormat(CF_TEXT) and
-    PossibleStream(ClipBoard.AsText))){$ENDIF} then
+    PossibleStream(ClipBoard.AsText))) then
   begin
     TmpContainer := TComponent.Create(Self);
     try
@@ -1260,16 +1149,12 @@ begin
     Result := False;
 end;
 
-// CanPaste
-//
 function TGLSceneEditorForm.CanPaste(obj, destination
   : TGLBaseSceneObject): Boolean;
 begin
   Result := Assigned(obj) and Assigned(destination);
 end;
 
-// ACCopyExecute
-//
 procedure TGLSceneEditorForm.ACCopyExecute(Sender: TObject);
 var
   ComponentList: IDesignerSelections;
@@ -1280,8 +1165,6 @@ begin
   ACPaste.Enabled := IsPastePossible;
 end;
 
-// ACCutExecute
-//
 procedure TGLSceneEditorForm.ACCutExecute(Sender: TObject);
 var
   AObject: TGLBaseSceneObject;
@@ -1301,8 +1184,6 @@ begin
   end;
 end;
 
-// ACPasteExecute
-//
 procedure TGLSceneEditorForm.ACPasteExecute(Sender: TObject);
 var
   selNode: TTreeNode;
@@ -1327,8 +1208,6 @@ begin
   end;
 end;
 
-// CopyComponents
-//
 procedure TGLSceneEditorForm.CopyComponents(Root: TComponent;
   const Components: IDesignerSelections);
 var
@@ -1356,8 +1235,6 @@ begin
   end;
 end;
 
-// MethodError
-//
 procedure TGLSceneEditorForm.MethodError(Reader: TReader;
   const MethodName: string; var Address: Pointer; var Error: Boolean);
 begin
@@ -1633,7 +1510,9 @@ begin
   end;
 end;
 
+//--------------------------------------------------------------
 initialization
+//--------------------------------------------------------------
 
 finalization
 

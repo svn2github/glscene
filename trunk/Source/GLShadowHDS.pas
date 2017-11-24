@@ -56,16 +56,13 @@ type
     data, and to a MaterialLibrary where shadowmaps will be placed. }
   TGLShadowHDS = class(TGLHeightDataSourceFilter)
   private
-
     FTileSize: integer;
-
     FShadowmapLibrary: TGLMaterialLibrary;
     FLightVector: TGLCoordinates;
     FScale: TGLCoordinates;
     FScaleVec: TVector3f;
     FOnNewTilePrepared: TNewTilePreparedEvent;
     FOnThreadBmp32: TThreadBmp32;
-
     // FSubSampling : Integer;
     FMaxTextures: integer;
     Step: TVector3f;
@@ -150,11 +147,7 @@ type
   end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 constructor TGLShadowHDS.Create(AOwner: TComponent);

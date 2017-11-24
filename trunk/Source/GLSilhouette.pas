@@ -63,23 +63,24 @@ type
     property Vertices: TVectorList read FVertices write SetVertices;
     property Indices: TIntegerList read FIndices write SetIndices;
     property CapIndices: TIntegerList read FCapIndices write SetCapIndices;
-    procedure Flush;
-    procedure Clear;
+    procedure Flush; inline;
+    procedure Clear; inline;
     procedure ExtrudeVerticesToInfinity(const origin: TAffineVector);
     { Adds an edge (two vertices) to the silhouette.
       If TightButSlow is true, no vertices will be doubled in the
       silhouette list. This should only be used when creating re-usable
       silhouettes, because it's much slower. }
     procedure AddEdgeToSilhouette(const v0, v1: TAffineVector;
-      tightButSlow: Boolean);
-    procedure AddIndexedEdgeToSilhouette(const Vi0, Vi1: integer);
+      tightButSlow: Boolean); inline;
+    procedure AddIndexedEdgeToSilhouette(const Vi0, Vi1: integer); inline;
+
     { Adds a capping triangle to the silhouette.
       If TightButSlow is true, no vertices will be doubled in the
       silhouette list. This should only be used when creating re-usable
       silhouettes, because it's much slower. }
     procedure AddCapToSilhouette(const v0, v1, v2: TAffineVector;
-      tightButSlow: Boolean);
-    procedure AddIndexedCapToSilhouette(const Vi0, Vi1, vi2: integer);
+      tightButSlow: Boolean); inline;
+    procedure AddIndexedCapToSilhouette(const Vi0, Vi1, vi2: integer); inline;
   end;
 
   TBaseConnectivity = class
@@ -110,8 +111,8 @@ type
     FFaceNormal: TAffineVectorList;
     FVertexMemory: TIntegerList;
     FVertices: TAffineVectorList;
-    function GetEdgeCount: integer; override;
-    function GetFaceCount: integer; override;
+    function GetEdgeCount: integer;
+    function GetFaceCount: integer;
     function ReuseOrFindVertexID(const SeenFrom: TAffineVector;
       ASilhouette: TGLSilhouette; index: integer): integer;
   public
@@ -119,13 +120,13 @@ type
     procedure Clear; virtual;
     procedure CreateSilhouette(const silhouetteParameters
       : TGLSilhouetteParameters; var ASilhouette: TGLSilhouette;
-      AddToSilhouette: Boolean); override;
+      AddToSilhouette: Boolean);
     function AddIndexedEdge(vertexIndex0, vertexIndex1: integer;
       FaceID: integer): integer;
     function AddIndexedFace(Vi0, Vi1, vi2: integer): integer;
-    function AddFace(const vertex0, vertex1, vertex2: TAffineVector): integer;
+    function AddFace(const vertex0, vertex1, vertex2: TAffineVector): integer;  inline;
     function AddQuad(const vertex0, vertex1, vertex2,
-      vertex3: TAffineVector): integer;
+      vertex3: TAffineVector): integer;  inline;
     property EdgeCount: integer read GetEdgeCount;
     property FaceCount: integer read GetFaceCount;
     constructor Create(APrecomputeFaceNormal: Boolean); override;
@@ -133,9 +134,9 @@ type
   end;
 
 // -------------------------------------------------------------
-// -------------------------------------------------------------
-// -------------------------------------------------------------
 implementation
+// -------------------------------------------------------------
+
 // ------------------
 // ------------------ TGLSilhouette ------------------
 // ------------------

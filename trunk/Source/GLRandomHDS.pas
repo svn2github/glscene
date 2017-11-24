@@ -253,7 +253,6 @@ type
   TGLCustomRandomHDS = class(TGLBaseRandomHDS)
   private
     FSlave: boolean;
-    FTextureCreated: boolean;
     FMaxHeight: single;
     FMinHeight: single;
     FRangeHeight: single;
@@ -261,7 +260,6 @@ type
     FSingleConstrain: TSingleClamp;
     FIntegerConstrain: TIntegerClamp;
     FKeepNormals: boolean;
-    procedure CreateTexture;
     function GetHeight(x, y: integer): single;
     procedure SetHeight(x, y: integer; const Value: single);
     procedure SetKeepNormals(const Value: boolean);
@@ -1382,28 +1380,6 @@ begin
   inherited;
   FLandCover := True;
   FOnDrawTexture := OnDrawTextureDefault;
-end;
-
-procedure TGLCustomRandomHDS.CreateTexture;
-begin
-  if FTerrainRenderer = nil then
-  begin
-    raise EInvalidOperation.Create
-      ('No TerrainRenderer linked to this component.');
-    exit;
-  end; // if
-  if FTerrainRenderer.MaterialLibrary = nil then
-  begin
-    raise EInvalidOperation.Create
-      ('No material library assigned to the TerrainRenderer');
-    exit;
-  end; // if
-  with FTerrainRenderer.MaterialLibrary do
-  begin
-    (Materials.Add).Name := FTerrainRenderer.Name + 'Light';
-  end; // with
-  MaterialName := FTerrainRenderer.Name + 'Light';
-  FTextureCreated := True;
 end;
 
 procedure TGLCustomRandomHDS.CyclicClamp(var x, y: single);

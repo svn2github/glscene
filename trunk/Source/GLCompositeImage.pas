@@ -18,12 +18,13 @@ interface
 uses
   System.Classes,
   
-  GLContext, OpenGLTokens, GLGraphics, GLTexture, GLTextureFormat;
+  GLContext, 
+  OpenGLTokens, 
+  GLGraphics, 
+  GLTexture, 
+  GLTextureFormat;
 
 type
-
-  // TGLCompositeImage
-  //
 
   TGLCompositeImage = class(TGLTextureImage)
   private
@@ -38,22 +39,17 @@ type
     function GetDepth: Integer; override;
     function GetTextureTarget: TGLTextureTarget; override;
   public
-
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
-
     procedure Assign(Source: TPersistent); override;
-
     function GetBitmap32: TGLBitmap32; override;
     procedure ReleaseBitmap32; override;
-
     procedure SaveToFile(const fileName: string); override;
     procedure LoadFromFile(const fileName: string); override;
     procedure LoadFromStream(const AStream: TStream);
     class function FriendlyName: string; override;
     class function FriendlyDescription: string; override;
     property NativeTextureTarget;
-
   published
     property Width: Integer read GetWidth write SetWidth;
     property Height: Integer read GetHeight write SetHeight;
@@ -61,16 +57,10 @@ type
   end;
 
 //-----------------------------------------------------------------------
-//-----------------------------------------------------------------------
-//-----------------------------------------------------------------------
 implementation
-//-----------------------------------------------------------------------
-//-----------------------------------------------------------------------
 //-----------------------------------------------------------------------
 
  
-//
-
 constructor TGLCompositeImage.Create(AOwner: TPersistent);
 begin
   inherited;
@@ -79,17 +69,12 @@ begin
   FDepth := 0;
 end;
 
- 
-//
 
 destructor TGLCompositeImage.Destroy;
 begin
   ReleaseBitmap32;
   inherited Destroy;
 end;
-
-// Assign
-//
 
 procedure TGLCompositeImage.Assign(Source: TPersistent);
 begin
@@ -117,9 +102,6 @@ begin
     inherited;
 end;
 
-// SetWidth
-//
-
 procedure TGLCompositeImage.SetWidth(val: Integer);
 begin
   if val <> FWidth then
@@ -131,16 +113,10 @@ begin
   end;
 end;
 
-// GetWidth
-//
-
 function TGLCompositeImage.GetWidth: Integer;
 begin
   Result := FWidth;
 end;
-
-// SetHeight
-//
 
 procedure TGLCompositeImage.SetHeight(val: Integer);
 begin
@@ -153,16 +129,10 @@ begin
   end;
 end;
 
-// GetHeight
-//
-
 function TGLCompositeImage.GetHeight: Integer;
 begin
   Result := FHeight;
 end;
-
-// SetDepth
-//
 
 procedure TGLCompositeImage.SetDepth(val: Integer);
 begin
@@ -175,16 +145,10 @@ begin
   end;
 end;
 
-// GetDepth
-//
-
 function TGLCompositeImage.GetDepth: Integer;
 begin
   Result := FDepth;
 end;
-
-// GetBitmap32
-//
 
 function TGLCompositeImage.GetBitmap32: TGLBitmap32;
 begin
@@ -202,9 +166,6 @@ begin
   Result := FBitmap;
 end;
 
-// ReleaseBitmap32
-//
-
 procedure TGLCompositeImage.ReleaseBitmap32;
 begin
   if Assigned(FBitmap) then
@@ -213,9 +174,6 @@ begin
     FBitmap := nil;
   end;
 end;
-
-// SaveToFile
-//
 
 procedure TGLCompositeImage.SaveToFile(const fileName: string);
 var
@@ -244,9 +202,6 @@ begin
   end;
 end;
 
- 
-//
-
 procedure TGLCompositeImage.LoadFromFile(const fileName: string);
 var
   BaseImageClass: TGLBaseImageClass;
@@ -274,9 +229,6 @@ begin
   end;
 end;
 
-// LoadFromStream
-//
-
 procedure TGLCompositeImage.LoadFromStream(const AStream: TStream);
 var
   tempImage: TGLBaseImage;
@@ -302,23 +254,15 @@ begin
 end;
 
  
-//
-
 class function TGLCompositeImage.FriendlyName: string;
 begin
   Result := 'Composite Image';
 end;
 
-// FriendlyDescription
-//
-
 class function TGLCompositeImage.FriendlyDescription: string;
 begin
   Result := 'Image contained any internal formats of OpenGL textures';
 end;
-
-// GetTextureTarget
-//
 
 function TGLCompositeImage.GetTextureTarget: TGLTextureTarget;
 begin

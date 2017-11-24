@@ -38,13 +38,11 @@ type
     FRecursiveVisible: Boolean;
     FWidth: Single;
     FHeight: Single;
-
   protected
     // self notification on hide. Also notifies children.
     procedure NotifyHide; dynamic;
     // child notification on show. Also notifies children.
     procedure NotifyShow; dynamic;
-
     procedure SetLeft(const Value: TGLFloat);
     function GetLeft: TGLFloat;
     procedure SetTop(const Value: TGLFloat);
@@ -52,13 +50,10 @@ type
     procedure SetWidth(const val: Single);
     procedure SetHeight(const val: Single);
     procedure SetVisible(aValue: Boolean); override;
-
   public
     constructor Create(AOwner: TComponent); override;
-
     procedure AddChild(AChild: TGLBaseSceneObject); override;
     procedure Insert(aIndex: Integer; aChild: TGLBaseSceneObject); override;
-
     {GuiComponent Width in 3D world units. }
     property Width: Single read FWidth write SetWidth;
     {GuiComponent Height in 3D world units. }
@@ -67,7 +62,6 @@ type
     property Left: TGLFloat read GetLeft write SetLeft;
     {GuiComponent Top in 3D world units. }
     property Top: TGLFloat read GetTop write SetTop;
-
     property RecursiveVisible: Boolean read FRecursiveVisible;
   end;
 
@@ -203,11 +197,11 @@ const
   GuiNullRect: TGUIRect = (X1: 0.0; Y1: 0.0; X2: 0.0; Y2: 0.0; XTiles: 0.0;
     YTiles: 0.0);
 
-function IsInRect(const R: TGUIRect; X, Y: Single): Boolean;
+function IsInRect(const R: TGUIRect; X, Y: Single): Boolean; inline;
 
 implementation
 
-function IsInRect(const R: TGUIRect; X, Y: Single): Boolean;
+function IsInRect(const R: TGUIRect; X, Y: Single): Boolean; inline;
 
 begin
   Result := (R.X1 <= X) and (R.X2 >= X) and (R.Y1 <= Y) and (R.Y2 >= Y);
@@ -218,16 +212,11 @@ end;
 // ------------------
 
  
-//
-
 constructor TGLBaseGuiObject.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   FRecursiveVisible := Visible;
 end;
-
-// SetLeft
-//
 
 procedure TGLBaseGuiObject.SetLeft(const Value: TGLFloat);
 var
@@ -254,8 +243,6 @@ begin
   end;
 end;
 
-// GetLeft
-//
 
 function TGLBaseGuiObject.GetLeft: TGLFloat;
 begin
@@ -265,8 +252,6 @@ begin
     Result := Position.X;
 end;
 
-// SetTop
-//
 
 procedure TGLBaseGuiObject.SetTop(const Value: TGLFloat);
 var
@@ -293,8 +278,6 @@ begin
   end;
 end;
 
-// GetTop
-//
 
 function TGLBaseGuiObject.GetTop: TGLFloat;
 begin
@@ -304,8 +287,6 @@ begin
     Result := Position.Y;
 end;
 
-// SetWidth
-//
 
 procedure TGLBaseGuiObject.SetWidth(const val: TGLFloat);
 begin
@@ -316,8 +297,6 @@ begin
   end;
 end;
 
-// SetHeight
-//
 
 procedure TGLBaseGuiObject.SetHeight(const val: TGLFloat);
 begin
@@ -328,8 +307,6 @@ begin
   end;
 end;
 
-// NotifyHide
-//
 
 procedure TGLBaseGuiObject.NotifyHide;
 var
@@ -348,8 +325,6 @@ begin
   end;
 end;
 
-// NotifyShow
-//
 
 procedure TGLBaseGuiObject.NotifyShow;
 var
@@ -368,8 +343,6 @@ begin
   end;
 end;
 
-// AddChild
-//
 
 procedure TGLBaseGuiObject.AddChild(aChild: TGLBaseSceneObject);
 begin
@@ -383,8 +356,6 @@ begin
   end;
 end;
 
-// Insert
-//
 
 procedure TGLBaseGuiObject.Insert(aIndex: Integer; aChild: TGLBaseSceneObject);
 begin
@@ -398,8 +369,6 @@ begin
   end;
 end;
 
-// SetVisible
-//
 
 procedure TGLBaseGuiObject.SetVisible(aValue: Boolean);
 begin

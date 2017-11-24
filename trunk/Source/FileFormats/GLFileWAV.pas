@@ -4,11 +4,8 @@
 {
    Support for Windows WAV format. 
    History :  
-       17/11/09 - DaStr - Improved Unix compatibility
-                             (thanks Predator) (BugtrackerID = 2893580)
-       25/07/09 - DaStr - Added $I GLScene.inc
-       26/05/09 - DanB - Fix for LengthInBytes when chunks occur after data chunk
        06/05/09 - DanB - Creation from split from GLSoundFileObjects.pas
+       The whole history is logged in previous version of the unit
 	 
 }
 unit GLFileWAV;
@@ -20,49 +17,35 @@ interface
 uses
   Winapi.MMSystem,
   System.Classes,
-  GLApplicationFileIO, GLSoundFileObjects;
+  GLApplicationFileIO, 
+  GLSoundFileObjects;
 
 type
 
-   // TGLWAVFile
-   //
    {Support for Windows WAV format. }
    TGLWAVFile = class (TGLSoundFile)
       private
-         
          {$IFDEF MSWINDOWS}
          waveFormat : TWaveFormatEx;
          pcmOffset : Integer;
          {$ENDIF}
          FPCMDataLength: Integer;
          data : array of Byte; // used to store WAVE bitstream
-
       protected
-         
-
       public
-          
          function CreateCopy(AOwner: TPersistent) : TGLDataFile; override;
-
          class function Capabilities : TGLDataFileCapabilities; override;
-
          procedure LoadFromStream(Stream: TStream); override;
          procedure SaveToStream(Stream: TStream); override;
-
          procedure PlayOnWaveOut; override;
-
-	      function WAVData : Pointer; override;
+         function WAVData : Pointer; override;
          function WAVDataSize : Integer; override;
 	      function PCMData : Pointer; override;
 	      function LengthInBytes : Integer; override;
    end;
 
 //------------------------------------------------------
-//------------------------------------------------------
-//------------------------------------------------------
 implementation
-//------------------------------------------------------
-//------------------------------------------------------
 //------------------------------------------------------
 
  {$IFDEF MSWINDOWS}
@@ -79,8 +62,6 @@ const
 // ------------------ TGLWAVFile ------------------
 // ------------------
 
-// CreateCopy
-//
 function TGLWAVFile.CreateCopy(AOwner: TPersistent) : TGLDataFile;
 begin
    Result:=inherited CreateCopy(AOwner);
@@ -92,15 +73,11 @@ begin
    end;
 end;
 
-// Capabilities
-//
 class function TGLWAVFile.Capabilities : TGLDataFileCapabilities;
 begin
    Result:=[dfcRead, dfcWrite];
 end;
 
-// LoadFromStream
-//
 procedure TGLWAVFile.LoadFromStream(stream : TStream);
 {$IFDEF MSWINDOWS}
 var
@@ -172,16 +149,12 @@ begin
 {$ENDIF}
 end;
 
-// SaveToStream
-//
 procedure TGLWAVFile.SaveToStream(stream: TStream);
 begin
    if Length(data)>0 then
       stream.Write(data[0], Length(data));
 end;
 
-// PlayOnWaveOut
-//
 procedure TGLWAVFile.PlayOnWaveOut;
 begin
 {$IFDEF MSWINDOWS}
@@ -190,8 +163,6 @@ begin
 //   GLSoundFileObjects.PlayOnWaveOut(PCMData, LengthInBytes, waveFormat);
 end;
 
-// WAVData
-//
 function TGLWAVFile.WAVData : Pointer;
 begin
    if Length(data)>0 then
@@ -199,15 +170,11 @@ begin
    else Result:=nil;
 end;
 
-// WAVDataSize
-//
 function TGLWAVFile.WAVDataSize : Integer;
 begin
    Result:=Length(data);
 end;
 
-// PCMData
-//
 function TGLWAVFile.PCMData : Pointer;
 begin
 {$IFDEF MSWINDOWS}
@@ -219,8 +186,6 @@ begin
 {$ENDIF}
 end;
 
-// LengthInBytes
-//
 function TGLWAVFile.LengthInBytes : Integer;
 begin
    Result:=FPCMDataLength;

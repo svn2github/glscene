@@ -5,22 +5,8 @@
    General utilities for mesh manipulations.
 
    History :
-       10/12/14 - PW - Renamed MeshUtils unit to GLMeshUtils
-       20/05/10 - Yar - Fixes for Linux x64
-       26/02/10 - Yar - Added functions to work with adjacent triangles
-       30/03/07 - DaStr - Added $I GLScene.inc
-       29/07/03 - PVD - Fixed bug in RemapReferences limiting lists to 32768 items   
-       29/07/03 - SG - Fixed small bug in ConvertStripToList (indexed vectors variant)
-       05/03/03 - EG - Added RemapIndicesToIndicesMap
-       20/01/03 - EG - Added UnifyTrianglesWinding
-       15/01/03 - EG - Added ConvertStripToList, ConvertIndexedListToList
-       13/01/03 - EG - Added InvertTrianglesWinding, BuildNonOrientedEdgesList,
-                          SubdivideTriangles 
-       10/03/02 - EG - Added WeldVertices, RemapTrianglesIndices and IncreaseCoherency
-       04/11/01 - EG - Optimized RemapAndCleanupReferences and BuildNormals
-       02/11/01 - EG - BuildVectorCountOptimizedIndices three times faster,
-                          StripifyMesh slightly faster
-	    18/08/01 - EG - Creation
+      18/08/01 - EG - Creation
+      The whole history is logged in previous version of the unit
 	 
 }
 unit GLMeshUtils;
@@ -86,8 +72,7 @@ procedure RemapReferences(reference : TIntegerList;
    This functions scans the reference list and removes all values that aren't
    referred in the indices list, and the indices list is remapped so as to remain
    coherent. }
-procedure RemapAndCleanupReferences(reference : TAffineVectorList;
-                                    indices : TIntegerList);
+procedure RemapAndCleanupReferences(reference : TAffineVectorList; indices : TIntegerList);
 {Creates an indices map from a remap list. 
    The remap list is what BuildVectorCountOptimizedIndices, a list of indices
    to distinct/unique items, the indices map contains the indices of these items
@@ -192,11 +177,7 @@ var
   vEdgeInfoReserveSize: LongWord = 64;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 uses 
@@ -205,8 +186,6 @@ uses
 var
    v0to255reciproquals : array of Single;
 
-// Get0to255reciproquals
-//
 function Get0to255reciproquals : PSingleArray;
 var
    i : Integer;
@@ -219,8 +198,6 @@ begin
    Result:=@v0to255reciproquals[0];
 end;
 
-// ConvertStripToList (non-indexed vectors variant)
-//
 procedure ConvertStripToList(const strip : TAffineVectorList;
                              list : TAffineVectorList);
 var
@@ -236,8 +213,6 @@ begin
    end;
 end;
 
-// ConvertStripToList (indices)
-//
 procedure ConvertStripToList(const strip : TIntegerList;
                              list : TIntegerList);
 var
@@ -253,8 +228,6 @@ begin
    end;
 end;
 
-// ConvertStripToList (indexed vectors variant)
-//
 procedure ConvertStripToList(const strip : TAffineVectorList;
                              const indices : TIntegerList;
                              list : TAffineVectorList);
@@ -275,8 +248,6 @@ begin
    end;
 end;
 
-// ConvertIndexedListToList
-//
 procedure ConvertIndexedListToList(const data : TAffineVectorList;
                                    const indices : TIntegerList;
                                    list : TAffineVectorList);
@@ -303,8 +274,6 @@ begin
       listList[i]:=dataList[indicesList[i]];
 end;
 
-// BuildVectorCountOptimizedIndices
-//
 function BuildVectorCountOptimizedIndices(const vertices : TAffineVectorList;
                                           const normals : TAffineVectorList = nil;
                                           const texCoords : TAffineVectorList = nil) : TIntegerList;
@@ -463,8 +432,6 @@ begin
    reference.Count:=(PtrUInt(refListN)-PtrUInt(@reference.List[0])) div SizeOf(TAffineVector);
 end;
 
-// RemapReferences (integers)
-//
 procedure RemapReferences(reference : TIntegerList;
                           const indices : TIntegerList);
 var
@@ -492,8 +459,6 @@ begin
    reference.Count:=n;
 end;
 
-// RemapAndCleanupReferences
-//
 procedure RemapAndCleanupReferences(reference : TAffineVectorList;
                                     indices : TIntegerList);
 var
@@ -525,8 +490,6 @@ begin
       indicesList[i]:=tag[indicesList[i]];
 end;
 
-// RemapIndicesToIndicesMap
-//
 function RemapIndicesToIndicesMap(remapIndices : TIntegerList) : TIntegerList;
 var
    i, n : Integer;
@@ -554,8 +517,6 @@ begin
       indicesMap[i]:=tag[remapList[i]];
 end;
 
-// RemapTrianglesIndices
-//
 procedure RemapTrianglesIndices(indices, indicesMap : TIntegerList);
 var
    i, k, a, b, c, n : Integer;
@@ -579,8 +540,6 @@ begin
    indices.Count:=k;
 end;
 
-// RemapIndices
-//
 procedure RemapIndices(indices, indicesMap : TIntegerList);
 var
    i : Integer;
@@ -592,8 +551,6 @@ begin
       ind[i]:=map[ind[i]];
 end;
 
-// UnifyTrianglesWinding
-//
 procedure UnifyTrianglesWinding(indices : TIntegerList);
 var
    nbTris : Integer;
@@ -662,8 +619,6 @@ begin
    end;
 end;
 
-// InvertTrianglesWinding
-//
 procedure InvertTrianglesWinding(indices : TIntegerList);
 var
    i : Integer;
@@ -854,8 +809,6 @@ begin
       edgesHash[j].Free;
 end;
 
-// IncreaseCoherency
-//
 procedure IncreaseCoherency(indices : TIntegerList; cacheSize : Integer);
 var
    i, n, maxVertex, bestCandidate, bestScore, candidateIdx, lastCandidate : Integer;
@@ -933,8 +886,6 @@ begin
       trisOfVertex[i].Free;
 end;
 
-// WeldVertices
-//
 procedure WeldVertices(vertices : TAffineVectorList;
                        indicesMap : TIntegerList;
                        weldRadius : Single);
@@ -990,8 +941,6 @@ begin
    vertices.Count:=k;
 end;
 
-// StripifyMesh
-//
 function StripifyMesh(indices : TIntegerList; maxVertexIndex : Integer;
                       agglomerateLoneTriangles : Boolean = False) : TPersistentObjectList;
 var
@@ -1111,8 +1060,6 @@ begin
       vertexTris[i].Free;
 end;
 
-// SubdivideTriangles
-//
 procedure SubdivideTriangles(smoothFactor : Single;
                              vertices : TAffineVectorList;
                              triangleIndices : TIntegerList;
@@ -1212,8 +1159,6 @@ var
   edgeInfo: TTriangleEdgeInfoArray;
   boundaryList: TTriangleBoundaryArray;
 
-// sameVertex - determine if two vertices are identical.
-//
 
 function sameVertex(i0, i1: LongWord): Boolean;
 begin

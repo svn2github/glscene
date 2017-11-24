@@ -40,6 +40,8 @@ unit GLIsosurface;
 
 interface
 
+{$I GLScene.inc}
+
 uses
   GLVectorGeometry,
   GLVectorLists,
@@ -153,13 +155,13 @@ type
     Dimensions: array ['x' .. 'z'] of Integer;
     { Build Index depending on whether the edges are outside or inside the surface }
     function BuildIndex(var ADatavals: array of Single; Isovalue: Single): word;
-    function Interpolate(V0, V1: TAffineVector;
+    function Interpolate(const V0, V1: TAffineVector;
       var Val0, Val1, Isovalue: Single; isPolished: boolean): TVertex;
   public
     constructor Create(); overload;
     constructor Create(Xdim, Ydim, Zdim: Integer;
       var AData: TSingle3DArray); overload;
-    destructor Destroy();
+    destructor Destroy(); override;
     procedure AssignData(Xdim, Ydim, Zdim: Integer; var AData: TSingle3DArray);
     { Launch Marching Cubes }
     procedure MarchingCubes(Isovalue: Single; out Vertices: TVertexArray;
@@ -639,13 +641,13 @@ begin
   begin
     Diff := Val0 / (Val0 + Val1);
     for i := 0 to 2 do
-      Result.V[i] := V0.V[i] + Diff * (V1.V[i] - V0.V[i]);
+      Result.C[i] := V0.C[i] + Diff * (V1.C[i] - V0.C[i]);
   end
   else
   begin
     Diff := Val1 / (Val0 + Val1);
     for i := 0 to 2 do
-      Result.V[i] := V1.V[i] + Diff * (V0.V[i] - V1.V[i]);
+      Result.C[i] := V1.C[i] + Diff * (V0.C[i] - V1.C[i]);
   end;
 end;
 
@@ -664,7 +666,7 @@ begin
   Result.Z := w0 * V0.Z + w1 * V1.Z;
 end;
 
-function TIsoSurfaceExtractor.Interpolate(V0, V1: TAffineVector;
+function TIsoSurfaceExtractor.Interpolate(const V0, V1: TAffineVector;
   var Val0, Val1, Isovalue: Single; isPolished: boolean): TVertex;
 begin
   if isPolished then
@@ -1522,30 +1524,30 @@ var
 
   function GetNrmColor(Nrm: TAffineVector): TVector;
   begin
-    Result.V[0] := 0;
-    if Nrm.V[0] > 0.0 then
-      Result.V[0] := Result.V[0] + Nrm.V[0];
-    if Nrm.V[1] < 0.0 then
-      Result.V[0] := Result.V[0] - 0.5 * Nrm.V[1];
-    if Nrm.V[2] < 0.0 then
-      Result.V[0] := Result.V[0] - 0.5 * Nrm.V[2];
+    Result.C[0] := 0;
+    if Nrm.C[0] > 0.0 then
+      Result.C[0] := Result.C[0] + Nrm.C[0];
+    if Nrm.C[1] < 0.0 then
+      Result.C[0] := Result.C[0] - 0.5 * Nrm.C[1];
+    if Nrm.C[2] < 0.0 then
+      Result.C[0] := Result.C[0] - 0.5 * Nrm.C[2];
 
-    Result.V[1] := 1;
-    if Nrm.V[0] < 0.0 then
-      Result.V[1] := Result.V[1] - 0.5 * Nrm.V[0];
-    if Nrm.V[1] > 0.0 then
-      Result.V[1] := Result.V[1] + Nrm.V[1];
-    if Nrm.V[2] < 0.0 then
-      Result.V[1] := Result.V[1] - 0.5 * Nrm.V[2];
+    Result.C[1] := 1;
+    if Nrm.C[0] < 0.0 then
+      Result.C[1] := Result.C[1] - 0.5 * Nrm.C[0];
+    if Nrm.C[1] > 0.0 then
+      Result.C[1] := Result.C[1] + Nrm.C[1];
+    if Nrm.C[2] < 0.0 then
+      Result.C[1] := Result.C[1] - 0.5 * Nrm.C[2];
 
-    Result.V[2] := 0;
-    if Nrm.V[0] < 0.0 then
-      Result.V[2] := Result.V[2] - 0.5 * Nrm.V[0];
-    if Nrm.V[1] < 0.0 then
-      Result.V[2] := Result.V[2] - 0.5 * Nrm.V[1];
-    if Nrm.V[2] > 0.0 then
-      Result.V[2] := Result.V[2] + Nrm.V[2];
-    Result.V[3] := 0.3
+    Result.C[2] := 0;
+    if Nrm.C[0] < 0.0 then
+      Result.C[2] := Result.C[2] - 0.5 * Nrm.C[0];
+    if Nrm.C[1] < 0.0 then
+      Result.C[2] := Result.C[2] - 0.5 * Nrm.C[1];
+    if Nrm.C[2] > 0.0 then
+      Result.C[2] := Result.C[2] + Nrm.C[2];
+    Result.C[3] := 0.3
   end;
 
   function GetColor(H: TxScalarValue): TVector;
@@ -1589,7 +1591,6 @@ end;
 procedure TGLMarchingCube.CalcMeshObject(AMeshObject: TMeshObject; Alpha: Single);
 var
   i: Integer;
-  vx1, vx2, vx3: TGLVertexData;
 begin
   AMeshObject.Clear;
   AMeshObject.Vertices.Capacity := _Nverts;

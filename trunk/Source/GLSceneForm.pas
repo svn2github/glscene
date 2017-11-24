@@ -36,8 +36,6 @@ type
 
   TGLSceneForm = class;
 
-  // TGLFullScreenResolution
-  //
   {Defines how GLSceneForm will handle fullscreen request
      fcWindowMaximize: Use current resolution (just maximize form and hide OS bars)
      fcNearestResolution: Change to nearest valid resolution from current window size
@@ -47,8 +45,6 @@ type
     fcNearestResolution,
     fcManualResolution);
 
-  // TGLFullScreenVideoMode
-  //
   {Screen mode settings }
   TGLFullScreenVideoMode = class(TPersistent)
   private
@@ -77,10 +73,8 @@ type
   end;
 
   { TGLSceneForm }
-
   TGLSceneForm = class(TForm)
   private
-     
     FBuffer: TGLSceneBuffer;
     FVSync: TGLVSyncMode;
     FOwnDC: HDC;
@@ -107,35 +101,28 @@ type
     procedure StartupFS;
     procedure ShutdownFS;
   protected
-    
     procedure Notification(AComponent: TComponent; Operation: TOperation);
       override;
     procedure CreateWnd; override;
     procedure Loaded; override;
-
     procedure DoBeforeRender(Sender: TObject); dynamic;
     procedure DoBufferChange(Sender: TObject); virtual;
     procedure DoBufferStructuralChange(Sender: TObject); dynamic;
-
     procedure MouseMove(Shift: TShiftState; X, Y: Integer); override;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure DestroyWnd; override;
-
     property IsRenderingContextAvailable: Boolean read
       GetIsRenderingContextAvailable;
     property RenderDC: HDC read FOwnDC;
   published
-    
     {  Camera from which the scene is rendered. }
     property Camera: TGLCamera read GetCamera write SetCamera;
-
     {  Specifies if the refresh should be synchronized with the VSync signal. 
       If the underlying OpenGL ICD does not support the WGL_EXT_swap_control
       extension, this property is ignored. }
     property VSync: TGLVSyncMode read FVSync write FVSync default vsmNoSync;
-
     {  Triggered before the scene's objects get rendered. 
       You may use this event to execute your own OpenGL rendering. }
     property BeforeRender: TNotifyEvent read GetBeforeRender write
@@ -148,22 +135,21 @@ type
       You cannot issue OpenGL calls in this event, if you want to do your own
       OpenGL stuff, use the PostRender event. }
     property AfterRender: TNotifyEvent read GetAfterRender write SetAfterRender;
-
     {  Access to buffer properties. }
     property Buffer: TGLSceneBuffer read FBuffer write SetBuffer;
-
     {  Returns or sets the field of view for the viewer, in degrees. 
       This value depends on the camera and the width and height of the scene.
       The value isn't persisted, if the width/height or camera.focallength is
       changed, FieldOfView is changed also. }
     property FieldOfView: single read GetFieldOfView write SetFieldOfView;
-
     property FullScreenVideoMode: TGLFullScreenVideoMode read
       FFullScreenVideoMode
       write SetFullScreenVideoMode;
   end;
 
+//-----------------------------------------------------------------
 implementation
+//-----------------------------------------------------------------
 
 constructor TGLSceneForm.Create(AOwner: TComponent);
 begin
@@ -184,8 +170,6 @@ begin
   inherited Destroy;
 end;
 
-// Notification
-//
 
 procedure TGLSceneForm.Notification(AComponent: TComponent; Operation:
   TOperation);
@@ -198,8 +182,6 @@ begin
   inherited;
 end;
 
-// CreateWnd
-//
 
 procedure TGLSceneForm.CreateWnd;
 begin
@@ -211,8 +193,6 @@ begin
   FBuffer.CreateRC(FOwnDC, false);
 end;
 
-// DestroyWnd
-//
 
 procedure TGLSceneForm.DestroyWnd;
 begin
@@ -228,8 +208,6 @@ begin
   inherited;
 end;
 
-// Loaded
-//
 
 procedure TGLSceneForm.Loaded;
 begin
@@ -243,8 +221,6 @@ begin
   end;
 end;
 
-// WMEraseBkgnd
-//
 
 procedure TGLSceneForm.WMEraseBkgnd(var Message: TWMEraseBkgnd);
 begin
@@ -254,8 +230,6 @@ begin
     inherited;
 end;
 
-// WMSize
-//
 
 procedure TGLSceneForm.WMSize(var Message: TWMSize);
 begin
@@ -264,8 +238,6 @@ begin
     FBuffer.Resize(0, 0, Message.Width, Message.Height);
 end;
 
-// WMPaint
-//
 
 procedure TGLSceneForm.WMPaint(var Message: TWMPaint);
 var
@@ -281,8 +253,6 @@ begin
   end;
 end;
 
-// WMDestroy
-//
 
 procedure TGLSceneForm.WMDestroy(var Message: TWMDestroy);
 begin
@@ -298,8 +268,6 @@ begin
   inherited;
 end;
 
-// LastFocus
-//
 
 procedure TGLSceneForm.LastFocus(var Mess: TMessage);
 begin
@@ -411,16 +379,10 @@ begin
   Top := (Screen.Height div 2) - (Height div 2);
 end;
 
-// DoBeforeRender
-//
-
 procedure TGLSceneForm.DoBeforeRender(Sender: TObject);
 begin
   SetupVSync(VSync);
 end;
-
-// DoBufferChange
-//
 
 procedure TGLSceneForm.DoBufferChange(Sender: TObject);
 begin
@@ -428,8 +390,6 @@ begin
     Invalidate;
 end;
 
-// DoBufferStructuralChange
-//
 
 procedure TGLSceneForm.DoBufferStructuralChange(Sender: TObject);
 begin
@@ -443,80 +403,54 @@ begin
     FBuffer.NotifyMouseMove(Shift, X, Y);
 end;
 
-// SetBeforeRender
-//
 
 procedure TGLSceneForm.SetBeforeRender(const val: TNotifyEvent);
 begin
   FBuffer.BeforeRender := val;
 end;
 
-// GetBeforeRender
-//
 
 function TGLSceneForm.GetBeforeRender: TNotifyEvent;
 begin
   Result := FBuffer.BeforeRender;
 end;
 
-// SetPostRender
-//
 
 procedure TGLSceneForm.SetPostRender(const val: TNotifyEvent);
 begin
   FBuffer.PostRender := val;
 end;
 
-// GetPostRender
-//
-
 function TGLSceneForm.GetPostRender: TNotifyEvent;
 begin
   Result := FBuffer.PostRender;
 end;
 
-// SetAfterRender
-//
 
 procedure TGLSceneForm.SetAfterRender(const val: TNotifyEvent);
 begin
   FBuffer.AfterRender := val;
 end;
 
-// GetAfterRender
-//
-
 function TGLSceneForm.GetAfterRender: TNotifyEvent;
 begin
   Result := FBuffer.AfterRender;
 end;
-
-// SetCamera
-//
 
 procedure TGLSceneForm.SetCamera(const val: TGLCamera);
 begin
   FBuffer.Camera := val;
 end;
 
-// GetCamera
-//
-
 function TGLSceneForm.GetCamera: TGLCamera;
 begin
   Result := FBuffer.Camera;
 end;
 
-// SetBuffer
-//
-
 procedure TGLSceneForm.SetBuffer(const val: TGLSceneBuffer);
 begin
   FBuffer.Assign(val);
 end;
-
-// GetFieldOfView
-//
 
 function TGLSceneForm.GetFieldOfView: single;
 begin
@@ -527,9 +461,6 @@ begin
   else
     Result := Camera.GetFieldOfView(Height);
 end;
-
-// SetFieldOfView
-//
 
 procedure TGLSceneForm.SetFieldOfView(const Value: single);
 begin
@@ -546,22 +477,14 @@ procedure TGLSceneForm.SetFullScreenVideoMode(AValue: TGLFullScreenVideoMode);
 begin
 end;
 
-// GetIsRenderingContextAvailable
-//
-
 function TGLSceneForm.GetIsRenderingContextAvailable: Boolean;
 begin
   Result := FBuffer.RCInstantiated and FBuffer.RenderingContext.IsValid;
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
 
   RegisterClass(TGLSceneForm);
 

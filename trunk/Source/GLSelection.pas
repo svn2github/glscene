@@ -46,19 +46,13 @@ type
      This list is used to store the results of a PickObjects call. }
   TGLPickList = class(TPersistentObjectList)
   private
-     
     function GetFar(aValue: Integer): Single;
     function GetHit(aValue: Integer): TObject;
     function GetNear(aValue: Integer): Single;
     function GetSubObjects(aValue: Integer): TPickSubObjects;
-  protected
-    
   public
-    
     constructor Create(aSortType: TPickSortType); reintroduce;
-
-    procedure AddHit(obj: TObject; const subObj: TPickSubObjects;
-      zMin, zMax: Single);
+    procedure AddHit(obj: TObject; const subObj: TPickSubObjects; zMin, zMax: Single);
     procedure Clear; override;
     function FindObject(AObject: TObject): Integer;
     property FarDistance[Index: Integer]: Single read GetFar;
@@ -89,7 +83,6 @@ type
     procedure PopObject(); virtual; abstract;
     procedure LoadObject(AName: TObject); virtual; abstract;
     procedure FillPickingList(var AList: TGLPickList); virtual; abstract;
-
     property CurrentObject: TObject read GetObject write SetObject;
     property ObjectCountGuess: Integer read FObjectCountGuess write SetObjectCountGuess;
     property Hits: Integer read GetHits write SetHits;
@@ -119,7 +112,9 @@ type
 
 function GetBestSelectorClass: TGLBaseSelectTechniqueClass; inline;
 
+//------------------------------------------------------------
 implementation
+//------------------------------------------------------------
 
 function GetBestSelectorClass: TGLBaseSelectTechniqueClass;
 begin

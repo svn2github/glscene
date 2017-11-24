@@ -49,14 +49,14 @@ type
     procedure SetScaleAsVector(const Value: TVector);
     function GetPositionCoordinate(const Index: Integer): TGLFloat;
     procedure SetPositionCoordinate(const Index: integer; const AValue: TGLFloat);
-    function GetRotationCoordinate(const Index: Integer): TGLFloat;
+    function GetRotationCoordinate(const Index: Integer): TGLFloat; inline;
     procedure SetRotationCoordinate(const Index: integer; const AValue: TGLFloat);
-    function GetScaleCoordinate(const Index: Integer): TGLFloat;
+    function GetScaleCoordinate(const Index: Integer): TGLFloat; inline;
     procedure SetScaleCoordinate(const Index: integer; const AValue: TGLFloat);
     procedure SetSpeed(const Value: single);
-    function GetDirectionCoordinate(const Index: Integer): TGLFloat;
+    function GetDirectionCoordinate(const Index: Integer): TGLFloat; inline;
     procedure SetDirectionCoordinate(const Index: integer; const AValue: TGLFloat);
-    function GetUpCoordinate(const Index: Integer): TGLFloat;
+    function GetUpCoordinate(const Index: Integer): TGLFloat; inline;
     procedure SetUpCoordinate(const Index: integer; const AValue: TGLFloat);
   protected
     function GetDisplayName: string; override;
@@ -88,19 +88,15 @@ type
     property PitchAngle: TGLFloat index 0 Read GetRotationCoordinate Write SetRotationCoordinate;
     property TurnAngle: TGLFloat index 1 Read GetRotationCoordinate Write SetRotationCoordinate;
     property RollAngle: TGLFloat index 2 Read GetRotationCoordinate Write SetRotationCoordinate;
-
     property ScaleX: TGLFloat index 0 Read GetScaleCoordinate Write SetScaleCoordinate;
     property ScaleY: TGLFloat index 1 Read GetScaleCoordinate Write SetScaleCoordinate;
     property ScaleZ: TGLFloat index 2 Read GetScaleCoordinate Write SetScaleCoordinate;
-
     property DirectionX: TGLFloat index 0 Read GetDirectionCoordinate Write SetDirectionCoordinate;
     property DirectionY: TGLFloat index 1 Read GetDirectionCoordinate Write SetDirectionCoordinate;
     property DirectionZ: TGLFloat index 2 Read GetDirectionCoordinate Write SetDirectionCoordinate;
-
     property UpX: TGLFloat index 0 Read GetUpCoordinate Write SetUpCoordinate;
     property UpY: TGLFloat index 1 Read GetUpCoordinate Write SetUpCoordinate;
     property UpZ: TGLFloat index 2 Read GetUpCoordinate Write SetUpCoordinate;
-
     property Speed: single Read FSpeed Write SetSpeed;
   end;
 
@@ -129,9 +125,7 @@ type
     FPathLine: TGLLines;
     FShowPath: Boolean;
     FPathSplineMode: TGLLineSplineMode;
-
     FNodes: TGLPathNodes;
-
     //All the time saved in ms
     FStartTimeApplied: Boolean;
     FStartTime: double;
@@ -142,8 +136,6 @@ type
     FLooped: boolean;
     FName: string;
     FRotationMode: TGLMovementRotationMode;
-
-
     MotionSplineControl: TCubicSpline;
     RotationSplineControl: TCubicSpline;
     ScaleSplineControl: TCubicSpline;
@@ -152,7 +144,6 @@ type
 
     FOnTravelStart: TNotifyEvent;
     FOnTravelStop: TNotifyEvent;
-
     FCurrentNodeIndex: integer;
     function GetNodeCount: integer;
     procedure SetStartTime(const Value: double);
@@ -193,7 +184,6 @@ type
     property OnTravelStop: TNotifyEvent Read FOnTravelStop Write FOnTravelStop;
   published
     property Name: string Read FName Write FName;
-
     {This property is currently ignored. }
     property PathSplineMode: TGLLineSplineMode read FPathSplineMode write SetPathSplineMode default lsmLines;
     property RotationMode: TGLMovementRotationMode read FRotationMode write FRotationMode default rmTurnPitchRoll;
@@ -297,11 +287,7 @@ procedure StartAllMovements(const Scene: TGLScene; const StartCamerasMove, Start
 procedure StopAllMovements(const Scene: TGLScene; const StopCamerasMove, StopObjectsMove: Boolean);
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 uses
   GLVectorTypes;
@@ -470,63 +456,61 @@ end;
 
 function TGLPathNode.GetPositionCoordinate(const Index: Integer): TGLFloat;
 begin
-  result := FPosition.V[Index];
+  result := FPosition.C[Index];
 end;
 
 procedure TGLPathNode.SetPositionCoordinate(const Index: integer; const AValue: TGLFloat);
 begin
-  FPosition.V[Index] := AValue;
+  FPosition.C[Index] := AValue;
   if Collection <> nil then
     (Collection as TGLPathNodes).NotifyChange;
 end;
 
 function TGLPathNode.GetRotationCoordinate(const Index: Integer): TGLFloat;
 begin
-  result := FRotation.V[Index];
+  result := FRotation.C[Index];
 end;
 
 procedure TGLPathNode.SetRotationCoordinate(const Index: integer; const AValue: TGLFloat);
 begin
-  FRotation.V[Index] := AValue;
+  FRotation.C[Index] := AValue;
   if Collection <> nil then
     (Collection as TGLPathNodes).NotifyChange;
 end;
 
 function TGLPathNode.GetScaleCoordinate(const Index: Integer): TGLFloat;
 begin
-  result := FScale.V[Index];
+  result := FScale.C[Index];
 end;
 
 procedure TGLPathNode.SetScaleCoordinate(const Index: integer; const AValue: TGLFloat);
 begin
-  FScale.V[Index] := AValue;
+  FScale.C[Index] := AValue;
   if Collection <> nil then
     (Collection as TGLPathNodes).NotifyChange;
 end;
 
-
 function TGLPathNode.GetDirectionCoordinate(const Index: Integer): TGLFloat;
 begin
-  result := FDirection.V[Index];
+  result := FDirection.C[Index];
 end;
-
 
 procedure TGLPathNode.SetDirectionCoordinate(const Index: integer;
   const AValue: TGLFloat);
 begin
-  FDirection.V[Index] := AValue;
+  FDirection.C[Index] := AValue;
   if Collection <> nil then
     (Collection as TGLPathNodes).NotifyChange;
 end;
 
 function TGLPathNode.GetUpCoordinate(const Index: Integer): TGLFloat;
 begin
-  result := FUp.V[Index];
+  result := FUp.C[Index];
 end;
 
 procedure TGLPathNode.SetUpCoordinate(const Index: integer; const AValue: TGLFloat);
 begin
-  FUp.V[Index] := AValue;
+  FUp.C[Index] := AValue;
   if Collection <> nil then
     (Collection as TGLPathNodes).NotifyChange;
 end;

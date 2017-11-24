@@ -34,34 +34,25 @@ type
    {Stores row information for a tiled area.  }
    TGLTiledAreaRow = class (TPersistentObject)
 	   private
-			 
          FColMin, FColMax : Integer;
          FData : TIntegerList;
 		protected
-			
          procedure SetColMin(const val : Integer);
          procedure SetColMax(const val : Integer);
-
          function GetCell(col : Integer) : Integer;
          procedure SetCell(col, val : Integer);
-
 		public
-			
 			constructor Create; override;
          destructor Destroy; override;
-	      procedure WriteToFiler(writer : TVirtualWriter); override;
-	      procedure ReadFromFiler(reader : TVirtualReader); override;
-
+         procedure WriteToFiler(writer : TVirtualWriter); override;
+	     procedure ReadFromFiler(reader : TVirtualReader); override;
          property Cell[col : Integer] : Integer read GetCell write SetCell; default;
          property ColMin : Integer read FColMin write SetColMin;
          property ColMax : Integer read FColMax write SetColMax;
          property Data : TIntegerList read FData;
-
          procedure Pack;
          function Empty : Boolean;
-
          procedure RemapTiles(remapList : TIntegerList);
-
    end;
 
    {Stores tile information in a tiled area. 
@@ -69,38 +60,27 @@ type
       assumed as "empty". }
    TGLTiledArea = class (TPersistentObject)
 	   private
-			 
          FRowMin, FRowMax : Integer;
          FRows : TPersistentObjectList;
-
 		protected
-			
          procedure SetRowMin(const val : Integer);
          procedure SetRowMax(const val : Integer);
-
          function GetTile(col, row : Integer) : Integer;
          procedure SetTile(col, row, val : Integer);
          function GetRow(index : Integer) : TGLTiledAreaRow;
-
 		public
-			
-			constructor Create; override;
+         constructor Create; override;
          destructor Destroy; override;
-	      procedure WriteToFiler(writer : TVirtualWriter); override;
-	      procedure ReadFromFiler(reader : TVirtualReader); override;
-
+	     procedure WriteToFiler(writer : TVirtualWriter); override;
+	     procedure ReadFromFiler(reader : TVirtualReader); override;
          property Tile[col, row : Integer] : Integer read GetTile write SetTile; default;
          property Row[index : Integer] : TGLTiledAreaRow read GetRow;
-
          property RowMin : Integer read FRowMin write SetRowMin;
          property RowMax : Integer read FRowMax write SetRowMax;
-
          procedure Pack;
          procedure Clear;
          function Empty : Boolean;
-
          procedure RemapTiles(remapList : TIntegerList);
-
    end;
 
    {A tiled textured plane. 
@@ -109,30 +89,22 @@ type
       Its bounding dimensions are determined by its painted tile. }
 	TGLTilePlane = class (TGLImmaterialSceneObject)
 	   private
-			 
          FNoZWrite : Boolean;
          FTiles : TGLTiledArea;
          FMaterialLibrary : TGLMaterialLibrary;
          FSortByMaterials : Boolean;
-
 		protected
-			
          procedure SetNoZWrite(const val : Boolean);
          procedure SetTiles(const val : TGLTiledArea);
          procedure SetMaterialLibrary(const val : TGLMaterialLibrary);
          procedure SetSortByMaterials(const val : Boolean);
-
          procedure Notification(AComponent: TComponent; Operation: TOperation); override;
-
 		public
-			
 			constructor Create(AOwner: TComponent); override;
          destructor Destroy; override;
-
          procedure DoRender(var ARci : TGLRenderContextInfo;
                             ARenderSelf, ARenderChildren : Boolean); override;
          procedure BuildList(var rci : TGLRenderContextInfo); override;
-
          // Access to the TiledArea data
          property Tiles : TGLTiledArea read FTiles write SetTiles;
          {Controls the sorting of tiles by material. 
@@ -140,10 +112,7 @@ type
             except for debugging and performance measurement, which is why
             it's only public and not published. }
          property SortByMaterials : Boolean read FSortByMaterials write SetSortByMaterials;
-
 		published
-			
-
          {If True the tiles are rendered without writing to the ZBuffer. }
          property NoZWrite : Boolean read FNoZWrite write SetNoZWrite;
          {Material library where tiles materials will be stored/retrieved. 
@@ -154,9 +123,9 @@ type
    end;
 
 //-------------------------------------------------------------
-//-------------------------------------------------------------
-//-------------------------------------------------------------
 implementation
+//-------------------------------------------------------------
+
 // ------------------
 // ------------------ TGLTiledAreaRow ------------------
 // ------------------

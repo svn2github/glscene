@@ -27,11 +27,7 @@ function GraphicClassForExtension(const anExtension: string): TGraphicClass;
 procedure HackTPictureRegisteredFormats(destList: TStrings);
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 function GraphicClassForExtension(const anExtension: string): TGraphicClass;

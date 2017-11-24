@@ -22,8 +22,6 @@ uses
 
 type
 
-  // TGLMeshOptimizerOptions
-  //
   TGLMeshOptimizerOption = (mooStandardize, mooVertexCache, mooSortByMaterials,
     mooMergeObjects);
   TGLMeshOptimizerOptions = set of TGLMeshOptimizerOption;
@@ -32,37 +30,31 @@ var
   vDefaultMeshOptimizerOptions: TGLMeshOptimizerOptions = [mooStandardize,
     mooVertexCache, mooSortByMaterials, mooMergeObjects];
 
-procedure OptimizeMesh(aList: TGLMeshObjectList;
-  options: TGLMeshOptimizerOptions); overload;
+(* Optimize Mesh (list, default options) *)
+procedure OptimizeMesh(aList: TGLMeshObjectList; options: TGLMeshOptimizerOptions); overload;
 procedure OptimizeMesh(aList: TGLMeshObjectList); overload;
-procedure OptimizeMesh(aMeshObject: TMeshObject;
-  options: TGLMeshOptimizerOptions); overload;
+// OptimizeMesh (object, with options)
+procedure OptimizeMesh(aMeshObject: TMeshObject; options: TGLMeshOptimizerOptions); overload;
+// OptimizeMesh (object, default options)
 procedure OptimizeMesh(aMeshObject: TMeshObject); overload;
 procedure FacesSmooth(aMeshObj: TMeshObject;
   aWeldDistance: Single = 0.0000001; aThreshold: Single = 35.0;
   InvertNormals: boolean = false);
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
-
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 uses
-  GLPersistentClasses, GLVectorLists, GLMeshUtils;
+  GLPersistentClasses, 
+  GLVectorLists, 
+  GLMeshUtils;
 
-// OptimizeMesh (list, default options)
-//
 procedure OptimizeMesh(aList: TGLMeshObjectList);
 begin
   OptimizeMesh(aList, vDefaultMeshOptimizerOptions);
 end;
 
-// OptimizeMesh (list, with options)
-//
 procedure OptimizeMesh(aList: TGLMeshObjectList;
   options: TGLMeshOptimizerOptions);
 var
@@ -113,15 +105,11 @@ begin
   end;
 end;
 
-// OptimizeMesh (object, default options)
-//
 procedure OptimizeMesh(aMeshObject: TMeshObject);
 begin
   OptimizeMesh(aMeshObject, vDefaultMeshOptimizerOptions);
 end;
 
-// OptimizeMesh (object, with options)
-//
 procedure OptimizeMesh(aMeshObject: TMeshObject;
   options: TGLMeshOptimizerOptions);
 var

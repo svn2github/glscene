@@ -29,8 +29,6 @@ uses
   GLCrossPlatform;
 
 type
-  // TGLDynamicTextureImage
-  //
   {Allows for fast updating of the texture at runtime. }
   TGLDynamicTextureImage = class(TGLBlankImage)
   private
@@ -49,54 +47,40 @@ type
     function GetBitsPerPixel: integer;
     function GetDataFormat: integer;
     function GetTextureFormat: integer;
-
     procedure FreePBO;
     procedure FreeBuffer;
-
     property BitsPerPixel: integer read GetBitsPerPixel;
     property DataFormat: integer read GetDataFormat;
     property TextureFormat: integer read GetTextureFormat;
   public
     constructor Create(AOwner: TPersistent); override;
-
     class function FriendlyName : String; override;
     class function FriendlyDescription : String; override;
-
     procedure NotifyChange(Sender: TObject); override;
-
     {Must be called before using the Data pointer. 
       Rendering context must be active! }
     procedure BeginUpdate;
-
     {Must be called after data is changed. 
        This will upload the new data. }
     procedure EndUpdate;
-
     {Pointer to buffer data.  Will be nil
        outside a BeginUpdate / EndUpdate block. }
     property Data: pointer read FData;
-
     {Marks the dirty rectangle inside the texture.  BeginUpdate sets
        it to ((0, 0), (Width, Height)), ie the entire texture.
        Override it if you're only changing a small piece of the texture.
        Note that the Data pointer is relative to the DirtyRectangle,
        NOT the entire texture. }
     property DirtyRectangle: TGLRect read FDirtyRect write SetDirtyRectangle;
-
     {Indicates that the data is stored as BGR(A) instead of
        RGB(A).  The default is to use BGR(A). }
     property UseBGR: boolean read FUseBGR write FUseBGR;
-
     {Enables or disables use of a PBO. Default is true. }
     property UsePBO: boolean read FUsePBO write SetUsePBO;
   end;
 
 //---------------------------------------------------------  
-//---------------------------------------------------------  
-//---------------------------------------------------------  
 implementation
-//---------------------------------------------------------  
-//---------------------------------------------------------  
 //---------------------------------------------------------  
 
 uses
@@ -256,15 +240,11 @@ begin
   end;
 end;
 
- 
-//
 class function TGLDynamicTextureImage.FriendlyName : String;
 begin
    Result:='Dynamic Texture';
 end;
 
-// FriendlyDescription
-//
 class function TGLDynamicTextureImage.FriendlyDescription : String;
 begin
    Result:='Dynamic Texture - optimised for changes at runtime';

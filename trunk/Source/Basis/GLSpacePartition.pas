@@ -16,20 +16,8 @@
 
 
    History :  
-   10/12/14 - PW - Renamed SpatialPartitioning unit to GLSpacePartition
-   10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
-   07/09/11 - Yar - Bugfixed memory leak in TSectoredSpacePartition (thanks to chenshunbin0624)
-   30/03/07 - DaStr - Added $I GLScene.inc
-   09/12/04 - MF - Renamed TQuadSpacePartition to TQuadtreeSpacePartition
-   08/12/04 - MF - Fixed AV error reported by DanB
-   03/12/04 - MF - Added quadtree for typical 2d (landscape) scenes
-   02/12/04 - MF - Removed rcci, cleaned up so that only frustum is used
-                      streamlined frustum culling.
-   01/12/04 - HRLI - Added rcci/frustum culling
-   23/06/03 - MF - Separated functionality for Octrees and general
-  sectored space partitions so Quadtrees will be easy
-  to add.
    20/06/03 - MF - Created
+   The whole history is logged in a former version of the unit.
    
 }
 
@@ -40,9 +28,14 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils, System.Math,
+  System.Classes, 
+  System.SysUtils, 
+  System.Math,
    
-  GLVectorTypes, GLVectorGeometry,  GLGeometryBB, GLPersistentClasses;
+  GLVectorTypes, 
+  GLVectorGeometry,  
+  GLGeometryBB, 
+  GLPersistentClasses;
 
 const
   COctree_LEAF_TRHESHOLD = 30;
@@ -1864,12 +1857,9 @@ var
     for N := 0 to 2 do
     begin
       case Flags[N] of
-        CMIN:
-          Result.V[N] := FAABB.Min.V[N];
-        CMID:
-          Result.V[N] := (FAABB.Max.V[N] + FAABB.Min.V[N]) / 2;
-        CMAX:
-          Result.V[N] := FAABB.Max.V[N];
+        CMIN: Result.C[N] := FAABB.Min.C[N];
+        CMID: Result.C[N] := (FAABB.Max.C[N] + FAABB.Min.C[N]) / 2;
+        CMAX: Result.C[N] := FAABB.Max.C[N];
       end;
     end;
   end;

@@ -24,8 +24,6 @@ uses
 
 type
 
-  // TGLBaseSceneFormWizard
-  //
 
   TGLBaseSceneFormWizard = class(
       TNotifierObject,
@@ -80,8 +78,6 @@ type
     function GetPersonality: string;
   end;
 
-  // TGLSimpleSceneFormWizard
-  //
 
   TGLSimpleSceneFormWizard = class(TGLBaseSceneFormWizard)
   protected
@@ -93,8 +89,6 @@ type
       const ModuleIdent, FormIdent, AncestorIdent: string): IOTAFile; override;
   end;
 
-  // TGLExtendedSceneFormWizard
-  //
 
   TGLExtendedSceneFormWizard = class(TGLBaseSceneFormWizard)
   protected
@@ -106,8 +100,6 @@ type
       const ModuleIdent, FormIdent, AncestorIdent: string): IOTAFile; override;
   end;
 
-  // TGLBaseSceneProjectCreator
-  //
 
   TGLBaseSceneProjectCreator = class(
     TInterfacedObject,
@@ -138,8 +130,6 @@ type
     procedure NewDefaultProjectModule(const Project: IOTAProject); virtual;
   end;
 
-  // TGLBaseSceneProjectWizard
-  //
 
   TGLBaseSceneProjectWizard = class(
       TNotifierObject,
@@ -165,8 +155,6 @@ type
     function GetPersonality: string;
   end;
 
-  // TGLSimpleSceneProjectWizard
-  //
 
   TGLSimpleSceneProjectWizard = class(TGLBaseSceneProjectWizard)
   public
@@ -175,16 +163,12 @@ type
     procedure Execute; override;
   end;
 
-  // TGLSimpleSceneProjectCreator
-  //
 
   TGLSimpleSceneProjectCreator = class(TGLBaseSceneProjectCreator)
   public
     procedure NewDefaultProjectModule(const Project: IOTAProject); override;
   end;
 
-  // TGLSimpleSceneProjectWizard
-  //
 
   TGLExtendedSceneProjectWizard = class(TGLBaseSceneProjectWizard)
   public
@@ -193,8 +177,6 @@ type
     procedure Execute; override;
   end;
 
-  // TGLSimpleSceneProjectCreator
-  //
 
   TGLExtendedSceneProjectCreator = class(TGLBaseSceneProjectCreator)
   public
@@ -235,7 +217,10 @@ resourcestring
 
 procedure Register;
 
+
+//------------------------------------------------------------
 implementation
+//------------------------------------------------------------
 
 {$R *.res}
 
@@ -1196,8 +1181,6 @@ begin
   Result := Format(ProjText, [FProjectName, FModuleName, FFormName]);
 end;
 
-// TGLBaseSceneFormWizard
-//
 
 function TGLBaseSceneFormWizard.GetIDString: string;
 begin

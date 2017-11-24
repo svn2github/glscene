@@ -34,11 +34,7 @@ function StarRecordPositionYUp(const starRecord : TGLStarRecord) : TAffineVector
 function StarRecordColor(const starRecord : TGLStarRecord; bias : Single) : TVector;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 function StarRecordPositionYUp(const starRecord : TGLStarRecord) : TAffineVector;

@@ -27,133 +27,91 @@ uses
 
 type
   {Possible styles of texture projection. Possible values: 
-      ptsOriginal: Original projection method (first pass,
-         is default scene render, second pass is texture
-         projection).
-      ptsInverse: Inverse projection method (first pass
-         is texture projection, sencond pass is regular scene
-         render). This method is useful if you want to simulate
-         lighting only through projected textures (the textures
+   ptsOriginal: Original projection method (first pass,
+      is default scene render, second pass is texture projection).
+   ptsInverse: Inverse projection method (first pass is texture projection, 
+               sencond pass is regular scene render). 
+   This method is useful if you want to simulate
+        lighting only through projected textures (the textures
          of the scene are "masked" into the white areas of
-         the projection textures).
-      }
+         the projection textures). }
   TGLProjectedTexturesStyle = (ptsOriginal, ptsInverse);
 
   TGLProjectedTextures = class;
 
-  // TGLTextureEmmiter
-  //
   {A projected texture emmiter. 
      It's material property will be used as the projected texture.
      Can be places anywhere in the scene. }
   TGLTextureEmitter = class(TGLSceneObject)
   private
-     
     FFOVy: single;
     FAspect: single;
-
   protected
-    
     {Sets up the base texture matrix for this emitter 
        Should be called whenever a change on its properties is made.}
     procedure SetupTexMatrix(var ARci: TGLRenderContextInfo);
-
   public
-    
     constructor Create(AOwner: TComponent); override;
-
   published
-    
     {Indicates the field-of-view of the projection frustum.}
     property FOVy: single read FFOVy write FFOVy;
-
     {x/y ratio. For no distortion, this should be set to
        texture.width/texture.height.}
     property Aspect: single read FAspect write FAspect;
   end;
 
-  // TGLTextureEmitterItem
-  //
   {Specifies an item on the TGLTextureEmitters collection. }
   TGLTextureEmitterItem = class(TCollectionItem)
   private
-     
     FEmitter: TGLTextureEmitter;
-
   protected
-    
     procedure SetEmitter(const val: TGLTextureEmitter);
     procedure RemoveNotification(aComponent: TComponent);
     function GetDisplayName: string; override;
-
   public
-    
     constructor Create(ACollection: TCollection); override;
     procedure Assign(Source: TPersistent); override;
-
   published
-    
     property Emitter: TGLTextureEmitter read FEmitter write SetEmitter;
 
   end;
 
-  // TGLTextureEmitters
-  //
   {Collection of TGLTextureEmitter. }
   TGLTextureEmitters = class(TCollection)
   private
-     
     FOwner: TGLProjectedTextures;
-
   protected
-    
     function GetOwner: TPersistent; override;
     function GetItems(index: Integer): TGLTextureEmitterItem;
     procedure RemoveNotification(aComponent: TComponent);
-
   public
-    
     procedure AddEmitter(texEmitter: TGLTextureEmitter);
-
     property Items[index: Integer]: TGLTextureEmitterItem read GetItems; default;
-
   end;
 
-  // TGLProjectedTexture
-  //
   {Projected Textures Manager. 
      Specifies active texture Emitters (whose texture will be projected)
      and receivers (children of this object). }
   TGLProjectedTextures = class(TGLImmaterialSceneObject)
   private
-     
     FEmitters: TGLTextureEmitters;
     FStyle: TGLProjectedTexturesStyle;
-
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure DoRender(var ARci: TGLRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
-
   published
-    
-
     {List of texture emitters. }
     property Emitters: TGLTextureEmitters read FEmitters write FEmitters;
-
     {Indicates the style of the projected textures. }
     property Style: TGLProjectedTexturesStyle read FStyle write FStyle;
   end;
 
-  //-------------------------------------------------------------
-  //-------------------------------------------------------------
-  //-------------------------------------------------------------
+//-------------------------------------------------------------
 implementation
 //-------------------------------------------------------------
-//-------------------------------------------------------------
-//-------------------------------------------------------------
+
 uses
   GLContext;
 // ------------------
@@ -161,17 +119,12 @@ uses
 // ------------------
 
  
-//
-
 constructor TGLTextureEmitter.Create(aOwner: TComponent);
 begin
   inherited Create(aOwner);
   FFOVy := 90;
   FAspect := 1;
 end;
-
-// SetupTexMatrix
-//
 
 procedure TGLTextureEmitter.SetupTexMatrix(var ARci: TGLRenderContextInfo);
 const
@@ -194,16 +147,11 @@ end;
 // ------------------ TGLTextureEmitterItem ------------------
 // ------------------
 
- 
-//
 
 constructor TGLTextureEmitterItem.Create(ACollection: TCollection);
 begin
   inherited Create(ACollection);
 end;
-
-// Assign
-//
 
 procedure TGLTextureEmitterItem.Assign(Source: TPersistent);
 begin
@@ -215,8 +163,6 @@ begin
   inherited;
 end;
 
-// SetCaster
-//
 
 procedure TGLTextureEmitterItem.SetEmitter(const val: TGLTextureEmitter);
 begin
@@ -227,17 +173,12 @@ begin
   end;
 end;
 
-// RemoveNotification
-//
 
 procedure TGLTextureEmitterItem.RemoveNotification(aComponent: TComponent);
 begin
   if aComponent = FEmitter then
     FEmitter := nil;
 end;
-
-// GetDisplayName
-//
 
 function TGLTextureEmitterItem.GetDisplayName: string;
 begin
@@ -253,24 +194,16 @@ end;
 // ------------------ TGLTextureEmitters ------------------
 // ------------------
 
-// GetOwner
-//
-
 function TGLTextureEmitters.GetOwner: TPersistent;
 begin
   Result := FOwner;
 end;
 
-// GetItems
-//
 
 function TGLTextureEmitters.GetItems(index: Integer): TGLTextureEmitterItem;
 begin
   Result := TGLTextureEmitterItem(inherited Items[index]);
 end;
-
-// RemoveNotification
-//
 
 procedure TGLTextureEmitters.RemoveNotification(aComponent: TComponent);
 var
@@ -279,9 +212,6 @@ begin
   for i := 0 to Count - 1 do
     Items[i].RemoveNotification(aComponent);
 end;
-
-// AddEmitter
-//
 
 procedure TGLTextureEmitters.AddEmitter(texEmitter: TGLTextureEmitter);
 var
@@ -295,9 +225,6 @@ end;
 // ------------------ TGLProjectedTextures ------------------
 // ------------------
 
- 
-//
-
 constructor TGLProjectedTextures.Create(AOwner: TComponent);
 begin
   inherited Create(aOWner);
@@ -306,16 +233,11 @@ begin
 end;
 
  
-//
-
 destructor TGLProjectedTextures.Destroy;
 begin
   FEmitters.Free;
   inherited destroy;
 end;
-
-// DoRender
-//
 
 procedure TGLProjectedTextures.DoRender(var ARci: TGLRenderContextInfo;
   ARenderSelf, ARenderChildren: boolean);

@@ -9,8 +9,7 @@
                 Originally the list of triangles increased  very often in size
                 and leads sometimes to "OutOfMemory"-Exceptions.
                 Solution: Set a reasonable size right in the beginning
-     09/02/00 - EG - Creation from split of GLObjects,
-}
+     09/02/00 - EG - Creation from split of GLObjects }
 unit GLVectorFileObjects;
 
 interface
@@ -61,9 +60,9 @@ type
     FNormals: TAffineVectorList;
     FVisible: Boolean;
   protected
-    procedure SetVertices(const val: TAffineVectorList);
-    procedure SetNormals(const val: TAffineVectorList);
-    procedure ContributeToBarycenter(var currentSum: TAffineVector; var nb: Integer); dynamic;
+    procedure SetVertices(const val: TAffineVectorList); inline;
+    procedure SetNormals(const val: TAffineVectorList); inline;
+    procedure ContributeToBarycenter(var currentSum: TAffineVector; var nb: Integer); virtual;
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -71,9 +70,9 @@ type
     procedure WriteToFiler(writer: TVirtualWriter); override;
     procedure ReadFromFiler(reader: TVirtualReader); override;
     { Clears all mesh object data, submeshes, facegroups, etc. }
-    procedure Clear; dynamic;
+    procedure Clear; virtual;
     { Translates all the vertices by the given delta. }
-    procedure Translate(const delta: TAffineVector); dynamic;
+    procedure Translate(const delta: TAffineVector); virtual;
     {Builds (smoothed) normals for the vertex list.
      If normalIndices is nil, the method assumes a bijection between
      vertices and normals sets, and when performed, Normals and Vertices
@@ -94,7 +93,7 @@ type
       If texCoords is specified, per vertex texture coordinates will be
       placed there, when available. }
     function ExtractTriangles(texCoords: TAffineVectorList = nil;
-      normals: TAffineVectorList = nil): TAffineVectorList; dynamic;
+      normals: TAffineVectorList = nil): TAffineVectorList; virtual;
     property Name: string read FName write FName;
     property Visible: Boolean read FVisible write FVisible;
     property Vertices: TAffineVectorList read FVertices write SetVertices;
@@ -3611,7 +3610,7 @@ var
 
   procedure SortVertexData(sortidx: Integer);
   begin
-    if t[0].V[sortidx] < t[1].V[sortidx] then
+    if t[0].C[sortidx] < t[1].C[sortidx] then
     begin
       vt := v[0];
       tt := t[0];
@@ -3620,7 +3619,7 @@ var
       v[1] := vt;
       t[1] := tt;
     end;
-    if t[0].V[sortidx] < t[2].V[sortidx] then
+    if t[0].C[sortidx] < t[2].C[sortidx] then
     begin
       vt := v[0];
       tt := t[0];
@@ -3629,7 +3628,7 @@ var
       v[2] := vt;
       t[2] := tt;
     end;
-    if t[1].V[sortidx] < t[2].V[sortidx] then
+    if t[1].C[sortidx] < t[2].C[sortidx] then
     begin
       vt := v[1];
       tt := t[1];
@@ -4354,10 +4353,10 @@ begin
     GetMeshObject(i).GetExtents(lMin, lMax);
     for k := 0 to 2 do
     begin
-      if lMin.V[k] < min.V[k] then
-        min.V[k] := lMin.V[k];
-      if lMax.V[k] > max.V[k] then
-        max.V[k] := lMax.V[k];
+      if lMin.C[k] < min.C[k] then
+        min.C[k] := lMin.C[k];
+      if lMax.C[k] > max.C[k] then
+        max.C[k] := lMax.C[k];
     end;
   end;
 end;
@@ -4549,8 +4548,6 @@ begin
   inherited;
 end;
 
-// WriteToFiler
-//
 
 procedure TGLMeshMorphTarget.WriteToFiler(writer: TVirtualWriter);
 begin
@@ -5490,10 +5487,10 @@ begin
     for k := 0 to 2 do
     begin
       f := ref^[k];
-      if f < min.V[k] then
-        min.V[k] := f;
-      if f > max.V[k] then
-        max.V[k] := f;
+      if f < min.C[k] then
+        min.C[k] := f;
+      if f > max.C[k] then
+        max.C[k] := f;
     end;
   end;
 end;
@@ -6188,10 +6185,10 @@ begin
     TMeshObject(MeshObjects[i]).GetExtents(lMin, lMax);
     for k := 0 to 2 do
     begin
-      if lMin.V[k] < min.V[k] then
-        min.V[k] := lMin.V[k];
-      if lMax.V[k] > max.V[k] then
-        max.V[k] := lMax.V[k];
+      if lMin.C[k] < min.C[k] then
+        min.C[k] := lMin.C[k];
+      if lMax.C[k] > max.C[k] then
+        max.C[k] := lMax.C[k];
     end;
   end;
 end;

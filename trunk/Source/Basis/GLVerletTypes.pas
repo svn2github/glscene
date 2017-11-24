@@ -1630,8 +1630,6 @@ begin
    InvertMatrix(FInvNatMatrix);
 end;
 
-// SatisfyConstraint
-//
 procedure TVCRigidBody.SatisfyConstraint(const iteration, maxIterations : Integer);
 var
    i : Integer;
@@ -1701,8 +1699,6 @@ begin
    FSlideDirection:=VectorNormalize(value);
 end;
 
-// SatisfyConstraint
-//
 procedure TVCSlider.SatisfyConstraint(const iteration, maxIterations : Integer);
 var
    delta : TAffineVector;
@@ -2024,16 +2020,16 @@ begin
    contactNormal:=NullVector;
 
    // Only move along the "shortest" axis
-   if PInteger(@p.V[smallestSide])^>=0 then begin
-      dp:=absP.V[smallestSide];
-      contactNormal.V[smallestSide]:=1;
+   if PInteger(@p.C[smallestSide])^>=0 then begin
+      dp:=absP.C[smallestSide];
+      contactNormal.C[smallestSide]:=1;
       aNode.ApplyFriction(FFrictionRatio, dp, contactNormal);
-      aNode.FLocation.V[smallestSide]:=aNode.FLocation.V[smallestSide]+dp;
+      aNode.FLocation.C[smallestSide]:=aNode.FLocation.C[smallestSide]+dp;
    end else begin
-      dp:=absP.V[smallestSide];
-      contactNormal.V[smallestSide]:=-1;
+      dp:=absP.C[smallestSide];
+      contactNormal.C[smallestSide]:=-1;
       aNode.ApplyFriction(FFrictionRatio, dp, contactNormal);
-      aNode.FLocation.V[smallestSide]:=aNode.FLocation.V[smallestSide]-dp;
+      aNode.FLocation.C[smallestSide]:=aNode.FLocation.C[smallestSide]-dp;
    end;
 
    aNode.FChangedOnStep:=Owner.CurrentStepCount;

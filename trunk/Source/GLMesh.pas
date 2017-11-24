@@ -186,12 +186,7 @@ type
   end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
-
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 // ----------------- TGLVertexList ------------------------------------------------
@@ -497,11 +492,11 @@ begin
     with FValues^[i] do
       for k := 0 to 2 do
       begin
-        f := coord.V[k];
-        if f < min.V[k] then
-          min.V[k] := f;
-        if f > max.V[k] then
-          max.V[k] := f;
+        f := coord.C[k];
+        if f < min.C[k] then
+          min.C[k] := f;
+        if f > max.C[k] then
+          max.C[k] := f;
       end;
   end;
 end;
@@ -577,17 +572,17 @@ end;
 
 function TGLMesh.Length: Single;
 begin
-  //
+  Result := 0;
 end;
 
 function TGLMesh.Area: Single;
 begin
-  //
+  Result := 0;
 end;
 
 function TGLMesh.Volume: Single;
 begin
-  //
+  Result := 0;
 end;
 
 procedure TGLMesh.BuildList(var rci: TGLRenderContextInfo);

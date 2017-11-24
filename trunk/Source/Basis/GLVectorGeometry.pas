@@ -5211,6 +5211,7 @@ begin
   else
     result := V2;
 end;
+
 function MaxFloat(const V1, V2: Double): Double;
 begin
   if V1 > V2 then

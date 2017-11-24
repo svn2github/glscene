@@ -26,9 +26,9 @@ uses
   FileMD3;
 
 type
-  // This class is used to extract the tag transform information
-  // stored in the MD3 files. The data is used to offset each
-  // part of the model based on the parent parts animation state.
+  (* This class is used to extract the tag transform information
+    stored in the MD3 files. The data is used to offset each
+    part of the model based on the parent parts animation state.*)
   TMD3TagList = class
     private
       FTags : array of TMD3Tag;
@@ -36,35 +36,35 @@ type
       FNumFrames : Integer;
     function GetTag(index: integer): TMD3Tag;
     public
-      procedure LoadFromFile(FileName:String);
+      procedure LoadFromFile(const FileName:String);
       procedure LoadFromStream(AStream:TStream);
-      function GetTransform(TagName:string; Frame:integer):TMatrix;
+      function GetTransform(const TagName:string; Frame:integer):TMatrix;
       property TagCount : integer read FNumTags;
       property FrameCount : integer read FNumFrames;
       property Tags[index:integer]:TMD3Tag read GetTag;
   end;
 
-// These procedures are helpers to load the Quake3 animation file data
-// into an animation list. The NamePrefix parameter is used to determine
-// which class of animation is extracted. eg NamePrefix='TORSO' will load
-// all animations starting with 'TORSO_' like 'TORSO_STAND'
+(* These procedures are helpers to load the Quake3 animation file data
+ into an animation list. The NamePrefix parameter is used to determine
+ which class of animation is extracted. eg NamePrefix='TORSO' will load
+ all animations starting with 'TORSO_' like 'TORSO_STAND' *)
 procedure LoadQ3Anims(Animations:TGLActorAnimations;
-            FileName:string; NamePrefix:string); overload;
+            const FileName:string; const NamePrefix:string); overload;
 procedure LoadQ3Anims(Animations:TGLActorAnimations;
-            Strings:TStrings; NamePrefix:string); overload;
+            Strings:TStrings; const NamePrefix:string); overload;
 
-// Quake3 Skin loading procedure. Use this procedure to apply textures
-// to a GLActor. This doens't use the actors original preloaded materials so
-// it may be a good idea to clear the actors material library before
-// running this to keep everything nice and clean.
-procedure LoadQ3Skin(FileName:string; Actor:TGLActor);
+(* Quake3 Skin loading procedure. Use this procedure to apply textures
+ to a GLActor. This doens't use the actors original preloaded materials so
+ it may be a good idea to clear the actors material library before
+ running this to keep everything nice and clean. *)
+procedure LoadQ3Skin(const FileName:string; Actor:TGLActor);
 
+//-----------------------------------------------------------------------
 implementation
+//-----------------------------------------------------------------------
 
-// LoadQ3Anims
-//
 procedure LoadQ3Anims(Animations:TGLActorAnimations;
-            FileName:string; NamePrefix:string);
+            const FileName:string; const NamePrefix:string);
 var
   AnimStrings:TStrings;
 begin
@@ -75,7 +75,7 @@ begin
 end;
 
 procedure LoadQ3Anims(Animations:TGLActorAnimations;
-            Strings:TStrings; NamePrefix:string);
+            Strings:TStrings; const NamePrefix:string);
 var
   anim :TStringList;
   val : array[0..3] of integer;
@@ -84,7 +84,7 @@ var
   commatext,str1 : string;
   TorsoStartFrame,LegsStartFrame : integer; // Used to Fix LEGS Frame values red from CFG file
 
-  function StrIsNumber(str:string):boolean;
+  function StrIsNumber(const str:string):boolean;
   var
     i : integer;
   begin
@@ -158,9 +158,7 @@ begin
   anim.Free;
 end;
 
-// LoadQ3Skin
-//
-procedure LoadQ3Skin(FileName:string; Actor:TGLActor);
+procedure LoadQ3Skin(const FileName:string; Actor:TGLActor);
 const
   // This list can be expanded if necessary
   ExtList : array[0..3] of string = ('.jpg','.jpeg','.tga','.bmp');
@@ -175,8 +173,8 @@ var
   textureFound,
   meshFound    : Boolean;
 
-  function GetMeshObjectByName(MeshObjects:TGLMeshObjectList; Name:string;
-    var mesh:TMeshObject):Boolean;
+  function GetMeshObjectByName(MeshObjects:TGLMeshObjectList; const Name:string;
+    out mesh:TMeshObject):Boolean;
   var
     i : integer;
   begin
@@ -245,8 +243,7 @@ end;
 // ------------------
 
  
-//
-procedure TMD3TagList.LoadFromFile(FileName:String);
+procedure TMD3TagList.LoadFromFile(const FileName:String);
 var
   fs : TStream;
 begin
@@ -260,8 +257,6 @@ begin
   end;
 end;
 
-// LoadFromStream
-//
 procedure TMD3TagList.LoadFromStream(aStream:TStream);
 var
   MD3Header : TMD3Header;
@@ -281,16 +276,12 @@ begin
   aStream.Read(FTags[0],FNumTags*FNumFrames*SizeOf(TMD3Tag));
 end;
 
-// GetTag
-//
 function TMD3TagList.GetTag(index: integer): TMD3Tag;
 begin
   Result:=FTags[index];
 end;
 
-// GetTransform
-//
-function TMD3TagList.GetTransform(TagName: string;
+function TMD3TagList.GetTransform(const TagName: string;
   Frame: integer): TMatrix;
 var
   TagIdx,i,j : integer;
@@ -307,9 +298,9 @@ begin
   Tag:=FTags[TagIdx+Frame*FNumTags];
   for j:=0 to 2 do
     for i:=0 to 2 do
-      Result.V[i].V[j]:=Tag.rotation.V[i].V[j];
+      Result.V[i].C[j]:=Tag.rotation.V[i].C[j];
   for i:=0 to 2 do
-    Result.W.V[i]:=Tag.vPosition.V[i];
+    Result.V[3].C[i]:=Tag.vPosition.C[i];
 end;
 
 end.

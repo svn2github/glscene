@@ -8,7 +8,7 @@
          "ignore OpenGL errors" mode during destruction, thus potentially
          leaking memory (depending on hardware drivers willingness to perform
          automatic releases) 
-   The history is logged in a former GLS version of the unit.
+   The history is logged in a former version of the unit.
 }
 unit GLSDLContext;
 

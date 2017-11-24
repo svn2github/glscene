@@ -21,26 +21,8 @@
   - BounceFactor: Restituition factor, 1 means that it will bounce forever
 
    History :  
-     21/01/01 - DanB - Added "inherited" call to TGLDCEDynamic/TGLDCEStatic.WriteToFiler
-     18/09/10 - YP - Moved published behaviours' events to public (they cannot be restored by the filer)
-     30/03/07 - DaStr - Added $I GLScene.inc
-     29/01/07 - DaStr - Moved registration to GLSceneRegister.pas
-     01/07/05 - MathX - Fixed memory leak on contactPoints (moveByDistance method)
-     23/01/05 - LucasG - Code reorganized, many fixes and some new features
-     19/11/04 - GAK - Added standardised collision selection (optionally use same selection criteria as other collision system)
-     17/11/04 - LucasG - Added support for static box colliders
-     17/11/04 - LucasG - Added UseGravity property to behaviour
-     14/11/04 - LucasG - Fixed average friction calculation
-     14/11/04 - LucasG - Added AirFriction property to DCEManager
-     13/11/04 - LucasG - Added Active property to behaviour
-     17/11/04 - LucasG - Added support for static box colliders
-     17/11/04 - LucasG - Added UseGravity property to behaviour
-     14/11/04 - LucasG - Fixed average friction calculation
-     14/11/04 - LucasG - Added AirFriction property to DCEManager
-     13/11/04 - LucasG - Added Active property to behaviour
-     03/09/04 - LucasG - First release
-     29/07/04 - LucasG - Creation
-   
+    29/07/04 - LucasG - Creation
+    The whole history is logged in previous version of the unit	 
 }
 
 unit GLDCE;
@@ -74,16 +56,14 @@ type
 
   {Indicates which type of layer comparison is made when trying to detect
      collisions between 2 bodies (A and B). Possible values are: 
-	  ccsDCEStandard: Collides bodies if A.layer <= B.layer
-	  ccsCollisionStandard: Collides bodies if either A or B have
+	 ccsDCEStandard: Collides bodies if A.layer <= B.layer
+	 ccsCollisionStandard: Collides bodies if either A or B have
 		 layer equal to zero or if their layers are different.
       ccsHybrid: Collides bodies if either one of the previous
 	     checks would pass (i.e. if the layer of either body  is
 		 equal to 0 or if A.layer <= B.layer) *and* if both
 		 layers are positive (that is, turns off collision
-		 for bodies whose layer is < 0)
-	 
-  }
+		 for bodies whose layer is < 0) }
   TDCECollisionSelection = (ccsDCEStandard, ccsCollisionStandard, ccsHybrid); // gak:20041119
 
   TDCECollision = record
@@ -105,7 +85,6 @@ type
 
   TGLDCEManager = class (TComponent)
   private
-     
     FStatics : TList;
     FDynamics : TList;
     FGravity: Single;
@@ -120,7 +99,6 @@ type
     function GetDynamicCount: Integer;
     function GetStaticCount: Integer;
   protected
-    
     procedure RegisterStatic(aClient : TGLDCEStatic);
     procedure DeRegisterStatic(aClient : TGLDCEStatic);
     procedure DeRegisterAllStatics;
@@ -128,7 +106,6 @@ type
     procedure DeRegisterDynamic(aClient : TGLDCEDynamic);
     procedure DeRegisterAllDynamics;
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     //Moves the body by the distance and returns the average friction
@@ -137,7 +114,6 @@ type
     property DynamicCount: Integer read GetDynamicCount;
     property StaticCount: Integer read GetStaticCount;
   published
-    
     property Gravity : Single read FGravity write FGravity;
     property WorldDirection : TGLCoordinates read FWorldDirection write SetWorldDirection;
     property WorldScale : Single read FWorldScale write SetWorldScale;
@@ -145,11 +121,10 @@ type
     Property StandardiseLayers: TDCECollisionSelection read FStandardiseLayers write FStandardiseLayers; //gak:20041119
     Property ManualStep: Boolean read FManualStep write FManualStep;
     property OnCollision : TDCECollisionEvent read FOnCollision write FOnCollision;
-	end;
+  end;
 
   TGLDCEStatic = class (TGLBehaviour)
 	private
-		 
     FManager : TGLDCEManager;
     FManagerName : String; // NOT persistent, temporarily used for persistence
     FActive: Boolean;
@@ -166,13 +141,11 @@ type
     procedure SetBounceFactor(const Value: Single);
     procedure SetSize(const Value: TGLCoordinates);
   protected
-    
     procedure SetManager(const val : TGLDCEManager);
     procedure WriteToFiler(writer : TWriter); override;
     procedure ReadFromFiler(reader : TReader); override;
     procedure Loaded; override;
   public
-    
     constructor Create(aOwner : TGLXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -180,7 +153,6 @@ type
     class function FriendlyDescription : String; override;
     property OnCollision : TDCEObjectCollisionEvent read FOnCollision write FOnCollision;
   published
-    
     property Active : Boolean read FActive write FActive;
     property Manager : TGLDCEManager read FManager write SetManager;
     property Shape : TDCEShape read FShape write SetShape;
@@ -194,8 +166,7 @@ type
   TDCESlideOrBounce = (csbSlide,csbBounce);
 
   TGLDCEDynamic = class (TGLBehaviour)
-	private
-		 
+  private
     FManager : TGLDCEManager;
     FManagerName : String; // NOT persistent, temporarily used for persistence
     FActive: Boolean;
@@ -224,13 +195,11 @@ type
     procedure SetBounceFactor(const Value: Single);
     procedure SetSize(const Value: TGLCoordinates);
   protected
-    
     procedure SetManager(const val : TGLDCEManager);
     procedure WriteToFiler(writer : TWriter); override;
     procedure ReadFromFiler(reader : TReader); override;
     procedure Loaded; override;
   public
-    
     constructor Create(aOwner : TGLXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -253,7 +222,6 @@ type
     property MaxRecursionDepth:byte read FMaxRecursionDepth write FMaxRecursionDepth;//gak20041119
     property OnCollision : TDCEObjectCollisionEvent read FOnCollision write FOnCollision;
   published
-    
     property Active : Boolean read FActive write FActive;
     property Manager : TGLDCEManager read FManager write SetManager;
     property UseGravity : Boolean read FUseGravity write FUseGravity;
@@ -271,7 +239,9 @@ function GetOrCreateDCEStatic(obj : TGLBaseSceneObject) : TGLDCEStatic; overload
 function GetOrCreateDCEDynamic(behaviours : TGLBehaviours) : TGLDCEDynamic; overload;
 function GetOrCreateDCEDynamic(obj : TGLBaseSceneObject) : TGLDCEDynamic; overload;
 
+//-------------------------------------------------------------------
 implementation
+//-------------------------------------------------------------------
 
 function RotateVectorByObject(Obj: TGLBaseSceneObject; const v: TAffineVector): TAffineVector;
 var v2: TVector;

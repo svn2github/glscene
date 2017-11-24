@@ -5,11 +5,8 @@
  Allows choosing a material in a material library 
 
      History :  
-       05/09/08 - DanB - Removed Kylix support
-       29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
-       19/12/06 - DaStr - LBMaterials.OnDblClick now handled
-       03/07/04 - LR  - Make change for Linux
        14/02/00 - Egg - Creation
+       The whole history is logged in previous version of the unit.
      
 }
 unit FLibMaterialPicker;
@@ -40,9 +37,7 @@ type
     procedure LBMaterialsKeyPress(Sender: TObject; var Key: Char);
     procedure LBMaterialsDblClick(Sender: TObject);
   private
-     
   public
-    
     function Execute(var materialName: TGLLibMaterialName;
       materialLibrary: TGLAbstractMaterialLibrary): Boolean;
   end;
@@ -50,7 +45,9 @@ type
 function GLLibMaterialPicker: TGLLibMaterialPicker;
 procedure ReleaseLibMaterialPicker;
 
+//-------------------------------------------------
 implementation
+//-------------------------------------------------
 
 {$R *.dfm}
 
@@ -73,8 +70,6 @@ begin
   end;
 end;
 
-// Execute
-//
 
 function TGLLibMaterialPicker.Execute(var materialName: TGLLibMaterialName;
   materialLibrary: TGLAbstractMaterialLibrary): Boolean;
@@ -117,7 +112,9 @@ begin
   BBOk.Click;
 end;
 
+//-----------------------------------------------------------------
 initialization
+//-----------------------------------------------------------------
 
 finalization
   ReleaseLibMaterialPicker;

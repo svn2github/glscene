@@ -59,20 +59,15 @@ type
     procedure MarkDirty(const area: TGLRect); override;
   published
     property MaxPoolSize;
-    property OnStartPreparingData: TStartPreparingDataEvent
-      read FOnStartPreparingData write FOnStartPreparingData;
-    property OnMarkDirtyEvent: TMarkDirtyEvent read FOnMarkDirty
-      write FOnMarkDirty;
-    property HeightDataSource: TGLHeightDataSource read FHeightDataSource
-      write SetHeightDataSource;
-    property MaterialLibrary: TGLMaterialLibrary read FMaterialLibrary
-      write FMaterialLibrary;
+    property OnStartPreparingData: TStartPreparingDataEvent read FOnStartPreparingData write FOnStartPreparingData;
+    property OnMarkDirtyEvent: TMarkDirtyEvent read FOnMarkDirty write FOnMarkDirty;
+    property HeightDataSource: TGLHeightDataSource read FHeightDataSource write SetHeightDataSource;
+    property MaterialLibrary: TGLMaterialLibrary read FMaterialLibrary write FMaterialLibrary;
     property WholeTilesOnly: Boolean read FWholeTilesOnly write FWholeTilesOnly;
     { This should match TileSize in TGLTerrainRenderer }
     property TileSize: integer read FTileSize write FTileSize;
     { This should match TilesPerTexture in TGLTerrainRenderer }
-    property TilesPerTexture: integer read FTilesPerTexture
-      write FTilesPerTexture;
+    property TilesPerTexture: integer read FTilesPerTexture write FTilesPerTexture;
   end;
 
 //=========================================================================
@@ -211,11 +206,7 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 RegisterClasses([TGLTexturedHDS]);

@@ -195,9 +195,8 @@ type
   public
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
-    procedure Apply(var rci: TGLRenderContextInfo; aFace: TCullFaceMode);
-    procedure ApplyNoLighting(var rci: TGLRenderContextInfo; aFace:
-      TCullFaceMode);
+    procedure Apply(var rci: TGLRenderContextInfo; aFace: TCullFaceMode); inline;
+    procedure ApplyNoLighting(var rci: TGLRenderContextInfo; aFace: TCullFaceMode); inline;
     procedure Assign(Source: TPersistent); override;
   published
     property Ambient: TGLColor read FAmbient write SetAmbient;
@@ -287,7 +286,7 @@ type
     function StoreAlphaFuncRef: Boolean;
   public
     constructor Create(AOwner: TPersistent); override;
-    procedure Apply(var rci: TGLRenderContextInfo);
+    procedure Apply(var rci: TGLRenderContextInfo);  inline;
   published
     property UseAlphaFunc: Boolean read FUseAlphaFunc write SetUseAlphaFunc
       default False;
@@ -331,7 +330,7 @@ type
   TMaterialOptions = set of TMaterialOption;
 
   {Describes a rendering material.
-      A material is basicly a set of face properties (front and back) that take
+      A material is basically a set of face properties (front and back) that take
       care of standard material rendering parameters (diffuse, ambient, emission
       and specular) and texture mapping.
       An instance of this class is available for almost all objects in GLScene
@@ -339,8 +338,7 @@ type
       TGLLibMaterial (taken for a material library).
       The TGLLibMaterial has more adavanced properties (like texture transforms)
       and provides a standard way of sharing definitions and texture maps. }
-  TGLMaterial = class(TGLUpdateAbleObject, IGLMaterialLibrarySupported,
-      IGLNotifyAble, IGLTextureNotifyAble)
+  TGLMaterial = class(TGLUpdateAbleObject, IGLMaterialLibrarySupported, IGLTextureNotifyAble)
   private
     FFrontProperties, FBackProperties: TGLFaceProperties;
     FDepthProperties: TGLDepthProperties;
@@ -357,7 +355,7 @@ type
     { Implementing IGLMaterialLibrarySupported.}
     function GetMaterialLibrary: TGLAbstractMaterialLibrary;
   protected
-    function GetBackProperties: TGLFaceProperties;
+    function GetBackProperties: TGLFaceProperties; inline;
     procedure SetBackProperties(Values: TGLFaceProperties);
     procedure SetFrontProperties(Values: TGLFaceProperties);
     procedure SetDepthProperties(Values: TGLDepthProperties);
@@ -379,11 +377,11 @@ type
   public
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
-    procedure PrepareBuildList;
+    procedure PrepareBuildList;  inline;
     procedure Apply(var rci: TGLRenderContextInfo);
     {Restore non-standard material states that were altered;
        A return value of True is a multipass request. }
-    function UnApply(var rci: TGLRenderContextInfo): Boolean;
+    function UnApply(var rci: TGLRenderContextInfo): Boolean; inline;
     procedure Assign(Source: TPersistent); override;
     procedure NotifyChange(Sender: TObject); override;
     procedure NotifyTexMapChange(Sender: TObject);
@@ -392,11 +390,11 @@ type
     {Returns True if the material is blended.
        Will return the libmaterial's blending if it is linked to a material
        library. }
-    function Blended: Boolean;
+    function Blended: Boolean; inline;
     { True if the material has a secondary texture }
     function HasSecondaryTexture: Boolean;
     { True if the material comes from the library instead of the texture property}
-    function MaterialIsLinkedToLib: Boolean;
+    function MaterialIsLinkedToLib: Boolean;  inline;
     { Gets the primary texture either from material library or the texture property}
     function GetActualPrimaryTexture: TGLTexture;
     { Gets the primary Material either from material library or the texture property}
@@ -546,11 +544,10 @@ type
   TGLAbstractLibMaterials = class(TOwnedCollection)
   protected
     procedure Loaded;
-    function GetMaterial(const AName: TGLLibMaterialName): TGLAbstractLibMaterial;
-    {$IFDEF GLS_INLINE}inline;{$ENDIF}
+    function GetMaterial(const AName: TGLLibMaterialName): TGLAbstractLibMaterial; inline;
   public
     function MakeUniqueName(const nameRoot: TGLLibMaterialName):
-      TGLLibMaterialName; virtual;
+      TGLLibMaterialName;
   end;
 
   {A collection of materials, mainly used in material libraries. }
@@ -604,11 +601,11 @@ type
        If a material is already applied, and has not yet been unapplied,
        an assertion will be triggered. }
     function ApplyMaterial(const AName: string;
-      var ARci: TGLRenderContextInfo): Boolean; virtual;
+      var ARci: TGLRenderContextInfo): Boolean;
     {Un-applies the last applied material.
        Use this function in conjunction with ApplyMaterial.
        If no material was applied, an assertion will be triggered. }
-    function UnApplyMaterial(var ARci: TGLRenderContextInfo): Boolean; virtual;
+    function UnApplyMaterial(var ARci: TGLRenderContextInfo): Boolean;
   end;
 
   {Stores a set of materials, to be used and shared by scene objects.
@@ -1132,6 +1129,7 @@ constructor TGLMaterial.Create(AOwner: TPersistent);
 begin
   inherited;
   FFrontProperties := TGLFaceProperties.Create(Self);
+  FBackProperties  := TGLFaceProperties.Create(Self);
   FTexture := nil; // AutoCreate
   FFaceCulling := fcBufferDefault;
   FPolygonMode := pmFill;
@@ -1159,14 +1157,12 @@ end;
 
 procedure TGLMaterial.SetBackProperties(Values: TGLFaceProperties);
 begin
-  BackProperties.Assign(Values);
+  FBackProperties.Assign(Values);
   NotifyChange(Self);
 end;
 
 function TGLMaterial.GetBackProperties: TGLFaceProperties;
 begin
-  if not Assigned(FBackProperties) then
-    FBackProperties := TGLFaceProperties.Create(Self);
   Result := FBackProperties;
 end;
 
@@ -1380,6 +1376,7 @@ begin
           BackProperties.Apply(rci, cmBack);
         end;
     end;
+
     // note: Front + Back with different PolygonMode are no longer supported.
     // Currently state cache just ignores back facing mode changes, changes to
     // front affect both front + back PolygonMode
@@ -1891,7 +1888,7 @@ begin
 
     if not libMatTexture2.FTextureMatrixIsIdentity then
       libMatTexture2.Material.Texture.ApplyAsTexture2(ARci,
-        @libMatTexture2.FTextureMatrix.X.X)
+        @libMatTexture2.FTextureMatrix.V[0].X)
     else
       libMatTexture2.Material.Texture.ApplyAsTexture2(ARci);
 
@@ -2010,7 +2007,7 @@ end;
 
 procedure TGLLibMaterial.SetTextureMatrix(const Value: TMatrix);
 begin
-  FTextureMatrixIsIdentity := CompareMem(@Value.X, @IdentityHmgMatrix.X, SizeOf(TMatrix));
+  FTextureMatrixIsIdentity := CompareMem(@Value.V[0], @IdentityHmgMatrix.V[0], SizeOf(TMatrix));
   FTextureMatrix := Value;
   FTextureOverride := True;
   NotifyUsers;

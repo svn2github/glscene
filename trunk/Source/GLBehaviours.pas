@@ -108,7 +108,6 @@ type
             0=no bounce). The normal is NOT assumed to be normalized. }
     procedure SurfaceBounce(const surfaceNormal: TVector; restitution: single);
   published
-    
     property Mass: single read FMass write FMass;
     property TranslationSpeed: TGLCoordinates
       read FTranslationSpeed write SetTranslationSpeed;
@@ -167,11 +166,7 @@ function GetOrCreateAcceleration(behaviours: TGLBehaviours): TGLBAcceleration;
 function GetOrCreateAcceleration(obj: TGLBaseSceneObject): TGLBAcceleration; overload;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 function GetInertia(const AGLSceneObject: TGLBaseSceneObject): TGLBInertia;
@@ -617,11 +612,7 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 // class registrations

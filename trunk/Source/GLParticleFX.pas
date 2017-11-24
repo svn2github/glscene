@@ -715,9 +715,9 @@ type
 function GetOrCreateSourcePFX(obj: TGLBaseSceneObject; const name: string = ''): TGLSourcePFXEffect;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
+// ------------------------------------------------------------------
+
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -807,13 +807,13 @@ end;
 
 function TGLParticle.GetPosition(const Index: Integer): Single;
 begin
-  Result := FPosition.V[Index];
+  Result := FPosition.C[Index];
 end;
 
 procedure TGLParticle.WritePosition(const Index: Integer; const aValue: Single);
 begin
-  if (aValue <> FPosition.V[Index]) then
-    FPosition.V[Index] := aValue;
+  if (aValue <> FPosition.C[Index]) then
+    FPosition.C[Index] := aValue;
 end;
 
 function TGLParticle.GetVelocity(const Index: Integer): Single;
@@ -823,8 +823,8 @@ end;
 
 procedure TGLParticle.WriteVelocity(const Index: Integer; const aValue: Single);
 begin
-  if (aValue <> FVelocity.V[Index]) then
-    FVelocity.V[Index] := aValue;
+  if (aValue <> FVelocity.C[Index]) then
+    FVelocity.C[Index] := aValue;
 end;
 
 procedure TGLParticle.WriteToFiler(writer: TVirtualWriter);
@@ -2451,8 +2451,8 @@ begin
   GL.GetFloatv(GL_MODELVIEW_MATRIX, @matrix);
   for i := 0 to 2 do
   begin
-    Fvx.V[i] := matrix.V[i].X * FParticleSize;
-    Fvy.V[i] := matrix.V[i].Y * FParticleSize;
+    Fvx.C[i] := matrix.V[i].X * FParticleSize;
+    Fvy.C[i] := matrix.V[i].Y * FParticleSize;
   end;
   FVertices := TAffineVectorList.Create;
   FVertices.Capacity := FNbSides;
@@ -2663,9 +2663,9 @@ begin
 
   for i := 0 to 2 do
   begin
-    Fvx.V[i] := matrix.V[i].X * w;
-    Fvy.V[i] := matrix.V[i].Y * h;
-    Fvz.V[i] := matrix.V[i].Z;
+    Fvx.C[i] := matrix.V[i].X * w;
+    Fvy.C[i] := matrix.V[i].Y * h;
+    Fvz.C[i] := matrix.V[i].Z;
   end;
 
   FVertices := TAffineVectorList.Create;
@@ -2909,11 +2909,7 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
  // class registrations

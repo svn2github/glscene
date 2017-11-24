@@ -17,15 +17,16 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
+  System.Classes, 
+  System.SysUtils,
 
-  
-  GLVectorGeometry, GLVectorTypes, GLVectorFileObjects,
-  GLApplicationFileIO, GLGraph;
+  GLVectorGeometry, 
+  GLVectorTypes, 
+  GLVectorFileObjects,
+  GLApplicationFileIO, 
+  GLGraph;
 
 type
-  // TGLGRDVectorFile
-  //
   {  The GRD file represents ascii grid formats in 2D/3D. 
     This is a format for storing regular grid values as a
     matrices of cell centers. The format supports variations and
@@ -33,7 +34,6 @@ type
 
   TGLGRDVectorFile = class(TGLVectorFile)
   public
-    
     GLHeightField: TGLHeightField;
     Nodes: array of TSingleArray;
     class function Capabilities: TGLDataFileCapabilities; override;
@@ -46,13 +46,11 @@ type
       const WordDelims: TSysCharSet): string;
     function WordPosition(const N: Integer; const S: string;
       const WordDelims: TSysCharSet): Integer;
-
   end;
 
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
 implementation
+// ------------------------------------------------------------------
 
 // ------------------
 // ------------------ TGLGRDVectorFile ------------------
@@ -62,8 +60,6 @@ const
   dSURFBLANKVAL = 1.70141E38; // default value in Surfer for blanking
   NODATA_value = -9999; // default value in GIS ArcInfo for blanking
 
-  // Capabilities
-  //
 class function TGLGRDVectorFile.Capabilities: TGLDataFileCapabilities;
 begin
   Result := [dfcRead];
@@ -94,8 +90,6 @@ begin
   end;
 end;
 
-// ExtractWord
-//
 function TGLGRDVectorFile.ExtractWord(N: Integer; const S: string;
   const WordDelims: TSysCharSet): string;
 
@@ -118,8 +112,6 @@ begin
   SetLength(Result, Len);
 end;
 
-// LoadFromStream
-//
 procedure TGLGRDVectorFile.LoadFromStream(aStream: TStream);
 var
   I, J, K: Integer;
@@ -254,12 +246,7 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 RegisterVectorFileFormat('grd', 'ArcInfo/Surfer grids', TGLGRDVectorFile);

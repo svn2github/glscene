@@ -37,8 +37,6 @@ type
 
    TObjectCollisionEvent = procedure (Sender : TObject; object1, object2 : TGLBaseSceneObject) of object;
 
-   // TCollisionBoundingMode
-   //
    {Defines how fine collision bounding is for a particular object. 
       Possible values are : 
        cbmPoint : the object is punctual and may only collide with volumes
@@ -47,41 +45,27 @@ type
        cbmEllipsoid the object is defined by its bounding axis-aligned ellipsoid
        cbmCube : the object is defined by a bounding axis-aligned "cube"
        cbmFaces : the object is defined by its faces (needs object-level support,
-         if unavailable, uses cbmCube code)
-       }
+         if unavailable, uses cbmCube code)  }
    TCollisionBoundingMode = (cbmPoint, cbmSphere, cbmEllipsoid, cbmCube, cbmFaces);
-
    TFastCollisionChecker = function (obj1, obj2 : TGLBaseSceneObject) : Boolean;
    PFastCollisionChecker = ^TFastCollisionChecker;
 
-	// TGLCollisionManager
-	//
 	TGLCollisionManager = class (TComponent)
 	   private
-	       
          FClients : TList;
          FOnCollision : TObjectCollisionEvent;
-
 	   protected
-	      
 	      procedure RegisterClient(aClient : TGLBCollision);
 	      procedure DeRegisterClient(aClient : TGLBCollision);
 	      procedure DeRegisterAllClients;
-
 	   public
-	      
 	      constructor Create(AOwner: TComponent); override;
          destructor Destroy; override;
-
 	      procedure CheckCollisions;
-
 		published
-			
          property OnCollision : TObjectCollisionEvent read FOnCollision write FOnCollision;
 	end;
 
-  	// TGLBCollision
-	//
 	{Collision detection behaviour. 
 		Allows an object to register to a TCollisionManager and be accounted for
       in collision-detection and distance calculation mechanisms. 
@@ -90,33 +74,23 @@ type
       of them will be accounted for, others will be ignored. }
 	TGLBCollision = class (TGLBehaviour)
 		private
-			 
          FBoundingMode : TCollisionBoundingMode;
          FManager : TGLCollisionManager;
          FManagerName : String; // NOT persistent, temporarily used for persistence
          FGroupIndex : Integer;
-
 		protected
-			
          procedure SetGroupIndex(const value : Integer);
          procedure SetManager(const val : TGLCollisionManager);
-
 			procedure WriteToFiler(writer : TWriter); override;
          procedure ReadFromFiler(reader : TReader); override;
          procedure Loaded; override;
-
 		public
-			
 			constructor Create(aOwner : TGLXCollection); override;
 			destructor Destroy; override;
-
          procedure Assign(Source: TPersistent); override;
-
 			class function FriendlyName : String; override;
 			class function FriendlyDescription : String; override;
-
 		published
-			
          {Refers the collision manager. }
          property Manager : TGLCollisionManager read FManager write SetManager;
          property BoundingMode : TCollisionBoundingMode read FBoundingMode write FBoundingMode;
@@ -155,11 +129,7 @@ function GetOrCreateCollision(behaviours : TGLBehaviours) : TGLBCollision; overl
 function GetOrCreateCollision(obj : TGLBaseSceneObject) : TGLBCollision; overload;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 const
@@ -173,8 +143,6 @@ const
        (FastCheckCubeVsPoint,       FastCheckCubeVsSphere,        FastCheckCubeVsEllipsoid,        FastCheckCubeVsCube,       FastCheckCubeVsFace),
        (FastCheckCubeVsPoint,       FastCheckCubeVsSphere,        FastCheckCubeVsEllipsoid,        FastCheckFaceVsCube,       FastCheckFaceVsFace)
       );
-
-// Collision utility routines
 
 // Fast Collision detection routines
 // by "fast" I mean they are heavily specialized and just return a boolean
@@ -407,26 +375,26 @@ function DoCubesIntersectPrim(obj1, obj2 : TGLBaseSceneObject) : Boolean;
     result := true;
     VectorSubtract(p1, p0, d);    // d: direction p0 -> p1
     for i:=0 to 2 do begin
-      if d.V[i]=0 then begin       // wire is parallel to plane
+      if d.C[i]=0 then begin       // wire is parallel to plane
         // this case will be handled by the other planes
       end else begin
         j := (i+1) mod 3;
         k := (j+1) mod 3;
-        t := (pl.V[i]-p0.V[i])/d.V[i];   // t: line parameter of intersection
+        t := (pl.C[i]-p0.C[i])/d.C[i];   // t: line parameter of intersection
         if IsInRange(t, 0, 1) then begin
           s := p0;
           CombineVector(s,d,t);    // calculate intersection
           // if the other two coordinates lie within the ranges, collision
-          if IsInRange(s.V[j],-pl.V[j],pl.V[j]) and
-             IsInRange(s.V[k],-pl.V[k],pl.V[k]) then Exit;
+          if IsInRange(s.C[j],-pl.C[j],pl.C[j]) and
+             IsInRange(s.C[k],-pl.C[k],pl.C[k]) then Exit;
         end;
-        t := (-pl.V[i]-p0.V[i])/d.V[i];   // t: parameter of intersection
+        t := (-pl.C[i]-p0.C[i])/d.C[i];   // t: parameter of intersection
         if IsInRange(t,0,1) then begin
           s := p0;
           CombineVector(s,d,t);    // calculate intersection
           // if the other two coordinates lie within the ranges, collision
-          if IsInRange(s.V[j],-pl.V[j],pl.V[j]) and
-          IsInRange(s.V[k],-pl.V[k],pl.V[k]) then Exit;
+          if IsInRange(s.C[j], -pl.C[j], pl.C[j]) and
+             IsInRange(s.C[k], -pl.C[k], pl.C[k]) then Exit;
         end;
       end;
     end;
@@ -587,8 +555,6 @@ begin
    end;
 end;
 
-// IntersectCubes (objects)
-//
 function IntersectCubes(obj1, obj2 : TGLBaseSceneObject) : Boolean;
 var
   aabb1, aabb2 : TAABB;
@@ -609,8 +575,6 @@ end;
 // ------------------ TCollisionManager ------------------
 // ------------------
 
- 
-//
 constructor TGLCollisionManager.Create(AOwner: TComponent);
 begin
 	inherited Create(AOwner);
@@ -628,8 +592,6 @@ begin
 	inherited Destroy;
 end;
 
-// RegisterClient
-//
 procedure TGLCollisionManager.RegisterClient(aClient : TGLBCollision);
 begin
    if Assigned(aClient) then
@@ -639,8 +601,6 @@ begin
       end;
 end;
 
-// DeRegisterClient
-//
 procedure TGLCollisionManager.DeRegisterClient(aClient : TGLBCollision);
 begin
    if Assigned(aClient) then begin
@@ -649,8 +609,6 @@ begin
    end;
 end;
 
-// DeRegisterAllClients
-//
 procedure TGLCollisionManager.DeRegisterAllClients;
 var
    i : Integer;
@@ -823,38 +781,28 @@ end;
 // ------------------ TGLBCollision ------------------
 // ------------------
 
- 
-//
 constructor TGLBCollision.Create(aOwner : TGLXCollection);
 begin
    inherited Create(aOwner);
 
 end;
 
- 
-//
 destructor TGLBCollision.Destroy;
 begin
    Manager:=nil;
    inherited Destroy;
 end;
 
- 
-//
 class function TGLBCollision.FriendlyName : String;
 begin
    Result:='Collision';
 end;
 
-// FriendlyDescription
-//
 class function TGLBCollision.FriendlyDescription : String;
 begin
    Result:='Collision-detection registration';
 end;
 
-// WriteToFiler
-//
 procedure TGLBCollision.WriteToFiler(writer : TWriter);
 begin
    with writer do begin
@@ -870,8 +818,6 @@ begin
    end;
 end;
 
-// ReadFromFiler
-//
 procedure TGLBCollision.ReadFromFiler(reader : TReader);
 var
    archiveVersion : Integer;
@@ -890,8 +836,6 @@ begin
    end;
 end;
 
-// Loaded
-//
 procedure TGLBCollision.Loaded;
 var
    mng : TComponent;
@@ -905,8 +849,6 @@ begin
    end;
 end;
 
-// Assign
-//
 procedure TGLBCollision.Assign(Source: TPersistent);
 begin
    if Source is TGLBCollision then begin
@@ -916,15 +858,8 @@ begin
    inherited Assign(Source);
 
 
-
-
-
-
-
 end;
 
-// SetManager
-//
 procedure TGLBCollision.SetManager(const val : TGLCollisionManager);
 begin
    if val<>FManager then begin
@@ -935,15 +870,11 @@ begin
    end;
 end;
 
-// SetGroupIndex
-//
 procedure TGLBCollision.SetGroupIndex(const value : Integer);
 begin
    FGroupIndex:=value;
 end;
 
-// GetOrCreateCollision (TGLBehaviours)
-//
 function GetOrCreateCollision(behaviours : TGLBehaviours) : TGLBCollision;
 var
 	i : Integer;
@@ -954,19 +885,13 @@ begin
 	else Result:=TGLBCollision.Create(behaviours);
 end;
 
-// GetOrCreateCollision (TGLBaseSceneObject)
-//
 function GetOrCreateCollision(obj : TGLBaseSceneObject) : TGLBCollision;
 begin
 	Result:=GetOrCreateCollision(obj.Behaviours);
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 	// class registrations

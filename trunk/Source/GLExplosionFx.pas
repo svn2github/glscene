@@ -87,17 +87,11 @@ type
   end;
 
 //-------------------------------------------------------------------------
-//-------------------------------------------------------------------------
-//-------------------------------------------------------------------------
 implementation
-//-------------------------------------------------------------------------
-//-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
 
 { TGLBExplosionFx }
 
- 
-//
 constructor TGLBExplosionFx.Create(aOwner: TGLXCollection);
 begin
   inherited Create(AOwner);
@@ -108,8 +102,6 @@ begin
   FDirection := TGLCoordinates.CreateInitialized(Self, NullHmgVector, csPoint);
 end;
 
- 
-//
 destructor TGLBExplosionFX.Destroy;
 begin
   FEnabled := False;
@@ -121,65 +113,47 @@ begin
   inherited Destroy;
 end;
 
- 
-//
 class function TGLBExplosionFX.FriendlyName: string;
 begin
   Result := 'ExplosionFx';
 end;
 
-// FriendlyDescription
-//
 class function TGLBExplosionFX.FriendlyDescription: string;
 begin
   Result := 'Explosion FX';
 end;
 
-// SetTriList
-//
 procedure TGLBExplosionFx.SetTriList(Value: TAffineVectorList);
 begin
   FTriList.Assign(Value);
 end;
 
-// SetRotList
-//
 procedure TGLBExplosionFx.SetRotList(Value: TAffineVectorList);
 begin
   FRotList.Assign(Value);
 end;
 
-// SetDirList
-//
 procedure TGLBExplosionFx.SetDirList(Value: TAffineVectorList);
 begin
   FDirList.Assign(Value);
 end;
 
-// SetPosList
-//
 procedure TGLBExplosionFx.SetPosList(Value: TAffineVectorList);
 begin
   FPosList.Assign(Value);
 end;
 
-// SetDirection
-//
 procedure TGLBExplosionFx.SetDirection(Value: TGLCoordinates);
 begin
   Value.Normalize;
   FDirection.Assign(Value);
 end;
 
-// SetEnabled
-//
 procedure TGLBExplosionFx.SetEnabled(Value: boolean);
 begin
   FEnabled := Value;
 end;
 
-// Reset
-//
 procedure TGLBExplosionFx.Reset;
 begin
   FEnabled := False;
@@ -191,8 +165,6 @@ begin
   FFaceCount := 0;
 end;
 
-// CacheInfo
-//
 procedure TGLBExplosionFx.CacheInfo;
 var
   Face: integer;
@@ -246,8 +218,6 @@ begin
   TGLBaseMesh(OwnerBaseSceneObject).StructureChanged;
 end;
 
-// Render
-//
 procedure TGLBExplosionFX.Render(var rci : TGLRenderContextInfo);
 var
   Face: integer;

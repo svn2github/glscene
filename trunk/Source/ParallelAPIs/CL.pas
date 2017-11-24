@@ -44,9 +44,7 @@ uses
 const
   {$IFDEF MSWINDOWS}
   LibOpenCL = 'OpenCL.dll';
- {$ENDIF}
- 
- {$IFDEF UNIX}
+ {$ELSE}
   LibOpenCL = 'OpenCL.so';
  {$ENDIF}
 

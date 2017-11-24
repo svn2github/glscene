@@ -141,8 +141,7 @@ type
     property Level: Integer read GetLevel write SetLevel;
   published
     property Active: Boolean read GetVisible write SetVisible default True;
-    property PickableTarget: Boolean read GetPickable write SetPickable
-      default False;
+    property PickableTarget: Boolean read GetPickable write SetPickable default False;
     {  force texture dimensions when initializing
       only works with TGLBlankImage and TGLFloatDataImage, otherwise does nothing }
     property ForceTextureDimensions: Boolean read FForceTextureDimensions
@@ -156,8 +155,7 @@ type
       write SetDepthTextureName;
     property MaterialLibrary: TGLAbstractMaterialLibrary read GetMaterialLibrary
       write SetMaterialLibrary;
-    property BackgroundColor: TGLColor read FBackgroundColor
-      write SetBackgroundColor;
+    property BackgroundColor: TGLColor read FBackgroundColor write SetBackgroundColor;
     property ClearOptions: TGLFBOClearOptions read FClearOptions
       write FClearOptions;
     {  camera used for rendering to the FBO
@@ -190,12 +188,10 @@ type
     property AfterRender: TGLDirectRenderEvent read FAfterRender write FAfterRender;
     {  Called before the FBO is initialized
       the FBO is bound before calling this event }
-    property PreInitialize: TNotifyEvent read FPreInitialize
-      write FPreInitialize;
+    property PreInitialize: TNotifyEvent read FPreInitialize write FPreInitialize;
     {  Called after the FBO is initialized, but before any rendering
       the FBO is bound before calling this event }
-    property PostInitialize: TNotifyEvent read FPostInitialize
-      write FPostInitialize;
+    property PostInitialize: TNotifyEvent read FPostInitialize write FPostInitialize;
     property UseLibraryAsMultiTarget: Boolean read FUseLibraryAsMultiTarget
       write SetUseLibraryAsMultiTarget default False;
     {  Control mipmap generation after rendering

@@ -5,11 +5,8 @@
    Standard texture image editors for standard texture image classes. 
 
    History :  
-       10/11/12 - PW - Added CPPB compatibility: used dummy method instead
-                          abstract class function Edit for GLS_CPPB
-       22/01/10 - Yar - Added to TGLBlankImage property editor ability to set the depth
-       03/07/04 - LR - Make change for Linux
        24/07/03 - EG - Creation
+       The whole history is logged in previous version of the unit.	   
     
 }
 unit GLTextureImageEditors;
@@ -19,15 +16,15 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
+  System.Classes, 
+  System.SysUtils,
    
-  GLTexture, GLProcTextures;
+  GLTexture, 
+  GLProcTextures;
 
 
 type
 
-   // TGLTextureImageEditor
-   //
    TGLTextureImageEditor = class(TObject)
 		public
          { Public Properties }
@@ -39,32 +36,24 @@ type
 
    TGLTextureImageEditorClass = class of TGLTextureImageEditor;
 
-   // TGLBlankTIE
-   //
    TGLBlankTIE = class(TGLTextureImageEditor)
 		public
          { Public Properties }
 			class function Edit(aTexImage : TGLTextureImage) : Boolean; override;
    end;
 
-   // TGLPersistentTIE
-   //
    TGLPersistentTIE = class(TGLTextureImageEditor)
 		public
          { Public Properties }
 			class function Edit(aTexImage : TGLTextureImage) : Boolean; override;
    end;
 
-   // TGLPicFileTIE
-   //
    TGLPicFileTIE = class(TGLTextureImageEditor)
 		public
          { Public Properties }
 			class function Edit(aTexImage : TGLTextureImage) : Boolean; override;
    end;
 
-   // TGLProcTextureNoiseTIE
-   //
    TGLProcTextureNoiseTIE = class(TGLTextureImageEditor)
 		public
          { Public Properties }
@@ -80,28 +69,21 @@ procedure UnRegisterGLTextureImageEditor(texImageEditor : TGLTextureImageEditorC
 
 
 //------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
 implementation
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
 uses
-  GLCrossPlatform, GLUtils;
+  GLCrossPlatform, 
+  GLUtils;
 
 var
    vTIEClass, vTIEEditor : TList;
 
-  // Dummy method for CPP
-  //
 class function TGLTextureImageEditor.Edit(ATexImage: TGLTextureImage): Boolean;
 begin
   Result := True;
 end;
 
-// EditGLTextureImage
-//
 function EditGLTextureImage(aTexImage : TGLTextureImage) : Boolean;
 var
    i : Integer;
@@ -119,8 +101,6 @@ begin
    Result:=False;
 end;
 
-// RegisterGLTextureImageEditor
-//
 procedure RegisterGLTextureImageEditor(aTexImageClass : TGLTextureImageClass;
                                        texImageEditor : TGLTextureImageEditorClass);
 begin
@@ -132,8 +112,6 @@ begin
    vTIEEditor.Add(texImageEditor);
 end;
 
-// UnRegisterGLTextureImageEditor
-//
 procedure UnRegisterGLTextureImageEditor(texImageEditor : TGLTextureImageEditorClass);
 var
    i : Integer;
@@ -151,8 +129,6 @@ end;
 // ------------------ TGLBlankTIE ------------------
 // ------------------
 
-// Edit
-//
 class function TGLBlankTIE.Edit(aTexImage : TGLTextureImage) : Boolean;
 var
    p1, p2 : Integer;
@@ -191,8 +167,6 @@ end;
 // ------------------ TGLPersistentTIE ------------------
 // ------------------
 
-// Edit
-//
 class function TGLPersistentTIE.Edit(aTexImage : TGLTextureImage) : Boolean;
 var
    fName : String;
@@ -209,8 +183,6 @@ end;
 // ------------------ TGLPicFileTIE ------------------
 // ------------------
 
-// Edit
-//
 class function TGLPicFileTIE.Edit(aTexImage : TGLTextureImage) : Boolean;
 var
 	newName : String;
@@ -224,8 +196,6 @@ begin
 		texImage.PictureFileName:=newName
 end;
 
-// Edit
-//
 class function TGLProcTextureNoiseTIE.Edit(aTexImage : TGLTextureImage) : Boolean;
 var
    p : Integer;
@@ -257,11 +227,7 @@ end;
 
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
   RegisterGLTextureImageEditor(TGLBlankImage, TGLBlankTIE);

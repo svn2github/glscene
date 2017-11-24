@@ -3,12 +3,13 @@
 //
 unit Const3DS;
 
-// All 3DS constant definitions used by the various routines (mainly in Utils3DS.pas). About one thousand
-// defined constants herein. The guys at Autodesk must be crazy...
-//
-// Last Change - 03. October 1999
-//
-// (c) Copyright 1999, Dipl. Ing. Mike Lischke (public@lischke-online.de)
+{ All 3DS constant definitions used by the various routines (mainly in Utils3DS.pas). About one thousand
+ defined constants herein. The guys at Autodesk must be crazy...
+ Last Change - 03. October 1999
+ (c) Copyright 1999, Dipl. Ing. Mike Lischke (public@lischke-online.de)
+ 
+  The whole history is logged in previous version of the unit
+ }
 
 interface
 

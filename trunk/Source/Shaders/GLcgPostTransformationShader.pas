@@ -22,11 +22,19 @@ uses
   System.Classes,
   System.SysUtils,
   
-  GLTexture, GLCadencer, GLContext, OpenGLTokens, GLScene, GLCustomShader,
-  GLRenderContextInfo, GLTextureFormat,
+  OpenGLTokens, 
+  GLTexture, 
+  GLCadencer, 
+  GLContext, 
+  GLScene, 
+  GLCustomShader,
+  GLRenderContextInfo, 
+  GLTextureFormat,
 
   // Cg Shaders
-  Cg, CgGL, GLCgShader;
+  Cg, 
+  CgGL, 
+  GLCgShader;
 
 type
 
@@ -36,7 +44,6 @@ type
     FTransformationTexture: TGLTexture;
   protected
     procedure DoApply(var rci: TGLRenderContextInfo; Sender: TObject); override;
-
     // Implementing IGLPostShader.
     procedure DoUseTempTexture(const TempTexture: TGLTextureHandle; TextureTarget: TGLTextureTarget);
     function GetTextureTarget: TGLTextureTarget;
@@ -53,11 +60,7 @@ type
   end;
 
 //------------------------------------------------------------------------
-//------------------------------------------------------------------------
-//------------------------------------------------------------------------
 implementation
-//------------------------------------------------------------------------
-//------------------------------------------------------------------------
 //------------------------------------------------------------------------
 
 { TGLCustomCGPostTransformationShader }

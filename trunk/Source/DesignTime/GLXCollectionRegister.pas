@@ -5,11 +5,8 @@
    Register TGLXCollection property editor 
   
    History :  
-       20/05/10 - Yar - Fixes for Linux x64
-       11/11/09 - DaStr - Improved FPC compatibility
-                             (thanks Predator) (BugtrackerID = 2893580)
-       03/07/04 - LR - Removed ..\ from the GLScene.inc
        16/04/00 - Egg - Creation
+	   The whole history is logged in previous version of the unit
 	 
 }
 unit GLXCollectionRegister;
@@ -25,8 +22,6 @@ uses
   DesignEditors, DesignIntf;
 
 type
-	// TGLXCollectionProperty
-	//
 	TGLXCollectionProperty = class(TClassProperty)
 		public
 			
@@ -37,11 +32,7 @@ type
 procedure Register;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 uses
   FXCollectionEditor;
@@ -49,15 +40,11 @@ uses
 
 //----------------- TGLXCollectionProperty ------------------------------------
 
-// GetAttributes
-//
 function TGLXCollectionProperty.GetAttributes: TPropertyAttributes;
 begin
 	Result:=[paDialog];
 end;
 
-// Edit
-//
 procedure TGLXCollectionProperty.Edit;
 begin
    with GLXCollectionEditorForm do begin
@@ -73,13 +60,9 @@ end;
 
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 
-	// class registrations
+// class registrations
 
 end.

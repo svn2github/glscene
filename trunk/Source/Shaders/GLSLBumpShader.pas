@@ -58,25 +58,20 @@ type
   private
     FBumpHeight: Single;
     FBumpSmoothness: Integer;
-
     FSpecularPower: Single;
     FSpecularSpread: Single;
     FLightPower: Single;
-
     FMaterialLibrary: TGLMaterialLibrary;
-
     FNormalTexture: TGLTexture;
     FSpecularTexture: TGLTexture;
     FNormalTextureName: TGLLibMaterialName;
     FSpecularTextureName: TGLLibMaterialName;
-
     function GetNormalTextureName: TGLLibMaterialName;
     function GetSpecularTextureName: TGLLibMaterialName;
     procedure SetNormalTextureName(const Value: TGLLibMaterialName);
     procedure SetSpecularTextureName(const Value: TGLLibMaterialName);
     procedure SetSpecularTexture(const Value: TGLTexture);
     procedure SetNormalTexture(const Value: TGLTexture);
-
     // Implementing IGLMaterialLibrarySupported.
     function GetMaterialLibrary: TGLAbstractMaterialLibrary;
   protected
@@ -86,20 +81,15 @@ type
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
   public
     constructor Create(AOwner : TComponent); override;
-
     property BumpHeight: Single read FBumpHeight write FBumpHeight;
     property BumpSmoothness: Integer read FBumpSmoothness write FBumpSmoothness;
-
     property SpecularPower: Single read FSpecularPower write FSpecularPower;
     property SpecularSpread: Single read FSpecularSpread write FSpecularSpread;
     property LightPower: Single read FLightPower write FLightPower;
-
     property NormalTexture: TGLTexture read FNormalTexture write SetNormalTexture;
     property SpecularTexture: TGLTexture read FSpecularTexture write SetSpecularTexture;
-
     property NormalTextureName: TGLLibMaterialName read GetNormalTextureName write SetNormalTextureName;
     property SpecularTextureName: TGLLibMaterialName read GetSpecularTextureName write SetSpecularTextureName;
-
     property MaterialLibrary: TGLMaterialLibrary read FMaterialLibrary write SetMaterialLibrary;
   end;
 
@@ -124,7 +114,6 @@ type
     FAmbientColor: TGLColor;
     FDiffuseColor: TGLColor;
     FSpecularColor: TGLColor;
-
     function GetAlpha: Single;
     procedure SetAlpha(const Value: Single);
   protected
@@ -133,11 +122,9 @@ type
   public
     constructor Create(AOwner : TComponent); override;
     destructor Destroy; override;
-
     property AmbientColor: TGLColor read FAmbientColor;
     property DiffuseColor: TGLColor read FDiffuseColor;
     property SpecularColor: TGLColor read FSpecularColor;
-
     property Alpha: Single read GetAlpha write SetAlpha;
   end;
 
@@ -152,16 +139,12 @@ type
     // Implementing IGLShaderDescription.
     procedure SetShaderTextures(const Textures: array of TGLTexture);
     procedure GetShaderTextures(var Textures: array of TGLTexture);
-
     procedure SetShaderColorParams(const AAmbientColor, ADiffuseColor, ASpecularcolor: TVector4f);
     procedure GetShaderColorParams(var AAmbientColor, ADiffuseColor, ASpecularcolor: TVector4f);
-
     procedure SetShaderMiscParameters(const ACadencer: TGLCadencer; const AMatLib: TGLMaterialLibrary; const ALightSources: TGLLightSourceSet);
     procedure GetShaderMiscParameters(var ACadencer: TGLCadencer; var AMatLib: TGLMaterialLibrary; var ALightSources: TGLLightSourceSet);
-
     function GetShaderAlpha: Single;
     procedure SetShaderAlpha(const Value: Single);
-
     function GetShaderDescription: string;
   protected
     procedure DoApply(var rci : TGLRenderContextInfo; Sender : TObject); override;
@@ -175,20 +158,15 @@ type
     FLightCompensation: Single;
     procedure SetLightSources(const Value: TGLLightSourceSet);
     procedure SetLightCompensation(const Value: Single);
-
     // Implementing IGLShaderDescription.
     procedure SetShaderTextures(const Textures: array of TGLTexture);
     procedure GetShaderTextures(var Textures: array of TGLTexture);
-
     procedure SetShaderColorParams(const AAmbientColor, ADiffuseColor, ASpecularcolor: TVector4f);
     procedure GetShaderColorParams(var AAmbientColor, ADiffuseColor, ASpecularcolor: TVector4f);
-
     procedure SetShaderMiscParameters(const ACadencer: TGLCadencer; const AMatLib: TGLMaterialLibrary; const ALightSources: TGLLightSourceSet);
     procedure GetShaderMiscParameters(var ACadencer: TGLCadencer; var AMatLib: TGLMaterialLibrary; var ALightSources: TGLLightSourceSet);
-
     function GetShaderAlpha: Single;
     procedure SetShaderAlpha(const Value: Single);
-
     function GetShaderDescription: string;
   protected
     procedure DoApply(var rci : TGLRenderContextInfo; Sender : TObject); override;
@@ -227,10 +205,8 @@ type
     property NormalTextureName;
     property SpecularTextureName;
     property MaterialLibrary;
-
     property BumpHeight;
     property BumpSmoothness;
-
     property SpecularPower;
     property SpecularSpread;
     property LightPower;
@@ -241,10 +217,8 @@ type
     property NormalTextureName;
     property SpecularTextureName;
     property MaterialLibrary;
-
     property BumpHeight;
     property BumpSmoothness;
-
     property SpecularPower;
     property SpecularSpread;
     property LightPower;
@@ -256,15 +230,12 @@ type
     property DiffuseColor;
     property SpecularColor;
     property Alpha stored False;
-
     property MainTextureName;
     property NormalTextureName;
     property SpecularTextureName;
     property MaterialLibrary;
-
     property BumpHeight;
     property BumpSmoothness;
-
     property SpecularPower;
     property SpecularSpread;
     property LightPower;
@@ -276,10 +247,8 @@ type
     property NormalTextureName;
     property SpecularTextureName;
     property MaterialLibrary;
-
     property BumpHeight;
     property BumpSmoothness;
-
     property SpecularPower;
     property SpecularSpread;
     property LightPower;
@@ -293,10 +262,8 @@ type
     property NormalTextureName;
     property SpecularTextureName;
     property MaterialLibrary;
-
     property BumpHeight;
     property BumpSmoothness;
-
     property SpecularPower;
     property SpecularSpread;
     property LightPower;
@@ -304,7 +271,9 @@ type
     property LightCompensation;
   end;
 
+//--------------------------------------------------------------
 implementation
+//--------------------------------------------------------------
 
 procedure GetVertexProgramCode(const Code: TStrings);
 begin

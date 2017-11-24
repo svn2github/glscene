@@ -26,7 +26,11 @@ interface
 uses
   System.Classes,
    
-  GLMaterial, GLScene, GLVectorGeometry, GLStrings, GLRenderContextInfo;
+  GLMaterial, 
+  GLScene, 
+  GLVectorGeometry, 
+  GLStrings, 
+  GLRenderContextInfo;
 
 type
   {MP - multipass, SP-singlepass, AP - anypass (single or multi)
@@ -34,7 +38,6 @@ type
      For example, sctTwoMPOneSP means that first one will be applied Shader Two,
      which can be a multipass shader, then Shader One is applied, which should be
      a singlepass shader.
-
      sctOneMPTwoSP and sctTwoMPOneSP modes are actualy quite Str@nge,
                                        because... well look at the code yourself
 
@@ -80,13 +83,7 @@ type
   end;
 
 //---------------------------------------------
-//---------------------------------------------
-//---------------------------------------------
-
 implementation
-
-//---------------------------------------------
-//---------------------------------------------
 //---------------------------------------------
 
 

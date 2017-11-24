@@ -37,7 +37,6 @@ uses
 type
 
    {Options d'automatisation du screen-saver. 
-      
        ssoAutoAdjustFormProperties : all relevant properties of main form
 			will be auto-adjusted (form style, border style, form size and for
 			preview, ParentWindow).
@@ -47,8 +46,7 @@ type
          screen saver when mouse is moved (you mays have to handle other mouse
          move events manually if you have placed components on the form)
        ssoEnhancedMouseMoveDetection : gets the mouse position every half-second
-         and closes the saver if position changed (uses GetCursorPos and a TTimer)
-       }
+         and closes the saver if position changed (uses GetCursorPos and a TTimer) }
    TScreenSaverOption = (ssoAutoAdjustFormProperties, ssoAutoHookKeyboardEvents,
                          ssoAutoHookMouseEvents, ssoEnhancedMouseMoveDetection);
 	TScreenSaverOptions = set of TScreenSaverOption;
@@ -77,12 +75,10 @@ type
 			command line and trigger relevant events
 		 Basicly, you only need to care about drawing in your main form's
 			client area (in a resolution/size independant way if possible)
-		 
 		There is no real difference between execution and preview modes, except
 		for the events fired... and the size of the form :). }
 	TGLScreenSaver = class (TComponent)
 		private
-			 
 			mouseEventsToIgnore : Integer;
 			FHonourWindowsPassword : Boolean;
          FOptions : TScreenSaverOptions;
@@ -96,9 +92,7 @@ type
          lastMousePosition : TPoint;
       FMutex: THandle;
 		protected
-			
 			procedure Loaded; override;
-
 			procedure FormMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
 			procedure FormKeyPress(Sender: TObject; var Key: Char);
          procedure OnMouseTimer(Sender: TObject);
@@ -120,13 +114,10 @@ type
 				canceled, if this passed, the password is checked if there is any,
 				then sends a WM_CLOSE to the saver windows. }
 			function CloseSaver : Boolean;
-
 			{True if the screen-save is in preview mode. 
 				Valid only when the TScreenSaver has completed loading. }
 			property InPreviewMode : Boolean read FInPreviewMode;
-
 		published
-			
 			property Options : TScreenSaverOptions read FOptions write FOptions default cDefaultScreenSaverOptions;
 			{If True, windows screen-saver password is checked before closing. 
 				You may be wanting to set this prop to false if you're using your
@@ -135,7 +126,6 @@ type
 			{This string is displayed if OnPropertiesRequested is not used. 
 				You may use it as a quick "AboutBox".  }
 			property AboutString : String read FAboutString write FAboutString;
-
 			{Display the properties dialog when this event is triggered. 
 				This event may be called before Delphi's form auto-creation is complete,
 				and should not rely on auto-created dialogs/forms but create what
@@ -155,11 +145,7 @@ type
 procedure SetScreenSaverPassword;
 
 // ---------------------------------------------------------------------
-// ---------------------------------------------------------------------
-// ---------------------------------------------------------------------
 implementation
-// ---------------------------------------------------------------------
-// ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
 
 {Returns system path and makes sure there is a trailing '\'.  }

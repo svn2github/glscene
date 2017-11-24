@@ -41,7 +41,9 @@ function CreateDOMNode(const ParentNode: GLSDOMNode; const NodeName: string): GL
 procedure SetXMLText(const DOMNode: GLSDOMNode; const AText: string);
 function GetXMLText(const XMLNode: GLSXMLNode; out AText: string): Boolean;
 
+//---------------------------------------------------------------------
 implementation
+//---------------------------------------------------------------------
 
 function GLSNewXMLDocument: GLSXMLDocument;
 begin

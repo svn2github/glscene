@@ -39,6 +39,7 @@ uses
   GLGui,
   GLCrossPlatform,
   GLColor,
+  GLTexture,
   GLRenderContextInfo,
   GLBaseClasses;
 
@@ -645,11 +646,7 @@ function UnpressGroup(CurrentObject: TGLBaseSceneObject; AGroupID: Integer):
   Boolean;
 
 //--------------------------------------------------------------------------
-//--------------------------------------------------------------------------
-//--------------------------------------------------------------------------
 implementation
-//--------------------------------------------------------------------------
-//--------------------------------------------------------------------------
 //--------------------------------------------------------------------------
 
 function UnpressGroup(CurrentObject: TGLBaseSceneObject; AGroupID: Integer):

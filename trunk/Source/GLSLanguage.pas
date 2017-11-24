@@ -20,7 +20,9 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.IniFiles, System.SysUtils;
+  System.Classes, 
+  System.IniFiles, 
+  System.SysUtils;
 
 type
 
@@ -78,11 +80,7 @@ type
   end;
 
 //-----------------------------------------------------------------------
-//-----------------------------------------------------------------------
-//-----------------------------------------------------------------------
 implementation
-//-----------------------------------------------------------------------
-//-----------------------------------------------------------------------
 //-----------------------------------------------------------------------
 
 uses
@@ -195,8 +193,6 @@ begin
         AddConst(aValues.Names[I],GetValueFromStringsIndex(aValues, I));
 end;
 
-// Change a Constant Value by ID
-//
 procedure TGLLanguageExt.ChangeConst(const ID: String;
   const Text: String);
 var
@@ -227,8 +223,6 @@ begin
   Result := high(Entry) + 1;
 end;
 
-// Save Update Language File
-//
 procedure TGLLanguageExt.SaveLanguageFromFile(const Language: String);
 var
   IniFile: TMemIniFile;
@@ -252,8 +246,8 @@ begin
   SaveLanguageFromFile(CurrentLanguageFile);
 end;
 
-// TGLSLanguage
-//
+{ TGLSLanguage }
+
 constructor TGLSLanguage.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
@@ -298,12 +292,7 @@ begin
 end;
 
 // ------------------------------------------------------------------------------
-// ------------------------------------------------------------------------------
-// ------------------------------------------------------------------------------
 initialization
-
-// ------------------------------------------------------------------------------
-// ------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------
 
 RegisterClass(TGLSLanguage);

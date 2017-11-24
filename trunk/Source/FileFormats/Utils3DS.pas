@@ -7,22 +7,8 @@
    they deal actually with the database and chunks.
 
   History : 
-       19/06/11 - Yar - Bugfixed undefined result of GetKFSegment (thanks to Johannes Pretorius, Bugtracker ID = 3319394)
-       12/06/10 - Yar - Fixes for Linux x64
-       16/10/08 - UweR - Compatibility fix for Delphi 2009
-       02/11/07 - DaStr - Fixed incorrect positioning when importing 3ds
-                              animation (Bugtracker ID = 1824372)
-                             Fixed memory leaks in the FreeChunkData() procedure
-                              (Bugtracker ID = 1823781)
-                             Added a standard GLScene header
-       30/03/07 - DaStr - Added $I GLScene.inc
-       24/03/07 - DaStr - Added explicit pointer dereferencing
-                              (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
-       09/03/07 - DaStr - Fixed a potential AV in two InitMeshObj procedures
-                              (thanks Burkhard Carstens) (BugtrackerID = 1678649)
-       27/10/06 - LC - Fixed memory leak in RelMeshObjField (Bugtracker ID = 1585639)
        12/08/02 -  EG  - ReadMatEntryChunk fix / COLOR_F chunk (coerni)
-  
+       The whole history is logged in previous version of the unit  
 
    (c) Copyright 1999, Dipl. Ing. Mike Lischke (public@lischke-online.de)
 
@@ -100,7 +86,7 @@ procedure GetObjectNodeNameList(const Source: TFile3DS; var DB: TDatabase3DS;
   List: TStringList);
 function GetObjectNodeCount(const Source: TFile3DS; var DB: TDatabase3DS): integer;
 function GetObjectMotionByName(const Source: TFile3DS; var DB: TDatabase3DS;
-  Name: string): TKFMesh3DS;
+  const Name: string): TKFMesh3DS;
 function GetObjectMotionByIndex(const Source: TFile3DS; var DB: TDatabase3DS;
   Index: cardinal): TKFMesh3DS;
 
@@ -109,7 +95,7 @@ procedure GetOmnilightNodeNameList(const Source: TFile3DS; var DB: TDatabase3DS;
   List: TStringList);
 function GetOmnilightNodeCount(const Source: TFile3DS; var DB: TDatabase3DS): cardinal;
 function GetOmnilightMotionByName(const Source: TFile3DS; var DB: TDatabase3DS;
-  Name: string): TKFOmni3DS;
+  const Name: string): TKFOmni3DS;
 function GetOmnilightMotionByIndex(const Source: TFile3DS; var DB: TDatabase3DS;
   Index: cardinal): TKFOmni3DS;
 
@@ -118,7 +104,7 @@ procedure GetSpotlightNodeNameList(const Source: TFile3DS; var DB: TDatabase3DS;
   List: TStringList);
 function GetSpotlightNodeCount(const Source: TFile3DS; var DB: TDatabase3DS): cardinal;
 function GetSpotlightMotionByName(const Source: TFile3DS; var DB: TDatabase3DS;
-  Name: string): TKFSpot3DS;
+  const Name: string): TKFSpot3DS;
 function GetSpotlightMotionByIndex(const Source: TFile3DS; var DB: TDatabase3DS;
   Index: cardinal): TKFSpot3DS;
 
@@ -134,7 +120,7 @@ procedure ChunkHeaderReport(var Strings: TStrings; Chunk: PChunk3DS;
 function ChunkTagToString(Tag: word): string;
 procedure DumpChunk(const Source: TFile3DS; var Strings: TStrings;
   Chunk: PChunk3DS; IndentLevel: integer; DumpLevel: TDumpLevel);
-procedure DumpKeyHeader(Strings: TStrings; Key: TKeyHeader3DS; IndentLevel: integer);
+procedure DumpKeyHeader(Strings: TStrings; const Key: TKeyHeader3DS; IndentLevel: integer);
 
 // support functions for chunk handling
 procedure DeleteChunk(var Chunk: PChunk3DS);
@@ -142,8 +128,8 @@ function FindNamedObjectByIndex(Source: TFile3DS; DB: TDatabase3DS;
   AType: word; Index: integer): PChunk3DS;
 
 // error message routines
-procedure ShowError(ErrorMessage: string);
-procedure ShowErrorFormatted(ErrorMessage: string; const Args: array of const);
+procedure ShowError(const ErrorMessage: string);
+procedure ShowErrorFormatted(const ErrorMessage: string; const Args: array of const);
 
 //---------------------------------------------------------------------------------------------------------------------
 
@@ -157,14 +143,14 @@ type
 
 //----------------- error handling ------------------------------------------------------------------------------------
 
-procedure ShowError(ErrorMessage: string);
+procedure ShowError(const ErrorMessage: string);
 begin
   raise E3DSError.Create(ErrorMessage);
 end;
 
 //---------------------------------------------------------------------------------------------------------------------
 
-procedure ShowErrorFormatted(ErrorMessage: string; const Args: array of const);
+procedure ShowErrorFormatted(const ErrorMessage: string; const Args: array of const);
 begin
   raise E3DSError.CreateFmt(ErrorMessage, Args);
 end;
@@ -1500,7 +1486,7 @@ end;
 
 //---------------------------------------------------------------------------------------------------------------------
 
-procedure DumpKeyHeader(Strings: TStrings; Key: TKeyHeader3DS; IndentLevel: integer);
+procedure DumpKeyHeader(Strings: TStrings; const Key: TKeyHeader3DS; IndentLevel: integer);
 
 var
   Output: string;
@@ -3112,7 +3098,7 @@ end;
 //---------------------------------------------------------------------------------------------------------------------
 
 function FindNamedAndTaggedChunk(const Source: TFile3DS; var DB: TDatabase3DS;
-  Name: string; TagID: word): PChunk3DS;
+  const Name: string; TagID: word): PChunk3DS;
 
   // Look through the keyframer stuff and find named chunk of the tag type TagID.
   // Has to be a chunk that has a node header: CAMERA_NODE, LIGHT_NODE, , .
@@ -3171,7 +3157,7 @@ end;
 //---------------------------------------------------------------------------------------------------------------------
 
 function FindNodeTagByNameAndType(const Source: TFile3DS; DB: TDatabase3DS;
-  Name: string; AType: word): PChunk3DS;
+  const Name: string; AType: word): PChunk3DS;
 
 var
   I: integer;
@@ -6008,7 +5994,7 @@ end;
 //---------------------------------------------------------------------------------------------------------------------
 
 function GetObjectMotionByName(const Source: TFile3DS; var DB: TDatabase3DS;
-  Name: string): TKFMesh3DS;
+  const Name: string): TKFMesh3DS;
 
 var
   ObjectChunk: PChunk3DS;
@@ -6217,7 +6203,7 @@ end;
 //---------------------------------------------------------------------------------------------------------------------
 
 function GetOmnilightMotionByName(const Source: TFile3DS; var DB: TDatabase3DS;
-  Name: string): TKFOmni3DS;
+  const Name: string): TKFOmni3DS;
 
 var
   Chunk: PChunk3DS;
@@ -6642,7 +6628,7 @@ end;
 //---------------------------------------------------------------------------------------------------------------------
 
 function GetSpotlightMotionByName(const Source: TFile3DS; var DB: TDatabase3DS;
-  Name: string): TKFSpot3DS;
+  const Name: string): TKFSpot3DS;
 
 var
   SpotlightChunk, TargetChunk: PChunk3DS;

@@ -5,14 +5,9 @@
    Material Preview frame. 
 
     History :  
-       12/07/07 - DaStr - Improved Cross-Platform compatibility
-                             (Bugtracker ID = 1684432)
-       06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
-       29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
-       16/12/06 - DaStr - Editor enhanced
-       03/07/04 - LR  - Make change for Linux
        06/02/00 - Egg - Creation
-    
+       The whole history is logged in previous version of the unit
+   
 }
 unit FRMaterialPreview;
 

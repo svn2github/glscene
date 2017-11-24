@@ -52,7 +52,6 @@ type
 
   TGLEParticleMask = class(TCollectionItem, IGLMaterialLibrarySupported)
   private
-     
     FName: string;
     FScale: TGLCoordinates;
     FPosition: TGLCoordinates;
@@ -65,7 +64,6 @@ type
     FMaxX, FMaxY, FMaxZ, FMinX, FMinY, FMinZ: Integer;
     IXW, IXH, IYW, IYH, IZW, IZH: Integer;
     LX, LY, LZ: Integer;
-
     MX, MY: Integer;
     BogusMask, BogusMaskX, BogusMaskY, BogusMaskZ: Boolean;
       // we might have a pitch mask
@@ -87,10 +85,8 @@ type
     function _AddRef: Integer; stdcall;
     function _Release: Integer; stdcall;
   protected
-    
     function GetDisplayName: string; override;
   public
-    
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -103,21 +99,18 @@ type
     procedure GenerateMaskFromProjection(FromMask, ToMask:
       TGLEProjectedParticleMask; Depth: Integer);
   published
-    
     // scales and positions
     property Scale: TGLCoordinates read FScale write FScale;
     property Position: TGLCoordinates read FPosition write FPosition;
     // the reference name of the particle mask
     property Name: string read FName write SetName;
-    property MaterialLibrary: TGLMaterialLibrary read FMaterialLibrary write
-      SetMaterialLibrary;
+    property MaterialLibrary: TGLMaterialLibrary read FMaterialLibrary write SetMaterialLibrary;
     // mask images, make sure materiallibrary is assigned
     property XMask: TGLLibMaterialName read FXMask write SetXMask;
     property YMask: TGLLibMaterialName read FYMask write SetYMask;
     property ZMask: TGLLibMaterialName read FZMask write SetZMask;
     // background color is the color that prevents particles from being positioned there
-    property BackgroundColor: TDelphiColor read FBackgroundColor write
-      FBackgroundColor;
+    property BackgroundColor: TDelphiColor read FBackgroundColor write FBackgroundColor;
     // maskcolor is where particles are allowed to be positioned
     property MaskColor: TDelphiColor read FMaskColor write FMaskColor;
     // just the average angles for orientation
@@ -128,26 +121,20 @@ type
 
   TGLEParticleMasks = class(TCollection)
   protected
-    
     Owner: TComponent;
     function GetOwner: TPersistent; override;
     procedure SetItems(Index: Integer; const Val: TGLEParticleMask);
     function GetItems(Index: Integer): TGLEParticleMask;
-
   public
-    
     function Add: TGLEParticleMask;
     constructor Create(AOwner: TComponent);
-    property Items[Index: Integer]: TGLEParticleMask read GetItems write
-      SetItems; default;
+    property Items[Index: Integer]: TGLEParticleMask read GetItems write SetItems; default;
   end;
 
   TGLEParticleMasksManager = class(TComponent)
   private
     FParticleMasks: TGLEParticleMasks;
-     
   protected
-    
     procedure ApplyOrthoGraphic(var Vec: TVector3f; Mask: TGLEParticleMask);
     procedure ApplyRotation(var Vec: TVector3f; Mask: TGLEParticleMask);
     procedure ApplyRotationTarget(var Vec: TVector3f; Mask: TGLEParticleMask;
@@ -157,25 +144,22 @@ type
       TGLEParticleMask; TargetObject: TGLBaseSceneObject);
     procedure FindParticlePosition(var Vec: TVector3f; Mask: TGLEParticleMask);
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     function CreateParticlePositionFromMask(MaskName: string): TVector3f;
-    function TargetParticlePositionFromMask(TargetObject: TGLBaseSceneObject;
-      MaskName: string): TVector3f;
-    procedure SetParticlePositionFromMask(Particle: TGLParticle; MaskName:
-      string);
+    function TargetParticlePositionFromMask(TargetObject: TGLBaseSceneObject; MaskName: string): TVector3f;
+    procedure SetParticlePositionFromMask(Particle: TGLParticle; MaskName: string);
     procedure SetParticlePositionFromMaskTarget(Particle: TGLParticle; MaskName:
       string; TargetObject: TGLBaseSceneObject);
     function ParticleMaskByName(MaskName: string): TGLEParticleMask;
-
   published
-    
     property ParticleMasks: TGLEParticleMasks read FParticleMasks write
       FParticleMasks;
   end;
 
+//--------------------------------------------------------------------------
 implementation
+//--------------------------------------------------------------------------
 
 { TGLEParticleMasks }
 

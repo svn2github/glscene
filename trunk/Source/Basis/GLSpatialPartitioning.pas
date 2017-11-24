@@ -4,7 +4,7 @@
 {
   Spatial partitioning related code that also uses GLScene objects
   History : 03/12/04 - MF - Created
-  The whole history is logged in a former GLS version of the unit.
+  The whole history is logged in a former version of the unit.
 }
 
 unit GLSpatialPartitioning;
@@ -53,11 +53,7 @@ procedure RenderAABB(var rci: TGLRenderContextInfo; const AABB: TAABB; w, r, g, 
 procedure RenderAABB(var rci: TGLRenderContextInfo; const AABB: TAABB); overload;
 
 //---------------------------------------------------------------------
-//---------------------------------------------------------------------
-//---------------------------------------------------------------------
 implementation
-//---------------------------------------------------------------------
-//---------------------------------------------------------------------
 //---------------------------------------------------------------------
 
 procedure RenderAABB(var rci: TGLRenderContextInfo; const AABB: TAABB);
@@ -95,9 +91,6 @@ begin
   GL.Vertex3f(AABB.max.X, AABB.min.Y, AABB.max.Z);
   GL.End_;
 end;
-
-// RenderSpatialPartitioning
-//
 
 procedure RenderSpatialPartitioning(var rci: TGLRenderContextInfo;
   const Space: TSectoredSpacePartition);

@@ -87,14 +87,11 @@ type
     property UserList: TPersistentObjectList read GetUserList;
     procedure DoOnPrepare(Sender: TGLContext); virtual; abstract;
   public
-    
     destructor Destroy; override;
-
     procedure RegisterUser(AUser: TGLUpdateAbleObject);
     procedure UnregisterUser(AUser: TGLUpdateAbleObject);
     function GetUserCount: Integer;
     function GetMaterialLibrary: TGLAbstractMaterialLibrary;
-
     property MaterialLibrary: TGLMaterialLibraryEx read GetMaterialLibraryEx;
     property IsValid: Boolean read FIsValid;
   published
@@ -723,21 +720,16 @@ type
       write SetGeometryVerticesOut default 1;
   end;
 
-  // TGLAbstractShaderUniform
-  //
 
   TGLAbstractShaderUniform = class(TGLUpdateAbleObject, IShaderParameter)
   protected
-
     FName: string;
     FNameHashCode: Integer;
     FType: TGLSLDataType;
     FSamplerType: TGLSLSamplerType;
-
     function GetName: string;
     function GetGLSLType: TGLSLDataType;
     function GetGLSLSamplerType: TGLSLSamplerType;
-
     function GetAutoSetMethod: string; virtual;
     function GetTextureName: string; virtual;
     function GetSamplerName: string; virtual;
@@ -746,48 +738,39 @@ type
     procedure SetSamplerName(const AValue: string); virtual;
     procedure SetAutoSetMethod(const AValue: string); virtual;
     procedure SetTextureSwizzle(const AValue: TSwizzleVector); virtual;
-
     function GetFloat: Single; virtual;
     function GetVec2: TVector2f; virtual;
     function GetVec3: TVector3f; virtual;
     function GetVec4: TVector; virtual;
-
     function GetInt: TGLint; virtual;
     function GetIVec2: TVector2i; virtual;
     function GetIVec3: TVector3i; virtual;
     function GetIVec4: TVector4i; virtual;
-
     function GetUInt: Cardinal; virtual;
     function GetUVec2: TVector2ui; virtual;
     function GetUVec3: TVector3ui; virtual;
     function GetUVec4: TVector4ui; virtual;
-
     procedure SetFloat(const Value: TGLFloat); virtual;
     procedure SetVec2(const Value: TVector2f); virtual;
     procedure SetVec3(const Value: TVector3f); virtual;
     procedure SetVec4(const Value: TVector4f); virtual;
-
     procedure SetInt(const Value: Integer); virtual;
     procedure SetIVec2(const Value: TVector2i); virtual;
     procedure SetIVec3(const Value: TVector3i); virtual;
     procedure SetIVec4(const Value: TVector4i); virtual;
-
     procedure SetUInt(const Value: Cardinal); virtual;
     procedure SetUVec2(const Value: TVector2ui); virtual;
     procedure SetUVec3(const Value: TVector3ui); virtual;
     procedure SetUVec4(const Value: TVector4ui); virtual;
-
     function GetMat2: TMatrix2f; virtual;
     function GetMat3: TMatrix3f; virtual;
     function GetMat4: TMatrix4f; virtual;
     procedure SetMat2(const Value: TMatrix2f); virtual;
     procedure SetMat3(const Value: TMatrix3f); virtual;
     procedure SetMat4(const Value: TMatrix4f); virtual;
-
     procedure SetFloatArray(const Values: PGLFloat; Count: Integer); virtual;
     procedure SetIntArray(const Values: PGLInt; Count: Integer); virtual;
     procedure SetUIntArray(const Values: PGLUInt; Count: Integer); virtual;
-
     procedure WriteToFiler(AWriter: TWriter); virtual;
     procedure ReadFromFiler(AReader: TReader); virtual;
     procedure Apply(var ARci: TGLRenderContextInfo); virtual;
@@ -795,118 +778,90 @@ type
 
   CGLAbstractShaderUniform = class of TGLAbstractShaderUniform;
 
-  // TGLShaderUniform
-  //
-
   TGLShaderUniform = class(TGLAbstractShaderUniform, IShaderParameter)
   protected
     
     FLocation: Integer;
     FStoreProgram: Cardinal;
     FAutoSet: TUniformAutoSetMethod;
-    function GetProgram: Cardinal;{$IFDEF GLS_INLINE} inline;{$ENDIF}
-    procedure PushProgram;{$IFDEF GLS_INLINE} inline;{$ENDIF}
-    procedure PopProgram; {$IFDEF GLS_INLINE} inline;{$ENDIF}
-
+    function GetProgram: Cardinal; inline;
+    procedure PushProgram; inline;
+    procedure PopProgram; inline;
     function GetFloat: Single; override;
     function GetVec2: TVector2f; override;
     function GetVec3: TVector3f; override;
     function GetVec4: TVector; override;
-
     function GetInt: Integer; override;
     function GetIVec2: TVector2i; override;
     function GetIVec3: TVector3i; override;
     function GetIVec4: TVector4i; override;
-
     function GetUInt: Cardinal; override;
     function GetUVec2: TVector2ui; override;
     function GetUVec3: TVector3ui; override;
     function GetUVec4: TVector4ui; override;
-
     procedure SetFloat(const Value: TGLFloat); override;
     procedure SetVec2(const Value: TVector2f); override;
     procedure SetVec3(const Value: TVector3f); override;
     procedure SetVec4(const Value: TVector4f); override;
-
     procedure SetInt(const Value: Integer); override;
     procedure SetIVec2(const Value: TVector2i); override;
     procedure SetIVec3(const Value: TVector3i); override;
     procedure SetIVec4(const Value: TVector4i); override;
-
     procedure SetUInt(const Value: Cardinal); override;
     procedure SetUVec2(const Value: TVector2ui); override;
     procedure SetUVec3(const Value: TVector3ui); override;
     procedure SetUVec4(const Value: TVector4ui); override;
-
     function GetMat2: TMatrix2f; override;
     function GetMat3: TMatrix3f; override;
     function GetMat4: TMatrix4f; override;
     procedure SetMat2(const Value: TMatrix2f); override;
     procedure SetMat3(const Value: TMatrix3f); override;
     procedure SetMat4(const Value: TMatrix4f); override;
-
     function GetAutoSetMethod: string; override;
     procedure SetAutoSetMethod(const AValue: string); override;
-
     procedure WriteToFiler(AWriter: TWriter); override;
     procedure ReadFromFiler(AReader: TReader); override;
   public
-    
     procedure SetFloatArray(const Values: PGLFloat; Count: Integer); override;
     procedure SetIntArray(const Values: PGLInt; Count: Integer); override;
     procedure SetUIntArray(const Values: PGLUInt; Count: Integer); override;
-
     procedure Assign(Source: TPersistent); override;
     procedure Apply(var ARci: TGLRenderContextInfo); override;
-
     property Name: string read GetName;
     property Location: Integer read FLocation;
     property GLSLType: TGLSLDataType read GetGLSLType;
   end;
 
-  // TGLShaderUniformDSA
-  //
-
   TGLShaderUniformDSA = class(TGLShaderUniform)
   protected
-    
     procedure SetFloat(const Value: TGLFloat); override;
     procedure SetVec2(const Value: TVector2f); override;
     procedure SetVec3(const Value: TVector3f); override;
     procedure SetVec4(const Value: TVector4f); override;
-
     procedure SetInt(const Value: Integer); override;
     procedure SetIVec2(const Value: TVector2i); override;
     procedure SetIVec3(const Value: TVector3i); override;
     procedure SetIVec4(const Value: TVector4i); override;
-
     procedure SetUInt(const Value: Cardinal); override;
     procedure SetUVec2(const Value: TVector2ui); override;
     procedure SetUVec3(const Value: TVector3ui); override;
     procedure SetUVec4(const Value: TVector4ui); override;
-
     procedure SetMat2(const Value: TMatrix2f); override;
     procedure SetMat3(const Value: TMatrix3f); override;
     procedure SetMat4(const Value: TMatrix4f); override;
   public
-    
     procedure SetFloatArray(const Values: PGLFloat; Count: Integer); override;
     procedure SetIntArray(const Values: PGLInt; Count: Integer); override;
     procedure SetUIntArray(const Values: PGLUInt; Count: Integer); override;
   end;
 
-  // TGLUniformTexture
-  //
-
   TGLShaderUniformTexture = class(TGLShaderUniform)
   private
-     
     FLibTexture: TGLAbstractTexture;
     FLibSampler: TGLTextureSampler;
     FTarget: TGLTextureTarget;
     FSwizzling: TSwizzleVector;
   protected
-    
     FLibTexureName: TGLMaterialComponentName;
     FLibSamplerName: TGLMaterialComponentName;
     function GetTextureName: string; override;
@@ -915,19 +870,15 @@ type
     procedure SetTextureName(const AValue: string); override;
     procedure SetSamplerName(const AValue: string); override;
     procedure SetTextureSwizzle(const AValue: TSwizzleVector); override;
-
     procedure WriteToFiler(AWriter: TWriter); override;
     procedure ReadFromFiler(AReader: TReader); override;
     procedure Loaded;
   public
-    
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
     procedure Notification(Sender: TObject; Operation: TOperation); override;
-
     procedure Apply(var ARci: TGLRenderContextInfo); override;
-
     property LibTextureName: TGLMaterialComponentName read GetTextureName
       write SetTextureName;
     property LibSamplerName: TGLMaterialComponentName read GetSamplerName
@@ -937,12 +888,9 @@ type
       SetTextureSwizzle;
   end;
 
-  // TGLBaseShaderModel
-  //
 
   TGLBaseShaderModel = class(TGLLibMaterialProperty)
   protected
-    
     FHandle: TGLProgramHandle;
     FLibShaderName: array[TGLShaderType] of string;
     FShaders: array[TGLShaderType] of TGLShaderEx;
@@ -950,13 +898,10 @@ type
     FInfoLog: string;
     FUniforms: TPersistentObjectList;
     FAutoFill: Boolean;
-
     function GetLibShaderName(AType: TGLShaderType): string;
     procedure SetLibShaderName(AType: TGLShaderType; const AValue: string);
-
     function GetUniform(const AName: string): IShaderParameter;
     class procedure ReleaseUniforms(AList: TPersistentObjectList);
-
     property LibVertexShaderName: TGLMaterialComponentName index shtVertex
       read GetLibShaderName write SetLibShaderName;
     property LibFragmentShaderName: TGLMaterialComponentName index shtFragment
@@ -967,33 +912,25 @@ type
       read GetLibShaderName write SetLibShaderName;
     property LibTessControlShaderName: TGLMaterialComponentName index shtControl
       read GetLibShaderName write SetLibShaderName;
-
     procedure DefineProperties(Filer: TFiler); override;
     procedure ReadUniforms(AStream: TStream);
     procedure WriteUniforms(AStream: TStream);
     procedure Loaded; override;
     class function IsSupported: Boolean; virtual; abstract;
-
   public
-    
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
-
     procedure NotifyChange(Sender: TObject); override;
     procedure Notification(Sender: TObject; Operation: TOperation); override;
-
     procedure DoOnPrepare(Sender: TGLContext);
     procedure Apply(var ARci: TGLRenderContextInfo); virtual;
     procedure UnApply(var ARci: TGLRenderContextInfo); virtual;
-
     procedure GetUniformNames(Proc: TGetStrProc);
-
     property Handle: TGLProgramHandle read FHandle;
     property IsValid: Boolean read FIsValid;
     property Uniforms[const AName: string]: IShaderParameter read GetUniform;
   published
-    
     // Compilation info log for design time
     property InfoLog: string read FInfoLog;
     // Turn on autofill of uniforms
@@ -1004,20 +941,16 @@ type
 
   TGLShaderModel3 = class(TGLBaseShaderModel)
   public
-    
     class function IsSupported: Boolean; override;
   published
-    
     property LibVertexShaderName;
     property LibFragmentShaderName;
   end;
 
   TGLShaderModel4 = class(TGLBaseShaderModel)
   public
-    
     class function IsSupported: Boolean; override;
   published
-    
     property LibVertexShaderName;
     property LibGeometryShaderName;
     property LibFragmentShaderName;
@@ -1025,12 +958,10 @@ type
 
   TGLShaderModel5 = class(TGLBaseShaderModel)
   public
-    
     procedure Apply(var ARci: TGLRenderContextInfo); override;
     procedure UnApply(var ARci: TGLRenderContextInfo); override;
     class function IsSupported: Boolean; override;
   published
-    
     property LibTessControlShaderName;
     property LibTessEvalShaderName;
     property LibVertexShaderName;
@@ -1038,12 +969,8 @@ type
     property LibFragmentShaderName;
   end;
 
-  // TGLLibMaterialEx
-  //
-
   TGLLibMaterialEx = class(TGLAbstractLibMaterial)
   private
-     
     FHandle: TGLVirtualHandle;
     FApplicableLevel: TGLMaterialLevel;
     FSelectedLevel: TGLMaterialLevel;
@@ -1074,31 +1001,21 @@ type
     procedure RemoveDefferedInit;
     procedure DoOnPrepare(Sender: TGLContext);
   public
-    
     constructor Create(ACollection: TCollection); override;
     destructor Destroy; override;
-
     procedure Assign(Source: TPersistent); override;
     procedure NotifyChange(Sender: TObject); override;
-
     procedure Apply(var ARci: TGLRenderContextInfo); override;
     function UnApply(var ARci: TGLRenderContextInfo): Boolean; override;
-
     function Blended: Boolean; override;
   published
-    
-    property ApplicableLevel: TGLMaterialLevel read FApplicableLevel write
-      SetLevel
-      default mlAuto;
+    property ApplicableLevel: TGLMaterialLevel read FApplicableLevel write SetLevel default mlAuto;
     property SelectedLevel: TGLMaterialLevel read FSelectedLevel;
-    property FixedFunction: TGLFixedFunctionProperties
-      read FFixedFunc write SetFixedFunc;
-    property Multitexturing: TGLMultitexturingProperties
-      read FMultitexturing write SetMultitexturing;
+    property FixedFunction: TGLFixedFunctionProperties read FFixedFunc write SetFixedFunc;
+    property Multitexturing: TGLMultitexturingProperties read FMultitexturing write SetMultitexturing;
     property ShaderModel3: TGLShaderModel3 read FSM3 write SetSM3;
     property ShaderModel4: TGLShaderModel4 read FSM4 write SetSM4;
     property ShaderModel5: TGLShaderModel5 read FSM5 write SetSM5;
-
     // Asm vertex program event
     property OnAsmProgSetting: TOnAsmProgSetting read FOnAsmProgSetting
       write FOnAsmProgSetting;
@@ -1119,19 +1036,14 @@ type
       write FOnSM5UniformSetting;
   end;
 
-  // TGLLibMaterialsEx
-  //
 
   TGLLibMaterialsEx = class(TGLAbstractLibMaterials)
   protected
     procedure SetItems(AIndex: Integer; const AValue: TGLLibMaterialEx);
     function GetItems(AIndex: Integer): TGLLibMaterialEx;
   public
-    
     constructor Create(AOwner: TComponent);
-
     function MaterialLibrary: TGLMaterialLibraryEx;
-
     function IndexOf(const Item: TGLLibMaterialEx): Integer;
     function Add: TGLLibMaterialEx;
     function FindItemID(ID: Integer): TGLLibMaterialEx;
@@ -1141,20 +1053,14 @@ type
       TGLLibMaterialEx;
   end;
 
-  // TGLMatLibComponents
-  //
-
   TGLMatLibComponents = class(TGLXCollection)
   protected
-    
     function GetItems(index: Integer): TGLBaseMaterialCollectionItem;
   public
-    
     function GetNamePath: string; override;
     class function ItemsClass: TGLXCollectionItemClass; override;
     property Items[index: Integer]: TGLBaseMaterialCollectionItem
     read GetItems; default;
-
     function GetItemByName(const AName: TGLMaterialComponentName):
       TGLBaseMaterialCollectionItem;
     function GetTextureByName(const AName: TGLMaterialComponentName):
@@ -1173,15 +1079,10 @@ type
       TGLMaterialComponentName;
   end;
 
-  // TGLMaterialLibraryEx
-  //
-
   TGLMaterialLibraryEx = class(TGLAbstractMaterialLibrary)
   private
-     
     FComponents: TGLMatLibComponents;
   protected
-    
     procedure Loaded; override;
     function GetMaterials: TGLLibMaterialsEx;
     procedure SetMaterials(AValue: TGLLibMaterialsEx);
@@ -1192,13 +1093,10 @@ type
     procedure WriteComponents(AStream: TStream);
     procedure ReadComponents(AStream: TStream);
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
     procedure GetNames(Proc: TGetStrProc;
       AClass: CGLBaseMaterialCollectionItem); overload;
-
     function AddTexture(const AName: TGLMaterialComponentName):
       TGLTextureImageEx;
     function AddAttachment(const AName: TGLMaterialComponentName):
@@ -1210,10 +1108,8 @@ type
     function AddShader(const AName: TGLMaterialComponentName): TGLShaderEx;
     function AddAsmProg(const AName: TGLMaterialComponentName):
       TGLASMVertexProgram;
-
     procedure SetLevelForAll(const ALevel: TGLMaterialLevel);
   published
-    
       {The materials collection. }
     property Materials: TGLLibMaterialsEx read GetMaterials write SetMaterials
       stored StoreMaterials;
@@ -1225,7 +1121,9 @@ type
 procedure RegisterGLMaterialExNameChangeEvent(AEvent: TNotifyEvent);
 procedure DeRegisterGLMaterialExNameChangeEvent(AEvent: TNotifyEvent);
 
+//=================================================================
 implementation
+//=================================================================
 
 const
   cTextureMagFilter: array[maNearest..maLinear] of Cardinal =

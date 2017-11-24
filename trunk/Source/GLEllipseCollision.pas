@@ -5,12 +5,8 @@
   Ellipsoid collision functions (mainly used by DCE).
 
    History :  
-     30/03/07 - DaStr - Added $I GLScene.inc
-     09/05/05 - Mathx - Protection agains float error on getLowestRoot
-     23/01/05 - LucasG - Code reorganized, many fixes and some new features 
-     03/09/04 - LucasG - First release
      29/07/04 - LucasG - Creation
-   
+     The whole history is logged in previous version of the unit	 
 }
 unit GLEllipseCollision;
 
@@ -19,7 +15,10 @@ interface
 {$I GLScene.inc}
 
 uses
-  GLVectorGeometry, GLOctree, GLVectorLists , GLVectorTypes;
+  GLVectorGeometry, 
+  GLOctree, 
+  GLVectorLists, 
+  GLVectorTypes;
 
 type
   TECPlane = class
