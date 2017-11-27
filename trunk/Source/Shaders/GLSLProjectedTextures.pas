@@ -160,13 +160,13 @@ type
     property UseLightmaps: boolean read FUseLightmaps write SetUseLightmaps;
   end;
 
+//---------------------------------------------------------------------------
 implementation
+//---------------------------------------------------------------------------
 
 // ------------------
 // ------------------ TGLSLTextureEmitter ------------------
 // ------------------
-
- 
 
 constructor TGLSLTextureEmitter.Create(aOwner: TComponent);
 begin

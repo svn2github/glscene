@@ -536,8 +536,6 @@ begin
    FStatics.Clear;
 end;
 
-//Register Dynamics
-
 procedure TGLDCEManager.RegisterDynamic(aClient : TGLDCEDynamic);
 begin
    if Assigned(aClient) then
@@ -1043,8 +1041,8 @@ begin
 end;
 
 
+// ------------------------------------------------------------------
 initialization
-
 // ------------------------------------------------------------------
 
 	// class registrations

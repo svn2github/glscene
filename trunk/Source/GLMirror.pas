@@ -67,8 +67,7 @@ type
     FRadius: Single; //ORL
     FSlices: Integer; //ORL
   protected
-    procedure Notification(AComponent: TComponent; Operation: TOperation);
-      override;
+    procedure Notification(AComponent: TComponent; Operation: TOperation); override;
     procedure SetMirrorObject(const val: TGLBaseSceneObject);
     procedure SetMirrorOptions(const val: TGLMirrorOptions);
     procedure ClearZBufferArea(aBuffer: TGLSceneBuffer);
@@ -77,7 +76,7 @@ type
     procedure SetRadius(const aValue: Single); //ORL
     procedure SetSlices(const aValue: Integer); //ORL
     procedure SetShape(aValue: TMirrorShapes); //ORL
-    function GetRadius: single; //ORL
+    function GetRadius: Single; //ORL
     function GetSlices: Integer; //ORL
   public
     constructor Create(AOwner: TComponent); override;
@@ -120,11 +119,7 @@ type
   end;
 
 //-------------------------------------------------------------
-//-------------------------------------------------------------
-//-------------------------------------------------------------
 implementation
-//-------------------------------------------------------------
-//-------------------------------------------------------------
 //-------------------------------------------------------------
 
 // ------------------
@@ -489,11 +484,7 @@ begin
 end;
 
 //-------------------------------------------------------------
-//-------------------------------------------------------------
-//-------------------------------------------------------------
 initialization
-//-------------------------------------------------------------
-//-------------------------------------------------------------
 //-------------------------------------------------------------
 
   RegisterClasses([TGLMirror]);

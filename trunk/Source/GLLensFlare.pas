@@ -125,11 +125,9 @@ type
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    procedure Notification(AComponent: TComponent; Operation: TOperation);
-      override;
+    procedure Notification(AComponent: TComponent; Operation: TOperation); override;
     procedure BuildList(var rci: TGLRenderContextInfo); override;
     procedure DoProgress(const progressTime: TProgressTimes); override;
-
     {Prepares pre-rendered texture to speed up actual rendering.
        Will use the currently active context as scratch space, and will
        automatically do nothing if things have already been prepared,
@@ -197,9 +195,9 @@ type
   end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
+// ------------------------------------------------------------------
+
 // ------------------
 // ------------------ TGLFlareGradient ------------------
 // ------------------
@@ -326,7 +324,7 @@ var
   i: Integer;
   rnd: Single;
 begin
-{$IFDEF GLS_OPENGL_DEBUG}
+{$IFDEF USE_OPENGL_DEBUG}
   if GL.GREMEDY_string_marker then
     GL.StringMarkerGREMEDY(14, 'LensFlare.Rays');
 {$ENDIF}
@@ -358,7 +356,7 @@ var
   i: Integer;
   a, f, s, c: Single;
 begin
-{$IFDEF GLS_OPENGL_DEBUG}
+{$IFDEF USE_OPENGL_DEBUG}
   if GL.GREMEDY_string_marker then
     GL.StringMarkerGREMEDY(17, 'LensFlare.Streaks');
 {$ENDIF}
@@ -384,7 +382,7 @@ var
   i: Integer;
   rW, s0, c0, s, c: Single;
 begin
-{$IFDEF GLS_OPENGL_DEBUG}
+{$IFDEF USE_OPENGL_DEBUG}
   if GL.GREMEDY_string_marker then
     GL.StringMarkerGREMEDY(14, 'LensFlare.Ring');
 {$ENDIF}
@@ -426,7 +424,7 @@ var
   v: TAffineVector;
   grad: TGLFlareGradient;
 begin
-{$IFDEF GLS_OPENGL_DEBUG}
+{$IFDEF USE_OPENGL_DEBUG}
   if GL.GREMEDY_string_marker then
     GL.StringMarkerGREMEDY(21, 'LensFlare.Secondaries');
 {$ENDIF}
@@ -630,7 +628,7 @@ begin
       begin
         if FTexRays.Handle <> 0 then
         begin
-        {$IFDEF GLS_OPENGL_DEBUG}
+        {$IFDEF USE_OPENGL_DEBUG}
           if GL.GREMEDY_string_marker then
             GL.StringMarkerGREMEDY(19, 'LensFlare.RaysQuad');
         {$ENDIF}
@@ -884,11 +882,7 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
   RegisterClasses([TGLLensFlare]);

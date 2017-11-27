@@ -24,7 +24,7 @@ uses
   VCL.Controls,
   VCL.Consts,
 
-{$IFDEF GLS_SERVICE_CONTEXT}
+{$IFDEF USE_SERVICE_CONTEXT}
   GLSGenerics,
 {$ENDIF}
   GLState,
@@ -60,10 +60,10 @@ type
     Event: TFinishTaskEvent;
   end;
 
-{$IFDEF GLS_SERVICE_CONTEXT}
+{$IFDEF USE_SERVICE_CONTEXT}
   TServiceContextTaskList = {$IFDEF GLS_GENERIC_PREFIX} specialize {$ENDIF}
     GThreadList < TServiceContextTask > ;
-{$ENDIF GLS_SERVICE_CONTEXT}
+{$ENDIF USE_SERVICE_CONTEXT}
 
   TGLContextManager = class;
 
@@ -111,21 +111,19 @@ type
     procedure SetActive(const aActive: Boolean); inline;
     procedure SetLayer(const Value: TGLContextLayer); inline;
   protected
-    
     FGL: TGLExtensionsAndEntryPoints;
     FXGL: TGLMultitextureCoordinator;
     FGLStates: TGLStateCache;
     FTransformation: TGLTransformation;
     FAcceleration: TGLContextAcceleration;
     FLayer: TGLContextLayer;
-{$IFNDEF GLS_MULTITHREAD}
+{$IFNDEF USE_MULTITHREAD}
     FSharedContexts: TList;
 {$ELSE}
     FSharedContexts: TThreadList;
     FLock: TCriticalSection;
 {$ENDIF}
     procedure PropagateSharedContext;
-
     procedure DoCreateContext(ADeviceHandle: HDC); virtual; abstract;
     procedure DoCreateMemoryContext(outputDevice: HWND; width, height:
       Integer; BufferCount: integer = 1); virtual; abstract;
@@ -136,7 +134,6 @@ type
     class function ServiceContext: TGLContext;
     procedure MakeGLCurrent;
   public
-    
     constructor Create; virtual;
     destructor Destroy; override;
     {An application-side cache of global per-context OpenGL states
@@ -165,7 +162,7 @@ type
     property Layer: TGLContextLayer read FLayer write SetLayer;
     {Rendering context options. }
     property Options: TGLRCOptions read FOptions write SetOptions;
-    {Allows reading and defining the activity for the context. 
+    {Allows reading and defining the activity for the context.
        The methods of this property are just wrappers around calls
        to Activate and Deactivate. }
     property Active: Boolean read GetActive write SetActive;
@@ -206,7 +203,7 @@ type
     procedure Deactivate;
     {Call OnPrepare for all handles.  }
     procedure PrepareHandlesData;
-    {Returns true if the context is valid. 
+    {Returns true if the context is valid.
        A context is valid from the time it has been successfully
        created to the time of its destruction. }
     function IsValid: Boolean; virtual; abstract;
@@ -236,7 +233,6 @@ type
     FFullScreen: Boolean;
   protected
   public
-
     property Width: Integer read FWidth write FWidth;
     property Height: Integer read FHeight write FHeight;
     property FullScreen: Boolean read FFullScreen write FFullScreen;
@@ -257,14 +253,13 @@ type
      use the TGLListHandle and TGLTextureHandle subclasses. }
   TGLContextHandle = class
   private
-
     FHandles: TList;
     FLastHandle : PGLRCHandle;
     FOnPrepare: TOnPrepareHandleData;
     function GetHandle: Cardinal; inline;
     function GetContext: TGLContext;
     function SearchRC(AContext: TGLContext): PGLRCHandle;
-    function RCItem(AIndex: integer): PGLRCHandle; {$IFDEF GLS_INLINE}inline;{$ENDIF}
+    function RCItem(AIndex: integer): PGLRCHandle; inline;
     procedure CheckCurrentRC;
   protected
     // Invoked by when there is no compatible context left for relocation
@@ -487,7 +482,7 @@ type
     procedure BufferSubData(offset, size: Integer; p: Pointer);
     {Map buffer content to memory. 
        Values for access are GL_READ_ONLY_ARB, GL_WRITE_ONLY_ARB and
-       GL_READ_WRITE_ARB. 
+       GL_READ_WRITE_ARB.
        Valid only if the buffer has been bound, must be followed by
        an UnmapBuffer, only one buffer may be mapped at a time. }
     function MapBuffer(access: Cardinal): Pointer;
@@ -757,7 +752,6 @@ type
 
   TGLARBFragmentProgramHandle = class(TGLARBProgramHandle)
   protected
-    
     class function GetTarget: Cardinal; override;
   public
     class function IsSupported: Boolean; override;
@@ -951,13 +945,13 @@ type
     FNotifications: array of TGLContextNotification;
     FCreatedRCCount: Integer;
 
-{$IFNDEF GLS_MULTITHREAD}
+{$IFNDEF USE_MULTITHREAD}
     FHandles: TList;
 {$ELSE}
     FHandles: TThreadList;
-{$ENDIF GLS_MULTITHREAD}
+{$ENDIF USE_MULTITHREAD}
 
-{$IFDEF GLS_SERVICE_CONTEXT}
+{$IFDEF USE_SERVICE_CONTEXT}
     FThread: TThread;
     FServiceStarter: TEvent;
     FThreadTask: TServiceContextTaskList;
@@ -971,7 +965,7 @@ type
     procedure ContextCreatedBy(aContext: TGLContext);
     procedure DestroyingContextBy(aContext: TGLContext);
 
-{$IFDEF GLS_SERVICE_CONTEXT}
+{$IFDEF USE_SERVICE_CONTEXT}
     {Create a special service and resource-keeper context. }
     procedure CreateServiceContext;
     procedure QueueTaskDepleted;
@@ -1017,7 +1011,7 @@ function SafeCurrentGLContext: TGLContext; inline;
 function IsMainThread: Boolean;
 function IsServiceContextAvaible: Boolean;
 function GetServiceWindow: TForm;
-{$IFDEF GLS_SERVICE_CONTEXT}
+{$IFDEF USE_SERVICE_CONTEXT}
 procedure AddTaskForServiceContext(ATask: TTaskProcedure; FinishEvent: TFinishTaskEvent = nil);
 {$ENDIF}
 
@@ -1026,7 +1020,7 @@ var
   vIgnoreOpenGLErrors: Boolean = False;
   vContextActivationFailureOccurred: Boolean = false;
 
-{$IFNDEF GLS_MULTITHREAD}
+{$IFNDEF USE_MULTITHREAD}
 var
 {$ELSE}
 threadvar
@@ -1040,17 +1034,11 @@ threadvar
 
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 
-{$IFDEF GLS_SERVICE_CONTEXT}
+{$IFDEF USE_SERVICE_CONTEXT}
 type
-  // TServiceContextThread
-  //
   TServiceContextThread = class(TThread)
   private
     FDC: HDC;
@@ -1069,11 +1057,9 @@ type
 var
   vContextClasses: TList;
   vServiceWindow: TForm;
-{$IFDEF GLS_SERVICE_CONTEXT}
+{$IFDEF USE_SERVICE_CONTEXT}
   OldInitProc: Pointer;
 {$ENDIF}
-
-
 
 function CurrentGLContext: TGLContext; inline;
 begin
@@ -1085,7 +1071,7 @@ begin
   Result := CurrentGLContext;
   if not Assigned(Result) then
   begin
-   {$IFDEF GLS_LOGGING}
+   {$IFDEF USE_LOGGING}
      GLSLogger.LogError(strNoActiveRC);
    {$ENDIF}
     Abort;
@@ -1107,8 +1093,6 @@ begin
   Result := vServiceWindow;
 end;
 
-
-
 procedure RegisterGLContextClass(aGLContextClass: TGLContextClass);
 begin
   if not Assigned(vContextClasses) then
@@ -1124,7 +1108,7 @@ end;
 constructor TGLContext.Create;
 begin
   inherited Create;
-{$IFDEF GLS_MULTITHREAD}
+{$IFDEF USE_MULTITHREAD}
   FLock := TCriticalSection.Create;
 {$ENDIF}
   FColorBits := 32;
@@ -1133,7 +1117,7 @@ begin
   FAuxBuffers := 0;
   FLayer := clMainPlane;
   FOptions := [];
-{$IFNDEF GLS_MULTITHREAD}
+{$IFNDEF USE_MULTITHREAD}
   FSharedContexts := TList.Create;
 {$ELSE}
   FSharedContexts := TThreadList.Create;
@@ -1149,8 +1133,6 @@ begin
   FXGL := TGLMultitextureCoordinator.Create;
 end;
 
-
-//
 destructor TGLContext.Destroy;
 begin
   if IsValid then
@@ -1161,14 +1143,11 @@ begin
   FXGL.Free;
   FTransformation.Free;
   FSharedContexts.Free;
-{$IFDEF GLS_MULTITHREAD}
+{$IFDEF USE_MULTITHREAD}
   FLock.Free;
 {$ENDIF}
   inherited Destroy;
 end;
-
-// SetColorBits
-//
 
 procedure TGLContext.SetColorBits(const aColorBits: Integer);
 begin
@@ -1178,9 +1157,6 @@ begin
     FColorBits := aColorBits;
 end;
 
-// SetAlphaBits
-//
-
 procedure TGLContext.SetAlphaBits(const aAlphaBits: Integer);
 begin
   if Active then
@@ -1188,9 +1164,6 @@ begin
   else
     FAlphaBits := aAlphaBits;
 end;
-
-// SetDepthBits
-//
 
 procedure TGLContext.SetDepthBits(const val: Integer);
 begin
@@ -1208,9 +1181,6 @@ begin
     FLayer := Value;
 end;
 
-// SetStencilBits
-//
-
 procedure TGLContext.SetStencilBits(const aStencilBits: Integer);
 begin
   if Active then
@@ -1218,9 +1188,6 @@ begin
   else
     FStencilBits := aStencilBits;
 end;
-
-// SetAccumBits
-//
 
 procedure TGLContext.SetAccumBits(const aAccumBits: Integer);
 begin
@@ -1230,9 +1197,6 @@ begin
     FAccumBits := aAccumBits;
 end;
 
-// SetAuxBuffers
-//
-
 procedure TGLContext.SetAuxBuffers(const aAuxBuffers: Integer);
 begin
   if Active then
@@ -1241,9 +1205,6 @@ begin
     FAuxBuffers := aAuxBuffers;
 end;
 
-// SetOptions
-//
-
 procedure TGLContext.SetOptions(const aOptions: TGLRCOptions);
 begin
   if Active then
@@ -1251,9 +1212,6 @@ begin
   else
     FOptions := aOptions;
 end;
-
-// SetAntiAliasing
-//
 
 procedure TGLContext.SetAntiAliasing(const val: TGLAntiAliasing);
 begin
@@ -1312,7 +1270,7 @@ var
 begin
   if vCurrentGLContext = Self then
   begin
-{$IFNDEF GLS_MULTITHREAD}
+{$IFNDEF USE_MULTITHREAD}
     for i := Manager.FHandles.Count - 1 downto 0 do
     begin
       LHandle := TGLContextHandle(Manager.FHandles[i]);
@@ -1342,7 +1300,7 @@ var
   otherContext: TGLContext;
   otherList: TList;
 begin
-{$IFNDEF GLS_MULTITHREAD}
+{$IFNDEF USE_MULTITHREAD}
   with FSharedContexts do
   begin
     for i := 1 to Count - 1 do
@@ -1389,7 +1347,7 @@ end;
 
 procedure TGLContext.ShareLists(aContext: TGLContext);
 begin
-{$IFNDEF GLS_MULTITHREAD}
+{$IFNDEF USE_MULTITHREAD}
   if FSharedContexts.IndexOf(aContext) < 0 then
   begin
     if DoShareLists(aContext) then
@@ -1421,7 +1379,7 @@ var
 begin
   Activate;
   try
-{$IFNDEF GLS_MULTITHREAD}
+{$IFNDEF USE_MULTITHREAD}
     for i := Manager.FHandles.Count - 1 downto 0 do
       TGLContextHandle(Manager.FHandles[i]).ContextDestroying;
 {$ELSE}
@@ -1457,7 +1415,7 @@ begin
 
   Activate;
   try
-{$IFNDEF GLS_MULTITHREAD}
+{$IFNDEF USE_MULTITHREAD}
     for i := Manager.FHandles.Count - 1 downto 0 do
     begin
       contextHandle := TGLContextHandle(Manager.FHandles[i]);
@@ -1477,7 +1435,7 @@ begin
 {$ENDIF}
     Manager.DestroyingContextBy(Self);
 
-{$IFDEF GLS_MULTITHREAD}
+{$IFDEF USE_MULTITHREAD}
     aList := FSharedContexts.LockList;
 {$ELSE}
     aList := FSharedContexts;
@@ -1489,7 +1447,7 @@ begin
     end;
     FSharedContexts.Clear;
     FSharedContexts.Add(Self);
-{$IFDEF GLS_MULTITHREAD}
+{$IFDEF USE_MULTITHREAD}
     FSharedContexts.UnlockList;
 {$ENDIF}
     Active := False;
@@ -1504,7 +1462,7 @@ end;
 
 procedure TGLContext.Activate;
 begin
-{$IFDEF GLS_MULTITHREAD}
+{$IFDEF USE_MULTITHREAD}
   FLock.Enter;
 {$ENDIF}
   if FActivationCount = 0 then
@@ -1543,7 +1501,7 @@ begin
   end
   else if FActivationCount < 0 then
     raise EGLContext.Create(strUnbalancedContexActivations);
-{$IFDEF GLS_MULTITHREAD}
+{$IFDEF USE_MULTITHREAD}
   FLock.Leave;
 {$ENDIF}
 end;
@@ -1553,7 +1511,7 @@ var
   i: Integer;
 begin
   Result := nil;
-{$IFNDEF GLS_MULTITHREAD}
+{$IFNDEF USE_MULTITHREAD}
   for i := 0 to FSharedContexts.Count - 1 do
     if TGLContext(FSharedContexts[i]) <> Self then
     begin
@@ -1638,7 +1596,7 @@ begin
 
   if vCurrentGLContext = nil then
   begin
-    {$IFDEF GLS_LOGGING}
+    {$IFDEF USE_LOGGING}
     GLSLogger.LogError('Failed to allocate OpenGL identifier - no active rendering context!');
     {$ENDIF}
     exit;
@@ -1653,7 +1611,7 @@ begin
   bSucces := False;
   if Transferable then
   begin
-{$IFNDEF GLS_MULTITHREAD}
+{$IFNDEF USE_MULTITHREAD}
     aList := vCurrentGLContext.FSharedContexts;
 {$ELSE}
     aList := vCurrentGLContext.FSharedContexts.LockList;
@@ -1673,7 +1631,7 @@ begin
           break;
         end;
       end;
-{$IFNDEF GLS_MULTITHREAD}
+{$IFNDEF USE_MULTITHREAD}
 {$ELSE}
     finally
       vCurrentGLContext.FSharedContexts.UnlockList;
@@ -1791,12 +1749,12 @@ begin
     bShared := False;
     if Transferable then
     begin
-    {$IFNDEF GLS_MULTITHREAD}
+    {$IFNDEF USE_MULTITHREAD}
       aList := vCurrentGLContext.FSharedContexts;
     {$ELSE}
       aList := vCurrentGLContext.FSharedContexts.LockList;
       try
-    {$ENDIF GLS_MULTITHREAD}
+    {$ENDIF USE_MULTITHREAD}
         for I := FHandles.Count-1 downto 1 do
         begin
           P := RCItem(I);
@@ -1808,11 +1766,11 @@ begin
               break;
             end;
         end;
-    {$IFDEF GLS_MULTITHREAD}
+    {$IFDEF USE_MULTITHREAD}
       finally
         vCurrentGLContext.FSharedContexts.UnLockList;
       end;
-    {$ENDIF GLS_MULTITHREAD}
+    {$ENDIF USE_MULTITHREAD}
     end;
 
     for I := FHandles.Count-1 downto 1 do
@@ -1895,7 +1853,7 @@ begin
     end
     else
     begin
-  {$IFNDEF GLS_MULTITHREAD}
+  {$IFNDEF USE_MULTITHREAD}
       aList := vCurrentGLContext.FSharedContexts;
   {$ELSE}
       aList := vCurrentGLContext.FSharedContexts.LockList;
@@ -1907,14 +1865,14 @@ begin
             if (FHandle <> 0) then
               FChanged := False;
         end;
-  {$IFDEF GLS_MULTITHREAD}
+  {$IFDEF USE_MULTITHREAD}
       finally
         vCurrentGLContext.FSharedContexts.UnlockList;
       end;
   {$ENDIF}
     end;
   end
-   {$IFDEF GLS_LOGGING}
+   {$IFDEF USE_LOGGING}
   else
     GLSLogger.LogError(strNoActiveRC);
     {$ENDIF}
@@ -1946,7 +1904,7 @@ begin
   if not Transferable then
     exit;
   Result := True;
-{$IFNDEF GLS_MULTITHREAD}
+{$IFNDEF USE_MULTITHREAD}
   aList := vCurrentGLContext.FSharedContexts;
 {$ELSE}
   aList := vCurrentGLContext.FSharedContexts.LockList;
@@ -1960,7 +1918,7 @@ begin
         (SearchRC(vContext).FHandle <> 0) then
         exit;
     end;
-{$IFDEF GLS_MULTITHREAD}
+{$IFDEF USE_MULTITHREAD}
   finally
     vCurrentGLContext.FSharedContexts.UnlockList;
   end;
@@ -2377,33 +2335,21 @@ begin
   Result := GL.ARB_vertex_buffer_object;
 end;
 
-// BindRange
-//
-
 procedure TGLBufferObjectHandle.BindRange(index: Cardinal; offset: TGLintptr;
   size: TGLsizeiptr);
 begin
   Assert(False, 'BindRange only XBO and UBO');
 end;
 
-// BindBase
-//
-
 procedure TGLBufferObjectHandle.BindBase(index: Cardinal);
 begin
   Assert(False, 'BindRange only XBO and UBO');
 end;
 
-// UnBindBase
-//
-
 procedure TGLBufferObjectHandle.UnBindBase(index: Cardinal);
 begin
   Assert(False, 'BindRange only XBO and UBO');
 end;
-
-// BufferData
-//
 
 procedure TGLBufferObjectHandle.BufferData(p: Pointer; size: Integer;
   bufferUsage: Cardinal);
@@ -2411,9 +2357,6 @@ begin
   FSize := size;
   GL.BufferData(Target, size, p, bufferUsage);
 end;
-
-// BindBufferData
-//
 
 procedure TGLBufferObjectHandle.BindBufferData(p: Pointer; size: Integer;
   bufferUsage: Cardinal);
@@ -2423,9 +2366,6 @@ begin
   GL.BufferData(Target, size, p, bufferUsage);
 end;
 
-// BufferSubData
-//
-
 procedure TGLBufferObjectHandle.BufferSubData(offset, size: Integer; p:
   Pointer);
 begin
@@ -2433,16 +2373,10 @@ begin
   GL.BufferSubData(Target, offset, size, p);
 end;
 
-// MapBuffer
-//
-
 function TGLBufferObjectHandle.MapBuffer(access: Cardinal): Pointer;
 begin
   Result := GL.MapBuffer(Target, access);
 end;
-
-// MapBufferRange
-//
 
 function TGLBufferObjectHandle.MapBufferRange(offset: TGLint; len: TGLsizei;
   access: TGLbitfield): Pointer;
@@ -2450,16 +2384,10 @@ begin
   Result := GL.MapBufferRange(Target, offset, len, access);
 end;
 
-// Flush
-//
-
 procedure TGLBufferObjectHandle.Flush(offset: TGLint; len: TGLsizei);
 begin
   GL.FlushMappedBufferRange(Target, offset, len);
 end;
-
-// UnmapBuffer
-//
 
 function TGLBufferObjectHandle.UnmapBuffer: Boolean;
 begin
@@ -2469,9 +2397,6 @@ end;
 // ------------------
 // ------------------ TGLVBOHandle ------------------
 // ------------------
-
-// GetVBOTarget
-//
 
 function TGLVBOHandle.GetVBOTarget: Cardinal;
 begin
@@ -2492,9 +2417,6 @@ begin
   vCurrentGLContext.GLStates.ArrayBufferBinding := 0;
 end;
 
-// GetTarget
-//
-
 function TGLVBOArrayBufferHandle.GetTarget: Cardinal;
 begin
   Result := GL_ARRAY_BUFFER;
@@ -2513,9 +2435,6 @@ procedure TGLVBOElementArrayHandle.UnBind;
 begin
   vCurrentGLContext.GLStates.ElementBufferBinding := 0;
 end;
-
-// GetTarget
-//
 
 function TGLVBOElementArrayHandle.GetTarget: Cardinal;
 begin
@@ -2536,16 +2455,10 @@ begin
   vCurrentGLContext.GLStates.PixelPackBufferBinding := 0;
 end;
 
-// GetTarget
-//
-
 function TGLPackPBOHandle.GetTarget: Cardinal;
 begin
   Result := GL_PIXEL_PACK_BUFFER;
 end;
-
-// IsSupported
-//
 
 class function TGLPackPBOHandle.IsSupported: Boolean;
 begin
@@ -2574,9 +2487,6 @@ begin
   Result := GL_PIXEL_UNPACK_BUFFER;
 end;
 
-// IsSupported
-//
-
 class function TGLUnpackPBOHandle.IsSupported: Boolean;
 begin
   Result := GL.ARB_pixel_buffer_object;
@@ -2585,9 +2495,6 @@ end;
 // ------------------
 // ------------------ TGLTransformFeedbackBufferHandle ------------------
 // ------------------
-
-// GetTarget
-//
 
 procedure TGLTransformFeedbackBufferHandle.Bind;
 begin
@@ -2639,9 +2546,6 @@ begin
   vCurrentGLContext.GLStates.SetBufferIndexedBinding(0, bbtTransformFeedBack,
     index, 0);
 end;
-
-// IsSupported
-//
 
 class function TGLTransformFeedbackBufferHandle.IsSupported: Boolean;
 begin
@@ -2712,16 +2616,10 @@ begin
     index, 0);
 end;
 
-// GetTarget
-//
-
 function TGLUniformBufferHandle.GetTarget: Cardinal;
 begin
   Result := GL_UNIFORM_BUFFER;
 end;
-
-// IsSupported
-//
 
 class function TGLUniformBufferHandle.IsSupported: Boolean;
 begin
@@ -2732,17 +2630,11 @@ end;
 // ------------------ TGLVertexArrayHandle ------------------
 // ------------------
 
-// DoAllocateHandle
-//
-
 function TGLVertexArrayHandle.DoAllocateHandle: Cardinal;
 begin
   Result := 0;
   GL.GenVertexArrays(1, @Result);
 end;
-
-// DoDestroyHandle
-//
 
 procedure TGLVertexArrayHandle.DoDestroyHandle(var AHandle: Cardinal);
 begin
@@ -2758,16 +2650,10 @@ begin
   end;
 end;
 
-// IsValid
-//
-
 class function TGLVertexArrayHandle.IsValid(const ID: Cardinal): Boolean;
 begin
   Result := GL.IsVertexArray(ID);
 end;
-
-// Bind
-//
 
 procedure TGLVertexArrayHandle.Bind;
 begin
@@ -2775,25 +2661,16 @@ begin
   vCurrentGLContext.GLStates.VertexArrayBinding := Handle;
 end;
 
-// UnBind
-//
-
 procedure TGLVertexArrayHandle.UnBind;
 begin
   Assert(vCurrentGLContext <> nil);
   vCurrentGLContext.GLStates.VertexArrayBinding := 0;
 end;
 
-// IsSupported
-//
-
 class function TGLVertexArrayHandle.IsSupported: Boolean;
 begin
   Result := GL.ARB_vertex_array_object;
 end;
-
-// Transferable
-//
 
 class function TGLVertexArrayHandle.Transferable: Boolean;
 begin
@@ -2804,17 +2681,11 @@ end;
 // ------------------ TGLFramebufferHandle ------------------
 // ------------------
 
-// DoAllocateHandle
-//
-
 function TGLFramebufferHandle.DoAllocateHandle: Cardinal;
 begin
   Result := 0;
   GL.GenFramebuffers(1, @Result)
 end;
-
-// DoDestroyHandle
-//
 
 procedure TGLFramebufferHandle.DoDestroyHandle(var AHandle: Cardinal);
 begin
@@ -2830,16 +2701,10 @@ begin
   end;
 end;
 
-// IsValid
-//
-
 class function TGLFramebufferHandle.IsValid(const ID: Cardinal): Boolean;
 begin
   Result := GL.IsFramebuffer(ID);
 end;
-
-// Bind
-//
 
 procedure TGLFramebufferHandle.Bind;
 begin
@@ -2847,17 +2712,11 @@ begin
   vCurrentGLContext.GLStates.SetFrameBuffer(Handle);
 end;
 
-// BindForDrawing
-//
-
 procedure TGLFramebufferHandle.BindForDrawing;
 begin
   Assert(vCurrentGLContext <> nil);
   vCurrentGLContext.GLStates.DrawFrameBuffer := Handle;
 end;
-
-// BindForReading
-//
 
 procedure TGLFramebufferHandle.BindForReading;
 begin
@@ -2865,17 +2724,11 @@ begin
   vCurrentGLContext.GLStates.ReadFrameBuffer := Handle;
 end;
 
-// UnBind
-//
-
 procedure TGLFramebufferHandle.UnBind;
 begin
   Assert(vCurrentGLContext <> nil);
   vCurrentGLContext.GLStates.SetFrameBuffer(0);
 end;
-
-// UnBindForDrawing
-//
 
 procedure TGLFramebufferHandle.UnBindForDrawing;
 begin
@@ -2883,17 +2736,11 @@ begin
   vCurrentGLContext.GLStates.DrawFrameBuffer := 0;
 end;
 
-// UnBindForReading
-//
-
 procedure TGLFramebufferHandle.UnBindForReading;
 begin
   Assert(vCurrentGLContext <> nil);
   vCurrentGLContext.GLStates.ReadFrameBuffer := 0;
 end;
-
-// Attach1DTexture
-//
 
 procedure TGLFramebufferHandle.Attach1DTexture(target: Cardinal; attachment:
   Cardinal; textarget: Cardinal; texture: Cardinal; level: TGLint);
@@ -2901,17 +2748,11 @@ begin
   GL.FramebufferTexture1D(target, attachment, textarget, texture, level);
 end;
 
-// Attach2DTexture
-//
-
 procedure TGLFramebufferHandle.Attach2DTexture(target: Cardinal; attachment:
   Cardinal; textarget: Cardinal; texture: Cardinal; level: TGLint);
 begin
   GL.FramebufferTexture2D(target, attachment, textarget, texture, level);
 end;
-
-// Attach3DTexture
-//
 
 procedure TGLFramebufferHandle.Attach3DTexture(target: Cardinal; attachment:
   Cardinal; textarget: Cardinal; texture: Cardinal; level: TGLint; layer: TGLint);
@@ -2919,17 +2760,11 @@ begin
   GL.FramebufferTexture3D(target, attachment, textarget, texture, level, layer);
 end;
 
-// AttachLayer
-//
-
 procedure TGLFramebufferHandle.AttachLayer(target: Cardinal; attachment: Cardinal;
   texture: Cardinal; level: TGLint; layer: TGLint);
 begin
   GL.FramebufferTextureLayer(target, attachment, texture, level, layer);
 end;
-
-// AttachRenderBuffer
-//
 
 procedure TGLFramebufferHandle.AttachRenderBuffer(target: Cardinal; attachment:
   Cardinal; renderbuffertarget: Cardinal; renderbuffer: Cardinal);
@@ -2938,26 +2773,17 @@ begin
     renderbuffer);
 end;
 
-// AttachTexture
-//
-
 procedure TGLFramebufferHandle.AttachTexture(target: Cardinal; attachment:
   Cardinal; texture: Cardinal; level: TGLint);
 begin
   GL.FramebufferTexture(target, attachment, texture, level);
 end;
 
-// AttachTextureLayer
-//
-
 procedure TGLFramebufferHandle.AttachTextureLayer(target: Cardinal; attachment:
   Cardinal; texture: Cardinal; level: TGLint; layer: TGLint);
 begin
   GL.FramebufferTextureLayer(target, attachment, texture, level, layer);
 end;
-
-// Blit
-//
 
 procedure TGLFramebufferHandle.Blit(srcX0: TGLint; srcY0: TGLint; srcX1: TGLint;
   srcY1: TGLint;
@@ -2968,17 +2794,11 @@ begin
     mask, filter);
 end;
 
-// GetAttachmentParameter
-//
-
 function TGLFramebufferHandle.GetAttachmentParameter(target: Cardinal;
   attachment: Cardinal; pname: Cardinal): TGLint;
 begin
   GL.GetFramebufferAttachmentParameteriv(target, attachment, pname, @Result)
 end;
-
-// GetAttachmentObjectType
-//
 
 function TGLFramebufferHandle.GetAttachmentObjectType(target: Cardinal;
   attachment: Cardinal): TGLint;
@@ -2987,18 +2807,12 @@ begin
     GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE, @Result);
 end;
 
-// GetAttachmentObjectName
-//
-
 function TGLFramebufferHandle.GetAttachmentObjectName(target: Cardinal;
   attachment: Cardinal): TGLint;
 begin
   GL.GetFramebufferAttachmentParameteriv(target, attachment,
     GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME, @Result);
 end;
-
-// CheckStatus
-//
 
 function TGLFramebufferHandle.GetStatus: TGLFramebufferStatus;
 var
@@ -3044,16 +2858,10 @@ begin
   clarification := cFBOStatus[Result];
 end;
 
-// IsSupported
-//
-
 class function TGLFramebufferHandle.IsSupported: Boolean;
 begin
   Result := GL.EXT_framebuffer_object or GL.ARB_framebuffer_object;
 end;
-
-// Transferable
-//
 
 class function TGLFramebufferHandle.Transferable: Boolean;
 begin
@@ -3064,17 +2872,11 @@ end;
 // ------------------ TGLRenderbufferObject ------------------
 // ------------------
 
-// DoAllocateHandle
-//
-
 function TGLRenderbufferHandle.DoAllocateHandle: Cardinal;
 begin
   Result := 0;
   GL.GenRenderbuffers(1, @Result);
 end;
-
-// DoDestroyHandle
-//
 
 procedure TGLRenderbufferHandle.DoDestroyHandle(var AHandle: Cardinal);
 begin
@@ -3090,24 +2892,15 @@ begin
   end;
 end;
 
-// IsValid
-//
-
 class function TGLRenderbufferHandle.IsValid(const ID: Cardinal): Boolean;
 begin
   Result := GL.IsRenderbuffer(ID);
 end;
 
-// Bind
-//
-
 procedure TGLRenderbufferHandle.Bind;
 begin
   vCurrentGLContext.GLStates.RenderBuffer := GetHandle;
 end;
-
-// UnBind
-//
 
 procedure TGLRenderbufferHandle.UnBind;
 begin
@@ -3115,17 +2908,11 @@ begin
     vCurrentGLContext.GLStates.RenderBuffer := 0;
 end;
 
-// SetStorage
-//
-
 procedure TGLRenderbufferHandle.SetStorage(internalformat: Cardinal; width,
   height: TGLsizei);
 begin
   GL.RenderbufferStorage(GL_RENDERBUFFER, internalformat, width, height);
 end;
-
-// SetStorageMultisample
-//
 
 procedure TGLRenderbufferHandle.SetStorageMultisample(internalformat: Cardinal;
   samples: TGLsizei; width, height: TGLsizei);
@@ -3133,9 +2920,6 @@ begin
   GL.RenderbufferStorageMultisample(GL_RENDERBUFFER, samples, internalformat,
     width, height);
 end;
-
-// IsSupported
-//
 
 class function TGLRenderbufferHandle.IsSupported: Boolean;
 begin
@@ -3146,18 +2930,12 @@ end;
 // ------------------ TGLARBProgramHandle ------------------
 // ------------------
 
-// DoAllocateHandle
-//
-
 function TGLARBProgramHandle.DoAllocateHandle: Cardinal;
 begin
   Result := 0;
   GL.GenPrograms(1, @Result);
   FReady := False;
 end;
-
-// DoDestroyHandle
-//
 
 procedure TGLARBProgramHandle.DoDestroyHandle(var AHandle: Cardinal);
 begin
@@ -3172,9 +2950,6 @@ begin
     CheckError;
   end;
 end;
-
-// IsValid
-//
 
 class function TGLARBProgramHandle.IsValid(const ID: Cardinal): Boolean;
 begin
@@ -3277,9 +3052,6 @@ begin
   end;
 end;
 
-// InfoLog
-//
-
 function TGLSLHandle.InfoLog: string;
 var
   maxLength: Integer;
@@ -3296,9 +3068,6 @@ begin
   Result := string(log);
 end;
 
-// IsSupported
-//
-
 class function TGLSLHandle.IsSupported: Boolean;
 begin
   Result := GL.ARB_shader_objects;
@@ -3308,24 +3077,15 @@ end;
 // ------------------ TGLShaderHandle ------------------
 // ------------------
 
-// DoAllocateHandle
-//
-
 function TGLShaderHandle.DoAllocateHandle: Cardinal;
 begin
   Result := GL.CreateShader(FShaderType)
 end;
 
-// IsValid
-//
-
 class function TGLShaderHandle.IsValid(const ID: Cardinal): Boolean;
 begin
   Result := GL.IsShader(ID);
 end;
-
-// ShaderSource
-//
 
 procedure TGLShaderHandle.ShaderSource(const source: AnsiString);
 var
@@ -3334,9 +3094,6 @@ begin
   p := PAnsiChar(AnsiString(source));
   GL.ShaderSource(GetHandle, 1, @p, nil);
 end;
-
-// CompileShader
-//
 
 function TGLShaderHandle.CompileShader: Boolean;
 var
@@ -3354,8 +3111,6 @@ end;
 // ------------------ TGLVertexShaderHandle ------------------
 // ------------------
 
- 
-//
 
 constructor TGLVertexShaderHandle.Create;
 begin
@@ -3377,9 +3132,6 @@ begin
   FShaderType := GL_GEOMETRY_SHADER_EXT;
   inherited;
 end;
-
-// IsSupported
-//
 
 class function TGLGeometryShaderHandle.IsSupported: Boolean;
 begin
@@ -3404,9 +3156,6 @@ end;
 // ------------------
 // ------------------ TGLTessControlShaderHandle ------------------
 // ------------------
-
- 
-//
 
 constructor TGLTessControlShaderHandle.Create;
 begin
@@ -3517,9 +3266,6 @@ begin
   GL.GetProgramiv(glH, GL_LINK_STATUS, @status);
   Result := (status <> 0);
 end;
-
-// ValidateProgram
-//
 
 function TGLProgramHandle.ValidateProgram: Boolean;
 var
@@ -3814,9 +3560,6 @@ begin
   Assert(Result >= 0, Format(strUnknownParam, ['uniform block', aName, Name]));
 end;
 
- 
-//
-
 constructor TGLProgramHandle.Create;
 begin
   inherited Create;
@@ -3827,7 +3570,7 @@ end;
 // ------------------ TGLContextManager ------------------
 // ------------------
 
-{$IFDEF GLS_SERVICE_CONTEXT}
+{$IFDEF USE_SERVICE_CONTEXT}
 procedure OnApplicationInitialize;
 begin
   InitProc := OldInitProc;
@@ -3840,11 +3583,11 @@ end;
 constructor TGLContextManager.Create;
 begin
   inherited Create;
-{$IFNDEF GLS_MULTITHREAD}
+{$IFNDEF USE_MULTITHREAD}
   FHandles := TList.Create;
 {$ELSE}
   FHandles := TThreadList.Create;
-{$ENDIF GLS_MULTITHREAD}
+{$ENDIF USE_MULTITHREAD}
   FList := TThreadList.Create;
 end;
 
@@ -3873,7 +3616,7 @@ begin
     Result := nil;
 end;
 
-{$IFDEF GLS_SERVICE_CONTEXT}
+{$IFDEF USE_SERVICE_CONTEXT}
 
 procedure TGLContextManager.CreateServiceContext;
 begin
@@ -3919,7 +3662,7 @@ begin
   end;
 end;
 
-{$ENDIF GLS_SERVICE_CONTEXT}
+{$ENDIF USE_SERVICE_CONTEXT}
 
 
 procedure TGLContextManager.Lock;
@@ -4070,7 +3813,7 @@ end;
 procedure TGLContextManager.Terminate;
 begin
   FTerminated := True;
-{$IFDEF GLS_SERVICE_CONTEXT}
+{$IFDEF USE_SERVICE_CONTEXT}
   // Sevice context may not be created becouse Application.Initialize not happened
   if Assigned(FServiceContext) then
   begin
@@ -4104,7 +3847,7 @@ begin
     end;
 end;
 
-{$IFDEF GLS_SERVICE_CONTEXT}
+{$IFDEF USE_SERVICE_CONTEXT}
 
 constructor TServiceContextThread.Create;
 begin
@@ -4287,7 +4030,7 @@ begin
   end;
 end;
 
-{$ENDIF GLS_SERVICE_CONTEXT}
+{$ENDIF USE_SERVICE_CONTEXT}
 
 constructor TFinishTaskEvent.Create;
 begin
@@ -4295,19 +4038,14 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-
 initialization
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
 
   vMainThread := True;
-{$IFDEF GLS_SERVICE_CONTEXT}
+{$IFDEF USE_SERVICE_CONTEXT}
   OldInitProc := InitProc;
   InitProc := @OnApplicationInitialize;
-{$ENDIF GLS_SERVICE_CONTEXT}
+{$ENDIF USE_SERVICE_CONTEXT}
   GLContextManager := TGLContextManager.Create;
   GLwithoutContext := TGLExtensionsAndEntryPoints.Create;
   GLwithoutContext.Close;

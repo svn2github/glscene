@@ -462,7 +462,7 @@ type
     function ExtractTriangles(texCoords: TAffineVectorList = nil;
       normals: TAffineVectorList = nil): TAffineVectorList; override;
     { Returns number of triangles in the mesh object. }
-    function TriangleCount: Integer; dynamic;
+    function TriangleCount: Integer; virtual;
     procedure PrepareMaterialLibraryCache(matLib: TGLMaterialLibrary);
     procedure DropMaterialLibraryCache;
     { Prepare the texture and materials before rendering.
@@ -476,7 +476,7 @@ type
     // Barycenter from vertices data
     function GetBarycenter: TVector;
     // Precalculate whatever is needed for rendering, called once
-    procedure Prepare; dynamic;
+    procedure Prepare; virtual;
     function PointInObject(const aPoint: TAffineVector): Boolean; virtual;
     // Returns the triangle data for a given triangle
     procedure GetTriangleData(tri: Integer; list: TAffineVectorList; var v0, v1, v2: TAffineVector); overload;
@@ -707,13 +707,13 @@ type
       all the triangles in a mesh. }
     procedure AddToTriangles(aList: TAffineVectorList;
       aTexCoords: TAffineVectorList = nil;
-      aNormals: TAffineVectorList = nil); dynamic;
+      aNormals: TAffineVectorList = nil); virtual;
     { Returns number of triangles in the facegroup. }
-    function TriangleCount: Integer; dynamic; abstract;
+    function TriangleCount: Integer; virtual; abstract;
     { Reverses the rendering order of faces. Default implementation does nothing }
-    procedure Reverse; dynamic;
+    procedure Reverse; virtual;
     // Precalculate whatever is needed for rendering, called once
-    procedure Prepare; dynamic;
+    procedure Prepare; virtual;
     property Owner: TGLFaceGroups read FOwner write FOwner;
     property MaterialName: string read FMaterialName write FMaterialName;
     property MaterialCache: TGLLibMaterial read FMaterialCache;
@@ -906,11 +906,11 @@ type
     { Invoked after creating a TGLVectorFile and before loading.
       Triggered by LoadFromFile/Stream and AddDataFromFile/Stream.
       Allows to adjust/transfer subclass-specific features. }
-    procedure PrepareVectorFile(aFile: TGLVectorFile); dynamic;
+    procedure PrepareVectorFile(aFile: TGLVectorFile); virtual;
     { Invoked after a mesh has been loaded/added.
       Triggered by LoadFromFile/Stream and AddDataFromFile/Stream.
       Allows to adjust/transfer subclass-specific features. }
-    procedure PrepareMesh; dynamic;
+    procedure PrepareMesh; virtual;
     { Recursively propagated to mesh object and facegroups.
       Notifies that they all can establish their material library caches. }
     procedure PrepareMaterialLibraryCache;
@@ -921,7 +921,7 @@ type
       Invoked once, before building the list and NOT while building the list,
       MaterialLibraryCache can be assumed to having been prepared if materials
       are active. Default behaviour is to prepare build lists for the meshobjects }
-    procedure PrepareBuildList(var mrci: TGLRenderContextInfo); dynamic;
+    procedure PrepareBuildList(var mrci: TGLRenderContextInfo); virtual;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -958,36 +958,36 @@ type
     function GetBarycenter: TAffineVector;
     { Invoked after a mesh has been loaded.
        Should auto-center according to the AutoCentering property. }
-    procedure PerformAutoCentering; dynamic;
+    procedure PerformAutoCentering; virtual;
     { Invoked after a mesh has been loaded.
        Should auto-scale the vertices of the meshobjects to AutoScaling the property. }
-    procedure PerformAutoScaling; dynamic;
+    procedure PerformAutoScaling; virtual;
     { Loads a vector file.
        A vector files (for instance a ".3DS") stores the definition of
        a mesh as well as materials property.
        Loading a file replaces the current one (if any). }
-    procedure LoadFromFile(const filename: string); dynamic;
+    procedure LoadFromFile(const filename: string); virtual;
     { Loads a vector file from a stream.
        See LoadFromFile.
        The filename attribute is required to identify the type data you're
        streaming (3DS, OBJ, etc.) }
-    procedure LoadFromStream(const filename: string; aStream: TStream); dynamic;
+    procedure LoadFromStream(const filename: string; aStream: TStream); virtual;
     { Saves to a vector file.
        Note that only some of the vector files formats can be written to
        by GLScene. }
-    procedure SaveToFile(const fileName: string); dynamic;
+    procedure SaveToFile(const fileName: string); virtual;
     { Saves to a vector file in a stream.
        Note that only some of the vector files formats can be written to
        by GLScene. }
-    procedure SaveToStream(const fileName: string; aStream: TStream); dynamic;
+    procedure SaveToStream(const fileName: string; aStream: TStream); virtual;
     { Loads additionnal data from a file.
        Additionnal data could be more animation frames or morph target.
        The VectorFile importer must be able to handle addition of data
        flawlessly. }
-    procedure AddDataFromFile(const filename: string); dynamic;
+    procedure AddDataFromFile(const filename: string); virtual;
     { Loads additionnal data from stream.
        See AddDataFromFile. }
-    procedure AddDataFromStream(const filename: string; aStream: TStream); dynamic;
+    procedure AddDataFromStream(const filename: string; aStream: TStream); virtual;
     { Returns the filename of the last loaded file, or a blank string if not
        file was loaded (or if the mesh was dinamically built). This does not
        take into account the data added to the mesh (through AddDataFromFile)

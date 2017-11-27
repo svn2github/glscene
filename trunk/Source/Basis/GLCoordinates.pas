@@ -122,20 +122,15 @@ type
     property Y: TGLFloat index 1 read GetCoordinate write SetCoordinate;
     property Z: TGLFloat index 2 read GetCoordinate write SetCoordinate;
     property W: TGLFloat index 3 read GetCoordinate write SetCoordinate;
-    property Coordinate[const AIndex: Integer]: TGLFloat read GetCoordinate
-      write SetCoordinate; default;
+    property Coordinate[const AIndex: Integer]: TGLFloat read GetCoordinate write SetCoordinate; default;
     {  The coordinates, in-between brackets, separated by semi-colons. }
     property AsString: String read GetAsString;
     // Similar to AsVector but does not trigger notification events
     property DirectVector: TVector read FCoords write SetDirectVector;
-    property DirectX: TGLFloat index 0 read GetDirectCoordinate
-      write SetDirectCoordinate;
-    property DirectY: TGLFloat index 1 read GetDirectCoordinate
-      write SetDirectCoordinate;
-    property DirectZ: TGLFloat index 2 read GetDirectCoordinate
-      write SetDirectCoordinate;
-    property DirectW: TGLFloat index 3 read GetDirectCoordinate
-      write SetDirectCoordinate;
+    property DirectX: TGLFloat index 0 read GetDirectCoordinate write SetDirectCoordinate;
+    property DirectY: TGLFloat index 1 read GetDirectCoordinate write SetDirectCoordinate;
+    property DirectZ: TGLFloat index 2 read GetDirectCoordinate write SetDirectCoordinate;
+    property DirectW: TGLFloat index 3 read GetDirectCoordinate write SetDirectCoordinate;
   end;
 
   {  A TGLCustomCoordinates that publishes X, Y properties. }
@@ -183,13 +178,9 @@ var
   // their default values (ie. design-time) or not (run-time)
   VUseDefaultCoordinateSets: Boolean = False;
 
-//---------------------------------------------------------------------
-//---------------------------------------------------------------------
-//---------------------------------------------------------------------
+//==================================================================  
 implementation
-//---------------------------------------------------------------------
-//---------------------------------------------------------------------
-//---------------------------------------------------------------------
+//==================================================================  
 
 const
   CsVectorHelp =

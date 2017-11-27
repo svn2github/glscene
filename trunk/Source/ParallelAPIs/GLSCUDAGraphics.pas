@@ -241,7 +241,7 @@ implementation
 //---------------------------------------------------------------------------
 
 uses
-  {$IFDEF GLS_LOGGING} GLSLog {$ENDIF};
+  {$IFDEF USE_LOGGING} GLSLog {$ENDIF};
 
 // ------------------
 // ------------------ TCUDAGLImageResource ------------------

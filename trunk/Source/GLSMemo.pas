@@ -4,7 +4,8 @@
 {
   Memo for GLScene
   History :
-       30/03/11 - Yar - Initial version (based on kpMemo by Konstantin Polyakov http://kpolyakov.narod.ru/)
+    30/03/11 - Yar - Initial version
+    (based on kpMemo by Konstantin Polyakov http://kpolyakov.narod.ru/)
 }
 
 unit GLSMemo;
@@ -54,15 +55,12 @@ type
     FCharAttrs: string;
   end;
 
-  // TCharStyle
-  //
   TCharStyle = class(TPersistent)
   private
-     
     FTextColor, FBkColor: TColor;
     FStyle: TFontStyles;
   published
-    
+
     property TextColor: TColor read FTextColor write FTextColor;
     property BkColor: TColor read FBkColor write FBkColor;
     property Style: TFontStyles read FStyle write FStyle;
@@ -70,7 +68,6 @@ type
 
   TStyleList = class(TList)
   private
-     
     procedure CheckRange(Index: integer);
     function GetTextColor(Index: Integer): TColor;
     procedure SetTextColor(Index: Integer; Value: TColor);
@@ -96,7 +93,6 @@ type
 
   TGLAbstractMemoObject = class(TObject)
   public
-    
     function MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer):
       Boolean; virtual; abstract;
     function MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer):
@@ -109,7 +105,6 @@ type
 
   TGLSMemoAbstractScrollableObject = class(TCustomControl)
   protected
-    
     procedure DoScroll(Sender: TGLSMemoScrollBar; ByValue: integer);
       virtual; abstract;
     procedure DoScrollPage(Sender: TGLSMemoScrollBar; ByValue: integer);
@@ -130,7 +125,6 @@ type
 
   TGLSMemoScrollBar = class(TGLAbstractMemoObject)
   private
-     
     FKind: TScrollBarKind;
     FParent: TGLSMemoAbstractScrollableObject;
     FLeft, FTop, FWidth, FHeight: integer;
@@ -148,20 +142,16 @@ type
     function GetPgBackRect: TRect;
     function GetPgForwardRect: TRect;
   public
-    
     constructor Create(AParent: TGLSMemoAbstractScrollableObject;
       AKind: TScrollBarKind);
     procedure PaintTo(ACanvas: TCanvas);
-
     function MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer):
       Boolean; override;
     function MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer):
       Boolean; override;
     function MouseMove(Shift: TShiftState; X, Y: Integer):
       Boolean; override;
-
     function MoveThumbTo(X, Y: Integer): integer;
-
     property Parent: TGLSMemoAbstractScrollableObject read FParent;
     property Kind: TScrollBarKind read FKind write FKind;
     property State: TsbState read FState write SetState;
@@ -183,13 +173,11 @@ type
 
   TGLSMemoStrings = class(TStringList)
   private
-     
     FMemo: TGLSCustomMemo;
     FLockCount: integer;
     FDeleting: Boolean;
     procedure CheckRange(Index: integer);
     function GetLineProp(Index: integer): TLineProp;
-
     procedure SetLineStyle(Index: integer; Value: integer);
     function GetLineStyle(Index: integer): integer;
     function GetInComment(Index: Integer): Boolean;
@@ -201,7 +189,6 @@ type
     function GetCharAttrs(Index: Integer): string;
     procedure SetCharAttrs(Index: Integer; const Value: string);
   protected
-    
     function GetObject(Index: Integer): TObject; override;
     procedure PutObject(Index: Integer; AObject: TObject); override;
     procedure SetUpdateState(Updating: Boolean); override;
@@ -218,7 +205,6 @@ type
     property CharAttrs[Index: integer]: string read GetCharAttrs write
     SetCharAttrs;
   public
-    
     destructor Destroy; override;
     procedure Clear; override;
     function DoAdd(const S: string): Integer;
@@ -235,18 +221,15 @@ type
 
   TGLSMemoGutter = class(TObject)
   private
-     
     FMemo: TGLSCustomMemo;
     FLeft, FTop, FWidth, FHeight: integer;
     FColor: TColor;
     procedure SetParams(Index: integer; Value: integer);
     function GetRect: TRect;
   protected
-    
     procedure PaintTo(ACanvas: TCanvas);
     procedure Invalidate;
   public
-    
     property Left: integer index 0 read FLeft write SetParams;
     property Top: integer index 1 read FTop write SetParams;
     property Width: integer index 2 read FWidth write SetParams;
@@ -256,13 +239,11 @@ type
 
   TGLSMemoUndo = class
   private
-     
     FMemo: TGLSCustomMemo;
     FUndoCurX0, FUndoCurY0: integer;
     FUndoCurX, FUndoCurY: integer;
     FUndoText: string;
   public
-    
     constructor Create(ACurX0, ACurY0, ACurX, ACurY: integer; const AText: string);
     function Append(NewUndo: TGLSMemoUndo): Boolean; virtual;
     procedure Undo;
@@ -277,7 +258,6 @@ type
 
   TGLSMemoInsCharUndo = class(TGLSMemoUndo)
   public
-    
     function Append(NewUndo: TGLSMemoUndo): Boolean; override;
     procedure PerformUndo; override;
     procedure PerformRedo; override;
@@ -285,10 +265,8 @@ type
 
   TGLSMemoDelCharUndo = class(TGLSMemoUndo)
   private
-     
     FIsBackspace: Boolean;
   public
-    
     function Append(NewUndo: TGLSMemoUndo): Boolean; override;
     procedure PerformUndo; override;
     procedure PerformRedo; override;
@@ -297,10 +275,8 @@ type
 
   TGLSMEmoDelLineUndo = class(TGLSMemoUndo)
   private
-     
     FIndex: integer;
   public
-    
     constructor Create(AIndex, ACurX0, ACurY0, ACurX, ACurY: integer; const AText:
       string);
     procedure PerformUndo; override;
@@ -309,11 +285,9 @@ type
 
   TGLSMemoSelUndo = class(TGLSMemoUndo)
   private
-     
     FUndoSelStartX, FUndoSelStartY,
       FUndoSelEndX, FUndoSelEndY: integer;
   public
-    
     property UndoSelStartX: integer read FUndoSelStartX write FUndoSelStartX;
     property UndoSelStartY: integer read FUndoSelStartY write FUndoSelStartY;
     property UndoSelEndX: integer read FUndoSelEndX write FUndoSelEndX;
@@ -322,31 +296,26 @@ type
 
   TGLSMemoDeleteBufUndo = class(TGLSMemoSelUndo)
   public
-    
     procedure PerformUndo; override;
     procedure PerformRedo; override;
   end;
 
   TGLSMemoPasteUndo = class(TGLSMemoUndo)
   public
-    
     procedure PerformUndo; override;
     procedure PerformRedo; override;
   end;
 
   TGLSMemoUndoList = class(TList)
   private
-     
     FPos: integer;
     FMemo: TGLSCustomMemo;
     FIsPerforming: Boolean;
     FLimit: integer;
   protected
-    
     function Get(Index: Integer): TGLSMemoUndo;
     procedure SetLimit(Value: integer);
   public
-    
     constructor Create;
     destructor Destroy; override;
     function Add(Item: Pointer): Integer;
@@ -372,12 +341,8 @@ type
     CanUndo, CanRedo: Boolean) of object;
   TScrollMode = (smAuto, smStrict);
 
-  // TGLSCustomMemo
-  //
-
   TGLSCustomMemo = class(TGLSMemoAbstractScrollableObject)
   private
-     
     FAutoIndent: Boolean;
     FMargin: integer;
     FHiddenCaret, FCaretVisible: Boolean;
@@ -423,22 +388,17 @@ type
     FOnGetLineAttrs: TGetLineAttrsEvent;
     FOnUndoChange: TUndoChangeEvent;
     FHideCursor: Boolean;
-
     procedure SetHiddenCaret(Value: Boolean);
-
     procedure SetScrollBars(Value: System.UITypes.TScrollStyle);
-
     procedure SetGutterWidth(Value: integer);
     procedure SetGutterColor(Value: TColor);
     function GetGutterColor: TColor;
-
     procedure SetCurX(Value: integer);
     procedure SetCurY(Value: integer);
     procedure SetFont(Value: TFont);
     procedure SetColor(Index: integer; Value: TColor);
     function GetSelStart: TPoint;
     function GetSelEnd: TPoint;
-
     procedure SetLines(ALines: TStrings);
     procedure SetLineStyle(Index: integer; Value: integer);
     function GetLineStyle(Index: integer): integer;
@@ -450,19 +410,15 @@ type
     procedure SetValidAttrs(Index: integer; Value: Boolean);
     function GetCharAttrs(Index: integer): string;
     procedure SetCharAttrs(Index: integer; const Value: string);
-
     procedure ExpandSelection;
     function GetSelText: string;
     procedure SetSelText(const AValue: string);
-
     function GetSelLength: integer;
-
     procedure MovePage(dP: integer; Shift: TShiftState);
     procedure ShowCaret(State: Boolean);
     procedure MakeVisible;
     function GetVisible(Index: integer): integer;
     function MaxLength: integer;
-
     procedure WMSize(var Msg: TWMSize); message WM_SIZE;
     procedure WMGetDlgCode(var Msg: TWMGetDlgCode); message WM_GETDLGCODE;
     procedure WMEraseBkgnd(var Msg: TWmEraseBkgnd); message WM_ERASEBKGND;
@@ -480,7 +436,6 @@ type
     procedure FreshLineBitmap;
     procedure SetUndoLimit(Value: integer);
   protected
-    
     procedure WndProc(var Message: TMessage); override;
     function EditorRect: TRect;
     function LineRangeRect(FromLine, ToLine: integer): TRect;
@@ -492,55 +447,39 @@ type
     procedure GoEnd(Shift: TShiftState);
     procedure InsertChar(C: Char);
     procedure DeleteChar(OldX, OldY: integer);
-    procedure DeleteLine(Index, OldX, OldY, NewX, NewY: integer; FixUndo:
-      Boolean);
+    procedure DeleteLine(Index, OldX, OldY, NewX, NewY: integer; FixUndo: Boolean);
     procedure BackSpace;
     procedure BackSpaceWord;
-
     function IndentCurrLine: string;
     procedure NewLine;
-
     procedure CreateParams(var Params: TCreateParams); override;
     procedure Paint; override;
-
     procedure DrawMargin;
     procedure DrawGutter;
     procedure DrawScrollBars;
-
     procedure KeyDown(var Key: Word; Shift: TShiftState); override;
     procedure KeyPress(var Key: Char); override;
-
-    procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y:
-      Integer); override;
+    procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
     procedure MouseMove(Shift: TShiftState; X, Y: Integer); override;
-    procedure MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-      override;
+    procedure MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
     procedure DblClick; override;
-
     procedure DoScroll(Sender: TGLSMemoScrollBar; ByValue: integer); override;
-    procedure DoScrollPage(Sender: TGLSMemoScrollBar; ByValue: integer);
-      override;
-
+    procedure DoScrollPage(Sender: TGLSMemoScrollBar; ByValue: integer); override;
     property VisiblePosCount: integer index 0 read GetVisible;
     property VisibleLineCount: integer index 1 read GetVisible;
     property LastVisiblePos: integer index 2 read GetVisible;
     property LastVisibleLine: integer index 3 read GetVisible;
-
     procedure DeleteSelection(bRepaint: Boolean);
-
     procedure Changed(FromLine, ToLine: integer); virtual;
     procedure AttrChanged(LineNo: integer); virtual;
     procedure SelectionChanged; virtual;
     procedure StatusChanged; virtual;
-
     procedure ClearUndoList;
     procedure UndoChange;
-
     property AutoIndent: Boolean read FAutoIndent write FAutoIndent;
     property GutterWidth: integer read FGutterWidth write SetGutterWidth;
     property GutterColor: TColor read GetGutterColor write SetGutterColor;
-    property ScrollBars: System.UITypes.TScrollStyle read FScrollBars write SetScrollBars
-      default ssBoth;
+    property ScrollBars: System.UITypes.TScrollStyle read FScrollBars write SetScrollBars default ssBoth;
     property Font: TFont read FFont write SetFont;
     property ReadOnly: Boolean read FReadOnly write FReadOnly;
     property Lines: TStrings read FLines write SetLines;
@@ -549,39 +488,24 @@ type
     property SelBkColor: TColor index 2 read FSelBkColor write SetColor;
     property HiddenCaret: Boolean read FHiddenCaret write SetHiddenCaret;
     property TabSize: integer read FTabSize write FTabSize;
-    property ScrollMode: TScrollMode read FScrollMode write FScrollMode default
-      smAuto;
+    property ScrollMode: TScrollMode read FScrollMode write FScrollMode default smAuto;
     property UndoLimit: integer read FUndoLimit write SetUndoLimit;
     property HideCursor: Boolean read FHideCursor write FHideCursor;
-
-    property InComment[Index: integer]: Boolean read GetInComment write
-    SetInComment;
-    property InBrackets[Index: integer]: integer read GetInBrackets write
-    SetInBrackets;
-    property ValidAttrs[Index: integer]: Boolean read GetValidAttrs write
-    SetValidAttrs;
-    property CharAttrs[Index: integer]: string read GetCharAttrs write
-    SetCharAttrs;
-
+    property InComment[Index: integer]: Boolean read GetInComment write SetInComment;
+    property InBrackets[Index: integer]: integer read GetInBrackets write SetInBrackets;
+    property ValidAttrs[Index: integer]: Boolean read GetValidAttrs write SetValidAttrs;
+    property CharAttrs[Index: integer]: string read GetCharAttrs write SetCharAttrs;
     {events}
-    property OnGutterClick: TGutterClickEvent read FOnGutterClick write
-      FOnGutterClick;
-    property OnGutterDraw: TGutterDrawEvent read FOnGutterDraw write
-      FOnGutterDraw;
+    property OnGutterClick: TGutterClickEvent read FOnGutterClick write FOnGutterClick;
+    property OnGutterDraw: TGutterDrawEvent read FOnGutterDraw write FOnGutterDraw;
     property OnChange: TNotifyEvent read FOnChange write FOnChange;
     property OnMoveCursor: TNotifyEvent read FOnMoveCursor write FOnMoveCursor;
     property OnAttrChange: TNotifyEvent read FOnAttrChange write FOnAttrChange;
-    property OnSelectionChange: TNotifyEvent read FOnSelectionChange
-      write FOnSelectionChange;
-    property OnStatusChange: TNotifyEvent read FOnStatusChange write
-      FOnStatusChange;
-    property OnGetLineAttrs: TGetLineAttrsEvent read FOnGetLineAttrs write
-      FOnGetLineAttrs;
-    property OnUndoChange: TUndoChangeEvent read FOnUndoChange write
-      FOnUndoChange;
-
+    property OnSelectionChange: TNotifyEvent read FOnSelectionChange write FOnSelectionChange;
+    property OnStatusChange: TNotifyEvent read FOnStatusChange write FOnStatusChange;
+    property OnGetLineAttrs: TGetLineAttrsEvent read FOnGetLineAttrs write FOnGetLineAttrs;
+    property OnUndoChange: TUndoChangeEvent read FOnUndoChange write FOnUndoChange;
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure CopyToClipBoard;
@@ -610,8 +534,7 @@ type
     procedure Redo;
     function CanUndo: Boolean;
     function CanRedo: Boolean;
-    function FindText(Text: string; Options: TFindOptions; Select: Boolean):
-      Boolean;
+    function FindText(Text: string; Options: TFindOptions; Select: Boolean): Boolean;
     property CurX: integer read FCurX write SetCurX;
     property CurY: integer read FCurY write SetCurY;
     property DelErase: Boolean read FDelErase write FDelErase;
@@ -623,7 +546,6 @@ type
 
   TGLSMemo = class(TGLSCustomMemo)
   published
-    
     {TControl }
     property PopupMenu;
     {TCustomControl }
@@ -705,7 +627,7 @@ type
   //--------------------------------------------------------------
   TGLSSynHiMemo = class(TGLSCustomMemo)
   private
-     
+
     FIsPainting: Boolean;
     FInComment: Boolean;
 
@@ -734,10 +656,8 @@ type
     procedure SetStyle(Index: integer; Value: TCharStyle);
     procedure SetCaseSensitive(Value: Boolean);
   protected
-    
     procedure Paint; override;
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure AddWord(StyleNo: integer; const ArrS: array of string);
@@ -795,17 +715,12 @@ type
     property OnUndoChange;
     {TGLSSyntaxMemo }
     property LineComment: string read FLineComment write FLineComment;
-    property MultiCommentLeft: string read FMultiCommentLeft write
-      FMultiCommentLeft;
-    property MultiCommentRight: string read FMultiCommentRight write
-      FMultiCommentRight;
+    property MultiCommentLeft: string read FMultiCommentLeft write FMultiCommentLeft;
+    property MultiCommentRight: string read FMultiCommentRight write FMultiCommentRight;
     property WordList: TGLSMemoStringList read FWordList write SetWordList;
-    property SpecialList: TGLSMemoStringList read FSpecialList write
-      SetSpecialList;
-    property BracketList: TGLSMemoStringList read FBracketList write
-      SetBracketList;
-    property DelimiterStyle: TCharStyle index 0 read FDelimiterStyle write
-      SetStyle;
+    property SpecialList: TGLSMemoStringList read FSpecialList write SetSpecialList;
+    property BracketList: TGLSMemoStringList read FBracketList write SetBracketList;
+    property DelimiterStyle: TCharStyle index 0 read FDelimiterStyle write SetStyle;
     property CommentStyle: TCharStyle index 1 read FCommentStyle write SetStyle;
     property NumberStyle: TCharStyle index 2 read FNumberStyle write SetStyle;
     property CaseSensitive: Boolean read FCaseSensitive write SetCaseSensitive;
@@ -813,7 +728,9 @@ type
 
 procedure Border(Canvas: TCanvas; const rct: TRect; BorderType: TBorderType);
 
+//==========================================================
 implementation
+//==========================================================
 
 const
   cmDelete = VK_DELETE;
@@ -846,16 +763,14 @@ var
 
 // ---------------------Helper functions 
 
-function PointInRect(const P: TPoint; const rct: TRect): Boolean;
-{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function PointInRect(const P: TPoint; const rct: TRect): Boolean; inline;
 begin
   with rct do
     Result := (Left <= P.X) and (Top <= P.Y) and
       (Right >= P.X) and (Bottom >= P.Y);
 end;
 
-procedure Swap(var I1, I2: integer);
-{$IFDEF GLS_INLINE}inline;{$ENDIF}
+procedure Swap(var I1, I2: integer); inline;
 var
   temp: integer;
 begin
@@ -864,8 +779,7 @@ begin
   I2 := temp;
 end;
 
-procedure OrderPos(var StartX, StartY, EndX, EndY: integer);
-{$IFDEF GLS_INLINE}inline;{$ENDIF}
+procedure OrderPos(var StartX, StartY, EndX, EndY: integer); inline;
 begin
   if (EndY < StartY) or
     ((EndY = StartY) and (EndX < StartX)) then
@@ -875,8 +789,7 @@ begin
   end;
 end;
 
-function TotalRect(const rct1, rct2: TRect): TRect;
-{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function TotalRect(const rct1, rct2: TRect): TRect; inline;
 begin
   Result := rct1;
   with Result do
@@ -892,9 +805,9 @@ begin
   end;
 end;
 
- 
 
-// ---------------------TGLSCustomMemo functions 
+
+// ---------------------TGLSCustomMemo functions
 
 procedure TGLSCustomMemo.WndProc(var Message: TMessage);
   function GetShiftState: Integer;

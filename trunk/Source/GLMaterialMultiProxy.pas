@@ -91,7 +91,6 @@ type
 
   {Collection of TGLMaterialMultiProxyMaster. }
   TGLMaterialMultiProxyMasters = class(TOwnedCollection)
-  private
   protected
     procedure SetItems(index: Integer; const Val: TGLMaterialMultiProxyMaster);
     function GetItems(index: Integer): TGLMaterialMultiProxyMaster;
@@ -546,11 +545,7 @@ end;
 
 
 //-------------------------------------------------------------
-//-------------------------------------------------------------
-//-------------------------------------------------------------
 initialization
-//-------------------------------------------------------------
-//-------------------------------------------------------------
 //-------------------------------------------------------------
 
   RegisterClasses([TGLMaterialMultiProxyMaster, TGLMaterialMultiProxyMasters,

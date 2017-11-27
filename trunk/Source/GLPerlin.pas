@@ -38,7 +38,7 @@ type
     FInterpolation: TGLPerlinInterpolation;
     FSmoothing: TGLPerlinInterpolation;
   public
-    Procedure Generate; dynamic; abstract;
+    Procedure Generate; virtual; abstract;
     property Interpolation: TGLPerlinInterpolation read FInterpolation
       write FInterpolation;
     property Smoothing: TGLPerlinInterpolation read FSmoothing write FSmoothing;
@@ -64,9 +64,8 @@ type
     Procedure Set_Number_Of_Octaves(val: Integer);
   public
     Constructor Create(AOwner: TComponent); override;
-    Procedure Generate; dynamic; abstract;
+    Procedure Generate; virtual; abstract;
     Property Octaves[index: Integer]: TGLBasePerlinOctav read GetOctave;
-
   published
     property Smoothing: TGLPerlinInterpolation read FSmoothing write FSmoothing;
     property Interpolation: TGLPerlinInterpolation read FInterpolation
@@ -123,7 +122,6 @@ type
     FLines: TStrings;
     FLinesChanged: Boolean;
     FXStart, FYStart: Integer;
-
   public
     MaxValue, MinValue: Double;
     Stall: Boolean;

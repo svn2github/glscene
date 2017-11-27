@@ -80,7 +80,7 @@ type
     FStaticOffset: TVector;
     FQuad: array[0..3] of TVector;
     FStaticScale: Single;
-    procedure PrepareTexture(var rci: TGLRenderContextInfo); dynamic;
+    procedure PrepareTexture(var rci: TGLRenderContextInfo); virtual;
     procedure RenderQuad(const texExtents, objPos: TVector; size: Single);
   public
     constructor Create(aBuilder: TGLImposterBuilder); virtual;
@@ -247,7 +247,6 @@ type
 
   {Imposter class whose texture contains several views from different angles. }
   TStaticImposter = class(TImposter)
-  private
   public
     procedure Render(var rci: TGLRenderContextInfo;
       const objPos, localCameraPos: TVector;
@@ -373,17 +372,11 @@ type
   end;
 
 //-------------------------------------------------------------
-//-------------------------------------------------------------
-//-------------------------------------------------------------
 implementation
-//-------------------------------------------------------------
-//-------------------------------------------------------------
 //-------------------------------------------------------------
 
 const
-  cReferenceToPos: array[Low(TImposterReference)..High(TImposterReference)] of
-    Single =
-    (0, -1, 1);
+  cReferenceToPos: array[Low(TImposterReference)..High(TImposterReference)] of Single = (0, -1, 1);
 
 // ----------
 // ---------- TImposter ----------
@@ -1175,7 +1168,7 @@ begin
   // setup imposter texture
   if destImposter.Texture.Handle = 0 then
   begin
-    {$IFDEF GLS_OPENGL_DEBUG}
+    {$IFDEF USE_OPENGL_DEBUG}
       if GL.GREMEDY_string_marker then
         GL.StringMarkerGREMEDY(22, 'Imposter texture setup');
     {$ENDIF}

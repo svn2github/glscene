@@ -159,13 +159,13 @@ type
     {Save textureImage to file.
      This may not save a picture, but for instance, parameters, if the
      textureImage is a procedural texture. }
-    procedure SaveToFile(const fileName: string); dynamic;
+    procedure SaveToFile(const fileName: string); virtual;
     {Load textureImage from a file.
      This may not load a picture, but for instance, parameters, if the
      textureImage is a procedural texture.
      Subclasses should invoke inherited which will take care of the
      "OnTextureNeeded" stuff. }
-    procedure LoadFromFile(const fileName: string); dynamic;
+    procedure LoadFromFile(const fileName: string); virtual;
     {Returns a user-friendly denomination for the class.
      This denomination is used for picking a texture image class
      in the IDE expert. }
@@ -176,7 +176,7 @@ type
      takes its value from FriendlyName. }
     class function FriendlyDescription: string; virtual;
     {Request reload/refresh of data upon next use. }
-    procedure Invalidate; dynamic;
+    procedure Invalidate; virtual;
      {Returns image's bitmap handle.
      If the actual image is not a windows bitmap (BMP), descendants should
      take care of properly converting to bitmap. }
@@ -3270,11 +3270,7 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
   RegisterGLTextureImageClass(TGLBlankImage);

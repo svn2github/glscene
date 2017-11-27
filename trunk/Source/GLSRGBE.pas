@@ -34,7 +34,6 @@ type
   ERGBEexception = class(Exception);
 
 // Extract exponent and mantissa from X
-//
 procedure Frexp(X: Extended; var Mantissa: Extended; var Exponent: Integer);
 begin
   Exponent := 0;

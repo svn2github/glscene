@@ -166,8 +166,7 @@ type
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    procedure Notification(AComponent: TComponent; Operation: TOperation);
-      override;
+    procedure Notification(AComponent: TComponent; Operation: TOperation); override;
     procedure DoRender(var ARci: TGLRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
     procedure DoProgress(const progressTime: TProgressTimes); override;

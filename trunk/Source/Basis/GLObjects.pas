@@ -220,8 +220,7 @@ type
     property MirrorV: Boolean read FMirrorV write SetMirrorV default False;
   end;
 
-  TGLPointStyle = (psSquare, psRound, psSmooth, psSmoothAdditive,
-    psSquareAdditive);
+  TGLPointStyle = (psSquare, psRound, psSmooth, psSmoothAdditive, psSquareAdditive);
 
   {  Point parameters as in ARB_point_parameters.
     Make sure to read the ARB_point_parameters spec if you want to understand
@@ -238,7 +237,6 @@ type
     procedure SetMaxSize(const val: Single);
     procedure SetFadeTresholdSize(const val: Single);
     procedure SetDistanceAttenuation(const val: TGLCoordinates);
-
     procedure DefineProperties(Filer: TFiler); override;
     procedure ReadData(Stream: TStream);
     procedure WriteData(Stream: TStream);
@@ -282,15 +280,13 @@ type
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
     procedure BuildList(var rci: TGLRenderContextInfo); override;
-    {  Points positions.
-      If empty, a single point is assumed at (0, 0, 0) }
+    {  Points positions.  If empty, a single point is assumed at (0, 0, 0) }
     property Positions: TAffineVectorList read FPositions write SetPositions;
     {  Defines the points colors.
        if empty, point color will be opaque white
        if contains a single color, all points will use that color
        if contains N colors, the first N points (at max) will be rendered
-      using the corresponding colors.
-       }
+      using the corresponding colors. }
     property Colors: TVectorList read FColors write SetColors;
   published
     {  If true points do not write their Z to the depth buffer. }
@@ -335,8 +331,7 @@ type
     property Color: TGLColor read FColor write SetColor stored StoreColor;
   end;
 
-  {  Specialized collection for Nodes in a TGLLines objects.
-    Stores TGLLinesNode items. }
+  {  Specialized collection for Nodes in a TGLLines objects. Stores TGLLinesNode items. }
   TGLLinesNodes = class(TGLNodes)
   public
     constructor Create(AOwner: TComponent); overload;
@@ -490,7 +485,8 @@ type
     procedure BuildList(var rci: TGLRenderContextInfo); override;
     procedure Assign(Source: TPersistent); override;
     function AxisAlignedDimensionsUnscaled: TVector; override;
-    function RayCastIntersect(const rayStart, rayVector: TVector; intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean; override;
+    function RayCastIntersect(const rayStart, rayVector: TVector; intersectPoint: PVector = nil; 
+	  intersectNormal: PVector = nil): Boolean; override;
   published
     property CubeWidth: TGLFloat index 0 read GetCubeWHD write SetCubeWHD stored False;
     property CubeHeight: TGLFloat index 1 read GetCubeWHD write SetCubeWHD stored False;
@@ -667,14 +663,12 @@ const
 implementation
 // -------------------------------------------------------------
 
-
-
 procedure CubeWireframeBuildList(var rci: TGLRenderContextInfo; Size: TGLFloat;
   Stipple: Boolean; const Color: TColorVector);
 var
   mi, ma: Single;
 begin
-{$IFDEF GLS_OPENGL_DEBUG}
+{$IFDEF USE_OPENGL_DEBUG}
   if GL.GREMEDY_string_marker then
     GL.StringMarkerGREMEDY(22, 'CubeWireframeBuildList');
 {$ENDIF}
@@ -1599,10 +1593,8 @@ begin
     Exit;
 
   case FColors.Count of
-    0:
-      GL.Color4f(1, 1, 1, 1);
-    1:
-      GL.Color4fv(PGLFloat(FColors.List));
+    0: GL.Color4f(1, 1, 1, 1);
+    1: GL.Color4fv(PGLFloat(FColors.List));
   else
     if FColors.Count < n then
       n := FColors.Count;
@@ -2302,18 +2294,13 @@ procedure TGLCube.BuildList(var rci: TGLRenderContextInfo);
 var
   v1: TAffineVector;
   v2: TAffineVector;
-
   v1d: TAffineVector;
   v2d: TAffineVector;
-
   nd: TGLFloat;
   TanLoc, BinLoc: Integer;
-
 begin
-
   VectorScale(FCubeSize, 0.5, v2);
   v1 := VectorNegate(v2);
-
   if FNormalDirection = ndInside then
   begin
     v1d := v2;
@@ -2336,73 +2323,103 @@ begin
     TanLoc := -1;
     BinLoc := -1;
   end;
-
   GL.Begin_(GL_QUADS);
   if cpFront in FParts then
   begin
     GL.Normal3f(0, 0, nd);
-    if TanLoc > -1 then GL.VertexAttrib3f(TanLoc, nd, 0, 0);
-    if BinLoc > -1 then GL.VertexAttrib3f(BinLoc, 0, nd, 0);
-
-    xgl.TexCoord2fv(@XYTexPoint);    GL.Vertex3fv(@v2);
-    xgl.TexCoord2fv(@YTexPoint);     GL.Vertex3f(v1d.x, v2d.y,  v2.z);
-    xgl.TexCoord2fv(@NullTexPoint);  GL.Vertex3f(v1.x,  v1.y,   v2.z);
-    xgl.TexCoord2fv(@XTexPoint);     GL.Vertex3f(v2d.x, v1d.y,  v2.z);
+    if TanLoc > -1 then 
+	  GL.VertexAttrib3f(TanLoc, nd, 0, 0);
+    if BinLoc > -1 then 
+	  GL.VertexAttrib3f(BinLoc, 0, nd, 0);
+    xgl.TexCoord2fv(@XYTexPoint);    
+	GL.Vertex3fv(@v2);
+    xgl.TexCoord2fv(@YTexPoint);     
+	GL.Vertex3f(v1d.x, v2d.y,  v2.z);
+    xgl.TexCoord2fv(@NullTexPoint);  
+	GL.Vertex3f(v1.x,  v1.y,   v2.z);
+    xgl.TexCoord2fv(@XTexPoint);     
+	GL.Vertex3f(v2d.x, v1d.y,  v2.z);
   end;
   if cpBack in FParts then
   begin
     GL.Normal3f(0, 0, -nd);
-    if TanLoc > -1 then GL.VertexAttrib3f(TanLoc, -nd, 0, 0);
-    if BinLoc > -1 then GL.VertexAttrib3f(BinLoc, 0, nd, 0);
+    if TanLoc > -1 then 
+	  GL.VertexAttrib3f(TanLoc, -nd, 0, 0);
+    if BinLoc > -1 then 
+	  GL.VertexAttrib3f(BinLoc, 0, nd, 0);
 
-    xgl.TexCoord2fv(@YTexPoint);    GL.Vertex3f(v2.x,   v2.y,   v1.z);
-    xgl.TexCoord2fv(@NullTexPoint); GL.Vertex3f(v2d.x,  v1d.y,  v1.z);
-    xgl.TexCoord2fv(@XTexPoint);    GL.Vertex3fv(@v1);
-    xgl.TexCoord2fv(@XYTexPoint);   GL.Vertex3f(v1d.x,  v2d.y,  v1.z);
+    xgl.TexCoord2fv(@YTexPoint);    
+	GL.Vertex3f(v2.x,   v2.y,   v1.z);
+    xgl.TexCoord2fv(@NullTexPoint); 
+	GL.Vertex3f(v2d.x,  v1d.y,  v1.z);
+    xgl.TexCoord2fv(@XTexPoint);    
+	GL.Vertex3fv(@v1);
+    xgl.TexCoord2fv(@XYTexPoint);   
+	GL.Vertex3f(v1d.x,  v2d.y,  v1.z);
   end;
   if cpLeft in FParts then
   begin
     GL.Normal3f(-nd, 0, 0);
-    if TanLoc > -1 then GL.VertexAttrib3f(TanLoc, 0, 0, nd);
-    if BinLoc > -1 then GL.VertexAttrib3f(BinLoc, 0, nd, 0);
-
-    xgl.TexCoord2fv(@XYTexPoint);   GL.Vertex3f(v1.x,   v2.y,   v2.z);
-    xgl.TexCoord2fv(@YTexPoint);    GL.Vertex3f(v1.x,   v2d.y,  v1d.z);
-    xgl.TexCoord2fv(@NullTexPoint); GL.Vertex3fv(@v1);
-    xgl.TexCoord2fv(@XTexPoint);    GL.Vertex3f(v1.x,   v1d.y,  v2d.z);
+    if TanLoc > -1 then 
+	  GL.VertexAttrib3f(TanLoc, 0, 0, nd);
+    if BinLoc > -1 then 
+	  GL.VertexAttrib3f(BinLoc, 0, nd, 0);
+    xgl.TexCoord2fv(@XYTexPoint);   
+	GL.Vertex3f(v1.x, v2.y, v2.z);
+    xgl.TexCoord2fv(@YTexPoint);    
+	GL.Vertex3f(v1.x, v2d.y, v1d.z);
+    xgl.TexCoord2fv(@NullTexPoint); 
+	GL.Vertex3fv(@v1);
+    xgl.TexCoord2fv(@XTexPoint);    
+	GL.Vertex3f(v1.x, v1d.y, v2d.z);
   end;
   if cpRight in FParts then
   begin
     GL.Normal3f(nd, 0, 0);
-    if TanLoc > -1 then GL.VertexAttrib3f(TanLoc, 0, 0, -nd);
-    if BinLoc > -1 then GL.VertexAttrib3f(BinLoc, 0, nd, 0);
-
-    xgl.TexCoord2fv(@YTexPoint);    GL.Vertex3fv(@v2);
-    xgl.TexCoord2fv(@NullTexPoint); GL.Vertex3f(v2.x,   v1d.y,  v2d.z);
-    xgl.TexCoord2fv(@XTexPoint);    GL.Vertex3f(v2.x,   v1.y,   v1.z);
-    xgl.TexCoord2fv(@XYTexPoint);   GL.Vertex3f(v2.x,   v2d.y,  v1d.z);
+    if TanLoc > -1 then 
+	  GL.VertexAttrib3f(TanLoc, 0, 0, -nd);
+    if BinLoc > -1 then 
+	  GL.VertexAttrib3f(BinLoc, 0, nd, 0);
+    xgl.TexCoord2fv(@YTexPoint);    
+	GL.Vertex3fv(@v2);
+    xgl.TexCoord2fv(@NullTexPoint); 
+	GL.Vertex3f(v2.x, v1d.y, v2d.z);
+    xgl.TexCoord2fv(@XTexPoint);    
+	GL.Vertex3f(v2.x, v1.y, v1.z);
+    xgl.TexCoord2fv(@XYTexPoint);   
+	GL.Vertex3f(v2.x, v2d.y, v1d.z);
   end;
   if cpTop in FParts then
   begin
     GL.Normal3f(0, nd, 0);
-    if TanLoc > -1 then GL.VertexAttrib3f(TanLoc, nd, 0, 0);
-    if BinLoc > -1 then GL.VertexAttrib3f(BinLoc, 0, 0, -nd);
-
-    xgl.TexCoord2fv(@YTexPoint);    GL.Vertex3f(v1.x,   v2.y,   v1.z);
-    xgl.TexCoord2fv(@NullTexPoint); GL.Vertex3f(v1d.x,  v2.y,   v2d.z);
-    xgl.TexCoord2fv(@XTexPoint);    GL.Vertex3fv(@v2);
-    xgl.TexCoord2fv(@XYTexPoint);   GL.Vertex3f(v2d.x,  v2.y,   v1d.z);
+    if TanLoc > -1 then 
+	  GL.VertexAttrib3f(TanLoc, nd, 0, 0);
+    if BinLoc > -1 then 
+	  GL.VertexAttrib3f(BinLoc, 0, 0, -nd);
+    xgl.TexCoord2fv(@YTexPoint);    
+	GL.Vertex3f(v1.x, v2.y, v1.z);
+    xgl.TexCoord2fv(@NullTexPoint); 
+	GL.Vertex3f(v1d.x, v2.y, v2d.z);
+    xgl.TexCoord2fv(@XTexPoint);    
+	GL.Vertex3fv(@v2);
+    xgl.TexCoord2fv(@XYTexPoint);   
+	GL.Vertex3f(v2d.x, v2.y, v1d.z);
   end;
   if cpBottom in FParts then
   begin
     GL.Normal3f(0, -nd, 0);
-    if TanLoc > -1 then GL.VertexAttrib3f(TanLoc, -nd, 0, 0);
-    if BinLoc > -1 then GL.VertexAttrib3f(BinLoc, 0, 0, nd);
-
-    xgl.TexCoord2fv(@NullTexPoint); GL.Vertex3fv(@v1);
-    xgl.TexCoord2fv(@XTexPoint);    GL.Vertex3f(v2d.x,  v1.y,   v1d.z);
-    xgl.TexCoord2fv(@XYTexPoint);   GL.Vertex3f(v2.x,   v1.y,   v2.z);
-    xgl.TexCoord2fv(@YTexPoint);    GL.Vertex3f(v1d.x,  v1.y,   v2d.z);
+    if TanLoc > -1 then 
+	  GL.VertexAttrib3f(TanLoc, -nd, 0, 0);
+    if BinLoc > -1 then 
+	  GL.VertexAttrib3f(BinLoc, 0, 0, nd);
+    xgl.TexCoord2fv(@NullTexPoint); 
+	GL.Vertex3fv(@v1);
+    xgl.TexCoord2fv(@XTexPoint);    
+	GL.Vertex3f(v2d.x, v1.y, v1d.z);
+    xgl.TexCoord2fv(@XYTexPoint);   
+	GL.Vertex3f(v2.x, v1.y, v2.z);
+    xgl.TexCoord2fv(@YTexPoint);    
+	GL.Vertex3f(v1d.x, v1.y, v2d.z);
   end;
   GL.End_;
 end;
@@ -3476,6 +3493,7 @@ begin
   end;
 end;
 
+
 procedure TGLSuperellipsoid.SetHCurve(const aValue: TGLFloat);
 begin
   if aValue <> FHCurve then
@@ -3493,7 +3511,6 @@ begin
     StructureChanged;
   end;
 end;
-
 
 procedure TGLSuperellipsoid.SetSlices(aValue: Integer);
 begin
@@ -3590,13 +3607,7 @@ begin
 end;
 
 // -------------------------------------------------------------
-// -------------------------------------------------------------
-// -------------------------------------------------------------
-
 initialization
-
-// -------------------------------------------------------------
-// -------------------------------------------------------------
 // -------------------------------------------------------------
 
  RegisterClasses([TGLSphere, TGLCube, TGLPlane, TGLSprite, TGLPoints,

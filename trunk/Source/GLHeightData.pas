@@ -265,7 +265,7 @@ type
     procedure RegisterUse;
     {  Allocate memory and prepare lookup tables for current datatype. 
       Fails if already allocated. Made Dynamic to allow descendants }
-    procedure Allocate(const Val: TGLHeightDataType); dynamic;
+    procedure Allocate(const Val: TGLHeightDataType); virtual;
     {  Decrements UseCounter. 
       When the counter reaches zero, notifies the Owner TGLHeightDataSource
       that the data is no longer used. 

@@ -144,8 +144,8 @@ type
     procedure SetMinFilter(AValue: TGLMinFilter);
     procedure SetGlyphsAlpha(val: TGLTextureImageAlpha);
     procedure TextureChanged;
-    procedure FreeTextureHandle; dynamic;
-    function TextureFormat: Integer; dynamic;
+    procedure FreeTextureHandle; virtual;
+    function TextureFormat: Integer; virtual;
     procedure InvalidateUsers;
     function CharactersPerRow: Integer;
     procedure GetCharTexCoords(Ch: WideChar;

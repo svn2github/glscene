@@ -1573,9 +1573,6 @@ type
     PathStencilDepthOffsetNV: PFNGLPATHSTENCILDEPTHOFFSETNVPROC;
     PathCoverDepthFuncNV: PFNGLPATHCOVERDEPTHFUNCNVPROC;
    
-  {$IFDEF GLS_REGIONS}
-  {$REGION 'Windows OpenGL (WGL) function/procedure definitions for ARB approved extensions'}
-  {$ENDIF}
   {$IFDEF SUPPORT_WGL}
     // ###########################################################
     // function and procedure definitions for
@@ -1642,12 +1639,8 @@ type
     WDXObjectAccessNV: PFNWGLDXOBJECTACCESSPROC;
     WDXLockObjectsNV: PFNWGLDXLOCKOBJECTSPROC;
     WDXUnlockObjectsNV: PFNWGLDXUNLOCKOBJECTSNVPROC;
+   {$ENDIF}
 
-   {$ENDIF}
-    
-   {$IFDEF GLS_REGIONS}
-   {$REGION 'Windows OpenGL (WGL) function/procedure definitions for Vendor/EXT extensions'}
-   {$ENDIF}
    {$IFDEF SUPPORT_WGL}
     // ###########################################################
     // function and procedure definitions for
@@ -1805,38 +1798,28 @@ type
       A_texture_range, A_transform_hint, A_vertex_array_object,
       A_vertex_array_range, A_vertex_program_evaluators, A_ycbcr_422: boolean;
 
-    ACreatePixelFormat: function(gdevs: PAGLDevice; ndev: GLint;
-      attribs: PGLint): TAGLPixelFormat; cdecl;
-    AChoosePixelFormat: function(gdevs: PAGLDevice; ndev: GLint;
-      attribs: PGLint): TAGLPixelFormat; cdecl;
+    ACreatePixelFormat: function(gdevs: PAGLDevice; ndev: GLint; attribs: PGLint): TAGLPixelFormat; cdecl;
+    AChoosePixelFormat: function(gdevs: PAGLDevice; ndev: GLint; attribs: PGLint): TAGLPixelFormat; cdecl;
     ADestroyPixelFormat: procedure(pix: TAGLPixelFormat); cdecl;
-    ADescribePixelFormat: function(pix: TAGLPixelFormat; attrib: TGLint;
-      Value: PGLint): TGLboolean; cdecl;
-    AGetCGLPixelFormat: function(pix: TAGLPixelFormat; cgl_pix: Pointer)
-      : TGLboolean; cdecl;
-    ADisplaysOfPixelFormat: function(pix: TAGLPixelFormat; ndevs: PGLint)
-      : CGDirectDisplayID; cdecl;
+    ADescribePixelFormat: function(pix: TAGLPixelFormat; attrib: TGLint; Value: PGLint): TGLboolean; cdecl;
+    AGetCGLPixelFormat: function(pix: TAGLPixelFormat; cgl_pix: Pointer): TGLboolean; cdecl;
+    ADisplaysOfPixelFormat: function(pix: TAGLPixelFormat; ndevs: PGLint): CGDirectDisplayID; cdecl;
     ANextPixelFormat: function(pix: TAGLPixelFormat): TAGLPixelFormat; cdecl;
     // Managing context
-    ACreateContext: function(pix: TAGLPixelFormat; share: TAGLContext)
-      : TAGLContext; cdecl;
-    ACopyContext: function(src: TAGLContext; dst: TAGLContext; mask: Cardinal)
-      : TGLboolean; cdecl;
+    ACreateContext: function(pix: TAGLPixelFormat; share: TAGLContext): TAGLContext; cdecl;
+    ACopyContext: function(src: TAGLContext; dst: TAGLContext; mask: Cardinal): TGLboolean; cdecl;
     ADestroyContext: function(ctx: TAGLContext): GLboolean; cdecl;
     AUpdateContext: function(ctx: TAGLContext): GLboolean; cdecl;
     ASetCurrentContext: function(ctx: TAGLContext): GLboolean; cdecl;
-    AGetCGLContext: function(ctx: TAGLContext; cgl_ctx: Pointer)
-      : GLboolean; cdecl;
+    AGetCGLContext: function(ctx: TAGLContext; cgl_ctx: Pointer): GLboolean; cdecl;
     AGetCurrentContext: function(): TAGLContext; cdecl;
     ASwapBuffers: procedure(ctx: TAGLContext); cdecl;
     // Managing Pixel Buffers
     ACreatePBuffer: function(Width: GLint; Height: GLint; target: GLenum;
-      internalFormat: GLenum; max_level: longint; pbuffer: PAGLPbuffer)
-      : GLboolean; cdecl;
+      internalFormat: GLenum; max_level: longint; pbuffer: PAGLPbuffer): GLboolean; cdecl;
     ADestroyPBuffer: function(pbuffer: TAGLPbuffer): GLboolean; cdecl;
     ADescribePBuffer: function(pbuffer: TAGLPbuffer; Width, Height: PGLint;
-      target: PGLenum; internalFormat: PGLenum; max_level: PGLint)
-      : TGLboolean; cdecl;
+      target: PGLenum; internalFormat: PGLenum; max_level: PGLint): TGLboolean; cdecl;
     AGetPBuffer: function(ctx: TAGLContext; out pbuffer: TAGLPbuffer;
       face, level, screen: PGLint): GLboolean; cdecl;
     ASetPBuffer: function(ctx: TAGLContext; pbuffer: TAGLPbuffer; face: GLint;
@@ -1844,8 +1827,7 @@ type
     ATexImagePBuffer: function(ctx: TAGLContext; pbuffer: TAGLPbuffer;
       Source: GLint): TGLboolean; cdecl;
     // Managing Drawable Objects
-    ASetDrawable: function(ctx: TAGLContext; draw: TAGLDrawable): GLboolean;
-      cdecl; // deprecated
+    ASetDrawable: function(ctx: TAGLContext; draw: TAGLDrawable): GLboolean; cdecl; // deprecated
     AGetDrawable: function(ctx: TAGLContext): TAGLDrawable; cdecl; // deprecated
     ASetFullScreen: function(ctx: TAGLContext; Width: TGLsizei; Height: TGLsizei;
       freq: TGLsizei; device: GLint): GLboolean; cdecl;
@@ -1855,40 +1837,33 @@ type
     AEnable: function(ctx: TAGLContext; pname: Cardinal): GLboolean; cdecl;
     ADisable: function(ctx: TAGLContext; pname: Cardinal): GLboolean; cdecl;
     AIsEnabled: function(ctx: TAGLContext; pname: Cardinal): GLboolean; cdecl;
-    ASetInteger: function(ctx: TAGLContext; pname: GLenum; params: PGLint)
-      : GLboolean; cdecl;
-    AGetInteger: function(ctx: TAGLContext; pname: GLenum; params: PGLint)
-      : GLboolean; cdecl;
+    ASetInteger: function(ctx: TAGLContext; pname: GLenum; params: PGLint): GLboolean; cdecl;
+    AGetInteger: function(ctx: TAGLContext; pname: GLenum; params: PGLint): GLboolean; cdecl;
     // Getting and Setting Global Information
     AConfigure: function(pname: Cardinal; param: Cardinal): TGLboolean; cdecl;
     AGetVersion: procedure(major: PGLint; minor: PGLint); cdecl;
     AResetLibrary: procedure(); cdecl;
     // Getting Renderer Information
-    ADescribeRenderer: function(rend: TAGLRendererInfo; prop: GLint;
-      Value: PGLint): GLboolean; cdecl;
+    ADescribeRenderer: function(rend: TAGLRendererInfo; prop: GLint; Value: PGLint): GLboolean; cdecl;
     ADestroyRendererInfo: procedure(rend: TAGLRendererInfo); cdecl;
-    ANextRendererInfo: function(rend: TAGLRendererInfo)
-      : TAGLRendererInfo; cdecl;
+    ANextRendererInfo: function(rend: TAGLRendererInfo): TAGLRendererInfo; cdecl;
     AQueryRendererInfoForCGDirectDisplayIDs: function(dspIDs: CGDirectDisplayID;
       ndev: TGLint): TAGLRendererInfo; cdecl;
     // Managing Virtual Screens
     AGetVirtualScreen: function(ctx: TAGLContext): GLint; cdecl;
-    ASetVirtualScreen: function(ctx: TAGLContext; screen: TGLint)
-      : TGLboolean; cdecl;
+    ASetVirtualScreen: function(ctx: TAGLContext; screen: TGLint): TGLboolean; cdecl;
     // Getting and Setting Windows
-    ASetWindowRef: function(ctx: TAGLContext; window: WindowRef)
-      : TGLboolean; cdecl;
+    ASetWindowRef: function(ctx: TAGLContext; window: WindowRef): TGLboolean; cdecl;
     AGetWindowRef: function(ctx: TAGLContext): TGLint; cdecl;
     // Getting and Setting HIView Objects
-    ASetHIViewRef: function(ctx: TAGLContext; hiview: HIViewRef)
-      : TGLboolean; cdecl;
+    ASetHIViewRef: function(ctx: TAGLContext; hiview: HIViewRef): TGLboolean; cdecl;
     AGetHIViewRef: function(ctx: TAGLContext): HIViewRef; cdecl;
     // Getting Error Information
     AGetError: function(): Cardinal; cdecl;
     AErrorString: function(code: Cardinal): PAnsiChar; cdecl;
 {$ENDIF}
- 
-// ------------------------------ EGL function/procedure 
+
+// ------------------------------ EGL function/procedure
 {$IFDEF EGL_SUPPORT}
     OES_depth24, OES_depth32, OES_depth_texture, OES_element_index_uint,
       OES_fbo_render_mipmap, OES_get_program_binary, OES_mapbuffer,
@@ -1993,7 +1968,6 @@ type
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     UDeleteNurbsTessellatorEXT: procedure(nurb: PGLUnurbs);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-{$IFDEF GLS_REGIONS} {$ENDREGION} {$ENDIF}
     constructor Create;
     procedure Initialize(ATemporary: boolean = False);
     procedure Close;
@@ -2036,41 +2010,31 @@ function wglUseFontOutlines(p1: HDC; p2, p3, p4: DWORD; p5, p6: single;
 // ------------- OpenGL Extension to the X Window System (GLX) support functions'}
 {$IFDEF SUPPORT_GLX}
 // GLX 1.0
-function glXGetProcAddress(const Name: PAnsiChar): Pointer; cdecl;
-  external opengl32;
-function glXGetProcAddressARB(const Name: PAnsiChar): Pointer; cdecl;
-  external opengl32;
+function glXGetProcAddress(const Name: PAnsiChar): Pointer; cdecl; external opengl32;
+function glXGetProcAddressARB(const Name: PAnsiChar): Pointer; cdecl; external opengl32;
 function glXChooseVisual(dpy: PDisplay; screen: TGLint; attribList: PGLint)
   : PXVisualInfo; cdecl; external opengl32;
 function glXCreateContext(dpy: PDisplay; vis: PXVisualInfo;
-  shareList: GLXContext; direct: TGLboolean): GLXContext; cdecl;
-  external opengl32;
-procedure glXDestroyContext(dpy: PDisplay; ctx: GLXContext); cdecl;
-  external opengl32;
+  shareList: GLXContext; direct: TGLboolean): GLXContext; cdecl; external opengl32;
+procedure glXDestroyContext(dpy: PDisplay; ctx: GLXContext); cdecl; external opengl32;
 function glXMakeCurrent(dpy: PDisplay; drawable: GLXDrawable; ctx: GLXContext)
   : TGLboolean; cdecl; external opengl32;
 procedure glXCopyContext(dpy: PDisplay; src: GLXContext; dst: GLXContext;
   mask: Cardinal); cdecl; external opengl32;
-procedure glXSwapBuffers(dpy: PDisplay; drawable: GLXDrawable); cdecl;
-  external opengl32;
+procedure glXSwapBuffers(dpy: PDisplay; drawable: GLXDrawable); cdecl; external opengl32;
 function glXCreateGLXPixmap(dpy: PDisplay; visual: PXVisualInfo;
   pixmap: GLXPixmap): GLXPixmap; cdecl; external opengl32;
-procedure glXDestroyGLXPixmap(dpy: PDisplay; pixmap: GLXPixmap); cdecl;
-  external opengl32;
-function glXQueryExtension(dpy: PDisplay; errorb: PGLint; event: PGLint)
-  : TGLboolean; cdecl; external opengl32;
-function glXQueryVersion(dpy: PDisplay; maj: PGLint; min: PGLint): TGLboolean;
-  cdecl; external opengl32;
-function glXIsDirect(dpy: PDisplay; ctx: GLXContext): TGLboolean; cdecl;
-  external opengl32;
+procedure glXDestroyGLXPixmap(dpy: PDisplay; pixmap: GLXPixmap); cdecl; external opengl32;
+function glXQueryExtension(dpy: PDisplay; errorb: PGLint; event: PGLint): TGLboolean; cdecl; external opengl32;
+function glXQueryVersion(dpy: PDisplay; maj: PGLint; min: PGLint): TGLboolean; cdecl; external opengl32;
+function glXIsDirect(dpy: PDisplay; ctx: GLXContext): TGLboolean; cdecl; external opengl32;
 function glXGetConfig(dpy: PDisplay; visual: PXVisualInfo; attrib: TGLint;
   Value: PGLint): TGLint; cdecl; external opengl32;
 function glXGetCurrentContext: GLXContext; cdecl; external opengl32;
 function glXGetCurrentDrawable: GLXDrawable; cdecl; external opengl32;
 procedure glXWaitGL; cdecl; external opengl32;
 procedure glXWaitX; cdecl; external opengl32;
-procedure glXUseXFont(font: XFont; First: TGLint; Count: TGLint; list: TGLint);
-  cdecl; external opengl32;
+procedure glXUseXFont(font: XFont; First: TGLint; Count: TGLint; list: TGLint); cdecl; external opengl32;
 
 // GLX 1.1 and later
 function glXQueryExtensionsString(dpy: PDisplay; screen: TGLint): PAnsiChar;
@@ -2209,7 +2173,6 @@ procedure gluNextContour(tess: PGLUtesselator; atype: Cardinal);
 procedure gluEndPolygon(tess: PGLUtesselator); 
 {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF} external glu32;
 
-{$IFDEF GLS_REGIONS} {$ENDREGION} {$ENDIF}
 function GetProcAddressGLLib(ProcName: PAnsiChar): Pointer;
 function GetProcAddressGLS(ProcName: PAnsiChar): Pointer;
 
@@ -2229,13 +2192,9 @@ procedure TrimAndSplitVersionString(buffer: string; var max, min: integer);
 function IsVersionMet(MajorVersion, MinorVersion, actualMajorVersion,
   actualMinorVersion: integer): boolean;
 
-//------------------------------------------------------------------  
-//------------------------------------------------------------------  
-//------------------------------------------------------------------  
+//------------------------------------------------------------------
 implementation
-//------------------------------------------------------------------  
-//------------------------------------------------------------------  
-//------------------------------------------------------------------  
+//------------------------------------------------------------------
 
 const
   glPrefix = 'gl';
@@ -2284,7 +2243,7 @@ procedure DebugCallBack(Source: Cardinal; type_: Cardinal; id: Cardinal;
   userParam: Pointer);
 {$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
 begin
-{$IFDEF GLS_LOGGING}
+{$IFDEF USE_LOGGING}
   if length > 0 then
     GLSLogger.LogDebug(string(message));
 {$ENDIF}
@@ -2305,7 +2264,7 @@ end;
 
 procedure glCap;{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
 begin
-{$IFDEF GLS_LOGGING}
+{$IFDEF USE_LOGGING}
   GLSLogger.LogError('Call OpenGL function with undefined entry point');
 {$ENDIF}
   Abort;
@@ -2349,7 +2308,7 @@ begin
           end;
         end;
       end;
-{$IFDEF GLS_OPENGL_DEBUG}
+{$IFDEF USE_OPENGL_DEBUG}
   if Result <> @glCap then
     GLSLogger.LogDebug('Finded entry point of ' + vName)
   else
@@ -2374,7 +2333,7 @@ begin
   Result := GetProcAddressGLS(PAnsiChar(AnsiString(vName)));
   if Result = nil then
     Result := @glCap;
-{$IFDEF GLS_OPENGL_DEBUG}
+{$IFDEF USE_OPENGL_DEBUG}
   if Result <> @glCap then
     GLSLogger.LogDebug('Finded entry point of ' + vName)
   else
@@ -2442,7 +2401,7 @@ begin
   if Result then
     Result := ((ExtPos + length(Extension) - 1) = length(FBuffer)) or
       (FBuffer[ExtPos + length(Extension)] = ' ');
-{$IFDEF GLS_OPENGL_DEBUG}
+{$IFDEF USE_OPENGL_DEBUG}
   if Result then
     GLSLogger.LogDebug(Extension);
 {$ENDIF}
@@ -2532,17 +2491,13 @@ begin
   ARB_depth_texture := CheckExtension('GL_ARB_depth_texture');
   ARB_draw_buffers := CheckExtension('GL_ARB_draw_buffers');
   ARB_draw_buffers_blend := CheckExtension('GL_ARB_draw_buffers_blend');
-  ARB_draw_elements_base_vertex :=
-    CheckExtension('GL_ARB_draw_elements_base_vertex');
+  ARB_draw_elements_base_vertex := CheckExtension('GL_ARB_draw_elements_base_vertex');
   ARB_draw_indirect := CheckExtension('GL_ARB_draw_indirect');
   ARB_draw_instanced := CheckExtension('GL_ARB_draw_instanced');
-  ARB_explicit_attrib_location :=
-    CheckExtension('GL_ARB_explicit_attrib_location');
-  ARB_fragment_coord_conventions :=
-    CheckExtension('GL_ARB_fragment_coord_conventions');
+  ARB_explicit_attrib_location := CheckExtension('GL_ARB_explicit_attrib_location');
+  ARB_fragment_coord_conventions := CheckExtension('GL_ARB_fragment_coord_conventions');
   ARB_fragment_program := CheckExtension('GL_ARB_fragment_program');
-  ARB_fragment_program_shadow :=
-    CheckExtension('GL_ARB_fragment_program_shadow');
+  ARB_fragment_program_shadow := CheckExtension('GL_ARB_fragment_program_shadow');
   ARB_fragment_shader := CheckExtension('GL_ARB_fragment_shader');
   ARB_framebuffer_object := CheckExtension('GL_ARB_framebuffer_object');
   ARB_framebuffer_sRGB := CheckExtension('GL_ARB_framebuffer_sRGB');
@@ -2578,11 +2533,9 @@ begin
   ARB_tessellation_shader := CheckExtension('GL_ARB_tessellation_shader');
   ARB_texture_border_clamp := CheckExtension('GL_ARB_texture_border_clamp');
   ARB_texture_buffer_object := CheckExtension('GL_ARB_texture_buffer_object');
-  ARB_texture_buffer_object_rgb32 :=
-    CheckExtension('GL_ARB_texture_buffer_object_rgb32');
+  ARB_texture_buffer_object_rgb32 := CheckExtension('GL_ARB_texture_buffer_object_rgb32');
   ARB_texture_compression := CheckExtension('GL_ARB_texture_compression');
-  ARB_texture_compression_rgtc :=
-    CheckExtension('GL_ARB_texture_compression_rgtc');
+  ARB_texture_compression_rgtc := CheckExtension('GL_ARB_texture_compression_rgtc');
   ARB_texture_cube_map := CheckExtension('GL_ARB_texture_cube_map');
   ARB_texture_cube_map_array := CheckExtension('GL_ARB_texture_cube_map_array');
   ARB_texture_env_add := CheckExtension('GL_ARB_texture_env_add');
@@ -2591,11 +2544,9 @@ begin
   ARB_texture_env_dot3 := CheckExtension('GL_ARB_texture_env_dot3');
   ARB_texture_float := CheckExtension('GL_ARB_texture_float');
   ARB_texture_gather := CheckExtension('GL_ARB_texture_gather');
-  ARB_texture_mirrored_repeat :=
-    CheckExtension('GL_ARB_texture_mirrored_repeat');
+  ARB_texture_mirrored_repeat := CheckExtension('GL_ARB_texture_mirrored_repeat');
   ARB_texture_multisample := CheckExtension('GL_ARB_texture_multisample');
-  ARB_texture_non_power_of_two :=
-    CheckExtension('GL_ARB_texture_non_power_of_two');
+  ARB_texture_non_power_of_two := CheckExtension('GL_ARB_texture_non_power_of_two');
   ARB_texture_query_lod := CheckExtension('GL_ARB_texture_query_lod');
   ARB_texture_rectangle := CheckExtension('GL_ARB_texture_rectangle');
   ARB_texture_rg := CheckExtension('GL_ARB_texture_rg');
@@ -2612,14 +2563,11 @@ begin
   ARB_vertex_buffer_object := CheckExtension('GL_ARB_vertex_buffer_object');
   ARB_vertex_program := CheckExtension('GL_ARB_vertex_program');
   ARB_vertex_shader := CheckExtension('GL_ARB_vertex_shader');
-  ARB_vertex_type_2_10_10_10_rev :=
-    CheckExtension('GL_ARB_vertex_type_2_10_10_10_rev');
+  ARB_vertex_type_2_10_10_10_rev := CheckExtension('GL_ARB_vertex_type_2_10_10_10_rev');
   ARB_window_pos := CheckExtension('GL_ARB_window_pos');
-  ARB_texture_compression_bptc :=
-    CheckExtension('GL_ARB_texture_compression_bptc');
+  ARB_texture_compression_bptc := CheckExtension('GL_ARB_texture_compression_bptc');
   ARB_get_program_binary := CheckExtension('GL_ARB_get_program_binary');
-  ARB_separate_shader_objects :=
-    CheckExtension('GL_ARB_separate_shader_objects');
+  ARB_separate_shader_objects := CheckExtension('GL_ARB_separate_shader_objects');
   ARB_shader_stencil_export := CheckExtension('GL_ARB_shader_stencil_export');
   KHR_debug := CheckExtension('GL_KHR_debug');
   ARB_clear_buffer_object := CheckExtension('GL_ARB_clear_buffer_object');
@@ -2629,25 +2577,19 @@ begin
   ARB_debug_label := CheckExtension('GL_ARB_debug_label');
   ARB_debug_output2 := CheckExtension('GL_ARB_debug_output2');
   ARB_ES3_compatibility := CheckExtension('GL_ARB_ES3_compatibility');
-  ARB_explicit_uniform_location :=
-    CheckExtension('GL_ARB_explicit_uniform_location');
-  ARB_fragment_layer_viewport :=
-    CheckExtension('GL_ARB_fragment_layer_viewport');
-  ARB_framebuffer_no_attachments :=
-    CheckExtension('GL_ARB_framebuffer_no_attachments');
+  ARB_explicit_uniform_location := CheckExtension('GL_ARB_explicit_uniform_location');
+  ARB_fragment_layer_viewport := CheckExtension('GL_ARB_fragment_layer_viewport');
+  ARB_framebuffer_no_attachments := CheckExtension('GL_ARB_framebuffer_no_attachments');
   ARB_internalformat_query2 := CheckExtension('GL_ARB_internalformat_query2');
   ARB_invalidate_subdata := CheckExtension('GL_ARB_invalidate_subdata');
   ARB_multi_draw_indirect := CheckExtension('GL_ARB_multi_draw_indirect');
-  ARB_program_interface_query :=
-    CheckExtension('GL_ARB_program_interface_query');
+  ARB_program_interface_query := CheckExtension('GL_ARB_program_interface_query');
   ARB_shader_image_size := CheckExtension('GL_ARB_shader_image_size');
-  ARB_shader_storage_buffer_object :=
-    CheckExtension('GL_ARB_shader_storage_buffer_object');
+  ARB_shader_storage_buffer_object := CheckExtension('GL_ARB_shader_storage_buffer_object');
   ARB_stencil_texturing := CheckExtension('GL_ARB_stencil_texturing');
   ARB_texture_buffer_range := CheckExtension('GL_ARB_texture_buffer_range');
   ARB_texture_query_levels := CheckExtension('GL_ARB_texture_query_levels');
-  ARB_texture_storage_multisample :=
-    CheckExtension('GL_ARB_texture_storage_multisample');
+  ARB_texture_storage_multisample := CheckExtension('GL_ARB_texture_storage_multisample');
   ARB_texture_view := CheckExtension('GL_ARB_texture_view');
   ARB_vertex_attrib_binding := CheckExtension('GL_ARB_vertex_attrib_binding');
   ARB_robustness_isolation := CheckExtension('GL_ARB_robustness_isolation');
@@ -2655,11 +2597,9 @@ begin
   // check Vendor/EXT OpenGL extensions
   _3DFX_multisample := CheckExtension('GL_3DFX_multisample');
   _3DFX_tbuffer := CheckExtension('GL_3DFX_tbuffer');
-  _3DFX_texture_compression_FXT1 :=
-    CheckExtension('GL_3DFX_texture_compression_FXT1');
+  _3DFX_texture_compression_FXT1 := CheckExtension('GL_3DFX_texture_compression_FXT1');
   ATI_draw_buffers := CheckExtension('GL_ATI_draw_buffers');
-  ATI_texture_compression_3dc :=
-    CheckExtension('GL_ATI_texture_compression_3dc');
+  ATI_texture_compression_3dc := CheckExtension('GL_ATI_texture_compression_3dc');
   ATI_texture_float := CheckExtension('GL_ATI_texture_float');
   ATI_texture_mirror_once := CheckExtension('GL_ATI_texture_mirror_once');
 
@@ -2669,8 +2609,7 @@ begin
   EXT_bgra := CheckExtension('GL_EXT_bgra');
   EXT_bindable_uniform := CheckExtension('GL_EXT_bindable_uniform');
   EXT_blend_color := CheckExtension('GL_EXT_blend_color');
-  EXT_blend_equation_separate :=
-    CheckExtension('GL_EXT_blend_equation_separate');
+  EXT_blend_equation_separate := CheckExtension('GL_EXT_blend_equation_separate');
   EXT_blend_func_separate := CheckExtension('GL_EXT_blend_func_separate');
   EXT_blend_logic_op := CheckExtension('GL_EXT_blend_logic_op');
   EXT_blend_minmax := CheckExtension('GL_EXT_blend_minmax');
@@ -2685,8 +2624,7 @@ begin
   EXT_draw_range_elements := CheckExtension('GL_EXT_draw_range_elements');
   EXT_fog_coord := CheckExtension('GL_EXT_fog_coord');
   EXT_framebuffer_blit := CheckExtension('GL_EXT_framebuffer_blit');
-  EXT_framebuffer_multisample :=
-    CheckExtension('GL_EXT_framebuffer_multisample');
+  EXT_framebuffer_multisample := CheckExtension('GL_EXT_framebuffer_multisample');
   EXT_framebuffer_object := CheckExtension('GL_EXT_framebuffer_object');
   EXT_framebuffer_sRGB := CheckExtension('GL_EXT_framebuffer_sRGB');
   EXT_geometry_shader4 := CheckExtension('GL_EXT_geometry_shader4');
@@ -2702,8 +2640,7 @@ begin
   EXT_polygon_offset := CheckExtension('GL_EXT_polygon_offset');
   EXT_rescale_normal := CheckExtension('GL_EXT_rescale_normal');
   EXT_secondary_color := CheckExtension('GL_EXT_secondary_color');
-  EXT_separate_specular_color :=
-    CheckExtension('GL_EXT_separate_specular_color');
+  EXT_separate_specular_color := CheckExtension('GL_EXT_separate_specular_color');
   EXT_shadow_funcs := CheckExtension('GL_EXT_shadow_funcs');
   EXT_shared_texture_palette := CheckExtension('GL_EXT_shared_texture_palette');
   EXT_stencil_clear_tag := CheckExtension('GL_EXT_stencil_clear_tag');
@@ -2712,12 +2649,9 @@ begin
   EXT_texture3D := CheckExtension('GL_EXT_texture3D');
   EXT_texture_array := CheckExtension('GL_EXT_texture_array');
   EXT_texture_buffer_object := CheckExtension('GL_EXT_texture_buffer_object');
-  EXT_texture_compression_latc :=
-    CheckExtension('GL_EXT_texture_compression_latc');
-  EXT_texture_compression_rgtc :=
-    CheckExtension('GL_EXT_texture_compression_rgtc');
-  EXT_texture_compression_s3tc :=
-    CheckExtension('GL_EXT_texture_compression_s3tc');
+  EXT_texture_compression_latc := CheckExtension('GL_EXT_texture_compression_latc');
+  EXT_texture_compression_rgtc := CheckExtension('GL_EXT_texture_compression_rgtc');
+  EXT_texture_compression_s3tc := CheckExtension('GL_EXT_texture_compression_s3tc');
   EXT_texture_cube_map := CheckExtension('GL_EXT_texture_cube_map');
   EXT_texture_edge_clamp := CheckExtension('GL_EXT_texture_edge_clamp');
   EXT_texture_env_add := CheckExtension('GL_EXT_texture_env_add');
@@ -2732,23 +2666,17 @@ begin
   EXT_texture_object := CheckExtension('GL_EXT_texture_object');
   EXT_texture_rectangle := CheckExtension('GL_EXT_texture_rectangle');
   EXT_texture_sRGB := CheckExtension('GL_EXT_texture_sRGB');
-  EXT_texture_shared_exponent :=
-    CheckExtension('GL_EXT_texture_shared_exponent');
+  EXT_texture_shared_exponent := CheckExtension('GL_EXT_texture_shared_exponent');
   EXT_timer_query := CheckExtension('GL_EXT_timer_query');
   EXT_transform_feedback := CheckExtension('GL_EXT_transform_feedback');
   EXT_vertex_array := CheckExtension('GL_EXT_vertex_array');
   EXT_texture_sRGB_decode := CheckExtension('GL_EXT_texture_sRGB_decode');
   EXT_direct_state_access := CheckExtension('EXT_direct_state_access');
   EXT_texture_swizzle := CheckExtension('EXT_texture_swizzle');
-
   HP_occlusion_test := CheckExtension('GL_HP_occlusion_test');
-
   IBM_rasterpos_clip := CheckExtension('GL_IBM_rasterpos_clip');
-
   KTX_buffer_region := CheckExtension('GL_KTX_buffer_region');
-
   MESA_resize_buffers := CheckExtension('GL_MESA_resize_buffers');
-
   NV_blend_square := CheckExtension('GL_NV_blend_square');
   NV_conditional_render := CheckExtension('GL_NV_conditional_render');
   NV_copy_image := CheckExtension('GL_NV_copy_image');
@@ -2774,36 +2702,28 @@ begin
   NV_transform_feedback := CheckExtension('GL_NV_transform_feedback');
   NV_vertex_array_range := CheckExtension('GL_NV_vertex_array_range');
   NV_vertex_array_range2 := CheckExtension('GL_NV_vertex_array_range2');
-  NV_vertex_buffer_unified_memory :=
-    CheckExtension('GL_NV_vertex_buffer_unified_memory');
+  NV_vertex_buffer_unified_memory := CheckExtension('GL_NV_vertex_buffer_unified_memory');
   NV_vertex_program := CheckExtension('GL_NV_vertex_program');
-
   SGI_color_matrix := CheckExtension('GL_SGI_color_matrix');
-
   SGIS_generate_mipmap := CheckExtension('GL_SGIS_generate_mipmap');
   SGIS_multisample := CheckExtension('GL_SGIS_multisample');
   SGIS_texture_border_clamp := CheckExtension('GL_SGIS_texture_border_clamp');
   SGIS_texture_color_mask := CheckExtension('GL_SGIS_texture_color_mask');
   SGIS_texture_edge_clamp := CheckExtension('GL_SGIS_texture_edge_clamp');
   SGIS_texture_lod := CheckExtension('GL_SGIS_texture_lod');
-
   SGIX_depth_texture := CheckExtension('GL_SGIX_depth_texture');
   SGIX_shadow := CheckExtension('GL_SGIX_shadow');
   SGIX_shadow_ambient := CheckExtension('GL_SGIX_shadow_ambient');
-
   AMD_vertex_shader_tessellator := CheckExtension('GL_AMD_vertex_shader_tessellator');
-
   WIN_swap_hint := CheckExtension('GL_WIN_swap_hint');
   ATI_meminfo := CheckExtension('GL_ATI_meminfo');
   NVX_gpu_memory_info := CheckExtension('GL_NVX_gpu_memory_info');
   NV_vdpau_interop := CheckExtension('GL_NV_vdpau_interop');
   NV_path_rendering := CheckExtension('GL_NV_path_rendering');
-
   GREMEDY_frame_terminator := CheckExtension('GL_GREMEDY_frame_terminator');
   GREMEDY_string_marker := CheckExtension('GL_GREMEDY_string_marker');
   AMDX_debug_output := CheckExtension('AMDX_debug_output');
   ARB_debug_output := CheckExtension('GL_ARB_debug_output');
-
   BindTexture := GetAddress('BindTexture');
   BlendFunc := GetAddress('BlendFunc');
   Clear := GetAddress('Clear');
@@ -3202,10 +3122,8 @@ begin
   EndTransformFeedback := GetAddress('EndTransformFeedback');
   TransformFeedbackVaryings := GetAddress('TransformFeedbackVaryings');
   GetTransformFeedbackVarying := GetAddress('GetTransformFeedbackVarying');
-
   TransformFeedbackAttribs := GetAddress('TransformFeedbackAttribs');
-  TransformFeedbackVaryingsNV := GetAddressNoSuffixes
-    ('TransformFeedbackVaryingsNV');
+  TransformFeedbackVaryingsNV := GetAddressNoSuffixes('TransformFeedbackVaryingsNV');
   TexBuffer := GetAddress('TexBuffer');
   BindVertexArray := GetAddress('BindVertexArray');
   DeleteVertexArrays := GetAddress('DeleteVertexArrays');
@@ -3290,7 +3208,6 @@ begin
   EnableVertexAttribArray := GetAddress('EnableVertexAttribArray');
   DisableVertexAttribArray := GetAddress('DisableVertexAttribArray');
   VertexAttribDivisor := GetAddress('VertexAttribDivisor');
-
   GenQueries := GetAddress('GenQueries');
   DeleteQueries := GetAddress('DeleteQueries');
   IsQuery := GetAddress('IsQuery');
@@ -3302,7 +3219,6 @@ begin
   QueryCounter := GetAddress('QueryCounter');
   GetQueryObjecti64v := GetAddress('GetQueryObjecti64v');
   GetQueryObjectui64v := GetAddress('GetQueryObjectui64v');
-
   DeleteObject := GetAddress('DeleteObject');
   GetHandle := GetAddress('GetHandle');
   DetachShader := GetAddressAlt('DetachShader', 'DetachObject');
@@ -3449,13 +3365,11 @@ begin
   ProgramUniformMatrix4x3dv := GetAddress('ProgramUniformMatrix4x3dv');
   ValidateProgramPipeline := GetAddress('ValidateProgramPipeline');
   GetProgramPipelineInfoLog := GetAddress('GetProgramPipelineInfoLog');
-
   BlendEquationSeparate := GetAddress('BlendEquationSeparate');
   DrawBuffers := GetAddress('DrawBuffers');
   StencilOpSeparate := GetAddress('StencilOpSeparate');
   StencilFuncSeparate := GetAddress('StencilFuncSeparate');
   StencilMaskSeparate := GetAddress('StencilMaskSeparate');
-
   ActiveTexture := GetAddress('ActiveTexture');
   CompressedTexImage3D := GetAddress('CompressedTexImage3D');
   CompressedTexImage2D := GetAddress('CompressedTexImage2D');
@@ -3497,11 +3411,9 @@ begin
   MultiTexCoord4iv := GetAddress('MultiTexCoord4iv');
   MultiTexCoord4s := GetAddress('MultiTexCoord4s');
   MultiTexCoord4sv := GetAddress('MultiTexCoord4sv');
-
   GetInteger64i_v := GetAddress('GetInteger64i_v');
   GetBufferParameteri64v := GetAddress('GetBufferParameteri64v');
   ProgramParameteri := GetAddress('ProgramParameteri');
-
   ProgramString := GetAddress('ProgramString');
   BindProgram := GetAddress('BindProgram');
   DeletePrograms := GetAddress('DeletePrograms');
@@ -3518,7 +3430,6 @@ begin
   GetProgramEnvParameterfv := GetAddress('GetProgramEnvParameterfv');
   GetProgramLocalParameterdv := GetAddress('GetProgramLocalParameterdv');
   GetProgramLocalParameterfv := GetAddress('GetProgramLocalParameterfv');
-
   ClearColorIi := GetAddress('ClearColorIi');
   ClearColorIui := GetAddress('ClearColorIui');
   TexParameterIiv := GetAddress('TexParameterIiv');
@@ -3527,7 +3438,6 @@ begin
   GetTexParameterIuiv := GetAddress('GetTexParameterIuiv');
   PatchParameteri := GetAddress('PatchParameteri');
   PatchParameterfv := GetAddress('PatchParameterfv');
-
   BufferAddressRangeNV := GetAddressNoSuffixes('BufferAddressRangeNV');
   VertexFormatNV := GetAddressNoSuffixes('VertexFormatNV');
   NormalFormatNV := GetAddressNoSuffixes('NormalFormatNV');
@@ -3540,32 +3450,25 @@ begin
   VertexAttribFormatNV := GetAddressNoSuffixes('VertexAttribFormatNV');
   VertexAttribIFormatNV := GetAddressNoSuffixes('VertexAttribIFormatNV');
   GetIntegerui64i_vNV := GetAddressNoSuffixes('GetIntegerui64i_vNV');
-  GetBufferParameterui64vNV := GetAddressNoSuffixes
-    ('GetBufferParameterui64vNV');
+  GetBufferParameterui64vNV := GetAddressNoSuffixes('GetBufferParameterui64vNV');
   MakeBufferResidentNV := GetAddressNoSuffixes('MakeBufferResidentNV');
   MakeBufferNonResidentNV := GetAddressNoSuffixes('MakeBufferNonResidentNV');
   IsBufferResidentNV := GetAddressNoSuffixes('IsBufferResidentNV');
-  MakeNamedBufferResidentNV := GetAddressNoSuffixes
-    ('MakeNamedBufferResidentNV');
-  MakeNamedBufferNonResidentNV := GetAddressNoSuffixes
-    ('MakeNamedBufferNonResidentNV');
+  MakeNamedBufferResidentNV := GetAddressNoSuffixes('MakeNamedBufferResidentNV');
+  MakeNamedBufferNonResidentNV := GetAddressNoSuffixes('MakeNamedBufferNonResidentNV');
   IsNamedBufferResidentNV := GetAddressNoSuffixes('IsNamedBufferResidentNV');
-  GetNamedBufferParameterui64vNV := GetAddressNoSuffixes
-    ('GetNamedBufferParameterui64vNV');
+  GetNamedBufferParameterui64vNV := GetAddressNoSuffixes('GetNamedBufferParameterui64vNV');
   GetIntegerui64vNV := GetAddressNoSuffixes('GetIntegerui64vNV');
   Uniformui64NV := GetAddressNoSuffixes('Uniformui64NV');
   Uniformui64vNV := GetAddressNoSuffixes('Uniformui64vNV');
   GetUniformui64vNV := GetAddressNoSuffixes('GetUniformui64vNV');
   ProgramUniformui64NV := GetAddressNoSuffixes('ProgramUniformui64NV');
   ProgramUniformui64vNV := GetAddressNoSuffixes('ProgramUniformui64vNV');
-
   TexImage2DMultisample := GetAddress('TexImage2DMultisample');
   TexImage3DMultisample := GetAddress('TexImage3DMultisample');
   GetMultisamplefv := GetAddress('GetMultisamplefv');
   SampleMaski := GetAddress('SampleMaski');
-
   ProvokingVertex := GetAddress('ProvokingVertex');
-
   FenceSync := GetAddress('FenceSync');
   IsSync := GetAddress('IsSync');
   DeleteSync := GetAddress('DeleteSync');
@@ -3573,13 +3476,11 @@ begin
   WaitSync := GetAddress('WaitSync');
   GetInteger64v := GetAddress('GetInteger64v');
   GetSynciv := GetAddress('GetSynciv');
-
   BlendEquationi := GetAddress('BlendEquationi');
   BlendEquationSeparatei := GetAddress('BlendEquationSeparatei');
   BlendFunci := GetAddress('BlendFunci');
   BlendFuncSeparatei := GetAddress('BlendFuncSeparatei');
   MinSampleShading := GetAddress('MinSampleShading');
-
   GenSamplers := GetAddress('GenSamplers');
   DeleteSamplers := GetAddress('DeleteSamplers');
   IsSampler := GetAddress('IsSampler');
@@ -3594,7 +3495,6 @@ begin
   GetSamplerParameterIiv := GetAddress('GetSamplerParameterIiv');
   GetSamplerParameterfv := GetAddress('GetSamplerParameterfv');
   GetSamplerParameterIfv := GetAddress('GetSamplerParameterIfv');
-
   ClientAttribDefault := GetAddress('ClientAttribDefault');
   PushClientAttribDefault := GetAddress('PushClientAttribDefault');
   MatrixLoadf := GetAddress('MatrixLoadf');
@@ -3696,29 +3596,19 @@ begin
   NamedProgramLocalParameter4dv := GetAddress('NamedProgramLocalParameter4dv');
   NamedProgramLocalParameter4f := GetAddress('NamedProgramLocalParameter4f');
   NamedProgramLocalParameter4fv := GetAddress('NamedProgramLocalParameter4fv');
-  GetNamedProgramLocalParameterdv :=
-    GetAddress('GetNamedProgramLocalParameterdv');
-  GetNamedProgramLocalParameterfv :=
-    GetAddress('GetNamedProgramLocalParameterfv');
+  GetNamedProgramLocalParameterdv := GetAddress('GetNamedProgramLocalParameterdv');
+  GetNamedProgramLocalParameterfv := GetAddress('GetNamedProgramLocalParameterfv');
   GetNamedProgramiv := GetAddress('GetNamedProgramiv');
   GetNamedProgramString := GetAddress('GetNamedProgramString');
-  NamedProgramLocalParameters4fv :=
-    GetAddress('NamedProgramLocalParameters4fv');
+  NamedProgramLocalParameters4fv := GetAddress('NamedProgramLocalParameters4fv');
   NamedProgramLocalParameterI4i := GetAddress('NamedProgramLocalParameterI4i');
-  NamedProgramLocalParameterI4iv :=
-    GetAddress('NamedProgramLocalParameterI4iv');
-  NamedProgramLocalParametersI4iv :=
-    GetAddress('NamedProgramLocalParametersI4iv');
-  NamedProgramLocalParameterI4ui :=
-    GetAddress('NamedProgramLocalParameterI4ui');
-  NamedProgramLocalParameterI4uiv :=
-    GetAddress('NamedProgramLocalParameterI4uiv');
-  NamedProgramLocalParametersI4uiv :=
-    GetAddress('NamedProgramLocalParametersI4uiv');
-  GetNamedProgramLocalParameterIiv :=
-    GetAddress('GetNamedProgramLocalParameterIiv');
-  GetNamedProgramLocalParameterIuiv :=
-    GetAddress('GetNamedProgramLocalParameterIuiv');
+  NamedProgramLocalParameterI4iv := GetAddress('NamedProgramLocalParameterI4iv');
+  NamedProgramLocalParametersI4iv := GetAddress('NamedProgramLocalParametersI4iv');
+  NamedProgramLocalParameterI4ui := GetAddress('NamedProgramLocalParameterI4ui');
+  NamedProgramLocalParameterI4uiv := GetAddress('NamedProgramLocalParameterI4uiv');
+  NamedProgramLocalParametersI4uiv := GetAddress('NamedProgramLocalParametersI4uiv');
+  GetNamedProgramLocalParameterIiv := GetAddress('GetNamedProgramLocalParameterIiv');
+  GetNamedProgramLocalParameterIuiv := GetAddress('GetNamedProgramLocalParameterIuiv');
   TextureParameterIiv := GetAddress('TextureParameterIiv');
   TextureParameterIuiv := GetAddress('TextureParameterIuiv');
   GetTextureParameterIiv := GetAddress('GetTextureParameterIiv');
@@ -3747,24 +3637,20 @@ begin
   NamedFramebufferTexture2D := GetAddress('NamedFramebufferTexture2D');
   NamedFramebufferTexture3D := GetAddress('NamedFramebufferTexture3D');
   NamedFramebufferRenderbuffer := GetAddress('NamedFramebufferRenderbuffer');
-  GetNamedFramebufferAttachmentParameteriv :=
-    GetAddress('GetNamedFramebufferAttachmentParameteriv');
+  GetNamedFramebufferAttachmentParameteriv := GetAddress('GetNamedFramebufferAttachmentParameteriv');
   GenerateTextureMipmap := GetAddress('GenerateTextureMipmap');
   GenerateMultiTexMipmap := GetAddress('GenerateMultiTexMipmap');
   FramebufferDrawBuffer := GetAddress('FramebufferDrawBuffer');
   FramebufferDrawBuffers := GetAddress('FramebufferDrawBuffers');
   FramebufferReadBuffer := GetAddress('FramebufferReadBuffer');
   GetFramebufferParameteriv := GetAddress('GetFramebufferParameteriv');
-  NamedRenderbufferStorageMultisample :=
-    GetAddress('NamedRenderbufferStorageMultisample');
-  NamedRenderbufferStorageMultisampleCoverage :=
-    GetAddress('NamedRenderbufferStorageMultisampleCoverage');
+  NamedRenderbufferStorageMultisample := GetAddress('NamedRenderbufferStorageMultisample');
+  NamedRenderbufferStorageMultisampleCoverage := GetAddress('NamedRenderbufferStorageMultisampleCoverage');
   NamedFramebufferTexture := GetAddress('NamedFramebufferTexture');
   NamedFramebufferTextureLayer := GetAddress('NamedFramebufferTextureLayer');
   NamedFramebufferTextureFace := GetAddress('NamedFramebufferTextureFace');
   TextureRenderbuffer := GetAddress('TextureRenderbuffer');
   MultiTexRenderbuffer := GetAddress('MultiTexRenderbuffer');
-
   FrameTerminatorGREMEDY := GetAddress('FrameTerminatorGREMEDY');
   StringMarkerGREMEDY := GetAddress('StringMarkerGREMEDY');
   DebugMessageEnableAMDX := GetAddressNoSuffixes('DebugMessageEnableAMDX');
@@ -3773,59 +3659,44 @@ begin
   DebugMessageInsert := GetAddress('DebugMessageInsert');
   DebugMessageCallback := GetAddress('DebugMessageCallback');
   GetDebugMessageLog := GetAddress('GetDebugMessageLog');
-
   PushDebugGroup := GetAddress('PushDebugGroup');
   PopDebugGroup := GetAddress('PopDebugGroup');
   ObjectLabel := GetAddress('ObjectLabel');
   GetObjectLabel := GetAddress('GetObjectLabel');
   ObjectPtrLabel := GetAddress('ObjectPtrLabel');
   GetObjectPtrLabel := GetAddress('GetObjectPtrLabel');
-
   ClearBufferData := GetAddress('ClearBufferData');
   ClearBufferSubData := GetAddress('ClearBufferSubData');
   ClearNamedBufferData := GetAddress('ClearNamedBufferData');
   ClearNamedBufferSubData := GetAddress('ClearNamedBufferSubData');
-
   DispatchCompute := GetAddress('DispatchCompute');
   DispatchComputeIndirect := GetAddress('DispatchComputeIndirect');
-
   CopyImageSubData := GetAddress('CopyImageSubData');
-
   FramebufferParameteri := GetAddress('FramebufferParameteri');
   NamedFramebufferParameteri := GetAddress('NamedFramebufferParameteri');
-  GetNamedFramebufferParameteriv :=
-    GetAddress('GetNamedFramebufferParameteriv');
-
+  GetNamedFramebufferParameteriv := GetAddress('GetNamedFramebufferParameteriv');
   GetInternalformati64v := GetAddress('GetInternalformati64v');
-
   InvalidateTexSubImage := GetAddress('InvalidateTexSubImage');
   InvalidateTexImage := GetAddress('InvalidateTexImage');
   InvalidateBufferSubData := GetAddress('InvalidateBufferSubData');
   InvalidateBufferData := GetAddress('InvalidateBufferData');
   InvalidateFramebuffer := GetAddress('InvalidateFramebuffer');
   InvalidateSubFramebuffer := GetAddress('InvalidateSubFramebuffer');
-
   MultiDrawArraysIndirect := GetAddress('MultiDrawArraysIndirect');
   MultiDrawElementsIndirect := GetAddress('MultiDrawElementsIndirect');
-
   GetProgramInterfaceiv := GetAddress('GetProgramInterfaceiv');
   GetProgramResourceIndex := GetAddress('GetProgramResourceIndex');
   GetProgramResourceName := GetAddress('GetProgramResourceName');
   GetProgramResourceiv := GetAddress('GetProgramResourceiv');
   GetProgramResourceLocation := GetAddress('GetProgramResourceLocation');
-  GetProgramResourceLocationIndex :=
-    GetAddress('GetProgramResourceLocationIndex');
-
+  GetProgramResourceLocationIndex := GetAddress('GetProgramResourceLocationIndex');
   ShaderStorageBlockBinding := GetAddress('ShaderStorageBlockBinding');
-
   TexBufferRange := GetAddress('TexBufferRange');
   TextureBufferRange := GetAddress('TextureBufferRange');
-
   TexStorage2DMultisample := GetAddress('TexStorage2DMultisample');
   TexStorage3DMultisample := GetAddress('TexStorage3DMultisample');
   TextureStorage2DMultisample := GetAddress('TextureStorage2DMultisample');
   TextureStorage3DMultisample := GetAddress('TextureStorage3DMultisample');
-
   BufferStorage := GetAddress('BufferStorage');
   ClearTexImage := GetAddress('ClearTexImage');
   ClearTexSubImage := GetAddress('ClearTexSubImage');
@@ -3835,9 +3706,7 @@ begin
   BindSamplers := GetAddress('BindSamplers');
   BindImageTextures := GetAddress('BindImageTextures');
   BindVertexBuffers := GetAddress('BindVertexBuffers');
-
   TextureView := GetAddress('TextureView');
-
   BindVertexBuffer := GetAddress('BindVertexBuffer');
   VertexAttribFormat := GetAddress('VertexAttribFormat');
   VertexAttribIFormat := GetAddress('VertexAttribIFormat');
@@ -3846,17 +3715,11 @@ begin
   VertexBindingDivisor := GetAddress('VertexBindingDivisor');
   VertexArrayBindVertexBuffer := GetAddress('VertexArrayBindVertexBuffer');
   VertexArrayVertexAttribFormat := GetAddress('VertexArrayVertexAttribFormat');
-  VertexArrayVertexAttribIFormat :=
-    GetAddress('VertexArrayVertexAttribIFormat');
-  VertexArrayVertexAttribLFormat :=
-    GetAddress('VertexArrayVertexAttribLFormat');
-  VertexArrayVertexAttribBinding :=
-    GetAddress('VertexArrayVertexAttribBinding');
-  VertexArrayVertexBindingDivisor :=
-    GetAddress('VertexArrayVertexBindingDivisor');
-
+  VertexArrayVertexAttribIFormat := GetAddress('VertexArrayVertexAttribIFormat');
+  VertexArrayVertexAttribLFormat := GetAddress('VertexArrayVertexAttribLFormat');
+  VertexArrayVertexAttribBinding := GetAddress('VertexArrayVertexAttribBinding');
+  VertexArrayVertexBindingDivisor := GetAddress('VertexArrayVertexBindingDivisor');
   CreateSyncFromCLevent := GetAddress('CreateSyncFromCLevent');
-
   GenPathsNV := GetAddressNoSuffixes('GenPathsNV');
   DeletePathsNV := GetAddressNoSuffixes('DeletePathsNV');
   IsPathNV := GetAddressNoSuffixes('IsPathNV');
@@ -3878,18 +3741,15 @@ begin
   PathStencilFuncNV := GetAddressNoSuffixes('PathStencilFuncNV');
   StencilFillPathNV := GetAddressNoSuffixes('StencilFillPathNV');
   StencilStrokePathNV := GetAddressNoSuffixes('StencilStrokePathNV');
-  StencilFillPathInstancedNV := GetAddressNoSuffixes
-    ('StencilFillPathInstancedNV');
-  StencilStrokePathInstancedNV := GetAddressNoSuffixes
-    ('StencilStrokePathInstancedNV');
+  StencilFillPathInstancedNV := GetAddressNoSuffixes('StencilFillPathInstancedNV');
+  StencilStrokePathInstancedNV := GetAddressNoSuffixes('StencilStrokePathInstancedNV');
   PathColorGenNV := GetAddressNoSuffixes('PathColorGenNV');
   PathTexGenNV := GetAddressNoSuffixes('PathTexGenNV');
   PathFogGenNV := GetAddressNoSuffixes('PathFogGenNV');
   CoverFillPathNV := GetAddressNoSuffixes('CoverFillPathNV');
   CoverStrokePathNV := GetAddressNoSuffixes('CoverStrokePathNV');
   CoverFillPathInstancedNV := GetAddressNoSuffixes('CoverFillPathInstancedNV');
-  CoverStrokePathInstancedNV := GetAddressNoSuffixes
-    ('CoverStrokePathInstancedNV');
+  CoverStrokePathInstancedNV := GetAddressNoSuffixes('CoverStrokePathInstancedNV');
   GetPathParameterivNV := GetAddressNoSuffixes('GetPathParameterivNV');
   GetPathParameterfvNV := GetAddressNoSuffixes('GetPathParameterfvNV');
   GetPathCommandsNV := GetAddressNoSuffixes('GetPathCommandsNV');
@@ -5313,8 +5173,6 @@ begin
     CheckExtension('WGL_EXT_create_context_es2_profile');
 end;
 
-// ReadWGLExtensions
-
 procedure TGLExtensionsAndEntryPoints.ReadWGLExtensions;
 begin
   // ARB wgl extensions
@@ -5589,7 +5447,6 @@ end;
 {$ENDIF}
 
 {$IFDEF EGL_SUPPORT}
-
 procedure TGLExtensionsAndEntryPoints.ReadEGLImplementationProperties;
 var
   MajorVersion, MinorVersion: integer;

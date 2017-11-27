@@ -4455,7 +4455,7 @@ end;
 function TGLGizmoExActionHistoryCollection.Add: TGLGizmoExActionHistoryItem;
 begin
   Result := nil;
-  //≈сли был использован ундо затираем предедущие записи
+  //If used undo then rewrite previous record
   if FItemIndex = Count - 1 then
   begin
     Result := TGLGizmoExActionHistoryItem(inherited Add);
@@ -4468,7 +4468,7 @@ begin
     Result := Items[FItemIndex];
     FItemIndex := FItemIndex + 1;
   end;
-  //—тираем элементы если количествой записей превышено потолка
+  // if number of record greater then maxcount then delete elements
   if Count - 1 > MaxCount then
   begin
     Delete(0);

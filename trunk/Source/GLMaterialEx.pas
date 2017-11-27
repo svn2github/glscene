@@ -104,9 +104,7 @@ type
 
   CGLBaseMaterialCollectionItem = class of TGLBaseMaterialCollectionItem;
 
-  TGLLibMaterialProperty = class(
-      TGLUpdateAbleObject,
-      IGLMaterialLibrarySupported)
+  TGLLibMaterialProperty = class(TGLUpdateAbleObject, IGLMaterialLibrarySupported)
   protected
     FEnabled: Boolean;
     FNextPassName: TGLLibMaterialName;
@@ -1254,7 +1252,7 @@ begin
     Result := (Result shl 1) + Byte(AName[i]);
 end;
 
-procedure Div2(var Value: Integer);{$IFDEF GLS_INLINE} inline;{$ENDIF}
+procedure Div2(var Value: Integer); inline;
 begin
   Value := Value div 2;
   if Value = 0 then
@@ -2559,7 +2557,7 @@ begin
               SamplerParameteri(ID, GL_TEXTURE_SRGB_DECODE_EXT,
                 GL_SKIP_DECODE_EXT);
           end;
-{$IFDEF GLS_OPENGL_DEBUG}
+{$IFDEF USE_OPENGL_DEBUG}
           CheckError;
 {$ENDIF}
 
@@ -2716,6 +2714,7 @@ begin
   end;
 end;
 
+{ TVXTextureCombiner }
 procedure TGLTextureCombiner.Assign(Source: TPersistent);
 var
   LCombiner: TGLTextureCombiner;
@@ -2837,6 +2836,7 @@ begin
 end;
 
 
+{ TVXLibMaterialEx }
 procedure TGLLibMaterialEx.Apply(var ARci: TGLRenderContextInfo);
 var
   LevelReady: array[TGLMaterialLevel] of Boolean;
@@ -3182,6 +3182,7 @@ begin
     FNextPass.Apply(ARCi);
 end;
 
+{ TVXMultitexturingProperties }
 procedure TGLMultitexturingProperties.Apply(var ARci: TGLRenderContextInfo);
 var
   N, U: Integer;
@@ -3435,6 +3436,7 @@ begin
     GL.Disable(GL_VERTEX_PROGRAM_ARB);
 end;
 
+{ TVXTextureProperties }
 procedure TGLTextureProperties.Apply(var ARci: TGLRenderContextInfo);
 var
   glTarget: Cardinal;
@@ -4031,6 +4033,7 @@ begin
     end;
 end;
 
+{ TVXShaderEx }
 procedure TGLShaderEx.Assign(Source: TPersistent);
 var
   LShader: TGLShaderEx;
@@ -4254,6 +4257,7 @@ begin
 end;
 
 
+{ TVXLibMaterialProperty }
 function TGLLibMaterialProperty.GetMaterial: TGLLibMaterialEx;
 begin
   if Owner is TGLLibMaterialEx then
@@ -4317,6 +4321,7 @@ begin
 end;
 
 
+{ TVXLibMaterialsEx }
 function TGLLibMaterialsEx.Add: TGLLibMaterialEx;
 begin
   Result := (inherited Add) as TGLLibMaterialEx;
@@ -4374,6 +4379,7 @@ begin
   inherited Items[AIndex] := AValue;
 end;
 
+{ TVXBaseShaderModel }
 procedure TGLBaseShaderModel.Apply(var ARci: TGLRenderContextInfo);
 var
   I: Integer;
@@ -5015,6 +5021,7 @@ begin
   ARci.amalgamating := False;
 end;
 
+{ TVXMatLibComponents }
 function TGLMatLibComponents.GetAttachmentByName(
   const AName: TGLMaterialComponentName): TGLFrameBufferAttachment;
 var
@@ -5192,6 +5199,7 @@ begin
 end;
 
 
+{ TVXMaterialLibraryEx }
 function TGLMaterialLibraryEx.AddAttachment(
   const AName: TGLMaterialComponentName): TGLFrameBufferAttachment;
 begin
@@ -5332,6 +5340,7 @@ begin
 end;
 
 
+{ TVXShaderUniformTexture }
 procedure TGLShaderUniformTexture.Apply(var ARci: TGLRenderContextInfo);
 
   function FindHotActiveUnit: Boolean;
@@ -5667,6 +5676,7 @@ begin
   end;
 end;
 
+{ TVXAbstractShaderUniform }
 function TGLAbstractShaderUniform.GetFloat: Single;
 begin
   FillChar(Result, SizeOf(Result), $00);
@@ -5882,6 +5892,7 @@ begin
 end;
 
 
+{ TVXShaderUniform }
 function TGLShaderUniform.GetFloat: Single;
 begin
   // TODO: Type checking
@@ -6159,6 +6170,7 @@ begin
   end;
 end;
 
+{ TVXShaderUniformDSA }
 procedure TGLShaderUniformDSA.SetFloat(const Value: TGLFloat);
 begin
   GL.ProgramUniform1f(GetProgram, FLocation, Value);
@@ -6254,6 +6266,7 @@ begin
     Value.W);
 end;
 
+{ TVXTextureSwizzling }
 procedure TGLTextureSwizzling.Assign(Source: TPersistent);
 var
   LSwizzling: TGLTextureSwizzling;
@@ -6319,6 +6332,7 @@ begin
   end;
 end;
 
+{ TVXFrameBufferAttachment }
 procedure TGLFrameBufferAttachment.Apply(var ARci: TGLRenderContextInfo);
 begin
   if FIsValid and not FOnlyWrite then
@@ -6923,6 +6937,7 @@ begin
 end;
 
 
+{ TVXASMVertexProgram }
 procedure TGLASMVertexProgram.Assign(Source: TPersistent);
 var
   LProg: TGLASMVertexProgram;

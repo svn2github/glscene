@@ -42,7 +42,7 @@ uses
   GLUtils, 
   GLSLog;
 
-{$UNDEF GLS_MULTITHREAD}
+{$UNDEF USE_MULTITHREAD}
 type
   TGLFaceProperties = class;
   TGLMaterial = class;
@@ -107,7 +107,7 @@ type
   protected
     {Invoked once, before the first call to DoApply.
      The call happens with the OpenGL context being active. }
-    procedure DoInitialize(var rci: TGLRenderContextInfo; Sender: TObject); dynamic;
+    procedure DoInitialize(var rci: TGLRenderContextInfo; Sender: TObject); virtual;
     {Request to apply the shader.
        Always followed by a DoUnApply when the shader is no longer needed. }
     procedure DoApply(var rci: TGLRenderContextInfo; Sender: TObject); virtual;
@@ -117,7 +117,7 @@ type
     function DoUnApply(var rci: TGLRenderContextInfo): Boolean; virtual;
     {Invoked once, before the destruction of context or release of shader.
        The call happens with the OpenGL context being active. }
-    procedure DoFinalize; dynamic;
+    procedure DoFinalize; virtual;
     function GetShaderInitialized: Boolean;
     procedure InitializeShader(var rci: TGLRenderContextInfo; Sender: TObject);
     procedure FinalizeShader;
@@ -628,8 +628,8 @@ type
     procedure DestroyHandles;
     procedure WriteToFiler(writer: TVirtualWriter);
     procedure ReadFromFiler(reader: TVirtualReader);
-    procedure SaveToStream(aStream: TStream); dynamic;
-    procedure LoadFromStream(aStream: TStream); dynamic;
+    procedure SaveToStream(aStream: TStream); virtual;
+    procedure LoadFromStream(aStream: TStream); virtual;
     procedure AddMaterialsFromStream(aStream: TStream);
     {Save library content to a file.
        Recommended extension : .GLML
@@ -998,7 +998,7 @@ end;
 
 procedure TGLShader.Apply(var rci: TGLRenderContextInfo; Sender: TObject);
 begin
-{$IFNDEF GLS_MULTITHREAD}
+{$IFNDEF USE_MULTITHREAD}
   Assert(not FShaderActive, 'Unbalanced shader application.');
 {$ENDIF}
   // Need to check it twice, because shader may refuse to initialize
@@ -1015,7 +1015,7 @@ end;
 
 function TGLShader.UnApply(var rci: TGLRenderContextInfo): Boolean;
 begin
-{$IFNDEF GLS_MULTITHREAD}
+{$IFNDEF USE_MULTITHREAD}
   Assert(FShaderActive, 'Unbalanced shader application.');
 {$ENDIF}
   if Enabled then
@@ -1045,7 +1045,7 @@ end;
 
 procedure TGLShader.SetEnabled(val: Boolean);
 begin
-{$IFNDEF GLS_MULTITHREAD}
+{$IFNDEF USE_MULTITHREAD}
   Assert(not FShaderActive, 'Shader is active.');
 {$ENDIF}
   if val <> FEnabled then

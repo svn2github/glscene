@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 { 
-  Activate GLS_LOGGING in "GLSCene.inc" to turn on inner GLScene logger. 
+  Activate USE_LOGGING in "GLSCene.inc" to turn on inner GLScene logger. 
   You may have only one instance of TGLSLogger 
   To obtain it, call UserLog() function from any unit. 
 
@@ -132,7 +132,7 @@ type
     FDisplayLogOnExitIfItContains: TLogLevels;
     FWriteInternalMessages: Boolean;
     FDisplayErrorDialogs: Boolean;
-{$IFNDEF GLS_LOGGING}
+{$IFNDEF USE_LOGGING}
     constructor OnlyCreate;
 {$ENDIF}
     procedure SetBuffered(const Value: Boolean);
@@ -177,7 +177,7 @@ type
       const args: array of const; const ALevel: TLogLevel = lkError);
 
     {  Logs a string  Desc  if  Level 
-      matches current GLS_LOGGING level (see @Link(LogLevels)) }
+      matches current USE_LOGGING level (see @Link(LogLevels)) }
     procedure LogDebug(const Desc: string);
     procedure LogInfo(const Desc: string);
     procedure LogNotice(const Desc: string);
@@ -298,7 +298,7 @@ function GLSLogger(): TGLLogSession;
 begin
   if v_GLSLogger = nil then
   begin
-  {$IFDEF GLS_LOGGING}
+  {$IFDEF USE_LOGGING}
     v_GLSLogger := TGLLogSession.Init(Copy(ExtractFileName(ParamStr(0)), 1,
     Length(ExtractFileName(ParamStr(0))) - Length(ExtractFileExt(ParamStr(0)))) +
     '.log', lfElapsed, llMax);
@@ -648,7 +648,7 @@ end;
 
 procedure TGLLogSession.SetMode(const NewMode: TLogLevels);
 begin
-{$IFNDEF GLS_LOGGING}
+{$IFNDEF USE_LOGGING}
   if Self = v_GLSLogger then
     Exit;
 {$ENDIF}
@@ -804,7 +804,7 @@ begin
     ChangeBufferedState();
 end;
 
-{$IFNDEF GLS_LOGGING}
+{$IFNDEF USE_LOGGING}
 
 constructor TGLLogSession.OnlyCreate;
 begin
@@ -971,7 +971,7 @@ var
   I: TLogLevel;
 begin
   FDestroying := True;
-{$IFNDEF GLS_LOGGING}
+{$IFNDEF USE_LOGGING}
   if Self = v_GLSLogger then
     Exit;
 {$ENDIF}
@@ -1056,7 +1056,7 @@ procedure TGLLogSession.LogEmtryLine;
 begin
  if not FEnabled then Exit;
 
-{$IFNDEF GLS_LOGGING}
+{$IFNDEF USE_LOGGING}
   if Self = v_GLSLogger then
     Exit;
 {$ENDIF}
@@ -1138,7 +1138,7 @@ procedure TGLLogSession.AppendLog(const AString: string; const ALevel: TLogLevel
 var
   line: string;
 begin
-{$IFNDEF GLS_LOGGING}
+{$IFNDEF USE_LOGGING}
   if Self = v_GLSLogger then
     Exit;
 {$ENDIF}
@@ -1165,7 +1165,7 @@ begin
   else
     line := AString;
 
-{$IFDEF GLS_MULTITHREAD}
+{$IFDEF USE_MULTITHREAD}
   if (FLogThreadId) then
     line := #9 + 'Thread ID ' + IntToStr(PtrUInt(GetCurrentThreadId)) + #9 + line;
 {$ENDIF}

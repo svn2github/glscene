@@ -42,11 +42,8 @@ type
     aresMesh);
 
   TAFIOCreateFileStream = function(const fileName: string; mode: Word): TStream;
-
   TAFIOFileStreamExists = function(const fileName: string): Boolean;
-
-   TAFIOFileStreamEvent = procedure (const fileName : String; mode : Word; var Stream : TStream) of object;
-
+  TAFIOFileStreamEvent = procedure (const fileName : String; mode : Word; var Stream : TStream) of object;
   TAFIOFileStreamExistsEvent = function(const fileName: string): Boolean of object;
 
   { Allows specifying a custom behaviour for GLApplicationFileIO's CreateFileStream.
@@ -56,7 +53,6 @@ type
     the last one created will be the active one. }
   TGLApplicationFileIO = class(TComponent)
   private
-
     FOnFileStream: TAFIOFileStreamEvent;
     FOnFileStreamExists: TAFIOFileStreamExistsEvent;
   public
@@ -87,18 +83,17 @@ type
     FResourceName: string;
     procedure SetResourceName(const AName: string);
   public
-
     {Describes what the TGLDataFile is capable of.
        Default value is [dfcRead]. }
     class function Capabilities: TGLDataFileCapabilities; virtual;
     {Duplicates Self and returns a copy.
        Subclasses should override this method to duplicate their data. }
-    function CreateCopy(AOwner: TPersistent): TGLDataFile; dynamic;
-    procedure LoadFromFile(const fileName: string); dynamic;
-    procedure SaveToFile(const fileName: string); dynamic;
-    procedure LoadFromStream(stream: TStream); dynamic;
-    procedure SaveToStream(stream: TStream); dynamic;
-    procedure Initialize; dynamic;
+    function CreateCopy(AOwner: TPersistent): TGLDataFile; virtual;
+    procedure LoadFromFile(const fileName: string); virtual;
+    procedure SaveToFile(const fileName: string); virtual;
+    procedure LoadFromStream(stream: TStream); virtual;
+    procedure SaveToStream(stream: TStream); virtual;
+    procedure Initialize; virtual;
     {Optionnal resource name.
        When using LoadFromFile/SaveToFile, the filename is placed in it,
        when using the Stream variants, the caller may place the resource
@@ -130,12 +125,8 @@ var
   vAFIOCreateFileStream: TAFIOCreateFileStream = nil;
   vAFIOFileStreamExists: TAFIOFileStreamExists = nil;
 
-  // ---------------------------------------------------------------------
-  // ---------------------------------------------------------------------
-  // ---------------------------------------------------------------------
+// ---------------------------------------------------------------------
 implementation
-// ---------------------------------------------------------------------
-// ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
 
 var

@@ -105,9 +105,9 @@ type
       override;
     procedure CreateWnd; override;
     procedure Loaded; override;
-    procedure DoBeforeRender(Sender: TObject); dynamic;
+    procedure DoBeforeRender(Sender: TObject); virtual;
     procedure DoBufferChange(Sender: TObject); virtual;
-    procedure DoBufferStructuralChange(Sender: TObject); dynamic;
+    procedure DoBufferStructuralChange(Sender: TObject); virtual;
     procedure MouseMove(Shift: TShiftState; X, Y: Integer); override;
   public
     constructor Create(AOwner: TComponent); override;

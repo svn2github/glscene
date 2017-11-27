@@ -15,8 +15,8 @@ interface
 uses
   System.Classes,
   System.SysUtils,
-  
-  //OpenGLTokens,
+
+  OpenGLTokens,
   GLTexture,
   GLCadencer,
   GLContext,
@@ -31,7 +31,6 @@ uses
 
 type
   ECgBombShaderException = class(ECgShaderException);
-
   TGLCgBombShaderTextureSource = (stsPrimaryTexture, stsSecondadyTexture,
                                   stsThirdTexture, stsUserSelectedTexture);
 
@@ -39,12 +38,10 @@ type
   TCgCustomBombShader = class(TCadencableCustomCgShader, IGLMaterialLibrarySupported)
   private
     FMaterialLibrary: TGLAbstractMaterialLibrary;
-
     FGradientTexture: TGLTexture;
     FMainTexture:     TGLTexture;
     FMainTextureName:     TGLLibMaterialName;
     FGradientTextureName: TGLLibMaterialName;
-
     FSharpness:  Single;
     FColorRange: Single;
     FSpeed:      Single;
@@ -54,18 +51,15 @@ type
     FColorSharpness: Single;
     FGradientTextureShare: Single;
     FMainTextureShare: Single;
-
-{$IFNDEF GLS_OPTIMIZATIONS}
+{$IFNDEF USE_OPTIMIZATIONS}
     FMainTextureSource: TGLCgBombShaderTextureSource;
 {$ENDIF}
     procedure SetGradientTexture(const Value: TGLTexture);
     procedure SetMainTexture(const Value: TGLTexture);
-
     function GetMainTextureName: TGLLibMaterialName;
     procedure SetMainTextureName(const Value: TGLLibMaterialName);
     function GetGradientTextureName: TGLLibMaterialName;
     procedure SetGradientTextureName(const Value: TGLLibMaterialName);
-
     function StoreColorRange: Boolean;
     function StoreColorSharpness: Boolean;
     function StoreDisplacement: Boolean;
@@ -74,31 +68,24 @@ type
     function StoreSpeed: Boolean;
     function StoreTurbDensity: Boolean;
     function StoreMainTextureShare: Boolean;
-
     // Implementing IGLMaterialLibrarySupported.
     function GetMaterialLibrary: TGLAbstractMaterialLibrary;
-
   protected
     procedure DoInitialize(var rci : TGLRenderContextInfo; Sender : TObject); override;
     procedure DoApply(var rci: TGLRenderContextInfo; Sender: TObject); override;
     procedure OnApplyVP(CgProgram: TCgProgram; Sender: TObject); virtual;
     procedure OnApplyFP(CgProgram: TCgProgram; Sender: TObject); virtual;
     procedure OnUnApplyFP(CgProgram: TCgProgram); virtual;
-
     procedure SetMaterialLibrary(const Value: TGLAbstractMaterialLibrary); virtual;
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
   public
     constructor Create(AOwner: TComponent); override;
-
     property MainTexture: TGLTexture read FMainTexture write SetMainTexture;
     property MainTextureName: TGLLibMaterialName read GetMainTextureName write SetMainTextureName;
-
     property GradientTexture: TGLTexture read FGradientTexture write SetGradientTexture;
     property GradientTextureName: TGLLibMaterialName read GetGradientTextureName write SetGradientTextureName;
-
     property GradientTextureShare: Single read FGradientTextureShare write FGradientTextureShare stored StoreGradientTextureShare;
     property MainTextureShare: Single read FMainTextureShare write FMainTextureShare stored StoreMainTextureShare;
-
     property Alpha: Single read FAlpha write FAlpha;
     property Displacement: Single read FDisplacement write FDisplacement stored StoreDisplacement;
     property Sharpness: Single read FSharpness write FSharpness stored StoreSharpness;
@@ -106,7 +93,7 @@ type
     property Speed: Single read FSpeed write FSpeed stored StoreSpeed;
     property TurbDensity: Single read FTurbDensity write FTurbDensity stored StoreTurbDensity;
     property ColorRange: Single read FColorRange write FColorRange stored StoreColorRange;
-{$IFNDEF GLS_OPTIMIZATIONS}
+{$IFNDEF USE_OPTIMIZATIONS}
     property MainTextureSource: TGLCgBombShaderTextureSource read FMainTextureSource write FMainTextureSource;
 {$ENDIF}
     property MaterialLibrary: TGLAbstractMaterialLibrary read FMaterialLibrary write SetMaterialLibrary;
@@ -122,10 +109,8 @@ type
   published
     property MainTextureShare;
     property MainTextureName;
-
     property GradientTextureShare;
     property GradientTextureName;
-
     property Alpha;
     property Cadencer;
     property Displacement;
@@ -138,7 +123,9 @@ type
     property DesignEnable;
   end;
 
+//=============================================================
 implementation
+//=============================================================
 
 const
   EPS = 0.001;
@@ -163,7 +150,7 @@ begin
   FColorRange := 0.24;
   FGradientTextureShare := 0.7;
   FMainTextureShare := 0.7;
-{$IFNDEF GLS_OPTIMIZATIONS}
+{$IFNDEF USE_OPTIMIZATIONS}
   FMainTextureSource := stsUserSelectedTexture;
 {$ENDIF}
 end;
@@ -173,7 +160,7 @@ procedure TCgCustomBombShader.DoApply(var rci: TGLRenderContextInfo; Sender: TOb
 begin
   VertexProgram.Apply(rci, Sender);
   FragmentProgram.Apply(rci, Sender);
-{$IFDEF GLS_OPTIMIZATIONS}
+{$IFDEF USE_OPTIMIZATIONS}
   if FMainTexture <> nil then
     FragmentProgram.ParamByName('MainTextureSampler').SetAsTexture2D(FMainTexture.Handle);
 {$ELSE}
@@ -468,7 +455,7 @@ end;
 procedure TCgBombShader.DoApply(var rci: TGLRenderContextInfo;
   Sender: TObject);
 begin
-{$IFNDEF GLS_OPTIMIZATIONS}
+{$IFNDEF USE_OPTIMIZATIONS}
   if (not (csDesigning in ComponentState)) or DesignEnable then
     inherited;
 {$ENDIF}
@@ -476,7 +463,7 @@ end;
 
 procedure TCgBombShader.DoInitialize(var rci : TGLRenderContextInfo; Sender : TObject);
 begin
-{$IFNDEF GLS_OPTIMIZATIONS}
+{$IFNDEF USE_OPTIMIZATIONS}
   if (not (csDesigning in ComponentState)) or DesignEnable then
     inherited;
 {$ENDIF}
@@ -485,7 +472,7 @@ end;
 procedure TCgBombShader.OnApplyFP(CgProgram: TCgProgram;
   Sender: TObject);
 begin
-{$IFNDEF GLS_OPTIMIZATIONS}
+{$IFNDEF USE_OPTIMIZATIONS}
   if (not (csDesigning in ComponentState)) or DesignEnable then
     inherited;
 {$ENDIF}
@@ -494,7 +481,7 @@ end;
 procedure TCgBombShader.OnApplyVP(CgProgram: TCgProgram;
   Sender: TObject);
 begin
-{$IFNDEF GLS_OPTIMIZATIONS}
+{$IFNDEF USE_OPTIMIZATIONS}
   if (not (csDesigning in ComponentState)) or DesignEnable then
     inherited;
 {$ENDIF}
@@ -502,7 +489,7 @@ end;
 
 procedure TCgBombShader.OnUnApplyFP(CgProgram: TCgProgram);
 begin
-{$IFNDEF GLS_OPTIMIZATIONS}
+{$IFNDEF USE_OPTIMIZATIONS}
   if (not (csDesigning in ComponentState)) or DesignEnable then
     inherited;
 {$ENDIF}

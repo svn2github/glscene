@@ -177,7 +177,7 @@ type
        that will be used throughout the whole rendering, per-frame
        initialization should take place here.
        OpenGL states/matrices should not be altered in any way here. }
-    procedure InitializeRendering(var rci: TGLRenderContextInfo); dynamic; abstract;
+    procedure InitializeRendering(var rci: TGLRenderContextInfo); virtual; abstract;
     {Triggered just before rendering a set of particles.
        The current OpenGL state should be assumed to be the "base" one as
        was found during InitializeRendering. Manager-specific states should
@@ -196,7 +196,7 @@ type
        caches of GLMisc), it should be restored back to the "base" state. }
     procedure EndParticles(var rci: TGLRenderContextInfo); virtual; abstract;
     {Invoked when rendering of particles for this manager is done. }
-    procedure FinalizeRendering(var rci: TGLRenderContextInfo); dynamic; abstract;
+    procedure FinalizeRendering(var rci: TGLRenderContextInfo); virtual; abstract;
     {ID for the next created particle. }
     property NextID: Integer read FNextID write FNextID;
     {Blending mode for the particles.
@@ -226,7 +226,6 @@ type
        to Particles.ItemCount, and the value returned by this method will
        be the one honoured at render time. }
     function ParticleCount: Integer; virtual;
-
     {If True the manager will free itself when its particle count reaches zero.
        Check happens in the progression event, use with caution and only
        if you know what you're doing! }
@@ -419,7 +418,7 @@ type
     procedure SetAcceleration(const val: TGLCoordinates);
     {Returns the maximum age for a particle.
        Particles older than that will be killed by DoProgress. }
-    function MaxParticleAge: Single; dynamic; abstract;
+    function MaxParticleAge: Single; virtual; abstract;
     property CurrentTime: Double read FCurrentTime;
   public
     constructor Create(aOwner: TComponent); override;
@@ -488,7 +487,6 @@ type
      Particles have a core and edge color, for subclassing. }
   TGLLifeColoredPFXManager = class(TGLDynamicPFXManager)
   private
-     
     FLifeColors: TPFXLifeColors;
     FLifeColorsLookup: TList;
     FLifeRotations: Boolean;
@@ -716,10 +714,6 @@ function GetOrCreateSourcePFX(obj: TGLBaseSceneObject; const name: string = ''):
 
 // ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 function GetOrCreateSourcePFX(obj: TGLBaseSceneObject; const name: string = ''): TGLSourcePFXEffect;

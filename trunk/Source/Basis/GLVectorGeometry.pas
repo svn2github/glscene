@@ -21,14 +21,17 @@
   than extended-based ones from "Math").
 
   History:
-    14/02/1999 - Mike Lischke - last change of Version 2.3
-    The whole history is logged in previous version of the unit
+
+   Based on Geometry.pas v.2.5 by Mike Lischke from 04. January 2000
+   The history is logged in a former GLS version of the unit.
 }
+
 unit GLVectorGeometry;
 
 interface
 
 {$I GLScene.inc}
+
 uses
   System.SysUtils,
   System.Types,
@@ -42,8 +45,6 @@ const
 
 type
   // data types needed for 3D graphics calculation,
-  // included are 'C like' aliases for each type (to be
-  // conformal with OpenGL types)
   PFloat = PSingle;
 
   PTexPoint = ^TTexPoint;
@@ -99,6 +100,7 @@ type
 
   PHomogeneousByteVector = ^THomogeneousByteVector;
   THomogeneousByteVector = TVector4b;
+
   PHomogeneousWordVector = ^THomogeneousWordVector;
   THomogeneousWordVector = TVector4w;
 
@@ -213,10 +215,10 @@ type
     Left, Top, Width, Height: Integer;
   end;
 
+  PFrustum = ^TFrustum;
   TFrustum = record
     pLeft, pTop, pRight, pBottom, pNear, pFar: THmgPlane;
   end;
-  PFrustum = ^TFrustum;
 
   TTransType = (ttScaleX, ttScaleY, ttScaleZ, ttShearXY, ttShearXZ, ttShearYZ,
     ttRotateX, ttRotateY, ttRotateZ, ttTranslateX, ttTranslateY, ttTranslateZ,
@@ -868,15 +870,15 @@ function CreateRotationMatrix(const anAxis: TVector; angle: Single): TMatrix; ov
 function CreateAffineRotationMatrix(const anAxis: TAffineVector; angle: Single): TAffineMatrix;
 
 // Multiplies two 3x3 matrices
-function MatrixMultiply(const m1, m2: TAffineMatrix): TAffineMatrix; overload; {$IFDEF GLS_FASTMATH}inline;{$ENDIF}
+function MatrixMultiply(const m1, m2: TAffineMatrix): TAffineMatrix; overload; {$IFDEF USE_FASTMATH}inline;{$ENDIF}
 
 // Multiplies two 4x4 matrices
-function MatrixMultiply(const m1, m2: TMatrix): TMatrix; overload; {$IFDEF GLS_FASTMATH}inline;{$ENDIF}
+function MatrixMultiply(const m1, m2: TMatrix): TMatrix; overload; {$IFDEF USE_FASTMATH}inline;{$ENDIF}
 // Multiplies M1 by M2 and places result in MResult
-procedure MatrixMultiply(const m1, m2: TMatrix; var MResult: TMatrix); overload; {$IFDEF GLS_FASTMATH}inline;{$ENDIF}
+procedure MatrixMultiply(const m1, m2: TMatrix; var MResult: TMatrix); overload; {$IFDEF USE_FASTMATH}inline;{$ENDIF}
 
 // Transforms a homogeneous vector by multiplying it with a matrix
-function VectorTransform(const V: TVector; const M: TMatrix): TVector; overload; {$IFDEF GLS_FASTMATH}inline;{$ENDIF}
+function VectorTransform(const V: TVector; const M: TMatrix): TVector; overload; {$IFDEF USE_FASTMATH}inline;{$ENDIF}
 // Transforms a homogeneous vector by multiplying it with a matrix
 function VectorTransform(const V: TVector; const M: TAffineMatrix): TVector; overload; inline;
 // Transforms an affine vector by multiplying it with a matrix
@@ -885,9 +887,9 @@ function VectorTransform(const V: TAffineVector; const M: TMatrix): TAffineVecto
 function VectorTransform(const V: TAffineVector; const M: TAffineMatrix): TAffineVector; overload; inline;
 
 // Determinant of a 3x3 matrix
-function MatrixDeterminant(const M: TAffineMatrix): Single; overload;  {$IFDEF GLS_FASTMATH}inline;{$ENDIF}
+function MatrixDeterminant(const M: TAffineMatrix): Single; overload;  {$IFDEF USE_FASTMATH}inline;{$ENDIF}
 // Determinant of a 4x4 matrix
-function MatrixDeterminant(const M: TMatrix): Single; overload; {$IFDEF GLS_FASTMATH}inline;{$ENDIF}
+function MatrixDeterminant(const M: TMatrix): Single; overload; {$IFDEF USE_FASTMATH}inline;{$ENDIF}
 
 { Adjoint of a 4x4 matrix, used in the computation of the inverse of a 4x4 matrix }
 procedure AdjointMatrix(var M: TMatrix); overload;
@@ -908,17 +910,17 @@ procedure TranslateMatrix(var M: TMatrix; const V: TVector); overload;
 procedure NormalizeMatrix(var M: TMatrix);
 
 // Computes transpose of 3x3 matrix
-procedure TransposeMatrix(var M: TAffineMatrix); overload; {$IFDEF GLS_FASTMATH}inline;{$ENDIF}
+procedure TransposeMatrix(var M: TAffineMatrix); overload; {$IFDEF USE_FASTMATH}inline;{$ENDIF}
 // Computes transpose of 4x4 matrix
-procedure TransposeMatrix(var M: TMatrix); overload; {$IFDEF GLS_FASTMATH}inline;{$ENDIF}
+procedure TransposeMatrix(var M: TMatrix); overload; {$IFDEF USE_FASTMATH}inline;{$ENDIF}
 
 // Finds the inverse of a 4x4 matrix
-procedure InvertMatrix(var M: TMatrix); overload; {$IFDEF GLS_FASTMATH}inline;{$ENDIF}
-function MatrixInvert(const M: TMatrix): TMatrix; overload; {$IFDEF GLS_FASTMATH}inline;{$ENDIF}
+procedure InvertMatrix(var M: TMatrix); overload; {$IFDEF USE_FASTMATH}inline;{$ENDIF}
+function MatrixInvert(const M: TMatrix): TMatrix; overload; {$IFDEF USE_FASTMATH}inline;{$ENDIF}
 
 // Finds the inverse of a 3x3 matrix;
-procedure InvertMatrix(var M: TAffineMatrix); overload; {$IFDEF GLS_FASTMATH}inline;{$ENDIF}
-function  MatrixInvert(const M: TAffineMatrix): TAffineMatrix; overload; {$IFDEF GLS_FASTMATH}inline;{$ENDIF}
+procedure InvertMatrix(var M: TAffineMatrix); overload; {$IFDEF USE_FASTMATH}inline;{$ENDIF}
+function  MatrixInvert(const M: TAffineMatrix): TAffineMatrix; overload; {$IFDEF USE_FASTMATH}inline;{$ENDIF}
 
 { Finds the inverse of an angle preserving matrix.
   Angle preserving matrices can combine translation, rotation and isotropic
@@ -1104,18 +1106,14 @@ function NormalizeAngle(angle: Single): Single; inline;
 function NormalizeDegAngle(angle: Single): Single; inline;
 
 // Calculates sine and cosine from the given angle Theta
-{$IFDEF GLS_PLATFORM_HAS_EXTENDED}
 procedure SinCosine(const Theta: Extended; out Sin, Cos: Extended); overload;
-{$ENDIF}
 // Calculates sine and cosine from the given angle Theta
 procedure SinCosine(const Theta: Double; out Sin, Cos: Double); overload; inline;
 // Calculates sine and cosine from the given angle Theta
 procedure SinCosine(const Theta: Single; out Sin, Cos: Single); overload; inline;
 { Calculates sine and cosine from the given angle Theta and Radius.
   sin and cos values calculated from theta are multiplicated by radius. }
-{$IFDEF GLS_PLATFORM_HAS_EXTENDED}
 procedure SinCosine(const Theta, radius: Double; out Sin, Cos: Extended); overload;
-{$ENDIF}
 { Calculates sine and cosine from the given angle Theta and Radius.
   sin and cos values calculated from theta are multiplicated by radius. }
 procedure SinCosine(const Theta, radius: Double; out Sin, Cos: Double); overload; inline;
@@ -1492,10 +1490,6 @@ implementation
 // ==============================================================
 
 const
-{$IFDEF GLS_ASM}
-  // FPU status flags (high order byte)
-  cwChop: Word = $1F3F;
-{$ENDIF}
   // to be used as descriptive indices
   X = 0;
   Y = 1;
@@ -4617,8 +4611,7 @@ begin
   result := QuaternionMultiply(qy, result);
 end;
 
-function QuaternionFromEuler(const X, Y, Z: Single; eulerOrder: TEulerOrder)
-  : TQuaternion;
+function QuaternionFromEuler(const X, Y, Z: Single; eulerOrder: TEulerOrder): TQuaternion;
 // input angles in degrees
 var
   gimbalLock: Boolean;
@@ -4775,12 +4768,10 @@ begin
     result := result + c360;
 end;
 
-{$IFDEF GLS_PLATFORM_HAS_EXTENDED}
 procedure SinCosine(const Theta: Extended; out Sin, Cos: Extended);
 begin
-  Math.SinCos(Theta, Sin, Cos);
+  SinCos(Theta, Sin, Cos);
 end;
-{$ENDIF GLS_PLATFORM_HAS_EXTENDED}
 
 procedure SinCosine(const Theta: Double; out Sin, Cos: Double);
 var
@@ -4807,18 +4798,14 @@ begin
 {$HINTS ON}
 end;
 
-{$IFDEF GLS_PLATFORM_HAS_EXTENDED}
-
 procedure SinCosine(const Theta, radius: Double; out Sin, Cos: Extended);
 var
   S, c: Extended;
 begin
-  Math.SinCos(Theta, S, c);
+  SinCos(Theta, S, c);
   Sin := S * radius;
   Cos := c * radius;
 end;
-
-{$ENDIF GLS_PLATFORM_HAS_EXTENDED}
 
 procedure SinCosine(const Theta, radius: Double; out Sin, Cos: Double);
 var

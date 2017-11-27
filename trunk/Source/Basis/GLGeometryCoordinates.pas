@@ -20,11 +20,9 @@ uses
   GLVectorGeometry;
 
 { Convert cylindrical to cartesian [single]. theta in rad }
-procedure Cylindrical_Cartesian(const r, theta, z1: single;
-  var x, y, z: single); overload;
+procedure Cylindrical_Cartesian(const r, theta, z1: single; var x, y, z: single); overload;
 { Convert cylindrical to cartesian [double]. theta in rads }
-procedure Cylindrical_Cartesian(const r, theta, z1: double;
-  var x, y, z: double); overload;
+procedure Cylindrical_Cartesian(const r, theta, z1: double; var x, y, z: double); overload;
 { Convert cylindrical to cartesian [single] (with error check). theta in rad }
 procedure Cylindrical_Cartesian(const r, theta, z1: single; var x, y, z: single;
   var ierr: integer); overload;
@@ -33,18 +31,14 @@ procedure Cylindrical_Cartesian(const r, theta, z1: double; var x, y, z: double;
   var ierr: integer); overload;
 
 { Convert cartesian to cylindrical [single] }
-procedure Cartesian_Cylindrical(const x, y, z1: single;
-  var r, theta, z: single); overload;
+procedure Cartesian_Cylindrical(const x, y, z1: single; var r, theta, z: single); overload;
 { Convert cartesion to cylindrical [double] }
-procedure Cartesian_Cylindrical(const x, y, z1: double;
-  var r, theta, z: double); overload;
+procedure Cartesian_Cylindrical(const x, y, z1: double; var r, theta, z: double); overload;
 
 { Convert spherical to cartesion. [single] theta,phi in rads }
-procedure Spherical_Cartesian(const r, theta, phi: single;
-  var x, y, z: single); overload;
+procedure Spherical_Cartesian(const r, theta, phi: single; var x, y, z: single); overload;
 { Convert spherical to cartesion. [double] theta,phi in rads }
-procedure Spherical_Cartesian(const r, theta, phi: double;
-  var x, y, z: double); overload;
+procedure Spherical_Cartesian(const r, theta, phi: double; var x, y, z: double); overload;
 { Convert spherical to cartesian [single] (with error check).theta,phi in rad }
 procedure Spherical_Cartesian(const r, theta, phi: single; var x, y, z: single;
   var ierr: integer); overload;
@@ -53,13 +47,10 @@ procedure Spherical_Cartesian(const r, theta, phi: double; var x, y, z: double;
   var ierr: integer); overload;
 
 { Convert cartesian to spherical [single] }
-procedure Cartesian_Spherical(const x, y, z: single;
-  var r, theta, phi: single); overload;
-procedure Cartesian_Spherical(const v: TAffineVector;
-  var r, theta, phi: single); overload;
+procedure Cartesian_Spherical(const x, y, z: single; var r, theta, phi: single); overload;
+procedure Cartesian_Spherical(const v: TAffineVector; var r, theta, phi: single); overload;
 { Convert cartesion to spherical [double] }
-procedure Cartesian_Spherical(const x, y, z: double;
-  var r, theta, phi: double); overload;
+procedure Cartesian_Spherical(const x, y, z: double; var r, theta, phi: double); overload;
 
 { Convert Prolate-Spheroidal to Cartesian. [single] eta, phi in rad }
 procedure ProlateSpheroidal_Cartesian(const xi, eta, phi, a: single;
@@ -68,12 +59,11 @@ procedure ProlateSpheroidal_Cartesian(const xi, eta, phi, a: single;
 procedure ProlateSpheroidal_Cartesian(const xi, eta, phi, a: double;
   var x, y, z: double); overload;
 { Convert Prolate-Spheroidal to Cartesian [single](with error check). eta,phi in rad }
-procedure ProlateSpheroidal_Cartesian(const xi, eta, phi, a: single;
+procedure ProlateSpheroidal_Cartesian(const xi, eta, phi, a: single; 
   var x, y, z: single; var ierr: integer); overload;
 { Convert Prolate-Spheroidal to Cartesian [single](with error check). eta,phi in rad }
-procedure ProlateSpheroidal_Cartesian(const xi, eta, phi, a: double;
-  var x, y, z: double; var ierr: integer); overload;
-
+procedure ProlateSpheroidal_Cartesian(const xi, eta, phi, a: double; var x, y, z: double; 
+  var ierr: integer); overload;
 { Convert Oblate-Spheroidal to Cartesian. [Single] eta, phi in rad }
 procedure OblateSpheroidal_Cartesian(const xi, eta, phi, a: single;
   var x, y, z: single); overload;
@@ -107,8 +97,7 @@ implementation
 // ----- Cylindrical_Cartesian ---------------------------------------------
 { ** Convert Cylindrical to Cartesian with no checks.
   Ref: http://mathworld.wolfram.com/CylindricalCoordinates.html }
-procedure Cylindrical_Cartesian(const r, theta, z1: single;
-  var x, y, z: single);
+procedure Cylindrical_Cartesian(const r, theta, z1: single; var x, y, z: single);
 
 begin
   SinCosine(theta, r, y, x);
@@ -118,8 +107,7 @@ end;
 // ----- Cylindrical_Cartesian -------------------------------------------------
 { ** Convert Cylindrical to Cartesian with no checks. Double version
   Ref: http://mathworld.wolfram.com/CylindricalCoordinates.html }
-procedure Cylindrical_Cartesian(const r, theta, z1: double;
-  var x, y, z: double);
+procedure Cylindrical_Cartesian(const r, theta, z1: double; var x, y, z: double);
 
 begin
   SinCosine(theta, r, y, x);
@@ -180,8 +168,7 @@ end;
 
 // ----- Cartesian_Cylindrical -------------------------------------------------
 { ** Convert Cartesian to Cylindrical no checks. Single }
-procedure Cartesian_Cylindrical(const x, y, z1: single;
-  var r, theta, z: single);
+procedure Cartesian_Cylindrical(const x, y, z1: single; var r, theta, z: single);
 
 begin
   r := sqrt(x * x + y * y);
@@ -191,8 +178,7 @@ end;
 
 // ----- Cartesian_Cylindrical -------------------------------------------------
 { ** Convert Cartesian to Cylindrical no checks. Duoble }
-procedure Cartesian_Cylindrical(const x, y, z1: double;
-  var r, theta, z: double);
+procedure Cartesian_Cylindrical(const x, y, z1: double; var r, theta, z: double);
 
 begin
   r := sqrt(x * x + y * y);
@@ -299,10 +285,7 @@ begin
   phi := ArcCosine(z / r);
 end;
 
-// Cartesian_Spherical
-//
-procedure Cartesian_Spherical(const v: TAffineVector;
-  var r, theta, phi: single);
+procedure Cartesian_Spherical(const v: TAffineVector; var r, theta, phi: single);
 begin
   r := VectorLength(v);
   theta := ArcTan2(v.y, v.x);
@@ -332,8 +315,7 @@ end;
   suggesed:
   http://documents.wolfram.com/v4/AddOns/StandardPackages/Calculus/VectorAnalysis.html
   Ref: http://mathworld.wolfram.com/ProlateSpheroidalCoordinates.html }
-procedure ProlateSpheroidal_Cartesian(const xi, eta, phi, a: single;
-  var x, y, z: single);
+procedure ProlateSpheroidal_Cartesian(const xi, eta, phi, a: single; var x, y, z: single);
 
 var
   sn, cs, snphi, csphi, shx, chx: single;
@@ -358,8 +340,7 @@ end;
   suggesed:
   http://documents.wolfram.com/v4/AddOns/StandardPackages/Calculus/VectorAnalysis.html
   Ref: http://mathworld.wolfram.com/ProlateSpheroidalCoordinates.html }
-procedure ProlateSpheroidal_Cartesian(const xi, eta, phi, a: double;
-  var x, y, z: double);
+procedure ProlateSpheroidal_Cartesian(const xi, eta, phi, a: double; var x, y, z: double);
 
 var
   sn, cs, snphi, csphi, shx, chx: double;
@@ -458,8 +439,7 @@ end;
   suggesed:
   http://documents.wolfram.com/v4/AddOns/StandardPackages/Calculus/VectorAnalysis.html
   Ref: http://mathworld.wolfram.com/OblateSpheroidalCoordinates.html }
-procedure OblateSpheroidal_Cartesian(const xi, eta, phi, a: single;
-  var x, y, z: single);
+procedure OblateSpheroidal_Cartesian(const xi, eta, phi, a: single; var x, y, z: single);
 
 var
   sn, cs, snphi, csphi, shx, chx: single;
@@ -486,8 +466,7 @@ end;
   suggesed:
   http://documents.wolfram.com/v4/AddOns/StandardPackages/Calculus/VectorAnalysis.html
   Ref: http://mathworld.wolfram.com/OblateSpheroidalCoordinates.html }
-procedure OblateSpheroidal_Cartesian(const xi, eta, phi, a: double;
-  var x, y, z: double);
+procedure OblateSpheroidal_Cartesian(const xi, eta, phi, a: double; var x, y, z: double);
 
 var
   sn, cs, snphi, csphi, shx, chx: double;
@@ -581,8 +560,7 @@ end;
 // ----- BipolarCylindrical_Cartesian ------------------------------------------
 { ** Convert BiPolarCylindrical to Cartesian with no checks.
   http://mathworld.wolfram.com/BipolarCylindricalCoordinates.html }
-procedure BipolarCylindrical_Cartesian(const u, v, z1, a: single;
-  var x, y, z: single);
+procedure BipolarCylindrical_Cartesian(const u, v, z1, a: single; var x, y, z: single);
 
 var
   cs, sn, shx, chx: single;
@@ -600,8 +578,7 @@ end;
 // ----- BipolarCylindrical_Cartesian ------------------------------------------
 { ** Convert BiPolarCylindrical to Cartesian with no checks. Double Version
   http://mathworld.wolfram.com/BipolarCylindricalCoordinates.html }
-procedure BipolarCylindrical_Cartesian(const u, v, z1, a: double;
-  var x, y, z: double);
+procedure BipolarCylindrical_Cartesian(const u, v, z1, a: double; var x, y, z: double);
 
 var
   cs, sn, shx, chx: double;

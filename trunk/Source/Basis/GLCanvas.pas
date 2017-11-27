@@ -113,8 +113,7 @@ type
     procedure Polyline(const points: array of TGLPoint);
     {Similar to Polyline but also connects the last point to the first. }
     procedure Polygon(const points: array of TGLPoint);
-    {Plots a pixel at given coordinate.
-     PenWidth affects pixel size.
+    {Plots a pixel at given coordinate. PenWidth affects pixel size.
      The current position is NOT updated. }
     procedure PlotPixel(const x, y: Integer); overload;
     procedure PlotPixel(const x, y: Single); overload;
@@ -133,16 +132,12 @@ type
     procedure EllipseBB(const x1, y1, x2, y2: Integer); overload;
     procedure EllipseBB(const x1, y1, x2, y2: Single); overload;
     {Draws and ellipse centered at (x, y) with given radiuses. }
-    procedure Ellipse(const x, y: Integer; const xRadius, yRadius: Single);
-      overload;
-    procedure Ellipse(const x, y: Single; const xRadius, yRadius: Single);
-      overload;
+    procedure Ellipse(const x, y: Integer; const xRadius, yRadius: Single); overload;
+    procedure Ellipse(const x, y: Single; const xRadius, yRadius: Single); overload;
     procedure Ellipse(const x, y: Single; const Radius: Single); overload;
     {Draw a filled ellipse. }
-    procedure FillEllipse(const x, y: Integer; const xRadius, yRadius: Single);
-      overload;
-    procedure FillEllipse(const x, y: Single; const xRadius, yRadius: Single);
-      overload;
+    procedure FillEllipse(const x, y: Integer; const xRadius, yRadius: Single); overload;
+    procedure FillEllipse(const x, y: Single; const xRadius, yRadius: Single); overload;
     procedure FillEllipse(const x, y: Single; const Radius: Single); overload;
     {Draw a filled gradient ellipse.
     OpenGL will use the last PenColor and PenAlpha as the center color and do gradient to edge of ellipse using the edgeColor parameter. }
@@ -169,16 +164,11 @@ type
     procedure ArcTo(const x1, y1, x2, y2: Single; AngleBegin, AngleEnd: Single); overload;
     procedure RoundRect(const x1, y1, x2, y2, xr, yr: Integer); overload;
     procedure RoundRect(const x1, y1, x2, y2, xr, yr: Single); overload;
-    property ArcDirection: TArcDirection read FArcDirection
-      write FArcDirection;
+    property ArcDirection: TArcDirection read FArcDirection write FArcDirection;
   end;
 
 //-------------------------------------------------------------
-//-------------------------------------------------------------
-//-------------------------------------------------------------
 implementation
-//-------------------------------------------------------------
-//-------------------------------------------------------------
 //-------------------------------------------------------------
 
 const

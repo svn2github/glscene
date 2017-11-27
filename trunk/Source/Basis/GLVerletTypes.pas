@@ -73,7 +73,7 @@ type
          procedure Verlet(const vpt : TVerletProgressTimes); virtual;
          {Initlializes the node. For the base class, it just makes sure that
          FOldPosition = FPosition, so that speed is zero }
-         procedure Initialize; dynamic;
+         procedure Initialize; virtual;
          {Calculates the distance to another node }
          function DistanceToNode(const node : TVerletNode) : Single;
          {Calculates the movement of the node }
@@ -373,7 +373,7 @@ type
                                const aStrength, aDamping : Single; const aSlack : Single = 0) : TVFSpring;
          function CreateSlider(const aNodeA, aNodeB : TVerletNode;
                                const aSlideDirection : TAffineVector) : TVCSlider;
-         procedure Initialize; dynamic;
+         procedure Initialize; virtual;
          procedure CreateOctree(const OctreeMin, OctreeMax : TAffineVector;
           const LeafThreshold, MaxTreeDepth : Integer);
          function Progress(const deltaTime, newTime : Double) : Integer; virtual;

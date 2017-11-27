@@ -101,9 +101,9 @@ uses OpenGL1x;
 
 {$I GLScene.inc}
 
-{$IFNDEF GLS_Graphics32_SUPPORT}
+{$IFNDEF USE_GRAPHICS32}
    Please rebuild this demo with
-   ($DEFINE GLS_Graphics32_SUPPORT} in GLScene.inc
+   ($DEFINE USE_GRAPHICS32} in GLScene.inc
 {$ENDIF}
 
 procedure TForm1.AsyncTimer1Timer(Sender: TObject);

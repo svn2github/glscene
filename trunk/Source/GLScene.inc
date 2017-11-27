@@ -15,45 +15,35 @@
 
 // Activate support for Graphics32 library
 // Can be found at https://github.com/graphics32
-{.$DEFINE GLS_Graphics32_SUPPORT}
+{.$DEFINE USE_GRAPHICS32}
 
 // Activate support for some optimizations by disabling checks that occur very often
 // Warning: it will disable some options (like ShowAxis and OptSaveGLStack)
-{.$DEFINE GLS_OPTIMIZATIONS}
+{.$DEFINE USE_OPTIMIZATIONS}
 
 // Activate assembly routines - Warning! Some components not working!!!
-{.$DEFINE GLS_ASM}
-
-// Activate inline directive
-{$DEFINE GLS_INLINE}
-
-// De-Activate regions
-{.$DEFINE GLS_NO_REGIONS}
+{.$DEFINE USE_ASM}
 
 // Activate Logging
-{.$DEFINE GLS_LOGGING}
+{.$DEFINE USE_LOGGING}
 
 // Activate support for FastMath library
 // Use https://github.com/neslib/FastMath by Erik van Bilsen
-{.$DEFINE GLS_FASTMATH}
+{.$DEFINE USE_FASTMATH}
 
 // Activate OpenGL debug mode
-{.$DEFINE GLS_OPENGL_DEBUG}
+{.$DEFINE USE_OPENGL_DEBUG}
 
 // Activate Multithread support
-{.$DEFINE GLS_MULTITHREAD}
+{.$DEFINE USE_MULTITHREAD}
 
-// Enable service rendering context, which automatically activate GLS_MULTITHREAD
+// Enable service rendering context, which automatically activate USE_MULTITHREAD
 // This work only on windows platform with modern compilers (XE2 and FPC or higher}
-{.$DEFINE GLS_SERVICE_CONTEXT}
+{.$DEFINE USE_SERVICE_CONTEXT}
 
-{$IFDEF GLS_MULTITHREAD}
-  {$DEFINE MULTITHREADOPENGL}
-{$ENDIF}
-
-{$IFDEF GLS_SERVICE_CONTEXT}
+{$IFDEF USE_SERVICE_CONTEXT}
   // Activate Multithread support
-  {$DEFINE GLS_MULTITHREAD}
+  {$DEFINE USE_MULTITHREAD}
 {$ENDIF}
 
 // Activate support of Windows
@@ -75,7 +65,7 @@
 {.$DEFINE GLS_X11_SUPPORT}
 
 // Activate OpenGL ES
-{.$DEFINE GLS_OPENGL_ES}
+{.$DEFINE OPENGL_ES}
 
 //
 // Platform Specific
@@ -91,7 +81,7 @@
 
 {$IFDEF LINUX}
   {$UNDEF SUPPORT_WGL}
-  {$UNDEF GLS_ASM}
+  {$UNDEF USE_ASM}
   {$DEFINE UNIX}
   {$DEFINE SUPPORT_GLX}
   {$DEFINE GLS_X11_SUPPORT}
@@ -99,23 +89,7 @@
 
 // .NET
 {$IFDEF CLR}
-  {$UNDEF GLS_ASM}
+  {$UNDEF USE_ASM}
   {$UNSAFECODE ON}
 {$ENDIF}
-
-{$UNDEF GLS_UNSUPPORTED}
-{$IFDEF GLS_UNSUPPORTED}
-  Error: unsupported version, requires at least Delphi XE2
-{$ENDIF}
-
-
-{$IFNDEF GLS_NO_REGIONS}
-  {$DEFINE GLS_REGIONS}
-{$ENDIF}
-
-{$DEFINE GLS_DEPRECATED}
-{
-  This defines if the compiler should use deprecated stuff or not.
-  by default headers use deprecated stuff.
-}
 

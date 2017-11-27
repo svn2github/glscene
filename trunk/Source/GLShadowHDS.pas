@@ -88,14 +88,12 @@ type
       in the direction of the step vector;}
     function WrapDist(Lx, Ly: single): integer;
     // Converts local tile coordinates to world coordinages. Even if the coordinates are off the tile.
-    procedure LocalToWorld(Lx, Ly: single; HD: TGLHeightData; var Wx: single;
-      var Wy: single);
+    procedure LocalToWorld(Lx, Ly: single; HD: TGLHeightData; var Wx: single; var Wy: single);
     // Takes World coordinates and returns the correct tile, and converted local coordinates
-    procedure WorldToLocal(Wx, Wy: single; var HD: TGLHeightData;
-      var Lx: single; var Ly: single);
+    procedure WorldToLocal(Wx, Wy: single; var HD: TGLHeightData; var Lx: single; var Ly: single);
   public
-    SkipGenerate: boolean;
     // When true, only a blank ShadowMap is generated (FAST), but OnThreadBmp32 is still called in a subthread.
+    SkipGenerate: boolean;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     // procedure   Release(aHeightData : TGLHeightData); override;
@@ -104,37 +102,30 @@ type
      DONT use this if you used TGLHeightData.MaterialName to link your terrain textures.
      Either use with TGLHeightData.LibMaterial, or manually delete unused LightMap textures.}
     procedure TrimTextureCache(MaxTextureCount: integer = 0);
-    procedure Notification(AComponent: TComponent;
-      Operation: TOperation); override;
+    procedure Notification(AComponent: TComponent; Operation: TOperation); override;
     // Prepare a blank texture for this tile's lightmap, from the main thread
     procedure BeforePreparingData(heightData: TGLHeightData); override;
     // Calculate the lightmap from the HD thread, using the attached blank texture
     procedure PreparingData(heightData: TGLHeightData); override;
     procedure AfterPreparingData(heightData: TGLHeightData); override;
-    procedure GenerateShadowMap(heightData: TGLHeightData;
-      ShadowMap: TGLBitmap32; scale: single);
+    procedure GenerateShadowMap(heightData: TGLHeightData; ShadowMap: TGLBitmap32; scale: single);
     { This traces a ray from a point on the terrain surface, back to the Lightsource,
      while testing for any intersections with the terrain.
      It returns the height of the shadow. There is no shadow if the shadow height is equal to terrain height.
      This is slow, but only needs to be done for pixels along the tile edge, facing the light.}
     function RayCastShadowHeight(HD: TGLHeightData; localX, localY: single): single; overload;
-    procedure RayCastLine(heightData: TGLHeightData; Lx, Ly: single;
-      ShadowMap: TGLBitmap32);
+    procedure RayCastLine(heightData: TGLHeightData; Lx, Ly: single; ShadowMap: TGLBitmap32);
     { Calculate the pixel brightness, using Direct Diffuse light and Ambient light.
      DirectLight  = 1 if in direct sunlight (no shadows)
      0 if in shadow. (Use "SoftRange" for soft shadow edges i.e. 1>Directlight>0 )
      AmbientLight = Relative to Angle between surface Normal and sky (Directly up)
      ie. Vertical walls are darker because they see less sky.
      DiffuseLight = Relative to Angle between surface Normal, and Sun vector.}
-    function Shade(heightData: TGLHeightData; x, y: integer;
-      ShadowHeight, TerrainHeight: single): byte;
+    function Shade(heightData: TGLHeightData; x, y: integer; ShadowHeight, TerrainHeight: single): byte;
   published
-    property ShadowmapLibrary: TGLMaterialLibrary read FShadowmapLibrary
-      write SetShadowmapLibrary;
-    property OnThreadBmp32: TThreadBmp32 read FOnThreadBmp32
-      write FOnThreadBmp32; // WARNING: This runs in a subthread
-    property OnNewTilePrepared: TNewTilePreparedEvent read FOnNewTilePrepared
-      write FOnNewTilePrepared;
+    property ShadowmapLibrary: TGLMaterialLibrary read FShadowmapLibrary write SetShadowmapLibrary;
+    property OnThreadBmp32: TThreadBmp32 read FOnThreadBmp32 write FOnThreadBmp32; // WARNING: This runs in a subthread
+    property OnNewTilePrepared: TNewTilePreparedEvent read FOnNewTilePrepared write FOnNewTilePrepared;
     property LightVector: TGLCoordinates read FLightVector write SetLightVector;
     property scale: TGLCoordinates read FScale write FScale;
     property ScanDistance: integer read FScanDistance write FScanDistance;
@@ -699,8 +690,7 @@ begin
   result := Ceil(minFloat(x, y));
 end;
 
-function TGLShadowHDS.Shade(heightData: TGLHeightData; x, y: integer;
-  ShadowHeight, TerrainHeight: single): byte;
+function TGLShadowHDS.Shade(heightData: TGLHeightData; x, y: integer; ShadowHeight, TerrainHeight: single): byte;
 var
   HD: TGLHeightData;
   nv: TAffineVector;
@@ -794,12 +784,7 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 RegisterClass(TGLShadowHDS);

@@ -178,7 +178,7 @@ procedure TGLTransformation.Push(AValue: PTransformationRec);
 var
   prevPos: Integer;
 begin
-  {$IFDEF GLS_LOGGING}
+  {$IFDEF USE_LOGGING}
   if FStackPos > MAX_MATRIX_STACK_DEPTH then
   begin
     GLSLogger.LogWarningFmt('Transformation stack overflow, more then %d values',
@@ -204,7 +204,7 @@ end;
 
 procedure TGLTransformation.Pop;
 begin
-  {$IFDEF GLS_LOGGING}
+  {$IFDEF USE_LOGGING}
   if FStackPos = 0 then
   begin
     GLSLogger.LogError('Transformation stack underflow');
@@ -226,7 +226,7 @@ procedure TGLTransformation.ReplaceFromStack;
 var
   prevPos: Integer;
 begin
-  {$IFDEF GLS_LOGGING}
+  {$IFDEF USE_LOGGING}
   if FStackPos = 0 then
   begin
     GLSLogger.LogError('Transformation stack underflow');

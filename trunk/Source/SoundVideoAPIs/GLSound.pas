@@ -268,28 +268,28 @@ type
     procedure Loaded; override;
     procedure DefineProperties(Filer: TFiler); override;
     procedure ListenerCoordinates(var position, velocity, direction, up: TVector);
-    function DoActivate: Boolean; dynamic;
+    function DoActivate: Boolean; virtual;
     // Invoked AFTER all sources have been stopped
-    procedure DoDeActivate; dynamic;
+    procedure DoDeActivate; virtual;
     {Effect mute of all sounds.
        Default implementation call MuteSource for all non-muted sources
        with "True" as parameter. }
-    function DoMute: Boolean; dynamic;
+    function DoMute: Boolean; virtual;
     {Effect un-mute of all sounds.
        Default implementation call MuteSource for all non-muted sources
        with "False" as parameter. }
-    procedure DoUnMute; dynamic;
+    procedure DoUnMute; virtual;
     {Effect pause of all sounds.
        Default implementation call PauseSource for all non-paused sources
        with "True" as parameter. }
-    function DoPause: Boolean; dynamic;
+    function DoPause: Boolean; virtual;
     {Effect un-pause of all sounds.
        Default implementation call PauseSource for all non-paused sources
        with "True" as parameter. }
-    procedure DoUnPause; dynamic;
-    procedure NotifyMasterVolumeChange; dynamic;
-    procedure Notify3DFactorsChanged; dynamic;
-    procedure NotifyEnvironmentChanged; dynamic;
+    procedure DoUnPause; virtual;
+    procedure NotifyMasterVolumeChange; virtual;
+    procedure Notify3DFactorsChanged; virtual;
+    procedure NotifyEnvironmentChanged; virtual;
     // Called when a source will be freed
     procedure KillSource(aSource: TGLBaseSoundSource); virtual;
     {Request to update source's data in low-level sound API.
@@ -313,7 +313,7 @@ type
        Returns -1 when unsupported. }
     function CPUUsagePercent: Single; virtual;
     {True if EAX is supported. }
-    function EAXSupported: Boolean; dynamic;
+    function EAXSupported: Boolean; virtual;
   published
       {Activation/deactivation of the low-level sound API }
     property Active: Boolean read FActive write SetActive default False;

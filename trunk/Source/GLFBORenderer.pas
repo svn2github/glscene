@@ -319,11 +319,9 @@ begin
   if not (csDesigning in ComponentState) then
     RenderToFBO(ARci);
 
-  if (not Assigned(FRootObject)) and (TargetVisibility = tvDefault) and
-    ARenderChildren then
-  begin
+  if (not Assigned(FRootObject)) and (TargetVisibility = tvDefault) and ARenderChildren 
+  then
     RenderChildren(0, Count - 1, ARci);
-  end;
 end;
 
 procedure TGLFBORenderer.ForceDimensions(Texture: TGLTexture);

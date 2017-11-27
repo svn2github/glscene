@@ -94,7 +94,7 @@ type
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
     function GetLatestProfile: TcgProfile; virtual; abstract;
-    procedure Initialize; dynamic;
+    procedure Initialize; virtual;
     procedure Finalize;
     procedure Apply(var rci: TGLRenderContextInfo; Sender: TObject);
     procedure UnApply(var rci: TGLRenderContextInfo);

@@ -1868,14 +1868,6 @@ var
 
   //----------------------------------------------------------------------
 
-{$IFDEF GLS_ASM}
-  function IsVertexMarked(P: Pointer; Index: integer): boolean; assembler;
-           // tests the Index-th bit, returns True if set else False
-  asm
-           BT      [EAX], EDX
-           SETC    AL
-  end;
-{$ELSE}
   function IsVertexMarked(P: PByteArray; Index: word): boolean; inline;
     // tests the Index-th bit, returns True if set else False
   var
@@ -1884,19 +1876,8 @@ var
     DivMod(index, 8, mi, index);
     Result := (((p^[mi] shr Index) and 1) = 1);
   end;
-{$ENDIF}
 
   //---------------------------------------------------------------------------
-
-{$IFDEF GLS_ASM}
-  function MarkVertex(P: Pointer; Index: integer): boolean; assembler;
-           // sets the Index-th bit and return True if it was already set else False
-  asm
-           BTS     [EAX], EDX
-           SETC    AL
-  end;
-
-{$ELSE}
 
   function MarkVertex(P: PByteArray; Index: word): boolean; inline;
     // sets the Index-th bit and return True if it was already set else False
@@ -1908,7 +1889,6 @@ var
     if not (Result) then
       p^[mi] := p^[mi] or (1 shl index);
   end;
-{$ENDIF}
 
   //---------------------------------------------------------------------------
   // Stores new vertex index (NewIndex) into the smooth index array of vertex ThisIndex

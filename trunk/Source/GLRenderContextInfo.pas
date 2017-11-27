@@ -31,16 +31,12 @@ type
     cy: Longint;
   end;
 
-  {Determines if objects are sorted, and how.
-   Sorting is done level by level (and not for all entities), values are :
-      osInherited : use inherited sorting mode, defaults to osRenderFarthestFirst
-      osNone : do not sort objects.
-  osRenderFarthestFirst : render objects whose Position is the farthest from
-  the camera first.
-      osRenderBlendedLast : opaque objects are not sorted and rendered
-        first, blended ones are rendered afterwards and depth sorted.
-  osRenderNearestFirst : render objects whose Position is the nearest to
-  the camera first.}
+  { Determines if objects are sorted, and how. Sorting is done level by level (and not for all entities), values are :
+   osInherited : use inherited sorting mode, defaults to osRenderFarthestFirst
+   osNone : do not sort objects.
+   osRenderFarthestFirst : render objects whose Position is the farthest from the camera first.
+   osRenderBlendedLast : opaque objects are not sorted and rendered first, blended ones are rendered afterwards and depth sorted.
+   osRenderNearestFirst : render objects whose Position is the nearest to the camera first.  }
   TGLObjectsSorting = (osInherited, osNone,
     osRenderFarthestFirst, osRenderBlendedLast,
     osRenderNearestFirst);

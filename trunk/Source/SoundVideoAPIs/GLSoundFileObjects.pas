@@ -86,7 +86,7 @@ type
 	      constructor Create(AOwner: TPersistent); override;
          destructor Destroy; override;
 
-         procedure PlayOnWaveOut; dynamic;
+         procedure PlayOnWaveOut; virtual;
 
          {Returns a pointer to the sample data viewed as an in-memory WAV File. }
 	      function WAVData : Pointer; virtual; abstract;

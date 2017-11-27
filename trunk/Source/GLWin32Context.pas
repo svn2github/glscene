@@ -45,8 +45,8 @@ type
     FLegacyContextsOnly: Boolean;
     FSwapBufferSupported: Boolean;
     procedure SpawnLegacyContext(aDC: HDC); // used for WGL_pixel_format soup
-    procedure CreateOldContext(aDC: HDC); dynamic;
-    procedure CreateNewContext(aDC: HDC); dynamic;
+    procedure CreateOldContext(aDC: HDC); virtual;
+    procedure CreateNewContext(aDC: HDC); virtual;
     procedure ClearIAttribs;
     procedure AddIAttrib(attrib, value: Integer);
     procedure ChangeIAttrib(attrib, newValue: Integer);
@@ -525,7 +525,7 @@ begin
     if Assigned(FShareContext) and (FShareContext.RC <> 0) then
     begin
       if not wglShareLists(FShareContext.RC, FRC) then
-      {$IFDEF GLS_LOGGING}
+      {$IFDEF USE_LOGGING}
         GLSLogger.LogWarning(strFailedToShare)
       {$ENDIF}
       else
@@ -1070,7 +1070,7 @@ begin
 
                 localRC := FGL.WCreateContextAttribsARB(localDC, 0, @FiAttribs[0]);
                 if localRC = 0 then
-               {$IFDEF GLS_LOGGING}
+               {$IFDEF USE_LOGGING}
                 begin
                   if false {GLStates.ForwardContext} then
                     GLSLogger.LogErrorFmt(strForwardContextFailed,

@@ -56,7 +56,6 @@ type
   {  Thor special effect manager. }
   TGLThorFXManager = class(TGLCadenceAbleComponent)
   private
-     
     FClients: TList;
     FThorpoints: PThorpointArray;
     FTarget: TGLCoordinates;
@@ -91,7 +90,6 @@ type
     destructor Destroy; override;
     procedure DoProgress(const progressTime: TProgressTimes); override;
   published
-    
     property Target: TGLCoordinates read FTarget write SetTarget;
     property Cadencer: TGLCadencer read FCadencer write SetCadencer;
     property Maxpoints: integer read FMaxpoints write SetMaxpoints default 256;
@@ -113,7 +111,6 @@ type
   {  Thor special effect }
   TGLBThorFX = class(TGLObjectPostEffect)
   private
-     
     FManager: TGLThorFXManager;
     FManagerName: String; // NOT persistent, temporarily used for persistence
     FTarget: TGLCoordinates;
@@ -140,20 +137,13 @@ function GetOrCreateThorFX(obj: TGLBaseSceneObject; const name: String = '')
   : TGLBThorFX;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
-
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 // ------------------
 // ------------------ TGLThorFXManager ------------------
 // ------------------
 
- 
-//
 constructor TGLThorFXManager.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
@@ -641,12 +631,7 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 // class registrations

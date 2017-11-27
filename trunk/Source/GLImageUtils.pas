@@ -85,11 +85,7 @@ procedure Build2DMipmap(const ASrc: Pointer; const ADst: TPointerArray; AColorFo
 procedure AlphaGammaBrightCorrection(const ASrc: Pointer; AColorFormat: Cardinal; ADataType: Cardinal; ASrcWidth, ASrcHeight: Integer; anAlphaProc: TImageAlphaProc; ABrightness: Single; AGamma: Single);
 
 //------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
 implementation
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
 const
@@ -99,8 +95,7 @@ type
   TConvertToImfProc = procedure(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFormat: Cardinal; AWidth, AHeight: Integer);
   TConvertFromInfProc = procedure(ASource: PIntermediateFormatArray; ADest: Pointer; AColorFormat: Cardinal; AWidth, AHeight: Integer);
 
-procedure Swap(var A, B: Integer);
-{$IFDEF GLS_INLINE} inline;{$ENDIF}
+procedure Swap(var A, B: Integer); inline;
 var
   C: Integer;
 begin
@@ -4823,7 +4818,7 @@ begin
   FreeMem(tempBuf1);
 end;
 
-procedure Div2(var Value: Integer); {$IFDEF GLS_INLINE} inline; {$ENDIF}
+procedure Div2(var Value: Integer); inline;
 begin
   Value := Value div 2;
   if Value = 0 then

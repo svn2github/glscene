@@ -57,9 +57,7 @@ type
 
       svcDefault : Default behaviour
       svcAlways : Always generates caps
-      svcNever : Never generates caps
-
-   }
+      svcNever : Never generates caps }
   TGLShadowVolumeCapping = (svcDefault, svcAlways, svcNever);
 
   {Determines when a caster should actually produce a shadow;
@@ -99,8 +97,7 @@ type
     property EffectiveRadius: Single read FEffectiveRadius write FEffectiveRadius;
     {Specifies if the shadow volume should be capped.
        Capping helps solve shadowing artefacts, at the cost of performance. }
-    property Capping: TGLShadowVolumeCapping read FCapping write FCapping default
-      svcDefault;
+    property Capping: TGLShadowVolumeCapping read FCapping write FCapping default svcDefault;
     {Determines when an object should cast a shadow or not. Typically, objects
     should only cast shadows when recursively visible. But if you're using
     dummy shadow casters which are less complex than their parent objects,
@@ -126,8 +123,7 @@ type
     procedure StoreCachedSilhouette(AIndex: Integer; ASil: TGLSilhouette);
     {Compute and setup scissor clipping rect for the light.
        Returns true if a scissor rect was setup }
-    function SetupScissorRect(worldAABB: PAABB; var rci: TGLRenderContextInfo):
-      Boolean;
+    function SetupScissorRect(worldAABB: PAABB; var rci: TGLRenderContextInfo): Boolean;
   public
     constructor Create(ACollection: TCollection); override;
     destructor Destroy; override;

@@ -39,9 +39,9 @@ type
     // Must be defined by all subclasses in their constructor(s)
     FItemSize: Integer;
     procedure SetCount(Val: Integer);  inline;
-        {Only function where list may be alloc'ed & freed. 
-           Resizes the array pointed by FBaseList, adjust the subclass's
-           typed pointer accordingly if any. }
+   {Only function where list may be alloc'ed & freed.
+    Resizes the array pointed by FBaseList, adjust the subclass's
+    typed pointer accordingly if any. }
     procedure SetCapacity(NewCapacity: Integer); virtual;
     function BufferItem: PByteArray;  inline;
     function GetSetCountResetsMemory: Boolean; inline;
@@ -61,11 +61,11 @@ type
     procedure InsertNulls(Index: Integer; nbVals: Cardinal);
     procedure AdjustCapacityToAtLeast(const size: Integer);
     function DataSize: Integer;
-        {Tell the list to use the specified range instead of its own.
-           rangeCapacity should be expressed in bytes.
-           The allocated memory is NOT managed by the list, current content
-           if copied to the location, if the capacity is later changed, regular
-           memory will be allocated, and the specified range no longer used. }
+    {Tell the list to use the specified range instead of its own.
+     rangeCapacity should be expressed in bytes.
+     The allocated memory is NOT managed by the list, current content
+     if copied to the location, if the capacity is later changed, regular
+     memory will be allocated, and the specified range no longer used. }
     procedure UseMemory(rangeStart: Pointer; rangeCapacity: Integer);
     {Empties the list without altering capacity. }
     procedure Flush; inline;
@@ -105,16 +105,15 @@ type
     procedure Translate(const delta: TAffineVector); overload; virtual;
     procedure Translate(const delta: TBaseVectorList); overload; virtual;
     procedure TranslateInv(const delta: TBaseVectorList); overload; virtual;
-
     {Replace content of the list with lerp results between the two given lists.
      Note: you can't Lerp with Self!!! }
     procedure Lerp(const list1, list2: TBaseVectorList; lerpFactor: Single); virtual; abstract;
-        {Replace content of the list with angle lerp between the two given lists. 
-           Note: you can't Lerp with Self!!! }
+   {Replace content of the list with angle lerp between the two given lists.
+    Note: you can't Lerp with Self!!! }
     procedure AngleLerp(const list1, list2: TBaseVectorList; lerpFactor: Single);
     procedure AngleCombine(const list1: TBaseVectorList; intensity: Single);
-        {Linear combination of Self with another list. 
-           Self[i]:=Self[i]+list2[i]*factor }
+    {Linear combination of Self with another list.
+     Self[i]:=Self[i]+list2[i]*factor }
     procedure Combine(const list2: TBaseVectorList; factor: Single); virtual;
     property ItemAddress[Index: Integer]: PFloatArray read GetItemAddress;
   end;
@@ -173,9 +172,8 @@ type
     procedure Scale(const factors: TAffineVector); overload;
   end;
 
-  {A list of TVector.
-   Similar to TList, but using TVector as items.
-       The list has stack-like push/pop methods. }
+  {A list of TVector. Similar to TList, but using TVector as items.
+   The list has stack-like push/pop methods. }
   TVectorList = class(TBaseVectorList)
   private
     FList: PVectorArray;
@@ -205,8 +203,7 @@ type
     procedure Lerp(const list1, list2: TBaseVectorList; lerpFactor: Single); override;
   end;
 
-  {A list of TTexPoint.
-   Similar to TList, but using TTexPoint as items.
+  {A list of TTexPoint. Similar to TList, but using TTexPoint as items.
    The list has stack-like push/pop methods. }
   TTexPointList = class(TBaseVectorList)
   private
@@ -238,9 +235,8 @@ type
     procedure Lerp(const list1, list2: TBaseVectorList; lerpFactor: Single); override;
   end;
 
-  {A list of Integers.
-   Similar to TList, but using TTexPoint as items.
-       The list has stack-like push/pop methods. }
+  {A list of Integers. Similar to TList, but using TTexPoint as items.
+   The list has stack-like push/pop methods. }
   TIntegerList = class(TBaseList)
   private
     FList: PIntegerArray;
@@ -261,7 +257,6 @@ type
     procedure Insert(Index: Integer; const item: Integer); inline;
     procedure Remove(const item: Integer); inline;
     function IndexOf(item: Integer): Integer; inline;
-
     property Items[Index: Integer]: Integer read Get write Put; default;
     property List: PIntegerArray read FList;
     {Adds count items in an arithmetic serie.
@@ -302,9 +297,8 @@ type
   TSingleArrayList = array[0..MaxInt shr 4] of Single;
   PSingleArrayList = ^TSingleArrayList;
 
-  {A list of Single.
-   Similar to TList, but using Single as items.
-       The list has stack-like push/pop methods. }
+  {A list of Single. Similar to TList, but using Single as items.
+   The list has stack-like push/pop methods. }
   TSingleList = class(TBaseList)
   private
     FList: PSingleArrayList;
@@ -346,9 +340,8 @@ type
   TDoubleArrayList = array[0..MaxInt shr 4] of Double;
   PDoubleArrayList = ^TDoubleArrayList;
 
-    {A list of Double.
-     Similar to TList, but using Double as items.
-         The list has stack-like push/pop methods. }
+  {A list of Double. Similar to TList, but using Double as items.
+   The list has stack-like push/pop methods. }
   TDoubleList = class(TBaseList)
   private
     FList: PDoubleArrayList;
@@ -384,8 +377,7 @@ type
     function Max: Single;
   end;
 
-  {A list of bytes.
-   Similar to TList, but using Byte as items.  }
+  {A list of bytes. Similar to TList, but using Byte as items.  }
   TByteList = class(TBaseList)
   private
     FList: PByteArray;
@@ -402,9 +394,8 @@ type
     property List: PByteArray read FList;
   end;
 
-  {A list of TQuaternion.
-     Similar to TList, but using TQuaternion as items.
-        The list has stack-like push/pop methods. }
+  {A list of TQuaternion. Similar to TList, but using TQuaternion as items.
+  The list has stack-like push/pop methods. }
   TQuaternionList = class(TBaseVectorList)
   private
     FList: PQuaternionArray;
@@ -520,11 +511,7 @@ procedure QuickSortLists(startIndex, endIndex: Integer; refList: TSingleList; ob
 procedure FastQuickSortLists(startIndex, endIndex: Integer; const refList: TSingleList; const objList: TPersistentObjectList);
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 const
@@ -2489,23 +2476,6 @@ begin
     locList^[I] := System.Sqrt(locList^[I]);
 end;
 
-{$IFDEF GLS_ASM}
-function TSingleList.Sum: Single;
-  function ComputeSum(list: PSingleArrayList; nb: Integer): Single; register;
-  asm
-    fld   dword ptr [eax]
-    @@Loop:
-    dec   edx
-    fadd  dword ptr [eax+edx*4]
-    jnz   @@Loop
-  end;
-begin
-  if FCount > 0 then
-    Result := ComputeSum(FList, FCount)
-  else
-    Result := 0;
-end;
-{$ELSE}
 function TSingleList.Sum: Single;
 var
   i: Integer;
@@ -2514,7 +2484,6 @@ begin
   for i := 0 to FCount-1 do
     Result := Result + FList^[i];
 end;
-{$ENDIF}
 
 function TSingleList.Min: Single;
 var
@@ -2767,24 +2736,6 @@ begin
     locList^[I] := System.Sqrt(locList^[I]);
 end;
 
-{$IFDEF GLS_ASM}
-function TDoubleList.Sum: Double;
-  function ComputeSum(list: PDoubleArrayList; nb: Integer): Double; register;
-  asm
-    fld   dword ptr [eax]
-    @@Loop:
-    dec   edx
-    fadd  dword ptr [eax+edx*4]
-    jnz   @@Loop
-  end;
-
-begin
-  if FCount > 0 then
-    Result := ComputeSum(FList, FCount)
-  else
-    Result := 0;
-end;
-{$ELSE}
 function TDoubleList.Sum: Double;
 var
   i: Integer;
@@ -2793,7 +2744,6 @@ begin
     for i := 0 to FCount-1 do
     Result := Result + FList^[i];
 end;
-{$ENDIF}
 
 function TDoubleList.Min: Single;
 var
@@ -3438,11 +3388,7 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
   RegisterClasses([TAffineVectorList, TVectorList, TTexPointList, TSingleList,

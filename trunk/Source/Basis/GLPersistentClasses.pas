@@ -98,18 +98,18 @@ type
     constructor CreateFromFiler(reader: TVirtualReader);
     destructor Destroy; override;
     procedure Assign(source: TPersistent); override;
-    function CreateClone: TPersistentObject; dynamic;
+    function CreateClone: TPersistentObject; virtual;
     class function FileSignature: string; virtual;
     class function FileVirtualWriter: TVirtualWriterClass; virtual;
     class function FileVirtualReader: TVirtualReaderClass; virtual;
-    procedure WriteToFiler(writer: TVirtualWriter); dynamic;
-    procedure ReadFromFiler(reader: TVirtualReader); dynamic;
-    procedure SaveToStream(stream: TStream; writerClass: TVirtualWriterClass = nil); dynamic;
-    procedure LoadFromStream(stream: TStream; readerClass: TVirtualReaderClass = nil); dynamic;
-    procedure SaveToFile(const fileName: string; writerClass: TVirtualWriterClass = nil); dynamic;
-    procedure LoadFromFile(const fileName: string; readerClass: TVirtualReaderClass = nil); dynamic;
-    function SaveToString(writerClass: TVirtualWriterClass = nil): string; dynamic;
-    procedure LoadFromString(const data: string; readerClass: TVirtualReaderClass = nil); dynamic;
+    procedure WriteToFiler(writer: TVirtualWriter); virtual;
+    procedure ReadFromFiler(reader: TVirtualReader); virtual;
+    procedure SaveToStream(stream: TStream; writerClass: TVirtualWriterClass = nil); virtual;
+    procedure LoadFromStream(stream: TStream; readerClass: TVirtualReaderClass = nil); virtual;
+    procedure SaveToFile(const fileName: string; writerClass: TVirtualWriterClass = nil); virtual;
+    procedure LoadFromFile(const fileName: string; readerClass: TVirtualReaderClass = nil); virtual;
+    function SaveToString(writerClass: TVirtualWriterClass = nil): string; virtual;
+    procedure LoadFromString(const data: string; readerClass: TVirtualReaderClass = nil); virtual;
   end;
 
   TPersistentObjectClass = class of TPersistentObject;

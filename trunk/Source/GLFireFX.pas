@@ -51,11 +51,10 @@ type
   TGLBFireFX = class;
 
     {Fire special effect manager. 
-       Defines the looks and behaviour of a particle system that can be made
-       to look fire-like. }
+     Defines the looks and behaviour of a particle system that can be made
+     to look fire-like. }
   TGLFireFXManager = class(TGLCadenceAbleComponent)
   private
-     
     FClients: TList;
     FFireParticles: PFireParticleArray;
     FFireDir, FInitialDir: TGLCoordinates;
@@ -69,13 +68,10 @@ type
     FDisabled, FPaused, FUseInterval: Boolean;
     FReference: TGLBaseSceneObject;
     FNoZWrite: Boolean;
-
   protected
-    
     procedure RegisterClient(aClient: TGLBFireFX);
     procedure DeRegisterClient(aClient: TGLBFireFX);
     procedure DeRegisterAllClients;
-
     procedure SetFireDir(const val: TGLCoordinates);
     procedure SetInitialDir(const val: TGLCoordinates);
     procedure SetCadencer(const val: TGLCadencer);
@@ -84,21 +80,15 @@ type
     procedure SetOuterColor(const val: TGLcolor);
     procedure SetReference(const val: TGLBaseSceneObject);
     procedure SetMaxParticles(const val: Integer);
-
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
-
     procedure CalcFire(deltaTime: Double; ParticleInterval, ParticleLife: Single;
       FireAlpha: Single);
     procedure AffParticle3d(Color2: TColorVector; const mat: TMatrix);
-
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
     {Reinitializes the fire. }
     procedure FireInit;
-
     {Spawns a large quantity of particles to simulate an isotropic explosion. 
        This method generates an isotropic explosion, i.e. there is no
        privilegied direction in the initial vector. }
@@ -111,15 +101,11 @@ type
     procedure RingExplosion(minInitialSpeed, maxInitialSpeed, lifeBoostFactor: Single;
       const ringVectorX, ringVectorY: TAffineVector;
       nbParticles: Integer = -1);
-
     {Current Nb of particles. }
     property ParticleCount: Integer read NP;
-
     procedure DoProgress(const progressTime: TProgressTimes); override;
-
   published
-    
-          {Adjusts the acceleration direction (abs coordinates). }
+    {Adjusts the acceleration direction (abs coordinates). }
     property FireDir: TGLCoordinates read FFireDir write SetFireDir;
     {Adjusts the initial direction (abs coordinates). }
     property InitialDir: TGLCoordinates read FInitialDir write SetInitialDir;
@@ -160,7 +146,6 @@ type
     property UseInterval: Boolean read FUseInterval write FUseInterval;
     {Particle's render won't write to Z-Buffer }
     property NoZWrite: Boolean read FNoZWrite write FNoZWrite default True;
-
     {Specifies an optional object whose position to use as reference. 
        This property allows switching between static/shared fires (for
        fireplaces or static torches) and dynamic fire trails.
@@ -170,39 +155,26 @@ type
     property Reference: TGLBaseSceneObject read FReference write SetReference;
   end;
 
-  // TGLBFireFX
-//
 {Fire special effect. 
      This effect works as a client of TFireFXManager }
   TGLBFireFX = class(TGLObjectPostEffect)
   private
-     
     FManager: TGLFireFXManager;
     FManagerName: string; // NOT persistent, temporarily used for persistence
-
   protected
-    
     procedure SetManager(const val: TGLFireFXManager);
-
     procedure WriteToFiler(writer: TWriter); override;
     procedure ReadFromFiler(reader: TReader); override;
     procedure Loaded; override;
-
   public
-    
     constructor Create(aOwner: TGLXCollection); override;
     destructor Destroy; override;
-
     procedure Assign(Source: TPersistent); override;
-
     class function FriendlyName: string; override;
     class function FriendlyDescription: string; override;
-
     procedure Render(var rci: TGLRenderContextInfo); override;
-
   published
-    
-          {Refers the collision manager. }
+   {Refers the collision manager. }
     property Manager: TGLFireFXManager read FManager write SetManager;
   end;
 
@@ -214,11 +186,7 @@ function GetOrCreateFireFX(effects: TGLObjectEffects): TGLBFireFX; overload;
 function GetOrCreateFireFX(obj: TGLBaseSceneObject): TGLBFireFX; overload;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 
@@ -685,7 +653,6 @@ begin
   inherited Assign(Source);
 end;
 
-
 procedure TGLBFireFX.SetManager(const val: TGLFireFXManager);
 begin
   if val <> FManager then
@@ -696,7 +663,6 @@ begin
       val.RegisterClient(Self);
   end;
 end;
-
 
 procedure TGLBFireFX.Render(var rci: TGLRenderContextInfo);
 var
@@ -763,12 +729,8 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
 
    // class registrations
   RegisterXCollectionItemClass(TGLBFireFX);

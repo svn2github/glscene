@@ -251,7 +251,7 @@ type
     procedure Render(var rci: TGLRenderContextInfo); override;
     class function FriendlyName: String; override;
     class function UniqueItem: Boolean; override;
-    function AddNewElement(AChild: TGLODEElementClass): TGLODEElementBase; dynamic;
+    function AddNewElement(AChild: TGLODEElementClass): TGLODEElementBase; virtual;
     procedure AlignObject;
     function CalculateMass: TdMass;
     procedure CalibrateCenterOfMass;
@@ -285,7 +285,7 @@ type
     procedure Render(var rci: TGLRenderContextInfo); override;
     class function FriendlyName: String; override;
     class function UniqueItem: Boolean; override;
-    function AddNewElement(AChild: TGLODEElementClass): TGLODEElementBase; dynamic;
+    function AddNewElement(AChild: TGLODEElementClass): TGLODEElementBase; virtual;
   published
     property Elements: TGLODEElements read FElements;
   end;

@@ -2242,7 +2242,6 @@ begin
   FParts := [alLine, alTopArrow];
 end;
 
-
 procedure TGLArrowLine.SetTopRadius(const aValue: Single);
 begin
   if aValue <> FTopRadius then
@@ -2251,7 +2250,6 @@ begin
     StructureChanged;
   end;
 end;
-
 
 procedure TGLArrowLine.SetTopArrowHeadHeight(const aValue: Single);
 begin
@@ -2429,7 +2427,6 @@ begin
   FParts := [aaArc, aaTopArrow];
 end;
 
-
 procedure TGLArrowArc.SetArcRadius(const aValue: Single);
 begin
   if fArcRadius <> aValue then
@@ -2439,7 +2436,6 @@ begin
     StructureChanged;
   end;
 end;
-
 
 procedure TGLArrowArc.SetStartAngle(const aValue: Single);
 begin
@@ -2451,7 +2447,6 @@ begin
   end;
 end;
 
-
 procedure TGLArrowArc.SetStopAngle(const aValue: Single);
 begin
   if FStopAngle <> aValue then
@@ -2461,7 +2456,6 @@ begin
     StructureChanged;
   end;
 end;
-
 
 procedure TGLArrowArc.SetTopRadius(const aValue: Single);
 begin
@@ -2473,7 +2467,6 @@ begin
   end;
 end;
 
-
 procedure TGLArrowArc.SetTopArrowHeadHeight(const aValue: Single);
 begin
   if aValue <> fTopArrowHeadHeight then
@@ -2483,7 +2476,6 @@ begin
     StructureChanged;
   end;
 end;
-
 
 procedure TGLArrowArc.SetTopArrowHeadRadius(const aValue: Single);
 begin
@@ -2495,7 +2487,6 @@ begin
   end;
 end;
 
-
 procedure TGLArrowArc.SetBottomArrowHeadHeight(const aValue: Single);
 begin
   if aValue <> fBottomArrowHeadHeight then
@@ -2505,7 +2496,6 @@ begin
     StructureChanged;
   end;
 end;
-
 
 procedure TGLArrowArc.SetBottomArrowHeadRadius(const aValue: Single);
 begin
@@ -2517,7 +2507,6 @@ begin
   end;
 end;
 
-
 procedure TGLArrowArc.SetParts(aValue: TArrowArcParts);
 begin
   if aValue <> FParts then
@@ -2527,7 +2516,6 @@ begin
     StructureChanged;
   end;
 end;
-
 
 procedure TGLArrowArc.SetHeadStackingStyle(const val: TArrowHeadStackingStyle);
 begin
@@ -2539,21 +2527,16 @@ begin
   end;
 end;
 
-
 procedure TGLArrowArc.BuildList(var rci: TGLRenderContextInfo);
   procedure EmitVertex(ptr: PVertexRec; L1, L2: integer);
-  // {$IFDEF GLS_INLINE}inline;{$ENDIF}
   begin
     XGL.TexCoord2fv(@ptr^.TexCoord);
-    with GL do
-    begin
-      Normal3fv(@ptr^.Normal);
-      if L1 > -1 then
-        VertexAttrib3fv(L1, @ptr.Tangent);
-      if L2 > -1 then
-        VertexAttrib3fv(L2, @ptr.Binormal);
-      Vertex3fv(@ptr^.Position);
-    end;
+    GL.Normal3fv(@ptr^.Normal);
+    if L1 > -1 then
+      GL.VertexAttrib3fv(L1, @ptr.Tangent);
+    if L2 > -1 then
+      GL.VertexAttrib3fv(L2, @ptr.Binormal);
+    GL.Vertex3fv(@ptr^.Position);
   end;
 
 var
@@ -2659,13 +2642,12 @@ begin
         Theta := Theta1;
       end;
       MeshIndex := FStacks + 1;
-      with GL do
       begin
-        if ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
+        if GL.ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
         begin
-          TanLoc := GetAttribLocation(rci.GLStates.CurrentProgram,
+          TanLoc := GL.GetAttribLocation(rci.GLStates.CurrentProgram,
             PAnsiChar(TangentAttributeName));
-          BinLoc := GetAttribLocation(rci.GLStates.CurrentProgram,
+          BinLoc := GL.GetAttribLocation(rci.GLStates.CurrentProgram,
             PAnsiChar(BinormalAttributeName));
         end
         else
@@ -2674,7 +2656,7 @@ begin
           BinLoc := TanLoc;
         end;
 
-        Begin_(GL_TRIANGLES);
+        GL.Begin_(GL_TRIANGLES);
         for i := FStacks - 1 downto 0 do
           for j := FSlices - 1 downto 0 do
           begin
@@ -2696,7 +2678,7 @@ begin
             pVertex := @FMesh[i][j + 1];
             EmitVertex(pVertex, TanLoc, BinLoc);
           end;
-        End_;
+        GL.End_;
       end;
     end;
 
@@ -2760,13 +2742,12 @@ begin
       ConeCenter.Binormal := FMesh[MeshIndex][0].Binormal;
       ConeCenter.TexCoord := Vector2fMake(0, 0);
 
-      with GL do
       begin
-        if ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
+        if GL.ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
         begin
-          TanLoc := GetAttribLocation(rci.GLStates.CurrentProgram,
+          TanLoc := GL.GetAttribLocation(rci.GLStates.CurrentProgram,
             PAnsiChar(TangentAttributeName));
-          BinLoc := GetAttribLocation(rci.GLStates.CurrentProgram,
+          BinLoc := GL.GetAttribLocation(rci.GLStates.CurrentProgram,
             PAnsiChar(BinormalAttributeName));
         end
         else
@@ -2775,7 +2756,7 @@ begin
           BinLoc := TanLoc;
         end;
 
-        Begin_(GL_TRIANGLE_FAN);
+        GL.Begin_(GL_TRIANGLE_FAN);
         pVertex := @ConeCenter;
         EmitVertex(pVertex, TanLoc, BinLoc);
         for j := FSlices downto 0 do
@@ -2783,9 +2764,9 @@ begin
           pVertex := @FMesh[MeshIndex][j];
           EmitVertex(pVertex, TanLoc, BinLoc);
         end;
-        End_;
+        GL.End_;
 
-        Begin_(GL_TRIANGLES);
+        GL.Begin_(GL_TRIANGLES);
 
         for j := FSlices - 1 downto 0 do
         begin
@@ -2807,7 +2788,7 @@ begin
           pVertex := @FMesh[MeshIndex + 1][j + 1];
           EmitVertex(pVertex, TanLoc, BinLoc);
         end;
-        End_;
+        GL.End_;
 
       end;
       MeshIndex := MeshIndex + 3;
@@ -2927,13 +2908,13 @@ begin
       ConeCenter.Binormal := FMesh[MeshIndex][0].Binormal;
       ConeCenter.TexCoord := Vector2fMake(1, 1);
 
-      with GL do
+//      with GL do
       begin
-        if ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
+        if GL.ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
         begin
-          TanLoc := GetAttribLocation(rci.GLStates.CurrentProgram,
+          TanLoc := GL.GetAttribLocation(rci.GLStates.CurrentProgram,
             PAnsiChar(TangentAttributeName));
-          BinLoc := GetAttribLocation(rci.GLStates.CurrentProgram,
+          BinLoc := GL.GetAttribLocation(rci.GLStates.CurrentProgram,
             PAnsiChar(BinormalAttributeName));
         end
         else
@@ -2942,7 +2923,7 @@ begin
           BinLoc := TanLoc;
         end;
 
-        Begin_(GL_TRIANGLE_FAN);
+        GL.Begin_(GL_TRIANGLE_FAN);
         pVertex := @ConeCenter;
         EmitVertex(pVertex, TanLoc, BinLoc);
         for j := 0 to FSlices do
@@ -2950,9 +2931,9 @@ begin
           pVertex := @FMesh[MeshIndex][j];
           EmitVertex(pVertex, TanLoc, BinLoc);
         end;
-        End_;
+        GL.End_;
 
-        Begin_(GL_TRIANGLES);
+        GL.Begin_(GL_TRIANGLES);
 
         for j := FSlices - 1 downto 0 do
         begin
@@ -2974,7 +2955,7 @@ begin
           pVertex := @FMesh[MeshIndex + 2][j + 1];
           EmitVertex(pVertex, TanLoc, BinLoc);
         end;
-        End_;
+        GL.End_;
 
       end;
     end
@@ -3006,13 +2987,13 @@ begin
       ConeCenter.Tangent := FMesh[MeshIndex][0].Tangent;
       ConeCenter.Binormal := FMesh[MeshIndex][0].Binormal;
       ConeCenter.TexCoord := Vector2fMake(0, 0);
-      with GL do
+//      with GL do
       begin
-        if ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
+        if GL.ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
         begin
-          TanLoc := GetAttribLocation(rci.GLStates.CurrentProgram,
+          TanLoc := GL.GetAttribLocation(rci.GLStates.CurrentProgram,
             PAnsiChar(TangentAttributeName));
-          BinLoc := GetAttribLocation(rci.GLStates.CurrentProgram,
+          BinLoc := GL.GetAttribLocation(rci.GLStates.CurrentProgram,
             PAnsiChar(BinormalAttributeName));
         end
         else
@@ -3020,7 +3001,7 @@ begin
           TanLoc := -1;
           BinLoc := TanLoc;
         end;
-        Begin_(GL_TRIANGLE_FAN);
+        GL.Begin_(GL_TRIANGLE_FAN);
         pVertex := @ConeCenter;
         EmitVertex(pVertex, TanLoc, BinLoc);
         for j := FSlices downto 0 do
@@ -3028,14 +3009,11 @@ begin
           pVertex := @FMesh[MeshIndex][j];
           EmitVertex(pVertex, TanLoc, BinLoc);
         end;
-        End_;
+        GL.End_;
       end;
     end;
   end;
 end;
-
-// Assign
-//
 
 procedure TGLArrowArc.Assign(Source: TPersistent);
 begin

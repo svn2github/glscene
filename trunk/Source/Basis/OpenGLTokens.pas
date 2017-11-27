@@ -4863,7 +4863,7 @@ const
 
  
 
-{$IFDEF GLS_REGIONS} {$REGION 'OpenGL Extension to the X Window System (GLX) generic constants'} {$ENDIF}
+//OpenGL Extension to the X Window System (GLX) generic constants
 
    GLX_EXTENSION_NAME                               = 'GLX';
    GLX_USE_GL                                       = 1;
@@ -5093,9 +5093,8 @@ type
    PGLXPipeRectLimits = ^TGLXPipeRectLimits;
 {$ENDIF}
 
-{$IFDEF GLS_REGIONS} {$ENDREGION} {$ENDIF}
 
-{$IFDEF GLS_REGIONS} {$REGION 'OpenGL Extension OSX generic constants'} {$ENDIF}
+//OpenGL Extension OSX generic constants'
 const
    AGL_NONE = 0;
 { choose from all available renderers           }
@@ -5383,10 +5382,8 @@ const
    AGL_BAD_ALLOC = 10016;
 { invalid CoreGraphics connection  }
    AGL_BAD_CONNECTION = 10017;
-{$IFDEF GLS_REGIONS} {$ENDREGION} {$ENDIF}
 
-{$IFDEF GLS_REGIONS} {$REGION 'OpenGL Utility (GLU) generic constants'} {$ENDIF}
-   // ********** GLU generic constants **********
+// ********** GLU generic constants **********
 const
    // Errors: (return value 0= no error)
    GLU_INVALID_ENUM                                 = 100900;
@@ -5542,9 +5539,8 @@ const
    GLU_ERROR                                        = GLU_TESS_ERROR;
    GLU_EDGE_FLAG                                    = GLU_TESS_EDGE_FLAG;
 
-{$IFDEF GLS_REGIONS} {$ENDREGION} {$ENDIF}
 
-{$IFDEF GLS_REGIONS} {$REGION 'OpenGL ES constants'} {$ENDIF}
+//OpenGL ES constants'
 {$IFDEF EGL_SUPPORT}
   { EGL Versioning  }
 

@@ -6,7 +6,7 @@
    byte order (GL_RGBA vs TBitmap's GL_BGRA)
 
    Note: TGLBitmap32 = TGLImage has support for Alex Denissov's Graphics32 library
-   (http://www.g32.org), just make sure the GLS_Graphics32_SUPPORT conditionnal
+   (http://www.g32.org), just make sure the USE_GRAPHICS32 conditionnal
    is active in GLScene.inc and recompile.
 }
 unit GLGraphics;
@@ -23,7 +23,7 @@ uses
   System.Math,
   VCL.Graphics,
   VCL.Imaging.Pngimage,
-  {$IFDEF GLS_Graphics32_SUPPORT} GR32, {$ENDIF}
+  {$IFDEF USE_GRAPHICS32} GR32, {$ENDIF}
 
   OpenGLTokens,
   GLState,
@@ -77,7 +77,7 @@ type
     FSourceStream: TStream;
     FStreamLevel: TGLImageLODRange;
     FFinishEvent: TFinishTaskEvent;
-{$IFDEF GLS_SERVICE_CONTEXT}
+{$IFDEF USE_SERVICE_CONTEXT}
     procedure ImageStreamingTask; stdcall;
 {$ENDIF}
   protected
@@ -210,7 +210,7 @@ type
     function GetScanLine(index: Integer): PGLPixel32Array;
     procedure AssignFrom24BitsBitmap(aBitmap: TBitmap);
     procedure AssignFrom32BitsBitmap(aBitmap: TBitmap);
-    {$IFDEF GLS_Graphics32_SUPPORT}
+    {$IFDEF USE_GRAPHICS32}
     procedure AssignFromBitmap32(aBitmap32: TBitmap32);
     {$ENDIF}
     procedure AssignFromPngImage(aPngImage: TPngImage);
@@ -933,9 +933,6 @@ begin
   Result := FLOD[ALOD].Width;
 end;
 
-// IsEmpty
-//
-
 function TGLBaseImage.IsEmpty: Boolean;
 begin
   Result := (GetWidth = 0) or (GetHeight = 0);
@@ -1231,9 +1228,6 @@ begin
     end;
   end;
 end;
-
-// UnMipmap
-//
 
 procedure TGLBaseImage.UnMipmap;
 var
@@ -1907,7 +1901,7 @@ end;
 
 procedure TGLBaseImage.DoStreaming;
 begin
-{$IFDEF GLS_SERVICE_CONTEXT}
+{$IFDEF USE_SERVICE_CONTEXT}
   if Assigned(FFinishEvent) then
   begin
     if FFinishEvent.WaitFor(0) <> wrSignaled then
@@ -1921,7 +1915,7 @@ begin
 {$ENDIF}
 end;
 
-{$IFDEF GLS_SERVICE_CONTEXT}
+{$IFDEF USE_SERVICE_CONTEXT}
 procedure TGLBaseImage.ImageStreamingTask;
 var
   readSize: Integer;
@@ -1984,15 +1978,9 @@ begin
 end;
 {$ENDIF}
 
- 
-
 // ------------------
 // ------------------ TGLImage ------------------
 // ------------------
-
-// ------------------------------ TGLImage 
- 
-//
 
 constructor TGLImage.Create;
 begin
@@ -2000,16 +1988,11 @@ begin
   SetBlank(false);
 end;
 
- 
-//
 
 destructor TGLImage.Destroy;
 begin
   inherited Destroy;
 end;
-
-// Assign
-//
 
 procedure TGLImage.Assign(Source: TPersistent);
 var
@@ -2080,7 +2063,7 @@ begin
         bmp.Free;
       end;
     end;
-{$IFDEF GLS_Graphics32_SUPPORT}
+{$IFDEF USE_GRAPHICS32}
   end
   else if Source is TBitmap32 then
   begin
@@ -2291,8 +2274,7 @@ begin
   end;
 end;
 
-{$IFDEF GLS_Graphics32_SUPPORT}
-
+{$IFDEF USE_GRAPHICS32}
 procedure TGLImage.AssignFromBitmap32(aBitmap32: TBitmap32);
 var
   y: Integer;
@@ -2334,10 +2316,8 @@ var
   AlphaScan: VCL.Imaging.Pngimage.pByteArray;
   Pixel: Integer;
 begin
-//{$IFDEF GLS_PngImage_RESIZENEAREST}
   if (aPngImage.Width and 3) > 0 then
     aPngImage.Resize((aPngImage.Width and $FFFC) + 4, aPngImage.Height);
-//{$ENDIF}
   UnMipmap;
   FLOD[0].Width := aPngImage.Width;
   FLOD[0].Height := aPngImage.Height;
@@ -2669,46 +2649,6 @@ type
   T2Pixel32 = packed array[0..1] of TGLPixel32;
   P2Pixel32 = ^T2Pixel32;
 
-{$IFDEF GLS_ASM}
-  procedure ProcessRow3DNow(pDest: PGLPixel32; pLineA, pLineB: P2Pixel32; n:
-    Integer);
-  asm     // 3DNow! version 30% faster
-      db $0F,$EF,$C0           /// pxor        mm0, mm0          // set mm0 to [0, 0, 0, 0]
-
-@@Loop:
-      db $0F,$0D,$81,$00,$01,$00,$00/// prefetch    [ecx+256]
-
-      db $0F,$6F,$0A           /// movq        mm1, [edx]
-      db $0F,$6F,$11           /// movq        mm2, [ecx]
-
-      db $0F,$6F,$D9           /// movq        mm3, mm1
-      db $0F,$6F,$E2           /// movq        mm4, mm2
-
-      db $0F,$60,$C8           /// punpcklbw   mm1, mm0          // promote to 16 bits and add LineA pixels
-      db $0F,$68,$D8           /// punpckhbw   mm3, mm0
-      db $0F,$FD,$CB           /// paddw       mm1, mm3
-
-      db $0F,$60,$D0           /// punpcklbw   mm2, mm0          // promote to 16 bits and add LineB pixels
-      db $0F,$68,$E0           /// punpckhbw   mm4, mm0
-      db $0F,$FD,$D4           /// paddw       mm2, mm4
-
-      db $0F,$FD,$CA           /// paddw       mm1, mm2          // add LineA and LineB pixels
-
-      db $0F,$71,$D1,$02       /// psrlw       mm1, 2            // divide by 4
-      db $0F,$67,$C9           /// packuswb    mm1, mm1          // reduce to 8 bits and store point
-      db $0F,$7E,$08           /// movd        [eax], mm1
-
-      add         edx, 8
-      add         ecx, 8
-      add         eax, 4
-
-      dec         [n]
-      jnz         @@Loop
-
-      db $0F,$0E               /// femms
-  end;
-{$ENDIF}
-
   procedure ProcessRowPascal(pDest: PGLPixel32; pLineA, pLineB: P2Pixel32; n:
     Integer);
   var
@@ -2747,27 +2687,12 @@ begin
   pDest := @FData[0];
   pLineA := @FData[0];
   pLineB := @FData[Width];
-{$IFDEF GLS_ASM}
-  if vSIMD = 1 then
+  for y := 0 to h2 - 1 do
   begin
-    for y := 0 to h2 - 1 do
-    begin
-      ProcessRow3DNow(pDest, pLineA, pLineB, w2);
-      Inc(pDest, w2);
-      Inc(pLineA, Width);
-      Inc(pLineB, Width);
-    end;
-  end
-  else
-{$ENDIF}
-  begin
-    for y := 0 to h2 - 1 do
-    begin
-      ProcessRowPascal(pDest, pLineA, pLineB, w2);
-      Inc(pDest, w2);
-      Inc(pLineA, Width);
-      Inc(pLineB, Width);
-    end;
+    ProcessRowPascal(pDest, pLineA, pLineB, w2);
+    Inc(pDest, w2);
+    Inc(pLineA, Width);
+    Inc(pLineB, Width);
   end;
   FLOD[0].Width := w2;
   FLOD[0].Height := h2;
