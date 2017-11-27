@@ -451,7 +451,7 @@ begin
       glListBase(glBase);
     end;
 
-    rci.VKStates.PushAttrib([sttPolygon]);
+    rci.VXStates.PushAttrib([sttPolygon]);
     for i := 0 to FLines.Count - 1 do
     begin
       glPushMatrix;
@@ -509,7 +509,7 @@ begin
           PGLChar(String(FLines.Strings[i])));
       glPopMatrix;
     end;
-    rci.VKStates.PopAttrib();
+    rci.VXStates.PopAttrib();
     glPopMatrix;
   end;
 end;

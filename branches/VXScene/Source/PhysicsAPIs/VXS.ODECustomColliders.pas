@@ -699,7 +699,7 @@ begin
   if FRenderContacts and (FContactRenderPoints.Count > 0) then
   begin
     glColor3fv(FContactColor.AsAddress);
-    rci.VKStates.PointSize := FPointSize;
+    rci.VXStates.PointSize := FPointSize;
     glBegin(GL_POINTS);
     for i := 0 to FContactRenderPoints.Count - 1 do
       glVertex3fv(@FContactRenderPoints.List[i]);

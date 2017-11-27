@@ -172,7 +172,7 @@
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
         <DCCReference Include="rtl.dcp"/>
-        <DCCReference Include="VXScene_RunTime.dcp"/>
+        <DCCReference Include="VXScene_RT.dcp"/>
         <DCCReference Include="..\..\Source\SoundVideoAPIs\Bass.pas"/>
         <DCCReference Include="..\..\Source\SoundVideoAPIs\fmod.pas"/>
         <DCCReference Include="..\..\Source\SoundVideoAPIs\fmoddyn.pas"/>

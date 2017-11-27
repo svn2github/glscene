@@ -95,8 +95,7 @@ type
   TConvertToImfProc = procedure(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFormat: GLEnum; AWidth, AHeight: Integer);
   TConvertFromInfProc = procedure(ASource: PIntermediateFormatArray; ADest: Pointer; AColorFormat: GLEnum; AWidth, AHeight: Integer);
 
-procedure Swap(var A, B: Integer);
-{$IFDEF VKS_INLINE} inline;{$ENDIF}
+procedure Swap(var A, B: Integer); inline;
 var
   C: Integer;
 begin

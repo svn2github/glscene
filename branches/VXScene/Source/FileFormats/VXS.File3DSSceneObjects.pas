@@ -189,7 +189,7 @@ begin
   if not vGLFile3DSSceneObjects_RenderCameraAndLights then
     Exit;
 
-  rci.VKStates.PolygonMode := pmLines;
+  rci.VXStates.PolygonMode := pmLines;
   glPushMatrix;
 
   dv := VectorDistance(Position.AsVector, rci.cameraPosition);
@@ -256,9 +256,9 @@ procedure TVXFile3DSCamera.DoRender(var rci: TVXRenderContextInfo; renderSelf, r
     //    glTranslatef(0, 0, 0.5);
     //    gluDisk(FQuadDisk[0], 0, 1, 6, 1);
     glTranslatef(0, 0, -0.5);
-    rci.VKStates.InvertFrontFace;
+    rci.VXStates.InvertFrontFace;
     //    gluDisk(FQuadDisk[0], 0, 1, 6, 1);
-    rci.VKStates.InvertFrontFace;
+    rci.VXStates.InvertFrontFace;
   end;
 
   procedure BuildFace;
@@ -286,7 +286,7 @@ begin
   NormalizeVector(v1);
   ang := ArcCosine(VectorDotProduct(v, v1));
 
-  rci.VKStates.PolygonMode := pmLines;
+  rci.VXStates.PolygonMode := pmLines;
 
   glPushMatrix;
   glRotatef(ang * 180 / pi, 0, 0, 1);
@@ -301,7 +301,7 @@ begin
   BuildFace;
   glPopMatrix;
 
-  rci.VKStates.PolygonMode := pmFill;
+  rci.VXStates.PolygonMode := pmFill;
 end;
 
 procedure TVXFile3DSCamera.CoordinateChanged(Sender: TVXCustomCoordinates);

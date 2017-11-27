@@ -48,7 +48,6 @@ type
       Stores TLineNode items. }
    TLineNodes = class(TVXNodes)
    public
-
      constructor Create(AOwner : TComponent); overload;
      destructor destroy; override;
      procedure NotifyChange; override;
@@ -191,11 +190,7 @@ type
   end;
 
 //--------------------------------------------------------------------------
-//--------------------------------------------------------------------------
-//--------------------------------------------------------------------------
 implementation
-//--------------------------------------------------------------------------
-//--------------------------------------------------------------------------
 //--------------------------------------------------------------------------
 
 const
@@ -585,22 +580,22 @@ begin
   begin
     glPushMatrix;
     glScalef(lNodeSize, lNodeSize, lNodeSize);
-///    rci.VKStates.UnSetVKState(stTexture2D);
-    rci.VKStates.UnSetVKState(stColorMaterial);
-    rci.VKStates.UnSetVKState(stBlend);
+///    rci.VXStates.UnSetVxState(stTexture2D);
+    rci.VXStates.UnSetVXState(stColorMaterial);
+    rci.VXStates.UnSetVXState(stBlend);
     if Node = FSelectedNode then
-      rci.VKStates.SetMaterialColors(cmFRONT, clrBlack, clrGray20, clrYellow, clrBlack, 0)
+      rci.VXStates.SetMaterialColors(cmFRONT, clrBlack, clrGray20, clrYellow, clrBlack, 0)
     else
-      rci.VKStates.SetMaterialColors(cmFRONT, clrBlack, clrGray20, clrGreen, clrBlack, 0);
+      rci.VXStates.SetMaterialColors(cmFRONT, clrBlack, clrGray20, clrGreen, clrBlack, 0);
     DrawCircle(lNodeSize);
     glPopMatrix;
   end
   else
   begin
     if Node = FSelectedNode then
-      rci.VKStates.SetMaterialColors(cmFRONT, clrBlack, clrGray20, clrYellow, clrBlack, 0)
+      rci.VXStates.SetMaterialColors(cmFRONT, clrBlack, clrGray20, clrYellow, clrBlack, 0)
     else
-      rci.VKStates.SetMaterialColors(cmFRONT, clrBlack, clrGray20, clrGreen, clrBlack, 0);
+      rci.VXStates.SetMaterialColors(cmFRONT, clrBlack, clrGray20, clrGreen, clrBlack, 0);
     DrawCircle(lNodeSize);
   end;
   glPopMatrix;

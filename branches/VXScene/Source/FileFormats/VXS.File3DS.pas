@@ -1994,7 +1994,7 @@ var
   //       have more than one group assigned to a face. To make the code fail safe the group ID
   //       is scanned for the lowest bit set.
 
-{$IFDEF VKS_ASM}
+{$IFDEF USE_ASM}
   procedure StoreSmoothIndex(ThisIndex, SmoothingGroup, NewIndex: cardinal; P: Pointer);
   asm
            PUSH    EBX
@@ -2023,7 +2023,7 @@ var
 
   //---------------------------------------------------------------------------
 
-{$IFDEF VKS_ASM}
+{$IFDEF USE_ASM}
   function GetSmoothIndex(ThisIndex, SmoothingGroup: cardinal; P: Pointer): integer;
            // Retrieves the vertex index for the given index and smoothing group.
            // This redirection is necessary because a vertex might have been duplicated.

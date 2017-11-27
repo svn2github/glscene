@@ -500,8 +500,8 @@ var
   storeDFB: GLuint;
   RC: TVXContext;
 begin
-  RC := SafeCurrentVKContext;
-  storeDFB := RC.VKStates.DrawFrameBuffer;
+  RC := SafeCurrentVXContext;
+  storeDFB := RC.VXStates.DrawFrameBuffer;
   if storeDFB <> FFrameBufferHandle.Handle then
     Bind;
 
@@ -543,7 +543,7 @@ begin
     end;
 
   if storeDFB <> FFrameBufferHandle.Handle then
-    RC.VKStates.SetFrameBuffer(storeDFB);
+    RC.VXStates.SetFrameBuffer(storeDFB);
 end;
 
 procedure TVXFrameBuffer.Bind;
@@ -651,7 +651,7 @@ begin
         if FTextureMipmap and (1 shl n) = 0 then
           Continue;
         textarget := FAttachedTexture[n].Image.NativeTextureTarget;
-        with FFrameBufferHandle.RenderingContext.VKStates do
+        with FFrameBufferHandle.RenderingContext.VxStates do
           TextureBinding[ActiveTexture, textarget] :=
             FAttachedTexture[n].Handle;
         glGenerateMipmap(DecodeTextureTarget(textarget));
@@ -678,8 +678,8 @@ begin
   backColor := ConvertWinColor(buffer.BackgroundColor);
   glClearColor(backColor.X, backColor.Y, backColor.Z,
     buffer.BackgroundAlpha);
-  rci.VKStates.SetColorMask(cAllColorComponents);
-  rci.VKStates.DepthWriteMask := 1;
+  rci.VXStates.SetColorMask(cAllColorComponents);
+  rci.VXStates.DepthWriteMask := 1;
   glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
 
   baseObject.Render(rci);
@@ -767,10 +767,10 @@ begin
   if FLayer <> Value then
   begin
     FLayer := Value;
-    RC := CurrentVKContext;
+    RC := CurrentVXContext;
     if Assigned(RC) then
     begin
-      if RC.VKStates.DrawFrameBuffer = FFrameBufferHandle.Handle then
+      if RC.VXStates.DrawFrameBuffer = FFrameBufferHandle.Handle then
         ReattachTextures;
     end;
   end;
@@ -783,10 +783,10 @@ begin
   if FLevel <> Value then
   begin
     FLevel := Value;
-    RC := CurrentVKContext;
+    RC := CurrentVXContext;
     if Assigned(RC) then
     begin
-      if RC.VKStates.DrawFrameBuffer = FFrameBufferHandle.Handle then
+      if RC.VXStates.DrawFrameBuffer = FFrameBufferHandle.Handle then
         ReattachTextures;
     end;
   end;

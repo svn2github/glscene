@@ -367,7 +367,7 @@ var
   Scale: TAffineVector;
 begin
   Scale := VKBaseSceneObject.Scale.AsAffineVector;
-  VKBaseSceneObject.Matrix := VKMatrixFromGeom(Geom);
+  VKBaseSceneObject.Matrix^ := VKMatrixFromGeom(Geom);
   VKBaseSceneObject.Scale.AsAffineVector := Scale;
 end;
 

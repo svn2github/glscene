@@ -34,8 +34,8 @@ package VXScene_Physics_DT;
 requires
   rtl,
   fmx,
-  VXScene_RunTime,
-  VXScene_Physics_RunTime;
+  VXScene_RT,
+  VXScene_Physics_RT;
 
 contains
   VXS.ODERegister in '..\..\Source\PhysicsAPIs\VXS.ODERegister.pas',

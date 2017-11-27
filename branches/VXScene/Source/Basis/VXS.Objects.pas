@@ -10,9 +10,8 @@
   More complex or more specialized versions should be placed in dedicated
   units where they can grow and prosper untammed. "Generic" geometrical
   objects can be found VXS.GeomObjects.
-
-
 }
+
 unit VXS.Objects;
 
 interface
@@ -40,6 +39,9 @@ uses
   VXS.BaseClasses,
   VXS.Nodes,
   VXS.Coordinates;
+
+const
+  cDefaultPointSize: Single = 1.0;
 
 type
 
@@ -70,18 +72,17 @@ type
     FGroupList: TVXListHandle;
     FOnVisibilityDetermination: TVXVisibilityDeterminationEvent;
   protected
-    procedure SetCubeSize(const val: GLfloat);
-    procedure SetEdgeColor(const val: TVXColor);
-    procedure SetVisibleAtRunTime(const val: Boolean);
-    procedure SetAmalgamate(const val: Boolean);
+    procedure SetCubeSize(const val: GLfloat); inline;
+    procedure SetEdgeColor(const val: TVXColor); inline;
+    procedure SetVisibleAtRunTime(const val: Boolean); inline;
+    procedure SetAmalgamate(const val: Boolean); inline;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
     function AxisAlignedDimensionsUnscaled: TVector; override;
     function RayCastIntersect(const rayStart, rayVector: TVector;
-      intersectPoint: PVector = nil; intersectNormal: PVector = nil)
-      : Boolean; override;
+      intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean; override;
     procedure BuildList(var rci: TVXRenderContextInfo); override;
     procedure DoRender(var rci: TVXRenderContextInfo;
       renderSelf, renderChildren: Boolean); override;
@@ -93,8 +94,7 @@ type
     { If true the dummycube's edges will be visible at runtime.
       The default behaviour of the dummycube is to be visible at design-time
       only, and invisible at runtime. }
-    property VisibleAtRunTime: Boolean read FVisibleAtRunTime
-      write SetVisibleAtRunTime default False;
+    property VisibleAtRunTime: Boolean read FVisibleAtRunTime write SetVisibleAtRunTime default False;
     { Amalgamate the dummy's children in a single OpenVX entity.
       This activates a special rendering mode, which will compile
       the rendering of all of the dummycube's children objects into a
@@ -107,8 +107,7 @@ type
       In short, this features is best used for static, non-transparent
       geometry, or when the point of view won't change over a large
       number of frames. }
-    property Amalgamate: Boolean read FAmalgamate write SetAmalgamate
-      default False;
+    property Amalgamate: Boolean read FAmalgamate write SetAmalgamate default False;
     { Camera Invariance Options.
       These options allow to "deactivate" sensitivity to camera, f.i. by
       centering the object on the camera or ignoring camera orientation. }
@@ -154,8 +153,7 @@ type
       : TVXSilhouetteParameters): TVXSilhouette; override;
     function AxisAlignedDimensionsUnscaled: TVector; override;
     function RayCastIntersect(const rayStart, rayVector: TVector;
-      intersectPoint: PVector = nil; intersectNormal: PVector = nil)
-      : Boolean; override;
+      intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean; override;
     { Computes the screen coordinates of the smallest rectangle encompassing the plane.
       Returned extents are NOT limited to any physical screen extents. }
     function ScreenRect(aBuffer: TVXSceneBuffer): TVXRect;
@@ -171,8 +169,7 @@ type
     property YOffset: GLfloat read FYOffset write SetYOffset;
     property YScope: GLfloat read FYScope write SetYScope stored StoreYScope;
     property YTiles: Cardinal read FYTiles write SetYTiles default 1;
-    property Style: TVXPlaneStyles read FStyle write SetStyle
-      default [psSingleQuad, psTileTexture];
+    property Style: TVXPlaneStyles read FStyle write SetStyle default [psSingleQuad, psTileTexture];
   end;
 
   { A rectangular area, perspective projected, but always facing the camera.
@@ -210,16 +207,14 @@ type
       Rotatation=0 is handled faster. }
     property Rotation: GLfloat read FRotation write SetRotation;
     { If different from 1, this value will replace that of Diffuse.Alpha }
-    property AlphaChannel: Single read FAlphaChannel write SetAlphaChannel
-      stored StoreAlphaChannel;
+    property AlphaChannel: Single read FAlphaChannel write SetAlphaChannel stored StoreAlphaChannel;
     { Reverses the texture coordinates in the U and V direction to mirror
       the texture. }
     property MirrorU: Boolean read FMirrorU write SetMirrorU default False;
     property MirrorV: Boolean read FMirrorV write SetMirrorV default False;
   end;
 
-  TVXPointStyle = (psSquare, psRound, psSmooth, psSmoothAdditive,
-    psSquareAdditive);
+  TVXPointStyle = (psSquare, psRound, psSmooth, psSmoothAdditive, psSquareAdditive);
 
   { Point parameters as in ARB_point_parameters.
     Make sure to read the ARB_point_parameters spec if you want to understand
@@ -249,11 +244,9 @@ type
     property Enabled: Boolean read FEnabled write SetEnabled default False;
     property MinSize: Single read FMinSize write SetMinSize stored False;
     property MaxSize: Single read FMaxSize write SetMaxSize stored False;
-    property FadeTresholdSize: Single read FFadeTresholdSize
-      write SetFadeTresholdSize stored False;
+    property FadeTresholdSize: Single read FFadeTresholdSize write SetFadeTresholdSize stored False;
     { Components XYZ are for constant, linear and quadratic attenuation. }
-    property DistanceAttenuation: TVXCoordinates read FDistanceAttenuation
-      write SetDistanceAttenuation;
+    property DistanceAttenuation: TVXCoordinates read FDistanceAttenuation write SetDistanceAttenuation;
   end;
 
   { Renders a set of non-transparent colored points.
@@ -304,19 +297,16 @@ type
     { Point parameters as of ARB_point_parameters. 
       Allows to vary the size and transparency of points depending
       on their distance to the observer. }
-    property PointParameters: TVXPointParameters read FPointParameters
-      write SetPointParameters;
+    property PointParameters: TVXPointParameters read FPointParameters write SetPointParameters;
   end;
 
   { Possible aspects for the nodes of a TLine. }
-  TLineNodesAspect = (lnaInvisible, lnaAxes, lnaCube, lnaDodecahedron);
+  TLineNodesAspect = (lnaInvisible, lnaAxes, lnaCube);
 
   { Available spline modes for a TLine. }
-  TLineSplineMode = (lsmLines, lsmCubicSpline, lsmBezierSpline, lsmNURBSCurve,
-    lsmSegments, lsmLoop);
+  TLineSplineMode = (lsmLines, lsmCubicSpline, lsmBezierSpline, lsmNURBSCurve, lsmSegments, lsmLoop);
 
-  { Specialized Node for use in a TVXLines objects.
-    Adds a Color property (TVXColor). }
+  { Specialized Node for use in a TVXLines objects. Adds a Color property (TVXColor). }
   TVXLinesNode = class(TVXNode)
   private
     FColor: TVXColor;
@@ -342,8 +332,7 @@ type
     procedure NotifyChange; override;
   end;
 
-  { Base class for line objects.
-    Introduces line style properties (width, color...). }
+  { Base class for line objects. Introduces line style properties (width, color...). }
   TVXLineBase = class(TVXImmaterialSceneObject)
   private
     FLineColor: TVXColor;
@@ -354,7 +343,7 @@ type
     procedure SetLineColor(const Value: TVXColor);
     procedure SetLinePattern(const Value: GLushort);
     procedure SetLineWidth(const val: Single);
-    function StoreLineWidth: Boolean;
+    function StoreLineWidth: Boolean; inline;
     procedure SetAntiAliased(const val: Boolean);
     { Setup OpenVX states according to line style.
       You must call RestoreLineStyle after drawing your lines.
@@ -369,18 +358,15 @@ type
     { Indicates if OpenVX should smooth line edges.
       Smoothed lines looks better but are poorly implemented in most OpenGL
       drivers and take *lots* of rendering time. }
-    property AntiAliased: Boolean read FAntiAliased write SetAntiAliased
-      default False;
+    property AntiAliased: Boolean read FAntiAliased write SetAntiAliased default False;
     { Default color of the lines. }
     property LineColor: TVXColor read FLineColor write SetLineColor;
     { Bitwise line pattern.
       For instance $FFFF (65535) is a white line (stipple disabled), $0000
       is a black line, $CCCC is the stipple used in axes and dummycube, etc. }
-    property LinePattern: GLushort read FLinePattern write SetLinePattern
-      default $FFFF;
+    property LinePattern: GLushort read FLinePattern write SetLinePattern default $FFFF;
     { Default width of the lines. }
-    property LineWidth: Single read FLineWidth write SetLineWidth
-      stored StoreLineWidth;
+    property LineWidth: Single read FLineWidth write SetLineWidth stored StoreLineWidth;
     property Visible;
   end;
 
@@ -399,8 +385,7 @@ type
     procedure SetNodes(const aNodes: TVXLinesNodes);
     procedure SetNodeSize(const val: Single);
     function StoreNodeSize: Boolean;
-    procedure DrawNode(var rci: TVXRenderContextInfo; X, Y, Z: Single;
-      Color: TVXColor);
+    procedure DrawNode(var rci: TVXRenderContextInfo; X, Y, Z: Single; Color: TVXColor);
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -417,11 +402,9 @@ type
     property Nodes: TVXLinesNodes read FNodes write SetNodes;
     { Default aspect of line nodes.
       May help you materialize nodes, segments and control points. }
-    property NodesAspect: TLineNodesAspect read FNodesAspect
-      write SetNodesAspect default lnaAxes;
+    property NodesAspect: TLineNodesAspect read FNodesAspect write SetNodesAspect default lnaAxes;
     { Size for the various node aspects. }
-    property NodeSize: Single read FNodeSize write SetNodeSize
-      stored StoreNodeSize;
+    property NodeSize: Single read FNodeSize write SetNodeSize stored StoreNodeSize;
   end;
 
   TLinesOption = (loUseNodeColorForLines, loColorLogicXor);
@@ -461,8 +444,7 @@ type
       Minimum 1 (disabled), ignored in lsmLines mode. }
     property Division: Integer read FDivision write SetDivision default 10;
     { Default spline drawing mode.  }
-    property SplineMode: TLineSplineMode read FSplineMode write SetSplineMode
-      default lsmLines;
+    property SplineMode: TLineSplineMode read FSplineMode write SetSplineMode default lsmLines;
     { Rendering options for the line.
        loUseNodeColorForLines: if set lines will be drawn using node
       colors (and color interpolation between nodes), if not, LineColor
@@ -483,35 +465,28 @@ type
     FCubeSize: TAffineVector;
     FParts: TCubeParts;
     FNormalDirection: TNormalDirection;
-    function GetCubeWHD(const Index: Integer): GLfloat;
-    procedure SetCubeWHD(Index: Integer; AValue: GLfloat);
-    procedure SetParts(aValue: TCubeParts);
-    procedure SetNormalDirection(aValue: TNormalDirection);
+    function GetCubeWHD(const Index: Integer): GLfloat; inline;
+    procedure SetCubeWHD(Index: Integer; AValue: GLfloat); inline;
+    procedure SetParts(aValue: TCubeParts); inline;
+    procedure SetNormalDirection(aValue: TNormalDirection); inline;
   protected
     procedure DefineProperties(Filer: TFiler); override;
-    procedure ReadData(Stream: TStream);
-    procedure WriteData(Stream: TStream);
+    procedure ReadData(Stream: TStream); inline;
+    procedure WriteData(Stream: TStream); inline;
   public
     constructor Create(AOwner: TComponent); override;
-    function GenerateSilhouette(const silhouetteParameters
-      : TVXSilhouetteParameters): TVXSilhouette; override;
+    function GenerateSilhouette(const silhouetteParameters: TVXSilhouetteParameters): TVXSilhouette; override;
     procedure BuildList(var rci: TVXRenderContextInfo); override;
     procedure Assign(Source: TPersistent); override;
     function AxisAlignedDimensionsUnscaled: TVector; override;
-    function RayCastIntersect(const rayStart, rayVector: TVector;
-      intersectPoint: PVector = nil; intersectNormal: PVector = nil)
-      : Boolean; override;
+    function RayCastIntersect(const rayStart, rayVector: TVector; intersectPoint: PVector = nil; 
+	  intersectNormal: PVector = nil): Boolean; override;
   published
-    property CubeWidth: GLfloat index 0 read GetCubeWHD write SetCubeWHD
-      stored False;
-    property CubeHeight: GLfloat index 1 read GetCubeWHD write SetCubeWHD
-      stored False;
-    property CubeDepth: GLfloat index 2 read GetCubeWHD write SetCubeWHD
-      stored False;
-    property NormalDirection: TNormalDirection read FNormalDirection
-      write SetNormalDirection default ndOutside;
-    property Parts: TCubeParts read FParts write SetParts
-      default [cpTop, cpBottom, cpFront, cpBack, cpLeft, cpRight];
+    property CubeWidth: GLfloat index 0 read GetCubeWHD write SetCubeWHD stored False;
+    property CubeHeight: GLfloat index 1 read GetCubeWHD write SetCubeWHD stored False;
+    property CubeDepth: GLfloat index 2 read GetCubeWHD write SetCubeWHD stored False;
+    property NormalDirection: TNormalDirection read FNormalDirection write SetNormalDirection default ndOutside;
+    property Parts: TCubeParts read FParts write SetParts default [cpTop, cpBottom, cpFront, cpBack, cpLeft, cpRight];
   end;
 
   { Determines how and if normals are smoothed.
@@ -537,10 +512,8 @@ type
     constructor Create(AOwner: TComponent); override;
     procedure Assign(Source: TPersistent); override;
   published
-    property Normals: TNormalSmoothing read FNormals write SetNormals
-      default nsSmooth;
-    property NormalDirection: TNormalDirection read FNormalDirection
-      write SetNormalDirection default ndOutside;
+    property Normals: TNormalSmoothing read FNormals write SetNormals default nsSmooth;
+    property NormalDirection: TNormalDirection read FNormalDirection write SetNormalDirection default ndOutside;
   end;
 
   TAngleLimit1 = -90 .. 90;
@@ -598,7 +571,7 @@ type
     FSplineMode: TLineSplineMode;
   protected
     FNodes: TVXNodes;
-    procedure CreateNodes; dynamic;
+    procedure CreateNodes; virtual;
     procedure SetSplineMode(const val: TLineSplineMode);
     procedure SetDivision(const Value: Integer);
     procedure SetNodes(const aNodes: TVXNodes);
@@ -623,13 +596,12 @@ type
       default lsmLines;
   end;
 
-  { A Superellipsoid object.
-    The Superellipsoid can have top and bottom caps,
+  { A Superellipsoid object. The Superellipsoid can have top and bottom caps,
     as well as being just a slice of Superellipsoid. }
   TVXSuperellipsoid = class(TVXQuadricObject)
   private
-    FRadius, FxyCurve, FzCurve: GLfloat;
-    FSlices, FStacks: GLint;
+    FRadius, FVCurve, FHCurve: GLFloat;
+    FSlices, FStacks: GLInt;
     FTop: TAngleLimit1;
     FBottom: TAngleLimit1;
     FStart: TAngleLimit2;
@@ -637,10 +609,10 @@ type
     FTopCap, FBottomCap: TCapType;
     procedure SetBottom(aValue: TAngleLimit1);
     procedure SetBottomCap(aValue: TCapType);
-    procedure SetRadius(const aValue: GLfloat);
-    procedure SetxyCurve(const aValue: GLfloat);
-    procedure SetzCurve(const aValue: GLfloat);
-    procedure SetSlices(aValue: GLint);
+    procedure SetRadius(const aValue: GLFloat);
+    procedure SetVCurve(const aValue: GLFloat);
+    procedure SetHCurve(const aValue: GLFloat);
+    procedure SetSlices(aValue: GLInt);
     procedure SetStart(aValue: TAngleLimit2);
     procedure SetStop(aValue: TAngleLimit2);
     procedure SetStacks(aValue: GLint);
@@ -661,10 +633,10 @@ type
     property BottomCap: TCapType read FBottomCap write SetBottomCap
       default ctNone;
     property Radius: GLfloat read FRadius write SetRadius;
-    property xyCurve: GLfloat read FxyCurve write SetxyCurve;
-    property zCurve: GLfloat read FzCurve write SetzCurve;
-    property Slices: GLint read FSlices write SetSlices default 16;
-    property Stacks: GLint read FStacks write SetStacks default 16;
+    property VCurve: GLFloat read FVCurve write SetVCurve;
+    property HCurve: GLFloat read FHCurve write SetHCurve;
+    property Slices: GLInt read FSlices write SetSlices default 16;
+    property Stacks: GLInt read FStacks write SetStacks default 16;
     property Start: TAngleLimit2 read FStart write SetStart default 0;
     property Stop: TAngleLimit2 read FStop write SetStop default 360;
     property Top: TAngleLimit1 read FTop write SetTop default 90;
@@ -674,14 +646,6 @@ type
 { Issues OpenVX for a unit-size cube stippled wireframe. }
 procedure CubeWireframeBuildList(var rci: TVXRenderContextInfo; Size: GLfloat;
   Stipple: Boolean; const Color: TColorVector);
-{ Issues OpenVX for a unit-size dodecahedron. }
-procedure DodecahedronBuildList;
-{ Issues OpenVX for a unit-size icosahedron. }
-procedure IcosahedronBuildList;
-{ Issues OpenVX for a unit-size octahedron. }
-procedure OctahedronBuildList;
-{ Issues OpenVX for a unit-size tetrahedron. }
-procedure TetrahedronBuildList;
 
 var
   TangentAttributeName: AnsiString = 'Tangent';
@@ -695,29 +659,26 @@ uses
   VXS.Spline,
   VXS.State;
 
-const
-  cDefaultPointSize: Single = 1.0;
-
 procedure CubeWireframeBuildList(var rci: TVXRenderContextInfo; Size: GLfloat;
   Stipple: Boolean; const Color: TColorVector);
 var
   mi, ma: Single;
 begin
-{$IFDEF VKS_OPENGL_DEBUG}
+{$IFDEF USE_OPENGL_DEBUG}
   if GL.GREMEDY_string_marker then
     GL.StringMarkerGREMEDY(22, 'CubeWireframeBuildList');
 {$ENDIF}
-  rci.VKStates.Disable(stLighting);
-  rci.VKStates.Enable(stLineSmooth);
+  rci.VXStates.Disable(stLighting);
+  rci.VXStates.Enable(stLineSmooth);
   if stipple then
   begin
-    rci.VKStates.Enable(stLineStipple);
-    rci.VKStates.Enable(stBlend);
-    rci.VKStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
-    rci.VKStates.LineStippleFactor := 1;
-    rci.VKStates.LineStipplePattern := $CCCC;
+    rci.VXStates.Enable(stLineStipple);
+    rci.VXStates.Enable(stBlend);
+    rci.VXStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
+    rci.VXStates.LineStippleFactor := 1;
+    rci.VXStates.LineStipplePattern := $CCCC;
   end;
-  rci.VKStates.LineWidth := 1;
+  rci.VXStates.LineWidth := 1;
   ma := 0.5 * Size;
   mi := -ma;
 
@@ -748,164 +709,6 @@ begin
   glVertex3f(ma, mi, ma);
   glVertex3f(mi, mi, ma);
   glEnd;
-end;
-
-procedure DodecahedronBuildList;
-const
-  A = 1.61803398875 * 0.3; // (Sqrt(5)+1)/2
-  B = 0.61803398875 * 0.3; // (Sqrt(5)-1)/2
-  C = 1 * 0.3;
-const
-  Vertices: packed array [0 .. 19] of TAffineVector = ((X: - A; Y: 0; Z: B),
-    (X: - A; Y: 0; Z: - B), (X: A; Y: 0; Z: - B), (X: A; Y: 0; Z: B), (X: B;
-    Y: - A; Z: 0), (X: - B; Y: - A; Z: 0), (X: - B; Y: A; Z: 0), (X: B; Y: A;
-    Z: 0), (X: 0; Y: B; Z: - A), (X: 0; Y: - B; Z: - A), (X: 0; Y: - B; Z: A),
-    (X: 0; Y: B; Z: A), (X: - C; Y: - C; Z: C), (X: - C; Y: - C; Z: - C), (X: C;
-    Y: - C; Z: - C), (X: C; Y: - C; Z: C), (X: - C; Y: C; Z: C), (X: - C; Y: C;
-    Z: - C), (X: C; Y: C; Z: - C), (X: C; Y: C; Z: C));
-
-  Polygons: packed array [0 .. 11] of packed array [0 .. 4]
-    of Byte = ((0, 12, 10, 11, 16), (1, 17, 8, 9, 13), (2, 14, 9, 8, 18),
-    (3, 19, 11, 10, 15), (4, 14, 2, 3, 15), (5, 12, 0, 1, 13),
-    (6, 17, 1, 0, 16), (7, 19, 3, 2, 18), (8, 17, 6, 7, 18), (9, 14, 4, 5, 13),
-    (10, 12, 5, 4, 15), (11, 19, 7, 6, 16));
-var
-  i, j: Integer;
-  n: TAffineVector;
-  faceIndices: PByteArray;
-begin
-  for i := 0 to 11 do
-  begin
-    faceIndices := @polygons[i, 0];
-
-    n := CalcPlaneNormal(vertices[faceIndices^[0]], vertices[faceIndices^[1]],
-      vertices[faceIndices^[2]]);
-    glNormal3fv(@n);
-
-//    glBegin(GL_TRIANGLE_FAN);
-//    for j := 0 to 4 do
-//      glVertex3fv(@vertices[faceIndices^[j]]);
-//    glEnd;
-
-    glBegin(GL_TRIANGLES);
-
-    for j := 1 to 3 do
-    begin
-      glVertex3fv(@vertices[faceIndices^[0]]);
-      glVertex3fv(@vertices[faceIndices^[j]]);
-      glVertex3fv(@vertices[faceIndices^[j+1]]);
-    end;
-    glEnd;
-  end;
-end;
-
-procedure IcosahedronBuildList;
-const
-  A = 0.5;
-  B = 0.30901699437; // 1/(1+Sqrt(5))
-const
-  Vertices: packed array [0 .. 11] of TAffineVector = ((X: 0; Y: - B; Z: - A),
-    (X: 0; Y: - B; Z: A), (X: 0; Y: B; Z: - A), (X: 0; Y: B; Z: A), (X: - A;
-    Y: 0; Z: - B), (X: - A; Y: 0; Z: B), (X: A; Y: 0; Z: - B), (X: A; Y: 0;
-    Z: B), (X: - B; Y: - A; Z: 0), (X: - B; Y: A; Z: 0), (X: B; Y: - A; Z: 0),
-    (X: B; Y: A; Z: 0));
-  Triangles: packed array [0 .. 19] of packed array [0 .. 2]
-    of Byte = ((2, 9, 11), (3, 11, 9), (3, 5, 1), (3, 1, 7), (2, 6, 0),
-    (2, 0, 4), (1, 8, 10), (0, 10, 8), (9, 4, 5), (8, 5, 4), (11, 7, 6),
-    (10, 6, 7), (3, 9, 5), (3, 7, 11), (2, 4, 9), (2, 11, 6), (0, 8, 4),
-    (0, 6, 10), (1, 5, 8), (1, 10, 7));
-
-var
-  i, j: Integer;
-  n: TAffineVector;
-  faceIndices: PByteArray;
-begin
-  for i := 0 to 19 do
-  begin
-    faceIndices := @triangles[i, 0];
-
-    n := CalcPlaneNormal(vertices[faceIndices^[0]], vertices[faceIndices^[1]],
-      vertices[faceIndices^[2]]);
-    glNormal3fv(@n);
-
-    glBegin(GL_TRIANGLES);
-    for j := 0 to 2 do
-      glVertex3fv(@vertices[faceIndices^[j]]);
-    glEnd;
-  end;
-end;
-
-procedure OctahedronBuildList;
-const
-  Vertices: packed array [0 .. 5] of TAffineVector =
-      ((X: 1.0; Y: 0.0; Z: 0.0),
-       (X: -1.0; Y: 0.0; Z: 0.0),
-       (X: 0.0; Y: 1.0; Z: 0.0),
-       (X: 0.0; Y: -1.0; Z: 0.0),
-       (X: 0.0; Y: 0.0; Z: 1.0),
-       (X: 0.0; Y: 0.0; Z: -1.0));
-
-  Triangles: packed array [0 .. 7] of packed array [0 .. 2]
-    of Byte = ((0, 4, 2), (1, 2, 4), (0, 3, 4), (1, 4, 3),
-               (0, 2, 5), (1, 5, 2), (0, 5, 3), (1, 3, 5));
-
-var
-  i, j: Integer;
-  n: TAffineVector;
-  faceIndices: PByteArray;
-begin
-  for i := 0 to 7 do
-  begin
-    faceIndices := @triangles[i, 0];
-
-    n := CalcPlaneNormal(vertices[faceIndices^[0]], vertices[faceIndices^[1]],
-      vertices[faceIndices^[2]]);
-    glNormal3fv(@n);
-
-    glBegin(GL_TRIANGLES);
-    for j := 0 to 2 do
-      glVertex3fv(@vertices[faceIndices^[j]]);
-    glEnd;
-  end;
-end;
-
-procedure TetrahedronBuildList;
-const
-  TetT = 1.73205080756887729;
-const
-  Vertices: packed array [0 .. 3] of TAffineVector =
-{
-       ((X: TetT;  Y: TetT;  Z: TetT),
-        (X: TetT;  Y: -TetT; Z: -TetT),
-        (X: -TetT; Y: TetT;  Z: -TetT),
-        (X: -TetT; Y: -TetT; Z: TetT));
-}
-       ((X: 1.0;  Y: 1.0;  Z: 1.0),
-        (X: 1.0;  Y: -1.0; Z: -1.0),
-        (X: -1.0; Y: 1.0;  Z: -1.0),
-        (X: -1.0; Y: -1.0; Z: 1.0));
-
-  Triangles: packed array [0 .. 3] of packed array [0 .. 2]
-    of Byte = ((0, 1, 3), (2, 1, 0), (3, 2, 0), (1, 2, 3));
-
-var
-  i, j: Integer;
-  n: TAffineVector;
-  faceIndices: PByteArray;
-begin
-  for i := 0 to 3 do
-  begin
-    faceIndices := @triangles[i, 0];
-
-    n := CalcPlaneNormal(vertices[faceIndices^[0]], vertices[faceIndices^[1]],
-      vertices[faceIndices^[2]]);
-    glNormal3fv(@n);
-
-    glBegin(GL_TRIANGLES);
-    for j := 0 to 2 do
-      glVertex3fv(@vertices[faceIndices^[j]]);
-    glEnd;
-  end;
 end;
 
 // ------------------
@@ -974,16 +777,16 @@ begin
     begin
       FGroupList.AllocateHandle;
       Assert(FGroupList.Handle <> 0, 'Handle=0 for ' + ClassName);
-      rci.VKStates.NewList(FGroupList.Handle, GL_COMPILE);
+      rci.VXStates.NewList(FGroupList.Handle, GL_COMPILE);
       rci.amalgamating := True;
       try
         inherited;
       finally
         rci.amalgamating := False;
-        rci.VKStates.EndList;
+        rci.VXStates.EndList;
       end;
     end;
-    rci.VKStates.CallList(FGroupList.Handle);
+    rci.VXStates.CallList(FGroupList.Handle);
   end
   else
   begin
@@ -1203,17 +1006,15 @@ begin
   hw := FWidth * 0.5;
   hh := FHeight * 0.5;
 
+  glNormal3fv(@ZVector);
+  if GL_ARB_shader_objects and (rci.VXStates.CurrentProgram > 0) then
   begin
-    glNormal3fv(@ZVector);
-    if GL_ARB_shader_objects and (rci.VKStates.CurrentProgram > 0) then
-    begin
-      TanLoc := glGetAttribLocation(rci.VKStates.CurrentProgram, PGLChar(TangentAttributeName));
-      BinLoc := glGetAttribLocation(rci.VKStates.CurrentProgram, PGLChar(BinormalAttributeName));
-      if TanLoc > -1 then
-        glVertexAttrib3fv(TanLoc, @XVector);
-      if BinLoc > -1 then
-        glVertexAttrib3fv(BinLoc, @YVector);
-    end;
+    TanLoc := glGetAttribLocation(rci.VXStates.CurrentProgram, PGLChar(TangentAttributeName));
+    BinLoc := glGetAttribLocation(rci.VXStates.CurrentProgram, PGLChar(BinormalAttributeName));
+    if TanLoc > -1 then
+      glVertexAttrib3fv(TanLoc, @XVector);
+    if BinLoc > -1 then
+      glVertexAttrib3fv(BinLoc, @YVector);
   end;
   // determine tex coords extents
   if psTileTexture in FStyle then
@@ -1275,7 +1076,6 @@ begin
     end;
   end;
 
-  begin
     glBegin(GL_TRIANGLES);
     for Y := 0 to FYTiles-1 do
     begin
@@ -1301,7 +1101,6 @@ begin
       end;
     end;
     glEnd;
-  end;
 end;
 
 procedure TVXPlane.SetWidth(const aValue: Single);
@@ -1480,9 +1279,9 @@ var
   u0, v0, u1, v1: Integer;
 begin
   if FAlphaChannel <> 1 then
-    rci.VKStates.SetMaterialAlphaChannel(GL_FRONT, FAlphaChannel);
+    rci.VXStates.SetMaterialAlphaChannel(GL_FRONT, FAlphaChannel);
 
-  mat := rci.PipelineTransformation.ModelViewMatrix;
+  mat := rci.PipelineTransformation.ModelViewMatrix^;
   // extraction of the "vecteurs directeurs de la matrice"
   // (dunno how they are named in english)
   w := FWidth * 0.5;
@@ -1535,9 +1334,6 @@ begin
     glPopMatrix;
 end;
 
-// SetWidth
-//
-
 procedure TVXSprite.SetWidth(const val: GLfloat);
 begin
   if FWidth <> val then
@@ -1546,9 +1342,6 @@ begin
     NotifyChange(Self);
   end;
 end;
-
-// SetHeight
-//
 
 procedure TVXSprite.SetHeight(const val: GLfloat);
 begin
@@ -1559,9 +1352,6 @@ begin
   end;
 end;
 
-// SetRotation
-//
-
 procedure TVXSprite.SetRotation(const val: GLfloat);
 begin
   if FRotation <> val then
@@ -1570,9 +1360,6 @@ begin
     NotifyChange(Self);
   end;
 end;
-
-// SetAlphaChannel
-//
 
 procedure TVXSprite.SetAlphaChannel(const val: Single);
 begin
@@ -1588,16 +1375,10 @@ begin
   end;
 end;
 
-// StoreAlphaChannel
-//
-
 function TVXSprite.StoreAlphaChannel: Boolean;
 begin
   Result := (FAlphaChannel <> 1);
 end;
-
-// SetMirrorU
-//
 
 procedure TVXSprite.SetMirrorU(const val: Boolean);
 begin
@@ -1605,17 +1386,11 @@ begin
   NotifyChange(Self);
 end;
 
-// SetMirrorV
-//
-
 procedure TVXSprite.SetMirrorV(const val: Boolean);
 begin
   FMirrorV := val;
   NotifyChange(Self);
 end;
-
-// SetSize
-//
 
 procedure TVXSprite.SetSize(const Width, Height: GLfloat);
 begin
@@ -1623,9 +1398,6 @@ begin
   FHeight := Height;
   NotifyChange(Self);
 end;
-
-// SetSquareSize
-//
 
 procedure TVXSprite.SetSquareSize(const Size: GLfloat);
 begin
@@ -1638,9 +1410,6 @@ end;
 // ------------------ TVXPointParameters ------------------
 // ------------------
 
-// Create
-//
-
 constructor TVXPointParameters.Create(AOwner: TPersistent);
 begin
   inherited Create(AOwner);
@@ -1651,17 +1420,11 @@ begin
     csVector);
 end;
 
-// Destroy
-//
-
 destructor TVXPointParameters.Destroy;
 begin
   FDistanceAttenuation.Free;
   inherited;
 end;
-
-// Assign
-//
 
 procedure TVXPointParameters.Assign(Source: TPersistent);
 begin
@@ -1674,9 +1437,6 @@ begin
   end;
 end;
 
-// DefineProperties
-//
-
 procedure TVXPointParameters.DefineProperties(Filer: TFiler);
 var
   defaultParams: Boolean;
@@ -1688,9 +1448,6 @@ begin
     not defaultParams);
 end;
 
-// ReadData
-//
-
 procedure TVXPointParameters.ReadData(Stream: TStream);
 begin
   with Stream do
@@ -1701,9 +1458,6 @@ begin
   end;
 end;
 
-// WriteData
-//
-
 procedure TVXPointParameters.WriteData(Stream: TStream);
 begin
   with Stream do
@@ -1713,9 +1467,6 @@ begin
     Write(FFadeTresholdSize, SizeOf(Single));
   end;
 end;
-
-// Apply
-//
 
 procedure TVXPointParameters.Apply;
 begin
@@ -1729,9 +1480,6 @@ begin
   end;
 end;
 
-// UnApply
-//
-
 procedure TVXPointParameters.UnApply;
 begin
   if Enabled and GL_ARB_point_parameters then
@@ -1743,9 +1491,6 @@ begin
   end;
 end;
 
-// SetEnabled
-//
-
 procedure TVXPointParameters.SetEnabled(const val: Boolean);
 begin
   if val <> FEnabled then
@@ -1754,9 +1499,6 @@ begin
     NotifyChange(Self);
   end;
 end;
-
-// SetMinSize
-//
 
 procedure TVXPointParameters.SetMinSize(const val: Single);
 begin
@@ -1770,9 +1512,6 @@ begin
   end;
 end;
 
-// SetMaxSize
-//
-
 procedure TVXPointParameters.SetMaxSize(const val: Single);
 begin
   if val <> FMaxSize then
@@ -1784,9 +1523,6 @@ begin
     NotifyChange(Self);
   end;
 end;
-
-// SetFadeTresholdSize
-//
 
 procedure TVXPointParameters.SetFadeTresholdSize(const val: Single);
 begin
@@ -1800,9 +1536,6 @@ begin
   end;
 end;
 
-// SetDistanceAttenuation
-//
-
 procedure TVXPointParameters.SetDistanceAttenuation(const val: TVXCoordinates);
 begin
   FDistanceAttenuation.Assign(val);
@@ -1811,9 +1544,6 @@ end;
 // ------------------
 // ------------------ TVXPoints ------------------
 // ------------------
-
-// Create
-//
 
 constructor TVXPoints.Create(AOwner: TComponent);
 begin
@@ -1827,9 +1557,6 @@ begin
   FPointParameters := TVXPointParameters.Create(Self);
 end;
 
-// Destroy
-//
-
 destructor TVXPoints.Destroy;
 begin
   FPointParameters.Free;
@@ -1837,9 +1564,6 @@ begin
   FPositions.Free;
   inherited;
 end;
-
-// Assign
-//
 
 procedure TVXPoints.Assign(Source: TPersistent);
 begin
@@ -1854,9 +1578,6 @@ begin
   inherited Assign(Source);
 end;
 
-// BuildList
-//
-
 procedure TVXPoints.BuildList(var rci: TVXRenderContextInfo);
 var
   n: Integer;
@@ -1867,10 +1588,8 @@ begin
     Exit;
 
   case FColors.Count of
-    0:
-      glColor4f(1, 1, 1, 1);
-    1:
-      glColor4fv(PGLFloat(FColors.List));
+    0: glColor4f(1, 1, 1, 1);
+    1: glColor4fv(PGLFloat(FColors.List));
   else
     if FColors.Count < n then
       n := FColors.Count;
@@ -1880,7 +1599,7 @@ begin
   if FColors.Count < 2 then
     glDisableClientState(GL_COLOR_ARRAY);
 
-  rci.VKStates.Disable(stLighting);
+  rci.VXStates.Disable(stLighting);
   if n = 0 then
   begin
     v := NullHmgPoint;
@@ -1892,8 +1611,8 @@ begin
   glEnableClientState(GL_VERTEX_ARRAY);
 
   if NoZWrite then
-    rci.VKStates.DepthWriteMask := GLboolean(False);
-  rci.VKStates.PointSize := FSize;
+    rci.VXStates.DepthWriteMask := GLboolean(False);
+  rci.VXStates.PointSize := FSize;
   PointParameters.Apply;
   if GL_EXT_compiled_vertex_array and (n > 64) then
     glLockArraysEXT(0, n);
@@ -1901,35 +1620,35 @@ begin
     psSquare:
       begin
         // square point (simplest method, fastest)
-        rci.VKStates.Disable(stBlend);
+        rci.VXStates.Disable(stBlend);
       end;
     psRound:
       begin
-        rci.VKStates.Enable(stPointSmooth);
-        rci.VKStates.Enable(stAlphaTest);
-        rci.VKStates.SetAlphaFunction(cfGreater, 0.5);
-        rci.VKStates.Disable(stBlend);
+        rci.VXStates.Enable(stPointSmooth);
+        rci.VXStates.Enable(stAlphaTest);
+        rci.VXStates.SetAlphaFunction(cfGreater, 0.5);
+        rci.VXStates.Disable(stBlend);
       end;
     psSmooth:
       begin
-        rci.VKStates.Enable(stPointSmooth);
-        rci.VKStates.Enable(stAlphaTest);
-        rci.VKStates.SetAlphaFunction(cfNotEqual, 0.0);
-        rci.VKStates.Enable(stBlend);
-        rci.VKStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
+        rci.VXStates.Enable(stPointSmooth);
+        rci.VXStates.Enable(stAlphaTest);
+        rci.VXStates.SetAlphaFunction(cfNotEqual, 0.0);
+        rci.VXStates.Enable(stBlend);
+        rci.VXStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
       end;
     psSmoothAdditive:
       begin
-        rci.VKStates.Enable(stPointSmooth);
-        rci.VKStates.Enable(stAlphaTest);
-        rci.VKStates.SetAlphaFunction(cfNotEqual, 0.0);
-        rci.VKStates.Enable(stBlend);
-        rci.VKStates.SetBlendFunc(bfSrcAlpha, bfOne);
+        rci.VXStates.Enable(stPointSmooth);
+        rci.VXStates.Enable(stAlphaTest);
+        rci.VXStates.SetAlphaFunction(cfNotEqual, 0.0);
+        rci.VXStates.Enable(stBlend);
+        rci.VXStates.SetBlendFunc(bfSrcAlpha, bfOne);
       end;
     psSquareAdditive:
       begin
-        rci.VKStates.Enable(stBlend);
-        rci.VKStates.SetBlendFunc(bfSrcAlpha, bfOne);
+        rci.VXStates.Enable(stBlend);
+        rci.VXStates.SetBlendFunc(bfSrcAlpha, bfOne);
       end;
   else
     Assert(False);
@@ -1943,16 +1662,10 @@ begin
     glDisableClientState(GL_COLOR_ARRAY);
 end;
 
-// StoreSize
-//
-
 function TVXPoints.StoreSize: Boolean;
 begin
   Result := (FSize <> cDefaultPointSize);
 end;
-
-// SetNoZWrite
-//
 
 procedure TVXPoints.SetNoZWrite(const val: Boolean);
 begin
@@ -1962,9 +1675,6 @@ begin
     StructureChanged;
   end;
 end;
-
-// SetStatic
-//
 
 procedure TVXPoints.SetStatic(const val: Boolean);
 begin
@@ -1979,9 +1689,6 @@ begin
   end;
 end;
 
-// SetSize
-//
-
 procedure TVXPoints.SetSize(const val: Single);
 begin
   if FSize <> val then
@@ -1991,26 +1698,17 @@ begin
   end;
 end;
 
-// SetPositions
-//
-
 procedure TVXPoints.SetPositions(const val: TAffineVectorList);
 begin
   FPositions.Assign(val);
   StructureChanged;
 end;
 
-// SetColors
-//
-
 procedure TVXPoints.SetColors(const val: TVectorList);
 begin
   FColors.Assign(val);
   StructureChanged;
 end;
-
-// SetStyle
-//
 
 procedure TVXPoints.SetStyle(const val: TVXPointStyle);
 begin
@@ -2021,9 +1719,6 @@ begin
   end;
 end;
 
-// SetPointParameters
-//
-
 procedure TVXPoints.SetPointParameters(const val: TVXPointParameters);
 begin
   FPointParameters.Assign(val);
@@ -2032,9 +1727,6 @@ end;
 // ------------------
 // ------------------ TVXLineBase ------------------
 // ------------------
-
-// Create
-//
 
 constructor TVXLineBase.Create(AOwner: TComponent);
 begin
@@ -2045,9 +1737,6 @@ begin
   FAntiAliased := False;
   FLineWidth := 1.0;
 end;
-
-// Destroy
-//
 
 destructor TVXLineBase.Destroy;
 begin
@@ -2062,17 +1751,11 @@ begin
   inherited;
 end;
 
-// SetLineColor
-//
-
 procedure TVXLineBase.SetLineColor(const Value: TVXColor);
 begin
   FLineColor.Color := Value.Color;
   StructureChanged;
 end;
-
-// SetLinePattern
-//
 
 procedure TVXLineBase.SetLinePattern(const Value: GLushort);
 begin
@@ -2083,9 +1766,6 @@ begin
   end;
 end;
 
-// SetLineWidth
-//
-
 procedure TVXLineBase.SetLineWidth(const val: Single);
 begin
   if FLineWidth <> val then
@@ -2095,16 +1775,10 @@ begin
   end;
 end;
 
-// StoreLineWidth
-//
-
 function TVXLineBase.StoreLineWidth: Boolean;
 begin
   Result := (FLineWidth <> 1.0);
 end;
-
-// SetAntiAliased
-//
 
 procedure TVXLineBase.SetAntiAliased(const val: Boolean);
 begin
@@ -2114,9 +1788,6 @@ begin
     StructureChanged;
   end;
 end;
-
-// Assign
-//
 
 procedure TVXLineBase.Assign(Source: TPersistent);
 begin
@@ -2130,12 +1801,9 @@ begin
   inherited Assign(Source);
 end;
 
-// SetupLineStyle
-//
-
 procedure TVXLineBase.SetupLineStyle(var rci: TVXRenderContextInfo);
 begin
-  with rci.VKStates do
+  with rci.VxStates do
   begin
     Disable(stLighting);
     if FLinePattern <> $FFFF then
@@ -2268,9 +1936,6 @@ begin
   StructureChanged;
 end;
 
-// OnNodeColorChanged
-//
-
 procedure TVXNodedLines.OnNodeColorChanged(Sender: TObject);
 var
   i: Integer;
@@ -2288,9 +1953,6 @@ begin
   StructureChanged;
 end;
 
-// SetNodeSize
-//
-
 procedure TVXNodedLines.SetNodeSize(const val: Single);
 begin
   if val <= 0 then
@@ -2300,16 +1962,10 @@ begin
   StructureChanged;
 end;
 
-// StoreNodeSize
-//
-
 function TVXNodedLines.StoreNodeSize: Boolean;
 begin
   Result := FNodeSize <> 1;
 end;
-
-// Assign
-//
 
 procedure TVXNodedLines.Assign(Source: TPersistent);
 begin
@@ -2323,9 +1979,6 @@ begin
   inherited Assign(Source);
 end;
 
-// DrawNode
-//
-
 procedure TVXNodedLines.DrawNode(var rci: TVXRenderContextInfo; X, Y, Z: Single;
   Color: TVXColor);
 begin
@@ -2336,24 +1989,6 @@ begin
       AxesBuildList(rci, $CCCC, FNodeSize * 0.5);
     lnaCube:
       CubeWireframeBuildList(rci, FNodeSize, False, Color.Color);
-    lnaDodecahedron:
-      begin
-        if FNodeSize <> 1 then
-        begin
-          glPushMatrix;
-          glScalef(FNodeSize, FNodeSize, FNodeSize);
-          rci.VKStates.SetMaterialColors(cmFront, clrBlack, clrGray20,
-            Color.Color, clrBlack, 0);
-          DodecahedronBuildList;
-          glPopMatrix;
-        end
-        else
-        begin
-          rci.VKStates.SetMaterialColors(cmFront, clrBlack, clrGray20,
-            Color.Color, clrBlack, 0);
-          DodecahedronBuildList;
-        end;
-      end;
   else
     Assert(False)
   end;
@@ -2371,9 +2006,6 @@ begin
   // into account in previous loop, must have been hiding another bug... somewhere...
   // DivideVector(Result, Scale.AsVector);     //DanB ?
 end;
-
-// AddNode (coords)
-//
 
 procedure TVXNodedLines.AddNode(const coords: TVXCoordinates);
 var
@@ -2393,9 +2025,6 @@ begin
   n.AsVector := VectorMake(X, Y, Z, 1);
   StructureChanged;
 end;
-
-// AddNode (vector)
-//
 
 procedure TVXNodedLines.AddNode(const Value: TVector);
 var
@@ -2429,9 +2058,6 @@ begin
   FNURBSTolerance := 50;
 end;
 
-// Destroy
-//
-
 destructor TVXLines.Destroy;
 begin
   FNURBSKnots.Free;
@@ -2456,9 +2082,6 @@ begin
   StructureChanged;
 end;
 
-// SetSplineMode
-//
-
 procedure TVXLines.SetSplineMode(const val: TLineSplineMode);
 begin
   if FSplineMode <> val then
@@ -2477,9 +2100,6 @@ begin
   end;
 end;
 
-// SetNURBSTolerance
-//
-
 procedure TVXLines.SetNURBSTolerance(const val: Single);
 begin
   if val <> FNURBSTolerance then
@@ -2488,9 +2108,6 @@ begin
     StructureChanged;
   end;
 end;
-
-// Assign
-//
 
 procedure TVXLines.Assign(Source: TPersistent);
 begin
@@ -2502,9 +2119,6 @@ begin
   end;
   inherited Assign(Source);
 end;
-
-// BuildList
-//
 
 procedure TVXLines.BuildList(var rci: TVXRenderContextInfo);
 var
@@ -2522,11 +2136,11 @@ begin
     // first, we setup the line color & stippling styles
     SetupLineStyle(rci);
     if rci.bufferDepthTest then
-      rci.VKStates.Enable(stDepthTest);
+      rci.VXStates.Enable(stDepthTest);
     if loColorLogicXor in Options then
     begin
-      rci.VKStates.Enable(stColorLogicOp);
-      rci.VKStates.LogicOpMode := loXOr;
+      rci.VXStates.Enable(stColorLogicOp);
+      rci.VXStates.LogicOpMode := loXOr;
     end;
     // Set up the control point buffer for Bezier splines and NURBS curves.
     // If required this could be optimized by storing a cached node buffer.
@@ -2545,7 +2159,7 @@ begin
     if FSplineMode = lsmBezierSpline then
     begin
       // map evaluator
-      rci.VKStates.PushAttrib([sttEval]);
+      rci.VXStates.PushAttrib([sttEval]);
       glEnable(GL_MAP1_VERTEX_3);
       glEnable(GL_MAP1_COLOR_4);
 
@@ -2639,10 +2253,10 @@ begin
       end;
       glEnd;
     end;
-    rci.VKStates.Disable(stColorLogicOp);
+    rci.VXStates.Disable(stColorLogicOp);
 
     if FSplineMode = lsmBezierSpline then
-      rci.VKStates.PopAttrib;
+      rci.VXStates.PopAttrib;
     if Length(nodeBuffer) > 0 then
     begin
       SetLength(nodeBuffer, 0);
@@ -2653,8 +2267,8 @@ begin
     begin
       if not rci.ignoreBlendingRequests then
       begin
-        rci.VKStates.Enable(stBlend);
-        rci.VKStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
+        rci.VXStates.Enable(stBlend);
+        rci.VXStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
       end;
 
       for i := 0 to Nodes.Count - 1 do
@@ -2668,9 +2282,6 @@ end;
 // ------------------ TVXCube ------------------
 // ------------------
 
-// Create
-//
-
 constructor TVXCube.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
@@ -2680,35 +2291,40 @@ begin
   ObjectStyle := ObjectStyle + [osDirectDraw];
 end;
 
-// BuildList
-//
-
 procedure TVXCube.BuildList(var rci: TVXRenderContextInfo);
 var
-  hw, hh, hd, nd: GLfloat;
+  v1: TAffineVector;
+  v2: TAffineVector;
+  v1d: TAffineVector;
+  v2d: TAffineVector;
+  nd: GLFloat;
   TanLoc, BinLoc: Integer;
 begin
+  VectorScale(FCubeSize, 0.5, v2);
+  v1 := VectorNegate(v2);
   if FNormalDirection = ndInside then
-    nd := -1
-  else
-    nd := 1;
-  hw := FCubeSize.X * 0.5;
-  hh := FCubeSize.Y * 0.5;
-  hd := FCubeSize.Z * 0.5;
-
   begin
-    if GL_ARB_shader_objects and (rci.VKStates.CurrentProgram > 0) then
-    begin
-      TanLoc := glGetAttribLocation(rci.VKStates.CurrentProgram, PGLChar(TangentAttributeName));
-      BinLoc := glGetAttribLocation(rci.VKStates.CurrentProgram, PGLChar(BinormalAttributeName));
-    end
-    else
-    begin
-      TanLoc := -1;
-      BinLoc := -1;
-    end;
+    v1d := v2;
+    v2d := v1;
+    nd  := -1
+  end
+  else begin
+    v1d := v1;
+    v2d := v2;
+    nd  := 1;
+  end;
 
-    glBegin(GL_TRIANGLES);
+  if GL_ARB_shader_objects and (rci.VXStates.CurrentProgram > 0) then
+  begin
+    TanLoc := glGetAttribLocation(rci.VXStates.CurrentProgram, PGLChar(TangentAttributeName));
+    BinLoc := glGetAttribLocation(rci.VXStates.CurrentProgram, PGLChar(BinormalAttributeName));
+  end
+  else
+  begin
+    TanLoc := -1;
+    BinLoc := -1;
+  end;
+    glBegin(GL_QUADS);
     if cpFront in FParts then
     begin
       glNormal3f(0, 0, nd);
@@ -2717,16 +2333,13 @@ begin
       if BinLoc > -1 then
         glVertexAttrib3f(BinLoc, 0, nd, 0);
       glTexCoord2fv(@XYTexPoint);
-      glVertex3f(hw, hh, hd);
+      glVertex3fv(@v2);
       glTexCoord2fv(@YTexPoint);
-      glVertex3f(-hw * nd, hh * nd, hd);
+      glVertex3f(v1d.x, v2d.y,  v2.z);
       glTexCoord2fv(@NullTexPoint);
-      glVertex3f(-hw, -hh, hd);
-      glVertex3f(-hw, -hh, hd);
+      glVertex3f(v1.x,  v1.y,   v2.z);
       glTexCoord2fv(@XTexPoint);
-      glVertex3f(hw * nd, -hh * nd, hd);
-      glTexCoord2fv(@XYTexPoint);
-      glVertex3f(hw, hh, hd);
+      glVertex3f(v2d.x, v1d.y,  v2.z);
     end;
     if cpBack in FParts then
     begin
@@ -2735,17 +2348,15 @@ begin
         glVertexAttrib3f(TanLoc, -nd, 0, 0);
       if BinLoc > -1 then
         glVertexAttrib3f(BinLoc, 0, nd, 0);
+
       glTexCoord2fv(@YTexPoint);
-      glVertex3f(hw, hh, -hd);
+      glVertex3f(v2.x,   v2.y,   v1.z);
       glTexCoord2fv(@NullTexPoint);
-      glVertex3f(hw * nd, -hh * nd, -hd);
-      glTexCoord2fv(@XTexPoint);
-      glVertex3f(-hw, -hh, -hd);
-      glVertex3f(-hw, -hh, -hd);
+      glVertex3f(v2d.x,  v1d.y,  v1.z);
       glTexCoord2fv(@XYTexPoint);
-      glVertex3f(-hw * nd, hh * nd, -hd);
-      glTexCoord2fv(@YTexPoint);
-      glVertex3f(hw, hh, -hd);
+      glVertex3fv(@v1);
+      glTexCoord2fv(@XYTexPoint);
+      glVertex3f(v1d.x,  v2d.y,  v1.z);
     end;
     if cpLeft in FParts then
     begin
@@ -2755,16 +2366,13 @@ begin
       if BinLoc > -1 then
         glVertexAttrib3f(BinLoc, 0, nd, 0);
       glTexCoord2fv(@XYTexPoint);
-      glVertex3f(-hw, hh, hd);
+      glVertex3f(v1.x, v2.y, v2.z);
       glTexCoord2fv(@YTexPoint);
-      glVertex3f(-hw, hh * nd, -hd * nd);
+      glVertex3f(v1.x, v2d.y, v1d.z);
       glTexCoord2fv(@NullTexPoint);
-      glVertex3f(-hw, -hh, -hd);
-      glVertex3f(-hw, -hh, -hd);
+      glVertex3fv(@v1);
       glTexCoord2fv(@XTexPoint);
-      glVertex3f(-hw, -hh * nd, hd * nd);
-      glTexCoord2fv(@XYTexPoint);
-      glVertex3f(-hw, hh, hd);
+      glVertex3f(v1.x, v1d.y, v2d.z);
     end;
     if cpRight in FParts then
     begin
@@ -2774,16 +2382,13 @@ begin
       if BinLoc > -1 then
         glVertexAttrib3f(BinLoc, 0, nd, 0);
       glTexCoord2fv(@YTexPoint);
-      glVertex3f(hw, hh, hd);
+      glVertex3fv(@v2);
       glTexCoord2fv(@NullTexPoint);
-      glVertex3f(hw, -hh * nd, hd * nd);
+      glVertex3f(v2.x, v1d.y, v2d.z);
       glTexCoord2fv(@XTexPoint);
-      glVertex3f(hw, -hh, -hd);
-      glVertex3f(hw, -hh, -hd);
+      glVertex3f(v2.x, v1.y, v1.z);
       glTexCoord2fv(@XYTexPoint);
-      glVertex3f(hw, hh * nd, -hd * nd);
-      glTexCoord2fv(@YTexPoint);
-      glVertex3f(hw, hh, hd);
+      glVertex3f(v2.x, v2d.y, v1d.z);
     end;
     if cpTop in FParts then
     begin
@@ -2793,16 +2398,13 @@ begin
       if BinLoc > -1 then
         glVertexAttrib3f(BinLoc, 0, 0, -nd);
       glTexCoord2fv(@YTexPoint);
-      glVertex3f(-hw, hh, -hd);
+      glVertex3f(v1.x, v2.y, v1.z);
       glTexCoord2fv(@NullTexPoint);
-      glVertex3f(-hw * nd, hh, hd * nd);
+      glVertex3f(v1d.x, v2.y, v2d.z);
       glTexCoord2fv(@XTexPoint);
-      glVertex3f(hw, hh, hd);
-      glVertex3f(hw, hh, hd);
+      glVertex3fv(@v2);
       glTexCoord2fv(@XYTexPoint);
-      glVertex3f(hw * nd, hh, -hd * nd);
-      glTexCoord2fv(@YTexPoint);
-      glVertex3f(-hw, hh, -hd);
+      glVertex3f(v2d.x, v2.y, v1d.z);
     end;
     if cpBottom in FParts then
     begin
@@ -2812,23 +2414,16 @@ begin
       if BinLoc > -1 then
         glVertexAttrib3f(BinLoc, 0, 0, nd);
       glTexCoord2fv(@NullTexPoint);
-      glVertex3f(-hw, -hh, -hd);
-      glTexCoord2fv(@XTexPoint);
-      glVertex3f(hw * nd, -hh, -hd * nd);
+      glVertex3fv(@v1);
       glTexCoord2fv(@XYTexPoint);
-      glVertex3f(hw, -hh, hd);
-      glVertex3f(hw, -hh, hd);
+      glVertex3f(v2d.x, v1.y, v1d.z);
+      glTexCoord2fv(@XYTexPoint);
+      glVertex3f(v2.x, v1.y, v2.z);
       glTexCoord2fv(@YTexPoint);
-      glVertex3f(-hw * nd, -hh, hd * nd);
-      glTexCoord2fv(@NullTexPoint);
-      glVertex3f(-hw, -hh, -hd);
+      glVertex3f(v1d.x, v1.y, v2d.z);
     end;
     glEnd;
-  end;
 end;
-
-// GenerateSilhouette
-//
 
 function TVXCube.GenerateSilhouette(const silhouetteParameters
   : TVXSilhouetteParameters): TVXSilhouette;
@@ -2888,16 +2483,12 @@ begin
   connectivity.Free;
 end;
 
-// GetCubeWHD
-//
 function TVXCube.GetCubeWHD(const Index: Integer): GLfloat;
 begin
   Result := FCubeSize.V[index];
 end;
 
 
-// SetCubeWHD
-//
 procedure TVXCube.SetCubeWHD(Index: Integer; AValue: GLfloat);
 begin
   if AValue <> FCubeSize.V[index] then
@@ -2908,8 +2499,6 @@ begin
 end;
 
 
-// SetParts
-//
 procedure TVXCube.SetParts(aValue: TCubeParts);
 begin
   if aValue <> FParts then
@@ -2919,9 +2508,6 @@ begin
   end;
 end;
 
-// SetNormalDirection
-//
-
 procedure TVXCube.SetNormalDirection(aValue: TNormalDirection);
 begin
   if aValue <> FNormalDirection then
@@ -2930,9 +2516,6 @@ begin
     StructureChanged;
   end;
 end;
-
-// Assign
-//
 
 procedure TVXCube.Assign(Source: TPersistent);
 begin
@@ -2945,9 +2528,6 @@ begin
   inherited Assign(Source);
 end;
 
-// AxisAlignedDimensions
-//
-
 function TVXCube.AxisAlignedDimensionsUnscaled: TVector;
 begin
   Result.X := FCubeSize.X * 0.5;
@@ -2956,9 +2536,6 @@ begin
   Result.W := 0;
 end;
 
-// RayCastIntersect
-//
-
 function TVXCube.RayCastIntersect(const rayStart, rayVector: TVector;
   intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean;
 var
@@ -2966,15 +2543,14 @@ var
   rv: TVector;
   rs, r: TVector;
   i: Integer;
-  t, e: Single;
+  t: Single;
   eSize: TAffineVector;
 begin
   rs := AbsoluteToLocal(rayStart);
   SetVector(rv, VectorNormalize(AbsoluteToLocal(rayVector)));
-  e := 0.5 + 0.0001; // Small value for floating point imprecisions
-  eSize.X := FCubeSize.X * e;
-  eSize.Y := FCubeSize.Y * e;
-  eSize.Z := FCubeSize.Z * e;
+  eSize.X := FCubeSize.X*0.5 + 0.0001;
+  eSize.Y := FCubeSize.Y*0.5 + 0.0001;
+  eSize.Z := FCubeSize.Z*0.5 + 0.0001;
   p[0] := XHmgVector;
   p[1] := YHmgVector;
   p[2] := ZHmgVector;
@@ -2987,7 +2563,7 @@ begin
     begin
       t := -(p[i].X * rs.X + p[i].Y * rs.Y +
              p[i].Z * rs.Z + 0.5 *
-        FCubeSize.V[i mod 3]) / (p[i].X * rv.X +
+        FCubeSize.C[i mod 3]) / (p[i].X * rv.X +
                                  p[i].Y * rv.Y +
                                  p[i].Z * rv.Z);
       MakePoint(r, rs.X + t * rv.X, rs.Y +
@@ -3010,18 +2586,12 @@ begin
   Result := False;
 end;
 
-// DefineProperties
-//
-
 procedure TVXCube.DefineProperties(Filer: TFiler);
 begin
   inherited;
   Filer.DefineBinaryProperty('CubeSize', ReadData, WriteData,
     (FCubeSize.X <> 1) or (FCubeSize.Y <> 1) or (FCubeSize.Z <> 1));
 end;
-
-// ReadData
-//
 
 procedure TVXCube.ReadData(Stream: TStream);
 begin
@@ -3030,9 +2600,6 @@ begin
     Read(FCubeSize, SizeOf(TAffineVector));
   end;
 end;
-
-// WriteData
-//
 
 procedure TVXCube.WriteData(Stream: TStream);
 begin
@@ -3046,18 +2613,12 @@ end;
 // ------------------ TVXQuadricObject ------------------
 // ------------------
 
-// Create
-//
-
 constructor TVXQuadricObject.Create(AOwner: TComponent);
 begin
   inherited;
   FNormals := nsSmooth;
   FNormalDirection := ndOutside;
 end;
-
-// SetNormals
-//
 
 procedure TVXQuadricObject.SetNormals(aValue: TNormalSmoothing);
 begin
@@ -3068,9 +2629,6 @@ begin
   end;
 end;
 
-// SetNormalDirection
-//
-
 procedure TVXQuadricObject.SetNormalDirection(aValue: TNormalDirection);
 begin
   if aValue <> FNormalDirection then
@@ -3079,9 +2637,6 @@ begin
     StructureChanged;
   end;
 end;
-
-// SetupQuadricParams
-//
 
 procedure TVXQuadricObject.SetupQuadricParams(quadric: GLUquadricObj);
 const
@@ -3094,9 +2649,6 @@ begin
   gluQuadricTexture(quadric, GLboolean(True));
 end;
 
-// SetNormalQuadricOrientation
-//
-
 procedure TVXQuadricObject.SetNormalQuadricOrientation(quadric: GLUquadricObj);
 const
   cNormalDirectionToEnum: array [ndInside .. ndOutside] of GLEnum =
@@ -3104,9 +2656,6 @@ const
 begin
   gluQuadricOrientation(quadric, cNormalDirectionToEnum[FNormalDirection]);
 end;
-
-// SetInvertedQuadricOrientation
-//
 
 procedure TVXQuadricObject.SetInvertedQuadricOrientation
   (quadric: GLUquadricObj);
@@ -3116,9 +2665,6 @@ const
 begin
   gluQuadricOrientation(quadric, cNormalDirectionToEnum[FNormalDirection]);
 end;
-
-// Assign
-//
 
 procedure TVXQuadricObject.Assign(Source: TPersistent);
 begin
@@ -3134,9 +2680,6 @@ end;
 // ------------------ TVXSphere ------------------
 // ------------------
 
-// Create
-//
-
 constructor TVXSphere.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
@@ -3149,9 +2692,6 @@ begin
   FStop := 360;
 end;
 
-// BuildList
-//
-
 procedure TVXSphere.BuildList(var rci: TVXRenderContextInfo);
 var
   v1, V2, N1: TAffineVector;
@@ -3162,15 +2702,15 @@ var
   DoReverse: Boolean;
 begin
   DoReverse := (FNormalDirection = ndInside);
-  rci.VKStates.PushAttrib([sttPolygon]);
+  rci.VXStates.PushAttrib([sttPolygon]);
   if DoReverse then
-    rci.VKStates.InvertFrontFace;
+    rci.VXStates.InvertFrontFace;
 
   // common settings
-  AngTop := DegToRadian(1.0 * FTop);
-  AngBottom := DegToRadian(1.0 * FBottom);
-  AngStart := DegToRadian(1.0 * FStart);
-  AngStop := DegToRadian(1.0 * FStop);
+  AngTop := DegToRad(1.0 * FTop);
+  AngBottom := DegToRad(1.0 * FBottom);
+  AngStart := DegToRad(1.0 * FStart);
+  AngStop := DegToRad(1.0 * FStop);
   StepH := (AngStop - AngStart) / FSlices;
   StepV := (AngTop - AngBottom) / FStacks;
   glPushMatrix;
@@ -3225,8 +2765,8 @@ begin
   for j := 0 to FStacks - 1 do
   begin
     Theta := AngStart;
-    SinCosine(Phi, SinP, CosP);
-    SinCosine(Phi2, SinP2, CosP2);
+    SinCos(Phi, SinP, CosP);
+    SinCos(Phi2, SinP2, CosP2);
     v1.Y := SinP;
     V2.Y := SinP2;
     vTexCoord0 := 1 - j * vTexFactor;
@@ -3236,7 +2776,7 @@ begin
     for i := 0 to FSlices do
     begin
 
-      SinCosine(Theta, SinT, CosT);
+      SinCos(Theta, SinT, CosT);
       v1.X := CosP * SinT;
       V2.X := CosP2 * SinT;
       v1.Z := CosP * CosT;
@@ -3274,7 +2814,7 @@ begin
   if (FBottom > -90) and (FBottomCap in [ctCenter, ctFlat]) then
   begin
     glBegin(GL_TRIANGLE_FAN);
-    SinCosine(AngBottom, SinP, CosP);
+    SinCos(AngBottom, SinP, CosP);
     glTexCoord2f(0.5, 0.5);
     if DoReverse then
       glNormal3f(0, 1, 0)
@@ -3297,7 +2837,7 @@ begin
     Theta := AngStop;
     for i := 0 to FSlices do
     begin
-      SinCosine(Theta, SinT, CosT);
+      SinCos(Theta, SinT, CosT);
       v1.X := CosP * SinT;
       v1.Z := CosP * CosT;
       if FBottomCap = ctCenter then
@@ -3314,13 +2854,10 @@ begin
     glEnd;
   end;
   if DoReverse then
-    rci.VKStates.InvertFrontFace;
+    rci.VXStates.InvertFrontFace;
   glPopMatrix;
-  rci.VKStates.PopAttrib;
+  rci.VXStates.PopAttrib;
 end;
-
-// RayCastIntersect
-//
 
 function TVXSphere.RayCastIntersect(const rayStart, rayVector: TVector;
   intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean;
@@ -3347,9 +2884,6 @@ begin
   else
     Result := False;
 end;
-
-// GenerateSilhouette
-//
 
 function TVXSphere.GenerateSilhouette(const silhouetteParameters
   : TVXSilhouetteParameters): TVXSilhouette;
@@ -3384,9 +2918,6 @@ begin
     Result.vertices.Add(NullHmgPoint);
 end;
 
-// SetBottom
-//
-
 procedure TVXSphere.SetBottom(aValue: TAngleLimit1);
 begin
   if FBottom <> aValue then
@@ -3395,9 +2926,6 @@ begin
     StructureChanged;
   end;
 end;
-
-// SetBottomCap
-//
 
 procedure TVXSphere.SetBottomCap(aValue: TCapType);
 begin
@@ -3408,9 +2936,6 @@ begin
   end;
 end;
 
-// SetRadius
-//
-
 procedure TVXSphere.SetRadius(const aValue: GLfloat);
 begin
   if aValue <> FRadius then
@@ -3419,9 +2944,6 @@ begin
     StructureChanged;
   end;
 end;
-
-// SetSlices
-//
 
 procedure TVXSphere.SetSlices(aValue: Integer);
 begin
@@ -3435,9 +2957,6 @@ begin
   end;
 end;
 
-// SetStacks
-//
-
 procedure TVXSphere.SetStacks(aValue: GLint);
 begin
   if aValue <> FStacks then
@@ -3450,9 +2969,6 @@ begin
   end;
 end;
 
-// SetStart
-//
-
 procedure TVXSphere.SetStart(aValue: TAngleLimit2);
 begin
   if FStart <> aValue then
@@ -3462,9 +2978,6 @@ begin
     StructureChanged;
   end;
 end;
-
-// SetStop
-//
 
 procedure TVXSphere.SetStop(aValue: TAngleLimit2);
 begin
@@ -3476,9 +2989,6 @@ begin
   end;
 end;
 
-// SetTop
-//
-
 procedure TVXSphere.SetTop(aValue: TAngleLimit1);
 begin
   if FTop <> aValue then
@@ -3488,9 +2998,6 @@ begin
   end;
 end;
 
-// SetTopCap
-//
-
 procedure TVXSphere.SetTopCap(aValue: TCapType);
 begin
   if FTopCap <> aValue then
@@ -3499,9 +3006,6 @@ begin
     StructureChanged;
   end;
 end;
-
-// Assign
-//
 
 procedure TVXSphere.Assign(Source: TPersistent);
 begin
@@ -3518,9 +3022,6 @@ begin
   inherited Assign(Source);
 end;
 
-// AxisAlignedDimensions
-//
-
 function TVXSphere.AxisAlignedDimensionsUnscaled: TVector;
 begin
   Result.X := Abs(FRadius);
@@ -3533,9 +3034,6 @@ end;
 // ------------------ TVXPolygonBase ------------------
 // ------------------
 
-// Create
-//
-
 constructor TVXPolygonBase.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
@@ -3544,25 +3042,16 @@ begin
   FSplineMode := lsmLines;
 end;
 
-// CreateNodes
-//
-
 procedure TVXPolygonBase.CreateNodes;
 begin
   FNodes := TVXNodes.Create(Self);
 end;
-
-// Destroy
-//
 
 destructor TVXPolygonBase.Destroy;
 begin
   FNodes.Free;
   inherited Destroy;
 end;
-
-// Assign
-//
 
 procedure TVXPolygonBase.Assign(Source: TPersistent);
 begin
@@ -3575,18 +3064,12 @@ begin
   inherited Assign(Source);
 end;
 
-// NotifyChange
-//
-
 procedure TVXPolygonBase.NotifyChange(Sender: TObject);
 begin
   if Sender = Nodes then
     StructureChanged;
   inherited;
 end;
-
-// SetDivision
-//
 
 procedure TVXPolygonBase.SetDivision(const Value: Integer);
 begin
@@ -3600,17 +3083,11 @@ begin
   end;
 end;
 
-// SetNodes
-//
-
 procedure TVXPolygonBase.SetNodes(const aNodes: TVXNodes);
 begin
   FNodes.Assign(aNodes);
   StructureChanged;
 end;
-
-// SetSplineMode
-//
 
 procedure TVXPolygonBase.SetSplineMode(const val: TLineSplineMode);
 begin
@@ -3620,9 +3097,6 @@ begin
     StructureChanged;
   end;
 end;
-
-// AddNode (coords)
-//
 
 procedure TVXPolygonBase.AddNode(const coords: TVXCoordinates);
 var
@@ -3634,9 +3108,6 @@ begin
   StructureChanged;
 end;
 
-// AddNode (xyz)
-//
-
 procedure TVXPolygonBase.AddNode(const X, Y, Z: GLfloat);
 var
   n: TVXNode;
@@ -3646,9 +3117,6 @@ begin
   StructureChanged;
 end;
 
-// AddNode (vector)
-//
-
 procedure TVXPolygonBase.AddNode(const Value: TVector);
 var
   n: TVXNode;
@@ -3657,9 +3125,6 @@ begin
   n.AsVector := Value;
   StructureChanged;
 end;
-
-// AddNode (affine vector)
-//
 
 procedure TVXPolygonBase.AddNode(const Value: TAffineVector);
 var
@@ -3674,15 +3139,12 @@ end;
 // ------------------ TVXSuperellipsoid ------------------
 // ------------------
 
-// Create
-//
-
 constructor TVXSuperellipsoid.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   FRadius := 0.5;
-  FxyCurve := 1.0;
-  FzCurve := 1.0;
+  FVCurve := 1.0;
+  FHCurve := 1.0;
   FSlices := 16;
   FStacks := 16;
   FTop := 90;
@@ -3691,13 +3153,9 @@ begin
   FStop := 360;
 end;
 
-// BuildList
-//
-
 procedure TVXSuperellipsoid.BuildList(var rci: TVXRenderContextInfo);
 var
   CosPc1, SinPc1, CosTc2, SinTc2: Double;
-
   tc1, tc2: integer;
   v1, v2, vs, N1: TAffineVector;
   AngTop, AngBottom, AngStart, AngStop, StepV, StepH: Double;
@@ -3709,29 +3167,29 @@ var
 begin
   DoReverse := (FNormalDirection = ndInside);
   if DoReverse then
-    rci.VKStates.InvertFrontFace;
+    rci.VXStates.InvertFrontFace;
 
   // common settings
-  AngTop := DegToRadian(1.0 * FTop);
-  AngBottom := DegToRadian(1.0 * FBottom);
-  AngStart := DegToRadian(1.0 * FStart);
-  AngStop := DegToRadian(1.0 * FStop);
+  AngTop := DegToRad(1.0 * FTop);
+  AngBottom := DegToRad(1.0 * FBottom);
+  AngStart := DegToRad(1.0 * FStart);
+  AngStop := DegToRad(1.0 * FStop);
   StepH := (AngStop - AngStart) / FSlices;
   StepV := (AngTop - AngBottom) / FStacks;
 
   { Even integer used with the Power function, only produce positive points }
-  tc1 := trunc(xyCurve);
-  tc2 := trunc(zCurve);
+  tc1 := trunc(VCurve);
+  tc2 := trunc(HCurve);
   if tc1 mod 2 = 0 then
-    xyCurve := xyCurve + 1e-6;
+    VCurve := VCurve + 1e-6;
   if tc2 mod 2 = 0 then
-    zCurve := zCurve - 1e-6;
+    HCurve := HCurve - 1e-6;
 
   // top cap
   if (FTop < 90) and (FTopCap in [ctCenter, ctFlat]) then
   begin
     glBegin(GL_TRIANGLE_FAN);
-    SinCosine(AngTop, SinP, CosP);
+    SinCos(AngTop, SinP, CosP);
     glTexCoord2f(0.5, 0.5);
     if DoReverse then
       glNormal3f(0, -1, 0)
@@ -3742,10 +3200,10 @@ begin
       glVertex3f(0, 0, 0)
     else
     begin { FTopCap = ctFlat }
-      if (Sign(SinP) = 1) or (tc1 = xyCurve) then
-        SinPc1 := Power(SinP, xyCurve)
+      if (Sign(SinP) = 1) or (tc1 = VCurve) then
+        SinPc1 := Power(SinP, VCurve)
       else
-        SinPc1 := -Power(-SinP, xyCurve);
+        SinPc1 := -Power(-SinP, VCurve);
       glVertex3f(0, SinPc1*Radius, 0);
 
       N1 := YVector;
@@ -3754,36 +3212,33 @@ begin
     end; { FTopCap = ctFlat }
 
     //  v1.Y := SinP;
-    if (Sign(SinP) = 1) or (tc1 = xyCurve) then
-      SinPc1 := Power(SinP, xyCurve)
+    if (Sign(SinP) = 1) or (tc1 = VCurve) then
+      SinPc1 := Power(SinP, VCurve)
     else
-      SinPc1 := -Power(-SinP, xyCurve);
+      SinPc1 := -Power(-SinP, VCurve);
     v1.Y := SinPc1;
 
     Theta := AngStart;
 
     for i := 0 to FSlices do
     begin
-      SinCosine(Theta, SinT, CosT);
+      SinCos(Theta, SinT, CosT);
       //    v1.X := CosP * SinT;
-      if (Sign(CosP) = 1) or (tc1 = xyCurve) then
-        CosPc1 := Power(CosP, xyCurve)
+      if (Sign(CosP) = 1) or (tc1 = VCurve) then
+        CosPc1 := Power(CosP, VCurve)
       else
-        CosPc1 := -Power(-CosP, xyCurve);
-
-      if (Sign(SinT) = 1) or (tc2 = zCurve) then
-        SinTc2 := Power(SinT, zCurve)
+        CosPc1 := -Power(-CosP, VCurve);
+      if (Sign(SinT) = 1) or (tc2 = HCurve) then
+        SinTc2 := Power(SinT, HCurve)
       else
-        SinTc2 := -Power(-SinT, zCurve);
+        SinTc2 := -Power(-SinT, HCurve);
       v1.X := CosPc1 * SinTc2;
-
       //    v1.Z := CosP * CosT;
-      if (Sign(CosT) = 1) or (tc2 = zCurve) then
-        CosTc2 := Power(CosT, zCurve)
+      if (Sign(CosT) = 1) or (tc2 = HCurve) then
+        CosTc2 := Power(CosT, HCurve)
       else
-        CosTc2 := -Power(-CosT, zCurve);
+        CosTc2 := -Power(-CosT, HCurve);
       v1.Z := CosPc1 * CosTc2;
-
       if FTopCap = ctCenter then
       begin
         N1 := VectorPerpendicular(YVector, v1);
@@ -3806,67 +3261,61 @@ begin
   Phi2 := Phi - StepV;
   uTexFactor := 1 / FSlices;
   vTexFactor := 1 / FStacks;
-
   for j := 0 to FStacks - 1 do
   begin
     Theta := AngStart;
-    SinCosine(Phi, SinP, CosP);
-    SinCosine(Phi2, SinP2, CosP2);
+    SinCos(Phi, SinP, CosP);
+    SinCos(Phi2, SinP2, CosP2);
 
-    if (Sign(SinP) = 1) or (tc1 = xyCurve) then
-      SinPc1 := Power(SinP, xyCurve)
+    if (Sign(SinP) = 1) or (tc1 = VCurve) then
+      SinPc1 := Power(SinP, VCurve)
     else
-      SinPc1 := -Power(-SinP, xyCurve);
+      SinPc1 := -Power(-SinP, VCurve);
     v1.Y := SinPc1;
 
-    if (Sign(SinP2) = 1) or (tc1 = xyCurve) then
-      SinPc1 := Power(SinP2, xyCurve)
+    if (Sign(SinP2) = 1) or (tc1 = VCurve) then
+      SinPc1 := Power(SinP2, VCurve)
     else
-      SinPc1 := -Power(-SinP2, xyCurve);
+      SinPc1 := -Power(-SinP2, VCurve);
     v2.Y := SinPc1;
-
     vTexCoord0 := 1 - j * vTexFactor;
     vTexCoord1 := 1 - (j + 1) * vTexFactor;
-
     glBegin(GL_TRIANGLE_STRIP);
     for i := 0 to FSlices do
     begin
-      SinCosine(Theta, SinT, CosT);
+      SinCos(Theta, SinT, CosT);
 
-      if (Sign(CosP) = 1) or (tc1 = xyCurve) then
-        CosPc1 := Power(CosP, xyCurve)
+      if (Sign(CosP) = 1) or (tc1 = VCurve) then
+        CosPc1 := Power(CosP, VCurve)
       else
-        CosPc1 := -Power(-CosP, xyCurve);
+        CosPc1 := -Power(-CosP, VCurve);
 
-      if (Sign(SinT) = 1) or (tc2 = zCurve) then
-        SinTc2 := Power(SinT, zCurve)
+      if (Sign(SinT) = 1) or (tc2 = HCurve) then
+        SinTc2 := Power(SinT, HCurve)
       else
-        SinTc2 := -Power(-SinT, zCurve);
+        SinTc2 := -Power(-SinT, HCurve);
       v1.X := CosPc1 * SinTc2;
 
-      if (Sign(CosP2) = 1) or (tc1 = xyCurve) then
-        CosPc1 := Power(CosP2, xyCurve)
+      if (Sign(CosP2) = 1) or (tc1 = VCurve) then
+        CosPc1 := Power(CosP2, VCurve)
       else
-        CosPc1 := -Power(-CosP2, xyCurve);
+        CosPc1 := -Power(-CosP2, VCurve);
       V2.X := CosPc1 * SinTc2;
 
-      if (Sign(CosP) = 1) or (tc1 = xyCurve) then
-        CosPc1 := Power(CosP, xyCurve)
+      if (Sign(CosP) = 1) or (tc1 = VCurve) then
+        CosPc1 := Power(CosP, VCurve)
       else
-        CosPc1 := -Power(-CosP, xyCurve);
-
-      if (Sign(CosT) = 1) or (tc2 = zCurve) then
-        CosTc2 := Power(CosT, zCurve)
+        CosPc1 := -Power(-CosP, VCurve);
+      if (Sign(CosT) = 1) or (tc2 = HCurve) then
+        CosTc2 := Power(CosT, HCurve)
       else
-        CosTc2 := -Power(-CosT, zCurve);
+        CosTc2 := -Power(-CosT, HCurve);
       v1.Z := CosPc1 * CosTc2;
-
-      if (Sign(CosP2) = 1) or (tc1 = xyCurve) then
-        CosPc1 := Power(CosP2, xyCurve)
+      if (Sign(CosP2) = 1) or (tc1 = VCurve) then
+        CosPc1 := Power(CosP2, VCurve)
       else
-        CosPc1 := -Power(-CosP2, xyCurve);
+        CosPc1 := -Power(-CosP2, VCurve);
       V2.Z := CosPc1 * CosTc2;
-
       uTexCoord := i * uTexFactor;
       glTexCoord2f(uTexCoord, vTexCoord0);
       if DoReverse then
@@ -3891,7 +3340,6 @@ begin
       vs := v2;
       ScaleVector(vs, Radius);
       glVertex3fv(@vs);
-
       Theta := Theta + StepH;
     end;
     glEnd;
@@ -3903,7 +3351,7 @@ begin
   if (FBottom > -90) and (FBottomCap in [ctCenter, ctFlat]) then
   begin
     glBegin(GL_TRIANGLE_FAN);
-    SinCosine(AngBottom, SinP, CosP);
+    SinCos(AngBottom, SinP, CosP);
     glTexCoord2f(0.5, 0.5);
     if DoReverse then
       glNormal3f(0, 1, 0)
@@ -3913,10 +3361,10 @@ begin
       glVertex3f(0, 0, 0)
     else
     begin { FTopCap = ctFlat }
-      if (Sign(SinP) = 1) or (tc1 = xyCurve) then
-        SinPc1 := Power(SinP, xyCurve)
+      if (Sign(SinP) = 1) or (tc1 = VCurve) then
+        SinPc1 := Power(SinP, VCurve)
       else
-        SinPc1 := -Power(-SinP, xyCurve);
+        SinPc1 := -Power(-SinP, VCurve);
       glVertex3f(0, SinPc1*Radius, 0);
 
       if DoReverse then
@@ -3925,35 +3373,33 @@ begin
         N1 := YVector;
     end;
     //  v1.Y := SinP;
-    if (Sign(SinP) = 1) or (tc1 = xyCurve) then
-      SinPc1 := Power(SinP, xyCurve)
+    if (Sign(SinP) = 1) or (tc1 = VCurve) then
+      SinPc1 := Power(SinP, VCurve)
     else
-      SinPc1 := -Power(-SinP, xyCurve);
+      SinPc1 := -Power(-SinP, VCurve);
     v1.Y := SinPc1;
 
     Theta := AngStop;
     for i := 0 to FSlices do
     begin
-      SinCosine(Theta, SinT, CosT);
+      SinCos(Theta, SinT, CosT);
       //    v1.X := CosP * SinT;
-      if (Sign(CosP) = 1) or (tc1 = xyCurve) then
-        CosPc1 := Power(CosP, xyCurve)
+      if (Sign(CosP) = 1) or (tc1 = VCurve) then
+        CosPc1 := Power(CosP, VCurve)
       else
-        CosPc1 := -Power(-CosP, xyCurve);
-
-      if (Sign(SinT) = 1) or (tc2 = zCurve) then
-        SinTc2 := Power(SinT, zCurve)
+        CosPc1 := -Power(-CosP, VCurve);
+      if (Sign(SinT) = 1) or (tc2 = HCurve) then
+        SinTc2 := Power(SinT, HCurve)
       else
-        SinTc2 := -Power(-SinT, zCurve);
+        SinTc2 := -Power(-SinT, HCurve);
       v1.X := CosPc1 * SinTc2;
 
       //    v1.Z := CosP * CosT;
-      if (Sign(CosT) = 1) or (tc2 = zCurve) then
-        CosTc2 := Power(CosT, zCurve)
+      if (Sign(CosT) = 1) or (tc2 = HCurve) then
+        CosTc2 := Power(CosT, HCurve)
       else
-        CosTc2 := -Power(-CosT, zCurve);
+        CosTc2 := -Power(-CosT, HCurve);
       v1.Z := CosPc1 * CosTc2;
-
       if FBottomCap = ctCenter then
       begin
         N1 := VectorPerpendicular(AffineVectorMake(0, -1, 0), v1);
@@ -3971,13 +3417,11 @@ begin
     glEnd;
   end;
   if DoReverse then
-    rci.VKStates.InvertFrontFace;
+    rci.VXStates.InvertFrontFace;
 end;
 
-// RayCastIntersect
 // This will probably not work, karamba
 // RayCastSphereIntersect -> RayCastSuperellipsoidIntersect ??????
-
 function TVXSuperellipsoid.RayCastIntersect(const rayStart, rayVector: TVector;
   intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean;
 var
@@ -4004,9 +3448,7 @@ begin
     Result := False;
 end;
 
-// GenerateSilhouette
 // This will probably not work;
-
 function TVXSuperellipsoid.GenerateSilhouette(const silhouetteParameters
   : TVXSilhouetteParameters): TVXSilhouette;
 var
@@ -4016,7 +3458,6 @@ var
   Segments: Integer;
 begin
   Segments := MaxInteger(FStacks, FSlices);
-
   // determine a local orthonormal matrix, viewer-oriented
   sVec := VectorCrossProduct(silhouetteParameters.SeenFrom, XVector);
   if VectorLength(sVec) < 1E-3 then
@@ -4040,9 +3481,6 @@ begin
     Result.vertices.Add(NullHmgPoint);
 end;
 
-// SetBottom
-//
-
 procedure TVXSuperellipsoid.SetBottom(aValue: TAngleLimit1);
 begin
   if FBottom <> aValue then
@@ -4051,9 +3489,6 @@ begin
     StructureChanged;
   end;
 end;
-
-// SetBottomCap
-//
 
 procedure TVXSuperellipsoid.SetBottomCap(aValue: TCapType);
 begin
@@ -4064,8 +3499,15 @@ begin
   end;
 end;
 
-// SetRadius
-//
+
+procedure TVXSuperellipsoid.SetHCurve(const aValue: GLfloat);
+begin
+  if aValue <> FHCurve then
+  begin
+    FHCurve := aValue;
+    StructureChanged;
+  end;
+end;
 
 procedure TVXSuperellipsoid.SetRadius(const aValue: GLfloat);
 begin
@@ -4075,33 +3517,6 @@ begin
     StructureChanged;
   end;
 end;
-
-// SetxyCurve
-//
-
-procedure TVXSuperellipsoid.SetxyCurve(const aValue: GLfloat);
-begin
-  if aValue <> FxyCurve then
-  begin
-    FxyCurve := aValue;
-    StructureChanged;
-  end;
-end;
-
-// SetzCurve
-//
-
-procedure TVXSuperellipsoid.SetzCurve(const aValue: GLfloat);
-begin
-  if aValue <> FzCurve then
-  begin
-    FzCurve := aValue;
-    StructureChanged;
-  end;
-end;
-
-// SetSlices
-//
 
 procedure TVXSuperellipsoid.SetSlices(aValue: Integer);
 begin
@@ -4115,9 +3530,6 @@ begin
   end;
 end;
 
-// SetStacks
-//
-
 procedure TVXSuperellipsoid.SetStacks(aValue: GLint);
 begin
   if aValue <> FStacks then
@@ -4130,9 +3542,6 @@ begin
   end;
 end;
 
-// SetStart
-//
-
 procedure TVXSuperellipsoid.SetStart(aValue: TAngleLimit2);
 begin
   if FStart <> aValue then
@@ -4142,9 +3551,6 @@ begin
     StructureChanged;
   end;
 end;
-
-// SetStop
-//
 
 procedure TVXSuperellipsoid.SetStop(aValue: TAngleLimit2);
 begin
@@ -4156,9 +3562,6 @@ begin
   end;
 end;
 
-// SetTop
-//
-
 procedure TVXSuperellipsoid.SetTop(aValue: TAngleLimit1);
 begin
   if FTop <> aValue then
@@ -4167,9 +3570,6 @@ begin
     StructureChanged;
   end;
 end;
-
-// SetTopCap
-//
 
 procedure TVXSuperellipsoid.SetTopCap(aValue: TCapType);
 begin
@@ -4180,8 +3580,14 @@ begin
   end;
 end;
 
-// Assign
-//
+procedure TVXSuperellipsoid.SetVCurve(const aValue: GLFloat);
+begin
+  if aValue <> FVCurve then
+  begin
+    FVCurve := aValue;
+    StructureChanged;
+  end;
+end;
 
 procedure TVXSuperellipsoid.Assign(Source: TPersistent);
 begin
@@ -4198,9 +3604,6 @@ begin
   inherited Assign(Source);
 end;
 
-// AxisAlignedDimensions
-//
-
 function TVXSuperellipsoid.AxisAlignedDimensionsUnscaled: TVector;
 begin
   Result.X := Abs(FRadius);
@@ -4210,13 +3613,7 @@ begin
 end;
 
 // -------------------------------------------------------------
-// -------------------------------------------------------------
-// -------------------------------------------------------------
-
 initialization
-
-// -------------------------------------------------------------
-// -------------------------------------------------------------
 // -------------------------------------------------------------
 
 RegisterClasses([TVXSphere, TVXCube, TVXPlane, TVXSprite, TVXPoints,

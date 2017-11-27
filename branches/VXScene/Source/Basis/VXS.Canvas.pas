@@ -18,11 +18,14 @@ uses
   Winapi.OpenGLext,
   System.Classes,
   System.UITypes,
+  System.Math,
   FMX.Graphics,
   
   VXS.VectorGeometry,
   VXS.Color,
   VXS.CrossPlatform,
+  VXS.Context,
+  VXS.VectorTypes,
   VXS.State;
 
 type
@@ -109,36 +112,31 @@ type
     procedure Polyline(const points: array of TVXPoint);
     { Similar to Polyline but also connects the last point to the first. }
     procedure Polygon(const points: array of TVXPoint);
-    { Plots a pixel at given coordinate.
-       PenWidth affects pixel size.
+    { Plots a pixel at given coordinate. PenWidth affects pixel size.
        The current position is NOT updated. }
     procedure PlotPixel(const x, y: Integer); overload;
     procedure PlotPixel(const x, y: Single); overload;
-    { Draw the (x1,y1)-(x2, y2) rectangle's frame (border). }
+    {Draw the (x1,y1)-(x2, y2) rectangle's frame (border). }
     procedure FrameRect(const x1, y1, x2, y2: Integer); overload;
     procedure FrameRect(const x1, y1, x2, y2: Single); overload;
-    { Draw the (x1,y1)-(x2, y2) rectangle (filled with PenColor). }
+    {Draw the (x1,y1)-(x2, y2) rectangle (filled with PenColor). }
     procedure FillRect(const x1, y1, x2, y2: Integer); overload;
     procedure FillRect(const x1, y1, x2, y2: Single); overload;
-    { Draw the (x1,y1)-(x2, y2) rectangle (filled with given gradient's color). }
+    {Draw the (x1,y1)-(x2, y2) rectangle (filled with given gradient's color). }
     procedure FillRectGradient(const x1, y1, x2, y2: Single;
       const x1y1Color, x2y1Color, x2y2Color, x1y2Color: TColorVector); overload;
     procedure FillRectGradient(const x1, y1, x2, y2: Integer;
       const x1y1Color, x2y1Color, x2y2Color, x1y2Color: TColorVector); overload;
-    { Draws an ellipse with (x1,y1)-(x2, y2) bounding rectangle. }
+    {Draws an ellipse with (x1,y1)-(x2, y2) bounding rectangle. }
     procedure EllipseBB(const x1, y1, x2, y2: Integer); overload;
     procedure EllipseBB(const x1, y1, x2, y2: Single); overload;
-    { Draws and ellipse centered at (x, y) with given radiuses. }
-    procedure Ellipse(const x, y: Integer; const xRadius, yRadius: Single);
-      overload;
-    procedure Ellipse(const x, y: Single; const xRadius, yRadius: Single);
-      overload;
+    {Draws and ellipse centered at (x, y) with given radiuses. }
+    procedure Ellipse(const x, y: Integer; const xRadius, yRadius: Single); overload;
+    procedure Ellipse(const x, y: Single; const xRadius, yRadius: Single); overload;
     procedure Ellipse(const x, y: Single; const Radius: Single); overload;
     { Draw a filled ellipse. }
-    procedure FillEllipse(const x, y: Integer; const xRadius, yRadius: Single);
-      overload;
-    procedure FillEllipse(const x, y: Single; const xRadius, yRadius: Single);
-      overload;
+    procedure FillEllipse(const x, y: Integer; const xRadius, yRadius: Single); overload;
+    procedure FillEllipse(const x, y: Single; const xRadius, yRadius: Single); overload;
     procedure FillEllipse(const x, y: Single; const Radius: Single); overload;
     { Draw a filled gradient ellipse.
     OpenVX will use the last PenColor and PenAlpha as the center color and do gradient to edge of ellipse using the edgeColor parameter. }
@@ -171,10 +169,6 @@ type
 //===============================================================
 implementation
 //===============================================================
-
-uses
-  VXS.Context,
-  VXS.VectorTypes;
 
 const
   cNoPrimitive = MaxInt;
@@ -226,7 +220,7 @@ end;
 
 procedure TVXCanvas.BackupOpenVXStates;
 begin
-  with CurrentVKContext.VKStates do
+  with CurrentVXContext.VxStates do
   begin
     Disable(stLighting);
     Disable(stFog);
@@ -295,7 +289,7 @@ begin
   if val < 1 then
     Exit;
   if val <> FPenWidth then
-    with CurrentVKContext.VKStates do
+    with CurrentVXContext.VxStates do
     begin
       FPenWidth := val;
       StopPrimitive;
@@ -683,10 +677,10 @@ begin
     SwapSingle(@y1, @y2);
 
   NormalizePoint(x1, y1, x2, y2, x3, y3, @x, @y);
-  AngleBegin := ArcTangent2(y, x);
+  AngleBegin := ArcTan2(y, x);
 
   NormalizePoint(x1, y1, x2, y2, x4, y4, @x, @y);
-  AngleEnd := ArcTangent2(y, x);
+  AngleEnd := ArcTan2(y, x);
 
   DrawArc(x1, y1, x2, y2, AngleBegin, AngleEnd, UpdateCurrentPos);
 end;

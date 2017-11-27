@@ -25,7 +25,7 @@ package VXScene_Sounds_RT;
 {$IMAGEBASE $400000}
 {$DEFINE DEBUG}
 {$ENDIF IMPLICITBUILDING}
-{$DESCRIPTION 'VXScene Sound Managers'}
+{$DESCRIPTION 'VKScene Sound Managers'}
 {$RUNONLY}
 {$IMPLICITBUILD ON}
 

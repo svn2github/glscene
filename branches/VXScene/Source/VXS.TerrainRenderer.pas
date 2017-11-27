@@ -101,7 +101,7 @@ type
     procedure Notification(AComponent: TComponent;
       Operation: TOperation); override;
     procedure DestroyHandle; override;
-    procedure ReleaseAllTiles; dynamic;
+    procedure ReleaseAllTiles; virtual;
     procedure OnTileDestroyed(Sender: TObject); virtual;
     function GetPreparedPatch(const TilePos, EyePos: TAffineVector;
       TexFactor: Single; HDList: TList): TVXROAMPatch;

@@ -208,14 +208,14 @@ procedure TVXParticles.BuildList(var ARci: TVXRenderContextInfo);
 var
   mi, ma: Single;
 begin
-  ARci.VKStates.Disable(stLighting);
-  ARci.VKStates.Enable(stLineStipple);
-  ARci.VKStates.Enable(stLineSmooth);
-  ARci.VKStates.Enable(stBlend);
-  ARci.VKStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
-  ARci.VKStates.LineWidth := 1;
-  ARci.VKStates.LineStippleFactor := 1;
-  ARci.VKStates.LineStipplePattern := $AAAA;
+  ARci.VXStates.Disable(stLighting);
+  ARci.VXStates.Enable(stLineStipple);
+  ARci.VXStates.Enable(stLineSmooth);
+  ARci.VXStates.Enable(stBlend);
+  ARci.VXStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
+  ARci.VXStates.LineWidth := 1;
+  ARci.VXStates.LineStippleFactor := 1;
+  ARci.VXStates.LineStipplePattern := $AAAA;
   ma := FCubeSize * 0.5;
   mi := -ma;
   with EdgeColor do

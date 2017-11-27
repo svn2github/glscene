@@ -38,7 +38,7 @@ uses
   VXS.Utils,
   VXS.XOpenGL;
 
-{$UNDEF VKS_MULTITHREAD}
+{$UNDEF USE_MULTITHREAD}
 type
   TVXFaceProperties = class;
   TVXMaterial = class;
@@ -112,7 +112,7 @@ type
           { Invoked once, before the first call to DoApply.
              The call happens with the OpenVX context being active. }
     procedure DoInitialize(var rci: TVXRenderContextInfo; Sender: TObject);
-      dynamic;
+      virtual;
     { Request to apply the shader.
        Always followed by a DoUnApply when the shader is no longer needed. }
     procedure DoApply(var rci: TVXRenderContextInfo; Sender: TObject); virtual; abstract;
@@ -122,7 +122,7 @@ type
     function DoUnApply(var rci: TVXRenderContextInfo): Boolean; virtual; abstract;
     { Invoked once, before the destruction of context or release of shader. 
        The call happens with the OpenVX context being active. }
-    procedure DoFinalize; dynamic;
+    procedure DoFinalize; virtual;
 
     function GetShaderInitialized: Boolean;
     procedure InitializeShader(var rci: TVXRenderContextInfo; Sender: TObject);
@@ -603,71 +603,50 @@ type
     property Shader: TVXShader read FShader write SetShader;
   end;
 
-  // TVXAbstractLibMaterials
-  //
-
   TVXAbstractLibMaterials = class(TOwnedCollection)
   protected
-    
+
     procedure Loaded;
-    function GetMaterial(const AName: TVXLibMaterialName): TVXAbstractLibMaterial;
-    {$IFDEF VKS_INLINE}inline;{$ENDIF}
+    function GetMaterial(const AName: TVXLibMaterialName): TVXAbstractLibMaterial; inline;
   public
     function MakeUniqueName(const nameRoot: TVXLibMaterialName):
       TVXLibMaterialName; virtual;
   end;
 
-  // TVXLibMaterials
-  //
-    { A collection of materials, mainly used in material libraries. }
+  { A collection of materials, mainly used in material libraries. }
 
   TVXLibMaterials = class(TVXAbstractLibMaterials)
   protected
-    
     procedure SetItems(index: Integer; const val: TVXLibMaterial);
     function GetItems(index: Integer): TVXLibMaterial;
     procedure DestroyHandles;
-
   public
-    
     constructor Create(AOwner: TComponent);
-
     function Owner: TPersistent;
-
     function IndexOf(const Item: TVXLibMaterial): Integer;
     function Add: TVXLibMaterial;
     function FindItemID(ID: Integer): TVXLibMaterial;
     property Items[index: Integer]: TVXLibMaterial read GetItems write SetItems;
     default;
-
-    function GetLibMaterialByName(const AName: TVXLibMaterialName):
-      TVXLibMaterial;
+    function GetLibMaterialByName(const AName: TVXLibMaterialName): TVXLibMaterial;
     { Returns index of this Texture if it exists. }
     function GetTextureIndex(const Texture: TVXTexture): Integer;
-
     { Returns index of this Material if it exists. }
     function GetMaterialIndex(const Material: TVXMaterial): Integer;
-
     { Returns name of this Texture if it exists. }
     function GetNameOfTexture(const Texture: TVXTexture): TVXLibMaterialName;
-
     { Returns name of this Material if it exists. }
     function GetNameOfLibMaterial(const Material: TVXLibMaterial):
       TVXLibMaterialName;
-
     procedure PrepareBuildList;
-    { Deletes all the unused materials in the collection. 
+    { Deletes all the unused materials in the collection.
        A material is considered unused if no other material or updateable object references it.
        WARNING: For this to work, objects that use the textuere, have to REGISTER to the texture.}
     procedure DeleteUnusedMaterials;
   end;
 
-  // TVXAbstractMaterialLibrary
-  //
-
   TVXAbstractMaterialLibrary = class(TVXCadenceAbleComponent)
   protected
-    
     FMaterials: TVXAbstractLibMaterials;
     FLastAppliedMaterial: TVXAbstractLibMaterial;
     FTexturePaths: string;
@@ -676,93 +655,77 @@ type
     property TexturePaths: string read FTexturePaths write SetTexturePaths;
     procedure Loaded; override;
   public
-    
-
     procedure SetNamesToTStrings(AStrings: TStrings);
-    { Applies the material of given name. 
+    { Applies the material of given name.
        Returns False if the material could not be found. ake sure this
        call is balanced with a corresponding UnApplyMaterial (or an
-       assertion will be triggered in the destructor). 
+       assertion will be triggered in the destructor).
        If a material is already applied, and has not yet been unapplied,
        an assertion will be triggered. }
     function ApplyMaterial(const AName: string;
       var ARci: TVXRenderContextInfo): Boolean; virtual;
-    { Un-applies the last applied material. 
-       Use this function in conjunction with ApplyMaterial. 
+    { Un-applies the last applied material.
+       Use this function in conjunction with ApplyMaterial.
        If no material was applied, an assertion will be triggered. }
     function UnApplyMaterial(var ARci: TVXRenderContextInfo): Boolean; virtual;
   end;
 
-  // TVXMaterialLibrary
-  //
-  { Stores a set of materials, to be used and shared by scene objects. 
+  { Stores a set of materials, to be used and shared by scene objects.
      Use a material libraries for storing commonly used materials, it provides
      an efficient way to share texture and material data among many objects,
-     thus reducing memory needs and rendering time. 
+     thus reducing memory needs and rendering time.
      Materials in a material library also feature advanced control properties
      like texture coordinates transforms. }
   TVXMaterialLibrary = class(TVXAbstractMaterialLibrary)
   private
-    
     FDoNotClearMaterialsOnLoad: Boolean;
     FOnTextureNeeded: TVXTextureNeededEvent;
   protected
-
     function GetMaterials: TVXLibMaterials;
     procedure SetMaterials(const val: TVXLibMaterials);
     function StoreMaterials: Boolean;
   public
-
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure DestroyHandles;
-
     procedure WriteToFiler(writer: TVirtualWriter);
     procedure ReadFromFiler(reader: TVirtualReader);
-    procedure SaveToStream(aStream: TStream); dynamic;
-    procedure LoadFromStream(aStream: TStream); dynamic;
+    procedure SaveToStream(aStream: TStream); virtual;
+    procedure LoadFromStream(aStream: TStream); virtual;
     procedure AddMaterialsFromStream(aStream: TStream);
-
-    { Save library content to a file. 
-       Recommended extension : .GLML 
+    { Save library content to a file.
+       Recommended extension : .GLML
        Currently saves only texture, ambient, diffuse, emission
        and specular colors. }
     procedure SaveToFile(const fileName: string);
     procedure LoadFromFile(const fileName: string);
     procedure AddMaterialsFromFile(const fileName: string);
-
-    { Add a "standard" texture material. 
+    { Add a "standard" texture material.
        "standard" means linear texturing mode with mipmaps and texture
-       modulation mode with default-strength color components. 
+       modulation mode with default-strength color components.
        If persistent is True, the image will be loaded persistently in memory
        (via a TVXPersistentImage), if false, it will be unloaded after upload
        to OpenVX (via TVXPicFileImage). }
     function AddTextureMaterial(const MaterialName, FileName: string;
       persistent: Boolean = True): TVXLibMaterial; overload;
-    { Add a "standard" texture material. 
+    { Add a "standard" texture material.
        TVXGraphic based variant. }
     function AddTextureMaterial(const MaterialName: string; Graphic:
       TVXGraphic): TVXLibMaterial; overload;
-
     { Returns libMaterial of given name if any exists. }
     function LibMaterialByName(const AName: TVXLibMaterialName): TVXLibMaterial;
-
     { Returns Texture of given material's name if any exists. }
     function TextureByName(const LibMatName: TVXLibMaterialName): TVXTexture;
-
     { Returns name of texture if any exists. }
     function GetNameOfTexture(const Texture: TVXTexture): TVXLibMaterialName;
-
     { Returns name of Material if any exists. }
     function GetNameOfLibMaterial(const LibMat: TVXLibMaterial):
       TVXLibMaterialName;
-
   published
-    
       { The materials collection. }
     property Materials: TVXLibMaterials read GetMaterials write SetMaterials stored
       StoreMaterials;
-    { This event is fired whenever a texture needs to be loaded from disk. 
+    { This event is fired whenever a texture needs to be loaded from disk.
        The event is triggered before even attempting to load the texture,
        and before TexturePaths is used. }
     property OnTextureNeeded: TVXTextureNeededEvent read FOnTextureNeeded write
@@ -778,9 +741,8 @@ type
   end;
 
 // ------------------------------------------------------------------------------
-// ------------------------------------------------------------------------------
-// ------------------------------------------------------------------------------
 implementation
+
 // ------------------
 // ------------------ TVXFaceProperties ------------------
 // ------------------
@@ -807,7 +769,7 @@ end;
 procedure TVXFaceProperties.Apply(var rci: TVXRenderContextInfo;
   aFace: TCullFaceMode);
 begin
-  with rci.VKStates do
+  with rci.VxStates do
   begin
     SetMaterialColors(aFace,
     Emission.Color, Ambient.Color, Diffuse.Color, Specular.Color, FShininess);
@@ -883,7 +845,7 @@ end;
 
 procedure TVXDepthProperties.Apply(var rci: TVXRenderContextInfo);
 begin
-  with rci.VKStates do
+  with rci.VxStates do
   begin
     if FDepthTest and rci.bufferDepthTest then
       Enable(stDepthTest)
@@ -1101,7 +1063,7 @@ end;
 
 procedure TVXShader.Apply(var rci: TVXRenderContextInfo; Sender: TObject);
 begin
-{$IFNDEF VKS_MULTITHREAD}
+{$IFNDEF USE_MULTITHREAD}
   Assert(not FShaderActive, 'Unbalanced shader application.');
 {$ENDIF}
   // Need to check it twice, because shader may refuse to initialize
@@ -1121,7 +1083,7 @@ end;
 
 function TVXShader.UnApply(var rci: TVXRenderContextInfo): Boolean;
 begin
-{$IFNDEF VKS_MULTITHREAD}
+{$IFNDEF USE_MULTITHREAD}
   Assert(FShaderActive, 'Unbalanced shader application.');
 {$ENDIF}
   if Enabled then
@@ -1160,7 +1122,7 @@ end;
 
 procedure TVXShader.SetEnabled(val: Boolean);
 begin
-{$IFNDEF VKS_MULTITHREAD}
+{$IFNDEF USE_MULTITHREAD}
   Assert(not FShaderActive, 'Shader is active.');
 {$ENDIF}
   if val <> FEnabled then
@@ -1543,7 +1505,7 @@ begin
   if Assigned(currentLibMaterial) then
     currentLibMaterial.Apply(rci)
   else
-  with rci.VKStates do
+  with rci.VxStates do
   begin
     Disable(stColorMaterial);
     PolygonMode := FPolygonMode;
@@ -2169,7 +2131,7 @@ begin
     end;
   end
   else
-    ARci.VKStates.CurrentProgram := 0;
+    ARci.VXStates.CurrentProgram := 0;
   if (Texture2Name <> '') and GL_ARB_multitexture and (not
     xgl.SecondTextureUnitForbidden) then
   begin
@@ -2191,14 +2153,14 @@ begin
   begin
     // no multitexturing ("standard" mode)
     if not FTextureMatrixIsIdentity then
-        ARci.VKStates.SetTextureMatrix(FTextureMatrix);
+        ARci.VXStates.SetTextureMatrix(FTextureMatrix);
     Material.Apply(ARci);
   end
   else
   begin
     // multitexturing is ON
     if not FTextureMatrixIsIdentity then
-      ARci.VKStates.SetTextureMatrix(FTextureMatrix);
+      ARci.VXStates.SetTextureMatrix(FTextureMatrix);
     Material.Apply(ARci);
 
     if not libMatTexture2.FTextureMatrixIsIdentity then
@@ -2259,7 +2221,7 @@ begin
     Material.UnApply(ARci);
     if not Material.Texture.Disabled then
       if not FTextureMatrixIsIdentity then
-        ARci.VKStates.ResetTextureMatrix;
+        ARci.VXStates.ResetTextureMatrix;
     if Assigned(FShader) then
     begin
       case Shader.ShaderStyle of
@@ -3413,22 +3375,22 @@ procedure TVXBlendingParameters.Apply(var rci: TVXRenderContextInfo);
 begin
   if FUseAlphaFunc then
   begin
-    rci.VKStates.Enable(stAlphaTest);
-    rci.VKStates.SetAlphaFunction(FAlphaFuncType, FAlphaFuncRef);
+    rci.VXStates.Enable(stAlphaTest);
+    rci.VXStates.SetAlphaFunction(FAlphaFuncType, FAlphaFuncRef);
   end
   else
-    rci.VKStates.Disable(stAlphaTest);
+    rci.VXStates.Disable(stAlphaTest);
   if FUseBlendFunc then
   begin
-    rci.VKStates.Enable(stBlend);
+    rci.VXStates.Enable(stBlend);
     if FSeparateBlendFunc then
-      rci.VKStates.SetBlendFuncSeparate(FBlendFuncSFactor, FBlendFuncDFactor,
+      rci.VXStates.SetBlendFuncSeparate(FBlendFuncSFactor, FBlendFuncDFactor,
         FAlphaBlendFuncSFactor, FAlphaBlendFuncDFactor)
     else
-      rci.VKStates.SetBlendFunc(FBlendFuncSFactor, FBlendFuncDFactor);
+      rci.VXStates.SetBlendFunc(FBlendFuncSFactor, FBlendFuncDFactor);
   end
   else
-    rci.VKStates.Disable(stBlend);
+    rci.VXStates.Disable(stBlend);
 end;
 
 constructor TVXBlendingParameters.Create(AOwner: TPersistent);

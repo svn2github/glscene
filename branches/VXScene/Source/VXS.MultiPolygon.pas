@@ -62,7 +62,7 @@ type
     procedure SetSplineMode(const Value: TLineSplineMode);
     procedure SetDescription(const Value: string);
   protected
-    procedure CreateNodes; dynamic;
+    procedure CreateNodes; virtual;
     procedure NodesChanged(Sender: TObject);
     function GetDisplayName: string; override;
   public

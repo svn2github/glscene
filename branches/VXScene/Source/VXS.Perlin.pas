@@ -17,10 +17,12 @@ interface
 uses
   System.Classes,
   System.SysUtils,
+  System.Math,
   FMX.Graphics,
 
   VXS.VectorGeometry,
-  VXS.PerlinBase, VXS.HeightData,
+  VXS.PerlinBase, 
+  VXS.HeightData,
   VXS.CrossPlatform;
 
 Type
@@ -34,7 +36,7 @@ Type
     FInterpolation: TVXPerlinInterpolation;
     FSmoothing: TVXPerlinInterpolation;
   public
-    Procedure Generate; dynamic; abstract;
+    Procedure Generate; virtual; abstract;
     property Interpolation: TVXPerlinInterpolation read FInterpolation
       write FInterpolation;
     property Smoothing: TVXPerlinInterpolation read FSmoothing write FSmoothing;
@@ -60,9 +62,8 @@ Type
     Procedure Set_Number_Of_Octaves(val: Integer);
   public
     Constructor Create(AOwner: TComponent); override;
-    Procedure Generate; dynamic; abstract;
+    Procedure Generate; virtual; abstract;
     Property Octaves[index: Integer]: TVXBasePerlinOctav read GetOctave;
-
   published
     property Smoothing: TVXPerlinInterpolation read FSmoothing write FSmoothing;
     property Interpolation: TVXPerlinInterpolation read FInterpolation
@@ -108,7 +109,7 @@ Type
     Function GetPerlinValue_2D(x, y: Double): Double;
     Procedure MakeBitmap(Param: TBitmap);
     Procedure SetHeightData(heightData: TVXHeightData);
-  End;
+  end;
 
   TVXPerlinHDS = class(TVXHeightDataSource)
   private
@@ -119,7 +120,6 @@ Type
     FLines: TStrings;
     FLinesChanged: Boolean;
     FXStart, FYStart: Integer;
-
   public
     MaxValue, MinValue: Double;
     Stall: Boolean;
@@ -151,11 +151,11 @@ implementation
 //---------------------------------------------------------------------
 function TVXBasePerlin.PerlinNoise_1D(x: Double): Double;
 
-Var
+var
   int_x: Integer;
   frac_x: Double;
 
-Begin
+begin
   int_x := Round(Int(x));
   frac_x := x - int_x;
   case Interpolation of
@@ -177,7 +177,7 @@ Begin
     raise exception.Create
       ('TVXBasePerlin.PerlinNoise_1D, Interpolation not implemented!');
   End;
-End;
+end;
 
 function TVXBasePerlin.PerlinNoise_2D(x, y: Double): Double;
 Var

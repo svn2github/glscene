@@ -34,12 +34,8 @@ type
 
   TOnBeforeKernelLaunch = procedure(Sender: TVXVertexAttribute) of object;
 
-  // TVXVertexAttribute
-  //
-
   TVXVertexAttribute = class(TCollectionItem)
   private
-    
     FName: string;
     FType: TVXSLDataType;
     FFunc: TCUDAFunction;
@@ -51,12 +47,10 @@ type
     function GetLocation: GLint;
     function GetOwner: TVXVertexAttributes; reintroduce;
   public
-    
     constructor Create(ACollection: TCollection); override;
     procedure NotifyChange(Sender: TObject);
     property Location: GLint read GetLocation;
   published
-    
     property Name: string read FName write SetName;
     property GLSLType: TVXSLDataType read FType write SetType;
     property KernelFunction: TCUDAFunction read FFunc write SetFunc;
@@ -64,16 +58,12 @@ type
       FOnBeforeKernelLaunch write FOnBeforeKernelLaunch;
   end;
 
-  // TVXVertexAttributes
-  //
-
   TVXVertexAttributes = class(TOwnedCollection)
   private
-    
     procedure SetItems(Index: Integer; const AValue: TVXVertexAttribute);
     function GetItems(Index: Integer): TVXVertexAttribute;
   public
-    
+
     constructor Create(AOwner: TComponent);
     procedure NotifyChange(Sender: TObject);
     function MakeUniqueName(const ANameRoot: string): string;
@@ -86,12 +76,9 @@ type
   TFeedBackMeshPrimitive = (fbmpPoint, fbmpLine, fbmpTriangle);
   TFeedBackMeshLaunching = (fblCommon, fblOnePerAtttribute);
 
-  // TVXFeedBackMesh
-  //
-
   TVXCustomFeedBackMesh = class(TVXBaseSceneObject)
   private
-    
+
     FGeometryResource: TCUDAGraphicResource;
     FAttributes: TVXVertexAttributes;
     FVAO: TVXVertexArrayHandle;
@@ -111,14 +98,12 @@ type
     procedure SetShader(AShader: TVXGLSLShader);
     procedure SetCommonFunc(AFunc: TCUDAFunction);
   protected
-    
     procedure Notification(AComponent: TComponent;
       Operation: TOperation); override;
     procedure RefreshAttributes;
     procedure AllocateHandles;
     procedure LaunchKernels;
   protected
-    
     property Attributes: TVXVertexAttributes read FAttributes write SetAttributes;
     { GLSL shader as material. If it absent or disabled - nothing be drawen. }
     property Shader: TVXGLSLShader read FShader write SetShader;
@@ -158,7 +143,6 @@ type
 
   TVXFeedBackMesh = class(TVXCustomFeedBackMesh)
   published
-    
     property Attributes;
     property Shader;
     property PrimitiveType;
@@ -185,12 +169,8 @@ type
     property Effects;
   end;
 
-  // TCUDAGLImageResource
-  //
-
   TCUDAGLImageResource = class(TCUDAGraphicResource)
   private
-    
     fMaterialLibrary: TVXMaterialLibrary;
     fTextureName: TVXLibMaterialName;
     procedure SetMaterialLibrary(const Value: TVXMaterialLibrary);
@@ -202,7 +182,6 @@ type
     procedure Notification(AComponent: TComponent; Operation: TOperation);
       override;
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
@@ -236,13 +215,10 @@ type
     function GetElementArrayDataSize: LongWord; override;
     function GetElementArrayAddress: Pointer; override;
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
     procedure MapResources; override;
     procedure UnMapResources; override;
-
     property AttributeDataSize[const AttribName: string]: LongWord read
       GetAttributeArraySize;
     property AttributeDataAddress[const AttribName: string]: Pointer read
@@ -250,7 +226,6 @@ type
     property IndexDataSize: LongWord read GetElementArrayDataSize;
     property IndexDataAddress: Pointer read GetElementArrayAddress;
   published
-    
     property FeedBackMesh: TVXCustomFeedBackMesh read FFeedBackMesh write
       SetFeedBackMesh;
     property Mapping;
@@ -264,7 +239,8 @@ uses
   VXS.TextureFormat;
 
 
-{$IFDEF VKS_REGION}{$REGION 'TCUDAGLImageResource'}{$ENDIF}
+{ TCUDAGLImageResource}
+
 // ------------------
 // ------------------ TCUDAGLImageResource ------------------
 // ------------------
@@ -440,9 +416,6 @@ begin
   SetArray(cudaArray, newArray, True, LTexture.TexDepth > 0);
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
-
-{$IFDEF VKS_REGION}{$REGION 'TCUDAGLGeometryResource'}{$ENDIF}
 // ------------------
 // ------------------ TCUDAGLGeometryResource ------------------
 // ------------------
@@ -726,13 +699,9 @@ begin
   Inc(Pbyte(Result), PtrUInt(MapPtr));
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
-
 // -----------------------
 // ----------------------- TVXVertexAttribute -------------------
 // -----------------------
-
-{$IFDEF VKS_REGION}{$REGION 'TVXVertexAttribute'}{$ENDIF}
 
 constructor TVXVertexAttribute.Create(ACollection: TCollection);
 begin
@@ -777,7 +746,7 @@ function TVXVertexAttribute.GetLocation: GLint;
 begin
   if FLocation < 0 then
     FLocation := glGetAttribLocation(
-      CurrentVKContext.VKStates.CurrentProgram,
+      CurrentVXContext.VXStates.CurrentProgram,
       PGLChar(String(FName)));
   Result := FLocation;
 end;
@@ -791,13 +760,10 @@ procedure TVXVertexAttribute.NotifyChange(Sender: TObject);
 begin
   GetOwner.NotifyChange(Self);
 end;
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
 
 // -----------------------
 // ----------------------- TVXVertexAttributes -------------------
 // -----------------------
-
-{$IFDEF VKS_REGION}{$REGION 'TVXVertexAttributes'}{$ENDIF}
 
 function TVXVertexAttributes.Add: TVXVertexAttribute;
 begin
@@ -854,23 +820,16 @@ begin
   inherited Items[index] := AValue;
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
-
 // -----------------------
 // ----------------------- TVXCustomFeedBackMesh -------------------
 // -----------------------
-
-{$IFDEF VKS_REGION}{$REGION 'TVXCustomFeedBackMesh'}{$ENDIF}
-
-// AllocateHandles
-//
 
 procedure TVXCustomFeedBackMesh.AllocateHandles;
 var
   I, L: Integer;
   Size, Offset: Cardinal;
   GR: TCUDAGLGeometryResource;
-  EnabledLocations: array[0..VKS_VERTEX_ATTR_NUM - 1] of Boolean;
+  EnabledLocations: array[0..VXS_VERTEX_ATTR_NUM - 1] of Boolean;
 begin
   FVAO.AllocateHandle;
   FVBO.AllocateHandle;
@@ -891,7 +850,7 @@ begin
       FEBO.UnBind; // Just in case
 
     // Predisable attributes
-    for I := 0 to VKS_VERTEX_ATTR_NUM - 1 do
+    for I := 0 to VXS_VERTEX_ATTR_NUM - 1 do
       EnabledLocations[I] := false;
 
     Offset := 0;
@@ -955,7 +914,7 @@ begin
 
     // Enable engagement attributes array
     begin
-      for I := VKS_VERTEX_ATTR_NUM - 1 downto 0 do
+      for I := VXS_VERTEX_ATTR_NUM - 1 downto 0 do
         if EnabledLocations[I] then
           glEnableVertexAttribArray(I)
         else
@@ -966,9 +925,6 @@ begin
     FVAO.NotifyDataUpdated;
   end;
 end;
-
-// Create
-//
 
 constructor TVXCustomFeedBackMesh.Create(AOwner: TComponent);
 begin
@@ -985,9 +941,6 @@ begin
   FBlend := False;
 end;
 
-// Destroy
-//
-
 destructor TVXCustomFeedBackMesh.Destroy;
 begin
   Shader := nil;
@@ -997,9 +950,6 @@ begin
   FEBO.Destroy;
   inherited;
 end;
-
-// LaunchKernels
-//
 
 procedure TVXCustomFeedBackMesh.LaunchKernels;
 var
@@ -1208,8 +1158,6 @@ begin
   FVertexNumber := AValue;
   FVAO.NotifyChangesOfData;
 end;
-
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
 
 initialization
 

@@ -7,32 +7,39 @@
   Component for animating camera movement.
   Can be used to zoom in/out, for linear movement, orbiting and Google Earth - like "fly-to"
   Main purpose was the SafeOrbitAndZoomToPos method, the others are usable as well
-       
-     
-     
+
+IMPORTANT!
+You should block user GUI access to the GLSceneViewer
+while movement is being done, check the AllowUserAction property!
+Block user GUI access while AllowUserAction is false to avoid behaviour errors
+simply put
+if GLCameraController1.AllowUserAction then
+do whatever you want on mouse move, form wheel etc
+
+methods and properties are explained in the interface section (through comments)
+additional comments might apear in implementation section where needed
+
+   History :
+     20/03/09 - DanB - Donated to GLScene by Bogdan Deaky.
+     The whole history is logged in previous version of the unit
 }
 
 
-//IMPORTANT!
-//You should block user GUI access to the GLSceneViewer
-//while movement is being done, check the AllowUserAction property!
-//Block user GUI access while AllowUserAction is false to avoid behaviour errors
-//simply put
-//if GLCameraController1.AllowUserAction then
-//do whatever you want on mouse move, form wheel etc
-
-// methods and properties are explained in the interface section (through comments)
-// additional comments might apear in implementation section where needed
 
 unit VXS.CameraController;
 
 interface
 
 uses
-  System.Classes, System.SysUtils, System.Math, System.Contnrs,
+  System.Classes, 
+  System.SysUtils, 
+  System.Math, 
+  System.Contnrs,
   
-  VXS.Scene, VXS.VectorGeometry,
-  VXS.SmoothNavigator, VXS.VectorTypes;
+  VXS.Scene, 
+  VXS.VectorGeometry,
+  VXS.SmoothNavigator, 
+  VXS.VectorTypes;
 
 type
 
@@ -433,7 +440,7 @@ begin
   Result.FTargetPosition := ATargetPosition;
   Result.FTime := ATime;
   Result.FSmoothNavigator := ASmoothNavigator;
-  Result.FShouldBeMatrix := FCameraJobList.FController.FCamera.Matrix;
+  Result.FShouldBeMatrix := FCameraJobList.FController.FCamera.Matrix^;
   Result.FNeedToRecalculateZoom := AFNeedToRecalculateZoom;
   if ACameraUpVector = nil then
     Result.FCameraUpVector := FCameraJobList.FController.FCamera.AbsoluteUp
@@ -960,7 +967,7 @@ begin
   if FElapsedTime < FProceedTime then
   begin
     // Save current matrix.
-    lCurrentMatrix := FJobList.FController.FCamera.Matrix;
+    lCurrentMatrix := FJobList.FController.FCamera.Matrix^;
 
     if FNeedToRecalculateZoom then
       lCurrentDistanceToTarget := FJobList.FController.FCamera.DistanceTo(FJobList.FController.FCameraTarget)
@@ -968,7 +975,7 @@ begin
       lCurrentDistanceToTarget := 0; // To avoid warning message.
 
     // Calculate the position, in which camera should have been.
-    FJobList.FController.FCamera.Matrix := FShouldBeMatrix;
+    FJobList.FController.FCamera.SetMatrix(FShouldBeMatrix);
 
     FJobList.FController.FCamera.AbsolutePosition := MoveObjectAround(
       FJobList.FController.FCamera.AbsolutePosition, FCameraUpVector,
@@ -979,10 +986,10 @@ begin
       RestoreDistanceToTarget();
 
     lTargetPosition := FJobList.FController.FCamera.AbsolutePosition;
-    FShouldBeMatrix := FJobList.FController.FCamera.Matrix;
+    FShouldBeMatrix := FJobList.FController.FCamera.Matrix^;
 
     // Restore Camera position and move it to the desired vector.
-    FJobList.FController.FCamera.Matrix := lCurrentMatrix;
+    FJobList.FController.FCamera.SetMatrix(lCurrentMatrix);
     SetTargetValueRelative(lTargetPosition);
   end
   else

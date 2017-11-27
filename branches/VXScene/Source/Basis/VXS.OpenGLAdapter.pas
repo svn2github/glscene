@@ -1913,7 +1913,7 @@ procedure DebugCallBack(Source: GLenum; type_: GLenum; id: GLuint;
   severity: GLenum; length: GLSizei; const message: PGLChar; userParam: Pointer);
 {$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
 begin
-  {$IFDEF VKS_LOGGING}
+  {$IFDEF USE_LOGGING}
    if length > 0 then
       ShowMwssage(string(message));
   {$ENDIF}
@@ -2018,7 +2018,7 @@ begin
     end;
   end;
  
-{$IFDEF VKS_OPENGL_DEBUG}
+{$IFDEF USE_OPENGL_DEBUG}
   if Result <> @glCap then
     GLSLogger.LogDebug('Finded entry point of ' + vName)
   else
@@ -2042,7 +2042,7 @@ begin
   Result := GetProcAddressGLS(PGLChar(vName));
   if Result = nil then
     Result := @glCap;
-{$IFDEF VKS_OPENGL_DEBUG}
+{$IFDEF USE_OPENGL_DEBUG}
   if Result <> @glCap then
     GLSLogger.LogDebug('Finded entry point of ' + vName)
   else
@@ -2067,7 +2067,7 @@ begin
   if Result then
     Result := ((ExtPos + length(Extension) - 1) = length(FBuffer)) or
       (FBuffer[ExtPos + length(Extension)] = ' ');
-{$IFDEF VKS_OPENGL_DEBUG}
+{$IFDEF USE_OPENGL_DEBUG}
   if Result then
     GLSLogger.LogDebug(Extension);
 {$ENDIF}

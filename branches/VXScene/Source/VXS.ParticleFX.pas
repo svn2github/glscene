@@ -16,13 +16,31 @@ interface
 {$I VXScene.inc}
 
 uses
-  System.Classes, System.SysUtils, System.Types, System.Math,
+  Winapi.OpenGL, 
+  Winapi.OpenGLext, 
+  System.Classes, 
+  System.SysUtils,
+  System.Types, 
+  System.Math,
 
-  VXS.Scene, Winapi.OpenGL, Winapi.OpenGLext,  VXS.CrossPlatform, VXS.State,
-  VXS.VectorTypes, VXS.PersistentClasses, VXS.VectorGeometry,
-  VXS.XCollection, VXS.Material, VXS.Cadencer, VXS.VectorLists,
-  VXS.Graphics, VXS.Context, VXS.Color, VXS.BaseClasses,
-  VXS.Coordinates, VXS.RenderContextInfo, VXS.Manager, VXS.TextureFormat;
+  VXS.Scene, 
+  VXS.CrossPlatform, 
+  VXS.State,
+  VXS.VectorTypes, 
+  VXS.PersistentClasses, 
+  VXS.VectorGeometry,
+  VXS.XCollection, 
+  VXS.Material, 
+  VXS.Cadencer, 
+  VXS.VectorLists,
+  VXS.Graphics, 
+  VXS.Context, 
+  VXS.Color, 
+  VXS.BaseClasses,
+  VXS.Coordinates, 
+  VXS.RenderContextInfo, 
+  VXS.Manager,
+  VXS.TextureFormat;
 
 const
   cPFXNbRegions = 128; // number of distance regions
@@ -34,15 +52,12 @@ type
   TVXParticleFXManager = class;
   TVXParticleFXEffect = class;
 
-  // TVXParticle
-  //
   { Base class for particles. 
      The class implements properties for position, velocity and time, whatever
      you need in excess of that will have to be placed in subclasses (this
      class should remain as compact as possible). }
   TVXParticle = class(TPersistentObject)
   private
-    
     FID, FTag: Integer;
     FManager: TVXParticleFXManager; // NOT persistent
     FPosition: TAffineVector;
@@ -54,19 +69,12 @@ type
     procedure WritePosition(const Index: Integer; const aValue: Single);
     function GetVelocity(const Index: Integer): Single;
     procedure WriteVelocity(const Index: Integer; const aValue: Single);
-
-  protected
-    
-
   public
-    
     constructor Create; override;
     destructor Destroy; override;
     procedure WriteToFiler(writer: TVirtualWriter); override;
     procedure ReadFromFiler(reader: TVirtualReader); override;
-
     property Manager: TVXParticleFXManager read FManager write FManager;
-
     { Particle's ID, given at birth. 
        ID is a value unique per manager. }
     property ID: Integer read FID;
@@ -74,7 +82,7 @@ type
        Note that this property is read-accessed directly at rendering time
        in the innards of the depth-sorting code. }
     property Position: TAffineVector read FPosition write FPosition;
-    { Particle's velocity. 
+    { Particle's velocity.
        This velocity is indicative and is NOT automatically applied
        to the position during progression events by this class (subclasses
        may implement that). }
@@ -88,7 +96,6 @@ type
     property VelX : Single index 0 read GetVelocity write WriteVelocity;
     property VelY : Single index 1 read GetVelocity write WriteVelocity;
     property VelZ : Single index 2 read GetVelocity write WriteVelocity;
-
     property Tag: Integer read FTag write FTag;
   end;
 
@@ -96,96 +103,78 @@ type
   TVXParticleArray = array[0..MaxInt shr 4] of TVXParticle;
   PGLParticleArray = ^TVXParticleArray;
 
-  // TVXParticleList
-  //
-  { List of particles. 
+  { List of particles.
      This list is managed with particles and performance in mind, make sure to
      check methods doc. }
   TVXParticleList = class(TPersistentObject)
   private
-    
     FOwner: TVXParticleFXManager; // NOT persistent
     FItemList: TPersistentObjectList;
     FDirectList: PGLParticleArray; // NOT persistent
-
   protected
-    
     function GetItems(index: Integer): TVXParticle;
     procedure SetItems(index: Integer; val: TVXParticle);
     procedure AfterItemCreated(Sender: TObject);
-
   public
-    
     constructor Create; override;
     destructor Destroy; override;
     procedure WriteToFiler(writer: TVirtualWriter); override;
     procedure ReadFromFiler(reader: TVirtualReader); override;
-
     { Refers owner manager }
     property Owner: TVXParticleFXManager read FOwner write FOwner;
     property Items[index: Integer]: TVXParticle read GetItems write SetItems; default;
-
     function ItemCount: Integer;
-    { Adds a particle to the list. 
+    { Adds a particle to the list.
        Particle owneship is defined blindly, if the particle was previously
        in another list, it won't be automatically removed from that list. }
     function AddItem(aItem: TVXParticle): Integer;
-    { Removes and frees a particular item for the list. 
-       If the item is not part of the list, nothing is done. 
+    { Removes and frees a particular item for the list.
+       If the item is not part of the list, nothing is done.
        If found in the list, the item's "slot" is set to nil and item is
        freed (after setting its ownership to nil). The nils can be removed
        with a call to Pack. }
     procedure RemoveAndFreeItem(aItem: TVXParticle);
     function IndexOfItem(aItem: TVXParticle): Integer;
-    { Packs the list by removing all "nil" items. 
+    { Packs the list by removing all "nil" items.
        Note: this functions is orders of magnitude faster than the TList
        version. }
     procedure Pack;
-
     property List: PGLParticleArray read FDirectList;
   end;
 
   TVXParticleFXRenderer = class;
   TPFXCreateParticleEvent = procedure(Sender: TObject; aParticle: TVXParticle) of object;
 
-  // TVXParticleFXManager
-  //
-  { Base class for particle FX managers. 
+  { Base class for particle FX managers.
      Managers take care of life and death of particles for a particular
      particles FX system. You can have multiple scene-wide particle
-     FX managers in a scene, handled by the same ParticleFxRenderer. 
+     FX managers in a scene, handled by the same ParticleFxRenderer.
      Before subclassing, make sure you understood how the Initialize/Finalize
      Rendering, Begin/End Particles and RenderParticles methods (and also
      understood that rendering of manager's particles may be interwoven). }
   TVXParticleFXManager = class(TVXCadencedComponent)
   private
-    
     FBlendingMode: TBlendingMode;
     FRenderer: TVXParticleFXRenderer;
     FParticles: TVXParticleList;
     FNextID: Integer;
     FOnCreateParticle: TPFXCreateParticleEvent;
     FAutoFreeWhenEmpty: Boolean;
-
     FUsers: TList; //list of objects that use this manager
-
   protected
-    
     procedure SetRenderer(const val: TVXParticleFXRenderer);
     procedure SetParticles(const aParticles: TVXParticleList);
-
-    { Texturing mode for the particles. 
+    { Texturing mode for the particles.
        Subclasses should return GL_TEXTURE_1D, 2D or 3D depending on their
        needs, and zero if they don't use texturing. This method is used
        to reduce the number of texturing activations/deactivations. }
     function TexturingMode: Cardinal; virtual; abstract;
-
-    { Invoked when the particles of the manager will be rendered. 
+    { Invoked when the particles of the manager will be rendered.
        This method is fired with the "base" OpenVX states and matrices
        that will be used throughout the whole rendering, per-frame
        initialization should take place here. 
        OpenVX states/matrices should not be altered in any way here. }
-    procedure InitializeRendering(var rci: TVXRenderContextInfo); dynamic; abstract;
+    procedure InitializeRendering(var rci: TVXRenderContextInfo); virtual; abstract;
     { Triggered just before rendering a set of particles. 
        The current OpenVX state should be assumed to be the "base" one as
        was found during InitializeRendering. Manager-specific states should
@@ -204,11 +193,9 @@ type
        caches of GLMisc), it should be restored back to the "base" state. }
     procedure EndParticles(var rci: TVXRenderContextInfo); virtual; abstract;
     { Invoked when rendering of particles for this manager is done. }
-    procedure FinalizeRendering(var rci: TVXRenderContextInfo); dynamic; abstract;
-
+    procedure FinalizeRendering(var rci: TVXRenderContextInfo); virtual; abstract;
     { ID for the next created particle. }
     property NextID: Integer read FNextID write FNextID;
-
     { Blending mode for the particles. 
        Protected and unused in the base class. }
     property BlendingMode: TBlendingMode read FBlendingMode write FBlendingMode;
@@ -216,25 +203,19 @@ type
     procedure ApplyBlendingMode(var rci: TVXRenderContextInfo);
     { Unapply BlendingMode relatively by restoring the renderer's blending mode. }
     procedure UnapplyBlendingMode(var rci: TVXRenderContextInfo);
-
     procedure registerUser(obj: TVXParticleFXEffect);
     procedure unregisterUser(obj: TVXParticleFXEffect);
-
   public
-    
     constructor Create(aOwner: TComponent); override;
     destructor Destroy; override;
-
     procedure NotifyChange(Sender: TObject); override;
     procedure DoProgress(const progressTime: TProgressTimes); override;
-
     // Class of particles created by this manager. }
     class function ParticlesClass: TVXParticleClass; virtual;
     { Creates a new particle controlled by the manager. }
     function CreateParticle: TVXParticle; virtual;
     { Create several particles at once. }
     procedure CreateParticles(nbParticles: Integer);
-
     { A TVXParticleList property. }
     property Particles: TVXParticleList read FParticles write SetParticles;
     { Return the number of particles. 
@@ -242,61 +223,43 @@ type
        to Particles.ItemCount, and the value returned by this method will
        be the one honoured at render time. }
     function ParticleCount: Integer; virtual;
-
     { If True the manager will free itself when its particle count reaches zero. 
        Check happens in the progression event, use with caution and only
        if you know what you're doing! }
     property AutoFreeWhenEmpty: Boolean read FAutoFreeWhenEmpty write FAutoFreeWhenEmpty;
-
   published
-    
-          { References the renderer. 
-             The renderer takes care of ordering the particles of the manager
-             (and other managers linked to it) and rendering them all depth-sorted. }
+    { References the renderer. 
+      The renderer takes care of ordering the particles of the manager
+      (and other managers linked to it) and rendering them all depth-sorted. }
     property Renderer: TVXParticleFXRenderer read FRenderer write SetRenderer;
     { Event triggered after standard particle creation and initialization. }
     property OnCreateParticle: TPFXCreateParticleEvent read FOnCreateParticle write FOnCreateParticle;
-
     property Cadencer;
   end;
 
-  // TVXParticleFXEffect
-  //
   { Base class for linking scene objects to a particle FX manager.  }
   TVXParticleFXEffect = class(TVXObjectPostEffect)
   private
-    
     FManager: TVXParticleFXManager;
     FManagerName: string;
     FEffectScale: single;
     procedure SetEffectScale(const Value: single); // NOT persistent, temporarily used for persistence
-
   protected
-    
     procedure SetManager(val: TVXParticleFXManager);
-
     procedure WriteToFiler(writer: TWriter); override;
     procedure ReadFromFiler(reader: TReader); override;
-
     procedure Loaded; override;
-
     procedure managerNotification(aManager: TVXParticleFXManager; Operation: TOperation);
-
   public
-    
     constructor Create(aOwner: TVXXCollection); override;
     destructor Destroy; override;
-
   published
-    
-          { Reference to the Particle FX manager }
+    { Reference to the Particle FX manager }
     property Manager: TVXParticleFXManager read FManager write SetManager;
     property EffectScale: single read FEffectScale write SetEffectScale;
-
   end;
 
   // PFX region rendering structures
-
   TParticleReference = packed record
     particle: TVXParticle;
     distance: Integer; // stores an IEEE single!
@@ -313,12 +276,8 @@ type
   end;
   PPFXRegion = ^TPFXRegion;
 
-  // TPFXSortAccuracy
-  //
   TPFXSortAccuracy = (saLow, saOneTenth, saOneThird, saOneHalf, saHigh);
 
-  // TVXParticleFXRenderer
-  //
   { Rendering interface for scene-wide particle FX. 
      A renderer can take care of rendering any number of particle systems,
      its main task being to depth-sort the particles so that they are blended
@@ -328,7 +287,6 @@ type
      importance and has no effect on the rendering of the particles. }
   TVXParticleFXRenderer = class(TVXBaseSceneObject)
   private
-    
     FManagerList: TList;
     FLastSortTime: Double;
     FLastParticleCount: Integer;
@@ -337,36 +295,38 @@ type
     FZMaxDistance: Single;
     FBlendingMode: TBlendingMode;
     FRegions: array[0..cPFXNbRegions - 1] of TPFXRegion;
-
   protected
-    
     function StoreZMaxDistance: Boolean;
-
     { Register a manager }
     procedure RegisterManager(aManager: TVXParticleFXManager);
     { UnRegister a manager }
     procedure UnRegisterManager(aManager: TVXParticleFXManager);
-
     procedure UnRegisterAll;
-
   public
-    
     constructor Create(aOwner: TComponent); override;
     destructor Destroy; override;
-
+   { Quick Explanation of what is below:
+   The purpose is to depth-sort a large number (thousandths) of particles and
+   render them back to front. The rendering part is not particularly complex,
+   it just invokes the various PFX managers involved and request particle
+   renderings.
+   The sort uses a first-pass region partition (the depth range is split into
+   regions, and particles are assigned directly to the region they belong to),
+   then each region is sorted with a QuickSort.
+   The QuickSort itself is the regular classic variant, but the comparison is
+   made on singles as if they were integers, this is allowed by the IEEE format
+   in a very efficient manner if all values are superior to 1, which is ensured
+   by the distance calculation and a fixed offset of 1 }
     procedure BuildList(var rci: TVXRenderContextInfo); override;
-
     { Time (in msec) spent sorting the particles for last render. }
     property LastSortTime: Double read FLastSortTime;
     { Amount of particles during the last render. }
     property LastParticleCount: Integer read FLastParticleCount;
-
   published
-    
-        { Specifies if particles should write to ZBuffer. 
-           If the PFXRenderer is the last object to be rendered in the scene,
-           it is not necessary to write to the ZBuffer since the particles
-           are depth-sorted. Writing to the ZBuffer has a performance penalty. }
+    {Specifies if particles should write to ZBuffer.
+     If the PFXRenderer is the last object to be rendered in the scene,
+     it is not necessary to write to the ZBuffer since the particles
+     are depth-sorted. Writing to the ZBuffer has a performance penalty. }
     property ZWrite: Boolean read FZWrite write FZWrite default False;
     { Specifies if particles should write to test ZBuffer.  }
     property ZTest: Boolean read FZTest write FZTest default True;
@@ -385,28 +345,16 @@ type
        opacify view, "opaque" is more rarely used. 
        Note: specific PFX managers may override/ignore this setting. }
     property BlendingMode: TBlendingMode read FBlendingMode write FBlendingMode default bmAdditive;
-
     property Visible;
   end;
 
-  // TVXSourcePFXVelocityMode
-  //
   TVXSourcePFXVelocityMode = (svmAbsolute, svmRelative);
-
-  // TVXSourcePFXPositionMode
-  //
   TVXSourcePFXPositionMode = (spmAbsoluteOffset, spmRelative);
-
-  // TVXSourcePFXDispersionMode
-  //
   TVXSourcePFXDispersionMode = (sdmFast, sdmIsotropic);
 
-  // TVXSourcePFXEffect
-  //
   { Simple Particles Source.  }
   TVXSourcePFXEffect = class(TVXParticleFXEffect)
   private
-    
     FInitialVelocity: TVXCoordinates;
     FInitialPosition: TVXCoordinates;
     FPositionDispersionRange: TVXCoordinates;
@@ -420,36 +368,26 @@ type
     FDisabledIfOwnerInvisible: Boolean;
     FTimeRemainder: Double;
     FRotationDispersion: Single;
-
   protected
-    
     procedure SetInitialVelocity(const val: TVXCoordinates);
     procedure SetInitialPosition(const val: TVXCoordinates);
     procedure SetPositionDispersionRange(const val: TVXCoordinates);
     procedure SetParticleInterval(const val: Single);
     procedure WriteToFiler(writer: TWriter); override;
     procedure ReadFromFiler(reader: TReader); override;
-
     function ParticleAbsoluteInitialPos: TAffineVector;
-
   public
-    
     constructor Create(aOwner: TVXXCollection); override;
     destructor Destroy; override;
-
     class function FriendlyName: string; override;
     class function FriendlyDescription: string; override;
-
     procedure DoProgress(const progressTime: TProgressTimes); override;
-
     // Instantaneously creates nb particles
     procedure Burst(time: Double; nb: Integer);
     procedure RingExplosion(time: Double;
       minInitialSpeed, maxInitialSpeed: Single;
       nbParticles: Integer);
-
   published
-    
     property InitialVelocity: TVXCoordinates read FInitialVelocity write SetInitialVelocity;
     property VelocityDispersion: Single read FVelocityDispersion write FVelocityDispersion;
     property InitialPosition: TVXCoordinates read FInitialPosition write SetInitialPosition;
@@ -464,39 +402,26 @@ type
     property DisabledIfOwnerInvisible: boolean read FDisabledIfOwnerInvisible write FDisabledIfOwnerInvisible;
   end;
 
-  // TVXDynamicPFXManager
-  //
   { An abstract PFX manager for simple dynamic particles. 
      Adds properties and progress implementation for handling moving particles
      (simple velocity and const acceleration integration). }
   TVXDynamicPFXManager = class(TVXParticleFXManager)
   private
-    
     FAcceleration: TVXCoordinates;
     FFriction: Single;
     FCurrentTime: Double;
-
     //FRotationCenter: TAffineVector;
-
   protected
-    
     procedure SetAcceleration(const val: TVXCoordinates);
-
-    { Returns the maximum age for a particle. 
+    { Returns the maximum age for a particle.
        Particles older than that will be killed by DoProgress. }
-    function MaxParticleAge: Single; dynamic; abstract;
-
+    function MaxParticleAge: Single; virtual; abstract;
     property CurrentTime: Double read FCurrentTime;
-
   public
-    
     constructor Create(aOwner: TComponent); override;
     destructor Destroy; override;
-
     procedure DoProgress(const progressTime: TProgressTimes); override;
-
   published
-    
       { Oriented acceleration applied to the particles. }
     property Acceleration: TVXCoordinates read FAcceleration write SetAcceleration;
     { Friction applied to the particles. 
@@ -507,11 +432,8 @@ type
     property Friction: Single read FFriction write FFriction;
   end;
 
-  // TPFXLifeColor
-  //
   TPFXLifeColor = class(TCollectionItem)
   private
-    
     FColorInner: TVXColor;
     FColorOuter: TVXColor;
     FLifeTime, FInvLifeTime: Single;
@@ -519,70 +441,49 @@ type
     FSizeScale: Single;
     FDoScale: Boolean;
     FDoRotate: boolean;
-
     FRotateAngle: Single;
-
   protected
-    
     function GetDisplayName: string; override;
     procedure SetColorInner(const val: TVXColor);
     procedure SetColorOuter(const val: TVXColor);
     procedure SetLifeTime(const val: Single);
     procedure SetSizeScale(const val: Single);
     procedure SetRotateAngle(const Value: Single); // indirectly persistent
-
   public
-    
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
-
     procedure Assign(Source: TPersistent); override;
-
     { Stores 1/LifeTime }
     property InvLifeTime: Single read FInvLifeTime;
     { Stores 1/(LifeTime[Next]-LifeTime[Self]) }
     property InvIntervalRatio: Single read FIntervalRatio;
-
   published
-    
     property ColorInner: TVXColor read FColorInner write SetColorInner;
     property ColorOuter: TVXColor read FColorOuter write SetColorOuter;
     property LifeTime: Single read FLifeTime write SetLifeTime;
     property SizeScale: Single read FSizeScale write SetSizeScale;
-
     property RotateAngle: Single read FRotateAngle write SetRotateAngle;
-
   end;
 
-  // TPFXLifeColors
-  //
   TPFXLifeColors = class(TOwnedCollection)
   protected
-    
     procedure SetItems(index: Integer; const val: TPFXLifeColor);
     function GetItems(index: Integer): TPFXLifeColor;
-
   public
-    
     constructor Create(AOwner: TPersistent);
-
     function Add: TPFXLifeColor;
     function FindItemID(ID: Integer): TPFXLifeColor;
     property Items[index: Integer]: TPFXLifeColor read GetItems write SetItems; default;
-
     function MaxLifeTime: Double;
     function RotationsDefined: Boolean;
     function ScalingDefined: Boolean;
     procedure PrepareIntervalRatios;
   end;
 
-  // TVXLifeColoredPFXManager
-  //
   { Base PFX manager for particles with life colors. 
      Particles have a core and edge color, for subclassing. }
   TVXLifeColoredPFXManager = class(TVXDynamicPFXManager)
   private
-    
     FLifeColors: TPFXLifeColors;
     FLifeColorsLookup: TList;
     FLifeRotations: Boolean;
@@ -590,39 +491,28 @@ type
     FColorInner: TVXColor;
     FColorOuter: TVXColor;
     FParticleSize: Single;
-
   protected
-    
     procedure SetLifeColors(const val: TPFXLifeColors);
     procedure SetColorInner(const val: TVXColor);
     procedure SetColorOuter(const val: TVXColor);
-
     procedure InitializeRendering(var rci: TVXRenderContextInfo); override;
     procedure FinalizeRendering(var rci: TVXRenderContextInfo); override;
-
     function MaxParticleAge: Single; override;
-
     procedure ComputeColors(var lifeTime: Single; var inner, outer: TColorVector);
     procedure ComputeInnerColor(var lifeTime: Single; var inner: TColorVector);
     procedure ComputeOuterColor(var lifeTime: Single; var outer: TColorVector);
     function ComputeSizeScale(var lifeTime: Single; var sizeScale: Single): Boolean;
     function ComputeRotateAngle(var lifeTime, rotateAngle: Single): Boolean;
-
     procedure RotateVertexBuf(buf: TAffineVectorList; lifeTime: Single;
       const axis: TAffineVector; offsetAngle: Single);
-
   public
-    
     constructor Create(aOwner: TComponent); override;
     destructor Destroy; override;
-
     property ParticleSize: Single read FParticleSize write FParticleSize;
     property ColorInner: TVXColor read FColorInner write SetColorInner;
     property ColorOuter: TVXColor read FColorOuter write SetColorOuter;
     property LifeColors: TPFXLifeColors read FLifeColors write SetLifeColors;
-
   published
-    
     property BlendingMode default bmAdditive;
   end;
 
@@ -634,8 +524,6 @@ type
     aParticle: TVXParticle; var killParticle: Boolean) of object;
   TPFXGetParticleCountEvent = function(Sender: TObject): Integer of object;
 
-  // TVXCustomPFXManager
-  //
   { A particles FX manager offering events for customization/experimentation. 
      This manager essentially surfaces the PFX methods as events, and is best
      suited when you have specific particles that don't fall into any existing
@@ -644,7 +532,6 @@ type
      If the events aren't handled, nothing will be rendered. }
   TVXCustomPFXManager = class(TVXLifeColoredPFXManager)
   private
-    
     FOnInitializeRendering: TDirectRenderEvent;
     FOnBeginParticles: TDirectRenderEvent;
     FOnRenderParticle: TPFXDirectRenderEvent;
@@ -653,23 +540,17 @@ type
     FOnProgress: TPFXProgressEvent;
     FOnParticleProgress: TPFXParticleProgress;
     FOnGetParticleCountEvent: TPFXGetParticleCountEvent;
-
   protected
-    
     function TexturingMode: Cardinal; override;
     procedure InitializeRendering(var rci: TVXRenderContextInfo); override;
     procedure BeginParticles(var rci: TVXRenderContextInfo); override;
     procedure RenderParticle(var rci: TVXRenderContextInfo; aParticle: TVXParticle); override;
     procedure EndParticles(var rci: TVXRenderContextInfo); override;
     procedure FinalizeRendering(var rci: TVXRenderContextInfo); override;
-
   public
-    
     procedure DoProgress(const progressTime: TProgressTimes); override;
     function ParticleCount: Integer; override;
-
   published
-    
     property OnInitializeRendering: TDirectRenderEvent read FOnInitializeRendering write FOnInitializeRendering;
     property OnBeginParticles: TDirectRenderEvent read FOnBeginParticles write FOnBeginParticles;
     property OnRenderParticle: TPFXDirectRenderEvent read FOnRenderParticle write FOnRenderParticle;
@@ -678,15 +559,12 @@ type
     property OnProgress: TPFXProgressEvent read FOnProgress write FOnProgress;
     property OnParticleProgress: TPFXParticleProgress read FOnParticleProgress write FOnParticleProgress;
     property OnGetParticleCountEvent: TPFXGetParticleCountEvent read FOnGetParticleCountEvent write FOnGetParticleCountEvent;
-
     property ParticleSize;
     property ColorInner;
     property ColorOuter;
     property LifeColors;
   end;
 
-  // TVXPolygonPFXManager
-  //
   { Polygonal particles FX manager. 
      The particles of this manager are made of N-face regular polygon with
      a core and edge color. No texturing is available. 
@@ -694,61 +572,43 @@ type
      using TVXPointLightPFXManager. }
   TVXPolygonPFXManager = class(TVXLifeColoredPFXManager)
   private
-    
     FNbSides: Integer;
     Fvx, Fvy: TAffineVector; // NOT persistent
     FVertices: TAffineVectorList; // NOT persistent
     FVertBuf: TAffineVectorList; // NOT persistent
-
   protected
-    
     procedure SetNbSides(const val: Integer);
-
     function TexturingMode: Cardinal; override;
     procedure InitializeRendering(var rci: TVXRenderContextInfo); override;
     procedure BeginParticles(var rci: TVXRenderContextInfo); override;
     procedure RenderParticle(var rci: TVXRenderContextInfo; aParticle: TVXParticle); override;
     procedure EndParticles(var rci: TVXRenderContextInfo); override;
     procedure FinalizeRendering(var rci: TVXRenderContextInfo); override;
-
   public
-    
     constructor Create(aOwner: TComponent); override;
     destructor Destroy; override;
-
   published
-    
     property NbSides: Integer read FNbSides write SetNbSides default 6;
-
     property ParticleSize;
     property ColorInner;
     property ColorOuter;
     property LifeColors;
   end;
 
-  // TSpriteColorMode
-  //
   { Sprite color modes. 
-      
       scmFade: vertex coloring is used to fade inner-outer
       scmInner: vertex coloring uses inner color only
       scmOuter: vertex coloring uses outer color only
-      scmNone: vertex coloring is NOT used (colors are ignored).
-       }
+      scmNone: vertex coloring is NOT used (colors are ignored). }
   TSpriteColorMode = (scmFade, scmInner, scmOuter, scmNone);
 
-  // TSpritesPerTexture
-  //
   { Sprites per sprite texture for the SpritePFX. }
   TSpritesPerTexture = (sptOne, sptFour);
 
-  // TVXBaseSpritePFXManager
-  //
   { Base class for sprite-based particles FX managers. 
      The particles are made of optionally centered single-textured quads. }
   TVXBaseSpritePFXManager = class(TVXLifeColoredPFXManager)
   private
-    
     FTexHandle: TVXTextureHandle;
     Fvx, Fvy, Fvz: TAffineVector; // NOT persistent
     FVertices: TAffineVectorList; // NOT persistent
@@ -756,15 +616,11 @@ type
     FAspectRatio: Single;
     FRotation: Single;
     FShareSprites: TVXBaseSpritePFXManager;
-
     FSpritesPerTexture: TSpritesPerTexture;
     FColorMode: TSpriteColorMode;
-
   protected
-    
     { Subclasses should draw their stuff in this bmp32. }
     procedure PrepareImage(bmp32: TVXBitmap32; var texFormat: Integer); virtual; abstract;
-
     procedure BindTexture(var rci: TVXRenderContextInfo);
     procedure SetSpritesPerTexture(const val: TSpritesPerTexture); virtual;
     procedure SetColorMode(const val: TSpriteColorMode);
@@ -772,25 +628,18 @@ type
     function StoreAspectRatio: Boolean;
     procedure SetRotation(const val: Single);
     procedure SetShareSprites(const val: TVXBaseSpritePFXManager);
-
     function TexturingMode: Cardinal; override;
     procedure InitializeRendering(var rci: TVXRenderContextInfo); override;
     procedure BeginParticles(var rci: TVXRenderContextInfo); override;
     procedure RenderParticle(var rci: TVXRenderContextInfo; aParticle: TVXParticle); override;
     procedure EndParticles(var rci: TVXRenderContextInfo); override;
     procedure FinalizeRendering(var rci: TVXRenderContextInfo); override;
-
     property SpritesPerTexture: TSpritesPerTexture read FSpritesPerTexture write SetSpritesPerTexture;
-
   public
-    
     constructor Create(aOwner: TComponent); override;
     destructor Destroy; override;
-
     property ColorMode: TSpriteColorMode read FColorMode write SetColorMode;
-
   published
-    
       { Ratio between width and height. 
          An AspectRatio of 1 (default) will result in square sprite particles,
          values higher than one will result in horizontally stretched sprites,
@@ -807,32 +656,20 @@ type
     property ShareSprites: TVXBaseSpritePFXManager read FShareSprites write FShareSprites;
   end;
 
-  // TPFXPrepareTextureImageEvent
-  //
   TPFXPrepareTextureImageEvent = procedure(Sender: TObject; destBmp32: TVXBitmap32; var texFormat: Integer) of object;
 
-  // TVXPointLightPFXManager
-  //
   { A sprite-based particles FX managers using user-specified code to prepare the texture.  }
   TVXCustomSpritePFXManager = class(TVXBaseSpritePFXManager)
   private
-    
     FOnPrepareTextureImage: TPFXPrepareTextureImageEvent;
-
   protected
-    
     procedure PrepareImage(bmp32: TVXBitmap32; var texFormat: Integer); override;
-
   public
-    
     constructor Create(aOwner: TComponent); override;
     destructor Destroy; override;
-
   published
-    
       { Place your texture rendering code in this event.  }
     property OnPrepareTextureImage: TPFXPrepareTextureImageEvent read FOnPrepareTextureImage write FOnPrepareTextureImage;
-
     property ColorMode default scmInner;
     property SpritesPerTexture default sptOne;
     property ParticleSize;
@@ -841,8 +678,6 @@ type
     property LifeColors;
   end;
 
-  // TVXPointLightPFXManager
-  //
   { A sprite-based particles FX managers using point light maps. 
      The texture map is a round, distance-based transparency map (center "opaque"),
      you can adjust the quality (size) of the underlying texture map with the
@@ -854,26 +689,17 @@ type
      that may use particles with more complex textures. }
   TVXPointLightPFXManager = class(TVXBaseSpritePFXManager)
   private
-    
     FTexMapSize: Integer;
-
   protected
-    
     procedure PrepareImage(bmp32: TVXBitmap32; var texFormat: Integer); override;
-
     procedure SetTexMapSize(const val: Integer);
-
   public
-    
     constructor Create(aOwner: TComponent); override;
     destructor Destroy; override;
-
   published
-    
       { Underlying texture map size, as a power of two. 
          Min value is 3 (size=8), max value is 9 (size=512). }
     property TexMapSize: Integer read FTexMapSize write SetTexMapSize default 5;
-
     property ColorMode default scmInner;
     property ParticleSize;
     property ColorInner;
@@ -885,15 +711,8 @@ type
 function GetOrCreateSourcePFX(obj: TVXBaseSceneObject; const name: string = ''): TVXSourcePFXEffect;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-
-// GetOrCreateSourcePFX
-//
 
 function GetOrCreateSourcePFX(obj: TVXBaseSceneObject; const name: string = ''): TVXSourcePFXEffect;
 var
@@ -924,7 +743,6 @@ begin
 end;
 
 // RndVector
-//
 
 procedure RndVector(const dispersion: TVXSourcePFXDispersionMode;
   var v: TAffineVector; var f: Single;
@@ -962,16 +780,12 @@ end;
 // ------------------ TVXParticle ------------------
 // ------------------
 
-// Create
-//
 constructor TVXParticle.Create;
 begin
   FEffectScale := 1;
   inherited Create;
 end;
 
-// Destroy
-//
 destructor TVXParticle.Destroy;
 begin
   inherited Destroy;
@@ -999,8 +813,6 @@ begin
     FVelocity.V[Index] := aValue;
 end;
 
-// WriteToFiler
-//
 procedure TVXParticle.WriteToFiler(writer: TVirtualWriter);
 begin
   inherited WriteToFiler(writer);
@@ -1014,9 +826,6 @@ begin
   end;
 end;
 
-
-// ReadFromFiler
-//
 
 procedure TVXParticle.ReadFromFiler(reader: TVirtualReader);
 var
@@ -1040,9 +849,6 @@ end;
 // ------------------ TVXParticleList ------------------
 // ------------------
 
-// Create
-//
-
 constructor TVXParticleList.Create;
 begin
   inherited Create;
@@ -1051,17 +857,11 @@ begin
   FDirectList := nil;
 end;
 
-// Destroy
-//
-
 destructor TVXParticleList.Destroy;
 begin
   FItemList.CleanFree;
   inherited Destroy;
 end;
-
-// WriteToFiler
-//
 
 procedure TVXParticleList.WriteToFiler(writer: TVirtualWriter);
 begin
@@ -1072,9 +872,6 @@ begin
     FItemList.WriteToFiler(writer);
   end;
 end;
-
-// ReadFromFiler
-//
 
 procedure TVXParticleList.ReadFromFiler(reader: TVirtualReader);
 var
@@ -1092,40 +889,25 @@ begin
     RaiseFilerException(archiveVersion);
 end;
 
-// GetItems
-//
-
 function TVXParticleList.GetItems(index: Integer): TVXParticle;
 begin
   Result := TVXParticle(FItemList[index]);
 end;
-
-// SetItems
-//
 
 procedure TVXParticleList.SetItems(index: Integer; val: TVXParticle);
 begin
   FItemList[index] := val;
 end;
 
-// AfterItemCreated
-//
-
 procedure TVXParticleList.AfterItemCreated(Sender: TObject);
 begin
   (Sender as TVXParticle).Manager := Self.Owner;
 end;
 
-// ItemCount
-//
-
 function TVXParticleList.ItemCount: Integer;
 begin
   Result := FItemList.Count;
 end;
-
-// AddItem
-//
 
 function TVXParticleList.AddItem(aItem: TVXParticle): Integer;
 begin
@@ -1133,9 +915,6 @@ begin
   Result := FItemList.Add(aItem);
   FDirectList := PGLParticleArray(FItemList.List);
 end;
-
-// RemoveAndFreeItem
-//
 
 procedure TVXParticleList.RemoveAndFreeItem(aItem: TVXParticle);
 var
@@ -1151,16 +930,10 @@ begin
   end;
 end;
 
-// IndexOfItem
-//
-
 function TVXParticleList.IndexOfItem(aItem: TVXParticle): Integer;
 begin
   Result := FItemList.IndexOf(aItem);
 end;
-
-// Pack
-//
 
 procedure TVXParticleList.Pack;
 begin
@@ -1172,9 +945,6 @@ end;
 // ------------------ TVXParticleFXManager ------------------
 // ------------------
 
-// Create
-//
-
 constructor TVXParticleFXManager.Create(aOwner: TComponent);
 begin
   inherited;
@@ -1184,9 +954,6 @@ begin
   FBlendingMode := bmAdditive;
   RegisterManager(Self);
 end;
-
-// Destroy
-//
 
 destructor TVXParticleFXManager.Destroy;
 var
@@ -1298,11 +1065,11 @@ begin
     begin
       case BlendingMode of
         bmAdditive:
-          rci.VKStates.SetBlendFunc(bfSrcAlpha, bfOne);
+          rci.VXStates.SetBlendFunc(bfSrcAlpha, bfOne);
         bmTransparency:
-          rci.VKStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
+          rci.VXStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
       else // bmOpaque
-        rci.VKStates.Disable(stBlend);
+        rci.VXStates.Disable(stBlend);
       end;
     end
     else
@@ -1310,13 +1077,13 @@ begin
       case BlendingMode of
         bmAdditive:
           begin
-            rci.VKStates.SetBlendFunc(bfSrcAlpha, bfOne);
-            rci.VKStates.Enable(stBlend);
+            rci.VXStates.SetBlendFunc(bfSrcAlpha, bfOne);
+            rci.VXStates.Enable(stBlend);
           end;
         bmTransparency:
           begin
-            rci.VKStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
-            rci.VKStates.Enable(stBlend);
+            rci.VXStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
+            rci.VXStates.Enable(stBlend);
           end;
       else
         // bmOpaque, do nothing
@@ -1337,11 +1104,11 @@ begin
     begin
       case Renderer.BlendingMode of
         bmAdditive:
-          rci.VKStates.SetBlendFunc(bfSrcAlpha, bfOne);
+          rci.VXStates.SetBlendFunc(bfSrcAlpha, bfOne);
         bmTransparency:
-          rci.VKStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
+          rci.VXStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
       else // bmOpaque
-        rci.VKStates.Disable(stBlend);
+        rci.VXStates.Disable(stBlend);
       end;
     end
     else
@@ -1349,13 +1116,13 @@ begin
       case Renderer.BlendingMode of
         bmAdditive:
           begin
-            rci.VKStates.SetBlendFunc(bfSrcAlpha, bfOne);
-            rci.VKStates.Enable(stBlend);
+            rci.VXStates.SetBlendFunc(bfSrcAlpha, bfOne);
+            rci.VXStates.Enable(stBlend);
           end;
         bmTransparency:
           begin
-            rci.VKStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
-            rci.VKStates.Enable(stBlend);
+            rci.VXStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
+            rci.VXStates.Enable(stBlend);
           end;
       else
         // bmOpaque, do nothing
@@ -1737,35 +1504,35 @@ begin
     FLastSortTime := StopPrecisionTimer(timer) * 1000;
 
     rci.PipelineTransformation.Push;
-    rci.PipelineTransformation.ModelMatrix := IdentityHmgMatrix;
+    rci.PipelineTransformation.SetModelMatrix(IdentityHmgMatrix);
 
-    rci.VKStates.Disable(stCullFace);
-    rci.VKStates.ActiveTextureEnabled[ttTexture2D] := True;
+    rci.VXStates.Disable(stCullFace);
+    rci.VXStates.ActiveTextureEnabled[ttTexture2D] := True;
     currentTexturingMode := 0;
-    rci.VKStates.Disable(stLighting);
-    rci.VKStates.PolygonMode := pmFill;
+    rci.VXStates.Disable(stLighting);
+    rci.VXStates.PolygonMode := pmFill;
 
     case FBlendingMode of
       bmAdditive:
         begin
-          rci.VKStates.SetBlendFunc(bfSrcAlpha, bfOne);
-          rci.VKStates.Enable(stBlend);
+          rci.VXStates.SetBlendFunc(bfSrcAlpha, bfOne);
+          rci.VXStates.Enable(stBlend);
         end;
       bmTransparency:
         begin
-          rci.VKStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
-          rci.VKStates.Enable(stBlend);
+          rci.VXStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
+          rci.VXStates.Enable(stBlend);
         end;
     else
       // bmOpaque, do nothing
     end;
-    rci.VKStates.DepthFunc := cfLEqual;
+    rci.VXStates.DepthFunc := cfLEqual;
     if not FZWrite then
     begin
-      rci.VKStates.DepthWriteMask := 0;
+      rci.VXStates.DepthWriteMask := 0;
     end;
     if not FZTest then
-      rci.VKStates.Disable(stDepthTest);
+      rci.VXStates.Disable(stDepthTest);
 
     try
       // Initialize managers
@@ -1812,8 +1579,8 @@ begin
     finally
       rci.PipelineTransformation.Pop;
     end;
-    rci.VKStates.ActiveTextureEnabled[ttTexture2D] := False;
-    rci.VKStates.DepthWriteMask := 1;
+    rci.VXStates.ActiveTextureEnabled[ttTexture2D] := False;
+    rci.VXStates.DepthWriteMask := 1;
   finally
     // cleanup
     for regionIdx := cPFXNbRegions - 1 downto 0 do
@@ -1833,9 +1600,6 @@ end;
 // ------------------ TVXSourcePFXEffect ------------------
 // ------------------
 
-// Create
-//
-
 constructor TVXSourcePFXEffect.Create(aOwner: TVXXCollection);
 begin
   inherited;
@@ -1852,9 +1616,6 @@ begin
   FDisabledIfOwnerInvisible := False;
 end;
 
-// Destroy
-//
-
 destructor TVXSourcePFXEffect.Destroy;
 begin
   FPositionDispersionRange.Free;
@@ -1863,24 +1624,15 @@ begin
   inherited Destroy;
 end;
 
-// FriendlyName
-//
-
 class function TVXSourcePFXEffect.FriendlyName: string;
 begin
   Result := 'PFX Source';
 end;
 
-// FriendlyDescription
-//
-
 class function TVXSourcePFXEffect.FriendlyDescription: string;
 begin
   Result := 'Simple Particles FX Source';
 end;
-
-// WriteToFiler
-//
 
 procedure TVXSourcePFXEffect.WriteToFiler(writer: TWriter);
 begin
@@ -1907,9 +1659,6 @@ begin
     WriteInteger(Integer(FPositionMode));
   end;
 end;
-
-// ReadFromFiler
-//
 
 procedure TVXSourcePFXEffect.ReadFromFiler(reader: TReader);
 var
@@ -1941,32 +1690,20 @@ begin
   end;
 end;
 
-// SetInitialVelocity
-//
-
 procedure TVXSourcePFXEffect.SetInitialVelocity(const val: TVXCoordinates);
 begin
   FInitialVelocity.Assign(val);
 end;
-
-// SetInitialPosition
-//
 
 procedure TVXSourcePFXEffect.SetInitialPosition(const val: TVXCoordinates);
 begin
   FInitialPosition.Assign(val);
 end;
 
-// SetPositionDispersionRange
-//
-
 procedure TVXSourcePFXEffect.SetPositionDispersionRange(const val: TVXCoordinates);
 begin
   FPositionDispersionRange.Assign(val);
 end;
-
-// SetParticleInterval
-//
 
 procedure TVXSourcePFXEffect.SetParticleInterval(const val: Single);
 begin
@@ -1979,9 +1716,6 @@ begin
       FTimeRemainder := FParticleInterval;
   end;
 end;
-
-// DoProgress
-//
 
 procedure TVXSourcePFXEffect.DoProgress(const progressTime: TProgressTimes);
 var
@@ -2002,9 +1736,6 @@ begin
   end;
 end;
 
-// ParticleAbsoluteInitialPos
-//
-
 function TVXSourcePFXEffect.ParticleAbsoluteInitialPos: TAffineVector;
 begin
   if PositionMode = spmRelative then
@@ -2017,9 +1748,6 @@ begin
     AddVector(Result, InitialPosition.AsAffineVector);
   end;
 end;
-
-// Burst
-//
 
 procedure TVXSourcePFXEffect.Burst(time: Double; nb: Integer);
 
@@ -2064,9 +1792,6 @@ begin
   end;
 end;
 
-// RingExplosion
-//
-
 procedure TVXSourcePFXEffect.RingExplosion(time: Double;
   minInitialSpeed, maxInitialSpeed: Single;
   nbParticles: Integer);
@@ -2110,9 +1835,6 @@ end;
 // ------------------ TPFXLifeColor ------------------
 // ------------------
 
-// Create
-//
-
 constructor TPFXLifeColor.Create(Collection: TCollection);
 begin
   inherited Create(Collection);
@@ -2124,18 +1846,12 @@ begin
   FRotateAngle := 0;
 end;
 
-// Destroy
-//
-
 destructor TPFXLifeColor.Destroy;
 begin
   FColorOuter.Free;
   FColorInner.Free;
   inherited Destroy;
 end;
-
-// Assign
-//
 
 procedure TPFXLifeColor.Assign(Source: TPersistent);
 begin
@@ -2150,9 +1866,6 @@ begin
     inherited;
 end;
 
-// GetDisplayName
-//
-
 function TPFXLifeColor.GetDisplayName: string;
 begin
   Result := Format('LifeTime %f - Inner [%.2f, %.2f, %.2f, %.2f] - Outer [%.2f, %.2f, %.2f, %.2f]',
@@ -2161,24 +1874,15 @@ begin
       ColorOuter.Red, ColorOuter.Green, ColorOuter.Blue, ColorOuter.Alpha]);
 end;
 
-// SetColorInner
-//
-
 procedure TPFXLifeColor.SetColorInner(const val: TVXColor);
 begin
   FColorInner.Assign(val);
 end;
 
-// SetColorOuter
-//
-
 procedure TPFXLifeColor.SetColorOuter(const val: TVXColor);
 begin
   FColorOuter.Assign(val);
 end;
-
-// SetLifeTime
-//
 
 procedure TPFXLifeColor.SetLifeTime(const val: Single);
 begin
@@ -2190,9 +1894,6 @@ begin
     FInvLifeTime := 1 / FLifeTime;
   end;
 end;
-
-// SetSizeScale
-//
 
 procedure TPFXLifeColor.SetSizeScale(const val: Single);
 begin
@@ -2236,16 +1937,10 @@ begin
   Result := (inherited Add) as TPFXLifeColor;
 end;
 
-// FindItemID
-//
-
 function TPFXLifeColors.FindItemID(ID: Integer): TPFXLifeColor;
 begin
   Result := (inherited FindItemID(ID)) as TPFXLifeColor;
 end;
-
-// MaxLifeTime
-//
 
 function TPFXLifeColors.MaxLifeTime: Double;
 begin
@@ -2254,9 +1949,6 @@ begin
   else
     Result := 1e30;
 end;
-
-// RotationsDefined
-//
 
 function TPFXLifeColors.RotationsDefined: Boolean;
 var
@@ -2273,9 +1965,6 @@ begin
   Result := False;
 end;
 
-// ScalingDefined
-//
-
 function TPFXLifeColors.ScalingDefined: Boolean;
 var
   i: Integer;
@@ -2291,9 +1980,6 @@ begin
   Result := False;
 end;
 
-// PrepareIntervalRatios
-//
-
 procedure TPFXLifeColors.PrepareIntervalRatios;
 var
   i: Integer;
@@ -2306,9 +1992,6 @@ end;
 // ------------------ TVXDynamicPFXManager ------------------
 // ------------------
 
-// Create
-//
-
 constructor TVXDynamicPFXManager.Create(aOwner: TComponent);
 begin
   inherited;
@@ -2316,17 +1999,11 @@ begin
   FFriction := 1;
 end;
 
-// Destroy
-//
-
 destructor TVXDynamicPFXManager.Destroy;
 begin
   FAcceleration.Free;
   inherited Destroy;
 end;
-
-// DoProgress
-//
 
 procedure TVXDynamicPFXManager.DoProgress(const progressTime: TProgressTimes);
 var
@@ -2406,9 +2083,6 @@ begin
     Particles.Pack;
 end;
 
-// SetAcceleration
-//
-
 procedure TVXDynamicPFXManager.SetAcceleration(const val: TVXCoordinates);
 begin
   FAcceleration.Assign(val);
@@ -2417,9 +2091,6 @@ end;
 // ------------------
 // ------------------ TVXLifeColoredPFXManager ------------------
 // ------------------
-
-// Create
-//
 
 constructor TVXLifeColoredPFXManager.Create(aOwner: TComponent);
 begin
@@ -2434,9 +2105,6 @@ begin
   FParticleSize := 1;
 end;
 
-// Destroy
-//
-
 destructor TVXLifeColoredPFXManager.Destroy;
 begin
   FLifeColors.Free;
@@ -2445,32 +2113,20 @@ begin
   inherited Destroy;
 end;
 
-// SetColorInner
-//
-
 procedure TVXLifeColoredPFXManager.SetColorInner(const val: TVXColor);
 begin
   FColorInner.Assign(val);
 end;
-
-// SetColorOuter
-//
 
 procedure TVXLifeColoredPFXManager.SetColorOuter(const val: TVXColor);
 begin
   FColorOuter.Assign(val);
 end;
 
-// SetLifeColors
-//
-
 procedure TVXLifeColoredPFXManager.SetLifeColors(const val: TPFXLifeColors);
 begin
   FLifeColors.Assign(Self);
 end;
-
-// InitializeRendering
-//
 
 procedure TVXLifeColoredPFXManager.InitializeRendering(var rci: TVXRenderContextInfo);
 var
@@ -2486,24 +2142,15 @@ begin
   LifeColors.PrepareIntervalRatios;
 end;
 
-// FinalizeRendering
-//
-
 procedure TVXLifeColoredPFXManager.FinalizeRendering(var rci: TVXRenderContextInfo);
 begin
   FLifeColorsLookup.Free;
 end;
 
-// MaxParticleAge
-//
-
 function TVXLifeColoredPFXManager.MaxParticleAge: Single;
 begin
   Result := LifeColors.MaxLifeTime;
 end;
-
-// ComputeColors
-//
 
 procedure TVXLifeColoredPFXManager.ComputeColors(var lifeTime: Single; var inner, outer: TColorVector);
 var
@@ -2551,9 +2198,6 @@ begin
   end;
 end;
 
-// ComputeInnerColor
-//
-
 procedure TVXLifeColoredPFXManager.ComputeInnerColor(var lifeTime: Single; var inner: TColorVector);
 var
   i, k, n: Integer;
@@ -2597,9 +2241,6 @@ begin
   end;
 end;
 
-// ComputeOuterColor
-//
-
 procedure TVXLifeColoredPFXManager.ComputeOuterColor(var lifeTime: Single; var outer: TColorVector);
 var
   i, k, n: Integer;
@@ -2640,9 +2281,6 @@ begin
     end;
   end;
 end;
-
-// ComputeSizeScale
-//
 
 function TVXLifeColoredPFXManager.ComputeSizeScale(var lifeTime: Single; var sizeScale: Single): Boolean;
 var
@@ -2693,9 +2331,6 @@ begin
   end;
 end;
 
-// ComputeRotateAngle
-//
-
 function TVXLifeColoredPFXManager.ComputeRotateAngle(var lifeTime: Single; var rotateAngle: Single): Boolean;
 var
   i, k, n: Integer;
@@ -2745,9 +2380,6 @@ begin
   end;
 end;
 
-// RotateVertexBuf
-//
-
 procedure TVXLifeColoredPFXManager.RotateVertexBuf(buf: TAffineVectorList;
   lifeTime: Single; const axis: TAffineVector; offsetAngle: Single);
 var
@@ -2770,9 +2402,6 @@ end;
 // ------------------
 // ------------------ TVXCustomPFXManager ------------------
 // ------------------
-
-// DoProgress
-//
 
 procedure TVXCustomPFXManager.DoProgress(const progressTime: TProgressTimes);
 var
@@ -2811,16 +2440,10 @@ begin
   end;
 end;
 
-// TexturingMode
-//
-
 function TVXCustomPFXManager.TexturingMode: Cardinal;
 begin
   Result := 0;
 end;
-
-// InitializeRendering
-//
 
 procedure TVXCustomPFXManager.InitializeRendering(var rci: TVXRenderContextInfo);
 begin
@@ -2829,17 +2452,11 @@ begin
     FOnInitializeRendering(Self, rci);
 end;
 
-// BeginParticles
-//
-
 procedure TVXCustomPFXManager.BeginParticles(var rci: TVXRenderContextInfo);
 begin
   if Assigned(FOnBeginParticles) then
     FOnBeginParticles(Self, rci);
 end;
-
-// RenderParticle
-//
 
 procedure TVXCustomPFXManager.RenderParticle(var rci: TVXRenderContextInfo; aParticle: TVXParticle);
 begin
@@ -2847,17 +2464,11 @@ begin
     FOnRenderParticle(Self, aParticle, rci);
 end;
 
-// EndParticles
-//
-
 procedure TVXCustomPFXManager.EndParticles(var rci: TVXRenderContextInfo);
 begin
   if Assigned(FOnEndParticles) then
     FOnEndParticles(Self, rci);
 end;
-
-// FinalizeRendering
-//
 
 procedure TVXCustomPFXManager.FinalizeRendering(var rci: TVXRenderContextInfo);
 begin
@@ -2865,9 +2476,6 @@ begin
     FOnFinalizeRendering(Self, rci);
   inherited;
 end;
-
-// ParticleCount
-//
 
 function TVXCustomPFXManager.ParticleCount: Integer;
 begin
@@ -2881,25 +2489,16 @@ end;
 // ------------------ TVXPolygonPFXManager ------------------
 // ------------------
 
-// Create
-//
-
 constructor TVXPolygonPFXManager.Create(aOwner: TComponent);
 begin
   inherited;
   FNbSides := 6;
 end;
 
-// Destroy
-//
-
 destructor TVXPolygonPFXManager.Destroy;
 begin
   inherited Destroy;
 end;
-
-// SetNbSides
-//
 
 procedure TVXPolygonPFXManager.SetNbSides(const val: Integer);
 begin
@@ -2912,16 +2511,10 @@ begin
   end;
 end;
 
-// TexturingMode
-//
-
 function TVXPolygonPFXManager.TexturingMode: Cardinal;
 begin
   Result := 0;
 end;
-
-// InitializeRendering
-//
 
 procedure TVXPolygonPFXManager.InitializeRendering(var rci: TVXRenderContextInfo);
 var
@@ -2947,16 +2540,10 @@ begin
   FVertBuf.Count := FVertices.Count;
 end;
 
-// BeginParticles
-//
-
 procedure TVXPolygonPFXManager.BeginParticles(var rci: TVXRenderContextInfo);
 begin
   ApplyBlendingMode(rci);
 end;
-
-// RenderParticle
-//
 
 procedure TVXPolygonPFXManager.RenderParticle(var rci: TVXRenderContextInfo; aParticle: TVXParticle);
 var
@@ -3006,16 +2593,10 @@ begin
   glEnd;
 end;
 
-// EndParticles
-//
-
 procedure TVXPolygonPFXManager.EndParticles(var rci: TVXRenderContextInfo);
 begin
   UnapplyBlendingMode(rci);
 end;
-
-// FinalizeRendering
-//
 
 procedure TVXPolygonPFXManager.FinalizeRendering(var rci: TVXRenderContextInfo);
 begin
@@ -3028,9 +2609,6 @@ end;
 // ------------------ TVXBaseSpritePFXManager ------------------
 // ------------------
 
-// Create
-//
-
 constructor TVXBaseSpritePFXManager.Create(aOwner: TComponent);
 begin
   inherited;
@@ -3039,18 +2617,12 @@ begin
   FAspectRatio := 1;
 end;
 
-// Destroy
-//
-
 destructor TVXBaseSpritePFXManager.Destroy;
 begin
   FTexHandle.Free;
   FShareSprites := nil;
   inherited Destroy;
 end;
-
-// SetSpritesPerTexture
-//
 
 procedure TVXBaseSpritePFXManager.SetSpritesPerTexture(const val: TSpritesPerTexture);
 begin
@@ -3062,9 +2634,6 @@ begin
   end;
 end;
 
-// SetColorMode
-//
-
 procedure TVXBaseSpritePFXManager.SetColorMode(const val: TSpriteColorMode);
 begin
   if val <> FColorMode then
@@ -3073,9 +2642,6 @@ begin
     NotifyChange(Self);
   end;
 end;
-
-// SetAspectRatio
-//
 
 procedure TVXBaseSpritePFXManager.SetAspectRatio(const val: Single);
 begin
@@ -3086,16 +2652,10 @@ begin
   end;
 end;
 
-// StoreAspectRatio
-//
-
 function TVXBaseSpritePFXManager.StoreAspectRatio: Boolean;
 begin
   Result := (FAspectRatio <> 1);
 end;
-
-// SetRotation
-//
 
 procedure TVXBaseSpritePFXManager.SetRotation(const val: Single);
 begin
@@ -3105,9 +2665,6 @@ begin
     NotifyChange(Self);
   end;
 end;
-
-// SetShareSprites
-//
 
 procedure TVXBaseSpritePFXManager.SetShareSprites(const val: TVXBaseSpritePFXManager);
 begin
@@ -3120,9 +2677,6 @@ begin
       FShareSprites.FreeNotification(Self);
   end;
 end;
-
-// BindTexture
-//
 
 procedure TVXBaseSpritePFXManager.BindTexture(var rci: TVXRenderContextInfo);
 var
@@ -3137,12 +2691,12 @@ begin
     begin
       FTexHandle.AllocateHandle;
       FTexHandle.Target := ttTexture2D;
-      rci.VKStates.TextureBinding[0, ttTexture2D] := FTexHandle.Handle;
+      rci.VXStates.TextureBinding[0, ttTexture2D] := FTexHandle.Handle;
       glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-      rci.VKStates.UnpackAlignment := 4;
-      rci.VKStates.UnpackRowLength := 0;
-      rci.VKStates.UnpackSkipRows := 0;
-      rci.VKStates.UnpackSkipPixels := 0;
+      rci.VXStates.UnpackAlignment := 4;
+      rci.VXStates.UnpackRowLength := 0;
+      rci.VXStates.UnpackSkipRows := 0;
+      rci.VXStates.UnpackSkipPixels := 0;
 
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -3162,21 +2716,15 @@ begin
     else
     begin
 
-      rci.VKStates.TextureBinding[0, ttTexture2D] := FTexHandle.Handle;
+      rci.VXStates.TextureBinding[0, ttTexture2D] := FTexHandle.Handle;
     end;
   end;
 end;
-
-// TexturingMode
-//
 
 function TVXBaseSpritePFXManager.TexturingMode: Cardinal;
 begin
   Result := GL_TEXTURE_2D;
 end;
-
-// InitializeRendering
-//
 
 procedure TVXBaseSpritePFXManager.InitializeRendering(var rci: TVXRenderContextInfo);
 var
@@ -3213,9 +2761,6 @@ begin
   FVertBuf.Count := FVertices.Count;
 end;
 
-// BeginParticles
-//
-
 procedure TVXBaseSpritePFXManager.BeginParticles(var rci: TVXRenderContextInfo);
 begin
   BindTexture(rci);
@@ -3227,9 +2772,6 @@ begin
   if ColorMode <> scmFade then
     glBegin(GL_QUADS);
 end;
-
-// RenderParticle
-//
 
 procedure TVXBaseSpritePFXManager.RenderParticle(var rci: TVXRenderContextInfo; aParticle: TVXParticle);
 type
@@ -3337,18 +2879,12 @@ begin
   end;
 end;
 
-// EndParticles
-//
-
 procedure TVXBaseSpritePFXManager.EndParticles(var rci: TVXRenderContextInfo);
 begin
   if ColorMode <> scmFade then
     glEnd;
   UnApplyBlendingMode(rci);
 end;
-
-// FinalizeRendering
-//
 
 procedure TVXBaseSpritePFXManager.FinalizeRendering(var rci: TVXRenderContextInfo);
 begin
@@ -3361,9 +2897,6 @@ end;
 // ------------------ TVXCustomSpritePFXManager ------------------
 // ------------------
 
-// Create
-//
-
 constructor TVXCustomSpritePFXManager.Create(aOwner: TComponent);
 begin
   inherited;
@@ -3371,16 +2904,10 @@ begin
   FSpritesPerTexture := sptOne;
 end;
 
-// Destroy
-//
-
 destructor TVXCustomSpritePFXManager.Destroy;
 begin
   inherited Destroy;
 end;
-
-// BindTexture
-//
 
 procedure TVXCustomSpritePFXManager.PrepareImage(bmp32: TVXBitmap32; var texFormat: Integer);
 begin
@@ -3392,9 +2919,6 @@ end;
 // ------------------ TVXPointLightPFXManager ------------------
 // ------------------
 
-// Create
-//
-
 constructor TVXPointLightPFXManager.Create(aOwner: TComponent);
 begin
   inherited;
@@ -3402,16 +2926,10 @@ begin
   FColorMode := scmInner;
 end;
 
-// Destroy
-//
-
 destructor TVXPointLightPFXManager.Destroy;
 begin
   inherited Destroy;
 end;
-
-// SetTexMapSize
-//
 
 procedure TVXPointLightPFXManager.SetTexMapSize(const val: Integer);
 begin
@@ -3425,9 +2943,6 @@ begin
     NotifyChange(Self);
   end;
 end;
-
-// BindTexture
-//
 
 procedure TVXPointLightPFXManager.PrepareImage(bmp32: TVXBitmap32; var texFormat: Integer);
 var
@@ -3468,12 +2983,8 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
 
      // class registrations
   RegisterClasses([TVXParticle, TVXParticleList,

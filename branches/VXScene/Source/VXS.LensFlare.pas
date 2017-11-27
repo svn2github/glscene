@@ -32,8 +32,6 @@ uses
 
 type
 
-  // TFlareElement
-  //
   TFlareElement = (feGlow, feRing, feStreaks, feRays, feSecondaries);
   TFlareElements = set of TFlareElement;
 
@@ -42,25 +40,18 @@ type
      lens flare elements. }
   TVXFlareGradient = class(TVXUpdateAbleObject)
   private
-    
     FFromColor: TVXColor;
     FToColor: TVXColor;
-
   protected
-    
     procedure SetFromColor(const val: TVXColor);
     procedure SetToColor(const val: TVXColor);
-
   public
-    
     constructor Create(AOwner: TPersistent); override;
     constructor CreateInitialized(AOwner: TPersistent;
       const fromColor, toColor: TColorVector);
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
-
   published
-    
     property FromColor: TVXColor read FFromColor write SetFromColor;
     property ToColor: TVXColor read FToColor write SetToColor;
   end;
@@ -70,11 +61,8 @@ const
 
 type
 
-  // TVXLensFlare
-  //
   TVXLensFlare = class(TVXBaseSceneObject)
   private
-    
     FSize: Integer;
     FDeltaTime: Single;
     FCurrSize: Single;
@@ -98,9 +86,7 @@ type
     FSecondariesGradient: TVXFlareGradient;
     FDynamic: Boolean;
     FPreRenderPoint: TVXRenderPoint;
-
   protected
-    
     procedure SetGlowGradient(const val: TVXFlareGradient);
     procedure SetRingGradient(const val: TVXFlareGradient);
     procedure SetStreaksGradient(const val: TVXFlareGradient);
@@ -122,27 +108,20 @@ type
     procedure SetPreRenderPoint(const val: TVXRenderPoint);
     procedure PreRenderEvent(Sender: TObject; var rci: TVXRenderContextInfo);
     procedure PreRenderPointFreed(Sender: TObject);
-
     // These are quite unusual in that they don't use an RCI, since
     // PreRender is done before proper rendering starts, but we do know
     // which RC is being used, so we can use this state cache
     procedure SetupRenderingOptions(StateCache: TVXStateCache);
-
     procedure RenderRays(StateCache: TVXStateCache; const size: Single);
     procedure RenderStreaks(StateCache: TVXStateCache);
     procedure RenderRing;
     procedure RenderSecondaries(const posVector: TAffineVector);
-
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    procedure Notification(AComponent: TComponent; Operation: TOperation);
-      override;
-
+    procedure Notification(AComponent: TComponent; Operation: TOperation); override;
     procedure BuildList(var rci: TVXRenderContextInfo); override;
     procedure DoProgress(const progressTime: TProgressTimes); override;
-
     { Prepares pre-rendered texture to speed up actual rendering. 
        Will use the currently active context as scratch space, and will
        automatically do nothing if things have already been prepared,
@@ -154,16 +133,13 @@ type
        occlusion status, and this property allows to track or manually
        alter this instantaneous size. }
     property FlareInstantaneousSize: Single read FCurrSize write FCurrSize;
-
   published
-    
     property GlowGradient: TVXFlareGradient read FGlowGradient write
       SetGlowGradient;
     property RingGradient: TVXFlareGradient read FRingGradient;
     property StreaksGradient: TVXFlareGradient read FStreaksGradient;
     property RaysGradient: TVXFlareGradient read FRaysGradient;
     property SecondariesGradient: TVXFlareGradient read FSecondariesGradient;
-
     // MaxRadius of the flare.
     property Size: Integer read FSize write SetSize default 50;
     // Random seed
@@ -180,8 +156,7 @@ type
     // Number of secondary flares.
     property NumSecs: Integer read FNumSecs write SetNumSecs default 8;
     // Number of segments used when rendering circles.
-    property Resolution: Integer read FResolution write SetResolution default
-      64;
+    property Resolution: Integer read FResolution write SetResolution default 64;
     { Automatically computes FlareIsNotOccluded depending on ZBuffer test. 
        Not that the automated test may use test result from the previous
        frame into the next (to avoid a rendering stall). }
@@ -206,7 +181,6 @@ type
        See PreRender method for more details. }
     property PreRenderPoint: TVXRenderPoint read FPreRenderPoint write
       SetPreRenderPoint;
-
     property ObjectsSorting;
     property Position;
     property Visible;
@@ -215,16 +189,13 @@ type
     property Effects;
   end;
 
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
 implementation
+// ------------------------------------------------------------------
+
 // ------------------
 // ------------------ TVXFlareGradient ------------------
 // ------------------
-
-// Create
-//
 
 constructor TVXFlareGradient.Create(AOwner: TPersistent);
 begin
@@ -232,9 +203,6 @@ begin
   FFromColor := TVXColor.Create(Self);
   FToColor := TVXColor.Create(Self);
 end;
-
-// CreateInitialized
-//
 
 constructor TVXFlareGradient.CreateInitialized(AOwner: TPersistent;
   const fromColor, toColor: TColorVector);
@@ -244,18 +212,12 @@ begin
   FToColor.Initialize(toColor);
 end;
 
-// Destroy
-//
-
 destructor TVXFlareGradient.Destroy;
 begin
   FToColor.Free;
   FFromColor.Free;
   inherited;
 end;
-
-// Assign
-//
 
 procedure TVXFlareGradient.Assign(Source: TPersistent);
 begin
@@ -267,16 +229,10 @@ begin
   inherited;
 end;
 
-// SetFromColor
-//
-
 procedure TVXFlareGradient.SetFromColor(const val: TVXColor);
 begin
   FFromColor.Assign(val);
 end;
-
-// SetToColor
-//
 
 procedure TVXFlareGradient.SetToColor(const val: TVXColor);
 begin
@@ -286,9 +242,6 @@ end;
 // ------------------
 // ------------------ TVXLensFlare ------------------
 // ------------------
-
-// Create
-//
 
 constructor TVXLensFlare.Create(AOwner: TComponent);
 begin
@@ -304,9 +257,7 @@ begin
   FAutoZTest := True;
   FlareIsNotOccluded := True;
   FDynamic := True;
-
   SetResolution(64);
-
   // Render all elements by default.
   FElements := [feGlow, feRing, feStreaks, feRays, feSecondaries];
   // Setup default gradients:
@@ -324,9 +275,6 @@ begin
   FTexRays := TVXTextureHandle.Create;
 end;
 
-// Destroy
-//
-
 destructor TVXLensFlare.Destroy;
 begin
   PreRenderPoint := nil;
@@ -340,9 +288,6 @@ begin
   inherited;
 end;
 
-// Notification
-//
-
 procedure TVXLensFlare.Notification(AComponent: TComponent; Operation:
   TOperation);
 begin
@@ -350,9 +295,6 @@ begin
     PreRenderPoint := nil;
   inherited;
 end;
-
-// SetupRenderingOptions
-//
 
 procedure TVXLensFlare.SetupRenderingOptions(StateCache: TVXStateCache);
 begin
@@ -371,16 +313,13 @@ begin
   end;
 end;
 
-// RenderRays
-//
-
 procedure TVXLensFlare.RenderRays(StateCache: TVXStateCache; const size:
   Single);
 var
   i: Integer;
   rnd: Single;
 begin
-{$IFDEF VKS_OPENGL_DEBUG}
+{$IFDEF USE_OPENGL_DEBUG}
   if GL.GREMEDY_string_marker then
     GL.StringMarkerGREMEDY(14, 'LensFlare.Rays');
 {$ENDIF}
@@ -407,15 +346,12 @@ begin
   glEnd;
 end;
 
-// RenderStreak
-//
-
 procedure TVXLensFlare.RenderStreaks(StateCache: TVXStateCache);
 var
   i: Integer;
   a, f, s, c: Single;
 begin
-{$IFDEF VKS_OPENGL_DEBUG}
+{$IFDEF USE_OPENGL_DEBUG}
   if GL.GREMEDY_string_marker then
     GL.StringMarkerGREMEDY(17, 'LensFlare.Streaks');
 {$ENDIF}
@@ -436,15 +372,12 @@ begin
   StateCache.Disable(stLineSmooth);
 end;
 
-// RenderRing
-//
-
 procedure TVXLensFlare.RenderRing;
 var
   i: Integer;
   rW, s0, c0, s, c: Single;
 begin
-{$IFDEF VKS_OPENGL_DEBUG}
+{$IFDEF USE_OPENGL_DEBUG}
   if GL.GREMEDY_string_marker then
     GL.StringMarkerGREMEDY(14, 'LensFlare.Ring');
 {$ENDIF}
@@ -479,9 +412,6 @@ begin
   glEnd;
 end;
 
-// RenderSecondaries
-//
-
 procedure TVXLensFlare.RenderSecondaries(const posVector: TAffineVector);
 var
   i, j: Integer;
@@ -489,7 +419,7 @@ var
   v: TAffineVector;
   grad: TVXFlareGradient;
 begin
-{$IFDEF VKS_OPENGL_DEBUG}
+{$IFDEF USE_OPENGL_DEBUG}
   if GL.GREMEDY_string_marker then
     GL.StringMarkerGREMEDY(21, 'LensFlare.Secondaries');
 {$ENDIF}
@@ -521,9 +451,6 @@ begin
     glEnd;
   end;
 end;
-
-// BuildList
-//
 
 procedure TVXLensFlare.BuildList(var rci: TVXRenderContextInfo);
 var
@@ -608,11 +535,11 @@ begin
       // hardware-based occlusion test is possible
       FlareIsNotOccluded := True;
 
-      rci.VKStates.SetColorMask([]);
-      rci.VKStates.Disable(stAlphaTest);
-      rci.VKStates.DepthWriteMask := GLboolean(False);
-      rci.VKStates.Enable(stDepthTest);
-      rci.VKStates.DepthFunc := cfLEqual;
+      rci.VXStates.SetColorMask([]);
+      rci.VXStates.Disable(stAlphaTest);
+      rci.VXStates.DepthWriteMask := GLboolean(False);
+      rci.VXStates.Enable(stDepthTest);
+      rci.VXStates.DepthFunc := cfLEqual;
 
       if TVXOcclusionQueryHandle.IsSupported > False then
       begin
@@ -647,8 +574,8 @@ begin
         glGetBooleanv(GL_OCCLUSION_TEST_RESULT_HP, @FFlareIsNotOccluded)
       end;
 
-      rci.VKStates.DepthFunc := cfLEqual;
-      rci.VKStates.SetColorMask(cAllColorComponents);
+      rci.VXStates.DepthFunc := cfLEqual;
+      rci.VXStates.SetColorMask(cAllColorComponents);
     end
     else
     begin
@@ -669,7 +596,7 @@ begin
     oldSeed := RandSeed;
     RandSeed := Seed;
 
-    SetupRenderingOptions(rci.VKStates);
+    SetupRenderingOptions(rci.VxStates);
 
     if [feGlow, feStreaks, feRays, feRing] * Elements <> [] then
     begin
@@ -689,19 +616,19 @@ begin
       end;
 
       if feStreaks in Elements then
-        RenderStreaks(rci.VKStates);
+        RenderStreaks(rci.VxStates);
 
       // Rays (random-length lines from the origin):
       if feRays in Elements then
       begin
         if FTexRays.Handle <> 0 then
         begin
-        {$IFDEF VKS_OPENGL_DEBUG}
+        {$IFDEF USE_OPENGL_DEBUG}
           if GL.GREMEDY_string_marker then
             GL.StringMarkerGREMEDY(19, 'LensFlare.RaysQuad');
         {$ENDIF}
-          rci.VKStates.TextureBinding[0, ttTexture2D] := FTexRays.Handle;
-          rci.VKStates.ActiveTextureEnabled[ttTexture2D] := True;
+          rci.VXStates.TextureBinding[0, ttTexture2D] := FTexRays.Handle;
+          rci.VXStates.ActiveTextureEnabled[ttTexture2D] := True;
           glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 
           glBegin(GL_QUADS);
@@ -715,10 +642,10 @@ begin
           glVertex2f(-FCurrSize, FCurrSize);
           glEnd;
 
-          rci.VKStates.ActiveTextureEnabled[ttTexture2D] := False;
+          rci.VXStates.ActiveTextureEnabled[ttTexture2D] := False;
         end
         else
-          RenderRays(rci.VKStates, FCurrSize);
+          RenderRays(rci.VxStates, FCurrSize);
       end;
 
       if feRing in Elements then
@@ -741,17 +668,11 @@ begin
     Self.RenderChildren(0, Count - 1, rci);
 end;
 
-// DoProgress
-//
-
 procedure TVXLensFlare.DoProgress(const progressTime: TProgressTimes);
 begin
   inherited;
   FDeltaTime := progressTime.deltaTime;
 end;
-
-// PreRender
-//
 
 procedure TVXLensFlare.PreRender(activeBuffer: TVXSceneBuffer);
 var
@@ -762,10 +683,10 @@ begin
     Exit;
   with activeBuffer.RenderingContext do
   begin
-    stateCache := VKStates;
+    stateCache := VXStates;
     PipelineTransformation.Push;
-    PipelineTransformation.ProjectionMatrix := CreateOrthoMatrix(0, activeBuffer.Width, 0, activeBuffer.Height, -1, 1);
-    PipelineTransformation.ViewMatrix := IdentityHmgMatrix;
+    PipelineTransformation.SetProjectionMatrix(CreateOrthoMatrix(0, activeBuffer.Width, 0, activeBuffer.Height, -1, 1));
+    PipelineTransformation.SetViewMatrix(IdentityHmgMatrix);
   end;
   SetupRenderingOptions(stateCache);
 
@@ -807,17 +728,11 @@ begin
   CheckOpenGLError;
 end;
 
-// SetGlowGradient
-//
-
 procedure TVXLensFlare.SetGlowGradient(const val: TVXFlareGradient);
 begin
   FGlowGradient.Assign(val);
   StructureChanged;
 end;
-
-// SetRingGradient
-//
 
 procedure TVXLensFlare.SetRingGradient(const val: TVXFlareGradient);
 begin
@@ -825,17 +740,11 @@ begin
   StructureChanged;
 end;
 
-// SetStreaksGradient
-//
-
 procedure TVXLensFlare.SetStreaksGradient(const val: TVXFlareGradient);
 begin
   FStreaksGradient.Assign(val);
   StructureChanged;
 end;
-
-// SetRaysGradient
-//
 
 procedure TVXLensFlare.SetRaysGradient(const val: TVXFlareGradient);
 begin
@@ -843,17 +752,11 @@ begin
   StructureChanged;
 end;
 
-// SetSecondariesGradient
-//
-
 procedure TVXLensFlare.SetSecondariesGradient(const val: TVXFlareGradient);
 begin
   FSecondariesGradient.Assign(val);
   StructureChanged;
 end;
-
-// SetSize
-//
 
 procedure TVXLensFlare.SetSize(aValue: Integer);
 begin
@@ -861,17 +764,11 @@ begin
   StructureChanged;
 end;
 
-// SetSeed
-//
-
 procedure TVXLensFlare.SetSeed(aValue: Integer);
 begin
   FSeed := aValue;
   StructureChanged;
 end;
-
-// SetSqueeze
-//
 
 procedure TVXLensFlare.SetSqueeze(aValue: Single);
 begin
@@ -879,16 +776,10 @@ begin
   StructureChanged;
 end;
 
-// StoreSqueeze
-//
-
 function TVXLensFlare.StoreSqueeze: Boolean;
 begin
   Result := (FSqueeze <> 1);
 end;
-
-// SetNumStreaks
-//
 
 procedure TVXLensFlare.SetNumStreaks(aValue: Integer);
 begin
@@ -896,25 +787,16 @@ begin
   StructureChanged;
 end;
 
-// SetStreakWidth
-//
-
 procedure TVXLensFlare.SetStreakWidth(aValue: Single);
 begin
   FStreakWidth := aValue;
   StructureChanged;
 end;
 
-// StoreStreakWidth
-//
-
 function TVXLensFlare.StoreStreakWidth: Boolean;
 begin
   Result := (FStreakWidth <> 2);
 end;
-
-// SetStreakAngle
-//
 
 procedure TVXLensFlare.SetStreakAngle(aValue: Single);
 begin
@@ -922,17 +804,11 @@ begin
   StructureChanged;
 end;
 
-// SetNumSecs
-//
-
 procedure TVXLensFlare.SetNumSecs(aValue: Integer);
 begin
   FNumSecs := aValue;
   StructureChanged;
 end;
-
-// SetResolution
-//
 
 procedure TVXLensFlare.SetResolution(aValue: Integer);
 begin
@@ -949,9 +825,6 @@ begin
   end;
 end;
 
-// SetAutoZTest
-//
-
 procedure TVXLensFlare.SetAutoZTest(aValue: Boolean);
 begin
   if FAutoZTest <> aValue then
@@ -960,9 +833,6 @@ begin
     StructureChanged;
   end;
 end;
-
-// SetElements
-//
 
 procedure TVXLensFlare.SetElements(aValue: TFlareElements);
 begin
@@ -973,9 +843,6 @@ begin
   end;
 end;
 
-// SetDynamic
-//
-
 procedure TVXLensFlare.SetDynamic(aValue: Boolean);
 begin
   if aValue <> FDynamic then
@@ -984,9 +851,6 @@ begin
     NotifyChange(Self);
   end;
 end;
-
-// SetPreRenderPoint
-//
 
 procedure TVXLensFlare.SetPreRenderPoint(const val: TVXRenderPoint);
 begin
@@ -1001,17 +865,11 @@ begin
   end;
 end;
 
-// PreRenderEvent
-//
-
 procedure TVXLensFlare.PreRenderEvent(Sender: TObject; var rci:
   TVXRenderContextInfo);
 begin
   PreRender(rci.buffer as TVXSceneBuffer);
 end;
-
-// PreRenderPointFreed
-//
 
 procedure TVXLensFlare.PreRenderPointFreed(Sender: TObject);
 begin
@@ -1019,12 +877,8 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
 
   RegisterClasses([TVXLensFlare]);
 

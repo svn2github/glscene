@@ -452,7 +452,7 @@ begin
   CheckOpenGLError;
   repeat
     if AlphaChannel <> 1 then
-      ARci.VKStates.SetMaterialAlphaChannel(GL_FRONT, AlphaChannel);
+      ARci.VXStates.SetMaterialAlphaChannel(GL_FRONT, AlphaChannel);
     // Prepare matrices
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix;
@@ -471,8 +471,8 @@ begin
     glMatrixMode(GL_PROJECTION);
     glPushMatrix;
     glLoadIdentity;
-    ARci.VKStates.Disable(stDepthTest);
-    ARci.VKStates.DepthWriteMask := GLboolean(False);
+    ARci.VXStates.Disable(stDepthTest);
+    ARci.VXStates.DepthWriteMask := GLboolean(False);
 
     // calculate offsets in order to keep the quad a square centered in the view
     if ARci.viewPortSize.cx > ARci.viewPortSize.cy then
@@ -772,7 +772,7 @@ procedure TVXMotionBlur.DoRender(var ARci: TVXRenderContextInfo; ARenderSelf, AR
 begin
   if not (ARci.ignoreMaterials or (csDesigning in ComponentState) or
     (ARci.drawState = dsPicking)) then
-  with ARci.VKStates do
+  with ARci.VxStates do
   begin
     ARci.ignoreDepthRequests := True;
     Material.Apply(ARci);

@@ -1,7 +1,13 @@
 //
-// VXScene Component Library, based on GLScene http://glscene.sourceforge.net 
+// VXScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
+{
+  ThorFX  for VXScene
+  History :  
+   09/03/01 - Rene Lindsay - unit created
+   The whole history is logged in previous version of the unit.
 
+}
 unit VXS.ThorFX;
 
 interface
@@ -9,12 +15,26 @@ interface
 {$I VXScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
+  System.Classes,
+  System.SysUtils,
+  System.Math,
 
-  VXS.Scene, VXS.XCollection, VXS.VectorGeometry,
-  Winapi.OpenGL, Winapi.OpenGLext,  VXS.Context, VXS.VectorLists, VXS.VectorTypes,
-  VXS.Cadencer, VXS.Color, VXS.BaseClasses, VXS.Coordinates,
-  VXS.RenderContextInfo, VXS.Manager, VXS.State, VXS.TextureFormat;
+  VXS.Scene,
+  VXS.XCollection,
+  VXS.VectorGeometry,
+  VXS.Context,
+  VXS.VectorLists,
+  VXS.VectorTypes,
+  VXS.Cadencer,
+  VXS.Color,
+  VXS.BaseClasses,
+  VXS.Coordinates,
+  VXS.RenderContextInfo,
+  VXS.Manager,
+  VXS.State,
+  VXS.TextureFormat;
 
 type
   PThorpoint = ^TThorpoint;
@@ -32,12 +52,9 @@ type
   TCalcPointEvent = procedure(Sender: TObject; PointNo: integer; var x: single;
     var y: single; var z: single) of object;
 
-  // TVXThorFXManager
-  //
   { Thor special effect manager. }
   TVXThorFXManager = class(TVXCadenceAbleComponent)
   private
-    
     FClients: TList;
     FThorpoints: PThorpointArray;
     FTarget: TVXCoordinates;
@@ -51,7 +68,6 @@ type
     FDisabled, FCore, FGlow: boolean;
     FOnCalcPoint: TCalcPointEvent;
   protected
-    
     procedure RegisterClient(aClient: TVXBThorFX);
     procedure DeRegisterClient(aClient: TVXBThorFX);
     procedure DeRegisterAllClients;
@@ -69,12 +85,10 @@ type
     procedure CalcThor;
     procedure CalcFrac(left, right: integer; lh, rh: single; xyz: integer);
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure DoProgress(const progressTime: TProgressTimes); override;
   published
-    
     property Target: TVXCoordinates read FTarget write SetTarget;
     property Cadencer: TVXCadencer read FCadencer write SetCadencer;
     property Maxpoints: integer read FMaxpoints write SetMaxpoints default 256;
@@ -93,24 +107,19 @@ type
     property OnCalcPoint: TCalcPointEvent read FOnCalcPoint write FOnCalcPoint;
   end;
 
-  // TVXBThorFX
-  //
   { Thor special effect }
   TVXBThorFX = class(TVXObjectPostEffect)
   private
-    
     FManager: TVXThorFXManager;
     FManagerName: String; // NOT persistent, temporarily used for persistence
     FTarget: TVXCoordinates;
   protected
-    
     procedure SetManager(const val: TVXThorFXManager);
     procedure WriteToFiler(writer: TWriter); override;
     procedure ReadFromFiler(reader: TReader); override;
     procedure Loaded; override;
     procedure SetTarget(const val: TVXCoordinates);
   public
-    
     constructor Create(AOwner: TVXXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -118,7 +127,6 @@ type
     class function FriendlyDescription: String; override;
     procedure Render(var rci: TVXRenderContextInfo); override;
   published
-    
     { Refers the collision manager. }
     property Manager: TVXThorFXManager read FManager write SetManager;
   end;
@@ -128,15 +136,13 @@ function GetOrCreateThorFX(obj: TVXBaseSceneObject; const name: String = '')
   : TVXBThorFX;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
+// ------------------------------------------------------------------
+
 // ------------------
 // ------------------ TVXThorFXManager ------------------
 // ------------------
 
-// Create
-//
 constructor TVXThorFXManager.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
@@ -160,8 +166,6 @@ begin
   ThorInit;
 end;
 
-// Destroy
-//
 destructor TVXThorFXManager.Destroy;
 begin
   DeRegisterAllClients;
@@ -175,8 +179,6 @@ begin
   inherited Destroy;
 end;
 
-// RegisterClient
-//
 procedure TVXThorFXManager.RegisterClient(aClient: TVXBThorFX);
 begin
   if Assigned(aClient) then
@@ -187,8 +189,6 @@ begin
     end;
 end;
 
-// DeRegisterClient
-//
 procedure TVXThorFXManager.DeRegisterClient(aClient: TVXBThorFX);
 begin
   if Assigned(aClient) then
@@ -198,8 +198,6 @@ begin
   end;
 end;
 
-// DeRegisterAllClients
-//
 procedure TVXThorFXManager.DeRegisterAllClients;
 var
   i: integer;
@@ -216,8 +214,6 @@ begin
   ThorInit;
 end;
 
-// SetCadencer
-//
 procedure TVXThorFXManager.SetCadencer(const val: TVXCadencer);
 begin
   if FCadencer <> val then
@@ -230,8 +226,6 @@ begin
   end;
 end;
 
-// SetMaxpoints
-//
 procedure TVXThorFXManager.SetMaxpoints(const val: integer);
 begin
   if FMaxpoints <> val then
@@ -241,22 +235,16 @@ begin
   end;
 end;
 
-// StoreGlowSize
-//
 function TVXThorFXManager.StoreGlowSize: boolean;
 begin
   Result := (FGlowSize <> 1);
 end;
 
-// StoreGlowSize
-//
 function TVXThorFXManager.StoreVibrate: boolean;
 begin
   Result := (FVibrate <> 1);
 end;
 
-// SetInnerColor
-//
 procedure TVXThorFXManager.SetInnerColor(const val: TVXColor);
 begin
   if FInnerColor <> val then
@@ -266,8 +254,6 @@ begin
   end;
 end;
 
-// SetOuterColor
-//
 procedure TVXThorFXManager.SetOuterColor(const val: TVXColor);
 begin
   if FOuterColor <> val then
@@ -277,8 +263,6 @@ begin
   end;
 end;
 
-// SetOuterColor
-//
 procedure TVXThorFXManager.SetCoreColor(const val: TVXColor);
 begin
   if FCoreColor <> val then
@@ -288,8 +272,6 @@ begin
   end;
 end;
 
-// Notification
-//
 procedure TVXThorFXManager.Notification(AComponent: TComponent;
   Operation: TOperation);
 begin
@@ -298,8 +280,6 @@ begin
   inherited;
 end;
 
-// DoProgress
-//
 procedure TVXThorFXManager.DoProgress(const progressTime: TProgressTimes);
 var
   i: integer;
@@ -313,15 +293,11 @@ begin
       (TVXBThorFX(FClients[i]));
 end;
 
-// ThorInit
-//
 procedure TVXThorFXManager.ThorInit;
 begin
   ReallocMem(FThorpoints, FMaxpoints * Sizeof(TThorpoint));
 end;
 
-// CalcThor
-//
 procedure TVXThorFXManager.CalcThor;
 var
   N: integer;
@@ -346,8 +322,8 @@ begin
   SetVector(nvec, FTarget.x, FTarget.y, FTarget.z);
   len := VectorLength(nvec);
   NormalizeVector(nvec);
-  a := ArcCosine(nvec.Z);
-  b := ArcTangent2(nvec.X, nvec.Y);
+  a := ArcCos(nvec.Z);
+  b := ArcTan2(nvec.X, nvec.Y);
 
   N := 0;
   While (N < Maxpoints) do
@@ -400,8 +376,6 @@ end;
 // ------------------ TVXBThorFX ------------------
 // ------------------
 
-// Create
-//
 constructor TVXBThorFX.Create(AOwner: TVXXCollection);
 begin
   inherited Create(AOwner);
@@ -409,8 +383,6 @@ begin
   FTarget.Style := csPoint;
 end;
 
-// Destroy
-//
 destructor TVXBThorFX.Destroy;
 begin
   Manager := nil;
@@ -418,22 +390,16 @@ begin
   inherited Destroy;
 end;
 
-// FriendlyName
-//
 class function TVXBThorFX.FriendlyName: String;
 begin
   Result := 'ThorFX';
 end;
 
-// FriendlyDescription
-//
 class function TVXBThorFX.FriendlyDescription: String;
 begin
   Result := 'Thor FX';
 end;
 
-// WriteToFiler
-//
 procedure TVXBThorFX.WriteToFiler(writer: TWriter);
 begin
   with writer do
@@ -448,8 +414,6 @@ begin
   end;
 end;
 
-// ReadFromFiler
-//
 procedure TVXBThorFX.ReadFromFiler(reader: TReader);
 var
   archiveVersion: integer;
@@ -482,8 +446,6 @@ begin
   end;
 end;
 
-// Assign
-//
 procedure TVXBThorFX.Assign(Source: TPersistent);
 begin
   if Source is TVXBThorFX then
@@ -493,15 +455,11 @@ begin
   inherited Assign(Source);
 end;
 
-// SetTarget
-//
 procedure TVXBThorFX.SetTarget(const val: TVXCoordinates);
 begin
   FTarget.Assign(val);
 end;
 
-// SetManager
-//
 procedure TVXBThorFX.SetManager(const val: TVXThorFXManager);
 begin
   if val <> FManager then
@@ -513,8 +471,6 @@ begin
   end;
 end;
 
-// Render
-//
 procedure TVXBThorFX.Render(var rci: TVXRenderContextInfo);
 var
   N: integer;
@@ -540,11 +496,11 @@ begin
   // ...should be removed when absolute coords will be handled directly
   // in the point system (and will also make a better flame effect)
 
-  rci.VKStates.Disable(stCullFace);
-  rci.VKStates.ActiveTextureEnabled[ttTexture2D] := False;
-  rci.VKStates.Disable(stLighting);
-  rci.VKStates.SetBlendFunc(bfSrcAlpha, bfOne);
-  rci.VKStates.Enable(stBlend);
+  rci.VXStates.Disable(stCullFace);
+  rci.VXStates.ActiveTextureEnabled[ttTexture2D] := False;
+  rci.VXStates.Disable(stLighting);
+  rci.VXStates.SetBlendFunc(bfSrcAlpha, bfOne);
+  rci.VXStates.Enable(stBlend);
 
   N := Manager.NP;
 
@@ -560,7 +516,7 @@ begin
     end;
     QuickSortLists(0, N - 1, distList, objList);
 
-    mat := rci.PipelineTransformation.ModelViewMatrix;
+    mat := rci.PipelineTransformation.ModelViewMatrix^;
     for m := 0 to 2 do
     begin
       vx.V[m] := mat.V[m].X * Manager.GlowSize;
@@ -570,13 +526,13 @@ begin
     SetVector(InnerColor, Manager.FInnerColor.color);
 
     // ---------------
-    rci.VKStates.SetBlendFunc(bfSrcAlpha, bfOne);
-    rci.VKStates.Enable(stBlend);
-    rci.VKStates.Enable(stLineSmooth);
-    rci.VKStates.Disable(stLighting);
+    rci.VXStates.SetBlendFunc(bfSrcAlpha, bfOne);
+    rci.VXStates.Enable(stBlend);
+    rci.VXStates.Enable(stLineSmooth);
+    rci.VXStates.Disable(stLighting);
     // Stops particles at same distanceform overwriting each-other
-    rci.VKStates.DepthFunc := cfLEqual;
-    rci.VKStates.LineWidth := 3;
+    rci.VXStates.DepthFunc := cfLEqual;
+    rci.VXStates.LineWidth := 3;
     Icol := Manager.FInnerColor.color;
     Ocol := Manager.FOuterColor.color;
     Ccol := Manager.FCoreColor.color;
@@ -584,7 +540,7 @@ begin
     // ---Core Line---
     if Manager.FCore then
     begin
-      rci.VKStates.Disable(stBlend);
+      rci.VXStates.Disable(stBlend);
       glColor4fv(@Ccol);
       glBegin(GL_LINE_STRIP);
       for i := 0 to N - 1 do
@@ -599,7 +555,7 @@ begin
     // ---Point Glow---
     if Manager.FGlow then
     begin
-      rci.VKStates.Enable(stBlend);
+      rci.VXStates.Enable(stBlend);
       for i := N - 1 downto 0 do
       begin
         fp := PThorpoint(objList[i]);
@@ -646,8 +602,6 @@ begin
   rci.PipelineTransformation.Pop;
 end;
 
-// GetOrCreateThorFX
-//
 function GetOrCreateThorFX(obj: TVXBaseSceneObject; const name: String = '')
   : TVXBThorFX;
 var
@@ -678,12 +632,7 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 // class registrations

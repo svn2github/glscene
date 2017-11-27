@@ -331,7 +331,7 @@ var
   I: Integer;
 begin
   ALightIDs.Clear;
-  with CurrentVKContext.VKStates do
+  with CurrentVXContext.VxStates do
   begin
     for I := 0 to MaxLights - 1 do
     begin
@@ -365,7 +365,7 @@ end;
 
 procedure ApplyBlendingModeEx(const BlendingMode: TVXBlendingModeEx);
 begin
-  with CurrentVKContext.VKStates do
+  with CurrentVXContext.VxStates do
   begin
     Enable(stBlend);
 
@@ -497,7 +497,7 @@ procedure InitTexture(
 var
   glTarget: GLEnum;
 begin
-  with CurrentVKContext.VKStates do
+  with CurrentVXContext.VxStates do
   begin
     TextureBinding[ActiveTexture, TextureTarget] := TextureHandle;
   end;

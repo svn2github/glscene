@@ -149,7 +149,7 @@
         </DelphiCompile>
         <DCCReference Include="rtl.dcp"/>
         <DCCReference Include="fmx.dcp"/>
-        <DCCReference Include="VXScene_RunTime.dcp"/>
+        <DCCReference Include="VXScene_RT.dcp"/>
         <DCCReference Include="..\..\Source\PhysicsAPIs\VXS.ODEManager.pas"/>
         <DCCReference Include="..\..\Source\PhysicsAPIs\VXS.ODECustomColliders.pas"/>
         <DCCReference Include="..\..\Source\PhysicsAPIs\VXS.ODESkeletonColliders.pas"/>

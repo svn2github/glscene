@@ -147,8 +147,8 @@ type
     procedure SetMinFilter(AValue: TVXMinFilter);
     procedure SetGlyphsAlpha(val: TVXTextureImageAlpha);
     procedure TextureChanged;
-    procedure FreeTextureHandle; dynamic;
-    function TextureFormat: Integer; dynamic;
+    procedure FreeTextureHandle; virtual;
+    function TextureFormat: Integer; virtual;
     procedure InvalidateUsers;
     function CharactersPerRow: Integer;
     procedure GetCharTexCoords(Ch: WideChar;
@@ -712,7 +712,7 @@ begin
   // only check when really used
   if FTextureWidth = 0 then
   begin
-    FTextureWidth := ARci.VKStates.MaxTextureSize;
+    FTextureWidth := ARci.VXStates.MaxTextureSize;
     if FTextureWidth > 512 then
       FTextureWidth := 512;
     if FTextureWidth < 64 then
@@ -720,7 +720,7 @@ begin
   end;
   if FTextureHeight = 0 then
   begin
-    FTextureHeight := ARci.VKStates.MaxTextureSize;
+    FTextureHeight := ARci.VXStates.MaxTextureSize;
     if FTextureHeight > 512 then
       FTextureHeight := 512;
     if FTextureHeight < 64 then
@@ -757,7 +757,7 @@ begin
     t.AllocateHandle;
     // texture registration
     t.Target := ttTexture2D;
-    ARci.VKStates.TextureBinding[0, ttTexture2D] := t.Handle;
+    ARci.VXStates.TextureBinding[0, ttTexture2D] := t.Handle;
 
     // copy data
     { TODO : E2003 Undeclared identifier: 'Draw', need to use DrawBitmap() }
@@ -813,7 +813,7 @@ const
     GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
 begin
 
-  with ARci.VKStates do
+  with ARci.VxStates do
   begin
     UnpackAlignment := 4;
     UnpackRowLength := 0;
@@ -912,7 +912,7 @@ begin
   vBottomRight.W := 1;
   spaceDeltaH := GetCharWidth(#32) + HSpaceFix + HSpace;
   // set states
-  with ARci.VKStates do
+  with ARci.VxStates do
   begin
     ActiveTextureEnabled[ttTexture2D] := true;
     Disable(stLighting);
@@ -972,8 +972,8 @@ begin
   end;
   glEnd;
   // unbind texture
-  ARci.VKStates.TextureBinding[0, ttTexture2D] := 0;
-  ARci.VKStates.ActiveTextureEnabled[ttTexture2D] := False;
+  ARci.VXStates.TextureBinding[0, ttTexture2D] := 0;
+  ARci.VXStates.ActiveTextureEnabled[ttTexture2D] := False;
 end;
 
 procedure TVXCustomBitmapFont.TextOut(var rci: TVXRenderContextInfo; X, Y: Single;
@@ -1099,7 +1099,7 @@ begin
     begin
       FLastTexture := t;
       glEnd;
-      ARci.VKStates.TextureBinding[0, ttTexture2D] := t.Handle;
+      ARci.VXStates.TextureBinding[0, ttTexture2D] := t.Handle;
       glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
       glBegin(GL_QUADS);
     end;
@@ -1232,14 +1232,14 @@ procedure TVXFlatText.DoRender(var rci: TVXRenderContextInfo;
 begin
   if Assigned(FBitmapFont) and (Text <> '') then
   begin
-    rci.VKStates.PolygonMode := pmFill;
+    rci.VXStates.PolygonMode := pmFill;
     if FModulateColor.Alpha <> 1 then
     begin
-      rci.VKStates.Enable(stBlend);
-      rci.VKStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
+      rci.VXStates.Enable(stBlend);
+      rci.VXStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
     end;
     if ftoTwoSided in FOptions then
-      rci.VKStates.Disable(stCullFace);
+      rci.VXStates.Disable(stCullFace);
     FBitmapFont.RenderString(rci, Text, FAlignment, FLayout,
       FModulateColor.Color);
   end;

@@ -1,8 +1,8 @@
 //
 // VXScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
-{ 
-  Geometric objects 
+{
+  Geometric objects
   The history is logged in a former GLS version of the unit.
 }
 
@@ -16,6 +16,7 @@ uses
   Winapi.OpenGL,
   Winapi.OpenGLext,
   System.Classes,
+  System.Math,
   
   VXS.OpenGLAdapter,
   VXS.XOpenGL,
@@ -30,8 +31,7 @@ uses
   VXS.Polynomials;
 
 type
-  { A Disk object.
-    The disk may not be complete, it can have a hole (controled by the
+  { A Disk object.  The disk may not be complete, it can have a hole (controled by the
     InnerRadius property) and can only be a slice (controled by the StartAngle
     and SweepAngle properties). }
   TVXDisk = class(TVXQuadricObject)
@@ -573,7 +573,7 @@ begin
         else
         begin
           // arctan2 returns results between -pi and +pi, we want between 0 and 360
-          angle := 180 / pi * ArcTangent2(localIntPoint.X, localIntPoint.Y);
+          angle := 180 / pi * ArcTan2(localIntPoint.X, localIntPoint.Y);
           if angle < 0 then
             angle := angle + 360;
           // we also want StartAngle and StartAngle+SweepAngle to be in this range
@@ -802,9 +802,6 @@ begin
   glPopMatrix;
 end;
 
-// SetParts
-//
-
 procedure TVXCone.SetParts(aValue: TVXConeParts);
 begin
   if aValue <> FParts then
@@ -813,9 +810,6 @@ begin
     StructureChanged;
   end;
 end;
-
-// Assign
-//
 
 procedure TVXCone.Assign(Source: TPersistent);
 begin
@@ -826,9 +820,6 @@ begin
   inherited Assign(Source);
 end;
 
-// AxisAlignedDimensions
-//
-
 function TVXCone.AxisAlignedDimensionsUnscaled: TVector;
 var
   r: GLfloat;
@@ -838,16 +829,10 @@ begin
     r { *Scale.DirectZ } );
 end;
 
-// GetTopRadius
-//
-
 function TVXCone.GetTopRadius: Single;
 begin
   Result := 0;
 end;
-
-// RayCastIntersect
-//
 
 function TVXCone.RayCastIntersect(const rayStart, rayVector: TVector;
   intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean;
@@ -923,9 +908,6 @@ end;
 // ------------------ TVXCylinder ------------------
 // ------------------
 
-// Create
-//
-
 constructor TVXCylinder.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
@@ -933,9 +915,6 @@ begin
   FParts := [cySides, cyBottom, cyTop];
   FAlignment := caCenter;
 end;
-
-// BuildList
-//
 
 procedure TVXCylinder.BuildList(var rci: TVXRenderContextInfo);
 var
@@ -972,9 +951,6 @@ begin
   glPopMatrix;
 end;
 
-// SetTopRadius
-//
-
 procedure TVXCylinder.SetTopRadius(const aValue: Single);
 begin
   if aValue <> FTopRadius then
@@ -984,16 +960,10 @@ begin
   end;
 end;
 
-// GetTopRadius
-//
-
 function TVXCylinder.GetTopRadius: Single;
 begin
   Result := FTopRadius;
 end;
-
-// SetParts
-//
 
 procedure TVXCylinder.SetParts(aValue: TVXCylinderParts);
 begin
@@ -1004,9 +974,6 @@ begin
   end;
 end;
 
-// SetAlignment
-//
-
 procedure TVXCylinder.SetAlignment(val: TVXCylinderAlignment);
 begin
   if val <> FAlignment then
@@ -1015,9 +982,6 @@ begin
     StructureChanged;
   end;
 end;
-
-// Assign
-//
 
 procedure TVXCylinder.Assign(Source: TPersistent);
 begin
@@ -1028,9 +992,6 @@ begin
   end;
   inherited Assign(Source);
 end;
-
-// AxisAlignedDimensions
-//
 
 function TVXCylinder.AxisAlignedDimensionsUnscaled: TVector;
 var
@@ -1043,9 +1004,6 @@ begin
   Result := VectorMake(r, 0.5 * FHeight, r);
   // ScaleVector(Result, Scale.AsVector);
 end;
-
-// RayCastIntersect
-//
 
 function TVXCylinder.RayCastIntersect(const rayStart, rayVector: TVector;
   intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean;
@@ -1169,9 +1127,6 @@ begin
     SetLength(roots, 0);
 end;
 
-// Align
-//
-
 procedure TVXCylinder.Align(const startPoint, endPoint: TVector);
 var
   dir: TAffineVector;
@@ -1186,16 +1141,10 @@ begin
   Alignment := caCenter;
 end;
 
-// Align
-//
-
 procedure TVXCylinder.Align(const startObj, endObj: TVXBaseSceneObject);
 begin
   Align(startObj.AbsolutePosition, endObj.AbsolutePosition);
 end;
-
-// Align
-//
 
 procedure TVXCylinder.Align(const startPoint, endPoint: TAffineVector);
 begin
@@ -1205,9 +1154,6 @@ end;
 // ------------------
 // ------------------ TVXCapsule ------------------
 // ------------------
-
-// Create
-//
 
 constructor TVXCapsule.Create(AOwner: TComponent);
 begin
@@ -1219,9 +1165,6 @@ begin
   FParts := [cySides, cyBottom, cyTop];
   FAlignment := caCenter;
 end;
-
-// BuildList
-//
 
 procedure TVXCapsule.BuildList(var rci: TVXRenderContextInfo);
 var
@@ -1347,9 +1290,6 @@ begin
   glPopMatrix;
 end;
 
-// SetLength
-//
-
 procedure TVXCapsule.SetHeight(const aValue: Single);
 begin
   if aValue <> FHeight then
@@ -1358,9 +1298,6 @@ begin
     StructureChanged;
   end;
 end;
-
-// SetRadius
-//
 
 procedure TVXCapsule.SetRadius(const aValue: Single);
 begin
@@ -1371,9 +1308,6 @@ begin
   end;
 end;
 
-// SetSlices
-//
-
 procedure TVXCapsule.SetSlices(const aValue: integer);
 begin
   if aValue <> FSlices then
@@ -1382,9 +1316,6 @@ begin
     StructureChanged;
   end;
 end;
-
-// SetStacks
-//
 
 procedure TVXCapsule.SetStacks(const aValue: integer);
 begin
@@ -1395,9 +1326,6 @@ begin
   end;
 end;
 
-// SetParts
-//
-
 procedure TVXCapsule.SetParts(aValue: TVXCylinderParts);
 begin
   if aValue <> FParts then
@@ -1406,9 +1334,6 @@ begin
     StructureChanged;
   end;
 end;
-
-// SetAlignment
-//
 
 procedure TVXCapsule.SetAlignment(val: TVXCylinderAlignment);
 begin
@@ -1419,9 +1344,6 @@ begin
   end;
 end;
 
-// Assign
-//
-
 procedure TVXCapsule.Assign(Source: TPersistent);
 begin
   if Assigned(Source) and (Source is TVXCapsule) then
@@ -1431,9 +1353,6 @@ begin
   end;
   inherited Assign(Source);
 end;
-
-// AxisAlignedDimensions
-//
 
 function TVXCapsule.AxisAlignedDimensionsUnscaled: TVector;
 var
@@ -1446,9 +1365,6 @@ begin
   Result := VectorMake(r, 0.5 * FHeight, r);
   // ScaleVector(Result, Scale.AsVector);
 end;
-
-// RayCastIntersect
-//
 
 function TVXCapsule.RayCastIntersect(const rayStart, rayVector: TVector;
   intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean;
@@ -1572,9 +1488,6 @@ begin
     SetLength(roots, 0);
 end;
 
-// Align
-//
-
 procedure TVXCapsule.Align(const startPoint, endPoint: TVector);
 var
   dir: TAffineVector;
@@ -1589,16 +1502,10 @@ begin
   Alignment := caCenter;
 end;
 
-// Align
-//
-
 procedure TVXCapsule.Align(const startObj, endObj: TVXBaseSceneObject);
 begin
   Align(startObj.AbsolutePosition, endObj.AbsolutePosition);
 end;
-
-// Align
-//
 
 procedure TVXCapsule.Align(const startPoint, endPoint: TAffineVector);
 begin
@@ -1609,9 +1516,6 @@ end;
 // ------------------ TVXAnnulus ------------------
 // ------------------
 
-// Create
-//
-
 constructor TVXAnnulus.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
@@ -1620,9 +1524,6 @@ begin
   FTopRadius := 0.5;
   FParts := [anInnerSides, anOuterSides, anBottom, anTop];
 end;
-
-// SetBottomInnerRadius
-//
 
 procedure TVXAnnulus.SetBottomInnerRadius(const aValue: Single);
 begin
@@ -1633,9 +1534,6 @@ begin
   end;
 end;
 
-// SetTopRadius
-//
-
 procedure TVXAnnulus.SetTopRadius(const aValue: Single);
 begin
   if aValue <> FTopRadius then
@@ -1644,9 +1542,6 @@ begin
     StructureChanged;
   end;
 end;
-
-// SetTopInnerRadius
-//
 
 procedure TVXAnnulus.SetTopInnerRadius(const aValue: Single);
 begin
@@ -1657,9 +1552,6 @@ begin
   end;
 end;
 
-// SetParts
-//
-
 procedure TVXAnnulus.SetParts(aValue: TVXAnnulusParts);
 begin
   if aValue <> FParts then
@@ -1668,9 +1560,6 @@ begin
     StructureChanged;
   end;
 end;
-
-// BuildList
-//
 
 procedure TVXAnnulus.BuildList(var rci: TVXRenderContextInfo);
 var
@@ -1704,9 +1593,6 @@ begin
   glPopMatrix;
 end;
 
-// Assign
-//
-
 procedure TVXAnnulus.Assign(Source: TPersistent);
 begin
   if Assigned(Source) and (Source is TVXAnnulus) then
@@ -1720,9 +1606,6 @@ begin
   inherited Assign(Source);
 end;
 
-// AxisAlignedDimensions
-//
-
 function TVXAnnulus.AxisAlignedDimensionsUnscaled: TVector;
 var
   r, r1: GLfloat;
@@ -1733,9 +1616,6 @@ begin
     r := r1;
   Result := VectorMake(r, 0.5 * FHeight, r);
 end;
-
-// RayCastIntersect
-//
 
 function TVXAnnulus.RayCastIntersect(const rayStart, rayVector: TVector;
   intersectPoint, intersectNormal: PVector): Boolean;
@@ -1920,9 +1800,6 @@ end;
 // ------------------ TVXTorus ------------------
 // ------------------
 
-// Create
-//
-
 constructor TVXTorus.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
@@ -1934,9 +1811,6 @@ begin
   FStopAngle := 360.0;
   FParts := [toSides, toStartDisk, toStopDisk];
 end;
-
-// BuildList
-//
 
 procedure TVXTorus.BuildList(var rci: TVXRenderContextInfo);
 
@@ -2110,11 +1984,11 @@ begin
   end;
 
   begin
-    if {GL_ARB_shader_objects and} (rci.VKStates.CurrentProgram > 0) then
+    if {GL_ARB_shader_objects and} (rci.VXStates.CurrentProgram > 0) then
     begin
-      TanLoc := glGetAttribLocation(rci.VKStates.CurrentProgram,
+      TanLoc := glGetAttribLocation(rci.VXStates.CurrentProgram,
         PGLChar(TangentAttributeName));
-      BinLoc := glGetAttribLocation(rci.VKStates.CurrentProgram,
+      BinLoc := glGetAttribLocation(rci.VXStates.CurrentProgram,
         PGLChar(BinormalAttributeName));
     end
     else
@@ -2183,9 +2057,6 @@ begin
   end;
 end;
 
-// SetMajorRadius
-//
-
 procedure TVXTorus.SetMajorRadius(const aValue: Single);
 begin
   if FMajorRadius <> aValue then
@@ -2196,9 +2067,6 @@ begin
   end;
 end;
 
-// SetMinorRadius
-//
-
 procedure TVXTorus.SetMinorRadius(const aValue: Single);
 begin
   if FMinorRadius <> aValue then
@@ -2208,9 +2076,6 @@ begin
     StructureChanged;
   end;
 end;
-
-// SetRings
-//
 
 procedure TVXTorus.SetRings(aValue: Cardinal);
 begin
@@ -2223,9 +2088,6 @@ begin
     StructureChanged;
   end;
 end;
-
-// SetSides
-//
 
 procedure TVXTorus.SetSides(aValue: Cardinal);
 begin
@@ -2268,9 +2130,6 @@ begin
   end;
 end;
 
-// AxisAlignedDimensionsUnscaled
-//
-
 function TVXTorus.AxisAlignedDimensionsUnscaled: TVector;
 var
   r, r1: GLfloat;
@@ -2279,9 +2138,6 @@ begin
   r1 := Abs(FMinorRadius);
   Result := VectorMake(r + r1, r + r1, r1); // Danb
 end;
-
-// RayCastIntersect
-//
 
 function TVXTorus.RayCastIntersect(const rayStart, rayVector: TVector;
   intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean;
@@ -2349,9 +2205,6 @@ end;
 // ------------------ TVXArrowLine ------------------
 // ------------------
 
-// Create
-//
-
 constructor TVXArrowLine.Create(AOwner: TComponent);
 begin
   inherited;
@@ -2368,9 +2221,6 @@ begin
   FParts := [alLine, alTopArrow];
 end;
 
-// SetTopRadius
-//
-
 procedure TVXArrowLine.SetTopRadius(const aValue: Single);
 begin
   if aValue <> FTopRadius then
@@ -2379,9 +2229,6 @@ begin
     StructureChanged;
   end;
 end;
-
-// SetTopArrowHeadHeight
-//
 
 procedure TVXArrowLine.SetTopArrowHeadHeight(const aValue: Single);
 begin
@@ -2392,9 +2239,6 @@ begin
   end;
 end;
 
-// SetTopArrowHeadRadius
-//
-
 procedure TVXArrowLine.SetTopArrowHeadRadius(const aValue: Single);
 begin
   if aValue <> fTopArrowHeadRadius then
@@ -2403,9 +2247,6 @@ begin
     StructureChanged;
   end;
 end;
-
-// SetBottomArrowHeadHeight
-//
 
 procedure TVXArrowLine.SetBottomArrowHeadHeight(const aValue: Single);
 begin
@@ -2416,9 +2257,6 @@ begin
   end;
 end;
 
-// SetBottomArrowHeadRadius
-//
-
 procedure TVXArrowLine.SetBottomArrowHeadRadius(const aValue: Single);
 begin
   if aValue <> fBottomArrowHeadRadius then
@@ -2427,9 +2265,6 @@ begin
     StructureChanged;
   end;
 end;
-
-// SetParts
-//
 
 procedure TVXArrowLine.SetParts(aValue: TVXArrowLineParts);
 begin
@@ -2440,9 +2275,6 @@ begin
   end;
 end;
 
-// SetHeadStackingStyle
-//
-
 procedure TVXArrowLine.SetHeadStackingStyle(const val: TVXArrowHeadStackingStyle);
 begin
   if val <> FHeadStackingStyle then
@@ -2451,9 +2283,6 @@ begin
     StructureChanged;
   end;
 end;
-
-// BuildList
-//
 
 procedure TVXArrowLine.BuildList(var rci: TVXRenderContextInfo);
 var
@@ -2535,9 +2364,6 @@ begin
   gluDeleteQuadric(quadric);
 end;
 
-// Assign
-//
-
 procedure TVXArrowLine.Assign(Source: TPersistent);
 begin
   if Assigned(Source) and (Source is TVXArrowLine) then
@@ -2557,9 +2383,6 @@ end;
 // ------------------ TVXArrowArc ------------------
 // ------------------
 
-// Create
-//
-
 constructor TVXArrowArc.Create(AOwner: TComponent);
 begin
   inherited;
@@ -2577,9 +2400,6 @@ begin
   FParts := [aaArc, aaTopArrow];
 end;
 
-// SetArcRadius
-//
-
 procedure TVXArrowArc.SetArcRadius(const aValue: Single);
 begin
   if fArcRadius <> aValue then
@@ -2589,9 +2409,6 @@ begin
     StructureChanged;
   end;
 end;
-
-// SetStartAngle
-//
 
 procedure TVXArrowArc.SetStartAngle(const aValue: Single);
 begin
@@ -2603,9 +2420,6 @@ begin
   end;
 end;
 
-// SetStopAngle
-//
-
 procedure TVXArrowArc.SetStopAngle(const aValue: Single);
 begin
   if FStopAngle <> aValue then
@@ -2615,9 +2429,6 @@ begin
     StructureChanged;
   end;
 end;
-
-// SetTopRadius
-//
 
 procedure TVXArrowArc.SetTopRadius(const aValue: Single);
 begin
@@ -2629,9 +2440,6 @@ begin
   end;
 end;
 
-// SetTopArrowHeadHeight
-//
-
 procedure TVXArrowArc.SetTopArrowHeadHeight(const aValue: Single);
 begin
   if aValue <> fTopArrowHeadHeight then
@@ -2641,9 +2449,6 @@ begin
     StructureChanged;
   end;
 end;
-
-// SetTopArrowHeadRadius
-//
 
 procedure TVXArrowArc.SetTopArrowHeadRadius(const aValue: Single);
 begin
@@ -2655,9 +2460,6 @@ begin
   end;
 end;
 
-// SetBottomArrowHeadHeight
-//
-
 procedure TVXArrowArc.SetBottomArrowHeadHeight(const aValue: Single);
 begin
   if aValue <> fBottomArrowHeadHeight then
@@ -2667,9 +2469,6 @@ begin
     StructureChanged;
   end;
 end;
-
-// SetBottomArrowHeadRadius
-//
 
 procedure TVXArrowArc.SetBottomArrowHeadRadius(const aValue: Single);
 begin
@@ -2681,9 +2480,6 @@ begin
   end;
 end;
 
-// SetParts
-//
-
 procedure TVXArrowArc.SetParts(aValue: TArrowArcParts);
 begin
   if aValue <> FParts then
@@ -2693,9 +2489,6 @@ begin
     StructureChanged;
   end;
 end;
-
-// SetHeadStackingStyle
-//
 
 procedure TVXArrowArc.SetHeadStackingStyle(const val: TVXArrowHeadStackingStyle);
 begin
@@ -2707,33 +2500,27 @@ begin
   end;
 end;
 
-// BuildList
-//
-
 procedure TVXArrowArc.BuildList(var rci: TVXRenderContextInfo);
   procedure EmitVertex(ptr: PVertexRec; L1, L2: integer);
-  // {$IFDEF VKS_INLINE}inline;{$ENDIF}
   begin
     glTexCoord2fv(@ptr^.TexCoord);
-    begin
-      glNormal3fv(@ptr^.Normal);
-      if L1 > -1 then
-        glVertexAttrib3fv(L1, @ptr.Tangent);
-      if L2 > -1 then
-        glVertexAttrib3fv(L2, @ptr.Binormal);
-      glVertex3fv(@ptr^.Position);
-    end;
+    glNormal3fv(@ptr^.Normal);
+    if L1 > -1 then
+      glVertexAttrib3fv(L1, @ptr.Tangent);
+    if L2 > -1 then
+      glVertexAttrib3fv(L2, @ptr.Binormal);
+    glVertex3fv(@ptr^.Position);
   end;
 
 var
   i, j: integer;
-  Theta, Phi, Theta1, cosPhi, sinPhi, dist: GLfloat;
-  cosTheta1, sinTheta1: GLfloat;
-  ringDelta, sideDelta: GLfloat;
+  Theta, Phi, Theta1, cosPhi, sinPhi, dist: Single;
+  cosTheta1, sinTheta1: Single;
+  ringDelta, sideDelta: Single;
   ringDir: TAffineVector;
   iFact, jFact: Single;
   pVertex: PVertexRec;
-  TanLoc, BinLoc: GLint;
+  TanLoc, BinLoc: Integer;
   MeshSize: integer;
   MeshIndex: integer;
   ConeCenter: TVertexRec;
@@ -2767,23 +2554,23 @@ begin
         begin
           if aaBottomArrow in Parts then
             StartOffset :=
-              RadianToDeg(ArcTan(0.5 * fBottomArrowHeadHeight / fArcRadius))
+              RadToDeg(ArcTan(0.5 * fBottomArrowHeadHeight / fArcRadius))
           else
             StartOffset :=0;
           if aaTopArrow in Parts then
             StopOffset :=
-              RadianToDeg(ArcTan(0.5 * fTopArrowHeadHeight / fArcRadius))
+              RadToDeg(ArcTan(0.5 * fTopArrowHeadHeight / fArcRadius))
           else
             StopOffset :=0;
         end ;
       ahssIncluded:
         begin
           if aaBottomArrow in Parts then
-            StartOffset := RadianToDeg(ArcTan(fBottomArrowHeadHeight / fArcRadius))
+            StartOffset := RadToDeg(ArcTan(fBottomArrowHeadHeight / fArcRadius))
           else
             StartOffset :=0;
           if aaTopArrow in Parts then
-            StopOffset := RadianToDeg(ArcTan(fTopArrowHeadHeight / fArcRadius))
+            StopOffset := RadToDeg(ArcTan(fTopArrowHeadHeight / fArcRadius))
           else
             StopOffset :=0;
         end ;
@@ -2827,11 +2614,11 @@ begin
       end;
       MeshIndex := FStacks + 1;
       begin
-        if {GL_ARB_shader_objects and} (rci.VKStates.CurrentProgram > 0) then
+        if {GL_ARB_shader_objects and} (rci.VXStates.CurrentProgram > 0) then
         begin
-          TanLoc := glGetAttribLocation(rci.VKStates.CurrentProgram,
+          TanLoc := glGetAttribLocation(rci.VXStates.CurrentProgram,
             PGLChar(TangentAttributeName));
-          BinLoc := glGetAttribLocation(rci.VKStates.CurrentProgram,
+          BinLoc := glGetAttribLocation(rci.VXStates.CurrentProgram,
             PGLChar(BinormalAttributeName));
         end
         else
@@ -2927,11 +2714,11 @@ begin
       ConeCenter.TexCoord := Vector2fMake(0, 0);
 
       begin
-        if {GL_ARB_shader_objects and} (rci.VKStates.CurrentProgram > 0) then
+        if {GL_ARB_shader_objects and} (rci.VXStates.CurrentProgram > 0) then
         begin
-          TanLoc := glGetAttribLocation(rci.VKStates.CurrentProgram,
+          TanLoc := glGetAttribLocation(rci.VXStates.CurrentProgram,
             PGLChar(TangentAttributeName));
-          BinLoc := glGetAttribLocation(rci.VKStates.CurrentProgram,
+          BinLoc := glGetAttribLocation(rci.VXStates.CurrentProgram,
             PGLChar(BinormalAttributeName));
         end
         else
@@ -3007,11 +2794,11 @@ begin
       ConeCenter.Binormal := FMesh[MeshIndex][0].Binormal;
       ConeCenter.TexCoord := Vector2fMake(1, 1);
       begin
-        if {GL_ARB_shader_objects and} (rci.VKStates.CurrentProgram > 0) then
+        if {GL_ARB_shader_objects and} (rci.VXStates.CurrentProgram > 0) then
         begin
-          TanLoc := glGetAttribLocation(rci.VKStates.CurrentProgram,
+          TanLoc := glGetAttribLocation(rci.VXStates.CurrentProgram,
             PGLChar(TangentAttributeName));
-          BinLoc := glGetAttribLocation(rci.VKStates.CurrentProgram,
+          BinLoc := glGetAttribLocation(rci.VXStates.CurrentProgram,
             PGLChar(BinormalAttributeName));
         end
         else
@@ -3092,11 +2879,11 @@ begin
       ConeCenter.TexCoord := Vector2fMake(1, 1);
 
       begin
-        if {GL_ARB_shader_objects and} (rci.VKStates.CurrentProgram > 0) then
+        if {GL_ARB_shader_objects and} (rci.VXStates.CurrentProgram > 0) then
         begin
-          TanLoc := glGetAttribLocation(rci.VKStates.CurrentProgram,
+          TanLoc := glGetAttribLocation(rci.VXStates.CurrentProgram,
             PGLChar(TangentAttributeName));
-          BinLoc := glGetAttribLocation(rci.VKStates.CurrentProgram,
+          BinLoc := glGetAttribLocation(rci.VXStates.CurrentProgram,
             PGLChar(BinormalAttributeName));
         end
         else
@@ -3170,11 +2957,11 @@ begin
       ConeCenter.Binormal := FMesh[MeshIndex][0].Binormal;
       ConeCenter.TexCoord := Vector2fMake(0, 0);
       begin
-        if {GL_ARB_shader_objects and} (rci.VKStates.CurrentProgram > 0) then
+        if {GL_ARB_shader_objects and} (rci.VXStates.CurrentProgram > 0) then
         begin
-          TanLoc := glGetAttribLocation(rci.VKStates.CurrentProgram,
+          TanLoc := glGetAttribLocation(rci.VXStates.CurrentProgram,
             PGLChar(TangentAttributeName));
-          BinLoc := glGetAttribLocation(rci.VKStates.CurrentProgram,
+          BinLoc := glGetAttribLocation(rci.VXStates.CurrentProgram,
             PGLChar(BinormalAttributeName));
         end
         else
@@ -3195,9 +2982,6 @@ begin
     end;
   end;
 end;
-
-// Assign
-//
 
 procedure TVXArrowArc.Assign(Source: TPersistent);
 begin
@@ -3234,12 +3018,12 @@ end;
 
 procedure TVXFrustrum.BuildList(var rci: TVXRenderContextInfo);
 var
-  HBW, HBD: GLfloat; // half of width, half of depth at base
-  HTW, HTD: GLfloat; // half of width, half of depth at top of frustrum
-  HFH: GLfloat; // half of height, for align to center
-  Sign: GLfloat; // +1 or -1
-  angle: GLfloat; // in radians
-  ASin, ACos: GLfloat;
+  HBW, HBD: Single; // half of width, half of depth at base
+  HTW, HTD: Single; // half of width, half of depth at top of frustrum
+  HFH: Single; // half of height, for align to center
+  Sign: Single; // +1 or -1
+  angle: Single; // in radians
+  ASin, ACos: Single;
 begin
   if FNormalDirection = ndInside then
     Sign := -1
@@ -3468,7 +3252,7 @@ begin
   begin
     child := TVXBaseSceneObject(Children[i]);
     aabb := child.AxisAlignedBoundingBoxUnscaled;
-    AABBTransform(aabb, child.Matrix);
+    AABBTransform(aabb, child.Matrix^);
     AddAABB(Result, aabb);
   end;
 end;
@@ -3485,25 +3269,16 @@ end;
 // ------------------ TVXPolygon ------------------
 // ------------------
 
-// Create
-//
-
 constructor TVXPolygon.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   FParts := [ppTop, ppBottom];
 end;
 
-// Destroy
-//
-
 destructor TVXPolygon.Destroy;
 begin
   inherited Destroy;
 end;
-
-// SetParts
-//
 
 procedure TVXPolygon.SetParts(const val: TPolygonParts);
 begin

@@ -33,8 +33,8 @@ package VXScene_Parallel_DT;
 requires
   rtl,
   fmx,
-  VXScene_Parallel_RunTime,
-  VXScene_DesignTime;
+  VXScene_Parallel_RT,
+  VXScene_DT;
 
 contains
   FCUDAEditor in '..\..\Source\FCUDAEditor.pas' {GLSCUDAEditorForm},

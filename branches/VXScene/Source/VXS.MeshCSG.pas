@@ -21,10 +21,16 @@ interface
 {$I VXScene.inc}
 
 uses
-  System.SysUtils, System.Classes, System.Math,
+  System.SysUtils, 
+  System.Classes, 
+  System.Math,
   
-  VXS.Scene, VXS.VectorTypes, VXS.VectorFileObjects,
-  VXS.VectorGeometry, VXS.BSP, VXS.VectorLists;
+  VXS.Scene, 
+  VXS.VectorTypes, 
+  VXS.VectorFileObjects,
+  VXS.VectorGeometry, 
+  VXS.BSP, 
+  VXS.VectorLists;
 
 type
   TCSGOperation = (CSG_Union, CSG_Subtraction, CSG_Intersection);
@@ -72,7 +78,8 @@ begin
   Result[2] := v3;
 end;
 
-procedure CSG_Iterate_tri(const vec, nor: TCSGTri; BSP: TBSPMeshObject; Node: TFGBSPNode; ResMesh: TVXMeshObject; ResFG: TFGVertexNormalTexIndexList; keepinside, keepoutside, inverttriangle: Boolean);
+procedure CSG_Iterate_tri(const vec, nor: TCSGTri; BSP: TBSPMeshObject; 
+  Node: TFGBSPNode; ResMesh: TVXMeshObject; ResFG: TFGVertexNormalTexIndexList; keepinside, keepoutside, inverttriangle: Boolean);
 
 var
   vertex_offset: Integer;
@@ -503,7 +510,8 @@ begin
   end;
 end;
 
-procedure CSG_Operation(obj1, obj2: TVXMeshObject; Operation: TCSGOperation; Res: TVXMeshObject; const MaterialName1, MaterialName2: string);
+procedure CSG_Operation(obj1, obj2: TVXMeshObject; Operation: TCSGOperation; 
+  Res: TVXMeshObject; const MaterialName1, MaterialName2: string);
 
 var
   v1, t1, n1: TAffineVectorList;
@@ -528,7 +536,7 @@ begin
   n1 := TAffineVectorList.create;
   v1 := obj1.ExtractTriangles(t1, n1);
 
-  v1.TransformAsPoints(obj1.Owner.Owner.Matrix);
+  v1.TransformAsPoints(obj1.Owner.Owner.Matrix^);
 
   BSP1.Mode := momTriangles;
   BSP1.Vertices := v1;
@@ -539,7 +547,7 @@ begin
   t2 := TAffineVectorList.create;
   n2 := TAffineVectorList.create;
   v2 := obj2.ExtractTriangles(t2, n2);
-  v2.TransformAsPoints(obj2.Owner.Owner.Matrix);
+  v2.TransformAsPoints(obj2.Owner.Owner.Matrix^);
 
   BSP2.Mode := momTriangles;
   BSP2.Vertices := v2;

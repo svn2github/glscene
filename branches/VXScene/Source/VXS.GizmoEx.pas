@@ -642,9 +642,9 @@ end;
 procedure TVXGizmoExUIArrowLine.BuildList(var rci: TVXRenderContextInfo);
 begin
   if FNoZWrite then
-    rci.VKStates.Disable(stDepthTest)
+    rci.VXStates.Disable(stDepthTest)
   else
-    rci.VKStates.Enable(stDepthTest);
+    rci.VXStates.Enable(stDepthTest);
   inherited;
 end;
 
@@ -658,9 +658,9 @@ end;
 procedure TVXGizmoExUIDisk.BuildList(var rci: TVXRenderContextInfo);
 begin
   if FNoZWrite then
-    rci.VKStates.Disable(stDepthTest)
+    rci.VXStates.Disable(stDepthTest)
   else
-    rci.VKStates.Enable(stDepthTest);
+    rci.VXStates.Enable(stDepthTest);
   inherited;
 end;
 
@@ -673,9 +673,9 @@ end;
 procedure TVXGizmoExUISphere.BuildList(var rci: TVXRenderContextInfo);
 begin
   if FNoZWrite then
-    rci.VKStates.Disable(stDepthTest)
+    rci.VXStates.Disable(stDepthTest)
   else
-    rci.VKStates.Enable(stDepthTest);
+    rci.VXStates.Enable(stDepthTest);
   inherited;
 end;
 
@@ -688,9 +688,9 @@ end;
 procedure TVXGizmoExUIPolyGon.BuildList(var rci: TVXRenderContextInfo);
 begin
   if FNoZWrite then
-    rci.VKStates.Disable(stDepthTest)
+    rci.VXStates.Disable(stDepthTest)
   else
-    rci.VKStates.Enable(stDepthTest);
+    rci.VXStates.Enable(stDepthTest);
   inherited;
 end;
 
@@ -703,9 +703,9 @@ end;
 procedure TVXGizmoExUIFrustrum.BuildList(var rci: TVXRenderContextInfo);
 begin
   if FNoZWrite then
-    rci.VKStates.Disable(stDepthTest)
+    rci.VXStates.Disable(stDepthTest)
   else
-    rci.VKStates.Enable(stDepthTest);
+    rci.VXStates.Enable(stDepthTest);
   inherited;
 end;
 
@@ -718,9 +718,9 @@ end;
 procedure TVXGizmoExUITorus.BuildList(var rci: TVXRenderContextInfo);
 begin
   if FNoZWrite then
-    rci.VKStates.Disable(stDepthTest)
+    rci.VXStates.Disable(stDepthTest)
   else
-    rci.VKStates.Enable(stDepthTest);
+    rci.VXStates.Enable(stDepthTest);
   inherited;
 end;
 
@@ -733,9 +733,9 @@ end;
 procedure TVXGizmoExUILines.BuildList(var rci: TVXRenderContextInfo);
 begin
   if FNoZWrite then
-    rci.VKStates.Disable(stDepthTest)
+    rci.VXStates.Disable(stDepthTest)
   else
-    rci.VKStates.Enable(stDepthTest);
+    rci.VXStates.Enable(stDepthTest);
   inherited;
 end;
 
@@ -748,9 +748,9 @@ end;
 procedure TVXGizmoExUIFlatText.BuildList(var rci: TVXRenderContextInfo);
 begin
   if FNoZWrite then
-    rci.VKStates.Disable(stDepthTest)
+    rci.VXStates.Disable(stDepthTest)
   else
-    rci.VKStates.Enable(stDepthTest);
+    rci.VXStates.Enable(stDepthTest);
   inherited;
 end;
 
@@ -2185,36 +2185,36 @@ procedure TVXGizmoEx.InternalRender(Sender: TObject; var rci: TVXRenderContextIn
   begin
     if not Assigned(FLabelFont) and (Text = '') then
       Exit;
-    rci.VKStates.Enable(stDepthTest);
+    rci.VXStates.Enable(stDepthTest);
     FLayout := VXS.CrossPlatform.tlCenter;
     FAlignment := taCenter;
 
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix;
-    wm := rci.PipelineTransformation.ViewMatrix;
+    wm := rci.PipelineTransformation.ViewMatrix^;
 
     TransposeMatrix(wm);
 
     for I := 0 to 2 do
       for J := 0 to 2 do
         if I = J then
-          wm.V[I].V[J] := 1
+          wm.V[I].C[J] := 1
         else
-          wm.V[I].V[J] := 0;
+          wm.V[I].C[J] := 0;
     glLoadMatrixf(@wm);
 
-    rci.VKStates.PolygonMode := pmFill;
+    rci.VXStates.PolygonMode := pmFill;
     glScalef(Scale.X, Scale.Y, Scale.Z);
     glTranslatef(Position.X, Position.Y, Position.Z);
 
 
     if Color.W <> 1 then
     begin
-      rci.VKStates.Enable(stBlend);
-      rci.VKStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
+      rci.VXStates.Enable(stBlend);
+      rci.VXStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
     end;
-    rci.VKStates.Disable(stDepthTest);
-    rci.VKStates.Disable(stCullFace);
+    rci.VXStates.Disable(stDepthTest);
+    rci.VXStates.Disable(stCullFace);
 
     FLabelFont.RenderString(rci, Text, FAlignment, FLayout, Color);
     glPopMatrix;
@@ -2229,17 +2229,17 @@ begin
 
   if FShowBoundingBox and (FSelectedObjects.Count - 1 >= 0) then
   begin
-    rci.VKStates.Disable(stLighting);
+    rci.VXStates.Disable(stLighting);
     if FAntiAliasedLines then
-      rci.VKStates.Enable(stLineSmooth);
+      rci.VXStates.Enable(stLineSmooth);
 
     if (FGizmoThickness >= 0.5) and (FGizmoThickness <= 7) then
-      rci.VKStates.LineWidth := FGizmoThickness
+      rci.VXStates.LineWidth := FGizmoThickness
     else
-      rci.VKStates.LineWidth := 1;
+      rci.VXStates.LineWidth := 1;
 
     glColorMaterial(GL_FRONT, GL_EMISSION);
-    rci.VKStates.Enable(stColorMaterial);
+    rci.VXStates.Enable(stColorMaterial);
 
     glColor4fv(@FBoundingBoxColor.Color);
 
@@ -2247,7 +2247,7 @@ begin
       ShowBoundingBox(TVXBaseSceneObject(FSelectedObjects.Hit[I]));
 
   end;
-  rci.VKStates.Disable(stColorMaterial);
+  rci.VXStates.Disable(stColorMaterial);
 end;
 
 procedure TVXGizmoEx.SetReferenceCoordSystem(aValue: TVXGizmoExReferenceCoordinateSystem);
@@ -4282,7 +4282,7 @@ begin
   if not AssignAndRemoveObj then
   begin
     EffectedObject := AObject;
-    SetOldMatrix(AObject.Matrix);
+    SetOldMatrix(AObject.Matrix^);
     if AObject is TVXFreeForm then
       FOldAutoScaling := TVXFreeForm(AObject).AutoScaling.AsVector;
   end
@@ -4331,7 +4331,7 @@ begin
 
   if not FReturnObject then
   begin
-    FEffectedObject.Matrix := FOldMatrix;
+    FEffectedObject.SetMatrix(FOldMatrix);
     if FEffectedObject is TVXFreeForm then
       TVXFreeForm(FEffectedObject).AutoScaling.AsVector := FOldAutoScaling;
   end
@@ -4457,7 +4457,7 @@ end;
 function TVXGizmoExActionHistoryCollection.Add: TVXGizmoExActionHistoryItem;
 begin
   Result := nil;
-  //≈сли был использован ундо затираем предедущие записи
+  //If used undo then rewrite previous record
   if FItemIndex = Count - 1 then
   begin
     Result := TVXGizmoExActionHistoryItem(inherited Add);
@@ -4470,7 +4470,7 @@ begin
     Result := Items[FItemIndex];
     FItemIndex := FItemIndex + 1;
   end;
-  //—тираем элементы если количествой записей превышено потолка
+  // if number of record greater then maxcount then delete elements
   if Count - 1 > MaxCount then
   begin
     Delete(0);

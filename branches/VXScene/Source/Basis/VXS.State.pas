@@ -1,5 +1,5 @@
 //
-// VXScene Component Library, based on GLScene http://glscene.sourceforge.net 
+// VXScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
 {
    Tools for managing an application-side cache of OpenGL state.
@@ -36,7 +36,7 @@ uses
   VXS.TextureFormat;
 
 const
-  VKS_VERTEX_ATTR_NUM = 16;
+  VXS_VERTEX_ATTR_NUM = 16;
 
 type
 
@@ -68,7 +68,7 @@ type
     mpPATCHES
     );
 
-  TVXMeshPrimitives = set of TVXMeshPrimitive;
+  TVXMeshPrimitives = set of TVxMeshPrimitive;
 
 const
   cAllMeshPrimitive = [
@@ -376,7 +376,6 @@ type
 
     FOnLightsChanged: TOnLightsChanged;
   protected
-    
     // Vertex Array Data state
     procedure SetVertexArrayBinding(const Value: GLuint);
     function GetArrayBufferBinding: GLuint;
@@ -551,20 +550,16 @@ type
     function GetMaterialEmission(const aFace: TCullFaceMode): TVector;
     function GetMaterialShininess(const aFace: TCullFaceMode): Integer;
   public
-    
     constructor Create; virtual;
     destructor Destroy; override;
-
-    procedure PushAttrib(stateTypes: TVXStateTypes);
+    procedure PushAttrib(stateTypes: TVxStateTypes);
     procedure PopAttrib();
-
-    procedure Enable(const aState: TVXState);
-    procedure Disable(const aState: TVXState);
-    procedure PerformEnable(const aState: TVXState);
-    procedure PerformDisable(const aState: TVXState);
-
-    procedure SetVKState(const aState : TVXState); deprecated;
-    procedure UnSetVKState(const aState : TVXState); deprecated;
+    procedure Enable(const aState: TVxState);
+    procedure Disable(const aState: TVxState);
+    procedure PerformEnable(const aState: TVxState);
+    procedure PerformDisable(const aState: TVxState);
+    procedure SetVxState(const aState : TVxState); deprecated;
+    procedure UnSetVxState(const aState : TVxState); deprecated;
     procedure ResetPolygonMode; deprecated;
     procedure ResetMaterialColors; deprecated;
     procedure ResetTexture(const TextureUnit: Integer); deprecated;
@@ -572,12 +567,10 @@ type
     procedure ResetFrontFace; deprecated;
     procedure SetGLFrontFaceCW; deprecated;
     procedure ResetAll; deprecated;
-
     { Adjusts material colors for a face. }
     procedure SetMaterialColors(const aFace: TCullFaceMode;
       const emission, ambient, diffuse, specular: TVector;
       const shininess: Integer);
-
     property MaterialAmbient[const aFace: TCullFaceMode]: TVector
       read GetMaterialAmbient;
     property MaterialDiffuse[const aFace: TCullFaceMode]: TVector
@@ -588,13 +581,10 @@ type
       read GetMaterialEmission;
     property MaterialShininess[const aFace: TCullFaceMode]: Integer
       read GetMaterialShininess;
-
     { Adjusts material alpha channel for a face. }
     procedure SetMaterialAlphaChannel(const aFace: GLEnum; const alpha: GLfloat);
-
     { Adjusts material diffuse color for a face. }
     procedure SetMaterialDiffuseColor(const aFace: GLEnum; const diffuse: TVector);
-
     { Lighting states }
     property FixedFunctionPipeLight: Boolean read FFFPLight write SetFFPLight;
     property MaxLights: Integer read GetMaxLights;
@@ -624,10 +614,8 @@ type
     function GetLightStateAsAddress: Pointer;
     property LightNumber: Integer read FLightNumber;
     property OnLightsChanged: TOnLightsChanged read FOnLightsChanged write FOnLightsChanged;
-
     { Blending states }
     procedure SetAlphaFunction(func: TComparisonFunction; ref: Single);
-
     // Vertex Array Data state
     { The currently bound array buffer (calling glVertexAttribPointer
        locks this buffer to the currently bound VBO). }
@@ -648,7 +636,6 @@ type
     { The currently bound texture buffer object (TBO). }
     property TextureBufferBinding: GLuint read FTextureBufferBinding write
       SetTextureBufferBinding;
-
     // Transformation state
     { The viewport. }
     property ViewPort: TVector4i read FViewPort write SetViewPort;
@@ -666,7 +653,6 @@ type
     { Enables/Disables depth clamping. }
     property EnableDepthClamp: GLboolean read FEnableDepthClamp write
       SetEnableDepthClamp;
-
     // Coloring state
     { Controls read color clamping. }
     property ClampReadColor: GLEnum read FClampReadColor write
@@ -675,7 +661,6 @@ type
        primitive will the same value determined by this property. }
     property ProvokingVertex: GLEnum read FProvokingVertex write
       SetProvokingVertex;
-
     // Rasterization state
     { The default point size, used when EnableProgramPointSize = false. }
     property PointSize: GLfloat read FPointSize write SetPointSize;
@@ -728,7 +713,6 @@ type
     { Enable/Disable polygon offset for polygons in fill mode. }
     property EnablePolygonOffsetFill: GLboolean read FEnablePolygonOffsetFill
       write SetEnablePolygonOffsetFill;
-
     // Multisample state
     { Enable/Disable multisampling. }
     property EnableMultisample: GLboolean read FEnableMultisample write
@@ -756,7 +740,6 @@ type
     { Sample mask values. }
     property SampleMaskValue[Index: Integer]: GLbitfield read GetSampleMaskValue
     write SetSampleMaskValue;
-
     // Textures
     { Textures bound to each texture unit + binding point. }
     property TextureBinding[Index: Integer; target: TVXTextureTarget]: GLuint
@@ -775,11 +758,9 @@ type
     property MaxTextureAnisotropy: GLuint read GetMaxTextureAnisotropy;
     property MaxSamples: GLuint read GetMaxSamples;
     // TODO: GL_TEXTURE_BUFFER_DATA_STORE_BINDING ?
-
     // Active texture
     { The active texture unit.  Valid values are 0 .. Max texture units. }
     property ActiveTexture: GLint read FActiveTexture write SetActiveTexture;
-
     // Pixel operations
     { Enables/Disables scissor test. }
     property EnableScissorTest: GLboolean read FEnableScissorTest write
@@ -793,8 +774,7 @@ type
        when comparing the reference + stored stencil values.  }
     property StencilFunc: TStencilFunction read FStencilFunc;
     // write SetStencilFunc;
-  { The stencil value mask.  Masks both the reference + stored stencil
-     values. }
+  { The stencil value mask.  Masks both the reference + stored stencil values. }
     property StencilValueMask: GLuint read FStencilValueMask;
     // write SetStencilValueMask;
   { The stencil reference value.  Clamped to 0..255 with an 8 bit stencil. }
@@ -907,7 +887,6 @@ type
       SetEnableColorLogicOp;
     { Logic op mode. }
     property LogicOpMode: TLogicOp read FLogicOpMode write SetLogicOpMode;
-
     // Framebuffer control
     { The color write mask, for each draw buffer. }
     property ColorWriteMask[Index: Integer]: TColorMask read GetColorWriteMask
@@ -932,22 +911,17 @@ type
     { The stencil clear value. }
     property StencilClearValue: GLuint read FStencilClearValue write
       SetStencilClearValue;
-
     // Framebuffer
     { Framebuffer to be used for draw operations, 0 = default framebuffer. }
     property DrawFrameBuffer: GLuint read FDrawFrameBuffer write
       SetDrawFrameBuffer;
     { Framebuffer to be used for read operations, 0 = default framebuffer. }
-    property ReadFrameBuffer: GLuint read FReadFrameBuffer write
-      SetReadFrameBuffer;
+    property ReadFrameBuffer: GLuint read FReadFrameBuffer write SetReadFrameBuffer;
     { set both draw + read framebuffer. }
     procedure SetFrameBuffer(const Value: GLuint);
     //property FrameBuffer: GLuint read FDrawFrameBuffer write SetFrameBuffer;
-
-    // Renderbuffer
     { Currently bound render buffer. }
     property RenderBuffer: GLuint read FRenderBuffer write SetRenderBuffer;
-
     // Pixels
     { Controls whether byte swapping occurs during pixel unpacking. }
     property UnpackSwapBytes: GLboolean read FUnpackSwapBytes write
@@ -997,36 +971,28 @@ type
     property PixelPackBufferBinding: GLuint read FPixelPackBufferBinding
       write SetPixelPackBufferBinding;
     { Buffer bound for pixel unpacking (eg. Tex*Image). }
-    property PixelUnpackBufferBinding: GLuint read FPixelUnpackBufferBinding
-      write SetPixelUnpackBufferBinding;
-
+    property PixelUnpackBufferBinding: GLuint read FPixelUnpackBufferBinding write SetPixelUnpackBufferBinding;
     // Program
     { Currently bound program. }
-    property CurrentProgram: GLuint read FCurrentProgram write
-      SetCurrentProgram;
+    property CurrentProgram: GLuint read FCurrentProgram write SetCurrentProgram;
     property MaxTextureUnits: GLuint read GetMaxTextureUnits;
     { Currently bound uniform buffer. }
-    property UniformBufferBinding: GLuint read FUniformBufferBinding
-      write SetUniformBufferBinding;
+    property UniformBufferBinding: GLuint read FUniformBufferBinding write SetUniformBufferBinding;
 
     procedure SetBufferIndexedBinding(const Value: GLuint; ATarget: TVXBufferBindingTarget; AIndex: GLuint; ABufferSize: GLsizeiptr); overload;
     procedure SetBufferIndexedBinding(const Value: GLuint; ATarget: TVXBufferBindingTarget; AIndex: GLuint; AOffset: GLintptr; ARangeSize: GLsizeiptr); overload;
-
     // Vector + Geometry Shader state
-    { Default values to be used when a vertex array is not used for that
-       attribute. }
+    { Default values to be used when a vertex array is not used for that  attribute. }
     property CurrentVertexAttrib[Index: Integer]: TVector
     read GetCurrentVertexAttrib write SetCurrentVertexAttrib;
     { Enables/disables program point size. }
     property EnableProgramPointSize: GLboolean read FEnableProgramPointSize
       write SetEnableProgramPointSize;
-
     // Transform Feedback state
     { Currently bound transform feedbac buffer. }
     property TransformFeedbackBufferBinding: GLuint
       read FTransformFeedbackBufferBinding write
       SetTransformFeedbackBufferBinding;
-
     // Hints
     { Line smooth hint. }
     property LineSmoothHint: THintType read FLineSmoothHint write
@@ -1042,7 +1008,6 @@ type
       read FFragmentShaderDerivitiveHint write SetFragmentShaderDerivitiveHint;
     property MultisampleFilterHint: THintType read FMultisampleFilterHint
       write SetMultisampleFilterHint;
-
     // Misc
     { Current queries. }
     property CurrentQuery[Index: TQueryType]: GLuint read GetCurrentQuery;
@@ -1071,26 +1036,20 @@ type
     procedure EndList;
     { Call display list. }
     procedure CallList(list: GLuint);
-
     { Defines the OpenVX texture matrix.
        Assumed texture mode is GL_MODELVIEW. }
     procedure SetTextureMatrix(const matrix: TMatrix);
     procedure ResetTextureMatrix;
     procedure ResetAllTextureMatrix;
-
     // note: needs to change to per draw-buffer
     procedure SetColorWriting(flag: Boolean);
-
     { Inverts front face winding (CCW/CW). }
     procedure InvertFrontFace;
-
     // read only properties
     property States: TVXStates read FStates;
-
     { True for ignore deprecated and removed features in OpenVX 3x }
     property ForwardContext: Boolean read FForwardContext
       write SetForwardContext;
-
   end;
 
 type
@@ -1186,16 +1145,13 @@ const
 
   cGLBufferBindingTarget: array[TVXBufferBindingTarget] of GLEnum =
     (GL_UNIFORM_BUFFER, GL_TRANSFORM_FEEDBACK_BUFFER);
-  //------------------------------------------------------
-  //------------------------------------------------------
-  //------------------------------------------------------
+
+//------------------------------------------------------
 implementation
-//------------------------------------------------------
-//------------------------------------------------------
 //------------------------------------------------------
 
 uses
-  VXS.Context, 
+  VXS.Context,
   VXS.Color;
 
   // ------------------
@@ -3590,10 +3546,7 @@ begin
 end;
 
 
-// SetVKColorIgnoring
-//
-
-procedure TVXStateCache.SetColorWriting(flag: Boolean);
+procedure TVxStateCache.SetColorWriting(flag: Boolean);
 begin
   if (FColorWriting <> flag) or FInsideList then
   begin
@@ -3605,10 +3558,7 @@ begin
   end;
 end;
 
-// InvertVKFrontFace
-//
-
-procedure TVXStateCache.InvertFrontFace;
+procedure TVxStateCache.InvertFrontFace;
 begin
   if FFrontFace = fwCounterClockWise then
     FrontFace := fwClockWise
@@ -3616,34 +3566,24 @@ begin
     FrontFace := fwCounterClockWise;
 end;
 
-// SetGLState
-//
-procedure TVXStateCache.SetVKState(const aState : TVXState);
+procedure TVxStateCache.SetVxState(const aState : TVxState);
 begin
 	Enable(aState);
 end;
 
-// UnSetGLState
-//
-procedure TVXStateCache.UnSetVKState(const aState : TVXState);
+procedure TVxStateCache.UnSetVxState(const aState : TVxState);
 begin
 	Disable(aState);
 end;
 
-// ResetVKPolygonMode
-//
-
-procedure TVXStateCache.ResetPolygonMode;
+procedure TVxStateCache.ResetPolygonMode;
 begin
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
   FPolygonMode := pmFill;
   FPolygonBackMode := pmFill;
 end;
 
-// ResetVKMaterialColors
-//
-
-procedure TVXStateCache.ResetMaterialColors;
+procedure TVxStateCache.ResetMaterialColors;
 begin
   glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, @clrGray20);
   glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, @clrGray80);
@@ -3655,16 +3595,13 @@ begin
   FFrontBackShininess[1] := 0;
 end;
 
-// ResetVKTexture
-//
-
-procedure TVXStateCache.ResetTexture(const TextureUnit: Integer);
+procedure TVxStateCache.ResetTexture(const TextureUnit: Integer);
 var
-  t: TVXTextureTarget;
+  t: TVxTextureTarget;
   glTarget: GLEnum;
 begin
   glActiveTexture(GL_TEXTURE0 + TextureUnit);
-  for t := Low(TVXTextureTarget) to High(TVXTextureTarget) do
+  for t := Low(TVXTextureTarget) to High(TVxTextureTarget) do
   begin
     glTarget := DecodeTextureTarget(t);
     if IsTargetSupported(glTarget) then
@@ -3677,19 +3614,16 @@ begin
   FActiveTexture := 0;
 end;
 
-// ResetVKCurrentTexture
-//
-
-procedure TVXStateCache.ResetCurrentTexture;
+procedure TVxStateCache.ResetCurrentTexture;
 var
   a: GLint;
-  t: TVXTextureTarget;
+  t: TVxTextureTarget;
   glTarget: GLEnum;
 begin
   for a := MaxTextureImageUnits - 1 to 0 do
   begin
     glActiveTexture(GL_TEXTURE0 + a);
-    for t := Low(TVXTextureTarget) to High(TVXTextureTarget) do
+    for t := Low(TVXTextureTarget) to High(TVxTextureTarget) do
     begin
       glTarget := DecodeTextureTarget(t);
       if IsTargetSupported(glTarget) then
@@ -3701,17 +3635,14 @@ begin
   end;
 end;
 
-// ResetVKFrontFace
-//
-
-procedure TVXStateCache.ResetFrontFace;
+procedure TVxStateCache.ResetFrontFace;
 begin
   glFrontFace(GL_CCW);
   FFrontFace := fwCounterClockWise;
 end;
 
 
-procedure TVXStateCache.SetGLFrontFaceCW;
+procedure TVxStateCache.SetGLFrontFaceCW;
 begin
   if FFrontFace = fwCounterClockWise then
   begin
@@ -3720,10 +3651,7 @@ begin
   end;
 end;
 
-// ResetAll
-//
-
-procedure TVXStateCache.ResetAll;
+procedure TVxStateCache.ResetAll;
 begin
   ResetPolygonMode;
   ResetMaterialColors;

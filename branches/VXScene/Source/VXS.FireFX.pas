@@ -1,8 +1,8 @@
 //
-// VXScene Component Library, based on GLScene http://glscene.sourceforge.net 
+// VXScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
 {
- Fire special effect 
+ Fire special effect
 }
 
 unit VXS.FireFX;
@@ -12,12 +12,25 @@ interface
 {$I VXScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
+  System.Classes,
+  System.SysUtils,
 
-  VXS.Scene, VXS.XCollection, VXS.VectorGeometry,
-  Winapi.OpenGL, Winapi.OpenGLext,  VXS.Context, VXS.VectorLists, VXS.VectorTypes,
-  VXS.Cadencer, VXS.Color, VXS.BaseClasses, VXS.Coordinates,
-  VXS.Manager, VXS.RenderContextInfo, VXS.State, VXS.TextureFormat;
+  VXS.Scene,
+  VXS.XCollection,
+  VXS.VectorGeometry,
+  VXS.Context,
+  VXS.VectorLists,
+  VXS.VectorTypes,
+  VXS.Cadencer,
+  VXS.Color,
+  VXS.BaseClasses,
+  VXS.Coordinates,
+  VXS.Manager,
+  VXS.RenderContextInfo,
+  VXS.State,
+  VXS.TextureFormat;
 
 type
 
@@ -33,14 +46,11 @@ type
 
   TVXBFireFX = class;
 
-  // TVXFireFXManager
-  //
-    { Fire special effect manager. 
-       Defines the looks and behaviour of a particle system that can be made
-       to look fire-like. }
+  { Fire special effect manager.
+    Defines the looks and behaviour of a particle system that can be made
+    to look fire-like. }
   TVXFireFXManager = class(TVXCadenceAbleComponent)
   private
-    
     FClients: TList;
     FFireParticles: PFireParticleArray;
     FFireDir, FInitialDir: TVXCoordinates;
@@ -54,13 +64,10 @@ type
     FDisabled, FPaused, FUseInterval: Boolean;
     FReference: TVXBaseSceneObject;
     FNoZWrite: Boolean;
-
   protected
-    
     procedure RegisterClient(aClient: TVXBFireFX);
     procedure DeRegisterClient(aClient: TVXBFireFX);
     procedure DeRegisterAllClients;
-
     procedure SetFireDir(const val: TVXCoordinates);
     procedure SetInitialDir(const val: TVXCoordinates);
     procedure SetCadencer(const val: TVXCadencer);
@@ -69,42 +76,32 @@ type
     procedure SetOuterColor(const val: TVXcolor);
     procedure SetReference(const val: TVXBaseSceneObject);
     procedure SetMaxParticles(const val: Integer);
-
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
-
     procedure CalcFire(deltaTime: Double; ParticleInterval, ParticleLife: Single;
       FireAlpha: Single);
     procedure AffParticle3d(Color2: TColorVector; const mat: TMatrix);
-
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
     { Reinitializes the fire. }
     procedure FireInit;
-
-    { Spawns a large quantity of particles to simulate an isotropic explosion. 
+    { Spawns a large quantity of particles to simulate an isotropic explosion.
        This method generates an isotropic explosion, i.e. there is no
        privilegied direction in the initial vector. }
     procedure IsotropicExplosion(minInitialSpeed, maxInitialSpeed, lifeBoostFactor: Single;
       nbParticles: Integer = -1);
-    { Spawns a large quantity of particles to simulate a ring explosion. 
+    { Spawns a large quantity of particles to simulate a ring explosion.
        This method generates a ring explosion. The plane of the ring is described
        by ringVectorX/Y, which should be of unit length (but you may not
        make them of unit length if you want "elliptic" rings). }
     procedure RingExplosion(minInitialSpeed, maxInitialSpeed, lifeBoostFactor: Single;
       const ringVectorX, ringVectorY: TAffineVector;
       nbParticles: Integer = -1);
-
     { Current Nb of particles. }
     property ParticleCount: Integer read NP;
-
     procedure DoProgress(const progressTime: TProgressTimes); override;
-
   published
-    
-          { Adjusts the acceleration direction (abs coordinates). }
+    { Adjusts the acceleration direction (abs coordinates). }
     property FireDir: TVXCoordinates read FFireDir write SetFireDir;
     { Adjusts the initial direction (abs coordinates). }
     property InitialDir: TVXCoordinates read FInitialDir write SetInitialDir;
@@ -120,7 +117,7 @@ type
     property OuterColor: TVXcolor read FOuterColor write SetOuterColor; // default clrWhite;
     property FireDensity: Single read FFireDensity write FFireDensity;
     property FireEvaporation: Single read FFireEvaporation write FFireEvaporation;
-    { Adjust a crown (circular) radius on which particles are spawned. 
+    { Adjust a crown (circular) radius on which particles are spawned.
        With a value of zero, the particles are spawned in the FireRadius
        cube around the origin, with a non zero value, they appear in
        a torus of major radius FireCrown, and minor radius FireRadius*1.73. }
@@ -130,84 +127,63 @@ type
     property FireBurst: Single read FFireBurst write FFireBurst;
     { Adjusts the random birth radius for particles (actually a birth cube). }
     property FireRadius: Single read FFireRadius write FFireRadius;
-    { If true, no new particles are spawn. 
+    { If true, no new particles are spawn.
        But current ones continue to live and die. }
     property Disabled: Boolean read FDisabled write FDisabled;
     { When paused, the fire animation is freezed. }
     property Paused: Boolean read FPaused write FPaused;
-    { Interval between particles births (in sec). 
+    { Interval between particles births (in sec).
        The interval may not be honoured if MawParticles is reached. }
     property ParticleInterval: Single read FParticleInterval write FParticleInterval;
-    { Enable/disable use of ParticleInterval. 
+    { Enable/disable use of ParticleInterval.
        If true ParticleInterval is used, if False, the system will attempt
        to maintain a particle count of MaxParticles, by spawning new
        particles to replace the dead ones ASAP. }
     property UseInterval: Boolean read FUseInterval write FUseInterval;
     { Particle's render won't write to Z-Buffer }
     property NoZWrite: Boolean read FNoZWrite write FNoZWrite default True;
-
-    { Specifies an optional object whose position to use as reference. 
+    { Specifies an optional object whose position to use as reference.
        This property allows switching between static/shared fires (for
-       fireplaces or static torches) and dynamic fire trails. 
+       fireplaces or static torches) and dynamic fire trails.
        The absolute position of the reference object is 'central' spawning
        point for new particles, usually, the object will be the one and only
        one on which the effect is applied. }
     property Reference: TVXBaseSceneObject read FReference write SetReference;
   end;
 
-  // TVXBFireFX
-//
-{ Fire special effect. 
+{ Fire special effect.
      This effect works as a client of TFireFXManager }
   TVXBFireFX = class(TVXObjectPostEffect)
   private
-    
     FManager: TVXFireFXManager;
     FManagerName: string; // NOT persistent, temporarily used for persistence
-
   protected
-    
     procedure SetManager(const val: TVXFireFXManager);
-
     procedure WriteToFiler(writer: TWriter); override;
     procedure ReadFromFiler(reader: TReader); override;
     procedure Loaded; override;
-
   public
-    
     constructor Create(aOwner: TVXXCollection); override;
     destructor Destroy; override;
-
     procedure Assign(Source: TPersistent); override;
-
     class function FriendlyName: string; override;
     class function FriendlyDescription: string; override;
-
     procedure Render(var rci: TVXRenderContextInfo); override;
-
   published
-    
-          { Refers the collision manager. }
+   { Refers the collision manager. }
     property Manager: TVXFireFXManager read FManager write SetManager;
   end;
 
-  { Returns or creates the TVXBFireFX within the given behaviours. 
+  { Returns or creates the TVXBFireFX within the given behaviours.
    This helper function is convenient way to access a TVXBFireFX. }
 function GetOrCreateFireFX(effects: TVXObjectEffects): TVXBFireFX; overload;
-{ Returns or creates the TVXBFireFX within the given object's behaviours. 
+{ Returns or creates the TVXBFireFX within the given object's behaviours.
  This helper function is convenient way to access a TVXBFireFX. }
 function GetOrCreateFireFX(obj: TVXBaseSceneObject): TVXBFireFX; overload;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-
-// GetOrCreateFireFX (TVXObjectEffects)
-//
 
 function GetOrCreateFireFX(effects: TVXObjectEffects): TVXBFireFX;
 var
@@ -220,9 +196,6 @@ begin
     Result := TVXBFireFX.Create(effects);
 end;
 
-// GetOrCreateFireFX (TVXBaseSceneObject)
-//
-
 function GetOrCreateFireFX(obj: TVXBaseSceneObject): TVXBFireFX;
 begin
   Result := GetOrCreateFireFX(obj.Effects);
@@ -231,9 +204,6 @@ end;
 // ------------------
 // ------------------ TVXFireFXManager ------------------
 // ------------------
-
-// Create
-//
 
 constructor TVXFireFXManager.Create(AOwner: TComponent);
 begin
@@ -263,9 +233,6 @@ begin
   FireInit;
 end;
 
-// Destroy
-//
-
 destructor TVXFireFXManager.Destroy;
 begin
   DeRegisterAllClients;
@@ -279,9 +246,6 @@ begin
   inherited Destroy;
 end;
 
-// RegisterClient
-//
-
 procedure TVXFireFXManager.RegisterClient(aClient: TVXBFireFX);
 begin
   if Assigned(aClient) then
@@ -292,9 +256,6 @@ begin
     end;
 end;
 
-// DeRegisterClient
-//
-
 procedure TVXFireFXManager.DeRegisterClient(aClient: TVXBFireFX);
 begin
   if Assigned(aClient) then
@@ -303,9 +264,6 @@ begin
     FClients.Remove(aClient);
   end;
 end;
-
-// DeRegisterAllClients
-//
 
 procedure TVXFireFXManager.DeRegisterAllClients;
 var
@@ -317,24 +275,15 @@ begin
   FClients.Clear;
 end;
 
-// SetFireDir
-//
-
 procedure TVXFireFXManager.SetFireDir(const val: TVXCoordinates);
 begin
   FFireDir.Assign(val);
 end;
 
-// SetInitialDir
-//
-
 procedure TVXFireFXManager.SetInitialDir(const val: TVXCoordinates);
 begin
   FInitialDir.Assign(val);
 end;
-
-// SetCadencer
-//
 
 procedure TVXFireFXManager.SetCadencer(const val: TVXCadencer);
 begin
@@ -348,16 +297,10 @@ begin
   end;
 end;
 
-// StoreParticleSize
-//
-
 function TVXFireFXManager.StoreParticleSize: Boolean;
 begin
   Result := (FParticleSize <> 1);
 end;
-
-// SetInnerColor
-//
 
 procedure TVXFireFXManager.SetInnerColor(const val: TVXcolor);
 begin
@@ -368,9 +311,6 @@ begin
   end;
 end;
 
-// SetOuterColor
-//
-
 procedure TVXFireFXManager.SetOuterColor(const val: TVXcolor);
 begin
   if FOuterColor <> val then
@@ -380,17 +320,11 @@ begin
   end;
 end;
 
-// SetReference
-//
-
 procedure TVXFireFXManager.SetReference(const val: TVXBaseSceneObject);
 begin
   // nothing more yet, maybe later
   FReference := val;
 end;
-
-// SetMaxParticles
-//
 
 procedure TVXFireFXManager.SetMaxParticles(const val: Integer);
 begin
@@ -406,9 +340,6 @@ begin
   end;
 end;
 
-// Notification
-//
-
 procedure TVXFireFXManager.Notification(AComponent: TComponent; Operation: TOperation);
 begin
   if Operation = opRemove then
@@ -420,9 +351,6 @@ begin
   end;
   inherited;
 end;
-
-// DoProgress
-//
 
 procedure TVXFireFXManager.DoProgress(const progressTime: TProgressTimes);
 var
@@ -438,18 +366,12 @@ begin
     TVXBFireFX(FClients[i]).OwnerBaseSceneObject.NotifyChange(TVXBFireFX(FClients[i]));
 end;
 
-// FireInit
-//
-
 procedure TVXFireFXManager.FireInit;
 begin
   IntervalDelta := 0;
   NP := 0;
   ReallocMem(FFireParticles, FMaxParticles * Sizeof(TFireParticle));
 end;
-
-// IsotropicExplosion
-//
 
 procedure TVXFireFXManager.IsotropicExplosion(minInitialSpeed, maxInitialSpeed, lifeBoostFactor: Single;
   nbParticles: Integer = -1);
@@ -483,9 +405,6 @@ begin
     Dec(n);
   end;
 end;
-
-// RingExplosion
-//
 
 procedure TVXFireFXManager.RingExplosion(minInitialSpeed, maxInitialSpeed, lifeBoostFactor: Single;
   const ringVectorX, ringVectorY: TAffineVector;
@@ -524,9 +443,6 @@ begin
     Dec(n);
   end;
 end;
-
-// CalcFire
-//
 
 procedure TVXFireFXManager.CalcFire(deltaTime: Double;
   particleInterval, particleLife: Single; fireAlpha: Single);
@@ -592,9 +508,6 @@ begin
   end;
 end;
 
-// AffParticle3d
-//
-
 procedure TVXFireFXManager.AffParticle3d(Color2: TColorVector; const mat: TMatrix);
 var
   vx, vy: TVector;
@@ -633,16 +546,10 @@ end;
 // ------------------ TVXBFireFX ------------------
 // ------------------
 
-// Create
-//
-
 constructor TVXBFireFX.Create(aOwner: TVXXCollection);
 begin
   inherited Create(aOwner);
 end;
-
-// Destroy
-//
 
 destructor TVXBFireFX.Destroy;
 begin
@@ -650,24 +557,15 @@ begin
   inherited Destroy;
 end;
 
-// FriendlyName
-//
-
 class function TVXBFireFX.FriendlyName: string;
 begin
   Result := 'FireFX';
 end;
 
-// FriendlyDescription
-//
-
 class function TVXBFireFX.FriendlyDescription: string;
 begin
   Result := 'Fire FX';
 end;
-
-// WriteToFiler
-//
 
 procedure TVXBFireFX.WriteToFiler(writer: TWriter);
 begin
@@ -682,9 +580,6 @@ begin
       WriteString('');
   end;
 end;
-
-// ReadFromFiler
-//
 
 procedure TVXBFireFX.ReadFromFiler(reader: TReader);
 var
@@ -701,9 +596,6 @@ begin
   end;
 end;
 
-// Loaded
-//
-
 procedure TVXBFireFX.Loaded;
 var
   mng: TComponent;
@@ -718,9 +610,6 @@ begin
   end;
 end;
 
-// Assign
-//
-
 procedure TVXBFireFX.Assign(Source: TPersistent);
 begin
   if Source is TVXBFireFX then
@@ -729,9 +618,6 @@ begin
   end;
   inherited Assign(Source);
 end;
-
-// SetManager
-//
 
 procedure TVXBFireFX.SetManager(const val: TVXFireFXManager);
 begin
@@ -743,9 +629,6 @@ begin
       val.RegisterClient(Self);
   end;
 end;
-
-// Render
-//
 
 procedure TVXBFireFX.Render(var rci: TVXRenderContextInfo);
 var
@@ -763,18 +646,18 @@ begin
   rci.PipelineTransformation.Push;
   // revert to the base model matrix in the case of a referenced fire
   if Assigned(Manager.Reference) then
-    rci.PipelineTransformation.ModelMatrix := IdentityHmgMatrix;
+    rci.PipelineTransformation.SetModelMatrix(IdentityHmgMatrix);
 
-  rci.VKStates.CurrentProgram := 0;
-  rci.VKStates.Disable(stCullFace);
-  rci.VKStates.ActiveTextureEnabled[ttTexture2D] := False;
-  rci.VKStates.Disable(stLighting);
-  rci.VKStates.SetBlendFunc(bfSrcAlpha, bfOne);
-  rci.VKStates.Enable(stBlend);
-  rci.VKStates.Disable(stAlphaTest);
-  rci.VKStates.Enable(stDepthTest);
-  rci.VKStates.DepthFunc := cfLEqual;
-  rci.VKStates.DepthWriteMask := not GLboolean(Manager.NoZWrite);
+  rci.VXStates.CurrentProgram := 0;
+  rci.VXStates.Disable(stCullFace);
+  rci.VXStates.ActiveTextureEnabled[ttTexture2D] := False;
+  rci.VXStates.Disable(stLighting);
+  rci.VXStates.SetBlendFunc(bfSrcAlpha, bfOne);
+  rci.VXStates.Enable(stBlend);
+  rci.VXStates.Disable(stAlphaTest);
+  rci.VXStates.Enable(stDepthTest);
+  rci.VXStates.DepthFunc := cfLEqual;
+  rci.VXStates.DepthWriteMask := not GLboolean(Manager.NoZWrite);
 
   n := Manager.NP;
 
@@ -801,7 +684,7 @@ begin
         SetVector(lastTr, fp^.Position);
         innerColor.W := fp^.Alpha * fp^.TimeToLive / Sqr(fp^.LifeLength);
         glColor4fv(@innerColor);
-        Manager.AffParticle3d(Manager.FOuterColor.Color, rci.PipelineTransformation.ViewMatrix);
+        Manager.AffParticle3d(Manager.FOuterColor.Color, rci.PipelineTransformation.ViewMatrix^);
       end;
 
     objList.Free;
@@ -812,12 +695,8 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
 
    // class registrations
   RegisterXCollectionItemClass(TVXBFireFX);

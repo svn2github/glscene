@@ -113,13 +113,13 @@ type
 
     { Duplicates Self and returns a copy. 
        Subclasses should override this method to duplicate their data. }
-    function CreateCopy(AOwner: TPersistent): TVXDataFile; dynamic;
+    function CreateCopy(AOwner: TPersistent): TVXDataFile; virtual;
 
-    procedure LoadFromFile(const fileName: string); dynamic;
-    procedure SaveToFile(const fileName: string); dynamic;
-    procedure LoadFromStream(stream: TStream); dynamic;
-    procedure SaveToStream(stream: TStream); dynamic;
-    procedure Initialize; dynamic;
+    procedure LoadFromFile(const fileName: string); virtual;
+    procedure SaveToFile(const fileName: string); virtual;
+    procedure LoadFromStream(stream: TStream); virtual;
+    procedure SaveToStream(stream: TStream); virtual;
+    procedure Initialize; virtual;
     { Optionnal resource name. 
        When using LoadFromFile/SaveToFile, the filename is placed in it,
        when using the Stream variants, the caller may place the resource

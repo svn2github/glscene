@@ -168,7 +168,7 @@ const
 
 // FillSmallInt
 //
-{$IFDEF VKS_ASM}
+{$IFDEF USE_ASM}
 procedure FillSmallInt(p : PSmallInt; count : Integer; v : SmallInt); register;
 // EAX contains p
 // EDX contains count

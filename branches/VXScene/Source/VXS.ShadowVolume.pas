@@ -18,10 +18,14 @@ interface
 uses
   Winapi.OpenGL,
   Winapi.OpenGLext,
+  System.SysUtils,
   System.Classes,
   
   VXS.OpenGLAdapter,
   VXS.Scene,
+  VXS.VectorLists,
+  VXS.State, 
+  VXS.VectorTypes,
   VXS.VectorGeometry,
   VXS.Context,
   VXS.Silhouette,
@@ -46,9 +50,7 @@ type
     
       svcDefault : Default behaviour
       svcAlways : Always generates caps
-      svcNever : Never generates caps
-    
-   }
+      svcNever : Never generates caps  }
   TVXShadowVolumeCapping = (svcDefault, svcAlways, svcNever);
 
   { Determines when a caster should actually produce a shadow;
@@ -59,56 +61,37 @@ type
      all have visible=true
     scmParentVisible : Caster produces shadow if parent has visible=true
     scmParentRecursivelyVisible : Caster casts shadow if ancestors up the hierarchy
-     all have visible=true, starting from the parent (ignoring own visible setting)
-    }
-
+     all have visible=true, starting from the parent (ignoring own visible setting) }
   TVXShadowCastingMode = (scmAlways, scmVisible, scmRecursivelyVisible,
     scmParentVisible, scmParentRecursivelyVisible);
 
-  // TVXShadowVolumeCaster
-  //
   { Specifies an individual shadow caster. 
      Can be a light or an opaque object. }
   TVXShadowVolumeCaster = class(TCollectionItem)
   private
-    
     FCaster: TVXBaseSceneObject;
     FEffectiveRadius: Single;
     FCapping: TVXShadowVolumeCapping;
     FCastingMode: TVXShadowCastingMode;
-
   protected
-    
     procedure SetCaster(const val: TVXBaseSceneObject);
     function GetGLShadowVolume: TVXShadowVolume;
-
     procedure RemoveNotification(aComponent: TComponent);
     function GetDisplayName: string; override;
-
   public
-    
     constructor Create(ACollection: TCollection); override;
     destructor Destroy; override;
-
     procedure Assign(Source: TPersistent); override;
-
-    { Shadow casting object. 
-       Can be an opaque object or a lightsource. }
+    { Shadow casting object.  Can be an opaque object or a lightsource. }
     property Caster: TVXBaseSceneObject read FCaster write SetCaster;
-
     property GLShadowVolume: TVXShadowVolume read GetGLShadowVolume;
-
   published
-    
-
-          { Radius beyond which the caster can be ignored. 
-             Zero (default value) means the caster can never be ignored. }
-    property EffectiveRadius: Single read FEffectiveRadius write
-      FEffectiveRadius;
+    { Radius beyond which the caster can be ignored. 
+      Zero (default value) means the caster can never be ignored. }
+    property EffectiveRadius: Single read FEffectiveRadius write  FEffectiveRadius;
     { Specifies if the shadow volume should be capped. 
        Capping helps solve shadowing artefacts, at the cost of performance. }
-    property Capping: TVXShadowVolumeCapping read FCapping write FCapping default
-      svcDefault;
+    property Capping: TVXShadowVolumeCapping read FCapping write FCapping default  svcDefault;
     { Determines when an object should cast a shadow or not. Typically, objects
     should only cast shadows when recursively visible. But if you're using
     dummy shadow casters which are less complex than their parent objects,
@@ -117,79 +100,48 @@ type
       FCastingMode default scmRecursivelyVisible;
   end;
 
-  // TVXShadowVolumeOccluder
-  //
   { Specifies an individual shadow casting occluder.  }
   TVXShadowVolumeOccluder = class(TVXShadowVolumeCaster)
   published
-    
     property Caster;
   end;
 
-  // TVXShadowVolumeLight
-  //
   { Specifies an individual shadow casting light.  }
   TVXShadowVolumeLight = class(TVXShadowVolumeCaster)
   private
-    
     FSilhouettes: TPersistentObjectList;
-
   protected
-    
     function GetLightSource: TVXLightSource;
     procedure SetLightSource(const ls: TVXLightSource);
-
-    function GetCachedSilhouette(AIndex: Integer): TVXSilhouette;
+    function GetCachedSilhouette(AIndex: Integer): TVXSilhouette; inline;
     procedure StoreCachedSilhouette(AIndex: Integer; ASil: TVXSilhouette);
-
     { Compute and setup scissor clipping rect for the light. 
        Returns true if a scissor rect was setup }
-    function SetupScissorRect(worldAABB: PAABB; var rci: TVXRenderContextInfo):
-      Boolean;
-
+    function SetupScissorRect(worldAABB: PAABB; var rci: TVXRenderContextInfo): Boolean;
   public
-    
     constructor Create(ACollection: TCollection); override;
     destructor Destroy; override;
-
     procedure FlushSilhouetteCache;
-
   published
-    
-          { Shadow casting lightsource.  }
-    property LightSource: TVXLightSource read GetLightSource write
-      SetLightSource;
-
+    { Shadow casting lightsource.  }
+    property LightSource: TVXLightSource read GetLightSource write SetLightSource;
   end;
 
-  // TVXShadowVolumeCasters
-  //
   { Collection of TVXShadowVolumeCaster. }
   TVXShadowVolumeCasters = class(TOwnedCollection)
-  private
-    
-
   protected
-    
     function GetItems(index: Integer): TVXShadowVolumeCaster;
     procedure RemoveNotification(aComponent: TComponent);
-
   public
-    
     function AddCaster(obj: TVXBaseSceneObject; effectiveRadius: Single = 0;
       CastingMode: TVXShadowCastingMode = scmRecursivelyVisible):
       TVXShadowVolumeCaster;
     procedure RemoveCaster(obj: TVXBaseSceneObject);
     function IndexOfCaster(obj: TVXBaseSceneObject): Integer;
-
-    property Items[index: Integer]: TVXShadowVolumeCaster read GetItems;
-    default;
+    property Items[index: Integer]: TVXShadowVolumeCaster read GetItems; default;
   end;
 
-  // TVXShadowVolumeOption
-  //
   { Shadow volume rendering options/optimizations. 
-      
       svoShowVolumes : make the shadow volumes visible
       svoDesignVisible : the shadow are visible at design-time
       svoCacheSilhouettes : cache shadow volume silhouettes, beneficial when
@@ -197,27 +149,20 @@ type
       svoScissorClips : use scissor clipping per light, beneficial when
         lights are attenuated and don't illuminate the whole scene
       svoWorldScissorClip : use scissor clipping for the world, beneficial
-        when shadow receivers don't cover the whole viewer surface
-       }
+        when shadow receivers don't cover the whole viewer surface  }
   TVXShadowVolumeOption = (svoShowVolumes, svoCacheSilhouettes, svoScissorClips,
     svoWorldScissorClip, svoDesignVisible);
   TVXShadowVolumeOptions = set of TVXShadowVolumeOption;
 
-  // TVXShadowVolumeMode
-  //
   { Shadow rendering modes. 
-      
       svmAccurate : will render the scene with ambient lighting only, then
         for each light will make a diffuse+specular pass
       svmDarkening : renders the scene with lighting on as usual, then darkens
         shadowed areas (i.e. inaccurate lighting, but will "shadow" objects
         that don't honour to diffuse or specular lighting)
-      svmOff : no shadowing will take place
-       }
+      svmOff : no shadowing will take place }
   TVXShadowVolumeMode = (svmAccurate, svmDarkening, svmOff);
 
-  // TVXShadowVolume
-  //
   { Simple shadow volumes. 
      Shadow receiving objects are the ShadowVolume's children, shadow casters
      (opaque objects or lights) must be explicitly specified in the Casters
@@ -231,7 +176,6 @@ type
       }
   TVXShadowVolume = class(TVXImmaterialSceneObject)
   private
-    
     FActive: Boolean;
     FRendering: Boolean;
     FLights: TVXShadowVolumeCasters;
@@ -240,43 +184,30 @@ type
     FOptions: TVXShadowVolumeOptions;
     FMode: TVXShadowVolumeMode;
     FDarkeningColor: TVXColor;
-
   protected
-    
-    procedure Notification(AComponent: TComponent; Operation: TOperation);
-      override;
-
+    procedure Notification(AComponent: TComponent; Operation: TOperation);  override;
     procedure SetActive(const val: Boolean);
     procedure SetLights(const val: TVXShadowVolumeCasters);
     procedure SetOccluders(const val: TVXShadowVolumeCasters);
     procedure SetOptions(const val: TVXShadowVolumeOptions);
     procedure SetMode(const val: TVXShadowVolumeMode);
     procedure SetDarkeningColor(const val: TVXColor);
-
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
     procedure DoRender(var ARci: TVXRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
-
     procedure Assign(Source: TPersistent); override;
-
     procedure FlushSilhouetteCache;
-
   published
-    
-          { Determines if shadow volume rendering is active. 
-             When set to false, children will be rendered without any shadowing
+    { Determines if shadow volume rendering is active. 
+      When set to false, children will be rendered without any shadowing
              or multipass lighting. }
     property Active: Boolean read FActive write SetActive default True;
     { Lights that cast shadow volumes. }
     property Lights: TVXShadowVolumeCasters read FLights write SetLights;
     { Occluders that cast shadow volumes. }
-    property Occluders: TVXShadowVolumeCasters read FOccluders write
-      SetOccluders;
-
+    property Occluders: TVXShadowVolumeCasters read FOccluders write SetOccluders;
     { Specifies if the shadow volume should be capped. 
        Capping helps solve shadowing artefacts, at the cost of performance. }
     property Capping: TVXShadowVolumeCapping read FCapping write FCapping default
@@ -285,26 +216,14 @@ type
     property Options: TVXShadowVolumeOptions read FOptions write SetOptions
       default [svoCacheSilhouettes, svoScissorClips];
     { Shadow rendering mode. }
-    property Mode: TVXShadowVolumeMode read FMode write SetMode default
-      svmAccurate;
+    property Mode: TVXShadowVolumeMode read FMode write SetMode default svmAccurate;
     { Darkening color used in svmDarkening mode. }
-    property DarkeningColor: TVXColor read FDarkeningColor write
-      SetDarkeningColor;
+    property DarkeningColor: TVXColor read FDarkeningColor write SetDarkeningColor;
   end;
 
-  //-------------------------------------------------------------
-  //-------------------------------------------------------------
-  //-------------------------------------------------------------
+//-------------------------------------------------------------
 implementation
 //-------------------------------------------------------------
-//-------------------------------------------------------------
-//-------------------------------------------------------------
-
-uses
-  System.SysUtils,
-  VXS.VectorLists,
-  VXS.State
-  , VXS.VectorTypes;
 
 // ------------------
 // ------------------ TVXShadowVolumeCaster ------------------
@@ -519,7 +438,7 @@ begin
   end;
 
   // Calculate the window-space bounds of the light's bounding box.
-  mvp := rci.PipelineTransformation.ViewProjectionMatrix;
+  mvp := rci.PipelineTransformation.ViewProjectionMatrix^;
 
   clipRect := AABBToClipRect(aabb, mvp, rci.viewPortSize.cx,
     rci.viewPortSize.cy);
@@ -541,9 +460,6 @@ end;
 // ------------------ TVXShadowVolumeCasters ------------------
 // ------------------
 
-// RemoveNotification
-//
-
 procedure TVXShadowVolumeCasters.RemoveNotification(aComponent: TComponent);
 var
   i: Integer;
@@ -552,16 +468,10 @@ begin
     Items[i].RemoveNotification(aComponent);
 end;
 
-// GetItems
-//
-
 function TVXShadowVolumeCasters.GetItems(index: Integer): TVXShadowVolumeCaster;
 begin
   Result := TVXShadowVolumeCaster(inherited Items[index]);
 end;
-
-// AddCaster
-//
 
 function TVXShadowVolumeCasters.AddCaster(obj: TVXBaseSceneObject;
   effectiveRadius: Single = 0;
@@ -578,9 +488,6 @@ begin
   result := newCaster;
 end;
 
-// RemoveCaster
-//
-
 procedure TVXShadowVolumeCasters.RemoveCaster(obj: TVXBaseSceneObject);
 var
   i: Integer;
@@ -589,9 +496,6 @@ begin
   if i >= 0 then
     Delete(i);
 end;
-
-// IndexOfCaster
-//
 
 function TVXShadowVolumeCasters.IndexOfCaster(obj: TVXBaseSceneObject): Integer;
 var
@@ -612,9 +516,6 @@ end;
 // ------------------ TVXShadowVolume ------------------
 // ------------------
 
-// Create
-//
-
 constructor TVXShadowVolume.Create(AOwner: Tcomponent);
 begin
   inherited Create(AOwner);
@@ -628,9 +529,6 @@ begin
   FDarkeningColor := TVXColor.CreateInitialized(Self, VectorMake(0, 0, 0, 0.5));
 end;
 
-// Destroy
-//
-
 destructor TVXShadowVolume.Destroy;
 begin
   inherited;
@@ -638,9 +536,6 @@ begin
   FLights.Free;
   FOccluders.Free;
 end;
-
-// Notification
-//
 
 procedure TVXShadowVolume.Notification(AComponent: TComponent; Operation:
   TOperation);
@@ -652,9 +547,6 @@ begin
   end;
   inherited;
 end;
-
-// Assign
-//
 
 procedure TVXShadowVolume.Assign(Source: TPersistent);
 begin
@@ -668,9 +560,6 @@ begin
   inherited Assign(Source);
 end;
 
-// FlushSilhouetteCache
-//
-
 procedure TVXShadowVolume.FlushSilhouetteCache;
 var
   i: Integer;
@@ -678,9 +567,6 @@ begin
   for i := 0 to Lights.Count - 1 do
     (Lights[i] as TVXShadowVolumeLight).FlushSilhouetteCache;
 end;
-
-// SetActive
-//
 
 procedure TVXShadowVolume.SetActive(const val: Boolean);
 begin
@@ -691,9 +577,6 @@ begin
   end;
 end;
 
-// SetLights
-//
-
 procedure TVXShadowVolume.SetLights(const val: TVXShadowVolumeCasters);
 begin
   Assert(val.ItemClass = TVXShadowVolumeLight);
@@ -701,18 +584,12 @@ begin
   StructureChanged;
 end;
 
-// SetOccluders
-//
-
 procedure TVXShadowVolume.SetOccluders(const val: TVXShadowVolumeCasters);
 begin
   Assert(val.ItemClass = TVXShadowVolumeOccluder);
   FOccluders.Assign(val);
   StructureChanged;
 end;
-
-// SetOptions
-//
 
 procedure TVXShadowVolume.SetOptions(const val: TVXShadowVolumeOptions);
 begin
@@ -725,9 +602,6 @@ begin
   end;
 end;
 
-// SetMode
-//
-
 procedure TVXShadowVolume.SetMode(const val: TVXShadowVolumeMode);
 begin
   if FMode <> val then
@@ -737,16 +611,10 @@ begin
   end;
 end;
 
-// SetDarkeningColor
-//
-
 procedure TVXShadowVolume.SetDarkeningColor(const val: TVXColor);
 begin
   FDarkeningColor.Assign(val);
 end;
-
-// DoRender
-//
 
 procedure TVXShadowVolume.DoRender(var ARci: TVXRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);
@@ -864,7 +732,7 @@ begin
     end;
 
     // render the shadow volumes
-    with ARci.VKStates do
+    with ARci.VxStates do
     begin
 
       if Mode = svmAccurate then
@@ -987,7 +855,7 @@ begin
           if Assigned(sil) then
             try
               // render the silhouette
-              ARci.PipelineTransformation.ModelMatrix := obj.AbsoluteMatrix;
+              ARci.PipelineTransformation.SetModelMatrix(obj.AbsoluteMatrix);
               glVertexPointer(4, GL_FLOAT, 0, sil.Vertices.List);
 
               if Boolean(PtrUInt(opaqueCapping[k])) then
@@ -1101,7 +969,6 @@ begin
 
           SetBlendFunc(bfSrcAlpha, bfOne);
         end;
-
         // disable light, but restore its ambient component
         LightEnabling[lightID] := False;
         LightAmbient[lightID] := lightSource.Ambient.Color;
@@ -1110,7 +977,7 @@ begin
 
       // restore OpenGL state
       glLightModelfv(GL_LIGHT_MODEL_AMBIENT, @ARci.sceneAmbientColor);
-      Scene.SetupLights(ARci.VKStates.MaxLights);
+      Scene.SetupLights(ARci.VXStates.MaxLights);
       Disable(stStencilTest);
       SetPolygonOffset(0, 0);
       ARci.ignoreBlendingRequests := False;
@@ -1124,13 +991,8 @@ begin
 end;
 
 //-------------------------------------------------------------
-//-------------------------------------------------------------
-//-------------------------------------------------------------
-
 initialization
-  //-------------------------------------------------------------
-  //-------------------------------------------------------------
-  //-------------------------------------------------------------
+//-------------------------------------------------------------
 
   RegisterClasses([TVXShadowVolume]);
 

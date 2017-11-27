@@ -1,5 +1,5 @@
 //
-// VXScene Component Library, based on GLScene http://glscene.sourceforge.net 
+// VXScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
 {
    Implements an HDS that automatically generates a terrain lightmap texture
@@ -25,33 +25,40 @@ unit VXS.ShadowHDS;
 interface
 
 uses
-  System.Classes, VXS.HeightData, VXS.Graphics, VXS.VectorGeometry, VXS.Texture,
-  VXS.VectorTypes, VXS.Coordinates, VXS.Material;
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
+  System.Classes,
+  System.SysUtils,
+  System.Math,
+
+  VXS.VectorLists,
+  VXS.HeightData,
+  VXS.Graphics,
+  VXS.VectorGeometry,
+  VXS.Texture,
+  VXS.VectorTypes,
+  VXS.Coordinates,
+  VXS.Material;
 
 type
    TVXShadowHDS = class;
-   TNewTilePreparedEvent = procedure (Sender : TVXShadowHDS; heightData : TVXHeightData;
-                                      ShadowMapMaterial : TVXLibMaterial) of object;
-   TThreadBmp32 = procedure (Sender : TVXShadowHDS; heightData : TVXHeightData; bmp32:TVXBitmap32) of object;
+   TNewTilePreparedEvent = procedure (Sender : TVXShadowHDS; 
+     heightData : TVXHeightData;  ShadowMapMaterial : TVXLibMaterial) of object;
+   TThreadBmp32 = procedure (Sender : TVXShadowHDS; heightData : TVXHeightData; 
+     bmp32:TVXBitmap32) of object;
 
-
-	// TVXShadowHDS
-	//
-   { An Height Data Source that generates terrain shadow maps automatically. 
+   { An Height Data Source that generates terrain shadow maps automatically.
       The HDS must be connected to another HDS, which will provide the elevation
       data, and to a MaterialLibrary where shadowmaps will be placed. }
 	 TVXShadowHDS = class (TVXHeightDataSourceFilter)
 	   private
-	      
          FTileSize:integer;
-
          FShadowmapLibrary : TVXMaterialLibrary;
          FLightVector : TVXCoordinates;
          FScale       : TVXCoordinates;
          FScaleVec     :TVector3f;
          FOnNewTilePrepared : TNewTilePreparedEvent;
          FOnThreadBmp32 : TThreadBmp32;
-
          //FSubSampling : Integer;
          FMaxTextures : integer;
          Step :TVector3f;
@@ -61,7 +68,6 @@ type
          FAmbient:single;
          OwnerHDS:TVXHeightDataSource; //The owner of the tile
 	   protected
-	      
          procedure SetShadowmapLibrary(const val : TVXMaterialLibrary);
          procedure SetScale(AValue: TVXCoordinates);
          procedure SetLightVector(AValue: TVXCoordinates);
@@ -69,42 +75,57 @@ type
          procedure SetDiffuse(AValue: Single);
          procedure SetAmbient(AValue: Single);
          //procedure SetSubSampling(const val : Integer);
-
          procedure Trim(MaxTextureCount:integer);
          function  FindUnusedMaterial:TVXLibMaterial;
          function  CalcStep:TAffineVector;
          function  CalcScale:TAffineVector;
+    { Get the number of steps, before the current tile's edge is reached,
+      in the direction of the step vector;}
          function  WrapDist(Lx,Ly:single):integer;
+    // Converts local tile coordinates to world coordinages. Even if the coordinates are off the tile.
          procedure LocalToWorld(Lx,Ly:single;HD:TVXHeightData;var Wx:single;var Wy:single);
+    // Takes World coordinates and returns the correct tile, and converted local coordinates
          procedure WorldToLocal(wx,wy:single;var HD:TVXHeightData;var lx:single; var ly:single);
-
 	   public
-	      
-         SkipGenerate:boolean;  //When true, only a blank ShadowMap is generated (FAST), but OnThreadBmp32 is still called in a subthread.
-	        constructor Create(AOwner: TComponent); override;
+         //When true, only a blank ShadowMap is generated (FAST), but OnThreadBmp32 is still called in a subthread.
+         SkipGenerate:boolean;  
+	     constructor Create(AOwner: TComponent); override;
          destructor  Destroy; override;
          //procedure   Release(aHeightData : TVXHeightData); override;
+    { This will repeatedly delete the oldest unused texture from the TGLMaterialLibrary,
+     until the texture count drops to MaxTextureCount.
+     DONT use this if you used TGLHeightData.MaterialName to link your terrain textures.
+     Either use with TGLHeightData.LibMaterial, or manually delete unused LightMap textures.}
          procedure   TrimTextureCache(MaxTextureCount:integer=0);
          procedure   Notification(AComponent: TComponent; Operation: TOperation); override;
-
+    // Prepare a blank texture for this tile's lightmap, from the main thread
          procedure   BeforePreparingData(heightData : TVXHeightData); override;
+    // Calculate the lightmap from the HD thread, using the attached blank texture
          procedure   PreparingData(heightData : TVXHeightData); override;
          procedure   AfterPreparingData(heightData : TVXHeightData); override;
-
          procedure   GenerateShadowMap(heightData:TVXHeightData; ShadowMap:TVXBitmap32; scale:Single);
+    { This traces a ray from a point on the terrain surface, back to the Lightsource,
+     while testing for any intersections with the terrain.
+     It returns the height of the shadow. There is no shadow if the shadow height is equal to terrain height.
+     This is slow, but only needs to be done for pixels along the tile edge, facing the light.}
          function    RayCastShadowHeight(HD:TVXHeightData;localX,localY:single):single;  overload;
          procedure   RayCastLine(HeightData:TVXHeightData;Lx,Ly:single;ShadowMap:TVXBitmap32);
+    { Calculate the pixel brightness, using Direct Diffuse light and Ambient light.
+     DirectLight  = 1 if in direct sunlight (no shadows)
+     0 if in shadow. (Use "SoftRange" for soft shadow edges i.e. 1>Directlight>0 )
+     AmbientLight = Relative to Angle between surface Normal and sky (Directly up)
+     ie. Vertical walls are darker because they see less sky.
+     DiffuseLight = Relative to Angle between surface Normal, and Sun vector.}
          function    Shade(HeightData:TVXHeightData;x,y:integer;ShadowHeight,TerrainHeight:single):byte;
 	   published
-
-	      
          property ShadowmapLibrary : TVXMaterialLibrary read FShadowmapLibrary write SetShadowmapLibrary;
          property OnThreadBmp32 : TThreadBmp32 read FOnThreadBmp32 write FOnThreadBmp32; //WARNING: This runs in a subthread
          property OnNewTilePrepared : TNewTilePreparedEvent read FOnNewTilePrepared write FOnNewTilePrepared;
          property LightVector : TVXCoordinates read FLightVector write SetLightVector;
          property Scale       : TVXCoordinates read FScale write FScale;
          property ScanDistance: integer read FScanDistance write FScanDistance;
-         property SoftRange   : cardinal read FSoftRange write SetSoftRange; //Shadow height above sufrace for max diffuse light
+         property SoftRange   : cardinal read FSoftRange write SetSoftRange; 
+		 //Shadow height above sufrace for max diffuse light
          property Diffuse     : single read FDiffuse write SetDiffuse;
          property Ambient     : single read FAmbient write SetAmbient;
          property MaxTextures : integer read FMaxTextures write FMaxTextures;
@@ -112,19 +133,9 @@ type
   end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 
-uses
-  System.SysUtils,
-  Winapi.OpenGL, Winapi.OpenGLext,  VXS.VectorLists;
-
-// Create
-//
 constructor TVXShadowHDS.Create(AOwner: TComponent);
 begin
  	inherited Create(AOwner);
@@ -141,8 +152,6 @@ begin
   SkipGenerate:=false; //Set to true in "OnSourceDataFetched" to skip shadow generation.
 end;
 
-// Destroy
-//
 destructor TVXShadowHDS.Destroy;
 begin
   self.Active:=false;
@@ -152,8 +161,6 @@ begin
  	inherited Destroy;
 end;
 
-// Notification
-//
 procedure TVXShadowHDS.Notification(AComponent: TComponent; Operation: TOperation);
 begin
    if Operation=opRemove then begin
@@ -162,8 +169,6 @@ begin
    inherited;
 end;
 
-// Release
-//
 {
 procedure TVXShadowHDS.Release(aHeightData : TVXHeightData);
 var libMat : TVXLibMaterial;
@@ -178,17 +183,13 @@ begin
 end;
 }
 
-// TrimTextureCache
-//
-// This will repeatedly delete the oldest unused texture from the TVXMaterialLibrary,
-// until the texture count drops to MaxTextureCount.
-// DONT use this if you used TVXHeightData.MaterialName to link your terrain textures.
-// Either use with TVXHeightData.LibMaterial, or manually delete unused LightMap textures.
-//
 procedure TVXShadowHDS.TrimTextureCache(MaxTextureCount:integer);  //Thread-safe Version
+// Thread-safe Version
 begin
-  If(not assigned(self))or(not assigned(OwnerHDS)) then exit;
-  with OwnerHDS.Data.LockList do try
+  If(not assigned(self))or(not assigned(OwnerHDS)) then 
+    exit;
+  with OwnerHDS.Data.LockList do 
+  try
     Trim(MaxTextureCount);
   finally
     OwnerHDS.Data.UnlockList;
@@ -196,21 +197,26 @@ begin
 end;
 
 procedure TVXShadowHDS.Trim(MaxTextureCount:integer); //internal use only
-var matLib: TVXMaterialLibrary;
-    libMat: TVXLibMaterial;
-    i:integer;
-    cnt:integer;
+var 
+  matLib: TVXMaterialLibrary;
+  libMat: TVXLibMaterial;
+  i:integer;
+  cnt:integer;
 begin
   matLib:=FShadowmapLibrary;
-  if matLib<>nil then begin
+  if matLib<>nil then 
+  begin
     //---------------------------------
     //--Trim unused textures, until MaxTextureCount is reached--
     cnt:=matlib.Materials.Count;
     i:=0;
-    while (i<cnt)and(cnt>=MaxTextureCount) do begin
+    while (i<cnt)and(cnt>=MaxTextureCount) do 
+	begin
       libMat:=matlib.Materials[i];
-      if libMat.IsUsed then inc(i)
-      else begin
+      if libMat.IsUsed then 
+	    inc(i)
+      else 
+	  begin
         libmat.Free;
         dec(cnt);  //cnt:=matlib.Materials.Count;
       end;
@@ -219,26 +225,24 @@ begin
   end;
 end;
 
-//FindUnusedMaterial
-//
-// Useful for recycling unused textures, instead of freeing and creating a new one.
 function TVXShadowHDS.FindUnusedMaterial:TVXLibMaterial;
-var matLib: TVXMaterialLibrary;
+var 
+  matLib: TVXMaterialLibrary;
     i:integer;
     cnt:integer;
 begin
   result:=nil;
   matLib:=FShadowmapLibrary;
-  if matLib<>nil then begin
+  if matLib<>nil then 
+  begin
     cnt:=matlib.Materials.Count;
     i:=0;
     while(i<cnt)and(matlib.Materials[i].IsUsed) do inc(i);
-    if (i<cnt) then result:=matlib.Materials[i];
+    if (i<cnt) then 
+	  result:=matlib.Materials[i];
   end;
 end;
 
-//  SetLightVector
-//
 procedure TVXShadowHDS.SetLightVector(AValue: TVXCoordinates);
 begin
   With OwnerHDS.Data.LockList do try
@@ -248,8 +252,6 @@ begin
   finally OwnerHDS.Data.UnlockList; end;
 end;
 
-// CalcStep
-//
 function TVXShadowHDS.CalcStep:TAffineVector;
 var L:single;
     v:TAffineVector;
@@ -269,8 +271,6 @@ begin
   result:=step;
 end;
 
-// CalcScale
-//
 function TVXShadowHDS.CalcScale:TAffineVector;
 begin
   FScaleVec.X:=FScale.X*256;
@@ -279,9 +279,6 @@ begin
   result:=FScaleVec;
 end;
 
-// BeforePreparingData
-// Prepare a blank texture for this tile's lightmap, from the main thread
-//
 procedure TVXShadowHDS.BeforePreparingData(heightData : TVXHeightData);
 var HD    : TVXHeightData;
     libMat: TVXLibMaterial;
@@ -307,8 +304,6 @@ begin
 end;
 
 
-// Calculate the lightmap from the HD thread, using the attached blank texture
-//
 procedure TVXShadowHDS.PreparingData(heightData : TVXHeightData);
 var HD    : TVXHeightData;
     libMat: TVXLibMaterial;
@@ -361,8 +356,6 @@ end;
 
 
 {
-//  PreparingData
-//
 procedure TVXShadowHDS.PreparingData(heightData : TVXHeightData);
 var HD    : TVXHeightData;
     libMat: TVXLibMaterial;
@@ -459,12 +452,6 @@ begin
   end;
 end;
 
-//RayCastUpShadowHeight
-//
-//  This traces a ray from a point on the terrain surface, back to the Lightsource,
-//  while testing for any intersections with the terrain.
-//  It returns the height of the shadow. There is no shadow if the shadow height is equal to terrain height.
-//  This is slow, but only needs to be done for pixels along the tile edge, facing the light.
 function TVXShadowHDS.RayCastShadowHeight(HD:TVXHeightData;localX,localY:single):single;
 var tmpHD:TVXHeightData;
     wx,wy:single;
@@ -507,9 +494,6 @@ begin
 end;
 
 
-//  LocalToWorld
-//  Converts local tile coordinates to world coordinages. Even if the coordinates are off the tile.
-//
 procedure TVXShadowHDS.LocalToWorld(Lx,Ly:single;HD:TVXHeightData;var Wx:single;var Wy:single);
 var HDS:TVXHeightDataSource;
 begin
@@ -524,9 +508,6 @@ begin
   //if wy<0 then wy:=wy+HDS.Height;
 end;
 
-//WorldToLocal
-//Takes World coordinates and returns the correct tile, and converted local coordinates
-//
 procedure TVXShadowHDS.WorldToLocal(Wx,Wy:single;var HD:TVXHeightData;var lx:single; var ly:single);
 var HDS:TVXHeightDataSource;
     xleft,ytop:integer;
@@ -612,10 +593,6 @@ end;
 
 //----------------------------------------------------------
 
-//WrapDist
-//
-//Get the number of steps, before the current tile's edge is reached,
-//in the direction of the step vector;
 function TVXShadowHDS.WrapDist(Lx,Ly:single):integer;
 var x,y:single;
     size:integer;
@@ -636,14 +613,6 @@ begin
   result:=Ceil(minFloat(x,y));
 end;
 
-// Shade
-//
-// Calculate the pixel brightness, using Direct Diffuse light and Ambient light.
-// DirectLight  = 1 if in direct sunlight (no shadows)
-//                0 if in shadow. (Use "SoftRange" for soft shadow edges i.e. 1>Directlight>0 )
-// AmbientLight = Relative to Angle between surface Normal and sky (Directly up)
-//                ie. Vertical walls are darker because they see less sky.
-// DiffuseLight = Relative to Angle between surface Normal, and Sun vector.
 function TVXShadowHDS.Shade(HeightData:TVXHeightData;x,y:integer;ShadowHeight,TerrainHeight:single):byte;
 var HD:TVXHeightData;
     nv:TAffineVector;
@@ -675,61 +644,63 @@ end;
 
 procedure TVXShadowHDS.SetShadowmapLibrary(const val : TVXMaterialLibrary);
 begin
-   if val<>FShadowmapLibrary then begin
-      if Assigned(FShadowmapLibrary) then FShadowmapLibrary.RemoveFreeNotification(Self);
-      FShadowmapLibrary:=val;
-      if Assigned(FShadowmapLibrary) then FShadowmapLibrary.FreeNotification(Self);
-      MarkDirty;
-   end;
+  if val <> FShadowmapLibrary then
+  begin
+    if assigned(FShadowmapLibrary) then
+      FShadowmapLibrary.RemoveFreeNotification(Self);
+    FShadowmapLibrary := val;
+    if assigned(FShadowmapLibrary) then
+      FShadowmapLibrary.FreeNotification(Self);
+    MarkDirty;
+  end;
 end;
 
-// SetBumpScale
-//
 procedure TVXShadowHDS.SetScale(AValue: TVXCoordinates);
 begin
   with OwnerHDS.Data.LockList do try
     FScale.Assign(AValue);
   //CalcScale;
   //MarkDirty;
-  finally OwnerHDS.Data.UnlockList; end;
+  finally 
+    OwnerHDS.Data.UnlockList; 
+  end;
 end;
 
-//SetSoftRange
-//
 procedure TVXShadowHDS.SetSoftRange(AValue:Cardinal);
 begin
-  with OwnerHDS.Data.LockList do try
+  with OwnerHDS.Data.LockList do 
+  try
     FSoftRange:=MaxInteger(AValue,1);
     //MarkDirty;
-  finally OwnerHDS.Data.UnlockList; end;
+  finally 
+    OwnerHDS.Data.UnlockList; 
+  end;
 end;
 
-//SetDiffuse
-//
 procedure TVXShadowHDS.SetDiffuse(AValue: Single);
 begin
-  with OwnerHDS.Data.LockList do try
+  with OwnerHDS.Data.LockList do 
+  try
     FDiffuse:=ClampValue(AValue,0.001,1);
     //MarkDirty;
-  finally OwnerHDS.Data.UnlockList; end;
+  finally 
+    OwnerHDS.Data.UnlockList; 
+  end;
 end;
 
-//SetAmbient
-//
 procedure TVXShadowHDS.SetAmbient(AValue: Single);
 begin
-  with OwnerHDS.Data.LockList do try
+  with OwnerHDS.Data.LockList do 
+  try
     FAmbient:=ClampValue(AValue,0.001,1);
     //MarkDirty;
-  finally OwnerHDS.Data.UnlockList; end;
+  finally 
+    OwnerHDS.Data.UnlockList; 
+  end;
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 	// class registrations

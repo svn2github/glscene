@@ -10,9 +10,16 @@ unit VXS.ProcTextures;
 interface
 
 uses
-  System.Classes, System.SysUtils,
-  VXS.Texture, VXS.Graphics, Winapi.OpenGL, Winapi.OpenGLext, 
-  VXS.CrossPlatform, VXS.TextureFormat, VXS.VectorGeometry;
+  Winapi.OpenGL, 
+  Winapi.OpenGLext, 
+  System.Classes, 
+  System.SysUtils,
+  System.Math,
+  VXS.Texture, 
+  VXS.Graphics, 
+  VXS.CrossPlatform, 
+  VXS.TextureFormat, 
+  VXS.VectorGeometry;
 
 const
   GRADIENT_TABLE_SIZE = 256;

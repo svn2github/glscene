@@ -128,7 +128,7 @@ function xgl(): TVXMultitextureCoordinator;
 var
   RC: TVXContext;
 begin
-  RC := SafeCurrentVKContext;
+  RC := SafeCurrentVXContext;
   if not Assigned(vMTC) or (vMTC.FOwner <> RC) then
   begin
     vMTC := TVXMultitextureCoordinator(RC.MultitextureCoordinator);
@@ -197,7 +197,7 @@ var
 begin
   for i := 0 to xgl.FComplexMappingN do
   begin
-    CurrentVKContext.VKStates.ActiveTexture := xgl.FComplexMapping[i];
+    CurrentVXContext.VXStates.ActiveTexture := xgl.FComplexMapping[i];
     glTexGenf(coord, pname, param);
   end;
 end;
@@ -209,7 +209,7 @@ var
 begin
   for i := 0 to xgl.FComplexMappingN do
   begin
-    CurrentVKContext.VKStates.ActiveTexture := xgl.FComplexMapping[i];
+    CurrentVXContext.VXStates.ActiveTexture := xgl.FComplexMapping[i];
     glTexGenfv(coord, pname, params);
   end;
 end;
@@ -221,7 +221,7 @@ var
 begin
   for i := 0 to xgl.FComplexMappingN do
   begin
-    CurrentVKContext.VKStates.ActiveTexture := xgl.FComplexMapping[i];
+    CurrentVXContext.VXStates.ActiveTexture := xgl.FComplexMapping[i];
     glTexGeni(coord, pname, param);
   end;
 end;
@@ -233,7 +233,7 @@ var
 begin
   for i := 0 to xgl.FComplexMappingN do
   begin
-    CurrentVKContext.VKStates.ActiveTexture := xgl.FComplexMapping[i];
+    CurrentVXContext.VXStates.ActiveTexture := xgl.FComplexMapping[i];
     glTexGeniv(coord, pname, params);
   end;
 end;
@@ -245,7 +245,7 @@ var
 begin
   for i := 0 to xgl.FComplexMappingN do
   begin
-    CurrentVKContext.VKStates.ActiveTexture := xgl.FComplexMapping[i];
+    CurrentVXContext.VXStates.ActiveTexture := xgl.FComplexMapping[i];
     glEnable(cap);
   end;
 end;
@@ -257,7 +257,7 @@ var
 begin
   for i := 0 to xgl.FComplexMappingN do
   begin
-    CurrentVKContext.VKStates.ActiveTexture := xgl.FComplexMapping[i];
+    CurrentVXContext.VXStates.ActiveTexture := xgl.FComplexMapping[i];
     glDisable(cap);
   end;
 end;
@@ -340,42 +340,42 @@ end;
 procedure TexGenf_Second(coord, pname: GLEnum; param: GLfloat);
 {$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
 begin
-  CurrentVKContext.VKStates.ActiveTexture := 1;
+  CurrentVXContext.VXStates.ActiveTexture := 1;
   glTexGenf(coord, pname, param);
 end;
 
 procedure TexGenfv_Second(coord, pname: GLEnum; params: PGLfloat);
 {$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
 begin
-  CurrentVKContext.VKStates.ActiveTexture := 1;
+  CurrentVXContext.VXStates.ActiveTexture := 1;
   glTexGenfv(coord, pname, params);
 end;
 
 procedure TexGeni_Second(coord, pname: GLEnum; param: GLint);
 {$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
 begin
-  CurrentVKContext.VKStates.ActiveTexture := 1;
+  CurrentVXContext.VXStates.ActiveTexture := 1;
   glTexGeni(coord, pname, param);
 end;
 
 procedure TexGeniv_Second(coord, pname: GLEnum; params: PGLint);
 {$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
 begin
-  CurrentVKContext.VKStates.ActiveTexture := 1;
+  CurrentVXContext.VXStates.ActiveTexture := 1;
   glTexGeniv(coord, pname, params);
 end;
 
 procedure Enable_Second(cap: GLEnum);
 {$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
 begin
-  CurrentVKContext.VKStates.ActiveTexture := 1;
+  CurrentVXContext.VXStates.ActiveTexture := 1;
   glEnable(cap);
 end;
 
 procedure Disable_Second(cap: GLEnum);
 {$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
 begin
-  CurrentVKContext.VKStates.ActiveTexture := 1;
+  CurrentVXContext.VXStates.ActiveTexture := 1;
   glDisable(cap);
 end;
 
@@ -451,7 +451,7 @@ end;
 procedure TexGenf_Dual(coord, pname: GLEnum; param: GLfloat);
 {$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
 begin
-  with CurrentVKContext.VKStates do
+  with CurrentVXContext.VxStates do
   begin
     ActiveTexture := 0;
     glTexGenf(coord, pname, param);
@@ -463,7 +463,7 @@ end;
 procedure TexGenfv_Dual(coord, pname: GLEnum; params: PGLfloat);
 {$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
 begin
-  with CurrentVKContext.VKStates do
+  with CurrentVXContext.VxStates do
   begin
     ActiveTexture := 0;
     glTexGenfv(coord, pname, params);
@@ -475,7 +475,7 @@ end;
 procedure TexGeni_Dual(coord, pname: GLEnum; param: GLint);
 {$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
 begin
-  with CurrentVKContext.VKStates do
+  with CurrentVXContext.VxStates do
   begin
     ActiveTexture := 0;
     glTexGeni(coord, pname, param);
@@ -487,7 +487,7 @@ end;
 procedure TexGeniv_Dual(coord, pname: GLEnum; params: PGLint);
 {$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
 begin
-  with CurrentVKContext.VKStates do
+  with CurrentVXContext.VxStates do
   begin
     ActiveTexture := 0;
     glTexGeniv(coord, pname, params);
@@ -499,7 +499,7 @@ end;
 procedure Enable_Dual(cap: GLEnum);
 {$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
 begin
-  with CurrentVKContext.VKStates do
+  with CurrentVXContext.VxStates do
   begin
     ActiveTexture := 0;
     glEnable(cap);
@@ -511,7 +511,7 @@ end;
 procedure Disable_Dual(cap: GLEnum);
 {$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
 begin
-  with CurrentVKContext.VKStates do
+  with CurrentVXContext.VxStates do
   begin
     ActiveTexture := 0;
     glDisable(cap);

@@ -11,38 +11,32 @@
 //
 
 // Activate support for Alex Denissov's Graphics32 library (http://www.g32.org)
-{.$DEFINE VKS_Graphics32_SUPPORT}
+{.$DEFINE USE_GRAPHICS32}
 
 // Activate support for some optimizations by disabling checks that occur very often
 // Warning: it will disable some options (like ShowAxis and OptSaveGLStack)
-{.$DEFINE VKS_OPTIMIZATIONS}
+{.$DEFINE USE_OPTIMIZATIONS}
 
 // Activate assembly routines - Warning! Some components not working!!!
-{.$DEFINE GLS_ASM}
-
-// Activate inline directive
-{.$DEFINE VKS_INLINE}
-
-// De-Activate regions
-{$DEFINE VKS_NO_REGIONS}
+{.$DEFINE USE_ASM}
 
 // Activate OpenVX debug mode
-{.$DEFINE VKS_DEBUG}
+{.$DEFINE USE_DEBUG}
+
+// Activate Logging
+{.$DEFINE USE_LOGGING}
+
 
 // Activate Multithread support
-{.$DEFINE VKS_MULTITHREAD}
+{.$DEFINE USE_MULTITHREAD}
 
-// Enable service rendering context, which automatically activate VKS_MULTITHREAD
+// Enable service rendering context, which automatically activate USE_MULTITHREAD
 // This work only on windows platform and with modern compiler (XE2 and FPC or higher}
-{.$DEFINE VKS_SERVICE_CONTEXT}
+{.$DEFINE USE_SERVICE_CONTEXT}
 
-{$IFDEF VKS_MULTITHREAD}
-  {$DEFINE MULTITHREADOPENGL}
-{$ENDIF}
-
-{$IFDEF VKS_SERVICE_CONTEXT}
+{$IFDEF USE_SERVICE_CONTEXT}
   // Activate Multithread support
-  {$DEFINE VKS_MULTITHREAD}
+  {$DEFINE USE_MULTITHREAD}
 {$ENDIF}
 
 // Activate support of Windows OS
@@ -61,7 +55,7 @@
 {.$DEFINE LINUX}
 
 // Activate support X Window System
-{.$DEFINE VKS_X11_SUPPORT}
+{.$DEFINE X11_SUPPORT}
 
 
 //
@@ -78,27 +72,10 @@
 
 {$IFDEF LINUX}
   {$UNDEF SUPPORT_WGL}
-  {$UNDEF VKS_ASM}
+  {$UNDEF USE_ASM}
   {$DEFINE UNIX}
   {$DEFINE SUPPORT_GLX}
   {$DEFINE VKS_X11_SUPPORT}
 {$ENDIF}
 
-{$UNDEF VKS_UNSUPPORTED}
-
-{$IFDEF VKS_UNSUPPORTED}
-  Error: unsupported version, requires at least RAD XE2
-{$ENDIF}
-
-{$IFDEF VKS_ASM}
-  {$IFDEF VKS_INLINE}
-    {$DEFINE VKS_INLINE_VICE_ASM}
-  {$ENDIF}
-{$ENDIF}
-
-{$DEFINE VKS_DEPRECATED}
-{
-  This defines if the compiler should use deprecated stuff or not.
-  by default headers use deprecated stuff.
-}
 

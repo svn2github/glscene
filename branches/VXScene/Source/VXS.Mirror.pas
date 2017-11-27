@@ -15,16 +15,22 @@ interface
 {$I VXScene.inc}
 
 uses
+  Winapi.OpenGL, 
+  Winapi.OpenGLext, 
   System.Classes,
-  VXS.Scene, VXS.VectorGeometry, VXS.OpenGLAdapter, Winapi.OpenGL, Winapi.OpenGLext, 
-  VXS.Context, VXS.Material, VXS.Color, VXS.RenderContextInfo,
-  VXS.State, VXS.VectorTypes;
+  VXS.Scene, 
+  VXS.VectorGeometry, 
+  VXS.OpenGLAdapter, 
+  VXS.Context, 
+  VXS.Material, 
+  VXS.Color, 
+  VXS.RenderContextInfo,
+  VXS.State, 
+  VXS.VectorTypes;
 
 
 type
 
-  // TMirrorOptions
-  //
   TMirrorOption = (moUseStencil, moOpaque, moMirrorPlaneClip, moClearZBuffer);
   TMirrorOptions = set of TMirrorOption;
 
@@ -33,11 +39,8 @@ const
 
 type
 
-  // TMirrorShapes  ORL
   TMirrorShapes = (msRect, msDisk);
 
-  // TVXMirror
-  //
   { A simple plane mirror. 
      This mirror requires a stencil buffer for optimal rendering! 
      The object is a mix between a plane and a proxy object, in that the plane
@@ -48,7 +51,6 @@ type
      materials/mirror demo before using this component. }
   TVXMirror = class(TVXSceneObject)
   private
-    
     FRendering: Boolean;
     FMirrorObject: TVXBaseSceneObject;
     FWidth, FHeight: GLfloat;
@@ -58,43 +60,30 @@ type
     FShape: TMirrorShapes; //ORL
     FRadius: GLfloat; //ORL
     FSlices: GLint; //ORL
-
   protected
-    
-    procedure Notification(AComponent: TComponent; Operation: TOperation);
-      override;
+    procedure Notification(AComponent: TComponent; Operation: TOperation); override;
     procedure SetMirrorObject(const val: TVXBaseSceneObject);
     procedure SetMirrorOptions(const val: TMirrorOptions);
     procedure ClearZBufferArea(aBuffer: TVXSceneBuffer);
-
-    procedure SetHeight(AValue: GLfloat);
-    procedure SetWidth(AValue: GLfloat);
-
+    procedure SetHeight(AValue: Single);
+    procedure SetWidth(AValue: Single);
     procedure SetRadius(const aValue: Single); //ORL
     procedure SetSlices(const aValue: GLint); //ORL
     procedure SetShape(aValue: TMirrorShapes); //ORL
-    function GetRadius: single; //ORL
+    function GetRadius: Single; //ORL
     function GetSlices: GLint; //ORL
-
   public
-    
     constructor Create(AOwner: TComponent); override;
-
     procedure DoRender(var ARci: TVXRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
     procedure BuildList(var ARci: TVXRenderContextInfo); override;
-
     procedure Assign(Source: TPersistent); override;
     function AxisAlignedDimensionsUnscaled: TVector; override;
-
   published
-    
-          { Selects the object to mirror. 
-             If nil, the whole scene is mirrored. }
+    { Selects the object to mirror. If nil, the whole scene is mirrored. }
     property MirrorObject: TVXBaseSceneObject read FMirrorObject write
       SetMirrorObject;
     { Controls rendering options. 
-        
         moUseStencil: mirror area is stenciled, prevents reflected
           objects to be visible on the sides of the mirror (stencil buffer
           must be active in the viewer)
@@ -126,17 +115,15 @@ type
     //ORL
   end;
 
-  //-------------------------------------------------------------
-  //-------------------------------------------------------------
-  //-------------------------------------------------------------
+//-------------------------------------------------------------
 implementation
+//-------------------------------------------------------------
+
 // ------------------
 // ------------------ TVXMirror ------------------
 // ------------------
 
-// Create
-//
-
+ 
 constructor TVXMirror.Create(AOwner: Tcomponent);
 begin
   inherited Create(AOwner);
@@ -152,8 +139,6 @@ begin
   Shape := msRect; //ORL
 end;
 
-// DoRender
-//
 
 procedure TVXMirror.DoRender(var ARci: TVXRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);
@@ -175,7 +160,7 @@ begin
 
     if VectorDotProduct(VectorSubtract(ARci.cameraPosition, AbsolutePosition),
       AbsoluteDirection) > 0 then
-      with ARci.VKStates do
+      with ARci.VxStates do
       begin
 
         // "Render" stencil mask
@@ -184,7 +169,7 @@ begin
           if (moUseStencil in MirrorOptions) then
           begin
             Enable(stStencilTest);
-            ARci.VKStates.StencilClearValue := 0;
+            ARci.VXStates.StencilClearValue := 0;
             glClear(GL_STENCIL_BUFFER_BIT);
             SetStencilFunc(cfAlways, 1, 1);
             SetStencilOp(soReplace, soZero, soReplace);
@@ -192,7 +177,7 @@ begin
           if (moOpaque in MirrorOptions) then
           begin
             bgColor := ConvertWinColor(CurrentBuffer.BackgroundColor);
-            ARci.VKStates.SetMaterialColors(cmFront, bgColor, clrBlack,
+            ARci.VXStates.SetMaterialColors(cmFront, bgColor, clrBlack,
               clrBlack, clrBlack, 0);
           end
           else
@@ -218,7 +203,7 @@ begin
         end;
 
         ARci.PipelineTransformation.Push;
-        ARci.PipelineTransformation.ModelMatrix := IdentityHmgMatrix;
+        ARci.PipelineTransformation.SetModelMatrix(IdentityHmgMatrix);
 
         Disable(stCullFace);
         Enable(stNormalize);
@@ -235,8 +220,8 @@ begin
         refMat := MakeReflectionMatrix(
           AffineVectorMake(AbsolutePosition),
           AffineVectorMake(AbsoluteDirection));
-        curMat := MatrixMultiply(refMat, ARci.PipelineTransformation.ViewMatrix);
-        ARci.PipelineTransformation.ViewMatrix := curMat;
+        curMat := MatrixMultiply(refMat, ARci.PipelineTransformation.ViewMatrix^);
+        ARci.PipelineTransformation.SetViewMatrix(curMat);
         Scene.SetupLights(CurrentBuffer.LimitOf[limLights]);
 
         // mirror geometry and render master
@@ -255,7 +240,7 @@ begin
           if FMirrorObject.Parent <> nil then
             MatrixMultiply(ModelMat, FMirrorObject.Parent.AbsoluteMatrix, ModelMat);
           MatrixMultiply(ModelMat, FMirrorObject.LocalMatrix^, ModelMat);
-          ARci.PipelineTransformation.ModelMatrix := ModelMat;
+          ARci.PipelineTransformation.SetModelMatrix(ModelMat);
           FMirrorObject.DoRender(ARci, ARenderSelf, FMirrorObject.Count > 0);
         end
         else
@@ -268,13 +253,13 @@ begin
         // Restore to "normal"
         ARci.cameraPosition := cameraPosBackup;
         ARci.cameraDirection := cameraDirectionBackup;
-        ARci.VKStates.CullFaceMode := cmBack;
+        ARci.VXStates.CullFaceMode := cmBack;
         ARci.PipelineTransformation.ReplaceFromStack;
         Scene.SetupLights(CurrentBuffer.LimitOf[limLights]);
         ARci.PipelineTransformation.Pop;
         if moMirrorPlaneClip in MirrorOptions then
           glDisable(GL_CLIP_PLANE0);
-        ARci.VKStates.Disable(stStencilTest);
+        ARci.VXStates.Disable(stStencilTest);
 
         ARci.proxySubObject := oldProxySubObject;
 
@@ -299,12 +284,10 @@ begin
   end;
 end;
 
-// BuildList
-//
 
 procedure TVXMirror.BuildList(var ARci: TVXRenderContextInfo);
 var
-  hw, hh: GLfloat;
+  hw, hh: Single;
   quadric: GLUquadricObj;
 begin
   if msRect = FShape then
@@ -326,8 +309,6 @@ begin
   end;
 end;
 
-// BuildList
-//
 
 procedure TVXMirror.ClearZBufferArea(aBuffer: TVXSceneBuffer);
 var
@@ -345,7 +326,7 @@ begin
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity;
 
-    with aBuffer.RenderingContext.VKStates do
+    with aBuffer.RenderingContext.VxStates do
     begin
       DepthFunc := cfAlways;
       SetColorWriting(False);
@@ -366,7 +347,7 @@ begin
     glVertex3f(p.X, p.Y, 0.999);
     glEnd;
 
-    with aBuffer.RenderingContext.VKStates do
+    with aBuffer.RenderingContext.VxStates do
     begin
       DepthFunc := cfLess;
       SetColorWriting(True);
@@ -379,8 +360,6 @@ begin
   end;
 end;
 
-// Notification
-//
 
 procedure TVXMirror.Notification(AComponent: TComponent; Operation: TOperation);
 begin
@@ -389,8 +368,6 @@ begin
   inherited;
 end;
 
-// SetMirrorObject
-//
 
 procedure TVXMirror.SetMirrorObject(const val: TVXBaseSceneObject);
 begin
@@ -405,8 +382,6 @@ begin
   end;
 end;
 
-// SetWidth
-//
 
 procedure TVXMirror.SetWidth(AValue: GLfloat);
 begin
@@ -417,8 +392,6 @@ begin
   end;
 end;
 
-// SetHeight
-//
 
 procedure TVXMirror.SetHeight(AValue: GLfloat);
 begin
@@ -429,8 +402,6 @@ begin
   end;
 end;
 
-// Assign
-//
 
 procedure TVXMirror.Assign(Source: TPersistent);
 begin
@@ -444,8 +415,6 @@ begin
   inherited Assign(Source);
 end;
 
-// AxisAlignedDimensions
-//
 
 function TVXMirror.AxisAlignedDimensionsUnscaled: TVector;
 begin
@@ -453,8 +422,6 @@ begin
     0.5 * Abs(FHeight), 0);
 end;
 
-// SetMirrorOptions
-//
 
 procedure TVXMirror.SetMirrorOptions(const val: TMirrorOptions);
 begin
@@ -467,8 +434,6 @@ end;
 
 //ORL add-ons
 
-// SetRadius
-//
 
 procedure TVXMirror.SetRadius(const aValue: Single);
 begin
@@ -479,16 +444,12 @@ begin
   end;
 end;
 
-// GetRadius
-//
 
 function TVXMirror.GetRadius: single;
 begin
   result := FRadius;
 end;
 
-// SetSlices
-//
 
 procedure TVXMirror.SetSlices(const aValue: GLint);
 begin
@@ -503,16 +464,12 @@ begin
   end;
 end;
 
-// GetSlices
-//
 
 function TVXMirror.GetSlices: GLint;
 begin
   result := FSlices;
 end;
 
-// SetShape
-//
 
 procedure TVXMirror.SetShape(aValue: TMirrorShapes);
 begin
@@ -524,12 +481,8 @@ begin
 end;
 
 //-------------------------------------------------------------
-//-------------------------------------------------------------
-//-------------------------------------------------------------
 initialization
-  //-------------------------------------------------------------
-  //-------------------------------------------------------------
-  //-------------------------------------------------------------
+//-------------------------------------------------------------
 
   RegisterClasses([TVXMirror]);
 

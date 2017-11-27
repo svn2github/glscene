@@ -114,28 +114,21 @@ type
     procedure Notification(AComponent: TComponent;
       Operation: TOperation); override;
     procedure Initialize;
-
     procedure ForceDimensions(Texture: TVXTexture);
-
     procedure RenderToFBO(var ARci: TVXRenderContextInfo);
-
     procedure ApplyCamera(var ARci: TVXRenderContextInfo);
     procedure UnApplyCamera(var ARci: TVXRenderContextInfo);
-
     procedure DoBeforeRender(var ARci: TVXRenderContextInfo);
     procedure DoAfterRender(var ARci: TVXRenderContextInfo);
     procedure DoPreInitialize;
     procedure DoPostInitialize;
-
     property HasColor: Boolean read FHasColor;
     property HasDepth: Boolean read FHasDepth;
     property HasStencil: Boolean read FHasStencil;
-
     property Viewport: TRectangle read GetViewport;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
     procedure DoRender(var ARci: TVXRenderContextInfo; ARenderSelf: Boolean;
       ARenderChildren: Boolean); override;
 
@@ -145,21 +138,16 @@ type
     property Layer: Integer read GetLayer write SetLayer;
     { Mipmap Level where will be rendering }
     property Level: Integer read GetLevel write SetLevel;
-
   published
     property Active: Boolean read GetVisible write SetVisible default True;
-    property PickableTarget: Boolean read GetPickable write SetPickable
-      default False;
+    property PickableTarget: Boolean read GetPickable write SetPickable default False;
     { force texture dimensions when initializing
       only works with TVXBlankImage and GLfloatDataImage, otherwise does nothing }
     property ForceTextureDimensions: Boolean read FForceTextureDimensions
       write SetForceTextureDimentions default True;
-
     property Width: Integer read FWidth write SetWidth default 256;
     property Height: Integer read FHeight write SetHeight default 256;
-
     property Aspect: Single read FAspect write FAspect stored StoreAspect;
-
     property ColorTextureName: TVXLibMaterialName read FColorTextureName
       write SetColorTextureName;
 
@@ -258,13 +246,13 @@ begin
       // 96 is default dpi
       FCamera.SceneScale := sc;
 
-      ViewMatrix := CreateScaleMatrix(Vector3fMake(1.0 / FAspect, 1.0, 1.0));
+      SetViewMatrix(CreateScaleMatrix(Vector3fMake(1.0 / FAspect, 1.0, 1.0)));
       FCamera.Apply;
     end
     else
     begin
-      ViewMatrix := MatrixMultiply(ViewMatrix,
-        CreateScaleMatrix(Vector3fMake(1.0 / FAspect, 1.0, 1.0)));
+      SetViewMatrix(MatrixMultiply(ViewMatrix^,
+        CreateScaleMatrix(Vector3fMake(1.0 / FAspect, 1.0, 1.0))));
     end;
   end;
 end;
@@ -346,9 +334,7 @@ begin
 
   if (not Assigned(FRootObject)) and (TargetVisibility = tvDefault) and ARenderChildren
   then
-  begin
     RenderChildren(0, Count - 1, ARci);
-  end;
 end;
 
 procedure TVXFBORenderer.ForceDimensions(Texture: TVXTexture);
@@ -396,11 +382,14 @@ procedure TVXFBORenderer.Initialize;
 
 const
   cDrawBuffers: array [0 .. 15] of GLenum = (GL_COLOR_ATTACHMENT0,
-    GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3,
-    GL_COLOR_ATTACHMENT4, GL_COLOR_ATTACHMENT5, GL_COLOR_ATTACHMENT6,
-    GL_COLOR_ATTACHMENT7, GL_COLOR_ATTACHMENT8, GL_COLOR_ATTACHMENT9,
-    GL_COLOR_ATTACHMENT10, GL_COLOR_ATTACHMENT11, GL_COLOR_ATTACHMENT12,
-    GL_COLOR_ATTACHMENT13, GL_COLOR_ATTACHMENT14, GL_COLOR_ATTACHMENT15);
+    GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, 
+	GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4, 
+	GL_COLOR_ATTACHMENT5, GL_COLOR_ATTACHMENT6,
+    GL_COLOR_ATTACHMENT7, GL_COLOR_ATTACHMENT8, 
+	GL_COLOR_ATTACHMENT9, GL_COLOR_ATTACHMENT10, 
+	GL_COLOR_ATTACHMENT11, GL_COLOR_ATTACHMENT12,
+    GL_COLOR_ATTACHMENT13, GL_COLOR_ATTACHMENT14, 
+	GL_COLOR_ATTACHMENT15);
 var
   colorTex: TVXTexture;
   depthTex: TVXTexture;
@@ -586,24 +575,24 @@ type
 
   function StoreStates: TVXStoredStates;
   begin
-    Result.ColorClearValue := ARci.VKStates.ColorClearValue;
-    Result.ColorWriteMask := ARci.VKStates.ColorWriteMask[0];
-    Result.Tests := [stDepthTest, stStencilTest] * ARci.VKStates.States;
+    Result.ColorClearValue := ARci.VXStates.ColorClearValue;
+    Result.ColorWriteMask := ARci.VXStates.ColorWriteMask[0];
+    Result.Tests := [stDepthTest, stStencilTest] * ARci.VXStates.States;
   end;
 
   procedure RestoreStates(const aStates: TVXStoredStates);
   begin
-    ARci.VKStates.ColorClearValue := aStates.ColorClearValue;
-    ARci.VKStates.SetColorMask(aStates.ColorWriteMask);
+    ARci.VXStates.ColorClearValue := aStates.ColorClearValue;
+    ARci.VXStates.SetColorMask(aStates.ColorWriteMask);
     if stDepthTest in aStates.Tests then
-      ARci.VKStates.Enable(stDepthTest)
+      ARci.VXStates.Enable(stDepthTest)
     else
-      ARci.VKStates.Disable(stDepthTest);
+      ARci.VXStates.Disable(stDepthTest);
 
     if stStencilTest in aStates.Tests then
-      ARci.VKStates.Enable(stStencilTest)
+      ARci.VXStates.Enable(stStencilTest)
     else
-      ARci.VKStates.Disable(stStencilTest);
+      ARci.VXStates.Disable(stStencilTest);
   end;
 
 var
@@ -650,7 +639,7 @@ begin
 
     DoBeforeRender(ARci);
     if Assigned(Camera) then
-      Camera.Scene.SetupLights(ARci.VKStates.MaxLights);
+      Camera.Scene.SetupLights(ARci.VXStates.MaxLights);
 
     w := Width;
     h := Height;
@@ -663,30 +652,30 @@ begin
       if h = 0 then
         h := 1;
     end;
-    ARci.VKStates.Viewport := Vector4iMake(0, 0, w, h);
+    ARci.VXStates.Viewport := Vector4iMake(0, 0, w, h);
     buffer := ARci.buffer as TVXSceneBuffer;
 
     if HasColor then
-      ARci.VKStates.SetColorMask(cAllColorComponents)
+      ARci.VXStates.SetColorMask(cAllColorComponents)
     else
-      ARci.VKStates.SetColorMask([]);
+      ARci.VXStates.SetColorMask([]);
 
-    ARci.VKStates.DepthWriteMask := GLboolean(HasDepth);
+    ARci.VXStates.DepthWriteMask := GLboolean(HasDepth);
 
     if HasStencil then
-      ARci.VKStates.Enable(stStencilTest)
+      ARci.VXStates.Enable(stStencilTest)
     else
-      ARci.VKStates.Disable(stStencilTest);
+      ARci.VXStates.Disable(stStencilTest);
 
     if coUseBufferBackground in FClearOptions then
     begin
       backColor := ConvertWinColor(buffer.BackgroundColor);
       backColor.W := buffer.BackgroundAlpha;
-      ARci.VKStates.ColorClearValue := backColor;
+      ARci.VXStates.ColorClearValue := backColor;
     end
     else
     begin
-      ARci.VKStates.ColorClearValue := FBackgroundColor.Color;
+      ARci.VXStates.ColorClearValue := FBackgroundColor.Color;
     end;
 
     glClear(GetClearBits);
@@ -709,7 +698,7 @@ begin
     FFbo.PostRender(FPostGenerateMipmap);
 
     RestoreStates(savedStates);
-    ARci.VKStates.Viewport := Vector4iMake(0, 0, ARci.viewPortSize.cx,
+    ARci.VXStates.Viewport := Vector4iMake(0, 0, ARci.viewPortSize.cx,
       ARci.viewPortSize.cy);
   finally
     FFbo.Unbind;
@@ -717,7 +706,7 @@ begin
     DoAfterRender(ARci);
     UnApplyCamera(ARci);
     if Assigned(Camera) then
-      Camera.Scene.SetupLights(ARci.VKStates.MaxLights);
+      Camera.Scene.SetupLights(ARci.VXStates.MaxLights);
   end;
 end;
 
@@ -772,16 +761,13 @@ begin
   end;
 end;
 
-// GetMaterialLibrary
-//
 
 function TVXFBORenderer.GetMaterialLibrary: TVXAbstractMaterialLibrary;
 begin
   Result := FMaterialLibrary;
 end;
 
-procedure TVXFBORenderer.SetMaterialLibrary(const Value
-  : TVXAbstractMaterialLibrary);
+procedure TVXFBORenderer.SetMaterialLibrary(const Value: TVXAbstractMaterialLibrary);
 begin
   if FMaterialLibrary <> Value then
   begin
@@ -793,8 +779,6 @@ begin
   end;
 end;
 
-// SetUseLibraryAsMultiTarget
-//
 
 procedure TVXFBORenderer.SetUseLibraryAsMultiTarget(Value: Boolean);
 begin
@@ -857,16 +841,10 @@ begin
   end;
 end;
 
-// StoreSceneScaleFactor
-//
-
 function TVXFBORenderer.StoreSceneScaleFactor: Boolean;
 begin
   Result := (FSceneScaleFactor <> 0.0);
 end;
-
-// StoreAspect
-//
 
 function TVXFBORenderer.StoreAspect: Boolean;
 begin
@@ -930,7 +908,7 @@ begin
           w := 1;
         if h = 0 then
           h := 1;
-        CurrentVKContext.VKStates.Viewport := Vector4iMake(0, 0, w, h);
+        CurrentVXContext.VXStates.Viewport := Vector4iMake(0, 0, w, h);
       end;
     end
     else

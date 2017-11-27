@@ -149,33 +149,33 @@ begin
   begin
     if not (GetTextureMatrixIsUnitary) then
     begin
-      rci.VKStates.SetTextureMatrix(TextureMatrix);
+      rci.VXStates.SetTextureMatrix(TextureMatrix);
     end;
   end;
 
   if moNoLighting in FLibMaterial.Material.MaterialOptions then
-    rci.VKStates.Disable(stLighting);
+    rci.VXStates.Disable(stLighting);
 
-  if stLighting in rci.VKStates.States then
+  if stLighting in rci.VXStates.States then
   begin
-    rci.VKStates.SetMaterialColors(cmFront,
+    rci.VXStates.SetMaterialColors(cmFront,
       Emission.Color, Ambient.Color, Diffuse.Color, Specular.Color, Shininess);
-    rci.VKStates.PolygonMode :=FLibMaterial.Material.PolygonMode;
+    rci.VXStates.PolygonMode :=FLibMaterial.Material.PolygonMode;
   end
   else
     FLibMaterial.Material.FrontProperties.ApplyNoLighting(rci, cmFront);
-  if (stCullFace in rci.VKStates.States) then
+  if (stCullFace in rci.VXStates.States) then
   begin
     case FLibMaterial.Material.FaceCulling of
       fcBufferDefault: if not rci.bufferFaceCull then
         begin
-          rci.VKStates.Disable(stCullFace);
+          rci.VXStates.Disable(stCullFace);
           FLibMaterial.Material.BackProperties.Apply(rci, cmBack);
         end;
       fcCull: ; // nothing to do
       fcNoCull:
       begin
-        rci.VKStates.Disable(stCullFace);
+        rci.VXStates.Disable(stCullFace);
         FLibMaterial.Material.BackProperties.Apply(rci, cmBack);
       end;
       else
@@ -189,11 +189,11 @@ begin
       fcBufferDefault:
       begin
         if rci.bufferFaceCull then
-          rci.VKStates.Enable(stCullFace)
+          rci.VXStates.Enable(stCullFace)
         else
           FLibMaterial.Material.BackProperties.Apply(rci, cmBack);
       end;
-      fcCull: rci.VKStates.Enable(stCullFace);
+      fcCull: rci.VXStates.Enable(stCullFace);
       fcNoCull: FLibMaterial.Material.BackProperties.Apply(rci, cmBack);
       else
         Assert(False);
@@ -205,38 +205,38 @@ begin
     case BlendingMode of
       bmOpaque:
       begin
-        rci.VKStates.Disable(stBlend);
-        rci.VKStates.Disable(stAlphaTest);
+        rci.VXStates.Disable(stBlend);
+        rci.VXStates.Disable(stAlphaTest);
       end;
       bmTransparency:
       begin
-        rci.VKStates.Enable(stBlend);
-        rci.VKStates.Enable(stAlphaTest);
-        rci.VKStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
+        rci.VXStates.Enable(stBlend);
+        rci.VXStates.Enable(stAlphaTest);
+        rci.VXStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
       end;
       bmAdditive:
       begin
-        rci.VKStates.Enable(stBlend);
-        rci.VKStates.Enable(stAlphaTest);
-        rci.VKStates.SetBlendFunc(bfSrcAlpha, bfOne);
+        rci.VXStates.Enable(stBlend);
+        rci.VXStates.Enable(stAlphaTest);
+        rci.VXStates.SetBlendFunc(bfSrcAlpha, bfOne);
       end;
       bmAlphaTest50:
       begin
-        rci.VKStates.Disable(stBlend);
-        rci.VKStates.Enable(stAlphaTest);
-        rci.VKStates.SetAlphaFunction(cfGEqual, 0.5);
+        rci.VXStates.Disable(stBlend);
+        rci.VXStates.Enable(stAlphaTest);
+        rci.VXStates.SetAlphaFunction(cfGEqual, 0.5);
       end;
       bmAlphaTest100:
       begin
-        rci.VKStates.Disable(stBlend);
-        rci.VKStates.Enable(stAlphaTest);
-        rci.VKStates.SetAlphaFunction(cfGEqual, 1.0);
+        rci.VXStates.Disable(stBlend);
+        rci.VXStates.Enable(stAlphaTest);
+        rci.VXStates.SetAlphaFunction(cfGEqual, 1.0);
       end;
       bmModulate:
       begin
-        rci.VKStates.Enable(stBlend);
-        rci.VKStates.Enable(stAlphaTest);
-        rci.VKStates.SetBlendFunc(bfDstColor, bfZero);
+        rci.VXStates.Enable(stBlend);
+        rci.VXStates.Enable(stAlphaTest);
+        rci.VXStates.SetBlendFunc(bfDstColor, bfZero);
       end;
       else
         Assert(False);
@@ -244,9 +244,9 @@ begin
   // Fog switch
   if moIgnoreFog in FLibMaterial.Material.MaterialOptions then
   begin
-    if stFog in rci.VKStates.States then
+    if stFog in rci.VXStates.States then
     begin
-      rci.VKStates.Disable(stFog);
+      rci.VXStates.Disable(stFog);
       Inc(rci.fogDisabledCounter);
     end;
   end;
@@ -468,7 +468,7 @@ begin
   if not FLibMaterial.Material.Texture.Disabled then
     if not (GetTextureMatrixIsUnitary) then
     begin
-      rci.VKStates.ResetTextureMatrix;
+      rci.VXStates.ResetTextureMatrix;
     end;
 
   if Assigned(FLibMaterial.Shader) then
@@ -504,8 +504,8 @@ procedure TVXTextureSharingShader.DoApply(var rci: TVXRenderContextInfo; Sender:
 begin
   if Materials.Count > 0 then
   begin
-    rci.VKStates.Enable(stDepthTest);
-    rci.VKStates.DepthFunc := cfLEqual;
+    rci.VXStates.Enable(stDepthTest);
+    rci.VXStates.DepthFunc := cfLEqual;
     Materials[0].Apply(rci);
     FCurrentPass := 1;
   end;
@@ -525,9 +525,9 @@ begin
     end
     else
     begin
-      rci.VKStates.DepthFunc := cfLess;
-      rci.VKStates.Disable(stBlend);
-      rci.VKStates.Disable(stAlphaTest);
+      rci.VXStates.DepthFunc := cfLess;
+      rci.VXStates.Disable(stBlend);
+      rci.VXStates.Disable(stAlphaTest);
       FCurrentPass := 0;
     end;
   end;

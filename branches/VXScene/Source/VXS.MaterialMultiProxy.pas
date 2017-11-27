@@ -27,56 +27,55 @@ interface
 {$I VXScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
+  System.Classes, 
+  System.SysUtils,
    
-  VXS.Scene, VXS.VectorGeometry, VXS.Texture, VXS.Material, VXS.Silhouette, VXS.Strings,
-  VXS.CrossPlatform, VXS.PersistentClasses, VXS.RenderContextInfo, VXS.BaseClasses,
-  VXS.Context , VXS.VectorTypes;
+  VXS.Scene, 
+  VXS.VectorGeometry, 
+  VXS.Texture, 
+  VXS.Material, 
+  VXS.Silhouette, 
+  VXS.Strings,
+  VXS.CrossPlatform, 
+  VXS.PersistentClasses, 
+  VXS.RenderContextInfo, 
+  VXS.BaseClasses,
+  VXS.Context, 
+  VXS.VectorTypes;
 
 type
 
   TVXMaterialMultiProxy = class;
 
-  // TVXMaterialMultiProxyMaster
-  //
   { MasterObject description for a MultiProxy object. }
   TVXMaterialMultiProxyMaster = class(TVXInterfacedCollectionItem, IGLMaterialLibrarySupported)
   private
-    
     FMasterObject: TVXBaseSceneObject;
     FMasterLibMaterial: TVXLibMaterial;
     FTempLibMaterialName: TVXLibMaterialName;
     FDistanceMin2, FDistanceMax2: Single;
-
     procedure SetMasterLibMaterialName(const Value: TVXLibMaterialName);
     function GetMasterLibMaterialName: TVXLibMaterialName;
-
     // Implementing IGLMaterialLibrarySupported.
     function GetMaterialLibrary: TVXAbstractMaterialLibrary;
   protected
-    
     function GetDisplayName: string; override;
     procedure SetMasterObject(const Val: TVXBaseSceneObject);
     procedure SetDistanceMin(const Val: Single);
     procedure SetDistanceMax(const Val: Single);
     function GetDistanceMin: Single;
     function GetDistanceMax: Single;
-
   public
-    
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
-
     function OwnerObject: TVXMaterialMultiProxy;
     procedure NotifyChange;
-
     { Specifies the Material, that current master object will use.
        Provides a faster way to access FMasterLibMaterial, compared to
        MasterLibMaterialName }
     property MasterLibMaterial: TVXLibMaterial read FMasterLibMaterial write FMasterLibMaterial stored False;
   published
-    
     { Specifies the Master object which will be proxy'ed. }
     property MasterObject: TVXBaseSceneObject read FMasterObject write SetMasterObject;
     { Specifies the Material, that current master object will use. }
@@ -87,34 +86,23 @@ type
     property DistanceMax: Single read GetDistanceMax write SetDistanceMax;
   end;
 
-  // TVXMaterialMultiProxyMasters
-  //
   { Collection of TVXMaterialMultiProxyMaster. }
   TVXMaterialMultiProxyMasters = class(TOwnedCollection)
-  private
-    
-
   protected
-    
     procedure SetItems(index: Integer; const Val: TVXMaterialMultiProxyMaster);
     function GetItems(index: Integer): TVXMaterialMultiProxyMaster;
     procedure Update(Item: TCollectionItem); override;
     procedure Notification(AComponent: TComponent); virtual;
   public
-    
     constructor Create(AOwner: TPersistent);
-
     function Add: TVXMaterialMultiProxyMaster; overload;
     function Add(Master: TVXBaseSceneObject; DistanceMin, DistanceMax: Single): TVXMaterialMultiProxyMaster; overload;
     function Add(Master: TVXBaseSceneObject; MasterLibMaterial: TVXLibMaterial; DistanceMin, DistanceMax: Single): TVXMaterialMultiProxyMaster; overload;
     property Items[index: Integer]: TVXMaterialMultiProxyMaster read GetItems write SetItems; default;
-
     procedure NotifyChange;
     procedure EndUpdate; override;
   end;
 
-  // TVXMaterialMultiProxy
-  //
    { Multiple Proxy object. 
       This proxy has multiple Master objects, which are individually made visible
       depending on a Distance to the camera criterion. It can be used to implement
@@ -124,35 +112,25 @@ type
       (item zero in the MasterObjects collection). }
   TVXMaterialMultiProxy = class(TVXBaseSceneObject)
   private
-    
     FMasterObjects: TVXMaterialMultiProxyMasters;
     FRendering: Boolean; // internal use (loop protection)
     FMaterialLibrary: TVXMaterialLibrary;
     procedure SetMaterialLibrary(const Value: TVXMaterialLibrary);
   protected
-    
     procedure SetMasterObjects(const Val: TVXMaterialMultiProxyMasters);
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
-
     function PrimaryMaster: TVXBaseSceneObject;
-
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
     procedure Assign(Source: TPersistent); override;
     procedure DoRender(var rci: TVXRenderContextInfo; renderSelf, renderChildren: Boolean); override;
-
     function AxisAlignedDimensionsUnscaled: TVector; override;
     function RayCastIntersect(const rayStart, rayVector: TVector; intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean; override;
     function GenerateSilhouette(const silhouetteParameters: TVXSilhouetteParameters): TVXSilhouette; override;
-
   published
-    
     property MasterObjects: TVXMaterialMultiProxyMasters read FMasterObjects write SetMasterObjects;
     property MaterialLibrary: TVXMaterialLibrary read FMaterialLibrary write SetMaterialLibrary;
-
     property ObjectsSorting;
     property Direction;
     property PitchAngle;
@@ -169,35 +147,25 @@ type
   end;
 
 //-------------------------------------------------------------
-//-------------------------------------------------------------
-//-------------------------------------------------------------
 implementation
-//-------------------------------------------------------------
-//-------------------------------------------------------------
 //-------------------------------------------------------------
 
 // ------------------
 // ------------------ TVXMaterialMultiProxyMaster ------------------
 // ------------------
 
-// Create
-//
 constructor TVXMaterialMultiProxyMaster.Create(Collection: TCollection);
 begin
   inherited Create(Collection);
 
 end;
 
-// Destroy
-//
 destructor TVXMaterialMultiProxyMaster.Destroy;
 begin
   MasterObject := nil;
   inherited Destroy;
 end;
 
-// Assign
-//
 procedure TVXMaterialMultiProxyMaster.Assign(Source: TPersistent);
 begin
   if Source is TVXMaterialMultiProxyMaster then
@@ -212,8 +180,6 @@ begin
     inherited;
 end;
 
-// OwnerObject
-//
 function TVXMaterialMultiProxyMaster.OwnerObject: TVXMaterialMultiProxy;
 begin
   if Collection = nil then
@@ -222,15 +188,11 @@ begin
     Result := TVXMaterialMultiProxy(TVXMaterialMultiProxyMasters(Collection).GetOwner);
 end;
 
-// NotifyChange
-//
 procedure TVXMaterialMultiProxyMaster.NotifyChange;
 begin
   TVXMaterialMultiProxyMasters(Collection).NotifyChange;
 end;
 
-// GetDisplayName
-//
 function TVXMaterialMultiProxyMaster.GetDisplayName: string;
 begin
   if MasterObject <> nil then
@@ -240,8 +202,6 @@ begin
   Result := Result + Format(' [%.2f; %.2f[', [DistanceMin, DistanceMax]);
 end;
 
-// SetMasterObject
-//
 procedure TVXMaterialMultiProxyMaster.SetMasterObject(const Val: TVXBaseSceneObject);
 begin
   if FMasterObject <> Val then
@@ -255,8 +215,6 @@ begin
   end;
 end;
 
-// SetDistanceMin
-//
 procedure TVXMaterialMultiProxyMaster.SetDistanceMin(const Val: Single);
 var
   tmp: Single;
@@ -269,8 +227,6 @@ begin
   end;
 end;
 
-// SetDistanceMax
-//
 procedure TVXMaterialMultiProxyMaster.SetDistanceMax(const Val: Single);
 var
   tmp: Single;
@@ -283,8 +239,6 @@ begin
   end;
 end;
 
-// GetMaterialLibrary
-//
 function TVXMaterialMultiProxyMaster.GetMaterialLibrary: TVXAbstractMaterialLibrary;
 begin
   if OwnerObject = nil then
@@ -293,22 +247,16 @@ begin
     Result := OwnerObject.FMaterialLibrary;
 end;
 
-// GetDistanceMax
-//
 function TVXMaterialMultiProxyMaster.GetDistanceMax: Single;
 begin
   Result := sqrt(FDistanceMax2);
 end;
 
-// GetDistanceMin
-//
 function TVXMaterialMultiProxyMaster.GetDistanceMin: Single;
 begin
   Result := sqrt(FDistanceMin2);
 end;
 
-// SetMasterLibMaterialName
-//
 procedure TVXMaterialMultiProxyMaster.SetMasterLibMaterialName(
   const Value: TVXLibMaterialName);
 begin
@@ -325,8 +273,6 @@ begin
   end;
 end;
 
-// GetMasterLibMaterialName
-//
 function TVXMaterialMultiProxyMaster.GetMasterLibMaterialName: TVXLibMaterialName;
 begin
   Result := OwnerObject.FMaterialLibrary.GetNameOfLibMaterial(FMasterLibMaterial);
@@ -339,45 +285,33 @@ end;
 // ------------------ TVXMaterialMultiProxyMasters ------------------
 // ------------------
 
-// Create
-//
 constructor TVXMaterialMultiProxyMasters.Create(AOwner: TPersistent);
 begin
   inherited Create(AOwner, TVXMaterialMultiProxyMaster);
 end;
 
-// SetItems
-//
 procedure TVXMaterialMultiProxyMasters.SetItems(index: Integer;
   const Val: TVXMaterialMultiProxyMaster);
 begin
   inherited Items[index] := Val;
 end;
 
-// GetItems
-//
 function TVXMaterialMultiProxyMasters.GetItems(index: Integer): TVXMaterialMultiProxyMaster;
 begin
   Result := TVXMaterialMultiProxyMaster(inherited Items[index]);
 end;
 
-// Update
-//
 procedure TVXMaterialMultiProxyMasters.Update(Item: TCollectionItem);
 begin
   inherited;
   NotifyChange;
 end;
 
-// Add (simple)
-//
 function TVXMaterialMultiProxyMasters.Add: TVXMaterialMultiProxyMaster;
 begin
   Result := (inherited Add) as TVXMaterialMultiProxyMaster;
 end;
 
-// Add (classic params)
-//
 function TVXMaterialMultiProxyMasters.Add(Master: TVXBaseSceneObject;
   DistanceMin, DistanceMax: Single): TVXMaterialMultiProxyMaster;
 begin
@@ -389,8 +323,6 @@ begin
   EndUpdate;
 end;
 
-// Notification
-//
 procedure TVXMaterialMultiProxyMasters.Notification(AComponent: TComponent);
 var
   I: Integer;
@@ -401,16 +333,12 @@ begin
         FMasterObject := nil;
 end;
 
-// NotifyChange
-//
 procedure TVXMaterialMultiProxyMasters.NotifyChange;
 begin
   if (UpdateCount = 0) and (GetOwner <> nil) and (GetOwner is TVXUpdateAbleComponent) then
     TVXUpdateAbleComponent(GetOwner).NotifyChange(Self);
 end;
 
-// EndUpdate
-//
 procedure TVXMaterialMultiProxyMasters.EndUpdate;
 begin
   inherited EndUpdate;
@@ -420,8 +348,6 @@ begin
 end;
 
 
-// Add
-//
 function TVXMaterialMultiProxyMasters.Add(Master: TVXBaseSceneObject;
   MasterLibMaterial: TVXLibMaterial;
   DistanceMin, DistanceMax: Single): TVXMaterialMultiProxyMaster;
@@ -439,8 +365,6 @@ end;
 // ------------------ TVXMaterialMultiProxy ------------------
 // ------------------
 
-// Create
-//
 constructor TVXMaterialMultiProxy.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
@@ -448,16 +372,12 @@ begin
   FMasterObjects := TVXMaterialMultiProxyMasters.Create(Self);
 end;
 
-// Destroy
-//
 destructor TVXMaterialMultiProxy.Destroy;
 begin
   inherited Destroy;
   FMasterObjects.Free;
 end;
 
-// Notification
-//
 procedure TVXMaterialMultiProxy.Notification(AComponent: TComponent; Operation: TOperation);
 begin
   if Operation = opRemove then
@@ -467,16 +387,12 @@ begin
   inherited;
 end;
 
-// SetMasterObjects
-//
 procedure TVXMaterialMultiProxy.SetMasterObjects(const Val: TVXMaterialMultiProxyMasters);
 begin
   FMasterObjects.Assign(Val);
   StructureChanged;
 end;
 
-// Assign
-//
 procedure TVXMaterialMultiProxy.Assign(Source: TPersistent);
 begin
   if Source is TVXMaterialMultiProxy then
@@ -484,8 +400,6 @@ begin
   inherited;
 end;
 
-// Render
-//
 procedure TVXMaterialMultiProxy.DoRender(var rci: TVXRenderContextInfo;
   renderSelf, renderChildren: Boolean);
 var
@@ -508,7 +422,7 @@ begin
         oldProxySubObject := rci.proxySubObject;
         rci.proxySubObject := True;
         with rci.PipelineTransformation do
-          ModelMatrix := MatrixMultiply(mpMaster.MasterObject.Matrix, ModelMatrix);
+          SetModelMatrix(MatrixMultiply(mpMaster.MasterObject.Matrix^, ModelMatrix^));
         if (mpMaster.MasterObject is TVXCustomSceneObject) and (FMaterialLibrary <> nil) then
         begin
           TVXCustomSceneObject(mpMaster.MasterObject).Material.QuickAssignMaterial(
@@ -529,8 +443,6 @@ begin
   ClearStructureChanged;
 end;
 
-// PrimaryMaster
-//
 function TVXMaterialMultiProxy.PrimaryMaster: TVXBaseSceneObject;
 begin
   if MasterObjects.Count > 0 then
@@ -539,8 +451,6 @@ begin
     Result := nil;
 end;
 
-// AxisAlignedDimensions
-//
 function TVXMaterialMultiProxy.AxisAlignedDimensionsUnscaled: TVector;
 var
   Master: TVXBaseSceneObject;
@@ -552,8 +462,6 @@ begin
     Result := inherited AxisAlignedDimensionsUnscaled;
 end;
 
-// RayCastIntersect
-//
 function TVXMaterialMultiProxy.RayCastIntersect(const rayStart, rayVector: TVector;
   intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean;
 var
@@ -589,8 +497,6 @@ begin
     Result := False;
 end;
 
-// GenerateSilhouette
-//
 function TVXMaterialMultiProxy.GenerateSilhouette(
   const silhouetteParameters: TVXSilhouetteParameters): TVXSilhouette;
 var
@@ -603,8 +509,6 @@ begin
     Result := nil;
 end;
 
-// SetMaterialLibrary
-//
 procedure TVXMaterialMultiProxy.SetMaterialLibrary(
   const Value: TVXMaterialLibrary);
 var
@@ -638,11 +542,7 @@ end;
 
 
 //-------------------------------------------------------------
-//-------------------------------------------------------------
-//-------------------------------------------------------------
 initialization
-//-------------------------------------------------------------
-//-------------------------------------------------------------
 //-------------------------------------------------------------
 
   RegisterClasses([TVXMaterialMultiProxyMaster, TVXMaterialMultiProxyMasters,

@@ -247,11 +247,11 @@ begin
         FCommandCache := GetTextureCombiners(FCombiners);
       for n := 0 to High(FCommandCache) do
       begin
-        rci.VKStates.ActiveTexture := FCommandCache[n].ActiveUnit;
+        rci.VXStates.ActiveTexture := FCommandCache[n].ActiveUnit;
         glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_ARB);
         glTexEnvi(GL_TEXTURE_ENV, FCommandCache[n].Arg1, FCommandCache[n].Arg2);
       end;
-      rci.VKStates.ActiveTexture := 0;
+      rci.VXStates.ActiveTexture := 0;
     except
       on E: Exception do
       begin

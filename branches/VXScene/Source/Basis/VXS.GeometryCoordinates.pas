@@ -1,16 +1,17 @@
 //
-// VXScene Component Library, based on GLScene http://glscene.sourceforge.net 
+// VXScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
 {
   Helper functions to convert between different three dimensional coordinate
-  systems. Room for optimisations. 
-  The history is logged in a former GLS version of the unit.     
+  systems. Room for optimisations.
+  The history is logged in a former GLS version of the unit.
 }
 unit VXS.GeometryCoordinates;
 
 interface
 
 uses
+  System.Math,
   VXS.VectorGeometry;
 
 { Convert cylindrical to cartesian [single]. theta in rad}
@@ -53,12 +54,11 @@ procedure ProlateSpheroidal_Cartesian(const xi,eta,phi,a:single;
 procedure ProlateSpheroidal_Cartesian(const xi,eta,phi,a:double;
   var x,y,z:double);overload;
 { Convert Prolate-Spheroidal to Cartesian [single](with error check). eta,phi in rad}
-procedure ProlateSpheroidal_Cartesian(const xi,eta,phi,a:single; var x,y,z:single;
-  var ierr:integer);overload;
+procedure ProlateSpheroidal_Cartesian(const xi,eta,phi,a:single; 
+  var x,y,z:single; var ierr:integer);overload;
 { Convert Prolate-Spheroidal to Cartesian [single](with error check). eta,phi in rad}
 procedure ProlateSpheroidal_Cartesian(const xi,eta,phi,a:double; var x,y,z:double;
   var ierr:integer);overload;
-
 { Convert Oblate-Spheroidal to Cartesian. [Single] eta, phi in rad}
 procedure OblateSpheroidal_Cartesian(const xi,eta,phi,a:single;
   var x,y,z:single);overload;
@@ -66,12 +66,11 @@ procedure OblateSpheroidal_Cartesian(const xi,eta,phi,a:single;
 procedure OblateSpheroidal_Cartesian(const xi,eta,phi,a:double;
   var x,y,z:double);overload;
 { Convert Oblate-Spheroidal to Cartesian (with error check). eta,phi in rad}
-procedure OblateSpheroidal_Cartesian(const xi,eta,phi,a:single; var x,y,z:single;
-  var ierr:integer);overload;
+procedure OblateSpheroidal_Cartesian(const xi,eta,phi,a:single; 
+  var x,y,z:single; var ierr:integer);overload;
 { Convert Oblate-Spheroidal to Cartesian (with error check).[Double] eta,phi in rad}
-procedure OblateSpheroidal_Cartesian(const xi,eta,phi,a:double; var x,y,z:double;
-  var ierr:integer);overload;
-
+procedure OblateSpheroidal_Cartesian(const xi,eta,phi,a:double; 
+  var x,y,z:double; var ierr:integer);overload;
 { Convert Bipolar to Cartesian. u in rad}
 procedure BipolarCylindrical_Cartesian(const u,v,z1,a:single;
   var x,y,z:single);overload;
@@ -79,18 +78,14 @@ procedure BipolarCylindrical_Cartesian(const u,v,z1,a:single;
 procedure BipolarCylindrical_Cartesian(const u,v,z1,a:double;
   var x,y,z:double);overload;
 { Convert Bipolar to Cartesian (with error check). u in rad}
-procedure BipolarCylindrical_Cartesian(const u,v,z1,a:single; var x,y,z:single;
-  var ierr:integer);overload;
+procedure BipolarCylindrical_Cartesian(const u,v,z1,a:single; 
+  var x,y,z:single; var ierr:integer);overload;
 { Convert Bipolar to Cartesian (with error check). [Double] u in rad}
-procedure BipolarCylindrical_Cartesian(const u,v,z1,a:double; var x,y,z:double;
-  var ierr:integer);overload;
+procedure BipolarCylindrical_Cartesian(const u,v,z1,a:double; 
+  var x,y,z:double; var ierr:integer);overload;
 
 //---------------------------------------------------------------------
-//---------------------------------------------------------------------
-//---------------------------------------------------------------------
 implementation
-//---------------------------------------------------------------------
-//---------------------------------------------------------------------
 //---------------------------------------------------------------------
 
 // ----- Cylindrical_Cartesian -------------------------------------------------
@@ -167,7 +162,7 @@ procedure Cartesian_Cylindrical(const x,y,z1:single; var r,theta,z:single);
 
 begin
   r := sqrt(x*x+y*y);
-  theta := ArcTangent2(y,x);
+  theta := ArcTan2(y,x);
   z := z1;
 end;
 // ----- Cartesian_Cylindrical -------------------------------------------------
@@ -176,7 +171,7 @@ procedure Cartesian_Cylindrical(const x,y,z1:double; var r,theta,z:double);
 
 begin
   r := sqrt(x*x+y*y);
-  theta := ArcTangent2(y,x);
+  theta := ArcTan2(y,x);
   z := z1;
 end;
 // ----- Spherical_Cartesian ---------------------------------------------------
@@ -271,16 +266,14 @@ procedure Cartesian_Spherical(const x,y,z:single; var r,theta,phi:single);
 
 begin
   r := sqrt((x*x)+(y*y)+(z*z));
-  theta := ArcTangent2(y,x);
+  theta := ArcTan2(y,x);
   phi := ArcCosine(z/r);
 end;
 
-// Cartesian_Spherical
-//
 procedure Cartesian_Spherical(const v : TAffineVector; var r, theta, phi : Single);
 begin
    r := VectorLength(v);
-   theta := ArcTangent2(v.Y, v.X);
+   theta := ArcTan2(v.Y, v.X);
    phi := ArcCosine(v.Z/r);
 end;
 
@@ -293,7 +286,7 @@ procedure Cartesian_Spherical(const x,y,z:double; var r,theta,phi:double);
 
 begin
   r := Sqrt((x*x)+(y*y)+(z*z));
-  theta := ArcTangent2(y,x);
+  theta := ArcTan2(y,x);
   phi := ArcCosine(z/r);
 end;
 // ----- ProlateSpheroidal_Cartesian -------------------------------------------
@@ -351,8 +344,8 @@ ierr: [0] = ok,
       [2] = eta out of bounds. Acceptable eta: [0,pi]
       [3] = phi out of bounds. Acceptable phi: [0,2pi)
 Ref: http://mathworld.wolfram.com/ProlateSpheroidalCoordinates.html}
-procedure ProlateSpheroidal_Cartesian(const xi,eta,phi,a:single; var x,y,z:single;
-  var ierr:integer);overload;
+procedure ProlateSpheroidal_Cartesian(const xi,eta,phi,a:single; 
+  var x,y,z:single; var ierr:integer);overload;
 
 var
   sn,cs,snphi,csphi,shx,chx : single;
@@ -387,8 +380,8 @@ ierr: [0] = ok,
       [2] = eta out of bounds. Acceptable eta: [0,pi]
       [3] = phi out of bounds. Acceptable phi: [0,2pi)
 Ref: http://mathworld.wolfram.com/ProlateSpheroidalCoordinates.html}
-procedure ProlateSpheroidal_Cartesian(const xi,eta,phi,a:double; var x,y,z:double;
-  var ierr:integer);overload;
+procedure ProlateSpheroidal_Cartesian(const xi,eta,phi,a:double; 
+  var x,y,z:double; var ierr:integer);overload;
 
 var
   sn,cs,snphi,csphi,shx,chx : double;
@@ -475,8 +468,8 @@ ierr: [0] = ok,
       [2] = eta out of bounds. Acceptable eta: [-0.5*pi,0.5*pi]
       [3] = phi out of bounds. Acceptable phi: [0,2*pi)
 Ref: http://mathworld.wolfram.com/ProlateSpheroidalCoordinates.html}
-procedure OblateSpheroidal_Cartesian(const xi,eta,phi,a:single; var x,y,z:single;
-  var ierr:integer);overload;
+procedure OblateSpheroidal_Cartesian(const xi,eta,phi,a:single; 
+  var x,y,z:single; var ierr:integer);overload;
 
 var
   sn,cs,snphi,csphi,shx,chx : single;
@@ -511,8 +504,8 @@ ierr: [0] = ok,
       [2] = eta out of bounds. Acceptable eta: [-0.5*pi,0.5*pi]
       [3] = phi out of bounds. Acceptable phi: [0,2*pi)
 Ref: http://mathworld.wolfram.com/ProlateSpheroidalCoordinates.html}
-procedure OblateSpheroidal_Cartesian(const xi,eta,phi,a:double; var x,y,z:double;
-  var ierr:integer);overload;
+procedure OblateSpheroidal_Cartesian(const xi,eta,phi,a:double; 
+  var x,y,z:double; var ierr:integer);overload;
 
 var
   sn,cs,snphi,csphi,shx,chx : double;
@@ -581,8 +574,8 @@ ierr: [0] = ok,
       [2] = v out of bounds. Acceptable v: (-inf,inf)
       [3] = z1 out of bounds. Acceptable z1: (-inf,inf)
 Ref: http://mathworld.wolfram.com/BiPolarCylindricalCoordinates.html}
-procedure BipolarCylindrical_Cartesian(const u,v,z1,a:single;var x,y,z:single;
-  var ierr:integer);overload;
+procedure BipolarCylindrical_Cartesian(const u,v,z1,a:single;
+  var x,y,z:single; var ierr:integer);overload;
 
 var
   cs,sn,shx,chx:single;
@@ -612,8 +605,8 @@ ierr: [0] = ok,
       [2] = v out of bounds. Acceptable v: (-inf,inf)
       [3] = z1 out of bounds. Acceptable z1: (-inf,inf)
 Ref: http://mathworld.wolfram.com/BiPolarCylindricalCoordinates.html}
-procedure BipolarCylindrical_Cartesian(const u,v,z1,a:double;var x,y,z:double;
-  var ierr:integer);overload;
+procedure BipolarCylindrical_Cartesian(const u,v,z1,a:double;
+  var x,y,z:double; var ierr:integer);overload;
 
 var
   cs,sn,shx,chx:double;

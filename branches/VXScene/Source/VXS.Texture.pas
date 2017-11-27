@@ -154,13 +154,13 @@ type
     {Save textureImage to file.
      This may not save a picture, but for instance, parameters, if the
      textureImage is a procedural texture. }
-    procedure SaveToFile(const fileName: string); dynamic;
+    procedure SaveToFile(const fileName: string); virtual;
     {Load textureImage from a file.
      This may not load a picture, but for instance, parameters, if the
      textureImage is a procedural texture.
      Subclasses should invoke inherited which will take care of the
      "OnTextureNeeded" stuff. }
-    procedure LoadFromFile(const fileName: string); dynamic;
+    procedure LoadFromFile(const fileName: string); virtual;
     {Returns a user-friendly denomination for the class.
      This denomination is used for picking a texture image class
      in the IDE expert. }
@@ -171,7 +171,7 @@ type
      takes its value from FriendlyName. }
     class function FriendlyDescription: string; virtual;
     {Request reload/refresh of data upon next use. }
-    procedure Invalidate; dynamic;
+    procedure Invalidate; virtual;
      {Returns image's bitmap handle.
      If the actual image is not a windows bitmap (BMP), descendants should
      take care of properly converting to bitmap. }
@@ -2407,10 +2407,10 @@ procedure TVXTexture.Apply(var rci: TVXRenderContextInfo);
     case MappingMode of
       tmmCubeMapReflection, tmmCubeMapNormal:
         begin
-          m := rci.PipelineTransformation.ViewMatrix;
+          m := rci.PipelineTransformation.ViewMatrix^;
           NormalizeMatrix(m);
           TransposeMatrix(m);
-          rci.VKStates.SetTextureMatrix(m);
+          rci.VXStates.SetTextureMatrix(m);
         end;
       tmmCubeMapLight0:
         begin
@@ -2419,11 +2419,11 @@ procedure TVXTexture.Apply(var rci: TVXRenderContextInfo);
             begin
               m := TVXLightSource(Items[0]).AbsoluteMatrix;
               NormalizeMatrix(m);
-              mm := rci.PipelineTransformation.ViewMatrix;
+              mm := rci.PipelineTransformation.ViewMatrix^;
               NormalizeMatrix(mm);
               TransposeMatrix(mm);
               m := MatrixMultiply(m, mm);
-              rci.VKStates.SetTextureMatrix(m);
+              rci.VXStates.SetTextureMatrix(m);
             end;
         end;
       tmmCubeMapCamera:
@@ -2432,11 +2432,11 @@ procedure TVXTexture.Apply(var rci: TVXRenderContextInfo);
           m.Y := VectorNegate(rci.cameraDirection);
           m.Z := rci.cameraUp;
           m.W := WHmgPoint;
-          mm := rci.PipelineTransformation.ViewMatrix;
+          mm := rci.PipelineTransformation.ViewMatrix^;
           NormalizeMatrix(mm);
           TransposeMatrix(mm);
           m := MatrixMultiply(m, mm);
-          rci.VKStates.SetTextureMatrix(m);
+          rci.VXStates.SetTextureMatrix(m);
         end;
     end;
   end;
@@ -2451,14 +2451,14 @@ begin
   H := Handle;
   if not Disabled and (H > 0) then
   begin
-    with rci.VKStates do
+    with rci.VxStates do
     begin
       ActiveTexture := 0;
       TextureBinding[0, FTextureHandle.Target] := H;
       ActiveTextureEnabled[FTextureHandle.Target] := True;
     end;
 
-    if not rci.VKStates.ForwardContext then
+    if not rci.VXStates.ForwardContext then
     begin
       if FTextureHandle.Target = ttTextureCube then
         SetCubeMapTextureMatrix;
@@ -2469,7 +2469,7 @@ begin
       xgl.MapTexCoordToMain;
     end;
   end
-  else if not rci.VKStates.ForwardContext then
+  else if not rci.VXStates.ForwardContext then
   begin // default
     xgl.MapTexCoordToMain;
   end;
@@ -2478,12 +2478,12 @@ end;
 procedure TVXTexture.UnApply(var rci: TVXRenderContextInfo);
 begin
   if not Disabled
-    and not rci.VKStates.ForwardContext then
+    and not rci.VXStates.ForwardContext then
   begin
     // Multisample image do not work with FFP
     if FTextureHandle.Target in [ttNoShape, ttTexture2DMultisample, ttTexture2DMultisampleArray] then
       exit;
-    with rci.VKStates do
+    with rci.VXStates do
     begin
       ActiveTexture := 0;
       ActiveTextureEnabled[FTextureHandle.Target] := False;
@@ -2517,7 +2517,7 @@ begin
     if (FTextureHandle.Target = ttTexture2DMultisample) or
       (FTextureHandle.Target = ttTexture2DMultisampleArray) then
       exit;
-    with rci.VKStates do
+    with rci.VxStates do
     begin
       ActiveTexture := n - 1;
       TextureBinding[n - 1, FTextureHandle.Target] := Handle;
@@ -2526,10 +2526,10 @@ begin
         SetTextureMatrix(textureMatrix^)
       else if FTextureHandle.Target = ttTextureCube then
       begin
-        m := rci.PipelineTransformation.ModelViewMatrix;
+        m := rci.PipelineTransformation.ModelViewMatrix^;
         NormalizeMatrix(m);
         TransposeMatrix(m);
-        rci.VKStates.SetTextureMatrix(m);
+        rci.VXStates.SetTextureMatrix(m);
       end;
 
       if not ForwardContext then
@@ -2546,13 +2546,13 @@ end;
 procedure TVXTexture.UnApplyAsTextureN(n: Integer; var rci: TVXRenderContextInfo;
   reloadIdentityTextureMatrix: boolean);
 begin
-  if not rci.VKStates.ForwardContext then
+  if not rci.VXStates.ForwardContext then
   begin
     // Multisample image do not work with FFP
     if (FTextureHandle.Target = ttTexture2DMultisample) or
       (FTextureHandle.Target = ttTexture2DMultisampleArray) then
       exit;
-    with rci.VKStates do
+    with rci.VXStates do
     begin
       ActiveTexture := n - 1;
       ActiveTextureEnabled[FTextureHandle.Target] := False;
@@ -2592,7 +2592,7 @@ begin
   begin
     if FSamplerHandle.IsDataNeedUpdate then
     begin
-      with CurrentVKContext.VKStates do
+      with CurrentVXContext.VxStates do
         TextureBinding[ActiveTexture, FTextureHandle.Target] := Result;
       PrepareParams(DecodeTextureTarget(FTextureHandle.Target));
       FSamplerHandle.NotifyDataUpdated;
@@ -2616,7 +2616,7 @@ var
   var
     t: TVXTextureTarget;
   begin
-    with CurrentVKContext.VKStates do
+    with CurrentVXContext.VxStates do
     begin
       if TextureBinding[ActiveTexture, FTextureHandle.Target] = FTextureHandle.Handle then
         TextureBinding[ActiveTexture, FTextureHandle.Target] := 0;
@@ -2628,13 +2628,13 @@ var
   var
     t: TVXTextureTarget;
   begin
-    with CurrentVKContext.VKStates do
+    with CurrentVXContext.VxStates do
       for t := Low(TVXTextureTarget) to High(TVXTextureTarget) do
         TextureBinding[ActiveTexture, t] := LBinding[t];
   end;
 
 begin
-  with CurrentVKContext.VKStates do
+  with CurrentVXContext.VxStates do
   begin
     StoreBindings;
     try
@@ -2694,7 +2694,7 @@ begin
     texComp := tcNone; // no compression support for float_type
 
   if (texComp <> tcNone) and (TextureFormat <= tfNormalMap) then
-    with CurrentVKContext.VKStates do
+    with CurrentVXContext.VxStates do
     begin
       case texComp of
         tcStandard: TextureCompressionHint := hintDontCare;
@@ -2796,7 +2796,7 @@ begin
       texComp := tcNone;
 
     if (texComp <> tcNone) and (TextureFormat <= tfNormalMap) then
-      with CurrentVKContext.VKStates do
+      with CurrentVXContext.VXStates do
       begin
         case texComp of
           tcStandard: TextureCompressionHint := hintDontCare;
@@ -2869,7 +2869,7 @@ begin
 
   R_Dim := GL_ARB_texture_cube_map or GL_EXT_texture3D;
 
-  with CurrentVKContext.VKStates do
+  with CurrentVXContext.VXStates do
   begin
     UnpackAlignment := 1;
     UnpackRowLength := 0;
@@ -2929,7 +2929,7 @@ begin
       cTextureCompareMode[fTextureCompareMode]);
     glTexParameteri(target, GL_TEXTURE_COMPARE_FUNC,
       cGLComparisonFunctionToGLEnum[fTextureCompareFunc]);
-    if not FTextureHandle.RenderingContext.VKStates.ForwardContext then
+   // if not FTextureHandle.RenderingContext.VXStates.ForwardContext then
       glTexParameteri(target, GL_DEPTH_TEXTURE_MODE,
         cDepthTextureMode[fDepthTextureMode]);
   end;
@@ -3052,7 +3052,7 @@ begin
   FApplied := False;
   if FTexture.Enabled then
   begin
-    rci.VKStates.ActiveTexture := FTextureIndex;
+    rci.VXStates.ActiveTexture := FTextureIndex;
     glMatrixMode(GL_TEXTURE);
     glPushMatrix;
     if FTextureMatrixIsIdentity then
@@ -3060,7 +3060,7 @@ begin
     else
       glLoadMatrixf(@FTextureMatrix.X.X);
     glMatrixMode(GL_MODELVIEW);
-    rci.VKStates.ActiveTexture := 0;
+    rci.VXStates.ActiveTexture := 0;
     if FTextureIndex = 0 then
       FTexture.Apply(rci)
     else if FTextureIndex = 1 then
@@ -3081,11 +3081,11 @@ begin
       FTexture.UnApplyAsTexture2(rci, false)
     else if FTextureIndex >= 2 then
       FTexture.UnApplyAsTextureN(FTextureIndex + 1, rci, false);
-    rci.VKStates.ActiveTexture := FTextureIndex;
+    rci.VXStates.ActiveTexture := FTextureIndex;
     glMatrixMode(GL_TEXTURE);
     glPopMatrix;
     glMatrixMode(GL_MODELVIEW);
-    rci.VKStates.ActiveTexture := 0;
+    rci.VXStates.ActiveTexture := 0;
     FApplied := False;
   end;
 end;
@@ -3252,11 +3252,7 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
   RegisterTextureImageClass(TVXBlankImage);

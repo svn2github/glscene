@@ -118,8 +118,8 @@
         <DCCReference Include="..\..\Resources\VKSceneOpenAL.dcr"/>
         <DCCReference Include="rtl.dcp"/>
         <DCCReference Include="fmx.dcp"/>
-        <DCCReference Include="VXScene_DesignTime.dcp"/>
-        <DCCReference Include="VXScene_Sounds_RunTime.dcp"/>
+        <DCCReference Include="VXScene_DT.dcp"/>
+        <DCCReference Include="VXScene_Sounds_RT.dcp"/>
         <DCCReference Include="..\..\Source\SoundVideoAPIs\VXS.SoundRegister.pas"/>
         <BuildConfiguration Include="Debug">
             <Key>Cfg_2</Key>

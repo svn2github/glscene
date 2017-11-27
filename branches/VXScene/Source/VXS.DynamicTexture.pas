@@ -121,7 +121,7 @@ begin
     // Force creation of texture
     // This is a bit of a hack, should be a better way...
     LTarget := TVXTexture(OwnerTexture).TextureHandle.Target;
-    CurrentVKContext.VKStates.TextureBinding[0, LTarget] := TVXTexture(OwnerTexture).Handle;
+    CurrentVXContext.VXStates.TextureBinding[0, LTarget] := TVXTexture(OwnerTexture).Handle;
     case LTarget of
       ttNoShape: ;
       ttTexture1D: ;
@@ -189,7 +189,7 @@ begin
   end;
 
   LTarget := TVXTexture(OwnerTexture).TextureHandle.Target;
-  CurrentVKContext.VKStates.TextureBinding[0, LTarget] := TVXTexture(OwnerTexture).Handle;
+  CurrentVXContext.VXStates.TextureBinding[0, LTarget] := TVXTexture(OwnerTexture).Handle;
 
   case LTarget of
     ttNoShape: ;

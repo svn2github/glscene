@@ -33,8 +33,6 @@ uses
   VXS.Utils;
 
 type
-  // TImposterOptions
-  //
   { Imposter rendering options.
      Following options are supported:
       impoBlended : the imposters are transparently blended during renders,
@@ -47,9 +45,7 @@ type
       impoPerspectiveCorrection : activates a special imposter rendering
      projection suitable for distorting the sprites when seen from a level
      angle of view with a wide focal camera (think trees/grass when walking
-     in a forest), if not active, the imposter sprites are camera-facing
-      
-  }
+     in a forest), if not active, the imposter sprites are camera-facing  }
   TImposterOption = (impoBlended, impoAlphaTest, impoNearestFiltering,
     impoPerspectiveCorrection);
   TImposterOptions = set of TImposterOption;
@@ -60,8 +56,6 @@ const
 type
   TVXImposterBuilder = class;
 
-  // TImposter
-  //
   { Base class for imposters manipulation and handling. 
      Rendering imposters is performed by three methods, BeginRender must
      be invoked first, then Render for each of the impostr
@@ -77,32 +71,24 @@ type
     FImpostoredObject: TVXBaseSceneObject;
     FAspectRatio: Single;
     FModulated: Boolean;
-
   protected
-    
     FVx, FVy: TVector;
     FStaticOffset: TVector;
     FQuad: array[0..3] of TVector;
     FStaticScale: Single;
-
-    procedure PrepareTexture(var rci: TVXRenderContextInfo); dynamic;
+    procedure PrepareTexture(var rci: TVXRenderContextInfo); virtual;
     procedure RenderQuad(const texExtents, objPos: TVector; size: Single);
-
   public
-    
     constructor Create(aBuilder: TVXImposterBuilder); virtual;
     destructor Destroy; override;
-
     procedure BeginRender(var rci: TVXRenderContextInfo); virtual;
     procedure Render(var rci: TVXRenderContextInfo;
       const objPos, localCameraPos: TVector;
       size: Single); virtual;
     procedure EndRender(var rci: TVXRenderContextInfo); virtual;
-
     procedure RenderOnce(var rci: TVXRenderContextInfo;
       const objPos, localCameraPos: TVector;
       size: Single);
-
     property AspectRatio: Single read FAspectRatio write FAspectRatio;
     property Builder: TVXImposterBuilder read FBuilder;
     property Texture: TVXTextureHandle read FTexture;
@@ -111,6 +97,7 @@ type
     property Modulated: Boolean read FModulated write FModulated;
   end;
 
+   { Imposter loading events }
    TLoadingImposterEvent = function (Sender : TObject; impostoredObject :
      TVXBaseSceneObject; destImposter : TImposter) : TVXBitmap32 of object;
    {$NODEFINE TLoadingImposterEvent}
@@ -122,16 +109,11 @@ type
          TVXBaseSceneObject;
          destImposter : TImposter) of object;
 
-  // TImposterReference
-  //
   TImposterReference = (irCenter, irTop, irBottom);
 
-  // TVXImposterBuilder
-  //
   { Abstract ImposterBuilder class. }
   TVXImposterBuilder = class(TVXUpdateAbleComponent)
   private
-    
     FBackColor: TVXColor;
     FBuildOffset: TVXCoordinates;
     FImposterRegister: TPersistentObjectList;
@@ -141,20 +123,15 @@ type
     FImposterReference: TImposterReference;
     FOnLoadingImposter: TLoadingImposterEvent;
     FOnImposterLoaded: TImposterLoadedEvent;
-
   protected
-    
     procedure SetRenderPoint(AValue: TVXRenderPoint);
     procedure RenderPointFreed(Sender: TObject);
     procedure SetBackColor(AValue: TVXColor);
     procedure SetBuildOffset(AValue: TVXCoordinates);
     procedure SetImposterReference(AValue: TImposterReference);
-
     procedure InitializeImpostorTexture(const textureSize: TVXPoint);
-
     property ImposterRegister: TPersistentObjectList read FImposterRegister;
     procedure UnregisterImposter(imposter: TImposter);
-
     function CreateNewImposter: TImposter; virtual;
     procedure PrepareImposters(Sender: TObject; var rci: TVXRenderContextInfo);
       virtual;
@@ -165,15 +142,12 @@ type
       var rci: TVXRenderContextInfo;
       destImposter: TImposter;
       bmp32: TVXBitmap32); virtual;
-
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Notification(AComponent: TComponent; Operation: TOperation);
       override;
     procedure NotifyChange(Sender: TObject); override;
-
     { Returns a valid imposter for the specified object. 
        Imposter must have been requested first, and the builder given
        an opportunity to prepare it before it can be available. }
@@ -182,9 +156,7 @@ type
     procedure RequestImposterFor(impostoredObject: TVXBaseSceneObject);
     { Tells the imposter for the specified object is no longer needed. }
     procedure UnRequestImposterFor(impostoredObject: TVXBaseSceneObject);
-
   published
-    
       { Specifies the render point at which the impostor texture(s) can be prepared. 
          For best result, the render point should happen in viewer that has
          a destination alpha (otherwise, impostors will be opaque). }
@@ -207,7 +179,6 @@ type
       SetImposterReference default irCenter;
     { Alpha testing teshold.  }
     property AlphaTreshold: Single read FAlphaTreshold write FAlphaTreshold;
-
     { Event fired before preparing/loading an imposter. 
        If an already prepared version of the importer is available, place
        it in the TVXBitmap32 the event shall return (the bitmap will be
@@ -222,30 +193,21 @@ type
       FOnImposterLoaded;
   end;
 
-  // TVXStaticImposterBuilderCorona
-  //
     { Describes a set of orientation in a corona fashion. }
   TVXStaticImposterBuilderCorona = class(TCollectionItem)
   private
-    
     FSamples: Integer;
     FElevation: Single;
     FSampleBaseIndex: Integer;
-
   protected
-    
     function GetDisplayName: string; override;
     procedure SetSamples(AValue: Integer);
     procedure SetElevation(AValue: Single);
-
   public
-    
     constructor Create(ACollection: TCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
-
   published
-    
     property Samples: Integer read FSamples write SetSamples default 8;
     property Elevation: Single read FElevation write SetElevation;
   end;
@@ -255,67 +217,43 @@ type
     corona: TVXStaticImposterBuilderCorona;
   end;
 
-  // TVXStaticImposterBuilderCoronas
-  //
   TVXStaticImposterBuilderCoronas = class(TOwnedCollection)
   private
-    
     FCoronaTangentLookup: array of TCoronaTangentLookup;
-
   protected
-    
     procedure SetItems(AIndex: Integer; const AValue:
       TVXStaticImposterBuilderCorona);
     function GetItems(AIndex: Integer): TVXStaticImposterBuilderCorona;
     procedure Update(Item: TCollectionItem); override;
-
     procedure PrepareSampleBaseIndices;
     procedure PrepareCoronaTangentLookup;
     function CoronaForElevationTangent(aTangent: Single):
       TVXStaticImposterBuilderCorona;
-
   public
-    
     constructor Create(AOwner: TPersistent);
-
     function Add: TVXStaticImposterBuilderCorona; overload;
     function Add(const elevation: Single; samples: Integer):
       TVXStaticImposterBuilderCorona; overload;
     property Items[AIndex: Integer]: TVXStaticImposterBuilderCorona read GetItems
     write SetItems; default;
     function SampleCount: Integer;
-
     procedure NotifyChange; virtual;
     procedure EndUpdate; override;
   end;
 
-  // TStaticImposter
-  //
   { Imposter class whose texture contains several views from different angles. }
   TStaticImposter = class(TImposter)
-  private
-    
-
-  protected
-    
-
   public
-    
     procedure Render(var rci: TVXRenderContextInfo;
       const objPos, localCameraPos: TVector;
       size: Single); override;
   end;
 
-  // TSIBLigthing
-  //
   TSIBLigthing = (siblNoLighting, siblStaticLighting, siblLocalLighting);
 
-  // TVXStaticImposterBuilder
-  //
   { Builds imposters whose texture is a catalog of prerendered views. }
   TVXStaticImposterBuilder = class(TVXImposterBuilder)
   private
-    
     FCoronas: TVXStaticImposterBuilderCoronas;
     FSampleSize: Integer;
     FTextureSize: TVXPoint;
@@ -324,9 +262,7 @@ type
     FSamplingRatioBias, FInvSamplingRatioBias: Single;
     FLighting: TSIBLigthing;
     FSamplesAlphaScale: Single;
-
   protected
-    
     procedure SetCoronas(AValue: TVXStaticImposterBuilderCoronas);
     procedure SetSampleSize(AValue: Integer);
     procedure SetSamplingRatioBias(AValue: Single);
@@ -334,13 +270,10 @@ type
     procedure SetLighting(AValue: TSIBLigthing);
     procedure SetSamplesAlphaScale(AValue: Single);
     function StoreSamplesAlphaScale: Boolean;
-
     function GetTextureSizeInfo: string;
     procedure SetTextureSizeInfo(const texSize: string);
-
     { Computes the optimal texture size that would be able to hold all samples. }
     function ComputeOptimalTextureSize: TVXPoint;
-
     function CreateNewImposter: TImposter; override;
     procedure DoPrepareImposter(var rci: TVXRenderContextInfo;
       impostoredObject: TVXBaseSceneObject;
@@ -350,12 +283,9 @@ type
       destImposter: TImposter;
       bmp32: TVXBitmap32); override;
     procedure ComputeStaticParams(destImposter: TImposter);
-
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
     { Render imposter texture. 
        Buffer and object must be compatible, RC must have been activated. }
     procedure Render(var rci: TVXRenderContextInfo;
@@ -365,19 +295,15 @@ type
        If this value is below 1, you're wasting texture space and may
        as well increase the number of samples. }
     function TextureFillRatio: Single;
-
     { Meaningful only after imposter texture has been prepared. }
     property TextureSize: TVXPoint read FTextureSize;
     property SamplesPerAxis: TVXPoint read FSamplesPerAxis;
-
   published
-    
       { Description of the samples looking orientations. }
     property Coronas: TVXStaticImposterBuilderCoronas read FCoronas write
       SetCoronas;
     { Size of the imposter samples (square). }
-    property SampleSize: Integer read FSampleSize write SetSampleSize default
-      32;
+    property SampleSize: Integer read FSampleSize write SetSampleSize default  32;
     { Size ratio applied to the impostor'ed objects during sampling. 
        Values greater than one can be used to "fill" the samples more
        by scaling up the object. This is especially useful when the impostor'ed
@@ -402,84 +328,55 @@ type
       SetTextureSizeInfo stored False;
   end;
 
-  // TVXDynamicImposterBuilder
-  //
   TVXDynamicImposterBuilder = class(TVXImposterBuilder)
   private
-    
     FMinTexSize, FMaxTexSize: Integer;
     FMinDistance, FTolerance: Single;
     FUseMatrixError: Boolean;
-
   protected
-    
     procedure SetMinDistance(const AValue: Single);
-
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     {         procedure DoRender(var rci : TVXRenderContextInfo;
                                 renderSelf, renderChildren : Boolean); override; }
-
   published
-    
     property MinTexSize: Integer read FMinTexSize write FMinTexSize;
     property MaxTexSize: Integer read FMaxTexSize write FMaxTexSize;
     property MinDistance: Single read FMinDistance write SetMinDistance;
     property Tolerance: Single read FTolerance write FTolerance;
     property UseMatrixError: Boolean read FUseMatrixError write FUseMatrixError;
-
   end;
 
-  // TVXImposter
-  //
   TVXImposter = class(TVXImmaterialSceneObject)
   private
-    
     FBuilder: TVXImposterBuilder;
     FImpostoredObject: TVXBaseSceneObject;
-
   protected
-    
     procedure SetBuilder(const AValue: TVXImposterBuilder);
     procedure SetImpostoredObject(const AValue: TVXBaseSceneObject);
-
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    procedure Notification(AComponent: TComponent; Operation: TOperation);
-      override;
+    procedure Notification(AComponent: TComponent; Operation: TOperation);  override;
     procedure DoRender(var ARci: TVXRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
-
   published
-    
     property Builder: TVXImposterBuilder read FBuilder write SetBuilder;
     property ImpostoredObject: TVXBaseSceneObject read FImpostoredObject write
       SetImpostoredObject;
   end;
 
-  //-------------------------------------------------------------
-  //-------------------------------------------------------------
-  //-------------------------------------------------------------
+//-------------------------------------------------------------
 implementation
-//-------------------------------------------------------------
-//-------------------------------------------------------------
 //-------------------------------------------------------------
 
 const
-  cReferenceToPos: array[Low(TImposterReference)..High(TImposterReference)] of
-    Single =
-    (0, -1, 1);
+  cReferenceToPos: array[Low(TImposterReference)..High(TImposterReference)] of Single = (0, -1, 1);
 
   // ----------
   // ---------- TImposter ----------
   // ----------
-
-  // Create
-  //
 
 constructor TImposter.Create(aBuilder: TVXImposterBuilder);
 begin
@@ -490,9 +387,6 @@ begin
   FAspectRatio := 1;
 end;
 
-// Destroy
-//
-
 destructor TImposter.Destroy;
 begin
   if Assigned(FBuilder) then
@@ -500,9 +394,6 @@ begin
   FTexture.Free;
   inherited;
 end;
-
-// PrepareTexture
-//
 
 procedure TImposter.PrepareTexture(var rci: TVXRenderContextInfo);
 var
@@ -513,21 +404,16 @@ begin
 
   FTexture.AllocateHandle;
   FTexture.Target := ttTexture2D;
-  rci.VKStates.TextureBinding[0, ttTexture2D] := FTexture.Handle;
+  rci.VXStates.TextureBinding[0, ttTexture2D] := FTexture.Handle;
   if GL_EXT_texture_edge_clamp then
     i := GL_CLAMP_TO_EDGE
   else
     i := GL_CLAMP;
-  begin
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, i);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, i);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  end;
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, i);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, i);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 end;
-
-// BeginRender
-//
 
 procedure TImposter.BeginRender(var rci: TVXRenderContextInfo);
 var
@@ -535,7 +421,7 @@ var
   filter: GLEnum;
   fx, fy, yOffset, cosAlpha, dynScale: Single;
 begin
-  with rci.VKStates do
+  with rci.VxStates do
   begin
     Disable(stLighting);
     Disable(stCullFace);
@@ -573,7 +459,7 @@ begin
     else
       glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 
-    mat := rci.PipelineTransformation.ModelViewMatrix;
+    mat := rci.PipelineTransformation.ModelViewMatrix^;
     FVx.X := mat.X.X;
     FVx.Y := mat.Y.X;
     FVx.Z := mat.Z.X;
@@ -612,9 +498,6 @@ begin
   end;
 end;
 
-// Render
-//
-
 procedure TImposter.Render(var rci: TVXRenderContextInfo;
   const objPos, localCameraPos: TVector;
   size: Single);
@@ -623,9 +506,6 @@ const
 begin
   RenderQuad(cQuadTexExtents, objPos, size);
 end;
-
-// RenderQuad
-//
 
 procedure TImposter.RenderQuad(const texExtents, objPos: TVector; size: Single);
 var
@@ -645,17 +525,11 @@ begin
   glVertex3fv(@pos);
 end;
 
-// EndRender
-//
-
 procedure TImposter.EndRender(var rci: TVXRenderContextInfo);
 begin
   glEnd;
-  rci.VKStates.ActiveTextureEnabled[ttTexture2D] := False;
+  rci.VXStates.ActiveTextureEnabled[ttTexture2D] := False;
 end;
-
-// RenderOnce
-//
 
 procedure TImposter.RenderOnce(var rci: TVXRenderContextInfo;
   const objPos, localCameraPos: TVector;
@@ -670,9 +544,6 @@ end;
 // ---------- TVXImposterBuilder ----------
 // ----------
 
-// Create
-//
-
 constructor TVXImposterBuilder.Create(AOwner: TComponent);
 begin
   inherited;
@@ -682,9 +553,6 @@ begin
   FImposterOptions := cDefaultImposterOptions;
   FAlphaTreshold := 0.5;
 end;
-
-// Destroy
-//
 
 destructor TVXImposterBuilder.Destroy;
 var
@@ -697,9 +565,6 @@ begin
   FImposterRegister.CleanFree;
   inherited;
 end;
-
-// Notification
-//
 
 procedure TVXImposterBuilder.Notification(AComponent: TComponent; Operation:
   TOperation);
@@ -724,16 +589,10 @@ begin
   inherited;
 end;
 
-// CreateNewImposter
-//
-
 function TVXImposterBuilder.CreateNewImposter: TImposter;
 begin
   Result := TImposter.Create(Self);
 end;
-
-// PrepareImposters
-//
 
 procedure TVXImposterBuilder.PrepareImposters(Sender: TObject; var rci:
   TVXRenderContextInfo);
@@ -764,9 +623,6 @@ begin
   end;
 end;
 
-// DoUserSpecifiedImposter
-//
-
 procedure TVXImposterBuilder.DoUserSpecifiedImposter(
   var rci: TVXRenderContextInfo;
   destImposter: TImposter;
@@ -779,9 +635,6 @@ begin
     destImposter.FTexture, False, GL_RGBA8, size, size, size);
 end;
 
-// NotifyChange
-//
-
 procedure TVXImposterBuilder.NotifyChange(Sender: TObject);
 var
   i: Integer;
@@ -790,9 +643,6 @@ begin
     TImposter(FImposterRegister[i]).Texture.DestroyHandle;
   inherited;
 end;
-
-// ImposterFor
-//
 
 function TVXImposterBuilder.ImposterFor(impostoredObject: TVXBaseSceneObject):
   TImposter;
@@ -807,9 +657,6 @@ begin
   end;
   Result := nil;
 end;
-
-// RequestImposterFor
-//
 
 procedure TVXImposterBuilder.RequestImposterFor(impostoredObject:
   TVXBaseSceneObject);
@@ -843,9 +690,6 @@ begin
   end;
 end;
 
-// SetRenderPoint
-//
-
 procedure TVXImposterBuilder.SetRenderPoint(AValue: TVXRenderPoint);
 begin
   if AValue <> FRenderPoint then
@@ -864,32 +708,20 @@ begin
   end;
 end;
 
-// RenderPointFreed
-//
-
 procedure TVXImposterBuilder.RenderPointFreed(Sender: TObject);
 begin
   FRenderPoint := nil;
 end;
-
-// SetBackColor
-//
 
 procedure TVXImposterBuilder.SetBackColor(AValue: TVXColor);
 begin
   FBackColor.Assign(AValue);
 end;
 
-// SetBuildOffset
-//
-
 procedure TVXImposterBuilder.SetBuildOffset(AValue: TVXCoordinates);
 begin
   FBuildOffset.Assign(AValue);
 end;
-
-// SetImposterReference
-//
 
 procedure TVXImposterBuilder.SetImposterReference(AValue: TImposterReference);
 begin
@@ -900,18 +732,12 @@ begin
   end;
 end;
 
-// InitializeImpostorTexture
-//
-
 procedure TVXImposterBuilder.InitializeImpostorTexture(const textureSize:
   TVXPoint);
 begin
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, textureSize.X, textureSize.Y, 0,
       GL_RGBA, GL_UNSIGNED_BYTE, nil);
 end;
-
-// UnregisterImposter
-//
 
 procedure TVXImposterBuilder.UnregisterImposter(imposter: TImposter);
 begin
@@ -926,25 +752,16 @@ end;
 // ---------- TVXStaticImposterBuilderCorona ----------
 // ----------
 
-// Create
-//
-
 constructor TVXStaticImposterBuilderCorona.Create(ACollection: TCollection);
 begin
   inherited;
   FSamples := 8;
 end;
 
-// Destroy
-//
-
 destructor TVXStaticImposterBuilderCorona.Destroy;
 begin
   inherited;
 end;
-
-// Assign
-//
 
 procedure TVXStaticImposterBuilderCorona.Assign(Source: TPersistent);
 begin
@@ -956,16 +773,10 @@ begin
   inherited;
 end;
 
-// GetDisplayName
-//
-
 function TVXStaticImposterBuilderCorona.GetDisplayName: string;
 begin
   Result := Format('%.1f° / %d samples', [Elevation, Samples]);
 end;
-
-// SetSamples
-//
 
 procedure TVXStaticImposterBuilderCorona.SetSamples(AValue: Integer);
 begin
@@ -977,9 +788,6 @@ begin
     (Collection as TVXStaticImposterBuilderCoronas).NotifyChange;
   end;
 end;
-
-// SetElevation
-//
 
 procedure TVXStaticImposterBuilderCorona.SetElevation(AValue: Single);
 begin
@@ -994,24 +802,15 @@ end;
 // ---------- TVXStaticImposterBuilderCoronas ----------
 // ----------
 
-// Create
-//
-
 constructor TVXStaticImposterBuilderCoronas.Create(AOwner: TPersistent);
 begin
   inherited Create(AOwner, TVXStaticImposterBuilderCorona);
 end;
 
-// Add
-//
-
 function TVXStaticImposterBuilderCoronas.Add: TVXStaticImposterBuilderCorona;
 begin
   Result := (inherited Add) as TVXStaticImposterBuilderCorona;
 end;
-
-// Add (elevation, samples)
-//
 
 function TVXStaticImposterBuilderCoronas.Add(const elevation: Single;
   samples: Integer): TVXStaticImposterBuilderCorona;
@@ -1021,17 +820,11 @@ begin
   Result.Samples := samples;
 end;
 
-// SetItems
-//
-
 procedure TVXStaticImposterBuilderCoronas.SetItems(AIndex: Integer; const
   AValue: TVXStaticImposterBuilderCorona);
 begin
   inherited Items[AIndex] := AValue;
 end;
-
-// GetItems
-//
 
 function TVXStaticImposterBuilderCoronas.GetItems(AIndex: Integer):
   TVXStaticImposterBuilderCorona;
@@ -1039,17 +832,11 @@ begin
   Result := TVXStaticImposterBuilderCorona(inherited Items[AIndex]);
 end;
 
-// Update
-//
-
 procedure TVXStaticImposterBuilderCoronas.Update(Item: TCollectionItem);
 begin
   inherited;
   NotifyChange;
 end;
-
-// NotifyChange
-//
 
 procedure TVXStaticImposterBuilderCoronas.NotifyChange;
 begin
@@ -1058,17 +845,11 @@ begin
     TVXUpdateAbleComponent(GetOwner).NotifyChange(Self);
 end;
 
-// EndUpdate
-//
-
 procedure TVXStaticImposterBuilderCoronas.EndUpdate;
 begin
   inherited;
   NotifyChange;
 end;
-
-// SampleCount
-//
 
 function TVXStaticImposterBuilderCoronas.SampleCount: Integer;
 var
@@ -1078,9 +859,6 @@ begin
   for i := 0 to Count - 1 do
     Result := Result + Items[i].Samples;
 end;
-
-// PrepareSampleBaseIndices
-//
 
 procedure TVXStaticImposterBuilderCoronas.PrepareSampleBaseIndices;
 var
@@ -1093,9 +871,6 @@ begin
     Inc(p, Items[i].Samples);
   end;
 end;
-
-// PrepareCoronaTangentLookup
-//
 
 procedure TVXStaticImposterBuilderCoronas.PrepareCoronaTangentLookup;
 var
@@ -1128,9 +903,6 @@ begin
   end;
 end;
 
-// CoronaForElevationTangent
-//
-
 function TVXStaticImposterBuilderCoronas.CoronaForElevationTangent(aTangent:
   Single): TVXStaticImposterBuilderCorona;
 var
@@ -1156,9 +928,6 @@ end;
 // ----------
 // ---------- TStaticImposter ----------
 // ----------
-
-// Render
-//
 
 procedure TStaticImposter.Render(var rci: TVXRenderContextInfo;
   const objPos, localCameraPos: TVector;
@@ -1203,9 +972,6 @@ end;
 // ---------- TVXStaticImposterBuilder ----------
 // ----------
 
-// Create
-//
-
 constructor TVXStaticImposterBuilder.Create(AOwner: TComponent);
 begin
   inherited;
@@ -1218,25 +984,16 @@ begin
   FSamplesAlphaScale := 1;
 end;
 
-// Destroy
-//
-
 destructor TVXStaticImposterBuilder.Destroy;
 begin
   FCoronas.Free;
   inherited;
 end;
 
-// CreateNewImposter
-//
-
 function TVXStaticImposterBuilder.CreateNewImposter: TImposter;
 begin
   Result := TStaticImposter.Create(Self);
 end;
-
-// SetCoronas
-//
 
 procedure TVXStaticImposterBuilder.SetCoronas(AValue:
   TVXStaticImposterBuilderCoronas);
@@ -1244,9 +1001,6 @@ begin
   FCoronas.Assign(AValue);
   NotifyChange(Self);
 end;
-
-// SetSampleSize
-//
 
 procedure TVXStaticImposterBuilder.SetSampleSize(AValue: Integer);
 begin
@@ -1262,9 +1016,6 @@ begin
   end;
 end;
 
-// SetSamplingRatioBias
-//
-
 procedure TVXStaticImposterBuilder.SetSamplingRatioBias(AValue: Single);
 begin
   AValue := ClampValue(AValue, 0.1, 10);
@@ -1276,16 +1027,10 @@ begin
   end;
 end;
 
-// StoreSamplingRatioBias
-//
-
 function TVXStaticImposterBuilder.StoreSamplingRatioBias: Boolean;
 begin
   Result := (FSamplingRatioBias <> 1);
 end;
-
-// SetLighting
-//
 
 procedure TVXStaticImposterBuilder.SetLighting(AValue: TSIBLigthing);
 begin
@@ -1296,9 +1041,6 @@ begin
   end;
 end;
 
-// SetSamplesAlphaScale
-//
-
 procedure TVXStaticImposterBuilder.SetSamplesAlphaScale(AValue: Single);
 begin
   if FSamplesAlphaScale <> AValue then
@@ -1308,16 +1050,10 @@ begin
   end;
 end;
 
-// StoreSamplesAlphaScale
-//
-
 function TVXStaticImposterBuilder.StoreSamplesAlphaScale: Boolean;
 begin
   Result := (FSamplesAlphaScale <> 1);
 end;
-
-// GetTextureSizeInfo
-//
 
 function TVXStaticImposterBuilder.GetTextureSizeInfo: string;
 var
@@ -1331,16 +1067,10 @@ begin
     Result := Result + Format(' (%.1f%%)', [(100 * fill) / (t.X * t.Y)]);
 end;
 
-// SetTextureSizeInfo
-//
-
 procedure TVXStaticImposterBuilder.SetTextureSizeInfo(const texSize: string);
 begin
   // do nothing, this is a dummy property!
 end;
-
-// DoPrepareImposter
-//
 
 procedure TVXStaticImposterBuilder.DoPrepareImposter(var rci:
   TVXRenderContextInfo;
@@ -1348,9 +1078,6 @@ procedure TVXStaticImposterBuilder.DoPrepareImposter(var rci:
 begin
   Render(rci, impostoredObject, destImposter);
 end;
-
-// DoUserSpecifiedImposter
-//
 
 procedure TVXStaticImposterBuilder.DoUserSpecifiedImposter(
   var rci: TVXRenderContextInfo;
@@ -1363,9 +1090,6 @@ begin
   FTextureSize.Y := bmp32.Height;
   ComputeStaticParams(destImposter);
 end;
-
-// ComputeStaticParams
-//
 
 procedure TVXStaticImposterBuilder.ComputeStaticParams(destImposter: TImposter);
 var
@@ -1390,9 +1114,6 @@ begin
     destImposter.FStaticScale := radius * 0.5;
   destImposter.FStaticOffset := FBuildOffset.DirectVector;
 end;
-
-// Render
-//
 
 procedure TVXStaticImposterBuilder.Render(var rci: TVXRenderContextInfo;
   impostoredObject: TVXBaseSceneObject; destImposter: TImposter);
@@ -1419,28 +1140,28 @@ begin
   if ImposterReference <> irCenter then
     radius := radius * 0.5;
 
-  Assert((rci.VKStates.ViewPort.Z >= SampleSize) and (rci.VKStates.ViewPort.W >= SampleSize),
+  Assert((rci.VXStates.ViewPort.Z >= SampleSize) and (rci.VXStates.ViewPort.W >= SampleSize),
     'ViewPort too small to render imposter samples!');
 
   // Setup the buffer in a suitable fashion for our needs
   with FBackColor do
-    rci.VKStates.ColorClearValue := Color;
+    rci.VXStates.ColorClearValue := Color;
   if Lighting = siblNoLighting then
-    rci.VKStates.Disable(stLighting);
+    rci.VXStates.Disable(stLighting);
 
   rci.PipelineTransformation.Push;
-  fx := radius * rci.VKStates.ViewPort.Z / SampleSize;
-  fy := radius * rci.VKStates.ViewPort.W / SampleSize;
+  fx := radius * rci.VXStates.ViewPort.Z / SampleSize;
+  fy := radius * rci.VXStates.ViewPort.W / SampleSize;
   yOffset := cReferenceToPos[ImposterReference] * radius;
-  rci.PipelineTransformation.ProjectionMatrix :=
-    CreateOrthoMatrix(-fx, fx, yOffset - fy, yOffset + fy, radius * 0.5, radius * 5);
-  xSrc := (rci.VKStates.ViewPort.Z - SampleSize) div 2;
-  ySrc := (rci.VKStates.ViewPort.W - SampleSize) div 2;
+  rci.PipelineTransformation.SetProjectionMatrix(
+    CreateOrthoMatrix(-fx, fx, yOffset - fy, yOffset + fy, radius * 0.5, radius * 5));
+  xSrc := (rci.VXStates.ViewPort.Z - SampleSize) div 2;
+  ySrc := (rci.VXStates.ViewPort.W - SampleSize) div 2;
 
   // setup imposter texture
   if destImposter.Texture.Handle = 0 then
   begin
-    {$IFDEF VKS_OPENGL_DEBUG}
+    {$IFDEF USE_OPENGL_DEBUG}
       if GL.GREMEDY_string_marker then
         GL.StringMarkerGREMEDY(22, 'Imposter texture setup');
     {$ENDIF}
@@ -1462,21 +1183,21 @@ begin
       cameraOffset := cameraDirection;
       RotateVector(cameraOffset, YHmgVector, (c2PI * i) / corona.Samples);
       ScaleVector(cameraOffset, -radius * 2);
-      rci.VKStates.DepthWriteMask := 1;
+      rci.VXStates.DepthWriteMask := 1;
       glClear(GL_COLOR_BUFFER_BIT + GL_DEPTH_BUFFER_BIT);
 
       LM := CreateLookAtMatrix(cameraOffset, NullHmgVector, YHmgVector);
       if Lighting = siblStaticLighting then
-        (rci.scene as TVXScene).SetupLights(rci.VKStates.MaxLights);
-      rci.PipelineTransformation.ViewMatrix := MatrixMultiply(
-        CreateTranslationMatrix(FBuildOffset.AsVector), LM);
+        (rci.scene as TVXScene).SetupLights(rci.VXStates.MaxLights);
+      rci.PipelineTransformation.SetViewMatrix(MatrixMultiply(
+        CreateTranslationMatrix(FBuildOffset.AsVector), LM));
       impostoredObject.Render(rci);
       CheckOpenGLError;
 
       xDest := (curSample mod FSamplesPerAxis.X) * SampleSize;
       yDest := (curSample div FSamplesPerAxis.X) * SampleSize;
 
-      rci.VKStates.TextureBinding[0, ttTexture2D] :=
+      rci.VXStates.TextureBinding[0, ttTexture2D] :=
         destImposter.Texture.Handle;
       glCopyTexSubImage2D(GL_TEXTURE_2D, 0, xDest, yDest, xSrc, ySrc,
         SampleSize, SampleSize);
@@ -1491,11 +1212,8 @@ begin
 
   glClear(GL_COLOR_BUFFER_BIT + GL_DEPTH_BUFFER_BIT);
   if Lighting = siblStaticLighting then
-    (rci.scene as TVXScene).SetupLights(rci.VKStates.MaxLights);
+    (rci.scene as TVXScene).SetupLights(rci.VXStates.MaxLights);
 end;
-
-// ComputeOptimalTextureSize
-//
 
 function TVXStaticImposterBuilder.ComputeOptimalTextureSize: TVXPoint;
 var
@@ -1504,7 +1222,7 @@ var
   requiredSurface, currentSurface, bestSurface: Integer;
 begin
   nbSamples := Coronas.SampleCount;
-  if CurrentVKContext = nil then
+  if CurrentVXContext = nil then
     maxTexSize := 16 * 1024
   else
     glGetIntegerv(GL_MAX_TEXTURE_SIZE, @maxTexSize);
@@ -1552,9 +1270,6 @@ begin
   Result := bestTexDim;
 end;
 
-// TextureFillRatio
-//
-
 function TVXStaticImposterBuilder.TextureFillRatio: Single;
 var
   texDim: TVXPoint;
@@ -1568,9 +1283,6 @@ end;
 // ---------- TVXDynamicImposterBuilder ----------
 // ----------
 
-// Create
-//
-
 constructor TVXDynamicImposterBuilder.Create(AOwner: TComponent);
 begin
   inherited;
@@ -1580,16 +1292,12 @@ begin
   FMaxTexSize := 64;
 end;
 
-// Destroy
-//
-
 destructor TVXDynamicImposterBuilder.Destroy;
 begin
   inherited;
 end;
+
 {
-// DoRender
-//
 procedure TVXDynamicImposterBuilder.DoRender(var rci : TVXRenderContextInfo;
   renderSelf, renderChildren : Boolean);
 var
@@ -1704,8 +1412,6 @@ begin
   glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT or GL_STENCIL_BUFFER_BIT);
 end;
 }
-// SetMinDistance
-//
 
 procedure TVXDynamicImposterBuilder.SetMinDistance(const AValue: Single);
 begin
@@ -1720,17 +1426,11 @@ end;
 // ---------- TVXImposter ----------
 // ----------
 
-// Create
-//
-
 constructor TVXImposter.Create(AOwner: TComponent);
 begin
   inherited;
   ObjectStyle := ObjectStyle + [osDirectDraw];
 end;
-
-// Destroy
-//
 
 destructor TVXImposter.Destroy;
 begin
@@ -1738,9 +1438,6 @@ begin
   ImpostoredObject := nil;
   inherited;
 end;
-
-// Notification
-//
 
 procedure TVXImposter.Notification(AComponent: TComponent; Operation:
   TOperation);
@@ -1754,9 +1451,6 @@ begin
   end;
   inherited;
 end;
-
-// DoRender
-//
 
 procedure TVXImposter.DoRender(var ARci: TVXRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);
@@ -1779,9 +1473,6 @@ begin
     Self.RenderChildren(0, Count - 1, ARci);
 end;
 
-// SetBuilder
-//
-
 procedure TVXImposter.SetBuilder(const AValue: TVXImposterBuilder);
 begin
   if AValue <> FBuilder then
@@ -1800,9 +1491,6 @@ begin
   end;
 end;
 
-// SetImpostoredObject
-//
-
 procedure TVXImposter.SetImpostoredObject(const AValue: TVXBaseSceneObject);
 begin
   if AValue <> FImpostoredObject then
@@ -1816,15 +1504,11 @@ begin
 end;
 
 {
-// AxisAlignedDimensionsUnscaled
-//
 function TVXImposter.AxisAlignedDimensionsUnscaled : TVector;
 begin
    Result:=NullHMGVector;
 end;
 
-// CalcDifference
-//
 function TVXImposter.CalcError(NewMatrix : TMatrix) : Single;
 var
    i : Integer;
@@ -1840,8 +1524,6 @@ begin
    Result:=err;
 end;
 
-// GetTextureHandle
-//
 function TVXImposter.GetTextureHandle: Cardinal;
 begin
   if FTextureHandle = 0 then
@@ -1849,8 +1531,6 @@ begin
   Result:=FTextureHandle;
 end;
 
-// Invalidate
-//
 procedure TVXImposter.Invalidate;
 begin
   FInvalidated:=True;

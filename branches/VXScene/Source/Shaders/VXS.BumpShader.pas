@@ -559,27 +559,27 @@ begin
   glProgramLocalParameter4fvARB(GL_VERTEX_PROGRAM_ARB, 0, @lightPos.X);
 
   // Set the light attenutation to program.local[1]
-  lightAtten.X := rci.VKStates.LightConstantAtten[FLightIDs[0]];
-  lightAtten.Y := rci.VKStates.LightLinearAtten[FLightIDs[0]];
-  lightAtten.Z := rci.VKStates.LightQuadraticAtten[FLightIDs[0]];
+  lightAtten.X := rci.VXStates.LightConstantAtten[FLightIDs[0]];
+  lightAtten.Y := rci.VXStates.LightLinearAtten[FLightIDs[0]];
+  lightAtten.Z := rci.VXStates.LightQuadraticAtten[FLightIDs[0]];
   glProgramLocalParameter4fvARB(GL_VERTEX_PROGRAM_ARB, 1, @lightAtten.X);
 
   case FBumpMethod of
     bmDot3TexCombiner:
       begin
-        rci.VKStates.ActiveTexture := 0;
-        dummyHandle := rci.VKStates.TextureBinding[0, ttTexture2D];
+        rci.VXStates.ActiveTexture := 0;
+        dummyHandle := rci.VXStates.TextureBinding[0, ttTexture2D];
         glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_ARB);
         glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB_ARB, GL_DOT3_RGB_ARB);
         glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB_ARB, GL_TEXTURE0_ARB);
         glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB_ARB, GL_PRIMARY_COLOR_ARB);
 
-        rci.VKStates.ActiveTexture := 1;
-        rci.VKStates.ActiveTextureEnabled[ttTexture2D] := True;
-        tempHandle := rci.VKStates.TextureBinding[1, ttTexture2D];
+        rci.VXStates.ActiveTexture := 1;
+        rci.VXStates.ActiveTextureEnabled[ttTexture2D] := True;
+        tempHandle := rci.VXStates.TextureBinding[1, ttTexture2D];
         if tempHandle = 0 then
-          rci.VKStates.TextureBinding[1, ttTexture2D] := dummyHandle;
-        lightDiffuse := rci.VKStates.LightDiffuse[FLightIDs[0]];
+          rci.VXStates.TextureBinding[1, ttTexture2D] := dummyHandle;
+        lightDiffuse := rci.VXStates.LightDiffuse[FLightIDs[0]];
         glGetMaterialfv(GL_FRONT, GL_DIFFUSE, @materialDiffuse);
         lightDiffuse.X := lightDiffuse.X * materialDiffuse.X;
         lightDiffuse.Y := lightDiffuse.Y * materialDiffuse.Y;
@@ -591,7 +591,7 @@ begin
         glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB_ARB, GL_PREVIOUS_ARB);
         glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB_ARB, GL_CONSTANT_COLOR_EXT);
 
-        with rci.VKStates do
+        with rci.VxStates do
         begin
           ActiveTexture := 2;
           ActiveTextureEnabled[ttTexture2D] := False;
@@ -603,9 +603,9 @@ begin
       begin
         FFragmentProgramHandle.Enable;
         FFragmentProgramHandle.Bind;
-        lightDiffuse := rci.VKStates.LightDiffuse[FLightIDs[0]];
-        lightSpecular := rci.VKStates.LightSpecular[FLightIDs[0]];
-        lightAtten.X := rci.VKStates.LightConstantAtten[FLightIDs[0]];
+        lightDiffuse := rci.VXStates.LightDiffuse[FLightIDs[0]];
+        lightSpecular := rci.VXStates.LightSpecular[FLightIDs[0]];
+        lightAtten.X := rci.VXStates.LightConstantAtten[FLightIDs[0]];
 
         glProgramLocalParameter4fvARB(GL_FRAGMENT_PROGRAM_ARB, 0,
           @lightDiffuse.X);
@@ -675,11 +675,11 @@ begin
   end;
 
   FLightIDs.Clear;
-  rci.VKStates.ActiveTexture := 0;
-  if rci.VKStates.ActiveTextureEnabled[ttTexture2D] then
-    for i := 0 to rci.VKStates.MaxLights - 1 do
+  rci.VXStates.ActiveTexture := 0;
+  if rci.VXStates.ActiveTextureEnabled[ttTexture2D] then
+    for i := 0 to rci.VXStates.MaxLights - 1 do
     begin
-      if rci.VKStates.LightEnabling[i] then
+      if rci.VXStates.LightEnabling[i] then
         FLightIDs.Add(i);
     end;
   FLightsEnabled := FLightIDs.Count;
@@ -690,14 +690,14 @@ begin
   if FLightIDs.Count > 0 then
   begin
 
-    rci.VKStates.DepthFunc := cfLEqual;
-    rci.VKStates.Disable(stBlend);
+    rci.VXStates.DepthFunc := cfLEqual;
+    rci.VXStates.Disable(stBlend);
     DoLightPass(rci, FLightIDs[0]);
     FLightIDs.Delete(0);
 
   end
   else
-    with rci.VKStates do
+    with rci.VxStates do
     begin
       Disable(stLighting);
       ActiveTexture := 0;
@@ -734,7 +734,7 @@ begin
     exit;
 
   if FLightIDs.Count > 0 then
-    with rci.VKStates do
+    with rci.VxStates do
     begin
 
       DepthFunc := cfLEqual;
@@ -750,7 +750,7 @@ begin
   else if not FDiffusePass and (FLightsEnabled <> 0)
     and (boDiffuseTexture2 in BumpOptions)
     and (BumpMethod = bmDot3TexCombiner) then
-    with rci.VKStates do
+    with rci.VxStates do
     begin
 
       Enable(stBlend);
@@ -771,7 +771,7 @@ begin
 
     end
   else if not FAmbientPass then
-    with rci.VKStates do
+    with rci.VxStates do
     begin
 
       FVertexProgramHandle.Disable;

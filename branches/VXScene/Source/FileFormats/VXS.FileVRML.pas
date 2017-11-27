@@ -1,5 +1,5 @@
 //
-// VXScene Component Library, based on GLScene http://glscene.sourceforge.net 
+// VXScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
 {
    Preliminary VRML vector file support.
@@ -9,9 +9,10 @@ unit VXS.FileVRML;
 interface
 
 uses
-  System.Classes, 
-  System.SysUtils, 
-  VXS.VectorFileObjects, 
+  System.Classes,
+  System.SysUtils,
+  System.Math,
+  VXS.VectorFileObjects,
   VXS.Material, 
   VXS.ApplicationFileIO,
   VXS.VectorTypes, 
@@ -197,7 +198,7 @@ var
         Emission.Color:=VectorMake(VRMLMaterial.EmissiveColor, Emission.Color.W);
       if Shininess = 0 then Shininess:=16;
       if VRMLMaterial.HasShininess then
-        Shininess:=Floor(128*VRMLMaterial.Shininess);
+        Shininess := Floor(128*VRMLMaterial.Shininess);
       if VRMLMaterial.HasTransparency then begin
         Diffuse.Color:=VectorMake(AffineVectorMake(Diffuse.Color),
                                   1-VRMLMaterial.Transparency);

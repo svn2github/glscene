@@ -1,17 +1,17 @@
 //
-// VXScene Component Library, based on GLScene http://glscene.sourceforge.net 
+// VXScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
 {
    Utility class and functions to manipulate a bitmap in OpenGL's default
-   byte order (GL_RGBA vs TBitmap's GL_BGRA) 
+   byte order (GL_RGBA vs TBitmap's GL_BGRA)
 
-   Note: TVXBitmap32 has support for Alex Denissov's Graphics32 library
+   Note: TVxBitmap32 has support for Alex Denissov's Graphics32 library
    (http://www.g32.org), just make sure the VKS_Graphics32_SUPPORT conditionnal
-   is active in GLScene. inc and recompile. 
+   is active in GLScene. inc and recompile.
 
-   Note: TVXBitmap32 has support for Alex Denissov's Graphics32 library
-   (http://www.g32.org), just make sure the VKS_Graphics32_SUPPORT conditionnal
-   is active in GLScene. inc and recompile. 
+   Note: TVxBitmap32 has support for Alex Denissov's Graphics32 library
+   (http://www.graphics32.org), just make sure the Graphics32_SUPPORT conditionnal
+   is active in GLScene. inc and recompile.
 
 }
 
@@ -19,7 +19,7 @@ unit VXS.Graphics;
 
 interface
 
-{$I VXScene.inc}
+{$I VxScene.inc}
 
 uses
 {$IFDEF MSWINDOWS}
@@ -51,15 +51,11 @@ uses
 
 type
 
-  // TVXPixel24
-  //
   TVXPixel24 = packed record
     r, g, b: Byte;
   end;
   PGLPixel24 = ^TVXPixel24;
 
-  // TVXPixel32
-  //
   TVXPixel32 = packed record
     r, g, b, a: Byte;
   end;
@@ -70,8 +66,6 @@ type
 
   TVXLODStreamingState = (ssKeeping, ssLoading, ssLoaded, ssTransfered);
 
-  // TVXImageLevelDesc
-  //
   TVXImageLevelDesc = record
     Width: Integer;
     Height: Integer;
@@ -88,14 +82,12 @@ type
 
   TVXImagePiramid = array[TVXImageLODRange] of TVXImageLevelDesc;
 
-  // TVXBaseImage
-  //
   TVXBaseImage = class(TVXDataFile)
   private
     FSourceStream: TStream;
     FStreamLevel: TVXImageLODRange;
     FFinishEvent: TFinishTaskEvent;
-{$IFDEF VKS_SERVICE_CONTEXT}
+{$IFDEF USE_SERVICE_CONTEXT}
     procedure ImageStreamingTask; stdcall;
 {$ENDIF}
   protected
@@ -108,14 +100,12 @@ type
     fElementSize: Integer;
     fCubeMap: Boolean;
     fTextureArray: Boolean;
-
     function GetData: PGLPixel32Array; virtual;
     function GetWidth: Integer;
     function GetHeight: Integer;
     function GetDepth: Integer;
     function GetLevelAddress(ALevel: Byte): Pointer; overload;
     function GetLevelAddress(ALevel, AFace: Byte): Pointer; overload;
-
     function GetLevelWidth(ALOD: TVXImageLODRange): Integer;
     function GetLevelHeight(ALOD: TVXImageLODRange): Integer;
     function GetLevelDepth(ALOD: TVXImageLODRange): Integer;
@@ -124,7 +114,6 @@ type
     function GetLevelSizeInByte(ALOD: TVXImageLODRange): Integer;
     function GetLevelStreamingState(ALOD: TVXImageLODRange): TVXLODStreamingState;
     procedure SetLevelStreamingState(ALOD: TVXImageLODRange; AState: TVXLODStreamingState);
-
     procedure SaveHeader;
     procedure LoadHeader;
     procedure StartStreaming;
@@ -133,9 +122,7 @@ type
     constructor Create; reintroduce; virtual;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
-
     function GetTextureTarget: TVXTextureTarget;
-
     { Registers the bitmap's content as an OpenVX texture map. }
     procedure RegisterAsOpenVXTexture(
       AHandle: TVXTextureHandle;
@@ -144,7 +131,6 @@ type
       out texWidth: integer;
       out texHeight: integer;
       out texDepth: integer); virtual;
-
     { Assigns from any Texture.}
     function AssignFromTexture(
       AHandle: TVXTextureHandle;
@@ -152,7 +138,6 @@ type
       const intFormat: TVXInternalFormat = tfRGBA8;
       const colorFormat: GLEnum = 0;
       const dataType: GLEnum = 0): Boolean; virtual;
-
     { Convert vertical cross format of non compressed, non mipmaped image
        to six face of cube map }
     function ConvertCrossToCubeMap: Boolean;
@@ -174,10 +159,8 @@ type
     property Data: PGLPixel32Array read GetData;
     { Set image of error. }
     procedure SetErrorImage;
-
     { Recalculate levels information based on first level. }
     procedure UpdateLevelsInfo;
-
     property LevelWidth[ALOD: TVXImageLODRange]: Integer
       read GetLevelWidth;
     property LevelHeight[ALOD: TVXImageLODRange]: Integer
@@ -196,7 +179,6 @@ type
       read GetLevelStreamingState write SetLevelStreamingState;
     { Number of levels. }
     property LevelCount: TVXImageLODRange read fLevelCount;
-
     property InternalFormat: TVXInternalFormat read FInternalFormat;
     property ColorFormat: GLEnum read fColorFormat;
     property DataType: GLenum read fDataType;
@@ -207,28 +189,24 @@ type
 
   TVXBaseImageClass = class of TVXBaseImage;
 
-  // TVXImage
-  //
-    { Contains and manipulates a 32 bits (24+8) bitmap. 
+    { Contains and manipulates a 32 bits (24+8) bitmap.
        This is the base class for preparing and manipulating textures in VXS.Scene,
        this function does not rely on a windows handle and should be used for
-       in-memory manipulations only. 
+       in-memory manipulations only.
        16 bits textures are automatically converted to 24 bits and an opaque (255)
        alpha channel is assumed for all planes, the byte order is as specified
        in GL_RGBA. If 32 bits is used in this class, it can however output 16 bits texture
-       data for use in OpenGL. 
+       data for use in OpenGL.
        The class has support for registering its content as a texture, as well
        as for directly drawing/reading from the current OpenGL buffer. }
   TVXImage = class(TVXBaseImage)
   private
-    
     FVerticalReverseOnAssignFromBitmap: Boolean;
     FBlank: boolean;
     fOldColorFormat: GLenum;
     fOldDataType: GLenum;
     procedure DataConvertTask;
   protected
-    
     procedure SetWidth(val: Integer);
     procedure SetHeight(const val: Integer);
     procedure SetDepth(const val: Integer);
@@ -238,37 +216,33 @@ type
     function GetScanLine(index: Integer): PGLPixel32Array;
     procedure AssignFrom24BitsBitmap(aBitmap: TBitmap);
     procedure AssignFrom32BitsBitmap(aBitmap: TBitmap);
-{$IFDEF VKS_Graphics32_SUPPORT}
+{$IFDEF GRAPHICS32_SUPPORT}
     procedure AssignFromBitmap32(aBitmap32: TBitmap32);
 {$ENDIF}
 {$IFDEF VKS_PngImage_SUPPORT}
     procedure AssignFromPngImage(aPngImage: TPngImage);
 {$ENDIF}
-
   public
-    
     constructor Create; override;
     destructor Destroy; override;
     { Accepts TVXImage and TGraphic subclasses. }
     procedure Assign(Source: TPersistent); override;
-    { Assigns from a 24 bits bitmap without swapping RGB. 
+    { Assigns from a 24 bits bitmap without swapping RGB.
       This is faster than a regular assignment, but R and B channels
       will be reversed (from what you would view in a TImage). Suitable
-      if you do your own drawing and reverse RGB on the drawing side. 
+      if you do your own drawing and reverse RGB on the drawing side.
       If you're after speed, don't forget to set the bitmap's dimensions
       to a power of two! }
     procedure AssignFromBitmap24WithoutRGBSwap(aBitmap: TBitmap);
-    { Assigns from a 2D Texture. 
+    { Assigns from a 2D Texture.
       The context which holds the texture must be active and the texture
       handle valid. }
     procedure AssignFromTexture2D(textureHandle: Cardinal); overload;
     { Assigns from a Texture handle. 
       If the handle is invalid, the bitmap32 will be empty. }
     procedure AssignFromTexture2D(textureHandle: TVXTextureHandle); overload;
-
     { Create a 32 bits TBitmap from self content. }
     function Create32BitsBitmap: TBitmap;
-
     { Width of the bitmap.  }
     property Width: Integer read GetWidth write SetWidth;
     { Height of the bitmap. }
@@ -284,31 +258,26 @@ type
     property DataType: GLenum read fDataType;
     { Size in bytes of pixel or block }
     property ElementSize: Integer read fElementSize;
-
     property CubeMap: Boolean read fCubeMap write SetCubeMap;
-
     property TextureArray: Boolean read fTextureArray write SetArray;
-    { Access to a specific Bitmap ScanLine. 
-      index should be in the [0; Height[ range. 
+    { Access to a specific Bitmap ScanLine.
+      index should be in the [0; Height[ range.
       Warning : this function is NOT protected against invalid indexes,
       and invoking it is invalid if the bitmap is Empty. }
     property ScanLine[index: Integer]: PGLPixel32Array read GetScanLine;
-
     property VerticalReverseOnAssignFromBitmap: Boolean read
       FVerticalReverseOnAssignFromBitmap write
       FVerticalReverseOnAssignFromBitmap;
-
     { Set Blank to true if you actually don't need to allocate data in main
-      menory. 
+      menory.
       Useful for textures that are generated by the GPU on the fly. }
     property Blank: boolean read FBlank write SetBlank;
-
     { Recast image OpenGL data type and color format. }
     procedure SetColorFormatDataType(const AColorFormat, ADataType: GLenum);
-    { Set Alpha channel values to the pixel intensity. 
+    { Set Alpha channel values to the pixel intensity.
       The intensity is calculated as the mean of RGB components. }
     procedure SetAlphaFromIntensity;
-    { Set Alpha channel to 0 for pixels of given color, 255 for others). 
+    { Set Alpha channel to 0 for pixels of given color, 255 for others).
       This makes pixels of given color totally transparent while the others
       are completely opaque. }
     procedure SetAlphaTransparentForColor(const aColor: TColor); overload;
@@ -318,33 +287,29 @@ type
     procedure SetAlphaToValue(const aValue: Byte);
     { Set Alpha channel values to given float [0..1] value. }
     procedure SetAlphaToFloatValue(const aValue: Single);
-    { Inverts the AlphaChannel component. 
+    { Inverts the AlphaChannel component.
       What was transparent becomes opaque and vice-versa. }
     procedure InvertAlpha;
     { AlphaChannel components are replaced by their sqrt.  }
     procedure SqrtAlpha;
-
     { Apply a brightness (scaled saturating) correction to the RGB components. }
     procedure BrightnessCorrection(const factor: Single);
     { Apply a gamma correction to the RGB components. }
     procedure GammaCorrection(const gamma: Single);
-
-    { Downsample the bitmap by a factor of 2 in both dimensions. 
+    { Downsample the bitmap by a factor of 2 in both dimensions.
       If one of the dimensions is 1 or less, does nothing. }
     procedure DownSampleByFactor2;
-
-    { Reads the given area from the current active OpenGL rendering context. 
+    { Reads the given area from the current active OpenGL rendering context.
       The best spot for reading pixels is within a SceneViewer's PostRender
       event : the scene has been fully rendered and the OpenGL context
       is still active. }
     procedure ReadPixels(const area: TVXRect);
-    { Draws the whole bitmap at given position in the current OpenGL context. 
-      This function must be called with a rendering context active. 
+    { Draws the whole bitmap at given position in the current OpenGL context.
+      This function must be called with a rendering context active.
       Blending and Alpha channel functions are not altered by this function
       and must be adjusted separately. }
     procedure DrawPixels(const x, y: Single);
-
-    { Converts a grayscale 'elevation' bitmap to normal map. 
+    { Converts a grayscale 'elevation' bitmap to normal map.
       Actually, only the Green component in the original bitmap is used. }
     procedure GrayScaleToNormalMap(const scale: Single;
       wrapX: Boolean = True; wrapY: Boolean = True);
@@ -359,8 +324,6 @@ type
 
   TVXBitmap32 = TVXImage;
 
-  // TRasterFileFormat
-  //
   TRasterFileFormat = class
   public
     BaseImageClass: TVXBaseImageClass;
@@ -369,14 +332,10 @@ type
     DescResID: Integer;
   end;
 
-  // TRasterFileFormatsList
-  //
   { Stores registered raster file formats. }
   TRasterFileFormatsList = class(TPersistentObjectList)
   public
-    
     destructor Destroy; override;
-
     procedure Add(const Ext, Desc: string; DescID: Integer; AClass:
       TVXBaseImageClass);
     function FindExt(ext: string): TVXBaseImageClass;
@@ -395,7 +354,6 @@ type
   EInvalidRasterFile = class(Exception);
 
 procedure Div2(var Value: Integer);
-
 procedure BGR24ToRGB24(src, dest: Pointer; pixelCount: Integer);
 procedure BGR24ToRGBA32(src, dest: Pointer; pixelCount: Integer);
 procedure RGB24ToRGBA32(src, dest: Pointer; pixelCount: Integer);
@@ -408,7 +366,7 @@ procedure BrightenRGBArray(base: Pointer; pixelCount: Integer;
 // Read access to the list of registered vector file formats
 function GetRasterFileFormats: TRasterFileFormatsList;
 { Returns an extension by its index
-   in the internal image files dialogs filter. 
+   in the internal image files dialogs filter.
    Use InternalImageFileFormatsFilter to obtain the filter. }
 function RasterFileFormatExtensionByIndex(index: Integer): string;
 
@@ -420,21 +378,13 @@ function GetImageLodNumber(w, h, d: integer; IsVolume: Boolean): Integer;
 
 var
   vVerticalFlipDDS: Boolean = true;
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+
+// ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 var
   vRasterFileFormats: TRasterFileFormatsList;
-
-{$IFDEF VKS_REGIONS}{$REGION 'Raster File Registries'}{$ENDIF}
-
-  // GetRasterFileFormats
-  //
 
 function GetRasterFileFormats: TRasterFileFormatsList;
 begin
@@ -443,9 +393,6 @@ begin
   Result := vRasterFileFormats;
 end;
 
-// RegisterRasterFormat
-//
-
 procedure RegisterRasterFormat(const AExtension, ADescription: string;
   AClass: TVXBaseImageClass);
 begin
@@ -453,34 +400,22 @@ begin
   GetRasterFileFormats.Add(AExtension, ADescription, 0, AClass);
 end;
 
-// UnregisterRasterFormat
-//
-
 procedure UnregisterRasterFormat(AClass: TVXBaseImageClass);
 begin
   if Assigned(vRasterFileFormats) then
     vRasterFileFormats.Remove(AClass);
 end;
 
-// RasterFileFormatExtensionByIndex
-//
-
 function RasterFileFormatExtensionByIndex(index: Integer): string;
 begin
   Result := GetRasterFileFormats.FindExtByIndex(index);
 end;
-
-// TRasterFileFormatsList.Destroy
-//
 
 destructor TRasterFileFormatsList.Destroy;
 begin
   Clean;
   inherited;
 end;
-
-// Add
-//
 
 procedure TRasterFileFormatsList.Add(const Ext, Desc: string; DescID: Integer;
   AClass: TVXBaseImageClass);
@@ -497,9 +432,6 @@ begin
   end;
   inherited Add(newRec);
 end;
-
-// FindExt
-//
 
 function TRasterFileFormatsList.FindExt(ext: string): TVXBaseImageClass;
 var
@@ -518,9 +450,6 @@ begin
   Result := nil;
 end;
 
-// FindFromFileName
-//
-
 function TRasterFileFormatsList.FindFromFileName(const fileName: string):
   TVXBaseImageClass;
 var
@@ -533,9 +462,6 @@ begin
     raise EInvalidRasterFile.CreateFmt(strUnknownExtension,
       [ext, 'GLFile' + UpperCase(ext)]);
 end;
-
-// FindFromStream
-//
 
 function TRasterFileFormatsList.FindFromStream(const AStream: TStream):
   TVXBaseImageClass;
@@ -565,9 +491,6 @@ begin
       [ext, 'GLFile' + UpperCase(ext)]);
 end;
 
-// Remove
-//
-
 procedure TRasterFileFormatsList.Remove(AClass: TVXBaseImageClass);
 var
   i: Integer;
@@ -578,9 +501,6 @@ begin
       DeleteAndFree(i);
   end;
 end;
-
-// BuildFilterStrings
-//
 
 procedure TRasterFileFormatsList.BuildFilterStrings(
   imageFileClass: TVXBaseImageClass;
@@ -622,9 +542,6 @@ begin
     FmtStr(descriptions, '%s (%s)|%1:s|%s',
       [glsAllFilter, filters, descriptions]);
 end;
-
-// FindExtByIndex
-//
 
 function TRasterFileFormatsList.FindExtByIndex(index: Integer;
   formatsThatCanBeOpened: Boolean = True;
@@ -684,12 +601,6 @@ begin
 
 end;
 
-{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
-
-{$IFDEF VKS_REGIONS}{$REGION 'RGBA Utils'}{$ENDIF}
-// GammaCorrectRGBArray
-//
-
 procedure GammaCorrectRGBArray(base: Pointer; pixelCount: Integer;
   gamma: Single);
 var
@@ -716,9 +627,6 @@ begin
     Inc(ptr);
   end;
 end;
-
-// GammaCorrectRGBAArray
-//
 
 procedure GammaCorrectRGBAArray(base: Pointer; pixelCount: Integer;
   gamma: Single);
@@ -753,9 +661,6 @@ begin
   end;
 end;
 
-// BrightenRGBArray
-//
-
 procedure BrightenRGBArray(base: Pointer; pixelCount: Integer;
   factor: Single);
 var
@@ -782,9 +687,6 @@ begin
     Inc(ptr);
   end;
 end;
-
-// BrightenRGBAArray
-//
 
 procedure BrightenRGBAArray(base: Pointer; pixelCount: Integer;
   factor: Single);
@@ -820,9 +722,6 @@ begin
   end;
 end;
 
-// BGR24ToRGB24
-//
-
 procedure BGR24ToRGB24(src, dest: Pointer; pixelCount: Integer); register;
 begin
   while pixelCount > 0 do
@@ -836,43 +735,6 @@ begin
   end;
 end;
 
-// BGR24ToRGBA32
-//
-{$IFDEF GLS_ASM}
-procedure BGR24ToRGBA32(src, dest: Pointer; pixelCount: Integer); register;
-// EAX stores src
-// EDX stores dest
-// ECX stores pixelCount
-asm
-         push  edi
-         cmp   ecx, 0
-         jle   @@Done
-         mov   edi, eax
-         dec   ecx
-         jz    @@Last
-@@Loop:
-         mov   eax, [edi]
-         shl   eax, 8
-         or    eax, $FF
-         bswap eax
-         mov   [edx], eax
-         add   edi, 3
-         add   edx, 4
-         dec   ecx
-         jnz   @@Loop
-@@Last:
-         mov   cx, [edi+1]
-         shl   ecx, 16
-         mov   ah, [edi]
-         mov   al, $FF
-         and   eax, $FFFF
-         or    eax, ecx
-         bswap eax
-         mov   [edx], eax
-@@Done:
-         pop   edi
-end;
-{$ELSE}
 procedure BGR24ToRGBA32(src, dest: Pointer; pixelCount: Integer);
 begin
   while pixelCount > 0 do
@@ -886,40 +748,7 @@ begin
     Dec(pixelCount);
   end;
 end;
-{$ENDIF}
 
-// RGB24ToRGBA32
-//
-{$IFDEF GLS_ASM}
-procedure RGB24ToRGBA32(src, dest: Pointer; pixelCount: Integer); register;
-// EAX stores src
-// EDX stores dest
-// ECX stores pixelCount
-asm
-         push  edi
-         cmp   ecx, 0
-         jle   @@Done
-         mov   edi, eax
-         dec   ecx
-         jz    @@Last
-@@Loop:
-         mov   eax, [edi]
-         or    eax, $FF000000
-         mov   [edx], eax
-         add   edi, 3
-         add   edx, 4
-         dec   ecx
-         jnz   @@Loop
-@@Last:
-         mov   ax, [edi+1]
-         shl   eax, 8
-         mov   al, [edi];
-         or    eax, $FF000000
-         mov   [edx], eax
-@@Done:
-         pop   edi
-end;
-{$ELSE}
 procedure RGB24ToRGBA32(src, dest: Pointer; pixelCount: Integer);
 begin
   while pixelCount > 0 do
@@ -933,34 +762,7 @@ begin
     Dec(pixelCount);
   end;
 end;
-{$ENDIF}
 
-// BGRA32ToRGBA32
-//
-{$IFDEF GLS_ASM}
-procedure BGRA32ToRGBA32(src, dest: Pointer; pixelCount: Integer); register;
-// EAX stores src
-// EDX stores dest
-// ECX stores pixelCount
-asm
-         push  edi
-         cmp   ecx, 0
-         jle   @@Done
-         mov   edi, eax
-@@Loop:
-         mov   eax, [edi]
-         shl   eax, 8
-         mov   al, [edi+3]
-         bswap eax
-         mov   [edx], eax
-         add   edi, 4
-         add   edx, 4
-         dec   ecx
-         jnz   @@Loop
-@@Done:
-         pop   edi
-end;
-{$ELSE}
 procedure BGRA32ToRGBA32(src, dest: Pointer; pixelCount: Integer);
 begin
   while pixelCount > 0 do
@@ -974,9 +776,6 @@ begin
     Dec(pixelCount);
   end;
 end;
-{$ENDIF}
-
-{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
 
 // ------------------
 // ------------------ TVXBaseImage ------------------
@@ -1607,7 +1406,7 @@ begin
     end;
     }
     // Check maximum dimension
-    maxSize := CurrentVkContext.VKStates.MaxTextureSize;
+    maxSize := CurrentVXContext.VXStates.MaxTextureSize;
     if w > maxSize then
       w := maxSize;
     if h > maxSize then
@@ -1915,7 +1714,7 @@ var
 
 begin
   Result := False;
-  LContext := CurrentVKContext;
+  LContext := CurrentVXContext;
   if LContext = nil then
   begin
     LContext := AHandle.RenderingContext;
@@ -1933,7 +1732,7 @@ begin
   glTarget := DecodeTextureTarget(AHandle.Target);
 
   try
-    LContext.VKStates.TextureBinding[0, AHandle.Target] := AHandle.Handle;
+    LContext.VXStates.TextureBinding[0, AHandle.Target] := AHandle.Handle;
 
     FLevelCount := 0;
     glGetTexParameteriv(glTarget, GL_TEXTURE_MAX_LEVEL, @texLod);
@@ -2150,7 +1949,7 @@ end;
 
 procedure TVXBaseImage.DoStreaming;
 begin
-{$IFDEF VKS_SERVICE_CONTEXT}
+{$IFDEF USE_SERVICE_CONTEXT}
   if Assigned(FFinishEvent) then
   begin
     if FFinishEvent.WaitFor(0) <> wrSignaled then
@@ -2164,7 +1963,7 @@ begin
 {$ENDIF}
 end;
 
-{$IFDEF VKS_SERVICE_CONTEXT}
+{$IFDEF USE_SERVICE_CONTEXT}
 procedure TVXBaseImage.ImageStreamingTask;
 var
   readSize: Integer;
@@ -2233,26 +2032,16 @@ end;
 // ------------------ TVXImage ------------------
 // ------------------
 
-{$IFDEF VKS_REGIONS}{$REGION 'TVXImage'}{$ENDIF}
-// Create
-//
-
 constructor TVXImage.Create;
 begin
   inherited Create;
   SetBlank(false);
 end;
 
-// Destroy
-//
-
 destructor TVXImage.Destroy;
 begin
   inherited Destroy;
 end;
-
-// Assign
-//
 
 procedure TVXImage.Assign(Source: TPersistent);
 var
@@ -2333,7 +2122,7 @@ begin
       end;
     end;
   end
-{$IFDEF VKS_Graphics32_SUPPORT}
+{$IFDEF GRAPHICS32_SUPPORT}
   else if Source is TBitmap32 then
   begin
     Narrow;
@@ -2344,8 +2133,6 @@ begin
     inherited;
 end;
 
-// AssignFrom24BitsBitmap
-//
 procedure TVXImage.AssignFrom24BitsBitmap(aBitmap: TBitmap);
 var
   y, lineSize: Integer;
@@ -2423,8 +2210,6 @@ begin
   end;
 end;
 
-// AssignFromBitmap24WithoutRGBSwap
-//
 procedure TVXImage.AssignFromBitmap24WithoutRGBSwap(aBitmap: TBitmap);
 var
   y: Integer;
@@ -2476,8 +2261,6 @@ begin
   end;
 end;
 
-// AssignFrom32BitsBitmap
-//
 procedure TVXImage.AssignFrom32BitsBitmap(aBitmap: TBitmap);
 var
   y: Integer;
@@ -2549,10 +2332,9 @@ begin
   end;
 end;
 
-{$IFDEF VKS_Graphics32_SUPPORT}
-// AssignFromBitmap32
-//
-procedure TVXImage.AssignFromBitmap32(aBitmap32: TBitmap32);
+{$IFDEF GRAPHICS32_SUPPORT}
+
+procedure TVxImage.AssignFromBitmap32(aBitmap32: TBitmap32);
 var
   y: Integer;
   pSrc, pDest: PAnsiChar;
@@ -2652,8 +2434,6 @@ begin
 end;
 {$ENDIF}
 
-// AssignFromTexture2D
-//
 
 procedure TVXImage.AssignFromTexture2D(textureHandle: Cardinal);
 var
@@ -2661,7 +2441,7 @@ var
 begin
   UnMipmap;
 
-  with CurrentVKContext.VKStates do
+  with CurrentVXContext.VxStates do
   begin
     oldTex := TextureBinding[ActiveTexture, ttTexture2D];
     TextureBinding[ActiveTexture, ttTexture2D] := textureHandle;
@@ -2683,9 +2463,6 @@ begin
   end;
 end;
 
-// AssignFromTexture2D
-//
-
 procedure TVXImage.AssignFromTexture2D(textureHandle: TVXTextureHandle);
 var
   oldContext: TVXContext;
@@ -2693,7 +2470,7 @@ var
 begin
   if Assigned(textureHandle) and (textureHandle.Handle <> 0) then
   begin
-    oldContext := CurrentVKContext;
+    oldContext := CurrentVXContext;
     contextActivate := (oldContext <> textureHandle.RenderingContext);
     if contextActivate then
     begin
@@ -2729,9 +2506,6 @@ begin
     ReallocMem(FData, DataSize);
   end;
 end;
-
-// Create32BitsBitmap
-//
 
 function TVXImage.Create32BitsBitmap: TBitmap;
 var
@@ -2770,8 +2544,6 @@ begin
   end;
 end;
 
-// SetWidth
-//
 procedure TVXImage.SetWidth(val: Integer);
 begin
   if val <> FLOD[0].Width then
@@ -2781,9 +2553,6 @@ begin
     FBlank := true;
   end;
 end;
-
-// SetHeight
-//
 
 procedure TVXImage.SetHeight(const val: Integer);
 begin
@@ -2795,9 +2564,6 @@ begin
   end;
 end;
 
-// SetDepth
-//
-
 procedure TVXImage.SetDepth(const val: Integer);
 begin
   if val <> FLOD[0].Depth then
@@ -2808,9 +2574,6 @@ begin
   end;
 end;
 
-// SetCubeMap
-//
-
 procedure TVXImage.SetCubeMap(const val: Boolean);
 begin
   if val <> fCubeMap then
@@ -2820,9 +2583,6 @@ begin
   end;
 end;
 
-// SetArray
-//
-
 procedure TVXImage.SetArray(const val: Boolean);
 begin
   if val <> fTextureArray then
@@ -2831,9 +2591,6 @@ begin
     FBlank := true;
   end;
 end;
-
-// SetColorFormatDataType
-//
 
 procedure TVXImage.SetColorFormatDataType(const AColorFormat, ADataType: GLenum);
 begin
@@ -2851,17 +2608,11 @@ begin
   DataConvertTask;
 end;
 
-// GetScanLine
-//
-
 function TVXImage.GetScanLine(index: Integer): PGLPixel32Array;
 begin
   Narrow;
   Result := PGLPixel32Array(@FData[index * GetWidth]);
 end;
-
-// SetAlphaFromIntensity
-//
 
 procedure TVXImage.SetAlphaFromIntensity;
 var
@@ -2872,9 +2623,6 @@ begin
     with FData^[i] do
       a := (Integer(r) + Integer(g) + Integer(b)) div 3;
 end;
-
-// SetAlphaTransparentForColor
-//
 
 procedure TVXImage.SetAlphaTransparentForColor(const aColor: TColor);
 var
@@ -2899,9 +2647,6 @@ begin
   SetAlphaTransparentForColor(color);
 end;
 
-// SetAlphaTransparentForColor
-//
-
 procedure TVXImage.SetAlphaTransparentForColor(const aColor: TVXPixel24);
 var
   i: Integer;
@@ -2916,9 +2661,6 @@ begin
       FData^[i].a := 255;
 end;
 
-// SetAlphaToValue
-//
-
 procedure TVXImage.SetAlphaToValue(const aValue: Byte);
 var
   i: Integer;
@@ -2928,16 +2670,10 @@ begin
     FData^[i].a := aValue
 end;
 
-// SetAlphaToFloatValue
-//
-
 procedure TVXImage.SetAlphaToFloatValue(const aValue: Single);
 begin
   SetAlphaToValue(Byte(Trunc(aValue * 255) and 255));
 end;
-
-// InvertAlpha
-//
 
 procedure TVXImage.InvertAlpha;
 var
@@ -2947,9 +2683,6 @@ begin
   for i := (DataSize div 4) - 1 downto 0 do
     FData^[i].a := 255 - FData^[i].a;
 end;
-
-// SqrtAlpha
-//
 
 procedure TVXImage.SqrtAlpha;
 var
@@ -2963,9 +2696,6 @@ begin
       a := sqrt255Array^[(Integer(r) + Integer(g) + Integer(b)) div 3];
 end;
 
-// BrightnessCorrection
-//
-
 procedure TVXImage.BrightnessCorrection(const factor: Single);
 begin
   if Assigned(FData) then
@@ -2974,9 +2704,6 @@ begin
     BrightenRGBAArray(Data, DataSize div 4, factor);
   end;
 end;
-
-// GammaCorrection
-//
 
 procedure TVXImage.GammaCorrection(const gamma: Single);
 begin
@@ -2987,53 +2714,11 @@ begin
   end;
 end;
 
-// DownSampleByFactor2
-//
-
 procedure TVXImage.DownSampleByFactor2;
 type
   T2Pixel32 = packed array[0..1] of TVXPixel32;
   P2Pixel32 = ^T2Pixel32;
 
-{$IFDEF GLS_ASM}
-  procedure ProcessRow3DNow(pDest: PGLPixel32; pLineA, pLineB: P2Pixel32; n:
-    Integer);
-  asm     // 3DNow! version 30% faster
-      db $0F,$EF,$C0           /// pxor        mm0, mm0          // set mm0 to [0, 0, 0, 0]
-
-@@Loop:
-      db $0F,$0D,$81,$00,$01,$00,$00/// prefetch    [ecx+256]
-
-      db $0F,$6F,$0A           /// movq        mm1, [edx]
-      db $0F,$6F,$11           /// movq        mm2, [ecx]
-
-      db $0F,$6F,$D9           /// movq        mm3, mm1
-      db $0F,$6F,$E2           /// movq        mm4, mm2
-
-      db $0F,$60,$C8           /// punpcklbw   mm1, mm0          // promote to 16 bits and add LineA pixels
-      db $0F,$68,$D8           /// punpckhbw   mm3, mm0
-      db $0F,$FD,$CB           /// paddw       mm1, mm3
-
-      db $0F,$60,$D0           /// punpcklbw   mm2, mm0          // promote to 16 bits and add LineB pixels
-      db $0F,$68,$E0           /// punpckhbw   mm4, mm0
-      db $0F,$FD,$D4           /// paddw       mm2, mm4
-
-      db $0F,$FD,$CA           /// paddw       mm1, mm2          // add LineA and LineB pixels
-
-      db $0F,$71,$D1,$02       /// psrlw       mm1, 2            // divide by 4
-      db $0F,$67,$C9           /// packuswb    mm1, mm1          // reduce to 8 bits and store point
-      db $0F,$7E,$08           /// movd        [eax], mm1
-
-      add         edx, 8
-      add         ecx, 8
-      add         eax, 4
-
-      dec         [n]
-      jnz         @@Loop
-
-      db $0F,$0E               /// femms
-  end;
-{$ENDIF}
   procedure ProcessRowPascal(pDest: PGLPixel32; pLineA, pLineB: P2Pixel32; n:
     Integer);
   var
@@ -3072,19 +2757,6 @@ begin
   pDest := @FData[0];
   pLineA := @FData[0];
   pLineB := @FData[Width];
-{$IFDEF GLS_ASM}
-  if vSIMD = 1 then
-  begin
-    for y := 0 to h2 - 1 do
-    begin
-      ProcessRow3DNow(pDest, pLineA, pLineB, w2);
-      Inc(pDest, w2);
-      Inc(pLineA, Width);
-      Inc(pLineB, Width);
-    end;
-  end
-  else
-{$ENDIF}
   begin
     for y := 0 to h2 - 1 do
     begin
@@ -3098,9 +2770,6 @@ begin
   FLOD[0].Height := h2;
   ReallocMem(FData, DataSize);
 end;
-
-// ReadPixels
-//
 
 procedure TVXImage.ReadPixels(const area: TVXRect);
 begin
@@ -3119,20 +2788,14 @@ begin
   glReadPixels(0, 0, GetWidth, GetHeight, GL_RGBA, GL_UNSIGNED_BYTE, FData);
 end;
 
-// DrawPixels
-//
-
 procedure TVXImage.DrawPixels(const x, y: Single);
 begin
   if fBlank or IsEmpty then
     Exit;
-  Assert(not CurrentVKContext.VKStates.ForwardContext);
+  Assert(not CurrentVXContext.VXStates.ForwardContext);
   glRasterPos2f(x, y);
   glDrawPixels(Width, Height, fColorFormat, fDataType, FData);
 end;
-
-// TVXImage
-//
 
 procedure TVXImage.GrayScaleToNormalMap(const scale: Single;
   wrapX: Boolean = True; wrapY: Boolean = True);
@@ -3205,9 +2868,6 @@ begin
   end;
 end;
 
-// NormalizeNormalMap
-//
-
 procedure TVXImage.NormalizeNormalMap;
 var
   x, y: Integer;
@@ -3247,8 +2907,6 @@ begin
 end;
 
 //Converts a TVXImage back into a TBitmap
-//
-
 procedure TVXImage.AssignToBitmap(aBitmap: TBitmap); //TBitmap = TBitmap
 var
   y: integer;
@@ -3279,17 +2937,11 @@ begin
   end;
 end;
 
-// GenerateMipmap
-//
-
 procedure TVXImage.GenerateMipmap(AFilter: TImageFilterFunction);
 begin
   if not FBlank then
     inherited GenerateMipmap(AFilter);
 end;
-
-// UnMipmap
-//
 
 procedure TVXImage.UnMipmap;
 begin
@@ -3336,8 +2988,6 @@ begin
     end;
   end;
 end;
-
-{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
 
 initialization
 

@@ -15,6 +15,7 @@ uses
   Winapi.OpenGLext,
   System.Classes,
   System.SysUtils,
+  System.Math,
   
   VXS.OpenGLAdapter,
   VXS.CrossPlatform,
@@ -380,14 +381,14 @@ var
       Result := fElementSize * (cw * ch * (FLOD[level].Depth and -4) + x +
         cw * (y + ch * (z - 4 * ch)))
     else
-      Result := fElementSize * (4 * (x + cw * (y + ch * floor(z / 4))) + (z and
+      Result := fElementSize * (4 * (x + cw * (y + ch * Floor(z / 4))) + (z and
         3));
     if Result < 0 then
       Result := 0;
   end;
 
 begin
-  oldContext := CurrentVKContext;
+  oldContext := CurrentVXContext;
   contextActivate := (oldContext <> textureContext);
   if contextActivate then
   begin
@@ -398,7 +399,7 @@ begin
   glTarget := DecodeTextureTarget(textureTarget);
 
   try
-    textureContext.VKStates.TextureBinding[0, textureTarget] := textureHandle;
+    textureContext.VXStates.TextureBinding[0, textureTarget] := textureHandle;
     fLevelCount := 0;
     glGetTexParameteriv(glTarget, GL_TEXTURE_MAX_LEVEL, @texLod);
     if glTarget = GL_TEXTURE_CUBE_MAP then

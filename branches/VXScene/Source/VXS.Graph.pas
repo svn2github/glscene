@@ -419,16 +419,16 @@ begin
       // controled at the sceneviewer level
       if hfoTwoSided in Options then
       begin
-        rci.VKStates.Disable(stCullFace);
-        rci.VKStates.PolygonMode := Material.PolygonMode;
+        rci.VXStates.Disable(stCullFace);
+        rci.VXStates.PolygonMode := Material.PolygonMode;
       end;
       if ColorMode <> hfcmNone then
       begin
-        rci.VKStates.Enable(stColorMaterial);
+        rci.VXStates.Enable(stColorMaterial);
         glColorMaterial(GL_FRONT_AND_BACK, cHFCMtoEnum[ColorMode]);
-        rci.VKStates.SetMaterialColors(cmFront, clrBlack, clrGray20,
+        rci.VXStates.SetMaterialColors(cmFront, clrBlack, clrGray20,
           clrGray80, clrBlack, 0);
-        rci.VKStates.SetMaterialColors(cmBack, clrBlack, clrGray20, clrGray80,
+        rci.VXStates.SetMaterialColors(cmBack, clrBlack, clrGray20, clrGray80,
           clrBlack, 0);
       end;
     end;

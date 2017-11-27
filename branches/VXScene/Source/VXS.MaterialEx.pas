@@ -66,14 +66,10 @@ type
   TOnUniformSetting = procedure(Sender: TVXBaseShaderModel;
     var ARci: TVXRenderContextInfo) of object;
 
-  // TVXBaseMaterialCollectionItem
-  //
-
   TVXBaseMaterialCollectionItem = class(
       TVXXCollectionItem,
       IGLMaterialLibrarySupported)
   private
-    
     FNameHashKey: Integer;
     FUserList: TPersistentObjectList;
     FDefferedInit: Boolean;
@@ -82,24 +78,19 @@ type
     function GetUserList: TPersistentObjectList;
     function GetMaterialLibraryEx: TVXMaterialLibraryEx;
   protected
-    
     procedure SetName(const AValue: TVXMaterialComponentName); override;
     procedure NotifyChange(Sender: TObject); virtual;
     property UserList: TPersistentObjectList read GetUserList;
     procedure DoOnPrepare(Sender: TVXContext); virtual; abstract;
   public
-    
     destructor Destroy; override;
-
     procedure RegisterUser(AUser: TVXUpdateAbleObject);
     procedure UnregisterUser(AUser: TVXUpdateAbleObject);
     function GetUserCount: Integer;
     function GetMaterialLibrary: TVXAbstractMaterialLibrary;
-
     property MaterialLibrary: TVXMaterialLibraryEx read GetMaterialLibraryEx;
     property IsValid: Boolean read FIsValid;
   published
-    
     property Name: TVXMaterialComponentName read GetName write SetName;
     { Run-time flag, indicate that resource
        should initialize in case of failure material's level. }
@@ -109,14 +100,8 @@ type
 
   CGLBaseMaterialCollectionItem = class of TVXBaseMaterialCollectionItem;
 
-  // TVXLibMaterialProperty
-  //
-
-  TVXLibMaterialProperty = class(
-      TVXUpdateAbleObject,
-      IGLMaterialLibrarySupported)
+  TVXLibMaterialProperty = class(TVXUpdateAbleObject, IGLMaterialLibrarySupported)
   protected
-    
     FEnabled: Boolean;
     FNextPassName: TVXLibMaterialName;
     function GetMaterial: TVXLibMaterialEx;
@@ -126,26 +111,18 @@ type
     procedure Loaded; virtual;
     property NextPass: TVXLibMaterialName read FNextPassName write SetNextPass;
   public
-    
     procedure NotifyChange(Sender: TObject); override;
     function GetMaterialLibrary: TVXAbstractMaterialLibrary;
-
     property MaterialLibrary: TVXMaterialLibraryEx read GetMaterialLibraryEx;
   published
-    
     property Enabled: Boolean read FEnabled write SetEnabled;
   end;
 
-  // TVXTextureSampler
-  //
-
   TVXTextureSampler = class(TVXBaseMaterialCollectionItem)
   protected
-    
     procedure WriteToFiler(AWriter: TWriter); override;
     procedure ReadFromFiler(AReader: TReader); override;
   private
-    
     FHandle: TVXSamplerHandle;
     FMinFilter: TVXMinFilter;
     FMagFilter: TVXMagFilter;
@@ -168,23 +145,16 @@ type
     procedure SetCompareFunc(AValue: TDepthFunction);
     procedure SetDecodeSRGB(AValue: Boolean);
   public
-    
     constructor Create(AOwner: TVXXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
-
     procedure NotifyChange(Sender: TObject); override;
-
     procedure DoOnPrepare(Sender: TVXContext); override;
     procedure Apply(var ARci: TVXRenderContextInfo);
     procedure UnApply(var ARci: TVXRenderContextInfo);
-
     class function FriendlyName: string; override;
-
     property Handle: TVXSamplerHandle read FHandle;
   published
-    
-
     { Texture magnification filter. }
     property MagFilter: TVXMagFilter read FMagFilter write SetMagFilter
       default maLinear;
@@ -216,9 +186,6 @@ type
       default True;
   end;
 
-  // TVXAbstractTexture
-  //
-
   TVXAbstractTexture = class(TVXBaseMaterialCollectionItem)
   protected
     
@@ -234,10 +201,8 @@ type
     procedure Apply(var ARci: TVXRenderContextInfo); virtual; abstract;
     procedure UnApply(var ARci: TVXRenderContextInfo); virtual; abstract;
   public
-    
     property Handle: TVXTextureHandle read FHandle;
   published
-    
     property Shape: TVXTextureTarget read GetTextureTarget;
   end;
 
@@ -255,16 +220,11 @@ type
     mgmMitchellFilter
     );
 
-  // TVXTextureImageEx
-  //
-
   TVXTextureImageEx = class(TVXAbstractTexture)
   protected
-    
     procedure WriteToFiler(AWriter: TWriter); override;
     procedure ReadFromFiler(AReader: TReader); override;
   private
-    
     FCompression: TVXTextureCompression;
     FImage: TVXBaseImage;
     FImageAlpha: TVXTextureImageAlpha;
@@ -297,28 +257,21 @@ type
     procedure StreamTransfer;
     procedure CalcLODRange(out AFirstLOD, ALastLOD: Integer);
   public
-    
     constructor Create(AOwner: TVXXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
-
     procedure NotifyChange(Sender: TObject); override;
-
     procedure DoOnPrepare(Sender: TVXContext); override;
     procedure Apply(var ARci: TVXRenderContextInfo); override;
     procedure UnApply(var ARci: TVXRenderContextInfo); override;
-
     class function FriendlyName: string; override;
   published
-    
-
     // Factual texture properties
     property InternalWidth: Integer read FWidth;
     property InternalHeight: Integer read FHeight;
     property InternalDepth: Integer read FDepth;
     property InternalFormat: TVXInternalFormat read FInternalFormat
       write SetInternalFormat default tfRGBA8;
-
     { Automatic Image Alpha setting. 
       Allows to control how and if the image's Alpha channel (transparency)
       is computed. }
@@ -360,16 +313,11 @@ type
       write SetUseStreaming default False;
   end;
 
-  // TVXFrameBufferAttachment
-  //
-
   TVXFrameBufferAttachment = class(TVXAbstractTexture)
   protected
-    
     procedure WriteToFiler(AWriter: TWriter); override;
     procedure ReadFromFiler(AReader: TReader); override;
   private
-    
     FRenderBufferHandle: TVXRenderbufferHandle;
     FLayered: Boolean;
     FCubeMap: Boolean;
@@ -386,20 +334,15 @@ type
     procedure SetSamples(AValue: Integer);
     procedure SetFixedSamplesLocation(AValue: Boolean);
   public
-    
     constructor Create(AOwner: TVXXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
-
     procedure NotifyChange(Sender: TObject); override;
-
     procedure DoOnPrepare(Sender: TVXContext); override;
     procedure Apply(var ARci: TVXRenderContextInfo); override;
     procedure UnApply(var ARci: TVXRenderContextInfo); override;
-
     class function FriendlyName: string; override;
   published
-    
     property InternalWidth: Integer read FWidth
       write SetWidth default 256;
     property InternalHeight: Integer read FHeight
@@ -429,13 +372,10 @@ type
       write SetFixedSamplesLocation default False;
   end;
 
-  // TVXTextureSwizzling
-  //
     { Swizzle the components of a texture fetches in
         shader or fixed-function pipeline. }
   TVXTextureSwizzling = class(TVXUpdateAbleObject)
   private
-    
     FSwizzles: TSwizzleVector;
     function GetSwizzle(AIndex: Integer): TVXTextureSwizzle;
     procedure SetSwizzle(AIndex: Integer; AValue: TVXTextureSwizzle);
@@ -443,11 +383,9 @@ type
   public
     constructor Create(AOwner: TPersistent); override;
     procedure Assign(Source: TPersistent); override;
-
     procedure WriteToFiler(AWriter: TWriter);
     procedure ReadFromFiler(AReader: TReader);
   published
-    
     property RedFrom: TVXTextureSwizzle index 0 read GetSwizzle
       write SetSwizzle stored StoreSwizzle;
     property GreenFrom: TVXTextureSwizzle index 1 read GetSwizzle
@@ -458,12 +396,8 @@ type
       write SetSwizzle stored StoreSwizzle;
   end;
 
-  // TVXTextureProperties
-  //
-
   TVXTextureProperties = class(TVXLibMaterialProperty)
   private
-    
     FLibTextureName: TVXMaterialComponentName;
     FLibSamplerName: TVXMaterialComponentName;
     FLibTexture: TVXAbstractTexture;
@@ -509,28 +443,22 @@ type
     procedure SetSwizzling(const AValue: TVXTextureSwizzling);
     function StoreSwizzling: Boolean;
     procedure SetEnvColor(const AValue: TVXColor);
-
     procedure CalculateTextureMatrix;
     procedure ApplyMappingMode;
     procedure UnApplyMappingMode;
   protected
     procedure Loaded; override;
   public
-    
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
-
     procedure NotifyChange(Sender: TObject); override;
     procedure Notification(Sender: TObject; Operation: TOperation); override;
-
     function IsValid: Boolean;
     procedure Apply(var ARci: TVXRenderContextInfo);
     procedure UnApply(var ARci: TVXRenderContextInfo);
-
     property TextureMatrix: TMatrix read FTextureMatrix write SetTextureMatrix;
   published
-    
     property LibTextureName: TVXMaterialComponentName read GetLibTextureName
       write SetLibTextureName;
     property LibSamplerName: TVXMaterialComponentName read GetLibSamplerName
@@ -570,11 +498,8 @@ type
       SetSwizzling stored StoreSwizzling;
   end;
 
-  //  TVXFixedFunctionProperties
-  //
   TVXFixedFunctionProperties = class(TVXLibMaterialProperty)
   private
-    
     FFrontProperties: TVXFaceProperties;
     FBackProperties: TVXFaceProperties;
     FDepthProperties: TVXDepthProperties;
@@ -606,12 +531,9 @@ type
     procedure UnApply(var ARci: TVXRenderContextInfo);
     { Returns True if the material is blended.  }
     function Blended: Boolean;
-
   published
-    
     property MaterialOptions: TMaterialOptions read FMaterialOptions write
       SetMaterialOptions default [];
-
     property BackProperties: TVXFaceProperties read GetBackProperties write
       SetBackProperties;
     property FrontProperties: TVXFaceProperties read FFrontProperties write
@@ -622,7 +544,6 @@ type
       default bmOpaque;
     property BlendingParams: TVXBlendingParameters read FBlendingParams write
       SetBlendingParams;
-
     property FaceCulling: TFaceCulling read FFaceCulling write SetFaceCulling
       default fcBufferDefault;
     property PolygonMode: TPolygonMode read FPolygonMode write SetPolygonMode
@@ -635,16 +556,11 @@ type
     property NextPass;
   end;
 
-  //  TVXTextureCombiner
-  //
-
   TVXTextureCombiner = class(TVXBaseMaterialCollectionItem)
   protected
-    
     procedure WriteToFiler(AWriter: TWriter); override;
     procedure ReadFromFiler(AReader: TReader); override;
   private
-    
     FHandle: TVXVirtualHandle;
     FScript: TStringList;
     FCommandCache: TCombinerCache;
@@ -652,31 +568,21 @@ type
     procedure DoAllocate(Sender: TVXVirtualHandle; var handle: GLuint);
     procedure DoDeallocate(Sender: TVXVirtualHandle; var handle: GLuint);
   public
-    
     constructor Create(AOwner: TVXXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
-
     procedure NotifyChange(Sender: TObject); override;
-
     procedure DoOnPrepare(Sender: TVXContext); override;
-
     class function FriendlyName: string; override;
   published
-    
     property Script: TStringList read FScript write SetScript;
   end;
 
-  // TVXARBVertexProgram
-  //
-
   TVXASMVertexProgram = class(TVXBaseMaterialCollectionItem)
   protected
-    
     procedure WriteToFiler(AWriter: TWriter); override;
     procedure ReadFromFiler(AReader: TReader); override;
   private
-    
     FHandle: TVXVertexProgramHandle;
     FSource: TStringList;
     FSourceFile: string;
@@ -685,19 +591,14 @@ type
     procedure SetSourceFile(AValue: string);
     function GetHandle: TVXVertexProgramHandle;
   public
-    
     constructor Create(AOwner: TVXXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
-
     procedure DoOnPrepare(Sender: TVXContext); override;
-
     class function FriendlyName: string; override;
-
     procedure NotifyChange(Sender: TObject); override;
     property Handle: TVXVertexProgramHandle read GetHandle;
   published
-    
     property Source: TStringList read FSource write SetSource;
     property SourceFile: string read FSourceFile write SetSourceFile;
     property InfoLog: string read FInfoLog;
@@ -710,9 +611,6 @@ type
     l2eEnvColor2,
     l2eEnvColor3
     );
-
-  // TVXMultitexturingProperties
-  //
 
   TVXMultitexturingProperties = class(TVXLibMaterialProperty)
   private
@@ -735,17 +633,13 @@ type
   protected
     procedure Loaded; override;
   public
-    
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
-
     procedure Notification(Sender: TObject; Operation: TOperation); override;
-
     function IsValid: Boolean;
     procedure Apply(var ARci: TVXRenderContextInfo);
     procedure UnApply(var ARci: TVXRenderContextInfo);
   published
-    
     property LibCombinerName: string read GetLibCombinerName
       write SetLibCombinerName;
     property LibAsmProgName: string read GetLibAsmProgName
@@ -781,12 +675,8 @@ type
     shtFragment
     );
 
-  // TVXGLSLShaderEx
-  //
-
   TVXShaderEx = class(TVXBaseMaterialCollectionItem)
   protected
-    
     procedure WriteToFiler(AWriter: TWriter); override;
     procedure ReadFromFiler(AReader: TReader); override;
   private
@@ -807,19 +697,14 @@ type
     procedure SetGeometryVerticesOut(AValue: GLint);
     function GetHandle: TVXShaderHandle;
   public
-    
     constructor Create(AOwner: TVXXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
-
     procedure DoOnPrepare(Sender: TVXContext); override;
-
     class function FriendlyName: string; override;
-
     procedure NotifyChange(Sender: TObject); override;
     property Handle: TVXShaderHandle read GetHandle;
   published
-    
     property Source: TStringList read FSource write SetSource;
     property SourceFile: string read FSourceFile write SetSourceFile;
     property ShaderType: TVXShaderType read FShaderType
@@ -833,21 +718,16 @@ type
       write SetGeometryVerticesOut default 1;
   end;
 
-  // TVXAbstractShaderUniform
-  //
 
   TVXAbstractShaderUniform = class(TVXUpdateAbleObject, IShaderParameter)
   protected
-    
     FName: string;
     FNameHashCode: Integer;
     FType: TVXSLDataType;
     FSamplerType: TVXSLSamplerType;
-
     function GetName: string;
     function GetGLSLType: TVXSLDataType;
     function GetGLSLSamplerType: TVXSLSamplerType;
-
     function GetAutoSetMethod: string; virtual;
     function GetTextureName: string; virtual;
     function GetSamplerName: string; virtual;
@@ -856,48 +736,39 @@ type
     procedure SetSamplerName(const AValue: string); virtual;
     procedure SetAutoSetMethod(const AValue: string); virtual;
     procedure SetTextureSwizzle(const AValue: TSwizzleVector); virtual;
-
     function GetFloat: Single; virtual;
     function GetVec2: TVector2f; virtual;
     function GetVec3: TVector3f; virtual;
     function GetVec4: TVector; virtual;
-
     function GetInt: GLint; virtual;
     function GetIVec2: TVector2i; virtual;
     function GetIVec3: TVector3i; virtual;
     function GetIVec4: TVector4i; virtual;
-
     function GetUInt: GLuint; virtual;
     function GetUVec2: TVector2ui; virtual;
     function GetUVec3: TVector3ui; virtual;
     function GetUVec4: TVector4ui; virtual;
-
     procedure SetFloat(const Value: GLfloat); virtual;
     procedure SetVec2(const Value: TVector2f); virtual;
     procedure SetVec3(const Value: TVector3f); virtual;
     procedure SetVec4(const Value: TVector4f); virtual;
-
     procedure SetInt(const Value: Integer); virtual;
     procedure SetIVec2(const Value: TVector2i); virtual;
     procedure SetIVec3(const Value: TVector3i); virtual;
     procedure SetIVec4(const Value: TVector4i); virtual;
-
     procedure SetUInt(const Value: GLuint); virtual;
     procedure SetUVec2(const Value: TVector2ui); virtual;
     procedure SetUVec3(const Value: TVector3ui); virtual;
     procedure SetUVec4(const Value: TVector4ui); virtual;
-
     function GetMat2: TMatrix2f; virtual;
     function GetMat3: TMatrix3f; virtual;
     function GetMat4: TMatrix4f; virtual;
     procedure SetMat2(const Value: TMatrix2f); virtual;
     procedure SetMat3(const Value: TMatrix3f); virtual;
     procedure SetMat4(const Value: TMatrix4f); virtual;
-
     procedure SetFloatArray(const Values: PGLFloat; Count: Integer); virtual;
     procedure SetIntArray(const Values: PGLInt; Count: Integer); virtual;
     procedure SetUIntArray(const Values: PGLUInt; Count: Integer); virtual;
-
     procedure WriteToFiler(AWriter: TWriter); virtual;
     procedure ReadFromFiler(AReader: TReader); virtual;
     procedure Apply(var ARci: TVXRenderContextInfo); virtual;
@@ -905,45 +776,30 @@ type
 
   CGLAbstractShaderUniform = class of TVXAbstractShaderUniform;
 
-  // TVXShaderUniform
-  //
-
   TVXShaderUniform = class(TVXAbstractShaderUniform, IShaderParameter)
   protected
-    
     FLocation: GLint;
     FStoreProgram: GLuint;
     FAutoSet: TUniformAutoSetMethod;
-    function GetProgram: GLuint;
-{$IFDEF VKS_INLINE} inline;
-{$ENDIF}
-    procedure PushProgram;
-{$IFDEF VKS_INLINE} inline;
-{$ENDIF}
-    procedure PopProgram;
-{$IFDEF VKS_INLINE} inline;
-{$ENDIF}
-
+    function GetProgram: GLuint; inline;
+    procedure PushProgram; inline;
+    procedure PopProgram; inline;
     function GetFloat: Single; override;
     function GetVec2: TVector2f; override;
     function GetVec3: TVector3f; override;
     function GetVec4: TVector; override;
-
     function GetInt: GLint; override;
     function GetIVec2: TVector2i; override;
     function GetIVec3: TVector3i; override;
     function GetIVec4: TVector4i; override;
-
     function GetUInt: GLuint; override;
     function GetUVec2: TVector2ui; override;
     function GetUVec3: TVector3ui; override;
     function GetUVec4: TVector4ui; override;
-
     procedure SetFloat(const Value: GLfloat); override;
     procedure SetVec2(const Value: TVector2f); override;
     procedure SetVec3(const Value: TVector3f); override;
     procedure SetVec4(const Value: TVector4f); override;
-
     procedure SetInt(const Value: Integer); override;
     procedure SetIVec2(const Value: TVector2i); override;
     procedure SetIVec3(const Value: TVector3i); override;
@@ -953,76 +809,57 @@ type
     procedure SetUVec2(const Value: TVector2ui); override;
     procedure SetUVec3(const Value: TVector3ui); override;
     procedure SetUVec4(const Value: TVector4ui); override;
-
     function GetMat2: TMatrix2f; override;
     function GetMat3: TMatrix3f; override;
     function GetMat4: TMatrix4f; override;
     procedure SetMat2(const Value: TMatrix2f); override;
     procedure SetMat3(const Value: TMatrix3f); override;
     procedure SetMat4(const Value: TMatrix4f); override;
-
     function GetAutoSetMethod: string; override;
     procedure SetAutoSetMethod(const AValue: string); override;
-
     procedure WriteToFiler(AWriter: TWriter); override;
     procedure ReadFromFiler(AReader: TReader); override;
   public
-    
     procedure SetFloatArray(const Values: PGLFloat; Count: Integer); override;
     procedure SetIntArray(const Values: PGLInt; Count: Integer); override;
     procedure SetUIntArray(const Values: PGLUInt; Count: Integer); override;
-
     procedure Assign(Source: TPersistent); override;
     procedure Apply(var ARci: TVXRenderContextInfo); override;
-
     property Name: string read GetName;
     property Location: GLint read FLocation;
     property GLSLType: TVXSLDataType read GetGLSLType;
   end;
 
-  // TVXShaderUniformDSA
-  //
-
   TVXShaderUniformDSA = class(TVXShaderUniform)
   protected
-    
     procedure SetFloat(const Value: GLfloat); override;
     procedure SetVec2(const Value: TVector2f); override;
     procedure SetVec3(const Value: TVector3f); override;
     procedure SetVec4(const Value: TVector4f); override;
-
     procedure SetInt(const Value: Integer); override;
     procedure SetIVec2(const Value: TVector2i); override;
     procedure SetIVec3(const Value: TVector3i); override;
     procedure SetIVec4(const Value: TVector4i); override;
-
     procedure SetUInt(const Value: GLuint); override;
     procedure SetUVec2(const Value: TVector2ui); override;
     procedure SetUVec3(const Value: TVector3ui); override;
     procedure SetUVec4(const Value: TVector4ui); override;
-
     procedure SetMat2(const Value: TMatrix2f); override;
     procedure SetMat3(const Value: TMatrix3f); override;
     procedure SetMat4(const Value: TMatrix4f); override;
   public
-    
     procedure SetFloatArray(const Values: PGLFloat; Count: Integer); override;
     procedure SetIntArray(const Values: PGLInt; Count: Integer); override;
     procedure SetUIntArray(const Values: PGLUInt; Count: Integer); override;
   end;
 
-  // TVXUniformTexture
-  //
-
   TVXShaderUniformTexture = class(TVXShaderUniform)
   private
-    
     FLibTexture: TVXAbstractTexture;
     FLibSampler: TVXTextureSampler;
     FTarget: TVXTextureTarget;
     FSwizzling: TSwizzleVector;
   protected
-    
     FLibTexureName: TVXMaterialComponentName;
     FLibSamplerName: TVXMaterialComponentName;
     function GetTextureName: string; override;
@@ -1031,19 +868,15 @@ type
     procedure SetTextureName(const AValue: string); override;
     procedure SetSamplerName(const AValue: string); override;
     procedure SetTextureSwizzle(const AValue: TSwizzleVector); override;
-
     procedure WriteToFiler(AWriter: TWriter); override;
     procedure ReadFromFiler(AReader: TReader); override;
     procedure Loaded;
   public
-    
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
     procedure Notification(Sender: TObject; Operation: TOperation); override;
-
     procedure Apply(var ARci: TVXRenderContextInfo); override;
-
     property LibTextureName: TVXMaterialComponentName read GetTextureName
       write SetTextureName;
     property LibSamplerName: TVXMaterialComponentName read GetSamplerName
@@ -1053,12 +886,9 @@ type
       SetTextureSwizzle;
   end;
 
-  // TVXBaseShaderModel
-  //
 
   TVXBaseShaderModel = class(TVXLibMaterialProperty)
   protected
-    
     FHandle: TVXProgramHandle;
     FLibShaderName: array[TVXShaderType] of string;
     FShaders: array[TVXShaderType] of TVXShaderEx;
@@ -1066,13 +896,10 @@ type
     FInfoLog: string;
     FUniforms: TPersistentObjectList;
     FAutoFill: Boolean;
-
     function GetLibShaderName(AType: TVXShaderType): string;
     procedure SetLibShaderName(AType: TVXShaderType; const AValue: string);
-
     function GetUniform(const AName: string): IShaderParameter;
     class procedure ReleaseUniforms(AList: TPersistentObjectList);
-
     property LibVertexShaderName: TVXMaterialComponentName index shtVertex
       read GetLibShaderName write SetLibShaderName;
     property LibFragmentShaderName: TVXMaterialComponentName index shtFragment
@@ -1083,33 +910,25 @@ type
       read GetLibShaderName write SetLibShaderName;
     property LibTessControlShaderName: TVXMaterialComponentName index shtControl
       read GetLibShaderName write SetLibShaderName;
-
     procedure DefineProperties(Filer: TFiler); override;
     procedure ReadUniforms(AStream: TStream);
     procedure WriteUniforms(AStream: TStream);
     procedure Loaded; override;
     class function IsSupported: Boolean; virtual; abstract;
-
   public
-    
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
-
     procedure NotifyChange(Sender: TObject); override;
     procedure Notification(Sender: TObject; Operation: TOperation); override;
-
     procedure DoOnPrepare(Sender: TVXContext);
     procedure Apply(var ARci: TVXRenderContextInfo); virtual;
     procedure UnApply(var ARci: TVXRenderContextInfo); virtual;
-
     procedure GetUniformNames(Proc: TGetStrProc);
-
     property Handle: TVXProgramHandle read FHandle;
     property IsValid: Boolean read FIsValid;
     property Uniforms[const AName: string]: IShaderParameter read GetUniform;
   published
-    
     // Compilation info log for design time
     property InfoLog: string read FInfoLog;
     // Turn on autofill of uniforms
@@ -1120,20 +939,16 @@ type
 
   TVXShaderModel3 = class(TVXBaseShaderModel)
   public
-    
     class function IsSupported: Boolean; override;
   published
-    
     property LibVertexShaderName;
     property LibFragmentShaderName;
   end;
 
   TVXShaderModel4 = class(TVXBaseShaderModel)
   public
-    
     class function IsSupported: Boolean; override;
   published
-    
     property LibVertexShaderName;
     property LibGeometryShaderName;
     property LibFragmentShaderName;
@@ -1141,12 +956,10 @@ type
 
   TVXShaderModel5 = class(TVXBaseShaderModel)
   public
-    
     procedure Apply(var ARci: TVXRenderContextInfo); override;
     procedure UnApply(var ARci: TVXRenderContextInfo); override;
     class function IsSupported: Boolean; override;
   published
-    
     property LibTessControlShaderName;
     property LibTessEvalShaderName;
     property LibVertexShaderName;
@@ -1154,12 +967,8 @@ type
     property LibFragmentShaderName;
   end;
 
-  // TVXLibMaterialEx
-  //
-
   TVXLibMaterialEx = class(TVXAbstractLibMaterial)
   private
-    
     FHandle: TVXVirtualHandle;
     FApplicableLevel: TVXMaterialLevel;
     FSelectedLevel: TVXMaterialLevel;
@@ -1190,31 +999,21 @@ type
     procedure RemoveDefferedInit;
     procedure DoOnPrepare(Sender: TVXContext);
   public
-    
     constructor Create(ACollection: TCollection); override;
     destructor Destroy; override;
-
     procedure Assign(Source: TPersistent); override;
     procedure NotifyChange(Sender: TObject); override;
-
     procedure Apply(var ARci: TVXRenderContextInfo); override;
     function UnApply(var ARci: TVXRenderContextInfo): Boolean; override;
-
     function Blended: Boolean; override;
   published
-    
-    property ApplicableLevel: TVXMaterialLevel read FApplicableLevel write
-      SetLevel
-      default mlAuto;
+    property ApplicableLevel: TVXMaterialLevel read FApplicableLevel write SetLevel default mlAuto;
     property SelectedLevel: TVXMaterialLevel read FSelectedLevel;
-    property FixedFunction: TVXFixedFunctionProperties
-      read FFixedFunc write SetFixedFunc;
-    property Multitexturing: TVXMultitexturingProperties
-      read FMultitexturing write SetMultitexturing;
+    property FixedFunction: TVXFixedFunctionProperties read FFixedFunc write SetFixedFunc;
+    property Multitexturing: TVXMultitexturingProperties read FMultitexturing write SetMultitexturing;
     property ShaderModel3: TVXShaderModel3 read FSM3 write SetSM3;
     property ShaderModel4: TVXShaderModel4 read FSM4 write SetSM4;
     property ShaderModel5: TVXShaderModel5 read FSM5 write SetSM5;
-
     // Asm vertex program event
     property OnAsmProgSetting: TOnAsmProgSetting read FOnAsmProgSetting
       write FOnAsmProgSetting;
@@ -1235,19 +1034,14 @@ type
       write FOnSM5UniformSetting;
   end;
 
-  // TVXLibMaterialsEx
-  //
 
   TVXLibMaterialsEx = class(TVXAbstractLibMaterials)
   protected
     procedure SetItems(AIndex: Integer; const AValue: TVXLibMaterialEx);
     function GetItems(AIndex: Integer): TVXLibMaterialEx;
   public
-    
     constructor Create(AOwner: TComponent);
-
     function MaterialLibrary: TVXMaterialLibraryEx;
-
     function IndexOf(const Item: TVXLibMaterialEx): Integer;
     function Add: TVXLibMaterialEx;
     function FindItemID(ID: Integer): TVXLibMaterialEx;
@@ -1257,15 +1051,10 @@ type
       TVXLibMaterialEx;
   end;
 
-  // TVXMatLibComponents
-  //
-
   TVXMatLibComponents = class(TVXXCollection)
   protected
-    
     function GetItems(index: Integer): TVXBaseMaterialCollectionItem;
   public
-    
     function GetNamePath: string; override;
     class function ItemsClass: TVXXCollectionItemClass; override;
     property Items[index: Integer]: TVXBaseMaterialCollectionItem
@@ -1289,15 +1078,10 @@ type
       TVXMaterialComponentName;
   end;
 
-  // TVXMaterialLibraryEx
-  //
-
   TVXMaterialLibraryEx = class(TVXAbstractMaterialLibrary)
   private
-    
     FComponents: TVXMatLibComponents;
   protected
-    
     procedure Loaded; override;
     function GetMaterials: TVXLibMaterialsEx;
     procedure SetMaterials(AValue: TVXLibMaterialsEx);
@@ -1308,13 +1092,10 @@ type
     procedure WriteComponents(AStream: TStream);
     procedure ReadComponents(AStream: TStream);
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
     procedure GetNames(Proc: TGetStrProc;
       AClass: CGLBaseMaterialCollectionItem); overload;
-
     function AddTexture(const AName: TVXMaterialComponentName):
       TVXTextureImageEx;
     function AddAttachment(const AName: TVXMaterialComponentName):
@@ -1326,10 +1107,8 @@ type
     function AddShader(const AName: TVXMaterialComponentName): TVXShaderEx;
     function AddAsmProg(const AName: TVXMaterialComponentName):
       TVXASMVertexProgram;
-
     procedure SetLevelForAll(const ALevel: TVXMaterialLevel);
   published
-    
       { The materials collection. }
     property Materials: TVXLibMaterialsEx read GetMaterials write SetMaterials
       stored StoreMaterials;
@@ -1341,20 +1120,22 @@ type
 procedure RegisterGLMaterialExNameChangeEvent(AEvent: TNotifyEvent);
 procedure DeRegisterGLMaterialExNameChangeEvent(AEvent: TNotifyEvent);
 
+//=================================================================
 implementation
+//=================================================================
 
 const
-  cTextureMagFilter: array[maNearest..maLinear] of GLEnum =
+  cTextureMagFilter: array[maNearest..maLinear] of Cardinal =
     (GL_NEAREST, GL_LINEAR);
-  cTextureMinFilter: array[miNearest..miLinearMipmapLinear] of GLEnum =
+  cTextureMinFilter: array[miNearest..miLinearMipmapLinear] of Cardinal =
     (GL_NEAREST, GL_LINEAR, GL_NEAREST_MIPMAP_NEAREST,
     GL_LINEAR_MIPMAP_NEAREST, GL_NEAREST_MIPMAP_LINEAR,
     GL_LINEAR_MIPMAP_LINEAR);
-  cTextureWrapMode: array[twRepeat..twMirrorClampToBorder] of GLEnum =
+  cTextureWrapMode: array[twRepeat..twMirrorClampToBorder] of Cardinal =
     (GL_REPEAT, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_BORDER,
     GL_MIRRORED_REPEAT, GL_MIRROR_CLAMP_TO_EDGE_ATI,
       GL_MIRROR_CLAMP_TO_BORDER_EXT);
-  cTextureCompareMode: array[tcmNone..tcmCompareRtoTexture] of GLEnum =
+  cTextureCompareMode: array[tcmNone..tcmCompareRtoTexture] of Cardinal =
     (GL_NONE, GL_COMPARE_R_TO_TEXTURE);
   cSamplerToTexture: array[TVXSLSamplerType] of TVXTextureTarget =
     (
@@ -1421,59 +1202,35 @@ type
   TStandartUniformAutoSetExecutor = class
   public
     constructor Create;
-    procedure SetModelMatrix(Sender: IShaderParameter; var ARci:
-      TVXRenderContextInfo);
-    procedure SetViewMatrix(Sender: IShaderParameter; var ARci:
-      TVXRenderContextInfo);
-    procedure SetProjectionMatrix(Sender: IShaderParameter; var ARci:
-      TVXRenderContextInfo);
-    procedure SetInvModelMatrix(Sender: IShaderParameter; var ARci:
-      TVXRenderContextInfo);
-    procedure SetModelViewMatrix(Sender: IShaderParameter; var ARci:
-      TVXRenderContextInfo);
-    procedure SetNormalModelMatrix(Sender: IShaderParameter; var ARci:
-      TVXRenderContextInfo);
-    procedure SetInvModelViewMatrix(Sender: IShaderParameter; var ARci:
-      TVXRenderContextInfo);
-    procedure SetViewProjectionMatrix(Sender: IShaderParameter; var ARci:
-      TVXRenderContextInfo);
-    procedure SetWorldViewProjectionMatrix(Sender: IShaderParameter; var ARci:
-      TVXRenderContextInfo);
-    procedure SetCameraPosition(Sender: IShaderParameter; var ARci:
-      TVXRenderContextInfo);
+    procedure SetModelMatrix(Sender: IShaderParameter; var ARci: TVXRenderContextInfo);
+    procedure SetViewMatrix(Sender: IShaderParameter; var ARci: TVXRenderContextInfo);
+    procedure SetProjectionMatrix(Sender: IShaderParameter; var ARci: TVXRenderContextInfo);
+    procedure SetInvModelMatrix(Sender: IShaderParameter; var ARci: TVXRenderContextInfo);
+    procedure SetModelViewMatrix(Sender: IShaderParameter; var ARci: TVXRenderContextInfo);
+    procedure SetNormalModelMatrix(Sender: IShaderParameter; var ARci: TVXRenderContextInfo);
+    procedure SetInvModelViewMatrix(Sender: IShaderParameter; var ARci: TVXRenderContextInfo);
+    procedure SetViewProjectionMatrix(Sender: IShaderParameter; var ARci: TVXRenderContextInfo);
+    procedure SetWorldViewProjectionMatrix(Sender: IShaderParameter; var ARci: TVXRenderContextInfo);
+    procedure SetCameraPosition(Sender: IShaderParameter; var ARci: TVXRenderContextInfo);
     // Lighting
-    procedure SetLightSource0Position(Sender: IShaderParameter; var ARci:
-      TVXRenderContextInfo);
+    procedure SetLightSource0Position(Sender: IShaderParameter; var ARci: TVXRenderContextInfo);
     // Material
-    procedure SetMaterialFrontAmbient(Sender: IShaderParameter; var ARci:
-      TVXRenderContextInfo);
-    procedure SetMaterialFrontDiffuse(Sender: IShaderParameter; var ARci:
-      TVXRenderContextInfo);
-    procedure SetMaterialFrontSpecular(Sender: IShaderParameter; var ARci:
-      TVXRenderContextInfo);
-    procedure SetMaterialFrontEmission(Sender: IShaderParameter; var ARci:
-      TVXRenderContextInfo);
-    procedure SetMaterialFrontShininess(Sender: IShaderParameter; var ARci:
-      TVXRenderContextInfo);
-    procedure SetMaterialBackAmbient(Sender: IShaderParameter; var ARci:
-      TVXRenderContextInfo);
-    procedure SetMaterialBackDiffuse(Sender: IShaderParameter; var ARci:
-      TVXRenderContextInfo);
-    procedure SetMaterialBackSpecular(Sender: IShaderParameter; var ARci:
-      TVXRenderContextInfo);
-    procedure SetMaterialBackShininess(Sender: IShaderParameter; var ARci:
-      TVXRenderContextInfo);
-    procedure SetMaterialBackEmission(Sender: IShaderParameter; var ARci:
-      TVXRenderContextInfo);
+    procedure SetMaterialFrontAmbient(Sender: IShaderParameter; var ARci: TVXRenderContextInfo);
+    procedure SetMaterialFrontDiffuse(Sender: IShaderParameter; var ARci: TVXRenderContextInfo);
+    procedure SetMaterialFrontSpecular(Sender: IShaderParameter; var ARci: TVXRenderContextInfo);
+    procedure SetMaterialFrontEmission(Sender: IShaderParameter; var ARci: TVXRenderContextInfo);
+    procedure SetMaterialFrontShininess(Sender: IShaderParameter; var ARci: TVXRenderContextInfo);
+    procedure SetMaterialBackAmbient(Sender: IShaderParameter; var ARci: TVXRenderContextInfo);
+    procedure SetMaterialBackDiffuse(Sender: IShaderParameter; var ARci: TVXRenderContextInfo);
+    procedure SetMaterialBackSpecular(Sender: IShaderParameter; var ARci: TVXRenderContextInfo);
+    procedure SetMaterialBackShininess(Sender: IShaderParameter; var ARci: TVXRenderContextInfo);
+    procedure SetMaterialBackEmission(Sender: IShaderParameter; var ARci: TVXRenderContextInfo);
   end;
 
 var
   vGLMaterialExNameChangeEvent: TNotifyEvent;
   vStandartUniformAutoSetExecutor: TStandartUniformAutoSetExecutor;
-  vStoreBegin: procedure(mode: GLEnum);
-{$IFDEF MSWINDOWS}stdcall;
-{$ENDIF}{$IFDEF UNIX}cdecl;
-{$ENDIF}
+  vStoreBegin: procedure(mode: GLEnum); {$IFDEF MSWINDOWS}stdcall;{$ENDIF}{$IFDEF UNIX}cdecl;{$ENDIF}
 
 procedure RegisterGLMaterialExNameChangeEvent(AEvent: TNotifyEvent);
 begin
@@ -1496,9 +1253,7 @@ begin
     Result := (Result shl 1) + Byte(AName[i]);
 end;
 
-procedure Div2(var Value: Integer);
-{$IFDEF VKS_INLINE} inline;
-{$ENDIF}
+procedure Div2(var Value: Integer); inline;
 begin
   Value := Value div 2;
   if Value = 0 then
@@ -1509,11 +1264,8 @@ function CalcTextureLevelNumber(ATarget: TVXTextureTarget; w, h, d: Integer):
   Integer;
 begin
   Result := 0;
-
   case ATarget of
-
     ttNoShape: ;
-
     ttTexture1D, ttTexture1DArray, ttTextureCube, ttTextureCubeArray:
       repeat
         Inc(Result);
@@ -1540,8 +1292,6 @@ begin
       Result := 1;
   end;
 end;
-
-{$IFDEF VKS_REGION}{$REGION 'TVXBaseMaterialCollectionItem'}{$ENDIF}
 
 destructor TVXBaseMaterialCollectionItem.Destroy;
 var
@@ -1642,19 +1392,15 @@ begin
   end;
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
-
-{$IFDEF VKS_REGION}{$REGION 'TVXFixedFunctionProperties'}{$ENDIF}
-
 procedure TVXFixedFunctionProperties.Apply(var ARci: TVXRenderContextInfo);
 begin
-  with ARci.VKStates do
+  with ARci.VxStates do
   begin
     Disable(stColorMaterial);
     PolygonMode := FPolygonMode;
 
     // Fixed functionality state
-    if not ARci.VKStates.ForwardContext then
+    if True{ not ARci.VXStates.ForwardContext} then
     begin
       // Lighting switch
       if (moNoLighting in MaterialOptions) or not ARci.bufferLighting then
@@ -1667,10 +1413,8 @@ begin
         Enable(stLighting);
         FFrontProperties.Apply(ARci, cmFront);
       end;
-
       if FPolygonMode = pmLines then
         Disable(stLineStipple);
-
       // Fog switch
       if (moIgnoreFog in MaterialOptions) or not ARci.bufferFog then
         Disable(stFog)
@@ -1755,7 +1499,7 @@ begin
     begin
       if FTexProp.Enabled and FTexProp.IsValid then
       begin
-        ARci.VKStates.ActiveTexture := 0;
+        ARci.VXStates.ActiveTexture := 0;
         FTexProp.Apply(ARci);
         glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,
           cTextureMode[FTextureMode]);
@@ -1910,25 +1654,17 @@ begin
     FTexProp.UnApply(ARci);
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
-
-{$IFDEF VKS_REGION}{$REGION 'TVXAbstractTexture'}{$ENDIF}
-
 function TVXAbstractTexture.GetTextureTarget: TVXTextureTarget;
 begin
   Result := FHandle.Target;
 end;
-
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
-
-{$IFDEF VKS_REGION}{$REGION 'TVXTextureImageEx'}{$ENDIF}
 
 procedure TVXTextureImageEx.Apply(var ARci: TVXRenderContextInfo);
 begin
   if FIsValid then
   begin
     // Just bind
-    with ARci.VKStates do
+    with ARci.VxStates do
     begin
       TextureBinding[ActiveTexture, FHandle.Target] := FHandle.Handle;
       ActiveTextureEnabled[FHandle.Target] := True;
@@ -1949,7 +1685,7 @@ begin
       end;
     end;
   end
-  else with ARci.VKStates do
+  else with ARci.VxStates do
     TextureBinding[ActiveTexture, FHandle.Target] := 0;
 end;
 
@@ -2049,7 +1785,7 @@ begin
       FUseStreaming := FUseStreaming and (LTarget = ttTexture2D);
     end;
 
-    with Sender.VKStates do
+    with Sender.VxStates do
     begin
       ActiveTextureEnabled[FHandle.Target] := True;
       TextureBinding[ActiveTexture, FHandle.Target] := FHandle.Handle;
@@ -2078,7 +1814,7 @@ begin
     else
       FullTransfer;
 
-    Sender.VKStates.ActiveTextureEnabled[FHandle.Target] := False;
+    Sender.VXStates.ActiveTextureEnabled[FHandle.Target] := False;
 
     FApplyCounter := 0;
     FIsValid := True;
@@ -2107,7 +1843,7 @@ begin
       LCompression := tcNone;
 
     if LCompression <> tcNone then
-      with CurrentVKContext.VKStates do
+      with CurrentVXContext.VxStates do
       begin
         case LCompression of
           tcStandard: TextureCompressionHint := hintDontCare;
@@ -2136,7 +1872,7 @@ begin
     if glGetError <> GL_NO_ERROR then
     begin
       ClearOpenGLError;
-      CurrentVKContext.VKStates.ActiveTextureEnabled[FHandle.Target] := False;
+      CurrentVXContext.VXStates.ActiveTextureEnabled[FHandle.Target] := False;
       ShowMessage(Format('Unable to create texture "%s"', [Self.Name]));
       Abort;
     end
@@ -2152,13 +1888,13 @@ begin
   case FHandle.Target of
     ttTexture3D:
       begin
-        MaxLODSize := CurrentVKContext.VKStates.Max3DTextureSize;
+        MaxLODSize := CurrentVXContext.VXStates.Max3DTextureSize;
         MaxLODZSize := MaxLODSize;
       end;
 
     ttTextureCube:
       begin
-        MaxLODSize := CurrentVKContext.VKStates.MaxCubeTextureSize;
+        MaxLODSize := CurrentVXContext.VXStates.MaxCubeTextureSize;
         MaxLODZSize := 0;
       end;
 
@@ -2167,13 +1903,13 @@ begin
       ttTextureCubeArray,
       ttTexture2DMultisampleArray:
       begin
-        MaxLODSize := CurrentVKContext.VKStates.MaxTextureSize;
-        MaxLODZSize := CurrentVKContext.VKStates.MaxArrayTextureSize;
+        MaxLODSize := CurrentVXContext.VXStates.MaxTextureSize;
+        MaxLODZSize := CurrentVXContext.VXStates.MaxArrayTextureSize;
       end;
 
   else
     begin
-      MaxLODSize := CurrentVKContext.VKStates.MaxTextureSize;
+      MaxLODSize := CurrentVXContext.VXStates.MaxTextureSize;
       MaxLODZSize := 0;
     end;
   end;
@@ -2681,7 +2417,7 @@ end;
 
 procedure TVXTextureImageEx.UnApply(var ARci: TVXRenderContextInfo);
 begin
-  ARci.VKStates.ActiveTextureEnabled[FHandle.Target] := False;
+  ARci.VXStates.ActiveTextureEnabled[FHandle.Target] := False;
 end;
 
 procedure TVXTextureImageEx.WriteToFiler(AWriter: TWriter);
@@ -2705,14 +2441,10 @@ begin
   end;
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
-
-{$IFDEF VKS_REGION}{$REGION 'TVXTextureSampler'}{$ENDIF}
-
 procedure TVXTextureSampler.Apply(var ARci: TVXRenderContextInfo);
 begin
   if FIsValid then
-    ARci.VKStates.SamplerBinding[ARci.VKStates.ActiveTexture] := FHandle.Handle;
+    ARci.VXStates.SamplerBinding[ARci.VXStates.ActiveTexture] := FHandle.Handle;
 end;
 
 procedure TVXTextureSampler.Assign(Source: TPersistent);
@@ -2804,7 +2536,7 @@ begin
           begin
             if FFilteringQuality = tfAnisotropic then
               glSamplerParameteri(ID, GL_TEXTURE_MAX_ANISOTROPY_EXT,
-                CurrentVKContext.VKStates.MaxTextureAnisotropy)
+                CurrentVXContext.VXStates.MaxTextureAnisotropy)
             else
               glSamplerParameteri(ID, GL_TEXTURE_MAX_ANISOTROPY_EXT, 1);
           end;
@@ -2822,7 +2554,7 @@ begin
               glSamplerParameteri(ID, GL_TEXTURE_SRGB_DECODE_EXT,
                 GL_SKIP_DECODE_EXT);
           end;
-          {$IFDEF VKS_OPENGL_DEBUG}
+          {$IFDEF USE_OPENGL_DEBUG}
           CheckError;
           {$ENDIF}
 
@@ -2954,7 +2686,7 @@ end;
 procedure TVXTextureSampler.UnApply(var ARci: TVXRenderContextInfo);
 begin
   if FHandle.IsSupported > False then
-    with ARci.VKStates do
+    with ARci.VxStates do
       SamplerBinding[ActiveTexture] := 0;
 end;
 
@@ -2979,9 +2711,7 @@ begin
   end;
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
-
-{$IFDEF VKS_REGION}{$REGION 'TVXTextureCombiner'}{$ENDIF}
+{ TVXTextureCombiner }
 
 procedure TVXTextureCombiner.Assign(Source: TPersistent);
 var
@@ -3103,9 +2833,7 @@ begin
   end;
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
-
-{$IFDEF VKS_REGION}{$REGION 'TVXLibMaterialEx'}{$ENDIF}
+{ TVXLibMaterialEx }
 
 procedure TVXLibMaterialEx.Apply(var ARci: TVXRenderContextInfo);
 var
@@ -3335,7 +3063,7 @@ begin
         FSM5.FShaders[ST].FDefferedInit := False;
   end;
 
-  CurrentVKContext.PrepareHandlesData;
+  CurrentVXContext.PrepareHandlesData;
 end;
 
 procedure TVXLibMaterialEx.SetMultitexturing(AValue:
@@ -3445,16 +3173,14 @@ begin
   else
     FNextPass := nil;
   end;
-  ARci.VKStates.ActiveTexture := 0;
+  ARci.VXStates.ActiveTexture := 0;
 
   Result := Assigned(FNextPass);
   if Result then
     FNextPass.Apply(ARCi);
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
-
-{$IFDEF VKS_REGION}{$REGION 'TVXMultitexturingProperties'}{$ENDIF}
+{ TVXMultitexturingProperties }
 
 procedure TVXMultitexturingProperties.Apply(var ARci: TVXRenderContextInfo);
 var
@@ -3473,12 +3199,12 @@ begin
     begin
       if Assigned(FTexProps[N]) and FTexProps[N].Enabled then
       begin
-        ARci.VKStates.ActiveTexture := N;
+        ARci.VXStates.ActiveTexture := N;
         FTexProps[N].Apply(ARci);
         if Ord(FLightDir) = N+1 then
         begin
-          LDir := ARci.VKStates.LightPosition[FLightSourceIndex];
-          LDir := VectorTransform(LDir, ARci.PipelineTransformation.InvModelMatrix);
+          LDir := ARci.VXStates.LightPosition[FLightSourceIndex];
+          LDir := VectorTransform(LDir, ARci.PipelineTransformation.InvModelMatrix^);
           NormalizeVector(LDir);
           glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, @LDir);
         end;
@@ -3494,7 +3220,7 @@ begin
         GetMaterial.FOnAsmProgSetting(Self.FLibAsmProg, ARci);
     end;
 
-    with ARci.VKStates do
+    with ARci.VxStates do
     begin
       if Assigned(FLibCombiner) and (Length(FLibCombiner.FCommandCache) > 0)
         then
@@ -3699,19 +3425,17 @@ begin
   begin
     if FTexProps[N].Enabled then
     begin
-      ARci.VKStates.ActiveTexture := N;
+      ARci.VXStates.ActiveTexture := N;
       FTexProps[N].UnApply(ARci);
     end;
   end;
-  ARci.VKStates.ActiveTexture := 0;
+  ARci.VXStates.ActiveTexture := 0;
 
   if Assigned(FLibAsmProg) then
     glDisable(GL_VERTEX_PROGRAM_ARB);
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
-
-{$IFDEF VKS_REGION}{$REGION 'TVXTextureProperties'}{$ENDIF}
+{ TVXTextureProperties }
 
 procedure TVXTextureProperties.Apply(var ARci: TVXRenderContextInfo);
 var
@@ -3778,7 +3502,7 @@ begin
           begin
             if FLibSampler.FilteringQuality = tfAnisotropic then
               glTexParameteri(glTarget, GL_TEXTURE_MAX_ANISOTROPY_EXT,
-                CurrentVKContext.VKStates.MaxTextureAnisotropy)
+                CurrentVXContext.VXStates.MaxTextureAnisotropy)
             else
               glTexParameteri(glTarget, GL_TEXTURE_MAX_ANISOTROPY_EXT, 1);
           end;
@@ -3802,7 +3526,7 @@ begin
       end;
 
       if not FTextureMatrixIsIdentity and (MappingMode = tmmUser) then
-        ARci.VKStates.SetTextureMatrix(FTextureMatrix);
+        ARci.VXStates.SetTextureMatrix(FTextureMatrix);
 
       if ARci.currentMaterialLevel < mlSM3 then
       begin
@@ -4286,7 +4010,7 @@ begin
     if ARci.currentMaterialLevel < mlSM3 then
     begin
       if not FTextureMatrixIsIdentity and (MappingMode = tmmUser) then
-        ARci.VKStates.SetTextureMatrix(IdentityHmgMatrix);
+        ARci.VXStates.SetTextureMatrix(IdentityHmgMatrix);
       UnApplyMappingMode;
     end;
   end;
@@ -4306,9 +4030,7 @@ begin
     end;
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
-
-{$IFDEF VKS_REGION}{$REGION 'TVXShaderEx'}{$ENDIF}
+{ TVXShaderEx }
 
 procedure TVXShaderEx.Assign(Source: TPersistent);
 var
@@ -4532,9 +4254,7 @@ begin
   end;
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
-
-{$IFDEF VKS_REGION}{$REGION 'TVXLibMaterialProperty'}{$ENDIF}
+{ TVXLibMaterialProperty }
 
 function TVXLibMaterialProperty.GetMaterial: TVXLibMaterialEx;
 begin
@@ -4598,9 +4318,8 @@ begin
   end;
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
 
-{$IFDEF VKS_REGION}{$REGION 'TVXLibMaterialsEx'}{$ENDIF}
+{ TVXLibMaterialsEx }
 
 function TVXLibMaterialsEx.Add: TVXLibMaterialEx;
 begin
@@ -4659,9 +4378,7 @@ begin
   inherited Items[AIndex] := AValue;
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
-
-{$IFDEF VKS_REGION}{$REGION 'TVXBaseShaderModel'}{$ENDIF}
+{ TVXBaseShaderModel }
 
 procedure TVXBaseShaderModel.Apply(var ARci: TVXRenderContextInfo);
 var
@@ -5223,7 +4940,7 @@ end;
 
 procedure TVXBaseShaderModel.UnApply(var ARci: TVXRenderContextInfo);
 begin
-  if FIsValid and not ARci.VKStates.ForwardContext then
+  if FIsValid and not ARci.VXStates.ForwardContext then
     FHandle.EndUseProgramObject;
 end;
 
@@ -5302,9 +5019,8 @@ begin
   ARci.amalgamating := False;
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
 
-{$IFDEF VKS_REGION}{$REGION 'TVXMatLibComponents'}{$ENDIF}
+{ TVXMatLibComponents }
 
 function TVXMatLibComponents.GetAttachmentByName(
   const AName: TVXMaterialComponentName): TVXFrameBufferAttachment;
@@ -5482,9 +5198,8 @@ begin
   end;
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
 
-{$IFDEF VKS_REGION}{$REGION 'TVXMaterialLibraryEx'}{$ENDIF}
+{ TVXMaterialLibraryEx }
 
 function TVXMaterialLibraryEx.AddAttachment(
   const AName: TVXMaterialComponentName): TVXFrameBufferAttachment;
@@ -5625,9 +5340,8 @@ begin
   end;
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
 
-{$IFDEF VKS_REGION}{$REGION 'TVXShaderUniformTexture'}{$ENDIF}
+{ TVXShaderUniformTexture }
 
 procedure TVXShaderUniformTexture.Apply(var ARci: TVXRenderContextInfo);
 
@@ -5638,7 +5352,7 @@ procedure TVXShaderUniformTexture.Apply(var ARci: TVXRenderContextInfo);
     bindTime, minTime: Double;
     LTex: TVXTextureImageEx;
   begin
-    with ARci.VKStates do
+    with ARci.VxStates do
     begin
       if Assigned(FLibTexture) and FLibTexture.IsValid then
       begin
@@ -5763,7 +5477,7 @@ begin
           begin
             if FLibSampler.FilteringQuality = tfAnisotropic then
               glTexParameteri(glTarget, GL_TEXTURE_MAX_ANISOTROPY_EXT,
-                CurrentVKContext.VKStates.MaxTextureAnisotropy)
+                CurrentVXContext.VXStates.MaxTextureAnisotropy)
             else
               glTexParameteri(glTarget, GL_TEXTURE_MAX_ANISOTROPY_EXT, 1);
           end;
@@ -5963,9 +5677,8 @@ begin
   end;
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
 
-{$IFDEF VKS_REGION}{$REGION 'TVXAbstractShaderUniform'}{$ENDIF}
+{ TVXAbstractShaderUniform }
 
 function TVXAbstractShaderUniform.GetFloat: Single;
 begin
@@ -6181,9 +5894,7 @@ procedure TVXAbstractShaderUniform.WriteToFiler(AWriter: TWriter);
 begin
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
-
-{$IFDEF VKS_REGION}{$REGION 'TVXShaderUniform'}{$ENDIF}
+{ TVXShaderUniform }
 
 function TVXShaderUniform.GetFloat: Single;
 begin
@@ -6295,12 +6006,12 @@ end;
 
 procedure TVXShaderUniform.PopProgram;
 begin
-  CurrentVKContext.VKStates.CurrentProgram := FStoreProgram;
+  CurrentVXContext.VXStates.CurrentProgram := FStoreProgram;
 end;
 
 procedure TVXShaderUniform.PushProgram;
 begin
-  with CurrentVKContext.VKStates do
+  with CurrentVXContext.VxStates do
   begin
     FStoreProgram := CurrentProgram;
     CurrentProgram := GetProgram;
@@ -6462,9 +6173,8 @@ begin
   end;
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
 
-{$IFDEF VKS_REGION}{$REGION 'TVXShaderUniformDSA'}{$ENDIF}
+{ TVXShaderUniformDSA }
 
 procedure TVXShaderUniformDSA.SetFloat(const Value: GLfloat);
 begin
@@ -6561,9 +6271,8 @@ begin
     Value.W);
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
 
-{$IFDEF VKS_REGION}{$REGION 'TVXTextureSwizzling'}{$ENDIF}
+{ TVXTextureSwizzling }
 
 procedure TVXTextureSwizzling.Assign(Source: TPersistent);
 var
@@ -6630,23 +6339,21 @@ begin
   end;
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
-
-{$IFDEF VKS_REGION}{$REGION 'TVXFrameBufferAttachment'}{$ENDIF}
+{ TVXFrameBufferAttachment }
 
 procedure TVXFrameBufferAttachment.Apply(var ARci: TVXRenderContextInfo);
 begin
   if FIsValid and not FOnlyWrite then
   begin
     // Just bind
-    with ARci.VKStates do
+    with ARci.VxStates do
     begin
       ActiveTextureEnabled[FHandle.Target] := True;
       TextureBinding[ActiveTexture, FHandle.Target] := FHandle.Handle;
     end;
   end
   else
-    ARci.VKStates.TextureBinding[ARci.VKStates.ActiveTexture, FHandle.Target] :=
+    ARci.VXStates.TextureBinding[ARci.VXStates.ActiveTexture, FHandle.Target] :=
       0;
 end;
 
@@ -6761,8 +6468,8 @@ begin
   s := FSamples;
   if FCubeMap then
   begin
-    if w > Integer(Sender.VKStates.MaxCubeTextureSize) then
-      w := Sender.VKStates.MaxCubeTextureSize;
+    if w > Integer(Sender.VXStates.MaxCubeTextureSize) then
+      w := Sender.VXStates.MaxCubeTextureSize;
     h := w;
     if FLayered then
     begin
@@ -6772,19 +6479,19 @@ begin
         d := 6 * (d div 6 + 1);
     end;
   end
-  else if w > Integer(Sender.VKStates.MaxTextureSize) then
-    w := Sender.VKStates.MaxTextureSize;
-  if h > Integer(Sender.VKStates.MaxTextureSize) then
-    h := Sender.VKStates.MaxTextureSize;
+  else if w > Integer(Sender.VXStates.MaxTextureSize) then
+    w := Sender.VXStates.MaxTextureSize;
+  if h > Integer(Sender.VXStates.MaxTextureSize) then
+    h := Sender.VXStates.MaxTextureSize;
   if FLayered then
   begin
-    if d > Integer(Sender.VKStates.MaxArrayTextureSize) then
-      d := Sender.VKStates.MaxArrayTextureSize;
+    if d > Integer(Sender.VXStates.MaxArrayTextureSize) then
+      d := Sender.VXStates.MaxArrayTextureSize;
   end
-  else if d > Integer(Sender.VKStates.Max3DTextureSize) then
-    d := Sender.VKStates.Max3DTextureSize;
-  if (s > -1) and (s > Integer(Sender.VKStates.MaxSamples)) then
-    s := Sender.VKStates.MaxSamples;
+  else if d > Integer(Sender.VXStates.Max3DTextureSize) then
+    d := Sender.VXStates.Max3DTextureSize;
+  if (s > -1) and (s > Integer(Sender.VXStates.MaxSamples)) then
+    s := Sender.VXStates.MaxSamples;
 
   glTarget := DecodeTextureTarget(LTarget);
 
@@ -6810,8 +6517,8 @@ begin
   else
     with Sender do
     begin
-      VKStates.ActiveTextureEnabled[FHandle.Target] := True;
-      VKStates.TextureBinding[VKStates.ActiveTexture, FHandle.Target] :=
+      VXStates.ActiveTextureEnabled[FHandle.Target] := True;
+      VXStates.TextureBinding[VXStates.ActiveTexture, FHandle.Target] :=
         FHandle.Handle;
       MaxLevel := CalcTextureLevelNumber(LTarget, w, h, d);
 
@@ -6886,7 +6593,7 @@ begin
           end;
       end; // of case
 
-      VKStates.ActiveTextureEnabled[FHandle.Target] := False;
+      VXStates.ActiveTextureEnabled[FHandle.Target] := False;
       FOnlyWrite := False;
     end; // of texture
 
@@ -7042,7 +6749,7 @@ end;
 
 procedure TVXFrameBufferAttachment.UnApply(var ARci: TVXRenderContextInfo);
 begin
-  ARci.VKStates.ActiveTextureEnabled[FHandle.Target] := False;
+  ARci.VXStates.ActiveTextureEnabled[FHandle.Target] := False;
 end;
 
 procedure TVXFrameBufferAttachment.WriteToFiler(AWriter: TWriter);
@@ -7064,9 +6771,7 @@ begin
   end;
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
-
-{$IFDEF VKS_REGION}{$REGION 'TStandartUniformAutoSetExecutor'}{$ENDIF}
+{ TStandartUniformAutoSetExecutor} 
 
 constructor TStandartUniformAutoSetExecutor.Create;
 begin
@@ -7122,128 +6827,127 @@ end;
 procedure TStandartUniformAutoSetExecutor.SetInvModelMatrix(Sender:
   IShaderParameter; var ARci: TVXRenderContextInfo);
 begin
-  Sender.mat4 := ARci.PipelineTransformation.InvModelMatrix;
+  Sender.mat4 := ARci.PipelineTransformation.InvModelMatrix^;
 end;
 
 procedure TStandartUniformAutoSetExecutor.SetInvModelViewMatrix(Sender:
   IShaderParameter; var ARci: TVXRenderContextInfo);
 begin
-  Sender.mat4 := ARci.PipelineTransformation.InvModelViewMatrix;
+  Sender.mat4 := ARci.PipelineTransformation.InvModelViewMatrix^;
 end;
 
 procedure TStandartUniformAutoSetExecutor.SetLightSource0Position(Sender:
   IShaderParameter; var ARci: TVXRenderContextInfo);
 begin
-  Sender.vec4 := ARci.VKStates.LightPosition[0];
+  Sender.vec4 := ARci.VXStates.LightPosition[0];
 end;
 
 procedure TStandartUniformAutoSetExecutor.SetMaterialBackAmbient(Sender:
   IShaderParameter; var ARci: TVXRenderContextInfo);
 begin
-  Sender.vec4 := ARci.VKStates.MaterialAmbient[cmBack];
+  Sender.vec4 := ARci.VXStates.MaterialAmbient[cmBack];
 end;
 
 procedure TStandartUniformAutoSetExecutor.SetMaterialBackDiffuse(Sender:
   IShaderParameter; var ARci: TVXRenderContextInfo);
 begin
-  Sender.vec4 := ARci.VKStates.MaterialDiffuse[cmBack];
+  Sender.vec4 := ARci.VXStates.MaterialDiffuse[cmBack];
 end;
 
 procedure TStandartUniformAutoSetExecutor.SetMaterialBackEmission(Sender:
   IShaderParameter; var ARci: TVXRenderContextInfo);
 begin
-  Sender.vec4 := ARci.VKStates.MaterialEmission[cmBack];
+  Sender.vec4 := ARci.VXStates.MaterialEmission[cmBack];
 end;
 
 procedure TStandartUniformAutoSetExecutor.SetMaterialBackShininess(Sender:
   IShaderParameter; var ARci: TVXRenderContextInfo);
 begin
-  Sender.float := ARci.VKStates.MaterialShininess[cmBack];
+  Sender.float := ARci.VXStates.MaterialShininess[cmBack];
 end;
 
 procedure TStandartUniformAutoSetExecutor.SetMaterialBackSpecular(Sender:
   IShaderParameter; var ARci: TVXRenderContextInfo);
 begin
-  Sender.vec4 := ARci.VKStates.MaterialSpecular[cmBack];
+  Sender.vec4 := ARci.VXStates.MaterialSpecular[cmBack];
 end;
 
 procedure TStandartUniformAutoSetExecutor.SetMaterialFrontAmbient(Sender:
   IShaderParameter; var ARci: TVXRenderContextInfo);
 begin
-  Sender.vec4 := ARci.VKStates.MaterialAmbient[cmFront];
+  Sender.vec4 := ARci.VXStates.MaterialAmbient[cmFront];
 end;
 
 procedure TStandartUniformAutoSetExecutor.SetMaterialFrontDiffuse(Sender:
   IShaderParameter; var ARci: TVXRenderContextInfo);
 begin
-  Sender.vec4 := ARci.VKStates.MaterialDiffuse[cmFront];
+  Sender.vec4 := ARci.VXStates.MaterialDiffuse[cmFront];
 end;
 
 procedure TStandartUniformAutoSetExecutor.SetMaterialFrontEmission(Sender:
   IShaderParameter; var ARci: TVXRenderContextInfo);
 begin
-  Sender.vec4 := ARci.VKStates.MaterialEmission[cmFront];
+  Sender.vec4 := ARci.VXStates.MaterialEmission[cmFront];
 end;
 
 procedure TStandartUniformAutoSetExecutor.SetMaterialFrontShininess(Sender:
   IShaderParameter; var ARci: TVXRenderContextInfo);
 begin
-  Sender.float := ARci.VKStates.MaterialShininess[cmFront];
+  Sender.float := ARci.VXStates.MaterialShininess[cmFront];
 end;
 
 procedure TStandartUniformAutoSetExecutor.SetMaterialFrontSpecular(Sender:
   IShaderParameter; var ARci: TVXRenderContextInfo);
 begin
-  Sender.vec4 := ARci.VKStates.MaterialSpecular[cmFront];
+  Sender.vec4 := ARci.VXStates.MaterialSpecular[cmFront];
 end;
 
 procedure TStandartUniformAutoSetExecutor.SetModelMatrix(Sender:
   IShaderParameter; var ARci: TVXRenderContextInfo);
 begin
-  Sender.mat4 := ARci.PipelineTransformation.ModelMatrix;
+  Sender.mat4 := ARci.PipelineTransformation.ModelMatrix^;
 end;
 
 procedure TStandartUniformAutoSetExecutor.SetModelViewMatrix(Sender:
   IShaderParameter; var ARci: TVXRenderContextInfo);
 begin
-  Sender.mat4 := ARci.PipelineTransformation.ModelViewMatrix;
+  Sender.mat4 := ARci.PipelineTransformation.ModelViewMatrix^;
 end;
 
 procedure TStandartUniformAutoSetExecutor.SetNormalModelMatrix(Sender:
   IShaderParameter; var ARci: TVXRenderContextInfo);
 begin
-  Sender.mat3 := ARci.PipelineTransformation.NormalModelMatrix;
+  Sender.mat3 := ARci.PipelineTransformation.NormalModelMatrix^;
 end;
 
 procedure TStandartUniformAutoSetExecutor.SetProjectionMatrix(Sender:
   IShaderParameter; var ARci: TVXRenderContextInfo);
 begin
-  Sender.mat4 := ARci.PipelineTransformation.ProjectionMatrix;
+  Sender.mat4 := ARci.PipelineTransformation.ProjectionMatrix^;
 end;
 
 procedure TStandartUniformAutoSetExecutor.SetViewMatrix(Sender:
   IShaderParameter; var ARci: TVXRenderContextInfo);
 begin
-  Sender.mat4 := ARci.PipelineTransformation.ViewMatrix;
+  Sender.mat4 := ARci.PipelineTransformation.ViewMatrix^;
 end;
 
 procedure TStandartUniformAutoSetExecutor.SetViewProjectionMatrix(Sender:
   IShaderParameter; var ARci: TVXRenderContextInfo);
 begin
-  Sender.mat4 := ARci.PipelineTransformation.ViewProjectionMatrix;
+  Sender.mat4 := ARci.PipelineTransformation.ViewProjectionMatrix^;
 end;
 
 procedure TStandartUniformAutoSetExecutor.SetWorldViewProjectionMatrix(Sender:
   IShaderParameter; var ARci: TVXRenderContextInfo);
 begin
   Sender.mat4 := MatrixMultiply(
-    ARci.PipelineTransformation.ModelViewMatrix,
-    ARci.PipelineTransformation.ProjectionMatrix);
+    ARci.PipelineTransformation.ModelViewMatrix^,
+    ARci.PipelineTransformation.ProjectionMatrix^);
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
 
-{$IFDEF VKS_REGION}{$REGION 'TVXASMVertexProgram'}{$ENDIF}
+{ TVXASMVertexProgram }
 
 procedure TVXASMVertexProgram.Assign(Source: TPersistent);
 var
@@ -7397,8 +7101,6 @@ begin
     WriteString(FSourceFile);
   end;
 end;
-
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
 
 initialization
 

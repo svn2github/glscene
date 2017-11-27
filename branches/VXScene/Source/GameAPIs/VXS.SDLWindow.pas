@@ -506,9 +506,9 @@ procedure TSDLWindow.ResizeGLWindow;
 var
   RC: TVXContext;
 begin
-  RC := CurrentVKContext;
+  RC := CurrentVXContext;
   if Assigned(RC) then
-    RC.VKStates.ViewPort := Vector4iMake(0, 0, Width, Height);
+    RC.VXStates.ViewPort := Vector4iMake(0, 0, Width, Height);
 end;
 
 // SetActive

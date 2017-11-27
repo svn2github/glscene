@@ -397,14 +397,14 @@ begin
         Assert(Assigned(FShaders[I].FShader));
         if FShaders[I].FShader.Enabled then
         begin
-          rci.VKStates.ActiveTextureEnabled[FTempTextureTarget] := True;
+          rci.VXStates.ActiveTextureEnabled[FTempTextureTarget] := True;
           FShaders[I].FShader.Apply(rci, Self);
           repeat
             CopyScreenToTexture(rci.viewPortSize, DecodeTextureTarget(FTempTextureTarget));
             FShaders[I].FPostShaderInterface.DoUseTempTexture(FTempTexture, FTempTextureTarget);
             DrawTexturedScreenQuad5(rci.viewPortSize);
           until not FShaders[I].FShader.UnApply(rci);
-          rci.VKStates.ActiveTextureEnabled[FTempTextureTarget] := False;
+          rci.VXStates.ActiveTextureEnabled[FTempTextureTarget] := False;
         end;
       end;
     end;

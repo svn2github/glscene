@@ -56,7 +56,6 @@ type
     procedure Notification(AComponent: TComponent;
       Operation: TOperation); virtual;
     procedure AssignFromObject(const AObject: TVXCustomSceneObject);
-
     // TODO: create a special type for Matrix.
     property OldMatrix: TMatrix read FOldMatrix write SetOldMatrix;
   published
@@ -117,37 +116,29 @@ type
   TVXGizmo = class(TComponent)
   private
     _GZObaseGizmo: TVXBaseSceneObject;
-
     _GZOBoundingcube: TVXCube;
-
     _GZOrootHelpers: TVXBaseSceneObject;
     _GZOrootLines: TVXBaseSceneObject;
     _GZOrootTorus: TVXBaseSceneObject;
     _GZOrootCubes: TVXBaseSceneObject;
     _GZORootAxisLabel: TVXBaseSceneObject;
     _GZORootVisibleInfoLabels: TVXBaseSceneObject;
-
     _GZOlineX, _GZOlineY, _GZOlineZ, _GZOplaneXY, _GZOplaneXZ,
       _GZOplaneYZ: TVXLines; // For Move
     _GZOTorusX, _GZOTorusY, _GZOTorusZ: TVXGizmoPickTorus; // For Rotate
     _GZOCubeX, _GZOCubeY, _GZOCubeZ: TVXGizmoPickCube; // For Scale
-
     _GZOAxisLabelX, _GZOAxisLabelY, _GZOAxisLabelZ: TVXFlatText;
     _GZOVisibleInfoLabels: TVXFlatText;
-
     FRootGizmo: TVXBaseSceneObject;
     FSelectedObj: TVXBaseSceneObject;
     // FLastOperation,
     FOperation: TVXGizmoOperation;
     FSelAxis: TVXGizmoAxis;
-
     FBoundingBoxColor: TVXColor;
     FSelectedColor: TVXColor;
     FVisibleInfoLabelsColor: TVXColor;
-
     FBoundingBoxColorChanged: Boolean;
     FVisibleInfoLabelsColorChanged: Boolean;
-
     FForceOperation: Boolean;
     FForceAxis: Boolean;
     FForceUniformScale: Boolean;
@@ -155,29 +146,21 @@ type
     FExcludeObjects: Boolean;
     FNoZWrite: Boolean;
     FEnabled: Boolean;
-
     FAutoZoomFactor: Single;
     FZoomFactor: Single;
     FMoveCoef: Single;
     FRotationCoef: Single;
-
     FViewer: TVXSceneViewer;
-
     FGizmoElements: TVXGizmoElements;
     FVisibleVisibleInfoLabels: TVXGizmoVisibleInfoLabels;
-
     FExcludeObjectsList: TStrings;
-
     Moving: Boolean;
     Mx, My: Integer;
     Rx, Ry: Integer;
-
     dglEnable, dglDisable, dgtEnable, dgtDisable, dgcEnable, dgcDisable,
       dglaEnable, dglaDisable, dgliEnable, dgliDisable: TVXDirectOpenVX;
-
     LastMousePos: TVector;
     ObjDimensions: TVector;
-
     FOnBeforeSelect: TVXGizmoAcceptEvent;
     FOnBeforeUpdate: TVXGizmoUpdateEvent;
     FOnSelectionLost: TNotifyEvent;
@@ -185,29 +168,22 @@ type
     FGizmoThickness: Single;
     FPickMode: TVXGizmoPickMode;
     FInternalRaycastHitData: TList;
-
     FUndoHistory:  TVXGizmoUndoCollection;
     FLabelFont: TVXCustomBitmapFont;
-
     procedure SetRootGizmo(const AValue: TVXBaseSceneObject);
-
     procedure SetGizmoElements(const AValue: TVXGizmoElements);
     procedure SetGizmoVisibleInfoLabels(const AValue
       : TVXGizmoVisibleInfoLabels);
     procedure SetBoundingBoxColor(const AValue: TVXColor);
     procedure SetSelectedColor(const AValue: TVXColor);
     procedure SetVisibleInfoLabelsColor(const AValue: TVXColor);
-
     procedure SetExcludeObjectsList(const AValue: TStrings);
-
     procedure DirectGLDisable(Sender: TObject; var Rci: TVXRenderContextInfo);
     procedure DirectGLEnable(Sender: TObject; var Rci: TVXRenderContextInfo);
-
     function MouseWorldPos(const X, Y: Integer): TVector;
     function CheckObjectInExcludeList(const Obj: TVXBaseSceneObject): Boolean;
     procedure UpdateVisibleInfoLabels;
     procedure SetGizmoThickness(const Value: Single);
-
     function InternalGetPickedObjects(const X1, Y1, X2, Y2: Integer;
       const GuessCount: Integer = 8): TVXPickList;
     procedure ClearInternalRaycastHitData;
@@ -221,65 +197,48 @@ type
     procedure Loaded; override;
     procedure Notification(AComponent: TComponent;
       Operation: TOperation); override;
-
     procedure ViewerMouseMove(const X, Y: Integer);
     procedure ViewerMouseDown(const X, Y: Integer);
     procedure ViewerMouseUp(const X, Y: Integer);
-
     procedure UpdateGizmo; overload;
     procedure UpdateGizmo(const NewDimensions: TVector); overload;
     procedure SetVisible(const AValue: Boolean);
     function GetPickedObjectPoint(const Obj: TVXBaseSceneObject): TVector;
-
     procedure LooseSelection; virtual;
-
     procedure UndoAdd(const AObject: TVXCustomSceneObject);
     property RootGizmo: TVXBaseSceneObject read FRootGizmo write SetRootGizmo;
-
     // --------------------------------------------------------------------
   published
-
     property Viewer: TVXSceneViewer read FViewer write SetViewer;
-
     property GizmoElements: TVXGizmoElements read FGizmoElements
       write SetGizmoElements;
-
     property BoundingBoxColor: TVXColor read FBoundingBoxColor
       write SetBoundingBoxColor;
     property SelectedColor: TVXColor read FSelectedColor write SetSelectedColor;
-
     property SelAxis: TVXGizmoAxis read FSelAxis write FSelAxis;
     property ForceAxis: Boolean read FForceAxis write FForceAxis;
-
     property SelectedObj: TVXBaseSceneObject read FSelectedObj
       write SetSelectedObj;
-
     property Operation: TVXGizmoOperation read FOperation write FOperation;
     property ForceOperation: Boolean read FForceOperation write FForceoperation;
     property ForceUniformScale: Boolean read FForceUniformScale
       write FForceUniformScale;
-
     property ExcludeObjects: Boolean read FExcludeObjects write FExcludeObjects;
     property ExcludeObjectsList: TStrings read FExcludeObjectsList
       write SetExcludeObjectsList;
-
     property VisibleInfoLabels: TVXGizmoVisibleInfoLabels
       read FVisibleVisibleInfoLabels write SetGizmoVisibleInfoLabels;
     property VisibleInfoLabelsColor: TVXColor read FVisibleInfoLabelsColor
       write SetVisibleInfoLabelsColor;
-
     property AutoZoom: Boolean read FAutoZoom write FAutoZoom;
     property AutoZoomFactor: Single read FAutoZoomFactor write FAutoZoomFactor;
     property ZoomFactor: Single read FZoomFactor write FZoomFactor;
-
     property MoveCoef: Single read FMoveCoef write FMoveCoef;
     property RotationCoef: Single read FRotationCoef write FRotationCoef;
     property ScaleCoef: Single read FScaleCoef write FScaleCoef;
     property NoZWrite: Boolean read FNoZWrite write FNoZWrite;
-
     property GizmoThickness: Single read FGizmoThickness
       write SetGizmoThickness;
-
     { Indicates whether the gizmo is enabled or not.
       WARNING: When loading/editing (possibly whenever a structureChanged
       call is made) a model, sometimes the gizmo will trigger a
@@ -287,20 +246,16 @@ type
       remember to disable the gizmo before loading, then process windows
       messages (i.e. application.processMessage) and then enable the gizmo
       again. }
-
     { Warning Enable is ReadOnly property if you set to False, Gizmo is not Hidden
       use Visible instead if you want to Hide, if you want to Hide but keep enabled
       see the VisibleGizmo property }
     property Enabled: Boolean read FEnabled write FEnabled default False;
-
     property LabelFont: TVXCustomBitmapFont read FLabelFont write SetLabelFont
       default nil;
-
     property OnBeforeSelect: TVXGizmoAcceptEvent read FOnBeforeSelect
       write FOnBeforeSelect;
     property OnSelectionLost: TNotifyEvent read FOnSelectionLost
       write FOnSelectionLost;
-
     { Called before an Update is applied. The "vector" parameter is the difference
       that will be applied to the object, according to the axis and
       operation selected. }
@@ -309,9 +264,11 @@ type
     property PickMode: TVXGizmoPickMode read FPickMode write FPickMode
       default PmGetPickedObjects;
   end;
-//-----------------------------------------------------------------------
+
+//=========================================================
 implementation
-//-----------------------------------------------------------------------
+//=========================================================
+
 procedure RotateAroundArbitraryAxis(const AnObject: TVXBaseSceneObject;
   const Axis, Origin: TAffineVector; const Angle: Single);
 var
@@ -322,7 +279,7 @@ begin
   M3 := CreateTranslationMatrix(Origin);
   M := MatrixMultiply(M1, M2);
   M := MatrixMultiply(M, M3);
-  AnObject.Matrix := MatrixMultiply(AnObject.Matrix, M);
+  AnObject.SetMatrix(MatrixMultiply(AnObject.Matrix^, M));
 
   // Just a workarround to Update angles...
   AnObject.Roll(0);
@@ -894,7 +851,7 @@ procedure TVXGizmo.DirectGlDisable(Sender: TObject;
   var Rci: TVXRenderContextInfo);
 begin
   if FNoZWrite then
-    Rci.VKStates.Disable(StDepthTest);
+    Rci.VXStates.Disable(StDepthTest);
 end;
 
 procedure TVXGizmo.SetLabelFont(const Value: TVXCustomBitmapFont);
@@ -917,7 +874,7 @@ end;
 procedure TVXGizmo.DirectGlEnable(Sender: TObject; var Rci: TVXRenderContextInfo);
 begin
   if FNoZWrite then
-    Rci.VKStates.Enable(StDepthTest);
+    Rci.VXStates.Enable(StDepthTest);
 end;
 
 function TVXGizmo.GetPickedObjectPoint(const Obj: TVXBaseSceneObject): TVector;
@@ -1624,7 +1581,7 @@ begin
   if GeObjectInfos in FGizmoElements then
     UpdateVisibleInfoLabels;
 
-  _GZOBoundingcube.Matrix := SelectedObj.AbsoluteMatrix;
+  _GZOBoundingcube.SetMatrix(SelectedObj.AbsoluteMatrix);
   _GZOBoundingcube.Position.SetPoint(0, 0, 0);
 
   // We must Update Color Of the BoundingBox And VisibleInfoLabels Here
@@ -1728,7 +1685,7 @@ procedure TVXGizmoUndoItem.AssignFromObject(const AObject
   : TVXCustomSceneObject);
 begin
   SetEffectedObject(AObject);
-  SetOldMatrix(AObject.Matrix);
+  SetOldMatrix(AObject.Matrix^);
   if AObject is TVXFreeForm then
   begin
     FOldAutoScaling.Assign(TVXFreeForm(AObject).AutoScaling);
@@ -1751,7 +1708,7 @@ end;
 
 procedure TVXGizmoUndoItem.DoUndo;
 begin
-  FEffectedObject.Matrix := FOldMatr;
+  FEffectedObject.SetMatrix(FOldMatr);
   if FEffectedObject is TVXFreeForm then
     TVXFreeForm(FEffectedObject).AutoScaling.Assign(FOldAutoScaling);
   FEffectedObject.Material.LibMaterialName := FOldLibMaterialName;

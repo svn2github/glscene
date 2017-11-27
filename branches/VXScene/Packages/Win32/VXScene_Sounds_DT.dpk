@@ -35,8 +35,8 @@ package VXScene_Sounds_DT;
 requires
   rtl,
   fmx,
-  VXScene_DesignTime,
-  VXScene_Sounds_RunTime;
+  VXScene_DT,
+  VXScene_Sounds_RT;
 
 contains
   VXS.SoundRegister in '..\..\Source\SoundVideoAPIs\VXS.SoundRegister.pas';

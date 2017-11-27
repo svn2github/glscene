@@ -22,40 +22,42 @@ interface
 {$I VXScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
+  Winapi.OpenGL, 
+  Winapi.OpenGLext, 
+  System.Classes, 
+  System.SysUtils,
 
-  VXS.VectorGeometry, VXS.VectorLists, VXS.Scene, VXS.VectorFileObjects,
-  VXS.Texture, VXS.RenderContextInfo, VXS.Context, VXS.State, Winapi.OpenGL, Winapi.OpenGLext, 
-  VXS.MeshUtils, VXS.VectorTypes;
+  VXS.VectorGeometry, 
+  VXS.VectorLists, 
+  VXS.Scene, 
+  VXS.VectorFileObjects,
+  VXS.Texture, 
+  VXS.RenderContextInfo, 
+  VXS.Context, 
+  VXS.State, 
+  VXS.MeshUtils, 
+  VXS.VectorTypes;
 
 type
   TFeedbackMode = (fm2D, fm3D, fm3DColor, fm3DColorTexture, fm4DColorTexture);
 
-  // TVXFeedback
   { An object encapsulating the OpenGL feedback rendering mode. }
   TVXFeedback = class(TVXBaseSceneObject)
   private
-    
     FActive: Boolean;
     FBuffer: TSingleList;
     FMaxBufferSize: Cardinal;
     FBuffered: Boolean;
     FCorrectionScaling: Single;
     FMode: TFeedbackMode;
-
   protected
-    
     procedure SetMaxBufferSize(const Value: Cardinal);
     procedure SetMode(const Value: TFeedbackMode);
-
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
     procedure DoRender(var ARci: TVXRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
-
     { Parse the the feedback buffer for polygon data and build
        a mesh into the assigned lists. }
     procedure BuildMeshFromBuffer(
@@ -64,49 +66,34 @@ type
       Colors: TVectorList = nil;
       TexCoords: TAffineVectorList = nil;
       VertexIndices: TIntegerList = nil);
-
     // True when there is data in the buffer ready for parsing
     property Buffered: Boolean read FBuffered;
-
     // The feedback buffer
     property Buffer: TSingleList read FBuffer;
-
     { Vertex positions in the buffer needs to be scaled by
        CorrectionScaling to get correct coordinates. }
     property CorrectionScaling: Single read FCorrectionScaling;
-
   published
-    
-
     // Maximum size allocated for the feedback buffer
     property MaxBufferSize: Cardinal read FMaxBufferSize write SetMaxBufferSize;
     // Toggles the feedback rendering
     property Active: Boolean read FActive write FActive;
     // The type of data that is collected in the feedback buffer
     property Mode: TFeedbackMode read FMode write SetMode;
-
     property Visible;
   end;
 
-  // ----------------------------------------------------------------------
-  // ----------------------------------------------------------------------
-  // ----------------------------------------------------------------------
+// ----------------------------------------------------------------------
 implementation
-// ----------------------------------------------------------------------
-// ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
 
 // ----------
 // ---------- TVXFeedback ----------
 // ----------
 
-// Create
-//
-
 constructor TVXFeedback.Create(AOwner: TComponent);
 begin
   inherited;
-
   FMaxBufferSize := $100000;
   FBuffer := TSingleList.Create;
   FBuffer.Capacity := FMaxBufferSize div SizeOf(Single);
@@ -115,18 +102,12 @@ begin
   FMode := fm3DColorTexture;
 end;
 
-// Destroy
-//
-
 destructor TVXFeedback.Destroy;
 begin
   FBuffer.Free;
 
   inherited;
 end;
-
-// DoRender
-//
 
 procedure TVXFeedback.DoRender(var ARci: TVXRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);
@@ -176,16 +157,16 @@ begin
 
     FBuffer.Count := FMaxBufferSize div SizeOf(Single);
     glFeedBackBuffer(FMaxBufferSize, atype, @FBuffer.List[0]);
-    ARci.VKStates.Disable(stCullFace);
+    ARci.VXStates.Disable(stCullFace);
     ARci.ignoreMaterials := FMode < fm3DColor;
     ARci.PipelineTransformation.Push;
-    ARci.PipelineTransformation.ProjectionMatrix := IdentityHmgMatrix;
-    ARci.PipelineTransformation.ViewMatrix :=
+    ARci.PipelineTransformation.SetProjectionMatrix(IdentityHmgMatrix);
+    ARci.PipelineTransformation.SetViewMatrix(
       CreateScaleMatrix(VectorMake(
         1.0 / FCorrectionScaling,
         1.0 / FCorrectionScaling,
-        1.0 / FCorrectionScaling));
-    ARci.VKStates.ViewPort := Vector4iMake(-1, -1, 2, 2);
+        1.0 / FCorrectionScaling)));
+    ARci.VXStates.ViewPort := Vector4iMake(-1, -1, 2, 2);
     glRenderMode(GL_FEEDBACK);
 
     Self.RenderChildren(0, Count - 1, ARci);
@@ -199,12 +180,9 @@ begin
     if ARenderChildren then
       Self.RenderChildren(0, Count - 1, ARci);
   end;
-  ARci.VKStates.ViewPort :=
+  ARci.VXStates.ViewPort :=
     Vector4iMake(0, 0, ARci.viewPortSize.cx, ARci.viewPortSize.cy);
 end;
-
-// BuildMeshFromBuffer
-//
 
 procedure TVXFeedback.BuildMeshFromBuffer(
   Vertices: TAffineVectorList = nil;
@@ -336,9 +314,6 @@ begin
   tempIndices.Destroy;
 end;
 
-// SetMaxBufferSize
-//
-
 procedure TVXFeedback.SetMaxBufferSize(const Value: Cardinal);
 begin
   if Value <> FMaxBufferSize then
@@ -349,9 +324,6 @@ begin
     FBuffer.Capacity := FMaxBufferSize div SizeOf(Single);
   end;
 end;
-
-// SetMode
-//
 
 procedure TVXFeedback.SetMode(const Value: TFeedbackMode);
 begin

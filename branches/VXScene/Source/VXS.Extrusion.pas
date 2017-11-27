@@ -1405,10 +1405,10 @@ begin
   if NodesColorMode <> pncmNone then
   begin
     glColorMaterial(GL_FRONT_AND_BACK, cPNCMtoEnum[NodesColorMode]);
-    rci.VKStates.Enable(stColorMaterial);
+    rci.VXStates.Enable(stColorMaterial);
   end
   else
-    rci.VKStates.Disable(stColorMaterial);
+    rci.VXStates.Disable(stColorMaterial);
 
   CalculateRow(@rows[0], PAffineVector(@Nodes[0].AsVector)^, normal,
     TVXPipeNode(Nodes[0]).RadiusFactor);

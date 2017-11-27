@@ -15,7 +15,10 @@ uses
   System.Classes,
 
   VXS.Scene,
+  VXS.PersistentClasses,
+  VXS.State,
   VXS.VectorGeometry,
+  VXS.PipelineTransformation,
   VXS.Context,
   VXS.RenderContextInfo,
   VXS.VectorTypes;
@@ -36,9 +39,9 @@ type
   end;
 
 //-------------------------------------------------------------
-//-------------------------------------------------------------
-//-------------------------------------------------------------
 implementation
+//-------------------------------------------------------------
+
 // ------------------
 // ------------------ TVXTeapot ------------------
 // ------------------
@@ -69,7 +72,7 @@ const
     (68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83), // spout
     (80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95)); // spout
 
-  CPData: array[0..126, 0..2] of GLfloat =
+  CPData: array[0..126, 0..2] of Single =
     ((0.2, 0, 2.7), (0.2, -0.112, 2.7), (0.112, -0.2, 2.7), (0, -0.2, 2.7), (1.3375, 0, 2.53125),
     (1.3375, -0.749, 2.53125), (0.749, -1.3375, 2.53125), (0, -1.3375, 2.53125),
     (1.4375, 0, 2.53125), (1.4375, -0.805, 2.53125), (0.805, -1.4375, 2.53125),
@@ -97,18 +100,18 @@ const
     (0.728, -1.3, 2.4), (0, -1.3, 2.4), (0, 0, 0), (1.425, -0.798, 0), (1.5, 0, 0.075), (1.425, 0, 0),
     (0.798, -1.425, 0), (0, -1.5, 0.075), (0, -1.425, 0), (1.5, -0.84, 0.075), (0.84, -1.5, 0.075));
 
-  Tex: array[0..1, 0..1, 0..1] of GLfloat =
+  Tex: array[0..1, 0..1, 0..1] of Single =
     (((0, 0), (1, 0)), ((0, 1), (1, 1)));
 
 var
-  P, Q, R, S: array[0..3, 0..3, 0..2] of GLfloat;
+  P, Q, R, S: array[0..3, 0..3, 0..2] of Single;
   I, J, K, L, GRD: Integer;
 begin
   if FGrid < 2 then
     FGrid := 2;
   GRD := FGrid;
 
-  rci.VKStates.InvertFrontFace;
+  rci.VXStates.InvertFrontFace;
   glEnable(GL_AUTO_NORMAL);
   glEnable(GL_MAP2_VERTEX_3);
   glEnable(GL_MAP2_TEXTURE_COORD_2);
@@ -153,7 +156,7 @@ begin
   glDisable(GL_AUTO_NORMAL);
   glDisable(GL_MAP2_VERTEX_3);
   glDisable(GL_MAP2_TEXTURE_COORD_2);
-  rci.VKStates.InvertFrontFace;
+  rci.VXStates.InvertFrontFace;
 end;
 
 procedure TVXTeapot.DoRender(var ARci: TVXRenderContextInfo;
@@ -169,12 +172,12 @@ begin
   if ARenderSelf then
   begin
     with ARci.PipelineTransformation do
-      ModelMatrix := MatrixMultiply(M, ModelMatrix);
+      SetModelMatrix(MatrixMultiply(M, ModelMatrix^));
     if ARci.ignoreMaterials then
       if (osDirectDraw in ObjectStyle) or ARci.amalgamating then
         BuildList(ARci)
       else
-        ARci.VKStates.CallList(GetHandle(ARci))
+        ARci.VXStates.CallList(GetHandle(ARci))
     else
     begin
       Material.Apply(ARci);
@@ -182,7 +185,7 @@ begin
         if (osDirectDraw in ObjectStyle) or ARci.amalgamating then
           BuildList(ARci)
         else
-          ARci.VKStates.CallList(GetHandle(ARci));
+          ARci.VXStates.CallList(GetHandle(ARci));
       until not Material.UnApply(ARci);
     end;
   end;
@@ -192,11 +195,7 @@ begin
 end;
 
 //-------------------------------------------------------------
-//-------------------------------------------------------------
-//-------------------------------------------------------------
 initialization
-//-------------------------------------------------------------
-//-------------------------------------------------------------
 //-------------------------------------------------------------
 
   RegisterClasses([TVXTeapot]);

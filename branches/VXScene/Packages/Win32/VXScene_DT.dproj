@@ -133,7 +133,7 @@
         <DCCReference Include="..\..\Resources\nonVKScene.dcr"/>
         <DCCReference Include="rtl.dcp"/>
         <DCCReference Include="fmx.dcp"/>
-        <DCCReference Include="VXScene_RunTime.dcp"/>
+        <DCCReference Include="VXScene_RT.dcp"/>
         <DCCReference Include="..\..\Source\DesignTime\FGUILayoutEditor.pas">
             <Form>Layouts_Form</Form>
         </DCCReference>

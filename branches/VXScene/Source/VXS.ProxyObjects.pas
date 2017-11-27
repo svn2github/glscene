@@ -294,7 +294,7 @@ begin
         oldProxySubObject := ARci.proxySubObject;
         ARci.proxySubObject := True;
         if pooTransformation in ProxyOptions then
-          glMultMatrixf(PGLFloat(MasterObject.MatrixAsAddress));
+          glMultMatrixf(PGLFloat(MasterObject.Matrix));
         GetMasterMaterialObject.Material.FrontProperties.Assign(FFrontColor);
         MasterObject.DoRender(ARci, ARenderSelf, MasterObject.Count > 0);
         ARci.proxySubObject := oldProxySubObject;
@@ -529,7 +529,7 @@ begin
         ARci.proxySubObject := True;
         if pooTransformation in ProxyOptions then
           with ARci.PipelineTransformation do
-            ModelMatrix := MatrixMultiply(MasterActor.Matrix, ModelMatrix);
+            SetModelMatrix(MatrixMultiply(MasterActor.Matrix^, ModelMatrix^));
 
         // At last TVXActorProxy specific stuff!
         with MasterActor do
@@ -656,9 +656,6 @@ begin
     Bmo.Matrix := MasterObject.Skeleton.BoneByID(Bmo.BoneIndex).GlobalMatrix;
   end;
 end;
-
-// GetMasterObject
-//
 
 function TVXActorProxy.GetMasterActorObject: TVXActor;
 begin
@@ -802,9 +799,6 @@ begin
     FStoredBoneNames.Assign(Value);
 end;
 
-// SetMasterObject
-//
-
 procedure TVXActorProxy.SetMasterActorObject(const Value: TVXActor);
 begin
   inherited SetMasterObject(Value);
@@ -891,7 +885,7 @@ begin
         oldProxySubObject := ARci.proxySubObject;
         ARci.proxySubObject := True;
         if pooTransformation in ProxyOptions then
-          glMultMatrixf(PGLFloat(MasterObject.MatrixAsAddress));
+          glMultMatrixf(PGLFloat(MasterObject.Matrix));
 
         if (FMasterLibMaterial <> nil) and (FMaterialLibrary <> nil) then
           GetMasterMaterialObject.Material.QuickAssignMaterial(
@@ -985,12 +979,8 @@ begin
 end;
 
 //-------------------------------------------------------------
-//-------------------------------------------------------------
-//-------------------------------------------------------------
 initialization
-  //-------------------------------------------------------------
-  //-------------------------------------------------------------
-  //-------------------------------------------------------------
+//-------------------------------------------------------------
 
   RegisterClasses([TVXColorProxy, TVXFreeFormProxy, TVXActorProxy,
     TVXMaterialProxy]);

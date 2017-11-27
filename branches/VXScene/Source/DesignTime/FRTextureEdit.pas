@@ -64,7 +64,7 @@ type
     Changeing: Boolean;
   protected
     procedure SetTexture(const val: TVXTexture);
-    procedure DoOnChange; dynamic;
+    procedure DoOnChange; virtual;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;

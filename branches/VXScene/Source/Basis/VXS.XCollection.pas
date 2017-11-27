@@ -51,7 +51,7 @@ type
     { Override this function to read subclass data. }
     procedure ReadFromFiler(reader: TReader); virtual;
     { Override to perform things when owner form has been loaded. }
-    procedure Loaded; dynamic;
+    procedure Loaded; virtual;
     { Triggers an EFilerException with appropriate version message. }
     procedure RaiseFilerException(const archiveVersion: integer);
   public

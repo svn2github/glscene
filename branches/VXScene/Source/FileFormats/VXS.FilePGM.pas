@@ -121,7 +121,7 @@ begin
   if not((textureTarget = ttTexture2D) or (textureTarget = ttTextureRect)) then
     exit;
 
-  oldContext := CurrentVKContext;
+  oldContext := CurrentVXContext;
   contextActivate := (oldContext <> textureContext);
   if contextActivate then
   begin
@@ -132,7 +132,7 @@ begin
   glTarget := DecodeTextureTarget(textureTarget);
 
   try
-    textureContext.VKStates.TextureBinding[0, textureTarget] := textureHandle;
+    textureContext.VXStates.TextureBinding[0, textureTarget] := textureHandle;
     fLevelCount := 0;
     fCubeMap := false;
     fTextureArray := false;

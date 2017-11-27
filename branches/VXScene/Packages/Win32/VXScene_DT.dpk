@@ -35,7 +35,7 @@ package VXScene_DT;
 requires
   rtl,
   fmx,
-  VXScene_RunTime;
+  VXScene_RT;
 
 contains
   FGUILayoutEditor in '..\..\Source\DesignTime\FGUILayoutEditor.pas' {Layouts_Form},

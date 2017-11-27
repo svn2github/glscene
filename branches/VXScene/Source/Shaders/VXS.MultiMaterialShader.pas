@@ -67,8 +67,8 @@ begin
    FPass:=1;
    if (not (csDesigning in ComponentState)) or FShaderActiveAtDesignTime then begin
       rci.ignoreDepthRequests := True;
-      rci.VKStates.Enable(stDepthTest);
-      rci.VKStates.DepthFunc := cfLEqual;
+      rci.VXStates.Enable(stDepthTest);
+      rci.VXStates.DepthFunc := cfLEqual;
       if FMaterialLibrary.Materials.Count>0 then
          FMaterialLibrary.Materials[0].Apply(rci);
       rci.ignoreDepthRequests := False;
@@ -91,7 +91,7 @@ begin
            Exit;
          end;
       if (FPass >= FMaterialLibrary.Materials.Count) then begin
-         rci.VKStates.DepthFunc := cfLess;
+         rci.VXStates.DepthFunc := cfLess;
          exit;
       end;
       FMaterialLibrary.Materials[FPass].Apply(rci);

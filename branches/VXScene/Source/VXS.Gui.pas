@@ -28,9 +28,9 @@ type
 
   protected
     // self notification on hide. Also notifies children.
-    procedure NotifyHide; dynamic;
+    procedure NotifyHide; virtual;
     // child notification on show. Also notifies children.
-    procedure NotifyShow; dynamic;
+    procedure NotifyShow; virtual;
 
     procedure SetLeft(const Value: GLfloat);
     function GetLeft: GLfloat;

@@ -3,7 +3,7 @@
 //
 {
    ZBuffer retrieval and computations.
-   See readme.txt in the Demos/SpecialsFX/Shadows directory. 
+   See readme.txt in the Demos/SpecialsFX/Shadows directory.
    By René Lindsay.
 }
 
@@ -31,6 +31,7 @@ uses
   Winapi.OpenGLext,
   System.Classes,
   System.SysUtils,
+  System.Math,
 
   VXS.XOpenGL,
   VXS.Scene,
@@ -391,12 +392,12 @@ begin
   MakeVector(hnorm, normal);
 
   MakeVector(hcVec, lb); //---Corner Vector---
-  ang1 := ArcTangent2(Hnorm.X, Hnorm.Z);
+  ang1 := ArcTan2(Hnorm.X, Hnorm.Z);
   SetVector(axs, 0, 1, 0);
   RotateVector(hnorm, axs, ang1);
   RotateVector(hcvec, axs, ang1);
 
-  ang2 := ArcTangent2(Hnorm.Y, Hnorm.Z);
+  ang2 := ArcTan2(Hnorm.Y, Hnorm.Z);
   SetVector(axs, 1, 0, 0);
   RotateVector(hcvec, axs, -ang2);
 
@@ -664,7 +665,7 @@ begin
     with FTexHandle do
     begin
       AllocateHandle;
-      with RenderingContext.VKStates do
+      with RenderingContext.VxStates do
       begin
         TextureBinding[0, ttTexture2D] := Handle;
 
@@ -687,7 +688,7 @@ begin
     end
   else
     with FTexHandle do
-      RenderingContext.VKStates.TextureBinding[0, ttTexture2D] := Handle;
+      RenderingContext.VXStates.TextureBinding[0, ttTexture2D] := Handle;
 end;
 
 procedure TVXZShadows.PrepareAlphaMemory;
@@ -730,9 +731,9 @@ begin
   end;
   ViewerZBuf.Refresh;
 
-  ARci.VKStates.ActiveTextureEnabled[ttTexture2D] := True;
-  ARci.VKStates.Enable(stBlend);
-  ARci.VKStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
+  ARci.VXStates.ActiveTextureEnabled[ttTexture2D] := True;
+  ARci.VXStates.Enable(stBlend);
+  ARci.VXStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
 
   if FWidth > ARci.viewPortSize.cx then
     Fwidth := ARci.viewPortSize.cx;
@@ -742,7 +743,7 @@ begin
   //-----------------------
   CalcShadowTexture(ARci);
   //-----------------------
-  ARci.VKStates.TextureBinding[0, ttTexture2D] := FTexHandle.Handle;
+  ARci.VXStates.TextureBinding[0, ttTexture2D] := FTexHandle.Handle;
 
   //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
@@ -772,8 +773,8 @@ begin
   glMatrixMode(GL_PROJECTION);
   glPushMatrix;
   glLoadIdentity;
-  ARci.VKStates.Disable(stDepthTest);
-  ARci.VKStates.Disable(stLighting);
+  ARci.VXStates.Disable(stDepthTest);
+  ARci.VXStates.Disable(stLighting);
 
   vx := 0;
   vx1 := vx + FWidth;

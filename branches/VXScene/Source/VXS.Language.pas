@@ -116,7 +116,7 @@ begin
     Exit;
   if not FileExists(string(Language)) then
   begin
-{$IFDEF VKS_LOGGING}
+{$IFDEF USE_LOGGING}
     GLSLogger.LogFatalError(ExtractFileName(string(Language)) +
       ' Languagefile missing!');
 {$ENDIF}

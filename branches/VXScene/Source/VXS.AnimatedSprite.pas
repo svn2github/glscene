@@ -15,6 +15,7 @@ uses
   Winapi.OpenGLext,
   System.Classes,
   System.SysUtils,
+  System.Math,
   
   VXS.Scene,
   VXS.Context,
@@ -787,7 +788,7 @@ begin
 
         if Assigned(libMat) then
           libMat.Apply(rci);
-        rci.VKStates.Disable(stLighting);
+        rci.VXStates.Disable(stLighting);
         if FRotation <> 0 then
         begin
           glMatrixMode(GL_MODELVIEW);

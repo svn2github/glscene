@@ -18,17 +18,20 @@ uses
   System.Classes,
   System.SysUtils,
   System.UITypes,
+  System.Math,
   FMX.Graphics,
   FMX.Controls,
   FMX.Types,
   FMX.Dialogs,
   
   VXS.OpenGLAdapter,
+  VXS.Strings,
   VXS.Context,
   VXS.VectorGeometry,
   VXS.XCollection,
   VXS.Silhouette,
   VXS.PersistentClasses,
+  VXS.PipeLineTransformation,
   VXS.State,
   VXS.Graphics,
   VXS.GeometryBB,
@@ -42,7 +45,7 @@ uses
   VXS.Material,
   VXS.TextureFormat,
   VXS.Selection,
-  VXS.Strings,
+
   VXS.VectorTypes,
   VXS.ApplicationFileIO,
   VXS.Utils,
@@ -60,15 +63,15 @@ type
 
 const
   cDefaultProxyOptions = [pooEffects, pooObjects, pooTransformation];
-  VXScene_REVISION = '$Revision: 6850$';
-  VXScene_VERSION = '1.5.0.%s';
+  VXScene_REVISION = '$Revision: 7082$';
+  VXScene_VERSION = '1.8.0.%s';
 
 type
 
   TNormalDirection = (ndInside, ndOutside);
 
-  { Used to decribe only the changes in an object,
-   which have to be reflected in the scene }
+  (* Used to describe only the changes in an object,
+   which have to be reflected in the scene *)
   TObjectChange = (ocTransformation, ocAbsoluteMatrix, ocInvAbsoluteMatrix,
     ocStructure);
   TObjectChanges = set of TObjectChange;
@@ -130,8 +133,7 @@ type
       osIgnoreDepthBuffer : object is rendered with depth test disabled,
         this is true for its children too.
       osNoVisibilityCulling : whatever the VisibilityCulling setting,
-        it will be ignored and the object rendered
-       }
+        it will be ignored and the object rendered  }
   TVXObjectStyle = (
     osDirectDraw,
     osIgnoreDepthBuffer,
@@ -171,10 +173,9 @@ type
      encouraged. }
   TVXBaseSceneObject = class(TVXCoordinatesUpdateAbleComponent)
   private
-    FAbsoluteMatrix, FInvAbsoluteMatrix: PMatrix;
-    FLocalMatrix: PMatrix;
+    FAbsoluteMatrix, FInvAbsoluteMatrix: TMatrix;
+    FLocalMatrix: TMatrix;
     FObjectStyle: TVXObjectStyles;
-    FListHandle: TVXListHandle; // created on 1st use
     FPosition: TVXCoordinates;
     FDirection, FUp: TVXCoordinates;
     FScaling: TVXCoordinates;
@@ -201,26 +202,28 @@ type
     FOnPicked: TNotifyEvent;
     FTagObject: TObject;
     FTagFloat: Single;
+
+    objList: TPersistentObjectList;
+    distList: TSingleList;
     //  FOriginalFiler: TFiler;   //used to allow persistent events in behaviours & effects
-    {If somebody could look at DefineProperties, ReadBehaviours, ReadEffects and verify code
-    is safe to use then it could be uncommented}
-    function Get(Index: Integer): TVXBaseSceneObject;
-    function GetCount: Integer;
-    function GetIndex: Integer;
-    procedure SetParent(const val: TVXBaseSceneObject);
+    {If somebody could look at DefineProperties, ReadBehaviours, ReadEffects
+     and verify code is safe to use then it could be uncommented}
+    function Get(Index: Integer): TVXBaseSceneObject; inline;
+    function GetCount: Integer; inline;
+    function GetIndex: Integer; inline;
+    procedure SetParent(const val: TVXBaseSceneObject); inline;
     procedure SetIndex(aValue: Integer);
     procedure SetDirection(AVector: TVXCoordinates);
     procedure SetUp(AVector: TVXCoordinates);
-    function GetMatrix: TMatrix;
-    procedure SetMatrix(const aValue: TMatrix);
+    function GetMatrix: PMatrix; inline;
     procedure SetPosition(APosition: TVXCoordinates);
     procedure SetPitchAngle(AValue: Single);
     procedure SetRollAngle(AValue: Single);
     procedure SetTurnAngle(AValue: Single);
     procedure SetRotation(aRotation: TVXCoordinates);
-    function GetPitchAngle: Single;
-    function GetTurnAngle: Single;
-    function GetRollAngle: Single;
+    function GetPitchAngle: Single; inline;
+    function GetTurnAngle: Single; inline;
+    function GetRollAngle: Single; inline;
     procedure SetShowAxes(AValue: Boolean);
     procedure SetScaling(AValue: TVXCoordinates);
     procedure SetObjectsSorting(const val: TVXObjectsSorting);
@@ -233,10 +236,13 @@ type
     function GetAbsoluteScale: TVector;
     procedure SetAbsoluteAffineScale(const Value: TAffineVector);
     procedure SetAbsoluteScale(const Value: TVector);
-    function GetAbsoluteMatrix: TMatrix;
+    function GetAbsoluteMatrix: TMatrix; inline;
     procedure SetAbsoluteMatrix(const Value: TMatrix);
     procedure SetBBChanges(const Value: TObjectBBChanges);
+    function GetDirectAbsoluteMatrix: PMatrix;
+    function GetLocalMatrix: PMatrix; inline;
   protected
+    FListHandle: TVXListHandle;
     procedure Loaded; override;
     procedure SetScene(const Value: TVXScene); virtual;
     procedure DefineProperties(Filer: TFiler); override;
@@ -251,7 +257,7 @@ type
     procedure SetVisible(aValue: Boolean); virtual;
     procedure SetPickable(aValue: Boolean); virtual;
     procedure SetAbsolutePosition(const v: TVector);
-    function GetAbsolutePosition: TVector;
+    function GetAbsolutePosition: TVector; inline;
     procedure SetAbsoluteUp(const v: TVector);
     function GetAbsoluteUp: TVector;
     procedure SetAbsoluteDirection(const v: TVector);
@@ -262,7 +268,7 @@ type
     function GetAbsoluteAffineUp: TAffineVector;
     procedure SetAbsoluteAffineDirection(const v: TAffineVector);
     function GetAbsoluteAffineDirection: TAffineVector;
-    procedure RecTransformationChanged;
+    procedure RecTransformationChanged; inline;
     procedure DrawAxes(var rci: TVXRenderContextInfo; pattern: Word);
     procedure GetChildren(AProc: TGetChildProc; Root: TComponent); override;
     // Should the object be considered as blended for sorting purposes?
@@ -270,11 +276,11 @@ type
     procedure RebuildMatrix;
     procedure SetName(const NewName: TComponentName); override;
     procedure SetParentComponent(Value: TComponent); override;
-    procedure DestroyHandle; dynamic;
+    procedure DestroyHandle; virtual;
     procedure DestroyHandles;
     procedure DeleteChildCameras;
     procedure DoOnAddedToParent; virtual;
-    { Used to re-calculate BoundingBoxes every time we need it.
+    {Used to re-calculate BoundingBoxes every time we need it.
        GetLocalUnscaleBB() must return the local BB, not the axis-aligned one.
        By default it is calculated from AxisAlignedBoundingBoxUnscaled and
        BarycenterAbsolutePosition, but for most objects there is a more
@@ -291,89 +297,83 @@ type
     property ObjectStyle: TVXObjectStyles read FObjectStyle write FObjectStyle;
     { Returns the handle to the object's build list.
        Use with caution! Some objects don't support buildlists! }
-    function GetHandle(var rci: TVXRenderContextInfo): Cardinal; virtual;
-    function ListHandleAllocated: Boolean;
-    { The local transformation (relative to parent).
+    function GetHandle(var rci: TVXRenderContextInfo): Cardinal;
+    function ListHandleAllocated: Boolean; inline;
+    {The local transformation (relative to parent).
        If you're *sure* the local matrix is up-to-date, you may use LocalMatrix
        for quicker access. }
-    property Matrix: TMatrix read GetMatrix write SetMatrix;
-    { See Matrix. }
-    function MatrixAsAddress: PMatrix;
-    { Holds the local transformation (relative to parent).
+    procedure SetMatrix(const aValue: TMatrix); inline;
+    property Matrix: PMatrix read GetMatrix;
+    {Holds the local transformation (relative to parent).
        If you're not *sure* the local matrix is up-to-date, use Matrix property. }
-    property LocalMatrix: PMatrix read FLocalMatrix;
-    { Forces the local matrix to the specified value.
+    property LocalMatrix: PMatrix read GetLocalMatrix;
+    {Forces the local matrix to the specified value.
        AbsoluteMatrix, InverseMatrix, etc. will honour that change, but
        may become invalid if the specified matrix isn't orthonormal (can
        be used for specific rendering or projection effects).
        The local matrix will be reset by the next TransformationChanged,
        position or attitude change. }
-    procedure ForceLocalMatrix(const aMatrix: TMatrix);
-    { See AbsoluteMatrix. }
+    procedure ForceLocalMatrix(const aMatrix: TMatrix); inline;
+    {See AbsoluteMatrix. }
     function AbsoluteMatrixAsAddress: PMatrix;
     { Holds the absolute transformation matrix.
        If you're not *sure* the absolute matrix is up-to-date,
        use the AbsoluteMatrix property, this one may be nil... }
-    property DirectAbsoluteMatrix: PMatrix read FAbsoluteMatrix;
-    { Calculates the object's absolute inverse matrix.
+    property DirectAbsoluteMatrix: PMatrix read GetDirectAbsoluteMatrix;
+    {Calculates the object's absolute inverse matrix.
        Multiplying an absolute coordinate with this matrix gives a local coordinate.
        The current implem uses transposition(AbsoluteMatrix), which is true
        unless you're using some scaling... }
-    function InvAbsoluteMatrix: TMatrix;
-    { See InvAbsoluteMatrix. }
+    function InvAbsoluteMatrix: TMatrix; inline;
+    {See InvAbsoluteMatrix. }
     function InvAbsoluteMatrixAsAddress: PMatrix;
-    { The object's absolute matrix by composing all local matrices.
+    {The object's absolute matrix by composing all local matrices.
        Multiplying a local coordinate with this matrix gives an absolute coordinate. }
     property AbsoluteMatrix: TMatrix read GetAbsoluteMatrix write
       SetAbsoluteMatrix;
     { Direction vector in absolute coordinates. }
-    property AbsoluteDirection: TVector read GetAbsoluteDirection write
-      SetAbsoluteDirection;
-    property AbsoluteAffineDirection: TAffineVector read
-      GetAbsoluteAffineDirection write SetAbsoluteAffineDirection;
+    property AbsoluteDirection: TVector read GetAbsoluteDirection write SetAbsoluteDirection;
+    property AbsoluteAffineDirection: TAffineVector read GetAbsoluteAffineDirection write SetAbsoluteAffineDirection;
     { Scale vector in absolute coordinates.
        Warning: SetAbsoluteScale() does not work correctly at the moment. }
-    property AbsoluteScale: TVector read GetAbsoluteScale write
-      SetAbsoluteScale;
-    property AbsoluteAffineScale: TAffineVector read GetAbsoluteAffineScale write
-      SetAbsoluteAffineScale;
-    { Up vector in absolute coordinates. }
+    property AbsoluteScale: TVector read GetAbsoluteScale write SetAbsoluteScale;
+    property AbsoluteAffineScale: TAffineVector read GetAbsoluteAffineScale write SetAbsoluteAffineScale;
+    {Up vector in absolute coordinates. }
     property AbsoluteUp: TVector read GetAbsoluteUp write SetAbsoluteUp;
-    property AbsoluteAffineUp: TAffineVector read GetAbsoluteAffineUp write
-      SetAbsoluteAffineUp;
-    { Calculate the right vector in absolute coordinates. }
+    property AbsoluteAffineUp: TAffineVector read GetAbsoluteAffineUp write SetAbsoluteAffineUp;
+    {Calculate the right vector in absolute coordinates. }
     function AbsoluteRight: TVector;
-    { Calculate the left vector in absolute coordinates. }
+    {Calculate the left vector in absolute coordinates. }
     function AbsoluteLeft: TVector;
-    { Computes and allows to set the object's absolute coordinates.  }
+    {Computes and allows to set the object's absolute coordinates.  }
     property AbsolutePosition: TVector read GetAbsolutePosition write
       SetAbsolutePosition;
     property AbsoluteAffinePosition: TAffineVector read GetAbsoluteAffinePosition
       write SetAbsoluteAffinePosition;
     function AbsolutePositionAsAddress: PVector;
-    { Returns the Absolute X Vector expressed in local coordinates. }
+    {Returns the Absolute X Vector expressed in local coordinates. }
     function AbsoluteXVector: TVector;
-    { Returns the Absolute Y Vector expressed in local coordinates. }
+    {Returns the Absolute Y Vector expressed in local coordinates. }
     function AbsoluteYVector: TVector;
-    { Returns the Absolute Z Vector expressed in local coordinates. }
+    {Returns the Absolute Z Vector expressed in local coordinates. }
     function AbsoluteZVector: TVector;
-    { Converts a vector/point from absolute coordinates to local coordinates.  }
+    {Converts a vector/point from absolute coordinates to local coordinates.  }
     function AbsoluteToLocal(const v: TVector): TVector; overload;
-    { Converts a vector from absolute coordinates to local coordinates.  }
+    {Converts a vector from absolute coordinates to local coordinates.  }
     function AbsoluteToLocal(const v: TAffineVector): TAffineVector; overload;
-    { Converts a vector/point from local coordinates to absolute coordinates.  }
+    {Converts a vector/point from local coordinates to absolute coordinates.  }
     function LocalToAbsolute(const v: TVector): TVector; overload;
-    { Converts a vector from local coordinates to absolute coordinates.  }
+    {Converts a vector from local coordinates to absolute coordinates.  }
     function LocalToAbsolute(const v: TAffineVector): TAffineVector; overload;
-    { Returns the Right vector (based on Up and Direction) }
-    function Right: TVector;
-    { Returns the Left vector (based on Up and Direction) }
-    function LeftVector: TVector;
-    { Returns the Right vector (based on Up and Direction) }
-    function AffineRight: TAffineVector;
-    { Returns the Left vector (based on Up and Direction) }
-    function AffineLeftVector: TAffineVector;
-    { Calculates the object's square distance to a point/object.
+    {Returns the Right vector (based on Up and Direction) }
+    function Right: TVector; inline;
+    {Returns the Left vector (based on Up and Direction) }
+    function LeftVector: TVector; inline;
+    {Returns the Right vector (based on Up and Direction) }
+    function AffineRight: TAffineVector; inline;
+    {Returns the Left vector (based on Up and Direction) }
+    function AffineLeftVector: TAffineVector; inline;
+    {Calculates the object's square distance to a point/object.
        pt is assumed to be in absolute coordinates,
        AbsolutePosition is considered as being the object position. }
     function SqrDistanceTo(anObject: TVXBaseSceneObject): Single; overload;
@@ -403,13 +403,11 @@ type
     { Calculates and return the AABB for the object.
        The AABB is currently calculated from the BB.
        There is  no  caching scheme for them. }
-    function AxisAlignedBoundingBox(const AIncludeChilden: Boolean = True):
-      TAABB;
-    function AxisAlignedBoundingBoxUnscaled(const AIncludeChilden: Boolean =
-      True): TAABB;
+    function AxisAlignedBoundingBox(const AIncludeChilden: Boolean = True): TAABB;
+    function AxisAlignedBoundingBoxUnscaled(const AIncludeChilden: Boolean = True): TAABB;
     function AxisAlignedBoundingBoxAbsolute(const AIncludeChilden: Boolean =
       True; const AUseBaryCenter: Boolean = False): TAABB;
-    { Advanced AABB functions that use a caching scheme.
+    {Advanced AABB functions that use a caching scheme.
        Also they include children and use BaryCenter. }
     function AxisAlignedBoundingBoxEx: TAABB;
     function AxisAlignedBoundingBoxAbsoluteEx: TAABB;
@@ -429,15 +427,15 @@ type
     function BoundingBoxPersonalUnscaledEx: THmgBoundingBox;
     function BoundingBoxOfChildrenEx: THmgBoundingBox;
     function BoundingBoxIncludingChildrenEx: THmgBoundingBox;
-    { Max distance of corners of the BoundingBox. }
-    function BoundingSphereRadius: Single;
-    function BoundingSphereRadiusUnscaled: Single;
-    { Indicates if a point is within an object.
+    {Max distance of corners of the BoundingBox. }
+    function BoundingSphereRadius: Single; inline;
+    function BoundingSphereRadiusUnscaled: Single; inline;
+    {Indicates if a point is within an object.
        Given coordinate is an absolute coordinate.
        Linear or surfacic objects shall always return False.
        Default value is based on AxisAlignedDimension and a cube bounding. }
     function PointInObject(const point: TVector): Boolean; virtual;
-    { Request to determine an intersection with a casted ray.
+    {Request to determine an intersection with a casted ray.
        Given coordinates & vector are in absolute coordinates, rayVector
        must be normalized.
        rayStart may be a point inside the object, allowing retrieval of
@@ -460,25 +458,23 @@ type
     property Count: Integer read GetCount;
     property Index: Integer read GetIndex write SetIndex;
     // Create a new scene object and add it to this object as new child
-    function AddNewChild(AChild: TVXSceneObjectClass): TVXBaseSceneObject; dynamic;
+    function AddNewChild(AChild: TVXSceneObjectClass): TVXBaseSceneObject; virtual;
     // Create a new scene object and add it to this object as first child
-    function AddNewChildFirst(AChild: TVXSceneObjectClass): TVXBaseSceneObject; dynamic;
-    procedure AddChild(AChild: TVXBaseSceneObject); dynamic;
+    function AddNewChildFirst(AChild: TVXSceneObjectClass): TVXBaseSceneObject; virtual;
+    procedure AddChild(AChild: TVXBaseSceneObject); virtual;
     function GetOrCreateBehaviour(aBehaviour: TVXBehaviourClass): TVXBehaviour;
     function AddNewBehaviour(aBehaviour: TVXBehaviourClass): TVXBehaviour;
     function GetOrCreateEffect(anEffect: TVXObjectEffectClass): TVXObjectEffect;
     function AddNewEffect(anEffect: TVXObjectEffectClass): TVXObjectEffect;
     function HasSubChildren: Boolean;
-    procedure DeleteChildren; dynamic;
-    procedure Insert(AIndex: Integer; AChild: TVXBaseSceneObject); dynamic;
+    procedure DeleteChildren; virtual;
+    procedure Insert(AIndex: Integer; AChild: TVXBaseSceneObject); virtual;
     { Takes a scene object out of the child list, but doesn't destroy it.
        If 'KeepChildren' is true its children will be kept as new children
        in this scene object. }
-    procedure Remove(aChild: TVXBaseSceneObject; keepChildren: Boolean);
-      dynamic;
+    procedure Remove(aChild: TVXBaseSceneObject; keepChildren: Boolean); virtual;
     function IndexOfChild(aChild: TVXBaseSceneObject): Integer;
-    function FindChild(const aName: string; ownChildrenOnly: Boolean):
-      TVXBaseSceneObject;
+    function FindChild(const aName: string; ownChildrenOnly: Boolean): TVXBaseSceneObject;
     { The "safe" version of this procedure checks if indexes are inside
        the list. If not, no exception if raised. }
     procedure ExchangeChildrenSafe(anIndex1, anIndex2: Integer);
@@ -492,20 +488,20 @@ type
     procedure MoveChildFirst(anIndex: Integer);
     procedure MoveChildLast(anIndex: Integer);
     procedure DoProgress(const progressTime: TProgressTimes); override;
-    procedure MoveTo(newParent: TVXBaseSceneObject); dynamic;
+    procedure MoveTo(newParent: TVXBaseSceneObject); virtual;
     procedure MoveUp;
     procedure MoveDown;
     procedure MoveFirst;
     procedure MoveLast;
-    procedure BeginUpdate; virtual;
-    procedure EndUpdate; virtual;
+    procedure BeginUpdate; inline;
+    procedure EndUpdate; inline;
     { Make object-specific geometry description here.
        Subclasses should MAINTAIN OpenVX states (restore the states if
        they were altered). }
     procedure BuildList(var rci: TVXRenderContextInfo); virtual;
     function GetParentComponent: TComponent; override;
-    function HasParent: Boolean; override;
-    function IsUpdating: Boolean;
+    function HasParent: Boolean; override; final;
+    function IsUpdating: Boolean; inline;
     // Moves the object along the Up vector (move up/down)
     procedure Lift(ADistance: Single);
     // Moves the object along the direction vector
@@ -519,35 +515,34 @@ type
     procedure Pitch(angle: Single);
     procedure Roll(angle: Single);
     procedure Turn(angle: Single);
-    { Sets all rotations to zero and restores default Direction/Up.
+    {Sets all rotations to zero and restores default Direction/Up.
        Using this function then applying roll/pitch/turn in the order that
        suits you, you can give an "absolute" meaning to rotation angles
        (they are still applied locally though).
        Scale and Position are not affected. }
     procedure ResetRotations;
-    { Reset rotations and applies them back in the specified order. }
+    {Reset rotations and applies them back in the specified order. }
     procedure ResetAndPitchTurnRoll(const degX, degY, degZ: Single);
-    { Applies rotations around absolute X, Y and Z axis.  }
+    {Applies rotations around absolute X, Y and Z axis.  }
     procedure RotateAbsolute(const rx, ry, rz: Single); overload;
-    { Applies rotations around the absolute given vector (angle in degrees).  }
+    {Applies rotations around the absolute given vector (angle in degrees).  }
     procedure RotateAbsolute(const axis: TAffineVector; angle: Single); overload;
     // Moves camera along the right vector (move left and right)
     procedure Slide(ADistance: Single);
     // Orients the object toward a target object
-    procedure PointTo(const ATargetObject: TVXBaseSceneObject; const AUpVector:
-      TVector); overload;
+    procedure PointTo(const ATargetObject: TVXBaseSceneObject; const AUpVector: TVector); overload;
     // Orients the object toward a target absolute position
     procedure PointTo(const AAbsolutePosition, AUpVector: TVector); overload;
     procedure Render(var ARci: TVXRenderContextInfo);
     procedure DoRender(var ARci: TVXRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); virtual;
     procedure RenderChildren(firstChildIndex, lastChildIndex: Integer;
-      var rci: TVXRenderContextInfo); virtual;
-    procedure StructureChanged; dynamic;
-    procedure ClearStructureChanged;
+      var rci: TVXRenderContextInfo); 
+    procedure StructureChanged; virtual;
+    procedure ClearStructureChanged; inline;
     { Recalculate an orthonormal system }
     procedure CoordinateChanged(Sender: TVXCustomCoordinates); override;
-    procedure TransformationChanged;
+    procedure TransformationChanged; inline;
     procedure NotifyChange(Sender: TObject); override;
     property Rotation: TVXCoordinates read FRotation write SetRotation;
     property PitchAngle: Single read GetPitchAngle write SetPitchAngle;
@@ -570,12 +565,9 @@ type
       write SetVisibilityCulling default vcInherited;
     property OnProgress: TVXProgressEvent read FOnProgress write FOnProgress;
     property OnPicked: TNotifyEvent read FOnPicked write FOnPicked;
-    property OnAddedToParent: TNotifyEvent read FOnAddedToParent write
-      FOnAddedToParent;
-    property Behaviours: TVXBehaviours read GetBehaviours write SetBehaviours
-      stored False;
-    property Effects: TVXObjectEffects read GetEffects write SetEffects stored
-      False;
+    property OnAddedToParent: TNotifyEvent read FOnAddedToParent write FOnAddedToParent;
+    property Behaviours: TVXBehaviours read GetBehaviours write SetBehaviours stored False;
+    property Effects: TVXObjectEffects read GetEffects write SetEffects stored False;
     property TagObject: TObject read FTagObject write FTagObject;
   published
     property TagFloat: Single read FTagFloat write FTagFloat;
@@ -595,8 +587,7 @@ type
        
      Some behaviours may be cooperative (like force-fields affects inertia)
      or unique (e.g. only one inertia behaviour per object). 
-     NOTES : 
-      Don't forget to override the ReadFromFiler/WriteToFiler persistence
+     NOTES : Don't forget to override the ReadFromFiler/WriteToFiler persistence
         methods if you add data in a subclass !
       Subclasses must be registered using the RegisterXCollectionItemClass function }
   TVXBaseBehaviour = class(TVXXCollectionItem)
@@ -637,7 +628,7 @@ type
     class function ItemsClass: TVXXCollectionItemClass; override;
     property Behaviour[index: Integer]: TVXBehaviour read GetBehaviour; default;
     function CanAdd(aClass: TVXXCollectionItemClass): Boolean; override;
-    procedure DoProgress(const progressTimes: TProgressTimes);
+    procedure DoProgress(const progressTimes: TProgressTimes); inline;
   end;
 
   { A rendering effect that can be applied to SceneObjects.
@@ -693,9 +684,9 @@ type
     property ObjectEffect[index: Integer]: TVXObjectEffect read GetEffect; default;
     function CanAdd(aClass: TVXXCollectionItemClass): Boolean; override;
     procedure DoProgress(const progressTime: TProgressTimes);
-    procedure RenderPreEffects(var rci: TVXRenderContextInfo);
+    procedure RenderPreEffects(var rci: TVXRenderContextInfo); inline;
     { Also take care of registering after effects with the VXSceneViewer. }
-    procedure RenderPostEffects(var rci: TVXRenderContextInfo);
+    procedure RenderPostEffects(var rci: TVXRenderContextInfo); inline;
   end;
 
   { Extended base scene object class with a material property.
@@ -706,7 +697,7 @@ type
     FHint: string;
   protected
     function Blended: Boolean; override;
-    procedure SetVKMaterial(AValue: TVXMaterial);
+    procedure SetVKMaterial(AValue: TVXMaterial); inline;
     procedure DestroyHandle; override;
     procedure Loaded; override;
   public
@@ -962,7 +953,6 @@ type
     procedure DoRender(var ARci: TVXRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
     // light sources have different handle types than normal scene objects
-    function GetHandle(var rci: TVXRenderContextInfo): Cardinal; override;
     function RayCastIntersect(const rayStart, rayVector: TVector;
       intersectPoint: PVector = nil;
       intersectNormal: PVector = nil): Boolean; override;
@@ -1037,9 +1027,8 @@ type
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
     { Nearest clipping plane for the frustum.
-       This value depends on the FocalLength and DepthOfView fields and
-       is calculated to minimize Z-Buffer crawling as suggested by the
-       OpenVX documentation. }
+      This value depends on the FocalLength and DepthOfView fields and
+      is calculated to minimize Z-Buffer crawling as suggested by the OpenVX documentation. }
     property NearPlane: Single read FNearPlane;
 
     // Apply camera transformation
@@ -1055,13 +1044,11 @@ type
     procedure Reset(aSceneBuffer: TVXSceneBuffer);
     // Position the camera so that the whole scene can be seen
     procedure ZoomAll(aSceneBuffer: TVXSceneBuffer);
-    procedure RotateObject(obj: TVXBaseSceneObject; pitchDelta, turnDelta:
-      Single; rollDelta: Single = 0);
+    procedure RotateObject(obj: TVXBaseSceneObject; pitchDelta, turnDelta: Single; rollDelta: Single = 0);
     procedure RotateTarget(pitchDelta, turnDelta: Single; rollDelta: Single = 0);
     { Change camera's position to make it move around its target.
        If TargetObject is nil, nothing happens. This method helps in quickly
-       implementing camera controls. Camera's Up and Direction properties
-       are unchanged.
+       implementing camera controls. Camera's Up and Direction properties are unchanged.
        Angle deltas are in degrees, camera parent's coordinates should be identity.
        Tip : make the camera a child of a "target" dummycube and make
        it a target the dummycube. Now, to pan across the scene, just move
@@ -1069,13 +1056,11 @@ type
     procedure MoveAroundTarget(pitchDelta, turnDelta: Single);
     { Change camera's position to make it move all around its target.
        If TargetObject is nil, nothing happens. This method helps in quickly
-       implementing camera controls. Camera's Up and Direction properties
-       are changed.
+       implementing camera controls. Camera's Up and Direction properties are changed.
        Angle deltas are in degrees. }
     procedure MoveAllAroundTarget(pitchDelta, turnDelta :Single);
     { Moves the camera in eye space coordinates. }
-    procedure MoveInEyeSpace(forwardDistance, rightDistance, upDistance:
-      Single);
+    procedure MoveInEyeSpace(forwardDistance, rightDistance, upDistance: Single);
     { Moves the target in eye space coordinates. }
     procedure MoveTargetInEyeSpace(forwardDistance, rightDistance, upDistance:
       Single);
@@ -1275,13 +1260,12 @@ type
 
   TFogMode = (fmLinear, fmExp, fmExp2);
 
-  { Fog distance calculation mode.
+
+     { Fog distance calculation mode.
       fdDefault: let OpenVX use its default formula
       fdEyeRadial: uses radial "true" distance (best quality)
-      fdEyePlane: uses the distance to the projection plane
-                 (same as Z-Buffer, faster)
-      Requires support of GL_NV_fog_distance extension, otherwise,
-     it is ignored. }
+      fdEyePlane: uses the distance to the projection plane (same as Z-Buffer, faster)
+      Requires support of GL_NV_fog_distance extension, otherwise, it is ignored. }
   TFogDistance = (fdDefault, fdEyeRadial, fdEyePlane);
 
   { Parameters for fog environment in a scene.
@@ -1321,8 +1305,7 @@ type
        GL_NV_fog_distance extension, otherwise, it is ignored. 
            fdDefault: let OpenVX use its default formula
            fdEyeRadial: uses radial "true" distance (best quality)
-           fdEyePlane: uses the distance to the projection plane
-             (same as Z-Buffer, faster) }
+           fdEyePlane: uses the distance to the projection plane  (same as Z-Buffer, faster) }
     property FogDistance: TFogDistance read FFogDistance write SetFogDistance
       default fdDefault;
   end;
@@ -1533,13 +1516,11 @@ type
        This function accepts standard canvas coordinates, with (0,0) being
        the top left corner, and returns, when the camera is in orthogonal
        mode, the corresponding 3D world point that is in the camera's plane. }
-    function OrthoScreenToWorld(screenX, screenY: Integer): TAffineVector;
-      overload;
+    function OrthoScreenToWorld(screenX, screenY: Integer): TAffineVector; overload;
     { Converts a screen coordinate into world (3D) coordinates.
        This methods wraps a call to gluUnProject.
        Note that screen coord (0,0) is the lower left corner. }
-    function ScreenToWorld(const aPoint: TAffineVector): TAffineVector;
-      overload;
+    function ScreenToWorld(const aPoint: TAffineVector): TAffineVector; overload;
     function ScreenToWorld(const aPoint: TVector): TVector; overload;
     { Converts a screen pixel coordinate into 3D world coordinates.
        This function accepts standard canvas coordinates, with (0,0) being
@@ -1742,7 +1723,7 @@ type
     procedure SetHeight(const val: Integer);
     procedure SetupCubeMapCamera(Sender: TObject);
     procedure DoOnPrepareGLContext(Sender: TObject);
-    procedure PrepareGLContext; dynamic;
+    procedure PrepareGLContext; virtual;
     procedure DoBufferChange(Sender: TObject); virtual;
     procedure DoBufferStructuralChange(Sender: TObject); virtual;
   public
@@ -1798,7 +1779,6 @@ type
   private
     FBufferCount: integer;
     procedure SetBufferCount(const Value: integer);
-  protected
   public
     constructor Create(AOwner: TComponent); override;
     procedure InstantiateRenderingContext;
@@ -1837,18 +1817,18 @@ procedure InvokeInfoForm(aSceneBuffer: TVXSceneBuffer; Modal: boolean);
 
 function GetCurrentRenderingObject: TVXBaseSceneObject;
 
-//========================================================================
-implementation
-//========================================================================
-
 var
   vCounterFrequency: Int64;
-{$IFNDEF VKS_MULTITHREAD}
+{$IFNDEF USE_MULTITHREAD}
 var
 {$ELSE}
 threadvar
 {$ENDIF}
   vCurrentRenderingObject: TVXBaseSceneObject;
+
+//------------------------------------------------------------------------------
+implementation
+//------------------------------------------------------------------------------
 
 function GetCurrentRenderingObject: TVXBaseSceneObject;
 begin
@@ -1858,11 +1838,11 @@ end;
 procedure AxesBuildList(var rci: TVXRenderContextInfo; pattern: Word; axisLen:
   Single);
 begin
-{$IFDEF VKS_OPENGL_DEBUG}
+{$IFDEF USE_OPENGL_DEBUG}
   if GL.GREMEDY_string_marker then
     GL.StringMarkerGREMEDY(13, 'AxesBuildList');
 {$ENDIF}
-  with rci.VKStates do
+  with rci.VXStates do
   begin
     Disable(stLighting);
     if not rci.ignoreBlendingRequests then
@@ -1950,6 +1930,7 @@ end;
 constructor TVXBaseSceneObject.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
+  FListHandle := TVXListHandle.Create;
   FObjectStyle := [];
   FChanges := [ocTransformation, ocStructure,
     ocAbsoluteMatrix, ocInvAbsoluteMatrix];
@@ -1958,17 +1939,21 @@ begin
   FDirection := TVXCoordinates.CreateInitialized(Self, ZHmgVector, csVector);
   FUp := TVXCoordinates.CreateInitialized(Self, YHmgVector, csVector);
   FScaling := TVXCoordinates.CreateInitialized(Self, XYZHmgVector, csVector);
-  GetMem(FLocalMatrix, SizeOf(TMatrix));
-  FLocalMatrix^ := IdentityHmgMatrix;
+  FLocalMatrix := IdentityHmgMatrix;
   FVisible := True;
   FPickable := True;
   FObjectsSorting := osInherited;
   FVisibilityCulling := vcInherited;
+  FChildren := TPersistentObjectList.Create;
 
   fBBChanges := [oBBcChild, oBBcStructure];
   FBoundingBoxPersonalUnscaled := NullBoundingBox;
   FBoundingBoxOfChildren := NullBoundingBox;
   FBoundingBoxIncludingChildren := NullBoundingBox;
+
+  distList := TSingleList.Create;
+  objList := TPersistentObjectList.Create;
+
 end;
 
 constructor TVXBaseSceneObject.CreateAsChild(aParentOwner: TVXBaseSceneObject);
@@ -1980,11 +1965,6 @@ end;
 destructor TVXBaseSceneObject.Destroy;
 begin
   DeleteChildCameras;
-  if assigned(FLocalMatrix) then
-    FreeMem(FLocalMatrix, SizeOf(TMatrix));
-  if assigned(FAbsoluteMatrix) then
-    // This bug have coming surely from a bad commit file.
-    FreeMem(FAbsoluteMatrix, SizeOf(TMatrix) * 2);
   // k00m memory fix and remove some leak of the old version.
   FGLObjectEffects.Free;
   FGLBehaviours.Free;
@@ -1996,18 +1976,24 @@ begin
   FScaling.Free;
   if Assigned(FParent) then
     FParent.Remove(Self, False);
-  if Assigned(FChildren) then
-  begin
-    DeleteChildren;
-    FChildren.Free;
-  end;
+  DeleteChildren;
+  FChildren.Free;
+            objList.Free;
+            distList.Free;
+
   inherited Destroy;
 end;
 
 function TVXBaseSceneObject.GetHandle(var rci: TVXRenderContextInfo): Cardinal;
 begin
+
+  // Special case.. dirty trixxors
   if not Assigned(FListHandle) then
-    FListHandle := TVXListHandle.Create;
+  begin
+    Result := 0;
+    Exit;
+  end;
+
   Result := FListHandle.Handle;
   if Result = 0 then
     Result := FListHandle.AllocateHandle;
@@ -2020,12 +2006,12 @@ begin
 
   if FListHandle.IsDataNeedUpdate then
   begin
-    rci.VKStates.NewList(Result, GL_COMPILE);
-    try
+    rci.VXStates.NewList(Result, GL_COMPILE);
+//    try
       BuildList(rci);
-    finally
-      rci.VKStates.EndList;
-    end;
+//    finally
+      rci.VXStates.EndList;
+//    end;
     FListHandle.NotifyDataUpdated;
   end;
 end;
@@ -2095,7 +2081,6 @@ var
   child: TVXBaseSceneObject;
 begin
   i := 0;
-  if Assigned(FChildren) then
     while i < FChildren.Count do
     begin
       child := TVXBaseSceneObject(FChildren.List^[i]);
@@ -2117,7 +2102,6 @@ begin
   DeleteChildCameras;
   if Assigned(FScene) then
     FScene.RemoveLights(Self);
-  if Assigned(FChildren) then
     while FChildren.Count > 0 do
     begin
       child := TVXBaseSceneObject(FChildren.Pop);
@@ -2219,12 +2203,12 @@ end;
 
 procedure TVXBaseSceneObject.WriteRotations(stream: TStream);
 begin
-  stream.Write(FRotation.AsAddress^, 3 * SizeOf(GLfloat));
+  stream.Write(FRotation.AsAddress^, 3 * SizeOf(GLFloat));
 end;
 
 procedure TVXBaseSceneObject.ReadRotations(stream: TStream);
 begin
-  stream.Read(FRotation.AsAddress^, 3 * SizeOf(GLfloat));
+  stream.Read(FRotation.AsAddress^, 3 * SizeOf(GLFloat));
 end;
 
 procedure TVXBaseSceneObject.DrawAxes(var rci: TVXRenderContextInfo; pattern:
@@ -2238,26 +2222,24 @@ procedure TVXBaseSceneObject.GetChildren(AProc: TGetChildProc; Root: TComponent)
 var
   i: Integer;
 begin
-  if Assigned(FChildren) then
-    for i := 0 to FChildren.Count - 1 do
-      if not IsSubComponent(TComponent(FChildren.List^[i])) then
-        AProc(TComponent(FChildren.List^[i]));
+  for i := 0 to FChildren.Count - 1 do
+    if not IsSubComponent(TComponent(FChildren.List^[i])) then
+      AProc(TComponent(FChildren.List^[i]));
 end;
 
 function TVXBaseSceneObject.Get(Index: Integer): TVXBaseSceneObject;
 begin
-  if Assigned(FChildren) then
-    Result := TVXBaseSceneObject(FChildren[Index])
-  else
-    Result := nil;
+  Result := TVXBaseSceneObject(FChildren[Index]);
 end;
 
 function TVXBaseSceneObject.GetCount: Integer;
 begin
-  if Assigned(FChildren) then
-    Result := FChildren.Count
-  else
-    Result := 0;
+  Result := FChildren.Count;
+end;
+
+function TVXBaseSceneObject.GetDirectAbsoluteMatrix: PMatrix;
+begin
+  Result := @FAbsoluteMatrix;
 end;
 
 function TVXBaseSceneObject.HasSubChildren: Boolean;
@@ -2278,8 +2260,6 @@ procedure TVXBaseSceneObject.AddChild(aChild: TVXBaseSceneObject);
 begin
   if Assigned(FScene) then
     FScene.AddLights(aChild);
-  if not Assigned(FChildren) then
-    FChildren := TPersistentObjectList.Create;
   FChildren.Add(aChild);
   aChild.FParent := Self;
   aChild.SetScene(FScene);
@@ -2333,10 +2313,10 @@ procedure TVXBaseSceneObject.RebuildMatrix;
 begin
   if ocTransformation in Changes then
   begin
-    VectorScale(LeftVector, Scale.X, FLocalMatrix^.X);
-    VectorScale(FUp.AsVector, Scale.Y, FLocalMatrix^.Y);
-    VectorScale(FDirection.AsVector, Scale.Z, FLocalMatrix^.Z);
-    SetVector(FLocalMatrix^.W, FPosition.AsVector);
+    VectorScale(LeftVector, Scale.X, FLocalMatrix.X);
+    VectorScale(FUp.AsVector, Scale.Y, FLocalMatrix.Y);
+    VectorScale(FDirection.AsVector, Scale.Z, FLocalMatrix.Z);
+    SetVector(FLocalMatrix.W, FPosition.AsVector);
     Exclude(FChanges, ocTransformation);
     Include(FChanges, ocAbsoluteMatrix);
     Include(FChanges, ocInvAbsoluteMatrix);
@@ -2345,7 +2325,7 @@ end;
 
 procedure TVXBaseSceneObject.ForceLocalMatrix(const aMatrix: TMatrix);
 begin
-  FLocalMatrix^ := aMatrix;
+  FLocalMatrix := aMatrix;
   Exclude(FChanges, ocTransformation);
   Include(FChanges, ocAbsoluteMatrix);
   Include(FChanges, ocInvAbsoluteMatrix);
@@ -2356,23 +2336,18 @@ begin
   if ocAbsoluteMatrix in FChanges then
   begin
     RebuildMatrix;
-    if not Assigned(FAbsoluteMatrix) then
+    if Assigned(Parent) {and (not (Parent is TVXSceneRootObject))} then
     begin
-      GetMem(FAbsoluteMatrix, SizeOf(TMatrix) * 2);
-      FInvAbsoluteMatrix := PMatrix(PtrUInt(FAbsoluteMatrix) + SizeOf(TMatrix));
-    end;
-    if Assigned(Parent) and (not (Parent is TVXSceneRootObject)) then
-    begin
-      MatrixMultiply(FLocalMatrix^,
+      MatrixMultiply(FLocalMatrix,
         TVXBaseSceneObject(Parent).AbsoluteMatrixAsAddress^,
-        FAbsoluteMatrix^);
+        FAbsoluteMatrix);
     end
     else
-      FAbsoluteMatrix^ := FLocalMatrix^;
+      FAbsoluteMatrix := FLocalMatrix;
     Exclude(FChanges, ocAbsoluteMatrix);
     Include(FChanges, ocInvAbsoluteMatrix);
   end;
-  Result := FAbsoluteMatrix;
+  Result := @FAbsoluteMatrix;
 end;
 
 function TVXBaseSceneObject.InvAbsoluteMatrix: TMatrix;
@@ -2386,28 +2361,22 @@ begin
   begin
     if VectorEquals(Scale.DirectVector, XYZHmgVector) then
     begin
-      if not Assigned(FAbsoluteMatrix) then
-      begin
-        GetMem(FAbsoluteMatrix, SizeOf(TMatrix) * 2);
-        FInvAbsoluteMatrix := PMatrix(PtrUInt(FAbsoluteMatrix) +
-          SizeOf(TMatrix));
-      end;
       RebuildMatrix;
       if Parent <> nil then
-        FInvAbsoluteMatrix^ :=
+        FInvAbsoluteMatrix :=
           MatrixMultiply(Parent.InvAbsoluteMatrixAsAddress^,
-          AnglePreservingMatrixInvert(FLocalMatrix^))
+          AnglePreservingMatrixInvert(FLocalMatrix))
       else
-        FInvAbsoluteMatrix^ := AnglePreservingMatrixInvert(FLocalMatrix^);
+        FInvAbsoluteMatrix := AnglePreservingMatrixInvert(FLocalMatrix);
     end
     else
     begin
-      FInvAbsoluteMatrix^ := AbsoluteMatrixAsAddress^;
-      InvertMatrix(FInvAbsoluteMatrix^);
+      FInvAbsoluteMatrix := AbsoluteMatrixAsAddress^;
+      InvertMatrix(FInvAbsoluteMatrix);
     end;
     Exclude(FChanges, ocInvAbsoluteMatrix);
   end;
-  Result := FInvAbsoluteMatrix;
+  Result := @FInvAbsoluteMatrix;
 end;
 
 function TVXBaseSceneObject.GetAbsoluteMatrix: TMatrix;
@@ -2417,11 +2386,11 @@ end;
 
 procedure TVXBaseSceneObject.SetAbsoluteMatrix(const Value: TMatrix);
 begin
-  if not MatrixEquals(Value, FAbsoluteMatrix^) then
+  if not MatrixEquals(Value, FAbsoluteMatrix) then
   begin
-    FAbsoluteMatrix^ := Value;
+    FAbsoluteMatrix := Value;
     if Parent <> nil then
-      SetMatrix(MatrixMultiply(FAbsoluteMatrix^,
+      SetMatrix(MatrixMultiply(FAbsoluteMatrix,
         Parent.InvAbsoluteMatrixAsAddress^))
     else
       SetMatrix(Value);
@@ -2594,9 +2563,6 @@ begin
   ScaleVector(Result, Scale.AsVector);
 end;
 
-// AxisAlignedDimensionsUnscaled
-//
-
 function TVXBaseSceneObject.AxisAlignedDimensionsUnscaled: TVector;
 begin
   Result.X := 0.5;
@@ -2604,9 +2570,6 @@ begin
   Result.Z := 0.5;
   Result.W := 0;
 end;
-
-// AxisAlignedBoundingBox
-//
 
 function TVXBaseSceneObject.AxisAlignedBoundingBox(
   const AIncludeChilden: Boolean): TAABB;
@@ -2617,21 +2580,18 @@ var
 begin
   SetAABB(Result, AxisAlignedDimensionsUnscaled);
   // not tested for child objects
-  if AIncludeChilden and Assigned(FChildren) then
+  if AIncludeChilden then
   begin
     for i := 0 to FChildren.Count - 1 do
     begin
       child := TVXBaseSceneObject(FChildren.List^[i]);
       aabb := child.AxisAlignedBoundingBoxUnscaled(AIncludeChilden);
-      AABBTransform(aabb, child.Matrix);
+      AABBTransform(aabb, child.Matrix^);
       AddAABB(Result, aabb);
     end;
   end;
   AABBScale(Result, Scale.AsAffineVector);
 end;
-
-// AxisAlignedBoundingBoxUnscaled
-//
 
 function TVXBaseSceneObject.AxisAlignedBoundingBoxUnscaled(
   const AIncludeChilden: Boolean): TAABB;
@@ -2641,29 +2601,23 @@ var
 begin
   SetAABB(Result, AxisAlignedDimensionsUnscaled);
   //not tested for child objects
-  if AIncludeChilden and Assigned(FChildren) then
+  if AIncludeChilden then
   begin
     for i := 0 to FChildren.Count - 1 do
     begin
       aabb :=
         TVXBaseSceneObject(FChildren.List^[i]).AxisAlignedBoundingBoxUnscaled(AIncludeChilden);
-      AABBTransform(aabb, TVXBaseSceneObject(FChildren.List^[i]).Matrix);
+      AABBTransform(aabb, TVXBaseSceneObject(FChildren.List^[i]).Matrix^);
       AddAABB(Result, aabb);
     end;
   end;
 end;
-
-// AxisAlignedBoundingBoxAbsolute
-//
 
 function TVXBaseSceneObject.AxisAlignedBoundingBoxAbsolute(
   const AIncludeChilden: Boolean; const AUseBaryCenter: Boolean): TAABB;
 begin
   Result := BBToAABB(BoundingBoxAbsolute(AIncludeChilden, AUseBaryCenter));
 end;
-
-// BoundingBox
-//
 
 function TVXBaseSceneObject.BoundingBox(const AIncludeChilden: Boolean;
   const AUseBaryCenter: Boolean): THmgBoundingBox;
@@ -2682,9 +2636,6 @@ begin
   end;
 end;
 
-// BoundingBoxUnscaled
-//
-
 function TVXBaseSceneObject.BoundingBoxUnscaled(
   const AIncludeChilden: Boolean;
   const AUseBaryCenter: Boolean): THmgBoundingBox;
@@ -2702,9 +2653,6 @@ begin
     OffsetBBPoint(Result, CurrentBaryOffset);
   end;
 end;
-
-// BoundingBoxAbsolute
-//
 
 function TVXBaseSceneObject.BoundingBoxAbsolute(
   const AIncludeChilden: Boolean;
@@ -2725,24 +2673,15 @@ begin
   end;
 end;
 
-// BoundingSphereRadius
-//
-
 function TVXBaseSceneObject.BoundingSphereRadius: Single;
 begin
   Result := VectorLength(AxisAlignedDimensions);
 end;
 
-// BoundingSphereRadiusUnscaled
-//
-
 function TVXBaseSceneObject.BoundingSphereRadiusUnscaled: Single;
 begin
   Result := VectorLength(AxisAlignedDimensionsUnscaled);
 end;
-
-// PointInObject
-//
 
 function TVXBaseSceneObject.PointInObject(const point: TVector): Boolean;
 var
@@ -2755,9 +2694,6 @@ begin
             (Abs(localPt.Z * Scale.Z) <= dim.Z);
 end;
 
-// CalculateBoundingBoxPersonalUnscaled
-//
-
 procedure TVXBaseSceneObject.CalculateBoundingBoxPersonalUnscaled(var
   ANewBoundingBox: THmgBoundingBox);
 begin
@@ -2765,9 +2701,6 @@ begin
   ANewBoundingBox := AABBToBB(AxisAlignedBoundingBoxUnscaled(False));
   OffsetBBPoint(ANewBoundingBox, AbsoluteToLocal(BarycenterAbsolutePosition));
 end;
-
-// BoundingBoxPersonalUnscaledEx
-//
 
 function TVXBaseSceneObject.BoundingBoxPersonalUnscaledEx: THmgBoundingBox;
 begin
@@ -2779,9 +2712,6 @@ begin
   Result := FBoundingBoxPersonalUnscaled;
 end;
 
-// AxisAlignedBoundingBoxAbsoluteEx
-//
-
 function TVXBaseSceneObject.AxisAlignedBoundingBoxAbsoluteEx: TAABB;
 var
   pBB: THmgBoundingBox;
@@ -2791,17 +2721,11 @@ begin
   Result := BBtoAABB(pBB);
 end;
 
-// AxisAlignedBoundingBoxEx
-//
-
 function TVXBaseSceneObject.AxisAlignedBoundingBoxEx: TAABB;
 begin
   Result := BBtoAABB(BoundingBoxIncludingChildrenEx);
   AABBScale(Result, Scale.AsAffineVector);
 end;
-
-// BoundingBoxOfChildrenEx
-//
 
 function TVXBaseSceneObject.BoundingBoxOfChildrenEx: THmgBoundingBox;
 var
@@ -2812,30 +2736,24 @@ begin
   begin
     // Computing
     FBoundingBoxOfChildren := NullBoundingBox;
-    if assigned(FChildren) then
+    for i := 0 to FChildren.count - 1 do
     begin
-      for i := 0 to FChildren.count - 1 do
+      pBB :=
+        TVXBaseSceneObject(FChildren.List^[i]).BoundingBoxIncludingChildrenEx;
+      if not BoundingBoxesAreEqual(@pBB, @NullBoundingBox) then
       begin
-        pBB :=
-          TVXBaseSceneObject(FChildren.List^[i]).BoundingBoxIncludingChildrenEx;
-        if not BoundingBoxesAreEqual(@pBB, @NullBoundingBox) then
-        begin
-          // transformation with local matrix
-          BBTransform(pbb, TVXBaseSceneObject(FChildren.List^[i]).Matrix);
-          if BoundingBoxesAreEqual(@FBoundingBoxOfChildren, @NullBoundingBox) then
-            FBoundingBoxOfChildren := pBB
-          else
-            AddBB(FBoundingBoxOfChildren, pBB);
-        end;
+        // transformation with local matrix
+        BBTransform(pbb, TVXBaseSceneObject(FChildren.List^[i]).Matrix^);
+        if BoundingBoxesAreEqual(@FBoundingBoxOfChildren, @NullBoundingBox) then
+          FBoundingBoxOfChildren := pBB
+        else
+          AddBB(FBoundingBoxOfChildren, pBB);
       end;
     end;
     exclude(FBBChanges, oBBcChild);
   end;
   result := FBoundingBoxOfChildren;
 end;
-
-// BoundingBoxIncludingChildrenEx
-//
 
 function TVXBaseSceneObject.BoundingBoxIncludingChildrenEx: THmgBoundingBox;
 var
@@ -2857,9 +2775,6 @@ begin
   end;
   Result := FBoundingBoxIncludingChildren;
 end;
-
-// RayCastIntersect
-//
 
 function TVXBaseSceneObject.RayCastIntersect(const rayStart, rayVector: TVector;
   intersectPoint: PVector = nil;
@@ -2884,9 +2799,6 @@ begin
   else
     Result := False;
 end;
-
-// GenerateSilhouette
-//
 
 function TVXBaseSceneObject.GenerateSilhouette(const silhouetteParameters:
   TVXSilhouetteParameters): TVXSilhouette;
@@ -2931,9 +2843,6 @@ begin
     Result.Vertices.Add(NullHmgPoint);
 end;
 
-// Assign
-//
-
 procedure TVXBaseSceneObject.Assign(Source: TPersistent);
 var
   i: Integer;
@@ -2944,7 +2853,7 @@ begin
     DestroyHandles;
     FVisible := TVXBaseSceneObject(Source).FVisible;
     TVXBaseSceneObject(Source).RebuildMatrix;
-    SetMatrix(TVXBaseSceneObject(Source).FLocalMatrix^);
+    SetMatrix(TVXBaseSceneObject(Source).FLocalMatrix);
     FShowAxes := TVXBaseSceneObject(Source).FShowAxes;
     FObjectsSorting := TVXBaseSceneObject(Source).FObjectsSorting;
     FVisibilityCulling := TVXBaseSceneObject(Source).FVisibilityCulling;
@@ -2979,16 +2888,10 @@ begin
     inherited Assign(Source);
 end;
 
-// IsUpdating
-//
-
 function TVXBaseSceneObject.IsUpdating: Boolean;
 begin
   Result := (FUpdateCount <> 0) or (csReading in ComponentState);
 end;
-
-// GetParentComponent
-//
 
 function TVXBaseSceneObject.GetParentComponent: TComponent;
 begin
@@ -2998,16 +2901,10 @@ begin
     Result := FParent;
 end;
 
-// HasParent
-//
-
 function TVXBaseSceneObject.HasParent: Boolean;
 begin
   Result := assigned(FParent);
 end;
-
-// Lift
-//
 
 procedure TVXBaseSceneObject.Lift(aDistance: Single);
 begin
@@ -3015,17 +2912,11 @@ begin
   TransformationChanged;
 end;
 
-// Move
-//
-
 procedure TVXBaseSceneObject.Move(ADistance: Single);
 begin
   FPosition.AddScaledVector(ADistance, FDirection.AsVector);
   TransformationChanged;
 end;
-
-// Slide
-//
 
 procedure TVXBaseSceneObject.Slide(ADistance: Single);
 begin
@@ -3033,25 +2924,19 @@ begin
   TransformationChanged;
 end;
 
-// ResetRotations
-//
-
 procedure TVXBaseSceneObject.ResetRotations;
 begin
-  FillChar(FLocalMatrix^, SizeOf(TMatrix), 0);
-  FLocalMatrix^.X.X := Scale.DirectX;
-  FLocalMatrix^.Y.Y := Scale.DirectY;
-  FLocalMatrix^.Z.Z := Scale.DirectZ;
-  SetVector(FLocalMatrix^.W, Position.DirectVector);
+  FillChar(FLocalMatrix, SizeOf(TMatrix), 0);
+  FLocalMatrix.X.X := Scale.DirectX;
+  FLocalMatrix.Y.Y := Scale.DirectY;
+  FLocalMatrix.Z.Z := Scale.DirectZ;
+  SetVector(FLocalMatrix.W, Position.DirectVector);
   FRotation.DirectVector := NullHmgPoint;
   FDirection.DirectVector := ZHmgVector;
   FUp.DirectVector := YHmgVector;
   TransformationChanged;
   Exclude(FChanges, ocTransformation);
 end;
-
-// ResetAndPitchTurnRoll
-//
 
 procedure TVXBaseSceneObject.ResetAndPitchTurnRoll(const degX, degY, degZ:
   Single);
@@ -3091,15 +2976,12 @@ begin
   NotifyChange(self);
 end;
 
-// RotateAbsolute
-//
-
 procedure TVXBaseSceneObject.RotateAbsolute(const rx, ry, rz: Single);
 var
   resMat: TMatrix;
   v: TAffineVector;
 begin
-  resMat := Matrix;
+  resMat := Matrix^;
   // No we build rotation matrices and use them to rotate the obj
   if rx <> 0 then
   begin
@@ -3116,11 +2998,8 @@ begin
     SetVector(v, AbsoluteToLocal(ZVector));
     resMat := MatrixMultiply(CreateRotationMatrix(v, -DegToRadian(rz)), resMat);
   end;
-  Matrix := resMat;
+  SetMatrix(resMat);
 end;
-
-// RotateAbsolute
-//
 
 procedure TVXBaseSceneObject.RotateAbsolute(const axis: TAffineVector; angle:
   Single);
@@ -3130,12 +3009,9 @@ begin
   if angle <> 0 then
   begin
     SetVector(v, AbsoluteToLocal(axis));
-    Matrix := MatrixMultiply(CreateRotationMatrix(v, DegToRadian(angle)), Matrix);
+    SetMatrix(MatrixMultiply(CreateRotationMatrix(v, DegToRadian(angle)), Matrix^));
   end;
 end;
-
-// Pitch
-//
 
 procedure TVXBaseSceneObject.Pitch(angle: Single);
 var
@@ -3144,14 +3020,13 @@ var
 begin
   FIsCalculating := True;
   try
-    angle := -DegToRadian(angle);
+    angle := -DegToRad(angle);
     rightVector := Right;
     FUp.Rotate(rightVector, angle);
     FUp.Normalize;
     FDirection.Rotate(rightVector, angle);
     FDirection.Normalize;
-    r := -RadianToDeg(ArcTangent2(FDirection.Y, VectorLength(FDirection.X,
-      FDirection.Z)));
+    r := -RadToDeg(ArcTan2(FDirection.Y, VectorLength(FDirection.X, FDirection.Z)));
     if FDirection.X < 0 then
       if FDirection.Y < 0 then
         r := 180 - r
@@ -3164,9 +3039,6 @@ begin
   TransformationChanged;
 end;
 
-// SetPitchAngle
-//
-
 procedure TVXBaseSceneObject.SetPitchAngle(AValue: Single);
 var
   diff: Single;
@@ -3177,7 +3049,7 @@ begin
     if not (csLoading in ComponentState) then
     begin
       FIsCalculating := True;
-      try
+//      try
         diff := DegToRadian(FRotation.X - AValue);
         rotMatrix := CreateRotationMatrix(Right, diff);
         FUp.DirectVector := VectorTransform(FUp.AsVector, rotMatrix);
@@ -3186,9 +3058,9 @@ begin
           rotMatrix);
         FDirection.Normalize;
         TransformationChanged;
-      finally
+//      finally
         FIsCalculating := False;
-      end;
+//      end;
     end;
     FRotation.DirectX := NormalizeDegAngle(AValue);
   end;
@@ -3213,7 +3085,7 @@ begin
 
     // calculate new rotation angle from vectors
     rightVector := Right;
-    r := -RadianToDeg(ArcTangent2(rightVector.Y,
+    r := -RadToDeg(ArcTan2(rightVector.Y,
               VectorLength(rightVector.X,
                            rightVector.Z)));
     if rightVector.X < 0 then
@@ -3228,9 +3100,6 @@ begin
   TransformationChanged;
 end;
 
-// SetRollAngle
-//
-
 procedure TVXBaseSceneObject.SetRollAngle(AValue: Single);
 var
   diff: Single;
@@ -3241,7 +3110,7 @@ begin
     if not (csLoading in ComponentState) then
     begin
       FIsCalculating := True;
-      try
+//      try
         diff := DegToRadian(FRotation.Z - AValue);
         rotMatrix := CreateRotationMatrix(Direction.AsVector, diff);
         FUp.DirectVector := VectorTransform(FUp.AsVector, rotMatrix);
@@ -3250,16 +3119,13 @@ begin
           rotMatrix);
         FDirection.Normalize;
         TransformationChanged;
-      finally
+//      finally
         FIsCalculating := False;
-      end;
+//      end;
     end;
     FRotation.DirectZ := NormalizeDegAngle(AValue);
   end;
 end;
-
-// Turn
-//
 
 procedure TVXBaseSceneObject.Turn(angle: Single);
 var
@@ -3274,7 +3140,7 @@ begin
     FUp.Normalize;
     FDirection.Rotate(upVector, angle);
     FDirection.Normalize;
-    r := -RadianToDeg(ArcTangent2(FDirection.X, VectorLength(FDirection.Y,
+    r := -RadToDeg(ArcTan2(FDirection.X, VectorLength(FDirection.Y,
       FDirection.Z)));
     if FDirection.X < 0 then
       if FDirection.Y < 0 then
@@ -3288,9 +3154,6 @@ begin
   TransformationChanged;
 end;
 
-// SetTurnAngle
-//
-
 procedure TVXBaseSceneObject.SetTurnAngle(AValue: Single);
 var
   diff: Single;
@@ -3301,7 +3164,7 @@ begin
     if not (csLoading in ComponentState) then
     begin
       FIsCalculating := True;
-      try
+//      try
         diff := DegToRadian(FRotation.Y - AValue);
         rotMatrix := CreateRotationMatrix(Up.AsVector, diff);
         FUp.DirectVector := VectorTransform(FUp.AsVector, rotMatrix);
@@ -3310,16 +3173,13 @@ begin
           rotMatrix);
         FDirection.Normalize;
         TransformationChanged;
-      finally
+//      finally
         FIsCalculating := False;
-      end;
+//      end;
     end;
     FRotation.DirectY := NormalizeDegAngle(AValue);
   end;
 end;
-
-// SetRotation
-//
 
 procedure TVXBaseSceneObject.SetRotation(aRotation: TVXCoordinates);
 begin
@@ -3327,41 +3187,26 @@ begin
   TransformationChanged;
 end;
 
-// GetPitchAngle
-//
-
 function TVXBaseSceneObject.GetPitchAngle: Single;
 begin
   Result := FRotation.X;
 end;
-
-// GetTurnAngle
-//
 
 function TVXBaseSceneObject.GetTurnAngle: Single;
 begin
   Result := FRotation.Y;
 end;
 
-// GetRollAngle
-//
-
 function TVXBaseSceneObject.GetRollAngle: Single;
 begin
   Result := FRotation.Z;
 end;
-
-// PointTo
-//
 
 procedure TVXBaseSceneObject.PointTo(const ATargetObject: TVXBaseSceneObject;
   const AUpVector: TVector);
 begin
   PointTo(ATargetObject.AbsolutePosition, AUpVector);
 end;
-
-// PointTo
-//
 
 procedure TVXBaseSceneObject.PointTo(const AAbsolutePosition, AUpVector:
   TVector);
@@ -3388,9 +3233,6 @@ begin
   TransformationChanged
 end;
 
-// SetShowAxes
-//
-
 procedure TVXBaseSceneObject.SetShowAxes(AValue: Boolean);
 begin
   if FShowAxes <> AValue then
@@ -3400,17 +3242,11 @@ begin
   end;
 end;
 
-// SetScaling
-//
-
 procedure TVXBaseSceneObject.SetScaling(AValue: TVXCoordinates);
 begin
   FScaling.Assign(AValue);
   TransformationChanged;
 end;
-
-// SetName
-//
 
 procedure TVXBaseSceneObject.SetName(const NewName: TComponentName);
 begin
@@ -3422,16 +3258,10 @@ begin
   end;
 end;
 
-// SetParent
-//
-
 procedure TVXBaseSceneObject.SetParent(const val: TVXBaseSceneObject);
 begin
   MoveTo(val);
 end;
-
-// GetIndex
-//
 
 function TVXBaseSceneObject.GetIndex: Integer;
 begin
@@ -3441,8 +3271,10 @@ begin
     Result := -1;
 end;
 
-// SetIndex
-//
+function TVXBaseSceneObject.GetLocalMatrix: PMatrix;
+begin
+  Result := @FLocalMatrix;
+end;
 
 procedure TVXBaseSceneObject.SetIndex(aValue: Integer);
 var
@@ -3469,9 +3301,6 @@ begin
   end;
 end;
 
-// SetParentComponent
-//
-
 procedure TVXBaseSceneObject.SetParentComponent(Value: TComponent);
 begin
   inherited;
@@ -3486,9 +3315,6 @@ begin
     SetParent(nil);
 end;
 
-// StructureChanged
-//
-
 procedure TVXBaseSceneObject.StructureChanged;
 begin
   if not (ocStructure in FChanges) then
@@ -3500,17 +3326,11 @@ begin
     NotifyChange(Self);
 end;
 
-// ClearStructureChanged
-//
-
 procedure TVXBaseSceneObject.ClearStructureChanged;
 begin
   Exclude(FChanges, ocStructure);
   SetBBChanges(BBChanges + [oBBcStructure]);
 end;
-
-// RecTransformationChanged
-//
 
 procedure TVXBaseSceneObject.RecTransformationChanged;
 var
@@ -3522,17 +3342,11 @@ begin
   if matSet * FChanges <> matSet then
   begin
     FChanges := FChanges + matSet;
-    if Assigned(FChildren) then
-    begin
-      list := FChildren.List;
-      for i := 0 to FChildren.Count - 1 do
-        TVXBaseSceneObject(list^[i]).RecTransformationChanged;
-    end;
+    list := FChildren.List;
+    for i := 0 to FChildren.Count - 1 do
+      TVXBaseSceneObject(list^[i]).RecTransformationChanged;
   end;
 end;
-
-// TransformationChanged
-//
 
 procedure TVXBaseSceneObject.TransformationChanged;
 begin
@@ -3544,9 +3358,6 @@ begin
       NotifyChange(Self);
   end;
 end;
-
-// MoveTo
-//
 
 procedure TVXBaseSceneObject.MoveTo(newParent: TVXBaseSceneObject);
 begin
@@ -3563,17 +3374,11 @@ begin
     SetScene(nil);
 end;
 
-// MoveUp
-//
-
 procedure TVXBaseSceneObject.MoveUp;
 begin
   if Assigned(parent) then
     parent.MoveChildUp(parent.IndexOfChild(Self));
 end;
-
-// MoveDown
-//
 
 procedure TVXBaseSceneObject.MoveDown;
 begin
@@ -3581,26 +3386,17 @@ begin
     parent.MoveChildDown(parent.IndexOfChild(Self));
 end;
 
-// MoveFirst
-//
-
 procedure TVXBaseSceneObject.MoveFirst;
 begin
   if Assigned(parent) then
     parent.MoveChildFirst(parent.IndexOfChild(Self));
 end;
 
-// MoveLast
-//
-
 procedure TVXBaseSceneObject.MoveLast;
 begin
   if Assigned(parent) then
     parent.MoveChildLast(parent.IndexOfChild(Self));
 end;
-
-// MoveObjectAroundTarget
-//
 
 procedure TVXBaseSceneObject.MoveObjectAround(anObject: TVXBaseSceneObject;
   pitchDelta, turnDelta: Single);
@@ -3625,10 +3421,9 @@ begin
       NormalizeVector(normalCameraRight);
     // calculate the current pitch.
     // 0 is looking down and PI is looking up
-    pitchNow := ArcCosine(VectorDotProduct(AbsoluteUp, normalT2C));
-    pitchNow := ClampValue(pitchNow + DegToRadian(pitchDelta), 0 + 0.025, PI -
-      0.025);
-    // create a new vector pointing up and then rotate it down
+    pitchNow := ArcCos(VectorDotProduct(AbsoluteUp, normalT2C));
+    pitchNow := ClampValue(pitchNow + DegToRad(pitchDelta), 0 + 0.025, PI - 0.025);
+    // creates a new vector pointing up and then rotate it down
     // into the new position
     SetVector(normalT2C, AbsoluteUp);
     RotateVector(normalT2C, normalCameraRight, -pitchNow);
@@ -3641,9 +3436,6 @@ begin
     Position.AsVector := newPos;
   end;
 end;
-
-// MoveObjectAllAround
-//
 
 procedure TVXBaseSceneObject.MoveObjectAllAround(anObject: TVXBaseSceneObject;
   pitchDelta, turnDelta: Single);
@@ -3698,9 +3490,6 @@ begin
   end;
 end;
 
-// CoordinateChanged
-//
-
 procedure TVXBaseSceneObject.CoordinateChanged(Sender: TVXCustomCoordinates);
 var
   rightVector: TVector;
@@ -3751,16 +3540,12 @@ begin
   end;
 end;
 
-// DoProgress
-//
-
 procedure TVXBaseSceneObject.DoProgress(const progressTime: TProgressTimes);
 var
   i: Integer;
 begin
-  if Assigned(FChildren) then
-    for i := FChildren.Count - 1 downto 0 do
-      TVXBaseSceneObject(FChildren.List^[i]).DoProgress(progressTime);
+  for i := FChildren.Count - 1 downto 0 do
+    TVXBaseSceneObject(FChildren.List^[i]).DoProgress(progressTime);
   if Assigned(FGLBehaviours) then
     FGLBehaviours.DoProgress(progressTime);
   if Assigned(FGLObjectEffects) then
@@ -3770,14 +3555,9 @@ begin
       FOnProgress(Self, deltaTime, newTime);
 end;
 
-// Insert
-//
-
 procedure TVXBaseSceneObject.Insert(aIndex: Integer; aChild:
   TVXBaseSceneObject);
 begin
-  if not Assigned(FChildren) then
-    FChildren := TPersistentObjectList.Create;
   with FChildren do
   begin
     if Assigned(aChild.FParent) then
@@ -3794,9 +3574,6 @@ begin
 
   aChild.DoOnAddedToParent;
 end;
-
-// Remove
-//
 
 procedure TVXBaseSceneObject.Remove(aChild: TVXBaseSceneObject; keepChildren:
   Boolean);
@@ -3827,19 +3604,10 @@ begin
   end;
 end;
 
-// IndexOfChild
-//
-
 function TVXBaseSceneObject.IndexOfChild(aChild: TVXBaseSceneObject): Integer;
 begin
-  if Assigned(FChildren) then
-    Result := FChildren.IndexOf(aChild)
-  else
-    Result := -1;
+  Result := FChildren.IndexOf(aChild)
 end;
-
-// FindChild
-//
 
 function TVXBaseSceneObject.FindChild(const aName: string;
   ownChildrenOnly: Boolean): TVXBaseSceneObject;
@@ -3849,8 +3617,6 @@ var
 begin
   res := nil;
   Result := nil;
-  if not Assigned(FChildren) then
-    Exit;
   for i := 0 to FChildren.Count - 1 do
   begin
     if CompareText(TVXBaseSceneObject(FChildren[i]).Name, aName) = 0 then
@@ -3873,18 +3639,12 @@ begin
     Result := res;
 end;
 
-// ExchangeChildren
-//
-
 procedure TVXBaseSceneObject.ExchangeChildren(anIndex1, anIndex2: Integer);
 begin
   Assert(Assigned(FChildren), 'No children found!');
   FChildren.Exchange(anIndex1, anIndex2);
   NotifyChange(Self);
 end;
-
-// ExchangeChildrenSafe
-//
 
 procedure TVXBaseSceneObject.ExchangeChildrenSafe(anIndex1, anIndex2: Integer);
 begin
@@ -3897,9 +3657,6 @@ begin
   end;
 end;
 
-// MoveChildUp
-//
-
 procedure TVXBaseSceneObject.MoveChildUp(anIndex: Integer);
 begin
   Assert(Assigned(FChildren), 'No children found!');
@@ -3909,9 +3666,6 @@ begin
     NotifyChange(Self);
   end;
 end;
-
-// MoveChildDown
-//
 
 procedure TVXBaseSceneObject.MoveChildDown(anIndex: Integer);
 begin
@@ -3923,9 +3677,6 @@ begin
   end;
 end;
 
-// MoveChildFirst
-//
-
 procedure TVXBaseSceneObject.MoveChildFirst(anIndex: Integer);
 begin
   Assert(Assigned(FChildren), 'No children found!');
@@ -3935,9 +3686,6 @@ begin
     NotifyChange(Self);
   end;
 end;
-
-// MoveChildLast
-//
 
 procedure TVXBaseSceneObject.MoveChildLast(anIndex: Integer);
 begin
@@ -3949,16 +3697,13 @@ begin
   end;
 end;
 
-// Render
-//
-
 procedure TVXBaseSceneObject.Render(var ARci: TVXRenderContextInfo);
 var
   shouldRenderSelf, shouldRenderChildren: Boolean;
   aabb: TAABB;
   master: TObject;
 begin
-{$IFDEF VKS_OPENGL_DEBUG}
+{$IFDEF USE_OPENGL_DEBUG}
   if GL.GREMEDY_string_marker then
     GL.StringMarkerGREMEDY(
       Length(Name) + Length('.Render'), PGLChar(String(Name + '.Render')));
@@ -3991,19 +3736,19 @@ begin
     Assert(ARci.visibilityCulling in [vcNone, vcInherited],
       'Unknown visibility culling option');
     shouldRenderSelf := True;
-    shouldRenderChildren := Assigned(FChildren);
+    shouldRenderChildren := FChildren.Count>0;
   end;
 
   // Prepare Matrix and PickList stuff
   ARci.PipelineTransformation.Push;
+
   if ocTransformation in FChanges then
     RebuildMatrix;
 
   if ARci.proxySubObject then
-    ARci.PipelineTransformation.ModelMatrix :=
-      MatrixMultiply(LocalMatrix^, ARci.PipelineTransformation.ModelMatrix)
+    ARci.PipelineTransformation.SetModelMatrix(MatrixMultiply(LocalMatrix^, ARci.PipelineTransformation.ModelMatrix^))
   else
-    ARci.PipelineTransformation.ModelMatrix := AbsoluteMatrix;
+    ARci.PipelineTransformation.SetModelMatrix(AbsoluteMatrix);
 
   master := nil;
   if ARci.drawState = dsPicking then
@@ -4017,7 +3762,7 @@ begin
   if shouldRenderSelf then
   begin
     vCurrentRenderingObject := Self;
-{$IFNDEF VKS_OPTIMIZATIONS}
+{$IFNDEF USE_OPTIMIZATIONS}
     if FShowAxes then
       DrawAxes(ARci, $CCCC);
 {$ENDIF}
@@ -4030,9 +3775,9 @@ begin
       ARci.PipelineTransformation.Push;
       if osIgnoreDepthBuffer in ObjectStyle then
       begin
-        ARci.VKStates.Disable(stDepthTest);
+        ARci.VXStates.Disable(stDepthTest);
         DoRender(ARci, True, shouldRenderChildren);
-        ARci.VKStates.Enable(stDepthTest);
+        ARci.VXStates.Enable(stDepthTest);
       end
       else
         DoRender(ARci, True, shouldRenderChildren);
@@ -4044,13 +3789,12 @@ begin
     begin
       if osIgnoreDepthBuffer in ObjectStyle then
       begin
-        ARci.VKStates.Disable(stDepthTest);
+        ARci.VXStates.Disable(stDepthTest);
         DoRender(ARci, True, shouldRenderChildren);
-        ARci.VKStates.Enable(stDepthTest);
+        ARci.VXStates.Enable(stDepthTest);
       end
       else
         DoRender(ARci, True, shouldRenderChildren);
-
     end;
     vCurrentRenderingObject := nil;
   end
@@ -4059,9 +3803,9 @@ begin
     if (osIgnoreDepthBuffer in ObjectStyle) and
       TVXSceneBuffer(ARCi.buffer).DepthTest then
     begin
-      ARci.VKStates.Disable(stDepthTest);
+      ARci.VXStates.Disable(stDepthTest);
       DoRender(ARci, False, shouldRenderChildren);
-      ARci.VKStates.Enable(stDepthTest);
+      ARci.VXStates.Enable(stDepthTest);
     end
     else
       DoRender(ARci, False, shouldRenderChildren);
@@ -4072,9 +3816,6 @@ begin
   ARci.PipelineTransformation.Pop;
 end;
 
-// DoRender
-//
-
 procedure TVXBaseSceneObject.DoRender(var ARci: TVXRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);
 begin
@@ -4084,30 +3825,25 @@ begin
     if (osDirectDraw in ObjectStyle) or ARci.amalgamating then
       BuildList(ARci)
     else
-      ARci.VKStates.CallList(GetHandle(ARci));
+      ARci.VXStates.CallList(GetHandle(ARci));
   end;
   // start rendering children (if any)
   if ARenderChildren then
     Self.RenderChildren(0, Count - 1, ARci);
 end;
 
-// RenderChildren
-//
-
 procedure TVXBaseSceneObject.RenderChildren(firstChildIndex, lastChildIndex:
   Integer;
   var rci: TVXRenderContextInfo);
 var
   i: Integer;
-  objList: TPersistentObjectList;
-  distList: TSingleList;
+
   plist: PPointerObjectList;
   obj: TVXBaseSceneObject;
   oldSorting: TVXObjectsSorting;
   oldCulling: TVXVisibilityCulling;
 begin
-  if not Assigned(FChildren) then
-    Exit;
+
   oldCulling := rci.visibilityCulling;
   if Self.VisibilityCulling <> vcInherited then
     rci.visibilityCulling := Self.VisibilityCulling;
@@ -4135,11 +3871,11 @@ begin
         end;
       osRenderFarthestFirst, osRenderBlendedLast, osRenderNearestFirst:
         begin
-          distList := TSingleList.Create;
-          objList := TPersistentObjectList.Create;
+          distList.Flush;
+          objList.Count := 0;
           distList.GrowthDelta := lastChildIndex + 1; // no reallocations
           objList.GrowthDelta := distList.GrowthDelta;
-          try
+          //try
             case rci.objectsSorting of
               osRenderBlendedLast:
                 // render opaque stuff
@@ -4191,10 +3927,8 @@ begin
               for i := objList.Count - 1 downto 0 do
                 TVXBaseSceneObject(plist^[i]).Render(rci);
             end;
-          finally
-            objList.Free;
-            distList.Free;
-          end;
+          //finally
+          //end;
         end;
     else
       Assert(False);
@@ -4204,45 +3938,28 @@ begin
   rci.visibilityCulling := oldCulling;
 end;
 
-// NotifyChange
-//
-
 procedure TVXBaseSceneObject.NotifyChange(Sender: TObject);
 begin
   if Assigned(FScene) and (not IsUpdating) then
     FScene.NotifyChange(Self);
 end;
 
-// GetMatrix
-//
-
-function TVXBaseSceneObject.GetMatrix: TMatrix;
+function TVXBaseSceneObject.GetMatrix: PMatrix;
 begin
   RebuildMatrix;
-  Result := FLocalMatrix^;
+  Result := @FLocalMatrix;
 end;
-
-// MatrixAsAddress
-//
-
-function TVXBaseSceneObject.MatrixAsAddress: PMatrix;
-begin
-  RebuildMatrix;
-  Result := FLocalMatrix;
-end;
-
-// SetMatrix
-//
 
 procedure TVXBaseSceneObject.SetMatrix(const aValue: TMatrix);
 begin
-  FLocalMatrix^ := aValue;
-  FDirection.DirectVector := VectorNormalize(FLocalMatrix^.Z);
-  FUp.DirectVector := VectorNormalize(FLocalMatrix^.Y);
-  Scale.SetVector(VectorLength(FLocalMatrix^.X),
-    VectorLength(FLocalMatrix^.Y),
-    VectorLength(FLocalMatrix^.Z), 0);
-  FPosition.DirectVector := FLocalMatrix^.W;
+  FLocalMatrix := aValue;
+  FDirection.DirectVector := VectorNormalize(FLocalMatrix.Z);
+  FUp.DirectVector := VectorNormalize(FLocalMatrix.Y);
+  Scale.SetVector(
+    VectorLength(FLocalMatrix.X),
+    VectorLength(FLocalMatrix.Y),
+    VectorLength(FLocalMatrix.Z), 0);
+  FPosition.DirectVector := FLocalMatrix.W;
   TransformationChanged;
 end;
 
@@ -4273,9 +3990,6 @@ begin
   Result := FPickable;
 end;
 
-// SetVisible
-//
-
 procedure TVXBaseSceneObject.SetVisible(aValue: Boolean);
 begin
   if FVisible <> aValue then
@@ -4284,9 +3998,6 @@ begin
     NotifyChange(Self);
   end;
 end;
-
-// SetPickable
-//
 
 procedure TVXBaseSceneObject.SetPickable(aValue: Boolean);
 begin
@@ -4297,9 +4008,6 @@ begin
   end;
 end;
 
-// SetObjectsSorting
-//
-
 procedure TVXBaseSceneObject.SetObjectsSorting(const val: TVXObjectsSorting);
 begin
   if FObjectsSorting <> val then
@@ -4308,9 +4016,6 @@ begin
     NotifyChange(Self);
   end;
 end;
-
-// SetVisibilityCulling
-//
 
 procedure TVXBaseSceneObject.SetVisibilityCulling(const val:
   TVXVisibilityCulling);
@@ -4322,16 +4027,10 @@ begin
   end;
 end;
 
-// SetBehaviours
-//
-
 procedure TVXBaseSceneObject.SetBehaviours(const val: TVXBehaviours);
 begin
   Behaviours.Assign(val);
 end;
-
-// GetBehaviours
-//
 
 function TVXBaseSceneObject.GetBehaviours: TVXBehaviours;
 begin
@@ -4340,16 +4039,10 @@ begin
   Result := FGLBehaviours;
 end;
 
-// SetEffects
-//
-
 procedure TVXBaseSceneObject.SetEffects(const val: TVXObjectEffects);
 begin
   Effects.Assign(val);
 end;
-
-// GetEffects
-//
 
 function TVXBaseSceneObject.GetEffects: TVXObjectEffects;
 begin
@@ -4357,9 +4050,6 @@ begin
     FGLObjectEffects := TVXObjectEffects.Create(Self);
   Result := FGLObjectEffects;
 end;
-
-// SetScene
-//
 
 procedure TVXBaseSceneObject.SetScene(const value: TVXScene);
 var
@@ -4378,16 +4068,10 @@ begin
   end;
 end;
 
-// Translate
-//
-
 procedure TVXBaseSceneObject.Translate(tx, ty, tz: Single);
 begin
   FPosition.Translate(AffineVectorMake(tx, ty, tz));
 end;
-
-// GetAbsoluteAffinePosition
-//
 
 function TVXBaseSceneObject.GetAbsoluteAffinePosition: TAffineVector;
 var
@@ -4397,9 +4081,6 @@ begin
   Result := AffineVectorMake(temp.X, temp.Y, temp.Z);
 end;
 
-// GetAbsoluteAffineDirection
-//
-
 function TVXBaseSceneObject.GetAbsoluteAffineDirection: TAffineVector;
 var
   temp: TVector;
@@ -4407,9 +4088,6 @@ begin
   temp := GetAbsoluteDirection;
   Result := AffineVectorMake(temp.X, temp.Y, temp.Z);
 end;
-
-// GetAbsoluteAffineUp
-//
 
 function TVXBaseSceneObject.GetAbsoluteAffineUp: TAffineVector;
 var
@@ -4419,65 +4097,41 @@ begin
   Result := AffineVectorMake(temp.X, temp.Y, temp.Z);
 end;
 
-// SetAbsoluteAffinePosition
-//
-
 procedure TVXBaseSceneObject.SetAbsoluteAffinePosition(const Value:
   TAffineVector);
 begin
   SetAbsolutePosition(VectorMake(Value, 1));
 end;
 
-// SetAbsoluteAffineUp
-//
-
 procedure TVXBaseSceneObject.SetAbsoluteAffineUp(const v: TAffineVector);
 begin
   SetAbsoluteUp(VectorMake(v, 1));
 end;
-
-// SetAbsoluteAffineDirection
-//
 
 procedure TVXBaseSceneObject.SetAbsoluteAffineDirection(const v: TAffineVector);
 begin
   SetAbsoluteDirection(VectorMake(v, 1));
 end;
 
-// AffineLeftVector
-//
-
 function TVXBaseSceneObject.AffineLeftVector: TAffineVector;
 begin
   Result := AffineVectorMake(LeftVector);
 end;
-
-// AffineRight
-//
 
 function TVXBaseSceneObject.AffineRight: TAffineVector;
 begin
   Result := AffineVectorMake(Right);
 end;
 
-// DistanceTo
-//
-
 function TVXBaseSceneObject.DistanceTo(const pt: TAffineVector): Single;
 begin
   Result := VectorDistance(AbsoluteAffinePosition, pt);
 end;
 
-// SqrDistanceTo
-//
-
 function TVXBaseSceneObject.SqrDistanceTo(const pt: TAffineVector): Single;
 begin
   Result := VectorDistance2(AbsoluteAffinePosition, pt);
 end;
-
-// DoOnAddedToParent
-//
 
 procedure TVXBaseSceneObject.DoOnAddedToParent;
 begin
@@ -4485,16 +4139,10 @@ begin
     FOnAddedToParent(self);
 end;
 
-// GetAbsoluteAffineScale
-//
-
 function TVXBaseSceneObject.GetAbsoluteAffineScale: TAffineVector;
 begin
   Result := AffineVectorMake(GetAbsoluteScale);
 end;
-
-// SetAbsoluteAffineScale
-//
 
 procedure TVXBaseSceneObject.SetAbsoluteAffineScale(
   const Value: TAffineVector);
@@ -4506,17 +4154,11 @@ end;
 // ------------------ TVXBaseBehaviour ------------------
 // ------------------
 
-// Create
-//
-
 constructor TVXBaseBehaviour.Create(aOwner: TVXXCollection);
 begin
   inherited Create(aOwner);
   // nothing more, yet
 end;
-
-// Destroy
-//
 
 destructor TVXBaseBehaviour.Destroy;
 begin
@@ -4524,18 +4166,12 @@ begin
   inherited Destroy;
 end;
 
-// SetName
-//
-
 procedure TVXBaseBehaviour.SetName(const val: string);
 begin
   inherited SetName(val);
   if Assigned(vGLBehaviourNameChangeEvent) then
     vGLBehaviourNameChangeEvent(Self);
 end;
-
-// WriteToFiler
-//
 
 procedure TVXBaseBehaviour.WriteToFiler(writer: TWriter);
 begin
@@ -4547,9 +4183,6 @@ begin
     // nothing more, yet
   end;
 end;
-
-// ReadFromFiler
-//
 
 procedure TVXBaseBehaviour.ReadFromFiler(reader: TReader);
 begin
@@ -4564,16 +4197,10 @@ begin
   end;
 end;
 
-// OwnerBaseSceneObject
-//
-
 function TVXBaseBehaviour.OwnerBaseSceneObject: TVXBaseSceneObject;
 begin
   Result := TVXBaseSceneObject(Owner.Owner);
 end;
-
-// DoProgress
-//
 
 procedure TVXBaseBehaviour.DoProgress(const progressTime: TProgressTimes);
 begin
@@ -4593,9 +4220,6 @@ begin
   inherited Create(aOwner);
 end;
 
-// GetNamePath
-//
-
 function TVXBehaviours.GetNamePath: string;
 var
   s: string;
@@ -4609,33 +4233,21 @@ begin
   Result := s + '.Behaviours';
 end;
 
-// ItemsClass
-//
-
 class function TVXBehaviours.ItemsClass: TVXXCollectionItemClass;
 begin
   Result := TVXBehaviour;
 end;
-
-// GetBehaviour
-//
 
 function TVXBehaviours.GetBehaviour(index: Integer): TVXBehaviour;
 begin
   Result := TVXBehaviour(Items[index]);
 end;
 
-// CanAdd
-//
-
 function TVXBehaviours.CanAdd(aClass: TVXXCollectionItemClass): Boolean;
 begin
   Result := (not aClass.InheritsFrom(TVXObjectEffect)) and (inherited
     CanAdd(aClass));
 end;
-
-// DoProgress
-//
 
 procedure TVXBehaviours.DoProgress(const progressTimes: TProgressTimes);
 var
@@ -4649,9 +4261,6 @@ end;
 // ------------------ TVXObjectEffect ------------------
 // ------------------
 
-// WriteToFiler
-//
-
 procedure TVXObjectEffect.WriteToFiler(writer: TWriter);
 begin
   inherited;
@@ -4661,9 +4270,6 @@ begin
     // nothing more, yet
   end;
 end;
-
-// ReadFromFiler
-//
 
 procedure TVXObjectEffect.ReadFromFiler(reader: TReader);
 begin
@@ -4678,9 +4284,6 @@ begin
   end;
 end;
 
-// Render
-//
-
 procedure TVXObjectEffect.Render(var rci: TVXRenderContextInfo);
 begin
   // nothing here, this implem is just to avoid "abstract error"
@@ -4690,17 +4293,11 @@ end;
 // ------------------ TVXObjectEffects ------------------
 // ------------------
 
-// Create
-//
-
 constructor TVXObjectEffects.Create(aOwner: TPersistent);
 begin
   Assert(aOwner is TVXBaseSceneObject);
   inherited Create(aOwner);
 end;
-
-// GetNamePath
-//
 
 function TVXObjectEffects.GetNamePath: string;
 var
@@ -4715,33 +4312,21 @@ begin
   Result := s + '.Effects';
 end;
 
-// ItemsClass
-//
-
 class function TVXObjectEffects.ItemsClass: TVXXCollectionItemClass;
 begin
   Result := TVXObjectEffect;
 end;
-
-// GetEffect
-//
 
 function TVXObjectEffects.GetEffect(index: Integer): TVXObjectEffect;
 begin
   Result := TVXObjectEffect(Items[index]);
 end;
 
-// CanAdd
-//
-
 function TVXObjectEffects.CanAdd(aClass: TVXXCollectionItemClass): Boolean;
 begin
   Result := (aClass.InheritsFrom(TVXObjectEffect)) and (inherited
     CanAdd(aClass));
 end;
-
-// DoProgress
-//
 
 procedure TVXObjectEffects.DoProgress(const progressTime: TProgressTimes);
 var
@@ -4750,9 +4335,6 @@ begin
   for i := 0 to Count - 1 do
     TVXObjectEffect(Items[i]).DoProgress(progressTime);
 end;
-
-// RenderPreEffects
-//
 
 procedure TVXObjectEffects.RenderPreEffects(var rci: TVXRenderContextInfo);
 var
@@ -4766,9 +4348,6 @@ begin
       effect.Render(rci);
   end;
 end;
-
-// RenderPostEffects
-//
 
 procedure TVXObjectEffects.RenderPostEffects(var rci: TVXRenderContextInfo);
 var
@@ -4789,26 +4368,17 @@ end;
 // ------------------ TVXCustomSceneObject ------------------
 // ------------------
 
-// Create
-//
-
 constructor TVXCustomSceneObject.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   FMaterial := TVXMaterial.Create(Self);
 end;
 
-// Destroy
-//
-
 destructor TVXCustomSceneObject.Destroy;
 begin
   inherited Destroy;
   FMaterial.Free;
 end;
-
-// Assign
-//
 
 procedure TVXCustomSceneObject.Assign(Source: TPersistent);
 begin
@@ -4820,16 +4390,10 @@ begin
   inherited Assign(Source);
 end;
 
-// Blended
-//
-
 function TVXCustomSceneObject.Blended: Boolean;
 begin
   Result := Material.Blended;
 end;
-
-// Loaded
-//
 
 procedure TVXCustomSceneObject.Loaded;
 begin
@@ -4837,26 +4401,17 @@ begin
   FMaterial.Loaded;
 end;
 
-// SetGLMaterial
-//
-
 procedure TVXCustomSceneObject.SetVKMaterial(AValue: TVXMaterial);
 begin
   FMaterial.Assign(AValue);
   NotifyChange(Self);
 end;
 
-// DestroyHandle
-//
-
 procedure TVXCustomSceneObject.DestroyHandle;
 begin
   inherited;
   FMaterial.DestroyHandles;
 end;
-
-// DoRender
-//
 
 procedure TVXCustomSceneObject.DoRender(var ARci: TVXRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);
@@ -4867,7 +4422,7 @@ begin
       if (osDirectDraw in ObjectStyle) or ARci.amalgamating then
         BuildList(ARci)
       else
-        ARci.VKStates.CallList(GetHandle(ARci))
+        ARci.VXStates.CallList(GetHandle(ARci))
     else
     begin
       FMaterial.Apply(ARci);
@@ -4875,7 +4430,7 @@ begin
         if (osDirectDraw in ObjectStyle) or ARci.amalgamating then
           BuildList(ARci)
         else
-          ARci.VKStates.CallList(GetHandle(ARci));
+          ARci.VXStates.CallList(GetHandle(ARci));
       until not FMaterial.UnApply(ARci);
     end;
   // start rendering children (if any)
@@ -4886,9 +4441,6 @@ end;
 // ------------------
 // ------------------ TVXSceneRootObject ------------------
 // ------------------
-
-// Create
-//
 
 constructor TVXSceneRootObject.Create(AOwner: TComponent);
 begin
@@ -4901,9 +4453,6 @@ end;
 // ------------------
 // ------------------ TVXCamera ------------------
 // ------------------
-
-// Create
-//
 
 constructor TVXCamera.Create(aOwner: TComponent);
 begin
@@ -4918,9 +4467,6 @@ begin
   FFOVY := -1;
   FKeepFOVMode := ckmHorizontalFOV;
 end;
-
-// destroy
-//
 
 destructor TVXCamera.Destroy;
 begin
@@ -4966,9 +4512,6 @@ begin
   end;
 end;
 
-// AbsoluteVectorToTarget
-//
-
 function TVXCamera.AbsoluteVectorToTarget: TVector;
 begin
   if TargetObject <> nil then
@@ -4979,9 +4522,6 @@ begin
   else
     Result := AbsoluteDirection;
 end;
-
-// AbsoluteRightVectorToTarget
-//
 
 function TVXCamera.AbsoluteRightVectorToTarget: TVector;
 begin
@@ -4994,9 +4534,6 @@ begin
   else
     Result := AbsoluteRight;
 end;
-
-// AbsoluteUpVectorToTarget
-//
 
 function TVXCamera.AbsoluteUpVectorToTarget: TVector;
 begin
@@ -5042,14 +4579,11 @@ begin
       v2 := VectorAdd(absPos, v);
       LM := CreateLookAtMatrix(absPos, v2, d);
     end;
-    with CurrentVKContext.PipelineTransformation do
-      ViewMatrix := MatrixMultiply(LM, ViewMatrix);
+    with CurrentVXContext.PipelineTransformation do
+      SetViewMatrix(MatrixMultiply(LM, ViewMatrix^));
     ClearStructureChanged;
   end;
 end;
-
-// ApplyPerspective
-//
 
 procedure TVXCamera.ApplyPerspective(const AViewport: TRectangle;
   AWidth, AHeight: Integer; ADPI: Integer);
@@ -5079,8 +4613,8 @@ begin
     FNearPlane := -1;
     vFar := 1;
     mat := CreateOrthoMatrix(vLeft, vRight, vBottom, vTop, FNearPlane, vFar);
-    with CurrentVKContext.PipelineTransformation do
-      ProjectionMatrix := MatrixMultiply(mat, ProjectionMatrix);
+    with CurrentVXContext.PipelineTransformation do
+      SetProjectionMatrix(MatrixMultiply(mat, ProjectionMatrix^));
     FViewPortRadius := VectorLength(AWidth, AHeight) / 2;
   end
   else if CameraStyle = csCustom then
@@ -5146,19 +4680,19 @@ begin
         begin
           if FFOVY < 0 then // Need Update FOV
           begin
-            FFOVY := ArcTangent2(vTop - vBottom, 2 * FNearPlane) * 2;
-            FFOVX := ArcTangent2(vRight - vLeft, 2 * FNearPlane) * 2;
+            FFOVY := ArcTan2(vTop - vBottom, 2 * FNearPlane) * 2;
+            FFOVX := ArcTan2(vRight - vLeft, 2 * FNearPlane) * 2;
           end;
 
           case FKeepFOVMode of
             ckmVerticalFOV:
             begin
-              ymax := FNearPlane * Tangent(FFOVY / 2);
+              ymax := FNearPlane * Tan(FFOVY / 2);
               xmax := ymax * AWidth / AHeight;
             end;
             ckmHorizontalFOV:
             begin
-              xmax := FNearPlane * Tangent(FFOVX / 2);
+              xmax := FNearPlane * Tan(FFOVX / 2);
               ymax := xmax * AHeight / AWidth;
             end;
             else
@@ -5190,10 +4724,9 @@ begin
       Assert(False);
     end;
 
-    with CurrentVKContext.PipelineTransformation do
-      ProjectionMatrix := MatrixMultiply(mat, ProjectionMatrix);
-
-    FViewPortRadius := VectorLength(vRight, vTop) / FNearPlane;
+    with CurrentVXContext.PipelineTransformation do
+      SetProjectionMatrix(MatrixMultiply(mat, ProjectionMatrix^));
+      FViewPortRadius := VectorLength(vRight, vTop) / FNearPlane
   end;
 end;
 
@@ -5213,23 +4746,18 @@ begin
     FUp.Normalize;
     // adjust local coordinates
     FDirection.DirectVector := VectorCrossProduct(FUp.AsVector, rightVector);
-    FRotation.Z := -RadianToDeg(ArcTangent2(RightVector.Y,
+    FRotation.Z := -RadToDeg(ArcTan2(RightVector.Y,
       VectorLength(RightVector.X, RightVector.Z)));
   end;
 end;
 
-// Notification
-//
-
+//------------------------------------------------------------------------------
 procedure TVXCamera.Notification(AComponent: TComponent; Operation: TOperation);
 begin
   if (Operation = opRemove) and (AComponent = FTargetObject) then
     TargetObject := nil;
   inherited;
 end;
-
-// SetTargetObject
-//
 
 procedure TVXCamera.SetTargetObject(const val: TVXBaseSceneObject);
 begin
@@ -5244,9 +4772,6 @@ begin
       TransformationChanged;
   end;
 end;
-
-// Reset
-//
 
 procedure TVXCamera.Reset(aSceneBuffer: TVXSceneBuffer);
 var
@@ -5268,9 +4793,6 @@ begin
   TransformationChanged;
 end;
 
-// ZoomAll
-//
-
 procedure TVXCamera.ZoomAll(aSceneBuffer: TVXSceneBuffer);
 var
   extent: Single;
@@ -5287,9 +4809,6 @@ begin
     FDirection.SetVector(-FPosition.X, -FPosition.Y, -FPosition.Z, 0);
   end;
 end;
-
-// RotateObject
-//
 
 procedure TVXCamera.RotateObject(obj: TVXBaseSceneObject; pitchDelta, turnDelta:
   Single;
@@ -5319,7 +4838,7 @@ begin
   //save scale & position info
   Scale1 := obj.Scale.AsVector;
   position1 := obj.Position.asVector;
-  resMat := obj.Matrix;
+  resMat := obj.Matrix^;
   //get rid of scaling & location info
   NormalizeMatrix(resMat);
   // Now we build rotation matrices and use them to rotate the obj
@@ -5341,14 +4860,11 @@ begin
     resMat := MatrixMultiply(CreateRotationMatrix(v, DegToRadian(pitchDelta)),
       resMat);
   end;
-  obj.Matrix := resMat;
+  obj.SetMatrix(resMat);
   //restore scaling & rotation info
   obj.Scale.AsVector := Scale1;
   obj.Position.AsVector := Position1;
 end;
-
-// RotateTarget
-//
 
 procedure TVXCamera.RotateTarget(pitchDelta, turnDelta: Single; rollDelta: Single
   = 0);
@@ -5357,24 +4873,15 @@ begin
     RotateObject(FTargetObject, pitchDelta, turnDelta, rollDelta)
 end;
 
-// MoveAroundTarget
-//
-
 procedure TVXCamera.MoveAroundTarget(pitchDelta, turnDelta: Single);
 begin
   MoveObjectAround(FTargetObject, pitchDelta, turnDelta);
 end;
 
-// MoveAllAroundTarget
-//
-
 procedure TVXCamera.MoveAllAroundTarget(pitchDelta, turnDelta :Single);
 begin
   MoveObjectAllAround(FTargetObject, pitchDelta, turnDelta);
 end;
-
-// MoveInEyeSpace
-//
 
 procedure TVXCamera.MoveInEyeSpace(forwardDistance, rightDistance, upDistance:
   Single);
@@ -5389,9 +4896,6 @@ begin
     Position.Translate(trVector);
 end;
 
-// MoveTargetInEyeSpace
-//
-
 procedure TVXCamera.MoveTargetInEyeSpace(forwardDistance, rightDistance,
   upDistance: Single);
 var
@@ -5405,9 +4909,6 @@ begin
   end;
 end;
 
-// AbsoluteEyeSpaceVector
-//
-
 function TVXCamera.AbsoluteEyeSpaceVector(forwardDistance, rightDistance,
   upDistance: Single): TVector;
 begin
@@ -5419,9 +4920,6 @@ begin
   if upDistance <> 0 then
     CombineVector(Result, AbsoluteUpVectorToTarget, upDistance);
 end;
-
-// AdjustDistanceToTarget
-//
 
 procedure TVXCamera.AdjustDistanceToTarget(distanceRatio: Single);
 var
@@ -5440,9 +4938,6 @@ begin
   end;
 end;
 
-// DistanceToTarget
-//
-
 function TVXCamera.DistanceToTarget: Single;
 var
   vect: TVector;
@@ -5455,9 +4950,6 @@ begin
   else
     Result := 1;
 end;
-
-// ScreenDeltaToVector
-//
 
 function TVXCamera.ScreenDeltaToVector(deltaX, deltaY: Integer; ratio: Single;
   const planeNormal: TVector): TVector;
@@ -5479,9 +4971,6 @@ begin
   // and here, we're done
   Result := VectorCombine(screenX, screenY, deltaX * ratio, deltaY * ratio);
 end;
-
-// ScreenDeltaToVectorXY
-//
 
 function TVXCamera.ScreenDeltaToVectorXY(deltaX, deltaY: Integer; ratio:
   Single): TVector;
@@ -5508,9 +4997,6 @@ begin
   Result.W := 0;
 end;
 
-// ScreenDeltaToVectorXZ
-//
-
 function TVXCamera.ScreenDeltaToVectorXZ(deltaX, deltaY: Integer; ratio:
   Single): TVector;
 var
@@ -5534,9 +5020,6 @@ begin
   Result.Z := screenY.Z * dzr + screenY.X * dxr;
   Result.W := 0;
 end;
-
-// ScreenDeltaToVectorYZ
-//
 
 function TVXCamera.ScreenDeltaToVectorYZ(deltaX, deltaY: Integer; ratio:
   Single): TVector;
@@ -5562,16 +5045,10 @@ begin
   Result.W := 0;
 end;
 
-// PointInFront
-//
-
 function TVXCamera.PointInFront(const point: TVector): boolean;
 begin
   result := PointIsInHalfSpace(point, AbsolutePosition, AbsoluteDirection);
 end;
-
-// SetDepthOfView
-//
 
 procedure TVXCamera.SetDepthOfView(AValue: Single);
 begin
@@ -5583,9 +5060,6 @@ begin
       TransformationChanged;
   end;
 end;
-
-// SetFocalLength
-//
 
 procedure TVXCamera.SetFocalLength(AValue: Single);
 begin
@@ -5600,28 +5074,19 @@ begin
   end;
 end;
 
-// GetFieldOfView
-//
-
 function TVXCamera.GetFieldOfView(const AViewportDimension: single): single;
 begin
   if FFocalLength = 0 then
     result := 0
   else
-    result := RadianToDeg(2 * ArcTangent2(AViewportDimension * 0.5, FFocalLength));
+    result := RadToDeg(2 * ArcTan2(AViewportDimension * 0.5, FFocalLength));
 end;
-
-// SetFieldOfView
-//
 
 procedure TVXCamera.SetFieldOfView(const AFieldOfView,
   AViewportDimension: single);
 begin
-  FocalLength := AViewportDimension / (2 * Tangent(DegToRadian(AFieldOfView / 2)));
+  FocalLength := AViewportDimension / (2 * Tan(DegToRadian(AFieldOfView / 2)));
 end;
-
-// SetCameraStyle
-//
 
 procedure TVXCamera.SetCameraStyle(const val: TVXCameraStyle);
 begin
@@ -5633,9 +5098,6 @@ begin
   end;
 end;
 
-// SetKeepCamAngleMode
-//
-
 procedure TVXCamera.SetKeepFOVMode(const val: TVXCameraKeepFOVMode);
 begin
   if FKeepFOVMode <> val then
@@ -5646,9 +5108,6 @@ begin
       NotifyChange(Self);
   end;
 end;
-
-// SetSceneScale
-//
 
 procedure TVXCamera.SetSceneScale(value: Single);
 begin
@@ -5662,16 +5121,10 @@ begin
   end;
 end;
 
-// StoreSceneScale
-//
-
 function TVXCamera.StoreSceneScale: Boolean;
 begin
   Result := (FSceneScale <> 1);
 end;
-
-// SetNearPlaneBias
-//
 
 procedure TVXCamera.SetNearPlaneBias(value: Single);
 begin
@@ -5685,16 +5138,10 @@ begin
   end;
 end;
 
-// StoreNearPlaneBias
-//
-
 function TVXCamera.StoreNearPlaneBias: Boolean;
 begin
   Result := (FNearPlaneBias <> 1);
 end;
-
-// DoRender
-//
 
 procedure TVXCamera.DoRender(var ARci: TVXRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);
@@ -5702,9 +5149,6 @@ begin
   if ARenderChildren and (Count > 0) then
     Self.RenderChildren(0, Count - 1, ARci);
 end;
-
-// RayCastIntersect
-//
 
 function TVXCamera.RayCastIntersect(const rayStart, rayVector: TVector;
   intersectPoint: PVector = nil;
@@ -5717,9 +5161,6 @@ end;
 // ------------------ TVXImmaterialSceneObject ------------------
 // ------------------
 
-// DoRender
-//
-
 procedure TVXImmaterialSceneObject.DoRender(var ARci: TVXRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);
 begin
@@ -5729,7 +5170,7 @@ begin
     if (osDirectDraw in ObjectStyle) or ARci.amalgamating then
       BuildList(ARci)
     else
-      ARci.VKStates.CallList(GetHandle(ARci));
+      ARci.VXStates.CallList(GetHandle(ARci));
   end;
   // start rendering children (if any)
   if ARenderChildren then
@@ -5740,17 +5181,11 @@ end;
 // ------------------ TVXCameraInvariantObject ------------------
 // ------------------
 
-// Create
-//
-
 constructor TVXCameraInvariantObject.Create(AOwner: TComponent);
 begin
   inherited;
   FCamInvarianceMode := cimNone;
 end;
-
-// Assign
-//
 
 procedure TVXCameraInvariantObject.Assign(Source: TPersistent);
 begin
@@ -5761,9 +5196,6 @@ begin
   inherited Assign(Source);
 end;
 
-// DoRender
-//
-
 procedure TVXCameraInvariantObject.DoRender(var ARci: TVXRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);
 begin
@@ -5771,45 +5203,42 @@ begin
     with ARci.PipelineTransformation do
     begin
       Push;
-      try
+//      try
         // prepare
         case CamInvarianceMode of
           cimPosition:
             begin
-              ViewMatrix := MatrixMultiply(
+              SetViewMatrix(MatrixMultiply(
                 CreateTranslationMatrix(ARci.cameraPosition),
-                ARci.PipelineTransformation.ViewMatrix);
+                ARci.PipelineTransformation.ViewMatrix^));
             end;
           cimOrientation:
             begin
               // makes the coordinates system more 'intuitive' (Z+ forward)
-              ViewMatrix := CreateScaleMatrix(Vector3fMake(1, -1, -1))
+              SetViewMatrix(CreateScaleMatrix(Vector3fMake(1, -1, -1)))
             end;
         else
           Assert(False);
         end;
         // Apply local transform
-        ModelMatrix := LocalMatrix^;
+        SetModelMatrix(LocalMatrix^);
 
         if ARenderSelf then
         begin
           if (osDirectDraw in ObjectStyle) or ARci.amalgamating then
             BuildList(ARci)
           else
-            ARci.VKStates.CallList(GetHandle(ARci));
+            ARci.VXStates.CallList(GetHandle(ARci));
         end;
         if ARenderChildren then
           Self.RenderChildren(0, Count - 1, ARci);
-      finally
+//      finally
         Pop;
-      end;
+//      end;
     end
   else
     inherited;
 end;
-
-// SetCamInvarianceMode
-//
 
 procedure TVXCameraInvariantObject.SetCamInvarianceMode(const val:
   TVXCameraInvarianceMode);
@@ -5822,11 +5251,8 @@ begin
 end;
 
 // ------------------
-// ------------------ TVXDirectOpenVX ------------------
+// ------------------ TxDirectOpenVX ------------------
 // ------------------
-
-// Create
-//
 
 constructor TVXDirectOpenVX.Create(AOwner: TComponent);
 begin
@@ -5834,9 +5260,6 @@ begin
   ObjectStyle := ObjectStyle + [osDirectDraw];
   FBlend := False;
 end;
-
-// Assign
-//
 
 procedure TVXDirectOpenVX.Assign(Source: TPersistent);
 begin
@@ -5849,9 +5272,6 @@ begin
   inherited Assign(Source);
 end;
 
-// BuildList
-//
-
 procedure TVXDirectOpenVX.BuildList(var rci: TVXRenderContextInfo);
 begin
   if Assigned(FOnRender) then
@@ -5861,16 +5281,10 @@ begin
   end;
 end;
 
-// AxisAlignedDimensionsUnscaled
-//
-
 function TVXDirectOpenVX.AxisAlignedDimensionsUnscaled: TVector;
 begin
   Result := NullHmgPoint;
 end;
-
-// SetUseBuildList
-//
 
 procedure TVXDirectOpenVX.SetUseBuildList(const val: Boolean);
 begin
@@ -5884,16 +5298,10 @@ begin
   end;
 end;
 
-// Blended
-//
-
 function TVXDirectOpenVX.Blended: Boolean;
 begin
   Result := FBlend;
 end;
-
-// SetBlend
-//
 
 procedure TVXDirectOpenVX.SetBlend(const val: Boolean);
 begin
@@ -5905,11 +5313,8 @@ begin
 end;
 
 // ------------------
-// ------------------ TVXRenderPoint ------------------
+// ------------------ TxRenderPoint ------------------
 // ------------------
-
-// Create
-//
 
 constructor TVXRenderPoint.Create(AOwner: TComponent);
 begin
@@ -5917,17 +5322,11 @@ begin
   ObjectStyle := ObjectStyle + [osDirectDraw];
 end;
 
-// Destroy
-//
-
 destructor TVXRenderPoint.Destroy;
 begin
   Clear;
   inherited;
 end;
-
-// BuildList
-//
 
 procedure TVXRenderPoint.BuildList(var rci: TVXRenderContextInfo);
 var
@@ -5936,9 +5335,6 @@ begin
   for i := 0 to High(FCallBacks) do
     FCallBacks[i](Self, rci);
 end;
-
-// RegisterCallBack
-//
 
 procedure TVXRenderPoint.RegisterCallBack(renderEvent: TDirectRenderEvent;
   renderPointFreed: TNotifyEvent);
@@ -5951,9 +5347,6 @@ begin
   FCallBacks[n] := renderEvent;
   FFreeCallBacks[n] := renderPointFreed;
 end;
-
-// UnRegisterCallBack
-//
 
 procedure TVXRenderPoint.UnRegisterCallBack(renderEvent: TDirectRenderEvent);
 type
@@ -5983,9 +5376,6 @@ begin
   end;
 end;
 
-// BuildList
-//
-
 procedure TVXRenderPoint.Clear;
 begin
   while Length(FCallBacks) > 0 do
@@ -5996,11 +5386,8 @@ begin
 end;
 
 // ------------------
-// ------------------ TVXProxyObject ------------------
+// ------------------ TxProxyObject ------------------
 // ------------------
-
-// Create
-//
 
 constructor TVXProxyObject.Create(AOwner: TComponent);
 begin
@@ -6008,17 +5395,11 @@ begin
   FProxyOptions := cDefaultProxyOptions;
 end;
 
-// Destroy
-//
-
 destructor TVXProxyObject.Destroy;
 begin
   SetMasterObject(nil);
   inherited;
 end;
-
-// Assign
-//
 
 procedure TVXProxyObject.Assign(Source: TPersistent);
 begin
@@ -6028,9 +5409,6 @@ begin
   end;
   inherited Assign(Source);
 end;
-
-// Render
-//
 
 procedure TVXProxyObject.DoRender(var ARci: TVXRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);
@@ -6052,7 +5430,7 @@ begin
         ARci.proxySubObject := True;
         if pooTransformation in FProxyOptions then
           with ARci.PipelineTransformation do
-            ModelMatrix := MatrixMultiply(FMasterObject.Matrix, ModelMatrix);
+            SetModelMatrix(MatrixMultiply(FMasterObject.Matrix^, ModelMatrix^));
         FMasterObject.DoRender(ARci, ARenderSelf, (FMasterObject.Count > 0));
         ARci.proxySubObject := oldProxySubObject;
       end;
@@ -6067,9 +5445,6 @@ begin
   end;
   ClearStructureChanged;
 end;
-
-// AxisAlignedDimensions
-//
 
 function TVXProxyObject.AxisAlignedDimensions: TVector;
 begin
@@ -6095,9 +5470,6 @@ begin
     Result := inherited AxisAlignedDimensionsUnscaled;
 end;
 
-// BarycenterAbsolutePosition
-//
-
 function TVXProxyObject.BarycenterAbsolutePosition: TVector;
 var
   lAdjustVector: TVector;
@@ -6115,9 +5487,6 @@ begin
     Result := inherited BarycenterAbsolutePosition;
 end;
 
-// Notification
-//
-
 procedure TVXProxyObject.Notification(AComponent: TComponent; Operation:
   TOperation);
 begin
@@ -6125,9 +5494,6 @@ begin
     MasterObject := nil;
   inherited;
 end;
-
-// SetMasterObject
-//
 
 procedure TVXProxyObject.SetMasterObject(const val: TVXBaseSceneObject);
 begin
@@ -6142,9 +5508,6 @@ begin
   end;
 end;
 
-// SetProxyOptions
-//
-
 procedure TVXProxyObject.SetProxyOptions(const val: TVXProxyObjectOptions);
 begin
   if FProxyOptions <> val then
@@ -6153,9 +5516,6 @@ begin
     StructureChanged;
   end;
 end;
-
-// RayCastIntersect
-//
 
 function TVXProxyObject.RayCastIntersect(const rayStart, rayVector: TVector;
   intersectPoint: PVector = nil;
@@ -6193,9 +5553,6 @@ begin
     Result := False;
 end;
 
-// GenerateSilhouette
-//
-
 function TVXProxyObject.GenerateSilhouette(const silhouetteParameters:
   TVXSilhouetteParameters): TVXSilhouette;
 begin
@@ -6206,19 +5563,15 @@ begin
 end;
 
 // ------------------
-// ------------------ TVXLightSource ------------------
+// ------------------ TxLightSource ------------------
 // ------------------
-
-// Create
-//
 
 constructor TVXLightSource.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
+  FListHandle := nil;
   FShining := True;
-  FSpotDirection := TVXCoordinates.CreateInitialized(Self, VectorMake(0, 0, -1,
-    0),
-    csVector);
+  FSpotDirection := TVXCoordinates.CreateInitialized(Self, VectorMake(0, 0, -1,  0), csVector);
   FConstAttenuation := 1;
   FLinearAttenuation := 0;
   FQuadraticAttenuation := 0;
@@ -6231,9 +5584,6 @@ begin
   FSpecular := TVXColor.Create(Self);
 end;
 
-// Destroy
-//
-
 destructor TVXLightSource.Destroy;
 begin
   FSpotDirection.Free;
@@ -6243,18 +5593,12 @@ begin
   inherited Destroy;
 end;
 
-// DoRender
-//
-
 procedure TVXLightSource.DoRender(var ARci: TVXRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);
 begin
   if ARenderChildren and Assigned(FChildren) then
     Self.RenderChildren(0, Count - 1, ARci);
 end;
-
-// RayCastIntersect
-//
 
 function TVXLightSource.RayCastIntersect(const rayStart, rayVector: TVector;
   intersectPoint: PVector = nil;
@@ -6263,9 +5607,6 @@ begin
   Result := False;
 end;
 
-// CoordinateChanged
-//
-
 procedure TVXLightSource.CoordinateChanged(Sender: TVXCustomCoordinates);
 begin
   inherited;
@@ -6273,25 +5614,11 @@ begin
     TransformationChanged;
 end;
 
-// GenerateSilhouette
-//
-
 function TVXLightSource.GenerateSilhouette(const silhouetteParameters:
   TVXSilhouetteParameters): TVXSilhouette;
 begin
   Result := nil;
 end;
-
-// GetHandle
-//
-
-function TVXLightSource.GetHandle(var rci: TVXRenderContextInfo): Cardinal;
-begin
-  Result := 0;
-end;
-
-// SetShining
-//
 
 procedure TVXLightSource.SetShining(AValue: Boolean);
 begin
@@ -6302,18 +5629,12 @@ begin
   end;
 end;
 
-// SetSpotDirection
-//
-
 procedure TVXLightSource.SetSpotDirection(AVector: TVXCoordinates);
 begin
   FSpotDirection.DirectVector := AVector.AsVector;
   FSpotDirection.W := 0;
   NotifyChange(Self);
 end;
-
-// SetSpotExponent
-//
 
 procedure TVXLightSource.SetSpotExponent(AValue: Single);
 begin
@@ -6323,9 +5644,6 @@ begin
     NotifyChange(Self);
   end;
 end;
-
-// SetSpotCutOff
-//
 
 procedure TVXLightSource.SetSpotCutOff(const val: Single);
 begin
@@ -6339,9 +5657,6 @@ begin
   end;
 end;
 
-// SetLightStyle
-//
-
 procedure TVXLightSource.SetLightStyle(const val: TLightStyle);
 begin
   if FLightStyle <> val then
@@ -6351,17 +5666,11 @@ begin
   end;
 end;
 
-// SetAmbient
-//
-
 procedure TVXLightSource.SetAmbient(AValue: TVXColor);
 begin
   FAmbient.Color := AValue.Color;
   NotifyChange(Self);
 end;
-
-// SetDiffuse
-//
 
 procedure TVXLightSource.SetDiffuse(AValue: TVXColor);
 begin
@@ -6369,17 +5678,11 @@ begin
   NotifyChange(Self);
 end;
 
-// SetSpecular
-//
-
 procedure TVXLightSource.SetSpecular(AValue: TVXColor);
 begin
   FSpecular.Color := AValue.Color;
   NotifyChange(Self);
 end;
-
-// SetConstAttenuation
-//
 
 procedure TVXLightSource.SetConstAttenuation(AValue: Single);
 begin
@@ -6390,9 +5693,6 @@ begin
   end;
 end;
 
-// SetLinearAttenuation
-//
-
 procedure TVXLightSource.SetLinearAttenuation(AValue: Single);
 begin
   if FLinearAttenuation <> AValue then
@@ -6402,9 +5702,6 @@ begin
   end;
 end;
 
-// SetQuadraticAttenuation
-//
-
 procedure TVXLightSource.SetQuadraticAttenuation(AValue: Single);
 begin
   if FQuadraticAttenuation <> AValue then
@@ -6413,9 +5710,6 @@ begin
     NotifyChange(Self);
   end;
 end;
-
-// Attenuated
-//
 
 function TVXLightSource.Attenuated: Boolean;
 begin
@@ -6427,9 +5721,6 @@ end;
 // ------------------
 // ------------------ TVXScene ------------------
 // ------------------
-
-// Create
-//
 
 constructor TVXScene.Create(AOwner: TComponent);
 begin
@@ -6446,9 +5737,6 @@ begin
   FInitializableObjects := TVXInitializableObjectList.Create;
 end;
 
-// Destroy
-//
-
 destructor TVXScene.Destroy;
 begin
   InitializableObjects.Free;
@@ -6458,9 +5746,6 @@ begin
   if Assigned(FBuffers) then FreeAndNil(FBuffers);
   inherited Destroy;
 end;
-
-// AddLight
-//
 
 procedure TVXScene.AddLight(ALight: TVXLightSource);
 var
@@ -6475,9 +5760,6 @@ begin
     end;
 end;
 
-// RemoveLight
-//
-
 procedure TVXScene.RemoveLight(ALight: TVXLightSource);
 var
   idx: Integer;
@@ -6486,9 +5768,6 @@ begin
   if idx >= 0 then
     FLights[idx] := nil;
 end;
-
-// AddLights
-//
 
 procedure TVXScene.AddLights(anObj: TVXBaseSceneObject);
 var
@@ -6500,9 +5779,6 @@ begin
     AddLights(anObj.Children[i]);
 end;
 
-// RemoveLights
-//
-
 procedure TVXScene.RemoveLights(anObj: TVXBaseSceneObject);
 var
   i: Integer;
@@ -6512,9 +5788,6 @@ begin
   for i := 0 to anObj.Count - 1 do
     RemoveLights(anObj.Children[i]);
 end;
-
-// ShutdownAllLights
-//
 
 procedure TVXScene.ShutdownAllLights;
 
@@ -6532,9 +5805,6 @@ begin
   DoShutdownLight(FObjects);
 end;
 
-// AddBuffer
-//
-
 procedure TVXScene.AddBuffer(aBuffer: TVXSceneBuffer);
 begin
   if not Assigned(FBuffers) then
@@ -6548,9 +5818,6 @@ begin
       aBuffer.RenderingContext.ShareLists(FBaseContext);
   end;
 end;
-
-// RemoveBuffer
-//
 
 procedure TVXScene.RemoveBuffer(aBuffer: TVXSceneBuffer);
 var
@@ -6575,24 +5842,15 @@ begin
   end;
 end;
 
-// GetChildren
-//
-
 procedure TVXScene.GetChildren(AProc: TGetChildProc; Root: TComponent);
 begin
   FObjects.GetChildren(AProc, Root);
 end;
 
-// SetChildOrder
-//
-
 procedure TVXScene.SetChildOrder(AChild: TComponent; Order: Integer);
 begin
   (AChild as TVXBaseSceneObject).Index := Order;
 end;
-
-// IsUpdating
-//
 
 function TVXScene.IsUpdating: Boolean;
 begin
@@ -6600,16 +5858,10 @@ begin
     in ComponentState);
 end;
 
-// BeginUpdate
-//
-
 procedure TVXScene.BeginUpdate;
 begin
   Inc(FUpdateCount);
 end;
-
-// EndUpdate
-//
 
 procedure TVXScene.EndUpdate;
 begin
@@ -6618,9 +5870,6 @@ begin
   if FUpdateCount = 0 then
     NotifyChange(Self);
 end;
-
-// SetObjectsSorting
-//
 
 procedure TVXScene.SetObjectsSorting(const val: TVXObjectsSorting);
 begin
@@ -6634,9 +5883,6 @@ begin
   end;
 end;
 
-// SetVisibilityCulling
-//
-
 procedure TVXScene.SetVisibilityCulling(const val: TVXVisibilityCulling);
 begin
   if FVisibilityCulling <> val then
@@ -6648,9 +5894,6 @@ begin
     NotifyChange(Self);
   end;
 end;
-
-// ReadState
-//
 
 procedure TVXScene.ReadState(Reader: TReader);
 var
@@ -6735,9 +5978,6 @@ begin
   end;
 end;
 
-// LoadFromTextFile
-//
-
 procedure TVXScene.LoadFromTextFile(const fileName: string);
 var
   Mem: TMemoryStream;
@@ -6754,9 +5994,6 @@ begin
     Mem.Free;
   end;
 end;
-
-// LoadFromStream
-//
 
 procedure TVXScene.LoadFromStream(aStream: TStream);
 var
@@ -6788,24 +6025,15 @@ begin
   end;
 end;
 
-// SaveToStream
-//
-
 procedure TVXScene.SaveToStream(aStream: TStream);
 begin
   aStream.WriteComponent(Self);
 end;
 
-// FindSceneObject
-//
-
 function TVXScene.FindSceneObject(const AName: string): TVXBaseSceneObject;
 begin
   Result := FObjects.FindChild(AName, False);
 end;
-
-// RayCastIntersect
-//
 
 function TVXScene.RayCastIntersect(const rayStart, rayVector: TVector;
   intersectPoint: PVector = nil;
@@ -6867,9 +6095,6 @@ begin
   Result := bestHit;
 end;
 
-// NotifyChange
-//
-
 procedure TVXScene.NotifyChange(Sender: TObject);
 var
   i: Integer;
@@ -6878,9 +6103,6 @@ begin
     for i := 0 to FBuffers.Count - 1 do
       TVXSceneBuffer(FBuffers[i]).NotifyChange(Self);
 end;
-
-// SetupLights
-//
 
 procedure TVXScene.SetupLights(maxLights: Integer);
 var
@@ -6893,7 +6115,7 @@ begin
   if nbLights > maxLights then
     nbLights := maxLights;
   // setup all light sources
-  with CurrentVKContext.VKStates, CurrentVKContext.PipelineTransformation do
+  with CurrentVXContext.VXStates, CurrentVXContext.PipelineTransformation do
   begin
     for i := 0 to nbLights - 1 do
     begin
@@ -6909,12 +6131,12 @@ begin
               RebuildMatrix;
               if LightStyle in [lsParallel, lsParallelSpot] then
               begin
-                ModelMatrix := AbsoluteMatrix;
+                SetModelMatrix(AbsoluteMatrix);
                 glLightfv(GL_LIGHT0 + FLightID, GL_POSITION, SpotDirection.AsAddress);
               end
               else
               begin
-                ModelMatrix := Parent.AbsoluteMatrix;
+                SetModelMatrix(Parent.AbsoluteMatrix);
                 glLightfv(GL_LIGHT0 + FLightID, GL_POSITION, Position.AsAddress);
               end;
               if LightStyle in [lsSpot, lsParallelSpot] then
@@ -6950,7 +6172,7 @@ begin
     // turn off other lights
     for i := nbLights to maxLights - 1 do
       LightEnabling[i] := False;
-    ModelMatrix := IdentityHmgMatrix;
+    SetModelMatrix(IdentityHmgMatrix);
   end;
 end;
 
@@ -6960,9 +6182,6 @@ end;
 
 // Note: The fog implementation is not conformal with the rest of the scene management
 //       because it is viewer bound not scene bound.
-
-// Create
-//
 
 constructor TVXFogEnvironment.Create(AOwner: TPersistent);
 begin
@@ -6975,17 +6194,11 @@ begin
   FFogDistance := fdDefault;
 end;
 
-// Destroy
-//
-
 destructor TVXFogEnvironment.Destroy;
 begin
   FFogColor.Free;
   inherited Destroy;
 end;
-
-// SetFogColor
-//
 
 procedure TVXFogEnvironment.SetFogColor(Value: TVXColor);
 begin
@@ -6996,9 +6209,6 @@ begin
   end;
 end;
 
-// SetFogStart
-//
-
 procedure TVXFogEnvironment.SetFogStart(Value: Single);
 begin
   if Value <> FFogStart then
@@ -7008,9 +6218,6 @@ begin
   end;
 end;
 
-// SetFogEnd
-//
-
 procedure TVXFogEnvironment.SetFogEnd(Value: Single);
 begin
   if Value <> FFogEnd then
@@ -7019,9 +6226,6 @@ begin
     NotifyChange(Self);
   end;
 end;
-
-// Assign
-//
 
 procedure TVXFogEnvironment.Assign(Source: TPersistent);
 begin
@@ -7037,9 +6241,6 @@ begin
   inherited;
 end;
 
-// IsAtDefaultValues
-//
-
 function TVXFogEnvironment.IsAtDefaultValues: Boolean;
 begin
   Result := VectorEquals(FogColor.Color, FogColor.DefaultColor)
@@ -7048,9 +6249,6 @@ begin
     and (FogMode = fmLinear)
     and (FogDistance = fdDefault);
 end;
-
-// SetFogMode
-//
 
 procedure TVXFogEnvironment.SetFogMode(Value: TFogMode);
 begin
@@ -7070,8 +6268,6 @@ begin
   end;
 end;
 
-// ApplyFog
-//
 var
   vImplemDependantFogDistanceDefault: Integer = -1;
 
@@ -7218,7 +6414,7 @@ begin
     AuxBuffers := 0;
     AntiAliasing := Self.AntiAliasing;
     Layer := Self.Layer;
-    VKStates.ForwardContext := roForwardContext in ContextOptions;
+{    VXStates.ForwardContext := roForwardContext in ContextOptions;}
     PrepareGLContext;
   end;
 end;
@@ -7262,11 +6458,11 @@ begin
       end;
       // define viewport, this is necessary because the first WM_SIZE message
       // is posted before the rendering context has been created
-      FRenderingContext.VKStates.ViewPort :=
+      FRenderingContext.VXStates.ViewPort :=
         Vector4iMake(FViewPort.Left, FViewPort.Top, FViewPort.Width, FViewPort.Height);
       // set up initial context states
       SetupRenderingContext(FRenderingContext);
-      FRenderingContext.VKStates.ColorClearValue :=
+      FRenderingContext.VXStates.ColorClearValue :=
         ConvertWinColor(FBackgroundColor);
     finally
       FRenderingContext.Deactivate;
@@ -7289,16 +6485,10 @@ begin
   end;
 end;
 
-// RCInstantiated
-//
-
 function TVXSceneBuffer.RCInstantiated: Boolean;
 begin
   Result := Assigned(FRenderingContext);
 end;
-
-// Resize
-//
 
 procedure TVXSceneBuffer.Resize(newLeft, newTop, newWidth, newHeight: Integer);
 begin
@@ -7315,16 +6505,13 @@ begin
     FRenderingContext.Activate;
     try
       // Part of workaround for MS OpenGL "black borders" bug
-      FRenderingContext.VKStates.ViewPort :=
+      FRenderingContext.VXStates.ViewPort :=
         Vector4iMake(FViewPort.Left, FViewPort.Top, FViewPort.Width, FViewPort.Height);
     finally
       FRenderingContext.Deactivate;
     end;
   end;
 end;
-
-// Acceleration
-//
 
 function TVXSceneBuffer.Acceleration: TVXContextAcceleration;
 begin
@@ -7334,16 +6521,13 @@ begin
     Result := chaUnknown;
 end;
 
-// SetupRenderingContext
-//
-
 procedure TVXSceneBuffer.SetupRenderingContext(context: TVXContext);
 
   procedure SetState(bool: Boolean; csState: TVXState);
   begin
     case bool of
-      true: context.VKStates.PerformEnable(csState);
-      false: context.VKStates.PerformDisable(csState);
+      true: context.VXStates.PerformEnable(csState);
+      false: context.VXStates.PerformDisable(csState);
     end;
   end;
 
@@ -7369,7 +6553,7 @@ begin
     end;
   end;
 
-  with context.VKStates do
+  with context.VXStates do
   begin
     Enable(stNormalize);
     SetState(DepthTest, stDepthTest);
@@ -7387,34 +6571,21 @@ begin
   end;
 end;
 
-// GetLimit
-//
-
 function TVXSceneBuffer.GetLimit(Which: TLimitType): Integer;
 var
   VP: array[0..1] of Double;
 begin
   case Which of
-    limClipPlanes:
-      glGetIntegerv(GL_MAX_CLIP_PLANES, @Result);
-    limEvalOrder:
-      glGetIntegerv(GL_MAX_EVAL_ORDER, @Result);
-    limLights:
-      glGetIntegerv(GL_MAX_LIGHTS, @Result);
-    limListNesting:
-      glGetIntegerv(GL_MAX_LIST_NESTING, @Result);
-    limModelViewStack:
-      glGetIntegerv(GL_MAX_MODELVIEW_STACK_DEPTH, @Result);
-    limNameStack:
-      glGetIntegerv(GL_MAX_NAME_STACK_DEPTH, @Result);
-    limPixelMapTable:
-      glGetIntegerv(GL_MAX_PIXEL_MAP_TABLE, @Result);
-    limProjectionStack:
-      glGetIntegerv(GL_MAX_PROJECTION_STACK_DEPTH, @Result);
-    limTextureSize:
-      glGetIntegerv(GL_MAX_TEXTURE_SIZE, @Result);
-    limTextureStack:
-      glGetIntegerv(GL_MAX_TEXTURE_STACK_DEPTH, @Result);
+    limClipPlanes: glGetIntegerv(GL_MAX_CLIP_PLANES, @Result);
+    limEvalOrder: glGetIntegerv(GL_MAX_EVAL_ORDER, @Result);
+    limLights: glGetIntegerv(GL_MAX_LIGHTS, @Result);
+    limListNesting: glGetIntegerv(GL_MAX_LIST_NESTING, @Result);
+    limModelViewStack: glGetIntegerv(GL_MAX_MODELVIEW_STACK_DEPTH, @Result);
+    limNameStack: glGetIntegerv(GL_MAX_NAME_STACK_DEPTH, @Result);
+    limPixelMapTable: glGetIntegerv(GL_MAX_PIXEL_MAP_TABLE, @Result);
+    limProjectionStack: glGetIntegerv(GL_MAX_PROJECTION_STACK_DEPTH, @Result);
+    limTextureSize: glGetIntegerv(GL_MAX_TEXTURE_SIZE, @Result);
+    limTextureStack: glGetIntegerv(GL_MAX_TEXTURE_STACK_DEPTH, @Result);
     limViewportDims:
       begin
         glGetDoublev(GL_MAX_VIEWPORT_DIMS, @VP);
@@ -7423,38 +6594,23 @@ begin
         else
           Result := Round(VP[1]);
       end;
-    limAccumAlphaBits:
-      glGetIntegerv(GL_ACCUM_ALPHA_BITS, @Result);
-    limAccumBlueBits:
-      glGetIntegerv(GL_ACCUM_BLUE_BITS, @Result);
-    limAccumGreenBits:
-      glGetIntegerv(GL_ACCUM_GREEN_BITS, @Result);
-    limAccumRedBits:
-      glGetIntegerv(GL_ACCUM_RED_BITS, @Result);
-    limAlphaBits:
-      glGetIntegerv(GL_ALPHA_BITS, @Result);
-    limAuxBuffers:
-      glGetIntegerv(GL_AUX_BUFFERS, @Result);
-    limDepthBits:
-      glGetIntegerv(GL_DEPTH_BITS, @Result);
-    limStencilBits:
-      glGetIntegerv(GL_STENCIL_BITS, @Result);
-    limBlueBits:
-      glGetIntegerv(GL_BLUE_BITS, @Result);
-    limGreenBits:
-      glGetIntegerv(GL_GREEN_BITS, @Result);
-    limRedBits:
-      glGetIntegerv(GL_RED_BITS, @Result);
-    limIndexBits:
-      glGetIntegerv(GL_INDEX_BITS, @Result);
-    limStereo:
-      glGetIntegerv(GL_STEREO, @Result);
-    limDoubleBuffer:
-      glGetIntegerv(GL_DOUBLEBUFFER, @Result);
-    limSubpixelBits:
-      glGetIntegerv(GL_SUBPIXEL_BITS, @Result);
-    limNbTextureUnits:
-      if GL_ARB_multitexture then
+    limAccumAlphaBits: glGetIntegerv(GL_ACCUM_ALPHA_BITS, @Result);
+    limAccumBlueBits: glGetIntegerv(GL_ACCUM_BLUE_BITS, @Result);
+    limAccumGreenBits: glGetIntegerv(GL_ACCUM_GREEN_BITS, @Result);
+    limAccumRedBits: glGetIntegerv(GL_ACCUM_RED_BITS, @Result);
+    limAlphaBits: glGetIntegerv(GL_ALPHA_BITS, @Result);
+    limAuxBuffers: glGetIntegerv(GL_AUX_BUFFERS, @Result);
+    limDepthBits: glGetIntegerv(GL_DEPTH_BITS, @Result);
+    limStencilBits: glGetIntegerv(GL_STENCIL_BITS, @Result);
+    limBlueBits: glGetIntegerv(GL_BLUE_BITS, @Result);
+    limGreenBits: glGetIntegerv(GL_GREEN_BITS, @Result);
+    limRedBits: glGetIntegerv(GL_RED_BITS, @Result);
+    limIndexBits: glGetIntegerv(GL_INDEX_BITS, @Result);
+    limStereo: glGetIntegerv(GL_STEREO, @Result);
+    limDoubleBuffer: glGetIntegerv(GL_DOUBLEBUFFER, @Result);
+    limSubpixelBits: glGetIntegerv(GL_SUBPIXEL_BITS, @Result);
+    limNbTextureUnits: 
+	  if GL_ARB_multitexture then
         glGetIntegerv(GL_MAX_TEXTURE_UNITS_ARB, @Result)
       else
         Result := 1;
@@ -7462,9 +6618,6 @@ begin
     Result := 0;
   end;
 end;
-
-// RenderToFile
-//
 
 procedure TVXSceneBuffer.RenderToFile(const aFile: string; DPI: Integer);
 var
@@ -7477,8 +6630,8 @@ begin
   try
     aBitmap.Width := FViewPort.Width;
     aBitmap.Height := FViewPort.Height;
-    { TODO -oPW : E2129 Cannot assign to a read-only property }
-    (*aBitmap.PixelFormat := glpf24Bit;*)
+   { TODO -oPW : E2129 Cannot assign to a read-only property }
+   // aBitmap.PixelFormat := glpf24Bit;
     RenderToBitmap(ABitmap, DPI);
     fileName := aFile;
     if fileName = '' then
@@ -7497,9 +6650,6 @@ begin
   end;
 end;
 
-// RenderToFile
-//
-
 procedure TVXSceneBuffer.RenderToFile(const AFile: string; bmpWidth, bmpHeight:
   Integer);
 var
@@ -7513,8 +6663,9 @@ begin
     aBitmap.Width := bmpWidth;
     aBitmap.Height := bmpHeight;
     { TODO -oPW : E2129 Cannot assign to a read-only property }
-    (*aBitmap.PixelFormat := glpf24Bit;*)
+    (* GLS-> aBitmap.PixelFormat := glpf24Bit; *)
     RenderToBitmap(aBitmap,
+	  // GLS-> (GetDeviceLogicalPixelsX(Cardinal(ABitmap.Canvas.Handle)) * bmpWidth) div
       (GetDeviceLogicalPixelsX(ABitmap.Handle) * bmpWidth) div
       FViewPort.Width);
     fileName := AFile;
@@ -7534,9 +6685,6 @@ begin
   end;
 end;
 
-// TVXBitmap32
-//
-
 function TVXSceneBuffer.CreateSnapShot: TVXBitmap32;
 begin
   Result := TVXBitmap32.Create;
@@ -7553,9 +6701,6 @@ begin
   end;
 end;
 
-// CreateSnapShotBitmap
-//
-
 function TVXSceneBuffer.CreateSnapShotBitmap: TBitmap;
 var
   bmp32: TVXBitmap32;
@@ -7568,16 +6713,10 @@ begin
   end;
 end;
 
-// CopyToTexture
-//
-
 procedure TVXSceneBuffer.CopyToTexture(aTexture: TVXTexture);
 begin
   CopyToTexture(aTexture, 0, 0, Width, Height, 0, 0);
 end;
-
-// CopyToTexture
-//
 
 procedure TVXSceneBuffer.CopyToTexture(aTexture: TVXTexture;
   xSrc, ySrc, AWidth, AHeight: Integer;
@@ -7602,7 +6741,7 @@ begin
         TVXBlankImage(aTexture.Image).CubeMap := (glCubeFace > 0);
 
       bindTarget := aTexture.Image.NativeTextureTarget;
-      RenderingContext.VKStates.TextureBinding[0, bindTarget] := aTexture.Handle;
+      RenderingContext.VXStates.TextureBinding[0, bindTarget] := aTexture.Handle;
       if glCubeFace > 0 then
         glCopyTexSubImage2D(glCubeFace,
           0, xDest, yDest, xSrc, ySrc, AWidth, AHeight)
@@ -7646,9 +6785,6 @@ begin
   end;
 end;
 
-// SetViewPort
-//
-
 procedure TVXSceneBuffer.SetViewPort(X, Y, W, H: Integer);
 begin
   with FViewPort do
@@ -7661,24 +6797,15 @@ begin
   NotifyChange(Self);
 end;
 
-// Width
-//
-
 function TVXSceneBuffer.Width: Integer;
 begin
   Result := FViewPort.Width;
 end;
 
-// Height
-//
-
 function TVXSceneBuffer.Height: Integer;
 begin
   Result := FViewPort.Height;
 end;
-
-// Freeze
-//
 
 procedure TVXSceneBuffer.Freeze;
 begin
@@ -7699,9 +6826,6 @@ begin
   end;
 end;
 
-// Melt
-//
-
 procedure TVXSceneBuffer.Melt;
 begin
   if not Freezed then
@@ -7710,9 +6834,6 @@ begin
   FFreezeBuffer := nil;
   FFreezed := False;
 end;
-
-// RenderToBitmap
-//
 
 procedure TVXSceneBuffer.RenderToBitmap(ABitmap: TBitmap; DPI: Integer);
 var
@@ -7733,13 +6854,13 @@ begin
       Options := []; // no such things for bitmap rendering
       ColorBits := aColorBits; // honour Bitmap's pixel depth
       AntiAliasing := aaNone; // no AA for bitmap rendering
-      CreateContext(ABitmap.Handle);
+      CreateContext(ABitmap.Handle); // CreateContext(ABitmap.Canvas.Handle);
     end;
     try
       FRenderingContext.Activate;
       try
         SetupRenderingContext(FRenderingContext);
-        FRenderingContext.VKStates.ColorClearValue := ConvertWinColor(FBackgroundColor);
+        FRenderingContext.VXStates.ColorClearValue := ConvertWinColor(FBackgroundColor);
         // set the desired viewport and limit output to this rectangle
         with FViewport do
         begin
@@ -7747,7 +6868,7 @@ begin
           Top := 0;
           Width := ABitmap.Width;
           Height := ABitmap.Height;
-          FRenderingContext.VKStates.ViewPort :=
+          FRenderingContext.VXStates.ViewPort :=
             Vector4iMake(Left, Top, Width, Height);
         end;
         ClearBuffers;
@@ -7757,7 +6878,7 @@ begin
         // render
         DoBaseRender(FViewport, FRenderDPI, dsPrinting, nil);
         if nativeContext <> nil then
-          FViewport := TRectangle(nativeContext.VKStates.ViewPort);
+          FViewport := TRectangle(nativeContext.VXStates.ViewPort);
         glFinish;
       finally
         FRenderingContext.Deactivate;
@@ -7775,9 +6896,6 @@ begin
         FAfterRender(Self);
 end;
 
-// ShowInfo
-//
-
 procedure TVXSceneBuffer.ShowInfo(Modal: boolean);
 begin
   if not Assigned(FRenderingContext) then
@@ -7791,9 +6909,6 @@ begin
   end;
 end;
 
-// ResetPerformanceMonitor
-//
-
 procedure TVXSceneBuffer.ResetPerformanceMonitor;
 begin
   FFramesPerSecond := 0;
@@ -7801,21 +6916,15 @@ begin
   FFirstPerfCounter := 0;
 end;
 
-// PushViewMatrix
-//
-
 procedure TVXSceneBuffer.PushViewMatrix(const newMatrix: TMatrix);
 var
   n: Integer;
 begin
   n := Length(FViewMatrixStack);
   SetLength(FViewMatrixStack, n + 1);
-  FViewMatrixStack[n] := RenderingContext.PipelineTransformation.ViewMatrix;
-  RenderingContext.PipelineTransformation.ViewMatrix := newMatrix;
+  FViewMatrixStack[n] := RenderingContext.PipelineTransformation.ViewMatrix^;
+  RenderingContext.PipelineTransformation.SetViewMatrix(newMatrix);
 end;
-
-// PopModelViewMatrix
-//
 
 procedure TVXSceneBuffer.PopViewMatrix;
 var
@@ -7823,12 +6932,9 @@ var
 begin
   n := High(FViewMatrixStack);
   Assert(n >= 0, 'Unbalanced PopViewMatrix');
-  RenderingContext.PipelineTransformation.ViewMatrix := FViewMatrixStack[n];
+  RenderingContext.PipelineTransformation.SetViewMatrix(FViewMatrixStack[n]);
   SetLength(FViewMatrixStack, n);
 end;
-
-// PushProjectionMatrix
-//
 
 procedure TVXSceneBuffer.PushProjectionMatrix(const newMatrix: TMatrix);
 var
@@ -7836,12 +6942,9 @@ var
 begin
   n := Length(FProjectionMatrixStack);
   SetLength(FProjectionMatrixStack, n + 1);
-  FProjectionMatrixStack[n] := RenderingContext.PipelineTransformation.ProjectionMatrix;
-  RenderingContext.PipelineTransformation.ProjectionMatrix := newMatrix;
+  FProjectionMatrixStack[n] := RenderingContext.PipelineTransformation.ProjectionMatrix^;
+  RenderingContext.PipelineTransformation.SetProjectionMatrix(newMatrix);
 end;
-
-// PopProjectionMatrix
-//
 
 procedure TVXSceneBuffer.PopProjectionMatrix;
 var
@@ -7849,27 +6952,24 @@ var
 begin
   n := High(FProjectionMatrixStack);
   Assert(n >= 0, 'Unbalanced PopProjectionMatrix');
-  RenderingContext.PipelineTransformation.ProjectionMatrix := FProjectionMatrixStack[n];
+  RenderingContext.PipelineTransformation.SetProjectionMatrix(FProjectionMatrixStack[n]);
   SetLength(FProjectionMatrixStack, n);
 end;
 
 function TVXSceneBuffer.ProjectionMatrix;
 begin
-  Result := RenderingContext.PipelineTransformation.ProjectionMatrix;
+  Result := RenderingContext.PipelineTransformation.ProjectionMatrix^;
 end;
 
 function TVXSceneBuffer.ViewMatrix: TMatrix;
 begin
-  Result := RenderingContext.PipelineTransformation.ViewMatrix;
+  Result := RenderingContext.PipelineTransformation.ViewMatrix^;
 end;
 
 function TVXSceneBuffer.ModelMatrix: TMatrix;
 begin
-  Result := RenderingContext.PipelineTransformation.ModelMatrix;
+  Result := RenderingContext.PipelineTransformation.ModelMatrix^;
 end;
-
-// OrthoScreenToWorld
-//
 
 function TVXSceneBuffer.OrthoScreenToWorld(screenX, screenY: Integer):
   TAffineVector;
@@ -7905,9 +7005,6 @@ begin
     Result := NullVector;
 end;
 
-// ScreenToWorld (affine)
-//
-
 function TVXSceneBuffer.ScreenToWorld(const aPoint: TAffineVector):
   TAffineVector;
 var
@@ -7916,7 +7013,7 @@ begin
   if Assigned(FCamera)
     and UnProject(
     VectorMake(aPoint),
-    RenderingContext.PipelineTransformation.ViewProjectionMatrix,
+    RenderingContext.PipelineTransformation.ViewProjectionMatrix^,
     PHomogeneousIntVector(@FViewPort)^,
     rslt) then
     Result := Vector3fMake(rslt)
@@ -7924,16 +7021,10 @@ begin
     Result := aPoint;
 end;
 
-// ScreenToWorld (hmg)
-//
-
 function TVXSceneBuffer.ScreenToWorld(const aPoint: TVector): TVector;
 begin
   MakePoint(Result, ScreenToWorld(AffineVectorMake(aPoint)));
 end;
-
-// ScreenToWorld (x, y)
-//
 
 function TVXSceneBuffer.ScreenToWorld(screenX, screenY: Integer): TAffineVector;
 begin
@@ -7941,11 +7032,7 @@ begin
     0));
 end;
 
-// WorldToScreen
-//
-
-function TVXSceneBuffer.WorldToScreen(const aPoint: TAffineVector):
-  TAffineVector;
+function TVXSceneBuffer.WorldToScreen(const aPoint: TAffineVector): TAffineVector;
 var
   rslt: TVector;
 begin
@@ -7955,7 +7042,7 @@ begin
     if Assigned(FCamera)
       and Project(
       VectorMake(aPoint),
-      RenderingContext.PipelineTransformation.ViewProjectionMatrix,
+      RenderingContext.PipelineTransformation.ViewProjectionMatrix^,
       TVector4i(FViewPort),
       rslt) then
       Result := Vector3fMake(rslt)
@@ -7966,16 +7053,10 @@ begin
   end;
 end;
 
-// WorldToScreen
-//
-
 function TVXSceneBuffer.WorldToScreen(const aPoint: TVector): TVector;
 begin
   SetVector(Result, WorldToScreen(AffineVectorMake(aPoint)));
 end;
-
-// WorldToScreen
-//
 
 procedure TVXSceneBuffer.WorldToScreen(points: PVector; nbPoints: Integer);
 var
@@ -7985,14 +7066,11 @@ begin
   begin
     for i := nbPoints - 1 downto 0 do
     begin
-      Project(points^, RenderingContext.PipelineTransformation.ViewProjectionMatrix, PHomogeneousIntVector(@FViewPort)^, points^);
+      Project(points^, RenderingContext.PipelineTransformation.ViewProjectionMatrix^, PHomogeneousIntVector(@FViewPort)^, points^);
       Inc(points);
     end;
   end;
 end;
-
-// ScreenToVector (affine)
-//
 
 function TVXSceneBuffer.ScreenToVector(const aPoint: TAffineVector):
   TAffineVector;
@@ -8001,18 +7079,12 @@ begin
     PAffineVector(@FCameraAbsolutePosition)^);
 end;
 
-// ScreenToVector (hmg)
-//
-
 function TVXSceneBuffer.ScreenToVector(const aPoint: TVector): TVector;
 begin
   SetVector(Result, VectorSubtract(ScreenToWorld(aPoint),
     FCameraAbsolutePosition));
   Result.W := 0;
 end;
-
-// ScreenToVector
-//
 
 function TVXSceneBuffer.ScreenToVector(const x, y: Integer): TVector;
 var
@@ -8024,18 +7096,12 @@ begin
   SetVector(Result, ScreenToVector(av));
 end;
 
-// VectorToScreen
-//
-
 function TVXSceneBuffer.VectorToScreen(const VectToCam: TAffineVector):
   TAffineVector;
 begin
   Result := WorldToScreen(VectorAdd(VectToCam,
     PAffineVector(@FCameraAbsolutePosition)^));
 end;
-
-// ScreenVectorIntersectWithPlane
-//
 
 function TVXSceneBuffer.ScreenVectorIntersectWithPlane(
   const aScreenPoint: TVector;
@@ -8055,9 +7121,6 @@ begin
     Result := False;
 end;
 
-// ScreenVectorIntersectWithPlaneXY
-//
-
 function TVXSceneBuffer.ScreenVectorIntersectWithPlaneXY(
   const aScreenPoint: TVector; const z: Single;
   var intersectPoint: TVector): Boolean;
@@ -8066,9 +7129,6 @@ begin
     ZHmgVector, intersectPoint);
   intersectPoint.W := 0;
 end;
-
-// ScreenVectorIntersectWithPlaneYZ
-//
 
 function TVXSceneBuffer.ScreenVectorIntersectWithPlaneYZ(
   const aScreenPoint: TVector; const x: Single;
@@ -8079,9 +7139,6 @@ begin
   intersectPoint.W := 0;
 end;
 
-// ScreenVectorIntersectWithPlaneXZ
-//
-
 function TVXSceneBuffer.ScreenVectorIntersectWithPlaneXZ(
   const aScreenPoint: TVector; const y: Single;
   var intersectPoint: TVector): Boolean;
@@ -8090,9 +7147,6 @@ begin
     YHmgVector, intersectPoint);
   intersectPoint.W := 0;
 end;
-
-// PixelRayToWorld
-//
 
 function TVXSceneBuffer.PixelRayToWorld(x, y: Integer): TAffineVector;
 var
@@ -8143,33 +7197,27 @@ begin
   else
   begin
     bufferBits := GL_DEPTH_BUFFER_BIT;
-    CurrentVKContext.VKStates.DepthWriteMask := Byte(True);
+    CurrentVXContext.VXStates.DepthWriteMask := Byte(True);
   end;
   if ContextOptions * [roNoColorBuffer, roNoColorBufferClear] = [] then
   begin
     bufferBits := bufferBits or GL_COLOR_BUFFER_BIT;
-    CurrentVKContext.VKStates.SetColorMask(cAllColorComponents);
+    CurrentVXContext.VXStates.SetColorMask(cAllColorComponents);
   end;
   if roStencilBuffer in ContextOptions then
   begin
     bufferBits := bufferBits or GL_STENCIL_BUFFER_BIT;
   end;
-  glClear(BufferBits);
+  if bufferBits<>0 then
+    glClear(BufferBits);
 end;
-
-// NotifyChange
-//
 
 procedure TVXSceneBuffer.NotifyChange(Sender: TObject);
 begin
   DoChange;
 end;
 
-// PickObjects
-//
-
-procedure TVXSceneBuffer.PickObjects(const rect: TVXRect; pickList: TVXPickList;
-  objectCountGuess: Integer);
+procedure TVXSceneBuffer.PickObjects(const rect: TVXRect; pickList: TVXPickList; objectCountGuess: Integer);
 var
   I: Integer;
   obj: TVXBaseSceneObject;
@@ -8181,7 +7229,7 @@ begin
   FRenderingContext.Activate;
   FRendering := True;
   try
-    // Create best selector which techniques is hardware can do
+    // Creates best selector which techniques is hardware can do
     if not Assigned(FSelector) then
       FSelector := GetBestSelectorClass.Create;
 
@@ -8211,18 +7259,12 @@ begin
   end;
 end;
 
-// GetPickedObjects
-//
-
 function TVXSceneBuffer.GetPickedObjects(const rect: TVXRect; objectCountGuess:
   Integer = 64): TVXPickList;
 begin
   Result := TVXPickList.Create(psMinDepth);
   PickObjects(Rect, Result, objectCountGuess);
 end;
-
-// GetPickedObject
-//
 
 function TVXSceneBuffer.GetPickedObject(x, y: Integer): TVXBaseSceneObject;
 var
@@ -8239,9 +7281,6 @@ begin
   end;
 end;
 
-// GetPixelColor
-//
-
 function TVXSceneBuffer.GetPixelColor(x, y: Integer): TColor;
 var
   buf: array[0..2] of Byte;
@@ -8253,16 +7292,12 @@ begin
   end;
   FRenderingContext.Activate;
   try
-    glReadPixels(x, FViewPort.Height - y, 1, 1, GL_RGB, GL_UNSIGNED_BYTE,
-      @buf[0]);
+    glReadPixels(x, FViewPort.Height - y, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, @buf[0]);
   finally
     FRenderingContext.Deactivate;
   end;
   Result := RGB(buf[0], buf[1], buf[2]);
 end;
-
-// GetPixelDepth
-//
 
 function TVXSceneBuffer.GetPixelDepth(x, y: Integer): Single;
 begin
@@ -8280,9 +7315,6 @@ begin
   end;
 end;
 
-// PixelDepthToDistance
-//
-
 function TVXSceneBuffer.PixelDepthToDistance(aDepth: Single): Single;
 var
   dov, np, fp: Single;
@@ -8296,9 +7328,6 @@ begin
   Result := (fp * np) / (fp - aDepth * dov);
   // calculate world distance from z-buffer value
 end;
-
-// PixelToDistance
-//
 
 function TVXSceneBuffer.PixelToDistance(x, y: integer): Single;
 var
@@ -8324,16 +7353,10 @@ begin
   Result := dst / camAng; //compensate for flat frustrum face
 end;
 
-// NotifyMouseMove
-//
-
 procedure TVXSceneBuffer.NotifyMouseMove(Shift: TShiftState; X, Y: Single);
 begin
   // Nothing
 end;
-
-// PrepareRenderingMatrices
-//
 
 procedure TVXSceneBuffer.PrepareRenderingMatrices(const aViewPort: TRectangle;
   resolution: Integer; pickingRect: PGLRect = nil);
@@ -8342,14 +7365,15 @@ begin
   // setup projection matrix
   if Assigned(pickingRect) then
   begin
-    CurrentVKContext.PipelineTransformation.ProjectionMatrix := CreatePickMatrix(
+    CurrentVXContext.PipelineTransformation.SetProjectionMatrix(
+      CreatePickMatrix(
       (pickingRect^.Left + pickingRect^.Right) div 2,
       FViewPort.Height - ((pickingRect^.Top + pickingRect^.Bottom) div 2),
       Abs(pickingRect^.Right - pickingRect^.Left),
       Abs(pickingRect^.Bottom - pickingRect^.Top),
-      TVector4i(FViewport));
+      TVector4i(FViewport)));
   end;
-  FBaseProjectionMatrix := CurrentVKContext.PipelineTransformation.ProjectionMatrix;
+  FBaseProjectionMatrix := CurrentVXContext.PipelineTransformation.ProjectionMatrix^;
 
   if Assigned(FCamera) then
   begin
@@ -8367,17 +7391,14 @@ begin
   end;
 end;
 
-// DoBaseRender
-//
-
 procedure TVXSceneBuffer.DoBaseRender(const aViewPort: TRectangle; resolution:
   Integer;
   drawState: TDrawState; baseObject: TVXBaseSceneObject);
 begin
-  with RenderingContext.VKStates do
+  with RenderingContext.VXStates do
   begin
     PrepareRenderingMatrices(aViewPort, resolution);
-    if not ForwardContext then
+{    if not ForwardContext then}
     begin
       xgl.MapTexCoordToNull; // force XGL rebind
       xgl.MapTexCoordToMain;
@@ -8395,7 +7416,7 @@ begin
       with FCamera.FScene do
       begin
         SetupLights(MaxLights);
-        if not ForwardContext then
+{        if not ForwardContext then}
         begin
           if FogEnable then
           begin
@@ -8422,16 +7443,10 @@ begin
     'Unbalance Push/PopProjectionMatrix.');
 end;
 
-// Render
-//
-
 procedure TVXSceneBuffer.Render;
 begin
   Render(nil);
 end;
-
-// Render
-//
 
 procedure TVXSceneBuffer.Render(baseObject: TVXBaseSceneObject);
 var
@@ -8447,7 +7462,7 @@ begin
   begin
     RenderingContext.Activate;
     try
-      RenderingContext.VKStates.ColorClearValue :=
+      RenderingContext.VXStates.ColorClearValue :=
         ConvertWinColor(FBackgroundColor, FBackgroundAlpha);
       ClearBuffers;
       glMatrixMode(GL_PROJECTION);
@@ -8484,7 +7499,7 @@ begin
       ClearOpenGLError;
       SetupRenderingContext(FRenderingContext);
       // clear the buffers
-      FRenderingContext.VKStates.ColorClearValue :=
+      FRenderingContext.VXStates.ColorClearValue :=
         ConvertWinColor(FBackgroundColor, FBackgroundAlpha);
       ClearBuffers;
       // render
@@ -8511,9 +7526,6 @@ begin
     FRendering := False;
   end;
 end;
-
-// RenderScene
-//
 
 procedure TVXSceneBuffer.RenderScene(aScene: TVXScene;
   const viewPortSizeX, viewPortSizeY: Integer;
@@ -8563,13 +7575,13 @@ begin
   rci.viewPortSize.cx := viewPortSizeX;
   rci.viewPortSize.cy := viewPortSizeY;
   rci.renderDPI := FRenderDPI;
-  rci.VKStates := RenderingContext.VKStates;
+  rci.VxStates := RenderingContext.VxStates;
   rci.PipelineTransformation := RenderingContext.PipelineTransformation;
   rci.proxySubObject := False;
   rci.ignoreMaterials := (roNoColorBuffer in FContextOptions)
     or (rci.drawState = dsPicking);
   rci.amalgamating := rci.drawState = dsPicking;
-  rci.VKStates.SetColorWriting(not rci.ignoreMaterials);
+  rci.VXStates.SetColorWriting(not rci.ignoreMaterials);
   if Assigned(FInitiateRendering) then
     FInitiateRendering(Self, rci);
 
@@ -8592,7 +7604,7 @@ begin
   end
   else
     baseObject.Render(rci);
-  rci.VKStates.SetColorWriting(True);
+  rci.VXStates.SetColorWriting(True);
   with FAfterRenderEffects do
     if Count > 0 then
       for i := 0 to Count - 1 do
@@ -8600,9 +7612,6 @@ begin
   if Assigned(FWrapUpRendering) then
     FWrapUpRendering(Self, rci);
 end;
-
-// SetBackgroundColor
-//
 
 procedure TVXSceneBuffer.SetBackgroundColor(AColor: TColor);
 begin
@@ -8613,9 +7622,6 @@ begin
   end;
 end;
 
-// SetBackgroundAlpha
-//
-
 procedure TVXSceneBuffer.SetBackgroundAlpha(alpha: Single);
 begin
   if FBackgroundAlpha <> alpha then
@@ -8625,16 +7631,10 @@ begin
   end;
 end;
 
-// SetAmbientColor
-//
-
 procedure TVXSceneBuffer.SetAmbientColor(AColor: TVXColor);
 begin
   FAmbientColor.Assign(AColor);
 end;
-
-// SetCamera
-//
 
 procedure TVXSceneBuffer.SetCamera(ACamera: TVXCamera);
 begin
@@ -8655,9 +7655,6 @@ begin
   end;
 end;
 
-// SetContextOptions
-//
-
 procedure TVXSceneBuffer.SetContextOptions(Options: TContextOptions);
 begin
   if FContextOptions <> Options then
@@ -8667,9 +7664,6 @@ begin
   end;
 end;
 
-// SetDepthTest
-//
-
 procedure TVXSceneBuffer.SetDepthTest(AValue: Boolean);
 begin
   if FDepthTest <> AValue then
@@ -8678,9 +7672,6 @@ begin
     NotifyChange(Self);
   end;
 end;
-
-// SetFaceCulling
-//
 
 procedure TVXSceneBuffer.SetFaceCulling(AValue: Boolean);
 begin
@@ -8709,9 +7700,6 @@ begin
   end;
 end;
 
-// SetAntiAliasing
-//
-
 procedure TVXSceneBuffer.SetAntiAliasing(const val: TVXAntiAliasing);
 begin
   if FAntiAliasing <> val then
@@ -8720,9 +7708,6 @@ begin
     DoStructuralChange;
   end;
 end;
-
-// SetDepthPrecision
-//
 
 procedure TVXSceneBuffer.SetDepthPrecision(const val: TVXDepthPrecision);
 begin
@@ -8733,9 +7718,6 @@ begin
   end;
 end;
 
-// SetColorDepth
-//
-
 procedure TVXSceneBuffer.SetColorDepth(const val: TVXColorDepth);
 begin
   if FColorDepth <> val then
@@ -8744,9 +7726,6 @@ begin
     DoStructuralChange;
   end;
 end;
-
-// SetShadeModel
-//
 
 procedure TVXSceneBuffer.SetShadeModel(const val: TVXShadeModel);
 begin
@@ -8757,9 +7736,6 @@ begin
   end;
 end;
 
-// SetFogEnable
-//
-
 procedure TVXSceneBuffer.SetFogEnable(AValue: Boolean);
 begin
   if FFogEnable <> AValue then
@@ -8769,25 +7745,16 @@ begin
   end;
 end;
 
-// SetFogEnvironment
-//
-
 procedure TVXSceneBuffer.SetFogEnvironment(AValue: TVXFogEnvironment);
 begin
   FFogEnvironment.Assign(AValue);
   NotifyChange(Self);
 end;
 
-// StoreFog
-//
-
 function TVXSceneBuffer.StoreFog: Boolean;
 begin
   Result := (not FFogEnvironment.IsAtDefaultValues);
 end;
-
-// SetAccumBufferBits
-//
 
 procedure TVXSceneBuffer.SetAccumBufferBits(const val: Integer);
 begin
@@ -8798,17 +7765,11 @@ begin
   end;
 end;
 
-// DoChange
-//
-
 procedure TVXSceneBuffer.DoChange;
 begin
   if (not FRendering) and Assigned(FOnChange) then
     FOnChange(Self);
 end;
-
-// DoStructuralChange
-//
 
 procedure TVXSceneBuffer.DoStructuralChange;
 var
@@ -8826,9 +7787,6 @@ end;
 // ------------------ TVXNonVisualViewer ------------------
 // ------------------
 
-// Create
-//
-
 constructor TVXNonVisualViewer.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
@@ -8840,17 +7798,11 @@ begin
   FBuffer.OnPrepareGLContext := DoOnPrepareGLContext;
 end;
 
-// Destroy
-//
-
 destructor TVXNonVisualViewer.Destroy;
 begin
   FBuffer.Free;
   inherited Destroy;
 end;
-
-// Notification
-//
 
 procedure TVXNonVisualViewer.Notification(AComponent: TComponent; Operation:
   TOperation);
@@ -8860,16 +7812,10 @@ begin
   inherited;
 end;
 
-// CopyToTexture
-//
-
 procedure TVXNonVisualViewer.CopyToTexture(aTexture: TVXTexture);
 begin
   CopyToTexture(aTexture, 0, 0, Width, Height, 0, 0);
 end;
-
-// CopyToTexture
-//
 
 procedure TVXNonVisualViewer.CopyToTexture(aTexture: TVXTexture;
   xSrc, ySrc, width, height: Integer;
@@ -8878,17 +7824,11 @@ begin
   Buffer.CopyToTexture(aTexture, xSrc, ySrc, width, height, xDest, yDest);
 end;
 
-// CopyToTextureMRT
-//
-
 procedure TVXNonVisualViewer.CopyToTextureMRT(aTexture: TVXTexture;
   BufferIndex: integer);
 begin
   CopyToTextureMRT(aTexture, 0, 0, Width, Height, 0, 0, BufferIndex);
 end;
-
-// CopyToTextureMRT
-//
 
 procedure TVXNonVisualViewer.CopyToTextureMRT(aTexture: TVXTexture; xSrc,
   ySrc, width, height, xDest, yDest, BufferIndex: integer);
@@ -8954,7 +7894,7 @@ begin
       // For MRT
       glReadBuffer(MRT_BUFFERS[BufferIndex]);
 
-      Buffer.RenderingContext.VKStates.TextureBinding[0,
+      Buffer.RenderingContext.VXStates.TextureBinding[0,
         EncodeTextureTarget(target)] := handle;
 
       if target = GL_TEXTURE_CUBE_MAP_ARB then
@@ -8972,11 +7912,9 @@ begin
   end;
 end;
 
-// SetupCubeMapCamera
-//
-
 procedure TVXNonVisualViewer.SetupCubeMapCamera(Sender: TObject);
 
+{
 const
   cFaceMat: array[0..5] of TMatrix =
   (
@@ -9005,21 +7943,19 @@ const
      Z:(X:-1.2167964414e-08; Y:0; Z:1; W:0);
      W:(X:0; Y:0; Z:0; W:1))
   );
+}
 
 var
   TM: TMatrix;
 begin
   // Setup appropriate FOV
-  with CurrentVKContext.PipelineTransformation do
+  with CurrentVXContext.PipelineTransformation do
   begin
-    ProjectionMatrix := CreatePerspectiveMatrix(90, 1, FCubeMapZNear, FCubeMapZFar);
+    SetProjectionMatrix(CreatePerspectiveMatrix(90, 1, FCubeMapZNear, FCubeMapZFar));
     TM := CreateTranslationMatrix(FCubeMapTranslation);
-    ViewMatrix := MatrixMultiply(cFaceMat[FCubeMapRotIdx], TM);
+ {   SetViewMatrix(MatrixMultiply(cFaceMat[FCubeMapRotIdx], TM));}
   end;
 end;
-
-// RenderTextures
-//
 
 procedure TVXNonVisualViewer.RenderCubeMapTextures(cubeMapTexture: TVXTexture;
   zNear: Single = 0;
@@ -9055,112 +7991,70 @@ begin
   end;
 end;
 
-// SetBeforeRender
-//
-
 procedure TVXNonVisualViewer.SetBeforeRender(const val: TNotifyEvent);
 begin
   FBuffer.BeforeRender := val;
 end;
-
-// GetBeforeRender
-//
 
 function TVXNonVisualViewer.GetBeforeRender: TNotifyEvent;
 begin
   Result := FBuffer.BeforeRender;
 end;
 
-// SetPostRender
-//
-
 procedure TVXNonVisualViewer.SetPostRender(const val: TNotifyEvent);
 begin
   FBuffer.PostRender := val;
 end;
-
-// GetPostRender
-//
 
 function TVXNonVisualViewer.GetPostRender: TNotifyEvent;
 begin
   Result := FBuffer.PostRender;
 end;
 
-// SetAfterRender
-//
-
 procedure TVXNonVisualViewer.SetAfterRender(const val: TNotifyEvent);
 begin
   FBuffer.AfterRender := val;
 end;
-
-// GetAfterRender
-//
 
 function TVXNonVisualViewer.GetAfterRender: TNotifyEvent;
 begin
   Result := FBuffer.AfterRender;
 end;
 
-// SetCamera
-//
-
 procedure TVXNonVisualViewer.SetCamera(const val: TVXCamera);
 begin
   FBuffer.Camera := val;
 end;
-
-// GetCamera
-//
 
 function TVXNonVisualViewer.GetCamera: TVXCamera;
 begin
   Result := FBuffer.Camera;
 end;
 
-// SetBuffer
-//
-
 procedure TVXNonVisualViewer.SetBuffer(const val: TVXSceneBuffer);
 begin
   FBuffer.Assign(val);
 end;
-
-// DoOnPrepareGLContext
-//
 
 procedure TVXNonVisualViewer.DoOnPrepareGLContext(sender: TObject);
 begin
   PrepareGLContext;
 end;
 
-// PrepareGLContext
-//
-
 procedure TVXNonVisualViewer.PrepareGLContext;
 begin
   // nothing, reserved for subclasses
 end;
-
-// DoBufferChange
-//
 
 procedure TVXNonVisualViewer.DoBufferChange(Sender: TObject);
 begin
   // nothing, reserved for subclasses
 end;
 
-// DoBufferStructuralChange
-//
-
 procedure TVXNonVisualViewer.DoBufferStructuralChange(Sender: TObject);
 begin
   FBuffer.DestroyRC;
 end;
-
-// SetWidth
-//
 
 procedure TVXNonVisualViewer.SetWidth(const val: Integer);
 begin
@@ -9172,9 +8066,6 @@ begin
     DoBufferStructuralChange(Self);
   end;
 end;
-
-// SetHeight
-//
 
 procedure TVXNonVisualViewer.SetHeight(const val: Integer);
 begin
@@ -9260,8 +8151,7 @@ initialization
 //------------------------------------------------------------------------------
 
   RegisterClasses([TVXLightSource, TVXCamera, TVXProxyObject,
-    TVXScene, TVXDirectOpenVX, TVXRenderPoint,
-      TVXMemoryViewer]);
+    TVXScene, TVXDirectOpenVX, TVXRenderPoint, TVXMemoryViewer]);
 
   // preparation for high resolution timer
   QueryPerformanceFrequency(vCounterFrequency);

@@ -9,7 +9,7 @@ unit VXS.Utils;
 
 interface
 
-{$I VXScene.inc}
+{$I VxScene.inc}
 
 uses
   System.Classes,
@@ -19,10 +19,10 @@ uses
   FMX.Graphics,
   FMX.Controls,
   FMX.Dialogs,
-  
-  VXS.VectorGeometry,
-  VXS.Strings,
-  VXS.CrossPlatform;
+
+  VxS.VectorGeometry,
+  VxS.Strings,
+  VxS.CrossPlatform;
 
 type
   EGLUtilsException = class(Exception);
@@ -96,11 +96,7 @@ function OpenPictureDialog(var AFileName: string; const ATitle: string = ''): Bo
 procedure SetVXSceneMediaDir();
 
 //------------------------------------------------------
-//------------------------------------------------------
-//------------------------------------------------------
 implementation
-//------------------------------------------------------
-//------------------------------------------------------
 //------------------------------------------------------
 
 uses
@@ -109,29 +105,6 @@ uses
 var
   vSqrt255: TSqrt255Array;
 
-  // WordToIntegerArray
-  //
-{$IFDEF GLS_ASM}
-procedure WordToIntegerArray(Source: PWordArray; Dest: PIntegerArray; Count: Cardinal); assembler;
-// EAX contains Source
-// EDX contains Dest
-// ECX contains Count
-asm
-              JECXZ @@Finish
-              PUSH ESI
-              PUSH EDI
-              MOV ESI,EAX
-              MOV EDI,EDX
-              XOR EAX,EAX
-@@1:          LODSW
-              STOSD
-              DEC ECX
-              JNZ @@1
-              POP EDI
-              POP ESI
-@@Finish:
-end;
-{$ELSE}
 procedure WordToIntegerArray(Source: PWordArray; Dest: PIntegerArray; Count: Cardinal);
 var
   i: integer;
@@ -139,10 +112,6 @@ begin
   for i := 0 to Count - 1 do
     Dest^[i] := Source^[i];
 end;
-{$ENDIF}
-
-// RoundUpToPowerOf2
-//
 
 function RoundUpToPowerOf2(value: Integer): Integer;
 begin
@@ -150,9 +119,6 @@ begin
   while (Result < value) do
     Result := Result shl 1;
 end;
-
-// RoundDownToPowerOf2
-//
 
 function RoundDownToPowerOf2(value: Integer): Integer;
 begin
@@ -166,16 +132,10 @@ begin
     Result := 1;
 end;
 
-// IsPowerOf2
-//
-
 function IsPowerOf2(value: Integer): Boolean;
 begin
   Result := (RoundUpToPowerOf2(value) = value);
 end;
-
-// ReadCRLFString
-//
 
 function ReadCRLFString(aStream: TStream): AnsiString;
 var

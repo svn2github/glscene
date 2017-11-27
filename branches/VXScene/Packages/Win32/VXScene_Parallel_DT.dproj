@@ -141,8 +141,8 @@
         <DCCReference Include="..\..\Resources\VXSceneCUDA.dcr"/>
         <DCCReference Include="rtl.dcp"/>
         <DCCReference Include="fmx.dcp"/>
-        <DCCReference Include="VXScene_Parallel_RunTime.dcp"/>
-        <DCCReference Include="VXScene_DesignTime.dcp"/>
+        <DCCReference Include="VXScene_Parallel_RT.dcp"/>
+        <DCCReference Include="VXScene_DT.dcp"/>
         <DCCReference Include="..\..\Source\FCUDAEditor.pas">
             <Form>GLSCUDAEditorForm</Form>
         </DCCReference>

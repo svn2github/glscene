@@ -68,8 +68,8 @@ begin
 
   if FLightIDs.Count > 0 then
   begin
-    rci.VKStates.DepthFunc := cfLEqual;
-    rci.VKStates.Disable(stBlend);
+    rci.VXStates.DepthFunc := cfLEqual;
+    rci.VXStates.Disable(stBlend);
     DoLightPass(FLightIDs[0]);
     FLightIDs.Delete(0);
   end
@@ -98,15 +98,15 @@ begin
   begin
     Self.UnApplyShaderPrograms();
 
-    rci.VKStates.Enable(stBlend);
-    rci.VKStates.SetBlendFunc(bfOne, bfOne);
+    rci.VXStates.Enable(stBlend);
+    rci.VXStates.SetBlendFunc(bfOne, bfOne);
     DoAmbientPass(rci);
     FAmbientPass := True;
 
     Result := True;
     Exit;
   end;
-  rci.VKStates.DepthFunc := cfLEqual;
+  rci.VXStates.DepthFunc := cfLEqual;
 end;
 
 // DoInitialize
@@ -218,9 +218,9 @@ end;
 //
 procedure TVXPhongShader.UnApplyLights(var rci: TVXRenderContextInfo);
 begin
-  rci.VKStates.DepthFunc := cfLEqual;
-  rci.VKStates.Enable(stBlend);
-  rci.VKStates.SetBlendFunc(bfOne, bfOne);
+  rci.VXStates.DepthFunc := cfLEqual;
+  rci.VXStates.Enable(stBlend);
+  rci.VXStates.SetBlendFunc(bfOne, bfOne);
   DoLightPass(FLightIDs[0]);
   FLightIDs.Delete(0);
 end;
@@ -235,7 +235,7 @@ procedure TVXPhongShader.DoAmbientPass(var rci: TVXRenderContextInfo);
 var
   ambient, materialAmbient: TVector;
 begin
-  rci.VKStates.Disable(stLighting);
+  rci.VXStates.Disable(stLighting);
 
   glGetFloatv(GL_LIGHT_MODEL_AMBIENT, @ambient);
   glGetMaterialfv(GL_FRONT, GL_AMBIENT, @materialAmbient);
@@ -249,7 +249,7 @@ var
 begin
   Self.ApplyShaderPrograms();
 
-  with CurrentVKContext.VKStates do
+  with CurrentVXContext.VxStates do
   begin
     glGetLightfv(GL_LIGHT0+lightID, GL_POSITION, @LightParam);
     LightParam := LightParam;

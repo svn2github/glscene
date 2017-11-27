@@ -258,7 +258,7 @@ begin
       Abort;
   end;
 
-  rci.VKStates.Disable(stLighting);
+  rci.VXStates.Disable(stLighting);
   glGetLightfv(GL_LIGHT0, GL_POSITION, @light.X);
   FVPHandle.Enable;
   FVPHandle.Bind;
@@ -294,7 +294,7 @@ begin
   end;
 
   if FOutlinePass then
-    with rci.VKStates do
+    with rci.VxStates do
     begin
       ActiveTexture := 0;
       ActiveTextureEnabled[ttTexture2D] := False;
@@ -316,11 +316,11 @@ begin
       Exit;
     end
   else
-    with rci.VKStates do
+    with rci.VxStates do
     begin
-      rci.VKStates.PolygonMode := pmFill;
-      rci.VKStates.CullFaceMode := cmBack;
-      rci.VKStates.DepthFunc := cfLEqual;
+      rci.VXStates.PolygonMode := pmFill;
+      rci.VXStates.CullFaceMode := cmBack;
+      rci.VXStates.DepthFunc := cfLEqual;
     end;
 
 end;

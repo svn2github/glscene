@@ -120,24 +120,24 @@ type
     procedure WriteToFiler(writer: TVirtualWriter); override;
     procedure ReadFromFiler(reader: TVirtualReader); override;
 
-    procedure GetExtents(out min, max: TAffineVector); dynamic;
-    function Sum: TAffineVector; dynamic;
-    procedure Normalize; dynamic;
-    function MaxSpacing(list2: TBaseVectorList): Single; dynamic;
-    procedure Translate(const delta: TAffineVector); overload; dynamic;
-    procedure Translate(const delta: TBaseVectorList); overload; dynamic;
-    procedure TranslateInv(const delta: TBaseVectorList); overload; dynamic;
+    procedure GetExtents(out min, max: TAffineVector); virtual;
+    function Sum: TAffineVector; virtual;
+    procedure Normalize; virtual;
+    function MaxSpacing(list2: TBaseVectorList): Single; virtual;
+    procedure Translate(const delta: TAffineVector); overload; virtual;
+    procedure Translate(const delta: TBaseVectorList); overload; virtual;
+    procedure TranslateInv(const delta: TBaseVectorList); overload; virtual;
 
         { Replace content of the list with lerp results between the two given lists. 
            Note: you can't Lerp with Self!!! }
-    procedure Lerp(const list1, list2: TBaseVectorList; lerpFactor: Single); dynamic; abstract;
+    procedure Lerp(const list1, list2: TBaseVectorList; lerpFactor: Single); virtual; abstract;
         { Replace content of the list with angle lerp between the two given lists. 
            Note: you can't Lerp with Self!!! }
     procedure AngleLerp(const list1, list2: TBaseVectorList; lerpFactor: Single);
     procedure AngleCombine(const list1: TBaseVectorList; intensity: Single);
         { Linear combination of Self with another list. 
            Self[i]:=Self[i]+list2[i]*factor }
-    procedure Combine(const list2: TBaseVectorList; factor: Single); dynamic;
+    procedure Combine(const list2: TBaseVectorList; factor: Single); virtual;
 
     property ItemAddress[Index: Integer]: PFloatArray read GetItemAddress;
 
@@ -2540,7 +2540,7 @@ end;
 
 // IntegerSearch
 //
-{$IFDEF VKS_ASM}
+{$IFDEF USE_ASM}
 function IntegerSearch(item: Integer; list: PIntegerVector; Count: Integer): Integer; register;
 asm
   push edi;
@@ -4164,7 +4164,7 @@ end;
 
 // LongWordSearch
 //
-{$IFDEF VKS_ASM}
+{$IFDEF USE_ASM}
 function LongWordSearch(item: LongWord; list: PLongWordVector; Count: Integer): Integer; register;
 asm
   push edi;

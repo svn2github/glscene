@@ -244,7 +244,7 @@ begin
       Exit;
   end;
   // render explosion
-  rci.VKStates.Disable(stCullFace);
+  rci.VXStates.Disable(stCullFace);
   glBegin(GL_TRIANGLES);
   for Face := 0 to FaceCount - 1 do begin
     SetVector(p1, FTriList.Items[Face * 3]);
@@ -284,7 +284,7 @@ begin
     glVertex3f(p3.X, p3.Y, p3.Z);
   end;
   glEnd;
-  rci.VKStates.Enable(stCullFace);
+  rci.VXStates.Enable(stCullFace);
   if FMaxSteps <> 0 then begin
     Inc(FStep);
     if FStep = FMaxSteps then

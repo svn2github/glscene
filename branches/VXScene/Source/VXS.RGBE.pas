@@ -9,8 +9,12 @@ interface
 {$I VXScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
-  VXS.VectorTypes, VXS.VectorGeometry, VXS.CrossPlatform;
+  System.Classes, 
+  System.SysUtils,
+  System.Math,
+  VXS.VectorTypes, 
+  VXS.VectorGeometry, 
+  VXS.CrossPlatform;
 
 
 procedure Float2rgbe(var RGBE: TVector4b; const Red, Green, Blue: Single);
@@ -19,51 +23,15 @@ procedure LoadRLEpixels(Stream: TStream; Dst: PSingle;
   Scanline_width, Num_scanlines: Integer);
 procedure LoadRGBEpixels(Stream: TStream; Dst: PSingle; Numpixels: Integer);
 
-//------------------------------------------------------------------------
+//====================================================================
 implementation
-//------------------------------------------------------------------------
+//====================================================================
 
 type
   ERGBEexception = class(Exception);
 
 // Extract exponent and mantissa from X
-{$IFDEF VKS_ASM}
 procedure Frexp(X: Extended; var Mantissa: Extended; var Exponent: Integer);
-{ Mantissa ptr in EAX, Exponent ptr in EDX }
-asm
-  FLD     X
-  PUSH    EAX
-  MOV     dword ptr [edx], 0    { if X = 0, return 0 }
-
-  FTST
-  FSTSW   AX
-  FWAIT
-  SAHF
-  JZ      @@Done
-
-  FXTRACT                 // ST(1) = exponent, (pushed) ST = fraction
-  FXCH
-
-  // The FXTRACT instruction normalizes the fraction 1 bit higher than
-  // wanted for the definition of frexp() so we need to tweak the result
-  // by scaling the fraction down and incrementing the exponent.
-
-  FISTP   dword ptr [edx]
-  FLD1
-  FCHS
-  FXCH
-  FSCALE                  // scale fraction
-  INC     dword ptr [edx] // exponent biased to match
-  FSTP ST(1)              // discard -1, leave fraction as TOS
-
-@@Done:
-  POP     EAX
-  FSTP    tbyte ptr [eax]
-  FWAIT
-end;
-{$ELSE}
-procedure Frexp(X: Extended; var Mantissa: Extended; var Exponent: Integer);
-{ Mantissa ptr in EAX, Exponent ptr in EDX }
 begin
   Exponent := 0;
   if (X <> 0) then
@@ -80,26 +48,12 @@ begin
       end;
   Mantissa := X;
 end;
-{$ENDIF}
 
-{$IFDEF VKS_ASM}
-function Ldexp(X: Extended; const P: Integer): Extended;
-asm
-  PUSH    EAX
-  FILD    dword ptr [ESP]
-  FLD     X
-  FSCALE
-  POP     EAX
-  FSTP    ST(1)
-  FWAIT
-end;
-{$ELSE}
+
 function Ldexp(X: Extended; const P: Integer): Extended;
 begin
-  Ldexp := X * Intpower(2.0, P);
+  Ldexp := X * PowerSingle(2.0, P); // Result := X * (2^P)
 end;
-{$ENDIF}
-{ Result := X * (2^P) }
 
 // standard conversion from float pixels to rgbe pixels
 procedure Float2rgbe(var RGBE: TVector4b; const Red, Green, Blue: Single);

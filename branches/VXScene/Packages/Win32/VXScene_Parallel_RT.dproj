@@ -132,7 +132,7 @@
         </DelphiCompile>
         <DCCReference Include="rtl.dcp"/>
         <DCCReference Include="fmx.dcp"/>
-        <DCCReference Include="VXScene_RunTime.dcp"/>
+        <DCCReference Include="VXScene_RT.dcp"/>
         <DCCReference Include="..\..\Source\ParallelAPIs\CL.pas"/>
         <DCCReference Include="..\..\Source\ParallelAPIs\CL_GL.pas"/>
         <DCCReference Include="..\..\Source\ParallelAPIs\CL_Platform.pas"/>

@@ -1,5 +1,5 @@
 //
-// VXScene Component Library, based on GLScene http://glscene.sourceforge.net 
+// VXScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
 {
    General utilities for mesh manipulations.
@@ -11,9 +11,15 @@ interface
 {$I VXScene.inc}
 
 uses
-  System.Classes,  System.SysUtils,
-  VXS.PersistentClasses, VXS.VectorLists, VXS.VectorGeometry, VXS.VectorTypes,
+  System.Classes,
+  System.SysUtils,
+  System.Math,
+  VXS.PersistentClasses,
+  VXS.VectorLists,
+  VXS.VectorGeometry,
+  VXS.VectorTypes,
   VXS.CrossPlatform;
+
 
 { Converts a triangle strips into a triangle list. 
    Vertices are added to list, based on the content of strip. Both non-indexed
@@ -319,7 +325,7 @@ begin
 
    // Initialize data structures for a hash table
    // (each vertex will only be compared to vertices of similar hash value)
-   hashSize:=(1 shl MaxInteger(Integer(0), Integer(Trunc(log2(vertices.Count*cInvVerticesPerHashKey)))))-1;
+   hashSize:=(1 shl MaxInteger(Integer(0), Integer(Trunc(Log2(vertices.Count*cInvVerticesPerHashKey)))))-1;
    if hashSize<7 then hashSize:=7;
    if hashSize>65535 then hashSize:=65535;
    SetLength(hashTable, hashSize+1);

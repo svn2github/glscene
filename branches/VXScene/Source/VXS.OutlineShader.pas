@@ -103,14 +103,14 @@ end;
 
 function TVXOutlineShader.DoUnApply(var rci: TVXRenderContextInfo): Boolean;
 begin
-  if rci.ignoreMaterials or (stStencilTest in rci.VKStates.States) then
+  if rci.ignoreMaterials or (stStencilTest in rci.VXStates.States) then
   begin
     Result := False;
     Exit;
   end;
   case FPassCount of
     1:
-      with rci.VKStates do
+      with rci.VxStates do
       begin
         // Now set up to draw the outline in the second pass
 
@@ -144,7 +144,7 @@ begin
         Result := True; // go for next pass
       end;
     2:
-      with rci.VKStates do
+      with rci.VxStates do
       begin
         // Restore settings
         PolygonMode := pmFill;

@@ -12,6 +12,7 @@ interface
 {$I VXScene.inc}
 
 uses
+  System.Math,
   VXS.VectorGeometry;
 
 const
@@ -19,50 +20,42 @@ const
 
 type
 
-   // TVXPerlin3DNoise
-   //
-   { Generates Perlin Noise in the [-1; 1] range. 
+   { Generates Perlin Noise in the [-1; 1] range.
       2D noise requests are taken in the Z=0 slice }
    TVXPerlin3DNoise = class (TObject)
       protected
-         
          FPermutations : packed array [0..cPERLIN_TABLE_SIZE-1] of Integer;
          FGradients : packed array [0..cPERLIN_TABLE_SIZE*3-1] of Single;
-
       protected
-         
          function Lattice(ix, iy, iz : Integer; fx, fy, fz : Single) : Single; overload;
          function Lattice(ix, iy : Integer; fx, fy : Single) : Single; overload;
-
       public
-         
          constructor Create(randomSeed : Integer);
          procedure Initialize(randomSeed : Integer);
-
+         // Noise (dual single)
          function Noise(const x, y : Single) : Single; overload;
+         // Noise (trio single)
          function Noise(const x, y, z : Single) : Single; overload;
          function Noise(const v : TAffineVector) : Single; overload;
+         // Noise (hmg)
          function Noise(const v : TVector) : Single; overload;
   end;
 
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
+
 // ------------------------------------------------------------------
 implementation
+// ------------------------------------------------------------------
+
 // ------------------
 // ------------------ TVXPerlin3DNoise ------------------
 // ------------------
 
-// Create
-//
 constructor TVXPerlin3DNoise.Create(randomSeed : Integer);
 begin
    inherited Create;
    Initialize(randomSeed);
 end;
 
-// InitGradients
-//
 procedure TVXPerlin3DNoise.Initialize(randomSeed : Integer);
 var
    seedBackup : Integer;
@@ -93,8 +86,6 @@ begin
    RandSeed:=seedBackup;
 end;
 
-// Lattice (3d)
-//
 function TVXPerlin3DNoise.Lattice(ix, iy, iz : Integer; fx, fy, fz : Single): Single;
 const
    cMask = cPERLIN_TABLE_SIZE-1;
@@ -117,15 +108,13 @@ begin
    Result:=FGradients[g]*fx+FGradients[g+1]*fy;
 end;
 
-// Noise (affine)
-//
 function TVXPerlin3DNoise.Noise(const v : TAffineVector) : Single;
 
    function Smooth(var x : Single) : Single;
    begin
       Result:=x*x*(3-2*x);
    end;
-   
+
 var
    ix, iy, iz : Integer;
    fx0, fx1, fy0, fy1, fz0, fz1 : Single;
@@ -166,8 +155,6 @@ begin
    Result:=Lerp(vz0, vz1, wz);
 end;
 
-// Noise (dual single)
-//
 function TVXPerlin3DNoise.Noise(const x, y : Single) : Single;
 
    function Smooth(var x : Single) : Single;
@@ -200,15 +187,11 @@ begin
    Result:=Lerp(vy0, vy1, wy);
 end;
 
-// Noise (trio single)
-//
 function TVXPerlin3DNoise.Noise(const x, y, z : Single) : Single;
 begin
    Result:=Noise(AffineVectorMake(x, y, z));
 end;
 
-// Noise (hmg)
-//
 function TVXPerlin3DNoise.Noise(const v : TVector) : Single;
 begin
    Result:=Noise(PAffineVector(@v)^);

@@ -3,7 +3,7 @@
 //
 {
   Vector File related objects for GLScene
-  The history is logged in a former GLS version of the unit. 
+  The history is logged in a former GLS version of the unit.
 }
 unit VXS.VectorFileObjects;
 
@@ -15,6 +15,7 @@ uses
   Winapi.OpenGL,
   Winapi.OpenGLext,
   System.Classes,
+  System.Math,
   System.SysUtils,
   System.Types,
 
@@ -66,7 +67,7 @@ type
     procedure SetVertices(const val: TAffineVectorList);
     procedure SetNormals(const val: TAffineVectorList);
     procedure ContributeToBarycenter(var currentSum: TAffineVector;
-      var nb: Integer); dynamic;
+      var nb: Integer); virtual;
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -74,9 +75,9 @@ type
     procedure WriteToFiler(writer: TVirtualWriter); override;
     procedure ReadFromFiler(reader: TVirtualReader); override;
     { Clears all mesh object data, submeshes, facegroups, etc. }
-    procedure Clear; dynamic;
+    procedure Clear; virtual;
     { Translates all the vertices by the given delta. }
-    procedure Translate(const delta: TAffineVector); dynamic;
+    procedure Translate(const delta: TAffineVector); virtual;
     { Builds (smoothed) normals for the vertex list.
        If normalIndices is nil, the method assumes a bijection between
        vertices and normals sets, and when performed, Normals and Vertices
@@ -97,7 +98,7 @@ type
        If texCoords is specified, per vertex texture coordinates will be
        placed there, when available. }
     function ExtractTriangles(texCoords: TAffineVectorList = nil;
-      normals: TAffineVectorList = nil): TAffineVectorList; dynamic;
+      normals: TAffineVectorList = nil): TAffineVectorList; virtual;
     property Name: string read FName write FName;
     property Visible: Boolean read FVisible write FVisible;
     property Vertices: TAffineVectorList read FVertices write SetVertices;
@@ -108,10 +109,10 @@ type
 
   TVXSkeletonFrameTransform = (sftRotation, sftQuaternion);
 
-    { Stores position and rotation for skeleton joints.
-       If you directly alter some values, make sure to call FlushLocalMatrixList
-       so that the local matrices will be recalculated (the call to Flush does
-       not recalculate the matrices, but marks the current ones as dirty). }
+  { Stores position and rotation for skeleton joints.
+    If you directly alter some values, make sure to call FlushLocalMatrixList
+    so that the local matrices will be recalculated (the call to Flush does
+    not recalculate the matrices, but marks the current ones as dirty). }
   TVXSkeletonFrame = class(TPersistentObject)
   private
     FOwner: TVXSkeletonFrameList;
@@ -475,7 +476,7 @@ type
     function ExtractTriangles(texCoords: TAffineVectorList = nil;
       normals: TAffineVectorList = nil): TAffineVectorList; override;
     { Returns number of triangles in the mesh object. }
-    function TriangleCount: Integer; dynamic;
+    function TriangleCount: Integer; virtual;
     procedure PrepareMaterialLibraryCache(matLib: TVXMaterialLibrary);
     procedure DropMaterialLibraryCache;
     { Prepare the texture and materials before rendering.
@@ -489,7 +490,7 @@ type
     // Barycenter from vertices data
     function GetBarycenter: TVector;
     // Precalculate whatever is needed for rendering, called once
-    procedure Prepare; dynamic;
+    procedure Prepare; virtual;
     function PointInObject(const aPoint: TAffineVector): Boolean; virtual;
     // Returns the triangle data for a given triangle
     procedure GetTriangleData(tri: Integer; list: TAffineVectorList;
@@ -583,7 +584,7 @@ type
        Resturns True if all its MeshObjects use VBOs. }
     property UseVBO: Boolean read GetUseVBO write SetUseVBO;
     // Precalculate whatever is needed for rendering, called once
-    procedure Prepare; dynamic;
+    procedure Prepare; virtual;
     function FindMeshByName(MeshName: string): TVXMeshObject;
     property Owner: TVXBaseMesh read FOwner;
     procedure Clear; override;
@@ -730,14 +731,14 @@ type
        all the triangles in a mesh. }
     procedure AddToTriangles(aList: TAffineVectorList;
       aTexCoords: TAffineVectorList = nil;
-      aNormals: TAffineVectorList = nil); dynamic;
+      aNormals: TAffineVectorList = nil); virtual;
     { Returns number of triangles in the facegroup. }
-    function TriangleCount: Integer; dynamic; abstract;
+    function TriangleCount: Integer; virtual; abstract;
     { Reverses the rendering order of faces.
        Default implementation does nothing }
-    procedure Reverse; dynamic;
+    procedure Reverse; virtual;
     // Precalculate whatever is needed for rendering, called once
-    procedure Prepare; dynamic;
+    procedure Prepare; virtual;
     property Owner: TVXFaceGroups read FOwner write FOwner;
     property MaterialName: string read FMaterialName write FMaterialName;
     property MaterialCache: TVXLibMaterial read FMaterialCache;
@@ -933,11 +934,11 @@ type
     { Invoked after creating a TVXVectorFile and before loading.
        Triggered by LoadFromFile/Stream and AddDataFromFile/Stream.
        Allows to adjust/transfer subclass-specific features. }
-    procedure PrepareVectorFile(aFile: TVXVectorFile); dynamic;
+    procedure PrepareVectorFile(aFile: TVXVectorFile); virtual;
     { Invoked after a mesh has been loaded/added.
        Triggered by LoadFromFile/Stream and AddDataFromFile/Stream.
        Allows to adjust/transfer subclass-specific features. }
-    procedure PrepareMesh; dynamic;
+    procedure PrepareMesh; virtual;
     { Recursively propagated to mesh object and facegroups.
        Notifies that they all can establish their material library caches. }
     procedure PrepareMaterialLibraryCache;
@@ -949,7 +950,7 @@ type
        MaterialLibraryCache can be assumed to having been prepared if materials
        are active. Default behaviour is to prepare build lists for the
        meshobjects. }
-    procedure PrepareBuildList(var mrci: TVXRenderContextInfo); dynamic;
+    procedure PrepareBuildList(var mrci: TVXRenderContextInfo); virtual;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -987,35 +988,35 @@ type
     function GetBarycenter: TAffineVector;
     { Invoked after a mesh has been loaded.
        Should auto-center according to the AutoCentering property. }
-    procedure PerformAutoCentering; dynamic;
+    procedure PerformAutoCentering; virtual;
     { Invoked after a mesh has been loaded.
        Should auto-scale the vertices of the meshobjects to AutoScaling the property. }
-    procedure PerformAutoScaling; dynamic;
+    procedure PerformAutoScaling; virtual;
     { Loads a vector file.
        A vector files (for instance a ".3DS") stores the definition of
        a mesh as well as materials property.
        Loading a file replaces the current one (if any). }
-    procedure LoadFromFile(const filename: string); dynamic;
+    procedure LoadFromFile(const filename: string); virtual;
     { Loads a vector file from a stream.
        See LoadFromFile.
        The filename attribute is required to identify the type data you're
        streaming (3DS, OBJ, etc.) }
-    procedure LoadFromStream(const filename: string; aStream: TStream); dynamic;
+    procedure LoadFromStream(const filename: string; aStream: TStream); virtual;
     { Saves to a vector file.
       Note that only some of the vector files formats can be written. }
-    procedure SaveToFile(const fileName: string); dynamic;
+    procedure SaveToFile(const fileName: string); virtual;
     { Saves to a vector file in a stream.
        Note that only some of the vector files formats can be written. }
-    procedure SaveToStream(const fileName: string; aStream: TStream); dynamic;
+    procedure SaveToStream(const fileName: string; aStream: TStream); virtual;
     { Loads additionnal data from a file.
        Additionnal data could be more animation frames or morph target.
        The VectorFile importer must be able to handle addition of data
        flawlessly. }
-    procedure AddDataFromFile(const filename: string); dynamic;
+    procedure AddDataFromFile(const filename: string); virtual;
     { Loads additionnal data from stream.
        See AddDataFromFile. }
     procedure AddDataFromStream(const filename: string; aStream: TStream);
-      dynamic;
+      virtual;
     { Returns the filename of the last loaded file, or a blank string if not
        file was loaded (or if the mesh was dinamically built). This does not
        take into account the data added to the mesh (through AddDataFromFile)
@@ -1293,14 +1294,10 @@ type
     procedure Assign(Source: TPersistent); override;
     procedure BuildList(var rci: TVXRenderContextInfo); override;
     procedure DoProgress(const progressTime: TProgressTimes); override;
-    procedure LoadFromStream(const filename: string; aStream: TStream);
-      override;
-    procedure SwitchToAnimation(anAnimation: TVXActorAnimation; smooth: Boolean =
-      False); overload;
-    procedure SwitchToAnimation(const animationName: string; smooth: Boolean =
-      False); overload;
-    procedure SwitchToAnimation(animationIndex: Integer; smooth: Boolean =
-      False); overload;
+    procedure LoadFromStream(const filename: string; aStream: TStream); override;
+    procedure SwitchToAnimation(anAnimation: TVXActorAnimation; smooth: Boolean = False); overload;
+    procedure SwitchToAnimation(const animationName: string; smooth: Boolean = False); overload;
+    procedure SwitchToAnimation(animationIndex: Integer; smooth: Boolean = False); overload;
     function CurrentAnimation: string;
     { Synchronize self animation with an other actor.
        Copies Start/Current/End Frame values, CurrentFrameDelta,
@@ -1321,14 +1318,11 @@ type
     property EndFrame: Integer read FEndFrame write SetEndFrame default 0;
     { Reference Frame Animation mode.
        Allows specifying if the model is primarily morph or skeleton based. }
-    property Reference: TVXActorAnimationReference read FReference write FReference
-      default aarMorph;
+    property Reference: TVXActorAnimationReference read FReference write FReference default aarMorph;
     { Current animation frame. }
-    property CurrentFrame: Integer read FCurrentFrame write SetCurrentFrame
-      default 0;
+    property CurrentFrame: Integer read FCurrentFrame write SetCurrentFrame default 0;
     { Value in the [0; 1] range expressing the delta to the next frame.  }
-    property CurrentFrameDelta: Single read FCurrentFrameDelta write
-      FCurrentFrameDelta;
+    property CurrentFrameDelta: Single read FCurrentFrameDelta write FCurrentFrameDelta;
     { Frame interpolation mode (afpNone/afpLinear). }
     property FrameInterpolation: TActorFrameInterpolation read
       FFrameInterpolation write FFrameInterpolation default afpLinear;
@@ -1338,20 +1332,15 @@ type
     { Interval between frames, in milliseconds. }
     property Interval: Integer read FInterval write FInterval;
     { Actor and animation miscellanious options. }
-    property Options: TVXActorOptions read FOptions write SetOptions default
-      cDefaultActorOptions;
+    property Options: TVXActorOptions read FOptions write SetOptions default cDefaultActorOptions;
     { Triggered after each CurrentFrame change. }
-    property OnFrameChanged: TNotifyEvent read FOnFrameChanged write
-      FOnFrameChanged;
+    property OnFrameChanged: TNotifyEvent read FOnFrameChanged write FOnFrameChanged;
     { Triggered after EndFrame has been reached by progression or "nextframe" }
-    property OnEndFrameReached: TNotifyEvent read FOnEndFrameReached write
-      FOnEndFrameReached;
+    property OnEndFrameReached: TNotifyEvent read FOnEndFrameReached write FOnEndFrameReached;
     { Triggered after StartFrame has been reached by progression or "nextframe" }
-    property OnStartFrameReached: TNotifyEvent read FOnStartFrameReached write
-      FOnStartFrameReached;
+    property OnStartFrameReached: TNotifyEvent read FOnStartFrameReached write FOnStartFrameReached;
     { Collection of animations sequences. }
-    property Animations: TVXActorAnimations read FAnimations write SetAnimations
-      stored StoreAnimations;
+    property Animations: TVXActorAnimations read FAnimations write SetAnimations stored StoreAnimations;
     property AutoCentering;
     property MaterialLibrary;
     property LightmapLibrary;
@@ -1423,18 +1412,12 @@ var
 const
   cAAFHeader: AnsiString = 'AAF';
 
-  // GetVectorFileFormats
-  //
-
 function GetVectorFileFormats: TVXVectorFileFormatsList;
 begin
   if not Assigned(vVectorFileFormats) then
     vVectorFileFormats := TVXVectorFileFormatsList.Create;
   Result := vVectorFileFormats;
 end;
-
-// VectorFileFormatsFilter
-//
 
 function VectorFileFormatsFilter: string;
 var
@@ -1443,18 +1426,12 @@ begin
   GetVectorFileFormats.BuildFilterStrings(TVXVectorFile, Result, f);
 end;
 
-// VectorFileFormatsSaveFilter
-//
-
 function VectorFileFormatsSaveFilter: string;
 var
   f: string;
 begin
   GetVectorFileFormats.BuildFilterStrings(TVXVectorFile, Result, f, False, True);
 end;
-
-// RegisterVectorFileFormat
-//
 
 procedure RegisterVectorFileFormat(const AExtension, ADescription: string;
   AClass: TVXVectorFileClass);
@@ -1463,34 +1440,22 @@ begin
   GetVectorFileFormats.Add(AExtension, ADescription, 0, AClass);
 end;
 
-// UnregisterVectorFileClass
-//
-
 procedure UnregisterVectorFileClass(AClass: TVXVectorFileClass);
 begin
   if Assigned(vVectorFileFormats) then
     vVectorFileFormats.Remove(AClass);
 end;
 
-// VectorFileFormatExtensionByIndex
-//
-
 function VectorFileFormatExtensionByIndex(index: Integer): string;
 begin
   Result := GetVectorFileFormats.FindExtByIndex(index);
 end;
-
-// TVXVectorFileFormatsList.Destroy
-//
 
 destructor TVXVectorFileFormatsList.Destroy;
 begin
   Clean;
   inherited;
 end;
-
-// Add
-//
 
 procedure TVXVectorFileFormatsList.Add(const Ext, Desc: string; DescID: Integer;
   AClass: TVXVectorFileClass);
@@ -1507,9 +1472,6 @@ begin
   end;
   inherited Add(newRec);
 end;
-
-// FindExt
-//
 
 function TVXVectorFileFormatsList.FindExt(ext: string): TVXVectorFileClass;
 var
@@ -1528,9 +1490,6 @@ begin
   Result := nil;
 end;
 
-// FindFromFileName
-//
-
 function TVXVectorFileFormatsList.FindFromFileName(const fileName: string):
   TVXVectorFileClass;
 var
@@ -1544,9 +1503,6 @@ begin
       [ext, 'GLFile' + UpperCase(ext)]);
 end;
 
-// Remove
-//
-
 procedure TVXVectorFileFormatsList.Remove(AClass: TVXVectorFileClass);
 var
   i: Integer;
@@ -1557,9 +1513,6 @@ begin
       DeleteAndFree(i);
   end;
 end;
-
-// BuildFilterStrings
-//
 
 procedure TVXVectorFileFormatsList.BuildFilterStrings(
   vectorFileClass: TVXVectorFileClass;
@@ -1603,9 +1556,6 @@ begin
       [glsAllFilter, filters, descriptions]);
 end;
 
-// FindExtByIndex
-//
-
 function TVXVectorFileFormatsList.FindExtByIndex(index: Integer;
   formatsThatCanBeOpened: Boolean = True;
   formatsThatCanBeSaved: Boolean = False): string;
@@ -1639,9 +1589,6 @@ end;
 // ------------------ TBaseMeshObject ------------------
 // ------------------
 
-// Create
-//
-
 constructor TVXBaseMeshObject.Create;
 begin
   FVertices := TAffineVectorList.Create;
@@ -1650,18 +1597,12 @@ begin
   inherited Create;
 end;
 
-// Destroy
-//
-
 destructor TVXBaseMeshObject.Destroy;
 begin
   FNormals.Free;
   FVertices.Free;
   inherited;
 end;
-
-// Assign
-//
 
 procedure TVXBaseMeshObject.Assign(Source: TPersistent);
 begin
@@ -1675,9 +1616,6 @@ begin
     inherited; // Die!
 end;
 
-// WriteToFiler
-//
-
 procedure TVXBaseMeshObject.WriteToFiler(writer: TVirtualWriter);
 begin
   inherited WriteToFiler(writer);
@@ -1690,9 +1628,6 @@ begin
     WriteBoolean(FVisible);
   end;
 end;
-
-// ReadFromFiler
-//
 
 procedure TVXBaseMeshObject.ReadFromFiler(reader: TVirtualReader);
 var
@@ -1715,17 +1650,11 @@ begin
     RaiseFilerException(archiveVersion);
 end;
 
-// Clear
-//
-
 procedure TVXBaseMeshObject.Clear;
 begin
   FNormals.Clear;
   FVertices.Clear;
 end;
-
-// ContributeToBarycenter
-//
 
 procedure TVXBaseMeshObject.ContributeToBarycenter(var currentSum: TAffineVector;
   var nb: Integer);
@@ -1734,16 +1663,10 @@ begin
   nb := nb + FVertices.Count;
 end;
 
-// Translate
-//
-
 procedure TVXBaseMeshObject.Translate(const delta: TAffineVector);
 begin
   FVertices.Translate(delta);
 end;
-
-// BuildNormals
-//
 
 procedure TVXBaseMeshObject.BuildNormals(vertexIndices: TIntegerList; mode:
   TVXMeshObjectMode;
@@ -1882,9 +1805,6 @@ begin
   end;
 end;
 
-// ExtractTriangles
-//
-
 function TVXBaseMeshObject.ExtractTriangles(texCoords: TAffineVectorList = nil;
   normals: TAffineVectorList = nil): TAffineVectorList;
 begin
@@ -1897,16 +1817,10 @@ begin
   end;
 end;
 
-// SetVertices
-//
-
 procedure TVXBaseMeshObject.SetVertices(const val: TAffineVectorList);
 begin
   FVertices.Assign(val);
 end;
-
-// SetNormals
-//
 
 procedure TVXBaseMeshObject.SetNormals(const val: TAffineVectorList);
 begin
@@ -1917,18 +1831,12 @@ end;
 // ------------------ TVXSkeletonFrame ------------------
 // ------------------
 
-// CreateOwned
-//
-
 constructor TVXSkeletonFrame.CreateOwned(aOwner: TVXSkeletonFrameList);
 begin
   FOwner := aOwner;
   aOwner.Add(Self);
   Create;
 end;
-
-// Create
-//
 
 constructor TVXSkeletonFrame.Create;
 begin
@@ -1939,9 +1847,6 @@ begin
   FTransformMode := sftRotation;
 end;
 
-// Destroy
-//
-
 destructor TVXSkeletonFrame.Destroy;
 begin
   FlushLocalMatrixList;
@@ -1950,9 +1855,6 @@ begin
   FQuaternion.Free;
   inherited Destroy;
 end;
-
-// WriteToFiler
-//
 
 procedure TVXSkeletonFrame.WriteToFiler(writer: TVirtualWriter);
 begin
@@ -1967,9 +1869,6 @@ begin
     WriteInteger(Integer(FTransformMode));
   end;
 end;
-
-// ReadFromFiler
-//
 
 procedure TVXSkeletonFrame.ReadFromFiler(reader: TVirtualReader);
 var
@@ -1994,32 +1893,20 @@ begin
   FlushLocalMatrixList;
 end;
 
-// SetPosition
-//
-
 procedure TVXSkeletonFrame.SetPosition(const val: TAffineVectorList);
 begin
   FPosition.Assign(val);
 end;
-
-// SetRotation
-//
 
 procedure TVXSkeletonFrame.SetRotation(const val: TAffineVectorList);
 begin
   FRotation.Assign(val);
 end;
 
-// SetQuaternion
-//
-
 procedure TVXSkeletonFrame.SetQuaternion(const val: TQuaternionList);
 begin
   FQuaternion.Assign(val);
 end;
-
-// LocalMatrixList
-//
 
 function TVXSkeletonFrame.LocalMatrixList: PMatrixArray;
 var
@@ -2080,9 +1967,6 @@ begin
   Result := FLocalMatrixList;
 end;
 
-// FlushLocalMatrixList
-//
-
 procedure TVXSkeletonFrame.FlushLocalMatrixList;
 begin
   if Assigned(FLocalMatrixList) then
@@ -2091,9 +1975,6 @@ begin
     FLocalMatrixList := nil;
   end;
 end;
-
-// ConvertQuaternionsToRotations
-//
 
 procedure TVXSkeletonFrame.ConvertQuaternionsToRotations(KeepQuaternions: Boolean
   = True);
@@ -2114,9 +1995,6 @@ begin
   if not KeepQuaternions then
     Quaternion.Clear;
 end;
-
-// ConvertRotationsToQuaternions
-//
 
 procedure TVXSkeletonFrame.ConvertRotationsToQuaternions(KeepRotations: Boolean =
   True);
@@ -2148,26 +2026,17 @@ end;
 // ------------------ TVXSkeletonFrameList ------------------
 // ------------------
 
-// CreateOwned
-//
-
 constructor TVXSkeletonFrameList.CreateOwned(AOwner: TPersistent);
 begin
   FOwner := AOwner;
   Create;
 end;
 
-// Destroy
-//
-
 destructor TVXSkeletonFrameList.Destroy;
 begin
   Clear;
   inherited;
 end;
-
-// ReadFromFiler
-//
 
 procedure TVXSkeletonFrameList.ReadFromFiler(reader: TVirtualReader);
 var
@@ -2177,9 +2046,6 @@ begin
   for i := 0 to Count - 1 do
     Items[i].FOwner := Self;
 end;
-
-// Clear
-//
 
 procedure TVXSkeletonFrameList.Clear;
 var
@@ -2202,9 +2068,6 @@ begin
   Result := TVXSkeletonFrame(List^[Index]);
 end;
 
-// ConvertQuaternionsToRotations
-//
-
 procedure TVXSkeletonFrameList.ConvertQuaternionsToRotations(KeepQuaternions:
   Boolean = True; SetTransformMode: Boolean = True);
 var
@@ -2217,9 +2080,6 @@ begin
       Items[i].TransformMode := sftRotation;
   end;
 end;
-
-// ConvertRotationsToQuaternions
-//
 
 procedure TVXSkeletonFrameList.ConvertRotationsToQuaternions(KeepRotations: Boolean
   = True; SetTransformMode: Boolean = True);
@@ -2238,17 +2098,11 @@ end;
 // ------------------ TVXSkeletonBoneList ------------------
 // ------------------
 
-// CreateOwned
-//
-
 constructor TVXSkeletonBoneList.CreateOwned(aOwner: TVXSkeleton);
 begin
   FSkeleton := aOwner;
   Create;
 end;
-
-// Create
-//
 
 constructor TVXSkeletonBoneList.Create;
 begin
@@ -2256,17 +2110,11 @@ begin
   FGlobalMatrix := IdentityHmgMatrix;
 end;
 
-// Destroy
-//
-
 destructor TVXSkeletonBoneList.Destroy;
 begin
   Clean;
   inherited;
 end;
-
-// WriteToFiler
-//
 
 procedure TVXSkeletonBoneList.WriteToFiler(writer: TVirtualWriter);
 begin
@@ -2277,9 +2125,6 @@ begin
     // nothing, yet
   end;
 end;
-
-// ReadFromFiler
-//
 
 procedure TVXSkeletonBoneList.ReadFromFiler(reader: TVirtualReader);
 var
@@ -2298,9 +2143,6 @@ begin
     Items[i].FOwner := Self;
 end;
 
-// AfterObjectCreatedByReader
-//
-
 procedure TVXSkeletonBoneList.AfterObjectCreatedByReader(Sender: TObject);
 begin
   with (Sender as TVXSkeletonBone) do
@@ -2310,16 +2152,10 @@ begin
   end;
 end;
 
-// GetSkeletonBone
-//
-
 function TVXSkeletonBoneList.GetSkeletonBone(Index: Integer): TVXSkeletonBone;
 begin
   Result := TVXSkeletonBone(List^[Index]);
 end;
-
-// BoneByID
-//
 
 function TVXSkeletonBoneList.BoneByID(anID: Integer): TVXSkeletonBone;
 var
@@ -2334,9 +2170,6 @@ begin
   end;
 end;
 
-// BoneByName
-//
-
 function TVXSkeletonBoneList.BoneByName(const aName: string): TVXSkeletonBone;
 var
   i: Integer;
@@ -2350,9 +2183,6 @@ begin
   end;
 end;
 
-// BoneCount
-//
-
 function TVXSkeletonBoneList.BoneCount: Integer;
 var
   i: Integer;
@@ -2361,9 +2191,6 @@ begin
   for i := 0 to Count - 1 do
     Inc(Result, Items[i].BoneCount);
 end;
-
-// PrepareGlobalMatrices
-//
 
 procedure TVXSkeletonBoneList.PrepareGlobalMatrices;
 var
@@ -2377,9 +2204,6 @@ end;
 // ------------------ TVXSkeletonRootBoneList ------------------
 // ------------------
 
-// WriteToFiler
-//
-
 procedure TVXSkeletonRootBoneList.WriteToFiler(writer: TVirtualWriter);
 begin
   inherited WriteToFiler(writer);
@@ -2389,9 +2213,6 @@ begin
     // nothing, yet
   end;
 end;
-
-// ReadFromFiler
-//
 
 procedure TVXSkeletonRootBoneList.ReadFromFiler(reader: TVirtualReader);
 var
@@ -2410,16 +2231,13 @@ begin
     Items[i].FOwner := Self;
 end;
 
-// BuildList
-//
-
 procedure TVXSkeletonRootBoneList.BuildList(var mrci: TVXRenderContextInfo);
 var
   i: Integer;
 begin
   // root node setups and restore OpenGL stuff
-  mrci.VKStates.Disable(stColorMaterial);
-  mrci.VKStates.Disable(stLighting);
+  mrci.VXStates.Disable(stColorMaterial);
+  mrci.VXStates.Disable(stLighting);
   glColor3f(1, 1, 1);
   // render root-bones
   for i := 0 to Count - 1 do
@@ -2430,9 +2248,6 @@ end;
 // ------------------ TVXSkeletonBone ------------------
 // ------------------
 
-// CreateOwned
-//
-
 constructor TVXSkeletonBone.CreateOwned(aOwner: TVXSkeletonBoneList);
 begin
   FOwner := aOwner;
@@ -2441,17 +2256,11 @@ begin
   Create;
 end;
 
-// Create
-//
-
 constructor TVXSkeletonBone.Create;
 begin
   FColor := $FFFFFFFF; // opaque white
   inherited;
 end;
-
-// Destroy
-//
 
 destructor TVXSkeletonBone.Destroy;
 begin
@@ -2459,9 +2268,6 @@ begin
     Owner.Remove(Self);
   inherited Destroy;
 end;
-
-// WriteToFiler
-//
 
 procedure TVXSkeletonBone.WriteToFiler(writer: TVirtualWriter);
 begin
@@ -2474,9 +2280,6 @@ begin
     WriteInteger(Integer(FColor));
   end;
 end;
-
-// ReadFromFiler
-//
 
 procedure TVXSkeletonBone.ReadFromFiler(reader: TVirtualReader);
 var
@@ -2497,9 +2300,6 @@ begin
     Items[i].FOwner := Self;
 end;
 
-// BuildList
-//
-
 procedure TVXSkeletonBone.BuildList(var mrci: TVXRenderContextInfo);
 
   procedure IssueColor(color: Cardinal);
@@ -2513,7 +2313,7 @@ var
   i: Integer;
 begin
   // point for self
-  mrci.VKStates.PointSize := 5;
+  mrci.VXStates.PointSize := 5;
   glBegin(GL_POINTS);
   IssueColor(Color);
   glVertex3fv(@GlobalMatrix.W.X);
@@ -2531,16 +2331,10 @@ begin
     Items[i].BuildList(mrci);
 end;
 
-// GetSkeletonBone
-//
-
 function TVXSkeletonBone.GetSkeletonBone(Index: Integer): TVXSkeletonBone;
 begin
   Result := TVXSkeletonBone(List^[Index]);
 end;
-
-// SetColor
-//
 
 procedure TVXSkeletonBone.SetColor(const val: Cardinal);
 begin
@@ -2558,9 +2352,6 @@ begin
     Result := inherited BoneByID(anID);
 end;
 
-// BoneByName
-//
-
 function TVXSkeletonBone.BoneByName(const aName: string): TVXSkeletonBone;
 begin
   if Name = aName then
@@ -2569,18 +2360,12 @@ begin
     Result := inherited BoneByName(aName);
 end;
 
-// Clean
-//
-
 procedure TVXSkeletonBone.Clean;
 begin
   BoneID := 0;
   Name := '';
   inherited;
 end;
-
-// PrepareGlobalMatrices
-//
 
 procedure TVXSkeletonBone.PrepareGlobalMatrices;
 begin
@@ -2609,9 +2394,6 @@ end;
 // ------------------ TVXSkeletonCollider ------------------
 // ------------------
 
-// Create
-//
-
 constructor TVXSkeletonCollider.Create;
 begin
   inherited;
@@ -2620,9 +2402,6 @@ begin
   FAutoUpdate := True;
 end;
 
-// CreateOwned
-//
-
 constructor TVXSkeletonCollider.CreateOwned(AOwner: TVXSkeletonColliderList);
 begin
   Create;
@@ -2630,9 +2409,6 @@ begin
   if Assigned(FOwner) then
     FOwner.Add(Self);
 end;
-
-// WriteToFiler
-//
 
 procedure TVXSkeletonCollider.WriteToFiler(writer: TVirtualWriter);
 begin
@@ -2647,9 +2423,6 @@ begin
     Write(FLocalMatrix, SizeOf(TMatrix));
   end;
 end;
-
-// ReadFromFiler
-//
 
 procedure TVXSkeletonCollider.ReadFromFiler(reader: TVirtualReader);
 var
@@ -2666,9 +2439,6 @@ begin
   else
     RaiseFilerException(archiveVersion);
 end;
-
-// AlignCollider
-//
 
 procedure TVXSkeletonCollider.AlignCollider;
 var
@@ -2688,17 +2458,11 @@ begin
     FGlobalMatrix := FLocalMatrix;
 end;
 
-// SetBone
-//
-
 procedure TVXSkeletonCollider.SetBone(const val: TVXSkeletonBone);
 begin
   if val <> FBone then
     FBone := val;
 end;
-
-// SetMatrix
-//
 
 procedure TVXSkeletonCollider.SetLocalMatrix(const val: TMatrix);
 begin
@@ -2709,17 +2473,11 @@ end;
 // ------------------ TVXSkeletonColliderList ------------------
 // ------------------
 
-// CreateOwned
-//
-
 constructor TVXSkeletonColliderList.CreateOwned(AOwner: TPersistent);
 begin
   Create;
   FOwner := AOwner;
 end;
-
-// Destroy
-//
 
 destructor TVXSkeletonColliderList.Destroy;
 begin
@@ -2727,17 +2485,11 @@ begin
   inherited;
 end;
 
-// GetSkeletonCollider
-//
-
 function TVXSkeletonColliderList.GetSkeletonCollider(index: Integer):
   TVXSkeletonCollider;
 begin
   Result := TVXSkeletonCollider(inherited Get(index));
 end;
-
-// ReadFromFiler
-//
 
 procedure TVXSkeletonColliderList.ReadFromFiler(reader: TVirtualReader);
 var
@@ -2752,9 +2504,6 @@ begin
   end;
 end;
 
-// Clear
-//
-
 procedure TVXSkeletonColliderList.Clear;
 var
   i: Integer;
@@ -2766,9 +2515,6 @@ begin
   end;
   inherited;
 end;
-
-// AlignColliders
-//
 
 procedure TVXSkeletonColliderList.AlignColliders;
 var
@@ -2783,17 +2529,11 @@ end;
 // ------------------ TVXSkeleton ------------------
 // ------------------
 
-// CreateOwned
-//
-
 constructor TVXSkeleton.CreateOwned(AOwner: TVXBaseMesh);
 begin
   FOwner := aOwner;
   Create;
 end;
-
-// Create
-//
 
 constructor TVXSkeleton.Create;
 begin
@@ -2802,9 +2542,6 @@ begin
   FFrames := TVXSkeletonFrameList.CreateOwned(Self);
   FColliders := TVXSkeletonColliderList.CreateOwned(Self);
 end;
-
-// Destroy
-//
 
 destructor TVXSkeleton.Destroy;
 begin
@@ -2815,9 +2552,6 @@ begin
   FColliders.Free;
   inherited Destroy;
 end;
-
-// WriteToFiler
-//
 
 procedure TVXSkeleton.WriteToFiler(writer : TVirtualWriter);
 begin
@@ -2833,9 +2567,6 @@ begin
         FColliders.WriteToFiler(writer);
    end;
 end;
-
-// ReadFromFiler
-//
 
 procedure TVXSkeleton.ReadFromFiler(reader: TVirtualReader);
 var
@@ -2855,24 +2586,15 @@ begin
     RaiseFilerException(archiveVersion);
 end;
 
-// SetRootBones
-//
-
 procedure TVXSkeleton.SetRootBones(const val: TVXSkeletonRootBoneList);
 begin
   FRootBones.Assign(val);
 end;
 
-// SetFrames
-//
-
 procedure TVXSkeleton.SetFrames(const val: TVXSkeletonFrameList);
 begin
   FFrames.Assign(val);
 end;
-
-// GetCurrentFrame
-//
 
 function TVXSkeleton.GetCurrentFrame: TVXSkeletonFrame;
 begin
@@ -2881,9 +2603,6 @@ begin
   Result := FCurrentFrame;
 end;
 
-// SetCurrentFrame
-//
-
 procedure TVXSkeleton.SetCurrentFrame(val: TVXSkeletonFrame);
 begin
   if Assigned(FCurrentFrame) then
@@ -2891,25 +2610,16 @@ begin
   FCurrentFrame := TVXSkeletonFrame(val.CreateClone);
 end;
 
-// SetColliders
-//
-
 procedure TVXSkeleton.SetColliders(const val: TVXSkeletonColliderList);
 begin
   FColliders.Assign(val);
 end;
-
-// FlushBoneByIDCache
-//
 
 procedure TVXSkeleton.FlushBoneByIDCache;
 begin
   FBonesByIDCache.Free;
   FBonesByIDCache := nil;
 end;
-
-// BoneByID
-//
 
 function TVXSkeleton.BoneByID(anID: Integer): TVXSkeletonBone;
 
@@ -2936,40 +2646,25 @@ begin
   Result := TVXSkeletonBone(FBonesByIDCache[anID])
 end;
 
-// BoneByName
-//
-
 function TVXSkeleton.BoneByName(const aName: string): TVXSkeletonBone;
 begin
   Result := RootBones.BoneByName(aName);
 end;
-
-// BoneCount
-//
 
 function TVXSkeleton.BoneCount: Integer;
 begin
   Result := RootBones.BoneCount;
 end;
 
-// MorphTo
-//
-
 procedure TVXSkeleton.MorphTo(frameIndex: Integer);
 begin
   CurrentFrame := Frames[frameIndex];
 end;
 
-// MorphTo
-//
-
 procedure TVXSkeleton.MorphTo(frame: TVXSkeletonFrame);
 begin
   CurrentFrame := frame;
 end;
-
-// Lerp
-//
 
 procedure TVXSkeleton.Lerp(frameIndex1, frameIndex2: Integer; lerpFactor: Single);
 begin
@@ -2989,9 +2684,6 @@ begin
     end;
   end;
 end;
-
-// BlendedLerps
-//
 
 procedure TVXSkeleton.BlendedLerps(const lerpInfos: array of TVXBlendedLerpInfo);
 var
@@ -3099,9 +2791,6 @@ begin
   end;
 end;
 
-// MakeSkeletalTranslationStatic
-//
-
 procedure TVXSkeleton.MakeSkeletalTranslationStatic(startFrame, endFrame:
   Integer);
 var
@@ -3118,9 +2807,6 @@ begin
     Frames[i].Position[0] := VectorCombine(Frames[i].Position[0], delta,
       1, (i - startFrame) * f);
 end;
-
-// MakeSkeletalRotationDelta
-//
 
 procedure TVXSkeleton.MakeSkeletalRotationDelta(startFrame, endFrame: Integer);
 var
@@ -3143,9 +2829,6 @@ begin
     end;
   end;
 end;
-
-// MorphMesh
-//
 
 procedure TVXSkeleton.MorphMesh(normalize: Boolean);
 var
@@ -3175,17 +2858,11 @@ begin
   end;
 end;
 
-// Synchronize
-//
-
 procedure TVXSkeleton.Synchronize(reference: TVXSkeleton);
 begin
   CurrentFrame.Assign(reference.CurrentFrame);
   MorphMesh(True);
 end;
-
-// Clear
-//
 
 procedure TVXSkeleton.Clear;
 begin
@@ -3242,9 +2919,6 @@ end;
 // ------------------ TVXMeshObject ------------------
 // ------------------
 
-// CreateOwned
-//
-
 constructor TVXMeshObject.CreateOwned(AOwner: TVXMeshObjectList);
 begin
   FOwner := AOwner;
@@ -3252,9 +2926,6 @@ begin
   if Assigned(FOwner) then
     FOwner.Add(Self);
 end;
-
-// Create
-//
 
 constructor TVXMeshObject.Create;
 begin
@@ -3270,9 +2941,6 @@ begin
   FUseVBO := vGLVectorFileObjectsEnableVBOByDefault;
   inherited;
 end;
-
-// Destroy
-//
 
 destructor TVXMeshObject.Destroy;
 var
@@ -3296,9 +2964,6 @@ begin
     FOwner.Remove(Self);
   inherited;
 end;
-
-// Assign
-//
 
 procedure TVXMeshObject.Assign(Source: TPersistent);
 var
@@ -3332,9 +2997,6 @@ begin
   end;
 end;
 
-// WriteToFiler
-//
-
 procedure TVXMeshObject.WriteToFiler(writer: TVirtualWriter);
 var
   i: Integer;
@@ -3357,9 +3019,6 @@ begin
     WriteInteger(TangentsTexCoordIndex);
   end;
 end;
-
-// ReadFromFiler
-//
 
 procedure TVXMeshObject.ReadFromFiler(reader: TVirtualReader);
 var
@@ -3416,9 +3075,6 @@ begin
     RaiseFilerException(archiveVersion);
 end;
 
-// Clear;
-//
-
 procedure TVXMeshObject.Clear;
 var
   i: Integer;
@@ -3431,9 +3087,6 @@ begin
   for i := 0 to FTexCoordsEx.Count - 1 do
     TexCoordsEx[i].Clear;
 end;
-
-// ExtractTriangles
-//
 
 function TVXMeshObject.ExtractTriangles(texCoords: TAffineVectorList = nil;
   normals: TAffineVectorList = nil): TAffineVectorList;
@@ -3467,9 +3120,6 @@ begin
   end;
 end;
 
-// TriangleCount
-//
-
 function TVXMeshObject.TriangleCount: Integer;
 var
   i: Integer;
@@ -3495,24 +3145,15 @@ begin
   end;
 end;
 
-// PrepareMaterialLibraryCache
-//
-
 procedure TVXMeshObject.PrepareMaterialLibraryCache(matLib: TVXMaterialLibrary);
 begin
   FaceGroups.PrepareMaterialLibraryCache(matLib);
 end;
 
-// DropMaterialLibraryCache
-//
-
 procedure TVXMeshObject.DropMaterialLibraryCache;
 begin
   FaceGroups.DropMaterialLibraryCache;
 end;
-
-// GetExtents
-//
 
 procedure TVXMeshObject.GetExtents(out min, max: TAffineVector);
 begin
@@ -3535,9 +3176,6 @@ begin
   aabb := FExtentCache;
 end;
 
-// GetBarycenter
-//
-
 function TVXMeshObject.GetBarycenter: TVector;
 var
   dMin, dMax: TAffineVector;
@@ -3550,9 +3188,6 @@ begin
   Result.W := 0;
 end;
 
-// Prepare
-//
-
 procedure TVXMeshObject.Prepare;
 var
   i: Integer;
@@ -3561,9 +3196,6 @@ begin
   for i := 0 to FaceGroups.Count - 1 do
     FaceGroups[i].Prepare;
 end;
-
-// PointInObject
-//
 
 function TVXMeshObject.PointInObject(const aPoint: TAffineVector): Boolean;
 var
@@ -3578,40 +3210,25 @@ begin
             (aPoint.Z <= max.Z);
 end;
 
-// SetTexCoords
-//
-
 procedure TVXMeshObject.SetTexCoords(const val: TAffineVectorList);
 begin
   FTexCoords.Assign(val);
 end;
-
-// SetLightmapTexCoords
-//
 
 procedure TVXMeshObject.SetLightmapTexCoords(const val: TAffineVectorList);
 begin
   FLightMapTexCoords.Assign(val);
 end;
 
-// SetColors
-//
-
 procedure TVXMeshObject.SetColors(const val: TVectorList);
 begin
   FColors.Assign(val);
 end;
 
-// SetTexCoordsEx
-//
-
 procedure TVXMeshObject.SetTexCoordsEx(index: Integer; const val: TVectorList);
 begin
   TexCoordsEx[index].Assign(val);
 end;
-
-// GetTexCoordsEx
-//
 
 function TVXMeshObject.GetTexCoordsEx(index: Integer): TVectorList;
 var
@@ -3623,24 +3240,15 @@ begin
   Result := TVectorList(FTexCoordsEx[index]);
 end;
 
-// SetBinormals
-//
-
 procedure TVXMeshObject.SetBinormals(const val: TVectorList);
 begin
   Binormals.Assign(val);
 end;
 
-// GetBinormals
-//
-
 function TVXMeshObject.GetBinormals: TVectorList;
 begin
   Result := TexCoordsEx[BinormalsTexCoordIndex];
 end;
-
-// SetBinormalsTexCoordIndex
-//
 
 procedure TVXMeshObject.SetBinormalsTexCoordIndex(const val: Integer);
 begin
@@ -3651,24 +3259,15 @@ begin
   end;
 end;
 
-// SetTangents
-//
-
 procedure TVXMeshObject.SetTangents(const val: TVectorList);
 begin
   Tangents.Assign(val);
 end;
 
-// GetTangents
-//
-
 function TVXMeshObject.GetTangents: TVectorList;
 begin
   Result := TexCoordsEx[TangentsTexCoordIndex];
 end;
-
-// SetTangentsTexCoordIndex
-//
 
 procedure TVXMeshObject.SetTangentsTexCoordIndex(const val: Integer);
 begin
@@ -3678,9 +3277,6 @@ begin
     FTangentsTexCoordIndex := val;
   end;
 end;
-
-// GetTriangleData
-//
 
 procedure TVXMeshObject.GetTriangleData(tri: Integer;
   list: TAffineVectorList; var v0, v1, v2: TAffineVector);
@@ -3759,9 +3355,6 @@ begin
   end;
 end;
 
-// GetTriangleData
-//
-
 procedure TVXMeshObject.GetTriangleData(tri: Integer;
   list: TVectorList; var v0, v1, v2: TVector);
 var
@@ -3839,9 +3432,6 @@ begin
   end;
 end;
 
-// SetTriangleData
-//
-
 procedure TVXMeshObject.SetTriangleData(tri: Integer;
   list: TAffineVectorList; const v0, v1, v2: TAffineVector);
 var
@@ -3918,9 +3508,6 @@ begin
     Assert(False);
   end;
 end;
-
-// SetTriangleData
-//
 
 procedure TVXMeshObject.SetTriangleData(tri: Integer;
   list: TVectorList; const v0, v1, v2: TVector);
@@ -4042,9 +3629,6 @@ begin
   end;
 end;
 
-// BuildTangentSpace
-//
-
 procedure TVXMeshObject.BuildTangentSpace(
   buildBinormals: Boolean = True;
   buildTangents: Boolean = True);
@@ -4155,9 +3739,6 @@ begin
   end;
 end;
 
-// DeclareArraysToOpenGL
-//
-
 procedure TVXMeshObject.DeclareArraysToOpenGL(var mrci: TVXRenderContextInfo;
   evenIfAlreadyDeclared: Boolean = False);
 var
@@ -4175,7 +3756,7 @@ begin
     // inside a display list
     FUseVBO := FUseVBO
       and GL_ARB_vertex_buffer_object
-      and not mrci.VKStates.InsideList;
+      and not mrci.VXStates.InsideList;
 
     if not FUseVBO then
     begin
@@ -4290,9 +3871,6 @@ begin
   end;
 end;
 
-// DisableOpenGLArrays
-//
-
 procedure TVXMeshObject.DisableOpenGLArrays(var mrci: TVXRenderContextInfo);
 var
   i: Integer;
@@ -4358,9 +3936,6 @@ begin
   end;
 end;
 
-// EnableLightMapArray
-//
-
 procedure TVXMeshObject.EnableLightMapArray(var mrci: TVXRenderContextInfo);
 begin
   if GL_ARB_multitexture and (not mrci.ignoreMaterials) then
@@ -4368,30 +3943,24 @@ begin
     Assert(FArraysDeclared);
     if not FLightMapArrayEnabled then
     begin
-      mrci.VKStates.ActiveTexture := 1;
-      mrci.VKStates.ActiveTextureEnabled[ttTexture2D] := True;
-      mrci.VKStates.ActiveTexture := 0;
+      mrci.VXStates.ActiveTexture := 1;
+      mrci.VXStates.ActiveTextureEnabled[ttTexture2D] := True;
+      mrci.VXStates.ActiveTexture := 0;
       FLightMapArrayEnabled := True;
     end;
   end;
 end;
 
-// DisableLightMapArray
-//
-
 procedure TVXMeshObject.DisableLightMapArray(var mrci: TVXRenderContextInfo);
 begin
   if GL_ARB_multitexture and FLightMapArrayEnabled then
   begin
-    mrci.VKStates.ActiveTexture := 1;
-    mrci.VKStates.ActiveTextureEnabled[ttTexture2D] := False;
-    mrci.VKStates.ActiveTexture := 0;
+    mrci.VXStates.ActiveTexture := 1;
+    mrci.VXStates.ActiveTextureEnabled[ttTexture2D] := False;
+    mrci.VXStates.ActiveTexture := 0;
     FLightMapArrayEnabled := False;
   end;
 end;
-
-// PrepareMaterials
-//
 
 procedure TVXMeshObject.PrepareBuildList(var mrci: TVXRenderContextInfo);
 var
@@ -4407,9 +3976,6 @@ begin
       end;
   end;
 end;
-
-// BuildList
-//
 
 procedure TVXMeshObject.BufferArrays;
 const
@@ -4556,10 +4122,10 @@ begin
   gotColor := (Vertices.Count = Colors.Count);
   if gotColor then
   begin
-    mrci.VKStates.Enable(stColorMaterial);
+    mrci.VXStates.Enable(stColorMaterial);
     glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
-    mrci.VKStates.SetMaterialColors(cmFront, clrBlack, clrGray20, clrGray80, clrBlack, 0);
-    mrci.VKStates.SetMaterialColors(cmBack, clrBlack, clrGray20, clrGray80, clrBlack, 0);
+    mrci.VXStates.SetMaterialColors(cmFront, clrBlack, clrGray20, clrGray80, clrBlack, 0);
+    mrci.VXStates.SetMaterialColors(cmBack, clrBlack, clrGray20, clrGray80, clrBlack, 0);
   end;
   case Mode of
     momTriangles, momTriangleStrip: if Vertices.Count > 0 then
@@ -4665,15 +4231,15 @@ begin
             end;
           end;
           // restore faceculling
-          if (stCullFace in mrci.VKStates.States) then
+          if (stCullFace in mrci.VXStates.States) then
           begin
             if not mrci.bufferFaceCull then
-              mrci.VKStates.Disable(stCullFace);
+              mrci.VXStates.Disable(stCullFace);
           end
           else
           begin
             if mrci.bufferFaceCull then
-              mrci.VKStates.Enable(stCullFace);
+              mrci.VXStates.Enable(stCullFace);
           end;
         end
         else
@@ -4690,26 +4256,17 @@ end;
 // ------------------ TVXMeshObjectList ------------------
 // ------------------
 
-// CreateOwned
-//
-
 constructor TVXMeshObjectList.CreateOwned(aOwner: TVXBaseMesh);
 begin
   FOwner := AOwner;
   Create;
 end;
 
-// Destroy
-//
-
 destructor TVXMeshObjectList.Destroy;
 begin
   Clear;
   inherited;
 end;
-
-// ReadFromFiler
-//
 
 procedure TVXMeshObjectList.ReadFromFiler(reader: TVirtualReader);
 var
@@ -4726,9 +4283,6 @@ begin
   end;
 end;
 
-// PrepareMaterialLibraryCache
-//
-
 procedure TVXMeshObjectList.PrepareMaterialLibraryCache(matLib:
   TVXMaterialLibrary);
 var
@@ -4738,9 +4292,6 @@ begin
     TVXMeshObject(List^[i]).PrepareMaterialLibraryCache(matLib);
 end;
 
-// DropMaterialLibraryCache
-//
-
 procedure TVXMeshObjectList.DropMaterialLibraryCache;
 var
   i: Integer;
@@ -4748,9 +4299,6 @@ begin
   for i := 0 to Count - 1 do
     TVXMeshObject(List^[i]).DropMaterialLibraryCache;
 end;
-
-// PrepareBuildList
-//
 
 procedure TVXMeshObjectList.PrepareBuildList(var mrci: TVXRenderContextInfo);
 var
@@ -4762,9 +4310,6 @@ begin
         PrepareBuildList(mrci);
 end;
 
-// BuildList
-//
-
 procedure TVXMeshObjectList.BuildList(var mrci: TVXRenderContextInfo);
 var
   i: Integer;
@@ -4775,9 +4320,6 @@ begin
         BuildList(mrci);
 end;
 
-// MorphTo
-//
-
 procedure TVXMeshObjectList.MorphTo(morphTargetIndex: Integer);
 var
   i: Integer;
@@ -4786,9 +4328,6 @@ begin
     if Items[i] is TVXMorphableMeshObject then
       TVXMorphableMeshObject(Items[i]).MorphTo(morphTargetIndex);
 end;
-
-// Lerp
-//
 
 procedure TVXMeshObjectList.Lerp(morphTargetIndex1, morphTargetIndex2: Integer;
   lerpFactor: Single);
@@ -4800,9 +4339,6 @@ begin
       TVXMorphableMeshObject(Items[i]).Lerp(morphTargetIndex1, morphTargetIndex2,
         lerpFactor);
 end;
-
-// MorphTargetCount
-//
 
 function TVXMeshObjectList.MorphTargetCount: Integer;
 var
@@ -4818,9 +4354,6 @@ begin
     Result := 0;
 end;
 
-// Clear
-//
-
 procedure TVXMeshObjectList.Clear;
 var
   i: Integer;
@@ -4835,16 +4368,10 @@ begin
   inherited;
 end;
 
-// GetMeshObject
-//
-
 function TVXMeshObjectList.GetMeshObject(Index: Integer): TVXMeshObject;
 begin
   Result := TVXMeshObject(List^[Index]);
 end;
-
-// GetExtents
-//
 
 procedure TVXMeshObjectList.GetExtents(out min, max: TAffineVector);
 var
@@ -4869,9 +4396,6 @@ begin
   end;
 end;
 
-// Translate
-//
-
 procedure TVXMeshObjectList.Translate(const delta: TAffineVector);
 var
   i: Integer;
@@ -4879,9 +4403,6 @@ begin
   for i := 0 to Count - 1 do
     GetMeshObject(i).Translate(delta);
 end;
-
-// ExtractTriangles
-//
 
 function TVXMeshObjectList.ExtractTriangles(texCoords: TAffineVectorList = nil;
   normals: TAffineVectorList = nil): TAffineVectorList;
@@ -4930,9 +4451,6 @@ begin
   end;
 end;
 
-// TriangleCount
-//
-
 function TVXMeshObjectList.TriangleCount: Integer;
 var
   i: Integer;
@@ -4942,9 +4460,6 @@ begin
     Result := Result + Items[i].TriangleCount;
 end;
 
-// Prepare
-//
-
 procedure TVXMeshObjectList.Prepare;
 var
   i: Integer;
@@ -4952,9 +4467,6 @@ begin
   for i := 0 to Count - 1 do
     Items[i].Prepare;
 end;
-
-// FindMeshByName
-//
 
 function TVXMeshObjectList.FindMeshByName(MeshName: string): TVXMeshObject;
 var
@@ -4969,9 +4481,6 @@ begin
     end;
 end;
 
-// BuildTangentSpace
-//
-
 procedure TVXMeshObjectList.BuildTangentSpace(buildBinormals,
   buildTangents: Boolean);
 var
@@ -4982,9 +4491,6 @@ begin
       GetMeshObject(I).BuildTangentSpace(buildBinormals, buildTangents);
 end;
 
-// GetUseVBO
-//
-
 function TVXMeshObjectList.GetUseVBO: Boolean;
 var
   I: Integer;
@@ -4994,9 +4500,6 @@ begin
     for I := 0 to Count - 1 do
       Result := Result and GetMeshObject(I).FUseVBO;
 end;
-
-// SetUseVBO
-//
 
 procedure TVXMeshObjectList.SetUseVBO(const Value: Boolean);
 var
@@ -5011,9 +4514,6 @@ end;
 // ------------------ TVXMeshMorphTarget ------------------
 // ------------------
 
-// CreateOwned
-//
-
 constructor TVXMeshMorphTarget.CreateOwned(AOwner: TVXMeshMorphTargetList);
 begin
   FOwner := AOwner;
@@ -5022,18 +4522,12 @@ begin
     FOwner.Add(Self);
 end;
 
-// Destroy
-//
-
 destructor TVXMeshMorphTarget.Destroy;
 begin
   if Assigned(FOwner) then
     FOwner.Remove(Self);
   inherited;
 end;
-
-// WriteToFiler
-//
 
 procedure TVXMeshMorphTarget.WriteToFiler(writer: TVirtualWriter);
 begin
@@ -5044,9 +4538,6 @@ begin
     //nothing
   end;
 end;
-
-// ReadFromFiler
-//
 
 procedure TVXMeshMorphTarget.ReadFromFiler(reader: TVirtualReader);
 var
@@ -5067,26 +4558,17 @@ end;
 // ------------------ TVXMeshMorphTargetList ------------------
 // ------------------
 
-// CreateOwned
-//
-
 constructor TVXMeshMorphTargetList.CreateOwned(AOwner: TPersistent);
 begin
   FOwner := AOwner;
   Create;
 end;
 
-// Destroy
-//
-
 destructor TVXMeshMorphTargetList.Destroy;
 begin
   Clear;
   inherited;
 end;
-
-// ReadFromFiler
-//
 
 procedure TVXMeshMorphTargetList.ReadFromFiler(reader: TVirtualReader);
 var
@@ -5097,9 +4579,6 @@ begin
     Items[i].FOwner := Self;
 end;
 
-// Translate
-//
-
 procedure TVXMeshMorphTargetList.Translate(const delta: TAffineVector);
 var
   i: Integer;
@@ -5107,9 +4586,6 @@ begin
   for i := 0 to Count - 1 do
     Items[i].Translate(delta);
 end;
-
-// Clear
-//
 
 procedure TVXMeshMorphTargetList.Clear;
 var
@@ -5124,9 +4600,6 @@ begin
   inherited;
 end;
 
-// GeTVXMeshMorphTarget
-//
-
 function TVXMeshMorphTargetList.GeTVXMeshMorphTarget(Index: Integer):
   TVXMeshMorphTarget;
 begin
@@ -5137,26 +4610,17 @@ end;
 // ------------------ TVXMorphableMeshObject ------------------
 // ------------------
 
-// Create
-//
-
 constructor TVXMorphableMeshObject.Create;
 begin
   inherited;
   FMorphTargets := TVXMeshMorphTargetList.CreateOwned(Self);
 end;
 
-// Destroy
-//
-
 destructor TVXMorphableMeshObject.Destroy;
 begin
   FMorphTargets.Free;
   inherited;
 end;
-
-// WriteToFiler
-//
 
 procedure TVXMorphableMeshObject.WriteToFiler(writer: TVirtualWriter);
 begin
@@ -5167,9 +4631,6 @@ begin
     FMorphTargets.WriteToFiler(writer);
   end;
 end;
-
-// ReadFromFiler
-//
 
 procedure TVXMorphableMeshObject.ReadFromFiler(reader: TVirtualReader);
 var
@@ -5186,17 +4647,11 @@ begin
     RaiseFilerException(archiveVersion);
 end;
 
-// Clear;
-//
-
 procedure TVXMorphableMeshObject.Clear;
 begin
   inherited;
   FMorphTargets.Clear;
 end;
-
-// Translate
-//
 
 procedure TVXMorphableMeshObject.Translate(const delta: TAffineVector);
 begin
@@ -5204,9 +4659,6 @@ begin
   MorphTargets.Translate(delta);
   ValidBuffers := ValidBuffers - [vbVertices];
 end;
-
-// MorphTo
-//
 
 procedure TVXMorphableMeshObject.MorphTo(morphTargetIndex: Integer);
 begin
@@ -5227,9 +4679,6 @@ begin
     end;
   end;
 end;
-
-// Lerp
-//
 
 procedure TVXMorphableMeshObject.Lerp(morphTargetIndex1, morphTargetIndex2:
   Integer;
@@ -5265,18 +4714,12 @@ end;
 // ------------------ TVXSkeletonMeshObject ------------------
 // ------------------
 
-// Create
-//
-
 constructor TVXSkeletonMeshObject.Create;
 begin
   FBoneMatrixInvertedMeshes := TList.Create;
   FBackupInvertedMeshes := TList.Create; // ragdoll
   inherited Create;
 end;
-
-// Destroy
-//
 
 destructor TVXSkeletonMeshObject.Destroy;
 begin
@@ -5285,9 +4728,6 @@ begin
   FBackupInvertedMeshes.Free;
   inherited Destroy;
 end;
-
-// WriteToFiler
-//
 
 procedure TVXSkeletonMeshObject.WriteToFiler(writer: TVirtualWriter);
 var
@@ -5305,9 +4745,6 @@ begin
         SizeOf(TVertexBoneWeight));
   end;
 end;
-
-// ReadFromFiler
-//
 
 procedure TVXSkeletonMeshObject.ReadFromFiler(reader: TVirtualReader);
 var
@@ -5330,9 +4767,6 @@ begin
     RaiseFilerException(archiveVersion);
 end;
 
-// Clear
-//
-
 procedure TVXSkeletonMeshObject.Clear;
 var
   i: Integer;
@@ -5346,9 +4780,6 @@ begin
   FBoneMatrixInvertedMeshes.Clear;
 end;
 
-// SetVerticeBoneWeightCount
-//
-
 procedure TVXSkeletonMeshObject.SetVerticeBoneWeightCount(const val: Integer);
 begin
   if val <> FVerticeBoneWeightCount then
@@ -5360,9 +4791,6 @@ begin
   end;
 end;
 
-// SetVerticeBoneWeightCapacity
-//
-
 procedure TVXSkeletonMeshObject.SetVerticeBoneWeightCapacity(const val: Integer);
 begin
   if val <> FVerticeBoneWeightCapacity then
@@ -5372,9 +4800,6 @@ begin
   end;
 end;
 
-// SetBonesPerVertex
-//
-
 procedure TVXSkeletonMeshObject.SetBonesPerVertex(const val: Integer);
 begin
   if val <> FBonesPerVertex then
@@ -5383,9 +4808,6 @@ begin
     ResizeVerticesBonesWeights;
   end;
 end;
-
-// ResizeVerticesBonesWeights
-//
 
 procedure TVXSkeletonMeshObject.ResizeVerticesBonesWeights;
 var
@@ -5435,9 +4857,6 @@ begin
   FLastBonesPerVertex := FBonesPerVertex;
 end;
 
-// AddWeightedBone
-//
-
 procedure TVXSkeletonMeshObject.AddWeightedBone(aBoneID: Integer; aWeight:
   Single);
 begin
@@ -5450,9 +4869,6 @@ begin
     Weight := aWeight;
   end;
 end;
-
-// AddWeightedBones
-//
 
 procedure TVXSkeletonMeshObject.AddWeightedBones(const boneIDs:
   TVertexBoneWeightDynArray);
@@ -5473,9 +4889,6 @@ begin
     end;
   end;
 end;
-
-// FindOrAdd
-//
 
 function TVXSkeletonMeshObject.FindOrAdd(boneID: Integer;
   const vertex, normal: TAffineVector): Integer;
@@ -5507,9 +4920,6 @@ begin
     Result := Normals.Add(normal);
   end;
 end;
-
-// FindOrAdd
-//
 
 function TVXSkeletonMeshObject.FindOrAdd(const boneIDs: TVertexBoneWeightDynArray;
   const vertex, normal: TAffineVector): Integer;
@@ -5544,9 +4954,6 @@ begin
     Result := Normals.Add(normal);
   end;
 end;
-
-// PrepareBoneMatrixInvertedMeshes
-//
 
 procedure TVXSkeletonMeshObject.PrepareBoneMatrixInvertedMeshes;
 var
@@ -5628,9 +5035,6 @@ begin
   FBackupInvertedMeshes.Clear;
 end;
 
-// ApplyCurrentSkeletonFrame
-//
-
 procedure TVXSkeletonMeshObject.ApplyCurrentSkeletonFrame(normalize: Boolean);
 var
   i, j, boneID: Integer;
@@ -5704,9 +5108,6 @@ end;
 // ------------------ TVXFaceGroup ------------------
 // ------------------
 
-// CreateOwned
-//
-
 constructor TVXFaceGroup.CreateOwned(AOwner: TVXFaceGroups);
 begin
   FOwner := AOwner;
@@ -5716,18 +5117,12 @@ begin
     FOwner.Add(Self);
 end;
 
-// Destroy
-//
-
 destructor TVXFaceGroup.Destroy;
 begin
   if Assigned(FOwner) then
     FOwner.Remove(Self);
   inherited;
 end;
-
-// WriteToFiler
-//
 
 procedure TVXFaceGroup.WriteToFiler(writer: TVirtualWriter);
 begin
@@ -5748,9 +5143,6 @@ begin
   end;
 end;
 
-// ReadFromFiler
-//
-
 procedure TVXFaceGroup.ReadFromFiler(reader: TVirtualReader);
 var
   archiveVersion: Integer;
@@ -5770,9 +5162,6 @@ begin
     RaiseFilerException(archiveVersion);
 end;
 
-// AttachLightmap
-//
-
 procedure TVXFaceGroup.AttachLightmap(lightMap: TVXTexture; var mrci:
   TVXRenderContextInfo);
 begin
@@ -5780,15 +5169,12 @@ begin
     with lightMap do
     begin
       Assert(Image.NativeTextureTarget = ttTexture2D);
-      mrci.VKStates.TextureBinding[1, ttTexture2D] := Handle;
+      mrci.VXStates.TextureBinding[1, ttTexture2D] := Handle;
       glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
-      mrci.VKStates.ActiveTexture := 0;
+      mrci.VXStates.ActiveTexture := 0;
     end;
 end;
-
-// AttachOrDetachLightmap
-//
 
 procedure TVXFaceGroup.AttachOrDetachLightmap(var mrci: TVXRenderContextInfo);
 var
@@ -5821,9 +5207,6 @@ begin
   end;
 end;
 
-// PrepareMaterialLibraryCache
-//
-
 procedure TVXFaceGroup.PrepareMaterialLibraryCache(matLib: TVXMaterialLibrary);
 begin
   if (FMaterialName <> '') and (matLib <> nil) then
@@ -5832,16 +5215,10 @@ begin
     FMaterialCache := nil;
 end;
 
-// DropMaterialLibraryCache
-//
-
 procedure TVXFaceGroup.DropMaterialLibraryCache;
 begin
   FMaterialCache := nil;
 end;
-
-// AddToTriangles
-//
 
 procedure TVXFaceGroup.AddToTriangles(aList: TAffineVectorList;
   aTexCoords: TAffineVectorList = nil;
@@ -5850,16 +5227,10 @@ begin
   // nothing
 end;
 
-// Reverse
-//
-
 procedure TVXFaceGroup.Reverse;
 begin
   // nothing
 end;
-
-// Prepare
-//
 
 procedure TVXFaceGroup.Prepare;
 begin
@@ -5870,9 +5241,6 @@ end;
 // ------------------ TFGVertexIndexList ------------------
 // ------------------
 
-// Create
-//
-
 constructor TFGVertexIndexList.Create;
 begin
   inherited;
@@ -5880,18 +5248,12 @@ begin
   FMode := fgmmTriangles;
 end;
 
-// Destroy
-//
-
 destructor TFGVertexIndexList.Destroy;
 begin
   FVertexIndices.Free;
   FIndexVBO.Free;
   inherited;
 end;
-
-// WriteToFiler
-//
 
 procedure TFGVertexIndexList.WriteToFiler(writer: TVirtualWriter);
 begin
@@ -5903,9 +5265,6 @@ begin
     WriteInteger(Integer(FMode));
   end;
 end;
-
-// ReadFromFiler
-//
 
 procedure TFGVertexIndexList.ReadFromFiler(reader: TVirtualReader);
 var
@@ -5923,9 +5282,6 @@ begin
   else
     RaiseFilerException(archiveVersion);
 end;
-
-// SetIndices
-//
 
 procedure TFGVertexIndexList.SetupVBO;
 const
@@ -5952,9 +5308,6 @@ begin
   InvalidateVBO;
 end;
 
-// BuildList
-//
-
 procedure TFGVertexIndexList.BuildList(var mrci: TVXRenderContextInfo);
 const
   cFaceGroupMeshModeToOpenGL: array[TVXFaceGroupMeshMode] of Integer =
@@ -5980,9 +5333,6 @@ begin
       GL_UNSIGNED_INT, VertexIndices.List);
   end;
 end;
-
-// AddToList
-//
 
 procedure TFGVertexIndexList.AddToList(source, destination: TAffineVectorList;
   indices: TIntegerList);
@@ -6056,9 +5406,6 @@ begin
   end;
 end;
 
-// AddToTriangles
-//
-
 procedure TFGVertexIndexList.AddToTriangles(aList: TAffineVectorList;
   aTexCoords: TAffineVectorList = nil;
   aNormals: TAffineVectorList = nil);
@@ -6071,9 +5418,6 @@ begin
   AddToList(mo.Normals, aNormals, VertexIndices);
   InvalidateVBO;
 end;
-
-// TriangleCount
-//
 
 function TFGVertexIndexList.TriangleCount: Integer;
 begin
@@ -6094,26 +5438,17 @@ begin
   end;
 end;
 
-// Reverse
-//
-
 procedure TFGVertexIndexList.Reverse;
 begin
   VertexIndices.Reverse;
   InvalidateVBO;
 end;
 
-// Add
-//
-
 procedure TFGVertexIndexList.Add(idx: Integer);
 begin
   FVertexIndices.Add(idx);
   InvalidateVBO;
 end;
-
-// GetExtents
-//
 
 procedure TFGVertexIndexList.GetExtents(var min, max: TAffineVector);
 var
@@ -6139,9 +5474,6 @@ begin
     end;
   end;
 end;
-
-// ConvertToList
-//
 
 procedure TFGVertexIndexList.ConvertToList;
 var
@@ -6180,9 +5512,6 @@ begin
   end;
 end;
 
-// GetNormal
-//
-
 function TFGVertexIndexList.GetNormal: TAffineVector;
 begin
   if VertexIndices.Count < 3 then
@@ -6203,9 +5532,6 @@ end;
 // ------------------ TFGVertexNormalTexIndexList ------------------
 // ------------------
 
-// Create
-//
-
 constructor TFGVertexNormalTexIndexList.Create;
 begin
   inherited;
@@ -6213,18 +5539,12 @@ begin
   FTexCoordIndices := TIntegerList.Create;
 end;
 
-// Destroy
-//
-
 destructor TFGVertexNormalTexIndexList.Destroy;
 begin
   FTexCoordIndices.Free;
   FNormalIndices.Free;
   inherited;
 end;
-
-// WriteToFiler
-//
 
 procedure TFGVertexNormalTexIndexList.WriteToFiler(writer: TVirtualWriter);
 begin
@@ -6236,9 +5556,6 @@ begin
     FTexCoordIndices.WriteToFiler(writer);
   end;
 end;
-
-// ReadFromFiler
-//
 
 procedure TFGVertexNormalTexIndexList.ReadFromFiler(reader: TVirtualReader);
 var
@@ -6256,25 +5573,16 @@ begin
     RaiseFilerException(archiveVersion);
 end;
 
-// SetNormalIndices
-//
-
 procedure TFGVertexNormalTexIndexList.SetNormalIndices(const val: TIntegerList);
 begin
   FNormalIndices.Assign(val);
 end;
-
-// SetTexCoordIndices
-//
 
 procedure TFGVertexNormalTexIndexList.SetTexCoordIndices(const val:
   TIntegerList);
 begin
   FTexCoordIndices.Assign(val);
 end;
-
-// BuildList
-//
 
 procedure TFGVertexNormalTexIndexList.BuildList(var mrci: TVXRenderContextInfo);
 var
@@ -6323,9 +5631,6 @@ begin
   glEnd;
 end;
 
-// AddToTriangles
-//
-
 procedure TFGVertexNormalTexIndexList.AddToTriangles(aList: TAffineVectorList;
   aTexCoords: TAffineVectorList = nil;
   aNormals: TAffineVectorList = nil);
@@ -6334,9 +5639,6 @@ begin
   AddToList(Owner.Owner.TexCoords, aTexCoords, TexCoordIndices);
   AddToList(Owner.Owner.Normals, aNormals, NormalIndices);
 end;
-
-// Add
-//
 
 procedure TFGVertexNormalTexIndexList.Add(vertexIdx, normalIdx, texCoordIdx:
   Integer);
@@ -6350,26 +5652,17 @@ end;
 // ------------------ TFGIndexTexCoordList ------------------
 // ------------------
 
-// Create
-//
-
 constructor TFGIndexTexCoordList.Create;
 begin
   inherited;
   FTexCoords := TAffineVectorList.Create;
 end;
 
-// Destroy
-//
-
 destructor TFGIndexTexCoordList.Destroy;
 begin
   FTexCoords.Free;
   inherited;
 end;
-
-// WriteToFiler
-//
 
 procedure TFGIndexTexCoordList.WriteToFiler(writer: TVirtualWriter);
 begin
@@ -6380,9 +5673,6 @@ begin
     FTexCoords.WriteToFiler(writer);
   end;
 end;
-
-// ReadFromFiler
-//
 
 procedure TFGIndexTexCoordList.ReadFromFiler(reader: TVirtualReader);
 var
@@ -6399,16 +5689,10 @@ begin
     RaiseFilerException(archiveVersion);
 end;
 
-// SetTexCoords
-//
-
 procedure TFGIndexTexCoordList.SetTexCoords(const val: TAffineVectorList);
 begin
   FTexCoords.Assign(val);
 end;
-
-// BuildList
-//
 
 procedure TFGIndexTexCoordList.BuildList(var mrci: TVXRenderContextInfo);
 var
@@ -6464,9 +5748,6 @@ begin
   CheckOpenGLError;
 end;
 
-// AddToTriangles
-//
-
 procedure TFGIndexTexCoordList.AddToTriangles(aList: TAffineVectorList;
   aTexCoords: TAffineVectorList = nil;
   aNormals: TAffineVectorList = nil);
@@ -6512,17 +5793,11 @@ begin
   end;
 end;
 
-// Add (affine)
-//
-
 procedure TFGIndexTexCoordList.Add(idx: Integer; const texCoord: TAffineVector);
 begin
   TexCoords.Add(texCoord);
   inherited Add(idx);
 end;
-
-// Add (s, t)
-//
 
 procedure TFGIndexTexCoordList.Add(idx: Integer; const s, t: Single);
 begin
@@ -6534,26 +5809,17 @@ end;
 // ------------------ TVXFaceGroups ------------------
 // ------------------
 
-// CreateOwned
-//
-
 constructor TVXFaceGroups.CreateOwned(AOwner: TVXMeshObject);
 begin
   FOwner := AOwner;
   Create;
 end;
 
-// Destroy
-//
-
 destructor TVXFaceGroups.Destroy;
 begin
   Clear;
   inherited;
 end;
-
-// ReadFromFiler
-//
 
 procedure TVXFaceGroups.ReadFromFiler(reader: TVirtualReader);
 var
@@ -6563,9 +5829,6 @@ begin
   for i := 0 to Count - 1 do
     Items[i].FOwner := Self;
 end;
-
-// Clear
-//
 
 procedure TVXFaceGroups.Clear;
 var
@@ -6584,16 +5847,10 @@ begin
   inherited;
 end;
 
-// GetFaceGroup
-//
-
 function TVXFaceGroups.GetFaceGroup(Index: Integer): TVXFaceGroup;
 begin
   Result := TVXFaceGroup(List^[Index]);
 end;
-
-// PrepareMaterialLibraryCache
-//
 
 procedure TVXFaceGroups.PrepareMaterialLibraryCache(matLib: TVXMaterialLibrary);
 var
@@ -6603,9 +5860,6 @@ begin
     TVXFaceGroup(List^[i]).PrepareMaterialLibraryCache(matLib);
 end;
 
-// DropMaterialLibraryCache
-//
-
 procedure TVXFaceGroups.DropMaterialLibraryCache;
 var
   i: Integer;
@@ -6613,9 +5867,6 @@ begin
   for i := 0 to Count - 1 do
     TVXFaceGroup(List^[i]).DropMaterialLibraryCache;
 end;
-
-// AddToTriangles
-//
 
 procedure TVXFaceGroups.AddToTriangles(aList: TAffineVectorList;
   aTexCoords: TAffineVectorList = nil;
@@ -6626,9 +5877,6 @@ begin
   for i := 0 to Count - 1 do
     Items[i].AddToTriangles(aList, aTexCoords, aNormals);
 end;
-
-// MaterialLibrary
-//
 
 function TVXFaceGroups.MaterialLibrary: TVXMaterialLibrary;
 var
@@ -6651,9 +5899,6 @@ begin
   end;
   Result := nil;
 end;
-
-// CompareMaterials
-//
 
 function CompareMaterials(item1, item2: TObject): Integer;
 
@@ -6685,9 +5930,6 @@ begin
     Result := 1;
 end;
 
-// SortByMaterial
-//
-
 procedure TVXFaceGroups.SortByMaterial;
 begin
   PrepareMaterialLibraryCache(Owner.Owner.Owner.MaterialLibrary);
@@ -6698,25 +5940,16 @@ end;
 // ------------------ TVXVectorFile ------------------
 // ------------------
 
-// Create
-//
-
 constructor TVXVectorFile.Create(AOwner: TPersistent);
 begin
   Assert(AOwner is TVXBaseMesh);
   inherited;
 end;
 
-// Owner
-//
-
 function TVXVectorFile.Owner: TVXBaseMesh;
 begin
   Result := TVXBaseMesh(GetOwner);
 end;
-
-// SetNormalsOrientation
-//
 
 procedure TVXVectorFile.SetNormalsOrientation(const val: TMeshNormalsOrientation);
 begin
@@ -6727,24 +5960,15 @@ end;
 // ------------------ TVXGLSMVectorFile ------------------
 // ------------------
 
-// Capabilities
-//
-
 class function TVXGLSMVectorFile.Capabilities: TVXDataFileCapabilities;
 begin
   Result := [dfcRead, dfcWrite];
 end;
 
-// LoadFromStream
-//
-
 procedure TVXGLSMVectorFile.LoadFromStream(aStream: TStream);
 begin
   Owner.MeshObjects.LoadFromStream(aStream);
 end;
-
-// SaveToStream
-//
 
 procedure TVXGLSMVectorFile.SaveToStream(aStream: TStream);
 begin
@@ -6754,9 +5978,6 @@ end;
 // ------------------
 // ------------------ TVXBaseMesh ------------------
 // ------------------
-
-// Create
-//
 
 constructor TVXBaseMesh.Create(AOwner: TComponent);
 begin
@@ -6773,9 +5994,6 @@ begin
     csPoint);
 end;
 
-// Destroy
-//
-
 destructor TVXBaseMesh.Destroy;
 begin
   FConnectivity.Free;
@@ -6785,9 +6003,6 @@ begin
   FAutoScaling.Free;
   inherited Destroy;
 end;
-
-// Assign
-//
 
 procedure TVXBaseMesh.Assign(Source: TPersistent);
 begin
@@ -6811,9 +6026,6 @@ begin
   inherited Assign(Source);
 end;
 
-// LoadFromFile
-//
-
 procedure TVXBaseMesh.LoadFromFile(const filename: string);
 var
   fs: TStream;
@@ -6830,9 +6042,6 @@ begin
     end;
   end;
 end;
-
-// LoadFromStream
-//
 
 procedure TVXBaseMesh.LoadFromStream(const fileName: string; aStream: TStream);
 var
@@ -6867,9 +6076,6 @@ begin
   end;
 end;
 
-// SaveToFile
-//
-
 procedure TVXBaseMesh.SaveToFile(const filename: string);
 var
   fs: TStream;
@@ -6884,9 +6090,6 @@ begin
     end;
   end;
 end;
-
-// SaveToStream
-//
 
 procedure TVXBaseMesh.SaveToStream(const fileName: string; aStream: TStream);
 var
@@ -6907,9 +6110,6 @@ begin
   end;
 end;
 
-// AddDataFromFile
-//
-
 procedure TVXBaseMesh.AddDataFromFile(const filename: string);
 var
   fs: TStream;
@@ -6924,9 +6124,6 @@ begin
     end;
   end;
 end;
-
-// AddDataFromStream
-//
 
 procedure TVXBaseMesh.AddDataFromStream(const filename: string; aStream:
   TStream);
@@ -6953,9 +6150,6 @@ begin
   end;
 end;
 
-// GetExtents
-//
-
 procedure TVXBaseMesh.GetExtents(out min, max: TAffineVector);
 var
   i, k: Integer;
@@ -6979,9 +6173,6 @@ begin
   end;
 end;
 
-// GetBarycenter
-//
-
 function TVXBaseMesh.GetBarycenter: TAffineVector;
 var
   i, nb: Integer;
@@ -6994,16 +6185,10 @@ begin
     ScaleVector(Result, 1 / nb);
 end;
 
-// LastLoadedFilename
-//
-
 function TVXBaseMesh.LastLoadedFilename: string;
 begin
   result := FLastLoadedFilename;
 end;
-
-// SetMaterialLibrary
-//
 
 procedure TVXBaseMesh.SetMaterialLibrary(const val: TVXMaterialLibrary);
 begin
@@ -7023,9 +6208,6 @@ begin
   end;
 end;
 
-// SetMaterialLibrary
-//
-
 procedure TVXBaseMesh.SetLightmapLibrary(const val: TVXMaterialLibrary);
 begin
   if FLightmapLibrary <> val then
@@ -7042,9 +6224,6 @@ begin
   end;
 end;
 
-// SetNormalsOrientation
-//
-
 procedure TVXBaseMesh.SetNormalsOrientation(const val: TMeshNormalsOrientation);
 begin
   if val <> FNormalsOrientation then
@@ -7053,9 +6232,6 @@ begin
     StructureChanged;
   end;
 end;
-
-// SetOverlaySkeleton
-//
 
 procedure TVXBaseMesh.SetOverlaySkeleton(const val: Boolean);
 begin
@@ -7066,16 +6242,10 @@ begin
   end;
 end;
 
-// SetAutoScaling
-//
-
 procedure TVXBaseMesh.SetAutoScaling(const Value: TVXCoordinates);
 begin
   FAutoScaling.SetPoint(Value.DirectX, Value.DirectY, Value.DirectZ);
 end;
-
-// Notification
-//
 
 procedure TVXBaseMesh.Notification(AComponent: TComponent; Operation:
   TOperation);
@@ -7089,9 +6259,6 @@ begin
   end;
   inherited;
 end;
-
-// AxisAlignedDimensionsUnscaled
-//
 
 function TVXBaseMesh.AxisAlignedDimensionsUnscaled: TVector;
 var
@@ -7107,9 +6274,6 @@ begin
   end;
   SetVector(Result, FAxisAlignedDimensionsCache);
 end;
-
-// BarycenterOffset
-//
 
 function TVXBaseMesh.BarycenterOffset: TVector;
 var
@@ -7128,23 +6292,16 @@ begin
   Result := FBaryCenterOffset;
 end;
 
-// BarycenterPosition
-//
-
 function TVXBaseMesh.BarycenterPosition: TVector;
 begin
   Result := VectorAdd(Position.DirectVector, BarycenterOffset);
 end;
 
-// BarycenterAbsolutePosition
-//
 function TVXBaseMesh.BarycenterAbsolutePosition: TVector;
 begin
   Result := LocalToAbsolute(BarycenterPosition);
 end;
 
-// DestroyHandle
-//
 procedure TVXBaseMesh.DestroyHandle;
 begin
   if Assigned(FMaterialLibrary) then
@@ -7154,16 +6311,11 @@ begin
   inherited;
 end;
 
-// PrepareVectorFile
-//
 
 procedure TVXBaseMesh.PrepareVectorFile(aFile: TVXVectorFile);
 begin
   aFile.NormalsOrientation := NormalsOrientation;
 end;
-
-// PerformAutoCentering
-//
 
 procedure TVXBaseMesh.PerformAutoCentering;
 var
@@ -7195,9 +6347,6 @@ begin
     Position.Translate(VectorNegate(delta));
 end;
 
-// PerformAutoScaling
-//
-
 procedure TVXBaseMesh.PerformAutoScaling;
 var
   i: integer;
@@ -7215,16 +6364,10 @@ begin
   end;
 end;
 
-// PrepareMesh
-//
-
 procedure TVXBaseMesh.PrepareMesh;
 begin
   StructureChanged;
 end;
-
-// PrepareMaterialLibraryCache
-//
 
 procedure TVXBaseMesh.PrepareMaterialLibraryCache;
 begin
@@ -7233,9 +6376,6 @@ begin
   MeshObjects.PrepareMaterialLibraryCache(FMaterialLibrary);
   FMaterialLibraryCachesPrepared := True;
 end;
-
-// DropMaterialLibraryCache
-//
 
 procedure TVXBaseMesh.DropMaterialLibraryCache;
 begin
@@ -7246,18 +6386,12 @@ begin
   end;
 end;
 
-// PrepareBuildList
-//
-
 procedure TVXBaseMesh.PrepareBuildList(var mrci: TVXRenderContextInfo);
 begin
   MeshObjects.PrepareBuildList(mrci);
   if LightmapLibrary <> nil then
     LightmapLibrary.Materials.PrepareBuildList
 end;
-
-// SetUseMeshMaterials
-//
 
 procedure TVXBaseMesh.SetUseMeshMaterials(const val: Boolean);
 begin
@@ -7270,16 +6404,10 @@ begin
   end;
 end;
 
-// BuildList
-//
-
 procedure TVXBaseMesh.BuildList(var rci: TVXRenderContextInfo);
 begin
   MeshObjects.BuildList(rci);
 end;
-
-// DoRender
-//
 
 procedure TVXBaseMesh.DoRender(var rci: TVXRenderContextInfo;
   renderSelf, renderChildren: Boolean);
@@ -7291,7 +6419,7 @@ begin
     // set winding
     case FNormalsOrientation of
       mnoDefault: ; // nothing
-      mnoInvert: rci.VKStates.InvertFrontFace;
+      mnoInvert: rci.VXStates.InvertFrontFace;
     else
       Assert(False);
     end;
@@ -7319,7 +6447,7 @@ begin
           or UseMeshMaterials then
           BuildList(rci)
         else
-          rci.VKStates.CallList(GetHandle(rci));
+          rci.VXStates.CallList(GetHandle(rci));
       until not Material.UnApply(rci);
       rci.materialLibrary := nil;
     end
@@ -7328,19 +6456,16 @@ begin
       if (osDirectDraw in ObjectStyle) or rci.amalgamating then
         BuildList(rci)
       else
-        rci.VKStates.CallList(GetHandle(rci));
+        rci.VXStates.CallList(GetHandle(rci));
     end;
     if FNormalsOrientation <> mnoDefault then
-      rci.VKStates.InvertFrontFace;
+      rci.VXStates.InvertFrontFace;
   end;
   if Assigned(LightmapLibrary) then
     xgl.AllowSecondTextureUnit;
   if renderChildren and (Count > 0) then
     Self.RenderChildren(0, Count - 1, rci);
 end;
-
-// StructureChanged
-//
 
 procedure TVXBaseMesh.StructureChanged;
 begin
@@ -7351,16 +6476,10 @@ begin
   inherited;
 end;
 
-// StructureChangedNoPrepare
-//
-
 procedure TVXBaseMesh.StructureChangedNoPrepare;
 begin
   inherited StructureChanged;
 end;
-
-// RayCastIntersect
-//
 
 function TVXBaseMesh.RayCastIntersect(const rayStart, rayVector: TVector;
   intersectPoint: PVector = nil;
@@ -7413,9 +6532,6 @@ begin
   end;
 end;
 
-// GenerateSilhouette
-//
-
 function TVXBaseMesh.GenerateSilhouette(const silhouetteParameters:
   TVXSilhouetteParameters): TVXSilhouette;
 var
@@ -7444,9 +6560,6 @@ begin
   Result := sil;
 end;
 
-// BuildSilhouetteConnectivityData
-//
-
 procedure TVXBaseMesh.BuildSilhouetteConnectivityData;
 var
   i, j: Integer;
@@ -7470,9 +6583,6 @@ end;
 // ------------------ TVXFreeForm ------------------
 // ------------------
 
-// Create
-//
-
 constructor TVXFreeForm.Create(AOwner: TComponent);
 begin
   inherited;
@@ -7480,17 +6590,11 @@ begin
   FUseMeshMaterials := True;
 end;
 
-// Destroy
-//
-
 destructor TVXFreeForm.Destroy;
 begin
   FOctree.Free;
   inherited Destroy;
 end;
-
-// GetOctree
-//
 
 function TVXFreeForm.GetOctree: TVXOctree;
 begin
@@ -7498,9 +6602,6 @@ begin
   //     FOctree:=TOctree.Create;        //moved this code to BuildOctree
   Result := FOctree;
 end;
-
-// BuildOctree
-//
 
 procedure TVXFreeForm.BuildOctree(TreeDepth: integer = 3);
 var
@@ -7522,9 +6623,6 @@ begin
     tl.Free;
   end;
 end;
-
-// OctreeRayCastIntersect
-//
 
 function TVXFreeForm.OctreeRayCastIntersect(const rayStart, rayVector: TVector;
   intersectPoint: PVector = nil;
@@ -7550,9 +6648,6 @@ begin
     end;
   end;
 end;
-
-// OctreePointInMesh
-//
 
 function TVXFreeForm.OctreePointInMesh(const Point: TVector): boolean;
 const
@@ -7611,9 +6706,6 @@ begin
   end;
 end;
 
-// OctreeSphereIntersect
-//
-
 function TVXFreeForm.OctreeSphereSweepIntersect(const rayStart, rayVector:
   TVector;
   const velocity, radius: Single;
@@ -7642,9 +6734,6 @@ begin
   end;
 end;
 
-// OctreeTriangleIntersect
-//
-
 function TVXFreeForm.OctreeTriangleIntersect(const v1, v2, v3: TAffineVector):
   boolean;
 var
@@ -7658,9 +6747,6 @@ begin
 
   Result := Octree.TriangleIntersect(t1, t2, t3);
 end;
-
-// OctreeAABBIntersect
-//
 
 function TVXFreeForm.OctreeAABBIntersect(const AABB: TAABB;
   objMatrix, invObjMatrix: TMatrix; triangles: TAffineVectorList = nil):
@@ -7684,16 +6770,10 @@ end;
 // ------------------ TVXActorAnimation ------------------
 // ------------------
 
-// Create
-//
-
 constructor TVXActorAnimation.Create(Collection: TCollection);
 begin
   inherited Create(Collection);
 end;
-
-// Destroy
-//
 
 destructor TVXActorAnimation.Destroy;
 begin
@@ -7702,9 +6782,6 @@ begin
       FTargetSmoothAnimation := nil;
   inherited Destroy;
 end;
-
-// Assign
-//
 
 procedure TVXActorAnimation.Assign(Source: TPersistent);
 begin
@@ -7719,16 +6796,10 @@ begin
     inherited;
 end;
 
-// GetDisplayName
-//
-
 function TVXActorAnimation.GetDisplayName: string;
 begin
   Result := Format('%d - %s [%d - %d]', [Index, Name, StartFrame, EndFrame]);
 end;
-
-// FrameCount
-//
 
 function TVXActorAnimation.FrameCount: Integer;
 begin
@@ -7743,9 +6814,6 @@ begin
     Assert(False);
   end;
 end;
-
-// SetStartFrame
-//
 
 procedure TVXActorAnimation.SetStartFrame(const val: Integer);
 var
@@ -7765,9 +6833,6 @@ begin
     FEndFrame := FStartFrame;
 end;
 
-// SetEndFrame
-//
-
 procedure TVXActorAnimation.SetEndFrame(const val: Integer);
 var
   m: Integer;
@@ -7786,9 +6851,6 @@ begin
     FStartFrame := FEndFrame;
 end;
 
-// SetReference
-//
-
 procedure TVXActorAnimation.SetReference(val: TVXActorAnimationReference);
 begin
   if val <> FReference then
@@ -7798,9 +6860,6 @@ begin
     EndFrame := EndFrame;
   end;
 end;
-
-// SetAsString
-//
 
 procedure TVXActorAnimation.SetAsString(const val: string);
 var
@@ -7829,9 +6888,6 @@ begin
   end;
 end;
 
-// GetAsString
-//
-
 function TVXActorAnimation.GetAsString: string;
 const
   cAARToString: array[aarMorph..aarSkeleton] of string = ('morph', 'skeleton');
@@ -7840,24 +6896,15 @@ begin
     [FName, FStartFrame, FEndFrame, cAARToString[Reference]]);
 end;
 
-// OwnerActor
-//
-
 function TVXActorAnimation.OwnerActor: TVXActor;
 begin
   Result := ((Collection as TVXActorAnimations).GetOwner as TVXActor);
 end;
 
-// MakeSkeletalTranslationStatic
-//
-
 procedure TVXActorAnimation.MakeSkeletalTranslationStatic;
 begin
   OwnerActor.Skeleton.MakeSkeletalTranslationStatic(StartFrame, EndFrame);
 end;
-
-// MakeSkeletalRotationDelta
-//
 
 procedure TVXActorAnimation.MakeSkeletalRotationDelta;
 begin
@@ -7868,41 +6915,26 @@ end;
 // ------------------ TVXActorAnimations ------------------
 // ------------------
 
-// Create
-//
-
 constructor TVXActorAnimations.Create(AOwner: TVXActor);
 begin
   FOwner := AOwner;
   inherited Create(TVXActorAnimation);
 end;
 
-// GetOwner
-//
-
 function TVXActorAnimations.GetOwner: TPersistent;
 begin
   Result := FOwner;
 end;
-
-// SetItems
-//
 
 procedure TVXActorAnimations.SetItems(index: Integer; const val: TVXActorAnimation);
 begin
   inherited Items[index] := val;
 end;
 
-// GetItems
-//
-
 function TVXActorAnimations.GetItems(index: Integer): TVXActorAnimation;
 begin
   Result := TVXActorAnimation(inherited Items[index]);
 end;
-
-// Last
-//
 
 function TVXActorAnimations.Last: TVXActorAnimation;
 begin
@@ -7912,24 +6944,15 @@ begin
     Result := nil;
 end;
 
-// Add
-//
-
 function TVXActorAnimations.Add: TVXActorAnimation;
 begin
   Result := (inherited Add) as TVXActorAnimation;
 end;
 
-// FindItemID
-//
-
 function TVXActorAnimations.FindItemID(ID: Integer): TVXActorAnimation;
 begin
   Result := (inherited FindItemID(ID)) as TVXActorAnimation;
 end;
-
-// FindName
-//
 
 function TVXActorAnimations.FindName(const aName: string): TVXActorAnimation;
 var
@@ -7943,9 +6966,6 @@ begin
       Break;
     end;
 end;
-
-// FindFrame
-//
 
 function TVXActorAnimations.FindFrame(aFrame: Integer;
   aReference: TVXActorAnimationReference): TVXActorAnimation;
@@ -7963,9 +6983,6 @@ begin
       end;
 end;
 
-// SetToStrings
-//
-
 procedure TVXActorAnimations.SetToStrings(aStrings: TStrings);
 
 var
@@ -7981,9 +6998,6 @@ begin
   end;
 end;
 
-// SaveToStream
-//
-
 procedure TVXActorAnimations.SaveToStream(aStream: TStream);
 var
   i: Integer;
@@ -7993,9 +7007,6 @@ begin
   for i := 0 to Count - 1 do
     WriteCRLFString(aStream, AnsiString(Items[i].AsString));
 end;
-
-// LoadFromStream
-//
 
 procedure TVXActorAnimations.LoadFromStream(aStream: TStream);
 var
@@ -8009,9 +7020,6 @@ begin
     Add.AsString := string(ReadCRLFString(aStream));
 end;
 
-// SaveToFile
-//
-
 procedure TVXActorAnimations.SaveToFile(const fileName: string);
 var
   fs: TStream;
@@ -8023,9 +7031,6 @@ begin
     fs.Free;
   end;
 end;
-
-// LoadFromFile
-//
 
 procedure TVXActorAnimations.LoadFromFile(const fileName: string);
 var
@@ -8043,26 +7048,17 @@ end;
 // ------------------ TVXBaseAnimationControler ------------------
 // ------------------
 
-// Create
-//
-
 constructor TVXBaseAnimationControler.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   FEnabled := True;
 end;
 
-// Destroy
-//
-
 destructor TVXBaseAnimationControler.Destroy;
 begin
   SetActor(nil);
   inherited Destroy;
 end;
-
-// Notification
-//
 
 procedure TVXBaseAnimationControler.Notification(AComponent: TComponent;
   Operation: TOperation);
@@ -8072,17 +7068,11 @@ begin
   inherited;
 end;
 
-// DoChange
-//
-
 procedure TVXBaseAnimationControler.DoChange;
 begin
   if Assigned(FActor) then
     FActor.NotifyChange(Self);
 end;
-
-// SetEnabled
-//
 
 procedure TVXBaseAnimationControler.SetEnabled(const val: Boolean);
 begin
@@ -8093,9 +7083,6 @@ begin
       DoChange;
   end;
 end;
-
-// SetActor
-//
 
 procedure TVXBaseAnimationControler.SetActor(const val: TVXActor);
 begin
@@ -8112,9 +7099,6 @@ begin
   end;
 end;
 
-// Apply
-//
-
 function TVXBaseAnimationControler.Apply(var lerpInfo: TVXBlendedLerpInfo):
   Boolean;
 begin
@@ -8126,17 +7110,11 @@ end;
 // ------------------ TVXAnimationControler ------------------
 // ------------------
 
-// DoChange
-//
-
 procedure TVXAnimationControler.DoChange;
 begin
   if AnimationName <> '' then
     inherited;
 end;
-
-// SetAnimationName
-//
 
 procedure TVXAnimationControler.SetAnimationName(const val:
   TVXActorAnimationName);
@@ -8148,9 +7126,6 @@ begin
   end;
 end;
 
-// SetRatio
-//
-
 procedure TVXAnimationControler.SetRatio(const val: Single);
 begin
   if FRatio <> val then
@@ -8159,9 +7134,6 @@ begin
     DoChange;
   end;
 end;
-
-// Apply
-//
 
 function TVXAnimationControler.Apply(var lerpInfo: TVXBlendedLerpInfo): Boolean;
 var
@@ -8197,9 +7169,9 @@ begin
     begin
       baseDelta := anim.EndFrame - anim.StartFrame;
       lerpFactor := anim.StartFrame + baseDelta * Ratio;
-      frameIndex1 := VXS.VectorGeometry.Trunc(lerpFactor);
+      frameIndex1 := Trunc(lerpFactor);
       frameIndex2 := frameIndex1 + 1;
-      lerpFactor := VXS.VectorGeometry.Frac(lerpFactor);
+      lerpFactor := Frac(lerpFactor);
     end;
     weight := 1;
     externalRotations := nil;
@@ -8210,9 +7182,6 @@ end;
 // ------------------
 // ------------------ TVXActor ------------------
 // ------------------
-
-// Create
-//
 
 constructor TVXActor.Create(AOwner: TComponent);
 begin
@@ -8226,18 +7195,12 @@ begin
   FOptions := cDefaultActorOptions;
 end;
 
-// Destroy
-//
-
 destructor TVXActor.Destroy;
 begin
   inherited Destroy;
   FControlers.Free;
   FAnimations.Free;
 end;
-
-// Assign
-//
 
 procedure TVXActor.Assign(Source: TPersistent);
 begin
@@ -8250,9 +7213,6 @@ begin
   end;
 end;
 
-// RegisterControler
-//
-
 procedure TVXActor.RegisterControler(aControler: TVXBaseAnimationControler);
 begin
   if not Assigned(FControlers) then
@@ -8260,9 +7220,6 @@ begin
   FControlers.Add(aControler);
   FreeNotification(aControler);
 end;
-
-// UnRegisterControler
-//
 
 procedure TVXActor.UnRegisterControler(aControler: TVXBaseAnimationControler);
 begin
@@ -8272,9 +7229,6 @@ begin
   if FControlers.Count = 0 then
     FreeAndNil(FControlers);
 end;
-
-// SetCurrentFrame
-//
 
 procedure TVXActor.SetCurrentFrame(val: Integer);
 begin
@@ -8302,16 +7256,10 @@ begin
   end;
 end;
 
-// SetCurrentFrame
-//
-
 procedure TVXActor.SetCurrentFrameDirect(const Value: Integer);
 begin
   FCurrentFrame := Value;
 end;
-
-// SetStartFrame
-//
 
 procedure TVXActor.SetStartFrame(val: Integer);
 begin
@@ -8323,9 +7271,6 @@ begin
     CurrentFrame := FStartFrame;
 end;
 
-// SetEndFrame
-//
-
 procedure TVXActor.SetEndFrame(val: Integer);
 begin
   if (val >= 0) and (val < FrameCount) and (val <> EndFrame) then
@@ -8333,9 +7278,6 @@ begin
   if CurrentFrame > EndFrame then
     CurrentFrame := FEndFrame;
 end;
-
-// SetReference
-//
 
 procedure TVXActor.SetReference(val: TVXActorAnimationReference);
 begin
@@ -8349,24 +7291,15 @@ begin
   end;
 end;
 
-// SetAnimations
-//
-
 procedure TVXActor.SetAnimations(const val: TVXActorAnimations);
 begin
   FAnimations.Assign(val);
 end;
 
-// StoreAnimations
-//
-
 function TVXActor.StoreAnimations: Boolean;
 begin
   Result := (FAnimations.Count > 0);
 end;
-
-// SetOptions
-//
 
 procedure TVXActor.SetOptions(const val: TVXActorOptions);
 begin
@@ -8376,9 +7309,6 @@ begin
     StructureChanged;
   end;
 end;
-
-// NextFrameIndex
-//
 
 function TVXActor.NextFrameIndex: Integer;
 begin
@@ -8431,9 +7361,6 @@ begin
   end;
 end;
 
-// NextFrame
-//
-
 procedure TVXActor.NextFrame(nbSteps: Integer = 1);
 var
   n: Integer;
@@ -8450,9 +7377,6 @@ begin
   end;
 end;
 
-// PrevFrame
-//
-
 procedure TVXActor.PrevFrame(nbSteps: Integer = 1);
 var
   value: Integer;
@@ -8466,9 +7390,6 @@ begin
   end;
   CurrentFrame := Value;
 end;
-
-// DoAnimate
-//
 
 procedure TVXActor.DoAnimate();
 var
@@ -8547,22 +7468,16 @@ begin
   end;
 end;
 
-// BuildList
-//
-
 procedure TVXActor.BuildList(var rci: TVXRenderContextInfo);
 begin
   DoAnimate;
   inherited;
   if OverlaySkeleton then
   begin
-    rci.VKStates.Disable(stDepthTest);
+    rci.VXStates.Disable(stDepthTest);
     Skeleton.RootBones.BuildList(rci);
   end;
 end;
-
-// PrepareMesh
-//
 
 procedure TVXActor.PrepareMesh;
 begin
@@ -8574,16 +7489,10 @@ begin
   inherited;
 end;
 
-// PrepareBuildList
-//
-
 procedure TVXActor.PrepareBuildList(var mrci: TVXRenderContextInfo);
 begin
   // no preparation needed for actors, they don't use buildlists
 end;
-
-// FrameCount
-//
 
 function TVXActor.FrameCount: Integer;
 begin
@@ -8599,9 +7508,6 @@ begin
     Assert(False);
   end;
 end;
-
-// DoProgress
-//
 
 procedure TVXActor.DoProgress(const progressTime: TProgressTimes);
 var
@@ -8633,9 +7539,6 @@ begin
   end;
 end;
 
-// LoadFromStream
-//
-
 procedure TVXActor.LoadFromStream(const fileName: string; aStream: TStream);
 begin
   if fileName <> '' then
@@ -8645,17 +7548,11 @@ begin
   end;
 end;
 
-// SwitchToAnimation
-//
-
 procedure TVXActor.SwitchToAnimation(const animationName: string; smooth: Boolean
   = False);
 begin
   SwitchToAnimation(Animations.FindName(animationName), smooth);
 end;
-
-// SwitchToAnimation
-//
 
 procedure TVXActor.SwitchToAnimation(animationIndex: Integer; smooth: Boolean =
   False);
@@ -8663,9 +7560,6 @@ begin
   if (animationIndex >= 0) and (animationIndex < Animations.Count) then
     SwitchToAnimation(Animations[animationIndex], smooth);
 end;
-
-// SwitchToAnimation
-//
 
 procedure TVXActor.SwitchToAnimation(anAnimation: TVXActorAnimation; smooth:
   Boolean = False);
@@ -8687,9 +7581,6 @@ begin
   end;
 end;
 
-// CurrentAnimation
-//
-
 function TVXActor.CurrentAnimation: string;
 var
   aa: TVXActorAnimation;
@@ -8700,9 +7591,6 @@ begin
   else
     Result := '';
 end;
-
-// Synchronize
-//
 
 procedure TVXActor.Synchronize(referenceActor: TVXActor);
 begin
@@ -8735,11 +7623,7 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
   RegisterVectorFileFormat('glsm', 'VXScene Mesh', TVXGLSMVectorFile);

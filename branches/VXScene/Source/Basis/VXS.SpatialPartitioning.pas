@@ -67,7 +67,7 @@ end;
 procedure RenderAABB(var rci: TVXRenderContextInfo; AABB: TAABB; w, r, g, b: single);
 begin
   glColor3f(r, g, b);
-  rci.VKStates.LineWidth := w;
+  rci.VXStates.LineWidth := w;
 
   glBegin(GL_LINE_STRIP);
   glVertex3f(AABB.min.X, AABB.min.Y, AABB.min.Z);
@@ -118,7 +118,7 @@ procedure RenderSpatialPartitioning(var rci: TVXRenderContextInfo;
     end;
   end;
 begin
-  rci.VKStates.Disable(stLighting);
+  rci.VXStates.Disable(stLighting);
   RenderSectorNode(Space.RootNode);
 end;
 

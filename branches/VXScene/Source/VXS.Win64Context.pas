@@ -41,8 +41,8 @@ type
     FLegacyContextsOnly: Boolean;
     FSwapBufferSupported: Boolean;
     procedure SpawnLegacyContext(aDC: HDC); // used for WGL_pixel_format soup
-    procedure CreateOldContext(aDC: HDC); dynamic;
-    procedure CreateNewContext(aDC: HDC); dynamic;
+    procedure CreateOldContext(aDC: HDC); virtual;
+    procedure CreateNewContext(aDC: HDC); virtual;
     procedure ClearIAttribs;
     procedure AddIAttrib(attrib, value: Integer);
     procedure ChangeIAttrib(attrib, newValue: Integer);
@@ -534,7 +534,7 @@ begin
     if Assigned(FShareContext) and (FShareContext.RC <> 0) then
     begin
       if not wglShareLists(FShareContext.RC, FRC) then
-{$IFDEF VKS_LOGGING}
+{$IFDEF USE_LOGGING}
         GLSLogger.LogWarning(strFailedToShare)
 {$ENDIF}
       else
@@ -549,17 +549,17 @@ begin
     // If we are using AntiAliasing, adjust filtering hints
     if AntiAliasing in [aa2xHQ, aa4xHQ, csa8xHQ, csa16xHQ] then
       // Hint for nVidia HQ modes (Quincunx etc.)
-      VKStates.MultisampleFilterHint := hintNicest
+      VXStates.MultisampleFilterHint := hintNicest
     else
-      VKStates.MultisampleFilterHint := hintDontCare;
+      VXStates.MultisampleFilterHint := hintDontCare;
 
     if rcoDebug in Options then
       ShowMessage(strDriverNotSupportDebugRC);
     if rcoOGL_ES in Options then
       ShowMessage(strDriverNotSupportOESRC);
-    if VKStates.ForwardContext then
+    if VXStates.ForwardContext then
       ShowMessage(strDriverNotSupportFRC);
-    VKStates.ForwardContext := False;
+    VXStates.ForwardContext := False;
   end
   else
     ShowMessage(strTmpRC_Created);
@@ -575,7 +575,7 @@ begin
   try
     ClearIAttribs;
     // Initialize forward context
-    if VKStates.ForwardContext then
+    if VXStates.ForwardContext then
     begin
       if GL_VERSION_4_2 then
       begin
@@ -666,7 +666,7 @@ begin
       FRC := FVK.wglCreateContextAttribsARB(aDC, 0, @FiAttribs[0]);
       if FRC = 0 then
       begin
-        if VKStates.ForwardContext then
+        if VXStates.ForwardContext then
           ShowMessage(Format(strForwardContextFailed,
             [GetLastError, SysErrorMessage(GetLastError)]))
         else
@@ -690,18 +690,18 @@ begin
     // If we are using AntiAliasing, adjust filtering hints
     if AntiAliasing in [aa2xHQ, aa4xHQ, csa8xHQ, csa16xHQ] then
       // Hint for nVidia HQ modes (Quincunx etc.)
-      VKStates.MultisampleFilterHint := hintNicest
+      VXStates.MultisampleFilterHint := hintNicest
     else
-      VKStates.MultisampleFilterHint := hintDontCare;
+      VXStates.MultisampleFilterHint := hintDontCare;
 
-    if VKStates.ForwardContext then
+    if VXStates.ForwardContext then
       ShowMessage(strFRC_created);
     if bOES then
       ShowMessage(strOESRC_created);
     bSuccess := True;
   finally
-    VKStates.ForwardContext := VKStates.ForwardContext and bSuccess;
-    PipelineTransformation.LoadMatricesEnabled := not VKStates.ForwardContext;
+    VXStates.ForwardContext := VXStates.ForwardContext and bSuccess;
+    PipelineTransformation.LoadMatricesEnabled := not VXStates.ForwardContext;
   end;
 end;
 
@@ -1020,7 +1020,7 @@ begin
                 // Modern creation style
                 ClearIAttribs;
                 // Initialize forward context
-                if VKStates.ForwardContext then
+                if VXStates.ForwardContext then
                 begin
                   if GL_VERSION_4_2 then
                   begin
@@ -1097,9 +1097,9 @@ begin
                 localRC := FVK.wglCreateContextAttribsARB(localDC, 0,
                   @FiAttribs[0]);
                 if localRC = 0 then
-{$IFDEF VKS_LOGGING}
+{$IFDEF USE_LOGGING}
                 begin
-                  if VKStates.ForwardContext then
+                  if VXStates.ForwardContext then
                     GLSLogger.LogErrorFmt(cForwardContextFailed,
                       [GetLastError, SysErrorMessage(GetLastError)])
                   else
@@ -1164,11 +1164,11 @@ begin
   FVK.Initialize;
   // If we are using AntiAliasing, adjust filtering hints
   if AntiAliasing in [aa2xHQ, aa4xHQ, csa8xHQ, csa16xHQ] then
-    VKStates.MultisampleFilterHint := hintNicest
+    VXStates.MultisampleFilterHint := hintNicest
   else if AntiAliasing in [aa2x, aa4x, csa8x, csa16x] then
-    VKStates.MultisampleFilterHint := hintFastest
+    VXStates.MultisampleFilterHint := hintFastest
   else
-    VKStates.MultisampleFilterHint := hintDontCare;
+    VXStates.MultisampleFilterHint := hintDontCare;
 
   // Specific which color buffers are to be drawn into
   if BufferCount > 1 then
@@ -1198,11 +1198,11 @@ begin
 
   Deactivate;
 
-  if VKStates.ForwardContext then
+  if VXStates.ForwardContext then
     ShowMessage('PBuffer ' + strFRC_created);
   if bOES then
     ShowMessage('PBuffer ' + strOESRC_created);
-  if not(VKStates.ForwardContext or bOES) then
+  if not(VXStates.ForwardContext or bOES) then
     ShowMessage(strPBufferRC_created);
 end;
 
@@ -1258,7 +1258,7 @@ begin
   end;
 
   if not FVK.IsInitialized then
-    FVK.Initialize(CurrentVKContext = nil);
+    FVK.Initialize(CurrentVXContext = nil);
 end;
 
 // Deactivate

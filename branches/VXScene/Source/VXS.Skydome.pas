@@ -1,8 +1,8 @@
 ﻿//
-// VXScene Component Library, based on GLScene http://glscene.sourceforge.net 
+// VXScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
-{   Skydome object 
-  
+{   Skydome object
+
 }
 unit VXS.Skydome;
 
@@ -11,28 +11,33 @@ interface
 {$I VXScene.inc}
 
 uses
-  System.Classes, System.SysUtils, System.UITypes,
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
+  System.Classes,
+  System.SysUtils,
+  System.UITypes,
+  System.Math,
   FMX.Graphics,
-   
-  VXS.Scene, VXS.VectorGeometry, VXS.Graphics, VXS.CrossPlatform,
-  VXS.VectorTypes, VXS.Color, VXS.RenderContextInfo;
+
+  VXS.Scene,
+  VXS.VectorGeometry,
+  VXS.Graphics,
+  VXS.CrossPlatform,
+  VXS.VectorTypes,
+  VXS.Color,
+  VXS.RenderContextInfo;
 
 type
 
-  // TVXSkyDomeBand
-  //
   TVXSkyDomeBand = class(TCollectionItem)
   private
-    
     FStartAngle: Single;
     FStopAngle: Single;
     FStartColor: TVXColor;
     FStopColor: TVXColor;
     FSlices: Integer;
     FStacks: Integer;
-
   protected
-    
     function GetDisplayName: string; override;
     procedure SetStartAngle(const val: Single);
     procedure SetStartColor(const val: TVXColor);
@@ -41,17 +46,12 @@ type
     procedure SetSlices(const val: Integer);
     procedure SetStacks(const val: Integer);
     procedure OnColorChange(sender: TObject);
-
   public
-    
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
-
     procedure BuildList(var rci: TVXRenderContextInfo);
-
   published
-    
     property StartAngle: Single read FStartAngle write SetStartAngle;
     property StartColor: TVXColor read FStartColor write SetStartColor;
     property StopAngle: Single read FStopAngle write SetStopAngle;
@@ -60,51 +60,35 @@ type
     property Stacks: Integer read FStacks write SetStacks default 1;
   end;
 
-  // TVXSkyDomeBands
-  //
   TVXSkyDomeBands = class(TCollection)
   protected
-    
     owner: TComponent;
     function GetOwner: TPersistent; override;
     procedure SetItems(index: Integer; const val: TVXSkyDomeBand);
     function GetItems(index: Integer): TVXSkyDomeBand;
-
   public
-    
     constructor Create(AOwner: TComponent);
     function Add: TVXSkyDomeBand;
     function FindItemID(ID: Integer): TVXSkyDomeBand;
     property Items[index: Integer]: TVXSkyDomeBand read GetItems write SetItems;
     default;
-
     procedure NotifyChange;
     procedure BuildList(var rci: TVXRenderContextInfo);
   end;
 
-  // TVXSkyDomeStar
-  //
   TVXSkyDomeStar = class(TCollectionItem)
   private
-    
     FRA, FDec: Single;
     FMagnitude: Single;
     FColor: TColor;
     FCacheCoord: TAffineVector; // cached cartesian coordinates
-
   protected
-    
     function GetDisplayName: string; override;
-
   public
-    
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
-
     procedure Assign(Source: TPersistent); override;
-
   published
-    
       { Right Ascension, in degrees. }
     property RA: Single read FRA write FRA;
     { Declination, in degrees. }
@@ -113,82 +97,57 @@ type
     property Magnitude: Single read FMagnitude write FMagnitude;
     { Color of the star. }
     property Color: TColor read FColor write FColor;
-
   end;
 
-  // TVXSkyDomeStars
-  //
   TVXSkyDomeStars = class(TCollection)
   protected
-    
     owner: TComponent;
     function GetOwner: TPersistent; override;
     procedure SetItems(index: Integer; const val: TVXSkyDomeStar);
     function GetItems(index: Integer): TVXSkyDomeStar;
-
     procedure PrecomputeCartesianCoordinates;
-
   public
-    
     constructor Create(AOwner: TComponent);
-
     function Add: TVXSkyDomeStar;
     function FindItemID(ID: Integer): TVXSkyDomeStar;
-    property Items[index: Integer]: TVXSkyDomeStar read GetItems write SetItems;
-    default;
-
+    property Items[index: Integer]: TVXSkyDomeStar read GetItems write SetItems; default;
     procedure BuildList(var rci: TVXRenderContextInfo; twinkle: Boolean);
-
-    { Adds nb random stars of the given color. 
+    { Adds nb random stars of the given color.
        Stars are homogenously scattered on the complete sphere, not only the band defined or visible dome. }
     procedure AddRandomStars(const nb: Integer; const color: TColor; const limitToTopDome: Boolean = False); overload;
     procedure AddRandomStars(const nb: Integer; const ColorMin, ColorMax:TVector3b; const Magnitude_min, Magnitude_max: Single;const limitToTopDome: Boolean = False); overload;
-
-    { Load a 'stars' file, which is made of TVXStarRecord. 
+    { Load a 'stars' file, which is made of TVXStarRecord.
        Not that '.stars' files should already be sorted by magnitude and color. }
     procedure LoadStarsFile(const starsFileName: string);
   end;
 
-  // TVXSkyDomeOption
-  //
   TVXSkyDomeOption = (sdoTwinkle);
   TVXSkyDomeOptions = set of TVXSkyDomeOption;
 
-  // TVXSkyDome
-  //
-    { Renders a sky dome always centered on the camera. 
+    { Renders a sky dome always centered on the camera.
        If you use this object make sure it is rendered *first*, as it ignores
        depth buffering and overwrites everything. All children of a skydome
-       are rendered in the skydome's coordinate system. 
+       are rendered in the skydome's coordinate system.
        The skydome is described by "bands", each "band" is an horizontal cut
-       of a sphere, and you can have as many bands as you wish. 
-       Estimated CPU cost (K7-500, GeForce SDR, default bands): 
+       of a sphere, and you can have as many bands as you wish.
+       Estimated CPU cost (K7-500, GeForce SDR, default bands):
         800x600 fullscreen filled: 4.5 ms (220 FPS, worst case)
-        Geometry cost (0% fill): 0.7 ms (1300 FPS, best case)
-         }
+        Geometry cost (0% fill): 0.7 ms (1300 FPS, best case) }
   TVXSkyDome = class(TVXCameraInvariantObject)
   private
-    
     FOptions: TVXSkyDomeOptions;
     FBands: TVXSkyDomeBands;
     FStars: TVXSkyDomeStars;
-
   protected
-    
     procedure SetBands(const val: TVXSkyDomeBands);
     procedure SetStars(const val: TVXSkyDomeStars);
     procedure SetOptions(const val: TVXSkyDomeOptions);
-
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
-
     procedure BuildList(var rci: TVXRenderContextInfo); override;
-
   published
-    
     property Bands: TVXSkyDomeBands read FBands write SetBands;
     property Stars: TVXSkyDomeStars read FStars write SetStars;
     property Options: TVXSkyDomeOptions read FOptions write SetOptions default [];
@@ -197,19 +156,16 @@ type
   TEarthSkydomeOption = (esoFadeStarsWithSun, esoRotateOnTwelveHours, esoDepthTest);
   TEarthSkydomeOptions = set of TEarthSkydomeOption;
 
-  // TVXEarthSkyDome
-  //
-  { Render a skydome like what can be seen on earth. 
+  { Render a skydome like what can be seen on earth.
      Color is based on sun position and turbidity, to "mimic" atmospheric
      Rayleigh and Mie scatterings. The colors can be adjusted to render
-     weird/extra-terrestrial atmospheres too. 
+     weird/extra-terrestrial atmospheres too.
      The default slices/stacks values make for an average quality rendering,
      for a very clean rendering, use 64/64 (more is overkill in most cases).
      The complexity is quite high though, making a T&L 3D board a necessity
      for using TVXEarthSkyDome. }
   TVXEarthSkyDome = class(TVXSkyDome)
   private
-    
     FSunElevation: Single;
     FTurbidity: Single;
     FCurSunColor, FCurSkyColor, FCurHazeColor: TColorVector;
@@ -224,9 +180,7 @@ type
     FExtendedOptions: TEarthSkydomeOptions;
     FMorning: boolean;
   protected
-    
     procedure Loaded; override;
-
     procedure SetSunElevation(const val: Single);
     procedure SetTurbidity(const val: Single);
     procedure SetSunZenithColor(const val: TVXColor);
@@ -237,29 +191,21 @@ type
     procedure SetDeepColor(const val: TVXColor);
     procedure SetSlices(const val: Integer);
     procedure SetStacks(const val: Integer);
-
     procedure OnColorChanged(Sender: TObject);
     procedure PreCalculate;
     procedure RenderDome;
     function CalculateColor(const theta, cosGamma: Single): TColorVector;
-
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
-
     procedure BuildList(var rci: TVXRenderContextInfo); override;
-
     procedure SetSunAtTime(HH, MM: Single);
-
   published
-    
       { Elevation of the sun, measured in degrees. }
     property SunElevation: Single read FSunElevation write SetSunElevation;
     { Expresses the purity of air.  Value range is from 1 (pure athmosphere) to 120 (very nebulous) }
     property Turbidity: Single read FTurbidity write SetTurbidity;
-
     property SunZenithColor: TVXColor read FSunZenithColor write SetSunZenithColor;
     property SunDawnColor: TVXColor read FSunDawnColor write SetSunDawnColor;
     property HazeColor: TVXColor read FHazeColor write SetHazeColor;
@@ -271,16 +217,11 @@ type
     property Stacks: Integer read FStacks write SetStacks default 48;
   end;
 
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 uses
-  Winapi.OpenGL, Winapi.OpenGLext, 
   VXS.Context,
   VXS.StarRecord,
   VXS.State;
@@ -695,11 +636,11 @@ begin
   n := 0;
   lastPointSize10 := -1;
 
-  rci.VKStates.Enable(stPointSmooth);
-  rci.VKStates.Enable(stAlphaTest);
-  rci.VKStates.SetAlphaFunction(cfNotEqual, 0.0);
-  rci.VKStates.Enable(stBlend);
-  rci.VKStates.SetBlendFunc(bfSrcAlpha, bfOne);
+  rci.VXStates.Enable(stPointSmooth);
+  rci.VXStates.Enable(stAlphaTest);
+  rci.VXStates.SetAlphaFunction(cfNotEqual, 0.0);
+  rci.VXStates.Enable(stBlend);
+  rci.VXStates.SetBlendFunc(bfSrcAlpha, bfOne);
 
   glBegin(GL_POINTS);
   for i := 0 to Count - 1 do
@@ -712,14 +653,14 @@ begin
       begin
         glEnd;
         lastPointSize10 := pointSize10;
-        rci.VKStates.PointSize := pointSize10 * 0.1;
+        rci.VXStates.PointSize := pointSize10 * 0.1;
         glBegin(GL_POINTS);
       end
       else if lastPointSize10 <> 15 then
       begin
         glEnd;
         lastPointSize10 := 15;
-        rci.VKStates.PointSize := 1.5;
+        rci.VXStates.PointSize := 1.5;
         glBegin(GL_POINTS);
       end;
     end;
@@ -742,7 +683,7 @@ begin
   glEnd;
 
   // restore default AlphaFunc
-  rci.VKStates.SetAlphaFunction(cfGreater, 0);
+  rci.VXStates.SetAlphaFunction(cfGreater, 0);
 end;
 
 procedure TVXSkyDomeStars.AddRandomStars(const nb: Integer; const color: TColor;
@@ -939,13 +880,13 @@ var
   f: Single;
 begin
   // setup states
-  rci.VKStates.Disable(stLighting); // 8
-  rci.VKStates.Disable(stDepthTest);
-  rci.VKStates.Disable(stFog);
-  rci.VKStates.Disable(stCullFace);
-  rci.VKStates.Disable(stBlend); // 2
-  rci.VKStates.DepthWriteMask := 0;
-  rci.VKStates.PolygonMode := pmFill;
+  rci.VXStates.Disable(stLighting); // 8
+  rci.VXStates.Disable(stDepthTest);
+  rci.VXStates.Disable(stFog);
+  rci.VXStates.Disable(stCullFace);
+  rci.VXStates.Disable(stBlend); // 2
+  rci.VXStates.DepthWriteMask := 0;
+  rci.VXStates.PolygonMode := pmFill;
 
   f := rci.rcci.farClippingDistance * 0.90;
   glScalef(f, f, f);
@@ -1127,7 +1068,7 @@ var
   f: Single;
 begin
   // setup states
-  with rci.VKStates do
+  with rci.VxStates do
   begin
     CurrentProgram := 0;
     Disable(stLighting);
@@ -1154,7 +1095,7 @@ begin
   Stars.BuildList(rci, (sdoTwinkle in FOptions));
 
   // restore
-  rci.VKStates.DepthWriteMask := GLboolean(True);
+  rci.VXStates.DepthWriteMask := GLboolean(True);
 end;
 
 // OnColorChanged

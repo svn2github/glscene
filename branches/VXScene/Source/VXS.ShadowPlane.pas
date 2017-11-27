@@ -15,8 +15,11 @@ interface
 {$I VXScene.inc}
 
 uses
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
   System.Classes,
   VXS.Scene,
+  VXS.Context,
   VXS.VectorGeometry,
   VXS.Objects,
   VXS.CrossPlatform,
@@ -27,8 +30,6 @@ uses
 
 type
 
-  // TShadowPlaneOptions
-  //
   TShadowPlaneOption = (spoUseStencil, spoScissor, spoTransparent, spoIgnoreZ);
   TShadowPlaneOptions = set of TShadowPlaneOption;
 
@@ -37,8 +38,6 @@ const
 
 type
 
-  // TVXShadowPlane
-  //
   { A simple shadow plane. 
      This mirror requires a stencil buffer for optimal rendering! 
      The object is a mix between a plane and a proxy object, in that the plane
@@ -55,35 +54,26 @@ type
      }
   TVXShadowPlane = class(TVXPlane)
   private
-    
     FRendering: Boolean;
     FShadowingObject: TVXBaseSceneObject;
     FShadowedLight: TVXLightSource;
     FShadowColor: TVXColor;
     FShadowOptions: TShadowPlaneOptions;
     FOnBeginRenderingShadows, FOnEndRenderingShadows: TNotifyEvent;
-
   protected
-    
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
     procedure SetShadowingObject(const val: TVXBaseSceneObject);
     procedure SetShadowedLight(const val: TVXLightSource);
     procedure SetShadowColor(const val: TVXColor);
     procedure SetShadowOptions(const val: TShadowPlaneOptions);
-
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
     procedure DoRender(var ARci: TVXRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
-
     procedure Assign(Source: TPersistent); override;
-
   published
-    
-          { Selects the object to mirror. 
+    { Selects the object to mirror. 
              If nil, the whole scene is mirrored. }
     property ShadowingObject: TVXBaseSceneObject read FShadowingObject write SetShadowingObject;
     { The light which casts shadows. 
@@ -92,9 +82,7 @@ type
     { The shadow's color. 
        This color is transparently blended to make shadowed area darker. }
     property ShadowColor: TVXColor read FShadowColor write SetShadowColor;
-
     { Controls rendering options. 
-        
         spoUseStencil: plane area is stenciled, prevents shadowing
           objects to be visible on the sides of the mirror (stencil buffer
           must be active in the viewer too). It also allows shadows to
@@ -115,20 +103,14 @@ type
     property OnEndRenderingShadows: TNotifyEvent read FOnEndRenderingShadows write FOnEndRenderingShadows;
   end;
 
-  //-------------------------------------------------------------
-  //-------------------------------------------------------------
-  //-------------------------------------------------------------
+//-------------------------------------------------------------
 implementation
 //-------------------------------------------------------------
-//-------------------------------------------------------------
-//-------------------------------------------------------------
-uses Winapi.OpenGL, Winapi.OpenGLext,  VXS.Context;
+
 // ------------------
 // ------------------ TVXShadowPlane ------------------
 // ------------------
 
-// Create
-//
 
 constructor TVXShadowPlane.Create(AOwner: Tcomponent);
 const
@@ -149,8 +131,6 @@ begin
   FShadowColor.Free;
 end;
 
-// DoRender
-//
 
 procedure TVXShadowPlane.DoRender(var ARci: TVXRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);
@@ -165,7 +145,7 @@ begin
     Exit;
   FRendering := True;
   try
-    with ARci.VKStates do
+    with ARci.VxStates do
     begin
       oldProxySubObject := ARci.proxySubObject;
       ARci.proxySubObject := True;
@@ -233,10 +213,10 @@ begin
               ShadowedLight.AbsolutePosition);
           end;
 
-          ARci.PipelineTransformation.ViewMatrix := MatrixMultiply(
+          ARci.PipelineTransformation.SetViewMatrix(MatrixMultiply(
             shadowMat,
-            ARci.PipelineTransformation.ViewMatrix);
-          ARci.PipelineTransformation.ModelMatrix := IdentityHmgMatrix;
+            ARci.PipelineTransformation.ViewMatrix^));
+          ARci.PipelineTransformation.SetModelMatrix(IdentityHmgMatrix);
 
           Disable(stCullFace);
           Enable(stNormalize);
@@ -270,7 +250,7 @@ begin
             if FShadowingObject.Parent <> nil then
               MatrixMultiply(ModelMat, FShadowingObject.Parent.AbsoluteMatrix, ModelMat);
             MatrixMultiply(ModelMat, FShadowingObject.LocalMatrix^, ModelMat);
-            ARci.PipelineTransformation.ModelMatrix := ModelMat;
+            ARci.PipelineTransformation.SetModelMatrix(ModelMat);
             FShadowingObject.DoRender(ARci, True, (FShadowingObject.Count > 0));
           end
           else
@@ -301,8 +281,6 @@ begin
   end;
 end;
 
-// Notification
-//
 
 procedure TVXShadowPlane.Notification(AComponent: TComponent; Operation: TOperation);
 begin
@@ -316,8 +294,6 @@ begin
   inherited;
 end;
 
-// SetShadowingObject
-//
 
 procedure TVXShadowPlane.SetShadowingObject(const val: TVXBaseSceneObject);
 begin
@@ -332,8 +308,6 @@ begin
   end;
 end;
 
-// SetShadowedLight
-//
 
 procedure TVXShadowPlane.SetShadowedLight(const val: TVXLightSource);
 begin
@@ -348,16 +322,12 @@ begin
   end;
 end;
 
-// SetShadowColor
-//
 
 procedure TVXShadowPlane.SetShadowColor(const val: TVXColor);
 begin
   FShadowColor.Assign(val);
 end;
 
-// Assign
-//
 
 procedure TVXShadowPlane.Assign(Source: TPersistent);
 begin
@@ -371,8 +341,6 @@ begin
   inherited Assign(Source);
 end;
 
-// SetShadowOptions
-//
 
 procedure TVXShadowPlane.SetShadowOptions(const val: TShadowPlaneOptions);
 begin
@@ -384,12 +352,8 @@ begin
 end;
 
 //-------------------------------------------------------------
-//-------------------------------------------------------------
-//-------------------------------------------------------------
 initialization
-  //-------------------------------------------------------------
-  //-------------------------------------------------------------
-  //-------------------------------------------------------------
+//-------------------------------------------------------------
 
   RegisterClasses([TVXShadowPlane]);
 

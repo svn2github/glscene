@@ -236,7 +236,7 @@ type
     procedure Render(var rci: TVXRenderContextInfo); override;
     class function FriendlyName: String; override;
     class function UniqueItem: Boolean; override;
-    function AddNewElement(AChild: TODEElementClass): TODEElementBase; dynamic;
+    function AddNewElement(AChild: TODEElementClass): TODEElementBase; virtual;
     procedure AlignObject;
     function CalculateMass: TdMass;
     procedure CalibrateCenterOfMass;
@@ -270,7 +270,7 @@ type
     procedure Render(var rci: TVXRenderContextInfo); override;
     class function FriendlyName: String; override;
     class function UniqueItem: Boolean; override;
-    function AddNewElement(AChild: TODEElementClass): TODEElementBase; dynamic;
+    function AddNewElement(AChild: TODEElementClass): TODEElementBase; virtual;
   published
     property Elements: TODEElements read FElements;
   end;
@@ -1218,9 +1218,9 @@ begin
     if not VisibleAtRunTime then
       Exit;
 
-  rci.VKStates.Disable(stLighting);
-  rci.VKStates.Enable(stPolygonOffsetLine);
-  rci.VKStates.SetPolygonOffset(1, 2);
+  rci.VXStates.Disable(stLighting);
+  rci.VXStates.Enable(stPolygonOffsetLine);
+  rci.VXStates.SetPolygonOffset(1, 2);
 
   for i := 0 to FODEBehaviours.Count - 1 do
   begin
@@ -1728,7 +1728,7 @@ begin
   begin
     rci.PipelineTransformation.Push;
     Mat := TVXBaseSceneObject(Owner.Owner).AbsoluteMatrix;
-    rci.PipelineTransformation.ModelMatrix := Mat;
+    rci.PipelineTransformation.ModelMatrix^ := Mat;
   end;
 
   Elements.Render(rci);
@@ -1827,16 +1827,12 @@ begin
   end;
 end;
 
-// RegisterJoint
-//
 procedure TVXODEDynamic.RegisterJoint(Joint: TODEJointBase);
 begin
   if FJointRegister.IndexOf(Joint) = -1 then
     FJointRegister.Add(Joint);
 end;
 
-// UnregisterJoint
-//
 procedure TVXODEDynamic.UnregisterJoint(Joint: TODEJointBase);
 begin
   if FJointRegister.IndexOf(Joint) > -1 then
@@ -1857,8 +1853,6 @@ begin
     dBodySetMass(FBody, @calcmass);
 end;
 
-// AlignObject
-//
 procedure TVXODEDynamic.AlignObject;
 var
   Pos: PdVector3;
@@ -1870,11 +1864,9 @@ begin
   ODERToVXSceneMatrix(m, R^, Pos^);
   if OwnerBaseSceneObject.Parent is TVXBaseSceneObject then
     m := MatrixMultiply(m, OwnerBaseSceneObject.Parent.InvAbsoluteMatrix);
-  OwnerBaseSceneObject.Matrix := m;
+  OwnerBaseSceneObject.Matrix^ := m;
 end;
 
-// AlignBodyToMatrix
-//
 procedure TVXODEDynamic.AlignBodyToMatrix(Mat: TMatrix);
 var
   R: TdMatrix3;
@@ -2050,16 +2042,12 @@ begin
   FElements := TODEElements.Create(Self);
 end;
 
-// Destroy
-//
 destructor TVXODEStatic.Destroy;
 begin
   FElements.Free;
   inherited;
 end;
 
-// Render
-//
 procedure TVXODEStatic.Render(var rci: TVXRenderContextInfo);
 var
   Mat: TMatrix;
@@ -2068,7 +2056,7 @@ begin
   begin
     rci.PipelineTransformation.Push;
     Mat := TVXBaseSceneObject(Owner.Owner).AbsoluteMatrix;
-    rci.PipelineTransformation.ModelMatrix := Mat;
+    rci.PipelineTransformation.ModelMatrix^ := Mat;
   end;
 
   Elements.Render(rci);
@@ -2077,22 +2065,16 @@ begin
     rci.PipelineTransformation.Pop;
 end;
 
-// FriendlyName
-//
 class function TVXODEStatic.FriendlyName: String;
 begin
   Result := 'ODE Static';
 end;
 
-// UniqueItem
-//
 class function TVXODEStatic.UniqueItem: Boolean;
 begin
   Result := True;
 end;
 
-// Initialize
-//
 procedure TVXODEStatic.Initialize;
 begin
   if (not Assigned(Manager)) or (FInitialized) then
@@ -2105,8 +2087,6 @@ begin
   inherited;
 end;
 
-// Finalize
-//
 procedure TVXODEStatic.Finalize;
 begin
   if not FInitialized then
@@ -2116,8 +2096,6 @@ begin
   inherited;
 end;
 
-// WriteToFiler
-//
 procedure TVXODEStatic.WriteToFiler(writer: TWriter);
 begin
   inherited;
@@ -2140,8 +2118,6 @@ begin
   end;
 end;
 
-// AddNewElement
-//
 function TVXODEStatic.AddNewElement(AChild: TODEElementClass): TODEElementBase;
 begin
   Result := nil;
@@ -2152,8 +2128,6 @@ begin
   Result.Initialize;
 end;
 
-// AlignElements
-//
 procedure TVXODEStatic.AlignElements;
 var
   i: Integer;
@@ -2171,30 +2145,22 @@ end;
 // --------------- TODEElements ---------------
 // ---------------
 
-// Destroy
-//
 destructor TODEElements.Destroy;
 begin
   Finalize;
   inherited;
 end;
 
-// GetElement
-//
 function TODEElements.GetElement(index: Integer): TODEElementBase;
 begin
   Result := TODEElementBase(Items[index]);
 end;
 
-// ItemsClass
-//
 class function TODEElements.ItemsClass: TVXXCollectionItemClass;
 begin
   Result := TODEElementBase;
 end;
 
-// Initialize
-//
 procedure TODEElements.Initialize;
 var
   i: Integer;
@@ -2203,8 +2169,6 @@ begin
     TODEElementBase(Items[i]).Initialize;
 end;
 
-// Deintialize
-//
 procedure TODEElements.Finalize;
 var
   i: Integer;
@@ -2213,8 +2177,6 @@ begin
     TODEElementBase(Items[i]).Finalize;
 end;
 
-// Render
-//
 procedure TODEElements.Render(var rci: TVXRenderContextInfo);
 var
   i: Integer;
@@ -2223,8 +2185,6 @@ begin
     TODEElementBase(Items[i]).Render(rci);
 end;
 
-// NotifyChange
-//
 procedure TODEElements.NotifyChange(Sender: TObject);
 begin
   if Assigned(Owner) then
@@ -2237,8 +2197,6 @@ end;
 // --------------- TODEElementBase ---------------
 // ---------------
 
-// Create
-//
 constructor TODEElementBase.Create(AOwner: TVXXCollection);
 begin
   inherited;
@@ -2255,8 +2213,6 @@ begin
   FIsCalculating := False;
 end;
 
-// Destroy
-//
 destructor TODEElementBase.Destroy;
 begin
   if FInitialized then
@@ -2267,15 +2223,11 @@ begin
   inherited;
 end;
 
-// Render
-//
 procedure TODEElementBase.Render(var rci: TVXRenderContextInfo);
 begin
   // Override this procedure with element drawing OpenGL code
 end;
 
-// Initialize
-//
 procedure TODEElementBase.Initialize;
 var
   Manager: TVXODEManager;
@@ -2319,8 +2271,6 @@ begin
   FInitialized := True;
 end;
 
-// Finalize
-//
 procedure TODEElementBase.Finalize;
 begin
   if not FInitialized then
@@ -2338,8 +2288,6 @@ begin
   FInitialized := False;
 end;
 
-// WriteToFiler
-//
 procedure TODEElementBase.WriteToFiler(writer: TWriter);
 begin
   inherited;
@@ -2353,8 +2301,6 @@ begin
   end;
 end;
 
-// ReadFromFiler
-//
 procedure TODEElementBase.ReadFromFiler(reader: TReader);
 begin
   inherited;
@@ -2369,8 +2315,6 @@ begin
   NotifyChange(Self);
 end;
 
-// AbsoluteMatrix
-//
 function TODEElementBase.AbsoluteMatrix: TMatrix;
 var
   Mat: TMatrix;
@@ -2381,15 +2325,11 @@ begin
   Result := MatrixMultiply(Mat, FLocalMatrix);
 end;
 
-// AbsolutePosition
-//
 function TODEElementBase.AbsolutePosition: TAffineVector;
 begin
   Result := AffineVectorMake(AbsoluteMatrix.W);
 end;
 
-// AlignGeomElementToMatrix
-//
 procedure TODEElementBase.AlignGeomElementToMatrix(Mat: TMatrix);
 var
   R: TdMatrix3;
@@ -2413,15 +2353,11 @@ begin
   FRealignODE := False;
 end;
 
-// SetGeomElement
-//
 procedure TODEElementBase.SetGeomElement(aGeom: PdxGeom);
 begin
   FGeomElement := aGeom;
 end;
 
-// IsODEInitialized
-//
 function TODEElementBase.IsODEInitialized: Boolean;
 var
   Manager: TVXODEManager;
@@ -2435,8 +2371,6 @@ begin
   Result := Assigned(Manager.Space);
 end;
 
-// CalculateMass
-//
 function TODEElementBase.CalculateMass: TdMass;
 var
   R: TdMatrix3;
@@ -2458,8 +2392,6 @@ begin
   Result := FMass;
 end;
 
-// CoordinateChanged
-//
 procedure TODEElementBase.CoordinateChanged(Sender: TObject);
 var
   rightVector: TVector;
@@ -2505,23 +2437,17 @@ begin
   end;
 end;
 
-// NotifyChange
-//
 procedure TODEElementBase.NotifyChange(Sender: TObject);
 begin
   RebuildMatrix;
   ODERebuild;
 end;
 
-// GetMatrix
-//
 function TODEElementBase.GetMatrix: TMatrix;
 begin
   Result := FLocalMatrix;
 end;
 
-// RebuildMatrix
-//
 procedure TODEElementBase.RebuildMatrix;
 begin
   VectorCrossProduct(FUp.AsVector, FDirection.AsVector, FLocalMatrix.X);
@@ -2530,8 +2456,6 @@ begin
   SetVector(FLocalMatrix.W, FPosition.AsVector);
 end;
 
-// RebuildVectors
-//
 procedure TODEElementBase.RebuildVectors;
 begin
   FUp.SetVector(FLocalMatrix.Y.X, FLocalMatrix.Y.Y, FLocalMatrix.Y.Z);
@@ -2539,15 +2463,11 @@ begin
   FPosition.SetPoint(FLocalMatrix.W.X, FLocalMatrix.W.Y, FLocalMatrix.W.Z);
 end;
 
-// SetDensity
-//
 procedure TODEElementBase.SetDensity(const Value: TdReal);
 begin
   FDensity := Value;
 end;
 
-// SetMatrix
-//
 procedure TODEElementBase.SetMatrix(const Value: TMatrix);
 begin
   FLocalMatrix := Value;
@@ -2580,15 +2500,11 @@ begin
   FPosition.Assign(Value);
 end;
 
-// SetDirection
-//
 procedure TODEElementBase.SetDirection(const Value: TVXCoordinates);
 begin
   FDirection.Assign(Value);
 end;
 
-// SetUp
-//
 procedure TODEElementBase.SetUp(const Value: TVXCoordinates);
 begin
   FUp.Assign(Value);
@@ -2599,8 +2515,6 @@ end;
 // --------------- TODEElementBox ---------------
 // ---------------
 
-// BuildList
-//
 procedure TODEElementBox.Render(var rci: TVXRenderContextInfo);
 begin
   glPushMatrix;
@@ -4778,8 +4692,6 @@ begin
   inherited;
 end;
 
-// WriteToFiler
-//
 procedure TODEJointFixed.WriteToFiler(writer: TWriter);
 begin
   inherited;
@@ -4789,8 +4701,6 @@ begin
   end;
 end;
 
-// ReadFromFiler
-//
 procedure TODEJointFixed.ReadFromFiler(reader: TReader);
 begin
   inherited;
@@ -4800,15 +4710,11 @@ begin
   end;
 end;
 
-// FriendlyName
-//
 class function TODEJointFixed.FriendlyName: String;
 begin
   Result := 'Fixed';
 end;
 
-// FriendlyDescription
-//
 class function TODEJointFixed.FriendlyDescription: String;
 begin
   Result := 'ODE Fixed joint implementation';
@@ -4819,8 +4725,6 @@ end;
 // --------------- TGLODEJointHinge2 ---------------
 // ---------------
 
-// Create
-//
 constructor TGLODEJointHinge2.Create(AOwner: TVXXCollection);
 begin
   inherited;
@@ -4840,7 +4744,6 @@ begin
   JointOptions := [joBothObjectsMustBeAssigned];
 end;
 
-// Destroy
 destructor TGLODEJointHinge2.Destroy;
 begin
   FAnchor.Free;
@@ -4851,8 +4754,6 @@ begin
   inherited;
 end;
 
-// Initialize
-//
 procedure TGLODEJointHinge2.Initialize;
 begin
   if (not IsODEInitialized) or (FInitialized) then
@@ -4861,8 +4762,6 @@ begin
   inherited;
 end;
 
-// WriteToFiler
-//
 procedure TGLODEJointHinge2.WriteToFiler(writer: TWriter);
 begin
   inherited;
@@ -4877,8 +4776,6 @@ begin
   end;
 end;
 
-// ReadFromFiler
-//
 procedure TGLODEJointHinge2.ReadFromFiler(reader: TReader);
 begin
   inherited;
@@ -4893,8 +4790,6 @@ begin
   end;
 end;
 
-// StructureChanged
-//
 procedure TGLODEJointHinge2.StructureChanged;
 begin
   AnchorChange(nil);
@@ -4904,16 +4799,12 @@ begin
   Axis2Params.ApplyFlagged;
 end;
 
-// AnchorChange
-//
 procedure TGLODEJointHinge2.AnchorChange(Sender: TObject);
 begin
   if IsAttached then
     dJointSetHinge2Anchor(FJointID, FAnchor.X, FAnchor.Y, FAnchor.Z);
 end;
 
-// Axis1Change
-//
 procedure TGLODEJointHinge2.Axis1Change(Sender: TObject);
 var
   vec: TVector;
@@ -4925,8 +4816,6 @@ begin
     dJointSetHinge2Axis1(FJointID, FAxis1.X, FAxis1.Y, FAxis1.Z);
 end;
 
-// Axis2Change
-//
 procedure TGLODEJointHinge2.Axis2Change(Sender: TObject);
 var
   vec: TVector;
@@ -4938,29 +4827,21 @@ begin
     dJointSetHinge2Axis2(FJointID, FAxis2.X, FAxis2.Y, FAxis2.Z);
 end;
 
-// FriendlyName
-//
 class function TGLODEJointHinge2.FriendlyName: String;
 begin
   Result := 'Hinge2';
 end;
 
-// FriendlyDescription
-//
 class function TGLODEJointHinge2.FriendlyDescription: String;
 begin
   Result := 'ODE Double Axis Hinge joint implementation';
 end;
 
-// SetAnchor
-//
 procedure TGLODEJointHinge2.SetAnchor(const Value: TVXCoordinates);
 begin
   FAnchor.Assign(Value);
 end;
 
-// SetAxis1
-//
 procedure TGLODEJointHinge2.SetAxis1(const Value: TVXCoordinates);
 begin
   FAxis1.Assign(Value);
@@ -4973,22 +4854,16 @@ begin
   FAxis2.Assign(Value);
 end;
 
-// SetAxis1Params
-//
 procedure TGLODEJointHinge2.SetAxis1Params(const Value: TODEJointParams);
 begin
   Axis1Params.Assign(Value);
 end;
 
-// SetAxis2Params
-//
 procedure TGLODEJointHinge2.SetAxis2Params(const Value: TODEJointParams);
 begin
   Axis2Params.Assign(Value);
 end;
 
-// SetAxis1Param
-//
 function TGLODEJointHinge2.SetAxis1Param(Param: Integer;
   const Value: TdReal): Boolean;
 begin
@@ -5001,8 +4876,6 @@ begin
     Result := False;
 end;
 
-// SetAxis2Param
-//
 function TGLODEJointHinge2.SetAxis2Param(Param: Integer;
   const Value: TdReal): Boolean;
 begin
@@ -5015,8 +4888,6 @@ begin
     Result := False;
 end;
 
-// GetAxis1Param
-//
 function TGLODEJointHinge2.GetAxis1Param(Param: Integer;
   var Value: TdReal): Boolean;
 begin
@@ -5029,8 +4900,6 @@ begin
     Result := False;
 end;
 
-// GetAxis2Param
-//
 function TGLODEJointHinge2.GetAxis2Param(Param: Integer;
   var Value: TdReal): Boolean;
 begin
@@ -5048,8 +4917,6 @@ end;
 // --------------- TODEJointUniversal ---------------
 // ---------------
 
-// Create
-//
 constructor TODEJointUniversal.Create(AOwner: TVXXCollection);
 begin
   inherited;
@@ -5069,7 +4936,6 @@ begin
   JointOptions := [joBothObjectsMustBeAssigned];
 end;
 
-// Destroy
 destructor TODEJointUniversal.Destroy;
 begin
   FAnchor.Free;
@@ -5080,8 +4946,6 @@ begin
   inherited;
 end;
 
-// Initialize
-//
 procedure TODEJointUniversal.Initialize;
 begin
   if (not IsODEInitialized) or (FInitialized) then
@@ -5090,8 +4954,6 @@ begin
   inherited;
 end;
 
-// WriteToFiler
-//
 procedure TODEJointUniversal.WriteToFiler(writer: TWriter);
 begin
   inherited;
@@ -5106,8 +4968,6 @@ begin
   end;
 end;
 
-// ReadFromFiler
-//
 procedure TODEJointUniversal.ReadFromFiler(reader: TReader);
 begin
   inherited;
@@ -5122,8 +4982,6 @@ begin
   end;
 end;
 
-// StructureChanged
-//
 procedure TODEJointUniversal.StructureChanged;
 begin
   AnchorChange(nil);
@@ -5133,16 +4991,12 @@ begin
   Axis2Params.ApplyFlagged;
 end;
 
-// AnchorChange
-//
 procedure TODEJointUniversal.AnchorChange(Sender: TObject);
 begin
   if IsAttached then
     dJointSetUniversalAnchor(FJointID, FAnchor.X, FAnchor.Y, FAnchor.Z);
 end;
 
-// Axis1Change
-//
 procedure TODEJointUniversal.Axis1Change(Sender: TObject);
 var
   vec: TVector;
@@ -5154,8 +5008,6 @@ begin
     dJointSetUniversalAxis1(FJointID, FAxis1.X, FAxis1.Y, FAxis1.Z);
 end;
 
-// Axis2Change
-//
 procedure TODEJointUniversal.Axis2Change(Sender: TObject);
 var
   vec: TVector;
@@ -5167,57 +5019,41 @@ begin
     dJointSetUniversalAxis2(FJointID, FAxis2.X, FAxis2.Y, FAxis2.Z);
 end;
 
-// FriendlyName
-//
 class function TODEJointUniversal.FriendlyName: String;
 begin
   Result := 'Universal';
 end;
 
-// FriendlyDescription
-//
 class function TODEJointUniversal.FriendlyDescription: String;
 begin
   Result := 'ODE Universal joint implementation';
 end;
 
-// SetAnchor
-//
 procedure TODEJointUniversal.SetAnchor(const Value: TVXCoordinates);
 begin
   FAnchor.Assign(Value);
 end;
 
-// SetAxis1
-//
 procedure TODEJointUniversal.SetAxis1(const Value: TVXCoordinates);
 begin
   FAxis1.Assign(Value);
 end;
 
-// SetAxis2
-//
 procedure TODEJointUniversal.SetAxis2(const Value: TVXCoordinates);
 begin
   FAxis2.Assign(Value);
 end;
 
-// SetAxis1Params
-//
 procedure TODEJointUniversal.SetAxis1Params(const Value: TODEJointParams);
 begin
   Axis1Params.Assign(Value);
 end;
 
-// SetAxis2Params
-//
 procedure TODEJointUniversal.SetAxis2Params(const Value: TODEJointParams);
 begin
   Axis2Params.Assign(Value);
 end;
 
-// SetAxis1Param
-//
 function TODEJointUniversal.SetAxis1Param(Param: Integer;
   const Value: TdReal): Boolean;
 begin
@@ -5230,8 +5066,6 @@ begin
     Result := False;
 end;
 
-// SetAxis2Param
-//
 function TODEJointUniversal.SetAxis2Param(Param: Integer;
   const Value: TdReal): Boolean;
 begin
@@ -5244,8 +5078,6 @@ begin
     Result := False;
 end;
 
-// GetAxis1Param
-//
 function TODEJointUniversal.GetAxis1Param(Param: Integer;
   var Value: TdReal): Boolean;
 begin
@@ -5258,8 +5090,6 @@ begin
     Result := False;
 end;
 
-// GetAxis2Param
-//
 function TODEJointUniversal.GetAxis2Param(Param: Integer;
   var Value: TdReal): Boolean;
 begin
@@ -5274,13 +5104,7 @@ end;
 
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-
 initialization
-
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 vGLODEObjectRegister := TList.Create;

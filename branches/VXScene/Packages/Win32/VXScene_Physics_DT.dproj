@@ -108,8 +108,8 @@
         <DCCReference Include="..\..\Resources\VXSceneNGD.dcr"/>
         <DCCReference Include="rtl.dcp"/>
         <DCCReference Include="fmx.dcp"/>
-        <DCCReference Include="VXScene_RunTime.dcp"/>
-        <DCCReference Include="VXScene_Physics_RunTime.dcp"/>
+        <DCCReference Include="VXScene_RT.dcp"/>
+        <DCCReference Include="VXScene_Physics_RT.dcp"/>
         <DCCReference Include="..\..\Source\PhysicsAPIs\VXS.ODERegister.pas"/>
         <DCCReference Include="..\..\Source\PhysicsAPIs\VXS.NewtonRegister.pas"/>
         <BuildConfiguration Include="Debug">

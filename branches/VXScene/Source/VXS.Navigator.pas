@@ -12,27 +12,27 @@ interface
 {$I VXScene.inc}
 
 uses
-  System.SysUtils, System.Classes,
+  System.SysUtils,
+  System.Classes,
+  System.Math,
 
-  VXS.VectorGeometry, VXS.Scene, VXS.CrossPlatform, VXS.Coordinates,
-  VXS.Screen, VXS.VectorTypes;
+  VXS.VectorGeometry,
+  VXS.Scene,
+  VXS.CrossPlatform,
+  VXS.Coordinates,
+  VXS.Screen,
+  VXS.VectorTypes;
 
 type
 
-	// TVXNavigator
-	//
 	{ TVXNavigator is the component for moving a TVXBaseSceneObject, and all Classes based on it,
-      this includes all the objects from the Scene Editor. 
-
+      this includes all the objects from the Scene Editor.
 	   The four calls to get you started is
-       
-  	    TurnHorisontal : it turns left and right.
+	    TurnHorisontal : it turns left and right.
 	    TurnVertical : it turns up and down.
 	    MoveForward :	moves back and forth.
       FlyForward : moves back and forth in the movingobject's direction
-       
-	   The three properties to get you started is
-       
+  	   The three properties to get you started is
 	    MovingObject : The Object that you are moving.
 	    UseVirtualUp : When UseVirtualUp is set you navigate Quake style. If it isn't
    		it's more like Descent.
@@ -42,9 +42,7 @@ type
       (no tilt and flying)
 	    InvertHorizontalSteeringWhenUpsideDown : When using virtual up, and vertically
       rotating beyond 90 degrees, will make steering seem inverted, so we "invert" back
-      to normal.
-       
-   }
+      to normal.  }
   TVXNavigator = class(TComponent)
   private
     FObject: TVXBaseSceneObject;
@@ -68,7 +66,6 @@ type
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
     procedure TurnHorizontal(Angle: single);
     procedure TurnVertical(Angle: single);
     procedure MoveForward(Distance: single);
@@ -76,10 +73,8 @@ type
     procedure StrafeVertical(Distance: single);
     procedure Straighten;
     procedure FlyForward(Distance: single);
-
     procedure LoadState(Stream: TStream);
     procedure SaveState(Stream: TStream);
-
     property CurrentVAngle: single read FCurrentVAngle;
     property CurrentHAngle: single read FCurrentHAngle;
   published
@@ -94,26 +89,17 @@ type
     property AngleLock: boolean read FAngleLock write FAngleLock default False;
   end;
 
-	// TVXUserInterface
-	//
-	{ TVXUserInterface is the component which reads the userinput and transform it into action. 
-
-	   The four calls to get you started is
-       
+	{ TVXUserInterface is the component which reads the userinput and transform it into action.
+ 	   The four calls to get you started is
  	    MouseLookActivate : set us up the bomb.
  	    MouseLookDeActivate : defuses it.
 	    Mouselook(deltaTime: double) : handles mouse look... Should be called in the Cadencer event. (Though it works every where!)
 	    MouseUpdate : Resets mouse position so that you don't notice that the mouse is limited to the screen should be called after Mouselook.
-       
-	   The four properties to get you started are:
-       
-	    InvertMouse     : Inverts the mouse Y axis.
+ 	   The four properties to get you started are:
+ 	    InvertMouse     : Inverts the mouse Y axis.
 	    MouseSpeed      : Also known as mouse sensitivity.
 	    GLNavigator     : The Navigator which receives the user movement.
-	    GLVertNavigator : The Navigator which if set receives the vertical user movement. Used mostly for cameras....
-       
-   }
-
+	    GLVertNavigator : The Navigator which if set receives the vertical user movement. Used mostly for cameras....   }
   TVXUserInterface = class(TComponent)
   private
     FPrevPoint: TVXPoint;
@@ -152,7 +138,7 @@ type
 implementation
 //-------------------------------------------------------------------------
 
-Constructor TVXNavigator.Create(AOwner : TComponent);
+constructor TVXNavigator.Create(AOwner : TComponent);
 Begin
   inherited;
   FVirtualUp := TVXCoordinates.CreateInitialized(Self, ZHmgVector, csPoint);
@@ -160,7 +146,7 @@ Begin
   FCurrentHAngle := 0;
 End;
 
-Destructor  TVXNavigator.Destroy;
+destructor  TVXNavigator.Destroy;
 
 Begin
   FVirtualUp.Free;
@@ -168,7 +154,7 @@ Begin
 End;
 
 
-Procedure   TVXNavigator.SetObject(NewObject : TVXBaseSceneObject);
+procedure   TVXNavigator.SetObject(NewObject : TVXBaseSceneObject);
 Begin
   If FObject <> NewObject then
   Begin
@@ -196,28 +182,26 @@ End;
 
 procedure   TVXNavigator.Notification(AComponent: TComponent; Operation: TOperation);
 
-Begin
+begin
   If Operation = opRemove then
   If AComponent = FObject then
     MovingObject := Nil;
-
   inherited;
-End;
+end;
 
-Function    TVXNavigator.CalcRight : TVector;
+function    TVXNavigator.CalcRight : TVector;
 
-Begin
+begin
   If Assigned(FObject) then
   If FUseVirtualUp Then
   Begin
     VectorCrossProduct(FObject.Direction.AsVector, FVirtualUp.AsVector, Result);
     ScaleVector(Result,1/VectorLength(Result));
   End else VectorCrossProduct(FObject.Direction.AsVector, FObject.Up.AsVector, Result); { automaticly length(1), if not this is a bug }
-End;
+end;
 
-Procedure   TVXNavigator.TurnHorizontal(Angle : Single);
-
-Var
+procedure   TVXNavigator.TurnHorizontal(Angle : Single);
+var
   T : TVector;
   U : TAffineVector;
   TempVal : Single;
@@ -249,15 +233,14 @@ Begin
   End else FObject.Direction.AsVector := VectorCombine(FObject.Direction.AsVector,CalcRight,Cos(Angle),Sin(Angle));
 End;
 
-Procedure   TVXNavigator.TurnVertical(Angle : Single);
-
-Var
+procedure   TVXNavigator.TurnVertical(Angle : Single);
+var
   ExpectedAngle : Single;
   CosAngle, SinAngle : Single;
   TempVal : Single;
   Direction : TVector;
 
-Begin
+begin
   ExpectedAngle := FCurrentVAngle+Angle;
   If FAngleLock then
   Begin
@@ -289,9 +272,9 @@ Begin
   Direction := VectorCombine(MovingObject.Direction.AsVector,MovingObject.Up.AsVector,CosAngle,SinAngle);
   MovingObject.Up.AsVector := VectorCombine(MovingObject.Direction.AsVector,MovingObject.Up.AsVector,SinAngle,CosAngle);
   MovingObject.Direction.AsVector := Direction;
-End;
+end;
 
-Procedure   TVXNavigator.MoveForward(Distance : Single);
+procedure   TVXNavigator.MoveForward(Distance : Single);
 Begin
   If (FUseVirtualUp and (not MoveUpWhenMovingForward)) Then
   Begin
@@ -352,20 +335,19 @@ End;
 
 
 Procedure   TVXNavigator.SetVirtualUp(Up : TVXCoordinates);
-Begin
+begin
   FVirtualUp.Assign(Up);
   if csdesigning in componentstate then Exit;
   If FUseVirtualUp then FVirtualRight := CalcRight;
-End;
+end;
 
-Procedure   TVXNavigator.LoadState(Stream : TStream);
-
-Var
+procedure   TVXNavigator.LoadState(Stream : TStream);
+var
   Vector : TAffineVector;
   B : ByteBool;
   S : Single;
 
-Begin
+begin
   Stream.Read(Vector,SizeOf(TAffineVector));
   FObject.Position.AsAffineVector := Vector;
   Stream.Read(Vector,SizeOf(TAffineVector));
@@ -384,16 +366,15 @@ Begin
   FCurrentVAngle := S;
   Stream.Read(S,SizeOf(Single));
   FCurrentHAngle := S;
-End;
+end;
 
-Procedure   TVXNavigator.SaveState(Stream : TStream);
-
-Var
+procedure   TVXNavigator.SaveState(Stream : TStream);
+var
   Vector : TAffineVector;
   B : ByteBool;
   S : Single;
 
-Begin
+begin
   Vector := FObject.Position.AsAffineVector;
   Stream.Write(Vector,SizeOf(TAffineVector));
   Vector := FObject.Direction.AsAffineVector;
@@ -412,7 +393,7 @@ Begin
   Stream.Write(S,SizeOf(Single));
   S := FCurrentHAngle;
   Stream.Write(S,SizeOf(Single));
-End;
+end;
 
 function TVXUserInterface.IsMouseLookOn: Boolean;
 begin
@@ -481,8 +462,6 @@ begin
      GLGetCursorPos(FPrevPoint);
 end;
 
-// Mouselook
-//
 function  TVXUserInterface.Mouselook : Boolean;
 var
    deltaX, deltaY : Single;
@@ -519,10 +498,10 @@ End;
 
 Destructor  TVXUserInterface.Destroy;
 
-Begin
+begin
   if FMouseActive then MouseLookDeactivate; // added by JAJ
   inherited;
-End;
+end;
 
 procedure TVXUserInterface.Notification(AComponent: TComponent; operation:
     TOperation);

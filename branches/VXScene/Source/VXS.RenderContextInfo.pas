@@ -2,8 +2,7 @@
 // VXScene Component Library, based on GLScene http://glscene.sourceforge.net 
 //
 {
-   Stores contextual info useful during rendering methods. 
-    
+   Stores contextual info useful during rendering methods.
 }
 unit VXS.RenderContextInfo;
 
@@ -12,8 +11,11 @@ interface
 {$I VXScene.inc}
 
 uses
-  VXS.PersistentClasses, VXS.VectorGeometry, VXS.State,
-  VXS.PipelineTransformation, VXS.Color;
+  VXS.PersistentClasses,
+  VXS.VectorGeometry,
+  VXS.State,
+  VXS.PipelineTransformation,
+  VXS.Color;
 
 type
 
@@ -24,29 +26,19 @@ type
     cy: Longint;
   end;
 
-  // TVXx.ObjectsSorting
-  //
-  { Determines if objects are sorted, and how. 
-     Sorting is done level by level (and not for all entities), values are : 
-      osInherited : use inherited sorting mode, defaults to osRenderFarthestFirst
-      osNone : do not sort objects.
-  osRenderFarthestFirst : render objects whose Position is the farthest from
-  the camera first.
-      osRenderBlendedLast : opaque objects are not sorted and rendered
-        first, blended ones are rendered afterwards and depth sorted.
-  osRenderNearestFirst : render objects whose Position is the nearest to
-  the camera first.
-        }
+  { Determines if objects are sorted, and how. Sorting is done level by level (and not for all entities), values are :
+   osInherited : use inherited sorting mode, defaults to osRenderFarthestFirst
+   osNone : do not sort objects.
+   osRenderFarthestFirst : render objects whose Position is the farthest from the camera first.
+   osRenderBlendedLast : opaque objects are not sorted and rendered first, blended ones are rendered afterwards and depth sorted.
+   osRenderNearestFirst : render objects whose Position is the nearest to the camera first.  }
   TVXObjectsSorting = (osInherited, osNone,
     osRenderFarthestFirst, osRenderBlendedLast,
     osRenderNearestFirst);
 
-  // TVXVisibilityCulling
-  //
   { Determines the visibility culling mode.
-     Culling is done level by level, allowed values are: 
-      vcInherited : use inherited culling value, if selected for the root
-        level, defaults to vcNone
+     Culling is done level by level, allowed values are:
+      vcInherited : use inherited culling value, if selected for the root level, defaults to vcNone
       vcNone : no visibility culling is performed
       vcObjectBased : culling is done on a per-object basis, each object may
         or may not be culled base on its own AxisAlignedDimensions,
@@ -60,8 +52,6 @@ type
      board, it may be faster not to cull at all (ie. leave this to the hardware). }
   TVXVisibilityCulling = (vcInherited, vcNone, vcObjectBased, vcHierarchical);
 
-  // TRenderContextClippingInfo
-  //
   TRenderContextClippingInfo = record
     origin: TVector;
     clippingDirection: TVector;
@@ -71,8 +61,6 @@ type
     frustum: TFrustum;
   end;
 
-  // TVXRenderContextInfo
-  //
   { Stores contextual info useful during rendering methods. }
   TVXRenderContextInfo = record
     scene: TObject; //usually TVXScene
@@ -87,7 +75,7 @@ type
     drawState: TDrawState;
     objectsSorting: TVXObjectsSorting;
     visibilityCulling: TVXVisibilityCulling;
-    VKStates: TVXStateCache;
+    VXStates: TVXStateCache;
     PipelineTransformation: TVXTransformation;
     rcci: TRenderContextClippingInfo;
     sceneAmbientColor: TColorVector;

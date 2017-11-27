@@ -164,16 +164,16 @@ var
 
 procedure TVXLineSettings.Apply(var rci: TVXRenderContextInfo);
 begin
-  rci.VKStates.LineWidth := Width;
+  rci.VXStates.LineWidth := Width;
   glColor4fv(Color.AsAddress);
   if Pattern <> $FFFF then
   begin
-    rci.VKStates.Enable(stLineStipple);
-    rci.VKStates.LineStippleFactor := 1;
-    rci.VKStates.LineStipplePattern := Pattern;
+    rci.VXStates.Enable(stLineStipple);
+    rci.VXStates.LineStippleFactor := 1;
+    rci.VXStates.LineStipplePattern := Pattern;
   end
   else
-    rci.VKStates.Disable(stLineStipple);
+    rci.VXStates.Disable(stLineStipple);
 
   if ForceMaterial then
   begin
@@ -236,7 +236,7 @@ begin
   FPassCount := 1;
 
   if solid then
-    with rci.VKStates do
+    with rci.VxStates do
     begin
       // draw filled front faces in first pass
       PolygonMode := pmFill;
@@ -258,7 +258,7 @@ begin
       Enable(stPolygonOffsetFill);
     end
   else
-    with rci.VKStates do
+    with rci.VxStates do
     begin
       Disable(stLighting);
       // draw back lines in first pass
@@ -269,7 +269,7 @@ begin
       Enable(stPolygonOffsetLine);
     end;
 
-  rci.VKStates.SetPolygonOffset(1, 2);
+  rci.VXStates.SetPolygonOffset(1, 2);
 end;
 
 // DoUnApply
@@ -279,7 +279,7 @@ function TVXHiddenLineShader.DoUnApply(var rci: TVXRenderContextInfo): Boolean;
 
   procedure SetLineSmoothBlend;
   begin
-    with rci.VKStates do
+    with rci.VxStates do
     begin
       LineStippleFactor := 1;
       LineStipplePattern := $FFFF;
@@ -305,7 +305,7 @@ function TVXHiddenLineShader.DoUnApply(var rci: TVXRenderContextInfo): Boolean;
 begin
   case FPassCount of
     1:
-      with rci.VKStates do begin
+      with rci.VxStates do begin
         // draw front line in 2nd pass
         FPassCount := 2;
 
@@ -321,16 +321,16 @@ begin
         CullFaceMode := cmBack;
 
         if solid then
-          rci.VKStates.Disable(stPolygonOffsetFill)
+          rci.VXStates.Disable(stPolygonOffsetFill)
         else
-          rci.VKStates.Disable(stPolygonOffsetLine);
+          rci.VXStates.Disable(stPolygonOffsetLine);
 
         Result := True;
       end;
     2:
       begin
         FFrontLine.UnApply(rci);
-        rci.VKStates.PolygonMode := pmFill;
+        rci.VXStates.PolygonMode := pmFill;
         Result := false;
       end;
   else

@@ -436,7 +436,7 @@ end;
 function TVXCustomGLSLPostBlurShader.DoUnApply(
   var rci: TVXRenderContextInfo): Boolean;
 begin
-  rci.VKStates.ActiveTexture := 0;
+  rci.VXStates.ActiveTexture := 0;
   GetGLSLProg.EndUseProgramObject;
   Result := False;
 end;
@@ -523,7 +523,7 @@ end;
 function TVXCustomGLSLPostThermalVisionShader.DoUnApply(
   var rci: TVXRenderContextInfo): Boolean;
 begin
-  rci.VKStates.ActiveTexture := 0;
+  rci.VXStates.ActiveTexture := 0;
   GetGLSLProg.EndUseProgramObject;
   Result := False;
 end;
@@ -620,7 +620,7 @@ end;
 function TVXCustomGLSLPostDreamVisionShader.DoUnApply(
   var rci: TVXRenderContextInfo): Boolean;
 begin
-  rci.VKStates.ActiveTexture := 0;
+  rci.VXStates.ActiveTexture := 0;
   GetGLSLProg.EndUseProgramObject;
   Result := False;
 end;
@@ -723,7 +723,7 @@ end;
 function TVXCustomGLSLPostNightVisionShader.DoUnApply(
   var rci: TVXRenderContextInfo): Boolean;
 begin
-  rci.VKStates.ActiveTexture := 0;
+  rci.VXStates.ActiveTexture := 0;
   GetGLSLProg.EndUseProgramObject;
   Result := False;
 end;
@@ -898,7 +898,7 @@ end;
 function TVXCustomGLSLPostPixelateShader.DoUnApply(
   var rci: TVXRenderContextInfo): Boolean;
 begin
-  rci.VKStates.ActiveTexture := 0;
+  rci.VXStates.ActiveTexture := 0;
   GetGLSLProg.EndUseProgramObject;
   Result := False;
 end;
@@ -987,7 +987,7 @@ end;
 function TVXCustomGLSLPostPosterizeShader.DoUnApply(
   var rci: TVXRenderContextInfo): Boolean;
 begin
-  rci.VKStates.ActiveTexture := 0;
+  rci.VXStates.ActiveTexture := 0;
   GetGLSLProg.EndUseProgramObject;
   Result := False;
 end;
@@ -1082,7 +1082,7 @@ end;
 function TVXCustomGLSLPostFrostShader.DoUnApply(
   var rci: TVXRenderContextInfo): Boolean;
 begin
-  rci.VKStates.ActiveTexture := 0;
+  rci.VXStates.ActiveTexture := 0;
   GetGLSLProg.EndUseProgramObject;
   Result := False;
 end;
@@ -1252,7 +1252,7 @@ end;
 function TVXCustomGLSLPostTroubleShader.DoUnApply(
   var rci: TVXRenderContextInfo): Boolean;
 begin
-  rci.VKStates.ActiveTexture := 0;
+  rci.VXStates.ActiveTexture := 0;
   GetGLSLProg.EndUseProgramObject;
   Result := False;
 end;

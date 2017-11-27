@@ -261,10 +261,10 @@ begin
     invAtmosphereHeight := 1 / (FAtmosphereRadius - FPlanetRadius);
     lightingVector := VectorNormalize(sunPos); // sun at infinity
 
-    rci.VKStates.DepthWriteMask := GLboolean(False);
-    rci.VKStates.Disable(stLighting);
-    rci.VKStates.Enable(stBlend);
-    EnableGLBlendingMode(rci.VKStates);
+    rci.VXStates.DepthWriteMask := GLboolean(False);
+    rci.VXStates.Disable(stLighting);
+    rci.VXStates.Enable(stBlend);
+    EnableGLBlendingMode(rci.VxStates);
     for I := 0 to 13 do
     begin
       if I < 5 then

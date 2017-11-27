@@ -176,7 +176,7 @@ contains
   VXS.Navigator in '..\..\Source\VXS.Navigator.pas',
   VXS.Nodes in '..\..\Source\VXS.Nodes.pas',
   VXS.ObjectManager in '..\..\Source\VXS.ObjectManager.pas',
-  VXS.Objects in '..\..\Source\VXS.Objects.pas',
+  VXS.Objects in '..\..\Source\Basis\VXS.Objects.pas',
   VXS.Octree in '..\..\Source\Basis\VXS.Octree.pas',
   VXS.OpenGLAdapter in '..\..\Source\Basis\VXS.OpenGLAdapter.pas',
   VXS.OpenGLFMX in '..\..\Source\Basis\VXS.OpenGLFMX.pas',

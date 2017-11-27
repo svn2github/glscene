@@ -28,11 +28,21 @@ interface
 {$I VXScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
+  System.Classes, 
+  System.SysUtils,
   
-  VXS.Scene, VXS.XCollection, VXS.VectorGeometry, VXS.VectorLists,
-  VXS.VectorFileObjects, VXS.CrossPlatform, VXS.DCEMisc, VXS.EllipseCollision,
-  VXS.TerrainRenderer, VXS.Coordinates, VXS.BaseClasses, VXS.Manager,
+  VXS.Scene, 
+  VXS.XCollection, 
+  VXS.VectorGeometry, 
+  VXS.VectorLists,
+  VXS.VectorFileObjects, 
+  VXS.CrossPlatform, 
+  VXS.DCEMisc, 
+  VXS.EllipseCollision,
+  VXS.TerrainRenderer, 
+  VXS.Coordinates, 
+  VXS.BaseClasses, 
+  VXS.Manager,
   VXS.VectorTypes;
 
 type
@@ -48,9 +58,7 @@ type
 	     checks would pass (i.e. if the layer of either body  is
 		 equal to 0 or if A.layer <= B.layer) *and* if both
 		 layers are positive (that is, turns off collision
-		 for bodies whose layer is < 0)
-	  
-  }
+		 for bodies whose layer is < 0)  }
   TDCECollisionSelection = (ccsDCEStandard, ccsCollisionStandard, ccsHybrid); // gak:20041119
 
   TDCECollision = record
@@ -72,7 +80,6 @@ type
 
   TVXDCEManager = class (TComponent)
   private
-    
     FStatics : TList;
     FDynamics : TList;
     FGravity: Single;
@@ -95,7 +102,6 @@ type
     procedure DeRegisterDynamic(aClient : TVXDCEDynamic);
     procedure DeRegisterAllDynamics;
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     //Moves the body by the distance and returns the average friction
@@ -104,7 +110,6 @@ type
     property DynamicCount: Integer read GetDynamicCount;
     property StaticCount: Integer read GetStaticCount;
   published
-    
     property Gravity : Single read FGravity write FGravity;
     property WorldDirection : TVXCoordinates read FWorldDirection write SetWorldDirection;
     property WorldScale : Single read FWorldScale write SetWorldScale;
@@ -116,7 +121,6 @@ type
 
   TVXDCEStatic = class (TVXBehaviour)
 	private
-		
     FManager : TVXDCEManager;
     FManagerName : String; // NOT persistent, temporarily used for persistence
     FActive: Boolean;
@@ -133,13 +137,11 @@ type
     procedure SetBounceFactor(const Value: Single);
     procedure SetSize(const Value: TVXCoordinates);
   protected
-    
     procedure SetManager(const val : TVXDCEManager);
     procedure WriteToFiler(writer : TWriter); override;
     procedure ReadFromFiler(reader : TReader); override;
     procedure Loaded; override;
   public
-    
     constructor Create(aOwner : TVXXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -147,7 +149,6 @@ type
     class function FriendlyDescription : String; override;
     property OnCollision : TDCEObjectCollisionEvent read FOnCollision write FOnCollision;
   published
-    
     property Active : Boolean read FActive write FActive;
     property Manager : TVXDCEManager read FManager write SetManager;
     property Shape : TDCEShape read FShape write SetShape;
@@ -162,7 +163,6 @@ type
 
   TVXDCEDynamic = class (TVXBehaviour)
 	private
-		
     FManager : TVXDCEManager;
     FManagerName : String; // NOT persistent, temporarily used for persistence
     FActive: Boolean;
@@ -191,13 +191,11 @@ type
     procedure SetBounceFactor(const Value: Single);
     procedure SetSize(const Value: TVXCoordinates);
   protected
-    
     procedure SetManager(const val : TVXDCEManager);
     procedure WriteToFiler(writer : TWriter); override;
     procedure ReadFromFiler(reader : TReader); override;
     procedure Loaded; override;
   public
-    
     constructor Create(aOwner : TVXXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -238,13 +236,15 @@ function GetOrCreateDCEStatic(obj : TVXBaseSceneObject) : TVXDCEStatic; overload
 function GetOrCreateDCEDynamic(behaviours : TVXBehaviours) : TVXDCEDynamic; overload;
 function GetOrCreateDCEDynamic(obj : TVXBaseSceneObject) : TVXDCEDynamic; overload;
 
+//-------------------------------------------------------------------
 implementation
+//-------------------------------------------------------------------
 
 function RotateVectorByObject(Obj: TVXBaseSceneObject; v: TAffineVector): TAffineVector;
 var v2: TVector;
 begin
   SetVector(v2,v);
-  SetVector(result,VectorTransform(v2, Obj.Matrix));
+  SetVector(result,VectorTransform(v2, Obj.Matrix^));
 end;
 
 constructor TVXDCEManager.Create(AOwner: TComponent);
@@ -261,8 +261,6 @@ begin
   RegisterManager(Self);
 end;
 
-// Destroy
-//
 destructor TVXDCEManager.Destroy;
 begin
 	DeRegisterAllStatics;
@@ -534,8 +532,6 @@ begin
       TVXDCEStatic(FStatics[i]).FManager:=nil;
    FStatics.Clear;
 end;
-
-//Register Dynamics
 
 procedure TVXDCEManager.RegisterDynamic(aClient : TVXDCEDynamic);
 begin
@@ -1041,9 +1037,8 @@ begin
 	Result:=GetOrCreateDCEDynamic(obj.Behaviours);
 end;
 
-
+// ------------------------------------------------------------------
 initialization
-
 // ------------------------------------------------------------------
 
 	// class registrations

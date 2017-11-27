@@ -82,7 +82,6 @@ type
     property UseAttenuation: boolean read FUseAttenuation write SetUseAttenuation;
     property UseQuadraticAttenuation: Boolean read FUseQuadraticAttenuation write SetUseQuadraticAttenuation;
     property AllowReverseProjection: boolean read FAllowReverseProjection write SetAllowReverseProjection;
-
     property ObjectsSorting;
     property VisibilityCulling;
     property Direction;
@@ -157,9 +156,9 @@ type
   end;
 
 //---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
 implementation
+//---------------------------------------------------------------------------
+
 // ------------------
 // ------------------ TVXSLTextureEmitter ------------------
 // ------------------
@@ -202,7 +201,7 @@ begin
   TexMatrix := MatrixMultiply(
     CreatePerspectiveMatrix(FFOV, FAspect, 0.1, 1), cBaseMat);
   TexMatrix := MatrixMultiply(
-    CurrentVKContext.PipelineTransformation.InvModelViewMatrix, TexMatrix);
+    CurrentVXContext.PipelineTransformation.InvModelViewMatrix^, TexMatrix);
 end;
 
 procedure TVXSLTextureEmitter.SetAllowReverseProjection(val: boolean);
@@ -545,7 +544,7 @@ begin
     if emitters.count > 0 then
       Shader.Uniform1i['ProjMap'] := 2;
 
-    rci.VKStates.TextureBinding[2, ttTexture2D] := Material.Texture.Handle;
+    rci.VXStates.TextureBinding[2, ttTexture2D] := Material.Texture.Handle;
 
     self.RenderChildren(0, Count - 1, rci);
 

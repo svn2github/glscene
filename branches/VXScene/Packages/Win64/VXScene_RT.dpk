@@ -25,7 +25,7 @@ package VXScene_RT;
 {$IMAGEBASE $400000}
 {$DEFINE DEBUG}
 {$ENDIF IMPLICITBUILDING}
-{$DESCRIPTION 'VXScene Components'}
+{$DESCRIPTION 'VKScene 3D library'}
 {$RUNONLY}
 {$IMPLICITBUILD ON}
 
@@ -46,13 +46,6 @@ contains
   uFileOCT in '..\..\Source\FileFormats\uFileOCT.pas',
   uFileTGA in '..\..\Source\FileFormats\uFileTGA.pas',
   uFileX in '..\..\Source\FileFormats\uFileX.pas',
-  uHDRImage in '..\..\Source\FileFormats\uHDRImage.pas',
-  uLWObjects in '..\..\Source\FileFormats\uLWObjects.pas',
-  uQ3BSP in '..\..\Source\FileFormats\uQ3BSP.pas',
-  uQ3MD3 in '..\..\Source\FileFormats\uQ3MD3.pas',
-  uTypes3DS in '..\..\Source\FileFormats\uTypes3DS.pas',
-  uUtils3DS in '..\..\Source\FileFormats\uUtils3DS.pas',
-  uVRMLParser in '..\..\Source\FileFormats\uVRMLParser.pas',
   VXS.AVIRecorder in '..\..\Source\SoundVideoAPIs\VXS.AVIRecorder.pas',
   VXS.AnimatedSprite in '..\..\Source\VXS.AnimatedSprite.pas',
   VXS.AnimationUtils in '..\..\Source\VXS.AnimationUtils.pas',
@@ -183,7 +176,7 @@ contains
   VXS.Navigator in '..\..\Source\VXS.Navigator.pas',
   VXS.Nodes in '..\..\Source\VXS.Nodes.pas',
   VXS.ObjectManager in '..\..\Source\VXS.ObjectManager.pas',
-  VXS.Objects in '..\..\Source\VXS.Objects.pas',
+  VXS.Objects in '..\..\Source\Basis\VXS.Objects.pas',
   VXS.Octree in '..\..\Source\Basis\VXS.Octree.pas',
   VXS.OpenGLAdapter in '..\..\Source\Basis\VXS.OpenGLAdapter.pas',
   VXS.OpenGLFMX in '..\..\Source\Basis\VXS.OpenGLFMX.pas',
@@ -269,10 +262,17 @@ contains
   VXS.WaterPlane in '..\..\Source\VXS.WaterPlane.pas',
   VXS.Windows in '..\..\Source\VXS.Windows.pas',
   VXS.WindowsFont in '..\..\Source\VXS.WindowsFont.pas',
-  VXS.Vulkan in '..\..\Source\Basis\VXS.Vulkan.pas',
-  VXS.XOpenGL in '..\..\Source\Basis\VXS.XOpenGL.pas',
   VXS.XCollection in '..\..\Source\Basis\VXS.XCollection.pas',
-  VXS.zBuffer in '..\..\Source\VXS.zBuffer.pas';
+  VXS.zBuffer in '..\..\Source\VXS.zBuffer.pas',
+  uHDRImage in '..\..\Source\FileFormats\uHDRImage.pas',
+  uLWObjects in '..\..\Source\FileFormats\uLWObjects.pas',
+  uQ3BSP in '..\..\Source\FileFormats\uQ3BSP.pas',
+  uQ3MD3 in '..\..\Source\FileFormats\uQ3MD3.pas',
+  uTypes3DS in '..\..\Source\FileFormats\uTypes3DS.pas',
+  uUtils3DS in '..\..\Source\FileFormats\uUtils3DS.pas',
+  uVRMLParser in '..\..\Source\FileFormats\uVRMLParser.pas',
+  VXS.Vulkan in '..\..\Source\Basis\VXS.Vulkan.pas',
+  VXS.XOpenGL in '..\..\Source\Basis\VXS.XOpenGL.pas';
 
 end.
 

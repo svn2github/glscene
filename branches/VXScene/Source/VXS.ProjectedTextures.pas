@@ -135,7 +135,7 @@ begin
   // Set the projector's "perspective" (i.e. the "spotlight cone"):.
   PM := MatrixMultiply(CreatePerspectiveMatrix(FFOVy, FAspect, 0.1, 1), cBaseMat);
   PM := MatrixMultiply(invAbsoluteMatrix, PM);
-  Arci.VKStates.SetTextureMatrix(PM);
+  Arci.VXStates.SetTextureMatrix(PM);
 end;
 
 // ------------------
@@ -291,9 +291,9 @@ begin
   glTexGenfv(GL_Q, GL_EYE_PLANE, @PQ);
 
   //options
-  Arci.VKStates.Disable(stLighting);
-  Arci.VKStates.DepthFunc := cfLEqual;
-  Arci.VKStates.Enable(stBlend);
+  Arci.VXStates.Disable(stLighting);
+  Arci.VXStates.DepthFunc := cfLEqual;
+  Arci.VXStates.Enable(stBlend);
   glEnable(GL_TEXTURE_GEN_S);
   glEnable(GL_TEXTURE_GEN_T);
   glEnable(GL_TEXTURE_GEN_R);
@@ -311,14 +311,14 @@ begin
 
     emitter.Material.Apply(ARci);
 
-    ARci.VKStates.Enable(stBlend);
+    ARci.VXStates.Enable(stBlend);
     if Style = ptsOriginal then
     begin
       //on the original style, render blending the textures
       if emitter.Material.Texture.TextureMode <> tmBlend then
-        ARci.VKStates.SetBlendFunc(bfDstColor, bfOne)
+        ARci.VXStates.SetBlendFunc(bfDstColor, bfOne)
       else
-        ARci.VKStates.SetBlendFunc(bfDstColor, bfZero);
+        ARci.VXStates.SetBlendFunc(bfDstColor, bfZero);
     end
     else
     begin
@@ -326,9 +326,9 @@ begin
       //be a regular rendering (i.e. no blending). All others
       //are "added" together creating an "illumination mask"
       if i = 0 then
-        Arci.VKStates.SetBlendFunc(bfOne, bfZero)
+        Arci.VXStates.SetBlendFunc(bfOne, bfZero)
       else
-        ARci.VKStates.SetBlendFunc(bfOne, bfOne);
+        ARci.VXStates.SetBlendFunc(bfOne, bfOne);
     end;
 
     //get this emitter's tex matrix
@@ -341,7 +341,7 @@ begin
   end;
 
   // LoseTexMatrix
-  ARci.VKStates.SetBlendFunc(bfOne, bfZero);
+  ARci.VXStates.SetBlendFunc(bfOne, bfZero);
   glDisable(GL_TEXTURE_GEN_S);
   glDisable(GL_TEXTURE_GEN_T);
   glDisable(GL_TEXTURE_GEN_R);
@@ -351,15 +351,15 @@ begin
   glLoadIdentity;
   glMatrixMode(GL_MODELVIEW);
 
-  ARci.VKStates.DepthFunc := cfLEqual;
+  ARci.VXStates.DepthFunc := cfLEqual;
 
   //second pass (inverse): render regular scene, blending it
   //with the "mask"
   if Style = ptsInverse then
   begin
 
-    Arci.VKStates.Enable(stBlend);
-    ARci.VKStates.SetBlendFunc(bfDstColor, bfSrcColor);
+    Arci.VXStates.Enable(stBlend);
+    ARci.VXStates.SetBlendFunc(bfDstColor, bfSrcColor);
 
     //second pass: render everything, blending with what is
     //already there

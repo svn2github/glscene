@@ -323,7 +323,7 @@
         <DCCReference Include="..\..\Source\VXS.Navigator.pas"/>
         <DCCReference Include="..\..\Source\VXS.Nodes.pas"/>
         <DCCReference Include="..\..\Source\VXS.ObjectManager.pas"/>
-        <DCCReference Include="..\..\Source\VXS.Objects.pas"/>
+        <DCCReference Include="..\..\Source\Basis\VXS.Objects.pas"/>
         <DCCReference Include="..\..\Source\Basis\VXS.Octree.pas"/>
         <DCCReference Include="..\..\Source\Basis\VXS.OpenGLAdapter.pas"/>
         <DCCReference Include="..\..\Source\Basis\VXS.OpenGLFMX.pas"/>
