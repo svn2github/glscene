@@ -39,8 +39,7 @@ type
     cbmCube : the object is defined by a bounding axis-aligned "cube"
     cbmFaces : the object is defined by its faces (needs object-level support,
     if unavalaible, uses cbmCube code) }
-  TCollisionBoundingMode = (cbmPoint, cbmSphere, cbmEllipsoid, cbmCube,
-    cbmFaces);
+  TCollisionBoundingMode = (cbmPoint, cbmSphere, cbmEllipsoid, cbmCube, cbmFaces);
 
   TFastCollisionChecker = function(obj1, obj2: TVXBaseSceneObject): Boolean;
   PFastCollisionChecker = ^TFastCollisionChecker;
@@ -58,8 +57,7 @@ type
     destructor Destroy; override;
     procedure CheckCollisions;
   published
-    property OnCollision: TObjectCollisionEvent read FOnCollision
-      write FOnCollision;
+    property OnCollision: TObjectCollisionEvent read FOnCollision write FOnCollision;
   end;
 
   { Collision detection behaviour.
@@ -124,27 +122,21 @@ function IntersectCubes(obj1, obj2: TVXBaseSceneObject): Boolean; overload;
 
 { Returns or creates the TVXBCollision within the given behaviours.
   This helper function is convenient way to access a TVXBCollision. }
-function GetOrCreateCollision(behaviours: TVXBehaviours)
-  : TVXBCollision; overload;
+function GetOrCreateCollision(behaviours: TVXBehaviours): TVXBCollision; overload;
 { Returns or creates the TVXBCollision within the given object's behaviours.
   This helper function is convenient way to access a TVXBCollision. }
 function GetOrCreateCollision(obj: TVXBaseSceneObject): TVXBCollision; overload;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
-
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 const
   cEpsilon: Single = 1E-6;
 
 const
-  cFastCollisionChecker: array [cbmPoint .. cbmFaces, cbmPoint .. cbmFaces]
-    of TFastCollisionChecker = ((FastCheckPointVsPoint, FastCheckPointVsSphere,
+  cFastCollisionChecker: array [cbmPoint .. cbmFaces, cbmPoint .. cbmFaces] of TFastCollisionChecker = (
+    (FastCheckPointVsPoint, FastCheckPointVsSphere,
     FastCheckPointVsEllipsoid, FastCheckPointVsCube, FastCheckPointVsCube),
     (FastCheckSphereVsPoint, FastCheckSphereVsSphere,
     FastCheckSphereVsEllipsoid, FastCheckSphereVsCube, FastCheckSphereVsCube),
@@ -199,8 +191,7 @@ end;
 
 function FastCheckSphereVsPoint(obj1, obj2: TVXBaseSceneObject): Boolean;
 begin
-  Result := (obj1.SqrDistanceTo(obj2.AbsolutePosition) <=
-    Sqr(obj1.BoundingSphereRadius));
+  Result := (obj1.SqrDistanceTo(obj2.AbsolutePosition) <= Sqr(obj1.BoundingSphereRadius));
 end;
 
 function FastCheckSphereVsSphere(obj1, obj2: TVXBaseSceneObject): Boolean;
@@ -347,8 +338,7 @@ begin
   // express in local coordinates (for obj2)
   v := VectorTransform(obj1.AbsolutePosition, obj2.InvAbsoluteMatrix);
   // calc local vector, and rescale to unit dimensions
-  aad := VectorAdd(obj2.AxisAlignedDimensionsUnscaled,
-    obj1.BoundingSphereRadius);
+  aad := VectorAdd(obj2.AxisAlignedDimensionsUnscaled, obj1.BoundingSphereRadius);
   DivideVector(v, aad);
   v.W := 0;
   // if norm is below 1, collision
@@ -417,24 +407,24 @@ function DoCubesIntersectPrim(obj1, obj2: TVXBaseSceneObject): Boolean;
       begin
         j := (i + 1) mod 3;
         k := (j + 1) mod 3;
-        t := (pl.v[i] - p0.v[i]) / d.v[i]; // t: line parameter of intersection
+        t := (pl.C[i]-p0.C[i])/d.C[i];   // t: line parameter of intersection
         if IsInRange(t, 0, 1) then
         begin
           s := p0;
           CombineVector(s, d, t); // calculate intersection
           // if the other two coordinates lie within the ranges, collision
-          if IsInRange(s.v[j], -pl.v[j], pl.v[j]) and
-            IsInRange(s.v[k], -pl.v[k], pl.v[k]) then
+          if IsInRange(s.C[j],-pl.C[j],pl.C[j]) and
+             IsInRange(s.C[k],-pl.C[k],pl.C[k]) then 
             Exit;
         end;
-        t := (-pl.v[i] - p0.v[i]) / d.v[i]; // t: parameter of intersection
+        t := (-pl.C[i]-p0.C[i])/d.C[i];   // t: parameter of intersection
         if IsInRange(t, 0, 1) then
         begin
           s := p0;
           CombineVector(s, d, t); // calculate intersection
           // if the other two coordinates lie within the ranges, collision
-          if IsInRange(s.v[j], -pl.v[j], pl.v[j]) and
-            IsInRange(s.v[k], -pl.v[k], pl.v[k]) then
+          if IsInRange(s.C[j], -pl.C[j], pl.C[j]) and
+             IsInRange(s.C[k], -pl.C[k], pl.C[k]) then 
             Exit;
         end;
       end;
@@ -443,8 +433,10 @@ function DoCubesIntersectPrim(obj1, obj2: TVXBaseSceneObject): Boolean;
   end;
 
 const
-  cWires: array [0 .. 11, 0 .. 1] of Integer = ((0, 1), (1, 2), (2, 3), (3, 0),
-    (4, 5), (5, 6), (6, 7), (7, 4), (0, 4), (1, 5), (2, 6), (3, 7));
+  cWires: array [0 .. 11, 0 .. 1] of Integer = 
+    ((0, 1), (1, 2), (2, 3), (3, 0),
+     (4, 5), (5, 6), (6, 7), (7, 4), 
+	 (0, 4), (1, 5), (2, 6), (3, 7));
 var
   pt1: array [0 .. 7] of TVector;
   M: TMatrix;
@@ -962,11 +954,7 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 RegisterXCollectionItemClass(TVXBCollision);
