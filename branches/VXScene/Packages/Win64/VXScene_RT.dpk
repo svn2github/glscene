@@ -251,7 +251,6 @@ contains
   VXS.VectorGeometry in '..\..\Source\Basis\VXS.VectorGeometry.pas',
   VXS.VectorLists in '..\..\Source\Basis\VXS.VectorLists.pas',
   VXS.VectorTypes in '..\..\Source\Basis\VXS.VectorTypes.pas',
-  VXS.VerletClasses in '..\..\Source\Basis\VXS.VerletClasses.pas',
   VXS.VerletClothify in '..\..\Source\Basis\VXS.VerletClothify.pas',
   VXS.VerletHairClasses in '..\..\Source\Basis\VXS.VerletHairClasses.pas',
   VXS.VerletSkeletonColliders in '..\..\Source\Basis\VXS.VerletSkeletonColliders.pas',

@@ -104,9 +104,9 @@
     <PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
         <DCC_UnitSearchPath>$(VXSCENEDIR)\Source;$(VXSCENEDIR)\Source\Basis;$(VXSCENEDIR)\Source\DesignTime;$(VXSCENEDIR)\Source\FileFormats;$(VXSCENEDIR)\Source\GameAPIs;$(VXSCENEDIR)\Source\ParallelAPIs;$(VXSCENEDIR)\Source\PhysicsAPIs;$(VXSCENEDIR)\Source\ScriptingAPIs;$(VXSCENEDIR)\Source\Shaders;$(VXSCENEDIR)\Source\SoundVideoAPIs;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
         <DCC_DcpOutput>$(VXSCENEDIR)\lib\Win32</DCC_DcpOutput>
-        <DCC_BpiOutput>$(VKSCENEDIR)\lib\Win32</DCC_BpiOutput>
-        <DCC_HppOutput>$(VKSCENEDIR)\include\Win32</DCC_HppOutput>
-        <DCC_ObjOutput>$(VKSCENEDIR)\lib\Win32</DCC_ObjOutput>
+        <DCC_BpiOutput>$(VXSCENEDIR)\lib\Win32</DCC_BpiOutput>
+        <DCC_HppOutput>$(VXSCENEDIR)\include\Win32</DCC_HppOutput>
+        <DCC_ObjOutput>$(VXSCENEDIR)\lib\Win32</DCC_ObjOutput>
         <DCC_DcuOutput>$(VXSCENEDIR)\lib\Win32</DCC_DcuOutput>
         <DCC_Description>VXScene 3D library</DCC_Description>
         <DCC_K>false</DCC_K>
@@ -205,6 +205,7 @@
                     <Source Name="MainSource">VXScene_DT.dpk</Source>
                 </Source>
                 <Excluded_Packages>
+                    <Excluded_Packages Name="C:\Users\Public\Documents\Embarcadero\Studio\19.0\Bpl\GBComps.bpl">Geoblock - Components</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\bcboffice2k250.bpl">Embarcadero C++Builder Office 2000 Servers Package</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\bcbofficexp250.bpl">Embarcadero C++Builder Office XP Servers Package</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\dcloffice2k250.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
