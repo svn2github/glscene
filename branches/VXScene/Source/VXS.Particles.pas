@@ -12,11 +12,15 @@ interface
 {$I VXScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
+  System.Classes,
+  System.SysUtils,
 
   VXS.Scene,
+  VXS.XCollection,
+  VXS.PersistentClasses,
   VXS.VectorGeometry,
-  Winapi.OpenGL, Winapi.OpenGLext, 
   VXS.Context,
   VXS.Color,
   VXS.BaseClasses,
@@ -26,9 +30,7 @@ uses
 type
   TVXParticleEvent = procedure(Sender: TObject; particle: TVXBaseSceneObject) of object;
 
-  // TVXParticles
-  //
-  { Manager object of a particle system. 
+  { Manager object of a particle system.
    Particles in a TVXParticles system are described as normal scene objects,
    however their children are to be : 
     "particle template" : the first object (index=0), this one will be
@@ -44,16 +46,14 @@ type
    instead of freeing them, and will pick in the pool instead of creating
    new objects when new particles are requested. To take advantage of this
    behaviour, you should set the ParticlePoolSize property to a non-null
-   value and use the KillParticle function instead of "Free" to kill a
-       particle. 
-       All direct access to a TVXParticles children should be avoided. 
-       For high-performance particle systems of basic particles, you should
-       look into VXS.ParticleFX instead, TVXParticles being rather focused on
-       complex particles.
+   value and use the KillParticle function instead of "Free" to kill a particle.
+   All direct access to a TVXParticles children should be avoided.
+   For high-performance particle systems of basic particles, you should
+   look into VXS.ParticleFX instead, TVXParticles being rather focused on
+   complex particles.
   }
   TVXParticles = class(TVXImmaterialSceneObject)
   private
-    
     FCubeSize: GLfloat;
     FEdgeColor: TVXColor;
     FVisibleAtRunTime: Boolean;
@@ -64,61 +64,50 @@ type
     FOnKillParticle: TVXParticleEvent;
     FOnDestroyParticle: TVXParticleEvent;
     FOnBeforeRenderParticles, FOnAfterRenderParticles: TDirectRenderEvent;
-
   protected
-    
     procedure SetCubeSize(const val: GLfloat);
     procedure SetEdgeColor(const val: TVXColor);
     procedure SetVisibleAtRunTime(const val: Boolean);
     procedure SetParticlePoolSize(val: Integer);
-
     procedure ClearParticlePool;
-
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
     procedure Assign(Source: TPersistent); override;
     procedure BuildList(var ARci: TVXRenderContextInfo); override;
     procedure DoRender(var ARci: TVXRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
     procedure DoProgress(const progressTime: TProgressTimes); override;
-
-    { Request creation of a new particle. 
+    { Request creation of a new particle.
      Particle will be either created or retrieved from the particlePool. }
     function CreateParticle: TVXBaseSceneObject;
-    { Kill given particle. 
+    { Kill given particle.
      If particlePool is not full, particle will be sent to the pool,
      if not, it will be freed. }
     procedure KillParticle(aParticle: TVXBaseSceneObject);
     { Kill all particles. }
     procedure KillParticles;
-
   published
-    
     property CubeSize: GLfloat read FCubeSize write SetCubeSize;
     property EdgeColor: TVXColor read FEdgeColor write SetEdgeColor;
     property VisibleAtRunTime: Boolean read FVisibleAtRunTime write SetVisibleAtRunTime default False;
-
-    { Size of the particle pool (for storing killed particles). 
+    { Size of the particle pool (for storing killed particles).
              Default size is zero, meaning the particlePool is disabled. }
     property ParticlePoolSize: Integer read FParticlePoolSize write SetParticlePoolSize default 0;
-
-    { Fired a particle has been created as a template duplicate. 
+    { Fired a particle has been created as a template duplicate.
        When the event is triggered, the particle has yet been added  to
        the scene. }
     property OnCreateParticle: TVXParticleEvent read FOnCreateParticle write FOnCreateParticle;
-    { Fired when a particle will get in the "live" list. 
+    { Fired when a particle will get in the "live" list.
        The particle has just been "Assigned" with the template, may happen
        after a creation or a pick from the particle pool. }
     property OnActivateParticle: TVXParticleEvent read FOnActivateParticle write FOnActivateParticle;
-    { Triggered when a particle is killed. 
+    { Triggered when a particle is killed.
              When the event is fired, the particle is still parented, after this
              event, the particle will either go to the pool or be destroyed if
              the pool is full. }
     property OnKillParticle: TVXParticleEvent read FOnKillParticle write FOnKillParticle;
-    { Triggered just before destroying a particle. 
+    { Triggered just before destroying a particle.
        The particle can be in the pool (ie. not parented). }
     property OnDestroyParticle: TVXParticleEvent read FOnDestroyParticle write FOnDestroyParticle;
     { Fired before rendering the first of the particles. }
@@ -127,15 +116,12 @@ type
     property OnAfterRenderParticles: TDirectRenderEvent read FOnAfterRenderParticles write FOnAfterRenderParticles;
   end;
 
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
 implementation
 //---------------------------------------------------------------------
+
 //----------------- TVXParticles --------------------------------------
 //---------------------------------------------------------------------
-// Create
-//
 
 constructor TVXParticles.Create(AOwner: TComponent);
 begin
@@ -147,8 +133,6 @@ begin
   particlePool := TList.Create;
 end;
 
-// Destroy
-//
 
 destructor TVXParticles.Destroy;
 begin
@@ -157,9 +141,6 @@ begin
   particlePool.Free;
   inherited;
 end;
-
-// Assign
-//
 
 procedure TVXParticles.Assign(Source: TPersistent);
 begin
@@ -177,9 +158,6 @@ begin
   end;
   inherited Assign(Source);
 end;
-
-// ClearParticlePool
-//
 
 procedure TVXParticles.ClearParticlePool;
 var
@@ -200,9 +178,6 @@ begin
       TVXBaseSceneObject(particlePool[i]).Free;
   particlePool.Clear;
 end;
-
-// BuildList
-//
 
 procedure TVXParticles.BuildList(var ARci: TVXRenderContextInfo);
 var
@@ -248,9 +223,6 @@ begin
   glEnd;
 end;
 
-// DoRender
-//
-
 procedure TVXParticles.DoRender(var ARci: TVXRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);
 begin
@@ -274,9 +246,6 @@ begin
     FOnAfterRenderParticles(Self, ARci);
 end;
 
-// DoProgress
-//
-
 procedure TVXParticles.DoProgress(const progressTime: TProgressTimes);
 var
   i: Integer;
@@ -289,9 +258,6 @@ begin
       OnProgress(Self, deltaTime, newTime);
 end;
 
-// SetCubeSize
-//
-
 procedure TVXParticles.SetCubeSize(const val: GLfloat);
 begin
   if val <> FCubeSize then
@@ -300,9 +266,6 @@ begin
     StructureChanged;
   end;
 end;
-
-// SetEdgeColor
-//
 
 procedure TVXParticles.SetEdgeColor(const val: TVXColor);
 begin
@@ -313,9 +276,6 @@ begin
   end;
 end;
 
-// SetVisibleAtRunTime
-//
-
 procedure TVXParticles.SetVisibleAtRunTime(const val: Boolean);
 begin
   if val <> FVisibleAtRunTime then
@@ -324,9 +284,6 @@ begin
     StructureChanged;
   end;
 end;
-
-// SetParticlePoolSize
-//
 
 procedure TVXParticles.SetParticlePoolSize(val: Integer);
 var
@@ -348,9 +305,6 @@ begin
       end;
   end;
 end;
-
-// CreateParticle
-//
 
 function TVXParticles.CreateParticle: TVXBaseSceneObject;
 begin
@@ -377,9 +331,6 @@ begin
     Result := nil;
 end;
 
-// KillParticle
-//
-
 procedure TVXParticles.KillParticle(aParticle: TVXBaseSceneObject);
 begin
   Assert(aParticle.Parent = Self, 'KillParticle : particle is not mine !');
@@ -398,9 +349,6 @@ begin
   end;
 end;
 
-// KillParticles
-//
-
 procedure TVXParticles.KillParticles;
 begin
   while Count > 1 do
@@ -408,12 +356,8 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
 
   RegisterClass(TVXParticles);
 

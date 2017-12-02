@@ -24,6 +24,7 @@ uses
 
   VXS.HeightData,
   VXS.Graphics,
+  VXS.Coordinates,
   VXS.VectorGeometry,
   VXS.Texture,
   VXS.Material,

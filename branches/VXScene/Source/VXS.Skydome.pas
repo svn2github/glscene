@@ -2,7 +2,6 @@
 // VXScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
 {   Skydome object
-
 }
 unit VXS.Skydome;
 
@@ -21,6 +20,8 @@ uses
 
   VXS.Scene,
   VXS.VectorGeometry,
+  VXS.Context,
+  VXS.State,
   VXS.Graphics,
   VXS.CrossPlatform,
   VXS.VectorTypes,
@@ -28,6 +29,14 @@ uses
   VXS.RenderContextInfo;
 
 type
+   TVXStarRecord = packed record
+      RA : Word;              // x100 builtin factor, degrees
+      DEC : SmallInt;         // x100 builtin factor, degrees
+      BVColorIndex : Byte;    // x100 builtin factor
+      VMagnitude : Byte;      // x10 builtin factor
+   end;
+   PGLStarRecord = ^TVXStarRecord;
+
 
   TVXSkyDomeBand = class(TCollectionItem)
   private
@@ -89,7 +98,7 @@ type
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
   published
-      { Right Ascension, in degrees. }
+    { Right Ascension, in degrees. }
     property RA: Single read FRA write FRA;
     { Declination, in degrees. }
     property Dec: Single read FDec write FDec;
@@ -125,14 +134,14 @@ type
   TVXSkyDomeOptions = set of TVXSkyDomeOption;
 
     { Renders a sky dome always centered on the camera.
-       If you use this object make sure it is rendered *first*, as it ignores
-       depth buffering and overwrites everything. All children of a skydome
-       are rendered in the skydome's coordinate system.
-       The skydome is described by "bands", each "band" is an horizontal cut
-       of a sphere, and you can have as many bands as you wish.
-       Estimated CPU cost (K7-500, GeForce SDR, default bands):
-        800x600 fullscreen filled: 4.5 ms (220 FPS, worst case)
-        Geometry cost (0% fill): 0.7 ms (1300 FPS, best case) }
+      If you use this object make sure it is rendered *first*, as it ignores
+      depth buffering and overwrites everything. All children of a skydome
+      are rendered in the skydome's coordinate system.
+      The skydome is described by "bands", each "band" is an horizontal cut
+      of a sphere, and you can have as many bands as you wish.
+      Estimated CPU cost (K7-500, GeForce SDR, default bands):
+      800x600 fullscreen filled: 4.5 ms (220 FPS, worst case)
+      Geometry cost (0% fill): 0.7 ms (1300 FPS, best case) }
   TVXSkyDome = class(TVXCameraInvariantObject)
   private
     FOptions: TVXSkyDomeOptions;
@@ -202,9 +211,9 @@ type
     procedure BuildList(var rci: TVXRenderContextInfo); override;
     procedure SetSunAtTime(HH, MM: Single);
   published
-      { Elevation of the sun, measured in degrees. }
+    { Elevation of the sun, measured in degrees. }
     property SunElevation: Single read FSunElevation write SetSunElevation;
-    { Expresses the purity of air.  Value range is from 1 (pure athmosphere) to 120 (very nebulous) }
+    { Expresses the purity of air.  Value range is from 1 (pure atmosphere) to 120 (very nebulous) }
     property Turbidity: Single read FTurbidity write SetTurbidity;
     property SunZenithColor: TVXColor read FSunZenithColor write SetSunZenithColor;
     property SunDawnColor: TVXColor read FSunDawnColor write SetSunDawnColor;
@@ -217,21 +226,64 @@ type
     property Stacks: Integer read FStacks write SetStacks default 48;
   end;
 
+{ Computes position on the unit sphere of a star record (Z=up). }
+function StarRecordPositionZUp(const starRecord : TVXStarRecord) : TAffineVector;
+{ Computes position on the unit sphere of a star record (Y=up). }
+function StarRecordPositionYUp(const starRecord : TVXStarRecord) : TAffineVector;
+{ Computes star color from BV index (RGB) and magnitude (alpha). }
+function StarRecordColor(const starRecord : TVXStarRecord; bias : Single) : TVector;
+
+
 // ------------------------------------------------------------------
 implementation
 // ------------------------------------------------------------------
 
-uses
-  VXS.Context,
-  VXS.StarRecord,
-  VXS.State;
+function StarRecordPositionYUp(const starRecord : TVXStarRecord) : TAffineVector;
+var
+   f : Single;
+begin
+   SinCosine(starRecord.DEC*(0.01*PI/180), Result.Y, f);
+   SinCosine(starRecord.RA*(0.01*PI/180), f, Result.X, Result.Z);
+end;
+
+function StarRecordPositionZUp(const starRecord : TVXStarRecord) : TAffineVector;
+var
+   f : Single;
+begin
+   SinCosine(starRecord.DEC*(0.01*PI/180), Result.Z, f);
+   SinCosine(starRecord.RA*(0.01*PI/180), f, Result.X, Result.Y);
+end;
+
+function StarRecordColor(const starRecord : TVXStarRecord; bias : Single) : TVector;
+const
+   // very *rough* approximation
+   cBVm035 : TVector = (X:0.7; Y:0.8; Z:1.0; W:1);
+   cBV015  : TVector = (X:1.0; Y:1.0; Z:1.0; W:1);
+   cBV060  : TVector = (X:1.0; Y:1.0; Z:0.7; W:1);
+   cBV135  : TVector = (X:1.0; Y:0.8; Z:0.7; W:1);
+var
+   bvIndex100 : Integer;
+begin
+   bvIndex100:=starRecord.BVColorIndex-50;
+   // compute RGB color for B&V index
+   if bvIndex100<-035 then
+      Result:=cBVm035
+   else if bvIndex100<015 then
+      VectorLerp(cBVm035, cBV015, (bvIndex100+035)*(1/(015+035)), Result)
+   else if bvIndex100<060 then
+      VectorLerp(cBV015, cBV060, (bvIndex100-015)*(1/(060-015)), Result)
+   else if bvIndex100<135 then
+      VectorLerp(cBV060, cBV135, (bvIndex100-060)*(1/(135-060)), Result)
+   else Result:=cBV135;
+   // compute transparency for VMag
+   // the actual factor is 2.512, and not used here
+   Result.W:=PowerSingle(1.2, -(starRecord.VMagnitude*0.1-bias));
+end;
+
 
 // ------------------
 // ------------------ TVXSkyDomeBand ------------------
 // ------------------
-
-// Create
-//
 
 constructor TVXSkyDomeBand.Create(Collection: TCollection);
 begin
@@ -246,18 +298,12 @@ begin
   FStacks := 1;
 end;
 
-// Destroy
-//
-
 destructor TVXSkyDomeBand.Destroy;
 begin
   FStartColor.Free;
   FStopColor.Free;
   inherited Destroy;
 end;
-
-// Assign
-//
 
 procedure TVXSkyDomeBand.Assign(Source: TPersistent);
 begin
@@ -273,16 +319,10 @@ begin
   inherited Destroy;
 end;
 
-// GetDisplayName
-//
-
 function TVXSkyDomeBand.GetDisplayName: string;
 begin
   Result := Format('%d: %.1f° - %.1f°', [Index, StartAngle, StopAngle]);
 end;
-
-// SetStartAngle
-//
 
 procedure TVXSkyDomeBand.SetStartAngle(const val: Single);
 begin
@@ -291,16 +331,10 @@ begin
   TVXSkyDomeBands(Collection).NotifyChange;
 end;
 
-// SetStartColor
-//
-
 procedure TVXSkyDomeBand.SetStartColor(const val: TVXColor);
 begin
   FStartColor.Assign(val);
 end;
-
-// SetStopAngle
-//
 
 procedure TVXSkyDomeBand.SetStopAngle(const val: Single);
 begin
@@ -310,16 +344,10 @@ begin
   TVXSkyDomeBands(Collection).NotifyChange;
 end;
 
-// SetStopColor
-//
-
 procedure TVXSkyDomeBand.SetStopColor(const val: TVXColor);
 begin
   FStopColor.Assign(val);
 end;
-
-// SetSlices
-//
 
 procedure TVXSkyDomeBand.SetSlices(const val: Integer);
 begin
@@ -330,9 +358,6 @@ begin
   TVXSkyDomeBands(Collection).NotifyChange;
 end;
 
-// SetStacks
-//
-
 procedure TVXSkyDomeBand.SetStacks(const val: Integer);
 begin
   if val < 1 then
@@ -342,16 +367,10 @@ begin
   TVXSkyDomeBands(Collection).NotifyChange;
 end;
 
-// OnColorChange
-//
-
 procedure TVXSkyDomeBand.OnColorChange(sender: TObject);
 begin
   TVXSkyDomeBands(Collection).NotifyChange;
 end;
-
-// BuildList
-//
 
 procedure TVXSkyDomeBand.BuildList(var rci: TVXRenderContextInfo);
 
@@ -476,9 +495,6 @@ begin
   if Assigned(owner) and (owner is TVXBaseSceneObject) then TVXBaseSceneObject(owner).StructureChanged;
 end;
 
-// BuildList
-//
-
 procedure TVXSkyDomeBands.BuildList(var rci: TVXRenderContextInfo);
 var
   i: Integer;
@@ -490,24 +506,15 @@ end;
 // ------------------ TVXSkyDomeStar ------------------
 // ------------------
 
-// Create
-//
-
 constructor TVXSkyDomeStar.Create(Collection: TCollection);
 begin
   inherited Create(Collection);
 end;
 
-// Destroy
-//
-
 destructor TVXSkyDomeStar.Destroy;
 begin
   inherited Destroy;
 end;
-
-// Assign
-//
 
 procedure TVXSkyDomeStar.Assign(Source: TPersistent);
 begin
@@ -522,9 +529,6 @@ begin
   inherited Destroy;
 end;
 
-// GetDisplayName
-//
-
 function TVXSkyDomeStar.GetDisplayName: string;
 begin
   Result := Format('RA: %5.1f / Dec: %5.1f', [RA, Dec]);
@@ -534,57 +538,36 @@ end;
 // ------------------ TVXSkyDomeStars ------------------
 // ------------------
 
-// Create
-//
-
 constructor TVXSkyDomeStars.Create(AOwner: TComponent);
 begin
   Owner := AOwner;
   inherited Create(TVXSkyDomeStar);
 end;
 
-// GetOwner
-//
-
 function TVXSkyDomeStars.GetOwner: TPersistent;
 begin
   Result := Owner;
 end;
-
-// SetItems
-//
 
 procedure TVXSkyDomeStars.SetItems(index: Integer; const val: TVXSkyDomeStar);
 begin
   inherited Items[index] := val;
 end;
 
-// GetItems
-//
-
 function TVXSkyDomeStars.GetItems(index: Integer): TVXSkyDomeStar;
 begin
   Result := TVXSkyDomeStar(inherited Items[index]);
 end;
-
-// Add
-//
 
 function TVXSkyDomeStars.Add: TVXSkyDomeStar;
 begin
   Result := (inherited Add) as TVXSkyDomeStar;
 end;
 
-// FindItemID
-//
-
 function TVXSkyDomeStars.FindItemID(ID: Integer): TVXSkyDomeStar;
 begin
   Result := (inherited FindItemID(ID)) as TVXSkyDomeStar;
 end;
-
-// PrecomputeCartesianCoordinates
-//
 
 procedure TVXSkyDomeStars.PrecomputeCartesianCoordinates;
 var
@@ -603,9 +586,6 @@ begin
     star.FCacheCoord.Z := decS;
   end;
 end;
-
-// BuildList
-//
 
 procedure TVXSkyDomeStars.BuildList(var rci: TVXRenderContextInfo; twinkle:
   Boolean);
@@ -711,9 +691,6 @@ begin
   end;
 end;
 
-// AddRandomStars
-//
-
 procedure TVXSkyDomeStars.AddRandomStars(const nb: Integer; const ColorMin,
   ColorMax: TVector3b;
   const Magnitude_min, Magnitude_max: Single;
@@ -750,9 +727,6 @@ begin
   end;
 end;
 
-// LoadStarsFile
-//
-
 procedure TVXSkyDomeStars.LoadStarsFile(const starsFileName: string);
 var
   fs: TFileStream;
@@ -785,9 +759,6 @@ end;
 // ------------------ TVXSkyDome ------------------
 // ------------------
 
-// CreateOwned
-//
-
 constructor TVXSkyDome.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
@@ -812,18 +783,12 @@ begin
   FStars := TVXSkyDomeStars.Create(Self);
 end;
 
-// Destroy
-//
-
 destructor TVXSkyDome.Destroy;
 begin
   FStars.Free;
   FBands.Free;
   inherited Destroy;
 end;
-
-// Assign
-//
 
 procedure TVXSkyDome.Assign(Source: TPersistent);
 begin
@@ -835,26 +800,17 @@ begin
   inherited;
 end;
 
-// SetBands
-//
-
 procedure TVXSkyDome.SetBands(const val: TVXSkyDomeBands);
 begin
   FBands.Assign(val);
   StructureChanged;
 end;
 
-// SetStars
-//
-
 procedure TVXSkyDome.SetStars(const val: TVXSkyDomeStars);
 begin
   FStars.Assign(val);
   StructureChanged;
 end;
-
-// SetOptions
-//
 
 procedure TVXSkyDome.SetOptions(const val: TVXSkyDomeOptions);
 begin
@@ -871,9 +827,6 @@ begin
     StructureChanged;
   end;
 end;
-
-// BuildList
-//
 
 procedure TVXSkyDome.BuildList(var rci: TVXRenderContextInfo);
 var
@@ -899,9 +852,6 @@ end;
 // ------------------ TVXEarthSkyDome ------------------
 // ------------------
 
-// CreateOwned
-//
-
 constructor TVXEarthSkyDome.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
@@ -920,9 +870,6 @@ begin
   PreCalculate;
 end;
 
-// Destroy
-//
-
 destructor TVXEarthSkyDome.Destroy;
 begin
   FSunZenithColor.Free;
@@ -933,9 +880,6 @@ begin
   FDeepColor.Free;
   inherited Destroy;
 end;
-
-// Assign
-//
 
 procedure TVXEarthSkyDome.Assign(Source: TPersistent);
 begin
@@ -955,17 +899,11 @@ begin
   inherited;
 end;
 
-// Loaded
-//
-
 procedure TVXEarthSkyDome.Loaded;
 begin
   inherited;
   PreCalculate;
 end;
-
-// SetSunElevation
-//
 
 procedure TVXEarthSkyDome.SetSunElevation(const val: Single);
 var
@@ -979,17 +917,11 @@ begin
   end;
 end;
 
-// SetTurbidity
-//
-
 procedure TVXEarthSkyDome.SetTurbidity(const val: Single);
 begin
   FTurbidity := ClampValue(val, 1, 120);
   PreCalculate;
 end;
-
-// SetSunZenithColor
-//
 
 procedure TVXEarthSkyDome.SetSunZenithColor(const val: TVXColor);
 begin
@@ -997,17 +929,11 @@ begin
   PreCalculate;
 end;
 
-// SetSunDawnColor
-//
-
 procedure TVXEarthSkyDome.SetSunDawnColor(const val: TVXColor);
 begin
   FSunDawnColor.Assign(val);
   PreCalculate;
 end;
-
-// SetHazeColor
-//
 
 procedure TVXEarthSkyDome.SetHazeColor(const val: TVXColor);
 begin
@@ -1015,17 +941,11 @@ begin
   PreCalculate;
 end;
 
-// SetSkyColor
-//
-
 procedure TVXEarthSkyDome.SetSkyColor(const val: TVXColor);
 begin
   FSkyColor.Assign(val);
   PreCalculate;
 end;
-
-// SetNightColor
-//
 
 procedure TVXEarthSkyDome.SetNightColor(const val: TVXColor);
 begin
@@ -1033,17 +953,11 @@ begin
   PreCalculate;
 end;
 
-// SetDeepColor
-//
-
 procedure TVXEarthSkyDome.SetDeepColor(const val: TVXColor);
 begin
   FDeepColor.Assign(val);
   PreCalculate;
 end;
-
-// SetSlices
-//
 
 procedure TVXEarthSkyDome.SetSlices(const val: Integer);
 begin
@@ -1051,17 +965,11 @@ begin
   StructureChanged;
 end;
 
-// SetStacks
-//
-
 procedure TVXEarthSkyDome.SetStacks(const val: Integer);
 begin
   if val>1 then FStacks:=val else FStacks:=1;
   StructureChanged;
 end;
-
-// BuildList
-//
 
 procedure TVXEarthSkyDome.BuildList(var rci: TVXRenderContextInfo);
 var
@@ -1097,9 +1005,6 @@ begin
   // restore
   rci.VXStates.DepthWriteMask := GLboolean(True);
 end;
-
-// OnColorChanged
-//
 
 procedure TVXEarthSkyDome.OnColorChanged(Sender: TObject);
 begin
@@ -1169,14 +1074,6 @@ begin
   StructureChanged;
 end;
 
-
-
-
-
-
-// PreCalculate
-//
-
 procedure TVXEarthSkyDome.PreCalculate;
 var
   ts: Single;
@@ -1224,9 +1121,6 @@ begin
   StructureChanged;
 end;
 
-// CalculateColor
-//
-
 function TVXEarthSkyDome.CalculateColor(const theta, cosGamma: Single):
   TColorVector;
 var
@@ -1240,9 +1134,6 @@ begin
   VectorLerp(Result, FCurSunColor, ClampValue(exp(FCurSunSkyTurbid * cosGamma *
     (1 + t)) * 1.1, 0, 1), Result);
 end;
-
-// SetSunElevation
-//
 
 procedure TVXEarthSkyDome.RenderDome;
 var
@@ -1388,12 +1279,8 @@ begin
 end;
 
 //-------------------------------------------------------------
-//-------------------------------------------------------------
-//-------------------------------------------------------------
 initialization
-  //-------------------------------------------------------------
-  //-------------------------------------------------------------
-  //-------------------------------------------------------------
+//-------------------------------------------------------------
 
   RegisterClasses([TVXSkyDome, TVXEarthSkyDome]);
 

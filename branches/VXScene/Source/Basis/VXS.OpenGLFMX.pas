@@ -168,7 +168,7 @@ type
   end;
 
 var
-  VKOpenGL: TVXOpenGL;
+  VXOpenGL: TVXOpenGL;
 
 //-----------------------------------------------------------------------
 implementation
@@ -566,13 +566,13 @@ end;
 initialization
 //==========================================================================
 
-VKOpenGL := TVXOpenGL.Create;
-VKOpenGL.BeginGL;
+VXOpenGL := TVXOpenGL.Create;
+VXOpenGL.BeginGL;
 InitOpenGLext;
 
 finalization
 
-VKOpenGL.EndGL;
-VKOpenGL.Free;
+VXOpenGL.EndGL;
+VXOpenGL.Free;
 
 end.

@@ -1,13 +1,13 @@
 //
-// VXScene Component Library, based on GLScene http://glscene.sourceforge.net 
+// VXScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
 {
-   Implements basic shadow volumes support. 
+   Implements basic shadow volumes support.
 
    Be aware that only objects that support silhouette determination have a chance
    to cast correct shadows. Transparent/blended/shader objects among the receivers
-   or the casters will be rendered incorrectly. 
-  
+   or the casters will be rendered incorrectly.
+
 }
 unit VXS.ShadowVolume;
 
@@ -20,9 +20,10 @@ uses
   Winapi.OpenGLext,
   System.SysUtils,
   System.Classes,
-  
+
   VXS.OpenGLAdapter,
   VXS.Scene,
+  VXS.PipelineTransformation,
   VXS.VectorLists,
   VXS.State, 
   VXS.VectorTypes,
@@ -229,9 +230,6 @@ implementation
 // ------------------ TVXShadowVolumeCaster ------------------
 // ------------------
 
-// Create
-//
-
 constructor TVXShadowVolumeCaster.Create(ACollection: TCollection);
 begin
   inherited Create(ACollection);
@@ -251,18 +249,12 @@ begin
   Result := TVXShadowVolume(THackOwnedCollection(Collection).GetOwner);
 end;
 
-// Destroy
-//
-
 destructor TVXShadowVolumeCaster.Destroy;
 begin
   if Assigned(FCaster) then
     FCaster.RemoveFreeNotification(GLShadowVolume);
   inherited;
 end;
-
-// Assign
-//
 
 procedure TVXShadowVolumeCaster.Assign(Source: TPersistent);
 begin
@@ -275,9 +267,6 @@ begin
   end;
   inherited;
 end;
-
-// SetCaster
-//
 
 procedure TVXShadowVolumeCaster.SetCaster(const val: TVXBaseSceneObject);
 begin
@@ -292,9 +281,6 @@ begin
   end;
 end;
 
-// RemoveNotification
-//
-
 procedure TVXShadowVolumeCaster.RemoveNotification(aComponent: TComponent);
 begin
   if aComponent = FCaster then
@@ -305,9 +291,6 @@ begin
     Free;
   end;
 end;
-
-// GetDisplayName
-//
 
 function TVXShadowVolumeCaster.GetDisplayName: string;
 begin
@@ -329,17 +312,11 @@ end;
 // ------------------ TVXShadowVolumeLight ------------------
 // ------------------
 
-// Create
-//
-
 constructor TVXShadowVolumeLight.Create(ACollection: TCollection);
 begin
   inherited Create(ACollection);
   FSilhouettes := TPersistentObjectList.Create;
 end;
-
-// Destroy
-//
 
 destructor TVXShadowVolumeLight.Destroy;
 begin
@@ -348,32 +325,20 @@ begin
   inherited;
 end;
 
-// FlushSilhouetteCache
-//
-
 procedure TVXShadowVolumeLight.FlushSilhouetteCache;
 begin
   FSilhouettes.Clean;
 end;
-
-// Create
-//
 
 function TVXShadowVolumeLight.GetLightSource: TVXLightSource;
 begin
   Result := TVXLightSource(Caster);
 end;
 
-// SetLightSource
-//
-
 procedure TVXShadowVolumeLight.SetLightSource(const ls: TVXLightSource);
 begin
   SetCaster(ls);
 end;
-
-// GetCachedSilhouette
-//
 
 function TVXShadowVolumeLight.GetCachedSilhouette(AIndex: Integer):
   TVXSilhouette;
@@ -383,9 +348,6 @@ begin
   else
     Result := nil;
 end;
-
-// StoreCachedSilhouette
-//
 
 procedure TVXShadowVolumeLight.StoreCachedSilhouette(AIndex: Integer; ASil:
   TVXSilhouette);
@@ -399,9 +361,6 @@ begin
     FSilhouettes[AIndex] := ASil;
   end;
 end;
-
-// TVXShadowVolumeLight
-//
 
 function TVXShadowVolumeLight.SetupScissorRect(worldAABB: PAABB; var rci:
   TVXRenderContextInfo): Boolean;

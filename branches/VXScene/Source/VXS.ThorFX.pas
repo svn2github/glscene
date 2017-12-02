@@ -22,6 +22,7 @@ uses
   System.Math,
 
   VXS.Scene,
+  VXS.PipelineTransformation,
   VXS.XCollection,
   VXS.VectorGeometry,
   VXS.Context,

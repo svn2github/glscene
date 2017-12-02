@@ -19,13 +19,13 @@ uses
   Winapi.OpenGLext,
   System.Classes,
   System.SysUtils,
-  
-  VXS.OpenGLAdapter,
+
   VXS.XOpenGL,
   VXS.Scene,
   VXS.HeightData,
   VXS.Material,
   VXS.VectorGeometry,
+  VXS.Coordinates,
   VXS.Context,
   VXS.ROAMPatch,
   VXS.VectorLists,
@@ -39,25 +39,21 @@ const
 type
 
   TGetTerrainBoundsEvent = procedure(var l, t, r, b: single) of object;
-  TPatchPostRenderEvent = procedure(var rci: TVXRenderContextInfo;
-    const patches: TList) of object;
-  TVXHeightDataPostRenderEvent = procedure(var rci: TVXRenderContextInfo;
-    var HeightDatas: TList) of object;
-  TMaxCLODTrianglesReachedEvent = procedure(var rci: TVXRenderContextInfo)
-    of object;
+  TPatchPostRenderEvent = procedure(var rci: TVXRenderContextInfo; const patches: TList) of object;
+  TVXHeightDataPostRenderEvent = procedure(var rci: TVXRenderContextInfo; var HeightDatas: TList) of object;
+  TMaxCLODTrianglesReachedEvent = procedure(var rci: TVXRenderContextInfo) of object;
 
   TVXTerrainHighResStyle = (hrsFullGeometry, hrsTesselated);
   TVXTerrainOcclusionTesselate = (totTesselateAlways, totTesselateIfVisible);
 
-  TVXTileManagementFlag = (tmClearUsedFlags, tmMarkUsedTiles,
-    tmReleaseUnusedTiles, tmAllocateNewTiles, tmWaitForPreparing);
+  TVXTileManagementFlag = (tmClearUsedFlags, tmMarkUsedTiles, tmReleaseUnusedTiles, tmAllocateNewTiles, tmWaitForPreparing);
   TVXTileManagementFlags = set of TVXTileManagementFlag;
 
   { Basic terrain renderer.
     This renderer uses no sophisticated meshing, it just builds and maintains
     a set of terrain tiles, performs basic visibility culling and renders its
     stuff. You can use it has a base class/sample for more specialized
-    terrain renderers. 
+    terrain renderers.
     The Terrain heightdata is retrieved directly from a TVXHeightDataSource, and
     expressed as z=f(x, y) data. }
   TVXTerrainRenderer = class(TVXSceneObject)
@@ -86,25 +82,21 @@ type
     procedure MarkAllTilesAsUnused;
     procedure ReleaseAllUnusedTiles;
     procedure MarkHashedTileAsUsed(const tilePos: TAffineVector);
-    function HashedTile(const tilePos: TAffineVector;
-      canAllocate: Boolean = True): TVXHeightData; overload;
-    function HashedTile(const xLeft, yTop: Integer; canAllocate: Boolean = True)
-      : TVXHeightData; overload;
+    function HashedTile(const tilePos: TAffineVector; canAllocate: Boolean = True): TVXHeightData; overload;
+    function HashedTile(const xLeft, yTop: Integer; canAllocate: Boolean = True): TVXHeightData; overload;
 
     procedure SetHeightDataSource(const val: TVXHeightDataSource);
-    procedure SetTileSize(const Val: Integer);
-    procedure SetTilesPerTexture(const Val: single);
-    procedure SetCLODPrecision(const Val: Integer);
-    procedure SetMaterialLibrary(const Val: TVXMaterialLibrary);
-    procedure SetQualityStyle(const Val: TVXTerrainHighResStyle);
-    procedure SetOcclusionFrameSkip(Val: Integer);
-    procedure Notification(AComponent: TComponent;
-      Operation: TOperation); override;
+    procedure SetTileSize(const val: Integer);
+    procedure SetTilesPerTexture(const val: single);
+    procedure SetCLODPrecision(const val: Integer);
+    procedure SetMaterialLibrary(const val: TVXMaterialLibrary);
+    procedure SetQualityStyle(const val: TVXTerrainHighResStyle);
+    procedure SetOcclusionFrameSkip(val: Integer);
+    procedure Notification(AComponent: TComponent; Operation: TOperation); override;
     procedure DestroyHandle; override;
     procedure ReleaseAllTiles; virtual;
     procedure OnTileDestroyed(Sender: TObject); virtual;
-    function GetPreparedPatch(const TilePos, EyePos: TAffineVector;
-      TexFactor: Single; HDList: TList): TVXROAMPatch;
+    function GetPreparedPatch(const tilePos, EyePos: TAffineVector; TexFactor: single; HDList: TList): TVXROAMPatch;
   public
     { TileManagement flags can be used to turn off various Tile cache management features.
       This helps to prevent unnecessary tile cache flushes, when rendering from multiple cameras. }
@@ -112,9 +104,8 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure BuildList(var rci: TVXRenderContextInfo); override;
-    function RayCastIntersect(const rayStart, rayVector: TVector;
-      intersectPoint: PVector = nil; intersectNormal: PVector = nil)
-      : boolean; override;
+    function RayCastIntersect(const rayStart, rayVector: TVector; intersectPoint: PVector = nil; intersectNormal: PVector = nil)
+      : Boolean; override;
     { Interpolates height for the given point.
       Expects a point expressed in absolute coordinates. }
     function InterpolatedHeight(const p: TVector): single; overload; virtual;
@@ -124,46 +115,39 @@ type
     function HashedTileCount: Integer;
   published
     { Specifies the HeightData provider component. }
-    property HeightDataSource: TVXHeightDataSource read FHeightDataSource
-      write SetHeightDataSource;
+    property HeightDataSource: TVXHeightDataSource read FHeightDataSource write SetHeightDataSource;
     { Size of the terrain tiles. Must be a power of two. }
     property TileSize: Integer read FTileSize write SetTileSize default 16;
     { Number of tiles required for a full texture map. }
-    property TilesPerTexture: single read FTilesPerTexture
-      write SetTilesPerTexture;
+    property TilesPerTexture: single read FTilesPerTexture write SetTilesPerTexture;
     { Link to the material library holding terrain materials.
       If unspecified, and for all terrain tiles with unspecified material,
       the terrain renderer's material is used. }
-    property MaterialLibrary: TVXMaterialLibrary read FMaterialLibrary
-      write SetMaterialLibrary;
-    {  Quality distance hint.
+    property MaterialLibrary: TVXMaterialLibrary read FMaterialLibrary write SetMaterialLibrary;
+    { Quality distance hint.
       This parameter gives an hint to the terrain renderer at which distance
       the terrain quality can be degraded to favor speed. The distance is
       expressed in absolute coordinates units.
       All tiles closer than this distance are rendered according to
       QualityStyle and with a static resolution. }
-    property QualityDistance: Single read FQualityDistance
-      write FQualityDistance;
+    property QualityDistance: single read FQualityDistance write FQualityDistance;
     { Determines how high-res tiles (closer than QualityDistance) are rendered.
       hrsFullGeometry (default value) means that the high-res tiles are rendered
       with full-geometry, and no LOD of any kind, while hrsTesselated means
       the tiles will be tesselated once, with the best output for the
       CLODPrecision, and the result of that tesselation will be reused
       in further frames without any adpative tesselation. }
-    property QualityStyle: TVXTerrainHighResStyle read FQualityStyle
-      write SetQualityStyle default hrsFullGeometry;
-    {  Maximum number of CLOD triangles per scene.
+    property QualityStyle: TVXTerrainHighResStyle read FQualityStyle write SetQualityStyle default hrsFullGeometry;
+    { Maximum number of CLOD triangles per scene.
       Triangles in high-resolution tiles (closer than QualityDistance) do
       not count toward this limit. }
-    property MaxCLODTriangles: Integer read FMaxCLODTriangles
-      write FMaxCLODTriangles default 65536;
-    {  Precision of CLOD tiles.
+    property MaxCLODTriangles: Integer read FMaxCLODTriangles write FMaxCLODTriangles default 65536;
+    { Precision of CLOD tiles.
       The lower the value, the higher the precision and triangle count.
       Large values will result in coarse terrain.
       high-resolution tiles (closer than QualityDistance) ignore this setting. }
-    property CLODPrecision: Integer read FCLODPrecision write SetCLODPrecision
-      default 100;
-    {  Numbers of frames to skip for a tile when occlusion testing found it invisible.
+    property CLODPrecision: Integer read FCLODPrecision write SetCLODPrecision default 100;
+    { Numbers of frames to skip for a tile when occlusion testing found it invisible.
       Occlusion testing can help reduce CPU, T&L and fillrate requirements
       when tiles are occluded, either by the terrain itself (tiles behind
       a mountain or a cliff) or by geometry that was rendered before the
@@ -177,9 +161,8 @@ type
       coherency optimization, and as such, shouldn't be used for static
       rendering (ie. leave value to its default of zero).
       This optimization requires the hardware to support GL_NV_occlusion_query. }
-    property OcclusionFrameSkip: Integer read FOcclusionFrameSkip
-      write SetOcclusionFrameSkip default 0;
-    {  Determines if and how occlusion testing affects tesselation.
+    property OcclusionFrameSkip: Integer read FOcclusionFrameSkip write SetOcclusionFrameSkip default 0;
+    { Determines if and how occlusion testing affects tesselation.
       Turning off tesselation of tiles determined invisible can improve
       performance, however, it may result in glitches since the tesselation
       of an ivisible tile can have a slight effect on the tesselation
@@ -188,48 +171,42 @@ type
       the QualityDistance, so that glitches will apear farther away
       (this will mean increasing your triangle count though, so you'll
       trade CPU power against T&L power). }
-    property OcclusionTesselate: TVXTerrainOcclusionTesselate
-      read FOcclusionTesselate write FOcclusionTesselate
+    property OcclusionTesselate: TVXTerrainOcclusionTesselate read FOcclusionTesselate write FOcclusionTesselate
       default totTesselateIfVisible;
-    {  Allows to specify terrain bounds.
+    { Allows to specify terrain bounds.
       Default rendering bounds will reach depth of view in all direction,
       with this event you can chose to specify a smaller rendered
       terrain area. }
-    property OnGetTerrainBounds: TGetTerrainBoundsEvent read FOnGetTerrainBounds
-      write FOnGetTerrainBounds;
+    property OnGetTerrainBounds: TGetTerrainBoundsEvent read FOnGetTerrainBounds write FOnGetTerrainBounds;
     { Invoked for each rendered patch after terrain render has completed.
       The list holds TVXROAMPatch objects and allows per-patch
       post-processings, like waters, trees... It is invoked *before*
       OnHeightDataPostRender. }
-    property OnPatchPostRender: TPatchPostRenderEvent read FOnPatchPostRender
-      write FOnPatchPostRender;
-    {  Invoked for each heightData not culled out by the terrain renderer.
+    property OnPatchPostRender: TPatchPostRenderEvent read FOnPatchPostRender write FOnPatchPostRender;
+    { Invoked for each heightData not culled out by the terrain renderer.
       The list holds TVXHeightData objects and allows per-patch
       post-processings, like waters, trees... It is invoked *after*
       OnPatchPostRender. }
-    property OnHeightDataPostRender: TVXHeightDataPostRenderEvent
-      read FOnHeightDataPostRender write FOnHeightDataPostRender;
-    {  Invoked whenever the MaxCLODTriangles limit was reached during last rendering.
+    property OnHeightDataPostRender: TVXHeightDataPostRenderEvent read FOnHeightDataPostRender write FOnHeightDataPostRender;
+    { Invoked whenever the MaxCLODTriangles limit was reached during last rendering.
       This forced the terrain renderer to resize the buffer, which affects performance.
       If this event is fired frequently, one should increase MaxCLODTriangles. }
-    property OnMaxCLODTrianglesReached: TMaxCLODTrianglesReachedEvent
-      read FOnMaxCLODTrianglesReached write FOnMaxCLODTrianglesReached;
-     {  Distance between contours - zero (default) for no contours  PGS }
-    property ContourInterval: Integer read FContourInterval
-      write FContourInterval default 0;
-     {  Width of contour lines }
-    property ContourWidth: Integer read FContourWidth
-      write FContourWidth default 1;
+    property OnMaxCLODTrianglesReached: TMaxCLODTrianglesReachedEvent read FOnMaxCLODTrianglesReached
+      write FOnMaxCLODTrianglesReached;
+    { Distance between contours - zero (default) for no contours  PGS }
+    property ContourInterval: Integer read FContourInterval write FContourInterval default 0;
+    { Width of contour lines }
+    property ContourWidth: Integer read FContourWidth write FContourWidth default 1;
   end;
 
-//===================================================================
+  // ===================================================================
 implementation
-//===================================================================
+
+// ===================================================================
 
 function HashKey(const xLeft, yTop: Integer): Integer;
 begin
-  Result := (xLeft + (xLeft shr 8) + (xLeft shr 16) + (yTop shl 1) +
-    (yTop shr 9) + (yTop shr 17)) and cTilesHashSize;
+  Result := (xLeft + (xLeft shr 8) + (xLeft shr 16) + (yTop shl 1) + (yTop shr 9) + (yTop shr 17)) and cTilesHashSize;
 end;
 
 // ------------------
@@ -253,8 +230,7 @@ begin
   FBufferVertices := TAffineVectorList.Create;
   FBufferTexPoints := TTexPointList.Create;
   FBufferVertexIndices := TIntegerList.Create;
-  TileManagement := [tmClearUsedFlags, tmMarkUsedTiles, tmReleaseUnusedTiles,
-    tmAllocateNewTiles];
+  TileManagement := [tmClearUsedFlags, tmMarkUsedTiles, tmReleaseUnusedTiles, tmAllocateNewTiles];
 end;
 
 destructor TVXTerrainRenderer.Destroy;
@@ -273,8 +249,7 @@ begin
   inherited Destroy;
 end;
 
-procedure TVXTerrainRenderer.Notification(AComponent: TComponent;
-  Operation: TOperation);
+procedure TVXTerrainRenderer.Notification(AComponent: TComponent; Operation: TOperation);
 begin
   if Operation = opRemove then
   begin
@@ -286,8 +261,6 @@ begin
   inherited;
 end;
 
-// DestroyHandle
-//
 procedure TVXTerrainRenderer.DestroyHandle;
 begin
   inherited;
@@ -296,13 +269,11 @@ begin
     HeightDataSource.Clear;
 end;
 
-// RayCastIntersect
-//
-function TVXTerrainRenderer.RayCastIntersect(const rayStart, rayVector: TVector;
-  intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean;
+function TVXTerrainRenderer.RayCastIntersect(const rayStart, rayVector: TVector; intersectPoint: PVector = nil;
+  intersectNormal: PVector = nil): Boolean;
 var
   p1, d, p2, p3: TVector;
-  step, i, h, minH, maxH, p1height: Single;
+  step, i, h, minH, maxH, p1height: single;
   startedAbove: Boolean;
   failSafe: Integer;
   AbsX, AbsY, AbsZ: TVector;
@@ -314,8 +285,7 @@ begin
     i := step;
     d := VectorNormalize(rayVector);
     AbsZ := VectorNormalize(LocalToAbsolute(ZHMGVector));
-    startedAbove := ((InterpolatedHeight(rayStart) - VectorDotProduct(rayStart,
-      AbsZ)) < 0);
+    startedAbove := ((InterpolatedHeight(rayStart) - VectorDotProduct(rayStart, AbsZ)) < 0);
     maxH := Scale.Z * 256;
     minH := -Scale.Z * 256;
     failSafe := 0;
@@ -361,8 +331,7 @@ begin
 
     if Result then
     begin
-      p1 := VectorAdd(p1, VectorScale(AbsZ, InterpolatedHeight(p1) -
-        VectorDotProduct(p1, AbsZ)));
+      p1 := VectorAdd(p1, VectorScale(AbsZ, InterpolatedHeight(p1) - VectorDotProduct(p1, AbsZ)));
       if Assigned(intersectPoint) then
         intersectPoint^ := p1;
 
@@ -373,21 +342,15 @@ begin
         AbsX := VectorNormalize(LocalToAbsolute(XHMGVector));
         AbsY := VectorNormalize(LocalToAbsolute(YHMGVector));
         p2 := VectorAdd(p1, VectorScale(AbsX, 0.1));
-        p2 := VectorAdd(p2, VectorScale(AbsZ, InterpolatedHeight(p2) -
-          VectorDotProduct(p2, AbsZ)));
+        p2 := VectorAdd(p2, VectorScale(AbsZ, InterpolatedHeight(p2) - VectorDotProduct(p2, AbsZ)));
         p3 := VectorAdd(p1, VectorScale(AbsY, 0.1));
-        p3 := VectorAdd(p3, VectorScale(AbsZ, InterpolatedHeight(p3) -
-          VectorDotProduct(p3, AbsZ)));
+        p3 := VectorAdd(p3, VectorScale(AbsZ, InterpolatedHeight(p3) - VectorDotProduct(p3, AbsZ)));
 
-        intersectNormal^ :=
-          VectorNormalize(VectorCrossProduct(VectorSubtract(p1, p2),
-          VectorSubtract(p3, p1)));
+        intersectNormal^ := VectorNormalize(VectorCrossProduct(VectorSubtract(p1, p2), VectorSubtract(p3, p1)));
       end;
     end;
   end;
 end;
-
-// ReleaseAllTiles
 
 procedure TVXTerrainRenderer.ReleaseAllTiles;
 var
@@ -408,8 +371,6 @@ begin
     end;
 end;
 
-// OnTileDestroyed
-
 procedure TVXTerrainRenderer.OnTileDestroyed(Sender: TObject);
 var
   list: TList;
@@ -427,8 +388,6 @@ begin
   end;
 end;
 
-// InterpolatedHeight (hmg)
-
 function TVXTerrainRenderer.InterpolatedHeight(const p: TVector): single;
 var
   pLocal: TVector;
@@ -436,47 +395,41 @@ begin
   if Assigned(HeightDataSource) then
   begin
     pLocal := AbsoluteToLocal(p);
-    Result := HeightDataSource.InterpolatedHeight(pLocal.X, pLocal.Y,
-      TileSize + 1) * Scale.Z * (1 / 128);
+    Result := HeightDataSource.InterpolatedHeight(pLocal.X, pLocal.Y, TileSize + 1) * Scale.Z * (1 / 128);
   end
   else
     Result := 0;
 end;
-
-// InterpolatedHeight (affine)
 
 function TVXTerrainRenderer.InterpolatedHeight(const p: TAffineVector): single;
 begin
   Result := InterpolatedHeight(PointMake(p));
 end;
 
-// BuildList
-
 procedure TVXTerrainRenderer.BuildList(var rci: TVXRenderContextInfo);
 var
   vEye, vEyeDirection: TVector;
-  TilePos, AbsTilePos, Observer: TAffineVector;
+  tilePos, AbsTilePos, Observer: TAffineVector;
   DeltaX, nbX, iX: Integer;
   DeltaY, nbY, iY: Integer;
   n, rpIdxDelta, AccumCount: Integer;
-  f, TileRadius, TileGroundRadius, TexFactor, TileDist, qDist: Single;
+  f, TileRadius, TileGroundRadius, TexFactor, TileDist, qDist: single;
   Patch, PrevPatch: TVXROAMPatch;
   PatchList, RowList, prevRow, buf: TList;
   PostRenderPatchList, postRenderHeightDataList: TList;
   rcci: TRenderContextClippingInfo;
   CurrentMaterialName: String;
-  MaxTilePosX, MaxTilePosY, MinTilePosX, MinTilePosY: Single;
-  t_l, t_t, t_r, t_b: Single;
+  MaxTilePosX, MaxTilePosY, MinTilePosX, MinTilePosY: single;
+  t_l, t_t, t_r, t_b: single;
 
   procedure ApplyMaterial(const materialName: String);
   begin
-    if (MaterialLibrary = nil) or (currentMaterialName = materialName) then
+    if (MaterialLibrary = nil) or (CurrentMaterialName = materialName) then
       Exit;
     // flush whatever is in progress
-    TVXROAMPatch.FlushAccum(FBufferVertices, FBufferVertexIndices,
-      FBufferTexPoints);
+    TVXROAMPatch.FlushAccum(FBufferVertices, FBufferVertexIndices, FBufferTexPoints);
     // unapply current
-    if currentMaterialName = '' then
+    if CurrentMaterialName = '' then
     begin
       repeat
         // ... proper multipass support will be implemented later
@@ -493,7 +446,7 @@ var
       Material.Apply(rci)
     else
       MaterialLibrary.ApplyMaterial(materialName, rci);
-    CurrentMaterialName := MaterialName;
+    CurrentMaterialName := materialName;
   end;
 
 begin
@@ -502,36 +455,33 @@ begin
   if HeightDataSource = nil then
     Exit;
 
-  currentMaterialName := '';
+  CurrentMaterialName := '';
   // first project eye position into heightdata coordinates
   vEye := VectorTransform(rci.cameraPosition, InvAbsoluteMatrix);
   vEyeDirection := VectorTransform(rci.cameraDirection, InvAbsoluteMatrix);
-  SetVector(observer, vEye);
-  vEye.X := Round(vEye.X * FinvTileSize - 0.5) * TileSize +
-    TileSize * 0.5;
-  vEye.Y := Round(vEye.Y * FinvTileSize - 0.5) * TileSize +
-    TileSize * 0.5;
-  tileGroundRadius := Sqr(TileSize * 0.5 * Scale.X) +
-    Sqr(TileSize * 0.5 * Scale.Y);
-  tileRadius := Sqrt(tileGroundRadius + Sqr(256 * Scale.Z));
-  tileGroundRadius := Sqrt(tileGroundRadius);
+  SetVector(Observer, vEye);
+  vEye.X := Round(vEye.X * FinvTileSize - 0.5) * TileSize + TileSize * 0.5;
+  vEye.Y := Round(vEye.Y * FinvTileSize - 0.5) * TileSize + TileSize * 0.5;
+  TileGroundRadius := Sqr(TileSize * 0.5 * Scale.X) + Sqr(TileSize * 0.5 * Scale.Y);
+  TileRadius := Sqrt(TileGroundRadius + Sqr(256 * Scale.Z));
+  TileGroundRadius := Sqrt(TileGroundRadius);
   // now, we render a quad grid centered on eye position
   SetVector(tilePos, vEye);
   tilePos.Z := 0;
-  f := (rci.rcci.farClippingDistance + tileGroundRadius) / Scale.X;
+  f := (rci.rcci.farClippingDistance + TileGroundRadius) / Scale.X;
   f := Round(f * FinvTileSize + 1.0) * TileSize;
-  maxTilePosX := vEye.X + f;
-  maxTilePosY := vEye.Y + f;
-  minTilePosX := vEye.X - f;
-  minTilePosY := vEye.Y - f;
+  MaxTilePosX := vEye.X + f;
+  MaxTilePosY := vEye.Y + f;
+  MinTilePosX := vEye.X - f;
+  MinTilePosY := vEye.Y - f;
 
   if Assigned(FOnGetTerrainBounds) then
   begin
     // User-specified terrain bounds, may override ours
-    t_l := minTilePosX;
-    t_t := maxTilePosY;
-    t_r := maxTilePosX;
-    t_b := minTilePosY;
+    t_l := MinTilePosX;
+    t_t := MaxTilePosY;
+    t_r := MaxTilePosX;
+    t_b := MinTilePosY;
 
     FOnGetTerrainBounds(t_l, t_t, t_r, t_b);
 
@@ -540,26 +490,26 @@ begin
     t_r := Round(t_r / TileSize - 0.5) * TileSize - TileSize * 0.5;
     t_b := Round(t_b / TileSize - 0.5) * TileSize + TileSize * 0.5;
 
-    if maxTilePosX > t_r then
-      maxTilePosX := t_r;
-    if maxTilePosY > t_t then
-      maxTilePosY := t_t;
-    if minTilePosX < t_l then
-      minTilePosX := t_l;
-    if minTilePosY < t_b then
-      minTilePosY := t_b;
+    if MaxTilePosX > t_r then
+      MaxTilePosX := t_r;
+    if MaxTilePosY > t_t then
+      MaxTilePosY := t_t;
+    if MinTilePosX < t_l then
+      MinTilePosX := t_l;
+    if MinTilePosY < t_b then
+      MinTilePosY := t_b;
   end;
   // if max is less than min, we have nothing to render
-  if (maxTilePosX < minTilePosX) or (maxTilePosY < minTilePosY) then
+  if (MaxTilePosX < MinTilePosX) or (MaxTilePosY < MinTilePosY) then
     Exit;
 
-  nbX := Round((maxTilePosX - minTilePosX) / TileSize);
-  nbY := Round((maxTilePosY - minTilePosY) / TileSize);
+  nbX := Round((MaxTilePosX - MinTilePosX) / TileSize);
+  nbY := Round((MaxTilePosY - MinTilePosY) / TileSize);
 
-  texFactor := 1 / (TilesPerTexture * TileSize);
+  TexFactor := 1 / (TilesPerTexture * TileSize);
   rcci := rci.rcci;
   if QualityDistance > 0 then
-    qDist := QualityDistance + tileRadius * 0.5
+    qDist := QualityDistance + TileRadius * 0.5
   else
     qDist := -1;
 
@@ -570,11 +520,13 @@ begin
 
   XGL.PushState;
   try
-    if GL_ARB_multitexture then
+    (*
+      if GL_ARB_multitexture then
       xgl.MapTexCoordToDual
-    else
+      else
       xgl.MapTexCoordToMain;
-
+    *)
+    XGL.MapTexCoordToDual;
     glPushMatrix;
     glScalef(1, 1, 1 / 128);
     glTranslatef(-0.5 * TileSize, -0.5 * TileSize, 0);
@@ -592,14 +544,14 @@ begin
   HeightDataSource.Data.LockList; // Lock out the HDS thread while rendering
 
   FLastTriangleCount := 0;
-  patchList := TList.Create;
-  patchList.Capacity := (nbX + 1) * (nbY + 1);
-  rowList := TList.Create;
+  PatchList := TList.Create;
+  PatchList.Capacity := (nbX + 1) * (nbY + 1);
+  RowList := TList.Create;
   prevRow := TList.Create;
   if Assigned(FOnPatchPostRender) then
-    postRenderPatchList := TList.Create
+    PostRenderPatchList := TList.Create
   else
-    postRenderPatchList := nil;
+    PostRenderPatchList := nil;
   if Assigned(FOnHeightDataPostRender) then
     postRenderHeightDataList := TList.Create
   else
@@ -610,148 +562,144 @@ begin
 
   // determine orientation (to render front-to-back)
   if vEyeDirection.X >= 0 then
-    deltaX := TileSize
+    DeltaX := TileSize
   else
   begin
-    deltaX := -TileSize;
-    minTilePosX := maxTilePosX;
+    DeltaX := -TileSize;
+    MinTilePosX := MaxTilePosX;
   end;
   if vEyeDirection.Y >= 0 then
-    deltaY := TileSize
+    DeltaY := TileSize
   else
   begin
-    deltaY := -TileSize;
-    minTilePosY := maxTilePosY;
+    DeltaY := -TileSize;
+    MinTilePosY := MaxTilePosY;
   end;
 
-  tileRadius := tileRadius;
+  TileRadius := TileRadius;
 
-  tilePos.Y := minTilePosY;
+  tilePos.Y := MinTilePosY;
   for iY := 0 to nbY - 1 do
   begin
-    tilePos.X := minTilePosX;
-    prevPatch := nil;
+    tilePos.X := MinTilePosX;
+    PrevPatch := nil;
     n := 0;
     for iX := 0 to nbX do
     begin
-      absTilePos := VectorTransform(tilePos, DirectAbsoluteMatrix^);
-      if not IsVolumeClipped(absTilePos, tileRadius, rcci.frustum) then
+      AbsTilePos := VectorTransform(tilePos, DirectAbsoluteMatrix^);
+      if not IsVolumeClipped(AbsTilePos, TileRadius, rcci.frustum) then
       begin
-        patch := GetPreparedPatch(tilePos, observer, texFactor,
-          postRenderHeightDataList);
+        Patch := GetPreparedPatch(tilePos, Observer, TexFactor, postRenderHeightDataList);
 
-        if patch <> nil then
+        if Patch <> nil then
         begin
 
-          tileDist := VectorDistance(PAffineVector(@rcci.origin)^, absTilePos);
-          patch.HighRes := (tileDist < qDist);
+          TileDist := VectorDistance(PAffineVector(@rcci.origin)^, AbsTilePos);
+          Patch.HighRes := (TileDist < qDist);
 
-          if not patch.HighRes then
-            patch.ResetTessellation;
-          if Assigned(prevPatch) then
+          if not Patch.HighRes then
+            Patch.ResetTessellation;
+          if Assigned(PrevPatch) then
           begin
-            if deltaX > 0 then
-              patch.ConnectToTheWest(prevPatch)
+            if DeltaX > 0 then
+              Patch.ConnectToTheWest(PrevPatch)
             else
-              prevPatch.ConnectToTheWest(patch);
+              PrevPatch.ConnectToTheWest(Patch);
           end;
           if (prevRow.Count > n) and (prevRow.Items[n] <> nil) then
           begin
-            if deltaY > 0 then
-              patch.ConnectToTheNorth(TVXROAMPatch(prevRow.Items[n]))
+            if DeltaY > 0 then
+              Patch.ConnectToTheNorth(TVXROAMPatch(prevRow.Items[n]))
             else
-              TVXROAMPatch(prevRow.Items[n]).ConnectToTheNorth(patch);
+              TVXROAMPatch(prevRow.Items[n]).ConnectToTheNorth(Patch);
           end;
 
-          if patch.HighRes then
+          if Patch.HighRes then
           begin
             // high-res patches are issued immediately
-            ApplyMaterial(patch.HeightData.materialName);
-            patch.RenderHighRes(FBufferVertices, FBufferVertexIndices,
-              FBufferTexPoints, (QualityStyle = hrsTesselated));
-            FLastTriangleCount := FLastTriangleCount + patch.TriangleCount;
+            ApplyMaterial(Patch.HeightData.materialName);
+            Patch.RenderHighRes(FBufferVertices, FBufferVertexIndices, FBufferTexPoints, (QualityStyle = hrsTesselated));
+            FLastTriangleCount := FLastTriangleCount + Patch.TriangleCount;
           end
           else
           begin
             // CLOD patches are issued after tesselation
-            patchList.Add(patch);
+            PatchList.Add(Patch);
           end;
 
-          prevPatch := patch;
-          rowList.Add(patch);
+          PrevPatch := Patch;
+          RowList.Add(Patch);
 
-          if Assigned(postRenderPatchList) then
-            postRenderPatchList.Add(patch);
+          if Assigned(PostRenderPatchList) then
+            PostRenderPatchList.Add(Patch);
         end
         else
         begin
-          prevPatch := nil;
-          rowList.Add(nil);
+          PrevPatch := nil;
+          RowList.Add(nil);
         end;
       end
       else
       begin
         MarkHashedTileAsUsed(tilePos);
-        prevPatch := nil;
-        rowList.Add(nil);
+        PrevPatch := nil;
+        RowList.Add(nil);
       end;
-      tilePos.X := tilePos.X + deltaX;
+      tilePos.X := tilePos.X + DeltaX;
       Inc(n);
     end;
-    tilePos.Y := tilePos.Y + deltaY;
+    tilePos.Y := tilePos.Y + DeltaY;
     buf := prevRow;
-    prevRow := rowList;
-    rowList := buf;
-    rowList.Count := 0;
+    prevRow := RowList;
+    RowList := buf;
+    RowList.Count := 0;
   end;
 
-  accumCount := FBufferVertexIndices.Capacity shr 3;
+  AccumCount := FBufferVertexIndices.Capacity shr 3;
 
   // Interleave Tesselate and Render so we can send some work to the hardware
   // while the CPU keeps working
   rpIdxDelta := Round(2 * f / TileSize) + 2;
-  for n := 0 to patchList.Count - 1 + rpIdxDelta do
+  for n := 0 to PatchList.Count - 1 + rpIdxDelta do
   begin
-    if n < patchList.Count then
+    if n < PatchList.Count then
     begin
-      patch := TVXROAMPatch(patchList[n]);
-      if Assigned(patch) then
+      Patch := TVXROAMPatch(PatchList[n]);
+      if Assigned(Patch) then
       begin
-        if (patch.LastOcclusionTestPassed) or (patch.OcclusionCounter <= 0) or
-          (OcclusionTesselate = totTesselateAlways) then
-          patch.SafeTesselate;
+        if (Patch.LastOcclusionTestPassed) or (Patch.OcclusionCounter <= 0) or (OcclusionTesselate = totTesselateAlways) then
+          Patch.SafeTesselate;
       end;
     end;
     if n >= rpIdxDelta then
     begin
-      patch := TVXROAMPatch(patchList[n - rpIdxDelta]);
-      if Assigned(patch) then
+      Patch := TVXROAMPatch(PatchList[n - rpIdxDelta]);
+      if Assigned(Patch) then
       begin
-        ApplyMaterial(patch.HeightData.materialName);
-        patch.RenderAccum(FBufferVertices, FBufferVertexIndices,
-          FBufferTexPoints, accumCount);
-        Inc(FLastTriangleCount, patch.TriangleCount);
+        ApplyMaterial(Patch.HeightData.materialName);
+        Patch.RenderAccum(FBufferVertices, FBufferVertexIndices, FBufferTexPoints, AccumCount);
+        Inc(FLastTriangleCount, Patch.TriangleCount);
       end;
     end;
   end;
 
-  if (GetROAMTrianglesCapacity > MaxCLODTriangles) and
-    Assigned(FOnMaxCLODTrianglesReached) then
+  if (GetROAMTrianglesCapacity > MaxCLODTriangles) and Assigned(FOnMaxCLODTrianglesReached) then
   begin
     FOnMaxCLODTrianglesReached(rci);
     // Fire an event if the MaxCLODTriangles limit was reached
   end;
 
-  TVXROAMPatch.FlushAccum(FBufferVertices, FBufferVertexIndices,
-    FBufferTexPoints);
+  TVXROAMPatch.FlushAccum(FBufferVertices, FBufferVertexIndices, FBufferTexPoints);
 
   XGL.PushState;
   try
-    if GL_ARB_multitexture then
+    (*
+      if GL_ARB_multitexture then
       xgl.MapTexCoordToDual
-    else
+      else
       xgl.MapTexCoordToMain;
-
+    *)
+    XGL.MapTexCoordToDual;
     glDisableClientState(GL_VERTEX_ARRAY);
     XGL.DisableClientState(GL_TEXTURE_COORD_ARRAY);
   finally
@@ -759,10 +707,10 @@ begin
   end;
 
   ApplyMaterial('');
-  if Assigned(postRenderPatchList) then
+  if Assigned(PostRenderPatchList) then
   begin
-    FOnPatchPostRender(rci, postRenderPatchList);
-    postRenderPatchList.Free;
+    FOnPatchPostRender(rci, PostRenderPatchList);
+    PostRenderPatchList.Free;
   end;
   if Assigned(postRenderHeightDataList) then
   begin
@@ -778,14 +726,12 @@ begin
     HeightDataSource.CleanUp;
   end;
 
-  rowList.Free;
+  RowList.Free;
   prevRow.Free;
-  patchList.Free;
+  PatchList.Free;
 
   HeightDataSource.Data.UnLockList;
 end;
-
-// MarkAllTilesAsUnused
 
 procedure TVXTerrainRenderer.MarkAllTilesAsUnused;
 var
@@ -801,8 +747,6 @@ begin
         TVXHeightData(Items[j]).Tag := zero;
     end;
 end;
-
-// ReleaseAllUnusedTiles
 
 procedure TVXTerrainRenderer.ReleaseAllUnusedTiles;
 var
@@ -827,8 +771,6 @@ begin
   end;
 end;
 
-// HashedTileCount
-
 function TVXTerrainRenderer.HashedTileCount: Integer;
 var
   i: Integer;
@@ -844,13 +786,10 @@ begin
   Result := cnt;
 end;
 
-
-// MarkHashedTileAsUsed
-
 procedure TVXTerrainRenderer.MarkHashedTileAsUsed(const tilePos: TAffineVector);
 var
   hd: TVXHeightData;
-  canAllocate: boolean;
+  canAllocate: Boolean;
 begin
   if not(tmMarkUsedTiles in TileManagement) then
     Exit; // Mark used tiles option
@@ -861,22 +800,16 @@ begin
     hd.Tag := 1;
 end;
 
-// HashedTile
-
-function TVXTerrainRenderer.HashedTile(const tilePos: TAffineVector;
-  canAllocate: Boolean = True): TVXHeightData;
+function TVXTerrainRenderer.HashedTile(const tilePos: TAffineVector; canAllocate: Boolean = True): TVXHeightData;
 var
-  XLeft, YTop: Integer;
+  xLeft, yTop: Integer;
 begin
-  XLeft := Round(tilePos.X * FinvTileSize - 0.5) * (TileSize);
-  YTop := Round(tilePos.Y * FinvTileSize - 0.5) * (TileSize);
+  xLeft := Round(tilePos.X * FinvTileSize - 0.5) * (TileSize);
+  yTop := Round(tilePos.Y * FinvTileSize - 0.5) * (TileSize);
   Result := HashedTile(xLeft, yTop, canAllocate);
 end;
 
-// HashedTile
-
-function TVXTerrainRenderer.HashedTile(const xLeft, yTop: Integer;
-  canAllocate: Boolean = True): TVXHeightData;
+function TVXTerrainRenderer.HashedTile(const xLeft, yTop: Integer; canAllocate: Boolean = True): TVXHeightData;
 var
   i: Integer;
   hd: TVXHeightData;
@@ -892,7 +825,7 @@ begin
       if hd.DontUse then
       begin
         // This tile has now been replaced. Remove it from the hash-table.
-        HashList.Remove(hd);
+        hashList.Remove(hd);
       end
       else
       begin
@@ -915,29 +848,27 @@ begin
     Result := nil;
 end;
 
-// GetPreparedPatch
-//
-function TVXTerrainRenderer.GetPreparedPatch(const tilePos,
-  EyePos: TAffineVector; TexFactor: Single; HDList: TList): TVXROAMPatch;
+function TVXTerrainRenderer.GetPreparedPatch(const tilePos, EyePos: TAffineVector; TexFactor: single; HDList: TList)
+  : TVXROAMPatch;
 var
   Tile: TVXHeightData;
   Patch: TVXROAMPatch;
-  XLeft, YTop: Integer;
-  CanAllocate: Boolean;
+  xLeft, yTop: Integer;
+  canAllocate: Boolean;
 begin
-  CanAllocate := tmAllocateNewTiles in TileManagement;
-  XLeft := Round(TilePos.X * FinvTileSize - 0.5) * TileSize;
-  YTop := Round(TilePos.Y * FinvTileSize - 0.5) * TileSize;
+  canAllocate := tmAllocateNewTiles in TileManagement;
+  xLeft := Round(tilePos.X * FinvTileSize - 0.5) * TileSize;
+  yTop := Round(tilePos.Y * FinvTileSize - 0.5) * TileSize;
   Tile := HashedTile(xLeft, yTop, canAllocate);
   Result := nil;
-  if not Assigned(tile) then
+  if not Assigned(Tile) then
     Exit;
 
   if (tmClearUsedFlags in TileManagement) // Tile cache management option
   then
     Tile.Tag := 1; // mark tile as used
-  if Assigned(hdList) then
-    hdList.Add(tile);
+  if Assigned(HDList) then
+    HDList.Add(Tile);
 
   // if tile.DataState=hdsNone then begin
   if Tile.DataState <> hdsReady then
@@ -946,31 +877,28 @@ begin
   end
   else
   begin
-    patch := TVXROAMPatch(tile.ObjectTag);
-    if not Assigned(patch) then
+    Patch := TVXROAMPatch(Tile.ObjectTag);
+    if not Assigned(Patch) then
     begin
       // spawn ROAM patch
       Patch := TVXROAMPatch.Create;
       Patch.ContourInterval := ContourInterval;
       Patch.ContourWidth := ContourWidth;
-      Tile.ObjectTag := patch;
-      Patch.HeightData := tile;
+      Tile.ObjectTag := Patch;
+      Patch.HeightData := Tile;
       Patch.VertexScale := XYZVector;
       Patch.VertexOffset := tilePos;
       Patch.OcclusionSkip := OcclusionFrameSkip;
       case Tile.TextureCoordinatesMode of
         tcmWorld:
           begin
-            Patch.TextureScale := AffineVectorMake(TexFactor, -TexFactor,
-              texFactor);
-            Patch.TextureOffset := AffineVectorMake(XLeft * TexFactor,
-              1 - YTop * texFactor, 0);
+            Patch.TextureScale := AffineVectorMake(TexFactor, -TexFactor, TexFactor);
+            Patch.TextureOffset := AffineVectorMake(xLeft * TexFactor, 1 - yTop * TexFactor, 0);
           end;
         tcmLocal:
           begin
             with Tile.TextureCoordinatesScale do
-              Patch.TextureScale := AffineVectorMake(texFactor * S,
-                -texFactor * t, texFactor);
+              Patch.TextureScale := AffineVectorMake(TexFactor * S, -TexFactor * t, TexFactor);
             with Tile.TextureCoordinatesOffset do
               Patch.TextureOffset := AffineVectorMake(0 + S, 1 + t, 0);
           end;
@@ -979,13 +907,11 @@ begin
       end;
       Patch.ComputeVariance(FCLODPrecision);
     end;
-    Patch.ObserverPosition := VectorSubtract(eyePos, tilePos);
-    Result := patch;
+    Patch.ObserverPosition := VectorSubtract(EyePos, tilePos);
+    Result := Patch;
   end;
 end;
 
-// SetHeightDataSource
-//
 procedure TVXTerrainRenderer.SetHeightDataSource(const val: TVXHeightDataSource);
 begin
   if FHeightDataSource <> val then
@@ -1003,8 +929,6 @@ begin
   end;
 end;
 
-// SetTileSize
-//
 procedure TVXTerrainRenderer.SetTileSize(const val: Integer);
 begin
   if val <> FTileSize then
@@ -1019,8 +943,6 @@ begin
   end;
 end;
 
-// SetTilesPerTexture
-//
 procedure TVXTerrainRenderer.SetTilesPerTexture(const val: single);
 begin
   if val <> FTilesPerTexture then
@@ -1030,8 +952,6 @@ begin
   end;
 end;
 
-// SetCLODPrecision
-//
 procedure TVXTerrainRenderer.SetCLODPrecision(const val: Integer);
 var
   i, k: Integer;
@@ -1060,8 +980,6 @@ begin
   end;
 end;
 
-// SetMaterialLibrary
-
 procedure TVXTerrainRenderer.SetMaterialLibrary(const val: TVXMaterialLibrary);
 begin
   if val <> FMaterialLibrary then
@@ -1071,8 +989,6 @@ begin
   end;
 end;
 
-// SetQualityStyle
-
 procedure TVXTerrainRenderer.SetQualityStyle(const val: TVXTerrainHighResStyle);
 begin
   if val <> FQualityStyle then
@@ -1081,8 +997,6 @@ begin
     StructureChanged;
   end;
 end;
-
-// SetOcclusionFrameSkip
 
 procedure TVXTerrainRenderer.SetOcclusionFrameSkip(val: Integer);
 var
@@ -1109,12 +1023,8 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
 
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 // class registrations

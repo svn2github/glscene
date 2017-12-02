@@ -70,14 +70,14 @@ begin
   while ((I <= Length(S)) and (Count <> N)) do
   begin
     // skip over delimiters
-    while (I <= Length(S)) and (S[I] in WordDelims) do
+    while (I <= Length(S)) and CharInSet(S[I], WordDelims) do
       Inc(I);
     // if we're not beyond end of S, we're at the start of a word
     if I <= Length(S) then
       Inc(Count);
     // if not finished, find the end of the current word
     if Count <> N then
-      while (I <= Length(S)) and not(S[I] in WordDelims) do
+      while (I <= Length(S)) and not CharInSet(S[I], WordDelims) do
         Inc(I)
     else
       Result := I;
@@ -95,7 +95,7 @@ begin
   I := WordPosition(N, S, WordDelims);
   if (I <> 0) then
     // find the end of the current word
-    while (I <= Length(S)) and not(S[I] in WordDelims) do
+    while (I <= Length(S)) and not CharInSet(S[I], WordDelims) do
     begin
       // add the I'th character to result
       Inc(Len);

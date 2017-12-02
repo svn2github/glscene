@@ -35,7 +35,9 @@ uses
 
   VXS.XOpenGL,
   VXS.Scene,
+  VXS.PersistentClasses,
   VXS.VectorGeometry,
+  VXS.Coordinates,
   VXS.Graphics,
   VXS.Objects,
   VXS.Context,

@@ -29,6 +29,7 @@ uses
   VXS.Coordinates,
   VXS.BaseClasses,
   VXS.State,
+  VXS.PipelineTransformation,
   VXS.TextureFormat,
   VXS.Utils;
 

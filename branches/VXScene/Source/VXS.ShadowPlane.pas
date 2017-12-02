@@ -18,7 +18,11 @@ uses
   Winapi.OpenGL,
   Winapi.OpenGLext,
   System.Classes,
+
+  VXS.VectorTypes,
+  VXS.PersistentClasses,
   VXS.Scene,
+  VXS.PipelineTransformation,
   VXS.Context,
   VXS.VectorGeometry,
   VXS.Objects,

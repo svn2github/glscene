@@ -27,7 +27,8 @@ interface
 {$I VXScene.inc}
 
 uses
-  System.Classes, 
+  Winapi.OpenGL,
+  System.Classes,
   System.SysUtils,
    
   VXS.Scene, 
@@ -40,7 +41,8 @@ uses
   VXS.PersistentClasses, 
   VXS.RenderContextInfo, 
   VXS.BaseClasses,
-  VXS.Context, 
+  VXS.Context,
+  VXS.PipelineTransformation,
   VXS.VectorTypes;
 
 type

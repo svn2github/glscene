@@ -18,7 +18,6 @@
 #pragma link "GLWin32Viewer"
 #pragma link "GLKeyboard"
 #pragma link "GLVerletTypes"
-#pragma link "GLVerletClasses"
 #pragma link "GLODECustomColliders"
 #pragma link "ODEGL"
 #pragma link "GLODEManager"

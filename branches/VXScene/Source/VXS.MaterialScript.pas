@@ -3,7 +3,6 @@
 //
 {
    Material Script Batch loader for TVXMaterialLibrary for runtime. 
-	 
 }
 
 unit VXS.MaterialScript;
@@ -13,11 +12,20 @@ interface
 {$I VXScene.inc}
 
 uses
-  System.SysUtils, System.Classes,
-  FMX.StdCtrls, FMX.Memo,
+  System.SysUtils,
+  System.Classes,
+  FMX.StdCtrls,
+  FMX.Memo,
 
-  VXS.Texture, VXS.TextureFormat, VXS.Graphics, VXS.Utils, VXS.Color, VXS.Coordinates,
-  VXS.Material, VXS.State;
+  VXS.VectorTypes,
+  VXS.Texture,
+  VXS.TextureFormat,
+  VXS.Graphics,
+  VXS.Utils,
+  VXS.Color,
+  VXS.Coordinates,
+  VXS.Material,
+  VXS.State;
 
 type
   TVXShaderItem = class(TCollectionItem)
@@ -26,35 +34,24 @@ type
     FName: string;
     procedure SetShader(const Value: TVXShader);
     procedure SetName(const Value: string);
-    
-
   protected
-    
     function GetDisplayName: string; override;
-
   public
-    
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
-
   published
-    
     property Shader: TVXShader read FShader write SetShader;
     property Name: string read FName write SetName;
   end;
 
   TVXShaderItems = class(TOwnedCollection)
   private
-    
     procedure SetItems(Index: Integer; const Val: TVXShaderItem);
     function GetItems(Index: Integer): TVXShaderItem;
-
   public
-    
     constructor Create(AOwner: TPersistent);
     property Items[Index: Integer]: TVXShaderItem read GetItems write SetItems; default;
-
   end;
 
   TVXMaterialLibraryItem = class(TCollectionItem)
@@ -63,70 +60,51 @@ type
     FName: string;
     procedure SetMaterialLibrary(const Value: TVXMaterialLibrary);
     procedure SetName(const Value: string);
-    
-
   protected
-    
     function GetDisplayName: string; override;
-
   public
-    
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
-
   published
-    
     property MaterialLibrary: TVXMaterialLibrary read FMaterialLibrary write SetMaterialLibrary;
     property Name: string read FName write SetName;
   end;
 
   TVXMaterialLibraryItems = class(TOwnedCollection)
   private
-    
     procedure SetItems(Index: Integer; const Val: TVXMaterialLibraryItem);
     function GetItems(Index: Integer): TVXMaterialLibraryItem;
-
   public
-    
     constructor Create(AOwner: TPersistent);
     property Items[Index: Integer]: TVXMaterialLibraryItem read GetItems write SetItems; default;
-
   end;
 
 
   TVXMaterialScripter = class(TComponent)
   private
-    
     FShaderItems: TVXShaderItems;
     FMaterialLibraryItems: TVXMaterialLibraryItems;
     FAppend: Boolean;
     FOverwrite: Boolean;
-
     FScript: TStrings;
     FMemo: TMemo;
     FMaterialLibrary: TVXMaterialLibrary;
-
     Count: Longint;
     infini: Longint;
     done: Boolean;
-
     NewMat: TVXLibMaterial;
-
     tmpcoords: TVXCoordinates;
     tmpcolor: TVXColor;
     tmpcoords4: TVXCoordinates4;
     tmpstr: string;
-
     procedure SeTVXShaderItems(const Value: TVXShaderItems);
     procedure SeTVXMaterialLibraryItems(const Value: TVXMaterialLibraryItems);
     procedure SetAppend(const Value: Boolean);
     procedure SetOverwrite(const Value: Boolean);
-
     procedure SetScript(const Value: TStrings);
     procedure SetMaterialLibrary(const Value: TVXMaterialLibrary);
     procedure SetMemo(const Value: TMemo);
-
     // error checking
     procedure CheckError;
     function ClassExists(arguement: string): Boolean;
@@ -192,31 +170,25 @@ type
     procedure XPictureNY;
     procedure XPicturePZ;
     procedure XPictureNZ;
-
   protected
-    
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
-
   public
-    
     property DebugMemo: TMemo read FMemo write SetMemo;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
     procedure CompileScript;
-
   published
-    
     property Script: TStrings read FScript write SetScript;
     property MaterialLibrary: TVXMaterialLibrary read FMaterialLibrary write SetMaterialLibrary;
     property Shaders: TVXShaderItems read FShaderItems write SeTVXShaderItems;
     property MaterialLibraries: TVXMaterialLibraryItems read FMaterialLibraryItems write SeTVXMaterialLibraryItems;
     property AppendToMaterialLibrary: Boolean read FAppend write SetAppend;
     property OverwriteToMaterialLibrary: Boolean read FOverwrite write SetOverwrite;
-
   end;
 
+//-----------------------------------------------------------
 implementation
+//-----------------------------------------------------------
 
 procedure TVXShaderItem.SetShader(const Value: TVXShader);
 begin

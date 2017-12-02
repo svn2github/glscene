@@ -11,6 +11,8 @@ interface
 uses
   System.Classes,
   System.SysUtils,
+
+  VXS.VectorTypes,
   VXS.VectorFileObjects,
   VXS.ApplicationFileIO,
   VXS.VectorGeometry,

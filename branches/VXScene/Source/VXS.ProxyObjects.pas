@@ -12,18 +12,29 @@ interface
 {$I VXScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
+  System.Classes,
+  System.SysUtils,
 
-  VXS.Scene, VXS.VectorGeometry, VXS.Texture, VXS.VectorFileObjects,
-  VXS.Strings, VXS.RenderContextInfo, VXS.BaseClasses, VXS.Material,
-  Winapi.OpenGL, Winapi.OpenGLext,  VXS.Context, VXS.VectorTypes;
+  VXS.Scene,
+  VXS.XCollection,
+  VXS.PersistentClasses,
+  VXS.VectorGeometry,
+  VXS.Texture,
+  VXS.VectorFileObjects,
+  VXS.Strings,
+  VXS.RenderContextInfo,
+  VXS.BaseClasses,
+  VXS.Material,
+  VXS.Context,
+  VXS.PipelineTransformation,
+  VXS.VectorTypes;
 
 type
   EGLProxyException = class(Exception);
 
-  // TVXColorProxy
-  //
-  { A proxy object with its own color. 
+  { A proxy object with its own color.
      This proxy object can have a unique color. Note that multi-material
      objects (Freeforms linked to a material library f.i.) won't honour
      the color. }
@@ -35,14 +46,11 @@ type
     procedure SetMasterMaterialObject(const Value: TVXCustomSceneObject);
     procedure SetFrontColor(AValue: TVXFaceProperties);
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
     procedure DoRender(var ARci: TVXRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
   published
-    
     property FrontColor: TVXFaceProperties read FFrontColor write
       SetFrontColor;
     // Redeclare as TVXCustomSceneObject.
@@ -50,14 +58,11 @@ type
       write SetMasterMaterialObject;
   end;
 
-  // TVXMaterialProxy
-  //
-  { A proxy object with its own material. 
+  { A proxy object with its own material.
      This proxy object can take a mesh from one master and a materia from
      a material library. }
   TVXMaterialProxy = class(TVXProxyObject, IGLMaterialLibrarySupported)
   private
-    
     FTempLibMaterialName: string;
     FMasterLibMaterial: TVXLibMaterial;
     FMaterialLibrary: TVXMaterialLibrary;
@@ -69,12 +74,10 @@ type
     // Implementing IGLMaterialLibrarySupported.
     function GetMaterialLibrary: TVXAbstractMaterialLibrary;
   public
-    
     constructor Create(AOwner: TComponent); override;
     procedure Notification(AComponent: TComponent; Operation: TOperation);
       override;
     destructor Destroy; override;
-
     procedure DoRender(var ARci: TVXRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
     { Specifies the Material, that current master object will use.
@@ -94,19 +97,12 @@ type
       write SetMasterMaterialObject;
   end;
 
-  // TVXFreeFormProxy
-  //
   { A proxy object specialized for FreeForms.  }
   TVXFreeFormProxy = class(TVXProxyObject)
   private
     function GetMasterFreeFormObject: TVXFreeForm;
     procedure SetMasterFreeFormObject(const Value: TVXFreeForm);
-  protected
-    
-
   public
-    
-
     { If the MasterObject is a FreeForm, you can raycast against the Octree,
        which is alot faster.  You must build the octree before using. }
     function OctreeRayCastIntersect(const rayStart, rayVector: TVector;
@@ -118,14 +114,11 @@ type
       intersectPoint: PVector = nil;
       intersectNormal: PVector = nil): Boolean;
   published
-    
    // Redeclare as TVXFreeForm.
     property MasterObject: TVXFreeForm read GetMasterFreeFormObject write
       SetMasterFreeFormObject;
   end;
 
-  // TBoneMatrixObj
-  //
   { An object containing the bone matrix for TVXActorProxy.  }
   TBoneMatrixObj = class
   public
@@ -138,12 +131,9 @@ type
   // pamPlayOnce only works if Actor.AnimationMode <> aamNone.
   TVXActorProxyAnimationMode = (pamInherited, pamNone, pamPlayOnce);
 
-  // TVXActorProxy
-  //
   { A proxy object specialized for Actors.  }
   TVXActorProxy = class(TVXProxyObject, IGLMaterialLibrarySupported)
   private
-    
     FCurrentFrame: Integer;
     FStartFrame: Integer;
     FEndFrame: Integer;
@@ -151,17 +141,14 @@ type
     FCurrentFrameDelta: Single;
     FCurrentTime: TProgressTimes;
     FAnimation: TVXActorAnimationName;
-
     FTempLibMaterialName: string;
     FMasterLibMaterial: TVXLibMaterial;
     FMaterialLibrary: TVXMaterialLibrary;
-
     FBonesMatrices: TStringList;
     FStoreBonesMatrix: boolean;
     FStoredBoneNames: TStrings;
     FOnBeforeRender: TVXProgressEvent;
     FAnimationMode: TVXActorProxyAnimationMode;
-
     procedure SetAnimation(const Value: TVXActorAnimationName);
     procedure SetMasterActorObject(const Value: TVXActor);
     function GetMasterActorObject: TVXActor;
@@ -174,11 +161,9 @@ type
     procedure SetStoredBoneNames(const Value: TStrings);
     procedure SetOnBeforeRender(const Value: TVXProgressEvent);
   protected
-    
     procedure DoStoreBonesMatrices;
       // stores matrices of bones of the current frame rendered
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Notification(AComponent: TComponent; Operation: TOperation);
@@ -196,26 +181,21 @@ type
     function BoneMatrix(BoneIndex: integer): TMatrix; overload;
     function BoneMatrix(BoneName: string): TMatrix; overload;
     procedure BoneMatricesClear;
-
     { A standard version of the RayCastIntersect function. }
     function RayCastIntersect(const rayStart, rayVector: TVector;
       intersectPoint: PVector = nil;
       intersectNormal: PVector = nil): Boolean; override;
-
     { Raycasts on self, but actually on the "RefActor" Actor.
        Note that the "RefActor" parameter does not necessarily have to be
        the same Actor refernced by the MasterObject property:
        This allows to pass a low-low-low-poly Actor to raycast in the "RefActor" parameter,
        while using a high-poly Actor in the "MasterObject" property,
-       of course we assume that the two Masterobject Actors have same animations.
-      }
+       of course we assume that the two Masterobject Actors have same animations. }
     function RayCastIntersectEx(RefActor: TVXActor; const rayStart, rayVector:
       TVector;
       intersectPoint: PVector = nil;
       intersectNormal: PVector = nil): Boolean; overload;
-
   published
-    
     property AnimationMode: TVXActorProxyAnimationMode read FAnimationMode write
       FAnimationMode default pamInherited;
     property Animation: TVXActorAnimationName read FAnimation write SetAnimation;
@@ -245,16 +225,13 @@ type
       SetOnBeforeRender;
   end;
 
-  //-------------------------------------------------------------
-  //-------------------------------------------------------------
-  //-------------------------------------------------------------
+//-------------------------------------------------------------
 implementation
+//-------------------------------------------------------------
+
 // ------------------
 // ------------------ TVXColorProxy ------------------
 // ------------------
-
-// Create
-//
 
 constructor TVXColorProxy.Create(AOwner: TComponent);
 begin
@@ -262,18 +239,12 @@ begin
   FFrontColor := TVXFaceProperties.Create(Self);
 end;
 
-// Destroy
-//
-
 destructor TVXColorProxy.Destroy;
 begin
   FFrontColor.Free;
 
   inherited Destroy;
 end;
-
-// Render
-//
 
 procedure TVXColorProxy.DoRender(var ARci: TVXRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);
@@ -311,16 +282,10 @@ begin
   ClearStructureChanged;
 end;
 
-// GetMasterMaterialObject
-//
-
 function TVXColorProxy.GetMasterMaterialObject: TVXCustomSceneObject;
 begin
   Result := TVXCustomSceneObject(inherited MasterObject);
 end;
-
-// SetMasterMaterialObject
-//
 
 procedure TVXColorProxy.SetFrontColor(AValue: TVXFaceProperties);
 begin
@@ -336,9 +301,6 @@ end;
 // ------------------
 // ------------------ TVXFreeFormProxy ------------------
 // ------------------
-
-// OctreeRayCastIntersect
-//
 
 function TVXFreeFormProxy.OctreeRayCastIntersect(const rayStart, rayVector:
   TVector;
@@ -377,9 +339,6 @@ begin
   else
     Result := False;
 end;
-
-// OctreeSphereSweepIntersect
-//
 
 function TVXFreeFormProxy.OctreeSphereSweepIntersect(const rayStart, rayVector:
   TVector;
@@ -425,16 +384,10 @@ begin
   end;
 end;
 
-// GetMasterFreeFormObject
-//
-
 function TVXFreeFormProxy.GetMasterFreeFormObject: TVXFreeForm;
 begin
   Result := TVXFreeForm(inherited MasterObject);
 end;
-
-// SetMasterFreeFormObject
-//
 
 procedure TVXFreeFormProxy.SetMasterFreeFormObject(
   const Value: TVXFreeForm);
@@ -445,9 +398,6 @@ end;
 // ------------------
 // ------------------ TVXActorProxy ------------------
 // ------------------
-
-// Create
-//
 
 function TVXActorProxy.BoneMatrix(BoneIndex: integer): TMatrix;
 begin
@@ -486,9 +436,6 @@ begin
     // default is false to speed up a little if we don't need bones info
 end;
 
-// DoProgress
-//
-
 destructor TVXActorProxy.Destroy;
 begin
   BoneMatricesClear;
@@ -502,9 +449,6 @@ begin
   inherited;
   FCurrentTime := progressTime;
 end;
-
-// DoRender
-//
 
 procedure TVXActorProxy.DoRender(var ARci: TVXRenderContextInfo; ARenderSelf,
   ARenderChildren: Boolean);
@@ -769,9 +713,6 @@ begin
     TVXDummyActor(RefActor).DoAnimate();
   end;
 end;
-
-// SetAnimation
-//
 
 procedure TVXActorProxy.SetAnimation(const Value: TVXActorAnimationName);
 var

@@ -1,9 +1,9 @@
 //
-// VXScene Component Library, based on GLScene http://glscene.sourceforge.net 
+// VXScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
 {
-   An ARBvp1.0 + ARBfp1.0 shader that implements phong shading. 
-               
+   An ARBvp1.0 + ARBfp1.0 shader that implements phong shading.
+
 }
 unit VXS.PhongShader;
 
@@ -16,8 +16,8 @@ uses
   Winapi.OpenGLext,
   System.Classes,
   System.SysUtils,
-  
-  VXS.OpenGLAdapter,
+
+  VXS.VectorTypes,
   VXS.Texture, 
   VXS.VectorGeometry, 
   VXS.VectorLists, 
@@ -35,21 +35,17 @@ type
     FAmbientPass: Boolean;
     procedure SetDesignTimeEnabled(const Value: Boolean);
   protected
-    
     procedure DoLightPass(lightID: Cardinal); virtual;
     procedure DoAmbientPass(var rci: TVXRenderContextInfo); virtual;
     procedure UnApplyLights(var rci: TVXRenderContextInfo); virtual;
-
     procedure DoApply(var rci: TVXRenderContextInfo; Sender: TObject); override;
     function DoUnApply(var rci: TVXRenderContextInfo): Boolean; override;
     procedure DoInitialize(var rci : TVXRenderContextInfo; Sender : TObject); override;
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     function ShaderSupported: Boolean; override;
   published
-    
     property DesignTimeEnabled: Boolean read FDesignTimeEnabled write SetDesignTimeEnabled default False;
   end;
 
@@ -57,8 +53,6 @@ type
 implementation
 //------------------------------------------------------------------------
 
-// DoApply
-//
 procedure TVXPhongShader.DoApply(var rci: TVXRenderContextInfo; Sender: TObject);
 begin
   if (csDesigning in ComponentState) and not DesignTimeEnabled then Exit;
@@ -80,8 +74,6 @@ begin
   end;
 end;
 
-// DoUnApply
-//
 function TVXPhongShader.DoUnApply(var rci: TVXRenderContextInfo): Boolean;
 begin
   Result := False;
@@ -109,16 +101,12 @@ begin
   rci.VXStates.DepthFunc := cfLEqual;
 end;
 
-// DoInitialize
-//
 procedure TVXPhongShader.DoInitialize(var rci : TVXRenderContextInfo; Sender : TObject);
 begin
   if (csDesigning in ComponentState) and not DesignTimeEnabled then Exit;
   inherited;
 end;
 
-// SetDesignTimeEnabled
-//
 procedure TVXPhongShader.SetDesignTimeEnabled(const Value: Boolean);
 begin
   if Value <> FDesignTimeEnabled then
@@ -128,8 +116,6 @@ begin
   end;
 end;
 
-// Create
-//
 constructor TVXPhongShader.Create(AOwner: TComponent);
 begin
   inherited;
@@ -202,20 +188,15 @@ begin
   FLightIDs := TIntegerList.Create;
 end;
 
-// ShaderSupported
-//
 function TVXPhongShader.ShaderSupported: Boolean;
 var
   MaxTextures: Integer;
 begin
-  Result := inherited ShaderSupported and GL_ARB_multitexture;
-
+  Result := inherited ShaderSupported;
   glGetIntegerv(GL_MAX_TEXTURE_UNITS_ARB, @MaxTextures);
   Result := Result and (maxTextures > 2);
 end;
 
-// UnApplyLights
-//
 procedure TVXPhongShader.UnApplyLights(var rci: TVXRenderContextInfo);
 begin
   rci.VXStates.DepthFunc := cfLEqual;

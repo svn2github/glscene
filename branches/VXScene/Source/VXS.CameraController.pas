@@ -36,8 +36,10 @@ uses
   System.Math, 
   System.Contnrs,
   
-  VXS.Scene, 
+  VXS.PersistentClasses,
+  VXS.Scene,
   VXS.VectorGeometry,
+  VXS.Coordinates,
   VXS.SmoothNavigator, 
   VXS.VectorTypes;
 

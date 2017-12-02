@@ -17,7 +17,9 @@ uses
   System.Classes,
 
   VXS.XOpenGL,
+  VXS.VectorTypes,
   VXS.Scene,
+  VXS.PersistentClasses,
   VXS.Texture,
   VXS.VectorGeometry,
   VXS.RenderContextInfo,

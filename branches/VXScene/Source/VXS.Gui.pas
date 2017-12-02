@@ -13,10 +13,21 @@ interface
 {$I VXScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
-     
-  VXS.Scene, VXS.BitmapFont, VXS.Material, VXS.CrossPlatform, Winapi.OpenGL, Winapi.OpenGLext,  VXS.Context,
-  VXS.PersistentClasses, VXS.VectorGeometry, VXS.Coordinates, VXS.BaseClasses;
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
+  System.Classes,
+  System.SysUtils,
+
+  VXS.VectorTypes,
+  VXS.Scene,
+  VXS.BitmapFont,
+  VXS.Material,
+  VXS.CrossPlatform,
+  VXS.Context,
+  VXS.PersistentClasses,
+  VXS.VectorGeometry,
+  VXS.Coordinates,
+  VXS.BaseClasses;
 
 type
 
@@ -25,13 +36,11 @@ type
     FRecursiveVisible: Boolean;
     FWidth: Single;
     FHeight: Single;
-
   protected
     // self notification on hide. Also notifies children.
     procedure NotifyHide; virtual;
     // child notification on show. Also notifies children.
     procedure NotifyShow; virtual;
-
     procedure SetLeft(const Value: GLfloat);
     function GetLeft: GLfloat;
     procedure SetTop(const Value: GLfloat);
@@ -39,13 +48,10 @@ type
     procedure SetWidth(const val: Single);
     procedure SetHeight(const val: Single);
     procedure SetVisible(aValue: Boolean); override;
-
   public
     constructor Create(AOwner: TComponent); override;
-
     procedure AddChild(AChild: TVXBaseSceneObject); override;
     procedure Insert(aIndex: Integer; aChild: TVXBaseSceneObject); override;
-
     { GuiComponent Width in 3D world units. }
     property Width: Single read FWidth write SetWidth;
     { GuiComponent Height in 3D world units. }
@@ -54,7 +60,6 @@ type
     property Left: GLfloat read GetLeft write SetLeft;
     { GuiComponent Top in 3D world units. }
     property Top: GLfloat read GetTop write SetTop;
-
     property RecursiveVisible: Boolean read FRecursiveVisible;
   end;
 

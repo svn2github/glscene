@@ -375,7 +375,6 @@
         <DCCReference Include="..\..\Source\VXS.SpaceText.pas"/>
         <DCCReference Include="..\..\Source\Basis\VXS.SpatialPartitioning.pas"/>
         <DCCReference Include="..\..\Source\Basis\VXS.Spline.pas"/>
-        <DCCReference Include="..\..\Source\VXS.StarRecord.pas"/>
         <DCCReference Include="..\..\Source\Basis\VXS.State.pas"/>
         <DCCReference Include="..\..\Source\VXS.Strings.pas"/>
         <DCCReference Include="..\..\Source\Basis\VXS.Teapot.pas"/>
@@ -399,7 +398,6 @@
         <DCCReference Include="..\..\Source\Basis\VXS.VectorGeometry.pas"/>
         <DCCReference Include="..\..\Source\Basis\VXS.VectorLists.pas"/>
         <DCCReference Include="..\..\Source\Basis\VXS.VectorTypes.pas"/>
-        <DCCReference Include="..\..\Source\Basis\VXS.VerletClasses.pas"/>
         <DCCReference Include="..\..\Source\Basis\VXS.VerletClothify.pas"/>
         <DCCReference Include="..\..\Source\Basis\VXS.VerletHairClasses.pas"/>
         <DCCReference Include="..\..\Source\Basis\VXS.VerletSkeletonColliders.pas"/>

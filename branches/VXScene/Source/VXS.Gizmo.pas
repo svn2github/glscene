@@ -15,6 +15,7 @@ uses
   System.Classes,
   System.SysUtils,
   
+  VXS.PersistentClasses,
   VXS.Scene,
   VXS.Color,
   VXS.Objects,

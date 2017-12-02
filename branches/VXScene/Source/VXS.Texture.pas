@@ -26,6 +26,7 @@ uses
   VXS.Graphics,
   VXS.Context,
   VXS.State,
+  VXS.PipelineTransformation,
   VXS.Color,
   VXS.Coordinates,
   VXS.RenderContextInfo,

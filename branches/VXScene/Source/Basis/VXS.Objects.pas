@@ -25,7 +25,7 @@ uses
   System.SysUtils,
   System.Math,
 
-  VXS.OpenGLAdapter,
+  VXS.PersistentClasses,
   VXS.XOpenGL,
   VXS.VectorGeometry,
   VXS.VectorTypes,
@@ -38,6 +38,7 @@ uses
   VXS.RenderContextInfo,
   VXS.BaseClasses,
   VXS.Nodes,
+  VXS.PipelineTransformation,
   VXS.Coordinates;
 
 const
@@ -1007,7 +1008,7 @@ begin
   hh := FHeight * 0.5;
 
   glNormal3fv(@ZVector);
-  if GL_ARB_shader_objects and (rci.VXStates.CurrentProgram > 0) then
+  if (rci.VXStates.CurrentProgram > 0) then
   begin
     TanLoc := glGetAttribLocation(rci.VXStates.CurrentProgram, PGLChar(TangentAttributeName));
     BinLoc := glGetAttribLocation(rci.VXStates.CurrentProgram, PGLChar(BinormalAttributeName));
@@ -1470,7 +1471,7 @@ end;
 
 procedure TVXPointParameters.Apply;
 begin
-  if Enabled and GL_ARB_point_parameters then
+  if Enabled then //and GL_ARB_point_parameters
   begin
     glPointParameterf(GL_POINT_SIZE_MIN_ARB, FMinSize);
     glPointParameterf(GL_POINT_SIZE_MAX_ARB, FMaxSize);
@@ -1482,7 +1483,7 @@ end;
 
 procedure TVXPointParameters.UnApply;
 begin
-  if Enabled and GL_ARB_point_parameters then
+  if Enabled  then //and GL_ARB_point_parameters
   begin
     glPointParameterf(GL_POINT_SIZE_MIN_ARB, 0);
     glPointParameterf(GL_POINT_SIZE_MAX_ARB, 128);
@@ -1614,7 +1615,7 @@ begin
     rci.VXStates.DepthWriteMask := GLboolean(False);
   rci.VXStates.PointSize := FSize;
   PointParameters.Apply;
-  if GL_EXT_compiled_vertex_array and (n > 64) then
+  if (n > 64) then  /// and GL_EXT_compiled_vertex_array
     glLockArraysEXT(0, n);
   case FStyle of
     psSquare:
@@ -1654,7 +1655,7 @@ begin
     Assert(False);
   end;
   glDrawArrays(GL_POINTS, 0, n);
-  if GL_EXT_compiled_vertex_array and (n > 64) then
+  if (n > 64) then ///and GL_EXT_compiled_vertex_array
     glUnlockArraysEXT;
   PointParameters.UnApply;
   glDisableClientState(GL_VERTEX_ARRAY);
@@ -2314,7 +2315,7 @@ begin
     nd  := 1;
   end;
 
-  if GL_ARB_shader_objects and (rci.VXStates.CurrentProgram > 0) then
+  if (rci.VXStates.CurrentProgram > 0) then  //and GL_ARB_shader_objects
   begin
     TanLoc := glGetAttribLocation(rci.VXStates.CurrentProgram, PGLChar(TangentAttributeName));
     BinLoc := glGetAttribLocation(rci.VXStates.CurrentProgram, PGLChar(BinormalAttributeName));
@@ -2474,12 +2475,9 @@ begin
       AffineVectorMake(hw, -hh, -hd), AffineVectorMake(hw, -hh, hd),
       AffineVectorMake(-hw, -hh, hd));
   end;
-
   sil := nil;
   connectivity.CreateSilhouette(silhouetteParameters, sil, False);
-
   Result := sil;
-
   connectivity.Free;
 end;
 

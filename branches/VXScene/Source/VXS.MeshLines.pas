@@ -17,6 +17,7 @@ uses
   VXS.Scene,
   VXS.Objects,
   VXS.Texture,
+  VXS.VectorTypes,
   VXS.VectorFileObjects,
   VXS.Coordinates,
   VXS.Context,

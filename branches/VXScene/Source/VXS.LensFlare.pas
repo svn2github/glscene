@@ -2,7 +2,7 @@
 // VXScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
 {
-   Lens flare object.
+  Lens flare object.
 
 }
 unit VXS.LensFlare;
@@ -16,11 +16,13 @@ uses
   Winapi.OpenGLext,
   System.Classes,
   System.SysUtils,
-  
-  VXS.OpenGLAdapter,
+  System.Math,
+
+  VXS.PersistentClasses,
   VXS.Scene,
   VXS.VectorGeometry,
   VXS.Objects,
+  VXS.PipelineTransformation,
   VXS.Context,
   VXS.Color,
   VXS.BaseClasses,
@@ -35,9 +37,9 @@ type
   TFlareElement = (feGlow, feRing, feStreaks, feRays, feSecondaries);
   TFlareElements = set of TFlareElement;
 
-  { The actual gradients between two colors are, of course, calculated by OpenGL. 
-     The start and end colors of a gradient are stored to represent the color of
-     lens flare elements. }
+  { The actual gradients between two colors are, of course, calculated by OpenGL.
+    The start and end colors of a gradient are stored to represent the color of
+    lens flare elements. }
   TVXFlareGradient = class(TVXUpdateAbleObject)
   private
     FFromColor: TVXColor;
@@ -47,13 +49,12 @@ type
     procedure SetToColor(const val: TVXColor);
   public
     constructor Create(AOwner: TPersistent); override;
-    constructor CreateInitialized(AOwner: TPersistent;
-      const fromColor, toColor: TColorVector);
+    constructor CreateInitialized(AOwner: TPersistent; const fromColor, toColor: TColorVector);
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
   published
-    property FromColor: TVXColor read FFromColor write SetFromColor;
-    property ToColor: TVXColor read FToColor write SetToColor;
+    property fromColor: TVXColor read FFromColor write SetFromColor;
+    property toColor: TVXColor read FToColor write SetToColor;
   end;
 
 const
@@ -122,26 +123,25 @@ type
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
     procedure BuildList(var rci: TVXRenderContextInfo); override;
     procedure DoProgress(const progressTime: TProgressTimes); override;
-    { Prepares pre-rendered texture to speed up actual rendering. 
-       Will use the currently active context as scratch space, and will
-       automatically do nothing if things have already been prepared,
-       thus you can invoke it systematically in a Viewer.BeforeRender
-       event f.i. }
+    { Prepares pre-rendered texture to speed up actual rendering.
+      Will use the currently active context as scratch space, and will
+      automatically do nothing if things have already been prepared,
+      thus you can invoke it systematically in a Viewer.BeforeRender
+      event f.i. }
     procedure PreRender(activeBuffer: TVXSceneBuffer);
-    { Access to the Flare's current size. 
-       Flares decay or grow back over several frames, depending on their
-       occlusion status, and this property allows to track or manually
-       alter this instantaneous size. }
+    { Access to the Flare's current size.
+      Flares decay or grow back over several frames, depending on their
+      occlusion status, and this property allows to track or manually
+      alter this instantaneous size. }
     property FlareInstantaneousSize: Single read FCurrSize write FCurrSize;
   published
-    property GlowGradient: TVXFlareGradient read FGlowGradient write
-      SetGlowGradient;
+    property GlowGradient: TVXFlareGradient read FGlowGradient write SetGlowGradient;
     property RingGradient: TVXFlareGradient read FRingGradient;
     property StreaksGradient: TVXFlareGradient read FStreaksGradient;
     property RaysGradient: TVXFlareGradient read FRaysGradient;
     property SecondariesGradient: TVXFlareGradient read FSecondariesGradient;
     // MaxRadius of the flare.
-    property Size: Integer read FSize write SetSize default 50;
+    property size: Integer read FSize write SetSize default 50;
     // Random seed
     property Seed: Integer read FSeed write SetSeed;
     // To create elliptic flares.
@@ -149,38 +149,34 @@ type
     // Number of streaks.
     property NumStreaks: Integer read FNumStreaks write SetNumStreaks default 4;
     // Width of the streaks.
-    property StreakWidth: Single read FStreakWidth write SetStreakWidth stored
-      StoreStreakWidth;
+    property StreakWidth: Single read FStreakWidth write SetStreakWidth stored StoreStreakWidth;
     // Angle of the streaks (in degrees)
     property StreakAngle: Single read FStreakAngle write SetStreakAngle;
     // Number of secondary flares.
     property NumSecs: Integer read FNumSecs write SetNumSecs default 8;
     // Number of segments used when rendering circles.
     property Resolution: Integer read FResolution write SetResolution default 64;
-    { Automatically computes FlareIsNotOccluded depending on ZBuffer test. 
-       Not that the automated test may use test result from the previous
-       frame into the next (to avoid a rendering stall). }
+    { Automatically computes FlareIsNotOccluded depending on ZBuffer test.
+      Not that the automated test may use test result from the previous
+      frame into the next (to avoid a rendering stall). }
     property AutoZTest: Boolean read FAutoZTest write SetAutoZTest default True;
-    { Is the LensFlare not occluded?. 
-       If false the flare will fade away, if true, it will fade in and stay.
-       This value is automatically updated if AutoZTest is set. }
-    property FlareIsNotOccluded: Boolean read FFlareIsNotOccluded write
-      FFlareIsNotOccluded;
+    { Is the LensFlare not occluded?.
+      If false the flare will fade away, if true, it will fade in and stay.
+      This value is automatically updated if AutoZTest is set. }
+    property FlareIsNotOccluded: Boolean read FFlareIsNotOccluded write FFlareIsNotOccluded;
     // Which elements should be rendered?
-    property Elements: TFlareElements read FElements write SetElements default
-      cDefaultFlareElements;
-    { Is the flare size adjusted dynamically? 
-       If true, the flare size will be grown and reduced over a few frames
-       when it switches between occluded and non-occluded states. This
-       requires animation to be active, but results in a smoother appearance. 
-       When false, flare will either be at full size or hidden. 
-       The flare is always considered non-dynamic at design-time. }
+    property Elements: TFlareElements read FElements write SetElements default cDefaultFlareElements;
+    { Is the flare size adjusted dynamically?
+      If true, the flare size will be grown and reduced over a few frames
+      when it switches between occluded and non-occluded states. This
+      requires animation to be active, but results in a smoother appearance.
+      When false, flare will either be at full size or hidden.
+      The flare is always considered non-dynamic at design-time. }
     property Dynamic: Boolean read FDynamic write FDynamic default True;
 
-    { PreRender point for pre-rendered flare textures. 
-       See PreRender method for more details. }
-    property PreRenderPoint: TVXRenderPoint read FPreRenderPoint write
-      SetPreRenderPoint;
+    { PreRender point for pre-rendered flare textures.
+      See PreRender method for more details. }
+    property PreRenderPoint: TVXRenderPoint read FPreRenderPoint write SetPreRenderPoint;
     property ObjectsSorting;
     property Position;
     property Visible;
@@ -204,8 +200,7 @@ begin
   FToColor := TVXColor.Create(Self);
 end;
 
-constructor TVXFlareGradient.CreateInitialized(AOwner: TPersistent;
-  const fromColor, toColor: TColorVector);
+constructor TVXFlareGradient.CreateInitialized(AOwner: TPersistent; const fromColor, toColor: TColorVector);
 begin
   Create(AOwner);
   FFromColor.Initialize(fromColor);
@@ -223,8 +218,8 @@ procedure TVXFlareGradient.Assign(Source: TPersistent);
 begin
   if Source is TVXFlareGradient then
   begin
-    FromColor := TVXFlareGradient(Source).FromColor;
-    ToColor := TVXFlareGradient(Source).ToColor;
+    fromColor := TVXFlareGradient(Source).fromColor;
+    toColor := TVXFlareGradient(Source).toColor;
   end;
   inherited;
 end;
@@ -261,16 +256,11 @@ begin
   // Render all elements by default.
   FElements := [feGlow, feRing, feStreaks, feRays, feSecondaries];
   // Setup default gradients:
-  FGlowGradient := TVXFlareGradient.CreateInitialized(Self,
-    VectorMake(1, 1, 0.8, 0.3), VectorMake(1, 0.2, 0, 0));
-  FRingGradient := TVXFlareGradient.CreateInitialized(Self,
-    VectorMake(0.5, 0.2, 0, 0.1), VectorMake(0.5, 0.4, 0, 0.1));
-  FStreaksGradient := TVXFlareGradient.CreateInitialized(Self,
-    VectorMake(1, 1, 1, 0.2), VectorMake(0.2, 0, 1, 0));
-  FRaysGradient := TVXFlareGradient.CreateInitialized(Self,
-    VectorMake(1, 0.8, 0.5, 0.05), VectorMake(0.5, 0.2, 0, 0));
-  FSecondariesGradient := TVXFlareGradient.CreateInitialized(Self,
-    VectorMake(0, 0.2, 1, 0), VectorMake(0, 0.8, 0.2, 0.15));
+  FGlowGradient := TVXFlareGradient.CreateInitialized(Self, VectorMake(1, 1, 0.8, 0.3), VectorMake(1, 0.2, 0, 0));
+  FRingGradient := TVXFlareGradient.CreateInitialized(Self, VectorMake(0.5, 0.2, 0, 0.1), VectorMake(0.5, 0.4, 0, 0.1));
+  FStreaksGradient := TVXFlareGradient.CreateInitialized(Self, VectorMake(1, 1, 1, 0.2), VectorMake(0.2, 0, 1, 0));
+  FRaysGradient := TVXFlareGradient.CreateInitialized(Self, VectorMake(1, 0.8, 0.5, 0.05), VectorMake(0.5, 0.2, 0, 0));
+  FSecondariesGradient := TVXFlareGradient.CreateInitialized(Self, VectorMake(0, 0.2, 1, 0), VectorMake(0, 0.8, 0.2, 0.15));
 
   FTexRays := TVXTextureHandle.Create;
 end;
@@ -288,8 +278,7 @@ begin
   inherited;
 end;
 
-procedure TVXLensFlare.Notification(AComponent: TComponent; Operation:
-  TOperation);
+procedure TVXLensFlare.Notification(AComponent: TComponent; Operation: TOperation);
 begin
   if (Operation = opRemove) and (AComponent = FPreRenderPoint) then
     PreRenderPoint := nil;
@@ -313,8 +302,7 @@ begin
   end;
 end;
 
-procedure TVXLensFlare.RenderRays(StateCache: TVXStateCache; const size:
-  Single);
+procedure TVXLensFlare.RenderRays(StateCache: TVXStateCache; const size: Single);
 var
   i: Integer;
   rnd: Single;
@@ -323,7 +311,6 @@ begin
   if GL.GREMEDY_string_marker then
     GL.StringMarkerGREMEDY(14, 'LensFlare.Rays');
 {$ENDIF}
-
   with StateCache do
   begin
     LineWidth := 1;
@@ -338,9 +325,9 @@ begin
       rnd := 1.5 * Random * size
     else
       rnd := Random * size;
-    glColor4fv(RaysGradient.FromColor.AsAddress);
+    glColor4fv(RaysGradient.fromColor.AsAddress);
     glVertex2f(0, 0);
-    glColor4fv(RaysGradient.ToColor.AsAddress);
+    glColor4fv(RaysGradient.toColor.AsAddress);
     glVertex2f(rnd * FCos20Res[i], rnd * FSin20Res[i] * Squeeze);
   end;
   glEnd;
@@ -363,9 +350,9 @@ begin
   for i := 0 to NumStreaks - 1 do
   begin
     SinCosine(StreakAngle * cPIdiv180 + a * i, f, s, c);
-    glColor4fv(StreaksGradient.FromColor.AsAddress);
+    glColor4fv(StreaksGradient.fromColor.AsAddress);
     glVertex3fv(@NullVector);
-    glColor4fv(StreaksGradient.ToColor.AsAddress);
+    glColor4fv(StreaksGradient.toColor.AsAddress);
     glVertex2f(c, Squeeze * s);
   end;
   glEnd;
@@ -392,20 +379,20 @@ begin
     s0 := FSinRes[i] * 0.6 * Squeeze;
     c0 := FCosRes[i] * 0.6;
 
-    glColor4fv(GlowGradient.ToColor.AsAddress);
+    glColor4fv(GlowGradient.toColor.AsAddress);
     glVertex2f((FCurrSize - rW) * c, (FCurrSize - rW) * s);
-    glColor4fv(RingGradient.FromColor.AsAddress);
+    glColor4fv(RingGradient.fromColor.AsAddress);
     glVertex2f(FCurrSize * c, Squeeze * FCurrSize * s);
 
     glVertex2f(FCurrSize * c0, FCurrSize * s0);
-    glColor4fv(GlowGradient.ToColor.AsAddress);
+    glColor4fv(GlowGradient.toColor.AsAddress);
     glVertex2f((FCurrSize - rW) * c0, (FCurrSize - rW) * s0);
 
-    glColor4fv(RingGradient.FromColor.AsAddress);
+    glColor4fv(RingGradient.fromColor.AsAddress);
     glVertex2f(FCurrSize * c, FCurrSize * s);
     glVertex2f(FCurrSize * c0, FCurrSize * s0);
 
-    glColor4fv(GlowGradient.ToColor.AsAddress);
+    glColor4fv(GlowGradient.toColor.AsAddress);
     glVertex2f((FCurrSize + rW) * c0, (FCurrSize + rW) * s0);
     glVertex2f((FCurrSize + rW) * c, (FCurrSize + rW) * s);
   end;
@@ -443,9 +430,9 @@ begin
     rnd := (Random + 0.1) * FCurrSize * 0.25;
 
     glBegin(GL_TRIANGLE_FAN);
-    glColor4fv(grad.FromColor.AsAddress);
+    glColor4fv(grad.fromColor.AsAddress);
     glVertex2f(v.X, v.Y);
-    glColor4fv(grad.ToColor.AsAddress);
+    glColor4fv(grad.toColor.AsAddress);
     for i := 0 to Resolution - 1 do
       glVertex2f(FCosRes[i] * rnd + v.X, FSinRes[i] * rnd + v.Y);
     glEnd;
@@ -478,27 +465,25 @@ begin
   begin
     // find out where it is on the screen.
     screenPos := CurrentBuffer.WorldToScreen(v);
-    flareInViewPort := (screenPos.X < rci.viewPortSize.cx)
-    and (screenPos.X >= 0)
-    and (screenPos.Y < rci.viewPortSize.cy)
-    and (screenPos.Y >= 0);
+    flareInViewPort := (screenPos.X < rci.viewPortSize.cx) and (screenPos.X >= 0) and (screenPos.Y < rci.viewPortSize.cy) and
+      (screenPos.Y >= 0);
   end
   else
     flareInViewPort := False;
 
-  dynamicSize := FDynamic and not (csDesigning in ComponentState);
+  dynamicSize := FDynamic and not(csDesigning in ComponentState);
   if dynamicSize then
   begin
     // make the glow appear/disappear progressively
     if flareInViewPort and FlareIsNotOccluded then
     begin
-      FCurrSize := FCurrSize + FDeltaTime * 10 * Size;
-      if FCurrSize > Size then
-        FCurrSize := Size;
+      FCurrSize := FCurrSize + FDeltaTime * 10 * size;
+      if FCurrSize > size then
+        FCurrSize := size;
     end
     else
     begin
-      FCurrSize := FCurrSize - FDeltaTime * 10 * Size;
+      FCurrSize := FCurrSize - FDeltaTime * 10 * size;
       if FCurrSize < 0 then
         FCurrSize := 0;
     end;
@@ -506,7 +491,7 @@ begin
   else
   begin
     if flareInViewPort and FlareIsNotOccluded then
-      FCurrSize := Size
+      FCurrSize := size
     else
       FCurrSize := 0;
   end;
@@ -522,15 +507,11 @@ begin
   projMatrix.Y.Y := 2 / rci.viewPortSize.cy;
   glLoadMatrixf(@projMatrix);
 
-  MakeVector(posVector,
-    screenPos.X - rci.viewPortSize.cx * 0.5,
-    screenPos.Y - rci.viewPortSize.cy * 0.5,
-    0);
+  MakeVector(posVector, screenPos.X - rci.viewPortSize.cx * 0.5, screenPos.Y - rci.viewPortSize.cy * 0.5, 0);
 
   if AutoZTest then
   begin
-    if dynamicSize and (GL_HP_occlusion_test or
-      (TVXOcclusionQueryHandle.IsSupported = True)) then
+    if dynamicSize and (TVXOcclusionQueryHandle.IsSupported = True) then  //GL_OCCLUSION_TEST_HP
     begin
       // hardware-based occlusion test is possible
       FlareIsNotOccluded := True;
@@ -579,11 +560,10 @@ begin
     end
     else
     begin
-      //Compares the distance to the lensflare, to the z-buffer depth.
-      //This prevents the flare from being occluded by objects BEHIND the light.
-      depth := CurrentBuffer.PixelToDistance(Round(ScreenPos.X),
-        Round(rci.viewPortSize.cy - ScreenPos.Y));
-      dist := VectorDistance(rci.cameraPosition, self.AbsolutePosition);
+      // Compares the distance to the lensflare, to the z-buffer depth.
+      // This prevents the flare from being occluded by objects BEHIND the light.
+      depth := CurrentBuffer.PixelToDistance(Round(screenPos.X), Round(rci.viewPortSize.cy - screenPos.Y));
+      dist := VectorDistance(rci.cameraPosition, Self.AbsolutePosition);
       FlareIsNotOccluded := ((dist - depth) < 1);
     end;
   end;
@@ -596,7 +576,7 @@ begin
     oldSeed := RandSeed;
     RandSeed := Seed;
 
-    SetupRenderingOptions(rci.VxStates);
+    SetupRenderingOptions(rci.VXStates);
 
     if [feGlow, feStreaks, feRays, feRing] * Elements <> [] then
     begin
@@ -606,27 +586,26 @@ begin
       if feGlow in Elements then
       begin
         glBegin(GL_TRIANGLE_FAN);
-        glColor4fv(GlowGradient.FromColor.AsAddress);
+        glColor4fv(GlowGradient.fromColor.AsAddress);
         glVertex2f(0, 0);
-        glColor4fv(GlowGradient.ToColor.AsAddress);
+        glColor4fv(GlowGradient.toColor.AsAddress);
         for i := 0 to Resolution - 1 do
-          glVertex2f(FCurrSize * FCosRes[i],
-            Squeeze * FCurrSize * FSinRes[i]);
+          glVertex2f(FCurrSize * FCosRes[i], Squeeze * FCurrSize * FSinRes[i]);
         glEnd;
       end;
 
       if feStreaks in Elements then
-        RenderStreaks(rci.VxStates);
+        RenderStreaks(rci.VXStates);
 
       // Rays (random-length lines from the origin):
       if feRays in Elements then
       begin
         if FTexRays.Handle <> 0 then
         begin
-        {$IFDEF USE_OPENGL_DEBUG}
+{$IFDEF USE_OPENGL_DEBUG}
           if GL.GREMEDY_string_marker then
             GL.StringMarkerGREMEDY(19, 'LensFlare.RaysQuad');
-        {$ENDIF}
+{$ENDIF}
           rci.VXStates.TextureBinding[0, ttTexture2D] := FTexRays.Handle;
           rci.VXStates.ActiveTextureEnabled[ttTexture2D] := True;
           glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
@@ -645,7 +624,7 @@ begin
           rci.VXStates.ActiveTextureEnabled[ttTexture2D] := False;
         end
         else
-          RenderRays(rci.VxStates, FCurrSize);
+          RenderRays(rci.VXStates, FCurrSize);
       end;
 
       if feRing in Elements then
@@ -676,28 +655,28 @@ end;
 
 procedure TVXLensFlare.PreRender(activeBuffer: TVXSceneBuffer);
 var
-  i, texSize, maxSize: Integer;
-  stateCache: TVXStateCache;
+  texSize, maxSize: Integer;
+  StateCache: TVXStateCache;
 begin
   if FTexRays.Handle <> 0 then
     Exit;
   with activeBuffer.RenderingContext do
   begin
-    stateCache := VXStates;
+    StateCache := VXStates;
     PipelineTransformation.Push;
     PipelineTransformation.SetProjectionMatrix(CreateOrthoMatrix(0, activeBuffer.Width, 0, activeBuffer.Height, -1, 1));
     PipelineTransformation.SetViewMatrix(IdentityHmgMatrix);
   end;
-  SetupRenderingOptions(stateCache);
+  SetupRenderingOptions(StateCache);
 
-  texSize := RoundUpToPowerOf2(Size);
-  if texSize < Size * 1.5 then
+  texSize := RoundUpToPowerOf2(size);
+  if texSize < size * 1.5 then
     texSize := texSize * 2;
   glGetIntegerv(GL_MAX_TEXTURE_SIZE, @maxSize);
   if texSize > maxSize then
     texSize := maxSize;
 
-  stateCache.Disable(stBlend);
+  StateCache.Disable(stBlend);
   glColor4f(0, 0, 0, 0);
   glBegin(GL_QUADS);
   glVertex2f(0, 0);
@@ -705,19 +684,15 @@ begin
   glVertex2f(texSize + 4, texSize + 4);
   glVertex2f(0, texSize + 4);
   glEnd;
-  stateCache.Enable(stBlend);
+  StateCache.Enable(stBlend);
 
   glTranslatef(texSize * 0.5 + 2, texSize * 0.5 + 2, 0);
-  RenderRays(stateCache, texSize * 0.5);
+  RenderRays(StateCache, texSize * 0.5);
 
   FTexRays.AllocateHandle;
-  stateCache.TextureBinding[0, ttTexture2D] := FTexRays.Handle;
-  if GL_EXT_texture_edge_clamp then
-    i := GL_CLAMP_TO_EDGE
-  else
-    i := GL_CLAMP;
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, i);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, i);
+  StateCache.TextureBinding[0, ttTexture2D] := FTexRays.Handle;
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
@@ -725,7 +700,7 @@ begin
 
   activeBuffer.RenderingContext.PipelineTransformation.Pop;
 
-  CheckOpenGLError;
+///  CheckOpenGLError;
 end;
 
 procedure TVXLensFlare.SetGlowGradient(const val: TVXFlareGradient);
@@ -860,13 +835,11 @@ begin
       FPreRenderPoint.UnRegisterCallBack(Self.PreRenderEvent);
     FPreRenderPoint := val;
     if Assigned(FPreRenderPoint) then
-      FPreRenderPoint.RegisterCallBack(Self.PreRenderEvent,
-        Self.PreRenderPointFreed);
+      FPreRenderPoint.RegisterCallBack(Self.PreRenderEvent, Self.PreRenderPointFreed);
   end;
 end;
 
-procedure TVXLensFlare.PreRenderEvent(Sender: TObject; var rci:
-  TVXRenderContextInfo);
+procedure TVXLensFlare.PreRenderEvent(Sender: TObject; var rci: TVXRenderContextInfo);
 begin
   PreRender(rci.buffer as TVXSceneBuffer);
 end;
@@ -878,8 +851,9 @@ end;
 
 // ------------------------------------------------------------------
 initialization
+
 // ------------------------------------------------------------------
 
-  RegisterClasses([TVXLensFlare]);
+RegisterClasses([TVXLensFlare]);
 
 end.

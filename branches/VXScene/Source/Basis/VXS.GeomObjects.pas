@@ -18,7 +18,7 @@ uses
   System.Classes,
   System.Math,
   
-  VXS.OpenGLAdapter,
+  VXS.PersistentClasses,
   VXS.XOpenGL,
   VXS.Scene,
   VXS.VectorGeometry,

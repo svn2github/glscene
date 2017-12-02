@@ -19,6 +19,7 @@ interface
 uses
   Winapi.OpenGL,
   Winapi.OpenGLext,
+
   VXS.Context;
 
 type
@@ -909,9 +910,6 @@ begin
   n := GetBitWiseMapping;
   MapTexCoordToArbitrary(n or bitWiseUnits);
 end;
-
-// GetBitWiseMapping
-//
 
 function TVXMultitextureCoordinator.GetBitWiseMapping: Cardinal;
 var

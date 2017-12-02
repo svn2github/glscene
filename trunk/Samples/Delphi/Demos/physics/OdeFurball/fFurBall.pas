@@ -12,7 +12,7 @@ uses
   GLWin32Viewer, GLScene, GLObjects, GLCadencer, ODEImport,
   GLTexture, GLExtrusion, GLVectorGeometry, GLShadowPlane, GLNavigator,
   GLVerletTypes, GLVerletHairClasses, GLKeyboard, GLColor,
-  GLCrossPlatform, GLCoordinates, GLBaseClasses, ODEGL, GLVerletClasses;
+  GLCrossPlatform, GLCoordinates, GLBaseClasses, ODEGL;
 
 const
   cMaxWindMag = 8;

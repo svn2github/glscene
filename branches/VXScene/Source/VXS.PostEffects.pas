@@ -12,12 +12,22 @@ interface
 {$I VXScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
-  Winapi.OpenGL, Winapi.OpenGLext,
-  
-  VXS.Scene, VXS.Texture, VXS.Graphics, VXS.Strings,
-  VXS.CustomShader, VXS.Context, VXS.VectorGeometry, VXS.RenderContextInfo,
-  VXS.Material, VXS.TextureFormat;
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
+  System.Classes,
+  System.SysUtils,
+
+  VXS.Scene,
+  VXS.PersistentClasses,
+  VXS.Texture,
+  VXS.Graphics,
+  VXS.Strings,
+  VXS.CustomShader,
+  VXS.Context,
+  VXS.VectorGeometry,
+  VXS.RenderContextInfo,
+  VXS.Material,
+  VXS.TextureFormat;
 
 type
   EGLPostShaderHolderException = class(Exception);
@@ -93,8 +103,7 @@ type
        pepNoise - just adds random niose.
        pepNightVision - simulates nightvision goggles.
        pepBlur - blurs the scene.
-       pepCustom - calls the OnCustomEffect event.
-  }
+       pepCustom - calls the OnCustomEffect event. }
   TVXPostEffectPreset = (pepNone, pepGray, pepNegative, pepDistort, pepNoise,
                          pepNightVision, pepBlur, pepCustom);
 
@@ -461,7 +470,10 @@ begin
   GetItems(Index).Assign(Value);
 end;
 
+//---------------------------------------------------------
 initialization
+//---------------------------------------------------------
+
   RegisterClasses([TVXPostEffect, TVXPostShaderHolder,
                    TVXPostShaderCollection, TVXPostShaderCollectionItem]);
 

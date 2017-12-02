@@ -12,8 +12,16 @@ interface
 {$I VXScene.inc}
 
 uses
-  VXS.VectorFileObjects, VXS.EllipseCollision, VXS.VectorGeometry, VXS.VectorLists,
-  VXS.Scene, VXS.TerrainRenderer, VXS.ProxyObjects, VXS.MultiProxy, VXS.VectorTypes;
+  VXS.Coordinates,
+  VXS.VectorFileObjects,
+  VXS.EllipseCollision,
+  VXS.VectorGeometry,
+  VXS.VectorLists,
+  VXS.Scene,
+  VXS.TerrainRenderer,
+  VXS.ProxyObjects,
+  VXS.MultiProxy,
+  VXS.VectorTypes;
 
 //Calculate and set the collision range
 procedure ECSetCollisionRange(var MovePack: TECMovePack);

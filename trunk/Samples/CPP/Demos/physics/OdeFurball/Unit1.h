@@ -26,7 +26,6 @@
 #include "GLCrossPlatform.hpp"
 #include "GLVerletHairClasses.hpp"
 #include "GLVerletTypes.hpp"
-#include "GLVerletClasses.hpp"
 #include "ODEImport.hpp"
 #include "ODEGL.hpp"
 #include "GLODECustomColliders.hpp"

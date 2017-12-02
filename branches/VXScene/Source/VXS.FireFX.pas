@@ -30,6 +30,7 @@ uses
   VXS.Manager,
   VXS.RenderContextInfo,
   VXS.State,
+  VXS.PipelineTransformation,
   VXS.TextureFormat;
 
 type

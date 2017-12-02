@@ -1,28 +1,28 @@
 //
-// VXScene Component Library, based on GLScene http://glscene.sourceforge.net 
+// VXScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
 {
-   Parametric surface implementation (like Bezier and BSpline surfaces)
+  Parametric surface implementation (like Bezier and BSpline surfaces)
 
-   Notes:
-   The MOParametricSurface is a TVXMeshObject descendant that can be used
-   to render parametric surfaces. The Renderer property defines if the
-   surface should be rendered using mesh evaluators (through GLU
-   Nurbs for BSplines) or through GLScene using the CurvesAndSurfaces.pas
-   routines to generate the mesh vertices and then rendered through the
-   standard TVXMeshObject render routine. Please note that BSplines aren't
-   correctly handled yet in the CurvesAndSurfaces unit so the output mesh
-   in rendering mode is wrong. I'll have it fixed when I know
-   what's going wrong. The GLU Nurbs and glMeshEval Beziers work well
-   though. 
+  Notes:
+  The MOParametricSurface is a TVXMeshObject descendant that can be used
+  to render parametric surfaces. The Renderer property defines if the
+  surface should be rendered using mesh evaluators (through GLU
+  Nurbs for BSplines) or through GLScene using the CurvesAndSurfaces.pas
+  routines to generate the mesh vertices and then rendered through the
+  standard TVXMeshObject render routine. Please note that BSplines aren't
+  correctly handled yet in the CurvesAndSurfaces unit so the output mesh
+  in rendering mode is wrong. I'll have it fixed when I know
+  what's going wrong. The GLU Nurbs and glMeshEval Beziers work well
+  though.
 
-   The FGBezierSurface is a face group decendant that renders the surface
-   using mesh evaluators. The ControlPointIndices point to the mesh object
-   vertices much the same as vertex indices for other face group flavours.
-   The MinU, MaxU, MinV and MaxV properties allow for drawing specific
-   parts of the bezier surface, which can be used to blend a patch with
-   other patches. 
-   
+  The FGBezierSurface is a face group decendant that renders the surface
+  using mesh evaluators. The ControlPointIndices point to the mesh object
+  vertices much the same as vertex indices for other face group flavours.
+  The MinU, MaxU, MinV and MaxV properties allow for drawing specific
+  parts of the bezier surface, which can be used to blend a patch with
+  other patches.
+
 }
 unit VXS.ParametricSurfaces;
 
@@ -34,6 +34,7 @@ uses
   Winapi.OpenGL,
   Winapi.OpenGLext,
 
+  VXS.VectorTypes,
   VXS.VectorFileObjects,
   VXS.CurvesAndSurfaces,
   VXS.VectorGeometry,
@@ -48,34 +49,26 @@ uses
 type
 
   { psrVXScene tells the surface to render using GLScene code to build
-     the mesh, whereas, psrOpenVX uses glEvalMesh2 or gluNurbsRenderer
-     calls to render the surface. }
+    the mesh, whereas, psrOpenVX uses glEvalMesh2 or gluNurbsRenderer
+    calls to render the surface. }
   TParametricSurfaceRenderer = (psrVXScene, psrOpenVX);
 
   { psbBezier indicates building the surface with Bernstein basis
-     functions, no knot or order properties are used.
-     psbBSpline indicates building the surface using BSpline basis
-     functions, these require orders and knot vectors to define the
-     control point influences on the surface. }
+    functions, no knot or order properties are used.
+    psbBSpline indicates building the surface using BSpline basis
+    functions, these require orders and knot vectors to define the
+    control point influences on the surface. }
   TParametricSurfaceBasis = (psbBezier, psbBSpline);
 
   TMOParametricSurface = class(TVXMeshObject)
   private
-    FControlPoints,
-      FWeightedControlPoints: TAffineVectorList;
-    FKnotsU,
-      FKnotsV,
-      FWeights: TSingleList;
-    FOrderU,
-      FOrderV,
-      FCountU,
-      FCountV,
-      FResolution: Integer;
+    FControlPoints, FWeightedControlPoints: TAffineVectorList;
+    FKnotsU, FKnotsV, FWeights: TSingleList;
+    FOrderU, FOrderV, FCountU, FCountV, FResolution: Integer;
     FAutoKnots: Boolean;
     FContinuity: TBSplineContinuity;
     FRenderer: TParametricSurfaceRenderer;
     FBasis: TParametricSurfaceBasis;
-
     procedure SetControlPoints(Value: TAffineVectorList);
     procedure SetKnotsU(Value: TSingleList);
     procedure SetKnotsV(Value: TSingleList);
@@ -91,17 +84,17 @@ type
     procedure Prepare; override;
     procedure Clear; override;
     { Generates a mesh approximation of the surface defined by the
-       properties below. This is used to construct the mesh when using
-       Renderer = psrVXScene. If you want to render using OpenGL calls
-       but would like to obtain the mesh data also use this call to
-       generate the mesh data. Fills in Vertices, Normals, etc. }
+      properties below. This is used to construct the mesh when using
+      Renderer = psrVXScene. If you want to render using OpenGL calls
+      but would like to obtain the mesh data also use this call to
+      generate the mesh data. Fills in Vertices, Normals, etc. }
     procedure GenerateMesh;
 
     // Control points define the parametric surface.
     property ControlPoints: TAffineVectorList read FControlPoints write SetControlPoints;
     { KnotsU and KnotsV are the knot vectors in the U and V direction. Knots
-       define the continuity of curves and how control points influence the
-       parametric values to build the surface. }
+      define the continuity of curves and how control points influence the
+      parametric values to build the surface. }
     property KnotsU: TSingleList read FKnotsU write SetKnotsU;
     property KnotsV: TSingleList read FKnotsV write SetKnotsV;
     { Weights define how much a control point effects the surface. }
@@ -110,22 +103,22 @@ type
     property OrderU: Integer read FOrderU write FOrderU;
     property OrderV: Integer read FOrderV write FOrderV;
     { CountU and CountV describe the number of control points in the
-       U and V direciton. Basically a control point width and height
-       in (u,v) space. }
+      U and V direciton. Basically a control point width and height
+      in (u,v) space. }
     property CountU: Integer read FCountU write FCountU;
     property CountV: Integer read FCountV write FCountV;
     { Defines how fine the resultant mesh will be. Higher values create
-       finer meshes. Resolution = 50 would produce a 50x50 mesh.
-       The GLU Nurbs rendering uses resolution as the U_STEP and V_STEP
-       using the sampling method GLU_DOMAIN_DISTANCE, so the resolution
-       works a little differently there. }
+      finer meshes. Resolution = 50 would produce a 50x50 mesh.
+      The GLU Nurbs rendering uses resolution as the U_STEP and V_STEP
+      using the sampling method GLU_DOMAIN_DISTANCE, so the resolution
+      works a little differently there. }
     property Resolution: Integer read FResolution write FResolution;
     { Automatically generate the knot vectors based on the Continuity.
-       Only applies to BSpline surfaces. }
+      Only applies to BSpline surfaces. }
     property AutoKnots: Boolean read FAutoKnots write FAutoKnots;
     property Continuity: TBSplineContinuity read FContinuity write FContinuity;
     { Determines whether to use OpenGL calls (psrOpenGL) or the GLScene
-       mesh objects (psrGLScene) to render the surface. }
+      mesh objects (psrGLScene) to render the surface. }
     property Renderer: TParametricSurfaceRenderer read FRenderer write SetRenderer;
     // Basis determines the style of curve, psbBezier or psbBSpline
     property Basis: TParametricSurfaceBasis read FBasis write SetBasis;
@@ -134,23 +127,20 @@ type
   // TFGBezierSurface
   //
   { A 3d bezier surface implemented through facegroups. The ControlPointIndices
-     is an index to control points stored in the MeshObject.Vertices affine
-     vector list. Similarly the TexCoordIndices point to the owner
-     MeshObject.TexCoords, one for each control point.
-     CountU and CountV define the width and height of the surface.
-     Resolution sets the detail level of the mesh evaluation.
-     MinU, MaxU, MinV and MaxV define the region of the surface to be rendered,
-     this is especially useful for blending with neighbouring patches. }
+    is an index to control points stored in the MeshObject.Vertices affine
+    vector list. Similarly the TexCoordIndices point to the owner
+    MeshObject.TexCoords, one for each control point.
+    CountU and CountV define the width and height of the surface.
+    Resolution sets the detail level of the mesh evaluation.
+    MinU, MaxU, MinV and MaxV define the region of the surface to be rendered,
+    this is especially useful for blending with neighbouring patches. }
   TFGBezierSurface = class(TVXFaceGroup)
   private
     FCountU, FCountV: Integer;
-    FControlPointIndices,
-      FTexCoordIndices: TIntegerList;
+    FControlPointIndices, FTexCoordIndices: TIntegerList;
     FResolution: Integer;
-    FMinU, FMaxU,
-      FMinV, FMaxV: Single;
-    FTempControlPoints,
-      FTempTexCoords: TAffineVectorList;
+    FMinU, FMaxU, FMinV, FMaxV: Single;
+    FTempControlPoints, FTempTexCoords: TAffineVectorList;
 
   protected
     procedure SetControlPointIndices(const Value: TIntegerList);
@@ -176,19 +166,13 @@ type
 
   end;
 
-  // ----------------------------------------------------------------------
-  // ----------------------------------------------------------------------
-  // ----------------------------------------------------------------------
+// ----------------------------------------------------------------------
 implementation
 // ----------------------------------------------------------------------
-// ----------------------------------------------------------------------
-// ----------------------------------------------------------------------
+
 // ------------------
 // ------------------ TMOParametricSurface ------------------
 // ------------------
-
-// Create
-//
 
 constructor TMOParametricSurface.Create;
 begin
@@ -203,9 +187,6 @@ begin
   Resolution := 20;
 end;
 
-// Destroy
-//
-
 destructor TMOParametricSurface.Destroy;
 begin
   FControlPoints.Free;
@@ -215,9 +196,6 @@ begin
   FWeights.Free;
   inherited;
 end;
-
-// WriteToFiler
-//
 
 procedure TMOParametricSurface.WriteToFiler(writer: TVirtualWriter);
 begin
@@ -240,9 +218,6 @@ begin
     WriteInteger(Integer(FBasis));
   end;
 end;
-
-// ReadFromFiler
-//
 
 procedure TMOParametricSurface.ReadFromFiler(reader: TVirtualReader);
 var
@@ -271,19 +246,17 @@ begin
     RaiseFilerException(archiveVersion);
 end;
 
-// BuildList
-//
-
 procedure TMOParametricSurface.BuildList(var mrci: TVXRenderContextInfo);
 var
   NurbsRenderer: PGLUNurbs;
 begin
   case FRenderer of
-    psrVXScene: inherited;
+    psrVXScene:
+      inherited;
     psrOpenVX:
       begin
         mrci.VXStates.PushAttrib([sttEnable, sttEval]);
-        //glEnable(GL_MAP2_TEXTURE_COORD_3);
+        // glEnable(GL_MAP2_TEXTURE_COORD_3);
         glEnable(GL_MAP2_VERTEX_3);
         glEnable(GL_AUTO_NORMAL);
         glEnable(GL_NORMALIZE);
@@ -292,10 +265,7 @@ begin
           psbBezier:
             begin
               glMapGrid2f(FResolution, 1, 0, FResolution, 0, 1);
-              glMap2f(GL_MAP2_TEXTURE_COORD_3,
-                0, 1, 3, FOrderU,
-                0, 1, 3 * FCountU, FOrderV,
-                @FWeightedControlPoints.List[0]);
+              glMap2f(GL_MAP2_TEXTURE_COORD_3, 0, 1, 3, FOrderU, 0, 1, 3 * FCountU, FOrderV, @FWeightedControlPoints.List[0]);
               glMap2f(GL_MAP2_VERTEX_3, 0, 1, 3, FCountU, 0, 1, 3 * FCountU, FCountV, @FWeightedControlPoints.List[0]);
               glEvalMesh2(GL_FILL, 0, FResolution, 0, FResolution);
             end;
@@ -310,20 +280,10 @@ begin
               gluNurbsProperty(@NurbsRenderer, GLU_V_STEP, FResolution);
 
               gluBeginSurface(@NurbsRenderer);
-              gluNurbsSurface(@NurbsRenderer,
-                FKnotsU.Count, @FKnotsU.List[0],
-                FKnotsV.Count, @FKnotsV.List[0],
-                3, FCountU * 3,
-                @FWeightedControlPoints.List[0],
-                FOrderU, FOrderV,
-                GL_MAP2_TEXTURE_COORD_3);
-              gluNurbsSurface(@NurbsRenderer,
-                FKnotsU.Count, @FKnotsU.List[0],
-                FKnotsV.Count, @FKnotsV.List[0],
-                3, FCountU * 3,
-                @FWeightedControlPoints.List[0],
-                FOrderU, FOrderV,
-                GL_MAP2_VERTEX_3);
+              gluNurbsSurface(@NurbsRenderer, FKnotsU.Count, @FKnotsU.List[0], FKnotsV.Count, @FKnotsV.List[0], 3, FCountU * 3,
+                @FWeightedControlPoints.List[0], FOrderU, FOrderV, GL_MAP2_TEXTURE_COORD_3);
+              gluNurbsSurface(@NurbsRenderer, FKnotsU.Count, @FKnotsU.List[0], FKnotsV.Count, @FKnotsV.List[0], 3, FCountU * 3,
+                @FWeightedControlPoints.List[0], FOrderU, FOrderV, GL_MAP2_VERTEX_3);
               gluEndSurface(@NurbsRenderer);
               gluDeleteNurbsRenderer(@NurbsRenderer);
             end;
@@ -334,12 +294,9 @@ begin
   end;
 end;
 
-// Prepare
-//
-
 procedure TMOParametricSurface.Prepare;
 var
-  i: integer;
+  i: Integer;
 begin
   // We want to clear everything but the parametric surface
   // data (control points and knot vectors).
@@ -367,9 +324,6 @@ begin
   end;
 end;
 
-// Clear
-//
-
 procedure TMOParametricSurface.Clear;
 begin
   inherited;
@@ -378,9 +332,6 @@ begin
   FKnotsV.Clear;
   FWeights.Clear;
 end;
-
-// GenerateMesh
-//
 
 procedure TMOParametricSurface.GenerateMesh;
 var
@@ -424,46 +375,29 @@ begin
         VertexIndices.Add((i + 1) + FResolution * (j + 1));
       end;
   BuildNormals(fg.VertexIndices, momTriangles);
-
 end;
-
-// SetControlPoints
-//
 
 procedure TMOParametricSurface.SetControlPoints(Value: TAffineVectorList);
 begin
   FControlPoints.Assign(Value);
 end;
 
-// SetKnotsU
-//
-
 procedure TMOParametricSurface.SetKnotsU(Value: TSingleList);
 begin
   FKnotsU.Assign(Value);
 end;
-
-// SetKnotsV
-//
 
 procedure TMOParametricSurface.SetKnotsV(Value: TSingleList);
 begin
   FKnotsV.Assign(Value);
 end;
 
-// SetWeights
-//
-
 procedure TMOParametricSurface.SetWeights(Value: TSingleList);
 begin
   FWeights.Assign(Value);
 end;
 
-// SetRenderer
-//
-
-procedure TMOParametricSurface.SetRenderer(
-  Value: TParametricSurfaceRenderer);
+procedure TMOParametricSurface.SetRenderer(Value: TParametricSurfaceRenderer);
 begin
   if Value <> FRenderer then
   begin
@@ -471,9 +405,6 @@ begin
     Owner.Owner.StructureChanged;
   end;
 end;
-
-// SetBasis
-//
 
 procedure TMOParametricSurface.SetBasis(Value: TParametricSurfaceBasis);
 begin
@@ -487,9 +418,6 @@ end;
 // ------------------
 // ------------------ TFGBezierSurface ------------------
 // ------------------
-
-// Create
-//
 
 constructor TFGBezierSurface.Create;
 begin
@@ -509,9 +437,6 @@ begin
   FMaxV := 1;
 end;
 
-// Destroy
-//
-
 destructor TFGBezierSurface.Destroy;
 begin
   FControlPointIndices.Free;
@@ -520,9 +445,6 @@ begin
   FTempTexCoords.Free;
   inherited;
 end;
-
-// WriteToFiler
-//
 
 procedure TFGBezierSurface.WriteToFiler(writer: TVirtualWriter);
 begin
@@ -541,9 +463,6 @@ begin
     WriteFloat(FMaxV);
   end;
 end;
-
-// ReadFromFiler
-//
 
 procedure TFGBezierSurface.ReadFromFiler(reader: TVirtualReader);
 var
@@ -568,13 +487,9 @@ begin
     RaiseFilerException(archiveVersion);
 end;
 
-// BuildList
-//
-
 procedure TFGBezierSurface.BuildList(var mrci: TVXRenderContextInfo);
 begin
-  if (FTempControlPoints.Count = 0)
-    or (FTempControlPoints.Count <> FControlPointIndices.Count) then
+  if (FTempControlPoints.Count = 0) or (FTempControlPoints.Count <> FControlPointIndices.Count) then
     Exit;
 
   AttachOrDetachLightmap(mrci);
@@ -588,41 +503,26 @@ begin
   if FTempTexCoords.Count > 0 then
   begin
     glEnable(GL_MAP2_TEXTURE_COORD_3);
-    glMap2f(GL_MAP2_TEXTURE_COORD_3,
-      0, 1, 3, FCountU,
-      0, 1, 3 * FCountU, FCountV,
-      @FTempTexCoords.List[0]);
+    glMap2f(GL_MAP2_TEXTURE_COORD_3, 0, 1, 3, FCountU, 0, 1, 3 * FCountU, FCountV, @FTempTexCoords.List[0]);
   end;
 
   glEnable(GL_MAP2_VERTEX_3);
-  glMap2f(GL_MAP2_VERTEX_3,
-    0, 1, 3, FCountU,
-    0, 1, 3 * FCountU, FCountV,
-    @FTempControlPoints.List[0]);
+  glMap2f(GL_MAP2_VERTEX_3, 0, 1, 3, FCountU, 0, 1, 3 * FCountU, FCountV, @FTempControlPoints.List[0]);
 
   glEvalMesh2(GL_FILL, 0, FResolution, 0, FResolution);
 
   mrci.VXStates.PopAttrib;
 end;
 
-// SetControlPointIndices
-//
-
 procedure TFGBezierSurface.SetControlPointIndices(const Value: TIntegerList);
 begin
   FControlPointIndices.Assign(Value);
 end;
 
-// SetTexCoordIndices
-//
-
 procedure TFGBezierSurface.SetTexCoordIndices(const Value: TIntegerList);
 begin
   FTexCoordIndices.Assign(Value);
 end;
-
-// Prepare
-//
 
 procedure TFGBezierSurface.Prepare;
 var
@@ -641,4 +541,3 @@ begin
 end;
 
 end.
-

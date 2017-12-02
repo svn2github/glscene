@@ -19,6 +19,7 @@ uses
   System.Classes,
   System.SysUtils,
 
+  VXS.VectorTypes,
   VXS.ApplicationFileIO,
   VXS.VectorGeometry,
   VXS.VectorLists,
@@ -52,7 +53,6 @@ type
     procedure NeedMeshAndFaceGroup(basemesh: TVXBaseMesh; layer: STRING;
       fgmode: TVXFaceGroupMeshMode; fgmat: STRING; var m: TVXMeshObject;
       var fg: TFGVertexIndexList);
-
     function ReadLine: STRING;
     // Read a single line of text from the source stream, set FEof to true when done.
     function ReadInt: Integer;

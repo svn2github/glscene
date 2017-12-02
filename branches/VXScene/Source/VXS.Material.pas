@@ -20,7 +20,7 @@ uses
   FMX.Dialogs,
   FMX.Graphics,
 
-  VXS.OpenGLAdapter,
+  VXS.VectorTypes,
   VXS.RenderContextInfo,
   VXS.BaseClasses,
   VXS.Context,
@@ -39,13 +39,14 @@ uses
   VXS.XOpenGL;
 
 {$UNDEF USE_MULTITHREAD}
+
 type
   TVXFaceProperties = class;
   TVXMaterial = class;
   TVXAbstractMaterialLibrary = class;
   TVXMaterialLibrary = class;
 
-  //an interface for proper TVXLibMaterialNameProperty support
+  // an interface for proper TVXLibMaterialNameProperty support
   IGLMaterialLibrarySupported = interface(IInterface)
     ['{8E442AF9-D212-4A5E-8A88-92F798BABFD1}']
     function GetMaterialLibrary: TVXAbstractMaterialLibrary;
@@ -54,51 +55,43 @@ type
   TVXAbstractLibMaterial = class;
   TVXLibMaterial = class;
 
-  // TVXShaderStyle
-  //
   { Define VKShader style application relatively to a material.
-      ssHighLevel: shader is applied before material application, and unapplied
-           after material unapplication
-      ssLowLevel: shader is applied after material application, and unapplied
-           before material unapplication
-      ssReplace: shader is applied in place of the material (and material
-           is completely ignored)
-       }
+    ssHighLevel: shader is applied before material application, and unapplied
+    after material unapplication
+    ssLowLevel: shader is applied after material application, and unapplied
+    before material unapplication
+    ssReplace: shader is applied in place of the material (and material
+    is completely ignored)
+  }
   TVXShaderStyle = (ssHighLevel, ssLowLevel, ssReplace);
 
-  // TVXShaderFailedInitAction
-  //
-  { Defines what to do if for some reason shader failed to initialize. 
-      fiaSilentdisable:          just disable it
-      fiaRaiseHandledException:  raise an exception, and handle it right away
-                                    (usefull, when debigging within Delphi)
-      fiaRaiseStardardException: raises the exception with a string from this
-                                      function GetStardardNotSupportedMessage
-      fiaReRaiseException:       Re-raises the exception
-      fiaGenerateEvent:          Handles the exception, but generates an event
-                                    that user can respond to. For example, he can
-                                    try to compile a substitude shader, or replace
-                                    it by a material.
-                                    Note: HandleFailedInitialization does *not*
-                                    create this event, it is left to user shaders
-                                    which may chose to override this procedure.
-                                    Commented out, because not sure if this
-                                    option should exist, let other generations of
-                                    developers decide ;)
-       }
-  TVXShaderFailedInitAction = (
-    fiaSilentDisable, fiaRaiseStandardException,
-    fiaRaiseHandledException, fiaReRaiseException
-    {,fiaGenerateEvent});
+  { Defines what to do if for some reason shader failed to initialize.
+    fiaSilentdisable:          just disable it
+    fiaRaiseHandledException:  raise an exception, and handle it right away
+    (usefull, when debigging within Delphi)
+    fiaRaiseStardardException: raises the exception with a string from this
+    function GetStardardNotSupportedMessage
+    fiaReRaiseException:       Re-raises the exception
+    fiaGenerateEvent:          Handles the exception, but generates an event
+    that user can respond to. For example, he can
+    try to compile a substitude shader, or replace
+    it by a material.
+    Note: HandleFailedInitialization does *not*
+    create this event, it is left to user shaders
+    which may chose to override this procedure.
+    Commented out, because not sure if this
+    option should exist, let other generations of
+    developers decide ;)
+  }
+  TVXShaderFailedInitAction = (fiaSilentDisable, fiaRaiseStandardException, fiaRaiseHandledException, fiaReRaiseException
+    { ,fiaGenerateEvent } );
 
-  // TVXShader
-  //
-  { Generic, abstract shader class. 
-     Shaders are modeled here as an abstract material-altering entity with
-     transaction-like behaviour. The base class provides basic context and user
-     tracking, as well as setup/application facilities. 
-     Subclasses are expected to provide implementation for DoInitialize,
-     DoApply, DoUnApply and DoFinalize. }
+  { Generic, abstract shader class.
+    Shaders are modeled here as an abstract material-altering entity with
+    transaction-like behaviour. The base class provides basic context and user
+    tracking, as well as setup/application facilities.
+    Subclasses are expected to provide implementation for DoInitialize,
+    DoApply, DoUnApply and DoFinalize. }
   TVXShader = class(TVXUpdateAbleComponent)
   private
     FEnabled: Boolean;
@@ -109,86 +102,79 @@ type
     FShaderActive: Boolean;
     FFailedInitAction: TVXShaderFailedInitAction;
   protected
-          { Invoked once, before the first call to DoApply.
-             The call happens with the OpenVX context being active. }
-    procedure DoInitialize(var rci: TVXRenderContextInfo; Sender: TObject);
-      virtual;
+    { Invoked once, before the first call to DoApply.
+      The call happens with the OpenVX context being active. }
+    procedure DoInitialize(var rci: TVXRenderContextInfo; Sender: TObject); virtual;
     { Request to apply the shader.
-       Always followed by a DoUnApply when the shader is no longer needed. }
+      Always followed by a DoUnApply when the shader is no longer needed. }
     procedure DoApply(var rci: TVXRenderContextInfo; Sender: TObject); virtual; abstract;
-    { Request to un-apply the shader. 
-       Subclasses can assume the shader has been applied previously. 
-       Return True to request a multipass. }
+    { Request to un-apply the shader.
+      Subclasses can assume the shader has been applied previously.
+      Return True to request a multipass. }
     function DoUnApply(var rci: TVXRenderContextInfo): Boolean; virtual; abstract;
-    { Invoked once, before the destruction of context or release of shader. 
-       The call happens with the OpenVX context being active. }
+    { Invoked once, before the destruction of context or release of shader.
+      The call happens with the OpenVX context being active. }
     procedure DoFinalize; virtual;
-
     function GetShaderInitialized: Boolean;
     procedure InitializeShader(var rci: TVXRenderContextInfo; Sender: TObject);
     procedure FinalizeShader;
-    procedure OnVirtualHandleAllocate(sender: TVXVirtualHandle; var handle:
-      Cardinal);
-    procedure OnVirtualHandleDestroy(sender: TVXVirtualHandle; var handle:
-      Cardinal);
+    procedure OnVirtualHandleAllocate(Sender: TVXVirtualHandle; var handle: Cardinal);
+    procedure OnVirtualHandleDestroy(Sender: TVXVirtualHandle; var handle: Cardinal);
     procedure SetEnabled(val: Boolean);
     property ShaderInitialized: Boolean read GetShaderInitialized;
     property ShaderActive: Boolean read FShaderActive;
     procedure RegisterUser(libMat: TVXLibMaterial);
     procedure UnRegisterUser(libMat: TVXLibMaterial);
     { Used by the DoInitialize procedure of descendant classes to raise errors. }
-    procedure HandleFailedInitialization(const LastErrorMessage: string = '');
-      virtual;
+    procedure HandleFailedInitialization(const LastErrorMessage: string = ''); virtual;
     { May be this should be a function inside HandleFailedInitialization... }
     function GetStardardNotSupportedMessage: string; virtual;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     { Subclasses should invoke this function when shader properties are altered.
-        This procedure can also be used to reset/recompile the shader. }
+      This procedure can also be used to reset/recompile the shader. }
     procedure NotifyChange(Sender: TObject); override;
     procedure BeginUpdate;
     procedure EndUpdate;
 
-    { Apply shader to OpenVX state machine.}
+    { Apply shader to OpenVX state machine. }
     procedure Apply(var rci: TVXRenderContextInfo; Sender: TObject);
-    { UnApply shader. 
-       When returning True, the caller is expected to perform a multipass
-       rendering by re-rendering then invoking UnApply again, until a
-       "False" is returned. }
+    { UnApply shader.
+      When returning True, the caller is expected to perform a multipass
+      rendering by re-rendering then invoking UnApply again, until a
+      "False" is returned. }
     function UnApply(var rci: TVXRenderContextInfo): Boolean;
     { Shader application style (default is ssLowLevel). }
-    property ShaderStyle: TVXShaderStyle read FShaderStyle write FShaderStyle
-      default ssLowLevel;
+    property ShaderStyle: TVXShaderStyle read FShaderStyle write FShaderStyle default ssLowLevel;
     procedure Assign(Source: TPersistent); override;
     { Defines if shader is supported by hardware/drivers.
-       Default - always supported. Descendants are encouraged to override
-       this function. }
+      Default - always supported. Descendants are encouraged to override
+      this function. }
     function ShaderSupported: Boolean; virtual;
     { Defines what to do if for some reason shader failed to initialize.
-       Note, that in some cases it cannon be determined by just checking the
-       required OpenVX extentions. You need to try to compile and link the
-       shader - only at that stage you might catch an error }
-    property FailedInitAction: TVXShaderFailedInitAction
-      read FFailedInitAction write FFailedInitAction default
-      fiaRaiseStandardException;
+      Note, that in some cases it cannon be determined by just checking the
+      required OpenVX extentions. You need to try to compile and link the
+      shader - only at that stage you might catch an error }
+    property FailedInitAction: TVXShaderFailedInitAction read FFailedInitAction write FFailedInitAction
+      default fiaRaiseStandardException;
   published
-      { Turns on/off shader application.
-         Note that this only turns on/off the shader application, if the
-         ShaderStyle is ssReplace, the material won't be applied even if
-         the shader is disabled. }
+    { Turns on/off shader application.
+      Note that this only turns on/off the shader application, if the
+      ShaderStyle is ssReplace, the material won't be applied even if
+      the shader is disabled. }
     property Enabled: Boolean read FEnabled write SetEnabled default True;
   end;
 
   TVXShaderClass = class of TVXShader;
 
-  TShininess = 0..128;
+  TShininess = 0 .. 128;
 
   { Stores basic face lighting properties.
-     The lighting is described with the standard ambient/diffuse/emission/specular
-     properties that behave like those of most rendering tools.
-     You also have control over shininess (governs specular lighting) and
-     polygon mode (lines / fill). }
+    The lighting is described with the standard ambient/diffuse/emission/specular
+    properties that behave like those of most rendering tools.
+    You also have control over shininess (governs specular lighting) and
+    polygon mode (lines / fill). }
   TVXFaceProperties = class(TVXUpdateAbleObject)
   private
     FAmbient, FDiffuse, FSpecular, FEmission: TVXColor;
@@ -202,10 +188,8 @@ type
   public
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
-
     procedure Apply(var rci: TVXRenderContextInfo; aFace: TCullFaceMode);
-    procedure ApplyNoLighting(var rci: TVXRenderContextInfo; aFace:
-      TCullFaceMode);
+    procedure ApplyNoLighting(var rci: TVXRenderContextInfo; aFace: TCullFaceMode);
     procedure Assign(Source: TPersistent); override;
   published
     property Ambient: TVXColor read FAmbient write SetAmbient;
@@ -217,7 +201,7 @@ type
 
   TVXDepthProperties = class(TVXUpdateAbleObject)
   private
-    FDepthTest: boolean;
+    FDepthTest: Boolean;
     FDepthWrite: GLboolean;
     FZNear, FZFar: Single;
     FCompareFunc: TDepthfunction;
@@ -226,10 +210,9 @@ type
     procedure SetZNear(Value: Single);
     procedure SetZFar(Value: Single);
     procedure SetCompareFunc(Value: TVXDepthCompareFunc);
-    procedure SetDepthTest(Value: boolean);
+    procedure SetDepthTest(Value: Boolean);
     procedure SetDepthWrite(Value: GLboolean);
-    procedure SetDepthClamp(Value: boolean);
-
+    procedure SetDepthClamp(Value: Boolean);
     function StoreZNear: Boolean;
     function StoreZFar: Boolean;
   public
@@ -238,42 +221,36 @@ type
     procedure Assign(Source: TPersistent); override;
   published
     { Specifies the mapping of the near clipping plane to
-       window coordinates.  The initial value is 0.  }
+      window coordinates.  The initial value is 0. }
     property ZNear: Single read FZNear write SetZNear stored StoreZNear;
     { Specifies the mapping of the far clipping plane to
-       window coordinates.  The initial value is 1. }
+      window coordinates.  The initial value is 1. }
     property ZFar: Single read FZFar write SetZFar stored StoreZFar;
     { Specifies the function used to compare each
       incoming pixel depth value with the depth value present in
       the depth buffer. }
-    property DepthCompareFunction: TDepthFunction
-      read FCompareFunc write SetCompareFunc default cfLequal;
-    { DepthTest enabling. 
-       When DepthTest is enabled, objects closer to the camera will hide
-       farther ones (via use of Z-Buffering). 
-       When DepthTest is disabled, the latest objects drawn/rendered overlap
-       all previous objects, whatever their distance to the camera. 
-       Even when DepthTest is enabled, objects may chose to ignore depth
-       testing through the osIgnoreDepthBuffer of their ObjectStyle property. }
-    property DepthTest: boolean read FDepthTest write SetDepthTest default True;
+    property DepthCompareFunction: TDepthfunction read FCompareFunc write SetCompareFunc default cfLequal;
+    { DepthTest enabling.
+      When DepthTest is enabled, objects closer to the camera will hide
+      farther ones (via use of Z-Buffering).
+      When DepthTest is disabled, the latest objects drawn/rendered overlap
+      all previous objects, whatever their distance to the camera.
+      Even when DepthTest is enabled, objects may chose to ignore depth
+      testing through the osIgnoreDepthBuffer of their ObjectStyle property. }
+    property DepthTest: Boolean read FDepthTest write SetDepthTest default True;
     { If True, object will not write to Z-Buffer. }
     property DepthWrite: GLboolean read FDepthWrite write SetDepthWrite default 1;
     { Enable clipping depth to the near and far planes }
-    property DepthClamp: Boolean read FDepthClamp write SetDepthClamp default
-      False;
+    property DepthClamp: Boolean read FDepthClamp write SetDepthClamp default False;
   end;
 
   TVXLibMaterialName = string;
 
-  //
-  // DaStr: if you write smth like af_GL_NEVER = GL_NEVER in the definition,
-  // it won't show up in the Dephi 7 design-time editor. So I had to add
-  // vTGlAlphaFuncValues and vTVXBlendFuncFactorValues arrays.
-  //
+  (* If you write smth like af_GL_NEVER = GL_NEVER in the definition,
+    it won't show up in the Dephi 7 design-time editor. So I had to add
+    vTGlAlphaFuncValues and vTVXBlendFuncFactorValues arrays. *)
   TGlAlphaFunc = TComparisonFunction;
 
-  // TVXBlendingParameters
-  //
   TVXBlendingParameters = class(TVXUpdateAbleObject)
   private
     FUseAlphaFunc: Boolean;
@@ -299,68 +276,49 @@ type
     constructor Create(AOwner: TPersistent); override;
     procedure Apply(var rci: TVXRenderContextInfo);
   published
-    property UseAlphaFunc: Boolean read FUseAlphaFunc write SetUseAlphaFunc
-      default False;
-    property AlphaFunctType: TGlAlphaFunc read FAlphaFuncType write
-      SetAlphaFuncType default cfGreater;
-    property AlphaFuncRef: Single read FAlphaFuncRef write SetAlphaFuncRef
-      stored StoreAlphaFuncRef;
+    property UseAlphaFunc: Boolean read FUseAlphaFunc write SetUseAlphaFunc default False;
+    property AlphaFunctType: TGlAlphaFunc read FAlphaFuncType write SetAlphaFuncType default cfGreater;
+    property AlphaFuncRef: Single read FAlphaFuncRef write SetAlphaFuncRef stored StoreAlphaFuncRef;
 
-    property UseBlendFunc: Boolean read FUseBlendFunc write SetUseBlendFunc
-      default True;
-    property SeparateBlendFunc: Boolean read FSeparateBlendFunc write SetSeparateBlendFunc
-      default False;
-    property BlendFuncSFactor: TBlendFunction read FBlendFuncSFactor write
-      SetBlendFuncSFactor default bfSrcAlpha;
-    property BlendFuncDFactor: TBlendFunction read FBlendFuncDFactor write
-      SetBlendFuncDFactor default bfOneMinusSrcAlpha;
-    property AlphaBlendFuncSFactor: TBlendFunction read FAlphaBlendFuncSFactor write
-      SetAlphaBlendFuncSFactor default bfSrcAlpha;
-    property AlphaBlendFuncDFactor: TBlendFunction read FAlphaBlendFuncDFactor write
-      SetAlphaBlendFuncDFactor default bfOneMinusSrcAlpha;
+    property UseBlendFunc: Boolean read FUseBlendFunc write SetUseBlendFunc default True;
+    property SeparateBlendFunc: Boolean read FSeparateBlendFunc write SetSeparateBlendFunc default False;
+    property BlendFuncSFactor: TBlendFunction read FBlendFuncSFactor write SetBlendFuncSFactor default bfSrcAlpha;
+    property BlendFuncDFactor: TBlendFunction read FBlendFuncDFactor write SetBlendFuncDFactor default bfOneMinusSrcAlpha;
+    property AlphaBlendFuncSFactor: TBlendFunction read FAlphaBlendFuncSFactor write SetAlphaBlendFuncSFactor
+      default bfSrcAlpha;
+    property AlphaBlendFuncDFactor: TBlendFunction read FAlphaBlendFuncDFactor write SetAlphaBlendFuncDFactor
+      default bfOneMinusSrcAlpha;
   end;
 
-  // TBlendingMode
-  //
-  { Simplified blending options. 
-     bmOpaque : disable blending 
-     bmTransparency : uses standard alpha blending 
-     bmAdditive : activates additive blending (with saturation) 
-     bmAlphaTest50 : uses opaque blending, with alpha-testing at 50% (full
-        transparency if alpha is below 0.5, full opacity otherwise) 
-     bmAlphaTest100 : uses opaque blending, with alpha-testing at 100% 
-     bmModulate : uses modulation blending 
-     bmCustom : uses TVXBlendingParameters options
-     }
-  TBlendingMode = (bmOpaque, bmTransparency, bmAdditive,
-    bmAlphaTest50, bmAlphaTest100, bmModulate, bmCustom);
+  { Simplified blending options.
+    bmOpaque : disable blending
+    bmTransparency : uses standard alpha blending
+    bmAdditive : activates additive blending (with saturation)
+    bmAlphaTest50 : uses opaque blending, with alpha-testing at 50% (full
+    transparency if alpha is below 0.5, full opacity otherwise)
+    bmAlphaTest100 : uses opaque blending, with alpha-testing at 100%
+    bmModulate : uses modulation blending
+    bmCustom : uses TVXBlendingParameters options }
+  TBlendingMode = (bmOpaque, bmTransparency, bmAdditive, bmAlphaTest50, bmAlphaTest100, bmModulate, bmCustom);
 
-  // TFaceCulling
-  //
   TFaceCulling = (fcBufferDefault, fcCull, fcNoCull);
 
-  // TMaterialOptions
-  //
-  { Control special rendering options for a material. 
-     moIgnoreFog : fog is deactivated when the material is rendered }
+  { Control special rendering options for a material.
+    moIgnoreFog : fog is deactivated when the material is rendered }
   TMaterialOption = (moIgnoreFog, moNoLighting);
   TMaterialOptions = set of TMaterialOption;
 
-  // TVXMaterial
-   //
-   { Describes a rendering material. 
-      A material is basicly a set of face properties (front and back) that take
-      care of standard material rendering parameters (diffuse, ambient, emission
-      and specular) and texture mapping. 
-      An instance of this class is available for almost all objects in GLScene
-      to allow quick definition of material properties. It can link to a
-      TVXLibMaterial (taken for a material library).
-      The TVXLibMaterial has more adavanced properties (like texture transforms)
-      and provides a standard way of sharing definitions and texture maps. }
-  TVXMaterial = class(TVXUpdateAbleObject, IGLMaterialLibrarySupported,
-      IVKNotifyAble, IVKTextureNotifyAble)
+  { Describes a rendering material.
+    A material is basicly a set of face properties (front and back) that take
+    care of standard material rendering parameters (diffuse, ambient, emission
+    and specular) and texture mapping.
+    An instance of this class is available for almost all objects in GLScene
+    to allow quick definition of material properties. It can link to a
+    TVXLibMaterial (taken for a material library).
+    The TVXLibMaterial has more adavanced properties (like texture transforms)
+    and provides a standard way of sharing definitions and texture maps. }
+  TVXMaterial = class(TVXUpdateAbleObject, IGLMaterialLibrarySupported, IVKNotifyAble, IVKTextureNotifyAble)
   private
-    
     FFrontProperties, FBackProperties: TVXFaceProperties;
     FDepthProperties: TVXDepthProperties;
     FBlendingMode: TBlendingMode;
@@ -373,11 +331,9 @@ type
     FFaceCulling: TFaceCulling;
     FPolygonMode: TPolygonMode;
     currentLibMaterial: TVXAbstractLibMaterial;
-
     // Implementing IGLMaterialLibrarySupported.
     function GetMaterialLibrary: TVXAbstractMaterialLibrary;
   protected
-    
     function GetBackProperties: TVXFaceProperties;
     procedure SetBackProperties(Values: TVXFaceProperties);
     procedure SetFrontProperties(Values: TVXFaceProperties);
@@ -391,148 +347,102 @@ type
     procedure SetFaceCulling(const val: TFaceCulling);
     procedure SetPolygonMode(AValue: TPolygonMode);
     function GetTextureEx: TVXTextureEx;
-    procedure SetTextureEx(const value: TVXTextureEx);
+    procedure SetTextureEx(const Value: TVXTextureEx);
     function StoreTextureEx: Boolean;
     procedure SetBlendingParams(const Value: TVXBlendingParameters);
-
     procedure NotifyLibMaterialDestruction;
     // Back, Front, Texture and blending not stored if linked to a LibMaterial
     function StoreMaterialProps: Boolean;
-
   public
-    
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
-
     procedure PrepareBuildList;
     procedure Apply(var rci: TVXRenderContextInfo);
-    { Restore non-standard material states that were altered; 
-       A return value of True is a multipass request. }
+    { Restore non-standard material states that were altered;
+      A return value of True is a multipass request. }
     function UnApply(var rci: TVXRenderContextInfo): Boolean;
     procedure Assign(Source: TPersistent); override;
     procedure NotifyChange(Sender: TObject); override;
     procedure NotifyTexMapChange(Sender: TObject);
     procedure DestroyHandles;
-
     procedure Loaded;
-
-    { Returns True if the material is blended. 
-       Will return the libmaterial's blending if it is linked to a material
-       library. }
+    { Returns True if the material is blended.
+      Will return the libmaterial's blending if it is linked to a material  library. }
     function Blended: Boolean;
-
     // True if the material has a secondary texture
     function HasSecondaryTexture: Boolean;
-
     // True if the material comes from the library instead of the texture property
     function MaterialIsLinkedToLib: Boolean;
-
     // Gets the primary texture either from material library or the texture property
     function GetActualPrimaryTexture: TVXTexture;
-
     // Gets the primary Material either from material library or the texture property
     function GetActualPrimaryMaterial: TVXMaterial;
-
     // Return the LibMaterial (see LibMaterialName)
     function GetLibMaterial: TVXLibMaterial;
-
-    procedure QuickAssignMaterial(const MaterialLibrary: TVXMaterialLibrary;
-      const Material: TVXLibMaterial);
+    procedure QuickAssignMaterial(const MaterialLibrary: TVXMaterialLibrary; const Material: TVXLibMaterial);
   published
-    
-    property BackProperties: TVXFaceProperties read GetBackProperties write
-      SetBackProperties stored StoreMaterialProps;
-    property FrontProperties: TVXFaceProperties read FFrontProperties write
-      SetFrontProperties stored StoreMaterialProps;
-    property DepthProperties: TVXDepthProperties read FDepthProperties write
-      SetDepthProperties stored StoreMaterialProps;
-    property BlendingMode: TBlendingMode read FBlendingMode write SetBlendingMode
-      stored StoreMaterialProps default bmOpaque;
-    property BlendingParams: TVXBlendingParameters read FBlendingParams write
-      SetBlendingParams;
-
-    property MaterialOptions: TMaterialOptions read FMaterialOptions write
-      SetMaterialOptions default [];
-    property Texture: TVXTexture read GetTexture write SetTexture stored
-      StoreMaterialProps;
-    property FaceCulling: TFaceCulling read FFaceCulling write SetFaceCulling
-      default fcBufferDefault;
-
-    property MaterialLibrary: TVXAbstractMaterialLibrary read FMaterialLibrary write
-      SetMaterialLibrary;
-    property LibMaterialName: TVXLibMaterialName read FLibMaterialName write
-      SetLibMaterialName;
-    property TextureEx: TVXTextureEx read GetTextureEx write SetTextureEx stored
-      StoreTextureEx;
-    property PolygonMode: TPolygonMode read FPolygonMode write SetPolygonMode
-      default pmFill;
+    property BackProperties: TVXFaceProperties read GetBackProperties write SetBackProperties stored StoreMaterialProps;
+    property FrontProperties: TVXFaceProperties read FFrontProperties write SetFrontProperties stored StoreMaterialProps;
+    property DepthProperties: TVXDepthProperties read FDepthProperties write SetDepthProperties stored StoreMaterialProps;
+    property BlendingMode: TBlendingMode read FBlendingMode write SetBlendingMode stored StoreMaterialProps default bmOpaque;
+    property BlendingParams: TVXBlendingParameters read FBlendingParams write SetBlendingParams;
+    property MaterialOptions: TMaterialOptions read FMaterialOptions write SetMaterialOptions default [];
+    property Texture: TVXTexture read GetTexture write SetTexture stored StoreMaterialProps;
+    property FaceCulling: TFaceCulling read FFaceCulling write SetFaceCulling default fcBufferDefault;
+    property MaterialLibrary: TVXAbstractMaterialLibrary read FMaterialLibrary write SetMaterialLibrary;
+    property LibMaterialName: TVXLibMaterialName read FLibMaterialName write SetLibMaterialName;
+    property TextureEx: TVXTextureEx read GetTextureEx write SetTextureEx stored StoreTextureEx;
+    property PolygonMode: TPolygonMode read FPolygonMode write SetPolygonMode default pmFill;
   end;
 
-  // TVXBaseLibMaterial
-  //
-
-  TVXAbstractLibMaterial = class(
-    TCollectionItem,
-    IGLMaterialLibrarySupported,
-    IVKNotifyAble)
+  TVXAbstractLibMaterial = class(TCollectionItem, IGLMaterialLibrarySupported, IVKNotifyAble)
   protected
-    
     FUserList: TList;
     FName: TVXLibMaterialName;
     FNameHashKey: Integer;
     FTag: Integer;
     FNotifying: Boolean; // used for recursivity protection
-    //implementing IGLMaterialLibrarySupported
+    // implementing IGLMaterialLibrarySupported
     function GetMaterialLibrary: TVXAbstractMaterialLibrary;
-    //implementing IInterface
+    // implementing IInterface
     function QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
     function _AddRef: Integer; stdcall;
     function _Release: Integer; stdcall;
   protected
-    
     function GetDisplayName: string; override;
     class function ComputeNameHashKey(const name: string): Integer;
     procedure SetName(const val: TVXLibMaterialName);
     procedure Loaded; virtual; abstract;
-
   public
-    
     constructor Create(ACollection: TCollection); override;
     destructor Destroy; override;
-
     procedure Assign(Source: TPersistent); override;
-
     procedure Apply(var ARci: TVXRenderContextInfo); virtual; abstract;
     // Restore non-standard material states that were altered
     function UnApply(var ARci: TVXRenderContextInfo): Boolean; virtual; abstract;
-
-    procedure RegisterUser(obj: TVXUpdateAbleObject); overload;
-    procedure UnregisterUser(obj: TVXUpdateAbleObject); overload;
+    procedure RegisterUser(Obj: TVXUpdateAbleObject); overload;
+    procedure UnRegisterUser(Obj: TVXUpdateAbleObject); overload;
     procedure RegisterUser(comp: TVXUpdateAbleComponent); overload;
-    procedure UnregisterUser(comp: TVXUpdateAbleComponent); overload;
+    procedure UnRegisterUser(comp: TVXUpdateAbleComponent); overload;
     procedure RegisterUser(libMaterial: TVXLibMaterial); overload;
-    procedure UnregisterUser(libMaterial: TVXLibMaterial); overload;
+    procedure UnRegisterUser(libMaterial: TVXLibMaterial); overload;
     procedure NotifyUsers;
-    function IsUsed: boolean; //returns true if the texture has registed users
+    function IsUsed: Boolean; // returns true if the texture has registed users
     property NameHashKey: Integer read FNameHashKey;
     procedure NotifyChange(Sender: TObject); virtual;
     function Blended: Boolean; virtual;
     property MaterialLibrary: TVXAbstractMaterialLibrary read GetMaterialLibrary;
   published
-    
     property Name: TVXLibMaterialName read FName write SetName;
     property Tag: Integer read FTag write FTag;
   end;
 
-  // TVXLibMaterial
-  //
-    { Material in a material library. 
-       Introduces Texture transformations (offset and scale). Those transformations
-       are available only for lib materials to minimize the memory cost of basic
-       materials (which are used in almost all objects). }
+  { Material in a material library.
+    Introduces Texture transformations (offset and scale). Those transformations
+    are available only for lib materials to minimize the memory cost of basic
+    materials (which are used in almost all objects). }
   TVXLibMaterial = class(TVXAbstractLibMaterial, IVKTextureNotifyAble)
   private
-    
     FMaterial: TVXMaterial;
     FTextureOffset, FTextureScale: TVXCoordinates;
     FTextureRotate: Single;
@@ -543,7 +453,6 @@ type
     FShader: TVXShader;
     libMatTexture2: TVXLibMaterial; // internal cache
   protected
-    
     procedure Loaded; override;
     procedure SetMaterial(const val: TVXMaterial);
     procedure SetTextureOffset(const val: TVXCoordinates);
@@ -553,51 +462,39 @@ type
     procedure SetShader(const val: TVXShader);
     procedure SetTextureRotate(Value: Single);
     function StoreTextureRotate: Boolean;
-
     procedure CalculateTextureMatrix;
     procedure DestroyHandles;
     procedure DoOnTextureNeeded(Sender: TObject; var textureFileName: string);
     procedure OnNotifyChange(Sender: TObject);
   public
-    
     constructor Create(ACollection: TCollection); override;
     destructor Destroy; override;
-
     procedure Assign(Source: TPersistent); override;
-
     procedure PrepareBuildList;
     procedure Apply(var ARci: TVXRenderContextInfo); override;
     // Restore non-standard material states that were altered
     function UnApply(var ARci: TVXRenderContextInfo): Boolean; override;
-
     procedure NotifyUsersOfTexMapChange;
     property TextureMatrix: TMatrix read FTextureMatrix write SetTextureMatrix;
-    property TextureMatrixIsIdentity: boolean read FTextureMatrixIsIdentity;
+    property TextureMatrixIsIdentity: Boolean read FTextureMatrixIsIdentity;
     procedure NotifyTexMapChange(Sender: TObject);
     function Blended: Boolean; override;
   published
-    
     property Material: TVXMaterial read FMaterial write SetMaterial;
-
-    { Texture offset in texture coordinates. 
-       The offset is applied <i>after</i> scaling. }
-    property TextureOffset: TVXCoordinates read FTextureOffset write
-      SetTextureOffset;
-    { Texture coordinates scaling. 
-       Scaling is applied <i>before</i> applying the offset, and is applied
-       to the texture coordinates, meaning that a scale factor of (2, 2, 2)
-       will make your texture look twice <i>smaller</i>. }
-    property TextureScale: TVXCoordinates read FTextureScale write
-      SetTextureScale;
-
-    property TextureRotate: Single read FTextureRotate write
-      SetTextureRotate stored StoreTextureRotate;
-    { Reference to the second texture. 
-       The referred LibMaterial *must* be in the same material library. 
-       Second textures are supported only through ARB multitexturing (ignored
-       if not supported). }
-    property Texture2Name: TVXLibMaterialName read FTexture2Name write
-      SetTexture2Name;
+    { Texture offset in texture coordinates.
+      The offset is applied <i>after</i> scaling. }
+    property TextureOffset: TVXCoordinates read FTextureOffset write SetTextureOffset;
+    { Texture coordinates scaling.
+      Scaling is applied <i>before</i> applying the offset, and is applied
+      to the texture coordinates, meaning that a scale factor of (2, 2, 2)
+      will make your texture look twice <i>smaller</i>. }
+    property TextureScale: TVXCoordinates read FTextureScale write SetTextureScale;
+    property TextureRotate: Single read FTextureRotate write SetTextureRotate stored StoreTextureRotate;
+    { Reference to the second texture.
+      The referred LibMaterial *must* be in the same material library.
+      Second textures are supported only through ARB multitexturing (ignored
+      if not supported). }
+    property Texture2Name: TVXLibMaterialName read FTexture2Name write SetTexture2Name;
 
     { Optionnal shader for the material. }
     property Shader: TVXShader read FShader write SetShader;
@@ -605,16 +502,13 @@ type
 
   TVXAbstractLibMaterials = class(TOwnedCollection)
   protected
-
     procedure Loaded;
     function GetMaterial(const AName: TVXLibMaterialName): TVXAbstractLibMaterial; inline;
   public
-    function MakeUniqueName(const nameRoot: TVXLibMaterialName):
-      TVXLibMaterialName; virtual;
+    function MakeUniqueName(const nameRoot: TVXLibMaterialName): TVXLibMaterialName; virtual;
   end;
 
   { A collection of materials, mainly used in material libraries. }
-
   TVXLibMaterials = class(TVXAbstractLibMaterials)
   protected
     procedure SetItems(index: Integer; const val: TVXLibMaterial);
@@ -626,8 +520,7 @@ type
     function IndexOf(const Item: TVXLibMaterial): Integer;
     function Add: TVXLibMaterial;
     function FindItemID(ID: Integer): TVXLibMaterial;
-    property Items[index: Integer]: TVXLibMaterial read GetItems write SetItems;
-    default;
+    property Items[index: Integer]: TVXLibMaterial read GetItems write SetItems; default;
     function GetLibMaterialByName(const AName: TVXLibMaterialName): TVXLibMaterial;
     { Returns index of this Texture if it exists. }
     function GetTextureIndex(const Texture: TVXTexture): Integer;
@@ -636,12 +529,11 @@ type
     { Returns name of this Texture if it exists. }
     function GetNameOfTexture(const Texture: TVXTexture): TVXLibMaterialName;
     { Returns name of this Material if it exists. }
-    function GetNameOfLibMaterial(const Material: TVXLibMaterial):
-      TVXLibMaterialName;
+    function GetNameOfLibMaterial(const Material: TVXLibMaterial): TVXLibMaterialName;
     procedure PrepareBuildList;
     { Deletes all the unused materials in the collection.
-       A material is considered unused if no other material or updateable object references it.
-       WARNING: For this to work, objects that use the textuere, have to REGISTER to the texture.}
+      A material is considered unused if no other material or updateable object references it.
+      WARNING: For this to work, objects that use the textuere, have to REGISTER to the texture. }
     procedure DeleteUnusedMaterials;
   end;
 
@@ -657,25 +549,24 @@ type
   public
     procedure SetNamesToTStrings(AStrings: TStrings);
     { Applies the material of given name.
-       Returns False if the material could not be found. ake sure this
-       call is balanced with a corresponding UnApplyMaterial (or an
-       assertion will be triggered in the destructor).
-       If a material is already applied, and has not yet been unapplied,
-       an assertion will be triggered. }
-    function ApplyMaterial(const AName: string;
-      var ARci: TVXRenderContextInfo): Boolean; virtual;
+      Returns False if the material could not be found. ake sure this
+      call is balanced with a corresponding UnApplyMaterial (or an
+      assertion will be triggered in the destructor).
+      If a material is already applied, and has not yet been unapplied,
+      an assertion will be triggered. }
+    function ApplyMaterial(const AName: string; var ARci: TVXRenderContextInfo): Boolean; virtual;
     { Un-applies the last applied material.
-       Use this function in conjunction with ApplyMaterial.
-       If no material was applied, an assertion will be triggered. }
+      Use this function in conjunction with ApplyMaterial.
+      If no material was applied, an assertion will be triggered. }
     function UnApplyMaterial(var ARci: TVXRenderContextInfo): Boolean; virtual;
   end;
 
   { Stores a set of materials, to be used and shared by scene objects.
-     Use a material libraries for storing commonly used materials, it provides
-     an efficient way to share texture and material data among many objects,
-     thus reducing memory needs and rendering time.
-     Materials in a material library also feature advanced control properties
-     like texture coordinates transforms. }
+    Use a material libraries for storing commonly used materials, it provides
+    an efficient way to share texture and material data among many objects,
+    thus reducing memory needs and rendering time.
+    Materials in a material library also feature advanced control properties
+    like texture coordinates transforms. }
   TVXMaterialLibrary = class(TVXAbstractMaterialLibrary)
   private
     FDoNotClearMaterialsOnLoad: Boolean;
@@ -694,24 +585,22 @@ type
     procedure LoadFromStream(aStream: TStream); virtual;
     procedure AddMaterialsFromStream(aStream: TStream);
     { Save library content to a file.
-       Recommended extension : .GLML
-       Currently saves only texture, ambient, diffuse, emission
-       and specular colors. }
+      Recommended extension : .GLML
+      Currently saves only texture, ambient, diffuse, emission
+      and specular colors. }
     procedure SaveToFile(const fileName: string);
     procedure LoadFromFile(const fileName: string);
     procedure AddMaterialsFromFile(const fileName: string);
     { Add a "standard" texture material.
-       "standard" means linear texturing mode with mipmaps and texture
-       modulation mode with default-strength color components.
-       If persistent is True, the image will be loaded persistently in memory
-       (via a TVXPersistentImage), if false, it will be unloaded after upload
-       to OpenVX (via TVXPicFileImage). }
-    function AddTextureMaterial(const MaterialName, FileName: string;
-      persistent: Boolean = True): TVXLibMaterial; overload;
+      "standard" means linear texturing mode with mipmaps and texture
+      modulation mode with default-strength color components.
+      If persistent is True, the image will be loaded persistently in memory
+      (via a TVXPersistentImage), if false, it will be unloaded after upload
+      to OpenVX (via TVXPicFileImage). }
+    function AddTextureMaterial(const MaterialName, fileName: string; persistent: Boolean = True): TVXLibMaterial; overload;
     { Add a "standard" texture material.
-       TVXGraphic based variant. }
-    function AddTextureMaterial(const MaterialName: string; Graphic:
-      TVXGraphic): TVXLibMaterial; overload;
+      TVXGraphic based variant. }
+    function AddTextureMaterial(const MaterialName: string; Graphic: TVXGraphic): TVXLibMaterial; overload;
     { Returns libMaterial of given name if any exists. }
     function LibMaterialByName(const AName: TVXLibMaterialName): TVXLibMaterial;
     { Returns Texture of given material's name if any exists. }
@@ -719,34 +608,32 @@ type
     { Returns name of texture if any exists. }
     function GetNameOfTexture(const Texture: TVXTexture): TVXLibMaterialName;
     { Returns name of Material if any exists. }
-    function GetNameOfLibMaterial(const LibMat: TVXLibMaterial):
-      TVXLibMaterialName;
+    function GetNameOfLibMaterial(const libMat: TVXLibMaterial): TVXLibMaterialName;
   published
-      { The materials collection. }
-    property Materials: TVXLibMaterials read GetMaterials write SetMaterials stored
-      StoreMaterials;
+    { The materials collection. }
+    property Materials: TVXLibMaterials read GetMaterials write SetMaterials stored StoreMaterials;
     { This event is fired whenever a texture needs to be loaded from disk.
-       The event is triggered before even attempting to load the texture,
-       and before TexturePaths is used. }
-    property OnTextureNeeded: TVXTextureNeededEvent read FOnTextureNeeded write
-      FOnTextureNeeded;
+      The event is triggered before even attempting to load the texture,
+      and before TexturePaths is used. }
+    property OnTextureNeeded: TVXTextureNeededEvent read FOnTextureNeeded write FOnTextureNeeded;
     { Paths to lookup when attempting to load a texture.
-       You can specify multiple paths when loading a texture, the separator
-       being the semi-colon ';' character. Directories are looked up from
-       first to last, the first file name match is used.
-       The current directory is always implicit and checked last.
-       Note that you can also use the OnTextureNeeded event to provide a
-       filename. }
+      You can specify multiple paths when loading a texture, the separator
+      being the semi-colon ';' character. Directories are looked up from
+      first to last, the first file name match is used.
+      The current directory is always implicit and checked last.
+      Note that you can also use the OnTextureNeeded event to provide a
+      filename. }
     property TexturePaths;
   end;
 
 // ------------------------------------------------------------------------------
 implementation
+// ------------------------------------------------------------------------------
 
 // ------------------
 // ------------------ TVXFaceProperties ------------------
 // ------------------
-constructor TVXFaceProperties.Create(aOwner: TPersistent);
+constructor TVXFaceProperties.Create(AOwner: TPersistent);
 begin
   inherited;
   // OpenVX default colors
@@ -766,18 +653,15 @@ begin
   inherited Destroy;
 end;
 
-procedure TVXFaceProperties.Apply(var rci: TVXRenderContextInfo;
-  aFace: TCullFaceMode);
+procedure TVXFaceProperties.Apply(var rci: TVXRenderContextInfo; aFace: TCullFaceMode);
 begin
   with rci.VxStates do
   begin
-    SetMaterialColors(aFace,
-    Emission.Color, Ambient.Color, Diffuse.Color, Specular.Color, FShininess);
+    SetMaterialColors(aFace, Emission.Color, Ambient.Color, Diffuse.Color, Specular.Color, FShininess);
   end;
 end;
 
-procedure TVXFaceProperties.ApplyNoLighting(var rci: TVXRenderContextInfo;
-  aFace: TCullFaceMode);
+procedure TVXFaceProperties.ApplyNoLighting(var rci: TVXRenderContextInfo; aFace: TCullFaceMode);
 begin
   glColor4fv(Diffuse.AsAddress);
 end;
@@ -855,9 +739,9 @@ begin
     DepthFunc := FCompareFunc;
     SetDepthRange(FZNear, FZFar);
     if FDepthClamp then
-       Enable(stDepthClamp)
-     else
-       Disable(stDepthClamp);
+      Enable(stDepthClamp)
+    else
+      Disable(stDepthClamp);
   end;
 end;
 
@@ -894,7 +778,7 @@ begin
   end;
 end;
 
-procedure TVXDepthProperties.SetCompareFunc(Value: TDepthFunction);
+procedure TVXDepthProperties.SetCompareFunc(Value: TDepthfunction);
 begin
   if Value <> FCompareFunc then
   begin
@@ -903,7 +787,7 @@ begin
   end;
 end;
 
-procedure TVXDepthProperties.SetDepthTest(Value: boolean);
+procedure TVXDepthProperties.SetDepthTest(Value: Boolean);
 begin
   if Value <> FDepthTest then
   begin
@@ -921,7 +805,7 @@ begin
   end;
 end;
 
-procedure TVXDepthProperties.SetDepthClamp(Value: boolean);
+procedure TVXDepthProperties.SetDepthClamp(Value: Boolean);
 begin
   if Value <> FDepthClamp then
   begin
@@ -1032,14 +916,13 @@ end;
 
 function TVXShader.GetShaderInitialized: Boolean;
 begin
-  Result := (FVirtualHandle.Handle <> 0);
+  Result := (FVirtualHandle.handle <> 0);
 end;
 
 // InitializeShader
 //
 
-procedure TVXShader.InitializeShader(var rci: TVXRenderContextInfo; Sender:
-  TObject);
+procedure TVXShader.InitializeShader(var rci: TVXRenderContextInfo; Sender: TObject);
 begin
   FVirtualHandle.AllocateHandle;
   if FVirtualHandle.IsDataNeedUpdate then
@@ -1052,7 +935,7 @@ end;
 // FinalizeShader
 //
 
- procedure TVXShader.FinalizeShader;
+procedure TVXShader.FinalizeShader;
 begin
   FVirtualHandle.NotifyChangesOfData;
   DoFinalize;
@@ -1102,8 +985,7 @@ end;
 // OnVirtualHandleDestroy
 //
 
-procedure TVXShader.OnVirtualHandleDestroy(sender: TVXVirtualHandle; var handle:
-  Cardinal);
+procedure TVXShader.OnVirtualHandleDestroy(Sender: TVXVirtualHandle; var handle: Cardinal);
 begin
   handle := 0;
 end;
@@ -1111,8 +993,7 @@ end;
 // OnVirtualHandleAllocate
 //
 
-procedure TVXShader.OnVirtualHandleAllocate(sender: TVXVirtualHandle; var
-  handle: Cardinal);
+procedure TVXShader.OnVirtualHandleAllocate(Sender: TVXVirtualHandle; var handle: Cardinal);
 begin
   handle := 1;
 end;
@@ -1165,7 +1046,7 @@ begin
     Enabled := TVXShader(Source).FEnabled;
   end
   else
-    inherited Assign(Source); //to the pit of doom ;)
+    inherited Assign(Source); // to the pit of doom ;)
 end;
 
 // Assign
@@ -1179,11 +1060,11 @@ end;
 // HandleFailedInitialization
 //
 
-procedure TVXShader.HandleFailedInitialization(const LastErrorMessage: string =
-  '');
+procedure TVXShader.HandleFailedInitialization(const LastErrorMessage: string = '');
 begin
   case FailedInitAction of
-    fiaSilentdisable: ; // Do nothing ;)
+    fiaSilentDisable:
+      ; // Do nothing ;)
     fiaRaiseHandledException:
       try
         raise EGLShaderException.Create(GetStardardNotSupportedMessage);
@@ -1198,8 +1079,8 @@ begin
         else
           raise EGLShaderException.Create(GetStardardNotSupportedMessage)
       end;
-    //    fiaGenerateEvent:; // Do nothing. Event creation is left up to user shaders
-    //                       // which may choose to override this procedure.
+    // fiaGenerateEvent:; // Do nothing. Event creation is left up to user shaders
+    // // which may choose to override this procedure.
   else
     Assert(False, strErrorEx + strUnknownType);
   end;
@@ -1213,14 +1094,10 @@ begin
   if Name <> '' then
     Result := 'Your hardware/driver doesn''t support shader "' + Name + '"!'
   else
-    Result := 'Your hardware/driver doesn''t support shader "' + ClassName +
-      '"!';
+    Result := 'Your hardware/driver doesn''t support shader "' + ClassName + '"!';
 end;
 
-//----------------- TVXMaterial --------------------------------------------------
-
-// Create
-//
+// ----------------- TVXMaterial --------------------------------------------------
 
 constructor TVXMaterial.Create(AOwner: TPersistent);
 begin
@@ -1233,13 +1110,10 @@ begin
   FDepthProperties := TVXDepthProperties.Create(Self)
 end;
 
-// Destroy
-//
-
 destructor TVXMaterial.Destroy;
 begin
   if Assigned(currentLibMaterial) then
-    currentLibMaterial.UnregisterUser(Self);
+    currentLibMaterial.UnRegisterUser(Self);
   FBackProperties.Free;
   FFrontProperties.Free;
   FDepthProperties.Free;
@@ -1249,25 +1123,16 @@ begin
   inherited Destroy;
 end;
 
-// GetMaterialLibrary
-//
-
 function TVXMaterial.GetMaterialLibrary: TVXAbstractMaterialLibrary;
 begin
   Result := FMaterialLibrary;
 end;
-
-// SetBackProperties
-//
 
 procedure TVXMaterial.SetBackProperties(Values: TVXFaceProperties);
 begin
   BackProperties.Assign(Values);
   NotifyChange(Self);
 end;
-
-// GetBackProperties
-//
 
 function TVXMaterial.GetBackProperties: TVXFaceProperties;
 begin
@@ -1276,26 +1141,17 @@ begin
   Result := FBackProperties;
 end;
 
-// SetFrontProperties
-//
-
 procedure TVXMaterial.SetFrontProperties(Values: TVXFaceProperties);
 begin
   FFrontProperties.Assign(Values);
   NotifyChange(Self);
 end;
 
-// TVXMaterial
-//
-
 procedure TVXMaterial.SetDepthProperties(Values: TVXDepthProperties);
 begin
   FDepthProperties.Assign(Values);
   NotifyChange(Self);
 end;
-
-// SetBlendingMode
-//
 
 procedure TVXMaterial.SetBlendingMode(const val: TBlendingMode);
 begin
@@ -1306,9 +1162,6 @@ begin
   end;
 end;
 
-// SetMaterialOptions
-//
-
 procedure TVXMaterial.SetMaterialOptions(const val: TMaterialOptions);
 begin
   if val <> FMaterialOptions then
@@ -1318,9 +1171,6 @@ begin
   end;
 end;
 
-// GetTexture
-//
-
 function TVXMaterial.GetTexture: TVXTexture;
 begin
   if not Assigned(FTexture) then
@@ -1328,19 +1178,13 @@ begin
   Result := FTexture;
 end;
 
-// SetTexture
-//
-
-procedure TVXMaterial.SetTexture(aTexture: TVXTexture);
+procedure TVXMaterial.SetTexture(ATexture: TVXTexture);
 begin
-  if Assigned(aTexture) then
+  if Assigned(ATexture) then
     Texture.Assign(ATexture)
   else
     FreeAndNil(FTexture);
 end;
-
-// SetFaceCulling
-//
 
 procedure TVXMaterial.SetFaceCulling(const val: TFaceCulling);
 begin
@@ -1351,17 +1195,11 @@ begin
   end;
 end;
 
-// SetMaterialLibrary
-//
-
 procedure TVXMaterial.SetMaterialLibrary(const val: TVXAbstractMaterialLibrary);
 begin
   FMaterialLibrary := val;
   SetLibMaterialName(LibMaterialName);
 end;
-
-// SetLibMaterialName
-//
 
 procedure TVXMaterial.SetLibMaterialName(const val: TVXLibMaterialName);
 var
@@ -1395,7 +1233,7 @@ begin
   else
     newLibMaterial := nil;
 
-   // make sure new won't trigger an infinite loop
+  // make sure new won't trigger an infinite loop
   if FMaterialLibrary is TVXMaterialLibrary then
   begin
     oldLibrary := TVXMaterialLibrary(FMaterialLibrary);
@@ -1415,7 +1253,7 @@ begin
   begin
     // unregister from old
     if Assigned(currentLibMaterial) then
-      currentLibMaterial.UnregisterUser(Self);
+      currentLibMaterial.UnRegisterUser(Self);
     currentLibMaterial := newLibMaterial;
     // register with new
     if Assigned(currentLibMaterial) then
@@ -1424,9 +1262,6 @@ begin
   end;
 end;
 
-// GetTextureEx
-//
-
 function TVXMaterial.GetTextureEx: TVXTextureEx;
 begin
   if not Assigned(FTextureEx) then
@@ -1434,34 +1269,22 @@ begin
   Result := FTextureEx;
 end;
 
-// SetTextureEx
-//
-
 procedure TVXMaterial.SetTextureEx(const Value: TVXTextureEx);
 begin
   if Assigned(Value) or Assigned(FTextureEx) then
     TextureEx.Assign(Value);
 end;
 
-// StoreTextureEx
-//
-
 function TVXMaterial.StoreTextureEx: Boolean;
 begin
   Result := (Assigned(FTextureEx) and (TextureEx.Count > 0));
 end;
-
-// SetBlendingParams
-//
 
 procedure TVXMaterial.SetBlendingParams(const Value: TVXBlendingParameters);
 begin
   FBlendingParams.Assign(Value);
   NotifyChange(Self);
 end;
-
-// NotifyLibMaterialDestruction
-//
 
 procedure TVXMaterial.NotifyLibMaterialDestruction;
 begin
@@ -1470,9 +1293,6 @@ begin
   currentLibMaterial := nil;
 end;
 
-// Loaded
-//
-
 procedure TVXMaterial.Loaded;
 begin
   inherited;
@@ -1480,16 +1300,10 @@ begin
     TextureEx.Loaded;
 end;
 
-// StoreMaterialProps
-//
-
 function TVXMaterial.StoreMaterialProps: Boolean;
 begin
   Result := not Assigned(currentLibMaterial);
 end;
-
-// PrepareBuildList
-//
 
 procedure TVXMaterial.PrepareBuildList;
 begin
@@ -1497,128 +1311,123 @@ begin
     FTexture.PrepareBuildList;
 end;
 
-// Apply
-//
-
 procedure TVXMaterial.Apply(var rci: TVXRenderContextInfo);
 begin
   if Assigned(currentLibMaterial) then
     currentLibMaterial.Apply(rci)
   else
-  with rci.VxStates do
-  begin
-    Disable(stColorMaterial);
-    PolygonMode := FPolygonMode;
-    if FPolygonMode = pmLines then
-      Disable(stLineStipple);
-
-    // Lighting switch
-    if (moNoLighting in MaterialOptions) or not rci.bufferLighting then
+    with rci.VxStates do
     begin
-      Disable(stLighting);
-      FFrontProperties.ApplyNoLighting(rci, cmFront);
-    end
-    else
-    begin
-      Enable(stLighting);
-      FFrontProperties.Apply(rci, cmFront);
-    end;
+      Disable(stColorMaterial);
+      PolygonMode := FPolygonMode;
+      if FPolygonMode = pmLines then
+        Disable(stLineStipple);
 
-    // Apply FaceCulling and BackProperties (if needs be)
-    case FFaceCulling of
-      fcBufferDefault:
-        begin
-          if rci.bufferFaceCull then
-            Enable(stCullFace)
-          else
-            Disable(stCullFace);
-          BackProperties.Apply(rci, cmBack);
-        end;
-      fcCull: Enable(stCullFace);
-      fcNoCull:
-        begin
-          Disable(stCullFace);
-          BackProperties.Apply(rci, cmBack);
-        end;
-    end;
-    // note: Front + Back with different PolygonMode are no longer supported.
-    // Currently state cache just ignores back facing mode changes, changes to
-    // front affect both front + back PolygonMode
-
-    // Apply Blending mode
-    if not rci.ignoreBlendingRequests then
-      case FBlendingMode of
-        bmOpaque:
-          begin
-            Disable(stBlend);
-            Disable(stAlphaTest);
-          end;
-        bmTransparency:
-          begin
-            Enable(stBlend);
-            Enable(stAlphaTest);
-            SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
-            SetAlphaFunction(cfGreater, 0);
-          end;
-        bmAdditive:
-          begin
-            Enable(stBlend);
-            Enable(stAlphaTest);
-            SetBlendFunc(bfSrcAlpha, bfOne);
-            SetAlphaFunction(cfGreater, 0);
-          end;
-        bmAlphaTest50:
-          begin
-            Disable(stBlend);
-            Enable(stAlphaTest);
-            SetAlphaFunction(cfGEqual, 0.5);
-          end;
-        bmAlphaTest100:
-          begin
-            Disable(stBlend);
-            Enable(stAlphaTest);
-            SetAlphaFunction(cfGEqual, 1.0);
-          end;
-        bmModulate:
-          begin
-            Enable(stBlend);
-            Enable(stAlphaTest);
-            SetBlendFunc(bfDstColor, bfZero);
-            SetAlphaFunction(cfGreater, 0);
-          end;
-        bmCustom:
-          begin
-            FBlendingParams.Apply(rci);
-          end;
+      // Lighting switch
+      if (moNoLighting in MaterialOptions) or not rci.bufferLighting then
+      begin
+        Disable(stLighting);
+        FFrontProperties.ApplyNoLighting(rci, cmFront);
+      end
+      else
+      begin
+        Enable(stLighting);
+        FFrontProperties.Apply(rci, cmFront);
       end;
 
-    // Fog switch
-    if (moIgnoreFog in MaterialOptions) or not rci.bufferFog then
-      Disable(stFog)
-    else
-      Enable(stFog);
+      // Apply FaceCulling and BackProperties (if needs be)
+      case FFaceCulling of
+        fcBufferDefault:
+          begin
+            if rci.bufferFaceCull then
+              Enable(stCullFace)
+            else
+              Disable(stCullFace);
+            BackProperties.Apply(rci, cmBack);
+          end;
+        fcCull:
+          Enable(stCullFace);
+        fcNoCull:
+          begin
+            Disable(stCullFace);
+            BackProperties.Apply(rci, cmBack);
+          end;
+      end;
+      // note: Front + Back with different PolygonMode are no longer supported.
+      // Currently state cache just ignores back facing mode changes, changes to
+      // front affect both front + back PolygonMode
 
-    if not Assigned(FTextureEx) then
-    begin
-      if Assigned(FTexture) then
-        FTexture.Apply(rci)
-    end
-    else
-    begin
-      if Assigned(FTexture) and not FTextureEx.IsTextureEnabled(0) then
-        FTexture.Apply(rci)
-      else if FTextureEx.Count > 0 then
-        FTextureEx.Apply(rci);
+      // Apply Blending mode
+      if not rci.ignoreBlendingRequests then
+        case FBlendingMode of
+          bmOpaque:
+            begin
+              Disable(stBlend);
+              Disable(stAlphaTest);
+            end;
+          bmTransparency:
+            begin
+              Enable(stBlend);
+              Enable(stAlphaTest);
+              SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
+              SetAlphaFunction(cfGreater, 0);
+            end;
+          bmAdditive:
+            begin
+              Enable(stBlend);
+              Enable(stAlphaTest);
+              SetBlendFunc(bfSrcAlpha, bfOne);
+              SetAlphaFunction(cfGreater, 0);
+            end;
+          bmAlphaTest50:
+            begin
+              Disable(stBlend);
+              Enable(stAlphaTest);
+              SetAlphaFunction(cfGEqual, 0.5);
+            end;
+          bmAlphaTest100:
+            begin
+              Disable(stBlend);
+              Enable(stAlphaTest);
+              SetAlphaFunction(cfGEqual, 1.0);
+            end;
+          bmModulate:
+            begin
+              Enable(stBlend);
+              Enable(stAlphaTest);
+              SetBlendFunc(bfDstColor, bfZero);
+              SetAlphaFunction(cfGreater, 0);
+            end;
+          bmCustom:
+            begin
+              FBlendingParams.Apply(rci);
+            end;
+        end;
+
+      // Fog switch
+      if (moIgnoreFog in MaterialOptions) or not rci.bufferFog then
+        Disable(stFog)
+      else
+        Enable(stFog);
+
+      if not Assigned(FTextureEx) then
+      begin
+        if Assigned(FTexture) then
+          FTexture.Apply(rci)
+      end
+      else
+      begin
+        if Assigned(FTexture) and not FTextureEx.IsTextureEnabled(0) then
+          FTexture.Apply(rci)
+        else if FTextureEx.Count > 0 then
+          FTextureEx.Apply(rci);
+      end;
+
+      // Apply depth properties
+      if not rci.ignoreDepthRequests then
+        FDepthProperties.Apply(rci);
     end;
-
-    // Apply depth properties
-    if not rci.ignoreDepthRequests then
-      FDepthProperties.Apply(rci);
-  end;
 end;
-
-// UnApply
-//
 
 function TVXMaterial.UnApply(var rci: TVXRenderContextInfo): Boolean;
 begin
@@ -1626,17 +1435,13 @@ begin
     Result := currentLibMaterial.UnApply(rci)
   else
   begin
-    if Assigned(FTexture) and (not FTexture.Disabled) and (not
-      FTextureEx.IsTextureEnabled(0)) then
+    if Assigned(FTexture) and (not FTexture.Disabled) and (not FTextureEx.IsTextureEnabled(0)) then
       FTexture.UnApply(rci)
     else if Assigned(FTextureEx) then
       FTextureEx.UnApply(rci);
     Result := False;
   end;
 end;
-
-// Assign
-//
 
 procedure TVXMaterial.Assign(Source: TPersistent);
 begin
@@ -1665,9 +1470,6 @@ begin
     inherited;
 end;
 
-// NotifyChange
-//
-
 procedure TVXMaterial.NotifyChange(Sender: TObject);
 var
   intf: IVKNotifyAble;
@@ -1675,9 +1477,6 @@ begin
   if Supports(Owner, IVKNotifyAble, intf) then
     intf.NotifyChange(Self);
 end;
-
-// NotifyTexMapChange
-//
 
 procedure TVXMaterial.NotifyTexMapChange(Sender: TObject);
 var
@@ -1689,17 +1488,11 @@ begin
     NotifyChange(Self);
 end;
 
-// DestroyHandles
-//
-
 procedure TVXMaterial.DestroyHandles;
 begin
   if Assigned(FTexture) then
     FTexture.DestroyHandles;
 end;
-
-// Blended
-//
 
 function TVXMaterial.Blended: Boolean;
 begin
@@ -1709,29 +1502,19 @@ begin
     Result := currentLibMaterial.Blended
   end
   else
-    Result := not (BlendingMode in [bmOpaque, bmAlphaTest50, bmAlphaTest100, bmCustom]);
+    Result := not(BlendingMode in [bmOpaque, bmAlphaTest50, bmAlphaTest100, bmCustom]);
 end;
-
-// HasSecondaryTexture
-//
 
 function TVXMaterial.HasSecondaryTexture: Boolean;
 begin
-  Result := Assigned(currentLibMaterial)
-    and (currentLibMaterial is TVXLibMaterial)
-    and Assigned(TVXLibMaterial(currentLibMaterial).libMatTexture2);
+  Result := Assigned(currentLibMaterial) and (currentLibMaterial is TVXLibMaterial) and
+    Assigned(TVXLibMaterial(currentLibMaterial).libMatTexture2);
 end;
-
-// MaterialIsLinkedToLib
-//
 
 function TVXMaterial.MaterialIsLinkedToLib: Boolean;
 begin
   Result := Assigned(currentLibMaterial);
 end;
-
-// GetActualPrimaryTexture
-//
 
 function TVXMaterial.GetActualPrimaryTexture: TVXTexture;
 begin
@@ -1741,9 +1524,6 @@ begin
     Result := Texture;
 end;
 
-// GetActualPrimaryTexture
-//
-
 function TVXMaterial.GetActualPrimaryMaterial: TVXMaterial;
 begin
   if Assigned(currentLibMaterial) and (currentLibMaterial is TVXLibMaterial) then
@@ -1751,9 +1531,6 @@ begin
   else
     Result := Self;
 end;
-
-// QuickAssignMaterial
-//
 
 function TVXMaterial.GetLibMaterial: TVXLibMaterial;
 begin
@@ -1763,31 +1540,24 @@ begin
     Result := nil;
 end;
 
-// QuickAssignMaterial
-//
-
-procedure TVXMaterial.QuickAssignMaterial(const MaterialLibrary:
-  TVXMaterialLibrary; const Material: TVXLibMaterial);
+procedure TVXMaterial.QuickAssignMaterial(const MaterialLibrary: TVXMaterialLibrary; const Material: TVXLibMaterial);
 begin
   FMaterialLibrary := MaterialLibrary;
   FLibMaterialName := Material.FName;
 
-  if Material <> CurrentLibMaterial then
+  if Material <> currentLibMaterial then
   begin
     // unregister from old
-    if Assigned(CurrentLibMaterial) then
-      currentLibMaterial.UnregisterUser(Self);
-    CurrentLibMaterial := Material;
+    if Assigned(currentLibMaterial) then
+      currentLibMaterial.UnRegisterUser(Self);
+    currentLibMaterial := Material;
     // register with new
-    if Assigned(CurrentLibMaterial) then
-      CurrentLibMaterial.RegisterUser(Self);
+    if Assigned(currentLibMaterial) then
+      currentLibMaterial.RegisterUser(Self);
 
     NotifyTexMapChange(Self);
   end;
 end;
-
-// SetPolygonMode
-//
 
 procedure TVXMaterial.SetPolygonMode(AValue: TPolygonMode);
 begin
@@ -1801,10 +1571,7 @@ end;
 // ------------------
 // ------------------ TVXAbstractLibMaterial ------------------
 // ------------------
-{$IFDEF VKS_REGION}{$REGION 'TVXAbstractLibMaterial'}{$ENDIF}
 
-// Create
-//
 constructor TVXAbstractLibMaterial.Create(ACollection: TCollection);
 begin
   inherited Create(ACollection);
@@ -1816,32 +1583,22 @@ begin
   end;
 end;
 
-// Destroy
-//
-
 destructor TVXAbstractLibMaterial.Destroy;
 begin
   FUserList.Free;
   inherited Destroy;
 end;
 
-// Assign
-//
-
 procedure TVXAbstractLibMaterial.Assign(Source: TPersistent);
 begin
   if Source is TVXAbstractLibMaterial then
   begin
-    FName :=
-      TVXLibMaterials(Collection).MakeUniqueName(TVXLibMaterial(Source).Name);
+    FName := TVXLibMaterials(Collection).MakeUniqueName(TVXLibMaterial(Source).name);
     FNameHashKey := ComputeNameHashKey(FName);
   end
   else
     inherited; // Raise AssignError
 end;
-
-// QueryInterface
-//
 
 function TVXAbstractLibMaterial.QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
 begin
@@ -1851,39 +1608,26 @@ begin
     Result := E_NOINTERFACE;
 end;
 
-// _AddRef
-//
 function TVXAbstractLibMaterial._AddRef: Integer; stdcall;
 begin
-  Result := -1; //ignore
+  Result := -1; // ignore
 end;
 
-// _Release
-//
 function TVXAbstractLibMaterial._Release: Integer; stdcall;
 begin
-  Result := -1; //ignore
+  Result := -1; // ignore
 end;
 
-// RegisterUser
-//
-
-procedure TVXAbstractLibMaterial.RegisterUser(obj: TVXUpdateAbleObject);
+procedure TVXAbstractLibMaterial.RegisterUser(Obj: TVXUpdateAbleObject);
 begin
-  Assert(FUserList.IndexOf(obj) < 0);
-  FUserList.Add(obj);
+  Assert(FUserList.IndexOf(Obj) < 0);
+  FUserList.Add(Obj);
 end;
 
-// UnregisterUser
-//
-
-procedure TVXAbstractLibMaterial.UnRegisterUser(obj: TVXUpdateAbleObject);
+procedure TVXAbstractLibMaterial.UnRegisterUser(Obj: TVXUpdateAbleObject);
 begin
-  FUserList.Remove(obj);
+  FUserList.Remove(Obj);
 end;
-
-// RegisterUser
-//
 
 procedure TVXAbstractLibMaterial.RegisterUser(comp: TVXUpdateAbleComponent);
 begin
@@ -1891,16 +1635,10 @@ begin
   FUserList.Add(comp);
 end;
 
-// UnregisterUser
-//
-
 procedure TVXAbstractLibMaterial.UnRegisterUser(comp: TVXUpdateAbleComponent);
 begin
   FUserList.Remove(comp);
 end;
-
-// RegisterUser
-//
 
 procedure TVXAbstractLibMaterial.RegisterUser(libMaterial: TVXLibMaterial);
 begin
@@ -1908,44 +1646,35 @@ begin
   FUserList.Add(libMaterial);
 end;
 
-// UnregisterUser
-//
-
 procedure TVXAbstractLibMaterial.UnRegisterUser(libMaterial: TVXLibMaterial);
 begin
   FUserList.Remove(libMaterial);
 end;
-
-// NotifyUsers
-//
 
 procedure TVXAbstractLibMaterial.NotifyChange(Sender: TObject);
 begin
   NotifyUsers();
 end;
 
-// NotifyUsers
-//
-
 procedure TVXAbstractLibMaterial.NotifyUsers;
 var
   i: Integer;
-  obj: TObject;
+  Obj: TObject;
 begin
   if FNotifying then
-    Exit;
+    exit;
   FNotifying := True;
   try
     for i := 0 to FUserList.Count - 1 do
     begin
-      obj := TObject(FUserList[i]);
-      if obj is TVXUpdateAbleObject then
+      Obj := TObject(FUserList[i]);
+      if Obj is TVXUpdateAbleObject then
         TVXUpdateAbleObject(FUserList[i]).NotifyChange(Self)
-      else if obj is TVXUpdateAbleComponent then
+      else if Obj is TVXUpdateAbleComponent then
         TVXUpdateAbleComponent(FUserList[i]).NotifyChange(Self)
       else
       begin
-        Assert(obj is TVXAbstractLibMaterial);
+        Assert(Obj is TVXAbstractLibMaterial);
         TVXAbstractLibMaterial(FUserList[i]).NotifyUsers;
       end;
     end;
@@ -1954,24 +1683,15 @@ begin
   end;
 end;
 
-// IsUsed
-//
-
 function TVXAbstractLibMaterial.IsUsed: Boolean;
 begin
-  Result := Assigned(Self) and (FUserlist.Count > 0);
+  Result := Assigned(Self) and (FUserList.Count > 0);
 end;
-
-// GetDisplayName
-//
 
 function TVXAbstractLibMaterial.GetDisplayName: string;
 begin
   Result := Name;
 end;
-
-// GetMaterialLibrary
-//
 
 function TVXAbstractLibMaterial.GetMaterialLibrary: TVXAbstractMaterialLibrary;
 var
@@ -1986,16 +1706,10 @@ begin
   end;
 end;
 
-// Blended
-//
-
 function TVXAbstractLibMaterial.Blended: Boolean;
 begin
   Result := False;
 end;
-
-// ComputeNameHashKey
-//
 
 class function TVXAbstractLibMaterial.ComputeNameHashKey(const name: string): Integer;
 var
@@ -2007,14 +1721,11 @@ begin
     Result := (Result shl 1) + Byte(name[i]);
 end;
 
-// SetName
-//
-
 procedure TVXAbstractLibMaterial.SetName(const val: TVXLibMaterialName);
 begin
   if val <> FName then
   begin
-    if not (csLoading in TComponent(Collection.Owner).ComponentState) then
+    if not(csLoading in TComponent(Collection.Owner).ComponentState) then
     begin
       if TVXLibMaterials(Collection).GetLibMaterialByName(val) <> Self then
         FName := TVXLibMaterials(Collection).MakeUniqueName(val)
@@ -2027,15 +1738,9 @@ begin
   end;
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
-
 // ------------------
 // ------------------ TVXLibMaterial ------------------
 // ------------------
-{$IFDEF VKS_REGION}{$REGION 'TVXLibMaterial'}{$ENDIF}
-
-// Create
-//
 
 constructor TVXLibMaterial.Create(ACollection: TCollection);
 begin
@@ -2050,9 +1755,6 @@ begin
   FTextureOverride := False;
   FTextureMatrixIsIdentity := True;
 end;
-
-// Destroy
-//
 
 destructor TVXLibMaterial.Destroy;
 var
@@ -2078,9 +1780,6 @@ begin
   inherited;
 end;
 
-// Assign
-//
-
 procedure TVXLibMaterial.Assign(Source: TPersistent);
 begin
   if Source is TVXLibMaterial then
@@ -2102,17 +1801,11 @@ begin
   Result := Material.Blended;
 end;
 
-// PrepareBuildList
-//
-
 procedure TVXLibMaterial.PrepareBuildList;
 begin
   if Assigned(Self) then
     Material.PrepareBuildList;
 end;
-
-// Apply
-//
 
 procedure TVXLibMaterial.Apply(var ARci: TVXRenderContextInfo);
 var
@@ -2122,30 +1815,28 @@ begin
   if Assigned(FShader) then
   begin
     case Shader.ShaderStyle of
-      ssHighLevel: Shader.Apply(ARci, Self);
+      ssHighLevel:
+        Shader.Apply(ARci, Self);
       ssReplace:
         begin
           Shader.Apply(ARci, Self);
-          Exit;
+          exit;
         end;
     end;
   end
   else
-    ARci.VXStates.CurrentProgram := 0;
-  if (Texture2Name <> '') and GL_ARB_multitexture and (not
-    xgl.SecondTextureUnitForbidden) then
+    ARci.VxStates.CurrentProgram := 0;
+  if (Texture2Name <> '') and (not xgl.SecondTextureUnitForbidden) then
   begin
     if not Assigned(libMatTexture2) then
     begin
-      libMatTexture2 :=
-        TVXLibMaterials(Collection).GetLibMaterialByName(Texture2Name);
+      libMatTexture2 := TVXLibMaterials(Collection).GetLibMaterialByName(Texture2Name);
       if Assigned(libMatTexture2) then
         libMatTexture2.RegisterUser(Self)
       else
         FTexture2Name := '';
     end;
-    multitextured := Assigned(libMatTexture2)
-      and (not libMatTexture2.Material.Texture.Disabled);
+    multitextured := Assigned(libMatTexture2) and (not libMatTexture2.Material.Texture.Disabled);
   end
   else
     multitextured := False;
@@ -2153,46 +1844,42 @@ begin
   begin
     // no multitexturing ("standard" mode)
     if not FTextureMatrixIsIdentity then
-        ARci.VXStates.SetTextureMatrix(FTextureMatrix);
+      ARci.VxStates.SetTextureMatrix(FTextureMatrix);
     Material.Apply(ARci);
   end
   else
   begin
     // multitexturing is ON
     if not FTextureMatrixIsIdentity then
-      ARci.VXStates.SetTextureMatrix(FTextureMatrix);
+      ARci.VxStates.SetTextureMatrix(FTextureMatrix);
     Material.Apply(ARci);
 
     if not libMatTexture2.FTextureMatrixIsIdentity then
-      libMatTexture2.Material.Texture.ApplyAsTexture2(ARci,
-        @libMatTexture2.FTextureMatrix.X.X)
+      libMatTexture2.Material.Texture.ApplyAsTexture2(ARci, @libMatTexture2.FTextureMatrix.X.X)
     else
       libMatTexture2.Material.Texture.ApplyAsTexture2(ARci);
 
-    if (not Material.Texture.Disabled) and (Material.Texture.MappingMode =
-      tmmUser) then
+    if (not Material.Texture.Disabled) and (Material.Texture.MappingMode = tmmUser) then
       if libMatTexture2.Material.Texture.MappingMode = tmmUser then
-        XGL.MapTexCoordToDual
+        xgl.MapTexCoordToDual
       else
-        XGL.MapTexCoordToMain
+        xgl.MapTexCoordToMain
     else if libMatTexture2.Material.Texture.MappingMode = tmmUser then
-      XGL.MapTexCoordToSecond
+      xgl.MapTexCoordToSecond
     else
-      XGL.MapTexCoordToMain;
+      xgl.MapTexCoordToMain;
 
   end;
 
   if Assigned(FShader) then
   begin
     case Shader.ShaderStyle of
-      ssLowLevel: Shader.Apply(ARci, Self);
+      ssLowLevel:
+        Shader.Apply(ARci, Self);
     end;
   end;
   xgl.EndUpdate;
 end;
-
-// UnApply
-//
 
 function TVXLibMaterial.UnApply(var ARci: TVXRenderContextInfo): Boolean;
 begin
@@ -2200,32 +1887,32 @@ begin
   if Assigned(FShader) then
   begin
     case Shader.ShaderStyle of
-      ssLowLevel: Result := Shader.UnApply(ARci);
+      ssLowLevel:
+        Result := Shader.UnApply(ARci);
       ssReplace:
         begin
           Result := Shader.UnApply(ARci);
-          Exit;
+          exit;
         end;
     end;
   end;
 
   if not Result then
   begin
-    if Assigned(libMatTexture2) and GL_ARB_multitexture and (not
-      xgl.SecondTextureUnitForbidden) then
+    if Assigned(libMatTexture2) and (not xgl.SecondTextureUnitForbidden) then
     begin
-      libMatTexture2.Material.Texture.UnApplyAsTexture2(ARci, (not
-        libMatTexture2.TextureMatrixIsIdentity));
-      XGL.MapTexCoordToMain;
+      libMatTexture2.Material.Texture.UnApplyAsTexture2(ARci, (not libMatTexture2.TextureMatrixIsIdentity));
+      xgl.MapTexCoordToMain;
     end;
     Material.UnApply(ARci);
     if not Material.Texture.Disabled then
       if not FTextureMatrixIsIdentity then
-        ARci.VXStates.ResetTextureMatrix;
+        ARci.VxStates.ResetTextureMatrix;
     if Assigned(FShader) then
     begin
       case Shader.ShaderStyle of
-        ssHighLevel: Result := Shader.UnApply(ARci);
+        ssHighLevel:
+          Result := Shader.UnApply(ARci);
       end;
     end;
   end;
@@ -2236,28 +1923,25 @@ begin
   NotifyUsersOfTexMapChange();
 end;
 
-// NotifyUsersOfTexMapChange
-//
-
 procedure TVXLibMaterial.NotifyUsersOfTexMapChange;
 var
   i: Integer;
-  obj: TObject;
+  Obj: TObject;
 begin
   if FNotifying then
-    Exit;
+    exit;
   FNotifying := True;
   try
     for i := 0 to FUserList.Count - 1 do
     begin
-      obj := TObject(FUserList[i]);
-      if obj is TVXMaterial then
+      Obj := TObject(FUserList[i]);
+      if Obj is TVXMaterial then
         TVXMaterial(FUserList[i]).NotifyTexMapChange(Self)
-      else if obj is TVXLibMaterial then
+      else if Obj is TVXLibMaterial then
         TVXLibMaterial(FUserList[i]).NotifyUsersOfTexMapChange
-      else if obj is TVXUpdateAbleObject then
+      else if Obj is TVXUpdateAbleObject then
         TVXUpdateAbleObject(FUserList[i]).NotifyChange(Self)
-      else if obj is TVXUpdateAbleComponent then
+      else if Obj is TVXUpdateAbleComponent then
         TVXUpdateAbleComponent(FUserList[i]).NotifyChange(Self);
     end;
   finally
@@ -2265,25 +1949,16 @@ begin
   end;
 end;
 
-// Loaded
-//
-
 procedure TVXLibMaterial.Loaded;
 begin
   CalculateTextureMatrix;
   Material.Loaded;
 end;
 
-// SetMaterial
-//
-
 procedure TVXLibMaterial.SetMaterial(const val: TVXMaterial);
 begin
   FMaterial.Assign(val);
 end;
-
-// SetTextureOffset
-//
 
 procedure TVXLibMaterial.SetTextureOffset(const val: TVXCoordinates);
 begin
@@ -2291,17 +1966,11 @@ begin
   CalculateTextureMatrix;
 end;
 
-// SetTextureScale
-//
-
 procedure TVXLibMaterial.SetTextureScale(const val: TVXCoordinates);
 begin
   FTextureScale.AsVector := val.AsVector;
   CalculateTextureMatrix;
 end;
-
-// SetTextureMatrix
-//
 
 procedure TVXLibMaterial.SetTextureMatrix(const Value: TMatrix);
 begin
@@ -2325,25 +1994,19 @@ begin
   Result := Abs(FTextureRotate) > EPSILON;
 end;
 
-// SetTexture2
-//
-
 procedure TVXLibMaterial.SetTexture2Name(const val: TVXLibMaterialName);
 begin
   if val <> Texture2Name then
   begin
     if Assigned(libMatTexture2) then
     begin
-      libMatTexture2.UnregisterUser(Self);
+      libMatTexture2.UnRegisterUser(Self);
       libMatTexture2 := nil;
     end;
     FTexture2Name := val;
     NotifyUsers;
   end;
 end;
-
-// SetShader
-//
 
 procedure TVXLibMaterial.SetShader(const val: TVXShader);
 begin
@@ -2358,31 +2021,20 @@ begin
   end;
 end;
 
-// CalculateTextureMatrix
-//
-
 procedure TVXLibMaterial.CalculateTextureMatrix;
 begin
-  if TextureOffset.Equals(NullHmgVector)
-   and TextureScale.Equals(XYZHmgVector)
-   and not StoreTextureRotate then
+  if TextureOffset.Equals(NullHmgVector) and TextureScale.Equals(XYZHmgVector) and not StoreTextureRotate then
     FTextureMatrixIsIdentity := True
   else
   begin
     FTextureMatrixIsIdentity := False;
-    FTextureMatrix := CreateScaleAndTranslationMatrix(
-      TextureScale.AsVector,
-      TextureOffset.AsVector);
+    FTextureMatrix := CreateScaleAndTranslationMatrix(TextureScale.AsVector, TextureOffset.AsVector);
     if StoreTextureRotate then
-      FTextureMatrix := MatrixMultiply(FTextureMatrix,
-        CreateRotationMatrixZ(DegToRadian(FTextureRotate)));
+      FTextureMatrix := MatrixMultiply(FTextureMatrix, CreateRotationMatrixZ(DegToRadian(FTextureRotate)));
   end;
   FTextureOverride := False;
   NotifyUsers;
 end;
-
-// DestroyHandles
-//
 
 procedure TVXLibMaterial.DestroyHandles;
 var
@@ -2397,19 +2049,12 @@ begin
   end;
 end;
 
-// OnNotifyChange
-//
-
 procedure TVXLibMaterial.OnNotifyChange(Sender: TObject);
 begin
   CalculateTextureMatrix;
 end;
 
-// DoOnTextureNeeded
-//
-
-procedure TVXLibMaterial.DoOnTextureNeeded(Sender: TObject; var textureFileName:
-  string);
+procedure TVXLibMaterial.DoOnTextureNeeded(Sender: TObject; var textureFileName: string);
 var
   mLib: TVXMaterialLibrary;
   i: Integer;
@@ -2422,19 +2067,16 @@ begin
     if Assigned(FOnTextureNeeded) then
       FOnTextureNeeded(mLib, textureFileName);
   // if a ':' is present, or if it starts with a '\', consider it as an absolute path
-  if (Pos(':', textureFileName) > 0) or (Copy(textureFileName, 1, 1) = PathDelim)
-    then
-    Exit;
+  if (Pos(':', textureFileName) > 0) or (Copy(textureFileName, 1, 1) = PathDelim) then
+    exit;
   // ok, not an absolute path, try given paths
   with mLib do
   begin
     if FTexturePathList <> nil then
       for i := 0 to FTexturePathList.Count - 1 do
       begin
-        tryName := IncludeTrailingPathDelimiter(FTexturePathList[i]) +
-          textureFileName;
-        if (Assigned(vAFIOCreateFileStream) and FileStreamExists(tryName)) or
-          FileExists(tryName) then
+        tryName := IncludeTrailingPathDelimiter(FTexturePathList[i]) + textureFileName;
+        if (Assigned(vAFIOCreateFileStream) and FileStreamExists(tryName)) or FileExists(tryName) then
         begin
           textureFileName := tryName;
           Break;
@@ -2442,18 +2084,12 @@ begin
       end;
   end;
 end;
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
 
 // ------------------
 // ------------------ TVXLibMaterials ------------------
 // ------------------
- {$IFDEF VKS_REGION}{$REGION 'TVXLibMaterials'}{$ENDIF}
 
- // MakeUniqueName
-//
-
-function TVXAbstractLibMaterials.GetMaterial(const AName: TVXLibMaterialName):
-  TVXAbstractLibMaterial;
+function TVXAbstractLibMaterials.GetMaterial(const AName: TVXLibMaterialName): TVXAbstractLibMaterial;
 var
   i, hk: Integer;
   lm: TVXAbstractLibMaterial;
@@ -2462,28 +2098,25 @@ begin
   for i := 0 to Count - 1 do
   begin
     lm := TVXAbstractLibMaterial(inherited Items[i]);
-    if (lm.NameHashKey = hk) and (lm.Name = AName) then
+    if (lm.NameHashKey = hk) and (lm.name = AName) then
     begin
       Result := lm;
-      Exit;
+      exit;
     end;
   end;
   Result := nil;
 end;
 
-// Loaded
-//
 
 procedure TVXAbstractLibMaterials.Loaded;
 var
-  I: Integer;
+  i: Integer;
 begin
-  for I := Count - 1 downto 0 do
-    TVXAbstractLibMaterial(Items[I]).Loaded;
+  for i := Count - 1 downto 0 do
+    TVXAbstractLibMaterial(Items[i]).Loaded;
 end;
 
-function TVXAbstractLibMaterials.MakeUniqueName(const nameRoot: TVXLibMaterialName):
-  TVXLibMaterialName;
+function TVXAbstractLibMaterials.MakeUniqueName(const nameRoot: TVXLibMaterialName): TVXLibMaterialName;
 var
   i: Integer;
 begin
@@ -2496,32 +2129,21 @@ begin
   end;
 end;
 
-// Create
-//
 
 constructor TVXLibMaterials.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner, TVXLibMaterial);
 end;
 
-// SetItems
-//
-
 procedure TVXLibMaterials.SetItems(index: Integer; const val: TVXLibMaterial);
 begin
   inherited Items[index] := val;
 end;
 
-// GetItems
-//
-
 function TVXLibMaterials.GetItems(index: Integer): TVXLibMaterial;
 begin
   Result := TVXLibMaterial(inherited Items[index]);
 end;
-
-// DestroyHandles
-//
 
 procedure TVXLibMaterials.DestroyHandles;
 var
@@ -2531,35 +2153,22 @@ begin
     Items[i].DestroyHandles;
 end;
 
-// Owner
-//
-
 function TVXLibMaterials.Owner: TPersistent;
 begin
   Result := GetOwner;
 end;
-
-// Add
-//
 
 function TVXLibMaterials.Add: TVXLibMaterial;
 begin
   Result := (inherited Add) as TVXLibMaterial;
 end;
 
-// FindItemID
-//
-
 function TVXLibMaterials.FindItemID(ID: Integer): TVXLibMaterial;
 begin
   Result := (inherited FindItemID(ID)) as TVXLibMaterial;
 end;
 
-// GetLibMaterialByName
-//
-
-function TVXLibMaterials.GetLibMaterialByName(const AName: TVXLibMaterialName):
-  TVXLibMaterial;
+function TVXLibMaterials.GetLibMaterialByName(const AName: TVXLibMaterialName): TVXLibMaterial;
 var
   LMaterial: TVXAbstractLibMaterial;
 begin
@@ -2570,89 +2179,69 @@ begin
     Result := nil;
 end;
 
-// GetTextureIndex
-//
-
 function TVXLibMaterials.GetTextureIndex(const Texture: TVXTexture): Integer;
 var
-  I: Integer;
+  i: Integer;
 begin
   if Count <> 0 then
-    for I := 0 to Count - 1 do
-      if GetItems(I).Material.Texture = Texture then
+    for i := 0 to Count - 1 do
+      if GetItems(i).Material.Texture = Texture then
       begin
-        Result := I;
-        Exit;
+        Result := i;
+        exit;
       end;
   Result := -1;
 end;
-
-// GetMaterialIndex
-//
 
 function TVXLibMaterials.GetMaterialIndex(const Material: TVXMaterial): Integer;
 var
-  I: Integer;
+  i: Integer;
 begin
   if Count <> 0 then
-    for I := 0 to Count - 1 do
-      if GetItems(I).Material = Material then
+    for i := 0 to Count - 1 do
+      if GetItems(i).Material = Material then
       begin
-        Result := I;
-        Exit;
+        Result := i;
+        exit;
       end;
   Result := -1;
 end;
 
-// GetMaterialIndex
-//
-
-function TVXLibMaterials.GetNameOfTexture(const Texture: TVXTexture):
-  TVXLibMaterialName;
+function TVXLibMaterials.GetNameOfTexture(const Texture: TVXTexture): TVXLibMaterialName;
 var
   MatIndex: Integer;
 begin
   MatIndex := GetTextureIndex(Texture);
   if MatIndex <> -1 then
-    Result := GetItems(MatIndex).Name
+    Result := GetItems(MatIndex).name
   else
     Result := '';
 end;
 
-// GetNameOfMaterial
-//
-
-function TVXLibMaterials.GetNameOfLibMaterial(const Material: TVXLibMaterial):
-  TVXLibMaterialName;
+function TVXLibMaterials.GetNameOfLibMaterial(const Material: TVXLibMaterial): TVXLibMaterialName;
 var
   MatIndex: Integer;
 begin
   MatIndex := IndexOf(Material);
   if MatIndex <> -1 then
-    Result := GetItems(MatIndex).Name
+    Result := GetItems(MatIndex).name
   else
     Result := '';
 end;
 
-// IndexOf
-//
-
 function TVXLibMaterials.IndexOf(const Item: TVXLibMaterial): Integer;
 var
-  I: Integer;
+  i: Integer;
 begin
   Result := -1;
   if Count <> 0 then
-    for I := 0 to Count - 1 do
-      if GetItems(I) = Item then
+    for i := 0 to Count - 1 do
+      if GetItems(i) = Item then
       begin
-        Result := I;
-        Exit;
+        Result := i;
+        exit;
       end;
 end;
-
-// PrepareBuildList
-//
 
 procedure TVXLibMaterials.PrepareBuildList;
 var
@@ -2661,9 +2250,6 @@ begin
   for i := 0 to Count - 1 do
     TVXLibMaterial(inherited Items[i]).PrepareBuildList;
 end;
-
-// DeleteUnusedMaterials
-//
 
 procedure TVXLibMaterials.DeleteUnusedMaterials;
 var
@@ -2684,13 +2270,6 @@ begin
   until gotNone;
   EndUpdate;
 end;
-
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
-
-{$IFDEF VKS_REGION}{$REGION 'TVXAbstractMaterialLibrary'}{$ENDIF}
-
-// SetTexturePaths
-//
 
 procedure TVXAbstractMaterialLibrary.SetTexturePaths(const val: string);
 var
@@ -2730,11 +2309,7 @@ begin
   end;
 end;
 
-// ApplyMaterial
-//
-
-function TVXAbstractMaterialLibrary.ApplyMaterial(const AName: string;
-  var ARci: TVXRenderContextInfo): Boolean;
+function TVXAbstractMaterialLibrary.ApplyMaterial(const AName: string; var ARci: TVXRenderContextInfo): Boolean;
 begin
   FLastAppliedMaterial := FMaterials.GetMaterial(AName);
   Result := Assigned(FLastAppliedMaterial);
@@ -2742,11 +2317,7 @@ begin
     FLastAppliedMaterial.Apply(ARci);
 end;
 
-// UnApplyMaterial
-//
-
-function TVXAbstractMaterialLibrary.UnApplyMaterial(
-  var ARci: TVXRenderContextInfo): Boolean;
+function TVXAbstractMaterialLibrary.UnApplyMaterial(var ARci: TVXRenderContextInfo): Boolean;
 begin
   if Assigned(FLastAppliedMaterial) then
   begin
@@ -2757,9 +2328,6 @@ begin
   else
     Result := False;
 end;
-
-// SetNamesToTStrings
-//
 
 procedure TVXAbstractMaterialLibrary.SetNamesToTStrings(AStrings: TStrings);
 var
@@ -2773,14 +2341,11 @@ begin
     for i := 0 to FMaterials.Count - 1 do
     begin
       lm := TVXAbstractLibMaterial(FMaterials.Items[i]);
-      AddObject(lm.Name, lm);
+      AddObject(lm.name, lm);
     end;
     EndUpdate;
   end;
 end;
-
-// Loaded
-//
 
 procedure TVXAbstractMaterialLibrary.Loaded;
 begin
@@ -2788,16 +2353,9 @@ begin
   FMaterials.Loaded;
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
-
 // ------------------
 // ------------------ TVXMaterialLibrary ------------------
 // ------------------
-
-{$IFDEF VKS_REGION}{$REGION 'TVXMaterialLibrary'}{$ENDIF}
-
-// Create
-//
 
 constructor TVXMaterialLibrary.Create(AOwner: TComponent);
 begin
@@ -2853,15 +2411,13 @@ begin
     begin
       // version 0
       libMat := Materials[i];
-      WriteString(libMat.Name);
+      WriteString(libMat.name);
       tex := libMat.Material.Texture;
       img := tex.Image;
       pim := TVXPersistentImage(img);
-      if tex.Enabled and
-             (img is TVXPersistentImage) and (pim.Picture.Bitmap <>
-        nil) then
+      if tex.Enabled and (img is TVXPersistentImage) and (pim.Picture.Bitmap <> nil) then
       begin
-        WriteBoolean(true);
+        WriteBoolean(True);
         ss := TStringStream.Create('');
         try
           bmp := TBitmap.Create;
@@ -2917,7 +2473,7 @@ begin
         Write(Specular.AsAddress^, SizeOf(Single) * 3);
       end;
 
-      //version 1
+      // version 1
       with libMat.Material.FrontProperties do
       begin
         Write(FShininess, 1);
@@ -2939,7 +2495,7 @@ begin
       begin
         if BlendingMode = bmCustom then
         begin
-          WriteBoolean(TRUE);
+          WriteBoolean(True);
           with BlendingParams do
           begin
             WriteFloat(AlphaFuncRef);
@@ -2951,7 +2507,7 @@ begin
           end;
         end
         else
-          WriteBoolean(FALSE);
+          WriteBoolean(False);
 
         WriteInteger(Integer(FaceCulling));
       end;
@@ -2973,8 +2529,7 @@ begin
         texExItem := libMat.Material.TextureEx[j];
         img := texExItem.Texture.Image;
         pim := TVXPersistentImage(img);
-        if texExItem.Texture.Enabled and (img is TVXPersistentImage)
-          and (pim.Picture.Bitmap <> nil) then
+        if texExItem.Texture.Enabled and (img is TVXPersistentImage) and (pim.Picture.Bitmap <> nil) then
         begin
           WriteBoolean(True);
           ss := TStringStream.Create('');
@@ -3001,9 +2556,6 @@ begin
   end;
 end;
 
-// ReadFromFiler
-//
-
 procedure TVXMaterialLibrary.ReadFromFiler(reader: TVirtualReader);
 var
   archiveVersion: Integer;
@@ -3011,7 +2563,7 @@ var
   i, n, size, tex, texCount: Integer;
   LName: string;
   ss: TStringStream;
-///->  bmp: TBitmap;
+  /// ->  bmp: TBitmap;
   texExItem: TVXTextureExItem;
 begin
   archiveVersion := reader.ReadInteger;
@@ -3033,59 +2585,59 @@ begin
         begin
           ss := TStringStream.Create(ReadString);
           try
-///->            bmp := TBitmap.Create;
+            /// ->            bmp := TBitmap.Create;
             try
-///->              bmp.LoadFromStream(ss);
+              /// ->              bmp.LoadFromStream(ss);
               if libMat = nil then
                 { TODO : E2250 There is no overloaded version of 'AddTextureMaterial' that can be called with these arguments }
-                (*libMat := AddTextureMaterial(LName, bmp)*)
+                (* libMat := AddTextureMaterial(LName, bmp) *)
               else
-///->                libMat.Material.Texture.Image.Assign(bmp);
+                /// ->                libMat.Material.Texture.Image.Assign(bmp);
+              finally
+                /// ->              bmp.Free;
+              end;
             finally
-///->              bmp.Free;
+              ss.Free;
             end;
-          finally
-            ss.Free;
-          end;
 
-          // version 3
-          if archiveVersion >= 3 then
-            with libMat.Material.Texture do
-            begin
-              Read(BorderColor.AsAddress^, SizeOf(Single) * 4);
-              Compression := TVXTextureCompression(ReadInteger);
-              DepthTextureMode := TVXDepthTextureMode(ReadInteger);
-              Read(EnvColor.AsAddress^, SizeOf(Single) * 4);
-              FilteringQuality := TVXTextureFilteringQuality(ReadInteger);
-              ImageAlpha := TVXTextureImageAlpha(ReadInteger);
-              ImageBrightness := ReadFloat;
-              ImageGamma := ReadFloat;
-              MagFilter := TVXMagFilter(ReadInteger);
-              MappingMode := TVXTextureMappingMode(ReadInteger);
-              Read(MappingSCoordinates.AsAddress^, SizeOf(Single) * 4);
-              Read(MappingTCoordinates.AsAddress^, SizeOf(Single) * 4);
-              Read(MappingRCoordinates.AsAddress^, SizeOf(Single) * 4);
-              Read(MappingQCoordinates.AsAddress^, SizeOf(Single) * 4);
-              MinFilter := TVXMinFilter(ReadInteger);
-              NormalMapScale := ReadFloat;
-              TextureCompareFunc := TVXDepthCompareFunc(ReadInteger);
-              TextureCompareMode := TVXTextureCompareMode(ReadInteger);
-              TextureFormat := TVXTextureFormat(ReadInteger);
-              TextureMode := TVXTextureMode(ReadInteger);
-              TextureWrap := TVXTextureWrap(ReadInteger);
-              TextureWrapR := TVXSeparateTextureWrap(ReadInteger);
-              TextureWrapS := TVXSeparateTextureWrap(ReadInteger);
-              TextureWrapT := TVXSeparateTextureWrap(ReadInteger);
-            end;
-          // version 3 end
+            // version 3
+            if archiveVersion >= 3 then
+              with libMat.Material.Texture do
+              begin
+                Read(BorderColor.AsAddress^, SizeOf(Single) * 4);
+                Compression := TVXTextureCompression(ReadInteger);
+                DepthTextureMode := TVXDepthTextureMode(ReadInteger);
+                Read(EnvColor.AsAddress^, SizeOf(Single) * 4);
+                FilteringQuality := TVXTextureFilteringQuality(ReadInteger);
+                ImageAlpha := TVXTextureImageAlpha(ReadInteger);
+                ImageBrightness := ReadFloat;
+                ImageGamma := ReadFloat;
+                MagFilter := TVXMagFilter(ReadInteger);
+                MappingMode := TVXTextureMappingMode(ReadInteger);
+                Read(MappingSCoordinates.AsAddress^, SizeOf(Single) * 4);
+                Read(MappingTCoordinates.AsAddress^, SizeOf(Single) * 4);
+                Read(MappingRCoordinates.AsAddress^, SizeOf(Single) * 4);
+                Read(MappingQCoordinates.AsAddress^, SizeOf(Single) * 4);
+                MinFilter := TVXMinFilter(ReadInteger);
+                NormalMapScale := ReadFloat;
+                TextureCompareFunc := TVXDepthCompareFunc(ReadInteger);
+                TextureCompareMode := TVXTextureCompareMode(ReadInteger);
+                TextureFormat := TVXTextureFormat(ReadInteger);
+                TextureMode := TVXTextureMode(ReadInteger);
+                TextureWrap := TVXTextureWrap(ReadInteger);
+                TextureWrapR := TVXSeparateTextureWrap(ReadInteger);
+                TextureWrapS := TVXSeparateTextureWrap(ReadInteger);
+                TextureWrapT := TVXSeparateTextureWrap(ReadInteger);
+              end;
+            // version 3 end
 
-        end
+          end
         else
         begin
           if libMat = nil then
           begin
             libMat := Materials.Add;
-            libMat.Name := LName;
+            libMat.name := LName;
           end;
         end;
         with libMat.Material.FrontProperties do
@@ -3111,7 +2663,7 @@ begin
             Read(Emission.AsAddress^, SizeOf(Single) * 3);
             Read(Specular.AsAddress^, SizeOf(Single) * 3);
             Read(FShininess, 1);
-            { PolygonMode := TPolygonMode(} ReadInteger;
+            { PolygonMode := TPolygonMode( } ReadInteger;
           end;
           libMat.Material.BlendingMode := TBlendingMode(ReadInteger);
 
@@ -3154,13 +2706,13 @@ begin
             if ReadBoolean then
             begin
               ss := TStringStream.Create(ReadString);
-///->              bmp := TBitmap.Create;
+              /// ->              bmp := TBitmap.Create;
               try
-///->                bmp.LoadFromStream(ss);
-///->                texExItem.Texture.Image.Assign(bmp);
+                /// ->                bmp.LoadFromStream(ss);
+                /// ->                texExItem.Texture.Image.Assign(bmp);
                 texExItem.Texture.Enabled := True;
               finally
-///->                bmp.Free;
+                /// ->                bmp.Free;
                 ss.Free;
               end;
             end;
@@ -3175,9 +2727,6 @@ begin
     RaiseFilerException(Self.ClassType, archiveVersion);
 end;
 
-// SaveToStream
-//
-
 procedure TVXMaterialLibrary.SaveToStream(aStream: TStream);
 var
   wr: TBinaryWriter;
@@ -3189,9 +2738,6 @@ begin
     wr.Free;
   end;
 end;
-
-// LoadFromStream
-//
 
 procedure TVXMaterialLibrary.LoadFromStream(aStream: TStream);
 var
@@ -3251,14 +2797,13 @@ begin
   end;
 end;
 
-function TVXMaterialLibrary.AddTextureMaterial(const MaterialName, FileName:
-  string;
-  persistent: Boolean = True): TVXLibMaterial;
+function TVXMaterialLibrary.AddTextureMaterial(const MaterialName, fileName: string; persistent: Boolean = True)
+  : TVXLibMaterial;
 begin
   Result := Materials.Add;
   with Result do
   begin
-    Name := materialName;
+    Name := MaterialName;
     with Material.Texture do
     begin
       MinFilter := miLinearMipmapLinear;
@@ -3280,29 +2825,24 @@ begin
   end;
 end;
 
-function TVXMaterialLibrary.AddTextureMaterial(const materialName: string;
-  graphic: TVXGraphic): TVXLibMaterial;
+function TVXMaterialLibrary.AddTextureMaterial(const MaterialName: string; Graphic: TVXGraphic): TVXLibMaterial;
 begin
   Result := Materials.Add;
   with Result do
   begin
-    Name := materialName;
+    Name := MaterialName;
     with Material.Texture do
     begin
       MinFilter := miLinearMipmapLinear;
       MagFilter := maLinear;
       TextureMode := tmModulate;
       Disabled := False;
-      Image.Assign(graphic);
+      Image.Assign(Graphic);
     end;
   end;
 end;
 
-// LibMaterialByName
-//
-
-function TVXMaterialLibrary.LibMaterialByName(const AName: TVXLibMaterialName):
-  TVXLibMaterial;
+function TVXMaterialLibrary.LibMaterialByName(const AName: TVXLibMaterialName): TVXLibMaterial;
 begin
   if Assigned(Self) then
     Result := Materials.GetLibMaterialByName(AName)
@@ -3310,13 +2850,9 @@ begin
     Result := nil;
 end;
 
-// TextureByName
-//
-
-function TVXMaterialLibrary.TextureByName(const LibMatName: TVXLibMaterialName):
-  TVXTexture;
+function TVXMaterialLibrary.TextureByName(const LibMatName: TVXLibMaterialName): TVXTexture;
 var
-  LibMat: TVXLibMaterial;
+  libMat: TVXLibMaterial;
 begin
   if Self = nil then
     raise ETexture.Create(strErrorEx + strMatLibNotDefined)
@@ -3324,20 +2860,15 @@ begin
     Result := nil
   else
   begin
-    LibMat := LibMaterialByName(LibMatName);
-    if LibMat = nil then
-      raise ETexture.CreateFmt(strErrorEx + strMaterialNotFoundInMatlibEx,
-        [LibMatName])
+    libMat := LibMaterialByName(LibMatName);
+    if libMat = nil then
+      raise ETexture.CreateFmt(strErrorEx + strMaterialNotFoundInMatlibEx, [LibMatName])
     else
-      Result := LibMat.Material.Texture;
+      Result := libMat.Material.Texture;
   end;
 end;
 
-// GetNameOfTexture
-//
-
-function TVXMaterialLibrary.GetNameOfTexture(const Texture: TVXTexture):
-  TVXLibMaterialName;
+function TVXMaterialLibrary.GetNameOfTexture(const Texture: TVXTexture): TVXLibMaterialName;
 begin
   if (Self = nil) or (Texture = nil) then
     Result := ''
@@ -3345,52 +2876,40 @@ begin
     Result := Materials.GetNameOfTexture(Texture);
 end;
 
-// GetMaterials
-//
-
 function TVXMaterialLibrary.GetMaterials: TVXLibMaterials;
 begin
   Result := TVXLibMaterials(FMaterials);
 end;
 
-// GetNameOfMaterial
-//
-
-function TVXMaterialLibrary.GetNameOfLibMaterial(const LibMat: TVXLibMaterial):
-  TVXLibMaterialName;
+function TVXMaterialLibrary.GetNameOfLibMaterial(const libMat: TVXLibMaterial): TVXLibMaterialName;
 begin
-  if (Self = nil) or (LibMat = nil) then
+  if (Self = nil) or (libMat = nil) then
     Result := ''
   else
-    Result := Materials.GetNameOfLibMaterial(LibMat);
+    Result := Materials.GetNameOfLibMaterial(libMat);
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
-
 { TVXBlendingParameters }
-
-{$IFDEF VKS_REGION}{$REGION 'TVXBlendingParameters'}{$ENDIF}
 
 procedure TVXBlendingParameters.Apply(var rci: TVXRenderContextInfo);
 begin
   if FUseAlphaFunc then
   begin
-    rci.VXStates.Enable(stAlphaTest);
-    rci.VXStates.SetAlphaFunction(FAlphaFuncType, FAlphaFuncRef);
+    rci.VxStates.Enable(stAlphaTest);
+    rci.VxStates.SetAlphaFunction(FAlphaFuncType, FAlphaFuncRef);
   end
   else
-    rci.VXStates.Disable(stAlphaTest);
+    rci.VxStates.Disable(stAlphaTest);
   if FUseBlendFunc then
   begin
-    rci.VXStates.Enable(stBlend);
+    rci.VxStates.Enable(stBlend);
     if FSeparateBlendFunc then
-      rci.VXStates.SetBlendFuncSeparate(FBlendFuncSFactor, FBlendFuncDFactor,
-        FAlphaBlendFuncSFactor, FAlphaBlendFuncDFactor)
+      rci.VxStates.SetBlendFuncSeparate(FBlendFuncSFactor, FBlendFuncDFactor, FAlphaBlendFuncSFactor, FAlphaBlendFuncDFactor)
     else
-      rci.VXStates.SetBlendFunc(FBlendFuncSFactor, FBlendFuncDFactor);
+      rci.VxStates.SetBlendFunc(FBlendFuncSFactor, FBlendFuncDFactor);
   end
   else
-    rci.VXStates.Disable(stBlend);
+    rci.VxStates.Disable(stBlend);
 end;
 
 constructor TVXBlendingParameters.Create(AOwner: TPersistent);
@@ -3417,8 +2936,7 @@ begin
   end;
 end;
 
-procedure TVXBlendingParameters.SetAlphaFuncType(
-  const Value: TGlAlphaFunc);
+procedure TVXBlendingParameters.SetAlphaFuncType(const Value: TGlAlphaFunc);
 begin
   if (FAlphaFuncType <> Value) then
   begin
@@ -3427,8 +2945,7 @@ begin
   end;
 end;
 
-procedure TVXBlendingParameters.SetBlendFuncDFactor(
-  const Value: TBlendFunction);
+procedure TVXBlendingParameters.SetBlendFuncDFactor(const Value: TBlendFunction);
 begin
   if (FBlendFuncDFactor <> Value) then
   begin
@@ -3439,8 +2956,7 @@ begin
   end;
 end;
 
-procedure TVXBlendingParameters.SetBlendFuncSFactor(
-  const Value: TBlendFunction);
+procedure TVXBlendingParameters.SetBlendFuncSFactor(const Value: TBlendFunction);
 begin
   if (FBlendFuncSFactor <> Value) then
   begin
@@ -3506,10 +3022,10 @@ begin
   Result := (Abs(AlphaFuncRef) > 0.001);
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
-
+//-------------------------------------------------
 initialization
+//-------------------------------------------------
 
-  RegisterClasses([TVXMaterialLibrary, TVXMaterial, TVXShader]);
+RegisterClasses([TVXMaterialLibrary, TVXMaterial, TVXShader]);
 
 end.

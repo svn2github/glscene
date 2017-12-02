@@ -28,7 +28,7 @@ uses
   System.Classes,
   System.SysUtils,
   
-  VXS.OpenGLAdapter,
+  VXS.PersistentClasses,
   VXS.CrossPlatform,
   VXS.Scene,
   VXS.Texture,
@@ -37,6 +37,7 @@ uses
   VXS.Color,
   VXS.RenderContextInfo,
   VXS.TextureFormat,
+  VXS.PipelineTransformation,
   VXS.VectorTypes;
 
 type
@@ -131,7 +132,6 @@ type
      At the moment, only 1 texture can be used.}
   TVXSLProjectedTextures = class(TVXSceneObject)
   private
-    ShaderSupported: boolean;
     FEmitters: TVXSLTextureEmitters;
     FUseLightmaps: boolean;
     Shader: TVXProgramHandle;
@@ -350,12 +350,6 @@ var
   emitter: TVXSLTextureEmitter;
   OldSeparator: char;
 begin
-  ShaderSupported := (GL_ARB_shader_objects and GL_ARB_vertex_program and
-    GL_ARB_vertex_shader and GL_ARB_fragment_shader);
-
-  if not ShaderSupported then
-    exit;
-
   if assigned(shader) then
     FreeAndNil(shader);
 
@@ -516,7 +510,6 @@ begin
     ShaderChanged := false;
   end;
 
-  if ShaderSupported then
   with Shader do
   begin
     UseProgramObject;
@@ -549,9 +542,7 @@ begin
     self.RenderChildren(0, Count - 1, rci);
 
     EndUseProgramObject;
-  end
-  else
-    self.RenderChildren(0, Count - 1, rci);
+  end;
 end;
 
 procedure TVXSLProjectedTextures.StructureChanged;

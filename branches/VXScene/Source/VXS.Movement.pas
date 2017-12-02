@@ -15,39 +15,42 @@ interface
 {$I VXScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
+  System.Classes,
+  System.SysUtils,
 
-  VXS.Scene, VXS.VectorGeometry, VXS.XCollection, Winapi.OpenGL, Winapi.OpenGLext,  VXS.Spline, VXS.Objects,
-  VXS.CrossPlatform, VXS.Strings, VXS.BaseClasses, VXS.VectorTypes;
+  VXS.PersistentClasses,
+  VXS.Scene,
+  VXS.VectorGeometry,
+  VXS.XCollection,
+  VXS.Spline,
+  VXS.Objects,
+  VXS.CrossPlatform,
+  VXS.Strings,
+  VXS.BaseClasses,
+  VXS.VectorTypes;
 
 type
 
-  // TVXPathNode
-  //
   TVXPathNode = class (TCollectionItem)
   private
     FPosition: TVector;
     FScale: TVector;
     FRotation: TVector;
-
     FDirection: TVector;
     FUp: TVector;
-
     FSpeed: single;
-
     procedure SetPositionAsVector(const Value: TVector);
     procedure SetRotationAsVector(const Value: TVector);
     procedure SetScaleAsVector(const Value: TVector);
-
     function GetPositionCoordinate(const Index: Integer): GLfloat;
     procedure SetPositionCoordinate(const Index: integer; const AValue: GLfloat);
     function GetRotationCoordinate(const Index: Integer): GLfloat;
     procedure SetRotationCoordinate(const Index: integer; const AValue: GLfloat);
     function GetScaleCoordinate(const Index: Integer): GLfloat;
     procedure SetScaleCoordinate(const Index: integer; const AValue: GLfloat);
-
     procedure SetSpeed(const Value: single);
-
     function GetDirectionCoordinate(const Index: Integer): GLfloat;
     procedure SetDirectionCoordinate(const Index: integer; const AValue: GLfloat);
     function GetUpCoordinate(const Index: Integer): GLfloat;
@@ -59,60 +62,45 @@ type
   public
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
-
     function PositionAsAddress: PGLFloat;
     function RotationAsAddress: PGLFloat;
     function ScaleAsAddress: PGLFloat;
-
     procedure Assign(Source: TPersistent); override;
-
     procedure InitializeByObject(const Obj: TVXBaseSceneObject);
-
     { Warning: does not take speed into account. }
     function EqualNode(const aNode: TVXPathNode): boolean;
-
     { Rotation.X means PitchAngle, Rotation.Y means TurnAngle, Rotation.Z means RollAngle.}
     property RotationAsVector: TVector Read FRotation Write SetRotationAsVector;
     property PositionAsVector: TVector Read FPosition Write SetPositionAsVector;
     property ScaleAsVector: TVector Read FScale Write SetScaleAsVector;
     property UpAsVector: TVector read FUp write FUp;
     property DirectionAsVector: TVector read FDirection write FDirection;
-
   published
     property X: GLfloat index 0 Read GetPositionCoordinate Write SetPositionCoordinate;
     property Y: GLfloat index 1 Read GetPositionCoordinate Write SetPositionCoordinate;
     property Z: GLfloat index 2 Read GetPositionCoordinate Write SetPositionCoordinate;
-
     //Rotation.X means PitchAngle;
     //Rotation.Y means TurnAngle;
     //Rotation.Z means RollAngle;
     property PitchAngle: GLfloat index 0 Read GetRotationCoordinate Write SetRotationCoordinate;
     property TurnAngle: GLfloat index 1 Read GetRotationCoordinate Write SetRotationCoordinate;
     property RollAngle: GLfloat index 2 Read GetRotationCoordinate Write SetRotationCoordinate;
-
     property ScaleX: GLfloat index 0 Read GetScaleCoordinate Write SetScaleCoordinate;
     property ScaleY: GLfloat index 1 Read GetScaleCoordinate Write SetScaleCoordinate;
     property ScaleZ: GLfloat index 2 Read GetScaleCoordinate Write SetScaleCoordinate;
-
     property DirectionX: GLfloat index 0 Read GetDirectionCoordinate Write SetDirectionCoordinate;
     property DirectionY: GLfloat index 1 Read GetDirectionCoordinate Write SetDirectionCoordinate;
     property DirectionZ: GLfloat index 2 Read GetDirectionCoordinate Write SetDirectionCoordinate;
-
     property UpX: GLfloat index 0 Read GetUpCoordinate Write SetUpCoordinate;
     property UpY: GLfloat index 1 Read GetUpCoordinate Write SetUpCoordinate;
     property UpZ: GLfloat index 2 Read GetUpCoordinate Write SetUpCoordinate;
-
     property Speed: single Read FSpeed Write SetSpeed;
   end;
 
 
   TVXMovementRotationMode = (rmTurnPitchRoll, rmUpDirection);
-
-
   TVXMovementPath = class;
 
-  // TVXPathNodes
-  //
   TVXPathNodes = class (TOwnedCollection)
   protected
     procedure SetItems(const index: integer; const val: TVXPathNode);
@@ -134,9 +122,7 @@ type
     FPathLine: TVXLines;
     FShowPath: Boolean;
     FPathSplineMode: TLineSplineMode;
-
     FNodes: TVXPathNodes;
-
     //All the time saved in ms
     FStartTimeApplied: Boolean;
     FStartTime: double;
@@ -147,25 +133,17 @@ type
     FLooped: boolean;
     FName: string;
     FRotationMode: TVXMovementRotationMode;
-
-
     MotionSplineControl: TCubicSpline;
     RotationSplineControl: TCubicSpline;
     ScaleSplineControl: TCubicSpline;
     DirectionSplineControl: TCubicSpline;
     UpSplineControl: TCubicSpline;
-
-
     FOnTravelStart: TNotifyEvent;
     FOnTravelStop: TNotifyEvent;
-
     FCurrentNodeIndex: integer;
-
     function GetNodeCount: integer;
     procedure SetStartTime(const Value: double);
-
     procedure SetCurrentNodeIndex(const Value: integer);
-
     procedure SetShowPath(const Value: Boolean);
     procedure SetPathSplineMode(const Value: TLineSplineMode);
   protected
@@ -176,51 +154,37 @@ type
   public
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
-
     procedure Assign(Source: TPersistent); override;
     function GetMovement: TVXMovement;
-
     function AddNode: TVXPathNode; overload;
     function AddNode(const Node: TVXPathNode): TVXPathNode; overload;
-
     function AddNodeFromObject(const Obj: TVXBaseSceneObject): TVXPathNode;
     function InsertNodeFromObject(const Obj: TVXBaseSceneObject; const Index: integer): TVXPathNode;
-
     function InsertNode(const Node: TVXPathNode; const Index: integer): TVXPathNode; overload;
     function InsertNode(const Index: integer): TVXPathNode; overload;
     function DeleteNode(const Index: integer): TVXPathNode; overload;
     function DeleteNode(const Node: TVXPathNode): TVXPathNode; overload;
     procedure ClearNodes;
     procedure UpdatePathLine;
-
     function NodeDistance(const Node1, Node2: TVXPathNode): double;
-
     procedure CalculateState(const CurrentTime: double);
-
     procedure TravelPath(const Start: boolean); overload;
     procedure TravelPath(const Start: boolean; const aStartTime: double); overload;
-
     property NodeCount: integer Read GetNodeCount;
     property CurrentNode: TVXPathNode Read FCurrentNode;
     property InTravel: boolean Read FInTravel;
-
     function PrevNode: integer;
     function NextNode: integer;
-
     property CurrentNodeIndex: integer Read FCurrentNodeIndex Write SetCurrentNodeIndex;
-
     property OnTravelStart: TNotifyEvent Read FOnTravelStart Write FOnTravelStart;
     property OnTravelStop: TNotifyEvent Read FOnTravelStop Write FOnTravelStop;
   published
     property Name: string Read FName Write FName;
-
     { This property is currently ignored. }
     property PathSplineMode: TLineSplineMode read FPathSplineMode write SetPathSplineMode default lsmLines;
     property RotationMode: TVXMovementRotationMode read FRotationMode write FRotationMode default rmTurnPitchRoll;
-
     property StartTime: double Read FStartTime Write SetStartTime;
     property EstimateTime: double Read FEstimateTime;
-
     property Looped: boolean Read FLooped Write FLooped;
     property Nodes: TVXPathNodes Read FNodes;
     property ShowPath: Boolean read FShowPath write SetShowPath;
@@ -241,7 +205,7 @@ type
 
 
   //Event for path related event
-  TPathTravelStartEvent = procedure (Sender: TObject; 
+  TPathTravelStartEvent = procedure (Sender: TObject;
     Path: TVXMovementPath) of object;
   TPathTravelStopEvent = procedure (Sender: TObject;
     Path: TVXMovementPath; var Looped: boolean) of object;
@@ -251,7 +215,6 @@ type
     FPaths: TVXMovementPaths;
     FAutoStartNextPath: boolean;
     FActivePathIndex: integer;
-
     FOnAllPathTravelledOver: TNotifyEvent;
     FOnPathTravelStart: TPathTravelStartEvent;
     FOnPathTravelStop: TPathTravelStopEvent;
@@ -261,7 +224,6 @@ type
     }
     function GetPathCount: integer;
     procedure SetActivePathIndex(Value: integer);
-
     function GetActivePath: TVXMovementPath;
     procedure SetActivePath(Value: TVXMovementPath);
   protected
@@ -269,12 +231,10 @@ type
     procedure ReadFromFiler(reader : TReader); override;
     procedure PathTravelStart(Sender: TObject);
     procedure PathTravelStop(Sender: TObject);
-
     function GetSceneObject: TVXBaseSceneObject;
   public
     constructor Create(aOwner: TVXXCollection); override;
     destructor Destroy; override;
-
       //add an empty path;
     function AddPath: TVXMovementPath; overload;
     //add an path with one node, and the node is based on aObject
@@ -286,25 +246,19 @@ type
     function DeletePath(Path: TVXMovementPath): TVXMovementPath; overload;
     function DeletePath(Index: integer): TVXMovementPath; overload;
     function DeletePath: TVXMovementPath; overload;
-
     procedure Assign(Source: TPersistent); override;
     class function FriendlyName: string; override;
     class function FriendlyDescription: string; override;
     class function UniqueItem: boolean; override;
-
     procedure StartPathTravel;
     procedure StopPathTravel;
-
     procedure DoProgress(const progressTime : TProgressTimes); override;
-
     function NextPath: integer;
     function PrevPath: integer;
     function FirstPath: integer;
     function LastPath: integer;
-
       //property Paths[index: Integer]: TVXMovementPath read GetMovementPath write SetMovementPath;
     property PathCount: integer Read GetPathCount;
-
     //why do these property can't be saved in IDE ?
     property OnAllPathTravelledOver: TNotifyEvent Read FOnAllPathTravelledOver Write FOnAllPathTravelledOver;
     property OnPathTravelStart: TPathTravelStartEvent Read FOnPathTravelStart Write FOnPathTravelStart;
@@ -324,12 +278,9 @@ procedure StartAllMovements(const Scene: TVXScene; const StartCamerasMove, Start
 procedure StopAllMovements(const Scene: TVXScene; const StopCamerasMove, StopObjectsMove: Boolean);
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
+
 //----------------------------- TVXPathNode ------------------------------------
 constructor TVXPathNode.Create(Collection: TCollection);
 begin
@@ -1678,11 +1629,7 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
   // class registrations

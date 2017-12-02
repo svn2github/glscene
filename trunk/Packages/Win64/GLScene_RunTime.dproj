@@ -378,7 +378,6 @@
         <DCCReference Include="..\..\Source\Basis\GLVectorGeometry.pas"/>
         <DCCReference Include="..\..\Source\Basis\GLVectorLists.pas"/>
         <DCCReference Include="..\..\Source\Basis\GLVectorTypes.pas"/>
-        <DCCReference Include="..\..\Source\Basis\GLVerletClasses.pas"/>
         <DCCReference Include="..\..\Source\Basis\GLVerletClothify.pas"/>
         <DCCReference Include="..\..\Source\Basis\GLVerletHairClasses.pas"/>
         <DCCReference Include="..\..\Source\Basis\GLVerletSkeletonColliders.pas"/>

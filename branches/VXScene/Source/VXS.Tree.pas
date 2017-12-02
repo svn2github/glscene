@@ -15,8 +15,7 @@
   Default : 0.5
   "AutoRebuild" flag  -
   Rebuild tree after property change.
-  Default: True
-}
+  Default: True }
 unit VXS.Tree;
 
 interface
@@ -28,6 +27,7 @@ uses
   Winapi.OpenGLext,
   System.Classes,
   System.SysUtils,
+  System.Math,
 
   VXS.OpenGLAdapter,
   VXS.XOpenGL,

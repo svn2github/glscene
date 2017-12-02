@@ -22,6 +22,7 @@ uses
   FMX.Graphics,
   FMX.Types,
 
+  VXS.PersistentClasses,
   VXS.XOpenGL,
   VXS.Scene,
   VXS.VectorGeometry,

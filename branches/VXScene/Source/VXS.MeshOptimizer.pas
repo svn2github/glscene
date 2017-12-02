@@ -3,31 +3,29 @@
 //
 {
     Mesh optimization
- 
 }
 unit VXS.MeshOptimizer;
 
 interface
 
 uses
-  System.Classes, 
+  System.Classes,
   System.SysUtils,
-  
-  VXS.VectorGeometry, 
-  VXS.VectorFileObjects, 
+
+  VXS.VectorGeometry,
+  VXS.VectorTypes,
+  VXS.VectorFileObjects,
   VXS.PersistentClasses,
-  VXS.VectorLists, 
+  VXS.VectorLists,
   VXS.MeshUtils;
 
 
 type
-   TMeshOptimizerOption = (mooStandardize, mooVertexCache, mooSortByMaterials,
-                           mooMergeObjects);
+   TMeshOptimizerOption = (mooStandardize, mooVertexCache, mooSortByMaterials, mooMergeObjects);
    TMeshOptimizerOptions = set of TMeshOptimizerOption;
 
 var
-   vDefaultMeshOptimizerOptions : TMeshOptimizerOptions =
-      [mooStandardize, mooVertexCache, mooSortByMaterials, mooMergeObjects];
+   vDefaultMeshOptimizerOptions : TMeshOptimizerOptions = [mooStandardize, mooVertexCache, mooSortByMaterials, mooMergeObjects];
 
 procedure OptimizeMesh(aList : TVXMeshObjectList; options : TMeshOptimizerOptions); overload;
 procedure OptimizeMesh(aList : TVXMeshObjectList); overload;
@@ -37,11 +35,7 @@ procedure FacesSmooth(aMeshObj: TVXMeshObject; aWeldDistance: Single=0.0000001; 
 
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 procedure OptimizeMesh(aList : TVXMeshObjectList);
@@ -49,8 +43,6 @@ begin
    OptimizeMesh(aList, vDefaultMeshOptimizerOptions);
 end;
 
-// OptimizeMesh (list, with options)
-//
 procedure OptimizeMesh(aList : TVXMeshObjectList; options : TMeshOptimizerOptions);
 var
    i, k : Integer;
@@ -93,15 +85,11 @@ begin
    end;
 end;
 
-// OptimizeMesh (object, default options)
-//
 procedure OptimizeMesh(aMeshObject : TVXMeshObject);
 begin
    OptimizeMesh(aMeshObject, vDefaultMeshOptimizerOptions);
 end;
 
-// OptimizeMesh (object, with options)
-//
 procedure OptimizeMesh(aMeshObject : TVXMeshObject; options : TMeshOptimizerOptions);
 var
    i : Integer;

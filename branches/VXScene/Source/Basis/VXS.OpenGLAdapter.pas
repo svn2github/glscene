@@ -1971,9 +1971,6 @@ begin
   Abort;
 end;
 
-// TVXExtensionsAndEntryPoints
-//
-
 constructor TVXExtensionsAndEntryPoints.Create;
 begin
   FInitialized := False;

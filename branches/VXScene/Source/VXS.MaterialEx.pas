@@ -42,6 +42,7 @@ uses
   VXS.PersistentClasses,
   VXS.CrossPlatform,
   VXS.State,
+  VXS.PipelineTransformation,
   VXS.TextureFormat,
   VXS.XCollection,
   VXS.TextureCombiners,

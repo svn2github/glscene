@@ -48,6 +48,8 @@ uses
   System.UITypes,
   System.UIConsts,
   FMX.Graphics,
+
+  VXS.Coordinates,
   VXS.Scene,
   VXS.Objects,
   VXS.HUDObjects,

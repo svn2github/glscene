@@ -1,5 +1,5 @@
 //
-// VXScene Component Library, based on GLScene http://glscene.sourceforge.net 
+// VXScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
 {
    An extention of TVXNavigator, which allows to move objects with inertia
@@ -25,15 +25,20 @@ interface
 
 uses
   System.Classes,
-   
-  VXS.Navigator, VXS.VectorGeometry, VXS.Scene, VXS.CrossPlatform, VXS.Coordinates,
-  VXS.Screen, VXS.XCollection;
+
+  VXS.VectorTypes,
+  VXS.Navigator,
+  VXS.VectorGeometry,
+  VXS.Scene,
+  VXS.CrossPlatform,
+  VXS.Coordinates,
+  VXS.Screen,
+  VXS.PersistentClasses,
+  VXS.XCollection;
 
 type
 
-  { TVXNavigatorAdjustDistanceParameters includes a basic set of parameters
-     that control the smoothness of movement. 
-  }
+  { Includes a basic set of parameters that control the smoothness of movement. }
   TVXNavigatorAbstractParameters = class(TPersistent)
   private
     FOwner: TPersistent;
@@ -44,7 +49,6 @@ type
   protected
     function StoreInertia: Boolean; virtual;
     function StoreSpeed: Boolean; virtual;
-      
     function GetOwner: TPersistent; override;
   public
     constructor Create(AOwner: TPersistent); virtual;
@@ -58,9 +62,7 @@ type
 
   TVXSmoothNavigator = class;
 
-  { TVXNavigatorSmoothChangeItem includes a basic set of parameters
-     that control the smoothness of movement. 
-  }
+  { Includes a basic set of parameters that control the smoothness of movement }
   TVXNavigatorSmoothChangeItem = class(TVXXCollectionItem)
   private
     FInertia: Single;
@@ -103,7 +105,7 @@ type
     class function FriendlyName: string; override;
     function Proceed(ADeltaTime: Double): Boolean; override;
     procedure Assign(Source: TPersistent); override;
-    procedure ResetTargetValue(); override;    
+    procedure ResetTargetValue(); override;
   published
     property TargetValue: Single read FTargetValue write FTargetValue;
     property OnGetCurrentValue: TVXNavigatorSmoothChangeSingleGetEvent read FOnGetCurrentValue write FOnGetCurrentValue;
@@ -151,9 +153,7 @@ type
             SetItems; default;
   end;
 
-  { TVXNavigatorAdjustDistanceParameters is wrapper for all parameters that
-       affect how the AdjustDisanceTo[...] methods work 
-  }
+  { This is wrapper for all parameters that affect how the AdjustDisanceTo[...] methods work }
   TVXNavigatorAdjustDistanceParameters = class(TVXNavigatorAbstractParameters)
   private
     FOldDistanceRatio: Single;
@@ -169,12 +169,9 @@ type
     property ImpulseSpeed: Single read FImpulseSpeed write FImpulseSpeed stored StoreImpulseSpeed;
   end;
 
-  { TVXNavigatorAdjustDistanceParameters is wrapper for all parameters that
-       affect how the AdjustDisanceTo[...]Ex methods work 
-
+  { This is a wrapper for all parameters that affect how the AdjustDisanceTo[...]Ex methods work
      You need to set the TargetObject and desired distance to it,
-     then call AdjustDisanceTo[...]Ex() in your Cadencer.OnProgress code.
-  }
+     then call AdjustDisanceTo[...]Ex() in your Cadencer.OnProgress code. }
   TVXNavigatorAdjustDistanceParametersEx = class(TVXNavigatorAbstractParameters)
   private
     FSpeedLimit: Single;
@@ -183,7 +180,7 @@ type
     function StoreTargetDistance: Boolean;
   protected
     function StoreSpeed: Boolean; override;
-    function StoreInertia: Boolean; override;    
+    function StoreInertia: Boolean; override;
   public
     constructor Create(AOwner: TPersistent); override;
     procedure Assign(Source: TPersistent); override;
@@ -192,27 +189,21 @@ type
     property SpeedLimit: Single read FSpeedLimit write FSpeedLimit stored StoreSpeedLimit;
   end;
 
-  { TVXNavigatorInertiaParameters is wrapper for all parameters that affect the
-       smoothness of movement 
-  }
+  { This is a wrapper for all parameters that affect the smoothness of movement }
   TVXNavigatorInertiaParameters = class(TPersistent)
   private
     FOwner: TPersistent;
-
     OldTurnHorizontalAngle: Single;
     OldTurnVerticalAngle: Single;
-
     OldMoveForwardDistance: Single;
     OldStrafeHorizontalDistance: Single;
     OldStrafeVerticalDistance: Single;
-
     FTurnInertia: Single;
     FTurnSpeed: Single;
     FTurnMaxAngle: Single;
     FMovementAcceleration: Single;
     FMovementInertia: Single;
     FMovementSpeed: Single;
-
     function StoreTurnMaxAngle: Boolean;
     function StoreMovementAcceleration: Boolean;
     function StoreMovementInertia: Boolean;
@@ -236,20 +227,17 @@ type
   end;
 
 
-  { TVXNavigatorGeneralParameters is a wrapper for all general inertia parameters.
-
+  { This is a wrapper for all general inertia parameters.
      These properties mean that if ExpectedMaxFPS is 100, FAutoScaleMin is 0.1,
      FAutoScaleMax is 0.75 then the "safe range" for it to change is [10..75].
      If these bounds are violated, then ExpectedMaxFPS is automaticly increased
-     or decreased by AutoScaleMult.
-  }
+     or decreased by AutoScaleMult. }
   TVXNavigatorGeneralParameters = class(TPersistent)
   private
     FOwner: TPersistent;
     FAutoScaleMin: Single;
     FAutoScaleMax: Single;
     FAutoScaleMult: Single;
-
     function StoreAutoScaleMax: Boolean;
     function StoreAutoScaleMin: Boolean;
     function StoreAutoScaleMult: Boolean;
@@ -265,23 +253,18 @@ type
   end;
 
 
-  { TVXNavigatorMoveAroundParameters is a wrapper for all parameters that
-      effect how the TVXBaseSceneObject.MoveObjectAround() procedure works
-  }
+  { This is a wrapper for all parameters that effect how the TVXBaseSceneObject.MoveObjectAround() procedure works}
   TVXNavigatorMoveAroundParameters = class(TPersistent)
   private
     FOwner: TPersistent;
     FTargetObject: TVXBaseSceneObject;
-
     FOldPitchInertiaAngle : Single;
     FOldTurnInertiaAngle  : Single;
-
     FPitchSpeed : Single;
     FTurnSpeed  : Single;
     FInertia          : Single;
     FMaxAngle         : Single;
     FCutoff: Double;
-
     function StoreInertia: Boolean;
     function StoreMaxAngle: Boolean;
     function StorePitchSpeed: Boolean;
@@ -304,15 +287,11 @@ type
   end;
 
 
-  // TVXSmoothNavigator
-  //
-  { TVXSmoothNavigator is the component for moving a TVXBaseSceneObject, and all
-       classes based on it, this includes all the objects from the Scene Editor. 
-
+  { This is the component for moving a TVXBaseSceneObject, and all
+       classes based on it, this includes all the objects from the Scene Editor.
      It uses complex smoothing algorithms, most of which are FPS-dependant.
      Make sure your limit your FPS and set MaxExpectedDeltaTime to a value
-     that is aproximatly 5 times less than your usual deltatime.
-  }
+     that is aproximatly 5 times less than your usual deltatime. }
   TVXSmoothNavigator = class(TVXNavigator)
   private
     FMaxExpectedDeltaTime: Double;
@@ -337,10 +316,8 @@ type
     // Constructors-destructors.
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
     // From TVXNavigator. Probably, should not be public.
     procedure SetObject(Value: TVXBaseSceneObject); override;
-
     // Uses InertiaParams.
     procedure TurnHorizontal(Angle: Single; ADeltaTime: Double); virtual;
     procedure TurnVertical(Angle: Single; ADeltaTime: Double); virtual;
@@ -348,22 +325,17 @@ type
     procedure MoveForward(const Plus, Minus: Boolean; ADeltaTime: Double; const Accelerate: Boolean = False); virtual;
     procedure StrafeHorizontal(const Plus, Minus: Boolean; ADeltaTime: Double; const Accelerate: Boolean = False); virtual;
     procedure StrafeVertical(const Plus, Minus: Boolean; ADeltaTime: Double; const Accelerate: Boolean = False); virtual;
-
     // Uses MoveAroundParams. Returns True, if object was actually moved.
     function MoveAroundTarget(const PitchDelta, TurnDelta : Single; const ADeltaTime: Double): Boolean; virtual;
     function MoveObjectAround(const AObject: TVXBaseSceneObject; PitchDelta, TurnDelta : Single; ADeltaTime: Double): Boolean; virtual;
-
     // Uses AdjustDistanceParams.
     function AdjustDistanceToPoint(const  APoint: TVector; const DistanceRatio : Single; ADeltaTime: Double): Boolean; virtual;
     function AdjustDistanceToTarget(const DistanceRatio : Single; const ADeltaTime: Double): Boolean; virtual;
-
     // Uses AdjustDistanceParamsEx.
     function AdjustDistanceToPointEx(const  APoint: TVector; ADeltaTime: Double): Boolean; virtual;
     function AdjustDistanceToTargetEx(const ADeltaTime: Double): Boolean; virtual;
-
     // Uses CustomAnimatedItems.
     procedure AnimateCustomItems(const ADeltaTime: Double); virtual;
-
     // Uses GeneralParams.
       { In ScaleParameters, Value should be around 1. }
     procedure ScaleParameters(const Value: Single); virtual;
@@ -380,22 +352,15 @@ type
   end;
 
 
-  // TVXSmoothUserInterface
-  //
-  { TVXSmoothUserInterface is the component which reads the userinput and transform it into action. 
-       
+  { This is the component which reads the userinput and transform it into action.
 	    Mouselook(ADeltaTime: double) : handles mouse look... Should be called
                            in the Cadencer event. (Though it works everywhere!)
-       
 	   The four properties to get you started are:
-       
 	    InvertMouse     : Inverts the mouse Y axis.
 	    AutoUpdateMouse : If enabled (by defaul), than handles all mouse updates.
 	    GLNavigator     : The Navigator which receives the user movement.
 	    GLVertNavigator : The Navigator which if set receives the vertical user
-                           movement. Used mostly for cameras....
-       
-   }
+                           movement. Used mostly for cameras.... }
   TVXSmoothUserInterface = class(TComponent)
   private
     FAutoUpdateMouse: Boolean;
@@ -430,7 +395,9 @@ type
     property OriginalMousePos: TVXCoordinates2 read FOriginalMousePos write SetOriginalMousePos;
   end;
 
+//-----------------------------------------------------------
 implementation
+//-----------------------------------------------------------
 
 const
   EPS =  0.001;

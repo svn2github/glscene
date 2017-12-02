@@ -12,13 +12,28 @@ interface
 {$I VXScene.inc}
 
 uses
-  System.Classes, System.SysUtils, System.UITypes,
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
+  System.Classes,
+  System.SysUtils,
+  System.UITypes,
   FMX.Graphics,
 
-  Winapi.OpenGL, Winapi.OpenGLext,  VXS.Context, VXS.CrossPlatform, VXS.VectorGeometry,
-  VXS.Scene, VXS.VectorFileObjects, VXS.VectorLists, VXS.XCollection,
-  VXS.GeomObjects, VXS.Navigator, VXS.RenderContextInfo, VXS.BaseClasses,
-  VXS.Manager, VXS.State;
+  VXS.VectorTypes,
+  VXS.Context,
+  VXS.CrossPlatform,
+  VXS.VectorGeometry,
+  VXS.Scene,
+  VXS.Coordinates,
+  VXS.VectorFileObjects,
+  VXS.VectorLists,
+  VXS.XCollection,
+  VXS.GeomObjects,
+  VXS.Navigator,
+  VXS.RenderContextInfo,
+  VXS.BaseClasses,
+  VXS.Manager,
+  VXS.State;
 
 type
   TContactPoint = record

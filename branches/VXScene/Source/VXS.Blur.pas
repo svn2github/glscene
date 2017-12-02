@@ -19,9 +19,11 @@ uses
   System.UITypes,
   FMX.Graphics,
 
-  VXS.OpenGLAdapter,
   VXS.XOpenGL,
+  VXS.VectorTypes,
+  VXS.PersistentClasses,
   VXS.Scene,
+  VXS.Coordinates,
   VXS.VectorGeometry,
   VXS.Objects,
   VXS.BitmapFont,
@@ -32,6 +34,7 @@ uses
   VXS.Graphics,
   VXS.Context,
   VXS.State,
+  VXS.Strings,
   VXS.TextureFormat,
   VXS.BaseClasses,
   VXS.RenderContextInfo;
@@ -447,9 +450,9 @@ begin
   end;
   if ARci.ignoreMaterials then
     Exit;
-  CheckOpenGLError;
+///  CheckOpenGLError;
   Material.Apply(ARci);
-  CheckOpenGLError;
+///  CheckOpenGLError;
   repeat
     if AlphaChannel <> 1 then
       ARci.VXStates.SetMaterialAlphaChannel(GL_FRONT, AlphaChannel);
@@ -831,16 +834,11 @@ end;
 
 function TVXMotionBlur.SupportsRequiredExtensions: Boolean;
 begin
-  Result :=
-    GL_ARB_texture_rectangle or GL_EXT_texture_rectangle or GL_NV_texture_rectangle;
+  Result := True; /// GL_ARB_texture_rectangle or GL_EXT_texture_rectangle or GL_NV_texture_rectangle;
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
      // class registrations

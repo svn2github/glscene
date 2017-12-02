@@ -15,8 +15,11 @@ uses
   Winapi.OpenGLext,
   System.Classes,
 
+  VXS.VectorTypes,
   VXS.XOpenGL,
+  VXS.PersistentClasses,
   VXS.Scene,
+  VXS.Coordinates,
   VXS.VectorGeometry,
   VXS.Objects,
   VXS.BitmapFont,

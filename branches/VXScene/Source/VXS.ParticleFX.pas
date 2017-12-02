@@ -40,6 +40,7 @@ uses
   VXS.Coordinates, 
   VXS.RenderContextInfo, 
   VXS.Manager,
+  VXS.PipelineTransformation,
   VXS.TextureFormat;
 
 const

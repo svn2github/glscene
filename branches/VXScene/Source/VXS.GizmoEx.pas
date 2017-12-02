@@ -24,6 +24,7 @@ uses
   System.Classes,
   System.SysUtils,
   System.Math,
+
   VXS.Scene,
   VXS.Color,
   VXS.Objects,
@@ -43,6 +44,7 @@ uses
   VXS.PersistentClasses,
   VXS.Screen,
   VXS.State,
+  VXS.PipelineTransformation,
   VXS.Selection,
   VXS.Context;
 

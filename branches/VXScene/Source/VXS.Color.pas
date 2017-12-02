@@ -32,8 +32,6 @@ type
   PRGBColor = ^TRGBColor;
   TRGBColor = TVector3b;
 
-  // TVXColor
-  //
   { Wraps an OpenVX color. }
   TVXColor = class(TVXUpdateAbleObject)
   private
@@ -46,17 +44,13 @@ type
     procedure SetAsWinColor(const val: TColor);
     function GetAsWinColor: TColor;
     procedure SetDirectColorVector(const aColor: TColorVector);
-
   protected
-    { Protected Properties }
     procedure DefineProperties(Filer: TFiler); override;
     procedure ReadData(Stream: TStream);
     procedure WriteData(Stream: TStream);
     function GetHSVA: TVector;
     procedure SetHSVA(const hsva: TVector);
-
   public
-    { Public Properties }
     constructor Create(AOwner: TPersistent); override;
     constructor CreateInitialized(AOwner: TPersistent;
       const Color: TColorVector; changeEvent: TNotifyEvent = nil);
@@ -65,26 +59,21 @@ type
     procedure Assign(Source: TPersistent); override;
     procedure Initialize(const Color: TColorVector);
     function AsAddress: PGLfloat;
-
     procedure RandomColor;
     procedure SetColor(red, green, blue: Single; alpha: Single = 1); overload;
-
     property Color: TColorVector read FColor write SetColorVector;
     property DirectColor: TColorVector read FColor write SetDirectColorVector;
     property AsWinColor: TColor read GetAsWinColor write SetAsWinColor;
     property hsva: TVector read GetHSVA write SetHSVA;
-
     property DefaultColor: TColorVector read FColor;
-
   published
-    { Published Properties }
-    property red: Single index 0 read GetColorComponent write SetColorComponent
+    property Red: Single index 0 read GetColorComponent write SetColorComponent
       stored False;
-    property green: Single index 1 read GetColorComponent
+    property Green: Single index 1 read GetColorComponent
       write SetColorComponent stored False;
-    property blue: Single index 2 read GetColorComponent write SetColorComponent
+    property Blue: Single index 2 read GetColorComponent write SetColorComponent
       stored False;
-    property alpha: Single index 3 read GetColorComponent
+    property Alpha: Single index 3 read GetColorComponent
       write SetColorComponent stored False;
   end;
 
@@ -95,16 +84,12 @@ type
     Color: TColorVector;
   end;
 
-  // TVXColorManager
-  //
   TVXColorManager = class(TList)
   public
     destructor Destroy; override;
-
     procedure AddColor(const aName: String; const aColor: TColorVector);
     procedure EnumColors(Proc: TGetStrProc); overload;
     procedure EnumColors(AValues: TStrings); overload;
-
     function FindColor(const aName: String): TColorVector;
     { Convert a clrXxxx or a '<red green blue alpha> to a color vector }
     function GetColor(const aName: String): TColorVector;
@@ -114,10 +99,8 @@ type
   end;
 
 function ColorManager: TVXColorManager;
-
 procedure RegisterColor(const aName: String; const aColor: TColorVector);
 procedure UnRegisterColor(const aName: String);
-
 function GetRValue(RGB: DWORD): Byte; {$NODEFINE GetRValue}
 function GetGValue(RGB: DWORD): Byte; {$NODEFINE GetGValue}
 function GetBValue(RGB: DWORD): Byte; {$NODEFINE GetBValue}
@@ -129,9 +112,8 @@ function ConvertWinColor(aColor: TColor; alpha: Single = 1): TColorVector;
 function ConvertColorVector(const aColor: TColorVector): TColor; overload;
 { Converts a color vector (containing float values) and alter intensity.
   intensity is in [0..1] }
-function ConvertColorVector(const aColor: TColorVector; intensity: Single)
-  : TColor; overload;
-// : Converts RGB components into a color vector with correct range
+function ConvertColorVector(const aColor: TColorVector; intensity: Single): TColor; overload;
+// Converts RGB components into a color vector with correct range
 function ConvertRGBColor(const aColor: array of Byte): TColorVector;
 
 // color definitions
@@ -276,20 +258,14 @@ const
   clrBrown: TColorVector = (X: 0.647059; Y: 0.164706; Z: 0.164706; W: 1);
   clrCadetBlue: TColorVector = (X: 0.372549; Y: 0.623529; Z: 0.623529; W: 1);
   clrCoral: TColorVector = (X: 1; Y: 0.498039; Z: 0.0; W: 1);
-  clrCornflowerBlue: TColorVector = (X: 0.258824; Y: 0.258824;
-    Z: 0.435294; W: 1);
+  clrCornflowerBlue: TColorVector = (X: 0.258824; Y: 0.258824; Z: 0.435294; W: 1);
   clrDarkGreen: TColorVector = (X: 0.184314; Y: 0.309804; Z: 0.184314; W: 1);
-  clrDarkOliveGreen: TColorVector = (X: 0.309804; Y: 0.309804;
-    Z: 0.184314; W: 1);
+  clrDarkOliveGreen: TColorVector = (X: 0.309804; Y: 0.309804; Z: 0.184314; W: 1);
   clrDarkOrchid: TColorVector = (X: 0.6; Y: 0.196078; Z: 0.8; W: 1);
-  clrDarkSlateBlue: TColorVector = (X: 0.419608; Y: 0.137255;
-    Z: 0.556863; W: 1);
-  clrDarkSlateGray: TColorVector = (X: 0.184314; Y: 0.309804;
-    Z: 0.309804; W: 1);
-  clrDarkSlateGrey: TColorVector = (X: 0.184314; Y: 0.309804;
-    Z: 0.309804; W: 1);
-  clrDarkTurquoise: TColorVector = (X: 0.439216; Y: 0.576471;
-    Z: 0.858824; W: 1);
+  clrDarkSlateBlue: TColorVector = (X: 0.419608; Y: 0.137255; Z: 0.556863; W: 1);
+  clrDarkSlateGray: TColorVector = (X: 0.184314; Y: 0.309804; Z: 0.309804; W: 1);
+  clrDarkSlateGrey: TColorVector = (X: 0.184314; Y: 0.309804; Z: 0.309804; W: 1);
+  clrDarkTurquoise: TColorVector = (X: 0.439216; Y: 0.576471; Z: 0.858824; W: 1);
   clrFirebrick: TColorVector = (X: 0.556863; Y: 0.137255; Z: 0.137255; W: 1);
   clrForestGreen: TColorVector = (X: 0.137255; Y: 0.556863; Z: 0.137255; W: 1);
   clrGold: TColorVector = (X: 0.8; Y: 0.498039; Z: 0.196078; W: 1);
@@ -298,23 +274,18 @@ const
   clrIndian: TColorVector = (X: 0.309804; Y: 0.184314; Z: 0.184314; W: 1);
   clrKhaki: TColorVector = (X: 0.623529; Y: 0.623529; Z: 0.372549; W: 1);
   clrLightBlue: TColorVector = (X: 0.74902; Y: 0.847059; Z: 0.847059; W: 1);
-  clrLightSteelBlue: TColorVector = (X: 0.560784; Y: 0.560784;
-    Z: 0.737255; W: 1);
+  clrLightSteelBlue: TColorVector = (X: 0.560784; Y: 0.560784; Z: 0.737255; W: 1);
   clrLimeGreen: TColorVector = (X: 0.196078; Y: 0.8; Z: 0.196078; W: 1);
   clrMaroon: TColorVector = (X: 0.556863; Y: 0.137255; Z: 0.419608; W: 1);
   clrMediumAquamarine: TColorVector = (X: 0.196078; Y: 0.8; Z: 0.6; W: 1);
   clrMediumBlue: TColorVector = (X: 0.196078; Y: 0.196078; Z: 0.8; W: 1);
-  clrMediumForestGreen: TColorVector = (X: 0.419608; Y: 0.556863;
-    Z: 0.137255; W: 1);
-  clrMediumGoldenrod: TColorVector = (X: 0.917647; Y: 0.917647;
-    Z: 0.678431; W: 1);
+  clrMediumForestGreen: TColorVector = (X: 0.419608; Y: 0.556863; Z: 0.137255; W: 1);
+  clrMediumGoldenrod: TColorVector = (X: 0.917647; Y: 0.917647; Z: 0.678431; W: 1);
   clrMediumOrchid: TColorVector = (X: 0.576471; Y: 0.439216; Z: 0.858824; W: 1);
-  clrMediumSeaGreen: TColorVector = (X: 0.258824; Y: 0.435294;
-    Z: 0.258824; W: 1);
+  clrMediumSeaGreen: TColorVector = (X: 0.258824; Y: 0.435294;  Z: 0.258824; W: 1);
   clrMediumSlateBlue: TColorVector = (X: 0.498039; Y: 0; Z: 1; W: 1);
   clrMediumSpringGreen: TColorVector = (X: 0.498039; Y: 1; Z: 0; W: 1);
-  clrMediumTurquoise: TColorVector = (X: 0.439216; Y: 0.858824;
-    Z: 0.858824; W: 1);
+  clrMediumTurquoise: TColorVector = (X: 0.439216; Y: 0.858824; Z: 0.858824; W: 1);
   clrMediumViolet: TColorVector = (X: 0.858824; Y: 0.439216; Z: 0.576471; W: 1);
   clrMidnightBlue: TColorVector = (X: 0.184314; Y: 0.184314; Z: 0.309804; W: 1);
   clrNavy: TColorVector = (X: 0.137255; Y: 0.137255; Z: 0.556863; W: 1);
@@ -402,8 +373,6 @@ implementation
 var
   vColorManager: TVXColorManager;
 
-  // ColorManager
-  //
 function ColorManager: TVXColorManager;
 begin
   if not Assigned(vColorManager) then
@@ -414,8 +383,6 @@ begin
   Result := vColorManager;
 end;
 
-// ConvertWinColor
-//
 function ConvertWinColor(aColor: TColor; alpha: Single = 1): TColorVector;
 var
   winColor: Integer;
@@ -429,29 +396,21 @@ begin
   Result.W := alpha;
 end;
 
-// GetRValue
-//
 function GetRValue(RGB: DWORD): Byte;
 begin
   Result := Byte(RGB);
 end;
 
-// GetGValue
-//
 function GetGValue(RGB: DWORD): Byte;
 begin
   Result := Byte(RGB shr 8);
 end;
 
-// GetBValue
-//
 function GetBValue(RGB: DWORD): Byte;
 begin
   Result := Byte(RGB shr 16);
 end;
 
-// InitVXSceneColors
-//
 procedure InitVXSceneColors;
 begin
   clrScrollBar := ConvertWinColor(TColorRec.cSCROLLBAR);
@@ -479,16 +438,12 @@ begin
   clrInfoBk := ConvertWinColor(TColorRec.cINFOBK);
 end;
 
-// ConvertColorVector
-//
 function ConvertColorVector(const aColor: TColorVector): TColor;
 begin
   Result := RGB(Round(255 * aColor.X), Round(255 * aColor.Y),
     Round(255 * aColor.Z));
 end;
 
-// ConvertColorVector
-//
 function ConvertColorVector(const aColor: TColorVector;
   intensity: Single): TColor;
 begin
@@ -497,8 +452,6 @@ begin
     Round(intensity * aColor.Z));
 end;
 
-// ConvertRGBColor
-//
 function ConvertRGBColor(const aColor: array of Byte): TColorVector;
 var
   n: Integer;
@@ -524,16 +477,12 @@ end;
 // ------------------ TVXColor ------------------
 // ------------------
 
-// Create
-//
 constructor TVXColor.Create(AOwner: TPersistent);
 begin
   inherited;
   Initialize(clrBlack);
 end;
 
-// CreateInitialized
-//
 constructor TVXColor.CreateInitialized(AOwner: TPersistent;
   const Color: TColorVector; changeEvent: TNotifyEvent = nil);
 begin
@@ -542,8 +491,6 @@ begin
   OnNotifyChange := changeEvent;
 end;
 
-// Destroy
-//
 destructor TVXColor.Destroy;
 begin
   if Assigned(FPDefaultColor) then
@@ -551,8 +498,6 @@ begin
   inherited;
 end;
 
-// Initialize
-//
 procedure TVXColor.Initialize(const Color: TColorVector);
 begin
   SetVector(FColor, Color);
@@ -564,8 +509,6 @@ begin
   end;
 end;
 
-// SetColorVector
-//
 procedure TVXColor.SetColorVector(const aColor: TColorVector);
 begin
   SetVector(FColor, aColor);
@@ -577,8 +520,6 @@ begin
   SetVector(FColor, aColor);
 end;
 
-// SetColorComponent
-//
 procedure TVXColor.SetColorComponent(index: Integer; value: Single);
 begin
   if FColor.V[index] <> value then
@@ -588,30 +529,22 @@ begin
   end;
 end;
 
-// SetAsWinColor
-//
 procedure TVXColor.SetAsWinColor(const val: TColor);
 begin
   FColor := ConvertWinColor(val);
   NotifyChange(Self);
 end;
 
-// GetAsWinColor
-//
 function TVXColor.GetAsWinColor: TColor;
 begin
   Result := ConvertColorVector(FColor);
 end;
 
-// GetColorComponent
-//
 function TVXColor.GetColorComponent(const index: Integer): Single;
 begin
   Result := FColor.V[Index];
 end;
 
-// Assign
-//
 procedure TVXColor.Assign(Source: TPersistent);
 begin
   if Assigned(Source) and (Source is TVXColor) then
@@ -623,8 +556,6 @@ begin
     inherited;
 end;
 
-// DefineProperties
-//
 procedure TVXColor.DefineProperties(Filer: TFiler);
 begin
   inherited;
@@ -632,22 +563,16 @@ begin
     not(Assigned(FPDefaultColor) and VectorEquals(FColor, FPDefaultColor^)));
 end;
 
-// ReadData
-//
 procedure TVXColor.ReadData(Stream: TStream);
 begin
   Stream.Read(FColor, SizeOf(FColor));
 end;
 
-// WriteData
-//
 procedure TVXColor.WriteData(Stream: TStream);
 begin
   Stream.Write(FColor, SizeOf(FColor));
 end;
 
-// NotifyChange
-//
 procedure TVXColor.NotifyChange(Sender: TObject);
 var
   intf: IVKNotifyable;
@@ -662,15 +587,11 @@ begin
   end;
 end;
 
-// AsAddress
-//
 function TVXColor.AsAddress: PGLfloat;
 begin
   Result := @FColor;
 end;
 
-// RandomColor
-//
 procedure TVXColor.RandomColor;
 begin
   red := Random;
@@ -678,8 +599,6 @@ begin
   blue := Random;
 end;
 
-// SetColor
-//
 procedure TVXColor.SetColor(red, green, blue: Single; alpha: Single = 1);
 begin
   FColor.X := red;
@@ -689,8 +608,6 @@ begin
   NotifyChange(Self);
 end;
 
-// GetHSVA
-//
 function TVXColor.GetHSVA: TVector;
 var
   delta, min: Single;
@@ -727,8 +644,6 @@ begin
   Result.W := alpha;
 end;
 
-// SetHSVA
-//
 procedure TVXColor.SetHSVA(const hsva: TVector);
 var
   f, hTemp, p, q, t: Single;
@@ -800,8 +715,6 @@ end;
 // ------------------ TVXColorManager ------------------
 // ------------------
 
-// Find Color
-//
 function TVXColorManager.FindColor(const aName: String): TColorVector;
 var
   i: Integer;
@@ -815,8 +728,6 @@ begin
     end;
 end;
 
-// GetColor
-//
 function TVXColorManager.GetColor(const aName: String): TColorVector;
 var
   workCopy: String;
@@ -896,8 +807,6 @@ begin
       aColor.W]);
 end;
 
-// Destroy
-//
 destructor TVXColorManager.Destroy;
 var
   i: Integer;
@@ -907,8 +816,6 @@ begin
   inherited Destroy;
 end;
 
-// AddColor
-//
 procedure TVXColorManager.AddColor(const aName: String;
   const aColor: TColorVector);
 var
@@ -925,8 +832,6 @@ begin
   Add(newEntry);
 end;
 
-// EnumColors
-//
 procedure TVXColorManager.EnumColors(Proc: TGetStrProc);
 var
   i: Integer;
@@ -935,8 +840,6 @@ begin
     Proc(string(TColorEntry(Items[i]^).Name));
 end;
 
-// EnumColors
-//
 procedure TVXColorManager.EnumColors(AValues: TStrings);
 var
   i: Integer;
@@ -945,8 +848,6 @@ begin
     AValues.Add(string(TColorEntry(Items[i]^).Name));
 end;
 
-// RegisterDefaultColors
-//
 procedure TVXColorManager.RegisterDefaultColors;
 begin
   Capacity := 150;
@@ -1078,7 +979,6 @@ begin
   AddColor('clrBlue', clrBlue);
   AddColor('clrFuchsia', clrFuchsia);
   AddColor('clrAqua', clrAqua);
-
   AddColor('clrScrollBar', clrScrollBar);
   AddColor('clrBackground', clrBackground);
   AddColor('clrActiveCaption', clrActiveCaption);
@@ -1106,8 +1006,6 @@ begin
   AddColor('clrInfoBk', clrInfoBk);
 end;
 
-// RemoveColor
-//
 procedure TVXColorManager.RemoveColor(const aName: String);
 var
   i: Integer;
@@ -1122,15 +1020,11 @@ begin
   end;
 end;
 
-// RegisterColor
-//
 procedure RegisterColor(const aName: String; const aColor: TColorVector);
 begin
   ColorManager.AddColor(aName, aColor);
 end;
 
-// UnregisterColor
-//
 procedure UnRegisterColor(const aName: String);
 begin
   ColorManager.RemoveColor(aName);

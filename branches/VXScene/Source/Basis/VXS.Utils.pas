@@ -150,9 +150,6 @@ begin
   Result := Copy(Result, 1, Length(Result) - 2);
 end;
 
-// WriteCRLFString
-//
-
 procedure WriteCRLFString(aStream: TStream; const aString: AnsiString);
 const
   cCRLF: Integer = $0A0D;
@@ -163,9 +160,6 @@ begin
     Write(cCRLF, 2);
   end;
 end;
-
-// TryStrToFloat
-//
 
 function TryStrToFloat(const strValue: string; var val: Extended): Boolean;
 var
@@ -256,8 +250,6 @@ begin
   Result := True;
 end;
 
-// StrToFloatDef
-//
 
 function StrToFloatDef(const strValue: string; defValue: Extended = 0): Extended;
 begin
@@ -265,26 +257,17 @@ begin
     result := defValue;
 end;
 
-// StringToColorAdvancedSafe
-//
-
 function StringToColorAdvancedSafe(const Str: string; const Default: TColor): TColor;
 begin
   if not TryStringToColorAdvanced(Str, Result) then
     Result := Default;
 end;
 
-// StringToColorAdvanced
-//
-
 function StringToColorAdvanced(const Str: string): TColor;
 begin
   if not TryStringToColorAdvanced(Str, Result) then
     raise EGLUtilsException.CreateResFmt(@strInvalidColor, [Str]);
 end;
-
-// TryStringToColorAdvanced
-//
 
 function TryStringToColorAdvanced(const Str: string; var OutColor: TColor): Boolean;
 var
@@ -312,9 +295,6 @@ begin
     end;
   end;
 end;
-
-// ParseInteger
-//
 
 function ParseInteger(var p: PChar): Integer;
 var
@@ -348,9 +328,6 @@ begin
   if neg then
     Result := -Result;
 end;
-
-// ParseFloat
-//
 
 function ParseFloat(var p: PChar): Extended;
 var
@@ -428,9 +405,6 @@ begin
     Result := -Result;
 end;
 
-// SaveStringToFile
-//
-
 procedure SaveAnsiStringToFile(const fileName: string; const data: AnsiString);
 var
   n: Cardinal;
@@ -445,9 +419,6 @@ begin
     fs.Free;
   end;
 end;
-
-// LoadStringFromFile
-//
 
 function LoadAnsiStringFromFile(const fileName: string): AnsiString;
 var
@@ -469,9 +440,6 @@ begin
   else
     Result := '';
 end;
-
-// SaveComponentToFile
-//
 
 procedure SaveComponentToFile(const Component: TComponent; const FileName: string; const AsText: Boolean);
 var
@@ -498,9 +466,6 @@ begin
   end;
 end;
 
-// LoadComponentFromFile
-//
-
 procedure LoadComponentFromFile(const Component: TComponent; const FileName: string; const AsText: Boolean = True);
 var
   Stream: TStream;
@@ -526,9 +491,6 @@ begin
   end;
 end;
 
-// SizeOfFile
-//
-
 function SizeOfFile(const fileName: string): Int64;
 var
   fs: TStream;
@@ -546,9 +508,6 @@ begin
     Result := 0;
 end;
 
-// GetSqrt255Array
-//
-
 function GetSqrt255Array: PSqrt255Array;
 const
   cOneDiv255 = 1 / 255;
@@ -563,16 +522,10 @@ begin
   Result := @vSqrt255;
 end;
 
-// InformationDlg
-//
-
 procedure InformationDlg(const msg: string);
 begin
   ShowMessage(msg);
 end;
-
-// QuestionDlg
-//
 
 function QuestionDlg(const msg: string): Boolean;
 begin
@@ -580,16 +533,10 @@ begin
               [TMsgDlgBtn.mbYes, TMsgDlgBtn.mbNo], 0) = mrYes);
 end;
 
-// InputDlg
-//
-
 function InputDlg(const aCaption, aPrompt, aDefault: string): string;
 begin
   Result := InputBox(aCaption, aPrompt, aDefault);
 end;
-
-// SavePictureDialog
-//
 
 function SavePictureDialog(var AFileName: string; const ATitle: string = ''): Boolean;
 var
@@ -608,9 +555,6 @@ begin
     SaveDialog.Free;
   end;
 end;
-
-// OpenPictureDialog
-//
 
 function OpenPictureDialog(var AFileName: string; const ATitle: string = ''): Boolean;
 var

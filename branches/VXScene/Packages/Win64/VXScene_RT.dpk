@@ -228,7 +228,6 @@ contains
   VXS.SpaceText in '..\..\Source\VXS.SpaceText.pas',
   VXS.SpatialPartitioning in '..\..\Source\Basis\VXS.SpatialPartitioning.pas',
   VXS.Spline in '..\..\Source\Basis\VXS.Spline.pas',
-  VXS.StarRecord in '..\..\Source\VXS.StarRecord.pas',
   VXS.State in '..\..\Source\Basis\VXS.State.pas',
   VXS.Strings in '..\..\Source\VXS.Strings.pas',
   VXS.Teapot in '..\..\Source\Basis\VXS.Teapot.pas',

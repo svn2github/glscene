@@ -27,14 +27,16 @@ uses
   System.Classes, 
   System.SysUtils,
 
-  VXS.VectorGeometry, 
-  VXS.VectorLists, 
-  VXS.Scene, 
+  VXS.PersistentClasses,
+  VXS.VectorGeometry,
+  VXS.VectorLists,
+  VXS.Scene,
   VXS.VectorFileObjects,
-  VXS.Texture, 
-  VXS.RenderContextInfo, 
-  VXS.Context, 
-  VXS.State, 
+  VXS.Texture,
+  VXS.RenderContextInfo,
+  VXS.Context,
+  VXS.State,
+  VXS.PipelineTransformation,
   VXS.MeshUtils, 
   VXS.VectorTypes;
 

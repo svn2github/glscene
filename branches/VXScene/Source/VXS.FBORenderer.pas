@@ -2,10 +2,8 @@
 // VXScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
 {
-  Implements FBO support for GLScene.
+  Implements FBO support.
   Original author of the unit is Riz.
-  Modified by C4 and YarUnderoaker (hope, I didn't miss anybody).
-
 }
 unit VXS.FBORenderer;
 
@@ -19,8 +17,8 @@ uses
   System.Classes,
   System.SysUtils,
   FMX.Dialogs,
-  
-  VXS.OpenGLAdapter,
+
+  VXS.PersistentClasses,
   VXS.VectorGeometry,
   VXS.Scene,
   VXS.Texture,
@@ -30,6 +28,7 @@ uses
   VXS.Material,
   VXS.RenderContextInfo,
   VXS.State,
+  VXS.PipelineTransformation,
   VXS.TextureFormat,
   VXS.VectorTypes,
   VXS.MultisampleImage;
@@ -40,14 +39,12 @@ type
 
   TVXFBOTargetVisibility = (tvDefault, tvFBOOnly);
 
-  TVXFBOClearOption = (coColorBufferClear, coDepthBufferClear,
-    coStencilBufferClear, coUseBufferBackground);
+  TVXFBOClearOption = (coColorBufferClear, coDepthBufferClear, coStencilBufferClear, coUseBufferBackground);
   TVXFBOClearOptions = set of TVXFBOClearOption;
 
   TVXTextureArray = array of TVXTexture;
 
-  TSetTextureTargetsEvent = procedure(Sender: TObject;
-    var colorTexs: TVXTextureArray) of object;
+  TSetTextureTargetsEvent = procedure(Sender: TObject; var colorTexs: TVXTextureArray) of object;
 
   TVXFBORenderer = class(TVXBaseSceneObject, IGLMaterialLibrarySupported)
   private
@@ -56,11 +53,9 @@ type
     FStencilRBO: TVXStencilRBO;
     FColorAttachment: Integer;
     FRendering: Boolean;
-
     FHasColor: Boolean;
     FHasDepth: Boolean;
     FHasStencil: Boolean;
-
     FMaterialLibrary: TVXMaterialLibrary;
     FColorTextureName: TVXLibMaterialName;
     FDepthTextureName: TVXLibMaterialName;
@@ -111,8 +106,7 @@ type
     procedure SetUseLibraryAsMultiTarget(Value: Boolean);
     procedure SetPostGenerateMipmap(const Value: Boolean);
   protected
-    procedure Notification(AComponent: TComponent;
-      Operation: TOperation); override;
+    procedure Notification(AComponent: TComponent; Operation: TOperation); override;
     procedure Initialize;
     procedure ForceDimensions(Texture: TVXTexture);
     procedure RenderToFBO(var ARci: TVXRenderContextInfo);
@@ -129,9 +123,7 @@ type
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    procedure DoRender(var ARci: TVXRenderContextInfo; ARenderSelf: Boolean;
-      ARenderChildren: Boolean); override;
-
+    procedure DoRender(var ARci: TVXRenderContextInfo; ARenderSelf: Boolean; ARenderChildren: Boolean); override;
     { Layer (also cube map face) is activated only on
       the volume textures, texture array and cube map.
       You can select the layer during the drawing to. }
@@ -143,86 +135,58 @@ type
     property PickableTarget: Boolean read GetPickable write SetPickable default False;
     { force texture dimensions when initializing
       only works with TVXBlankImage and GLfloatDataImage, otherwise does nothing }
-    property ForceTextureDimensions: Boolean read FForceTextureDimensions
-      write SetForceTextureDimentions default True;
+    property ForceTextureDimensions: Boolean read FForceTextureDimensions write SetForceTextureDimentions default True;
     property Width: Integer read FWidth write SetWidth default 256;
     property Height: Integer read FHeight write SetHeight default 256;
     property Aspect: Single read FAspect write FAspect stored StoreAspect;
-    property ColorTextureName: TVXLibMaterialName read FColorTextureName
-      write SetColorTextureName;
-
-    property DepthTextureName: TVXLibMaterialName read FDepthTextureName
-      write SetDepthTextureName;
-    property MaterialLibrary: TVXAbstractMaterialLibrary read GetMaterialLibrary
-      write SetMaterialLibrary;
-
-    property BackgroundColor: TVXColor read FBackgroundColor
-      write SetBackgroundColor;
-    property ClearOptions: TVXFBOClearOptions read FClearOptions
-      write FClearOptions;
-
+    property ColorTextureName: TVXLibMaterialName read FColorTextureName write SetColorTextureName;
+    property DepthTextureName: TVXLibMaterialName read FDepthTextureName write SetDepthTextureName;
+    property MaterialLibrary: TVXAbstractMaterialLibrary read GetMaterialLibrary write SetMaterialLibrary;
+    property BackgroundColor: TVXColor read FBackgroundColor write SetBackgroundColor;
+    property ClearOptions: TVXFBOClearOptions read FClearOptions write FClearOptions;
     { camera used for rendering to the FBO
       if not assigned, use the active view's camera }
     property Camera: TVXCamera read FCamera write SetCamera;
-
     { adjust the scene scale of the camera so that the rendering
       becomes independent of the width of the fbo renderer
       0 = disabled }
-    property SceneScaleFactor: Single read FSceneScaleFactor
-      write FSceneScaleFactor stored StoreSceneScaleFactor;
-
+    property SceneScaleFactor: Single read FSceneScaleFactor write FSceneScaleFactor stored StoreSceneScaleFactor;
     { root object used when rendering to the FBO
       if not assigned, uses itself as root and renders the child objects to the FBO }
-    property RootObject: TVXBaseSceneObject read FRootObject
-      write SetRootObject;
-
+    property RootObject: TVXBaseSceneObject read FRootObject write SetRootObject;
     { determines if target is rendered to FBO only or rendered normally
       in FBO only mode, if RootObject is assigned, the RootObject's Visible flag is modified
       in default mode, if RootObject is not assigned, children are rendered normally after being
       rendered to the FBO }
-    property TargetVisibility: TVXFBOTargetVisibility read FTargetVisibility
-      write SetTargetVisibility default tvDefault;
-
+    property TargetVisibility: TVXFBOTargetVisibility read FTargetVisibility write SetTargetVisibility default tvDefault;
     { Enables the use of a render buffer if a texture is not assigned }
-    property EnabledRenderBuffers: TVXEnabledRenderBuffers
-      read FEnabledRenderBuffers write SetEnabledRenderBuffers;
-
+    property EnabledRenderBuffers: TVXEnabledRenderBuffers read FEnabledRenderBuffers write SetEnabledRenderBuffers;
     { use stencil buffer }
-    property StencilPrecision: TVXStencilPrecision read FStencilPrecision
-      write SetStencilPrecision default spDefault;
-
+    property StencilPrecision: TVXStencilPrecision read FStencilPrecision write SetStencilPrecision default spDefault;
     { called before rendering to the FBO }
-    property BeforeRender: TDirectRenderEvent read FBeforeRender
-      write FBeforeRender;
+    property BeforeRender: TDirectRenderEvent read FBeforeRender write FBeforeRender;
     { called after the rendering to the FBO }
-    property AfterRender: TDirectRenderEvent read FAfterRender
-      write FAfterRender;
+    property AfterRender: TDirectRenderEvent read FAfterRender write FAfterRender;
     { Called before the FBO is initialized
       the FBO is bound before calling this event }
-    property PreInitialize: TNotifyEvent read FPreInitialize
-      write FPreInitialize;
+    property PreInitialize: TNotifyEvent read FPreInitialize write FPreInitialize;
     { Called after the FBO is initialized, but before any rendering
       the FBO is bound before calling this event }
-    property PostInitialize: TNotifyEvent read FPostInitialize
-      write FPostInitialize;
-
-    property UseLibraryAsMultiTarget: Boolean read FUseLibraryAsMultiTarget
-      write SetUseLibraryAsMultiTarget default False;
-
+    property PostInitialize: TNotifyEvent read FPostInitialize write FPostInitialize;
+    property UseLibraryAsMultiTarget: Boolean read FUseLibraryAsMultiTarget write SetUseLibraryAsMultiTarget default False;
     { Control mipmap generation after rendering
       texture must have MinFilter with mipmaping }
-    property PostGenerateMipmap: Boolean read FPostGenerateMipmap
-      write SetPostGenerateMipmap default True;
-
+    property PostGenerateMipmap: Boolean read FPostGenerateMipmap write SetPostGenerateMipmap default True;
     { Allows multiTargeting to different texture sources instead of all coming
       from one single MatLib with UseLibraryAsMultiTarget. OnSetTextureTargets
       overrides the other method of setting target textures via the MaterialLibrary,
       ColorTextureName and DepthTextureName propertes }
-    property OnSetTextureTargets: TSetTextureTargetsEvent
-      read FOnSetTextureTargets write FOnSetTextureTargets;
+    property OnSetTextureTargets: TSetTextureTargetsEvent read FOnSetTextureTargets write FOnSetTextureTargets;
   end;
 
+//------------------------------------------------------------------------------
 implementation
+//------------------------------------------------------------------------------
 
 { TVXFBORenderer }
 
@@ -251,8 +215,7 @@ begin
     end
     else
     begin
-      SetViewMatrix(MatrixMultiply(ViewMatrix^,
-        CreateScaleMatrix(Vector3fMake(1.0 / FAspect, 1.0, 1.0))));
+      SetViewMatrix(MatrixMultiply(ViewMatrix^, CreateScaleMatrix(Vector3fMake(1.0 / FAspect, 1.0, 1.0))));
     end;
   end;
 end;
@@ -276,8 +239,7 @@ begin
   FWidth := 256;
   FHeight := 256;
   FEnabledRenderBuffers := [erbDepth];
-  FClearOptions := [coColorBufferClear, coDepthBufferClear,
-    coStencilBufferClear, coUseBufferBackground];
+  FClearOptions := [coColorBufferClear, coDepthBufferClear, coStencilBufferClear, coUseBufferBackground];
   PickableTarget := False;
   FAspect := 1.0;
   FSceneScaleFactor := 0.0;
@@ -294,8 +256,7 @@ begin
   inherited;
 end;
 
-procedure TVXFBORenderer.Notification(AComponent: TComponent;
-  Operation: TOperation);
+procedure TVXFBORenderer.Notification(AComponent: TComponent; Operation: TOperation);
 begin
   inherited;
   if (AComponent = FRootObject) and (Operation = opRemove) then
@@ -326,14 +287,12 @@ begin
     FPreInitialize(Self);
 end;
 
-procedure TVXFBORenderer.DoRender(var ARci: TVXRenderContextInfo;
-  ARenderSelf, ARenderChildren: Boolean);
+procedure TVXFBORenderer.DoRender(var ARci: TVXRenderContextInfo; ARenderSelf, ARenderChildren: Boolean);
 begin
   if not(csDesigning in ComponentState) then
     RenderToFBO(ARci);
 
-  if (not Assigned(FRootObject)) and (TargetVisibility = tvDefault) and ARenderChildren
-  then
+  if (not Assigned(FRootObject)) and (TargetVisibility = tvDefault) and ARenderChildren then
     RenderChildren(0, Count - 1, ARci);
 end;
 
@@ -381,15 +340,10 @@ procedure TVXFBORenderer.Initialize;
   end;
 
 const
-  cDrawBuffers: array [0 .. 15] of GLenum = (GL_COLOR_ATTACHMENT0,
-    GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, 
-	GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4, 
-	GL_COLOR_ATTACHMENT5, GL_COLOR_ATTACHMENT6,
-    GL_COLOR_ATTACHMENT7, GL_COLOR_ATTACHMENT8, 
-	GL_COLOR_ATTACHMENT9, GL_COLOR_ATTACHMENT10, 
-	GL_COLOR_ATTACHMENT11, GL_COLOR_ATTACHMENT12,
-    GL_COLOR_ATTACHMENT13, GL_COLOR_ATTACHMENT14, 
-	GL_COLOR_ATTACHMENT15);
+  cDrawBuffers: array [0 .. 15] of GLenum = (GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2,
+    GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4, GL_COLOR_ATTACHMENT5, GL_COLOR_ATTACHMENT6, GL_COLOR_ATTACHMENT7,
+    GL_COLOR_ATTACHMENT8, GL_COLOR_ATTACHMENT9, GL_COLOR_ATTACHMENT10, GL_COLOR_ATTACHMENT11, GL_COLOR_ATTACHMENT12,
+    GL_COLOR_ATTACHMENT13, GL_COLOR_ATTACHMENT14, GL_COLOR_ATTACHMENT15);
 var
   colorTex: TVXTexture;
   depthTex: TVXTexture;
@@ -437,12 +391,6 @@ begin
 
   if FUseLibraryAsMultiTarget or Assigned(FOnSetTextureTargets) then
   begin
-    if not(GL_ARB_draw_buffers or GL_ATI_draw_buffers) then
-    begin
-      ShowMessage('Hardware do not support MRT');
-      Active := False;
-      exit;
-    end;
     if FMaxAttachment = 0 then
       glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, @FMaxAttachment);
 
@@ -549,7 +497,7 @@ begin
   DoPostInitialize;
   FFbo.Unbind;
 
-  CheckOpenGLError;
+  /// CheckOpenGLError;
   ClearStructureChanged;
 end;
 
@@ -670,7 +618,7 @@ begin
     if coUseBufferBackground in FClearOptions then
     begin
       backColor := ConvertWinColor(buffer.BackgroundColor);
-      backColor.W := buffer.BackgroundAlpha;
+      backColor.w := buffer.BackgroundAlpha;
       ARci.VXStates.ColorClearValue := backColor;
     end
     else
@@ -698,8 +646,7 @@ begin
     FFbo.PostRender(FPostGenerateMipmap);
 
     RestoreStates(savedStates);
-    ARci.VXStates.Viewport := Vector4iMake(0, 0, ARci.viewPortSize.cx,
-      ARci.viewPortSize.cy);
+    ARci.VXStates.Viewport := Vector4iMake(0, 0, ARci.viewPortSize.cx, ARci.viewPortSize.cy);
   finally
     FFbo.Unbind;
     FRendering := False;
@@ -742,8 +689,7 @@ begin
   end;
 end;
 
-procedure TVXFBORenderer.SetEnabledRenderBuffers(const Value
-  : TVXEnabledRenderBuffers);
+procedure TVXFBORenderer.SetEnabledRenderBuffers(const Value: TVXEnabledRenderBuffers);
 begin
   if FEnabledRenderBuffers <> Value then
   begin
@@ -761,7 +707,6 @@ begin
   end;
 end;
 
-
 function TVXFBORenderer.GetMaterialLibrary: TVXAbstractMaterialLibrary;
 begin
   Result := FMaterialLibrary;
@@ -778,7 +723,6 @@ begin
     end;
   end;
 end;
-
 
 procedure TVXFBORenderer.SetUseLibraryAsMultiTarget(Value: Boolean);
 begin
@@ -817,8 +761,7 @@ begin
   end;
 end;
 
-procedure TVXFBORenderer.SetTargetVisibility(const Value
-  : TVXFBOTargetVisibility);
+procedure TVXFBORenderer.SetTargetVisibility(const Value: TVXFBOTargetVisibility);
 begin
   if FTargetVisibility <> Value then
   begin
@@ -925,7 +868,9 @@ begin
   Result := FFbo.Level;
 end;
 
+//-------------------------------------------------------------------
 initialization
+//-------------------------------------------------------------------
 
 RegisterClasses([TVXFBORenderer]);
 

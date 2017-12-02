@@ -1,9 +1,9 @@
 //
-// VXScene Component Library, based on GLScene http://glscene.sourceforge.net 
+// VXScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
 {
-   Manages a basic game menu UI 
-  
+  Manages a basic game menu UI
+
 }
 unit VXS.GameMenu;
 
@@ -12,23 +12,29 @@ interface
 {$I VXScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
+  System.Classes,
+  System.SysUtils,
 
-  VXS.Scene, VXS.Material, VXS.BitmapFont, VXS.CrossPlatform, VXS.Color,
-  VXS.RenderContextInfo, VXS.Canvas, Winapi.OpenGL, Winapi.OpenGLext,  VXS.Context;
+  VXS.VectorTypes,
+  VXS.Scene,
+  VXS.Coordinates,
+  VXS.Material,
+  VXS.BitmapFont,
+  VXS.CrossPlatform,
+  VXS.Color,
+  VXS.RenderContextInfo,
+  VXS.Canvas,
+  VXS.Context;
 
 type
 
-  // TVXGameMenuScale
-  //
   TVXGameMenuScale = (gmsNormal, gms1024x768);
 
-  // TVXGameMenu
-  //
-  { Classic game menu interface made of several lines.  }
+  { Classic game menu interface made of several lines. }
   TVXGameMenu = class(TVXSceneObject, IGLMaterialLibrarySupported)
   private
-    { Private Properties }
     FItems: TStrings;
     FSelected: Integer;
     FFont: TVXCustomBitmapFont;
@@ -41,11 +47,10 @@ type
     FTitleWidth, FTitleHeight: Integer;
     FOnSelectedChanged: TNotifyEvent;
     FBoxTop, FBoxBottom, FBoxLeft, FBoxRight: Integer;
-    FMenuTop: integer;
-    //implementing IGLMaterialLibrarySupported
+    FMenuTop: Integer;
+    // implementing IGLMaterialLibrarySupported
     function GetMaterialLibrary: TVXAbstractMaterialLibrary;
   protected
-    { Protected Properties }
     procedure SetMenuScale(AValue: TVXGameMenuScale);
     procedure SetMarginHorz(AValue: Integer);
     procedure SetMarginVert(AValue: Integer);
@@ -64,65 +69,42 @@ type
     procedure SetTitleMaterialName(const AValue: string);
     procedure SetTitleWidth(AValue: Integer);
     procedure SetTitleHeight(AValue: Integer);
-
     procedure ItemsChanged(Sender: TObject);
-
   public
-    { Public Properties }
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
-    procedure Notification(AComponent: TComponent; Operation: TOperation);
-      override;
+    procedure Notification(AComponent: TComponent; Operation: TOperation); override;
     procedure BuildList(var rci: TVXRenderContextInfo); override;
-
     property Enabled[AIndex: Integer]: Boolean read GetEnabled write SetEnabled;
     property SelectedText: string read GetSelectedText;
-
     procedure SelectNext;
     procedure SelectPrev;
-
-    procedure MouseMenuSelect(const X, Y: integer);
-
+    procedure MouseMenuSelect(const X, Y: Integer);
   published
-    { Published Properties }
-    property MaterialLibrary: TVXMaterialLibrary read FMaterialLibrary write
-      SetMaterialLibrary;
-
-    property MenuScale: TVXGameMenuScale read FMenuScale write SetMenuScale
-      default gmsNormal;
-    property MarginHorz: Integer read FMarginHorz write SetMarginHorz default
-      16;
-    property MarginVert: Integer read FMarginVert write SetMarginVert default
-      16;
+    property MaterialLibrary: TVXMaterialLibrary read FMaterialLibrary write SetMaterialLibrary;
+    property MenuScale: TVXGameMenuScale read FMenuScale write SetMenuScale default gmsNormal;
+    property MarginHorz: Integer read FMarginHorz write SetMarginHorz default 16;
+    property MarginVert: Integer read FMarginVert write SetMarginVert default 16;
     property Spacing: Integer read FSpacing write SetSpacing default 16;
     property Font: TVXCustomBitmapFont read FFont write SetFont;
-
-    property TitleMaterialName: string read FTitleMaterialName write
-      SetTitleMaterialName;
+    property TitleMaterialName: string read FTitleMaterialName write SetTitleMaterialName;
     property TitleWidth: Integer read FTitleWidth write SetTitleWidth default 0;
-    property TitleHeight: Integer read FTitleHeight write SetTitleHeight default
-      0;
-
+    property TitleHeight: Integer read FTitleHeight write SetTitleHeight default 0;
     property BackColor: TVXColor read FBackColor write SetBackColor;
     property InactiveColor: TVXColor read FInactiveColor write SetInactiveColor;
     property ActiveColor: TVXColor read FActiveColor write SetActiveColor;
     property DisabledColor: TVXColor read FDisabledColor write SetDisabledColor;
-
     property Items: TStrings read FItems write SetItems;
     property Selected: Integer read FSelected write SetSelected default -1;
-    property OnSelectedChanged: TNotifyEvent read FOnSelectedChanged write
-      FOnSelectedChanged;
-
+    property OnSelectedChanged: TNotifyEvent read FOnSelectedChanged write FOnSelectedChanged;
     // these are the extents of the menu
-    property BoxTop: integer read FBoxTop;
-    property BoxBottom: integer read FBoxBottom;
-    property BoxLeft: integer read FBoxLeft;
-    property BoxRight: integer read FBoxRight;
+    property BoxTop: Integer read FBoxTop;
+    property BoxBottom: Integer read FBoxBottom;
+    property BoxLeft: Integer read FBoxLeft;
+    property BoxRight: Integer read FBoxRight;
     // this is the top of the first menu item
-    property MenuTop: integer read FMenuTop;
-
-    //publish other stuff from TVXBaseSceneObject
+    property MenuTop: Integer read FMenuTop;
+    // publish other stuff from TVXBaseSceneObject
     property ObjectsSorting;
     property VisibilityCulling;
     property Position;
@@ -132,20 +114,13 @@ type
     property Effects;
   end;
 
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 // ------------------
 // ------------------ TVXGameMenu ------------------
 // ------------------
-
-// Create
-//
 
 constructor TVXGameMenu.Create(AOwner: TComponent);
 begin
@@ -164,9 +139,6 @@ begin
   FDisabledColor := TVXColor.CreateInitialized(Self, clrGray60, NotifyChange);
 end;
 
-// Destroy
-//
-
 destructor TVXGameMenu.Destroy;
 begin
   inherited;
@@ -178,11 +150,7 @@ begin
   FDisabledColor.Free;
 end;
 
-// Notification
-//
-
-procedure TVXGameMenu.Notification(AComponent: TComponent; Operation:
-  TOperation);
+procedure TVXGameMenu.Notification(AComponent: TComponent; Operation: TOperation);
 begin
   inherited;
   if Operation = opRemove then
@@ -194,15 +162,12 @@ begin
   end;
 end;
 
-// BuildList
-//
-
 procedure TVXGameMenu.BuildList(var rci: TVXRenderContextInfo);
 var
-  canvas: TVXCanvas;
+  Canvas: TVXCanvas;
   buffer: TVXSceneBuffer;
-  i, w, h, tw, y: Integer;
-  color: TColorVector;
+  i, w, h, tw, Y: Integer;
+  Color: TColorVector;
   libMat: TVXLibMaterial;
 begin
   if Font = nil then
@@ -211,11 +176,12 @@ begin
     gmsNormal:
       begin
         buffer := TVXSceneBuffer(rci.buffer);
-        canvas := TVXCanvas.Create(buffer.Width, buffer.Height);
+        Canvas := TVXCanvas.Create(buffer.Width, buffer.Height);
       end;
-    gms1024x768: canvas := TVXCanvas.Create(1024, 768);
+    gms1024x768:
+      Canvas := TVXCanvas.Create(1024, 768);
   else
-    canvas := nil;
+    Canvas := nil;
     Assert(False);
   end;
   try
@@ -241,19 +207,18 @@ begin
     // paint back
     if BackColor.Alpha > 0 then
     begin
-      canvas.PenColor := BackColor.AsWinColor;
-      canvas.PenAlpha := BackColor.Alpha;
-      canvas.FillRect(FBoxLeft, FBoxTop, FBoxRight, FBoxBottom);
+      Canvas.PenColor := BackColor.AsWinColor;
+      Canvas.PenAlpha := BackColor.Alpha;
+      Canvas.FillRect(FBoxLeft, FBoxTop, FBoxRight, FBoxBottom);
     end;
 
-    canvas.StopPrimitive;
+    Canvas.StopPrimitive;
 
     // paint items
-    y := Round(Position.Y - h / 2 + MarginVert);
+    Y := Round(Position.Y - h / 2 + MarginVert);
     if TitleHeight > 0 then
     begin
-      if (TitleMaterialName <> '') and (MaterialLibrary <> nil) and (TitleWidth
-        > 0) then
+      if (TitleMaterialName <> '') and (MaterialLibrary <> nil) and (TitleWidth > 0) then
       begin
         libMat := MaterialLibrary.LibMaterialByName(TitleMaterialName);
         if libMat <> nil then
@@ -262,42 +227,39 @@ begin
           repeat
             glBegin(GL_QUADS);
             glTexCoord2f(0, 0);
-            glVertex2f(Position.X - TitleWidth div 2, y + TitleHeight);
+            glVertex2f(Position.X - TitleWidth div 2, Y + TitleHeight);
             glTexCoord2f(1, 0);
-            glVertex2f(Position.X + TitleWidth div 2, y + TitleHeight);
+            glVertex2f(Position.X + TitleWidth div 2, Y + TitleHeight);
             glTexCoord2f(1, 1);
-            glVertex2f(Position.X + TitleWidth div 2, y);
+            glVertex2f(Position.X + TitleWidth div 2, Y);
             glTexCoord2f(0, 1);
-            glVertex2f(Position.X - TitleWidth div 2, y);
+            glVertex2f(Position.X - TitleWidth div 2, Y);
             glEnd;
           until (not libMat.UnApply(rci));
         end;
       end;
-      y := y + TitleHeight + Spacing;
-      FMenuTop := y;
+      Y := Y + TitleHeight + Spacing;
+      FMenuTop := Y;
     end
     else
-      FMenuTop := y + Spacing;
+      FMenuTop := Y + Spacing;
 
     for i := 0 to FItems.Count - 1 do
     begin
       tw := Font.TextWidth(FItems[i]);
       if not Enabled[i] then
-        color := DisabledColor.Color
+        Color := DisabledColor.Color
       else if i = Selected then
-        color := ActiveColor.Color
+        Color := ActiveColor.Color
       else
-        color := InactiveColor.Color;
-      Font.TextOut(rci, Position.X - tw div 2, y, FItems[i], color);
-      y := y + Font.CharHeight + Spacing;
+        Color := InactiveColor.Color;
+      Font.TextOut(rci, Position.X - tw div 2, Y, FItems[i], Color);
+      Y := Y + Font.CharHeight + Spacing;
     end;
   finally
-    canvas.Free;
+    Canvas.Free;
   end;
 end;
-
-// SelectNext
-//
 
 procedure TVXGameMenu.SelectNext;
 var
@@ -311,9 +273,6 @@ begin
     Selected := i;
 end;
 
-// SelectPrev
-//
-
 procedure TVXGameMenu.SelectPrev;
 var
   i: Integer;
@@ -326,9 +285,6 @@ begin
     Selected := i;
 end;
 
-// SetMenuScale
-//
-
 procedure TVXGameMenu.SetMenuScale(AValue: TVXGameMenuScale);
 begin
   if FMenuScale <> AValue then
@@ -337,9 +293,6 @@ begin
     StructureChanged;
   end;
 end;
-
-// SetMarginHorz
-//
 
 procedure TVXGameMenu.SetMarginHorz(AValue: Integer);
 begin
@@ -350,9 +303,6 @@ begin
   end;
 end;
 
-// SetMarginVert
-//
-
 procedure TVXGameMenu.SetMarginVert(AValue: Integer);
 begin
   if FMarginVert <> AValue then
@@ -361,9 +311,6 @@ begin
     StructureChanged;
   end;
 end;
-
-// SetSpacing
-//
 
 procedure TVXGameMenu.SetSpacing(AValue: Integer);
 begin
@@ -374,9 +321,6 @@ begin
   end;
 end;
 
-// SetFont
-//
-
 procedure TVXGameMenu.SetFont(AValue: TVXCustomBitmapFont);
 begin
   if FFont <> nil then
@@ -386,66 +330,42 @@ begin
     FFont.FreeNotification(Self);
 end;
 
-// SetBackColor
-//
-
 procedure TVXGameMenu.SetBackColor(AValue: TVXColor);
 begin
   FBackColor.Assign(AValue);
 end;
-
-// SetInactiveColor
-//
 
 procedure TVXGameMenu.SetInactiveColor(AValue: TVXColor);
 begin
   FInactiveColor.Assign(AValue);
 end;
 
-// SetActiveColor
-//
-
 procedure TVXGameMenu.SetActiveColor(AValue: TVXColor);
 begin
   FActiveColor.Assign(AValue);
 end;
-
-// SetDisabledColor
-//
 
 procedure TVXGameMenu.SetDisabledColor(AValue: TVXColor);
 begin
   FDisabledColor.Assign(AValue);
 end;
 
-// GetEnabled
-//
-
 function TVXGameMenu.GetEnabled(AIndex: Integer): Boolean;
 begin
   Result := not Boolean(PtrUint(FItems.Objects[AIndex]));
 end;
 
-// SetEnabled
-//
-
 procedure TVXGameMenu.SetEnabled(AIndex: Integer; AValue: Boolean);
 begin
-  FItems.Objects[AIndex] := TObject(pointer(PtrUInt(ord(not AValue))));
+  FItems.Objects[AIndex] := TObject(pointer(PtrUint(ord(not AValue))));
   StructureChanged;
 end;
-
-// SetItems
-//
 
 procedure TVXGameMenu.SetItems(AValue: TStrings);
 begin
   FItems.Assign(AValue);
   SetSelected(Selected);
 end;
-
-// SetSelected
-//
 
 procedure TVXGameMenu.SetSelected(AValue: Integer);
 begin
@@ -462,9 +382,6 @@ begin
   end;
 end;
 
-// GetSelectedText
-//
-
 function TVXGameMenu.GetSelectedText: string;
 begin
   if Cardinal(Selected) < Cardinal(FItems.Count) then
@@ -472,9 +389,6 @@ begin
   else
     Result := '';
 end;
-
-// SetMaterialLibrary
-//
 
 procedure TVXGameMenu.SetMaterialLibrary(AValue: TVXMaterialLibrary);
 begin
@@ -485,9 +399,6 @@ begin
     FMaterialLibrary.FreeNotification(Self);
 end;
 
-// SetTitleMaterialName
-//
-
 procedure TVXGameMenu.SetTitleMaterialName(const AValue: string);
 begin
   if FTitleMaterialName <> AValue then
@@ -496,9 +407,6 @@ begin
     StructureChanged;
   end;
 end;
-
-// SetTitleWidth
-//
 
 procedure TVXGameMenu.SetTitleWidth(AValue: Integer);
 begin
@@ -511,9 +419,6 @@ begin
   end;
 end;
 
-// SetTitleHeight
-//
-
 procedure TVXGameMenu.SetTitleHeight(AValue: Integer);
 begin
   if AValue < 0 then
@@ -525,22 +430,15 @@ begin
   end;
 end;
 
-// ItemsChanged
-//
-
 procedure TVXGameMenu.ItemsChanged(Sender: TObject);
 begin
   SetSelected(FSelected);
   StructureChanged;
 end;
 
-// MouseMenuSelect
-//
-
-procedure TVXGameMenu.MouseMenuSelect(const X, Y: integer);
+procedure TVXGameMenu.MouseMenuSelect(const X, Y: Integer);
 begin
-  if (X >= BoxLeft) and (Y >= MenuTop) and
-    (X <= BoxRight) and (Y <= BoxBottom) then
+  if (X >= BoxLeft) and (Y >= MenuTop) and (X <= BoxRight) and (Y <= BoxBottom) then
   begin
     Selected := (Y - FMenuTop) div (Font.CharHeight + FSpacing);
   end
@@ -548,23 +446,16 @@ begin
     Selected := -1;
 end;
 
-// GetMaterialLibrary
-//
-
 function TVXGameMenu.GetMaterialLibrary: TVXAbstractMaterialLibrary;
 begin
   Result := FMaterialLibrary;
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
 
-  RegisterClass(TVXGameMenu);
+// ------------------------------------------------------------------
+
+RegisterClass(TVXGameMenu);
 
 end.
-

@@ -1,9 +1,9 @@
 //
-// VXScene Component Library, based on GLScene http://glscene.sourceforge.net 
+// VXScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
 {
-   Texture-based Lens flare object. 
-   
+   Texture-based Lens flare object.
+
 }
 unit VXS.TexLensFlare;
 
@@ -12,19 +12,25 @@ interface
 {$I VXScene.inc}
 
 uses
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
   System.Classes,
 
-  VXS.Scene, VXS.VectorGeometry, VXS.Objects, VXS.Texture,
-  Winapi.OpenGL, Winapi.OpenGLext,  VXS.Context, VXS.RenderContextInfo, VXS.BaseClasses,
-  VXS.State, VXS.VectorTypes;
+  VXS.Scene,
+  VXS.VectorGeometry,
+  VXS.PersistentClasses,
+  VXS.Objects,
+  VXS.Texture,
+  VXS.Context,
+  VXS.RenderContextInfo,
+  VXS.BaseClasses,
+  VXS.State,
+  VXS.VectorTypes;
 
 type
 
-  // TVXTextureLensFlare
-  //
   TVXTextureLensFlare = class(TVXBaseSceneObject)
   private
-    
     FSize: integer;
     FCurrSize: Single;
     FNumSecs: integer;
@@ -42,18 +48,15 @@ type
     procedure SetImgSecondaries(const Value: TVXTexture);
     procedure SetSeed(const Value: Integer);
   protected
-    
     procedure SetSize(aValue: integer);
     procedure SetNumSecs(aValue: integer);
     procedure SetAutoZTest(aValue: boolean);
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure BuildList(var rci: TVXRenderContextInfo); override;
     procedure DoProgress(const progressTime: TProgressTimes); override;
   published
-    
     // MaxRadius of the flare.
     property Size: integer read FSize write SetSize default 50;
     // Random seed
@@ -68,7 +71,6 @@ type
     property ImgRays: TVXTexture read FImgRays write SetImgRays;
     property ImgRing: TVXTexture read FImgRing write SetImgRing;
     property ImgSecondaries: TVXTexture read FImgSecondaries write SetImgSecondaries;
-
     property ObjectsSorting;
     property Position;
     property Visible;
@@ -77,7 +79,10 @@ type
     property Effects;
   end;
 
+//------------------------------------------------------------------
 implementation
+//------------------------------------------------------------------
+
 // ------------------
 // ------------------ TVXTextureLensFlare ------------------
 // ------------------
@@ -120,9 +125,6 @@ begin
   end;
 end;
 
-// SetAutoZTest
-//
-
 procedure TVXTextureLensFlare.SetAutoZTest(aValue: boolean);
 begin
   if FAutoZTest <> aValue then
@@ -131,9 +133,6 @@ begin
     StructureChanged;
   end;
 end;
-
-// BuildList
-//
 
 procedure TVXTextureLensFlare.BuildList(var rci: TVXRenderContextInfo);
 var
@@ -302,9 +301,6 @@ begin
     Self.RenderChildren(0, Count - 1, rci);
 end;
 
-// DoProgress
-//
-
 procedure TVXTextureLensFlare.DoProgress(const progressTime: TProgressTimes);
 begin
   FDeltaTime := progressTime.deltaTime;
@@ -351,12 +347,8 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
 
   RegisterClasses([TVXTextureLensFlare]);
 

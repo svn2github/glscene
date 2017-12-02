@@ -17,12 +17,12 @@ uses
   System.SysUtils,
   System.Math,
   
+  VXS.VectorTypes,
+  VXS.PersistentClasses,
   VXS.Scene,
   VXS.Context,
-
   VXS.VectorGeometry,
   VXS.Material,
-  VXS.PersistentClasses,
   VXS.CrossPlatform,
   VXS.RenderContextInfo,
   VXS.BaseClasses,

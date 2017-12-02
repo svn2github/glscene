@@ -13,8 +13,8 @@ uses
   Winapi.OpenGLext,
   System.Classes,
   System.SysUtils,
+  System.Math,
 
-  VXS.OpenGLAdapter,
   VXS.VectorGeometry,
   VXS.Context,
   VXS.BaseClasses,
@@ -23,16 +23,11 @@ uses
   VXS.VectorTypes,
   VXS.XOpenGL;
 
-
-
 {$I VXScene.inc}
 
 type
-  // TVXNode
-  //
   TVXNode = class(TCollectionItem)
   private
-    
     FCoords: TVector;
     FTagObject: TObject;
     procedure SetAsVector(const Value: TVector);
@@ -40,123 +35,89 @@ type
     function GetAsAffineVector: TAffineVector;
     procedure SetCoordinate(AIndex: Integer; AValue: GLfloat);
     function GetCoordinate(const Index: Integer): GLfloat;
-
   protected
-    
     function StoreCoordinate(AIndex: Integer): Boolean;
-
     function GetDisplayName: string; override;
-
   public
-    
     constructor Create(ACollection: TCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
-
     function AsAddress: PGLFloat;
-    { The coordinates viewed as a vector. 
+    { The coordinates viewed as a vector.
       Assigning a value to this property will trigger notification events,
       if you don't want so, use DirectVector instead. }
     property AsVector: TVector read FCoords write SetAsVector;
-    { The coordinates viewed as an affine vector. 
+    { The coordinates viewed as an affine vector.
       Assigning a value to this property will trigger notification events,
-      if you don't want so, use DirectVector instead. 
+      if you don't want so, use DirectVector instead.
       The W component is automatically adjustes depending on style. }
-    property AsAffineVector: TAffineVector read GetAsAffineVector  write SetAsAffineVector;
-
+    property AsAffineVector: TAffineVector read GetAsAffineVector write SetAsAffineVector;
     property W: GLfloat index 3 read GetCoordinate write SetCoordinate stored StoreCoordinate;
-
     property TagObject: TObject read FTagObject write FTagObject;
   published
-    
-    property X: GLfloat index 0 read GetCoordinate write SetCoordinate
-      stored StoreCoordinate;
-    property Y: GLfloat index 1 read GetCoordinate write SetCoordinate
-      stored StoreCoordinate;
-    property Z: GLfloat index 2 read GetCoordinate write SetCoordinate
-      stored StoreCoordinate;
+    property X: GLfloat index 0 read GetCoordinate write SetCoordinate stored StoreCoordinate;
+    property Y: GLfloat index 1 read GetCoordinate write SetCoordinate stored StoreCoordinate;
+    property Z: GLfloat index 2 read GetCoordinate write SetCoordinate stored StoreCoordinate;
   end;
 
-  // TVXNodes
-  //
   TVXNodes = class(TOwnedCollection)
-  private
-    
-
   protected
-    
     procedure SetItems(Index: Integer; const Val: TVXNode);
     function GetItems(Index: Integer): TVXNode;
     procedure Update(Item: TCollectionItem); override;
-
   public
-    
-    constructor Create(AOwner: TPersistent;
-      AItemClass: TCollectionItemClass = nil);
+    constructor Create(AOwner: TPersistent; AItemClass: TCollectionItemClass = nil);
     function CreateCopy(AOwner: TPersistent): TVXNodes;
-
     function Add: TVXNode;
     function FindItemID(ID: Integer): TVXNode;
-    property Items[index: Integer]: TVXNode read GetItems
-      write SetItems; default;
+    property Items[index: Integer]: TVXNode read GetItems write SetItems; default;
     function First: TVXNode;
     function Last: TVXNode;
-
     procedure NotifyChange; virtual;
     procedure EndUpdate; override;
-
     procedure AddNode(const Coords: TVXCustomCoordinates); overload;
     procedure AddNode(const X, Y, Z: GLfloat); overload;
     procedure AddNode(const Value: TVector); overload;
     procedure AddNode(const Value: TAffineVector); overload;
-    procedure AddXYArc(XRadius, YRadius: Single; 
-	                   StartAngle, StopAngle: Single;
-					   NbSegments: Integer; 
-					   const Center: TAffineVector);
-
-    // : Calculates and returns the barycenter of the nodes
+    procedure AddXYArc(XRadius, YRadius: Single; StartAngle, StopAngle: Single; NbSegments: Integer;
+      const Center: TAffineVector);
+    // Calculates and returns the barycenter of the nodes
     function Barycenter: TAffineVector;
-    { Computes normal based on the 1st three nodes. 
+    { Computes normal based on the 1st three nodes.
       Returns NullVector if there are less than 3 nodes. }
     function Normal: TAffineVector;
-    // : Returns normalized vector Nodes[i+1]-Nodes[i]
+    // Returns normalized vector Nodes[i+1]-Nodes[i]
     function Vector(I: Integer): TAffineVector;
-
-    { Calculates the extents of the nodes (min-max for all coordinates). 
+    { Calculates the extents of the nodes (min-max for all coordinates).
       The returned values are also the two corners of the axis-aligned
       bounding box. }
     procedure GetExtents(var Min, Max: TAffineVector);
-    // : Translate all nodes
+    // Translate all nodes
     procedure Translate(const Tv: TAffineVector);
-    // : Scale all node coordinates
+    // Scale all node coordinates
     procedure Scale(const Fv: TAffineVector); overload;
-    // : Scale all node coordinates
+    // Scale all node coordinates
     procedure Scale(F: Single); overload;
-    // : Rotate nodes around Y axis by the given angle (degrees)
+    // Rotate nodes around Y axis by the given angle (degrees)
     procedure RotateAroundX(Angle: Single);
-    // : Rotate nodes around Y axis by the given angle (degrees)
+    // Rotate nodes around Y axis by the given angle (degrees)
     procedure RotateAroundY(Angle: Single);
-    // : Rotate nodes around Y axis by the given angle (degrees)
+    // Rotate nodes around Y axis by the given angle (degrees)
     procedure RotateAroundZ(Angle: Single);
-
-    procedure RenderTesselatedPolygon(ATextured: Boolean;
-      ANormal: PAffineVector = nil; ASplineDivisions: Integer = 1;
+    procedure RenderTesselatedPolygon(ATextured: Boolean; ANormal: PAffineVector = nil; ASplineDivisions: Integer = 1;
       AInvertNormals: Boolean = False);
-
     function CreateNewCubicSpline: TCubicSpline;
-
   end;
 
   TVXNodesClass = class of TVXNodes;
 
+//-----------------------------------------------------
 implementation
+//-----------------------------------------------------
 
 // ------------------
 // ------------------ TVXNode ------------------
 // ------------------
-
-// Create
-//
 
 constructor TVXNode.Create(ACollection: TCollection);
 begin
@@ -164,17 +125,11 @@ begin
   // nothing, yet
 end;
 
-// Destroy
-//
-
 destructor TVXNode.Destroy;
 begin
   // nothing, yet
   inherited Destroy;
 end;
-
-// Assign
-//
 
 procedure TVXNode.Assign(Source: TPersistent);
 begin
@@ -186,24 +141,15 @@ begin
     inherited;
 end;
 
-// GetDisplayName
-//
-
 function TVXNode.GetDisplayName: string;
 begin
   Result := Format('%.4f; %.4f; %.4f', [X, Y, Z]);
 end;
 
-// AsAddress
-//
-
 function TVXNode.AsAddress: PGLFloat;
 begin
   Result := @FCoords;
 end;
-
-// SetAsVector
-//
 
 procedure TVXNode.SetAsVector(const Value: TVector);
 begin
@@ -211,17 +157,11 @@ begin
   (Collection as TVXNodes).NotifyChange;
 end;
 
-// SetAsAffineVector
-//
-
 procedure TVXNode.SetAsAffineVector(const Value: TAffineVector);
 begin
   VXS.VectorGeometry.SetVector(FCoords, Value);
   (Collection as TVXNodes).NotifyChange;
 end;
-
-// GetAsAffineVector
-//
 
 function TVXNode.GetAsAffineVector: TAffineVector;
 begin
@@ -233,8 +173,6 @@ begin
   Result := FCoords.V[Index];
 end;
 
-// SetCoordinate
-//
 
 procedure TVXNode.SetCoordinate(AIndex: Integer; AValue: GLfloat);
 begin
@@ -242,8 +180,6 @@ begin
   (Collection as TVXNodes).NotifyChange;
 end;
 
-// StoreCoordinate
-//
 
 function TVXNode.StoreCoordinate(AIndex: Integer): Boolean;
 begin
@@ -254,20 +190,13 @@ end;
 // ------------------ TVXNodes ------------------
 // ------------------
 
-// Create
-//
-
-constructor TVXNodes.Create(AOwner: TPersistent;
-  AItemClass: TCollectionItemClass = nil);
+constructor TVXNodes.Create(AOwner: TPersistent; AItemClass: TCollectionItemClass = nil);
 begin
   if not Assigned(AItemClass) then
     inherited Create(AOwner, TVXNode)
   else
     inherited Create(AOwner, AItemClass);
 end;
-
-// CreateCopy
-//
 
 function TVXNodes.CreateCopy(AOwner: TPersistent): TVXNodes;
 begin
@@ -280,24 +209,15 @@ begin
     Result := nil;
 end;
 
-// SetItems
-//
-
 procedure TVXNodes.SetItems(Index: Integer; const Val: TVXNode);
 begin
   inherited Items[index] := Val;
 end;
 
-// GetItems
-//
-
 function TVXNodes.GetItems(Index: Integer): TVXNode;
 begin
   Result := TVXNode(inherited Items[index]);
 end;
-
-// First
-//
 
 function TVXNodes.First: TVXNode;
 begin
@@ -306,9 +226,6 @@ begin
   else
     Result := nil;
 end;
-
-// Last
-//
 
 function TVXNodes.Last: TVXNode;
 var
@@ -321,43 +238,27 @@ begin
     Result := nil;
 end;
 
-// Update
-//
-
 procedure TVXNodes.Update(Item: TCollectionItem);
 begin
   inherited;
   NotifyChange;
 end;
 
-// Add
-//
-
 function TVXNodes.Add: TVXNode;
 begin
   Result := (inherited Add) as TVXNode;
 end;
-
-// FindItemID
-//
 
 function TVXNodes.FindItemID(ID: Integer): TVXNode;
 begin
   Result := (inherited FindItemID(ID)) as TVXNode;
 end;
 
-// NotifyChange
-//
-
 procedure TVXNodes.NotifyChange;
 begin
-  if (UpdateCount = 0) and (GetOwner <> nil) and
-    (GetOwner is TVXUpdateAbleComponent) then
+  if (UpdateCount = 0) and (GetOwner <> nil) and (GetOwner is TVXUpdateAbleComponent) then
     TVXUpdateAbleComponent(GetOwner).NotifyChange(Self);
 end;
-
-// EndUpdate
-//
 
 procedure TVXNodes.EndUpdate;
 begin
@@ -367,43 +268,27 @@ begin
     NotifyChange;
 end;
 
-// AddNode (TVXCustomCoordinates)
-//
-
 procedure TVXNodes.AddNode(const Coords: TVXCustomCoordinates);
 begin
   Add.AsVector := Coords.AsVector;
 end;
-
-// AddNode (floats)
-//
 
 procedure TVXNodes.AddNode(const X, Y, Z: Single);
 begin
   Add.AsVector := PointMake(X, Y, Z);
 end;
 
-// AddNode (TVector)
-//
-
 procedure TVXNodes.AddNode(const Value: TVector);
 begin
   Add.AsVector := Value;
 end;
-
-// AddNode (TAffineVector)
-//
 
 procedure TVXNodes.AddNode(const Value: TAffineVector);
 begin
   Add.AsAffineVector := Value;
 end;
 
-// AddXYArc
-//
-
-procedure TVXNodes.AddXYArc(XRadius, YRadius: Single;
-  StartAngle, StopAngle: Single; NbSegments: Integer;
+procedure TVXNodes.AddXYArc(XRadius, YRadius: Single; StartAngle, StopAngle: Single; NbSegments: Integer;
   const Center: TAffineVector);
 var
   I: Integer;
@@ -418,17 +303,12 @@ begin
     for I := 0 to NbSegments do
     begin
       SinCosine(I * F + StartAngle, S, C);
-      SetVector(Add.FCoords, Center.X + XRadius * C,
-                             Center.Y + YRadius * S,
-                             Center.Z, 1);
+      SetVector(Add.FCoords, Center.X + XRadius * C, Center.Y + YRadius * S, Center.Z, 1);
     end;
   finally
     EndUpdate;
   end;
 end;
-
-// Barycenter
-//
 
 function TVXNodes.Barycenter: TAffineVector;
 var
@@ -443,20 +323,13 @@ begin
   end;
 end;
 
-// Normal
-//
-
 function TVXNodes.Normal: TAffineVector;
 begin
   if Count >= 3 then
-    CalcPlaneNormal(Items[0].FCoords, Items[1].FCoords,
-      Items[2].FCoords, Result)
+    CalcPlaneNormal(Items[0].FCoords, Items[1].FCoords, Items[2].FCoords, Result)
   else
     Result := NullVector;
 end;
-
-// Vector
-//
 
 function TVXNodes.Vector(I: Integer): TAffineVector;
 
@@ -523,9 +396,6 @@ begin
     NormalizeVector(Result);
 end;
 
-// GetExtents
-//
-
 procedure TVXNodes.GetExtents(var Min, Max: TAffineVector);
 var
   I, K: Integer;
@@ -549,9 +419,6 @@ begin
   end;
 end;
 
-// Translate
-//
-
 procedure TVXNodes.Translate(const Tv: TAffineVector);
 var
   I: Integer;
@@ -560,9 +427,6 @@ begin
     AddVector(PAffineVector(Items[I].AsAddress)^, Tv);
   NotifyChange;
 end;
-
-// Scale (vector)
-//
 
 procedure TVXNodes.Scale(const Fv: TAffineVector);
 var
@@ -573,9 +437,6 @@ begin
   NotifyChange;
 end;
 
-// Scale (single)
-//
-
 procedure TVXNodes.Scale(F: Single);
 var
   I: Integer;
@@ -584,9 +445,6 @@ begin
     ScaleVector(PAffineVector(Items[I].AsAddress)^, F);
   NotifyChange;
 end;
-
-// RotateAroundX
-//
 
 procedure TVXNodes.RotateAroundX(Angle: Single);
 var
@@ -605,9 +463,6 @@ begin
   NotifyChange;
 end;
 
-// RotateAroundY
-//
-
 procedure TVXNodes.RotateAroundY(Angle: Single);
 var
   I: Integer;
@@ -625,9 +480,6 @@ begin
   NotifyChange;
 end;
 
-// RotateAroundZ
-//
-
 procedure TVXNodes.RotateAroundZ(Angle: Single);
 var
   I: Integer;
@@ -644,9 +496,6 @@ begin
   end;
   NotifyChange;
 end;
-
-// CreateNewCubicSpline
-//
 
 function TVXNodes.CreateNewCubicSpline: TCubicSpline;
 var
@@ -669,8 +518,6 @@ begin
   FreeMem(Za);
 end;
 
-// RenderTesselatedPolygon
-//
 var
   NbExtraVertices: Integer;
   NewVertices: PAffineVectorArray;
@@ -682,30 +529,27 @@ begin
 end;
 
 procedure TessError(Errno: GLEnum);
-{$IFDEF Win32} stdcall;{$ENDIF}{$IFDEF UNIX} cdecl;{$ENDIF}
+{$IFDEF Win32} stdcall; {$ENDIF}{$IFDEF UNIX} cdecl; {$ENDIF}
 begin
   Assert(False, IntToStr(Errno) + ': ' + string(GluErrorString(Errno)));
 end;
 
 procedure TessIssueVertex(VertexData: Pointer);
-{$IFDEF Win32} stdcall;{$ENDIF}{$IFDEF UNIX} cdecl;{$ENDIF}
+{$IFDEF Win32} stdcall; {$ENDIF}{$IFDEF UNIX} cdecl; {$ENDIF}
 begin
   glTexCoord2fv(VertexData);
   glVertex3fv(VertexData);
 end;
 
-procedure TessCombine(Coords: PDoubleVector; Vertex_data: Pointer;
-  Weight: PGLFloat; var OutData: Pointer);
-{$IFDEF Win32} stdcall;{$ENDIF}{$IFDEF UNIX} cdecl;{$ENDIF}
+procedure TessCombine(Coords: PDoubleVector; Vertex_data: Pointer; Weight: PGLFloat; var OutData: Pointer);
+{$IFDEF Win32} stdcall; {$ENDIF}{$IFDEF UNIX} cdecl; {$ENDIF}
 begin
   OutData := AllocNewVertex;
   SetVector(PAffineVector(OutData)^, Coords^[0], Coords^[1], Coords^[2]);
 end;
 
-procedure TVXNodes.RenderTesselatedPolygon(ATextured: Boolean;  
-                   ANormal: PAffineVector = nil; 
-				   ASplineDivisions: Integer = 1;
-                   AInvertNormals: Boolean = False);
+procedure TVXNodes.RenderTesselatedPolygon(ATextured: Boolean; ANormal: PAffineVector = nil; ASplineDivisions: Integer = 1;
+  AInvertNormals: Boolean = False);
 var
   I: Integer;
   Tess: GLUTesselator;
