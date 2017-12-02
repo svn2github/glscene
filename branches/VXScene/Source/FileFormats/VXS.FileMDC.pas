@@ -205,29 +205,27 @@ begin
     for I := 0 to Fileheader.NumSurfaces - 1 do
     begin
       // read header
-      AStream.Seek(FrameOffset, SoFromBeginning);
+      AStream.Position := FrameOffset;
       AStream.Read(Surfheader, SizeOf(TMDCSurfaceHeader));
 
       // triangles for this surface
       SetLength(Triangles, Surfheader.NumTriangles);
-      AStream.Seek(FrameOffset + Surfheader.OffsetTriangles, SoFromBeginning);
+      AStream.Position := FrameOffset + Surfheader.OffsetTriangles;
       AStream.Read(Triangles[0], SizeOf(TMDCTriangle) *
         Surfheader.NumTriangles);
 
       // texture coordinates for this surface
       SetLength(St, Surfheader.NumVertices);
-      AStream.Seek(FrameOffset + Surfheader.OffsetTexCoords, SoFromBeginning);
+      AStream.Position := FrameOffset + Surfheader.OffsetTexCoords;
       AStream.Read(St[0], 2 * SizeOf(Single) * Surfheader.NumVertices);
 
       // base frame table for this surface (for only loading)
       SetLength(Baseframetable, Fileheader.NumFrames);
-      AStream.Seek(FrameOffset + Surfheader.OffsetFrameBaseFrames,
-        SoFromBeginning);
+      AStream.Position := FrameOffset + Surfheader.OffsetFrameBaseFrames;
       AStream.Read(Baseframetable[0], SizeOf(Word) * Fileheader.NumFrames);
       // compressed frame table for this surface (for only loading)
       SetLength(Compframetable, Fileheader.NumFrames);
-      AStream.Seek(FrameOffset + Surfheader.OffsetFrameCompFrames,
-        SoFromBeginning);
+      AStream.Position := FrameOffset + Surfheader.OffsetFrameCompFrames;
       AStream.Read(Compframetable[0], SizeOf(Word) * Fileheader.NumFrames);
 
       Mesh := TVXMorphableMeshObject.CreateOwned(Owner.MeshObjects);

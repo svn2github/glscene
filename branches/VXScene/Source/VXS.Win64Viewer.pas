@@ -55,7 +55,7 @@ type
   TVXSceneViewer = class(TViewPort3D)
   private
     FBuffer: TVXSceneBuffer;
-    FVSync: TVSyncMode;
+    FVSync: TVXSyncMode;
     FOwnDC: HDC;
     FOnMouseEnter, FOnMouseLeave: TNotifyEvent;
     FMouseInControl: Boolean;
@@ -63,7 +63,6 @@ type
     FOnTouchMove: TTouchEvent;
     FOnTouchUp: TTouchEvent;
     FOnTouchDown: TTouchEvent;
-
     procedure WMEraseBkgnd(var Message: TWMEraseBkgnd); message WM_ERASEBKGND;
     procedure WMPaint(var Message: TWMPaint); message WM_PAINT;
     procedure WMSize(var Message: TWMSize); message WM_SIZE;
@@ -99,7 +98,7 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
-    { Makes TWinControl's RecreateWnd public. 
+    { Makes TWinControl's RecreateWnd public.
        This procedure allows to work around limitations in some OpenVX
        drivers (like MS Software OpenVX) that are not able to share lists
        between RCs that already have display lists. }
@@ -120,7 +119,7 @@ type
     { Specifies if the refresh should be synchronized with the VSync signal.
        If the underlying OpenVX ICD does not support the WGL_EXT_swap_control
        extension, this property is ignored.  }
-    property VSync: TVSyncMode read FVSync write FVSync default vsmNoSync;
+    property VSync: TVXSyncMode read FVSync write FVSync default vsmNoSync;
     { Triggered before the scene's objects get rendered.
        You may use this event to execute your own OpenVX rendering. }
     property BeforeRender: TNotifyEvent read GetBeforeRender write SetBeforeRender;
@@ -177,20 +176,20 @@ type
     property Touch;
   end;
 
-procedure SetupVSync(const AVSyncMode : TVSyncMode);
+procedure SetupVSync(const AVSyncMode : TVXSyncMode);
 
 var
  Handle: HWND;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
+// ------------------------------------------------------------------
+
 // ------------------
 // ------------------ TVXSceneViewerFMX ------------------
 // ------------------
 
-procedure SetupVSync(const AVSyncMode : TVSyncMode);
+procedure SetupVSync(const AVSyncMode : TVXSyncMode);
 var
   I: Integer;
 begin
@@ -554,12 +553,8 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
 
   RegisterClass(TVXSceneViewer);
 

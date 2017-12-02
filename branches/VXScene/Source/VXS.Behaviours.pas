@@ -1,5 +1,5 @@
 //
-// VXScene Component Library, based on GLScene http://glscene.sourceforge.net 
+// VXScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
 {
   Standard TVXBehaviour subclasses for GLScene<p>
@@ -11,9 +11,9 @@ interface
 {$I VXScene.inc}
 
 uses
-  System.Classes, 
+  System.Classes,
   System.SysUtils,
-  
+
   VXS.VectorTypes,
   VXS.Scene,
   VXS.VectorGeometry,
@@ -22,7 +22,7 @@ uses
   VXS.Coordinates;
 
 type
-  { Holds parameters for TVXScene basic damping model.
+  (* Holds parameters for TVXScene basic damping model.
     Damping is modeled by calculating a force from the speed, this force
     can then be transformed to an acceleration is you know the object's mass.
     Formulas :
@@ -32,8 +32,7 @@ type
     constant : use it for solid friction (will stop abruptly an object after
       decreasing its speed.
     linear : linear friction damping.
-    quadratic : expresses viscosity.
-     }
+    quadratic : expresses viscosity. *)
   TVXDamping = class(TVXUpdateAbleObject)
   private
     FConstant: single;
@@ -160,11 +159,7 @@ function GetOrCreateAcceleration(behaviours: TVXBehaviours): TVXBAcceleration;
 function GetOrCreateAcceleration(obj: TVXBaseSceneObject): TVXBAcceleration; overload;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 function GetInertia(const AVXSceneObject: TVXBaseSceneObject): TVXBInertia;
@@ -608,11 +603,7 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
   // class registrations

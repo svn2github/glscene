@@ -1,8 +1,8 @@
 //
-// VXScene Component Library, based on GLScene http://glscene.sourceforge.net 
+// VXScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
 {
-   HDR File support. 
+   HDR File support.
 }
 unit VXS.FileHDR;
 
@@ -15,8 +15,7 @@ uses
   Winapi.OpenGLext,
   System.Classes,
   System.SysUtils,
-  
-  VXS.OpenGLAdapter,
+
   VXS.Context,
   VXS.Graphics,
   VXS.TextureFormat,
@@ -67,9 +66,9 @@ procedure TVXHDRImage.LoadFromFile(const filename: string);
 var
   fs: TStream;
 begin
-  if FileStreamExists(fileName) then
+  if FileStreamExists(filename) then
   begin
-    fs := CreateFileStream(fileName, fmOpenRead);
+    fs := CreateFileStream(filename, fmOpenRead);
     try
       LoadFromStream(fs);
     finally
@@ -88,17 +87,17 @@ const
   cEXPOSURE = 'EXPOSURE=';
   cY = '-Y ';
 var
-  buf: array[0..1023] of AnsiChar;
+  buf: array [0 .. 1023] of AnsiChar;
   header: TStringList;
   s, sn: string;
   lineSize: integer;
   tempBuf, top, bottom: PByte;
-  i, j, err: Integer;
-  formatDefined: boolean;
+  i, j, err: integer;
+  formatDefined: Boolean;
 
-  function CmpWord(const word: string): boolean;
+  function CmpWord(const word: string): Boolean;
   var
-    l: Integer;
+    l: integer;
     ts: string;
   begin
     Result := false;
@@ -112,7 +111,7 @@ var
   end;
 
 begin
-  fProgramtype := '';
+  fProgramType := '';
   fGamma := 1.0;
   fExposure := 1.0;
   UnMipmap;
@@ -148,8 +147,7 @@ begin
     raise EInvalidRasterFile.Create('Bad HDR initial token.');
   end;
   // Get program type
-  SetProgramtype(AnsiString(Copy(header.Strings[0], 3, Length(header.Strings[0])
-    - 2)));
+  SetProgramType(Ansistring(Copy(header.Strings[0], 3, Length(header.Strings[0]) - 2)));
 
   formatDefined := false;
   for i := 1 to header.Count - 1 do
@@ -192,7 +190,7 @@ begin
 
   if (FLOD[0].Width = 0) or (FLOD[0].Height = 0) then
     raise EInvalidRasterFile.Create('Bad image dimension.');
-  //set all the parameters
+  // set all the parameters
   FLOD[0].Depth := 0;
   fColorFormat := GL_RGB;
   fInternalFormat := tfRGBA_FLOAT32;
@@ -203,7 +201,7 @@ begin
   ReallocMem(fData, DataSize);
   LoadRLEpixels(stream, PSingle(fData), FLOD[0].Width, FLOD[0].Height);
 
-  //hdr images come in upside down then flip it
+  // hdr images come in upside down then flip it
   lineSize := fElementSize * FLOD[0].Width;
   GetMem(tempBuf, lineSize);
   top := PByte(fData);
@@ -233,11 +231,8 @@ begin
     fProgramType[i] := aval[i];
 end;
 
-procedure TVXHDRImage.AssignFromTexture(textureContext: TVXContext;
-  const textureHandle: GLuint;
-  textureTarget: TVXTextureTarget;
-  const CurrentFormat: Boolean;
-  const intFormat: TVXInternalFormat);
+procedure TVXHDRImage.AssignFromTexture(textureContext: TVXContext; const textureHandle: GLuint;
+  textureTarget: TVXTextureTarget; const CurrentFormat: Boolean; const intFormat: TVXInternalFormat);
 var
   oldContext: TVXContext;
   contextActivate: Boolean;
@@ -246,8 +241,7 @@ var
   glTarget: GLEnum;
 begin
   glTarget := DecodeTextureTarget(textureTarget);
-  if not ((glTarget = GL_TEXTURE_2D)
-    or (glTarget = GL_TEXTURE_RECTANGLE)) then
+  if not((glTarget = GL_TEXTURE_2D) or (glTarget = GL_TEXTURE_RECTANGLE)) then
     Exit;
 
   oldContext := CurrentVXContext;
@@ -284,12 +278,12 @@ begin
     if fLevelCount > 0 then
     begin
       fElementSize := GetTextureElementSize(fColorFormat, fDataType);
-      ReallocMem(FData, DataSize);
+      ReallocMem(fData, DataSize);
       glGetTexImage(glTarget, 0, fColorFormat, fDataType, fData);
     end
     else
       fLevelCount := 1;
-    CheckOpenGLError;
+    /// CheckOpenGLError;
   finally
     if contextActivate then
     begin
@@ -302,7 +296,7 @@ end;
 
 class function TVXHDRImage.Capabilities: TVXDataFileCapabilities;
 begin
-  Result := [dfcRead {, dfcWrite}];
+  Result := [dfcRead { , dfcWrite } ];
 end;
 
 //-------------------------------------------------------------------

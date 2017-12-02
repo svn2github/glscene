@@ -38,46 +38,46 @@ unit GLRandomHDS;
   If you know how to make a registered component, please do it.
 
   History :
-    14/03/17 - PW - removed duplicated constructor CreateAsSlave as
-                    inaccessible from c++
-    05/07/03 - Alexandre Hirzel -
-      - TGLTiledRndLandscape released
-      - TGLFractalArchipelago released
-      - Water plane and associated parameters (thanks to Eric Grange)
-      - Other classes modified accordingly
-      - HeightData generated as smallint in place of single
-    25/06/03 - Alexandre Hirzel -
-      - Texture drawed for each tile independently
-      - Steps property added
-      - TGLTiledRndLandscape to deal with infinite landscapes
-      - Further hierarchisation
-    21/06/03 - Alexandre Hirzel - First implementation ( Alexandre.Hirzel@nat.unibe.ch )
+  14/03/17 - PW - removed duplicated constructor CreateAsSlave as
+  inaccessible from c++
+  05/07/03 - Alexandre Hirzel -
+  - TGLTiledRndLandscape released
+  - TGLFractalArchipelago released
+  - Water plane and associated parameters (thanks to Eric Grange)
+  - Other classes modified accordingly
+  - HeightData generated as smallint in place of single
+  25/06/03 - Alexandre Hirzel -
+  - Texture drawed for each tile independently
+  - Steps property added
+  - TGLTiledRndLandscape to deal with infinite landscapes
+  - Further hierarchisation
+  21/06/03 - Alexandre Hirzel - First implementation ( Alexandre.Hirzel@nat.unibe.ch )
 
-    The whole history is logged in previous version of the unit
+  The whole history is logged in previous version of the unit
 }
 
 interface
 
 uses
   Winapi.Windows,
-  System.Classes, 
-  System.Math, 
+  System.Classes,
+  System.Math,
   System.SysUtils,
   System.Contnrs,
-  Vcl.Graphics, 
-  Vcl.Imaging.jpeg, 
+  Vcl.Graphics,
+  Vcl.Imaging.jpeg,
   Vcl.Forms,
 
   OpenGLTokens,
   GLScene,
   GLVectorTypes,
-  GLVectorGeometry, 
-  GLHeightData, 
-  GLTerrainRenderer, 
+  GLVectorGeometry,
+  GLHeightData,
+  GLTerrainRenderer,
   GLTexture,
-  GLColor, 
-  GLCoordinates, 
-  GLRenderContextInfo, 
+  GLColor,
+  GLCoordinates,
+  GLRenderContextInfo,
   GLMaterial,
   GLContext;
 
@@ -119,8 +119,7 @@ type
   TGLBaseRandomHDS = class;
 
   // Function type to use for topography-based texture
-  TOnDrawTexture = function(const Sender: TGLBaseRandomHDS; x, y: integer;
-    z: double; Normal: TVector): TColorVector of object;
+  TOnDrawTexture = function(const Sender: TGLBaseRandomHDS; x, y: integer; z: double; Normal: TVector): TColorVector of object;
 
   TSingleClamp = procedure(var x, y: single) of object;
   TIntegerClamp = procedure(var x, y: integer) of object;
@@ -157,14 +156,12 @@ type
     FPrimerLandscape: boolean;
     FLandTileInfo: TLandTileInfo;
     FOnDrawTexture: TOnDrawTexture;
-    function OnDrawTextureDefault(const Sender: TGLBaseRandomHDS; x, y: integer;
-      z: double; Normal: TVector): TColorVector;
+    function OnDrawTextureDefault(const Sender: TGLBaseRandomHDS; x, y: integer; z: double; Normal: TVector): TColorVector;
     procedure SetSeed(const Value: integer);
     procedure SetMaterialName(const Value: string);
     procedure SetLighting(const Value: boolean);
     procedure SetLightDirection(const Value: TVector);
-    procedure SetTerrainRenderer(const Value: TGLTerrainRenderer);
-      virtual; abstract;
+    procedure SetTerrainRenderer(const Value: TGLTerrainRenderer); virtual; abstract;
     procedure SetLightColor(const Value: TColorVector);
     procedure SetShadows(const Value: boolean);
     procedure SetSea(const Value: boolean);
@@ -193,46 +190,38 @@ type
     // Usually white, but you can generate e.g.sunset ambiance by setting it to red
     property LightColor: TColorVector read FLightColor write SetLightColor;
     // Light is parallel (sun light)
-    property LightDirection: TVector read FLightDirection
-      write SetLightDirection;
+    property LightDirection: TVector read FLightDirection write SetLightDirection;
     { This function must be supplied by the user. Here he/she can define which
       colour to use depending on coordinates, elevation and normal. This provides
       a great flexibility. If no function is supplied (OnDrawTexture=nil), a default
       texture function is used (very basic, just blue and green). }
-    property OnDrawTexture: TOnDrawTexture read FOnDrawTexture
-      write SetOnDrawTexture;
+    property OnDrawTexture: TOnDrawTexture read FOnDrawTexture write SetOnDrawTexture;
   published
     property AmbientLight: single read FAmbientLight write SetAmbientLight;
     { If true, the landscape can be tiled to itself seamlessly.
       If false, the landscape is an isolated square. }
     property Cyclic: boolean read FCyclic write SetCyclic;
     // Erosion parameters. See associated record types
-    property ErosionByFraction: TFractionErosion read FErosionByFraction
-      write SetErosionByFraction;
-    property ErosionByLife: TLifeErosion read FErosionByLife
-      write SetErosionByLife;
-    property ErosionByRain: TRainErosion read FErosionByRain
-      write SetErosionByRain;
-    property ErosionBySea: tSeaErosion read FErosionBySea write SetErosionBySea;
+    property ErosionByFraction: TFractionErosion read FErosionByFraction write SetErosionByFraction;
+    property ErosionByLife: TLifeErosion read FErosionByLife write SetErosionByLife;
+    property ErosionByRain: TRainErosion read FErosionByRain write SetErosionByRain;
+    property ErosionBySea: TSeaErosion read FErosionBySea write SetErosionBySea;
     property LandCover: boolean read FLandCover write SetLandCover;
     // Enable or disable all lighting effects
     property Lighting: boolean read FLighting write SetLighting;
     // True by default. You can gain a little speed by disabling it.
-    property LightSmoothing: boolean read FLightSmoothing
-      write SetLightSmoothing;
+    property LightSmoothing: boolean read FLightSmoothing write SetLightSmoothing;
     (* Not used *)
     property MaterialName: string read FMaterialName write SetMaterialName;
     { If true, the height-field will not be emptied and generation will take the
       existing heights to shape the new landscape }
-    property PrimerLandscape: boolean read FPrimerLandscape
-      write SetPrimerLandscape;
+    property PrimerLandscape: boolean read FPrimerLandscape write SetPrimerLandscape;
     // Enable the sea surface truncation
     property Sea: boolean read FSea write SetSea;
     // Sea level
     property SeaLevel: single read GetSeaLevel write SetSeaLevel;
     // Depth at which the sea bottom becomes invisible. See DoSea for more information
-    property SeaTransparency: single read GetSeaTransparency
-      write SetSeaTransparency;
+    property SeaTransparency: single read GetSeaTransparency write SetSeaTransparency;
     { Seed used by the random generator. Each seed generate a different
       reproductible landscape. }
     property Seed: integer read FSeed write SetSeed;
@@ -240,16 +229,15 @@ type
     property Shadows: boolean read FShadows write SetShadows;
     property Steps: TSteps read FSteps write SetSteps;
     // TerrainRenderer used to render the HDS.
-    property TerrainRenderer: TGLTerrainRenderer read FTerrainRenderer
-      write SetTerrainRenderer;
+    property TerrainRenderer: TGLTerrainRenderer read FTerrainRenderer write SetTerrainRenderer;
     { Defines how many texture pixels are drawn per height-field cell. The larger
       this number the better the quality of the resulting image, but it takes a
       more time to compute. Good results are got between 1 and 5. }
     property TextureScale: integer read FTextureScale write SetTextureScale;
   end;
 
- { Base structure for all random landscape objects. It can't be used directly
-   since its BuildHeightField procedure is abstract. Use one of its descendants instead. }
+  { Base structure for all random landscape objects. It can't be used directly
+    since its BuildHeightField procedure is abstract. Use one of its descendants instead. }
   TGLCustomRandomHDS = class(TGLBaseRandomHDS)
   private
     FSlave: boolean;
@@ -344,8 +332,7 @@ type
     property KeepNormals: boolean read FKeepNormals write SetKeepNormals;
     { Property used by TGLTiledRndLandscape to know where the landtile is located
       and other parameters. See tLandTileInfo }
-    property LandTileInfo: TLandTileInfo read GetLandTileInfo
-      write SetLandTileInfo;
+    property LandTileInfo: TLandTileInfo read GetLandTileInfo write SetLandTileInfo;
     { Range checking }
     function PointInMap(const x, y: single): boolean; overload;
     function PointInMap(const x, y: integer): boolean; overload;
@@ -392,8 +379,7 @@ type
     procedure SetRoughness(const Value: single);
   public
     procedure BuildHeightField; overload; override;
-    procedure BuildHeightField(const aDepth, aSeed,
-      aAmplitude: integer); overload;
+    procedure BuildHeightField(const aDepth, aSeed, aAmplitude: integer); overload;
     constructor Create(AOwner: TComponent); override;
   published
     { Proportional to the difference between highest and lowest altitude. }
@@ -411,17 +397,14 @@ type
   TLandTile = TGLCustomRandomHDS;
 
   TRelativeCoordinate = record
-    dx, dz: integer
-  end;
+    dx, dz: integer end;
 
-  TOnCreateLandTile =
+    TOnCreateLandTile =
     procedure(x, z, Seed: integer; var aLandscape: TLandTile) of object;
-  TIsDefaultTile =
+    TIsDefaultTile =
     function(x, z: integer): boolean of object;
 
-  TGLTiledRndLandscape = class(TGLBaseRandomHDS)
-  private
-    FLandTileComputing : boolean; // Is a landtile being computed?
+    TGLTiledRndLandscape = class(TGLBaseRandomHDS)private FLandTileComputing: boolean; // Is a landtile being computed?
     FExtentX: integer;
     FExtentZ: integer;
     FExtentXhalf: integer;
@@ -462,15 +445,13 @@ type
     fLandTiles: tComponentList;
     procedure BoundaryClamp(var x, z: single); overload;
     procedure BoundaryClamp(var x, z: integer); overload;
-    procedure ComputeLandTile(const aX, aZ: integer;
-      var NewLandTile: TLandTile); virtual;
+    procedure ComputeLandTile(const aX, aZ: integer; var NewLandTile: TLandTile); virtual;
     procedure CyclicClamp(var x, z: single); overload;
     procedure CyclicClamp(var x, z: integer); overload;
     { tTerrainRenderer event handler }
     procedure GetTerrainBounds(var l, t, r, b: single);
     function LandTileSeed(x, z: integer): integer;
-    property OnCreateDefaultTile: TStartPreparingDataEvent
-      read fOnCreateDefaultTile write SetOnCreateDefaultTile;
+    property OnCreateDefaultTile: TStartPreparingDataEvent read fOnCreateDefaultTile write SetOnCreateDefaultTile;
     procedure SetCyclic(const Value: boolean); override;
     { This procedure MUST be called by the descendent of TGLRandomArchipelago }
     procedure SetSize(const aSize: integer);
@@ -498,15 +479,13 @@ type
     procedure Initialize(const aX, aZ: single); virtual;
     { User-supplied function determining if this landtile will be built by the
       OnCreateDefaultTile or if a landscape will be generated. }
-    property IsDefaultTile: TIsDefaultTile read FIsDefaultTile
-      write SetIsDefaultTile;
+    property IsDefaultTile: TIsDefaultTile read FIsDefaultTile write SetIsDefaultTile;
     { Number of landtile in memory }
     function LandtileCount: integer;
     { Size of a landtile. Must be a power of two }
     property LandTileSize: integer read fLandTileSize;
     { User-specified event handler containing the particular code for tile generation }
-    property OnCreateLandTile: TOnCreateLandTile read fOnCreateLandTile
-      write SetOnCreateLandTile;
+    property OnCreateLandTile: TOnCreateLandTile read fOnCreateLandTile write SetOnCreateLandTile;
     { When long computations are running, this property contains the operation
       beeing processed. }
     property Task: string read GetTask;
@@ -535,24 +514,20 @@ type
     property ExtentZ: integer read FExtentZ write SetExtentZ;
     { Distance at which a new landtile begin to be built. Increasing this value
       allows for a higher camera speed but it will also increase the memory requirements. }
-    property GenerationRadius: integer read FGenerationRadius
-      write SetGenerationRadius;
+    property GenerationRadius: integer read FGenerationRadius write SetGenerationRadius;
     { Number of landtile to keep in memory. Should not be modified. }
-    property LandTileCapacity: integer read FLandTileCapacity
-      write SetLandTileCapacity;
+    property LandTileCapacity: integer read FLandTileCapacity write SetLandTileCapacity;
     { Probability that a given landtile is non-default }
-    property LandTileDensity: single read FLandTileDensity
-      write SetLandTileDensity;
+    property LandTileDensity: single read FLandTileDensity write SetLandTileDensity;
     // Base seed for the entire archipelago
     property Seed: integer read FSeed write SetSeed;
-    // Terrain renderer linked to the HDS. Must be set just after creation. 
-    property TerrainRenderer: TGLTerrainRenderer read FTerrainRenderer
-      write SetTerrainRenderer;
-  end; 
+    // Terrain renderer linked to the HDS. Must be set just after creation.
+    property TerrainRenderer: TGLTerrainRenderer read FTerrainRenderer write SetTerrainRenderer;
+  end;
 
   TGLFractalArchipelago = class(TGLTiledRndLandscape)
   private
-    FDepth: integer;
+    fDepth: integer;
     FRoughnessMax: single;
     FRoughnessMin: single;
     FAmplitudeMin: integer;
@@ -564,12 +539,10 @@ type
     function GetIslandDensity: single;
     { PostRender event handler drawing a static water plane between islands
       Code borrowed from Eric's Archipelago GLScene advanced demo }
-    procedure FPostRenderSeaStatic(var rci: TGLRenderContextInfo;
-      var HeightDatas: TList);
+    procedure FPostRenderSeaStatic(var rci: TGLRenderContextInfo; var HeightDatas: TList);
     { Sea with waves.
       Borrowed from Eric's Archipelago GLScene advanced demo }
-    procedure FPostRenderSeaDynamic(var rci: TGLRenderContextInfo;
-      var HeightDatas: TList);
+    procedure FPostRenderSeaDynamic(var rci: TGLRenderContextInfo; var HeightDatas: TList);
     procedure SetIslandDensity(const Value: single);
     procedure SetDepth(const Value: integer);
     procedure SetRoughnessMax(const Value: single);
@@ -582,12 +555,10 @@ type
     procedure SetWaveSpeed(const Value: single);
   protected
     procedure SetTerrainRenderer(const Value: TGLTerrainRenderer); override;
-    procedure FOnCreateLandTile(aX, aZ, aSeed: integer;
-      var aLandscape: TLandTile);
-    procedure FOnCreateDefaultTile(heightData: TGLHeightData);
+    procedure fOnCreateLandTile(aX, aZ, aSeed: integer; var aLandscape: TLandTile);
+    procedure fOnCreateDefaultTile(heightData: TGLHeightData);
   public
-    procedure ComputeLandTile(const aX, aZ: integer;
-      var NewLandTile: TLandTile); override;
+    procedure ComputeLandTile(const aX, aZ: integer; var NewLandTile: TLandTile); override;
     constructor Create(AOwner: TComponent); override;
   published
     { Ranges for the amplitude parameter in the fractal algorithm }
@@ -605,14 +576,13 @@ type
     property SeaDynamic: boolean read FSeaDynamic write SetSeaDynamic;
     { Reference to a material in the TerrainRenderer's material library. This
       material will be used to drape the water plane. }
-    property SeaMaterialName: string read FSeaMaterialName
-      write SetSeaMaterialName;
+    property SeaMaterialName: string read FSeaMaterialName write SetSeaMaterialName;
     { Size of the waves }
     property WaveAmplitude: single read FWaveAmplitude write SetWaveAmplitude;
     property WaveSpeed: single read FWaveSpeed write SetWaveSpeed;
-  end; 
+  end;
 
-(* Texture functions *)
+  (* Texture functions *)
 function LoadJPGtexture(const JpgName: string): tBitmap;
 function NoisyColor(const Color: tColor; const Noise: single = 0.05): TColorVector;
 function TextureGreen(const x, y: integer): TColorVector;
@@ -624,9 +594,8 @@ function TextureDarkGray(const x, y: integer): TColorVector;
 function TextureWhite(const x, y: integer): TColorVector;
 
 (* Random HDS functions *)
-procedure FractalMiddlePointHDS(const aDepth, aSeed, aAmplitude: integer;
-  const aRoughness: single; aCyclic: boolean; var z: TMapOfSingle;
-  var MinZ, MaxZ: single);
+procedure FractalMiddlePointHDS(const aDepth, aSeed, aAmplitude: integer; const aRoughness: single; aCyclic: boolean;
+  var z: TMapOfSingle; var MinZ, MaxZ: single);
 procedure InitializeRandomGenerator(const Seed: integer);
 
 (* Landscape primers *)
@@ -636,15 +605,15 @@ procedure PrimerIsland(LowZ, HighZ: single; var z: TMapOfSingle);
 const
   VerticalScalingFactor = 128;
 
-//==========================================================================
+  // ==========================================================================
 implementation
-//==========================================================================
+
+// ==========================================================================
 
 const { Neighbourhood vectors and weight }
   NeighX: array [0 .. 8] of integer = (-1, 0, 1, 1, 1, 0, -1, -1, 0);
   NeighY: array [0 .. 8] of integer = (-1, -1, -1, 0, 1, 1, 1, 0, 0);
-  NeighW: array [0 .. 8] of single = (1 / 1.4142, 1, 1 / 1.4142, 1, 1 / 1.4142,
-    1, 1 / 1.4142, 1, 2);
+  NeighW: array [0 .. 8] of single = (1 / 1.4142, 1, 1 / 1.4142, 1, 1 / 1.4142, 1, 1 / 1.4142, 1, 2);
   SumWeights = 4 / 1.4142 + 4 + 2;
   Empty: single = -999;
   VSF = VerticalScalingFactor;
@@ -652,7 +621,7 @@ const { Neighbourhood vectors and weight }
 var
   rhdsStartTime: cardinal;
   rhdsLandscapeCounter: cardinal = 0;
-  //Counter	:tTickCounter;
+  // Counter	:tTickCounter;
 
 function LoadJPGtexture(const JpgName: string): tBitmap;
 var
@@ -665,8 +634,7 @@ begin
   Jpg.Free;
 end;
 
-function NoisyColor(const Color: tColor; const Noise: single = 0.05)
-  : TColorVector;
+function NoisyColor(const Color: tColor; const Noise: single = 0.05): TColorVector;
 var
   r: single;
 begin
@@ -720,7 +688,7 @@ begin
 end;
 
 //
-// TGLBaseRandomHDS 
+// TGLBaseRandomHDS
 //
 constructor TGLBaseRandomHDS.Create(AOwner: TComponent);
 begin
@@ -772,8 +740,8 @@ begin
   Result := FLandTileInfo;
 end;
 
-function TGLBaseRandomHDS.OnDrawTextureDefault(const Sender: TGLBaseRandomHDS;
-  x, y: integer; z: double; Normal: TVector): TColorVector;
+function TGLBaseRandomHDS.OnDrawTextureDefault(const Sender: TGLBaseRandomHDS; x, y: integer; z: double; Normal: TVector)
+  : TColorVector;
 begin
   if z > Sender.SeaLevel * VSF then
     Result := TextureGreen(x, y)
@@ -894,7 +862,7 @@ begin
 end;
 
 //
-// TGLCustomRandomHDS 
+// TGLCustomRandomHDS
 //
 procedure TGLCustomRandomHDS.BoundaryClamp(var x, y: single);
 begin
@@ -1245,13 +1213,11 @@ begin
       begin
         for x := 0 to Side - 1 do
         begin
-          meancol := MeanColor(Bmp[xx, yy].Canvas.Pixels[Side - 1, x],
-            Bmp[xx + 1, yy].Canvas.Pixels[0, x]);
+          meancol := MeanColor(Bmp[xx, yy].Canvas.Pixels[Side - 1, x], Bmp[xx + 1, yy].Canvas.Pixels[0, x]);
 
           Bmp[xx, yy].Canvas.Pixels[Side - 1, x] := meancol;
           Bmp[xx + 1, yy].Canvas.Pixels[0, x] := meancol;
-          meancol := MeanColor(Bmp[xx, yy].Canvas.Pixels[x, Side - 1],
-            Bmp[xx, yy + 1].Canvas.Pixels[x, 0]);
+          meancol := MeanColor(Bmp[xx, yy].Canvas.Pixels[x, Side - 1], Bmp[xx, yy + 1].Canvas.Pixels[x, 0]);
 
           Bmp[xx, yy].Canvas.Pixels[x, Side - 1] := meancol;
           Bmp[xx, yy + 1].Canvas.Pixels[x, 0] := meancol;
@@ -1264,8 +1230,7 @@ begin
     begin
       for xx := 0 to nbTiles - 1 do
       begin
-        with FTerrainRenderer.MaterialLibrary.AddTextureMaterial
-          (Format('%s%d%d', [Self.Name, xx, yy]), Bmp[xx, yy]) do
+        with FTerrainRenderer.MaterialLibrary.AddTextureMaterial(Format('%s%d%d', [Self.Name, xx, yy]), Bmp[xx, yy]) do
         begin
           // Material.Texture.MinFilter:=miNearest;
           Material.Texture.TextureWrap := twNone;
@@ -1415,8 +1380,7 @@ begin
     begin
       for x := 0 to (FSize div FTerrainRenderer.TileSize) - 1 do
       begin
-        Mat := FTerrainRenderer.MaterialLibrary.LibMaterialByName
-          (Format('%s%d%d', [Self.Name, x, y]));
+        Mat := FTerrainRenderer.MaterialLibrary.LibMaterialByName(Format('%s%d%d', [Self.Name, x, y]));
         if Mat <> nil then
           Mat.Material.DestroyHandles;
       end; // for x
@@ -1425,8 +1389,7 @@ begin
   end;
   if (FSlave) and (Owner <> nil) then
     with LandTileInfo do
-      TGLTiledRndLandscape(Owner).MarkDirty(x * FSize, z * FSize,
-        (x + 1) * FSize - 1, (z + 1) * FSize - 1);
+      TGLTiledRndLandscape(Owner).MarkDirty(x * FSize, z * FSize, (x + 1) * FSize - 1, (z + 1) * FSize - 1);
   inherited;
 end;
 
@@ -1533,8 +1496,7 @@ begin
           break; // In the sea or out of map
         if MinZ < z then
         begin
-          FHeight[x, y] := FHeight[x, y] - FErosionByRain.ErosionRate * Ks *
-            FRangeHeight; // Erosion
+          FHeight[x, y] := FHeight[x, y] - FErosionByRain.ErosionRate * Ks * FRangeHeight; // Erosion
           x := minx;
           y := miny;
           z := MinZ;
@@ -1543,8 +1505,7 @@ begin
         end // if
         else
         begin // Fallen into a pool? Deposit the charge
-          FHeight[x, y] := FHeight[x, y] + MinFloat(MinZ - z,
-            FErosionByRain.DepositRate * Ks * FRangeHeight * Charge);
+          FHeight[x, y] := FHeight[x, y] + MinFloat(MinZ - z, FErosionByRain.DepositRate * Ks * FRangeHeight * Charge);
           break; // Go to next rain drop
         end; // else
       end; // while
@@ -1553,9 +1514,9 @@ begin
 end; // *)
 
 (*
-Variants:
+  Variants:
 
-procedure TGLBaseRandomHDS.DoErosionByRain(const Intensity: single);
+  procedure TGLBaseRandomHDS.DoErosionByRain(const Intensity: single);
   const
   NeighX	:array[0..7] of integer=(-1, 0, 1, 1, 1, 0,-1,-1);
   NeighY	:array[0..7] of integer=(-1,-1,-1, 0, 1, 1, 1, 0);
@@ -1799,8 +1760,7 @@ begin
       if FHeight[i, j] < FSeaLevel - FSeaTransparency then
         FHeight[i, j] := FSeaLevel - 1 // Lvl-c-random*wave
       else if FHeight[i, j] < FSeaLevel then
-        FHeight[i, j] := FSeaLevel - (FSeaLevel - FHeight[i, j]) /
-          FSeaTransparency;
+        FHeight[i, j] := FSeaLevel - (FSeaLevel - FHeight[i, j]) / FSeaTransparency;
     end; // for
   end; // for
 end;
@@ -1941,8 +1901,7 @@ begin
   end; // if
 end;
 
-procedure TGLCustomRandomHDS.SetTerrainRenderer(const Value
-  : TGLTerrainRenderer);
+procedure TGLCustomRandomHDS.SetTerrainRenderer(const Value: TGLTerrainRenderer);
 begin
   FTerrainRenderer := Value;
   if not FSlave then
@@ -1979,12 +1938,9 @@ begin
       y0 := (FSize + (YTop mod (FSize))) mod (FSize);
     if FLandCover then
     begin
-      MaterialName := Format('%s%d%d', [Self.Name, x0 div (heightData.Size - 1),
-        y0 div (heightData.Size - 1)]);
+      MaterialName := Format('%s%d%d', [Self.Name, x0 div (heightData.Size - 1), y0 div (heightData.Size - 1)]);
       TextureCoordinatesMode := tcmLocal;
-      TextureCoordinatesScale :=
-        TexPointMake((Self.FSize) / (heightData.Size - 1),
-        (Self.FSize) / (heightData.Size - 1));
+      TextureCoordinatesScale := TexPointMake((Self.FSize) / (heightData.Size - 1), (Self.FSize) / (heightData.Size - 1));
     end // if
     else
     begin
@@ -2027,8 +1983,7 @@ end;
 
 { TGLFractalHDS }
 
-procedure TGLFractalHDS.BuildHeightField(const aDepth, aSeed,
-  aAmplitude: integer);
+procedure TGLFractalHDS.BuildHeightField(const aDepth, aSeed, aAmplitude: integer);
 begin
   fDepth := aDepth;
   FSeed := aSeed;
@@ -2038,8 +1993,7 @@ end;
 
 procedure TGLFractalHDS.BuildHeightField;
 begin
-  FractalMiddlePointHDS(fDepth, FSeed, fAmplitude, fRoughness, FCyclic, FHeight,
-    FMinHeight, FMaxHeight);
+  FractalMiddlePointHDS(fDepth, FSeed, fAmplitude, fRoughness, FCyclic, FHeight, FMinHeight, FMaxHeight);
   FRangeHeight := FMaxHeight - FMinHeight;
   Scale.x := 1;
   Scale.y := 1;
@@ -2151,8 +2105,7 @@ begin
   end; // for
 end;
 
-procedure TGLTiledRndLandscape.ComputeLandTile(const aX, aZ: integer;
-  var NewLandTile: TLandTile);
+procedure TGLTiledRndLandscape.ComputeLandTile(const aX, aZ: integer; var NewLandTile: TLandTile);
 var
   sx, sz: string;
 begin
@@ -2182,10 +2135,9 @@ begin
   OnCreateLandTile(aX, aZ, NewLandTile.Seed, NewLandTile);
   with NewLandTile.LandTileInfo do
     FLandTileInfo.State := hdsReady;
-  MarkDirty(aX * fLandTileSize, aZ * fLandTileSize, (aX + 1) * fLandTileSize -
-    1, (aZ + 1) * fLandTileSize - 1);
+  MarkDirty(aX * fLandTileSize, aZ * fLandTileSize, (aX + 1) * fLandTileSize - 1, (aZ + 1) * fLandTileSize - 1);
   fComputedLandTile := nil;
-  fLandTileComputing := False;
+  FLandTileComputing := False;
   fLandTiles.Add(NewLandTile);
   Application.ProcessMessages;
 end;
@@ -2246,15 +2198,13 @@ begin
   Result := (random >= FLandTileDensity);
 end;
 
-procedure TGLTiledRndLandscape.fDefaultOnCreateDefaultTile
-  (heightData: TGLHeightData);
+procedure TGLTiledRndLandscape.fDefaultOnCreateDefaultTile(heightData: TGLHeightData);
 begin
   heightData.DataState := hdsNone;
   // raise EAccessViolation.Create('No DefaultStartPreparingDefaultTile procedure supplied.');
 end;
 
-procedure TGLTiledRndLandscape.FindLandTile(const x, z: single;
-  var TileX, TileZ: integer);
+procedure TGLTiledRndLandscape.FindLandTile(const x, z: single; var TileX, TileZ: integer);
 begin
   TileX := Floor(x / fLandTileSize);
   TileZ := Floor(z / fLandTileSize);
@@ -2268,10 +2218,8 @@ var
   d1, d2: single;
 begin
   CameraPosition(x, z);
-  d1 := sqr(x - TLandTile(Item1^).LandTileInfo.x) +
-    sqr(z - TLandTile(Item1^).LandTileInfo.z);
-  d2 := sqr(x - TLandTile(Item2^).LandTileInfo.x) +
-    sqr(z - TLandTile(Item2^).LandTileInfo.z);
+  d1 := sqr(x - TLandTile(Item1^).LandTileInfo.x) + sqr(z - TLandTile(Item1^).LandTileInfo.z);
+  d2 := sqr(x - TLandTile(Item2^).LandTileInfo.x) + sqr(z - TLandTile(Item2^).LandTileInfo.z);
   Result := Round(d1 - d2);
 end;
 
@@ -2471,14 +2419,12 @@ begin
   FLandTileDensity := Value;
 end;
 
-procedure TGLTiledRndLandscape.SetOnCreateDefaultTile
-  (const Value: TStartPreparingDataEvent);
+procedure TGLTiledRndLandscape.SetOnCreateDefaultTile(const Value: TStartPreparingDataEvent);
 begin
   fOnCreateDefaultTile := Value;
 end;
 
-procedure TGLTiledRndLandscape.SetOnCreateLandTile
-  (const Value: TOnCreateLandTile);
+procedure TGLTiledRndLandscape.SetOnCreateLandTile(const Value: TOnCreateLandTile);
 begin
   fOnCreateLandTile := Value;
 end;
@@ -2494,8 +2440,7 @@ begin
   fLandTileSize := aSize;
 end;
 
-procedure TGLTiledRndLandscape.SetTerrainRenderer
-  (const Value: TGLTerrainRenderer);
+procedure TGLTiledRndLandscape.SetTerrainRenderer(const Value: TGLTerrainRenderer);
 begin
   FTerrainRenderer := Value;
   FTerrainRenderer.HeightDataSource := Self;
@@ -2510,8 +2455,7 @@ begin
   begin
     DataState := hdsPreparing;
 
-    if (System.abs(XLeft) mod (heightData.Size - 1) = 0) and
-      (System.abs(YTop) mod (heightData.Size - 1) = 0) then
+    if (System.abs(XLeft) mod (heightData.Size - 1) = 0) and (System.abs(YTop) mod (heightData.Size - 1) = 0) then
     begin
       FindLandTile(XLeft, YTop, tx, tz);
 
@@ -2544,18 +2488,14 @@ begin
   end; // with
 end;
 
-function TGLTiledRndLandscape.TileDistance(const x1, z1, x2,
-  z2: integer): single;
+function TGLTiledRndLandscape.TileDistance(const x1, z1, x2, z2: integer): single;
 begin
-  Result := sqrt(sqr(FExtentXhalf - abs(abs(x1 - x2) - FExtentXhalf)) +
-    sqr(FExtentZhalf - abs(abs(z1 - z2) - FExtentZhalf)));
+  Result := sqrt(sqr(FExtentXhalf - abs(abs(x1 - x2) - FExtentXhalf)) + sqr(FExtentZhalf - abs(abs(z1 - z2) - FExtentZhalf)));
 end;
 
-function TGLTiledRndLandscape.TileDistanceSquared(const x1, z1, x2,
-  z2: integer): integer;
+function TGLTiledRndLandscape.TileDistanceSquared(const x1, z1, x2, z2: integer): integer;
 begin
-  Result := sqr(FExtentXhalf - abs(abs(x1 - x2) - FExtentXhalf)) +
-    sqr(FExtentZhalf - abs(abs(z1 - z2) - FExtentZhalf));
+  Result := sqr(FExtentXhalf - abs(abs(x1 - x2) - FExtentXhalf)) + sqr(FExtentZhalf - abs(abs(z1 - z2) - FExtentZhalf));
 end;
 
 procedure TGLTiledRndLandscape.Update;
@@ -2595,7 +2535,7 @@ begin
     end; // for
 
     { If not, compute it }
-    if not Found and not fLandTileComputing then
+    if not Found and not FLandTileComputing then
     begin
       if fLandTiles.Count >= FLandTileCapacity then
       begin // If the tile buffer is full...
@@ -2640,8 +2580,7 @@ end;
 //
 // TGLFractalArchipelago
 //
-procedure TGLFractalArchipelago.ComputeLandTile(const aX, aZ: integer;
-  var NewLandTile: TLandTile);
+procedure TGLFractalArchipelago.ComputeLandTile(const aX, aZ: integer; var NewLandTile: TLandTile);
 begin
   NewLandTile := TGLFractalHDS.Create(Self);
   NewLandTile.FSlave := True;
@@ -2659,7 +2598,7 @@ begin
   Sea := False; // Sea is drawn by the PostRender event
 end;
 
-procedure TGLFractalArchipelago.FOnCreateDefaultTile(heightData: TGLHeightData);
+procedure TGLFractalArchipelago.fOnCreateDefaultTile(heightData: TGLHeightData);
 var
   x, y: integer;
   rasterLine: GLVectorGeometry.PSingleArray;
@@ -2686,8 +2625,7 @@ begin
   end; // with
 end;
 
-procedure TGLFractalArchipelago.FOnCreateLandTile(aX, aZ, aSeed: integer;
-  var aLandscape: TLandTile);
+procedure TGLFractalArchipelago.fOnCreateLandTile(aX, aZ, aSeed: integer; var aLandscape: TLandTile);
 begin
   InitializeRandomGenerator(aSeed);
   with TGLFractalHDS(aLandscape) do
@@ -2726,8 +2664,7 @@ begin
   end; // with
 end;
 
-procedure TGLFractalArchipelago.FPostRenderSeaDynamic
-  (var rci: TGLRenderContextInfo; var HeightDatas: TList);
+procedure TGLFractalArchipelago.FPostRenderSeaDynamic(var rci: TGLRenderContextInfo; var HeightDatas: TList);
 // Code borrowed from Eric's Archipelago GLScene advanced demo
 var
   i, x, y, s, s2: integer;
@@ -2812,8 +2749,7 @@ begin
   until not FTerrainRenderer.MaterialLibrary.UnApplyMaterial(rci);
 end;
 
-procedure TGLFractalArchipelago.fPostRenderSeaStatic
-  (var rci: TGLRenderContextInfo; var HeightDatas: TList);
+procedure TGLFractalArchipelago.FPostRenderSeaStatic(var rci: TGLRenderContextInfo; var HeightDatas: TList);
 var
   i, x, y, s, s2: integer;
   hd: TGLHeightData;
@@ -2941,8 +2877,7 @@ begin
   FSeaMaterialName := Value;
 end;
 
-procedure TGLFractalArchipelago.SetTerrainRenderer
-  (const Value: TGLTerrainRenderer);
+procedure TGLFractalArchipelago.SetTerrainRenderer(const Value: TGLTerrainRenderer);
 begin
   inherited;
   SeaDynamic := FSeaDynamic; // Called to hook the PostRender event handler
@@ -2962,9 +2897,8 @@ end;
 { *******              RANDOM HDS ALGORITHMS             ******** }
 { *************************************************************** }
 
-procedure FractalMiddlePointHDS(const aDepth, aSeed, aAmplitude: integer;
-  const aRoughness: single; aCyclic: boolean; var z: TMapOfSingle;
-  var MinZ, MaxZ: single);
+procedure FractalMiddlePointHDS(const aDepth, aSeed, aAmplitude: integer; const aRoughness: single; aCyclic: boolean;
+  var z: TMapOfSingle; var MinZ, MaxZ: single);
 { Fractal algorithm based on the middle-point displacement method. It is built in
   a way that it can be juxtaposed seamlessly to itself (cyclic boundaries) }
 var

@@ -22,7 +22,7 @@ object DataModule1: TDataModule1
       Position.Coordinates = {0000404000000040000000400000803F}
     end
   end
-  object GLSDLViewer1: TGLSDLViewer
+  object GLSDLViewer1: TSDLViewer
     Camera = GLCamera1
     Width = 640
     Height = 480

@@ -14,8 +14,7 @@ uses
   System.Classes,
   System.SysUtils,
   System.Math,
-  
-  VXS.OpenGLAdapter,
+
   VXS.VectorGeometry,
   VXS.CrossPlatform,
   VXS.Context,
@@ -32,16 +31,13 @@ type
     procedure SaveToFile(const filename: string); override;
     procedure LoadFromStream(stream: TStream); override;
     procedure SaveToStream(stream: TStream); override;
-    procedure AssignFromTexture(textureContext: TVXContext;
-      const textureHandle: GLuint;
-      textureTarget: TVXTextureTarget;
-      const CurrentFormat: Boolean;
-      const intFormat: TVXInternalFormat); reintroduce;
+    procedure AssignFromTexture(textureContext: TVXContext; const textureHandle: GLuint; textureTarget: TVXTextureTarget;
+      const CurrentFormat: Boolean; const intFormat: TVXInternalFormat); reintroduce;
   end;
 
-//=============================================================
+// =============================================================
 implementation
-//=============================================================
+// =============================================================
 
 const
   O3_TC_RGB_S3TC_DXT1 = 1;
@@ -84,7 +80,7 @@ type
     // Number of mipmaps.
     NumMipmaps: Cardinal;
     // The texture name (optional).
-    TextureName: array[0..127] of AnsiChar;
+    TextureName: array [0 .. 127] of AnsiChar;
     // The texture id (optional).
     TextureId: Cardinal;
   end;
@@ -97,9 +93,9 @@ procedure TVXO3TCImage.LoadFromFile(const filename: string);
 var
   fs: TStream;
 begin
-  if FileStreamExists(fileName) then
+  if FileStreamExists(filename) then
   begin
-    fs := CreateFileStream(fileName, fmOpenRead);
+    fs := CreateFileStream(filename, fmOpenRead);
     try
       LoadFromStream(fs);
     finally
@@ -115,7 +111,7 @@ procedure TVXO3TCImage.SaveToFile(const filename: string);
 var
   fs: TStream;
 begin
-  fs := CreateFileStream(fileName, fmOpenWrite or fmCreate);
+  fs := CreateFileStream(filename, fmOpenWrite or fmCreate);
   try
     SaveToStream(fs);
   finally
@@ -126,7 +122,7 @@ end;
 
 procedure TVXO3TCImage.LoadFromStream(stream: TStream);
 type
-  TFOURCC = array[0..3] of AnsiChar;
+  TFOURCC = array [0 .. 3] of AnsiChar;
 var
   Header: TO3TC_Header;
   ChunkHeader: TO3TC_ChunkHeader;
@@ -178,7 +174,7 @@ begin
     O3_TC_ATI3DC_ATI2N:
       begin
         fColorFormat := GL_COMPRESSED_LUMINANCE_ALPHA;
-///->        fInternalFormat := tfCOMPRESSED_LUMINANCE_ALPHA_3DC;
+        /// ->        fInternalFormat := tfCOMPRESSED_LUMINANCE_ALPHA_3DC;
         fDataType := GL_COMPRESSED_LUMINANCE_ALPHA_ARB;
         fElementSize := 16;
       end;
@@ -196,21 +192,19 @@ end;
 
 procedure TVXO3TCImage.SaveToStream(stream: TStream);
 const
-  Magic: array[0..3] of AnsiChar = 'O3TC';
+  Magic: array [0 .. 3] of AnsiChar = 'O3TC';
 var
   Header: TO3TC_Header;
   ChunkHeader: TO3TC_ChunkHeader;
 begin
-  if not ((fColorFormat = GL_COMPRESSED_RGB_S3TC_DXT1_EXT)
-    or (fColorFormat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT)
-    or (fColorFormat = GL_COMPRESSED_LUMINANCE_ALPHA_ARB)) then
-    raise
-      EInvalidRasterFile.Create('These image format do not match the O3TC format specification.');
+  if not((fColorFormat = GL_COMPRESSED_RGB_S3TC_DXT1_EXT) or (fColorFormat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT) or
+    (fColorFormat = GL_COMPRESSED_LUMINANCE_ALPHA_ARB)) then
+    raise EInvalidRasterFile.Create('These image format do not match the O3TC format specification.');
   // Setup Header
   Header.Magic := Cardinal(Magic);
-  Header.Size := SizeOf(TO3TC_Header) - SizeOf(Cardinal);
+  Header.Size := Sizeof(TO3TC_Header) - Sizeof(Cardinal);
   ChunkHeader.Extension := 0;
-  if not (fCubeMap or fTextureArray) then
+  if not(fCubeMap or fTextureArray) then
   begin
     Header.Version := 1;
   end
@@ -222,7 +216,7 @@ begin
     if fTextureArray then
       ChunkHeader.Extension := ChunkHeader.Extension or O3_TC_ARRAY;
   end;
-  ChunkHeader.ChunkHeaderSize := SizeOf(TO3TC_ChunkHeader);
+  ChunkHeader.ChunkHeaderSize := Sizeof(TO3TC_ChunkHeader);
   ChunkHeader.Width := GetWidth;
   ChunkHeader.Height := GetHeight;
   ChunkHeader.Depth := GetDepth;
@@ -231,12 +225,12 @@ begin
   FillChar(ChunkHeader.TextureName, 128, 0);
   ChunkHeader.TextureId := 0;
   case fColorFormat of
-    GL_COMPRESSED_RGB_S3TC_DXT1_EXT: ChunkHeader.InternalPixelFormat :=
-      O3_TC_RGB_S3TC_DXT1;
-    GL_COMPRESSED_RGBA_S3TC_DXT5_EXT: ChunkHeader.InternalPixelFormat :=
-      O3_TC_RGBA_S3TC_DXT5;
-    GL_COMPRESSED_LUMINANCE_ALPHA_ARB: ChunkHeader.InternalPixelFormat :=
-      O3_TC_ATI3DC_ATI2N;
+    GL_COMPRESSED_RGB_S3TC_DXT1_EXT:
+      ChunkHeader.InternalPixelFormat := O3_TC_RGB_S3TC_DXT1;
+    GL_COMPRESSED_RGBA_S3TC_DXT5_EXT:
+      ChunkHeader.InternalPixelFormat := O3_TC_RGBA_S3TC_DXT5;
+    GL_COMPRESSED_LUMINANCE_ALPHA_ARB:
+      ChunkHeader.InternalPixelFormat := O3_TC_ATI3DC_ATI2N;
   end;
   ChunkHeader.Size := DataSize;
   stream.Write(Header, Sizeof(TO3TC_Header));
@@ -244,11 +238,8 @@ begin
   stream.Write(fData[0], ChunkHeader.Size);
 end;
 
-procedure TVXO3TCImage.AssignFromTexture(textureContext: TVXContext;
-  const textureHandle: GLuint;
-  textureTarget: TVXTextureTarget;
-  const CurrentFormat: Boolean;
-  const intFormat: TVXInternalFormat);
+procedure TVXO3TCImage.AssignFromTexture(textureContext: TVXContext; const textureHandle: GLuint;
+  textureTarget: TVXTextureTarget; const CurrentFormat: Boolean; const intFormat: TVXInternalFormat);
 var
   oldContext: TVXContext;
   contextActivate: Boolean;
@@ -264,11 +255,9 @@ var
   function blockOffset(x, y, z: Integer): Integer;
   begin
     if z >= (FLOD[level].Depth and -4) then
-      Result := fElementSize * (cw * ch * (FLOD[level].Depth and -4) + x +
-        cw * (y + ch * (z - 4 * ch)))
+      Result := fElementSize * (cw * ch * (FLOD[level].Depth and -4) + x + cw * (y + ch * (z - 4 * ch)))
     else
-      Result := fElementSize * (4 * (x + cw * (y + ch * Floor(z / 4))) + (z and
-        3));
+      Result := fElementSize * (4 * (x + cw * (y + ch * Floor(z / 4))) + (z and 3));
     if Result < 0 then
       Result := 0;
   end;
@@ -299,14 +288,12 @@ begin
       fCubeMap := false;
       faceCount := 1;
     end;
-    fTextureArray := (glTarget = GL_TEXTURE_1D_ARRAY)
-      or (glTarget = GL_TEXTURE_2D_ARRAY)
-      or (glTarget = GL_TEXTURE_CUBE_MAP_ARRAY);
+    fTextureArray := (glTarget = GL_TEXTURE_1D_ARRAY) or (glTarget = GL_TEXTURE_2D_ARRAY) or
+      (glTarget = GL_TEXTURE_CUBE_MAP_ARRAY);
 
     repeat
       // Check level existence
-      glGetTexLevelParameteriv(glTarget, fLevelCount, GL_TEXTURE_INTERNAL_FORMAT,
-        @texFormat);
+      glGetTexLevelParameteriv(glTarget, fLevelCount, GL_TEXTURE_INTERNAL_FORMAT, @texFormat);
       if texFormat = 1 then
         Break;
       Inc(fLevelCount);
@@ -315,9 +302,7 @@ begin
         glGetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_WIDTH, @FLOD[0].Width);
         glGetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_HEIGHT, @FLOD[0].Height);
         FLOD[0].Depth := 0;
-        if (glTarget = GL_TEXTURE_3D)
-          or (glTarget = GL_TEXTURE_2D_ARRAY)
-          or (glTarget = GL_TEXTURE_CUBE_MAP_ARRAY) then
+        if (glTarget = GL_TEXTURE_3D) or (glTarget = GL_TEXTURE_2D_ARRAY) or (glTarget = GL_TEXTURE_CUBE_MAP_ARRAY) then
           glGetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_DEPTH, @FLOD[0].Depth);
         residentFormat := OpenVXFormatToInternalFormat(texFormat);
         if CurrentFormat then
@@ -330,8 +315,7 @@ begin
         if texLod > optLod then
           texLod := optLod;
         // Check for MipMap posibility
-        if ((fInternalFormat >= tfFLOAT_R16)
-          and (fInternalFormat <= tfFLOAT_RGBA32)) then
+        if ((fInternalFormat >= tfFLOAT_R16) and (fInternalFormat <= tfFLOAT_RGBA32)) then
           texLod := 1;
       end;
     until fLevelCount = Integer(texLod);
@@ -339,7 +323,7 @@ begin
     if fLevelCount > 0 then
     begin
       fElementSize := GetTextureElementSize(fColorFormat, fDataType);
-      ReallocMem(FData, DataSize);
+      ReallocMem(fData, DataSize);
       bCompressed := IsCompressed;
       vtcBuffer := nil;
 
@@ -352,7 +336,8 @@ begin
           if bCompressed then
           begin
 
-            if GL_NV_texture_compression_vtc and IsVolume then
+            if IsVolume then
+            /// and GL_NV_texture_compression_vtc
             begin
               if level = 0 then
                 GetMem(vtcBuffer, GetLevelSizeInByte(0));
@@ -370,7 +355,7 @@ begin
                     Move(bottom^, top^, fElementSize);
                     Inc(top, fElementSize);
                   end;
-             end
+            end
             else
               glGetCompressedTexImage(glTarget, level, GetLevelAddress(level));
           end
@@ -381,11 +366,11 @@ begin
       if Assigned(vtcBuffer) then
         FreeMem(vtcBuffer);
       // Check memory corruption
-      ReallocMem(FData, DataSize);
+      ReallocMem(fData, DataSize);
 
       if fLevelCount = 0 then
         fLevelCount := 1;
-      CheckOpenGLError;
+      /// CheckOpenGLError;
     end;
   finally
     if contextActivate then
@@ -402,11 +387,12 @@ begin
   Result := [dfcRead, dfcWrite];
 end;
 
-//--------------------------------------------------------------
+// --------------------------------------------------------------
 initialization
-//--------------------------------------------------------------
 
-  { Register this Fileformat-Handler }
-  RegisterRasterFormat('o3tc', 'oZone3D Texture Compression', TVXO3TCImage);
+// --------------------------------------------------------------
+
+{ Register this Fileformat-Handler }
+RegisterRasterFormat('o3tc', 'oZone3D Texture Compression', TVXO3TCImage);
 
 end.

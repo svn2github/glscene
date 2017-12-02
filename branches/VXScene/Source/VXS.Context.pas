@@ -2,8 +2,8 @@
 // VXScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
 {
-   Prototypes and base implementation of TVXContext.
-   The history is logged in a former version of the unit.
+  Prototypes and base implementation of TVXContext.
+  The history is logged in a former version of the unit.
 }
 unit VXS.Context;
 
@@ -38,7 +38,7 @@ uses
 
 // Buffer ID's for Multiple-Render-Targets (using GL_ATI_draw_buffers)
 const
-  MRT_BUFFERS: array[0..3] of GLenum = (GL_FRONT_LEFT, GL_AUX0, GL_AUX1, GL_AUX2);
+  MRT_BUFFERS: array [0 .. 3] of GLenum = (GL_FRONT_LEFT, GL_AUX0, GL_AUX1, GL_AUX2);
 
 type
   TVXRCOption = (rcoDoubleBuffered, rcoStereo, rcoDebug, rcoOGL_ES);
@@ -52,13 +52,14 @@ type
   end;
 
   TTaskProcedure = procedure of object; stdcall;
+
   TServiceContextTask = record
     Task: TTaskProcedure;
     Event: TFinishTaskEvent;
   end;
 
-  TServiceContextTaskList = {$IFDEF VKS_GENERIC_PREFIX} specialize {$ENDIF}
-    GThreadList < TServiceContextTask > ;
+  TServiceContextTaskList = {$IFDEF VXS_GENERIC_PREFIX} specialize {$ENDIF}
+    GThreadList<TServiceContextTask>;
 
   TVXContext = class;
   TVXContextManager = class;
@@ -74,22 +75,20 @@ type
 
   TVXContextAcceleration = (chaUnknown, chaHardware, chaSoftware);
 
-  TVXAntiAliasing = (// Multisample Antialiasing
-    aaDefault, aaNone, aa2x, aa2xHQ, aa4x, aa4xHQ,
-    aa6x, aa8x, aa16x,
+  TVXAntiAliasing = ( // Multisample Antialiasing
+    aaDefault, aaNone, aa2x, aa2xHQ, aa4x, aa4xHQ, aa6x, aa8x, aa16x,
     // Coverage Sampling Antialiasing
     csa8x, csa8xHQ, csa16x, csa16xHQ);
 
-  TVSyncMode = (vsmSync, vsmNoSync);
+  TVXSyncMode = (vsmSync, vsmNoSync);
 
-  { Wrapper around an OpenVX rendering context.
-     The aim of this class is to offer platform-independant
-     initialization, activation and management of OpenVX
-     rendering context. The class also offers notifications
-     event and error/problems detection.
-     This is a virtual abstract a class, and platform-specific
-     subclasses must be used.
-     All rendering context share the same lists. }
+  (* Wrapper around an OpenVX rendering context.
+    The aim of this class is to offer platform-independant
+    initialization, activation and management of OpenVX
+    rendering context. The class also offers notifications
+    event and error/problems detection.
+    This is a virtual abstract a class, and platform-specific
+    subclasses must be used. All rendering context share the same lists. *)
   TVXContext = class
   private
     FColorBits, FAlphaBits: Integer;
@@ -117,8 +116,8 @@ type
     procedure SetActive(const aActive: Boolean);
     procedure SetLayer(const Value: TVXContextLayer);
   protected
-    FVK: TVXExtensionsAndEntryPoints;
-    FXVK: TAbstractMultitextureCoordinator;
+    FVX: TVXExtensionsAndEntryPoints;
+    FXVX: TAbstractMultitextureCoordinator;
     FVXStates: TVXStateCache;
     FTransformation: TVXTransformation;
     FAcceleration: TVXContextAcceleration;
@@ -126,9 +125,9 @@ type
     FSharedContexts: TThreadList;
     FLock: TCriticalSection;
     procedure PropagateSharedContext;
-    procedure DoCreateContext(ADeviceHandle: THandle); virtual; abstract; //VCL -> HDC
-    procedure DoCreateMemoryContext(OutputDevice: THandle; Width, Height: //VCL ->HWND
-         Integer; BufferCount: integer = 1); virtual; abstract;
+    procedure DoCreateContext(ADeviceHandle: THandle); virtual; abstract; // VCL -> HDC
+    procedure DoCreateMemoryContext(OutputDevice: THandle; Width, Height: // VCL ->HWND
+      Integer; BufferCount: Integer = 1); virtual; abstract;
     function DoShareLists(aContext: TVXContext): Boolean; virtual; abstract;
     procedure DoDestroyContext; virtual; abstract;
     procedure DoActivate; virtual; abstract;
@@ -140,7 +139,7 @@ type
     constructor Create; virtual;
     destructor Destroy; override;
     { An application-side cache of global per-context OpenGL states
-       and parameters }
+      and parameters }
     property VXStates: TVXStateCache read FVXStates;
     property PipelineTransformation: TVXTransformation read FTransformation;
     // Context manager reference
@@ -158,57 +157,55 @@ type
     { Auxiliary buffers bits for the rendering context }
     property AuxBuffers: Integer read FAuxBuffers write SetAuxBuffers;
     { AntiAliasing option.
-       Ignored if not hardware supported, currently based on ARB_multisample. }
-    property AntiAliasing: TVXAntiAliasing read FAntiAliasing write
-      SetAntiAliasing;
+      Ignored if not hardware supported, currently based on ARB_multisample. }
+    property AntiAliasing: TVXAntiAliasing read FAntiAliasing write SetAntiAliasing;
     { Specifies the layer plane that the rendering context is bound to. }
     property Layer: TVXContextLayer read FLayer write SetLayer;
     { Rendering context options. }
     property Options: TVXRCOptions read FOptions write SetOptions;
     { Allows reading and defining the activity for the context.
-       The methods of this property are just wrappers around calls
-       to Activate and Deactivate. }
+      The methods of this property are just wrappers around calls
+      to Activate and Deactivate. }
     property Active: Boolean read GetActive write SetActive;
     { Indicates if the context is hardware-accelerated. }
     property Acceleration: TVXContextAcceleration read FAcceleration write SetAcceleration;
     { Triggered whenever the context is destroyed.
-       This events happens *before* the context has been
-       actually destroyed, OpenVX resource cleanup can
-       still occur here. }
-    property OnDestroyContext: TNotifyEvent read FOnDestroyContext write
-      FOnDestroyContext;
+      This events happens *before* the context has been
+      actually destroyed, OpenVX resource cleanup can
+      still occur here. }
+    property OnDestroyContext: TNotifyEvent read FOnDestroyContext write FOnDestroyContext;
     { Creates the context.
-       This method must be invoked before the context can be used. }
-    procedure CreateContext(ADeviceHandle: THandle); overload; //VCL -> HDC
+      This method must be invoked before the context can be used. }
+    procedure CreateContext(ADeviceHandle: THandle); overload; // VCL -> HDC
     { Creates an in-memory context.
-       The function should fail if no hardware-accelerated memory context
-       can be created (the CreateContext method can handle software OpenVX
-       contexts). }
-    procedure CreateMemoryContext(OutputDevice: THandle; Width, Height: //HWND
-      Integer; BufferCount: integer = 1);
+      The function should fail if no hardware-accelerated memory context
+      can be created (the CreateContext method can handle software OpenVX
+      contexts). }
+    procedure CreateMemoryContext(OutputDevice: THandle; Width, Height: // HWND
+      Integer; BufferCount: Integer = 1);
     { Setup display list sharing between two rendering contexts.
-       Both contexts must have the same pixel format. }
-    procedure ShareLists(AContext: TVXContext);
+      Both contexts must have the same pixel format. }
+    procedure ShareLists(aContext: TVXContext);
     { Destroy the context.
-       Will fail if no context has been created.
-       The method will first invoke the OnDestroyContext
-       event, then attempts to deactivate the context
-       (if it is active) before destroying it. }
+      Will fail if no context has been created.
+      The method will first invoke the OnDestroyContext
+      event, then attempts to deactivate the context
+      (if it is active) before destroying it. }
     procedure DestroyContext;
     { Activates the context.
-       A context can be activated multiple times (and must be
-       deactivated the same number of times), but this function
-       will fail if another context is already active. }
+      A context can be activated multiple times (and must be
+      deactivated the same number of times), but this function
+      will fail if another context is already active. }
     procedure Activate;
     { Deactivates the context.
-       Will fail if the context is not active or another
-       context has been activated. }
+      Will fail if the context is not active or another
+      context has been activated. }
     procedure Deactivate;
-    { Call OnPrepare for all handles.  }
+    { Call OnPrepare for all handles. }
     procedure PrepareHandlesData;
     { Returns true if the context is valid.
-       A context is valid from the time it has been successfully
-       created to the time of its destruction. }
+      A context is valid from the time it has been successfully
+      created to the time of its destruction. }
     function IsValid: Boolean; virtual; abstract;
     { Request to swap front and back buffers if they were defined. }
     procedure SwapBuffers; virtual; abstract;
@@ -217,19 +214,19 @@ type
     procedure DestroyAllHandles;
     function RenderOutputDevice: Pointer; virtual; abstract;
     { Access to OpenGL command and extension. }
-    ///property GL: TVXExtensionsAndEntryPoints read FGL; depricated
+    /// property GL: TVXExtensionsAndEntryPoints read FGL; depricated
     property MultitextureCoordinator: TAbstractMultitextureCoordinator read GetXGL;
     property IsPraparationNeed: Boolean read FIsPraparationNeed;
   end;
 
   TVXContextClass = class of TVXContext;
 
-  { A TVXContext with screen control property and methods.
-     This variety of contexts is for drivers that access windows and OpenGL
-     through an intermediate opaque cross-platform API.
-     TVXSceneViewer won't use them, TVXMemoryViewer may be able to use them,
-     but most of the time they will be accessed through a specific viewer
-     class/subclass. }
+  { Context with screen control property and methods.
+    This variety of contexts is for drivers that access windows and OpenGL
+    through an intermediate opaque cross-platform API.
+    TVXSceneViewer won't use them, TVXMemoryViewer may be able to use them,
+    but most of the time they will be accessed through a specific viewer
+    class/subclass. }
   TVXScreenControlingContext = class(TVXContext)
   private
     FWidth, FHeight: Integer;
@@ -242,27 +239,28 @@ type
   end;
 
   PGLRCHandle = ^TVXRCHandle;
+
   TVXRCHandle = record
     FRenderingContext: TVXContext;
     FHandle: GLuint;
     FChanged: Boolean;
   end;
 
-  TOnPrepareHandleData = procedure(AContext: TVXContext) of object;
+  TOnPrepareHandleData = procedure(aContext: TVXContext) of object;
 
   { Wrapper around an OpenVX context handle.
-     This wrapper also takes care of context registrations and data releases
-     related to context releases an cleanups. This is an abstract class,
-     use the TVXListHandle and TVXTextureHandle subclasses. }
+    This wrapper also takes care of context registrations and data releases
+    related to context releases an cleanups. This is an abstract class,
+    use the TVXListHandle and TVXTextureHandle subclasses. }
   TVXContextHandle = class
   private
     FHandles: TList;
-    FLastHandle : PGLRCHandle;
+    FLastHandle: PGLRCHandle;
     FOnPrepare: TOnPrepareHandleData;
     function GetHandle: GLuint;
     function GetContext: TVXContext;
-    function SearchRC(AContext: TVXContext): PGLRCHandle;
-    function RCItem(AIndex: integer): PGLRCHandle; inline;
+    function SearchRC(aContext: TVXContext): PGLRCHandle;
+    function RCItem(AIndex: Integer): PGLRCHandle; inline;
     procedure CheckCurrentRC;
   protected
     // Invoked by when there is no compatible context left for relocation
@@ -279,7 +277,7 @@ type
     { Return OpenVX identifier in current context. }
     property Handle: GLuint read GetHandle;
     { Return current rendering context if handle is allocated in it
-       or first context where handle is allocated. }
+      or first context where handle is allocated. }
     property RenderingContext: TVXContext read GetContext;
     { Return True is data need update in current context. }
     function IsDataNeedUpdate: Boolean;
@@ -291,9 +289,9 @@ type
     procedure NotifyChangesOfData;
     // Checks if required extensions / OpenGL version are met
     class function IsSupported: Boolean; virtual;
-    function IsAllocatedForContext(AContext: TVXContext = nil): Boolean;
+    function IsAllocatedForContext(aContext: TVXContext = nil): Boolean;
     function IsShared: Boolean;
-    function  AllocateHandle: GLuint;
+    function AllocateHandle: GLuint;
     procedure DestroyHandle;
     property OnPrapare: TOnPrepareHandleData read FOnPrepare write FOnPrepare;
   end;
@@ -304,16 +302,14 @@ type
   { A context handle with event-based handle allocation and destruction. }
   TVXVirtualHandle = class(TVXContextHandle)
   private
-    FOnAllocate,
-    FOnDestroy: TVXVirtualHandleEvent;
+    FOnAllocate, FOnDestroy: TVXVirtualHandleEvent;
     FTag: Integer;
   protected
     function DoAllocateHandle: GLuint; override;
     procedure DoDestroyHandle(var AHandle: GLuint); override;
     class function Transferable: Boolean; override;
   public
-    property OnAllocate: TVXVirtualHandleEvent read FOnAllocate write
-      FOnAllocate;
+    property OnAllocate: TVXVirtualHandleEvent read FOnAllocate write FOnAllocate;
     property OnDestroy: TVXVirtualHandleEvent read FOnDestroy write FOnDestroy;
     property Tag: Integer read FTag write FTag;
   end;
@@ -361,7 +357,7 @@ type
   end;
 
   { Manages a handle to a query.
-     Do not use this class directly, use one of its subclasses instead. }
+    Do not use this class directly, use one of its subclasses instead. }
   TVXQueryHandle = class(TVXContextHandle)
   private
     FActive: Boolean;
@@ -377,9 +373,9 @@ type
     procedure EndQuery;
     // Check if result is available from the query.  Result may not be available
     // immediately after ending the query
-    function IsResultAvailable: boolean;
+    function IsResultAvailable: Boolean;
     // Number of bits used to store the query result. eg. 32/64 bit
-    function CounterBits: integer;
+    function CounterBits: Integer;
     // Retrieve query result, may cause a stall if the result is not available yet
     function QueryResultInt: GLint;
     function QueryResultUInt: GLuint;
@@ -393,9 +389,9 @@ type
   end;
 
   { Manages a handle to an occlusion query.
-     Requires OpenVX 1.5+
-     Does *NOT* check for extension availability, this is assumed to have been
-     checked by the user. }
+    Requires OpenVX 1.5+
+    Does *NOT* check for extension availability, this is assumed to have been
+    checked by the user. }
   TVXOcclusionQueryHandle = class(TVXQueryHandle)
   protected
     function GetTarget: GLuint; override;
@@ -416,9 +412,9 @@ type
   end;
 
   { Manages a handle to a timer query.
-     Requires GL_EXT_timer_query extension.
-     Does *NOT* check for extension availability, this is assumed to have been
-     checked by the user. }
+    Requires GL_EXT_timer_query extension.
+    Does *NOT* check for extension availability, this is assumed to have been
+    checked by the user. }
   TVXTimerQueryHandle = class(TVXQueryHandle)
   protected
     function GetTarget: GLuint; override;
@@ -432,9 +428,9 @@ type
   end;
 
   { Manages a handle to a primitive query.
-     Requires OpenVX 3.0+
-     Does *NOT* check for extension availability, this is assumed to have been
-     checked by the user. }
+    Requires OpenVX 3.0+
+    Does *NOT* check for extension availability, this is assumed to have been
+    checked by the user. }
   TVXPrimitiveQueryHandle = class(TVXQueryHandle)
   protected
     function GetTarget: GLuint; override;
@@ -447,8 +443,8 @@ type
   end;
 
   { Manages a handle to a Buffer Object.
-     Does *NOT* check for extension availability, this is assumed to have been
-     checked by the user.  }
+    Does *NOT* check for extension availability, this is assumed to have been
+    checked by the user. }
   TVXBufferObjectHandle = class(TVXContextHandle)
   private
     FSize: Integer;
@@ -464,36 +460,34 @@ type
     { Note that it is not necessary to UnBind before Binding another buffer. }
     procedure UnBind; virtual; abstract;
     { Bind a buffer object to an indexed target, used by transform feedback
-       buffer objects and uniform buffer objects. (OpenVX 3.0+) }
-    procedure BindRange(index: GLuint; offset: GLintptr; size: GLsizeiptr);
-      virtual;
-    { Equivalent to calling BindRange with offset = 0, and size = the size of buffer.}
+      buffer objects and uniform buffer objects. (OpenVX 3.0+) }
+    procedure BindRange(index: GLuint; offset: GLintptr; size: GLsizeiptr); virtual;
+    { Equivalent to calling BindRange with offset = 0, and size = the size of buffer. }
     procedure BindBase(index: GLuint); virtual;
     procedure UnBindBase(index: GLuint); virtual;
     { Specifies buffer content.
-       Common bufferUsage values are GL_STATIC_DRAW_ARB for data that will
-       change rarely, but be used often, GL_STREAM_DRAW_ARB for data specified
-       once but used only a few times, and GL_DYNAMIC_DRAW_ARB for data
-       that is re-specified very often.
-       Valid only if the buffer has been bound. }
+      Common bufferUsage values are GL_STATIC_DRAW_ARB for data that will
+      change rarely, but be used often, GL_STREAM_DRAW_ARB for data specified
+      once but used only a few times, and GL_DYNAMIC_DRAW_ARB for data
+      that is re-specified very often.
+      Valid only if the buffer has been bound. }
     procedure BufferData(p: Pointer; size: Integer; bufferUsage: GLuint);
     // Invokes Bind then BufferData
     procedure BindBufferData(p: Pointer; size: Integer; bufferUsage: GLuint);
     { Updates part of an already existing buffer.
-       offset and size indicate which part of the data in the buffer is
-       to bo modified and p where the data should be taken from. }
+      offset and size indicate which part of the data in the buffer is
+      to bo modified and p where the data should be taken from. }
     procedure BufferSubData(offset, size: Integer; p: Pointer);
     { Map buffer content to memory.
-       Values for access are GL_READ_ONLY_ARB, GL_WRITE_ONLY_ARB and
-       GL_READ_WRITE_ARB.
-       Valid only if the buffer has been bound, must be followed by
-       an UnmapBuffer, only one buffer may be mapped at a time. }
+      Values for access are GL_READ_ONLY_ARB, GL_WRITE_ONLY_ARB and
+      GL_READ_WRITE_ARB.
+      Valid only if the buffer has been bound, must be followed by
+      an UnmapBuffer, only one buffer may be mapped at a time. }
     function MapBuffer(access: GLuint): Pointer;
-    function MapBufferRange(offset: GLint; len: GLsizei; access: GLbitfield):
-      Pointer;
+    function MapBufferRange(offset: GLint; len: GLsizei; access: GLbitfield): Pointer;
     procedure Flush(offset: GLint; len: GLsizei);
     { Unmap buffer content from memory.
-       Must follow a MapBuffer, and happen before the buffer is unbound. }
+      Must follow a MapBuffer, and happen before the buffer is unbound. }
     function UnmapBuffer: GLboolean;
     class function IsSupported: Boolean; override;
     property Target: GLuint read GetTarget;
@@ -501,9 +495,9 @@ type
   end;
 
   { Manages a handle to an Vertex Buffer Object.
-     Does *NOT* check for extension availability, this is assumed to have been
-     checked by the user.
-     Do not use this class directly, use one of its subclasses instead. }
+    Does *NOT* check for extension availability, this is assumed to have been
+    checked by the user.
+    Do not use this class directly, use one of its subclasses instead. }
   TVXVBOHandle = class(TVXBufferObjectHandle)
   private
     function GetVBOTarget: GLuint;
@@ -512,7 +506,7 @@ type
   end;
 
   { Manages a handle to VBO Array Buffer.
-     Typically used to store vertices, normals, texcoords, etc. }
+    Typically used to store vertices, normals, texcoords, etc. }
   TVXVBOArrayBufferHandle = class(TVXVBOHandle)
   protected
     function GetTarget: GLuint; override;
@@ -522,7 +516,7 @@ type
   end;
 
   { Manages a handle to VBO Element Array Buffer.
-     Typically used to store vertex indices. }
+    Typically used to store vertex indices. }
   TVXVBOElementArrayHandle = class(TVXVBOHandle)
   protected
     function GetTarget: GLuint; override;
@@ -532,8 +526,8 @@ type
   end;
 
   { Manages a handle to PBO Pixel Pack Buffer.
-     When bound, commands such as ReadPixels write
-     their data into a buffer object. }
+    When bound, commands such as ReadPixels write
+    their data into a buffer object. }
   TVXPackPBOHandle = class(TVXBufferObjectHandle)
   protected
     function GetTarget: GLuint; override;
@@ -555,19 +549,19 @@ type
   end;
 
   { Manages a handle to a Transform Feedback Buffer Object.
-     Transform feedback buffers can be used to capture vertex data from the
-     vertex or geometry shader stage to perform further processing without
-     going on to the fragment shader stage. }
+    Transform feedback buffers can be used to capture vertex data from the
+    vertex or geometry shader stage to perform further processing without
+    going on to the fragment shader stage. }
   TVXTransformFeedbackBufferHandle = class(TVXBufferObjectHandle)
-    //    FTransformFeedbackBufferBuffer: array[0..15] of GLuint; // (0, 0, 0, ...)
-    //    FTransformFeedbackBufferStart: array[0..15] of GLuint64; // (0, 0, 0, ...)
-    //    FTransformFeedbackBufferSize: array[0..15] of GLuint64; // (0, 0, 0, ...)
+    // FTransformFeedbackBufferBuffer: array[0..15] of GLuint; // (0, 0, 0, ...)
+    // FTransformFeedbackBufferStart: array[0..15] of GLuint64; // (0, 0, 0, ...)
+    // FTransformFeedbackBufferSize: array[0..15] of GLuint64; // (0, 0, 0, ...)
   protected
     function GetTarget: GLuint; override;
   public
     procedure Bind; override;
     procedure UnBind; override;
-    procedure BeginTransformFeedback(primitiveMode: GLEnum);
+    procedure BeginTransformFeedback(primitiveMode: GLenum);
     procedure EndTransformFeedback();
     procedure BindRange(index: GLuint; offset: GLintptr; size: GLsizeiptr); override;
     procedure BindBase(index: GLuint); override;
@@ -586,12 +580,12 @@ type
   end;
 
   { Manages a handle to a Uniform Buffer Object (UBO).
-     Uniform buffer objects store "uniform blocks"; groups of uniforms
-     that can be passed as a group into a GLSL program. }
+    Uniform buffer objects store "uniform blocks"; groups of uniforms
+    that can be passed as a group into a GLSL program. }
   TVXUniformBufferHandle = class(TVXBufferObjectHandle)
-    //    FUniformBufferBuffer: array[0..15] of GLuint; // (0, 0, 0, ...)
-    //    FUniformBufferStart: array[0..15] of GLuint64; // (0, 0, 0, ...)
-    //    FUniformBufferSize: array[0..15] of GLuint64; // (0, 0, 0, ...)
+    // FUniformBufferBuffer: array[0..15] of GLuint; // (0, 0, 0, ...)
+    // FUniformBufferStart: array[0..15] of GLuint64; // (0, 0, 0, ...)
+    // FUniformBufferSize: array[0..15] of GLuint64; // (0, 0, 0, ...)
   protected
     function GetTarget: GLuint; override;
   public
@@ -603,9 +597,9 @@ type
     class function IsSupported: Boolean; override;
   end;
 
-  { Manages a handle to a Vertex Array Object (VAO).
-     Vertex array objects are used to rapidly switch between large sets
-     of array state. }
+  (* Manages a handle to a Vertex Array Object (VAO).
+    Vertex array objects are used to rapidly switch between large sets
+    of array state. *)
   TVXVertexArrayHandle = class(TVXContextHandle)
   protected
     class function Transferable: Boolean; override;
@@ -618,35 +612,26 @@ type
     class function IsSupported: Boolean; override;
   end;
 
-  TVXFramebufferStatus = (
-    fsComplete,
-    fsIncompleteAttachment,
-    fsIncompleteMissingAttachment,
-    fsIncompleteDuplicateAttachment,
-    fsIncompleteDimensions,
-    fsIncompleteFormats,
-    fsIncompleteDrawBuffer,
-    fsIncompleteReadBuffer,
-    fsUnsupported,
-    fsIncompleteMultisample,
-    fsStatusError);
+  TVXFramebufferStatus = (fsComplete, fsIncompleteAttachment, fsIncompleteMissingAttachment, fsIncompleteDuplicateAttachment,
+    fsIncompleteDimensions, fsIncompleteFormats, fsIncompleteDrawBuffer, fsIncompleteReadBuffer, fsUnsupported,
+    fsIncompleteMultisample, fsStatusError);
 
   { Manages a handle to a Framebuffer Object (FBO).
-     Framebuffer objects provide a way of drawing to rendering
-     destinations other than the buffers provided to the GL by the
-     window-system.  One or more "framebuffer-attachable images" can be attached
-     to a Framebuffer for uses such as: offscreen rendering, "render to texture" +
-     "multiple render targets" (MRT).
-     There are several types of framebuffer-attachable images:
-     - The image of a renderbuffer object, which is always 2D.
-     - A single level of a 1D texture, which is treated as a 2D image with a height of one.
-     - A single level of a 2D or rectangle texture.
-     - A single face of a cube map texture level, which is treated as a 2D image.
-     - A single layer of a 1D or 2D array texture or 3D texture, which is treated as a 2D image.
-     Additionally, an entire level of a 3D texture, cube map texture,
-     or 1D or 2D array texture can be attached to an attachment point.
-     Such attachments are treated as an array of 2D images, arranged in
-     layers, and the corresponding attachment point is considered to be layered. }
+    Framebuffer objects provide a way of drawing to rendering
+    destinations other than the buffers provided to the GL by the
+    window-system.  One or more "framebuffer-attachable images" can be attached
+    to a Framebuffer for uses such as: offscreen rendering, "render to texture" +
+    "multiple render targets" (MRT).
+    There are several types of framebuffer-attachable images:
+    - The image of a renderbuffer object, which is always 2D.
+    - A single level of a 1D texture, which is treated as a 2D image with a height of one.
+    - A single level of a 2D or rectangle texture.
+    - A single face of a cube map texture level, which is treated as a 2D image.
+    - A single layer of a 1D or 2D array texture or 3D texture, which is treated as a 2D image.
+    Additionally, an entire level of a 3D texture, cube map texture,
+    or 1D or 2D array texture can be attached to an attachment point.
+    Such attachments are treated as an array of 2D images, arranged in
+    layers, and the corresponding attachment point is considered to be layered. }
   TVXFramebufferHandle = class(TVXContextHandle)
   protected
     class function Transferable: Boolean; override;
@@ -666,54 +651,44 @@ type
     procedure UnBindForReading;
     // target = GL_DRAW_FRAMEBUFFER, GL_READ_FRAMEBUFFER, GL_FRAMEBUFFER (attach to both READ + DRAW)
     // attachment = COLOR_ATTACHMENTi, DEPTH_ATTACHMENT, STENCIL_ATTACHMENT, DEPTH_STENCIL_ATTACHMENT
-    procedure Attach1DTexture(target: GLEnum; attachment: GLEnum; textarget:
-      GLEnum; texture: GLuint; level: GLint);
-    procedure Attach2DTexture(target: GLEnum; attachment: GLEnum; textarget:
-      GLEnum; texture: GLuint; level: GLint);
-    procedure Attach3DTexture(target: GLEnum; attachment: GLEnum; textarget:
-      GLEnum; texture: GLuint; level: GLint; layer: GLint);
-    procedure AttachLayer(target: GLEnum; attachment: GLEnum; texture:
-      GLuint; level: GLint; layer: GLint);
-    procedure AttachRenderBuffer(target: GLEnum; attachment: GLEnum;
-      renderbuffertarget: GLEnum; renderbuffer: GLuint);
+    procedure Attach1DTexture(Target: GLenum; attachment: GLenum; textarget: GLenum; texture: GLuint; level: GLint);
+    procedure Attach2DTexture(Target: GLenum; attachment: GLenum; textarget: GLenum; texture: GLuint; level: GLint);
+    procedure Attach3DTexture(Target: GLenum; attachment: GLenum; textarget: GLenum; texture: GLuint; level: GLint;
+      Layer: GLint);
+    procedure AttachLayer(Target: GLenum; attachment: GLenum; texture: GLuint; level: GLint; Layer: GLint);
+    procedure AttachRenderBuffer(Target: GLenum; attachment: GLenum; renderbuffertarget: GLenum; renderbuffer: GLuint);
     { If texture is the name of a three-dimensional texture, cube map texture, one-or
-     two-dimensional array texture, or two-dimensional multisample array texture, the
-     texture level attached to the framebuffer attachment point is an array of images,
-     and the framebuffer attachment is considered layered. }
-    procedure AttachTexture(target: GLEnum; attachment: GLEnum; texture:
-      GLuint; level: GLint);
-    procedure AttachTextureLayer(target: GLEnum; attachment: GLEnum; texture:
-      GLuint; level: GLint; layer: GLint);
+      two-dimensional array texture, or two-dimensional multisample array texture, the
+      texture level attached to the framebuffer attachment point is an array of images,
+      and the framebuffer attachment is considered layered. }
+    procedure AttachTexture(Target: GLenum; attachment: GLenum; texture: GLuint; level: GLint);
+    procedure AttachTextureLayer(Target: GLenum; attachment: GLenum; texture: GLuint; level: GLint; Layer: GLint);
     // copy rect from bound read framebuffer to bound draw framebuffer
-    procedure Blit(srcX0: GLint; srcY0: GLint; srcX1: GLint; srcY1: GLint;
-      dstX0: GLint; dstY0: GLint; dstX1: GLint; dstY1: GLint;
-      mask: GLbitfield; filter: GLEnum);
+    procedure Blit(srcX0: GLint; srcY0: GLint; srcX1: GLint; srcY1: GLint; dstX0: GLint; dstY0: GLint; dstX1: GLint;
+      dstY1: GLint; mask: GLbitfield; filter: GLenum);
     // target = GL_DRAW_FRAMEBUFFER, GL_READ_FRAMEBUFFER, GL_FRAMEBUFFER (equivalent to GL_DRAW_FRAMEBUFFER)
     // If default framebuffer (0) is bound:
     // attachment = GL_FRONT_LEFT, GL_FRONT_RIGHT, GL_BACK_LEFT, or GL_BACK_RIGHT, GL_DEPTH, GL_STENCIL
     // if a framebuffer object is bound:
     // attachment = GL_COLOR_ATTACHMENTi, GL_DEPTH_ATTACHMENT, GL_STENCIL_ATTACHMENT, GL_DEPTH_STENCIL_ATTACHMENT
     // param = GL_FRAMEBUFFER_ATTACHMENT_(OBJECT_TYPE, OBJECT_NAME,
-    //       RED_SIZE, GREEN_SIZE, BLUE_SIZE, ALPHA_SIZE, DEPTH_SIZE, STENCIL_SIZE,
-    //       COMPONENT_TYPE, COLOR_ENCODING, TEXTURE_LEVEL, LAYERED, TEXTURE_CUBE_MAP_FACE, TEXTURE_LAYER
-    function GetAttachmentParameter(target: GLEnum; attachment: GLEnum; pname:
-      GLEnum): GLint;
+    // RED_SIZE, GREEN_SIZE, BLUE_SIZE, ALPHA_SIZE, DEPTH_SIZE, STENCIL_SIZE,
+    // COMPONENT_TYPE, COLOR_ENCODING, TEXTURE_LEVEL, LAYERED, TEXTURE_CUBE_MAP_FACE, TEXTURE_LAYER
+    function GetAttachmentParameter(Target: GLenum; attachment: GLenum; pname: GLenum): GLint;
     // Returns the type of object bound to attachment point:
     // GL_NONE, GL_FRAMEBUFFER_DEFAULT, GL_TEXTURE, or GL_RENDERBUFFER
-    function GetAttachmentObjectType(target: GLEnum; attachment: GLEnum):
-      GLint;
+    function GetAttachmentObjectType(Target: GLenum; attachment: GLenum): GLint;
     { Returns the name (ID) of the texture or renderbuffer attached to attachment point }
-    function GetAttachmentObjectName(target: GLEnum; attachment: GLEnum):
-      GLint;
+    function GetAttachmentObjectName(Target: GLenum; attachment: GLenum): GLint;
     function GetStatus: TVXFramebufferStatus;
     function GetStringStatus(out clarification: string): TVXFramebufferStatus;
     class function IsSupported: Boolean; override;
   end;
 
   { Manages a handle to a Renderbuffer Object.
-     A Renderbuffer is a "framebuffer-attachable image" for generalized offscreen
-     rendering and it also provides a means to support rendering to GL logical
-     buffer types which have no corresponding texture format (stencil, accum, etc). }
+    A Renderbuffer is a "framebuffer-attachable image" for generalized offscreen
+    rendering and it also provides a means to support rendering to GL logical
+    buffer types which have no corresponding texture format (stencil, accum, etc). }
   TVXRenderbufferHandle = class(TVXContextHandle)
   protected
     function DoAllocateHandle: GLuint; override;
@@ -722,9 +697,8 @@ type
   public
     procedure Bind;
     procedure UnBind;
-    procedure SetStorage(internalformat: GLEnum; width, height: GLsizei);
-    procedure SetStorageMultisample(internalformat: GLEnum; samples: GLsizei;
-      width, height: GLsizei);
+    procedure SetStorage(internalformat: GLenum; Width, Height: GLsizei);
+    procedure SetStorageMultisample(internalformat: GLenum; samples: GLsizei; Width, Height: GLsizei);
     class function IsSupported: Boolean; override;
   end;
 
@@ -736,7 +710,7 @@ type
     function DoAllocateHandle: GLuint; override;
     procedure DoDestroyHandle(var AHandle: GLuint); override;
     class function IsValid(const ID: GLuint): GLboolean; override;
-    class function GetTarget: GLEnum; virtual; abstract;
+    class function GetTarget: GLenum; virtual; abstract;
   public
     procedure LoadARBProgram(AText: string);
     procedure Enable;
@@ -748,28 +722,27 @@ type
 
   TVXVertexProgramHandle = class(TVXProgramHandleEXT)
   protected
-    class function GetTarget: GLEnum; override;
+    class function GetTarget: GLenum; override;
   public
     class function IsSupported: Boolean; override;
   end;
 
   TVXFragmentProgramHandle = class(TVXProgramHandleEXT)
   protected
-    class function GetTarget: GLEnum; override;
+    class function GetTarget: GLenum; override;
   public
     class function IsSupported: Boolean; override;
   end;
 
   TVXGeometryProgramHandle = class(TVXProgramHandleEXT)
   protected
-    class function GetTarget: GLEnum; override;
+    class function GetTarget: GLenum; override;
   public
-
     class function IsSupported: Boolean; override;
   end;
 
   { Base class for GLSL handles (programs and shaders).
-     Do not use this class directly, use one of its subclasses instead. }
+    Do not use this class directly, use one of its subclasses instead. }
   TVXSLHandle = class(TVXContextHandle)
   private
   protected
@@ -780,9 +753,9 @@ type
   end;
 
   { Manages a handle to a Shader Object.
-     Does *NOT* check for extension availability, this is assumed to have been
-     checked by the user.
-     Do not use this class directly, use one of its subclasses instead. }
+    Does *NOT* check for extension availability, this is assumed to have been
+    checked by the user.
+    Do not use this class directly, use one of its subclasses instead. }
   TVXShaderHandle = class(TVXSLHandle)
   private
     FShaderType: Cardinal;
@@ -834,8 +807,8 @@ type
   end;
 
   { Manages a GLSL Program Object.
-     Does *NOT* check for extension availability, this is assumed to have been
-     checked by the user.  }
+    Does *NOT* check for extension availability, this is assumed to have been
+    checked by the user. }
   TVXProgramHandle = class(TVXSLHandle)
   public
     class function IsValid(const ID: GLuint): GLboolean; override;
@@ -863,14 +836,11 @@ type
     procedure SetUniformMatrix3fv(const index: string; const val: TMatrix3f);
     function GetUniformMatrix4fv(const index: string): TMatrix;
     procedure SetUniformMatrix4fv(const index: string; const val: TMatrix);
-    function GetUniformTextureHandle(const index: string;
-      const TextureIndex: Integer; const TextureTarget: TVXTextureTarget):
-      Cardinal;
-    procedure SetUniformTextureHandle(const index: string;
-      const TextureIndex: Integer; const TextureTarget: TVXTextureTarget;
+    function GetUniformTextureHandle(const index: string; const TextureIndex: Integer; const TextureTarget: TVXTextureTarget)
+      : Cardinal;
+    procedure SetUniformTextureHandle(const index: string; const TextureIndex: Integer; const TextureTarget: TVXTextureTarget;
       const Value: Cardinal);
-    procedure SetUniformBuffer(const index: string;
-      Value: TVXUniformBufferHandle);
+    procedure SetUniformBuffer(const index: string; Value: TVXUniformBufferHandle);
   protected
     function DoAllocateHandle: GLuint; override;
   public
@@ -878,70 +848,55 @@ type
     constructor Create; override;
     { Compile and attach a new shader.
       Raises an EGLShader exception in case of failure. }
-    procedure AddShader(shaderType: TVXShaderHandleClass; const shaderSource:
-      string;
-      treatWarningsAsErrors: Boolean = False);
+    procedure AddShader(ShaderType: TVXShaderHandleClass; const ShaderSource: string; treatWarningsAsErrors: Boolean = False);
     procedure AttachObject(shader: TVXShaderHandle);
     procedure DetachAllObject;
     procedure BindAttribLocation(index: Integer; const aName: string);
     procedure BindFragDataLocation(index: Integer; const aName: string);
     function LinkProgram: Boolean;
     function ValidateProgram: Boolean;
-    function GetAttribLocation(const aName: string): GLInt;
-    function GetUniformLocation(const aName: string): GLInt;
+    function GetAttribLocation(const aName: string): GLint;
+    function GetUniformLocation(const aName: string): GLint;
     function GetUniformOffset(const aName: string): GLintptr;
-    function GetUniformBlockIndex(const aName: string): GLInt;
-    function GetVaryingLocation(const aName: string): GLInt;
+    function GetUniformBlockIndex(const aName: string): GLint;
+    function GetVaryingLocation(const aName: string): GLint;
     // Currently, NVidia-specific.
     procedure AddActiveVarying(const aName: string);
     // Currently, NVidia-specific.
-    function GetUniformBufferSize(const aName: string): GLInt;
+    function GetUniformBufferSize(const aName: string): GLint;
     procedure UseProgramObject;
     procedure EndUseProgramObject;
-    procedure SetUniformi(const index: string; const val: GLInt); overload;
+    procedure SetUniformi(const index: string; const val: GLint); overload;
     procedure SetUniformi(const index: string; const val: TVector2i); overload;
     procedure SetUniformi(const index: string; const val: TVector3i); overload;
     procedure SetUniformi(const index: string; const val: TVector4i); overload;
-    procedure SetUniformf(const index: string; const val: single); overload;
+    procedure SetUniformf(const index: string; const val: Single); overload;
     procedure SetUniformf(const index: string; const val: TVector2f); overload;
     procedure SetUniformf(const index: string; const val: TVector3f); overload;
     procedure SetUniformf(const index: string; const val: TVector4f); overload;
     { Shader parameters. }
-    property Uniform1i[const index: string]: GLInt read GetUniform1i write
-    SetUniform1i;
-    property Uniform2i[const index: string]: TVector2i read GetUniform2i write
-    SetUniform2i;
-    property Uniform3i[const index: string]: TVector3i read GetUniform3i write
-    SetUniform3i;
-    property Uniform4i[const index: string]: TVector4i read GetUniform4i write
-    SetUniform4i;
-    property Uniform1f[const index: string]: Single read GetUniform1f write
-    SetUniform1f;
-    property Uniform2f[const index: string]: TVector2f read GetUniform2f write
-    SetUniform2f;
-    property Uniform3f[const index: string]: TAffineVector read GetUniform3f
-    write SetUniform3f;
-    property Uniform4f[const index: string]: TVector read GetUniform4f write
-    SetUniform4f;
-    property UniformMatrix2fv[const index: string]: TMatrix2f read
-    GetUniformMatrix2fv write SetUniformMatrix2fv;
-    property UniformMatrix3fv[const index: string]: TMatrix3f read
-    GetUniformMatrix3fv write SetUniformMatrix3fv;
-    property UniformMatrix4fv[const index: string]: TMatrix read
-    GetUniformMatrix4fv write SetUniformMatrix4fv;
-    property UniformTextureHandle[const index: string; const TextureIndex:
-    Integer; const TextureTarget: TVXTextureTarget]: GLuint read
-    GetUniformTextureHandle write SetUniformTextureHandle;
-    property UniformBuffer[const index: string]: TVXUniformBufferHandle write
-    SetUniformBuffer;
+    property Uniform1i[const index: string]: GLint read GetUniform1i write SetUniform1i;
+    property Uniform2i[const index: string]: TVector2i read GetUniform2i write SetUniform2i;
+    property Uniform3i[const index: string]: TVector3i read GetUniform3i write SetUniform3i;
+    property Uniform4i[const index: string]: TVector4i read GetUniform4i write SetUniform4i;
+    property Uniform1f[const index: string]: Single read GetUniform1f write SetUniform1f;
+    property Uniform2f[const index: string]: TVector2f read GetUniform2f write SetUniform2f;
+    property Uniform3f[const index: string]: TAffineVector read GetUniform3f write SetUniform3f;
+    property Uniform4f[const index: string]: TVector read GetUniform4f write SetUniform4f;
+    property UniformMatrix2fv[const index: string]: TMatrix2f read GetUniformMatrix2fv write SetUniformMatrix2fv;
+    property UniformMatrix3fv[const index: string]: TMatrix3f read GetUniformMatrix3fv write SetUniformMatrix3fv;
+    property UniformMatrix4fv[const index: string]: TMatrix read GetUniformMatrix4fv write SetUniformMatrix4fv;
+    property UniformTextureHandle[const index: string; const TextureIndex: Integer; const TextureTarget: TVXTextureTarget]
+      : GLuint read GetUniformTextureHandle write SetUniformTextureHandle;
+    property UniformBuffer[const index: string]: TVXUniformBufferHandle write SetUniformBuffer;
   end;
 
   TVXContextNotification = record
     obj: TObject;
-    event: TNotifyEvent;
+    Event: TNotifyEvent;
   end;
 
-  { Stores and manages all the TVXContext objects.  }
+  { Stores and manages all the TVXContext objects. }
   TVXContextManager = class
   private
     FList: TThreadList;
@@ -964,19 +919,18 @@ type
     constructor Create;
     destructor Destroy; override;
     { Returns an appropriate, ready-to use context.
-       The returned context should be freed by caller. }
+      The returned context should be freed by caller. }
     function CreateContext(AClass: TVXContextClass = nil): TVXContext;
     { Returns the number of TVXContext object.
-       This is *not* the number of OpenVX rendering contexts! }
+      This is *not* the number of OpenVX rendering contexts! }
     function ContextCount: Integer;
     { Registers a new object to notify when the last context is destroyed.
-       When the last rendering context is destroyed, the 'anEvent' will
-       be invoked with 'anObject' as parameter.
-       Note that the registration is kept until the notification is triggered
-       or a RemoveNotification on 'anObject' is issued. }
-    procedure LastContextDestroyNotification(anObject: TObject; anEvent:
-      TNotifyEvent);
-    { Unregisters an object from the notification lists.  }
+      When the last rendering context is destroyed, the 'anEvent' will
+      be invoked with 'anObject' as parameter.
+      Note that the registration is kept until the notification is triggered
+      or a RemoveNotification on 'anObject' is issued. }
+    procedure LastContextDestroyNotification(anObject: TObject; anEvent: TNotifyEvent);
+    { Unregisters an object from the notification lists. }
     procedure RemoveNotification(anObject: TObject);
     // Marks the context manager for termination
     procedure Terminate;
@@ -986,16 +940,14 @@ type
     procedure NotifyPreparationNeed;
   end;
 
-  EVKContext = class(Exception);
-
+  EVXContext = class(Exception);
   EPBuffer = class(Exception);
-
-  EGLShader = class(EVKContext);
+  EGLShader = class(EVXContext);
 
   { Drivers should register themselves via this function. }
-procedure RegisterVKContextClass(aVKContextClass: TVXContextClass);
+procedure RegisterVXContextClass(aVXContextClass: TVXContextClass);
 { The TVXContext that is the currently active context, if any.
-   Returns nil if no context is active. }
+  Returns nil if no context is active. }
 function CurrentVXContext: TVXContext;
 function SafeCurrentVXContext: TVXContext;
 function IsMainThread: Boolean;
@@ -1003,25 +955,21 @@ function IsServiceContextAvaible: Boolean;
 function GetServiceWindow: TForm;
 
 var
-  VKContextManager: TVXContextManager;
+  VXContextManager: TVXContextManager;
   vIgnoreOpenVXErrors: Boolean = False;
-  vContextActivationFailureOccurred: Boolean = false;
+  vContextActivationFailureOccurred: Boolean = False;
   vMultitextureCoordinatorClass: TAbstractMultitextureCoordinatorClass;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 var
   vContextClasses: TList;
-  GLwithoutContext: TVXExtensionsAndEntryPoints;
+  VXWithoutContext: TVXExtensionsAndEntryPoints;
   vServiceWindow: TForm;
 
-  vVK: TVXExtensionsAndEntryPoints;
+  vVX: TVXExtensionsAndEntryPoints;
   vCurrentVXContext: TVXContext;
   vMainThread: Boolean;
 
@@ -1035,9 +983,9 @@ begin
   Result := CurrentVXContext;
   if not Assigned(Result) then
   begin
-   {$IFDEF USE_LOGGING}
+{$IFDEF USE_LOGGING}
     ShowMessages(cNoActiveRC);
-   {$ENDIF}
+{$ENDIF}
     Abort;
   end;
 end;
@@ -1049,7 +997,7 @@ end;
 
 function IsServiceContextAvaible: Boolean;
 begin
-  Result := VKContextManager.FHandles <> nil;
+  Result := VXContextManager.FHandles <> nil;
 end;
 
 function GetServiceWindow: TForm;
@@ -1057,12 +1005,11 @@ begin
   Result := vServiceWindow;
 end;
 
-
-procedure RegisterVKContextClass(aVKContextClass: TVXContextClass);
+procedure RegisterVXContextClass(aVXContextClass: TVXContextClass);
 begin
   if not Assigned(vContextClasses) then
     vContextClasses := TList.Create;
-  vContextClasses.Add(aVKContextClass);
+  vContextClasses.Add(aVXContextClass);
 end;
 
 constructor TAbstractMultitextureCoordinator.Create(AOwner: TVXContext);
@@ -1088,10 +1035,10 @@ begin
   FSharedContexts.Add(Self);
   FAcceleration := chaUnknown;
   FVXStates := TVXStateCache.Create;
-  FVK := TVXExtensionsAndEntryPoints.Create;
+  FVX := TVXExtensionsAndEntryPoints.Create;
   FTransformation := TVXTransformation.Create;
   FTransformation.LoadMatricesEnabled := True;
-  VKContextManager.RegisterContext(Self);
+  VXContextManager.RegisterContext(Self);
   FIsPraparationNeed := True;
 end;
 
@@ -1099,10 +1046,10 @@ destructor TVXContext.Destroy;
 begin
   if IsValid then
     DestroyContext;
-  VKContextManager.UnRegisterContext(Self);
+  VXContextManager.UnRegisterContext(Self);
   FVXStates.Free;
-  FVK.Free;
-  FXVK.Free;
+  FVX.Free;
+  FXVX.Free;
   FTransformation.Free;
   FSharedContexts.Free;
   FLock.Free;
@@ -1112,7 +1059,7 @@ end;
 procedure TVXContext.SetColorBits(const aColorBits: Integer);
 begin
   if Active then
-    raise EVKContext.Create(strCannotAlterAnActiveContext)
+    raise EVXContext.Create(strCannotAlterAnActiveContext)
   else
     FColorBits := aColorBits;
 end;
@@ -1120,7 +1067,7 @@ end;
 procedure TVXContext.SetAlphaBits(const aAlphaBits: Integer);
 begin
   if Active then
-    raise EVKContext.Create(strCannotAlterAnActiveContext)
+    raise EVXContext.Create(strCannotAlterAnActiveContext)
   else
     FAlphaBits := aAlphaBits;
 end;
@@ -1128,7 +1075,7 @@ end;
 procedure TVXContext.SetDepthBits(const val: Integer);
 begin
   if Active then
-    raise EVKContext.Create(strCannotAlterAnActiveContext)
+    raise EVXContext.Create(strCannotAlterAnActiveContext)
   else
     FDepthBits := val;
 end;
@@ -1136,7 +1083,7 @@ end;
 procedure TVXContext.SetLayer(const Value: TVXContextLayer);
 begin
   if Active then
-    raise EVKContext.Create(strCannotAlterAnActiveContext)
+    raise EVXContext.Create(strCannotAlterAnActiveContext)
   else
     FLayer := Value;
 end;
@@ -1144,7 +1091,7 @@ end;
 procedure TVXContext.SetStencilBits(const aStencilBits: Integer);
 begin
   if Active then
-    raise EVKContext.Create(strCannotAlterAnActiveContext)
+    raise EVXContext.Create(strCannotAlterAnActiveContext)
   else
     FStencilBits := aStencilBits;
 end;
@@ -1152,7 +1099,7 @@ end;
 procedure TVXContext.SetAccumBits(const aAccumBits: Integer);
 begin
   if Active then
-    raise EVKContext.Create(strCannotAlterAnActiveContext)
+    raise EVXContext.Create(strCannotAlterAnActiveContext)
   else
     FAccumBits := aAccumBits;
 end;
@@ -1160,7 +1107,7 @@ end;
 procedure TVXContext.SetAuxBuffers(const aAuxBuffers: Integer);
 begin
   if Active then
-    raise EVKContext.Create(strCannotAlterAnActiveContext)
+    raise EVXContext.Create(strCannotAlterAnActiveContext)
   else
     FAuxBuffers := aAuxBuffers;
 end;
@@ -1168,7 +1115,7 @@ end;
 procedure TVXContext.SetOptions(const aOptions: TVXRCOptions);
 begin
   if Active then
-    raise EVKContext.Create(strCannotAlterAnActiveContext)
+    raise EVXContext.Create(strCannotAlterAnActiveContext)
   else
     FOptions := aOptions;
 end;
@@ -1176,7 +1123,7 @@ end;
 procedure TVXContext.SetAntiAliasing(const val: TVXAntiAliasing);
 begin
   if Active then
-    raise EVKContext.Create(strCannotAlterAnActiveContext)
+    raise EVXContext.Create(strCannotAlterAnActiveContext)
   else
     FAntiAliasing := val;
 end;
@@ -1184,7 +1131,7 @@ end;
 procedure TVXContext.SetAcceleration(const val: TVXContextAcceleration);
 begin
   if Active then
-    raise EVKContext.Create(strCannotAlterAnActiveContext)
+    raise EVXContext.Create(strCannotAlterAnActiveContext)
   else
     FAcceleration := val;
 end;
@@ -1209,16 +1156,15 @@ end;
 procedure TVXContext.CreateContext(ADeviceHandle: THandle);
 begin
   if IsValid then
-    raise EVKContext.Create(strContextAlreadyCreated);
+    raise EVXContext.Create(strContextAlreadyCreated);
   DoCreateContext(ADeviceHandle);
   Manager.ContextCreatedBy(Self);
 end;
 
-procedure TVXContext.CreateMemoryContext(OutputDevice: THandle;
-  Width, Height: Integer; BufferCount: integer);
+procedure TVXContext.CreateMemoryContext(OutputDevice: THandle; Width, Height: Integer; BufferCount: Integer);
 begin
   if IsValid then
-    raise EVKContext.Create(strContextAlreadyCreated);
+    raise EVXContext.Create(strContextAlreadyCreated);
   DoCreateMemoryContext(OutputDevice, Width, Height, BufferCount);
   Manager.ContextCreatedBy(Self);
 end;
@@ -1231,18 +1177,18 @@ begin
   if vCurrentVXContext = Self then
   begin
 {$IFNDEF USE_MULTITHREAD}
-    for i := Manager.FHandles.LockList.Count - 1 downto 0 do
+    for I := Manager.FHandles.LockList.Count - 1 downto 0 do
     begin
-      LHandle := TVXContextHandle(Manager.FHandles.LockList[i]);
+      LHandle := TVXContextHandle(Manager.FHandles.LockList[I]);
       if Assigned(LHandle.FOnPrepare) then
         LHandle.FOnPrepare(Self);
     end;
 {$ELSE}
     with Manager.FHandles.LockList do
       try
-        for i := Count - 1 downto 0 do
+        for I := Count - 1 downto 0 do
         begin
-          LHandle := TVXContextHandle(Items[i]);
+          LHandle := TVXContextHandle(Items[I]);
           if Assigned(LHandle.FOnPrepare) then
             LHandle.FOnPrepare(Self);
         end;
@@ -1256,24 +1202,24 @@ end;
 
 procedure TVXContext.PropagateSharedContext;
 var
-  i, j: Integer;
+  I, j: Integer;
   otherContext: TVXContext;
   otherList: TList;
 begin
   with FSharedContexts.LockList do
     try
-      for i := 1 to Count - 1 do
+      for I := 1 to Count - 1 do
       begin
-        otherContext := TVXContext(Items[i]);
+        otherContext := TVXContext(Items[I]);
         otherList := otherContext.FSharedContexts.LockList;
-        for J := 0 to otherList.Count - 1 do
-          if IndexOf(otherList[J]) < 0 then
-            Add(otherList[J]);
+        for j := 0 to otherList.Count - 1 do
+          if IndexOf(otherList[j]) < 0 then
+            Add(otherList[j]);
         otherContext.FSharedContexts.UnlockList;
       end;
-      for i := 1 to Count - 1 do
+      for I := 1 to Count - 1 do
       begin
-        otherContext := TVXContext(Items[i]);
+        otherContext := TVXContext(Items[I]);
         otherList := otherContext.FSharedContexts.LockList;
         if otherList.IndexOf(Self) < 0 then
           otherList.Add(Self);
@@ -1284,13 +1230,13 @@ begin
     end;
 end;
 
-procedure TVXContext.ShareLists(AContext: TVXContext);
+procedure TVXContext.ShareLists(aContext: TVXContext);
 begin
   with FSharedContexts.LockList do
     try
       if IndexOf(aContext) < 0 then
       begin
-        if DoShareLists(AContext) then
+        if DoShareLists(aContext) then
         begin
           Add(aContext);
           PropagateSharedContext;
@@ -1303,14 +1249,14 @@ end;
 
 procedure TVXContext.DestroyAllHandles;
 var
-  i: Integer;
+  I: Integer;
 begin
   Activate;
   try
     with Manager.FHandles.LockList do
       try
-        for i := Count - 1 downto 0 do
-          TVXContextHandle(Items[i]).ContextDestroying;
+        for I := Count - 1 downto 0 do
+          TVXContextHandle(Items[I]).ContextDestroying;
       finally
         Manager.FHandles.UnlockList;
       end;
@@ -1339,9 +1285,9 @@ begin
   try
     aList := Manager.FHandles.LockList;
     try
-      for i := aList.Count - 1 downto 0 do
+      for I := aList.Count - 1 downto 0 do
       begin
-        contextHandle := TVXContextHandle(aList[i]);
+        contextHandle := TVXContextHandle(aList[I]);
         contextHandle.ContextDestroying;
       end;
     finally
@@ -1365,7 +1311,7 @@ begin
       oldContext.Activate;
   end;
   FAcceleration := chaUnknown;
-  ///FGL.Close;
+  /// FVX.Close;
 end;
 
 procedure TVXContext.Activate;
@@ -1374,7 +1320,7 @@ begin
   if FActivationCount = 0 then
   begin
     if not IsValid then
-      raise EVKContext.Create(strContextNotCreated);
+      raise EVXContext.Create(strContextNotCreated);
 
     vContextActivationFailureOccurred := False;
     try
@@ -1382,7 +1328,7 @@ begin
     except
       vContextActivationFailureOccurred := True;
     end;
-    ///vGL := FGL;
+    /// vVX := FVX;
     vCurrentVXContext := Self;
   end
   else
@@ -1397,28 +1343,28 @@ begin
   if FActivationCount = 0 then
   begin
     if not IsValid then
-      raise EVKContext.Create(strContextNotCreated);
+      raise EVXContext.Create(strContextNotCreated);
     if not vContextActivationFailureOccurred then
       DoDeactivate;
     vCurrentVXContext := nil;
-    ///vGL := GLwithoutContext;
+    /// vVX := VXWithoutContext;
   end
   else if FActivationCount < 0 then
-    raise EVKContext.Create(strUnbalancedContexActivations);
+    raise EVXContext.Create(strUnbalancedContexActivations);
   FLock.Leave;
 end;
 
 function TVXContext.FindCompatibleContext: TVXContext;
 var
-  i: Integer;
+  I: Integer;
 begin
   Result := nil;
   with FSharedContexts.LockList do
     try
-      for i := 0 to Count - 1 do
-        if TVXContext(Items[i]) <> Self then
+      for I := 0 to Count - 1 do
+        if TVXContext(Items[I]) <> Self then
         begin
-          Result := TVXContext(Items[i]);
+          Result := TVXContext(Items[I]);
           Break;
         end;
     finally
@@ -1428,19 +1374,19 @@ end;
 
 class function TVXContext.ServiceContext: TVXContext;
 begin
-  Result := VKContextManager.FServiceContext;
+  Result := VXContextManager.FServiceContext;
 end;
 
 procedure TVXContext.MakeGLCurrent;
 begin
-  vVK := FVK;
+  vVX := FVX;
 end;
 
 function TVXContext.GetXGL: TAbstractMultitextureCoordinator;
 begin
-  if FXVK = nil then
-    FXVK := vMultitextureCoordinatorClass.Create(Self);
-  Result := FXVK;
+  if FXVX = nil then
+    FXVX := vMultitextureCoordinatorClass.Create(Self);
+  Result := FXVX;
 end;
 
 // ------------------
@@ -1451,32 +1397,31 @@ constructor TVXContextHandle.Create;
 begin
   inherited Create;
   FHandles := TList.Create;
-  //first is a dummy record
+  // first is a dummy record
   new(FLastHandle);
   FillChar(FLastHandle^, sizeof(FLastHandle^), 0);
   FHandles.Add(FLastHandle);
-  VKContextManager.FHandles.Add(Self);
+  VXContextManager.FHandles.Add(Self);
 end;
 
-constructor TVXContextHandle.CreateAndAllocate(failIfAllocationFailed: Boolean =
-  True);
+constructor TVXContextHandle.CreateAndAllocate(failIfAllocationFailed: Boolean = True);
 begin
   Create;
   AllocateHandle;
   if failIfAllocationFailed and (Handle = 0) then
-    raise EVKContext.Create('Auto-allocation failed');
+    raise EVXContext.Create('Auto-allocation failed');
 end;
 
 destructor TVXContextHandle.Destroy;
 var
-  i : integer;
+  I: Integer;
 begin
   DestroyHandle;
-  for i := 0 to FHandles.Count-1 do
-    Dispose(RCItem(i));
+  for I := 0 to FHandles.Count - 1 do
+    Dispose(RCItem(I));
   FHandles.Free;
-  if Assigned(VKContextManager) then
-    VKContextManager.FHandles.Remove(Self);
+  if Assigned(VXContextManager) then
+    VXContextManager.FHandles.Remove(Self);
   inherited Destroy;
 end;
 
@@ -1485,7 +1430,7 @@ var
   I: Integer;
   bSucces: Boolean;
   aList: TList;
-  p : PGLRCHandle;
+  p: PGLRCHandle;
 
 begin
   // if handle aready allocated in current context
@@ -1499,8 +1444,8 @@ begin
     exit;
   end;
 
-  //add entry
-  New(FLastHandle);
+  // add entry
+  new(FLastHandle);
   FillChar(FLastHandle^, sizeof(FLastHandle^), 0);
   FHandles.Add(FLastHandle);
   FLastHandle.FRenderingContext := vCurrentVXContext;
@@ -1512,16 +1457,16 @@ begin
     try
       for I := aList.Count - 1 downto 0 do
       begin
-        P := SearchRC(aList[I]);
-        if (P.FHandle > 0) then
+        p := SearchRC(aList[I]);
+        if (p.FHandle > 0) then
         begin
           // Copy shared handle
-          //FLastHandle.FRenderingContext := vCurrentVXContext;
-          FLastHandle.FHandle           := P.FHandle;
-          FLastHandle.FChanged          := P.FChanged;
+          // FLastHandle.FRenderingContext := vCurrentVXContext;
+          FLastHandle.FHandle := p.FHandle;
+          FLastHandle.FChanged := p.FChanged;
           Inc(vCurrentVXContext.FOwnedHandlesCount);
           bSucces := True;
-          break;
+          Break;
         end;
       end;
     finally
@@ -1540,37 +1485,37 @@ begin
 
   Result := FLastHandle.FHandle;
   if not bSucces then
-///    ShowMessages(cNoActiveRC)
+    /// ShowMessages(cNoActiveRC)
   else if Assigned(FOnPrepare) then
-    VKContextManager.NotifyPreparationNeed;
+    VXContextManager.NotifyPreparationNeed;
 end;
 
-function TVXContextHandle.IsAllocatedForContext(AContext: TVXContext = nil): Boolean;
+function TVXContextHandle.IsAllocatedForContext(aContext: TVXContext = nil): Boolean;
 begin
-  Result := SearchRC(AContext).FHandle > 0;
+  Result := SearchRC(aContext).FHandle > 0;
 end;
 
-function TVXContextHandle.SearchRC(AContext: TVXContext): PGLRCHandle;
+function TVXContextHandle.SearchRC(aContext: TVXContext): PGLRCHandle;
 var
-  i : integer;
+  I: Integer;
 begin
-  if AContext = nil then
-    AContext := vCurrentVXContext;
+  if aContext = nil then
+    aContext := vCurrentVXContext;
 
-  if AContext = FLastHandle.FRenderingContext then
+  if aContext = FLastHandle.FRenderingContext then
   begin
     Result := FLastHandle;
     exit;
   end;
 
-  for i := 1 to FHandles.Count-1 do
-    if RCItem(i).FRenderingContext = AContext then
+  for I := 1 to FHandles.Count - 1 do
+    if RCItem(I).FRenderingContext = aContext then
     begin
-      Result := RCItem(i);
+      Result := RCItem(I);
       exit;
     end;
 
-  //first handle is always a dummy
+  // first handle is always a dummy
   Result := FHandles[0];
 end;
 
@@ -1582,8 +1527,8 @@ end;
 
 function TVXContextHandle.GetHandle: GLuint;
 begin
-//  CheckCurrentRC;
-//inline doesn't always work... so optimize it here
+  // CheckCurrentRC;
+  // inline doesn't always work... so optimize it here
   if vCurrentVXContext <> FLastHandle.FRenderingContext then
     FLastHandle := SearchRC(vCurrentVXContext);
 
@@ -1593,30 +1538,30 @@ end;
 procedure TVXContextHandle.DestroyHandle;
 var
   oldContext: TVXContext;
-  P : PGLRCHandle;
+  p: PGLRCHandle;
   I: Integer;
 begin
   oldContext := vCurrentVXContext;
   if Assigned(oldContext) then
     oldContext.Deactivate;
   try
-    for I := FHandles.Count-1 downto 1 do
+    for I := FHandles.Count - 1 downto 1 do
     begin
-      P := FHandles[I];
-      if P.FHandle > 0 then
+      p := FHandles[I];
+      if p.FHandle > 0 then
       begin
-        P.FRenderingContext.Activate;
-        if IsValid(P.FHandle) > 0 then
-          DoDestroyHandle(P.FHandle);
-        Dec(P.FRenderingContext.FOwnedHandlesCount);
-        P.FRenderingContext.Deactivate;
-        P.FRenderingContext := nil;
-        P.FHandle := 0;
-        P.FChanged := True;
+        p.FRenderingContext.Activate;
+        if IsValid(p.FHandle) > 0 then
+          DoDestroyHandle(p.FHandle);
+        Dec(p.FRenderingContext.FOwnedHandlesCount);
+        p.FRenderingContext.Deactivate;
+        p.FRenderingContext := nil;
+        p.FHandle := 0;
+        p.FChanged := True;
       end;
-      Dispose(P);
+      Dispose(p);
     end;
-    FHandles.Count := 1; //delete all in 1 step
+    FHandles.Count := 1; // delete all in 1 step
     FLastHandle := FHandles[0];
   finally
     if Assigned(vCurrentVXContext) then
@@ -1629,7 +1574,7 @@ end;
 procedure TVXContextHandle.ContextDestroying;
 var
   I: Integer;
-  P: PGLRCHandle;
+  p: PGLRCHandle;
   aList: TList;
   bShared: Boolean;
 begin
@@ -1640,37 +1585,35 @@ begin
     begin
       aList := vCurrentVXContext.FSharedContexts.LockList;
       try
-        for I := FHandles.Count-1 downto 1 do
+        for I := FHandles.Count - 1 downto 1 do
         begin
-          P := RCItem(I);
-          if (P.FRenderingContext <> vCurrentVXContext)
-            and (P.FHandle <> 0)
-            and (aList.IndexOf(P.FRenderingContext) > -1) then
-            begin
-              bShared := True;
-              break;
-            end;
+          p := RCItem(I);
+          if (p.FRenderingContext <> vCurrentVXContext) and (p.FHandle <> 0) and (aList.IndexOf(p.FRenderingContext) > -1) then
+          begin
+            bShared := True;
+            Break;
+          end;
         end;
       finally
-        vCurrentVXContext.FSharedContexts.UnLockList;
+        vCurrentVXContext.FSharedContexts.UnlockList;
       end;
     end;
 
-    for I := FHandles.Count-1 downto 1 do
+    for I := FHandles.Count - 1 downto 1 do
     begin
-      P := RCItem(I);
-      if (P.FRenderingContext = vCurrentVXContext) and (P.FHandle <> 0) then
+      p := RCItem(I);
+      if (p.FRenderingContext = vCurrentVXContext) and (p.FHandle <> 0) then
       begin
         if not bShared then
-          if IsValid(P.FHandle) > 0 then
-            DoDestroyHandle(P.FHandle);
-        Dec(P.FRenderingContext.FOwnedHandlesCount);
-        P.FHandle := 0;
-        P.FRenderingContext := nil;
-        P.FChanged := True;
-        Dispose(P);
+          if IsValid(p.FHandle) > 0 then
+            DoDestroyHandle(p.FHandle);
+        Dec(p.FRenderingContext.FOwnedHandlesCount);
+        p.FHandle := 0;
+        p.FRenderingContext := nil;
+        p.FChanged := True;
+        Dispose(p);
         FHandles.Delete(I);
-        if FLastHandle = P then
+        if FLastHandle = p then
           FLastHandle := FHandles[0];
         exit;
       end;
@@ -1681,16 +1624,16 @@ end;
 function TVXContextHandle.GetContext: TVXContext;
 var
   I: Integer;
-  P: PGLRCHandle;
+  p: PGLRCHandle;
 begin
   Result := nil;
   // Return first context where handle is allocated
-  for I := FHandles.Count-1 downto 1 do
+  for I := FHandles.Count - 1 downto 1 do
   begin
-    P := RCItem(I);
-    if (P.FRenderingContext <> nil) and (P.FHandle <> 0) then
+    p := RCItem(I);
+    if (p.FRenderingContext <> nil) and (p.FHandle <> 0) then
     begin
-      Result := P.FRenderingContext;
+      Result := p.FRenderingContext;
       // If handle allocated in active context - return it
       if (Result = vCurrentVXContext) then
         exit;
@@ -1709,13 +1652,14 @@ function TVXContextHandle.IsDataComplitelyUpdated: Boolean;
 var
   I: Integer;
 begin
-  Result := false;
-  for I := FHandles.Count-1 downto 1 do
+  Result := False;
+  for I := FHandles.Count - 1 downto 1 do
   begin
-    with RCItem(i)^ do
-      if (FRenderingContext <> nil) and (FHandle <> 0) and FChanged then exit;
+    with RCItem(I)^ do
+      if (FRenderingContext <> nil) and (FHandle <> 0) and FChanged then
+        exit;
   end;
-  Result := true;
+  Result := True;
 end;
 
 procedure TVXContextHandle.NotifyDataUpdated;
@@ -1750,10 +1694,10 @@ begin
     end;
   end
   else
-///    ShowMessages(cNoActiveRC);
+    /// ShowMessages(cNoActiveRC);
 end;
 
-function TVXContextHandle.RCItem(AIndex: integer): PGLRCHandle;
+function TVXContextHandle.RCItem(AIndex: Integer): PGLRCHandle;
 begin
   Result := FHandles[AIndex];
 end;
@@ -1762,10 +1706,10 @@ procedure TVXContextHandle.NotifyChangesOfData;
 var
   I: Integer;
 begin
-  for I := FHandles.Count-1 downto 1 do
+  for I := FHandles.Count - 1 downto 1 do
     RCItem(I).FChanged := True;
   if Assigned(FOnPrepare) then
-    VKContextManager.NotifyPreparationNeed;
+    VXContextManager.NotifyPreparationNeed;
 end;
 
 function TVXContextHandle.IsShared: Boolean;
@@ -1785,14 +1729,14 @@ begin
     begin
       vContext := aList[I];
       if (vContext <> vCurrentVXContext) and
-        // at least one context is friendly
+      // at least one context is friendly
         (SearchRC(vContext).FHandle <> 0) then
         exit;
     end;
   finally
     vCurrentVXContext.FSharedContexts.UnlockList;
   end;
-  Result := false;
+  Result := False;
 end;
 
 class function TVXContextHandle.Transferable: Boolean;
@@ -1831,7 +1775,7 @@ begin
     if Assigned(FOnDestroy) then
       FOnDestroy(Self, AHandle);
     // check for error
-    {CheckError; } // from OpenVX adapter
+    { CheckError; } // from OpenVX adapter
   end;
 end;
 
@@ -1861,12 +1805,12 @@ end;
 procedure TVXListHandle.DoDestroyHandle(var AHandle: GLuint);
 begin
   if not vContextActivationFailureOccurred then
-  // reset error status
-  glGetError;
+    // reset error status
+    glGetError;
   // delete
   glDeleteLists(AHandle, 1);
   // check for error
-  {CheckError;}
+  { CheckError; }
 end;
 
 class function TVXListHandle.IsValid(const ID: GLuint): GLboolean;
@@ -1906,12 +1850,12 @@ var
   t: TVXTextureTarget;
 begin
   if not vContextActivationFailureOccurred then
-///  with GL do
+  /// with GL do
   begin
     // reset error status
     glGetError;
     { Unbind identifier from all image selectors. }
-    with GetContext.VxStates do
+    with GetContext.VXStates do
     begin
       for a := 0 to MaxTextureImageUnits - 1 do
         for t := Low(TVXTextureTarget) to High(TVXTextureTarget) do
@@ -1948,14 +1892,14 @@ end;
 procedure TVXSamplerHandle.DoDestroyHandle(var AHandle: GLuint);
 begin
   if not vContextActivationFailureOccurred then
-///  with GL do
+  /// with GL do
   begin
     // reset error status
     glGetError;
     // delete
     glDeleteSamplers(1, @AHandle);
     // check for error
-    {CheckError;}
+    { CheckError; }
   end;
 end;
 
@@ -1977,10 +1921,10 @@ procedure TVXQueryHandle.BeginQuery;
 begin
   if vCurrentVXContext.VXStates.CurrentQuery[QueryType] = 0 then
     vCurrentVXContext.VXStates.BeginQuery(QueryType, GetHandle);
-  Factive := True;
+  FActive := True;
 end;
 
-function TVXQueryHandle.CounterBits: integer;
+function TVXQueryHandle.CounterBits: Integer;
 begin
   glGetQueryiv(Target, GL_QUERY_COUNTER_BITS, @Result);
 end;
@@ -2000,7 +1944,7 @@ begin
     // delete
     glDeleteQueries(1, @AHandle);
     // check for error
-    {CheckError;}
+    { CheckError; }
   end;
 end;
 
@@ -2011,14 +1955,14 @@ end;
 
 procedure TVXQueryHandle.EndQuery;
 begin
-  Assert(FActive = true, 'Cannot end a query before it begins');
-  Factive := False;
+  Assert(FActive = True, 'Cannot end a query before it begins');
+  FActive := False;
   Assert(Handle <> 0);
-  //glEndQuery(Target);
+  // glEndQuery(Target);
   vCurrentVXContext.VXStates.EndQuery(QueryType);
 end;
 
-function TVXQueryHandle.IsResultAvailable: boolean;
+function TVXQueryHandle.IsResultAvailable: Boolean;
 begin
   glGetQueryObjectiv(Handle, GL_QUERY_RESULT_AVAILABLE, @Result);
 end;
@@ -2151,8 +2095,7 @@ end;
 // ------------------ TVXBufferObjectHandle ------------------
 // ------------------
 
-constructor TVXBufferObjectHandle.CreateFromData(p: Pointer; size: Integer;
-  bufferUsage: GLuint);
+constructor TVXBufferObjectHandle.CreateFromData(p: Pointer; size: Integer; bufferUsage: GLuint);
 begin
   Create;
   AllocateHandle;
@@ -2177,7 +2120,7 @@ begin
     // delete
     glDeleteBuffers(1, @AHandle);
     // check for error
-    {CheckError;}
+    { CheckError; }
   end;
 end;
 
@@ -2191,8 +2134,7 @@ begin
   Result := GL_ARB_vertex_buffer_object;
 end;
 
-procedure TVXBufferObjectHandle.BindRange(index: GLuint; offset: GLintptr;
-  size: GLsizeiptr);
+procedure TVXBufferObjectHandle.BindRange(index: GLuint; offset: GLintptr; size: GLsizeiptr);
 begin
   Assert(False, 'BindRange only XBO and UBO');
 end;
@@ -2207,23 +2149,20 @@ begin
   Assert(False, 'BindRange only XBO and UBO');
 end;
 
-procedure TVXBufferObjectHandle.BufferData(p: Pointer; size: Integer;
-  bufferUsage: GLuint);
+procedure TVXBufferObjectHandle.BufferData(p: Pointer; size: Integer; bufferUsage: GLuint);
 begin
   FSize := size;
   glBufferData(Target, size, p, bufferUsage);
 end;
 
-procedure TVXBufferObjectHandle.BindBufferData(p: Pointer; size: Integer;
-  bufferUsage: GLuint);
+procedure TVXBufferObjectHandle.BindBufferData(p: Pointer; size: Integer; bufferUsage: GLuint);
 begin
   Bind;
   FSize := size;
   glBufferData(Target, size, p, bufferUsage);
 end;
 
-procedure TVXBufferObjectHandle.BufferSubData(offset, size: Integer; p:
-  Pointer);
+procedure TVXBufferObjectHandle.BufferSubData(offset, size: Integer; p: Pointer);
 begin
   Assert(offset + size <= FSize);
   glBufferSubData(Target, offset, size, p);
@@ -2234,8 +2173,7 @@ begin
   Result := glMapBuffer(Target, access);
 end;
 
-function TVXBufferObjectHandle.MapBufferRange(offset: GLint; len: GLsizei;
-  access: GLbitfield): Pointer;
+function TVXBufferObjectHandle.MapBufferRange(offset: GLint; len: GLsizei; access: GLbitfield): Pointer;
 begin
   Result := glMapBufferRange(Target, offset, len, access);
 end;
@@ -2364,8 +2302,7 @@ begin
   Result := GL_TRANSFORM_FEEDBACK_BUFFER;
 end;
 
-procedure TVXTransformFeedbackBufferHandle.BeginTransformFeedback(primitiveMode:
-  GLEnum);
+procedure TVXTransformFeedbackBufferHandle.BeginTransformFeedback(primitiveMode: GLenum);
 begin
   glBeginTransformFeedback(primitiveMode);
 end;
@@ -2375,23 +2312,19 @@ begin
   glEndTransformFeedback();
 end;
 
-procedure TVXTransformFeedbackBufferHandle.BindRange(index: GLuint; offset: GLintptr;
-  size: GLsizeiptr);
+procedure TVXTransformFeedbackBufferHandle.BindRange(index: GLuint; offset: GLintptr; size: GLsizeiptr);
 begin
-  vCurrentVXContext.VXStates.SetBufferIndexedBinding(Handle, bbtTransformFeedBack,
-    index, offset, size);
+  vCurrentVXContext.VXStates.SetBufferIndexedBinding(Handle, bbtTransformFeedBack, index, offset, size);
 end;
 
 procedure TVXTransformFeedbackBufferHandle.BindBase(index: GLuint);
 begin
-  vCurrentVXContext.VXStates.SetBufferIndexedBinding(Handle, bbtTransformFeedBack,
-    index, BufferSize);
+  vCurrentVXContext.VXStates.SetBufferIndexedBinding(Handle, bbtTransformFeedBack, index, BufferSize);
 end;
 
 procedure TVXTransformFeedbackBufferHandle.UnBindBase(index: GLuint);
 begin
-  vCurrentVXContext.VXStates.SetBufferIndexedBinding(0, bbtTransformFeedBack,
-    index, 0);
+  vCurrentVXContext.VXStates.SetBufferIndexedBinding(0, bbtTransformFeedBack, index, 0);
 end;
 
 class function TVXTransformFeedbackBufferHandle.IsSupported: Boolean;
@@ -2437,23 +2370,19 @@ begin
   vCurrentVXContext.VXStates.UniformBufferBinding := 0;
 end;
 
-procedure TVXUniformBufferHandle.BindRange(index: GLuint; offset: GLintptr;
-  size: GLsizeiptr);
+procedure TVXUniformBufferHandle.BindRange(index: GLuint; offset: GLintptr; size: GLsizeiptr);
 begin
-  vCurrentVXContext.VXStates.SetBufferIndexedBinding(Handle, bbtUniform,
-    index, offset, size);
+  vCurrentVXContext.VXStates.SetBufferIndexedBinding(Handle, bbtUniform, index, offset, size);
 end;
 
 procedure TVXUniformBufferHandle.BindBase(index: GLuint);
 begin
-  vCurrentVXContext.VXStates.SetBufferIndexedBinding(Handle, bbtUniform,
-    index, BufferSize);
+  vCurrentVXContext.VXStates.SetBufferIndexedBinding(Handle, bbtUniform, index, BufferSize);
 end;
 
 procedure TVXUniformBufferHandle.UnBindBase(index: GLuint);
 begin
-  vCurrentVXContext.VXStates.SetBufferIndexedBinding(0, bbtUniform,
-    index, 0);
+  vCurrentVXContext.VXStates.SetBufferIndexedBinding(0, bbtUniform, index, 0);
 end;
 
 function TVXUniformBufferHandle.GetTarget: GLuint;
@@ -2485,7 +2414,7 @@ begin
     // delete
     glDeleteVertexArrays(1, @AHandle);
     // check for error
-    {CheckError;}
+    { CheckError; }
   end;
 end;
 
@@ -2535,7 +2464,7 @@ begin
     // delete
     glDeleteFramebuffers(1, @AHandle);
     // check for error
-    {CheckError;}
+    { CheckError; }
   end;
 end;
 
@@ -2580,115 +2509,102 @@ begin
   vCurrentVXContext.VXStates.ReadFrameBuffer := 0;
 end;
 
-procedure TVXFramebufferHandle.Attach1DTexture(target: GLEnum; attachment:
-  GLEnum; textarget: GLEnum; texture: GLuint; level: GLint);
+procedure TVXFramebufferHandle.Attach1DTexture(Target: GLenum; attachment: GLenum; textarget: GLenum; texture: GLuint;
+  level: GLint);
 begin
-  glFramebufferTexture1D(target, attachment, textarget, texture, level);
+  glFramebufferTexture1D(Target, attachment, textarget, texture, level);
 end;
 
-procedure TVXFramebufferHandle.Attach2DTexture(target: GLEnum; attachment:
-  GLEnum; textarget: GLEnum; texture: GLuint; level: GLint);
+procedure TVXFramebufferHandle.Attach2DTexture(Target: GLenum; attachment: GLenum; textarget: GLenum; texture: GLuint;
+  level: GLint);
 begin
-  glFramebufferTexture2D(target, attachment, textarget, texture, level);
+  glFramebufferTexture2D(Target, attachment, textarget, texture, level);
 end;
 
-procedure TVXFramebufferHandle.Attach3DTexture(target: GLEnum; attachment:
-  GLEnum; textarget: GLEnum; texture: GLuint; level: GLint; layer: GLint);
+procedure TVXFramebufferHandle.Attach3DTexture(Target: GLenum; attachment: GLenum; textarget: GLenum; texture: GLuint;
+  level: GLint; Layer: GLint);
 begin
-  glFramebufferTexture3D(target, attachment, textarget, texture, level, layer);
+  glFramebufferTexture3D(Target, attachment, textarget, texture, level, Layer);
 end;
 
-procedure TVXFramebufferHandle.AttachLayer(target: GLEnum; attachment: GLEnum;
-  texture: GLuint; level: GLint; layer: GLint);
+procedure TVXFramebufferHandle.AttachLayer(Target: GLenum; attachment: GLenum; texture: GLuint; level: GLint; Layer: GLint);
 begin
-  glFramebufferTextureLayer(target, attachment, texture, level, layer);
+  glFramebufferTextureLayer(Target, attachment, texture, level, Layer);
 end;
 
-procedure TVXFramebufferHandle.AttachRenderBuffer(target: GLEnum; attachment:
-  GLEnum; renderbuffertarget: GLEnum; renderbuffer: GLuint);
+procedure TVXFramebufferHandle.AttachRenderBuffer(Target: GLenum; attachment: GLenum; renderbuffertarget: GLenum;
+  renderbuffer: GLuint);
 begin
-  glFramebufferRenderbuffer(target, attachment, renderbuffertarget,
-    renderbuffer);
+  glFramebufferRenderbuffer(Target, attachment, renderbuffertarget, renderbuffer);
 end;
 
-procedure TVXFramebufferHandle.AttachTexture(target: GLEnum; attachment:
-  GLEnum; texture: GLuint; level: GLint);
+procedure TVXFramebufferHandle.AttachTexture(Target: GLenum; attachment: GLenum; texture: GLuint; level: GLint);
 begin
-  glFramebufferTexture(target, attachment, texture, level);
+  glFramebufferTexture(Target, attachment, texture, level);
 end;
 
-procedure TVXFramebufferHandle.AttachTextureLayer(target: GLEnum; attachment:
-  GLEnum; texture: GLuint; level: GLint; layer: GLint);
+procedure TVXFramebufferHandle.AttachTextureLayer(Target: GLenum; attachment: GLenum; texture: GLuint; level: GLint;
+  Layer: GLint);
 begin
-  glFramebufferTextureLayer(target, attachment, texture, level, layer);
+  glFramebufferTextureLayer(Target, attachment, texture, level, Layer);
 end;
 
-procedure TVXFramebufferHandle.Blit(srcX0: GLint; srcY0: GLint; srcX1: GLint;
-  srcY1: GLint;
-  dstX0: GLint; dstY0: GLint; dstX1: GLint; dstY1: GLint;
-  mask: GLbitfield; filter: GLEnum);
+procedure TVXFramebufferHandle.Blit(srcX0: GLint; srcY0: GLint; srcX1: GLint; srcY1: GLint; dstX0: GLint; dstY0: GLint;
+  dstX1: GLint; dstY1: GLint; mask: GLbitfield; filter: GLenum);
 begin
-  glBlitFramebuffer(srcX0, srcY0, srcX1, srcY1, dstX0, dstY0, dstX1, dstY1,
-    mask, filter);
+  glBlitFramebuffer(srcX0, srcY0, srcX1, srcY1, dstX0, dstY0, dstX1, dstY1, mask, filter);
 end;
 
-function TVXFramebufferHandle.GetAttachmentParameter(target: GLEnum;
-  attachment: GLEnum; pname: GLEnum): GLint;
+function TVXFramebufferHandle.GetAttachmentParameter(Target: GLenum; attachment: GLenum; pname: GLenum): GLint;
 begin
-  glGetFramebufferAttachmentParameteriv(target, attachment, pname, @Result)
+  glGetFramebufferAttachmentParameteriv(Target, attachment, pname, @Result)
 end;
 
-function TVXFramebufferHandle.GetAttachmentObjectType(target: GLEnum;
-  attachment: GLEnum): GLint;
+function TVXFramebufferHandle.GetAttachmentObjectType(Target: GLenum; attachment: GLenum): GLint;
 begin
-  glGetFramebufferAttachmentParameteriv(target, attachment,
-    GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE, @Result);
+  glGetFramebufferAttachmentParameteriv(Target, attachment, GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE, @Result);
 end;
 
-function TVXFramebufferHandle.GetAttachmentObjectName(target: GLEnum;
-  attachment: GLEnum): GLint;
+function TVXFramebufferHandle.GetAttachmentObjectName(Target: GLenum; attachment: GLenum): GLint;
 begin
-  glGetFramebufferAttachmentParameteriv(target, attachment,
-    GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME, @Result);
+  glGetFramebufferAttachmentParameteriv(Target, attachment, GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME, @Result);
 end;
 
 function TVXFramebufferHandle.GetStatus: TVXFramebufferStatus;
 var
-  Status: cardinal;
+  Status: Cardinal;
 begin
   Status := glCheckFramebufferStatus(GL_FRAMEBUFFER);
 
   case Status of
-    GL_FRAMEBUFFER_COMPLETE_EXT: Result := fsComplete;
-    GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT_EXT: Result := fsIncompleteAttachment;
-    GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT_EXT: Result :=
-      fsIncompleteMissingAttachment;
-    GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT: Result := fsIncompleteDimensions;
-    GL_FRAMEBUFFER_INCOMPLETE_FORMATS_EXT: Result := fsIncompleteFormats;
-    GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER_EXT: Result := fsIncompleteDrawBuffer;
-    GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER_EXT: Result := fsIncompleteReadBuffer;
-    GL_FRAMEBUFFER_UNSUPPORTED_EXT: Result := fsUnsupported;
-    GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE: Result := fsIncompleteMultisample;
+    GL_FRAMEBUFFER_COMPLETE_EXT:
+      Result := fsComplete;
+    GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT_EXT:
+      Result := fsIncompleteAttachment;
+    GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT_EXT:
+      Result := fsIncompleteMissingAttachment;
+    GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT:
+      Result := fsIncompleteDimensions;
+    GL_FRAMEBUFFER_INCOMPLETE_FORMATS_EXT:
+      Result := fsIncompleteFormats;
+    GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER_EXT:
+      Result := fsIncompleteDrawBuffer;
+    GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER_EXT:
+      Result := fsIncompleteReadBuffer;
+    GL_FRAMEBUFFER_UNSUPPORTED_EXT:
+      Result := fsUnsupported;
+    GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE:
+      Result := fsIncompleteMultisample;
   else
     Result := fsStatusError;
   end;
 end;
 
-function TVXFramebufferHandle.GetStringStatus(out clarification: string):
-  TVXFramebufferStatus;
+function TVXFramebufferHandle.GetStringStatus(out clarification: string): TVXFramebufferStatus;
 const
-  cFBOStatus: array[TVXFramebufferStatus] of string = (
-    'Complete',
-    'Incomplete attachment',
-    'Incomplete missing attachment',
-    'IncompleteDuplicateAttachment',
-    'Incomplete dimensions',
-    'Incomplete formats',
-    'Incomplete draw buffer',
-    'Incomplete read buffer',
-    'Unsupported',
-    'Incomplite multisample',
-    'Status Error');
+  cFBOStatus: array [TVXFramebufferStatus] of string = ('Complete', 'Incomplete attachment', 'Incomplete missing attachment',
+    'IncompleteDuplicateAttachment', 'Incomplete dimensions', 'Incomplete formats', 'Incomplete draw buffer',
+    'Incomplete read buffer', 'Unsupported', 'Incomplite multisample', 'Status Error');
 begin
   Result := GetStatus;
   clarification := cFBOStatus[Result];
@@ -2723,7 +2639,7 @@ begin
     // delete
     glDeleteRenderbuffers(1, @AHandle);
     // check for error
-    {CheckError;}
+    { CheckError; }
   end;
 end;
 
@@ -2734,26 +2650,23 @@ end;
 
 procedure TVXRenderbufferHandle.Bind;
 begin
-  vCurrentVXContext.VXStates.RenderBuffer := GetHandle;
+  vCurrentVXContext.VXStates.renderbuffer := GetHandle;
 end;
 
 procedure TVXRenderbufferHandle.UnBind;
 begin
   if vCurrentVXContext <> nil then
-    vCurrentVXContext.VXStates.RenderBuffer := 0;
+    vCurrentVXContext.VXStates.renderbuffer := 0;
 end;
 
-procedure TVXRenderbufferHandle.SetStorage(internalformat: GLEnum; width,
-  height: GLsizei);
+procedure TVXRenderbufferHandle.SetStorage(internalformat: GLenum; Width, Height: GLsizei);
 begin
-  glRenderbufferStorage(GL_RENDERBUFFER, internalformat, width, height);
+  glRenderbufferStorage(GL_RENDERBUFFER, internalformat, Width, Height);
 end;
 
-procedure TVXRenderbufferHandle.SetStorageMultisample(internalformat: GLEnum;
-  samples: GLsizei; width, height: GLsizei);
+procedure TVXRenderbufferHandle.SetStorageMultisample(internalformat: GLenum; samples: GLsizei; Width, Height: GLsizei);
 begin
-  glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples, internalformat,
-    width, height);
+  glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples, internalformat, Width, Height);
 end;
 
 class function TVXRenderbufferHandle.IsSupported: Boolean;
@@ -2781,7 +2694,7 @@ begin
     // delete
     glDeleteProgramsARB(1, @AHandle);
     // check for error
-    {CheckError;}
+    { CheckError; }
   end;
 end;
 
@@ -2792,25 +2705,25 @@ end;
 
 procedure TVXProgramHandleEXT.LoadARBProgram(AText: string);
 const
-  cProgType: array[0..2] of string =
-    ('ARB vertex', 'ARB fragment', 'NV geometry');
+  cProgType: array [0 .. 2] of string = ('ARB vertex', 'ARB fragment', 'NV geometry');
 var
-  errPos, P: Integer;
+  errPos, p: Integer;
 begin
   Bind;
-  glProgramStringARB(GetTarget, GL_PROGRAM_FORMAT_ASCII_ARB,
-    Length(AText), PGLChar(AText));
+  glProgramStringARB(GetTarget, GL_PROGRAM_FORMAT_ASCII_ARB, Length(AText), PGLChar(AText));
   glGetIntegerv(GL_PROGRAM_ERROR_POSITION_ARB, @errPos);
   if errPos > -1 then
   begin
     FInfoLog := string(glGetString(GL_PROGRAM_ERROR_STRING_ARB));
     case GetTarget of
-      GL_VERTEX_PROGRAM_ARB: P := 0;
-      GL_FRAGMENT_PROGRAM_ARB: P := 1;
+      GL_VERTEX_PROGRAM_ARB:
+        p := 0;
+      GL_FRAGMENT_PROGRAM_ARB:
+        p := 1;
     else
-      P := 2;
+      p := 2;
     end;
-///    ShowMessages(Format('%s Program Error - [Pos: %d][Error %s]', [cProgType[P], errPos, FInfoLog]));
+    /// ShowMessages(Format('%s Program Error - [Pos: %d][Error %s]', [cProgType[P], errPos, FInfoLog]));
     FReady := False;
   end
   else
@@ -2838,7 +2751,7 @@ begin
   glBindProgramARB(GetTarget, Handle);
 end;
 
-class function TVXVertexProgramHandle.GetTarget: GLEnum;
+class function TVXVertexProgramHandle.GetTarget: GLenum;
 begin
   Result := GL_VERTEX_PROGRAM_ARB;
 end;
@@ -2848,7 +2761,7 @@ begin
   Result := GL_ARB_vertex_program;
 end;
 
-class function TVXFragmentProgramHandle.GetTarget: GLEnum;
+class function TVXFragmentProgramHandle.GetTarget: GLenum;
 begin
   Result := GL_FRAGMENT_PROGRAM_ARB;
 end;
@@ -2858,7 +2771,7 @@ begin
   Result := GL_ARB_vertex_program;
 end;
 
-class function TVXGeometryProgramHandle.GetTarget: GLEnum;
+class function TVXGeometryProgramHandle.GetTarget: GLenum;
 begin
   Result := GL_GEOMETRY_PROGRAM_NV;
 end;
@@ -2881,7 +2794,7 @@ begin
     // delete
     glDeleteObjectARB(@AHandle);
     // check for error
-    {CheckError;}
+    { CheckError; }
   end;
 end;
 
@@ -2889,7 +2802,7 @@ function TVXSLHandle.InfoLog: string;
 var
   maxLength: Integer;
   log: String;
-  AHandle : GLuint;
+  AHandle: GLuint;
 begin
   maxLength := 0;
   AHandle := GetHandle;
@@ -3031,22 +2944,18 @@ begin
   Result := glIsProgram(ID);
 end;
 
-procedure TVXProgramHandle.AddShader(shaderType: TVXShaderHandleClass; const
-  shaderSource: string;
+procedure TVXProgramHandle.AddShader(ShaderType: TVXShaderHandleClass; const ShaderSource: string;
   treatWarningsAsErrors: Boolean = False);
 var
   shader: TVXShaderHandle;
 begin
-  shader := shaderType.CreateAndAllocate;
+  shader := ShaderType.CreateAndAllocate;
   try
     if shader.Handle = 0 then
-      raise EGLShader.Create('Couldn''t allocate ' + shaderType.ClassName);
-    shader.ShaderSource(AnsiString(shaderSource));
-    if (not shader.CompileShader)
-      or (treatWarningsAsErrors and (Pos('warning', LowerCase(shader.InfoLog)) >
-      0)) then
-      raise EGLShader.Create(FName + ' (' + shader.ClassName + '): '#13#10 +
-        shader.InfoLog);
+      raise EGLShader.Create('Couldn''t allocate ' + ShaderType.ClassName);
+    shader.ShaderSource(AnsiString(ShaderSource));
+    if (not shader.CompileShader) or (treatWarningsAsErrors and (Pos('warning', LowerCase(shader.InfoLog)) > 0)) then
+      raise EGLShader.Create(FName + ' (' + shader.ClassName + '): '#13#10 + shader.InfoLog);
     AttachObject(shader);
   finally
     shader.Free;
@@ -3063,15 +2972,15 @@ procedure TVXProgramHandle.DetachAllObject;
 var
   glH: GLuint;
   I: Integer;
-  count: GLSizei;
-  buffer: array[0..255] of GLuint;
+  Count: GLsizei;
+  buffer: array [0 .. 255] of GLuint;
 begin
   glH := GetHandle;
   if glH > 0 then
   begin
-    glGetAttachedShaders(glH, Length(buffer), @count, @buffer[0]);
-    count := MinInteger(count, Length(buffer));
-    for I := 0 to count - 1 do
+    glGetAttachedShaders(glH, Length(buffer), @Count, @buffer[0]);
+    Count := MinInteger(Count, Length(buffer));
+    for I := 0 to Count - 1 do
       glDetachShader(glH, buffer[I]);
     NotifyChangesOfData;
   end;
@@ -3082,22 +2991,21 @@ begin
   glBindAttribLocation(GetHandle, index, PGLChar(aName));
 end;
 
-procedure TVXProgramHandle.BindFragDataLocation(index: Integer; const aName:
-  string);
+procedure TVXProgramHandle.BindFragDataLocation(index: Integer; const aName: string);
 begin
   glBindFragDataLocation(GetHandle, index, PGLChar(name));
 end;
 
 function TVXProgramHandle.LinkProgram: Boolean;
 var
-  status: Integer;
+  Status: Integer;
   glH: GLuint;
 begin
   glH := GetHandle;
   glLinkProgram(glH);
-  status := 0;
-  glGetProgramiv(glH, GL_LINK_STATUS, @status);
-  Result := (status <> 0);
+  Status := 0;
+  glGetProgramiv(glH, GL_LINK_STATUS, @Status);
+  Result := (Status <> 0);
 end;
 
 function TVXProgramHandle.ValidateProgram: Boolean;
@@ -3182,20 +3090,17 @@ begin
   glUniform1i(GetUniformLocation(index), val);
 end;
 
-procedure TVXProgramHandle.SetUniform2i(const index: string;
-  const Value: TVector2i);
+procedure TVXProgramHandle.SetUniform2i(const index: string; const Value: TVector2i);
 begin
   glUniform2i(GetUniformLocation(index), Value.X, Value.Y);
 end;
 
-procedure TVXProgramHandle.SetUniform3i(const index: string;
-  const Value: TVector3i);
+procedure TVXProgramHandle.SetUniform3i(const index: string; const Value: TVector3i);
 begin
   glUniform3i(GetUniformLocation(index), Value.X, Value.Y, Value.Z);
 end;
 
-procedure TVXProgramHandle.SetUniform4i(const index: string;
-  const Value: TVector4i);
+procedure TVXProgramHandle.SetUniform4i(const index: string; const Value: TVector4i);
 begin
   glUniform4i(GetUniformLocation(index), Value.X, Value.Y, Value.Z, Value.W);
 end;
@@ -3205,8 +3110,7 @@ begin
   glGetUniformfv(GetHandle, GetUniformLocation(index), @Result);
 end;
 
-procedure TVXProgramHandle.SetUniform2f(const index: string; const val:
-  TVector2f);
+procedure TVXProgramHandle.SetUniform2f(const index: string; const val: TVector2f);
 begin
   glUniform2f(GetUniformLocation(index), val.X, val.Y);
 end;
@@ -3216,8 +3120,7 @@ begin
   glGetUniformfv(GetHandle, GetUniformLocation(index), @Result);
 end;
 
-procedure TVXProgramHandle.SetUniform3f(const index: string; const val:
-  TAffineVector);
+procedure TVXProgramHandle.SetUniform3f(const index: string; const val: TAffineVector);
 begin
   glUniform3f(GetUniformLocation(index), val.X, val.Y, val.Z);
 end;
@@ -3227,8 +3130,7 @@ begin
   glGetUniformfv(GetHandle, GetUniformLocation(index), @Result);
 end;
 
-procedure TVXProgramHandle.SetUniform4f(const index: string; const val:
-  TVector);
+procedure TVXProgramHandle.SetUniform4f(const index: string; const val: TVector);
 begin
   glUniform4f(GetUniformLocation(index), val.X, val.Y, val.Z, val.W);
 end;
@@ -3238,10 +3140,9 @@ begin
   glGetUniformfv(GetHandle, GetUniformLocation(index), @Result);
 end;
 
-procedure TVXProgramHandle.SetUniformMatrix2fv(const index: string; const val:
-  TMatrix2f);
+procedure TVXProgramHandle.SetUniformMatrix2fv(const index: string; const val: TMatrix2f);
 begin
-  glUniformMatrix2fv(GetUniformLocation(index), 1, 0{False}, @val);
+  glUniformMatrix2fv(GetUniformLocation(index), 1, 0 { False } , @val);
 end;
 
 function TVXProgramHandle.GetUniformMatrix3fv(const index: string): TMatrix3f;
@@ -3249,10 +3150,9 @@ begin
   glGetUniformfv(GetHandle, GetUniformLocation(index), @Result);
 end;
 
-procedure TVXProgramHandle.SetUniformMatrix3fv(const index: string; const val:
-  TMatrix3f);
+procedure TVXProgramHandle.SetUniformMatrix3fv(const index: string; const val: TMatrix3f);
 begin
-  glUniformMatrix3fv(GetUniformLocation(index), 1, 0{False}, @val);
+  glUniformMatrix3fv(GetUniformLocation(index), 1, 0 { False } , @val);
 end;
 
 function TVXProgramHandle.GetUniformMatrix4fv(const index: string): TMatrix;
@@ -3260,81 +3160,70 @@ begin
   glGetUniformfv(GetHandle, GetUniformLocation(index), @Result);
 end;
 
-procedure TVXProgramHandle.SetUniformMatrix4fv(const index: string; const val:
-  TMatrix);
+procedure TVXProgramHandle.SetUniformMatrix4fv(const index: string; const val: TMatrix);
 begin
-  glUniformMatrix4fv(GetUniformLocation(index), 1, 0{False}, @val);
+  glUniformMatrix4fv(GetUniformLocation(index), 1, 0 { False } , @val);
 end;
 
-procedure TVXProgramHandle.SetUniformf(const index: string;
-  const val: single);
+procedure TVXProgramHandle.SetUniformf(const index: string; const val: Single);
 begin
   SetUniform1f(index, val);
 end;
 
-procedure TVXProgramHandle.SetUniformf(const index: string; const val:
-  TVector2f);
+procedure TVXProgramHandle.SetUniformf(const index: string; const val: TVector2f);
 begin
   SetUniform2f(index, val);
 end;
 
-procedure TVXProgramHandle.SetUniformf(const index: string;
-  const val: TVector3f);
+procedure TVXProgramHandle.SetUniformf(const index: string; const val: TVector3f);
 begin
   SetUniform3f(index, val);
 end;
 
-procedure TVXProgramHandle.SetUniformf(const index: string;
-  const val: TVector4f);
+procedure TVXProgramHandle.SetUniformf(const index: string; const val: TVector4f);
 begin
   SetUniform4f(index, val);
 end;
 
-procedure TVXProgramHandle.SetUniformi(const index: string;
-  const val: integer);
+procedure TVXProgramHandle.SetUniformi(const index: string; const val: Integer);
 begin
   SetUniform1f(index, val);
 end;
 
-procedure TVXProgramHandle.SetUniformi(const index: string; const val:
-  TVector2i);
+procedure TVXProgramHandle.SetUniformi(const index: string; const val: TVector2i);
 begin
   SetUniform2i(index, val);
 end;
 
-procedure TVXProgramHandle.SetUniformi(const index: string;
-  const val: TVector3i);
+procedure TVXProgramHandle.SetUniformi(const index: string; const val: TVector3i);
 begin
   SetUniform3i(index, val);
 end;
 
-procedure TVXProgramHandle.SetUniformi(const index: string;
-  const val: TVector4i);
+procedure TVXProgramHandle.SetUniformi(const index: string; const val: TVector4i);
 begin
   SetUniform4i(index, val);
 end;
 
-function TVXProgramHandle.GetUniformTextureHandle(const index: string;
-  const TextureIndex: Integer; const TextureTarget: TVXTextureTarget): Cardinal;
+function TVXProgramHandle.GetUniformTextureHandle(const index: string; const TextureIndex: Integer;
+  const TextureTarget: TVXTextureTarget): Cardinal;
 begin
   Result := GetUniform1i(index);
 end;
 
-procedure TVXProgramHandle.SetUniformTextureHandle(const index: string;
-  const TextureIndex: Integer; const TextureTarget: TVXTextureTarget;
-  const Value: GLuint);
+procedure TVXProgramHandle.SetUniformTextureHandle(const index: string; const TextureIndex: Integer;
+  const TextureTarget: TVXTextureTarget; const Value: GLuint);
 begin
   vCurrentVXContext.VXStates.TextureBinding[0, TextureTarget] := Value;
   SetUniform1i(index, TextureIndex);
 end;
 
-procedure TVXProgramHandle.SetUniformBuffer(const index: string;
-  Value: TVXUniformBufferHandle);
+procedure TVXProgramHandle.SetUniformBuffer(const index: string; Value: TVXUniformBufferHandle);
 begin
   glUniformBufferEXT(Handle, GetUniformLocation(index), Value.Handle);
 end;
 
-function TVXProgramHandle.GetUniformBufferSize(const aName: string): GLInt;
+function TVXProgramHandle.GetUniformBufferSize(const aName: string): GLint;
 begin
   Result := glGetUniformBufferSizeEXT(Handle, GetUniformLocation(aName));
 end;
@@ -3428,12 +3317,11 @@ begin
   FThreadTask.Clear;
   nowTime := GLSTime;
   with TServiceContextThread(FThread) do
-  if (nowTime - FLastTaskStartTime > 30000)
-    and not FReported then
-  begin
-    FReported := True;
-    ShowMessage('Service context queue task depleted');
-  end;
+    if (nowTime - FLastTaskStartTime > 30000) and not FReported then
+    begin
+      FReported := True;
+      ShowMessage('Service context queue task depleted');
+    end;
 end;
 
 {$ENDIF USE_SERVICE_CONTEXT}
@@ -3467,7 +3355,7 @@ begin
   // try..finally just a waste of CPU here, if Count fails, the list is amok,
   // and so is the lock...
   Result := FList.LockList.Count;
-  FList.UnLockList;
+  FList.UnlockList;
 end;
 
 procedure TVXContextManager.RegisterContext(aContext: TVXContext);
@@ -3475,7 +3363,7 @@ begin
   with FList.LockList do
     try
       if IndexOf(aContext) >= 0 then
-        raise EVKContext.Create(strInvalidContextRegistration)
+        raise EVXContext.Create(strInvalidContextRegistration)
       else
         Add(aContext);
     finally
@@ -3488,7 +3376,7 @@ begin
   with FList.LockList do
     try
       if IndexOf(aContext) < 0 then
-        raise EVKContext.Create(strInvalidContextRegistration)
+        raise EVXContext.Create(strInvalidContextRegistration)
       else
         Remove(aContext);
     finally
@@ -3521,7 +3409,7 @@ begin
       begin
         cn := FNotifications[High(FNotifications)];
         SetLength(FNotifications, Length(FNotifications) - 1);
-        cn.event(cn.obj);
+        cn.Event(cn.obj);
       end;
     end;
   finally
@@ -3529,8 +3417,7 @@ begin
   end;
 end;
 
-procedure TVXContextManager.LastContextDestroyNotification(
-  anObject: TObject; anEvent: TNotifyEvent);
+procedure TVXContextManager.LastContextDestroyNotification(anObject: TObject; anEvent: TNotifyEvent);
 begin
   Lock;
   try
@@ -3538,7 +3425,7 @@ begin
     with FNotifications[High(FNotifications)] do
     begin
       obj := anObject;
-      event := anEvent;
+      Event := anEvent;
     end;
   finally
     UnLock;
@@ -3547,30 +3434,30 @@ end;
 
 procedure TVXContextManager.RemoveNotification(anObject: TObject);
 var
-  i: Integer;
+  I: Integer;
   found: Boolean;
 begin
   Lock;
   try
     found := False;
-    i := Low(FNotifications);
-    while i <= High(FNotifications) do
+    I := Low(FNotifications);
+    while I <= High(FNotifications) do
     begin
-      if FNotifications[i].obj = anObject then
+      if FNotifications[I].obj = anObject then
       begin
         found := True;
-        while i <= High(FNotifications) do
+        while I <= High(FNotifications) do
         begin
-          FNotifications[i] := FNotifications[i + 1];
-          Inc(i);
+          FNotifications[I] := FNotifications[I + 1];
+          Inc(I);
         end;
         SetLength(FNotifications, Length(FNotifications) - 1);
         Break;
       end;
-      Inc(i);
+      Inc(I);
     end;
     if not found then
-      raise EVKContext.Create(strInvalidNotificationRemoval);
+      raise EVXContext.Create(strInvalidNotificationRemoval);
   finally
     UnLock;
   end;
@@ -3581,26 +3468,25 @@ begin
   FTerminated := True;
   if ContextCount = 0 then
   begin
-    VKContextManager := nil;
+    VXContextManager := nil;
     Free;
   end;
 end;
 
 procedure TVXContextManager.DestroyAllHandles;
 var
-  i: Integer;
+  I: Integer;
 begin
   with FList.LockList do
     try
-      for i := Count - 1 downto 0 do
-        TVXContext(Items[i]).DestroyAllHandles;
+      for I := Count - 1 downto 0 do
+        TVXContext(Items[I]).DestroyAllHandles;
     finally
-      FList.UnLockList;
+      FList.UnlockList;
     end;
 end;
 
 {$IFDEF USE_SERVICE_CONTEXT}
-
 {$REGION 'TServiceContextThread'}
 
 constructor TServiceContextThread.Create;
@@ -3616,8 +3502,8 @@ begin
   vServiceWindow := FWindow;
 {$IFDEF MSWINDOWS}
   { TODO -oPW : E2010 Incompatible types: 'NativeUInt' and 'TWindowHandle' }
-  (*FDC := GetDeviceContext(FWindow.Handle);*)
-  {$ENDIF}
+  (* FDC := GetDeviceContext(FWindow.Handle); *)
+{$ENDIF}
 {$IFDEF LINUX}
   FDC := FWindow.Handle;
 {$ENDIF}
@@ -3626,7 +3512,7 @@ end;
 
 destructor TServiceContextThread.Destroy;
 begin
-  FWindow.Handle.Free; //VCL -> ReleaseDC(FWindow.Handle, FDC);
+  FWindow.Handle.Free; // VCL -> ReleaseDC(FWindow.Handle, FDC);
   FWindow.Free;
   inherited;
 end;
@@ -3655,7 +3541,7 @@ begin
       ShowMessage(Format('%s: can''t initialize memory rendering context. Try initialize common context.', [ClassName]));
       try
         { TODO -oPW : E2250 There is no overloaded version of 'CreateContext' that can be called with these arguments }
-        (*VKContextManager.ServiceContext.CreateContext(FDC);*)
+        (* VKContextManager.ServiceContext.CreateContext(FDC); *)
       except
         Fail;
         exit;
@@ -3687,7 +3573,7 @@ var
           if Assigned(TaskRec.Task) then
           begin
             Items[I] := NullTask;
-            break;
+            Break;
           end;
         end;
       finally
@@ -3721,7 +3607,7 @@ begin
             if Assigned(TaskRec.Event) then
               TaskRec.Event.SetEvent;
           end;
-         end
+        end
         else
           Synchronize(VKContextManager.QueueTaskDepleted);
         ServiceStarter.WaitFor(30000);
@@ -3753,7 +3639,7 @@ begin
             rEvent := TFinishTaskEvent.Create;
             TaskRec.Event := rEvent;
           end
-          else  // Asynchronous call
+          else // Asynchronous call
             TaskRec.Event := FinishEvent;
           Add(TaskRec);
           with TServiceContextThread(VKContextManager.FThread) do
@@ -3794,23 +3680,16 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 
-  vMainThread := True;
-  VKContextManager := TVXContextManager.Create;
+vMainThread := True;
+VXContextManager := TVXContextManager.Create;
 
 finalization
 
-  VKContextManager.Terminate;
-  vContextClasses.Free;
-  vContextClasses := nil;
+VXContextManager.Terminate;
+vContextClasses.Free;
+vContextClasses := nil;
 
 end.
-
-
-

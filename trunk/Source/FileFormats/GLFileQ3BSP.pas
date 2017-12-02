@@ -136,7 +136,7 @@ begin
     begin
       for i := 0 to High(bsp.Textures) do
       begin
-        GetOrAllocateMaterial(Trim(string(StrPas(bsp.Textures[i].TextureName))));
+        GetOrAllocateMaterial(Trim(StrPas(bsp.Textures[i].TextureName)));
       end;
     end;
 

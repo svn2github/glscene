@@ -4,7 +4,6 @@
 {
    File loader for MTS
    History :
-   01/01/07 - Dave Gravel - Modification to make it work.
    10/09/03 - Domin - Creation
    The whole history is logged in previous version of the unit
 
@@ -104,13 +103,13 @@ type
   TGLLMTSVectorFile = class(TGLVectorFile)
   public
     class function Capabilities: TGLDataFileCapabilities; override;
-
     procedure LoadFromStream(aStream: TStream); override;
     procedure SaveToStream(aStream: TStream); override;
-
   end;
 
+//---------------------------------------------------
 implementation
+//---------------------------------------------------
 
 uses
   GLTextureFormat;
@@ -119,16 +118,10 @@ uses
 // ------------------ TGLLMTSVectorFile ------------------
 // ------------------
 
-// Capabilities
-//
-
 class function TGLLMTSVectorFile.Capabilities: TGLDataFileCapabilities;
 begin
   Result := [dfcRead, dfcWrite];
 end;
-
-// LoadFromStream
-//
 
 procedure TGLLMTSVectorFile.LoadFromStream(aStream: TStream);
 var
@@ -426,9 +419,6 @@ begin
     MO.free;
   end;
 end;
-
-// SaveToStream
-//
 
 procedure TGLLMTSVectorFile.SaveToStream(aStream: TStream);
 var

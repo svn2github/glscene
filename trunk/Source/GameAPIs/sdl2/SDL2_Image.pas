@@ -52,7 +52,7 @@ const
    * version of the SDL_image library.
    *}
 
-procedure SDL_IMAGE_VERSION(var X: TSDL_Version);
+procedure SDL_IMAGE_VERSION(Out X: TSDL_Version);
 
   {* This function gets the version of the dynamically linked SDL_image library.
      it should NOT be used to fill a version structure, instead you should
@@ -212,21 +212,6 @@ cdecl; external SDL_ImageLibName {$IFDEF MACOS} {$IFNDEF IOS} name '_IMG_SavePNG
 {* We'll use SDL for reporting errors *}
 function IMG_SetError(fmt: PChar): SInt32;
 function IMG_GetError: PChar;
-
-
-
-
-
-
-//******************************************************************************
-//******************************************************************************
-//******************************************************************************
-//******************************************************************************
-//******************************************************************************
-
-
-
-
 
 implementation
 

@@ -1,5 +1,5 @@
 //
-// VXScene Component Library, based on GLScene http://glscene.sourceforge.net 
+// VXScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
 {
    SDL specific Context and Viewer.
@@ -14,15 +14,16 @@ unit VXS.SDLContext;
 interface
 
 uses
-{$IFDEF MSWINDOWS}
   Winapi.Windows,
-{$ENDIF}
   System.Classes,
   System.SysUtils,
+
+  VXS.CrossPlatform,
+  VXS.OpenGLAdapter,
+  VXS.XOpenGL,
   VXS.Context,
   VXS.SDLWindow,
-  VXS.Scene,
-  VXS.SDL;
+  VXS.Scene;
 
 type
 
@@ -32,7 +33,7 @@ type
   TVXSDLViewer = class(TVXNonVisualViewer)
   private
     FCaption: string;
-    FOnSDLEvent: TSDLEvent;
+    FOnSDLEvent: TVXSDLEvent;
     FOnEventPollDone: TNotifyEvent;
     FOnResize: TNotifyEvent;
   protected
@@ -40,10 +41,10 @@ type
     procedure DoOnOpen(sender: TObject);
     procedure DoOnClose(sender: TObject);
     procedure DoOnResize(sender: TObject);
-    procedure DoOnSDLEvent(sender: TObject; const event: TSDL_Event);
+    procedure DoOnSDLEvent(sender: TObject; const event: TVXSDLEvent);
     procedure DoOnEventPollDone(sender: TObject);
     procedure DoBufferStructuralChange(Sender: TObject); override;
-    procedure PrepareGLContext; override;
+    procedure PrepareVXContext; override;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -55,7 +56,7 @@ type
     { Fired whenever an SDL Event is polled.
        SDL_QUITEV and SDL_VIDEORESIZE are not passed to this event handler,
        they are passed via OnClose and OnResize respectively. }
-    property OnSDLEvent: TSDLEvent read FOnSDLEvent write FOnSDLEvent;
+    property OnSDLEvent: TVXSDLEvent read FOnSDLEvent write FOnSDLEvent;
     { Fired whenever an event polling completes with no events left to poll. }
     property OnEventPollDone: TNotifyEvent read FOnEventPollDone write FOnEventPollDone;
   end;
@@ -67,11 +68,12 @@ type
       closing the SDL window will terminate the application }
   TVXSDLContext = class(TVXScreenControlingContext)
   private
-    FSDLWin: TSDLWindow;
+    FSDLWin: TVXSDLWindow;
     FSimulatedValidity: Boolean; // Hack around SDL's post-notified destruction of context
   protected
-    procedure DoCreateContext(outputDevice: HDC); override;
-    procedure DoCreateMemoryContext(outputDevice: HWND; width, height: Integer; BufferCount: integer); override;
+    procedure DoCreateContext(outputDevice: THandle); override; //HDC
+    procedure DoCreateMemoryContext(OutputDevice: THandle; Width, Height: // VCL ->HWND
+      Integer; BufferCount: Integer = 1); override;
     function DoShareLists(aContext: TVXContext): Boolean; override;
     procedure DoDestroyContext; override;
     procedure DoActivate; override;
@@ -82,7 +84,7 @@ type
     function IsValid: Boolean; override;
     procedure SwapBuffers; override;
     function RenderOutputDevice: Pointer; override;
-    property SDLWindow: TSDLWindow read FSDLWin;
+    property SDLWindow: TVXSDLWindow read FSDLWin;
   end;
 
 procedure Register;
@@ -90,11 +92,6 @@ procedure Register;
 // ------------------------------------------------------------------
 implementation
 // ------------------------------------------------------------------
-
-uses
-  VXS.OpenGLAdapter,
-  VXS.CrossPlatform,
-  XOpenGL;
 
 procedure Register;
 begin
@@ -122,7 +119,7 @@ begin
   // ignore that, supporting it with SDL is not very praticable as of now...
 end;
 
-procedure TVXSDLViewer.PrepareGLContext;
+procedure TVXSDLViewer.PrepareVXContext;
 begin
   with Buffer.RenderingContext as TVXSDLContext do
   begin
@@ -134,7 +131,7 @@ begin
       OnOpen := DoOnOpen;
       OnClose := DoOnClose;
       OnResize := DoOnResize;
-      OnSDLEvent := DoOnSDLEvent;
+///?      OnSDLEvent := DoOnSDLEvent;
       OnEventPollDone := DoOnEventPollDone;
     end;
   end;
@@ -189,10 +186,12 @@ begin
     FOnResize(Self);
 end;
 
-procedure TVXSDLViewer.DoOnSDLEvent(sender: TObject; const event: TSDL_Event);
+procedure TVXSDLViewer.DoOnSDLEvent(sender: TObject; const event: TVXSDLEvent);
 begin
+{
   if Assigned(FOnSDLEvent) then
     FOnSDLEvent(sender, event);
+}
 end;
 
 procedure TVXSDLViewer.DoOnEventPollDone(sender: TObject);
@@ -208,28 +207,28 @@ end;
 constructor TVXSDLContext.Create;
 begin
   inherited Create;
-  FSDLWin := TSDLWindow.Create(nil);
+  FSDLWin := TVXSDLWindow.Create(nil);
 end;
 
 destructor TVXSDLContext.Destroy;
 var
   oldIgnore: Boolean;
 begin
-  oldIgnore := vIgnoreOpenGLErrors;
+  oldIgnore := vIgnoreOpenVXErrors;
   FSimulatedValidity := True;
-  vIgnoreOpenGLErrors := True;
+  vIgnoreOpenVXErrors := True;
   try
     inherited Destroy;
   finally
-    vIgnoreOpenGLErrors := oldIgnore;
+    vIgnoreOpenVXErrors := oldIgnore;
     FSimulatedValidity := False;
   end;
   FreeAndNil(FSDLWin);
 end;
 
-procedure TVXSDLContext.DoCreateContext(outputDevice: HDC);
+procedure TVXSDLContext.DoCreateContext(outputDevice: THandle);
 var
-  sdlOpt: TSDLWindowOptions;
+  sdlOpt: TVXSDLWindowOptions;
 begin
   // Just in case it didn't happen already.
   if not InitOpenGL then
@@ -242,7 +241,7 @@ begin
   else
     FSDLWin.PixelDepth := vpd16bits;
 
-  sdlOpt := [voOpenGL, voHardwareAccel];
+  sdlOpt := [voOpenGL];
   if FullScreen then
     sdlOpt := sdlOpt + [voFullScreen]
   else
@@ -256,11 +255,12 @@ begin
   if not FSDLWin.Active then
     raise Exception.Create('SDLWindow open failed.');
 
-  FGL.Initialize;
+  FVX.Initialize;
   MakeGLCurrent;
 end;
 
-procedure TVXSDLContext.DoCreateMemoryContext(outputDevice: HWND; width, height: Integer; BufferCount: integer);
+procedure TVXSDLContext.DoCreateMemoryContext(OutputDevice: THandle; Width, Height: // VCL ->HWND
+      Integer; BufferCount: Integer = 1);
 begin
   raise Exception.Create(ClassName + ': Memory contexts not supported');
 end;
@@ -274,17 +274,14 @@ end;
 procedure TVXSDLContext.DoDestroyContext;
 begin
   // Beware, SDL will also terminate the application
-  FGL.Close;
+  FVX.Close;
   FSDLWin.Close;
 end;
 
-// DoActivate
-//
-
 procedure TVXSDLContext.DoActivate;
 begin
-  if not FGL.IsInitialized then
-    FGL.Initialize;
+  if not FVX.IsInitialized then
+    FVX.Initialize;
 end;
 
 procedure TVXSDLContext.DoDeactivate;
@@ -313,7 +310,7 @@ initialization
 // ------------------------------------------------------------------
 
   RegisterClass(TVXSDLViewer);
-  RegisterGLContextClass(TVXSDLContext);
+  RegisterVXContextClass(TVXSDLContext);
 
 end.
 

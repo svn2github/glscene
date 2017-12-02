@@ -7,14 +7,12 @@
   This code was adapted from the nVidia Tree Demo:
   http://developer.nvidia.com/object/Procedural_Tree.html
   Some info:
-  CenterBranchConstant  -
-  Defines, how big the central branch is. When around 50%
-  it makes a small branch inside the tree, for higher values
-  much more branches and leaves are created, so either use it
-  with low depth, or set it to zero, and have two-branched tree.
+  CenterBranchConstant  - Defines, how big the central branch is. When around 50%
+    it makes a small branch inside the tree, for higher values
+    much more branches and leaves are created, so either use it
+    with low depth, or set it to zero, and have two-branched tree.
   Default : 0.5
-  "AutoRebuild" flag  -
-  Rebuild tree after property change.
+  "AutoRebuild" flag  - Rebuild tree after property change.
   Default: True }
 unit VXS.Tree;
 
@@ -29,7 +27,6 @@ uses
   System.SysUtils,
   System.Math,
 
-  VXS.OpenGLAdapter,
   VXS.XOpenGL,
   VXS.Scene,
   VXS.Material,
@@ -353,8 +350,6 @@ begin
     libMat.UnApply(rci);
 end;
 
-// Clear
-//
 procedure TVXTreeLeaves.Clear;
 begin
   FVertices.Clear;
@@ -367,8 +362,6 @@ end;
 // TVXTreeBranch
 // -----------------------------------------------------------------------------
 
-// Create
-//
 constructor TVXTreeBranch.Create(AOwner: TVXTreeBranches;
   AParent: TVXTreeBranch);
 begin
@@ -392,8 +385,6 @@ begin
     FParentID := -1;
 end;
 
-// Destroy
-//
 destructor TVXTreeBranch.Destroy;
 begin
   FUpper.Free;
@@ -403,8 +394,6 @@ begin
   inherited;
 end;
 
-// BuildBranch
-//
 procedure TVXTreeBranch.BuildBranch(branchNoise: TVXTreeBranchNoise;
   const matrix: TMatrix; TexCoordY, Twist: Single; Level: Integer);
 var
@@ -427,7 +416,6 @@ begin
   Assert(Assigned(FOwner.FOwner), 'Incorrect use of TVXTreeBranches');
 
   FMatrix := matrix;
-
   Branches := FOwner;
   Tree := FOwner.FOwner;
 
@@ -617,8 +605,6 @@ end;
 // TVXTreeBranches
 // -----------------------------------------------------------------------------
 
-// Create
-//
 constructor TVXTreeBranches.Create(AOwner: TVXTree);
 begin
   FOwner := AOwner;
@@ -633,8 +619,6 @@ begin
   FCount := 0;
 end;
 
-// Destroy
-//
 destructor TVXTreeBranches.Destroy;
 begin
   FSinList.Free;
@@ -649,8 +633,6 @@ begin
   inherited;
 end;
 
-// BuildBranches
-//
 procedure TVXTreeBranches.BuildBranches;
 var
   i: Integer;
@@ -686,8 +668,6 @@ begin
   Owner.FAxisAlignedDimensionsCache.X := -1;
 end;
 
-// BuildList
-//
 procedure TVXTreeBranches.BuildList(var rci: TVXRenderContextInfo);
 var
   i, stride: Integer;
@@ -718,8 +698,6 @@ begin
   glDisableClientState(GL_VERTEX_ARRAY);
 end;
 
-// Clear
-//
 procedure TVXTreeBranches.Clear;
 begin
   FSinList.Clear;
@@ -738,15 +716,11 @@ end;
 // TVXTreeBranchNoise
 // -----------------------------------------------------------------------------
 
-// Create
-//
 constructor TVXTreeBranchNoise.Create;
 begin
   FBranchNoise := Random;
 end;
 
-// Destroy
-//
 destructor TVXTreeBranchNoise.Destroy;
 begin
   FLeft.Free;
@@ -754,8 +728,6 @@ begin
   inherited;
 end;
 
-// GetLeft
-//
 function TVXTreeBranchNoise.GetLeft: TVXTreeBranchNoise;
 begin
   if not Assigned(FLeft) then
@@ -763,8 +735,6 @@ begin
   Result := FLeft;
 end;
 
-// GetRight
-//
 function TVXTreeBranchNoise.GetRight: TVXTreeBranchNoise;
 begin
   if not Assigned(FRight) then
@@ -783,8 +753,6 @@ end;
 // TVXTree
 // -----------------------------------------------------------------------------
 
-// Create
-//
 constructor TVXTree.Create(AOwner: TComponent);
 begin
   inherited;
@@ -810,8 +778,6 @@ begin
   FNoise := TVXTreeBranchNoise.Create;
 end;
 
-// Destroy
-//
 destructor TVXTree.Destroy;
 begin
   FLeaves.Free;
@@ -820,16 +786,12 @@ begin
   inherited;
 end;
 
-// Loaded
-//
 procedure TVXTree.Loaded;
 begin
   inherited;
   FBranches.BuildBranches;
 end;
 
-// Notification
-//
 procedure TVXTree.Notification(AComponent: TComponent; Operation: TOperation);
 begin
   if (Operation = opRemove) and (AComponent = FMaterialLibrary) then
@@ -837,8 +799,6 @@ begin
   inherited;
 end;
 
-// DoRender
-//
 procedure TVXTree.DoRender(var ARci: TVXRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);
 begin
@@ -848,8 +808,6 @@ begin
   inherited;
 end;
 
-// BuildList
-//
 procedure TVXTree.BuildList(var rci: TVXRenderContextInfo);
 begin
   if FRebuildTree then
@@ -861,16 +819,12 @@ begin
   Leaves.BuildList(rci);
 end;
 
-// StructureChanged
-//
 procedure TVXTree.StructureChanged;
 begin
   FAxisAlignedDimensionsCache.X := -1;
   inherited;
 end;
 
-// BuildMesh
-//
 procedure TVXTree.BuildMesh(GLBaseMesh: TVXBaseMesh);
 
   procedure RecursBranches(Branch: TVXTreeBranch; bone: TVXSkeletonBone;
@@ -1027,16 +981,12 @@ begin
   end;
 end;
 
-// Clear
-//
 procedure TVXTree.Clear;
 begin
   FLeaves.Clear;
   FBranches.Clear;
 end;
 
-// SetBranchAngle
-//
 procedure TVXTree.SetBranchAngle(const Value: Single);
 begin
   if Value <> FBranchAngle then
@@ -1047,8 +997,6 @@ begin
   end;
 end;
 
-// SetBranchAngleBias
-//
 procedure TVXTree.SetBranchAngleBias(const Value: Single);
 begin
   if Value <> FBranchAngleBias then
@@ -1059,8 +1007,6 @@ begin
   end;
 end;
 
-// SetBranchNoise
-//
 procedure TVXTree.SetBranchNoise(const Value: Single);
 begin
   if Value <> FBranchNoise then
@@ -1071,8 +1017,6 @@ begin
   end;
 end;
 
-// SetBranchRadius
-//
 procedure TVXTree.SetBranchRadius(const Value: Single);
 begin
   if Value <> FBranchRadius then
@@ -1083,8 +1027,6 @@ begin
   end;
 end;
 
-// SetBranchSize
-//
 procedure TVXTree.SetBranchSize(const Value: Single);
 begin
   if Value <> FBranchSize then
@@ -1095,8 +1037,6 @@ begin
   end;
 end;
 
-// SetBranchTwist
-//
 procedure TVXTree.SetBranchTwist(const Value: Single);
 begin
   if Value <> FBranchTwist then
@@ -1107,8 +1047,6 @@ begin
   end;
 end;
 
-// SetDepth
-//
 procedure TVXTree.SetDepth(const Value: Integer);
 begin
   if Value <> FDepth then
@@ -1119,8 +1057,6 @@ begin
   end;
 end;
 
-// SetBranchFacets
-//
 procedure TVXTree.SetBranchFacets(const Value: Integer);
 begin
   if Value <> FBranchFacets then
@@ -1131,8 +1067,6 @@ begin
   end;
 end;
 
-// SetLeafSize
-//
 procedure TVXTree.SetLeafSize(const Value: Single);
 begin
   if Value <> FLeafSize then
@@ -1143,8 +1077,6 @@ begin
   end;
 end;
 
-// SetLeafThreshold
-//
 procedure TVXTree.SetLeafThreshold(const Value: Single);
 begin
   if Value <> FLeafThreshold then
@@ -1155,8 +1087,6 @@ begin
   end;
 end;
 
-// SetCentralLeaderBias
-//
 procedure TVXTree.SetCentralLeaderBias(const Value: Single);
 begin
   if Value <> FCentralLeaderBias then
@@ -1167,8 +1097,6 @@ begin
   end;
 end;
 
-// SetCentralLeader
-//
 procedure TVXTree.SetCentralLeader(const Value: Boolean);
 begin
   if Value <> FCentralLeader then
@@ -1179,8 +1107,6 @@ begin
   end;
 end;
 
-// SetSeed
-//
 procedure TVXTree.SetSeed(const Value: Integer);
 begin
   if Value <> FSeed then
@@ -1191,8 +1117,6 @@ begin
   end;
 end;
 
-// SetCenterBranchConstant
-//
 procedure TVXTree.SetCenterBranchConstant(const Value: Single);
 begin
   if Value <> CenterBranchConstant then
@@ -1203,8 +1127,6 @@ begin
   end;
 end;
 
-// SetBranchMaterialName
-//
 procedure TVXTree.SetBranchMaterialName(const Value: TVXLibMaterialName);
 begin
   if Value <> FBranchMaterialName then
@@ -1214,8 +1136,6 @@ begin
   end;
 end;
 
-// SetLeafBackMaterialName
-//
 procedure TVXTree.SetLeafBackMaterialName(const Value: TVXLibMaterialName);
 begin
   if Value <> FLeafBackMaterialName then
@@ -1225,8 +1145,6 @@ begin
   end;
 end;
 
-// SetLeafMaterialName
-//
 procedure TVXTree.SetLeafMaterialName(const Value: TVXLibMaterialName);
 begin
   if Value <> FLeafMaterialName then
@@ -1236,8 +1154,6 @@ begin
   end;
 end;
 
-// SetMaterialLibrary
-//
 procedure TVXTree.SetMaterialLibrary(const Value: TVXMaterialLibrary);
 begin
   if Value <> FMaterialLibrary then
@@ -1247,8 +1163,6 @@ begin
   end;
 end;
 
-// RebuildTree
-//
 procedure TVXTree.RebuildTree;
 begin
   if not FRebuildTree then
@@ -1259,8 +1173,6 @@ begin
   end;
 end;
 
-// ForceTotalRebuild
-//
 procedure TVXTree.ForceTotalRebuild;
 begin
   Clear;
@@ -1272,8 +1184,6 @@ begin
   StructureChanged;
 end;
 
-// LoadFromStream
-//
 procedure TVXTree.LoadFromStream(aStream: TStream);
 var
   StrList, StrParse: TStringList;
@@ -1335,7 +1245,6 @@ begin
   end;
 end;
 
-// SaveToStream
 procedure TVXTree.SaveToStream(aStream: TStream);
 var
   StrList: TStringList;
@@ -1364,8 +1273,6 @@ begin
   StrList.Free;
 end;
 
-// LoadFromFile
-//
 procedure TVXTree.LoadFromFile(aFileName: String);
 var
   stream: TStream;
@@ -1378,8 +1285,6 @@ begin
   end;
 end;
 
-// SaveToFile
-//
 procedure TVXTree.SaveToFile(aFileName: String);
 var
   stream: TStream;
@@ -1392,7 +1297,6 @@ begin
   end;
 end;
 
-// GetExtents
 procedure TVXTree.GetExtents(var min, max: TAffineVector);
 var
   lmin, lmax, bmin, bmax: TAffineVector;
@@ -1426,8 +1330,6 @@ begin
   max.Z := MaxFloat([lmin.Z, lmax.Z, bmin.Z, bmax.Z]);
 end;
 
-// AxisAlignedDimensionsUnscaled
-//
 function TVXTree.AxisAlignedDimensionsUnscaled: TVector;
 var
   dMin, dMax: TAffineVector;
@@ -1442,8 +1344,6 @@ begin
   SetVector(Result, FAxisAlignedDimensionsCache);
 end;
 
-// SetAutoCenter
-//
 procedure TVXTree.SetAutoCenter(const Value: Boolean);
 begin
   if Value <> FAutoCenter then
@@ -1454,8 +1354,6 @@ begin
   end;
 end;
 
-// SetAutoRebuild
-//
 procedure TVXTree.SetAutoRebuild(const Value: Boolean);
 begin
   if Value <> FAutoRebuild then
@@ -1464,7 +1362,9 @@ begin
   end;
 end;
 
+//-----------------------------------------------------
 initialization
+//-----------------------------------------------------
 
 RegisterClasses([TVXTree]);
 

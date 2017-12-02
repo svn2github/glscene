@@ -1,5 +1,5 @@
 //
-// VXScene Component Library, based on GLScene http://glscene.sourceforge.net 
+// VXScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
 {
   3ds-specific scene objects.
@@ -17,7 +17,6 @@ uses
   System.SysUtils,
   System.Math,
 
-  VXS.OpenGLAdapter,
   VXS.VectorGeometry,
   VXS.Context,
   VXS.Scene,
@@ -49,8 +48,8 @@ type
   TVXFile3DSCamera = class(TVXCamera)
   private
     FTargetPos: TVXCoordinates;
-    FQuadCyl: array[0..1] of PGLUquadric;
-    FQuadDisk: array[0..1] of PGLUquadric;
+    FQuadCyl: array[0..1] of GLUquadricObj;
+    FQuadDisk: array[0..1] of GLUquadricObj;
   public
     constructor Create(AOwner: TComponent); override;
     procedure DoRender(var rci: TVXRenderContextInfo; renderSelf, renderChildren: Boolean); override;

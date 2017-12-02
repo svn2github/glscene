@@ -153,7 +153,7 @@ type
     constructor Create(); overload;
     constructor Create(Xdim, Ydim, Zdim: Integer;
       var AData: TSingle3DArray); overload;
-    destructor Destroy();
+    destructor Destroy(); override;
     procedure AssignData(Xdim, Ydim, Zdim: Integer; var AData: TSingle3DArray);
     { Launch Marching Cubes }
     procedure MarchingCubes(Isovalue: Single; out Vertices: TVertexArray;
@@ -1581,7 +1581,7 @@ end;
 procedure TVXMarchingCube.CalcMeshObject(AMeshObject: TVXMeshObject; Alpha: Single);
 var
   i: Integer;
-  vx1, vx2, vx3: TVXVertexData;
+//  vx1, vx2, vx3: TVXVertexData;
 begin
   AMeshObject.Clear;
   AMeshObject.Vertices.Capacity := _Nverts;

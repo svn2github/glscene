@@ -2,7 +2,7 @@
 // VXScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
 {
-   DDS File support.
+  DDS File support.
 }
 unit VXS.FileDDS;
 
@@ -16,8 +16,7 @@ uses
   System.Classes,
   System.SysUtils,
   System.Math,
-  
-  VXS.OpenGLAdapter,
+
   VXS.CrossPlatform,
   VXS.Context,
   VXS.Graphics,
@@ -26,9 +25,7 @@ uses
   VXS.ApplicationFileIO,
   VXS.VectorGeometry,
   VXS.Strings,
-
   uDXTC;
-
 
 type
 
@@ -44,25 +41,21 @@ type
     procedure SaveToFile(const filename: string); override;
     procedure LoadFromStream(stream: TStream); override;
     procedure SaveToStream(stream: TStream); override;
-
-    { Assigns from any Texture.}
-    procedure AssignFromTexture(textureContext: TVXContext;
-      const textureHandle: GLuint;
-      textureTarget: TVXTextureTarget;
-      const CurrentFormat: Boolean;
-      const intFormat: TVXInternalFormat); reintroduce;
+    { Assigns from any Texture. }
+    procedure AssignFromTexture(textureContext: TVXContext; const textureHandle: GLuint; textureTarget: TVXTextureTarget;
+      const CurrentFormat: Boolean; const intFormat: TVXInternalFormat); reintroduce;
   end;
 
 var
   { Variable determines which resolution to use textures,
-     high - it loads all levels,
-     midle - skipped the first level,
-     low - skipped the first two levels. }
+    high - it loads all levels,
+    midle - skipped the first level,
+    low - skipped the first two levels. }
   vDDSDetailLevel: TVXDDSDetailLevels = ddsHighDet;
 
-//======================================================
+// ======================================================
 implementation
-//======================================================
+// ======================================================
 
 // ------------------
 // ------------------ TVXDDSImage ------------------
@@ -72,9 +65,9 @@ procedure TVXDDSImage.LoadFromFile(const filename: string);
 var
   fs: TStream;
 begin
-  if FileStreamExists(fileName) then
+  if FileStreamExists(filename) then
   begin
-    fs := CreateFileStream(fileName, fmOpenRead);
+    fs := CreateFileStream(filename, fmOpenRead);
     try
       LoadFromStream(fs);
     finally
@@ -90,7 +83,7 @@ procedure TVXDDSImage.SaveToFile(const filename: string);
 var
   fs: TStream;
 begin
-  fs := CreateFileStream(fileName, fmOpenWrite or fmCreate);
+  fs := CreateFileStream(filename, fmOpenWrite or fmCreate);
   try
     SaveToStream(fs);
   finally
@@ -104,8 +97,8 @@ var
   header: TDDSHeader;
   DX10header: TDDS_HEADER_DXT10;
   btcCompressed: Boolean;
-  face, faceCount, level: Integer;
-  w, h, d, bw, bh, size, offset: Integer;
+  face, faceCount, level: integer;
+  w, h, d, bw, bh, size, offset: integer;
   bDXT10Header: Boolean;
 
   procedure CalcSize;
@@ -132,20 +125,20 @@ begin
     raise EInvalidRasterFile.Create('Invalid DDS file');
 
   // Verify header to validate DDS file
-  if (header.SurfaceFormat.dwSize <> sizeof(TDDSURFACEDESC2))
-    or (header.SurfaceFormat.ddpf.dwSize <> sizeof(TDDPIXELFORMAT)) then
+  if (header.SurfaceFormat.dwSize <> Sizeof(TDDSURFACEDESC2)) or (header.SurfaceFormat.ddpf.dwSize <> Sizeof(TDDPIXELFORMAT))
+  then
     raise EInvalidRasterFile.Create('Invalid DDS file');
 
   // Check for DX10 extension
-  bDXT10Header := (header.SurfaceFormat.ddpf.dwFlags and DDPF_FOURCC <> 0)
-    and (header.SurfaceFormat.ddpf.dwFourCC = FOURCC_DX10);
+  bDXT10Header := (header.SurfaceFormat.ddpf.dwFlags and DDPF_FOURCC <> 0) and
+    (header.SurfaceFormat.ddpf.dwFourCC = FOURCC_DX10);
   if bDXT10Header then
     stream.Read(DX10header, Sizeof(TDDS_HEADER_DXT10));
 
   with header.SurfaceFormat do
   begin
     { There are flags that are supposed to mark these fields as valid,
-       but some dds files don't set them properly }
+      but some dds files don't set them properly }
     UnMipmap;
     FLOD[0].Width := dwWidth;
     FLOD[0].Height := dwHeight;
@@ -160,12 +153,12 @@ begin
     else
       fLevelCount := 1;
 
-    //check cube-map faces
+    // check cube-map faces
     fCubeMap := false;
     faceCount := 0;
     if (dwCaps2 and DDSCAPS2_CUBEMAP) <> 0 then
     begin
-      //this is a cubemap, count the faces
+      // this is a cubemap, count the faces
       if (dwCaps2 and DDSCAPS2_CUBEMAP_POSITIVEX) <> 0 then
         Inc(faceCount);
       if (dwCaps2 and DDSCAPS2_CUBEMAP_NEGATIVEX) <> 0 then
@@ -178,27 +171,22 @@ begin
         Inc(faceCount);
       if (dwCaps2 and DDSCAPS2_CUBEMAP_NEGATIVEZ) <> 0 then
         Inc(faceCount);
-      //check for a complete cubemap
+      // check for a complete cubemap
       if (faceCount <> 6) or (GetWidth <> GetHeight) then
         raise EInvalidRasterFile.Create('Invalid cubemap');
       fCubeMap := true;
     end;
     fTextureArray := false;
 
-    if not DDSHeaderToGLEnum(header,
-      DX10header,
-      bDXT10Header,
-      fInternalFormat,
-      fColorFormat,
-      fDataType,
-      fElementSize) then
+    if not DDSHeaderToGLEnum(header, DX10header, bDXT10Header, fInternalFormat, fColorFormat, fDataType, fElementSize) then
       raise EInvalidRasterFile.Create('DDS errorneus format');
     btcCompressed := IsCompressedFormat(fInternalFormat);
   end; // of with
 
   offset := 0;
   case vDDSDetailLevel of
-    ddsHighDet: ; // Do nothing..
+    ddsHighDet:
+      ; // Do nothing..
     ddsMediumDet:
       if fLevelCount > 1 then
       begin
@@ -231,7 +219,7 @@ begin
         Dec(fLevelCount, 2);
       end;
   else
-    Assert(False, strErrorEx + strUnknownType);
+    Assert(false, strErrorEx + strUnknownType);
   end;
 
   ReallocMem(fData, DataSize);
@@ -253,35 +241,30 @@ end;
 
 procedure TVXDDSImage.SaveToStream(stream: TStream);
 const
-  Magic: array[0..3] of AnsiChar = 'DDS ';
+  Magic: array [0 .. 3] of AnsiChar = 'DDS ';
 var
   header: TDDSHeader;
   DX10header: TDDS_HEADER_DXT10;
   buffer: PGLubyte;
-  level, size: Integer;
+  level, size: integer;
 begin
-  FillChar(header, SizeOf(TDDSHeader), 0);
+  FillChar(header, Sizeof(TDDSHeader), 0);
   header.Magic := Cardinal(Magic);
-  header.SurfaceFormat.dwSize := sizeof(TDDSURFACEDESC2);
-  header.SurfaceFormat.ddpf.dwSize := sizeof(TDDPIXELFORMAT);
+  header.SurfaceFormat.dwSize := Sizeof(TDDSURFACEDESC2);
+  header.SurfaceFormat.ddpf.dwSize := Sizeof(TDDPIXELFORMAT);
   header.SurfaceFormat.dwWidth := GetWidth;
   header.SurfaceFormat.dwHeight := GetHeight;
   header.SurfaceFormat.dwDepth := GetDepth;
   header.SurfaceFormat.dwPitchOrLinearSize := fElementSize * GetWidth;
-  header.SurfaceFormat.dwFlags := DDSD_CAPS or
-    DDSD_HEIGHT or
-    DDSD_WIDTH or
-    DDSD_PIXELFORMAT;
+  header.SurfaceFormat.dwFlags := DDSD_CAPS or DDSD_HEIGHT or DDSD_WIDTH or DDSD_PIXELFORMAT;
   if IsCompressed then
   begin
-    header.SurfaceFormat.dwPitchOrLinearSize :=
-      header.SurfaceFormat.dwPitchOrLinearSize * Cardinal(GetHeight) *
+    header.SurfaceFormat.dwPitchOrLinearSize := header.SurfaceFormat.dwPitchOrLinearSize * Cardinal(GetHeight) *
       Cardinal(GetDepth);
     header.SurfaceFormat.dwFlags := header.SurfaceFormat.dwFlags or DDSD_PITCH;
   end
   else
-    header.SurfaceFormat.dwFlags := header.SurfaceFormat.dwFlags or
-      DDSD_LINEARSIZE;
+    header.SurfaceFormat.dwFlags := header.SurfaceFormat.dwFlags or DDSD_LINEARSIZE;
 
   header.SurfaceFormat.dwCaps := DDSCAPS_TEXTURE;
   header.SurfaceFormat.dwCaps2 := 0;
@@ -289,18 +272,14 @@ begin
   if IsVolume then
   begin
     header.SurfaceFormat.dwFlags := header.SurfaceFormat.dwFlags or DDSD_DEPTH;
-    header.SurfaceFormat.dwCaps := header.SurfaceFormat.dwCaps or
-      DDSCAPS_COMPLEX;
-    header.SurfaceFormat.dwCaps2 := header.SurfaceFormat.dwCaps2 or
-      DDSCAPS2_VOLUME;
+    header.SurfaceFormat.dwCaps := header.SurfaceFormat.dwCaps or DDSCAPS_COMPLEX;
+    header.SurfaceFormat.dwCaps2 := header.SurfaceFormat.dwCaps2 or DDSCAPS2_VOLUME;
   end;
 
   if fLevelCount > 1 then
   begin
-    header.SurfaceFormat.dwCaps := header.SurfaceFormat.dwCaps or DDSCAPS_COMPLEX
-      or DDSCAPS_MIPMAP;
-    header.SurfaceFormat.dwFlags := header.SurfaceFormat.dwFlags or
-      DDSD_MIPMAPCOUNT;
+    header.SurfaceFormat.dwCaps := header.SurfaceFormat.dwCaps or DDSCAPS_COMPLEX or DDSCAPS_MIPMAP;
+    header.SurfaceFormat.dwFlags := header.SurfaceFormat.dwFlags or DDSD_MIPMAPCOUNT;
     header.SurfaceFormat.dwMipMapCount := fLevelCount;
   end
   else
@@ -308,30 +287,17 @@ begin
 
   if fCubeMap then
   begin
-    header.SurfaceFormat.dwCaps := header.SurfaceFormat.dwCaps or
-      DDSCAPS_COMPLEX;
-    header.SurfaceFormat.dwCaps2 := header.SurfaceFormat.dwCaps2 or
-      DDSCAPS2_CUBEMAP or
-      DDSCAPS2_CUBEMAP_POSITIVEX or
-      DDSCAPS2_CUBEMAP_NEGATIVEX or
-      DDSCAPS2_CUBEMAP_POSITIVEY or
-      DDSCAPS2_CUBEMAP_NEGATIVEY or
-      DDSCAPS2_CUBEMAP_POSITIVEZ or
+    header.SurfaceFormat.dwCaps := header.SurfaceFormat.dwCaps or DDSCAPS_COMPLEX;
+    header.SurfaceFormat.dwCaps2 := header.SurfaceFormat.dwCaps2 or DDSCAPS2_CUBEMAP or DDSCAPS2_CUBEMAP_POSITIVEX or
+      DDSCAPS2_CUBEMAP_NEGATIVEX or DDSCAPS2_CUBEMAP_POSITIVEY or DDSCAPS2_CUBEMAP_NEGATIVEY or DDSCAPS2_CUBEMAP_POSITIVEZ or
       DDSCAPS2_CUBEMAP_NEGATIVEZ;
   end;
 
-  if not GLEnumToDDSHeader(header,
-    DX10header,
-    false,
-    fInternalFormat,
-    fColorFormat,
-    fDataType,
-    fElementSize) then
-    raise
-      EInvalidRasterFile.Create('These image format do not match the DDS format specification.');
+  if not GLEnumToDDSHeader(header, DX10header, false, fInternalFormat, fColorFormat, fDataType, fElementSize) then
+    raise EInvalidRasterFile.Create('These image format do not match the DDS format specification.');
 
   stream.Write(header, Sizeof(TDDSHeader));
-  //  stream.Write(DX10header, Sizeof(TDDS_HEADER_DXT10));
+  // stream.Write(DX10header, Sizeof(TDDS_HEADER_DXT10));
   if fCubeMap or not vVerticalFlipDDS then
   begin
     stream.Write(fData[0], DataSize);
@@ -357,32 +323,27 @@ end;
 // AssignFromTexture
 //
 
-procedure TVXDDSImage.AssignFromTexture(textureContext: TVXContext;
-  const textureHandle: GLuint;
-  textureTarget: TVXTextureTarget;
-  const CurrentFormat: Boolean;
-  const intFormat: TVXInternalFormat);
+procedure TVXDDSImage.AssignFromTexture(textureContext: TVXContext; const textureHandle: GLuint;
+  textureTarget: TVXTextureTarget; const CurrentFormat: Boolean; const intFormat: TVXInternalFormat);
 var
   oldContext: TVXContext;
   contextActivate: Boolean;
   texFormat, texLod, optLod: Cardinal;
-  level, faceCount, face: Integer;
+  level, faceCount, face: integer;
   residentFormat: TVXInternalFormat;
   bCompressed: Boolean;
   vtcBuffer, top, bottom: PGLubyte;
-  i, j, k: Integer;
-  cw, ch: Integer;
+  i, j, k: integer;
+  cw, ch: integer;
   glTarget: GLEnum;
 
-  function blockOffset(x, y, z: Integer): Integer;
+  function blockOffset(x, y, z: integer): integer;
   begin
 
     if z >= (FLOD[level].Depth and -4) then
-      Result := fElementSize * (cw * ch * (FLOD[level].Depth and -4) + x +
-        cw * (y + ch * (z - 4 * ch)))
+      Result := fElementSize * (cw * ch * (FLOD[level].Depth and -4) + x + cw * (y + ch * (z - 4 * ch)))
     else
-      Result := fElementSize * (4 * (x + cw * (y + ch * Floor(z / 4))) + (z and
-        3));
+      Result := fElementSize * (4 * (x + cw * (y + ch * Floor(z / 4))) + (z and 3));
     if Result < 0 then
       Result := 0;
   end;
@@ -413,15 +374,12 @@ begin
       fCubeMap := false;
       faceCount := 1;
     end;
-    fTextureArray := (glTarget = GL_TEXTURE_1D_ARRAY)
-      or (glTarget = GL_TEXTURE_2D_ARRAY)
-      or (glTarget = GL_TEXTURE_CUBE_MAP_ARRAY);
+    fTextureArray := (glTarget = GL_TEXTURE_1D_ARRAY) or (glTarget = GL_TEXTURE_2D_ARRAY) or
+      (glTarget = GL_TEXTURE_CUBE_MAP_ARRAY);
 
     repeat
       // Check level existence
-      glGetTexLevelParameteriv(glTarget, fLevelCount,
-        GL_TEXTURE_INTERNAL_FORMAT,
-        @texFormat);
+      glGetTexLevelParameteriv(glTarget, fLevelCount, GL_TEXTURE_INTERNAL_FORMAT, @texFormat);
       if texFormat = 1 then
         Break;
       Inc(fLevelCount);
@@ -430,37 +388,30 @@ begin
         glGetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_WIDTH, @FLOD[0].Width);
         glGetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_HEIGHT, @FLOD[0].Height);
         FLOD[0].Depth := 0;
-        if (glTarget = GL_TEXTURE_3D)
-          or (glTarget = GL_TEXTURE_2D_ARRAY)
-          or (glTarget = GL_TEXTURE_CUBE_MAP_ARRAY) then
+        if (glTarget = GL_TEXTURE_3D) or (glTarget = GL_TEXTURE_2D_ARRAY) or (glTarget = GL_TEXTURE_CUBE_MAP_ARRAY) then
           glGetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_DEPTH, @FLOD[0].Depth);
         residentFormat := OpenVXFormatToInternalFormat(texFormat);
         if CurrentFormat then
           fInternalFormat := residentFormat
         else
           fInternalFormat := intFormat;
-        if not FindDDSCompatibleDataFormat(fInternalFormat,
-          fColorFormat,
-          fDataType) then
-          FindCompatibleDataFormat(fInternalFormat,
-            fColorFormat,
-            fDataType);
+        if not FindDDSCompatibleDataFormat(fInternalFormat, fColorFormat, fDataType) then
+          FindCompatibleDataFormat(fInternalFormat, fColorFormat, fDataType);
 
         // Get optimal number or MipMap levels
         optLod := GetImageLodNumber(FLOD[0].Width, FLOD[0].Height, FLOD[0].Depth, glTarget = GL_TEXTURE_3D);
         if texLod > optLod then
           texLod := optLod;
         // Check for MipMap posibility
-        if ((fInternalFormat >= tfFLOAT_R16)
-          and (fInternalFormat <= tfFLOAT_RGBA32)) then
+        if ((fInternalFormat >= tfFLOAT_R16) and (fInternalFormat <= tfFLOAT_RGBA32)) then
           texLod := 1;
       end;
-    until fLevelCount = Integer(texLod);
+    until fLevelCount = integer(texLod);
 
     if fLevelCount > 0 then
     begin
       fElementSize := GetTextureElementSize(fColorFormat, fDataType);
-      ReallocMem(FData, DataSize);
+      ReallocMem(fData, DataSize);
       bCompressed := IsCompressed;
       vtcBuffer := nil;
 
@@ -472,9 +423,8 @@ begin
         begin
           if bCompressed then
           begin
-            if GL_NV_texture_compression_vtc
-              and (FLOD[level].Depth > 0)
-              and not fTextureArray then
+            if (FLOD[level].Depth > 0) and not fTextureArray then
+            /// and GL_NV_texture_compression_vtc
             begin
               if level = 0 then
                 GetMem(vtcBuffer, GetLevelSizeInByte(0));
@@ -504,7 +454,7 @@ begin
       if Assigned(vtcBuffer) then
         FreeMem(vtcBuffer);
       // Check memory corruption
-      ReallocMem(FData, DataSize);
+      ReallocMem(fData, DataSize);
     end;
 
     if fLevelCount < 1 then
@@ -532,7 +482,7 @@ begin
   if d = 0 then
     d := 1;
 
-  if not isCompressed then
+  if not IsCompressed then
   begin
     lineSize := fElementSize * w;
     sliceSize := lineSize * h;
@@ -563,11 +513,14 @@ begin
     h := (h + 3) div 4;
 
     case fColorFormat of
-      GL_COMPRESSED_RGBA_S3TC_DXT1_EXT: flipblocks := flip_blocks_dxtc1;
-      GL_COMPRESSED_RGBA_S3TC_DXT3_EXT: flipblocks := flip_blocks_dxtc3;
-      GL_COMPRESSED_RGBA_S3TC_DXT5_EXT: flipblocks := flip_blocks_dxtc5;
+      GL_COMPRESSED_RGBA_S3TC_DXT1_EXT:
+        flipblocks := flip_blocks_dxtc1;
+      GL_COMPRESSED_RGBA_S3TC_DXT3_EXT:
+        flipblocks := flip_blocks_dxtc3;
+      GL_COMPRESSED_RGBA_S3TC_DXT5_EXT:
+        flipblocks := flip_blocks_dxtc5;
     else
-      exit;
+      Exit;
     end;
 
     lineSize := fElementSize * w;
@@ -585,7 +538,7 @@ begin
         if top = bottom then
         begin
           flipblocks(top, w);
-          break;
+          Break;
         end;
 
         flipblocks(top, w);
@@ -612,8 +565,8 @@ begin
 end;
 
 initialization
-  { Register this Fileformat-Handler with GLScene }
-  RegisterRasterFormat('dds', 'Direct Draw Surface', TVXDDSImage);
+
+{ Register this Fileformat-Handler with GLScene }
+RegisterRasterFormat('dds', 'Direct Draw Surface', TVXDDSImage);
 
 end.
-

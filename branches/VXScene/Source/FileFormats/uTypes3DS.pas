@@ -25,7 +25,7 @@ uses
 type
   TDumpLevel = (dlTerseDump, dlMediumDump, dlMaximumDump);
 
-  PChar3DS = PAnsiChar;
+  PChar3DS = PWideChar;
   String3DS = AnsiString;
   String64 = string[64];
 

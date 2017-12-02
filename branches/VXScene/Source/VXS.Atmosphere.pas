@@ -1,12 +1,12 @@
 //
-// VXScene Component Library, based on GLScene http://glscene.sourceforge.net 
+// VXScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
 {
    This unit contains classes that imitate an atmosphere around a planet.<p>
     Comments:
       1) Eats a lot of CPU (reduces FPS from 1240 to 520 on my PC with cSlices=100)
       2) Alpha in LowAtmColor, HighAtmColor is ignored.
- 
+
 }
 
 unit VXS.Atmosphere;
@@ -16,31 +16,38 @@ interface
 {$I VXScene.inc}
 
 uses
-  System.SysUtils, System.Classes,
-  
-  VXS.Scene, VXS.Objects, VXS.Cadencer, Winapi.OpenGL, Winapi.OpenGLext,  VXS.VectorGeometry,
-  VXS.Context, VXS.Strings, VXS.Color, VXS.RenderContextInfo, VXS.State,
-  VXS.CrossPlatform, VXS.VectorTypes;
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
+  System.SysUtils,
+  System.Classes,
+
+  VXS.Scene,
+  VXS.Objects,
+  VXS.Cadencer,
+  VXS.VectorGeometry,
+  VXS.Context,
+  VXS.Strings,
+  VXS.Color,
+  VXS.RenderContextInfo,
+  VXS.State,
+  VXS.CrossPlatform,
+  VXS.VectorTypes;
 
 type
    EGLAtmosphereException = class(Exception);
 
-   {
-   With aabmOneMinusSrcAlpha atmosphere is transparent to other objects,
+   (* With aabmOneMinusSrcAlpha atmosphere is transparent to other objects,
    but has problems, which are best seen when the Atmosphere radius is big.
-
    With bmOneMinusDstColor atmosphere doesn't have these problems, but offers
-   limited transparency (when you look closely on the side).
-  }
+   limited transparency (when you look closely on the side). *)
   TVXAtmosphereBlendingMode = (abmOneMinusDstColor, abmOneMinusSrcAlpha);
 
-  { This class imitates an atmosphere around a planet. }
+  (* This class imitates an atmosphere around a planet. *)
   TVXCustomAtmosphere = class(TVXBaseSceneObject)
   private
     // Used in DoRenderl
     cosCache, sinCache: array of Single;
     pVertex, pColor: PVectorArray;
-
     FSlices: Integer;
     FBlendingMode: TVXAtmosphereBlendingMode;
     FPlanetRadius: Single;
@@ -65,29 +72,23 @@ type
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
   public
     property Sun: TVXBaseSceneObject read FSun write SetSun;
-
     property Slices: Integer read FSlices write SetSlices default 60;
     property Opacity: Single read FOpacity write FOpacity stored StoreOpacity;
-
     // AtmosphereRadius > PlanetRadius!!!
     property AtmosphereRadius: Single read FAtmosphereRadius write SetAtmosphereRadius stored StoreAtmosphereRadius;
     property PlanetRadius: Single read FPlanetRadius write SetPlanetRadius stored StorePlanetRadius;
-
     // Use value slightly lower than actual radius, for antialiasing effect.
     property LowAtmColor: TVXColor read FLowAtmColor write SetLowAtmColor stored StoreLowAtmColor;
     property HighAtmColor: TVXColor read FHighAtmColor write SetHighAtmColor stored StoreHighAtmColor;
     property BlendingMode: TVXAtmosphereBlendingMode read FBlendingMode
                                write FBlendingMode default abmOneMinusSrcAlpha;
-
     procedure SetOptimalAtmosphere(const ARadius: Single);  //absolute
     procedure SetOptimalAtmosphere2(const ARadius: Single); //relative
     procedure TogleBlendingMode; //changes between 2 blending modes
-
     // Standard component stuff.
     procedure Assign(Source: TPersistent); override;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
     // Main rendering procedure.
     procedure DoRender(var rci: TVXRenderContextInfo; renderSelf, renderChildren: Boolean); override;
     // Used to determine extents.
@@ -104,7 +105,6 @@ type
     property LowAtmColor;
     property HighAtmColor;
     property BlendingMode;
-
     property Position;
     property ObjectsSorting;
     property ShowAxes;
@@ -114,7 +114,9 @@ type
     property Effects;
   end;
 
+//---------------------------------------------------------------------
 implementation
+//---------------------------------------------------------------------
 
 const
   EPS = 0.0001;
@@ -435,7 +437,7 @@ begin
     GetMem(pColor, 2 * (FSlices + 1) * SizeOf(TVector));
   end
   else
-    raise EGLAtmosphereException.Create('Slices must be more than0!');
+    raise EGLAtmosphereException.Create('Slices must be more than 0!');
 end;
 
 procedure TVXCustomAtmosphere.SetHighAtmColor(const AValue: TVXColor);

@@ -4,8 +4,8 @@
 {
   Manages a basic game menu UI
   History :
-    03/03/05 - EG - Creation
-    The whole history is logged in previous version of the unit
+  03/03/05 - EG - Creation
+  The whole history is logged in previous version of the unit
 
 }
 unit GLGameMenu;
@@ -30,11 +30,10 @@ uses
   GLCanvas,
   GLContext;
 
-
 type
   TGLGameMenuScale = (gmsNormal, gms1024x768);
 
-  {Classic game menu interface made of several lines.  }
+  { Classic game menu interface made of several lines. }
   TGLGameMenu = class(TGLSceneObject, IGLMaterialLibrarySupported)
   private
     FItems: TStrings;
@@ -49,8 +48,8 @@ type
     FTitleWidth, FTitleHeight: Integer;
     FOnSelectedChanged: TNotifyEvent;
     FBoxTop, FBoxBottom, FBoxLeft, FBoxRight: Integer;
-    FMenuTop: integer;
-    //implementing IGLMaterialLibrarySupported
+    FMenuTop: Integer;
+    // implementing IGLMaterialLibrarySupported
     function GetMaterialLibrary: TGLAbstractMaterialLibrary;
   protected
     procedure SetMenuScale(AValue: TGLGameMenuScale);
@@ -75,25 +74,21 @@ type
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    procedure Notification(AComponent: TComponent; Operation: TOperation);
-      override;
+    procedure Notification(AComponent: TComponent; Operation: TOperation); override;
     procedure BuildList(var rci: TGLRenderContextInfo); override;
     property Enabled[AIndex: Integer]: Boolean read GetEnabled write SetEnabled;
     property SelectedText: string read GetSelectedText;
     procedure SelectNext;
     procedure SelectPrev;
-    procedure MouseMenuSelect(const X, Y: integer);
+    procedure MouseMenuSelect(const X, Y: Integer);
   published
-    property MaterialLibrary: TGLMaterialLibrary read FMaterialLibrary write
-      SetMaterialLibrary;
-    property MenuScale: TGLGameMenuScale read FMenuScale write SetMenuScale
-      default gmsNormal;
+    property MaterialLibrary: TGLMaterialLibrary read FMaterialLibrary write SetMaterialLibrary;
+    property MenuScale: TGLGameMenuScale read FMenuScale write SetMenuScale default gmsNormal;
     property MarginHorz: Integer read FMarginHorz write SetMarginHorz default 16;
     property MarginVert: Integer read FMarginVert write SetMarginVert default 16;
     property Spacing: Integer read FSpacing write SetSpacing default 16;
     property Font: TGLCustomBitmapFont read FFont write SetFont;
-    property TitleMaterialName: string read FTitleMaterialName write
-      SetTitleMaterialName;
+    property TitleMaterialName: string read FTitleMaterialName write SetTitleMaterialName;
     property TitleWidth: Integer read FTitleWidth write SetTitleWidth default 0;
     property TitleHeight: Integer read FTitleHeight write SetTitleHeight default 0;
     property BackColor: TGLColor read FBackColor write SetBackColor;
@@ -102,16 +97,15 @@ type
     property DisabledColor: TGLColor read FDisabledColor write SetDisabledColor;
     property Items: TStrings read FItems write SetItems;
     property Selected: Integer read FSelected write SetSelected default -1;
-    property OnSelectedChanged: TNotifyEvent read FOnSelectedChanged write
-      FOnSelectedChanged;
+    property OnSelectedChanged: TNotifyEvent read FOnSelectedChanged write FOnSelectedChanged;
     // these are the extents of the menu
-    property BoxTop: integer read FBoxTop;
-    property BoxBottom: integer read FBoxBottom;
-    property BoxLeft: integer read FBoxLeft;
-    property BoxRight: integer read FBoxRight;
+    property BoxTop: Integer read FBoxTop;
+    property BoxBottom: Integer read FBoxBottom;
+    property BoxLeft: Integer read FBoxLeft;
+    property BoxRight: Integer read FBoxRight;
     // this is the top of the first menu item
-    property MenuTop: integer read FMenuTop;
-    //publish other stuff from TGLBaseSceneObject
+    property MenuTop: Integer read FMenuTop;
+    // publish other stuff from TGLBaseSceneObject
     property ObjectsSorting;
     property VisibilityCulling;
     property Position;
@@ -122,11 +116,7 @@ type
   end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 // ------------------
@@ -161,8 +151,7 @@ begin
   FDisabledColor.Free;
 end;
 
-procedure TGLGameMenu.Notification(AComponent: TComponent; Operation:
-  TOperation);
+procedure TGLGameMenu.Notification(AComponent: TComponent; Operation: TOperation);
 begin
   inherited;
   if Operation = opRemove then
@@ -178,7 +167,7 @@ procedure TGLGameMenu.BuildList(var rci: TGLRenderContextInfo);
 var
   canvas: TGLCanvas;
   buffer: TGLSceneBuffer;
-  i, w, h, tw, y: Integer;
+  i, w, h, tw, Y: Integer;
   color: TColorVector;
   libMat: TGLLibMaterial;
 begin
@@ -190,7 +179,8 @@ begin
         buffer := TGLSceneBuffer(rci.buffer);
         canvas := TGLCanvas.Create(buffer.Width, buffer.Height);
       end;
-    gms1024x768: canvas := TGLCanvas.Create(1024, 768);
+    gms1024x768:
+      canvas := TGLCanvas.Create(1024, 768);
   else
     canvas := nil;
     Assert(False);
@@ -226,11 +216,10 @@ begin
     canvas.StopPrimitive;
 
     // paint items
-    y := Round(Position.Y - h / 2 + MarginVert);
+    Y := Round(Position.Y - h / 2 + MarginVert);
     if TitleHeight > 0 then
     begin
-      if (TitleMaterialName <> '') and (MaterialLibrary <> nil) and (TitleWidth
-        > 0) then
+      if (TitleMaterialName <> '') and (MaterialLibrary <> nil) and (TitleWidth > 0) then
       begin
         libMat := MaterialLibrary.LibMaterialByName(TitleMaterialName);
         if libMat <> nil then
@@ -239,34 +228,34 @@ begin
           repeat
             GL.Begin_(GL_QUADS);
             GL.TexCoord2f(0, 0);
-            GL.Vertex2f(Position.X - TitleWidth div 2, y + TitleHeight);
+            GL.Vertex2f(Position.X - TitleWidth div 2, Y + TitleHeight);
             GL.TexCoord2f(1, 0);
-            GL.Vertex2f(Position.X + TitleWidth div 2, y + TitleHeight);
+            GL.Vertex2f(Position.X + TitleWidth div 2, Y + TitleHeight);
             GL.TexCoord2f(1, 1);
-            GL.Vertex2f(Position.X + TitleWidth div 2, y);
+            GL.Vertex2f(Position.X + TitleWidth div 2, Y);
             GL.TexCoord2f(0, 1);
-            GL.Vertex2f(Position.X - TitleWidth div 2, y);
+            GL.Vertex2f(Position.X - TitleWidth div 2, Y);
             GL.End_;
           until (not libMat.UnApply(rci));
         end;
       end;
-      y := y + TitleHeight + Spacing;
-      FMenuTop := y;
+      Y := Y + TitleHeight + Spacing;
+      FMenuTop := Y;
     end
     else
-      FMenuTop := y + Spacing;
+      FMenuTop := Y + Spacing;
 
     for i := 0 to FItems.Count - 1 do
     begin
       tw := Font.TextWidth(FItems[i]);
       if not Enabled[i] then
-        color := DisabledColor.Color
+        color := DisabledColor.color
       else if i = Selected then
-        color := ActiveColor.Color
+        color := ActiveColor.color
       else
-        color := InactiveColor.Color;
-      Font.TextOut(rci, Position.X - tw div 2, y, FItems[i], color);
-      y := y + Font.CharHeight + Spacing;
+        color := InactiveColor.color;
+      Font.TextOut(rci, Position.X - tw div 2, Y, FItems[i], color);
+      Y := Y + Font.CharHeight + Spacing;
     end;
   finally
     canvas.Free;
@@ -369,7 +358,7 @@ end;
 
 procedure TGLGameMenu.SetEnabled(AIndex: Integer; AValue: Boolean);
 begin
-  FItems.Objects[AIndex] := TObject(pointer(PtrUInt(ord(not AValue))));
+  FItems.Objects[AIndex] := TObject(pointer(PtrUint(ord(not AValue))));
   StructureChanged;
 end;
 
@@ -448,10 +437,9 @@ begin
   StructureChanged;
 end;
 
-procedure TGLGameMenu.MouseMenuSelect(const X, Y: integer);
+procedure TGLGameMenu.MouseMenuSelect(const X, Y: Integer);
 begin
-  if (X >= BoxLeft) and (Y >= MenuTop) and
-    (X <= BoxRight) and (Y <= BoxBottom) then
+  if (X >= BoxLeft) and (Y >= MenuTop) and (X <= BoxRight) and (Y <= BoxBottom) then
   begin
     Selected := (Y - FMenuTop) div (Font.CharHeight + FSpacing);
   end
@@ -465,14 +453,10 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
+
 // ------------------------------------------------------------------
 
-  RegisterClass(TGLGameMenu);
+RegisterClass(TGLGameMenu);
 
 end.
-

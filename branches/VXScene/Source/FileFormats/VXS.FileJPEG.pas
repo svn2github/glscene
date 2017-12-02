@@ -1,5 +1,5 @@
 //
-// VXScene Component Library, based on GLScene http://glscene.sourceforge.net 
+// VXScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
 
 unit VXS.FileJPEG;
@@ -37,21 +37,19 @@ type
     procedure SaveToFile(const filename: string); override;
     procedure LoadFromStream(stream: TStream); override;
     procedure SaveToStream(stream: TStream); override;
-    { Assigns from any Texture.}
-    procedure AssignFromTexture(textureContext: TVXContext;
-      const textureHandle: GLuint;
-      textureTarget: TVXTextureTarget;
-      const CurrentFormat: boolean;
-      const intFormat: TVXInternalFormat); reintroduce;
+    { Assigns from any Texture. }
+    procedure AssignFromTexture(textureContext: TVXContext; const textureHandle: GLuint; textureTarget: TVXTextureTarget;
+      const CurrentFormat: boolean; const intFormat: TVXInternalFormat); reintroduce;
     property DivScale: longword read FDivScale write FDivScale;
     property Dither: boolean read FDither write FDither;
     property Smoothing: boolean read FSmoothing write SetSmoothing;
     property ProgressiveEncoding: boolean read FProgressiveEncoding;
   end;
 
-//===================================================================
+  // ===================================================================
 implementation
-//===================================================================
+
+// ===================================================================
 
 // ------------------
 // ------------------ TVXJPEGImage ------------------
@@ -69,9 +67,9 @@ procedure TVXJPEGImage.LoadFromFile(const filename: string);
 var
   fs: TStream;
 begin
-  if FileStreamExists(fileName) then
+  if FileStreamExists(filename) then
   begin
-    fs := CreateFileStream(fileName, fmOpenRead);
+    fs := CreateFileStream(filename, fmOpenRead);
     try
       LoadFromStream(fs);
     finally
@@ -87,7 +85,7 @@ procedure TVXJPEGImage.SaveToFile(const filename: string);
 var
   fs: TStream;
 begin
-  fs := CreateFileStream(fileName, fmOpenWrite or fmCreate);
+  fs := CreateFileStream(filename, fmOpenWrite or fmCreate);
   try
     SaveToStream(fs);
   finally
@@ -98,20 +96,18 @@ end;
 
 procedure TVXJPEGImage.LoadFromStream(stream: TStream);
 begin
-  //Do nothing
+  // Do nothing
 end;
-
 
 procedure TVXJPEGImage.SaveToStream(stream: TStream);
 begin
-  //Do nothing
+  // Do nothing
 end;
 
-procedure TVXJPEGImage.AssignFromTexture(textureContext: TVXContext;
-  const textureHandle: GLuint; textureTarget: TVXTextureTarget;
-  const CurrentFormat: boolean; const intFormat: TVXInternalFormat);
+procedure TVXJPEGImage.AssignFromTexture(textureContext: TVXContext; const textureHandle: GLuint;
+  textureTarget: TVXTextureTarget; const CurrentFormat: boolean; const intFormat: TVXInternalFormat);
 begin
-//
+  //
 end;
 
 procedure TVXJPEGImage.SetSmoothing(const AValue: boolean);
@@ -122,19 +118,17 @@ end;
 
 class function TVXJPEGImage.Capabilities: TVXDataFileCapabilities;
 begin
-  Result := [dfcRead {, dfcWrite}];
+  Result := [dfcRead { , dfcWrite } ];
 end;
 
-//------------------------------------------------------------------
+// ------------------------------------------------------------------
 initialization
-//------------------------------------------------------------------
 
-  { Register this Fileformat-Handler }
-  RegisterRasterFormat('jpg', 'Joint Photographic Experts Group Image',
-    TVXJPEGImage);
-  RegisterRasterFormat('jpeg', 'Joint Photographic Experts Group Image',
-    TVXJPEGImage);
-  RegisterRasterFormat('jpe', 'Joint Photographic Experts Group Image',
-    TVXJPEGImage);
+// ------------------------------------------------------------------
+
+{ Register this Fileformat-Handler }
+RegisterRasterFormat('jpg', 'Joint Photographic Experts Group Image', TVXJPEGImage);
+RegisterRasterFormat('jpeg', 'Joint Photographic Experts Group Image', TVXJPEGImage);
+RegisterRasterFormat('jpe', 'Joint Photographic Experts Group Image', TVXJPEGImage);
+
 end.
-

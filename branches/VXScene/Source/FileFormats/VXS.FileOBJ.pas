@@ -2,15 +2,15 @@
 // VXScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
 {
-    Support-Code to load Wavefront OBJ Files into TVXFreeForm-Components
-    in GLScene.
-    Note that you must manually add this unit to one of your project's uses
-    to enable support for OBJ & OBJF at run-time.
+  Support-Code to load Wavefront OBJ Files into TVXFreeForm-Components
+  in GLScene.
+  Note that you must manually add this unit to one of your project's uses
+  to enable support for OBJ & OBJF at run-time.
 
 }
 unit VXS.FileOBJ;
 
-{.$DEFINE STATS}{ Define to display statistics after loading. }
+{ .$DEFINE STATS }{ Define to display statistics after loading. }
 
 interface
 
@@ -22,7 +22,6 @@ uses
   System.Classes,
   System.SysUtils,
 
-  VXS.OpenGLAdapter,
   VXS.XOpenGL,
   VXS.VectorTypes,
   VXS.Strings,
@@ -44,7 +43,7 @@ uses
 const
   BufSize = 10240; { Load input data in chunks of BufSize Bytes. }
   LineLen = 100; { Allocate memory for the current line in chunks
-  of LineLen Bytes. }
+    of LineLen Bytes. }
 
 type
 
@@ -76,39 +75,38 @@ type
   end;
 
   { A simple class that know how to extract infos from a mtl file.
-     mtl files are companion files of the obj, they store material
-     information. Guessed content (imported ones denoted with a '*',
-     please help if you know more):
-      materials begin with a 'newmtl' command followed by material name
-      *Kd command defines the diffuse color
-      *map_Kd command defines the diffuse texture image
-      *Ka/map_Ka define the ambient color and texmap
-      *Ks/map_Ks define the specular color and texmap
-      *Ke/map_Ke define the self-illumination/lightmap texmap
-      map_Bump specifies the bump map
-      *d specifies transparency (alpha-channel, range [0; 1])
-      map_d specifies the opcaity texture map
-      Ns defines the specular exponent or shininess or phong specular (?)
-      Ni is the refraction index (greater than 1)
-      *illum defines the illumination model (0 for no lighting, 1 for
-          ambient and diffuse, 2 for full lighting) }
+    mtl files are companion files of the obj, they store material
+    information. Guessed content (imported ones denoted with a '*',
+    please help if you know more):
+    materials begin with a 'newmtl' command followed by material name
+    *Kd command defines the diffuse color
+    *map_Kd command defines the diffuse texture image
+    *Ka/map_Ka define the ambient color and texmap
+    *Ks/map_Ks define the specular color and texmap
+    *Ke/map_Ke define the self-illumination/lightmap texmap
+    map_Bump specifies the bump map
+    *d specifies transparency (alpha-channel, range [0; 1])
+    map_d specifies the opcaity texture map
+    Ns defines the specular exponent or shininess or phong specular (?)
+    Ni is the refraction index (greater than 1)
+    *illum defines the illumination model (0 for no lighting, 1 for
+    ambient and diffuse, 2 for full lighting) }
   TVXMTLFile = class(TStringList)
   public
     procedure Prepare;
     function MaterialStringProperty(const materialName, propertyName: string): string;
-    function MaterialVectorProperty(const materialName, propertyName: string;
-      const defaultValue: TVector): TVector;
+    function MaterialVectorProperty(const materialName, propertyName: string; const defaultValue: TVector): TVector;
   end;
 
 var
   { If enabled, main mesh will be splitted into multiple mesh from facegroup
-     data.}
+    data. }
 
-  vGLFileOBJ_SplitMesh: boolean = False;
+  vGLFileOBJ_SplitMesh: Boolean = False;
 
-//===================================================================
+// ===================================================================
 implementation
-//===================================================================
+// ===================================================================
 
 function StreamEOF(S: TStream): Boolean;
 begin
@@ -116,40 +114,40 @@ begin
   Result := (S.Position >= S.Size);
 end;
 
-function Rest(const s: string; Count: integer): string;
+function Rest(const S: string; Count: Integer): string;
 { Return the right part of s including s[Count]. }
 begin
-  Result := copy(s, Count, Length(s) - Count + 1);
+  Result := copy(S, Count, Length(S) - Count + 1);
 end;
 
-function NextToken(var s: string; delimiter: Char): string;
+function NextToken(var S: string; delimiter: Char): string;
 { Return the next Delimiter-delimited Token from the string s and
   remove it from s }
 var
   p: Integer;
 begin
-  p := Pos(Delimiter, s);
+  p := Pos(delimiter, S);
   if p = 0 then
   begin
-    Result := s;
-    s := '';
+    Result := S;
+    S := '';
   end
   else
   begin
-    Result := copy(s, 1, p - 1);
-    s := TrimLeft(Rest(s, p + 1));
+    Result := copy(S, 1, p - 1);
+    S := TrimLeft(Rest(S, p + 1));
   end;
 end;
 
 { ** TOBJFGVertexNormalTexIndexList ****************************************** }
 { - based on TFGVertexNormalTexIndexList (VXS.VectorFileObjects.pas)
   - adds support for polygons and for "missing" normals and
-    texture-coordinates. Pass -1 to Add for the index of a missing object.
+  texture-coordinates. Pass -1 to Add for the index of a missing object.
   - Polygons are defined by counting off the number of vertices added to the
-    PolygonVertices-property. So a PolygonVertices-List of
-      [3,4,6]
-    says "Vertex indices 0,1 and 2 make up a triangle, 3,4,5 and 6 a quad and
-    7,8,9,10,11 and 12 a hexagon".
+  PolygonVertices-property. So a PolygonVertices-List of
+  [3,4,6]
+  says "Vertex indices 0,1 and 2 make up a triangle, 3,4,5 and 6 a quad and
+  7,8,9,10,11 and 12 a hexagon".
 }
 
 type
@@ -160,10 +158,10 @@ type
     FMode: TOBJFGMode;
     FName: string;
     FPolygonVertices: TIntegerList;
-    FCurrentVertexCount: integer;
-    FShowNormals: boolean;
+    FCurrentVertexCount: Integer;
+    FShowNormals: Boolean;
     procedure PolygonComplete; { Current polygon completed. Adds FCurrentVertexCount
-                                 to FPolygonVertices and sets the variable to 0 }
+      to FPolygonVertices and sets the variable to 0 }
 
     procedure SetMode(aMode: TOBJFGMode);
 
@@ -173,26 +171,25 @@ type
     destructor Destroy; override;
 
     procedure WriteToFiler(writer: TVirtualWriter); override;
-    procedure ReadFromFiler(reader: TVirtualReader); override;    
+    procedure ReadFromFiler(reader: TVirtualReader); override;
 
     procedure Add(VertexIdx, NormalIdx, TexCoordIdx: Integer);
     procedure BuildList(var mrci: TVXRenderContextInfo); override;
-    procedure AddToTriangles(aList: TAffineVectorList;
-      aTexCoords: TAffineVectorList = nil;
+    procedure AddToTriangles(aList: TAffineVectorList; aTexCoords: TAffineVectorList = nil;
       aNormals: TAffineVectorList = nil); override;
     function TriangleCount: Integer; override;
 
     property Mode: TOBJFGMode read FMode write SetMode;
     property Name: string read FName write FName;
     property PolygonVertices: TIntegerList read FPolygonVertices;
-    property ShowNormals: boolean read FShowNormals write FShowNormals;
+    property ShowNormals: Boolean read FShowNormals write FShowNormals;
   end;
 
 constructor TOBJFGVertexNormalTexIndexList.CreateOwned(aOwner: TVXFaceGroups);
 begin
   inherited CreateOwned(aOwner);
   FMode := objfgmmTriangleStrip;
-  //FShowNormals:=True;
+  // FShowNormals:=True;
 end;
 
 destructor TOBJFGVertexNormalTexIndexList.Destroy;
@@ -265,12 +262,13 @@ var
             idx := TexCoordIndices.List^[Index];
             if idx >= 0 then
             begin
-              if GL_ARB_multitexture and (not xgl.SecondTextureUnitForbidden) then
+              if (not xgl.SecondTextureUnitForbidden) then
+              /// and GL_ARB_multitexture
               begin
                 glMultiTexCoord2fv(GL_TEXTURE0, @TexCoordPool[idx]);
                 glMultiTexCoord2fv(GL_TEXTURE1, @TexCoordPool[idx]);
               end
-                else
+              else
               begin
                 glTexCoord2fv(@TexCoordPool[idx]);
               end;
@@ -279,7 +277,7 @@ var
           end;
 
           glVertex3fv(@VertexPool[VertexIndices.List^[Index]]);
-          Inc(Index);
+          inc(Index);
         end;
       finally
         glEnd;
@@ -314,13 +312,13 @@ var
   end;
 
   procedure BuildTriangleStrip;
-    (*
+  (*
     begin
-      Owner.Owner.DeclareArraysToOpenGL(False);
-      glDrawElements(GL_TRIANGLE_STRIP,VertexIndices.Count,
-                     GL_UNSIGNED_INT,VertexIndices.List);
+    Owner.Owner.DeclareArraysToOpenGL(False);
+    glDrawElements(GL_TRIANGLE_STRIP,VertexIndices.Count,
+    GL_UNSIGNED_INT,VertexIndices.List);
     end;
-    *)
+  *)
   var
     Index, idx: Integer;
   begin
@@ -348,8 +346,8 @@ var
   end;
 
 begin
-  Assert(((TexCoordIndices.Count = 0) or (VertexIndices.Count <= TexCoordIndices.Count))
-    and (VertexIndices.Count <= NormalIndices.Count),
+  Assert(((TexCoordIndices.Count = 0) or (VertexIndices.Count <= TexCoordIndices.Count)) and
+    (VertexIndices.Count <= NormalIndices.Count),
     'Number of Vertices does not match number of Normals or Texture coordinates.');
 
   { Shorthand notations. }
@@ -365,19 +363,20 @@ begin
   GotColor := (Owner.Owner.Vertices.Count = Owner.Owner.Colors.Count);
 
   case FMode of
-    objfgmmPolygons: BuildPolygons;
-    objfgmmTriangleStrip: BuildTriangleStrip;
+    objfgmmPolygons:
+      BuildPolygons;
+    objfgmmTriangleStrip:
+      BuildTriangleStrip;
   end;
 end;
 
 // AddToTriangles
 //
 
-procedure TOBJFGVertexNormalTexIndexList.AddToTriangles(aList: TAffineVectorList;
-  aTexCoords: TAffineVectorList = nil;
+procedure TOBJFGVertexNormalTexIndexList.AddToTriangles(aList: TAffineVectorList; aTexCoords: TAffineVectorList = nil;
   aNormals: TAffineVectorList = nil);
 var
-  i, j, n, n0: Integer;
+  i, j, N, n0: Integer;
   vertexList, texCoordList, normalsList: TAffineVectorList;
 begin
   vertexList := Owner.Owner.Vertices;
@@ -386,57 +385,52 @@ begin
   case FMode of
     objfgmmPolygons:
       begin
-        n := 0;
+        N := 0;
         for i := 0 to FPolygonVertices.Count - 1 do
         begin
-          n0 := n;
+          n0 := N;
           for j := 0 to FPolygonVertices[i] - 1 do
           begin
             if j > 1 then
             begin
-              aList.Add(vertexList[VertexIndices[n0]],
-                vertexList[VertexIndices[n - 1]],
-                vertexList[VertexIndices[n]]);
+              aList.Add(vertexList[VertexIndices[n0]], vertexList[VertexIndices[N - 1]], vertexList[VertexIndices[N]]);
               if Assigned(aTexCoords) then
               begin
                 if texCoordList.Count > 0 then
-                  aTexCoords.Add(texCoordList[VertexIndices[n0]],
-                    texCoordList[VertexIndices[n - 1]],
-                    texCoordList[VertexIndices[n]])
+                  aTexCoords.Add(texCoordList[VertexIndices[n0]], texCoordList[VertexIndices[N - 1]],
+                    texCoordList[VertexIndices[N]])
                 else
                   aTexCoords.AddNulls(3);
               end;
               if Assigned(aNormals) then
               begin
                 if normalsList.Count > 0 then
-                  aNormals.Add(normalsList[VertexIndices[n0]],
-                    normalsList[VertexIndices[n - 1]],
-                    normalsList[VertexIndices[n]])
+                  aNormals.Add(normalsList[VertexIndices[n0]], normalsList[VertexIndices[N - 1]], normalsList[VertexIndices[N]])
                 else
                   aNormals.AddNulls(3);
               end;
             end;
-            Inc(n);
+            inc(N);
           end;
         end;
       end;
     objfgmmTriangleStrip:
       begin
         ConvertStripToList(vertexList, VertexIndices, aList);
-        n := (VertexIndices.Count - 2) * 3;
+        N := (VertexIndices.Count - 2) * 3;
         if Assigned(aTexCoords) then
         begin
           if texCoordList.Count > 0 then
             ConvertStripToList(texCoordList, VertexIndices, aTexCoords)
           else
-            aTexCoords.AddNulls(n);
+            aTexCoords.AddNulls(N);
         end;
         if Assigned(aNormals) then
         begin
           if normalsList.Count > 0 then
             ConvertStripToList(normalsList, VertexIndices, aNormals)
           else
-            aNormals.AddNulls(n);
+            aNormals.AddNulls(N);
         end;
       end;
   else
@@ -496,7 +490,7 @@ var
   end;
 
 begin
-  Inc(FLineNo);
+  inc(FLineNo);
 
   if FBufPos < 1 then
     FillBuffer;
@@ -506,7 +500,7 @@ begin
   begin
     if FBufPos > Length(FBuffer) then
     begin
-      if StreamEof(FSourceStream) then
+      if StreamEOF(FSourceStream) then
       begin
         FEof := True;
         break;
@@ -519,14 +513,14 @@ begin
       case FBuffer[FBufPos] of
         #10, #13:
           begin
-            Inc(FBufPos);
+            inc(FBufPos);
             if FBufPos > Length(FBuffer) then
-              if StreamEof(FSourceStream) then
+              if StreamEOF(FSourceStream) then
                 break
               else
                 FillBuffer;
             if (FBuffer[FBufPos] = #10) or (FBuffer[FBufPos] = #13) then
-              Inc(FBufPos);
+              inc(FBufPos);
             break;
           end;
       else
@@ -536,8 +530,8 @@ begin
           FLine[j] := #32
         else
           FLine[j] := Char(FBuffer[FBufPos]);
-        Inc(FBufPos);
-        Inc(j);
+        inc(FBufPos);
+        inc(j);
       end;
     end;
   end;
@@ -552,7 +546,7 @@ procedure TVXOBJVectorFile.Error(const msg: string);
 var
   E: EGLOBJFileError;
 begin
-  E := EGLOBJFileError.Create(Msg);
+  E := EGLOBJFileError.Create(msg);
   E.FLineNo := FLineNo;
   raise E;
 end;
@@ -570,30 +564,30 @@ end;
 
 procedure TVXOBJVectorFile.CalcMissingOBJNormals(mesh: TVXMeshObject);
 var
-  vertexPool: PAffineVectorArray;
-  n: TAffineVector;
-  p: array[1..3] of PAffineVector;
-  face, index: Integer;
+  VertexPool: PAffineVectorArray;
+  N: TAffineVector;
+  p: array [1 .. 3] of PAffineVector;
+  face, Index: Integer;
   fg: TOBJFGVertexNormalTexIndexList;
 
   procedure DoCalcNormal;
   var
     idx: Integer;
   begin
-    idx := TOBJFGVertexNormalTexIndexList(Mesh.FaceGroups[Face]).NormalIndices.List^[Index];
+    idx := TOBJFGVertexNormalTexIndexList(mesh.FaceGroups[face]).NormalIndices.List^[Index];
     if idx < 0 then
     begin
-      n := CalcPlaneNormal(p[1]^, p[2]^, p[3]^);
-      idx := Mesh.Normals.Add(n);
-      TOBJFGVertexNormalTexIndexList(Mesh.FaceGroups[Face]).NormalIndices.List^[Index] := idx;
+      N := CalcPlaneNormal(p[1]^, p[2]^, p[3]^);
+      idx := mesh.Normals.Add(N);
+      TOBJFGVertexNormalTexIndexList(mesh.FaceGroups[face]).NormalIndices.List^[Index] := idx;
     end;
   end;
 
   procedure CalcForPolygons;
   var
-    polygon, firstVertexIndex, j: Integer;
+    Polygon, firstVertexIndex, j: Integer;
   begin
-    with FG do
+    with fg do
     begin
       { Walk the polygons and calculate normals for those vertices that
         are missing. }
@@ -603,7 +597,7 @@ var
       for Polygon := 0 to FPolygonVertices.Count - 1 do
       begin
         { Init }
-        FirstVertexIndex := Index;
+        firstVertexIndex := Index;
         FillChar(p, SizeOf(p), 0);
         { Last Vertex in this polygon }
         p[2] := @VertexPool^[VertexIndices.List^[Index + FPolygonVertices[Polygon] - 1]];
@@ -615,12 +609,12 @@ var
           Move(p[2], p[1], 2 * SizeOf(PAffineVector));
           p[3] := @VertexPool^[VertexIndices.List^[Index + 1]];
           DoCalcNormal;
-          Inc(Index);
+          inc(Index);
         end;
 
         { For the last vertex use the first as partner to span the plane. }
         Move(p[2], p[1], 2 * SizeOf(PAffineVector));
-        p[3] := @VertexPool^[VertexIndices.List^[FirstVertexIndex]];
+        p[3] := @VertexPool^[VertexIndices.List^[firstVertexIndex]];
         DoCalcNormal;
         inc(Index);
       end; { of for FPolygonVertices }
@@ -633,14 +627,16 @@ var
 
 begin
   { Shorthand notations. }
-  VertexPool := Mesh.Vertices.List;
+  VertexPool := mesh.Vertices.List;
 
-  for Face := 0 to Mesh.FaceGroups.Count - 1 do
+  for face := 0 to mesh.FaceGroups.Count - 1 do
   begin
-    FG := TOBJFGVertexNormalTexIndexList(Mesh.FaceGroups[Face]);
-    case FG.Mode of
-      objfgmmPolygons: CalcForPolygons;
-      objfgmmTriangleStrip: CalcForTriangleStrip;
+    fg := TOBJFGVertexNormalTexIndexList(mesh.FaceGroups[face]);
+    case fg.Mode of
+      objfgmmPolygons:
+        CalcForPolygons;
+      objfgmmTriangleStrip:
+        CalcForTriangleStrip;
     end;
   end;
 end;
@@ -657,7 +653,7 @@ var
   faceGroupNames: TStringList;
 
   procedure ReadHomogeneousVector;
-    { Read a vector with a maximum of 4 elements from the current line. }
+  { Read a vector with a maximum of 4 elements from the current line. }
   var
     i, c: Integer;
     f: string;
@@ -670,14 +666,14 @@ var
       Val(f, hv.V[i], c);
       if c <> 0 then
         Error(Format('''%s'' is not a valid floating-point constant.', [f]));
-      Inc(i);
+      inc(i);
     end;
   end;
 
   procedure ReadAffineVector;
-    { Read a vector with a maximum of 3 elements from the current line. }
+  { Read a vector with a maximum of 3 elements from the current line. }
   var
-    i, c: integer;
+    i, c: Integer;
     f: string;
   begin
     FillChar(av, SizeOf(av), 0);
@@ -701,26 +697,25 @@ var
     begin
       faceGroup := TOBJFGVertexNormalTexIndexList(faceGroupNames.Objects[i]);
 
-      if faceGroup.MaterialName <> matlName then
+      if faceGroup.materialName <> matlName then
       begin
         i := faceGroupNames.IndexOf(aName);
         if i >= 0 then
         begin
           faceGroup := TOBJFGVertexNormalTexIndexList(faceGroupNames.Objects[i]);
-          if faceGroup.MaterialName <> matlName then
+          if faceGroup.materialName <> matlName then
             faceGroup := nil;
         end;
       end;
     end;
 
-    if (faceGroup = nil) or (faceGroup.Name <> aName)
-      or (faceGroup.PolygonVertices.Count > 0)
-      or (faceGroup.MaterialName <> matlName) then
+    if (faceGroup = nil) or (faceGroup.Name <> aName) or (faceGroup.PolygonVertices.Count > 0) or
+      (faceGroup.materialName <> matlName) then
     begin
-      faceGroup := TOBJFGVertexNormalTexIndexList.CreateOwned(Mesh.FaceGroups);
+      faceGroup := TOBJFGVertexNormalTexIndexList.CreateOwned(mesh.FaceGroups);
       faceGroup.FName := aName;
       faceGroup.Mode := objfgmmPolygons;
-      faceGroup.MaterialName := matlName;
+      faceGroup.materialName := matlName;
       faceGroupNames.AddObject(aName, faceGroup);
     end;
   end;
@@ -729,10 +724,10 @@ var
 
     function GetIndex(Count: Integer): Integer;
     var
-      s: string;
+      S: string;
     begin
-      s := NextToken(FaceVertices, '/');
-      Result := StrToIntDef(s, 0);
+      S := NextToken(faceVertices, '/');
+      Result := StrToIntDef(S, 0);
       if Result = 0 then
         Result := -1 // Missing
       else if Result < 0 then
@@ -763,7 +758,7 @@ var
   begin
     if FLine <> '' then
     begin
-      if not Assigned(FaceGroup) then
+      if not Assigned(faceGroup) then
         SetCurrentFaceGroup('', curMtlName);
       try
         while FLine <> '' do
@@ -772,7 +767,7 @@ var
           AddFaceVertex(faceVertices);
         end;
       finally
-        FaceGroup.PolygonComplete;
+        faceGroup.PolygonComplete;
       end;
     end;
   end;
@@ -785,15 +780,15 @@ var
       Error('q-line without preceding t-line.');
     while FLine <> '' do
     begin
-      FaceVertices := NextToken(FLine, ' ');
-      AddFaceVertex(FaceVertices);
+      faceVertices := NextToken(FLine, ' ');
+      AddFaceVertex(faceVertices);
     end;
   end;
 
   procedure ReadTriangleStrip;
   begin
     { Start a new Facegroup, mode=triangle strip }
-    faceGroup := TOBJFGVertexNormalTexIndexList.CreateOwned(Mesh.FaceGroups);
+    faceGroup := TOBJFGVertexNormalTexIndexList.CreateOwned(mesh.FaceGroups);
     faceGroup.Mode := objfgmmTriangleStrip;
     { The rest is the same as for continuation of a strip. }
     ReadTriangleStripContinued;
@@ -852,7 +847,8 @@ var
                     begin // non-lit material
                       libMat.Material.MaterialOptions := [moNoLighting];
                     end;
-                  1: ; // flat, non-shiny material
+                  1:
+                    ; // flat, non-shiny material
                   2:
                     begin // specular material
                       Specular.Color := objMtl.MaterialVectorProperty(matName, 'Ks', clrTransparent);
@@ -927,13 +923,13 @@ var
 
   procedure SplitMesh;
   var
-    i, j, count: Integer;
+    i, j, Count: Integer;
     newMesh: TVXMeshObject;
     newfaceGroup: TOBJFGVertexNormalTexIndexList;
     VertexIdx, NormalIdx, TexCoordIdx: Integer;
     AffineVector: TAffineVector;
   begin
-    for i := 0 to mesh.FaceGroups.Count-1 do
+    for i := 0 to mesh.FaceGroups.Count - 1 do
     begin
       faceGroup := mesh.FaceGroups[i] as TOBJFGVertexNormalTexIndexList;
 
@@ -945,14 +941,14 @@ var
       newfaceGroup.Assign(faceGroup);
       newfaceGroup.FName := faceGroup.Name;
       newfaceGroup.Mode := faceGroup.Mode;
-      newfaceGroup.MaterialName := faceGroup.MaterialName;
+      newfaceGroup.materialName := faceGroup.materialName;
 
-      //SendInteger('VertexIndices', faceGroup.VertexIndices.Count);
-      //SendInteger('TexCoords', faceGroup.TexCoordIndices.Count);
-      //SendInteger('Normals', faceGroup.NormalIndices.Count);
+      // SendInteger('VertexIndices', faceGroup.VertexIndices.Count);
+      // SendInteger('TexCoords', faceGroup.TexCoordIndices.Count);
+      // SendInteger('Normals', faceGroup.NormalIndices.Count);
 
-      count := faceGroup.VertexIndices.Count;
-      for j := 0 to count-1 do
+      Count := faceGroup.VertexIndices.Count;
+      for j := 0 to Count - 1 do
       begin
         VertexIdx := faceGroup.VertexIndices[j];
         AffineVector := mesh.Vertices[VertexIdx];
@@ -983,7 +979,6 @@ begin
 {$IFDEF STATS}
   t0 := GLGetTickCount;
 {$ENDIF}
-
   FEof := False;
   FSourceStream := aStream;
   FLineNo := 0;
@@ -1013,17 +1008,17 @@ begin
       if command = 'V' then
       begin
         ReadHomogeneousVector;
-        Mesh.Vertices.Add(hv.X, hv.Y, hv.Z);
+        mesh.Vertices.Add(hv.X, hv.Y, hv.Z);
       end
       else if command = 'VT' then
       begin
         ReadAffineVector;
-        Mesh.TexCoords.Add(av.X, av.Y, 0);
+        mesh.TexCoords.Add(av.X, av.Y, 0);
       end
       else if command = 'VN' then
       begin
         ReadAffineVector;
-        Mesh.Normals.Add(av.X, av.Y, av.Z);
+        mesh.Normals.Add(av.X, av.Y, av.Z);
       end
       else if command = 'VP' then
       begin
@@ -1075,28 +1070,15 @@ begin
 {$IFDEF STATS}
     t1 := GLGetTickCount;
 {$ENDIF}
-
     CalcMissingOBJNormals(mesh);
 
 {$IFDEF STATS}
     t2 := GLGetTickCount;
-    InformationDlg(Format('TVXOBJVectorFile Loaded in %dms'#13 +
-      #13 +
-      '    %dms spent reading'#13 +
-      '    %dms spent calculating normals'#13 +
-      '    %d Geometric Vertices'#13 +
-      '    %d Texture Vertices'#13 +
-      '    %d Normals'#13 +
-      '    %d FaceGroups/Strips',
-      [t2 - t0,
-      t1 - t0,
-        t2 - t1,
-        Mesh.Vertices.Count,
-        Mesh.TexCoords.Count,
-        Mesh.Normals.Count,
-        Mesh.FaceGroups.Count]));
+    InformationDlg(Format('TVXOBJVectorFile Loaded in %dms'#13 + #13 + '    %dms spent reading'#13 +
+      '    %dms spent calculating normals'#13 + '    %d Geometric Vertices'#13 + '    %d Texture Vertices'#13 +
+      '    %d Normals'#13 + '    %d FaceGroups/Strips', [t2 - t0, t1 - t0, t2 - t1, mesh.Vertices.Count, mesh.TexCoords.Count,
+      mesh.Normals.Count, mesh.FaceGroups.Count]));
 {$ENDIF}
-
     if vGLFileOBJ_SplitMesh then
       SplitMesh;
 
@@ -1107,17 +1089,17 @@ end;
 
 procedure TVXOBJVectorFile.SaveToStream(aStream: TStream);
 var
-  OldDecimalSeparator: char;
+  OldDecimalSeparator: Char;
 
-  procedure Write(const s: AnsiString);
+  procedure Write(const S: AnsiString);
   begin
-    if s <> '' then
-      aStream.Write(s[1], Length(s));
+    if S <> '' then
+      aStream.Write(S[1], Length(S));
   end;
 
-  procedure WriteLn(const s: string);
+  procedure WriteLn(const S: string);
   begin
-    Write(AnsiString(s));
+    Write(AnsiString(S));
     Write(#13#10);
   end;
 
@@ -1129,81 +1111,77 @@ var
 
   procedure WriteVertices;
   var
-    s: string;
-    j, i, n: integer;
+    S: string;
+    j, i, N: Integer;
   begin
-    n := 0;
+    N := 0;
     for j := 0 to Owner.MeshObjects.Count - 1 do
     begin
-      Writeln(Format('# Mesh %d', [j + 1]));
+      WriteLn(Format('# Mesh %d', [j + 1]));
       with Owner.MeshObjects[j].Vertices do
       begin
         for i := 0 to Count - 1 do
         begin
-          s := Format('v %g %g %g', [List^[i].X,
-                                     List^[i].Y,
-                                     List^[i].Z]);
-          Writeln(s);
+          S := Format('v %g %g %g', [List^[i].X, List^[i].Y, List^[i].Z]);
+          WriteLn(S);
         end;
-        Inc(n, Count);
+        inc(N, Count);
       end;
     end;
-    WriteLn(Format('# %d Vertices', [n]));
+    WriteLn(Format('# %d Vertices', [N]));
     WriteLn('');
   end;
 
   procedure WriteNormals;
   var
-    s: string;
-    j, i, n: integer;
+    S: string;
+    j, i, N: Integer;
   begin
-    n := 0;
+    N := 0;
     for j := 0 to Owner.MeshObjects.Count - 1 do
     begin
-      Writeln(Format('# Mesh %d', [j + 1]));
+      WriteLn(Format('# Mesh %d', [j + 1]));
       with Owner.MeshObjects[j].Normals do
       begin
         for i := 0 to Count - 1 do
         begin
-          s := Format('vn %g %g %g', [List^[i].X,
-                                      List^[i].Y,
-                                      List^[i].Z]);
-          Writeln(s);
+          S := Format('vn %g %g %g', [List^[i].X, List^[i].Y, List^[i].Z]);
+          WriteLn(S);
         end;
-        Inc(n, Count);
+        inc(N, Count);
       end;
     end;
-    WriteLn(Format('# %d Normals', [n]));
+    WriteLn(Format('# %d Normals', [N]));
     WriteLn('');
   end;
 
   procedure WriteTexCoords;
   var
-    s: string;
-    j, i, n: integer;
+    S: string;
+    j, i, N: Integer;
   begin
-    n := 0;
+    N := 0;
     for j := 0 to Owner.MeshObjects.Count - 1 do
     begin
-      Writeln(Format('# Mesh %d', [j + 1]));
+      WriteLn(Format('# Mesh %d', [j + 1]));
       with Owner.MeshObjects[j].TexCoords do
       begin
         for i := 0 to Count - 1 do
         begin
-          s := Format('vt %g %g', [List^[i].X, List^[i].Y]);
-          Writeln(s);
+          S := Format('vt %g %g', [List^[i].X, List^[i].Y]);
+          WriteLn(S);
         end;
-        Inc(n, Count);
+        inc(N, Count);
       end;
     end;
-    WriteLn(Format('# %d Texture-Coordinates', [n]));
+    WriteLn(Format('# %d Texture-Coordinates', [N]));
     WriteLn('');
   end;
 
   procedure WriteOBJFaceGroup(aFaceGroup: TOBJFGVertexNormalTexIndexList; o: Integer = 0);
   var
-    vIdx, nIdx, tIdx: integer;
-    i, Index, Polygon: integer;
+    vIdx, nIdx, tIdx: Integer;
+    i, Index, Polygon: Integer;
     Line, t: string;
   begin
     with aFaceGroup do
@@ -1226,59 +1204,55 @@ var
             t := t + '/'
           else
             t := t + IntToStr(nIdx) + '/';
-          Line := Line + Copy(t, 1, length(t) - 1) + ' ';
+          Line := Line + copy(t, 1, Length(t) - 1) + ' ';
           inc(Index);
         end;
-        Writeln(Line);
+        WriteLn(Line);
       end;
     end;
-    Writeln('');
+    WriteLn('');
   end;
 
   procedure WriteVertexIndexList(fg: TFGVertexIndexList; o: Integer = 0);
   var
-    i, n: Integer;
+    i, N: Integer;
   begin
     case fg.Mode of
       fgmmTriangles:
         begin
-          n := fg.VertexIndices.Count - 3;
+          N := fg.VertexIndices.Count - 3;
           i := 0;
-          while i <= n do
+          while i <= N do
           begin
-            Writeln(Format('f %d/%0:d %d/%1:d %d/%2:d',
-              [fg.VertexIndices[i] + 1 + o,
-              fg.VertexIndices[i + 1] + 1 + o,
-                fg.VertexIndices[i + 2] + 1 + o]));
-            Inc(i, 3);
+            WriteLn(Format('f %d/%0:d %d/%1:d %d/%2:d', [fg.VertexIndices[i] + 1 + o, fg.VertexIndices[i + 1] + 1 + o,
+              fg.VertexIndices[i + 2] + 1 + o]));
+            inc(i, 3);
           end;
         end;
       fgmmTriangleFan:
         begin
           Write('f ');
-          n := fg.VertexIndices.Count - 1;
+          N := fg.VertexIndices.Count - 1;
           i := 0;
-          while i <= n do
+          while i <= N do
           begin
-            if i < n then
+            if i < N then
               Write(AnsiString(Format('%d/%0:d ', [fg.VertexIndices[i] + 1 + o])))
             else
-              Writeln(Format('%d/%0:d', [fg.VertexIndices[i] + 1 + o]));
-            Inc(i);
+              WriteLn(Format('%d/%0:d', [fg.VertexIndices[i] + 1 + o]));
+            inc(i);
           end;
         end;
       fgmmTriangleStrip:
         begin
-          n := fg.VertexIndices.Count - 3;
+          N := fg.VertexIndices.Count - 3;
           i := 0;
-          while i <= n do
+          while i <= N do
           begin
-            Writeln(Format('f %d/%0:d %d/%1:d %d/%2:d',
-              [fg.VertexIndices[i] + 1 + o,
-              fg.VertexIndices[i + 1] + 1 + o,
-                fg.VertexIndices[i + 2] + 1 + o]));
+            WriteLn(Format('f %d/%0:d %d/%1:d %d/%2:d', [fg.VertexIndices[i] + 1 + o, fg.VertexIndices[i + 1] + 1 + o,
+              fg.VertexIndices[i + 2] + 1 + o]));
 
-            Inc(i);
+            inc(i);
           end;
         end;
     end;
@@ -1296,20 +1270,20 @@ var
       MoName := Owner.MeshObjects[j].Name;
       if MoName = '' then
         MoName := Format('Mesh%d', [j + 1]);
-      Writeln('g ' + MoName);
+      WriteLn('g ' + MoName);
       for i := 0 to Owner.MeshObjects[j].FaceGroups.Count - 1 do
       begin
-        Writeln(Format('s %d', [i + 1]));
+        WriteLn(Format('s %d', [i + 1]));
         fg := Owner.MeshObjects[j].FaceGroups[i];
         if fg is TOBJFGVertexNormalTexIndexList then
           WriteOBJFaceGroup(TOBJFGVertexNormalTexIndexList(fg), k)
         else if fg is TFGVertexIndexList then
           WriteVertexIndexList(TFGVertexIndexList(fg), k)
         else
-          Assert(False); //unsupported face group
+          Assert(False); // unsupported face group
       end;
-      //advance vertex index offset
-      Inc(k, Owner.MeshObjects[j].Vertices.Count);
+      // advance vertex index offset
+      inc(k, Owner.MeshObjects[j].Vertices.Count);
     end;
   end;
 
@@ -1318,7 +1292,7 @@ begin
 
   OldDecimalSeparator := GetDecimalSeparator;
   SetDecimalSeparator('.');
-    
+
   { Better not call anything that wants the system-locale intact
     from this block }
   try
@@ -1362,27 +1336,27 @@ end;
 
 function TVXMTLFile.MaterialStringProperty(const materialName, propertyName: string): string;
 var
-  i, n: Integer;
-  buf, line: string;
+  i, N: Integer;
+  buf, Line: string;
 begin
   buf := 'NEWMTL ' + UpperCase(materialName);
   i := IndexOf(buf);
   if i >= 0 then
   begin
     buf := UpperCase(propertyName) + ' ';
-    n := Length(buf);
-    Inc(i);
+    N := Length(buf);
+    inc(i);
     while i < Count do
     begin
-      line := Strings[i];
-      if Copy(line, 1, 7) = 'NEWMTL ' then
-        Break;
-      if Copy(line, 1, n) = buf then
+      Line := Strings[i];
+      if copy(Line, 1, 7) = 'NEWMTL ' then
+        break;
+      if copy(Line, 1, N) = buf then
       begin
-        Result := Copy(Strings[i], n + 1, MaxInt);
-        Exit;
+        Result := copy(Strings[i], N + 1, MaxInt);
+        exit;
       end;
-      Inc(i);
+      inc(i);
     end;
   end;
   Result := '';
@@ -1391,8 +1365,7 @@ end;
 // MaterialVectorProperty
 //
 
-function TVXMTLFile.MaterialVectorProperty(const materialName, propertyName: string;
-  const defaultValue: TVector): TVector;
+function TVXMTLFile.MaterialVectorProperty(const materialName, propertyName: string; const defaultValue: TVector): TVector;
 var
   i: Integer;
   sl: TStringList;
@@ -1407,7 +1380,7 @@ begin
         if sl.Count > i then
           Result.V[i] := VXS.Utils.StrToFloatDef(sl[i], 0)
         else
-          Break;
+          break;
     end
     else
       Result := defaultValue;
@@ -1432,14 +1405,13 @@ begin
       if FPolygonVertices = nil then
         FPolygonVertices := TIntegerList.Create;
       FPolygonVertices.Assign(TOBJFGVertexNormalTexIndexList(Source).FPolygonVertices);
-    end;  
+    end;
   end
   else
     inherited;
 end;
 
-procedure TOBJFGVertexNormalTexIndexList.ReadFromFiler(
-  reader: TVirtualReader);
+procedure TOBJFGVertexNormalTexIndexList.ReadFromFiler(reader: TVirtualReader);
 var
   archiveVersion: Integer;
 begin
@@ -1456,14 +1428,13 @@ begin
     begin
       FPolygonVertices := TIntegerList.Create;
       FPolygonVertices.ReadFromFiler(reader);
-    end;  
+    end;
   end
   else
     RaiseFilerException(archiveVersion);
 end;
 
-procedure TOBJFGVertexNormalTexIndexList.WriteToFiler(
-  writer: TVirtualWriter);
+procedure TOBJFGVertexNormalTexIndexList.WriteToFiler(writer: TVirtualWriter);
 begin
   inherited WriteToFiler(writer);
   with writer do
@@ -1482,10 +1453,9 @@ end;
 
 initialization
 
-  { Register this Fileformat-Handler with GLScene }
-  VXS.VectorFileObjects.RegisterVectorFileFormat('obj', 'WaveFront model file', TVXOBJVectorFile);
-  VXS.VectorFileObjects.RegisterVectorFileFormat('objf', 'Stripe model file', TVXOBJVectorFile);
-  RegisterClass(TOBJFGVertexNormalTexIndexList);
+{ Register this Fileformat-Handler with GLScene }
+VXS.VectorFileObjects.RegisterVectorFileFormat('obj', 'WaveFront model file', TVXOBJVectorFile);
+VXS.VectorFileObjects.RegisterVectorFileFormat('objf', 'Stripe model file', TVXOBJVectorFile);
+RegisterClass(TOBJFGVertexNormalTexIndexList);
 
 end.
-

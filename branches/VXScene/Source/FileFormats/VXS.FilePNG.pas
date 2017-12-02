@@ -1,5 +1,5 @@
 //
-// VXScene Component Library, based on GLScene http://glscene.sourceforge.net 
+// VXScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
 
 unit VXS.FilePNG;
@@ -13,8 +13,7 @@ uses
   Winapi.OpenGLext,
   System.Classes,
   System.SysUtils,
-  
-  VXS.OpenGLAdapter,
+
   VXS.CrossPlatform,
   VXS.Context,
   VXS.Graphics,
@@ -146,7 +145,7 @@ begin
     end
     else
       fLevelCount := 1;
-    CheckOpenGLError;
+///    CheckOpenGLError;
   finally
     if contextActivate then
     begin

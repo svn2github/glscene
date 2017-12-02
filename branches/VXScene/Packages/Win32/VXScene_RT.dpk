@@ -32,7 +32,8 @@ package VXScene_RT;
 requires
   rtl,
   fmx,
-  xmlrtl;
+  xmlrtl,
+  vcl;
 
 contains
   uConst3DS in '..\..\Source\FileFormats\uConst3DS.pas',
@@ -270,7 +271,10 @@ contains
   uUtils3DS in '..\..\Source\FileFormats\uUtils3DS.pas',
   uVRMLParser in '..\..\Source\FileFormats\uVRMLParser.pas',
   VXS.Vulkan in '..\..\Source\Basis\VXS.Vulkan.pas',
-  VXS.XOpenGL in '..\..\Source\Basis\VXS.XOpenGL.pas';
+  VXS.XOpenGL in '..\..\Source\Basis\VXS.XOpenGL.pas',
+  VXS.SDLContext in '..\..\Source\GameAPIs\VXS.SDLContext.pas',
+  VXS.SDLWindow in '..\..\Source\GameAPIs\VXS.SDLWindow.pas',
+  SDL2 in '..\..\Source\GameAPIs\sdl2\SDL2.pas';
 
 end.
 

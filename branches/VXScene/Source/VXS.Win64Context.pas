@@ -19,7 +19,8 @@ uses
   System.Classes,
   FMX.Forms,
   FMX.Dialogs,
-///  FMX.Platform.Win,
+  FMX.Platform.Win,
+
   VXS.OpenGLAdapter,
   VXS.Context,
   VXS.CrossPlatform,
@@ -28,10 +29,9 @@ uses
   VXS.VectorGeometry;
 
 type
-  { A context driver for standard Windows OpenVX }
+  { A context driver for standard Windows OpenGL }
   TVXWinContext = class(TVXContext)
   protected
-    
     FDC: HDC;
     FRC: HGLRC;
     FShareContext: TVXWinContext;
@@ -90,8 +90,6 @@ var
   vTrackedEvents: array of TNotifyEvent;
   vTrackingHook: HHOOK;
 
-// TrackHookProc
-//
 function TrackHookProc(nCode: Integer; wParam: wParam; lParam: lParam)
   : Integer; stdcall;
 var
@@ -176,8 +174,6 @@ var
     cbClsExtra: 0; cbWndExtra: 0; hInstance: 0; hIcon: 0; hCursor: 0;
     hbrBackground: 0; lpszMenuName: nil; lpszClassName: 'GLSUtilWindow');
 
-// CreateTempWnd
-//
 function CreateTempWnd: HWND;
 var
   classRegistered: Boolean;
@@ -197,8 +193,6 @@ end;
 // ------------------ TVXSceneContextFMX ------------------
 // ------------------
 
-// Create
-//
 constructor TVXWinContext.Create;
 begin
   inherited Create;
@@ -206,15 +200,11 @@ begin
   ClearFAttribs;
 end;
 
-// Destroy
-//
 destructor TVXWinContext.Destroy;
 begin
   inherited Destroy;
 end;
 
-// SetupPalette
-//
 function SetupPalette(DC: HDC; PFD: TPixelFormatDescriptor): HPalette;
 var
   nColors, i: Integer;
@@ -249,16 +239,12 @@ begin
     RaiseLastOSError;
 end;
 
-// ClearIAttribs
-//
 procedure TVXWinContext.ClearIAttribs;
 begin
   SetLength(FiAttribs, 1);
   FiAttribs[0] := 0;
 end;
 
-// AddIAttrib
-//
 procedure TVXWinContext.AddIAttrib(attrib, value: Integer);
 var
   n: Integer;
@@ -270,8 +256,6 @@ begin
   FiAttribs[n + 1] := 0;
 end;
 
-// ChangeIAttrib
-//
 procedure TVXWinContext.ChangeIAttrib(attrib, newValue: Integer);
 var
   i: Integer;
@@ -289,8 +273,6 @@ begin
   AddIAttrib(attrib, newValue);
 end;
 
-// DropIAttrib
-//
 procedure TVXWinContext.DropIAttrib(attrib: Integer);
 var
   i: Integer;
@@ -313,16 +295,12 @@ begin
   end;
 end;
 
-// ClearFAttribs
-//
 procedure TVXWinContext.ClearFAttribs;
 begin
   SetLength(FfAttribs, 1);
   FfAttribs[0] := 0;
 end;
 
-// AddFAttrib
-//
 procedure TVXWinContext.AddFAttrib(attrib, value: Single);
 var
   n: Integer;
@@ -334,16 +312,12 @@ begin
   FfAttribs[n + 1] := 0;
 end;
 
-// DestructionEarlyWarning
-//
 procedure TVXWinContext.DestructionEarlyWarning(sender: TObject);
 begin
   if IsValid then
     DestroyContext;
 end;
 
-// ChooseWGLFormat
-//
 procedure TVXWinContext.ChooseWGLFormat(DC: HDC; nMaxFormats: Cardinal;
   piFormats: PInteger; var nNumFormats: Integer; BufferCount: Integer);
 const
@@ -353,7 +327,7 @@ const
 
   procedure ChoosePixelFormat;
   begin
-    if not FVK.wglChoosePixelFormatARB(DC, @FiAttribs[0], @FfAttribs[0], 32,
+    if not FVX.wglChoosePixelFormatARB(DC, @FiAttribs[0], @FfAttribs[0], 32,
       PGLint(piFormats), @nNumFormats) then
       nNumFormats := 0;
   end;
@@ -526,7 +500,7 @@ begin
   FDC := aDC;
 
   if not wglMakeCurrent(FDC, FRC) then
-    raise EVKContext.Create(Format(strContextActivationFailed,
+    raise EVXContext.Create(Format(strContextActivationFailed,
       [GetLastError, SysErrorMessage(GetLastError)]));
 
   if not FLegacyContextsOnly then
@@ -543,8 +517,8 @@ begin
         PropagateSharedContext;
       end;
     end;
-    FVK.DebugMode := False;
-    FVK.Initialize;
+    FVX.DebugMode := False;
+    FVX.Initialize;
     MakeGLCurrent;
     // If we are using AntiAliasing, adjust filtering hints
     if AntiAliasing in [aa2xHQ, aa4xHQ, csa8xHQ, csa16xHQ] then
@@ -634,7 +608,7 @@ begin
     if rcoDebug in Options then
     begin
       AddIAttrib(WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_DEBUG_BIT_ARB);
-      FVK.DebugMode := True;
+      FVX.DebugMode := True;
     end;
 
     case Layer of
@@ -651,7 +625,7 @@ begin
     FRC := 0;
     if Assigned(FShareContext) then
     begin
-      FRC := FVK.wglCreateContextAttribsARB(aDC, FShareContext.RC, @FiAttribs[0]);
+      FRC := FVX.wglCreateContextAttribsARB(aDC, FShareContext.RC, @FiAttribs[0]);
       if FRC <> 0 then
       begin
         FSharedContexts.Add(FShareContext);
@@ -663,7 +637,7 @@ begin
 
     if FRC = 0 then
     begin
-      FRC := FVK.wglCreateContextAttribsARB(aDC, 0, @FiAttribs[0]);
+      FRC := FVX.wglCreateContextAttribsARB(aDC, 0, @FiAttribs[0]);
       if FRC = 0 then
       begin
         if VXStates.ForwardContext then
@@ -685,7 +659,7 @@ begin
       Abort;
     end;
 
-    FVK.Initialize;
+    FVX.Initialize;
     MakeGLCurrent;
     // If we are using AntiAliasing, adjust filtering hints
     if AntiAliasing in [aa2xHQ, aa4xHQ, csa8xHQ, csa16xHQ] then
@@ -705,8 +679,6 @@ begin
   end;
 end;
 
-// DoCreateContext
-//
 procedure TVXWinContext.DoCreateContext(ADeviceHandle: THandle);
 const
   cMemoryDCs = [OBJ_MEMDC, OBJ_METADC, OBJ_ENHMETADC];
@@ -827,7 +799,7 @@ begin
                 begin
                   pixelFormat := iFormats[i];
                   iValue := GL_FALSE;
-                  FVK.wglGetPixelFormatAttribivARB(ADeviceHandle, pixelFormat, 0,
+                  FVX.wglGetPixelFormatAttribivARB(ADeviceHandle, pixelFormat, 0,
                     1, @iAttrib, @iValue);
                   if iValue = GL_FALSE then
                     break;
@@ -945,8 +917,6 @@ begin
   end;
 end;
 
-// SpawnLegacyContext
-//
 procedure TVXWinContext.SpawnLegacyContext(aDC: HDC);
 begin
   try
@@ -965,8 +935,6 @@ begin
   end;
 end;
 
-// DoCreateMemoryContext
-//
 procedure TVXWinContext.DoCreateMemoryContext(OutputDevice: THandle;
   Width, Height: Integer; BufferCount: Integer);
 var
@@ -1006,12 +974,12 @@ begin
               ('Format not supported for pbuffer operation.');
           iPBufferAttribs[0] := 0;
 
-          localHPBuffer := FVK.wglCreatePbufferARB(tempDC, iFormats[0], Width,
+          localHPBuffer := FVX.wglCreatePbufferARB(tempDC, iFormats[0], Width,
             Height, @iPBufferAttribs[0]);
           if localHPBuffer = 0 then
             raise EPBuffer.Create('Unabled to create pbuffer.');
           try
-            localDC := FVK.wglGetPbufferDCARB(localHPBuffer);
+            localDC := FVX.wglGetPbufferDCARB(localHPBuffer);
             if localDC = 0 then
               raise EPBuffer.Create('Unabled to create pbuffer''s DC.');
             try
@@ -1080,7 +1048,7 @@ begin
                 if rcoDebug in Options then
                 begin
                   AddIAttrib(WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_DEBUG_BIT_ARB);
-                  FVK.DebugMode := True;
+                  FVX.DebugMode := True;
                 end;
 
                 case Layer of
@@ -1094,7 +1062,7 @@ begin
                     AddIAttrib(WGL_CONTEXT_LAYER_PLANE_ARB, 2);
                 end;
 
-                localRC := FVK.wglCreateContextAttribsARB(localDC, 0,
+                localRC := FVX.wglCreateContextAttribsARB(localDC, 0,
                   @FiAttribs[0]);
                 if localRC = 0 then
 {$IFDEF USE_LOGGING}
@@ -1124,11 +1092,11 @@ begin
               end;
 
             except
-              FVK.wglReleasePBufferDCARB(localHPBuffer, localDC);
+              FVX.wglReleasePBufferDCARB(localHPBuffer, localDC);
               raise;
             end;
           except
-            FVK.wglDestroyPBufferARB(localHPBuffer);
+            FVX.wglDestroyPBufferARB(localHPBuffer);
             raise;
           end;
         end
@@ -1161,7 +1129,7 @@ begin
   end;
 
   Activate;
-  FVK.Initialize;
+  FVX.Initialize;
   // If we are using AntiAliasing, adjust filtering hints
   if AntiAliasing in [aa2xHQ, aa4xHQ, csa8xHQ, csa16xHQ] then
     VXStates.MultisampleFilterHint := hintNicest
@@ -1195,9 +1163,7 @@ begin
       PropagateSharedContext;
     end;
   end;
-
   Deactivate;
-
   if VXStates.ForwardContext then
     ShowMessage('PBuffer ' + strFRC_created);
   if bOES then
@@ -1206,8 +1172,6 @@ begin
     ShowMessage(strPBufferRC_created);
 end;
 
-// DoShareLists
-//
 function TVXWinContext.DoShareLists(aContext: TVXContext): Boolean;
 begin
   if aContext is TVXWinContext then
@@ -1222,8 +1186,6 @@ begin
     raise Exception.Create(strIncompatibleContexts);
 end;
 
-// DoDestroyContext
-//
 procedure TVXWinContext.DoDestroyContext;
 begin
   if vUseWindowTrackingHook then
@@ -1231,8 +1193,8 @@ begin
 
   if FHPBUFFER <> 0 then
   begin
-    FVK.wglReleasePBufferDCARB(FHPBUFFER, FDC);
-    FVK.wglDestroyPBufferARB(FHPBUFFER);
+    FVX.wglReleasePBufferDCARB(FHPBUFFER, FDC);
+    FVX.wglDestroyPBufferARB(FHPBUFFER);
     FHPBUFFER := 0;
   end;
 
@@ -1246,8 +1208,6 @@ begin
   FShareContext := nil;
 end;
 
-// DoActivate
-//
 procedure TVXWinContext.DoActivate;
 begin
   if not wglMakeCurrent(FDC, FRC) then
@@ -1257,12 +1217,10 @@ begin
     Abort;
   end;
 
-  if not FVK.IsInitialized then
-    FVK.Initialize(CurrentVXContext = nil);
+  if not FVX.IsInitialized then
+    FVX.Initialize(CurrentVXContext = nil);
 end;
 
-// Deactivate
-//
 procedure TVXWinContext.DoDeactivate;
 begin
   if not wglMakeCurrent(0, 0) then
@@ -1273,15 +1231,11 @@ begin
   end;
 end;
 
-// IsValid
-//
 function TVXWinContext.IsValid: Boolean;
 begin
   Result := (FRC <> 0);
 end;
 
-// SwapBuffers
-//
 procedure TVXWinContext.SwapBuffers;
 begin
   if (FDC <> 0) and (rcoDoubleBuffered in Options) then
@@ -1303,22 +1257,15 @@ begin
     SwapBuffers(); /// Vcl - SwapBuffers(FDC);
 end;
 
-// RenderOutputDevice
-//
 function TVXWinContext.RenderOutputDevice: Pointer;
 begin
   Result := Pointer(FDC);
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-RegisterVKContextClass(TVXWinContext);
+RegisterVXContextClass(TVXWinContext);
 
 end.

@@ -2603,6 +2603,7 @@ begin
         end ;
       else
         StartOffset := 0;
+        StopOffset := 0;
     end;
 
     // handle texture generation

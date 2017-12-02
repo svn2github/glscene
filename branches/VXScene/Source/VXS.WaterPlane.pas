@@ -130,17 +130,10 @@ type
       write FMaximumCatchupIterations default 1;
   end;
 
-  // -------------------------------------------------------------
-  // -------------------------------------------------------------
-  // -------------------------------------------------------------
+// -------------------------------------------------------------
 implementation
-
-// -------------------------------------------------------------
-// -------------------------------------------------------------
 // -------------------------------------------------------------
 
-// Create
-//
 constructor TVXWaterPlane.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
@@ -165,8 +158,6 @@ begin
   SetResolution(64);
 end;
 
-// Destroy
-//
 destructor TVXWaterPlane.Destroy;
 begin
   FMask.Free;
@@ -177,8 +168,6 @@ begin
   inherited;
 end;
 
-// DoProgress
-//
 procedure TVXWaterPlane.DoProgress(const progressTime: TProgressTimes);
 var
   i: Integer;
@@ -226,16 +215,12 @@ begin
   end;
 end;
 
-// CreateRippleAtGridPos
-//
 procedure TVXWaterPlane.CreateRippleAtGridPos(X, Y: Integer);
 begin
   if (X > 0) and (Y > 0) and (X < Resolution - 1) and (Y < Resolution - 1) then
     FVelocity[X + Y * Resolution] := FRainForce;
 end;
 
-// CreateRippleAtWorldPos
-//
 procedure TVXWaterPlane.CreateRippleAtWorldPos(const X, Y, z: Single);
 var
   vv: TVector;
@@ -245,8 +230,6 @@ begin
     Round((vv.z + 0.5) * Resolution));
 end;
 
-// CreateRippleAtWorldPos
-//
 procedure TVXWaterPlane.CreateRippleAtWorldPos(const pos: TVector);
 var
   vv: TVector;
@@ -256,15 +239,11 @@ begin
     Round((vv.z + 0.5) * Resolution));
 end;
 
-// CreateRippleRandom
-//
 procedure TVXWaterPlane.CreateRippleRandom;
 begin
   CreateRippleAtGridPos(Random(Resolution - 3) + 2, Random(Resolution - 3) + 2);
 end;
 
-// InitResolution
-//
 procedure TVXWaterPlane.InitResolution;
 var
   i, j: Integer;
@@ -307,8 +286,6 @@ begin
   StructureChanged;
 end;
 
-// Reset
-//
 procedure TVXWaterPlane.Reset;
 var
   i, j, ij, resSqr: Integer;
@@ -376,8 +353,6 @@ begin
   end;
 end;
 
-// IterComputeVelocity
-//
 procedure TVXWaterPlane.IterComputeVelocity;
 var
   i, j, ij: Integer;
@@ -408,8 +383,6 @@ begin
   end;
 end;
 
-// IterComputePositions
-//
 procedure TVXWaterPlane.IterComputePositions;
 const
   cVelocityIntegrationCoeff: Single = 0.02;
@@ -438,8 +411,6 @@ begin
   end;
 end;
 
-// IterComputeNormals
-//
 procedure TVXWaterPlane.IterComputeNormals;
 var
   i, j, ij: Integer;
@@ -463,8 +434,6 @@ begin
   end;
 end;
 
-// Iterate
-//
 procedure TVXWaterPlane.Iterate;
 var
   t: Int64;
@@ -481,8 +450,6 @@ begin
   end;
 end;
 
-// BuildList
-//
 procedure TVXWaterPlane.BuildList(var rci: TVXRenderContextInfo);
 var
   i: Integer;
@@ -517,8 +484,6 @@ begin
   glPopClientAttrib;
 end;
 
-// Assign
-//
 procedure TVXWaterPlane.Assign(Source: TPersistent);
 begin
   if Assigned(Source) and (Source is TVXWaterPlane) then
@@ -531,8 +496,6 @@ begin
   inherited Assign(Source);
 end;
 
-// AxisAlignedDimensionsUnscaled
-//
 function TVXWaterPlane.AxisAlignedDimensionsUnscaled: TVector;
 begin
   Result.X := 0.5 * Abs(Resolution);
@@ -540,15 +503,11 @@ begin
   Result.z := 0.5 * Abs(FResolution);
 end;
 
-// SetElastic
-//
 procedure TVXWaterPlane.SetElastic(const value: Single);
 begin
   FElastic := value;
 end;
 
-// SetResolution
-//
 procedure TVXWaterPlane.SetResolution(const value: Integer);
 begin
   if value <> FResolution then
@@ -560,32 +519,24 @@ begin
   end;
 end;
 
-// SetRainTimeInterval
-//
 procedure TVXWaterPlane.SetRainTimeInterval(Const val: Integer);
 begin
   if (val >= 0) and (val <= 1000000) then
     FRainTimeInterval := val;
 end;
 
-// SetViscosity
-//
 Procedure TVXWaterPlane.SetViscosity(const val: Single);
 begin
   if (val >= 0) and (val <= 1) then
     FViscosity := val;
 end;
 
-// SetRainForce
-//
 procedure TVXWaterPlane.SetRainForce(const val: Single);
 begin
   if (val >= 0) and (val <= 1000000) then
     FRainForce := val;
 end;
 
-// SetSimulationFrequency
-//
 procedure TVXWaterPlane.SetSimulationFrequency(const val: Single);
 begin
   if FSimulationFrequency <> val then
@@ -618,13 +569,7 @@ begin
 end;
 
 // -------------------------------------------------------------
-// -------------------------------------------------------------
-// -------------------------------------------------------------
-
 initialization
-
-// -------------------------------------------------------------
-// -------------------------------------------------------------
 // -------------------------------------------------------------
 
 RegisterClasses([TVXWaterPlane]);

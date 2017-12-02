@@ -128,23 +128,18 @@ type
     property Height: Integer read FHeight write SetHeight default 480;
     {  PixelDepth of the SDL window. 
       To apply changes to an active window, call UpdateWindow. }
-    property PixelDepth: TGLSDLWindowPixelDepth read FPixelDepth
-      write SetPixelDepth default vpd24bits;
+    property PixelDepth: TGLSDLWindowPixelDepth read FPixelDepth write SetPixelDepth default vpd24bits;
     {  Options for the SDL window.
       To apply changes to an active window, call UpdateWindow. }
-    property Options: TGLSDLWindowOptions read FOptions write SetOptions
-      default cDefaultSDLWindowOptions;
+    property Options: TGLSDLWindowOptions read FOptions write SetOptions default cDefaultSDLWindowOptions;
     {  Caption of the SDL window }
     property Caption: String read FCaption write SetCaption;
     {  Controls automatic threaded event polling. }
-    property ThreadedEventPolling: Boolean read FThreadedEventPolling
-      write SetThreadedEventPolling default True;
+    property ThreadedEventPolling: Boolean read FThreadedEventPolling write SetThreadedEventPolling default True;
     {  Sleep length between pollings in the polling thread. }
-    property ThreadSleepLength: Integer read FThreadSleepLength
-      write SetThreadSleepLength default 1;
+    property ThreadSleepLength: Integer read FThreadSleepLength write SetThreadSleepLength default 1;
     {  Priority of the event polling thread. }
-    property ThreadPriority: TThreadPriority read FThreadPriority
-      write SetThreadPriority default tpLower;
+    property ThreadPriority: TThreadPriority read FThreadPriority write SetThreadPriority default tpLower;
     {  Fired whenever Open succeeds.
       The SDL surface is defined and usable when the event happens. }
     property OnOpen: TNotifyEvent read FOnOpen write FOnOpen;
@@ -159,8 +154,7 @@ type
       they are passed via OnClose and OnResize respectively. }
     property OnSDLEvent: TGLSDLEvent read FOnSDLEvent write FOnSDLEvent;
     {  Fired whenever an event polling completes with no events left to poll. }
-    property OnEventPollDone: TNotifyEvent read FOnEventPollDone
-      write FOnEventPollDone;
+    property OnEventPollDone: TNotifyEvent read FOnEventPollDone write FOnEventPollDone;
   end;
 
   {  Generic SDL or SDLWindow exception. }
@@ -198,11 +192,7 @@ function SDL_getenv(const name: PAnsiChar): PAnsiChar;
 procedure Register;
 
 // ---------------------------------------------------------------------
-// ---------------------------------------------------------------------
-// ---------------------------------------------------------------------
 implementation
-// ---------------------------------------------------------------------
-// ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
 
 var
@@ -391,8 +381,7 @@ end;
 
 procedure TGLSDLWindow.CreateOrRecreateSDLSurface;
 const
-  cPixelDepthToBpp: array [Low(TGLSDLWindowPixelDepth)
-    .. High(TGLSDLWindowPixelDepth)] of Integer = (16, 24);
+  cPixelDepthToBpp: array [Low(TGLSDLWindowPixelDepth) .. High(TGLSDLWindowPixelDepth)] of Integer = (16, 24);
 var
   videoFlags: Integer;
 begin
@@ -444,9 +433,7 @@ begin
   if voOpenGL in Options then
     InitOpenGL;
   SetupSDLEnvironmentValues;
-
   CreateOrRecreateSDLSurface;
-
   FActive := True;
   if Assigned(FOnOpen) then
     FOnOpen(Self);
@@ -612,12 +599,7 @@ begin
 end;
 
 // ---------------------------------------------------------------------
-// ---------------------------------------------------------------------
-// ---------------------------------------------------------------------
 initialization
-
-// ---------------------------------------------------------------------
-// ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
 
 // We DON'T free this stuff manually,

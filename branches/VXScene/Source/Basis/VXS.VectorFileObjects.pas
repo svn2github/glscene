@@ -19,7 +19,6 @@ uses
   System.SysUtils,
   System.Types,
 
-  VXS.OpenGLAdapter,
   VXS.XOpenGL,
   VXS.Scene,
   VXS.VectorGeometry,
@@ -43,7 +42,6 @@ uses
   VXS.State,
   VXS.Utils;
 
-
 type
 
   TVXMeshObjectList = class;
@@ -55,8 +53,8 @@ type
   TVXMeshObjectMode = (momTriangles, momTriangleStrip, momFaceGroups);
 
   { A base class for mesh objects.
-     The class introduces a set of vertices and normals for the object but
-     does no rendering of its own. }
+    The class introduces a set of vertices and normals for the object but
+    does no rendering of its own. }
   TVXBaseMeshObject = class(TPersistentObject)
   private
     FName: string;
@@ -66,8 +64,7 @@ type
   protected
     procedure SetVertices(const val: TAffineVectorList);
     procedure SetNormals(const val: TAffineVectorList);
-    procedure ContributeToBarycenter(var currentSum: TAffineVector;
-      var nb: Integer); virtual;
+    procedure ContributeToBarycenter(var currentSum: TAffineVector; var nb: Integer); virtual;
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -79,34 +76,31 @@ type
     { Translates all the vertices by the given delta. }
     procedure Translate(const delta: TAffineVector); virtual;
     { Builds (smoothed) normals for the vertex list.
-       If normalIndices is nil, the method assumes a bijection between
-       vertices and normals sets, and when performed, Normals and Vertices
-       list will have the same number of items (whatever previously was in
-       the Normals list is ignored/removed).
-       If normalIndices is defined, normals will be added to the list and
-       their indices will be added to normalIndices. Already defined
-       normals and indices are preserved.
-       The only valid modes are currently momTriangles and momTriangleStrip
-       (ie. momFaceGroups not supported). }
-    procedure BuildNormals(vertexIndices: TIntegerList; mode: TVXMeshObjectMode;
-      normalIndices: TIntegerList = nil);
+      If normalIndices is nil, the method assumes a bijection between
+      vertices and normals sets, and when performed, Normals and Vertices
+      list will have the same number of items (whatever previously was in
+      the Normals list is ignored/removed).
+      If normalIndices is defined, normals will be added to the list and
+      their indices will be added to normalIndices. Already defined
+      normals and indices are preserved.
+      The only valid modes are currently momTriangles and momTriangleStrip
+      (ie. momFaceGroups not supported). }
+    procedure BuildNormals(vertexIndices: TIntegerList; mode: TVXMeshObjectMode; normalIndices: TIntegerList = nil);
     { Extracts all mesh triangles as a triangles list.
-       The resulting list size is a multiple of 3, each group of 3 vertices
-       making up and independant triangle.
-       The returned list can be used independantly from the mesh object
-       (all data is duplicated) and should be freed by caller.
-       If texCoords is specified, per vertex texture coordinates will be
-       placed there, when available. }
-    function ExtractTriangles(texCoords: TAffineVectorList = nil;
-      normals: TAffineVectorList = nil): TAffineVectorList; virtual;
+      The resulting list size is a multiple of 3, each group of 3 vertices
+      making up and independant triangle.
+      The returned list can be used independantly from the mesh object
+      (all data is duplicated) and should be freed by caller.
+      If texCoords is specified, per vertex texture coordinates will be
+      placed there, when available. }
+    function ExtractTriangles(texCoords: TAffineVectorList = nil; normals: TAffineVectorList = nil): TAffineVectorList; virtual;
     property Name: string read FName write FName;
     property Visible: Boolean read FVisible write FVisible;
     property Vertices: TAffineVectorList read FVertices write SetVertices;
-    property Normals: TAffineVectorList read FNormals write SetNormals;
+    property normals: TAffineVectorList read FNormals write SetNormals;
   end;
 
   TVXSkeletonFrameList = class;
-
   TVXSkeletonFrameTransform = (sftRotation, sftQuaternion);
 
   { Stores position and rotation for skeleton joints.
@@ -139,19 +133,18 @@ type
     { Rotation values for the joints. }
     property Rotation: TAffineVectorList read FRotation write SetRotation;
     { Quaternions are an alternative to Euler rotations to build the
-       global matrices for the skeleton bones. }
+      global matrices for the skeleton bones. }
     property Quaternion: TQuaternionList read FQuaternion write SetQuaternion;
     { TransformMode indicates whether to use Rotation or Quaternion to build
-       the local transform matrices. }
-    property TransformMode: TVXSkeletonFrameTransform read FTransformMode write
-      FTransformMode;
+      the local transform matrices. }
+    property TransformMode: TVXSkeletonFrameTransform read FTransformMode write FTransformMode;
     { Calculate or retrieves an array of local bone matrices.
-       This array is calculated on the first call after creation, and the
-       first call following a FlushLocalMatrixList. Subsequent calls return
-       the same arrays. }
+      This array is calculated on the first call after creation, and the
+      first call following a FlushLocalMatrixList. Subsequent calls return
+      the same arrays. }
     function LocalMatrixList: PMatrixArray;
     { Flushes (frees) then LocalMatrixList data.
-       Call this function to allow a recalculation of local matrices. }
+      Call this function to allow a recalculation of local matrices. }
     procedure FlushLocalMatrixList;
     // As the name states; Convert Quaternions to Rotations or vice-versa.
     procedure ConvertQuaternionsToRotations(KeepQuaternions: Boolean = True);
@@ -165,24 +158,21 @@ type
   protected
     function GetSkeletonFrame(Index: Integer): TVXSkeletonFrame;
   public
-    constructor CreateOwned(AOwner: TPersistent);
+    constructor CreateOwned(aOwner: TPersistent);
     destructor Destroy; override;
     procedure ReadFromFiler(reader: TVirtualReader); override;
     // As the name states; Convert Quaternions to Rotations or vice-versa.
-    procedure ConvertQuaternionsToRotations(
-      KeepQuaternions: Boolean = True; SetTransformMode: Boolean = True);
-    procedure ConvertRotationsToQuaternions(
-      KeepRotations: Boolean = True; SetTransformMode: Boolean = True);
+    procedure ConvertQuaternionsToRotations(KeepQuaternions: Boolean = True; SetTransformMode: Boolean = True);
+    procedure ConvertRotationsToQuaternions(KeepRotations: Boolean = True; SetTransformMode: Boolean = True);
     property Owner: TPersistent read FOwner;
     procedure Clear; override;
-    property Items[Index: Integer]: TVXSkeletonFrame read GetSkeletonFrame;
-      default;
+    property Items[Index: Integer]: TVXSkeletonFrame read GetSkeletonFrame; default;
   end;
 
   TVXSkeleton = class;
   TVXSkeletonBone = class;
 
-  { A list of skeleton bones.  }
+  { A list of skeleton bones. }
   TVXSkeletonBoneList = class(TPersistentObjectList)
   private
     FSkeleton: TVXSkeleton; // not persistent
@@ -209,7 +199,7 @@ type
     procedure PrepareGlobalMatrices; virtual;
   end;
 
-  { This list store skeleton root bones exclusively.  }
+  { This list store skeleton root bones exclusively. }
   TVXSkeletonRootBoneList = class(TVXSkeletonBoneList)
   public
     procedure WriteToFiler(writer: TVirtualWriter); override;
@@ -220,9 +210,9 @@ type
   end;
 
   { A skeleton bone or node and its children.
-       This class is the base item of the bones hierarchy in a skeletal model.
-       The joint values are stored in a TVXSkeletonFrame, but the calculated bone
-       matrices are stored here. }
+    This class is the base item of the bones hierarchy in a skeletal model.
+    The joint values are stored in a TVXSkeletonFrame, but the calculated bone
+    matrices are stored here. }
   TVXSkeletonBone = class(TVXSkeletonBoneList)
   private
     FOwner: TVXSkeletonBoneList; // indirectly persistent
@@ -253,11 +243,11 @@ type
     { Set the bone's GlobalMatrix. Used for Ragdoll. }
     procedure SetGlobalMatrixForRagDoll(RagDollMatrix: TMatrix); // Ragdoll
     { Calculates the global matrix for the bone and its sub-bone.
-       Call this function directly only the RootBone. }
+      Call this function directly only the RootBone. }
     procedure PrepareGlobalMatrices; override;
     { Global Matrix for the bone in the current frame.
-       Global matrices must be prepared by invoking PrepareGlobalMatrices
-       on the root bone. }
+      Global matrices must be prepared by invoking PrepareGlobalMatrices
+      on the root bone. }
     property GlobalMatrix: TMatrix read FGlobalMatrix;
     { Free all sub bones and reset BoneID and Name. }
     procedure Clean; override;
@@ -266,9 +256,9 @@ type
   TVXSkeletonColliderList = class;
 
   { A general class storing the base level info required for skeleton
-     based collision methods. This class is meant to be inherited from
-     to create skeleton driven Verlet Constraints, ODE Geoms, etc.
-     Overriden classes should be named as TSCxxxxx. }
+    based collision methods. This class is meant to be inherited from
+    to create skeleton driven Verlet Constraints, ODE Geoms, etc.
+    Overriden classes should be named as TSCxxxxx. }
   TVXSkeletonCollider = class(TPersistentObject)
   private
     FOwner: TVXSkeletonColliderList;
@@ -281,21 +271,21 @@ type
     procedure SetLocalMatrix(const val: TMatrix);
   public
     constructor Create; override;
-    constructor CreateOwned(AOwner: TVXSkeletonColliderList);
+    constructor CreateOwned(aOwner: TVXSkeletonColliderList);
     procedure WriteToFiler(writer: TVirtualWriter); override;
     procedure ReadFromFiler(reader: TVirtualReader); override;
     { This method is used to align the colliders and their
-       derived objects to their associated skeleton bone.
-       Override to set up descendant class alignment properties. }
+      derived objects to their associated skeleton bone.
+      Override to set up descendant class alignment properties. }
     procedure AlignCollider; virtual;
     property Owner: TVXSkeletonColliderList read FOwner;
     // The bone that this collider associates with.
     property Bone: TVXSkeletonBone read FBone write SetBone;
     { Offset and orientation of the collider in the associated
-       bone's space. }
+      bone's space. }
     property LocalMatrix: TMatrix read FLocalMatrix write SetLocalMatrix;
     { Global offset and orientation of the collider. This
-       gets set in the AlignCollider method. }
+      gets set in the AlignCollider method. }
     property GlobalMatrix: TMatrix read FGlobalMatrix;
     property AutoUpdate: Boolean read FAutoUpdate write FAutoUpdate;
   end;
@@ -305,17 +295,16 @@ type
   private
     FOwner: TPersistent;
   protected
-    function GetSkeletonCollider(index: Integer): TVXSkeletonCollider;
+    function GetSkeletonCollider(Index: Integer): TVXSkeletonCollider;
   public
-    constructor CreateOwned(AOwner: TPersistent);
+    constructor CreateOwned(aOwner: TPersistent);
     destructor Destroy; override;
     procedure ReadFromFiler(reader: TVirtualReader); override;
     procedure Clear; override;
     { Calls AlignCollider for each collider in the list. }
     procedure AlignColliders;
     property Owner: TPersistent read FOwner;
-    property Items[Index: Integer]: TVXSkeletonCollider read GetSkeletonCollider;
-      default;
+    property Items[Index: Integer]: TVXSkeletonCollider read GetSkeletonCollider; default;
   end;
 
   TVXBaseMesh = class;
@@ -331,9 +320,9 @@ type
   end;
 
   { Main skeleton object.
-       This class stores the bones hierarchy and animation frames.
-       It is also responsible for maintaining the "CurrentFrame" and allowing
-       various frame blending operations. }
+    This class stores the bones hierarchy and animation frames.
+    It is also responsible for maintaining the "CurrentFrame" and allowing
+    various frame blending operations. }
   TVXSkeleton = class(TPersistentObject)
   private
     FOwner: TVXBaseMesh;
@@ -351,39 +340,35 @@ type
     procedure SetCurrentFrame(val: TVXSkeletonFrame);
     procedure SetColliders(const val: TVXSkeletonColliderList);
   public
-    constructor CreateOwned(AOwner: TVXBaseMesh);
+    constructor CreateOwned(aOwner: TVXBaseMesh);
     constructor Create; override;
     destructor Destroy; override;
     procedure WriteToFiler(writer: TVirtualWriter); override;
     procedure ReadFromFiler(reader: TVirtualReader); override;
     property Owner: TVXBaseMesh read FOwner;
-    property RootBones: TVXSkeletonRootBoneList read FRootBones write
-      SetRootBones;
+    property RootBones: TVXSkeletonRootBoneList read FRootBones write SetRootBones;
     property Frames: TVXSkeletonFrameList read FFrames write SetFrames;
-    property CurrentFrame: TVXSkeletonFrame read GetCurrentFrame write
-      SetCurrentFrame;
-    property Colliders: TVXSkeletonColliderList read FColliders write
-      SetColliders;
+    property CurrentFrame: TVXSkeletonFrame read GetCurrentFrame write SetCurrentFrame;
+    property Colliders: TVXSkeletonColliderList read FColliders write SetColliders;
     procedure FlushBoneByIDCache;
     function BoneByID(anID: Integer): TVXSkeletonBone;
     function BoneByName(const aName: string): TVXSkeletonBone;
     function BoneCount: Integer;
     procedure MorphTo(frameIndex: Integer); overload;
     procedure MorphTo(frame: TVXSkeletonFrame); overload;
-    procedure Lerp(frameIndex1, frameIndex2: Integer;
-      lerpFactor: Single);
+    procedure Lerp(frameIndex1, frameIndex2: Integer; lerpFactor: Single);
     procedure BlendedLerps(const lerpInfos: array of TVXBlendedLerpInfo);
     { Linearly removes the translation component between skeletal frames.
-       This function will compute the translation of the first bone (index 0)
-       and linearly subtract this translation in all frames between startFrame
-       and endFrame. Its purpose is essentially to remove the 'slide' that
-       exists in some animation formats (f.i. SMD). }
+      This function will compute the translation of the first bone (index 0)
+      and linearly subtract this translation in all frames between startFrame
+      and endFrame. Its purpose is essentially to remove the 'slide' that
+      exists in some animation formats (f.i. SMD). }
     procedure MakeSkeletalTranslationStatic(startFrame, endFrame: Integer);
     { Removes the absolute rotation component of the skeletal frames.
-       Some formats will store frames with absolute rotation information,
-       if this correct if the animation is the "main" animation.
-       This function removes that absolute information, making the animation
-       frames suitable for blending purposes. }
+      Some formats will store frames with absolute rotation information,
+      if this correct if the animation is the "main" animation.
+      This function removes that absolute information, making the animation
+      frames suitable for blending purposes. }
     procedure MakeSkeletalRotationDelta(startFrame, endFrame: Integer);
     { Applies current frame to morph all mesh objects. }
     procedure MorphMesh(normalize: Boolean);
@@ -396,28 +381,25 @@ type
     { Restore the BoneMatrixInvertedMeshes to stop the ragdoll }
     procedure StopRagdoll; // ragdoll
     { Turning this option off (by default) alows to increase FPS,
-       but may break backwards-compatibility, because some may choose to
-       attach other objects to invisible parts. }
-    property MorphInvisibleParts: Boolean read FMorphInvisibleParts write
-      FMorphInvisibleParts;
+      but may break backwards-compatibility, because some may choose to
+      attach other objects to invisible parts. }
+    property MorphInvisibleParts: Boolean read FMorphInvisibleParts write FMorphInvisibleParts;
   end;
 
   { Rendering options per TVXMeshObject.
-   moroGroupByMaterial : if set, the facegroups will be rendered by material
-     in batchs, this will optimize rendering by reducing material switches, but
-     also implies that facegroups will not be rendered in the order they are in
-     the list. }
+    moroGroupByMaterial : if set, the facegroups will be rendered by material
+    in batchs, this will optimize rendering by reducing material switches, but
+    also implies that facegroups will not be rendered in the order they are in
+    the list. }
   TVXMeshObjectRenderingOption = (moroGroupByMaterial);
   TVXMeshObjectRenderingOptions = set of TVXMeshObjectRenderingOption;
 
-  TVBOBuffer = (vbVertices, vbNormals, vbColors, vbTexCoords,
-    vbLightMapTexCoords,
-    vbTexCoordsEx);
+  TVBOBuffer = (vbVertices, vbNormals, vbColors, vbTexCoords, vbLightMapTexCoords, vbTexCoordsEx);
   TVBOBuffers = set of TVBOBuffer;
 
   { Base mesh class.
-     Introduces base methods and properties for mesh objects.
-     Subclasses are named "TMOxxx". }
+    Introduces base methods and properties for mesh objects.
+    Subclasses are named "TMOxxx". }
   TVXMeshObject = class(TVXBaseMeshObject)
   private
     FOwner: TVXMeshObjectList;
@@ -435,7 +417,7 @@ type
     FBinormalsTexCoordIndex: Integer;
     FTangentsTexCoordIndex: Integer;
     FLastXOpenGLTexMapping: Cardinal;
-    FUseVBO: boolean;
+    FUseVBO: Boolean;
     FVerticesVBO: TVXVBOHandle;
     FNormalsVBO: TVXVBOHandle;
     FColorsVBO: TVXVBOHandle;
@@ -443,20 +425,19 @@ type
     FLightmapTexCoordsVBO: TVXVBOHandle;
     FValidBuffers: TVBOBuffers;
     FExtentCache: TAABB;
-    procedure SetUseVBO(const Value: boolean);
+    procedure SetUseVBO(const Value: Boolean);
     procedure SetValidBuffers(Value: TVBOBuffers);
   protected
     procedure SetTexCoords(const val: TAffineVectorList);
     procedure SetLightmapTexCoords(const val: TAffineVectorList);
     procedure SetColors(const val: TVectorList);
     procedure BufferArrays;
-    procedure DeclareArraysToOpenGL(var mrci: TVXRenderContextInfo;
-      evenIfAlreadyDeclared: Boolean = False);
+    procedure DeclareArraysToOpenGL(var mrci: TVXRenderContextInfo; evenIfAlreadyDeclared: Boolean = False);
     procedure DisableOpenGLArrays(var mrci: TVXRenderContextInfo);
     procedure EnableLightMapArray(var mrci: TVXRenderContextInfo);
     procedure DisableLightMapArray(var mrci: TVXRenderContextInfo);
-    procedure SetTexCoordsEx(index: Integer; const val: TVectorList);
-    function GetTexCoordsEx(index: Integer): TVectorList;
+    procedure SetTexCoordsEx(Index: Integer; const val: TVectorList);
+    function GetTexCoordsEx(Index: Integer): TVectorList;
     procedure SetBinormals(const val: TVectorList);
     function GetBinormals: TVectorList;
     procedure SetBinormalsTexCoordIndex(const val: Integer);
@@ -466,21 +447,21 @@ type
     property ValidBuffers: TVBOBuffers read FValidBuffers write SetValidBuffers;
   public
     { Creates, assigns Owner and adds to list. }
-    constructor CreateOwned(AOwner: TVXMeshObjectList);
+    constructor CreateOwned(aOwner: TVXMeshObjectList);
     constructor Create; override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
     procedure WriteToFiler(writer: TVirtualWriter); override;
     procedure ReadFromFiler(reader: TVirtualReader); override;
     procedure Clear; override;
-    function ExtractTriangles(texCoords: TAffineVectorList = nil;
-      normals: TAffineVectorList = nil): TAffineVectorList; override;
+    function ExtractTriangles(texCoords: TAffineVectorList = nil; normals: TAffineVectorList = nil): TAffineVectorList;
+      override;
     { Returns number of triangles in the mesh object. }
     function TriangleCount: Integer; virtual;
     procedure PrepareMaterialLibraryCache(matLib: TVXMaterialLibrary);
     procedure DropMaterialLibraryCache;
     { Prepare the texture and materials before rendering.
-       Invoked once, before building the list and NOT while building the list. }
+      Invoked once, before building the list and NOT while building the list. }
     procedure PrepareBuildList(var mrci: TVXRenderContextInfo); virtual;
     // Similar to regular scene object's BuildList method
     procedure BuildList(var mrci: TVXRenderContextInfo); virtual;
@@ -493,55 +474,44 @@ type
     procedure Prepare; virtual;
     function PointInObject(const aPoint: TAffineVector): Boolean; virtual;
     // Returns the triangle data for a given triangle
-    procedure GetTriangleData(tri: Integer; list: TAffineVectorList;
-      var v0, v1, v2: TAffineVector); overload;
-    procedure GetTriangleData(tri: Integer; list: TVectorList;
-      var v0, v1, v2: TVector); overload;
+    procedure GetTriangleData(tri: Integer; list: TAffineVectorList; var v0, v1, v2: TAffineVector); overload;
+    procedure GetTriangleData(tri: Integer; list: TVectorList; var v0, v1, v2: TVector); overload;
     // Sets the triangle data of a given triangle
-    procedure SetTriangleData(tri: Integer; list: TAffineVectorList;
-      const v0, v1, v2: TAffineVector); overload;
-    procedure SetTriangleData(tri: Integer; list: TVectorList;
-      const v0, v1, v2: TVector); overload;
+    procedure SetTriangleData(tri: Integer; list: TAffineVectorList; const v0, v1, v2: TAffineVector); overload;
+    procedure SetTriangleData(tri: Integer; list: TVectorList; const v0, v1, v2: TVector); overload;
     { Build the tangent space from the mesh object's vertex, normal
-       and texcoord data, filling the binormals and tangents where
-       specified. }
-    procedure BuildTangentSpace(
-      buildBinormals: Boolean = True;
-      buildTangents: Boolean = True);
+      and texcoord data, filling the binormals and tangents where
+      specified. }
+    procedure BuildTangentSpace(buildBinormals: Boolean = True; buildTangents: Boolean = True);
     property Owner: TVXMeshObjectList read FOwner;
-    property Mode: TVXMeshObjectMode read FMode write FMode;
-    property TexCoords: TAffineVectorList read FTexCoords write SetTexCoords;
-    property LightMapTexCoords: TAffineVectorList read FLightMapTexCoords write
-      SetLightMapTexCoords;
+    property mode: TVXMeshObjectMode read FMode write FMode;
+    property texCoords: TAffineVectorList read FTexCoords write SetTexCoords;
+    property LightMapTexCoords: TAffineVectorList read FLightMapTexCoords write SetLightmapTexCoords;
     property Colors: TVectorList read FColors write SetColors;
     property FaceGroups: TVXFaceGroups read FFaceGroups;
-    property RenderingOptions: TVXMeshObjectRenderingOptions read FRenderingOptions
-      write FRenderingOptions;
+    property RenderingOptions: TVXMeshObjectRenderingOptions read FRenderingOptions write FRenderingOptions;
     { If set, rendering will use VBO's instead of vertex arrays. }
-    property UseVBO: boolean read FUseVBO write SetUseVBO;
+    property UseVBO: Boolean read FUseVBO write SetUseVBO;
     { The TexCoords Extension is a list of vector lists that are used
-       to extend the vertex data applied during rendering.
-       The lists are applied to the GL_TEXTURE0_ARB + index texture
-       environment. This means that if TexCoordsEx 0 or 1 have data it
-       will override the TexCoords or LightMapTexCoords repectively.
-       Lists are created on demand, meaning that if you request
-       TexCoordsEx[4] it will create the list up to and including 4.
-       The extensions are only applied to the texture environment if
-       they contain data. }
-    property TexCoordsEx[index: Integer]: TVectorList read GetTexCoordsEx write
-      SetTexCoordsEx;
+      to extend the vertex data applied during rendering.
+      The lists are applied to the GL_TEXTURE0_ARB + index texture
+      environment. This means that if TexCoordsEx 0 or 1 have data it
+      will override the TexCoords or LightMapTexCoords repectively.
+      Lists are created on demand, meaning that if you request
+      TexCoordsEx[4] it will create the list up to and including 4.
+      The extensions are only applied to the texture environment if
+      they contain data. }
+    property TexCoordsEx[index: Integer]: TVectorList read GetTexCoordsEx write SetTexCoordsEx;
     { A TexCoordsEx list wrapper for binormals usage,
-       returns TexCoordsEx[BinormalsTexCoordIndex]. }
+      returns TexCoordsEx[BinormalsTexCoordIndex]. }
     property Binormals: TVectorList read GetBinormals write SetBinormals;
     { A TexCoordsEx list wrapper for tangents usage,
-       returns TexCoordsEx[BinormalsTexCoordIndex]. }
+      returns TexCoordsEx[BinormalsTexCoordIndex]. }
     property Tangents: TVectorList read GetTangents write SetTangents;
     // Specify the texcoord extension index for binormals (default = 2)
-    property BinormalsTexCoordIndex: Integer read FBinormalsTexCoordIndex write
-      SetBinormalsTexCoordIndex;
+    property BinormalsTexCoordIndex: Integer read FBinormalsTexCoordIndex write SetBinormalsTexCoordIndex;
     // Specify the texcoord extension index for tangents (default = 3)
-    property TangentsTexCoordIndex: Integer read FTangentsTexCoordIndex write
-      SetTangentsTexCoordIndex;
+    property TangentsTexCoordIndex: Integer read FTangentsTexCoordIndex write SetTangentsTexCoordIndex;
   end;
 
   { A list of TVXMeshObject objects. }
@@ -560,28 +530,24 @@ type
     procedure PrepareMaterialLibraryCache(matLib: TVXMaterialLibrary);
     procedure DropMaterialLibraryCache;
     { Prepare the texture and materials before rendering.
-       Invoked once, before building the list and NOT while building the list. }
+      Invoked once, before building the list and NOT while building the list. }
     procedure PrepareBuildList(var mrci: TVXRenderContextInfo); virtual;
     // Similar to regular scene object's BuildList method
     procedure BuildList(var mrci: TVXRenderContextInfo); virtual;
     procedure MorphTo(morphTargetIndex: Integer);
-    procedure Lerp(morphTargetIndex1, morphTargetIndex2: Integer;
-      lerpFactor: Single);
+    procedure Lerp(morphTargetIndex1, morphTargetIndex2: Integer; lerpFactor: Single);
     function MorphTargetCount: Integer;
     procedure GetExtents(out min, max: TAffineVector);
     procedure Translate(const delta: TAffineVector);
-    function ExtractTriangles(texCoords: TAffineVectorList = nil;
-      normals: TAffineVectorList = nil): TAffineVectorList;
+    function ExtractTriangles(texCoords: TAffineVectorList = nil; normals: TAffineVectorList = nil): TAffineVectorList;
     { Returns number of triangles in the meshes of the list. }
     function TriangleCount: Integer;
     { Build the tangent space from the mesh object's vertex, normal
-       and texcoord data, filling the binormals and tangents where
-       specified. }
-    procedure BuildTangentSpace(
-      buildBinormals: Boolean = True;
-      buildTangents: Boolean = True);
+      and texcoord data, filling the binormals and tangents where
+      specified. }
+    procedure BuildTangentSpace(buildBinormals: Boolean = True; buildTangents: Boolean = True);
     { If set, rendering will use VBO's instead of vertex arrays.
-       Resturns True if all its MeshObjects use VBOs. }
+      Resturns True if all its MeshObjects use VBOs. }
     property UseVBO: Boolean read GetUseVBO write SetUseVBO;
     // Precalculate whatever is needed for rendering, called once
     procedure Prepare; virtual;
@@ -592,7 +558,6 @@ type
   end;
 
   TVXMeshObjectListClass = class of TVXMeshObjectList;
-
   TVXMeshMorphTargetList = class;
 
   { A morph target, stores alternate lists of vertices and normals. }
@@ -600,7 +565,7 @@ type
   private
     FOwner: TVXMeshMorphTargetList;
   public
-    constructor CreateOwned(AOwner: TVXMeshMorphTargetList);
+    constructor CreateOwned(aOwner: TVXMeshMorphTargetList);
     destructor Destroy; override;
     procedure WriteToFiler(writer: TVirtualWriter); override;
     procedure ReadFromFiler(reader: TVirtualReader); override;
@@ -614,19 +579,18 @@ type
   protected
     function GeTVXMeshMorphTarget(Index: Integer): TVXMeshMorphTarget;
   public
-    constructor CreateOwned(AOwner: TPersistent);
+    constructor CreateOwned(aOwner: TPersistent);
     destructor Destroy; override;
     procedure ReadFromFiler(reader: TVirtualReader); override;
     procedure Translate(const delta: TAffineVector);
     property Owner: TPersistent read FOwner;
     procedure Clear; override;
-    property Items[Index: Integer]: TVXMeshMorphTarget read GeTVXMeshMorphTarget;
-      default;
+    property Items[Index: Integer]: TVXMeshMorphTarget read GeTVXMeshMorphTarget; default;
   end;
 
   { Mesh object with support for morph targets.
-     The morph targets allow to change vertices and normals according to pre-
-     existing "morph targets". }
+    The morph targets allow to change vertices and normals according to pre-
+    existing "morph targets". }
   TVXMorphableMeshObject = class(TVXMeshObject)
   private
     FMorphTargets: TVXMeshMorphTargetList;
@@ -638,29 +602,28 @@ type
     procedure Clear; override;
     procedure Translate(const delta: TAffineVector); override;
     procedure MorphTo(morphTargetIndex: Integer); virtual;
-    procedure Lerp(morphTargetIndex1, morphTargetIndex2: Integer;
-      lerpFactor: Single); virtual;
+    procedure Lerp(morphTargetIndex1, morphTargetIndex2: Integer; lerpFactor: Single); virtual;
     property MorphTargets: TVXMeshMorphTargetList read FMorphTargets;
   end;
 
   TVertexBoneWeight = packed record
     BoneID: Integer;
-    Weight: Single;
+    weight: Single;
   end;
 
-  TVertexBoneWeightArray = array[0..MaxInt div (2*SizeOf(TVertexBoneWeight))] of TVertexBoneWeight;
+  TVertexBoneWeightArray = array [0 .. MaxInt div (2 * SizeOf(TVertexBoneWeight))] of TVertexBoneWeight;
   PVertexBoneWeightArray = ^TVertexBoneWeightArray;
-  TVerticesBoneWeights = array[0..MaxInt div (2*SizeOf(PVertexBoneWeightArray))] of PVertexBoneWeightArray;
+  TVerticesBoneWeights = array [0 .. MaxInt div (2 * SizeOf(PVertexBoneWeightArray))] of PVertexBoneWeightArray;
   PVerticesBoneWeights = ^TVerticesBoneWeights;
   TVertexBoneWeightDynArray = array of TVertexBoneWeight;
 
   { A mesh object with vertice bone attachments.
-       The class adds per vertex bone weights to the standard morphable mesh.
-       The TVertexBoneWeight structures are accessed via VerticesBonesWeights,
-       they must be initialized by adjusting the BonesPerVertex and
-       VerticeBoneWeightCount properties, you can also add vertex by vertex
-       by using the AddWeightedBone method.
-       When BonesPerVertex is 1, the weight is ignored (set to 1.0). }
+    The class adds per vertex bone weights to the standard morphable mesh.
+    The TVertexBoneWeight structures are accessed via VerticesBonesWeights,
+    they must be initialized by adjusting the BonesPerVertex and
+    VerticeBoneWeightCount properties, you can also add vertex by vertex
+    by using the AddWeightedBone method.
+    When BonesPerVertex is 1, the weight is ignored (set to 1.0). }
   TVXSkeletonMeshObject = class(TVXMorphableMeshObject)
   private
     FVerticesBonesWeights: PVerticesBoneWeights;
@@ -682,18 +645,12 @@ type
     procedure WriteToFiler(writer: TVirtualWriter); override;
     procedure ReadFromFiler(reader: TVirtualReader); override;
     procedure Clear; override;
-    property VerticesBonesWeights: PVerticesBoneWeights read
-      FVerticesBonesWeights;
-    property VerticeBoneWeightCount: Integer read FVerticeBoneWeightCount write
-      SetVerticeBoneWeightCount;
-    property VerticeBoneWeightCapacity: Integer read FVerticeBoneWeightCapacity
-      write SetVerticeBoneWeightCapacity;
-    property BonesPerVertex: Integer read FBonesPerVertex write
-      SetBonesPerVertex;
-    function FindOrAdd(boneID: Integer;
-      const vertex, normal: TAffineVector): Integer; overload;
-    function FindOrAdd(const boneIDs: TVertexBoneWeightDynArray;
-      const vertex, normal: TAffineVector): Integer; overload;
+    property VerticesBonesWeights: PVerticesBoneWeights read FVerticesBonesWeights;
+    property VerticeBoneWeightCount: Integer read FVerticeBoneWeightCount write SetVerticeBoneWeightCount;
+    property VerticeBoneWeightCapacity: Integer read FVerticeBoneWeightCapacity write SetVerticeBoneWeightCapacity;
+    property BonesPerVertex: Integer read FBonesPerVertex write SetBonesPerVertex;
+    function FindOrAdd(BoneID: Integer; const vertex, normal: TAffineVector): Integer; overload;
+    function FindOrAdd(const boneIDs: TVertexBoneWeightDynArray; const vertex, normal: TAffineVector): Integer; overload;
     procedure AddWeightedBone(aBoneID: Integer; aWeight: Single);
     procedure AddWeightedBones(const boneIDs: TVertexBoneWeightDynArray);
     procedure PrepareBoneMatrixInvertedMeshes;
@@ -701,11 +658,11 @@ type
   end;
 
   { Describes a face group of a TVXMeshObject.
-     Face groups should be understood as "a way to use mesh data to render
-     a part or the whole mesh object".
-     Subclasses implement the actual behaviours, and should have at least
-     one "Add" method, taking in parameters all that is required to describe
-     a single base facegroup element. }
+    Face groups should be understood as "a way to use mesh data to render
+    a part or the whole mesh object".
+    Subclasses implement the actual behaviours, and should have at least
+    one "Add" method, taking in parameters all that is required to describe
+    a single base facegroup element. }
   TVXFaceGroup = class(TPersistentObject)
   private
     FOwner: TVXFaceGroups;
@@ -713,13 +670,12 @@ type
     FMaterialCache: TVXLibMaterial;
     FLightMapIndex: Integer;
     FRenderGroupID: Integer;
-      // NOT Persistent, internal use only (rendering options)
+    // NOT Persistent, internal use only (rendering options)
   protected
-    procedure AttachLightmap(lightMap: TVXTexture; var mrci:
-      TVXRenderContextInfo);
+    procedure AttachLightmap(lightMap: TVXTexture; var mrci: TVXRenderContextInfo);
     procedure AttachOrDetachLightmap(var mrci: TVXRenderContextInfo);
   public
-    constructor CreateOwned(AOwner: TVXFaceGroups); virtual;
+    constructor CreateOwned(aOwner: TVXFaceGroups); virtual;
     destructor Destroy; override;
     procedure WriteToFiler(writer: TVirtualWriter); override;
     procedure ReadFromFiler(reader: TVirtualReader); override;
@@ -727,15 +683,14 @@ type
     procedure DropMaterialLibraryCache;
     procedure BuildList(var mrci: TVXRenderContextInfo); virtual; abstract;
     { Add to the list the triangles corresponding to the facegroup.
-       This function is used by TVXMeshObjects ExtractTriangles to retrieve
-       all the triangles in a mesh. }
-    procedure AddToTriangles(aList: TAffineVectorList;
-      aTexCoords: TAffineVectorList = nil;
+      This function is used by TVXMeshObjects ExtractTriangles to retrieve
+      all the triangles in a mesh. }
+    procedure AddToTriangles(aList: TAffineVectorList; aTexCoords: TAffineVectorList = nil;
       aNormals: TAffineVectorList = nil); virtual;
     { Returns number of triangles in the facegroup. }
     function TriangleCount: Integer; virtual; abstract;
     { Reverses the rendering order of faces.
-       Default implementation does nothing }
+      Default implementation does nothing }
     procedure Reverse; virtual;
     // Precalculate whatever is needed for rendering, called once
     procedure Prepare; virtual;
@@ -747,19 +702,18 @@ type
   end;
 
   { Known descriptions for face group mesh modes.
-     - fgmmTriangles : issue all vertices with GL_TRIANGLES.
-     - fgmmTriangleStrip : issue all vertices with GL_TRIANGLE_STRIP.
-     - fgmmFlatTriangles : same as fgmmTriangles, but take advantage of having
-        the same normal for all vertices of a triangle.
-     - fgmmTriangleFan : issue all vertices with GL_TRIANGLE_FAN.
-     - fgmmQuads : issue all vertices with GL_QUADS. }
-  TVXFaceGroupMeshMode = (fgmmTriangles, fgmmTriangleStrip, fgmmFlatTriangles,
-    fgmmTriangleFan, fgmmQuads);
+    - fgmmTriangles : issue all vertices with GL_TRIANGLES.
+    - fgmmTriangleStrip : issue all vertices with GL_TRIANGLE_STRIP.
+    - fgmmFlatTriangles : same as fgmmTriangles, but take advantage of having
+    the same normal for all vertices of a triangle.
+    - fgmmTriangleFan : issue all vertices with GL_TRIANGLE_FAN.
+    - fgmmQuads : issue all vertices with GL_QUADS. }
+  TVXFaceGroupMeshMode = (fgmmTriangles, fgmmTriangleStrip, fgmmFlatTriangles, fgmmTriangleFan, fgmmQuads);
 
   { A face group based on an indexlist.
-     The index list refers to items in the mesh object (vertices, normals, etc.),
-     that are all considered in sync, the render is obtained issueing the items
-     in the order given by the vertices.  }
+    The index list refers to items in the mesh object (vertices, normals, etc.),
+    that are all considered in sync, the render is obtained issueing the items
+    in the order given by the vertices. }
   TFGVertexIndexList = class(TVXFaceGroup)
   private
     FVertexIndices: TIntegerList;
@@ -769,16 +723,14 @@ type
     procedure InvalidateVBO;
   protected
     procedure SetVertexIndices(const val: TIntegerList);
-    procedure AddToList(source, destination: TAffineVectorList;
-      indices: TIntegerList);
+    procedure AddToList(Source, destination: TAffineVectorList; indices: TIntegerList);
   public
     constructor Create; override;
     destructor Destroy; override;
     procedure WriteToFiler(writer: TVirtualWriter); override;
     procedure ReadFromFiler(reader: TVirtualReader); override;
     procedure BuildList(var mrci: TVXRenderContextInfo); override;
-    procedure AddToTriangles(aList: TAffineVectorList;
-      aTexCoords: TAffineVectorList = nil;
+    procedure AddToTriangles(aList: TAffineVectorList; aTexCoords: TAffineVectorList = nil;
       aNormals: TAffineVectorList = nil); override;
     function TriangleCount: Integer; override;
     procedure Reverse; override;
@@ -788,14 +740,13 @@ type
     procedure ConvertToList;
     // Return the normal from the 1st three points in the facegroup
     function GetNormal: TAffineVector;
-    property Mode: TVXFaceGroupMeshMode read FMode write FMode;
-    property VertexIndices: TIntegerList read FVertexIndices write
-      SetVertexIndices;
+    property mode: TVXFaceGroupMeshMode read FMode write FMode;
+    property vertexIndices: TIntegerList read FVertexIndices write SetVertexIndices;
   end;
 
   { Adds normals and texcoords indices.
-     Allows very compact description of a mesh. The Normals ad TexCoords
-     indices are optionnal, if missing (empty), VertexIndices will be used. }
+    Allows very compact description of a mesh. The Normals ad TexCoords
+    indices are optionnal, if missing (empty), VertexIndices will be used. }
   TFGVertexNormalTexIndexList = class(TFGVertexIndexList)
   private
     FNormalIndices: TIntegerList;
@@ -809,19 +760,16 @@ type
     procedure WriteToFiler(writer: TVirtualWriter); override;
     procedure ReadFromFiler(reader: TVirtualReader); override;
     procedure BuildList(var mrci: TVXRenderContextInfo); override;
-    procedure AddToTriangles(aList: TAffineVectorList;
-      aTexCoords: TAffineVectorList = nil;
+    procedure AddToTriangles(aList: TAffineVectorList; aTexCoords: TAffineVectorList = nil;
       aNormals: TAffineVectorList = nil); override;
     procedure Add(vertexIdx, normalIdx, texCoordIdx: Integer);
-    property NormalIndices: TIntegerList read FNormalIndices write
-      SetNormalIndices;
-    property TexCoordIndices: TIntegerList read FTexCoordIndices write
-      SetTexCoordIndices;
+    property normalIndices: TIntegerList read FNormalIndices write SetNormalIndices;
+    property TexCoordIndices: TIntegerList read FTexCoordIndices write SetTexCoordIndices;
   end;
 
   { Adds per index texture coordinates to its ancestor.
-     Per index texture coordinates allows having different texture coordinates
-     per triangle, depending on the face it is used in. }
+    Per index texture coordinates allows having different texture coordinates
+    per triangle, depending on the face it is used in. }
   TFGIndexTexCoordList = class(TFGVertexIndexList)
   private
     FTexCoords: TAffineVectorList;
@@ -833,12 +781,11 @@ type
     procedure WriteToFiler(writer: TVirtualWriter); override;
     procedure ReadFromFiler(reader: TVirtualReader); override;
     procedure BuildList(var mrci: TVXRenderContextInfo); override;
-    procedure AddToTriangles(aList: TAffineVectorList;
-      aTexCoords: TAffineVectorList = nil;
+    procedure AddToTriangles(aList: TAffineVectorList; aTexCoords: TAffineVectorList = nil;
       aNormals: TAffineVectorList = nil); override;
     procedure Add(idx: Integer; const texCoord: TAffineVector); overload;
     procedure Add(idx: Integer; const s, t: Single); overload;
-    property TexCoords: TAffineVectorList read FTexCoords write SetTexCoords;
+    property texCoords: TAffineVectorList read FTexCoords write SetTexCoords;
   end;
 
   { A list of TVXFaceGroup objects. }
@@ -848,7 +795,7 @@ type
   protected
     function GetFaceGroup(Index: Integer): TVXFaceGroup;
   public
-    constructor CreateOwned(AOwner: TVXMeshObject);
+    constructor CreateOwned(aOwner: TVXMeshObject);
     destructor Destroy; override;
     procedure ReadFromFiler(reader: TVirtualReader); override;
     procedure PrepareMaterialLibraryCache(matLib: TVXMaterialLibrary);
@@ -856,47 +803,43 @@ type
     property Owner: TVXMeshObject read FOwner;
     procedure Clear; override;
     property Items[Index: Integer]: TVXFaceGroup read GetFaceGroup; default;
-    procedure AddToTriangles(aList: TAffineVectorList;
-      aTexCoords: TAffineVectorList = nil;
-      aNormals: TAffineVectorList = nil);
+    procedure AddToTriangles(aList: TAffineVectorList; aTexCoords: TAffineVectorList = nil; aNormals: TAffineVectorList = nil);
     { Material Library of the owner TVXBaseMesh. }
     function MaterialLibrary: TVXMaterialLibrary;
     { Sort faces by material.
-       Those without material first in list, followed by opaque materials,
-       then transparent materials. }
+      Those without material first in list, followed by opaque materials,
+      then transparent materials. }
     procedure SortByMaterial;
   end;
 
   { Determines how normals orientation is defined in a mesh.
-     - mnoDefault : uses default orientation
-     - mnoInvert : inverse of default orientation
-     - mnoAutoSolid : autocalculate to make the mesh globally solid
-     - mnoAutoHollow : autocalculate to make the mesh globally hollow  }
-  TMeshNormalsOrientation = (mnoDefault, mnoInvert); //, mnoAutoSolid, mnoAutoHollow);
+    - mnoDefault : uses default orientation
+    - mnoInvert : inverse of default orientation
+    - mnoAutoSolid : autocalculate to make the mesh globally solid
+    - mnoAutoHollow : autocalculate to make the mesh globally hollow }
+  TMeshNormalsOrientation = (mnoDefault, mnoInvert); // , mnoAutoSolid, mnoAutoHollow);
 
   { Abstract base class for different vector file formats.
-     The actual implementation for these files (3DS, DXF..) must be done
-     seperately. The concept for TVXVectorFile is very similar to TGraphic
-     (see Delphi Help). }
+    The actual implementation for these files (3DS, DXF..) must be done
+    seperately. The concept for TVXVectorFile is very similar to TGraphic
+    (see Delphi Help). }
   TVXVectorFile = class(TVXDataFile)
   private
     FNormalsOrientation: TMeshNormalsOrientation;
   protected
-    procedure SetNormalsOrientation(const val: TMeshNormalsOrientation);
-      virtual;
+    procedure SetNormalsOrientation(const val: TMeshNormalsOrientation); virtual;
   public
-    constructor Create(AOwner: TPersistent); override;
+    constructor Create(aOwner: TPersistent); override;
     function Owner: TVXBaseMesh;
-    property NormalsOrientation: TMeshNormalsOrientation read FNormalsOrientation
-      write SetNormalsOrientation;
+    property NormalsOrientation: TMeshNormalsOrientation read FNormalsOrientation write SetNormalsOrientation;
   end;
 
   TVXVectorFileClass = class of TVXVectorFile;
 
   { GLSM ( VXScene Mesh) vector file.
-     This corresponds to the 'native' Scene format, and object persistence
-     stream, which should be the 'fastest' of all formats to load, and supports
-     all of VXScene features. }
+    This corresponds to the 'native' Scene format, and object persistence
+    stream, which should be the 'fastest' of all formats to load, and supports
+    all of VXScene features. }
   TVXGLSMVectorFile = class(TVXVectorFile)
   public
     class function Capabilities: TVXDataFileCapabilities; override;
@@ -932,170 +875,156 @@ type
     procedure SetAutoScaling(const Value: TVXCoordinates);
     procedure DestroyHandle; override;
     { Invoked after creating a TVXVectorFile and before loading.
-       Triggered by LoadFromFile/Stream and AddDataFromFile/Stream.
-       Allows to adjust/transfer subclass-specific features. }
+      Triggered by LoadFromFile/Stream and AddDataFromFile/Stream.
+      Allows to adjust/transfer subclass-specific features. }
     procedure PrepareVectorFile(aFile: TVXVectorFile); virtual;
     { Invoked after a mesh has been loaded/added.
-       Triggered by LoadFromFile/Stream and AddDataFromFile/Stream.
-       Allows to adjust/transfer subclass-specific features. }
+      Triggered by LoadFromFile/Stream and AddDataFromFile/Stream.
+      Allows to adjust/transfer subclass-specific features. }
     procedure PrepareMesh; virtual;
     { Recursively propagated to mesh object and facegroups.
-       Notifies that they all can establish their material library caches. }
+      Notifies that they all can establish their material library caches. }
     procedure PrepareMaterialLibraryCache;
     { Recursively propagated to mesh object and facegroups.
-       Notifies that they all should forget their material library caches. }
+      Notifies that they all should forget their material library caches. }
     procedure DropMaterialLibraryCache;
     { Prepare the texture and materials before rendering.
-       Invoked once, before building the list and NOT while building the list,
-       MaterialLibraryCache can be assumed to having been prepared if materials
-       are active. Default behaviour is to prepare build lists for the
-       meshobjects. }
+      Invoked once, before building the list and NOT while building the list,
+      MaterialLibraryCache can be assumed to having been prepared if materials
+      are active. Default behaviour is to prepare build lists for the
+      meshobjects. }
     procedure PrepareBuildList(var mrci: TVXRenderContextInfo); virtual;
   public
-    constructor Create(AOwner: TComponent); override;
+    constructor Create(aOwner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
-    procedure Notification(AComponent: TComponent; Operation: TOperation);
-      override;
+    procedure Notification(AComponent: TComponent; Operation: TOperation); override;
     function AxisAlignedDimensionsUnscaled: TVector; override;
     function BarycenterOffset: TVector;
     function BarycenterPosition: TVector;
     function BarycenterAbsolutePosition: TVector; override;
     procedure BuildList(var rci: TVXRenderContextInfo); override;
-    procedure DoRender(var rci: TVXRenderContextInfo;
-      renderSelf, renderChildren: Boolean); override;
+    procedure DoRender(var rci: TVXRenderContextInfo; renderSelf, renderChildren: Boolean); override;
     procedure StructureChanged; override;
     { Notifies that geometry data changed, but no re-preparation is needed.
-       Using this method will usually be faster, but may result in incorrect
-       rendering, reduced performance and/or invalid bounding box data
-       (ie. invalid collision detection). Use with caution. }
+      Using this method will usually be faster, but may result in incorrect
+      rendering, reduced performance and/or invalid bounding box data
+      (ie. invalid collision detection). Use with caution. }
     procedure StructureChangedNoPrepare;
     { BEWARE! Utterly inefficient implementation! }
-    function RayCastIntersect(const rayStart, rayVector: TVector;
-      intersectPoint: PVector = nil;
-      intersectNormal: PVector = nil): Boolean; override;
-    function GenerateSilhouette(const silhouetteParameters:
-      TVXSilhouetteParameters): TVXSilhouette; override;
+    function RayCastIntersect(const rayStart, rayVector: TVector; intersectPoint: PVector = nil; intersectNormal: PVector = nil)
+      : Boolean; override;
+    function GenerateSilhouette(const silhouetteParameters: TVXSilhouetteParameters): TVXSilhouette; override;
     { This method allows fast shadow volumes for GLActors.
-       If your actor/mesh doesn't change, you don't need to call this.
-       It basically caches the connectivity data.}
+      If your actor/mesh doesn't change, you don't need to call this.
+      It basically caches the connectivity data. }
     procedure BuildSilhouetteConnectivityData;
     property MeshObjects: TVXMeshObjectList read FMeshObjects;
     property Skeleton: TVXSkeleton read FSkeleton;
-    { Computes the extents of the mesh.  }
+    { Computes the extents of the mesh. }
     procedure GetExtents(out min, max: TAffineVector);
-    { Computes the barycenter of the mesh.  }
+    { Computes the barycenter of the mesh. }
     function GetBarycenter: TAffineVector;
     { Invoked after a mesh has been loaded.
-       Should auto-center according to the AutoCentering property. }
+      Should auto-center according to the AutoCentering property. }
     procedure PerformAutoCentering; virtual;
     { Invoked after a mesh has been loaded.
-       Should auto-scale the vertices of the meshobjects to AutoScaling the property. }
+      Should auto-scale the vertices of the meshobjects to AutoScaling the property. }
     procedure PerformAutoScaling; virtual;
     { Loads a vector file.
-       A vector files (for instance a ".3DS") stores the definition of
-       a mesh as well as materials property.
-       Loading a file replaces the current one (if any). }
+      A vector files (for instance a ".3DS") stores the definition of
+      a mesh as well as materials property.
+      Loading a file replaces the current one (if any). }
     procedure LoadFromFile(const filename: string); virtual;
     { Loads a vector file from a stream.
-       See LoadFromFile.
-       The filename attribute is required to identify the type data you're
-       streaming (3DS, OBJ, etc.) }
+      See LoadFromFile.
+      The filename attribute is required to identify the type data you're
+      streaming (3DS, OBJ, etc.) }
     procedure LoadFromStream(const filename: string; aStream: TStream); virtual;
     { Saves to a vector file.
       Note that only some of the vector files formats can be written. }
-    procedure SaveToFile(const fileName: string); virtual;
+    procedure SaveToFile(const filename: string); virtual;
     { Saves to a vector file in a stream.
-       Note that only some of the vector files formats can be written. }
-    procedure SaveToStream(const fileName: string; aStream: TStream); virtual;
+      Note that only some of the vector files formats can be written. }
+    procedure SaveToStream(const filename: string; aStream: TStream); virtual;
     { Loads additionnal data from a file.
-       Additionnal data could be more animation frames or morph target.
-       The VectorFile importer must be able to handle addition of data
-       flawlessly. }
+      Additionnal data could be more animation frames or morph target.
+      The VectorFile importer must be able to handle addition of data
+      flawlessly. }
     procedure AddDataFromFile(const filename: string); virtual;
     { Loads additionnal data from stream.
-       See AddDataFromFile. }
-    procedure AddDataFromStream(const filename: string; aStream: TStream);
-      virtual;
+      See AddDataFromFile. }
+    procedure AddDataFromStream(const filename: string; aStream: TStream); virtual;
     { Returns the filename of the last loaded file, or a blank string if not
-       file was loaded (or if the mesh was dinamically built). This does not
-       take into account the data added to the mesh (through AddDataFromFile)
-       or saved files.}
+      file was loaded (or if the mesh was dinamically built). This does not
+      take into account the data added to the mesh (through AddDataFromFile)
+      or saved files. }
     function LastLoadedFilename: string;
     { Determines if a mesh should be centered and how.
-       AutoCentering is performed  only  after loading a mesh, it has
-       no effect on already loaded mesh data or when adding from a file/stream.
-       If you want to alter mesh data, use direct manipulation methods
-       (on the TVXMeshObjects). }
-    property AutoCentering: TVXMeshAutoCenterings read FAutoCentering write
-      FAutoCentering default [];
+      AutoCentering is performed  only  after loading a mesh, it has
+      no effect on already loaded mesh data or when adding from a file/stream.
+      If you want to alter mesh data, use direct manipulation methods
+      (on the TVXMeshObjects). }
+    property AutoCentering: TVXMeshAutoCenterings read FAutoCentering write FAutoCentering default [];
     { Scales vertices to a AutoScaling.
-       AutoScaling is performed  only  after loading a mesh, it has
-       no effect on already loaded mesh data or when adding from a file/stream.
-       If you want to alter mesh data, use direct manipulation methods
-       (on the TVXMeshObjects). }
+      AutoScaling is performed  only  after loading a mesh, it has
+      no effect on already loaded mesh data or when adding from a file/stream.
+      If you want to alter mesh data, use direct manipulation methods
+      (on the TVXMeshObjects). }
     property AutoScaling: TVXCoordinates read FAutoScaling write FAutoScaling;
     { Material library where mesh materials will be stored/retrieved.
-       If this property is not defined or if UseMeshMaterials is false,
-       only the FreeForm's material will be used (and the mesh's materials
-       will be ignored. }
-    property MaterialLibrary: TVXMaterialLibrary read FMaterialLibrary write
-      SetMaterialLibrary;
+      If this property is not defined or if UseMeshMaterials is false,
+      only the FreeForm's material will be used (and the mesh's materials
+      will be ignored. }
+    property MaterialLibrary: TVXMaterialLibrary read FMaterialLibrary write SetMaterialLibrary;
     { Defines wether materials declared in the vector file mesh are used.
-       You must also define the MaterialLibrary property. }
-    property UseMeshMaterials: Boolean read FUseMeshMaterials write
-      SetUseMeshMaterials default True;
+      You must also define the MaterialLibrary property. }
+    property UseMeshMaterials: Boolean read FUseMeshMaterials write SetUseMeshMaterials default True;
     { LightMap library where lightmaps will be stored/retrieved.
-       If this property is not defined, lightmaps won't be used.
-       Lightmaps currently *always* use the second texture unit (unit 1),
-       and may interfere with multi-texture materials. }
-    property LightmapLibrary: TVXMaterialLibrary read FLightmapLibrary write
-      SetLightmapLibrary;
+      If this property is not defined, lightmaps won't be used.
+      Lightmaps currently *always* use the second texture unit (unit 1),
+      and may interfere with multi-texture materials. }
+    property LightmapLibrary: TVXMaterialLibrary read FLightmapLibrary write SetLightmapLibrary;
     { If True, exceptions about missing textures will be ignored.
-       Implementation is up to the file loader class (ie. this property
-       may be ignored by some loaders) }
-    property IgnoreMissingTextures: Boolean read FIgnoreMissingTextures write
-      FIgnoreMissingTextures default False;
-    { Normals orientation for owned mesh.  }
-    property NormalsOrientation: TMeshNormalsOrientation read FNormalsOrientation
-      write SetNormalsOrientation default mnoDefault;
+      Implementation is up to the file loader class (ie. this property
+      may be ignored by some loaders) }
+    property IgnoreMissingTextures: Boolean read FIgnoreMissingTextures write FIgnoreMissingTextures default False;
+    { Normals orientation for owned mesh. }
+    property NormalsOrientation: TMeshNormalsOrientation read FNormalsOrientation write SetNormalsOrientation
+      default mnoDefault;
     { Request rendering of skeleton bones over the mesh. }
-    property OverlaySkeleton: Boolean read FOverlaySkeleton write
-      SetOverlaySkeleton default False;
+    property OverlaySkeleton: Boolean read FOverlaySkeleton write SetOverlaySkeleton default False;
   end;
 
   { Container objects for a vector file mesh.
-     FreeForms allows loading and rendering vector files (like 3DStudio
-     ".3DS" file) in GLScene.  Meshes can be loaded with the LoadFromFile
-     method.
-     A FreeForm may contain more than one mesh, but they will all be handled
-     as a single object in a scene. }
+    FreeForms allows loading and rendering vector files (like 3DStudio
+    ".3DS" file) in GLScene.  Meshes can be loaded with the LoadFromFile
+    method.
+    A FreeForm may contain more than one mesh, but they will all be handled
+    as a single object in a scene. }
   TVXFreeForm = class(TVXBaseMesh)
   private
     FOctree: TVXOctree;
   protected
     function GetOctree: TVXOctree;
   public
-    constructor Create(AOwner: TComponent); override;
+    constructor Create(aOwner: TComponent); override;
     destructor Destroy; override;
-    function OctreeRayCastIntersect(const rayStart, rayVector: TVector;
-      intersectPoint: PVector = nil;
+    function OctreeRayCastIntersect(const rayStart, rayVector: TVector; intersectPoint: PVector = nil;
       intersectNormal: PVector = nil): Boolean;
-    function OctreeSphereSweepIntersect(const rayStart, rayVector: TVector;
-      const velocity, radius: Single;
-      intersectPoint: PVector = nil;
-      intersectNormal: PVector = nil): Boolean;
-    function OctreeTriangleIntersect(const v1, v2, v3: TAffineVector): boolean;
+    function OctreeSphereSweepIntersect(const rayStart, rayVector: TVector; const velocity, radius: Single;
+      intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean;
+    function OctreeTriangleIntersect(const v1, v2, v3: TAffineVector): Boolean;
     { Returns true if Point is inside the free form - this will only work
-    properly on closed meshes. Requires that Octree has been prepared.}
-    function OctreePointInMesh(const Point: TVector): boolean;
-    function OctreeAABBIntersect(const AABB: TAABB; objMatrix, invObjMatrix:
-      TMatrix; triangles: TAffineVectorList = nil): boolean;
-    //         TODO:  function OctreeSphereIntersect
+      properly on closed meshes. Requires that Octree has been prepared. }
+    function OctreePointInMesh(const Point: TVector): Boolean;
+    function OctreeAABBIntersect(const aabb: TAABB; objMatrix, invObjMatrix: TMatrix;
+      triangles: TAffineVectorList = nil): Boolean;
+    // TODO:  function OctreeSphereIntersect
     { Octree support *experimental*.
       Use only if you understand what you're doing! }
     property Octree: TVXOctree read GetOctree;
-    procedure BuildOctree(TreeDepth: integer = 3);
+    procedure BuildOctree(TreeDepth: Integer = 3);
   published
     property AutoCentering;
     property AutoScaling;
@@ -1106,9 +1035,9 @@ type
   end;
 
   { Miscellanious actor options.
-      aoSkeletonNormalizeNormals : if set the normals of a skeleton-animated
-      mesh will be normalized, this is not required if no normals-based texture
-      coordinates generation occurs, and thus may be unset to improve performance. }
+    aoSkeletonNormalizeNormals : if set the normals of a skeleton-animated
+    mesh will be normalized, this is not required if no normals-based texture
+    coordinates generation occurs, and thus may be unset to improve performance. }
   TVXActorOption = (aoSkeletonNormalizeNormals);
   TVXActorOptions = set of TVXActorOption;
 
@@ -1118,15 +1047,14 @@ const
 type
 
   TVXActor = class;
-
   TVXActorAnimationReference = (aarMorph, aarSkeleton, aarNone);
 
   { An actor animation sequence.
-       An animation sequence is a named set of contiguous frames that can be used
-       for animating an actor. The referred frames can be either morph or skeletal
-       frames (choose which via the Reference property).
-       An animation can be directly "played" by the actor by selecting it with
-       SwitchAnimation, and can also be "blended" via a TVXAnimationControler. }
+    An animation sequence is a named set of contiguous frames that can be used
+    for animating an actor. The referred frames can be either morph or skeletal
+    frames (choose which via the Reference property).
+    An animation can be directly "played" by the actor by selecting it with
+    SwitchAnimation, and can also be "blended" via a TVXAnimationControler. }
   TVXActorAnimation = class(TCollectionItem)
   private
     FName: string;
@@ -1148,69 +1076,65 @@ type
     property AsString: string read GetAsString write SetAsString;
     function OwnerActor: TVXActor;
     { Linearly removes the translation component between skeletal frames.
-       This function will compute the translation of the first bone (index 0)
-       and linearly subtract this translation in all frames between startFrame
-       and endFrame. Its purpose is essentially to remove the 'slide' that
-       exists in some animation formats (f.i. SMD). }
+      This function will compute the translation of the first bone (index 0)
+      and linearly subtract this translation in all frames between startFrame
+      and endFrame. Its purpose is essentially to remove the 'slide' that
+      exists in some animation formats (f.i. SMD). }
     procedure MakeSkeletalTranslationStatic;
     { Removes the absolute rotation component of the skeletal frames.
-       Some formats will store frames with absolute rotation information,
-       if this correct if the animation is the "main" animation.
-       This function removes that absolute information, making the animation
-       frames suitable for blending purposes. }
+      Some formats will store frames with absolute rotation information,
+      if this correct if the animation is the "main" animation.
+      This function removes that absolute information, making the animation
+      frames suitable for blending purposes. }
     procedure MakeSkeletalRotationDelta;
   published
     property Name: string read FName write FName;
     { Index of the initial frame of the animation. }
-    property StartFrame: Integer read FStartFrame write SetStartFrame;
+    property startFrame: Integer read FStartFrame write SetStartFrame;
     { Index of the final frame of the animation. }
-    property EndFrame: Integer read FEndFrame write SetEndFrame;
+    property endFrame: Integer read FEndFrame write SetEndFrame;
     { Indicates if this is a skeletal or a morph-based animation. }
-    property Reference: TVXActorAnimationReference read FReference write
-      SetReference default aarMorph;
+    property reference: TVXActorAnimationReference read FReference write SetReference default aarMorph;
   end;
 
   TVXActorAnimationName = string;
 
-    { Collection of actor animations sequences. }
+  { Collection of actor animations sequences. }
   TVXActorAnimations = class(TCollection)
   private
     FOwner: TVXActor;
   protected
     function GetOwner: TPersistent; override;
-    procedure SetItems(index: Integer; const val: TVXActorAnimation);
-    function GetItems(index: Integer): TVXActorAnimation;
+    procedure SetItems(Index: Integer; const val: TVXActorAnimation);
+    function GetItems(Index: Integer): TVXActorAnimation;
   public
-    constructor Create(AOwner: TVXActor);
+    constructor Create(aOwner: TVXActor);
     function Add: TVXActorAnimation;
     function FindItemID(ID: Integer): TVXActorAnimation;
     function FindName(const aName: string): TVXActorAnimation;
-    function FindFrame(aFrame: Integer; aReference: TVXActorAnimationReference):
-      TVXActorAnimation;
+    function FindFrame(aFrame: Integer; aReference: TVXActorAnimationReference): TVXActorAnimation;
     procedure SetToStrings(aStrings: TStrings);
     procedure SaveToStream(aStream: TStream);
     procedure LoadFromStream(aStream: TStream);
-    procedure SaveToFile(const fileName: string);
-    procedure LoadFromFile(const fileName: string);
-    property Items[index: Integer]: TVXActorAnimation read GetItems write
-      SetItems; default;
+    procedure SaveToFile(const filename: string);
+    procedure LoadFromFile(const filename: string);
+    property Items[index: Integer]: TVXActorAnimation read GetItems write SetItems; default;
     function Last: TVXActorAnimation;
   end;
 
-  { Base class for skeletal animation control.  }
+  { Base class for skeletal animation control. }
   TVXBaseAnimationControler = class(TComponent)
   private
     FEnabled: Boolean;
     FActor: TVXActor;
   protected
-    procedure Notification(AComponent: TComponent; Operation: TOperation);
-      override;
+    procedure Notification(AComponent: TComponent; Operation: TOperation); override;
     procedure SetEnabled(const val: Boolean);
     procedure SetActor(const val: TVXActor);
     procedure DoChange; virtual;
     function Apply(var lerpInfo: TVXBlendedLerpInfo): Boolean; virtual;
   public
-    constructor Create(AOwner: TComponent); override;
+    constructor Create(aOwner: TComponent); override;
     destructor Destroy; override;
   published
     property Enabled: Boolean read FEnabled write SetEnabled default True;
@@ -1218,11 +1142,11 @@ type
   end;
 
   { Controls the blending of an additionnal skeletal animation into an actor.
-       The animation controler allows animating an actor with several animations
-       at a time, for instance, you could use a "run" animation as base animation
-       (in TVXActor), blend an animation that makes the arms move differently
-       depending on what the actor is carrying, along with an animation that will
-       make the head turn toward a target. }
+    The animation controler allows animating an actor with several animations
+    at a time, for instance, you could use a "run" animation as base animation
+    (in TVXActor), blend an animation that makes the arms move differently
+    depending on what the actor is carrying, along with an animation that will
+    make the head turn toward a target. }
   TVXAnimationControler = class(TVXBaseAnimationControler)
   private
     FAnimationName: TVXActorAnimationName;
@@ -1238,28 +1162,27 @@ type
   end;
 
   { Actor frame-interpolation mode.
-     - afpNone : no interpolation, display CurrentFrame only
-     - afpLinear : perform linear interpolation between current and next frame }
+    - afpNone : no interpolation, display CurrentFrame only
+    - afpLinear : perform linear interpolation between current and next frame }
   TActorFrameInterpolation = (afpNone, afpLinear);
 
   { Defines how an actor plays between its StartFrame and EndFrame.
-      aamNone : no animation is performed
-      aamPlayOnce : play from current frame to EndFrame, once end frame has
-        been reached, switches to aamNone
-      aamLoop : play from current frame to EndFrame, once end frame has
-        been reached, sets CurrentFrame to StartFrame
-      aamBounceForward : play from current frame to EndFrame, once end frame
-        has been reached, switches to aamBounceBackward
-      aamBounceBackward : play from current frame to StartFrame, once start
-        frame has been reached, switches to aamBounceForward
-      aamExternal : Allows for external animation control }
-  TVXActorAnimationMode = (aamNone, aamPlayOnce, aamLoop, aamBounceForward,
-    aamBounceBackward, aamLoopBackward, aamExternal);
+    aamNone : no animation is performed
+    aamPlayOnce : play from current frame to EndFrame, once end frame has
+    been reached, switches to aamNone
+    aamLoop : play from current frame to EndFrame, once end frame has
+    been reached, sets CurrentFrame to StartFrame
+    aamBounceForward : play from current frame to EndFrame, once end frame
+    has been reached, switches to aamBounceBackward
+    aamBounceBackward : play from current frame to StartFrame, once start
+    frame has been reached, switches to aamBounceForward
+    aamExternal : Allows for external animation control }
+  TVXActorAnimationMode = (aamNone, aamPlayOnce, aamLoop, aamBounceForward, aamBounceBackward, aamLoopBackward, aamExternal);
 
   { Mesh class specialized in animated meshes.
-     The TVXActor provides a quick interface to animated meshes based on morph
-     or skeleton frames, it is capable of performing frame interpolation and
-     animation blending (via TVXAnimationControler components). }
+    The TVXActor provides a quick interface to animated meshes based on morph
+    or skeleton frames, it is capable of performing frame interpolation and
+    animation blending (via TVXAnimationControler components). }
   TVXActor = class(TVXBaseMesh)
   private
     FStartFrame, FEndFrame: Integer;
@@ -1289,46 +1212,44 @@ type
     procedure RegisterControler(aControler: TVXBaseAnimationControler);
     procedure UnRegisterControler(aControler: TVXBaseAnimationControler);
   public
-    constructor Create(AOwner: TComponent); override;
+    constructor Create(aOwner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
     procedure BuildList(var rci: TVXRenderContextInfo); override;
     procedure DoProgress(const progressTime: TProgressTimes); override;
     procedure LoadFromStream(const filename: string; aStream: TStream); override;
     procedure SwitchToAnimation(anAnimation: TVXActorAnimation; smooth: Boolean = False); overload;
-    procedure SwitchToAnimation(const animationName: string; smooth: Boolean = False); overload;
+    procedure SwitchToAnimation(const AnimationName: string; smooth: Boolean = False); overload;
     procedure SwitchToAnimation(animationIndex: Integer; smooth: Boolean = False); overload;
     function CurrentAnimation: string;
     { Synchronize self animation with an other actor.
-       Copies Start/Current/End Frame values, CurrentFrameDelta,
-       AnimationMode and FrameInterpolation. }
+      Copies Start/Current/End Frame values, CurrentFrameDelta,
+      AnimationMode and FrameInterpolation. }
     procedure Synchronize(referenceActor: TVXActor);
     { Provides a direct access to FCurrentFrame without any checks.
-       Used in TVXActorProxy. }
+      Used in TVXActorProxy. }
     procedure SetCurrentFrameDirect(const Value: Integer);
     function NextFrameIndex: Integer;
     procedure NextFrame(nbSteps: Integer = 1);
     procedure PrevFrame(nbSteps: Integer = 1);
     function FrameCount: Integer;
     { Indicates whether the actor is currently swithing animations (with
-       smooth interpolation).}
-    function isSwitchingAnimation: boolean;
+      smooth interpolation). }
+    function isSwitchingAnimation: Boolean;
   published
-    property StartFrame: Integer read FStartFrame write SetStartFrame default 0;
-    property EndFrame: Integer read FEndFrame write SetEndFrame default 0;
+    property startFrame: Integer read FStartFrame write SetStartFrame default 0;
+    property endFrame: Integer read FEndFrame write SetEndFrame default 0;
     { Reference Frame Animation mode.
-       Allows specifying if the model is primarily morph or skeleton based. }
-    property Reference: TVXActorAnimationReference read FReference write FReference default aarMorph;
+      Allows specifying if the model is primarily morph or skeleton based. }
+    property reference: TVXActorAnimationReference read FReference write FReference default aarMorph;
     { Current animation frame. }
     property CurrentFrame: Integer read FCurrentFrame write SetCurrentFrame default 0;
-    { Value in the [0; 1] range expressing the delta to the next frame.  }
+    { Value in the [0; 1] range expressing the delta to the next frame. }
     property CurrentFrameDelta: Single read FCurrentFrameDelta write FCurrentFrameDelta;
     { Frame interpolation mode (afpNone/afpLinear). }
-    property FrameInterpolation: TActorFrameInterpolation read
-      FFrameInterpolation write FFrameInterpolation default afpLinear;
-    { See TVXActorAnimationMode.  }
-    property AnimationMode: TVXActorAnimationMode read FAnimationMode write
-      FAnimationMode default aamNone;
+    property FrameInterpolation: TActorFrameInterpolation read FFrameInterpolation write FFrameInterpolation default afpLinear;
+    { See TVXActorAnimationMode. }
+    property AnimationMode: TVXActorAnimationMode read FAnimationMode write FAnimationMode default aamNone;
     { Interval between frames, in milliseconds. }
     property Interval: Integer read FInterval write FInterval;
     { Actor and animation miscellanious options. }
@@ -1361,44 +1282,39 @@ type
   TVXVectorFileFormatsList = class(TPersistentObjectList)
   public
     destructor Destroy; override;
-    procedure Add(const Ext, Desc: string; DescID: Integer; AClass:
-      TVXVectorFileClass);
-    function FindExt(ext: string): TVXVectorFileClass;
-    function FindFromFileName(const fileName: string): TVXVectorFileClass;
+    procedure Add(const Ext, Desc: string; DescID: Integer; AClass: TVXVectorFileClass);
+    function FindExt(Ext: string): TVXVectorFileClass;
+    function FindFromFileName(const filename: string): TVXVectorFileClass;
     procedure Remove(AClass: TVXVectorFileClass);
-    procedure BuildFilterStrings(vectorFileClass: TVXVectorFileClass;
-      out descriptions, filters: string;
-      formatsThatCanBeOpened: Boolean = True;
-      formatsThatCanBeSaved: Boolean = False);
-    function FindExtByIndex(index: Integer;
-      formatsThatCanBeOpened: Boolean = True;
+    procedure BuildFilterStrings(VectorFileClass: TVXVectorFileClass; out descriptions, filters: string;
+      formatsThatCanBeOpened: Boolean = True; formatsThatCanBeSaved: Boolean = False);
+    function FindExtByIndex(Index: Integer; formatsThatCanBeOpened: Boolean = True;
       formatsThatCanBeSaved: Boolean = False): string;
   end;
 
   EInvalidVectorFile = class(Exception);
 
-// Read access to the list of registered vector file formats
+  // Read access to the list of registered vector file formats
 function GetVectorFileFormats: TVXVectorFileFormatsList;
 // A file extension filter suitable for dialog's 'Filter' property
 function VectorFileFormatsFilter: string;
 // A file extension filter suitable for a savedialog's 'Filter' property
 function VectorFileFormatsSaveFilter: string;
 { Returns an extension by its index in the vector files dialogs filter.
-   Use VectorFileFormatsFilter to obtain the filter. }
-function VectorFileFormatExtensionByIndex(index: Integer): string;
+  Use VectorFileFormatsFilter to obtain the filter. }
+function VectorFileFormatExtensionByIndex(Index: Integer): string;
 
-procedure RegisterVectorFileFormat(const aExtension, aDescription: string;
-  aClass: TVXVectorFileClass);
-procedure UnregisterVectorFileClass(aClass: TVXVectorFileClass);
+procedure RegisterVectorFileFormat(const aExtension, aDescription: string; AClass: TVXVectorFileClass);
+procedure UnregisterVectorFileClass(AClass: TVXVectorFileClass);
 
 var
   vGLVectorFileObjectsAllocateMaterials: Boolean = True;
-    // Mrqzzz : Flag to avoid loading materials (useful for IDE Extentions or scene editors)
+  // Mrqzzz : Flag to avoid loading materials (useful for IDE Extentions or scene editors)
   vGLVectorFileObjectsEnableVBOByDefault: Boolean = True;
 
-//===========================================================================
+// ===========================================================================
 implementation
-//===========================================================================
+// ===========================================================================
 
 uses
   VXS.CrossPlatform,
@@ -1433,11 +1349,10 @@ begin
   GetVectorFileFormats.BuildFilterStrings(TVXVectorFile, Result, f, False, True);
 end;
 
-procedure RegisterVectorFileFormat(const AExtension, ADescription: string;
-  AClass: TVXVectorFileClass);
+procedure RegisterVectorFileFormat(const aExtension, aDescription: string; AClass: TVXVectorFileClass);
 begin
   RegisterClass(AClass);
-  GetVectorFileFormats.Add(AExtension, ADescription, 0, AClass);
+  GetVectorFileFormats.Add(aExtension, aDescription, 0, AClass);
 end;
 
 procedure UnregisterVectorFileClass(AClass: TVXVectorFileClass);
@@ -1446,7 +1361,7 @@ begin
     vVectorFileFormats.Remove(AClass);
 end;
 
-function VectorFileFormatExtensionByIndex(index: Integer): string;
+function VectorFileFormatExtensionByIndex(Index: Integer): string;
 begin
   Result := GetVectorFileFormats.FindExtByIndex(index);
 end;
@@ -1457,8 +1372,7 @@ begin
   inherited;
 end;
 
-procedure TVXVectorFileFormatsList.Add(const Ext, Desc: string; DescID: Integer;
-  AClass: TVXVectorFileClass);
+procedure TVXVectorFileFormatsList.Add(const Ext, Desc: string; DescID: Integer; AClass: TVXVectorFileClass);
 var
   newRec: TVXVectorFileFormat;
 begin
@@ -1473,15 +1387,15 @@ begin
   inherited Add(newRec);
 end;
 
-function TVXVectorFileFormatsList.FindExt(ext: string): TVXVectorFileClass;
+function TVXVectorFileFormatsList.FindExt(Ext: string): TVXVectorFileClass;
 var
   i: Integer;
 begin
-  ext := AnsiLowerCase(ext);
+  Ext := AnsiLowerCase(Ext);
   for i := Count - 1 downto 0 do
-    with TVXVectorFileFormat(Items[I]) do
+    with TVXVectorFileFormat(Items[i]) do
     begin
-      if Extension = ext then
+      if Extension = Ext then
       begin
         Result := VectorFileClass;
         Exit;
@@ -1490,17 +1404,15 @@ begin
   Result := nil;
 end;
 
-function TVXVectorFileFormatsList.FindFromFileName(const fileName: string):
-  TVXVectorFileClass;
+function TVXVectorFileFormatsList.FindFromFileName(const filename: string): TVXVectorFileClass;
 var
-  ext: string;
+  Ext: string;
 begin
-  ext := ExtractFileExt(Filename);
-  System.Delete(ext, 1, 1);
-  Result := FindExt(ext);
+  Ext := ExtractFileExt(filename);
+  System.Delete(Ext, 1, 1);
+  Result := FindExt(Ext);
   if not Assigned(Result) then
-    raise EInvalidVectorFile.CreateFmt(strUnknownExtension,
-      [ext, 'GLFile' + UpperCase(ext)]);
+    raise EInvalidVectorFile.CreateFmt(strUnknownExtension, [Ext, 'GLFile' + UpperCase(Ext)]);
 end;
 
 procedure TVXVectorFileFormatsList.Remove(AClass: TVXVectorFileClass);
@@ -1514,11 +1426,8 @@ begin
   end;
 end;
 
-procedure TVXVectorFileFormatsList.BuildFilterStrings(
-  vectorFileClass: TVXVectorFileClass;
-  out descriptions, filters: string;
-  formatsThatCanBeOpened: Boolean = True;
-  formatsThatCanBeSaved: Boolean = False);
+procedure TVXVectorFileFormatsList.BuildFilterStrings(VectorFileClass: TVXVectorFileClass; out descriptions, filters: string;
+  formatsThatCanBeOpened: Boolean = True; formatsThatCanBeSaved: Boolean = False);
 var
   k, i: Integer;
   p: TVXVectorFileFormat;
@@ -1529,11 +1438,9 @@ begin
   for i := 0 to Count - 1 do
   begin
     p := TVXVectorFileFormat(Items[i]);
-    if p.VectorFileClass.InheritsFrom(vectorFileClass) and (p.Extension <> '')
-      and ((formatsThatCanBeOpened and (dfcRead in
-        p.VectorFileClass.Capabilities))
-      or (formatsThatCanBeSaved and (dfcWrite in
-        p.VectorFileClass.Capabilities))) then
+    if p.VectorFileClass.InheritsFrom(VectorFileClass) and (p.Extension <> '') and
+      ((formatsThatCanBeOpened and (dfcRead in p.VectorFileClass.Capabilities)) or
+      (formatsThatCanBeSaved and (dfcWrite in p.VectorFileClass.Capabilities))) then
     begin
       with p do
       begin
@@ -1544,20 +1451,17 @@ begin
         end;
         if (Description = '') and (DescResID <> 0) then
           Description := LoadStr(DescResID);
-        FmtStr(descriptions, '%s%s (*.%s)|*.%2:s',
-          [descriptions, Description, Extension]);
+        FmtStr(descriptions, '%s%s (*.%s)|*.%2:s', [descriptions, Description, Extension]);
         filters := filters + '*.' + Extension;
         Inc(k);
       end;
     end;
   end;
   if (k > 1) and (not formatsThatCanBeSaved) then
-    FmtStr(descriptions, '%s (%s)|%1:s|%s',
-      [glsAllFilter, filters, descriptions]);
+    FmtStr(descriptions, '%s (%s)|%1:s|%s', [glsAllFilter, filters, descriptions]);
 end;
 
-function TVXVectorFileFormatsList.FindExtByIndex(index: Integer;
-  formatsThatCanBeOpened: Boolean = True;
+function TVXVectorFileFormatsList.FindExtByIndex(Index: Integer; formatsThatCanBeOpened: Boolean = True;
   formatsThatCanBeSaved: Boolean = False): string;
 var
   i: Integer;
@@ -1569,9 +1473,8 @@ begin
     for i := 0 to Count - 1 do
     begin
       p := TVXVectorFileFormat(Items[i]);
-      if (formatsThatCanBeOpened and (dfcRead in p.VectorFileClass.Capabilities))
-        or (formatsThatCanBeSaved and (dfcWrite in
-          p.VectorFileClass.Capabilities)) then
+      if (formatsThatCanBeOpened and (dfcRead in p.VectorFileClass.Capabilities)) or
+        (formatsThatCanBeSaved and (dfcWrite in p.VectorFileClass.Capabilities)) then
       begin
         if index = 1 then
         begin
@@ -1586,7 +1489,7 @@ begin
 end;
 
 // ------------------
-// ------------------ TBaseMeshObject ------------------
+// ------------------ TVXBaseMeshObject ------------------
 // ------------------
 
 constructor TVXBaseMeshObject.Create;
@@ -1635,7 +1538,7 @@ var
 begin
   inherited ReadFromFiler(reader);
   archiveVersion := reader.ReadInteger;
-  if archiveVersion in [0..1] then
+  if archiveVersion in [0 .. 1] then
     with reader do
     begin
       FName := ReadString;
@@ -1656,8 +1559,7 @@ begin
   FVertices.Clear;
 end;
 
-procedure TVXBaseMeshObject.ContributeToBarycenter(var currentSum: TAffineVector;
-  var nb: Integer);
+procedure TVXBaseMeshObject.ContributeToBarycenter(var currentSum: TAffineVector; var nb: Integer);
 begin
   AddVector(currentSum, FVertices.Sum);
   nb := nb + FVertices.Count;
@@ -1668,26 +1570,24 @@ begin
   FVertices.Translate(delta);
 end;
 
-procedure TVXBaseMeshObject.BuildNormals(vertexIndices: TIntegerList; mode:
-  TVXMeshObjectMode;
+procedure TVXBaseMeshObject.BuildNormals(vertexIndices: TIntegerList; mode: TVXMeshObjectMode;
   normalIndices: TIntegerList = nil);
 var
   i, base: Integer;
   n: TAffineVector;
   newNormals: TIntegerList;
 
-  function TranslateNewNormal(vertexIndex: Integer; const delta:
-    TAffineVector): Integer;
+  function TranslateNewNormal(vertexIndex: Integer; const delta: TAffineVector): Integer;
   var
     pv: PAffineVector;
   begin
-    result := newNormals[vertexIndex];
-    if result < base then
+    Result := newNormals[vertexIndex];
+    if Result < base then
     begin
-      result := Normals.Add(NullVector);
-      newNormals[vertexIndex] := result;
+      Result := normals.Add(NullVector);
+      newNormals[vertexIndex] := Result;
     end;
-    pv := @Normals.List[result];
+    pv := @normals.list[Result];
     AddVector(pv^, delta);
   end;
 
@@ -1695,22 +1595,20 @@ begin
   if not Assigned(normalIndices) then
   begin
     // build bijection
-    Normals.Clear;
-    Normals.Count := Vertices.Count;
+    normals.Clear;
+    normals.Count := Vertices.Count;
     case mode of
       momTriangles:
         begin
           i := 0;
           while i <= vertexIndices.Count - 3 do
-            with Normals do
+            with normals do
             begin
               with Vertices do
               begin
-                CalcPlaneNormal(Items[vertexIndices[i + 0]],
-                  Items[vertexIndices[i + 1]],
-                  Items[vertexIndices[i + 2]], n);
+                CalcPlaneNormal(Items[vertexIndices[i + 0]], Items[vertexIndices[i + 1]], Items[vertexIndices[i + 2]], n);
               end;
-              with Normals do
+              with normals do
               begin
                 TranslateItem(vertexIndices[i + 0], n);
                 TranslateItem(vertexIndices[i + 1], n);
@@ -1723,20 +1621,16 @@ begin
         begin
           i := 0;
           while i <= vertexIndices.Count - 3 do
-            with Normals do
+            with normals do
             begin
               with Vertices do
               begin
                 if (i and 1) = 0 then
-                  CalcPlaneNormal(Items[vertexIndices[i + 0]],
-                    Items[vertexIndices[i + 1]],
-                    Items[vertexIndices[i + 2]], n)
+                  CalcPlaneNormal(Items[vertexIndices[i + 0]], Items[vertexIndices[i + 1]], Items[vertexIndices[i + 2]], n)
                 else
-                  CalcPlaneNormal(Items[vertexIndices[i + 0]],
-                    Items[vertexIndices[i + 2]],
-                    Items[vertexIndices[i + 1]], n);
+                  CalcPlaneNormal(Items[vertexIndices[i + 0]], Items[vertexIndices[i + 2]], Items[vertexIndices[i + 1]], n);
               end;
-              with Normals do
+              with normals do
               begin
                 TranslateItem(vertexIndices[i + 0], n);
                 TranslateItem(vertexIndices[i + 1], n);
@@ -1748,12 +1642,12 @@ begin
     else
       Assert(False);
     end;
-    Normals.Normalize;
+    normals.normalize;
   end
   else
   begin
     // add new normals
-    base := Normals.Count;
+    base := normals.Count;
     newNormals := TIntegerList.Create;
     newNormals.AddSerie(-1, 0, Vertices.Count);
     case mode of
@@ -1764,9 +1658,7 @@ begin
           begin
             with Vertices do
             begin
-              CalcPlaneNormal(Items[vertexIndices[i + 0]], Items[vertexIndices[i
-                + 1]],
-                Items[vertexIndices[i + 2]], n);
+              CalcPlaneNormal(Items[vertexIndices[i + 0]], Items[vertexIndices[i + 1]], Items[vertexIndices[i + 2]], n);
             end;
             normalIndices.Add(TranslateNewNormal(vertexIndices[i + 0], n));
             normalIndices.Add(TranslateNewNormal(vertexIndices[i + 1], n));
@@ -1782,13 +1674,9 @@ begin
             with Vertices do
             begin
               if (i and 1) = 0 then
-                CalcPlaneNormal(Items[vertexIndices[i + 0]],
-                  Items[vertexIndices[i + 1]],
-                  Items[vertexIndices[i + 2]], n)
+                CalcPlaneNormal(Items[vertexIndices[i + 0]], Items[vertexIndices[i + 1]], Items[vertexIndices[i + 2]], n)
               else
-                CalcPlaneNormal(Items[vertexIndices[i + 0]],
-                  Items[vertexIndices[i + 2]],
-                  Items[vertexIndices[i + 1]], n);
+                CalcPlaneNormal(Items[vertexIndices[i + 0]], Items[vertexIndices[i + 2]], Items[vertexIndices[i + 1]], n);
             end;
             normalIndices.Add(TranslateNewNormal(vertexIndices[i + 0], n));
             normalIndices.Add(TranslateNewNormal(vertexIndices[i + 1], n));
@@ -1799,21 +1687,21 @@ begin
     else
       Assert(False);
     end;
-    for i := base to Normals.Count - 1 do
-      NormalizeVector(Normals.List^[i]);
+    for i := base to normals.Count - 1 do
+      NormalizeVector(normals.list^[i]);
     newNormals.Free;
   end;
 end;
 
-function TVXBaseMeshObject.ExtractTriangles(texCoords: TAffineVectorList = nil;
-  normals: TAffineVectorList = nil): TAffineVectorList;
+function TVXBaseMeshObject.ExtractTriangles(texCoords: TAffineVectorList = nil; normals: TAffineVectorList = nil)
+  : TAffineVectorList;
 begin
   Result := TAffineVectorList.Create;
   if (Vertices.Count mod 3) = 0 then
   begin
     Result.Assign(Vertices);
     if Assigned(normals) then
-      normals.Assign(Self.Normals);
+      normals.Assign(Self.normals);
   end;
 end;
 
@@ -1872,7 +1760,7 @@ end;
 
 procedure TVXSkeletonFrame.ReadFromFiler(reader: TVirtualReader);
 var
-  archiveVersion: integer;
+  archiveVersion: Integer;
 begin
   inherited ReadFromFiler(reader);
   archiveVersion := reader.ReadInteger;
@@ -1976,10 +1864,9 @@ begin
   end;
 end;
 
-procedure TVXSkeletonFrame.ConvertQuaternionsToRotations(KeepQuaternions: Boolean
-  = True);
+procedure TVXSkeletonFrame.ConvertQuaternionsToRotations(KeepQuaternions: Boolean = True);
 var
-  i: integer;
+  i: Integer;
   t: TTransformations;
   m: TMatrix;
 begin
@@ -1996,10 +1883,9 @@ begin
     Quaternion.Clear;
 end;
 
-procedure TVXSkeletonFrame.ConvertRotationsToQuaternions(KeepRotations: Boolean =
-  True);
+procedure TVXSkeletonFrame.ConvertRotationsToQuaternions(KeepRotations: Boolean = True);
 var
-  i: integer;
+  i: Integer;
   mat, rmat: TMatrix;
   s, c: Single;
 begin
@@ -2026,9 +1912,9 @@ end;
 // ------------------ TVXSkeletonFrameList ------------------
 // ------------------
 
-constructor TVXSkeletonFrameList.CreateOwned(AOwner: TPersistent);
+constructor TVXSkeletonFrameList.CreateOwned(aOwner: TPersistent);
 begin
-  FOwner := AOwner;
+  FOwner := aOwner;
   Create;
 end;
 
@@ -2060,18 +1946,14 @@ begin
   inherited;
 end;
 
-// GetSkeletonFrame
-//
-
 function TVXSkeletonFrameList.GetSkeletonFrame(Index: Integer): TVXSkeletonFrame;
 begin
-  Result := TVXSkeletonFrame(List^[Index]);
+  Result := TVXSkeletonFrame(list^[Index]);
 end;
 
-procedure TVXSkeletonFrameList.ConvertQuaternionsToRotations(KeepQuaternions:
-  Boolean = True; SetTransformMode: Boolean = True);
+procedure TVXSkeletonFrameList.ConvertQuaternionsToRotations(KeepQuaternions: Boolean = True; SetTransformMode: Boolean = True);
 var
-  i: integer;
+  i: Integer;
 begin
   for i := 0 to Count - 1 do
   begin
@@ -2081,10 +1963,9 @@ begin
   end;
 end;
 
-procedure TVXSkeletonFrameList.ConvertRotationsToQuaternions(KeepRotations: Boolean
-  = True; SetTransformMode: Boolean = True);
+procedure TVXSkeletonFrameList.ConvertRotationsToQuaternions(KeepRotations: Boolean = True; SetTransformMode: Boolean = True);
 var
-  i: integer;
+  i: Integer;
 begin
   for i := 0 to Count - 1 do
   begin
@@ -2128,7 +2009,7 @@ end;
 
 procedure TVXSkeletonBoneList.ReadFromFiler(reader: TVirtualReader);
 var
-  archiveVersion, i: integer;
+  archiveVersion, i: Integer;
 begin
   inherited ReadFromFiler(reader);
   archiveVersion := reader.ReadInteger;
@@ -2154,7 +2035,7 @@ end;
 
 function TVXSkeletonBoneList.GetSkeletonBone(Index: Integer): TVXSkeletonBone;
 begin
-  Result := TVXSkeletonBone(List^[Index]);
+  Result := TVXSkeletonBone(list^[Index]);
 end;
 
 function TVXSkeletonBoneList.BoneByID(anID: Integer): TVXSkeletonBone;
@@ -2216,7 +2097,7 @@ end;
 
 procedure TVXSkeletonRootBoneList.ReadFromFiler(reader: TVirtualReader);
 var
-  archiveVersion, i: integer;
+  archiveVersion, i: Integer;
 begin
   inherited ReadFromFiler(reader);
   archiveVersion := reader.ReadInteger;
@@ -2283,7 +2164,7 @@ end;
 
 procedure TVXSkeletonBone.ReadFromFiler(reader: TVirtualReader);
 var
-  archiveVersion, i: integer;
+  archiveVersion, i: Integer;
 begin
   inherited ReadFromFiler(reader);
   archiveVersion := reader.ReadInteger;
@@ -2302,11 +2183,9 @@ end;
 
 procedure TVXSkeletonBone.BuildList(var mrci: TVXRenderContextInfo);
 
-  procedure IssueColor(color: Cardinal);
+  procedure IssueColor(Color: Cardinal);
   begin
-    glColor4f(GetRValue(color) / 255, GetGValue(color) / 255, GetBValue(color) /
-      255,
-      ((color shr 24) and 255) / 255);
+    glColor4f(GetRValue(Color) / 255, GetGValue(Color) / 255, GetBValue(Color) / 255, ((Color shr 24) and 255) / 255);
   end;
 
 var
@@ -2333,16 +2212,13 @@ end;
 
 function TVXSkeletonBone.GetSkeletonBone(Index: Integer): TVXSkeletonBone;
 begin
-  Result := TVXSkeletonBone(List^[Index]);
+  Result := TVXSkeletonBone(list^[Index]);
 end;
 
 procedure TVXSkeletonBone.SetColor(const val: Cardinal);
 begin
   FColor := val;
 end;
-
-// BoneByID
-//
 
 function TVXSkeletonBone.BoneByID(anID: Integer): TVXSkeletonBone;
 begin
@@ -2371,9 +2247,7 @@ procedure TVXSkeletonBone.PrepareGlobalMatrices;
 begin
   if (Skeleton.FRagDollEnabled) then
     Exit; // ragdoll
-  FGlobalMatrix :=
-    MatrixMultiply(Skeleton.CurrentFrame.LocalMatrixList^[BoneID],
-    TVXSkeletonBoneList(Owner).FGlobalMatrix);
+  FGlobalMatrix := MatrixMultiply(Skeleton.CurrentFrame.LocalMatrixList^[BoneID], TVXSkeletonBoneList(Owner).FGlobalMatrix);
   inherited;
 end;
 
@@ -2383,10 +2257,9 @@ begin
 end;
 
 procedure TVXSkeletonBone.SetGlobalMatrixForRagDoll(RagDollMatrix: TMatrix);
-  // ragdoll
+// ragdoll
 begin
-  FGlobalMatrix := MatrixMultiply(RagDollMatrix,
-    Skeleton.Owner.InvAbsoluteMatrix);
+  FGlobalMatrix := MatrixMultiply(RagDollMatrix, Skeleton.Owner.InvAbsoluteMatrix);
   inherited;
 end;
 
@@ -2397,15 +2270,15 @@ end;
 constructor TVXSkeletonCollider.Create;
 begin
   inherited;
-  FLocalMatrix := IdentityHMGMatrix;
-  FGlobalMatrix := IdentityHMGMatrix;
+  FLocalMatrix := IdentityHmgMatrix;
+  FGlobalMatrix := IdentityHmgMatrix;
   FAutoUpdate := True;
 end;
 
-constructor TVXSkeletonCollider.CreateOwned(AOwner: TVXSkeletonColliderList);
+constructor TVXSkeletonCollider.CreateOwned(aOwner: TVXSkeletonColliderList);
 begin
   Create;
-  FOwner := AOwner;
+  FOwner := aOwner;
   if Assigned(FOwner) then
     FOwner.Add(Self);
 end;
@@ -2426,7 +2299,7 @@ end;
 
 procedure TVXSkeletonCollider.ReadFromFiler(reader: TVirtualReader);
 var
-  archiveVersion: integer;
+  archiveVersion: Integer;
 begin
   inherited ReadFromFiler(reader);
   archiveVersion := reader.ReadInteger;
@@ -2448,8 +2321,7 @@ begin
   begin
     if Owner.Owner is TVXSkeleton then
       if TVXSkeleton(Owner.Owner).Owner is TVXBaseSceneObject then
-        mat := MatrixMultiply(FBone.GlobalMatrix,
-          TVXBaseSceneObject(TVXSkeleton(Owner.Owner).Owner).AbsoluteMatrix)
+        mat := MatrixMultiply(FBone.GlobalMatrix, TVXBaseSceneObject(TVXSkeleton(Owner.Owner).Owner).AbsoluteMatrix)
       else
         mat := FBone.GlobalMatrix;
     MatrixMultiply(FLocalMatrix, mat, FGlobalMatrix);
@@ -2473,10 +2345,10 @@ end;
 // ------------------ TVXSkeletonColliderList ------------------
 // ------------------
 
-constructor TVXSkeletonColliderList.CreateOwned(AOwner: TPersistent);
+constructor TVXSkeletonColliderList.CreateOwned(aOwner: TPersistent);
 begin
   Create;
-  FOwner := AOwner;
+  FOwner := aOwner;
 end;
 
 destructor TVXSkeletonColliderList.Destroy;
@@ -2485,8 +2357,7 @@ begin
   inherited;
 end;
 
-function TVXSkeletonColliderList.GetSkeletonCollider(index: Integer):
-  TVXSkeletonCollider;
+function TVXSkeletonColliderList.GetSkeletonCollider(Index: Integer): TVXSkeletonCollider;
 begin
   Result := TVXSkeletonCollider(inherited Get(index));
 end;
@@ -2529,7 +2400,7 @@ end;
 // ------------------ TVXSkeleton ------------------
 // ------------------
 
-constructor TVXSkeleton.CreateOwned(AOwner: TVXBaseMesh);
+constructor TVXSkeleton.CreateOwned(aOwner: TVXBaseMesh);
 begin
   FOwner := aOwner;
   Create;
@@ -2553,24 +2424,25 @@ begin
   inherited Destroy;
 end;
 
-procedure TVXSkeleton.WriteToFiler(writer : TVirtualWriter);
+procedure TVXSkeleton.WriteToFiler(writer: TVirtualWriter);
 begin
-   inherited WriteToFiler(writer);
-   with writer do begin
-      if FColliders.Count > 0 then
-        WriteInteger(1) // Archive Version 1 : with colliders
-      else
-        WriteInteger(0); // Archive Version 0
-      FRootBones.WriteToFiler(writer);
-      FFrames.WriteToFiler(writer);
-      if FColliders.Count > 0 then
-        FColliders.WriteToFiler(writer);
-   end;
+  inherited WriteToFiler(writer);
+  with writer do
+  begin
+    if FColliders.Count > 0 then
+      WriteInteger(1) // Archive Version 1 : with colliders
+    else
+      WriteInteger(0); // Archive Version 0
+    FRootBones.WriteToFiler(writer);
+    FFrames.WriteToFiler(writer);
+    if FColliders.Count > 0 then
+      FColliders.WriteToFiler(writer);
+  end;
 end;
 
 procedure TVXSkeleton.ReadFromFiler(reader: TVirtualReader);
 var
-  archiveVersion: integer;
+  archiveVersion: Integer;
 begin
   inherited ReadFromFiler(reader);
   archiveVersion := reader.ReadInteger;
@@ -2623,15 +2495,15 @@ end;
 
 function TVXSkeleton.BoneByID(anID: Integer): TVXSkeletonBone;
 
-  procedure CollectBones(bone: TVXSkeletonBone);
+  procedure CollectBones(Bone: TVXSkeletonBone);
   var
     i: Integer;
   begin
-    if bone.BoneID >= FBonesByIDCache.Count then
-      FBonesByIDCache.Count := bone.BoneID + 1;
-    FBonesByIDCache[bone.BoneID] := bone;
-    for i := 0 to bone.Count - 1 do
-      CollectBones(bone[i]);
+    if Bone.BoneID >= FBonesByIDCache.Count then
+      FBonesByIDCache.Count := Bone.BoneID + 1;
+    FBonesByIDCache[Bone.BoneID] := Bone;
+    for i := 0 to Bone.Count - 1 do
+      CollectBones(Bone[i]);
   end;
 
 var
@@ -2674,13 +2546,12 @@ begin
   FCurrentFrame.TransformMode := Frames[frameIndex1].TransformMode;
   with FCurrentFrame do
   begin
-    Position.Lerp(Frames[frameIndex1].Position,
-      Frames[frameIndex2].Position, lerpFactor);
+    Position.Lerp(Frames[frameIndex1].Position, Frames[frameIndex2].Position, lerpFactor);
     case TransformMode of
-      sftRotation: Rotation.AngleLerp(Frames[frameIndex1].Rotation,
-          Frames[frameIndex2].Rotation, lerpFactor);
-      sftQuaternion: Quaternion.Lerp(Frames[frameIndex1].Quaternion,
-          Frames[frameIndex2].Quaternion, lerpFactor);
+      sftRotation:
+        Rotation.AngleLerp(Frames[frameIndex1].Rotation, Frames[frameIndex2].Rotation, lerpFactor);
+      sftQuaternion:
+        Quaternion.Lerp(Frames[frameIndex1].Quaternion, Frames[frameIndex2].Quaternion, lerpFactor);
     end;
   end;
 end;
@@ -2706,14 +2577,12 @@ begin
     if Assigned(FCurrentFrame) then
       FCurrentFrame.Free;
     FCurrentFrame := TVXSkeletonFrame.Create;
-    FCurrentFrame.TransformMode :=
-      Frames[lerpInfos[i].frameIndex1].TransformMode;
+    FCurrentFrame.TransformMode := Frames[lerpInfos[i].frameIndex1].TransformMode;
     with FCurrentFrame do
     begin
       blendPositions := TAffineVectorList.Create;
       // lerp first item separately
-      Position.Lerp(Frames[lerpInfos[i].frameIndex1].Position,
-        Frames[lerpInfos[i].frameIndex2].Position,
+      Position.Lerp(Frames[lerpInfos[i].frameIndex1].Position, Frames[lerpInfos[i].frameIndex2].Position,
         lerpInfos[i].lerpFactor);
       if lerpInfos[i].weight <> 1 then
         Position.Scale(lerpInfos[i].weight);
@@ -2724,8 +2593,7 @@ begin
       begin
         if not Assigned(lerpInfos[i].externalPositions) then
         begin
-          blendPositions.Lerp(Frames[lerpInfos[i].frameIndex1].Position,
-            Frames[lerpInfos[i].frameIndex2].Position,
+          blendPositions.Lerp(Frames[lerpInfos[i].frameIndex1].Position, Frames[lerpInfos[i].frameIndex2].Position,
             lerpInfos[i].lerpFactor);
           Position.AngleCombine(blendPositions, 1);
         end
@@ -2741,8 +2609,7 @@ begin
           begin
             blendRotations := TAffineVectorList.Create;
             // lerp first item separately
-            Rotation.AngleLerp(Frames[lerpInfos[i].frameIndex1].Rotation,
-              Frames[lerpInfos[i].frameIndex2].Rotation,
+            Rotation.AngleLerp(Frames[lerpInfos[i].frameIndex1].Rotation, Frames[lerpInfos[i].frameIndex2].Rotation,
               lerpInfos[i].lerpFactor);
             Inc(i);
             // combine the other items
@@ -2750,8 +2617,7 @@ begin
             begin
               if not Assigned(lerpInfos[i].externalRotations) then
               begin
-                blendRotations.AngleLerp(Frames[lerpInfos[i].frameIndex1].Rotation,
-                  Frames[lerpInfos[i].frameIndex2].Rotation,
+                blendRotations.AngleLerp(Frames[lerpInfos[i].frameIndex1].Rotation, Frames[lerpInfos[i].frameIndex2].Rotation,
                   lerpInfos[i].lerpFactor);
                 Rotation.AngleCombine(blendRotations, 1);
               end
@@ -2766,8 +2632,7 @@ begin
           begin
             blendQuaternions := TQuaternionList.Create;
             // Initial frame lerp
-            Quaternion.Lerp(Frames[lerpInfos[i].frameIndex1].Quaternion,
-              Frames[lerpInfos[i].frameIndex2].Quaternion,
+            Quaternion.Lerp(Frames[lerpInfos[i].frameIndex1].Quaternion, Frames[lerpInfos[i].frameIndex2].Quaternion,
               lerpInfos[i].lerpFactor);
             Inc(i);
             // Combine the lerped frames together
@@ -2775,8 +2640,7 @@ begin
             begin
               if not Assigned(lerpInfos[i].externalQuaternions) then
               begin
-                blendQuaternions.Lerp(Frames[lerpInfos[i].frameIndex1].Quaternion,
-                  Frames[lerpInfos[i].frameIndex2].Quaternion,
+                blendQuaternions.Lerp(Frames[lerpInfos[i].frameIndex1].Quaternion, Frames[lerpInfos[i].frameIndex2].Quaternion,
                   lerpInfos[i].lerpFactor);
                 Quaternion.Combine(blendQuaternions, 1);
               end
@@ -2791,8 +2655,7 @@ begin
   end;
 end;
 
-procedure TVXSkeleton.MakeSkeletalTranslationStatic(startFrame, endFrame:
-  Integer);
+procedure TVXSkeleton.MakeSkeletalTranslationStatic(startFrame, endFrame: Integer);
 var
   delta: TAffineVector;
   i: Integer;
@@ -2800,12 +2663,10 @@ var
 begin
   if endFrame <= startFrame then
     Exit;
-  delta := VectorSubtract(Frames[endFrame].Position[0],
-    Frames[startFrame].Position[0]);
+  delta := VectorSubtract(Frames[endFrame].Position[0], Frames[startFrame].Position[0]);
   f := -1 / (endFrame - startFrame);
   for i := startFrame to endFrame do
-    Frames[i].Position[0] := VectorCombine(Frames[i].Position[0], delta,
-      1, (i - startFrame) * f);
+    Frames[i].Position[0] := VectorCombine(Frames[i].Position[0], delta, 1, (i - startFrame) * f);
 end;
 
 procedure TVXSkeleton.MakeSkeletalRotationDelta(startFrame, endFrame: Integer);
@@ -2820,9 +2681,8 @@ begin
     for j := 0 to Frames[i].Position.Count - 1 do
     begin
       Frames[i].Position[j] := NullVector;
-      v := VectorSubtract(Frames[i].Rotation[j],
-        Frames[0].Rotation[j]);
-      if VectorNorm(v) < 1e-6 then
+      v := VectorSubtract(Frames[i].Rotation[j], Frames[0].Rotation[j]);
+      if VectorNorm(v) < 1E-6 then
         Frames[i].Rotation[j] := NullVector
       else
         Frames[i].Rotation[j] := v;
@@ -2833,7 +2693,7 @@ end;
 procedure TVXSkeleton.MorphMesh(normalize: Boolean);
 var
   i: Integer;
-  mesh: TVXBaseMeshObject;
+  Mesh: TVXBaseMeshObject;
 begin
   if Owner.MeshObjects.Count > 0 then
   begin
@@ -2844,16 +2704,16 @@ begin
     if FMorphInvisibleParts then
       for i := 0 to Owner.MeshObjects.Count - 1 do
       begin
-        mesh := Owner.MeshObjects.Items[i];
-        if (mesh is TVXSkeletonMeshObject) then
-          TVXSkeletonMeshObject(mesh).ApplyCurrentSkeletonFrame(normalize);
+        Mesh := Owner.MeshObjects.Items[i];
+        if (Mesh is TVXSkeletonMeshObject) then
+          TVXSkeletonMeshObject(Mesh).ApplyCurrentSkeletonFrame(normalize);
       end
     else
       for i := 0 to Owner.MeshObjects.Count - 1 do
       begin
-        mesh := Owner.MeshObjects.Items[i];
-        if (mesh is TVXSkeletonMeshObject) and mesh.Visible then
-          TVXSkeletonMeshObject(mesh).ApplyCurrentSkeletonFrame(normalize);
+        Mesh := Owner.MeshObjects.Items[i];
+        if (Mesh is TVXSkeletonMeshObject) and Mesh.Visible then
+          TVXSkeletonMeshObject(Mesh).ApplyCurrentSkeletonFrame(normalize);
       end
   end;
 end;
@@ -2874,10 +2734,10 @@ begin
   FColliders.Clear;
 end;
 
-procedure TVXSkeleton.StartRagDoll; // ragdoll
+procedure TVXSkeleton.StartRagdoll; // ragdoll
 var
   i: Integer;
-  mesh: TVXBaseMeshObject;
+  Mesh: TVXBaseMeshObject;
 begin
   if FRagDollEnabled then
     Exit
@@ -2888,29 +2748,29 @@ begin
   begin
     for i := 0 to Owner.MeshObjects.Count - 1 do
     begin
-      mesh := Owner.MeshObjects.Items[i];
-      if mesh is TVXSkeletonMeshObject then
+      Mesh := Owner.MeshObjects.Items[i];
+      if Mesh is TVXSkeletonMeshObject then
       begin
-        TVXSkeletonMeshObject(mesh).BackupBoneMatrixInvertedMeshes;
-        TVXSkeletonMeshObject(mesh).PrepareBoneMatrixInvertedMeshes;
+        TVXSkeletonMeshObject(Mesh).BackupBoneMatrixInvertedMeshes;
+        TVXSkeletonMeshObject(Mesh).PrepareBoneMatrixInvertedMeshes;
       end;
     end;
   end;
 end;
 
-procedure TVXSkeleton.StopRagDoll; // ragdoll
+procedure TVXSkeleton.StopRagdoll; // ragdoll
 var
   i: Integer;
-  mesh: TVXBaseMeshObject;
+  Mesh: TVXBaseMeshObject;
 begin
   FRagDollEnabled := False;
   if Owner.MeshObjects.Count > 0 then
   begin
     for i := 0 to Owner.MeshObjects.Count - 1 do
     begin
-      mesh := Owner.MeshObjects.Items[i];
-      if mesh is TVXSkeletonMeshObject then
-        TVXSkeletonMeshObject(mesh).RestoreBoneMatrixInvertedMeshes;
+      Mesh := Owner.MeshObjects.Items[i];
+      if Mesh is TVXSkeletonMeshObject then
+        TVXSkeletonMeshObject(Mesh).RestoreBoneMatrixInvertedMeshes;
     end;
   end;
 end;
@@ -2919,9 +2779,9 @@ end;
 // ------------------ TVXMeshObject ------------------
 // ------------------
 
-constructor TVXMeshObject.CreateOwned(AOwner: TVXMeshObjectList);
+constructor TVXMeshObject.CreateOwned(aOwner: TVXMeshObjectList);
 begin
-  FOwner := AOwner;
+  FOwner := aOwner;
   Create;
   if Assigned(FOwner) then
     FOwner.Add(Self);
@@ -2967,7 +2827,7 @@ end;
 
 procedure TVXMeshObject.Assign(Source: TPersistent);
 var
-  I: Integer;
+  i: Integer;
 begin
   inherited Assign(Source);
 
@@ -2983,16 +2843,16 @@ begin
     FTangentsTexCoordIndex := TVXMeshObject(Source).FTangentsTexCoordIndex;
 
     // Clear FTexCoordsEx.
-    for I := 0 to FTexCoordsEx.Count - 1 do
-      TVectorList(FTexCoordsEx[I]).Free;
+    for i := 0 to FTexCoordsEx.Count - 1 do
+      TVectorList(FTexCoordsEx[i]).Free;
 
     FTexCoordsEx.Count := TVXMeshObject(Source).FTexCoordsEx.Count;
 
     // Fill FTexCoordsEx.
-    for I := 0 to FTexCoordsEx.Count - 1 do
+    for i := 0 to FTexCoordsEx.Count - 1 do
     begin
-      FTexCoordsEx[I] := TVectorList.Create;
-      TVectorList(FTexCoordsEx[I]).Assign(TVXMeshObject(Source).FTexCoordsEx[I]);
+      FTexCoordsEx[i] := TVectorList.Create;
+      TVectorList(FTexCoordsEx[i]).Assign(TVXMeshObject(Source).FTexCoordsEx[i]);
     end;
   end;
 end;
@@ -3029,7 +2889,7 @@ var
 begin
   inherited ReadFromFiler(reader);
   archiveVersion := reader.ReadInteger;
-  if archiveVersion in [0..3] then
+  if archiveVersion in [0 .. 3] then
     with reader do
     begin
       FTexCoords.ReadFromFiler(reader);
@@ -3044,8 +2904,8 @@ begin
         lOldLightMapTexCoords := TTexPointList.CreateFromFiler(reader);
         for i := 0 to lOldLightMapTexCoords.Count - 1 do
         begin
-          tc:=lOldLightMapTexCoords[i];
-          FLightMapTexCoords.Add(tc.S, tc.T);
+          tc := lOldLightMapTexCoords[i];
+          FLightMapTexCoords.Add(tc.s, tc.t);
         end;
         lOldLightMapTexCoords.Free;
       end
@@ -3088,26 +2948,26 @@ begin
     TexCoordsEx[i].Clear;
 end;
 
-function TVXMeshObject.ExtractTriangles(texCoords: TAffineVectorList = nil;
-  normals: TAffineVectorList = nil): TAffineVectorList;
+function TVXMeshObject.ExtractTriangles(texCoords: TAffineVectorList = nil; normals: TAffineVectorList = nil)
+  : TAffineVectorList;
 begin
   case mode of
     momTriangles:
       begin
         Result := inherited ExtractTriangles;
         if Assigned(texCoords) then
-          texCoords.Assign(Self.TexCoords);
+          texCoords.Assign(Self.texCoords);
         if Assigned(normals) then
-          normals.Assign(Self.Normals);
+          normals.Assign(Self.normals);
       end;
     momTriangleStrip:
       begin
         Result := TAffineVectorList.Create;
         ConvertStripToList(Vertices, Result);
         if Assigned(texCoords) then
-          ConvertStripToList(Self.TexCoords, texCoords);
+          ConvertStripToList(Self.texCoords, texCoords);
         if Assigned(normals) then
-          ConvertStripToList(Self.Normals, normals);
+          ConvertStripToList(Self.normals, normals);
       end;
     momFaceGroups:
       begin
@@ -3124,7 +2984,7 @@ function TVXMeshObject.TriangleCount: Integer;
 var
   i: Integer;
 begin
-  case Mode of
+  case mode of
     momTriangles:
       Result := (Vertices.Count div 3);
     momTriangleStrip:
@@ -3202,12 +3062,8 @@ var
   min, max: TAffineVector;
 begin
   GetExtents(min, max);
-  Result := (aPoint.X >= min.X) and
-            (aPoint.Y >= min.Y) and
-            (aPoint.Z >= min.Z) and
-            (aPoint.X <= max.X) and
-            (aPoint.Y <= max.Y) and
-            (aPoint.Z <= max.Z);
+  Result := (aPoint.X >= min.X) and (aPoint.Y >= min.Y) and (aPoint.Z >= min.Z) and (aPoint.X <= max.X) and (aPoint.Y <= max.Y)
+    and (aPoint.Z <= max.Z);
 end;
 
 procedure TVXMeshObject.SetTexCoords(const val: TAffineVectorList);
@@ -3225,12 +3081,12 @@ begin
   FColors.Assign(val);
 end;
 
-procedure TVXMeshObject.SetTexCoordsEx(index: Integer; const val: TVectorList);
+procedure TVXMeshObject.SetTexCoordsEx(Index: Integer; const val: TVectorList);
 begin
   TexCoordsEx[index].Assign(val);
 end;
 
-function TVXMeshObject.GetTexCoordsEx(index: Integer): TVectorList;
+function TVXMeshObject.GetTexCoordsEx(Index: Integer): TVectorList;
 var
   i: Integer;
 begin
@@ -3278,13 +3134,12 @@ begin
   end;
 end;
 
-procedure TVXMeshObject.GetTriangleData(tri: Integer;
-  list: TAffineVectorList; var v0, v1, v2: TAffineVector);
+procedure TVXMeshObject.GetTriangleData(tri: Integer; list: TAffineVectorList; var v0, v1, v2: TAffineVector);
 var
   i, LastCount, Count: Integer;
   fg: TFGVertexIndexList;
 begin
-  case Mode of
+  case mode of
     momTriangles:
       begin
         v0 := list[3 * tri];
@@ -3308,44 +3163,44 @@ begin
           if Count > tri then
           begin
             Count := tri - LastCount;
-            case fg.Mode of
+            case fg.mode of
               fgmmTriangles, fgmmFlatTriangles:
                 begin
-                  v0 := list[fg.VertexIndices[3 * Count]];
-                  v1 := list[fg.VertexIndices[3 * Count + 1]];
-                  v2 := list[fg.VertexIndices[3 * Count + 2]];
+                  v0 := list[fg.vertexIndices[3 * Count]];
+                  v1 := list[fg.vertexIndices[3 * Count + 1]];
+                  v2 := list[fg.vertexIndices[3 * Count + 2]];
                 end;
               fgmmTriangleStrip:
                 begin
-                  v0 := list[fg.VertexIndices[Count]];
-                  v1 := list[fg.VertexIndices[Count + 1]];
-                  v2 := list[fg.VertexIndices[Count + 2]];
+                  v0 := list[fg.vertexIndices[Count]];
+                  v1 := list[fg.vertexIndices[Count + 1]];
+                  v2 := list[fg.vertexIndices[Count + 2]];
                 end;
               fgmmTriangleFan:
                 begin
-                  v0 := list[fg.VertexIndices[0]];
-                  v1 := list[fg.VertexIndices[Count + 1]];
-                  v2 := list[fg.VertexIndices[Count + 2]];
+                  v0 := list[fg.vertexIndices[0]];
+                  v1 := list[fg.vertexIndices[Count + 1]];
+                  v2 := list[fg.vertexIndices[Count + 2]];
                 end;
               fgmmQuads:
                 begin
                   if Count mod 2 = 0 then
                   begin
-                    v0 := list[fg.VertexIndices[4 * (Count div 2)]];
-                    v1 := list[fg.VertexIndices[4 * (Count div 2) + 1]];
-                    v2 := list[fg.VertexIndices[4 * (Count div 2) + 2]];
+                    v0 := list[fg.vertexIndices[4 * (Count div 2)]];
+                    v1 := list[fg.vertexIndices[4 * (Count div 2) + 1]];
+                    v2 := list[fg.vertexIndices[4 * (Count div 2) + 2]];
                   end
                   else
                   begin
-                    v0 := list[fg.VertexIndices[4 * (Count div 2)]];
-                    v1 := list[fg.VertexIndices[4 * (Count div 2) + 2]];
-                    v2 := list[fg.VertexIndices[4 * (Count div 2) + 3]];
+                    v0 := list[fg.vertexIndices[4 * (Count div 2)]];
+                    v1 := list[fg.vertexIndices[4 * (Count div 2) + 2]];
+                    v2 := list[fg.vertexIndices[4 * (Count div 2) + 3]];
                   end;
                 end;
             else
               Assert(False);
             end;
-            break;
+            Break;
           end;
         end;
 
@@ -3355,13 +3210,12 @@ begin
   end;
 end;
 
-procedure TVXMeshObject.GetTriangleData(tri: Integer;
-  list: TVectorList; var v0, v1, v2: TVector);
+procedure TVXMeshObject.GetTriangleData(tri: Integer; list: TVectorList; var v0, v1, v2: TVector);
 var
   i, LastCount, Count: Integer;
   fg: TFGVertexIndexList;
 begin
-  case Mode of
+  case mode of
     momTriangles:
       begin
         v0 := list[3 * tri];
@@ -3385,44 +3239,44 @@ begin
           if Count > tri then
           begin
             Count := tri - LastCount;
-            case fg.Mode of
+            case fg.mode of
               fgmmTriangles, fgmmFlatTriangles:
                 begin
-                  v0 := list[fg.VertexIndices[3 * Count]];
-                  v1 := list[fg.VertexIndices[3 * Count + 1]];
-                  v2 := list[fg.VertexIndices[3 * Count + 2]];
+                  v0 := list[fg.vertexIndices[3 * Count]];
+                  v1 := list[fg.vertexIndices[3 * Count + 1]];
+                  v2 := list[fg.vertexIndices[3 * Count + 2]];
                 end;
               fgmmTriangleStrip:
                 begin
-                  v0 := list[fg.VertexIndices[Count]];
-                  v1 := list[fg.VertexIndices[Count + 1]];
-                  v2 := list[fg.VertexIndices[Count + 2]];
+                  v0 := list[fg.vertexIndices[Count]];
+                  v1 := list[fg.vertexIndices[Count + 1]];
+                  v2 := list[fg.vertexIndices[Count + 2]];
                 end;
               fgmmTriangleFan:
                 begin
-                  v0 := list[fg.VertexIndices[0]];
-                  v1 := list[fg.VertexIndices[Count + 1]];
-                  v2 := list[fg.VertexIndices[Count + 2]];
+                  v0 := list[fg.vertexIndices[0]];
+                  v1 := list[fg.vertexIndices[Count + 1]];
+                  v2 := list[fg.vertexIndices[Count + 2]];
                 end;
               fgmmQuads:
                 begin
                   if Count mod 2 = 0 then
                   begin
-                    v0 := list[fg.VertexIndices[4 * (Count div 2)]];
-                    v1 := list[fg.VertexIndices[4 * (Count div 2) + 1]];
-                    v2 := list[fg.VertexIndices[4 * (Count div 2) + 2]];
+                    v0 := list[fg.vertexIndices[4 * (Count div 2)]];
+                    v1 := list[fg.vertexIndices[4 * (Count div 2) + 1]];
+                    v2 := list[fg.vertexIndices[4 * (Count div 2) + 2]];
                   end
                   else
                   begin
-                    v0 := list[fg.VertexIndices[4 * (Count div 2)]];
-                    v1 := list[fg.VertexIndices[4 * (Count div 2) + 2]];
-                    v2 := list[fg.VertexIndices[4 * (Count div 2) + 3]];
+                    v0 := list[fg.vertexIndices[4 * (Count div 2)]];
+                    v1 := list[fg.vertexIndices[4 * (Count div 2) + 2]];
+                    v2 := list[fg.vertexIndices[4 * (Count div 2) + 3]];
                   end;
                 end;
             else
               Assert(False);
             end;
-            break;
+            Break;
           end;
         end;
 
@@ -3432,13 +3286,12 @@ begin
   end;
 end;
 
-procedure TVXMeshObject.SetTriangleData(tri: Integer;
-  list: TAffineVectorList; const v0, v1, v2: TAffineVector);
+procedure TVXMeshObject.SetTriangleData(tri: Integer; list: TAffineVectorList; const v0, v1, v2: TAffineVector);
 var
   i, LastCount, Count: Integer;
   fg: TFGVertexIndexList;
 begin
-  case Mode of
+  case mode of
     momTriangles:
       begin
         list[3 * tri] := v0;
@@ -3462,44 +3315,44 @@ begin
           if Count > tri then
           begin
             Count := tri - LastCount;
-            case fg.Mode of
+            case fg.mode of
               fgmmTriangles, fgmmFlatTriangles:
                 begin
-                  list[fg.VertexIndices[3 * Count]] := v0;
-                  list[fg.VertexIndices[3 * Count + 1]] := v1;
-                  list[fg.VertexIndices[3 * Count + 2]] := v2;
+                  list[fg.vertexIndices[3 * Count]] := v0;
+                  list[fg.vertexIndices[3 * Count + 1]] := v1;
+                  list[fg.vertexIndices[3 * Count + 2]] := v2;
                 end;
               fgmmTriangleStrip:
                 begin
-                  list[fg.VertexIndices[Count]] := v0;
-                  list[fg.VertexIndices[Count + 1]] := v1;
-                  list[fg.VertexIndices[Count + 2]] := v2;
+                  list[fg.vertexIndices[Count]] := v0;
+                  list[fg.vertexIndices[Count + 1]] := v1;
+                  list[fg.vertexIndices[Count + 2]] := v2;
                 end;
               fgmmTriangleFan:
                 begin
-                  list[fg.VertexIndices[0]] := v0;
-                  list[fg.VertexIndices[Count + 1]] := v1;
-                  list[fg.VertexIndices[Count + 2]] := v2;
+                  list[fg.vertexIndices[0]] := v0;
+                  list[fg.vertexIndices[Count + 1]] := v1;
+                  list[fg.vertexIndices[Count + 2]] := v2;
                 end;
               fgmmQuads:
                 begin
                   if Count mod 2 = 0 then
                   begin
-                    list[fg.VertexIndices[4 * (Count div 2)]] := v0;
-                    list[fg.VertexIndices[4 * (Count div 2) + 1]] := v1;
-                    list[fg.VertexIndices[4 * (Count div 2) + 2]] := v2;
+                    list[fg.vertexIndices[4 * (Count div 2)]] := v0;
+                    list[fg.vertexIndices[4 * (Count div 2) + 1]] := v1;
+                    list[fg.vertexIndices[4 * (Count div 2) + 2]] := v2;
                   end
                   else
                   begin
-                    list[fg.VertexIndices[4 * (Count div 2)]] := v0;
-                    list[fg.VertexIndices[4 * (Count div 2) + 2]] := v1;
-                    list[fg.VertexIndices[4 * (Count div 2) + 3]] := v2;
+                    list[fg.vertexIndices[4 * (Count div 2)]] := v0;
+                    list[fg.vertexIndices[4 * (Count div 2) + 2]] := v1;
+                    list[fg.vertexIndices[4 * (Count div 2) + 3]] := v2;
                   end;
                 end;
             else
               Assert(False);
             end;
-            break;
+            Break;
           end;
         end;
 
@@ -3509,13 +3362,12 @@ begin
   end;
 end;
 
-procedure TVXMeshObject.SetTriangleData(tri: Integer;
-  list: TVectorList; const v0, v1, v2: TVector);
+procedure TVXMeshObject.SetTriangleData(tri: Integer; list: TVectorList; const v0, v1, v2: TVector);
 var
   i, LastCount, Count: Integer;
   fg: TFGVertexIndexList;
 begin
-  case Mode of
+  case mode of
     momTriangles:
       begin
         list[3 * tri] := v0;
@@ -3539,44 +3391,44 @@ begin
           if Count > tri then
           begin
             Count := tri - LastCount;
-            case fg.Mode of
+            case fg.mode of
               fgmmTriangles, fgmmFlatTriangles:
                 begin
-                  list[fg.VertexIndices[3 * Count]] := v0;
-                  list[fg.VertexIndices[3 * Count + 1]] := v1;
-                  list[fg.VertexIndices[3 * Count + 2]] := v2;
+                  list[fg.vertexIndices[3 * Count]] := v0;
+                  list[fg.vertexIndices[3 * Count + 1]] := v1;
+                  list[fg.vertexIndices[3 * Count + 2]] := v2;
                 end;
               fgmmTriangleStrip:
                 begin
-                  list[fg.VertexIndices[Count]] := v0;
-                  list[fg.VertexIndices[Count + 1]] := v1;
-                  list[fg.VertexIndices[Count + 2]] := v2;
+                  list[fg.vertexIndices[Count]] := v0;
+                  list[fg.vertexIndices[Count + 1]] := v1;
+                  list[fg.vertexIndices[Count + 2]] := v2;
                 end;
               fgmmTriangleFan:
                 begin
-                  list[fg.VertexIndices[0]] := v0;
-                  list[fg.VertexIndices[Count + 1]] := v1;
-                  list[fg.VertexIndices[Count + 2]] := v2;
+                  list[fg.vertexIndices[0]] := v0;
+                  list[fg.vertexIndices[Count + 1]] := v1;
+                  list[fg.vertexIndices[Count + 2]] := v2;
                 end;
               fgmmQuads:
                 begin
                   if Count mod 2 = 0 then
                   begin
-                    list[fg.VertexIndices[4 * (Count div 2)]] := v0;
-                    list[fg.VertexIndices[4 * (Count div 2) + 1]] := v1;
-                    list[fg.VertexIndices[4 * (Count div 2) + 2]] := v2;
+                    list[fg.vertexIndices[4 * (Count div 2)]] := v0;
+                    list[fg.vertexIndices[4 * (Count div 2) + 1]] := v1;
+                    list[fg.vertexIndices[4 * (Count div 2) + 2]] := v2;
                   end
                   else
                   begin
-                    list[fg.VertexIndices[4 * (Count div 2)]] := v0;
-                    list[fg.VertexIndices[4 * (Count div 2) + 2]] := v1;
-                    list[fg.VertexIndices[4 * (Count div 2) + 3]] := v2;
+                    list[fg.vertexIndices[4 * (Count div 2)]] := v0;
+                    list[fg.vertexIndices[4 * (Count div 2) + 2]] := v1;
+                    list[fg.vertexIndices[4 * (Count div 2) + 3]] := v2;
                   end;
                 end;
             else
               Assert(False);
             end;
-            break;
+            Break;
           end;
         end;
 
@@ -3586,12 +3438,12 @@ begin
   end;
 end;
 
-procedure TVXMeshObject.SetUseVBO(const Value: boolean);
+procedure TVXMeshObject.SetUseVBO(const Value: Boolean);
 var
-  i: integer;
+  i: Integer;
 begin
   if Value = FUseVBO then
-    exit;
+    Exit;
 
   if FUseVBO then
   begin
@@ -3610,7 +3462,7 @@ end;
 
 procedure TVXMeshObject.SetValidBuffers(Value: TVBOBuffers);
 var
-  I: Integer;
+  i: Integer;
 begin
   if FValidBuffers <> Value then
   begin
@@ -3621,28 +3473,25 @@ begin
       FNormalsVBO.NotifyChangesOfData;
     if Assigned(FColorsVBO) then
       FColorsVBO.NotifyChangesOfData;
-    for I := 0 to high(FTexCoordsVBO) do
-      if Assigned(FTexCoordsVBO[I]) then
-        FTexCoordsVBO[I].NotifyChangesOfData;
+    for i := 0 to high(FTexCoordsVBO) do
+      if Assigned(FTexCoordsVBO[i]) then
+        FTexCoordsVBO[i].NotifyChangesOfData;
     if Assigned(FLightmapTexCoordsVBO) then
       FLightmapTexCoordsVBO.NotifyChangesOfData;
   end;
 end;
 
-procedure TVXMeshObject.BuildTangentSpace(
-  buildBinormals: Boolean = True;
-  buildTangents: Boolean = True);
+procedure TVXMeshObject.BuildTangentSpace(buildBinormals: Boolean = True; buildTangents: Boolean = True);
 var
   i, j: Integer;
-  v, n, t: array[0..2] of TAffineVector;
-  tangent,
-    binormal: array[0..2] of TVector;
+  v, n, t: array [0 .. 2] of TAffineVector;
+  tangent, binormal: array [0 .. 2] of TVector;
   vt, tt: TAffineVector;
   interp, dot: Single;
 
   procedure SortVertexData(sortidx: Integer);
   begin
-    if t[0].V[sortidx] < t[1].V[sortidx] then
+    if t[0].v[sortidx] < t[1].v[sortidx] then
     begin
       vt := v[0];
       tt := t[0];
@@ -3651,7 +3500,7 @@ var
       v[1] := vt;
       t[1] := tt;
     end;
-    if t[0].V[sortidx] < t[2].V[sortidx] then
+    if t[0].v[sortidx] < t[2].v[sortidx] then
     begin
       vt := v[0];
       tt := t[0];
@@ -3660,7 +3509,7 @@ var
       v[2] := vt;
       t[2] := tt;
     end;
-    if t[1].V[sortidx] < t[2].V[sortidx] then
+    if t[1].v[sortidx] < t[2].v[sortidx] then
     begin
       vt := v[1];
       tt := t[1];
@@ -3682,8 +3531,8 @@ begin
   begin
     // Get triangle data
     GetTriangleData(i, Vertices, v[0], v[1], v[2]);
-    GetTriangleData(i, Normals, n[0], n[1], n[2]);
-    GetTriangleData(i, TexCoords, t[0], t[1], t[2]);
+    GetTriangleData(i, normals, n[0], n[1], n[2]);
+    GetTriangleData(i, texCoords, t[0], t[1], t[2]);
 
     for j := 0 to 2 do
     begin
@@ -3739,35 +3588,33 @@ begin
   end;
 end;
 
-procedure TVXMeshObject.DeclareArraysToOpenGL(var mrci: TVXRenderContextInfo;
-  evenIfAlreadyDeclared: Boolean = False);
+procedure TVXMeshObject.DeclareArraysToOpenGL(var mrci: TVXRenderContextInfo; evenIfAlreadyDeclared: Boolean = False);
 var
   i: Integer;
   currentMapping: Cardinal;
-  lists: array[0..4] of pointer;
+  lists: array [0 .. 4] of pointer;
   tlists: array of pointer;
 begin
   if evenIfAlreadyDeclared or (not FArraysDeclared) then
   begin
-    FillChar(lists, sizeof(lists), 0);
+    FillChar(lists, SizeOf(lists), 0);
     SetLength(tlists, FTexCoordsEx.Count);
 
     // workaround for ATI bug, disable element VBO if
     // inside a display list
-    FUseVBO := FUseVBO
-      and GL_ARB_vertex_buffer_object
-      and not mrci.VXStates.InsideList;
+    FUseVBO := FUseVBO and not mrci.VXStates.InsideList;
+    /// and GL_ARB_vertex_buffer_object
 
     if not FUseVBO then
     begin
-      lists[0] := Vertices.List;
-      lists[1] := Normals.List;
-      lists[2] := Colors.List;
-      lists[3] := TexCoords.List;
-      lists[4] := LightMapTexCoords.List;
+      lists[0] := Vertices.list;
+      lists[1] := normals.list;
+      lists[2] := Colors.list;
+      lists[3] := texCoords.list;
+      lists[4] := LightMapTexCoords.list;
 
       for i := 0 to FTexCoordsEx.Count - 1 do
-        tlists[i] := TexCoordsEx[i].List;
+        tlists[i] := TexCoordsEx[i].list;
     end
     else
     begin
@@ -3776,7 +3623,7 @@ begin
 
     if not mrci.ignoreMaterials then
     begin
-      if Normals.Count > 0 then
+      if normals.Count > 0 then
       begin
         if FUseVBO then
           FNormalsVBO.Bind;
@@ -3794,7 +3641,7 @@ begin
       end
       else
         glDisableClientState(GL_COLOR_ARRAY);
-      if TexCoords.Count > 0 then
+      if texCoords.Count > 0 then
       begin
         if FUseVBO then
           FTexCoordsVBO[0].Bind;
@@ -3803,7 +3650,7 @@ begin
       end
       else
         glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-      if GL_ARB_multitexture then
+      /// if GL_ARB_multitexture then
       begin
         if LightMapTexCoords.Count > 0 then
         begin
@@ -3844,10 +3691,9 @@ begin
     else
       glDisableClientState(GL_VERTEX_ARRAY);
 
-    if GL_EXT_compiled_vertex_array and (LightMapTexCoords.Count = 0) and not
-      FUseVBO then
-      glLockArraysEXT(0, vertices.Count);
-
+    if (LightMapTexCoords.Count = 0) and not FUseVBO then
+    /// and GL_EXT_compiled_vertex_array
+      glLockArraysEXT(0, Vertices.Count);
     FLastLightMapIndex := -1;
     FArraysDeclared := True;
     FLightMapArrayEnabled := False;
@@ -3856,15 +3702,14 @@ begin
   end
   else
   begin
-    if not mrci.ignoreMaterials and not (mrci.drawState = dsPicking) then
-      if TexCoords.Count > 0 then
+    if not mrci.ignoreMaterials and not(mrci.drawState = dsPicking) then
+      if texCoords.Count > 0 then
       begin
         currentMapping := XGL.GetBitWiseMapping;
         if FLastXOpenGLTexMapping <> currentMapping then
         begin
           XGL.EnableClientState(GL_TEXTURE_COORD_ARRAY);
-          XGL.TexCoordPointer(2, GL_FLOAT, SizeOf(TAffineVector),
-            TexCoords.List);
+          XGL.TexCoordPointer(2, GL_FLOAT, SizeOf(TAffineVector), texCoords.list);
           FLastXOpenGLTexMapping := currentMapping;
         end;
       end;
@@ -3878,20 +3723,20 @@ begin
   if FArraysDeclared then
   begin
     DisableLightMapArray(mrci);
-    if GL_EXT_compiled_vertex_array and (LightMapTexCoords.Count = 0) and not
-      FUseVBO then
-        glUnlockArraysEXT;
+    if (LightMapTexCoords.Count = 0) and not FUseVBO then
+    /// and GL_EXT_compiled_vertex_array
+      glUnlockArraysEXT;
     if Vertices.Count > 0 then
       glDisableClientState(GL_VERTEX_ARRAY);
     if not mrci.ignoreMaterials then
     begin
-      if Normals.Count > 0 then
+      if normals.Count > 0 then
         glDisableClientState(GL_NORMAL_ARRAY);
       if (Colors.Count > 0) and (not mrci.ignoreMaterials) then
         glDisableClientState(GL_COLOR_ARRAY);
-      if TexCoords.Count > 0 then
+      if texCoords.Count > 0 then
         glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-      if GL_ARB_multitexture then
+      /// if GL_ARB_multitexture then
       begin
         if LightMapTexCoords.Count > 0 then
         begin
@@ -3914,11 +3759,11 @@ begin
     begin
       if Vertices.Count > 0 then
         FVerticesVBO.UnBind;
-      if Normals.Count > 0 then
+      if normals.Count > 0 then
         FNormalsVBO.UnBind;
       if Colors.Count > 0 then
         FColorsVBO.UnBind;
-      if TexCoords.Count > 0 then
+      if texCoords.Count > 0 then
         FTexCoordsVBO[0].UnBind;
       if LightMapTexCoords.Count > 0 then
         FLightmapTexCoordsVBO.UnBind;
@@ -3938,7 +3783,8 @@ end;
 
 procedure TVXMeshObject.EnableLightMapArray(var mrci: TVXRenderContextInfo);
 begin
-  if GL_ARB_multitexture and (not mrci.ignoreMaterials) then
+  if (not mrci.ignoreMaterials) then
+  /// and GL_ARB_multitexture
   begin
     Assert(FArraysDeclared);
     if not FLightMapArrayEnabled then
@@ -3953,7 +3799,8 @@ end;
 
 procedure TVXMeshObject.DisableLightMapArray(var mrci: TVXRenderContextInfo);
 begin
-  if GL_ARB_multitexture and FLightMapArrayEnabled then
+  if FLightMapArrayEnabled then
+  /// and GL_ARB_multitexture
   begin
     mrci.VXStates.ActiveTexture := 1;
     mrci.VXStates.ActiveTextureEnabled[ttTexture2D] := False;
@@ -3966,10 +3813,10 @@ procedure TVXMeshObject.PrepareBuildList(var mrci: TVXRenderContextInfo);
 var
   i: Integer;
 begin
-  if (Mode = momFaceGroups) and Assigned(mrci.materialLibrary) then
+  if (mode = momFaceGroups) and Assigned(mrci.MaterialLibrary) then
   begin
     for i := 0 to FaceGroups.Count - 1 do
-      with TVXFaceGroup(FaceGroups.List^[i]) do
+      with TVXFaceGroup(FaceGroups.list^[i]) do
       begin
         if MaterialCache <> nil then
           MaterialCache.PrepareBuildList;
@@ -3981,7 +3828,7 @@ procedure TVXMeshObject.BufferArrays;
 const
   BufferUsage = GL_DYNAMIC_DRAW;
 var
-  I: integer;
+  i: Integer;
 begin
   if Vertices.Count > 0 then
   begin
@@ -3991,10 +3838,7 @@ begin
 
     if FVerticesVBO.IsDataNeedUpdate then
     begin
-      FVerticesVBO.BindBufferData(
-      Vertices.List,
-      sizeof(TAffineVector) * Vertices.Count,
-      BufferUsage);
+      FVerticesVBO.BindBufferData(Vertices.list, SizeOf(TAffineVector) * Vertices.Count, BufferUsage);
       FVerticesVBO.NotifyDataUpdated;
       FVerticesVBO.UnBind;
     end;
@@ -4002,7 +3846,7 @@ begin
     Include(FValidBuffers, vbVertices);
   end;
 
-  if Normals.Count > 0 then
+  if normals.Count > 0 then
   begin
     if not Assigned(FNormalsVBO) then
       FNormalsVBO := TVXVBOArrayBufferHandle.Create;
@@ -4010,10 +3854,7 @@ begin
 
     if FNormalsVBO.IsDataNeedUpdate then
     begin
-      FNormalsVBO.BindBufferData(
-        Normals.List,
-        sizeof(TAffineVector) * Normals.Count,
-        BufferUsage);
+      FNormalsVBO.BindBufferData(normals.list, SizeOf(TAffineVector) * normals.Count, BufferUsage);
       FNormalsVBO.NotifyDataUpdated;
       FNormalsVBO.UnBind;
     end;
@@ -4029,10 +3870,7 @@ begin
 
     if FColorsVBO.IsDataNeedUpdate then
     begin
-      FColorsVBO.BindBufferData(
-        Colors.List,
-        sizeof(TVector) * Colors.Count,
-        BufferUsage);
+      FColorsVBO.BindBufferData(Colors.list, SizeOf(TVector) * Colors.Count, BufferUsage);
       FColorsVBO.NotifyDataUpdated;
       FColorsVBO.UnBind;
     end;
@@ -4040,7 +3878,7 @@ begin
     Include(FValidBuffers, vbColors);
   end;
 
-  if TexCoords.Count > 0 then
+  if texCoords.Count > 0 then
   begin
     if Length(FTexCoordsVBO) < 1 then
       SetLength(FTexCoordsVBO, 1);
@@ -4051,10 +3889,7 @@ begin
 
     if FTexCoordsVBO[0].IsDataNeedUpdate then
     begin
-      FTexCoordsVBO[0].BindBufferData(
-        TexCoords.List,
-        sizeof(TAffineVector) * TexCoords.Count,
-        BufferUsage);
+      FTexCoordsVBO[0].BindBufferData(texCoords.list, SizeOf(TAffineVector) * texCoords.Count, BufferUsage);
       FTexCoordsVBO[0].NotifyDataUpdated;
       FTexCoordsVBO[0].UnBind;
     end;
@@ -4068,10 +3903,7 @@ begin
       FLightmapTexCoordsVBO := TVXVBOArrayBufferHandle.Create;
     FLightmapTexCoordsVBO.AllocateHandle;
 
-    FLightmapTexCoordsVBO.BindBufferData(
-      LightMapTexCoords.List,
-      sizeof(TAffineVector) * LightMapTexCoords.Count,
-      BufferUsage);
+    FLightmapTexCoordsVBO.BindBufferData(LightMapTexCoords.list, SizeOf(TAffineVector) * LightMapTexCoords.Count, BufferUsage);
     FLightmapTexCoordsVBO.NotifyDataUpdated;
     FLightmapTexCoordsVBO.UnBind;
 
@@ -4083,7 +3915,7 @@ begin
     if Length(FTexCoordsVBO) < FTexCoordsEx.Count then
       SetLength(FTexCoordsVBO, FTexCoordsEx.Count);
 
-    for I := 0 to FTexCoordsEx.Count - 1 do
+    for i := 0 to FTexCoordsEx.Count - 1 do
     begin
       if TexCoordsEx[i].Count <= 0 then
         continue;
@@ -4094,9 +3926,7 @@ begin
 
       if FTexCoordsVBO[i].IsDataNeedUpdate then
       begin
-        FTexCoordsVBO[i].BindBufferData(
-          TexCoordsEx[i].List, sizeof(TVector) * TexCoordsEx[i].Count,
-          BufferUsage);
+        FTexCoordsVBO[i].BindBufferData(TexCoordsEx[i].list, SizeOf(TVector) * TexCoordsEx[i].Count, BufferUsage);
         FTexCoordsVBO[i].NotifyDataUpdated;
         FTexCoordsVBO[i].UnBind;
       end;
@@ -4105,7 +3935,7 @@ begin
     Include(FValidBuffers, vbTexCoordsEx);
   end;
 
-  CheckOpenGLError;
+  /// CheckOpenGLError;
 end;
 
 procedure TVXMeshObject.BuildList(var mrci: TVXRenderContextInfo);
@@ -4127,49 +3957,49 @@ begin
     mrci.VXStates.SetMaterialColors(cmFront, clrBlack, clrGray20, clrGray80, clrBlack, 0);
     mrci.VXStates.SetMaterialColors(cmBack, clrBlack, clrGray20, clrGray80, clrBlack, 0);
   end;
-  case Mode of
-    momTriangles, momTriangleStrip: if Vertices.Count > 0 then
+  case mode of
+    momTriangles, momTriangleStrip:
+      if Vertices.Count > 0 then
       begin
         DeclareArraysToOpenGL(mrci);
-        gotNormals := (Vertices.Count = Normals.Count);
-        gotTexCoords := (Vertices.Count = TexCoords.Count);
+        gotNormals := (Vertices.Count = normals.Count);
+        gotTexCoords := (Vertices.Count = texCoords.Count);
         SetLength(gotTexCoordsEx, FTexCoordsEx.Count);
         for i := 0 to FTexCoordsEx.Count - 1 do
-          gotTexCoordsEx[i] := (TexCoordsEx[i].Count > 0) and
-            GL_ARB_multitexture;
-        if Mode = momTriangles then
+          gotTexCoordsEx[i] := (TexCoordsEx[i].Count > 0);
+        /// and GL_ARB_multitexture;
+        if mode = momTriangles then
           glBegin(GL_TRIANGLES)
         else
           glBegin(GL_TRIANGLE_STRIP);
         for i := 0 to Vertices.Count - 1 do
         begin
           if gotNormals then
-            glNormal3fv(@Normals.List[i]);
+            glNormal3fv(@normals.list[i]);
           if gotColor then
-            glColor4fv(@Colors.List[i]);
+            glColor4fv(@Colors.list[i]);
           if FTexCoordsEx.Count > 0 then
           begin
             if gotTexCoordsEx[0] then
-              glMultiTexCoord4fv(GL_TEXTURE0, @TexCoordsEx[0].List[i])
+              glMultiTexCoord4fv(GL_TEXTURE0, @TexCoordsEx[0].list[i])
             else if gotTexCoords then
-              glTexCoord2fv(@TexCoords.List[i]);
+              glTexCoord2fv(@texCoords.list[i]);
             for j := 1 to FTexCoordsEx.Count - 1 do
               if gotTexCoordsEx[j] then
-                glMultiTexCoord4fv(GL_TEXTURE0 + j,
-                  @TexCoordsEx[j].List[i]);
+                glMultiTexCoord4fv(GL_TEXTURE0 + j, @TexCoordsEx[j].list[i]);
           end
           else
           begin
             if gotTexCoords then
-              glTexCoord2fv(@TexCoords.List[i]);
+              glTexCoord2fv(@texCoords.list[i]);
           end;
-          glVertex3fv(@Vertices.List[i]);
+          glVertex3fv(@Vertices.list[i]);
         end;
         glEnd;
       end;
     momFaceGroups:
       begin
-        if Assigned(mrci.materialLibrary) then
+        if Assigned(mrci.MaterialLibrary) then
         begin
           if moroGroupByMaterial in RenderingOptions then
           begin
@@ -4188,8 +4018,7 @@ begin
                   for j := i to FaceGroups.Count - 1 do
                     with FaceGroups[j] do
                     begin
-                      if (FRenderGroupID <> groupID)
-                        and (FMaterialCache = libMat) then
+                      if (FRenderGroupID <> groupID) and (FMaterialCache = libMat) then
                       begin
                         FRenderGroupID := groupID;
                         BuildList(mrci);
@@ -4258,7 +4087,7 @@ end;
 
 constructor TVXMeshObjectList.CreateOwned(aOwner: TVXBaseMesh);
 begin
-  FOwner := AOwner;
+  FOwner := aOwner;
   Create;
 end;
 
@@ -4271,25 +4100,24 @@ end;
 procedure TVXMeshObjectList.ReadFromFiler(reader: TVirtualReader);
 var
   i: Integer;
-  mesh: TVXMeshObject;
+  Mesh: TVXMeshObject;
 begin
   inherited;
   for i := 0 to Count - 1 do
   begin
-    mesh := Items[i];
-    mesh.FOwner := Self;
-    if mesh is TVXSkeletonMeshObject then
-      TVXSkeletonMeshObject(mesh).PrepareBoneMatrixInvertedMeshes;
+    Mesh := Items[i];
+    Mesh.FOwner := Self;
+    if Mesh is TVXSkeletonMeshObject then
+      TVXSkeletonMeshObject(Mesh).PrepareBoneMatrixInvertedMeshes;
   end;
 end;
 
-procedure TVXMeshObjectList.PrepareMaterialLibraryCache(matLib:
-  TVXMaterialLibrary);
+procedure TVXMeshObjectList.PrepareMaterialLibraryCache(matLib: TVXMaterialLibrary);
 var
   i: Integer;
 begin
   for i := 0 to Count - 1 do
-    TVXMeshObject(List^[i]).PrepareMaterialLibraryCache(matLib);
+    TVXMeshObject(list^[i]).PrepareMaterialLibraryCache(matLib);
 end;
 
 procedure TVXMeshObjectList.DropMaterialLibraryCache;
@@ -4297,7 +4125,7 @@ var
   i: Integer;
 begin
   for i := 0 to Count - 1 do
-    TVXMeshObject(List^[i]).DropMaterialLibraryCache;
+    TVXMeshObject(list^[i]).DropMaterialLibraryCache;
 end;
 
 procedure TVXMeshObjectList.PrepareBuildList(var mrci: TVXRenderContextInfo);
@@ -4329,15 +4157,13 @@ begin
       TVXMorphableMeshObject(Items[i]).MorphTo(morphTargetIndex);
 end;
 
-procedure TVXMeshObjectList.Lerp(morphTargetIndex1, morphTargetIndex2: Integer;
-  lerpFactor: Single);
+procedure TVXMeshObjectList.Lerp(morphTargetIndex1, morphTargetIndex2: Integer; lerpFactor: Single);
 var
   i: Integer;
 begin
   for i := 0 to Count - 1 do
     if Items[i] is TVXMorphableMeshObject then
-      TVXMorphableMeshObject(Items[i]).Lerp(morphTargetIndex1, morphTargetIndex2,
-        lerpFactor);
+      TVXMorphableMeshObject(Items[i]).Lerp(morphTargetIndex1, morphTargetIndex2, lerpFactor);
 end;
 
 function TVXMeshObjectList.MorphTargetCount: Integer;
@@ -4370,7 +4196,7 @@ end;
 
 function TVXMeshObjectList.GetMeshObject(Index: Integer): TVXMeshObject;
 begin
-  Result := TVXMeshObject(List^[Index]);
+  Result := TVXMeshObject(list^[Index]);
 end;
 
 procedure TVXMeshObjectList.GetExtents(out min, max: TAffineVector);
@@ -4378,8 +4204,8 @@ var
   i, k: Integer;
   lMin, lMax: TAffineVector;
 const
-  cBigValue: Single = 1e30;
-  cSmallValue: Single = -1e30;
+  cBigValue: Single = 1E30;
+  cSmallValue: Single = -1E30;
 begin
   SetVector(min, cBigValue, cBigValue, cBigValue);
   SetVector(max, cSmallValue, cSmallValue, cSmallValue);
@@ -4388,10 +4214,10 @@ begin
     GetMeshObject(i).GetExtents(lMin, lMax);
     for k := 0 to 2 do
     begin
-      if lMin.V[k] < min.V[k] then
-        min.V[k] := lMin.V[k];
-      if lMax.V[k] > max.V[k] then
-        max.V[k] := lMax.V[k];
+      if lMin.v[k] < min.v[k] then
+        min.v[k] := lMin.v[k];
+      if lMax.v[k] > max.v[k] then
+        max.v[k] := lMax.v[k];
     end;
   end;
 end;
@@ -4404,8 +4230,8 @@ begin
     GetMeshObject(i).Translate(delta);
 end;
 
-function TVXMeshObjectList.ExtractTriangles(texCoords: TAffineVectorList = nil;
-  normals: TAffineVectorList = nil): TAffineVectorList;
+function TVXMeshObjectList.ExtractTriangles(texCoords: TAffineVectorList = nil; normals: TAffineVectorList = nil)
+  : TAffineVectorList;
 var
   i: Integer;
   obj: TVXMeshObject;
@@ -4470,53 +4296,52 @@ end;
 
 function TVXMeshObjectList.FindMeshByName(MeshName: string): TVXMeshObject;
 var
-  i: integer;
+  i: Integer;
 begin
   Result := nil;
   for i := 0 to Count - 1 do
     if Items[i].Name = MeshName then
     begin
       Result := Items[i];
-      break;
+      Break;
     end;
 end;
 
-procedure TVXMeshObjectList.BuildTangentSpace(buildBinormals,
-  buildTangents: Boolean);
+procedure TVXMeshObjectList.BuildTangentSpace(buildBinormals, buildTangents: Boolean);
 var
-  I: Integer;
+  i: Integer;
 begin
   if Count <> 0 then
-    for I := 0 to Count - 1 do
-      GetMeshObject(I).BuildTangentSpace(buildBinormals, buildTangents);
+    for i := 0 to Count - 1 do
+      GetMeshObject(i).BuildTangentSpace(buildBinormals, buildTangents);
 end;
 
 function TVXMeshObjectList.GetUseVBO: Boolean;
 var
-  I: Integer;
+  i: Integer;
 begin
   Result := True;
   if Count <> 0 then
-    for I := 0 to Count - 1 do
-      Result := Result and GetMeshObject(I).FUseVBO;
+    for i := 0 to Count - 1 do
+      Result := Result and GetMeshObject(i).FUseVBO;
 end;
 
 procedure TVXMeshObjectList.SetUseVBO(const Value: Boolean);
 var
-  I: Integer;
+  i: Integer;
 begin
   if Count <> 0 then
-    for I := 0 to Count - 1 do
-      GetMeshObject(I).SetUseVBO(Value);
+    for i := 0 to Count - 1 do
+      GetMeshObject(i).SetUseVBO(Value);
 end;
 
 // ------------------
 // ------------------ TVXMeshMorphTarget ------------------
 // ------------------
 
-constructor TVXMeshMorphTarget.CreateOwned(AOwner: TVXMeshMorphTargetList);
+constructor TVXMeshMorphTarget.CreateOwned(aOwner: TVXMeshMorphTargetList);
 begin
-  FOwner := AOwner;
+  FOwner := aOwner;
   Create;
   if Assigned(FOwner) then
     FOwner.Add(Self);
@@ -4535,7 +4360,7 @@ begin
   with writer do
   begin
     WriteInteger(0); // Archive Version 0
-    //nothing
+    // nothing
   end;
 end;
 
@@ -4548,7 +4373,7 @@ begin
   if archiveVersion = 0 then
     with reader do
     begin
-      //nothing
+      // nothing
     end
   else
     RaiseFilerException(archiveVersion);
@@ -4558,9 +4383,9 @@ end;
 // ------------------ TVXMeshMorphTargetList ------------------
 // ------------------
 
-constructor TVXMeshMorphTargetList.CreateOwned(AOwner: TPersistent);
+constructor TVXMeshMorphTargetList.CreateOwned(aOwner: TPersistent);
 begin
-  FOwner := AOwner;
+  FOwner := aOwner;
   Create;
 end;
 
@@ -4600,10 +4425,9 @@ begin
   inherited;
 end;
 
-function TVXMeshMorphTargetList.GeTVXMeshMorphTarget(Index: Integer):
-  TVXMeshMorphTarget;
+function TVXMeshMorphTargetList.GeTVXMeshMorphTarget(Index: Integer): TVXMeshMorphTarget;
 begin
-  Result := TVXMeshMorphTarget(List^[Index]);
+  Result := TVXMeshMorphTarget(list^[Index]);
 end;
 
 // ------------------
@@ -4672,22 +4496,20 @@ begin
       Self.Vertices.Assign(Vertices);
       ValidBuffers := ValidBuffers - [vbVertices];
     end;
-    if Normals.Count > 0 then
+    if normals.Count > 0 then
     begin
-      Self.Normals.Assign(Normals);
+      Self.normals.Assign(normals);
       ValidBuffers := ValidBuffers - [vbNormals];
     end;
   end;
 end;
 
-procedure TVXMorphableMeshObject.Lerp(morphTargetIndex1, morphTargetIndex2:
-  Integer;
-  lerpFactor: Single);
+procedure TVXMorphableMeshObject.Lerp(morphTargetIndex1, morphTargetIndex2: Integer; lerpFactor: Single);
 var
   mt1, mt2: TVXMeshMorphTarget;
 begin
-  Assert((Cardinal(morphTargetIndex1) < Cardinal(MorphTargets.Count))
-    and (Cardinal(morphTargetIndex2) < Cardinal(MorphTargets.Count)));
+  Assert((Cardinal(morphTargetIndex1) < Cardinal(MorphTargets.Count)) and
+    (Cardinal(morphTargetIndex2) < Cardinal(MorphTargets.Count)));
   if lerpFactor = 0 then
     MorphTo(morphTargetIndex1)
   else if lerpFactor = 1 then
@@ -4701,10 +4523,10 @@ begin
       Vertices.Lerp(mt1.Vertices, mt2.Vertices, lerpFactor);
       ValidBuffers := ValidBuffers - [vbVertices];
     end;
-    if mt1.Normals.Count > 0 then
+    if mt1.normals.Count > 0 then
     begin
-      Normals.Lerp(mt1.Normals, mt2.Normals, lerpFactor);
-      Normals.Normalize;
+      normals.Lerp(mt1.normals, mt2.normals, lerpFactor);
+      normals.normalize;
       ValidBuffers := ValidBuffers - [vbNormals];
     end;
   end;
@@ -4741,14 +4563,13 @@ begin
     WriteInteger(FBonesPerVertex);
     WriteInteger(FVerticeBoneWeightCapacity);
     for i := 0 to FVerticeBoneWeightCount - 1 do
-      Write(FVerticesBonesWeights[i][0], FBonesPerVertex *
-        SizeOf(TVertexBoneWeight));
+      Write(FVerticesBonesWeights[i][0], FBonesPerVertex * SizeOf(TVertexBoneWeight));
   end;
 end;
 
 procedure TVXSkeletonMeshObject.ReadFromFiler(reader: TVirtualReader);
 var
-  archiveVersion, i: integer;
+  archiveVersion, i: Integer;
 begin
   inherited ReadFromFiler(reader);
   archiveVersion := reader.ReadInteger;
@@ -4760,8 +4581,7 @@ begin
       FVerticeBoneWeightCapacity := ReadInteger;
       ResizeVerticesBonesWeights;
       for i := 0 to FVerticeBoneWeightCount - 1 do
-        Read(FVerticesBonesWeights[i][0], FBonesPerVertex *
-          SizeOf(TVertexBoneWeight));
+        Read(FVerticesBonesWeights[i][0], FBonesPerVertex * SizeOf(TVertexBoneWeight));
     end
   else
     RaiseFilerException(archiveVersion);
@@ -4831,9 +4651,7 @@ begin
     GetMem(newArea, VerticeBoneWeightCapacity * SizeOf(PVertexBoneWeightArray));
     newArea[0] := AllocMem(n * SizeOf(TVertexBoneWeight));
     for i := 1 to VerticeBoneWeightCapacity - 1 do
-      newArea[i] := PVertexBoneWeightArray(
-        PtrUInt(newArea[0]) +
-        PtrUInt(i * SizeOf(TVertexBoneWeight) * BonesPerVertex));
+      newArea[i] := PVertexBoneWeightArray(PtrUInt(newArea[0]) + PtrUInt(i * SizeOf(TVertexBoneWeight) * BonesPerVertex));
     // transfer old data
     if FLastVerticeBoneWeightCount < VerticeBoneWeightCount then
       n := FLastVerticeBoneWeightCount
@@ -4857,8 +4675,7 @@ begin
   FLastBonesPerVertex := FBonesPerVertex;
 end;
 
-procedure TVXSkeletonMeshObject.AddWeightedBone(aBoneID: Integer; aWeight:
-  Single);
+procedure TVXSkeletonMeshObject.AddWeightedBone(aBoneID: Integer; aWeight: Single);
 begin
   if BonesPerVertex < 1 then
     BonesPerVertex := 1;
@@ -4866,12 +4683,11 @@ begin
   with VerticesBonesWeights^[VerticeBoneWeightCount - 1]^[0] do
   begin
     BoneID := aBoneID;
-    Weight := aWeight;
+    weight := aWeight;
   end;
 end;
 
-procedure TVXSkeletonMeshObject.AddWeightedBones(const boneIDs:
-  TVertexBoneWeightDynArray);
+procedure TVXSkeletonMeshObject.AddWeightedBones(const boneIDs: TVertexBoneWeightDynArray);
 var
   i: Integer;
   n: Integer;
@@ -4885,13 +4701,12 @@ begin
     with VerticesBonesWeights^[VerticeBoneWeightCount - 1]^[i] do
     begin
       BoneID := boneIDs[i].BoneID;
-      Weight := boneIDs[i].Weight;
+      weight := boneIDs[i].weight;
     end;
   end;
 end;
 
-function TVXSkeletonMeshObject.FindOrAdd(boneID: Integer;
-  const vertex, normal: TAffineVector): Integer;
+function TVXSkeletonMeshObject.FindOrAdd(BoneID: Integer; const vertex, normal: TAffineVector): Integer;
 var
   i: Integer;
   dynArray: TVertexBoneWeightDynArray;
@@ -4899,30 +4714,29 @@ begin
   if BonesPerVertex > 1 then
   begin
     SetLength(dynArray, 1);
-    dynArray[0].BoneID := boneID;
-    dynArray[0].Weight := 1;
+    dynArray[0].BoneID := BoneID;
+    dynArray[0].weight := 1;
     Result := FindOrAdd(dynArray, vertex, normal);
     Exit;
   end;
   Result := -1;
   for i := 0 to Vertices.Count - 1 do
-    if (VerticesBonesWeights^[i]^[0].BoneID = boneID)
-      and VectorEquals(Vertices.List^[i], vertex)
-      and VectorEquals(Normals.List^[i], normal) then
+    if (VerticesBonesWeights^[i]^[0].BoneID = BoneID) and VectorEquals(Vertices.list^[i], vertex) and
+      VectorEquals(normals.list^[i], normal) then
     begin
       Result := i;
       Break;
     end;
   if Result < 0 then
   begin
-    AddWeightedBone(boneID, 1);
+    AddWeightedBone(BoneID, 1);
     Vertices.Add(vertex);
-    Result := Normals.Add(normal);
+    Result := normals.Add(normal);
   end;
 end;
 
-function TVXSkeletonMeshObject.FindOrAdd(const boneIDs: TVertexBoneWeightDynArray;
-  const vertex, normal: TAffineVector): Integer;
+function TVXSkeletonMeshObject.FindOrAdd(const boneIDs: TVertexBoneWeightDynArray; const vertex, normal: TAffineVector)
+  : Integer;
 var
   i, j: Integer;
   bonesMatch: Boolean;
@@ -4933,15 +4747,14 @@ begin
     bonesMatch := True;
     for j := 0 to High(boneIDs) do
     begin
-      if (boneIDs[j].BoneID <> VerticesBonesWeights^[i]^[j].BoneID)
-        or (boneIDs[j].Weight <> VerticesBonesWeights^[i]^[j].Weight) then
+      if (boneIDs[j].BoneID <> VerticesBonesWeights^[i]^[j].BoneID) or (boneIDs[j].weight <> VerticesBonesWeights^[i]^[j].weight)
+      then
       begin
         bonesMatch := False;
         Break;
       end;
     end;
-    if bonesMatch and VectorEquals(Vertices[i], vertex)
-      and VectorEquals(Normals[i], normal) then
+    if bonesMatch and VectorEquals(Vertices[i], vertex) and VectorEquals(normals[i], normal) then
     begin
       Result := i;
       Break;
@@ -4951,7 +4764,7 @@ begin
   begin
     AddWeightedBones(boneIDs);
     Vertices.Add(vertex);
-    Result := Normals.Add(normal);
+    Result := normals.Add(normal);
   end;
 end;
 
@@ -4960,7 +4773,7 @@ var
   i, k, boneIndex: Integer;
   invMesh: TVXBaseMeshObject;
   invMat: TMatrix;
-  bone: TVXSkeletonBone;
+  Bone: TVXSkeletonBone;
   p: TVector;
 begin
   // cleanup existing stuff
@@ -4973,24 +4786,24 @@ begin
     invMesh := TVXBaseMeshObject.Create;
     FBoneMatrixInvertedMeshes.Add(invMesh);
     invMesh.Vertices := Vertices;
-    invMesh.Normals := Normals;
+    invMesh.normals := normals;
     for i := 0 to Vertices.Count - 1 do
     begin
       boneIndex := VerticesBonesWeights^[i]^[k].BoneID;
-      bone := Owner.Owner.Skeleton.RootBones.BoneByID(boneIndex);
+      Bone := Owner.Owner.Skeleton.RootBones.BoneByID(boneIndex);
       // transform point
       MakePoint(p, Vertices[i]);
-      invMat := bone.GlobalMatrix;
+      invMat := Bone.GlobalMatrix;
       InvertMatrix(invMat);
       p := VectorTransform(p, invMat);
       invMesh.Vertices[i] := PAffineVector(@p)^;
       // transform normal
-      SetVector(p, Normals[i]);
-      invMat := bone.GlobalMatrix;
+      SetVector(p, normals[i]);
+      invMat := Bone.GlobalMatrix;
       invMat.W := NullHmgPoint;
       InvertMatrix(invMat);
       p := VectorTransform(p, invMat);
-      invMesh.Normals[i] := PAffineVector(@p)^;
+      invMesh.normals[i] := PAffineVector(@p)^;
     end;
   end;
 end;
@@ -5037,33 +4850,31 @@ end;
 
 procedure TVXSkeletonMeshObject.ApplyCurrentSkeletonFrame(normalize: Boolean);
 var
-  i, j, boneID: Integer;
+  i, j, BoneID: Integer;
   refVertices, refNormals: TAffineVectorList;
   n, nt: TVector;
-  bone: TVXSkeletonBone;
-  skeleton: TVXSkeleton;
-  tempvert,
-    tempnorm: TAffineVector;
+  Bone: TVXSkeletonBone;
+  Skeleton: TVXSkeleton;
+  tempvert, tempnorm: TAffineVector;
 begin
   with TVXBaseMeshObject(FBoneMatrixInvertedMeshes[0]) do
   begin
     refVertices := Vertices;
-    refNormals := Normals;
+    refNormals := normals;
   end;
-  skeleton := Owner.Owner.Skeleton;
+  Skeleton := Owner.Owner.Skeleton;
   n.W := 0;
   if BonesPerVertex = 1 then
   begin
     // simple case, one bone per vertex
     for i := 0 to refVertices.Count - 1 do
     begin
-      boneID := VerticesBonesWeights^[i]^[0].BoneID;
-      bone := skeleton.BoneByID(boneID);
-      Vertices.List^[i] := VectorTransform(refVertices.List^[i],
-        bone.GlobalMatrix);
-      PAffineVector(@n)^ := refNormals.List^[i];
-      nt := VectorTransform(n, bone.GlobalMatrix);
-      Normals.List^[i] := PAffineVector(@nt)^;
+      BoneID := VerticesBonesWeights^[i]^[0].BoneID;
+      Bone := Skeleton.BoneByID(BoneID);
+      Vertices.list^[i] := VectorTransform(refVertices.list^[i], Bone.GlobalMatrix);
+      PAffineVector(@n)^ := refNormals.list^[i];
+      nt := VectorTransform(n, Bone.GlobalMatrix);
+      normals.list^[i] := PAffineVector(@nt)^;
     end;
   end
   else
@@ -5071,46 +4882,43 @@ begin
     // multiple bones per vertex
     for i := 0 to refVertices.Count - 1 do
     begin
-      Vertices.List^[i] := NullVector;
-      Normals.List^[i] := NullVector;
+      Vertices.list^[i] := NullVector;
+      normals.list^[i] := NullVector;
       for j := 0 to BonesPerVertex - 1 do
       begin
         with TVXBaseMeshObject(FBoneMatrixInvertedMeshes[j]) do
         begin
           refVertices := Vertices;
-          refNormals := Normals;
+          refNormals := normals;
         end;
         tempvert := NullVector;
         tempnorm := NullVector;
-        if VerticesBonesWeights^[i]^[j].Weight <> 0 then
+        if VerticesBonesWeights^[i]^[j].weight <> 0 then
         begin
-          boneID := VerticesBonesWeights^[i]^[j].BoneID;
-          bone := skeleton.BoneByID(boneID);
-          CombineVector(tempvert,
-            VectorTransform(refVertices.List^[i], bone.GlobalMatrix),
-            VerticesBonesWeights^[i]^[j].Weight);
-          PAffineVector(@n)^ := refNormals.List^[i];
-          n := VectorTransform(n, bone.GlobalMatrix);
-          CombineVector(tempnorm,
-            PAffineVector(@n)^,
-            VerticesBonesWeights^[i]^[j].Weight);
+          BoneID := VerticesBonesWeights^[i]^[j].BoneID;
+          Bone := Skeleton.BoneByID(BoneID);
+          CombineVector(tempvert, VectorTransform(refVertices.list^[i], Bone.GlobalMatrix),
+            VerticesBonesWeights^[i]^[j].weight);
+          PAffineVector(@n)^ := refNormals.list^[i];
+          n := VectorTransform(n, Bone.GlobalMatrix);
+          CombineVector(tempnorm, PAffineVector(@n)^, VerticesBonesWeights^[i]^[j].weight);
         end;
-        AddVector(Vertices.List^[i], tempvert);
-        AddVector(Normals.List^[i], tempnorm);
+        AddVector(Vertices.list^[i], tempvert);
+        AddVector(normals.list^[i], tempnorm);
       end;
     end;
   end;
   if normalize then
-    Normals.Normalize;
+    normals.normalize;
 end;
 
 // ------------------
 // ------------------ TVXFaceGroup ------------------
 // ------------------
 
-constructor TVXFaceGroup.CreateOwned(AOwner: TVXFaceGroups);
+constructor TVXFaceGroup.CreateOwned(aOwner: TVXFaceGroups);
 begin
-  FOwner := AOwner;
+  FOwner := aOwner;
   FLightMapIndex := -1;
   Create;
   if Assigned(FOwner) then
@@ -5149,7 +4957,7 @@ var
 begin
   inherited ReadFromFiler(reader);
   archiveVersion := reader.ReadInteger;
-  if archiveVersion in [0..1] then
+  if archiveVersion in [0 .. 1] then
     with reader do
     begin
       FMaterialName := ReadString;
@@ -5162,38 +4970,34 @@ begin
     RaiseFilerException(archiveVersion);
 end;
 
-procedure TVXFaceGroup.AttachLightmap(lightMap: TVXTexture; var mrci:
-  TVXRenderContextInfo);
+procedure TVXFaceGroup.AttachLightmap(lightMap: TVXTexture; var mrci: TVXRenderContextInfo);
 begin
-  if GL_ARB_multitexture then
-    with lightMap do
-    begin
-      Assert(Image.NativeTextureTarget = ttTexture2D);
-      mrci.VXStates.TextureBinding[1, ttTexture2D] := Handle;
-      glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+  /// if GL_ARB_multitexture then
+  with lightMap do
+  begin
+    Assert(Image.NativeTextureTarget = ttTexture2D);
+    mrci.VXStates.TextureBinding[1, ttTexture2D] := Handle;
+    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
-      mrci.VXStates.ActiveTexture := 0;
-    end;
+    mrci.VXStates.ActiveTexture := 0;
+  end;
 end;
 
 procedure TVXFaceGroup.AttachOrDetachLightmap(var mrci: TVXRenderContextInfo);
 var
   libMat: TVXLibMaterial;
 begin
-  if GL_ARB_multitexture then
-  begin
-    if (not mrci.ignoreMaterials) and Assigned(mrci.lightmapLibrary) then
+///  if GL_ARB_multitexture then
+    if (not mrci.ignoreMaterials) and Assigned(mrci.LightmapLibrary) then
     begin
-      if Owner.Owner.FLastLightMapIndex <> lightMapIndex then
+      if Owner.Owner.FLastLightMapIndex <> LightMapIndex then
       begin
-        Owner.Owner.FLastLightMapIndex := lightMapIndex;
-        if lightMapIndex >= 0 then
+        Owner.Owner.FLastLightMapIndex := LightMapIndex;
+        if LightMapIndex >= 0 then
         begin
           // attach and activate lightmap
-          Assert(lightMapIndex <
-            TVXMaterialLibrary(mrci.lightmapLibrary).Materials.Count);
-          libMat :=
-            TVXMaterialLibrary(mrci.lightmapLibrary).Materials[lightMapIndex];
+          Assert(LightMapIndex < TVXMaterialLibrary(mrci.LightmapLibrary).Materials.Count);
+          libMat := TVXMaterialLibrary(mrci.LightmapLibrary).Materials[LightMapIndex];
           AttachLightmap(libMat.Material.Texture, mrci);
           Owner.Owner.EnableLightMapArray(mrci);
         end
@@ -5204,7 +5008,6 @@ begin
         end;
       end;
     end;
-  end;
 end;
 
 procedure TVXFaceGroup.PrepareMaterialLibraryCache(matLib: TVXMaterialLibrary);
@@ -5220,8 +5023,7 @@ begin
   FMaterialCache := nil;
 end;
 
-procedure TVXFaceGroup.AddToTriangles(aList: TAffineVectorList;
-  aTexCoords: TAffineVectorList = nil;
+procedure TVXFaceGroup.AddToTriangles(aList: TAffineVectorList; aTexCoords: TAffineVectorList = nil;
   aNormals: TAffineVectorList = nil);
 begin
   // nothing
@@ -5294,10 +5096,7 @@ begin
 
   if FIndexVBO.IsDataNeedUpdate then
   begin
-    FIndexVBO.BindBufferData(
-      VertexIndices.List,
-      SizeOf(Integer) * VertexIndices.Count,
-      BufferUsage);
+    FIndexVBO.BindBufferData(vertexIndices.list, SizeOf(Integer) * vertexIndices.Count, BufferUsage);
     FIndexVBO.NotifyDataUpdated;
   end;
 end;
@@ -5310,10 +5109,10 @@ end;
 
 procedure TFGVertexIndexList.BuildList(var mrci: TVXRenderContextInfo);
 const
-  cFaceGroupMeshModeToOpenGL: array[TVXFaceGroupMeshMode] of Integer =
-    (GL_TRIANGLES, GL_TRIANGLE_STRIP, GL_TRIANGLES, GL_TRIANGLE_FAN, GL_QUADS);
+  cFaceGroupMeshModeToOpenGL: array [TVXFaceGroupMeshMode] of Integer = (GL_TRIANGLES, GL_TRIANGLE_STRIP, GL_TRIANGLES,
+    GL_TRIANGLE_FAN, GL_QUADS);
 begin
-  if VertexIndices.Count = 0 then
+  if vertexIndices.Count = 0 then
     Exit;
   Owner.Owner.DeclareArraysToOpenGL(mrci, False);
   AttachOrDetachLightmap(mrci);
@@ -5323,19 +5122,16 @@ begin
     SetupVBO;
 
     FIndexVBO.Bind;
-    glDrawElements(cFaceGroupMeshModeToOpenGL[Mode], VertexIndices.Count,
-      GL_UNSIGNED_INT, nil);
+    glDrawElements(cFaceGroupMeshModeToOpenGL[mode], vertexIndices.Count, GL_UNSIGNED_INT, nil);
     FIndexVBO.UnBind;
   end
   else
   begin
-    glDrawElements(cFaceGroupMeshModeToOpenGL[Mode], VertexIndices.Count,
-      GL_UNSIGNED_INT, VertexIndices.List);
+    glDrawElements(cFaceGroupMeshModeToOpenGL[mode], vertexIndices.Count, GL_UNSIGNED_INT, vertexIndices.list);
   end;
 end;
 
-procedure TFGVertexIndexList.AddToList(source, destination: TAffineVectorList;
-  indices: TIntegerList);
+procedure TFGVertexIndexList.AddToList(Source, destination: TAffineVectorList; indices: TIntegerList);
 var
   i, n: Integer;
 begin
@@ -5343,37 +5139,35 @@ begin
     Exit;
   if indices.Count < 3 then
     Exit;
-  case Mode of
+  case mode of
     fgmmTriangles, fgmmFlatTriangles:
       begin
         n := (indices.Count div 3) * 3;
-        if source.Count > 0 then
+        if Source.Count > 0 then
         begin
           destination.AdjustCapacityToAtLeast(destination.Count + n);
           for i := 0 to n - 1 do
-            destination.Add(source[indices.List^[i]]);
+            destination.Add(Source[indices.list^[i]]);
         end
         else
           destination.AddNulls(destination.Count + n);
       end;
     fgmmTriangleStrip:
       begin
-        if source.Count > 0 then
-          ConvertStripToList(source, indices, destination)
+        if Source.Count > 0 then
+          ConvertStripToList(Source, indices, destination)
         else
           destination.AddNulls(destination.Count + (indices.Count - 2) * 3);
       end;
     fgmmTriangleFan:
       begin
         n := (indices.Count - 2) * 3;
-        if source.Count > 0 then
+        if Source.Count > 0 then
         begin
           destination.AdjustCapacityToAtLeast(destination.Count + n);
-          for i := 2 to VertexIndices.Count - 1 do
+          for i := 2 to vertexIndices.Count - 1 do
           begin
-            destination.Add(source[indices.List^[0]],
-              source[indices.List^[i - 1]],
-              source[indices.List^[i]]);
+            destination.Add(Source[indices.list^[0]], Source[indices.list^[i - 1]], Source[indices.list^[i]]);
           end;
         end
         else
@@ -5382,18 +5176,14 @@ begin
     fgmmQuads:
       begin
         n := indices.Count div 4;
-        if source.Count > 0 then
+        if Source.Count > 0 then
         begin
           destination.AdjustCapacityToAtLeast(destination.Count + n * 6);
           i := 0;
           while n > 0 do
           begin
-            destination.Add(source[indices.List^[i]],
-              source[indices.List^[i + 1]],
-              source[indices.List^[i + 2]]);
-            destination.Add(source[indices.List^[i]],
-              source[indices.List^[i + 2]],
-              source[indices.List^[i + 3]]);
+            destination.Add(Source[indices.list^[i]], Source[indices.list^[i + 1]], Source[indices.list^[i + 2]]);
+            destination.Add(Source[indices.list^[i]], Source[indices.list^[i + 2]], Source[indices.list^[i + 3]]);
             Inc(i, 4);
             Dec(n);
           end;
@@ -5406,32 +5196,31 @@ begin
   end;
 end;
 
-procedure TFGVertexIndexList.AddToTriangles(aList: TAffineVectorList;
-  aTexCoords: TAffineVectorList = nil;
+procedure TFGVertexIndexList.AddToTriangles(aList: TAffineVectorList; aTexCoords: TAffineVectorList = nil;
   aNormals: TAffineVectorList = nil);
 var
   mo: TVXMeshObject;
 begin
   mo := Owner.Owner;
-  AddToList(mo.Vertices, aList, VertexIndices);
-  AddToList(mo.TexCoords, aTexCoords, VertexIndices);
-  AddToList(mo.Normals, aNormals, VertexIndices);
+  AddToList(mo.Vertices, aList, vertexIndices);
+  AddToList(mo.texCoords, aTexCoords, vertexIndices);
+  AddToList(mo.normals, aNormals, vertexIndices);
   InvalidateVBO;
 end;
 
 function TFGVertexIndexList.TriangleCount: Integer;
 begin
-  case Mode of
+  case mode of
     fgmmTriangles, fgmmFlatTriangles:
-      Result := VertexIndices.Count div 3;
+      Result := vertexIndices.Count div 3;
     fgmmTriangleFan, fgmmTriangleStrip:
       begin
-        Result := VertexIndices.Count - 2;
+        Result := vertexIndices.Count - 2;
         if Result < 0 then
           Result := 0;
       end;
     fgmmQuads:
-      result := VertexIndices.Count div 2;
+      Result := vertexIndices.Count div 2;
   else
     Result := 0;
     Assert(False);
@@ -5440,7 +5229,7 @@ end;
 
 procedure TFGVertexIndexList.Reverse;
 begin
-  VertexIndices.Reverse;
+  vertexIndices.Reverse;
   InvalidateVBO;
 end;
 
@@ -5456,21 +5245,21 @@ var
   f: Single;
   ref: PFloatArray;
 const
-  cBigValue: Single = 1e50;
-  cSmallValue: Single = -1e50;
+  cBigValue: Single = 1E50;
+  cSmallValue: Single = -1E50;
 begin
   SetVector(min, cBigValue, cBigValue, cBigValue);
   SetVector(max, cSmallValue, cSmallValue, cSmallValue);
-  for i := 0 to VertexIndices.Count - 1 do
+  for i := 0 to vertexIndices.Count - 1 do
   begin
-    ref := Owner.Owner.Vertices.ItemAddress[VertexIndices[i]];
+    ref := Owner.Owner.Vertices.ItemAddress[vertexIndices[i]];
     for k := 0 to 2 do
     begin
       f := ref^[k];
-      if f < min.V[k] then
-        min.V[k] := f;
-      if f > max.V[k] then
-        max.V[k] := f;
+      if f < min.v[k] then
+        min.v[k] := f;
+      if f > max.v[k] then
+        max.v[k] := f;
     end;
   end;
 end;
@@ -5480,15 +5269,15 @@ var
   i: Integer;
   bufList: TIntegerList;
 begin
-  if VertexIndices.Count >= 3 then
+  if vertexIndices.Count >= 3 then
   begin
-    case Mode of
+    case mode of
       fgmmTriangleStrip:
         begin
           bufList := TIntegerList.Create;
           try
-            ConvertStripToList(VertexIndices, bufList);
-            VertexIndices := bufList;
+            ConvertStripToList(vertexIndices, bufList);
+            vertexIndices := bufList;
           finally
             bufList.Free;
           end;
@@ -5498,10 +5287,9 @@ begin
         begin
           bufList := TIntegerList.Create;
           try
-            for i := 0 to VertexIndices.Count - 3 do
-              bufList.Add(VertexIndices[0], VertexIndices[i], VertexIndices[i +
-                1]);
-            VertexIndices := bufList;
+            for i := 0 to vertexIndices.Count - 3 do
+              bufList.Add(vertexIndices[0], vertexIndices[i], vertexIndices[i + 1]);
+            vertexIndices := bufList;
           finally
             bufList.Free;
           end;
@@ -5514,12 +5302,11 @@ end;
 
 function TFGVertexIndexList.GetNormal: TAffineVector;
 begin
-  if VertexIndices.Count < 3 then
+  if vertexIndices.Count < 3 then
     Result := NullVector
   else
     with Owner.Owner.Vertices do
-      CalcPlaneNormal(Items[VertexIndices[0]], Items[VertexIndices[1]],
-        Items[VertexIndices[2]], Result);
+      CalcPlaneNormal(Items[vertexIndices[0]], Items[vertexIndices[1]], Items[vertexIndices[2]], Result);
 end;
 
 procedure TFGVertexIndexList.InvalidateVBO;
@@ -5578,8 +5365,7 @@ begin
   FNormalIndices.Assign(val);
 end;
 
-procedure TFGVertexNormalTexIndexList.SetTexCoordIndices(const val:
-  TIntegerList);
+procedure TFGVertexNormalTexIndexList.SetTexCoordIndices(const val: TIntegerList);
 begin
   FTexCoordIndices.Assign(val);
 end;
@@ -5593,32 +5379,33 @@ var
   colorPool: PVectorArray;
   normalIdxList, texCoordIdxList, vertexIdxList: PIntegerVector;
 begin
-  Assert(((TexCoordIndices.Count = 0) or (VertexIndices.Count <=
-    TexCoordIndices.Count))
-    and ((NormalIndices.Count = 0) or (VertexIndices.Count <=
-      NormalIndices.Count)));
-  vertexPool := Owner.Owner.Vertices.List;
-  normalPool := Owner.Owner.Normals.List;
-  colorPool := Owner.Owner.Colors.List;
-  texCoordPool := Owner.Owner.TexCoords.List;
-  case Mode of
-    fgmmTriangles, fgmmFlatTriangles: glBegin(GL_TRIANGLES);
-    fgmmTriangleStrip: glBegin(GL_TRIANGLE_STRIP);
-    fgmmTriangleFan: glBegin(GL_TRIANGLE_FAN);
+  Assert(((TexCoordIndices.Count = 0) or (vertexIndices.Count <= TexCoordIndices.Count)) and
+    ((normalIndices.Count = 0) or (vertexIndices.Count <= normalIndices.Count)));
+  vertexPool := Owner.Owner.Vertices.list;
+  normalPool := Owner.Owner.normals.list;
+  colorPool := Owner.Owner.Colors.list;
+  texCoordPool := Owner.Owner.texCoords.list;
+  case mode of
+    fgmmTriangles, fgmmFlatTriangles:
+      glBegin(GL_TRIANGLES);
+    fgmmTriangleStrip:
+      glBegin(GL_TRIANGLE_STRIP);
+    fgmmTriangleFan:
+      glBegin(GL_TRIANGLE_FAN);
   else
     Assert(False);
   end;
-  vertexIdxList := VertexIndices.List;
-  if NormalIndices.Count > 0 then
-    normalIdxList := NormalIndices.List
+  vertexIdxList := vertexIndices.list;
+  if normalIndices.Count > 0 then
+    normalIdxList := normalIndices.list
   else
     normalIdxList := vertexIdxList;
   if TexCoordIndices.Count > 0 then
-    texCoordIdxList := TexCoordIndices.List
+    texCoordIdxList := TexCoordIndices.list
   else
     texCoordIdxList := vertexIdxList;
 
-  for i := 0 to VertexIndices.Count - 1 do
+  for i := 0 to vertexIndices.Count - 1 do
   begin
     glNormal3fv(@normalPool[normalIdxList^[i]]);
     if Assigned(colorPool) then
@@ -5631,17 +5418,15 @@ begin
   glEnd;
 end;
 
-procedure TFGVertexNormalTexIndexList.AddToTriangles(aList: TAffineVectorList;
-  aTexCoords: TAffineVectorList = nil;
+procedure TFGVertexNormalTexIndexList.AddToTriangles(aList: TAffineVectorList; aTexCoords: TAffineVectorList = nil;
   aNormals: TAffineVectorList = nil);
 begin
-  AddToList(Owner.Owner.Vertices, aList, VertexIndices);
-  AddToList(Owner.Owner.TexCoords, aTexCoords, TexCoordIndices);
-  AddToList(Owner.Owner.Normals, aNormals, NormalIndices);
+  AddToList(Owner.Owner.Vertices, aList, vertexIndices);
+  AddToList(Owner.Owner.texCoords, aTexCoords, TexCoordIndices);
+  AddToList(Owner.Owner.normals, aNormals, normalIndices);
 end;
 
-procedure TFGVertexNormalTexIndexList.Add(vertexIdx, normalIdx, texCoordIdx:
-  Integer);
+procedure TFGVertexNormalTexIndexList.Add(vertexIdx, normalIdx, texCoordIdx: Integer);
 begin
   inherited Add(vertexIdx);
   FNormalIndices.Add(normalIdx);
@@ -5696,35 +5481,40 @@ end;
 
 procedure TFGIndexTexCoordList.BuildList(var mrci: TVXRenderContextInfo);
 var
-  i, k: integer;
+  i, k: Integer;
   texCoordPool: PAffineVectorArray;
   vertexPool: PAffineVectorArray;
   normalPool: PAffineVectorArray;
   indicesPool: PIntegerArray;
   colorPool: PVectorArray;
-  gotColor: boolean;
+  gotColor: Boolean;
 
 begin
-  Assert(VertexIndices.Count = TexCoords.Count);
-  texCoordPool := TexCoords.List;
-  vertexPool := Owner.Owner.Vertices.List;
-  indicesPool := @VertexIndices.List[0];
-  colorPool := @Owner.Owner.Colors.List[0];
+  Assert(vertexIndices.Count = texCoords.Count);
+  texCoordPool := texCoords.list;
+  vertexPool := Owner.Owner.Vertices.list;
+  indicesPool := @vertexIndices.list[0];
+  colorPool := @Owner.Owner.Colors.list[0];
   gotColor := (Owner.Owner.Vertices.Count = Owner.Owner.Colors.Count);
 
-  case Mode of
-    fgmmTriangles: glBegin(GL_TRIANGLES);
-    fgmmFlatTriangles: glBegin(GL_TRIANGLES);
-    fgmmTriangleStrip: glBegin(GL_TRIANGLE_STRIP);
-    fgmmTriangleFan: glBegin(GL_TRIANGLE_FAN);
-    fgmmQuads: glBegin(GL_QUADS);
+  case mode of
+    fgmmTriangles:
+      glBegin(GL_TRIANGLES);
+    fgmmFlatTriangles:
+      glBegin(GL_TRIANGLES);
+    fgmmTriangleStrip:
+      glBegin(GL_TRIANGLE_STRIP);
+    fgmmTriangleFan:
+      glBegin(GL_TRIANGLE_FAN);
+    fgmmQuads:
+      glBegin(GL_QUADS);
   else
     Assert(False);
   end;
-  if Owner.Owner.Normals.Count = Owner.Owner.Vertices.Count then
+  if Owner.Owner.normals.Count = Owner.Owner.Vertices.Count then
   begin
-    normalPool := Owner.Owner.Normals.List;
-    for i := 0 to VertexIndices.Count - 1 do
+    normalPool := Owner.Owner.normals.list;
+    for i := 0 to vertexIndices.Count - 1 do
     begin
       glTexCoord2fv(@texCoordPool[i]);
       k := indicesPool[i];
@@ -5736,7 +5526,7 @@ begin
   end
   else
   begin
-    for i := 0 to VertexIndices.Count - 1 do
+    for i := 0 to vertexIndices.Count - 1 do
     begin
       glTexCoord2fv(@texCoordPool[i]);
       if gotColor then
@@ -5745,25 +5535,24 @@ begin
     end;
   end;
   glEnd;
-  CheckOpenGLError;
+///  CheckOpenGLError;
 end;
 
-procedure TFGIndexTexCoordList.AddToTriangles(aList: TAffineVectorList;
-  aTexCoords: TAffineVectorList = nil;
+procedure TFGIndexTexCoordList.AddToTriangles(aList: TAffineVectorList; aTexCoords: TAffineVectorList = nil;
   aNormals: TAffineVectorList = nil);
 var
   i, n: Integer;
   texCoordList: TAffineVectorList;
 begin
-  AddToList(Owner.Owner.Vertices, aList, VertexIndices);
-  AddToList(Owner.Owner.Normals, aNormals, VertexIndices);
-  texCoordList := Self.TexCoords;
-  case Mode of
+  AddToList(Owner.Owner.Vertices, aList, vertexIndices);
+  AddToList(Owner.Owner.normals, aNormals, vertexIndices);
+  texCoordList := Self.texCoords;
+  case mode of
     fgmmTriangles, fgmmFlatTriangles:
       begin
         if Assigned(aTexCoords) then
         begin
-          n := (VertexIndices.Count div 3) * 3;
+          n := (vertexIndices.Count div 3) * 3;
           aTexCoords.AdjustCapacityToAtLeast(aTexCoords.Count + n);
           for i := 0 to n - 1 do
             aTexCoords.Add(texCoordList[i]);
@@ -5778,13 +5567,10 @@ begin
       begin
         if Assigned(aTexCoords) then
         begin
-          aTexCoords.AdjustCapacityToAtLeast(aTexCoords.Count +
-            (VertexIndices.Count - 2) * 3);
-          for i := 2 to VertexIndices.Count - 1 do
+          aTexCoords.AdjustCapacityToAtLeast(aTexCoords.Count + (vertexIndices.Count - 2) * 3);
+          for i := 2 to vertexIndices.Count - 1 do
           begin
-            aTexCoords.Add(texCoordList[0],
-              texCoordList[i - 1],
-              texCoordList[i]);
+            aTexCoords.Add(texCoordList[0], texCoordList[i - 1], texCoordList[i]);
           end;
         end;
       end;
@@ -5795,13 +5581,13 @@ end;
 
 procedure TFGIndexTexCoordList.Add(idx: Integer; const texCoord: TAffineVector);
 begin
-  TexCoords.Add(texCoord);
+  texCoords.Add(texCoord);
   inherited Add(idx);
 end;
 
 procedure TFGIndexTexCoordList.Add(idx: Integer; const s, t: Single);
 begin
-  TexCoords.Add(s, t, 0);
+  texCoords.Add(s, t, 0);
   inherited Add(idx);
 end;
 
@@ -5809,9 +5595,9 @@ end;
 // ------------------ TVXFaceGroups ------------------
 // ------------------
 
-constructor TVXFaceGroups.CreateOwned(AOwner: TVXMeshObject);
+constructor TVXFaceGroups.CreateOwned(aOwner: TVXMeshObject);
 begin
-  FOwner := AOwner;
+  FOwner := aOwner;
   Create;
 end;
 
@@ -5849,7 +5635,7 @@ end;
 
 function TVXFaceGroups.GetFaceGroup(Index: Integer): TVXFaceGroup;
 begin
-  Result := TVXFaceGroup(List^[Index]);
+  Result := TVXFaceGroup(list^[Index]);
 end;
 
 procedure TVXFaceGroups.PrepareMaterialLibraryCache(matLib: TVXMaterialLibrary);
@@ -5857,7 +5643,7 @@ var
   i: Integer;
 begin
   for i := 0 to Count - 1 do
-    TVXFaceGroup(List^[i]).PrepareMaterialLibraryCache(matLib);
+    TVXFaceGroup(list^[i]).PrepareMaterialLibraryCache(matLib);
 end;
 
 procedure TVXFaceGroups.DropMaterialLibraryCache;
@@ -5865,11 +5651,10 @@ var
   i: Integer;
 begin
   for i := 0 to Count - 1 do
-    TVXFaceGroup(List^[i]).DropMaterialLibraryCache;
+    TVXFaceGroup(list^[i]).DropMaterialLibraryCache;
 end;
 
-procedure TVXFaceGroups.AddToTriangles(aList: TAffineVectorList;
-  aTexCoords: TAffineVectorList = nil;
+procedure TVXFaceGroups.AddToTriangles(aList: TAffineVectorList; aTexCoords: TAffineVectorList = nil;
   aNormals: TAffineVectorList = nil);
 var
   i: Integer;
@@ -5891,8 +5676,7 @@ begin
       bm := mol.Owner;
       if Assigned(bm) then
       begin
-        Result := bm.MaterialLibrary;
-        ;
+        Result := bm.MaterialLibrary;;
         Exit;
       end;
     end;
@@ -5922,7 +5706,7 @@ begin
   begin
     Result := CompareStr(fg1.MaterialName, fg2.MaterialName);
     if Result = 0 then
-      result := fg1.LightMapIndex - fg2.LightMapIndex;
+      Result := fg1.LightMapIndex - fg2.LightMapIndex;
   end
   else if opaque1 then
     Result := -1
@@ -5940,9 +5724,9 @@ end;
 // ------------------ TVXVectorFile ------------------
 // ------------------
 
-constructor TVXVectorFile.Create(AOwner: TPersistent);
+constructor TVXVectorFile.Create(aOwner: TPersistent);
 begin
-  Assert(AOwner is TVXBaseMesh);
+  Assert(aOwner is TVXBaseMesh);
   inherited;
 end;
 
@@ -5979,9 +5763,9 @@ end;
 // ------------------ TVXBaseMesh ------------------
 // ------------------
 
-constructor TVXBaseMesh.Create(AOwner: TComponent);
+constructor TVXBaseMesh.Create(aOwner: TComponent);
 begin
-  inherited Create(AOwner);
+  inherited Create(aOwner);
   if FMeshObjects = nil then
     FMeshObjects := TVXMeshObjectList.CreateOwned(Self);
   if FSkeleton = nil then
@@ -5990,8 +5774,7 @@ begin
   FAutoCentering := [];
   FAxisAlignedDimensionsCache.X := -1;
   FBaryCenterOffsetChanged := True;
-  FAutoScaling := TVXCoordinates.CreateInitialized(Self, XYZWHmgVector,
-    csPoint);
+  FAutoScaling := TVXCoordinates.CreateInitialized(Self, XYZWHmgVector, csPoint);
 end;
 
 destructor TVXBaseMesh.Destroy;
@@ -6012,7 +5795,7 @@ begin
     FNormalsOrientation := TVXBaseMesh(Source).FNormalsOrientation;
     FMaterialLibrary := TVXBaseMesh(Source).FMaterialLibrary;
     FLightmapLibrary := TVXBaseMesh(Source).FLightmapLibrary;
-    FAxisAlignedDimensionsCache :=  TVXBaseMesh(Source).FAxisAlignedDimensionsCache;
+    FAxisAlignedDimensionsCache := TVXBaseMesh(Source).FAxisAlignedDimensionsCache;
     FBaryCenterOffset := TVXBaseMesh(Source).FBaryCenterOffset;
     FUseMeshMaterials := TVXBaseMesh(Source).FUseMeshMaterials;
     FOverlaySkeleton := TVXBaseMesh(Source).FOverlaySkeleton;
@@ -6031,11 +5814,11 @@ var
   fs: TStream;
 begin
   FLastLoadedFilename := '';
-  if fileName <> '' then
+  if filename <> '' then
   begin
-    fs := CreateFileStream(fileName, fmOpenRead + fmShareDenyWrite);
+    fs := CreateFileStream(filename, fmOpenRead + fmShareDenyWrite);
     try
-      LoadFromStream(fileName, fs);
+      LoadFromStream(filename, fs);
       FLastLoadedFilename := filename;
     finally
       fs.Free;
@@ -6043,17 +5826,17 @@ begin
   end;
 end;
 
-procedure TVXBaseMesh.LoadFromStream(const fileName: string; aStream: TStream);
+procedure TVXBaseMesh.LoadFromStream(const filename: string; aStream: TStream);
 var
   newVectorFile: TVXVectorFile;
-  vectorFileClass: TVXVectorFileClass;
+  VectorFileClass: TVXVectorFileClass;
 begin
   FLastLoadedFilename := '';
-  if fileName <> '' then
+  if filename <> '' then
   begin
     MeshObjects.Clear;
     Skeleton.Clear;
-    vectorFileClass := GetVectorFileFormats.FindFromFileName(filename);
+    VectorFileClass := GetVectorFileFormats.FindFromFileName(filename);
     newVectorFile := VectorFileClass.Create(Self);
     try
       newVectorFile.ResourceName := filename;
@@ -6080,25 +5863,25 @@ procedure TVXBaseMesh.SaveToFile(const filename: string);
 var
   fs: TStream;
 begin
-  if fileName <> '' then
+  if filename <> '' then
   begin
-    fs := CreateFileStream(fileName, fmCreate);
+    fs := CreateFileStream(filename, fmCreate);
     try
-      SaveToStream(fileName, fs);
+      SaveToStream(filename, fs);
     finally
       fs.Free;
     end;
   end;
 end;
 
-procedure TVXBaseMesh.SaveToStream(const fileName: string; aStream: TStream);
+procedure TVXBaseMesh.SaveToStream(const filename: string; aStream: TStream);
 var
   newVectorFile: TVXVectorFile;
-  vectorFileClass: TVXVectorFileClass;
+  VectorFileClass: TVXVectorFileClass;
 begin
-  if fileName <> '' then
+  if filename <> '' then
   begin
-    vectorFileClass := GetVectorFileFormats.FindFromFileName(filename);
+    VectorFileClass := GetVectorFileFormats.FindFromFileName(filename);
     newVectorFile := VectorFileClass.Create(Self);
     try
       newVectorFile.ResourceName := filename;
@@ -6114,26 +5897,25 @@ procedure TVXBaseMesh.AddDataFromFile(const filename: string);
 var
   fs: TStream;
 begin
-  if fileName <> '' then
+  if filename <> '' then
   begin
-    fs := CreateFileStream(fileName, fmOpenRead + fmShareDenyWrite);
+    fs := CreateFileStream(filename, fmOpenRead + fmShareDenyWrite);
     try
-      AddDataFromStream(fileName, fs);
+      AddDataFromStream(filename, fs);
     finally
       fs.Free;
     end;
   end;
 end;
 
-procedure TVXBaseMesh.AddDataFromStream(const filename: string; aStream:
-  TStream);
+procedure TVXBaseMesh.AddDataFromStream(const filename: string; aStream: TStream);
 var
   newVectorFile: TVXVectorFile;
-  vectorFileClass: TVXVectorFileClass;
+  VectorFileClass: TVXVectorFileClass;
 begin
-  if fileName <> '' then
+  if filename <> '' then
   begin
-    vectorFileClass := GetVectorFileFormats.FindFromFileName(filename);
+    VectorFileClass := GetVectorFileFormats.FindFromFileName(filename);
     newVectorFile := VectorFileClass.Create(Self);
     newVectorFile.ResourceName := filename;
     PrepareVectorFile(newVectorFile);
@@ -6144,7 +5926,7 @@ begin
       if Assigned(Scene) then
         Scene.EndUpdate;
     finally
-      NewVectorFile.Free;
+      newVectorFile.Free;
     end;
     PrepareMesh;
   end;
@@ -6155,8 +5937,8 @@ var
   i, k: Integer;
   lMin, lMax: TAffineVector;
 const
-  cBigValue: Single = 1e50;
-  cSmallValue: Single = -1e50;
+  cBigValue: Single = 1E50;
+  cSmallValue: Single = -1E50;
 begin
   SetVector(min, cBigValue, cBigValue, cBigValue);
   SetVector(max, cSmallValue, cSmallValue, cSmallValue);
@@ -6165,10 +5947,10 @@ begin
     TVXMeshObject(MeshObjects[i]).GetExtents(lMin, lMax);
     for k := 0 to 2 do
     begin
-      if lMin.V[k] < min.V[k] then
-        min.V[k] := lMin.V[k];
-      if lMax.V[k] > max.V[k] then
-        max.V[k] := lMax.V[k];
+      if lMin.v[k] < min.v[k] then
+        min.v[k] := lMin.v[k];
+      if lMax.v[k] > max.v[k] then
+        max.v[k] := lMax.v[k];
     end;
   end;
 end;
@@ -6187,7 +5969,7 @@ end;
 
 function TVXBaseMesh.LastLoadedFilename: string;
 begin
-  result := FLastLoadedFilename;
+  Result := FLastLoadedFilename;
 end;
 
 procedure TVXBaseMesh.SetMaterialLibrary(const val: TVXMaterialLibrary);
@@ -6247,8 +6029,7 @@ begin
   FAutoScaling.SetPoint(Value.DirectX, Value.DirectY, Value.DirectZ);
 end;
 
-procedure TVXBaseMesh.Notification(AComponent: TComponent; Operation:
-  TOperation);
+procedure TVXBaseMesh.Notification(AComponent: TComponent; Operation: TOperation);
 begin
   if Operation = opRemove then
   begin
@@ -6311,7 +6092,6 @@ begin
   inherited;
 end;
 
-
 procedure TVXBaseMesh.PrepareVectorFile(aFile: TVXVectorFile);
 begin
   aFile.NormalsOrientation := NormalsOrientation;
@@ -6349,14 +6129,12 @@ end;
 
 procedure TVXBaseMesh.PerformAutoScaling;
 var
-  i: integer;
+  i: Integer;
   vScal: TAffineFltVector;
 begin
-  if (FAutoScaling.DirectX <> 1) or (FAutoScaling.DirectY <> 1) or
-    (FAutoScaling.DirectZ <> 1) then
+  if (FAutoScaling.DirectX <> 1) or (FAutoScaling.DirectY <> 1) or (FAutoScaling.DirectZ <> 1) then
   begin
-    MakeVector(vScal, FAutoScaling.DirectX, FAutoScaling.DirectY,
-      FAutoScaling.DirectZ);
+    MakeVector(vScal, FAutoScaling.DirectX, FAutoScaling.DirectY, FAutoScaling.DirectZ);
     for i := 0 to MeshObjects.Count - 1 do
     begin
       MeshObjects[i].Vertices.Scale(vScal);
@@ -6409,17 +6187,18 @@ begin
   MeshObjects.BuildList(rci);
 end;
 
-procedure TVXBaseMesh.DoRender(var rci: TVXRenderContextInfo;
-  renderSelf, renderChildren: Boolean);
+procedure TVXBaseMesh.DoRender(var rci: TVXRenderContextInfo; renderSelf, renderChildren: Boolean);
 begin
   if Assigned(LightmapLibrary) then
-    xgl.ForbidSecondTextureUnit;
+    XGL.ForbidSecondTextureUnit;
   if renderSelf then
   begin
     // set winding
     case FNormalsOrientation of
-      mnoDefault: ; // nothing
-      mnoInvert: rci.VXStates.InvertFrontFace;
+      mnoDefault:
+        ; // nothing
+      mnoInvert:
+        rci.VXStates.InvertFrontFace;
     else
       Assert(False);
     end;
@@ -6427,29 +6206,26 @@ begin
     begin
       if UseMeshMaterials and Assigned(MaterialLibrary) then
       begin
-        rci.materialLibrary := MaterialLibrary;
+        rci.MaterialLibrary := MaterialLibrary;
         if not FMaterialLibraryCachesPrepared then
           PrepareMaterialLibraryCache;
       end
       else
-        rci.materialLibrary := nil;
+        rci.MaterialLibrary := nil;
       if Assigned(LightmapLibrary) then
-        rci.lightmapLibrary := LightmapLibrary
+        rci.LightmapLibrary := LightmapLibrary
       else
-        rci.lightmapLibrary := nil;
-      if rci.amalgamating
-        or not (ListHandleAllocated or (osDirectDraw in ObjectStyle)) then
+        rci.LightmapLibrary := nil;
+      if rci.amalgamating or not(ListHandleAllocated or (osDirectDraw in ObjectStyle)) then
         PrepareBuildList(rci);
       Material.Apply(rci);
       repeat
-        if (osDirectDraw in ObjectStyle)
-          or rci.amalgamating
-          or UseMeshMaterials then
+        if (osDirectDraw in ObjectStyle) or rci.amalgamating or UseMeshMaterials then
           BuildList(rci)
         else
           rci.VXStates.CallList(GetHandle(rci));
       until not Material.UnApply(rci);
-      rci.materialLibrary := nil;
+      rci.MaterialLibrary := nil;
     end
     else
     begin
@@ -6462,9 +6238,9 @@ begin
       rci.VXStates.InvertFrontFace;
   end;
   if Assigned(LightmapLibrary) then
-    xgl.AllowSecondTextureUnit;
+    XGL.AllowSecondTextureUnit;
   if renderChildren and (Count > 0) then
-    Self.RenderChildren(0, Count - 1, rci);
+    Self.renderChildren(0, Count - 1, rci);
 end;
 
 procedure TVXBaseMesh.StructureChanged;
@@ -6481,8 +6257,7 @@ begin
   inherited StructureChanged;
 end;
 
-function TVXBaseMesh.RayCastIntersect(const rayStart, rayVector: TVector;
-  intersectPoint: PVector = nil;
+function TVXBaseMesh.RayCastIntersect(const rayStart, rayVector: TVector; intersectPoint: PVector = nil;
   intersectNormal: PVector = nil): Boolean;
 var
   i: Integer;
@@ -6499,9 +6274,8 @@ begin
     i := 0;
     while i < tris.Count do
     begin
-      if RayCastTriangleIntersect(locRayStart, locRayVector,
-        tris.List^[i], tris.List^[i + 1], tris.List^[i + 2],
-        @iPoint, @iNormal) then
+      if RayCastTriangleIntersect(locRayStart, locRayVector, tris.list^[i], tris.list^[i + 1], tris.list^[i + 2], @iPoint,
+        @iNormal) then
       begin
         d := VectorDistance2(locRayStart, iPoint);
         if (d < minD) or (minD < 0) then
@@ -6532,8 +6306,7 @@ begin
   end;
 end;
 
-function TVXBaseMesh.GenerateSilhouette(const silhouetteParameters:
-  TVXSilhouetteParameters): TVXSilhouette;
+function TVXBaseMesh.GenerateSilhouette(const silhouetteParameters: TVXSilhouetteParameters): TVXSilhouette;
 var
   mc: TVXBaseMeshConnectivity;
   sil: TVXSilhouette;
@@ -6542,17 +6315,13 @@ begin
   if Assigned(FConnectivity) then
   begin
     mc := TVXBaseMeshConnectivity(FConnectivity);
-    mc.CreateSilhouette(silhouetteParameters,
-      sil,
-      true);
+    mc.CreateSilhouette(silhouetteParameters, sil, True);
   end
   else
   begin
     mc := TVXBaseMeshConnectivity.CreateFromMesh(Self);
     try
-      mc.CreateSilhouette(silhouetteParameters,
-        sil,
-        true);
+      mc.CreateSilhouette(silhouetteParameters, sil, True);
     finally
       mc.Free;
     end;
@@ -6570,7 +6339,7 @@ begin
   for i := 0 to MeshObjects.Count - 1 do
   begin
     mo := (MeshObjects[i] as TVXMeshObject);
-    if mo.Mode <> momFacegroups then
+    if mo.mode <> momFaceGroups then
       Exit;
     for j := 0 to mo.FaceGroups.Count - 1 do
       if not mo.FaceGroups[j].InheritsFrom(TFGVertexIndexList) then
@@ -6583,10 +6352,10 @@ end;
 // ------------------ TVXFreeForm ------------------
 // ------------------
 
-constructor TVXFreeForm.Create(AOwner: TComponent);
+constructor TVXFreeForm.Create(aOwner: TComponent);
 begin
   inherited;
-//  ObjectStyle := [osDirectDraw];
+  // ObjectStyle := [osDirectDraw];
   FUseMeshMaterials := True;
 end;
 
@@ -6598,17 +6367,17 @@ end;
 
 function TVXFreeForm.GetOctree: TVXOctree;
 begin
-  //   if not Assigned(FOctree) then     //If auto-created, can never use "if Assigned(GLFreeform1.Octree)"
-  //     FOctree:=TOctree.Create;        //moved this code to BuildOctree
+  // if not Assigned(FOctree) then     //If auto-created, can never use "if Assigned(GLFreeform1.Octree)"
+  // FOctree:=TOctree.Create;        //moved this code to BuildOctree
   Result := FOctree;
 end;
 
-procedure TVXFreeForm.BuildOctree(TreeDepth: integer = 3);
+procedure TVXFreeForm.BuildOctree(TreeDepth: Integer = 3);
 var
   emin, emax: TAffineVector;
   tl: TAffineVectorList;
 begin
-  if not Assigned(FOctree) then //moved here from GetOctree
+  if not Assigned(FOctree) then // moved here from GetOctree
     FOctree := TVXOctree.Create;
 
   GetExtents(emin, emax);
@@ -6624,18 +6393,15 @@ begin
   end;
 end;
 
-function TVXFreeForm.OctreeRayCastIntersect(const rayStart, rayVector: TVector;
-  intersectPoint: PVector = nil;
+function TVXFreeForm.OctreeRayCastIntersect(const rayStart, rayVector: TVector; intersectPoint: PVector = nil;
   intersectNormal: PVector = nil): Boolean;
 var
   locRayStart, locRayVector: TVector;
 begin
-  Assert(Assigned(FOctree),
-    'Octree must have been prepared and setup before use.');
+  Assert(Assigned(FOctree), 'Octree must have been prepared and setup before use.');
   SetVector(locRayStart, AbsoluteToLocal(rayStart));
   SetVector(locRayVector, AbsoluteToLocal(rayVector));
-  Result := Octree.RayCastIntersect(locRayStart, locRayVector,
-    intersectPoint, intersectNormal);
+  Result := Octree.RayCastIntersect(locRayStart, locRayVector, intersectPoint, intersectNormal);
   if Result then
   begin
     if intersectPoint <> nil then
@@ -6649,24 +6415,23 @@ begin
   end;
 end;
 
-function TVXFreeForm.OctreePointInMesh(const Point: TVector): boolean;
+function TVXFreeForm.OctreePointInMesh(const Point: TVector): Boolean;
 const
   cPointRadiusStep = 10000;
 var
   rayStart, rayVector, hitPoint, hitNormal: TVector;
   BRad: double;
-  HitCount: integer;
+  HitCount: Integer;
   hitDot: double;
 begin
-  Assert(Assigned(FOctree),
-    'Octree must have been prepared and setup before use.');
+  Assert(Assigned(FOctree), 'Octree must have been prepared and setup before use.');
 
-  result := false;
+  Result := False;
 
   // Makes calculations sligthly faster by ignoring cases that are guaranteed
   // to be outside the object
   if not PointInObject(Point) then
-    exit;
+    Exit;
 
   BRad := BoundingSphereRadius;
 
@@ -6683,15 +6448,15 @@ begin
     // Are we past our taget?
     if VectorDotProduct(rayVector, VectorSubtract(Point, hitPoint)) < 0 then
     begin
-      result := HitCount > 0;
-      exit;
+      Result := HitCount > 0;
+      Exit;
     end;
 
     hitDot := VectorDotProduct(hitNormal, rayVector);
     if hitDot < 0 then
-      inc(HitCount)
+      Inc(HitCount)
     else if hitDot > 0 then
-      dec(HitCount);
+      Dec(HitCount);
 
     // ditDot = 0 is a tricky special case where the ray is just grazing the
     // side of a face - this case means that it doesn't necessarily actually
@@ -6701,26 +6466,19 @@ begin
 
     // Restart the ray slightly beyond the point it hit the previous face. Note
     // that this step introduces a possible issue with faces that are very close
-    rayStart := VectorAdd(hitPoint, VectorScale(rayVector, BRad /
-      cPointRadiusStep));
+    rayStart := VectorAdd(hitPoint, VectorScale(rayVector, BRad / cPointRadiusStep));
   end;
 end;
 
-function TVXFreeForm.OctreeSphereSweepIntersect(const rayStart, rayVector:
-  TVector;
-  const velocity, radius: Single;
-  intersectPoint: PVector = nil;
-  intersectNormal: PVector = nil): Boolean;
+function TVXFreeForm.OctreeSphereSweepIntersect(const rayStart, rayVector: TVector; const velocity, radius: Single;
+  intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean;
 var
   locRayStart, locRayVector: TVector;
 begin
-  Assert(Assigned(FOctree),
-    'Octree must have been prepared and setup before use.');
+  Assert(Assigned(FOctree), 'Octree must have been prepared and setup before use.');
   SetVector(locRayStart, AbsoluteToLocal(rayStart));
   SetVector(locRayVector, AbsoluteToLocal(rayVector));
-  Result := Octree.SphereSweepIntersect(locRayStart, locRayVector,
-    velocity, radius,
-    intersectPoint, intersectNormal);
+  Result := Octree.SphereSweepIntersect(locRayStart, locRayVector, velocity, radius, intersectPoint, intersectNormal);
   if Result then
   begin
     if intersectPoint <> nil then
@@ -6734,13 +6492,11 @@ begin
   end;
 end;
 
-function TVXFreeForm.OctreeTriangleIntersect(const v1, v2, v3: TAffineVector):
-  boolean;
+function TVXFreeForm.OctreeTriangleIntersect(const v1, v2, v3: TAffineVector): Boolean;
 var
   t1, t2, t3: TAffineVector;
 begin
-  Assert(Assigned(FOctree),
-    'Octree must have been prepared and setup before use.');
+  Assert(Assigned(FOctree), 'Octree must have been prepared and setup before use.');
   SetVector(t1, AbsoluteToLocal(v1));
   SetVector(t2, AbsoluteToLocal(v2));
   SetVector(t3, AbsoluteToLocal(v3));
@@ -6748,22 +6504,20 @@ begin
   Result := Octree.TriangleIntersect(t1, t2, t3);
 end;
 
-function TVXFreeForm.OctreeAABBIntersect(const AABB: TAABB;
-  objMatrix, invObjMatrix: TMatrix; triangles: TAffineVectorList = nil):
-    boolean;
+function TVXFreeForm.OctreeAABBIntersect(const aabb: TAABB; objMatrix, invObjMatrix: TMatrix;
+  triangles: TAffineVectorList = nil): Boolean;
 var
   m1to2, m2to1: TMatrix;
 begin
-  Assert(Assigned(FOctree),
-    'Octree must have been prepared and setup before use.');
+  Assert(Assigned(FOctree), 'Octree must have been prepared and setup before use.');
 
-  //get matrixes needed
-  //object to self
+  // get matrixes needed
+  // object to self
   MatrixMultiply(objMatrix, InvAbsoluteMatrix, m1to2);
-  //self to object
+  // self to object
   MatrixMultiply(AbsoluteMatrix, invObjMatrix, m2to1);
 
-  result := octree.AABBIntersect(aabb, m1to2, m2to1, triangles);
+  Result := Octree.AABBIntersect(aabb, m1to2, m2to1, triangles);
 end;
 
 // ------------------
@@ -6798,15 +6552,14 @@ end;
 
 function TVXActorAnimation.GetDisplayName: string;
 begin
-  Result := Format('%d - %s [%d - %d]', [Index, Name, StartFrame, EndFrame]);
+  Result := Format('%d - %s [%d - %d]', [Index, Name, startFrame, endFrame]);
 end;
 
 function TVXActorAnimation.FrameCount: Integer;
 begin
-  case Reference of
+  case reference of
     aarMorph:
-      Result :=
-        TVXActorAnimations(Collection).FOwner.MeshObjects.MorphTargetCount;
+      Result := TVXActorAnimations(Collection).FOwner.MeshObjects.MorphTargetCount;
     aarSkeleton:
       Result := TVXActorAnimations(Collection).FOwner.Skeleton.Frames.Count;
   else
@@ -6856,8 +6609,8 @@ begin
   if val <> FReference then
   begin
     FReference := val;
-    StartFrame := StartFrame;
-    EndFrame := EndFrame;
+    startFrame := startFrame;
+    endFrame := endFrame;
   end;
 end;
 
@@ -6875,14 +6628,14 @@ begin
     if sl.Count = 4 then
     begin
       if LowerCase(sl[3]) = 'morph' then
-        Reference := aarMorph
+        reference := aarMorph
       else if LowerCase(sl[3]) = 'skeleton' then
-        Reference := aarSkeleton
+        reference := aarSkeleton
       else
         Assert(False);
     end
     else
-      Reference := aarMorph;
+      reference := aarMorph;
   finally
     sl.Free;
   end;
@@ -6890,10 +6643,9 @@ end;
 
 function TVXActorAnimation.GetAsString: string;
 const
-  cAARToString: array[aarMorph..aarSkeleton] of string = ('morph', 'skeleton');
+  cAARToString: array [aarMorph .. aarSkeleton] of string = ('morph', 'skeleton');
 begin
-  Result := Format('"%s",%d,%d,%s',
-    [FName, FStartFrame, FEndFrame, cAARToString[Reference]]);
+  Result := Format('"%s",%d,%d,%s', [FName, FStartFrame, FEndFrame, cAARToString[reference]]);
 end;
 
 function TVXActorAnimation.OwnerActor: TVXActor;
@@ -6903,21 +6655,21 @@ end;
 
 procedure TVXActorAnimation.MakeSkeletalTranslationStatic;
 begin
-  OwnerActor.Skeleton.MakeSkeletalTranslationStatic(StartFrame, EndFrame);
+  OwnerActor.Skeleton.MakeSkeletalTranslationStatic(startFrame, endFrame);
 end;
 
 procedure TVXActorAnimation.MakeSkeletalRotationDelta;
 begin
-  OwnerActor.Skeleton.MakeSkeletalRotationDelta(StartFrame, EndFrame);
+  OwnerActor.Skeleton.MakeSkeletalRotationDelta(startFrame, endFrame);
 end;
 
 // ------------------
 // ------------------ TVXActorAnimations ------------------
 // ------------------
 
-constructor TVXActorAnimations.Create(AOwner: TVXActor);
+constructor TVXActorAnimations.Create(aOwner: TVXActor);
 begin
-  FOwner := AOwner;
+  FOwner := aOwner;
   inherited Create(TVXActorAnimation);
 end;
 
@@ -6926,12 +6678,12 @@ begin
   Result := FOwner;
 end;
 
-procedure TVXActorAnimations.SetItems(index: Integer; const val: TVXActorAnimation);
+procedure TVXActorAnimations.SetItems(Index: Integer; const val: TVXActorAnimation);
 begin
   inherited Items[index] := val;
 end;
 
-function TVXActorAnimations.GetItems(index: Integer): TVXActorAnimation;
+function TVXActorAnimations.GetItems(Index: Integer): TVXActorAnimation;
 begin
   Result := TVXActorAnimation(inherited Items[index]);
 end;
@@ -6967,16 +6719,14 @@ begin
     end;
 end;
 
-function TVXActorAnimations.FindFrame(aFrame: Integer;
-  aReference: TVXActorAnimationReference): TVXActorAnimation;
+function TVXActorAnimations.FindFrame(aFrame: Integer; aReference: TVXActorAnimationReference): TVXActorAnimation;
 var
   i: Integer;
 begin
   Result := nil;
   for i := 0 to Count - 1 do
     with Items[i] do
-      if (StartFrame <= aFrame) and (EndFrame >= aFrame)
-        and (Reference = aReference) then
+      if (startFrame <= aFrame) and (endFrame >= aFrame) and (reference = aReference) then
       begin
         Result := Items[i];
         Break;
@@ -7020,11 +6770,11 @@ begin
     Add.AsString := string(ReadCRLFString(aStream));
 end;
 
-procedure TVXActorAnimations.SaveToFile(const fileName: string);
+procedure TVXActorAnimations.SaveToFile(const filename: string);
 var
   fs: TStream;
 begin
-  fs := CreateFileStream(fileName, fmCreate);
+  fs := CreateFileStream(filename, fmCreate);
   try
     SaveToStream(fs);
   finally
@@ -7032,11 +6782,11 @@ begin
   end;
 end;
 
-procedure TVXActorAnimations.LoadFromFile(const fileName: string);
+procedure TVXActorAnimations.LoadFromFile(const filename: string);
 var
   fs: TStream;
 begin
-  fs := CreateFileStream(fileName, fmOpenRead + fmShareDenyWrite);
+  fs := CreateFileStream(filename, fmOpenRead + fmShareDenyWrite);
   try
     LoadFromStream(fs);
   finally
@@ -7048,9 +6798,9 @@ end;
 // ------------------ TVXBaseAnimationControler ------------------
 // ------------------
 
-constructor TVXBaseAnimationControler.Create(AOwner: TComponent);
+constructor TVXBaseAnimationControler.Create(aOwner: TComponent);
 begin
-  inherited Create(AOwner);
+  inherited Create(aOwner);
   FEnabled := True;
 end;
 
@@ -7060,8 +6810,7 @@ begin
   inherited Destroy;
 end;
 
-procedure TVXBaseAnimationControler.Notification(AComponent: TComponent;
-  Operation: TOperation);
+procedure TVXBaseAnimationControler.Notification(AComponent: TComponent; Operation: TOperation);
 begin
   if (AComponent = FActor) and (Operation = opRemove) then
     SetActor(nil);
@@ -7099,8 +6848,7 @@ begin
   end;
 end;
 
-function TVXBaseAnimationControler.Apply(var lerpInfo: TVXBlendedLerpInfo):
-  Boolean;
+function TVXBaseAnimationControler.Apply(var lerpInfo: TVXBlendedLerpInfo): Boolean;
 begin
   // virtual
   Result := False;
@@ -7116,8 +6864,7 @@ begin
     inherited;
 end;
 
-procedure TVXAnimationControler.SetAnimationName(const val:
-  TVXActorAnimationName);
+procedure TVXAnimationControler.SetAnimationName(const val: TVXActorAnimationName);
 begin
   if FAnimationName <> val then
   begin
@@ -7155,20 +6902,20 @@ begin
   begin
     if Ratio = 0 then
     begin
-      frameIndex1 := anim.StartFrame;
+      frameIndex1 := anim.startFrame;
       frameIndex2 := frameIndex1;
       lerpFactor := 0;
     end
     else if Ratio = 1 then
     begin
-      frameIndex1 := anim.EndFrame;
+      frameIndex1 := anim.endFrame;
       frameIndex2 := frameIndex1;
       lerpFactor := 0;
     end
     else
     begin
-      baseDelta := anim.EndFrame - anim.StartFrame;
-      lerpFactor := anim.StartFrame + baseDelta * Ratio;
+      baseDelta := anim.endFrame - anim.startFrame;
+      lerpFactor := anim.startFrame + baseDelta * Ratio;
       frameIndex1 := Trunc(lerpFactor);
       frameIndex2 := frameIndex1 + 1;
       lerpFactor := Frac(lerpFactor);
@@ -7183,9 +6930,9 @@ end;
 // ------------------ TVXActor ------------------
 // ------------------
 
-constructor TVXActor.Create(AOwner: TComponent);
+constructor TVXActor.Create(aOwner: TComponent);
 begin
-  inherited Create(AOwner);
+  inherited Create(aOwner);
   ObjectStyle := ObjectStyle + [osDirectDraw];
   FFrameInterpolation := afpLinear;
   FAnimationMode := aamNone;
@@ -7242,12 +6989,14 @@ begin
       FCurrentFrame := val;
     FCurrentFrameDelta := 0;
     case AnimationMode of
-      aamPlayOnce: if (CurrentFrame = EndFrame) and (FTargetSmoothAnimation =
-        nil) then
+      aamPlayOnce:
+        if (CurrentFrame = endFrame) and (FTargetSmoothAnimation = nil) then
           FAnimationMode := aamNone;
-      aamBounceForward: if CurrentFrame = EndFrame then
+      aamBounceForward:
+        if CurrentFrame = endFrame then
           FAnimationMode := aamBounceBackward;
-      aamBounceBackward: if CurrentFrame = StartFrame then
+      aamBounceBackward:
+        if CurrentFrame = startFrame then
           FAnimationMode := aamBounceForward;
     end;
     StructureChanged;
@@ -7263,29 +7012,29 @@ end;
 
 procedure TVXActor.SetStartFrame(val: Integer);
 begin
-  if (val >= 0) and (val < FrameCount) and (val <> StartFrame) then
+  if (val >= 0) and (val < FrameCount) and (val <> startFrame) then
     FStartFrame := val;
-  if EndFrame < StartFrame then
+  if endFrame < startFrame then
     FEndFrame := FStartFrame;
-  if CurrentFrame < StartFrame then
+  if CurrentFrame < startFrame then
     CurrentFrame := FStartFrame;
 end;
 
 procedure TVXActor.SetEndFrame(val: Integer);
 begin
-  if (val >= 0) and (val < FrameCount) and (val <> EndFrame) then
+  if (val >= 0) and (val < FrameCount) and (val <> endFrame) then
     FEndFrame := val;
-  if CurrentFrame > EndFrame then
+  if CurrentFrame > endFrame then
     CurrentFrame := FEndFrame;
 end;
 
 procedure TVXActor.SetReference(val: TVXActorAnimationReference);
 begin
-  if val <> Reference then
+  if val <> reference then
   begin
     FReference := val;
-    StartFrame := StartFrame;
-    EndFrame := EndFrame;
+    startFrame := startFrame;
+    endFrame := endFrame;
     CurrentFrame := CurrentFrame;
     StructureChanged;
   end;
@@ -7316,45 +7065,46 @@ begin
     aamLoop, aamBounceForward:
       begin
         if FTargetSmoothAnimation <> nil then
-          Result := FTargetSmoothAnimation.StartFrame
+          Result := FTargetSmoothAnimation.startFrame
         else
         begin
           Result := CurrentFrame + 1;
-          if Result > EndFrame then
+          if Result > endFrame then
           begin
-            Result := StartFrame + (Result - EndFrame - 1);
-            if Result > EndFrame then
-              Result := EndFrame;
+            Result := startFrame + (Result - endFrame - 1);
+            if Result > endFrame then
+              Result := endFrame;
           end;
         end;
       end;
     aamNone, aamPlayOnce:
       begin
         if FTargetSmoothAnimation <> nil then
-          Result := FTargetSmoothAnimation.StartFrame
+          Result := FTargetSmoothAnimation.startFrame
         else
         begin
           Result := CurrentFrame + 1;
-          if Result > EndFrame then
-            Result := EndFrame;
+          if Result > endFrame then
+            Result := endFrame;
         end;
       end;
     aamBounceBackward, aamLoopBackward:
       begin
         if FTargetSmoothAnimation <> nil then
-          Result := FTargetSmoothAnimation.StartFrame
+          Result := FTargetSmoothAnimation.startFrame
         else
         begin
           Result := CurrentFrame - 1;
-          if Result < StartFrame then
+          if Result < startFrame then
           begin
-            Result := EndFrame - (StartFrame - Result - 1);
-            if Result < StartFrame then
-              Result := StartFrame;
+            Result := endFrame - (startFrame - Result - 1);
+            if Result < startFrame then
+              Result := startFrame;
           end;
         end;
       end;
-    aamExternal: Result := CurrentFrame; // Do nothing
+    aamExternal:
+      Result := CurrentFrame; // Do nothing
   else
     Result := CurrentFrame;
     Assert(False);
@@ -7370,23 +7120,23 @@ begin
   begin
     CurrentFrame := NextFrameIndex;
     Dec(n);
-    if Assigned(FOnEndFrameReached) and (CurrentFrame = EndFrame) then
+    if Assigned(FOnEndFrameReached) and (CurrentFrame = endFrame) then
       FOnEndFrameReached(Self);
-    if Assigned(FOnStartFrameReached) and (CurrentFrame = StartFrame) then
+    if Assigned(FOnStartFrameReached) and (CurrentFrame = startFrame) then
       FOnStartFrameReached(Self);
   end;
 end;
 
 procedure TVXActor.PrevFrame(nbSteps: Integer = 1);
 var
-  value: Integer;
+  Value: Integer;
 begin
-  value := FCurrentFrame - nbSteps;
-  if value < FStartFrame then
+  Value := FCurrentFrame - nbSteps;
+  if Value < FStartFrame then
   begin
-    value := FEndFrame - (FStartFrame - value);
-    if value < FStartFrame then
-      value := FStartFrame;
+    Value := FEndFrame - (FStartFrame - Value);
+    if Value < FStartFrame then
+      Value := FStartFrame;
   end;
   CurrentFrame := Value;
 end;
@@ -7398,8 +7148,9 @@ var
   lerpInfos: array of TVXBlendedLerpInfo;
 begin
   nextFrameIdx := NextFrameIndex;
-  case Reference of
-    aarMorph: if nextFrameIdx >= 0 then
+  case reference of
+    aarMorph:
+      if nextFrameIdx >= 0 then
       begin
         case FrameInterpolation of
           afpLinear:
@@ -7408,7 +7159,8 @@ begin
           MeshObjects.MorphTo(CurrentFrame);
         end;
       end;
-    aarSkeleton: if Skeleton.Frames.Count > 0 then
+    aarSkeleton:
+      if Skeleton.Frames.Count > 0 then
       begin
         if Assigned(FControlers) and (AnimationMode <> aamExternal) then
         begin
@@ -7417,7 +7169,8 @@ begin
           if nextFrameIdx >= 0 then
           begin
             case FrameInterpolation of
-              afpLinear: with lerpInfos[0] do
+              afpLinear:
+                with lerpInfos[0] do
                 begin
                   frameIndex1 := CurrentFrame;
                   frameIndex2 := nextFrameIdx;
@@ -7446,8 +7199,7 @@ begin
           end;
           k := 1;
           for i := 0 to FControlers.Count - 1 do
-            if TVXBaseAnimationControler(FControlers[i]).Apply(lerpInfos[k])
-              then
+            if TVXBaseAnimationControler(FControlers[i]).Apply(lerpInfos[k]) then
               Inc(k);
           SetLength(lerpInfos, k);
           Skeleton.BlendedLerps(lerpInfos);
@@ -7464,7 +7216,8 @@ begin
         end;
         Skeleton.MorphMesh(aoSkeletonNormalizeNormals in Options);
       end;
-    aarNone: ; // do nothing
+    aarNone:
+      ; // do nothing
   end;
 end;
 
@@ -7496,7 +7249,7 @@ end;
 
 function TVXActor.FrameCount: Integer;
 begin
-  case Reference of
+  case reference of
     aarMorph:
       Result := MeshObjects.MorphTargetCount;
     aarSkeleton:
@@ -7516,10 +7269,9 @@ begin
   inherited;
   if (AnimationMode <> aamNone) and (Interval > 0) then
   begin
-    if (StartFrame <> EndFrame) and (FrameCount > 1) then
+    if (startFrame <> endFrame) and (FrameCount > 1) then
     begin
-      FCurrentFrameDelta := FCurrentFrameDelta + (progressTime.deltaTime * 1000)
-        / FInterval;
+      FCurrentFrameDelta := FCurrentFrameDelta + (progressTime.deltaTime * 1000) / FInterval;
       if FCurrentFrameDelta > 1 then
       begin
         if Assigned(FTargetSmoothAnimation) then
@@ -7539,30 +7291,27 @@ begin
   end;
 end;
 
-procedure TVXActor.LoadFromStream(const fileName: string; aStream: TStream);
+procedure TVXActor.LoadFromStream(const filename: string; aStream: TStream);
 begin
-  if fileName <> '' then
+  if filename <> '' then
   begin
     Animations.Clear;
-    inherited LoadFromStream(fileName, aStream);
+    inherited LoadFromStream(filename, aStream);
   end;
 end;
 
-procedure TVXActor.SwitchToAnimation(const animationName: string; smooth: Boolean
-  = False);
+procedure TVXActor.SwitchToAnimation(const AnimationName: string; smooth: Boolean = False);
 begin
-  SwitchToAnimation(Animations.FindName(animationName), smooth);
+  SwitchToAnimation(Animations.FindName(AnimationName), smooth);
 end;
 
-procedure TVXActor.SwitchToAnimation(animationIndex: Integer; smooth: Boolean =
-  False);
+procedure TVXActor.SwitchToAnimation(animationIndex: Integer; smooth: Boolean = False);
 begin
   if (animationIndex >= 0) and (animationIndex < Animations.Count) then
     SwitchToAnimation(Animations[animationIndex], smooth);
 end;
 
-procedure TVXActor.SwitchToAnimation(anAnimation: TVXActorAnimation; smooth:
-  Boolean = False);
+procedure TVXActor.SwitchToAnimation(anAnimation: TVXActorAnimation; smooth: Boolean = False);
 begin
   if Assigned(anAnimation) then
   begin
@@ -7573,10 +7322,10 @@ begin
     end
     else
     begin
-      Reference := anAnimation.Reference;
-      StartFrame := anAnimation.StartFrame;
-      EndFrame := anAnimation.EndFrame;
-      CurrentFrame := StartFrame;
+      reference := anAnimation.reference;
+      startFrame := anAnimation.startFrame;
+      endFrame := anAnimation.endFrame;
+      CurrentFrame := startFrame;
     end;
   end;
 end;
@@ -7585,7 +7334,7 @@ function TVXActor.CurrentAnimation: string;
 var
   aa: TVXActorAnimation;
 begin
-  aa := Animations.FindFrame(CurrentFrame, Reference);
+  aa := Animations.FindFrame(CurrentFrame, reference);
   if Assigned(aa) then
     Result := aa.Name
   else
@@ -7596,45 +7345,43 @@ procedure TVXActor.Synchronize(referenceActor: TVXActor);
 begin
   if Assigned(referenceActor) then
   begin
-    if referenceActor.StartFrame < FrameCount then
-      FStartFrame := referenceActor.StartFrame;
-    if referenceActor.EndFrame < FrameCount then
-      FEndFrame := referenceActor.EndFrame;
-    FReference := referenceActor.Reference;
+    if referenceActor.startFrame < FrameCount then
+      FStartFrame := referenceActor.startFrame;
+    if referenceActor.endFrame < FrameCount then
+      FEndFrame := referenceActor.endFrame;
+    FReference := referenceActor.reference;
     if referenceActor.CurrentFrame < FrameCount then
       FCurrentFrame := referenceActor.CurrentFrame;
     FCurrentFrameDelta := referenceActor.CurrentFrameDelta;
     FAnimationMode := referenceActor.AnimationMode;
     FFrameInterpolation := referenceActor.FrameInterpolation;
     if referenceActor.FTargetSmoothAnimation <> nil then
-      FTargetSmoothAnimation :=
-        Animations.FindName(referenceActor.FTargetSmoothAnimation.Name)
+      FTargetSmoothAnimation := Animations.FindName(referenceActor.FTargetSmoothAnimation.Name)
     else
       FTargetSmoothAnimation := nil;
-    if (Skeleton.Frames.Count > 0) and (referenceActor.Skeleton.Frames.Count > 0)
-      then
+    if (Skeleton.Frames.Count > 0) and (referenceActor.Skeleton.Frames.Count > 0) then
       Skeleton.Synchronize(referenceActor.Skeleton);
   end;
 end;
 
-function TVXActor.isSwitchingAnimation: boolean;
+function TVXActor.isSwitchingAnimation: Boolean;
 begin
-  result := FTargetSmoothAnimation <> nil;
+  Result := FTargetSmoothAnimation <> nil;
 end;
 
 // ------------------------------------------------------------------
 initialization
+
 // ------------------------------------------------------------------
 
-  RegisterVectorFileFormat('glsm', 'VXScene Mesh', TVXGLSMVectorFile);
+RegisterVectorFileFormat('glsm', 'VXScene Mesh', TVXGLSMVectorFile);
 
-  RegisterClasses([TVXFreeForm, TVXActor, TVXSkeleton, TVXSkeletonFrame,
-    TVXSkeletonBone, TVXSkeletonMeshObject, TVXMeshObject, TVXSkeletonFrameList, TVXMeshMorphTarget,
-    TVXMorphableMeshObject, TVXFaceGroup, TFGVertexIndexList, TFGVertexNormalTexIndexList,
-    TVXAnimationControler, TFGIndexTexCoordList, TVXSkeletonCollider, TVXSkeletonColliderList]);
+RegisterClasses([TVXFreeForm, TVXActor, TVXSkeleton, TVXSkeletonFrame, TVXSkeletonBone, TVXSkeletonMeshObject, TVXMeshObject,
+  TVXSkeletonFrameList, TVXMeshMorphTarget, TVXMorphableMeshObject, TVXFaceGroup, TFGVertexIndexList,
+  TFGVertexNormalTexIndexList, TVXAnimationControler, TFGIndexTexCoordList, TVXSkeletonCollider, TVXSkeletonColliderList]);
 
 finalization
 
-  FreeAndNil(vVectorFileFormats);
+FreeAndNil(vVectorFileFormats);
 
 end.

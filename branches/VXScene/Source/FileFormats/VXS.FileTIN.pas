@@ -52,7 +52,7 @@ var
   v1, v2, v3, n: TAffineVector;
   ActiveTin: Boolean;
   Id_Tin: Integer;
-  Tnam, S: string;
+  Tnam: string;
   Id_Mat, NVert, NTri: Integer;
 
   VertArr: TxPoint3DArray;

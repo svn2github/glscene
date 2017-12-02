@@ -73,7 +73,7 @@ type
     FOnClose: TCloseEvent;
     FOnCloseQuery: TCloseQueryEvent;
     FStayOnTop: Boolean;
-    FVSync: TVSyncMode;
+    FVSync: TVXSyncMode;
     FRefreshRate: Integer;
     { TODO : E2003 Undeclared identifier: 'TCursor' }
     (*FCursor: TCursor;*)
@@ -171,7 +171,7 @@ type
     { Specifies if the refresh should be synchronized with the VSync signal. 
       If the underlying OpenGL ICD does not support the WGL_EXT_swap_control
       extension, this property is ignored. }
-    property VSync: TVSyncMode read FVSync write FVSync default vsmSync;
+    property VSync: TVXSyncMode read FVSync write FVSync default vsmSync;
     { Screen refresh rate. 
       Use zero for system default. This property allows you to work around
       the winxp bug that limits uses a refresh rate of 60hz when changeing

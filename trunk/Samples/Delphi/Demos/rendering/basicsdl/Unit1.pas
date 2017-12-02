@@ -26,7 +26,7 @@ uses
 type
   TDataModule1 = class(TDataModule)
     GLScene1: TGLScene;
-    GLSDLViewer1: TGLSDLViewer;
+    GLSDLViewer1: TSDLViewer;
     GLCamera1: TGLCamera;
     GLLightSource1: TGLLightSource;
     Teapot1: TGLTeapot;
