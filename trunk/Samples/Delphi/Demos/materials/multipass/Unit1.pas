@@ -12,10 +12,19 @@ uses
   Vcl.Dialogs,
   Vcl.StdCtrls,
 
-  
-  GLScene, GLObjects, GLWin32Viewer, GLTexture, OpenGLTokens, GLContext,
-  GLGeomObjects, GLState, GLColor, GLMaterial, GLCoordinates,
-  GLCrossPlatform, GLRenderContextInfo, GLBaseClasses;
+  GLScene,
+  GLObjects,
+  GLWin32Viewer,
+  GLTexture,
+  GLContext,
+  GLGeomObjects,
+  GLState,
+  GLColor,
+  GLMaterial,
+  GLCoordinates,
+  GLCrossPlatform,
+  GLRenderContextInfo,
+  GLBaseClasses;
 
 type
   TForm1 = class(TForm)

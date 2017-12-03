@@ -45,7 +45,6 @@ type
   TSpriteAnimationList = class;
   TGLAnimatedSprite = class;
 
-  // TSpriteAnimFrame
   {Used by the SpriteAnimation when Dimensions are set manual. The animation
      will use the offsets, width and height to determine the texture coodinates
      for this frame. }
@@ -55,9 +54,7 @@ type
       FOffsetY,
       FWidth,
       FHeight: Integer;
-
     procedure DoChanged;
-
   protected
     procedure SetOffsetX(const Value: Integer);
     procedure SetOffsetY(const Value: Integer);
@@ -65,20 +62,16 @@ type
     procedure SetHeight(const Value: Integer);
     procedure WriteToFiler(writer: TWriter); override;
     procedure ReadFromFiler(reader: TReader); override;
-
   public
     class function FriendlyName: string; override;
     class function FriendlyDescription: string; override;
-
   published
     property OffsetX: Integer read FOffsetX write SetOffsetX;
     property OffsetY: Integer read FOffsetY write SetOffsetY;
     property Width: Integer read FWidth write SetWidth;
     property Height: Integer read FHeight write SetHeight;
-
   end;
 
-  // TSpriteAnimFrameList
   {The XCollection used for the TSpriteAnimFrame object. }
   TSpriteAnimFrameList = class(TGLXCollection)
   public
@@ -87,13 +80,11 @@ type
 
   end;
 
-  // TSpriteFrameDimensions
   {Determines if the texture coordinates are Automatically generated
      from the Animations properties or if they are Manually set through
      the Frames collection. }
   TSpriteFrameDimensions = (sfdAuto, sfdManual);
 
-  // TSpriteAnimMargins
   {Used to mask the auto generated frames. The Left, Top, Right and
      Bottom properties determines the number of pixels to be cropped
      from each corresponding side of the frame. Only applicable to
@@ -105,14 +96,12 @@ type
       FTop,
       FRight,
       FBottom: Integer;
-
   protected
     procedure SetLeft(const Value: Integer);
     procedure SetTop(const Value: Integer);
     procedure SetRight(const Value: Integer);
     procedure SetBottom(const Value: Integer);
     procedure DoChanged;
-
   public
     constructor Create(Animation: TSpriteAnimation);
     property Owner: TSpriteAnimation read FOwner;
@@ -122,10 +111,8 @@ type
     property Top: Integer read FTop write SetTop;
     property Right: Integer read FRight write SetRight;
     property Bottom: Integer read FBottom write SetBottom;
-
   end;
 
-  // TSpriteAnimation
   {Animations define how the texture coordinates for each offset
      are to be determined. }
   TSpriteAnimation = class(TGLXCollectionItem, IGLMaterialLibrarySupported)
@@ -143,7 +130,6 @@ type
     FMargins: TSpriteAnimMargins;
 
     procedure DoChanged;
-
   protected
     procedure SetCurrentFrame(const Value: Integer);
     procedure SetFrameWidth(const Value: Integer);
@@ -156,7 +142,6 @@ type
     procedure SetInterval(const Value: Integer);
     procedure SetFrameRate(const Value: Single);
     function GetFrameRate: Single;
-
     // Implementing IGLMaterialLibrarySupported.
     function GetMaterialLibrary: TGLAbstractMaterialLibrary;
   public
@@ -202,7 +187,6 @@ type
 
   end;
 
-  // TSpriteAnimationList
   {A collection for storing TSpriteAnimation objects. }
   TSpriteAnimationList = class(TGLXCollection)
   public
@@ -211,7 +195,6 @@ type
 
   end;
 
-  // TSpriteAnimationMode
   {Sets the current animation playback mode:
       samNone - No playback, the animation does not progress.
       samPlayOnce - Plays the animation once then switches to samNone.
@@ -225,7 +208,6 @@ type
   TSpriteAnimationMode = (samNone, samPlayOnce, samLoop, samBounceForward,
     samBounceBackward, samLoopBackward);
 
-  // TGLAnimatedSprite
   {An animated version of the TGLSprite using offset texture
      coordinate animation. }
   TGLAnimatedSprite = class(TGLBaseSceneObject)
@@ -243,7 +225,6 @@ type
     FOnFrameChanged: TNotifyEvent;
     FOnEndFrameReached: TNotifyEvent;
     FOnStartFrameReached: TNotifyEvent;
-
   protected
     procedure DefineProperties(Filer: TFiler); override;
     procedure WriteAnimations(Stream: TStream);
@@ -266,12 +247,10 @@ type
 
     procedure BuildList(var rci: TGLRenderContextInfo); override;
     procedure DoProgress(const progressTime: TProgressTimes); override;
-
     // Steps the current animation to the next frame
     procedure NextFrame;
-
   published
-    {A collection of animations. Stores the settings for animating
+    { A collection of animations. Stores the settings for animating
        then sprite. }
     property Animations: TSpriteAnimationList read FAnimations;
     // The material library that stores the lib materials for the animations.
@@ -287,10 +266,10 @@ type
     // Playback mode for the current animation.
     property AnimationMode: TSpriteAnimationMode read FAnimationMode write
       SetAnimationMode;
-    {Used to automatically calculate the width and height of a sprite based
+    { Used to automatically calculate the width and height of a sprite based
        on the size of the frame it is showing. For example, if PixelRatio is
        set to 100 and the current animation frame is 100 pixels wide it will
-       set the width of the sprite to 1. If the frame is 50 pixels widtdh the
+       set the width of the sprite to 1. If the frame is 50 pixels width the
        sprite will be 0.5 wide. }
     property PixelRatio: Integer read FPixelRatio write SetPixelRatio;
     // Rotates the sprite (in degrees).
@@ -299,15 +278,13 @@ type
     property MirrorU: Boolean read FMirrorU write SetMirrorU;
     // Mirror the generated texture coords in the V axis.
     property MirrorV: Boolean read FMirrorV write SetMirrorV;
-    {Sets the frames per second for the current animation. Automatically
+    { Sets the frames per second for the current animation. Automatically
        calculates the Interval. Precision will be restricted to the values
        of Interval since Interval takes priority. }
     property FrameRate: Single read GetFrameRate write SetFrameRate;
-
     property Position;
     property Scale;
     property Visible;
-
     // An event fired when the animation changes to it's next frame.
     property OnFrameChanged: TNotifyEvent read FOnFrameChanged write
       FOnFrameChanged;
@@ -317,7 +294,6 @@ type
     // An event fired when the animation reaches the start frame.
     property OnStartFrameReached: TNotifyEvent read FOnStartFrameReached write
       FOnStartFrameReached;
-
   end;
 
 // -----------------------------------------------------------------------------

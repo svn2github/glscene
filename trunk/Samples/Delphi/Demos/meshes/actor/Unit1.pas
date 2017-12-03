@@ -19,6 +19,7 @@ uses
   GLCadencer,
   GLVectorFileObjects,
   GLScene,
+  GLState,
   GLObjects,
   GLVectorGeometry,
   GLWin32Viewer,

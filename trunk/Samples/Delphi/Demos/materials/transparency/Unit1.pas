@@ -14,9 +14,20 @@ uses
   Vcl.ExtCtrls,
 
   
-  GLScene, GLObjects, Vcl.StdCtrls, GLCadencer, GLBehaviours, GLTexture,
-  GLVectorGeometry, GLWin32Viewer, GLGeomObjects, GLCoordinates, GLCrossPlatform,
-  GLBaseClasses, GLMaterial, GLRenderContextInfo;
+  GLScene,
+  GLObjects,
+  Vcl.StdCtrls,
+  GLCadencer,
+  GLBehaviours,
+  GLTexture,
+  GLVectorGeometry,
+  GLWin32Viewer,
+  GLGeomObjects,
+  GLCoordinates,
+  GLCrossPlatform,
+  GLBaseClasses,
+  GLMaterial,
+  GLRenderContextInfo;
 
 type
   TForm1 = class(TForm)
@@ -49,9 +60,7 @@ type
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
   private
-    { Déclarations privées }
-  public
-    { Déclarations publiques }
+    //
   end;
 
 var

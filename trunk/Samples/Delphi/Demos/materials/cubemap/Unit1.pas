@@ -12,7 +12,6 @@ uses
   Vcl.Dialogs,
   Vcl.StdCtrls,
 
-  OpenGLTokens,
   GLScene,
   GLWin32Viewer,
   GLObjects,
@@ -42,10 +41,8 @@ type
     procedure GLSceneViewer1BeforeRender(Sender: TObject);
     procedure FormCreate(Sender: TObject);
   private
-     
     CubmapSupported: Boolean;
   public
-     
     mx, my: Integer;
   end;
 

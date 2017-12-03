@@ -17,6 +17,9 @@ interface
 
 uses
 
+{$IFDEF USE_FASTMATH}
+  Neslib.FastMath,
+{$ENDIF}
   Winapi.Windows,
   System.Classes,
   System.SysUtils,
@@ -2316,10 +2319,10 @@ procedure TGLBaseSceneObject.RebuildMatrix;
 begin
   if ocTransformation in Changes then
   begin
-    VectorScale(LeftVector, Scale.X, FLocalMatrix.X);
-    VectorScale(FUp.AsVector, Scale.Y, FLocalMatrix.Y);
-    VectorScale(FDirection.AsVector, Scale.Z, FLocalMatrix.Z);
-    SetVector(FLocalMatrix.W, FPosition.AsVector);
+    VectorScale(LeftVector, Scale.X, FLocalMatrix.V[0]);
+    VectorScale(FUp.AsVector, Scale.Y, FLocalMatrix.V[1]);
+    VectorScale(FDirection.AsVector, Scale.Z, FLocalMatrix.V[2]);
+    SetVector(FLocalMatrix.V[3], FPosition.AsVector);
     Exclude(FChanges, ocTransformation);
     Include(FChanges, ocAbsoluteMatrix);
     Include(FChanges, ocInvAbsoluteMatrix);
@@ -2402,7 +2405,7 @@ end;
 
 function TGLBaseSceneObject.GetAbsoluteDirection: TVector;
 begin
-  Result := VectorNormalize(AbsoluteMatrixAsAddress^.Z);
+  Result := VectorNormalize(AbsoluteMatrixAsAddress^.V[2]);
 end;
 
 procedure TGLBaseSceneObject.SetAbsoluteDirection(const v: TVector);
@@ -2415,9 +2418,9 @@ end;
 
 function TGLBaseSceneObject.GetAbsoluteScale: TVector;
 begin
-  Result.X := AbsoluteMatrixAsAddress^.X.X;
-  Result.Y := AbsoluteMatrixAsAddress^.Y.Y;
-  Result.Z := AbsoluteMatrixAsAddress^.Z.Z;
+  Result.X := AbsoluteMatrixAsAddress^.V[0].X;
+  Result.Y := AbsoluteMatrixAsAddress^.V[1].Y;
+  Result.Z := AbsoluteMatrixAsAddress^.V[2].Z;
 
   Result.W := 0;
 end;
@@ -2432,7 +2435,7 @@ end;
 
 function TGLBaseSceneObject.GetAbsoluteUp: TVector;
 begin
-  Result := VectorNormalize(AbsoluteMatrixAsAddress^.Y);
+  Result := VectorNormalize(AbsoluteMatrixAsAddress^.V[1]);
 end;
 
 procedure TGLBaseSceneObject.SetAbsoluteUp(const v: TVector);
@@ -2445,7 +2448,7 @@ end;
 
 function TGLBaseSceneObject.AbsoluteRight: TVector;
 begin
-  Result := VectorNormalize(AbsoluteMatrixAsAddress^.X);
+  Result := VectorNormalize(AbsoluteMatrixAsAddress^.V[0]);
 end;
 
 function TGLBaseSceneObject.AbsoluteLeft: TVector;
@@ -2455,7 +2458,7 @@ end;
 
 function TGLBaseSceneObject.GetAbsolutePosition: TVector;
 begin
-  Result := AbsoluteMatrixAsAddress^.W;
+  Result := AbsoluteMatrixAsAddress^.V[3];
 end;
 
 procedure TGLBaseSceneObject.SetAbsolutePosition(const v: TVector);
@@ -2468,25 +2471,25 @@ end;
 
 function TGLBaseSceneObject.AbsolutePositionAsAddress: PVector;
 begin
-  Result := @AbsoluteMatrixAsAddress^.W;
+  Result := @AbsoluteMatrixAsAddress^.V[3];
 end;
 
 function TGLBaseSceneObject.AbsoluteXVector: TVector;
 begin
   AbsoluteMatrixAsAddress;
-  SetVector(Result, PAffineVector(@FAbsoluteMatrix.X)^);
+  SetVector(Result, PAffineVector(@FAbsoluteMatrix.V[0])^);
 end;
 
 function TGLBaseSceneObject.AbsoluteYVector: TVector;
 begin
   AbsoluteMatrixAsAddress;
-  SetVector(Result, PAffineVector(@FAbsoluteMatrix.Y)^);
+  SetVector(Result, PAffineVector(@FAbsoluteMatrix.V[1])^);
 end;
 
 function TGLBaseSceneObject.AbsoluteZVector: TVector;
 begin
   AbsoluteMatrixAsAddress;
-  SetVector(Result, PAffineVector(@FAbsoluteMatrix.Z)^);
+  SetVector(Result, PAffineVector(@FAbsoluteMatrix.V[2])^);
 end;
 
 function TGLBaseSceneObject.AbsoluteToLocal(const v: TVector): TVector;
@@ -2930,10 +2933,10 @@ end;
 procedure TGLBaseSceneObject.ResetRotations;
 begin
   FillChar(FLocalMatrix, SizeOf(TMatrix), 0);
-  FLocalMatrix.X.X := Scale.DirectX;
-  FLocalMatrix.Y.Y := Scale.DirectY;
-  FLocalMatrix.Z.Z := Scale.DirectZ;
-  SetVector(FLocalMatrix.W, Position.DirectVector);
+  FLocalMatrix.V[0].X := Scale.DirectX;
+  FLocalMatrix.V[1].Y := Scale.DirectY;
+  FLocalMatrix.V[2].Z := Scale.DirectZ;
+  SetVector(FLocalMatrix.V[3], Position.DirectVector);
   FRotation.DirectVector := NullHmgPoint;
   FDirection.DirectVector := ZHmgVector;
   FUp.DirectVector := YHmgVector;
@@ -3029,7 +3032,7 @@ begin
     FUp.Normalize;
     FDirection.Rotate(rightVector, angle);
     FDirection.Normalize;
-    r := -RadToDeg(ArcTan2(FDirection.Y, VectorLength(FDirection.X, FDirection.Z)));
+    r := -RadToDeg({$IFDEF USE_FASTMATH}Neslib.FastMath.{$ENDIF}ArcTan2(FDirection.Y, VectorLength(FDirection.X, FDirection.Z)));
     if FDirection.X < 0 then
       if FDirection.Y < 0 then
         r := 180 - r
@@ -3085,7 +3088,7 @@ begin
 
     // calculate new rotation angle from vectors
     rightVector := Right;
-    r := -RadToDeg(ArcTan2(rightVector.Y,
+    r := -RadToDeg({$IFDEF USE_FASTMATH}Neslib.FastMath.{$ENDIF}ArcTan2(rightVector.Y,
               VectorLength(rightVector.X,
                            rightVector.Z)));
     if rightVector.X < 0 then
@@ -3140,7 +3143,7 @@ begin
     FUp.Normalize;
     FDirection.Rotate(upVector, angle);
     FDirection.Normalize;
-    r := -RadToDeg(ArcTan2(FDirection.X, VectorLength(FDirection.Y,
+    r := -RadToDeg({$IFDEF USE_FASTMATH}Neslib.FastMath.{$ENDIF}ArcTan2(FDirection.X, VectorLength(FDirection.Y,
       FDirection.Z)));
     if FDirection.X < 0 then
       if FDirection.Y < 0 then
@@ -3421,7 +3424,7 @@ begin
       NormalizeVector(normalCameraRight);
     // calculate the current pitch.
     // 0 is looking down and PI is looking up
-    pitchNow := ArcCos(VectorDotProduct(AbsoluteUp, normalT2C));
+    pitchNow := {$IFDEF USE_FASTMATH}Neslib.FastMath.{$ENDIF}ArcCos(VectorDotProduct(AbsoluteUp, normalT2C));
     pitchNow := ClampValue(pitchNow + DegToRad(pitchDelta), 0 + 0.025, PI - 0.025);
     // creates a new vector pointing up and then rotate it down
     // into the new position
@@ -3768,6 +3771,7 @@ begin
     if FShowAxes then
       DrawAxes(ARci, $CCCC);
 {$ENDIF}
+
     if Assigned(FGLObjectEffects) and (FGLObjectEffects.Count > 0) then
     begin
       ARci.PipelineTransformation.Push;
@@ -3955,13 +3959,12 @@ end;
 procedure TGLBaseSceneObject.SetMatrix(const aValue: TMatrix);
 begin
   FLocalMatrix := aValue;
-  FDirection.DirectVector := VectorNormalize(FLocalMatrix.Z);
-  FUp.DirectVector := VectorNormalize(FLocalMatrix.Y);
-  Scale.SetVector(
-    VectorLength(FLocalMatrix.X),
-    VectorLength(FLocalMatrix.Y),
-    VectorLength(FLocalMatrix.Z), 0);
-  FPosition.DirectVector := FLocalMatrix.W;
+  FDirection.DirectVector := VectorNormalize(FLocalMatrix.V[2]);
+  FUp.DirectVector := VectorNormalize(FLocalMatrix.V[1]);
+  Scale.SetVector(VectorLength(FLocalMatrix.V[0]),
+    VectorLength(FLocalMatrix.V[1]),
+    VectorLength(FLocalMatrix.V[2]), 0);
+  FPosition.DirectVector := FLocalMatrix.V[3];
   TransformationChanged;
 end;
 
@@ -4706,14 +4709,14 @@ begin
       csInfinitePerspective:
         begin
           mat := IdentityHmgMatrix;
-          mat.X.X := 2 * FNearPlane / (vRight - vLeft);
-          mat.Y.Y := 2 * FNearPlane / (vTop - vBottom);
-          mat.Z.X := (vRight + vLeft) / (vRight - vLeft);
-          mat.Z.Y := (vTop + vBottom) / (vTop - vBottom);
-          mat.Z.Z := cEpsilon - 1;
-          mat.Z.W := -1;
-          mat.W.Z := FNearPlane * (cEpsilon - 2);
-          mat.W.W := 0;
+          mat.V[0].X := 2 * FNearPlane / (vRight - vLeft);
+          mat.V[1].Y := 2 * FNearPlane / (vTop - vBottom);
+          mat.V[2].X := (vRight + vLeft) / (vRight - vLeft);
+          mat.V[2].Y := (vTop + vBottom) / (vTop - vBottom);
+          mat.V[2].Z := cEpsilon - 1;
+          mat.V[2].W := -1;
+          mat.V[3].Z := FNearPlane * (cEpsilon - 2);
+          mat.V[3].W := 0;
         end;
       csOrthogonal:
         begin
@@ -4736,7 +4739,7 @@ var
   rightVector, rotAxis: TVector;
   angle: Single;
 begin
-  angle := RadToDeg(arccos(VectorDotProduct(FUp.AsVector, YVector)));
+  angle := RadToDeg({$IFDEF USE_FASTMATH}Neslib.FastMath.{$ENDIF}ArcCos(VectorDotProduct(FUp.AsVector, YVector)));
   rotAxis := VectorCrossProduct(YHmgVector, FUp.AsVector);
   if (angle > 1) and (VectorLength(rotAxis) > 0) then
   begin
@@ -4745,7 +4748,7 @@ begin
     FUp.Normalize;
     // adjust local coordinates
     FDirection.DirectVector := VectorCrossProduct(FUp.AsVector, rightVector);
-    FRotation.Z := -RadToDeg(ArcTan2(RightVector.Y,
+    FRotation.Z := -RadToDeg({$IFDEF USE_FASTMATH}Neslib.FastMath.{$ENDIF}ArcTan2(RightVector.Y,
       VectorLength(RightVector.X, RightVector.Z)));
   end;
 end;

@@ -38,9 +38,6 @@ type
     procedure GLCadencer1Progress(Sender: TObject;
       const deltaTime, newTime: Double);
   private
-     
-  public
-     
   end;
 
 var
@@ -51,7 +48,7 @@ implementation
 {$R *.DFM}
 
 const
-  cSize = 5;
+  cSize = 10;
 
 procedure TForm1.FormCreate(Sender: TObject);
 var

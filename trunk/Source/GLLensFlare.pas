@@ -17,6 +17,9 @@ interface
 {$I GLScene.inc}
 
 uses
+{$IFDEF USE_FASTMATH}
+  Neslib.FastMath,
+{$ENDIF}
   System.Classes,
   System.SysUtils,
   System.Math,
@@ -523,8 +526,8 @@ begin
   GL.MatrixMode(GL_PROJECTION);
   GL.PushMatrix;
   projMatrix := IdentityHmgMatrix;
-  projMatrix.X.X := 2 / rci.viewPortSize.cx;
-  projMatrix.Y.Y := 2 / rci.viewPortSize.cy;
+  projMatrix.V[0].X := 2 / rci.viewPortSize.cx;
+  projMatrix.V[1].Y := 2 / rci.viewPortSize.cy;
   GL.LoadMatrixf(@projMatrix);
 
   MakeVector(posVector,

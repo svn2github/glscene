@@ -13,10 +13,20 @@ uses
   Vcl.Dialogs,
   Vcl.Imaging.Jpeg,
 
-  
-  GLScene, GLObjects, GLWin32Viewer, GLTexture, GLVectorGeometry,
-  GLCadencer, GLMultiMaterialShader, GLTexCombineShader, GLMaterial,
-  GLCoordinates, GLCrossPlatform, GLUtils, GLBaseClasses, GLSimpleNavigation;
+  GLScene,
+  GLObjects,
+  GLWin32Viewer,
+  GLTexture,
+  GLVectorGeometry,
+  GLCadencer,
+  GLMultiMaterialShader,
+  GLTexCombineShader,
+  GLMaterial,
+  GLCoordinates,
+  GLCrossPlatform,
+  GLUtils,
+  GLBaseClasses,
+  GLSimpleNavigation;
 
 type
   TForm1 = class(TForm)
@@ -41,10 +51,7 @@ type
       newTime: Double);
     procedure FormMouseWheel(Sender: TObject; Shift: TShiftState;
       WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
-  private
-     
   public
-     
     mx,my : integer;
   end;
 
@@ -79,7 +86,7 @@ begin
 
   // GLMaterialLibrary2 is the source of the GLMultiMaterialShader
   // passes.
-    // Pass 1 : Base texture
+  // Pass 1 : Base texture
   GLMaterialLibrary2.AddTextureMaterial('Pass1','glscene.bmp');//}
 
     // Pass 2 : Add a bit of detail

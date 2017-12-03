@@ -17,6 +17,9 @@ interface
 {$I GLScene.inc}
 
 uses
+{$IFDEF USE_FASTMATH}
+  Neslib.FastMath,
+{$ENDIF}
   System.Classes,
   System.SysUtils,
   System.Types,
@@ -28,6 +31,7 @@ uses
   GLTexture,
   GLMaterial,
   GLMesh,
+  GLSLog,
   GLVectorLists,
   GLPersistentClasses,
   GLOctree,
@@ -37,6 +41,8 @@ uses
   GLContext,
   GLStrings,
   GLColor,
+  GLPipelineTransformation,
+  GLSelection,
   GLRenderContextInfo,
   GLCoordinates,
   GLBaseClasses,
@@ -1076,12 +1082,13 @@ type
     procedure MakeSkeletalRotationDelta;
   published
     property Name: string read FName write FName;
-    { Index of the initial frame of the animation. }
-    property startFrame: Integer read FStartFrame write SetStartFrame;
-    { Index of the final frame of the animation. }
-    property endFrame: Integer read FEndFrame write SetEndFrame;
-    { Indicates if this is a skeletal or a morph-based animation. }
-    property reference: TGLActorAnimationReference read FReference write SetReference default aarMorph;
+    {Index of the initial frame of the animation. }
+    property StartFrame: Integer read FStartFrame write SetStartFrame;
+    {Index of the final frame of the animation. }
+    property EndFrame: Integer read FEndFrame write SetEndFrame;
+    {Indicates if this is a skeletal or a morph-based animation. }
+    property Reference: TGLActorAnimationReference read FReference write
+      SetReference default aarMorph;
   end;
 
   TGLActorAnimationName = string;
@@ -1095,7 +1102,7 @@ type
     procedure SetItems(Index: Integer; const val: TGLActorAnimation);
     function GetItems(Index: Integer): TGLActorAnimation;
   public
-    constructor Create(aOwner: TGLActor);
+    constructor Create(AOwner: TGLActor);
     function Add: TGLActorAnimation;
     function FindItemID(ID: Integer): TGLActorAnimation;
     function FindName(const aName: string): TGLActorAnimation;
@@ -1103,9 +1110,10 @@ type
     procedure SetToStrings(aStrings: TStrings);
     procedure SaveToStream(aStream: TStream);
     procedure LoadFromStream(aStream: TStream);
-    procedure SaveToFile(const filename: string);
-    procedure LoadFromFile(const filename: string);
-    property Items[index: Integer]: TGLActorAnimation read GetItems write SetItems; default;
+    procedure SaveToFile(const fileName: string);
+    procedure LoadFromFile(const fileName: string);
+    property Items[index: Integer]: TGLActorAnimation read GetItems write
+      SetItems; default;
     function Last: TGLActorAnimation;
   end;
 
@@ -1121,7 +1129,7 @@ type
     procedure DoChange; virtual;
     function Apply(var lerpInfo: TGLBlendedLerpInfo): Boolean; virtual;
   public
-    constructor Create(aOwner: TComponent); override;
+    constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
   published
     property Enabled: Boolean read FEnabled write SetEnabled default True;
@@ -1223,11 +1231,12 @@ type
     { Indicates whether the actor is currently swithing animations (with smooth interpolation) }
     function isSwitchingAnimation: Boolean;
   published
-    property startFrame: Integer read FStartFrame write SetStartFrame default 0;
-    property endFrame: Integer read FEndFrame write SetEndFrame default 0;
-    { Reference Frame Animation mode. Allows specifying if the model is primarily morph or skeleton based }
-    property reference: TGLActorAnimationReference read FReference write FReference default aarMorph;
-    { Current animation frame. }
+    property StartFrame: Integer read FStartFrame write SetStartFrame default 0;
+    property EndFrame: Integer read FEndFrame write SetEndFrame default 0;
+    {Reference Frame Animation mode. Allows specifying if the model is primarily morph or skeleton based}
+    property Reference: TGLActorAnimationReference read FReference write FReference
+      default aarMorph;
+    {Current animation frame. }
     property CurrentFrame: Integer read FCurrentFrame write SetCurrentFrame default 0;
     { Value in the [0; 1] range expressing the delta to the next frame. }
     property CurrentFrameDelta: Single read FCurrentFrameDelta write FCurrentFrameDelta;
@@ -1272,9 +1281,12 @@ type
     function FindExt(Ext: string): TGLVectorFileClass;
     function FindFromFileName(const filename: string): TGLVectorFileClass;
     procedure Remove(AClass: TGLVectorFileClass);
-    procedure BuildFilterStrings(VectorFileClass: TGLVectorFileClass; out descriptions, filters: string;
-      formatsThatCanBeOpened: Boolean = True; formatsThatCanBeSaved: Boolean = False);
-    function FindExtByIndex(Index: Integer; formatsThatCanBeOpened: Boolean = True;
+    procedure BuildFilterStrings(vectorFileClass: TGLVectorFileClass;
+      out descriptions, filters: string;
+      formatsThatCanBeOpened: Boolean = True;
+      formatsThatCanBeSaved: Boolean = False);
+    function FindExtByIndex(index: Integer;
+      formatsThatCanBeOpened: Boolean = True;
       formatsThatCanBeSaved: Boolean = False): string;
   end;
 
@@ -1298,13 +1310,8 @@ var
   // Flag to avoid loading materials (useful for IDE Extentions or scene editors)
   vGLVectorFileObjectsEnableVBOByDefault: Boolean = True;
 
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
 implementation
-
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 uses
@@ -1436,9 +1443,11 @@ begin
   for i := 0 to Count - 1 do
   begin
     p := TGLVectorFileFormat(Items[i]);
-    if p.VectorFileClass.InheritsFrom(VectorFileClass) and (p.Extension <> '') and
-      ((formatsThatCanBeOpened and (dfcRead in p.VectorFileClass.Capabilities)) or
-      (formatsThatCanBeSaved and (dfcWrite in p.VectorFileClass.Capabilities))) then
+    if p.VectorFileClass.InheritsFrom(vectorFileClass) and (p.Extension <> '')
+      and ((formatsThatCanBeOpened and (dfcRead in
+        p.VectorFileClass.Capabilities))
+      or (formatsThatCanBeSaved and (dfcWrite in
+        p.VectorFileClass.Capabilities))) then
     begin
       with p do
       begin
@@ -1471,8 +1480,9 @@ begin
     for i := 0 to Count - 1 do
     begin
       p := TGLVectorFileFormat(Items[i]);
-      if (formatsThatCanBeOpened and (dfcRead in p.VectorFileClass.Capabilities)) or
-        (formatsThatCanBeSaved and (dfcWrite in p.VectorFileClass.Capabilities)) then
+      if (formatsThatCanBeOpened and (dfcRead in p.VectorFileClass.Capabilities))
+        or (formatsThatCanBeSaved and (dfcWrite in
+          p.VectorFileClass.Capabilities)) then
       begin
         if index = 1 then
         begin
@@ -1582,8 +1592,8 @@ var
     Result := newNormals[vertexIndex];
     if Result < base then
     begin
-      Result := normals.Add(NullVector);
-      newNormals[vertexIndex] := Result;
+      result := Normals.Add(NullVector);
+      newNormals[vertexIndex] := result;
     end;
     pv := @normals.list[Result];
     AddVector(pv^, delta);
@@ -1593,20 +1603,22 @@ begin
   if not Assigned(normalIndices) then
   begin
     // build bijection
-    normals.Clear;
-    normals.Count := Vertices.Count;
+    Normals.Clear;
+    Normals.Count := Vertices.Count;
     case mode of
       momTriangles:
         begin
           i := 0;
           while i <= vertexIndices.Count - 3 do
-            with normals do
+            with Normals do
             begin
               with Vertices do
               begin
-                CalcPlaneNormal(Items[vertexIndices[i + 0]], Items[vertexIndices[i + 1]], Items[vertexIndices[i + 2]], n);
+                CalcPlaneNormal(Items[vertexIndices[i + 0]],
+                  Items[vertexIndices[i + 1]],
+                  Items[vertexIndices[i + 2]], n);
               end;
-              with normals do
+              with Normals do
               begin
                 TranslateItem(vertexIndices[i + 0], n);
                 TranslateItem(vertexIndices[i + 1], n);
@@ -1619,16 +1631,20 @@ begin
         begin
           i := 0;
           while i <= vertexIndices.Count - 3 do
-            with normals do
+            with Normals do
             begin
               with Vertices do
               begin
                 if (i and 1) = 0 then
-                  CalcPlaneNormal(Items[vertexIndices[i + 0]], Items[vertexIndices[i + 1]], Items[vertexIndices[i + 2]], n)
+                  CalcPlaneNormal(Items[vertexIndices[i + 0]],
+                    Items[vertexIndices[i + 1]],
+                    Items[vertexIndices[i + 2]], n)
                 else
-                  CalcPlaneNormal(Items[vertexIndices[i + 0]], Items[vertexIndices[i + 2]], Items[vertexIndices[i + 1]], n);
+                  CalcPlaneNormal(Items[vertexIndices[i + 0]],
+                    Items[vertexIndices[i + 2]],
+                    Items[vertexIndices[i + 1]], n);
               end;
-              with normals do
+              with Normals do
               begin
                 TranslateItem(vertexIndices[i + 0], n);
                 TranslateItem(vertexIndices[i + 1], n);
@@ -1640,12 +1656,12 @@ begin
     else
       Assert(False);
     end;
-    normals.normalize;
+    Normals.Normalize;
   end
   else
   begin
     // add new normals
-    base := normals.Count;
+    base := Normals.Count;
     newNormals := TIntegerList.Create;
     newNormals.AddSerie(-1, 0, Vertices.Count);
     case mode of
@@ -1672,9 +1688,13 @@ begin
             with Vertices do
             begin
               if (i and 1) = 0 then
-                CalcPlaneNormal(Items[vertexIndices[i + 0]], Items[vertexIndices[i + 1]], Items[vertexIndices[i + 2]], n)
+                CalcPlaneNormal(Items[vertexIndices[i + 0]],
+                  Items[vertexIndices[i + 1]],
+                  Items[vertexIndices[i + 2]], n)
               else
-                CalcPlaneNormal(Items[vertexIndices[i + 0]], Items[vertexIndices[i + 2]], Items[vertexIndices[i + 1]], n);
+                CalcPlaneNormal(Items[vertexIndices[i + 0]],
+                  Items[vertexIndices[i + 2]],
+                  Items[vertexIndices[i + 1]], n);
             end;
             normalIndices.Add(TranslateNewNormal(vertexIndices[i + 0], n));
             normalIndices.Add(TranslateNewNormal(vertexIndices[i + 1], n));
@@ -1685,8 +1705,8 @@ begin
     else
       Assert(False);
     end;
-    for i := base to normals.Count - 1 do
-      NormalizeVector(normals.list^[i]);
+    for i := base to Normals.Count - 1 do
+      NormalizeVector(Normals.List^[i]);
     newNormals.Free;
   end;
 end;
@@ -1699,7 +1719,7 @@ begin
   begin
     Result.Assign(Vertices);
     if Assigned(normals) then
-      normals.Assign(Self.normals);
+      normals.Assign(Self.Normals);
   end;
 end;
 
@@ -1828,9 +1848,9 @@ begin
               rmat := CreateRotationMatrixZ(s, c);
               mat := MatrixMultiply(mat, rmat);
             end;
-            mat.W.X := Position[i].X;
-            mat.W.Y := Position[i].Y;
-            mat.W.Z := Position[i].Z;
+            mat.V[3].X := Position[i].X;
+            mat.V[3].Y := Position[i].Y;
+            mat.V[3].Z := Position[i].Z;
             FLocalMatrixList^[i] := mat;
           end;
         end;
@@ -1841,10 +1861,10 @@ begin
           begin
             quat := Quaternion[i];
             mat := QuaternionToMatrix(quat);
-            mat.W.X := Position[i].X;
-            mat.W.Y := Position[i].Y;
-            mat.W.Z := Position[i].Z;
-            mat.W.W := 1;
+            mat.V[3].X := Position[i].X;
+            mat.V[3].Y := Position[i].Y;
+            mat.V[3].Z := Position[i].Z;
+            mat.V[3].W := 1;
             FLocalMatrixList^[i] := mat;
           end;
         end;
@@ -1912,7 +1932,7 @@ end;
 
 constructor TGLSkeletonFrameList.CreateOwned(aOwner: TPersistent);
 begin
-  FOwner := aOwner;
+  FOwner := AOwner;
   Create;
 end;
 
@@ -2193,14 +2213,14 @@ begin
   mrci.GLStates.PointSize := 5;
   GL.Begin_(GL_POINTS);
   IssueColor(Color);
-  GL.Vertex3fv(@GlobalMatrix.W.X);
+  GL.Vertex3fv(@GlobalMatrix.V[3].X);
   GL.End_;
   // parent-self bone line
   if Owner is TGLSkeletonBone then
   begin
     GL.Begin_(GL_LINES);
-    GL.Vertex3fv(@TGLSkeletonBone(Owner).GlobalMatrix.W.X);
-    GL.Vertex3fv(@GlobalMatrix.W.X);
+    GL.Vertex3fv(@TGLSkeletonBone(Owner).GlobalMatrix.V[3].X);
+    GL.Vertex3fv(@GlobalMatrix.V[3].X);
     GL.End_;
   end;
   // render sub-bones
@@ -2210,7 +2230,7 @@ end;
 
 function TGLSkeletonBone.GetSkeletonBone(Index: Integer): TGLSkeletonBone;
 begin
-  Result := TGLSkeletonBone(list^[Index]);
+  Result := TGLSkeletonBone(List^[Index]);
 end;
 
 procedure TGLSkeletonBone.SetColor(const val: Cardinal);
@@ -2245,7 +2265,9 @@ procedure TGLSkeletonBone.PrepareGlobalMatrices;
 begin
   if (Skeleton.FRagDollEnabled) then
     Exit; // ragdoll
-  FGlobalMatrix := MatrixMultiply(Skeleton.CurrentFrame.LocalMatrixList^[BoneID], TGLSkeletonBoneList(Owner).FGlobalMatrix);
+  FGlobalMatrix :=
+    MatrixMultiply(Skeleton.CurrentFrame.LocalMatrixList^[BoneID],
+    TGLSkeletonBoneList(Owner).FGlobalMatrix);
   inherited;
 end;
 
@@ -2257,7 +2279,8 @@ end;
 procedure TGLSkeletonBone.SetGlobalMatrixForRagDoll(const RagDollMatrix: TMatrix);
 // ragdoll
 begin
-  FGlobalMatrix := MatrixMultiply(RagDollMatrix, Skeleton.Owner.InvAbsoluteMatrix);
+  FGlobalMatrix := MatrixMultiply(RagDollMatrix,
+    Skeleton.Owner.InvAbsoluteMatrix);
   inherited;
 end;
 
@@ -2273,10 +2296,10 @@ begin
   FAutoUpdate := True;
 end;
 
-constructor TGLSkeletonCollider.CreateOwned(aOwner: TGLSkeletonColliderList);
+constructor TGLSkeletonCollider.CreateOwned(AOwner: TGLSkeletonColliderList);
 begin
   Create;
-  FOwner := aOwner;
+  FOwner := AOwner;
   if Assigned(FOwner) then
     FOwner.Add(Self);
 end;
@@ -2319,7 +2342,8 @@ begin
   begin
     if Owner.Owner is TGLSkeleton then
       if TGLSkeleton(Owner.Owner).Owner is TGLBaseSceneObject then
-        mat := MatrixMultiply(FBone.GlobalMatrix, TGLBaseSceneObject(TGLSkeleton(Owner.Owner).Owner).AbsoluteMatrix)
+        mat := MatrixMultiply(FBone.GlobalMatrix,
+          TGLBaseSceneObject(TGLSkeleton(Owner.Owner).Owner).AbsoluteMatrix)
       else
         mat := FBone.GlobalMatrix;
     MatrixMultiply(FLocalMatrix, mat, FGlobalMatrix);
@@ -2398,7 +2422,7 @@ end;
 // ------------------ TGLSkeleton ------------------
 // ------------------
 
-constructor TGLSkeleton.CreateOwned(aOwner: TGLBaseMesh);
+constructor TGLSkeleton.CreateOwned(AOwner: TGLBaseMesh);
 begin
   FOwner := aOwner;
   Create;
@@ -2544,12 +2568,13 @@ begin
   FCurrentFrame.TransformMode := Frames[frameIndex1].TransformMode;
   with FCurrentFrame do
   begin
-    Position.Lerp(Frames[frameIndex1].Position, Frames[frameIndex2].Position, lerpFactor);
+    Position.Lerp(Frames[frameIndex1].Position,
+      Frames[frameIndex2].Position, lerpFactor);
     case TransformMode of
-      sftRotation:
-        Rotation.AngleLerp(Frames[frameIndex1].Rotation, Frames[frameIndex2].Rotation, lerpFactor);
-      sftQuaternion:
-        Quaternion.Lerp(Frames[frameIndex1].Quaternion, Frames[frameIndex2].Quaternion, lerpFactor);
+      sftRotation: Rotation.AngleLerp(Frames[frameIndex1].Rotation,
+          Frames[frameIndex2].Rotation, lerpFactor);
+      sftQuaternion: Quaternion.Lerp(Frames[frameIndex1].Quaternion,
+          Frames[frameIndex2].Quaternion, lerpFactor);
     end;
   end;
 end;
@@ -2575,12 +2600,14 @@ begin
     if Assigned(FCurrentFrame) then
       FCurrentFrame.Free;
     FCurrentFrame := TGLSkeletonFrame.Create;
-    FCurrentFrame.TransformMode := Frames[lerpInfos[i].frameIndex1].TransformMode;
+    FCurrentFrame.TransformMode :=
+      Frames[lerpInfos[i].frameIndex1].TransformMode;
     with FCurrentFrame do
     begin
       blendPositions := TAffineVectorList.Create;
       // lerp first item separately
-      Position.Lerp(Frames[lerpInfos[i].frameIndex1].Position, Frames[lerpInfos[i].frameIndex2].Position,
+      Position.Lerp(Frames[lerpInfos[i].frameIndex1].Position,
+        Frames[lerpInfos[i].frameIndex2].Position,
         lerpInfos[i].lerpFactor);
       if lerpInfos[i].weight <> 1 then
         Position.Scale(lerpInfos[i].weight);
@@ -2591,7 +2618,8 @@ begin
       begin
         if not Assigned(lerpInfos[i].externalPositions) then
         begin
-          blendPositions.Lerp(Frames[lerpInfos[i].frameIndex1].Position, Frames[lerpInfos[i].frameIndex2].Position,
+          blendPositions.Lerp(Frames[lerpInfos[i].frameIndex1].Position,
+            Frames[lerpInfos[i].frameIndex2].Position,
             lerpInfos[i].lerpFactor);
           Position.AngleCombine(blendPositions, 1);
         end
@@ -2607,7 +2635,8 @@ begin
           begin
             blendRotations := TAffineVectorList.Create;
             // lerp first item separately
-            Rotation.AngleLerp(Frames[lerpInfos[i].frameIndex1].Rotation, Frames[lerpInfos[i].frameIndex2].Rotation,
+            Rotation.AngleLerp(Frames[lerpInfos[i].frameIndex1].Rotation,
+              Frames[lerpInfos[i].frameIndex2].Rotation,
               lerpInfos[i].lerpFactor);
             Inc(i);
             // combine the other items
@@ -2615,7 +2644,8 @@ begin
             begin
               if not Assigned(lerpInfos[i].externalRotations) then
               begin
-                blendRotations.AngleLerp(Frames[lerpInfos[i].frameIndex1].Rotation, Frames[lerpInfos[i].frameIndex2].Rotation,
+                blendRotations.AngleLerp(Frames[lerpInfos[i].frameIndex1].Rotation,
+                  Frames[lerpInfos[i].frameIndex2].Rotation,
                   lerpInfos[i].lerpFactor);
                 Rotation.AngleCombine(blendRotations, 1);
               end
@@ -2630,7 +2660,8 @@ begin
           begin
             blendQuaternions := TQuaternionList.Create;
             // Initial frame lerp
-            Quaternion.Lerp(Frames[lerpInfos[i].frameIndex1].Quaternion, Frames[lerpInfos[i].frameIndex2].Quaternion,
+            Quaternion.Lerp(Frames[lerpInfos[i].frameIndex1].Quaternion,
+              Frames[lerpInfos[i].frameIndex2].Quaternion,
               lerpInfos[i].lerpFactor);
             Inc(i);
             // Combine the lerped frames together
@@ -2638,7 +2669,8 @@ begin
             begin
               if not Assigned(lerpInfos[i].externalQuaternions) then
               begin
-                blendQuaternions.Lerp(Frames[lerpInfos[i].frameIndex1].Quaternion, Frames[lerpInfos[i].frameIndex2].Quaternion,
+                blendQuaternions.Lerp(Frames[lerpInfos[i].frameIndex1].Quaternion,
+                  Frames[lerpInfos[i].frameIndex2].Quaternion,
                   lerpInfos[i].lerpFactor);
                 Quaternion.Combine(blendQuaternions, 1);
               end
@@ -2661,10 +2693,12 @@ var
 begin
   if endFrame <= startFrame then
     Exit;
-  delta := VectorSubtract(Frames[endFrame].Position[0], Frames[startFrame].Position[0]);
+  delta := VectorSubtract(Frames[endFrame].Position[0],
+    Frames[startFrame].Position[0]);
   f := -1 / (endFrame - startFrame);
   for i := startFrame to endFrame do
-    Frames[i].Position[0] := VectorCombine(Frames[i].Position[0], delta, 1, (i - startFrame) * f);
+    Frames[i].Position[0] := VectorCombine(Frames[i].Position[0], delta,
+      1, (i - startFrame) * f);
 end;
 
 procedure TGLSkeleton.MakeSkeletalRotationDelta(startFrame, endFrame: Integer);
@@ -2679,8 +2713,9 @@ begin
     for j := 0 to Frames[i].Position.Count - 1 do
     begin
       Frames[i].Position[j] := NullVector;
-      v := VectorSubtract(Frames[i].Rotation[j], Frames[0].Rotation[j]);
-      if VectorNorm(v) < 1E-6 then
+      v := VectorSubtract(Frames[i].Rotation[j],
+        Frames[0].Rotation[j]);
+      if VectorNorm(v) < 1e-6 then
         Frames[i].Rotation[j] := NullVector
       else
         Frames[i].Rotation[j] := v;
@@ -2732,7 +2767,7 @@ begin
   FColliders.Clear;
 end;
 
-procedure TGLSkeleton.StartRagdoll; // ragdoll
+procedure TGLSkeleton.StartRagDoll; // ragdoll
 var
   i: Integer;
   mesh: TGLBaseMeshObject;
@@ -2756,7 +2791,7 @@ begin
   end;
 end;
 
-procedure TGLSkeleton.StopRagdoll; // ragdoll
+procedure TGLSkeleton.StopRagDoll; // ragdoll
 var
   i: Integer;
   mesh: TGLBaseMeshObject;
@@ -2777,9 +2812,9 @@ end;
 // ------------------ TMeshObject ------------------
 // ------------------
 
-constructor TMeshObject.CreateOwned(aOwner: TGLMeshObjectList);
+constructor TMeshObject.CreateOwned(AOwner: TGLMeshObjectList);
 begin
-  FOwner := aOwner;
+  FOwner := AOwner;
   Create;
   if Assigned(FOwner) then
     FOwner.Add(Self);
@@ -2825,7 +2860,7 @@ end;
 
 procedure TMeshObject.Assign(Source: TPersistent);
 var
-  i: Integer;
+  I: Integer;
 begin
   inherited Assign(Source);
 
@@ -2841,16 +2876,16 @@ begin
     FTangentsTexCoordIndex := TMeshObject(Source).FTangentsTexCoordIndex;
 
     // Clear FTexCoordsEx.
-    for i := 0 to FTexCoordsEx.Count - 1 do
-      TVectorList(FTexCoordsEx[i]).Free;
+    for I := 0 to FTexCoordsEx.Count - 1 do
+      TVectorList(FTexCoordsEx[I]).Free;
 
     FTexCoordsEx.Count := TMeshObject(Source).FTexCoordsEx.Count;
 
     // Fill FTexCoordsEx.
-    for i := 0 to FTexCoordsEx.Count - 1 do
+    for I := 0 to FTexCoordsEx.Count - 1 do
     begin
-      FTexCoordsEx[i] := TVectorList.Create;
-      TVectorList(FTexCoordsEx[i]).Assign(TMeshObject(Source).FTexCoordsEx[i]);
+      FTexCoordsEx[I] := TVectorList.Create;
+      TVectorList(FTexCoordsEx[I]).Assign(TMeshObject(Source).FTexCoordsEx[I]);
     end;
   end;
 end;
@@ -2901,8 +2936,8 @@ begin
         lOldLightMapTexCoords := TTexPointList.CreateFromFiler(reader);
         for i := 0 to lOldLightMapTexCoords.Count - 1 do
         begin
-          tc := lOldLightMapTexCoords[i];
-          FLightMapTexCoords.Add(tc.s, tc.t);
+          tc:=lOldLightMapTexCoords[i];
+          FLightMapTexCoords.Add(tc.S, tc.T);
         end;
         lOldLightMapTexCoords.Free;
       end
@@ -2980,7 +3015,7 @@ function TMeshObject.TriangleCount: Integer;
 var
   i: Integer;
 begin
-  case mode of
+  case Mode of
     momTriangles:
       Result := (Vertices.Count div 3);
     momTriangleStrip:
@@ -3058,8 +3093,12 @@ var
   min, max: TAffineVector;
 begin
   GetExtents(min, max);
-  Result := (aPoint.X >= min.X) and (aPoint.Y >= min.Y) and (aPoint.Z >= min.Z) and (aPoint.X <= max.X) and (aPoint.Y <= max.Y)
-    and (aPoint.Z <= max.Z);
+  Result := (aPoint.X >= min.X) and
+            (aPoint.Y >= min.Y) and
+            (aPoint.Z >= min.Z) and
+            (aPoint.X <= max.X) and
+            (aPoint.Y <= max.Y) and
+            (aPoint.Z <= max.Z);
 end;
 
 procedure TMeshObject.SetTexCoords(const val: TAffineVectorList);
@@ -3135,7 +3174,7 @@ var
   i, LastCount, Count: Integer;
   fg: TFGVertexIndexList;
 begin
-  case mode of
+  case Mode of
     momTriangles:
       begin
         v0 := list[3 * tri];
@@ -3159,38 +3198,38 @@ begin
           if Count > tri then
           begin
             Count := tri - LastCount;
-            case fg.mode of
+            case fg.Mode of
               fgmmTriangles, fgmmFlatTriangles:
                 begin
-                  v0 := list[fg.vertexIndices[3 * Count]];
-                  v1 := list[fg.vertexIndices[3 * Count + 1]];
-                  v2 := list[fg.vertexIndices[3 * Count + 2]];
+                  v0 := list[fg.VertexIndices[3 * Count]];
+                  v1 := list[fg.VertexIndices[3 * Count + 1]];
+                  v2 := list[fg.VertexIndices[3 * Count + 2]];
                 end;
               fgmmTriangleStrip:
                 begin
-                  v0 := list[fg.vertexIndices[Count]];
-                  v1 := list[fg.vertexIndices[Count + 1]];
-                  v2 := list[fg.vertexIndices[Count + 2]];
+                  v0 := list[fg.VertexIndices[Count]];
+                  v1 := list[fg.VertexIndices[Count + 1]];
+                  v2 := list[fg.VertexIndices[Count + 2]];
                 end;
               fgmmTriangleFan:
                 begin
-                  v0 := list[fg.vertexIndices[0]];
-                  v1 := list[fg.vertexIndices[Count + 1]];
-                  v2 := list[fg.vertexIndices[Count + 2]];
+                  v0 := list[fg.VertexIndices[0]];
+                  v1 := list[fg.VertexIndices[Count + 1]];
+                  v2 := list[fg.VertexIndices[Count + 2]];
                 end;
               fgmmQuads:
                 begin
                   if Count mod 2 = 0 then
                   begin
-                    v0 := list[fg.vertexIndices[4 * (Count div 2)]];
-                    v1 := list[fg.vertexIndices[4 * (Count div 2) + 1]];
-                    v2 := list[fg.vertexIndices[4 * (Count div 2) + 2]];
+                    v0 := list[fg.VertexIndices[4 * (Count div 2)]];
+                    v1 := list[fg.VertexIndices[4 * (Count div 2) + 1]];
+                    v2 := list[fg.VertexIndices[4 * (Count div 2) + 2]];
                   end
                   else
                   begin
-                    v0 := list[fg.vertexIndices[4 * (Count div 2)]];
-                    v1 := list[fg.vertexIndices[4 * (Count div 2) + 2]];
-                    v2 := list[fg.vertexIndices[4 * (Count div 2) + 3]];
+                    v0 := list[fg.VertexIndices[4 * (Count div 2)]];
+                    v1 := list[fg.VertexIndices[4 * (Count div 2) + 2]];
+                    v2 := list[fg.VertexIndices[4 * (Count div 2) + 3]];
                   end;
                 end;
             else
@@ -3211,7 +3250,7 @@ var
   i, LastCount, Count: Integer;
   fg: TFGVertexIndexList;
 begin
-  case mode of
+  case Mode of
     momTriangles:
       begin
         v0 := list[3 * tri];
@@ -3235,38 +3274,38 @@ begin
           if Count > tri then
           begin
             Count := tri - LastCount;
-            case fg.mode of
+            case fg.Mode of
               fgmmTriangles, fgmmFlatTriangles:
                 begin
-                  v0 := list[fg.vertexIndices[3 * Count]];
-                  v1 := list[fg.vertexIndices[3 * Count + 1]];
-                  v2 := list[fg.vertexIndices[3 * Count + 2]];
+                  v0 := list[fg.VertexIndices[3 * Count]];
+                  v1 := list[fg.VertexIndices[3 * Count + 1]];
+                  v2 := list[fg.VertexIndices[3 * Count + 2]];
                 end;
               fgmmTriangleStrip:
                 begin
-                  v0 := list[fg.vertexIndices[Count]];
-                  v1 := list[fg.vertexIndices[Count + 1]];
-                  v2 := list[fg.vertexIndices[Count + 2]];
+                  v0 := list[fg.VertexIndices[Count]];
+                  v1 := list[fg.VertexIndices[Count + 1]];
+                  v2 := list[fg.VertexIndices[Count + 2]];
                 end;
               fgmmTriangleFan:
                 begin
-                  v0 := list[fg.vertexIndices[0]];
-                  v1 := list[fg.vertexIndices[Count + 1]];
-                  v2 := list[fg.vertexIndices[Count + 2]];
+                  v0 := list[fg.VertexIndices[0]];
+                  v1 := list[fg.VertexIndices[Count + 1]];
+                  v2 := list[fg.VertexIndices[Count + 2]];
                 end;
               fgmmQuads:
                 begin
                   if Count mod 2 = 0 then
                   begin
-                    v0 := list[fg.vertexIndices[4 * (Count div 2)]];
-                    v1 := list[fg.vertexIndices[4 * (Count div 2) + 1]];
-                    v2 := list[fg.vertexIndices[4 * (Count div 2) + 2]];
+                    v0 := list[fg.VertexIndices[4 * (Count div 2)]];
+                    v1 := list[fg.VertexIndices[4 * (Count div 2) + 1]];
+                    v2 := list[fg.VertexIndices[4 * (Count div 2) + 2]];
                   end
                   else
                   begin
-                    v0 := list[fg.vertexIndices[4 * (Count div 2)]];
-                    v1 := list[fg.vertexIndices[4 * (Count div 2) + 2]];
-                    v2 := list[fg.vertexIndices[4 * (Count div 2) + 3]];
+                    v0 := list[fg.VertexIndices[4 * (Count div 2)]];
+                    v1 := list[fg.VertexIndices[4 * (Count div 2) + 2]];
+                    v2 := list[fg.VertexIndices[4 * (Count div 2) + 3]];
                   end;
                 end;
             else
@@ -3311,38 +3350,38 @@ begin
           if Count > tri then
           begin
             Count := tri - LastCount;
-            case fg.mode of
+            case fg.Mode of
               fgmmTriangles, fgmmFlatTriangles:
                 begin
-                  list[fg.vertexIndices[3 * Count]] := v0;
-                  list[fg.vertexIndices[3 * Count + 1]] := v1;
-                  list[fg.vertexIndices[3 * Count + 2]] := v2;
+                  list[fg.VertexIndices[3 * Count]] := v0;
+                  list[fg.VertexIndices[3 * Count + 1]] := v1;
+                  list[fg.VertexIndices[3 * Count + 2]] := v2;
                 end;
               fgmmTriangleStrip:
                 begin
-                  list[fg.vertexIndices[Count]] := v0;
-                  list[fg.vertexIndices[Count + 1]] := v1;
-                  list[fg.vertexIndices[Count + 2]] := v2;
+                  list[fg.VertexIndices[Count]] := v0;
+                  list[fg.VertexIndices[Count + 1]] := v1;
+                  list[fg.VertexIndices[Count + 2]] := v2;
                 end;
               fgmmTriangleFan:
                 begin
-                  list[fg.vertexIndices[0]] := v0;
-                  list[fg.vertexIndices[Count + 1]] := v1;
-                  list[fg.vertexIndices[Count + 2]] := v2;
+                  list[fg.VertexIndices[0]] := v0;
+                  list[fg.VertexIndices[Count + 1]] := v1;
+                  list[fg.VertexIndices[Count + 2]] := v2;
                 end;
               fgmmQuads:
                 begin
                   if Count mod 2 = 0 then
                   begin
-                    list[fg.vertexIndices[4 * (Count div 2)]] := v0;
-                    list[fg.vertexIndices[4 * (Count div 2) + 1]] := v1;
-                    list[fg.vertexIndices[4 * (Count div 2) + 2]] := v2;
+                    list[fg.VertexIndices[4 * (Count div 2)]] := v0;
+                    list[fg.VertexIndices[4 * (Count div 2) + 1]] := v1;
+                    list[fg.VertexIndices[4 * (Count div 2) + 2]] := v2;
                   end
                   else
                   begin
-                    list[fg.vertexIndices[4 * (Count div 2)]] := v0;
-                    list[fg.vertexIndices[4 * (Count div 2) + 2]] := v1;
-                    list[fg.vertexIndices[4 * (Count div 2) + 3]] := v2;
+                    list[fg.VertexIndices[4 * (Count div 2)]] := v0;
+                    list[fg.VertexIndices[4 * (Count div 2) + 2]] := v1;
+                    list[fg.VertexIndices[4 * (Count div 2) + 3]] := v2;
                   end;
                 end;
             else
@@ -3387,38 +3426,38 @@ begin
           if Count > tri then
           begin
             Count := tri - LastCount;
-            case fg.mode of
+            case fg.Mode of
               fgmmTriangles, fgmmFlatTriangles:
                 begin
-                  list[fg.vertexIndices[3 * Count]] := v0;
-                  list[fg.vertexIndices[3 * Count + 1]] := v1;
-                  list[fg.vertexIndices[3 * Count + 2]] := v2;
+                  list[fg.VertexIndices[3 * Count]] := v0;
+                  list[fg.VertexIndices[3 * Count + 1]] := v1;
+                  list[fg.VertexIndices[3 * Count + 2]] := v2;
                 end;
               fgmmTriangleStrip:
                 begin
-                  list[fg.vertexIndices[Count]] := v0;
-                  list[fg.vertexIndices[Count + 1]] := v1;
-                  list[fg.vertexIndices[Count + 2]] := v2;
+                  list[fg.VertexIndices[Count]] := v0;
+                  list[fg.VertexIndices[Count + 1]] := v1;
+                  list[fg.VertexIndices[Count + 2]] := v2;
                 end;
               fgmmTriangleFan:
                 begin
-                  list[fg.vertexIndices[0]] := v0;
-                  list[fg.vertexIndices[Count + 1]] := v1;
-                  list[fg.vertexIndices[Count + 2]] := v2;
+                  list[fg.VertexIndices[0]] := v0;
+                  list[fg.VertexIndices[Count + 1]] := v1;
+                  list[fg.VertexIndices[Count + 2]] := v2;
                 end;
               fgmmQuads:
                 begin
                   if Count mod 2 = 0 then
                   begin
-                    list[fg.vertexIndices[4 * (Count div 2)]] := v0;
-                    list[fg.vertexIndices[4 * (Count div 2) + 1]] := v1;
-                    list[fg.vertexIndices[4 * (Count div 2) + 2]] := v2;
+                    list[fg.VertexIndices[4 * (Count div 2)]] := v0;
+                    list[fg.VertexIndices[4 * (Count div 2) + 1]] := v1;
+                    list[fg.VertexIndices[4 * (Count div 2) + 2]] := v2;
                   end
                   else
                   begin
-                    list[fg.vertexIndices[4 * (Count div 2)]] := v0;
-                    list[fg.vertexIndices[4 * (Count div 2) + 2]] := v1;
-                    list[fg.vertexIndices[4 * (Count div 2) + 3]] := v2;
+                    list[fg.VertexIndices[4 * (Count div 2)]] := v0;
+                    list[fg.VertexIndices[4 * (Count div 2) + 2]] := v1;
+                    list[fg.VertexIndices[4 * (Count div 2) + 3]] := v2;
                   end;
                 end;
             else
@@ -3487,7 +3526,7 @@ var
 
   procedure SortVertexData(sortidx: Integer);
   begin
-    if t[0].c[sortidx] < t[1].c[sortidx] then
+    if t[0].C[sortidx] < t[1].C[sortidx] then
     begin
       vt := v[0];
       tt := t[0];
@@ -3496,7 +3535,7 @@ var
       v[1] := vt;
       t[1] := tt;
     end;
-    if t[0].c[sortidx] < t[2].c[sortidx] then
+    if t[0].C[sortidx] < t[2].C[sortidx] then
     begin
       vt := v[0];
       tt := t[0];
@@ -3505,7 +3544,7 @@ var
       v[2] := vt;
       t[2] := tt;
     end;
-    if t[1].c[sortidx] < t[2].c[sortidx] then
+    if t[1].C[sortidx] < t[2].C[sortidx] then
     begin
       vt := v[1];
       tt := t[1];
@@ -3527,8 +3566,8 @@ begin
   begin
     // Get triangle data
     GetTriangleData(i, Vertices, v[0], v[1], v[2]);
-    GetTriangleData(i, normals, n[0], n[1], n[2]);
-    GetTriangleData(i, texCoords, t[0], t[1], t[2]);
+    GetTriangleData(i, Normals, n[0], n[1], n[2]);
+    GetTriangleData(i, TexCoords, t[0], t[1], t[2]);
 
     for j := 0 to 2 do
     begin
@@ -3598,18 +3637,20 @@ begin
 
     // workaround for ATI bug, disable element VBO if
     // inside a display list
-    FUseVBO := FUseVBO and GL.ARB_vertex_buffer_object and not mrci.GLStates.InsideList;
+    FUseVBO := FUseVBO
+      and GL.ARB_vertex_buffer_object
+      and not mrci.GLStates.InsideList;
 
     if not FUseVBO then
     begin
-      lists[0] := Vertices.list;
-      lists[1] := normals.list;
-      lists[2] := Colors.list;
-      lists[3] := texCoords.list;
-      lists[4] := LightMapTexCoords.list;
+      lists[0] := Vertices.List;
+      lists[1] := Normals.List;
+      lists[2] := Colors.List;
+      lists[3] := TexCoords.List;
+      lists[4] := LightMapTexCoords.List;
 
       for i := 0 to FTexCoordsEx.Count - 1 do
-        tlists[i] := TexCoordsEx[i].list;
+        tlists[i] := TexCoordsEx[i].List;
     end
     else
     begin
@@ -3618,7 +3659,7 @@ begin
 
     if not mrci.ignoreMaterials then
     begin
-      if normals.Count > 0 then
+      if Normals.Count > 0 then
       begin
         if FUseVBO then
           FNormalsVBO.Bind;
@@ -3636,7 +3677,7 @@ begin
       end
       else
         GL.DisableClientState(GL_COLOR_ARRAY);
-      if texCoords.Count > 0 then
+      if TexCoords.Count > 0 then
       begin
         if FUseVBO then
           FTexCoordsVBO[0].Bind;
@@ -3724,11 +3765,11 @@ begin
       GL.DisableClientState(GL_VERTEX_ARRAY);
     if not mrci.ignoreMaterials then
     begin
-      if normals.Count > 0 then
+      if Normals.Count > 0 then
         GL.DisableClientState(GL_NORMAL_ARRAY);
       if (Colors.Count > 0) and (not mrci.ignoreMaterials) then
         GL.DisableClientState(GL_COLOR_ARRAY);
-      if texCoords.Count > 0 then
+      if TexCoords.Count > 0 then
         xgl.DisableClientState(GL_TEXTURE_COORD_ARRAY);
       if GL.ARB_multitexture then
       begin
@@ -3753,11 +3794,11 @@ begin
     begin
       if Vertices.Count > 0 then
         FVerticesVBO.UnBind;
-      if normals.Count > 0 then
+      if Normals.Count > 0 then
         FNormalsVBO.UnBind;
       if Colors.Count > 0 then
         FColorsVBO.UnBind;
-      if texCoords.Count > 0 then
+      if TexCoords.Count > 0 then
         FTexCoordsVBO[0].UnBind;
       if LightMapTexCoords.Count > 0 then
         FLightmapTexCoordsVBO.UnBind;
@@ -3804,10 +3845,10 @@ procedure TMeshObject.PrepareBuildList(var mrci: TGLRenderContextInfo);
 var
   i: Integer;
 begin
-  if (mode = momFaceGroups) and Assigned(mrci.MaterialLibrary) then
+  if (Mode = momFaceGroups) and Assigned(mrci.materialLibrary) then
   begin
     for i := 0 to FaceGroups.Count - 1 do
-      with TGLFaceGroup(FaceGroups.list^[i]) do
+      with TGLFaceGroup(FaceGroups.List^[i]) do
       begin
         if MaterialCache <> nil then
           MaterialCache.PrepareBuildList;
@@ -3819,7 +3860,7 @@ procedure TMeshObject.BufferArrays;
 const
   BufferUsage = GL_DYNAMIC_DRAW;
 var
-  i: Integer;
+  I: integer;
 begin
   if Vertices.Count > 0 then
   begin
@@ -3836,7 +3877,7 @@ begin
     Include(FValidBuffers, vbVertices);
   end;
 
-  if normals.Count > 0 then
+  if Normals.Count > 0 then
   begin
     if not Assigned(FNormalsVBO) then
       FNormalsVBO := TGLVBOArrayBufferHandle.Create;
@@ -3905,7 +3946,7 @@ begin
     if Length(FTexCoordsVBO) < FTexCoordsEx.Count then
       SetLength(FTexCoordsVBO, FTexCoordsEx.Count);
 
-    for i := 0 to FTexCoordsEx.Count - 1 do
+    for I := 0 to FTexCoordsEx.Count - 1 do
     begin
       if TexCoordsEx[i].Count <= 0 then
         continue;
@@ -3963,15 +4004,15 @@ begin
         for i := 0 to Vertices.Count - 1 do
         begin
           if gotNormals then
-            GL.Normal3fv(@normals.list[i]);
+            GL.Normal3fv(@Normals.List[i]);
           if gotColor then
-            GL.Color4fv(@Colors.list[i]);
+            GL.Color4fv(@Colors.List[i]);
           if FTexCoordsEx.Count > 0 then
           begin
             if gotTexCoordsEx[0] then
-              GL.MultiTexCoord4fv(GL_TEXTURE0, @TexCoordsEx[0].list[i])
+              GL.MultiTexCoord4fv(GL_TEXTURE0, @TexCoordsEx[0].List[i])
             else if gotTexCoords then
-              xgl.TexCoord2fv(@texCoords.list[i]);
+              xgl.TexCoord2fv(@TexCoords.List[i]);
             for j := 1 to FTexCoordsEx.Count - 1 do
               if gotTexCoordsEx[j] then
                 GL.MultiTexCoord4fv(GL_TEXTURE0 + j, @TexCoordsEx[j].list[i]);
@@ -3979,15 +4020,15 @@ begin
           else
           begin
             if gotTexCoords then
-              xgl.TexCoord2fv(@texCoords.list[i]);
+              xgl.TexCoord2fv(@TexCoords.List[i]);
           end;
-          GL.Vertex3fv(@Vertices.list[i]);
+          GL.Vertex3fv(@Vertices.List[i]);
         end;
         GL.End_;
       end;
     momFaceGroups:
       begin
-        if Assigned(mrci.MaterialLibrary) then
+        if Assigned(mrci.materialLibrary) then
         begin
           if moroGroupByMaterial in RenderingOptions then
           begin
@@ -4075,7 +4116,7 @@ end;
 
 constructor TGLMeshObjectList.CreateOwned(aOwner: TGLBaseMesh);
 begin
-  FOwner := aOwner;
+  FOwner := AOwner;
   Create;
 end;
 
@@ -4105,7 +4146,7 @@ var
   i: Integer;
 begin
   for i := 0 to Count - 1 do
-    TMeshObject(list^[i]).PrepareMaterialLibraryCache(matLib);
+    TMeshObject(List^[i]).PrepareMaterialLibraryCache(matLib);
 end;
 
 procedure TGLMeshObjectList.DropMaterialLibraryCache;
@@ -4113,7 +4154,7 @@ var
   i: Integer;
 begin
   for i := 0 to Count - 1 do
-    TMeshObject(list^[i]).DropMaterialLibraryCache;
+    TMeshObject(List^[i]).DropMaterialLibraryCache;
 end;
 
 procedure TGLMeshObjectList.PrepareBuildList(var mrci: TGLRenderContextInfo);
@@ -4184,7 +4225,7 @@ end;
 
 function TGLMeshObjectList.GetMeshObject(Index: Integer): TMeshObject;
 begin
-  Result := TMeshObject(list^[Index]);
+  Result := TMeshObject(List^[Index]);
 end;
 
 procedure TGLMeshObjectList.GetExtents(out min, max: TAffineVector);
@@ -4202,10 +4243,10 @@ begin
     GetMeshObject(i).GetExtents(lMin, lMax);
     for k := 0 to 2 do
     begin
-      if lMin.c[k] < min.c[k] then
-        min.c[k] := lMin.c[k];
-      if lMax.c[k] > max.c[k] then
-        max.c[k] := lMax.c[k];
+      if lMin.C[k] < min.C[k] then
+        min.C[k] := lMin.C[k];
+      if lMax.C[k] > max.C[k] then
+        max.C[k] := lMax.C[k];
     end;
   end;
 end;
@@ -4279,53 +4320,53 @@ function TGLMeshObjectList.Area: Single;
 var
   i: Integer;
   tri: TxFace;
-  list: TAffineVectorList;
+  List: TAffineVectorList;
 
 begin
   Result := 0;
-  list := Self.ExtractTriangles;
-  if list.Count > 0 then
-    try
-      i := 0;
-      while i < list.Count do
-      begin
-        tri.normal := CalcPlaneNormal(list[i], list[i + 1], list[i + 2]);
-        tri.v1 := VectorTransform(list[i], TGLBaseSceneObject(Owner).AbsoluteMatrix);
-        tri.v2 := VectorTransform(list[i + 1], TGLBaseSceneObject(Owner).AbsoluteMatrix);
-        tri.v3 := VectorTransform(list[i + 2], TGLBaseSceneObject(Owner).AbsoluteMatrix);
-        Inc(i, 3);
-        Result := Result + TriangleArea(tri.v1, tri.v2, tri.v3);
-      end;
-    finally
-      list.Free();
+  List := Self.ExtractTriangles;
+  if List.Count > 0 then
+  try
+    i := 0;
+    while i < List.Count do
+    begin
+      Tri.Normal := CalcPlaneNormal(List[i], List[i+1], List[i+2]);
+      Tri.V1 := VectorTransform(List[i], TGLBaseSceneObject(Owner).AbsoluteMatrix);
+      Tri.V2 := VectorTransform(List[i+1], TGLBaseSceneObject(Owner).AbsoluteMatrix);
+      Tri.V3 := VectorTransform(List[i+2], TGLBaseSceneObject(Owner).AbsoluteMatrix);
+      Inc(i, 3);
+      Result := Result + TriangleArea(Tri.V1, Tri.V2, Tri.V3);
     end;
+  finally
+    List.Free();
+  end;
 end;
 
 function TGLMeshObjectList.Volume: Single;
 var
   i: Integer;
   tri: TxFace;
-  list: TAffineVectorList;
+  List: TAffineVectorList;
 
 begin
   Result := 0;
-  list := Self.ExtractTriangles;
-  if list.Count > 0 then
-    try
-      i := 0;
-      while i < list.Count do
-      begin
-        tri.normal := CalcPlaneNormal(list[i], list[i + 1], list[i + 2]);
-        tri.v1 := VectorTransform(list[i], TGLBaseSceneObject(Owner).AbsoluteMatrix);
-        tri.v2 := VectorTransform(list[i + 1], TGLBaseSceneObject(Owner).AbsoluteMatrix);
-        tri.v3 := VectorTransform(list[i + 2], TGLBaseSceneObject(Owner).AbsoluteMatrix);
-        Inc(i, 3);
-        Result := Result + VectorDotProduct(tri.v1, VectorCrossProduct(tri.v2, tri.v3));
-      end;
-      Result := Result / 6;
-    finally
-      list.Free();
+  List := Self.ExtractTriangles;
+  if List.Count > 0 then
+  try
+    i := 0;
+    while i < List.Count do
+    begin
+      Tri.Normal := CalcPlaneNormal(List[i], List[i+1], List[i+2]);
+      Tri.V1 := VectorTransform(List[i], TGLBaseSceneObject(Owner).AbsoluteMatrix);
+      Tri.V2 := VectorTransform(List[i+1], TGLBaseSceneObject(Owner).AbsoluteMatrix);
+      Tri.V3 := VectorTransform(List[i+2], TGLBaseSceneObject(Owner).AbsoluteMatrix);
+      Inc(i, 3);
+      Result := Result + VectorDotProduct(Tri.V1, VectorCrossProduct(Tri.V2, Tri.V3));
     end;
+    Result := Result / 6;
+  finally
+    List.Free();
+  end;
 end;
 
 procedure TGLMeshObjectList.Prepare;
@@ -4351,39 +4392,39 @@ end;
 
 procedure TGLMeshObjectList.BuildTangentSpace(buildBinormals, buildTangents: Boolean);
 var
-  i: Integer;
+  I: Integer;
 begin
   if Count <> 0 then
-    for i := 0 to Count - 1 do
-      GetMeshObject(i).BuildTangentSpace(buildBinormals, buildTangents);
+    for I := 0 to Count - 1 do
+      GetMeshObject(I).BuildTangentSpace(buildBinormals, buildTangents);
 end;
 
 function TGLMeshObjectList.GetUseVBO: Boolean;
 var
-  i: Integer;
+  I: Integer;
 begin
   Result := True;
   if Count <> 0 then
-    for i := 0 to Count - 1 do
-      Result := Result and GetMeshObject(i).FUseVBO;
+    for I := 0 to Count - 1 do
+      Result := Result and GetMeshObject(I).FUseVBO;
 end;
 
 procedure TGLMeshObjectList.SetUseVBO(const Value: Boolean);
 var
-  i: Integer;
+  I: Integer;
 begin
   if Count <> 0 then
-    for i := 0 to Count - 1 do
-      GetMeshObject(i).SetUseVBO(Value);
+    for I := 0 to Count - 1 do
+      GetMeshObject(I).SetUseVBO(Value);
 end;
 
 // ------------------
 // ------------------ TGLMeshMorphTarget ------------------
 // ------------------
 
-constructor TGLMeshMorphTarget.CreateOwned(aOwner: TGLMeshMorphTargetList);
+constructor TGLMeshMorphTarget.CreateOwned(AOwner: TGLMeshMorphTargetList);
 begin
-  FOwner := aOwner;
+  FOwner := AOwner;
   Create;
   if Assigned(FOwner) then
     FOwner.Add(Self);
@@ -4427,7 +4468,7 @@ end;
 
 constructor TGLMeshMorphTargetList.CreateOwned(aOwner: TPersistent);
 begin
-  FOwner := aOwner;
+  FOwner := AOwner;
   Create;
 end;
 
@@ -4469,7 +4510,7 @@ end;
 
 function TGLMeshMorphTargetList.GeTGLMeshMorphTarget(Index: Integer): TGLMeshMorphTarget;
 begin
-  Result := TGLMeshMorphTarget(list^[Index]);
+  Result := TGLMeshMorphTarget(List^[Index]);
 end;
 
 // ------------------
@@ -4538,9 +4579,9 @@ begin
       Self.Vertices.Assign(Vertices);
       ValidBuffers := ValidBuffers - [vbVertices];
     end;
-    if normals.Count > 0 then
+    if Normals.Count > 0 then
     begin
-      Self.normals.Assign(normals);
+      Self.Normals.Assign(Normals);
       ValidBuffers := ValidBuffers - [vbNormals];
     end;
   end;
@@ -4565,10 +4606,10 @@ begin
       Vertices.Lerp(mt1.Vertices, mt2.Vertices, lerpFactor);
       ValidBuffers := ValidBuffers - [vbVertices];
     end;
-    if mt1.normals.Count > 0 then
+    if mt1.Normals.Count > 0 then
     begin
-      normals.Lerp(mt1.normals, mt2.normals, lerpFactor);
-      normals.normalize;
+      Normals.Lerp(mt1.Normals, mt2.Normals, lerpFactor);
+      Normals.Normalize;
       ValidBuffers := ValidBuffers - [vbNormals];
     end;
   end;
@@ -4743,7 +4784,7 @@ begin
     with VerticesBonesWeights^[VerticeBoneWeightCount - 1]^[i] do
     begin
       BoneID := boneIDs[i].BoneID;
-      weight := boneIDs[i].weight;
+      Weight := boneIDs[i].Weight;
     end;
   end;
 end;
@@ -4756,8 +4797,8 @@ begin
   if BonesPerVertex > 1 then
   begin
     SetLength(dynArray, 1);
-    dynArray[0].BoneID := BoneID;
-    dynArray[0].weight := 1;
+    dynArray[0].BoneID := boneID;
+    dynArray[0].Weight := 1;
     Result := FindOrAdd(dynArray, vertex, normal);
     Exit;
   end;
@@ -4773,7 +4814,7 @@ begin
   begin
     AddWeightedBone(BoneID, 1);
     Vertices.Add(vertex);
-    Result := normals.Add(normal);
+    Result := Normals.Add(normal);
   end;
 end;
 
@@ -4789,14 +4830,15 @@ begin
     bonesMatch := True;
     for j := 0 to High(boneIDs) do
     begin
-      if (boneIDs[j].BoneID <> VerticesBonesWeights^[i]^[j].BoneID) or (boneIDs[j].weight <> VerticesBonesWeights^[i]^[j].weight)
-      then
+      if (boneIDs[j].BoneID <> VerticesBonesWeights^[i]^[j].BoneID)
+        or (boneIDs[j].Weight <> VerticesBonesWeights^[i]^[j].Weight) then
       begin
         bonesMatch := False;
         Break;
       end;
     end;
-    if bonesMatch and VectorEquals(Vertices[i], vertex) and VectorEquals(normals[i], normal) then
+    if bonesMatch and VectorEquals(Vertices[i], vertex)
+      and VectorEquals(Normals[i], normal) then
     begin
       Result := i;
       Break;
@@ -4806,7 +4848,7 @@ begin
   begin
     AddWeightedBones(boneIDs);
     Vertices.Add(vertex);
-    Result := normals.Add(normal);
+    Result := Normals.Add(normal);
   end;
 end;
 
@@ -4828,7 +4870,7 @@ begin
     invMesh := TGLBaseMeshObject.Create;
     FBoneMatrixInvertedMeshes.Add(invMesh);
     invMesh.Vertices := Vertices;
-    invMesh.normals := normals;
+    invMesh.Normals := Normals;
     for i := 0 to Vertices.Count - 1 do
     begin
       boneIndex := VerticesBonesWeights^[i]^[k].BoneID;
@@ -4842,10 +4884,10 @@ begin
       // transform normal
       SetVector(p, normals[i]);
       invMat := Bone.GlobalMatrix;
-      invMat.W := NullHmgPoint;
+      invMat.V[3] := NullHmgPoint;
       InvertMatrix(invMat);
       p := VectorTransform(p, invMat);
-      invMesh.normals[i] := PAffineVector(@p)^;
+      invMesh.Normals[i] := PAffineVector(@p)^;
     end;
   end;
 end;
@@ -4902,7 +4944,7 @@ begin
   with TGLBaseMeshObject(FBoneMatrixInvertedMeshes[0]) do
   begin
     refVertices := Vertices;
-    refNormals := normals;
+    refNormals := Normals;
   end;
   Skeleton := Owner.Owner.Skeleton;
   n.W := 0;
@@ -4916,7 +4958,7 @@ begin
       Vertices.list^[i] := VectorTransform(refVertices.list^[i], Bone.GlobalMatrix);
       PAffineVector(@n)^ := refNormals.list^[i];
       nt := VectorTransform(n, Bone.GlobalMatrix);
-      normals.list^[i] := PAffineVector(@nt)^;
+      Normals.List^[i] := PAffineVector(@nt)^;
     end;
   end
   else
@@ -4924,14 +4966,14 @@ begin
     // multiple bones per vertex
     for i := 0 to refVertices.Count - 1 do
     begin
-      Vertices.list^[i] := NullVector;
-      normals.list^[i] := NullVector;
+      Vertices.List^[i] := NullVector;
+      Normals.List^[i] := NullVector;
       for j := 0 to BonesPerVertex - 1 do
       begin
         with TGLBaseMeshObject(FBoneMatrixInvertedMeshes[j]) do
         begin
           refVertices := Vertices;
-          refNormals := normals;
+          refNormals := Normals;
         end;
         tempvert := NullVector;
         tempnorm := NullVector;
@@ -4958,9 +5000,9 @@ end;
 // ------------------ TGLFaceGroup ------------------
 // ------------------
 
-constructor TGLFaceGroup.CreateOwned(aOwner: TGLFaceGroups);
+constructor TGLFaceGroup.CreateOwned(AOwner: TGLFaceGroups);
 begin
-  FOwner := aOwner;
+  FOwner := AOwner;
   FLightMapIndex := -1;
   Create;
   if Assigned(FOwner) then
@@ -5156,7 +5198,7 @@ const
   cFaceGroupMeshModeToOpenGL: array [TGLFaceGroupMeshMode] of Integer = (GL_TRIANGLES, GL_TRIANGLE_STRIP, GL_TRIANGLES,
     GL_TRIANGLE_FAN, GL_QUADS);
 begin
-  if vertexIndices.Count = 0 then
+  if VertexIndices.Count = 0 then
     Exit;
   Owner.Owner.DeclareArraysToOpenGL(mrci, False);
   AttachOrDetachLightmap(mrci);
@@ -5183,7 +5225,7 @@ begin
     Exit;
   if indices.Count < 3 then
     Exit;
-  case mode of
+  case Mode of
     fgmmTriangles, fgmmFlatTriangles:
       begin
         n := (indices.Count div 3) * 3;
@@ -5246,25 +5288,25 @@ var
   mo: TMeshObject;
 begin
   mo := Owner.Owner;
-  AddToList(mo.Vertices, aList, vertexIndices);
-  AddToList(mo.texCoords, aTexCoords, vertexIndices);
-  AddToList(mo.normals, aNormals, vertexIndices);
+  AddToList(mo.Vertices, aList, VertexIndices);
+  AddToList(mo.TexCoords, aTexCoords, VertexIndices);
+  AddToList(mo.Normals, aNormals, VertexIndices);
   InvalidateVBO;
 end;
 
 function TFGVertexIndexList.TriangleCount: Integer;
 begin
-  case mode of
+  case Mode of
     fgmmTriangles, fgmmFlatTriangles:
-      Result := vertexIndices.Count div 3;
+      Result := VertexIndices.Count div 3;
     fgmmTriangleFan, fgmmTriangleStrip:
       begin
-        Result := vertexIndices.Count - 2;
+        Result := VertexIndices.Count - 2;
         if Result < 0 then
           Result := 0;
       end;
     fgmmQuads:
-      Result := vertexIndices.Count div 2;
+      result := VertexIndices.Count div 2;
   else
     Result := 0;
     Assert(False);
@@ -5273,7 +5315,7 @@ end;
 
 procedure TFGVertexIndexList.Reverse;
 begin
-  vertexIndices.Reverse;
+  VertexIndices.Reverse;
   InvalidateVBO;
 end;
 
@@ -5294,16 +5336,16 @@ const
 begin
   SetVector(min, cBigValue, cBigValue, cBigValue);
   SetVector(max, cSmallValue, cSmallValue, cSmallValue);
-  for i := 0 to vertexIndices.Count - 1 do
+  for i := 0 to VertexIndices.Count - 1 do
   begin
-    ref := Owner.Owner.Vertices.ItemAddress[vertexIndices[i]];
+    ref := Owner.Owner.Vertices.ItemAddress[VertexIndices[i]];
     for k := 0 to 2 do
     begin
       f := ref^[k];
-      if f < min.c[k] then
-        min.c[k] := f;
-      if f > max.c[k] then
-        max.c[k] := f;
+      if f < min.C[k] then
+        min.C[k] := f;
+      if f > max.C[k] then
+        max.C[k] := f;
     end;
   end;
 end;
@@ -5313,15 +5355,15 @@ var
   i: Integer;
   bufList: TIntegerList;
 begin
-  if vertexIndices.Count >= 3 then
+  if VertexIndices.Count >= 3 then
   begin
-    case mode of
+    case Mode of
       fgmmTriangleStrip:
         begin
           bufList := TIntegerList.Create;
           try
-            ConvertStripToList(vertexIndices, bufList);
-            vertexIndices := bufList;
+            ConvertStripToList(VertexIndices, bufList);
+            VertexIndices := bufList;
           finally
             bufList.Free;
           end;
@@ -5331,7 +5373,7 @@ begin
         begin
           bufList := TIntegerList.Create;
           try
-            for i := 0 to vertexIndices.Count - 3 do
+            for i := 0 to VertexIndices.Count - 3 do
               bufList.Add(vertexIndices[0], vertexIndices[i], vertexIndices[i + 1]);
             vertexIndices := bufList;
           finally
@@ -5346,7 +5388,7 @@ end;
 
 function TFGVertexIndexList.GetNormal: TAffineVector;
 begin
-  if vertexIndices.Count < 3 then
+  if VertexIndices.Count < 3 then
     Result := NullVector
   else
     with Owner.Owner.Vertices do
@@ -5426,30 +5468,27 @@ begin
   Assert(((TexCoordIndices.Count = 0) or (vertexIndices.Count <= TexCoordIndices.Count)) and
     ((normalIndices.Count = 0) or (vertexIndices.Count <= normalIndices.Count)));
   vertexPool := Owner.Owner.Vertices.list;
-  normalPool := Owner.Owner.normals.list;
-  colorPool := Owner.Owner.Colors.list;
-  texCoordPool := Owner.Owner.texCoords.list;
-  case mode of
-    fgmmTriangles, fgmmFlatTriangles:
-      GL.Begin_(GL_TRIANGLES);
-    fgmmTriangleStrip:
-      GL.Begin_(GL_TRIANGLE_STRIP);
-    fgmmTriangleFan:
-      GL.Begin_(GL_TRIANGLE_FAN);
+  normalPool := Owner.Owner.Normals.List;
+  colorPool := Owner.Owner.Colors.List;
+  texCoordPool := Owner.Owner.TexCoords.List;
+  case Mode of
+    fgmmTriangles, fgmmFlatTriangles: GL.Begin_(GL_TRIANGLES);
+    fgmmTriangleStrip: GL.Begin_(GL_TRIANGLE_STRIP);
+    fgmmTriangleFan: GL.Begin_(GL_TRIANGLE_FAN);
   else
     Assert(False);
   end;
-  vertexIdxList := vertexIndices.list;
-  if normalIndices.Count > 0 then
-    normalIdxList := normalIndices.list
+  vertexIdxList := VertexIndices.List;
+  if NormalIndices.Count > 0 then
+    normalIdxList := NormalIndices.List
   else
     normalIdxList := vertexIdxList;
   if TexCoordIndices.Count > 0 then
-    texCoordIdxList := TexCoordIndices.list
+    texCoordIdxList := TexCoordIndices.List
   else
     texCoordIdxList := vertexIdxList;
 
-  for i := 0 to vertexIndices.Count - 1 do
+  for i := 0 to VertexIndices.Count - 1 do
   begin
     GL.Normal3fv(@normalPool[normalIdxList^[i]]);
     if Assigned(colorPool) then
@@ -5465,9 +5504,9 @@ end;
 procedure TFGVertexNormalTexIndexList.AddToTriangles(aList: TAffineVectorList; aTexCoords: TAffineVectorList = nil;
   aNormals: TAffineVectorList = nil);
 begin
-  AddToList(Owner.Owner.Vertices, aList, vertexIndices);
-  AddToList(Owner.Owner.texCoords, aTexCoords, TexCoordIndices);
-  AddToList(Owner.Owner.normals, aNormals, normalIndices);
+  AddToList(Owner.Owner.Vertices, aList, VertexIndices);
+  AddToList(Owner.Owner.TexCoords, aTexCoords, TexCoordIndices);
+  AddToList(Owner.Owner.Normals, aNormals, NormalIndices);
 end;
 
 procedure TFGVertexNormalTexIndexList.Add(vertexIdx, normalIdx, texCoordIdx: Integer);
@@ -5534,31 +5573,26 @@ var
   gotColor: Boolean;
 
 begin
-  Assert(vertexIndices.Count = texCoords.Count);
-  texCoordPool := texCoords.list;
-  vertexPool := Owner.Owner.Vertices.list;
-  indicesPool := @vertexIndices.list[0];
-  colorPool := @Owner.Owner.Colors.list[0];
+  Assert(VertexIndices.Count = TexCoords.Count);
+  texCoordPool := TexCoords.List;
+  vertexPool := Owner.Owner.Vertices.List;
+  indicesPool := @VertexIndices.List[0];
+  colorPool := @Owner.Owner.Colors.List[0];
   gotColor := (Owner.Owner.Vertices.Count = Owner.Owner.Colors.Count);
 
-  case mode of
-    fgmmTriangles:
-      GL.Begin_(GL_TRIANGLES);
-    fgmmFlatTriangles:
-      GL.Begin_(GL_TRIANGLES);
-    fgmmTriangleStrip:
-      GL.Begin_(GL_TRIANGLE_STRIP);
-    fgmmTriangleFan:
-      GL.Begin_(GL_TRIANGLE_FAN);
-    fgmmQuads:
-      GL.Begin_(GL_QUADS);
+  case Mode of
+    fgmmTriangles: GL.Begin_(GL_TRIANGLES);
+    fgmmFlatTriangles: GL.Begin_(GL_TRIANGLES);
+    fgmmTriangleStrip: GL.Begin_(GL_TRIANGLE_STRIP);
+    fgmmTriangleFan: GL.Begin_(GL_TRIANGLE_FAN);
+    fgmmQuads: GL.Begin_(GL_QUADS);
   else
     Assert(False);
   end;
-  if Owner.Owner.normals.Count = Owner.Owner.Vertices.Count then
+  if Owner.Owner.Normals.Count = Owner.Owner.Vertices.Count then
   begin
-    normalPool := Owner.Owner.normals.list;
-    for i := 0 to vertexIndices.Count - 1 do
+    normalPool := Owner.Owner.Normals.List;
+    for i := 0 to VertexIndices.Count - 1 do
     begin
       xgl.TexCoord2fv(@texCoordPool[i]);
       k := indicesPool[i];
@@ -5570,7 +5604,7 @@ begin
   end
   else
   begin
-    for i := 0 to vertexIndices.Count - 1 do
+    for i := 0 to VertexIndices.Count - 1 do
     begin
       xgl.TexCoord2fv(@texCoordPool[i]);
       if gotColor then
@@ -5588,10 +5622,10 @@ var
   i, n: Integer;
   texCoordList: TAffineVectorList;
 begin
-  AddToList(Owner.Owner.Vertices, aList, vertexIndices);
-  AddToList(Owner.Owner.normals, aNormals, vertexIndices);
-  texCoordList := Self.texCoords;
-  case mode of
+  AddToList(Owner.Owner.Vertices, aList, VertexIndices);
+  AddToList(Owner.Owner.Normals, aNormals, VertexIndices);
+  texCoordList := Self.TexCoords;
+  case Mode of
     fgmmTriangles, fgmmFlatTriangles:
       begin
         if Assigned(aTexCoords) then
@@ -5625,13 +5659,13 @@ end;
 
 procedure TFGIndexTexCoordList.Add(idx: Integer; const texCoord: TAffineVector);
 begin
-  texCoords.Add(texCoord);
+  TexCoords.Add(texCoord);
   inherited Add(idx);
 end;
 
 procedure TFGIndexTexCoordList.Add(idx: Integer; const s, t: Single);
 begin
-  texCoords.Add(s, t, 0);
+  TexCoords.Add(s, t, 0);
   inherited Add(idx);
 end;
 
@@ -5639,9 +5673,9 @@ end;
 // ------------------ TGLFaceGroups ------------------
 // ------------------
 
-constructor TGLFaceGroups.CreateOwned(aOwner: TMeshObject);
+constructor TGLFaceGroups.CreateOwned(AOwner: TMeshObject);
 begin
-  FOwner := aOwner;
+  FOwner := AOwner;
   Create;
 end;
 
@@ -5679,7 +5713,7 @@ end;
 
 function TGLFaceGroups.GetFaceGroup(Index: Integer): TGLFaceGroup;
 begin
-  Result := TGLFaceGroup(list^[Index]);
+  Result := TGLFaceGroup(List^[Index]);
 end;
 
 procedure TGLFaceGroups.PrepareMaterialLibraryCache(matLib: TGLMaterialLibrary);
@@ -5687,7 +5721,7 @@ var
   i: Integer;
 begin
   for i := 0 to Count - 1 do
-    TGLFaceGroup(list^[i]).PrepareMaterialLibraryCache(matLib);
+    TGLFaceGroup(List^[i]).PrepareMaterialLibraryCache(matLib);
 end;
 
 procedure TGLFaceGroups.DropMaterialLibraryCache;
@@ -5695,7 +5729,7 @@ var
   i: Integer;
 begin
   for i := 0 to Count - 1 do
-    TGLFaceGroup(list^[i]).DropMaterialLibraryCache;
+    TGLFaceGroup(List^[i]).DropMaterialLibraryCache;
 end;
 
 procedure TGLFaceGroups.AddToTriangles(aList: TAffineVectorList; aTexCoords: TAffineVectorList = nil;
@@ -5768,9 +5802,9 @@ end;
 // ------------------ TGLVectorFile ------------------
 // ------------------
 
-constructor TGLVectorFile.Create(aOwner: TPersistent);
+constructor TGLVectorFile.Create(AOwner: TPersistent);
 begin
-  Assert(aOwner is TGLBaseMesh);
+  Assert(AOwner is TGLBaseMesh);
   inherited;
 end;
 
@@ -5807,9 +5841,9 @@ end;
 // ------------------ TGLBaseMesh ------------------
 // ------------------
 
-constructor TGLBaseMesh.Create(aOwner: TComponent);
+constructor TGLBaseMesh.Create(AOwner: TComponent);
 begin
-  inherited Create(aOwner);
+  inherited Create(AOwner);
   if FMeshObjects = nil then
     FMeshObjects := TGLMeshObjectList.CreateOwned(Self);
   if FSkeleton = nil then
@@ -5839,7 +5873,7 @@ begin
     FNormalsOrientation := TGLBaseMesh(Source).FNormalsOrientation;
     FMaterialLibrary := TGLBaseMesh(Source).FMaterialLibrary;
     FLightmapLibrary := TGLBaseMesh(Source).FLightmapLibrary;
-    FAxisAlignedDimensionsCache := TGLBaseMesh(Source).FAxisAlignedDimensionsCache;
+    FAxisAlignedDimensionsCache :=  TGLBaseMesh(Source).FAxisAlignedDimensionsCache;
     FBaryCenterOffset := TGLBaseMesh(Source).FBaryCenterOffset;
     FUseMeshMaterials := TGLBaseMesh(Source).FUseMeshMaterials;
     FOverlaySkeleton := TGLBaseMesh(Source).FOverlaySkeleton;
@@ -5858,11 +5892,11 @@ var
   fs: TStream;
 begin
   FLastLoadedFilename := '';
-  if filename <> '' then
+  if fileName <> '' then
   begin
-    fs := CreateFileStream(filename, fmOpenRead + fmShareDenyWrite);
+    fs := CreateFileStream(fileName, fmOpenRead + fmShareDenyWrite);
     try
-      LoadFromStream(filename, fs);
+      LoadFromStream(fileName, fs);
       FLastLoadedFilename := filename;
     finally
       fs.Free;
@@ -5870,17 +5904,17 @@ begin
   end;
 end;
 
-procedure TGLBaseMesh.LoadFromStream(const filename: string; aStream: TStream);
+procedure TGLBaseMesh.LoadFromStream(const fileName: string; aStream: TStream);
 var
   newVectorFile: TGLVectorFile;
-  VectorFileClass: TGLVectorFileClass;
+  vectorFileClass: TGLVectorFileClass;
 begin
   FLastLoadedFilename := '';
-  if filename <> '' then
+  if fileName <> '' then
   begin
     MeshObjects.Clear;
     Skeleton.Clear;
-    VectorFileClass := GetVectorFileFormats.FindFromFileName(filename);
+    vectorFileClass := GetVectorFileFormats.FindFromFileName(filename);
     newVectorFile := VectorFileClass.Create(Self);
     try
       newVectorFile.ResourceName := filename;
@@ -5907,25 +5941,25 @@ procedure TGLBaseMesh.SaveToFile(const filename: string);
 var
   fs: TStream;
 begin
-  if filename <> '' then
+  if fileName <> '' then
   begin
-    fs := CreateFileStream(filename, fmCreate);
+    fs := CreateFileStream(fileName, fmCreate);
     try
-      SaveToStream(filename, fs);
+      SaveToStream(fileName, fs);
     finally
       fs.Free;
     end;
   end;
 end;
 
-procedure TGLBaseMesh.SaveToStream(const filename: string; aStream: TStream);
+procedure TGLBaseMesh.SaveToStream(const fileName: string; aStream: TStream);
 var
   newVectorFile: TGLVectorFile;
-  VectorFileClass: TGLVectorFileClass;
+  vectorFileClass: TGLVectorFileClass;
 begin
-  if filename <> '' then
+  if fileName <> '' then
   begin
-    VectorFileClass := GetVectorFileFormats.FindFromFileName(filename);
+    vectorFileClass := GetVectorFileFormats.FindFromFileName(filename);
     newVectorFile := VectorFileClass.Create(Self);
     try
       newVectorFile.ResourceName := filename;
@@ -5941,7 +5975,7 @@ procedure TGLBaseMesh.AddDataFromFile(const filename: string);
 var
   fs: TStream;
 begin
-  if filename <> '' then
+  if fileName <> '' then
   begin
     fs := CreateFileStream(filename, fmOpenRead + fmShareDenyWrite);
     try
@@ -5970,7 +6004,7 @@ begin
       if Assigned(Scene) then
         Scene.EndUpdate;
     finally
-      newVectorFile.Free;
+      NewVectorFile.Free;
     end;
     PrepareMesh;
   end;
@@ -5991,10 +6025,10 @@ begin
     TMeshObject(MeshObjects[i]).GetExtents(lMin, lMax);
     for k := 0 to 2 do
     begin
-      if lMin.c[k] < min.c[k] then
-        min.c[k] := lMin.c[k];
-      if lMax.c[k] > max.c[k] then
-        max.c[k] := lMax.c[k];
+      if lMin.C[k] < min.C[k] then
+        min.C[k] := lMin.C[k];
+      if lMax.C[k] > max.C[k] then
+        max.C[k] := lMax.C[k];
     end;
   end;
 end;
@@ -6284,7 +6318,7 @@ begin
   if Assigned(LightmapLibrary) then
     xgl.AllowSecondTextureUnit;
   if renderChildren and (Count > 0) then
-    Self.renderChildren(0, Count - 1, rci);
+    Self.RenderChildren(0, Count - 1, rci);
 end;
 
 procedure TGLBaseMesh.StructureChanged;
@@ -6305,8 +6339,8 @@ function TGLBaseMesh.RayCastIntersect(const rayStart, rayVector: TVector; inters
   intersectNormal: PVector = nil): Boolean;
 
 var
-  i, j: Integer;
-  obj: TMeshObject;
+  i,j: Integer;
+  Obj: TMeshObject;
   Tris: TAffineVectorList;
   locRayStart, locRayVector, iPoint, iNormal: TVector;
   d, minD: Single;
@@ -6318,16 +6352,16 @@ begin
 
   for j := 0 to MeshObjects.Count - 1 do
   begin
-    obj := MeshObjects.GetMeshObject(j);
-    if not obj.Visible then
-      continue;
-    Tris := obj.ExtractTriangles(NIL, NIL); // objTexCoords & objNormals
+    Obj := MeshObjects.GetMeshObject(j);
+    if not Obj.Visible then
+      Continue;
+    Tris := Obj.ExtractTriangles(NIL, NIL); //objTexCoords & objNormals
     try
       i := 0;
       while i < Tris.Count do
       begin
-        if RayCastTriangleIntersect(locRayStart, locRayVector, Tris.list^[i], Tris.list^[i + 1], Tris.list^[i + 2], @iPoint,
-          @iNormal) then
+        if RayCastTriangleIntersect(locRayStart, locRayVector, Tris.List^[i],
+          Tris.List^[i + 1], Tris.List^[i + 2], @iPoint, @iNormal) then
         begin
           d := VectorDistance2(locRayStart, iPoint);
           if (d < minD) or (minD < 0) then
@@ -6599,12 +6633,12 @@ end;
 
 function TGLActorAnimation.GetDisplayName: string;
 begin
-  Result := Format('%d - %s [%d - %d]', [Index, Name, startFrame, endFrame]);
+  Result := Format('%d - %s [%d - %d]', [Index, Name, StartFrame, EndFrame]);
 end;
 
 function TGLActorAnimation.FrameCount: Integer;
 begin
-  case reference of
+  case Reference of
     aarMorph:
       Result := TGLActorAnimations(Collection).FOwner.MeshObjects.MorphTargetCount;
     aarSkeleton:
@@ -6656,8 +6690,8 @@ begin
   if val <> FReference then
   begin
     FReference := val;
-    startFrame := startFrame;
-    endFrame := endFrame;
+    StartFrame := StartFrame;
+    EndFrame := EndFrame;
   end;
 end;
 
@@ -6675,14 +6709,14 @@ begin
     if sl.Count = 4 then
     begin
       if LowerCase(sl[3]) = 'morph' then
-        reference := aarMorph
+        Reference := aarMorph
       else if LowerCase(sl[3]) = 'skeleton' then
-        reference := aarSkeleton
+        Reference := aarSkeleton
       else
         Assert(False);
     end
     else
-      reference := aarMorph;
+      Reference := aarMorph;
   finally
     sl.Free;
   end;
@@ -6702,21 +6736,21 @@ end;
 
 procedure TGLActorAnimation.MakeSkeletalTranslationStatic;
 begin
-  OwnerActor.Skeleton.MakeSkeletalTranslationStatic(startFrame, endFrame);
+  OwnerActor.Skeleton.MakeSkeletalTranslationStatic(StartFrame, EndFrame);
 end;
 
 procedure TGLActorAnimation.MakeSkeletalRotationDelta;
 begin
-  OwnerActor.Skeleton.MakeSkeletalRotationDelta(startFrame, endFrame);
+  OwnerActor.Skeleton.MakeSkeletalRotationDelta(StartFrame, EndFrame);
 end;
 
 // ------------------
 // ------------------ TGLActorAnimations ------------------
 // ------------------
 
-constructor TGLActorAnimations.Create(aOwner: TGLActor);
+constructor TGLActorAnimations.Create(AOwner: TGLActor);
 begin
-  FOwner := aOwner;
+  FOwner := AOwner;
   inherited Create(TGLActorAnimation);
 end;
 
@@ -6817,11 +6851,11 @@ begin
     Add.AsString := string(ReadCRLFString(aStream));
 end;
 
-procedure TGLActorAnimations.SaveToFile(const filename: string);
+procedure TGLActorAnimations.SaveToFile(const fileName: string);
 var
   fs: TStream;
 begin
-  fs := CreateFileStream(filename, fmCreate);
+  fs := CreateFileStream(fileName, fmCreate);
   try
     SaveToStream(fs);
   finally
@@ -6829,11 +6863,11 @@ begin
   end;
 end;
 
-procedure TGLActorAnimations.LoadFromFile(const filename: string);
+procedure TGLActorAnimations.LoadFromFile(const fileName: string);
 var
   fs: TStream;
 begin
-  fs := CreateFileStream(filename, fmOpenRead + fmShareDenyWrite);
+  fs := CreateFileStream(fileName, fmOpenRead + fmShareDenyWrite);
   try
     LoadFromStream(fs);
   finally
@@ -6845,9 +6879,9 @@ end;
 // ------------------ TGLBaseAnimationControler ------------------
 // ------------------
 
-constructor TGLBaseAnimationControler.Create(aOwner: TComponent);
+constructor TGLBaseAnimationControler.Create(AOwner: TComponent);
 begin
-  inherited Create(aOwner);
+  inherited Create(AOwner);
   FEnabled := True;
 end;
 
@@ -6949,20 +6983,20 @@ begin
   begin
     if Ratio = 0 then
     begin
-      frameIndex1 := anim.startFrame;
+      frameIndex1 := anim.StartFrame;
       frameIndex2 := frameIndex1;
       lerpFactor := 0;
     end
     else if Ratio = 1 then
     begin
-      frameIndex1 := anim.endFrame;
+      frameIndex1 := anim.EndFrame;
       frameIndex2 := frameIndex1;
       lerpFactor := 0;
     end
     else
     begin
-      baseDelta := anim.endFrame - anim.startFrame;
-      lerpFactor := anim.startFrame + baseDelta * Ratio;
+      baseDelta := anim.EndFrame - anim.StartFrame;
+      lerpFactor := anim.StartFrame + baseDelta * Ratio;
       frameIndex1 := Trunc(lerpFactor);
       frameIndex2 := frameIndex1 + 1;
       lerpFactor := Frac(lerpFactor);
@@ -6977,9 +7011,9 @@ end;
 // ------------------ TGLActor ------------------
 // ------------------
 
-constructor TGLActor.Create(aOwner: TComponent);
+constructor TGLActor.Create(AOwner: TComponent);
 begin
-  inherited Create(aOwner);
+  inherited Create(AOwner);
   ObjectStyle := ObjectStyle + [osDirectDraw];
   FFrameInterpolation := afpLinear;
   FAnimationMode := aamNone;
@@ -7036,14 +7070,12 @@ begin
       FCurrentFrame := val;
     FCurrentFrameDelta := 0;
     case AnimationMode of
-      aamPlayOnce:
-        if (CurrentFrame = endFrame) and (FTargetSmoothAnimation = nil) then
+      aamPlayOnce: if (CurrentFrame = EndFrame) and (FTargetSmoothAnimation =
+        nil) then
           FAnimationMode := aamNone;
-      aamBounceForward:
-        if CurrentFrame = endFrame then
+      aamBounceForward: if CurrentFrame = EndFrame then
           FAnimationMode := aamBounceBackward;
-      aamBounceBackward:
-        if CurrentFrame = startFrame then
+      aamBounceBackward: if CurrentFrame = StartFrame then
           FAnimationMode := aamBounceForward;
     end;
     StructureChanged;
@@ -7059,29 +7091,29 @@ end;
 
 procedure TGLActor.SetStartFrame(val: Integer);
 begin
-  if (val >= 0) and (val < FrameCount) and (val <> startFrame) then
+  if (val >= 0) and (val < FrameCount) and (val <> StartFrame) then
     FStartFrame := val;
-  if endFrame < startFrame then
+  if EndFrame < StartFrame then
     FEndFrame := FStartFrame;
-  if CurrentFrame < startFrame then
+  if CurrentFrame < StartFrame then
     CurrentFrame := FStartFrame;
 end;
 
 procedure TGLActor.SetEndFrame(val: Integer);
 begin
-  if (val >= 0) and (val < FrameCount) and (val <> endFrame) then
+  if (val >= 0) and (val < FrameCount) and (val <> EndFrame) then
     FEndFrame := val;
-  if CurrentFrame > endFrame then
+  if CurrentFrame > EndFrame then
     CurrentFrame := FEndFrame;
 end;
 
 procedure TGLActor.SetReference(val: TGLActorAnimationReference);
 begin
-  if val <> reference then
+  if val <> Reference then
   begin
     FReference := val;
-    startFrame := startFrame;
-    endFrame := endFrame;
+    StartFrame := StartFrame;
+    EndFrame := EndFrame;
     CurrentFrame := CurrentFrame;
     StructureChanged;
   end;
@@ -7112,46 +7144,45 @@ begin
     aamLoop, aamBounceForward:
       begin
         if FTargetSmoothAnimation <> nil then
-          Result := FTargetSmoothAnimation.startFrame
+          Result := FTargetSmoothAnimation.StartFrame
         else
         begin
           Result := CurrentFrame + 1;
-          if Result > endFrame then
+          if Result > EndFrame then
           begin
-            Result := startFrame + (Result - endFrame - 1);
-            if Result > endFrame then
-              Result := endFrame;
+            Result := StartFrame + (Result - EndFrame - 1);
+            if Result > EndFrame then
+              Result := EndFrame;
           end;
         end;
       end;
     aamNone, aamPlayOnce:
       begin
         if FTargetSmoothAnimation <> nil then
-          Result := FTargetSmoothAnimation.startFrame
+          Result := FTargetSmoothAnimation.StartFrame
         else
         begin
           Result := CurrentFrame + 1;
-          if Result > endFrame then
-            Result := endFrame;
+          if Result > EndFrame then
+            Result := EndFrame;
         end;
       end;
     aamBounceBackward, aamLoopBackward:
       begin
         if FTargetSmoothAnimation <> nil then
-          Result := FTargetSmoothAnimation.startFrame
+          Result := FTargetSmoothAnimation.StartFrame
         else
         begin
           Result := CurrentFrame - 1;
-          if Result < startFrame then
+          if Result < StartFrame then
           begin
-            Result := endFrame - (startFrame - Result - 1);
-            if Result < startFrame then
-              Result := startFrame;
+            Result := EndFrame - (StartFrame - Result - 1);
+            if Result < StartFrame then
+              Result := StartFrame;
           end;
         end;
       end;
-    aamExternal:
-      Result := CurrentFrame; // Do nothing
+    aamExternal: Result := CurrentFrame; // Do nothing
   else
     Result := CurrentFrame;
     Assert(False);
@@ -7167,9 +7198,9 @@ begin
   begin
     CurrentFrame := NextFrameIndex;
     Dec(n);
-    if Assigned(FOnEndFrameReached) and (CurrentFrame = endFrame) then
+    if Assigned(FOnEndFrameReached) and (CurrentFrame = EndFrame) then
       FOnEndFrameReached(Self);
-    if Assigned(FOnStartFrameReached) and (CurrentFrame = startFrame) then
+    if Assigned(FOnStartFrameReached) and (CurrentFrame = StartFrame) then
       FOnStartFrameReached(Self);
   end;
 end;
@@ -7195,9 +7226,8 @@ var
   lerpInfos: array of TGLBlendedLerpInfo;
 begin
   nextFrameIdx := NextFrameIndex;
-  case reference of
-    aarMorph:
-      if nextFrameIdx >= 0 then
+  case Reference of
+    aarMorph: if nextFrameIdx >= 0 then
       begin
         case FrameInterpolation of
           afpLinear:
@@ -7206,8 +7236,7 @@ begin
           MeshObjects.MorphTo(CurrentFrame);
         end;
       end;
-    aarSkeleton:
-      if Skeleton.Frames.Count > 0 then
+    aarSkeleton: if Skeleton.Frames.Count > 0 then
       begin
         if Assigned(FControlers) and (AnimationMode <> aamExternal) then
         begin
@@ -7216,8 +7245,7 @@ begin
           if nextFrameIdx >= 0 then
           begin
             case FrameInterpolation of
-              afpLinear:
-                with lerpInfos[0] do
+              afpLinear: with lerpInfos[0] do
                 begin
                   frameIndex1 := CurrentFrame;
                   frameIndex2 := nextFrameIdx;
@@ -7246,7 +7274,8 @@ begin
           end;
           k := 1;
           for i := 0 to FControlers.Count - 1 do
-            if TGLBaseAnimationControler(FControlers[i]).Apply(lerpInfos[k]) then
+            if TGLBaseAnimationControler(FControlers[i]).Apply(lerpInfos[k])
+              then
               Inc(k);
           SetLength(lerpInfos, k);
           Skeleton.BlendedLerps(lerpInfos);
@@ -7263,8 +7292,7 @@ begin
         end;
         Skeleton.MorphMesh(aoSkeletonNormalizeNormals in Options);
       end;
-    aarNone:
-      ; // do nothing
+    aarNone: ; // do nothing
   end;
 end;
 
@@ -7296,7 +7324,7 @@ end;
 
 function TGLActor.FrameCount: Integer;
 begin
-  case reference of
+  case Reference of
     aarMorph:
       Result := MeshObjects.MorphTargetCount;
     aarSkeleton:
@@ -7316,7 +7344,7 @@ begin
   inherited;
   if (AnimationMode <> aamNone) and (Interval > 0) then
   begin
-    if (startFrame <> endFrame) and (FrameCount > 1) then
+    if (StartFrame <> EndFrame) and (FrameCount > 1) then
     begin
       FCurrentFrameDelta := FCurrentFrameDelta + (progressTime.deltaTime * 1000) / FInterval;
       if FCurrentFrameDelta > 1 then
@@ -7338,12 +7366,12 @@ begin
   end;
 end;
 
-procedure TGLActor.LoadFromStream(const filename: string; aStream: TStream);
+procedure TGLActor.LoadFromStream(const FileName: string; aStream: TStream);
 begin
-  if filename <> '' then
+  if FileName <> '' then
   begin
     Animations.Clear;
-    inherited LoadFromStream(filename, aStream);
+    inherited LoadFromStream(FileName, aStream);
   end;
 end;
 
@@ -7369,10 +7397,10 @@ begin
     end
     else
     begin
-      reference := anAnimation.reference;
-      startFrame := anAnimation.startFrame;
-      endFrame := anAnimation.endFrame;
-      CurrentFrame := startFrame;
+      Reference := anAnimation.Reference;
+      StartFrame := anAnimation.StartFrame;
+      EndFrame := anAnimation.EndFrame;
+      CurrentFrame := StartFrame;
     end;
   end;
 end;
@@ -7381,7 +7409,7 @@ function TGLActor.CurrentAnimation: string;
 var
   aa: TGLActorAnimation;
 begin
-  aa := Animations.FindFrame(CurrentFrame, reference);
+  aa := Animations.FindFrame(CurrentFrame, Reference);
   if Assigned(aa) then
     Result := aa.Name
   else
@@ -7392,11 +7420,11 @@ procedure TGLActor.Synchronize(referenceActor: TGLActor);
 begin
   if Assigned(referenceActor) then
   begin
-    if referenceActor.startFrame < FrameCount then
-      FStartFrame := referenceActor.startFrame;
-    if referenceActor.endFrame < FrameCount then
-      FEndFrame := referenceActor.endFrame;
-    FReference := referenceActor.reference;
+    if referenceActor.StartFrame < FrameCount then
+      FStartFrame := referenceActor.StartFrame;
+    if referenceActor.EndFrame < FrameCount then
+      FEndFrame := referenceActor.EndFrame;
+    FReference := referenceActor.Reference;
     if referenceActor.CurrentFrame < FrameCount then
       FCurrentFrame := referenceActor.CurrentFrame;
     FCurrentFrameDelta := referenceActor.CurrentFrameDelta;
@@ -7411,25 +7439,23 @@ begin
   end;
 end;
 
-function TGLActor.isSwitchingAnimation: Boolean;
+function TGLActor.isSwitchingAnimation: boolean;
 begin
-  Result := FTargetSmoothAnimation <> nil;
+  result := FTargetSmoothAnimation <> nil;
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 RegisterVectorFileFormat('glsm', 'GLScene Mesh', TGLSMVectorFile);
 
-RegisterClasses([TGLFreeForm, TGLActor, TGLSkeleton, TGLSkeletonFrame, TGLSkeletonBone, TGLSkeletonMeshObject, TMeshObject,
-  TGLSkeletonFrameList, TGLMeshMorphTarget, TGLMorphableMeshObject, TGLFaceGroup, TFGVertexIndexList,
-  TFGVertexNormalTexIndexList, TGLAnimationControler, TFGIndexTexCoordList, TGLSkeletonCollider, TGLSkeletonColliderList]);
+  RegisterClasses(
+    [TGLFreeForm, TGLActor, TGLSkeleton, TGLSkeletonFrame, TGLSkeletonBone,
+    TGLSkeletonMeshObject, TMeshObject, TGLSkeletonFrameList, TGLMeshMorphTarget,
+    TGLMorphableMeshObject, TGLFaceGroup, TFGVertexIndexList,
+    TFGVertexNormalTexIndexList, TGLAnimationControler,
+    TFGIndexTexCoordList, TGLSkeletonCollider, TGLSkeletonColliderList]);
 
 finalization
 

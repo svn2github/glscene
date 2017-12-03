@@ -3,11 +3,16 @@ unit FNavForm;
 interface
 
 uses
-  System.SysUtils, System.Classes,
-  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
+  System.SysUtils,
+  System.Classes,
+  Vcl.Graphics,
+  Vcl.Controls,
+  Vcl.Forms,
+  Vcl.Dialogs,
   //GR32
-  GR32_Image, GR32, GR32_Layers,
-  
+  GR32_Image,
+  GR32,
+  GR32_Layers,
   GLHeightTileFile;
 
 type
@@ -16,12 +21,9 @@ type
     procedure ImageMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer; Layer: TCustomLayer);
   private
-     
     FPickX, FPickY : Integer;
   public
-     
     function Execute(htf : TGLHeightTileFile) : Boolean;
-
     property PickX : Integer read FPickX;
     property PickY : Integer read FPickY;
   end;

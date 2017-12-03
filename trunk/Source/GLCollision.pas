@@ -97,25 +97,28 @@ type
          property GroupIndex : Integer read FGroupIndex write SetGroupIndex;
 	end;
 
-function FastCheckPointVsPoint(obj1, obj2 : TGLBaseSceneObject) : Boolean;
-function FastCheckPointVsSphere(obj1, obj2 : TGLBaseSceneObject) : Boolean;
-function FastCheckPointVsEllipsoid(obj1, obj2 : TGLBaseSceneObject) : Boolean;
-function FastCheckPointVsCube(obj1, obj2 : TGLBaseSceneObject) : Boolean;
-function FastCheckSphereVsPoint(obj1, obj2 : TGLBaseSceneObject) : Boolean;
-function FastCheckSphereVsSphere(obj1, obj2 : TGLBaseSceneObject) : Boolean;
-function FastCheckSphereVsEllipsoid(obj1, obj2 : TGLBaseSceneObject) : Boolean;
-function FastCheckSphereVsCube(obj1, obj2 : TGLBaseSceneObject) : Boolean;
-function FastCheckEllipsoidVsPoint(obj1, obj2 : TGLBaseSceneObject) : Boolean;
-function FastCheckEllipsoidVsSphere(obj1, obj2 : TGLBaseSceneObject) : Boolean;
-function FastCheckEllipsoidVsEllipsoid(obj1, obj2 : TGLBaseSceneObject) : Boolean;
-function FastCheckEllipsoidVsCube(obj1, obj2 : TGLBaseSceneObject) : Boolean;
-function FastCheckCubeVsPoint(obj1, obj2 : TGLBaseSceneObject) : Boolean;
-function FastCheckCubeVsSphere(obj1, obj2 : TGLBaseSceneObject) : Boolean;
-function FastCheckCubeVsEllipsoid(obj1, obj2 : TGLBaseSceneObject) : Boolean;
-function FastCheckCubeVsCube(obj1, obj2 : TGLBaseSceneObject) : Boolean;
-function FastCheckCubeVsFace(obj1, obj2 : TGLBaseSceneObject) : Boolean;   //experimental
-function FastCheckFaceVsCube(obj1, obj2 : TGLBaseSceneObject) : Boolean;   //experimental
-function FastCheckFaceVsFace(obj1, obj2 : TGLBaseSceneObject) : Boolean;
+{ Fast Collision detection routines that are heavily specialized and just return a boolean }
+function FastCheckPointVsPoint(obj1, obj2: TGLBaseSceneObject): Boolean;
+function FastCheckPointVsSphere(obj1, obj2: TGLBaseSceneObject): Boolean;
+function FastCheckPointVsEllipsoid(obj1, obj2: TGLBaseSceneObject): Boolean;
+function FastCheckPointVsCube(obj1, obj2: TGLBaseSceneObject): Boolean;
+function FastCheckSphereVsPoint(obj1, obj2: TGLBaseSceneObject): Boolean;
+function FastCheckSphereVsSphere(obj1, obj2: TGLBaseSceneObject): Boolean;
+function FastCheckSphereVsEllipsoid(obj1, obj2: TGLBaseSceneObject): Boolean;
+function FastCheckSphereVsCube(obj1, obj2: TGLBaseSceneObject): Boolean;
+function FastCheckEllipsoidVsPoint(obj1, obj2: TGLBaseSceneObject): Boolean;
+function FastCheckEllipsoidVsSphere(obj1, obj2: TGLBaseSceneObject): Boolean;
+function FastCheckEllipsoidVsEllipsoid(obj1, obj2: TGLBaseSceneObject): Boolean;
+function FastCheckEllipsoidVsCube(obj1, obj2: TGLBaseSceneObject): Boolean;
+function FastCheckCubeVsPoint(obj1, obj2: TGLBaseSceneObject): Boolean;
+function FastCheckCubeVsSphere(obj1, obj2: TGLBaseSceneObject): Boolean;
+function FastCheckCubeVsEllipsoid(obj1, obj2: TGLBaseSceneObject): Boolean;
+function FastCheckCubeVsCube(obj1, obj2: TGLBaseSceneObject): Boolean;
+function FastCheckCubeVsFace(obj1, obj2: TGLBaseSceneObject): Boolean;
+// experimental
+function FastCheckFaceVsCube(obj1, obj2: TGLBaseSceneObject): Boolean;
+// experimental
+function FastCheckFaceVsFace(obj1, obj2: TGLBaseSceneObject): Boolean;
 
 {Returns true when the bounding box cubes does intersect the other. 
    Also true when the one cube does contain the other completely. }
@@ -144,8 +147,7 @@ const
        (FastCheckCubeVsPoint,       FastCheckCubeVsSphere,        FastCheckCubeVsEllipsoid,        FastCheckFaceVsCube,       FastCheckFaceVsFace)
       );
 
-// Fast Collision detection routines
-// by "fast" I mean they are heavily specialized and just return a boolean
+// Collision utility routines
 
 function FastCheckPointVsPoint(obj1, obj2 : TGLBaseSceneObject) : Boolean;
 begin
@@ -170,7 +172,7 @@ begin
 //   ScaleVector();
    v.W:=0;
    // if norm is below 1, collision
-   Result:=(VectorNorm(v)<=1{Sqr(obj2.BoundingSphereRadius)});  //DanB - since radius*radius = 1/2*1/2 = 1/4 for unit sphere
+   Result:=(VectorNorm(v)<=1{Sqr(obj2.BoundingSphereRadius)});  // since radius*radius = 1/2*1/2 = 1/4 for unit sphere
 end;
 
 function FastCheckPointVsCube(obj1, obj2 : TGLBaseSceneObject) : Boolean;
@@ -226,7 +228,7 @@ begin
    v.X := abs(v.X);
    v.Y := abs(v.Y);
    v.Z := abs(v.Z);
-   ScaleVector(v,obj2.Scale.AsVector);  //by DanB
+   ScaleVector(v,obj2.Scale.AsVector);  
 
    aad := obj2.AxisAlignedDimensions; // should be abs at all!
 
@@ -381,15 +383,18 @@ function DoCubesIntersectPrim(obj1, obj2 : TGLBaseSceneObject) : Boolean;
         j := (i+1) mod 3;
         k := (j+1) mod 3;
         t := (pl.C[i]-p0.C[i])/d.C[i];   // t: line parameter of intersection
-        if IsInRange(t, 0, 1) then begin
+        if IsInRange(t, 0, 1) then 
+		begin
           s := p0;
           CombineVector(s,d,t);    // calculate intersection
           // if the other two coordinates lie within the ranges, collision
           if IsInRange(s.C[j],-pl.C[j],pl.C[j]) and
-             IsInRange(s.C[k],-pl.C[k],pl.C[k]) then Exit;
+             IsInRange(s.C[k],-pl.C[k],pl.C[k]) then 
+		    Exit;
         end;
         t := (-pl.C[i]-p0.C[i])/d.C[i];   // t: parameter of intersection
-        if IsInRange(t,0,1) then begin
+        if IsInRange(t,0,1) then 
+		begin
           s := p0;
           CombineVector(s,d,t);    // calculate intersection
           // if the other two coordinates lie within the ranges, collision
@@ -422,10 +427,11 @@ begin
     // check if point lies inside "cube" obj2, collision
     if IsInCube(pt1[I],aad) then Exit;
   end;
-  for I:=0 to 11 do begin
+  for I:=0 to 11 do 
+  begin
     if CheckWire(pt1[cWires[I,0]],pt1[cWires[I,1]],aad) then Exit;
   end;
-  result := false;
+  Result := false;
 end;
 
 function FastCheckCubeVsCube(obj1, obj2 : TGLBaseSceneObject) : Boolean;
@@ -460,19 +466,15 @@ begin
 end;
 
 
-//  FastCheckCubeVsFace
-//
-//  Behaviour - Checks for collisions between Faces and cube by Checking
-//              whether triangles on the mesh have a point inside the cube,
-//              or a triangle intersects the side
-//
-//  Issues -  Checks whether triangles on the mesh have a point inside the cube
-//            1)  When the cube is completely inside a mesh, it will contain
-//               no triangles hence no collision detected
-//            2)  When the mesh is (almost) completely inside the cube
-//               Octree.GetTrianglesInCube returns no points, why?
-//
+{Behaviour - Checks for collisions between Faces and cube by Checking
+ whether triangles on the mesh have a point inside the cube,
+ or a triangle intersects the side
 
+ Issues -  Checks whether triangles on the mesh have a point inside the cube
+ 1)  When the cube is completely inside a mesh, it will contain
+ no triangles hence no collision detected
+ 2)  When the mesh is (almost) completely inside the cube
+ Octree.GetTrianglesInCube returns no points, why? }
 function FastCheckCubeVsFace(obj1, obj2 : TGLBaseSceneObject) : Boolean;
 //var
 //   triList : TAffineVectorList;
@@ -557,18 +559,18 @@ end;
 
 function IntersectCubes(obj1, obj2 : TGLBaseSceneObject) : Boolean;
 var
-  aabb1, aabb2 : TAABB;
-  m1To2, m2To1 : TMatrix;
+  aabb1, AABB2: TAABB;
+  m1to2, m2to1: TMatrix;
 begin
-   // Calc AABBs
-   aabb1:=Obj1.AxisAlignedBoundingBoxUnscaled;
-   aabb2:=Obj2.AxisAlignedBoundingBoxUnscaled;
+  // Calc AABBs
+  aabb1 := obj1.AxisAlignedBoundingBoxUnscaled;
+  AABB2 := obj2.AxisAlignedBoundingBoxUnscaled;
 
-   // Calc Conversion Matrixes
-   MatrixMultiply(obj1.AbsoluteMatrix, obj2.InvAbsoluteMatrix, m1To2);
-   MatrixMultiply(obj2.AbsoluteMatrix, obj1.InvAbsoluteMatrix, m2To1);
+  // Calc Conversion Matrixes
+  MatrixMultiply(obj1.AbsoluteMatrix, obj2.InvAbsoluteMatrix, m1to2);
+  MatrixMultiply(obj2.AbsoluteMatrix, obj1.InvAbsoluteMatrix, m2to1);
 
-   Result:=IntersectAABBs(aabb1, aabb2, m1To2, m2To1);
+  Result := IntersectAABBs(aabb1, AABB2, m1to2, m2to1);
 end;
 
 // ------------------
@@ -621,8 +623,6 @@ end;
 
 // Reference code
 {
-// CheckCollisions
-//
 procedure TCollisionManager.CheckCollisions;
 var
    obj1, obj2 : TGLBaseSceneObject;

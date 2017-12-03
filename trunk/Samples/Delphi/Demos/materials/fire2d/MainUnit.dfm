@@ -18,6 +18,7 @@ object Form1: TForm1
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  Position = poScreenCenter
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnKeyDown = FormKeyDown
@@ -110,8 +111,6 @@ object Form1: TForm1
     Left = 296
     Top = 16
     object Cube1: TGLCube
-      Material.Texture.ImageClassName = 'TGLPicFileImage'
-      Material.Texture.Image.PictureFileName = '..\..\..\..\media\Earth.jpg'
       Material.Texture.MinFilter = miLinear
       Material.Texture.TextureMode = tmReplace
       Material.Texture.Compression = tcNone
@@ -138,7 +137,13 @@ object Form1: TForm1
     Top = 16
   end
   object GLMaterialLibrary1: TGLMaterialLibrary
-    TexturePaths = '..\..\..\..\media'
+    Materials = <
+      item
+        Name = 'LibMaterial'
+        Tag = 0
+        Material.Texture.ImageClassName = 'TGLPicFileImage'
+        Material.MaterialLibrary = GLMaterialLibrary1
+      end>
     Left = 488
     Top = 16
   end

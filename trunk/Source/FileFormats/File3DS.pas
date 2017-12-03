@@ -873,8 +873,8 @@ begin
               IDParentNode := FindNodeByID(IDNode.ParentID);
               if assigned(IDParentNode) then
               begin
-                Name := AnsiString(IDParentNode.Name);
-                Inst := AnsiString(IDParentNode.InstStr);
+                Name := UTF8String(IDParentNode.Name); 
+                Inst := UTF8String(IDParentNode.InstStr);
               end;
 
               if Length(Name) > 0 then

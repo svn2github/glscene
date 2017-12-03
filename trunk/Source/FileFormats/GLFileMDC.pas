@@ -22,7 +22,7 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-   
+
   GLVectorFileObjects, GLMaterial, GLApplicationFileIO,
   GLVectorGeometry;
 
@@ -125,9 +125,9 @@ type
     procedure LoadFromStream(AStream: TStream); override;
   end;
 
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
+  // ------------------------------------------------------------------
+  // ------------------------------------------------------------------
+  // ------------------------------------------------------------------
 implementation
 
 // ------------------
@@ -200,37 +200,33 @@ begin
   try
     AStream.Seek(Fileheader.OffsetBorderFrames, SoFromBeginning);
     SetLength(Borderframes, Fileheader.NumFrames);
-    AStream.Read(Borderframes[0], SizeOf(TMDCBorderFrame) *
-      Fileheader.NumFrames);
+    AStream.Read(Borderframes[0], SizeOf(TMDCBorderFrame) * Fileheader.NumFrames);
 
     FrameOffset := Fileheader.OffsetSurfaces;
 
     for I := 0 to Fileheader.NumSurfaces - 1 do
     begin
       // read header
-      AStream.Seek(FrameOffset, SoFromBeginning);
+      AStream.Position := FrameOffset;
       AStream.Read(Surfheader, SizeOf(TMDCSurfaceHeader));
 
       // triangles for this surface
       SetLength(Triangles, Surfheader.NumTriangles);
-      AStream.Seek(FrameOffset + Surfheader.OffsetTriangles, SoFromBeginning);
-      AStream.Read(Triangles[0], SizeOf(TMDCTriangle) *
-        Surfheader.NumTriangles);
+      AStream.Position := FrameOffset + Surfheader.OffsetTriangles;
+      AStream.Read(Triangles[0], SizeOf(TMDCTriangle) * Surfheader.NumTriangles);
 
       // texture coordinates for this surface
       SetLength(St, Surfheader.NumVertices);
-      AStream.Seek(FrameOffset + Surfheader.OffsetTexCoords, SoFromBeginning);
+      AStream.Position := FrameOffset + Surfheader.OffsetTexCoords;
       AStream.Read(St[0], 2 * SizeOf(Single) * Surfheader.NumVertices);
 
       // base frame table for this surface (for only loading)
       SetLength(Baseframetable, Fileheader.NumFrames);
-      AStream.Seek(FrameOffset + Surfheader.OffsetFrameBaseFrames,
-        SoFromBeginning);
+      AStream.Position := FrameOffset + Surfheader.OffsetFrameBaseFrames;
       AStream.Read(Baseframetable[0], SizeOf(Word) * Fileheader.NumFrames);
       // compressed frame table for this surface (for only loading)
       SetLength(Compframetable, Fileheader.NumFrames);
-      AStream.Seek(FrameOffset + Surfheader.OffsetFrameCompFrames,
-        SoFromBeginning);
+      AStream.Position := FrameOffset + Surfheader.OffsetFrameCompFrames;
       AStream.Read(Compframetable[0], SizeOf(Word) * Fileheader.NumFrames);
 
       Mesh := TGLMorphableMeshObject.CreateOwned(Owner.MeshObjects);
@@ -250,12 +246,9 @@ begin
           // Get the vertex indices and texture coordinates
           for J := 0 to Surfheader.NumTriangles - 1 do
           begin
-            Add(Triangles[J, 0], St[Triangles[J, 0]][0],
-              1 - St[Triangles[J, 0]][1]);
-            Add(Triangles[J, 2], St[Triangles[J, 2]][0],
-              1 - St[Triangles[J, 2]][1]);
-            Add(Triangles[J, 1], St[Triangles[J, 1]][0],
-              1 - St[Triangles[J, 1]][1]);
+            Add(Triangles[J, 0], St[Triangles[J, 0]][0], 1 - St[Triangles[J, 0]][1]);
+            Add(Triangles[J, 2], St[Triangles[J, 2]][0], 1 - St[Triangles[J, 2]][1]);
+            Add(Triangles[J, 1], St[Triangles[J, 1]][0], 1 - St[Triangles[J, 1]][1]);
           end;
         end;
 
@@ -263,47 +256,35 @@ begin
         for J := 0 to Fileheader.NumFrames - 1 do
         begin
           MorphTarget := TGLMeshMorphTarget.CreateOwned(MorphTargets);
-          MorphTarget.Name := Trim(string(PChar(Surfheader.Name[0]))) + '[' +
-            IntToStr(J) + ']';
+          MorphTarget.Name := Trim(string(PChar(Surfheader.Name[0]))) + '[' + IntToStr(J) + ']';
           NumVerts := Surfheader.NumVertices;
           MorphTarget.Vertices.Capacity := NumVerts;
 
           // base frames
           SetLength(Baseframe.BaseVertices, Surfheader.NumVertices);
-          AStream.Seek(FrameOffset + Surfheader.OffsetBaseVerts + Baseframetable
-            [J] * Surfheader.NumVertices * 8, SoFromBeginning);
-          AStream.Read(Baseframe.BaseVertices[0], SizeOf(TMDCBaseVertex) *
-            Surfheader.NumVertices);
+          AStream.Position := FrameOffset + Surfheader.OffsetBaseVerts + Baseframetable[J] * Surfheader.NumVertices * 8;
+          AStream.Read(Baseframe.BaseVertices[0], SizeOf(TMDCBaseVertex) * Surfheader.NumVertices);
 
           // compressed frames
           if Compframetable[J] <> $FFFF then // is there a valid frame?
           begin
             SetLength(Compframe.CompVertices, Surfheader.NumVertices);
-            AStream.Seek(FrameOffset + Surfheader.OffsetCompVerts +
-              Compframetable[J] * Surfheader.NumVertices * 4, SoFromBeginning);
-            AStream.Read(Compframe.CompVertices[0], SizeOf(TMDCCompVertex) *
-              Surfheader.NumVertices);
+            AStream.Position := FrameOffset + Surfheader.OffsetCompVerts + Compframetable[J] * Surfheader.NumVertices * 4;
+            AStream.Read(Compframe.CompVertices[0], SizeOf(TMDCCompVertex) * Surfheader.NumVertices);
           end;
 
           for K := 0 to Surfheader.NumVertices - 1 do
           begin
-            Xyz.X := (Baseframe.BaseVertices[K, 0] * MDC_BASEVERTEX_FACTOR) +
-              Borderframes[J].LocalOrigin[0];
-            Xyz.Y := (Baseframe.BaseVertices[K, 1] * MDC_BASEVERTEX_FACTOR) +
-              Borderframes[J].LocalOrigin[1];
-            Xyz.Z := (Baseframe.BaseVertices[K, 2] * MDC_BASEVERTEX_FACTOR) +
-              Borderframes[J].LocalOrigin[2];
-            Normal := UnpackNormal
-              (PPackedNormal(@Baseframe.BaseVertices[K, 3])^);
+            Xyz.X := (Baseframe.BaseVertices[K, 0] * MDC_BASEVERTEX_FACTOR) + Borderframes[J].LocalOrigin[0];
+            Xyz.Y := (Baseframe.BaseVertices[K, 1] * MDC_BASEVERTEX_FACTOR) + Borderframes[J].LocalOrigin[1];
+            Xyz.Z := (Baseframe.BaseVertices[K, 2] * MDC_BASEVERTEX_FACTOR) + Borderframes[J].LocalOrigin[2];
+            Normal := UnpackNormal(PPackedNormal(@Baseframe.BaseVertices[K, 3])^);
 
             if Compframetable[J] <> $FFFF then
             begin
-              Xyz.X := Xyz.X + ((Compframe.CompVertices[K, 0] - 128) *
-                MDC_COMPVERTEX_FACTOR);
-              Xyz.Y := Xyz.Y + ((Compframe.CompVertices[K, 1] - 128) *
-                MDC_COMPVERTEX_FACTOR);
-              Xyz.Z := Xyz.Z + ((Compframe.CompVertices[K, 2] - 128) *
-                MDC_COMPVERTEX_FACTOR);
+              Xyz.X := Xyz.X + ((Compframe.CompVertices[K, 0] - 128) * MDC_COMPVERTEX_FACTOR);
+              Xyz.Y := Xyz.Y + ((Compframe.CompVertices[K, 1] - 128) * MDC_COMPVERTEX_FACTOR);
+              Xyz.Z := Xyz.Z + ((Compframe.CompVertices[K, 2] - 128) * MDC_COMPVERTEX_FACTOR);
               // FIXME:
               // I'm sure compframe.CompVertices[3] points a packed normal.
               // And it must be add the current normal like xyz.

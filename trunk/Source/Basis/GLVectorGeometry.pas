@@ -33,6 +33,11 @@ interface
 {$I GLScene.inc}
 
 uses
+
+{$IFDEF USE_FASTMATH}
+  Neslib.FastMath,
+{$ENDIF}
+
   System.SysUtils,
   System.Types,
   System.Math,
@@ -201,12 +206,16 @@ type
 
   // q = ([x, y, z], w)
   PQuaternion = ^TQuaternion;
+{$IFDEF USE_FASTMATH}
+  TQuaternion = Neslib.FastMath.TQuaternion;
+{$ELSE}
   TQuaternion = record
     case Integer of
       0 : ( ImagPart: TAffineVector;
             RealPart: Single);
       1:  ( X, Y, Z, W: Single);
   end;
+{$ENDIF}
 
   PQuaternionArray = ^TQuaternionArray;
   TQuaternionArray = array [0 .. MaxInt shr 5] of TQuaternion;
@@ -283,7 +292,11 @@ const
 
 
   // Quaternions
+{$IFDEF USE_FASTMATH}
+//  IdentityQuaternion: TQuaternion = TQuarternion.Identity;
+{$ELSE}
   IdentityQuaternion: TQuaternion = (ImagPart: (X: 0; Y: 0; Z: 0); RealPart: 1);
+{$ENDIF}
 
   // some very small numbers
   EPSILON: Single = 1E-40;
@@ -292,6 +305,11 @@ const
 // ------------------------------------------------------------------------------
 // Vector functions
 // ------------------------------------------------------------------------------
+{$IFDEF USE_FASTMATH}
+function ToMatrix3(const M: TMatrix4): TMatrix3; inline;
+function ToVector3(const V: TVector4): TVector3; inline;
+function ToVector4(const V: TVector3): TVector4; inline;
+{$ENDIF}
 
 function TexPointMake(const S, T: Single): TTexPoint; inline;
 function AffineVectorMake(const X, Y, Z: Single): TAffineVector; overload; inline;
@@ -1500,6 +1518,26 @@ const
   cOne: Single = 1.0;
   cOneDotFive: Single = 0.5;
 
+{$IFDEF USE_FASTMATH}
+function ToMatrix3(const M: TMatrix4): TMatrix3; inline;
+begin
+  Result.Init(
+    M.m11, M.m12, M.m13,
+    M.m21, M.m22, M.m23,
+    M.m31, M.m32, M.m33);
+end;
+
+function ToVector3(const V: TVector4): TVector3; inline;
+begin
+  Result.Init(V.X, V.Y, V.Z);
+end;
+
+function ToVector4(const V: TVector3): TVector4; inline;
+begin
+  Result.Init(V, 0);
+end;
+{$ENDIF}
+
 function GeometryOptimizationMode: String;
 begin
   case vSIMD of
@@ -1748,75 +1786,106 @@ end;
 
 function VectorAdd(const V1, V2: TAffineVector): TAffineVector;
 begin
+{$IFDEF USE_FASTMATH}
+  Result := V1 + V2;
+{$ELSE}
   result.X := V1.X + V2.X;
   result.Y := V1.Y + V2.Y;
   result.Z := V1.Z + V2.Z;
+{$ENDIF}
 end;
 
 procedure VectorAdd(const V1, V2: TAffineVector; var vr: TAffineVector); overload;
 begin
+{$IFDEF USE_FASTMATH}
+  vr := V1 + V2;
+{$ELSE}
   vr.X := V1.X + V2.X;
   vr.Y := V1.Y + V2.Y;
   vr.Z := V1.Z + V2.Z;
-
-
+{$ENDIF}
 end;
 
 procedure VectorAdd(const V1, V2: TAffineVector; vr: PAffineVector); overload;
 begin
+{$IFDEF USE_FASTMATH}
+  vr^ := V1 + V2;
+{$ELSE}
   vr^.X := V1.X + V2.X;
   vr^.Y := V1.Y + V2.Y;
   vr^.Z := V1.Z + V2.Z;
-
+{$ENDIF}
 end;
 
 function VectorAdd(const V1, V2: TVector): TVector;
 begin
+{$IFDEF USE_FASTMATH}
+  Result := V1 + V2;
+{$ELSE}
   result.X := V1.X + V2.X;
   result.Y := V1.Y + V2.Y;
   result.Z := V1.Z + V2.Z;
   result.W := V1.W + V2.W;
-
-
+{$ENDIF}
 end;
 
 procedure VectorAdd(const V1, V2: TVector; var vr: TVector);
 begin
+{$IFDEF USE_FASTMATH}
+  vr := V1 + V2;
+{$ELSE}
   vr.X := V1.X + V2.X;
   vr.Y := V1.Y + V2.Y;
   vr.Z := V1.Z + V2.Z;
   vr.W := V1.W + V2.W;
+{$ENDIF}
 end;
-
 
 function VectorAdd(const V: TAffineVector; const f: Single): TAffineVector;
 begin
+{$IFDEF USE_FASTMATH}
+  Result := V + f;
+{$ELSE}
   result.X := V.X + f;
   result.Y := V.Y + f;
   result.Z := V.Z + f;
+{$ENDIF}
 end;
 
 function VectorAdd(const V: TVector; const f: Single): TVector;
 begin
+{$IFDEF USE_FASTMATH}
+  Result := V + f;
+{$ELSE}
   result.X := V.X + f;
   result.Y := V.Y + f;
   result.Z := V.Z + f;
   result.W := V.W + f;
+{$ENDIF}
 end;
 
 function PointAdd(var V1: TVector; const V2: TVector): TVector;
 begin
+{$IFDEF USE_FASTMATH}
+  Result    := V1 + V2;
+  Result.W  := 1;
+{$ELSE}
   result.X := V1.X + V2.X;
   result.Y := V1.Y + V2.Y;
   result.Z := V1.Z + V2.Z;
   result.W := 1;
+{$ENDIF}
 end;
 
 procedure AddVector(var V1: TAffineVector; const V2: TAffineVector);
 begin
+{$IFDEF USE_FASTMATH}
+  V1 := V1 + V2;
+{$ELSE}
   V1.X := V1.X + V2.X;
   V1.Y := V1.Y + V2.Y;
   V1.Z := V1.Z + V2.Z;
+{$ENDIF}
 end;
 
 procedure AddVector(var V1: TAffineVector; const V2: TVector);
@@ -1825,36 +1894,53 @@ begin
   V1.Y := V1.Y + V2.Y;
   V1.Z := V1.Z + V2.Z;
 end;
+
 procedure AddVector(var V1: TVector; const V2: TVector);
 begin
+{$IFDEF USE_FASTMATH}
+  V1 := V1 + V2;
+{$ELSE}
   V1.X := V1.X + V2.X;
   V1.Y := V1.Y + V2.Y;
   V1.Z := V1.Z + V2.Z;
   V1.W := V1.W + V2.W;
+{$ENDIF}
 end;
-
 
 procedure AddVector(var V: TAffineVector; const f: Single);
 begin
+{$IFDEF USE_FASTMATH}
+  V := V + f;
+{$ELSE}
   V.X := V.X + f;
   V.Y := V.Y + f;
   V.Z := V.Z + f;
+{$ENDIF}
 end;
 
 procedure AddVector(var V: TVector; const f: Single);
 begin
+{$IFDEF USE_FASTMATH}
+  V := V + f;
+{$ELSE}
   V.X := V.X + f;
   V.Y := V.Y + f;
   V.Z := V.Z + f;
   V.W := V.W + f;
+{$ENDIF}
 end;
 
 procedure AddPoint(var V1: TVector; const V2: TVector);
 begin
+{$IFDEF USE_FASTMATH}
+  V1 := V1 + V2;
+  V1.W := 1;
+{$ELSE}
   V1.X := V1.X + V2.X;
   V1.Y := V1.Y + V2.Y;
   V1.Z := V1.Z + V2.Z;
   V1.W := 1;
+{$ENDIF}
 end;
 
 procedure TexPointArrayAdd(const src: PTexPointArray; const delta: TTexPoint;
@@ -1898,9 +1984,13 @@ end;
 
 function VectorSubtract(const V1, V2: TAffineVector): TAffineVector;
 begin
+{$IFDEF USE_FASTMATH}
+  Result := V1 - V2;
+{$ELSE}
   result.X := V1.X - V2.X;
   result.Y := V1.Y - V2.Y;
   result.Z := V1.Z - V2.Z;
+{$ENDIF}
 end;
 
 function VectorSubtract(const V1, V2: TVector2f): TVector2f;
@@ -1908,12 +1998,17 @@ begin
   result.X := V1.X - V2.X;
   result.Y := V1.Y - V2.Y;
 end;
+
 procedure VectorSubtract(const V1, V2: TAffineVector;
   var result: TAffineVector);
 begin
+{$IFDEF USE_FASTMATH}
+  Result := V1 - V2;
+{$ELSE}
   result.X := V1.X - V2.X;
   result.Y := V1.Y - V2.Y;
   result.Z := V1.Z - V2.Z;
+{$ENDIF}
 end;
 
 procedure VectorSubtract(const V1, V2: TAffineVector; var result: TVector);
@@ -1933,18 +2028,26 @@ end;
 
 function VectorSubtract(const V1, V2: TVector): TVector;
 begin
+{$IFDEF USE_FASTMATH}
+  Result := V1 - V2;
+{$ELSE}
   result.X := V1.X - V2.X;
   result.Y := V1.Y - V2.Y;
   result.Z := V1.Z - V2.Z;
   result.W := V1.W - V2.W;
+{$ENDIF}
 end;
 
 procedure VectorSubtract(const V1, V2: TVector; var result: TVector);
 begin
+{$IFDEF USE_FASTMATH}
+  Result := V1 - V2;
+{$ELSE}
   result.X := V1.X - V2.X;
   result.Y := V1.Y - V2.Y;
   result.Z := V1.Z - V2.Z;
   result.W := V1.W - V2.W;
+{$ENDIF}
 end;
 
 procedure VectorSubtract(const V1, V2: TVector;
@@ -1955,27 +2058,38 @@ begin
   result.Z := V1.Z - V2.Z;
 end;
 
-
 function VectorSubtract(const V1: TAffineVector; delta: Single): TAffineVector;
 begin
+{$IFDEF USE_FASTMATH}
+  Result := V1 - delta;
+{$ELSE}
   result.X := V1.X - delta;
   result.Y := V1.Y - delta;
   result.Z := V1.Z - delta;
+{$ENDIF}
 end;
 
 function VectorSubtract(const V1: TVector; delta: Single): TVector;
 begin
+{$IFDEF USE_FASTMATH}
+  Result := V1 - delta;
+{$ELSE}
   result.X := V1.X - delta;
   result.Y := V1.Y - delta;
   result.Z := V1.Z - delta;
   result.W := V1.W - delta;
+{$ENDIF}
 end;
 
 procedure SubtractVector(var V1: TAffineVector; const V2: TAffineVector);
 begin
+{$IFDEF USE_FASTMATH}
+  V1 := V1 - V2;
+{$ELSE}
   V1.X := V1.X - V2.X;
   V1.Y := V1.Y - V2.Y;
   V1.Z := V1.Z - V2.Z;
+{$ENDIF}
 end;
 
 procedure SubtractVector(var V1: TVector2f; const V2: TVector2f);
@@ -1983,30 +2097,42 @@ begin
   V1.X := V1.X - V2.X;
   V1.Y := V1.Y - V2.Y;
 end;
+
 procedure SubtractVector(var V1: TVector; const V2: TVector);
 begin
+{$IFDEF USE_FASTMATH}
+  V1 := V1 - V2;
+{$ELSE}
   V1.X := V1.X - V2.X;
   V1.Y := V1.Y - V2.Y;
   V1.Z := V1.Z - V2.Z;
   V1.W := V1.W - V2.W;
+{$ENDIF}
 end;
 
 procedure CombineVector(var vr: TAffineVector; const V: TAffineVector;
   var f: Single);
 begin
+{$IFDEF USE_FASTMATH}
+  vr := vr + V*f;
+{$ELSE}
   vr.X := vr.X + V.X * f;
   vr.Y := vr.Y + V.Y * f;
   vr.Z := vr.Z + V.Z * f;
+{$ENDIF}
 end;
 
 procedure CombineVector(var vr: TAffineVector; const V: TAffineVector;
   pf: PFloat);
 begin
+{$IFDEF USE_FASTMATH}
+  vr := vr + V*pf^;
+{$ELSE}
   vr.X := vr.X + V.X * pf^;
   vr.Y := vr.Y + V.Y * pf^;
   vr.Z := vr.Z + V.Z * pf^;
+{$ENDIF}
 end;
-
 
 function TexPointCombine(const t1, t2: TTexPoint; f1, f2: Single): TTexPoint;
 begin
@@ -2017,34 +2143,50 @@ end;
 function VectorCombine(const V1, V2: TAffineVector; const f1, f2: Single)
   : TAffineVector;
 begin
+{$IFDEF USE_FASTMATH}
+  Result := f1*V1 + f2*V2;
+{$ELSE}
   result.V[X] := (f1 * V1.V[X]) + (f2 * V2.V[X]);
   result.V[Y] := (f1 * V1.V[Y]) + (f2 * V2.V[Y]);
   result.V[Z] := (f1 * V1.V[Z]) + (f2 * V2.V[Z]);
+{$ENDIF}
 end;
 
 function VectorCombine3(const V1, V2, V3: TAffineVector;
   const f1, f2, F3: Single): TAffineVector;
 begin
+{$IFDEF USE_FASTMATH}
+  Result := f1*V1 + f2*V2 + f3*V3;
+{$ELSE}
   result.V[X] := (f1 * V1.V[X]) + (f2 * V2.V[X]) + (F3 * V3.V[X]);
   result.V[Y] := (f1 * V1.V[Y]) + (f2 * V2.V[Y]) + (F3 * V3.V[Y]);
   result.V[Z] := (f1 * V1.V[Z]) + (f2 * V2.V[Z]) + (F3 * V3.V[Z]);
+{$ENDIF}
 end;
 
 procedure VectorCombine3(const V1, V2, V3: TAffineVector;
   const f1, f2, F3: Single; var vr: TAffineVector);
 begin
+{$IFDEF USE_FASTMATH}
+  vr := f1*V1 + f2*V2 + f3*V3;
+{$ELSE}
   vr.V[X] := (f1 * V1.V[X]) + (f2 * V2.V[X]) + (F3 * V3.V[X]);
   vr.V[Y] := (f1 * V1.V[Y]) + (f2 * V2.V[Y]) + (F3 * V3.V[Y]);
   vr.V[Z] := (f1 * V1.V[Z]) + (f2 * V2.V[Z]) + (F3 * V3.V[Z]);
+{$ENDIF}
 end;
 
 procedure CombineVector(var vr: TVector; const V: TVector;
   var f: Single); overload;
 begin
+{$IFDEF USE_FASTMATH}
+  vr := vr + V*f;
+{$ELSE}
   vr.X := vr.X + V.X * f;
   vr.Y := vr.Y + V.Y * f;
   vr.Z := vr.Z + V.Z * f;
   vr.W := vr.W + V.W * f;
+{$ENDIF}
 end;
 
 procedure CombineVector(var vr: TVector; const V: TAffineVector;
@@ -2055,67 +2197,98 @@ begin
   vr.Z := vr.Z + V.Z * f;
 end;
 
-
 function VectorCombine(const V1, V2: TVector; const F1, F2: Single): TVector;
 begin
+{$IFDEF USE_FASTMATH}
+  Result := f1*V1 + f2*V2;
+{$ELSE}
   result.V[X] := (F1 * V1.V[X]) + (F2 * V2.V[X]);
   result.V[Y] := (F1 * V1.V[Y]) + (F2 * V2.V[Y]);
   result.V[Z] := (F1 * V1.V[Z]) + (F2 * V2.V[Z]);
   result.V[W] := (F1 * V1.V[W]) + (F2 * V2.V[W]);
+{$ENDIF}
 end;
 
 function VectorCombine(const V1: TVector; const V2: TAffineVector;
   const F1, F2: Single): TVector; overload;
+{$IFDEF USE_FASTMATH}
+var
+  vext: TVector4;
+begin
+  vext.Init(v2, 0);
+  Result := V1*F1 + vext*F2;
+{$ELSE}
 begin
   result.V[X] := (F1 * V1.V[X]) + (F2 * V2.V[X]);
   result.V[Y] := (F1 * V1.V[Y]) + (F2 * V2.V[Y]);
   result.V[Z] := (F1 * V1.V[Z]) + (F2 * V2.V[Z]);
   result.V[W] := F1 * V1.V[W];
+{$ENDIF}
 end;
 
 procedure VectorCombine(const V1, V2: TVector; const F1, F2: Single;
   var vr: TVector); overload;
 begin
+{$IFDEF USE_FASTMATH}
+  vr := f1*V1 + f2*V2;
+{$ELSE}
   vr.X := (F1 * V1.X) + (F2 * V2.X);
   vr.Y := (F1 * V1.Y) + (F2 * V2.Y);
   vr.Z := (F1 * V1.Z) + (F2 * V2.Z);
   vr.W := (F1 * V1.W) + (F2 * V2.W);
+{$ENDIF}
 end;
 
 procedure VectorCombine(const V1, V2: TVector; const f2: Single;
   var vr: TVector); overload;
-begin // 201283
+begin
+{$IFDEF USE_FASTMATH}
+  vr := V1 + f2*V2;
+{$ELSE}
   vr.X := V1.X + (f2 * V2.X);
   vr.Y := V1.Y + (f2 * V2.Y);
   vr.Z := V1.Z + (f2 * V2.Z);
   vr.W := V1.W + (f2 * V2.W);
+{$ENDIF}
 end;
 
 procedure VectorCombine(const V1: TVector; const V2: TAffineVector;
   const F1, F2: Single; var vr: TVector);
 begin
+{$IFDEF USE_FASTMATH}
+  vr := f1*V1 + f2*ToVector4(V2);
+{$ELSE}
   vr.V[X] := (F1 * V1.V[X]) + (F2 * V2.V[X]);
   vr.V[Y] := (F1 * V1.V[Y]) + (F2 * V2.V[Y]);
   vr.V[Z] := (F1 * V1.V[Z]) + (F2 * V2.V[Z]);
   vr.V[W] := F1 * V1.V[W];
+{$ENDIF}
 end;
 
 function VectorCombine3(const V1, V2, V3: TVector;
   const F1, F2, F3: Single): TVector;
 begin
+{$IFDEF USE_FASTMATH}
+  Result := f1*V1 + f2*V2 + f3*V3;
+{$ELSE}
   result.V[X] := (F1 * V1.V[X]) + (F2 * V2.V[X]) + (F3 * V3.V[X]);
   result.V[Y] := (F1 * V1.V[Y]) + (F2 * V2.V[Y]) + (F3 * V3.V[Y]);
   result.V[Z] := (F1 * V1.V[Z]) + (F2 * V2.V[Z]) + (F3 * V3.V[Z]);
   result.V[W] := (F1 * V1.V[W]) + (F2 * V2.V[W]) + (F3 * V3.V[W]);
+{$ENDIF}
 end;
 
 procedure VectorCombine3(const V1, V2, V3: TVector; const F1, F2, F3: Single;
   var vr: TVector);
 begin
+{$IFDEF USE_FASTMATH}
+  vr := f1*V1 + f2*V2 + f3*V3;
+{$ELSE}
   vr.V[X] := (F1 * V1.V[X]) + (F2 * V2.V[X]) + (F3 * V3.V[X]);
   vr.V[Y] := (F1 * V1.V[Y]) + (F2 * V2.V[Y]) + (F3 * V3.V[Y]);
   vr.V[Z] := (F1 * V1.V[Z]) + (F2 * V2.V[Z]) + (F3 * V3.V[Z]);
   vr.V[W] := (F1 * V1.V[W]) + (F2 * V2.V[W]) + (F3 * V3.V[W]);
+{$ENDIF}
 end;
 
 function VectorDotProduct(const V1, V2: TVector2f): Single;
@@ -2125,12 +2298,22 @@ end;
 
 function VectorDotProduct(const V1, V2: TAffineVector): Single;
 begin
+{$IFDEF USE_FASTMATH}
+  Result := V1.dot(V2);
+{$ELSE}
   result := V1.X * V2.X + V1.Y * V2.Y + V1.Z * V2.Z;
+{$ENDIF}
 end;
+
 function VectorDotProduct(const V1, V2: TVector): Single;
 begin
+{$IFDEF USE_FASTMATH}
+  Result := V1.dot(V2);
+{$ELSE}
   result := V1.X * V2.X + V1.Y * V2.Y + V1.Z * V2.Z + V1.W * V2.W;
+{$ENDIF}
 end;
+
 function VectorDotProduct(const V1: TVector; const V2: TAffineVector): Single;
 begin
   result := V1.X * V2.X + V1.Y * V2.Y + V1.Z * V2.Z;
@@ -2149,46 +2332,71 @@ end;
 
 function VectorCrossProduct(const V1, V2: TAffineVector): TAffineVector;
 begin
+{$IFDEF USE_FASTMATH}
+  Result := V1.Cross(V2);
+{$ELSE}
   result.X := V1.Y * V2.Z - V1.Z * V2.Y;
   result.Y := V1.Z * V2.X - V1.X * V2.Z;
   result.Z := V1.X * V2.Y - V1.Y * V2.X;
+{$ENDIF}
 end;
 
 function VectorCrossProduct(const V1, V2: TVector): TVector;
 begin
+{$IFDEF USE_FASTMATH}
+  Result.Init(ToVector3(V1).Cross(ToVector3(V2)), 0)
+{$ELSE}
   result.X := V1.Y * V2.Z - V1.Z * V2.Y;
   result.Y := V1.Z * V2.X - V1.X * V2.Z;
   result.Z := V1.X * V2.Y - V1.Y * V2.X;
   result.W := 0;
+{$ENDIF}
 end;
 procedure VectorCrossProduct(const V1, V2: TVector; var vr: TVector);
 begin
+{$IFDEF USE_FASTMATH}
+  vr.Init(ToVector3(V1).Cross(ToVector3(V2)), 0)
+{$ELSE}
   vr.X := V1.Y * V2.Z - V1.Z * V2.Y;
   vr.Y := V1.Z * V2.X - V1.X * V2.Z;
   vr.Z := V1.X * V2.Y - V1.Y * V2.X;
   vr.W := 0;
+{$ENDIF}
 end;
 procedure VectorCrossProduct(const V1, V2: TAffineVector;
   var vr: TVector); overload;
 begin
+{$IFDEF USE_FASTMATH}
+  vr.Init(V1.Cross(V2), 0)
+{$ELSE}
   vr.X := V1.Y * V2.Z - V1.Z * V2.Y;
   vr.Y := V1.Z * V2.X - V1.X * V2.Z;
   vr.Z := V1.X * V2.Y - V1.Y * V2.X;
   vr.W := 0;
+{$ENDIF}
 end;
+
 procedure VectorCrossProduct(const V1, V2: TVector;
   var vr: TAffineVector); overload;
 begin
+{$IFDEF USE_FASTMATH}
+  vr := ToVector3(V1).Cross(ToVector3(V2));
+{$ELSE}
   vr.V[X] := V1.V[Y] * V2.V[Z] - V1.V[Z] * V2.V[Y];
   vr.V[Y] := V1.V[Z] * V2.V[X] - V1.V[X] * V2.V[Z];
   vr.V[Z] := V1.V[X] * V2.V[Y] - V1.V[Y] * V2.V[X];
+{$ENDIF}
 end;
 procedure VectorCrossProduct(const V1, V2: TAffineVector;
   var vr: TAffineVector); overload;
 begin
+{$IFDEF USE_FASTMATH}
+  vr := V1.Cross(V2);
+{$ELSE}
   vr.V[X] := V1.V[Y] * V2.V[Z] - V1.V[Z] * V2.V[Y];
   vr.V[Y] := V1.V[Z] * V2.V[X] - V1.V[X] * V2.V[Z];
   vr.V[Z] := V1.V[X] * V2.V[Y] - V1.V[Y] * V2.V[X];
+{$ENDIF}
 end;
 
 
@@ -2234,25 +2442,37 @@ end;
 
 function VectorLerp(const V1, V2: TAffineVector; T: Single): TAffineVector;
 begin
+{$IFDEF USE_FASTMATH}
+  Result := V1.Lerp(V2,T);
+{$ELSE}
   result.X := V1.X + (V2.X - V1.X) * T;
   result.Y := V1.Y + (V2.Y - V1.Y) * T;
   result.Z := V1.Z + (V2.Z - V1.Z) * T;
+{$ENDIF}
 end;
 
 procedure VectorLerp(const V1, V2: TAffineVector; T: Single;
   var vr: TAffineVector);
 begin
+{$IFDEF USE_FASTMATH}
+  vr := V1.Lerp(V2,T);
+{$ELSE}
   vr.X := V1.X + (V2.X - V1.X) * T;
   vr.Y := V1.Y + (V2.Y - V1.Y) * T;
   vr.Z := V1.Z + (V2.Z - V1.Z) * T;
+{$ENDIF}
 end;
 
 function VectorLerp(const V1, V2: TVector; T: Single): TVector;
 begin
+{$IFDEF USE_FASTMATH}
+  Result := V1.Lerp(V2,T);
+{$ELSE}
   result.X := V1.X + (V2.X - V1.X) * T;
   result.Y := V1.Y + (V2.Y - V1.Y) * T;
   result.Z := V1.Z + (V2.Z - V1.Z) * T;
   result.W := V1.W + (V2.W - V1.W) * T;
+{$ENDIF}
 end;
 
 procedure VectorLerp(const V1, V2: TVector; T: Single; var vr: TVector);
@@ -2439,22 +2659,32 @@ begin
     result := (stop - start) * PowerInteger(delta, i) + start;
   end
   else
-    result := (stop - start) * Power(delta, DistortionDegree) + start;
+    result := (stop - start) * 
+	  {$IFDEF USE_FASTMATH}Neslib.FastMath.{$ENDIF}Power(delta, DistortionDegree) + start;
 end;
 
 function MatrixLerp(const m1, m2: TMatrix; const delta: Single): TMatrix;
 var
   i, J: Integer;
 begin
+{$IFDEF USE_FASTMATH}
+  for J := 0 to 3 do
+    for i := 0 to 3 do
+      result.V[i].C[J] := m1.V[i].C[J] + (m2.V[i].C[J] - m1.V[i].C[J]) * delta;
+{$ELSE}
   for J := 0 to 3 do
     for i := 0 to 3 do
       result.V[i].V[J] := m1.V[i].V[J] + (m2.V[i].V[J] - m1.V[i].V[J]) * delta;
+{$ENDIF}
 end;
 
 function RSqrt(V: Single): Single;
 begin
+{$IFDEF USE_FASTMATH}
+  Result := NesLib.FastMath.InverseSqrt(V);
+{$ELSE}
   result := 1 / Sqrt(V);
-
+{$ENDIF}
 end;
 
 function VectorLength(const V: array of Single): Single;
@@ -2484,12 +2714,20 @@ end;
 
 function VectorLength(const V: TAffineVector): Single;
 begin
+{$IFDEF USE_FASTMATH}
+  Result := V.Length;
+{$ELSE}
   result := Sqrt(VectorNorm(V));
+{$ENDIF}
 end;
 
 function VectorLength(const V: TVector): Single;
 begin
+{$IFDEF USE_FASTMATH}
+  Result := V.Length;
+{$ELSE}
   result := Sqrt(VectorNorm(V));
+{$ENDIF}
 end;
 
 function VectorNorm(const X, Y: Single): Single;
@@ -2501,6 +2739,7 @@ function VectorNorm(const V: TAffineVector): Single;
 begin
   result := V.X * V.X + V.Y * V.Y + V.Z * V.Z;
 end;
+
 function VectorNorm(const V: TVector): Single;
 begin
   result := V.X * V.X + V.Y * V.Y + V.Z * V.Z;
@@ -2631,32 +2870,48 @@ end;
 
 function VectorNegate(const Vector: TAffineVector): TAffineVector;
 begin
+{$IFDEF USE_FASTMATH}
+  Result := -Vector;
+{$ELSE}
   result.X := -Vector.X;
   result.Y := -Vector.Y;
   result.Z := -Vector.Z;
+{$ENDIF}
 end;
 
 function VectorNegate(const Vector: TVector): TVector;
 begin
+{$IFDEF USE_FASTMATH}
+  Result := -Vector;
+{$ELSE}
   result.X := -Vector.X;
   result.Y := -Vector.Y;
   result.Z := -Vector.Z;
   result.W := -Vector.W;
+{$ENDIF}
 end;
 
 procedure NegateVector(var V: TAffineVector);
 begin
+{$IFDEF USE_FASTMATH}
+  V := -V;
+{$ELSE}
   V.X := -V.X;
   V.Y := -V.Y;
   V.Z := -V.Z;
+{$ENDIF}
 end;
 
 procedure NegateVector(var V: TVector);
 begin
+{$IFDEF USE_FASTMATH}
+  V := -V;
+{$ELSE}
   V.X := -V.X;
   V.Y := -V.Y;
   V.Z := -V.Z;
   V.W := -V.W;
+{$ENDIF}
 end;
 
 procedure NegateVector(var V: array of Single);
@@ -2682,10 +2937,14 @@ end;
 
 procedure ScaleVector(var V: TVector; factor: Single);
 begin
+{$IFDEF USE_FASTMATH}
+  V := V*factor;
+{$ELSE}
   V.X := V.X * factor;
   V.Y := V.Y * factor;
   V.Z := V.Z * factor;
   V.W := V.W * factor;
+{$ENDIF}
 end;
 
 procedure ScaleVector(var V: TAffineVector; const factor: TAffineVector);
@@ -2711,34 +2970,51 @@ end;
 
 function VectorScale(const V: TAffineVector; factor: Single): TAffineVector;
 begin
+{$IFDEF USE_FASTMATH}
+  Result := V * factor;
+{$ELSE}
   result.X := V.X * factor;
   result.Y := V.Y * factor;
   result.Z := V.Z * factor;
+{$ENDIF}
 end;
 
 procedure VectorScale(const V: TAffineVector; factor: Single;
   var vr: TAffineVector);
 begin
+{$IFDEF USE_FASTMATH}
+  vr := V * factor;
+{$ELSE}
   vr.X := V.X * factor;
   vr.Y := V.Y * factor;
   vr.Z := V.Z * factor;
+{$ENDIF}
 end;
 
 function VectorScale(const V: TVector; factor: Single): TVector;
 begin
+{$IFDEF USE_FASTMATH}
+  Result := V * factor;
+{$ELSE}
   result.X := V.X * factor;
   result.Y := V.Y * factor;
   result.Z := V.Z * factor;
   result.W := V.W * factor;
+{$ENDIF}
 end;
 
 procedure VectorScale(const V: TVector; factor: Single; var vr: TVector);
 begin
+{$IFDEF USE_FASTMATH}
+  vr := V * factor;
+{$ELSE}
   vr.X := V.X * factor;
   vr.Y := V.Y * factor;
   vr.Z := V.Z * factor;
   vr.W := V.W * factor;
+{$ENDIF}
 end;
+
 procedure VectorScale(const V: TVector; factor: Single; var vr: TAffineVector);
 begin
   vr.X := V.X * factor;
@@ -2851,22 +3127,38 @@ end;
 
 function VectorDistance(const V1, V2: TAffineVector): Single;
 begin
+{$IFDEF USE_FASTMATH}
+  Result := V1.Distance(V2);
+{$ELSE}
   result := Sqrt(Sqr(V2.X - V1.X) + Sqr(V2.Y - V1.Y) + Sqr(V2.Z - V1.Z));
+{$ENDIF}
 end;
 
 function VectorDistance(const V1, V2: TVector): Single;
 begin
+{$IFDEF USE_FASTMATH}
+  Result := V1.Distance(V2);
+{$ELSE}
   result := Sqrt(Sqr(V2.X - V1.X) + Sqr(V2.Y - V1.Y) + Sqr(V2.Z - V1.Z));
+{$ENDIF}
 end;
 
 function VectorDistance2(const V1, V2: TAffineVector): Single;
 begin
+{$IFDEF USE_FASTMATH}
+  Result := V1.DistanceSquared(V2);
+{$ELSE}
   result := Sqr(V2.X - V1.X) + Sqr(V2.Y - V1.Y) + Sqr(V2.Z - V1.Z);
+{$ENDIF}
 end;
 
 function VectorDistance2(const V1, V2: TVector): Single;
 begin
+{$IFDEF USE_FASTMATH}
+  Result := V1.DistanceSquared(V2);
+{$ELSE}
   result := Sqr(V2.X - V1.X) + Sqr(V2.Y - V1.Y) + Sqr(V2.Z - V1.Z);
+{$ENDIF}
 end;
 
 function VectorPerpendicular(const V, n: TAffineVector): TAffineVector;
@@ -2874,14 +3166,22 @@ var
   dot: Single;
 begin
   dot := VectorDotProduct(V, n);
+{$IFDEF USE_FASTMATH}
+  Result := V - dot*N;
+{$ELSE}
   result.X := V.X - dot * n.X;
   result.Y := V.Y - dot * n.Y;
   result.Z := V.Z - dot * n.Z;
+{$ENDIF}
 end;
 
 function VectorReflect(const V, n: TAffineVector): TAffineVector;
 begin
+{$IFDEF USE_FASTMATH}
+  Result := V.Reflect(n);
+{$ELSE}
   result := VectorCombine(V, n, 1, -2 * VectorDotProduct(V, n));
+{$ENDIF}
 end;
 
 procedure RotateVector(var Vector: TVector; const axis: TAffineVector;
@@ -2997,6 +3297,10 @@ begin
 end;
 
 function IsColinear(const V1, V2: TAffineVector): Boolean; overload;
+{$IFDEF USE_FASTMATH}
+begin
+  Result := V1.IsCollinear(V2, cColinearBias);
+{$ELSE}
 var
   a, b, c: Single;
 begin
@@ -3004,9 +3308,14 @@ begin
   b := VectorDotProduct(V1, V2);
   c := VectorDotProduct(V2, V2);
   result := (a * c - b * b) < cColinearBias;
+{$ENDIF}
 end;
 
 function IsColinear(const V1, V2: TVector): Boolean; overload;
+{$IFDEF USE_FASTMATH}
+begin
+  Result := V1.IsCollinear(V2, cColinearBias);
+{$ELSE}
 var
   a, b, c: Single;
 begin
@@ -3014,6 +3323,7 @@ begin
   b := VectorDotProduct(V1, V2);
   c := VectorDotProduct(V2, V2);
   result := (a * c - b * b) < cColinearBias;
+{$ENDIF}
 end;
 
 procedure SetMatrix(var dest: THomogeneousDblMatrix; const src: TMatrix);
@@ -3031,6 +3341,11 @@ end;
 
 procedure SetMatrix(var dest: TAffineMatrix; const src: TMatrix);
 begin
+{$IFDEF USE_FASTMATH}
+  dest.V[0] := ToVector3(src.V[0]);
+  dest.V[1] := ToVector3(src.V[1]);
+  dest.V[2] := ToVector3(src.V[2]);
+{$ELSE}
   dest.V[0].X := src.V[X].X;
   dest.V[X].Y := src.V[X].Y;
   dest.V[X].Z := src.V[X].Z;
@@ -3040,10 +3355,17 @@ begin
   dest.V[Z].X := src.V[Z].X;
   dest.V[Z].Y := src.V[Z].Y;
   dest.V[Z].Z := src.V[Z].Z;
+{$ENDIF}
 end;
 
 procedure SetMatrix(var dest: TMatrix; const src: TAffineMatrix);
 begin
+{$IFDEF USE_FASTMATH}
+  dest.V[0] := ToVector4(src.V[0]);
+  dest.V[1] := ToVector4(src.V[1]);
+  dest.V[2] := ToVector4(src.V[2]);
+  dest.V[3].Init(0,0,0,1);
+{$ELSE}
   dest.V[X].X := src.V[X].X;
   dest.V[X].Y := src.V[X].Y;
   dest.V[X].Z := src.V[X].Z;
@@ -3060,6 +3382,7 @@ begin
   dest.V[W].Y := 0;
   dest.V[W].Z := 0;
   dest.V[W].W := 1;
+{$ENDIF}
 end;
 
 procedure SetMatrixRow(var dest: TMatrix; rowNb: Integer; const aRow: TVector);
@@ -3073,55 +3396,55 @@ end;
 function CreateScaleMatrix(const V: TAffineVector): TMatrix;
 begin
   result := IdentityHmgMatrix;
-  result.X.X := V.V[X];
-  result.Y.Y := V.V[Y];
-  result.Z.Z := V.V[Z];
+  result.V[0].X := V.X;
+  result.V[1].Y := V.Y;
+  result.V[2].Z := V.Z;
 end;
 
 function CreateScaleMatrix(const V: TVector): TMatrix;
 begin
   result := IdentityHmgMatrix;
-  result.X.X := V.V[X];
-  result.Y.Y := V.V[Y];
-  result.Z.Z := V.V[Z];
+  result.V[0].X := V.X;
+  result.V[1].Y := V.Y;
+  result.V[2].Z := V.Z;
 end;
 
 function CreateTranslationMatrix(const V: TAffineVector): TMatrix;
 begin
   result := IdentityHmgMatrix;
-  result.W.X := V.V[X];
-  result.W.Y := V.V[Y];
-  result.W.Z := V.V[Z];
+  result.V[3].X := V.X;
+  result.V[3].Y := V.Y;
+  result.V[3].Z := V.Z;
 end;
 
 function CreateTranslationMatrix(const V: TVector): TMatrix;
 begin
   result := IdentityHmgMatrix;
-  result.W.X := V.V[X];
-  result.W.Y := V.V[Y];
-  result.W.Z := V.V[Z];
+  Result.V[3].X := V.X;
+  Result.V[3].Y := V.Y;
+  Result.V[3].Z := V.Z;
 end;
 
 function CreateScaleAndTranslationMatrix(const scale, offset: TVector): TMatrix;
 begin
   result := IdentityHmgMatrix;
-  result.X.X := scale.V[X];
-  result.W.X := offset.V[X];
-  result.Y.Y := scale.V[Y];
-  result.W.Y := offset.V[Y];
-  result.Z.Z := scale.V[Z];
-  result.W.Z := offset.V[Z];
+  Result.V[0].X := scale.X;
+  Result.V[3].X := offset.X;
+  Result.V[1].Y := scale.Y;
+  Result.V[3].Y := offset.Y;
+  Result.V[2].Z := scale.Z;
+  Result.V[3].Z := offset.Z;
 end;
 
 function CreateRotationMatrixX(const sine, cosine: Single): TMatrix;
 begin
   result := EmptyHmgMatrix;
-  result.X.X := 1;
-  result.Y.Y := cosine;
-  result.Y.Z := sine;
-  result.Z.Y := -sine;
-  result.Z.Z := cosine;
-  result.W.W := 1;
+  Result.V[0].X := 1;
+  Result.V[1].X := cosine;
+  Result.V[1].Y := sine;
+  Result.V[2].Y := -sine;
+  Result.V[2].Z := cosine;
+  Result.V[3].W := 1;
 end;
 
 function CreateRotationMatrixX(const angle: Single): TMatrix;
@@ -3135,12 +3458,12 @@ end;
 function CreateRotationMatrixY(const sine, cosine: Single): TMatrix;
 begin
   result := EmptyHmgMatrix;
-  result.X.X := cosine;
-  result.X.Z := -sine;
-  result.Y.Y := 1;
-  result.Z.X := sine;
-  result.Z.Z := cosine;
-  result.W.W := 1;
+  Result.V[0].X := cosine;
+  Result.V[0].Z := -sine;
+  Result.V[1].Y := 1;
+  Result.V[2].X := sine;
+  Result.V[2].Z := cosine;
+  Result.V[3].W := 1;
 end;
 
 function CreateRotationMatrixY(const angle: Single): TMatrix;
@@ -3180,6 +3503,9 @@ begin
   one_minus_cosine := 1 - cosine;
   axis := VectorNormalize(anAxis);
 
+{$IFDEF USE_FASTMATH}
+  Result.InitRotation(axis, -angle);
+{$ELSE}
   result.V[X].X := (one_minus_cosine * axis.X * axis.X) + cosine;
   result.V[X].Y := (one_minus_cosine * axis.X * axis.Y) - (axis.Z * sine);
   result.V[X].Z := (one_minus_cosine * axis.Z * axis.X) + (axis.Y * sine);
@@ -3199,6 +3525,7 @@ begin
   result.V[W].Y := 0;
   result.V[W].Z := 0;
   result.V[W].W := 1;
+{$ENDIF}
 end;
 
 function CreateRotationMatrix(const anAxis: TVector; angle: Single): TMatrix;
@@ -3216,6 +3543,9 @@ begin
   one_minus_cosine := 1 - cosine;
   axis := VectorNormalize(anAxis);
 
+{$IFDEF USE_FASTMATH}
+//TODO: maybe
+{$ELSE}
   result.X.X := (one_minus_cosine * Sqr(axis.X)) + cosine;
   result.X.Y := (one_minus_cosine * axis.X * axis.Y) - (axis.Z * sine);
   result.X.Z := (one_minus_cosine * axis.Z * axis.X) + (axis.Y * sine);
@@ -3227,10 +3557,14 @@ begin
   result.Z.X := (one_minus_cosine * axis.Z * axis.X) - (axis.Y * sine);
   result.Z.Y := (one_minus_cosine * axis.Y * axis.Z) + (axis.X * sine);
   result.Z.Z := (one_minus_cosine * Sqr(axis.Z)) + cosine;
+{$ENDIF}
 end;
 
 function MatrixMultiply(const m1, m2: TAffineMatrix): TAffineMatrix;
 begin
+{$IFDEF USE_FASTMATH}
+  Result := m1 * m2;
+{$ELSE}
   result.X.X := m1.X.X * m2.X.X + m1.X.Y * m2.Y.X + m1.X.Z * m2.Z.X;
   result.X.Y := m1.X.X * m2.X.Y + m1.X.Y * m2.Y.Y + m1.X.Z * m2.Z.Y;
   result.X.Z := m1.X.X * m2.X.Z + m1.X.Y * m2.Y.Z + m1.X.Z * m2.Z.Z;
@@ -3240,10 +3574,14 @@ begin
   result.Z.X := m1.Z.X * m2.X.X + m1.Z.Y * m2.Y.X + m1.Z.Z * m2.Z.X;
   result.Z.Y := m1.Z.X * m2.X.Y + m1.Z.Y * m2.Y.Y + m1.Z.Z * m2.Z.Y;
   result.Z.Z := m1.Z.X * m2.X.Z + m1.Z.Y * m2.Y.Z + m1.Z.Z * m2.Z.Z;
+{$ENDIF}
 end;
 
 function MatrixMultiply(const m1, m2: TMatrix): TMatrix;
 begin
+{$IFDEF USE_FASTMATH}
+  Result := m1 * m2;
+{$ELSE}
   result.X.X := m1.X.X * m2.X.X + m1.X.Y * m2.Y.X + m1.X.Z * m2.Z.X +
     m1.X.W * m2.W.X;
   result.X.Y := m1.X.X * m2.X.Y + m1.X.Y * m2.Y.Y + m1.X.Z * m2.Z.Y +
@@ -3276,19 +3614,43 @@ begin
     m1.W.W * m2.W.Z;
   result.W.W := m1.W.X * m2.X.W + m1.W.Y * m2.Y.W + m1.W.Z * m2.Z.W +
     m1.W.W * m2.W.W;
+{$ENDIF}
 end;
 
 procedure MatrixMultiply(const m1, m2: TMatrix; var MResult: TMatrix);
 begin
-  MResult := MatrixMultiply(m1, m2);
+{$IFDEF USE_FASTMATH}
+  MResult := m1 * m2;
+{$ELSE}
+  MResult.X.X := m1.X.X * m2.X.X + m1.X.Y * m2.Y.X + m1.X.Z * m2.Z.X +  m1.X.W * m2.W.X;
+  MResult.X.Y := m1.X.X * m2.X.Y + m1.X.Y * m2.Y.Y + m1.X.Z * m2.Z.Y +  m1.X.W * m2.W.Y;
+  MResult.X.Z := m1.X.X * m2.X.Z + m1.X.Y * m2.Y.Z + m1.X.Z * m2.Z.Z +  m1.X.W * m2.W.Z;
+  MResult.X.W := m1.X.X * m2.X.W + m1.X.Y * m2.Y.W + m1.X.Z * m2.Z.W +  m1.X.W * m2.W.W;
+  MResult.Y.X := m1.Y.X * m2.X.X + m1.Y.Y * m2.Y.X + m1.Y.Z * m2.Z.X +  m1.Y.W * m2.W.X;
+  MResult.Y.Y := m1.Y.X * m2.X.Y + m1.Y.Y * m2.Y.Y + m1.Y.Z * m2.Z.Y +  m1.Y.W * m2.W.Y;
+  MResult.Y.Z := m1.Y.X * m2.X.Z + m1.Y.Y * m2.Y.Z + m1.Y.Z * m2.Z.Z +  m1.Y.W * m2.W.Z;
+  MResult.Y.W := m1.Y.X * m2.X.W + m1.Y.Y * m2.Y.W + m1.Y.Z * m2.Z.W +  m1.Y.W * m2.W.W;
+  MResult.Z.X := m1.Z.X * m2.X.X + m1.Z.Y * m2.Y.X + m1.Z.Z * m2.Z.X +  m1.Z.W * m2.W.X;
+  MResult.Z.Y := m1.Z.X * m2.X.Y + m1.Z.Y * m2.Y.Y + m1.Z.Z * m2.Z.Y +  m1.Z.W * m2.W.Y;
+  MResult.Z.Z := m1.Z.X * m2.X.Z + m1.Z.Y * m2.Y.Z + m1.Z.Z * m2.Z.Z +  m1.Z.W * m2.W.Z;
+  MResult.Z.W := m1.Z.X * m2.X.W + m1.Z.Y * m2.Y.W + m1.Z.Z * m2.Z.W +  m1.Z.W * m2.W.W;
+  MResult.W.X := m1.W.X * m2.X.X + m1.W.Y * m2.Y.X + m1.W.Z * m2.Z.X +  m1.W.W * m2.W.X;
+  MResult.W.Y := m1.W.X * m2.X.Y + m1.W.Y * m2.Y.Y + m1.W.Z * m2.Z.Y +  m1.W.W * m2.W.Y;
+  MResult.W.Z := m1.W.X * m2.X.Z + m1.W.Y * m2.Y.Z + m1.W.Z * m2.Z.Z +  m1.W.W * m2.W.Z;
+  MResult.W.W := m1.W.X * m2.X.W + m1.W.Y * m2.Y.W + m1.W.Z * m2.Z.W +  m1.W.W * m2.W.W;
+{$ENDIF}
 end;
 
 function VectorTransform(const V: TVector; const M: TMatrix): TVector;
 begin
-    result.V[X] := V.V[X] * M.X.X + V.V[Y] * M.Y.X + V.V[Z] * M.Z.X + V.V[W] * M.W.X;
-    result.V[Y] := V.V[X] * M.X.Y + V.V[Y] * M.Y.Y + V.V[Z] * M.Z.Y + V.V[W] * M.W.Y;
-    result.V[Z] := V.V[X] * M.X.Z + V.V[Y] * M.Y.Z + V.V[Z] * M.Z.Z + V.V[W] * M.W.Z;
-    result.V[W] := V.V[X] * M.X.W + V.V[Y] * M.Y.W + V.V[Z] * M.Z.W + V.V[W] * M.W.W;
+{$IFDEF USE_FASTMATH}
+  Result := V * M;
+{$ELSE}
+  result.V[X] := V.V[X] * M.X.X + V.V[Y] * M.Y.X + V.V[Z] * M.Z.X + V.V[W] * M.W.X;
+  result.V[Y] := V.V[X] * M.X.Y + V.V[Y] * M.Y.Y + V.V[Z] * M.Z.Y + V.V[W] * M.W.Y;
+  result.V[Z] := V.V[X] * M.X.Z + V.V[Y] * M.Y.Z + V.V[Z] * M.Z.Z + V.V[W] * M.W.Z;
+  result.V[W] := V.V[X] * M.X.W + V.V[Y] * M.Y.W + V.V[Z] * M.Z.W + V.V[W] * M.W.W;
+{$ENDIF}
 end;
 
 function VectorTransform(const V: TVector; const M: TAffineMatrix): TVector;
@@ -3310,15 +3672,23 @@ end;
 function VectorTransform(const V: TAffineVector; const M: TAffineMatrix)
   : TAffineVector;
 begin
+{$IFDEF USE_FASTMATH}
+  Result := V * M;
+{$ELSE}
   result.V[X] := V.V[X] * M.X.X + V.V[Y] * M.Y.X + V.V[Z] * M.Z.X;
   result.V[Y] := V.V[X] * M.X.Y + V.V[Y] * M.Y.Y + V.V[Z] * M.Z.Y;
   result.V[Z] := V.V[X] * M.X.Z + V.V[Y] * M.Y.Z + V.V[Z] * M.Z.Z;
+{$ENDIF}
 end;
 
 function MatrixDeterminant(const M: TAffineMatrix): Single;
 begin
+{$IFDEF USE_FASTMATH}
+  Result := M.Determinant;
+{$ELSE}
   result := M.X.X * (M.Y.Y * M.Z.Z - M.Z.Y * M.Y.Z) - M.X.Y *
     (M.Y.X * M.Z.Z - M.Z.X * M.Y.Z) + M.X.Z * (M.Y.X * M.Z.Y - M.Z.X * M.Y.Y);
+{$ENDIF}
 end;
 
 function MatrixDetInternal(const a1, a2, a3, b1, b2, b3, c1, c2,
@@ -3331,15 +3701,23 @@ end;
 
 function MatrixDeterminant(const M: TMatrix): Single;
 begin
+{$IFDEF USE_FASTMATH}
+  Result := M.Determinant;
+{$ELSE}
   result := M.X.X * MatrixDetInternal(M.Y.Y, M.Z.Y, M.W.Y, M.Y.Z, M.Z.Z, M.W.Z,
     M.Y.W, M.Z.W, M.W.W) - M.X.Y * MatrixDetInternal(M.Y.X, M.Z.X, M.W.X, M.Y.Z,
     M.Z.Z, M.W.Z, M.Y.W, M.Z.W, M.W.W) + M.X.Z * MatrixDetInternal(M.Y.X, M.Z.X,
     M.W.X, M.Y.Y, M.Z.Y, M.W.Y, M.Y.W, M.Z.W, M.W.W) - M.X.W *
     MatrixDetInternal(M.Y.X, M.Z.X, M.W.X, M.Y.Y, M.Z.Y, M.W.Y, M.Y.Z,
     M.Z.Z, M.W.Z);
+{$ENDIF}
 end;
 
 procedure AdjointMatrix(var M: TMatrix);
+{$IFDEF USE_FASTMATH}
+begin
+  raise Exception.Create('Not implemented.');
+{$ELSE}
 var
   a1, a2, a3, a4, b1, b2, b3, b4, c1, c2, c3, c4, d1, d2, d3, d4: Single;
 begin
@@ -3380,9 +3758,14 @@ begin
   M.Y.W := MatrixDetInternal(a1, a2, a3, c1, c2, c3, d1, d2, d3);
   M.Z.W := -MatrixDetInternal(a1, a2, a3, b1, b2, b3, d1, d2, d3);
   M.W.W := MatrixDetInternal(a1, a2, a3, b1, b2, b3, c1, c2, c3);
+{$ENDIF}
 end;
 
 procedure AdjointMatrix(var M: TAffineMatrix);
+{$IFDEF USE_FASTMATH}
+begin
+  raise Exception.Create('Error Message');
+{$ELSE}
 var
   a1, a2, a3, b1, b2, b3, c1, c2, c3: Single;
 begin
@@ -3406,9 +3789,14 @@ begin
   M.X.Z := (a2 * b3 - b2 * a3);
   M.Y.Z := -(a1 * b3 - b1 * a3);
   M.Z.Z := (a1 * b2 - b1 * a2);
+{$ENDIF}
 end;
 
 procedure ScaleMatrix(var M: TAffineMatrix; const factor: Single);
+{$IFDEF USE_FASTMATH}
+begin
+  M := M*factor;
+{$ELSE}
 var
   i: Integer;
 begin
@@ -3418,11 +3806,14 @@ begin
     M.V[i].Y := M.V[i].Y * factor;
     M.V[i].Z := M.V[i].Z * factor;
   end;
+{$ENDIF}
 end;
 
-// ScaleMatrix (hmg)
-//
 procedure ScaleMatrix(var M: TMatrix; const factor: Single);
+{$IFDEF USE_FASTMATH}
+begin
+  M := M*factor;
+{$ELSE}
 var
   i: Integer;
 begin
@@ -3433,24 +3824,34 @@ begin
     M.V[i].Z := M.V[i].Z * factor;
     M.V[i].W := M.V[i].W * factor;
   end;
+{$ENDIF}
 end;
 
 procedure TranslateMatrix(var M: TMatrix; const V: TAffineVector);
 begin
-  M.W.X := M.W.X + V.X;
-  M.W.Y := M.W.Y + V.Y;
-  M.W.Z := M.W.Z + V.Z;
+  M.V[3].X := M.V[3].X + V.X;
+  M.V[3].Y := M.V[3].Y + V.Y;
+  M.V[3].Z := M.V[3].Z + V.Z;
 end;
 
 procedure TranslateMatrix(var M: TMatrix; const V: TVector);
 begin
-  M.W.X := M.W.X + V.X;
-  M.W.Y := M.W.Y + V.Y;
-  M.W.Z := M.W.Z + V.Z;
+  M.V[3].X := M.V[3].X + V.X;
+  M.V[3].Y := M.V[3].Y + V.Y;
+  M.V[3].Z := M.V[3].Z + V.Z;
 end;
 
 procedure NormalizeMatrix(var M: TMatrix);
 begin
+{$IFDEF USE_FASTMATH}
+  M.V[0].W := 0;
+  M.V[0].SetNormalized;
+  M.V[1].W := 0;
+  M.V[1].SetNormalized;
+  M.V[2] := VectorCrossProduct(M.V[0], M.V[1]);
+  M.V[0] := VectorCrossProduct(M.V[1], M.V[2]);
+  M.V[3] := WHmgVector;
+{$ELSE}
   M.X.W := 0;
   NormalizeVector(M.X);
   M.Y.W := 0;
@@ -3458,9 +3859,14 @@ begin
   M.Z := VectorCrossProduct(M.X, M.Y);
   M.X := VectorCrossProduct(M.Y, M.Z);
   M.W := WHmgVector;
+{$ENDIF}
 end;
 
 procedure TransposeMatrix(var M: TAffineMatrix);
+{$IFDEF USE_FASTMATH}
+begin
+  M.SetTransposed;
+{$ELSE}
 var
   f: Single;
 begin
@@ -3473,9 +3879,14 @@ begin
   f := M.Y.Z;
   M.Y.Z := M.Z.Y;
   M.Z.Y := f;
+{$ENDIF}
 end;
 
 procedure TransposeMatrix(var M: TMatrix);
+{$IFDEF USE_FASTMATH}
+begin
+  M.SetTransposed;
+{$ELSE}
 var
   f: Single;
 begin
@@ -3497,9 +3908,14 @@ begin
   f := M.Z.W;
   M.Z.W := M.W.Z;
   M.W.Z := f;
+{$ENDIF}
 end;
 
 procedure InvertMatrix(var M: TMatrix);
+{$IFDEF USE_FASTMATH}
+begin
+  M.SetInversed;
+{$ELSE}
 var
   det: Single;
 begin
@@ -3511,15 +3927,24 @@ begin
     AdjointMatrix(M);
     ScaleMatrix(M, 1 / det);
   end;
+{$ENDIF}
 end;
 
 function MatrixInvert(const M: TMatrix): TMatrix;
 begin
+{$IFDEF USE_FASTMATH}
+  Result := M.Inverse;
+{$ELSE}
   result := M;
   InvertMatrix(result);
+{$ENDIF}
 end;
 
 procedure InvertMatrix(var M: TAffineMatrix);
+{$IFDEF USE_FASTMATH}
+begin
+  M.SetInversed;
+{$ELSE}
 var
   det: Single;
 begin
@@ -3531,17 +3956,25 @@ begin
     AdjointMatrix(M);
     ScaleMatrix(M, 1 / det);
   end;
+{$ENDIF}
 end;
 
 function MatrixInvert(const M: TAffineMatrix): TAffineMatrix;
 begin
+{$IFDEF USE_FASTMATH}
+  Result := M.Inverse;
+{$ELSE}
   result := M;
   InvertMatrix(result);
+{$ENDIF}
 end;
 
 procedure Transpose_Scale_M33(const src: TMatrix; var dest: TMatrix;
   var scale: Single);
 begin
+{$IFDEF USE_FASTMATH}
+  dest := scale * src.Transpose
+{$ELSE}
   dest.X.X := scale * src.X.X;
   dest.Y.X := scale * src.X.Y;
   dest.Z.X := scale * src.X.Z;
@@ -3551,8 +3984,8 @@ begin
   dest.X.Z := scale * src.Z.X;
   dest.Y.Z := scale * src.Z.Y;
   dest.Z.Z := scale * src.Z.Z;
+{$ENDIF}
 end;
-
 
 function AnglePreservingMatrixInvert(const mat: TMatrix): TMatrix;
 var
@@ -3713,12 +4146,12 @@ begin
   Tran[ttRotateY] := ArcSine(-row0.Z);
   if Cos(Tran[ttRotateY]) <> 0 then
   begin
-    Tran[ttRotateX] := ArcTan2(row1.V[Z], row2.V[Z]);
-    Tran[ttRotateZ] := ArcTan2(row0.V[Y], row0.V[X]);
+    Tran[ttRotateX] := {$IFDEF USE_FASTMATH}NesLib.FastMath.{$ENDIF}ArcTan2(row1.Z, row2.Z);
+    Tran[ttRotateZ] := {$IFDEF USE_FASTMATH}NesLib.FastMath.{$ENDIF}ArcTan2(row0.Y, row0.X);
   end
   else
   begin
-    Tran[ttRotateX] := ArcTan2(row1.V[X], row1.V[Y]);
+    Tran[ttRotateX] := {$IFDEF USE_FASTMATH}NesLib.FastMath.{$ENDIF}ArcTan2(row1.X, row1.Y);
     Tran[ttRotateZ] := 0;
   end;
   // All done!
@@ -4265,8 +4698,6 @@ begin
 end;
 
 // http://geometryalgorithms.com/Archive/algorithm_0104/algorithm_0104B.htm
-// SegmentSegmentClosestPoint
-//
 procedure SegmentSegmentClosestPoint(const S0Start, S0Stop, S1Start,
   S1Stop: TAffineVector; var Segment0Closest, Segment1Closest: TAffineVector);
 const
@@ -4390,7 +4821,11 @@ begin
     result := det / VectorLength(VectorCrossProduct(lineDir0, lineDir1));
 end;
 
-function QuaternionMake(const Imag: array of Single; Real: Single): TQuaternion;
+function QuaternionMake(const Imag: array of Single; Real: Single): TQuaternion; overload;
+{$IFDEF USE_FASTMATH}
+begin
+  Result.Init(Imag[0], Imag[1], Imag[2], Real);
+{$ELSE}
 var
   n: Integer;
 begin
@@ -4402,7 +4837,9 @@ begin
   if n >= 3 then
     result.ImagPart.Z := Imag[2];
   result.RealPart := Real;
+{$ENDIF}
 end;
+
 function QuaternionMake(const X,Y,Z,W: Single): TQuaternion; overload;
 begin
   Result.X := X;
@@ -4421,21 +4858,32 @@ end;
 
 function QuaternionConjugate(const Q: TQuaternion): TQuaternion;
 begin
+{$IFDEF USE_FASTMATH}
+  Result := Q.Conjugate;
+{$ELSE}
   result.ImagPart.X := -Q.ImagPart.X;
   result.ImagPart.Y := -Q.ImagPart.Y;
   result.ImagPart.Z := -Q.ImagPart.Z;
   result.RealPart := Q.RealPart;
+{$ENDIF}
 end;
 
 function QuaternionMagnitude(const Q: TQuaternion): Single;
 begin
+{$IFDEF USE_FASTMATH}
+  Result := Q.Length;
+{$ELSE}
   result := Sqrt(VectorNorm(Q.ImagPart) + Sqr(Q.RealPart));
+{$ENDIF}
 end;
 
 procedure NormalizeQuaternion(var Q: TQuaternion);
 var
   M, f: Single;
 begin
+{$IFDEF USE_FASTMATH}
+  Q.SetNormalized;
+{$ELSE}
   M := QuaternionMagnitude(Q);
   if M > EPSILON2 then
   begin
@@ -4445,12 +4893,17 @@ begin
   end
   else
     Q := IdentityQuaternion;
+{$ENDIF}
 end;
 
 function QuaternionFromPoints(const V1, V2: TAffineVector): TQuaternion;
 begin
+{$IFDEF USE_FASTMATH}
+  Result.Init(V1.Cross(V2), Sqrt((VectorDotProduct(V1, V2) + 1) / 2));
+{$ELSE}
   result.ImagPart := VectorCrossProduct(V1, V2);
   result.RealPart := Sqrt((VectorDotProduct(V1, V2) + 1) / 2);
+{$ENDIF}
 end;
 
 function QuaternionFromMatrix(const mat: TMatrix): TQuaternion;
@@ -4458,6 +4911,9 @@ function QuaternionFromMatrix(const mat: TMatrix): TQuaternion;
 var
   traceMat, S, invS: Double;
 begin
+{$IFDEF USE_FASTMATH}
+  Result.Init(mat);
+{$ELSE}
   traceMat := 1 + mat.V[X].X + mat.V[Y].Y + mat.V[Z].Z;
   if traceMat > EPSILON2 then
   begin
@@ -4500,12 +4956,16 @@ begin
     result.RealPart := (mat.X.Y - mat.Y.X) * invS;
   end;
   NormalizeQuaternion(result);
+{$ENDIF}
 end;
 
 function QuaternionMultiply(const qL, qR: TQuaternion): TQuaternion;
 var
   Temp: TQuaternion;
 begin
+{$IFDEF USE_FASTMATH}
+  Result := ql * qR;
+{$ELSE}
   Temp.RealPart := qL.RealPart * qR.RealPart - qL.ImagPart.V[X] * qR.ImagPart.V
     [X] - qL.ImagPart.V[Y] * qR.ImagPart.V[Y] - qL.ImagPart.V[Z] *
     qR.ImagPart.V[Z];
@@ -4519,12 +4979,16 @@ begin
     qR.RealPart + qL.ImagPart.V[X] * qR.ImagPart.V[Y] - qL.ImagPart.V[Y] *
     qR.ImagPart.V[X];
   result := Temp;
+{$ENDIF}
 end;
 
 function QuaternionToMatrix(quat: TQuaternion): TMatrix;
 var
   W, X, Y, Z, xx, xy, xz, xw, yy, yz, yw, zz, zw: Single;
 begin
+{$IFDEF USE_FASTMATH}
+  Result := quat.ToMatrix;
+{$ELSE}
   NormalizeQuaternion(quat);
   W := quat.RealPart;
   X := quat.ImagPart.X;
@@ -4555,12 +5019,16 @@ begin
   result.Y.W := 0;
   result.Z.W := 0;
   result.W.W := 1;
+{$ENDIF}
 end;
 
 function QuaternionToAffineMatrix(quat: TQuaternion): TAffineMatrix;
 var
   W, X, Y, Z, xx, xy, xz, xw, yy, yz, yw, zz, zw: Single;
 begin
+{$IFDEF USE_FASTMATH}
+  Result := ToMatrix3(quat.ToMatrix);
+{$ELSE}
   NormalizeQuaternion(quat);
   W := quat.RealPart;
   X := quat.ImagPart.X;
@@ -4584,6 +5052,7 @@ begin
   result.X.Z := 2 * (xz - yw);
   result.Y.Z := 2 * (yz + xw);
   result.Z.Z := 1 - 2 * (xx + yy);
+{$ENDIF}
 end;
 
 function QuaternionFromAngleAxis(const angle: Single; const axis: TAffineVector)
@@ -4681,6 +5150,9 @@ procedure QuaternionToPoints(const Q: TQuaternion;
 var
   S, invS: Single;
 begin
+{$IFDEF USE_FASTMATH}
+  raise Exception.Create('Error Message');
+{$ELSE}
   S := Q.ImagPart.V[X] * Q.ImagPart.V[X] + Q.ImagPart.V[Y] * Q.ImagPart.V[Y];
   if S = 0 then
     SetAffineVector(ArcFrom, 0, 1, 0)
@@ -4695,11 +5167,16 @@ begin
   ArcTo.V[Z] := Q.ImagPart.V[X] * ArcFrom.V[Y] - Q.ImagPart.V[Y] * ArcFrom.V[X];
   if Q.RealPart < 0 then
     SetAffineVector(ArcFrom, -ArcFrom.V[X], -ArcFrom.V[Y], 0);
+{$ENDIF}
 end;
 
 function Logarithm2(const X: Single): Single;
 begin
+{$IFDEF USE_FASTMATH}
+  result := NesLib.FastMath.Log2(X);
+{$ELSE}
   result := Log2(X);
+{$ENDIF}
 end;
 
 function PowerSingle(const Base, Exponent: Single): Single;
@@ -4710,7 +5187,7 @@ begin
   else if (Base = cZero) and (Exponent > cZero) then
     result := cZero
   else if RoundInt(Exponent) = Exponent then
-    result := Power(Base, Integer(Round(Exponent)))
+    result := {$IFDEF USE_FASTMATH}NesLib.FastMath.{$ENDIF}Power(Base, Integer(Round(Exponent)))
   else
     result := Exp(Exponent * Ln(Base));
 {$HINTS ON}
@@ -4719,7 +5196,7 @@ end;
 function PowerInteger(Base: Single; Exponent: Integer): Single;
 begin
 {$HINTS OFF}
-  result := Power(Base, Exponent);
+  result := {$IFDEF USE_FASTMATH}NesLib.FastMath.{$ENDIF}Power(Base, Exponent);
 {$HINTS ON}
 end;
 
@@ -4785,9 +5262,6 @@ begin
 end;
 
 procedure SinCosine(const Theta: Single; out Sin, Cos: Single);
-// EAX contains address of Sin
-// EDX contains address of Cos
-// Theta is passed over the stack
 var
   S, c: Extended;
 begin
@@ -5798,6 +6272,9 @@ var
   phi: Single; // theta plus spins
   bflip: Boolean; // use negativ t?
 begin
+{$IFDEF USE_FASTMATH}
+  raise Exception.Create('Error Message');
+{$ELSE}
   // cosine theta
   cost := VectorAngleCosine(QStart.ImagPart, QEnd.ImagPart);
 
@@ -5834,6 +6311,7 @@ begin
   result.ImagPart.V[Y] := beta * QStart.ImagPart.V[Y] + T * QEnd.ImagPart.V[Y];
   result.ImagPart.V[Z] := beta * QStart.ImagPart.V[Z] + T * QEnd.ImagPart.V[Z];
   result.RealPart := beta * QStart.RealPart + T * QEnd.RealPart;
+{$ENDIF}
 end;
 
 function QuaternionSlerp(const source, dest: TQuaternion; const T: Single)
@@ -6608,6 +7086,9 @@ var
 const
   cFact: Single = 32767;
 begin
+{$IFDEF USE_FASTMATH}
+  raise Exception.Create('Error Message');
+{$ELSE}
   Q := QuaternionFromMatrix(mat);
   NormalizeQuaternion(Q);
 {$HINTS OFF}
@@ -6624,6 +7105,7 @@ begin
     result[2] := Round(Q.ImagPart.Z * cFact);
   end;
 {$HINTS ON}
+{$ENDIF}
 end;
 
 function UnPackRotationMatrix(const packedMatrix
@@ -6633,6 +7115,9 @@ var
 const
   cFact: Single = 1 / 32767;
 begin
+{$IFDEF USE_FASTMATH}
+  raise Exception.Create('Error Message');
+{$ELSE}
   Q.ImagPart.X := packedMatrix[0] * cFact;
   Q.ImagPart.Y := packedMatrix[1] * cFact;
   Q.ImagPart.Z := packedMatrix[2] * cFact;
@@ -6642,6 +7127,7 @@ begin
   else
     Q.RealPart := Sqrt(Q.RealPart);
   result := QuaternionToMatrix(Q);
+{$ENDIF}
 end;
 
 function BarycentricCoordinates(const V1, V2, V3, p: TAffineVector;
@@ -7101,9 +7587,13 @@ end;
 
 function MatrixEquals(const Matrix1, Matrix2: TMatrix3f): Boolean;
 begin
+{$IFDEF USE_FASTMATH}
+  Result := Matrix1 = Matrix2;
+{$ELSE}
   result := VectorEquals(Matrix1.X, Matrix2.X) and
     VectorEquals(Matrix1.Y, Matrix2.Y) and
     VectorEquals(Matrix1.Z, Matrix2.Z);
+{$ENDIF}
 end;
 
 // 3x3i
@@ -7140,10 +7630,14 @@ end;
 // 4x4f
 function MatrixEquals(const Matrix1, Matrix2: TMatrix4f): Boolean;
 begin
+{$IFDEF USE_FASTMATH}
+  Result := Matrix1 = Matrix2;
+{$ELSE}
   result := VectorEquals(Matrix1.X, Matrix2.X) and
     VectorEquals(Matrix1.Y, Matrix2.Y) and
     VectorEquals(Matrix1.Z, Matrix2.Z) and
     VectorEquals(Matrix1.W, Matrix2.W);
+{$ENDIF}
 end;
 
 // 4x4i

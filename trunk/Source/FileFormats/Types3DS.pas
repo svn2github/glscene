@@ -30,14 +30,15 @@ interface
 {$I GLScene.inc}
 
 uses
-   System.Classes; // for TStringList
+   System.Classes, // for TStringList
+   System.SysUtils;
 
 //---------------- commonly used structures ----------------------------------
 
 type TDumpLevel = (dlTerseDump, dlMediumDump, dlMaximumDump);
 
      PChar3DS = PAnsiChar;
-     String3DS = AnsiString;
+     String3DS = UTF8String;
      String64 = string[64];
 
      PWordList = ^TWordList;

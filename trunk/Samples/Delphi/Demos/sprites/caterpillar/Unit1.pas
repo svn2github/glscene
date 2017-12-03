@@ -12,9 +12,18 @@ uses
   Vcl.ExtCtrls,
   Vcl.StdCtrls,
   
-  GLScene, GLObjects, GLTexture, GLVectorGeometry,
-  GLCadencer, GLWin32Viewer, GLCrossPlatform, GLMaterial,
-  GLCoordinates, GLBaseClasses, GLSimpleNavigation, GLProcTextures,
+  GLScene,
+  GLObjects,
+  GLTexture,
+  GLVectorGeometry,
+  GLCadencer,
+  GLWin32Viewer,
+  GLCrossPlatform,
+  GLMaterial,
+  GLCoordinates,
+  GLBaseClasses,
+  GLSimpleNavigation,
+  GLProcTextures,
   GLUtils;
 
 type

@@ -17,6 +17,10 @@
 // Can be found at https://github.com/graphics32
 {.$DEFINE USE_GRAPHICS32}
 
+// Activate support for FastMath library
+// Use https://github.com/neslib/FastMath
+{.$DEFINE USE_FASTMATH}
+
 // Activate support for some optimizations by disabling checks that occur very often
 // Warning: it will disable some options (like ShowAxis and OptSaveGLStack)
 {.$DEFINE USE_OPTIMIZATIONS}
@@ -26,10 +30,6 @@
 
 // Activate Logging
 {.$DEFINE USE_LOGGING}
-
-// Activate support for FastMath library
-// Use https://github.com/neslib/FastMath by Erik van Bilsen
-{.$DEFINE USE_FASTMATH}
 
 // Activate OpenGL debug mode
 {.$DEFINE USE_OPENGL_DEBUG}

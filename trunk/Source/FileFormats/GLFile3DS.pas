@@ -4,10 +4,10 @@
 {
   3DStudio 3DS vector file format implementation.
   History :
-    05/06/03 - SG - Separated from GLVectorFileObjects.pas
-    The whole history is logged in previous version of the unit
-
+  05/06/03 - SG - Separated from GLVectorFileObjects.pas
+  The whole history is logged in previous version of the unit
 }
+
 unit GLFile3DS;
 
 interface
@@ -18,7 +18,7 @@ uses
   System.Classes,
   System.SysUtils,
   System.Math,
-  
+
   OpenGLTokens,
   GLStrings,
   GLScene,
@@ -45,8 +45,8 @@ type
   { A record that holds all the information that is used during 3ds animation. }
   TGLFile3DSAnimationData = packed record
     ModelMatrix: TMatrix;
-    Color: TVector;            // Omni Light.
-    TargetPos: TAffineVector;  // Spot Light.
+    Color: TVector; // Omni Light.
+    TargetPos: TAffineVector; // Spot Light.
     SpotLightCutOff: Single;
     HotSpot: Single;
     Roll: Single;
@@ -57,20 +57,14 @@ type
   private
     FNumKeys: Integer;
     FKeys: array of TKeyHeader3DS;
-    procedure InterpolateFrame(var I: integer; var w: real; const AFrame: real);
+    procedure InterpolateFrame(var I: Integer; var w: real; const AFrame: real);
   protected
-    function InterpolateValue(const AValues: array of single;
-      const AFrame: real): single; overload;
-    function InterpolateValue(const AValues: array of TAffineVector;
-      const AFrame: real): TAffineVector; overload;
-    function InterpolateValue(const AValues: array of TKFRotKey3DS;
-      const AFrame: real): TMatrix; overload;
+    function InterpolateValue(const AValues: array of Single; const AFrame: real): Single; overload;
+    function InterpolateValue(const AValues: array of TAffineVector; const AFrame: real): TAffineVector; overload;
+    function InterpolateValue(const AValues: array of TKFRotKey3DS; const AFrame: real): TMatrix; overload;
   public
-    procedure LoadData(const ANumKeys: integer; const Keys: PKeyHeaderList;
-      const AData: Pointer); virtual;
-    procedure Apply(var DataTransf: TGLFile3DSAnimationData; const AFrame: real);
-      virtual; abstract;
-
+    procedure LoadData(const ANumKeys: Integer; const Keys: PKeyHeaderList; const AData: Pointer); virtual;
+    procedure Apply(var DataTransf: TGLFile3DSAnimationData; const AFrame: real); virtual; abstract;
     procedure Assign(Source: TPersistent); override;
     procedure WriteToFiler(Writer: TVirtualWriter); override;
     procedure ReadFromFiler(Reader: TVirtualReader); override;
@@ -80,10 +74,8 @@ type
   private
     FScale: array of TAffineVector;
   public
-    procedure LoadData(const ANumKeys: integer; const Keys: PKeyHeaderList;
-      const AData: Pointer); override;
-    procedure Apply(var DataTransf: TGLFile3DSAnimationData;
-      const AFrame: real); override;
+    procedure LoadData(const ANumKeys: Integer; const Keys: PKeyHeaderList; const AData: Pointer); override;
+    procedure Apply(var DataTransf: TGLFile3DSAnimationData; const AFrame: real); override;
     procedure Assign(Source: TPersistent); override;
     procedure WriteToFiler(Writer: TVirtualWriter); override;
     procedure ReadFromFiler(Reader: TVirtualReader); override;
@@ -93,10 +85,8 @@ type
   private
     FRot: array of TKFRotKey3DS;
   public
-    procedure LoadData(const ANumKeys: integer; const Keys: PKeyHeaderList;
-      const AData: Pointer); override;
-    procedure Apply(var DataTransf: TGLFile3DSAnimationData;
-      const AFrame: real); override;
+    procedure LoadData(const ANumKeys: Integer; const Keys: PKeyHeaderList; const AData: Pointer); override;
+    procedure Apply(var DataTransf: TGLFile3DSAnimationData; const AFrame: real); override;
     procedure Assign(Source: TPersistent); override;
     procedure WriteToFiler(Writer: TVirtualWriter); override;
     procedure ReadFromFiler(Reader: TVirtualReader); override;
@@ -106,10 +96,8 @@ type
   private
     FPos: array of TAffineVector;
   public
-    procedure LoadData(const ANumKeys: integer; const Keys: PKeyHeaderList;
-      const AData: Pointer); override;
-    procedure Apply(var DataTransf: TGLFile3DSAnimationData;
-      const AFrame: real); override;
+    procedure LoadData(const ANumKeys: Integer; const Keys: PKeyHeaderList; const AData: Pointer); override;
+    procedure Apply(var DataTransf: TGLFile3DSAnimationData; const AFrame: real); override;
     procedure Assign(Source: TPersistent); override;
     procedure WriteToFiler(Writer: TVirtualWriter); override;
     procedure ReadFromFiler(Reader: TVirtualReader); override;
@@ -119,10 +107,8 @@ type
   private
     FCol: array of TAffineVector;
   public
-    procedure LoadData(const ANumKeys: integer; const Keys: PKeyHeaderList;
-      const AData: Pointer); override;
-    procedure Apply(var DataTransf: TGLFile3DSAnimationData;
-      const AFrame: real); override;
+    procedure LoadData(const ANumKeys: Integer; const Keys: PKeyHeaderList; const AData: Pointer); override;
+    procedure Apply(var DataTransf: TGLFile3DSAnimationData; const AFrame: real); override;
     procedure Assign(Source: TPersistent); override;
     procedure WriteToFiler(Writer: TVirtualWriter); override;
     procedure ReadFromFiler(Reader: TVirtualReader); override;
@@ -132,10 +118,8 @@ type
   private
     FTPos: array of TAffineVector;
   public
-    procedure LoadData(const ANumKeys: integer; const Keys: PKeyHeaderList;
-      const AData: Pointer); override;
-    procedure Apply(var DataTransf: TGLFile3DSAnimationData;
-      const AFrame: real); override;
+    procedure LoadData(const ANumKeys: Integer; const Keys: PKeyHeaderList; const AData: Pointer); override;
+    procedure Apply(var DataTransf: TGLFile3DSAnimationData; const AFrame: real); override;
     procedure Assign(Source: TPersistent); override;
     procedure WriteToFiler(Writer: TVirtualWriter); override;
     procedure ReadFromFiler(Reader: TVirtualReader); override;
@@ -145,10 +129,8 @@ type
   private
     FFall: array of Single;
   public
-    procedure LoadData(const ANumKeys: integer; const Keys: PKeyHeaderList;
-      const AData: Pointer); override;
-    procedure Apply(var DataTransf: TGLFile3DSAnimationData;
-      const AFrame: real); override;
+    procedure LoadData(const ANumKeys: Integer; const Keys: PKeyHeaderList; const AData: Pointer); override;
+    procedure Apply(var DataTransf: TGLFile3DSAnimationData; const AFrame: real); override;
     procedure Assign(Source: TPersistent); override;
     procedure WriteToFiler(Writer: TVirtualWriter); override;
     procedure ReadFromFiler(Reader: TVirtualReader); override;
@@ -158,10 +140,8 @@ type
   private
     FHot: array of Single;
   public
-    procedure LoadData(const ANumKeys: integer; const Keys: PKeyHeaderList;
-      const AData: Pointer); override;
-    procedure Apply(var DataTransf: TGLFile3DSAnimationData;
-      const AFrame: real); override;
+    procedure LoadData(const ANumKeys: Integer; const Keys: PKeyHeaderList; const AData: Pointer); override;
+    procedure Apply(var DataTransf: TGLFile3DSAnimationData; const AFrame: real); override;
     procedure Assign(Source: TPersistent); override;
     procedure WriteToFiler(Writer: TVirtualWriter); override;
     procedure ReadFromFiler(Reader: TVirtualReader); override;
@@ -171,10 +151,8 @@ type
   private
     FRoll: array of Single;
   public
-    procedure LoadData(const ANumKeys: integer; const Keys: PKeyHeaderList;
-      const AData: Pointer); override;
-    procedure Apply(var DataTransf: TGLFile3DSAnimationData;
-      const AFrame: real); override;
+    procedure LoadData(const ANumKeys: Integer; const Keys: PKeyHeaderList; const AData: Pointer); override;
+    procedure Apply(var DataTransf: TGLFile3DSAnimationData; const AFrame: real); override;
     procedure Assign(Source: TPersistent); override;
     procedure WriteToFiler(Writer: TVirtualWriter); override;
     procedure ReadFromFiler(Reader: TVirtualReader); override;
@@ -195,9 +173,8 @@ type
     destructor Destroy; override;
   end;
 
-  {Used only for serialization. There probably is a more efficient way to do it. }
-  TGLFile3DSAnimKeysClassType = (ctScale, ctRot, ctPos, ctCol, ctTPos,
-    ctFall, ctHot, ctRoll);
+  { Used only for serialization. There probably is a more efficient way to do it. }
+  TGLFile3DSAnimKeysClassType = (ctScale, ctRot, ctPos, ctCol, ctTPos, ctFall, ctHot, ctRoll);
 
   { A 3ds-specific TGLMorphableMeshObject. }
   TGLFile3DSDummyObject = class(TGLMorphableMeshObject)
@@ -207,17 +184,15 @@ type
     FRefTranf, FAnimTransf: TGLFile3DSAnimationData;
     FParent: TGLFile3DSDummyObject;
     FParentName: String64;
-    FStatic : Boolean; // Static tag used in BuildList to not apply animation matrix
+    FStatic: Boolean; // Static tag used in BuildList to not apply animation matrix
   public
     procedure LoadAnimation(const AData: Pointer); virtual;
     procedure SetFrame(const AFrame: real); virtual;
 
-    procedure MorphTo(morphTargetIndex: integer); override;
-    procedure Lerp(morphTargetIndex1, morphTargetIndex2: integer;
-      lerpFactor: single); override;
+    procedure MorphTo(morphTargetIndex: Integer); override;
+    procedure Lerp(morphTargetIndex1, morphTargetIndex2: Integer; lerpFactor: Single); override;
     procedure GetExtents(out min, max: TAffineVector); override;
-    function ExtractTriangles(texCoords: TAffineVectorList = nil;
-      normals: TAffineVectorList = nil): TAffineVectorList;
+    function ExtractTriangles(texCoords: TAffineVectorList = nil; normals: TAffineVectorList = nil): TAffineVectorList;
       override;
 
     procedure WriteToFiler(Writer: TVirtualWriter); override;
@@ -231,14 +206,14 @@ type
     property RefrenceTransf: TGLFile3DSAnimationData read FRefTranf write FRefTranf;
   end;
 
-  {A 3ds-specific mesh object. }
+  { A 3ds-specific mesh object. }
   TGLFile3DSMeshObject = class(TGLFile3DSDummyObject)
   public
     procedure LoadAnimation(const AData: Pointer); override;
     procedure BuildList(var ARci: TGLRenderContextInfo); override;
   end;
 
-  {A 3ds-specific omni light. }
+  { A 3ds-specific omni light. }
   TGLFile3DSOmniLightObject = class(TGLFile3DSDummyObject)
   private
     FLightSrc: TGLFile3DSLight;
@@ -254,7 +229,7 @@ type
     destructor Destroy; override;
   end;
 
-  {TGLFile3DSSpotLightObject. A 3ds-specific spot light. }
+  { TGLFile3DSSpotLightObject. A 3ds-specific spot light. }
   TGLFile3DSSpotLightObject = class(TGLFile3DSOmniLightObject)
   public
     procedure LoadData(const AOwner: TGLBaseMesh; const AData: PLight3DS); override;
@@ -278,70 +253,75 @@ type
     destructor Destroy; override;
   end;
 
-  {The 3DStudio vector file.
-     Uses an upgraded version if a 3DS import library by Mike Lischke.
-     (http://www.lishcke-online.de). A 3DS file may contain material
-     information and require textures when loading. }
+  { The 3DStudio vector file.
+    Uses an upgraded version if a 3DS import library by Mike Lischke.
+    (http://www.lishcke-online.de). A 3DS file may contain material
+    information and require textures when loading. }
   TGL3DSVectorFile = class(TGLVectorFile)
   public
-
     class function Capabilities: TGLDataFileCapabilities; override;
     procedure LoadFromStream(aStream: TStream); override;
   end;
 
 var
-  {If enabled, advanced parameters will be loaded from a 3ds file
-     (TextureScale, TextureOffset), but it might break backwards compatibility.
-     If disabled, it won't break anything, but some parameters will not be
-     loaded correctly from a 3ds file.
-     Also there is a significant drop in FPS when this option is on
-     (for unknown reasons), so it is off by default. }
-  vGLFile3DS_UseTextureEx: boolean = False;
+  { If enabled, advanced parameters will be loaded from a 3ds file
+    (TextureScale, TextureOffset), but it might break backwards compatibility.
+    If disabled, it won't break anything, but some parameters will not be
+    loaded correctly from a 3ds file.
+    Also there is a significant drop in FPS when this option is on
+    (for unknown reasons), so it is off by default. }
+  vGLFile3DS_UseTextureEx: Boolean = False;
 
-  {If enabled, allows 3ds animation and fixes loading of some 3ds models,
-     but has a few bugs:
-     - TGLFreeForm.AutoCentering does now work correctly.
-     - TMeshObject.vertices return values different from
-        TMeshObject.ExtractTriangles()
-     }
-  vGLFile3DS_EnableAnimation: boolean = False;
-
-  {If enabled, a -90 degrees (-PI/2) rotation will occured on X Axis.
-     By design 3dsmax has a Z Up-Axis, after the rotation the Up axis will
-     be Y. (Note: you need vGLFile3DS_EnableAnimation = true)
+  { If enabled, allows 3ds animation and fixes loading of some 3ds models,
+    but has a few bugs:
+    - TGLFreeForm.AutoCentering does now work correctly.
+    - TMeshObject.vertices return values different from
+    TMeshObject.ExtractTriangles()
   }
-  vGLFile3DS_FixDefaultUpAxisY: boolean = False;
+  vGLFile3DS_EnableAnimation: Boolean = False;
 
-
-  {If >= 0, then the vertices list will be updated with selected frame
-     animation data. (Note: you need vGLFile3DS_EnableAnimation = true).
-     Be aware that in that case animation will not be usable, it is made
-     to be used with a static mesh like GLFreeForm.
+  { If enabled, a -90 degrees (-PI/2) rotation will occured on X Axis.
+    By design 3dsmax has a Z Up-Axis, after the rotation the Up axis will
+    be Y. (Note: you need vGLFile3DS_EnableAnimation = true)
   }
-  vGLFile3DS_LoadedStaticFrame: integer = -1;
+  vGLFile3DS_FixDefaultUpAxisY: Boolean = False;
 
-// ------------------------------------------------------------------
+  { If >= 0, then the vertices list will be updated with selected frame
+    animation data. (Note: you need vGLFile3DS_EnableAnimation = true).
+    Be aware that in that case animation will not be usable, it is made
+    to be used with a static mesh like GLFreeForm.
+  }
+  vGLFile3DS_LoadedStaticFrame: Integer = -1;
+
+  // ------------------------------------------------------------------
 implementation
+
 // ------------------------------------------------------------------
 
 const
-  cGLFILE3DS_FIXDEFAULTUPAXISY_ROTATIONVALUE = PI/2;
+  cGLFILE3DS_FIXDEFAULTUPAXISY_ROTATIONVALUE = PI / 2;
   CGLFILE3DS_DEFAULT_FRAME = 0;
 
-
-function AnimKeysClassTypeToClass(
-  const AAnimKeysClassType: TGLFile3DSAnimKeysClassType): TClass;
+function AnimKeysClassTypeToClass(const AAnimKeysClassType: TGLFile3DSAnimKeysClassType): TClass;
 begin
   case AAnimKeysClassType of
-    ctScale: Result := TGLFile3DSScaleAnimationKeys;
-    ctRot: Result := TGLFile3DSRotationAnimationKeys;
-    ctPos: Result := TGLFile3DSPositionAnimationKeys;
-    ctCol: Result := TGLFile3DSColorAnimationKeys;
-    ctTPos: Result := TTGLFile3DSPositionAnimationKeys;
-    ctFall: Result := TGLFile3DSSpotLightCutOffAnimationKeys;
-    ctHot: Result := TGLFile3DSLightHotSpotAnimationKeys;
-    ctRoll: Result := TGLFile3DSRollAnimationKeys;
-    else
+    ctScale:
+      Result := TGLFile3DSScaleAnimationKeys;
+    ctRot:
+      Result := TGLFile3DSRotationAnimationKeys;
+    ctPos:
+      Result := TGLFile3DSPositionAnimationKeys;
+    ctCol:
+      Result := TGLFile3DSColorAnimationKeys;
+    ctTPos:
+      Result := TTGLFile3DSPositionAnimationKeys;
+    ctFall:
+      Result := TGLFile3DSSpotLightCutOffAnimationKeys;
+    ctHot:
+      Result := TGLFile3DSLightHotSpotAnimationKeys;
+    ctRoll:
+      Result := TGLFile3DSRollAnimationKeys;
+  else
     begin
       Result := nil;
       Assert(False, strErrorEx + strUnknownType);
@@ -349,9 +329,7 @@ begin
   end;
 end;
 
-
-function ClassToAnimKeysClassType(
-  const AAnimKeysClass: TClass): TGLFile3DSAnimKeysClassType;
+function ClassToAnimKeysClassType(const AAnimKeysClass: TClass): TGLFile3DSAnimKeysClassType;
 begin
   if AAnimKeysClass.InheritsFrom(TGLFile3DSScaleAnimationKeys) then
     Result := ctScale
@@ -376,10 +354,10 @@ begin
   end;
 end;
 
-function MakeRotationQuaternion(const axis: TAffineVector; angle: single): TQuaternion;
+function MakeRotationQuaternion(const axis: TAffineVector; angle: Single): TQuaternion;
 var
-  v: Tvector;
-  halfAngle, invAxisLengthMult: single;
+  v: TVector;
+  halfAngle, invAxisLengthMult: Single;
 begin
   halfAngle := (angle) / 2;
   invAxisLengthMult := 1 / VectorLength(axis) * sin(halfAngle);
@@ -394,7 +372,7 @@ end;
 
 function QuaternionToRotateMatrix(const Quaternion: TQuaternion): TMatrix;
 var
-  wx, wy, wz, xx, yy, yz, xy, xz, zz, x2, y2, z2: single;
+  wx, wy, wz, xx, yy, yz, xy, xz, zz, x2, y2, z2: Single;
   quat: TVector;
   m: TMatrix;
 begin
@@ -437,8 +415,7 @@ end;
 // ------------------
 // ------------------ Support classes ------------------
 // ------------------
-procedure TGLFile3DSAnimationKeys.InterpolateFrame(var I: integer;
-  var w: real; const AFrame: real);
+procedure TGLFile3DSAnimationKeys.InterpolateFrame(var I: Integer; var w: real; const AFrame: real);
 begin
   w := 1;
   I := 0;
@@ -455,12 +432,11 @@ begin
   end;
 end;
 
-function TGLFile3DSAnimationKeys.InterpolateValue(const AValues: array of single;
-  const AFrame: real): single;
+function TGLFile3DSAnimationKeys.InterpolateValue(const AValues: array of Single; const AFrame: real): Single;
 var
-  I: integer;
+  I: Integer;
   w: real;
-  start, stop: single;
+  start, stop: Single;
 begin
   InterpolateFrame(I, w, AFrame);
 
@@ -476,10 +452,9 @@ begin
   Result := Lerp(start, stop, w);
 end;
 
-function TGLFile3DSAnimationKeys.InterpolateValue(const AValues: array of TAffineVector;
-  const AFrame: real): TAffineVector;
+function TGLFile3DSAnimationKeys.InterpolateValue(const AValues: array of TAffineVector; const AFrame: real): TAffineVector;
 var
-  I: integer;
+  I: Integer;
   w: real;
   start, stop: TAffineVector;
 begin
@@ -497,10 +472,9 @@ begin
   Result := VectorLerp(start, stop, w);
 end;
 
-function TGLFile3DSAnimationKeys.InterpolateValue(const AValues: array of TKFRotKey3DS;
-  const AFrame: real): TMatrix;
+function TGLFile3DSAnimationKeys.InterpolateValue(const AValues: array of TKFRotKey3DS; const AFrame: real): TMatrix;
 var
-  I: integer;
+  I: Integer;
   w: real;
 begin
   Result := IdentityHmgMatrix;
@@ -510,27 +484,23 @@ begin
   while (FNumKeys > I) and ((FKeys[I].Time) <= AFrame) do
   begin
     with AValues[I] do
-      Result := MatrixMultiply(Result, CreateRotationMatrix(
-        AffineVectorMake(X, Y, Z), Angle));
+      Result := MatrixMultiply(Result, CreateRotationMatrix(AffineVectorMake(X, Y, Z), angle));
     Inc(I);
   end;
 
   InterpolateFrame(I, w, AFrame);
 
   // Then interpolate this matrix
-  if (FNumKeys > I) and ((FKeys[I].Time) > AFrame) and
-    ((FKeys[I - 1].Time) < AFrame) then
+  if (FNumKeys > I) and ((FKeys[I].Time) > AFrame) and ((FKeys[I - 1].Time) < AFrame) then
   begin
     with AValues[I] do
-      Result := MatrixMultiply(Result, CreateRotationMatrix(
-        AffineVectorMake(X, Y, Z), AngleLerp(0, Angle, w)));
+      Result := MatrixMultiply(Result, CreateRotationMatrix(AffineVectorMake(X, Y, Z), AngleLerp(0, angle, w)));
   end;
 end;
 
-procedure TGLFile3DSAnimationKeys.LoadData(const ANumKeys: integer;
-  const Keys: PKeyHeaderList; const AData: Pointer);
+procedure TGLFile3DSAnimationKeys.LoadData(const ANumKeys: Integer; const Keys: PKeyHeaderList; const AData: Pointer);
 var
-  I: integer;
+  I: Integer;
 begin
   FNumKeys := ANumKeys;
   SetLength(FKeys, FNumKeys);
@@ -540,7 +510,7 @@ end;
 
 procedure TGLFile3DSAnimationKeys.Assign(Source: TPersistent);
 var
-  I: integer;
+  I: Integer;
 begin
   if Source is TGLFile3DSAnimationKeys then
   begin
@@ -568,13 +538,11 @@ begin
     Reader.Read(FKeys[0], FNumKeys * SizeOf(TKeyHeader3DS));
 end;
 
-
-procedure TGLFile3DSScaleAnimationKeys.LoadData(const ANumKeys: integer;
-  const Keys: PKeyHeaderList; const AData: Pointer);
+procedure TGLFile3DSScaleAnimationKeys.LoadData(const ANumKeys: Integer; const Keys: PKeyHeaderList; const AData: Pointer);
 var
-  I: integer;
-  AffVect : TAffineVector;
-  Sign : ShortInt;
+  I: Integer;
+  AffVect: TAffineVector;
+  Sign: ShortInt;
 begin
   inherited;
   SetLength(FScale, FNumKeys);
@@ -589,7 +557,7 @@ begin
       if (AffVect.X < 0) or (AffVect.Y < 0) or (AffVect.Z < 0) then
         Sign := -1
       else
-        Sign:= 1;
+        Sign := 1;
 
       AffVect := VectorRotateAroundX(AffVect, cGLFILE3DS_FIXDEFAULTUPAXISY_ROTATIONVALUE);
 
@@ -601,23 +569,21 @@ begin
   end;
 end;
 
-procedure TGLFile3DSScaleAnimationKeys.Apply(var DataTransf: TGLFile3DSAnimationData;
-  const AFrame: real);
+procedure TGLFile3DSScaleAnimationKeys.Apply(var DataTransf: TGLFile3DSAnimationData; const AFrame: real);
 begin
   if FNumKeys > 0 then
-    DataTransf.ModelMatrix := MatrixMultiply(DataTransf.ModelMatrix,
-      CreateScaleMatrix(InterpolateValue(FScale, AFrame)));
+    DataTransf.ModelMatrix := MatrixMultiply(DataTransf.ModelMatrix, CreateScaleMatrix(InterpolateValue(FScale, AFrame)));
 end;
 
 procedure TGLFile3DSScaleAnimationKeys.Assign(Source: TPersistent);
 var
-  I: integer;
+  I: Integer;
 begin
   inherited;
 
   SetLength(FScale, FNumKeys);
   for I := 0 to FNumKeys - 1 do
-    FScale[I] := (Source as TGLFile3DSScaleAnimationKeys).Fscale[I];
+    FScale[I] := (Source as TGLFile3DSScaleAnimationKeys).FScale[I];
 end;
 
 procedure TGLFile3DSScaleAnimationKeys.WriteToFiler(Writer: TVirtualWriter);
@@ -637,13 +603,11 @@ begin
     Reader.Read(FScale[0], FNumKeys * SizeOf(TPoint3DS));
 end;
 
-
-procedure TGLFile3DSRotationAnimationKeys.LoadData(const ANumKeys: integer;
-  const Keys: PKeyHeaderList; const AData: Pointer);
+procedure TGLFile3DSRotationAnimationKeys.LoadData(const ANumKeys: Integer; const Keys: PKeyHeaderList; const AData: Pointer);
 var
-  I: integer;
+  I: Integer;
   Rot: PKFRotKeyList;
-  AffVect : TAffineVector;
+  AffVect: TAffineVector;
 begin
   inherited;
 
@@ -658,7 +622,7 @@ begin
     // One quartalion can't describe a big angle (>180), that's why we have to subtract it from 2*pi
     if Rot[I].Angle > pi then
     begin
-      Rot[I].Angle := 2 * pi - Rot[I].Angle;
+      Rot[I].Angle := 2 * PI - Rot[I].Angle;
       Rot[I].X := -Rot[I].X;
       Rot[I].Y := -Rot[I].Y;
       Rot[I].Z := -Rot[I].Z;
@@ -680,17 +644,15 @@ begin
   end;
 end;
 
-procedure TGLFile3DSRotationAnimationKeys.Apply(var DataTransf: TGLFile3DSAnimationData;
-  const AFrame: real);
+procedure TGLFile3DSRotationAnimationKeys.Apply(var DataTransf: TGLFile3DSAnimationData; const AFrame: real);
 begin
   if FNumKeys > 0 then
-    DataTransf.ModelMatrix := MatrixMultiply(DataTransf.ModelMatrix,
-      InterpolateValue(FRot, AFrame));
+    DataTransf.ModelMatrix := MatrixMultiply(DataTransf.ModelMatrix, InterpolateValue(FRot, AFrame));
 end;
 
 procedure TGLFile3DSRotationAnimationKeys.Assign(Source: TPersistent);
 var
-  I: integer;
+  I: Integer;
 begin
   inherited;
 
@@ -716,11 +678,9 @@ begin
     Reader.Read(FRot[0], FNumKeys * SizeOf(TKFRotKey3DS));
 end;
 
-
-procedure TGLFile3DSPositionAnimationKeys.LoadData(const ANumKeys: integer;
-  const Keys: PKeyHeaderList; const AData: Pointer);
+procedure TGLFile3DSPositionAnimationKeys.LoadData(const ANumKeys: Integer; const Keys: PKeyHeaderList; const AData: Pointer);
 var
-  I: integer;
+  I: Integer;
 begin
   inherited;
   SetLength(FPos, FNumKeys);
@@ -735,17 +695,15 @@ begin
   end;
 end;
 
-procedure TGLFile3DSPositionAnimationKeys.Apply(var DataTransf: TGLFile3DSAnimationData;
-  const AFrame: real);
+procedure TGLFile3DSPositionAnimationKeys.Apply(var DataTransf: TGLFile3DSAnimationData; const AFrame: real);
 begin
   if FNumKeys > 0 then
-    DataTransf.ModelMatrix.V[3] :=
-      VectorAdd(DataTransf.ModelMatrix.V[3], VectorMake(InterpolateValue(FPos, AFrame)));
+    DataTransf.ModelMatrix.v[3] := VectorAdd(DataTransf.ModelMatrix.v[3], VectorMake(InterpolateValue(FPos, AFrame)));
 end;
 
 procedure TGLFile3DSPositionAnimationKeys.Assign(Source: TPersistent);
 var
-  I: integer;
+  I: Integer;
 begin
   inherited;
 
@@ -771,30 +729,26 @@ begin
     Reader.Read(FPos[0], FNumKeys * SizeOf(TPoint3DS));
 end;
 
-
-procedure TGLFile3DSColorAnimationKeys.LoadData(const ANumKeys: integer;
-  const Keys: PKeyHeaderList; const AData: Pointer);
+procedure TGLFile3DSColorAnimationKeys.LoadData(const ANumKeys: Integer; const Keys: PKeyHeaderList; const AData: Pointer);
 var
-  I: integer;
+  I: Integer;
 begin
   inherited;
 
   SetLength(FCol, FNumKeys);
   for I := 0 to FNumKeys - 1 do
-    FCol[I] := TaffineVector(PFColorList(AData)[I]);
+    FCol[I] := TAffineVector(PFColorList(AData)[I]);
 end;
 
-procedure TGLFile3DSColorAnimationKeys.Apply(var DataTransf: TGLFile3DSAnimationData;
-  const AFrame: real);
+procedure TGLFile3DSColorAnimationKeys.Apply(var DataTransf: TGLFile3DSAnimationData; const AFrame: real);
 begin
   if FNumKeys > 0 then
-    DataTransf.Color := VectorAdd(DataTransf.Color,
-      VectorMake(InterpolateValue(FCol, AFrame)));
+    DataTransf.Color := VectorAdd(DataTransf.Color, VectorMake(InterpolateValue(FCol, AFrame)));
 end;
 
 procedure TGLFile3DSColorAnimationKeys.Assign(Source: TPersistent);
 var
-  I: integer;
+  I: Integer;
 begin
   inherited;
 
@@ -820,18 +774,16 @@ begin
     Reader.Read(FCol[0], FNumKeys * SizeOf(TFColor3DS));
 end;
 
-
-procedure TTGLFile3DSPositionAnimationKeys.LoadData(const ANumKeys: integer;
-  const Keys: PKeyHeaderList; const AData: Pointer);
+procedure TTGLFile3DSPositionAnimationKeys.LoadData(const ANumKeys: Integer; const Keys: PKeyHeaderList; const AData: Pointer);
 var
-  I: integer;
+  I: Integer;
 begin
   inherited;
 
   SetLength(FTPos, FNumKeys);
   for I := 0 to FNumKeys - 1 do
   begin
-    FTPos[I] := TaffineVector(PPointList(AData)[I]);
+    FTPos[I] := TAffineVector(PPointList(AData)[I]);
 
     if vGLFile3DS_FixDefaultUpAxisY then
     begin
@@ -840,17 +792,15 @@ begin
   end;
 end;
 
-procedure TTGLFile3DSPositionAnimationKeys.Apply(var DataTransf: TGLFile3DSAnimationData;
-  const AFrame: real);
+procedure TTGLFile3DSPositionAnimationKeys.Apply(var DataTransf: TGLFile3DSAnimationData; const AFrame: real);
 begin
   if FNumKeys > 0 then
-    DataTransf.TargetPos := VectorAdd(DataTransf.TargetPos,
-      InterpolateValue(FTPos, AFrame));
+    DataTransf.TargetPos := VectorAdd(DataTransf.TargetPos, InterpolateValue(FTPos, AFrame));
 end;
 
 procedure TTGLFile3DSPositionAnimationKeys.Assign(Source: TPersistent);
 var
-  I: integer;
+  I: Integer;
 begin
   inherited;
 
@@ -876,11 +826,10 @@ begin
     Reader.Read(FTPos[0], FNumKeys * SizeOf(TPoint3DS));
 end;
 
-
-procedure TGLFile3DSSpotLightCutOffAnimationKeys.LoadData(const ANumKeys: integer;
-  const Keys: PKeyHeaderList; const AData: Pointer);
+procedure TGLFile3DSSpotLightCutOffAnimationKeys.LoadData(const ANumKeys: Integer; const Keys: PKeyHeaderList;
+  const AData: Pointer);
 var
-  I: integer;
+  I: Integer;
 begin
   inherited;
 
@@ -889,17 +838,15 @@ begin
     FFall[I] := PSingleList(AData)[I];
 end;
 
-procedure TGLFile3DSSpotLightCutOffAnimationKeys.Apply(
-  var DataTransf: TGLFile3DSAnimationData; const AFrame: real);
+procedure TGLFile3DSSpotLightCutOffAnimationKeys.Apply(var DataTransf: TGLFile3DSAnimationData; const AFrame: real);
 begin
   if FNumKeys > 0 then
-    DataTransf.SpotLightCutOff :=
-      DataTransf.SpotLightCutOff + InterpolateValue(FFall, AFrame);
+    DataTransf.SpotLightCutOff := DataTransf.SpotLightCutOff + InterpolateValue(FFall, AFrame);
 end;
 
 procedure TGLFile3DSSpotLightCutOffAnimationKeys.Assign(Source: TPersistent);
 var
-  I: integer;
+  I: Integer;
 begin
   inherited;
 
@@ -913,7 +860,7 @@ begin
   inherited;
 
   if FNumKeys > 0 then
-    Writer.Write(FFall[0], FNumKeys * SizeOf(single));
+    Writer.Write(FFall[0], FNumKeys * SizeOf(Single));
 end;
 
 procedure TGLFile3DSSpotLightCutOffAnimationKeys.ReadFromFiler(Reader: TVirtualReader);
@@ -922,14 +869,13 @@ begin
 
   SetLength(FFall, FNumKeys);
   if FNumKeys > 0 then
-    Reader.Read(FFall[0], FNumKeys * SizeOf(single));
+    Reader.Read(FFall[0], FNumKeys * SizeOf(Single));
 end;
 
-
-procedure TGLFile3DSLightHotSpotAnimationKeys.LoadData(const ANumKeys: integer;
-  const Keys: PKeyHeaderList; const AData: Pointer);
+procedure TGLFile3DSLightHotSpotAnimationKeys.LoadData(const ANumKeys: Integer; const Keys: PKeyHeaderList;
+  const AData: Pointer);
 var
-  I: integer;
+  I: Integer;
 begin
   inherited;
 
@@ -938,8 +884,7 @@ begin
     FHot[I] := PSingleList(AData)[I];
 end;
 
-procedure TGLFile3DSLightHotSpotAnimationKeys.Apply(
-  var DataTransf: TGLFile3DSAnimationData; const AFrame: real);
+procedure TGLFile3DSLightHotSpotAnimationKeys.Apply(var DataTransf: TGLFile3DSAnimationData; const AFrame: real);
 begin
   if FNumKeys > 0 then
     DataTransf.HotSpot := DataTransf.HotSpot + InterpolateValue(FHot, AFrame);
@@ -947,7 +892,7 @@ end;
 
 procedure TGLFile3DSLightHotSpotAnimationKeys.Assign(Source: TPersistent);
 var
-  I: integer;
+  I: Integer;
 begin
   inherited;
 
@@ -961,7 +906,7 @@ begin
   inherited;
 
   if FNumKeys > 0 then
-    Writer.Write(FHot[0], FNumKeys * SizeOf(single));
+    Writer.Write(FHot[0], FNumKeys * SizeOf(Single));
 end;
 
 procedure TGLFile3DSLightHotSpotAnimationKeys.ReadFromFiler(Reader: TVirtualReader);
@@ -970,13 +915,12 @@ begin
 
   SetLength(FHot, FNumKeys);
   if FNumKeys > 0 then
-    Reader.Read(FHot[0], FNumKeys * SizeOf(single));
+    Reader.Read(FHot[0], FNumKeys * SizeOf(Single));
 end;
 
-procedure TGLFile3DSRollAnimationKeys.LoadData(const ANumKeys: integer;
-  const Keys: PKeyHeaderList; const AData: Pointer);
+procedure TGLFile3DSRollAnimationKeys.LoadData(const ANumKeys: Integer; const Keys: PKeyHeaderList; const AData: Pointer);
 var
-  I: integer;
+  I: Integer;
 begin
   inherited;
 
@@ -985,8 +929,7 @@ begin
     FRoll[I] := PSingleList(AData)[I];
 end;
 
-procedure TGLFile3DSRollAnimationKeys.Apply(var DataTransf: TGLFile3DSAnimationData;
-  const AFrame: real);
+procedure TGLFile3DSRollAnimationKeys.Apply(var DataTransf: TGLFile3DSAnimationData; const AFrame: real);
 begin
   if FNumKeys > 0 then
     DataTransf.Roll := DataTransf.Roll + InterpolateValue(FRoll, AFrame);
@@ -994,7 +937,7 @@ end;
 
 procedure TGLFile3DSRollAnimationKeys.Assign(Source: TPersistent);
 var
-  I: integer;
+  I: Integer;
 begin
   inherited;
 
@@ -1008,7 +951,7 @@ begin
   inherited;
 
   if FNumKeys > 0 then
-    Writer.Write(FRoll[0], FNumKeys * SizeOf(single));
+    Writer.Write(FRoll[0], FNumKeys * SizeOf(Single));
 end;
 
 procedure TGLFile3DSRollAnimationKeys.ReadFromFiler(Reader: TVirtualReader);
@@ -1017,12 +960,12 @@ begin
 
   SetLength(FRoll, FNumKeys);
   if FNumKeys > 0 then
-    Reader.Read(FRoll[0], FNumKeys * SizeOf(single));
+    Reader.Read(FRoll[0], FNumKeys * SizeOf(Single));
 end;
 
 procedure TGLFile3DSAnimationKeyList.AddKeys(const AItem: TGLFile3DSAnimationKeys);
 var
-  ind: integer;
+  ind: Integer;
 begin
   if AItem = nil then
     Exit;
@@ -1031,10 +974,9 @@ begin
   FAnimKeysList[ind] := AItem;
 end;
 
-procedure TGLFile3DSAnimationKeyList.ApplyAnimKeys(
-  var DataTransf: TGLFile3DSAnimationData; const AFrame: real);
+procedure TGLFile3DSAnimationKeyList.ApplyAnimKeys(var DataTransf: TGLFile3DSAnimationData; const AFrame: real);
 var
-  I: integer;
+  I: Integer;
 begin
   for I := 0 to Length(FAnimKeysList) - 1 do
     FAnimKeysList[I].Apply(DataTransf, AFrame);
@@ -1042,7 +984,7 @@ end;
 
 procedure TGLFile3DSAnimationKeyList.ClearKeys;
 var
-  I: integer;
+  I: Integer;
 begin
   for I := 0 to Length(FAnimKeysList) - 1 do
     FAnimKeysList[I].Free;
@@ -1051,7 +993,7 @@ end;
 
 procedure TGLFile3DSAnimationKeyList.Assign(Source: TPersistent);
 var
-  I: integer;
+  I: Integer;
   item: TGLFile3DSAnimationKeys;
 begin
   if Source is TGLFile3DSAnimationKeyList then
@@ -1059,8 +1001,7 @@ begin
     ClearKeys;
     for I := 0 to Length(TGLFile3DSAnimationKeyList(Source).FAnimKeysList) - 1 do
     begin
-      item := (TGLFile3DSAnimationKeyList(Source).FAnimKeysList[I].ClassType.Create as
-        TGLFile3DSAnimationKeys);
+      item := (TGLFile3DSAnimationKeyList(Source).FAnimKeysList[I].ClassType.Create as TGLFile3DSAnimationKeys);
       item.Assign(TGLFile3DSAnimationKeyList(Source).FAnimKeysList[I]);
       AddKeys(item);
     end;
@@ -1071,7 +1012,7 @@ end;
 
 procedure TGLFile3DSAnimationKeyList.WriteToFiler(Writer: TVirtualWriter);
 var
-  I: integer;
+  I: Integer;
   Val: TGLFile3DSAnimKeysClassType;
 begin
   Writer.WriteInteger(Length(FAnimKeysList));
@@ -1085,7 +1026,7 @@ end;
 
 procedure TGLFile3DSAnimationKeyList.ReadFromFiler(Reader: TVirtualReader);
 var
-  I, cnt: integer;
+  I, cnt: Integer;
   Val: TGLFile3DSAnimKeysClassType;
 begin
   ClearKeys;
@@ -1143,16 +1084,14 @@ begin
   FAnimTransf := lAnimationData;
 end;
 
-procedure TGLFile3DSDummyObject.MorphTo(morphTargetIndex: integer);
+procedure TGLFile3DSDummyObject.MorphTo(morphTargetIndex: Integer);
 begin
   SetFrame(morphTargetIndex);
 end;
 
-procedure TGLFile3DSDummyObject.Lerp(morphTargetIndex1, morphTargetIndex2: integer;
-  lerpFactor: single);
+procedure TGLFile3DSDummyObject.Lerp(morphTargetIndex1, morphTargetIndex2: Integer; lerpFactor: Single);
 begin
-  if (Owner.Owner is TGLActor) and ((Owner.Owner as TGLActor).AnimationMode in
-    [aamBounceBackward, aamLoopBackward]) then
+  if (Owner.Owner is TGLActor) and ((Owner.Owner as TGLActor).AnimationMode in [aamBounceBackward, aamLoopBackward]) then
     SetFrame(morphTargetIndex1 - lerpFactor)
   else
     SetFrame(morphTargetIndex1 + lerpFactor);
@@ -1182,17 +1121,15 @@ begin
   end;
 end;
 
-function TGLFile3DSDummyObject.ExtractTriangles(texCoords, normals: TAffineVectorList):
-TAffineVectorList;
+function TGLFile3DSDummyObject.ExtractTriangles(texCoords, normals: TAffineVectorList): TAffineVectorList;
 var
-  I: integer;
+  I: Integer;
 begin
   Result := inherited ExtractTriangles(texCoords, normals);
 
   if not FStatic then
   begin
-    if (Result.Count <> 0) and not MatrixEquals(FAnimTransf.ModelMatrix,
-      IdentityHmgMatrix) then
+    if (Result.Count <> 0) and not MatrixEquals(FAnimTransf.ModelMatrix, IdentityHmgMatrix) then
       for I := 0 to Result.Count - 1 do
         Result[I] := VectorTransform(Result[I], FAnimTransf.ModelMatrix);
   end;
@@ -1230,7 +1167,6 @@ begin
 
   inherited;
 end;
-
 
 procedure TGLFile3DSMeshObject.LoadAnimation(const AData: Pointer);
 var
@@ -1309,8 +1245,7 @@ begin
   FLightSrc := TGLFile3DSLight.Create(nil);
 end;
 
-procedure TGLFile3DSOmniLightObject.LoadData(const AOwner: TGLBaseMesh;
-  const AData: PLight3DS);
+procedure TGLFile3DSOmniLightObject.LoadData(const AOwner: TGLBaseMesh; const AData: PLight3DS);
 begin
   FLightSrc.Parent := AOwner;
   FLightSrc.LightStyle := lsOmni;
@@ -1320,7 +1255,7 @@ begin
   FLightSrc.Diffuse.Color := VectorMake(AData.Color.R, AData.Color.G, AData.Color.B);
   FLightSrc.Specular.Color := VectorMake(AData.Color.R, AData.Color.G, AData.Color.B);
   FLightSrc.Diffuse.Color := VectorScale(FLightSrc.Diffuse.Color, AData.Multiplier);
-  //надо потестить
+  // надо потестить
   FLightSrc.Shining := not AData.DLOff;
   FLightSrc.Multipler := AData.Multiplier;
   FLightSrc.ConstAttenuation := 1;
@@ -1378,7 +1313,7 @@ procedure TGLFile3DSOmniLightObject.Assign(Source: TPersistent);
 begin
   inherited;
   if Source is TGLFile3DSOmniLightObject then
-    FlightSrc.Assign((Source as TGLFile3DSOmniLightObject).FLightSrc);
+    FLightSrc.Assign((Source as TGLFile3DSOmniLightObject).FLightSrc);
 end;
 
 procedure TGLFile3DSOmniLightObject.WriteToFiler(Writer: TVirtualWriter);
@@ -1409,16 +1344,14 @@ begin
   inherited;
 end;
 
-
-procedure TGLFile3DSSpotLightObject.LoadData(const AOwner: TGLBaseMesh;
-  const AData: PLight3DS);
+procedure TGLFile3DSSpotLightObject.LoadData(const AOwner: TGLBaseMesh; const AData: PLight3DS);
 begin
   inherited;
 
   FLightSrc.LightStyle := lsSpot;
   FLightSrc.SpotTargetPos.SetPoint(TAffineVector(AData.Spot.Target));
   FLightSrc.SpotCutOff := AData.Spot.FallOff / 2;
-  FLightSrc.HotSpot := AData.Spot.Hotspot / 2;
+  FLightSrc.HotSpot := AData.Spot.HotSpot / 2;
 end;
 
 procedure TGLFile3DSSpotLightObject.LoadAnimation(const AData: Pointer);
@@ -1461,7 +1394,6 @@ begin
   FLightSrc.SpotCutOff := FAnimTransf.SpotLightCutOff / 2;
   FLightSrc.HotSpot := FAnimTransf.HotSpot / 2;
 end;
-
 
 constructor TGLFile3DSCameraObject.Create;
 begin
@@ -1583,12 +1515,12 @@ type
   TSmoothIndexArray = array[0..MaxInt shr 8] of TSmoothIndexEntry;
 var
   Marker: PByteArray;
-  CurrentVertexCount: integer;
+  CurrentVertexCount: Integer;
   SmoothIndices: PSmoothIndexArray;
   mesh: TGLFile3DSMeshObject;
-  hasLightmap: boolean;
+  hasLightmap: Boolean;
 
-  //--------------- local functions -------------------------------------------
+  // --------------- local functions -------------------------------------------
 
   function GetOrAllocateMaterial(materials: TMaterialList; const Name: string): string;
   var
@@ -1613,22 +1545,20 @@ var
 
           with libMat.Material.FrontProperties do
           begin
-            Ambient.Color := VectorMake(material.Ambient.R, material.Ambient.G,
-              material.Ambient.B, 1);
+            Ambient.Color := VectorMake(material.Ambient.R, material.Ambient.G, material.Ambient.B, 1);
             // Material transparency can be stored as a positive or negative value.
-            Diffuse.Color := VectorMake(material.Diffuse.R, material.Diffuse.G,
-              material.Diffuse.B, 1 - Abs(material.Transparency));
-            specColor := VectorMake(material.Specular.R, material.Specular.G,
-              material.Specular.B, 1);
+            Diffuse.Color := VectorMake(material.Diffuse.R, material.Diffuse.G, material.Diffuse.B,
+              1 - Abs(material.Transparency));
+            specColor := VectorMake(material.Specular.R, material.Specular.G, material.Specular.B, 1);
             Specular.Color := VectorScale(specColor, material.ShinStrength);
-            Shininess := MaxInteger(0, integer(round((material.Shininess) * 128)));
+            Shininess := MaxInteger(0, Integer(round((material.Shininess) * 128)));
             if material.Transparency <> 0 then
-              libMat.Material.BlendingMode := bmTransparency;
+              libMat.material.BlendingMode := bmTransparency;
           end;
           if Trim(string(material.Texture.Map.NameStr)) <> '' then
             try
               if vGLFile3DS_UseTextureEx then
-                with libMat.Material.TextureEx.Add do
+                with libMat.material.TextureEx.Add do
                 begin
                   Texture.Image.LoadFromFile(string(material.Texture.Map.NameStr));
                   Texture.Disabled := False;
@@ -1637,8 +1567,7 @@ var
                   with material.Texture.Map do
                   begin
                     TextureScale.SetPoint(UScale, VScale, 0);
-                    TextureOffset.SetPoint((1 - frac(UOffset)) *
-                      UScale, (frac(VOffset)) * VScale, 0);
+                    TextureOffset.SetPoint((1 - frac(UOffset)) * UScale, (frac(VOffset)) * VScale, 0);
                   end;
                 end
               else
@@ -1653,7 +1582,7 @@ var
               on E: ETexture do
               begin
                 if not Owner.IgnoreMissingTextures then
-                  raise EGLFile3DS.CreateFmt(str3DSMapNotFound,['diffuse', e.Message, matLib.TexturePaths]);
+                  raise EGLFile3DS.CreateFmt(str3DSMapNotFound, ['diffuse', E.Message, matLib.TexturePaths]);
               end
               else
                 raise;
@@ -1673,16 +1602,14 @@ var
                   with material.Opacity.Map do
                   begin
                     TextureScale.SetPoint(UScale, VScale, 0);
-                    TextureOffset.SetPoint((1 - frac(UOffset)) *
-                      UScale, (frac(VOffset)) * VScale, 0);
+                    TextureOffset.SetPoint((1 - frac(UOffset)) * UScale, (frac(VOffset)) * VScale, 0);
                   end;
                 end
               else
                 with libMat.Material.Texture do
                 begin
                   SecondMaterial := matLib.Materials.Add;
-                  SecondMaterial.Material.Texture.Image.LoadFromFile(string(
-                    material.Opacity.Map.NameStr));
+                  SecondMaterial.material.Texture.Image.LoadFromFile(string(material.Opacity.Map.NameStr));
                   SecondMaterial.Material.Texture.Disabled := False;
                   SecondMaterial.Material.Texture.ImageAlpha := tiaAlphaFromIntensity;
                   SecondMaterial.Material.Texture.TextureMode := tmModulate;
@@ -1695,7 +1622,7 @@ var
               on E: ETexture do
               begin
                 if not Owner.IgnoreMissingTextures then
-                  raise EGLFile3DS.CreateFmt(str3DSMapNotFound,['opacity', e.Message, matLib.TexturePaths]);
+                  raise EGLFile3DS.CreateFmt(str3DSMapNotFound, ['opacity', E.Message, matLib.TexturePaths]);
               end
               else
                 raise;
@@ -1714,19 +1641,17 @@ var
                   with material.Bump.Map do
                   begin
                     TextureScale.SetPoint(UScale, VScale, 0);
-                    TextureOffset.SetPoint((1 - frac(UOffset)) *
-                      UScale, (frac(VOffset)) * VScale, 0);
+                    TextureOffset.SetPoint((1 - frac(UOffset)) * UScale, (frac(VOffset)) * VScale, 0);
                   end;
                 end
               else
                 with libMat.Material.Texture do
                 begin
-                  SecondMaterial := matLib.Materials.Add;
-                  SecondMaterial.Material.Texture.Image.LoadFromFile(string(
-                    material.Bump.Map.NameStr));
-                  SecondMaterial.Material.Texture.Disabled := False;
-                  SecondMaterial.Material.Texture.ImageAlpha := tiaAlphaFromIntensity;
-                  SecondMaterial.Material.Texture.TextureMode := tmModulate;
+                  SecondMaterial := matLib.materials.Add;
+                  SecondMaterial.material.Texture.Image.LoadFromFile(string(material.Bump.Map.NameStr));
+                  SecondMaterial.material.Texture.Disabled := False;
+                  SecondMaterial.material.Texture.ImageAlpha := tiaAlphaFromIntensity;
+                  SecondMaterial.material.Texture.TextureMode := tmModulate;
                   SecondMaterial.Name := string(material.Opacity.Map.NameStr);
                   Disabled := False;
                 end;
@@ -1735,7 +1660,7 @@ var
               on E: ETexture do
               begin
                 if not Owner.IgnoreMissingTextures then
-                  raise EGLFile3DS.CreateFmt(str3DSMapNotFound,['bump', e.Message, matLib.TexturePaths]);
+                  raise EGLFile3DS.CreateFmt(str3DSMapNotFound, ['bump', E.Message, matLib.TexturePaths]);
               end
               else
                 raise;
@@ -1749,8 +1674,7 @@ var
       Result := '';
   end;
 
-  function GetOrAllocateLightMap(materials: TMaterialList;
-  const Name: string): integer;
+  function GetOrAllocateLightMap(materials: TMaterialList; const Name: string): Integer;
   var
     material: PMaterial3DS;
     matLib: TGLMaterialLibrary;
@@ -1766,8 +1690,7 @@ var
       begin
         if Trim(string(material.IllumMap.Map.NameStr)) <> '' then
         begin
-          libMat := matLib.Materials.GetLibMaterialByName(
-		    string(material.IllumMap.Map.NameStr));
+          libMat := matLib.materials.GetLibMaterialByName(string(material.IllumMap.Map.NameStr));
           if not Assigned(libMat) then
           begin
             libMat := matLib.Materials.Add;
@@ -1783,30 +1706,30 @@ var
               on E: ETexture do
               begin
                 if not Owner.IgnoreMissingTextures then
-                  raise EGLFile3DS.CreateFmt(str3DSMapNotFound,['light', e.Message, matLib.TexturePaths]);
+                  raise EGLFile3DS.CreateFmt(str3DSMapNotFound, ['light', E.Message, matLib.TexturePaths]);
               end
               else
                 raise;
             end;
           end;
-          Result := libmat.Index;
+          Result := libMat.Index;
           hasLightMap := True;
         end;
       end;
     end;
   end;
 
-  //----------------------------------------------------------------------
+// ----------------------------------------------------------------------
 
   function InvertMeshMatrix(Objects: TObjectList; const Name: string): TMatrix;
-    // constructs a 4x4 matrix from 3x4 local mesh matrix given by Name and
-    // inverts it so it can be used for the keyframer stuff
+  // constructs a 4x4 matrix from 3x4 local mesh matrix given by Name and
+  // inverts it so it can be used for the keyframer stuff
   var
-    I, Index: integer;
-    boolY: boolean;
+    I, Index: Integer;
+    boolY: Boolean;
     m: TMatrix;
     v4: TVector;
-    factor: single;
+    factor: Single;
   begin
     with Objects do
     begin
@@ -1820,7 +1743,7 @@ var
 
       if Index > -1 then
       begin
-        with Mesh[Index]^ do
+        with mesh[Index]^ do
         begin
           Result.V[0].X := LocMatrix[0];
           Result.V[0].Y := LocMatrix[1];
@@ -1857,8 +1780,7 @@ var
 
 
         if boolY then
-          Result := MatrixMultiply(Result, CreateRotationMatrix(
-            AffineVectorMake(0, 1, 0), -pi));
+          Result := MatrixMultiply(Result, CreateRotationMatrix(AffineVectorMake(0, 1, 0), -PI));
 
       end
       else
@@ -1866,10 +1788,10 @@ var
     end;
   end;
 
-  //----------------------------------------------------------------------
+// ----------------------------------------------------------------------
 
-  function IsVertexMarked(P: PByteArray; Index: word): boolean; inline;
-    // tests the Index-th bit, returns True if set else False
+  function IsVertexMarked(p: PByteArray; Index: word): Boolean; inline;
+  // tests the Index-th bit, returns True if set else False
   var
     mi: word;
   begin
@@ -1877,60 +1799,58 @@ var
     Result := (((p^[mi] shr Index) and 1) = 1);
   end;
 
-  //---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
 
-  function MarkVertex(P: PByteArray; Index: word): boolean; inline;
-    // sets the Index-th bit and return True if it was already set else False
+  function MarkVertex(p: PByteArray; Index: word): Boolean; inline;
+  // sets the Index-th bit and return True if it was already set else False
   var
     mi: word;
   begin
     DivMod(index, 8, mi, index);
     Result := (((p^[mi] shr Index) and 1) = 1);
-    if not (Result) then
+    if not(Result) then
       p^[mi] := p^[mi] or (1 shl index);
   end;
 
-  //---------------------------------------------------------------------------
-  // Stores new vertex index (NewIndex) into the smooth index array of vertex ThisIndex
-  // using field SmoothingGroup, which must not be 0.
-  // For each vertex in the vertex array (also for duplicated vertices) an array of 32 cardinals
-  // is maintained (each for one possible smoothing group. If a vertex must be duplicated because
-  // it has no smoothing group or a different one then the index of the newly created vertex is
-  // stored in the SmoothIndices to avoid loosing the conjunction between not yet processed vertices
-  // and duplicated vertices.
-  // Note: Only one smoothing must be assigned per vertex. Some available models break this rule and
-  //       have more than one group assigned to a face. To make the code fail safe the group ID
-  //       is scanned for the lowest bit set.
+// ---------------------------------------------------------------------------
+// Stores new vertex index (NewIndex) into the smooth index array of vertex ThisIndex
+// using field SmoothingGroup, which must not be 0.
+// For each vertex in the vertex array (also for duplicated vertices) an array of 32 cardinals
+// is maintained (each for one possible smoothing group. If a vertex must be duplicated because
+// it has no smoothing group or a different one then the index of the newly created vertex is
+// stored in the SmoothIndices to avoid loosing the conjunction between not yet processed vertices
+// and duplicated vertices.
+// Note: Only one smoothing must be assigned per vertex. Some available models break this rule and
+// have more than one group assigned to a face. To make the code fail safe the group ID
+// is scanned for the lowest bit set.
 
-  procedure StoreSmoothIndex(ThisIndex, SmoothingGroup, NewIndex: cardinal;
-    P: PSmoothIndexArray);
+  procedure StoreSmoothIndex(ThisIndex, SmoothingGroup, NewIndex: cardinal; p: PSmoothIndexArray);
   var
-    i: word;
+    I: word;
   begin
-    i := 0;
-    while SmoothingGroup and (1 shl i) = 0 do
-      Inc(i);
-    p^[ThisIndex, i] := NewIndex;
+    I := 0;
+    while SmoothingGroup and (1 shl I) = 0 do
+      Inc(I);
+    p^[ThisIndex, I] := NewIndex;
   end;
 
-  //---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
 
-  function GetSmoothIndex(ThisIndex, SmoothingGroup: cardinal;
-    P: PSmoothIndexArray): integer; inline;
-    // Retrieves the vertex index for the given index and smoothing group.
-    // This redirection is necessary because a vertex might have been duplicated.
+  function GetSmoothIndex(ThisIndex, SmoothingGroup: cardinal; p: PSmoothIndexArray): Integer; inline;
+  // Retrieves the vertex index for the given index and smoothing group.
+  // This redirection is necessary because a vertex might have been duplicated.
   var
-    i: word;
+    I: word;
   begin
-    i := 0;
-    while SmoothingGroup and (1 shl i) = 0 do
-      Inc(i);
-    Result := integer(p^[ThisIndex, i]);
+    I := 0;
+    while SmoothingGroup and (1 shl I) = 0 do
+      Inc(I);
+    Result := Integer(p^[ThisIndex, I]);
   end;
 
-  //---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
 
-  procedure DuplicateVertex(Index: integer);
+  procedure DuplicateVertex(Index: Integer);
   // extends the vector and normal array by one entry and duplicates the vertex AData given by Index
   // the marker and texture arrays will be extended too, if necessary
   begin
@@ -1947,19 +1867,19 @@ var
       ReallocMem(Marker, ((CurrentVertexCount + 1) div 8) + 1);
       Marker[(CurrentVertexCount div 8) + 1] := 0;
     end;
-    with mesh.TexCoords do
+    with mesh.texCoords do
       if Count > 0 then
         Add(Items[index]);
     Inc(CurrentVertexCount);
   end;
 
-  //---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
 
-  function FindMotionIndex(KeyFramer: TKeyFramer; const ObjectName: AnsiString): integer;
-    // Looks through the motion list for the object "ObjectName" and returns its index
-    // or -1 if the name is not it the list
+  function FindMotionIndex(KeyFramer: TKeyFramer; const ObjectName: AnsiString): Integer;
+  // Looks through the motion list for the object "ObjectName" and returns its index
+  // or -1 if the name is not it the list
   var
-    I: integer;
+    I: Integer;
   begin
     Result := -1;
     with KeyFramer do
@@ -1971,16 +1891,16 @@ var
         end;
   end;
 
-  //--------------- end local functions ---------------------------------------
+// --------------- end local functions ---------------------------------------
 
 var
-  CurrentMotionIndex, iMaterial, i, j, x: integer;
+  CurrentMotionIndex, iMaterial, I, j, X: Integer;
   aFaceGroup: TFGVertexIndexList;
-  Face, Vertex, TargetVertex: integer;
+  Face, Vertex, TargetVertex: Integer;
   SmoothingGroup: cardinal;
   CurrentIndex: word;
   Vector1, Vector2, Normal: TAffineVector;
-  standardNormalsOrientation: boolean;
+  standardNormalsOrientation: Boolean;
   lights_mesh: TGLFile3DSOmniLightObject;
   camera_mesh: TGLFile3DSCameraObject;
   basemesh: TGLBaseMesh;
@@ -1991,16 +1911,16 @@ begin
       LoadFromStream(aStream);
       // determine front face winding
       { TODO : better face winding }
-      standardNormalsOrientation := not (NormalsOrientation = mnoDefault);
+      standardNormalsOrientation := not(NormalsOrientation = mnoDefault);
 
-      for i := 0 to Objects.MeshCount - 1 do
-        with PMesh3DS(Objects.Mesh[I])^ do
+      for I := 0 to Objects.MeshCount - 1 do
+        with PMesh3DS(Objects.mesh[I])^ do
         begin
-          hasLightMap := False;
+          hasLightmap := False;
           mesh := TGLFile3DSMeshObject.CreateOwned(Owner.MeshObjects);
-          mesh.Name := string(PMesh3DS(Objects.Mesh[I])^.NameStr);
-          //dummy targets
-          for x := KeyFramer.Settings.Seg.SegBegin to KeyFramer.Settings.Seg.SegEnd do
+          mesh.Name := string(PMesh3DS(Objects.mesh[I])^.NameStr);
+          // dummy targets
+          for X := KeyFramer.Settings.Seg.SegBegin to KeyFramer.Settings.Seg.SegEnd do
             TGLMeshMorphTarget.CreateOwned(mesh.MorphTargets);
 
           with mesh do
@@ -2033,14 +1953,14 @@ begin
           if SmoothArray = nil then
           begin
             // no smoothing groups to consider
-            for face := 0 to NFaces - 1 do
+            for Face := 0 to NFaces - 1 do
               with FaceArray^[Face] do
               begin
                 // normal vector for the face
                 with mesh.Vertices do
                 begin
-                  VectorSubtract(Items[V1], Items[V2], vector1);
-                  VectorSubtract(Items[V3], Items[V2], vector2);
+                  VectorSubtract(Items[V1], Items[V2], Vector1);
+                  VectorSubtract(Items[V3], Items[V2], Vector2);
                 end;
                 if standardNormalsOrientation then
                   Normal := VectorCrossProduct(Vector1, Vector2)
@@ -2077,8 +1997,8 @@ begin
                 // normal vector for the face
                 with mesh.Vertices do
                 begin
-                  VectorSubtract(Items[V1], Items[V2], vector1);
-                  VectorSubtract(Items[V3], Items[V2], vector2);
+                  VectorSubtract(Items[V1], Items[V2], Vector1);
+                  VectorSubtract(Items[V3], Items[V2], Vector2);
                 end;
                 if standardNormalsOrientation then
                   Normal := VectorCrossProduct(Vector1, Vector2)
@@ -2089,9 +2009,9 @@ begin
                 for Vertex := 0 to 2 do
                 begin
                   // copy current index for faster access
-                  currentIndex := FaceRec[Vertex];
+                  CurrentIndex := FaceRec[Vertex];
                   // Has vertex already been touched?
-                  if IsVertexMarked(Marker, currentIndex) then
+                  if IsVertexMarked(Marker, CurrentIndex) then
                   begin
                     // check smoothing group
                     if (SmoothingGroup = 0) then
@@ -2110,8 +2030,7 @@ begin
                     begin
                       // this vertex must be smoothed, check if there's already
                       // a (duplicated) vertex for this smoothing group
-                      TargetVertex :=
-                        GetSmoothIndex(CurrentIndex, SmoothingGroup, SmoothIndices);
+                      TargetVertex := GetSmoothIndex(CurrentIndex, SmoothingGroup, SmoothIndices);
                       if (TargetVertex < 0) then
                       begin
                         if (CurrentVertexCount < High(FaceRec[Vertex])) then
@@ -2212,8 +2131,8 @@ begin
         begin
           mesh := TGLFile3DSMeshObject.CreateOwned(Owner.MeshObjects);
           mesh.Name := string(KeyFramer.MeshMotion[I].NameStr);
-          //dummy targets
-          for x := KeyFramer.Settings.Seg.SegBegin to KeyFramer.Settings.Seg.SegEnd do
+          // dummy targets
+          for X := KeyFramer.Settings.Seg.SegBegin to KeyFramer.Settings.Seg.SegEnd do
             TGLMeshMorphTarget.CreateOwned(mesh.MorphTargets);
 
           mesh.LoadAnimation(KeyFramer.MeshMotion[I]);
@@ -2233,13 +2152,12 @@ begin
           end;
         end;
 
-
       // Lights Omni.
       for I := 0 to Objects.OmniLightCount - 1 do
       begin
         lights_mesh := TGLFile3DSOmniLightObject.CreateOwned(Owner.MeshObjects);
         // Dummy targets for it.
-        for x := KeyFramer.Settings.Seg.SegBegin to KeyFramer.Settings.Seg.SegEnd do
+        for X := KeyFramer.Settings.Seg.SegBegin to KeyFramer.Settings.Seg.SegEnd do
           TGLMeshMorphTarget.CreateOwned(lights_mesh.MorphTargets);
         lights_mesh.LoadData(Owner, Objects.OmniLight[I]);
         lights_mesh.LoadAnimation(KeyFramer.OmniLightMotion[I]);
@@ -2250,7 +2168,7 @@ begin
       begin
         lights_mesh := TGLFile3DSSpotLightObject.CreateOwned(Owner.MeshObjects);
         // Dummy targets for it.
-        for x := KeyFramer.Settings.Seg.SegBegin to KeyFramer.Settings.Seg.SegEnd do
+        for X := KeyFramer.Settings.Seg.SegBegin to KeyFramer.Settings.Seg.SegEnd do
           TGLMeshMorphTarget.CreateOwned(lights_mesh.MorphTargets);
         lights_mesh.LoadData(Owner, Objects.SpotLight[I]);
         lights_mesh.LoadAnimation(KeyFramer.SpotLightMotion[I]);
@@ -2261,7 +2179,7 @@ begin
       begin
         camera_mesh := TGLFile3DSCameraObject.CreateOwned(Owner.MeshObjects);
         // Dummy targets for it.
-        for x := KeyFramer.Settings.Seg.SegBegin to KeyFramer.Settings.Seg.SegEnd do
+        for X := KeyFramer.Settings.Seg.SegBegin to KeyFramer.Settings.Seg.SegEnd do
           TGLMeshMorphTarget.CreateOwned(camera_mesh.MorphTargets);
         camera_mesh.LoadData(Owner, Objects.Camera[I]);
         camera_mesh.LoadAnimation(KeyFramer.CameraMotion[I]);
@@ -2270,11 +2188,11 @@ begin
       // Apply animation matrix to static data
       if vGLFile3DS_LoadedStaticFrame >= 0 then
       begin
-        for i := 0 to Owner.MeshObjects.Count - 1 do
+        for I := 0 to Owner.MeshObjects.Count - 1 do
         begin
-          if Owner.MeshObjects[i] is TGLFile3DSMeshObject then
+          if Owner.MeshObjects[I] is TGLFile3DSMeshObject then
           begin
-            mesh := Owner.MeshObjects[i] as TGLFile3DSMeshObject;
+            mesh := Owner.MeshObjects[I] as TGLFile3DSMeshObject;
             mesh.FStatic := True;
             for j := 0 to mesh.Vertices.Count - 1 do
               mesh.Vertices[j] := VectorTransform(mesh.Vertices[j], mesh.FAnimTransf.ModelMatrix);
@@ -2282,24 +2200,19 @@ begin
         end;
       end;
 
-
     finally
       Free;
     end;
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-  RegisterClasses([TGLFile3DSDummyObject, TGLFile3DSMeshObject,
-    TGLFile3DSOmniLightObject, TGLFile3DSSpotLightObject,
-    TGLFile3DSCameraObject]);
 
-  RegisterVectorFileFormat('3ds', '3D Studio files', TGL3DSVectorFile);
-  RegisterVectorFileFormat('prj', '3D Studio project files', TGL3DSVectorFile);
+RegisterClasses([TGLFile3DSDummyObject, TGLFile3DSMeshObject, TGLFile3DSOmniLightObject, TGLFile3DSSpotLightObject,
+  TGLFile3DSCameraObject]);
+
+RegisterVectorFileFormat('3ds', '3D Studio files', TGL3DSVectorFile);
+RegisterVectorFileFormat('prj', '3D Studio project files', TGL3DSVectorFile);
+
 end.
-

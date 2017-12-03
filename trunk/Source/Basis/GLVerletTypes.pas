@@ -21,8 +21,13 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes,
-  System.SysUtils,
+
+{$IFDEF USE_FASTMATH}
+  Neslib.FastMath,
+{$ENDIF}
+
+  System.Classes, 
+  System.SysUtils, 
   System.Types,
 
   GLObjects,
@@ -1704,13 +1709,13 @@ begin
     FNodeParams[i].Z := FNodeCoords[i].Z * d;
   end;
 
-  ComputeNaturals(barycenter, FNatMatrix.X, FNatMatrix.Y, FNatMatrix.Z);
+   ComputeNaturals(barycenter, FNatMatrix.V[0], FNatMatrix.V[1], FNatMatrix.V[2]);
 
-  FNatMatrix.Z := VectorCrossProduct(FNatMatrix.X, FNatMatrix.Y);
-  FNatMatrix.Y := VectorCrossProduct(FNatMatrix.Z, FNatMatrix.X);
-  NormalizeVector(FNatMatrix.X);
-  NormalizeVector(FNatMatrix.Y);
-  NormalizeVector(FNatMatrix.Z);
+   FNatMatrix.V[2]:=VectorCrossProduct(FNatMatrix.V[0], FNatMatrix.V[1]);
+   FNatMatrix.V[1]:=VectorCrossProduct(FNatMatrix.V[2], FNatMatrix.V[0]);
+   NormalizeVector(FNatMatrix.V[0]);
+   NormalizeVector(FNatMatrix.V[1]);
+   NormalizeVector(FNatMatrix.V[2]);
 
   FInvNatMatrix := FNatMatrix;
   // TransposeMatrix(FInvNatMatrix);

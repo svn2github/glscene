@@ -2,12 +2,12 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Win32 specific Context.
+  Win32 specific Context.
 
-   History :
-     22/07/01 - EG - Creation (glcontext.omm)
-    The whole history is logged in previous version of the unit.
-    
+  History :
+  22/07/01 - EG - Creation (glcontext.omm)
+  The whole history is logged in previous version of the unit.
+
 }
 unit GLWin32Context;
 
@@ -21,19 +21,19 @@ uses
   System.SysUtils,
   System.Classes,
   Vcl.Forms,
-  
-  GLStrings,
+
   OpenGLTokens,
   OpenGLAdapter,
+  GLPipelineTransformation,
   GLContext,
   GLCrossPlatform,
   GLState,
   GLSLog,
+  GLStrings,
   GLVectorGeometry;
 
 type
-
-  {A context driver for standard Windows OpenGL (via MS OpenGL). }
+  { A context driver for standard Windows OpenGL (via MS OpenGL). }
   TGLWin32Context = class(TGLContext)
   protected
     FDC: HDC;
@@ -54,26 +54,22 @@ type
     procedure ClearFAttribs;
     procedure AddFAttrib(attrib, value: Single);
     procedure DestructionEarlyWarning(sender: TObject);
-    procedure ChooseWGLFormat(DC: HDC; nMaxFormats: Cardinal; piFormats:
-      PInteger; var nNumFormats: Integer; BufferCount: integer = 1);
+    procedure ChooseWGLFormat(DC: HDC; nMaxFormats: Cardinal; piFormats: PInteger; var nNumFormats: Integer;
+      BufferCount: Integer = 1);
     procedure DoCreateContext(ADeviceHandle: HDC); override;
-    procedure DoCreateMemoryContext(outputDevice: HWND; width, height:
-      Integer; BufferCount: integer); override;
+    procedure DoCreateMemoryContext(outputDevice: HWND; width, height: Integer; BufferCount: Integer); override;
     function DoShareLists(aContext: TGLContext): Boolean; override;
     procedure DoDestroyContext; override;
     procedure DoActivate; override;
     procedure DoDeactivate; override;
-    {DoGetHandles must be implemented in child classes,
-       and return the display + window }
+    { DoGetHandles must be implemented in child classes,
+      and return the display + window }
   public
     constructor Create; override;
     destructor Destroy; override;
-
     function IsValid: Boolean; override;
     procedure SwapBuffers; override;
-
     function RenderOutputDevice: Pointer; override;
-
     property DC: HDC read FDC;
     property RC: HGLRC read FRC;
   end;
@@ -88,13 +84,8 @@ var
   vUseWindowTrackingHook: Boolean = True;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-
 
 var
   vTrackingCount: Integer;
@@ -102,8 +93,7 @@ var
   vTrackedEvents: array of TNotifyEvent;
   vTrackingHook: HHOOK;
 
-function TrackHookProc(nCode: Integer; wParam: wParam; lParam: LPARAM): Integer;
-  stdcall;
+function TrackHookProc(nCode: Integer; wParam: wParam; lParam: lParam): Integer; stdcall;
 var
   i: Integer;
   p: PCWPStruct;
@@ -111,14 +101,14 @@ begin
   if nCode = HC_ACTION then
   begin
     p := PCWPStruct(lParam);
-    //   if (p.message=WM_DESTROY) or (p.message=WM_CLOSE) then begin 
+    // if (p.message=WM_DESTROY) or (p.message=WM_CLOSE) then begin
     if p.message = WM_DESTROY then
     begin
       // special care must be taken by this loop, items may go away unexpectedly
       i := vTrackingCount - 1;
       while i >= 0 do
       begin
-        if IsChild(p.hwnd, vTrackedHwnd[i]) then
+        if IsChild(p.HWND, vTrackedHwnd[i]) then
         begin
           // got one, send notification
           vTrackedEvents[i](nil);
@@ -140,8 +130,7 @@ begin
   if not IsWindow(h) then
     Exit;
   if vTrackingCount = 0 then
-    vTrackingHook := SetWindowsHookEx(WH_CALLWNDPROC, @TrackHookProc, 0,
-      GetCurrentThreadID);
+    vTrackingHook := SetWindowsHookEx(WH_CALLWNDPROC, @TrackHookProc, 0, GetCurrentThreadID);
   Inc(vTrackingCount);
   SetLength(vTrackedHwnd, vTrackingCount);
   vTrackedHwnd[vTrackingCount - 1] := h;
@@ -162,7 +151,7 @@ begin
   begin
     if vTrackedHwnd[i] <> h then
     begin
-      if(k <> i) then
+      if (k <> i) then
       begin
         vTrackedHwnd[k] := vTrackedHwnd[i];
         vTrackedEvents[k] := vTrackedEvents[i];
@@ -170,7 +159,8 @@ begin
       Inc(k);
     end
   end;
-  if(k >= vTrackingCount) then exit;
+  if (k >= vTrackingCount) then
+    Exit;
   Dec(vTrackingCount);
   SetLength(vTrackedHwnd, vTrackingCount);
   SetLength(vTrackedEvents, vTrackingCount);
@@ -179,30 +169,19 @@ begin
 end;
 
 var
-  vUtilWindowClass: TWndClass = (
-    style: 0;
-    lpfnWndProc: @DefWindowProc;
-    cbClsExtra: 0;
-    cbWndExtra: 0;
-    hInstance: 0;
-    hIcon: 0;
-    hCursor: 0;
-    hbrBackground: 0;
-    lpszMenuName: nil;
-    lpszClassName: 'GLSUtilWindow');
+  vUtilWindowClass: TWndClass = (style: 0; lpfnWndProc: @DefWindowProc; cbClsExtra: 0; cbWndExtra: 0; hInstance: 0; hIcon: 0;
+    hCursor: 0; hbrBackground: 0; lpszMenuName: nil; lpszClassName: 'GLSUtilWindow');
 
 function CreateTempWnd: HWND;
 var
   classRegistered: Boolean;
   tempClass: TWndClass;
 begin
-  vUtilWindowClass.hInstance := HInstance;
-  classRegistered := GetClassInfo(HInstance, vUtilWindowClass.lpszClassName,
-    tempClass);
+  vUtilWindowClass.hInstance := hInstance;
+  classRegistered := GetClassInfo(hInstance, vUtilWindowClass.lpszClassName, tempClass);
   if not classRegistered then
     Winapi.Windows.RegisterClass(vUtilWindowClass);
-  Result := CreateWindowEx(WS_EX_TOOLWINDOW, vUtilWindowClass.lpszClassName,
-    '', WS_POPUP, 0, 0, 0, 0, 0, 0, HInstance, nil);
+  Result := CreateWindowEx(WS_EX_TOOLWINDOW, vUtilWindowClass.lpszClassName, '', WS_POPUP, 0, 0, 0, 0, 0, 0, hInstance, nil);
 end;
 
 // ------------------
@@ -216,35 +195,30 @@ begin
   ClearFAttribs;
 end;
 
- 
 destructor TGLWin32Context.Destroy;
 begin
   inherited Destroy;
 end;
 
-
 function SetupPalette(DC: HDC; const PFD: TPixelFormatDescriptor): HPalette;
 var
-  nColors, I: Integer;
+  nColors, i: Integer;
   LogPalette: TMaxLogPalette;
   RedMask, GreenMask, BlueMask: Byte;
 begin
-  nColors := 1 shl Pfd.cColorBits;
+  nColors := 1 shl PFD.cColorBits;
   LogPalette.palVersion := $300;
   LogPalette.palNumEntries := nColors;
-  RedMask := (1 shl Pfd.cRedBits) - 1;
-  GreenMask := (1 shl Pfd.cGreenBits) - 1;
-  BlueMask := (1 shl Pfd.cBlueBits) - 1;
+  RedMask := (1 shl PFD.cRedBits) - 1;
+  GreenMask := (1 shl PFD.cGreenBits) - 1;
+  BlueMask := (1 shl PFD.cBlueBits) - 1;
   with LogPalette, PFD do
-    for I := 0 to nColors - 1 do
+    for i := 0 to nColors - 1 do
     begin
-      palPalEntry[I].peRed := (((I shr cRedShift) and RedMask) * 255) div
-        RedMask;
-      palPalEntry[I].peGreen := (((I shr cGreenShift) and GreenMask) * 255) div
-        GreenMask;
-      palPalEntry[I].peBlue := (((I shr cBlueShift) and BlueMask) * 255) div
-        BlueMask;
-      palPalEntry[I].peFlags := 0;
+      palPalEntry[i].peRed := (((i shr cRedShift) and RedMask) * 255) div RedMask;
+      palPalEntry[i].peGreen := (((i shr cGreenShift) and GreenMask) * 255) div GreenMask;
+      palPalEntry[i].peBlue := (((i shr cBlueShift) and BlueMask) * 255) div BlueMask;
+      palPalEntry[i].peFlags := 0;
     end;
 
   Result := CreatePalette(PLogPalette(@LogPalette)^);
@@ -257,13 +231,11 @@ begin
     RaiseLastOSError;
 end;
 
-
 procedure TGLWin32Context.ClearIAttribs;
 begin
   SetLength(FiAttribs, 1);
   FiAttribs[0] := 0;
 end;
-
 
 procedure TGLWin32Context.AddIAttrib(attrib, value: Integer);
 var
@@ -275,7 +247,6 @@ begin
   FiAttribs[n] := value;
   FiAttribs[n + 1] := 0;
 end;
-
 
 procedure TGLWin32Context.ChangeIAttrib(attrib, newValue: Integer);
 var
@@ -293,9 +264,6 @@ begin
   end;
   AddIAttrib(attrib, newValue);
 end;
-
-// DropIAttrib
-//
 
 procedure TGLWin32Context.DropIAttrib(attrib: Integer);
 var
@@ -319,13 +287,11 @@ begin
   end;
 end;
 
-
 procedure TGLWin32Context.ClearFAttribs;
 begin
   SetLength(FfAttribs, 1);
   FfAttribs[0] := 0;
 end;
-
 
 procedure TGLWin32Context.AddFAttrib(attrib, value: Single);
 var
@@ -338,36 +304,36 @@ begin
   FfAttribs[n + 1] := 0;
 end;
 
-
 procedure TGLWin32Context.DestructionEarlyWarning(sender: TObject);
 begin
   if IsValid then
     DestroyContext;
 end;
 
-procedure TGLWin32Context.ChooseWGLFormat(DC: HDC; nMaxFormats: Cardinal; piFormats:
-  PInteger; var nNumFormats: Integer; BufferCount: integer);
+procedure TGLWin32Context.ChooseWGLFormat(DC: HDC; nMaxFormats: Cardinal; piFormats: PInteger; var nNumFormats: Integer;
+  BufferCount: Integer);
 const
-  cAAToSamples: array[aaNone..csa16xHQ] of Integer =
-    (1, 2, 2, 4, 4, 6, 8, 16, 8, 8, 16, 16);
-  cCSAAToSamples: array[csa8x..csa16xHQ] of Integer = (4, 8, 4, 8);
+  cAAToSamples: array [aaNone .. csa16xHQ] of Integer = (1, 2, 2, 4, 4, 6, 8, 16, 8, 8, 16, 16);
+  cCSAAToSamples: array [csa8x .. csa16xHQ] of Integer = (4, 8, 4, 8);
 
   procedure ChoosePixelFormat;
   begin
-    if not FGL.WChoosePixelFormatARB(DC, @FiAttribs[0], @FfAttribs[0],
-      32, PGLint(piFormats), @nNumFormats) then
+    if not FGL.WChoosePixelFormatARB(DC, @FiAttribs[0], @FfAttribs[0], 32, PGLint(piFormats), @nNumFormats) then
       nNumFormats := 0;
   end;
 
 var
-  float: boolean;
+  float: Boolean;
   aa: TGLAntiAliasing;
 begin
   // request hardware acceleration
   case FAcceleration of
-    chaUnknown: AddIAttrib(WGL_ACCELERATION_ARB, WGL_GENERIC_ACCELERATION_ARB);
-    chaHardware: AddIAttrib(WGL_ACCELERATION_ARB, WGL_FULL_ACCELERATION_ARB);
-    chaSoftware: AddIAttrib(WGL_ACCELERATION_ARB, WGL_NO_ACCELERATION_ARB);
+    chaUnknown:
+      AddIAttrib(WGL_ACCELERATION_ARB, WGL_GENERIC_ACCELERATION_ARB);
+    chaHardware:
+      AddIAttrib(WGL_ACCELERATION_ARB, WGL_FULL_ACCELERATION_ARB);
+    chaSoftware:
+      AddIAttrib(WGL_ACCELERATION_ARB, WGL_NO_ACCELERATION_ARB);
   end;
 
   float := (ColorBits = 64) or (ColorBits = 128); // float_type
@@ -441,8 +407,10 @@ begin
     begin
       DropIAttrib(WGL_COLOR_SAMPLES_NV);
       case AntiAliasing of
-        csa8x, csa8xHQ: AntiAliasing := aa8x;
-        csa16x, csa16xHQ: AntiAliasing := aa16x;
+        csa8x, csa8xHQ:
+          AntiAliasing := aa8x;
+        csa16x, csa16xHQ:
+          AntiAliasing := aa16x;
       end;
       ChangeIAttrib(WGL_SAMPLES_ARB, cAAToSamples[AntiAliasing]);
     end;
@@ -502,11 +470,16 @@ begin
   if not FLegacyContextsOnly then
   begin
     case Layer of
-      clUnderlay2: FRC := wglCreateLayerContext(aDC, -2);
-      clUnderlay1: FRC := wglCreateLayerContext(aDC, -1);
-      clMainPlane: FRC := wglCreateContext(aDC);
-      clOverlay1: FRC := wglCreateLayerContext(aDC, 1);
-      clOverlay2: FRC := wglCreateLayerContext(aDC, 2);
+      clUnderlay2:
+        FRC := wglCreateLayerContext(aDC, -2);
+      clUnderlay1:
+        FRC := wglCreateLayerContext(aDC, -1);
+      clMainPlane:
+        FRC := wglCreateContext(aDC);
+      clOverlay1:
+        FRC := wglCreateLayerContext(aDC, 1);
+      clOverlay2:
+        FRC := wglCreateLayerContext(aDC, 2);
     end;
   end
   else
@@ -517,17 +490,16 @@ begin
   FDC := aDC;
 
   if not wglMakeCurrent(FDC, FRC) then
-    raise EGLContext.Create(Format(strContextActivationFailed,
-      [GetLastError, SysErrorMessage(GetLastError)]));
+    raise EGLContext.Create(Format(strContextActivationFailed, [GetLastError, SysErrorMessage(GetLastError)]));
 
   if not FLegacyContextsOnly then
   begin
     if Assigned(FShareContext) and (FShareContext.RC <> 0) then
     begin
       if not wglShareLists(FShareContext.RC, FRC) then
-      {$IFDEF USE_LOGGING}
+{$IFDEF USE_LOGGING}
         GLSLogger.LogWarning(strFailedToShare)
-      {$ENDIF}
+{$ENDIF}
       else
       begin
         FSharedContexts.Add(FShareContext);
@@ -548,9 +520,9 @@ begin
       GLSLogger.LogWarning(strDriverNotSupportDebugRC);
     if rcoOGL_ES in Options then
       GLSLogger.LogWarning(strDriverNotSupportOESRC);
-{    if GLStates.ForwardContext then
+    { if GLStates.ForwardContext then
       GLSLogger.LogWarning(strDriverNotSupportFRC);
-    GLStates.ForwardContext := False;}
+      GLStates.ForwardContext := False; }
   end
   else
     GLSLogger.LogInfo(strTmpRC_Created);
@@ -566,7 +538,7 @@ begin
   try
     ClearIAttribs;
     // Initialize forward context
-    if false{GLStates.ForwardContext} then
+    if False { GLStates.ForwardContext } then
     begin
       if FGL.VERSION_4_2 then
       begin
@@ -629,10 +601,14 @@ begin
     end;
 
     case Layer of
-      clUnderlay2: AddIAttrib(WGL_CONTEXT_LAYER_PLANE_ARB, -2);
-      clUnderlay1: AddIAttrib(WGL_CONTEXT_LAYER_PLANE_ARB, -1);
-      clOverlay1: AddIAttrib(WGL_CONTEXT_LAYER_PLANE_ARB, 1);
-      clOverlay2: AddIAttrib(WGL_CONTEXT_LAYER_PLANE_ARB, 2);
+      clUnderlay2:
+        AddIAttrib(WGL_CONTEXT_LAYER_PLANE_ARB, -2);
+      clUnderlay1:
+        AddIAttrib(WGL_CONTEXT_LAYER_PLANE_ARB, -1);
+      clOverlay1:
+        AddIAttrib(WGL_CONTEXT_LAYER_PLANE_ARB, 1);
+      clOverlay2:
+        AddIAttrib(WGL_CONTEXT_LAYER_PLANE_ARB, 2);
     end;
 
     FRC := 0;
@@ -653,12 +629,10 @@ begin
       FRC := FGL.WCreateContextAttribsARB(aDC, 0, @FiAttribs[0]);
       if FRC = 0 then
       begin
-        if false{GLStates.ForwardContext} then
-          GLSLogger.LogErrorFmt(strForwardContextFailed,
-            [GetLastError, SysErrorMessage(GetLastError)])
+        if False { GLStates.ForwardContext } then
+          GLSLogger.LogErrorFmt(strForwardContextFailed, [GetLastError, SysErrorMessage(GetLastError)])
         else
-          GLSLogger.LogErrorFmt(strBackwardContextFailed,
-            [GetLastError, SysErrorMessage(GetLastError)]);
+          GLSLogger.LogErrorFmt(strBackwardContextFailed, [GetLastError, SysErrorMessage(GetLastError)]);
         Abort;
       end;
     end;
@@ -667,8 +641,7 @@ begin
 
     if not wglMakeCurrent(FDC, FRC) then
     begin
-      GLSLogger.LogErrorFmt(strContextActivationFailed,
-        [GetLastError, SysErrorMessage(GetLastError)]);
+      GLSLogger.LogErrorFmt(strContextActivationFailed, [GetLastError, SysErrorMessage(GetLastError)]);
       Abort;
     end;
 
@@ -681,28 +654,29 @@ begin
     else
       GLStates.MultisampleFilterHint := hintDontCare;
 
-    {if GLStates.ForwardContext then
-      GLSLogger.LogInfo(strFRC_created);}
+    { if GLStates.ForwardContext then
+      GLSLogger.LogInfo(strFRC_created); }
     if bOES then
       GLSLogger.LogInfo(strOESRC_created);
     bSuccess := True;
   finally
-{    GLStates.ForwardContext := GLStates.ForwardContext and bSuccess;}
-    PipelineTransformation.LoadMatricesEnabled := true {not GLStates.ForwardContext};
+    {
+      GLStates.ForwardContext := GLStates.ForwardContext and bSuccess;
+    }
+    PipelineTransformation.LoadMatricesEnabled := True { not GLStates.ForwardContext };
   end;
 end;
-
 
 procedure TGLWin32Context.DoCreateContext(ADeviceHandle: HDC);
 const
   cMemoryDCs = [OBJ_MEMDC, OBJ_METADC, OBJ_ENHMETADC];
-  cBoolToInt: array[False..True] of Integer = (GL_FALSE, GL_TRUE);
-  cLayerToSet: array[TGLContextLayer] of Byte = (32, 16, 0, 1, 2);
+  cBoolToInt: array [False .. True] of Integer = (GL_FALSE, GL_TRUE);
+  cLayerToSet: array [TGLContextLayer] of Byte = (32, 16, 0, 1, 2);
 var
   pfDescriptor: TPixelFormatDescriptor;
   pixelFormat, nbFormats, softwarePixelFormat: Integer;
   aType: DWORD;
-  iFormats: array[0..31] of Integer;
+  iFormats: array [0 .. 31] of Integer;
   tempWnd: HWND;
   tempDC: HDC;
   localDC: HDC;
@@ -737,9 +711,9 @@ begin
 
   // Prepare PFD
   FillChar(pfDescriptor, SizeOf(pfDescriptor), 0);
-  with PFDescriptor do
+  with pfDescriptor do
   begin
-    nSize := SizeOf(PFDescriptor);
+    nSize := SizeOf(pfDescriptor);
     nVersion := 1;
     dwFlags := PFD_SUPPORT_OPENGL;
     aType := GetObjectType(ADeviceHandle);
@@ -761,9 +735,12 @@ begin
     cAlphaBits := AlphaBits;
     cAuxBuffers := AuxBuffers;
     case Layer of
-      clUnderlay2, clUnderlay1: iLayerType := Byte(PFD_UNDERLAY_PLANE);
-      clMainPlane: iLayerType := PFD_MAIN_PLANE;
-      clOverlay1, clOverlay2: iLayerType := PFD_OVERLAY_PLANE;
+      clUnderlay2, clUnderlay1:
+        iLayerType := Byte(PFD_UNDERLAY_PLANE);
+      clMainPlane:
+        iLayerType := PFD_MAIN_PLANE;
+      clOverlay1, clOverlay2:
+        iLayerType := PFD_OVERLAY_PLANE;
     end;
     bReserved := cLayerToSet[Layer];
     if Layer <> clMainPlane then
@@ -774,7 +751,7 @@ begin
 
   // WGL_ARB_pixel_format is used if available
   //
-  if not (IsMesaGL or FLegacyContextsOnly or (aType in cMemoryDCs)) then
+  if not(IsMesaGL or FLegacyContextsOnly or (aType in cMemoryDCs)) then
   begin
     // the WGL mechanism is a little awkward: we first create a dummy context
     // on the TOP-level DC (ie. screen), to retrieve our pixelformat, create
@@ -795,8 +772,7 @@ begin
             ClearIAttribs;
             AddIAttrib(WGL_DRAW_TO_WINDOW_ARB, GL_TRUE);
             AddIAttrib(WGL_STEREO_ARB, cBoolToInt[rcoStereo in Options]);
-            AddIAttrib(WGL_DOUBLE_BUFFER_ARB, cBoolToInt[rcoDoubleBuffered in
-              Options]);
+            AddIAttrib(WGL_DOUBLE_BUFFER_ARB, cBoolToInt[rcoDoubleBuffered in Options]);
 
             ChooseWGLFormat(ADeviceHandle, 32, @iFormats, nbFormats);
             if nbFormats > 0 then
@@ -809,17 +785,16 @@ begin
                 begin
                   pixelFormat := iFormats[i];
                   iValue := GL_FALSE;
-                  FGL.WGetPixelFormatAttribivARB(ADeviceHandle, pixelFormat, 0, 1,
-                    @iAttrib, @iValue);
+                  FGL.WGetPixelFormatAttribivARB(ADeviceHandle, pixelFormat, 0, 1, @iAttrib, @iValue);
                   if iValue = GL_FALSE then
-                    Break;
+                    break;
                 end;
               end
               else
                 pixelFormat := iFormats[0];
               if GetPixelFormat(ADeviceHandle) <> pixelFormat then
               begin
-                if not SetPixelFormat(ADeviceHandle, pixelFormat, @PFDescriptor) then
+                if not SetPixelFormat(ADeviceHandle, pixelFormat, @pfDescriptor) then
                   RaiseLastOSError;
               end;
             end;
@@ -844,9 +819,8 @@ begin
   if pixelFormat = 0 then
   begin
     // Legacy pixel format selection
-    pixelFormat := ChoosePixelFormat(ADeviceHandle, @PFDescriptor);
-    if (not (aType in cMemoryDCs)) and (not
-      CurrentPixelFormatIsHardwareAccelerated) then
+    pixelFormat := ChoosePixelFormat(ADeviceHandle, @pfDescriptor);
+    if (not(aType in cMemoryDCs)) and (not CurrentPixelFormatIsHardwareAccelerated) then
     begin
       softwarePixelFormat := pixelFormat;
       pixelFormat := 0;
@@ -856,15 +830,15 @@ begin
     if pixelFormat = 0 then
     begin
       // Failed on default params, try with 16 bits depth buffer
-      PFDescriptor.cDepthBits := 16;
-      pixelFormat := ChoosePixelFormat(ADeviceHandle, @PFDescriptor);
+      pfDescriptor.cDepthBits := 16;
+      pixelFormat := ChoosePixelFormat(ADeviceHandle, @pfDescriptor);
       if not CurrentPixelFormatIsHardwareAccelerated then
         pixelFormat := 0;
       if pixelFormat = 0 then
       begin
         // Failed, try with 16 bits color buffer
-        PFDescriptor.cColorBits := 16;
-        pixelFormat := ChoosePixelFormat(ADeviceHandle, @PFDescriptor);
+        pfDescriptor.cColorBits := 16;
+        pixelFormat := ChoosePixelFormat(ADeviceHandle, @pfDescriptor);
       end;
       if not CurrentPixelFormatIsHardwareAccelerated then
       begin
@@ -878,16 +852,16 @@ begin
 
   if GetPixelFormat(ADeviceHandle) <> pixelFormat then
   begin
-    if not SetPixelFormat(ADeviceHandle, pixelFormat, @PFDescriptor) then
+    if not SetPixelFormat(ADeviceHandle, pixelFormat, @pfDescriptor) then
       RaiseLastOSError;
   end;
 
   // Check the properties we just set.
-  DescribePixelFormat(ADeviceHandle, pixelFormat, SizeOf(PFDescriptor), PFDescriptor);
-  with PFDescriptor do
+  DescribePixelFormat(ADeviceHandle, pixelFormat, SizeOf(pfDescriptor), pfDescriptor);
+  with pfDescriptor do
   begin
     if (dwFlags and PFD_NEED_PALETTE) <> 0 then
-      SetupPalette(ADeviceHandle, PFDescriptor);
+      SetupPalette(ADeviceHandle, pfDescriptor);
     FSwapBufferSupported := (dwFlags and PFD_SWAP_LAYER_BUFFERS) <> 0;
     if bReserved = 0 then
       FLayer := clMainPlane;
@@ -895,17 +869,14 @@ begin
 
   if not FLegacyContextsOnly then
   begin
-    if ((pfDescriptor.dwFlags and PFD_GENERIC_FORMAT) > 0)
-      and (FAcceleration = chaHardware) then
+    if ((pfDescriptor.dwFlags and PFD_GENERIC_FORMAT) > 0) and (FAcceleration = chaHardware) then
     begin
       FAcceleration := chaSoftware;
       GLSLogger.LogWarning(strFailHWRC);
     end;
   end;
 
-  if not FLegacyContextsOnly
-    and FGL.W_ARB_create_context
-    and (FAcceleration = chaHardware) then
+  if not FLegacyContextsOnly and FGL.W_ARB_create_context and (FAcceleration = chaHardware) then
     CreateNewContext(ADeviceHandle)
   else
     CreateOldContext(ADeviceHandle);
@@ -926,7 +897,6 @@ begin
   end;
 end;
 
-
 procedure TGLWin32Context.SpawnLegacyContext(aDC: HDC);
 begin
   try
@@ -939,19 +909,16 @@ begin
   except
     on E: Exception do
     begin
-      raise Exception.Create(strUnableToCreateLegacyContext + #13#10
-        + E.ClassName + ': ' + E.Message);
+      raise Exception.Create(strUnableToCreateLegacyContext + #13#10 + E.ClassName + ': ' + E.message);
     end;
   end;
 end;
 
-
-procedure TGLWin32Context.DoCreateMemoryContext(outputDevice: HWND; width,
-  height: Integer; BufferCount: integer);
+procedure TGLWin32Context.DoCreateMemoryContext(outputDevice: HWND; width, height: Integer; BufferCount: Integer);
 var
   nbFormats: Integer;
-  iFormats: array[0..31] of Integer;
-  iPBufferAttribs: array[0..0] of Integer;
+  iFormats: array [0 .. 31] of Integer;
+  iPBufferAttribs: array [0 .. 0] of Integer;
   localHPBuffer: Integer;
   localRC: HGLRC;
   localDC, tempDC: HDC;
@@ -981,13 +948,10 @@ begin
           AddIAttrib(WGL_DRAW_TO_PBUFFER_ARB, 1);
           ChooseWGLFormat(tempDC, 32, @iFormats, nbFormats, BufferCount);
           if nbFormats = 0 then
-            raise
-              EPBuffer.Create('Format not supported for pbuffer operation.');
+            raise EPBuffer.Create('Format not supported for pbuffer operation.');
           iPBufferAttribs[0] := 0;
 
-          localHPBuffer := FGL.WCreatePbufferARB(tempDC, iFormats[0], width,
-            height,
-            @iPBufferAttribs[0]);
+          localHPBuffer := FGL.WCreatePbufferARB(tempDC, iFormats[0], width, height, @iPBufferAttribs[0]);
           if localHPBuffer = 0 then
             raise EPBuffer.Create('Unabled to create pbuffer.');
           try
@@ -1000,7 +964,7 @@ begin
                 // Modern creation style
                 ClearIAttribs;
                 // Initialize forward context
-                if false {GLStates.ForwardContext} then
+                if False { GLStates.ForwardContext } then
                 begin
                   if FGL.VERSION_4_2 then
                   begin
@@ -1062,27 +1026,29 @@ begin
                 end;
 
                 case Layer of
-                  clUnderlay2: AddIAttrib(WGL_CONTEXT_LAYER_PLANE_ARB, -2);
-                  clUnderlay1: AddIAttrib(WGL_CONTEXT_LAYER_PLANE_ARB, -1);
-                  clOverlay1: AddIAttrib(WGL_CONTEXT_LAYER_PLANE_ARB, 1);
-                  clOverlay2: AddIAttrib(WGL_CONTEXT_LAYER_PLANE_ARB, 2);
+                  clUnderlay2:
+                    AddIAttrib(WGL_CONTEXT_LAYER_PLANE_ARB, -2);
+                  clUnderlay1:
+                    AddIAttrib(WGL_CONTEXT_LAYER_PLANE_ARB, -1);
+                  clOverlay1:
+                    AddIAttrib(WGL_CONTEXT_LAYER_PLANE_ARB, 1);
+                  clOverlay2:
+                    AddIAttrib(WGL_CONTEXT_LAYER_PLANE_ARB, 2);
                 end;
 
                 localRC := FGL.WCreateContextAttribsARB(localDC, 0, @FiAttribs[0]);
                 if localRC = 0 then
-               {$IFDEF USE_LOGGING}
+{$IFDEF USE_LOGGING}
                 begin
-                  if false {GLStates.ForwardContext} then
-                    GLSLogger.LogErrorFmt(strForwardContextFailed,
-                      [GetLastError, SysErrorMessage(GetLastError)])
+                  if False { GLStates.ForwardContext } then
+                    GLSLogger.LogErrorFmt(strForwardContextFailed, [GetLastError, SysErrorMessage(GetLastError)])
                   else
-                    GLSLogger.LogErrorFmt(strBackwardContextFailed,
-                      [GetLastError, SysErrorMessage(GetLastError)]);
+                    GLSLogger.LogErrorFmt(strBackwardContextFailed, [GetLastError, SysErrorMessage(GetLastError)]);
                   Abort;
                 end;
-               {$ELSE}
-                  raise Exception.Create('Unabled to create pbuffer''s RC.');
-               {$ENDIF}
+{$ELSE}
+                raise Exception.Create('Unabled to create pbuffer''s RC.');
+{$ENDIF}
               end
               else
               begin
@@ -1090,8 +1056,7 @@ begin
                 localRC := wglCreateContext(localDC);
                 if localRC = 0 then
                 begin
-                  GLSLogger.LogErrorFmt(strBackwardContextFailed,
-                    [GetLastError, SysErrorMessage(GetLastError)]);
+                  GLSLogger.LogErrorFmt(strBackwardContextFailed, [GetLastError, SysErrorMessage(GetLastError)]);
                   Abort;
                 end;
               end;
@@ -1124,9 +1089,8 @@ begin
     FRC := localRC;
   end;
 
-  DescribePixelFormat(FDC, GetPixelFormat(FDC), SizeOf(PFDescriptor), PFDescriptor);
-  if ((PFDescriptor.dwFlags and PFD_GENERIC_FORMAT) > 0)
-    and (FAcceleration = chaHardware) then
+  DescribePixelFormat(FDC, GetPixelFormat(FDC), SizeOf(pfDescriptor), pfDescriptor);
+  if ((pfDescriptor.dwFlags and PFD_GENERIC_FORMAT) > 0) and (FAcceleration = chaHardware) then
   begin
     FAcceleration := chaSoftware;
     GLSLogger.LogWarning(strFailHWRC);
@@ -1139,7 +1103,8 @@ begin
     GLStates.MultisampleFilterHint := hintNicest
   else if AntiAliasing in [aa2x, aa4x, csa8x, csa16x] then
     GLStates.MultisampleFilterHint := hintFastest
-  else GLStates.MultisampleFilterHint := hintDontCare;
+  else
+    GLStates.MultisampleFilterHint := hintDontCare;
 
   // Specific which color buffers are to be drawn into
   if BufferCount > 1 then
@@ -1169,14 +1134,13 @@ begin
 
   Deactivate;
 
-{  if GLStates.ForwardContext then
+  { if GLStates.ForwardContext then
     GLSLogger.LogInfo('PBuffer ' + strFRC_created);
-  if bOES then
+    if bOES then
     GLSLogger.LogInfo('PBuffer ' + strOESRC_created);
-  if not (GLStates.ForwardContext or bOES) then
-    GLSLogger.LogInfo(strPBufferRC_created);}
+    if not (GLStates.ForwardContext or bOES) then
+    GLSLogger.LogInfo(strPBufferRC_created); }
 end;
-
 
 function TGLWin32Context.DoShareLists(aContext: TGLContext): Boolean;
 begin
@@ -1192,7 +1156,6 @@ begin
     raise Exception.Create(strIncompatibleContexts);
 end;
 
-
 procedure TGLWin32Context.DoDestroyContext;
 begin
   if vUseWindowTrackingHook then
@@ -1200,28 +1163,25 @@ begin
 
   if FHPBUFFER <> 0 then
   begin
-    FGL.WReleasePbufferDCARB(FHPBuffer, FDC);
-    FGL.WDestroyPbufferARB(FHPBUFFER);
+    FGL.WReleasePBufferDCARB(FHPBUFFER, FDC);
+    FGL.WDestroyPBufferARB(FHPBUFFER);
     FHPBUFFER := 0;
   end;
 
   if FRC <> 0 then
     if not wglDeleteContext(FRC) then
-      GLSLogger.LogErrorFmt(strDeleteContextFailed,
-        [GetLastError, SysErrorMessage(GetLastError)]);
+      GLSLogger.LogErrorFmt(strDeleteContextFailed, [GetLastError, SysErrorMessage(GetLastError)]);
 
   FRC := 0;
   FDC := 0;
   FShareContext := nil;
 end;
 
-
 procedure TGLWin32Context.DoActivate;
 begin
   if not wglMakeCurrent(FDC, FRC) then
   begin
-    GLSLogger.LogErrorFmt(strContextActivationFailed,
-      [GetLastError, SysErrorMessage(GetLastError)]);
+    GLSLogger.LogErrorFmt(strContextActivationFailed, [GetLastError, SysErrorMessage(GetLastError)]);
     Abort;
   end;
 
@@ -1229,23 +1189,19 @@ begin
     FGL.Initialize(CurrentGLContext = nil);
 end;
 
-
 procedure TGLWin32Context.DoDeactivate;
 begin
   if not wglMakeCurrent(0, 0) then
   begin
-    GLSLogger.LogErrorFmt(strContextDeactivationFailed,
-      [GetLastError, SysErrorMessage(GetLastError)]);
+    GLSLogger.LogErrorFmt(strContextDeactivationFailed, [GetLastError, SysErrorMessage(GetLastError)]);
     Abort;
   end;
 end;
-
 
 function TGLWin32Context.IsValid: Boolean;
 begin
   Result := (FRC <> 0);
 end;
-
 
 procedure TGLWin32Context.SwapBuffers;
 begin
@@ -1253,17 +1209,21 @@ begin
     if FSwapBufferSupported then
     begin
       case Layer of
-        clUnderlay2: wglSwapLayerBuffers(FDC, WGL_SWAP_UNDERLAY2);
-        clUnderlay1: wglSwapLayerBuffers(FDC, WGL_SWAP_UNDERLAY1);
-        clMainPlane: Winapi.Windows.SwapBuffers(FDC);
-        clOverlay1: wglSwapLayerBuffers(FDC, WGL_SWAP_OVERLAY1);
-        clOverlay2: wglSwapLayerBuffers(FDC, WGL_SWAP_OVERLAY2);
+        clUnderlay2:
+          wglSwapLayerBuffers(FDC, WGL_SWAP_UNDERLAY2);
+        clUnderlay1:
+          wglSwapLayerBuffers(FDC, WGL_SWAP_UNDERLAY1);
+        clMainPlane:
+          Winapi.Windows.SwapBuffers(FDC);
+        clOverlay1:
+          wglSwapLayerBuffers(FDC, WGL_SWAP_OVERLAY1);
+        clOverlay2:
+          wglSwapLayerBuffers(FDC, WGL_SWAP_OVERLAY2);
       end;
     end
     else
       Winapi.Windows.SwapBuffers(FDC);
 end;
-
 
 function TGLWin32Context.RenderOutputDevice: Pointer;
 begin
@@ -1271,13 +1231,10 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
 
-  RegisterGLContextClass(TGLWin32Context);
+// ------------------------------------------------------------------
+
+RegisterGLContextClass(TGLWin32Context);
 
 end.

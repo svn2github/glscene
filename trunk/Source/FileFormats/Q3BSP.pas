@@ -84,7 +84,7 @@ type
    PBSPFace = ^TBSPFace;
 
    TBSPTexture = record
-      TextureName : array [0..63] of AnsiChar;   // The name of the texture w/o the extension
+      TextureName : array [0..63] of WideChar;   // The name of the texture w/o the extension
       flags    : Integer;                    // The surface flags (unknown)
       contents : Integer;                    // The content flags (unknown)
    end;

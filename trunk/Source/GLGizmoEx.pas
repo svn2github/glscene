@@ -3652,7 +3652,7 @@ var
           IncludeCh := FindParent(TGLBaseSceneObject(Hit[I]).parent);
 
         pmat := TGLBaseSceneObject(Hit[I]).parent.InvAbsoluteMatrix;
-        SetVector(pmat.W, NullHmgPoint);
+        SetVector(pmat.V[3], NullHmgPoint);
 
         if IncludeCh then
           case SelAxis of

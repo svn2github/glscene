@@ -12,6 +12,11 @@ interface
 {$I GLScene.inc}
 
 uses
+
+{$IFDEF USE_FASTMATH}
+  Neslib.FastMath,
+{$ENDIF}
+
   System.Classes,
   System.SysUtils,
   
@@ -172,8 +177,9 @@ type
     procedure Scale(const factors: TAffineVector); overload;
   end;
 
-  {A list of TVector. Similar to TList, but using TVector as items.
-   The list has stack-like push/pop methods. }
+  {A list of TVector.
+   Similar to TList, but using TVector as items.
+       The list has stack-like push/pop methods. }
   TVectorList = class(TBaseVectorList)
   private
     FList: PVectorArray;
@@ -203,7 +209,8 @@ type
     procedure Lerp(const list1, list2: TBaseVectorList; lerpFactor: Single); override;
   end;
 
-  {A list of TTexPoint. Similar to TList, but using TTexPoint as items.
+  {A list of TTexPoint.
+   Similar to TList, but using TTexPoint as items.
    The list has stack-like push/pop methods. }
   TTexPointList = class(TBaseVectorList)
   private
@@ -235,8 +242,9 @@ type
     procedure Lerp(const list1, list2: TBaseVectorList; lerpFactor: Single); override;
   end;
 
-  {A list of Integers. Similar to TList, but using TTexPoint as items.
-   The list has stack-like push/pop methods. }
+  {A list of Integers.
+   Similar to TList, but using TTexPoint as items.
+       The list has stack-like push/pop methods. }
   TIntegerList = class(TBaseList)
   private
     FList: PIntegerArray;
@@ -297,8 +305,9 @@ type
   TSingleArrayList = array[0..MaxInt shr 4] of Single;
   PSingleArrayList = ^TSingleArrayList;
 
-  {A list of Single. Similar to TList, but using Single as items.
-   The list has stack-like push/pop methods. }
+  {A list of Single.
+   Similar to TList, but using Single as items.
+       The list has stack-like push/pop methods. }
   TSingleList = class(TBaseList)
   private
     FList: PSingleArrayList;
@@ -340,8 +349,9 @@ type
   TDoubleArrayList = array[0..MaxInt shr 4] of Double;
   PDoubleArrayList = ^TDoubleArrayList;
 
-  {A list of Double. Similar to TList, but using Double as items.
-   The list has stack-like push/pop methods. }
+    {A list of Double.
+     Similar to TList, but using Double as items.
+         The list has stack-like push/pop methods. }
   TDoubleList = class(TBaseList)
   private
     FList: PDoubleArrayList;
@@ -377,7 +387,8 @@ type
     function Max: Single;
   end;
 
-  {A list of bytes. Similar to TList, but using Byte as items.  }
+  {A list of bytes.
+   Similar to TList, but using Byte as items.  }
   TByteList = class(TBaseList)
   private
     FList: PByteArray;
@@ -394,8 +405,9 @@ type
     property List: PByteArray read FList;
   end;
 
-  {A list of TQuaternion. Similar to TList, but using TQuaternion as items.
-  The list has stack-like push/pop methods. }
+  {A list of TQuaternion.
+     Similar to TList, but using TQuaternion as items.
+        The list has stack-like push/pop methods. }
   TQuaternionList = class(TBaseVectorList)
   private
     FList: PQuaternionArray;
@@ -2870,7 +2882,11 @@ begin
     Delete(FCount - 1);
   end
   else
+{$IFDEF USE_FASTMATH}
+    Result := TQuaternion.Identity;
+{$ELSE}
     Result := IdentityQuaternion;
+{$ENDIF}
 end;
 
 function TQuaternionList.IndexOf(const item: TQuaternion): Integer;
@@ -2881,7 +2897,11 @@ begin
   for I := 0 to Count - 1 do
   begin
     curItem := @FList[I];
+{$IFDEF USE_FASTMATH}
+    if (item.ToMatrix = curItem^.ToMatrix) then
+{$ELSE}
     if (item.RealPart = curItem^.RealPart) and VectorEquals(item.ImagPart, curItem^.ImagPart) then
+{$ENDIF}
     begin
       Result := I;
       Exit;
@@ -2915,7 +2935,11 @@ procedure TQuaternionList.Combine(const list2: TBaseVectorList; factor: Single);
 
   procedure CombineQuaternion(var q1: TQuaternion; const q2: TQuaternion; factor: Single);
   begin
+{$IFDEF USE_FASTMATH}
+    q1 := QuaternionMultiply(q1, QuaternionSlerp(TQuaternion.Identity, q2, factor));
+{$ELSE}
     q1 := QuaternionMultiply(q1, QuaternionSlerp(IdentityQuaternion, q2, factor));
+{$ENDIF}
   end;
 
 var

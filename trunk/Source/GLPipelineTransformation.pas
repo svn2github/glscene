@@ -7,7 +7,7 @@
      13/12/13 - PW - Added GLSLog unit
      16/11/10 - Yar - Added NormalModelMatrix
      23/08/10 - Yar - Creation
-  
+
 }
 
 unit GLPipelineTransformation;
@@ -81,7 +81,7 @@ type
   protected
     procedure LoadModelViewMatrix; inline;
     procedure LoadProjectionMatrix; inline;
-    procedure DoMatrcesLoaded; inline;
+    procedure DoMatricesLoaded; inline;
     property OnPush: TOnMatricesPush read FOnPush write FOnPush;
   public
     constructor Create;
@@ -159,7 +159,7 @@ begin
   end;
 end;
 
-procedure TGLTransformation.DoMatrcesLoaded;
+procedure TGLTransformation.DoMatricesLoaded;
 begin
   if Assigned(FOnPush) then
     FOnPush();
@@ -196,7 +196,7 @@ begin
       LoadModelViewMatrix;
       LoadProjectionMatrix;
     end;
-    DoMatrcesLoaded;
+    DoMatricesLoaded;
   end
   else
     FStack[FStackPos] := FStack[prevPos];

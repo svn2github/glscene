@@ -15,9 +15,20 @@ uses
   Vcl.ExtCtrls,
 
   
-  GLVectorGeometry, GLTexture, GLScene, GLVectorFileObjects, GLObjects,
-  GLBehaviours, GLCadencer, GLWin32Viewer, GLGeomObjects, GLCrossPlatform,
-  GLCoordinates, GLBaseClasses,  GLFile3DS,  GLUtils;
+  GLVectorGeometry,
+  GLTexture,
+  GLScene,
+  GLVectorFileObjects,
+  GLObjects,
+  GLBehaviours,
+  GLCadencer,
+  GLWin32Viewer,
+  GLGeomObjects,
+  GLCrossPlatform,
+  GLCoordinates,
+  GLBaseClasses,
+  GLFile3DS,
+  GLUtils;
 
 type
   TForm1 = class(TForm)

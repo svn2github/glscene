@@ -10,8 +10,8 @@
   CAUTION : both connectivity classes leak memory.
 
   History :
-    10/06/03 - EG - Creation (based on code from Mattias Fagerlund)
-    The whole history is logged in previous version of the unit.
+  10/06/03 - EG - Creation (based on code from Mattias Fagerlund)
+  The whole history is logged in previous version of the unit.
 
 }
 unit GLSilhouette;
@@ -63,23 +63,21 @@ type
     property Vertices: TVectorList read FVertices write SetVertices;
     property Indices: TIntegerList read FIndices write SetIndices;
     property CapIndices: TIntegerList read FCapIndices write SetCapIndices;
-    procedure Flush; inline;
+    procedure Flush; virtual;
     procedure Clear; inline;
     procedure ExtrudeVerticesToInfinity(const origin: TAffineVector);
     { Adds an edge (two vertices) to the silhouette.
       If TightButSlow is true, no vertices will be doubled in the
       silhouette list. This should only be used when creating re-usable
       silhouettes, because it's much slower. }
-    procedure AddEdgeToSilhouette(const v0, v1: TAffineVector;
-      tightButSlow: Boolean); inline;
+    procedure AddEdgeToSilhouette(const v0, v1: TAffineVector; tightButSlow: Boolean); inline;
     procedure AddIndexedEdgeToSilhouette(const Vi0, Vi1: integer); inline;
 
     { Adds a capping triangle to the silhouette.
       If TightButSlow is true, no vertices will be doubled in the
       silhouette list. This should only be used when creating re-usable
       silhouettes, because it's much slower. }
-    procedure AddCapToSilhouette(const v0, v1, v2: TAffineVector;
-      tightButSlow: Boolean); inline;
+    procedure AddCapToSilhouette(const v0, v1, v2: TAffineVector; tightButSlow: Boolean); inline;
     procedure AddIndexedCapToSilhouette(const Vi0, Vi1, vi2: integer); inline;
   end;
 
@@ -92,8 +90,7 @@ type
     property EdgeCount: integer read GetEdgeCount;
     property FaceCount: integer read GetFaceCount;
     property PrecomputeFaceNormal: Boolean read FPrecomputeFaceNormal;
-    procedure CreateSilhouette(const ASilhouetteParameters
-      : TGLSilhouetteParameters; var ASilhouette: TGLSilhouette;
+    procedure CreateSilhouette(const ASilhouetteParameters: TGLSilhouetteParameters; var ASilhouette: TGLSilhouette;
       AddToSilhouette: Boolean); virtual;
     constructor Create(APrecomputeFaceNormal: Boolean); virtual;
   end;
@@ -113,28 +110,25 @@ type
     FVertices: TAffineVectorList;
     function GetEdgeCount: integer;
     function GetFaceCount: integer;
-    function ReuseOrFindVertexID(const SeenFrom: TAffineVector;
-      ASilhouette: TGLSilhouette; index: integer): integer;
+    function ReuseOrFindVertexID(const SeenFrom: TAffineVector; ASilhouette: TGLSilhouette; index: integer): integer;
   public
     { Clears out all connectivity information. }
     procedure Clear; virtual;
-    procedure CreateSilhouette(const silhouetteParameters
-      : TGLSilhouetteParameters; var ASilhouette: TGLSilhouette;
+    procedure CreateSilhouette(const silhouetteParameters: TGLSilhouetteParameters; var ASilhouette: TGLSilhouette;
       AddToSilhouette: Boolean);
-    function AddIndexedEdge(vertexIndex0, vertexIndex1: integer;
-      FaceID: integer): integer;
+    function AddIndexedEdge(vertexIndex0, vertexIndex1: integer; FaceID: integer): integer;
     function AddIndexedFace(Vi0, Vi1, vi2: integer): integer;
-    function AddFace(const vertex0, vertex1, vertex2: TAffineVector): integer;  inline;
-    function AddQuad(const vertex0, vertex1, vertex2,
-      vertex3: TAffineVector): integer;  inline;
+    function AddFace(const vertex0, vertex1, vertex2: TAffineVector): integer; inline;
+    function AddQuad(const vertex0, vertex1, vertex2, vertex3: TAffineVector): integer; inline;
     property EdgeCount: integer read GetEdgeCount;
     property FaceCount: integer read GetFaceCount;
     constructor Create(APrecomputeFaceNormal: Boolean); override;
     destructor Destroy; override;
   end;
 
-// -------------------------------------------------------------
+  // -------------------------------------------------------------
 implementation
+
 // -------------------------------------------------------------
 
 // ------------------
@@ -200,8 +194,7 @@ begin
   for i := 0 to nv - 1 do
   begin
     vListN^[i].W := 0;
-    VectorSubtract(PAffineVector(@vList[i])^, origin,
-      PAffineVector(@vListN[i])^);
+    VectorSubtract(PAffineVector(@vList[i])^, origin, PAffineVector(@vListN[i])^);
   end;
   // change silhouette indices to quad indices
   ni := Indices.Count;
@@ -233,8 +226,7 @@ end;
 // ------------------ TGLSilhouette ------------------
 // ------------------
 
-procedure TGLSilhouette.AddEdgeToSilhouette(const v0, v1: TAffineVector;
-  tightButSlow: Boolean);
+procedure TGLSilhouette.AddEdgeToSilhouette(const v0, v1: TAffineVector; tightButSlow: Boolean);
 begin
   if tightButSlow then
     Indices.Add(Vertices.FindOrAddPoint(v0), Vertices.FindOrAddPoint(v1))
@@ -248,15 +240,12 @@ begin
   Indices.Add(Vi0, Vi1);
 end;
 
-procedure TGLSilhouette.AddCapToSilhouette(const v0, v1, v2: TAffineVector;
-  tightButSlow: Boolean);
+procedure TGLSilhouette.AddCapToSilhouette(const v0, v1, v2: TAffineVector; tightButSlow: Boolean);
 begin
   if tightButSlow then
-    CapIndices.Add(Vertices.FindOrAddPoint(v0), Vertices.FindOrAddPoint(v1),
-      Vertices.FindOrAddPoint(v2))
+    CapIndices.Add(Vertices.FindOrAddPoint(v0), Vertices.FindOrAddPoint(v1), Vertices.FindOrAddPoint(v2))
   else
-    CapIndices.Add(Vertices.Add(v0, 1), Vertices.Add(v1, 1),
-      Vertices.Add(v2, 1));
+    CapIndices.Add(Vertices.Add(v0, 1), Vertices.Add(v1, 1), Vertices.Add(v2, 1));
 end;
 
 procedure TGLSilhouette.AddIndexedCapToSilhouette(const Vi0, Vi1, vi2: integer);
@@ -273,9 +262,8 @@ begin
   FPrecomputeFaceNormal := APrecomputeFaceNormal;
 end;
 
-procedure TBaseConnectivity.CreateSilhouette(const ASilhouetteParameters
-  : TGLSilhouetteParameters; var ASilhouette: TGLSilhouette;
-  AddToSilhouette: Boolean);
+procedure TBaseConnectivity.CreateSilhouette(const ASilhouetteParameters: TGLSilhouetteParameters;
+  var ASilhouette: TGLSilhouette; AddToSilhouette: Boolean);
 begin
   // Purely virtual!
 end;
@@ -343,8 +331,7 @@ begin
     FVertices.Clear;
 end;
 
-procedure TConnectivity.CreateSilhouette(const silhouetteParameters
-  : TGLSilhouetteParameters; var ASilhouette: TGLSilhouette;
+procedure TConnectivity.CreateSilhouette(const silhouetteParameters: TGLSilhouetteParameters; var ASilhouette: TGLSilhouette;
   AddToSilhouette: Boolean);
 var
   i: integer;
@@ -368,25 +355,20 @@ begin
   for i := 0 to FaceCount - 1 do
   begin
     if FPrecomputeFaceNormal then
-      faceIsVisible := (PointProject(silhouetteParameters.SeenFrom,
-        FVertices.List^[vis^[0]], FFaceNormal.List^[i]) >= 0)
+      faceIsVisible := (PointProject(silhouetteParameters.SeenFrom, FVertices.List^[vis^[0]], FFaceNormal.List^[i]) >= 0)
     else
     begin
       verticesList := FVertices.List;
-      faceNormal := CalcPlaneNormal(verticesList^[vis^[0]],
-        verticesList^[vis^[1]], verticesList^[vis^[2]]);
-      faceIsVisible := (PointProject(silhouetteParameters.SeenFrom,
-        FVertices.List^[vis^[0]], faceNormal) >= 0);
+      faceNormal := CalcPlaneNormal(verticesList^[vis^[0]], verticesList^[vis^[1]], verticesList^[vis^[2]]);
+      faceIsVisible := (PointProject(silhouetteParameters.SeenFrom, FVertices.List^[vis^[0]], faceNormal) >= 0);
     end;
 
     FFaceVisible[i] := Byte(faceIsVisible);
 
     if (not faceIsVisible) and silhouetteParameters.CappingRequired then
-      ASilhouette.CapIndices.Add
-        (ReuseOrFindVertexID(silhouetteParameters.SeenFrom, ASilhouette, vis^[0]
-        ), ReuseOrFindVertexID(silhouetteParameters.SeenFrom, ASilhouette,
-        vis^[1]), ReuseOrFindVertexID(silhouetteParameters.SeenFrom,
-        ASilhouette, vis^[2]));
+      ASilhouette.CapIndices.Add(ReuseOrFindVertexID(silhouetteParameters.SeenFrom, ASilhouette, vis^[0]),
+        ReuseOrFindVertexID(silhouetteParameters.SeenFrom, ASilhouette, vis^[1]),
+        ReuseOrFindVertexID(silhouetteParameters.SeenFrom, ASilhouette, vis^[2]));
     vis := @vis[3];
   end;
 
@@ -395,8 +377,7 @@ begin
     face0ID := FEdgeFaces[i * 2 + 0];
     face1ID := FEdgeFaces[i * 2 + 1];
 
-    if (face1ID = -1) or (FFaceVisible.List^[face0ID] <> FFaceVisible.List^
-      [face1ID]) then
+    if (face1ID = -1) or (FFaceVisible.List^[face0ID] <> FFaceVisible.List^[face1ID]) then
     begin
       // Retrieve the two vertice values add add them to the Silhouette list
       vis := @FEdgeVertices.List[i * 2];
@@ -405,18 +386,14 @@ begin
       // mesh. We can remember this information and re-use it for a speedup
       if FFaceVisible.List^[face0ID] = 0 then
       begin
-        tVi0 := ReuseOrFindVertexID(silhouetteParameters.SeenFrom,
-          ASilhouette, vis^[0]);
-        tVi1 := ReuseOrFindVertexID(silhouetteParameters.SeenFrom,
-          ASilhouette, vis^[1]);
+        tVi0 := ReuseOrFindVertexID(silhouetteParameters.SeenFrom, ASilhouette, vis^[0]);
+        tVi1 := ReuseOrFindVertexID(silhouetteParameters.SeenFrom, ASilhouette, vis^[1]);
         ASilhouette.Indices.Add(tVi0, tVi1);
       end
       else if face1ID > -1 then
       begin
-        tVi0 := ReuseOrFindVertexID(silhouetteParameters.SeenFrom,
-          ASilhouette, vis^[0]);
-        tVi1 := ReuseOrFindVertexID(silhouetteParameters.SeenFrom,
-          ASilhouette, vis^[1]);
+        tVi0 := ReuseOrFindVertexID(silhouetteParameters.SeenFrom, ASilhouette, vis^[0]);
+        tVi1 := ReuseOrFindVertexID(silhouetteParameters.SeenFrom, ASilhouette, vis^[1]);
         ASilhouette.Indices.Add(tVi1, tVi0);
       end;
     end;
@@ -433,8 +410,7 @@ begin
   result := FFaceVisible.Count;
 end;
 
-function TConnectivity.ReuseOrFindVertexID(const SeenFrom: TAffineVector;
-  ASilhouette: TGLSilhouette; index: integer): integer;
+function TConnectivity.ReuseOrFindVertexID(const SeenFrom: TAffineVector; ASilhouette: TGLSilhouette; index: integer): integer;
 var
   pMemIndex: PInteger;
   memIndex, i: integer;
@@ -464,8 +440,7 @@ begin
     result := pMemIndex^;
 end;
 
-function TConnectivity.AddIndexedEdge(vertexIndex0, vertexIndex1: integer;
-  FaceID: integer): integer;
+function TConnectivity.AddIndexedEdge(vertexIndex0, vertexIndex1: integer; FaceID: integer): integer;
 var
   i: integer;
   edgesVertices: PIntegerArray;
@@ -475,10 +450,8 @@ begin
   for i := 0 to EdgeCount - 1 do
   begin
     // Retrieve the two vertices in the edge
-    if ((edgesVertices^[0] = vertexIndex0) and
-      (edgesVertices^[1] = vertexIndex1)) or
-      ((edgesVertices^[0] = vertexIndex1) and (edgesVertices^[1] = vertexIndex0))
-    then
+    if ((edgesVertices^[0] = vertexIndex0) and (edgesVertices^[1] = vertexIndex1)) or
+      ((edgesVertices^[0] = vertexIndex1) and (edgesVertices^[1] = vertexIndex0)) then
     begin
       // Update the second Face of the edge and we're done (this _MAY_
       // overwrite a previous Face in a broken mesh)
@@ -503,8 +476,7 @@ begin
   FFaceVertexIndex.Add(Vi0, Vi1, vi2);
 
   if FPrecomputeFaceNormal then
-    FFaceNormal.Add(CalcPlaneNormal(FVertices.List^[Vi0], FVertices.List^[Vi1],
-      FVertices.List^[vi2]));
+    FFaceNormal.Add(CalcPlaneNormal(FVertices.List^[Vi0], FVertices.List^[Vi1], FVertices.List^[vi2]));
 
   FaceID := FFaceVisible.Add(0);
   AddIndexedEdge(Vi0, Vi1, FaceID);
@@ -513,8 +485,7 @@ begin
   result := FaceID;
 end;
 
-function TConnectivity.AddFace(const vertex0, vertex1,
-  vertex2: TAffineVector): integer;
+function TConnectivity.AddFace(const vertex0, vertex1, vertex2: TAffineVector): integer;
 var
   Vi0, Vi1, vi2: integer;
 begin
@@ -525,8 +496,7 @@ begin
   result := AddIndexedFace(Vi0, Vi1, vi2);
 end;
 
-function TConnectivity.AddQuad(const vertex0, vertex1, vertex2,
-  vertex3: TAffineVector): integer;
+function TConnectivity.AddQuad(const vertex0, vertex1, vertex2, vertex3: TAffineVector): integer;
 var
   Vi0, Vi1, vi2, Vi3: integer;
 begin

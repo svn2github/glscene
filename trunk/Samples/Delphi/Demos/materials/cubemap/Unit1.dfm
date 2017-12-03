@@ -12,7 +12,6 @@ object Form1: TForm1
   Font.Style = []
   OldCreateOrder = False
   Position = poScreenCenter
-  WindowState = wsMaximized
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
@@ -58,6 +57,7 @@ object Form1: TForm1
       Material.FrontProperties.Ambient.Color = {A7A6263FCDCC4C3ECDCC4C3E0000803F}
       Material.FrontProperties.Shininess = 46
       Material.FrontProperties.Specular.Color = {0000000000000000000000007F6A1C3F}
+      Material.Texture.ImageClassName = 'TGLCubeMapImage'
       Material.Texture.ImageAlpha = tiaAlphaFromIntensity
       Material.Texture.MinFilter = miNearest
       Material.Texture.TextureMode = tmReplace

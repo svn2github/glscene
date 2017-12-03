@@ -16,10 +16,17 @@ unit GLFileB3D;
 interface
 
 uses
-  System.Classes, System.SysUtils,
+  System.Classes, 
+  System.SysUtils,
    
-  GLVectorFileObjects, GLApplicationFileIO, GLTexture, GLTextureFormat,
-  GLMaterial, GLVectorTypes, GLVectorGeometry, GLVectorLists,
+  GLVectorFileObjects, 
+  GLApplicationFileIO, 
+  GLTexture, 
+  GLTextureFormat,
+  GLMaterial, 
+  GLVectorTypes, 
+  GLVectorGeometry, 
+  GLVectorLists,
   FileB3D;
 
 type
@@ -30,23 +37,16 @@ type
   end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 // ------------------------------ TGLB3DVectorFile ------------------------------
-// Capabilities
 
 class function TGLB3DVectorFile.Capabilities: TGLDataFileCapabilities;
 begin
   Result := [DfcRead];
 end;
 
-// LoadFromStream
 
 procedure TGLB3DVectorFile.LoadFromStream(AStream: TStream);
 
@@ -337,10 +337,8 @@ begin
   end;
 end;
 
+// ------------------------------------------------------------------
 initialization
-
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 RegisterVectorFileFormat('b3d', 'Blitz 3D model files', TGLB3DVectorFile);

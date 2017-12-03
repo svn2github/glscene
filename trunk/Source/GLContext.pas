@@ -2,11 +2,11 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Prototypes and base implementation of TGLContext.
+  Prototypes and base implementation of TGLContext.
 
-   History :
-     22/07/01 - EG - Creation (glcontext.omm)
-     The whole history is logged in previous version of the unit.
+  History :
+  22/07/01 - EG - Creation (glcontext.omm)
+  The whole history is logged in previous version of the unit.
 }
 unit GLContext;
 
@@ -27,7 +27,6 @@ uses
 {$IFDEF USE_SERVICE_CONTEXT}
   GLSGenerics,
 {$ENDIF}
-  GLState,
   GLSLog,
   GLCrossPlatform,
   OpenGLTokens,
@@ -35,13 +34,14 @@ uses
   GLVectorGeometry,
   GLStrings,
   GLVectorTypes,
+  GLState,
   XOpenGL,
   GLPipelineTransformation,
   GLTextureFormat;
 
 // Buffer ID's for Multiple-Render-Targets (using GL_ATI_draw_buffers)
 const
-  MRT_BUFFERS: array[0..3] of Cardinal = (GL_FRONT_LEFT, GL_AUX0, GL_AUX1, GL_AUX2);
+  MRT_BUFFERS: array [0 .. 3] of Cardinal = (GL_FRONT_LEFT, GL_AUX0, GL_AUX1, GL_AUX2);
 
 type
   TGLRCOption = (rcoDoubleBuffered, rcoStereo, rcoDebug, rcoOGL_ES);
@@ -55,23 +55,23 @@ type
   end;
 
   TTaskProcedure = procedure of object; stdcall;
+
   TServiceContextTask = record
     Task: TTaskProcedure;
     Event: TFinishTaskEvent;
   end;
 
 {$IFDEF USE_SERVICE_CONTEXT}
-  TServiceContextTaskList = {$IFDEF GLS_GENERIC_PREFIX} specialize {$ENDIF}
-    GThreadList < TServiceContextTask > ;
-{$ENDIF USE_SERVICE_CONTEXT}
 
+  TServiceContextTaskList = {$IFDEF GLS_GENERIC_PREFIX} specialize {$ENDIF}
+    GThreadList<TServiceContextTask>;
+{$ENDIF USE_SERVICE_CONTEXT}
   TGLContextManager = class;
 
   TGLContextAcceleration = (chaUnknown, chaHardware, chaSoftware);
 
-  TGLAntiAliasing = (// Multisample Antialiasing
-    aaDefault, aaNone, aa2x, aa2xHQ, aa4x, aa4xHQ,
-    aa6x, aa8x, aa16x,
+  TGLAntiAliasing = ( // Multisample Antialiasing
+    aaDefault, aaNone, aa2x, aa2xHQ, aa4x, aa4xHQ, aa6x, aa8x, aa16x,
     // Coverage Sampling Antialiasing
     csa8x, csa8xHQ, csa16x, csa16xHQ);
 
@@ -125,8 +125,7 @@ type
 {$ENDIF}
     procedure PropagateSharedContext;
     procedure DoCreateContext(ADeviceHandle: HDC); virtual; abstract;
-    procedure DoCreateMemoryContext(outputDevice: HWND; width, height:
-      Integer; BufferCount: integer = 1); virtual; abstract;
+    procedure DoCreateMemoryContext(outputDevice: HWND; width, height: Integer; BufferCount: Integer = 1); virtual; abstract;
     function DoShareLists(aContext: TGLContext): Boolean; virtual; abstract;
     procedure DoDestroyContext; virtual; abstract;
     procedure DoActivate; virtual; abstract;
@@ -136,84 +135,78 @@ type
   public
     constructor Create; virtual;
     destructor Destroy; override;
-    {An application-side cache of global per-context OpenGL states
-       and parameters }
+    { An application-side cache of global per-context OpenGL states
+      and parameters }
     property GLStates: TGLStateCache read FGLStates;
     property PipelineTransformation: TGLTransformation read FTransformation;
     // Context manager reference
     property Manager: TGLContextManager read FManager;
-    {Color bits for the rendering context }
+    { Color bits for the rendering context }
     property ColorBits: Integer read FColorBits write SetColorBits;
-    {Alpha bits for the rendering context }
+    { Alpha bits for the rendering context }
     property AlphaBits: Integer read FAlphaBits write SetAlphaBits;
-    {Depth bits for the rendering context }
+    { Depth bits for the rendering context }
     property DepthBits: Integer read FDepthBits write SetDepthBits;
-    {Stencil bits for the rendering context }
+    { Stencil bits for the rendering context }
     property StencilBits: Integer read FStencilBits write SetStencilBits;
-    {Accumulation buffer bits for the rendering context }
+    { Accumulation buffer bits for the rendering context }
     property AccumBits: Integer read FAccumBits write SetAccumBits;
-    {Auxiliary buffers bits for the rendering context }
+    { Auxiliary buffers bits for the rendering context }
     property AuxBuffers: Integer read FAuxBuffers write SetAuxBuffers;
-    { AntiAliasing option.
-      Ignored if not hardware supported, currently based on ARB_multisample. }
-    property AntiAliasing: TGLAntiAliasing read FAntiAliasing write
-      SetAntiAliasing;
-    {Specifies the layer plane that the rendering context is bound to. }
+    { AntiAliasing option. Ignored if not hardware supported, currently based on ARB_multisample. }
+    property AntiAliasing: TGLAntiAliasing read FAntiAliasing write SetAntiAliasing;
+    { Specifies the layer plane that the rendering context is bound to. }
     property Layer: TGLContextLayer read FLayer write SetLayer;
-    {Rendering context options. }
+    { Rendering context options. }
     property Options: TGLRCOptions read FOptions write SetOptions;
-    {Allows reading and defining the activity for the context.
-       The methods of this property are just wrappers around calls
-       to Activate and Deactivate. }
+    { Allows reading and defining the activity for the context.
+      The methods of this property are just wrappers around calls to Activate and Deactivate. }
     property Active: Boolean read GetActive write SetActive;
-    {Indicates if the context is hardware-accelerated. }
+    { Indicates if the context is hardware-accelerated. }
     property Acceleration: TGLContextAcceleration read FAcceleration write SetAcceleration;
-    {Triggered whenever the context is destroyed. 
-       This events happens *before* the context has been
-       actually destroyed, OpenGL resource cleanup can
-       still occur here. }
-    property OnDestroyContext: TNotifyEvent read FOnDestroyContext write
-      FOnDestroyContext;
-    {Creates the context.
-       This method must be invoked before the context can be used. }
+    { Triggered whenever the context is destroyed.
+      This events happens *before* the context has been
+      actually destroyed, OpenGL resource cleanup can still occur here. }
+    property OnDestroyContext: TNotifyEvent read FOnDestroyContext write FOnDestroyContext;
+    { Creates the context.
+      This method must be invoked before the context can be used. }
     procedure CreateContext(ADeviceHandle: HDC); overload;
-    {Creates an in-memory context.
-       The function should fail if no hardware-accelerated memory context
-       can be created (the CreateContext method can handle software OpenGL
-       contexts). }
-    procedure CreateMemoryContext(outputDevice: HWND; width, height:
-      Integer; BufferCount: integer = 1);
-    {Setup display list sharing between two rendering contexts. 
-       Both contexts must have the same pixel format. }
+    { Creates an in-memory context.
+      The function should fail if no hardware-accelerated memory context
+      can be created (the CreateContext method can handle software OpenGL
+      contexts). }
+    procedure CreateMemoryContext(outputDevice: HWND; width, height: Integer; BufferCount: Integer = 1);
+    { Setup display list sharing between two rendering contexts.
+      Both contexts must have the same pixel format. }
     procedure ShareLists(aContext: TGLContext);
-    {Destroy the context. 
-       Will fail if no context has been created.
-       The method will first invoke the OnDestroyContext
-       event, then attempts to deactivate the context
-       (if it is active) before destroying it. }
+    { Destroy the context.
+      Will fail if no context has been created.
+      The method will first invoke the OnDestroyContext
+      event, then attempts to deactivate the context
+      (if it is active) before destroying it. }
     procedure DestroyContext;
-    {Activates the context. 
-       A context can be activated multiple times (and must be
-       deactivated the same number of times), but this function
-       will fail if another context is already active. }
+    { Activates the context.
+      A context can be activated multiple times (and must be
+      deactivated the same number of times), but this function
+      will fail if another context is already active. }
     procedure Activate;
     { Deactivates the context.
       Will fail if the context is not active or another
       context has been activated. }
     procedure Deactivate;
-    {Call OnPrepare for all handles.  }
+    { Call OnPrepare for all handles. }
     procedure PrepareHandlesData;
-    {Returns true if the context is valid.
-       A context is valid from the time it has been successfully
-       created to the time of its destruction. }
+    { Returns true if the context is valid.
+      A context is valid from the time it has been successfully
+      created to the time of its destruction. }
     function IsValid: Boolean; virtual; abstract;
-    {Request to swap front and back buffers if they were defined. }
+    { Request to swap front and back buffers if they were defined. }
     procedure SwapBuffers; virtual; abstract;
-    {Returns the first compatible context that isn't self in the shares. }
+    { Returns the first compatible context that isn't self in the shares. }
     function FindCompatibleContext: TGLContext;
     procedure DestroyAllHandles;
     function RenderOutputDevice: Pointer; virtual; abstract;
-    {Access to OpenGL command and extension. }
+    { Access to OpenGL command and extension. }
     property GL: TGLExtensionsAndEntryPoints read FGL;
     property MultitextureCoordinator: TGLMultitextureCoordinator read FXGL;
     property IsPraparationNeed: Boolean read FIsPraparationNeed;
@@ -221,45 +214,46 @@ type
 
   TGLContextClass = class of TGLContext;
 
-  {A TGLContext with screen control property and methods.
-     This variety of contexts is for drivers that access windows and OpenGL
-     through an intermediate opaque cross-platform API. 
-     TGLSceneViewer won't use them, TGLMemoryViewer may be able to use them,
-     but most of the time they will be accessed through a specific viewer
-     class/subclass. }
+  { A TGLContext with screen control property and methods.
+    This variety of contexts is for drivers that access windows and OpenGL
+    through an intermediate opaque cross-platform API.
+    TGLSceneViewer won't use them, TGLMemoryViewer may be able to use them,
+    but most of the time they will be accessed through a specific viewer
+    class/subclass. }
   TGLScreenControlingContext = class(TGLContext)
   strict private
     FWidth, FHeight: Integer;
     FFullScreen: Boolean;
   protected
   public
-    property Width: Integer read FWidth write FWidth;
-    property Height: Integer read FHeight write FHeight;
+    property width: Integer read FWidth write FWidth;
+    property height: Integer read FHeight write FHeight;
     property FullScreen: Boolean read FFullScreen write FFullScreen;
   end;
 
   PGLRCHandle = ^TGLRCHandle;
+
   TGLRCHandle = record
     FRenderingContext: TGLContext;
     FHandle: Cardinal;
     FChanged: Boolean;
   end;
 
-  TOnPrepareHandleData = procedure(AContext: TGLContext) of object;
+  TOnPrepareHandleData = procedure(aContext: TGLContext) of object;
 
-  {Wrapper around an OpenGL context handle.
-     This wrapper also takes care of context registrations and data releases
-     related to context releases an cleanups. This is an abstract class,
-     use the TGLListHandle and TGLTextureHandle subclasses. }
+  { Wrapper around an OpenGL context handle.
+    This wrapper also takes care of context registrations and data releases
+    related to context releases an cleanups. This is an abstract class,
+    use the TGLListHandle and TGLTextureHandle subclasses. }
   TGLContextHandle = class
   private
     FHandles: TList;
-    FLastHandle : PGLRCHandle;
+    FLastHandle: PGLRCHandle;
     FOnPrepare: TOnPrepareHandleData;
     function GetHandle: Cardinal; inline;
     function GetContext: TGLContext;
-    function SearchRC(AContext: TGLContext): PGLRCHandle;
-    function RCItem(AIndex: integer): PGLRCHandle; inline;
+    function SearchRC(aContext: TGLContext): PGLRCHandle;
+    function RCItem(AIndex: Integer): PGLRCHandle; inline;
     procedure CheckCurrentRC;
   protected
     // Invoked by when there is no compatible context left for relocation
@@ -273,33 +267,32 @@ type
     constructor Create; virtual;
     constructor CreateAndAllocate(failIfAllocationFailed: Boolean = True);
     destructor Destroy; override;
-    {Return OpenGL identifier in current context. }
+    { Return OpenGL identifier in current context. }
     property Handle: Cardinal read GetHandle;
-    {Return current rendering context if handle is allocated in it
-       or first context where handle is allocated. }
+    { Return current rendering context if handle is allocated in it
+      or first context where handle is allocated. }
     property RenderingContext: TGLContext read GetContext;
-    {Return True is data need update in current context. }
+    { Return True is data need update in current context. }
     function IsDataNeedUpdate: Boolean; inline;
-    {Return True if data updated in all contexts. }
+    { Return True if data updated in all contexts. }
     function IsDataComplitelyUpdated: Boolean;
-    {Notify the data was updated in current context. }
+    { Notify the data was updated in current context. }
     procedure NotifyDataUpdated;
     { Notify the data was changed through all context. }
-    procedure NotifyChangesOfData; inline;
+    procedure NotifyChangesOfData;
     // Checks if required extensions / OpenGL version are met
     class function IsSupported: Boolean; virtual;
-    function IsAllocatedForContext(AContext: TGLContext = nil): Boolean;
+    function IsAllocatedForContext(aContext: TGLContext = nil): Boolean;
     function IsShared: Boolean;
-    function  AllocateHandle: Cardinal;
+    function AllocateHandle: Cardinal;
     procedure DestroyHandle;
     property OnPrapare: TOnPrepareHandleData read FOnPrepare write FOnPrepare;
   end;
 
   TGLVirtualHandle = class;
-  TGLVirtualHandleEvent = procedure(Sender: TGLVirtualHandle; var handle:
-    Cardinal) of object;
+  TGLVirtualHandleEvent = procedure(Sender: TGLVirtualHandle; var Handle: Cardinal) of object;
 
-  {A context handle with event-based handle allocation and destruction. }
+  { A context handle with event-based handle allocation and destruction. }
   TGLVirtualHandle = class(TGLContextHandle)
   private
     FOnAllocate, FOnDestroy: TGLVirtualHandleEvent;
@@ -309,19 +302,18 @@ type
     procedure DoDestroyHandle(var AHandle: Cardinal); override;
     class function Transferable: Boolean; override;
   public
-    property OnAllocate: TGLVirtualHandleEvent read FOnAllocate write
-      FOnAllocate;
+    property OnAllocate: TGLVirtualHandleEvent read FOnAllocate write FOnAllocate;
     property OnDestroy: TGLVirtualHandleEvent read FOnDestroy write FOnDestroy;
     property Tag: Integer read FTag write FTag;
   end;
 
-  {Transferable virtual handle. }
+  { Transferable virtual handle. }
   TGLVirtualHandleTransf = class(TGLVirtualHandle)
   protected
     class function Transferable: Boolean; override;
   end;
 
-  {Manages a handle to a display list. }
+  { Manages a handle to a display list. }
   TGLListHandle = class(TGLContextHandle)
   protected
     function DoAllocateHandle: Cardinal; override;
@@ -333,7 +325,7 @@ type
     procedure CallList; inline;
   end;
 
-  {Manages a handle to a texture. }
+  { Manages a handle to a texture. }
   TGLTextureHandle = class(TGLContextHandle)
   private
     FTarget: TGLTextureTarget;
@@ -357,8 +349,8 @@ type
     class function IsSupported: Boolean; override;
   end;
 
-  {Manages a handle to a query.
-     Do not use this class directly, use one of its subclasses instead. }
+  { Manages a handle to a query.
+    Do not use this class directly, use one of its subclasses instead. }
   TGLQueryHandle = class(TGLContextHandle)
   private
     FActive: Boolean;
@@ -374,9 +366,9 @@ type
     procedure EndQuery;
     // Check if result is available from the query.  Result may not be available
     // immediately after ending the query
-    function IsResultAvailable: boolean;
+    function IsResultAvailable: Boolean;
     // Number of bits used to store the query result. eg. 32/64 bit
-    function CounterBits: integer;
+    function CounterBits: Integer;
     // Retrieve query result, may cause a stall if the result is not available yet
     function QueryResultInt: TGLInt;
     function QueryResultUInt: Cardinal;
@@ -385,14 +377,14 @@ type
     function QueryResultBool: TGLboolean;
     property Target: Cardinal read GetTarget;
     property QueryType: TQueryType read GetQueryType;
-    {True if within a Begin/EndQuery. }
+    { True if within a Begin/EndQuery. }
     property Active: Boolean read FActive;
   end;
 
-  {Manages a handle to an occlusion query.
-     Requires OpenGL 1.5+
-     Does *NOT* check for extension availability, this is assumed to have been
-     checked by the user. }
+  { Manages a handle to an occlusion query.
+    Requires OpenGL 1.5+
+    Does *NOT* check for extension availability, this is assumed to have been
+    checked by the user. }
   TGLOcclusionQueryHandle = class(TGLQueryHandle)
   protected
     function GetTarget: Cardinal; override;
@@ -428,10 +420,10 @@ type
     function Time: Integer;
   end;
 
-  {Manages a handle to a primitive query.
-     Requires OpenGL 3.0+
-     Does *NOT* check for extension availability, this is assumed to have been
-     checked by the user. }
+  { Manages a handle to a primitive query.
+    Requires OpenGL 3.0+
+    Does *NOT* check for extension availability, this is assumed to have been
+    checked by the user. }
   TGLPrimitiveQueryHandle = class(TGLQueryHandle)
   protected
     function GetTarget: Cardinal; override;
@@ -455,16 +447,15 @@ type
     function GetTarget: Cardinal; virtual; abstract;
     class function IsValid(const ID: Cardinal): Boolean; override;
   public
-    {Creates the buffer object buffer and initializes it. }
+    { Creates the buffer object buffer and initializes it. }
     constructor CreateFromData(p: Pointer; size: Integer; bufferUsage: Cardinal);
     procedure Bind; virtual; abstract;
-    {Note that it is not necessary to UnBind before Binding another buffer. }
+    { Note that it is not necessary to UnBind before Binding another buffer. }
     procedure UnBind; virtual; abstract;
-    {Bind a buffer object to an indexed target, used by transform feedback
-       buffer objects and uniform buffer objects. (OpenGL 3.0+) }
-    procedure BindRange(index: Cardinal; offset: TGLintptr; size: TGLsizeiptr);
-      virtual;
-    {Equivalent to calling BindRange with offset = 0, and size = the size of buffer.}
+    { Bind a buffer object to an indexed target, used by transform feedback
+      buffer objects and uniform buffer objects. (OpenGL 3.0+) }
+    procedure BindRange(index: Cardinal; offset: TGLintptr; size: TGLsizeiptr); virtual;
+    { Equivalent to calling BindRange with offset = 0, and size = the size of buffer. }
     procedure BindBase(index: Cardinal); virtual;
     procedure UnBindBase(index: Cardinal); virtual;
     { Specifies buffer content.
@@ -476,21 +467,20 @@ type
     procedure BufferData(p: Pointer; size: Integer; bufferUsage: Cardinal);
     // Invokes Bind then BufferData
     procedure BindBufferData(p: Pointer; size: Integer; bufferUsage: Cardinal);
-    {Updates part of an already existing buffer.
-       offset and size indicate which part of the data in the buffer is
-       to bo modified and p where the data should be taken from. }
+    { Updates part of an already existing buffer.
+      offset and size indicate which part of the data in the buffer is
+      to bo modified and p where the data should be taken from. }
     procedure BufferSubData(offset, size: Integer; p: Pointer);
-    {Map buffer content to memory. 
-       Values for access are GL_READ_ONLY_ARB, GL_WRITE_ONLY_ARB and
-       GL_READ_WRITE_ARB.
-       Valid only if the buffer has been bound, must be followed by
-       an UnmapBuffer, only one buffer may be mapped at a time. }
+    { Map buffer content to memory.
+      Values for access are GL_READ_ONLY_ARB, GL_WRITE_ONLY_ARB and
+      GL_READ_WRITE_ARB.
+      Valid only if the buffer has been bound, must be followed by
+      an UnmapBuffer, only one buffer may be mapped at a time. }
     function MapBuffer(access: Cardinal): Pointer;
-    function MapBufferRange(offset: TGLint; len: TGLsizei; access: TGLbitfield):
-      Pointer;
-    procedure Flush(offset: TGLint; len: TGLsizei);
-    {Unmap buffer content from memory. 
-       Must follow a MapBuffer, and happen before the buffer is unbound. }
+    function MapBufferRange(offset: TGLInt; len: TGLsizei; access: TGLbitfield): Pointer;
+    procedure Flush(offset: TGLInt; len: TGLsizei);
+    { Unmap buffer content from memory.
+      Must follow a MapBuffer, and happen before the buffer is unbound. }
     function UnmapBuffer: Boolean;
     class function IsSupported: Boolean; override;
     property Target: Cardinal read GetTarget;
@@ -508,7 +498,7 @@ type
     property VBOTarget: Cardinal read GetVBOTarget;
   end;
 
-  { Manages a handle to VBO Array Buffer. Typically used to store vertices, normals, texcoords, etc.}
+  { Manages a handle to VBO Array Buffer. Typically used to store vertices, normals, texcoords, etc. }
   TGLVBOArrayBufferHandle = class(TGLVBOHandle)
   protected
     function GetTarget: Cardinal; override;
@@ -517,7 +507,7 @@ type
     procedure UnBind; override;
   end;
 
-  {Manages a handle to VBO Element Array Buffer. Typically used to store vertex indices. }
+  { Manages a handle to VBO Element Array Buffer. Typically used to store vertex indices. }
   TGLVBOElementArrayHandle = class(TGLVBOHandle)
   protected
     function GetTarget: Cardinal; override;
@@ -537,9 +527,9 @@ type
     class function IsSupported: Boolean; override;
   end;
 
-  {Manages a handle to PBO Pixel Unpack Buffer.
-     When bound, commands such as DrawPixels read
-     their data from a buffer object. }
+  { Manages a handle to PBO Pixel Unpack Buffer.
+    When bound, commands such as DrawPixels read
+    their data from a buffer object. }
   TGLUnpackPBOHandle = class(TGLBufferObjectHandle)
   protected
     function GetTarget: Cardinal; override;
@@ -549,14 +539,14 @@ type
     class function IsSupported: Boolean; override;
   end;
 
-  {Manages a handle to a Transform Feedback Buffer Object.
-     Transform feedback buffers can be used to capture vertex data from the
-     vertex or geometry shader stage to perform further processing without
-     going on to the fragment shader stage. }
+  { Manages a handle to a Transform Feedback Buffer Object.
+    Transform feedback buffers can be used to capture vertex data from the
+    vertex or geometry shader stage to perform further processing without
+    going on to the fragment shader stage. }
   TGLTransformFeedbackBufferHandle = class(TGLBufferObjectHandle)
-    //    FTransformFeedbackBufferBuffer: array[0..15] of Cardinal; // (0, 0, 0, ...)
-    //    FTransformFeedbackBufferStart: array[0..15] of TGLuint64; // (0, 0, 0, ...)
-    //    FTransformFeedbackBufferSize: array[0..15] of TGLuint64; // (0, 0, 0, ...)
+    // FTransformFeedbackBufferBuffer: array[0..15] of Cardinal; // (0, 0, 0, ...)
+    // FTransformFeedbackBufferStart: array[0..15] of TGLuint64; // (0, 0, 0, ...)
+    // FTransformFeedbackBufferSize: array[0..15] of TGLuint64; // (0, 0, 0, ...)
   protected
     function GetTarget: Cardinal; override;
   public
@@ -571,7 +561,7 @@ type
     class function IsSupported: Boolean; override;
   end;
 
-  {Manages a handle to a Buffer Texture. (TBO) }
+  { Manages a handle to a Buffer Texture. (TBO) }
   TGLTextureBufferHandle = class(TGLBufferObjectHandle)
   protected
     function GetTarget: Cardinal; override;
@@ -581,13 +571,13 @@ type
     class function IsSupported: Boolean; override;
   end;
 
-  {Manages a handle to a Uniform Buffer Object (UBO).
-     Uniform buffer objects store "uniform blocks"; groups of uniforms
-     that can be passed as a group into a GLSL program. }
+  { Manages a handle to a Uniform Buffer Object (UBO).
+    Uniform buffer objects store "uniform blocks"; groups of uniforms
+    that can be passed as a group into a GLSL program. }
   TGLUniformBufferHandle = class(TGLBufferObjectHandle)
-    //    FUniformBufferBuffer: array[0..15] of Cardinal; // (0, 0, 0, ...)
-    //    FUniformBufferStart: array[0..15] of TGLuint64; // (0, 0, 0, ...)
-    //    FUniformBufferSize: array[0..15] of TGLuint64; // (0, 0, 0, ...)
+    // FUniformBufferBuffer: array[0..15] of Cardinal; // (0, 0, 0, ...)
+    // FUniformBufferStart: array[0..15] of TGLuint64; // (0, 0, 0, ...)
+    // FUniformBufferSize: array[0..15] of TGLuint64; // (0, 0, 0, ...)
   protected
     function GetTarget: Cardinal; override;
   public
@@ -599,9 +589,9 @@ type
     class function IsSupported: Boolean; override;
   end;
 
-  {Manages a handle to a Vertex Array Object (VAO).
-     Vertex array objects are used to rapidly switch between large sets
-     of array state. }
+  { Manages a handle to a Vertex Array Object (VAO).
+    Vertex array objects are used to rapidly switch between large sets
+    of array state. }
   TGLVertexArrayHandle = class(TGLContextHandle)
   protected
     class function Transferable: Boolean; override;
@@ -614,30 +604,26 @@ type
     class function IsSupported: Boolean; override;
   end;
 
-  TGLFramebufferStatus = (fsComplete, fsIncompleteAttachment,
-    fsIncompleteMissingAttachment,
-    fsIncompleteDuplicateAttachment, fsIncompleteDimensions,
-    fsIncompleteFormats,
-    fsIncompleteDrawBuffer, fsIncompleteReadBuffer, fsUnsupported,
-    fsIncompleteMultisample,
-    fsStatusError);
+  TGLFramebufferStatus = (fsComplete, fsIncompleteAttachment, fsIncompleteMissingAttachment, fsIncompleteDuplicateAttachment,
+    fsIncompleteDimensions, fsIncompleteFormats, fsIncompleteDrawBuffer, fsIncompleteReadBuffer, fsUnsupported,
+    fsIncompleteMultisample, fsStatusError);
 
-  {Manages a handle to a Framebuffer Object (FBO).
-     Framebuffer objects provide a way of drawing to rendering
-     destinations other than the buffers provided to the GL by the
-     window-system.  One or more "framebuffer-attachable images" can be attached
-     to a Framebuffer for uses such as: offscreen rendering, "render to texture" +
-     "multiple render targets" (MRT).
-     There are several types of framebuffer-attachable images:
-     - The image of a renderbuffer object, which is always 2D.
-     - A single level of a 1D texture, which is treated as a 2D image with a height of one.
-     - A single level of a 2D or rectangle texture.
-     - A single face of a cube map texture level, which is treated as a 2D image.
-     - A single layer of a 1D or 2D array texture or 3D texture, which is treated as a 2D image.
-     Additionally, an entire level of a 3D texture, cube map texture,
-     or 1D or 2D array texture can be attached to an attachment point.
-     Such attachments are treated as an array of 2D images, arranged in
-     layers, and the corresponding attachment point is considered to be layered. }
+  { Manages a handle to a Framebuffer Object (FBO).
+    Framebuffer objects provide a way of drawing to rendering
+    destinations other than the buffers provided to the GL by the
+    window-system.  One or more "framebuffer-attachable images" can be attached
+    to a Framebuffer for uses such as: offscreen rendering, "render to texture" +
+    "multiple render targets" (MRT).
+    There are several types of framebuffer-attachable images:
+    - The image of a renderbuffer object, which is always 2D.
+    - A single level of a 1D texture, which is treated as a 2D image with a height of one.
+    - A single level of a 2D or rectangle texture.
+    - A single face of a cube map texture level, which is treated as a 2D image.
+    - A single layer of a 1D or 2D array texture or 3D texture, which is treated as a 2D image.
+    Additionally, an entire level of a 3D texture, cube map texture,
+    or 1D or 2D array texture can be attached to an attachment point.
+    Such attachments are treated as an array of 2D images, arranged in
+    layers, and the corresponding attachment point is considered to be layered. }
   TGLFramebufferHandle = class(TGLContextHandle)
   protected
     class function Transferable: Boolean; override;
@@ -651,54 +637,44 @@ type
     procedure BindForDrawing;
     // Bind framebuffer for reading
     procedure BindForReading;
-    {Note that it is not necessary to unbind before binding another framebuffer. }
+    { Note that it is not necessary to unbind before binding another framebuffer. }
     procedure UnBind;
     procedure UnBindForDrawing;
     procedure UnBindForReading;
     // target = GL_DRAW_FRAMEBUFFER, GL_READ_FRAMEBUFFER, GL_FRAMEBUFFER (attach to both READ + DRAW)
     // attachment = COLOR_ATTACHMENTi, DEPTH_ATTACHMENT, STENCIL_ATTACHMENT, DEPTH_STENCIL_ATTACHMENT
-    procedure Attach1DTexture(target: Cardinal; attachment: Cardinal; textarget:
-      Cardinal; texture: Cardinal; level: TGLint);
-    procedure Attach2DTexture(target: Cardinal; attachment: Cardinal; textarget:
-      Cardinal; texture: Cardinal; level: TGLint);
-    procedure Attach3DTexture(target: Cardinal; attachment: Cardinal; textarget:
-      Cardinal; texture: Cardinal; level: TGLint; layer: TGLint);
-    procedure AttachLayer(target: Cardinal; attachment: Cardinal; texture:
-      Cardinal; level: TGLint; layer: TGLint);
-    procedure AttachRenderBuffer(target: Cardinal; attachment: Cardinal;
-      renderbuffertarget: Cardinal; renderbuffer: Cardinal);
+    procedure Attach1DTexture(Target: Cardinal; attachment: Cardinal; textarget: Cardinal; texture: Cardinal; level: TGLInt);
+    procedure Attach2DTexture(Target: Cardinal; attachment: Cardinal; textarget: Cardinal; texture: Cardinal; level: TGLInt);
+    procedure Attach3DTexture(Target: Cardinal; attachment: Cardinal; textarget: Cardinal; texture: Cardinal; level: TGLInt;
+      Layer: TGLInt);
+    procedure AttachLayer(Target: Cardinal; attachment: Cardinal; texture: Cardinal; level: TGLInt; Layer: TGLInt);
+    procedure AttachRenderBuffer(Target: Cardinal; attachment: Cardinal; renderbuffertarget: Cardinal; renderbuffer: Cardinal);
     // OpenGL 3.2+ only.
     // If texture is the name of a three-dimensional texture, cube map texture, one-or
     // two-dimensional array texture, or two-dimensional multisample array texture, the
     // texture level attached to the framebuffer attachment point is an array of images,
     // and the framebuffer attachment is considered layered.
-    procedure AttachTexture(target: Cardinal; attachment: Cardinal; texture:
-      Cardinal; level: TGLint);
+    procedure AttachTexture(Target: Cardinal; attachment: Cardinal; texture: Cardinal; level: TGLInt);
     // OpenGL 3.2+ only
-    procedure AttachTextureLayer(target: Cardinal; attachment: Cardinal; texture:
-      Cardinal; level: TGLint; layer: TGLint);
+    procedure AttachTextureLayer(Target: Cardinal; attachment: Cardinal; texture: Cardinal; level: TGLInt; Layer: TGLInt);
 
     // copy rect from bound read framebuffer to bound draw framebuffer
-    procedure Blit(srcX0: TGLint; srcY0: TGLint; srcX1: TGLint; srcY1: TGLint;
-      dstX0: TGLint; dstY0: TGLint; dstX1: TGLint; dstY1: TGLint;
-      mask: TGLbitfield; filter: Cardinal);
+    procedure Blit(srcX0: TGLInt; srcY0: TGLInt; srcX1: TGLInt; srcY1: TGLInt; dstX0: TGLInt; dstY0: TGLInt; dstX1: TGLInt;
+      dstY1: TGLInt; mask: TGLbitfield; filter: Cardinal);
     // target = GL_DRAW_FRAMEBUFFER, GL_READ_FRAMEBUFFER, GL_FRAMEBUFFER (equivalent to GL_DRAW_FRAMEBUFFER)
     // If default framebuffer (0) is bound:
     // attachment = GL_FRONT_LEFT, GL_FRONT_RIGHT, GL_BACK_LEFT, or GL_BACK_RIGHT, GL_DEPTH, GL_STENCIL
     // if a framebuffer object is bound:
     // attachment = GL_COLOR_ATTACHMENTi, GL_DEPTH_ATTACHMENT, GL_STENCIL_ATTACHMENT, GL_DEPTH_STENCIL_ATTACHMENT
     // param = GL_FRAMEBUFFER_ATTACHMENT_(OBJECT_TYPE, OBJECT_NAME,
-    //       RED_SIZE, GREEN_SIZE, BLUE_SIZE, ALPHA_SIZE, DEPTH_SIZE, STENCIL_SIZE,
-    //       COMPONENT_TYPE, COLOR_ENCODING, TEXTURE_LEVEL, LAYERED, TEXTURE_CUBE_MAP_FACE, TEXTURE_LAYER
-    function GetAttachmentParameter(target: Cardinal; attachment: Cardinal; pname:
-      Cardinal): TGLint;
+    // RED_SIZE, GREEN_SIZE, BLUE_SIZE, ALPHA_SIZE, DEPTH_SIZE, STENCIL_SIZE,
+    // COMPONENT_TYPE, COLOR_ENCODING, TEXTURE_LEVEL, LAYERED, TEXTURE_CUBE_MAP_FACE, TEXTURE_LAYER
+    function GetAttachmentParameter(Target: Cardinal; attachment: Cardinal; pname: Cardinal): TGLInt;
     // Returns the type of object bound to attachment point:
     // GL_NONE, GL_FRAMEBUFFER_DEFAULT, GL_TEXTURE, or GL_RENDERBUFFER
-    function GetAttachmentObjectType(target: Cardinal; attachment: Cardinal):
-      TGLint;
+    function GetAttachmentObjectType(Target: Cardinal; attachment: Cardinal): TGLInt;
     // Returns the name (ID) of the texture or renderbuffer attached to attachment point
-    function GetAttachmentObjectName(target: Cardinal; attachment: Cardinal):
-      TGLint;
+    function GetAttachmentObjectName(Target: Cardinal; attachment: Cardinal): TGLInt;
 
     function GetStatus: TGLFramebufferStatus;
     function GetStringStatus(out clarification: string): TGLFramebufferStatus;
@@ -706,10 +682,10 @@ type
     class function IsSupported: Boolean; override;
   end;
 
-  {Manages a handle to a Renderbuffer Object.
-     A Renderbuffer is a "framebuffer-attachable image" for generalized offscreen
-     rendering and it also provides a means to support rendering to GL logical
-     buffer types which have no corresponding texture format (stencil, accum, etc). }
+  { Manages a handle to a Renderbuffer Object.
+    A Renderbuffer is a "framebuffer-attachable image" for generalized offscreen
+    rendering and it also provides a means to support rendering to GL logical
+    buffer types which have no corresponding texture format (stencil, accum, etc). }
   TGLRenderbufferHandle = class(TGLContextHandle)
   protected
     function DoAllocateHandle: Cardinal; override;
@@ -719,14 +695,13 @@ type
     procedure Bind;
     procedure UnBind;
     procedure SetStorage(internalformat: Cardinal; width, height: TGLsizei);
-    procedure SetStorageMultisample(internalformat: Cardinal; samples: TGLsizei;
-      width, height: TGLsizei);
+    procedure SetStorageMultisample(internalformat: Cardinal; samples: TGLsizei; width, height: TGLsizei);
     class function IsSupported: Boolean; override;
   end;
 
   TGLARBProgramHandle = class(TGLContextHandle)
   private
-     
+
     FReady: Boolean;
     FInfoLog: string;
   protected
@@ -764,8 +739,8 @@ type
     class function IsSupported: Boolean; override;
   end;
 
-  {Base class for GLSL handles (programs and shaders).
-     Do not use this class directly, use one of its subclasses instead. }
+  { Base class for GLSL handles (programs and shaders).
+    Do not use this class directly, use one of its subclasses instead. }
   TGLSLHandle = class(TGLContextHandle)
   protected
     procedure DoDestroyHandle(var AHandle: Cardinal); override;
@@ -774,10 +749,10 @@ type
     class function IsSupported: Boolean; override;
   end;
 
-  {Manages a handle to a Shader Object.
-     Does *NOT* check for extension availability, this is assumed to have been
-     checked by the user.
-     Do not use this class directly, use one of its subclasses instead. }
+  { Manages a handle to a Shader Object.
+    Does *NOT* check for extension availability, this is assumed to have been
+    checked by the user.
+    Do not use this class directly, use one of its subclasses instead. }
   TGLShaderHandle = class(TGLSLHandle)
   private
     FShaderType: Cardinal;
@@ -793,44 +768,44 @@ type
 
   TGLShaderHandleClass = class of TGLShaderHandle;
 
-  {Manages a handle to a Vertex Shader Object. }
+  { Manages a handle to a Vertex Shader Object. }
   TGLVertexShaderHandle = class(TGLShaderHandle)
   public
     constructor Create; override;
     class function IsSupported: Boolean; override;
   end;
 
-  {Manages a handle to a Geometry Shader Object. }
+  { Manages a handle to a Geometry Shader Object. }
   TGLGeometryShaderHandle = class(TGLShaderHandle)
   public
     constructor Create; override;
     class function IsSupported: Boolean; override;
   end;
 
-  {Manages a handle to a Fragment Shader Object. }
+  { Manages a handle to a Fragment Shader Object. }
   TGLFragmentShaderHandle = class(TGLShaderHandle)
   public
     constructor Create; override;
     class function IsSupported: Boolean; override;
   end;
 
-  {Manages a handle to a Tessellation Control Shader Object. }
+  { Manages a handle to a Tessellation Control Shader Object. }
   TGLTessControlShaderHandle = class(TGLShaderHandle)
   public
     constructor Create; override;
     class function IsSupported: Boolean; override;
   end;
 
-  {Manages a handle to a Tessellation Evaluation Shader Object. }
+  { Manages a handle to a Tessellation Evaluation Shader Object. }
   TGLTessEvaluationShaderHandle = class(TGLShaderHandle)
   public
     constructor Create; override;
     class function IsSupported: Boolean; override;
   end;
 
-  {Manages a GLSL Program Object.
-     Does *NOT* check for extension availability, this is assumed to have been
-     checked by the user. }
+  { Manages a GLSL Program Object.
+    Does *NOT* check for extension availability, this is assumed to have been
+    checked by the user. }
   TGLProgramHandle = class(TGLSLHandle)
   public
     class function IsValid(const ID: Cardinal): Boolean; override;
@@ -858,24 +833,19 @@ type
     procedure SetUniformMatrix3fv(const index: string; const val: TMatrix3f);
     function GetUniformMatrix4fv(const index: string): TMatrix;
     procedure SetUniformMatrix4fv(const index: string; const val: TMatrix);
-    function GetUniformTextureHandle(const index: string;
-      const TextureIndex: Integer; const TextureTarget: TGLTextureTarget):
-      Cardinal;
-    procedure SetUniformTextureHandle(const index: string;
-      const TextureIndex: Integer; const TextureTarget: TGLTextureTarget;
+    function GetUniformTextureHandle(const index: string; const TextureIndex: Integer; const TextureTarget: TGLTextureTarget)
+      : Cardinal;
+    procedure SetUniformTextureHandle(const index: string; const TextureIndex: Integer; const TextureTarget: TGLTextureTarget;
       const Value: Cardinal);
-    procedure SetUniformBuffer(const index: string;
-      Value: TGLUniformBufferHandle);
+    procedure SetUniformBuffer(const index: string; Value: TGLUniformBufferHandle);
   protected
-    function DoAllocateHandle: cardinal; override;
+    function DoAllocateHandle: Cardinal; override;
   public
     property Name: string read FName write FName;
     constructor Create; override;
-    {Compile and attach a new shader.
-       Raises an EGLShader exception in case of failure. }
-    procedure AddShader(shaderType: TGLShaderHandleClass; const shaderSource:
-      string;
-      treatWarningsAsErrors: Boolean = False);
+    { Compile and attach a new shader.
+      Raises an EGLShader exception in case of failure. }
+    procedure AddShader(ShaderType: TGLShaderHandleClass; const ShaderSource: string; treatWarningsAsErrors: Boolean = False);
     procedure AttachObject(shader: TGLShaderHandle);
     procedure DetachAllObject;
     procedure BindAttribLocation(index: Integer; const aName: string);
@@ -893,50 +863,37 @@ type
     function GetUniformBufferSize(const aName: string): Integer;
     procedure UseProgramObject;
     procedure EndUseProgramObject;
-    procedure SetUniformi(const index: string; const val: integer); overload;
+    procedure SetUniformi(const index: string; const val: Integer); overload;
     procedure SetUniformi(const index: string; const val: TVector2i); overload;
     procedure SetUniformi(const index: string; const val: TVector3i); overload;
     procedure SetUniformi(const index: string; const val: TVector4i); overload;
-    procedure SetUniformf(const index: string; const val: single); overload;
+    procedure SetUniformf(const index: string; const val: Single); overload;
     procedure SetUniformf(const index: string; const val: TVector2f); overload;
     procedure SetUniformf(const index: string; const val: TVector3f); overload;
     procedure SetUniformf(const index: string; const val: TVector4f); overload;
-    {Shader parameters. }
-    property Uniform1i[const index: string]: Integer read GetUniform1i write
-    SetUniform1i;
-    property Uniform2i[const index: string]: TVector2i read GetUniform2i write
-    SetUniform2i;
-    property Uniform3i[const index: string]: TVector3i read GetUniform3i write
-    SetUniform3i;
-    property Uniform4i[const index: string]: TVector4i read GetUniform4i write
-    SetUniform4i;
-    property Uniform1f[const index: string]: Single read GetUniform1f write
-    SetUniform1f;
-    property Uniform2f[const index: string]: TVector2f read GetUniform2f write
-    SetUniform2f;
-    property Uniform3f[const index: string]: TAffineVector read GetUniform3f
-    write SetUniform3f;
-    property Uniform4f[const index: string]: TVector read GetUniform4f write
-    SetUniform4f;
-    property UniformMatrix2fv[const index: string]: TMatrix2f read
-    GetUniformMatrix2fv write SetUniformMatrix2fv;
-    property UniformMatrix3fv[const index: string]: TMatrix3f read
-    GetUniformMatrix3fv write SetUniformMatrix3fv;
-    property UniformMatrix4fv[const index: string]: TMatrix read
-    GetUniformMatrix4fv write SetUniformMatrix4fv;
-    property UniformTextureHandle[const index: string; const TextureIndex:
-    Integer; const TextureTarget: TGLTextureTarget]: Cardinal read
-    GetUniformTextureHandle write SetUniformTextureHandle;
-    property UniformBuffer[const index: string]: TGLUniformBufferHandle write
-    SetUniformBuffer;
+    { Shader parameters. }
+    property Uniform1i[const index: string]: Integer read GetUniform1i write SetUniform1i;
+    property Uniform2i[const index: string]: TVector2i read GetUniform2i write SetUniform2i;
+    property Uniform3i[const index: string]: TVector3i read GetUniform3i write SetUniform3i;
+    property Uniform4i[const index: string]: TVector4i read GetUniform4i write SetUniform4i;
+    property Uniform1f[const index: string]: Single read GetUniform1f write SetUniform1f;
+    property Uniform2f[const index: string]: TVector2f read GetUniform2f write SetUniform2f;
+    property Uniform3f[const index: string]: TAffineVector read GetUniform3f write SetUniform3f;
+    property Uniform4f[const index: string]: TVector read GetUniform4f write SetUniform4f;
+    property UniformMatrix2fv[const index: string]: TMatrix2f read GetUniformMatrix2fv write SetUniformMatrix2fv;
+    property UniformMatrix3fv[const index: string]: TMatrix3f read GetUniformMatrix3fv write SetUniformMatrix3fv;
+    property UniformMatrix4fv[const index: string]: TMatrix read GetUniformMatrix4fv write SetUniformMatrix4fv;
+    property UniformTextureHandle[const index: string; const TextureIndex: Integer; const TextureTarget: TGLTextureTarget]
+      : Cardinal read GetUniformTextureHandle write SetUniformTextureHandle;
+    property UniformBuffer[const index: string]: TGLUniformBufferHandle write SetUniformBuffer;
   end;
 
   TGLContextNotification = record
     obj: TObject;
-    event: TNotifyEvent;
+    Event: TNotifyEvent;
   end;
 
-  {Stores and manages all the TGLContext objects.  }
+  { Stores and manages all the TGLContext objects. }
   TGLContextManager = class
   private
 
@@ -950,7 +907,6 @@ type
 {$ELSE}
     FHandles: TThreadList;
 {$ENDIF USE_MULTITHREAD}
-
 {$IFDEF USE_SERVICE_CONTEXT}
     FThread: TThread;
     FServiceStarter: TEvent;
@@ -966,7 +922,7 @@ type
     procedure DestroyingContextBy(aContext: TGLContext);
 
 {$IFDEF USE_SERVICE_CONTEXT}
-    {Create a special service and resource-keeper context. }
+    { Create a special service and resource-keeper context. }
     procedure CreateServiceContext;
     procedure QueueTaskDepleted;
     property ServiceStarter: TEvent read FServiceStarter;
@@ -975,26 +931,25 @@ type
   public
     constructor Create;
     destructor Destroy; override;
-    {Returns an appropriate, ready-to use context.
-       The returned context should be freed by caller. }
+    { Returns an appropriate, ready-to use context.
+      The returned context should be freed by caller. }
     function CreateContext(AClass: TGLContextClass = nil): TGLContext;
-    {Returns the number of TGLContext object.
-       This is *not* the number of OpenGL rendering contexts! }
+    { Returns the number of TGLContext object.
+      This is *not* the number of OpenGL rendering contexts! }
     function ContextCount: Integer;
-    {Registers a new object to notify when the last context is destroyed.
-       When the last rendering context is destroyed, the 'anEvent' will
-       be invoked with 'anObject' as parameter.
-       Note that the registration is kept until the notification is triggered
-       or a RemoveNotification on 'anObject' is issued. }
-    procedure LastContextDestroyNotification(anObject: TObject; anEvent:
-      TNotifyEvent);
-    {Unregisters an object from the notification lists.  }
+    { Registers a new object to notify when the last context is destroyed.
+      When the last rendering context is destroyed, the 'anEvent' will
+      be invoked with 'anObject' as parameter.
+      Note that the registration is kept until the notification is triggered
+      or a RemoveNotification on 'anObject' is issued. }
+    procedure LastContextDestroyNotification(anObject: TObject; anEvent: TNotifyEvent);
+    { Unregisters an object from the notification lists. }
     procedure RemoveNotification(anObject: TObject);
     // Marks the context manager for termination
     procedure Terminate;
-    {Request all contexts to destroy all their handles. }
+    { Request all contexts to destroy all their handles. }
     procedure DestroyAllHandles;
-    {Notify all contexts about necessity of handles preparation. }
+    { Notify all contexts about necessity of handles preparation. }
     procedure NotifyPreparationNeed;
   end;
 
@@ -1002,10 +957,10 @@ type
   EPBuffer = class(Exception);
   EGLShader = class(EGLContext);
 
-  {Drivers should register themselves via this function. }
+  { Drivers should register themselves via this function. }
 procedure RegisterGLContextClass(aGLContextClass: TGLContextClass);
-{The TGLContext that is the currently active context, if any.
-   Returns nil if no context is active. }
+{ The TGLContext that is the currently active context, if any.
+  Returns nil if no context is active. }
 function CurrentGLContext: TGLContext; inline;
 function SafeCurrentGLContext: TGLContext; inline;
 function IsMainThread: Boolean;
@@ -1018,26 +973,27 @@ procedure AddTaskForServiceContext(ATask: TTaskProcedure; FinishEvent: TFinishTa
 var
   GLContextManager: TGLContextManager;
   vIgnoreOpenGLErrors: Boolean = False;
-  vContextActivationFailureOccurred: Boolean = false;
+  vContextActivationFailureOccurred: Boolean = False;
 
 {$IFNDEF USE_MULTITHREAD}
+
 var
 {$ELSE}
-threadvar
+  threadvar
 {$ENDIF}
-
-  vCurrentGLContext: TGLContext;
+    vCurrentGLContext: TGLContext;
   GL: TGLExtensionsAndEntryPoints;
   xgl: TGLMultitextureCoordinator;
   vMainThread: Boolean;
   GLwithoutContext: TGLExtensionsAndEntryPoints;
 
-
-// ------------------------------------------------------------------
+  // ------------------------------------------------------------------
 implementation
+
 // ------------------------------------------------------------------
 
 {$IFDEF USE_SERVICE_CONTEXT}
+
 type
   TServiceContextThread = class(TThread)
   private
@@ -1071,9 +1027,9 @@ begin
   Result := CurrentGLContext;
   if not Assigned(Result) then
   begin
-   {$IFDEF USE_LOGGING}
-     GLSLogger.LogError(strNoActiveRC);
-   {$ENDIF}
+{$IFDEF USE_LOGGING}
+    GLSLogger.LogError(strNoActiveRC);
+{$ENDIF}
     Abort;
   end;
 end;
@@ -1103,7 +1059,6 @@ end;
 // ------------------
 // ------------------ TGLContext ------------------
 // ------------------
-
 
 constructor TGLContext.Create;
 begin
@@ -1254,8 +1209,7 @@ begin
   Manager.ContextCreatedBy(Self);
 end;
 
-procedure TGLContext.CreateMemoryContext(outputDevice: HWND;
-  width, height: Integer; BufferCount: integer);
+procedure TGLContext.CreateMemoryContext(outputDevice: HWND; width, height: Integer; BufferCount: Integer);
 begin
   if IsValid then
     raise EGLContext.Create(strContextAlreadyCreated);
@@ -1271,18 +1225,18 @@ begin
   if vCurrentGLContext = Self then
   begin
 {$IFNDEF USE_MULTITHREAD}
-    for i := Manager.FHandles.Count - 1 downto 0 do
+    for I := Manager.FHandles.Count - 1 downto 0 do
     begin
-      LHandle := TGLContextHandle(Manager.FHandles[i]);
+      LHandle := TGLContextHandle(Manager.FHandles[I]);
       if Assigned(LHandle.FOnPrepare) then
         LHandle.FOnPrepare(Self);
     end;
 {$ELSE}
     with Manager.FHandles.LockList do
       try
-        for i := Count - 1 downto 0 do
+        for I := Count - 1 downto 0 do
         begin
-          LHandle := TGLContextHandle(Items[i]);
+          LHandle := TGLContextHandle(Items[I]);
           if Assigned(LHandle.FOnPrepare) then
             LHandle.FOnPrepare(Self);
         end;
@@ -1296,24 +1250,24 @@ end;
 
 procedure TGLContext.PropagateSharedContext;
 var
-  i, j: Integer;
+  I, j: Integer;
   otherContext: TGLContext;
   otherList: TList;
 begin
 {$IFNDEF USE_MULTITHREAD}
   with FSharedContexts do
   begin
-    for i := 1 to Count - 1 do
+    for I := 1 to Count - 1 do
     begin
-      otherContext := TGLContext(Items[i]);
+      otherContext := TGLContext(Items[I]);
       otherList := otherContext.FSharedContexts;
-      for J := 0 to otherList.Count - 1 do
-        if IndexOf(otherList[J]) < 0 then
-          Add(otherList[J]);
+      for j := 0 to otherList.Count - 1 do
+        if IndexOf(otherList[j]) < 0 then
+          Add(otherList[j]);
     end;
-    for i := 1 to Count - 1 do
+    for I := 1 to Count - 1 do
     begin
-      otherContext := TGLContext(Items[i]);
+      otherContext := TGLContext(Items[I]);
       otherList := otherContext.FSharedContexts;
       if otherList.IndexOf(Self) < 0 then
         otherList.Add(Self);
@@ -1322,18 +1276,18 @@ begin
 {$ELSE}
   with FSharedContexts.LockList do
     try
-      for i := 1 to Count - 1 do
+      for I := 1 to Count - 1 do
       begin
-        otherContext := TGLContext(Items[i]);
+        otherContext := TGLContext(Items[I]);
         otherList := otherContext.FSharedContexts.LockList;
-        for J := 0 to otherList.Count - 1 do
-          if IndexOf(otherList[J]) < 0 then
-            Add(otherList[J]);
+        for j := 0 to otherList.Count - 1 do
+          if IndexOf(otherList[j]) < 0 then
+            Add(otherList[j]);
         otherContext.FSharedContexts.UnlockList;
       end;
-      for i := 1 to Count - 1 do
+      for I := 1 to Count - 1 do
       begin
-        otherContext := TGLContext(Items[i]);
+        otherContext := TGLContext(Items[I]);
         otherList := otherContext.FSharedContexts.LockList;
         if otherList.IndexOf(Self) < 0 then
           otherList.Add(Self);
@@ -1375,18 +1329,18 @@ end;
 
 procedure TGLContext.DestroyAllHandles;
 var
-  i: Integer;
+  I: Integer;
 begin
   Activate;
   try
 {$IFNDEF USE_MULTITHREAD}
-    for i := Manager.FHandles.Count - 1 downto 0 do
-      TGLContextHandle(Manager.FHandles[i]).ContextDestroying;
+    for I := Manager.FHandles.Count - 1 downto 0 do
+      TGLContextHandle(Manager.FHandles[I]).ContextDestroying;
 {$ELSE}
     with Manager.FHandles.LockList do
       try
-        for i := Count - 1 downto 0 do
-          TGLContextHandle(Items[i]).ContextDestroying;
+        for I := Count - 1 downto 0 do
+          TGLContextHandle(Items[I]).ContextDestroying;
       finally
         Manager.FHandles.UnlockList;
       end;
@@ -1416,17 +1370,17 @@ begin
   Activate;
   try
 {$IFNDEF USE_MULTITHREAD}
-    for i := Manager.FHandles.Count - 1 downto 0 do
+    for I := Manager.FHandles.Count - 1 downto 0 do
     begin
-      contextHandle := TGLContextHandle(Manager.FHandles[i]);
+      contextHandle := TGLContextHandle(Manager.FHandles[I]);
       contextHandle.ContextDestroying;
     end;
 {$ELSE}
     aList := Manager.FHandles.LockList;
     try
-      for i := aList.Count - 1 downto 0 do
+      for I := aList.Count - 1 downto 0 do
       begin
-        contextHandle := TGLContextHandle(aList[i]);
+        contextHandle := TGLContextHandle(aList[I]);
         contextHandle.ContextDestroying;
       end;
     finally
@@ -1477,7 +1431,7 @@ begin
       vContextActivationFailureOccurred := True;
     end;
     GLContext.GL := FGL;
-    XGL := FXGL;
+    xgl := FXGL;
     vCurrentGLContext := Self;
   end
   else
@@ -1497,7 +1451,7 @@ begin
       DoDeactivate;
     vCurrentGLContext := nil;
     GLContext.GL := GLwithoutContext;
-    XGL := nil;
+    xgl := nil;
   end
   else if FActivationCount < 0 then
     raise EGLContext.Create(strUnbalancedContexActivations);
@@ -1508,23 +1462,23 @@ end;
 
 function TGLContext.FindCompatibleContext: TGLContext;
 var
-  i: Integer;
+  I: Integer;
 begin
   Result := nil;
 {$IFNDEF USE_MULTITHREAD}
-  for i := 0 to FSharedContexts.Count - 1 do
-    if TGLContext(FSharedContexts[i]) <> Self then
+  for I := 0 to FSharedContexts.Count - 1 do
+    if TGLContext(FSharedContexts[I]) <> Self then
     begin
-      Result := TGLContext(FSharedContexts[i]);
+      Result := TGLContext(FSharedContexts[I]);
       Break;
     end;
 {$ELSE}
   with FSharedContexts.LockList do
     try
-      for i := 0 to Count - 1 do
-        if TGLContext(Items[i]) <> Self then
+      for I := 0 to Count - 1 do
+        if TGLContext(Items[I]) <> Self then
         begin
-          Result := TGLContext(Items[i]);
+          Result := TGLContext(Items[I]);
           Break;
         end;
     finally
@@ -1552,15 +1506,14 @@ constructor TGLContextHandle.Create;
 begin
   inherited Create;
   FHandles := TList.Create;
-  //first is a dummy record
+  // first is a dummy record
   new(FLastHandle);
   FillChar(FLastHandle^, sizeof(FLastHandle^), 0);
   FHandles.Add(FLastHandle);
   GLContextManager.FHandles.Add(Self);
 end;
 
-constructor TGLContextHandle.CreateAndAllocate(failIfAllocationFailed: Boolean =
-  True);
+constructor TGLContextHandle.CreateAndAllocate(failIfAllocationFailed: Boolean = True);
 begin
   Create;
   AllocateHandle;
@@ -1570,11 +1523,11 @@ end;
 
 destructor TGLContextHandle.Destroy;
 var
-  i : integer;
+  I: Integer;
 begin
   DestroyHandle;
-  for i := 0 to FHandles.Count-1 do
-    Dispose(RCItem(i));
+  for I := 0 to FHandles.Count - 1 do
+    Dispose(RCItem(I));
   FHandles.Free;
   if Assigned(GLContextManager) then
     GLContextManager.FHandles.Remove(Self);
@@ -1586,7 +1539,7 @@ var
   I: Integer;
   bSucces: Boolean;
   aList: TList;
-  p : PGLRCHandle;
+  p: PGLRCHandle;
 
 begin
   // if handle aready allocated in current context
@@ -1596,14 +1549,14 @@ begin
 
   if vCurrentGLContext = nil then
   begin
-    {$IFDEF USE_LOGGING}
+{$IFDEF USE_LOGGING}
     GLSLogger.LogError('Failed to allocate OpenGL identifier - no active rendering context!');
-    {$ENDIF}
+{$ENDIF}
     exit;
   end;
 
-  //add entry
-  New(FLastHandle);
+  // add entry
+  new(FLastHandle);
   FillChar(FLastHandle^, sizeof(FLastHandle^), 0);
   FHandles.Add(FLastHandle);
   FLastHandle.FRenderingContext := vCurrentGLContext;
@@ -1619,16 +1572,16 @@ begin
 {$ENDIF}
       for I := aList.Count - 1 downto 0 do
       begin
-        P := SearchRC(aList[I]);
-        if (P.FHandle > 0) then
+        p := SearchRC(aList[I]);
+        if (p.FHandle > 0) then
         begin
           // Copy shared handle
-          //FLastHandle.FRenderingContext := vCurrentGLContext;
-          FLastHandle.FHandle           := P.FHandle;
-          FLastHandle.FChanged          := P.FChanged;
+          // FLastHandle.FRenderingContext := vCurrentGLContext;
+          FLastHandle.FHandle := p.FHandle;
+          FLastHandle.FChanged := p.FChanged;
           Inc(vCurrentGLContext.FOwnedHandlesCount);
           bSucces := True;
-          break;
+          Break;
         end;
       end;
 {$IFNDEF USE_MULTITHREAD}
@@ -1656,32 +1609,32 @@ begin
     GLContextManager.NotifyPreparationNeed;
 end;
 
-function TGLContextHandle.IsAllocatedForContext(AContext: TGLContext = nil): Boolean;
+function TGLContextHandle.IsAllocatedForContext(aContext: TGLContext = nil): Boolean;
 begin
-  Result := SearchRC(AContext).FHandle > 0;
+  Result := SearchRC(aContext).FHandle > 0;
 end;
 
-function TGLContextHandle.SearchRC(AContext: TGLContext): PGLRCHandle;
+function TGLContextHandle.SearchRC(aContext: TGLContext): PGLRCHandle;
 var
-  i : integer;
+  I: Integer;
 begin
-  if AContext = nil then
-    AContext := vCurrentGLContext;
+  if aContext = nil then
+    aContext := vCurrentGLContext;
 
-  if AContext = FLastHandle.FRenderingContext then
+  if aContext = FLastHandle.FRenderingContext then
   begin
     Result := FLastHandle;
     exit;
   end;
 
-  for i := 1 to FHandles.Count-1 do
-    if RCItem(i).FRenderingContext = AContext then
+  for I := 1 to FHandles.Count - 1 do
+    if RCItem(I).FRenderingContext = aContext then
     begin
-      Result := RCItem(i);
+      Result := RCItem(I);
       exit;
     end;
 
-  //first handle is always a dummy
+  // first handle is always a dummy
   Result := FHandles[0];
 end;
 
@@ -1693,8 +1646,8 @@ end;
 
 function TGLContextHandle.GetHandle: Cardinal;
 begin
-//  CheckCurrentRC;
-//inline doesn't always work... so optimize it here
+  // CheckCurrentRC;
+  // inline doesn't always work... so optimize it here
   if vCurrentGLContext <> FLastHandle.FRenderingContext then
     FLastHandle := SearchRC(vCurrentGLContext);
 
@@ -1704,30 +1657,30 @@ end;
 procedure TGLContextHandle.DestroyHandle;
 var
   oldContext: TGLContext;
-  P : PGLRCHandle;
+  p: PGLRCHandle;
   I: Integer;
 begin
   oldContext := vCurrentGLContext;
   if Assigned(oldContext) then
     oldContext.Deactivate;
   try
-    for I := FHandles.Count-1 downto 1 do
+    for I := FHandles.Count - 1 downto 1 do
     begin
-      P := FHandles[I];
-      if P.FHandle > 0 then
+      p := FHandles[I];
+      if p.FHandle > 0 then
       begin
-        P.FRenderingContext.Activate;
-        if IsValid(P.FHandle) then
-          DoDestroyHandle(P.FHandle);
-        Dec(P.FRenderingContext.FOwnedHandlesCount);
-        P.FRenderingContext.Deactivate;
-        P.FRenderingContext := nil;
-        P.FHandle := 0;
-        P.FChanged := True;
+        p.FRenderingContext.Activate;
+        if IsValid(p.FHandle) then
+          DoDestroyHandle(p.FHandle);
+        Dec(p.FRenderingContext.FOwnedHandlesCount);
+        p.FRenderingContext.Deactivate;
+        p.FRenderingContext := nil;
+        p.FHandle := 0;
+        p.FChanged := True;
       end;
-      Dispose(P);
+      Dispose(p);
     end;
-    FHandles.Count := 1; //delete all in 1 step
+    FHandles.Count := 1; // delete all in 1 step
     FLastHandle := FHandles[0];
   finally
     if Assigned(vCurrentGLContext) then
@@ -1740,7 +1693,7 @@ end;
 procedure TGLContextHandle.ContextDestroying;
 var
   I: Integer;
-  P: PGLRCHandle;
+  p: PGLRCHandle;
   aList: TList;
   bShared: Boolean;
 begin
@@ -1749,45 +1702,43 @@ begin
     bShared := False;
     if Transferable then
     begin
-    {$IFNDEF USE_MULTITHREAD}
+{$IFNDEF USE_MULTITHREAD}
       aList := vCurrentGLContext.FSharedContexts;
-    {$ELSE}
+{$ELSE}
       aList := vCurrentGLContext.FSharedContexts.LockList;
       try
-    {$ENDIF USE_MULTITHREAD}
-        for I := FHandles.Count-1 downto 1 do
+{$ENDIF USE_MULTITHREAD}
+        for I := FHandles.Count - 1 downto 1 do
         begin
-          P := RCItem(I);
-          if (P.FRenderingContext <> vCurrentGLContext)
-            and (P.FHandle <> 0)
-            and (aList.IndexOf(P.FRenderingContext) > -1) then
-            begin
-              bShared := True;
-              break;
-            end;
+          p := RCItem(I);
+          if (p.FRenderingContext <> vCurrentGLContext) and (p.FHandle <> 0) and (aList.IndexOf(p.FRenderingContext) > -1) then
+          begin
+            bShared := True;
+            Break;
+          end;
         end;
-    {$IFDEF USE_MULTITHREAD}
+{$IFDEF USE_MULTITHREAD}
       finally
-        vCurrentGLContext.FSharedContexts.UnLockList;
+        vCurrentGLContext.FSharedContexts.UnlockList;
       end;
-    {$ENDIF USE_MULTITHREAD}
+{$ENDIF USE_MULTITHREAD}
     end;
 
-    for I := FHandles.Count-1 downto 1 do
+    for I := FHandles.Count - 1 downto 1 do
     begin
-      P := RCItem(I);
-      if (P.FRenderingContext = vCurrentGLContext) and (P.FHandle <> 0) then
+      p := RCItem(I);
+      if (p.FRenderingContext = vCurrentGLContext) and (p.FHandle <> 0) then
       begin
         if not bShared then
-          if IsValid(P.FHandle) then
-            DoDestroyHandle(P.FHandle);
-        Dec(P.FRenderingContext.FOwnedHandlesCount);
-        P.FHandle := 0;
-        P.FRenderingContext := nil;
-        P.FChanged := True;
-        Dispose(P);
+          if IsValid(p.FHandle) then
+            DoDestroyHandle(p.FHandle);
+        Dec(p.FRenderingContext.FOwnedHandlesCount);
+        p.FHandle := 0;
+        p.FRenderingContext := nil;
+        p.FChanged := True;
+        Dispose(p);
         FHandles.Delete(I);
-        if FLastHandle = P then
+        if FLastHandle = p then
           FLastHandle := FHandles[0];
         exit;
       end;
@@ -1798,16 +1749,16 @@ end;
 function TGLContextHandle.GetContext: TGLContext;
 var
   I: Integer;
-  P: PGLRCHandle;
+  p: PGLRCHandle;
 begin
   Result := nil;
   // Return first context where handle is allocated
-  for I := FHandles.Count-1 downto 1 do
+  for I := FHandles.Count - 1 downto 1 do
   begin
-    P := RCItem(I);
-    if (P.FRenderingContext <> nil) and (P.FHandle <> 0) then
+    p := RCItem(I);
+    if (p.FRenderingContext <> nil) and (p.FHandle <> 0) then
     begin
-      Result := P.FRenderingContext;
+      Result := p.FRenderingContext;
       // If handle allocated in active context - return it
       if (Result = vCurrentGLContext) then
         exit;
@@ -1826,13 +1777,14 @@ function TGLContextHandle.IsDataComplitelyUpdated: Boolean;
 var
   I: Integer;
 begin
-  Result := false;
-  for I := FHandles.Count-1 downto 1 do
+  Result := False;
+  for I := FHandles.Count - 1 downto 1 do
   begin
-    with RCItem(i)^ do
-      if (FRenderingContext <> nil) and (FHandle <> 0) and FChanged then exit;
+    with RCItem(I)^ do
+      if (FRenderingContext <> nil) and (FHandle <> 0) and FChanged then
+        exit;
   end;
-  Result := true;
+  Result := True;
 end;
 
 procedure TGLContextHandle.NotifyDataUpdated;
@@ -1853,32 +1805,32 @@ begin
     end
     else
     begin
-  {$IFNDEF USE_MULTITHREAD}
+{$IFNDEF USE_MULTITHREAD}
       aList := vCurrentGLContext.FSharedContexts;
-  {$ELSE}
+{$ELSE}
       aList := vCurrentGLContext.FSharedContexts.LockList;
       try
-  {$ENDIF}
+{$ENDIF}
         for I := 0 to aList.Count - 1 do
         begin
           with SearchRC(aList[I])^ do
             if (FHandle <> 0) then
               FChanged := False;
         end;
-  {$IFDEF USE_MULTITHREAD}
+{$IFDEF USE_MULTITHREAD}
       finally
         vCurrentGLContext.FSharedContexts.UnlockList;
       end;
-  {$ENDIF}
+{$ENDIF}
     end;
   end
-   {$IFDEF USE_LOGGING}
+{$IFDEF USE_LOGGING}
   else
     GLSLogger.LogError(strNoActiveRC);
-    {$ENDIF}
+{$ENDIF}
 end;
 
-function TGLContextHandle.RCItem(AIndex: integer): PGLRCHandle;
+function TGLContextHandle.RCItem(AIndex: Integer): PGLRCHandle;
 begin
   Result := FHandles[AIndex];
 end;
@@ -1887,7 +1839,7 @@ procedure TGLContextHandle.NotifyChangesOfData;
 var
   I: Integer;
 begin
-  for I := FHandles.Count-1 downto 1 do
+  for I := FHandles.Count - 1 downto 1 do
     RCItem(I).FChanged := True;
   if Assigned(FOnPrepare) then
     GLContextManager.NotifyPreparationNeed;
@@ -1914,7 +1866,7 @@ begin
     begin
       vContext := aList[I];
       if (vContext <> vCurrentGLContext) and
-        // at least one context is friendly
+      // at least one context is friendly
         (SearchRC(vContext).FHandle <> 0) then
         exit;
     end;
@@ -1923,7 +1875,7 @@ begin
     vCurrentGLContext.FSharedContexts.UnlockList;
   end;
 {$ENDIF}
-  Result := false;
+  Result := False;
 end;
 
 class function TGLContextHandle.Transferable: Boolean;
@@ -1955,16 +1907,16 @@ end;
 procedure TGLVirtualHandle.DoDestroyHandle(var AHandle: Cardinal);
 begin
   if not vContextActivationFailureOccurred then
-  with GL do
-  begin
-    // reset error status
-    ClearError;
-    // delete
-    if Assigned(FOnDestroy) then
-      FOnDestroy(Self, AHandle);
-    // check for error
-    CheckError;
-  end;
+    with GL do
+    begin
+      // reset error status
+      ClearError;
+      // delete
+      if Assigned(FOnDestroy) then
+        FOnDestroy(Self, AHandle);
+      // check for error
+      CheckError;
+    end;
 end;
 
 class function TGLVirtualHandle.Transferable: Boolean;
@@ -1991,15 +1943,15 @@ end;
 procedure TGLListHandle.DoDestroyHandle(var AHandle: Cardinal);
 begin
   if not vContextActivationFailureOccurred then
-  with GL do
-  begin
-    // reset error status
-    ClearError;
-    // delete
-    DeleteLists(AHandle, 1);
-    // check for error
-    CheckError;
-  end;
+    with GL do
+    begin
+      // reset error status
+      ClearError;
+      // delete
+      DeleteLists(AHandle, 1);
+      // check for error
+      CheckError;
+    end;
 end;
 
 class function TGLListHandle.IsValid(const ID: Cardinal): Boolean;
@@ -2035,35 +1987,35 @@ end;
 
 procedure TGLTextureHandle.DoDestroyHandle(var AHandle: Cardinal);
 var
-  a: TGLint;
+  a: TGLInt;
   t: TGLTextureTarget;
 begin
   if not vContextActivationFailureOccurred then
-  with GL do
-  begin
-    // reset error status
-    GetError;
-    {Unbind identifier from all image selectors. }
-    if ARB_multitexture then
+    with GL do
     begin
-      with GetContext.GLStates do
+      // reset error status
+      GetError;
+      { Unbind identifier from all image selectors. }
+      if ARB_multitexture then
       begin
-        for a := 0 to MaxTextureImageUnits - 1 do
-          for t := Low(TGLTextureTarget) to High(TGLTextureTarget) do
-            if TextureBinding[a, t] = AHandle then
-              TextureBinding[a, t] := 0;
+        with GetContext.GLStates do
+        begin
+          for a := 0 to MaxTextureImageUnits - 1 do
+            for t := Low(TGLTextureTarget) to High(TGLTextureTarget) do
+              if TextureBinding[a, t] = AHandle then
+                TextureBinding[a, t] := 0;
+        end
       end
-    end
-    else
-      with GetContext.GLStates do
-        for t := Low(TGLTextureTarget) to High(TGLTextureTarget) do
-          if TextureBinding[0, t] = AHandle then
-            TextureBinding[0, t] := 0;
+      else
+        with GetContext.GLStates do
+          for t := Low(TGLTextureTarget) to High(TGLTextureTarget) do
+            if TextureBinding[0, t] = AHandle then
+              TextureBinding[0, t] := 0;
 
-    DeleteTextures(1, @AHandle);
-    // check for error
-    CheckError;
-  end;
+      DeleteTextures(1, @AHandle);
+      // check for error
+      CheckError;
+    end;
 end;
 
 class function TGLTextureHandle.IsValid(const ID: Cardinal): Boolean;
@@ -2090,15 +2042,15 @@ end;
 procedure TGLSamplerHandle.DoDestroyHandle(var AHandle: Cardinal);
 begin
   if not vContextActivationFailureOccurred then
-  with GL do
-  begin
-    // reset error status
-    GetError;
-    // delete
-    DeleteSamplers(1, @AHandle);
-    // check for error
-    CheckError;
-  end;
+    with GL do
+    begin
+      // reset error status
+      GetError;
+      // delete
+      DeleteSamplers(1, @AHandle);
+      // check for error
+      CheckError;
+    end;
 end;
 
 class function TGLSamplerHandle.IsSupported: Boolean;
@@ -2119,10 +2071,10 @@ procedure TGLQueryHandle.BeginQuery;
 begin
   if vCurrentGLContext.GLStates.CurrentQuery[QueryType] = 0 then
     vCurrentGLContext.GLStates.BeginQuery(QueryType, GetHandle);
-  Factive := True;
+  FActive := True;
 end;
 
-function TGLQueryHandle.CounterBits: integer;
+function TGLQueryHandle.CounterBits: Integer;
 begin
   GL.GetQueryiv(Target, GL_QUERY_COUNTER_BITS, @Result);
 end;
@@ -2136,15 +2088,15 @@ end;
 procedure TGLQueryHandle.DoDestroyHandle(var AHandle: Cardinal);
 begin
   if not vContextActivationFailureOccurred then
-  with GL do
-  begin
-    // reset error status
-    GetError;
-    // delete
-    DeleteQueries(1, @AHandle);
-    // check for error
-    CheckError;
-  end;
+    with GL do
+    begin
+      // reset error status
+      GetError;
+      // delete
+      DeleteQueries(1, @AHandle);
+      // check for error
+      CheckError;
+    end;
 end;
 
 class function TGLQueryHandle.IsValid(const ID: Cardinal): Boolean;
@@ -2154,14 +2106,14 @@ end;
 
 procedure TGLQueryHandle.EndQuery;
 begin
-  Assert(FActive = true, 'Cannot end a query before it begins');
-  Factive := False;
+  Assert(FActive = True, 'Cannot end a query before it begins');
+  FActive := False;
   Assert(Handle <> 0);
-  //glEndQuery(Target);
+  // glEndQuery(Target);
   vCurrentGLContext.GLStates.EndQuery(QueryType);
 end;
 
-function TGLQueryHandle.IsResultAvailable: boolean;
+function TGLQueryHandle.IsResultAvailable: Boolean;
 begin
   GL.GetQueryObjectiv(Handle, GL_QUERY_RESULT_AVAILABLE, @Result);
 end;
@@ -2294,8 +2246,7 @@ end;
 // ------------------ TGLBufferObjectHandle ------------------
 // ------------------
 
-constructor TGLBufferObjectHandle.CreateFromData(p: Pointer; size: Integer;
-  bufferUsage: Cardinal);
+constructor TGLBufferObjectHandle.CreateFromData(p: Pointer; size: Integer; bufferUsage: Cardinal);
 begin
   Create;
   AllocateHandle;
@@ -2313,16 +2264,16 @@ end;
 procedure TGLBufferObjectHandle.DoDestroyHandle(var AHandle: Cardinal);
 begin
   if not vContextActivationFailureOccurred then
-  with GL do
-  begin
-    // reset error status
-    GetError;
-    UnBind;
-    // delete
-    DeleteBuffers(1, @AHandle);
-    // check for error
-    CheckError;
-  end;
+    with GL do
+    begin
+      // reset error status
+      GetError;
+      UnBind;
+      // delete
+      DeleteBuffers(1, @AHandle);
+      // check for error
+      CheckError;
+    end;
 end;
 
 class function TGLBufferObjectHandle.IsValid(const ID: Cardinal): Boolean;
@@ -2335,8 +2286,7 @@ begin
   Result := GL.ARB_vertex_buffer_object;
 end;
 
-procedure TGLBufferObjectHandle.BindRange(index: Cardinal; offset: TGLintptr;
-  size: TGLsizeiptr);
+procedure TGLBufferObjectHandle.BindRange(index: Cardinal; offset: TGLintptr; size: TGLsizeiptr);
 begin
   Assert(False, 'BindRange only XBO and UBO');
 end;
@@ -2351,23 +2301,20 @@ begin
   Assert(False, 'BindRange only XBO and UBO');
 end;
 
-procedure TGLBufferObjectHandle.BufferData(p: Pointer; size: Integer;
-  bufferUsage: Cardinal);
+procedure TGLBufferObjectHandle.BufferData(p: Pointer; size: Integer; bufferUsage: Cardinal);
 begin
   FSize := size;
   GL.BufferData(Target, size, p, bufferUsage);
 end;
 
-procedure TGLBufferObjectHandle.BindBufferData(p: Pointer; size: Integer;
-  bufferUsage: Cardinal);
+procedure TGLBufferObjectHandle.BindBufferData(p: Pointer; size: Integer; bufferUsage: Cardinal);
 begin
   Bind;
   FSize := size;
   GL.BufferData(Target, size, p, bufferUsage);
 end;
 
-procedure TGLBufferObjectHandle.BufferSubData(offset, size: Integer; p:
-  Pointer);
+procedure TGLBufferObjectHandle.BufferSubData(offset, size: Integer; p: Pointer);
 begin
   Assert(offset + size <= FSize);
   GL.BufferSubData(Target, offset, size, p);
@@ -2378,13 +2325,12 @@ begin
   Result := GL.MapBuffer(Target, access);
 end;
 
-function TGLBufferObjectHandle.MapBufferRange(offset: TGLint; len: TGLsizei;
-  access: TGLbitfield): Pointer;
+function TGLBufferObjectHandle.MapBufferRange(offset: TGLInt; len: TGLsizei; access: TGLbitfield): Pointer;
 begin
   Result := GL.MapBufferRange(Target, offset, len, access);
 end;
 
-procedure TGLBufferObjectHandle.Flush(offset: TGLint; len: TGLsizei);
+procedure TGLBufferObjectHandle.Flush(offset: TGLInt; len: TGLsizei);
 begin
   GL.FlushMappedBufferRange(Target, offset, len);
 end;
@@ -2514,8 +2460,7 @@ end;
 // BeginTransformFeedback
 //
 
-procedure TGLTransformFeedbackBufferHandle.BeginTransformFeedback(primitiveMode:
-  Cardinal);
+procedure TGLTransformFeedbackBufferHandle.BeginTransformFeedback(primitiveMode: Cardinal);
 begin
   GL.BeginTransformFeedback(primitiveMode);
 end;
@@ -2528,23 +2473,19 @@ begin
   GL.EndTransformFeedback();
 end;
 
-procedure TGLTransformFeedbackBufferHandle.BindRange(index: Cardinal; offset: TGLintptr;
-  size: TGLsizeiptr);
+procedure TGLTransformFeedbackBufferHandle.BindRange(index: Cardinal; offset: TGLintptr; size: TGLsizeiptr);
 begin
-  vCurrentGLContext.GLStates.SetBufferIndexedBinding(Handle, bbtTransformFeedBack,
-    index, offset, size);
+  vCurrentGLContext.GLStates.SetBufferIndexedBinding(Handle, bbtTransformFeedBack, index, offset, size);
 end;
 
 procedure TGLTransformFeedbackBufferHandle.BindBase(index: Cardinal);
 begin
-  vCurrentGLContext.GLStates.SetBufferIndexedBinding(Handle, bbtTransformFeedBack,
-    index, BufferSize);
+  vCurrentGLContext.GLStates.SetBufferIndexedBinding(Handle, bbtTransformFeedBack, index, BufferSize);
 end;
 
 procedure TGLTransformFeedbackBufferHandle.UnBindBase(index: Cardinal);
 begin
-  vCurrentGLContext.GLStates.SetBufferIndexedBinding(0, bbtTransformFeedBack,
-    index, 0);
+  vCurrentGLContext.GLStates.SetBufferIndexedBinding(0, bbtTransformFeedBack, index, 0);
 end;
 
 class function TGLTransformFeedbackBufferHandle.IsSupported: Boolean;
@@ -2579,8 +2520,7 @@ end;
 
 class function TGLTextureBufferHandle.IsSupported: Boolean;
 begin
-  Result := GL.EXT_texture_buffer_object or GL.ARB_texture_buffer_object or
-    GL.VERSION_3_1;
+  Result := GL.EXT_texture_buffer_object or GL.ARB_texture_buffer_object or GL.VERSION_3_1;
 end;
 
 // ------------------
@@ -2597,23 +2537,19 @@ begin
   vCurrentGLContext.GLStates.UniformBufferBinding := 0;
 end;
 
-procedure TGLUniformBufferHandle.BindRange(index: Cardinal; offset: TGLintptr;
-  size: TGLsizeiptr);
+procedure TGLUniformBufferHandle.BindRange(index: Cardinal; offset: TGLintptr; size: TGLsizeiptr);
 begin
-  vCurrentGLContext.GLStates.SetBufferIndexedBinding(Handle, bbtUniform,
-    index, offset, size);
+  vCurrentGLContext.GLStates.SetBufferIndexedBinding(Handle, bbtUniform, index, offset, size);
 end;
 
 procedure TGLUniformBufferHandle.BindBase(index: Cardinal);
 begin
-  vCurrentGLContext.GLStates.SetBufferIndexedBinding(Handle, bbtUniform,
-    index, BufferSize);
+  vCurrentGLContext.GLStates.SetBufferIndexedBinding(Handle, bbtUniform, index, BufferSize);
 end;
 
 procedure TGLUniformBufferHandle.UnBindBase(index: Cardinal);
 begin
-  vCurrentGLContext.GLStates.SetBufferIndexedBinding(0, bbtUniform,
-    index, 0);
+  vCurrentGLContext.GLStates.SetBufferIndexedBinding(0, bbtUniform, index, 0);
 end;
 
 function TGLUniformBufferHandle.GetTarget: Cardinal;
@@ -2639,15 +2575,15 @@ end;
 procedure TGLVertexArrayHandle.DoDestroyHandle(var AHandle: Cardinal);
 begin
   if not vContextActivationFailureOccurred then
-  with GL do
-  begin
-    // reset error status
-    GetError;
-    // delete
-    DeleteVertexArrays(1, @AHandle);
-    // check for error
-    CheckError;
-  end;
+    with GL do
+    begin
+      // reset error status
+      GetError;
+      // delete
+      DeleteVertexArrays(1, @AHandle);
+      // check for error
+      CheckError;
+    end;
 end;
 
 class function TGLVertexArrayHandle.IsValid(const ID: Cardinal): Boolean;
@@ -2690,15 +2626,15 @@ end;
 procedure TGLFramebufferHandle.DoDestroyHandle(var AHandle: Cardinal);
 begin
   if not vContextActivationFailureOccurred then
-  with GL do
-  begin
-    // reset error status
-    GetError;
-    // delete
-    DeleteFramebuffers(1, @AHandle);
-    // check for error
-    CheckError;
-  end;
+    with GL do
+    begin
+      // reset error status
+      GetError;
+      // delete
+      DeleteFramebuffers(1, @AHandle);
+      // check for error
+      CheckError;
+    end;
 end;
 
 class function TGLFramebufferHandle.IsValid(const ID: Cardinal): Boolean;
@@ -2742,117 +2678,105 @@ begin
   vCurrentGLContext.GLStates.ReadFrameBuffer := 0;
 end;
 
-procedure TGLFramebufferHandle.Attach1DTexture(target: Cardinal; attachment:
-  Cardinal; textarget: Cardinal; texture: Cardinal; level: TGLint);
+procedure TGLFramebufferHandle.Attach1DTexture(Target: Cardinal; attachment: Cardinal; textarget: Cardinal; texture: Cardinal;
+  level: TGLInt);
 begin
-  GL.FramebufferTexture1D(target, attachment, textarget, texture, level);
+  GL.FramebufferTexture1D(Target, attachment, textarget, texture, level);
 end;
 
-procedure TGLFramebufferHandle.Attach2DTexture(target: Cardinal; attachment:
-  Cardinal; textarget: Cardinal; texture: Cardinal; level: TGLint);
+procedure TGLFramebufferHandle.Attach2DTexture(Target: Cardinal; attachment: Cardinal; textarget: Cardinal; texture: Cardinal;
+  level: TGLInt);
 begin
-  GL.FramebufferTexture2D(target, attachment, textarget, texture, level);
+  GL.FramebufferTexture2D(Target, attachment, textarget, texture, level);
 end;
 
-procedure TGLFramebufferHandle.Attach3DTexture(target: Cardinal; attachment:
-  Cardinal; textarget: Cardinal; texture: Cardinal; level: TGLint; layer: TGLint);
+procedure TGLFramebufferHandle.Attach3DTexture(Target: Cardinal; attachment: Cardinal; textarget: Cardinal; texture: Cardinal;
+  level: TGLInt; Layer: TGLInt);
 begin
-  GL.FramebufferTexture3D(target, attachment, textarget, texture, level, layer);
+  GL.FramebufferTexture3D(Target, attachment, textarget, texture, level, Layer);
 end;
 
-procedure TGLFramebufferHandle.AttachLayer(target: Cardinal; attachment: Cardinal;
-  texture: Cardinal; level: TGLint; layer: TGLint);
+procedure TGLFramebufferHandle.AttachLayer(Target: Cardinal; attachment: Cardinal; texture: Cardinal; level: TGLInt;
+  Layer: TGLInt);
 begin
-  GL.FramebufferTextureLayer(target, attachment, texture, level, layer);
+  GL.FramebufferTextureLayer(Target, attachment, texture, level, Layer);
 end;
 
-procedure TGLFramebufferHandle.AttachRenderBuffer(target: Cardinal; attachment:
-  Cardinal; renderbuffertarget: Cardinal; renderbuffer: Cardinal);
+procedure TGLFramebufferHandle.AttachRenderBuffer(Target: Cardinal; attachment: Cardinal; renderbuffertarget: Cardinal;
+  renderbuffer: Cardinal);
 begin
-  GL.FramebufferRenderbuffer(target, attachment, renderbuffertarget,
-    renderbuffer);
+  GL.FramebufferRenderbuffer(Target, attachment, renderbuffertarget, renderbuffer);
 end;
 
-procedure TGLFramebufferHandle.AttachTexture(target: Cardinal; attachment:
-  Cardinal; texture: Cardinal; level: TGLint);
+procedure TGLFramebufferHandle.AttachTexture(Target: Cardinal; attachment: Cardinal; texture: Cardinal; level: TGLInt);
 begin
-  GL.FramebufferTexture(target, attachment, texture, level);
+  GL.FramebufferTexture(Target, attachment, texture, level);
 end;
 
-procedure TGLFramebufferHandle.AttachTextureLayer(target: Cardinal; attachment:
-  Cardinal; texture: Cardinal; level: TGLint; layer: TGLint);
+procedure TGLFramebufferHandle.AttachTextureLayer(Target: Cardinal; attachment: Cardinal; texture: Cardinal; level: TGLInt;
+  Layer: TGLInt);
 begin
-  GL.FramebufferTextureLayer(target, attachment, texture, level, layer);
+  GL.FramebufferTextureLayer(Target, attachment, texture, level, Layer);
 end;
 
-procedure TGLFramebufferHandle.Blit(srcX0: TGLint; srcY0: TGLint; srcX1: TGLint;
-  srcY1: TGLint;
-  dstX0: TGLint; dstY0: TGLint; dstX1: TGLint; dstY1: TGLint;
-  mask: TGLbitfield; filter: Cardinal);
+procedure TGLFramebufferHandle.Blit(srcX0: TGLInt; srcY0: TGLInt; srcX1: TGLInt; srcY1: TGLInt; dstX0: TGLInt; dstY0: TGLInt;
+  dstX1: TGLInt; dstY1: TGLInt; mask: TGLbitfield; filter: Cardinal);
 begin
-  GL.BlitFramebuffer(srcX0, srcY0, srcX1, srcY1, dstX0, dstY0, dstX1, dstY1,
-    mask, filter);
+  GL.BlitFramebuffer(srcX0, srcY0, srcX1, srcY1, dstX0, dstY0, dstX1, dstY1, mask, filter);
 end;
 
-function TGLFramebufferHandle.GetAttachmentParameter(target: Cardinal;
-  attachment: Cardinal; pname: Cardinal): TGLint;
+function TGLFramebufferHandle.GetAttachmentParameter(Target: Cardinal; attachment: Cardinal; pname: Cardinal): TGLInt;
 begin
-  GL.GetFramebufferAttachmentParameteriv(target, attachment, pname, @Result)
+  GL.GetFramebufferAttachmentParameteriv(Target, attachment, pname, @Result)
 end;
 
-function TGLFramebufferHandle.GetAttachmentObjectType(target: Cardinal;
-  attachment: Cardinal): TGLint;
+function TGLFramebufferHandle.GetAttachmentObjectType(Target: Cardinal; attachment: Cardinal): TGLInt;
 begin
-  GL.GetFramebufferAttachmentParameteriv(target, attachment,
-    GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE, @Result);
+  GL.GetFramebufferAttachmentParameteriv(Target, attachment, GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE, @Result);
 end;
 
-function TGLFramebufferHandle.GetAttachmentObjectName(target: Cardinal;
-  attachment: Cardinal): TGLint;
+function TGLFramebufferHandle.GetAttachmentObjectName(Target: Cardinal; attachment: Cardinal): TGLInt;
 begin
-  GL.GetFramebufferAttachmentParameteriv(target, attachment,
-    GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME, @Result);
+  GL.GetFramebufferAttachmentParameteriv(Target, attachment, GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME, @Result);
 end;
 
 function TGLFramebufferHandle.GetStatus: TGLFramebufferStatus;
 var
-  Status: cardinal;
+  Status: Cardinal;
 begin
   Status := GL.CheckFramebufferStatus(GL_FRAMEBUFFER);
 
   case Status of
-    GL_FRAMEBUFFER_COMPLETE_EXT: Result := fsComplete;
-    GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT_EXT: Result := fsIncompleteAttachment;
-    GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT_EXT: Result :=
-      fsIncompleteMissingAttachment;
-    GL_FRAMEBUFFER_INCOMPLETE_DUPLICATE_ATTACHMENT_EXT: Result :=
-      fsIncompleteDuplicateAttachment;
-    GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT: Result := fsIncompleteDimensions;
-    GL_FRAMEBUFFER_INCOMPLETE_FORMATS_EXT: Result := fsIncompleteFormats;
-    GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER_EXT: Result := fsIncompleteDrawBuffer;
-    GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER_EXT: Result := fsIncompleteReadBuffer;
-    GL_FRAMEBUFFER_UNSUPPORTED_EXT: Result := fsUnsupported;
-    GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE: Result := fsIncompleteMultisample;
+    GL_FRAMEBUFFER_COMPLETE_EXT:
+      Result := fsComplete;
+    GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT_EXT:
+      Result := fsIncompleteAttachment;
+    GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT_EXT:
+      Result := fsIncompleteMissingAttachment;
+    GL_FRAMEBUFFER_INCOMPLETE_DUPLICATE_ATTACHMENT_EXT:
+      Result := fsIncompleteDuplicateAttachment;
+    GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT:
+      Result := fsIncompleteDimensions;
+    GL_FRAMEBUFFER_INCOMPLETE_FORMATS_EXT:
+      Result := fsIncompleteFormats;
+    GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER_EXT:
+      Result := fsIncompleteDrawBuffer;
+    GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER_EXT:
+      Result := fsIncompleteReadBuffer;
+    GL_FRAMEBUFFER_UNSUPPORTED_EXT:
+      Result := fsUnsupported;
+    GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE:
+      Result := fsIncompleteMultisample;
   else
     Result := fsStatusError;
   end;
 end;
 
-function TGLFramebufferHandle.GetStringStatus(out clarification: string):
-  TGLFramebufferStatus;
+function TGLFramebufferHandle.GetStringStatus(out clarification: string): TGLFramebufferStatus;
 const
-  cFBOStatus: array[TGLFramebufferStatus] of string = (
-    'Complete',
-    'Incomplete attachment',
-    'Incomplete missing attachment',
-    'Incomplete duplicate attachment',
-    'Incomplete dimensions',
-    'Incomplete formats',
-    'Incomplete draw buffer',
-    'Incomplete read buffer',
-    'Unsupported',
-    'Incomplite multisample',
-    'Status Error');
+  cFBOStatus: array [TGLFramebufferStatus] of string = ('Complete', 'Incomplete attachment', 'Incomplete missing attachment',
+    'Incomplete duplicate attachment', 'Incomplete dimensions', 'Incomplete formats', 'Incomplete draw buffer',
+    'Incomplete read buffer', 'Unsupported', 'Incomplite multisample', 'Status Error');
 begin
   Result := GetStatus;
   clarification := cFBOStatus[Result];
@@ -2881,15 +2805,15 @@ end;
 procedure TGLRenderbufferHandle.DoDestroyHandle(var AHandle: Cardinal);
 begin
   if not vContextActivationFailureOccurred then
-  with GL do
-  begin
-    // reset error status
-    GetError;
-    // delete
-    DeleteRenderbuffers(1, @AHandle);
-    // check for error
-    CheckError;
-  end;
+    with GL do
+    begin
+      // reset error status
+      GetError;
+      // delete
+      DeleteRenderbuffers(1, @AHandle);
+      // check for error
+      CheckError;
+    end;
 end;
 
 class function TGLRenderbufferHandle.IsValid(const ID: Cardinal): Boolean;
@@ -2899,26 +2823,23 @@ end;
 
 procedure TGLRenderbufferHandle.Bind;
 begin
-  vCurrentGLContext.GLStates.RenderBuffer := GetHandle;
+  vCurrentGLContext.GLStates.renderbuffer := GetHandle;
 end;
 
 procedure TGLRenderbufferHandle.UnBind;
 begin
   if vCurrentGLContext <> nil then
-    vCurrentGLContext.GLStates.RenderBuffer := 0;
+    vCurrentGLContext.GLStates.renderbuffer := 0;
 end;
 
-procedure TGLRenderbufferHandle.SetStorage(internalformat: Cardinal; width,
-  height: TGLsizei);
+procedure TGLRenderbufferHandle.SetStorage(internalformat: Cardinal; width, height: TGLsizei);
 begin
   GL.RenderbufferStorage(GL_RENDERBUFFER, internalformat, width, height);
 end;
 
-procedure TGLRenderbufferHandle.SetStorageMultisample(internalformat: Cardinal;
-  samples: TGLsizei; width, height: TGLsizei);
+procedure TGLRenderbufferHandle.SetStorageMultisample(internalformat: Cardinal; samples: TGLsizei; width, height: TGLsizei);
 begin
-  GL.RenderbufferStorageMultisample(GL_RENDERBUFFER, samples, internalformat,
-    width, height);
+  GL.RenderbufferStorageMultisample(GL_RENDERBUFFER, samples, internalformat, width, height);
 end;
 
 class function TGLRenderbufferHandle.IsSupported: Boolean;
@@ -2940,15 +2861,15 @@ end;
 procedure TGLARBProgramHandle.DoDestroyHandle(var AHandle: Cardinal);
 begin
   if not vContextActivationFailureOccurred then
-  with GL do
-  begin
-    // reset error status
-    GetError;
-    // delete
-    DeletePrograms(1, @AHandle);
-    // check for error
-    CheckError;
-  end;
+    with GL do
+    begin
+      // reset error status
+      GetError;
+      // delete
+      DeletePrograms(1, @AHandle);
+      // check for error
+      CheckError;
+    end;
 end;
 
 class function TGLARBProgramHandle.IsValid(const ID: Cardinal): Boolean;
@@ -2958,25 +2879,25 @@ end;
 
 procedure TGLARBProgramHandle.LoadARBProgram(const AText: string);
 const
-  cProgType: array[0..2] of string =
-    ('ARB vertex', 'ARB fragment', 'NV geometry');
+  cProgType: array [0 .. 2] of string = ('ARB vertex', 'ARB fragment', 'NV geometry');
 var
-  errPos, P: Integer;
+  errPos, p: Integer;
 begin
   Bind;
-  GL.ProgramString(GetTarget, GL_PROGRAM_FORMAT_ASCII_ARB,
-    Length(AText), PAnsiChar(AnsiString(AText)));
+  GL.ProgramString(GetTarget, GL_PROGRAM_FORMAT_ASCII_ARB, Length(AText), PAnsiChar(AnsiString(AText)));
   GL.GetIntegerv(GL_PROGRAM_ERROR_POSITION_ARB, @errPos);
   if errPos > -1 then
   begin
     FInfoLog := string(GL.GetString(GL_PROGRAM_ERROR_STRING_ARB));
     case GetTarget of
-      GL_VERTEX_PROGRAM_ARB: P := 0;
-      GL_FRAGMENT_PROGRAM_ARB: P := 1;
+      GL_VERTEX_PROGRAM_ARB:
+        p := 0;
+      GL_FRAGMENT_PROGRAM_ARB:
+        p := 1;
     else
-      P := 2;
+      p := 2;
     end;
-    GLSLogger.LogError(Format('%s Program Error - [Pos: %d][Error %s]', [cProgType[P], errPos, FInfoLog]));
+    GLSLogger.LogError(Format('%s Program Error - [Pos: %d][Error %s]', [cProgType[p], errPos, FInfoLog]));
     FReady := False;
   end
   else
@@ -3041,15 +2962,15 @@ end;
 procedure TGLSLHandle.DoDestroyHandle(var AHandle: Cardinal);
 begin
   if not vContextActivationFailureOccurred then
-  with GL do
-  begin
-    // reset error status
-    ClearError;
-    // delete
-    DeleteObject(AHandle);
-    // check for error
-    CheckError;
-  end;
+    with GL do
+    begin
+      // reset error status
+      ClearError;
+      // delete
+      DeleteObject(AHandle);
+      // check for error
+      CheckError;
+    end;
 end;
 
 function TGLSLHandle.InfoLog: string;
@@ -3110,7 +3031,6 @@ end;
 // ------------------
 // ------------------ TGLVertexShaderHandle ------------------
 // ------------------
-
 
 constructor TGLVertexShaderHandle.Create;
 begin
@@ -3187,7 +3107,7 @@ end;
 // ------------------ TGLProgramHandle ------------------
 // ------------------
 
-function TGLProgramHandle.DoAllocateHandle: cardinal;
+function TGLProgramHandle.DoAllocateHandle: Cardinal;
 begin
   Result := GL.CreateProgram();
 end;
@@ -3197,22 +3117,18 @@ begin
   Result := GL.IsProgram(ID);
 end;
 
-procedure TGLProgramHandle.AddShader(shaderType: TGLShaderHandleClass; const
-  shaderSource: string;
+procedure TGLProgramHandle.AddShader(ShaderType: TGLShaderHandleClass; const ShaderSource: string;
   treatWarningsAsErrors: Boolean = False);
 var
   shader: TGLShaderHandle;
 begin
-  shader := shaderType.CreateAndAllocate;
+  shader := ShaderType.CreateAndAllocate;
   try
     if shader.Handle = 0 then
-      raise EGLShader.Create('Couldn''t allocate ' + shaderType.ClassName);
-    shader.ShaderSource(AnsiString(shaderSource));
-    if (not shader.CompileShader)
-      or (treatWarningsAsErrors and (Pos('warning', LowerCase(shader.InfoLog)) >
-      0)) then
-      raise EGLShader.Create(FName + ' (' + shader.ClassName + '): '#13#10 +
-        shader.InfoLog);
+      raise EGLShader.Create('Couldn''t allocate ' + ShaderType.ClassName);
+    shader.ShaderSource(AnsiString(ShaderSource));
+    if (not shader.CompileShader) or (treatWarningsAsErrors and (Pos('warning', LowerCase(shader.InfoLog)) > 0)) then
+      raise EGLShader.Create(FName + ' (' + shader.ClassName + '): '#13#10 + shader.InfoLog);
     AttachObject(shader);
   finally
     shader.Free;
@@ -3229,42 +3145,40 @@ procedure TGLProgramHandle.DetachAllObject;
 var
   glH: Cardinal;
   I: Integer;
-  count: TGLsizei;
-  buffer: array[0..255] of Cardinal;
+  Count: TGLsizei;
+  buffer: array [0 .. 255] of Cardinal;
 begin
   glH := GetHandle;
   if glH > 0 then
   begin
-    GL.GetAttachedShaders(glH, Length(buffer), @count, @buffer[0]);
-    count := MinInteger(count, Length(buffer));
-    for I := 0 to count - 1 do
+    GL.GetAttachedShaders(glH, Length(buffer), @Count, @buffer[0]);
+    Count := MinInteger(Count, Length(buffer));
+    for I := 0 to Count - 1 do
       GL.DetachShader(glH, buffer[I]);
     NotifyChangesOfData;
   end;
 end;
 
-procedure TGLProgramHandle.BindAttribLocation(index: Integer; const aName:
-  string);
+procedure TGLProgramHandle.BindAttribLocation(index: Integer; const aName: string);
 begin
   GL.BindAttribLocation(GetHandle, index, PAnsiChar(AnsiString(aName)));
 end;
 
-procedure TGLProgramHandle.BindFragDataLocation(index: Integer; const aName:
-  string);
+procedure TGLProgramHandle.BindFragDataLocation(index: Integer; const aName: string);
 begin
   GL.BindFragDataLocation(GetHandle, index, PAnsiChar(AnsiString(name)));
 end;
 
 function TGLProgramHandle.LinkProgram: Boolean;
 var
-  status: Integer;
+  Status: Integer;
   glH: Cardinal;
 begin
   glH := GetHandle;
   GL.LinkProgram(glH);
-  status := 0;
-  GL.GetProgramiv(glH, GL_LINK_STATUS, @status);
-  Result := (status <> 0);
+  Status := 0;
+  GL.GetProgramiv(glH, GL_LINK_STATUS, @Status);
+  Result := (Status <> 0);
 end;
 
 function TGLProgramHandle.ValidateProgram: Boolean;
@@ -3279,13 +3193,11 @@ begin
   Result := (validated <> 0);
 end;
 
-
 function TGLProgramHandle.GetAttribLocation(const aName: string): Integer;
 begin
   Result := GL.GetAttribLocation(GetHandle, PAnsiChar(AnsiString(aName)));
   Assert(Result >= 0, Format(strUnknownParam, ['attrib', aName, Name]));
 end;
-
 
 function TGLProgramHandle.GetUniformLocation(const aName: string): Integer;
 begin
@@ -3293,19 +3205,16 @@ begin
   Assert(Result >= 0, Format(strUnknownParam, ['uniform', aName, Name]));
 end;
 
-
 function TGLProgramHandle.GetVaryingLocation(const aName: string): Integer;
 begin
   Result := GL.GetVaryingLocation(GetHandle, PAnsiChar(AnsiString(aName)));
   Assert(Result >= 0, Format(strUnknownParam, ['varying', aName, Name]));
 end;
 
-
 procedure TGLProgramHandle.AddActiveVarying(const aName: string);
 begin
   GL.ActiveVarying(GetHandle, PAnsiChar(AnsiString(aName)));
 end;
-
 
 procedure TGLProgramHandle.UseProgramObject;
 begin
@@ -3313,246 +3222,189 @@ begin
   vCurrentGLContext.GLStates.CurrentProgram := Handle;
 end;
 
-
 procedure TGLProgramHandle.EndUseProgramObject;
 begin
   Assert(vCurrentGLContext <> nil);
   vCurrentGLContext.GLStates.CurrentProgram := 0;
 end;
 
-
 function TGLProgramHandle.GetUniform1i(const index: string): Integer;
 begin
   GL.GetUniformiv(GetHandle, GetUniformLocation(index), @Result);
 end;
-
 
 function TGLProgramHandle.GetUniform2i(const index: string): TVector2i;
 begin
   GL.GetUniformiv(GetHandle, GetUniformLocation(index), @Result);
 end;
 
-
 function TGLProgramHandle.GetUniform3i(const index: string): TVector3i;
 begin
   GL.GetUniformiv(GetHandle, GetUniformLocation(index), @Result);
 end;
-
 
 function TGLProgramHandle.GetUniform4i(const index: string): TVector4i;
 begin
   GL.GetUniformiv(GetHandle, GetUniformLocation(index), @Result);
 end;
 
-
 procedure TGLProgramHandle.SetUniform1f(const index: string; val: Single);
 begin
   GL.Uniform1f(GetUniformLocation(index), val);
 end;
-
 
 function TGLProgramHandle.GetUniform1f(const index: string): Single;
 begin
   GL.GetUniformfv(GetHandle, GetUniformLocation(index), @Result);
 end;
 
-
 procedure TGLProgramHandle.SetUniform1i(const index: string; val: Integer);
 begin
   GL.Uniform1i(GetUniformLocation(index), val);
 end;
 
-
-procedure TGLProgramHandle.SetUniform2i(const index: string;
-  const Value: TVector2i);
+procedure TGLProgramHandle.SetUniform2i(const index: string; const Value: TVector2i);
 begin
   GL.Uniform2i(GetUniformLocation(index), Value.X, Value.Y);
 end;
 
-
-procedure TGLProgramHandle.SetUniform3i(const index: string;
-  const Value: TVector3i);
+procedure TGLProgramHandle.SetUniform3i(const index: string; const Value: TVector3i);
 begin
   GL.Uniform3i(GetUniformLocation(index), Value.X, Value.Y, Value.Z);
 end;
 
-
-procedure TGLProgramHandle.SetUniform4i(const index: string;
-  const Value: TVector4i);
+procedure TGLProgramHandle.SetUniform4i(const index: string; const Value: TVector4i);
 begin
-  GL.Uniform4i(GetUniformLocation(index), Value.X, Value.Y, Value.Z,
-    Value.W);
+  GL.Uniform4i(GetUniformLocation(index), Value.X, Value.Y, Value.Z, Value.W);
 end;
-
 
 function TGLProgramHandle.GetUniform2f(const index: string): TVector2f;
 begin
   GL.GetUniformfv(GetHandle, GetUniformLocation(index), @Result);
 end;
 
-
-procedure TGLProgramHandle.SetUniform2f(const index: string; const val:
-  TVector2f);
+procedure TGLProgramHandle.SetUniform2f(const index: string; const val: TVector2f);
 begin
   GL.Uniform2f(GetUniformLocation(index), val.X, val.Y);
 end;
-
 
 function TGLProgramHandle.GetUniform3f(const index: string): TAffineVector;
 begin
   GL.GetUniformfv(GetHandle, GetUniformLocation(index), @Result);
 end;
 
-
-procedure TGLProgramHandle.SetUniform3f(const index: string; const val:
-  TAffineVector);
+procedure TGLProgramHandle.SetUniform3f(const index: string; const val: TAffineVector);
 begin
   GL.Uniform3f(GetUniformLocation(index), val.X, val.Y, val.Z);
 end;
-
 
 function TGLProgramHandle.GetUniform4f(const index: string): TVector;
 begin
   GL.GetUniformfv(GetHandle, GetUniformLocation(index), @Result);
 end;
 
-
-procedure TGLProgramHandle.SetUniform4f(const index: string; const val:
-  TVector);
+procedure TGLProgramHandle.SetUniform4f(const index: string; const val: TVector);
 begin
   GL.Uniform4f(GetUniformLocation(index), val.X, val.Y, val.Z, val.W);
 end;
-
 
 function TGLProgramHandle.GetUniformMatrix2fv(const index: string): TMatrix2f;
 begin
   GL.GetUniformfv(GetHandle, GetUniformLocation(index), @Result);
 end;
 
-
-procedure TGLProgramHandle.SetUniformMatrix2fv(const index: string; const val:
-  TMatrix2f);
+procedure TGLProgramHandle.SetUniformMatrix2fv(const index: string; const val: TMatrix2f);
 begin
   GL.UniformMatrix2fv(GetUniformLocation(index), 1, False, @val);
 end;
-
 
 function TGLProgramHandle.GetUniformMatrix3fv(const index: string): TMatrix3f;
 begin
   GL.GetUniformfv(GetHandle, GetUniformLocation(index), @Result);
 end;
 
-
-procedure TGLProgramHandle.SetUniformMatrix3fv(const index: string; const val:
-  TMatrix3f);
+procedure TGLProgramHandle.SetUniformMatrix3fv(const index: string; const val: TMatrix3f);
 begin
   GL.UniformMatrix3fv(GetUniformLocation(index), 1, False, @val);
 end;
-
 
 function TGLProgramHandle.GetUniformMatrix4fv(const index: string): TMatrix;
 begin
   GL.GetUniformfv(GetHandle, GetUniformLocation(index), @Result);
 end;
 
-
-procedure TGLProgramHandle.SetUniformMatrix4fv(const index: string; const val:
-  TMatrix);
+procedure TGLProgramHandle.SetUniformMatrix4fv(const index: string; const val: TMatrix);
 begin
   GL.UniformMatrix4fv(GetUniformLocation(index), 1, False, @val);
 end;
 
-
-procedure TGLProgramHandle.SetUniformf(const index: string;
-  const val: single);
+procedure TGLProgramHandle.SetUniformf(const index: string; const val: Single);
 begin
   SetUniform1f(index, val);
 end;
 
-
-procedure TGLProgramHandle.SetUniformf(const index: string; const val:
-  TVector2f);
+procedure TGLProgramHandle.SetUniformf(const index: string; const val: TVector2f);
 begin
   SetUniform2f(index, val);
 end;
 
-
-procedure TGLProgramHandle.SetUniformf(const index: string;
-  const val: TVector3f);
+procedure TGLProgramHandle.SetUniformf(const index: string; const val: TVector3f);
 begin
   SetUniform3f(index, val);
 end;
 
-
-procedure TGLProgramHandle.SetUniformf(const index: string;
-  const val: TVector4f);
+procedure TGLProgramHandle.SetUniformf(const index: string; const val: TVector4f);
 begin
   SetUniform4f(index, val);
 end;
 
-
-procedure TGLProgramHandle.SetUniformi(const index: string;
-  const val: integer);
+procedure TGLProgramHandle.SetUniformi(const index: string; const val: Integer);
 begin
   SetUniform1f(index, val);
 end;
 
-
-procedure TGLProgramHandle.SetUniformi(const index: string; const val:
-  TVector2i);
+procedure TGLProgramHandle.SetUniformi(const index: string; const val: TVector2i);
 begin
   SetUniform2i(index, val);
 end;
 
-
-procedure TGLProgramHandle.SetUniformi(const index: string;
-  const val: TVector3i);
+procedure TGLProgramHandle.SetUniformi(const index: string; const val: TVector3i);
 begin
   SetUniform3i(index, val);
 end;
 
-
-procedure TGLProgramHandle.SetUniformi(const index: string;
-  const val: TVector4i);
+procedure TGLProgramHandle.SetUniformi(const index: string; const val: TVector4i);
 begin
   SetUniform4i(index, val);
 end;
 
-
-function TGLProgramHandle.GetUniformTextureHandle(const index: string;
-  const TextureIndex: Integer; const TextureTarget: TGLTextureTarget): Cardinal;
+function TGLProgramHandle.GetUniformTextureHandle(const index: string; const TextureIndex: Integer;
+  const TextureTarget: TGLTextureTarget): Cardinal;
 begin
   Result := GetUniform1i(index);
 end;
 
-
-procedure TGLProgramHandle.SetUniformTextureHandle(const index: string;
-  const TextureIndex: Integer; const TextureTarget: TGLTextureTarget;
-  const Value: Cardinal);
+procedure TGLProgramHandle.SetUniformTextureHandle(const index: string; const TextureIndex: Integer;
+  const TextureTarget: TGLTextureTarget; const Value: Cardinal);
 begin
   vCurrentGLContext.GLStates.TextureBinding[0, TextureTarget] := Value;
   SetUniform1i(index, TextureIndex);
 end;
 
-
-procedure TGLProgramHandle.SetUniformBuffer(const index: string;
-  Value: TGLUniformBufferHandle);
+procedure TGLProgramHandle.SetUniformBuffer(const index: string; Value: TGLUniformBufferHandle);
 begin
   GL.UniformBuffer(Handle, GetUniformLocation(index), Value.Handle);
 end;
-
 
 function TGLProgramHandle.GetUniformBufferSize(const aName: string): Integer;
 begin
   Result := GL.GetUniformBufferSize(Handle, GetUniformLocation(aName));
 end;
 
-
 function TGLProgramHandle.GetUniformOffset(const aName: string): PGLInt;
 begin
   Result := GL.GetUniformOffset(Handle, GetUniformLocation(aName));
 end;
-
 
 function TGLProgramHandle.GetUniformBlockIndex(const aName: string): Integer;
 begin
@@ -3571,6 +3423,7 @@ end;
 // ------------------
 
 {$IFDEF USE_SERVICE_CONTEXT}
+
 procedure OnApplicationInitialize;
 begin
   InitProc := OldInitProc;
@@ -3578,7 +3431,6 @@ begin
   GLContextManager.CreateServiceContext;
 end;
 {$ENDIF}
-
 
 constructor TGLContextManager.Create;
 begin
@@ -3591,14 +3443,12 @@ begin
   FList := TThreadList.Create;
 end;
 
-
 destructor TGLContextManager.Destroy;
 begin
   FHandles.Free;
   FList.Free;
   inherited Destroy;
 end;
-
 
 function TGLContextManager.CreateContext(AClass: TGLContextClass): TGLContext;
 begin
@@ -3654,16 +3504,14 @@ begin
   FThreadTask.Clear;
   nowTime := GLSTime;
   with TServiceContextThread(FThread) do
-  if (nowTime - FLastTaskStartTime > 30000)
-    and not FReported then
-  begin
-    FReported := True;
-    GLSLogger.LogInfo('Service context queue task depleted');
-  end;
+    if (nowTime - FLastTaskStartTime > 30000) and not FReported then
+    begin
+      FReported := True;
+      GLSLogger.LogInfo('Service context queue task depleted');
+    end;
 end;
 
 {$ENDIF USE_SERVICE_CONTEXT}
-
 
 procedure TGLContextManager.Lock;
 begin
@@ -3694,9 +3542,8 @@ begin
   // try..finally just a waste of CPU here, if Count fails, the list is amok,
   // and so is the lock...
   Result := FList.LockList.Count;
-  FList.UnLockList;
+  FList.UnlockList;
 end;
-
 
 procedure TGLContextManager.RegisterContext(aContext: TGLContext);
 begin
@@ -3711,7 +3558,6 @@ begin
     end;
 end;
 
-
 procedure TGLContextManager.UnRegisterContext(aContext: TGLContext);
 begin
   with FList.LockList do
@@ -3725,7 +3571,6 @@ begin
     end;
 end;
 
-
 procedure TGLContextManager.ContextCreatedBy(aContext: TGLContext);
 begin
   Lock;
@@ -3735,7 +3580,6 @@ begin
     UnLock;
   end;
 end;
-
 
 procedure TGLContextManager.DestroyingContextBy(aContext: TGLContext);
 var
@@ -3752,7 +3596,7 @@ begin
       begin
         cn := FNotifications[High(FNotifications)];
         SetLength(FNotifications, Length(FNotifications) - 1);
-        cn.event(cn.obj);
+        cn.Event(cn.obj);
       end;
     end;
   finally
@@ -3760,9 +3604,7 @@ begin
   end;
 end;
 
-
-procedure TGLContextManager.LastContextDestroyNotification(
-  anObject: TObject; anEvent: TNotifyEvent);
+procedure TGLContextManager.LastContextDestroyNotification(anObject: TObject; anEvent: TNotifyEvent);
 begin
   Lock;
   try
@@ -3770,37 +3612,36 @@ begin
     with FNotifications[High(FNotifications)] do
     begin
       obj := anObject;
-      event := anEvent;
+      Event := anEvent;
     end;
   finally
     UnLock;
   end;
 end;
 
-
 procedure TGLContextManager.RemoveNotification(anObject: TObject);
 var
-  i: Integer;
+  I: Integer;
   found: Boolean;
 begin
   Lock;
   try
     found := False;
-    i := Low(FNotifications);
-    while i <= High(FNotifications) do
+    I := Low(FNotifications);
+    while I <= High(FNotifications) do
     begin
-      if FNotifications[i].obj = anObject then
+      if FNotifications[I].obj = anObject then
       begin
         found := True;
-        while i <= High(FNotifications) do
+        while I <= High(FNotifications) do
         begin
-          FNotifications[i] := FNotifications[i + 1];
-          Inc(i);
+          FNotifications[I] := FNotifications[I + 1];
+          Inc(I);
         end;
         SetLength(FNotifications, Length(FNotifications) - 1);
         Break;
       end;
-      Inc(i);
+      Inc(I);
     end;
     if not found then
       raise EGLContext.Create(strInvalidNotificationRemoval);
@@ -3808,7 +3649,6 @@ begin
     UnLock;
   end;
 end;
-
 
 procedure TGLContextManager.Terminate;
 begin
@@ -3836,14 +3676,14 @@ end;
 
 procedure TGLContextManager.DestroyAllHandles;
 var
-  i: Integer;
+  I: Integer;
 begin
   with FList.LockList do
     try
-      for i := Count - 1 downto 0 do
-        TGLContext(Items[i]).DestroyAllHandles;
+      for I := Count - 1 downto 0 do
+        TGLContext(Items[I]).DestroyAllHandles;
     finally
-      FList.UnLockList;
+      FList.UnlockList;
     end;
 end;
 
@@ -3854,8 +3694,8 @@ begin
   FWindow := TForm.CreateNew(nil);
   FWindow.Hide;
   FWindow.Position := poScreenCenter;
-  FWindow.Width := 1;
-  FWindow.Height := 1;
+  FWindow.width := 1;
+  FWindow.height := 1;
   FWindow.BorderStyle := bsNone;
   FWindow.FormStyle := fsStayOnTop;
   FWindow.Color := 0;
@@ -3897,7 +3737,8 @@ begin
     end;
     on EPBuffer do
     begin
-      GLSLogger.LogWarning(Format('%s: can''t initialize memory rendering context. Try initialize common context.', [ClassName]));
+      GLSLogger.LogWarning(Format('%s: can''t initialize memory rendering context. Try initialize common context.',
+        [ClassName]));
       try
         GLContextManager.ServiceContext.CreateContext(FDC);
       except
@@ -3931,7 +3772,7 @@ var
           if Assigned(TaskRec.Task) then
           begin
             Items[I] := NullTask;
-            break;
+            Break;
           end;
         end;
       finally
@@ -3965,7 +3806,7 @@ begin
             if Assigned(TaskRec.Event) then
               TaskRec.Event.SetEvent;
           end;
-         end
+        end
         else
           Synchronize(GLContextManager.QueueTaskDepleted);
         ServiceStarter.WaitFor(30000);
@@ -3997,7 +3838,7 @@ begin
             rEvent := TFinishTaskEvent.Create;
             TaskRec.Event := rEvent;
           end
-          else  // Asynchronous call
+          else // Asynchronous call
             TaskRec.Event := FinishEvent;
           Add(TaskRec);
           with TServiceContextThread(GLContextManager.FThread) do
@@ -4039,25 +3880,25 @@ end;
 
 // ------------------------------------------------------------------
 initialization
+
 // ------------------------------------------------------------------
 
-  vMainThread := True;
+vMainThread := True;
 {$IFDEF USE_SERVICE_CONTEXT}
-  OldInitProc := InitProc;
-  InitProc := @OnApplicationInitialize;
+OldInitProc := InitProc;
+InitProc := @OnApplicationInitialize;
 {$ENDIF USE_SERVICE_CONTEXT}
-  GLContextManager := TGLContextManager.Create;
-  GLwithoutContext := TGLExtensionsAndEntryPoints.Create;
-  GLwithoutContext.Close;
-  //vLocalGL := @GL;
+GLContextManager := TGLContextManager.Create;
+GLwithoutContext := TGLExtensionsAndEntryPoints.Create;
+GLwithoutContext.Close;
+// vLocalGL := @GL;
 
 finalization
 
-  GLContextManager.Terminate;
-  vContextClasses.Free;
-  vContextClasses := nil;
-  GLwithoutContext.Free;
-  GLwithoutContext := nil;
+GLContextManager.Terminate;
+vContextClasses.Free;
+vContextClasses := nil;
+GLwithoutContext.Free;
+GLwithoutContext := nil;
 
 end.
-

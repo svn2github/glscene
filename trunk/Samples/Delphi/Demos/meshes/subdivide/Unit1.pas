@@ -14,6 +14,7 @@ uses
   Vcl.ExtCtrls,
 
   GLScene,
+  GLPersistentClasses,
   GLVectorFileObjects,
   GLObjects,
   GLTexture,

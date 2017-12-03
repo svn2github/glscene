@@ -4,6 +4,7 @@ interface
 
 uses
   Winapi.OpenGL,
+  Winapi.OpenGLExt,
   System.SysUtils,
   System.Classes,
   Vcl.Graphics,
@@ -12,16 +13,15 @@ uses
   Vcl.Dialogs,
   Vcl.StdCtrls,
 
-  GLVectorFileObjects,
   GLScene,
-  GLObjects,
   GLWin32Viewer,
   GLFeedback,
-  GLTeapot,
   GLPolyhedron,
   GLCrossPlatform,
+  GLVectorFileObjects,
   GLCoordinates,
-  GLBaseClasses;
+  GLBaseClasses,
+  GLObjects;
 
 type
   TForm1 = class(TForm)

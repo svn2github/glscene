@@ -66,6 +66,9 @@ interface
 {$I GLScene.inc}
 
 uses
+{$IFDEF USE_FASTMATH}
+  Neslib.FastMath,
+{$ENDIF}
   System.Classes,
   System.SysUtils,
 
@@ -1350,7 +1353,7 @@ var
       OnBeforeUpdate(Self, SelectedObj, SelAxis, Operation, Vec1);
 
     Pmat := SelectedObj.Parent.InvAbsoluteMatrix;
-    SetVector(Pmat.W, NullHmgPoint);
+    SetVector(Pmat.V[3], NullHmgPoint);
     case SelAxis of
       GaX:
         begin

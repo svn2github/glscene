@@ -1,22 +1,20 @@
-{:
-  A demo for using Alex Denissov's Graphics32 library (http://www.g32.org)
-  to generate 2D texture for use with GLScene.<p>
-
-  By Nelson Chu<p>
+{
+  A demo for using Alex Denissov's Graphics32 library (http://www.graphics32.org)
+  to generate 2D texture for use with GLScene.
+  By Nelson Chu
 
   Try lighting the white line near the bottom of the window with your mouse
-  pointer and see the fire spreads. Press ESC to quit.<p>
+  pointer and see the fire spreads. Press ESC to quit.
 
-  To use Graphics32 with GLScene:<p>
+  To use Graphics32 with GLScene:
 
-  1. Make sure USE_GRAPHICS32 is defined in GLSCene.inc. Recompile if
+  1. Make sure USE_GRAPHICS32 is defined in GLSCene.inc. Recompile GLScene if
      needed.
-  2. In your program, use code like:<br>
+  2. In your program to assign the Bitmap32 to your GLScene texture and notify GLScene
+     use code like:
 
-       GLTexture.Image.GetBitmap32(0).assign(Bitmap32);<br>
-       GLTexture.Image.NotifyChange(self);<br>
-
-     to assign the Bitmap32 to your GLScene texture and notify GLScene.<p>
+       ..Texture.Image.GetBitmap32(0).Assign(Bitmap32);
+       ..Texture.Image.NotifyChange(self);
 
   To get fast assignment, remember to make the dimensions of your Bitmap32 equal
   to a power of two, so that GLScene doesn't need to do conversion internally.<p>
