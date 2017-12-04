@@ -246,7 +246,6 @@ contains
   GLSpaceText in '..\..\Source\GLSpaceText.pas',
   GLSpatialPartitioning in '..\..\Source\Basis\GLSpatialPartitioning.pas',
   GLSpline in '..\..\Source\Basis\GLSpline.pas',
-  GLStarRecord in '..\..\Source\GLStarRecord.pas',
   GLState in '..\..\Source\Basis\GLState.pas',
   GLStrings in '..\..\Source\GLStrings.pas',
   GLTeapot in '..\..\Source\Basis\GLTeapot.pas',
