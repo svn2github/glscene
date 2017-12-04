@@ -11,7 +11,13 @@ unit GLSpatialPartitioning;
 
 interface
 
+{$I GLScene.inc}
+
 uses
+{$IFDEF USE_FASTMATH}
+  Neslib.FastMath,
+{$ENDIF}
+
   Winapi.OpenGL,
   
   GLScene,

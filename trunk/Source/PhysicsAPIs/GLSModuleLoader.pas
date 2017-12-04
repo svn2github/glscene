@@ -63,15 +63,16 @@ function GetModuleSymbolEx(Module: TModuleHandle; SymbolName: PChar; var Accu: B
 function ReadModuleData(Module: TModuleHandle; SymbolName: PChar; var Buffer; Size: Cardinal): Boolean; stdcall;
 function WriteModuleData(Module: TModuleHandle; SymbolName: PChar; var Buffer; Size: Cardinal): Boolean; stdcall;
 
+//--------------------------------------------------------------------
 implementation
+//--------------------------------------------------------------------
 
-// load the DLL file FileName
-// the rules for FileName are those of LoadLibrary
-// Returns: True = success, False = failure to load
-// Assigns: the handle of the loaded DLL to Module
-// Warning: if Module has any other value than INVALID_MODULEHANDLE_VALUE
-// on entry the function will do nothing but returning success.
-
+(* load the DLL file FileName
+   the rules for FileName are those of LoadLibrary
+   Returns: True = success, False = failure to load
+   Assigns: the handle of the loaded DLL to Module
+   Warning: if Module has any other value than INVALID_MODULEHANDLE_VALUE
+   on entry the function will do nothing but returning success. *)
 function LoadModule(var Module: TModuleHandle; FileName: PChar): Boolean;
 begin
   if Module = INVALID_MODULEHANDLE_VALUE then

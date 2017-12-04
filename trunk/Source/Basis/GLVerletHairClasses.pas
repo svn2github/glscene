@@ -16,6 +16,10 @@ interface
 {$I GLScene.inc}
 
 uses
+
+{$IFDEF USE_FASTMATH}
+  Neslib.FastMath,
+{$ENDIF}
   System.Classes, 
   System.SysUtils,
   GLVerletTypes, 
@@ -46,38 +50,31 @@ type
     procedure SetStiffness(const Value: TVHStiffnessSet);
   public
     procedure BuildHair(const AAnchorPosition, AHairDirection: TAffineVector);
-
     procedure BuildStiffness;
     procedure ClearStiffness;
     procedure Clear;
-
     constructor Create(const AVerletWorld : TGLVerletWorld;
-      const ARootDepth, AHairLength : single; ALinkCount : integer;
-      const AAnchorPosition, AHairDirection : TAffineVector;
-      const AStiffness : TVHStiffnessSet);
-
+    const ARootDepth, AHairLength : single; ALinkCount : integer;
+    const AAnchorPosition, AHairDirection : TAffineVector;
+    const AStiffness : TVHStiffnessSet);
     destructor Destroy; override;
-
     property NodeList : TVerletNodeList read FNodeList;
     property VerletWorld : TGLVerletWorld read FVerletWorld;
-
     property RootDepth : single read FRootDepth;
     property LinkLength : single read GetLinkLength;
     property LinkCount : integer read FLinkCount;
     property HairLength : single read FHairLength;
-
     property Stiffness : TVHStiffnessSet read FStiffness write SetStiffness;
-
     property Data : pointer read FData write FData;
-
     {Anchor should be nailed down to give the hair stability }
     property Anchor : TVerletNode read GetAnchor;
-
     {Root should be nailed down to give the hair stability }
     property Root : TVerletNode read GetRoot;
   end;
 
+//------------------------------------------------------------------
 implementation
+//------------------------------------------------------------------
 
 { TGLVerletHair }
 

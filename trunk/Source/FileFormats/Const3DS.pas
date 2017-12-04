@@ -8,8 +8,7 @@ unit Const3DS;
  Last Change - 03. October 1999
  (c) Copyright 1999, Dipl. Ing. Mike Lischke (public@lischke-online.de)
  
-  The whole history is logged in previous version of the unit
- }
+  The whole history is logged in previous version of the unit }
 
 interface
 

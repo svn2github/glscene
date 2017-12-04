@@ -5,11 +5,8 @@
    Fast Fourier Transform for CUDA  
 
    History :  
-   13/12/13 - PW - Added GLScene.inc and GLSLog
-   04/05/11 - Yar - Fixed Source/Destination size checking
-   05/03/11 - Yar - Refactored
    19/03/10 - Yar - Creation
-    
+   The whole history is logged in previous version of the unit    
 }
 
 unit GLSCUDAFFTPlan;
@@ -65,14 +62,12 @@ type
     procedure DestroyHandles; override;
     class procedure CheckLib;
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
     procedure Execute(ASrc: TCUDAMemData; ADst: TCUDAMemData;
       const ADir: TCUDAFFTdir = fftdForward);
   published
-    
     property Width: Integer read fWidth write SetWidth default 256;
     property Height: Integer read FHeight write SetHeight default 0;
     property Depth: Integer read FDepth write SetDepth default 0;
@@ -82,11 +77,7 @@ type
   end;
 
 //---------------------------------------------------------------------  
-//---------------------------------------------------------------------  
-//---------------------------------------------------------------------  
 implementation
-//---------------------------------------------------------------------  
-//---------------------------------------------------------------------  
 //---------------------------------------------------------------------  
 
 constructor TCUDAFFTPlan.Create(AOwner: TComponent);
@@ -395,12 +386,7 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
   RegisterClasses([TCUDAFFTPlan]);

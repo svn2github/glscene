@@ -28,7 +28,6 @@ type
 
   TGLSCUDAEditor = class(TComponentEditor)
   public
-    
     procedure Edit; override;
     procedure ExecuteVerb(Index: Integer); override;
     function GetVerb(Index: Integer): string; override;
@@ -37,7 +36,6 @@ type
 
   TGLSCUDACompilerEditor = class(TComponentEditor)
   public
-    
     procedure Edit; override;
     procedure ExecuteVerb(Index: Integer); override;
     function GetVerb(Index: Integer): string; override;
@@ -49,7 +47,6 @@ type
     FModuleList: TStringList;
     procedure RefreshModuleList;
   public
-    
     constructor Create(const ADesigner: IDesigner; APropCount: Integer); override;
     destructor Destroy; override;
     function GetAttributes: TPropertyAttributes; override;
@@ -61,20 +58,17 @@ type
   private
     FDeviceList: TStringList;
   public
-    
     constructor Create(const ADesigner: IDesigner; APropCount: Integer); override;
     destructor Destroy; override;
     function GetAttributes: TPropertyAttributes; override;
     procedure GetValues(Proc: TGetStrProc); override;
     procedure SetValue(const Value: String); override;
   end;
-//--------------------------------------------------------------------
-//--------------------------------------------------------------------
+
 //--------------------------------------------------------------------
 implementation
 //--------------------------------------------------------------------
-//--------------------------------------------------------------------
-//--------------------------------------------------------------------
+
 uses
   GLSCUDARunTime,
   GLSCUDAContext,
@@ -322,16 +316,11 @@ begin
 end;
 
  
-//
-
 destructor TGLSCUDACompilerSourceProperty.Destroy;
 begin
   FModuleList.Destroy;
   inherited;
 end;
-
-// RefreshModuleList
-//
 
 procedure TGLSCUDACompilerSourceProperty.RefreshModuleList;
 var
@@ -355,16 +344,12 @@ begin
   end;
 end;
 
-// GetAttributes
-//
 
 function TGLSCUDACompilerSourceProperty.GetAttributes;
 begin
   Result := [paValueList];
 end;
 
-// GetValues
-//
 procedure TGLSCUDACompilerSourceProperty.GetValues(Proc: TGetStrProc);
 var
    I : Integer;
@@ -374,8 +359,6 @@ begin
       Proc(ExtractFileName(FModuleList[I]));
 end;
 
-// SetValue
-//
 procedure TGLSCUDACompilerSourceProperty.SetValue(const Value: String);
 var
   I, J: Integer;

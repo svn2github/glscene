@@ -4,9 +4,8 @@
 {
    TIN (Triangular Irregular Network) vector file format implementation. 
    History : 
-       08/04/13 - PW - Fixed a bug in VertArr: decremented element numbers by one
-       17/11/05 - PW - Added support for ascii TIN files with materials
-       05/06/03 - SG - Separated from GLVectorFileObjects.pas
+      05/06/03 - SG - Separated from GLVectorFileObjects.pas
+     The whole history is logged in previous version of the unit.
 }
 unit GLFileTIN;
 
@@ -58,7 +57,7 @@ var
    v1, v2, v3, n : TAffineVector;
    ActiveTin : Boolean;
    Id_Tin : Integer;
-   Tnam, S : string;
+   Tnam: string;
    Id_Mat, NVert, NTri : Integer;
 
    VertArr :  TxPoint3DArray;
@@ -143,11 +142,7 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
    RegisterVectorFileFormat('tin', 'Triangular Irregular Network', TGLTINVectorFile);

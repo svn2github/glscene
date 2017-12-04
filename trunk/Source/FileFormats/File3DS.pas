@@ -105,9 +105,7 @@ type
   public
     constructor Create(AOwner: TFile3DS); virtual;
     destructor Destroy; override;
-
     procedure ClearLists;
-
     property CameraCount: Integer read GetCamCount;
     property MeshCount: Integer read GetMeshObjectCount;
     property OmniLightCount: Integer read GetOmniCount;
@@ -139,9 +137,7 @@ type
   public
     constructor Create(AOwner: TFile3DS); virtual;
     destructor Destroy; override;
-
     procedure ClearLists;
-
     property AmbientLightMotion: PKFAmbient3DS read GetAmbientMotion;
     property CameraMotionCount: Integer read GetCamMotionCount;
     property MeshMotionCount: Integer read GetMeshMotionCount;
@@ -154,9 +150,9 @@ type
     property SpotLightMotion[Index: Integer]: PKFSpot3DS read GetSpotLightMotion;
   end;
 
-  // TFile3DS is the  main class and supplies the user with all available data
-  // from a specific 3DS file. The data is currently read only, but the class might be
-  // finished sometime later...
+  (* The main class that supplies the user with all available data
+    from a specific 3DS file. The data is currently read only, but the class might be
+    finished sometime later... *)
   TFile3DS = class
   private
     FNodeList: PNodeList;
@@ -197,12 +193,10 @@ type
     constructor CreateFromFile(const FileName: String); virtual;
     destructor Destroy; override;
     procedure ClearLists;
-
     // database methods
     procedure DumpDataBase(Strings: TStrings; DumpLevel: TDumpLevel);
     procedure LoadFromFile(const FileName: String);
     procedure LoadFromStream(const aStream: TStream);
-
     // basic access methods
     function ReadByte: Byte;
     function ReadCardinal: Cardinal;
@@ -220,12 +214,10 @@ type
     function ReadTexVert: TTexVert3DS;
     function ReadTrackHeader: TTrackHeader3DS;
     function ReadWord: Word;
-
     procedure FinishHeader(StartPos, EndPos: Cardinal);
     function InitChunkData(Chunk: PChunk3DS): Pointer;
     procedure SeekChild(Chunk: PChunk3DS);
     procedure Skip(AValue: Integer);
-
     procedure WriteByte(AValue: Byte);
     procedure WriteCardinal(AValue: Cardinal);
     procedure WriteData(Size: Integer; Data: Pointer);
@@ -242,7 +234,6 @@ type
     procedure WriteTexVertex(const T: TTexVert3DS);
     procedure WriteTrackHeader(const T: TTrackHeader3DS);
     procedure WriteWord(AValue: Word);
-
     property Atmosphere: TAtmosphere3DS read GetAtmosphereData;
     property Background: TBackground3DS read GetBackgroundData;
     property DatabaseRelease: TReleaseLevel read GetDatabaseRelease;
@@ -258,13 +249,9 @@ type
     property OnLoadProgress: TLoadProgress read FOnLoadProgress write FOnLoadProgress;
   end;
 
- // ---------------------------------------------------------------------------------------------------------------------
- // ---------------------------------------------------------------------------------------------------------------------
- // ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 implementation
- // ---------------------------------------------------------------------------------------------------------------------
- // ---------------------------------------------------------------------------------------------------------------------
- // ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 
 uses 
   Const3DS, 

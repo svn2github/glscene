@@ -4,10 +4,8 @@
 {
    CUDA Graphics for GLScene
    History :
-       05/03/11 - Yar - Moved and remake TGLFeedBackMesh from experimental to GLSCUDAGraphics, removed TGLFactory mediator component
-                           Added to TGLFeedBackMesh vertex attribute collection
-       01/04/10 - Yar - Creation
-
+     01/04/10 - Yar - Creation
+     The whole history is logged in previous version of the unit
 }
 
 unit GLSCUDAGraphics;
@@ -232,12 +230,9 @@ type
       SetFeedBackMesh;
     property Mapping;
   end;
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
 //---------------------------------------------------------------------------
 implementation
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 
 uses

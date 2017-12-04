@@ -4,7 +4,6 @@
 {
   Ode Dynamic Engine for GLScene
   History :  
-    03/02/03 - EG - Fixed CopyPosFromGeomToGL
     11/02/03 - MF - Added a couple of vector functions for copying between
                    ODE formats and GLScene formats
     The whole history is logged in previous version of the unit.
@@ -14,15 +13,11 @@ unit ODEGL;
 
 interface
 
-{
-  Here I collect random functions and procedures I've found useful when
+{ Here I collect random functions and procedures I've found useful when
   integrating ODE into GLScene. If you don't use GLScene, this unit won't be
   very useful to you. The unit is not intended as a sorted toolbox, but more
   as a place to put stuff until we figure out how to organize the integration.
-
-  Mattias Fagerlund ( mattias@cambrianlabs.com ), 2002-09-26
-
-}
+  Mattias Fagerlund ( mattias@cambrianlabs.com ), 2002-09-26 }
 
 uses
   System.SysUtils,
@@ -54,12 +49,10 @@ function ConvertdVector3ToVector3f(R: TdVector3): TVector3f; overload;
 function ConvertdVector3ToVector3f(R: PdVector3): TVector3f; overload;
 function ConvertdVector3ToVector4f(R: TdVector3): TVector4f; overload;
 function ConvertdVector3ToVector4f(R: PdVector3): TVector4f; overload;
-
 function ConvertdVector3ToAffineVector(R: PdVector3): TAffineVector; overload;
 function ConvertdVector3ToAffineVector(R: TdVector3): TAffineVector; overload;
 
 function GetBodyPositionAsAffineVector(Body: PdxBody): TAffineVector;
-
 // Converting between GLScene and ODE formats
 function ConvertVector3fTodVector3(R: TVector3f): TdVector3;
 function ConvertVector3fToPdVector3(R: TVector3f): PdVector3;
@@ -68,16 +61,12 @@ function ConvertVector4fToPdVector3(R: TVector4f): PdVector3;
 
 function dVector3Length(R: TdVector3): single; overload;
 function dVector3Length(R: PdVector3): single; overload;
-
 function dBodyToBodyDistance(Body1, Body2: PdxBody): TdReal;
-
 procedure CopyPosFromGeomToGL(Geom: PdxGeom; GLBaseSceneObject:  TGLBaseSceneObject);
 procedure PositionSceneObject(GLBaseSceneObject: TGLBaseSceneObject; Geom: PdxGeom);
 procedure PositionSceneObjectForGeom(Geom: PdxGeom);
-
 procedure CopyCubeSizeFromBox(Cube: TGLCube; Geom: PdxGeom);
 procedure CopyBodyFromCube(Body: PdxBody; var Geom: PdxGeom; Cube: TGLCube;  Space: PdxSpace);
-
 function CreateGeomFromCube(Cube: TGLCube; Space: PdxSpace): PdxGeom;
 function CreateBodyFromCube(var Geom: PdxGeom; Cube: TGLCube; World: PdxWorld;  Space: PdxSpace): PdxBody;
 
@@ -100,29 +89,31 @@ function RandomColorVector: TVector;
 
 // { $ EXTERNALSYM GL_ZERO} ?
 
+//---------------------------------------------------------------------------
 implementation
+//---------------------------------------------------------------------------
 
 procedure ODERToGLSceneMatrix(var m: TMatrix; R: TdMatrix3_As3x4; pos: TdVector3); overload;
 begin
-  m.X.X := r[0][0];
-  m.X.Y := r[0][1];
-  m.X.Z := r[0][2];
-  m.X.W := 0;
-  m.Y.X := r[1][0];
-  m.Y.Y := r[1][1];
-  m.Y.Z := r[1][2];
-  m.Y.W := 0;
-  m.Z.X := r[2][0];
-  m.Z.Y := r[2][1];
-  m.Z.Z := r[2][2];
-  m.Z.W := 0;
-  m.W := NullHmgPoint;
+  m.V[0].X := r[0][0];
+  m.V[0].Y := r[0][1];
+  m.V[0].Z := r[0][2];
+  m.V[0].W := 0;
+  m.V[1].X := r[1][0];
+  m.V[1].Y := r[1][1];
+  m.V[1].Z := r[1][2];
+  m.V[1].W := 0;
+  m.V[2].X := r[2][0];
+  m.V[2].Y := r[2][1];
+  m.V[2].Z := r[2][2];
+  m.V[2].W := 0;
+  m.V[3] := NullHmgPoint;
 
   TransposeMatrix(m);
-  m.W.X := pos[0];
-  m.W.Y := pos[1];
-  m.W.Z := pos[2];
-  m.W.W := 1; //}
+  m.V[3].X := pos[0];
+  m.V[3].Y := pos[1];
+  m.V[3].Z := pos[2];
+  m.V[3].W := 1; //}
 end;
 
 procedure ODERToGLSceneMatrix(var m: TMatrix; R: PdMatrix3; pos: PdVector3);
@@ -183,15 +174,15 @@ end;
 function GLSceneMatrixToODER(m: TMatrix): TdMatrix3;
 begin
   TransposeMatrix(m);
-  Result[0] := m.X.X;
-  Result[1] := m.X.Y;
-  Result[2] := m.X.Z;
-  Result[4] := m.Y.X;
-  Result[5] := m.Y.Y;
-  Result[6] := m.Y.Z;
-  Result[8] := m.Z.X;
-  Result[9] := m.Z.Y;
-  Result[10] := m.Z.Z;
+  Result[0] := m.V[0].X;
+  Result[1] := m.V[0].Y;
+  Result[2] := m.V[0].Z;
+  Result[4] := m.V[1].X;
+  Result[5] := m.V[1].Y;
+  Result[6] := m.V[1].Z;
+  Result[8] := m.V[2].X;
+  Result[9] := m.V[2].Y;
+  Result[10] := m.V[2].Z;
 end;
 
 procedure dsDrawBox(pos: PdVector3; R: PdMatrix3; Sides: TdVector3);
@@ -367,7 +358,7 @@ var
 begin
   m := GLMatrixFromGeom(Geom);
 
-  result := VectorNormalize(m.Z);
+  result := VectorNormalize(m.V[2]);
 end;
 
 procedure PositionSceneObject(GLBaseSceneObject: TGLBaseSceneObject; Geom: PdxGeom);
@@ -406,18 +397,18 @@ begin
   pos := dgeomGetPosition(Geom);
 
   m := GLBaseSceneObject.AbsoluteMatrix;
-  R[0] := m.X.X;
-  R[4] := m.X.Y;
-  R[8] := m.X.Z;
-  R[1] := m.Y.X;
-  R[5] := m.Y.Y;
-  R[9] := m.Y.Z;
-  R[2] := m.Z.X;
-  R[6] := m.Z.Y;
-  R[10] := m.Z.Z;
-  pos[0] := m.W.X;
-  pos[1] := m.W.Y;
-  pos[2] := m.W.Z; //}
+  R[0] := m.V[0].X;
+  R[4] := m.V[0].Y;
+  R[8] := m.V[0].Z;
+  R[1] := m.V[1].X;
+  R[5] := m.V[1].Y;
+  R[9] := m.V[1].Z;
+  R[2] := m.V[2].X;
+  R[6] := m.V[2].Y;
+  R[10] := m.V[2].Z;
+  pos[0] := m.V[3].X;
+  pos[1] := m.V[3].Y;
+  pos[2] := m.V[3].Z; //}
 
   dGeomSetRotation(Geom, R^);
 end;

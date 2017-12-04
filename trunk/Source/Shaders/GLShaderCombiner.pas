@@ -9,13 +9,9 @@
    multipass shaders, this unit does magic and allows to reuse and upgrade
    previously written shaders. 
 
-
     History :  
        23/02/07 - DaStr - Initial version (contributed to GLScene)
 
-
-    Previous version history:
-      v1.0  02 November    '2006  Creation
 }
 unit GLShaderCombiner;
 
@@ -63,7 +59,6 @@ type
     procedure DoApply(var rci : TGLRenderContextInfo; Sender : TObject); override;
     function DoUnApply(var rci: TGLRenderContextInfo): Boolean; override;
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
-
     property CombinerType: TGLShaderCombinerType read FCombinerType write FCombinerType default sctOneSPTwoAP;
     property ShaderOne: TGLShader read FShaderOne write SetShaderOne;
     property ShaderTwo: TGLShader read FShaderTwo write SetShaderTwo;

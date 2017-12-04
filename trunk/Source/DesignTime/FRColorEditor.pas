@@ -5,13 +5,8 @@
    RGB+Alpha color editor. 
 
     History:  
-       24/04/09 - DanB - removed some ifdef MSWINDOWS, which were actually for Kylix
-       05/09/08 - DanB - Removed Kylix support
-       06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
-       29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
-       03/07/04 - LR - Make change for Linux
-       06/02/00 - Egg - Creation
-    
+    06/02/00 - Egg - Creation
+    The whole history is logged in previous version of the unit    
 }
 unit FRColorEditor;
 
@@ -20,10 +15,22 @@ interface
 {$I GLScene.inc}
 
 uses
-  WinApi.Windows, System.Classes, System.SysUtils, VCL.Forms, VCL.StdCtrls,
-  VCL.ComCtrls, VCL.ExtCtrls, VCL.Dialogs, VCL.Controls, VCL.Graphics,
+  WinApi.Windows, 
+  System.Classes, 
+  System.SysUtils, 
+  VCL.Forms, 
+  VCL.StdCtrls,
+  VCL.ComCtrls, 
+  VCL.ExtCtrls, 
+  VCL.Dialogs, 
+  VCL.Controls, 
+  VCL.Graphics,
    
-  GLVectorGeometry, GLColor, GLTexture, GLCrossPlatform, GLVectorTypes;
+  GLVectorGeometry, 
+  GLColor, 
+  GLTexture, 
+  GLCrossPlatform, 
+  GLVectorTypes;
 
 type
   TRColorEditor = class(TFrame)

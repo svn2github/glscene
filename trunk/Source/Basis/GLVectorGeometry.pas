@@ -7047,8 +7047,6 @@ begin
   result.V[W].W := dot - lightPos.W * planeNormal3;
 end;
 
-// MakeReflectionMatrix
-//
 function MakeReflectionMatrix(const planePoint, planeNormal
   : TAffineVector): TMatrix;
 var
@@ -7078,8 +7076,6 @@ begin
   result.V[W].W := 1;
 end;
 
-// PackRotationMatrix
-//
 function PackRotationMatrix(const mat: TMatrix): TPackedRotationMatrix;
 var
   Q: TQuaternion;

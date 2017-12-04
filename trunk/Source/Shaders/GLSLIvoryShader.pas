@@ -35,21 +35,16 @@ uses
   GLSLShader,
   GLCustomShader;
 
-//TGLCustomGLSLIvoryShader
-//
 {Custom class for GLSLIvoryShader. 
  A shader that simulate Ivory Material }
 type
   TGLCustomGLSLIvoryShader = class(TGLCustomGLSLShader)
-  private
-
   protected
     procedure DoApply(var rci : TGLRenderContextInfo; Sender : TObject); override;
     function DoUnApply(var rci: TGLRenderContextInfo): Boolean; override;
   public
     constructor Create(AOwner : TComponent); override;
     destructor Destroy; override;
-
   end;
 
 type
@@ -106,8 +101,6 @@ begin
     Add('gl_FragColor = vec4(result); ');
     Add('} ');
   end;
-
-
   // Initial stuff.
 
 end;
@@ -131,7 +124,6 @@ begin
   Result := False;
   GetGLSLProg.EndUseProgramObject;
 end;
-
 
 
 end.

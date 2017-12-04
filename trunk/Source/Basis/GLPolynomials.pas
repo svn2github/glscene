@@ -28,6 +28,9 @@ interface
 {$I GLScene.inc}
 
 uses
+{$IFDEF USE_FASTMATH}
+  Neslib.FastMath,
+{$ENDIF}
   GLVectorGeometry;
 
 type
@@ -63,12 +66,7 @@ function SolveCubic(const c: PDoubleArray): TDoubleArray;
 function SolveQuartic(const c: PDoubleArray): TDoubleArray;
 
 // --------------------------------------------------------------
-// --------------------------------------------------------------
-// --------------------------------------------------------------
 implementation
-
-// --------------------------------------------------------------
-// --------------------------------------------------------------
 // --------------------------------------------------------------
 
 const
@@ -76,15 +74,11 @@ const
   c1div3: Double = 0.3333333333333333333333333333333;
   cHalf: Double = 0.5;
 
-  // IsZero
-  //
 function IsZero(var v: Double): Boolean; overload;
 begin
   Result := (Abs(v) <= cEpsilon);
 end;
 
-// EvalPolynom
-//
 function EvalPolynom(const poly: TDoubleArray; const x: Double): Double;
 var
   i, n: Integer;
@@ -100,8 +94,6 @@ begin
     Result := 0;
 end;
 
-// DerivatedPolynom
-//
 function DerivatedPolynom(const poly: TDoubleArray): TDoubleArray;
 var
   n, i: Integer;
@@ -120,8 +112,6 @@ begin
   end;
 end;
 
-// FindRoot
-//
 function FindRoot(const poly: TDoubleArray; min, max, epsilon: Double): Double;
 var
   evMin, evMax, mid, evMid: Double;
@@ -169,8 +159,6 @@ begin
   Result := (max + min) * cHalf;
 end;
 
-// MinPositiveCoef
-//
 function MinPositiveCoef(const coefs: TDoubleArray; var aMin: Double): Boolean;
 var
   n, i, j: Integer;
@@ -226,8 +214,6 @@ begin
   end;
 end;
 
-// cbrt
-//
 function cbrt(const x: Double): Double;
 begin
   if x > 0 then
@@ -238,8 +224,6 @@ begin
     Result := 0;
 end;
 
-// SolveQuadric
-//
 function SolveQuadric(const c: PDoubleArray): TDoubleArray;
 var
   p, q, D, sqrt_D: Double;
@@ -270,8 +254,6 @@ begin
   end;
 end;
 
-// SolveCubic
-//
 function SolveCubic(const c: PDoubleArray): TDoubleArray;
 var
   i: Integer;
@@ -347,8 +329,6 @@ begin
     Result[i] := Result[i] - sub;
 end;
 
-// SolveQuartic
-//
 function SolveQuartic(const c: PDoubleArray): TDoubleArray;
 var
   coeffs: array [0 .. 3] of Double;

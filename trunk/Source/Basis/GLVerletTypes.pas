@@ -1371,8 +1371,6 @@ begin
     DoUpdateSpacePartition; // }
 end;
 
-// Verlet
-//
 procedure TGLVerletWorld.Verlet(const vpt: TVerletProgressTimes);
 var
   i: Integer;

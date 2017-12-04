@@ -2,6 +2,8 @@ unit GLInertias;
 
 interface
 
+{$I GLScene.inc}
+
 uses
   System.SysUtils,
   System.Classes,
@@ -71,7 +73,7 @@ type
     property TranslationSpeed: TGLCoordinates read FTranslationSpeed
       write SetTranslationSpeed;
 
-    { : Enable/Disable damping (damping has a high cpu-cycle cost).<p>
+    { Enable/Disable damping (damping has a high cpu-cycle cost).<p>
       Damping is enabled by default. }
     // property DampingEnabled : Boolean read FDampingEnabled write FDampingEnabled;
     { Damping applied to translation speed.<br>
@@ -454,8 +456,6 @@ begin
   }
 end;
 
-// CalcStateDot
-//
 procedure TGLParticleInertia.CalcStateDot(var StateArray: TStateArray;
   StatePos: Integer);
 var
@@ -775,15 +775,15 @@ procedure TGLRigidBodyInertia.SetUpStartingState();
 begin
   //
   inherited SetUpStartingState();
-  fBodyInertiaTensor.X.X := InertiaTensor.fm11;
-  fBodyInertiaTensor.X.Y := InertiaTensor.fm12;
-  fBodyInertiaTensor.X.Z := InertiaTensor.fm13;
-  fBodyInertiaTensor.Y.X := InertiaTensor.fm21;
-  fBodyInertiaTensor.Y.Y  := InertiaTensor.fm22;
-  fBodyInertiaTensor.Y.Z  := InertiaTensor.fm23;
-  fBodyInertiaTensor.Z.X := InertiaTensor.fm31;
-  fBodyInertiaTensor.Z.Y := InertiaTensor.fm32;
-  fBodyInertiaTensor.Z.Z  := InertiaTensor.fm33;
+  fBodyInertiaTensor.V[0].X := InertiaTensor.fm11;
+  fBodyInertiaTensor.V[0].Y := InertiaTensor.fm12;
+  fBodyInertiaTensor.V[0].Z := InertiaTensor.fm13;
+  fBodyInertiaTensor.V[1].X := InertiaTensor.fm21;
+  fBodyInertiaTensor.V[1].Y  := InertiaTensor.fm22;
+  fBodyInertiaTensor.V[1].Z  := InertiaTensor.fm23;
+  fBodyInertiaTensor.V[2].X := InertiaTensor.fm31;
+  fBodyInertiaTensor.V[2].Y := InertiaTensor.fm32;
+  fBodyInertiaTensor.V[2].Z  := InertiaTensor.fm33;
 
   fBodyInverseInertiaTensor := fBodyInertiaTensor;
 
@@ -1130,12 +1130,7 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 // class registrations

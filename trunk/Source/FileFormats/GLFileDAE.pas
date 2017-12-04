@@ -5,10 +5,8 @@
    COLLADA DAE file format implementation. 
 
     History : 
-       17/01/14 - PW - Bugfixed for XE5
-       16/01/14 - PW - Added $I GLScene.inc
-       15/01/14 - PW - Creation
-	 
+     15/01/14 - PW - Creation
+     The whole history is logged in previous version of the unit	 
 }
 unit GLFileDAE;
 
@@ -20,7 +18,8 @@ uses
   System.Classes,
   System.SysUtils,
   GLVectorFileObjects,
-  GLApplicationFileIO {, Fmx.FileDAE};
+  GLApplicationFileIO 
+  {, Fmx.FileDAE};
 
 type
    {The DAE vector file (COLLADA actor file). 

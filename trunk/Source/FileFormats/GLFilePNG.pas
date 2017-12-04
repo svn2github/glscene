@@ -46,14 +46,14 @@ type
       const intFormat: TGLInternalFormat); reintroduce;
   end;
 
+//--------------------------------------------------------------
 implementation
+//--------------------------------------------------------------
 
 // ------------------
 // ------------------ TGLPNGImage ------------------
 // ------------------
 
- 
-//
 
 procedure TGLPNGImage.LoadFromFile(const filename: string);
 var
@@ -73,8 +73,6 @@ begin
     raise EInvalidRasterFile.CreateFmt('File %s not found', [filename]);
 end;
 
-// SaveToFile
-//
 
 procedure TGLPNGImage.SaveToFile(const filename: string);
 var
@@ -89,18 +87,11 @@ begin
   ResourceName := filename;
 end;
 
-// LoadFromStream
-//
 
 procedure TGLPNGImage.LoadFromStream(AStream: TStream);
 var
   PngImage: TPngImage;
-  sig: array[0..7] of Byte;
-  colorType, bitDepth: Integer;
   rowBytes: Cardinal;
-  rowPointers: array of PGLUbyte;
-  ii: Integer;
-  use16: Boolean;
 
 begin
   try
@@ -114,8 +105,6 @@ begin
     PngImage.Free;
   end;
 end;
-// SaveToStream
-//
 
 procedure TGLPNGImage.SaveToStream(AStream: TStream);
 var
@@ -129,8 +118,6 @@ begin
   end;
 end;
 
-// AssignFromTexture
-//
 
 procedure TGLPNGImage.AssignFromTexture(textureContext: TGLContext;
   const textureHandle: Cardinal;
@@ -198,8 +185,6 @@ begin
   end;
 end;
 
-// Capabilities
-//
 
 class function TGLPNGImage.Capabilities: TGLDataFileCapabilities;
 begin

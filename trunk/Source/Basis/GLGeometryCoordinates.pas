@@ -16,7 +16,12 @@ interface
 {$I GLScene.inc}
 
 uses
+{$IFDEF USE_FASTMATH}
+  Neslib.FastMath,
+{$ELSE}
   System.Math,
+{$ENDIF}
+
   GLVectorGeometry;
 
 { Convert cylindrical to cartesian [single]. theta in rad }

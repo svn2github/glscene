@@ -42,7 +42,6 @@ type
    {A component interfacing the Joystick via the (regular) windows API. }
 	TGLJoystick = class (TComponent)
 	   private
-	       
          FWindowHandle : HWND;
          FNumButtons, FLastX, FLastY, FLastZ : Integer;
          FThreshold, FInterval : Cardinal;
@@ -53,7 +52,6 @@ type
          FOnJoystickButtonChange, FOnJoystickMove : TJoystickEvent;
          FXPosition, FYPosition : Integer;
          FJoyButtons : TJoystickButtons;
-
          procedure SetCapture(AValue: Boolean);
          procedure SetInterval(AValue: Cardinal);
          procedure SetJoystickID(AValue: TJoystickID);
@@ -68,7 +66,6 @@ type
          procedure WndProc(var Msg: TMessage);
          procedure Loaded; override;
       public
-	      
          constructor Create(AOwner : TComponent); override;
 	     destructor Destroy; override;
          procedure Assign(Source: TPersistent); override;
@@ -76,7 +73,6 @@ type
          property XPosition : Integer read FXPosition;
          property YPosition : Integer read FYPosition;
 	   published
-	      
          {When set to True, the component attempts to capture the joystick. 
             If capture is successfull, retrieving joystick status is possible,
             if not, an error message is triggered. }
@@ -89,15 +85,10 @@ type
          property Threshold: Cardinal read FThreshold write SetThreshold default 1000;
 	      property OnJoystickButtonChange: TJoystickEvent read FOnJoystickButtonChange write FOnJoystickButtonChange;
 	      property OnJoystickMove: TJoystickEvent read FOnJoystickMove write FOnJoystickMove;
-
 	end;
 
 // ---------------------------------------------------------------------
-// ---------------------------------------------------------------------
-// ---------------------------------------------------------------------
 implementation
-// ---------------------------------------------------------------------
-// ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
 
 const

@@ -18,7 +18,7 @@ unit GLSLGoochShader;
 
 interface
 
-//{$I GLScene.inc}
+{$I GLScene.inc}
 
 uses
   System.Classes,
@@ -39,8 +39,6 @@ uses
   GLSLShader,
   GLCustomShader;
 
-//TGLCustomGLSLSimpleGoochShader
-//
 {Custom class for GLSLSimpleGoochShader. }
 type
   TGLCustomGLSLSimpleGoochShader = class(TGLCustomGLSLShader)
@@ -55,22 +53,18 @@ type
     FAmbientFactor : Single;
     FDiffuseFactor : Single;
     FSpecularFactor : Single;
-
     FBlendingMode: TGLBlendingModeEx;
-
     procedure SetDiffuseColor(AValue: TGLColor);
     procedure SetAmbientColor(AValue: TGLColor);
     procedure SetSpecularColor(AValue: TGLColor);
     procedure SetWarmColor(AValue: TGLColor);
     procedure SetCoolColor(AValue: TGLColor);
-
   protected
     procedure DoApply(var rci : TGLRenderContextInfo; Sender : TObject); override;
     function DoUnApply(var rci: TGLRenderContextInfo): Boolean; override;
   public
     constructor Create(AOwner : TComponent); override;
     destructor Destroy; override;
-
     property DiffuseColor : TGLColor read FDiffuseColor Write setDiffuseColor;
     property WarmColor : TGLColor read FWarmColor Write setWarmColor;
     property CoolColor : TGLColor Read FCoolColor Write setCoolColor;
@@ -81,7 +75,6 @@ type
     property AmbientFactor : Single Read FAmbientFactor Write FAmbientFactor;
     property DiffuseFactor : Single Read FDiffuseFactor Write FDiffuseFactor;
     property SpecularFactor : Single Read FSpecularFactor Write FSpecularFactor;
-
     property BlendingMode: TGLBlendingModeEx read FBlendingMode write FBlendingMode default bmxOpaque;
   end;
 

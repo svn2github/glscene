@@ -14,6 +14,10 @@ unit GLGeomObjects;
 interface
 
 uses
+{$IFDEF USE_FASTMATH}
+  Neslib.FastMath,
+{$ENDIF}
+
   System.Classes,
   System.Math,
   
@@ -34,7 +38,6 @@ uses
 
 
 type
-
   { A Disk object that may not be complete, it can have a hole (controled by the
     InnerRadius property) and can only be a slice (controled by the StartAngle
     and SweepAngle properties). }
@@ -126,7 +129,6 @@ type
 
   TCylinderPart = (cySides, cyBottom, cyTop);
   TCylinderParts = set of TCylinderPart;
-
   TCylinderAlignment = (caCenter, caTop, caBottom);
 
   {  Cylinder object, can also be used to make truncated cones }
@@ -207,25 +209,20 @@ type
     FBottomInnerRadius: Single;
     FTopInnerRadius: Single;
     FTopRadius: Single;
-
   protected
     procedure SetTopRadius(const aValue: Single);
     procedure SetTopInnerRadius(const aValue: Single);
     procedure SetBottomInnerRadius(const aValue: Single);
     procedure SetParts(aValue: TAnnulusParts);
-
   public
     constructor Create(AOwner: TComponent); override;
     procedure Assign(Source: TPersistent); override;
-
     procedure BuildList(var rci: TGLRenderContextInfo); override;
     function AxisAlignedDimensionsUnscaled: TVector; override;
     function RayCastIntersect(const rayStart, rayVector: TVector;
       intersectPoint: PVector = nil; intersectNormal: PVector = nil)
       : Boolean; override;
-
   published
-    
     property BottomInnerRadius: Single read FBottomInnerRadius
       write SetBottomInnerRadius;
     property TopInnerRadius: Single read FTopInnerRadius
@@ -579,7 +576,7 @@ begin
         else
         begin
           // arctan2 returns results between -pi and +pi, we want between 0 and 360
-          angle := 180 / pi * ArcTan2(localIntPoint.X, localIntPoint.Y);
+          angle := 180 / pi * {$IFDEF USE_FASTMATH}Neslib.FastMath.{$ENDIF}ArcTan2(localIntPoint.X, localIntPoint.Y);
           if angle < 0 then
             angle := angle + 360;
           // we also want StartAngle and StartAngle+SweepAngle to be in this range
@@ -2909,7 +2906,6 @@ begin
       ConeCenter.Binormal := FMesh[MeshIndex][0].Binormal;
       ConeCenter.TexCoord := Vector2fMake(1, 1);
 
-//      with GL do
       begin
         if GL.ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
         begin
@@ -2988,7 +2984,6 @@ begin
       ConeCenter.Tangent := FMesh[MeshIndex][0].Tangent;
       ConeCenter.Binormal := FMesh[MeshIndex][0].Binormal;
       ConeCenter.TexCoord := Vector2fMake(0, 0);
-//      with GL do
       begin
         if GL.ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
         begin

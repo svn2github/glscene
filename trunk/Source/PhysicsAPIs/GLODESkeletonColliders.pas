@@ -5,15 +5,8 @@
    Skeleton colliders for defining and controlling ODE geoms. 
 
     History : 
-       10/11/12 - PW - Added CPP compatibility: restored records with arrays instead of vector arrays
-       17/11/09 - DaStr - Improved Unix compatibility
-                             (thanks Predator) (BugtrackerID = 2893580)
-       12/04/08 - DaStr - Cleaned up uses section
-                            (thanks Sandor Domokos) (BugtrackerID = 1808373)
-       06/02/08 - Mrqzzz - Upgrade to ODE 0.9 (replaced references, and
-                             CCilinder (ode 0.8) with Capsule(ode 0.9))
-       02/08/04 - LR, YHC - BCB corrections: use record instead array
        04/12/03 - SG - Creation.
+       The whole history is logged in previous version of the unit.
     
 }
 unit GLODESkeletonColliders;
@@ -183,10 +176,10 @@ begin
   inherited;
   if Assigned(FGeom) then begin
     Mat:=GlobalMatrix;
-    dGeomSetPosition(FGeom,Mat.W.X,Mat.W.Y,Mat.W.Z);
-    R[0]:=Mat.X.X; R[1]:=Mat.Y.X; R[2]:= Mat.Z.X; R[3]:= 0;
-    R[4]:=Mat.X.Y; R[5]:=Mat.Y.Y; R[6]:= Mat.Z.Y; R[7]:= 0;
-    R[8]:=Mat.X.Z; R[9]:=Mat.Y.Z; R[10]:=Mat.Z.Z; R[11]:=0;
+    dGeomSetPosition(FGeom,Mat.V[3].X, Mat.V[3].Y, Mat.V[3].Z);
+    R[0]:=Mat.V[0].X; R[1]:=Mat.V[1].X; R[2]:= Mat.V[2].X; R[3]:= 0;
+    R[4]:=Mat.V[0].Y; R[5]:=Mat.V[1].Y; R[6]:= Mat.V[2].Y; R[7]:= 0;
+    R[8]:=Mat.V[0].Z; R[9]:=Mat.V[1].Z; R[10]:=Mat.V[2].Z; R[11]:=0;
     dGeomSetRotation(FGeom,R);
   end;
 end;

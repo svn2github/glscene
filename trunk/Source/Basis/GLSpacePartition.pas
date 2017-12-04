@@ -1743,7 +1743,9 @@ end;
 
 function TSPQuadtreeNode.AABBFitsInNode(const AAABB: TAABB): Boolean;
 begin
-  Result := (AAABB.Min.X >= FAABB.Min.X) and (AAABB.Min.Z >= FAABB.Min.Z) and (AAABB.Max.X <= FAABB.Max.X) and
+  Result := (AAABB.Min.X >= FAABB.Min.X) and
+    (AAABB.Min.Z >= FAABB.Min.Z) and
+    (AAABB.Max.X <= FAABB.Max.X) and
     (AAABB.Max.Z <= FAABB.Max.Z);
 end;
 

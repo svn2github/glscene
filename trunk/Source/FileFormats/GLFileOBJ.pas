@@ -55,7 +55,6 @@ type
     FLineNo: Integer; { current Line number - for error messages }
     FEof: Boolean; { Stream done? }
     FBufPos: Integer; { Position in the buffer }
-
   protected
     // Read a single line of text from the source stream, set FEof to true when done.
     procedure ReadLine;

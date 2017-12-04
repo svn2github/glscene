@@ -5,10 +5,8 @@
     Simple X format support for Delphi (Microsoft's favorite format) 
 
     History :  
-       17/04/13 - YP - Warn user if file content unparsable (http://paulbourke.net/dataformats/directx/)
-       04/10/10 - Yar - Fixed TDXFileHeader type (thanks JironBach)
        07/11/09 - DaStr - Initial version (Added from the GLScene-Lazarus SVN)
-    
+       The whole history is logged in previous version of the unit.    
 }
 unit FileX;
 

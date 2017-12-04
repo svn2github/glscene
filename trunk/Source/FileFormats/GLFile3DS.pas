@@ -15,6 +15,9 @@ interface
 {$I GLScene.inc}
 
 uses
+{$IFDEF USE_FASTMATH}
+  Neslib.FastMath,
+{$ENDIF}
   System.Classes,
   System.SysUtils,
   System.Math,
@@ -293,7 +296,7 @@ var
   }
   vGLFile3DS_LoadedStaticFrame: Integer = -1;
 
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
 implementation
 
 // ------------------------------------------------------------------
@@ -305,23 +308,15 @@ const
 function AnimKeysClassTypeToClass(const AAnimKeysClassType: TGLFile3DSAnimKeysClassType): TClass;
 begin
   case AAnimKeysClassType of
-    ctScale:
-      Result := TGLFile3DSScaleAnimationKeys;
-    ctRot:
-      Result := TGLFile3DSRotationAnimationKeys;
-    ctPos:
-      Result := TGLFile3DSPositionAnimationKeys;
-    ctCol:
-      Result := TGLFile3DSColorAnimationKeys;
-    ctTPos:
-      Result := TTGLFile3DSPositionAnimationKeys;
-    ctFall:
-      Result := TGLFile3DSSpotLightCutOffAnimationKeys;
-    ctHot:
-      Result := TGLFile3DSLightHotSpotAnimationKeys;
-    ctRoll:
-      Result := TGLFile3DSRollAnimationKeys;
-  else
+    ctScale: Result := TGLFile3DSScaleAnimationKeys;
+    ctRot: Result := TGLFile3DSRotationAnimationKeys;
+    ctPos: Result := TGLFile3DSPositionAnimationKeys;
+    ctCol: Result := TGLFile3DSColorAnimationKeys;
+    ctTPos: Result := TTGLFile3DSPositionAnimationKeys;
+    ctFall: Result := TGLFile3DSSpotLightCutOffAnimationKeys;
+    ctHot: Result := TGLFile3DSLightHotSpotAnimationKeys;
+    ctRoll: Result := TGLFile3DSRollAnimationKeys;
+    else
     begin
       Result := nil;
       Assert(False, strErrorEx + strUnknownType);
@@ -698,7 +693,8 @@ end;
 procedure TGLFile3DSPositionAnimationKeys.Apply(var DataTransf: TGLFile3DSAnimationData; const AFrame: real);
 begin
   if FNumKeys > 0 then
-    DataTransf.ModelMatrix.v[3] := VectorAdd(DataTransf.ModelMatrix.v[3], VectorMake(InterpolateValue(FPos, AFrame)));
+    DataTransf.ModelMatrix.V[3] :=
+      VectorAdd(DataTransf.ModelMatrix.V[3], VectorMake(InterpolateValue(FPos, AFrame)));
 end;
 
 procedure TGLFile3DSPositionAnimationKeys.Assign(Source: TPersistent);
@@ -1743,7 +1739,7 @@ var
 
       if Index > -1 then
       begin
-        with mesh[Index]^ do
+        with Mesh[Index]^ do
         begin
           Result.V[0].X := LocMatrix[0];
           Result.V[0].Y := LocMatrix[1];
@@ -1913,14 +1909,14 @@ begin
       { TODO : better face winding }
       standardNormalsOrientation := not(NormalsOrientation = mnoDefault);
 
-      for I := 0 to Objects.MeshCount - 1 do
-        with PMesh3DS(Objects.mesh[I])^ do
+      for i := 0 to Objects.MeshCount - 1 do
+        with PMesh3DS(Objects.Mesh[I])^ do
         begin
-          hasLightmap := False;
+          hasLightMap := False;
           mesh := TGLFile3DSMeshObject.CreateOwned(Owner.MeshObjects);
-          mesh.Name := string(PMesh3DS(Objects.mesh[I])^.NameStr);
-          // dummy targets
-          for X := KeyFramer.Settings.Seg.SegBegin to KeyFramer.Settings.Seg.SegEnd do
+          mesh.Name := string(PMesh3DS(Objects.Mesh[I])^.NameStr);
+          //dummy targets
+          for x := KeyFramer.Settings.Seg.SegBegin to KeyFramer.Settings.Seg.SegEnd do
             TGLMeshMorphTarget.CreateOwned(mesh.MorphTargets);
 
           with mesh do

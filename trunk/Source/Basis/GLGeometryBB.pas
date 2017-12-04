@@ -16,6 +16,11 @@ interface
 {$I GLScene.inc}
 
 uses
+
+{$IFDEF USE_FASTMATH}
+  Neslib.FastMath,
+{$ENDIF}
+
   System.SysUtils,
   GLVectorGeometry,
   GLVectorLists;

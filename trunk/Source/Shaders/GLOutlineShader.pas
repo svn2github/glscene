@@ -35,31 +35,21 @@ uses
 
 type
 
-  // TGLOutlineShader
-  //
   TGLOutlineShader = class(TGLShader)
   private
-     
     FPassCount: integer;
     FLineColor: TGLColor;
     FOutlineSmooth: Boolean;
     FOutlineWidth: Single;
-
     procedure SetOutlineWidth(v: single);
     procedure SetOutlineSmooth(v: boolean);
-
   protected
-    
     procedure DoApply(var rci: TGLRenderContextInfo; Sender: TObject); override;
     function DoUnApply(var rci: TGLRenderContextInfo): Boolean; override;
-
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
   published
-    
     property LineColor: TGLColor read FLineColor write FLineColor;
     {Line smoothing control }
     property LineSmooth: Boolean read FOutlineSmooth write SetOutlineSmooth
@@ -67,12 +57,8 @@ type
     property LineWidth: Single read FOutlineWidth write SetOutlineWidth;
   end;
 
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 uses 
@@ -83,8 +69,6 @@ uses
 // ------------------
 
  
-//
-
 constructor TGLOutlineShader.Create(AOwner: TComponent);
 begin
   inherited;
@@ -95,16 +79,11 @@ begin
 end;
 
  
-//
-
 destructor TGLOutlineShader.Destroy;
 begin
   FLineColor.Free;
   inherited;
 end;
-
-// DoApply
-//
 
 procedure TGLOutlineShader.DoApply(var rci: TGLRenderContextInfo; Sender:
   TObject);
@@ -113,9 +92,6 @@ begin
   // with color alpha < 1 to be rendered correctly with outline.
   FPassCount := 1;
 end;
-
-// DoUnApply
-//
 
 function TGLOutlineShader.DoUnApply(var rci: TGLRenderContextInfo): Boolean;
 begin
@@ -174,9 +150,6 @@ begin
   end;
 end;
 
-// SetOutlineWidth
-//
-
 procedure TGLOutlineShader.SetOutlineWidth(v: single);
 begin
   if FOutlineWidth <> v then
@@ -185,9 +158,6 @@ begin
     NotifyChange(self);
   end;
 end;
-
-// SetOutlineSmooth
-//
 
 procedure TGLOutlineShader.SetOutlineSmooth(v: boolean);
 begin

@@ -125,11 +125,7 @@ var
   vFindCuFileFunc: TFindCuFileFunc;
 
 //------------------------------------------------------------------
-//------------------------------------------------------------------
-//------------------------------------------------------------------
 implementation
-//------------------------------------------------------------------
-//------------------------------------------------------------------
 //------------------------------------------------------------------
 
 
@@ -154,23 +150,11 @@ begin
     if FileExists(path + 'nvcc.exe') then
       FNVCCPath := path;
   end;
-  path := 'C:\Program Files\Microsoft Visual Studio 10.0\VC\bin\';
+  path := 'C:\Program Files\Microsoft Visual Studio 2015\VC\bin\';
   if FileExists(path + 'cl.exe') then
     FCppCompilerPath := path
   else
-  begin
-    path := 'C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\';
-    if FileExists(path + 'cl.exe') then
-      FCppCompilerPath := path
-    else
-    begin
-      path := 'C:\Program Files\Microsoft Visual Studio 9.0\VC\bin\';
-      if FileExists(path + 'cl.exe') then
-        FCppCompilerPath := path
-      else
         FCppCompilerPath := '';
-    end;
-  end;
   FProjectModule := 'none';
   FModuleInfo := TCUDAModuleInfo.Create;
 end;

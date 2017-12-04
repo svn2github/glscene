@@ -6,7 +6,6 @@
    History :
      27/02/10 - Yar - Creation
      The whole history is logged in a prior version of the unit
-
 }
 unit GLFileJPEG;
 

@@ -30,12 +30,9 @@ type
     Note : X, Y & Z are actually interpolated independently. }
   TCubicSpline = class(TObject)
   private
-
     matX, matY, matZ, matW: TCubicSplineMatrix;
     FNb: Integer;
-
   public
-
     { Creates the spline and declares interpolation points.
       Time references go from 0 (first point) to nb-1 (last point), the
       first and last reference matrices respectively are used when T is
@@ -45,7 +42,6 @@ type
     constructor Create(const X, Y, Z, W: PFloatArray; const nb: Integer);
     {$IFDEF CLR}unsafe; {$ENDIF}
     destructor Destroy; override;
-
     { Calculates X component at time t. }
     function SplineX(const t: Single): Single;
     { Calculates Y component at time t. }
@@ -54,14 +50,12 @@ type
     function SplineZ(const t: Single): Single;
     { Calculates W component at time t. }
     function SplineW(const t: Single): Single;
-
     { Calculates X and Y components at time t. }
     procedure SplineXY(const t: Single; out X, Y: Single);
     { Calculates X, Y and Z components at time t. }
     procedure SplineXYZ(const t: Single; out X, Y, Z: Single);
     { Calculates X, Y, Z and W components at time t. }
     procedure SplineXYZW(const t: Single; out X, Y, Z, W: Single);
-
     { Calculates affine vector at time t. }
     function SplineAffineVector(const t: Single): TAffineVector; overload;
     { Calculates affine vector at time t. }
@@ -71,7 +65,6 @@ type
     function SplineVector(const t: Single): TVector; overload;
     { Calculates vector at time t. }
     procedure SplineVector(const t: Single; var vector: TVector); overload;
-
     { Calculates X component slope at time t. }
     function SplineSlopeX(const t: Single): Single;
     { Calculates Y component slope at time t. }
@@ -82,7 +75,6 @@ type
     function SplineSlopeW(const t: Single): Single;
     { Calculates the spline slope at time t. }
     function SplineSlopeVector(const t: Single): TAffineVector; overload;
-
     { Calculates the intersection of the spline with the YZ plane.
       Returns True if an intersection was found. }
     function SplineIntersecYZ(X: Single; var Y, Z: Single): Boolean;
@@ -95,12 +87,7 @@ type
   end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
-
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 procedure VECCholeskyTriDiagResol(const b: array of Single; const nb: Integer;

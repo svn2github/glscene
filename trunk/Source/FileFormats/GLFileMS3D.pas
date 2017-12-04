@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Support for MS3D file format. 
+   Support for MS3D file format.
 
    History :
      03/06/03 - EG - Added header, now self-registers
@@ -16,9 +16,13 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, 
-  System.SysUtils, 
+{$IFDEF USE_FASTMATH}
+  Neslib.FastMath,
+{$ELSE}
   System.Math,
+{$ENDIF}
+  System.Classes,
+  System.SysUtils, 
    
   GLCrossPlatform, 
   GLVectorFileObjects,
@@ -258,7 +262,6 @@ type
 
 // ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
 
 { TMS3DGroup }
 

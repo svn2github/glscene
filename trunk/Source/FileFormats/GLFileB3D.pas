@@ -5,11 +5,8 @@
   B3D VectorFile class to load Blitz 3D model files 
 
   History :
-   10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
-   22/01/10 - Yar - Added GLVectorTypes to uses
-   22/01/10 - Yar - Added GLTextureFormat to uses
    22/12/05 - Mathx - Added to the GLScene Project.
-
+   The whole history is logged in previous version of the unit	 
 }
 unit GLFileB3D;
 

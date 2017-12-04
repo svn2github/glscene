@@ -8,12 +8,9 @@
    A material using SEM is very useful to highlight variations in the mesh: creases, bumps, even slow ondulations.
    It doesn't work that well on a cube, for instance. And does absolutely nothing on a sphere:
    SEM on a sphere is exactly the same as a planar projection of the matCap texture. 
-
    At this time only one light source is supported
-
-    History :  
+   History :  
      11/12/15 - J.Delauney - Creation
-
 }
 
 

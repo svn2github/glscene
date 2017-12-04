@@ -14,7 +14,6 @@
       - TGLSLBumpShader
       - TGLSLBumpShaderMT
       - TGLSLBumpShaderAM
-
       - TGLSLMLBumpShader
       - TGLSLMLBumpShaderMT
 
@@ -23,7 +22,6 @@
       color's Alpha individualy
      2) TGLSLMLBumpShader takes all Light parameters directly
       from OpenGL (that includes TGLLightSource's)
-
 
     TODO:
       1) Implement IGLShaderDescription in all shaders.

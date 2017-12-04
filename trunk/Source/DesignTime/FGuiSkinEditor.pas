@@ -5,21 +5,10 @@
    Editor for Gui skin. 
 
     History :  
-       17/11/14 - PW - Renamed from GuiSkinEditorFormUnit.pas to FGuiSkinEditor
-       16/03/11 - Yar - Fixes after emergence of GLMaterialEx
-       04/03/10 - DanB - Now uses CharInSet
-       05/10/08 - DanB - removed Kylix support, changed uses clause
-       07/06/08 - DaStr - Updated TGUISkinEditor.AddElement() to use SetPoint2D()
-                              (thanks Nicoara Adrian)
-       29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
-       18/02/07 - DaStr - Fixed range check error.
-       22/02/05 - Mathx - Fixed Delphi 5 support.
        16/12/05 - aidave - moved GUIComponentDialog in from GLGui.pas
-       03/10/05 - adirex - XP styles and panels problem
        24/01/05 - adirex - Focus rect for selection
                      Huge editor enchancements. Too many to write them all :)
-       03/07/04 - LR - Make change for Linux
-       ?/?/? -  - Creation
+      The whole history is logged in previous version of the unit.
     
 }
 unit FGuiSkinEditor;

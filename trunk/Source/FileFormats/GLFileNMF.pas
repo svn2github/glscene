@@ -8,9 +8,8 @@
   NormalMapper can be found at http://www.ati.com/developer/tools.html
 
   History:
-  16/10/08 - UweR - Compatibility fix for Delphi 2009
-  20/05/2003 - SG - Fixed SaveToStream to use ExtractTriangles
-  16/05/2003 - SG - Creation
+   16/05/2003 - SG - Creation
+   
 }
 unit GLFileNMF;
 

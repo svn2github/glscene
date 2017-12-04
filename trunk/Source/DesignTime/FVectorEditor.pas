@@ -3,12 +3,6 @@
 //
 {
    Editor for a vector. 
-
-    History :  
-       05/10/08 - DanB - Removed Kylix support
-       29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
-       03/07/04 - LR - Make change for Linux
-       ?/?/? -  - Creation
     
 }
 unit FVectorEditor;

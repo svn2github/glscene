@@ -18,8 +18,12 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes,
+{$IFDEF USE_FASTMATH}
+  Neslib.FastMath,
+{$ELSE}
   System.Math,
+{$ENDIF}
+  System.Classes,
   GLVectorTypes,
   GLVectorGeometry,
   GLVectorLists,
@@ -47,23 +51,19 @@ type
     // TextureHandle:TGLTextureHandle;
     ListHandle: TGLListHandle;
     WillDraw: Boolean; // temporary change
-
     // Duplicates possible?
     TriArray: array of Integer; // array of triangle references
-
     ChildArray: array [0 .. 7] of POctreeNode; // Octree's 8 children
   end;
 
   {  Manages an Octree containing references to triangles.  }
   TGLOctree = class(TObject)
   private
-
 {$IFDEF DEBUG}
     Intersections: Integer;
     // for debugging  - number of triangles intersecting an AABB plane
 {$ENDIF}
   protected
-    
     // Find the exact centre of an AABB
     function GetMidPoint(Min, Max: Single): Single;
     // Check if a point lies within the AABB specified by min and max entents
@@ -74,27 +74,22 @@ type
     // Check if a sphere (at point C with radius) lies within the AABB specified by min and max entents
     function SphereInNode(const MinExtent, MaxExtent: TAffineVector;
       const C: TVector; Radius: Single): Boolean;
-
     procedure WalkTriToLeafx(Onode: POctreeNode;
       const V1, V2, V3: TAffineFLTVector);
     procedure WalkPointToLeafx(ONode: POctreeNode; const P: TAffineVector);
     procedure WalkSphereToLeafx(Onode: POctreeNode; const P: TVector;
       Radius: Single);
     procedure WalkRayToLeafx(Onode: POctreeNode; const P, V: TVector);
-
     function GetExtent(const Flags: array of Byte; ParentNode: POctreeNode)
       : TAffineFLTVector;
-
     {  Recursive routine to build nodes from parent to max depth level. }
     procedure Refine(ParentNode: POctreeNode; Level: Integer);
-
     // Main "walking" routines.  Walks the item through the Octree down to a leaf node.
     procedure WalkPointToLeaf(ONode: POctreeNode; const P: TAffineVector);
     procedure WalkTriToLeaf(Onode: POctreeNode;
       const V1, V2, V3: TAffineVector);
     procedure WalkRayToLeaf(Onode: POctreeNode; const P, V: TVector);
-
-    // : Example of how to process each node in the tree
+    // Example of how to process each node in the tree
     procedure ConvertR4(ONode: POctreeNode; const Scale: TAffineFLTVector);
     procedure CreateTree(Depth: Integer);
     procedure CutMesh;
@@ -140,11 +135,7 @@ type
   end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 // ----------------------------------------------------------------------
@@ -401,8 +392,6 @@ const
   USE_EPSILON_TEST = TRUE;
   EPSILON = 0.000001;
 
-  // coplanar_tri_tri
-  //
 function Coplanar_tri_tri(const N, V0, V1, V2, U0, U1,
   U2: TAffineFLTVEctor): Integer;
 var
@@ -533,8 +522,6 @@ begin
   Result := POINT_IN_TRI(U0, V0, V1, V2);
 end;
 
-// tri_tri_intersect
-//
 function Tri_tri_intersect(const V0, V1, V2, U0, U1,
   U2: TAFFineFLTVector): Integer;
 var

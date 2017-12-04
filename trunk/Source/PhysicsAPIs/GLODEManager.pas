@@ -106,8 +106,7 @@ type
     procedure GeomColorChangeDynD(Sender: TObject);
     procedure SetGeomColorStat(const Value: TGLColor);
     procedure GeomColorChangeStat(Sender: TObject);
-    property ODEBehaviours[index: Integer]: TGLODEBehaviour
-      read GetODEBehaviour;
+    property ODEBehaviours[index: Integer]: TGLODEBehaviour read GetODEBehaviour;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -119,17 +118,15 @@ type
     property NumContactJoints: Integer read FNumContactJoints;
   published
     property Gravity: TGLCoordinates read FGravity write SetGravity;
-    property OnCollision: TGLODECollisionEvent read FOnCollision
-      write FOnCollision;
-    property OnCustomCollision: TGLODECustomCollisionEvent read FOnCustomCollision
-      write FOnCustomCollision;
+    property OnCollision: TGLODECollisionEvent read FOnCollision write FOnCollision;
+    property OnCustomCollision: TGLODECustomCollisionEvent read FOnCustomCollision 
+	  write FOnCustomCollision;
     property Solver: TGLODESolverMethod read FSolver write FSolver;
     property Iterations: Integer read FIterations write SetIterations;
     property MaxContacts: Integer read FMaxContacts write SetMaxContacts;
     property RenderPoint: TGLRenderPoint read FRenderPoint write SetRenderPoint;
     property Visible: Boolean read FVisible write SetVisible;
-    property VisibleAtRunTime: Boolean read FVisibleAtRunTime
-      write SetVisibleAtRunTime;
+    property VisibleAtRunTime: Boolean read FVisibleAtRunTime write SetVisibleAtRunTime;
     property GeomColorDynD: TGLColor read FGeomColorDynD write SetGeomColorDynD;
     property GeomColorDynE: TGLColor read FGeomColorDynE write SetGeomColorDynE;
     property GeomColorStat: TGLColor read FGeomColorStat write SetGeomColorStat;
@@ -1702,7 +1699,7 @@ begin
   begin
     rci.PipelineTransformation.Push;
     Mat := TGLBaseSceneObject(Owner.Owner).AbsoluteMatrix;
-    rci.PipelineTransformation.ModelMatrix^ := Mat;
+    rci.PipelineTransformation.SetModelMatrix(Mat);
   end;
 
   Elements.Render(rci);
@@ -1835,20 +1832,20 @@ var
 begin
   if not Assigned(FBody) then
     Exit;
-  R[0] := Mat.X.X;
-  R[1] := Mat.Y.X;
-  R[2] := Mat.Z.X;
+  R[0] := Mat.V[0].X;
+  R[1] := Mat.V[1].X;
+  R[2] := Mat.V[2].X;
   R[3] := 0;
-  R[4] := Mat.X.Y;
-  R[5] := Mat.Y.Y;
-  R[6] := Mat.Z.Y;
+  R[4] := Mat.V[0].Y;
+  R[5] := Mat.V[1].Y;
+  R[6] := Mat.V[2].Y;
   R[7] := 0;
-  R[8] := Mat.X.Z;
-  R[9] := Mat.Y.Z;
-  R[10] := Mat.Z.Z;
+  R[8] := Mat.V[0].Z;
+  R[9] := Mat.V[1].Z;
+  R[10] := Mat.V[2].Z;
   R[11] := 0;
   dBodySetRotation(FBody, R);
-  dBodySetPosition(FBody, Mat.W.X, Mat.W.Y, Mat.W.Z);
+  dBodySetPosition(FBody, Mat.V[3].X, Mat.V[3].Y, Mat.V[3].Z);
 end;
 
 function TGLODEDynamic.CalculateMass: TdMass;
@@ -1988,7 +1985,7 @@ begin
   begin
     rci.PipelineTransformation.Push;
     Mat := TGLBaseSceneObject(Owner.Owner).AbsoluteMatrix;
-    rci.PipelineTransformation.ModelMatrix^ := Mat;
+    rci.PipelineTransformation.SetModelMatrix(Mat);
   end;
 
   Elements.Render(rci);
@@ -2256,7 +2253,7 @@ end;
 
 function TGLODEElementBase.AbsolutePosition: TAffineVector;
 begin
-  Result := AffineVectorMake(AbsoluteMatrix.W);
+  Result := AffineVectorMake(AbsoluteMatrix.V[3]);
 end;
 
 procedure TGLODEElementBase.AlignGeomElementToMatrix(Mat: TMatrix);
@@ -2265,18 +2262,18 @@ var
 begin
   if not Assigned(FGeomElement) then
     Exit;
-  dGeomSetPosition(FGeomElement, Mat.W.X, Mat.W.Y, Mat.W.Z);
-  R[0] := Mat.X.X;
-  R[1] := Mat.Y.X;
-  R[2] := Mat.Z.X;
+  dGeomSetPosition(FGeomElement, Mat.V[3].X, Mat.V[3].Y, Mat.V[3].Z);
+  R[0] := Mat.V[0].X;
+  R[1] := Mat.V[1].X;
+  R[2] := Mat.V[2].X;
   R[3] := 0;
-  R[4] := Mat.X.Y;
-  R[5] := Mat.Y.Y;
-  R[6] := Mat.Z.Y;
+  R[4] := Mat.V[0].Y;
+  R[5] := Mat.V[1].Y;
+  R[6] := Mat.V[2].Y;
   R[7] := 0;
-  R[8] := Mat.X.Z;
-  R[9] := Mat.Y.Z;
-  R[10] := Mat.Z.Z;
+  R[8] := Mat.V[0].Z;
+  R[9] := Mat.V[1].Z;
+  R[10] := Mat.V[2].Z;
   R[11] := 0;
   dGeomSetRotation(FGeomElement, R);
   FRealignODE := False;
@@ -2304,21 +2301,20 @@ function TGLODEElementBase.CalculateMass: TdMass;
 var
   R: TdMatrix3;
 begin
-  R[0] := FLocalMatrix.X.X;
-  R[1] := FLocalMatrix.Y.X;
-  R[2] := FLocalMatrix.Z.X;
+  R[0] := FLocalMatrix.V[0].X;
+  R[1] := FLocalMatrix.V[1].X;
+  R[2] := FLocalMatrix.V[2].X;
   R[3] := 0;
-  R[4] := FLocalMatrix.X.Y;
-  R[5] := FLocalMatrix.Y.Y;
-  R[6] := FLocalMatrix.Z.Y;
+  R[4] := FLocalMatrix.V[0].Y;
+  R[5] := FLocalMatrix.V[1].Y;
+  R[6] := FLocalMatrix.V[2].Y;
   R[7] := 0;
-  R[8] := FLocalMatrix.X.Z;
-  R[9] := FLocalMatrix.Y.Z;
-  R[10] := FLocalMatrix.Z.Z;
+  R[8] := FLocalMatrix.V[0].Z;
+  R[9] := FLocalMatrix.V[1].Z;
+  R[10] := FLocalMatrix.V[2].Z;
   R[11] := 0;
   dMassRotate(FMass, R);
-  dMassTranslate(FMass, FLocalMatrix.W.X, FLocalMatrix.W.Y,
-    FLocalMatrix.W.Z);
+  dMassTranslate(FMass, FLocalMatrix.V[3].X, FLocalMatrix.V[3].Y, FLocalMatrix.V[3].Z);
   Result := FMass;
 end;
 
@@ -2380,20 +2376,17 @@ end;
 
 procedure TGLODEElementBase.RebuildMatrix;
 begin
-  VectorCrossProduct(FUp.AsVector, FDirection.AsVector, FLocalMatrix.X);
-  SetVector(FLocalMatrix.Y, FUp.AsVector);
-  SetVector(FLocalMatrix.Z, FDirection.AsVector);
-  SetVector(FLocalMatrix.W, FPosition.AsVector);
+  VectorCrossProduct(FUp.AsVector, FDirection.AsVector, FLocalMatrix.V[0]);
+  SetVector(FLocalMatrix.V[1], FUp.AsVector);
+  SetVector(FLocalMatrix.V[2], FDirection.AsVector);
+  SetVector(FLocalMatrix.V[3], FPosition.AsVector);
 end;
 
 procedure TGLODEElementBase.RebuildVectors;
 begin
-  FUp.SetVector(FLocalMatrix.Y.X, FLocalMatrix.Y.Y,
-    FLocalMatrix.Y.Z);
-  FDirection.SetVector(FLocalMatrix.Z.X, FLocalMatrix.Z.Y,
-    FLocalMatrix.Z.Z);
-  FPosition.SetPoint(FLocalMatrix.W.X, FLocalMatrix.W.Y,
-    FLocalMatrix.W.Z);
+  FUp.SetVector(FLocalMatrix.V[1].X, FLocalMatrix.V[1].Y, FLocalMatrix.V[1].Z);
+  FDirection.SetVector(FLocalMatrix.V[2].X, FLocalMatrix.V[2].Y, FLocalMatrix.V[2].Z);
+  FPosition.SetPoint(FLocalMatrix.V[3].X, FLocalMatrix.V[3].Y, FLocalMatrix.V[3].Z);
 end;
 
 procedure TGLODEElementBase.SetDensity(const Value: TdReal);
@@ -3256,11 +3249,9 @@ var
 begin
   if not Assigned(FGeomElement) then
     Exit;
-  d := VectorDotProduct(Mat.Z, Mat.W);
-  dGeomPlaneSetParams(FGeomElement, Mat.Z.X, Mat.Z.Y,
-    Mat.Z.Z, d);
+  d := VectorDotProduct(Mat.V[2], Mat.V[3]);
+  dGeomPlaneSetParams(FGeomElement, Mat.V[2].X, Mat.V[2].Y, Mat.V[2].Z, d);
 end;
-
 
 // ---------------
 // --------------- TGLODEJoints ---------------

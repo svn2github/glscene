@@ -9,7 +9,7 @@
      The whole history is logged in previous version of the unit.
 }
 
-{; Known bugs/limitations
+{  Known bugs/limitations
 
 1. Only 1 texture can be used for all emitters
 2. Only up to 6 Emitters can be used (more on better cards)

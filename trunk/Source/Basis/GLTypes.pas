@@ -11,7 +11,13 @@ unit GLTypes;
 
 interface
 
+{$I GLScene.inc}
+
 uses
+{$IFDEF USE_FASTMATH}
+  Neslib.FastMath,
+{$ENDIF}
+
   System.Types,
   System.SysUtils,
   System.Rtti,

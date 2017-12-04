@@ -36,8 +36,6 @@ uses
   GLSLShader,
   GLCustomShader;
 
-//TGLCustomGLSLSimpleLatticeShader
-//
 {Custom class for GLSLSimpleLatticeShader. 
  A shader that simulate Lattice }
 type
@@ -58,8 +56,6 @@ type
   end;
 
 
-//TGLCustomGLSLLatticeShader
-//
 {Custom class for GLSLLatticeShader. 
  A shader that simulate Lattice with Diffuse/Specular and support Texture }
   TGLCustomGLSLLatticeShader = class(TGLCustomGLSLSimpleLatticeShader)
@@ -67,45 +63,34 @@ type
     FAmbientColor: TGLColor;
     FDiffuseColor: TGLColor;
     FSpecularColor: TGLColor;
-
     FMaterialLibrary: TGLAbstractMaterialLibrary;
     FMainTexture: TGLTexture;
     FMainTexName   : TGLLibMaterialName;
-
     FSpecularPower: Single;
     FLightPower: Single;
-
     function GetMaterialLibrary: TGLAbstractMaterialLibrary;
-
     procedure SetMainTexTexture(const Value: TGLTexture);
     function GetMainTexName: TGLLibMaterialName;
     procedure SetMainTexName(const Value: TGLLibMaterialName);
-
     procedure SetDiffuseColor(AValue: TGLColor);
     procedure SetAmbientColor(AValue: TGLColor);
     procedure SetSpecularColor(AValue: TGLColor);
-
   protected
     procedure DoInitialize(var rci : TGLRenderContextInfo; Sender : TObject); override;
     procedure DoApply(var rci : TGLRenderContextInfo; Sender : TObject); override;
-
     procedure SetMaterialLibrary(const Value: TGLAbstractMaterialLibrary); virtual;
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
   public
     constructor Create(AOwner : TComponent); override;
     destructor Destroy; override;
-
     property DiffuseColor : TGLColor read FDiffuseColor Write setDiffuseColor;
     property SpecularColor : TGLColor Read FSpecularColor Write setSpecularColor;
     property AmbientColor : TGLColor Read FAmbientColor Write setAmbientColor;
-
     property MaterialLibrary: TGLAbstractMaterialLibrary read getMaterialLibrary write SetMaterialLibrary;
     property MainTexture: TGLTexture read FMainTexture write SetMainTexTexture;
     property MainTextureName: TGLLibMaterialName read GetMainTexName write SetMainTexName;
-
     property SpecularPower: Single read FSpecularPower write FSpecularPower;
     property LightPower: Single read FLightPower write FLightPower;
-
   end;
 
   TGLSLSimpleLatticeShader = class(TGLCustomGLSLSimpleLatticeShader)
@@ -118,18 +103,17 @@ type
   published
     property LatticeScale;
     property LatticeThreshold;
-
     property AmbientColor;
     property DiffuseColor;
     property SpecularColor;
-
     property MainTexture;
-
     property SpecularPower;
     property LightPower;
   end;
 
+//------------------------------------------------------
 implementation
+//------------------------------------------------------
 
 { TGLCustomGLSLSimpleLatticeShader }
 

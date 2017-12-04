@@ -1630,8 +1630,9 @@ end;
 procedure TGLStateCache.SetBlendFuncSeparate(const SrcRGB: TBlendFunction; const DstRGB: TDstBlendFunction;
   const SrcAlpha: TBlendFunction; const DstAlpha: TDstBlendFunction);
 begin
-  if (SrcRGB <> FBlendSrcRGB) or (DstRGB <> FBlendDstRGB) or (SrcAlpha <> FBlendSrcAlpha) or (DstAlpha <> FBlendDstAlpha) or FInsideList
-  then
+  if (SrcRGB <> FBlendSrcRGB) or (DstRGB <> FBlendDstRGB) or
+     (SrcAlpha <> FBlendSrcAlpha) or (DstAlpha <> FBlendDstAlpha)
+    or FInsideList then
   begin
     if FInsideList then
       Include(FListStates[FCurrentList], sttColorBuffer)

@@ -26,33 +26,23 @@ uses
 
 type
 
-	// TGLSoundSampling
-	//
    {Defines a sound sampling quality. }
 	TGLSoundSampling = class (TPersistent)
 	   private
-	       
          FOwner : TPersistent;
          FFrequency : Integer;
          FNbChannels : Integer;
          FBitsPerSample : Integer;
-
 	   protected
-	      
          function GetOwner : TPersistent; override;
-
 	   public
-	      
 	      constructor Create(AOwner: TPersistent);
          destructor Destroy; override;
 	      procedure Assign(Source: TPersistent); override;
-
          function BytesPerSec : Integer;
          function BytesPerSample : Integer;
-
          function WaveFormat : TWaveFormatEx;
      published
-	      
          {Sampling frequency in Hz (= samples per sec) }
          property Frequency : Integer read FFrequency write FFrequency default 22050;
          {Nb of sampling channels. 
@@ -63,8 +53,6 @@ type
          property BitsPerSample : Integer read FBitsPerSample write FBitsPerSample default 8;
 	end;
 
-   // TGLSoundFile
-   //
    {Abstract base class for different Sound file formats. 
       The actual implementation for these files (WAV, RAW...) must be done
       seperately. The concept for TGLSoundFile is very similar to TGraphic
@@ -74,20 +62,13 @@ type
       methods in most cases. }
    TGLSoundFile = class (TGLDataFile)
       private
-          
          FSampling : TGLSoundSampling;
-
       protected
-         
          procedure SetSampling(const val : TGLSoundSampling);
-
       public
-         
 	      constructor Create(AOwner: TPersistent); override;
          destructor Destroy; override;
-
          procedure PlayOnWaveOut; virtual;
-
          {Returns a pointer to the sample data viewed as an in-memory WAV File. }
 	      function WAVData : Pointer; virtual; abstract;
          {Returns the size (in bytes) of the WAVData. }
@@ -100,14 +81,11 @@ type
 	      function LengthInSamples : Integer;
          {Length of play of the sample at nominal speed in seconds. }
 	      function LengthInSec : Single;
-
          property Sampling : TGLSoundSampling read FSampling write SetSampling;
    end;
 
    TGLSoundFileClass = class of TGLSoundFile;
 
-   // TGLSoundFileFormat
-   //
    TGLSoundFileFormat = record
       SoundFileClass : TGLSoundFileClass;
       Extension      : String;
@@ -116,11 +94,8 @@ type
    end;
    PSoundFileFormat = ^TGLSoundFileFormat;
 
-   // TGLSoundFileFormatsList
-   //
    TGLSoundFileFormatsList = class(TList)
       public
-         
          destructor Destroy; override;
          procedure Add(const Ext, Desc: String; DescID: Integer; AClass: TGLSoundFileClass);
          function FindExt(Ext: string): TGLSoundFileClass;
@@ -133,18 +108,12 @@ procedure RegisterSoundFileFormat(const AExtension, ADescription: String; AClass
 procedure UnregisterSoundFileClass(AClass: TGLSoundFileClass);
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 var
    vSoundFileFormats : TGLSoundFileFormatsList;
 
-// GeTGLSoundFileFormats
-//
 function GetGLSoundFileFormats : TGLSoundFileFormatsList;
 begin
    if not Assigned(vSoundFileFormats)then
@@ -152,8 +121,6 @@ begin
    Result := vSoundFileFormats;
 end;
 
-// RegisterSoundFileFormat
-//
 procedure RegisterSoundFileFormat(const AExtension, ADescription: String; AClass: TGLSoundFileClass);
 begin
    RegisterClass(AClass);
@@ -172,8 +139,6 @@ end;
 // ------------------ TGLSoundSampling ------------------
 // ------------------
 
- 
-//
 constructor TGLSoundSampling.Create(AOwner: TPersistent);
 begin
 	inherited Create;
@@ -183,15 +148,11 @@ begin
    FBitsPerSample:=8;
 end;
 
- 
-//
 destructor TGLSoundSampling.Destroy;
 begin
 	inherited Destroy;
 end;
 
-// Assign
-//
 procedure TGLSoundSampling.Assign(Source: TPersistent);
 begin
    if Source is TGLSoundSampling then begin
@@ -201,29 +162,21 @@ begin
    end else inherited;
 end;
 
-// GetOwner
-//
 function TGLSoundSampling.GetOwner : TPersistent;
 begin
    Result:=FOwner;
 end;
 
-// BytesPerSec
-//
 function TGLSoundSampling.BytesPerSec : Integer;
 begin
    Result:=(FFrequency*FBitsPerSample*FNbChannels) shr 3;
 end;
 
-// BytesPerSample
-//
 function TGLSoundSampling.BytesPerSample : Integer;
 begin
    Result:=FBitsPerSample shr 3;
 end;
 
-// WaveFormat
-//
 function TGLSoundSampling.WaveFormat : TWaveFormatEx;
 begin
    Result.nSamplesPerSec:=Frequency;
@@ -239,38 +192,28 @@ end;
 // ------------------ TGLSoundFile ------------------
 // ------------------
 
- 
-//
 constructor TGLSoundFile.Create(AOwner: TPersistent);
 begin
    inherited;
    FSampling:=TGLSoundSampling.Create(Self);
 end;
 
- 
-//
 destructor TGLSoundFile.Destroy;
 begin
    FSampling.Free;
    inherited;
 end;
 
-// SetSampling
-//
 procedure TGLSoundFile.SetSampling(const val : TGLSoundSampling);
 begin
    FSampling.Assign(val);
 end;
 
-// PlayOnWaveOut
-//
 procedure TGLSoundFile.PlayOnWaveOut;
 begin
 //   GLSoundFileObjects.PlayOnWaveOut(PCMData, LengthInSamples, Sampling);
 end;
 
-// LengthInSamples
-//
 function TGLSoundFile.LengthInSamples : Integer;
 var
    d : Integer;
@@ -281,8 +224,6 @@ begin
    else Result:=0;
 end;
 
-// LengthInSec
-//
 function TGLSoundFile.LengthInSec : Single;
 begin
 	Result:=LengthInBytes/Sampling.BytesPerSec;
@@ -292,8 +233,6 @@ end;
 // ------------------ TGLSoundFileFormatsList ------------------
 // ------------------
 
- 
-//
 destructor TGLSoundFileFormatsList.Destroy;
 var
    i : Integer;
@@ -302,8 +241,6 @@ begin
    inherited;
 end;
 
-// Add
-//
 procedure TGLSoundFileFormatsList.Add(const Ext, Desc: String; DescID: Integer;
                                      AClass: TGLSoundFileClass);
 var
@@ -319,8 +256,6 @@ begin
    inherited Add(NewRec);
 end;
 
-// FindExt
-//
 function TGLSoundFileFormatsList.FindExt(Ext: string): TGLSoundFileClass;
 var
    i : Integer;
@@ -334,8 +269,6 @@ begin
    Result := nil;
 end;
 
-// Remove
-//
 procedure TGLSoundFileFormatsList.Remove(AClass: TGLSoundFileClass);
 var
    i : Integer;
@@ -350,8 +283,6 @@ begin
    end;
 end;
 
-// BuildFilterStrings
-//
 procedure TGLSoundFileFormatsList.BuildFilterStrings(SoundFileClass: TGLSoundFileClass;
                                                     out Descriptions, Filters: string);
 var
@@ -382,11 +313,7 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 finalization

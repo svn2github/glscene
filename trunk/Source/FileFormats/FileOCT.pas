@@ -5,10 +5,8 @@
 	Loader for FSRad OCT files. 
 
 	 History :  
-       16/10/08 - UweR - Compatibility fix for Delphi 2009
-       02/04/07 - DaStr - Added $I GLScene.inc
-       30/01/03 - Egg - Creation
-	 
+     30/01/03 - Egg - Creation
+     The whole history is logged in previous version of the unit.	 
 }
 unit FileOCT;
 

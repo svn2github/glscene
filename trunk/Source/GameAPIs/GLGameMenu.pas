@@ -439,7 +439,8 @@ end;
 
 procedure TGLGameMenu.MouseMenuSelect(const X, Y: Integer);
 begin
-  if (X >= BoxLeft) and (Y >= MenuTop) and (X <= BoxRight) and (Y <= BoxBottom) then
+  if (X >= BoxLeft) and (Y >= MenuTop) and
+    (X <= BoxRight) and (Y <= BoxBottom) then
   begin
     Selected := (Y - FMenuTop) div (Font.CharHeight + FSpacing);
   end

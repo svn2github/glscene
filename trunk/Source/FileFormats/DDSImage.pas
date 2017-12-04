@@ -39,7 +39,6 @@ type
 
   TDDSImage = class(TBitmap)
   public
-    
     procedure LoadFromStream(stream: TStream); override;
     procedure SaveToStream(stream: TStream); override;
   end;

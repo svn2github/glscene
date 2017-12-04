@@ -5,18 +5,8 @@
    TGLRagdoll extended using Open Dynamics Engine (ODE).  
 
    History : 
-     10/11/12 - PW - Added CPP compatibility: used records with arrays instead of vector arrays
-     13/07/08 - Mrqzzz - replaced constants "cDensity" and "cMass" with
-                            global vars "vGLODERagdoll_cDensity" and "vGLODERagdoll_cMass"
-     11/05/08 - Mrqzzz - replaced TGLCube with TODERagdollCube
-                            (contains reference to Bone and Ragdoll, useful in collision events)
-     28/02/08 - Mrqzzz - prevent ODE 0.9 "bNormalizationResult failed" error
-                            in TODERagdollBone.Start.
-                            Fixed a memory leak in TODERagdollBone.Stop
-     05/02/08 - Mrqzzz - upgrade to ODE 0.9 (by paul Robello)
-     09/11/05 - LucasG - Fixed joints to be relative to the body
-     07/11/05 - LucasG - Alignment (Using Stuart's AlignToMatrix function)
      02/11/05 - LucasG - First version created.
+     The whole history is logged in previous version of the unit.
    
 }
 
@@ -259,11 +249,11 @@ var
   R : TdMatrix3;
 begin
   if not Assigned(FBody) then exit;
-  R[0]:=Mat.X.X; R[1]:=Mat.Y.X; R[2]:= Mat.Z.X; R[3]:= 0;
-  R[4]:=Mat.X.Y; R[5]:=Mat.Y.Y; R[6]:= Mat.Z.Y; R[7]:= 0;
-  R[8]:=Mat.X.Z; R[9]:=Mat.Y.Z; R[10]:=Mat.Z.Z; R[11]:=0;
+  R[0]:=Mat.V[0].X; R[1]:=Mat.V[1].X; R[2]:= Mat.V[2].X; R[3]:= 0;
+  R[4]:=Mat.V[0].Y; R[5]:=Mat.V[1].Y; R[6]:= Mat.V[2].Y; R[7]:= 0;
+  R[8]:=Mat.V[0].Z; R[9]:=Mat.V[1].Z; R[10]:=Mat.V[2].Z; R[11]:=0;
   dBodySetRotation(FBody,R);
-  dBodySetPosition(FBody,Mat.W.X,Mat.W.Y,Mat.W.Z);
+  dBodySetPosition(FBody, Mat.V[3].X, Mat.V[3].Y, Mat.V[3].Z);
 end;
 
 procedure TODERagdollBone.Start;
@@ -276,21 +266,21 @@ var
   var absMat: TMatrix;
   begin
     absMat := ReferenceMatrix;
-    absMat.W := NullHmgVector;
+    absMat.V[3] := NullHmgVector;
     Result := VectorNormalize(VectorTransform(Axis, absMat));
   end;
 
 begin
   FBody := dBodyCreate(FRagdoll.ODEWorld.World);
 
-  boneSize.X := Size.X*VectorLength(BoneMatrix.X);
-  boneSize.Y := Size.Y*VectorLength(BoneMatrix.Y);
-  boneSize.Z := Size.Z*VectorLength(BoneMatrix.Z);
+  boneSize.X := Size.X*VectorLength(BoneMatrix.V[0]);
+  boneSize.Y := Size.Y*VectorLength(BoneMatrix.V[1]);
+  boneSize.Z := Size.Z*VectorLength(BoneMatrix.V[2]);
 
   // prevent ODE 0.9 "bNormalizationResult failed" error:
   for n:=0 to 2 do
-      if (BoneSize.V[n]=0) then
-         BoneSize.V[n]:=0.000001;
+    if (BoneSize.C[n]=0) then
+      BoneSize.C[n]:=0.000001;
 
   dMassSetBox(mass, vGLODERagdoll_cDensity, BoneSize.X, BoneSize.Y, BoneSize.Z);
 

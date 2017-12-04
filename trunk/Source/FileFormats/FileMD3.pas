@@ -5,10 +5,8 @@
   File loading methods for the MD3 file format
 
   History :
-    16/10/08 - UweR - Compatibility fix for Delphi 2009
-    19/12/04 - PhP - Replaced array definitions with predefined GLVectorTypes
-    09/03/04 - SG - Small structure fixes (Osman Turan)
     28/02/03 - SG - Creation
+    The whole history is logged in previous version of the unit.	 	
 }
 unit FileMD3;
 

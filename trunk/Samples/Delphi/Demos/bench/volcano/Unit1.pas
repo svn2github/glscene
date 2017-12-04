@@ -19,7 +19,9 @@ uses
   GLParticleFX,
   GLCadencer,
   GLBehaviours,
-  GLWin32Viewer, GLCrossPlatform, GLCoordinates,
+  GLWin32Viewer,
+  GLCrossPlatform,
+  GLCoordinates,
   GLBaseClasses;
 
 type
