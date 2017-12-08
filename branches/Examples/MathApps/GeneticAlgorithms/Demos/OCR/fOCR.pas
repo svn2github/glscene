@@ -36,9 +36,9 @@ type
       NEATPopulation: TNEATPopulation; Genotype: TGenotype);
   private
     FCharArray: TCharArray;
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
     procedure GenerateImages;
     procedure AddLine(Msg: string);
     function TestGenotype(Genotype : TGenotype; Draw : boolean) : single;

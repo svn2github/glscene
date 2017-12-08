@@ -3,17 +3,18 @@ unit fStyle;
 interface
 
 uses
-  Windows,
-  Messages,
-  SysUtils,
-  Variants,
-  Classes,
-  Graphics,
-  Controls,
-  Forms,
-  Dialogs,
-  StdCtrls,
-  Buttons,
+  Winapi.Windows,
+  Winapi.Messages,
+  System.SysUtils,
+  System.UITypes,
+  System.Variants,
+  System.Classes,
+  Vcl.Graphics,
+  Vcl.Controls,
+  Vcl.Forms,
+  Vcl.Dialogs,
+  Vcl.StdCtrls,
+  Vcl.Buttons,
 
   uGlobal;
 
@@ -29,7 +30,6 @@ type
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure StyleListBoxDblClick(Sender: TObject);
   private
-     
     StyleAltered: Boolean;
     procedure SaveToFile;
   public

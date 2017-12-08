@@ -4,7 +4,7 @@ object FunctionsForm: TFunctionsForm
   Align = alRight
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
-  ClientHeight = 522
+  ClientHeight = 462
   ClientWidth = 281
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -22,7 +22,7 @@ object FunctionsForm: TFunctionsForm
   OnShow = FormShow
   DesignSize = (
     281
-    522)
+    462)
   PixelsPerInch = 96
   TextHeight = 16
   object Label1: TLabel
@@ -742,7 +742,7 @@ object FunctionsForm: TFunctionsForm
     ParentShowHint = False
     ShowHint = True
     TabOrder = 8
-    Text = '1'
+    Text = '2'
     OnChange = EditPenChange
     OnKeyDown = EditKeyDown
     OnKeyPress = IntKeyPress
@@ -759,7 +759,7 @@ object FunctionsForm: TFunctionsForm
     Min = 1
     Max = 10
     ParentShowHint = False
-    Position = 1
+    Position = 2
     ShowHint = True
     TabOrder = 9
     TabStop = True
@@ -832,7 +832,7 @@ object FunctionsForm: TFunctionsForm
     Left = 3
     Top = 346
     Width = 276
-    Height = 132
+    Height = 72
     Cursor = crHandPoint
     Hint = 'Select a function for editing etc'
     OnClickCheck = CheckListBoxClickCheck
@@ -842,7 +842,7 @@ object FunctionsForm: TFunctionsForm
   end
   object BitBtn2: TBitBtn
     Left = 67
-    Top = 484
+    Top = 424
     Width = 140
     Height = 27
     Cursor = crHandPoint
@@ -1221,7 +1221,7 @@ object FunctionsForm: TFunctionsForm
     Left = 240
     Top = 232
     Bitmap = {
-      494C010108003000A00310001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010108003000B00310001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000003000000001002000000000000030
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

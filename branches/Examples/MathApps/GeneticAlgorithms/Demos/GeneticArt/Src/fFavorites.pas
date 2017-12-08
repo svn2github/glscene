@@ -52,7 +52,7 @@ type
     procedure Addcollection1Click(Sender: TObject);
     procedure SaveImage1Click(Sender: TObject);
   private
-    { Private declarations }
+     
     FDoc : TsdXMLDocument;
     FGenotype : TGenotype;
     FUserAcceptedLossOfGeneration : boolean;
@@ -62,7 +62,7 @@ type
     function GetCurrentCollection: TXMLNode;
     function GetCurrentImage: TXMLNode;
   public
-    { Public declarations }
+     
     procedure RefreshImageList;
     procedure RefreshCollectionList;
     property CurrentCollection : TXMLNode read GetCurrentCollection;

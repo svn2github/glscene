@@ -9,9 +9,9 @@ uses
 type
   TfrmAboutPoleCart = class(TfrmAboutCambrianLabs)
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
   end;
 
 var

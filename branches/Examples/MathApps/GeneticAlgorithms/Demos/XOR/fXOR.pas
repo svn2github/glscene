@@ -47,10 +47,10 @@ type
     procedure Button_LoadIndividualClick(Sender: TObject);
     procedure Button_ShowCodeClick(Sender: TObject);
   private
-    { Private declarations }
+     
     function MyModify(x : double) : double;
   public
-    { Public declarations }
+     
   end;
 
 var

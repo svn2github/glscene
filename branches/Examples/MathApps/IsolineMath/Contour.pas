@@ -11,12 +11,21 @@ unit Contour;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages,
-  System.Classes, System.SysUtils,
-  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls,
-  Vcl.Menus, Vcl.Clipbrd,
+  Winapi.Windows,
+  Winapi.Messages,
+  System.Classes,
+  System.SysUtils,
+  Vcl.Graphics,
+  Vcl.Controls,
+  Vcl.Forms,
+  Vcl.Dialogs,
+  Vcl.StdCtrls,
+  Vcl.ExtCtrls,
+  Vcl.Menus,
+  Vcl.Clipbrd,
   //
-  MathImage, OverlayImage;
+  MathImage,
+  OverlayImage;
 
 const
   gxmin = -3; gxmax = 6.5; gymin = -4; gymax = 4; {graph domain}
@@ -43,20 +52,17 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure FilledContoursButtonClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
-
   private
     CurrentType: Integer;
     GraphSurface: TLevelSurface;
     LevelsMade: Boolean;
     procedure Graph(x, y: MathFloat; var z: MathFloat);
-    procedure makegraphsurface;
-    { Private declarations }
+    procedure MakeGraphSurface;
   protected
     procedure CreateParams(var Params: TCreateParams); override;
   public
     values: array[0..13] of TLabel;
     Colors: array[0..13] of TLabel;
-    { Public declarations }
   end;
 
 var
@@ -183,10 +189,10 @@ begin
     DrawFilledLevelCurves(graphsurface);
   end;
   Screen.Cursor := crDefault;
-end;  
+end;
 {*****************************************}
 
-procedure TContourform.makegraphsurface;
+procedure TContourform.MakeGraphSurface;
 var
   i, j: Integer; x, y, z: MathFloat;
 begin

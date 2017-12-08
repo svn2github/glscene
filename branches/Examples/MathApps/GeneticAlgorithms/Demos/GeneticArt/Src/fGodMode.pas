@@ -26,7 +26,7 @@ type
     procedure Timer_RedrawEventTimer(Sender: TObject);
     procedure Button_ZoomClick(Sender: TObject);
   private
-    { Private declarations }
+     
     FGenotype: TGenotype;
     FChangedAt : cardinal;
     FFastDrawn : boolean;

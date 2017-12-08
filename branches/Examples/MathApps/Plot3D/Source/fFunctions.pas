@@ -21,6 +21,7 @@ uses
   Vcl.Menus,
 
   OpenGLTokens,
+  GLCoordinates,
   GLVectorGeometry,
   GLColor,
   GLVectorTypes,
@@ -118,8 +119,7 @@ type
     procedure PositiveKeyPress(Sender: TObject; var Key: Char);
     procedure EditNoteClick(Sender: TObject);
     procedure EditNoteKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
-
-    private
+  private
     NewFile: Boolean;
     TooManyPoints: integer;
     function ReadData(const FName: TFileName): Boolean;
@@ -773,6 +773,7 @@ begin
 end;
 
 function TFunctionsForm.ReadData(const FName: TFileName): Boolean;
+
   function StrToVector(s: string): TVector;
   var
     t: string;
@@ -781,15 +782,15 @@ function TFunctionsForm.ReadData(const FName: TFileName): Boolean;
   begin
     i := Pos(',', s);
     t := Copy(s, 1, i -1);
-    Result.X := StrToFloat(t);
+    TryStrToFloat(t, Result.X);
 
     s := Copy(s, i +1, Length(s));
     i := Pos(',', s);
     t := Copy(s, 1, i -1);
-    Result.Y := StrToFloat(t);
+    TryStrToFloat(t, Result.Y);
 
     s := Copy(s, i +1, Length(s));
-    Result.Z := StrToFloat(s);
+    TryStrToFloat(t, Result.Z);
   end;
 
   function StrToColor(s: string): TColorVector;
@@ -800,20 +801,20 @@ function TFunctionsForm.ReadData(const FName: TFileName): Boolean;
   begin
     i := Pos(',', s);
     t := Copy(s, 1, i -1);
-    Result.X := StrToFloat(t);
+    TryStrToFloat(t, Result.X);
 
     s := Copy(s, i +1, Length(s));
     i := Pos(',', s);
     t := Copy(s, 1, i -1);
-    Result.Y := StrToFloat(t);
+    TryStrToFloat(t, Result.Y);
 
     s := Copy(s, i +1, Length(s));
     i := Pos(',', s);
     t := Copy(s, 1, i -1);
-    Result.Z := StrToFloat(t);
+    TryStrToFloat(t, Result.Z);
 
     s := Copy(s, i +1, Length(s));
-    Result.W := StrToFloat(s);
+    TryStrToFloat(t, Result.W);
   end;
 
   function StrToRange(s: string): TRange;
@@ -824,15 +825,15 @@ function TFunctionsForm.ReadData(const FName: TFileName): Boolean;
   begin
     i := Pos(',', s);
     t := Copy(s, 1, i -1);
-    Result.Maximum := StrToFloat(t);
+    TryStrToFloat(t, Result.Maximum);
 
     s := Copy(s, i +1, Length(s));
     i := Pos(',', s);
     t := Copy(s, 1, i -1);
-    Result.Minimum := StrToFloat(t);
+    TryStrToFloat(t, Result.Minimum);
 
     s := Copy(s, i +1, Length(s));
-    Result.Step := StrToFloat(s);
+    TryStrToFloat(t, Result.Step);
   end;
 
 var
@@ -860,59 +861,59 @@ begin
 
         with ViewData do
         case j of
-        1:CameraCubeAt := StrToVector(t);
-        2:CameraAt := StrToVector(t);
-        3:fLength := StrToFloat(t);
-        4:LightAt := StrToVector(t);
-        5:ViewDepth := StrToFloat(t);
-        6:BackColor := StrToInt(t);
+        1: CameraCubeAt := StrToVector(t);
+        2: CameraAt := StrToVector(t);
+        3: TryStrToFloat(t, fLength);
+        4: LightAt := StrToVector(t);
+        5: TryStrToFloat(t, ViewDepth);
+        6: BackColor := StrToInt(t);
 
-        7:xyGrid.Color := StrToColor(t);
-        8:xyGrid.xRange := StrToRange(t);
-        9:xyGrid.yRange := StrToRange(t);
-       10:xyGrid.zPosition := StrToFloat(t);
-       11:xyGrid.zScale := StrToFloat(t);
-       12:xyGrid.IsVisible := StrToBool(t);
-       13:xyGrid.IsChecked := StrToBool(t);
+        7: xyGrid.Color := StrToColor(t);
+        8: xyGrid.xRange := StrToRange(t);
+        9: xyGrid.yRange := StrToRange(t);
+       10: TryStrToFloat(t, xyGrid.zPosition);
+       11: TryStrToFloat(t, xyGrid.zScale);
+       12: xyGrid.IsVisible := StrToBool(t);
+       13: xyGrid.IsChecked := StrToBool(t);
 
-       14:xzGrid.Color := StrToColor(t);
-       15:xzGrid.xRange := StrToRange(t);
-       16:xzGrid.zRange := StrToRange(t);
-       17:xzGrid.yPosition := StrToFloat(t);
-       18:xzGrid.IsVisible := StrToBool(t);
-       19:xzGrid.IsChecked := StrToBool(t);
+       14: xzGrid.Color := StrToColor(t);
+       15: xzGrid.xRange := StrToRange(t);
+       16: xzGrid.zRange := StrToRange(t);
+       17: TryStrToFloat(t, xzGrid.yPosition);
+       18: xzGrid.IsVisible := StrToBool(t);
+       19: xzGrid.IsChecked := StrToBool(t);
 
-       20:yzGrid.Color := StrToColor(t);
-       21:yzGrid.yRange := StrToRange(t);
-       22:yzGrid.zRange := StrToRange(t);
-       23:yzGrid.xPosition := StrToFloat(t);
-       24:yzGrid.IsVisible := StrToBool(t);
-       25:yzGrid.IsChecked := StrToBool(t);
-       26:ViewForm.TargetCube.Position.AsVector := StrToVector(t);
+       20: yzGrid.Color := StrToColor(t);
+       21: yzGrid.yRange := StrToRange(t);
+       22: yzGrid.zRange := StrToRange(t);
+       23: TryStrToFloat(t, yzGrid.xPosition);
+       24: yzGrid.IsVisible := StrToBool(t);
+       25: yzGrid.IsChecked := StrToBool(t);
+       26: ViewForm.TargetCube.Position.AsVector := StrToVector(t);
 
-       27:xEvaluate := StrToFloat(t);
-       28:yEvaluate := StrToFloat(t);
-       29:CoordChecked := StrToBool(t);
-       30:ToGridsChecked := StrToBool(t);
-       31:dzdx_dyChecked := StrToBool(t);
-       32:BoxChecked := StrToBool(t);
-       33:CoordWidth := StrToInt(t);
-       34:CoordColor := StrToInt(t);
-       35:BoxLnWidth := StrToInt(t);
-       36:BoxLnColor := StrToColor(t);
-       37:TextVisible := StrToBool(t);
-       38:TextFontN := t;
-       39:TextFontSz := StrToInt(t);
-       40:xPosYMax := StrToBool(t);
-       41:xPosZMax := StrToBool(t);
-       42:xTextColor := StrToInt(t);
-       43:yPosXMax := StrToBool(t);
-       44:yPosZMax := StrToBool(t);
-       45:yTextColor := StrToInt(t);
-       46:zPosXMax := StrToBool(t);
-       47:zPosYMax := StrToBool(t);
-       48:zTextColor := StrToInt(t);
-       49:ArrowSize := StrTofloat(t);
+       27: TryStrToFloat(t, xEvaluate);
+       28: TryStrToFloat(t, yEvaluate);
+       29: CoordChecked := StrToBool(t);
+       30: ToGridsChecked := StrToBool(t);
+       31: dzdx_dyChecked := StrToBool(t);
+       32: BoxChecked := StrToBool(t);
+       33: CoordWidth := StrToInt(t);
+       34: CoordColor := StrToInt(t);
+       35: BoxLnWidth := StrToInt(t);
+       36: BoxLnColor := StrToColor(t);
+       37: TextVisible := StrToBool(t);
+       38: TextFontN := t;
+       39: TextFontSz := StrToInt(t);
+       40: xPosYMax := StrToBool(t);
+       41: xPosZMax := StrToBool(t);
+       42: xTextColor := StrToInt(t);
+       43: yPosXMax := StrToBool(t);
+       44: yPosZMax := StrToBool(t);
+       45: yTextColor := StrToInt(t);
+       46: zPosXMax := StrToBool(t);
+       47: zPosYMax := StrToBool(t);
+       48: zTextColor := StrToInt(t);
+       49: TryStrToFloat(t, ArrowSize);
         end;
       end;
       n := StrToInt(s);  { number of functions }
@@ -931,25 +932,25 @@ begin
 
           with PlotData do
           case j of
-          1:fxyStr := t;
-          2:txtStr := t;
-          3:NoteStr := t;
-          4:xMin := StrToFloat(t);
-          5:xMax := StrToFloat(t);
-          6:xInc := StrToFloat(t);
-          7:yMin := StrToFloat(t);
-          8:yMax := StrToFloat(t);
-          9:yInc := StrToFloat(t);
-         10:zMin := StrToFloat(t);
-         11:zMax := StrToFloat(t);
-         12:zLim := StrToBool(t);
-         13:zcap := StrToBool(t);
-         14:UpperColor := StrToColor(t);
-         15:LowerColor := StrToColor(t);
-         16:ColorBlend := StrToFloat(t);
-         17:ColorMove := StrToFloat(t);
-         18:ViewMode := TViewMode(StrToInt(t));
-         19:fxyMode := TfxyMode(StrToInt(t));
+          1: fxyStr := t;
+          2: txtStr := t;
+          3: NoteStr := t;
+          4: TryStrToFloat(t, xMin);
+          5: TryStrToFloat(t, xMax);
+          6: TryStrToFloat(t, xInc);
+          7: TryStrToFloat(t, yMin);
+          8: TryStrToFloat(t, yMax);
+          9: TryStrToFloat(t, yInc);
+         10: TryStrToFloat(t, zMin);
+         11: TryStrToFloat(t, zMax);
+         12: zLim := StrToBool(t);
+         13: zcap := StrToBool(t);
+         14: UpperColor := StrToColor(t);
+         15: LowerColor := StrToColor(t);
+         16: ColorBlend := StrToFloat(t); //TryStrToFloat(t, ColorBlend);
+         17: ColorMove := StrToFloat(t); //TryStrToFloat(t, ColorMove);
+         18: ViewMode := TViewMode(StrToInt(t));
+         19: fxyMode := TfxyMode(StrToInt(t));
           end;
         end;
         with CheckListBox do
@@ -971,25 +972,25 @@ begin
         Inc(j);
         with AddedData do
         case j of
-        1:xMin := StrToFloat(t);
-        2:xMax := StrToFloat(t);
-        3:xInc := StrToFloat(t);
-        4:yMin := StrToFloat(t);
-        5:yMax := StrToFloat(t);
-        6:yInc := StrToFloat(t);
-        7:zMin := StrToFloat(t);
-        8:zMax := StrToFloat(t);
-        9:zLim := StrToBool(t);
-       10:zcap := StrToBool(t);
-       11:UpperColor := StrToColor(t);
-       12:LowerColor := StrToColor(t);
-       13:ColorBlend := StrToFloat(t);
-       14:ColorMove := StrToFloat(t);
-       15:ViewMode := TViewMode(StrToInt(t));
-       16:fxyMode := TfxyMode(StrToInt(t));
-       17:AddLineWidth := StrToInt(t);
-       18:AddLineColor := StrToInt(t);
-       19:AddedAs := TAddedType(StrToInt(t));
+        1: TryStrToFloat(t, xMin);
+        2: TryStrToFloat(t, xMax);
+        3: TryStrToFloat(t, xInc);
+        4: TryStrToFloat(t, yMin);
+        5: TryStrToFloat(t, yMax);
+        6: TryStrToFloat(t, yInc);
+        7: TryStrToFloat(t, zMin);
+        8: TryStrToFloat(t, zMax);
+        9: zLim := StrToBool(t);
+       10: zcap := StrToBool(t);
+       11: UpperColor := StrToColor(t);
+       12: LowerColor := StrToColor(t);
+       13: TryStrToFloat(t, ColorBlend);
+       14: TryStrToFloat(t, ColorMove);
+       15: ViewMode := TViewMode(StrToInt(t));
+       16: fxyMode := TfxyMode(StrToInt(t));
+       17: TryStrToInt(t, AddLineWidth);
+       18: TryStrToInt(t, AddLineColor);
+       19: AddedAs := TAddedType(StrToInt(t));
         end;
       end;
 

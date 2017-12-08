@@ -19,11 +19,11 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormKeyPress(Sender: TObject; var Key: Char);
   private
-    { Private declarations }
+     
     FDoc : TsdXmlDocument;
     FGenotype : TGenotype;
   public
-    { Public declarations }
+     
     procedure AddGenotype(const AGenotype : TGenotype);
     procedure FillCollectionList;
   end;

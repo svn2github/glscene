@@ -74,10 +74,10 @@ type
       Genotype: TGenotype; DifferentFromPrevious: Boolean): double;
     procedure CheckBox_AllowGaussianClick(Sender: TObject);
   private
-    { Private declarations }
+     
     function DoFitnessTest(Genotype: TGenotype; MaxSteps : integer; Visible : boolean): single;
   public
-    { Public declarations }
+     
     PoleCart : TGPPoleCart;
 
     RunCount : integer;

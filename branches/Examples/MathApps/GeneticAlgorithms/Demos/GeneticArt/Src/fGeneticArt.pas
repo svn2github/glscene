@@ -65,7 +65,7 @@ type
     procedure Button_FavoritesClick(Sender: TObject);
     procedure SaveImage1Click(Sender: TObject);
   private
-    { Private declarations }
+     
     FImages : TObjectList;
     FNoise : TNoise;
     FCurrentImage : TImage32;
@@ -79,7 +79,7 @@ type
     procedure DoGodMode;
     procedure DoZoom;
   public
-    { Public declarations }
+     
     procedure RenderGeneration;
     procedure RenderGenotype(const AGenotype : TGenotype;
       const ABitmap32 : TBitmap32; const ARenderSkip : integer=1); overload;

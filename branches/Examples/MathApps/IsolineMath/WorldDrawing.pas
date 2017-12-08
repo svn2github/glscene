@@ -1,24 +1,21 @@
 unit WorldDrawing;
 (*
- ***************************************************************************
- *
- *                         TWorldDrawing
- *             Object for drawing in world coordinates
- *                 Now the object powering TMathImage
- *
- * Copyright © 2000 Renate Schaaf.
- *
- ************************************************************************)
+  TWorldDrawing
+  Object for drawing in world coordinates
+  Now the object powering TMathImage based on Renate Schaaf's source
+ *)
 
 interface
 
 uses
   Winapi.Windows,
-  System.Classes, System.SysUtils, System.Math,
+  System.Classes,
+  System.SysUtils,
+  System.Math,
   Vcl.Graphics;
 
 type
-  MathFloat = double;
+  MathFloat = single; //double; extended;
 
   PFloatPoint = ^TFloatpoint;
   TFloatpoint = record
@@ -46,9 +43,7 @@ type
   end;
 
   Td3FloatPointArray = array of TD3FloatPoint;
-
   TColorArray = array of TColor;
-
   TFloatarray = array of MathFloat;
 
 
@@ -130,49 +125,28 @@ type
 
 
 
-  {: Object for drawing in world coordinates on any canvas. Use of this
+  { Object for drawing in world coordinates on any canvas. Use of this
   object is more advanced than using <See class=TMathImage>, because you need
   to set the world, and screen dimensions, and have to update them as needed
   if your area resizes. Second, there is no exception handling whatsoever done
   in this object. Third, you need to do your own clipping when using axes.
-  The AxesRect property can be used.
-  }
+  The AxesRect property can be used }
   TWorldDrawing = class
   private
-    //property private fields:
-
-    fwidth, fHeight: Integer;
-    //Screen dimensions
-
-    fd2x1, fd2xw, fd2y1, fd2yw: MathFloat;
-    //D2- worldsize
-
-    fd2Axes: Boolean;
-    //Leave space for axes?
+    fwidth, fHeight: Integer;    //Screen dimensions
+    fd2x1, fd2xw, fd2y1, fd2yw: MathFloat;  //D2- worldsize
+    fd2Axes: Boolean;    //Leave space for axes?
 
     fmaxxtw, fmaxytw, fmaxth: Integer;
-    fd3ar: Boolean;
-    //true aspectratio in d3?
+    fd3ar: Boolean;    //true aspectratio in d3?
+    fd3x1, fd3xw, fd3y1, fd3yw, fd3z1, fd3zw: MathFloat;   //D3-worldsize
 
-    fd3x1, fd3xw, fd3y1, fd3yw, fd3z1, fd3zw: MathFloat;
-    //D3-worldsize
-
-    fd3alpha, fd3vd, fd3vdinv: MathFloat;
-    //D3-lens: opening angle, viewdist
-
-    fd3zr, fd3yr: MathFloat;
-    //D3 viewpoint angles
-
-    fd3ViewPoint: TD3FloatPoint;
-    //D3 current viewpoint
-
+    fd3alpha, fd3vd, fd3vdinv: MathFloat; //D3-lens: opening angle, viewdist
+    fd3zr, fd3yr: MathFloat;   //D3 viewpoint angles
+    fd3ViewPoint: TD3FloatPoint;   //D3 current viewpoint
     fd3ViewAngles: TFloatpoint;
-
     fd3L1, fd3L2: TLightSource;
-
-    fd3xScale, fd3yScale, fd3zScale: MathFloat;
-    //D3 axes scalings
-
+    fd3xScale, fd3yScale, fd3zScale: MathFloat;  //D3 axes scalings
     fClipRect: TRect;
 
     //helper variables
@@ -198,11 +172,9 @@ type
       zLabel: string; xTicks, yTicks, zTicks: byte; yx, zx, xy, zy, xz,
       yz: MathFloat; Arrows: Boolean = True);
   protected
-  //Low level routines that require the pointers
-  //to have been set up
+    (*Low level routines that require the pointers to have been set up *)
     procedure d3ResetWorld;
     procedure GetBrightness(const p, n: TD3FloatPoint; var BDiff, BSpec: MathFloat);
-
     procedure Draw4Cells(ACanvas: TCanvas; const Cells: array of T4Cell);
     procedure d3DrawTriangles(ACanvas: TCanvas; const Triangles: array of TD3Triangle);
     procedure d3DrawSurfaceCells(ACanvas: TCanvas; const SurfaceCells: array of TD3SurfaceCell);
@@ -219,20 +191,15 @@ type
   public
     property AxesClipRect: TRect read fClipRect;
     constructor Create;
-
     //general d2-Stuff
-    {: Use this first thing to tell the object the pixel dimensions for
-    the drawing area.
-    }
+    { Use this first thing to tell the object the pixel dimensions for the drawing area }
     procedure SetScreen(AWidth, AHeight: Integer);
-
-    {: Set the bounds for your world coordinates. x1, y1 are the lower bounds,
+    { Set the bounds for your world coordinates. x1, y1 are the lower bounds,
     x2,y2 the upper ones. This TWorldDrawing does no exception handling, so
     you need to make sure that x1<x2 and y1<y2. The canvas this is intended
     for, needs to be passed, so the right amount of space can be left for
     axes drawing depending on the canvas's font. If you change the font, you need
-    to reset the world.
-    }
+    to reset the world }
     procedure SetWorld(ACanvas: TCanvas; x1, y1, x2, y2: MathFloat);
     procedure ResetWorld(ACanvas: TCanvas);
     procedure Setd2Axes(ACanvas: TCanvas; Value: Boolean);
@@ -257,7 +224,6 @@ type
     procedure DrawPolyline(ACanvas: TCanvas; const FloatPointArray: array of TFloatpoint; PointCount: Integer);
     procedure DrawPolygon(ACanvas: TCanvas; const FloatPointArray: array of TFloatpoint; PointCount: Integer);
     procedure DrawPolyPolyline(ACanvas: TCanvas; const GraphList: array of TFloatPointArray);
-
     //general d3 stuff
     procedure d3SetWorld(x1, y1, z1, x2, y2, z2: MathFloat; AspectRatio: Boolean);
     procedure d3SetViewPoint(vd, alpha, yr, zr: MathFloat);
@@ -305,7 +271,6 @@ type
     procedure d3DrawLitCubes(ACanvas: TCanvas; const Cubes: array of TCube; diffuse, focussed: MathFloat);
 
     //Level stuff
-
     procedure DrawLevelCurves(ACanvas: TCanvas; const SurfArray: array of Td3FloatPointArray; Level: MathFloat);
     procedure DrawFilledLevelCurves(ACanvas: TCanvas; const SurfArray: array of Td3FloatPointArray;
       const Levels: array of MathFloat; const Colors: array of TColor);
@@ -339,17 +304,15 @@ type
   end;
 
 procedure D3FloatPoint(x, y, z: MathFloat; var p: TD3FloatPoint);
-
 procedure FloatPoint(x, y: MathFloat; var r: TFloatpoint);
-
 procedure CrossProduct(x1, y1, z1, x2, y2, z2: MathFloat; var u1, u2, u3: MathFloat);
-
 procedure GetLineSegments(const f: array of TD3FloatPoint;
   aCount: Integer; NormalKind: TNormalKind; var l: Td3LineSegmentArray);
 
 
-
+//========================================================================
 implementation
+//========================================================================
 
 const piInv = 2 / pi;
 

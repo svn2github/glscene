@@ -20,6 +20,8 @@ uses
   Vcl.Menus,
   Vcl.ExtDlgs,
 
+  OpenGLTokens,
+  GLPersistentClasses,
   GLScene,
   GLVectorTypes,
   GLGeomObjects,
@@ -33,7 +35,6 @@ uses
   GLWindowsFont,
   GLParticles,
   GLColor,
-  OpenGLTokens,
   GLBaseClasses,
   GLVectorGeometry,
   GLState,

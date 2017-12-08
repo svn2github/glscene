@@ -29,11 +29,11 @@ type
     procedure SetResolution_Click(Sender: TObject);
     procedure SaveImage1Click(Sender: TObject);
   private
-    { Private declarations }
+     
     FGenotype : TGenotype;
     procedure RenderImage(const ARenderSkip : integer);
   public
-    { Public declarations }
+     
     procedure ShowAndRender(const AGenotype : TGenotype);
   end;
 

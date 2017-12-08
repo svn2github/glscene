@@ -38,10 +38,10 @@ type
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure RadioGroup_FunctionClick(Sender: TObject);
   private
-    { Private declarations }
+     
     FValueList : TList;
   public
-    { Public declarations }
+     
     function CalculateFitness(Genotype : TGenotype) : double;
   end;
 

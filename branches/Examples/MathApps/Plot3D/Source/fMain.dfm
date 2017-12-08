@@ -1,7 +1,7 @@
 object ViewForm: TViewForm
   Left = 69
   Top = 77
-  ClientHeight = 790
+  ClientHeight = 750
   ClientWidth = 1098
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -28,12 +28,12 @@ object ViewForm: TViewForm
     Left = 0
     Top = 0
     Width = 1098
-    Height = 771
+    Height = 731
     Cursor = crHandPoint
     Camera = Camera
     Buffer.BackgroundColor = clActiveCaption
     Buffer.ContextOptions = [roDoubleBuffer, roRenderToWindow]
-    FieldOfView = 125.158821105957000000
+    FieldOfView = 122.625427246093800000
     Align = alClient
     OnMouseDown = GLSViewerMouseDown
     OnMouseMove = GLSViewerMouseMove
@@ -42,7 +42,7 @@ object ViewForm: TViewForm
   end
   object StatusBar: TStatusBar
     Left = 0
-    Top = 771
+    Top = 731
     Width = 1098
     Height = 19
     Cursor = crHandPoint

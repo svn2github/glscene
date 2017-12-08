@@ -50,9 +50,9 @@ type
     procedure rgrpAntSteeringClick(Sender: TObject);
     procedure cmdGarbageClick(Sender: TObject);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
     procedure CreatePopulation;
     procedure Compile(sExpression : string);
     procedure RunTest(Parser :TParser);

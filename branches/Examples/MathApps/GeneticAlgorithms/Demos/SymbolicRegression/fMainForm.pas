@@ -20,9 +20,9 @@ type
     function PopulationCalculateFitness(TNNPopulation: TNNPopulation;
       Genotype: TGenotype): Single;
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
     function CalculateFitness(Genotype : TGenotype) : single;
   end;
 

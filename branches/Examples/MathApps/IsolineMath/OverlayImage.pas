@@ -1,75 +1,61 @@
 unit OverlayImage;
-(*
-*****      Base Component for Graphing     ****************************
-**              TOverlayImage
-**
-**             © Renate Schaaf
-**            renates@xmission.com
-**
-**  Specialty: Has methods for
-**  temporary flickerless speedy overlayed drawings
-**  like zoom rectangles or even sprites.
-**  Use the usual canvas routines with the prefix Overlay,
-**  like OverlayEllipse, OverlayRectangle, etc.
-**  Exceptions:
-**  The analog of Moveto/Lineto is as a command OverlayLine.
-**  The analog of Canvas.Draw(x,y,MyGraphic) is OvelayDraw(DestRect,MyGraphic).
-**  After finished with the overlayed (possibly compound) drawing,
-**  call ShowOverlay. The next overlayed drawing
-**  will start from scratch.
-**
-**                                                                       *)
-
+(*      Base Component for Graphing
+  TOverlayImage based on Renate Schaaf's code
+  Specialty: Has methods for temporary flickerless speedy overlayed drawings
+  like zoom rectangles or even sprites.
+  Use the usual canvas routines with the prefix Overlay, like OverlayEllipse,
+   OverlayRectangle, etc.
+  Exceptions:
+  The analog of Moveto/Lineto is as a command OverlayLine.
+  The analog of Canvas.Draw(x,y,MyGraphic) is OvelayDraw(DestRect,MyGraphic).
+  After finished with the overlayed (possibly compound) drawing,
+  call ShowOverlay. The next overlayed drawing
+  will start from scratch *)
 
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages,
-  System.SysUtils, System.Classes,
-  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Clipbrd;
+  Winapi.Windows,
+  Winapi.Messages,
+  System.SysUtils,
+  System.Classes,
+  Vcl.Graphics,
+  Vcl.Controls,
+  Vcl.Forms,
+  Vcl.Dialogs,
+  Vcl.Clipbrd;
 
 type
   TOverlayImage = class(TGraphicControl)
   private
-    fBitmap: TBitmap;
-    //Bitmap for the persistant Drawing
+    fBitmap: TBitmap;      //Bitmap for the persistant Drawing
     fDrawWidth, fDrawHeight: Integer;
-    fScreenBitmap: TBitmap;
-    //Bitmap that gets blasted to screen
+    fScreenBitmap: TBitmap;  //Bitmap that gets blasted to screen
     fLockCount: Integer;
     fDrawing: Boolean;
     fTempDrawing: Boolean;
     fOverlayed: Boolean;
-    fClipRect: TRect;
-    //ClipRect for fBitmap
-    fTempRect: TRect;
-    //fTempRect is fClipRect translated to screen
+    fClipRect: TRect;      //ClipRect for fBitmap
+    fTempRect: TRect;      //fTempRect is fClipRect translated to screen
     //coordinates
-    fClipRgn: HRgn;
-    //corresponding region
-    fOldRgn, fNewRgn: HRgn;
-    //regions to optimize overlaid drawing
+    fClipRgn: HRgn;           //corresponding region
+    fOldRgn, fNewRgn: HRgn;   //regions to optimize overlaid drawing
     fxoff, fyoff: Integer;
-    //scaling data, bmp to screen, rsp. device
-    //regions have to be given in device coordinates.
-    //if the control is not located at top=left=0 in
-    //the parent, those will be offset from the control
-    //coordinates
+    (* scaling data, bmp to screen, rsp. device
+     regions have to be given in device coordinates.
+     if the control is not located at top=left=0 in
+     the parent, those will be offset from the control  coordinates *)
     fOrgFontChanged,
       fOrgPenChanged,
       fOrgBrushChanged,
       fOrgPaint,
       fOnMouseLeave,
       fOnMouseEnter: TNotifyEvent;
-    fOnTempPaint: TNotifyEvent;
-    //Something that should always be added
-
-
+    fOnTempPaint: TNotifyEvent;  //Something that should always be added
     procedure fBitmapChanged(Sender: TObject);
     procedure fFontChanged(Sender: TObject);
     procedure fPenChanged(Sender: TObject);
     procedure fBrushChanged(Sender: TObject);
-
     function GetCanvas: TCanvas;
     function GetTempCanvas: TCanvas;
     function GetMetafileCanvas: TCanvas;
@@ -79,18 +65,14 @@ type
     function GetTempFont: TFont;
     function GetTempBrush: TBrush;
     function GetTempPen: TPen;
-
     procedure SetFont(Value: TFont);
     procedure SetPen(Value: TPen);
     procedure SetBrush(Value: TBrush);
     procedure SetTempFont(Value: TFont);
     procedure SetTempBrush(Value: TBrush);
     procedure SetTempPen(Value: TPen);
-
     procedure GetOffSet;
     procedure fTempCanvasChanging;
-
-    { Private declarations }
   protected
     fMetaFileCanvas: TMetaFileCanvas;
     fMetaFile: TMetaFile;
@@ -98,225 +80,145 @@ type
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
     procedure CMMouseLeave(var msg: TMessage); message CM_MouseLeave;
     procedure CMMouseEnter(var msg: TMessage); message CM_MouseEnter;
-    procedure WMWindowPosChanged(var msg: TMessage); message
-      WM_WINDOWPOSCHANGED;
+    procedure WMWindowPosChanged(var msg: TMessage); message WM_WINDOWPOSCHANGED;
     procedure SizeChanged; virtual;
     procedure Loaded; override;
-    {: Canvas for overlaid drawings like
+    (* Canvas for overlaid drawings like
     zoom rectangles, or helper shapes which aren't part of
     the actual drawings. Now protected, because it can't be
-    used properly without some specific precautions.
-    }
+    used properly without some specific precautions *)
     property OverlayCanvas: TCanvas read GetTempCanvas;
-    { Protected declarations }
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
-    {: Define a new rectangular clip region. The previous region
-     is discarded.
-    }
+    { Define a new rectangular clip region. The previous region
+     is discarded.}
     procedure NewClipRegion(Value: TRect);
-
-    {: Add a rectangle to the current clip region.
-    }
+    { Add a rectangle to the current clip region }
     procedure AddClipRegion(Value: TRect);
-
-    {: Subtract a rectangular region from the current clip region.
-    }
+    { Subtract a rectangular region from the current clip region }
     procedure SubtractClipRegion(Value: TRect);
-
-    {: Intersect the current clip region with the region given by Value.
-    }
+    {Intersect the current clip region with the region given by Value}
     procedure IntersectClipRegion(Value: TRect);
-
-    {: Call when the component is inside a scrollbox to adjust to scroll. Since
+    { Call when the component is inside a scrollbox to adjust to scroll. Since
     the usual scrollbox has no OnScroll event, there is a derived one
-    (<See class=TScrollEventBox>) in this same unit.
-    }
+    (<See class=TScrollEventBox>) in this same unit }
     procedure AdjustToScroll;
-
-    {: Drawing surrounded by LockUpdate and UnlockUpdate is not
+    { Drawing surrounded by LockUpdate and UnlockUpdate is not
      updated to the screen immediately. Nested calls are OK,
      Screen will be updated on the last UnlockUpdate. This speeds up
-     compound drawing.
-     }
+     compound drawing}
     procedure LockUpdate;
-
-    {: Drawing surrounded by LockUpdate and UnlockUpdate is not
+    { Drawing surrounded by LockUpdate and UnlockUpdate is not
      updated to the screen immediately. Nested calls are OK,
      Screen will be updated on the last UnlockUpdate. This speeds up
-     compound drawing.
-     }
+     compound drawing}
     procedure UnlockUpdate;
-
-    {: A call to ShowOverlay puts the current drawing on the
+    { A call to ShowOverlay puts the current drawing on the
     Overlaycanvas to screen. The next Overlaycanvas call, or a call of
-    <See method=HideOverlay> clears the canvas.
-    }
+    <See method=HideOverlay> clears the canvas }
     procedure ShowOverlay;
-
-    {: Clears the overlayed canvas. Call, if no overlayed drawing is needed anymore,
-    as this speeds up normal drawing.
-    }
+    { Clears the overlayed canvas. Call, if no overlayed drawing is needed anymore,
+    as this speeds up normal drawing }
     procedure HideOverlay;
-
-    {: Clears the Canvas, sets background to AColor.
-    }
+    { Clears the Canvas, sets background to AColor }
     procedure Clear(Acanvas: TCanvas; AColor: TColor); // overload; virtual;
-
-    {: Saves any drawing on the <See property=MetafileCanvas> to file.
-    }
+    { Saves any drawing on the <See property=MetafileCanvas> to file }
     procedure SaveMetafile(const filename: string);
-
-    {: Releases memory for metafile support.
-    }
+    { Releases memory for metafile support }
     procedure EraseMetafile;
-
-    {: For speed optimized drawings on the overlayed canvas use this
-    analogon of the TCanvas method.
-    }
+    { For speed optimized drawings on the overlayed canvas use this
+    analogon of the TCanvas method }
     procedure OverlayCopyRect(dest: TRect; Canvas: TCanvas; Source: TRect);
-
-    {: For speed optimized drawings on the overlayed canvas use this
-    analogon of the TCanvas method.
-    }
+    { For speed optimized drawings on the overlayed canvas use this
+    analogon of the TCanvas method }
     procedure OverlayDraw(dest: TRect; Graphic: TGraphic);
-
-    {: For speed optimized drawings on the overlayed canvas use this
-    analogon of the TCanvas method.
-    }
+    { For speed optimized drawings on the overlayed canvas use this
+    analogon of the TCanvas method }
     procedure OverlayFillRect(const Rect: TRect);
-
-    {: For speed optimized drawings on the overlayed canvas use this
-    analogon of the TCanvas method.
-    }
+    { For speed optimized drawings on the overlayed canvas use this
+    analogon of the TCanvas method }
     procedure OverlayFrameRect(const Rect: TRect);
-
-    {: For speed optimized drawings on the overlayed canvas use this
-    analogon of the TCanvas method.
-    }
+    { For speed optimized drawings on the overlayed canvas use this
+    analogon of the TCanvas method }
     procedure OverlayLine(x1, y1, x2, y2: Integer);
-
-    {: For speed optimized drawings on the overlayed canvas use this
-    analogon of the TCanvas method.
-    }
+    { For speed optimized drawings on the overlayed canvas use this
+    analogon of the TCanvas method }
     procedure OverlayPolygon(Points: array of TPoint);
-
-    {: For speed optimized drawings on the overlayed canvas use this
-    analogon of the TCanvas method.
-    }
+    { For speed optimized drawings on the overlayed canvas use this
+    analogon of the TCanvas method }
     procedure OverlayPolyline(Points: array of TPoint);
-
-    {: For speed optimized drawings on the overlayed canvas use this
-    analogon of the TCanvas method.
-    }
+    { For speed optimized drawings on the overlayed canvas use this
+    analogon of the TCanvas method }
     procedure OverlayEllipse(x1, y1, x2, y2: Integer);
-
-    {: For speed optimized drawings on the overlayed canvas use this
-    analogon of the TCanvas method.
-    }
+    { For speed optimized drawings on the overlayed canvas use this
+    analogon of the TCanvas method }
     procedure OverlayRectangle(x1, y1, x2, y2: Integer);
-
-    {: For speed optimized drawings on the overlayed canvas use this
-    analogon of the TCanvas method.
-    }
+    { For speed optimized drawings on the overlayed canvas use this
+    analogon of the TCanvas method }
     procedure OverlayRoundRect(x1, y1, x2, y2, X3, Y3: Integer);
-
-    {: For speed optimized drawings on the overlayed canvas use this
-    analogon of the TCanvas method.
-    }
+    { For speed optimized drawings on the overlayed canvas use this
+    analogon of the TCanvas method }
     procedure OverlayTextOut(x, y: Integer; const s: string);
-
-    {: Actually the canvas of the offscreen fbitmap.
-    }
+    { Actually the canvas of the offscreen fbitmap }
     property Canvas: TCanvas read GetCanvas;
-
-
-    {: In case you'd like to draw a metafile, just use this property.
-    It will be created, if needed.
-    }
+    { In case you'd like to draw a metafile, just use this property.
+    It will be created, if needed }
     property MetafileCanvas: TCanvas read GetMetafileCanvas;
-
-    {: The metafile generated by drawing on <See property=MetafileCanvas>.
-    }
+    { The metafile generated by drawing on <See property=MetafileCanvas> }
     property Metafile: TMetaFile read fMetaFile;
-
-    {: This Bitmap which holds the current main (not overlayed) drawing.
-    }
+    { This Bitmap which holds the current main (not overlayed) drawing }
     property Bitmap: TBitmap read fBitmap;
-
     property OverlayBrush: TBrush read GetTempBrush write SetTempBrush;
-
     property OverlayPen: TPen read GetTempPen write SetTempPen;
-
     property OverlayFont: TFont read GetTempFont write SetTempFont;
-
-
-    { Public declarations }
   published
     property Align;
-
-
-    {: Pen, brush and font properties for the main drawing. To set the corresponding
+    { Pen, brush and font properties for the main drawing. To set the corresponding
     for the overlayed canvas use OverlayPen. For the Metafile canvas use MetafileCanvas.Pen,
-    as usual.
-    }
+    as usual }
     property Pen: TPen read GetPen write SetPen;
-
-    {: Pen, brush and font properties for the main drawing. To set the corresponding
+    { Pen, brush and font properties for the main drawing. To set the corresponding
     for the overlayed canvas use OverlayBrush. For the Metafile canvas use MetafileCanvas.Brush,
-    as usual.
-    }
+    as usual }
     property Brush: TBrush read GetBrush write SetBrush;
-
-    {: Pen, brush and font properties for the main drawing. To set the corresponding
+    { Pen, brush and font properties for the main drawing. To set the corresponding
     for the overlayed canvas use OverlayFont. For the Metafile canvas use MetafileCanvas.Font,
-    as usual.
-    }
+    as usual }
     property Font: TFont read GetFont write SetFont;
-
-    {: Events}
+    { Events}
     property OnMouseDown;
     property OnMouseUp;
     property OnMouseMove;
     property OnResize;
-
-    {: If you want to see a persistent drawing on the overlayed canvas, use this
-    event for the drawing commands.
-    }
+    { If you want to see a persistent drawing on the overlayed canvas, use this
+    event for the drawing commands }
     property OnOverlayPaint: TNotifyEvent read fOnTempPaint write fOnTempPaint;
-
-    {: Event which fires if the mouse leaves the control. Note: There must be space
-    between the control and the boundary of the parent for this to work.
-    }
+    { Event which fires if the mouse leaves the control. Note: There must be space
+    between the control and the boundary of the parent for this to work }
     property OnMouseLeave: TNotifyEvent read fOnMouseLeave write fOnMouseLeave;
-
-    {: Event which fires if the mouse enters the control.
-    }
+    { Event which fires if the mouse enters the control }
     property OnMouseEnter: TNotifyEvent read fOnMouseEnter write fOnMouseEnter;
-
-    { Published declarations }
   end;
 
-  {: Had to create an extra scrollbox, which fires scrollevents, because
+  (* Had to create an extra scrollbox, which fires scrollevents, because
   when the TOverlayImage is scrolled, the offsets for the device regions
-  have to be recomputed. See procedure TOverlayImage.AdjustToScroll
-  }
+  have to be recomputed. See procedure TOverlayImage.AdjustToScroll *)
   TScrollEventBox = class(TScrollbox)
   private
     fOnScroll: TNotifyEvent;
     procedure WMHScroll(var Message: TWMHScroll); message WM_HSCROLL;
     procedure WMVScroll(var Message: TWMVScroll); message WM_VSCROLL;
   published
-    {: Event fires on vertical or horizontal scroll.
-    }
+    { Event fires on vertical or horizontal scroll }
     property OnScroll: TNotifyEvent read fOnScroll write fOnScroll;
   end;
 
 procedure Register;
 
+//==============================================================
 implementation
+//==============================================================
 
 constructor TOverlayImage.Create;
 begin
@@ -559,7 +461,7 @@ begin
   DeleteObject(rgn);
 end;
 
-
+//------------------------------------------------------------------------
 
 procedure TOverlayImage.WMWindowPosChanged;
 begin

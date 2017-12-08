@@ -263,9 +263,9 @@ type
     MainTop: integer;
     MainWidth: integer;
     MainHeight: integer;
-    CurrentGraphFName: ShortString;
-    CurrentDataPath: ShortString;
-    CurrentImagePath: ShortString;
+    CurrentGraphFName: String[255];
+    CurrentDataPath: String[255];
+    CurrentImagePath: String[255];
     CurrentPrinterInfo: TPrinterInfo;
     GridsVisible: Boolean;
     GridsLeft: integer;

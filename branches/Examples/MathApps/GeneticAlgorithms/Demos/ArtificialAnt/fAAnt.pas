@@ -59,9 +59,9 @@ type
     procedure SaveXML(AGenotype: TGenotype);
 {    function CalculateFitness: TIndividual;
     procedure InitFunctionAndTerminalSet;//}
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
     procedure DrawMap;
     procedure ReadMapFromText;
     procedure InitializeMap;

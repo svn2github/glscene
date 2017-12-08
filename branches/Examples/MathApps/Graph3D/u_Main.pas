@@ -17,7 +17,7 @@ uses
   Vcl.ComCtrls,
   Vcl.ToolWin,
   Vcl.ExtCtrls,
-  //GLS
+   
   GLScene,
   GLObjects,
   GLCoordinates, GLWin32Viewer, GLCrossPlatform,

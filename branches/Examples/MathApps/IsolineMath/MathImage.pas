@@ -1,21 +1,20 @@
 unit MathImage;
-(*
- **********************************************************************
- *
- *                         TMathImage 6.0
- *
- * Copyright © 2000 Renate Schaaf.
- *
- *
+(***********************************************************************
+ *  TMathImage 7.0
+ *  Based on Renate Schaaf's TMathImage 6.0
  ***********************************************************************)
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages,
-  System.SysUtils,  System.Classes, Vcl.Graphics,
+  Winapi.Windows,
+  Winapi.Messages,
+  System.SysUtils,
+  System.UITypes,
+  System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
   //
-  WorldDrawing, OverlayImage;
+  WorldDrawing,
+  OverlayImage;
 
 
 
@@ -891,7 +890,7 @@ you are doing here. }
     color colors[k].       }
     procedure DrawFilledLevelCurves(LevelSurface: TLevelSurface);
 
-    { Public declarations }
+     
 
   published
     property Align;
@@ -1060,7 +1059,7 @@ you are doing here. }
     property OnZoomStop: TNotifyEvent read FOnEndZoom write FOnEndZoom;
     {analogous}
 
-     { Published declarations }
+      
 
   end;
 

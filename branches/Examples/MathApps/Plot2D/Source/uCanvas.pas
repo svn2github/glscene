@@ -4,6 +4,7 @@ interface
 
 uses
   Winapi.OpenGL,
+  System.Types,
   System.Classes,
   System.SysUtils,
   System.Math,
@@ -53,22 +54,18 @@ type
     IntegList: TList;       { used to hold Integral TGraphPointObjects }
     SectorList: TList;      { used to hold polar Integral sectors }
     FxParser: TFxParser;
-
     function FormatValue(const n: integer; const v, dv: extended): string;
     function CoordX(x: extended): integer;
     function CoordY(y: extended): integer;
     function CoordLogX(x: extended): integer;
     function CoordLogY(y: extended): integer;
-
     function EvaluateFunction(const x: extended): extended;
     function ValueX(const x: integer): extended;
     function ValueLogX(const x: integer): extended;
-
     procedure AddXAxisText(x: extended;
               xCoord, yCoord, halfWd: integer; atTop: Boolean);
     procedure AddYAxisText(y: extended;
               xCoord, yCoord, halfWd: integer; atRight: Boolean);
-
     procedure DrawXGridLinear;
     procedure DrawYGridLinear;
     procedure DrawXGridLog;
@@ -88,18 +85,11 @@ type
     procedure PopulatePolar(var L: TList);
     procedure PopulateDerivCartesian(var Ls, L: TList);
     procedure PopulateDerivPolar(var Ls, L: TList);
-    procedure NoNumberCartesian(var L: Tlist; const P, C: TGraphPoint;
-                              const i: integer);
-    procedure NoNumberDerivCartesian(var L: Tlist; const P, C: TGraphPoint;
-                                   const i: integer);
-    procedure NoNumberPolar(var L: Tlist; var P, C: TGraphPoint;
-                          const i: integer);
-
-    procedure InfinityCartesian(var L: Tlist; var P, C: TGraphPoint;
-                              const i: integer);
-    procedure InfinityPolar(var L: Tlist; var P, C: TGraphPoint;
-                          const i: integer);
-
+    procedure NoNumberCartesian(var L: Tlist; const P, C: TGraphPoint; const i: integer);
+    procedure NoNumberDerivCartesian(var L: Tlist; const P, C: TGraphPoint; const i: integer);
+    procedure NoNumberPolar(var L: Tlist; var P, C: TGraphPoint; const i: integer);
+    procedure InfinityCartesian(var L: Tlist; var P, C: TGraphPoint; const i: integer);
+    procedure InfinityPolar(var L: Tlist; var P, C: TGraphPoint; const i: integer);
     function LineIsValid(var P, C: TGraphPoint): Boolean;
     procedure AnalyseCartesian(var L: TList);
     procedure AnalyseDerivCartesian(var L: TList);
@@ -186,12 +176,12 @@ begin
   yLoc := y;
   TextColor := c;
   TextString := T;
-end;      { TTextLocObject.Create }
+end;
 
 destructor TTextLocObject.Destroy;
 begin
   inherited Destroy;
-end;     { TTextLocObject.Destroy }
+end;
 
 constructor TfxCanvas.Create(bufferSizeX, bufferSizeY: Integer);
 begin                                        inherited;
@@ -2314,7 +2304,7 @@ begin
     ClearPointList(IntegList);
     IntegList := nil;
   end;
-end;    { TfxCanvas.IntegrateYCartesian }
+end;
 
 procedure TfxCanvas.IntegrateBetweenFunctions;
   procedure PopulateList;
@@ -2337,7 +2327,7 @@ procedure TfxCanvas.IntegrateBetweenFunctions;
 
       x := x + h;    { next step }
     end;
-  end;    { PopulateList }
+  end;
 
   procedure AddDataToList;
   var
@@ -2353,7 +2343,7 @@ procedure TfxCanvas.IntegrateBetweenFunctions;
       p2Y := CoordY(y2);
       P2 := point(p1X, p2Y);
     end;
-  end;    { AddDataToList }
+  end;
 
   function SumBetweenSegs(var aNeg, aPos: extended): extended;
   var
@@ -2396,7 +2386,7 @@ procedure TfxCanvas.IntegrateBetweenFunctions;
       if a > 0 then aPos := aPos + a else aNeg := aNeg - a;
     end;
     Result := aPos - aNeg;
-  end;   { SumBetweenSegs }
+  end;
 
   procedure ShadeBetweenArea;
   var
@@ -2424,7 +2414,7 @@ procedure TfxCanvas.IntegrateBetweenFunctions;
 
       px := gl.P1.X;
     end;
-  end;    { ShadeBetweenArea }
+  end;
 
   procedure ClearAndFreeList;
   var
@@ -2435,9 +2425,9 @@ procedure TfxCanvas.IntegrateBetweenFunctions;
     do TGraphLineObject(IntegList[i]).Free;
     IntegList.Free;
     Integlist:= nil;
-  end;    { ClearAndFreeList }
+  end;
 
-        { TfxCanvas.IntegrateBetweenFunctions }
+
 var
   SumSegs: extended;
   NegSegs: extended;
@@ -2681,9 +2671,8 @@ procedure TfxCanvas.IntegrateVolumeX;
   { restore plot pen width }
     PenWidth := GraphData.PlotData.PlotWidth;
     PenColor := GraphData.PlotData.PlotColor;
-  end;    { DrawVolumeX }
+  end;
 
-        { TfxCanvas.IntegrateVolumeX }
 
 var
   VolSegs: extended;
@@ -2715,7 +2704,7 @@ begin
     end
   except
   end;
-end;    { TfxCanvas.IntegrateVolumeX }
+end;
 
 procedure TfxCanvas.IntegrateVolumeY;
 
@@ -2999,9 +2988,8 @@ procedure TfxCanvas.IntegrateVolumeY;
       PenWidth := GraphData.PlotData.PlotWidth;
       PenColor := GraphData.PlotData.PlotColor;
     end;
-  end;    { DrawVolumeY }
+  end;
 
-        { TfxCanvas.IntegrateVolumeY }
 
 var
   VolSegs: extended;
@@ -3034,7 +3022,7 @@ begin
     end;
   except
   end;
-end;    { TfxCanvas.IntegrateVolumeY }
+end;
 
 procedure TfxCanvas.FindfxValues(const y: extended);
 
@@ -3100,9 +3088,9 @@ procedure TfxCanvas.FindfxValues(const y: extended);
       end;
     end;
     Display;
-  end;    { Interpolate f(x) }
+  end;
 
-        { TfxCanvas.FindfxValues }
+
 var
   i: integer;
   y_rPrior: extended;
@@ -3132,7 +3120,7 @@ begin
       Inc(i);
     end;
   end;
-end;    { TfxCanvas.FindfxValues }
+end;
 
 procedure TfxCanvas.DrawfxPoints;
 var
@@ -3218,7 +3206,7 @@ var
       for j := 1 to 3 do px[j] := px[j] + dx;
     end;
 
-          { Interpolate f'(x) }
+ { Interpolate f'(x) }
 
   const
     xDeltaMin = 7.88860905221012E-31;  { 1/2^100 }
@@ -3253,9 +3241,9 @@ var
     end;
 
     Display;
-  end;    { Interpolate f'(x) }
+  end;
 
-        { TfxCanvas.Findfx1Values }
+
 var
   i: integer;
   j: integer;
@@ -3282,7 +3270,7 @@ begin
     end;
     Inc(i);
   end;
-end;    { TfxCanvas.Findfx1Values }
+end;
 
 procedure TfxCanvas.Drawfx1Points;
 var
@@ -3344,14 +3332,19 @@ var
   Mean: extended;
 
   procedure Interpolate;
+  const
+    xDeltaMin = 7.88860905221012E-31;  { 1/2^100 }
+  var
+    dx: extended;
+    xDelta: extended;
+    j: integer;
+
     procedure Display;
     var
       sx, sy: string;
-
     begin
       if isNaN(px[3]) or isInfinite(px[3]) or
          isNaN(Mean) or isInfinite(Mean) then Exit;
-
       if px[3] < 0
       then sx := ' '+Format('%g',[px[3]])
       else sx := '  '+Format('%g',[px[3]]);
@@ -3361,14 +3354,11 @@ var
       then sy := ' '+Format('%g',[Mean])
       else sy := '  '+Format('%g',[Mean]);
       while Length(sy) < 24 do sy := sy + ' ';
-
       fx2ValueForm.ListBox1.AddItem(sx + '|' + sy,
       TFoundPointObject.Create(px[3], Mean, py[3],
        GraphData.PlotData.PlotColor, GraphData.d2ydx2Color));
-    end;    { Display }
+    end;
 
-  var
-    dx: extended;
 
     procedure MoveLeft;
     var
@@ -3386,13 +3376,6 @@ var
       for j := 1 to 5 do px[j] := px[j] + dx;
     end;
 
-
-  const
-    xDeltaMin = 7.88860905221012E-31;  { 1/2^100 }
-
-  var
-    xDelta: extended;
-    j: integer;
 
   begin
     xDelta := 1/8;
@@ -3425,9 +3408,8 @@ var
     end;
 
     Display;
-  end;    { Interpolate f"(x) }
+  end;
 
-        { TfxCanvas.Findfx2Values }
 var
   i: integer;
   j: integer;
@@ -3859,7 +3841,7 @@ begin   { TfxCanvas.DrawNumericData }
               PlotColor := PenColor;
             end;
             DrawCartesian(PlotList);     { draw the graph }
-          end;  { nsLagrange }
+          end;
 
         nsHermite:
 
@@ -3963,7 +3945,7 @@ begin   { TfxCanvas.DrawNumericData }
 
             DrawCartesian(PlotList);     { draw the graph }
             ClearPointList(ePoints);
-          end;  { nsHermite }
+          end;
         end;  { case Data.NumericStyle of }
 
         with NumericForm do
@@ -4010,7 +3992,7 @@ begin   { TfxCanvas.DrawNumericData }
       end;  { if Points.Count > 0 then... }
     end;  { with TNumericObject(Items.Objects[i]) do if Checked[i] then... }
   end;  { with NumericForm.CheckListBox do if Count > 0 then... }
-end;    { TfxCanvas.DrawNumericData }
+end;  { TfxCanvas.DrawNumericData }
 
 
 procedure TfxCanvas.DrawTextBlocks(var rci: TGLRenderContextInfo;
@@ -4215,7 +4197,7 @@ begin  { SumSegments }
   end;
   if i < IntegList.Count -1 then Inc(i);
   with TGraphPointObject(IntegList[i]) do IntegXMax := x_phi;
-end;   { SumSegments }
+end;
 
 function TfxCanvas.SumYSegments(var aNeg, aPos: Extended): extended;
 var

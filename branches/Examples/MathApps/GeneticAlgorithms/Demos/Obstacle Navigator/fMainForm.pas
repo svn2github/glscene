@@ -48,9 +48,9 @@ type
     procedure CheckBox_AllowGaussianClick(Sender: TObject);
 
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
     function RunIndividualOnWorlds(Genotype : TGenotype; Draw : boolean) : single;
     function RunIndividual(Genotype : TGenotype; Draw : boolean) : single;
     function Shake(a: single) : single;

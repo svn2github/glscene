@@ -16,6 +16,8 @@ uses
   Vcl.StdCtrls,
 
   OpenGLTokens,
+  GLPersistentClasses,
+  GLScene,
   GLVectorTypes,
   GLBitmapFont,
   GLVectorGeometry,

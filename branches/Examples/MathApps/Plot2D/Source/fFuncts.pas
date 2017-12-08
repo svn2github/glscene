@@ -9,6 +9,7 @@ uses
   System.Variants,
   System.Classes,
   System.ImageList,
+  System.UITypes,
   System.Math,
   Vcl.ClipBrd,
   Vcl.Graphics,
@@ -1200,63 +1201,60 @@ begin
         i := Pos(#9, s);
         Inc(j);
 
-        with GraphData do
         case j of
-        1:xMin := StrToFloat(t);
-        2:yMin := StrToFloat(t);
-        3:xMax := StrToFloat(t);
-        4:yMax := StrToFloat(t);
-
-        5:SavexMin := StrToFloat(t);
-        6:SaveyMin := StrToFloat(t);
-        7:SavexMax := StrToFloat(t);
-        8:SaveyMax := StrToFloat(t);
-        9:AreaAlpha := StrToFloat(t);
-       10:FontName := t;
+        1: TryStrToFloat(t, GraphData.xMin);
+        2: TryStrToFloat(t, GraphData.yMin);
+        3: TryStrToFloat(t, GraphData.xMax);
+        4: TryStrToFloat(t, GraphData.yMax);
+        5: TryStrToFloat(t, GraphData.SavexMin);
+        6: TryStrToFloat(t, GraphData.SaveyMin);
+        7: TryStrToFloat(t, GraphData.SavexMax);
+        8: TryStrToFloat(t, GraphData.SaveyMax);
+        9: TryStrToFloat(t, GraphData.AreaAlpha);
+       10: GraphData.FontName := t;
        11:begin
-            FontStyle := [];
+            GraphData.FontStyle := [];
             if Pos('fsBold', t) > 0
-               then Include(FontStyle, fsBold);
+               then Include(GraphData.FontStyle, fsBold);
             if Pos('fsItalic', t) > 0
-               then Include(FontStyle, fsItalic);
+               then Include(GraphData.FontStyle, fsItalic);
             if Pos('fsUnderline', t) > 0
-               then Include(FontStyle, fsUnderline);
+               then Include(GraphData.FontStyle, fsUnderline);
             if Pos('fsStrikeOut', t) > 0
-            then Include(FontStyle, fsStrikeOut);
+            then Include(GraphData.FontStyle, fsStrikeOut);
           end;
-       12:FontSize := StrToInt(t);
-       13:AxisWidth := StrToInt(t);
-       14:xMinorGrad := StrToInt(t);
-       15:yMinorGrad := StrToInt(t);
-       16:xMajorGrad := StrToInt(t);
-       17:yMajorGrad := StrToInt(t);
-       18:MinorWidth := StrToInt(t);
-       19:MajorWidth := StrToInt(t);
-       20:CoordWidth := StrToInt(t);
-       21:dydxWidth := StrToInt(t);
-       22:d2ydx2Width := StrToInt(t);
-       23:IntegCount := StrToInt(t);
-       24:ydxWidth := StrToInt(t);
-       25:BackColor := StrToInt(t);
-       26:GridColor := StrToInt(t);
-       27:xAxisColor := StrToInt(t);
-       28:yAxisColor := StrToInt(t);
-       29:CoordColor := StrToInt(t);
-       30:dydxColor := StrToInt(t);
-       31:d2ydx2Color := StrToInt(t);
-       32:ydxColor := StrToInt(t);
-       33:PosAreaColor := StrToInt(t);
-       34:NegAreaColor := StrToInt(t);
-       35:Grid.xAxisStyle := TAxisStyle(StrToInt(t));
-       36:Grid.yAxisStyle := TAxisStyle(StrToInt(t));
-       37:Grid.GridStyle := TGridStyle(StrToInt(t));
+       12: GraphData.FontSize := StrToInt(t);
+       13: GraphData.AxisWidth := StrToInt(t);
+       14: TryStrToInt(t, GraphData.xMinorGrad);
+       15: TryStrToInt(t, GraphData.yMinorGrad);
+       16: TryStrToInt(t, GraphData.xMajorGrad);
+       17: TryStrToInt(t, GraphData.yMajorGrad);
+       18: TryStrToInt(t, GraphData.MinorWidth);
+       19: TryStrToInt(t, GraphData.MajorWidth);
+       20: TryStrToInt(t, GraphData.CoordWidth);
+       21: TryStrToInt(t, GraphData.dydxWidth);
+       22: TryStrToInt(t, GraphData.d2ydx2Width);
+       23: TryStrToInt(t, GraphData.IntegCount);
+       24: TryStrToInt(t, GraphData.ydxWidth);
+       25: GraphData.BackColor := StrToInt(t);
+       26: GraphData.GridColor := StrToInt(t);
+       27: GraphData.xAxisColor := StrToInt(t);
+       28: GraphData.yAxisColor := StrToInt(t);
+       29: GraphData.CoordColor := StrToInt(t);
+       30: GraphData.dydxColor := StrToInt(t);
+       31: GraphData.d2ydx2Color := StrToInt(t);
+       32: GraphData.ydxColor := StrToInt(t);
+       33: GraphData.PosAreaColor := StrToInt(t);
+       34: GraphData.NegAreaColor := StrToInt(t);
+       35: GraphData.Grid.xAxisStyle := TAxisStyle(StrToInt(t));
+       36: GraphData.Grid.yAxisStyle := TAxisStyle(StrToInt(t));
+       37: GraphData.Grid.GridStyle := TGridStyle(StrToInt(t));
         end;
       end;
-      with GridOptionsForm do
-      begin
-        xTrackBar.Position := GraphData.xMinorGrad;
-        yTrackBar.Position := GraphData.yMinorGrad;
-      end;
+      // with GridOptionsForm
+      GridOptionsForm.xTrackBar.Position := GraphData.xMinorGrad;
+      GridOptionsForm.yTrackBar.Position := GraphData.yMinorGrad;
+
       n := StrToInt(s);  { number of functions to plot }
 
       for k := 0 to n -1 do
@@ -1273,28 +1271,25 @@ begin
           Inc(j);
           with GraphData.PlotData do
           case j of
-          1:FunctStr := t;
-          2:TextStr := t;
-          3:xInc := StrToFloat(t);
-          4:PlotWidth := StrToInt(t);
-          5:PlotColor := StrToInt(t);
-          6:PhiInc := StrToFloat(t);
-          7:SegMin := StrToFloat(t);
-          8:SegMax := StrToFloat(t);
-          9:xLabel := StrToFloat(t);
-         10:yLabel := StrToFloat(t);
-         11:ShowLabel := StrToBool(t);
-         12:PlotAsFx := StrToBool(t);
-         13:IsSegment := StrToBool(t);
-         14:IsContinuous := StrToBool(t);
+          1: FunctStr := t;
+          2: TextStr := t;
+          3: TryStrToFloat(t, xInc);
+          4: PlotWidth := StrToInt(t);
+          5: PlotColor := StrToInt(t);
+          6: TryStrToFloat(t, PhiInc);
+          7: TryStrToFloat(t, SegMin);
+          8: TryStrToFloat(t, SegMax);
+          9: TryStrToFloat(t, xLabel);
+         10: TryStrToFloat(t, yLabel);
+         11: ShowLabel := StrToBool(t);
+         12: PlotAsFx := StrToBool(t);
+         13: IsSegment := StrToBool(t);
+         14: IsContinuous := StrToBool(t);
           end;
         end;
 
-        with GraphData, CheckListBox do
-        begin
-          AddItem(PlotData.TextStr, TPlotDataObject.Create(PlotData));
-          Checked[Count -1] := StrToBool(s);
-        end;
+        CheckListBox.AddItem(GraphData.PlotData.TextStr, TPlotDataObject.Create(GraphData.PlotData));
+        CheckListBox.Checked[CheckListBox.Count -1] := StrToBool(s);
       end;
 
       with NumericForm do
@@ -1317,23 +1312,20 @@ begin
             i := Pos(#9, s);
             Inc(j);
 
-            with NumericData do    { TNumericData }
-            begin
-              case j of
-              1:Name := t;
-              2:NumericStyle := TNumericStyle(StrToInt(t));
-              3:ShowPoints := StrToBool(t);
-              4:PointStyle := TPointStyle(StrToInt(t));
-              5:PointSize := StrToInt(t);
-              6:PointColor := StrToInt(t);
-              7:PlotWidth := StrToInt(t);
-              8:PlotColor := StrToInt(t);
-              9:SortXValue := StrToBool(t);
-             10:Extrapolate := StrToBool(t);
-             11:CoordsIdx := StrToInt(t);
-             12:CurveRate := StrToInt(t);     { was k0 = CurveRate/100 }
-             13:m := StrToInt(t);             { number of plot points }
-              end;
+            case j of
+            1: NumericData.Name := t;
+            2: NumericData.NumericStyle := TNumericStyle(StrToInt(t));
+            3: NumericData.ShowPoints := StrToBool(t);
+            4: NumericData.PointStyle := TPointStyle(StrToInt(t));
+            5: NumericData.PointSize := StrToInt(t);
+            6: NumericData.PointColor := StrToInt(t);
+            7: NumericData.PlotWidth := StrToInt(t);
+            8: NumericData.PlotColor := StrToInt(t);
+            9: NumericData.SortXValue := StrToBool(t);
+           10: NumericData.Extrapolate := StrToBool(t);
+           11: TryStrToInt(t, NumericData.CoordsIdx);
+           12: TryStrToInt(t, NumericData.CurveRate); { was k0 = CurveRate/100 }
+           13: m := StrToInt(t);        { number of plot points }
             end;
           end;
 
@@ -1355,15 +1347,13 @@ begin
               s := Copy(s, i +1, Length(s));
               i := Pos(#9, s);
               Inc(j);
-              if Odd(j) then vx := StrToFloat(t)
+              if Odd(j) then
+                TryStrToFloat(t, vx)
               else
               begin
-                vy := StrToFloat(t);
-                with CheckListBox do
-                begin
-                  with TNumericObject(Items.Objects[Count -1])
-                  do ControlPoints.Add(TGraphPointObject.Create(vx, vy));
-                end;
+                TryStrToFloat(t, vy);
+                with TNumericObject(CheckListBox.Items.Objects[CheckListBox.Count -1])
+                do ControlPoints.Add(TGraphPointObject.Create(vx, vy));
               end;
             end;
           end;
@@ -1388,28 +1378,25 @@ begin
           s := Copy(s, i +1, Length(s));
           i := Pos(#9, s);
           Inc(j);
-          with td do
-          begin
-            case j of
-            1:Caption := t;
-            2:xLoc := StrToFloat(t);
-            3:yLoc := StrToFloat(t);
-            4:yInc := StrToInt(t);
-            5:FontName := t;
-            6:begin
-                FontStyle := [];
-                if Pos('fsBold', t) > 0
-                then Include(FontStyle, fsBold);
-                if Pos('fsItalic', t) > 0
-                then Include(FontStyle, fsItalic);
-                if Pos('fsUnderline', t) > 0
-                then Include(FontStyle, fsUnderline);
-                if Pos('fsStrikeOut', t) > 0
-                then Include(FontStyle, fsStrikeOut);
-              end;
-            7:FontSize := StrToInt(t);
-            8:FontColor := StrToInt(t);
+          case j of
+          1: Caption := t;
+          2: TryStrToFloat(t, td.xLoc);
+          3: TryStrToFloat(t, td.yLoc);
+          4: TryStrToInt(t, td.yInc);
+          5: td.FontName := t;
+          6:begin
+              td.FontStyle := [];
+              if Pos('fsBold', t) > 0
+              then Include(td.FontStyle, fsBold);
+              if Pos('fsItalic', t) > 0
+              then Include(td.FontStyle, fsItalic);
+              if Pos('fsUnderline', t) > 0
+              then Include(td.FontStyle, fsUnderline);
+              if Pos('fsStrikeOut', t) > 0
+              then Include(td.FontStyle, fsStrikeOut);
             end;
+          7:td.FontSize := StrToInt(t);
+          8:td.FontColor := StrToInt(t);
           end;
         end;
 

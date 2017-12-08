@@ -89,7 +89,7 @@ type
     procedure Action_AboutCambrianGPExecute(Sender: TObject);
   protected
   public
-    { Public declarations }
+     
 
     procedure SetBestFitness(const Value: double);override;
     procedure SetRunState(Running : boolean); override;

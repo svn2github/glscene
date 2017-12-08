@@ -16,34 +16,13 @@ uses
   Vcl.Imaging.Jpeg,
   Vcl.Menus,
 
-
-  GLScene,
-  GLBaseClasses,
-  GLVectorFileObjects,
-  GLObjects,
-  GLWin32Viewer,
-  GLTexture,
-  GLCadencer,
-  GLSkydome,
-  GLParticleFX,
-  GLVectorGeometry,
-  GLLensFlare,
-  GLBitmapFont,
-  GLWindowsFont,
-  GLHUDObjects,
-  GLVectorTypes,
-  GLScreenSaver,
-  GLShadowPlane,
-  GLFile3DS,
-  GLGeomObjects,
-  GLMaterial,
-  GLCoordinates,
-  GLCrossPlatform,
-  GLColor,
-  GLSound,
-  GLSMBASS,
-  GLFileWAV,
-  Bass;
+  
+  GLScene, GLVectorFileObjects, GLObjects, GLWin32Viewer,
+  GLTexture, GLCadencer, GLSkydome, GLParticleFX, GLVectorGeometry,
+  GLLensFlare, GLBitmapFont, GLWindowsFont, GLHUDObjects, GLVectorTypes,
+  GLScreenSaver, GLShadowPlane, GLFile3DS, GLGeomObjects, GLMaterial,
+  GLCoordinates, GLBaseClasses, GLCrossPlatform, GLColor,
+  GLSound, GLSMBASS, GLFileWAV, Bass;
 
 type
   TMain = class(TForm)
@@ -122,7 +101,10 @@ type
     procedure miHappyNewYearClick(Sender: TObject);
     procedure FormMouseWheel(Sender: TObject; Shift: TShiftState;
       WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
+  private
+     
   public
+     
     mx, my : Integer;
     FireLight : Single;
     inPreview, inSaver : Boolean;

@@ -20,6 +20,7 @@ uses
   Vcl.ComCtrls,
 
   OpenGLTokens,
+  GLCoordinates,
   GLVectorTypes,
   GLVectorGeometry,
   fDerivativeOptions,

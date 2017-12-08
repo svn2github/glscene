@@ -38,8 +38,6 @@ object Main: TMain
     OnMouseDown = ViewerMouseDown
     OnMouseMove = ViewerMouseMove
     TabOrder = 0
-    ExplicitLeft = -8
-    ExplicitTop = -8
   end
   object SMBASS: TGLSMBASS
     Active = True
@@ -107,14 +105,14 @@ object Main: TMain
           Material.FrontProperties.Diffuse.Color = {000000001283803E000000000000803F}
           Direction.Coordinates = {441DAF3E00000000B28F703F00000000}
           Position.Coordinates = {000000000AD7233C000000000000803F}
-          CubeSize = {CDCCCC3D0AD7A33CCDCCCC3D}
+          CubeSize = {CDCCCC3D0AD7A33C0000003F}
         end
         object Cube4: TGLCube
           Material.FrontProperties.Ambient.Color = {0000000000000000000000000000803F}
           Material.FrontProperties.Diffuse.Color = {000000001283803E000000000000803F}
           Direction.Coordinates = {431DAF3E00000000B28F703F00000000}
           Position.Coordinates = {000000008FC2753C000000000000803F}
-          CubeSize = {0000003F0AD7A33C0000003F}
+          CubeSize = {0000003F0AD7A33CCDCCCC3D}
         end
       end
       object DCDecoWhite: TGLDummyCube

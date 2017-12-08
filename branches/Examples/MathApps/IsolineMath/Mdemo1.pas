@@ -21,9 +21,9 @@ type
 //    procedure TabSet1Change(Sender: TObject; NewTab: Integer;   var AllowChange: Boolean);
   private
     guest: TForm;
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
   end;
 
 var

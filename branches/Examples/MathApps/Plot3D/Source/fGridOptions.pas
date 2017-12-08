@@ -16,6 +16,8 @@ uses
   Vcl.Buttons,
 
   OpenGLTokens,
+  GLVectorTypes,
+  GLCoordinates,
   GLVectorGeometry,
 
   uGlobal,
@@ -95,7 +97,6 @@ type
     procedure EditxyGridMinyChange(Sender: TObject);
     procedure EditxyGridMaxyChange(Sender: TObject);
     procedure EditxyGridStpyChange(Sender: TObject);
-
     procedure EditxzGridMinxChange(Sender: TObject);
     procedure EditxzGridMaxxChange(Sender: TObject);
     procedure EditxzGridStpxChange(Sender: TObject);

@@ -1,7 +1,7 @@
-// ------------------------------------------------
-// Fractal3D
-// based on Ivan Lee Herring  source code
-// -------------------------------------------------
+(*
+ Fractal3D
+ based on Ivan Lee Herring  source code
+*)
 
 unit fmain;
 
@@ -11,6 +11,7 @@ uses
   Winapi.Windows,
   Winapi.Messages,
   Winapi.MMSystem,
+  System.Types,
   System.SysUtils,
   System.Classes,
   Vcl.Graphics,
@@ -207,7 +208,6 @@ type
     procedure FV_IS3840x2880Click(Sender: TObject);
     procedure FV_IS3200x2400Click(Sender: TObject);
     procedure FV_IS2560x1920Click(Sender: TObject);
-
     procedure FalseColors;
     procedure Black1Click(Sender: TObject);
     procedure Maroon1Click(Sender: TObject);
@@ -227,16 +227,13 @@ type
     procedure White1Click(Sender: TObject);
     procedure Mine1Click(Sender: TObject);
     procedure Bomb1Click(Sender: TObject);
-
     procedure FractalBlack1Click(Sender: TObject);
-
     procedure False16;
     procedure Win16SetClick(Sender: TObject);
     procedure LandformsSetClick(Sender: TObject);
     procedure ColorPicker16Click(Sender: TObject);
     procedure RGB16Click(Sender: TObject);
     procedure Loaded16Click(Sender: TObject);
-
     procedure FalseSets;
     procedure BlueMeanie256Click(Sender: TObject);
     procedure AquaMarine256Click(Sender: TObject);
@@ -248,10 +245,8 @@ type
     procedure ColorPicker256Click(Sender: TObject);
     procedure Loaded256Click(Sender: TObject);
     procedure LoadedToo56Click(Sender: TObject);
-
     procedure ImageDoneVoicesClick(Sender: TObject);
     procedure AlarmBtnClick(Sender: TObject);
-
     procedure EditCut(Sender: TObject);
     procedure EditCopy(Sender: TObject);
     procedure EditPaste(Sender: TObject);
@@ -278,14 +273,10 @@ type
     procedure DoMiner;
     procedure DoBomber;
   public
-    Drawing: Boolean; { field to track whether button was pressed }
-    Origin, MovePt: TPoint; { fields to store points }
+    Drawing: Boolean; // field to track whether button was pressed
+    Origin, MovePt: TPoint; // fields to store points
     DrawingTool: TDrawingTool;
-
-    procedure DrawShape
-    { (TopLeft, BottomRight: TPoint; AMode: TPenMode); }
-      (TopLeft, BottomRight, Tri, Quad: TPoint; AMode: TPenMode);
-
+    procedure DrawShape (TopLeft, BottomRight, Tri, Quad: TPoint; AMode: TPenMode);
     procedure ChangeFileName;
     procedure WriteDataFile;
     procedure ReadDataFile;
@@ -307,7 +298,9 @@ var
   MainForm: TMainForm;
   BitmapF: TBitmap; { temporary variable to hold the bitmap }
 
+//==================================================================
 implementation
+//==================================================================
 
 uses
   FUGlobal,
@@ -319,14 +312,12 @@ uses
   FGStyle,
   FMJPEG,
   FMResize,
-  {FFractalPreviewForm,}
+  //FFractalPreviewForm, ?
   FXYZ3D,
   Fjul,
-  FGlfrm {FGlForm, FMathGL,};
+  FGLfrm {FGlForm, FMathGL,};
 
 {$R *.DFM}
-
-
 
 {---------------------------------------------------------------------}
 procedure TMainForm.FileExit(Sender: TObject);
@@ -594,34 +585,20 @@ procedure TMainForm.SetImageSize;
 begin
   MainForm.FalseSize;
   case FYImageX of
-    640:
-      MainForm.FV_IS640x480.Checked := True;
-    800:
-      MainForm.FV_IS800x600.Checked := True;
-    1024:
-      MainForm.FV_IS1024x768.Checked := True;
-    1280:
-      MainForm.FV_IS1280x960.Checked := True;
-    1600:
-      MainForm.FV_IS1600x1200.Checked := True;
-    1920:
-      MainForm.FV_IS1920x1440.Checked := True;
-    2048:
-      MainForm.FV_IS2048x1536.Checked := True;
-    2400:
-      MainForm.FV_IS2400x1800.Checked := True;
-    2560:
-      MainForm.FV_IS2560x1920.Checked := True;
-    3072:
-      MainForm.FV_IS3072x2304.Checked := True;
-    3200:
-      MainForm.FV_IS3200x2400.Checked := True;
-    3840:
-      MainForm.FV_IS3840x2880.Checked := True;
-    4000:
-      MainForm.FV_IS4000x3000.Checked := True;
-    4096:
-      MainForm.FV_IS4096x3072.Checked := True;
+    640:  MainForm.FV_IS640x480.Checked := True;
+    800:  MainForm.FV_IS800x600.Checked := True;
+    1024: MainForm.FV_IS1024x768.Checked := True;
+    1280: MainForm.FV_IS1280x960.Checked := True;
+    1600: MainForm.FV_IS1600x1200.Checked := True;
+    1920: MainForm.FV_IS1920x1440.Checked := True;
+    2048: MainForm.FV_IS2048x1536.Checked := True;
+    2400: MainForm.FV_IS2400x1800.Checked := True;
+    2560: MainForm.FV_IS2560x1920.Checked := True;
+    3072: MainForm.FV_IS3072x2304.Checked := True;
+    3200: MainForm.FV_IS3200x2400.Checked := True;
+    3840: MainForm.FV_IS3840x2880.Checked := True;
+    4000: MainForm.FV_IS4000x3000.Checked := True;
+    4096: MainForm.FV_IS4096x3072.Checked := True;
   else
     DoMessages(24);
   end;

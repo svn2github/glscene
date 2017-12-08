@@ -69,8 +69,6 @@ type
                               Shift: TShiftState);
     procedure EditMoveKeyPress(Sender: TObject; var Key: Char);
     procedure EditMoveKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
-  private
-    { Private declarations }
   public
     procedure ShowPlotColorData;
   end;

@@ -76,7 +76,7 @@ var
 begin
   FSort := BubbleSort;
   RePopulate(nil);
-  AFile := Format('%sReadMe.RTF', [ExtractFilePath(Application.ExeName)]);
+  AFile := Format('%sReadMe.RTF', [ExtractFilePath(ParamStr(0))]);
   if FileExists(AFile) then
     redInfo.Lines.LoadFromFile(AFile);
 end;

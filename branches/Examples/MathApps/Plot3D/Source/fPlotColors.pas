@@ -19,7 +19,7 @@ uses
 
   OpenGLTokens,
   uGlobal,
-  Functions,
+  fFunctions,
   fDerivativeOptions;
 
 type
@@ -84,8 +84,7 @@ implementation
 //=======================================================================
 
 uses
-  fMain,
-  fFunctions;
+  fMain;
 
 {$R *.dfm}
 
