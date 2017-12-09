@@ -34,6 +34,10 @@
 // Activate OpenGL debug mode
 {.$DEFINE USE_OPENGL_DEBUG}
 
+// Avtivate using depricated OpenGL code
+{$DEFINE USE_DEPRECATED}
+
+
 // Activate Multithread support
 {.$DEFINE USE_MULTITHREAD}
 
@@ -62,7 +66,7 @@
 {.$DEFINE ANDROID}
 
 // Activate support X Window System
-{.$DEFINE GLS_X11_SUPPORT}
+{.$DEFINE X11_SUPPORT}
 
 // Activate OpenGL ES
 {.$DEFINE OPENGL_ES}
@@ -75,7 +79,7 @@
 // do exist
 {$IFDEF MSWINDOWS}
   {$UNDEF SUPPORT_GLX}
-  {$UNDEF GLS_X11_SUPPORT}
+  {$UNDEF X11_SUPPORT}
   {$DEFINE SUPPORT_WGL}
 {$ENDIF}
 
@@ -84,7 +88,7 @@
   {$UNDEF USE_ASM}
   {$DEFINE UNIX}
   {$DEFINE SUPPORT_GLX}
-  {$DEFINE GLS_X11_SUPPORT}
+  {$DEFINE X11_SUPPORT}
 {$ENDIF}
 
 // .NET

@@ -1694,9 +1694,9 @@ type
     {$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
     {$ENDIF EGL_SUPPORT}
 
-    {$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
+    {$IFDEF VXS_REGIONS}{$ENDREGION}{$ENDIF}
 
-    {$IFDEF VKS_REGIONS}{$REGION 'locate functions/procedures for OpenGL Utility (GLU) extensions'} {$ENDIF}
+    {$IFDEF VXS_REGIONS}{$REGION 'locate functions/procedures for OpenGL Utility (GLU) extensions'} {$ENDIF}
 
     // ###########################################################
     // locate functions and procedures for
@@ -1813,11 +1813,7 @@ procedure ClearOpenGLError;
 procedure CheckOpenGLError;
 
 //------------------------------------------------------------------
-//------------------------------------------------------------------
-//------------------------------------------------------------------
 implementation
-//------------------------------------------------------------------
-//------------------------------------------------------------------
 //------------------------------------------------------------------
 
 const

@@ -323,7 +323,7 @@ const
   cGLFILE3DS_FIXDEFAULTUPAXISY_ROTATIONVALUE = PI/2;
   CGLFILE3DS_DEFAULT_FRAME = 0;
 
-{$IFDEF VKS_REGIONS}{$REGION 'Misc functions'}{$ENDIF}
+{$IFDEF VXS_REGIONS}{$REGION 'Misc functions'}{$ENDIF}
 
 // AnimKeysClassTypeToClass
 
@@ -444,9 +444,9 @@ end;
 // ------------------ Support classes ------------------
 // ------------------
 
-{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VXS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF VKS_REGIONS}{$REGION 'TVXFile3DSAnimationKeys'}{$ENDIF}
+{$IFDEF VXS_REGIONS}{$REGION 'TVXFile3DSAnimationKeys'}{$ENDIF}
 
 procedure TVXFile3DSAnimationKeys.InterpolateFrame(var I: integer;
   var w: real; const AFrame: real);
@@ -581,9 +581,9 @@ begin
     Reader.Read(FKeys[0], FNumKeys * SizeOf(TKeyHeader3DS));
 end;
 
-{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VXS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF VKS_REGIONS}{$REGION 'TVXFile3DSScaleAnimationKeys'}{$ENDIF}
+{$IFDEF VXS_REGIONS}{$REGION 'TVXFile3DSScaleAnimationKeys'}{$ENDIF}
 
 procedure TVXFile3DSScaleAnimationKeys.LoadData(const ANumKeys: integer;
   const Keys: PKeyHeaderList; const AData: Pointer);
@@ -655,9 +655,9 @@ begin
     Reader.Read(FScale[0], FNumKeys * SizeOf(TPoint3DS));
 end;
 
-{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VXS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF VKS_REGIONS}{$REGION 'TVXFile3DSRotationAnimationKeys'}{$ENDIF}
+{$IFDEF VXS_REGIONS}{$REGION 'TVXFile3DSRotationAnimationKeys'}{$ENDIF}
 
 procedure TVXFile3DSRotationAnimationKeys.LoadData(const ANumKeys: integer;
   const Keys: PKeyHeaderList; const AData: Pointer);
@@ -740,9 +740,9 @@ begin
     Reader.Read(FRot[0], FNumKeys * SizeOf(TKFRotKey3DS));
 end;
 
-{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VXS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF VKS_REGIONS}{$REGION 'TVXFile3DSPositionAnimationKeys'}{$ENDIF}
+{$IFDEF VXS_REGIONS}{$REGION 'TVXFile3DSPositionAnimationKeys'}{$ENDIF}
 
 procedure TVXFile3DSPositionAnimationKeys.LoadData(const ANumKeys: integer;
   const Keys: PKeyHeaderList; const AData: Pointer);
@@ -798,9 +798,9 @@ begin
     Reader.Read(FPos[0], FNumKeys * SizeOf(TPoint3DS));
 end;
 
-{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VXS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF VKS_REGIONS}{$REGION 'TVXFile3DSColorAnimationKeys'}{$ENDIF}
+{$IFDEF VXS_REGIONS}{$REGION 'TVXFile3DSColorAnimationKeys'}{$ENDIF}
 
 procedure TVXFile3DSColorAnimationKeys.LoadData(const ANumKeys: integer;
   const Keys: PKeyHeaderList; const AData: Pointer);
@@ -850,9 +850,9 @@ begin
     Reader.Read(FCol[0], FNumKeys * SizeOf(TFColor3DS));
 end;
 
-{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VXS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF VKS_REGIONS}{$REGION 'TTVXFile3DSPositionAnimationKeys'}{$ENDIF}
+{$IFDEF VXS_REGIONS}{$REGION 'TTVXFile3DSPositionAnimationKeys'}{$ENDIF}
 
 procedure TTVXFile3DSPositionAnimationKeys.LoadData(const ANumKeys: integer;
   const Keys: PKeyHeaderList; const AData: Pointer);
@@ -909,9 +909,9 @@ begin
     Reader.Read(FTPos[0], FNumKeys * SizeOf(TPoint3DS));
 end;
 
-{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VXS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF VKS_REGIONS}{$REGION 'TVXFile3DSSpotLightCutOffAnimationKeys'}{$ENDIF}
+{$IFDEF VXS_REGIONS}{$REGION 'TVXFile3DSSpotLightCutOffAnimationKeys'}{$ENDIF}
 
 procedure TVXFile3DSSpotLightCutOffAnimationKeys.LoadData(const ANumKeys: integer;
   const Keys: PKeyHeaderList; const AData: Pointer);
@@ -961,9 +961,9 @@ begin
     Reader.Read(FFall[0], FNumKeys * SizeOf(single));
 end;
 
-{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VXS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF VKS_REGIONS}{$REGION 'TVXFile3DSLightHotSpotAnimationKeys'}{$ENDIF}
+{$IFDEF VXS_REGIONS}{$REGION 'TVXFile3DSLightHotSpotAnimationKeys'}{$ENDIF}
 
 procedure TVXFile3DSLightHotSpotAnimationKeys.LoadData(const ANumKeys: integer;
   const Keys: PKeyHeaderList; const AData: Pointer);
@@ -1012,9 +1012,9 @@ begin
     Reader.Read(FHot[0], FNumKeys * SizeOf(single));
 end;
 
-{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VXS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF VKS_REGIONS}{$REGION 'TVXFile3DSRollAnimationKeys'}{$ENDIF}
+{$IFDEF VXS_REGIONS}{$REGION 'TVXFile3DSRollAnimationKeys'}{$ENDIF}
 
 procedure TVXFile3DSRollAnimationKeys.LoadData(const ANumKeys: integer;
   const Keys: PKeyHeaderList; const AData: Pointer);
@@ -1074,9 +1074,9 @@ begin
   FAnimKeysList[ind] := AItem;
 end;
 
-{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VXS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF VKS_REGIONS}{$REGION 'TVXFile3DSAnimationKeyList'}{$ENDIF}
+{$IFDEF VXS_REGIONS}{$REGION 'TVXFile3DSAnimationKeyList'}{$ENDIF}
 
 procedure TVXFile3DSAnimationKeyList.ApplyAnimKeys(
   var DataTransf: TVXFile3DSAnimationData; const AFrame: real);
@@ -1152,9 +1152,9 @@ begin
   inherited Destroy;
 end;
 
-{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VXS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF VKS_REGIONS}{$REGION 'TVXFile3DSDummyObject'}{$ENDIF}
+{$IFDEF VXS_REGIONS}{$REGION 'TVXFile3DSDummyObject'}{$ENDIF}
 
 constructor TVXFile3DSDummyObject.Create;
 begin
@@ -1282,9 +1282,9 @@ begin
   inherited;
 end;
 
-{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VXS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF VKS_REGIONS}{$REGION 'TVXFile3DSMeshObject'}{$ENDIF}
+{$IFDEF VXS_REGIONS}{$REGION 'TVXFile3DSMeshObject'}{$ENDIF}
 
 procedure TVXFile3DSMeshObject.LoadAnimation(const AData: Pointer);
 var
@@ -1358,9 +1358,9 @@ begin
   glPopMatrix;
 end;
 
-{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VXS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF VKS_REGIONS}{$REGION 'TVXFile3DSOmniLightObject'}{$ENDIF}
+{$IFDEF VXS_REGIONS}{$REGION 'TVXFile3DSOmniLightObject'}{$ENDIF}
 
 constructor TVXFile3DSOmniLightObject.Create;
 begin
@@ -1471,9 +1471,9 @@ begin
   inherited;
 end;
 
-{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VXS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF VKS_REGIONS}{$REGION 'TVXFile3DSSpotLightObject'}{$ENDIF}
+{$IFDEF VXS_REGIONS}{$REGION 'TVXFile3DSSpotLightObject'}{$ENDIF}
 
 procedure TVXFile3DSSpotLightObject.LoadData(const AOwner: TVXBaseMesh;
   const AData: PLight3DS);
@@ -1527,9 +1527,9 @@ begin
   FLightSrc.HotSpot := FAnimTransf.HotSpot / 2;
 end;
 
-{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VXS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF VKS_REGIONS}{$REGION 'TVXFile3DSCameraObject'}{$ENDIF}
+{$IFDEF VXS_REGIONS}{$REGION 'TVXFile3DSCameraObject'}{$ENDIF}
 
 constructor TVXFile3DSCameraObject.Create;
 begin
@@ -1633,9 +1633,9 @@ begin
   inherited;
 end;
 
-{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VXS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF VKS_REGIONS}{$REGION 'TVX3DSVectorFile'}{$ENDIF}
+{$IFDEF VXS_REGIONS}{$REGION 'TVX3DSVectorFile'}{$ENDIF}
 
 // Capabilities
 
@@ -1659,7 +1659,7 @@ var
   hasLightmap: boolean;
 
 
-  {$IFDEF VKS_REGIONS}{$REGION 'TVX3DSVectorFile.LoadFromStream Local functions'}{$ENDIF}
+  {$IFDEF VXS_REGIONS}{$REGION 'TVX3DSVectorFile.LoadFromStream Local functions'}{$ENDIF}
   //--------------- local functions -------------------------------------------
 
   function GetOrAllocateMaterial(materials: TMaterialList; const Name: string): string;
@@ -1940,7 +1940,7 @@ var
 
   //----------------------------------------------------------------------
 
-{$IFDEF VKS_NO_ASM}
+{$IFDEF VXS_NO_ASM}
   function IsVertexMarked(P: PByteArray; Index: word): boolean; inline;
     // tests the Index-th bit, returns True if set else False
   var
@@ -1961,7 +1961,7 @@ var
 
   //---------------------------------------------------------------------------
 
-{$IFDEF VKS_NO_ASM}
+{$IFDEF VXS_NO_ASM}
   function MarkVertex(P: PByteArray; Index: word): boolean; inline;
     // sets the Index-th bit and return True if it was already set else False
   var
@@ -2095,7 +2095,7 @@ var
         end;
   end;
 
-  {$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
+  {$IFDEF VXS_REGIONS}{$ENDREGION}{$ENDIF}
 
 var
   CurrentMotionIndex, iMaterial, i, j, x: integer;
@@ -2420,7 +2420,7 @@ begin
     end;
 end;
 
-{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VXS_REGIONS}{$ENDREGION}{$ENDIF}
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------

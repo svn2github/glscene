@@ -12,7 +12,7 @@
   being prepared.  Although this keeps the framerate up, it may cause holes in the
   terrain to show, if the HeightDataThreads cant keep up with the TerrainRenderer's
   requests for new tiles.
-  The history is logged in a previous version of the unit.
+      The whole history is logged in previous versions of the unit
 
 }
 
@@ -32,16 +32,12 @@ type
   TVXAsyncHDS = class;
   TIdleEvent = procedure(Sender: TVXAsyncHDS; TilesUpdated: boolean) of object;
   TNewTilePreparedEvent = procedure(Sender: TVXAsyncHDS;
-    HeightData: TVXHeightData) of object;
-  // a tile was updated (called INSIDE the sub-thread?)
+     HeightData: TVXHeightData) of object;  // a tile was updated (called INSIDE the sub-thread?)
 
-  { TUseDirtyTiles determines if/how dirty tiles are displayed and when they are released.
-    TUseDirtyTiles
-
+  { Determines if/how dirty tiles are displayed and when they are released.
     When a tile is maked as dirty, a replacement is queued immediately.
     However, the replacement cant be used until the HDThread has finished preparing it.
     Dirty tiles can be deleted as soon as they are no longer used/displayed.
-
     Possible states for a TUseDirtyTiles.
     hdsNever :            Dirty tiles get released immediately, leaving a hole in the terrain, until the replacement is hdsReady.
     hdsUntilReplaced :    Dirty tiles are used, until the HDThread has finished preparing the queued replacement.
@@ -56,7 +52,6 @@ type
     FOnNewTilePrepared: TNewTilePreparedEvent;
     FUseDirtyTiles: TUseDirtyTiles;
     FTilesUpdated: boolean;
-  protected
   public
     // TilesUpdated:boolean;
     constructor Create(AOwner: TComponent); override;
@@ -66,22 +61,21 @@ type
     procedure ThreadIsIdle; override;
     procedure NewTilePrepared(HeightData: TVXHeightData);
     function ThreadCount: integer;
+	  (*  Wait for all running threads to finish.
+          Should only be called after setting Active to false,
+          to prevent new threads from starting. *)
     procedure WaitFor(TimeOut: integer = 2000);
     // procedure NotifyChange(Sender : TObject); override;
-    function TilesUpdated: boolean;
-    // Returns true if tiles have been updated since the flag was last reset
-    procedure TilesUpdatedFlagReset;
-    // sets the TilesUpdatedFlag to false; (is ThreadSafe)
+      (* This function prevents the user from trying to write directly to this variable.
+        FTilesUpdated if NOT threadsafe and should only be reset with TilesUpdatedFlagReset. *)
+    function TilesUpdated: boolean;  // Returns true if tiles have been updated since the flag was last reset
+    procedure TilesUpdatedFlagReset; // sets the TilesUpdatedFlag to false; (is ThreadSafe)
   published
     property OnIdle: TIdleEvent read FOnIdleEvent write FOnIdleEvent;
-    property OnNewTilePrepared: TNewTilePreparedEvent read FOnNewTilePrepared
-      write FOnNewTilePrepared;
-    property UseDirtyTiles: TUseDirtyTiles read FUseDirtyTiles
-      write FUseDirtyTiles;
-    property MaxThreads;
-    // sets the maximum number of simultaineous threads that will prepare tiles.(>1 is rarely needed)
-    property Active;
-    // set to false, to ignore new queued tiles.(Partially processed tiles will still be completed)
+    property OnNewTilePrepared: TNewTilePreparedEvent read FOnNewTilePrepared  write FOnNewTilePrepared;
+    property UseDirtyTiles: TUseDirtyTiles read FUseDirtyTiles write FUseDirtyTiles;
+    property MaxThreads; // sets the maximum number of simultaineous threads that will prepare tiles.(>1 is rarely needed)
+    property Active;  // set to false, to ignore new queued tiles.(Partially processed tiles will still be completed)
   end;
 
   TVXAsyncHDThread = class(TVXHeightDataThread)
@@ -153,8 +147,7 @@ begin
   end
   else
   begin // --MaxThreads>0 : start the thread and go back to start the next one--
-    HeightData.DataState := hdsPreparing;
-    // prevent other threads from preparing this HD.
+    HeightData.DataState := hdsPreparing; // prevent other threads from preparing this HD.
     HDThread := TVXAsyncHDThread.Create(true);
     HDThread.Owner := self;
     HDThread.HDS := self.HeightDataSource;
@@ -228,8 +221,6 @@ begin
   end;
 end;
 
-// Count the active threads
-//
 function TVXAsyncHDS.ThreadCount: integer;
 var
   lst: TList;
@@ -250,10 +241,6 @@ begin
   result := TdCtr;
 end;
 
-// WaitFor
-// Wait for all running threads to finish.
-// Should only be called after setting Active to false,
-// to prevent new threads from starting.
 procedure TVXAsyncHDS.WaitFor(TimeOut: integer = 2000);
 var
   OutTime: TDateTime;
@@ -274,8 +261,6 @@ end;
   end;
 }
 
-// This function prevents the user from trying to write directly to this variable.
-// FTilesUpdated if NOT threadsafe and should only be reset with TilesUpdatedFlagReset.
 function TVXAsyncHDS.TilesUpdated: boolean;
 begin
   result := FTilesUpdated;

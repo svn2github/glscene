@@ -470,6 +470,8 @@ begin
   Count := 0;
 end;
 
+// ------------------------------------------------------------------------------
+
 destructor TVXBuffer<_TYPE_>.Destroy;
 begin
   glDeleteBuffers(1, @_ID);

@@ -31,11 +31,11 @@
 // successor clauses in the FAR, DOD or NASA FAR Supplement. Unpublished -
 // rights reserved under the Copyright Laws of the United States.
 // -------------------------------------------------------------
-unit OpenGL1x;
+unit VXS.OpenGL1x;
 
 interface
 
-{$I GLScene.inc}
+{$I VXScene.inc}
 
 uses
   System.SysUtils,
@@ -44,7 +44,7 @@ uses
   {$ENDIF}
   {$IFDEF WIN64} System.Math, {$ENDIF}
   {$IFDEF LINUX} X, XLib, XUtil, {$ENDIF}
-  GLVectorTypes;
+  VXS.VectorTypes;
 
 const
 {$IFDEF MSWINDOWS}
@@ -73,7 +73,7 @@ type
 
    GLenum      = Cardinal;
    {$EXTERNALSYM GLenum}
-   TGLenum     = Cardinal; 
+   TGLenum     = Cardinal;
    PGLenum     = ^TGLenum;
 
   GLboolean = BYTEBOOL;

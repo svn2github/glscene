@@ -14,9 +14,16 @@ unit USMDStuff;
 interface
 
 uses
-  System.Classes, System.SysUtils,
-   
-  GLVectorFileObjects, GLVectorGeometry, GLVectorTypes;
+  System.Classes,
+  System.SysUtils,
+  System.Math,
+
+  GLScene,
+  GLCoordinates,
+  GLVectorLists,
+  GLVectorFileObjects,
+  GLVectorGeometry,
+  GLVectorTypes;
 
 // LOADING STUFF
 procedure LoadQC(QCFilename: string; Ac: TGLActor; LoadReference: Boolean;

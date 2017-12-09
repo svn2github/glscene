@@ -1418,7 +1418,7 @@ begin
       Include(FListStates[FCurrentList], sttEnable)
     else
       Exclude(FStates, aState);
-{$IFDEF VKS_CACHE_MISS_CHECK}
+{$IFDEF VXS_CACHE_MISS_CHECK}
     if not glIsEnabled(cGLStateToGLEnum[aState].VKConst) then
       ShowMessages(strStateCashMissing + 'Disable');
 {$ENDIF}
@@ -2836,11 +2836,11 @@ begin
 end;
 
 procedure TVXStateCache.SetStencilOp(const fail, zfail, zpass: TStencilOp);
-{$IFDEF VKS_CACHE_MISS_CHECK}
+{$IFDEF VXS_CACHE_MISS_CHECK}
 var I: GLuint;
 {$ENDIF}
 begin
-{$IFDEF VKS_CACHE_MISS_CHECK}
+{$IFDEF VXS_CACHE_MISS_CHECK}
   glGetIntegerv(GL_STENCIL_FAIL, @I);
   if cGLStencilOpToGLEnum[FStencilFail] <> I then
     ShowMessages(strStateCashMissing + 'Stencil fail');
@@ -2905,11 +2905,11 @@ begin
 end;
 
 procedure TVXStateCache.SetStencilWriteMask(const Value: GLuint);
-{$IFDEF VKS_CACHE_MISS_CHECK}
+{$IFDEF VXS_CACHE_MISS_CHECK}
 var I: GLuint;
 {$ENDIF}
 begin
-{$IFDEF VKS_CACHE_MISS_CHECK}
+{$IFDEF VXS_CACHE_MISS_CHECK}
   glGetIntegerv(GL_STENCIL_WRITEMASK, @I);
   if FStencilWriteMask <> I then
     ShowMessages(strStateCashMissing + 'Stencil write mask');

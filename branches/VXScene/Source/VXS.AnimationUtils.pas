@@ -2,8 +2,12 @@
 // VXScene Component Library, based on GLScene http://glscene.sourceforge.net 
 //
 {
-  Main purpose is to give an easy way to create an interpolation.
-  The history is logged in a former version of the unit.
+  Main purpose is to give an easy way to create an interpolation. 
+
+  History :  
+     27/06/12 - YP - First pascal implementation of the tweener library
+                      http://code.google.com/p/tweener/
+   
 }
 
 unit VXS.AnimationUtils;
@@ -79,28 +83,28 @@ type
 
 {.$REGION 'ease functions'}
 
-(**
- * Easing equation function for a simple linear tweening, with no easing.
- *
- * @param t		Current time (in frames or seconds).
- * @param b		Starting value.
- * @param c		Change needed in value.
- * @param d		Expected easing duration (in frames or seconds).
- * @Result		The correct value.
+(*
+  Easing equation function for a simple linear tweening, with no easing.
+ 
+  t		Current time (in frames or seconds).
+  b		Starting value.
+  c		Change needed in value.
+  d		Expected easing duration (in frames or seconds).
+  Result		The correct value.
  *)
 function easeNone (t:Single; b:Single; c:Single; d:Single):Single;
 begin
   Result := c*t/d + b;
 end;
 
-(**
- * Easing equation function for a quadratic (t^2) easing in: accelerating from zero velocity.
- *
- * @param t		Current time (in frames or seconds).
- * @param b		Starting value.
- * @param c		Change needed in value.
- * @param d		Expected easing duration (in frames or seconds).
- * @Result		The correct value.
+(*
+  Easing equation function for a quadratic (t^2) easing in: accelerating from zero velocity.
+ 
+  t		Current time (in frames or seconds).
+  b		Starting value.
+  c		Change needed in value.
+  d		Expected easing duration (in frames or seconds).
+  Result		The correct value.
  *)
 function easeInQuad (t:Single; b:Single; c:Single; d:Single):Single;
 begin
@@ -108,14 +112,14 @@ begin
   Result := c*t*t + b;
 end;
 
-(**
- * Easing equation function for a quadratic (t^2) easing out: decelerating to zero velocity.
- *
- * @param t		Current time (in frames or seconds).
- * @param b		Starting value.
- * @param c		Change needed in value.
- * @param d		Expected easing duration (in frames or seconds).
- * @Result		The correct value.
+(*
+  Easing equation function for a quadratic (t^2) easing out: decelerating to zero velocity.
+ 
+  t		Current time (in frames or seconds).
+  b		Starting value.
+  c		Change needed in value.
+  d		Expected easing duration (in frames or seconds).
+  Result		The correct value.
  *)
 function easeOutQuad (t:Single; b:Single; c:Single; d:Single):Single;
 begin
@@ -123,14 +127,14 @@ begin
   Result := -c *t*(t-2) + b;
 end;
 
-(**
- * Easing equation function for a quadratic (t^2) easing in/out: acceleration until halfway, then deceleration.
- *
- * @param t		Current time (in frames or seconds).
- * @param b		Starting value.
- * @param c		Change needed in value.
- * @param d		Expected easing duration (in frames or seconds).
- * @Result		The correct value.
+(*
+  Easing equation function for a quadratic (t^2) easing in/out: acceleration until halfway, then deceleration.
+ 
+  t		Current time (in frames or seconds).
+  b		Starting value.
+  c		Change needed in value.
+  d		Expected easing duration (in frames or seconds).
+  Result		The correct value.
  *)
 function easeInOutQuad (t:Single; b:Single; c:Single; d:Single):Single;
 begin
@@ -144,14 +148,14 @@ begin
   end;
 end;
 
-(**
- * Easing equation function for a quadratic (t^2) easing out/in: deceleration until halfway, then acceleration.
- *
- * @param t		Current time (in frames or seconds).
- * @param b		Starting value.
- * @param c		Change needed in value.
- * @param d		Expected easing duration (in frames or seconds).
- * @Result		The correct value.
+(*
+  Easing equation function for a quadratic (t^2) easing out/in: deceleration until halfway, then acceleration.
+ 
+  t		Current time (in frames or seconds).
+  b		Starting value.
+  c		Change needed in value.
+  d		Expected easing duration (in frames or seconds).
+  Result		The correct value.
  *)
 function easeOutInQuad (t:Single; b:Single; c:Single; d:Single):Single;
 begin
@@ -161,14 +165,14 @@ begin
     Result := easeInQuad((t*2)-d, b+c/2, c/2, d);
 end;
 
-(**
- * Easing equation function for a cubic (t^3) easing in: accelerating from zero velocity.
- *
- * @param t		Current time (in frames or seconds).
- * @param b		Starting value.
- * @param c		Change needed in value.
- * @param d		Expected easing duration (in frames or seconds).
- * @Result		The correct value.
+(*
+   Easing equation function for a cubic (t^3) easing in: accelerating from zero velocity.
+ 
+   t		Current time (in frames or seconds).
+   b		Starting value.
+   c		Change needed in value.
+   d		Expected easing duration (in frames or seconds).
+   Result		The correct value.
  *)
 function easeInCubic (t:Single; b:Single; c:Single; d:Single):Single;
 begin
@@ -176,14 +180,14 @@ begin
   Result := c*t*t*t + b;
 end;
 
-(**
- * Easing equation function for a cubic (t^3) easing out: decelerating from zero velocity.
- *
- * @param t		Current time (in frames or seconds).
- * @param b		Starting value.
- * @param c		Change needed in value.
- * @param d		Expected easing duration (in frames or seconds).
- * @Result		The correct value.
+(*
+  Easing equation function for a cubic (t^3) easing out: decelerating from zero velocity.
+ 
+   t		Current time (in frames or seconds).
+   b		Starting value.
+   c		Change needed in value.
+   d		Expected easing duration (in frames or seconds).
+   Result		The correct value.
  *)
 function easeOutCubic (t:Single; b:Single; c:Single; d:Single):Single;
 begin
@@ -191,14 +195,14 @@ begin
   Result := c*(t*t*t + 1) + b;
 end;
 
-(**
- * Easing equation function for a cubic (t^3) easing in/out: acceleration until halfway, then deceleration.
- *
- * @param t		Current time (in frames or seconds).
- * @param b		Starting value.
- * @param c		Change needed in value.
- * @param d		Expected easing duration (in frames or seconds).
- * @Result		The correct value.
+(*
+  Easing equation function for a cubic (t^3) easing in/out: acceleration until halfway, then deceleration.
+ 
+   t		Current time (in frames or seconds).
+   b		Starting value.
+   c		Change needed in value.
+   d		Expected easing duration (in frames or seconds).
+   Result		The correct value.
  *)
 function easeInOutCubic (t:Single; b:Single; c:Single; d:Single):Single;
 begin
@@ -212,14 +216,14 @@ begin
   end;
 end;
 
-(**
- * Easing equation function for a cubic (t^3) easing out/in: deceleration until halfway, then acceleration.
- *
- * @param t		Current time (in frames or seconds).
- * @param b		Starting value.
- * @param c		Change needed in value.
- * @param d		Expected easing duration (in frames or seconds).
- * @Result		The correct value.
+(*
+  Easing equation function for a cubic (t^3) easing out/in: deceleration until halfway, then acceleration.
+ 
+   t		Current time (in frames or seconds).
+   b		Starting value.
+   c		Change needed in value.
+   d		Expected easing duration (in frames or seconds).
+   Result		The correct value.
  *)
 function easeOutInCubic (t:Single; b:Single; c:Single; d:Single):Single;
 begin
@@ -229,14 +233,14 @@ begin
     Result := easeInCubic((t*2)-d, b+c/2, c/2, d);
 end;
 
-(**
- * Easing equation function for a quartic (t^4) easing in: accelerating from zero velocity.
- *
- * @param t		Current time (in frames or seconds).
- * @param b		Starting value.
- * @param c		Change needed in value.
- * @param d		Expected easing duration (in frames or seconds).
- * @Result		The correct value.
+(*
+  Easing equation function for a quartic (t^4) easing in: accelerating from zero velocity.
+ 
+   t		Current time (in frames or seconds).
+   b		Starting value.
+   c		Change needed in value.
+   d		Expected easing duration (in frames or seconds).
+   Result		The correct value.
  *)
 function easeInQuart (t:Single; b:Single; c:Single; d:Single):Single;
 begin
@@ -244,14 +248,14 @@ begin
   Result := c*t*t*t*t + b;
 end;
 
-(**
- * Easing equation function for a quartic (t^4) easing out: decelerating from zero velocity.
- *
- * @param t		Current time (in frames or seconds).
- * @param b		Starting value.
- * @param c		Change needed in value.
- * @param d		Expected easing duration (in frames or seconds).
- * @Result		The correct value.
+(*
+  Easing equation function for a quartic (t^4) easing out: decelerating from zero velocity.
+ 
+   t		Current time (in frames or seconds).
+   b		Starting value.
+   c		Change needed in value.
+   d		Expected easing duration (in frames or seconds).
+   Result		The correct value.
  *)
 function easeOutQuart (t:Single; b:Single; c:Single; d:Single):Single;
 begin
@@ -259,14 +263,14 @@ begin
   Result := -c * (t*t*t*t - 1) + b;
 end;
 
-(**
- * Easing equation function for a quartic (t^4) easing in/out: acceleration until halfway, then deceleration.
- *
- * @param t		Current time (in frames or seconds).
- * @param b		Starting value.
- * @param c		Change needed in value.
- * @param d		Expected easing duration (in frames or seconds).
- * @Result		The correct value.
+(*
+  Easing equation function for a quartic (t^4) easing in/out: acceleration until halfway, then deceleration.
+ 
+   t		Current time (in frames or seconds).
+   b		Starting value.
+   c		Change needed in value.
+   d		Expected easing duration (in frames or seconds).
+   Result		The correct value.
  *)
 function easeInOutQuart (t:Single; b:Single; c:Single; d:Single):Single;
 begin
@@ -280,14 +284,14 @@ begin
   end;
 end;
 
-(**
- * Easing equation function for a quartic (t^4) easing out/in: deceleration until halfway, then acceleration.
- *
- * @param t		Current time (in frames or seconds).
- * @param b		Starting value.
- * @param c		Change needed in value.
- * @param d		Expected easing duration (in frames or seconds).
- * @Result		The correct value.
+(*
+  Easing equation function for a quartic (t^4) easing out/in: deceleration until halfway, then acceleration.
+ 
+   t		Current time (in frames or seconds).
+   b		Starting value.
+   c		Change needed in value.
+   d		Expected easing duration (in frames or seconds).
+   Result		The correct value.
  *)
 function easeOutInQuart (t:Single; b:Single; c:Single; d:Single):Single;
 begin
@@ -297,14 +301,14 @@ begin
     Result := easeInQuart((t*2)-d, b+c/2, c/2, d);
 end;
 
-(**
- * Easing equation function for a quintic (t^5) easing in: accelerating from zero velocity.
- *
- * @param t		Current time (in frames or seconds).
- * @param b		Starting value.
- * @param c		Change needed in value.
- * @param d		Expected easing duration (in frames or seconds).
- * @Result		The correct value.
+(*
+  Easing equation function for a quintic (t^5) easing in: accelerating from zero velocity.
+ 
+   t		Current time (in frames or seconds).
+   b		Starting value.
+   c		Change needed in value.
+   d		Expected easing duration (in frames or seconds).
+   Result		The correct value.
  *)
 function easeInQuint (t:Single; b:Single; c:Single; d:Single):Single;
 begin
@@ -312,14 +316,14 @@ begin
   Result := c*t*t*t*t*t + b;
 end;
 
-(**
- * Easing equation function for a quintic (t^5) easing out: decelerating from zero velocity.
- *
- * @param t		Current time (in frames or seconds).
- * @param b		Starting value.
- * @param c		Change needed in value.
- * @param d		Expected easing duration (in frames or seconds).
- * @Result		The correct value.
+(*
+   Easing equation function for a quintic (t^5) easing out: decelerating from zero velocity.
+ 
+   t		Current time (in frames or seconds).
+   b		Starting value.
+   c		Change needed in value.
+   d		Expected easing duration (in frames or seconds).
+   Result		The correct value.
  *)
 function easeOutQuint (t:Single; b:Single; c:Single; d:Single):Single;
 begin
@@ -327,14 +331,14 @@ begin
   Result := c*(t*t*t*t*t + 1) + b;
 end;
 
-(**
- * Easing equation function for a quintic (t^5) easing in/out: acceleration until halfway, then deceleration.
- *
- * @param t		Current time (in frames or seconds).
- * @param b		Starting value.
- * @param c		Change needed in value.
- * @param d		Expected easing duration (in frames or seconds).
- * @Result		The correct value.
+(*
+  Easing equation function for a quintic (t^5) easing in/out: acceleration until halfway, then deceleration.
+ 
+   t		Current time (in frames or seconds).
+   b		Starting value.
+   c		Change needed in value.
+   d		Expected easing duration (in frames or seconds).
+   Result		The correct value.
  *)
 function easeInOutQuint (t:Single; b:Single; c:Single; d:Single):Single;
 begin
@@ -348,14 +352,14 @@ begin
   end;
 end;
 
-(**
- * Easing equation function for a quintic (t^5) easing out/in: deceleration until halfway, then acceleration.
- *
- * @param t		Current time (in frames or seconds).
- * @param b		Starting value.
- * @param c		Change needed in value.
- * @param d		Expected easing duration (in frames or seconds).
- * @Result		The correct value.
+(*
+   Easing equation function for a quintic (t^5) easing out/in: deceleration until halfway, then acceleration.
+ 
+   t		Current time (in frames or seconds).
+   b		Starting value.
+   c		Change needed in value.
+   d		Expected easing duration (in frames or seconds).
+   Result		The correct value.
  *)
 function easeOutInQuint (t:Single; b:Single; c:Single; d:Single):Single;
 begin
@@ -365,56 +369,56 @@ begin
     Result := easeInQuint((t*2)-d, b+c/2, c/2, d);
 end;
 
-(**
- * Easing equation function for a sinusoidal (sin(t)) easing in: accelerating from zero velocity.
- *
- * @param t		Current time (in frames or seconds).
- * @param b		Starting value.
- * @param c		Change needed in value.
- * @param d		Expected easing duration (in frames or seconds).
- * @Result		The correct value.
+(*
+   Easing equation function for a sinusoidal (sin(t)) easing in: accelerating from zero velocity.
+ 
+   t		Current time (in frames or seconds).
+   b		Starting value.
+   c		Change needed in value.
+   d		Expected easing duration (in frames or seconds).
+   Result		The correct value.
  *)
 function easeInSine (t:Single; b:Single; c:Single; d:Single):Single;
 begin
   Result := -c * cos(t/d * (PI/2)) + c + b;
 end;
 
-(**
- * Easing equation function for a sinusoidal (sin(t)) easing out: decelerating from zero velocity.
- *
- * @param t		Current time (in frames or seconds).
- * @param b		Starting value.
- * @param c		Change needed in value.
- * @param d		Expected easing duration (in frames or seconds).
- * @Result		The correct value.
+(*
+   Easing equation function for a sinusoidal (sin(t)) easing out: decelerating from zero velocity.
+ 
+   t		Current time (in frames or seconds).
+   b		Starting value.
+   c		Change needed in value.
+   d		Expected easing duration (in frames or seconds).
+   Result		The correct value.
  *)
 function easeOutSine (t:Single; b:Single; c:Single; d:Single):Single;
 begin
   Result := c * sin(t/d * (PI/2)) + b;
 end;
 
-(**
- * Easing equation function for a sinusoidal (sin(t)) easing in/out: acceleration until halfway, then deceleration.
- *
- * @param t		Current time (in frames or seconds).
- * @param b		Starting value.
- * @param c		Change needed in value.
- * @param d		Expected easing duration (in frames or seconds).
- * @Result		The correct value.
+(*
+   Easing equation function for a sinusoidal (sin(t)) easing in/out: acceleration until halfway, then deceleration.
+ 
+   t		Current time (in frames or seconds).
+   b		Starting value.
+   c		Change needed in value.
+   d		Expected easing duration (in frames or seconds).
+   Result		The correct value.
  *)
 function easeInOutSine (t:Single; b:Single; c:Single; d:Single):Single;
 begin
   Result := -c/2 * (cos(PI*t/d) - 1) + b;
 end;
 
-(**
- * Easing equation function for a sinusoidal (sin(t)) easing out/in: deceleration until halfway, then acceleration.
- *
- * @param t		Current time (in frames or seconds).
- * @param b		Starting value.
- * @param c		Change needed in value.
- * @param d		Expected easing duration (in frames or seconds).
- * @Result		The correct value.
+(*
+   Easing equation function for a sinusoidal (sin(t)) easing out/in: deceleration until halfway, then acceleration.
+ 
+   t		Current time (in frames or seconds).
+   b		Starting value.
+   c		Change needed in value.
+   d		Expected easing duration (in frames or seconds).
+   Result		The correct value.
  *)
 function easeOutInSine (t:Single; b:Single; c:Single; d:Single):Single;
 begin
@@ -424,14 +428,14 @@ begin
     Result := easeInSine((t*2)-d, b+c/2, c/2, d);
 end;
 
-(**
- * Easing equation function for an exponential (2^t) easing in: accelerating from zero velocity.
- *
- * @param t		Current time (in frames or seconds).
- * @param b		Starting value.
- * @param c		Change needed in value.
- * @param d		Expected easing duration (in frames or seconds).
- * @Result		The correct value.
+(*
+   Easing equation function for an exponential (2^t) easing in: accelerating from zero velocity.
+ 
+   t		Current time (in frames or seconds).
+   b		Starting value.
+   c		Change needed in value.
+   d		Expected easing duration (in frames or seconds).
+   Result		The correct value.
  *)
 function easeInExpo (t:Single; b:Single; c:Single; d:Single):Single;
 begin
@@ -441,14 +445,14 @@ begin
     Result := c * Power(2, 10 * (t/d - 1)) + b - c * 0.001;
 end;
 
-(**
- * Easing equation function for an exponential (2^t) easing out: decelerating from zero velocity.
- *
- * @param t		Current time (in frames or seconds).
- * @param b		Starting value.
- * @param c		Change needed in value.
- * @param d		Expected easing duration (in frames or seconds).
- * @Result		The correct value.
+(*
+   Easing equation function for an exponential (2^t) easing out: decelerating from zero velocity.
+ 
+   t		Current time (in frames or seconds).
+   b		Starting value.
+   c		Change needed in value.
+   d		Expected easing duration (in frames or seconds).
+   Result		The correct value.
  *)
 function easeOutExpo (t:Single; b:Single; c:Single; d:Single):Single;
 begin
@@ -458,14 +462,14 @@ begin
     Result := c * 1.001 * (-Power(2, -10 * t/d) + 1) + b;
 end;
 
-(**
- * Easing equation function for an exponential (2^t) easing in/out: acceleration until halfway, then deceleration.
- *
- * @param t		Current time (in frames or seconds).
- * @param b		Starting value.
- * @param c		Change needed in value.
- * @param d		Expected easing duration (in frames or seconds).
- * @Result		The correct value.
+(*
+   Easing equation function for an exponential (2^t) easing in/out: acceleration until halfway, then deceleration.
+ 
+   t		Current time (in frames or seconds).
+   b		Starting value.
+   c		Change needed in value.
+   d		Expected easing duration (in frames or seconds).
+   Result		The correct value.
  *)
 function easeInOutExpo (t:Single; b:Single; c:Single; d:Single):Single;
 begin
@@ -487,14 +491,14 @@ begin
   end;
 end;
 
-(**
- * Easing equation function for an exponential (2^t) easing out/in: deceleration until halfway, then acceleration.
- *
- * @param t		Current time (in frames or seconds).
- * @param b		Starting value.
- * @param c		Change needed in value.
- * @param d		Expected easing duration (in frames or seconds).
- * @Result		The correct value.
+(*
+   Easing equation function for an exponential (2^t) easing out/in: deceleration until halfway, then acceleration.
+ 
+   t		Current time (in frames or seconds).
+   b		Starting value.
+   c		Change needed in value.
+   d		Expected easing duration (in frames or seconds).
+   Result		The correct value.
  *)
 function easeOutInExpo (t:Single; b:Single; c:Single; d:Single):Single; begin
   if (t < d/2) then
@@ -503,14 +507,14 @@ function easeOutInExpo (t:Single; b:Single; c:Single; d:Single):Single; begin
     Result := easeInExpo((t*2)-d, b+c/2, c/2, d);
 end;
 
-(**
- * Easing equation function for a circular (sqrt(1-t^2)) easing in: accelerating from zero velocity.
- *
- * @param t		Current time (in frames or seconds).
- * @param b		Starting value.
- * @param c		Change needed in value.
- * @param d		Expected easing duration (in frames or seconds).
- * @Result		The correct value.
+(*
+   Easing equation function for a circular (sqrt(1-t^2)) easing in: accelerating from zero velocity.
+ 
+   t		Current time (in frames or seconds).
+   b		Starting value.
+   c		Change needed in value.
+   d		Expected easing duration (in frames or seconds).
+   Result		The correct value.
  *)
 function easeInCirc (t:Single; b:Single; c:Single; d:Single):Single;
 begin
@@ -518,14 +522,14 @@ begin
   Result := -c * (Sqrt(1 - t*t) - 1) + b;
 end;
 
-(**
- * Easing equation function for a circular (sqrt(1-t^2)) easing out: decelerating from zero velocity.
- *
- * @param t		Current time (in frames or seconds).
- * @param b		Starting value.
- * @param c		Change needed in value.
- * @param d		Expected easing duration (in frames or seconds).
- * @Result		The correct value.
+(*
+   Easing equation function for a circular (sqrt(1-t^2)) easing out: decelerating from zero velocity.
+ 
+   t		Current time (in frames or seconds).
+   b		Starting value.
+   c		Change needed in value.
+   d		Expected easing duration (in frames or seconds).
+   Result		The correct value.
  *)
 function easeOutCirc (t:Single; b:Single; c:Single; d:Single):Single;
 begin
@@ -533,14 +537,14 @@ begin
   Result := c * Sqrt(1 - t*t) + b;
 end;
 
-(**
- * Easing equation function for a circular (sqrt(1-t^2)) easing in/out: acceleration until halfway, then deceleration.
- *
- * @param t		Current time (in frames or seconds).
- * @param b		Starting value.
- * @param c		Change needed in value.
- * @param d		Expected easing duration (in frames or seconds).
- * @Result		The correct value.
+(*
+   Easing equation function for a circular (sqrt(1-t^2)) easing in/out: acceleration until halfway, then deceleration.
+ 
+   t		Current time (in frames or seconds).
+   b		Starting value.
+   c		Change needed in value.
+   d		Expected easing duration (in frames or seconds).
+   Result		The correct value.
  *)
 function easeInOutCirc (t:Single; b:Single; c:Single; d:Single):Single;
 begin
@@ -554,14 +558,14 @@ begin
   end;
 end;
 
-(**
- * Easing equation function for a circular (sqrt(1-t^2)) easing out/in: deceleration until halfway, then acceleration.
- *
- * @param t		Current time (in frames or seconds).
- * @param b		Starting value.
- * @param c		Change needed in value.
- * @param d		Expected easing duration (in frames or seconds).
- * @Result		The correct value.
+(*
+   Easing equation function for a circular (sqrt(1-t^2)) easing out/in: deceleration until halfway, then acceleration.
+ 
+   t		Current time (in frames or seconds).
+   b		Starting value.
+   c		Change needed in value.
+   d		Expected easing duration (in frames or seconds).
+   Result		The correct value.
  *)
 function easeOutInCirc (t:Single; b:Single; c:Single; d:Single):Single;
 begin
@@ -571,16 +575,16 @@ begin
     Result := easeInCirc((t*2)-d, b+c/2, c/2, d);
 end;
 
-(**
- * Easing equation function for an elastic (exponentially decaying sine wave) easing in: accelerating from zero velocity.
- *
- * @param t		Current time (in frames or seconds).
- * @param b		Starting value.
- * @param c		Change needed in value.
- * @param d		Expected easing duration (in frames or seconds).
- * @param a		Amplitude.
- * @param p		Period.
- * @Result		The correct value.
+(*
+   Easing equation function for an elastic (exponentially decaying sine wave) easing in: accelerating from zero velocity.
+ 
+   t		Current time (in frames or seconds).
+   b		Starting value.
+   c		Change needed in value.
+   d		Expected easing duration (in frames or seconds).
+   a		Amplitude.
+   p		Period.
+   Result		The correct value.
  *)
 function easeInElastic (t:Single; b:Single; c:Single; d:Single):Single;
 var
@@ -606,16 +610,16 @@ end;
 
 
 
-(**
- * Easing equation function for an elastic (exponentially decaying sine wave) easing out: decelerating from zero velocity.
- *
- * @param t		Current time (in frames or seconds).
- * @param b		Starting value.
- * @param c		Change needed in value.
- * @param d		Expected easing duration (in frames or seconds).
- * @param a		Amplitude.
- * @param p		Period.
- * @Result		The correct value.
+(*
+   Easing equation function for an elastic (exponentially decaying sine wave) easing out: decelerating from zero velocity.
+ 
+   t		Current time (in frames or seconds).
+   b		Starting value.
+   c		Change needed in value.
+   d		Expected easing duration (in frames or seconds).
+   a		Amplitude.
+   p		Period.
+   Result		The correct value.
  *)
 function easeOutElastic (t:Single; b:Single; c:Single; d:Single):Single;
 var
@@ -638,16 +642,16 @@ begin
   end;
 end;
 
-(**
- * Easing equation function for an elastic (exponentially decaying sine wave) easing in/out: acceleration until halfway, then deceleration.
- *
- * @param t		Current time (in frames or seconds).
- * @param b		Starting value.
- * @param c		Change needed in value.
- * @param d		Expected easing duration (in frames or seconds).
- * @param a		Amplitude.
- * @param p		Period.
- * @Result		The correct value.
+(*
+   Easing equation function for an elastic (exponentially decaying sine wave) easing in/out: acceleration until halfway, then deceleration.
+ 
+   t		Current time (in frames or seconds).
+   b		Starting value.
+   c		Change needed in value.
+   d		Expected easing duration (in frames or seconds).
+   a		Amplitude.
+   p		Period.
+   Result		The correct value.
  *)
 function easeInOutElastic (t:Single; b:Single; c:Single; d:Single):Single;
 var
@@ -677,16 +681,16 @@ end;
 
 
 
-(**
- * Easing equation function for an elastic (exponentially decaying sine wave) easing out/in: deceleration until halfway, then acceleration.
- *
- * @param t		Current time (in frames or seconds).
- * @param b		Starting value.
- * @param c		Change needed in value.
- * @param d		Expected easing duration (in frames or seconds).
- * @param a		Amplitude.
- * @param p		Period.
- * @Result		The correct value.
+(*
+   Easing equation function for an elastic (exponentially decaying sine wave) easing out/in: deceleration until halfway, then acceleration.
+ 
+   t		Current time (in frames or seconds).
+   b		Starting value.
+   c		Change needed in value.
+   d		Expected easing duration (in frames or seconds).
+   a		Amplitude.
+   p		Period.
+   Result		The correct value.
  *)
 function easeOutInElastic (t:Single; b:Single; c:Single; d:Single):Single;
 begin
@@ -696,15 +700,15 @@ begin
     Result := easeInElastic((t*2)-d, b+c/2, c/2, d)
 end;
 
-(**
- * Easing equation function for a back (overshooting cubic easing: (s+1)*t^3 - s*t^2) easing in: accelerating from zero velocity.
- *
- * @param t		Current time (in frames or seconds).
- * @param b		Starting value.
- * @param c		Change needed in value.
- * @param d		Expected easing duration (in frames or seconds).
- * @param s		Overshoot ammount: higher s means greater overshoot (0 produces cubic easing with no overshoot, and the default value of 1.70158 produces an overshoot of 10 percent).
- * @Result		The correct value.
+(*
+   Easing equation function for a back (overshooting cubic easing: (s+1)*t^3 - s*t^2) easing in: accelerating from zero velocity.
+ 
+   t		Current time (in frames or seconds).
+   b		Starting value.
+   c		Change needed in value.
+   d		Expected easing duration (in frames or seconds).
+   s		Overshoot ammount: higher s means greater overshoot (0 produces cubic easing with no overshoot, and the default value of 1.70158 produces an overshoot of 10 percent).
+   Result		The correct value.
  *)
 function easeInBack (t:Single; b:Single; c:Single; d:Single):Single;
 var
@@ -715,15 +719,15 @@ begin
   Result := c*t*t*((s+1)*t - s) + b;
 end;
 
-(**
- * Easing equation function for a back (overshooting cubic easing: (s+1)*t^3 - s*t^2) easing out: decelerating from zero velocity.
- *
- * @param t		Current time (in frames or seconds).
- * @param b		Starting value.
- * @param c		Change needed in value.
- * @param d		Expected easing duration (in frames or seconds).
- * @param s		Overshoot ammount: higher s means greater overshoot (0 produces cubic easing with no overshoot, and the default value of 1.70158 produces an overshoot of 10 percent).
- * @Result		The correct value.
+(*
+   Easing equation function for a back (overshooting cubic easing: (s+1)*t^3 - s*t^2) easing out: decelerating from zero velocity.
+ 
+   t		Current time (in frames or seconds).
+   b		Starting value.
+   c		Change needed in value.
+   d		Expected easing duration (in frames or seconds).
+   s		Overshoot ammount: higher s means greater overshoot (0 produces cubic easing with no overshoot, and the default value of 1.70158 produces an overshoot of 10 percent).
+   Result		The correct value.
  *)
 function easeOutBack (t:Single; b:Single; c:Single; d:Single):Single;
 var
@@ -734,15 +738,15 @@ begin
   Result := c*(t*t*((s+1)*t + s) + 1) + b;
 end;
 
-(**
- * Easing equation function for a back (overshooting cubic easing: (s+1)*t^3 - s*t^2) easing in/out: acceleration until halfway, then deceleration.
- *
- * @param t		Current time (in frames or seconds).
- * @param b		Starting value.
- * @param c		Change needed in value.
- * @param d		Expected easing duration (in frames or seconds).
- * @param s		Overshoot ammount: higher s means greater overshoot (0 produces cubic easing with no overshoot, and the default value of 1.70158 produces an overshoot of 10 percent).
- * @Result		The correct value.
+(*
+   Easing equation function for a back (overshooting cubic easing: (s+1)*t^3 - s*t^2) easing in/out: acceleration until halfway, then deceleration.
+ 
+   t		Current time (in frames or seconds).
+   b		Starting value.
+   c		Change needed in value.
+   d		Expected easing duration (in frames or seconds).
+   s		Overshoot ammount: higher s means greater overshoot (0 produces cubic easing with no overshoot, and the default value of 1.70158 produces an overshoot of 10 percent).
+   Result		The correct value.
  *)
 function easeInOutBack (t:Single; b:Single; c:Single; d:Single):Single;
 var
@@ -760,15 +764,15 @@ begin
   end;
 end;
 
-(**
- * Easing equation function for a back (overshooting cubic easing: (s+1)*t^3 - s*t^2) easing out/in: deceleration until halfway, then acceleration.
- *
- * @param t		Current time (in frames or seconds).
- * @param b		Starting value.
- * @param c		Change needed in value.
- * @param d		Expected easing duration (in frames or seconds).
- * @param s		Overshoot ammount: higher s means greater overshoot (0 produces cubic easing with no overshoot, and the default value of 1.70158 produces an overshoot of 10 percent).
- * @Result		The correct value.
+(*
+   Easing equation function for a back (overshooting cubic easing: (s+1)*t^3 - s*t^2) easing out/in: deceleration until halfway, then acceleration.
+ 
+   t		Current time (in frames or seconds).
+   b		Starting value.
+   c		Change needed in value.
+   d		Expected easing duration (in frames or seconds).
+   s		Overshoot ammount: higher s means greater overshoot (0 produces cubic easing with no overshoot, and the default value of 1.70158 produces an overshoot of 10 percent).
+   Result		The correct value.
  *)
 function easeOutInBack (t:Single; b:Single; c:Single; d:Single):Single;
 begin
@@ -780,14 +784,14 @@ end;
 
 
 
-(**
- * Easing equation function for a bounce (exponentially decaying parabolic bounce) easing out: decelerating from zero velocity.
- *
- * @param t		Current time (in frames or seconds).
- * @param b		Starting value.
- * @param c		Change needed in value.
- * @param d		Expected easing duration (in frames or seconds).
- * @Result		The correct value.
+(*
+   Easing equation function for a bounce (exponentially decaying parabolic bounce) easing out: decelerating from zero velocity.
+ 
+   t		Current time (in frames or seconds).
+   b		Starting value.
+   c		Change needed in value.
+   d		Expected easing duration (in frames or seconds).
+   Result		The correct value.
  *)
 function easeOutBounce (t:Single; b:Single; c:Single; d:Single):Single;
 begin
@@ -813,28 +817,28 @@ begin
   end;
 end;
 
-(**
- * Easing equation function for a bounce (exponentially decaying parabolic bounce) easing in: accelerating from zero velocity.
- *
- * @param t		Current time (in frames or seconds).
- * @param b		Starting value.
- * @param c		Change needed in value.
- * @param d		Expected easing duration (in frames or seconds).
- * @Result		The correct value.
+(*
+   Easing equation function for a bounce (exponentially decaying parabolic bounce) easing in: accelerating from zero velocity.
+ 
+   t		Current time (in frames or seconds).
+   b		Starting value.
+   c		Change needed in value.
+   d		Expected easing duration (in frames or seconds).
+ * Result		The correct value.
  *)
 function easeInBounce (t:Single; b:Single; c:Single; d:Single):Single;
 begin
   Result := c - easeOutBounce (d-t, 0, c, d) + b;
 end;
 
-(**
- * Easing equation function for a bounce (exponentially decaying parabolic bounce) easing in/out: acceleration until halfway, then deceleration.
- *
- * @param t		Current time (in frames or seconds).
- * @param b		Starting value.
- * @param c		Change needed in value.
- * @param d		Expected easing duration (in frames or seconds).
- * @Result		The correct value.
+(*
+   Easing equation function for a bounce (exponentially decaying parabolic bounce) easing in/out: acceleration until halfway, then deceleration.
+ 
+   t		Current time (in frames or seconds).
+   b		Starting value.
+   c		Change needed in value.
+   d		Expected easing duration (in frames or seconds).
+ * Result		The correct value.
  *)
 function easeInOutBounce (t:Single; b:Single; c:Single; d:Single):Single;
 begin
@@ -844,14 +848,14 @@ begin
     Result := easeOutBounce(t*2-d, 0, c, d) * 0.5 + c*0.5 + b;
 end;
 
-(**
- * Easing equation function for a bounce (exponentially decaying parabolic bounce) easing out/in: deceleration until halfway, then acceleration.
- *
- * @param t		Current time (in frames or seconds).
- * @param b		Starting value.
- * @param c		Change needed in value.
- * @param d		Expected easing duration (in frames or seconds).
- * @Result		The correct value.
+(*
+   Easing equation function for a bounce (exponentially decaying parabolic bounce) easing out/in: deceleration until halfway, then acceleration.
+ 
+   t		Current time (in frames or seconds).
+   b		Starting value.
+   c		Change needed in value.
+   d		Expected easing duration (in frames or seconds).
+   Result		The correct value.
  *)
 function easeOutInBounce (t:Single; b:Single; c:Single; d:Single):Single;
 begin
@@ -920,8 +924,8 @@ begin
   EaseFunction := GetEaseFunctionFromType(EaseType);
   for i := 0 to 2 do
   begin
-    Target.V[i] := Target.V[i]-Current.V[i];
-    Result.V[i] := EaseFunction(Time, Current.V[i], Target.V[i], Duration);
+    Target.C[i] := Target.C[i]-Current.C[i];
+    Result.C[i] := EaseFunction(Time, Current.C[i], Target.C[i], Duration);
   end;
 end;
 
@@ -936,8 +940,8 @@ begin
   EaseFunction := GetEaseFunctionFromType(EaseType);
   for i := 0 to 3 do
   begin
-    Target.V[i] := Target.V[i]-Current.V[i];
-    Result.V[i] := EaseFunction(Time, Current.V[i], Target.V[i], Duration);
+    Target.C[i] := Target.C[i]-Current.C[i];
+    Result.C[i] := EaseFunction(Time, Current.C[i], Target.C[i], Duration);
   end;
 end;
 
@@ -952,8 +956,8 @@ begin
   EaseFunction := GetEaseFunctionFromType(EaseType);
   for i := 0 to 1 do
   begin
-    Target.V[i] := Target.V[i]-Current.V[i];
-    Result.V[i] := EaseFunction(Time, Current.V[i], Target.V[i], Duration);
+    Target.C[i] := Target.C[i]-Current.C[i];
+    Result.C[i] := EaseFunction(Time, Current.C[i], Target.C[i], Duration);
   end;
 end;
 

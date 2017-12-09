@@ -60,7 +60,6 @@ type
     FAbort         : boolean;
     FInit          : boolean;
     FRunning       : Boolean;
-
     FElapsedTime   : Double;
     FDeltaTime      : Double;
     FStartTime     : Double;
@@ -90,7 +89,7 @@ type
     procedure Init; override;
     // Properties.
     property InitialPos: TVector read FInitialPos;
-    property FinalPos: TVector read FFinalPos;    
+    property FinalPos: TVector read FFinalPos;
   end;
 
   TGLZoomToDistanceJob = class(TGLCameraJob)
@@ -231,13 +230,11 @@ type
     (*zooms in/out by moving to the given distance from camera.targetObject
      there has to be a camera.targetObject assigned! *)
     function ZoomToDistance(Distance,Time:double): TGLZoomToDistanceJob;
-
-    (*google earth - like "fly-to" = zoom out to safe distance, orbit, 
+    (*google earth - like "fly-to" = zoom out to safe distance, orbit,
 	 and then zoom in to the given point
     there has to be a camera.targetObject assigned! *)
     procedure SafeOrbitAndZoomToPos(x,y,z:double);
-
-    (* It might be a good idea to introduce ability to stop movement 
+    (* It might be a good idea to introduce ability to stop movement
 	and return control to user, here it is *)
     procedure StopMovement;
     // Called by the cadencer to animate the camera
@@ -251,7 +248,7 @@ type
     (*specifies whether user should be able interract with the GLSceneViewer
     it is set to false while the camera is moving and
     coders should check this value and block GUI access to GLSceneViewer *)
-    //property AllowUserAction:boolean read FAllowUserAction; 
+    //property AllowUserAction:boolean read FAllowUserAction;
     (*safe distance to avoid moving the camera trough the camera.targetObject
      while performing  SafeOrbitAndZoomToPos *)
     property soSafeDistance:double read FsoSafeDist write FsoSafeDist;

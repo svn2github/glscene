@@ -39,22 +39,18 @@ uses
 type
    EGLAtmosphereException = class(Exception);
 
-   {
-   With aabmOneMinusSrcAlpha atmosphere is transparent to other objects,
-   but has problems, which are best seen when the Atmosphere radius is big.
-
-   With bmOneMinusDstColor atmosphere doesn't have these problems, but offers
-   limited transparency (when you look closely on the side).
-  }
+   (* With aabmOneMinusSrcAlpha atmosphere is transparent to other objects,
+      but has problems, which are best seen when the Atmosphere radius is big.
+      With bmOneMinusDstColor atmosphere doesn't have these problems, but offers
+      limited transparency (when you look closely on the side). *)
   TGLAtmosphereBlendingMode = (abmOneMinusDstColor, abmOneMinusSrcAlpha);
 
-  {This class imitates an atmosphere around a planet. }
+  (* This class imitates an atmosphere around a planet. *)
   TGLCustomAtmosphere = class(TGLBaseSceneObject)
   private
     // Used in DoRenderl
     cosCache, sinCache: array of Single;
     pVertex, pColor: PVectorArray;
-
     FSlices: Integer;
     FBlendingMode: TGLAtmosphereBlendingMode;
     FPlanetRadius: Single;
@@ -62,8 +58,8 @@ type
     FOpacity: Single;
     FLowAtmColor: TGLColor;
     FHighAtmColor: TGLColor;
-    FSun: TglBaseSceneObject;
-    procedure SetSun(const Value: TglBaseSceneObject);
+    FSun: TGLBaseSceneObject;
+    procedure SetSun(const Value: TGLBaseSceneObject);
     procedure SetAtmosphereRadius(const Value: Single);
     procedure SetPlanetRadius(const Value: Single);
     procedure EnableGLBlendingMode(StateCache: TGLStateCache);
@@ -78,30 +74,24 @@ type
   protected
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
   public
-    property Sun: TglBaseSceneObject read FSun write SetSun;
-
+    property Sun: TGLBaseSceneObject read FSun write SetSun;
     property Slices: Integer read FSlices write SetSlices default 60;
     property Opacity: Single read FOpacity write FOpacity stored StoreOpacity;
-
     // AtmosphereRadius > PlanetRadius!!!
     property AtmosphereRadius: Single read FAtmosphereRadius write SetAtmosphereRadius stored StoreAtmosphereRadius;
     property PlanetRadius: Single read FPlanetRadius write SetPlanetRadius stored StorePlanetRadius;
-
     // Use value slightly lower than actual radius, for antialiasing effect.
     property LowAtmColor: TGLColor read FLowAtmColor write SetLowAtmColor stored StoreLowAtmColor;
     property HighAtmColor: TGLColor read FHighAtmColor write SetHighAtmColor stored StoreHighAtmColor;
     property BlendingMode: TGLAtmosphereBlendingMode read FBlendingMode
                                write FBlendingMode default abmOneMinusSrcAlpha;
-
     procedure SetOptimalAtmosphere(const ARadius: Single);  //absolute
     procedure SetOptimalAtmosphere2(const ARadius: Single); //relative
     procedure TogleBlendingMode; //changes between 2 blending modes
-
     // Standard component stuff.
     procedure Assign(Source: TPersistent); override;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
     // Main rendering procedure.
     procedure DoRender(var rci: TGLRenderContextInfo; renderSelf, renderChildren: Boolean); override;
     // Used to determine extents.
@@ -128,7 +118,9 @@ type
     property Effects;
   end;
 
+//---------------------------------------------------------------------
 implementation
+//---------------------------------------------------------------------
 
 const
   EPS = 0.0001;

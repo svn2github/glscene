@@ -582,7 +582,7 @@ begin
   if FSpecularTexture <> nil then
     Param['specMap'].AsTexture2D[2] := FSpecularTexture;
 
-{$IFNDEF VKS_OPTIMIZATIONS}
+{$IFNDEF VXS_OPTIMIZATIONS}
   if FNormalTexture <> nil then
 {$ENDIF}
   begin

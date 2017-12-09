@@ -593,7 +593,7 @@ end;
 // ------------------ TVXSCUDA ------------------
 // ------------------
 
-{$IFDEF VKS_REGION}{$REGION 'TVXSCUDA'}{$ENDIF}
+{$IFDEF VXS_REGION}{$REGION 'TVXSCUDA'}{$ENDIF}
 // Create
 //
 
@@ -688,12 +688,12 @@ begin
   end;
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VXS_REGION}{$ENDREGION}{$ENDIF}
 // ------------------
 // ------------------ TCUDAModule ------------------
 // ------------------
 
-{$IFDEF VKS_REGION}{$REGION 'TCUDAmodule'}{$ENDIF}
+{$IFDEF VXS_REGION}{$REGION 'TCUDAmodule'}{$ENDIF}
 
 // Create
 //
@@ -1066,12 +1066,12 @@ begin
   end;
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VXS_REGION}{$ENDREGION}{$ENDIF}
 // ------------------
 // ------------------ TCUDAComponent ------------------
 // ------------------
 
-{$IFDEF VKS_REGION}{$REGION 'TCUDAComponent'}{$ENDIF}
+{$IFDEF VXS_REGION}{$REGION 'TCUDAComponent'}{$ENDIF}
 
 destructor TCUDAComponent.Destroy;
 begin
@@ -1240,12 +1240,12 @@ begin
   end;
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VXS_REGION}{$ENDREGION}{$ENDIF}
 // ------------------
 // ------------------ TCUDAFunction ------------------
 // ------------------
 
-{$IFDEF VKS_REGION}{$REGION 'TCUDAFunction'}{$ENDIF}
+{$IFDEF VXS_REGION}{$REGION 'TCUDAFunction'}{$ENDIF}
 // Create
 //
 
@@ -1671,12 +1671,12 @@ begin
   end;
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VXS_REGION}{$ENDREGION}{$ENDIF}
 // ------------------
 // ------------------ TCUDAMemData ------------------
 // ------------------
 
-{$IFDEF VKS_REGION}{$REGION 'TCUDAMemData'}{$ENDIF}
+{$IFDEF VXS_REGION}{$REGION 'TCUDAMemData'}{$ENDIF}
 
 constructor TCUDAMemData.Create(AOwner: TComponent);
 begin
@@ -2515,7 +2515,7 @@ end;
 // ------------------ TCUDATexture ------------------
 // ------------------
 
-{$IFDEF VKS_REGION}{$REGION 'TCUDATexture'}{$ENDIF}
+{$IFDEF VXS_REGION}{$REGION 'TCUDATexture'}{$ENDIF}
 // Create
 //
 
@@ -2777,12 +2777,12 @@ begin
   end;
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VXS_REGION}{$ENDREGION}{$ENDIF}
 // ------------------
 // ------------------ TCUDAGraphicResource ------------------
 // ------------------
 
-{$IFDEF VKS_REGION}{$REGION 'TCUDAGraphicResource'}{$ENDIF}
+{$IFDEF VXS_REGION}{$REGION 'TCUDAGraphicResource'}{$ENDIF}
 
 procedure TCUDAGraphicResource.SetMapping(const Value: TCUDAMapping);
 begin
@@ -2867,12 +2867,12 @@ begin
   end;
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VXS_REGION}{$ENDREGION}{$ENDIF}
 // ------------------
 // ------------------ TCUDAUniform ------------------
 // ------------------
 
-{$IFDEF VKS_REGION}{$REGION 'TCUDAUniform'}{$ENDIF}
+{$IFDEF VXS_REGION}{$REGION 'TCUDAUniform'}{$ENDIF}
 
 constructor TCUDAUniform.Create(AOwner: TComponent);
 begin
@@ -2954,13 +2954,13 @@ begin
     CuNotifyChange(cuchSize);
   end;
 end;
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VXS_REGION}{$ENDREGION}{$ENDIF}
 
 // ------------------
 // ------------------ TCUDAConstant ------------------
 // ------------------
 
-{$IFDEF VKS_REGION}{$REGION 'TCUDAConstant'}{$ENDIF}
+{$IFDEF VXS_REGION}{$REGION 'TCUDAConstant'}{$ENDIF}
 
 procedure TCUDAConstant.AllocateHandles;
 var
@@ -3009,13 +3009,13 @@ begin
   Result := FHandle;
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VXS_REGION}{$ENDREGION}{$ENDIF}
 
 // ------------------
 // ------------------ TCUDAFuncParam ------------------
 // ------------------
 
-{$IFDEF VKS_REGION}{$REGION 'TCUDAFuncParam'}{$ENDIF}
+{$IFDEF VXS_REGION}{$REGION 'TCUDAFuncParam'}{$ENDIF}
 
 procedure TCUDAFuncParam.AllocateHandles;
 begin
@@ -3043,7 +3043,7 @@ begin
   end;
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VXS_REGION}{$ENDREGION}{$ENDIF}
 
 initialization
 

@@ -27,8 +27,7 @@ uses
 
 type
   TVXBCollision = class;
-  TObjectCollisionEvent = procedure(Sender: TObject;
-    object1, object2: TVXBaseSceneObject) of object;
+  TObjectCollisionEvent = procedure(Sender: TObject; object1, object2: TVXBaseSceneObject) of object;
 
   { Defines how fine collision bounding is for a particular object.
     Possible values are :
@@ -40,7 +39,6 @@ type
     cbmFaces : the object is defined by its faces (needs object-level support,
     if unavalaible, uses cbmCube code) }
   TCollisionBoundingMode = (cbmPoint, cbmSphere, cbmEllipsoid, cbmCube, cbmFaces);
-
   TFastCollisionChecker = function(obj1, obj2: TVXBaseSceneObject): Boolean;
   PFastCollisionChecker = ^TFastCollisionChecker;
 
@@ -92,8 +90,7 @@ type
     property GroupIndex: Integer read FGroupIndex write SetGroupIndex;
   end;
 
-{ Fast Collision detection routines
- by "fast" I mean they are heavily specialized and just return a boolean }
+{ Fast Collision detection routines that are heavily specialized and just return a boolean }
 function FastCheckPointVsPoint(obj1, obj2: TVXBaseSceneObject): Boolean;
 function FastCheckPointVsSphere(obj1, obj2: TVXBaseSceneObject): Boolean;
 function FastCheckPointVsEllipsoid(obj1, obj2: TVXBaseSceneObject): Boolean;
@@ -173,8 +170,7 @@ begin
   // ScaleVector();
   v.W := 0;
   // if norm is below 1, collision
-  Result := (VectorNorm(v) <= 1 { Sqr(obj2.BoundingSphereRadius) } );
-  // DanB - since radius*radius = 1/2*1/2 = 1/4 for unit sphere
+  Result := (VectorNorm(v) <= 1 { Sqr(obj2.BoundingSphereRadius) } ); // since radius*radius = 1/2*1/2 = 1/4 for unit sphere
 end;
 
 function FastCheckPointVsCube(obj1, obj2: TVXBaseSceneObject): Boolean;
@@ -230,7 +226,7 @@ begin
   v.X := abs(v.X);
   v.Y := abs(v.Y);
   v.Z := abs(v.Z);
-  ScaleVector(v, obj2.Scale.AsVector); // by DanB
+  ScaleVector(v, obj2.Scale.AsVector); 
 
   aad := obj2.AxisAlignedDimensions; // should be abs at all!
 

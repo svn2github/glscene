@@ -104,7 +104,7 @@ begin
   B := C;
 end;
 
-{$IFDEF VKS_REGIONS}{$REGION 'OpenGL format image to RGBA Float'}{$ENDIF}
+{$IFDEF VXS_REGIONS}{$REGION 'OpenGL format image to RGBA Float'}{$ENDIF}
 
 procedure UnsupportedToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFormat: GLEnum; AWidth, AHeight: Integer);
   begin
@@ -829,8 +829,8 @@ procedure UInt_10_10_10_2_Rev_ToImf(ASource: Pointer; ADest: PIntermediateFormat
     end;
   end;
 
-{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
-{$IFDEF VKS_REGIONS}{$REGION 'Decompression'}{$ENDIF}
+{$IFDEF VXS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VXS_REGIONS}{$REGION 'Decompression'}{$ENDIF}
 
 procedure DecodeColor565(col: Word; out R, G, B: Byte);
   begin
@@ -2014,8 +2014,8 @@ procedure SRGTC2_ToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColor
     end;
   end;
 
-{$IFDEF VKS_REGIONS}{$ENDREGION 'Decompression'}{$ENDIF}
-{$IFDEF VKS_REGIONS}{$REGION 'RGBA Float to OpenGL format image'}{$ENDIF}
+{$IFDEF VXS_REGIONS}{$ENDREGION 'Decompression'}{$ENDIF}
+{$IFDEF VXS_REGIONS}{$REGION 'RGBA Float to OpenGL format image'}{$ENDIF}
 
 procedure UnsupportedFromImf(ASource: PIntermediateFormatArray; ADest: Pointer; AColorFormat: GLEnum; AWidth, AHeight: Integer);
   begin
@@ -2243,8 +2243,8 @@ procedure ImfToHalf(ASource: PIntermediateFormatArray; ADest: Pointer; AColorFor
       raise EGLImageUtils.Create(strInvalidType);
     end;
   end;
-{$IFDEF VKS_REGIONS}{$ENDREGION 'RGBA Float to OpenGL format image'}{$ENDIF}
-{$IFDEF VKS_REGIONS}{$REGION 'Compression'}{$ENDIF}
+{$IFDEF VXS_REGIONS}{$ENDREGION 'RGBA Float to OpenGL format image'}{$ENDIF}
+{$IFDEF VXS_REGIONS}{$REGION 'Compression'}{$ENDIF}
 { function FloatTo565(const AColor: TIntermediateFormat): Integer;
   var
   r, g, b: Integer;
@@ -2343,8 +2343,8 @@ procedure ImfToHalf(ASource: PIntermediateFormatArray; ADest: Pointer; AColorFor
   WriteColourBlock( a, b, remapped, block );
   end; }
 
-{$IFDEF VKS_REGIONS}{$ENDREGION 'Compression'}{$ENDIF}
-{$IFDEF VKS_REGIONS}{$REGION 'Image filters'}{$ENDIF}
+{$IFDEF VXS_REGIONS}{$ENDREGION 'Compression'}{$ENDIF}
+{$IFDEF VXS_REGIONS}{$REGION 'Image filters'}{$ENDIF}
 
 function ImageBoxFilter(Value: Single): Single;
   begin
@@ -2535,8 +2535,8 @@ type
   TCListList = array [0 .. MaxInt div (2 * SizeOf(TCList))] of TCList;
   PCListList = ^TCListList;
 
-{$IFDEF VKS_REGIONS}{$ENDREGION 'Image filters'}{$ENDIF}
-{$IFDEF VKS_REGIONS}{$REGION 'Data type conversion table'}{$ENDIF}
+{$IFDEF VXS_REGIONS}{$ENDREGION 'Image filters'}{$ENDIF}
+{$IFDEF VXS_REGIONS}{$REGION 'Data type conversion table'}{$ENDIF}
 
 type
   TConvertTableRec = record
@@ -2621,7 +2621,7 @@ const
 
     (type_: GL_COMPRESSED_SIGNED_RG_RGTC2; proc1: SRGTC2_ToImf; proc2: UnsupportedFromImf));
 
-{$IFDEF VKS_REGIONS}{$ENDREGION 'Data type conversion table'}{$ENDIF}
+{$IFDEF VXS_REGIONS}{$ENDREGION 'Data type conversion table'}{$ENDIF}
 
 procedure ConvertImage(const ASrc: Pointer; const ADst: Pointer; ASrcColorFormat, ADstColorFormat: GLEnum; ASrcDataType, ADstDataType: GLEnum; AWidth, AHeight: Integer);
   var
@@ -2935,7 +2935,7 @@ begin
   FreeMem(tempBuf1);
 end;
 
-procedure Div2(var Value: Integer); {$IFDEF VKS_INLINE} inline; {$ENDIF}
+procedure Div2(var Value: Integer); {$IFDEF VXS_INLINE} inline; {$ENDIF}
 begin
   Value := Value div 2;
   if Value = 0 then

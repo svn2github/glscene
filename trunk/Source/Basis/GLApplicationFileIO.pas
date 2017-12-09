@@ -104,7 +104,7 @@ type
   TGLDataFileClass = class of TGLDataFile;
   TGLSResourceStream = TResourceStream;
 
-// Returns true if an GLApplicationFileIO has been defined
+// Returns true if an ApplicationFileIO has been defined
 function ApplicationFileIODefined: Boolean;
 
 (*Creates a file stream corresponding to the fileName.
@@ -116,7 +116,6 @@ function CreateFileStream(const fileName: string;
 // Queries is a file stream corresponding to the fileName exists.
 function FileStreamExists(const fileName: string): Boolean;
 
-// Create a resource stream.
 function CreateResourceStream(const ResName: string; ResType: PChar): TGLSResourceStream;
 
 function StrToGLSResType(const AStrRes: string): TGLSApplicationResource;

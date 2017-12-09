@@ -473,9 +473,9 @@ begin
   Result := vObjectManager;
 end;
 
-{$IFDEF VKS_REGION}{$REGION 'TOpenGLCategory'}{$ENDIF}
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF VKS_REGION}{$REGION 'TVXSceneViewerEditor'}{$ENDIF}
+{$IFDEF VXS_REGION}{$REGION 'TOpenGLCategory'}{$ENDIF}
+{$IFDEF VXS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VXS_REGION}{$REGION 'TVXSceneViewerEditor'}{$ENDIF}
 // ExecuteVerb
 //
 
@@ -509,8 +509,8 @@ begin
   Result := 1;
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF VKS_REGION}{$REGION 'TVXSceneEditor'}{$ENDIF}
+{$IFDEF VXS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VXS_REGION}{$REGION 'TVXSceneEditor'}{$ENDIF}
 
 procedure TVXSceneEditor.Edit;
 begin
@@ -542,8 +542,8 @@ begin
   Result := 1;
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF VKS_REGION}{$REGION 'TResolutionProperty'}{$ENDIF}
+{$IFDEF VXS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VXS_REGION}{$REGION 'TResolutionProperty'}{$ENDIF}
 
 function TResolutionProperty.GetAttributes: TPropertyAttributes;
 begin
@@ -633,7 +633,7 @@ begin
     SetOrdValue(0);
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VXS_REGION}{$ENDREGION}{$ENDIF}
 
 function TVXTextureProperty.GetAttributes: TPropertyAttributes;
 begin
@@ -652,7 +652,7 @@ begin
     Designer.Modified;
 end;
 
-{$IFDEF VKS_REGION}{$REGION 'TVXImageClassProperty'}{$ENDIF}
+{$IFDEF VXS_REGION}{$REGION 'TVXImageClassProperty'}{$ENDIF}
 
 function TVXImageClassProperty.GetAttributes: TPropertyAttributes;
 begin
@@ -690,8 +690,8 @@ begin
   Modified;
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF VKS_REGION}{$REGION 'TVXColorProperty'}{$ENDIF}
+{$IFDEF VXS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VXS_REGION}{$REGION 'TVXColorProperty'}{$ENDIF}
 
 procedure TVXColorProperty.Edit;
 var
@@ -804,8 +804,8 @@ begin
   DefaultPropertyDrawName(Self, ACanvas, ARect);
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF VKS_REGION}{$REGION 'TSoundFileProperty'}{$ENDIF}
+{$IFDEF VXS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VXS_REGION}{$REGION 'TSoundFileProperty'}{$ENDIF}
 
 function TSoundFileProperty.GetAttributes: TPropertyAttributes;
 begin
@@ -845,7 +845,7 @@ begin
   end;
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VXS_REGION}{$ENDREGION}{$ENDIF}
 
 //---------------------------------------------------------
 
@@ -892,7 +892,7 @@ end;
 
 //--------------------------------------------------------
 
-{$IFDEF VKS_REGION}{$REGION 'TVXMaterialProperty'}{$ENDIF}
+{$IFDEF VXS_REGION}{$REGION 'TVXMaterialProperty'}{$ENDIF}
 
 function TVXMaterialProperty.GetAttributes: TPropertyAttributes;
 begin
@@ -906,8 +906,8 @@ begin
     Modified;
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF VKS_REGION}{$REGION 'TVXGUILayoutEditor'}{$ENDIF}
+{$IFDEF VXS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VXS_REGION}{$REGION 'TVXGUILayoutEditor'}{$ENDIF}
 
 procedure TVXGUILayoutEditor.Edit;
 begin
@@ -935,8 +935,8 @@ begin
   Result := 1;
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF VKS_REGION}{$REGION 'TReuseableDefaultEditor'}{$ENDIF}
+{$IFDEF VXS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VXS_REGION}{$REGION 'TReuseableDefaultEditor'}{$ENDIF}
 // CheckEdit
 //
 
@@ -1004,8 +1004,8 @@ begin
   end;
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF VKS_REGION}{$REGION 'TVXMaterialLibraryEditor'}{$ENDIF}
+{$IFDEF VXS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VXS_REGION}{$REGION 'TVXMaterialLibraryEditor'}{$ENDIF}
 
 // EditProperty
 //
@@ -1039,8 +1039,8 @@ begin
   Result := 1
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF VKS_REGION}{$REGION 'TVXLibMaterialNameProperty'}{$ENDIF}
+{$IFDEF VXS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VXS_REGION}{$REGION 'TVXLibMaterialNameProperty'}{$ENDIF}
 // GetAttributes
 //
 
@@ -1074,8 +1074,8 @@ begin
     SetStrValue(buf);
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF VKS_REGION}{$REGION 'TVXAnimationNameProperty'}{$ENDIF}
+{$IFDEF VXS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VXS_REGION}{$REGION 'TVXAnimationNameProperty'}{$ENDIF}
 // GetAttributes
 //
 
@@ -1106,8 +1106,8 @@ begin
   end;
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF VKS_REGION}{$REGION 'TVXBaseSceneObjectSelectionEditor'}{$ENDIF}
+{$IFDEF VXS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VXS_REGION}{$REGION 'TVXBaseSceneObjectSelectionEditor'}{$ENDIF}
 
 procedure TVXBaseSceneObjectSelectionEditor.RequiresUnits(Proc: TGetStrProc);
 var
@@ -1130,8 +1130,8 @@ begin
   end;
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF VKS_REGION}{$REGION 'TVXSoundLibrarySelectionEditor'}{$ENDIF}
+{$IFDEF VXS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VXS_REGION}{$REGION 'TVXSoundLibrarySelectionEditor'}{$ENDIF}
 
 procedure TVXSoundLibrarySelectionEditor.RequiresUnits(Proc: TGetStrProc);
 var
@@ -1153,8 +1153,8 @@ begin
   end;
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF VKS_REGION}{$REGION 'TVXSArchiveManagerEditor'}{$ENDIF}
+{$IFDEF VXS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VXS_REGION}{$REGION 'TVXSArchiveManagerEditor'}{$ENDIF}
 
 procedure TVXSArchiveManagerEditor.EditProperty(const Prop: IProperty;
   var Continue: Boolean);
@@ -1186,8 +1186,8 @@ begin
   Result := 1
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF VKS_REGION}{$REGION 'TVXMaterialComponentNameProperty'}{$ENDIF}
+{$IFDEF VXS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VXS_REGION}{$REGION 'TVXMaterialComponentNameProperty'}{$ENDIF}
 
 procedure TVXMaterialComponentNameProperty.Edit;
 var
@@ -1266,8 +1266,8 @@ begin
       .GetNames(Proc, TVXASMVertexProgram);
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF VKS_REGION}{$REGION 'TPictureFileProperty'}{$ENDIF}
+{$IFDEF VXS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VXS_REGION}{$REGION 'TPictureFileProperty'}{$ENDIF}
 
 function TPictureFileProperty.GetAttributes: TPropertyAttributes;
 begin
@@ -1285,8 +1285,8 @@ begin
   Modified;
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF VKS_REGION}{$REGION 'TShaderFileProperty'}{$ENDIF}
+{$IFDEF VXS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VXS_REGION}{$REGION 'TShaderFileProperty'}{$ENDIF}
 
 procedure TShaderFileProperty.Edit;
 var
@@ -1310,8 +1310,8 @@ begin
   Result := [paDialog];
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF VKS_REGION}{$REGION 'TAsmProgFileProperty'}{$ENDIF}
+{$IFDEF VXS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VXS_REGION}{$REGION 'TAsmProgFileProperty'}{$ENDIF}
 
 procedure TAsmProgFileProperty.Edit;
 var
@@ -1335,8 +1335,8 @@ begin
   Result := [paDialog];
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF VKS_REGION}{$REGION 'TUniformAutoSetProperty'}{$ENDIF}
+{$IFDEF VXS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VXS_REGION}{$REGION 'TUniformAutoSetProperty'}{$ENDIF}
 
 function TUniformAutoSetProperty.GetAttributes: TPropertyAttributes;
 begin
@@ -1368,8 +1368,8 @@ begin
   end;
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF VKS_REGION}{$REGION 'TVXShaderEditorProperty'}{$ENDIF}
+{$IFDEF VXS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VXS_REGION}{$REGION 'TVXShaderEditorProperty'}{$ENDIF}
 
 function TVXShaderEditorProperty.GetAttributes: TPropertyAttributes;
 begin
@@ -1425,7 +1425,7 @@ begin
   end;
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VXS_REGION}{$ENDREGION}{$ENDIF}
 // ******************************************************************************
 
 procedure GLRegisterPropertiesInCategories;

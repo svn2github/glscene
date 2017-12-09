@@ -10,6 +10,7 @@ uses
   Winapi.OpenGLext,
   System.SysUtils,
   System.Classes,
+  System.Math,
   Vcl.FileCtrl,
   Vcl.Imaging.Jpeg,
   Vcl.Graphics,
@@ -21,9 +22,9 @@ uses
   Vcl.Dialogs,
   Vcl.Menus,
 
-   
   GLScene,
   GLObjects,
+  GLVectorLists,
   GLWin32Viewer,
   GLUtils,
   GLSkydome,
@@ -43,8 +44,7 @@ uses
   GLCrossPlatform,
   GLBaseClasses,
   GLTextureFormat,
-  GLContext,
-  OpenGLTokens;
+  GLContext;
 
 type
   TMarkerPosition = class(TObject)

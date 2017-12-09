@@ -1674,7 +1674,7 @@ begin
     TGLMaterialMultiProxyMaster, '', TGLLibMaterialNameProperty);
   RegisterPropertyEditor(TypeInfo(TGLLibMaterialName), TGLSLBumpShader, '',
     TGLLibMaterialNameProperty);
-  RegisterPropertyEditor(TypeInfo(TGLLibMaterialName), TSpriteAnimation, '',
+  RegisterPropertyEditor(TypeInfo(TGLLibMaterialName), TGLSpriteAnimation, '',
     TGLLibMaterialNameProperty);
   RegisterPropertyEditor(TypeInfo(TGLLibMaterialName), TGLMaterialProxy, '',
     TGLLibMaterialNameProperty);

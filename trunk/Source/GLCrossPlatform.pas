@@ -20,7 +20,7 @@ uses
 {$IFDEF UNIX}
   Unix, BaseUnix,
 {$ENDIF}
-{$IFDEF GLS_X11_SUPPORT}
+{$IFDEF X11_SUPPORT}
   xlib,
 {$ENDIF}
   System.Types, 
@@ -417,7 +417,7 @@ begin
   end;
 end;
 {$ELSE}
-{$IFDEF GLS_X11_SUPPORT}
+{$IFDEF X11_SUPPORT}
 var
   dpy: PDisplay;
 begin

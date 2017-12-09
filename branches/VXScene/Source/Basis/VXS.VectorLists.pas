@@ -3035,7 +3035,7 @@ end;
 //
 
 function TSingleList.Sum: Single;
-{$IFNDEF VKS_NO_ASM}
+{$IFNDEF VXS_NO_ASM}
   function ComputeSum(list: PSingleArrayList; nb: Integer): Single; register;
   asm
     fld   dword ptr [eax]
@@ -3385,7 +3385,7 @@ end;
 //
 
 function TDoubleList.Sum: Double;
-{$IFNDEF VKS_NO_ASM}
+{$IFNDEF VXS_NO_ASM}
   function ComputeSum(list: PDoubleArrayList; nb: Integer): Double; register;
   asm
     fld   dword ptr [eax]

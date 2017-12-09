@@ -8,7 +8,7 @@ unit VXS.BitmapFont;
 
 {$I VXScene.inc}
 
-{$DEFINE VKS_UNICODE_SUPPORT}
+{$DEFINE VXS_UNICODE_SUPPORT}
 
 interface
 
@@ -39,7 +39,7 @@ uses
   VXS.VectorTypes;
 
 type
-{$IFNDEF VKS_UNICODE_SUPPORT}
+{$IFNDEF VXS_UNICODE_SUPPORT}
   UnicodeString = WideString; // Use WideString for earlier versions
 {$ENDIF}
 

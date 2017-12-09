@@ -165,7 +165,7 @@ object GlsSmdQcFrm: TGlsSmdQcFrm
     object Label15: TLabel
       Left = 1
       Top = 390
-      Width = 246
+      Width = 236
       Height = 26
       Align = alBottom
       Alignment = taCenter
@@ -175,7 +175,6 @@ object GlsSmdQcFrm: TGlsSmdQcFrm
       Color = clGray
       ParentColor = False
       WordWrap = True
-      ExplicitWidth = 236
     end
     object HelpBtn: TSpeedButton
       Left = 184
@@ -446,7 +445,6 @@ object GlsSmdQcFrm: TGlsSmdQcFrm
       TargetObject = DummyCube1
       Position.Coordinates = {000048420000A0410000A0400000803F}
       Direction.Coordinates = {00000000000000000000803F00000000}
-      Up.Coordinates = {000000000000803F0000008000000000}
       Left = 224
       Top = 160
     end

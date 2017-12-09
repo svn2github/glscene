@@ -990,7 +990,7 @@ end;
 
 procedure TVXPlane.BuildList(var rci: TVXRenderContextInfo);
 
-  procedure EmitVertex(ptr: PVertexRec); {$IFDEF VKS_INLINE}inline;{$ENDIF}
+  procedure EmitVertex(ptr: PVertexRec); {$IFDEF VXS_INLINE}inline;{$ENDIF}
   begin
     glTexCoord2fv(@ptr^.TexCoord);
     glVertex3fv(@ptr^.Position);

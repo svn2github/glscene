@@ -8,14 +8,33 @@ unit FGlsSmdQc;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages,
-  System.SysUtils, System.Classes,
-  Vcl.Buttons, Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
-  Vcl.Samples.Spin, Vcl.ComCtrls, Vcl.StdCtrls, Vcl.ExtCtrls,
-   
-  GLVectorFileObjects, GLScene, GLObjects, GLTexture,
-  GLCadencer, GLWin32Viewer, GLGraph, GLVectorTypes,
-  GLMaterial, GLCoordinates, GLCrossPlatform, GLBaseClasses;
+  Winapi.Windows,
+  Winapi.Messages,
+  System.SysUtils,
+  System.Classes,
+  Vcl.Buttons,
+  Vcl.Graphics,
+  Vcl.Controls,
+  Vcl.Forms,
+  Vcl.Dialogs,
+  Vcl.Samples.Spin,
+  Vcl.ComCtrls,
+  Vcl.StdCtrls,
+  Vcl.ExtCtrls,
+
+  GLVectorGeometry,
+  GLVectorFileObjects,
+  GLScene,
+  GLObjects,
+  GLTexture,
+  GLCadencer,
+  GLWin32Viewer,
+  GLGraph,
+  GLVectorTypes,
+  GLMaterial,
+  GLCoordinates,
+  GLCrossPlatform,
+  GLBaseClasses;
 
 type
   TGlsSmdQcFrm = class(TForm)

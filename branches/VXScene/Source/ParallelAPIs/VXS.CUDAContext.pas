@@ -224,7 +224,7 @@ threadvar
 // ------------------ TCUDADimensions ------------------
 // ------------------
 
-{$IFDEF VKS_REGION}{$REGION 'TCUDADimensions'}{$ENDIF}
+{$IFDEF VXS_REGION}{$REGION 'TCUDADimensions'}{$ENDIF}
 
 constructor TCUDADimensions.Create(AOwner: TPersistent);
 const
@@ -292,12 +292,12 @@ begin
     end;
   end;
 end;
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VXS_REGION}{$ENDREGION}{$ENDIF}
 // ------------------
 // ------------------ TCUDADevice ------------------
 // ------------------
 
-{$IFDEF VKS_REGION}{$REGION 'TCUDAdevice'}{$ENDIF}
+{$IFDEF VXS_REGION}{$REGION 'TCUDAdevice'}{$ENDIF}
 // Create
 //
 
@@ -395,12 +395,12 @@ begin
   Result := fDeviceProperties.TotalGlobalMem;
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VXS_REGION}{$ENDREGION}{$ENDIF}
 // ------------------
 // ------------------ TVXSCUDADevice ------------------
 // ------------------
 
-{$IFDEF VKS_REGION}{$REGION 'TVXSCUDADevice'}{$ENDIF}
+{$IFDEF VXS_REGION}{$REGION 'TVXSCUDADevice'}{$ENDIF}
 // Create
 //
 
@@ -459,12 +459,12 @@ begin
     CUDAContextManager.CreateContextOf(Self.Device);
   end;
 end;
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VXS_REGION}{$ENDREGION}{$ENDIF}
 // ------------------
 // ------------------ TCUDAContextManager ------------------
 // ------------------
 
-{$IFDEF VKS_REGION}{$REGION 'TCUDAcontextManager'}{$ENDIF}
+{$IFDEF VXS_REGION}{$REGION 'TCUDAcontextManager'}{$ENDIF}
 // Init
 //
 
@@ -859,12 +859,12 @@ begin
   end;
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VXS_REGION}{$ENDREGION}{$ENDIF}
 // ------------------
 // ------------------ TCUDAHandlesMaster ------------------
 // ------------------
 
-{$IFDEF VKS_REGION}{$REGION 'TCUDAHandlesMaster'}{$ENDIF}
+{$IFDEF VXS_REGION}{$REGION 'TCUDAHandlesMaster'}{$ENDIF}
 // AllocateHandles
 //
 
@@ -886,12 +886,12 @@ begin
   GetContext.FHandleList.Remove(Self);
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VXS_REGION}{$ENDREGION}{$ENDIF}
 // ------------------
 // ------------------ TCUDAContext ------------------
 // ------------------
 
-{$IFDEF VKS_REGION}{$REGION 'TCUDAcontext'}{$ENDIF}
+{$IFDEF VXS_REGION}{$REGION 'TCUDAcontext'}{$ENDIF}
 // Create
 //
 
@@ -959,7 +959,7 @@ function TCUDAContext.IsValid: Boolean;
 begin
   Result := Assigned(fHandle);
 end;
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VXS_REGION}{$ENDREGION}{$ENDIF}
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------

@@ -39,16 +39,15 @@ uses
   GLState;
 
 type
-  TSpriteAnimFrame = class;
-  TSpriteAnimFrameList = class;
-  TSpriteAnimation = class;
-  TSpriteAnimationList = class;
+  TGLSpriteAnimFrame = class;
+  TGLSpriteAnimFrameList = class;
+  TGLSpriteAnimation = class;
+  TGLSpriteAnimationList = class;
   TGLAnimatedSprite = class;
 
-  {Used by the SpriteAnimation when Dimensions are set manual. The animation
-     will use the offsets, width and height to determine the texture coodinates
-     for this frame. }
-  TSpriteAnimFrame = class(TGLXCollectionItem)
+  { Used by the SpriteAnimation when Dimensions are set manual. The animation
+    will use the offsets, width and height to determine the texture coodinates for this frame. }
+  TGLSpriteAnimFrame = class(TGLXCollectionItem)
   private
     FOffsetX,
       FOffsetY,
@@ -72,30 +71,24 @@ type
     property Height: Integer read FHeight write SetHeight;
   end;
 
-  {The XCollection used for the TSpriteAnimFrame object. }
-  TSpriteAnimFrameList = class(TGLXCollection)
+  TGLSpriteAnimFrameList = class(TGLXCollection)
   public
     constructor Create(aOwner: TPersistent); override;
     class function ItemsClass: TGLXCollectionItemClass; override;
-
   end;
 
   {Determines if the texture coordinates are Automatically generated
      from the Animations properties or if they are Manually set through
      the Frames collection. }
-  TSpriteFrameDimensions = (sfdAuto, sfdManual);
+  TGLSpriteFrameDimensions = (sfdAuto, sfdManual);
 
-  {Used to mask the auto generated frames. The Left, Top, Right and
-     Bottom properties determines the number of pixels to be cropped
-     from each corresponding side of the frame. Only applicable to
-     auto dimensions. }
-  TSpriteAnimMargins = class(TPersistent)
+  { Used to mask the auto generated frames. The Left, Top, Right and
+    Bottom properties determines the number of pixels to be cropped
+    from each corresponding side of the frame. Only applicable to auto dimensions. }
+  TGLSpriteAnimMargins = class(TPersistent)
   private
-    FOwner: TSpriteAnimation;
-    FLeft,
-      FTop,
-      FRight,
-      FBottom: Integer;
+    FOwner: TGLSpriteAnimation;
+    FLeft, FTop, FRight, FBottom: Integer;
   protected
     procedure SetLeft(const Value: Integer);
     procedure SetTop(const Value: Integer);
@@ -103,9 +96,8 @@ type
     procedure SetBottom(const Value: Integer);
     procedure DoChanged;
   public
-    constructor Create(Animation: TSpriteAnimation);
-    property Owner: TSpriteAnimation read FOwner;
-
+    constructor Create(Animation: TGLSpriteAnimation);
+    property Owner: TGLSpriteAnimation read FOwner;
   published
     property Left: Integer read FLeft write SetLeft;
     property Top: Integer read FTop write SetTop;
@@ -113,9 +105,8 @@ type
     property Bottom: Integer read FBottom write SetBottom;
   end;
 
-  {Animations define how the texture coordinates for each offset
-     are to be determined. }
-  TSpriteAnimation = class(TGLXCollectionItem, IGLMaterialLibrarySupported)
+  {Animations define how the texture coordinates for each offset are to be determined. }
+  TGLSpriteAnimation = class(TGLXCollectionItem, IGLMaterialLibrarySupported)
   private
     FCurrentFrame,
       FStartFrame,
@@ -123,12 +114,11 @@ type
       FFrameWidth,
       FFrameHeight,
       FInterval: Integer;
-    FFrames: TSpriteAnimFrameList;
+    FFrames: TGLSpriteAnimFrameList;
     FLibMaterialName: TGLLibMaterialName;
     FLibMaterialCached: TGLLibMaterial;
-    FDimensions: TSpriteFrameDimensions;
-    FMargins: TSpriteAnimMargins;
-
+    FDimensions: TGLSpriteFrameDimensions;
+    FMargins: TGLSpriteAnimMargins;
     procedure DoChanged;
   protected
     procedure SetCurrentFrame(const Value: Integer);
@@ -136,7 +126,7 @@ type
     procedure SetFrameHeight(const Value: Integer);
     procedure WriteToFiler(writer: TWriter); override;
     procedure ReadFromFiler(reader: TReader); override;
-    procedure SetDimensions(const Value: TSpriteFrameDimensions);
+    procedure SetDimensions(const Value: TGLSpriteFrameDimensions);
     procedure SetLibMaterialName(const val: TGLLibMaterialName);
     function GetLibMaterialCached: TGLLibMaterial;
     procedure SetInterval(const Value: Integer);
@@ -149,9 +139,7 @@ type
     destructor Destroy; override;
     class function FriendlyName: string; override;
     class function FriendlyDescription: string; override;
-
     property LibMaterialCached: TGLLibMaterial read GetLibMaterialCached;
-
   published
     // The current showing frame for this animation.
     property CurrentFrame: Integer read FCurrentFrame write SetCurrentFrame;
@@ -169,30 +157,27 @@ type
       SetLibMaterialName;
     {Manual dimension animation frames. Stores the offsets and dimensions
        for each frame in the animation. }
-    property Frames: TSpriteAnimFrameList read FFrames;
+    property Frames: TGLSpriteAnimFrameList read FFrames;
     // Automatic or manual texture coordinate generation.
-    property Dimensions: TSpriteFrameDimensions read FDimensions write
+    property Dimensions: TGLSpriteFrameDimensions read FDimensions write
       SetDimensions;
     {The number of milliseconds between each frame in the animation.
        Will automatically calculate the FrameRate value when set.
-       Will override the TGLAnimatedSprite Interval is greater than
-       zero. }
+       Will override the TGLAnimatedSprite Interval is greater than zero. }
     property Interval: Integer read FInterval write SetInterval;
     {The number of frames per second for the animation.
        Will automatically calculate the Interval value when set.
        Precision will depend on Interval since Interval has priority. }
     property FrameRate: Single read GetFrameRate write SetFrameRate;
     // Sets cropping margins for auto dimension animations.
-    property Margins: TSpriteAnimMargins read FMargins;
-
+    property Margins: TGLSpriteAnimMargins read FMargins;
   end;
 
-  {A collection for storing TSpriteAnimation objects. }
-  TSpriteAnimationList = class(TGLXCollection)
+  {A collection for storing SpriteAnimation objects. }
+  TGLSpriteAnimationList = class(TGLXCollection)
   public
     constructor Create(aOwner: TPersistent); override;
     class function ItemsClass: TGLXCollectionItemClass; override;
-
   end;
 
   {Sets the current animation playback mode:
@@ -203,16 +188,14 @@ type
       samBounceForward - Plays forward and switches to samBounceBackward
         when EndFrame is reached.
       samBounceBackward - Plays backward and switches to samBounceForward
-        when StartFrame is reached.
-       }
-  TSpriteAnimationMode = (samNone, samPlayOnce, samLoop, samBounceForward,
+        when StartFrame is reached. }
+  TGLSpriteAnimationMode = (samNone, samPlayOnce, samLoop, samBounceForward,
     samBounceBackward, samLoopBackward);
 
-  {An animated version of the TGLSprite using offset texture
-     coordinate animation. }
+  {An animated version for using offset texture coordinate animation. }
   TGLAnimatedSprite = class(TGLBaseSceneObject)
   private
-    FAnimations: TSpriteAnimationList;
+    FAnimations: TGLSpriteAnimationList;
     FMaterialLibrary: TGLMaterialLibrary;
     FAnimationIndex,
       FInterval,
@@ -220,7 +203,7 @@ type
       FPixelRatio: Integer;
     FMirrorU,
       FMirrorV: Boolean;
-    FAnimationMode: TSpriteAnimationMode;
+    FAnimationMode: TGLSpriteAnimationMode;
     FCurrentFrameDelta: Double;
     FOnFrameChanged: TNotifyEvent;
     FOnEndFrameReached: TNotifyEvent;
@@ -233,7 +216,7 @@ type
       override;
     procedure SetInterval(const val: Integer);
     procedure SetAnimationIndex(const val: Integer);
-    procedure SetAnimationMode(const val: TSpriteAnimationMode);
+    procedure SetAnimationMode(const val: TGLSpriteAnimationMode);
     procedure SetMaterialLibrary(const val: TGLMaterialLibrary);
     procedure SetPixelRatio(const val: Integer);
     procedure SetRotation(const val: Integer);
@@ -244,7 +227,6 @@ type
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
     procedure BuildList(var rci: TGLRenderContextInfo); override;
     procedure DoProgress(const progressTime: TProgressTimes); override;
     // Steps the current animation to the next frame
@@ -252,19 +234,19 @@ type
   published
     { A collection of animations. Stores the settings for animating
        then sprite. }
-    property Animations: TSpriteAnimationList read FAnimations;
+    property Animations: TGLSpriteAnimationList read FAnimations;
     // The material library that stores the lib materials for the animations.
     property MaterialLibrary: TGLMaterialLibrary read FMaterialLibrary write
       SetMaterialLibrary;
     {Sets the number of milliseconds between each frame. Will recalculate
-       the Framerate when set. Will be overridden by the TSpriteAnimation
+       the Framerate when set. Will be overridden by the TGLSpriteAnimation
        Interval if it is greater than zero. }
     property Interval: Integer read FInterval write SetInterval;
     // Index of the sprite animation to be used.
     property AnimationIndex: Integer read FAnimationIndex write
       SetAnimationIndex;
     // Playback mode for the current animation.
-    property AnimationMode: TSpriteAnimationMode read FAnimationMode write
+    property AnimationMode: TGLSpriteAnimationMode read FAnimationMode write
       SetAnimationMode;
     { Used to automatically calculate the width and height of a sprite based
        on the size of the frame it is showing. For example, if PixelRatio is
@@ -299,35 +281,32 @@ type
 // -----------------------------------------------------------------------------
 implementation
 // -----------------------------------------------------------------------------
+
 // ----------
-// ---------- TSpriteAnimFrame ----------
+// ---------- TGLSpriteAnimFrame ----------
 // ----------
 
-
-procedure TSpriteAnimFrame.DoChanged;
+procedure TGLSpriteAnimFrame.DoChanged;
 begin
   if Assigned(Owner) then
   begin
     if Assigned(Owner.Owner) then
-      if Owner.Owner is TSpriteAnimation then
-        TSpriteAnimation(Owner.Owner).DoChanged;
+      if Owner.Owner is TGLSpriteAnimation then
+        TGLSpriteAnimation(Owner.Owner).DoChanged;
   end;
 end;
 
- 
-class function TSpriteAnimFrame.FriendlyName: string;
+class function TGLSpriteAnimFrame.FriendlyName: string;
 begin
   Result := 'Frame';
 end;
 
-
-class function TSpriteAnimFrame.FriendlyDescription: string;
+class function TGLSpriteAnimFrame.FriendlyDescription: string;
 begin
   Result := 'Sprite Animation Frame';
 end;
 
-
-procedure TSpriteAnimFrame.WriteToFiler(writer: TWriter);
+procedure TGLSpriteAnimFrame.WriteToFiler(writer: TWriter);
 begin
   inherited;
   writer.WriteInteger(0); // Archive version number
@@ -340,8 +319,7 @@ begin
   end;
 end;
 
-
-procedure TSpriteAnimFrame.ReadFromFiler(reader: TReader);
+procedure TGLSpriteAnimFrame.ReadFromFiler(reader: TReader);
 var
   archiveVersion: Integer;
 begin
@@ -357,8 +335,7 @@ begin
   end;
 end;
 
-
-procedure TSpriteAnimFrame.SetOffsetX(const Value: Integer);
+procedure TGLSpriteAnimFrame.SetOffsetX(const Value: Integer);
 begin
   if Value <> FOffsetX then
   begin
@@ -367,8 +344,7 @@ begin
   end;
 end;
 
-
-procedure TSpriteAnimFrame.SetOffsetY(const Value: Integer);
+procedure TGLSpriteAnimFrame.SetOffsetY(const Value: Integer);
 begin
   if Value <> FOffsetY then
   begin
@@ -377,8 +353,7 @@ begin
   end;
 end;
 
-
-procedure TSpriteAnimFrame.SetWidth(const Value: Integer);
+procedure TGLSpriteAnimFrame.SetWidth(const Value: Integer);
 begin
   if Value <> FWidth then
   begin
@@ -387,8 +362,7 @@ begin
   end;
 end;
 
-
-procedure TSpriteAnimFrame.SetHeight(const Value: Integer);
+procedure TGLSpriteAnimFrame.SetHeight(const Value: Integer);
 begin
   if Value <> FHeight then
   begin
@@ -398,34 +372,30 @@ begin
 end;
 
 // ----------
-// ---------- TSpriteAnimFrameList ----------
+// ---------- TGLSpriteAnimFrameList ----------
 // ----------
 
-
-constructor TSpriteAnimFrameList.Create(aOwner: TPersistent);
+constructor TGLSpriteAnimFrameList.Create(aOwner: TPersistent);
 begin
   inherited;
 end;
 
-
-class function TSpriteAnimFrameList.ItemsClass: TGLXCollectionItemClass;
+class function TGLSpriteAnimFrameList.ItemsClass: TGLXCollectionItemClass;
 begin
-  Result := TSpriteAnimFrame;
+  Result := TGLSpriteAnimFrame;
 end;
 
 // ----------
-// ---------- TSpriteAnimationMargins ----------
+// ---------- TGLSpriteAnimMargins ----------
 // ----------
 
-
-constructor TSpriteAnimMargins.Create(Animation: TSpriteAnimation);
+constructor TGLSpriteAnimMargins.Create(Animation: TGLSpriteAnimation);
 begin
   inherited Create;
   FOwner := Animation;
 end;
 
-
-procedure TSpriteAnimMargins.SetLeft(const Value: Integer);
+procedure TGLSpriteAnimMargins.SetLeft(const Value: Integer);
 begin
   if Value <> FLeft then
   begin
@@ -434,8 +404,7 @@ begin
   end;
 end;
 
-
-procedure TSpriteAnimMargins.SetTop(const Value: Integer);
+procedure TGLSpriteAnimMargins.SetTop(const Value: Integer);
 begin
   if Value <> FTop then
   begin
@@ -445,7 +414,7 @@ begin
 end;
 
 
-procedure TSpriteAnimMargins.SetRight(const Value: Integer);
+procedure TGLSpriteAnimMargins.SetRight(const Value: Integer);
 begin
   if Value <> FRight then
   begin
@@ -455,7 +424,7 @@ begin
 end;
 
 
-procedure TSpriteAnimMargins.SetBottom(const Value: Integer);
+procedure TGLSpriteAnimMargins.SetBottom(const Value: Integer);
 begin
   if Value <> FBottom then
   begin
@@ -465,61 +434,55 @@ begin
 end;
 
 
-procedure TSpriteAnimMargins.DoChanged;
+procedure TGLSpriteAnimMargins.DoChanged;
 begin
   if Assigned(Owner) then
     Owner.DoChanged;
 end;
 
 // ----------
-// ---------- TSpriteAnimation ----------
+// ---------- TGLSpriteAnimation ----------
 // ----------
 
-
-constructor TSpriteAnimation.Create(aOwner: TGLXCollection);
+constructor TGLSpriteAnimation.Create(aOwner: TGLXCollection);
 begin
   inherited;
-  FFrames := TSpriteAnimFrameList.Create(Self);
-  FMargins := TSpriteAnimMargins.Create(Self);
+  FFrames := TGLSpriteAnimFrameList.Create(Self);
+  FMargins := TGLSpriteAnimMargins.Create(Self);
 end;
 
-
-destructor TSpriteAnimation.Destroy;
+destructor TGLSpriteAnimation.Destroy;
 begin
   FFrames.Free;
   FMargins.Free;
   inherited;
 end;
 
-
-function TSpriteAnimation.GetMaterialLibrary: TGLAbstractMaterialLibrary;
+function TGLSpriteAnimation.GetMaterialLibrary: TGLAbstractMaterialLibrary;
 begin
-  if not (Owner is TSpriteAnimationList) then
+  if not (Owner is TGLSpriteAnimationList) then
     Result := nil
   else
   begin
-    if not (TSpriteAnimationList(Owner).Owner is TGLAnimatedSprite) then
+    if not (TGLSpriteAnimationList(Owner).Owner is TGLAnimatedSprite) then
       Result := nil
     else
       Result :=
-        TGLAnimatedSprite(TSpriteAnimationList(Owner).Owner).FMaterialLibrary;
+        TGLAnimatedSprite(TGLSpriteAnimationList(Owner).Owner).FMaterialLibrary;
   end;
 end;
 
-
-class function TSpriteAnimation.FriendlyName: string;
+class function TGLSpriteAnimation.FriendlyName: string;
 begin
   Result := 'Animation';
 end;
 
-
-class function TSpriteAnimation.FriendlyDescription: string;
+class function TGLSpriteAnimation.FriendlyDescription: string;
 begin
   Result := 'Sprite Animation';
 end;
 
-
-procedure TSpriteAnimation.WriteToFiler(writer: TWriter);
+procedure TGLSpriteAnimation.WriteToFiler(writer: TWriter);
 begin
   inherited;
   writer.WriteInteger(2); // Archive version number
@@ -534,10 +497,8 @@ begin
     WriteInteger(FrameWidth);
     WriteInteger(FrameHeight);
     WriteInteger(Integer(Dimensions));
-
     // Version 1
     WriteInteger(Interval);
-
     // Version 2
     WriteInteger(Margins.Left);
     WriteInteger(Margins.Top);
@@ -546,8 +507,7 @@ begin
   end;
 end;
 
-
-procedure TSpriteAnimation.ReadFromFiler(reader: TReader);
+procedure TGLSpriteAnimation.ReadFromFiler(reader: TReader);
 var
   archiveVersion: Integer;
 begin
@@ -563,7 +523,7 @@ begin
     EndFrame := ReadInteger;
     FrameWidth := ReadInteger;
     FrameHeight := ReadInteger;
-    Dimensions := TSpriteFrameDimensions(ReadInteger);
+    Dimensions := TGLSpriteFrameDimensions(ReadInteger);
 
     if archiveVersion >= 1 then
     begin
@@ -580,8 +540,7 @@ begin
   end;
 end;
 
-
-procedure TSpriteAnimation.DoChanged;
+procedure TGLSpriteAnimation.DoChanged;
 begin
   if Assigned(Owner) then
   begin
@@ -591,8 +550,7 @@ begin
   end;
 end;
 
-
-procedure TSpriteAnimation.SetCurrentFrame(const Value: Integer);
+procedure TGLSpriteAnimation.SetCurrentFrame(const Value: Integer);
 begin
   if Value <> FCurrentFrame then
   begin
@@ -603,8 +561,7 @@ begin
   end;
 end;
 
-
-procedure TSpriteAnimation.SetFrameWidth(const Value: Integer);
+procedure TGLSpriteAnimation.SetFrameWidth(const Value: Integer);
 begin
   if Value <> FFrameWidth then
   begin
@@ -613,8 +570,7 @@ begin
   end;
 end;
 
-
-procedure TSpriteAnimation.SetFrameHeight(const Value: Integer);
+procedure TGLSpriteAnimation.SetFrameHeight(const Value: Integer);
 begin
   if Value <> FFrameHeight then
   begin
@@ -623,9 +579,8 @@ begin
   end;
 end;
 
-
-procedure TSpriteAnimation.SetDimensions(
-  const Value: TSpriteFrameDimensions);
+procedure TGLSpriteAnimation.SetDimensions(
+  const Value: TGLSpriteFrameDimensions);
 begin
   if Value <> FDimensions then
   begin
@@ -634,8 +589,7 @@ begin
   end;
 end;
 
-
-procedure TSpriteAnimation.SetLibMaterialName(const val: TGLLibMaterialName);
+procedure TGLSpriteAnimation.SetLibMaterialName(const val: TGLLibMaterialName);
 begin
   if val <> FLibMaterialName then
   begin
@@ -644,8 +598,7 @@ begin
   end;
 end;
 
-
-function TSpriteAnimation.GetLibMaterialCached: TGLLibMaterial;
+function TGLSpriteAnimation.GetLibMaterialCached: TGLLibMaterial;
 begin
   Result := nil;
   if FLibMaterialName = '' then
@@ -662,8 +615,7 @@ begin
   Result := FLibMaterialCached;
 end;
 
-
-procedure TSpriteAnimation.SetInterval(const Value: Integer);
+procedure TGLSpriteAnimation.SetInterval(const Value: Integer);
 begin
   if Value <> FInterval then
   begin
@@ -672,8 +624,7 @@ begin
   end;
 end;
 
-
-procedure TSpriteAnimation.SetFrameRate(const Value: Single);
+procedure TGLSpriteAnimation.SetFrameRate(const Value: Single);
 begin
   if Value > 0 then
     Interval := Round(1000 / Value)
@@ -681,8 +632,7 @@ begin
     Interval := 0;
 end;
 
-
-function TSpriteAnimation.GetFrameRate: Single;
+function TGLSpriteAnimation.GetFrameRate: Single;
 begin
   if Interval > 0 then
     Result := 1000 / Interval
@@ -691,31 +641,28 @@ begin
 end;
 
 // ----------
-// ---------- TSpriteAnimationList ----------
+// ---------- TGLSpriteAnimationList ----------
 // ----------
 
-
-constructor TSpriteAnimationList.Create(aOwner: TPersistent);
+constructor TGLSpriteAnimationList.Create(aOwner: TPersistent);
 begin
   inherited;
 end;
 
-
-class function TSpriteAnimationList.ItemsClass: TGLXCollectionItemClass;
+class function TGLSpriteAnimationList.ItemsClass: TGLXCollectionItemClass;
 begin
-  Result := TSpriteAnimation;
+  Result := TGLSpriteAnimation;
 end;
 
 // ----------
 // ---------- TGLAnimatedSprite ----------
 // ----------
 
-
 constructor TGLAnimatedSprite.Create(AOwner: TComponent);
 begin
   inherited;
 
-  FAnimations := TSpriteAnimationList.Create(Self);
+  FAnimations := TGLSpriteAnimationList.Create(Self);
   FAnimationIndex := -1;
   FInterval := 100;
   FPixelRatio := 100;
@@ -725,7 +672,6 @@ begin
 
   ObjectStyle := [osDirectDraw];
 end;
-
 
 destructor TGLAnimatedSprite.Destroy;
 begin
@@ -742,20 +688,20 @@ var
   mat: TMatrix;
   u0, v0, u1, v1: Single;
   x0, y0, x1, y1, TexWidth, TexHeight: Integer;
-  Anim: TSpriteAnimation;
-  Frame: TSpriteAnimFrame;
+  Anim: TGLSpriteAnimation;
+  Frame: TGLSpriteAnimFrame;
   libMat: TGLLibMaterial;
   IsAuto: Boolean;
 begin
   if (FAnimationIndex <> -1) and (FAnimationIndex < Animations.Count) then
   begin
-    Anim := TSpriteAnimation(Animations[FAnimationIndex]);
+    Anim := TGLSpriteAnimation(Animations[FAnimationIndex]);
 
     if (Anim.CurrentFrame >= 0) then
     begin
       if (Anim.Dimensions = sfdManual) and (Anim.CurrentFrame <
         Anim.Frames.Count) then
-        Frame := TSpriteAnimFrame(Anim.Frames[Anim.CurrentFrame])
+        Frame := TGLSpriteAnimFrame(Anim.Frames[Anim.CurrentFrame])
       else
         Frame := nil;
       IsAuto := (Anim.CurrentFrame <= Anim.EndFrame) and
@@ -875,7 +821,6 @@ begin
 end;
 {$WARNINGS On}
 
-
 procedure TGLAnimatedSprite.DoProgress(const progressTime: TProgressTimes);
 var
   i, intr: Integer;
@@ -883,7 +828,7 @@ begin
   inherited;
   if (AnimationIndex = -1) then
     exit;
-  intr := TSpriteAnimation(Animations[AnimationIndex]).Interval;
+  intr := TGLSpriteAnimation(Animations[AnimationIndex]).Interval;
   if intr = 0 then
     intr := Interval;
   if (FAnimationMode <> samNone) and (intr > 0) then
@@ -910,7 +855,6 @@ begin
   inherited;
 end;
 
-
 procedure TGLAnimatedSprite.DefineProperties(Filer: TFiler);
 begin
   inherited;
@@ -918,7 +862,6 @@ begin
     ReadAnimations, WriteAnimations,
     FAnimations.Count > 0);
 end;
-
 
 procedure TGLAnimatedSprite.WriteAnimations(Stream: TStream);
 var
@@ -932,7 +875,6 @@ begin
   end;
 end;
 
-
 procedure TGLAnimatedSprite.ReadAnimations(Stream: TStream);
 var
   reader: TReader;
@@ -945,18 +887,17 @@ begin
   end;
 end;
 
-
 procedure TGLAnimatedSprite.NextFrame;
 var
   currentFrame,
     startFrame,
     endFrame: Integer;
-  Anim: TSpriteAnimation;
+  Anim: TGLSpriteAnimation;
 begin
   if (FAnimationIndex = -1) or (FAnimationIndex >= Animations.Count) then
     exit;
 
-  Anim := TSpriteAnimation(Animations[FAnimationIndex]);
+  Anim := TGLSpriteAnimation(Animations[FAnimationIndex]);
 
   currentFrame := Anim.CurrentFrame;
   if Anim.Dimensions = sfdManual then
@@ -1025,7 +966,6 @@ begin
   Anim.CurrentFrame := currentFrame;
 end;
 
-
 procedure TGLAnimatedSprite.SetInterval(const val: Integer);
 begin
   if val <> FInterval then
@@ -1044,7 +984,6 @@ begin
     Interval := 0;
 end;
 
-
 function TGLAnimatedSprite.GetFrameRate: Single;
 begin
   if Interval > 0 then
@@ -1052,7 +991,6 @@ begin
   else
     Result := 0;
 end;
-
 
 procedure TGLAnimatedSprite.SetAnimationIndex(const val: Integer);
 begin
@@ -1062,7 +1000,7 @@ begin
     if FAnimationIndex < 0 then
       FAnimationIndex := -1;
     if (FAnimationIndex <> -1) and (FAnimationIndex < Animations.Count) then
-      with TSpriteAnimation(Animations[FAnimationIndex]) do
+      with TGLSpriteAnimation(Animations[FAnimationIndex]) do
         case AnimationMode of
           samNone, samPlayOnce, samLoop, samBounceForward:
             CurrentFrame := StartFrame;
@@ -1073,8 +1011,7 @@ begin
   end;
 end;
 
-
-procedure TGLAnimatedSprite.SetAnimationMode(const val: TSpriteAnimationMode);
+procedure TGLAnimatedSprite.SetAnimationMode(const val: TGLSpriteAnimationMode);
 begin
   if val <> FAnimationMode then
   begin
@@ -1082,7 +1019,6 @@ begin
     NotifyChange(Self);
   end;
 end;
-
 
 procedure TGLAnimatedSprite.SetMaterialLibrary(const val: TGLMaterialLibrary);
 var
@@ -1096,11 +1032,10 @@ begin
     if FMaterialLibrary <> nil then
       FMaterialLibrary.FreeNotification(Self);
     for i := 0 to Animations.Count - 1 do
-      TSpriteAnimation(Animations[i]).FLibMaterialCached := nil;
+      TGLSpriteAnimation(Animations[i]).FLibMaterialCached := nil;
     NotifyChange(Self);
   end;
 end;
-
 
 procedure TGLAnimatedSprite.SetPixelRatio(const val: Integer);
 begin
@@ -1111,7 +1046,6 @@ begin
   end;
 end;
 
-
 procedure TGLAnimatedSprite.SetRotation(const val: Integer);
 begin
   if val <> FRotation then
@@ -1121,7 +1055,6 @@ begin
   end;
 end;
 
-
 procedure TGLAnimatedSprite.SetMirrorU(const val: Boolean);
 begin
   if val <> FMirrorU then
@@ -1130,7 +1063,6 @@ begin
     NotifyChange(Self);
   end;
 end;
-
 
 procedure TGLAnimatedSprite.SetMirrorV(const val: Boolean);
 begin
@@ -1146,16 +1078,16 @@ initialization
 // -----------------------------------------------------------------------------
 
   RegisterClasses([TGLAnimatedSprite,
-    TSpriteAnimFrame, TSpriteAnimFrameList,
-      TSpriteAnimation, TSpriteAnimationList]);
+    TGLSpriteAnimFrame, TGLSpriteAnimFrameList,
+      TGLSpriteAnimation, TGLSpriteAnimationList]);
 
-  RegisterXCollectionItemClass(TSpriteAnimFrame);
-  RegisterXCollectionItemClass(TSpriteAnimation);
+  RegisterXCollectionItemClass(TGLSpriteAnimFrame);
+  RegisterXCollectionItemClass(TGLSpriteAnimation);
 
 finalization
 
-  UnregisterXCollectionItemClass(TSpriteAnimFrame);
-  UnregisterXCollectionItemClass(TSpriteAnimation);
+  UnregisterXCollectionItemClass(TGLSpriteAnimFrame);
+  UnregisterXCollectionItemClass(TGLSpriteAnimation);
 
 end.
 

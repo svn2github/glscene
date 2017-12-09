@@ -2,7 +2,7 @@ unit FABCreator;
 
 {Need to Mix the data requirements
    from "Earth Demo" and  "Planet Frenzy" Demo}
-{: "Planet Frenzy" Demo. http://jdelauney.free.fr/glscene/planetfrenzy
+{ "Planet Frenzy" Demo. http://jdelauney.free.fr/glscene/planetfrenzy
  Version : PRE-ALPHA 0.1
 
   An idea of Alexandre Hirzel
@@ -75,17 +75,32 @@ MaterialLibrary : M1
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, Winapi.ShellAPI,
-  System.SysUtils, System.Classes,
-  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Imaging.Jpeg,
-  Vcl.StdCtrls, Vcl.Buttons, Vcl.ExtCtrls, Vcl.ComCtrls, Vcl.Menus,
+  Winapi.Windows,
+  Winapi.Messages,
+  Winapi.ShellAPI,
+  System.SysUtils,
+  System.Classes,
+  System.Math,
+  Vcl.Graphics,
+  Vcl.Controls,
+  Vcl.Forms,
+  Vcl.Dialogs,
+  Vcl.Imaging.Jpeg,
+  Vcl.StdCtrls,
+  Vcl.Buttons,
+  Vcl.ExtCtrls,
+  Vcl.ComCtrls,
+  Vcl.Menus,
   Vcl.Imaging.PNGimage,
   {bmp is internal.. nothing needed}
 
   USolarSystem, //Eric: TOrbitalElementsData
     {USolarSystem.pas,  Orbit Elements for Rotation}
 
-  GLScene, GLVectorGeometry, GLObjects, GLVectorFileObjects, GLGeomObjects,
+  GLVectorTypes,
+  GLPersistentClasses,
+  GLScene,
+  GLVectorGeometry, GLObjects, GLVectorFileObjects, GLGeomObjects,
   GLTexture, GLCadencer,  GLFile3ds,GLWin32Viewer, GLLensFlare, GLParticles,
 
   ///UFireFxBase,// MRQZZZ 5/5/2003
@@ -132,7 +147,6 @@ Type
       nbMoons          : Byte;
       nbS3ds           : Byte;
       DocIndex         : Byte;
-
       Albedo,  OrbitRotation      : Double;
       aDistance,aDistanceVar      : Double; //aConstEdit aVarEdit
       Inclination,InclinationVar  : Double; //iConstEdit iVarEdit
@@ -140,7 +154,6 @@ Type
       nLongitude, nLongitudeVar   : Double; //NConstEdit NVarEdit
       wPerihelion,wPerihelionVar  : Double; //wConstEdit wVarEdit
       mAnomaly, mAnomalyVar       : Double; //MConstEdit MVarEdit
-
       Mass, Density            : Double;
       Atmosphere, VelocityType : Byte;
       Velocity, VelocityDir    : Double;

@@ -82,7 +82,7 @@ type
 implementation
 //==================================================================
 
-{$IFDEF VKS_REGIONS}{$REGION 'TVXUpdateAbleObject'}{$ENDIF}
+{$IFDEF VXS_REGIONS}{$REGION 'TVXUpdateAbleObject'}{$ENDIF}
 //---------------------- TVXUpdateAbleObject -----------------------------------------
 
 constructor TVXUpdateAbleObject.Create(AOwner: TPersistent);
@@ -130,9 +130,9 @@ begin
     NotifyChange(Self);
   end;
 end;
-{$IFDEF VKS_REGIONS}{$ENDREGION 'TVXUpdateAbleObject'}{$ENDIF}
+{$IFDEF VXS_REGIONS}{$ENDREGION 'TVXUpdateAbleObject'}{$ENDIF}
 
-{$IFDEF VKS_REGIONS}{$REGION 'TVXCadenceAbleComponent'}{$ENDIF}
+{$IFDEF VXS_REGIONS}{$REGION 'TVXCadenceAbleComponent'}{$ENDIF}
 // ------------------
 // ------------------ TVXCadenceAbleComponent ------------------
 // ------------------
@@ -152,9 +152,9 @@ begin
     if (Owner is TVXUpdateAbleComponent) then
       (Owner as TVXUpdateAbleComponent).NotifyChange(Self);
 end;
-{$IFDEF VKS_REGIONS}{$ENDREGION 'TVXUpdateAbleObject'}{$ENDIF}
+{$IFDEF VXS_REGIONS}{$ENDREGION 'TVXUpdateAbleObject'}{$ENDIF}
 
-{$IFDEF VKS_REGIONS}{$REGION 'TVXNotifyCollection'}{$ENDIF}
+{$IFDEF VXS_REGIONS}{$REGION 'TVXNotifyCollection'}{$ENDIF}
 // ------------------
 // ------------------ TVXNotifyCollection ------------------
 // ------------------
@@ -172,7 +172,7 @@ begin
   if Assigned(FOnNotifyChange) then
     FOnNotifyChange(Self);
 end;
-{$IFDEF VKS_REGIONS}{$ENDREGION 'TVXNotifyCollection'}{$ENDIF}
+{$IFDEF VXS_REGIONS}{$ENDREGION 'TVXNotifyCollection'}{$ENDIF}
 
 end.
 

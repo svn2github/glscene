@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Implements a HDS Filter that generates HeightData tiles in a seperate thread. 
+   Implements a HDS Filter that generates HeightData tiles in a seperate thread.
 
    This component is a TGLHeightDataSourceFilter, which uses a TGLHeightDataSourceThread,
    to asyncronously search the HeightData cache for any queued tiles.
@@ -12,11 +12,11 @@
    being prepared.  Although this keeps the framerate up, it may cause holes in the
    terrain to show, if the HeightDataThreads cant keep up with the TerrainRenderer's
    requests for new tiles.
-    
 
-	 History :  
+
+	 History :
        12/02/07 - LIN - Creation
-      The whole history is logged in previous version of the unit
+      The whole history is logged in previous versions of the unit
 
 }
 
@@ -26,34 +26,30 @@ interface
 
 {$I GLScene.inc}
 
-uses 
-  System.Classes, 
+uses
+  System.Classes,
   System.SysUtils,
-   
-  GLHeightData, 
+
+  GLHeightData,
   GLCrossPlatform;
 
 type
   TGLAsyncHDS = class;
   TIdleEvent = procedure(Sender:TGLAsyncHDS;TilesUpdated:boolean) of object;
-  TNewTilePreparedEvent = procedure (Sender : TGLAsyncHDS; heightData : TGLHeightData) of object; //a tile was updated (called INSIDE the sub-thread?)
+  TNewTilePreparedEvent = procedure (Sender : TGLAsyncHDS; 
+     HeightData : TGLHeightData) of object; //a tile was updated (called INSIDE the sub-thread?)
 
-  (* TUseDirtyTiles determines if/how dirty tiles are displayed and when they are released.
-     
-      TUseDirtyTiles
-      
-       When a tile is maked as dirty, a replacement is queued immediately.
-       However, the replacement cant be used until the HDThread has finished preparing it.
-       Dirty tiles can be deleted as soon as they are no longer used/displayed.
-
-     Possible states for a TUseDirtyTiles. 
+  (* Determines if/how dirty tiles are displayed and when they are released.
+     When a tile is maked as dirty, a replacement is queued immediately.
+     However, the replacement cant be used until the HDThread has finished preparing it.
+     Dirty tiles can be deleted as soon as they are no longer used/displayed.
+     Possible states for a TUseDirtyTiles.
        hdsNever :            Dirty tiles get released immediately, leaving a hole in the terrain, until the replacement is hdsReady.
        hdsUntilReplaced :    Dirty tiles are used, until the HDThread has finished preparing the queued replacement.
        hdsUntilAllReplaced : Waits until the HDSThread has finished preparing ALL queued tiles,
                              before allowing the renderer to switch over to the new set of tiles.
                              (This prevents a fading checkerbox effect.) *)
   TUseDirtyTiles=(dtNever,dtUntilReplaced,dtUntilAllReplaced);
-
 
 	 TGLAsyncHDS = class (TGLHeightDataSourceFilter)
      private
@@ -73,8 +69,8 @@ type
 	  (*  Wait for all running threads to finish.
           Should only be called after setting Active to false,
           to prevent new threads from starting. *)
-      procedure WaitFor(TimeOut:integer=2000);
-      //procedure NotifyChange(Sender : TObject); override;
+      procedure WaitFor(TimeOut: integer = 2000);
+      // procedure NotifyChange(Sender : TObject); override;
       (* This function prevents the user from trying to write directly to this variable.
         FTilesUpdated if NOT threadsafe and should only be reset with TilesUpdatedFlagReset. *)
       function  TilesUpdated:boolean;        //Returns true if tiles have been updated since the flag was last reset
@@ -95,7 +91,6 @@ type
       Procedure Sync;
   end;
 
-
 // ------------------------------------------------------------------
 implementation
 // ------------------------------------------------------------------
@@ -106,183 +101,206 @@ implementation
 
 constructor TGLAsyncHDS.Create(AOwner: TComponent);
 begin
-	 inherited Create(AOwner);
-  MaxThreads:=1;
-  FUseDirtyTiles:=dtNever;
-  FTilesUpdated:=true;
+  inherited Create(AOwner);
+  MaxThreads := 1;
+  FUseDirtyTiles := dtNever;
+  FTilesUpdated := true;
 end;
 
 destructor TGLAsyncHDS.Destroy;
 begin
-	inherited Destroy;
+  inherited Destroy;
 end;
 
-procedure TGLAsyncHDS.BeforePreparingData(heightData : TGLHeightData);
+procedure TGLAsyncHDS.BeforePreparingData(HeightData: TGLHeightData);
 begin
-  if FUseDirtyTiles=dtNever then begin
-    if heightData.OldVersion<>nil then begin
-      heightData.OldVersion.DontUse:=true;
-      heightData.DontUse:=false;
+  if FUseDirtyTiles = dtNever then
+  begin
+    if HeightData.OldVersion <> nil then
+    begin
+      HeightData.OldVersion.DontUse := true;
+      HeightData.DontUse := false;
     end;
   end;
-  if assigned(HeightDataSource) then HeightDataSource.BeforePreparingData(heightData);
+  if assigned(HeightDataSource) then
+    HeightDataSource.BeforePreparingData(HeightData);
 end;
 
-procedure TGLAsyncHDS.StartPreparingData(heightData : TGLHeightData);
-var HDThread : TGLAsyncHDThread;
-    HDS:TGLHeightDataSource;
+procedure TGLAsyncHDS.StartPreparingData(HeightData: TGLHeightData);
+var
+  HDThread: TGLAsyncHDThread;
+  HDS: TGLHeightDataSource;
 begin
-  HDS:=HeightDataSource;
-  //---if there is no linked HDS then return an empty tile--
-  if not Assigned(HDS) then begin
-    heightData.DataState:=hdsNone;
+  HDS := HeightDataSource;
+  // ---if there is no linked HDS then return an empty tile--
+  if not assigned(HDS) then
+  begin
+    HeightData.DataState := hdsNone;
     exit;
   end;
-  if (Active=false) then exit;
+  if (Active = false) then
+    exit;
 
-  //---If not using threads then prepare the HD tile directly---  (everything else freezes until done)
-  if MaxThreads=0 then begin
+  // ---If not using threads then prepare the HD tile directly---  (everything else freezes until done)
+  if MaxThreads = 0 then
+  begin
     HDS.StartPreparingData(HeightData);
-    if heightData.DataState=hdsPreparing
-      then heightData.DataState:=hdsReady
-      else heightData.DataState:=hdsNone;
-  end else begin //--MaxThreads>0 : start the thread and go back to start the next one--
-    heightData.DataState:=hdsPreparing; //prevent other threads from preparing this HD.
-    HDThread:=TGLAsyncHDThread.Create(true);
-    HDThread.Owner:=self;
-    HDThread.HDS:=self.HeightDataSource;
-    HDThread.HeightData:=HeightData;
-    heightData.Thread:=HDThread;
-    HDThread.FreeOnTerminate:=false;
+    if HeightData.DataState = hdsPreparing then
+      HeightData.DataState := hdsReady
+    else
+      HeightData.DataState := hdsNone;
+  end
+  else
+  begin // --MaxThreads>0 : start the thread and go back to start the next one--
+    HeightData.DataState := hdsPreparing; // prevent other threads from preparing this HD.
+    HDThread := TGLAsyncHDThread.Create(true);
+    HDThread.Owner := self;
+    HDThread.HDS := self.HeightDataSource;
+    HDThread.HeightData := HeightData;
+    HeightData.Thread := HDThread;
+    HDThread.FreeOnTerminate := false;
     HDThread.Start;
   end;
 end;
 
-
 procedure TGLAsyncHDS.ThreadIsIdle;
-var i:integer;
-    lst:TList;
-    HD:TGLHeightData;
+var
+  i: integer;
+  lst: TList;
+  HD: TGLHeightData;
 begin
-  //----------- dtUntilAllReplaced -------------
-  //Switch to the new version of ALL dirty tiles
-    lst:=self.Data.LockList;
-    try
-      if FUseDirtyTiles=dtUntilAllReplaced then begin
-        i:=lst.Count;
-        while(i>0) do begin
-          dec(i);
-          HD:=TGLHeightData(lst.Items[i]);
-          if (HD.DataState in [hdsReady,hdsNone])
-            and(Hd.DontUse)and(HD.OldVersion<>nil) then begin
-            HD.DontUse:=false;
-            HD.OldVersion.DontUse:=true;
-            FTilesUpdated:=true;
-          end;
+  // ----------- dtUntilAllReplaced -------------
+  // Switch to the new version of ALL dirty tiles
+  lst := self.Data.LockList;
+  try
+    if FUseDirtyTiles = dtUntilAllReplaced then
+    begin
+      i := lst.Count;
+      while (i > 0) do
+      begin
+        dec(i);
+        HD := TGLHeightData(lst.Items[i]);
+        if (HD.DataState in [hdsReady, hdsNone]) and (HD.DontUse) and (HD.OldVersion <> nil) then
+        begin
+          HD.DontUse := false;
+          HD.OldVersion.DontUse := true;
+          FTilesUpdated := true;
         end;
-      end;//Until All Replaced
-      if Assigned(FOnIdleEvent) then FOnIdleEvent(Self,FTilesUpdated);
-    finally
-      self.Data.UnlockList;
-    end;
-  //--------------------------------------------
+      end;
+    end; // Until All Replaced
+    if assigned(FOnIdleEvent) then
+      FOnIdleEvent(self, FTilesUpdated);
+  finally
+    self.Data.UnlockList;
+  end;
+  // --------------------------------------------
 end;
 
-procedure TGLAsyncHDS.NewTilePrepared(heightData:TGLHeightData);
-var HD:TGLHeightData;
+procedure TGLAsyncHDS.NewTilePrepared(HeightData: TGLHeightData);
+var
+  HD: TGLHeightData;
 begin
-  if assigned(HeightDataSource) then HeightDataSource.AfterPreparingData(HeightData);
-  with self.Data.LockList do begin
+  if assigned(HeightDataSource) then
+    HeightDataSource.AfterPreparingData(HeightData);
+  with self.Data.LockList do
+  begin
     try
-      HD:=heightdata;
-      //--------------- dtUntilReplaced -------------
-      //Tell terrain renderer to display the new tile
-      if (FUseDirtyTiles=dtUntilReplaced)and(HD.DontUse)and(HD.OldVersion<>nil) then begin
-        HD.DontUse:=false;            //No longer ignore the new tile
-        HD.OldVersion.DontUse:=true;  //Start ignoring the old tile
+      HD := HeightData;
+      // --------------- dtUntilReplaced -------------
+      // Tell terrain renderer to display the new tile
+      if (FUseDirtyTiles = dtUntilReplaced) and (HD.DontUse) and (HD.OldVersion <> nil) then
+      begin
+        HD.DontUse := false; // No longer ignore the new tile
+        HD.OldVersion.DontUse := true; // Start ignoring the old tile
       end;
-      //---------------------------------------------
-      if HD.DontUse=false then FTilesUpdated:=true;
-      if Assigned(FOnNewTilePrepared) then FOnNewTilePrepared(Self,HeightData);           //OnNewTilePrepared Event
+      // ---------------------------------------------
+      if HD.DontUse = false then
+        FTilesUpdated := true;
+      if assigned(FOnNewTilePrepared) then
+        FOnNewTilePrepared(self, HeightData); // OnNewTilePrepared Event
     finally
       self.Data.UnlockList;
     end;
   end;
 end;
 
-function TGLAsyncHDS.ThreadCount:integer;
-var lst: Tlist;
-    i,TdCtr:integer;
-    HD:TGLHeightData;
+function TGLAsyncHDS.ThreadCount: integer;
+var
+  lst: TList;
+  i, TdCtr: integer;
+  HD: TGLHeightData;
 begin
-  lst:=self.Data.LockList;
-  i:=0;TdCtr:=0;
-  while(i<lst.Count)and(TdCtr<self.MaxThreads) do begin
-    HD:=TGLHeightData(lst.Items[i]);
-    if HD.Thread<>nil then Inc(TdCtr);
-    inc(i);
+  lst := self.Data.LockList;
+  i := 0;
+  TdCtr := 0;
+  while (i < lst.Count) and (TdCtr < self.MaxThreads) do
+  begin
+    HD := TGLHeightData(lst.Items[i]);
+    if HD.Thread <> nil then
+      Inc(TdCtr);
+    Inc(i);
   end;
   self.Data.UnlockList;
-  result:=TdCtr;
+  result := TdCtr;
 end;
 
-procedure TGLAsyncHDS.WaitFor(TimeOut:Integer=2000);
-var OutTime:TDateTime;
+procedure TGLAsyncHDS.WaitFor(TimeOut: integer = 2000);
+var
+  OutTime: TDateTime;
 begin
-  Assert(not self.active);
-  OutTime:=now+TimeOut;
-  While ((now<OutTime)and(ThreadCount>0)) do begin
+  Assert(not self.Active);
+  OutTime := now + TimeOut;
+  While ((now < OutTime) and (ThreadCount > 0)) do
+  begin
     sleep(0);
   end;
-  Assert(ThreadCount=0);
+  Assert(ThreadCount = 0);
 end;
 
 {
-procedure TGLAsyncHDS.NotifyChange(Sender : TObject);
-begin
+  procedure TGLAsyncHDS.NotifyChange(Sender : TObject);
+  begin
   TilesChanged:=true;
-end;
+  end;
 }
 
-function TGLAsyncHDS.TilesUpdated:boolean;
+function TGLAsyncHDS.TilesUpdated: boolean;
 begin
-  result:=FTilesUpdated;
+  result := FTilesUpdated;
 end;
 
 // Set the TilesUpdatedFlag to false. (is Threadsafe)
 procedure TGLAsyncHDS.TilesUpdatedFlagReset;
 begin
-  if not assigned(self) then exit; //prevents AV on Application termination.
-  with Data.LockList do try
-    FTilesUpdated:=False;
-  finally Data.UnlockList; end;
+  if not assigned(self) then
+    exit; // prevents AV on Application termination.
+  with Data.LockList do
+    try
+      FTilesUpdated := false;
+    finally
+      Data.UnlockList;
+    end;
 end;
 
-//-------------------HD Thread----------------
+// -------------------HD Thread----------------
 Procedure TGLAsyncHDThread.Execute;
 Begin
   HDS.StartPreparingData(HeightData);
-  HeightData.Thread:=nil;
-  Synchronize(sync);
+  HeightData.Thread := nil;
+  Synchronize(Sync);
 end;
 
 Procedure TGLAsyncHDThread.Sync;
 begin
-  Owner.NewTilePrepared(heightData);
-  if heightData.DataState=hdsPreparing then heightData.DataState:=hdsReady;
+  Owner.NewTilePrepared(HeightData);
+  if HeightData.DataState = hdsPreparing then
+    HeightData.DataState := hdsReady;
 end;
 
-//--------------------------------------------
-
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 initialization
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 
-	// class registrations
    RegisterClass(TGLAsyncHDS);
 
 end.

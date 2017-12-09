@@ -31,7 +31,7 @@ interface
 uses
   System.Classes,
   System.SysUtils,
-  //
+
   OpenGLTokens,
   OpenGLAdapter,
   GLSpline,
@@ -67,19 +67,15 @@ type
     procedure SetDivision(Value: Integer);
     procedure SetSplineMode(const Value: TGLLineSplineMode);
     procedure SetDescription(const Value: string);
-
   protected
     procedure CreateNodes;
     procedure NodesChanged(Sender: TObject);
     function GetDisplayName: string; override;
-
   public
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
-
   published
-
     property Description: string read FDescription write SetDescription;
     {The nodes list.  }
     property Nodes: TGLContourNodes read FNodes write SetNodes;
@@ -116,7 +112,7 @@ type
     property List[I: Integer]: TAffineVectorList read GetList;
   end;
 
-  {Multipolygon is defined with multiple contours. 
+  {Multipolygon is defined with multiple contours.
      The contours have to be in the X-Y plane, otherwise they are projected
      to it (this is done automatically by the tesselator).
      The plane normal is pointing in +Z. All contours are automatically closed,
@@ -124,8 +120,7 @@ type
      Contours should be defined counterclockwise, the first contour (index = 0)
      is taken as is, all following are reversed. This means you can define the
      outer contour first and the holes and cutouts after that. If you give the
-     following contours in clockwise order, the first contour is extended. 
-
+     following contours in clockwise order, the first contour is extended.
      TMultiPolygonBase will take the input contours and let the tesselator
      make an outline from it (this is done in RetreiveOutline). This outline is
      used for Rendering. Only when there are changes in the contours, the
@@ -164,14 +159,12 @@ type
     property Contours: TGLContours read FContours write SetContours;
   end;
 
-  {A polygon that can have holes and multiple contours. 
+  {A polygon that can have holes and multiple contours.
      Use the Path property to access a contour or one of the AddNode methods
      to add a node to a contour (contours are allocated automatically). }
   TGLMultiPolygon = class(TMultiPolygonBase)
   private
-     
     FParts: TPolygonParts;
-
   protected
     procedure SetParts(const value: TPolygonParts);
   public
@@ -182,23 +175,11 @@ type
     property Parts: TPolygonParts read FParts write SetParts default [ppTop, ppBottom];
   end;
 
-//-------------------------------------------------------------
-//-------------------------------------------------------------
-//-------------------------------------------------------------
-implementation
-//-------------------------------------------------------------
-//-------------------------------------------------------------
-//-------------------------------------------------------------
-
-type
-  { page oriented pointer array, with persistent pointer target memory.
+  { Page oriented pointer array, with persistent pointer target memory.
     In TVectorList a pointer to a vector will not be valid any more after
     a call to SetCapacity, which might be done implicitely during Add.
     The TVectorPool keeps memory in its original position during its
     whole lifetime. }
-
-  // removed Notify (only D5)
-  // added Destroy (also working with D4)
   TVectorPool = class(TList)
   private
     FEntrySize: Integer; // size of each entry
@@ -210,12 +191,15 @@ type
   public
     constructor Create(APageSize, AEntrySize: Integer);
     destructor Destroy; override;
-
     { retrieve pointer to new entry. will create new page if needed }
     procedure GetNewVector(var P: Pointer);
   end;
 
-  { TVectorPool }
+//-------------------------------------------------------------
+implementation
+//-------------------------------------------------------------
+
+{ TVectorPool }
 
 constructor TVectorPool.Create(APageSize, AEntrySize: Integer);
 begin
@@ -255,7 +239,6 @@ end;
 // ------------------
 // ------------------ TPolygonList ------------------
 // ------------------
-
 
 procedure TPolygonList.Add;
 begin
@@ -508,17 +491,13 @@ var
   vVertexPool: TVectorPool;
 
 procedure tessError(errno: Cardinal);
-{$IFDEF Win32} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+{$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF UNIX} cdecl;{$ENDIF}
 begin
   Assert(False, IntToStr(errno) + ' : ' + string(gluErrorString(errno)));
 end;
 
 procedure tessIssueVertex(vertexData: Pointer);
-{$IFDEF Win32} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+{$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF UNIX} cdecl;{$ENDIF}
 begin
   xgl.TexCoord2fv(vertexData);
   GL.Vertex3fv(vertexData);
@@ -526,26 +505,20 @@ end;
 
 procedure tessCombine(coords: PDoubleVector; vertex_data: Pointer;
   weight: PGLFloat; var outData: Pointer);
-{$IFDEF Win32} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+{$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF UNIX} cdecl;{$ENDIF}
 begin
   vVertexPool.GetNewVector(outData);
   SetVector(PAffineVector(outData)^, coords^[0], coords^[1], coords^[2]);
 end;
 
 procedure tessBeginList(typ: Cardinal; polygonData: Pointer);
-{$IFDEF Win32} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+{$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF UNIX} cdecl;{$ENDIF}
 begin
   TPolygonList(polygonData).Add;
 end;
 
 procedure tessIssueVertexList(vertexData: Pointer; polygonData: Pointer);
-{$IFDEF Win32} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+{$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF unix} cdecl;{$ENDIF}
 begin
   TPolygonList(polygonData).AktList.Add(PAffineVector(vertexData)^);
 end;
@@ -821,11 +794,7 @@ begin
 end;
 
 //-------------------------------------------------------------
-//-------------------------------------------------------------
-//-------------------------------------------------------------
 initialization
-//-------------------------------------------------------------
-//-------------------------------------------------------------
 //-------------------------------------------------------------
 
   RegisterClass(TGLMultiPolygon);

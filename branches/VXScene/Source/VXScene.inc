@@ -10,8 +10,13 @@
 // Additionnal support & dependencies
 //
 
-// Activate support for Alex Denissov's Graphics32 library (http://www.g32.org)
+// Activate support for Graphics32 library
+// Can be found at https://github.com/graphics32
 {.$DEFINE USE_GRAPHICS32}
+
+// Activate support for FastMath library
+// Use https://github.com/neslib/FastMath
+{.$DEFINE USE_FASTMATH}
 
 // Activate support for some optimizations by disabling checks that occur very often
 // Warning: it will disable some options (like ShowAxis and OptSaveGLStack)
@@ -20,18 +25,21 @@
 // Activate assembly routines - Warning! Some components not working!!!
 {.$DEFINE USE_ASM}
 
-// Activate OpenVX debug mode
-{.$DEFINE USE_DEBUG}
-
 // Activate Logging
 {.$DEFINE USE_LOGGING}
+
+// Activate OpenGL debug mode
+{.$DEFINE USE_OPENGL_DEBUG}
+
+// Avtivate using depricated OpenGL code
+{$DEFINE USE_DEPRECATED}
 
 
 // Activate Multithread support
 {.$DEFINE USE_MULTITHREAD}
 
 // Enable service rendering context, which automatically activate USE_MULTITHREAD
-// This work only on windows platform and with modern compiler (XE2 and FPC or higher}
+// This work only on windows platform with modern compilers (XE2 and FPC or higher}
 {.$DEFINE USE_SERVICE_CONTEXT}
 
 {$IFDEF USE_SERVICE_CONTEXT}
@@ -39,8 +47,11 @@
   {$DEFINE USE_MULTITHREAD}
 {$ENDIF}
 
-// Activate support of Windows OS
+// Activate support of Windows
 {$DEFINE MSWINDOWS}
+
+// Activate support of Linux
+{.$DEFINE LINUX}
 
 // Activate support of Mac OS
 {.$DEFINE MACOS}
@@ -51,22 +62,21 @@
 // Activate support of Android
 {.$DEFINE ANDROID}
 
-// Activate support of Linux
-{.$DEFINE LINUX}
-
 // Activate support X Window System
 {.$DEFINE X11_SUPPORT}
 
+// Activate OpenGL ES
+{.$DEFINE OPENGL_ES}
 
 //
-// Platform Detection
+// Platform Specific
 //
 
 // by default, GLX is not supported on windows, although windows implementations
 // do exist
 {$IFDEF MSWINDOWS}
   {$UNDEF SUPPORT_GLX}
-  {$UNDEF VKS_X11_SUPPORT}
+  {$UNDEF X11_SUPPORT}
   {$DEFINE SUPPORT_WGL}
 {$ENDIF}
 
@@ -75,7 +85,7 @@
   {$UNDEF USE_ASM}
   {$DEFINE UNIX}
   {$DEFINE SUPPORT_GLX}
-  {$DEFINE VKS_X11_SUPPORT}
+  {$DEFINE X11_SUPPORT}
 {$ENDIF}
 
 

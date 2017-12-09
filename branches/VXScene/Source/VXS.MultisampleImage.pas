@@ -83,7 +83,7 @@ implementation
 // ------------------ TVXMultisampleImage ------------------
 // ------------------
 
-{$IFDEF VKS_REGIONS}{$REGION 'TVXMultisampleImage'}{$ENDIF}
+{$IFDEF VXS_REGIONS}{$REGION 'TVXMultisampleImage'}{$ENDIF}
 
 // Create
 //
@@ -343,7 +343,7 @@ begin
   end;
 end;
 
-{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VXS_REGIONS}{$ENDREGION}{$ENDIF}
 
 initialization
   RegisterTextureImageClass(TVXMultisampleImage);

@@ -4,7 +4,9 @@ unit USahObjects;
 interface
 
 uses
-  OpenGL1x, GLVectorGeometry, GLVectorFileObjects, OpenGLTokens,
+  OpenGL1x, 
+  GLVectorGeometry, 
+  GLVectorFileObjects,
   GLScene;
 
 // Cube of radius 1 centred on the origin

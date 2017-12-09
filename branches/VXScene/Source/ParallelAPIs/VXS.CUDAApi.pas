@@ -1556,7 +1556,7 @@ const
   cuGLMapBufferObjectAsyncName = 'cuGLMapBufferObjectAsync';
   cuGLUnmapBufferObjectAsyncName = 'cuGLUnmapBufferObjectAsync';
 
-{$IFDEF VKS_CUDA_DEBUG_MODE}
+{$IFDEF VXS_CUDA_DEBUG_MODE}
 
 var
   cuInit_: TcuInit;
@@ -2699,7 +2699,7 @@ function cuGLUnmapBufferObjectAsyncShell(buffer: Cardinal; hStream: PCUstream)
       Get_CUDA_API_Error_String(Result)]))
 end;
 
-{$ENDIF VKS_CUDA_DEBUG_MODE}
+{$ENDIF VXS_CUDA_DEBUG_MODE}
 
 function GetProcAddressCUDA(ProcName: PAnsiChar): Pointer;
 var
@@ -2740,7 +2740,7 @@ begin
 
   if CUDAHandle = INVALID_MODULEHANDLE then
     Exit;
-{$IFNDEF VKS_CUDA_DEBUG_MODE}
+{$IFNDEF VXS_CUDA_DEBUG_MODE}
   cuInit := GetProcAddressCUDA(cuInitName);
   cuDriverGetVersion := GetProcAddressCUDA(cuDriverGetVersionName);
   cuDeviceGet := GetProcAddressCUDA(cuDeviceGet_Name);
@@ -3118,7 +3118,7 @@ begin
   cuGLUnmapBufferObjectAsync_ :=
     GetProcAddressCUDA(cuGLUnmapBufferObjectAsyncName);
   cuGLUnmapBufferObjectAsync := cuGLUnmapBufferObjectAsyncShell;
-{$ENDIF VKS_CUDA_DEBUG_MODE}
+{$ENDIF VXS_CUDA_DEBUG_MODE}
   cuDriverGetVersion(V);
   ShowMessage(Format('%s version %d is loaded', [CUDAAPIDLL, V]));
   Result := True;

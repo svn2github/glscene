@@ -256,11 +256,6 @@ type
 
   TGLLibMaterialName = string;
 
-  //
-  // DaStr: if you write smth like af_GL_NEVER = GL_NEVER in the definition,
-  // it won't show up in the Dephi 7 design-time editor. So I had to add
-  // vTGlAlphaFuncValues and vTGLBlendFuncFactorValues arrays.
-  //
   TGlAlphaFunc = TComparisonFunction;
 
   TGLBlendingParameters = class(TGLUpdateAbleObject)
@@ -309,7 +304,7 @@ type
       SetAlphaBlendFuncDFactor default bfOneMinusSrcAlpha;
   end;
 
-  {Simplified blending options.
+  (* Simplified blending options.
      bmOpaque : disable blending
      bmTransparency : uses standard alpha blending
      bmAdditive : activates additive blending (with saturation)
@@ -317,8 +312,7 @@ type
         transparency if alpha is below 0.5, full opacity otherwise)
      bmAlphaTest100 : uses opaque blending, with alpha-testing at 100%
      bmModulate : uses modulation blending
-     bmCustom : uses TGLBlendingParameters options
-     }
+     bmCustom : uses TGLBlendingParameters options *)
   TGLBlendingMode = (bmOpaque, bmTransparency, bmAdditive,
     bmAlphaTest50, bmAlphaTest100, bmModulate, bmCustom);
 
@@ -329,15 +323,15 @@ type
   TMaterialOption = (moIgnoreFog, moNoLighting);
   TMaterialOptions = set of TMaterialOption;
 
-  {Describes a rendering material.
-      A material is basically a set of face properties (front and back) that take
-      care of standard material rendering parameters (diffuse, ambient, emission
-      and specular) and texture mapping.
-      An instance of this class is available for almost all objects in GLScene
-      to allow quick definition of material properties. It can link to a
-      TGLLibMaterial (taken for a material library).
-      The TGLLibMaterial has more adavanced properties (like texture transforms)
-      and provides a standard way of sharing definitions and texture maps. }
+  (* Describes a rendering material.
+     A material is basically a set of face properties (front and back) that take
+     care of standard material rendering parameters (diffuse, ambient, emission
+     and specular) and texture mapping.
+     An instance of this class is available for almost all objects in GLScene
+     to allow quick definition of material properties. It can link to a
+     TGLLibMaterial (taken for a material library).
+     The TGLLibMaterial has more adavanced properties (like texture transforms)
+     and provides a standard way of sharing definitions and texture maps. *)
   TGLMaterial = class(TGLUpdateAbleObject, IGLMaterialLibrarySupported, IGLTextureNotifyAble)
   private
     FFrontProperties, FBackProperties: TGLFaceProperties;
@@ -564,7 +558,6 @@ type
     function FindItemID(ID: Integer): TGLLibMaterial;
     property Items[index: Integer]: TGLLibMaterial read GetItems write SetItems;
     default;
-
     function GetLibMaterialByName(const AName: TGLLibMaterialName):
       TGLLibMaterial;
     {Returns index of this Texture if it exists. }
@@ -679,11 +672,7 @@ type
   end;
 
 // ------------------------------------------------------------------------------
-// ------------------------------------------------------------------------------
-// ------------------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------------------
-// ------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------
 
 procedure TGLShader.DoApply
@@ -3086,8 +3075,9 @@ begin
   Result := (Abs(AlphaFuncRef) > 0.001);
 end;
 
-
+//-----------------------------------------------
 initialization
+//-----------------------------------------------
 
   RegisterClasses([TGLMaterialLibrary, TGLMaterial, TGLShader]);
 

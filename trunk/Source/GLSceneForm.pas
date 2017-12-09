@@ -316,7 +316,7 @@ begin
   FColorDepth := vVideoModes[0].ColorDepth;
   FFrequency := vVideoModes[0].MaxFrequency;
 {$ENDIF}
-{$IFDEF GLS_X11_SUPPORT}
+{$IFDEF X11_SUPPORT}
   FWidth := vVideoModes[0].vdisplay;
   FHeight := vVideoModes[0].hdisplay;
   FColorDepth := 32;

@@ -13,7 +13,7 @@ unit VXS.VfsPAK;
 {$I VXScene.inc}
 // Activate support for LZRW1 compression. This line could be moved to VXScene.inc file.
 // Remove the "." characted in order to activate compression features.
-{.$DEFINE VKS_LZRW_SUPPORT}
+{.$DEFINE VXS_LZRW_SUPPORT}
 
 interface
 

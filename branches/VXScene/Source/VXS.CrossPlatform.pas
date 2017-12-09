@@ -142,7 +142,7 @@ const
 const
   glsAllFilter: string = SMsgDlgAll; //in VCL -> sAllFilter;
 
-  VKS_FONT_CHARS_COUNT = 2024;
+  VXS_FONT_CHARS_COUNT = 2024;
 
 var
   IsDesignTime: Boolean = False;

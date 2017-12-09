@@ -86,11 +86,11 @@ type
     function AxisAlignedDimensionsUnscaled: TVector; override;
     procedure StructureChanged; override;
   published
-          {Parts of the rotation solid to be generated for rendering. 
-             rspInside and rspOutside are generated from the curve and make the
-             inside/outside as long as NormalDirection=ndOutside and the solid
-             is described by the curve that goes from top to bottom. 
-             Start/StopPolygon are tesselated from the curve (considered as closed). }
+    {Parts of the rotation solid to be generated for rendering.
+     rspInside and rspOutside are generated from the curve and make the
+     inside/outside as long as NormalDirection=ndOutside and the solid
+     is described by the curve that goes from top to bottom.
+     Start/StopPolygon are tesselated from the curve (considered as closed). }
     property Parts: TRevolutionSolidParts read FParts write SetParts default [rspOutside];
     property StartAngle: Single read FStartAngle write SetStartAngle;
     property StopAngle: Single read FStopAngle write SetStopAngle stored

@@ -38,6 +38,6 @@ requires
   GLScene_DesignTime;
 
 contains
-  GLCgRegister in '..\..\Source\Shaders\GLcgRegister.pas';
+  GLcgRegister in '..\..\Source\Shaders\GLcgRegister.pas';
 
 end.

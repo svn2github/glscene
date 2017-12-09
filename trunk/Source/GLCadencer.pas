@@ -15,21 +15,27 @@ interface
 {$I GLScene.inc}
 
 uses
-  Winapi.Windows, Winapi.Messages,
-  System.Classes, System.SysUtils, System.Types, VCL.Forms,
-   
-  GLScene, GLCrossPlatform, GLBaseClasses;
+  Winapi.Windows,
+  Winapi.Messages,
+  System.Classes,
+  System.SysUtils,
+  System.Types,
+  VCL.Forms,
+
+  GLScene,
+  GLCrossPlatform,
+  GLBaseClasses;
 
 //**************************************
 
 type
 
-  {Determines how the TGLCadencer operates. 
+  {Determines how the TGLCadencer operates.
    - cmManual : you must trigger progress manually (in your code)
    - cmASAP : progress is triggered As Soon As Possible after a previous
-    progress (uses windows messages).
-       - cmApplicationIdle : will hook Application.OnIdle, this will overwrite
-          any previous event handle, and only one cadencer may be in this mode. }
+     progress (uses windows messages).
+   - cmApplicationIdle : will hook Application.OnIdle, this will overwrite
+     any previous event handle, and only one cadencer may be in this mode. }
   TGLCadencerMode = (cmManual, cmASAP, cmApplicationIdle);
 
   {Determines which time reference the TGLCadencer should use. 
@@ -67,8 +73,7 @@ type
     FProgressing: Integer;
     procedure SetCurrentTime(const Value: Double);
   protected
-    procedure Notification(AComponent: TComponent; Operation: TOperation);
-      override;
+    procedure Notification(AComponent: TComponent; Operation: TOperation); override;
     function StoreTimeMultiplier: Boolean;
     procedure SetEnabled(const val: Boolean);
     procedure SetScene(const val: TGLScene);
@@ -91,10 +96,10 @@ type
     procedure Progress;
     {Adjusts CurrentTime if necessary, then returns its value. }
     function GetCurrenttime: Double; inline;
-    {Returns True if a "Progress" is underway. 
-       Be aware that as long as IsBusy is True, the Cadencer may be
-       sending messages and progression calls to cadenceable components
-       and scenes. }
+    {Returns True if a "Progress" is underway.
+     Be aware that as long as IsBusy is True, the Cadencer may be
+     sending messages and progression calls to cadenceable components
+     and scenes. }
     function IsBusy: Boolean;
     {Reset the time parameters and returns to zero. }
     procedure Reset;
@@ -105,11 +110,11 @@ type
   published
     {The TGLScene that will be cadenced (progressed). }
     property Scene: TGLScene read FScene write SetScene;
-    {Enables/Disables cadencing. 
+    {Enables/Disables cadencing.
      Disabling won't cause a jump when restarting, it is working like
      a play/pause (ie. may modify OriginTime to keep things smooth). }
     property Enabled: Boolean read FEnabled write SetEnabled default True;
-    {Defines how CurrentTime is updated. 
+    {Defines how CurrentTime is updated.
      See TGLCadencerTimeReference.
      Dynamically changeing the TimeReference may cause a "jump".  }
     property TimeReference: TGLCadencerTimeReference read FTimeReference write

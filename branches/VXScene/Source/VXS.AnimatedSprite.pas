@@ -2,13 +2,20 @@
 // VXScene Component Library, based on GLScene http://glscene.sourceforge.net 
 //
 {
+  This Source Code is subject to the terms of the Mozilla Public License v. 2.0.
+  If a copy of the MPL was not distributed with this file,
+  You can obtain one at http://mozilla.org/MPL/2.0/.
+}
+{
   A sprite that uses a scrolling texture for animation.
-  The history is logged in a previous version of the unit.
+  The whole history is logged in previous versions of the unit.
 }
 
 unit VXS.AnimatedSprite;
 
 interface
+
+{$I VXScene.inc}
 
 uses
   Winapi.OpenGL,
@@ -37,8 +44,7 @@ type
   TVXAnimatedSprite = class;
 
   { Used by the SpriteAnimation when Dimensions are set manual. The animation
-     will use the offsets, width and height to determine the texture coodinates
-     for this frame. }
+    will use the offsets, width and height to determine the texture coodinates for this frame. }
   TVXSpriteAnimFrame = class(TVXXCollectionItem)
   private
     FOffsetX,
@@ -63,7 +69,6 @@ type
     property Height: Integer read FHeight write SetHeight;
   end;
 
-  { The XCollection used for the TSpriteAnimFrame object. }
   TVXSpriteAnimFrameList = class(TVXXCollection)
   public
     constructor Create(aOwner: TPersistent); override;
@@ -76,16 +81,12 @@ type
   TVXSpriteFrameDimensions = (sfdAuto, sfdManual);
 
   { Used to mask the auto generated frames. The Left, Top, Right and
-     Bottom properties determines the number of pixels to be cropped
-     from each corresponding side of the frame. Only applicable to
-     auto dimensions. }
+    Bottom properties determines the number of pixels to be cropped
+    from each corresponding side of the frame. Only applicable to auto dimensions. }
   TVXSpriteAnimMargins = class(TPersistent)
   private
     FOwner: TVXSpriteAnimation;
-    FLeft,
-      FTop,
-      FRight,
-      FBottom: Integer;
+    FLeft, FTop, FRight, FBottom: Integer;
   protected
     procedure SetLeft(const Value: Integer);
     procedure SetTop(const Value: Integer);
@@ -102,8 +103,7 @@ type
     property Bottom: Integer read FBottom write SetBottom;
   end;
 
-  { Animations define how the texture coordinates for each offset
-     are to be determined. }
+  { Animations define how the texture coordinates for each offset are to be determined. }
   TVXSpriteAnimation = class(TVXXCollectionItem, IGLMaterialLibrarySupported)
   private
     FCurrentFrame,
@@ -161,8 +161,7 @@ type
       SetDimensions;
     { The number of milliseconds between each frame in the animation.
        Will automatically calculate the FrameRate value when set.
-       Will override the TVXAnimatedSprite Interval is greater than
-       zero. }
+       Will override the TVXAnimatedSprite Interval is greater than zero. }
     property Interval: Integer read FInterval write SetInterval;
     { The number of frames per second for the animation.
        Will automatically calculate the Interval value when set.
@@ -170,10 +169,9 @@ type
     property FrameRate: Single read GetFrameRate write SetFrameRate;
     // Sets cropping margins for auto dimension animations.
     property Margins: TVXSpriteAnimMargins read FMargins;
-
   end;
 
-  { A collection for storing TVXSpriteAnimation objects. }
+  { A collection for storing SpriteAnimation objects. }
   TVXSpriteAnimationList = class(TVXXCollection)
   public
     constructor Create(aOwner: TPersistent); override;
@@ -192,8 +190,7 @@ type
   TVXSpriteAnimationMode = (samNone, samPlayOnce, samLoop, samBounceForward,
     samBounceBackward, samLoopBackward);
 
-  { An animated version of the TVXSprite using offset texture
-     coordinate animation. }
+  { An animated version for using offset texture coordinate animation. }
   TVXAnimatedSprite = class(TVXBaseSceneObject)
   private
     FAnimations: TVXSpriteAnimationList;
@@ -240,7 +237,7 @@ type
     property MaterialLibrary: TVXMaterialLibrary read FMaterialLibrary write
       SetMaterialLibrary;
     { Sets the number of milliseconds between each frame. Will recalculate
-       the Framerate when set. Will be overridden by the TSpriteAnimation
+       the Framerate when set. Will be overridden by the TVXSpriteAnimation
        Interval if it is greater than zero. }
     property Interval: Integer read FInterval write SetInterval;
     // Index of the sprite animation to be used.
@@ -280,9 +277,8 @@ type
   end;
 
 // -----------------------------------------------------------------------------
-// -----------------------------------------------------------------------------
-// -----------------------------------------------------------------------------
 implementation
+// -----------------------------------------------------------------------------
 // ----------
 // ---------- TVXSpriteAnimFrame ----------
 // ----------
@@ -387,7 +383,7 @@ begin
 end;
 
 // ----------
-// ---------- TVXSpriteAnimationMargins ----------
+// ---------- TVXSpriteAnimaMargins ----------
 // ----------
 
 constructor TVXSpriteAnimMargins.Create(Animation: TVXSpriteAnimation);
@@ -764,12 +760,12 @@ begin
         end;
 
         glGetFloatv(GL_MODELVIEW_MATRIX, @mat);
-        vx.X := mat.X.X;
-        vy.X := mat.X.Y;
-        vx.Y := mat.Y.X;
-        vy.Y := mat.Y.Y;
-        vx.Z := mat.Z.X;
-        vy.Z := mat.Z.Y;
+        vx.X := mat.V[0].X;
+        vy.X := mat.V[0].Y;
+        vx.Y := mat.V[1].X;
+        vy.Y := mat.V[1].Y;
+        vx.Z := mat.V[2].X;
+        vy.Z := mat.V[2].Y;
         ScaleVector(vx, w * VectorLength(vx));
         ScaleVector(vy, h * VectorLength(vy));
 
@@ -793,7 +789,7 @@ begin
         begin
           glMatrixMode(GL_MODELVIEW);
           glPushMatrix;
-          glRotatef(FRotation, mat.X.Z, mat.Y.Z, mat.Z.Z);
+          glRotatef(FRotation, mat.V[0].Z, mat.V[1].Z, mat.V[2].Z);
         end;
         glBegin(GL_QUADS);
         glTexCoord2f(u1, v1);
@@ -845,8 +841,6 @@ begin
   end;
 end;
 
-// Notification
-//
 
 procedure TVXAnimatedSprite.Notification(AComponent: TComponent; Operation:
   TOperation);
@@ -976,8 +970,6 @@ begin
   end;
 end;
 
-// SetFrameRate
-//
 
 procedure TVXAnimatedSprite.SetFrameRate(const Value: Single);
 begin
@@ -1077,12 +1069,8 @@ begin
 end;
 
 // -----------------------------------------------------------------------------
-// -----------------------------------------------------------------------------
-// -----------------------------------------------------------------------------
 initialization
-  // -----------------------------------------------------------------------------
-  // -----------------------------------------------------------------------------
-  // -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
   RegisterClasses([TVXAnimatedSprite,
     TVXSpriteAnimFrame, TVXSpriteAnimFrameList,

@@ -6,7 +6,7 @@
    byte order (GL_RGBA vs TBitmap's GL_BGRA)
 
    Note: TVxBitmap32 has support for Alex Denissov's Graphics32 library
-   (http://www.g32.org), just make sure the VKS_Graphics32_SUPPORT conditionnal
+   (http://www.g32.org), just make sure the VXS_Graphics32_SUPPORT conditionnal
    is active in GLScene. inc and recompile.
 
    Note: TVxBitmap32 has support for Alex Denissov's Graphics32 library
@@ -34,7 +34,7 @@ uses
   System.Math,
   FMX.Graphics,
   FMX.Dialogs,
-{$IFDEF VKS_Graphics32_SUPPORT}
+{$IFDEF VXS_Graphics32_SUPPORT}
   GR32,
 {$ENDIF}
   VXS.OpenGLAdapter,
@@ -219,7 +219,7 @@ type
 {$IFDEF GRAPHICS32_SUPPORT}
     procedure AssignFromBitmap32(aBitmap32: TBitmap32);
 {$ENDIF}
-{$IFDEF VKS_PngImage_SUPPORT}
+{$IFDEF VXS_PngImage_SUPPORT}
     procedure AssignFromPngImage(aPngImage: TPngImage);
 {$ENDIF}
   public
@@ -781,7 +781,7 @@ end;
 // ------------------ TVXBaseImage ------------------
 // ------------------
 
-{$IFDEF VKS_REGIONS}{$REGION 'TVXBaseImage'}{$ENDIF}
+{$IFDEF VXS_REGIONS}{$REGION 'TVXBaseImage'}{$ENDIF}
 // Create
 //
 
@@ -2026,7 +2026,7 @@ begin
 end;
 {$ENDIF}
 
-{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VXS_REGIONS}{$ENDREGION}{$ENDIF}
 
 // ------------------
 // ------------------ TVXImage ------------------
@@ -2080,7 +2080,7 @@ begin
       else
         AssignFrom32BitsBitmap(TBitmap(Source))
     end
-{$IFDEF VKS_PngImage_SUPPORT}
+{$IFDEF VXS_PngImage_SUPPORT}
     else if Source is TPngImage then
       AssignFromPngImage(TPngImage(Source))
 {$ENDIF}
@@ -2367,7 +2367,7 @@ begin
 end;
 {$ENDIF}
 
-{$IFDEF VKS_PngImage_SUPPORT}
+{$IFDEF VXS_PngImage_SUPPORT}
 // AlphaChannel Support
 
 procedure TVXImage.AssignFromPngImage(aPngImage: TPngImage);
@@ -2378,7 +2378,7 @@ var
   AlphaScan: pByteArray;
   Pixel: Integer;
 begin
-{$IFDEF VKS_PngImage_RESIZENEAREST}
+{$IFDEF VXS_PngImage_RESIZENEAREST}
   if (aPngImage.Width and 3) > 0 then
     aPngImage.Resize((aPngImage.Width and $FFFC) + 4, aPngImage.Height);
 {$ENDIF}

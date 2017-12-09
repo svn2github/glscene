@@ -3,18 +3,47 @@ unit FSpaceScene;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, Winapi.ShellAPI,
-  System.SysUtils, System.Classes,
-  Vcl.FileCtrl, Vcl.Imaging.Jpeg,
-  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.StdCtrls,
-  Vcl.ExtCtrls, Vcl.ComCtrls, Vcl.Dialogs, Vcl.Menus,
+  Winapi.Windows,
+  Winapi.Messages,
+  Winapi.ShellAPI,
+  System.SysUtils,
+  System.Classes,
+  System.Math,
+  Vcl.FileCtrl,
+  Vcl.Imaging.Jpeg,
+  Vcl.Graphics,
+  Vcl.Controls,
+  Vcl.Forms,
+  Vcl.StdCtrls,
+  Vcl.ExtCtrls,
+  Vcl.ComCtrls,
+  Vcl.Dialogs, Vcl.Menus,
 
-   
-  GLScene, GLObjects, GLWin32Viewer, GLUtils, GLSkydome, GLTexture,
-  GLVectorFileObjects, GLMesh, GLRenderContextInfo, GLColor, GLVectorTypes,
-  GLCadencer, GLLensFlare, GLTexCombineShader, GLVectorGeometry,
-  GLMultiMaterialShader, GLMaterial, GLCoordinates, GLCrossPlatform,
-  GLBaseClasses, GLTextureFormat, GLContext, OpenGL1x, OpenGLTokens;
+  OpenGL1x,
+  OpenGLTokens,
+  GLScene,
+  GLObjects,
+  GLVectorLists,
+  GLWin32Viewer,
+  GLUtils,
+  GLSkydome,
+  GLTexture,
+  GLVectorFileObjects,
+  GLMesh,
+  GLRenderContextInfo,
+  GLColor,
+  GLVectorTypes,
+  GLCadencer,
+  GLLensFlare,
+  GLTexCombineShader,
+  GLVectorGeometry,
+  GLMultiMaterialShader,
+  GLMaterial,
+  GLCoordinates,
+  GLCrossPlatform,
+  GLBaseClasses,
+  GLTextureFormat,
+  GLContext;
 
 type
   TMarkerPosition = class(TObject)

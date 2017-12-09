@@ -99,9 +99,7 @@ type
         moClearZBuffer: mirror area's ZBuffer is cleared so that background
           objects don't interfere with reflected objects (reflected objects
           must be rendered AFTER the mirror in the hierarchy). Works only
-          along with stenciling.
-       
-    }
+          along with stenciling. }
     property MirrorOptions: TGLMirrorOptions read FMirrorOptions write
       SetMirrorOptions default cDefaultMirrorOptions;
     property Height: Single read FHeight write SetHeight;

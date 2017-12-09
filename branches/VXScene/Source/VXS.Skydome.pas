@@ -35,7 +35,7 @@ type
       BVColorIndex : Byte;    // x100 builtin factor
       VMagnitude : Byte;      // x10 builtin factor
    end;
-   PGLStarRecord = ^TVXStarRecord;
+   PVXStarRecord = ^TVXStarRecord;
 
 
   TVXSkyDomeBand = class(TCollectionItem)

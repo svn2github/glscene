@@ -273,7 +273,7 @@ var
 {$IFDEF LINUX}
   CUFFTHandle: TLibHandle = INVALID_MODULEHANDLE;
 {$ENDIF}
-{$IFDEF VKS_CUDA_DEBUG_MODE}
+{$IFDEF VXS_CUDA_DEBUG_MODE}
 
 var
   cufftPlan1d_: TcufftPlan1d;
@@ -447,7 +447,7 @@ begin
       Get_CUDA_FFT_Error_String(Result)]));
 end;
 
-{$ENDIF VKS_CUDA_DEBUG_MODE}
+{$ENDIF VXS_CUDA_DEBUG_MODE}
 
 function CUFFTGetProcAddress(ProcName: PAnsiChar): Pointer;
 begin
@@ -487,7 +487,7 @@ begin
     CUFFTHandle := LoadLibraryW(PWideChar(LibName));
   if CUFFTHandle = INVALID_MODULEHANDLE then
     Exit(False);
-{$IFNDEF VKS_CUDA_DEBUG_MODE}
+{$IFNDEF VXS_CUDA_DEBUG_MODE}
   cufftPlan1d := CUFFTGetProcAddress(cufftPlan1dName);
   cufftPlan2d := CUFFTGetProcAddress(cufftPlan2dName);
   cufftPlan3d := CUFFTGetProcAddress(cufftPlan3dName);

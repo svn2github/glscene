@@ -21,10 +21,10 @@ uses
 
 
 const
-  VKS_RC_DDS_Type = RT_RCDATA;
-  VKS_RC_JPG_Type = RT_RCDATA;
-  VKS_RC_XML_Type = RT_RCDATA;
-  VKS_RC_String_Type = RT_RCDATA;
+  VXS_RC_DDS_Type = RT_RCDATA;
+  VXS_RC_JPG_Type = RT_RCDATA;
+  VXS_RC_XML_Type = RT_RCDATA;
+  VXS_RC_String_Type = RT_RCDATA;
 
 type
 
@@ -37,24 +37,11 @@ type
     aresFont,
     aresMesh);
 
-  // TAFIOCreateFileStream
-  //
   TAFIOCreateFileStream = function(const fileName: string; mode: Word): TStream;
-
-  // TAFIOFileStreamExists
-  //
   TAFIOFileStreamExists = function(const fileName: string): Boolean;
-
-  // TAFIOFileStreamEvent
-  //
-   TAFIOFileStreamEvent = procedure (const fileName : String; mode : Word;var stream : TStream) of object;
-
-  // TAFIOFileStreamExistsEvent
-  //
+  TAFIOFileStreamEvent = procedure (const fileName : String; mode : Word;var stream : TStream) of object;
   TAFIOFileStreamExistsEvent = function(const fileName: string): Boolean of object;
 
-  // TVXApplicationFileIO
-  //
     { Allows specifying a custom behaviour for VXS.ApplicationFileIO's CreateFileStream. 
        The component should be considered a helper only, you can directly specify
        a function via the vAFIOCreateFileStream variable. 
@@ -62,20 +49,12 @@ type
        the last one created will be the active one. }
   TVXApplicationFileIO = class(TComponent)
   private
-    
     FOnFileStream: TAFIOFileStreamEvent;
     FOnFileStreamExists: TAFIOFileStreamExistsEvent;
-
-  protected
-    
-
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
   published
-    
       { Event that allows you to specify a stream for the file. 
          Destruction of the stream is at the discretion of the code that
          invoked CreateFileStream. Return nil to let the default mechanism
@@ -85,13 +64,9 @@ type
     property OnFileStreamExists: TAFIOFileStreamExistsEvent read FOnFileStreamExists write FOnFileStreamExists;
   end;
 
-  // TVXDataFileCapabilities
-  //
   TVXDataFileCapability = (dfcRead, dfcWrite);
   TVXDataFileCapabilities = set of TVXDataFileCapability;
 
-  // TVXDataFile
-  //
   { Abstract base class for data file formats interfaces. 
      This class declares base file-related behaviours, ie. ability to load/save
      from a file or a stream. 
@@ -101,20 +76,15 @@ type
      to this class, without the need to rewrite subclasses. }
   TVXDataFile = class(TVXUpdateAbleObject)
   private
-    
     FResourceName: string;
     procedure SetResourceName(const AName: string);
   public
-    
-
     { Describes what the TVXDataFile is capable of. 
        Default value is [dfcRead]. }
     class function Capabilities: TVXDataFileCapabilities; virtual;
-
     { Duplicates Self and returns a copy. 
        Subclasses should override this method to duplicate their data. }
     function CreateCopy(AOwner: TPersistent): TVXDataFile; virtual;
-
     procedure LoadFromFile(const fileName: string); virtual;
     procedure SaveToFile(const fileName: string); virtual;
     procedure LoadFromStream(stream: TStream); virtual;
@@ -130,7 +100,7 @@ type
   TVXDataFileClass = class of TVXDataFile;
   TVXSResourceStream = TResourceStream;
 
-  // Returns true if an VXS.ApplicationFileIO has been defined
+// Returns true if an ApplicationFileIO has been defined
 function ApplicationFileIODefined: Boolean;
 
 { Creates a file stream corresponding to the fileName. 
@@ -142,7 +112,6 @@ function CreateFileStream(const fileName: string;
 { Queries is a file stream corresponding to the fileName exists.  }
 function FileStreamExists(const fileName: string): Boolean;
 
-{ Create a resource stream. }
 function CreateResourceStream(const ResName: string; ResType: PChar): TVXSResourceStream;
 
 function StrToGLSResType(const AStrRes: string): TVXSApplicationResource;
@@ -151,27 +120,18 @@ var
   vAFIOCreateFileStream: TAFIOCreateFileStream = nil;
   vAFIOFileStreamExists: TAFIOFileStreamExists = nil;
 
-  // ---------------------------------------------------------------------
-  // ---------------------------------------------------------------------
-  // ---------------------------------------------------------------------
+// ---------------------------------------------------------------------
 implementation
-// ---------------------------------------------------------------------
-// ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
 
 var
   vAFIO: TVXApplicationFileIO = nil;
 
-// ApplicationFileIODefined
-//
 function ApplicationFileIODefined: Boolean;
 begin
   Result := (Assigned(vAFIOCreateFileStream) and Assigned(vAFIOFileStreamExists))
     or Assigned(vAFIO);
 end;
-
-// CreateFileStream
-//
 
 function CreateFileStream(const fileName: string;
   mode: Word = fmOpenRead + fmShareDenyNone): TStream;
@@ -191,8 +151,6 @@ begin
    end;
 end;
 
-// FileStreamExists
-//
 function FileStreamExists(const fileName: string): Boolean;
 begin
   if Assigned(vAFIOFileStreamExists) then
@@ -206,8 +164,6 @@ begin
   end;
 end;
 
-// FileStreamExists
-//
 function CreateResourceStream(const ResName: string; ResType: PChar): TVXSResourceStream;
 var
   InfoBlock: HRSRC;
@@ -224,16 +180,11 @@ end;
 // ------------------ TVXApplicationFileIO ------------------
 // ------------------
 
-// Create
-//
 constructor TVXApplicationFileIO.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   vAFIO := Self;
 end;
-
-// Destroy
-//
 
 destructor TVXApplicationFileIO.Destroy;
 begin
@@ -241,21 +192,15 @@ begin
   inherited Destroy;
 end;
 
-
 // ------------------
 // ------------------ TVXDataFile ------------------
 // ------------------
 
-// Capabilities
-//
 class function TVXDataFile.Capabilities: TVXDataFileCapabilities;
 begin
   Result := [dfcRead];
 end;
 
-
-// CreateCopy
-//
 function TVXDataFile.CreateCopy(AOwner: TPersistent): TVXDataFile;
 begin
   if Self <> nil then
@@ -263,9 +208,6 @@ begin
   else
     Result := nil;
 end;
-
-// LoadFromFile
-//
 
 procedure TVXDataFile.LoadFromFile(const fileName: string);
 var
@@ -280,9 +222,6 @@ begin
   end;
 end;
 
-// SaveToFile
-//
-
 procedure TVXDataFile.SaveToFile(const fileName: string);
 var
   fs: TStream;
@@ -296,16 +235,10 @@ begin
   end;
 end;
 
-// LoadFromStream
-//
-
 procedure TVXDataFile.LoadFromStream(stream: TStream);
 begin
   Assert(False, 'Imaport for ' + ClassName + ' to ' + stream.ClassName + ' not available.');
 end;
-
-// SaveToStream
-//
 
 procedure TVXDataFile.SaveToStream(stream: TStream);
 begin
