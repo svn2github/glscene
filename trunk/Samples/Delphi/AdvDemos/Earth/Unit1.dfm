@@ -124,7 +124,7 @@ object Form1: TForm1
       SpotCutOff = 180.000000000000000000
       object GLLensFlare1: TGLLensFlare
         Seed = 1465
-        FlareIsNotOccluded = False
+        FlareIsNotOccluded = True
       end
     end
   end
@@ -5236,7 +5236,7 @@ object Form1: TForm1
           A6BE4252084520257CA08452882114A208444404529F9A08444404529482114A
           8404452821111011110111101111011110111101111011110111101111011110
           11110111101111011110129114C002911130111151FFD9}
-        Material.Texture.ImageGamma = 0.699999988079071100
+        Material.Texture.ImageGamma = 0.699999988079071000
         Material.Texture.TextureMode = tmModulate
         Material.Texture.FilteringQuality = tfAnisotropic
         Material.Texture.Disabled = False

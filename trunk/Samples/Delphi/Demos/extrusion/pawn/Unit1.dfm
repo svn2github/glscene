@@ -3,8 +3,8 @@ object Form1: TForm1
   Top = 89
   BorderWidth = 3
   Caption = 'Pawn'
-  ClientHeight = 391
-  ClientWidth = 522
+  ClientHeight = 379
+  ClientWidth = 510
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -12,28 +12,28 @@ object Form1: TForm1
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
-  WindowState = wsMaximized
+  Position = poScreenCenter
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 393
-    Height = 391
+    Width = 381
+    Height = 379
     Camera = GLCamera1
     Buffer.BackgroundColor = clBackground
-    FieldOfView = 151.307739257812500000
+    FieldOfView = 150.438476562500000000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
     TabOrder = 0
   end
   object Panel1: TPanel
-    Left = 393
+    Left = 381
     Top = 0
     Width = 129
-    Height = 391
+    Height = 379
     Align = alRight
     TabOrder = 1
     object Label1: TLabel

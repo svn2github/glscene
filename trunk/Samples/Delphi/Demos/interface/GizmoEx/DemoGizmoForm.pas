@@ -15,7 +15,8 @@ uses
   Vcl.Buttons,
   Vcl.ComCtrls,
 
-  
+
+  GLPersistentClasses,
   GLScene,
   GLCadencer,
   GLObjects,
@@ -32,7 +33,8 @@ uses
   GLWindowsFont,
   GLPolyhedron,
   GLHUDObjects,
-  GLGraph;
+  GLGraph,
+  GLVectorFileObjects;
 
 type
   TForm1 = class(TForm)
@@ -168,9 +170,7 @@ type
     function ObjectName(value: string): string;
     procedure Timer1Timer(Sender: TObject);
   private
-     
   public
-     
     mx, my: Integer;
     MousePos,LostMousePos: TVector;
     MouseMoving: boolean;
@@ -595,7 +595,8 @@ end;
 
 procedure TForm1.edAutoZoomFactorKeyPress(Sender: TObject; var Key: Char);
 begin
-  if not (key in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', ',']) then
+  if not CharInSet(Key, ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', ','])
+  then
     key := #0;
 end;
 
@@ -659,7 +660,7 @@ var
   value: single;
 begin
 
-  tryStrToFloat((Sender as TEdit).Text, value);
+  TryStrToFloat((Sender as TEdit).Text, value);
   if value > 0 then
   case (Sender as TEdit).Tag of
     1: Gizmo.GizmoThickness := value;

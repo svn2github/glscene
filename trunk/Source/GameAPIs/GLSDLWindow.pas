@@ -24,8 +24,11 @@ uses
   System.Classes,
   System.SysUtils,
   System.SyncObjs,
-  OpenGLAdapter, 
-  GLContext, 
+
+  OpenGL1x,
+  GLVectorTypes,
+  GLState,
+  GLContext,
   GLVectorGeometry,
   SDL2;
 

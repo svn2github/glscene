@@ -3,7 +3,6 @@
 //
 { Python implementation for the GLScene scripting layer.
 
-   This unit is experimental.
    History:
      11/11/2004 - SG - Creation
 }
@@ -99,30 +98,33 @@ end;
 procedure TGLScriptPython.Assign(Source: TPersistent);
 begin
   inherited;
-  if Source is TGLScriptPython then begin
-    Engine:=TGLScriptPython(Source).Engine;
+  if Source is TGLScriptPython then
+  begin
+    Engine := TGLScriptPython(Source).Engine;
   end;
 end;
 
-procedure TGLScriptPython.ReadFromFiler(reader : TReader);
+procedure TGLScriptPython.ReadFromFiler(reader: TReader);
 var
-  archiveVersion : Integer;
+  archiveVersion: Integer;
 begin
   inherited;
-  archiveVersion:=reader.ReadInteger;
+  archiveVersion := reader.ReadInteger;
   Assert(archiveVersion = 0);
 
-  with reader do begin
-    FEngineName:=ReadString;
+  with reader do
+  begin
+    FEngineName := ReadString;
   end;
 end;
 
-procedure TGLScriptPython.WriteToFiler(writer : TWriter);
+procedure TGLScriptPython.WriteToFiler(writer: TWriter);
 begin
   inherited;
   writer.WriteInteger(0); // archiveVersion
 
-  with writer do begin
+  with writer do
+  begin
     if Assigned(FEngine) then
       WriteString(FEngine.GetNamePath)
     else
@@ -132,46 +134,49 @@ end;
 
 procedure TGLScriptPython.Loaded;
 var
-  temp : TComponent;
+  temp: TComponent;
 begin
   inherited;
-  if FEngineName<>'' then begin
-    temp:=FindManager(TGLPythonEngine, FEngineName);
+  if FEngineName <> '' then
+  begin
+    temp := FindManager(TGLPythonEngine, FEngineName);
     if Assigned(temp) then
-      Engine:=TGLPythonEngine(temp);
-    FEngineName:='';
+      Engine := TGLPythonEngine(temp);
+    FEngineName := '';
   end;
 end;
 
 procedure TGLScriptPython.Notification(AComponent: TComponent; Operation: TOperation);
 begin
   if (AComponent = Engine) and (Operation = opRemove) then
-    Engine:=nil;
+    Engine := nil;
 end;
 
-class function TGLScriptPython.FriendlyName : String;
+class function TGLScriptPython.FriendlyName: String;
 begin
-  Result:='TGLScriptPython';
+  Result := 'TGLScriptPython';
 end;
 
-class function TGLScriptPython.FriendlyDescription : String;
+class function TGLScriptPython.FriendlyDescription: String;
 begin
-  Result:='Python script';
+  Result := 'Python script';
 end;
 
-class function TGLScriptPython.ItemCategory : String;
+class function TGLScriptPython.ItemCategory: String;
 begin
-  Result:='';
+  Result := '';
 end;
 
 procedure TGLScriptPython.Compile;
 begin
   Invalidate;
-  if Assigned(Engine) then begin
+  if Assigned(Engine) then
+  begin
     Engine.ExecStrings(Text);
-    FCompiled:=True;
-    FStarted:=False;
-  end else
+    FCompiled := True;
+    FStarted := False;
+  end
+  else
     raise Exception.Create('No engine assigned!');
 end;
 
@@ -182,58 +187,62 @@ end;
 
 procedure TGLScriptPython.Invalidate;
 begin
-  FStarted:=False;
-  FCompiled:=False;
+  FStarted := False;
+  FCompiled := False;
 end;
 
 procedure TGLScriptPython.Start;
 begin
   Compile;
-  FStarted:=True;
+  FStarted := True;
 end;
 
 procedure TGLScriptPython.Stop;
 begin
-  FStarted:=False;
+  FStarted := False;
 end;
 
-function TGLScriptPython.Call(aName: String;
-  aParams: array of Variant) : Variant;
+function TGLScriptPython.Call(aName: String; aParams: array of Variant): Variant;
 var
-  func : PPyObject;
-  args : array of TVarRec;
-  i : Integer;
+  func: PPyObject;
+  args: array of TVarRec;
+  i: Integer;
 begin
   if State = ssUncompiled then
     Start;
-  if State = ssRunning then begin
-    func:=Engine.FindFunction('__main__', aName);
+  if State = ssRunning then
+  begin
+    func := Engine.FindFunction('__main__', aName);
     if Assigned(func) then
-      if Length(aParams)>0 then begin
+      if Length(aParams) > 0 then
+      begin
         SetLength(args, Length(aParams));
-        for i:=0 to Length(aParams)-1 do begin
-          args[i].VType:=vtVariant;
-          args[i].VVariant:=@aParams[i];
+        for i := 0 to Length(aParams) - 1 do
+        begin
+          args[i].VType := vtVariant;
+          args[i].VVariant := @aParams[i];
         end;
-        Result:=Engine.EvalFunction(func, args);
-      end else
-        Result:=Engine.EvalFunctionNoArgs(func);
+        Result := Engine.EvalFunction(func, args);
+      end
+      else
+        Result := Engine.EvalFunctionNoArgs(func);
   end;
 end;
 
-procedure TGLScriptPython.SetEngine(const Value : TGLPythonEngine);
+procedure TGLScriptPython.SetEngine(const Value: TGLPythonEngine);
 begin
-  if Value<>FEngine then begin
-    FEngine:=Value;
+  if Value <> FEngine then
+  begin
+    FEngine := Value;
     Invalidate;
   end;
 end;
 
-function TGLScriptPython.GetState : TGLScriptState;
+function TGLScriptPython.GetState: TGLScriptState;
 begin
-  Result:=ssUncompiled;
+  Result := ssUncompiled;
   if Assigned(Engine) and FCompiled and FStarted then
-    Result:=ssRunning;
+    Result := ssRunning;
 end;
 
 procedure Register;

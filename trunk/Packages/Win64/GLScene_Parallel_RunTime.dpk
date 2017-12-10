@@ -51,7 +51,8 @@ contains
   GLFilePGM in '..\..\Source\FileFormats\GLFilePGM.pas',
   CL in '..\..\Source\ParallelAPIs\CL.pas',
   CL_GL in '..\..\Source\ParallelAPIs\CL_GL.pas',
-  CL_Platform in '..\..\Source\ParallelAPIs\CL_Platform.pas';
+  CL_Platform in '..\..\Source\ParallelAPIs\CL_Platform.pas',
+  GLSCUDAUtility in '..\..\Source\ParallelAPIs\GLSCUDAUtility.pas';
 
 end.
 

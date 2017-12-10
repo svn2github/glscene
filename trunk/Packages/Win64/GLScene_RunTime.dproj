@@ -337,6 +337,7 @@
         <DCCReference Include="..\..\Source\GLSceneForm.pas"/>
         <DCCReference Include="..\..\Source\GLScreen.pas"/>
         <DCCReference Include="..\..\Source\GLScreenSaver.pas"/>
+        <DCCReference Include="..\..\Source\ScriptingAPIs\GLScriptBase.pas"/>
         <DCCReference Include="..\..\Source\GLSelection.pas"/>
         <DCCReference Include="..\..\Source\Shaders\GLShaderCombiner.pas"/>
         <DCCReference Include="..\..\Source\GLShadowHDS.pas"/>

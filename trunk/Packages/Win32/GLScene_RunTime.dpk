@@ -33,8 +33,7 @@ requires
   vcl,
   rtl,
   vclimg,
-  xmlrtl,
-  GR32_R;
+  xmlrtl;
 
 contains
   Const3DS in '..\..\Source\FileFormats\Const3DS.pas',
@@ -229,6 +228,7 @@ contains
   GLSceneForm in '..\..\Source\GLSceneForm.pas',
   GLScreen in '..\..\Source\GLScreen.pas',
   GLScreenSaver in '..\..\Source\GLScreenSaver.pas',
+  GLScriptBase in '..\..\Source\ScriptingAPIs\GLScriptBase.pas',
   GLSelection in '..\..\Source\GLSelection.pas',
   GLShaderCombiner in '..\..\Source\Shaders\GLShaderCombiner.pas',
   GLShadowHDS in '..\..\Source\GLShadowHDS.pas',

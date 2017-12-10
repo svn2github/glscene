@@ -13,6 +13,7 @@ uses
 
   
   GLScene,
+  GLPersistentClasses,
   GLObjects,
   GLExtrusion,
   GLCadencer,

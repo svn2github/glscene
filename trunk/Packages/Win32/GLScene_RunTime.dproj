@@ -135,7 +135,6 @@
         <DCCReference Include="rtl.dcp"/>
         <DCCReference Include="vclimg.dcp"/>
         <DCCReference Include="xmlrtl.dcp"/>
-        <DCCReference Include="GR32_R.dcp"/>
         <DCCReference Include="..\..\Source\FileFormats\Const3DS.pas"/>
         <DCCReference Include="..\..\Source\FileFormats\DDSImage.pas"/>
         <DCCReference Include="..\..\Source\FileFormats\DXTC.pas"/>
@@ -328,6 +327,7 @@
         <DCCReference Include="..\..\Source\GLSceneForm.pas"/>
         <DCCReference Include="..\..\Source\GLScreen.pas"/>
         <DCCReference Include="..\..\Source\GLScreenSaver.pas"/>
+        <DCCReference Include="..\..\Source\ScriptingAPIs\GLScriptBase.pas"/>
         <DCCReference Include="..\..\Source\GLSelection.pas"/>
         <DCCReference Include="..\..\Source\Shaders\GLShaderCombiner.pas"/>
         <DCCReference Include="..\..\Source\GLShadowHDS.pas"/>

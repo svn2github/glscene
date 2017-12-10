@@ -15,6 +15,7 @@ uses
 
   
   GLScene,
+  GLPersistentClasses,
   GLCadencer,
   GLObjects,
   GLSpaceText,
@@ -27,7 +28,7 @@ uses
   GLGizmo,
   GLCrossPlatform,
   GLCoordinates,
-  GLBaseClasses;
+  GLBaseClasses, GLVectorFileObjects;
 
 type
   TForm1 = class(TForm)
@@ -190,7 +191,8 @@ end;
 
 procedure TForm1.edAutoZoomFactorKeyPress(Sender: TObject; var Key: Char);
 begin
-  if not (Key in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', ',']) then
+  if not CharInSet(Key,['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', ','])
+  then
     key := #0;
 
 end;

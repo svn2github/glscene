@@ -14,7 +14,6 @@ uses
   Vcl.FileCtrl,
   Vcl.Imaging.Jpeg,
 
-  OpenGLTokens,
   OpenGL1x,
   GLMaterial,
   GLTexCombineShader,

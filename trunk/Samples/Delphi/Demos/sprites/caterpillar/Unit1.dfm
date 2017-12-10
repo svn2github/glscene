@@ -3,8 +3,8 @@ object Form1: TForm1
   Top = 106
   BorderWidth = 5
   Caption = 'Caterpillar'
-  ClientHeight = 328
-  ClientWidth = 458
+  ClientHeight = 298
+  ClientWidth = 428
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -12,7 +12,7 @@ object Form1: TForm1
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
-  WindowState = wsMaximized
+  Position = poScreenCenter
   OnCreate = FormCreate
   OnResize = FormResize
   PixelsPerInch = 96
@@ -20,12 +20,12 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 458
-    Height = 328
+    Width = 428
+    Height = 298
     Camera = GLCamera1
     Buffer.BackgroundColor = clBlack
     Buffer.DepthTest = False
-    FieldOfView = 146.089370727539100000
+    FieldOfView = 142.899536132812500000
     Align = alClient
     TabOrder = 0
   end

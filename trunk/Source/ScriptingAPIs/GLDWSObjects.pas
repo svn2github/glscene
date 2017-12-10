@@ -9,7 +9,7 @@
        06/04/2004 - SG - Creation
     
 }
-unit GLDWSObjects;
+unit GLdwsObjects;
 
 interface
 
@@ -18,7 +18,7 @@ uses
   System.SysUtils, 
   GLScene, 
   GLXCollection, 
-  GLScriptDWS2, 
+  GLScriptDWS, 
   GLBaseClasses, 
   GLManager,
   dwsComp, 

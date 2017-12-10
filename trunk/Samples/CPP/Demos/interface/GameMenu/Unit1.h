@@ -13,6 +13,7 @@
 #include <System.Classes.hpp>
 #include <Dialogs.hpp>
 #include <Vcl.StdCtrls.hpp>
+#include <Vcl.Imaging.jpeg.hpp>
 
 #include "GLScene.hpp"
 #include "GLObjects.hpp"
@@ -24,7 +25,6 @@
 #include "GLCadencer.hpp"
 #include "GLTexture.hpp"
 #include "GLKeyboard.hpp"
-#include "JPEG.hpp"
 #include "GLCrossPlatform.hpp"
 #include "GLMaterial.hpp"
 #include "GLCoordinates.hpp"
