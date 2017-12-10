@@ -50,7 +50,7 @@ type
   TVXMaterialMultiProxy = class;
 
   { MasterObject description for a MultiProxy object. }
-  TVXMaterialMultiProxyMaster = class(TVXInterfacedCollectionItem, IGLMaterialLibrarySupported)
+  TVXMaterialMultiProxyMaster = class(TVXInterfacedCollectionItem, IVXMaterialLibrarySupported)
   private
     FMasterObject: TVXBaseSceneObject;
     FMasterLibMaterial: TVXLibMaterial;

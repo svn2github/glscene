@@ -1,10 +1,9 @@
 //
-// VXScene Component Library, based on GLScene http://glscene.sourceforge.net 
+// VXScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
-{ 
+{
   Creates a trail-like mesh.
-  Based on Jason Lanford's demo.  
-   
+  Based on Jason Lanford's demo.
 }
 
 unit VXS.Trail;
@@ -14,11 +13,19 @@ interface
 {$I VXScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
+  System.Classes,
+  System.SysUtils,
 
-  VXS.Scene, VXS.VectorTypes, VXS.MeshUtils, VXS.VectorGeometry,
-  VXS.VectorFileObjects, VXS.Mesh, VXS.Objects, VXS.Material,
-  VXS.Strings, VXS.BaseClasses;
+  VXS.Scene,
+  VXS.VectorTypes,
+  VXS.MeshUtils,
+  VXS.VectorGeometry,
+  VXS.VectorFileObjects,
+  VXS.Mesh,
+  VXS.Objects,
+  VXS.Material,
+  VXS.Strings,
+  VXS.BaseClasses;
 
 const cMaxVerts = 2000;
 
@@ -28,29 +35,25 @@ type
 
   TVXTrail = class(TVXMesh)
   private
-
     fVertLimit: integer;
     fTimeLimit: single;
     fMinDistance: single;
     fAlpha: single;
     fAlphaFade: Boolean;
-    fUVScale: Single;
-    fVerts: array[1..cMaxVerts] of TVector3f;
-    fUVs: array[1..cMaxVerts] of TTexpoint;
-    fTimeStamps: array[1..cMaxVerts] of Double;
-    fVertStart,fVertEnd,fVertCount: integer;
-
-
-    fLastV0Pos,fLastPos, fLastDir, fLastUp: TVector3f;
+    fUVScale: single;
+    fVerts: array [1 .. cMaxVerts] of TVector3f;
+    fUVs: array [1 .. cMaxVerts] of TTexpoint;
+    fTimeStamps: array [1 .. cMaxVerts] of Double;
+    fVertStart, fVertEnd, fVertCount: integer;
+    fLastV0Pos, fLastPos, fLastDir, fLastUp: TVector3f;
     FLastUVs: single;
-
     // used for UV scaling
-    fLastP1,fLastP2: TVector3f;
+    fLastP1, fLastP2: TVector3f;
     FTrailObject: TVXBaseSceneObject;
     FMarkStyle: TMarkStyle;
     FMarkWidth: single;
-    FEnabled: boolean;
-    FAntiZFightOffset: Single;
+    FEnabled: Boolean;
+    FAntiZFightOffset: single;
     procedure SetTrailObject(const Value: TVXBaseSceneObject);
     procedure SetMarkStyle(const Value: TMarkStyle);
     procedure SetAlpha(const Value: single);
@@ -60,42 +63,35 @@ type
     procedure SetUVScale(const Value: single);
     procedure SetVertLimit(const Value: integer);
     procedure SetMarkWidth(const Value: single);
-    procedure SetEnabled(const Value: boolean);
+    procedure SetEnabled(const Value: Boolean);
     function StoreAntiZFightOffset: Boolean;
-    
   protected
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
   public
-
-    //EnableUVmapping: boolean; // generate UV's or not
-
-    procedure DoProgress(const progressTime : TProgressTimes); override;
+    // EnableUVmapping: boolean; // generate UV's or not
+    procedure DoProgress(const progressTime: TVXProgressTimes); override;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
-    procedure CreateMark(obj: TVXBaseSceneObject; width: single;CurrentTime : Double); overload;
-    procedure CreateMark(APos,ADir,AUp: TVector3f; AWidth: single;ACurrentTime : Double); overload;
-    function CreateMark(p1,p2: TVector3f;CurrentTime : Double):boolean; overload;
-
+    procedure CreateMark(obj: TVXBaseSceneObject; width: single; CurrentTime: Double); overload;
+    procedure CreateMark(APos, ADir, AUp: TVector3f; AWidth: single; ACurrentTime: Double); overload;
+    function CreateMark(p1, p2: TVector3f; CurrentTime: Double): Boolean; overload;
     procedure ClearMarks;
-
   published
     { Add a tiny bit of offset to help prevent z-fighting..
-       Need a better solution here as this will get out of whack on really
-       long trails and is dependant on scene scale. }
-     property AntiZFightOffset: Single read FAntiZFightOffset write FAntiZFightOffset stored StoreAntiZFightOffset;
-
-     property VertLimit: integer  read FVertLimit write SetVertLimit default 150;
-     property TimeLimit: single  read FTimeLimit write SetTimeLimit;
-     { Don't create mark unless moved at least this distance. }
-     property MinDistance: single  read FMinDistance write SetMinDistance;
-     property Alpha: single  read FAlpha write SetAlpha;
-     property AlphaFade: Boolean  read FAlphaFade write SetAlphaFade default True;
-     property UVScale: single  read FUVScale write SetUVScale;
-     property MarkStyle : TMarkStyle read FMarkStyle write SetMarkStyle default msFaceCamera;
-     property TrailObject : TVXBaseSceneObject read FTrailObject write SetTrailObject default nil;
-     property MarkWidth : single read FMarkWidth write SetMarkWidth;
-     property Enabled : boolean read FEnabled write SetEnabled default True;
+      Need a better solution here as this will get out of whack on really
+      long trails and is dependant on scene scale. }
+    property AntiZFightOffset: single read FAntiZFightOffset write FAntiZFightOffset stored StoreAntiZFightOffset;
+    property VertLimit: integer read fVertLimit write SetVertLimit default 150;
+    property TimeLimit: single read fTimeLimit write SetTimeLimit;
+    { Don't create mark unless moved at least this distance. }
+    property MinDistance: single read fMinDistance write SetMinDistance;
+    property Alpha: single read fAlpha write SetAlpha;
+    property AlphaFade: Boolean read fAlphaFade write SetAlphaFade default True;
+    property UVScale: single read fUVScale write SetUVScale;
+    property MarkStyle: TMarkStyle read FMarkStyle write SetMarkStyle default msFaceCamera;
+    property TrailObject: TVXBaseSceneObject read FTrailObject write SetTrailObject default nil;
+    property MarkWidth: single read FMarkWidth write SetMarkWidth;
+    property Enabled: Boolean read FEnabled write SetEnabled default True;
   end;
 
 //-----------------------------------------------------------------------------
@@ -132,7 +128,7 @@ begin
    inherited Destroy;
 end;
 
-procedure TVXTrail.DoProgress(const progressTime: TProgressTimes);
+procedure TVXTrail.DoProgress(const progressTime: TVXProgressTimes);
 begin
   inherited;
   if Enabled and Assigned(TrailObject) then
@@ -188,7 +184,7 @@ begin
         p1 := fLastp1;
      if not PointIsInHalfSpace(p2,fLastV0Pos,VectorSubtract(v0,fLastV0Pos)) then
         p2 := fLastp2;
-     
+
 
      if CreateMark(p1,p2,CurrentTime) then
      begin

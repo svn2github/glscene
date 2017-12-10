@@ -1,9 +1,8 @@
 //
-// VXScene Component Library, based on GLScene http://glscene.sourceforge.net 
+// VXScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
 {
-  A collection of components that generate post effects. 
- 
+  A collection of components that generate post effects.
 }
 unit VXS.PostEffects;
 
@@ -36,7 +35,7 @@ type
   TVXPostShaderCollectionItem = class(TCollectionItem)
   private
     FShader: TVXShader;
-    FPostShaderInterface: IGLPostShader;
+    FPostShaderInterface: IVXPostShader;
     procedure SetShader(const Value: TVXShader);
   protected
     function GetRealOwner: TVXPostShaderHolder;
@@ -341,7 +340,7 @@ begin
   if FShader <> nil then
       FShader.RemoveFreeNotification(RealOwner);
 
-  if not Supports(TObject(Value), IGLPostShader, FPostShaderInterface) then
+  if not Supports(TObject(Value), IVXPostShader, FPostShaderInterface) then
     raise EGLPostShaderHolderException.Create('Shader must support interface IGLPostShader!');
 
   if RealOwner <> nil then

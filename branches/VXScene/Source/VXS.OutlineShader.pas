@@ -9,8 +9,7 @@
                    overlap itself. Texture transparency doesn't work.
        2. Doesn't work with objects (e.g. TVXFreeForm) having it's own
                    color array.
-       3. Doesn't Works with visible backfaces. 
-   
+       3. Doesn't Works with visible backfaces.
 }
 unit VXS.OutlineShader;
 
@@ -19,38 +18,36 @@ interface
 {$I VXScene.inc}
 
 uses
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
   System.Classes,
-  
-  VXS.Material, VXS.CrossPlatform, VXS.Color, VXS.RenderContextInfo,
-  Winapi.OpenGL, Winapi.OpenGLext,  VXS.Context, VXS.State, VXS.TextureFormat;
+
+  VXS.OpenGL1x,
+  VXS.Material,
+  VXS.CrossPlatform,
+  VXS.Color,
+  VXS.RenderContextInfo,
+  VXS.Context,
+  VXS.State,
+  VXS.TextureFormat;
 
 type
 
-  // TVXOutlineShader
-  //
   TVXOutlineShader = class(TVXShader)
   private
-    
     FPassCount: integer;
     FLineColor: TVXColor;
     FOutlineSmooth: Boolean;
     FOutlineWidth: Single;
-
     procedure SetOutlineWidth(v: single);
     procedure SetOutlineSmooth(v: boolean);
-
   protected
-    
     procedure DoApply(var rci: TVXRenderContextInfo; Sender: TObject); override;
     function DoUnApply(var rci: TVXRenderContextInfo): Boolean; override;
-
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
   published
-    
     property LineColor: TVXColor read FLineColor write FLineColor;
     { Line smoothing control }
     property LineSmooth: Boolean read FOutlineSmooth write SetOutlineSmooth
@@ -58,16 +55,13 @@ type
     property LineWidth: Single read FOutlineWidth write SetOutlineWidth;
   end;
 
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
 implementation
+// ------------------------------------------------------------------
+
 // ------------------
 // ------------------ TVXOutlineShader ------------------
 // ------------------
-
-// Create
-//
 
 constructor TVXOutlineShader.Create(AOwner: TComponent);
 begin
@@ -78,17 +72,11 @@ begin
   ShaderStyle := ssLowLevel;
 end;
 
-// Destroy
-//
-
 destructor TVXOutlineShader.Destroy;
 begin
   FLineColor.Free;
   inherited;
 end;
-
-// DoApply
-//
 
 procedure TVXOutlineShader.DoApply(var rci: TVXRenderContextInfo; Sender:
   TObject);
@@ -97,9 +85,6 @@ begin
   // with color alpha < 1 to be rendered correctly with outline.
   FPassCount := 1;
 end;
-
-// DoUnApply
-//
 
 function TVXOutlineShader.DoUnApply(var rci: TVXRenderContextInfo): Boolean;
 begin
@@ -158,9 +143,6 @@ begin
   end;
 end;
 
-// SetOutlineWidth
-//
-
 procedure TVXOutlineShader.SetOutlineWidth(v: single);
 begin
   if FOutlineWidth <> v then
@@ -169,9 +151,6 @@ begin
     NotifyChange(self);
   end;
 end;
-
-// SetOutlineSmooth
-//
 
 procedure TVXOutlineShader.SetOutlineSmooth(v: boolean);
 begin

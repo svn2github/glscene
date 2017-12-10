@@ -53,7 +53,7 @@ type
   end;
 
   // Abstract class.
-  TVXBaseGLSLDiffuseSpecularShaderMT = class(TVXBaseCustomGLSLDiffuseSpecular, IGLMaterialLibrarySupported)
+  TVXBaseGLSLDiffuseSpecularShaderMT = class(TVXBaseCustomGLSLDiffuseSpecular, IVXMaterialLibrarySupported)
   private
     FMaterialLibrary: TVXMaterialLibrary;
     FMainTexture: TVXTexture;

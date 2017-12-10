@@ -29,7 +29,7 @@ type
   TVXSkyBoxStyle = (sbsFull, sbsTopHalf, sbsBottomHalf, sbTopTwoThirds,
     sbsTopHalfClamped);
 
-  TVXSkyBox = class(TVXCameraInvariantObject, IGLMaterialLibrarySupported)
+  TVXSkyBox = class(TVXCameraInvariantObject, IVXMaterialLibrarySupported)
   private
     FMatNameTop: string;
     FMatNameRight: string;
@@ -138,7 +138,7 @@ begin
   // (note: simply not writing to depth buffer may not make this not work,
   //  child objects may need the depth buffer to render themselves properly,
   //  this may require depth buffer cleared after that. - DanB)
-  Arci.VXStates.DepthWriteMask := 0;
+  Arci.VXStates.DepthWriteMask := False;
   Arci.ignoreDepthRequests := true;
   inherited;
   Arci.ignoreDepthRequests := False;

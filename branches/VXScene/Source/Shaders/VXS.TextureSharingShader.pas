@@ -35,7 +35,7 @@ uses
 type
   TVXTextureSharingShader = class;
 
-  TVXTextureSharingShaderMaterial = class(TVXInterfacedCollectionItem, IGLMaterialLibrarySupported)
+  TVXTextureSharingShaderMaterial = class(TVXInterfacedCollectionItem, IVXMaterialLibrarySupported)
   private
     FTextureMatrix: TMatrix;
     FNeedToUpdateTextureMatrix: Boolean;

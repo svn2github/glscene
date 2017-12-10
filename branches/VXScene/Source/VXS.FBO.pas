@@ -679,7 +679,7 @@ begin
   glClearColor(backColor.X, backColor.Y, backColor.Z,
     buffer.BackgroundAlpha);
   rci.VXStates.SetColorMask(cAllColorComponents);
-  rci.VXStates.DepthWriteMask := 1;
+  rci.VXStates.DepthWriteMask := True;
   glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
 
   baseObject.Render(rci);

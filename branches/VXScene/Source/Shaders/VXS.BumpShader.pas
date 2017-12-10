@@ -36,8 +36,8 @@ uses
   Winapi.OpenGLext,
   System.Classes,
   System.SysUtils,
-  
-  VXS.OpenGLAdapter,
+
+  VXS.OpenGL1x,
   VXS.Material,
   VXS.Graphics,
   VXS.Utils,
@@ -64,8 +64,6 @@ type
 
   TSpecularMode = (smOff, smBlinn, smPhong);
 
-  // TVXBumpShader
-  //
   { A generic bump shader.  }
   TVXBumpShader = class(TVXShader)
   private
@@ -83,11 +81,9 @@ type
     FVertexProgram: TStringList;
     FFragmentProgram: TStringList;
     FParallaxOffset: Single;
-
     function GenerateVertexProgram: string;
     function GenerateFragmentProgram: string;
     procedure DoLightPass(var rci: TVXRenderContextInfo; lightID: Cardinal);
-
   protected
     procedure SetBumpMethod(const Value: TBumpMethod);
     procedure SetBumpSpace(const Value: TBumpSpace);
@@ -98,41 +94,27 @@ type
     procedure Loaded; override;
     procedure DeleteVertexPrograms;
     procedure DeleteFragmentPrograms;
-
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
     procedure DoApply(var rci: TVXRenderContextInfo; Sender: TObject); override;
     function DoUnApply(var rci: TVXRenderContextInfo): Boolean; override;
-
   published
     property BumpMethod: TBumpMethod read FBumpMethod write SetBumpMethod;
     property BumpSpace: TBumpSpace read FBumpSpace write SetBumpSpace;
     property BumpOptions: TBumpOptions read FBumpOptions write SetBumpOptions;
-    property SpecularMode: TSpecularMode read FSpecularMode write
-      SetSpecularMode;
-    property DesignTimeEnabled: Boolean read FDesignTimeEnabled write
-      SetDesignTimeEnabled;
-    property ParallaxOffset: Single read FParallaxOffset write
-      SetParallaxOffset;
-
+    property SpecularMode: TSpecularMode read FSpecularMode write SetSpecularMode;
+    property DesignTimeEnabled: Boolean read FDesignTimeEnabled write SetDesignTimeEnabled;
+    property ParallaxOffset: Single read FParallaxOffset write SetParallaxOffset;
   end;
 
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 // ------------------
 // ------------------ TVXBumpShader ------------------
 // ------------------
-
-// Create
-//
 
 constructor TVXBumpShader.Create(AOwner: TComponent);
 begin
@@ -149,9 +131,6 @@ begin
   FFragmentProgram := TStringList.Create;
 end;
 
-// Destroy
-//
-
 destructor TVXBumpShader.Destroy;
 begin
   DeleteVertexPrograms;
@@ -162,16 +141,10 @@ begin
   inherited;
 end;
 
-// Loaded
-//
-
 procedure TVXBumpShader.Loaded;
 begin
   inherited;
 end;
-
-// GenerateVertexProgram
-//
 
 function TVXBumpShader.GenerateVertexProgram: string;
 var
@@ -371,9 +344,6 @@ begin
   VP.Free;
 end;
 
-// GenerateFragmentProgram
-//
-
 function TVXBumpShader.GenerateFragmentProgram: string;
 var
   FP: TStringList;
@@ -541,9 +511,6 @@ begin
   FP.Free;
 end;
 
-// DoLightPass
-//
-
 procedure TVXBumpShader.DoLightPass(var rci: TVXRenderContextInfo;
   lightID: Cardinal);
 var
@@ -619,9 +586,6 @@ begin
     Assert(False, 'Invalid bump method!');
   end;
 end;
-
-// DoApply
-//
 
 procedure TVXBumpShader.DoApply(var rci: TVXRenderContextInfo; Sender: TObject);
 var
@@ -720,9 +684,6 @@ begin
     end;
 end;
 
-// DoUnApply
-//
-
 function TVXBumpShader.DoUnApply(var rci: TVXRenderContextInfo): Boolean;
 var
   ambient, LMaterialAmbient: TVector;
@@ -809,9 +770,6 @@ begin
     FFragmentProgramHandle.Disable;
 end;
 
-// DeleteVertexPrograms
-//
-
 procedure TVXBumpShader.DeleteVertexPrograms;
 begin
   FVertexProgramHandle.Free;
@@ -819,18 +777,12 @@ begin
   FVertexProgram.Clear;
 end;
 
-// DeleteFragmentPrograms
-//
-
 procedure TVXBumpShader.DeleteFragmentPrograms;
 begin
   FFragmentProgramHandle.Free;
   FFragmentProgramHandle := nil;
   FFragmentProgram.Clear;
 end;
-
-// SetBumpMethod
-//
 
 procedure TVXBumpShader.SetBumpMethod(const Value: TBumpMethod);
 begin
@@ -843,9 +795,6 @@ begin
   end;
 end;
 
-// SetBumpSpace
-//
-
 procedure TVXBumpShader.SetBumpSpace(const Value: TBumpSpace);
 begin
   if Value <> FBumpSpace then
@@ -856,9 +805,6 @@ begin
     NotifyChange(Self);
   end;
 end;
-
-// SetBumpOptions
-//
 
 procedure TVXBumpShader.SetBumpOptions(const Value: TBumpOptions);
 begin
@@ -871,9 +817,6 @@ begin
   end;
 end;
 
-// SetSpecularMode
-//
-
 procedure TVXBumpShader.SetSpecularMode(const Value: TSpecularMode);
 begin
   if Value <> FSpecularMode then
@@ -885,9 +828,6 @@ begin
   end;
 end;
 
-// SetDesignTimeEnabled
-//
-
 procedure TVXBumpShader.SetDesignTimeEnabled(const Value: Boolean);
 begin
   if Value <> FDesignTimeEnabled then
@@ -896,9 +836,6 @@ begin
     NotifyChange(Self);
   end;
 end;
-
-// SetParallaxOffset
-//
 
 procedure TVXBumpShader.SetParallaxOffset(const Value: Single);
 begin

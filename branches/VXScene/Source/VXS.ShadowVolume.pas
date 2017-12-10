@@ -21,7 +21,7 @@ uses
   System.SysUtils,
   System.Classes,
 
-  VXS.OpenGLAdapter,
+  VXS.OpenGL1x,
   VXS.Scene,
   VXS.PipelineTransformation,
   VXS.VectorLists,
@@ -718,7 +718,7 @@ begin
 
       ARci.ignoreBlendingRequests := True;
       ARci.ignoreDepthRequests := True;
-      DepthWriteMask := 0;
+      DepthWriteMask := False;
       Enable(stDepthTest);
       SetBlendFunc(bfSrcAlpha, bfOne);
       Disable(stAlphaTest);

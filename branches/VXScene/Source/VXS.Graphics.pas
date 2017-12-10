@@ -5,21 +5,16 @@
    Utility class and functions to manipulate a bitmap in OpenGL's default
    byte order (GL_RGBA vs TBitmap's GL_BGRA)
 
-   Note: TVxBitmap32 has support for Alex Denissov's Graphics32 library
-   (http://www.g32.org), just make sure the VXS_Graphics32_SUPPORT conditionnal
+   Note: TVXBitmap32 has support for Alex Denissov's Graphics32 library
+   (http://www.g32.org), just make sure the USE_GRAPHICS32 conditionnal
    is active in GLScene. inc and recompile.
-
-   Note: TVxBitmap32 has support for Alex Denissov's Graphics32 library
-   (http://www.graphics32.org), just make sure the Graphics32_SUPPORT conditionnal
-   is active in GLScene. inc and recompile.
-
 }
 
 unit VXS.Graphics;
 
 interface
 
-{$I VxScene.inc}
+{$I VXScene.inc}
 
 uses
 {$IFDEF MSWINDOWS}
@@ -34,10 +29,10 @@ uses
   System.Math,
   FMX.Graphics,
   FMX.Dialogs,
-{$IFDEF VXS_Graphics32_SUPPORT}
+{$IFDEF USE_GRAPHICS32}
   GR32,
 {$ENDIF}
-  VXS.OpenGLAdapter,
+  VXS.OpenGL1x,
   VXS.ApplicationFileIO,
   VXS.PersistentClasses,
   VXS.Context,
@@ -86,7 +81,7 @@ type
   private
     FSourceStream: TStream;
     FStreamLevel: TVXImageLODRange;
-    FFinishEvent: TFinishTaskEvent;
+    FFinishEvent: TVXFinishTaskEvent;
 {$IFDEF USE_SERVICE_CONTEXT}
     procedure ImageStreamingTask; stdcall;
 {$ENDIF}
@@ -216,12 +211,10 @@ type
     function GetScanLine(index: Integer): PGLPixel32Array;
     procedure AssignFrom24BitsBitmap(aBitmap: TBitmap);
     procedure AssignFrom32BitsBitmap(aBitmap: TBitmap);
-{$IFDEF GRAPHICS32_SUPPORT}
+{$IFDEF USE_GRAPHICS32}
     procedure AssignFromBitmap32(aBitmap32: TBitmap32);
 {$ENDIF}
-{$IFDEF VXS_PngImage_SUPPORT}
-    procedure AssignFromPngImage(aPngImage: TPngImage);
-{$ENDIF}
+    procedure AssignFromPngImage(aPngImage: TBitmapImage);
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -781,10 +774,6 @@ end;
 // ------------------ TVXBaseImage ------------------
 // ------------------
 
-{$IFDEF VXS_REGIONS}{$REGION 'TVXBaseImage'}{$ENDIF}
-// Create
-//
-
 constructor TVXBaseImage.Create;
 begin
   inherited Create(Self);
@@ -797,9 +786,6 @@ begin
   fCubeMap := false;
   fTextureArray := false;
 end;
-
-// Destroy
-//
 
 destructor TVXBaseImage.Destroy;
 var
@@ -818,9 +804,6 @@ begin
   FSourceStream.Free;
   inherited Destroy;
 end;
-
-// Assign
-//
 
 procedure TVXBaseImage.Assign(Source: TPersistent);
 var
@@ -869,9 +852,6 @@ begin
     and (FInternalFormat <= tfFLOAT_RGBA32)) then
     Result := ttTextureRect;
 end;
-
-// DataSize
-//
 
 function TVXBaseImage.DataSize: PtrUint;
 var
@@ -959,25 +939,16 @@ begin
   Result := (GetWidth = 0) or (GetHeight = 0);
 end;
 
-// IsCompressed
-//
-
 function TVXBaseImage.IsCompressed: Boolean;
 begin
   Result := IsCompressedFormat(fInternalFormat);
 end;
-
-// IsVolume
-//
 
 function TVXBaseImage.IsVolume: boolean;
 begin
   Result := (GetDepth > 0) and not fTextureArray and not fCubeMap;
 end;
 
-
-// ConvertCrossToCubemap
-//
 
 function TVXBaseImage.ConvertCrossToCubemap: Boolean;
 var
@@ -1075,9 +1046,6 @@ begin
 
   Result := true;
 end;
-
-// ConvertToVolume
-//
 
 function TVXBaseImage.ConvertToVolume(const col, row: Integer; const MakeArray:
   Boolean): Boolean;
@@ -1186,9 +1154,6 @@ begin
   FLOD[ALOD].State := AState;
 end;
 
-// Narrow
-//
-
 procedure TVXBaseImage.Narrow;
 var
   size: Integer;
@@ -1228,9 +1193,6 @@ begin
   fData := newData;
 end;
 
-// GemerateMipmap
-//
-
 procedure TVXBaseImage.GenerateMipmap(AFilter: TImageFilterFunction);
 var
   LAddresses: TPointerArray;
@@ -1268,9 +1230,6 @@ begin
     end;
   end;
 end;
-
-// UnMipmap
-//
 
 procedure TVXBaseImage.UnMipmap;
 var
@@ -1348,9 +1307,6 @@ function TVXBaseImage.GetData: PGLPixel32Array;
 begin
   Result := fData;
 end;
-
-// RegisterAsOpenVXTexture
-//
 
 procedure TVXBaseImage.RegisterAsOpenVXTexture(
   AHandle: TVXTextureHandle;
@@ -1679,9 +1635,6 @@ begin
 
   end; // of with GL
 end;
-
-// AssignFromTexture
-//
 
 function TVXBaseImage.AssignFromTexture(
   AHandle: TVXTextureHandle;
@@ -2026,8 +1979,6 @@ begin
 end;
 {$ENDIF}
 
-{$IFDEF VXS_REGIONS}{$ENDREGION}{$ENDIF}
-
 // ------------------
 // ------------------ TVXImage ------------------
 // ------------------
@@ -2122,7 +2073,7 @@ begin
       end;
     end;
   end
-{$IFDEF GRAPHICS32_SUPPORT}
+{$IFDEF USE_GRAPHICS32}
   else if Source is TBitmap32 then
   begin
     Narrow;
@@ -2332,9 +2283,8 @@ begin
   end;
 end;
 
-{$IFDEF GRAPHICS32_SUPPORT}
-
-procedure TVxImage.AssignFromBitmap32(aBitmap32: TBitmap32);
+{$IFDEF USE_GRAPHICS32}
+procedure TVXImage.AssignFromBitmap32(aBitmap32: TBitmap32);
 var
   y: Integer;
   pSrc, pDest: PAnsiChar;
@@ -2367,21 +2317,19 @@ begin
 end;
 {$ENDIF}
 
-{$IFDEF VXS_PngImage_SUPPORT}
 // AlphaChannel Support
-
-procedure TVXImage.AssignFromPngImage(aPngImage: TPngImage);
+procedure TVXImage.AssignFromPngImage(aPngImage: TBitmapImage);
 var
   i, j: Integer;
-  SourceScan: PRGBLine;
+  SourceScan: PRGBQuad; //VCL->PRGBLine;
   DestScan: PGLPixel32Array;
   AlphaScan: pByteArray;
   Pixel: Integer;
 begin
-{$IFDEF VXS_PngImage_RESIZENEAREST}
+(*
   if (aPngImage.Width and 3) > 0 then
     aPngImage.Resize((aPngImage.Width and $FFFC) + 4, aPngImage.Height);
-{$ENDIF}
+*)
   UnMipmap;
   FLOD[0].Width := aPngImage.Width;
   FLOD[0].Height := aPngImage.Height;
@@ -2394,6 +2342,7 @@ begin
   fTextureArray := false;
   ReallocMem(FData, DataSize);
   FBlank := False;
+  (*
   case aPngImage.Header.ColorType of
     { Direct ScanLine (24 Bits) }
     COLOR_RGB, COLOR_RGBALPHA: for j := 1 to aPngImage.Height do
@@ -2431,9 +2380,8 @@ begin
       end;
     end;
   end;
+  *)
 end;
-{$ENDIF}
-
 
 procedure TVXImage.AssignFromTexture2D(textureHandle: Cardinal);
 var
@@ -2633,9 +2581,6 @@ begin
   color.b := GetBValue(aColor);
   SetAlphaTransparentForColor(color);
 end;
-
-// SetAlphaTransparentForColor
-//
 
 procedure TVXImage.SetAlphaTransparentForColor(const aColor: TVXPixel32);
 var
@@ -2989,7 +2934,9 @@ begin
   end;
 end;
 
+//---------------------------------------------------
 initialization
+//---------------------------------------------------
 
 finalization
   FreeAndNil(vRasterFileFormats);

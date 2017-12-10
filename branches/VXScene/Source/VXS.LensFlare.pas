@@ -18,6 +18,7 @@ uses
   System.SysUtils,
   System.Math,
 
+  VXS.OpenGL1x,
   VXS.PersistentClasses,
   VXS.Scene,
   VXS.VectorGeometry,
@@ -122,7 +123,7 @@ type
     destructor Destroy; override;
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
     procedure BuildList(var rci: TVXRenderContextInfo); override;
-    procedure DoProgress(const progressTime: TProgressTimes); override;
+    procedure DoProgress(const progressTime: TVXProgressTimes); override;
     { Prepares pre-rendered texture to speed up actual rendering.
       Will use the currently active context as scratch space, and will
       automatically do nothing if things have already been prepared,
@@ -294,7 +295,7 @@ begin
     Disable(stFog);
     Disable(stColorMaterial);
     Disable(stCullFace);
-    DepthWriteMask := GLboolean(False);
+    DepthWriteMask := False;
     Enable(stBlend);
     SetBlendFunc(bfSrcAlpha, bfOne);
     Disable(stAlphaTest);
@@ -647,7 +648,7 @@ begin
     Self.RenderChildren(0, Count - 1, rci);
 end;
 
-procedure TVXLensFlare.DoProgress(const progressTime: TProgressTimes);
+procedure TVXLensFlare.DoProgress(const progressTime: TVXProgressTimes);
 begin
   inherited;
   FDeltaTime := progressTime.deltaTime;

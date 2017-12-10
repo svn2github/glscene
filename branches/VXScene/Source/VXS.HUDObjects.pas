@@ -210,7 +210,7 @@ begin
     glPushMatrix;
     glLoadIdentity;
     rci.VXStates.Disable(stDepthTest);
-    rci.VXStates.DepthWriteMask := GLboolean(False);
+    rci.VXStates.DepthWriteMask := False;
 
     // precalc coordinates
     vx := -Width * 0.5 * f;

@@ -25,6 +25,7 @@ uses
   System.SysUtils,
   System.Math,
 
+  VXS.OpenGL1x,
   VXS.PersistentClasses,
   VXS.XOpenGL,
   VXS.VectorGeometry,
@@ -90,7 +91,7 @@ type
     procedure StructureChanged; override;
     function BarycenterAbsolutePosition: TVector; override;
   published
-    property CubeSize: GLfloat read FCubeSize write SetCubeSize;
+    property CubeSize: TGLfloat read FCubeSize write SetCubeSize;
     property EdgeColor: TVXColor read FEdgeColor write SetEdgeColor;
     { If true the dummycube's edges will be visible at runtime.
       The default behaviour of the dummycube is to be visible at design-time
@@ -506,9 +507,9 @@ type
   protected
     procedure SetNormals(aValue: TNormalSmoothing);
     procedure SetNormalDirection(aValue: TNormalDirection);
-    procedure SetupQuadricParams(quadric: GLUquadricObj);
-    procedure SetNormalQuadricOrientation(quadric: GLUquadricObj);
-    procedure SetInvertedQuadricOrientation(quadric: GLUquadricObj);
+    procedure SetupQuadricParams(quadric: PGLUquadricObj);
+    procedure SetNormalQuadricOrientation(quadric: PGLUquadricObj);
+    procedure SetInvertedQuadricOrientation(quadric: PGLUquadricObj);
   public
     constructor Create(AOwner: TComponent); override;
     procedure Assign(Source: TPersistent); override;
@@ -1476,8 +1477,7 @@ begin
     glPointParameterf(GL_POINT_SIZE_MIN_ARB, FMinSize);
     glPointParameterf(GL_POINT_SIZE_MAX_ARB, FMaxSize);
     glPointParameterf(GL_POINT_FADE_THRESHOLD_SIZE_ARB, FFadeTresholdSize);
-    glPointParameterfv(GL_DISTANCE_ATTENUATION_EXT,
-      FDistanceAttenuation.AsAddress);
+    glPointParameterfv(GL_DISTANCE_ATTENUATION_EXT, FDistanceAttenuation.AsAddress);
   end;
 end;
 
@@ -2130,7 +2130,7 @@ var
   vertexColor: TVector;
   nodeBuffer: array of TAffineVector;
   colorBuffer: array of TVector;
-  nurbsRenderer: GLUNurbsObj;
+   nurbsRenderer : PGLUNurbs;
 begin
   if Nodes.Count > 1 then
   begin
@@ -2160,7 +2160,7 @@ begin
     if FSplineMode = lsmBezierSpline then
     begin
       // map evaluator
-      rci.VXStates.PushAttrib([sttEval]);
+      glPushAttrib(GL_EVAL_BIT);
       glEnable(GL_MAP1_VERTEX_3);
       glEnable(GL_MAP1_COLOR_4);
 
@@ -2176,8 +2176,7 @@ begin
 
         nurbsRenderer := gluNewNurbsRenderer;
         try
-          gluNurbsProperty(nurbsRenderer, GLU_SAMPLING_TOLERANCE,
-            FNURBSTolerance);
+          gluNurbsProperty(nurbsRenderer, GLU_SAMPLING_TOLERANCE, FNURBSTolerance);
           gluNurbsProperty(nurbsRenderer, GLU_DISPLAY_MODE, GLU_FILL);
           gluBeginCurve(nurbsRenderer);
           gluNurbsCurve(nurbsRenderer, FNURBSKnots.Count, @FNURBSKnots.List[0],
@@ -2233,11 +2232,10 @@ begin
               n := (i div FDivision);
               if n < Nodes.Count - 1 then
                 VectorLerp(TVXLinesNode(Nodes[n]).Color.Color,
-                  TVXLinesNode(Nodes[n + 1]).Color.Color, (i mod FDivision) * f,
-                  vertexColor)
+                  TVXLinesNode(Nodes[n + 1]).Color.Color, 
+				  (i mod FDivision) * f, vertexColor)
               else
-                SetVector(vertexColor, TVXLinesNode(Nodes[Nodes.Count - 1])
-                  .Color.Color);
+                SetVector(vertexColor, TVXLinesNode(Nodes[Nodes.Count - 1]).Color.Color);
               glColor4fv(@vertexColor);
             end;
             glVertex3f(A, B, C);
@@ -2636,18 +2634,18 @@ begin
   end;
 end;
 
-procedure TVXQuadricObject.SetupQuadricParams(quadric: GLUquadricObj);
+procedure TVXQuadricObject.SetupQuadricParams(quadric: PGLUquadricObj);
 const
-  cNormalSmoothinToEnum: array [nsFlat .. nsNone] of GLEnum = (GLU_FLAT,
+  cNormalSmoothinToEnum: array [nsFlat .. nsNone] of TGLEnum = (GLU_FLAT,
     GLU_SMOOTH, GLU_NONE);
 begin
-  gluQuadricDrawStyle(quadric, GLU_FILL);
-  gluQuadricNormals(quadric, cNormalSmoothinToEnum[FNormals]);
-  SetNormalQuadricOrientation(quadric);
-  gluQuadricTexture(quadric, GLboolean(True));
+	gluQuadricDrawStyle(Quadric, GLU_FILL);
+	gluQuadricNormals(Quadric, cNormalSmoothinToEnum[FNormals]);
+   SetNormalQuadricOrientation(Quadric);
+	gluQuadricTexture(Quadric, True);
 end;
 
-procedure TVXQuadricObject.SetNormalQuadricOrientation(quadric: GLUquadricObj);
+procedure TVXQuadricObject.SetNormalQuadricOrientation(quadric: PGLUquadricObj);
 const
   cNormalDirectionToEnum: array [ndInside .. ndOutside] of GLEnum =
     (GLU_INSIDE, GLU_OUTSIDE);
@@ -2655,8 +2653,7 @@ begin
   gluQuadricOrientation(quadric, cNormalDirectionToEnum[FNormalDirection]);
 end;
 
-procedure TVXQuadricObject.SetInvertedQuadricOrientation
-  (quadric: GLUquadricObj);
+procedure TVXQuadricObject.SetInvertedQuadricOrientation(quadric: PGLUquadricObj);
 const
   cNormalDirectionToEnum: array [ndInside .. ndOutside] of GLEnum =
     (GLU_OUTSIDE, GLU_INSIDE);
@@ -2692,15 +2689,15 @@ end;
 
 procedure TVXSphere.BuildList(var rci: TVXRenderContextInfo);
 var
-  v1, V2, N1: TAffineVector;
+  V1, V2, N1 : TAffineVector;
   AngTop, AngBottom, AngStart, AngStop, StepV, StepH: Double;
   SinP, CosP, SinP2, CosP2, SinT, CosT, Phi, Phi2, Theta: Double;
   uTexCoord, uTexFactor, vTexFactor, vTexCoord0, vTexCoord1: Single;
-  i, j: Integer;
+  I, J: Integer;
   DoReverse: Boolean;
 begin
   DoReverse := (FNormalDirection = ndInside);
-  rci.VXStates.PushAttrib([sttPolygon]);
+   glPushAttrib(GL_POLYGON_BIT);
   if DoReverse then
     rci.VXStates.InvertFrontFace;
 

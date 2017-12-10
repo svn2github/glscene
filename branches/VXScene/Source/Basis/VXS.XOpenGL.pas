@@ -26,7 +26,7 @@ type
   TMapTexCoordMode = (mtcmUndefined, mtcmNull, mtcmMain, mtcmDual, mtcmSecond,
     mtcmArbitrary);
 
-  TVXMultitextureCoordinator = class(TAbstractMultitextureCoordinator)
+  TVXMultitextureCoordinator = class(TVXAbstractMultitextureCoordinator)
   private
     FMapTexCoordMode: TMapTexCoordMode;
     FSecondTextureUnitForbidden: Boolean;

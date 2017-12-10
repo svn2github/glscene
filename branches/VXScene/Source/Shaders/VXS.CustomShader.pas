@@ -36,13 +36,13 @@ uses
   VXS.GLSLParameter;
 
 const
-  glsShaderMaxLightSources = 8;
+  vxsShaderMaxLightSources = 8;
 
 type
   TVXShaderFogSupport = (sfsEnabled, sfsDisabled, sfsAuto);
   TVXTransformFeedBackMode = (tfbmInterleaved, tfbmSeparate);
 
-  EGLCustomShaderException = class(EGLShaderException);
+  EVXCustomShaderException = class(EVXShaderException);
 
   TVXCustomShader = class;
   TVXVertexProgram = class;
@@ -52,7 +52,7 @@ type
   TVXShaderEvent = procedure(Shader: TVXCustomShader) of object;
   TVXShaderUnAplyEvent = procedure(Shader: TVXCustomShader; var ThereAreMorePasses: Boolean) of object;
 
-  TVXLightSourceEnum = 1..glsShaderMaxLightSources;
+  TVXLightSourceEnum = 1..vxsShaderMaxLightSources;
   TVXLightSourceSet = set of TVXLightSourceEnum;
 
   { This interface describes user shaders, in order to be able to access them
@@ -77,7 +77,7 @@ type
   end;
 
   { Used in the TVXPostShaderHolder component. }
-  IGLPostShader = interface
+  IVXPostShader = interface
   ['{68A62362-AF0A-4CE8-A9E1-714FE02AFA4A}']
     { Called on every pass. }
     procedure DoUseTempTexture(const TempTexture: TVXTextureHandle;

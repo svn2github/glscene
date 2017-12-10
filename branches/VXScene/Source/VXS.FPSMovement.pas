@@ -164,7 +164,7 @@ type
     constructor Create(aOwner: TVXXCollection); override;
     destructor Destroy; override;
 
-    procedure DoProgress(const progressTime: TProgressTimes); override;
+    procedure DoProgress(const progressTime: TVXProgressTimes); override;
 
     class function FriendlyName: string; override;
 
@@ -832,7 +832,7 @@ begin
   Manager.Navigator.MovingObject := prevObj;
 end;
 
-procedure TVXBFPSMovement.DoProgress(const progressTime: TProgressTimes);
+procedure TVXBFPSMovement.DoProgress(const progressTime: TVXProgressTimes);
 var
   newPosition: TVector;
   CollisionState: TCollisionState;

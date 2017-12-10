@@ -19,13 +19,13 @@ uses
   Winapi.OpenGLext,
   System.Classes,
   System.SysUtils,
-  
-  VXS.OpenGLAdapter,
+
+  VXS.OpenGL1x,
   VXS.XOpenGL,
   VXS.Strings,
   VXS.Context,
   VXS.Scene,
-  VXS.VectorGeometry,   
+  VXS.VectorGeometry,
   VXS.State,
   VXS.Color, 
   VXS.BaseClasses,  
@@ -58,21 +58,15 @@ type
   TVXVertexDataArray = array[0..(MAXINT shr 6)] of TVXVertexData;
   PVKVertexDataArray = ^TVXVertexDataArray;
 
-  // TVXVertexList
-  //
   { Stores an interlaced vertex list for direct use in OpenGL.
     Locking (hardware passthrough) is supported, see "Locked" property for details. }
   TVXVertexList = class(TVXUpdateAbleObject)
   private
-    
     FValues: PVKVertexDataArray;
     FCount: Integer;
     FCapacity, FGrowth: Integer;
     FLockedOldValues: PVKVertexDataArray;
-
   protected
-    
-    FGL: TVXExtensionsAndEntryPoints;
     procedure SetCapacity(const val: Integer);
     procedure SetGrowth(const val: Integer);
     procedure Grow;
@@ -86,24 +80,17 @@ type
     function GetVertexTexCoord(index: Integer): TTexPoint;
     procedure SetVertexColor(index: Integer; const val: TVector4f);
     function GetVertexColor(index: Integer): TVector4f;
-
     function GetFirstEntry: PGLFloat;
     function GetFirstColor: PGLFloat;
     function GetFirstNormal: PGLFloat;
     function GetFirstVertex: PGLFloat;
     function GetFirstTexPoint: PGLFloat;
-
     function GetLocked: Boolean;
     procedure SetLocked(val: Boolean);
-
   public
-    
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
-
-    function CreateInterpolatedCoords(list2: TVXVertexList; lerpFactor: Single)
-      : TVXVertexList;
-
+    function CreateInterpolatedCoords(list2: TVXVertexList; lerpFactor: Single): TVXVertexList;
     { Adds a vertex to the list, fastest method. }
     procedure AddVertex(const vertexData: TVXVertexData); overload;
     { Adds a vertex to the list, fastest method for adding a triangle. }
@@ -121,10 +108,8 @@ type
       const normal: TAffineVector); overload;
     { Duplicates the vertex of given index and adds it at the end of the list. }
     procedure DuplicateVertex(index: Integer);
-
     procedure Assign(Source: TPersistent); override;
     procedure Clear;
-
     property Vertices[index: Integer]: TVXVertexData read GetVertices
     write SetVertices; default;
     property VertexCoord[index: Integer]: TAffineVector read GetVertexCoord
@@ -136,13 +121,12 @@ type
     property VertexColor[index: Integer]: TVector4f read GetVertexColor
     write SetVertexColor;
     property Count: Integer read FCount;
-    { Capacity of the list (nb of vertex). 
+    { Capacity of the list (nb of vertex).
       Use this to allocate memory quickly before calling AddVertex. }
     property Capacity: Integer read FCapacity write SetCapacity;
-    { Vertex capacity that will be added each time the list needs to grow. 
+    { Vertex capacity that will be added each time the list needs to grow.
       default value is 256 (chunks of approx 13 kb). }
     property Growth: Integer read FGrowth write SetGrowth;
-
     { Calculates the sum of all vertex coords }
     function SumVertexCoords: TAffineVector;
     { Calculates the extents of the vertice coords. }
@@ -151,22 +135,20 @@ type
     procedure NormalizeNormals;
     { Translate all coords by given vector }
     procedure Translate(const v: TAffineVector);
-
     procedure DefineOpenGLArrays;
-
     property FirstColor: PGLFloat read GetFirstColor;
     property FirstEntry: PGLFloat read GetFirstEntry;
     property FirstNormal: PGLFloat read GetFirstNormal;
     property FirstVertex: PGLFloat read GetFirstVertex;
     property FirstTexPoint: PGLFloat read GetFirstTexPoint;
 
-    { Locking state of the vertex list. 
+    { Locking state of the vertex list.
       You can "Lock" a list to increase rendering performance on some
       OpenVX implementations (NVidia's). A Locked list size shouldn't be
-      changed and calculations should be avoided. 
+      changed and calculations should be avoided.
       Performance can only be gained from a lock for osDirectDraw object,
       ie. meshes that are updated for each frame (the default build list
-      mode is faster on static meshes). 
+      mode is faster on static meshes).
       Be aware that the "Locked" state enforcement is not very strict
       to avoid performance hits, and VXScene may not always notify you
       that you're doing things you shouldn't on a locked list! }
@@ -203,7 +185,7 @@ type
     procedure Assign(Source: TPersistent); override;
 
     procedure BuildList(var rci: TVXRenderContextInfo); override;
-    procedure CalcNormals(Frontface: TFaceWinding);
+    procedure CalcNormals(Frontface: TVXFaceWinding);
     property Vertices: TVXVertexList read FVertices write SetVertices;
     function AxisAlignedDimensionsUnscaled: TVector; override;
     procedure StructureChanged; override;
@@ -215,13 +197,8 @@ type
       default vmVNCT;
   end;
 
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
 implementation
-
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 // ----------------- TVXVertexList ------------------------------------------------
@@ -235,18 +212,12 @@ begin
   FGrowth := 256;
 end;
 
-// Destroy
-//
-
 destructor TVXVertexList.Destroy;
 begin
   Locked := False;
   FreeMem(FValues);
   inherited;
 end;
-
-// CreateInterpolatedCoords
-//
 
 function TVXVertexList.CreateInterpolatedCoords(list2: TVXVertexList;
   lerpFactor: Single): TVXVertexList;
@@ -263,9 +234,6 @@ begin
       Result.FValues^[i].coord);
 end;
 
-// SetCapacity
-//
-
 procedure TVXVertexList.SetCapacity(const val: Integer);
 begin
   Assert(not Locked, 'Cannot change locked list capacity !');
@@ -275,9 +243,6 @@ begin
   ReallocMem(FValues, FCapacity * SizeOf(TVXVertexData));
 end;
 
-// SetGrowth
-//
-
 procedure TVXVertexList.SetGrowth(const val: Integer);
 begin
   if val > 16 then
@@ -286,18 +251,12 @@ begin
     FGrowth := 16;
 end;
 
-// Grow
-//
-
 procedure TVXVertexList.Grow;
 begin
   Assert(not Locked, 'Cannot add to a locked list !');
   FCapacity := FCapacity + FGrowth;
   ReallocMem(FValues, FCapacity * SizeOf(TVXVertexData));
 end;
-
-// GetFirstColor
-//
 
 function TVXVertexList.GetFirstColor: PGLFloat;
 begin
@@ -312,40 +271,25 @@ begin
   Result := Pointer(FValues);
 end;
 
-// GetFirstNormal
-//
-
 function TVXVertexList.GetFirstNormal: PGLFloat;
 begin
   Result := @(FValues^[0].normal);
 end;
-
-// GetFirstVertex
-//
 
 function TVXVertexList.GetFirstVertex: PGLFloat;
 begin
   Result := @(FValues^[0].coord);
 end;
 
-// GetFirstTexPoint
-//
-
 function TVXVertexList.GetFirstTexPoint: PGLFloat;
 begin
   Result := @(FValues^[0].textCoord);
 end;
 
-// GetLocked
-//
-
 function TVXVertexList.GetLocked: Boolean;
 begin
   Result := Assigned(FLockedOldValues);
 end;
-
-// SetLocked
-//
 
 procedure TVXVertexList.SetLocked(val: Boolean);
 var
@@ -362,10 +306,10 @@ begin
         // Lock
         FLockedOldValues := FValues;
         {$IFDEF MSWINDOWS}
-        FValues := FGL.wglAllocateMemoryNV(size, 0, 0, 0.5);
+        FValues := wglAllocateMemoryNV(size, 0, 0, 0.5);
         {$ENDIF}
         {$IFDEF LINUX}
-        FValues := FGL.glxAllocateMemoryNV(size, 0, 0, 0.5);
+        FValues := glxAllocateMemoryNV(size, 0, 0, 0.5);
         {$ENDIF}
         if FValues = nil then
         begin
@@ -378,7 +322,7 @@ begin
       else
       begin
         // Unlock
-        FGL.wglFreeMemoryNV(0, 0, 0, 0); //<-FGL.wglFreeMemoryNV(FValues);
+        wglFreeMemoryNV(nil);
 
         FValues := FLockedOldValues;
         FLockedOldValues := nil;
@@ -386,9 +330,6 @@ begin
     end;
   end;
 end;
-
-// EnterLockSection
-//
 
 procedure TVXVertexList.EnterLockSection;
 begin
@@ -399,9 +340,6 @@ begin
   end;
 end;
 
-// LeaveLockSection
-//
-
 procedure TVXVertexList.LeaveLockSection;
 begin
   if Locked then
@@ -411,9 +349,6 @@ begin
   end;
 end;
 
-// SetVertices
-//
-
 procedure TVXVertexList.SetVertices(index: Integer; const val: TVXVertexData);
 begin
   Assert(Cardinal(index) < Cardinal(Count));
@@ -421,17 +356,11 @@ begin
   NotifyChange(Self);
 end;
 
-// GetVertices
-//
-
 function TVXVertexList.GetVertices(index: Integer): TVXVertexData;
 begin
   Assert(Cardinal(index) < Cardinal(Count));
   Result := FValues^[index];
 end;
-
-// SetVertexCoord
-//
 
 procedure TVXVertexList.SetVertexCoord(index: Integer; const val: TAffineVector);
 begin
@@ -439,16 +368,10 @@ begin
   NotifyChange(Self);
 end;
 
-// GetVertexCoord
-//
-
 function TVXVertexList.GetVertexCoord(index: Integer): TAffineVector;
 begin
   Result := FValues^[index].coord;
 end;
-
-// SetVertexNormal
-//
 
 procedure TVXVertexList.SetVertexNormal(index: Integer; const val: TAffineVector);
 begin
@@ -456,16 +379,10 @@ begin
   NotifyChange(Self);
 end;
 
-// GetVertexNormal
-//
-
 function TVXVertexList.GetVertexNormal(index: Integer): TAffineVector;
 begin
   Result := FValues^[index].normal;
 end;
-
-// SetVertexTexCoord
-//
 
 procedure TVXVertexList.SetVertexTexCoord(index: Integer; const val: TTexPoint);
 begin
@@ -473,16 +390,10 @@ begin
   NotifyChange(Self);
 end;
 
-// GetVertexTexCoord
-//
-
 function TVXVertexList.GetVertexTexCoord(index: Integer): TTexPoint;
 begin
   Result := FValues^[index].textCoord;
 end;
-
-// SetVertexColor
-//
 
 procedure TVXVertexList.SetVertexColor(index: Integer; const val: TVector4f);
 begin
@@ -490,16 +401,10 @@ begin
   NotifyChange(Self);
 end;
 
-// GetVertexColor
-//
-
 function TVXVertexList.GetVertexColor(index: Integer): TVector4f;
 begin
   Result := FValues^[index].color;
 end;
-
-// AddVertex (direct)
-//
 
 procedure TVXVertexList.AddVertex(const vertexData: TVXVertexData);
 begin
@@ -509,9 +414,6 @@ begin
   Inc(FCount);
   NotifyChange(Self);
 end;
-
-// AddVertex3
-//
 
 procedure TVXVertexList.AddVertex3(const vd1, vd2, vd3: TVXVertexData);
 begin
@@ -525,9 +427,6 @@ begin
   Inc(FCount, 3);
   NotifyChange(Self);
 end;
-
-// AddVertex (texturing)
-//
 
 procedure TVXVertexList.AddVertex(const aVertex: TVertex;
   const aNormal: TAffineVector; const aColor: TColorVector;
@@ -547,26 +446,17 @@ begin
   NotifyChange(Self);
 end;
 
-// AddVertex (no texturing)
-//
-
 procedure TVXVertexList.AddVertex(const vertex: TVertex;
   const normal: TAffineVector; const color: TColorVector);
 begin
   AddVertex(vertex, normal, color, NullTexPoint);
 end;
 
-// AddVertex (no texturing, no color)
-//
-
 procedure TVXVertexList.AddVertex(const vertex: TVertex;
   const normal: TAffineVector);
 begin
   AddVertex(vertex, normal, clrBlack, NullTexPoint);
 end;
-
-// DuplicateVertex
-//
 
 procedure TVXVertexList.DuplicateVertex(index: Integer);
 begin
@@ -578,9 +468,6 @@ begin
   NotifyChange(Self);
 end;
 
-// Clear
-//
-
 procedure TVXVertexList.Clear;
 begin
   Assert(not Locked, 'Cannot clear a locked list !');
@@ -591,9 +478,6 @@ begin
   NotifyChange(Self);
 end;
 
-// SumVertexCoords
-//
-
 function TVXVertexList.SumVertexCoords: TAffineVector;
 var
   i: Integer;
@@ -602,9 +486,6 @@ begin
   for i := 0 to Count - 1 do
     AddVector(Result, FValues^[i].coord);
 end;
-
-// GetExtents
-//
 
 procedure TVXVertexList.GetExtents(var min, max: TAffineVector);
 var
@@ -630,9 +511,6 @@ begin
   end;
 end;
 
-// NormalizeNormals
-//
-
 procedure TVXVertexList.NormalizeNormals;
 var
   i: Integer;
@@ -641,9 +519,6 @@ begin
     NormalizeVector(FValues^[i].coord);
 end;
 
-// Translate
-//
-
 procedure TVXVertexList.Translate(const v: TAffineVector);
 var
   i: Integer;
@@ -651,9 +526,6 @@ begin
   for i := 0 to Count - 1 do
     AddVector(FValues^[i].coord, v);
 end;
-
-// DefineOpenGLArrays
-//
 
 procedure TVXVertexList.DefineOpenGLArrays;
 begin
@@ -667,9 +539,6 @@ begin
   glTexCoordPointer(2, GL_FLOAT, SizeOf(TVXVertexData) - SizeOf(TTexPoint),
     FirstTexPoint);
 end;
-
-// Assign
-//
 
 procedure TVXVertexList.Assign(Source: TPersistent);
 begin
@@ -686,9 +555,6 @@ end;
 
 // ----------------- TVXMesh ------------------------------------------------------
 
-// Create
-//
-
 constructor TVXMesh.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
@@ -703,25 +569,16 @@ begin
   // should change this later to default to vmVN. But need to
 end; // change GLMeshPropform so that it greys out unused vertex info
 
-// Destroy
-//
-
 destructor TVXMesh.Destroy;
 begin
   FVertices.Free;
   inherited Destroy;
 end;
 
-// VerticesChanged
-//
-
 procedure TVXMesh.VerticesChanged(Sender: TObject);
 begin
   StructureChanged;
 end;
-
-// BuildList
-//
 
 procedure TVXMesh.BuildList(var rci: TVXRenderContextInfo);
 var
@@ -776,9 +633,6 @@ begin
     FVertices.LeaveLockSection;
 end;
 
-// SetMode
-//
-
 procedure TVXMesh.SetMode(AValue: TMeshMode);
 begin
   if AValue <> FMode then
@@ -787,9 +641,6 @@ begin
     StructureChanged;
   end;
 end;
-
-// SetVertices
-//
 
 procedure TVXMesh.SetVertices(AValue: TVXVertexList);
 begin
@@ -800,9 +651,6 @@ begin
   end;
 end;
 
-// SetVertexMode
-//
-
 procedure TVXMesh.SetVertexMode(AValue: TVertexMode);
 begin
   if AValue <> FVertexMode then
@@ -812,10 +660,7 @@ begin
   end;
 end;
 
-// CalcNormals
-//
-
-procedure TVXMesh.CalcNormals(Frontface: TFaceWinding);
+procedure TVXMesh.CalcNormals(Frontface: TVXFaceWinding);
 var
   vn: TAffineFltVector;
   i, j: Integer;
@@ -880,16 +725,8 @@ begin
   else
     Assert(False);
   end;
-{$IFDEF USE_ASM}
-  // clear fpu exception flag
-  asm fclex
-  end;
-{$ENDIF}
   StructureChanged;
 end;
-
-// Assign
-//
 
 procedure TVXMesh.Assign(Source: TPersistent);
 begin
@@ -902,9 +739,6 @@ begin
   else
     inherited Assign(Source);
 end;
-
-// AxisAlignedDimensionsUnscaled
-//
 
 function TVXMesh.AxisAlignedDimensionsUnscaled: TVector;
 var
@@ -920,9 +754,6 @@ begin
   SetVector(Result, FAxisAlignedDimensionsCache);
 end;
 
-// StructureChanged
-//
-
 procedure TVXMesh.StructureChanged;
 begin
   FAxisAlignedDimensionsCache.X := -1;
@@ -930,13 +761,8 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
 
   // class registrations
   RegisterClasses([TVXMesh]);

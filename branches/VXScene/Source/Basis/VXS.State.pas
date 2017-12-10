@@ -30,6 +30,7 @@ uses
   System.Classes,
   System.SysUtils,
 
+  VXS.OpenGL1x,
   VXS.CrossPlatform,
   VXS.VectorTypes,
   VXS.VectorGeometry,
@@ -98,30 +99,30 @@ type
 
   TVXStates = set of TVXState;
 
-  TComparisonFunction = (cfNever, cfAlways, cfLess, cfLEqual, cfEqual,
+  TVXComparisonFunction = (cfNever, cfAlways, cfLess, cfLEqual, cfEqual,
     cfGreater, cfNotEqual, cfGEqual);
-  TStencilFunction = TComparisonFunction;
-  TDepthFunction = TComparisonFunction;
+  TVXStencilFunction = TVXComparisonFunction;
+  TVXDepthFunction = TVXComparisonFunction;
 
-  TBlendFunction = (bfZero, bfOne,
+  TVXBlendFunction = (bfZero, bfOne,
     bfSrcColor, bfOneMinusSrcColor, bfDstColor, bfOneMinusDstColor,
     bfSrcAlpha, bfOneMinusSrcAlpha, bfDstAlpha, bfOneMinusDstAlpha,
     bfConstantColor, bfOneMinusConstantColor,
     bfConstantAlpha, bfOneMinusConstantAlpha,
     bfSrcAlphaSat);
 
-  TDstBlendFunction = bfZero..bfOneMinusConstantAlpha;
+  TVXDstBlendFunction = bfZero..bfOneMinusConstantAlpha;
 
-  TBlendEquation = (beAdd, beSubtract, beReverseSubtract, beMin, beMax);
+  TVXBlendEquation = (beAdd, beSubtract, beReverseSubtract, beMin, beMax);
 
-  TStencilOp = (soKeep, soZero, soReplace, soIncr, soDecr, soInvert, soIncrWrap,
+  TVXStencilOp = (soKeep, soZero, soReplace, soIncr, soDecr, soInvert, soIncrWrap,
     soDecrWrap);
 
-  TLogicOp = (loClear, loAnd, loAndReverse, loCopy, loAndInverted, loNoOp,
+  TVXLogicOp = (loClear, loAnd, loAndReverse, loCopy, loAndInverted, loNoOp,
     loXOr, loOr, loNor, loEquiv, loInvert, loOrReverse, loCopyInverted,
     loOrInverted, loNAnd, loSet);
 
-  TQueryType = (
+  TVXQueryType = (
     qrySamplesPassed,
     qryPrimitivesGenerated,
     qryTransformFeedbackPrimitivesWritten,
@@ -129,15 +130,15 @@ type
     qryAnySamplesPassed);
 
   // Describe what kind of winding has a front face
-  TFaceWinding = (fwCounterClockWise, fwClockWise);
+  TVXFaceWinding = (fwCounterClockWise, fwClockWise);
 
-  TPolygonMode = (pmFill, pmLines, pmPoints);
+  TVXPolygonMode = (pmFill, pmLines, pmPoints);
 
-  TCullFaceMode = (cmFront, cmBack, cmFrontAndBack);
+  TVXCullFaceMode = (cmFront, cmBack, cmFrontAndBack);
   //  TSingleCullFaceMode = cmFront..cmBack;
 
-  TColorComponent = (ccRed, ccGreen, ccBlue, ccAlpha);
-  TColorMask = set of TColorComponent;
+  TVXColorComponent = (ccRed, ccGreen, ccBlue, ccAlpha);
+  TVXColorMask = set of TVXColorComponent;
 
 const
   cAllColorComponents = [ccRed, ccGreen, ccBlue, ccAlpha];
@@ -148,9 +149,9 @@ const
 
 type
 
-  THintType = (hintDontCare, hintFastest, hintNicest);
+  TVXHintType = (hintDontCare, hintFastest, hintNicest);
 
-  TLightSourceState = packed record
+  TVXLightSourceState = packed record
     Position: array[0..MAX_HARDWARE_LIGHT-1] of TVector;
     Ambient: array[0..MAX_HARDWARE_LIGHT-1] of TVector;
     Diffuse: array[0..MAX_HARDWARE_LIGHT-1] of TVector;
@@ -160,7 +161,7 @@ type
     Attenuation: array[0..MAX_HARDWARE_LIGHT-1] of TVector;
   end;
 
-  TShaderLightSourceState = packed record
+  TVXShaderLightSourceState = packed record
     Position: array[0..MAX_SHADER_LIGHT-1] of TVector;
     Ambient: array[0..MAX_SHADER_LIGHT-1] of TVector;
     Diffuse: array[0..MAX_SHADER_LIGHT-1] of TVector;
@@ -191,17 +192,17 @@ type
     // Legacy state
     FFrontBackColors: array[0..1, 0..3] of TVector;
     FFrontBackShininess: array[0..1] of Integer;
-    FAlphaFunc: TComparisonFunction;
+    FAlphaFunc: TVXComparisonFunction;
     FAlphaRef: Single;
-    FPolygonBackMode: TPolygonMode; // Front + back have same polygon mode
+    FPolygonBackMode: TVXPolygonMode; // Front + back have same polygon mode
     // Lighting state
     FMaxLights: Cardinal;
     FLightEnabling: array[0..MAX_HARDWARE_LIGHT - 1] of Boolean;
     FLightIndices: array[0..MAX_HARDWARE_LIGHT - 1] of GLint;
     FLightNumber: Integer;
-    FLightStates: TLightSourceState;
+    FLightStates: TVXLightSourceState;
     FSpotCutoff: array[0..MAX_HARDWARE_LIGHT-1] of Single;
-    FShaderLightStates: TShaderLightSourceState;
+    FShaderLightStates: TVXShaderLightSourceState;
     FShaderLightStatesChanged: Boolean;
     FColorWriting: Boolean; // TODO: change to per draw buffer (FColorWriteMask)
     FStates: TVXStates;
@@ -210,7 +211,6 @@ type
     FTextureMatrixIsIdentity: array[0..3] of Boolean;
     FForwardContext: Boolean;
     FFFPLight: Boolean;
-
     // Vertex Array Data state
     FVertexArrayBinding: Cardinal;
     FArrayBufferBinding: Cardinal;
@@ -218,13 +218,11 @@ type
     FTextureBufferBinding: Cardinal;
     FEnablePrimitiveRestart: GLboolean;
     FPrimitiveRestartIndex: Cardinal;
-
     // Transformation state
     FViewPort: TVector4i;
     FDepthRange: array[0..1] of GLclampd;
     FEnableClipDistance: array[0..7] of GLboolean;
     FEnableDepthClamp: GLboolean;
-
     // Coloring state
     FClampReadColor: Cardinal; // GL_FIXED_ONLY
     FProvokingVertex: Cardinal; // GL_LAST_VERTEX_CONVENTION
@@ -235,19 +233,17 @@ type
     FLineWidth: Single;
     FLineStippleFactor: GLint;
     FLineStipplePattern: GLushort;
-
     FEnableLineSmooth: GLboolean;
     FEnableCullFace: GLboolean;
-    FCullFaceMode: TCullFaceMode;
-    FFrontFace: TFaceWinding;
+    FCullFaceMode: TVXCullFaceMode;
+    FFrontFace: TVXFaceWinding;
     FEnablePolygonSmooth: GLboolean;
-    FPolygonMode: TPolygonMode;
+    FPolygonMode: TVXPolygonMode;
     FPolygonOffsetFactor: GLfloat;
     FPolygonOffsetUnits: GLfloat;
     FEnablePolygonOffsetPoint: GLboolean;
     FEnablePolygonOffsetLine: GLboolean;
     FEnablePolygonOffsetFill: GLboolean;
-
     // Multisample state
     FEnableMultisample: GLboolean;
     FEnableSampleAlphaToCoverage: GLboolean;
@@ -257,7 +253,6 @@ type
     FSampleCoverageInvert: GLboolean;
     FEnableSampleMask: GLboolean;
     FSampleMaskValue: array[0..15] of GLbitfield;
-
     // Texture state
     FMaxTextureSize: Cardinal;
     FMax3DTextureSize: Cardinal;
@@ -272,56 +267,44 @@ type
     // Active texture state
     FActiveTexture: GLint; // 0 .. Max_texture_units
     FActiveTextureEnabling: array[0..MAX_HARDWARE_TEXTURE_UNIT - 1, TVXTextureTarget] of Boolean;
-
     // Pixel operation state
     FEnableScissorTest: GLboolean;
     FScissorBox: TVector4i;
-
     FEnableStencilTest: GLboolean;
-
-    FStencilFunc: TStencilFunction;
+    FStencilFunc: TVXStencilFunction;
     FStencilValueMask: Cardinal;
     FStencilRef: GLint;
-    FStencilFail: TStencilOp;
-    FStencilPassDepthFail: TStencilOp;
-    FStencilPassDepthPass: TStencilOp;
-
-    FStencilBackFunc: TStencilFunction;
+    FStencilFail: TVXStencilOp;
+    FStencilPassDepthFail: TVXStencilOp;
+    FStencilPassDepthPass: TVXStencilOp;
+    FStencilBackFunc: TVXStencilFunction;
     FStencilBackValueMask: GLuint;
     FStencilBackRef: GLuint;
-    FStencilBackFail: TStencilOp;
-    FStencilBackPassDepthPass: TStencilOp;
-    FStencilBackPassDepthFail: TStencilOp;
-
+    FStencilBackFail: TVXStencilOp;
+    FStencilBackPassDepthPass: TVXStencilOp;
+    FStencilBackPassDepthFail: TVXStencilOp;
     FEnableDepthTest: GLboolean;
-    FDepthFunc: TDepthFunction;
-
+    FDepthFunc: TVXDepthFunction;
     FEnableBlend: array[0..15] of GLboolean;
-
-    FBlendSrcRGB: TBlendFunction;
-    FBlendSrcAlpha: TBlendFunction;
-    FBlendDstRGB: TDstBlendFunction;
-    FBlendDstAlpha: TDstBlendFunction;
-
-    FBlendEquationRGB: TBlendEquation;
-    FBlendEquationAlpha: TBlendEquation;
+    FBlendSrcRGB: TVXBlendFunction;
+    FBlendSrcAlpha: TVXBlendFunction;
+    FBlendDstRGB: TVXDstBlendFunction;
+    FBlendDstAlpha: TVXDstBlendFunction;
+    FBlendEquationRGB: TVXBlendEquation;
+    FBlendEquationAlpha: TVXBlendEquation;
     FBlendColor: TVector;
-
     FEnableFramebufferSRGB: GLboolean;
     FEnableDither: GLboolean;
     FEnableColorLogicOp: GLboolean;
-
-    FLogicOpMode: TLogicOp;
-
+    FLogicOpMode: TVXLogicOp;
     // Framebuffer control state
-    FColorWriteMask: array[0..15] of TColorMask;
-    FDepthWriteMask: GLboolean;
+    FColorWriteMask: array[0..15] of TVXColorMask;
+    FDepthWriteMask: Boolean;
     FStencilWriteMask: GLuint;
     FStencilBackWriteMask: GLuint;
     FColorClearValue: TVector;
     FDepthClearValue: GLfloat;
     FStencilClearValue: GLuint;
-
     // Framebuffer state
     FDrawFrameBuffer: Cardinal;
     FReadFrameBuffer: Cardinal;
@@ -344,36 +327,30 @@ type
     FPackSkipRows: GLuint;
     FPackSkipPixels: GLuint;
     FPackAlignment: GLuint;
-
     FPixelPackBufferBinding: GLuint;
     FPixelUnpackBufferBinding: GLuint;
-
     // Program state
     FCurrentProgram: GLuint;
     FMaxTextureUnits: GLuint;
     FUniformBufferBinding: GLuint;
     FUBOStates: array[TVXBufferBindingTarget, 0..MAX_HARDWARE_UNIFORM_BUFFER_BINDING-1] of TUBOStates;
-
     // Vector + Geometry Shader state
     FCurrentVertexAttrib: array[0..15] of TVector;
     FEnableProgramPointSize: GLboolean;
-
     // Transform Feedback state
     FTransformFeedbackBufferBinding: Cardinal;
     // Hints state
-    FTextureCompressionHint: THintType;
-    FPolygonSmoothHint: THintType;
-    FFragmentShaderDerivitiveHint: THintType;
-    FLineSmoothHint: THintType;
-    FMultisampleFilterHint: THintType;
-
+    FTextureCompressionHint: TVXHintType;
+    FPolygonSmoothHint: TVXHintType;
+    FFragmentShaderDerivitiveHint: TVXHintType;
+    FLineSmoothHint: TVXHintType;
+    FMultisampleFilterHint: TVXHintType;
     // Misc state
-    FCurrentQuery: array[TQueryType] of GLuint;
+    FCurrentQuery: array[TVXQueryType] of GLuint;
     FCopyReadBufferBinding: GLuint;
     FCopyWriteBufferBinding: GLuint;
     FEnableTextureCubeMapSeamless: GLboolean;
     FInsideList: Boolean;
-
     FOnLightsChanged: TOnLightsChanged;
   protected
     // Vertex Array Data state
@@ -406,13 +383,12 @@ type
     procedure SetLineWidth(const Value: GLfloat);
     procedure SetLineStippleFactor(const Value: GLint);
     procedure SetLineStipplePattern(const Value: GLushort);
-
     procedure SetEnableLineSmooth(const Value: GLboolean);
     procedure SetEnableCullFace(const Value: GLboolean);
-    procedure SetCullFaceMode(const Value: TCullFaceMode);
-    procedure SetFrontFace(const Value: TFaceWinding);
+    procedure SetCullFaceMode(const Value: TVXCullFaceMode);
+    procedure SetFrontFace(const Value: TVXFaceWinding);
     procedure SetEnablePolygonSmooth(const Value: GLboolean);
-    procedure SetPolygonMode(const Value: TPolygonMode);
+    procedure SetPolygonMode(const Value: TVXPolygonMode);
     procedure SetPolygonOffsetFactor(const Value: GLfloat);
     procedure SetPolygonOffsetUnits(const Value: GLfloat);
     procedure SetEnablePolygonOffsetPoint(const Value: GLboolean);
@@ -454,18 +430,18 @@ type
     procedure SetScissorBox(const Value: TVector4i);
     procedure SetEnableStencilTest(const Value: GLboolean);
     procedure SetEnableDepthTest(const Value: GLboolean);
-    procedure SetDepthFunc(const Value: TDepthFunction);
+    procedure SetDepthFunc(const Value: TVXDepthFunction);
     function GetEnableBlend(Index: Integer): GLboolean;
     procedure SetEnableBlend(Index: Integer; const Value: GLboolean);
     procedure SetBlendColor(const Value: TVector);
     procedure SetEnableFramebufferSRGB(const Value: GLboolean);
     procedure SetEnableDither(const Value: GLboolean);
     procedure SetEnableColorLogicOp(const Value: GLboolean);
-    procedure SetLogicOpMode(const Value: TLogicOp);
+    procedure SetLogicOpMode(const Value: TVXLogicOp);
     // Framebuffer control
-    function GetColorWriteMask(Index: Integer): TColorMask;
-    procedure SetColorWriteMask(Index: Integer; const Value: TColorMask);
-    procedure SetDepthWriteMask(const Value: GLboolean);
+    function GetColorWriteMask(Index: Integer): TVXColorMask;
+    procedure SetColorWriteMask(Index: Integer; const Value: TVXColorMask);
+    procedure SetDepthWriteMask(const Value: Boolean);
     procedure SetStencilWriteMask(const Value: GLuint);
     procedure SetStencilBackWriteMask(const Value: GLuint);
     procedure SetColorClearValue(const Value: TVector);
@@ -506,14 +482,14 @@ type
     // Transform Feedback state
     procedure SetTransformFeedbackBufferBinding(const Value: GLuint);
     // Hints
-    procedure SetLineSmoothHint(const Value: THintType);
-    procedure SetPolygonSmoothHint(const Value: THintType);
-    procedure SetTextureCompressionHint(const Value: THintType);
-    procedure SetFragmentShaderDerivitiveHint(const Value: THintType);
-    procedure SetMultisampleFilterHint(const Value: THintType);
+    procedure SetLineSmoothHint(const Value: TVXHintType);
+    procedure SetPolygonSmoothHint(const Value: TVXHintType);
+    procedure SetTextureCompressionHint(const Value: TVXHintType);
+    procedure SetFragmentShaderDerivitiveHint(const Value: TVXHintType);
+    procedure SetMultisampleFilterHint(const Value: TVXHintType);
     // Misc
-    function GetCurrentQuery(Index: TQueryType): GLuint;
-    //    procedure SetCurrentQuery(Index: TQueryType; const Value: GLuint);
+    function GetCurrentQuery(Index: TVXQueryType): GLuint;
+    //    procedure SetCurrentQuery(Index: TVXQueryType; const Value: GLuint);
     procedure SetCopyReadBufferBinding(const Value: GLuint);
     procedure SetCopyWriteBufferBinding(const Value: GLuint);
     procedure SetEnableTextureCubeMapSeamless(const Value: GLboolean);
@@ -543,12 +519,11 @@ type
     function GetQuadAtten(I: Integer): Single;
     procedure SetQuadAtten(I: Integer; const Value: Single);
     procedure SetForwardContext(Value: Boolean);
-
-    function GetMaterialAmbient(const aFace: TCullFaceMode): TVector;
-    function GetMaterialDiffuse(const aFace: TCullFaceMode): TVector;
-    function GetMaterialSpecular(const aFace: TCullFaceMode): TVector;
-    function GetMaterialEmission(const aFace: TCullFaceMode): TVector;
-    function GetMaterialShininess(const aFace: TCullFaceMode): Integer;
+    function GetMaterialAmbient(const aFace: TVXCullFaceMode): TVector;
+    function GetMaterialDiffuse(const aFace: TVXCullFaceMode): TVector;
+    function GetMaterialSpecular(const aFace: TVXCullFaceMode): TVector;
+    function GetMaterialEmission(const aFace: TVXCullFaceMode): TVector;
+    function GetMaterialShininess(const aFace: TVXCullFaceMode): Integer;
   public
     constructor Create; virtual;
     destructor Destroy; override;
@@ -568,18 +543,18 @@ type
     procedure SetGLFrontFaceCW; deprecated;
     procedure ResetAll; deprecated;
     { Adjusts material colors for a face. }
-    procedure SetMaterialColors(const aFace: TCullFaceMode;
+    procedure SetMaterialColors(const aFace: TVXCullFaceMode;
       const emission, ambient, diffuse, specular: TVector;
       const shininess: Integer);
-    property MaterialAmbient[const aFace: TCullFaceMode]: TVector
+    property MaterialAmbient[const aFace: TVXCullFaceMode]: TVector
       read GetMaterialAmbient;
-    property MaterialDiffuse[const aFace: TCullFaceMode]: TVector
+    property MaterialDiffuse[const aFace: TVXCullFaceMode]: TVector
       read GetMaterialDiffuse;
-    property MaterialSpecular[const aFace: TCullFaceMode]: TVector
+    property MaterialSpecular[const aFace: TVXCullFaceMode]: TVector
       read GetMaterialSpecular;
-    property MaterialEmission[const aFace: TCullFaceMode]: TVector
+    property MaterialEmission[const aFace: TVXCullFaceMode]: TVector
       read GetMaterialEmission;
-    property MaterialShininess[const aFace: TCullFaceMode]: Integer
+    property MaterialShininess[const aFace: TVXCullFaceMode]: Integer
       read GetMaterialShininess;
     { Adjusts material alpha channel for a face. }
     procedure SetMaterialAlphaChannel(const aFace: GLEnum; const alpha: GLfloat);
@@ -615,7 +590,7 @@ type
     property LightNumber: Integer read FLightNumber;
     property OnLightsChanged: TOnLightsChanged read FOnLightsChanged write FOnLightsChanged;
     { Blending states }
-    procedure SetAlphaFunction(func: TComparisonFunction; ref: Single);
+    procedure SetAlphaFunction(func: TVXComparisonFunction; ref: Single);
     // Vertex Array Data state
     { The currently bound array buffer (calling glVertexAttribPointer
        locks this buffer to the currently bound VBO). }
@@ -685,16 +660,16 @@ type
     property EnableCullFace: GLboolean read FEnableCullFace write
       SetEnableCullFace;
     { Selects which faces to cull: front, back or front+back.}
-    property CullFaceMode: TCullFaceMode read FCullFaceMode write
+    property CullFaceMode: TVXCullFaceMode read FCullFaceMode write
       SetCullFaceMode;
     { The winding direction that indicates a front facing primitive. }
-    property FrontFace: {GLEnum} TFaceWinding read FFrontFace write
+    property FrontFace: {GLEnum} TVXFaceWinding read FFrontFace write
     SetFrontFace;
     // Enables/Disables polygon smoothing.
     property EnablePolygonSmooth: GLboolean read FEnablePolygonSmooth write
       SetEnablePolygonSmooth;
     { Whether polygons appear filled, lines or points. }
-    property PolygonMode: TPolygonMode read FPolygonMode write SetPolygonMode;
+    property PolygonMode: TVXPolygonMode read FPolygonMode write SetPolygonMode;
     { Scales the maximum depth of the polygon. }
     property PolygonOffsetFactor: GLfloat read FPolygonOffsetFactor write
       SetPolygonOffsetFactor;
@@ -772,7 +747,7 @@ type
       SetEnableStencilTest;
     { The stencil function.  Determines the comparison function to be used
        when comparing the reference + stored stencil values.  }
-    property StencilFunc: TStencilFunction read FStencilFunc;
+    property StencilFunc: TVXStencilFunction read FStencilFunc;
     // write SetStencilFunc;
   { The stencil value mask.  Masks both the reference + stored stencil values. }
     property StencilValueMask: GLuint read FStencilValueMask;
@@ -780,18 +755,18 @@ type
   { The stencil reference value.  Clamped to 0..255 with an 8 bit stencil. }
     property StencilRef: GLint read FStencilRef; // write SetStencilRef;
     { The operation to perform when stencil test fails. }
-    property StencilFail: TStencilOp read FStencilFail; // write SetStencilFail;
+    property StencilFail: TVXStencilOp read FStencilFail; // write SetStencilFail;
     { The operation to perform when stencil test passes + depth test fails. }
-    property StencilPassDepthFail: TStencilOp read FStencilPassDepthFail;
+    property StencilPassDepthFail: TVXStencilOp read FStencilPassDepthFail;
     // write SetStencilPassDepthFail;
   { The operation to perform when stencil test passes + depth test passes. }
-    property StencilPassDepthPass: TStencilOp read FStencilPassDepthPass;
+    property StencilPassDepthPass: TVXStencilOp read FStencilPassDepthPass;
     // write SetStencilPassDepthPass;
 
   { The stencil back function.  Determines the comparison function to be
      used when comparing the reference + stored stencil values on back
      facing primitives. }
-    property StencilBackFunc: TStencilFunction read FStencilBackFunc;
+    property StencilBackFunc: TVXStencilFunction read FStencilBackFunc;
     // write SetStencilBackFunc;
   { The stencil back value mask.  Masks both the reference + stored stencil
      values. }
@@ -803,78 +778,78 @@ type
     // write SetStencilBackRef;
   { The operation to perform when stencil test fails on back facing
      primitives. }
-    property StencilBackFail: TStencilOp read FStencilBackFail;
+    property StencilBackFail: TVXStencilOp read FStencilBackFail;
     // write SetStencilBackFail;
   { The operation to perform when stencil test passes + depth test fails on
      back facing primitives. }
-    property StencilBackPassDepthFail: TStencilOp read
+    property StencilBackPassDepthFail: TVXStencilOp read
       FStencilBackPassDepthFail;
     // write SetStencilBackPassDepthFail;
   { The operation to perform when stencil test passes + depth test passes on
      back facing primitives. }
-    property StencilBackPassDepthPass: TStencilOp read
+    property StencilBackPassDepthPass: TVXStencilOp read
       FStencilBackPassDepthPass;
     // write SetStencilBackPassDepthPass;
   { Used to set stencil Function, Reference + Mask values, for both front +
      back facing primitives. }
-    procedure SetStencilFunc(const func: TStencilFunction; const ref: GLint;
+    procedure SetStencilFunc(const func: TVXStencilFunction; const ref: GLint;
       const mask: GLuint);
     { Used to set stencil Function, Reference + Mask values for either the
        front or back facing primitives (or both, which is the same as calling
        SetStencilFunc). }
-    procedure SetStencilFuncSeparate(const face: TCullFaceMode;
-      const func: TStencilFunction; const ref: GLint; const mask: GLuint);
+    procedure SetStencilFuncSeparate(const face: TVXCullFaceMode;
+      const func: TVXStencilFunction; const ref: GLint; const mask: GLuint);
     { Used to set the StencilFail, StencilPassDepthFail + StencilPassDepthPass
        in one go. }
-    procedure SetStencilOp(const fail, zfail, zpass: TStencilOp);
+    procedure SetStencilOp(const fail, zfail, zpass: TVXStencilOp);
     { Used to set the StencilFail, StencilPassDepthFail + StencilPassDepthPass
        in one go, for either front or back facing primitives. }
-    procedure SetStencilOpSeparate(const face: TCullFaceMode; const sfail,
-      dpfail, dppass: TStencilOp);
+    procedure SetStencilOpSeparate(const face: TVXCullFaceMode; const sfail,
+      dpfail, dppass: TVXStencilOp);
 
     { Enables/disables depth testing. }
     property EnableDepthTest: GLboolean read FEnableDepthTest write
       SetEnableDepthTest;
     { The depth function.  Used to determine whether to keep a fragment or
        discard it, depending on the current value stored in the depth buffer. }
-    property DepthFunc: TDepthFunction read FDepthFunc write SetDepthFunc;
+    property DepthFunc: TVXDepthFunction read FDepthFunc write SetDepthFunc;
     { Enables/disables blending for each draw buffer. }
     property EnableBlend[Index: Integer]: GLboolean read GetEnableBlend write
     SetEnableBlend;
     { The weighting factor used in blending equation, for source RGB. }
-    property BlendSrcRGB: TBlendFunction read FBlendSrcRGB;
+    property BlendSrcRGB: TVXBlendFunction read FBlendSrcRGB;
     // write SetBlendSrcRGB;
   { The weighting factor used in blending equation, for source alpha. }
-    property BlendSrcAlpha: TBlendFunction read FBlendSrcAlpha;
+    property BlendSrcAlpha: TVXBlendFunction read FBlendSrcAlpha;
     // write SetBlendSrcAlpha;
   { The weighting factor used in blending equation, for destination RGB. }
-    property BlendDstRGB: TDstBlendFunction read FBlendDstRGB;
+    property BlendDstRGB: TVXDstBlendFunction read FBlendDstRGB;
     // write SetBlendDstRGB;
   { The weighting factor used in blending equation, for destination alpha. }
-    property BlendDstAlpha: TDstBlendFunction read FBlendDstAlpha;
+    property BlendDstAlpha: TVXDstBlendFunction read FBlendDstAlpha;
     // write SetBlendDstAlpha;
   { Sets the weighting factors to be used by the blending equation, for
      both color + alpha. }
-    procedure SetBlendFunc(const Src: TBlendFunction;
-      const Dst: TDstBlendFunction);
+    procedure SetBlendFunc(const Src: TVXBlendFunction;
+      const Dst: TVXDstBlendFunction);
     { Sets the weighting factors to be used by the blending equation, with
        separate values used for color + alpha components. }
-    procedure SetBlendFuncSeparate(const SrcRGB: TBlendFunction;
-      const DstRGB: TDstBlendFunction; const SrcAlpha: TBlendFunction;
-      const DstAlpha: TDstBlendFunction);
+    procedure SetBlendFuncSeparate(const SrcRGB: TVXBlendFunction;
+      const DstRGB: TVXDstBlendFunction; const SrcAlpha: TVXBlendFunction;
+      const DstAlpha: TVXDstBlendFunction);
     { The blending equation.  Determines how the incoming source fragment's
        RGB are combined with the destination RGB. }
-    property BlendEquationRGB: TBlendEquation read FBlendEquationRGB;
+    property BlendEquationRGB: TVXBlendEquation read FBlendEquationRGB;
     // write SetBlendEquationRGB;
   { The blending equation.  Determines how the incoming source fragment's
      alpha values are combined with the destination alpha values. }
-    property BlendEquationAlpha: TBlendEquation read FBlendEquationAlpha;
+    property BlendEquationAlpha: TVxBlendEquation read FBlendEquationAlpha;
     // write SetBlendEquationAlpha;
   { Sets the blend equation for RGB + alpha to the same value. }
-    procedure SetBlendEquation(const mode: TBlendEquation);
+    procedure SetBlendEquation(const mode: TVXBlendEquation);
     { Sets the blend equations for RGB + alpha separately. }
     procedure SetBlendEquationSeparate(const modeRGB, modeAlpha:
-      TBlendEquation);
+      TVXBlendEquation);
     { A constant blend color, that can be used in the blend equation. }
     property BlendColor: TVector read FBlendColor write SetBlendColor;
     { Enables/disables framebuffer SRGB. }
@@ -886,15 +861,15 @@ type
     property EnableColorLogicOp: GLboolean read FEnableColorLogicOp write
       SetEnableColorLogicOp;
     { Logic op mode. }
-    property LogicOpMode: TLogicOp read FLogicOpMode write SetLogicOpMode;
+    property LogicOpMode: TVXLogicOp read FLogicOpMode write SetLogicOpMode;
     // Framebuffer control
     { The color write mask, for each draw buffer. }
-    property ColorWriteMask[Index: Integer]: TColorMask read GetColorWriteMask
+    property ColorWriteMask[Index: Integer]: TVXColorMask read GetColorWriteMask
     write SetColorWriteMask;
     { Set the color write mask for all draw buffers. }
-    procedure SetColorMask(mask: TColorMask);
+    procedure SetColorMask(mask: TVXColorMask);
     { The depth write mask. }
-    property DepthWriteMask: GLboolean read FDepthWriteMask write
+    property DepthWriteMask: Boolean read FDepthWriteMask write
       SetDepthWriteMask;
     { The stencil write mask. }
     property StencilWriteMask: GLuint read FStencilWriteMask write
@@ -995,26 +970,26 @@ type
       SetTransformFeedbackBufferBinding;
     // Hints
     { Line smooth hint. }
-    property LineSmoothHint: THintType read FLineSmoothHint write
+    property LineSmoothHint: TVXHintType read FLineSmoothHint write
       SetLineSmoothHint;
     { Polygon smooth hint. }
-    property PolygonSmoothHint: THintType read FPolygonSmoothHint write
+    property PolygonSmoothHint: TVXHintType read FPolygonSmoothHint write
       SetPolygonSmoothHint;
     { Texture compression hint. }
-    property TextureCompressionHint: THintType
+    property TextureCompressionHint: TVXHintType
       read FTextureCompressionHint write SetTextureCompressionHint;
     { Fragment shader derivitive hint. }
-    property FragmentShaderDerivitiveHint: THintType
+    property FragmentShaderDerivitiveHint: TVXHintType
       read FFragmentShaderDerivitiveHint write SetFragmentShaderDerivitiveHint;
-    property MultisampleFilterHint: THintType read FMultisampleFilterHint
+    property MultisampleFilterHint: TVXHintType read FMultisampleFilterHint
       write SetMultisampleFilterHint;
     // Misc
     { Current queries. }
-    property CurrentQuery[Index: TQueryType]: GLuint read GetCurrentQuery;
+    property CurrentQuery[Index: TVXQueryType]: GLuint read GetCurrentQuery;
     { Begins a query of "Target" type.  "Value" must be a valid query object. }
-    procedure BeginQuery(const Target: TQueryType; const Value: GLuint);
+    procedure BeginQuery(const Target: TVXQueryType; const Value: GLuint);
     { Ends current query of type "Target". }
-    procedure EndQuery(const Target: TQueryType);
+    procedure EndQuery(const Target: TVXQueryType);
     { The buffer currently bound to the copy read buffer binding point, this
        is an extra binding point provided so that you don't need to overwrite
        other binding points to copy between buffers. }
@@ -1053,14 +1028,15 @@ type
   end;
 
 type
-  TStateRecord = record
-    VKConst: GLEnum;
-    VKDeprecated: Boolean;
+  TVXStateRecord = record
+    GLConst: TGLEnum;   //OpenGL
+    VKConst: Cardinal;  //Vulkan
+    IsDeprecated: Boolean;
   end;
 
 const
 {$WARN SYMBOL_DEPRECATED OFF}
-  cGLStateTypeToGLEnum: array[TVXStateType] of Cardinal = (
+  cGLStateTypeToGLEnum: array[TVXStateType] of TGLenum = (
     GL_CURRENT_BIT, GL_POINT_BIT, GL_LINE_BIT, GL_POLYGON_BIT,
     GL_POLYGON_STIPPLE_BIT, GL_PIXEL_MODE_BIT, GL_LIGHTING_BIT, GL_FOG_BIT,
     GL_DEPTH_BUFFER_BIT, GL_ACCUM_BUFFER_BIT, GL_STENCIL_BUFFER_BIT,
@@ -1069,31 +1045,31 @@ const
     GL_MULTISAMPLE_BIT);
 
 {$WARN SYMBOL_DEPRECATED ON}
-  cGLStateToGLEnum: array[TVXState] of TStateRecord =
-    ((VKConst: GL_ALPHA_TEST; VKDeprecated: True),
-    (VKConst: GL_AUTO_NORMAL; VKDeprecated: True),
-    (VKConst: GL_BLEND; VKDeprecated: False),
-    (VKConst: GL_COLOR_MATERIAL; VKDeprecated: True),
-    (VKConst: GL_CULL_FACE; VKDeprecated: False),
-    (VKConst: GL_DEPTH_TEST; VKDeprecated: False),
-    (VKConst: GL_DITHER; VKDeprecated: False),
-    (VKConst: GL_FOG; VKDeprecated: True),
-    (VKConst: GL_LIGHTING; VKDeprecated: True),
-    (VKConst: GL_LINE_SMOOTH; VKDeprecated: True),
-    (VKConst: GL_LINE_STIPPLE; VKDeprecated: True),
-    (VKConst: GL_INDEX_LOGIC_OP; VKDeprecated: True),
-    (VKConst: GL_COLOR_LOGIC_OP; VKDeprecated: False),
-    (VKConst: GL_NORMALIZE; VKDeprecated: True),
-    (VKConst: GL_POINT_SMOOTH; VKDeprecated: True),
-    (VKConst: GL_POINT_SPRITE; VKDeprecated: True),
-    (VKConst: GL_POLYGON_SMOOTH; VKDeprecated: True),
-    (VKConst: GL_POLYGON_STIPPLE; VKDeprecated: True),
-    (VKConst: GL_SCISSOR_TEST; VKDeprecated: False),
-    (VKConst: GL_STENCIL_TEST; VKDeprecated: False),
-    (VKConst: GL_POLYGON_OFFSET_POINT; VKDeprecated: False),
-    (VKConst: GL_POLYGON_OFFSET_LINE; VKDeprecated: False),
-    (VKConst: GL_POLYGON_OFFSET_FILL; VKDeprecated: False),
-    (VKConst: GL_DEPTH_CLAMP; VKDeprecated: False)
+  cGLStateToGLEnum: array[TVXState] of TVXStateRecord =
+    ((GLConst: GL_ALPHA_TEST; IsDeprecated: True),
+    (GLConst: GL_AUTO_NORMAL; IsDeprecated: True),
+    (GLConst: GL_BLEND; IsDeprecated: False),
+    (GLConst: GL_COLOR_MATERIAL; IsDeprecated: True),
+    (GLConst: GL_CULL_FACE; IsDeprecated: False),
+    (GLConst: GL_DEPTH_TEST; IsDeprecated: False),
+    (GLConst: GL_DITHER; IsDeprecated: False),
+    (GLConst: GL_FOG; IsDeprecated: True),
+    (GLConst: GL_LIGHTING; IsDeprecated: True),
+    (GLConst: GL_LINE_SMOOTH; IsDeprecated: True),
+    (GLConst: GL_LINE_STIPPLE; IsDeprecated: True),
+    (GLConst: GL_INDEX_LOGIC_OP; IsDeprecated: True),
+    (GLConst: GL_COLOR_LOGIC_OP; IsDeprecated: False),
+    (GLConst: GL_NORMALIZE; IsDeprecated: True),
+    (GLConst: GL_POINT_SMOOTH; IsDeprecated: True),
+    (GLConst: GL_POINT_SPRITE; IsDeprecated: True),
+    (GLConst: GL_POLYGON_SMOOTH; IsDeprecated: True),
+    (GLConst: GL_POLYGON_STIPPLE; IsDeprecated: True),
+    (GLConst: GL_SCISSOR_TEST; IsDeprecated: False),
+    (GLConst: GL_STENCIL_TEST; IsDeprecated: False),
+    (GLConst: GL_POLYGON_OFFSET_POINT; IsDeprecated: False),
+    (GLConst: GL_POLYGON_OFFSET_LINE; IsDeprecated: False),
+    (GLConst: GL_POLYGON_OFFSET_FILL; IsDeprecated: False),
+    (GLConst: GL_DEPTH_CLAMP; IsDeprecated: False)
     );
 
   cGLTexTypeToGLEnum: array[TVXTextureTarget] of GLEnum =
@@ -1102,45 +1078,45 @@ const
     GL_TEXTURE_CUBE_MAP, GL_TEXTURE_2D_MULTISAMPLE,
     GL_TEXTURE_2D_MULTISAMPLE_ARRAY, GL_TEXTURE_CUBE_MAP_ARRAY);
 
-  cGLQueryTypeToGLEnum: array[TQueryType] of GLEnum =
+  cGLQueryTypeToGLEnum: array[TVxQueryType] of GLEnum =
     (GL_SAMPLES_PASSED, GL_PRIMITIVES_GENERATED,
     GL_TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN,
     GL_TIME_ELAPSED, GL_ANY_SAMPLES_PASSED);
 
-  cGLStencilOpToGLEnum: array[TStencilOp] of GLEnum =
+  cGLStencilOpToGLEnum: array[TVXStencilOp] of GLEnum =
     (GL_KEEP, GL_ZERO, GL_REPLACE, GL_INCR, GL_DECR, GL_INVERT, GL_INCR_WRAP,
     GL_DECR_WRAP);
 
-  cGLLogicOpToGLEnum: array[TLogicOp] of GLEnum =
+  cGLLogicOpToGLEnum: array[TVXLogicOp] of GLEnum =
     (GL_CLEAR, GL_AND, GL_AND_REVERSE, GL_COPY, GL_AND_INVERTED, GL_NOOP,
     GL_XOR, GL_OR, GL_NOR, GL_EQUIV, GL_INVERT, GL_OR_REVERSE,
     GL_COPY_INVERTED, GL_OR_INVERTED, GL_NAND, GL_SET);
 
-  cGLComparisonFunctionToGLEnum: array[TComparisonFunction] of GLEnum =
+  cGLComparisonFunctionToGLEnum: array[TVXComparisonFunction] of GLEnum =
     (GL_NEVER, GL_ALWAYS, GL_LESS, GL_LEQUAL, GL_EQUAL, GL_GREATER,
     GL_NOTEQUAL, GL_GEQUAL);
 
-  cGLBlendFunctionToGLEnum: array[TBlendFunction] of GLEnum =
+  cGLBlendFunctionToGLEnum: array[TVXBlendFunction] of GLEnum =
     (GL_ZERO, GL_ONE, GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR, GL_DST_COLOR,
     GL_ONE_MINUS_DST_COLOR, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA,
     GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA, GL_CONSTANT_COLOR,
     GL_ONE_MINUS_CONSTANT_COLOR, GL_CONSTANT_ALPHA,
     GL_ONE_MINUS_CONSTANT_ALPHA, GL_SRC_ALPHA_SATURATE {valid for src only});
 
-  cGLBlendEquationToGLEnum: array[TBlendEquation] of GLEnum =
+  cGLBlendEquationToGLEnum: array[TVXBlendEquation] of GLEnum =
     (GL_FUNC_ADD, GL_FUNC_SUBTRACT, GL_FUNC_REVERSE_SUBTRACT, GL_MIN,
     GL_MAX);
 
-  cGLFaceWindingToGLEnum: array[TFaceWinding] of GLEnum =
+  cGLFaceWindingToGLEnum: array[TVXFaceWinding] of GLEnum =
     (GL_CCW, GL_CW);
 
-  cGLPolygonModeToGLEnum: array[TPolygonMode] of GLEnum =
+  cGLPolygonModeToGLEnum: array[TVXPolygonMode] of GLEnum =
     (GL_FILL, GL_LINE, GL_POINT);
 
-  cGLCullFaceModeToGLEnum: array[TCullFaceMode] of GLEnum =
+  cGLCullFaceModeToGLEnum: array[TVXCullFaceMode] of GLEnum =
     (GL_FRONT, GL_BACK, GL_FRONT_AND_BACK);
 
-  cGLHintToGLEnum: array[THintType] of GLEnum =
+  cGLHintToGLEnum: array[TVXHintType] of GLEnum =
     (GL_DONT_CARE, GL_FASTEST, GL_NICEST);
 
   cGLBufferBindingTarget: array[TVXBufferBindingTarget] of GLEnum =
@@ -1158,7 +1134,7 @@ uses
   // ------------------ TVXStateCache ------------------
   // ------------------
 
-procedure TVXStateCache.BeginQuery(const Target: TQueryType; const Value:
+procedure TVXStateCache.BeginQuery(const Target: TVXQueryType; const Value:
   GLuint);
 begin
   Assert(FCurrentQuery[Target] = 0, 'Can only have one query (of each type)' +
@@ -1230,7 +1206,7 @@ begin
   FDepthRange[1] := 1.0;
 
   FillChar(FEnableClipDistance, sizeof(FEnableClipDistance), $00);
-  FEnableDepthClamp := 0;
+  FEnableDepthClamp := false;
 
   // Coloring state
   FClampReadColor := GL_FIXED_ONLY;
@@ -1243,26 +1219,26 @@ begin
   FLineWidth := 1.0;
   FLineStippleFactor := 1;
   FLineStipplePattern := $FFFF;
-  FEnableLineSmooth := 0;
-  FEnableCullFace := 0;
+  FEnableLineSmooth := false;
+  FEnableCullFace := false;
   FCullFaceMode := cmBack;
   FFrontFace := fwCounterClockWise;
-  FEnablePolygonSmooth := 0;
+  FEnablePolygonSmooth := false;
   FPolygonMode := pmFill;
   FPolygonOffsetFactor := 0.0;
   FPolygonOffsetUnits := 0.0;
-  FEnablePolygonOffsetPoint := 0;
-  FEnablePolygonOffsetLine := 0;
-  FEnablePolygonOffsetFill := 0;
+  FEnablePolygonOffsetPoint := false;
+  FEnablePolygonOffsetLine := false;
+  FEnablePolygonOffsetFill := false;
 
   // Multisample state
-  FEnableMultisample := 1;
-  FEnableSampleAlphaToCoverage := 0;
-  FEnableSampleAlphaToOne := 0;
-  FEnableSampleCoverage := 0;
+  FEnableMultisample := true;
+  FEnableSampleAlphaToCoverage := false;
+  FEnableSampleAlphaToOne := false;
+  FEnableSampleCoverage := false;
   FSampleCoverageValue := 1.0;
-  FSampleCoverageInvert := 0;
-  FEnableSampleMask := 0;
+  FSampleCoverageInvert := false;
+  FEnableSampleMask := false;
   FillChar(FSampleMaskValue, sizeof(FSampleMaskValue), $FF);
 
   // Texture state
@@ -1273,9 +1249,9 @@ begin
   FActiveTexture := 0;
 
   // Pixel operation state
-  FEnableScissorTest := 0;
+  FEnableScissorTest := false;
   //    FScissorBox := Rect(0, 0, Width, Height);
-  FEnableStencilTest := 0;
+  FEnableStencilTest := false;
   FStencilFunc := cfAlways;
   FStencilValueMask := $FFFFFFFF;
   FStencilRef := 0;
@@ -1290,7 +1266,7 @@ begin
   FStencilBackPassDepthPass := soKeep;
   FStencilBackPassDepthFail := soKeep;
 
-  FEnableDepthTest := 0;
+  FEnableDepthTest := false;
   FDepthFunc := cfLess;
 
   FillChar(FEnableBlend, sizeof(FEnableBlend), $0);
@@ -1304,17 +1280,17 @@ begin
   FBlendEquationAlpha := beAdd;
   FBlendColor := NullHmgVector;
 
-  FEnableFramebufferSRGB := 0;
-  FEnableDither := 1;
-  FEnableColorLogicOp := 0;
+  FEnableFramebufferSRGB := false;
+  FEnableDither := true;
+  FEnableColorLogicOp := false;
 
   FLogicOpMode := loCopy;
 
-  // Framebuffer control state
-//    for I := 0 to Length(FColorWriteMask) - 1 do
-//      FColorWriteMask[i] := [ccRed, ccGreen, ccBlue, ccAlpha];
+// Framebuffer control state
+// for I := 0 to Length(FColorWriteMask) - 1 do
+//    FColorWriteMask[i] := [ccRed, ccGreen, ccBlue, ccAlpha];
   FillChar(FColorWriteMask, sizeof(FColorWriteMask), $F);
-  FDepthWriteMask := 1;
+  FDepthWriteMask := True;
   FStencilWriteMask := $FFFFFFFF;
   FStencilBackWriteMask := $FFFFFFFF;
   FColorClearValue := NullHmgVector;
@@ -1329,16 +1305,16 @@ begin
   FRenderBuffer := 0;
 
   // Pixels state
-  FUnpackSwapBytes := 0;
-  FUnpackLSBFirst := 0;
+  FUnpackSwapBytes := false;
+  FUnpackLSBFirst := false;
   FUnpackImageHeight := 0;
   FUnpackSkipImages := 0;
   FUnpackRowLength := 0;
   FUnpackSkipRows := 0;
   FUnpackSkipPixels := 0;
   FUnpackAlignment := 4;
-  FPackSwapBytes := 0;
-  FPackLSBFirst := 0;
+  FPackSwapBytes := False;
+  FPackLSBFirst := False;
   FPackImageHeight := 0;
   FPackSkipImages := 0;
   FPackRowLength := 0;
@@ -1357,7 +1333,7 @@ begin
   // Vector + Geometry Shader state
   for I := 0 to Length(FCurrentVertexAttrib) - 1 do
     FCurrentVertexAttrib[I] := NullHmgPoint;
-  FEnableProgramPointSize := 0;
+  FEnableProgramPointSize := False;
 
   // Transform Feedback state
   FTransformFeedbackBufferBinding := 0;
@@ -1372,29 +1348,25 @@ begin
   FillChar(FCurrentQuery, sizeof(FCurrentQuery), $00);
   FCopyReadBufferBinding := 0;
   FCopyWriteBufferBinding := 0;
-  FEnableTextureCubeMapSeamless := 0;
+  FEnableTextureCubeMapSeamless := false;
   FInsideList := False;
 end;
 
-// Destroy
-//
 destructor TVXStateCache.Destroy;
 begin
   inherited;
 end;
 
-procedure TVXStateCache.EndQuery(const Target: TQueryType);
+procedure TVXStateCache.EndQuery(const Target: TVXQueryType);
 begin
   Assert(FCurrentQuery[Target] <> 0, 'No query running');
   FCurrentQuery[Target] := 0;
   glEndQuery(cGLQueryTypeToGLEnum[Target]);
 end;
 
-// Enable
-//
 procedure TVXStateCache.Enable(const aState: TVXState);
 begin
-  if cGLStateToGLEnum[aState].VKDeprecated and FForwardContext then
+  if cGLStateToGLEnum[aState].IsDeprecated and FForwardContext then
     exit;
   if not (aState in FStates) or FInsideList then
   begin
@@ -1402,15 +1374,13 @@ begin
       Include(FListStates[FCurrentList], sttEnable)
     else
       Include(FStates, aState);
-    glEnable(cGLStateToGLEnum[aState].VKConst);
+    glEnable(cGLStateToGLEnum[aState].GLConst);
   end;
 end;
 
-// Disable
-//
 procedure TVXStateCache.Disable(const aState: TVXState);
 begin
-  if cGLStateToGLEnum[aState].VKDeprecated and FForwardContext then
+  if cGLStateToGLEnum[aState].IsDeprecated and FForwardContext then
     exit;
   if (aState in FStates) or FInsideList then
   begin
@@ -1419,10 +1389,10 @@ begin
     else
       Exclude(FStates, aState);
 {$IFDEF VXS_CACHE_MISS_CHECK}
-    if not glIsEnabled(cGLStateToGLEnum[aState].VKConst) then
+    if not glIsEnabled(cGLStateToGLEnum[aState].VXConst) then
       ShowMessages(strStateCashMissing + 'Disable');
 {$ENDIF}
-    glDisable(cGLStateToGLEnum[aState].VKConst);
+    glDisable(cGLStateToGLEnum[aState].GLConst);
     if aState = stColorMaterial then
       if FInsideList then
         Include(FListStates[FCurrentList], sttLighting)
@@ -1445,18 +1415,18 @@ end;
 
 procedure TVXStateCache.PerformEnable(const aState: TVXState);
 begin
-  if cGLStateToGLEnum[aState].VKDeprecated and FForwardContext then
+  if cGLStateToGLEnum[aState].IsDeprecated and FForwardContext then
     exit;
   Include(FStates, aState);
-  glEnable(cGLStateToGLEnum[aState].VKConst);
+  glEnable(cGLStateToGLEnum[aState].GLConst);
 end;
 
 procedure TVXStateCache.PerformDisable(const aState: TVXState);
 begin
-  if cGLStateToGLEnum[aState].VKDeprecated and FForwardContext then
+  if cGLStateToGLEnum[aState].IsDeprecated and FForwardContext then
     exit;
   Exclude(FStates, aState);
-  glDisable(cGLStateToGLEnum[aState].VKConst);
+  glDisable(cGLStateToGLEnum[aState].GLConst);
 end;
 
 procedure TVXStateCache.PopAttrib;
@@ -1482,7 +1452,7 @@ begin
   glPushAttrib(tempFlag);
 end;
 
-procedure TVXStateCache.SetMaterialColors(const aFace: TCullFaceMode;
+procedure TVXStateCache.SetMaterialColors(const aFace: TVXCullFaceMode;
   const emission, ambient, diffuse, specular: TVector;
   const shininess: Integer);
 var
@@ -1535,8 +1505,7 @@ begin
     Include(FListStates[FCurrentList], sttLighting);
 end;
 
-procedure TVXStateCache.SetMaterialAlphaChannel(const aFace: GLEnum; const
-  alpha: GLfloat);
+procedure TVXStateCache.SetMaterialAlphaChannel(const aFace: GLEnum; const alpha: GLfloat);
 var
   i: Integer;
   color: TVector4f;
@@ -1602,7 +1571,6 @@ end;
 
 procedure TVXStateCache.SetActiveTexture(const Value: GLint);
 begin
-///  if GL_ARB_multitexture then
     if (Value <> FActiveTexture) or FInsideList then
     begin
       if FInsideList then
@@ -1662,14 +1630,14 @@ begin
     FEnablePrimitiveRestart := enabled;
     if FForwardContext then
     begin
-      if enabled = 1 then
+      if enabled then
         glEnable(GL_PRIMITIVE_RESTART)
       else
         glDisable(GL_PRIMITIVE_RESTART);
     end
     else
     begin
-      if enabled = 1 then
+      if enabled then
         glEnableClientState(GL_PRIMITIVE_RESTART_NV)
       else
         glDisableClientState(GL_PRIMITIVE_RESTART_NV);
@@ -1699,7 +1667,7 @@ begin
   if Value <> FEnableProgramPointSize then
   begin
     FEnableProgramPointSize := Value;
-    if Value > 0 then
+    if Value then
       glEnable(GL_PROGRAM_POINT_SIZE)
     else
       glDisable(GL_PROGRAM_POINT_SIZE);
@@ -1718,8 +1686,7 @@ begin
   end;
 end;
 
-procedure TVXStateCache.SetBlendEquationSeparate(const modeRGB, modeAlpha:
-  TBlendEquation);
+procedure TVXStateCache.SetBlendEquationSeparate(const modeRGB, modeAlpha: TVXBlendEquation);
 begin
   if (modeRGB <> FBlendEquationRGB) or (modeAlpha <> FBlendEquationAlpha)
     or FInsideList then
@@ -1733,7 +1700,7 @@ begin
     Include(FListStates[FCurrentList], sttColorBuffer);
 end;
 
-procedure TVXStateCache.SetBlendEquation(const mode: TBlendEquation);
+procedure TVXStateCache.SetBlendEquation(const mode: TVXBlendEquation);
 begin
   if (mode <> FBlendEquationRGB) or (mode <> FBlendEquationAlpha)
     or FInsideList then
@@ -1749,8 +1716,8 @@ begin
   end;
 end;
 
-procedure TVXStateCache.SetBlendFunc(const Src: TBlendFunction;
-  const Dst: TDstBlendFunction);
+procedure TVXStateCache.SetBlendFunc(const Src: TVXBlendFunction;
+  const Dst: TVXDstBlendFunction);
 begin
   if (Src <> FBlendSrcRGB) or (Dst <> FBlendDstRGB) or FInsideList then
   begin
@@ -1767,9 +1734,9 @@ begin
   end;
 end;
 
-procedure TVXStateCache.SetBlendFuncSeparate(const SrcRGB: TBlendFunction;
-  const DstRGB: TDstBlendFunction; const SrcAlpha: TBlendFunction;
-  const DstAlpha: TDstBlendFunction);
+procedure TVXStateCache.SetBlendFuncSeparate(const SrcRGB: TVXBlendFunction;
+  const DstRGB: TVXDstBlendFunction; const SrcAlpha: TVXBlendFunction;
+  const DstAlpha: TVXDstBlendFunction);
 begin
   if (SrcRGB <> FBlendSrcRGB) or (DstRGB <> FBlendDstRGB) or
     (SrcAlpha <> FBlendSrcAlpha) or (DstAlpha <> FBlendDstAlpha)
@@ -1805,13 +1772,13 @@ begin
 end;
 
 procedure TVXStateCache.SetColorWriteMask(Index: Integer;
-  const Value: TColorMask);
+  const Value: TVXColorMask);
 begin
   if FColorWriteMask[Index] <> Value then
   begin
     FColorWriteMask[Index] := Value;
-    glColorMaski(Index,  GLboolean(ccRed  in Value), GLboolean(ccGreen in Value),
-      GLboolean(ccBlue in Value), GLboolean(ccAlpha in Value));
+    glColorMaski(Index,  ccRed  in Value, ccGreen in Value, ccBlue in Value, 
+	  ccAlpha in Value);
   end;
 end;
 
@@ -1833,7 +1800,7 @@ begin
   end;
 end;
 
-procedure TVXStateCache.SetCullFaceMode(const Value: TCullFaceMode);
+procedure TVXStateCache.SetCullFaceMode(const Value: TVXCullFaceMode);
 begin
   if (Value <> FCullFaceMode) or FInsideList then
   begin
@@ -1887,7 +1854,7 @@ begin
 
 end;
 
-procedure TVXStateCache.SetDepthFunc(const Value: TDepthFunction);
+procedure TVXStateCache.SetDepthFunc(const Value: TVXDepthFunction);
 begin
   if (Value <> FDepthFunc) or FInsideList then
   begin
@@ -1940,7 +1907,7 @@ begin
   end;
 end;
 
-procedure TVXStateCache.SetDepthWriteMask(const Value: GLboolean);
+procedure TVXStateCache.SetDepthWriteMask(const Value: Boolean);
 begin
   if (Value <> FDepthWriteMask) or FInsideList then
   begin
@@ -1967,7 +1934,7 @@ begin
   if FEnableBlend[Index] <> Value then
   begin
     FEnableBlend[Index] := Value;
-    if Value > 0 then
+    if Value then
       glEnablei(GL_BLEND, Index)
     else
       glDisablei(GL_BLEND, Index);
@@ -1980,7 +1947,7 @@ begin
   if FEnableClipDistance[Index] <> Value then
   begin
     FEnableClipDistance[Index] := Value;
-    if Value >0 then
+    if Value then
       glEnable(GL_CLIP_DISTANCE0 + Index)
     else
       glDisable(GL_CLIP_DISTANCE0 + Index);
@@ -1992,7 +1959,7 @@ begin
   if Value <> FEnableColorLogicOp then
   begin
     FEnableColorLogicOp := Value;
-    if Value >0 then
+    if Value then
       glEnable(GL_COLOR_LOGIC_OP)
     else
       glDisable(GL_COLOR_LOGIC_OP);
@@ -2059,7 +2026,7 @@ begin
   if Value <> FEnableSampleAlphaToCoverage then
   begin
     FEnableSampleAlphaToCoverage := Value;
-    if Value > 0 then
+    if Value > True then
       glEnable(GL_SAMPLE_ALPHA_TO_COVERAGE)
     else
       glDisable(GL_SAMPLE_ALPHA_TO_COVERAGE);
@@ -2071,7 +2038,7 @@ begin
   if Value <> FEnableSampleCoverage then
   begin
     FEnableSampleCoverage := Value;
-    if Value > 0 then
+    if Value > True then
       glEnable(GL_SAMPLE_COVERAGE)
     else
       glDisable(GL_SAMPLE_COVERAGE);
@@ -2083,7 +2050,7 @@ begin
   if Value <> FEnableSampleMask then
   begin
     FEnableSampleMask := Value;
-    if Value > 0 then
+    if Value > True then
       glEnable(GL_SAMPLE_MASK)
     else
       glDisable(GL_SAMPLE_MASK);
@@ -2095,7 +2062,7 @@ begin
   if Value <> FEnableSampleAlphaToOne then
   begin
     FEnableSampleAlphaToOne := Value;
-    if Value > 0 then
+    if Value > True then
       glEnable(GL_SAMPLE_ALPHA_TO_ONE)
     else
       glDisable(GL_SAMPLE_ALPHA_TO_ONE);
@@ -2112,7 +2079,7 @@ begin
 
 end;
 
-procedure TVXStateCache.SetFragmentShaderDerivitiveHint(const Value: THintType);
+procedure TVXStateCache.SetFragmentShaderDerivitiveHint(const Value: TVXHintType);
 begin
   if Value <> FFragmentShaderDerivitiveHint then
   begin
@@ -2124,7 +2091,7 @@ begin
   end;
 end;
 
-procedure TVXStateCache.SetMultisampleFilterHint(const Value: THintType);
+procedure TVXStateCache.SetMultisampleFilterHint(const Value: TVXHintType);
 begin
   if Value <> FMultisampleFilterHint then
   begin
@@ -2147,7 +2114,7 @@ begin
   end;
 end;
 
-procedure TVXStateCache.SetFrontFace(const Value: TFaceWinding);
+procedure TVXStateCache.SetFrontFace(const Value: TVXFaceWinding);
 begin
   if (Value <> FFrontFace) or FInsideList then
   begin
@@ -2159,7 +2126,7 @@ begin
   end;
 end;
 
-procedure TVXStateCache.SetAlphaFunction(func: TComparisonFunction;
+procedure TVXStateCache.SetAlphaFunction(func: TVXComparisonFunction;
   ref: Single);
 begin
   if FForwardContext then
@@ -2178,12 +2145,12 @@ begin
   end;
 end;
 
-function TVXStateCache.GetColorWriteMask(Index: Integer): TColorMask;
+function TVXStateCache.GetColorWriteMask(Index: Integer): TVXColorMask;
 begin
   Result := FColorWriteMask[Index];
 end;
 
-function TVXStateCache.GetCurrentQuery(Index: TQueryType): GLuint;
+function TVXStateCache.GetCurrentQuery(Index: TVXQueryType): GLuint;
 begin
   Result := FCurrentQuery[Index];
 end;
@@ -2226,27 +2193,27 @@ begin
   Result := FMaxTextureSize;
 end;
 
-function TVXStateCache.GetMaterialAmbient(const aFace: TCullFaceMode): TVector;
+function TVXStateCache.GetMaterialAmbient(const aFace: TVXCullFaceMode): TVector;
 begin
   Result := FFrontBackColors[ord(aFace)][1];
 end;
 
-function TVXStateCache.GetMaterialDiffuse(const aFace: TCullFaceMode): TVector;
+function TVXStateCache.GetMaterialDiffuse(const aFace: TVXCullFaceMode): TVector;
 begin
   Result := FFrontBackColors[ord(aFace)][2];
 end;
 
-function TVXStateCache.GetMaterialEmission(const aFace: TCullFaceMode): TVector;
+function TVXStateCache.GetMaterialEmission(const aFace: TVXCullFaceMode): TVector;
 begin
   Result := FFrontBackColors[ord(aFace)][0];
 end;
 
-function TVXStateCache.GetMaterialShininess(const aFace: TCullFaceMode): Integer;
+function TVXStateCache.GetMaterialShininess(const aFace: TVXCullFaceMode): Integer;
 begin
   Result := FFrontBackShininess[ord(aFace)];
 end;
 
-function TVXStateCache.GetMaterialSpecular(const aFace: TCullFaceMode): TVector;
+function TVXStateCache.GetMaterialSpecular(const aFace: TVXCullFaceMode): TVector;
 begin
   Result := FFrontBackColors[ord(aFace)][3];
 end;
@@ -2325,9 +2292,6 @@ begin
   end;
 end;
 
-// SetGLTextureMatrix
-//
-
 procedure TVXStateCache.SetTextureMatrix(const matrix: TMatrix);
 begin
   if FForwardContext then
@@ -2341,9 +2305,6 @@ begin
   glMatrixMode(GL_MODELVIEW);
 end;
 
-// ResetGLTextureMatrix
-//
-
 procedure TVXStateCache.ResetTextureMatrix;
 begin
   if FForwardContext then
@@ -2353,9 +2314,6 @@ begin
   FTextureMatrixIsIdentity[ActiveTexture] := True;
   glMatrixMode(GL_MODELVIEW);
 end;
-
-// ResetAllGLTextureMatrix
-//
 
 procedure TVXStateCache.ResetAllTextureMatrix;
 var
@@ -2377,7 +2335,7 @@ begin
   ActiveTexture := lastActiveTexture;
 end;
 
-procedure TVXStateCache.SetLineSmoothHint(const Value: THintType);
+procedure TVXStateCache.SetLineSmoothHint(const Value: TVXHintType);
 begin
   if (Value <> FLineSmoothHint) or FInsideList then
   begin
@@ -2391,7 +2349,7 @@ end;
 
 procedure TVXStateCache.SetLineWidth(const Value: GLfloat);
 begin
-  // note: wide lines no longer deprecated (see OpenVX spec)
+  // note: wide lines no longer deprecated (see OpenGL spec)
   if (Value <> FLineWidth) or FInsideList then
   begin
     if FInsideList then
@@ -2426,7 +2384,7 @@ begin
   end;
 end;
 
-procedure TVXStateCache.SetLogicOpMode(const Value: TLogicOp);
+procedure TVXStateCache.SetLogicOpMode(const Value: TVXLogicOp);
 begin
   if (Value <> FLogicOpMode) or FInsideList then
   begin
@@ -2564,7 +2522,7 @@ begin
   end;
 end;
 
-procedure TVXStateCache.SetPolygonMode(const Value: TPolygonMode);
+procedure TVXStateCache.SetPolygonMode(const Value: TVXPolygonMode);
 begin
   if (Value <> FPolygonMode) or FInsideList then
   begin
@@ -2619,7 +2577,7 @@ begin
   end;
 end;
 
-procedure TVXStateCache.SetPolygonSmoothHint(const Value: THintType);
+procedure TVXStateCache.SetPolygonSmoothHint(const Value: TVXHintType);
 begin
   if (Value <> FPolygonSmoothHint) or FInsideList then
   begin
@@ -2759,10 +2717,10 @@ begin
   end;
 end;
 
-procedure TVXStateCache.SetColorMask(mask: TColorMask);
+procedure TVXStateCache.SetColorMask(mask: TVXColorMask);
 var
   i: integer;
-  color : GLBoolean;
+  Color : GLBoolean;
 begin
   // it might be faster to keep track of whether all draw buffers are same
   // value or not, since using this is probably more common than setting
@@ -2774,12 +2732,11 @@ begin
     begin
       FColorWriteMask[I] := mask;
     end;
-  glColorMask(GLboolean(ccRed in mask), GLboolean(ccGreen in mask),
-       GLboolean(ccBlue in mask), GLboolean(ccAlpha in mask));
+  glColorMask(ccRed in mask, ccGreen in mask, ccBlue in mask, ccAlpha in mask);
 end;
 
-procedure TVXStateCache.SetStencilFuncSeparate(const face: TCullFaceMode;
-  const func: TStencilFunction; const ref: GLint; const mask: GLuint);
+procedure TVXStateCache.SetStencilFuncSeparate(const face: TVXCullFaceMode;
+  const func: TVXStencilFunction; const ref: GLint; const mask: GLuint);
 
 begin
 //  if (func<>FStencilFunc) or (ref<>FStencilRef) or (mask<>FStencilValueMask)
@@ -2817,8 +2774,7 @@ begin
   end;
 end;
 
-procedure TVXStateCache.SetStencilFunc(const func: TStencilFunction; const ref:
-  GLint; const mask: GLuint);
+procedure TVXStateCache.SetStencilFunc(const func: TVXStencilFunction; const ref: GLint; const mask: GLuint);
 begin
   if (func <> FStencilFunc) or (ref <> FStencilRef) or (mask <>
     FStencilValueMask) or FInsideList then
@@ -2835,7 +2791,7 @@ begin
   end;
 end;
 
-procedure TVXStateCache.SetStencilOp(const fail, zfail, zpass: TStencilOp);
+procedure TVXStateCache.SetStencilOp(const fail, zfail, zpass: TVXStencilOp);
 {$IFDEF VXS_CACHE_MISS_CHECK}
 var I: GLuint;
 {$ENDIF}
@@ -2868,8 +2824,8 @@ begin
   end;
 end;
 
-procedure TVXStateCache.SetStencilOpSeparate(const face: TCullFaceMode;
-  const sfail, dpfail, dppass: TStencilOp);
+procedure TVXStateCache.SetStencilOpSeparate(const face: TVXCullFaceMode;
+  const sfail, dpfail, dppass: TVXStencilOp);
 begin
   if FInsideList then
     Include(FListStates[FCurrentList], sttStencilBuffer)
@@ -2974,7 +2930,7 @@ begin
   end;
 end;
 
-procedure TVXStateCache.SetTextureCompressionHint(const Value: THintType);
+procedure TVXStateCache.SetTextureCompressionHint(const Value: TVXHintType);
 begin
   if (Value <> FTextureCompressionHint) or FInsideList then
   begin
@@ -3001,7 +2957,7 @@ begin
   if Value <> FEnableTextureCubeMapSeamless then
   begin
     FEnableTextureCubeMapSeamless := Value;
-    if Value = 1 then
+    if Value = False then
       glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS)
     else
       glDisable(GL_TEXTURE_CUBE_MAP_SEAMLESS);

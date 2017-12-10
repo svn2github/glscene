@@ -84,7 +84,7 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
-    procedure DoProgress(const progressTime: TProgressTimes); override;
+    procedure DoProgress(const progressTime: TVXProgressTimes); override;
     procedure BuildList(var rci: TVXRenderContextInfo); override;
     procedure Assign(Source: TPersistent); override;
     function AxisAlignedDimensionsUnscaled: TVector; override;
@@ -168,7 +168,7 @@ begin
   inherited;
 end;
 
-procedure TVXWaterPlane.DoProgress(const progressTime: TProgressTimes);
+procedure TVXWaterPlane.DoProgress(const progressTime: TVXProgressTimes);
 var
   i: Integer;
 begin

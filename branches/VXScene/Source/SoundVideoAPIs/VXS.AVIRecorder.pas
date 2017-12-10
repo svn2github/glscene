@@ -25,7 +25,7 @@ uses
   FMX.Graphics,
   FMX.Dialogs,
   FMX.Types,
-  
+
   VXS.Graphics,
   VXS.Vfw,
   VXS.Scene,
@@ -37,7 +37,7 @@ type
 
   PAVIStream = ^IAVIStream;
 
-  { Frame size restriction. 
+  { Frame size restriction.
     Forces frame dimensions to be a multiple of 2, 4, or 8. Some compressors
     require this. e.g. DivX 5.2.1 requires mutiples of 2. }
   TAVISizeRestriction = (srNoRestriction, srForceBlock2x2, srForceBlock4x4,
@@ -45,14 +45,13 @@ type
 
   TAVIRecorderState = (rsNone, rsRecording);
 
-  { Image retrieval mode for frame capture. 
-    Following modes are supported: 
+  { Image retrieval mode for frame capture.
+    Following modes are supported:
      irmSnapShot : retrieve OpenGL framebuffer content using glReadPixels
      irmRenderToBitmap : renders the whole scene to a bitmap, this is
     the slowest mode, but it won't be affected by driver-side specifics.
      irmBitBlt : tranfers the framebuffer using the BitBlt function,
-    usually the fastest solution
-      }
+    usually the fastest solution }
   TAVIImageRetrievalMode = (irmSnapShot, irmRenderToBitmap, irmBitBlt);
 
   TAVIRecorderPostProcessEvent = procedure(Sender: TObject; frame: TBitmap)
@@ -86,9 +85,7 @@ type
     procedure SetSizeRestriction(const val: TAVISizeRestriction);
     procedure SetVXSceneViewer(const Value: TVXSceneViewer);
     procedure SetVKNonVisualViewer(const Value: TVXNonVisualViewer);
-
   protected
-    
     // Now, TAVIRecorder is tailored for GLScene.  Maybe we should make a generic
     // TAVIRecorder, and then sub-class it to use with GLScene
     FVXSceneViewer: TVXSceneViewer;
@@ -134,12 +131,8 @@ type
       read FOnPostProcessEvent write FOnPostProcessEvent;
   end;
 
- // ---------------------------------------------------------------------
- // ---------------------------------------------------------------------
- // ---------------------------------------------------------------------
+// ---------------------------------------------------------------------
 implementation
-// ---------------------------------------------------------------------
-// ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
 
 // DIB support rountines for AVI output
@@ -201,8 +194,6 @@ end;
 // ------------------ TAVIRecorder ------------------
 // ------------------
 
-// Create
-//
 constructor TVXAVIRecorder.Create(AOwner: TComponent);
 begin
   inherited;
@@ -215,8 +206,6 @@ begin
   FImageRetrievalMode := irmBitBlt;
 end;
 
-// Destroy
-//
 destructor TVXAVIRecorder.Destroy;
 begin
   // if still open here, abort it
@@ -225,8 +214,6 @@ begin
   inherited;
 end;
 
-// Restricted
-//
 function TVXAVIRecorder.Restricted(s: integer): integer;
 begin
   case FSizeRestriction of
@@ -241,24 +228,18 @@ begin
   end;
 end;
 
-// SetHeight
-//
 procedure TVXAVIRecorder.SetHeight(const val: integer);
 begin
   if (RecorderState <> rsRecording) and (val <> FHeight) and (val > 0) then
     FHeight := Restricted(val);
 end;
 
-// SetWidth
-//
 procedure TVXAVIRecorder.SetWidth(const val: integer);
 begin
   if (RecorderState <> rsRecording) and (val <> FWidth) and (val > 0) then
     FWidth := Restricted(val);
 end;
 
-// SetSizeRestriction
-//
 procedure TVXAVIRecorder.SetSizeRestriction(const val: TAVISizeRestriction);
 begin
   if val <> FSizeRestriction then
@@ -269,8 +250,6 @@ begin
   end;
 end;
 
-// AddAVIFrame (from sceneviewer)
-//
 procedure TVXAVIRecorder.AddAVIFrame;
 var
   bmp32: TVXBitmap32;
@@ -329,8 +308,6 @@ begin
   InternalAddAVIFrame;
 end;
 
-// InternalAddAVIFrame
-//
 procedure TVXAVIRecorder.InternalAddAVIFrame;
 begin
   if Assigned(FOnPostProcessEvent) then

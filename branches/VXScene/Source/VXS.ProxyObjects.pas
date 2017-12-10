@@ -61,7 +61,7 @@ type
   { A proxy object with its own material.
      This proxy object can take a mesh from one master and a materia from
      a material library. }
-  TVXMaterialProxy = class(TVXProxyObject, IGLMaterialLibrarySupported)
+  TVXMaterialProxy = class(TVXProxyObject, IVXMaterialLibrarySupported)
   private
     FTempLibMaterialName: string;
     FMasterLibMaterial: TVXLibMaterial;
@@ -132,14 +132,14 @@ type
   TVXActorProxyAnimationMode = (pamInherited, pamNone, pamPlayOnce);
 
   { A proxy object specialized for Actors.  }
-  TVXActorProxy = class(TVXProxyObject, IGLMaterialLibrarySupported)
+  TVXActorProxy = class(TVXProxyObject, IVXMaterialLibrarySupported)
   private
     FCurrentFrame: Integer;
     FStartFrame: Integer;
     FEndFrame: Integer;
     FLastFrame: Integer;
     FCurrentFrameDelta: Single;
-    FCurrentTime: TProgressTimes;
+    FCurrentTime: TVXProgressTimes;
     FAnimation: TVXActorAnimationName;
     FTempLibMaterialName: string;
     FMasterLibMaterial: TVXLibMaterial;
@@ -170,12 +170,12 @@ type
       override;
     procedure DoRender(var ARci: TVXRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
-    procedure DoProgress(const progressTime: TProgressTimes); override;
+    procedure DoProgress(const progressTime: TVXProgressTimes); override;
     property CurrentFrame: Integer read FCurrentFrame;
     property StartFrame: Integer read FStartFrame;
     property EndFrame: Integer read FEndFrame;
     property CurrentFrameDelta: Single read FCurrentFrameDelta;
-    property CurrentTime: TProgressTimes read FCurrentTime;
+    property CurrentTime: TVXProgressTimes read FCurrentTime;
     { Gets the Bones Matrix in the current animation frame.
      (since the masterobject is shared between all proxies, each proxy will have it's bones matrices) }
     function BoneMatrix(BoneIndex: integer): TMatrix; overload;
@@ -444,7 +444,7 @@ begin
   inherited;
 end;
 
-procedure TVXActorProxy.DoProgress(const progressTime: TProgressTimes);
+procedure TVXActorProxy.DoProgress(const progressTime: TVXProgressTimes);
 begin
   inherited;
   FCurrentTime := progressTime;

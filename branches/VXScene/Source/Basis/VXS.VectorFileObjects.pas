@@ -1216,7 +1216,7 @@ type
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
     procedure BuildList(var rci: TVXRenderContextInfo); override;
-    procedure DoProgress(const progressTime: TProgressTimes); override;
+    procedure DoProgress(const progressTime: TVXProgressTimes); override;
     procedure LoadFromStream(const filename: string; aStream: TStream); override;
     procedure SwitchToAnimation(anAnimation: TVXActorAnimation; smooth: Boolean = False); overload;
     procedure SwitchToAnimation(const AnimationName: string; smooth: Boolean = False); overload;
@@ -7262,7 +7262,7 @@ begin
   end;
 end;
 
-procedure TVXActor.DoProgress(const progressTime: TProgressTimes);
+procedure TVXActor.DoProgress(const progressTime: TVXProgressTimes);
 var
   fDelta: Single;
 begin

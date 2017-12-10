@@ -19,7 +19,7 @@ uses
 
 type
 
-  TDrawState = (dsRendering, dsPicking, dsPrinting);
+  TVXDrawState = (dsRendering, dsPicking, dsPrinting);
 
   TVXSize = record
     cx: Longint;
@@ -52,7 +52,7 @@ type
      board, it may be faster not to cull at all (ie. leave this to the hardware). }
   TVXVisibilityCulling = (vcInherited, vcNone, vcObjectBased, vcHierarchical);
 
-  TRenderContextClippingInfo = record
+  TVXRenderContextClippingInfo = record
     origin: TVector;
     clippingDirection: TVector;
     viewPortRadius: Single; // viewport bounding radius per distance unit
@@ -72,12 +72,12 @@ type
     materialLibrary: TObject; //usually TVXMaterialLibrary;
     lightmapLibrary: TObject; //usually TVXMaterialLibrary;
     fogDisabledCounter: Integer;
-    drawState: TDrawState;
+    drawState: TVXDrawState;
     objectsSorting: TVXObjectsSorting;
     visibilityCulling: TVXVisibilityCulling;
     VXStates: TVXStateCache;
     PipelineTransformation: TVXTransformation;
-    rcci: TRenderContextClippingInfo;
+    rcci: TVXRenderContextClippingInfo;
     sceneAmbientColor: TColorVector;
     bufferFaceCull: Boolean;
     bufferLighting: Boolean;

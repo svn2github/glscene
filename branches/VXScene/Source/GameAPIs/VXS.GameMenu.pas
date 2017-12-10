@@ -33,7 +33,7 @@ type
   TVXGameMenuScale = (gmsNormal, gms1024x768);
 
   { Classic game menu interface made of several lines. }
-  TVXGameMenu = class(TVXSceneObject, IGLMaterialLibrarySupported)
+  TVXGameMenu = class(TVXSceneObject, IVXMaterialLibrarySupported)
   private
     FItems: TStrings;
     FSelected: Integer;

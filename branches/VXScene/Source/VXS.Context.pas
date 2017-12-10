@@ -26,6 +26,7 @@ uses
   FMX.Types,
   FMX.Dialogs,
 
+///  VXS.OpenGL1x,
   VXS.OpenGLAdapter,
   VXS.Generics,
   VXS.CrossPlatform,
@@ -46,32 +47,32 @@ type
 
   TVXContextLayer = (clUnderlay2, clUnderlay1, clMainPlane, clOverlay1, clOverlay2);
 
-  TFinishTaskEvent = class(TEvent)
+  TVXFinishTaskEvent = class(TEvent)
   public
     constructor Create; reintroduce;
   end;
 
-  TTaskProcedure = procedure of object; stdcall;
+  TVXTaskProcedure = procedure of object; stdcall;
 
-  TServiceContextTask = record
-    Task: TTaskProcedure;
-    Event: TFinishTaskEvent;
+  TVXServiceContextTask = record
+    Task: TVXTaskProcedure;
+    Event: TVXFinishTaskEvent;
   end;
 
-  TServiceContextTaskList = {$IFDEF VXS_GENERIC_PREFIX} specialize {$ENDIF}
-    GThreadList<TServiceContextTask>;
+  TVXServiceContextTaskList = {$IFDEF VXS_GENERIC_PREFIX} specialize {$ENDIF}
+    GThreadList<TVXServiceContextTask>;
 
   TVXContext = class;
   TVXContextManager = class;
 
-  TAbstractMultitextureCoordinator = class(TObject)
+  TVXAbstractMultitextureCoordinator = class(TObject)
   protected
     FOwner: TVXContext;
   public
     constructor Create(AOwner: TVXContext); virtual;
   end;
 
-  TAbstractMultitextureCoordinatorClass = class of TAbstractMultitextureCoordinator;
+  TVXAbstractMultitextureCoordinatorClass = class of TVXAbstractMultitextureCoordinator;
 
   TVXContextAcceleration = (chaUnknown, chaHardware, chaSoftware);
 
@@ -117,7 +118,7 @@ type
     procedure SetLayer(const Value: TVXContextLayer);
   protected
     FVX: TVXExtensionsAndEntryPoints;
-    FXVX: TAbstractMultitextureCoordinator;
+    FXVX: TVXAbstractMultitextureCoordinator;
     FVXStates: TVXStateCache;
     FTransformation: TVXTransformation;
     FAcceleration: TVXContextAcceleration;
@@ -134,7 +135,7 @@ type
     procedure DoDeactivate; virtual; abstract;
     class function ServiceContext: TVXContext;
     procedure MakeGLCurrent;
-    function GetXGL: TAbstractMultitextureCoordinator;
+    function GetXGL: TVXAbstractMultitextureCoordinator;
   public
     constructor Create; virtual;
     destructor Destroy; override;
@@ -215,7 +216,7 @@ type
     function RenderOutputDevice: Pointer; virtual; abstract;
     { Access to OpenGL command and extension. }
     /// property GL: TVXExtensionsAndEntryPoints read FGL; depricated
-    property MultitextureCoordinator: TAbstractMultitextureCoordinator read GetXGL;
+    property MultitextureCoordinator: TVXAbstractMultitextureCoordinator read GetXGL;
     property IsPraparationNeed: Boolean read FIsPraparationNeed;
   end;
 
@@ -366,7 +367,7 @@ type
     function DoAllocateHandle: GLuint; override;
     procedure DoDestroyHandle(var AHandle: GLuint); override;
     function GetTarget: GLuint; virtual; abstract;
-    function GetQueryType: TQueryType; virtual; abstract;
+    function GetQueryType: TVXQueryType; virtual; abstract;
     class function IsValid(const ID: GLuint): GLboolean; override;
   public
     procedure BeginQuery;
@@ -383,7 +384,7 @@ type
     function QueryResultUInt64: GLuint64EXT;
     function QueryResultBool: GLboolean;
     property Target: GLuint read GetTarget;
-    property QueryType: TQueryType read GetQueryType;
+    property QueryType: TVXQueryType read GetQueryType;
     { True if within a Begin/EndQuery. }
     property Active: Boolean read FActive;
   end;
@@ -395,7 +396,7 @@ type
   TVXOcclusionQueryHandle = class(TVXQueryHandle)
   protected
     function GetTarget: GLuint; override;
-    function GetQueryType: TQueryType; override;
+    function GetQueryType: TVXQueryType; override;
   public
     class function IsSupported: Boolean; override;
     // Number of samples (pixels) drawn during the query, some pixels may
@@ -406,7 +407,7 @@ type
   TVXBooleanOcclusionQueryHandle = class(TVXQueryHandle)
   protected
     function GetTarget: GLuint; override;
-    function GetQueryType: TQueryType; override;
+    function GetQueryType: TVXQueryType; override;
   public
     class function IsSupported: Boolean; override;
   end;
@@ -418,7 +419,7 @@ type
   TVXTimerQueryHandle = class(TVXQueryHandle)
   protected
     function GetTarget: GLuint; override;
-    function GetQueryType: TQueryType; override;
+    function GetQueryType: TVXQueryType; override;
   public
     class function IsSupported: Boolean; override;
     // Time, in nanoseconds (1 ns = 10^-9 s) between starting + ending the query.
@@ -434,7 +435,7 @@ type
   TVXPrimitiveQueryHandle = class(TVXQueryHandle)
   protected
     function GetTarget: GLuint; override;
-    function GetQueryType: TQueryType; override;
+    function GetQueryType: TVXQueryType; override;
   public
     class function IsSupported: Boolean; override;
     // Number of primitives (eg. Points, Triangles etc.) drawn whilst the
@@ -906,7 +907,7 @@ type
     FHandles: TThreadList;
     FThread: TThread;
     FServiceStarter: TEvent;
-    FThreadTask: TServiceContextTaskList;
+    FThreadTask: TVXServiceContextTaskList;
     FServiceContext: TVXContext;
   protected
     procedure Lock;
@@ -958,7 +959,7 @@ var
   VXContextManager: TVXContextManager;
   vIgnoreOpenVXErrors: Boolean = False;
   vContextActivationFailureOccurred: Boolean = False;
-  vMultitextureCoordinatorClass: TAbstractMultitextureCoordinatorClass;
+  vMultitextureCoordinatorClass: TVXAbstractMultitextureCoordinatorClass;
 
 // ------------------------------------------------------------------
 implementation
@@ -1012,7 +1013,7 @@ begin
   vContextClasses.Add(aVXContextClass);
 end;
 
-constructor TAbstractMultitextureCoordinator.Create(AOwner: TVXContext);
+constructor TVXAbstractMultitextureCoordinator.Create(AOwner: TVXContext);
 begin
   FOwner := AOwner;
 end;
@@ -1382,7 +1383,7 @@ begin
   vVX := FVX;
 end;
 
-function TVXContext.GetXGL: TAbstractMultitextureCoordinator;
+function TVXContext.GetXGL: TVXAbstractMultitextureCoordinator;
 begin
   if FXVX = nil then
     FXVX := vMultitextureCoordinatorClass.Create(Self);
@@ -2004,7 +2005,7 @@ end;
 // ------------------ TVXOcclusionQueryHandle ------------------
 // ------------------
 
-function TVXOcclusionQueryHandle.GetQueryType: TQueryType;
+function TVXOcclusionQueryHandle.GetQueryType: TVXQueryType;
 begin
   Result := qrySamplesPassed;
 end;
@@ -2028,7 +2029,7 @@ end;
 // ------------------ TVXBooleanOcclusionQueryHandle ------------------
 // ------------------
 
-function TVXBooleanOcclusionQueryHandle.GetQueryType: TQueryType;
+function TVXBooleanOcclusionQueryHandle.GetQueryType: TVXQueryType;
 begin
   Result := qryAnySamplesPassed;
 end;
@@ -2047,7 +2048,7 @@ end;
 // ------------------ TVXTimerQueryHandle ------------------
 // ------------------
 
-function TVXTimerQueryHandle.GetQueryType: TQueryType;
+function TVXTimerQueryHandle.GetQueryType: TVXQueryType;
 begin
   Result := qryTimeElapsed;
 end;
@@ -2071,7 +2072,7 @@ end;
 // ------------------ TVXPrimitiveQueryHandle ------------------
 // ------------------
 
-function TVXPrimitiveQueryHandle.GetQueryType: TQueryType;
+function TVXPrimitiveQueryHandle.GetQueryType: TVXQueryType;
 begin
   Result := qryPrimitivesGenerated;
 end;
@@ -3674,7 +3675,7 @@ end;
 
 {$ENDIF USE_SERVICE_CONTEXT}
 
-constructor TFinishTaskEvent.Create;
+constructor TVXFinishTaskEvent.Create;
 begin
   inherited Create(nil, True, False, '');
 end;

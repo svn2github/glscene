@@ -20,6 +20,7 @@ uses
   FMX.Dialogs,
   FMX.Graphics,
 
+  VXS.OpenGL1x,
   VXS.VectorTypes,
   VXS.RenderContextInfo,
   VXS.BaseClasses,
@@ -47,7 +48,7 @@ type
   TVXMaterialLibrary = class;
 
   // an interface for proper TVXLibMaterialNameProperty support
-  IGLMaterialLibrarySupported = interface(IInterface)
+  IVXMaterialLibrarySupported = interface(IInterface)
     ['{8E442AF9-D212-4A5E-8A88-92F798BABFD1}']
     function GetMaterialLibrary: TVXAbstractMaterialLibrary;
   end;
@@ -55,14 +56,13 @@ type
   TVXAbstractLibMaterial = class;
   TVXLibMaterial = class;
 
-  { Define VKShader style application relatively to a material.
+  { Define VXShader style application relatively to a material.
     ssHighLevel: shader is applied before material application, and unapplied
-    after material unapplication
+         after material unapplication
     ssLowLevel: shader is applied after material application, and unapplied
-    before material unapplication
+         before material unapplication
     ssReplace: shader is applied in place of the material (and material
-    is completely ignored)
-  }
+         is completely ignored) }
   TVXShaderStyle = (ssHighLevel, ssLowLevel, ssReplace);
 
   { Defines what to do if for some reason shader failed to initialize.
@@ -138,7 +138,7 @@ type
     procedure BeginUpdate;
     procedure EndUpdate;
 
-    { Apply shader to OpenVX state machine. }
+    { Apply shader to OpenGL state machine. }
     procedure Apply(var rci: TVXRenderContextInfo; Sender: TObject);
     { UnApply shader.
       When returning True, the caller is expected to perform a multipass
@@ -188,8 +188,8 @@ type
   public
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
-    procedure Apply(var rci: TVXRenderContextInfo; aFace: TCullFaceMode);
-    procedure ApplyNoLighting(var rci: TVXRenderContextInfo; aFace: TCullFaceMode);
+    procedure Apply(var rci: TVXRenderContextInfo; AFace: TVXCullFaceMode);
+    procedure ApplyNoLighting(var rci: TVXRenderContextInfo; AFace: TVXCullFaceMode);
     procedure Assign(Source: TPersistent); override;
   published
     property Ambient: TVXColor read FAmbient write SetAmbient;
@@ -202,16 +202,16 @@ type
   TVXDepthProperties = class(TVXUpdateAbleObject)
   private
     FDepthTest: Boolean;
-    FDepthWrite: GLboolean;
+    FDepthWrite: Boolean;
     FZNear, FZFar: Single;
-    FCompareFunc: TDepthfunction;
+    FCompareFunc: TVXDepthfunction;
     FDepthClamp: Boolean;
   protected
     procedure SetZNear(Value: Single);
     procedure SetZFar(Value: Single);
     procedure SetCompareFunc(Value: TVXDepthCompareFunc);
     procedure SetDepthTest(Value: Boolean);
-    procedure SetDepthWrite(Value: GLboolean);
+    procedure SetDepthWrite(Value: Boolean);
     procedure SetDepthClamp(Value: Boolean);
     function StoreZNear: Boolean;
     function StoreZFar: Boolean;
@@ -229,7 +229,7 @@ type
     { Specifies the function used to compare each
       incoming pixel depth value with the depth value present in
       the depth buffer. }
-    property DepthCompareFunction: TDepthfunction read FCompareFunc write SetCompareFunc default cfLequal;
+    property DepthCompareFunction: TVXDepthfunction read FCompareFunc write SetCompareFunc default cfLequal;
     { DepthTest enabling.
       When DepthTest is enabled, objects closer to the camera will hide
       farther ones (via use of Z-Buffering).
@@ -239,7 +239,7 @@ type
       testing through the osIgnoreDepthBuffer of their ObjectStyle property. }
     property DepthTest: Boolean read FDepthTest write SetDepthTest default True;
     { If True, object will not write to Z-Buffer. }
-    property DepthWrite: GLboolean read FDepthWrite write SetDepthWrite default 1;
+    property DepthWrite: Boolean read FDepthWrite write SetDepthWrite default False;
     { Enable clipping depth to the near and far planes }
     property DepthClamp: Boolean read FDepthClamp write SetDepthClamp default False;
   end;
@@ -249,7 +249,7 @@ type
   (* If you write smth like af_GL_NEVER = GL_NEVER in the definition,
     it won't show up in the Dephi 7 design-time editor. So I had to add
     vTGlAlphaFuncValues and vTVXBlendFuncFactorValues arrays. *)
-  TGlAlphaFunc = TComparisonFunction;
+  TGlAlphaFunc = TVXComparisonFunction;
 
   TVXBlendingParameters = class(TVXUpdateAbleObject)
   private
@@ -257,20 +257,20 @@ type
     FUseBlendFunc: Boolean;
     FSeparateBlendFunc: Boolean;
     FAlphaFuncType: TGlAlphaFunc;
-    FAlphaFuncRef: Single;
-    FBlendFuncSFactor: TBlendFunction;
-    FBlendFuncDFactor: TBlendFunction;
-    FAlphaBlendFuncSFactor: TBlendFunction;
-    FAlphaBlendFuncDFactor: TBlendFunction;
+    FAlphaFuncRef: TGLclampf;
+    FBlendFuncSFactor: TVXBlendFunction;
+    FBlendFuncDFactor: TVXBlendFunction;
+    FAlphaBlendFuncSFactor: TVXBlendFunction;
+    FAlphaBlendFuncDFactor: TVXBlendFunction;
     procedure SetUseAlphaFunc(const Value: Boolean);
     procedure SetUseBlendFunc(const Value: Boolean);
     procedure SetSeparateBlendFunc(const Value: Boolean);
-    procedure SetAlphaFuncRef(const Value: Single);
+    procedure SetAlphaFuncRef(const Value: TGLclampf);
     procedure SetAlphaFuncType(const Value: TGlAlphaFunc);
-    procedure SetBlendFuncDFactor(const Value: TBlendFunction);
-    procedure SetBlendFuncSFactor(const Value: TBlendFunction);
-    procedure SetAlphaBlendFuncDFactor(const Value: TBlendFunction);
-    procedure SetAlphaBlendFuncSFactor(const Value: TBlendFunction);
+    procedure SetBlendFuncDFactor(const Value: TVXBlendFunction);
+    procedure SetBlendFuncSFactor(const Value: TVXBlendFunction);
+    procedure SetAlphaBlendFuncDFactor(const Value: TVXBlendFunction);
+    procedure SetAlphaBlendFuncSFactor(const Value: TVXBlendFunction);
     function StoreAlphaFuncRef: Boolean;
   public
     constructor Create(AOwner: TPersistent); override;
@@ -278,15 +278,15 @@ type
   published
     property UseAlphaFunc: Boolean read FUseAlphaFunc write SetUseAlphaFunc default False;
     property AlphaFunctType: TGlAlphaFunc read FAlphaFuncType write SetAlphaFuncType default cfGreater;
-    property AlphaFuncRef: Single read FAlphaFuncRef write SetAlphaFuncRef stored StoreAlphaFuncRef;
+    property AlphaFuncRef: TGLclampf read FAlphaFuncRef write SetAlphaFuncRef stored StoreAlphaFuncRef;
 
     property UseBlendFunc: Boolean read FUseBlendFunc write SetUseBlendFunc default True;
     property SeparateBlendFunc: Boolean read FSeparateBlendFunc write SetSeparateBlendFunc default False;
-    property BlendFuncSFactor: TBlendFunction read FBlendFuncSFactor write SetBlendFuncSFactor default bfSrcAlpha;
-    property BlendFuncDFactor: TBlendFunction read FBlendFuncDFactor write SetBlendFuncDFactor default bfOneMinusSrcAlpha;
-    property AlphaBlendFuncSFactor: TBlendFunction read FAlphaBlendFuncSFactor write SetAlphaBlendFuncSFactor
+    property BlendFuncSFactor: TVXBlendFunction read FBlendFuncSFactor write SetBlendFuncSFactor default bfSrcAlpha;
+    property BlendFuncDFactor: TVXBlendFunction read FBlendFuncDFactor write SetBlendFuncDFactor default bfOneMinusSrcAlpha;
+    property AlphaBlendFuncSFactor: TVXBlendFunction read FAlphaBlendFuncSFactor write SetAlphaBlendFuncSFactor
       default bfSrcAlpha;
-    property AlphaBlendFuncDFactor: TBlendFunction read FAlphaBlendFuncDFactor write SetAlphaBlendFuncDFactor
+    property AlphaBlendFuncDFactor: TVXBlendFunction read FAlphaBlendFuncDFactor write SetAlphaBlendFuncDFactor
       default bfOneMinusSrcAlpha;
   end;
 
@@ -317,7 +317,7 @@ type
     TVXLibMaterial (taken for a material library).
     The TVXLibMaterial has more adavanced properties (like texture transforms)
     and provides a standard way of sharing definitions and texture maps. }
-  TVXMaterial = class(TVXUpdateAbleObject, IGLMaterialLibrarySupported, IVKNotifyAble, IVKTextureNotifyAble)
+  TVXMaterial = class(TVXUpdateAbleObject, IVXMaterialLibrarySupported, IVXNotifyAble, IVXTextureNotifyAble)
   private
     FFrontProperties, FBackProperties: TVXFaceProperties;
     FDepthProperties: TVXDepthProperties;
@@ -329,9 +329,9 @@ type
     FLibMaterialName: TVXLibMaterialName;
     FMaterialOptions: TMaterialOptions;
     FFaceCulling: TFaceCulling;
-    FPolygonMode: TPolygonMode;
+    FPolygonMode: TVXPolygonMode;
     currentLibMaterial: TVXAbstractLibMaterial;
-    // Implementing IGLMaterialLibrarySupported.
+    (* Implementing IVXMaterialLibrarySupported. *)
     function GetMaterialLibrary: TVXAbstractMaterialLibrary;
   protected
     function GetBackProperties: TVXFaceProperties;
@@ -345,7 +345,7 @@ type
     procedure SetMaterialLibrary(const val: TVXAbstractMaterialLibrary);
     procedure SetLibMaterialName(const val: TVXLibMaterialName);
     procedure SetFaceCulling(const val: TFaceCulling);
-    procedure SetPolygonMode(AValue: TPolygonMode);
+    procedure SetPolygonMode(AValue: TVXPolygonMode);
     function GetTextureEx: TVXTextureEx;
     procedure SetTextureEx(const Value: TVXTextureEx);
     function StoreTextureEx: Boolean;
@@ -392,17 +392,17 @@ type
     property MaterialLibrary: TVXAbstractMaterialLibrary read FMaterialLibrary write SetMaterialLibrary;
     property LibMaterialName: TVXLibMaterialName read FLibMaterialName write SetLibMaterialName;
     property TextureEx: TVXTextureEx read GetTextureEx write SetTextureEx stored StoreTextureEx;
-    property PolygonMode: TPolygonMode read FPolygonMode write SetPolygonMode default pmFill;
+    property PolygonMode: TVXPolygonMode read FPolygonMode write SetPolygonMode default pmFill;
   end;
 
-  TVXAbstractLibMaterial = class(TCollectionItem, IGLMaterialLibrarySupported, IVKNotifyAble)
+  TVXAbstractLibMaterial = class(TCollectionItem, IVXMaterialLibrarySupported, IVXNotifyAble)
   protected
     FUserList: TList;
     FName: TVXLibMaterialName;
     FNameHashKey: Integer;
     FTag: Integer;
     FNotifying: Boolean; // used for recursivity protection
-    // implementing IGLMaterialLibrarySupported
+    // implementing IVXMaterialLibrarySupported
     function GetMaterialLibrary: TVXAbstractMaterialLibrary;
     // implementing IInterface
     function QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
@@ -441,7 +441,7 @@ type
     Introduces Texture transformations (offset and scale). Those transformations
     are available only for lib materials to minimize the memory cost of basic
     materials (which are used in almost all objects). }
-  TVXLibMaterial = class(TVXAbstractLibMaterial, IVKTextureNotifyAble)
+  TVXLibMaterial = class(TVXAbstractLibMaterial, IVXTextureNotifyAble)
   private
     FMaterial: TVXMaterial;
     FTextureOffset, FTextureScale: TVXCoordinates;
@@ -653,7 +653,7 @@ begin
   inherited Destroy;
 end;
 
-procedure TVXFaceProperties.Apply(var rci: TVXRenderContextInfo; aFace: TCullFaceMode);
+procedure TVXFaceProperties.Apply(var rci: TVXRenderContextInfo; aFace: TVXCullFaceMode);
 begin
   with rci.VxStates do
   begin
@@ -661,7 +661,7 @@ begin
   end;
 end;
 
-procedure TVXFaceProperties.ApplyNoLighting(var rci: TVXRenderContextInfo; aFace: TCullFaceMode);
+procedure TVXFaceProperties.ApplyNoLighting(var rci: TVXRenderContextInfo; aFace: TVXCullFaceMode);
 begin
   glColor4fv(Diffuse.AsAddress);
 end;
@@ -720,7 +720,7 @@ constructor TVXDepthProperties.Create(AOwner: TPersistent);
 begin
   inherited Create(AOwner);
   FDepthTest := True;
-  FDepthWrite := 1;
+  FDepthWrite := False;
   FZNear := 0;
   FZFar := 1;
   FCompareFunc := cfLequal;
@@ -778,7 +778,7 @@ begin
   end;
 end;
 
-procedure TVXDepthProperties.SetCompareFunc(Value: TDepthfunction);
+procedure TVXDepthProperties.SetCompareFunc(Value: TVXDepthfunction);
 begin
   if Value <> FCompareFunc then
   begin
@@ -796,7 +796,7 @@ begin
   end;
 end;
 
-procedure TVXDepthProperties.SetDepthWrite(Value: GLboolean);
+procedure TVXDepthProperties.SetDepthWrite(Value: Boolean);
 begin
   if Value <> FDepthWrite then
   begin
@@ -1067,17 +1067,17 @@ begin
       ; // Do nothing ;)
     fiaRaiseHandledException:
       try
-        raise EGLShaderException.Create(GetStardardNotSupportedMessage);
+        raise EVXShaderException.Create(GetStardardNotSupportedMessage);
       except
       end;
     fiaRaiseStandardException:
-      raise EGLShaderException.Create(GetStardardNotSupportedMessage);
+      raise EVXShaderException.Create(GetStardardNotSupportedMessage);
     fiaReRaiseException:
       begin
         if LastErrorMessage <> '' then
-          raise EGLShaderException.Create(LastErrorMessage)
+          raise EVXShaderException.Create(LastErrorMessage)
         else
-          raise EGLShaderException.Create(GetStardardNotSupportedMessage)
+          raise EVXShaderException.Create(GetStardardNotSupportedMessage)
       end;
     // fiaGenerateEvent:; // Do nothing. Event creation is left up to user shaders
     // // which may choose to override this procedure.
@@ -1472,17 +1472,17 @@ end;
 
 procedure TVXMaterial.NotifyChange(Sender: TObject);
 var
-  intf: IVKNotifyAble;
+  intf: IVXNotifyAble;
 begin
-  if Supports(Owner, IVKNotifyAble, intf) then
+  if Supports(Owner, IVXNotifyAble, intf) then
     intf.NotifyChange(Self);
 end;
 
 procedure TVXMaterial.NotifyTexMapChange(Sender: TObject);
 var
-  intf: IVKTextureNotifyAble;
+  intf: IVXTextureNotifyAble;
 begin
-  if Supports(Owner, IVKTextureNotifyAble, intf) then
+  if Supports(Owner, IVXTextureNotifyAble, intf) then
     intf.NotifyTexMapChange(Self)
   else
     NotifyChange(Self);
@@ -1559,7 +1559,7 @@ begin
   end;
 end;
 
-procedure TVXMaterial.SetPolygonMode(AValue: TPolygonMode);
+procedure TVXMaterial.SetPolygonMode(AValue: TVXPolygonMode);
 begin
   if AValue <> FPolygonMode then
   begin
@@ -2654,7 +2654,7 @@ begin
           with libMat.Material.FrontProperties do
           begin
             Read(FShininess, 1);
-            libMat.Material.PolygonMode := TPolygonMode(ReadInteger);
+            libMat.Material.PolygonMode := TVXPolygonMode(ReadInteger);
           end;
           with libMat.Material.BackProperties do
           begin
@@ -2675,8 +2675,8 @@ begin
               begin
                 AlphaFuncRef := ReadFloat;
                 AlphaFunctType := TGlAlphaFunc(ReadInteger);
-                BlendFuncDFactor := TBlendFunction(ReadInteger);
-                BlendFuncSFactor := TBlendFunction(ReadInteger);
+                BlendFuncDFactor := TVXBlendFunction(ReadInteger);
+                BlendFuncSFactor := TVXBlendFunction(ReadInteger);
                 UseAlphaFunc := ReadBoolean;
                 UseBlendFunc := ReadBoolean;
               end;
@@ -2945,7 +2945,7 @@ begin
   end;
 end;
 
-procedure TVXBlendingParameters.SetBlendFuncDFactor(const Value: TBlendFunction);
+procedure TVXBlendingParameters.SetBlendFuncDFactor(const Value: TVXBlendFunction);
 begin
   if (FBlendFuncDFactor <> Value) then
   begin
@@ -2956,7 +2956,7 @@ begin
   end;
 end;
 
-procedure TVXBlendingParameters.SetBlendFuncSFactor(const Value: TBlendFunction);
+procedure TVXBlendingParameters.SetBlendFuncSFactor(const Value: TVXBlendFunction);
 begin
   if (FBlendFuncSFactor <> Value) then
   begin
@@ -2967,7 +2967,7 @@ begin
   end;
 end;
 
-procedure TVXBlendingParameters.SetAlphaBlendFuncDFactor(const Value: TBlendFunction);
+procedure TVXBlendingParameters.SetAlphaBlendFuncDFactor(const Value: TVXBlendFunction);
 begin
   if FSeparateBlendFunc and (FAlphaBlendFuncDFactor <> Value) then
   begin
@@ -2976,7 +2976,7 @@ begin
   end;
 end;
 
-procedure TVXBlendingParameters.SetAlphaBlendFuncSFactor(const Value: TBlendFunction);
+procedure TVXBlendingParameters.SetAlphaBlendFuncSFactor(const Value: TVXBlendFunction);
 begin
   if FSeparateBlendFunc and (FAlphaBlendFuncSFactor <> Value) then
   begin

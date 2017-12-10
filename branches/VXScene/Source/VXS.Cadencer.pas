@@ -12,7 +12,8 @@ interface
 {$I VXScene.inc}
 
 uses
-  Winapi.Windows, 
+  Winapi.Windows,
+  System.Messaging,
   Winapi.Messages,
   System.Classes, 
   System.Types, 
@@ -27,19 +28,15 @@ uses
 
 type
 
-  // TVXCadencerMode
-  //
-  { Determines how the TVXCadencer operates. 
-   - cmManual : you must trigger progress manually (in your code) 
+  { Determines how the TVXCadencer operates.
+   - cmManual : you must trigger progress manually (in your code)
    - cmASAP : progress is triggered As Soon As Possible after a previous
     progress (uses windows messages).
        - cmApplicationIdle : will hook Application.OnIdle, this will overwrite
           any previous event handle, and only one cadencer may be in this mode. }
   TVXCadencerMode = (cmManual, cmASAP, cmApplicationIdle);
 
-  // TVXCadencerTimeReference
-  //
-  { Determines which time reference the TVXCadencer should use. 
+  { Determines which time reference the TVXCadencer should use.
    - cmRTC : the Real Time Clock is used (precise over long periods, but
     not accurate to the millisecond, may limit your effective framerate
           to less than 50 FPS on some systems) 
@@ -49,19 +46,16 @@ type
    - cmExternal : the CurrentTime property is used }
   TVXCadencerTimeReference = (cmRTC, cmPerformanceCounter, cmExternal);
 
-  // TVXCadencer
-  //
-  { This component allows auto-progression of animation. 
+  { This component allows auto-progression of animation.
    Basicly dropping this component and linking it to your TVXScene will send
    it real-time progression events (time will be measured in seconds) while
-   keeping the CPU 100% busy if possible (ie. if things change in your scene). 
+   keeping the CPU 100% busy if possible (ie. if things change in your scene).
    The progression time (the one you'll see in you progression events)
    is calculated using  (CurrentTime-OriginTime)*TimeMultiplier,
    CurrentTime being either manually or automatically updated using
    TimeReference (setting CurrentTime does NOT trigger progression). }
   TVXCadencer = class(TComponent)
   private
-    
     FSubscribedCadenceableComponents: TList;
     FScene: TVXScene;
     FTimeMultiplier: Double;
@@ -76,9 +70,7 @@ type
   	FOnProgress, FOnTotalProgress : TVXProgressEvent;
     FProgressing: Integer;
     procedure SetCurrentTime(const Value: Double);
-
   protected
-    
     procedure Notification(AComponent: TComponent; Operation: TOperation);
       override;
     function StoreTimeMultiplier: Boolean;
@@ -91,140 +83,104 @@ type
     function GetRawReferenceTime: Double;
     procedure RestartASAP;
     procedure Loaded; override;
-
     procedure OnIdleEvent(Sender: TObject; var Done: Boolean);
-
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
     procedure Subscribe(aComponent: TVXCadenceAbleComponent);
     procedure UnSubscribe(aComponent: TVXCadenceAbleComponent);
-
-    { Allows to manually trigger a progression. 
-     Time stuff is handled automatically. 
+    { Allows to manually trigger a progression.
+     Time stuff is handled automatically.
      If cadencer is disabled, this functions does nothing. }
     procedure Progress;
-
     { Adjusts CurrentTime if necessary, then returns its value. }
     function GetCurrenttime: Double;
-
-    { Returns True if a "Progress" is underway. 
+    { Returns True if a "Progress" is underway.
        Be aware that as long as IsBusy is True, the Cadencer may be
        sending messages and progression calls to cadenceable components
        and scenes. }
     function IsBusy: Boolean;
-
     { Reset the time parameters and returns to zero. }
     procedure Reset;
-
     { Value soustracted to current time to obtain progression time. }
     property OriginTime: Double read FOriginTime write FOriginTime;
     { Current time (manually or automatically set, see TimeReference). }
     property CurrentTime: Double read FCurrentTime write SetCurrentTime;
-
   published
-    
     { The TVXScene that will be cadenced (progressed). }
     property Scene: TVXScene read FScene write SetScene;
-    { Enables/Disables cadencing. 
+    { Enables/Disables cadencing.
      Disabling won't cause a jump when restarting, it is working like
      a play/pause (ie. may modify OriginTime to keep things smooth). }
     property Enabled: Boolean read FEnabled write SetEnabled default True;
-
-    { Defines how CurrentTime is updated. 
-     See TVXCadencerTimeReference. 
+    { Defines how CurrentTime is updated.
+     See TVXCadencerTimeReference.
      Dynamically changeing the TimeReference may cause a "jump".  }
     property TimeReference: TVXCadencerTimeReference read FTimeReference write
       SetTimeReference default cmPerformanceCounter;
-
-    { Multiplier applied to the time reference. 
+    { Multiplier applied to the time reference.
       Zero isn't an allowed value, and be aware that if negative values
-      are accepted, they may not be supported by other GLScene objects. 
+      are accepted, they may not be supported by other GLScene objects.
      Changing the TimeMultiplier will alter OriginTime. }
     property TimeMultiplier: Double read FTimeMultiplier write SetTimeMultiplier
       stored StoreTimeMultiplier;
-
-    { Maximum value for deltaTime in progression events. 
+    { Maximum value for deltaTime in progression events.
        If null or negative, no max deltaTime is defined, otherwise, whenever
        an event whose actual deltaTime would be superior to MaxDeltaTime
        occurs, deltaTime is clamped to this max, and the extra time is hidden
-       by the cadencer (it isn't visible in CurrentTime either). 
+       by the cadencer (it isn't visible in CurrentTime either).
        This option allows to limit progression rate in simulations where
        high values would result in errors/random behaviour. }
     property MaxDeltaTime: Double read FMaxDeltaTime write FMaxDeltaTime;
-
-    { Minimum value for deltaTime in progression events. 
+    { Minimum value for deltaTime in progression events.
        If superior to zero, this value specifies the minimum time step
-       between two progression events. 
+       between two progression events.
        This option allows to limit progression rate in simulations where
        low values would result in errors/random behaviour. }
     property MinDeltaTime: Double read FMinDeltaTime write FMinDeltaTime;
-
-    { Fixed time-step value for progression events. 
+    { Fixed time-step value for progression events.
        If superior to zero, progression steps will happen with that fixed
        delta time. The progression remains time based, so zero to N events
        may be fired depending on the actual deltaTime (if deltaTime is
        inferior to FixedDeltaTime, no event will be fired, if it is superior
-       to two times FixedDeltaTime, two events will be fired, etc.). 
+       to two times FixedDeltaTime, two events will be fired, etc.).
        This option allows to use fixed time steps in simulations (while the
        animation and rendering itself may happen at a lower or higher
        framerate). }
     property FixedDeltaTime: Double read FFixedDeltaTime write FFixedDeltaTime;
-
-    { Adjusts how progression events are triggered. 
+    { Adjusts how progression events are triggered.
      See TVXCadencerMode. }
     property Mode: TVXCadencerMode read FMode write SetMode default cmASAP;
-
-    { Allows relinquishing time to other threads/processes. 
+    { Allows relinquishing time to other threads/processes.
      A "sleep" is issued BEFORE each progress if SleepLength>=0 (see
      help for the "sleep" procedure in delphi for details). }
-    property SleepLength: Integer read FSleepLength write FSleepLength default
-      -1;
-
+    property SleepLength: Integer read FSleepLength write FSleepLength default -1;
     { Happens AFTER scene was progressed. }
     property OnProgress: TVXProgressEvent read FOnProgress write FOnProgress;
     { Happens AFTER all iterations with fixed delta time. }
     property OnTotalProgress : TVXProgressEvent read FOnTotalProgress write FOnTotalProgress;
   end;
 
-  // TVXCustomCadencedComponent
-  //
   { Adds a property to connect/subscribe to a cadencer.  }
   TVXCustomCadencedComponent = class(TVXUpdateAbleComponent)
   private
-    
     FCadencer: TVXCadencer;
-
   protected
-    
     procedure SetCadencer(const val: TVXCadencer);
-
     property Cadencer: TVXCadencer read FCadencer write SetCadencer;
-
   public
-    
     destructor Destroy; override;
-
     procedure Notification(AComponent: TComponent; Operation: TOperation);
       override;
   end;
 
-  // TVXCadencedComponent
-  //
   TVXCadencedComponent = class(TVXCustomCadencedComponent)
   published
-    
     property Cadencer;
   end;
 
-  // ---------------------------------------------------------------------
-  // ---------------------------------------------------------------------
-  // ---------------------------------------------------------------------
+// ---------------------------------------------------------------------
 implementation
-// ---------------------------------------------------------------------
-// ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
 
 const
@@ -249,9 +205,6 @@ var
   vHandler: TASAPHandler;
   vCounterFrequency: Int64;
 
-  // RegisterASAPCadencer
-  //
-
 procedure RegisterASAPCadencer(aCadencer: TVXCadencer);
 begin
   if aCadencer.Mode = cmASAP then
@@ -268,9 +221,6 @@ begin
   else if aCadencer.Mode = cmApplicationIdle then
     Application.OnIdle := aCadencer.OnIdleEvent;
 end;
-
-// UnRegisterASAPCadencer
-//
 
 procedure UnRegisterASAPCadencer(aCadencer: TVXCadencer);
 var
@@ -293,18 +243,12 @@ end;
 // ------------------ TASAPHandler ------------------
 // ------------------
 
-// Create
-//
-
 constructor TASAPHandler.Create;
 begin
   inherited Create;
   FWindowHandle := AllocateHWnd(WndProc);
   PostMessage(FWindowHandle, vWMTickCadencer, 0, 0);
 end;
-
-// Destroy
-//
 
 destructor TASAPHandler.Destroy;
 begin
@@ -317,9 +261,6 @@ end;
 
 var
   vWndProcInLoop: Boolean;
-
-  // WndProc
-  //
 
 procedure TASAPHandler.WndProc(var Msg: TMessage);
 var
@@ -410,9 +351,6 @@ end;
 // ------------------ TVXCadencer ------------------
 // ------------------
 
-// Create
-//
-
 constructor TVXCadencer.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
@@ -425,9 +363,6 @@ begin
   Enabled := True;
 end;
 
-// Destroy
-//
-
 destructor TVXCadencer.Destroy;
 begin
   Assert(FProgressing = 0);
@@ -436,9 +371,6 @@ begin
   FSubscribedCadenceableComponents := nil;
   inherited Destroy;
 end;
-
-// Subscribe
-//
 
 procedure TVXCadencer.Subscribe(aComponent: TVXCadenceAbleComponent);
 begin
@@ -450,9 +382,6 @@ begin
     aComponent.FreeNotification(Self);
   end;
 end;
-
-// UnSubscribe
-//
 
 procedure TVXCadencer.UnSubscribe(aComponent: TVXCadenceAbleComponent);
 var
@@ -469,9 +398,6 @@ begin
   end;
 end;
 
-// Notification
-//
-
 procedure TVXCadencer.Notification(AComponent: TComponent; Operation:
   TOperation);
 begin
@@ -485,26 +411,17 @@ begin
   inherited;
 end;
 
-// Loaded
-//
-
 procedure TVXCadencer.Loaded;
 begin
   inherited Loaded;
   RestartASAP;
 end;
 
-// OnIdleEvent
-//
-
 procedure TVXCadencer.OnIdleEvent(Sender: TObject; var Done: Boolean);
 begin
   Progress;
   Done := False;
 end;
-
-// RestartASAP
-//
 
 procedure TVXCadencer.RestartASAP;
 begin
@@ -518,9 +435,6 @@ begin
       UnRegisterASAPCadencer(Self);
   end;
 end;
-
-// SetEnabled
-//
 
 procedure TVXCadencer.SetEnabled(const val: Boolean);
 begin
@@ -538,9 +452,6 @@ begin
   end;
 end;
 
-// SetScene
-//
-
 procedure TVXCadencer.SetScene(const val: TVXScene);
 begin
   if FScene <> val then
@@ -553,9 +464,6 @@ begin
     RestartASAP;
   end;
 end;
-
-// SetTimeMultiplier
-//
 
 procedure TVXCadencer.SetTimeMultiplier(const val: Double);
 var
@@ -589,16 +497,10 @@ begin
   end;
 end;
 
-// StoreTimeMultiplier
-//
-
 function TVXCadencer.StoreTimeMultiplier: Boolean;
 begin
   Result := (FTimeMultiplier <> 1);
 end;
-
-// SetMode
-//
 
 procedure TVXCadencer.SetMode(const val: TVXCadencerMode);
 begin
@@ -611,24 +513,18 @@ begin
   end;
 end;
 
-// SetTimeReference
-//
-
 procedure TVXCadencer.SetTimeReference(const val: TVXCadencerTimeReference);
 begin
   // nothing more, yet
   FTimeReference := val;
 end;
 
-// Progress
-//
-
 procedure TVXCadencer.Progress;
 var
   deltaTime, newTime, totalDelta: Double;
   fullTotalDelta, firstLastTime : Double;
   i: Integer;
-  pt: TProgressTimes;
+  pt: TVXProgressTimes;
 begin
   // basic protection against infinite loops,
     // shall never happen, unless there is a bug in user code
@@ -715,9 +611,6 @@ begin
   end;
 end;
 
-// GetRawReferenceTime
-//
-
 function TVXCadencer.GetRawReferenceTime: Double;
 var
   counter: Int64;
@@ -738,25 +631,16 @@ begin
   end;
 end;
 
-// GetCurrenttime
-//
-
 function TVXCadencer.GetCurrenttime: Double;
 begin
   Result := (GetRawReferenceTime - FOriginTime) * FTimeMultiplier;
   FCurrentTime := Result;
 end;
 
-// IsBusy
-//
-
 function TVXCadencer.IsBusy: Boolean;
 begin
   Result := (FProgressing <> 0);
 end;
-
-//  Reset
-//
 
 procedure TVXCadencer.Reset;
 begin
@@ -764,9 +648,6 @@ begin
   downTime := GetRawReferenceTime;
   FOriginTime := downTime;
 end;
-
-// SetCurrentTime
-//
 
 procedure TVXCadencer.SetCurrentTime(const Value: Double);
 begin
@@ -779,17 +660,11 @@ end;
 // ------------------ TVXCustomCadencedComponent ------------------
 // ------------------
 
-// Destroy
-//
-
 destructor TVXCustomCadencedComponent.Destroy;
 begin
   Cadencer := nil;
   inherited Destroy;
 end;
-
-// Notification
-//
 
 procedure TVXCustomCadencedComponent.Notification(AComponent: TComponent;
   Operation: TOperation);
@@ -798,9 +673,6 @@ begin
     Cadencer := nil;
   inherited;
 end;
-
-// SetCadencer
-//
 
 procedure TVXCustomCadencedComponent.SetCadencer(const val: TVXCadencer);
 begin
@@ -815,12 +687,8 @@ begin
 end;
 
 // ---------------------------------------------------------------------
-// ---------------------------------------------------------------------
-// ---------------------------------------------------------------------
 initialization
-  // ---------------------------------------------------------------------
-  // ---------------------------------------------------------------------
-  // ---------------------------------------------------------------------
+// ---------------------------------------------------------------------
 
   RegisterClasses([TVXCadencer]);
 

@@ -41,7 +41,7 @@ uses
   VXS.VectorLists,
   VXS.PersistentClasses,
   VXS.Texture,
-  VXS.OpenGLAdapter,
+  VXS.OpenGL1x,
   VXS.State,
   VXS.Context,
   VXS.RenderContextInfo;
@@ -89,7 +89,6 @@ type
       but would like to obtain the mesh data also use this call to
       generate the mesh data. Fills in Vertices, Normals, etc. }
     procedure GenerateMesh;
-
     // Control points define the parametric surface.
     property ControlPoints: TAffineVectorList read FControlPoints write SetControlPoints;
     { KnotsU and KnotsV are the knot vectors in the U and V direction. Knots
@@ -124,8 +123,6 @@ type
     property Basis: TParametricSurfaceBasis read FBasis write SetBasis;
   end;
 
-  // TFGBezierSurface
-  //
   { A 3d bezier surface implemented through facegroups. The ControlPointIndices
     is an index to control points stored in the MeshObject.Vertices affine
     vector list. Similarly the TexCoordIndices point to the owner
@@ -141,11 +138,9 @@ type
     FResolution: Integer;
     FMinU, FMaxU, FMinV, FMaxV: Single;
     FTempControlPoints, FTempTexCoords: TAffineVectorList;
-
   protected
     procedure SetControlPointIndices(const Value: TIntegerList);
     procedure SetTexCoordIndices(const Value: TIntegerList);
-
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -153,7 +148,6 @@ type
     procedure ReadFromFiler(reader: TVirtualReader); override;
     procedure BuildList(var mrci: TVXRenderContextInfo); override;
     procedure Prepare; override;
-
     property CountU: Integer read FCountU write FCountU;
     property CountV: Integer read FCountV write FCountV;
     property Resolution: Integer read FResolution write FResolution;
@@ -163,7 +157,6 @@ type
     property MaxV: Single read FMaxV write FMaxV;
     property ControlPointIndices: TIntegerList read FControlPointIndices write SetControlPointIndices;
     property TexCoordIndices: TIntegerList read FTexCoordIndices write SetTexCoordIndices;
-
   end;
 
 // ----------------------------------------------------------------------
@@ -255,7 +248,7 @@ begin
       inherited;
     psrOpenVX:
       begin
-        mrci.VXStates.PushAttrib([sttEnable, sttEval]);
+        glPushAttrib(GL_ENABLE_BIT or GL_EVAL_BIT); // [sttEnable, sttEval]);
         // glEnable(GL_MAP2_TEXTURE_COORD_3);
         glEnable(GL_MAP2_VERTEX_3);
         glEnable(GL_AUTO_NORMAL);

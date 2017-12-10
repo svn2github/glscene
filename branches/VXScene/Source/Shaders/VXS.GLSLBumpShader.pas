@@ -22,39 +22,45 @@ interface
 {$I VXScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
-  
-  VXS.Texture, VXS.Scene, VXS.VectorGeometry, VXS.VectorTypes,
-  VXS.Cadencer, VXS.Strings, Winapi.OpenGL, Winapi.OpenGLext,  VXS.CustomShader, VXS.Color,
-  VXS.RenderContextInfo, VXS.Material, VXS.GLSLShader;
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
+  System.Classes,
+  System.SysUtils,
+
+  VXS.Texture,
+  VXS.Scene,
+  VXS.VectorGeometry,
+  VXS.VectorTypes,
+  VXS.Cadencer,
+  VXS.Strings,
+  VXS.CustomShader,
+  VXS.Color,
+  VXS.RenderContextInfo,
+  VXS.Material,
+  VXS.GLSLShader;
 
 type
   EGLSLBumpShaderException = class(EGLSLShaderException);
 
   // An abstract class.
-  TVXBaseCustomGLSLBumpShader = class(TVXCustomGLSLShader, IGLMaterialLibrarySupported)
+  TVXBaseCustomGLSLBumpShader = class(TVXCustomGLSLShader, IVXMaterialLibrarySupported)
   private
     FBumpHeight: Single;
     FBumpSmoothness: Integer;
-
     FSpecularPower: Single;
     FSpecularSpread: Single;
     FLightPower: Single;
-
     FMaterialLibrary: TVXMaterialLibrary;
-
     FNormalTexture: TVXTexture;
     FSpecularTexture: TVXTexture;
     FNormalTextureName: TVXLibMaterialName;
     FSpecularTextureName: TVXLibMaterialName;
-
     function GetNormalTextureName: TVXLibMaterialName;
     function GetSpecularTextureName: TVXLibMaterialName;
     procedure SetNormalTextureName(const Value: TVXLibMaterialName);
     procedure SetSpecularTextureName(const Value: TVXLibMaterialName);
     procedure SetSpecularTexture(const Value: TVXTexture);
     procedure SetNormalTexture(const Value: TVXTexture);
-
     // Implementing IGLMaterialLibrarySupported.
     function GetMaterialLibrary: TVXAbstractMaterialLibrary;
   protected
@@ -64,20 +70,15 @@ type
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
   public
     constructor Create(AOwner : TComponent); override;
-
     property BumpHeight: Single read FBumpHeight write FBumpHeight;
     property BumpSmoothness: Integer read FBumpSmoothness write FBumpSmoothness;
-
     property SpecularPower: Single read FSpecularPower write FSpecularPower;
     property SpecularSpread: Single read FSpecularSpread write FSpecularSpread;
     property LightPower: Single read FLightPower write FLightPower;
-
     property NormalTexture: TVXTexture read FNormalTexture write SetNormalTexture;
     property SpecularTexture: TVXTexture read FSpecularTexture write SetSpecularTexture;
-
     property NormalTextureName: TVXLibMaterialName read GetNormalTextureName write SetNormalTextureName;
     property SpecularTextureName: TVXLibMaterialName read GetSpecularTextureName write SetSpecularTextureName;
-
     property MaterialLibrary: TVXMaterialLibrary read FMaterialLibrary write SetMaterialLibrary;
   end;
 
@@ -111,11 +112,9 @@ type
   public
     constructor Create(AOwner : TComponent); override;
     destructor Destroy; override;
-
     property AmbientColor: TVXColor read FAmbientColor;
     property DiffuseColor: TVXColor read FDiffuseColor;
     property SpecularColor: TVXColor read FSpecularColor;
-
     property Alpha: Single read GetAlpha write SetAlpha;
   end;
 
@@ -130,16 +129,12 @@ type
     // Implementing IGLShaderDescription.
     procedure SetShaderTextures(const Textures: array of TVXTexture);
     procedure GetShaderTextures(var Textures: array of TVXTexture);
-
     procedure SetShaderColorParams(const AAmbientColor, ADiffuseColor, ASpecularcolor: TVector4f);
     procedure GetShaderColorParams(var AAmbientColor, ADiffuseColor, ASpecularcolor: TVector4f);
-
     procedure SetShaderMiscParameters(const ACadencer: TVXCadencer; const AMatLib: TVXMaterialLibrary; const ALightSources: TVXLightSourceSet);
     procedure GetShaderMiscParameters(var ACadencer: TVXCadencer; var AMatLib: TVXMaterialLibrary; var ALightSources: TVXLightSourceSet);
-
     function GetShaderAlpha: Single;
     procedure SetShaderAlpha(const Value: Single);
-
     function GetShaderDescription: string;
   protected
     procedure DoApply(var rci : TVXRenderContextInfo; Sender : TObject); override;
@@ -153,20 +148,15 @@ type
     FLightCompensation: Single;
     procedure SetLightSources(const Value: TVXLightSourceSet);
     procedure SetLightCompensation(const Value: Single);
-
     // Implementing IGLShaderDescription.
     procedure SetShaderTextures(const Textures: array of TVXTexture);
     procedure GetShaderTextures(var Textures: array of TVXTexture);
-
     procedure SetShaderColorParams(const AAmbientColor, ADiffuseColor, ASpecularcolor: TVector4f);
     procedure GetShaderColorParams(var AAmbientColor, ADiffuseColor, ASpecularcolor: TVector4f);
-
     procedure SetShaderMiscParameters(const ACadencer: TVXCadencer; const AMatLib: TVXMaterialLibrary; const ALightSources: TVXLightSourceSet);
     procedure GetShaderMiscParameters(var ACadencer: TVXCadencer; var AMatLib: TVXMaterialLibrary; var ALightSources: TVXLightSourceSet);
-
     function GetShaderAlpha: Single;
     procedure SetShaderAlpha(const Value: Single);
-
     function GetShaderDescription: string;
   protected
     procedure DoApply(var rci : TVXRenderContextInfo; Sender : TObject); override;
@@ -196,7 +186,7 @@ type
     property LightCompensation: Single read FLightCompensation write SetLightCompensation;
   end;
 
-                {************** Published **************}
+   {************** Published **************}
 
   // One light shaders.
   TVXSLBumpShaderMT = class(TVXCustomGLSLBumpShaderMT)
@@ -205,10 +195,8 @@ type
     property NormalTextureName;
     property SpecularTextureName;
     property MaterialLibrary;
-
     property BumpHeight;
     property BumpSmoothness;
-
     property SpecularPower;
     property SpecularSpread;
     property LightPower;
@@ -219,10 +207,8 @@ type
     property NormalTextureName;
     property SpecularTextureName;
     property MaterialLibrary;
-
     property BumpHeight;
     property BumpSmoothness;
-
     property SpecularPower;
     property SpecularSpread;
     property LightPower;
@@ -234,15 +220,12 @@ type
     property DiffuseColor;
     property SpecularColor;
     property Alpha stored False;
-
     property MainTextureName;
     property NormalTextureName;
     property SpecularTextureName;
     property MaterialLibrary;
-
     property BumpHeight;
     property BumpSmoothness;
-
     property SpecularPower;
     property SpecularSpread;
     property LightPower;
@@ -254,10 +237,8 @@ type
     property NormalTextureName;
     property SpecularTextureName;
     property MaterialLibrary;
-
     property BumpHeight;
     property BumpSmoothness;
-
     property SpecularPower;
     property SpecularSpread;
     property LightPower;
@@ -271,10 +252,8 @@ type
     property NormalTextureName;
     property SpecularTextureName;
     property MaterialLibrary;
-
     property BumpHeight;
     property BumpSmoothness;
-
     property SpecularPower;
     property SpecularSpread;
     property LightPower;
@@ -283,12 +262,9 @@ type
   end;
 
 //-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
 implementation
 //-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
+
 procedure GetVertexProgramCode(const Code: TStrings);
 begin
   with Code do
@@ -861,7 +837,7 @@ begin
 
     lLightCount := 0;
     // Repeat for all lights.
-    for I := 0 to glsShaderMaxLightSources - 1 do
+    for I := 0 to vxsShaderMaxLightSources - 1 do
       if I + 1 in FLightSources then
       begin
         GetMLFragmentProgramCodeMid(FragmentProgram.Code, I);
@@ -1017,7 +993,7 @@ begin
     lLightCount := 0;
 
     // Repeat for all lights.
-    for I := 0 to glsShaderMaxLightSources - 1 do
+    for I := 0 to vxsShaderMaxLightSources - 1 do
       if I + 1 in FLightSources then
       begin
         GetMLFragmentProgramCodeMid(FragmentProgram.Code, I);

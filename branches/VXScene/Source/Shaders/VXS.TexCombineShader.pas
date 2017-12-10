@@ -16,7 +16,7 @@ uses
   System.Classes,
   System.SysUtils,
   
-  VXS.OpenGLAdapter,
+  VXS.OpenGL1x,
   VXS.XOpenGL,
   VXS.Texture,
   VXS.Material,
@@ -155,9 +155,6 @@ begin
   end;
 end;
 
-// SetLibMaterial4Name
-//
-
 procedure TVXTexCombineShader.SetLibMaterial4Name(const val: TVXLibMaterialName);
 var
   newLibMaterial: TVXLibMaterial;
@@ -182,15 +179,9 @@ begin
   end;
 end;
 
-// DoInitialize
-//
-
 procedure TVXTexCombineShader.DoInitialize(var rci: TVXRenderContextInfo; Sender: TObject);
 begin
 end;
-
-// DoApply
-//
 
 procedure TVXTexCombineShader.DoApply(var rci: TVXRenderContextInfo; Sender: TObject);
 var
@@ -262,9 +253,6 @@ begin
   end;
 end;
 
-// DoUnApply
-//
-
 function TVXTexCombineShader.DoUnApply(var rci: TVXRenderContextInfo): Boolean;
 begin
   if FApplied3 then
@@ -276,15 +264,9 @@ begin
   Result := False;
 end;
 
-// DoFinalize
-//
-
 procedure TVXTexCombineShader.DoFinalize;
 begin
 end;
-
-// SetCombiners
-//
 
 procedure TVXTexCombineShader.SetCombiners(const val: TStringList);
 begin
@@ -294,9 +276,6 @@ begin
     NotifyChange(Self);
   end;
 end;
-
-// SetDesignTimeEnabled
-//
 
 procedure TVXTexCombineShader.SetDesignTimeEnabled(const val: Boolean);
 begin

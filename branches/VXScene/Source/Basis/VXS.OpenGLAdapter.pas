@@ -1,20 +1,27 @@
 //
-// VXScene Component Library, based on GLScene http://glscene.sourceforge.net
+// This unit is part of the GLScene Project, http://glscene.org
 //
 {
   OpenGL adapter
+  The whole history is logged in previous version of the unit.
 }
+
 unit VXS.OpenGLAdapter;
 
 interface
 
 {$I VXScene.inc}
+{$IFDEF DARWIN}
+{$LINKFRAMEWORK OpenGL}
+{$LINKFRAMEWORK AGL}
+{$ENDIF}
 
 uses
   Winapi.Windows,
   Winapi.OpenGL,
   Winapi.OpenGLext,
   System.SysUtils,
+  System.Messaging,
   FMX.Dialogs,
   
   VXS.Strings,
@@ -1702,6 +1709,7 @@ type
     // locate functions and procedures for
     // GLU extensions
     // ###########################################################
+
     (*
     gluNurbsCallbackDataEXT: procedure(nurb: PGLUnurbs; userData: Pointer);
     {$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
@@ -1760,7 +1768,7 @@ function wglUseFontOutlines(p1: HDC; p2, p3, p4: DWORD; p5, p6: Single;
 {$ENDIF}
 
 //OpenGL Extension to the X Window System (GLX) support functions
-  {$IFDEF SUPPORT_GLX}
+{$IFDEF SUPPORT_GLX}
   // GLX 1.0
   function glXGetProcAddress(const Name: PAnsiChar): Pointer; cdecl; external opengl32;
   function glXGetProcAddressARB(const Name: PAnsiChar): Pointer; cdecl; external opengl32;
@@ -1770,8 +1778,7 @@ function wglUseFontOutlines(p1: HDC; p2, p3, p4: DWORD; p5, p6: Single;
   function glXMakeCurrent(dpy: PDisplay; drawable: GLXDrawable; ctx: GLXContext): GLboolean; cdecl; external opengl32;
   procedure glXCopyContext(dpy: PDisplay; src: GLXContext; dst: GLXContext; mask: GLuint); cdecl; external opengl32;
   procedure glXSwapBuffers(dpy: PDisplay; drawable: GLXDrawable); cdecl; external opengl32;
-  function glXCreateGLXPixmap(dpy: PDisplay; visual: PXVisualInfo;
-    pixmap: GLXPixmap): GLXPixmap; cdecl; external opengl32;
+  function glXCreateGLXPixmap(dpy: PDisplay; visual: PXVisualInfo; pixmap: GLXPixmap): GLXPixmap; cdecl; external opengl32;
   procedure glXDestroyGLXPixmap(dpy: PDisplay; pixmap: GLXPixmap); cdecl; external opengl32;
   function glXQueryExtension(dpy: PDisplay; errorb: PGLint; event: PGLint): GLboolean; cdecl; external opengl32;
   function glXQueryVersion(dpy: PDisplay; maj: PGLint; min: PGLint): GLboolean; cdecl; external opengl32;
@@ -1786,9 +1793,7 @@ function wglUseFontOutlines(p1: HDC; p2, p3, p4: DWORD; p5, p6: Single;
   function glXQueryServerString(dpy: PDisplay; screen: GLint; Name: GLint): PGLChar; cdecl; external opengl32;
   function glXGetClientString(dpy: PDisplay; Name: GLint): PGLChar; cdecl; external opengl32;
   function glXGetCurrentDisplay: PDisplay; cdecl; external opengl32;
-  {$ENDIF}
-
-
+{$ENDIF}
 
 function GetProcAddressGLLib(ProcName: PGLChar): Pointer;
 function GetProcAddressGLS(ProcName: PGLChar): Pointer;
@@ -1963,7 +1968,7 @@ end;
 procedure GLCap;
 {$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
 begin
-  ShowMessage('Call OpenVX function with undefined entry point');
+  ShowMessage('Call OpenGL function with undefined entry point');
   Abort;
 end;
 

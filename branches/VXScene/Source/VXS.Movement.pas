@@ -252,7 +252,7 @@ type
     class function UniqueItem: boolean; override;
     procedure StartPathTravel;
     procedure StopPathTravel;
-    procedure DoProgress(const progressTime : TProgressTimes); override;
+    procedure DoProgress(const progressTime : TVXProgressTimes); override;
     function NextPath: integer;
     function PrevPath: integer;
     function FirstPath: integer;
@@ -1514,7 +1514,7 @@ begin
 end;
 
 //Calculate functions add into this method
-procedure TVXMovement.DoProgress(const progressTime : TProgressTimes);
+procedure TVXMovement.DoProgress(const progressTime : TVXProgressTimes);
 var
   Path: TVXMovementPath;
 begin

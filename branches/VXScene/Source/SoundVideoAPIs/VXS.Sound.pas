@@ -316,7 +316,7 @@ type
     { Progress notification for time synchronization.
        This method will call UpdateSources depending on the last time
        it was performed and the value of the UpdateFrequency property. }
-    procedure DoProgress(const progressTime: TProgressTimes); override;
+    procedure DoProgress(const progressTime: TVXProgressTimes); override;
     { Sound manager API reported CPU Usage.
        Returns -1 when unsupported. }
     function CPUUsagePercent: Single; virtual;
@@ -409,7 +409,7 @@ type
     class function FriendlyName: string; override;
     class function FriendlyDescription: string; override;
     class function UniqueItem: Boolean; override;
-    procedure DoProgress(const progressTime: TProgressTimes); override;
+    procedure DoProgress(const progressTime: TVXProgressTimes); override;
     property PlayingSource: TVXSoundSource read FPlayingSource;
   published
     property Source: TVXBaseSoundSource read FSource write SetSource;
@@ -1390,7 +1390,7 @@ begin
     Sources.Delete(i);
 end;
 
-procedure TVXSoundManager.DoProgress(const progressTime: TProgressTimes);
+procedure TVXSoundManager.DoProgress(const progressTime: TVXProgressTimes);
 begin
   if not Active then
     Exit;
@@ -1484,7 +1484,7 @@ begin
   Result := False;
 end;
 
-procedure TVXBSoundEmitter.DoProgress(const progressTime: TProgressTimes);
+procedure TVXBSoundEmitter.DoProgress(const progressTime: TVXProgressTimes);
 begin
   // nothing, yet
 end;

@@ -24,6 +24,7 @@ uses
   FMX.StdCtrls,
   FMX.Objects,
   FMX.ListBox,
+  FMX.Controls.Presentation,
 
   FRMaterialPreview,
   FRColorEditor,
@@ -31,7 +32,7 @@ uses
   VXS.Texture,
   FRTextureEdit,
   VXS.Material,
-  VXS.State, FMX.Controls.Presentation;
+  VXS.State;
 
 type
   TMaterialEditorForm = class(TForm)
@@ -95,8 +96,8 @@ begin
   inherited;
   for i := 0 to Integer(High(TBlendingMode)) do
     CBBlending.Items.Add(GetEnumName(TypeInfo(TBlendingMode), i));
-  for i := 0 to Integer(High(TPolygonMode)) do
-    CBPolygonMode.Items.Add(GetEnumName(TypeInfo(TPolygonMode), i));
+  for i := 0 to Integer(High(TVXPolygonMode)) do
+    CBPolygonMode.Items.Add(GetEnumName(TypeInfo(TVXPolygonMode), i));
 
   FEFront.OnChange := OnMaterialChanged;
   FEBack.OnChange := OnMaterialChanged;
@@ -122,7 +123,7 @@ begin
       BackProperties := FEBack.FaceProperties;
       Texture := RTextureEdit.Texture;
       BlendingMode := TBlendingMode(CBBlending.ItemIndex);
-      PolygonMode := TPolygonMode(CBPolygonMode.ItemIndex);
+      PolygonMode := TVXPolygonMode(CBPolygonMode.ItemIndex);
     end;
 end;
 
@@ -135,7 +136,7 @@ begin
     BackProperties := FEBack.FaceProperties;
     Texture := RTextureEdit.Texture;
     BlendingMode := TBlendingMode(CBBlending.ItemIndex);
-    PolygonMode := TPolygonMode(CBPolygonMode.ItemIndex);
+    PolygonMode := TVXPolygonMode(CBPolygonMode.ItemIndex);
   end;
   MPPreview.GLSViewer.EndUpdate;
 end;

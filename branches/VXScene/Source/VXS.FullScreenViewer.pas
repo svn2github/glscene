@@ -23,7 +23,6 @@ uses
   FMX.Controls,
   FMX.Menus,
   
-  VXS.OpenGLAdapter,
   VXS.Scene,
   VXS.Context,
   VXS.Win64Viewer,
@@ -33,25 +32,20 @@ uses
 
 type
 
-  // TVXScreenDepth
-  //
   TVXScreenDepth = (sd8bits, sd16bits, sd24bits, sd32bits);
 
-  // TVXFullScreenViewer
-  //
-  { A FullScreen viewer. 
+  { A FullScreen viewer.
     This non visual viewer will, when activated, use the full screen as rendering
     surface. It will also switch/restore videomode depending on the required
-    width/height. 
+    width/height.
     This is performed by creating an underlying TForm and using its surface
     for rendering OpenGL, "decent" ICDs will automatically use PageFlipping
     instead of BlockTransfer (slower buffer flipping mode used for windowed
-    OpenGL). 
+    OpenGL).
     Note: if you terminate the application either via a kill or in the IDE,
     the original resolution isn't restored. }
   TVXFullScreenViewer = class(TVXNonVisualViewer)
   private
-    
     FFormIsOwned: Boolean;
     FForm: TForm;
     FOwnDC: THandle; // in VCL HWND;
@@ -100,9 +94,7 @@ type
     procedure SetForm(aVal: TForm);
     procedure SetManualRendering(const val: Boolean);
   protected
-    
     function GetHandle: TWindowHandle;
-
     procedure DoBeforeRender(Sender: TObject);
     procedure DoBufferChange(Sender: TObject); override;
     procedure DoBufferStructuralChange(Sender: TObject); override;
@@ -116,76 +108,60 @@ type
     procedure DoDeactivate(Sender: TObject);
     procedure DoFormDestroy(Sender: TObject);
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
     procedure Render(baseObject: TVXBaseSceneObject = nil); override;
-
-    { Adjusts property so that current resolution will be used. 
+    { Adjusts property so that current resolution will be used.
       Call this method if you want to make sure video mode isn't switched. }
     procedure UseCurrentResolution;
-
     procedure BeginUpdate;
     procedure EndUpdate;
-
     { Activates/deactivates full screen mode.  }
     property Active: Boolean read FActive write SetActive;
-
     procedure ReActivate;
-    { Read access to the underlying form handle. 
+    { Read access to the underlying form handle.
       Returns 0 (zero) if the viewer is not active or has not yet
       instantiated its form. }
     property Handle: TWindowHandle read GetHandle;
-
     procedure Notification(AComponent: TComponent;
       Operation: TOperation); override;
-
     function LastFrameTime: Single;
     function FramesPerSecond: Single;
     function FramesPerSecondText(decimals: Integer = 1): String;
     procedure ResetPerformanceMonitor;
-
     property RenderDC: THandle read FOwnDC; //HWND
   published
-    
     property Form: TForm read FForm write SetForm;
-
     property ManualRendering: Boolean read FManualRendering
       write SetManualRendering;
-
     // It is not used in UNIX
     { Requested ScreenDepth. }
     property ScreenDepth: TVXScreenDepth read FScreenDepth write SetScreenDepth
       default sd32bits;
-
-    { Specifies if the underlying form is "fsStayOnTop". 
+    { Specifies if the underlying form is "fsStayOnTop".
       The benefit of StayOnTop is that it hides the windows bar and
       other background windows. The "fsStayOnTop" is automatically
-      switched off/on when the underlying form loses/gains focus. 
+      switched off/on when the underlying form loses/gains focus.
       It is recommended not to use StayOnTop while running in the IDE
       or during the debugging phase.  }
     property StayOnTop: Boolean read FStayOnTop write SetStayOnTop
       default False;
-
-    { Specifies if the refresh should be synchronized with the VSync signal. 
+    { Specifies if the refresh should be synchronized with the VSync signal.
       If the underlying OpenGL ICD does not support the WGL_EXT_swap_control
       extension, this property is ignored. }
     property VSync: TVXSyncMode read FVSync write FVSync default vsmSync;
-    { Screen refresh rate. 
+    { Screen refresh rate.
       Use zero for system default. This property allows you to work around
       the winxp bug that limits uses a refresh rate of 60hz when changeing
       resolution. it is however suggested to give the user the opportunity
       to adjust it instead of having a fixed value (expecially beyond
-      75hz or for resolutions beyond 1024x768). 
+      75hz or for resolutions beyond 1024x768).
       the value will be automatically clamped to the highest value
       *reported* compatible with the monitor. }
     property RefreshRate: Integer read FRefreshRate write FRefreshRate;
-
     { TODO : E2003 Undeclared identifier: 'TCursor' }
     (*property Cursor: TCursor read FCursor write SetCursor default crDefault;*)
     property PopupMenu: TPopupMenu read FPopupMenu write SetPopupMenu;
-
     property OnClose: TCloseEvent read FOnClose write SetOnClose;
     property OnKeyUp: TKeyEvent read FOnKeyUp write SetOnKeyUp;
     property OnKeyDown: TKeyEvent read FOnKeyDown write SetOnKeyDown;
@@ -209,12 +185,7 @@ type
 procedure Register;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
-
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 const
@@ -229,8 +200,6 @@ end;
 // ------------------ TVXFullScreenViewer ------------------
 // ------------------
 
-// Create
-//
 constructor TVXFullScreenViewer.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
@@ -243,23 +212,17 @@ begin
   Buffer.ViewerBeforeRender := DoBeforeRender;
 end;
 
-// Destroy
-//
 destructor TVXFullScreenViewer.Destroy;
 begin
   Active := False;
   inherited Destroy;
 end;
 
-// DoBeforeRender
-//
 procedure TVXFullScreenViewer.DoBeforeRender(Sender: TObject);
 begin
   SetupVSync(VSync);
 end;
 
-// DoBufferChange
-//
 procedure TVXFullScreenViewer.DoBufferChange(Sender: TObject);
 begin
   if Assigned(FForm) and (not Buffer.Rendering) then
@@ -268,30 +231,22 @@ begin
   end;
 end;
 
-// DoBufferStructuralChange
-//
 procedure TVXFullScreenViewer.DoBufferStructuralChange(Sender: TObject);
 begin
   if Active and (FUpdateCount = 0) then
     ReActivate
 end;
 
-// Render
-//
 procedure TVXFullScreenViewer.Render(baseObject: TVXBaseSceneObject = nil);
 begin
   Buffer.Render(baseObject);
 end;
 
-// BeginUpdate
-//
 procedure TVXFullScreenViewer.BeginUpdate;
 begin
   Inc(FUpdateCount);
 end;
 
-// EndUpdate
-//
 procedure TVXFullScreenViewer.EndUpdate;
 begin
   Dec(FUpdateCount);
@@ -350,8 +305,6 @@ begin
   Buffer.ResetPerformanceMonitor;
 end;
 
-// UseCurrentResolution
-//
 procedure TVXFullScreenViewer.UseCurrentResolution;
 begin
   BeginUpdate;
@@ -374,8 +327,6 @@ begin
   end;
 end;
 
-// SetActive
-//
 procedure TVXFullScreenViewer.SetActive(const val: Boolean);
 begin
   if val <> FActive then
@@ -394,8 +345,6 @@ begin
   end;
 end;
 
-// Startup
-//
 procedure TVXFullScreenViewer.Startup;
 var
   res: TResolution;
@@ -467,8 +416,6 @@ begin
   FActive := True;
 end;
 
-// Shutdown
-//
 procedure TVXFullScreenViewer.Shutdown;
 begin
   if not FActive then
@@ -496,8 +443,6 @@ begin
     FreeAndNil(FForm);
 end;
 
-// BindFormEvents
-//
 procedure TVXFullScreenViewer.BindFormEvents;
 begin
   if Assigned(FForm) then
@@ -522,8 +467,6 @@ begin
     end;
 end;
 
-// DoCloseQuery
-//
 procedure TVXFullScreenViewer.DoCloseQuery(Sender: TObject;
   var CanClose: Boolean);
 begin
@@ -533,8 +476,6 @@ begin
   // if CanClose then Shutdown;
 end;
 
-// DoPaint
-//
 procedure TVXFullScreenViewer.DoPaint(Sender: TObject);
 begin
   If not ManualRendering then
@@ -563,8 +504,6 @@ begin
   Active := False;
 end;
 
-// SetScreenDepth
-//
 procedure TVXFullScreenViewer.SetScreenDepth(const val: TVXScreenDepth);
 begin
   if FScreenDepth <> val then
@@ -574,8 +513,6 @@ begin
   end;
 end;
 
-// SetStayOnTop
-//
 procedure TVXFullScreenViewer.SetStayOnTop(const val: Boolean);
 begin
   if val <> FStayOnTop then
@@ -585,15 +522,11 @@ begin
   end;
 end;
 
-// SetOnCloseQuery
-//
 procedure TVXFullScreenViewer.SetOnCloseQuery(const val: TCloseQueryEvent);
 begin
   FOnCloseQuery := val; // this one uses a special binding
 end;
 
-// SetOnClose
-//
 procedure TVXFullScreenViewer.SetOnClose(const val: TCloseEvent);
 begin
   If Form <> nil then
@@ -601,8 +534,6 @@ begin
   FOnClose := val;
 end;
 
-// SetOnKeyPress
-//
 procedure TVXFullScreenViewer.SetOnKeyPress(const val: TKeyEvent); //VCL - TKeyPressEvent
 begin
   If Form <> nil then
@@ -610,8 +541,6 @@ begin
   FOnKeyPress := val;
 end;
 
-// SetOnKeyUp
-//
 procedure TVXFullScreenViewer.SetOnKeyUp(const val: TKeyEvent);
 begin
   If Form <> nil then
@@ -619,8 +548,6 @@ begin
   FOnKeyUp := val;
 end;
 
-// SetOnKeyDown
-//
 procedure TVXFullScreenViewer.SetOnKeyDown(const val: TKeyEvent);
 begin
   If Form <> nil then
@@ -628,8 +555,6 @@ begin
   FOnKeyDown := val;
 end;
 
-// SetOnMouseWheel
-//
 procedure TVXFullScreenViewer.SetOnMouseWheel(const val: TMouseWheelEvent);
 begin
   If Form <> nil then
@@ -637,8 +562,6 @@ begin
   FOnMouseWheel := val;
 end;
 
-// SetOnMouseWheelDown
-//
 procedure TVXFullScreenViewer.SetOnMouseWheelDown
   (const val: TMouseWheelEvent);
 begin
@@ -647,8 +570,6 @@ begin
   FOnMouseWheelDown := val;
 end;
 
-// SetOnMouseWheelUp
-//
 procedure TVXFullScreenViewer.SetOnMouseWheelUp(const val: TMouseWheelEvent);
 begin
   If Form <> nil then
@@ -656,8 +577,6 @@ begin
   FOnMouseWheelUp := val;
 end;
 
-// SetOnClick
-//
 procedure TVXFullScreenViewer.SetOnClick(const val: TNotifyEvent);
 begin
   If Form <> nil then
@@ -666,8 +585,6 @@ begin
   FOnClick := val;
 end;
 
-// SetOnDblClick
-//
 procedure TVXFullScreenViewer.SetOnDblClick(const val: TNotifyEvent);
 begin
   If Form <> nil then
@@ -676,8 +593,6 @@ begin
   FOnDblClick := val;
 end;
 
-// SetOnMouseMove
-//
 procedure TVXFullScreenViewer.SetOnMouseMove(const val: TMouseMoveEvent);
 begin
   If Form <> nil then
@@ -685,8 +600,6 @@ begin
   FOnMouseMove := val;
 end;
 
-// SetOnMouseDown
-//
 procedure TVXFullScreenViewer.SetOnMouseDown(const val: TMouseEvent);
 begin
   If Form <> nil then
@@ -694,8 +607,6 @@ begin
   FOnMouseDown := val;
 end;
 
-// SetOnMouseUp
-//
 procedure TVXFullScreenViewer.SetOnMouseUp(const val: TMouseEvent);
 begin
   If Form <> nil then
@@ -703,8 +614,6 @@ begin
   FOnMouseUp := val;
 end;
 
-// SetCursor
-//
 (*
 procedure TVXFullScreenViewer.SetCursor(const val: TCursor);
 begin
@@ -716,8 +625,7 @@ begin
   end;
 end;
 *)
-// SetPopupMenu
-//
+
 procedure TVXFullScreenViewer.SetPopupMenu(const val: TPopupMenu);
 begin
   if val <> FPopupMenu then
@@ -740,8 +648,6 @@ begin
     FManualRendering := val;
 end;
 
-// GetHandle
-//
 function TVXFullScreenViewer.GetHandle: TWindowHandle;
 begin
   if Form <> nil then
@@ -751,12 +657,7 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 RegisterClasses([TVXFullScreenViewer]);

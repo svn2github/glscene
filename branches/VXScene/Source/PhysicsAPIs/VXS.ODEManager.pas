@@ -20,6 +20,8 @@ uses
   System.SysUtils,
 
   ODEImport,
+
+  VXS.OpenGL1x,
   VXS.ODEGL,
   VXS.Scene,
   VXS.VectorGeometry,

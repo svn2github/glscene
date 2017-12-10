@@ -263,7 +263,7 @@ begin
     invAtmosphereHeight := 1 / (FAtmosphereRadius - FPlanetRadius);
     lightingVector := VectorNormalize(sunPos); // sun at infinity
 
-    rci.VXStates.DepthWriteMask := GLboolean(False);
+    rci.VXStates.DepthWriteMask := False;
     rci.VXStates.Disable(stLighting);
     rci.VXStates.Enable(stBlend);
     EnableGLBlendingMode(rci.VxStates);

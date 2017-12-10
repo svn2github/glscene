@@ -26,7 +26,8 @@ uses
   System.SysUtils,
   System.SyncObjs,
 
-  VXS.OpenGLAdapter,
+  VXS.OpenGL1x,
+  VXS.VectorTypes,
   VXS.Context,
   VXS.VectorGeometry,
   SDL2;

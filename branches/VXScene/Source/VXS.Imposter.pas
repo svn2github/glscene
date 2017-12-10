@@ -16,7 +16,7 @@ uses
   System.Classes,
   System.SysUtils,
   
-  VXS.OpenGLAdapter,
+  VXS.OpenGL1x,
   VXS.Scene,
   VXS.Context,
   VXS.VectorTypes,
@@ -57,7 +57,7 @@ const
 type
   TVXImposterBuilder = class;
 
-  { Base class for imposters manipulation and handling. 
+  { Base class for imposters manipulation and handling.
      Rendering imposters is performed by three methods, BeginRender must
      be invoked first, then Render for each of the impostr
      This class assumes a single impostor per texture.
@@ -1184,7 +1184,7 @@ begin
       cameraOffset := cameraDirection;
       RotateVector(cameraOffset, YHmgVector, (c2PI * i) / corona.Samples);
       ScaleVector(cameraOffset, -radius * 2);
-      rci.VXStates.DepthWriteMask := 1;
+      rci.VXStates.DepthWriteMask := True;
       glClear(GL_COLOR_BUFFER_BIT + GL_DEPTH_BUFFER_BIT);
 
       LM := CreateLookAtMatrix(cameraOffset, NullHmgVector, YHmgVector);

@@ -35,6 +35,7 @@ requires
   xmlrtl;
 
 contains
+  SDL2 in '..\..\Source\GameAPIs\sdl2\SDL2.pas',
   uConst3DS in '..\..\Source\FileFormats\uConst3DS.pas',
   uDDSImage in '..\..\Source\FileFormats\uDDSImage.pas',
   uDXTC in '..\..\Source\FileFormats\uDXTC.pas',
@@ -46,10 +47,17 @@ contains
   uFileOCT in '..\..\Source\FileFormats\uFileOCT.pas',
   uFileTGA in '..\..\Source\FileFormats\uFileTGA.pas',
   uFileX in '..\..\Source\FileFormats\uFileX.pas',
+  uHDRImage in '..\..\Source\FileFormats\uHDRImage.pas',
+  uLWObjects in '..\..\Source\FileFormats\uLWObjects.pas',
+  uQ3BSP in '..\..\Source\FileFormats\uQ3BSP.pas',
+  uQ3MD3 in '..\..\Source\FileFormats\uQ3MD3.pas',
+  uTypes3DS in '..\..\Source\FileFormats\uTypes3DS.pas',
+  uUtils3DS in '..\..\Source\FileFormats\uUtils3DS.pas',
+  uVRMLParser in '..\..\Source\FileFormats\uVRMLParser.pas',
   VXS.AVIRecorder in '..\..\Source\SoundVideoAPIs\VXS.AVIRecorder.pas',
   VXS.AnimatedSprite in '..\..\Source\VXS.AnimatedSprite.pas',
   VXS.AnimationUtils in '..\..\Source\VXS.AnimationUtils.pas',
-  VXS.ApplicationFileIO in '..\..\Source\VXS.ApplicationFileIO.pas',
+  VXS.ApplicationFileIO in '..\..\Source\Basis\VXS.ApplicationFileIO.pas',
   VXS.ArchiveManager in '..\..\Source\VXS.ArchiveManager.pas',
   VXS.AsmShader in '..\..\Source\Shaders\VXS.AsmShader.pas',
   VXS.AsyncHDS in '..\..\Source\VXS.AsyncHDS.pas',
@@ -178,6 +186,7 @@ contains
   VXS.ObjectManager in '..\..\Source\VXS.ObjectManager.pas',
   VXS.Objects in '..\..\Source\Basis\VXS.Objects.pas',
   VXS.Octree in '..\..\Source\Basis\VXS.Octree.pas',
+  VXS.OpenGL1x in '..\..\Source\Basis\VXS.OpenGL1x.pas',
   VXS.OpenGLAdapter in '..\..\Source\Basis\VXS.OpenGLAdapter.pas',
   VXS.OpenGLFMX in '..\..\Source\Basis\VXS.OpenGLFMX.pas',
   VXS.OutlineShader in '..\..\Source\VXS.OutlineShader.pas',
@@ -257,20 +266,14 @@ contains
   VXS.VerletTypes in '..\..\Source\Basis\VXS.VerletTypes.pas',
   VXS.VfsPAK in '..\..\Source\FileFormats\VXS.VfsPAK.pas',
   VXS.Vfw in '..\..\Source\SoundVideoAPIs\VXS.Vfw.pas',
+  VXS.ViewerOpenGL in '..\..\Source\VXS.ViewerOpenGL.pas',
   VXS.WaterPlane in '..\..\Source\VXS.WaterPlane.pas',
   VXS.Windows in '..\..\Source\VXS.Windows.pas',
   VXS.WindowsFont in '..\..\Source\VXS.WindowsFont.pas',
   VXS.XCollection in '..\..\Source\Basis\VXS.XCollection.pas',
-  VXS.zBuffer in '..\..\Source\VXS.zBuffer.pas',
-  uHDRImage in '..\..\Source\FileFormats\uHDRImage.pas',
-  uLWObjects in '..\..\Source\FileFormats\uLWObjects.pas',
-  uQ3BSP in '..\..\Source\FileFormats\uQ3BSP.pas',
-  uQ3MD3 in '..\..\Source\FileFormats\uQ3MD3.pas',
-  uTypes3DS in '..\..\Source\FileFormats\uTypes3DS.pas',
-  uUtils3DS in '..\..\Source\FileFormats\uUtils3DS.pas',
-  uVRMLParser in '..\..\Source\FileFormats\uVRMLParser.pas',
   VXS.Vulkan in '..\..\Source\Basis\VXS.Vulkan.pas',
-  VXS.XOpenGL in '..\..\Source\Basis\VXS.XOpenGL.pas';
+  VXS.XOpenGL in '..\..\Source\Basis\VXS.XOpenGL.pas',
+  VXS.zBuffer in '..\..\Source\VXS.zBuffer.pas';
 
 end.
 

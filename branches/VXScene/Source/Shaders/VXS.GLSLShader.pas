@@ -2,7 +2,7 @@
 // VXScene Component Library, based on GLScene http://glscene.sourceforge.net 
 //
 {
-   TVXGLSLShader is a wrapper for GLS shaders. 
+   TVXGLSLShader is a wrapper for GLS shaders.
  }
 unit VXS.GLSLShader;
 
@@ -15,8 +15,8 @@ uses
   Winapi.OpenGLext,
   System.Classes,
   System.SysUtils,
-  
-  VXS.OpenGLAdapter,
+
+  VXS.OpenGL1x,
   VXS.VectorGeometry,
   VXS.VectorTypes,
   VXS.Texture,
@@ -29,7 +29,7 @@ uses
 type
   TVXGLSLShaderParameter = class;
   TVXCustomGLSLShader = class;
-  EGLSLShaderException = class(EGLCustomShaderException);
+  EGLSLShaderException = class(EVXCustomShaderException);
 
   TVXGLSLShaderEvent = procedure(Shader: TVXCustomGLSLShader) of object;
   TVXGLSLShaderUnApplyEvent = procedure(Shader: TVXCustomGLSLShader;
@@ -491,17 +491,17 @@ end;
 
 procedure TVXGLSLShaderParameter.SetAsMatrix2f(const Value: TMatrix2f);
 begin
-  glUniformMatrix2fv(FParameterID, 1, 0, @Value);
+  glUniformMatrix2fv(FParameterID, 1, True, @Value);
 end;
 
 procedure TVXGLSLShaderParameter.SetAsMatrix3f(const Value: TMatrix3f);
 begin
-  glUniformMatrix3fv(FParameterID, 1, 0, @Value);
+  glUniformMatrix3fv(FParameterID, 1, True, @Value);
 end;
 
 procedure TVXGLSLShaderParameter.SetAsMatrix4f(const Value: TMatrix4f);
 begin
-  glUniformMatrix4fv(FParameterID, 1, 0, @Value);
+  glUniformMatrix4fv(FParameterID, 1, True, @Value);
 end;
 
 procedure TVXGLSLShaderParameter.SetAsVector1f(const Value: Single);

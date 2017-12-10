@@ -53,7 +53,7 @@ type
   TVXEParticleMask = class;
   TVXEParticleMasks = class;
 
-  TVXEParticleMask = class(TCollectionItem, IGLMaterialLibrarySupported)
+  TVXEParticleMask = class(TCollectionItem, IVXMaterialLibrarySupported)
   private
     
     FName: string;

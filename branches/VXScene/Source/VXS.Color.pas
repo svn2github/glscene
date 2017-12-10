@@ -12,6 +12,7 @@ interface
 
 uses
   Winapi.OpenGL,
+  Winapi.OpenGLext,
   System.SysUtils,
   System.Classes,
   System.Types,
@@ -19,6 +20,7 @@ uses
   FMX.Dialogs,
   FMX.Graphics,
 
+  VXS.OpenGL1x,
   VXS.VectorTypes,
   VXS.VectorGeometry,
   VXS.CrossPlatform,
@@ -58,13 +60,13 @@ type
     procedure NotifyChange(Sender: TObject); override;
     procedure Assign(Source: TPersistent); override;
     procedure Initialize(const Color: TColorVector);
-    function AsAddress: PGLfloat;
+    function AsAddress: PGLFloat;
     procedure RandomColor;
     procedure SetColor(red, green, blue: Single; alpha: Single = 1); overload;
     property Color: TColorVector read FColor write SetColorVector;
     property DirectColor: TColorVector read FColor write SetDirectColorVector;
     property AsWinColor: TColor read GetAsWinColor write SetAsWinColor;
-    property hsva: TVector read GetHSVA write SetHSVA;
+    property HSVA: TVector read GetHSVA write SetHSVA;
     property DefaultColor: TColorVector read FColor;
   published
     property Red: Single index 0 read GetColorComponent write SetColorComponent
@@ -106,15 +108,15 @@ function GetGValue(RGB: DWORD): Byte; {$NODEFINE GetGValue}
 function GetBValue(RGB: DWORD): Byte; {$NODEFINE GetBValue}
 procedure InitVXSceneColors;
 { Converts a delphi color into its RGB fragments and correct range. }
-function ConvertWinColor(aColor: TColor; alpha: Single = 1): TColorVector;
+function ConvertWinColor(AColor: TColor; alpha: Single = 1): TColorVector;
 
 // Converts a color vector (containing float values)
-function ConvertColorVector(const aColor: TColorVector): TColor; overload;
+function ConvertColorVector(const AColor: TColorVector): TColor; overload;
 { Converts a color vector (containing float values) and alter intensity.
   intensity is in [0..1] }
-function ConvertColorVector(const aColor: TColorVector; intensity: Single): TColor; overload;
+function ConvertColorVector(const AColor: TColorVector; intensity: Single): TColor; overload;
 // Converts RGB components into a color vector with correct range
-function ConvertRGBColor(const aColor: array of Byte): TColorVector;
+function ConvertRGBColor(const AColor: array of Byte): TColorVector;
 
 // color definitions
 const
@@ -457,18 +459,18 @@ var
   n: Integer;
 begin
   // convert 0..255 range into 0..1 range
-  n := High(aColor);
-  Result.X := aColor[0] * (1 / 255);
+  n := High(AColor);
+  Result.X := AColor[0] * (1 / 255);
   if n > 0 then
-    Result.Y := aColor[1] * (1 / 255)
+    Result.Y := AColor[1] * (1 / 255)
   else
     Result.Y := 0;
   if n > 1 then
-    Result.Z := aColor[2] * (1 / 255)
+    Result.Z := AColor[2] * (1 / 255)
   else
     Result.Z := 0;
   if n > 2 then
-    Result.W := aColor[3] * (1 / 255)
+    Result.W := AColor[3] * (1 / 255)
   else
     Result.W := 1;
 end;
@@ -511,7 +513,7 @@ end;
 
 procedure TVXColor.SetColorVector(const aColor: TColorVector);
 begin
-  SetVector(FColor, aColor);
+  SetVector(FColor, AColor);
   NotifyChange(Self);
 end;
 
@@ -575,13 +577,13 @@ end;
 
 procedure TVXColor.NotifyChange(Sender: TObject);
 var
-  intf: IVKNotifyable;
+  intf: IVXNotifyable;
 begin
   if Assigned(Owner) then
   begin
-    if Supports(Owner, IVKNotifyable, intf) then
+    if Supports(Owner, IVXNotifyable, intf) then
       intf.NotifyChange(Self);
-    // if Owner is TVXBaseSceneObject then
+    //  if Owner is TVXBaseSceneObject then
     // TVXBaseSceneObject(Owner).StructureChanged;
     inherited;
   end;

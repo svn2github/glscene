@@ -100,7 +100,7 @@ type
       nbParticles: Integer = -1);
     { Current Nb of particles. }
     property ParticleCount: Integer read NP;
-    procedure DoProgress(const progressTime: TProgressTimes); override;
+    procedure DoProgress(const progressTime: TVXProgressTimes); override;
   published
     { Adjusts the acceleration direction (abs coordinates). }
     property FireDir: TVXCoordinates read FFireDir write SetFireDir;
@@ -353,7 +353,7 @@ begin
   inherited;
 end;
 
-procedure TVXFireFXManager.DoProgress(const progressTime: TProgressTimes);
+procedure TVXFireFXManager.DoProgress(const progressTime: TVXProgressTimes);
 var
   i: Integer;
 begin
@@ -658,7 +658,7 @@ begin
   rci.VXStates.Disable(stAlphaTest);
   rci.VXStates.Enable(stDepthTest);
   rci.VXStates.DepthFunc := cfLEqual;
-  rci.VXStates.DepthWriteMask := not GLboolean(Manager.NoZWrite);
+  rci.VXStates.DepthWriteMask := not Manager.NoZWrite;
 
   n := Manager.NP;
 

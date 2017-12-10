@@ -55,7 +55,7 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure BuildList(var rci: TVXRenderContextInfo); override;
-    procedure DoProgress(const progressTime: TProgressTimes); override;
+    procedure DoProgress(const progressTime: TVXProgressTimes); override;
   published
     // MaxRadius of the flare.
     property Size: integer read FSize write SetSize default 50;
@@ -301,7 +301,7 @@ begin
     Self.RenderChildren(0, Count - 1, rci);
 end;
 
-procedure TVXTextureLensFlare.DoProgress(const progressTime: TProgressTimes);
+procedure TVXTextureLensFlare.DoProgress(const progressTime: TVXProgressTimes);
 begin
   FDeltaTime := progressTime.deltaTime;
   inherited;

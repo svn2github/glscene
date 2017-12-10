@@ -3,8 +3,8 @@
 //
 {
    A shader that applies cel shading through a vertex program
-   and shade definition texture. 
-    
+   and shade definition texture.
+
 }
 unit VXS.CelShader;
 
@@ -17,7 +17,8 @@ uses
   Winapi.OpenGLext,
   System.Classes,
   System.SysUtils,
-  
+
+  VXS.OpenGL1x,
   VXS.Texture,
   VXS.Context,
   VXS.Graphics,
@@ -40,14 +41,10 @@ type
   TVXCelShaderOption = (csoOutlines, csoTextured, csoNoBuildShadeTexture);
   TVXCelShaderOptions = set of TVXCelShaderOption;
 
-  // TVXCelShaderGetIntensity
-  //
   // An event for user defined cel intensity.
   TVXCelShaderGetIntensity = procedure(Sender: TObject; var intensity: Byte) of
     object;
 
-  // TVXCelShader
-  //
   { A generic cel shader.  }
   TVXCelShader = class(TVXShader)
   private

@@ -24,7 +24,7 @@ uses
   FMX.Types,
   FMX.Dialogs,
 
-  VXS.OpenGLAdapter,
+  VXS.OpenGL1x,
   VXS.Strings,
   VXS.Context,
   VXS.VectorGeometry,
@@ -204,15 +204,15 @@ type
     procedure SetUp(AVector: TVXCoordinates);
     function GetMatrix: PMatrix; inline;
     procedure SetPosition(APosition: TVXCoordinates);
-    procedure SetPitchAngle(aValue: Single);
-    procedure SetRollAngle(aValue: Single);
-    procedure SetTurnAngle(aValue: Single);
+    procedure SetPitchAngle(AValue: Single);
+    procedure SetRollAngle(AValue: Single);
+    procedure SetTurnAngle(AValue: Single);
     procedure SetRotation(aRotation: TVXCoordinates);
     function GetPitchAngle: Single; inline;
     function GetTurnAngle: Single; inline;
     function GetRollAngle: Single; inline;
-    procedure SetShowAxes(aValue: Boolean);
-    procedure SetScaling(aValue: TVXCoordinates);
+    procedure SetShowAxes(AValue: Boolean);
+    procedure SetScaling(AValue: TVXCoordinates);
     procedure SetObjectsSorting(const val: TVXObjectsSorting);
     procedure SetVisibilityCulling(const val: TVXVisibilityCulling);
     procedure SetBehaviours(const val: TVXBehaviours);
@@ -465,7 +465,7 @@ type
     procedure MoveChildDown(anIndex: Integer);
     procedure MoveChildFirst(anIndex: Integer);
     procedure MoveChildLast(anIndex: Integer);
-    procedure DoProgress(const progressTime: TProgressTimes); override;
+    procedure DoProgress(const progressTime: TVXProgressTimes); override;
     procedure MoveTo(newParent: TVXBaseSceneObject); virtual;
     procedure MoveUp;
     procedure MoveDown;
@@ -575,7 +575,7 @@ type
   public
     constructor Create(AOwner: TVXXCollection); override;
     destructor Destroy; override;
-    procedure DoProgress(const progressTime: TProgressTimes); virtual;
+    procedure DoProgress(const progressTime: TVXProgressTimes); virtual;
   end;
 
   { Ancestor for non-rendering behaviours.
@@ -600,7 +600,7 @@ type
     class function ItemsClass: TVXXCollectionItemClass; override;
     property Behaviour[index: Integer]: TVXBehaviour read GetBehaviour; default;
     function CanAdd(aClass: TVXXCollectionItemClass): Boolean; override;
-    procedure DoProgress(const progressTimes: TProgressTimes); inline;
+    procedure DoProgress(const progressTimes: TVXProgressTimes); inline;
   end;
 
   { A rendering effect that can be applied to SceneObjects.
@@ -655,7 +655,7 @@ type
     class function ItemsClass: TVXXCollectionItemClass; override;
     property ObjectEffect[index: Integer]: TVXObjectEffect read GetEffect; default;
     function CanAdd(aClass: TVXXCollectionItemClass): Boolean; override;
-    procedure DoProgress(const progressTime: TProgressTimes);
+    procedure DoProgress(const progressTime: TVXProgressTimes);
     procedure RenderPreEffects(var rci: TVXRenderContextInfo); inline;
     { Also take care of registering after effects with the VXSceneViewer. }
     procedure RenderPostEffects(var rci: TVXRenderContextInfo); inline;
@@ -1314,7 +1314,7 @@ type
     function StoreFog: Boolean;
     procedure SetAccumBufferBits(const val: Integer);
     procedure PrepareRenderingMatrices(const AViewport: TRectangle; resolution: Integer; pickingRect: PGLRect = nil);
-    procedure DoBaseRender(const AViewport: TRectangle; resolution: Integer; drawState: TDrawState;
+    procedure DoBaseRender(const AViewport: TRectangle; resolution: Integer; drawState: TVXDrawState;
       baseObject: TVXBaseSceneObject);
     procedure SetupRenderingContext(Context: TVXContext);
     procedure SetupRCOptions(Context: TVXContext);
@@ -1369,7 +1369,7 @@ type
       refreshed, use Invalidate instead. }
     procedure Render(baseObject: TVXBaseSceneObject); overload;
     procedure Render; overload;
-    procedure RenderScene(aScene: TVXScene; const viewPortSizeX, viewPortSizeY: Integer; drawState: TDrawState;
+    procedure RenderScene(aScene: TVXScene; const viewPortSizeX, viewPortSizeY: Integer; drawState: TVXDrawState;
       baseObject: TVXBaseSceneObject);
     { Render the scene to a bitmap at given DPI.
       DPI = "dots per inch".
@@ -1745,7 +1745,7 @@ begin
     Enable(stLineStipple);
     LineStippleFactor := 1;
     LineStipplePattern := pattern;
-    DepthWriteMask := 1;
+    DepthWriteMask := False;
     DepthFunc := cfLEqual;
     if rci.bufferDepthTest then
       Enable(stDepthTest);
@@ -3378,7 +3378,7 @@ begin
   end;
 end;
 
-procedure TVXBaseSceneObject.DoProgress(const progressTime: TProgressTimes);
+procedure TVXBaseSceneObject.DoProgress(const progressTime: TVXProgressTimes);
 var
   i: Integer;
 begin
@@ -4020,7 +4020,7 @@ begin
   Result := TVXBaseSceneObject(Owner.Owner);
 end;
 
-procedure TVXBaseBehaviour.DoProgress(const progressTime: TProgressTimes);
+procedure TVXBaseBehaviour.DoProgress(const progressTime: TVXProgressTimes);
 begin
   // does nothing
 end;
@@ -4066,7 +4066,7 @@ begin
   Result := (not aClass.InheritsFrom(TVXObjectEffect)) and (inherited CanAdd(aClass));
 end;
 
-procedure TVXBehaviours.DoProgress(const progressTimes: TProgressTimes);
+procedure TVXBehaviours.DoProgress(const progressTimes: TVXProgressTimes);
 var
   i: Integer;
 begin
@@ -4144,7 +4144,7 @@ begin
   Result := (aClass.InheritsFrom(TVXObjectEffect)) and (inherited CanAdd(aClass));
 end;
 
-procedure TVXObjectEffects.DoProgress(const progressTime: TProgressTimes);
+procedure TVXObjectEffects.DoProgress(const progressTime: TVXProgressTimes);
 var
   i: Integer;
 begin
@@ -5685,7 +5685,7 @@ end;
 
 procedure TVXScene.Progress(const deltaTime, newTime: Double);
 var
-  pt: TProgressTimes;
+  pt: TVXProgressTimes;
 begin
   pt.deltaTime := deltaTime;
   pt.newTime := newTime;
@@ -6954,7 +6954,7 @@ begin
   else
   begin
     bufferBits := GL_DEPTH_BUFFER_BIT;
-    CurrentVXContext.VXStates.DepthWriteMask := Byte(True);
+    CurrentVXContext.VXStates.DepthWriteMask := True;
   end;
   if ContextOptions * [roNoColorBuffer, roNoColorBufferClear] = [] then
   begin
@@ -7136,7 +7136,7 @@ begin
   end;
 end;
 
-procedure TVXSceneBuffer.DoBaseRender(const AViewport: TRectangle; resolution: Integer; drawState: TDrawState;
+procedure TVXSceneBuffer.DoBaseRender(const AViewport: TRectangle; resolution: Integer; drawState: TVXDrawState;
   baseObject: TVXBaseSceneObject);
 begin
   with RenderingContext.VXStates do
@@ -7234,7 +7234,7 @@ begin
         QueryPerformanceCounter(FFirstPerfCounter);
 
       FRenderDPI := 96; // default value for screen
-      ClearOpenGLError;
+      ClearGLError;
       SetupRenderingContext(FRenderingContext);
       // clear the buffers
       FRenderingContext.VXStates.ColorClearValue := ConvertWinColor(FBackgroundColor, FBackgroundAlpha);
@@ -7264,7 +7264,7 @@ begin
   end;
 end;
 
-procedure TVXSceneBuffer.RenderScene(aScene: TVXScene; const viewPortSizeX, viewPortSizeY: Integer; drawState: TDrawState;
+procedure TVXSceneBuffer.RenderScene(aScene: TVXScene; const viewPortSizeX, viewPortSizeY: Integer; drawState: TVXDrawState;
   baseObject: TVXBaseSceneObject);
 
 var
@@ -7631,7 +7631,7 @@ begin
       else
         glCopyTexSubImage2D(target, 0, xDest, yDest, xSrc, ySrc, width, height);
 
-      ClearOpenGLError;
+      ClearGLError;
     finally
       Buffer.RenderingContext.Deactivate;
     end;

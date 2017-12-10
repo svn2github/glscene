@@ -37,11 +37,11 @@ Type
 
   //****************************************************************************
 
-  //Base class for archivers
+  //Base classes for archivers
 
   { TVXBaseArchive }
 
-  TVXBaseArchive= class(TVXDataFile)
+  TVXBaseArchive = class(TVXDataFile)
     protected
       FFileName: string;
       FContentList: TStrings;
@@ -50,30 +50,21 @@ Type
     public
       constructor Create(AOwner: TPersistent); override;
       destructor Destroy; override;
-
       property ContentList: TStrings read FContentList;
-
       property CompressionLevel: TCompressionLevel
                read FCompressionLevel
                write SetCompressionLevel default clNone;
-
       procedure Clear; virtual;abstract;
-
       function ContentExists(ContentName: string): boolean;virtual;abstract;
-
       function GetContent(Stream: TStream; index: integer): TStream; overload;virtual;abstract;
       function GetContent(ContentName: string): TStream; overload;virtual;abstract;
       function GetContent(index: integer): TStream; overload;virtual;abstract;
-
       function GetContentSize(index: integer): integer; overload;virtual;abstract;
       function GetContentSize(ContentName: string): integer; overload;virtual;abstract;
-
       procedure AddFromStream(ContentName, Path: string; FS: TStream);virtual;abstract;
       procedure AddFromFile(FileName, Path: string);virtual;abstract;
-
       procedure RemoveContent(index: integer); overload;virtual;abstract;
       procedure RemoveContent(ContentName: string); overload;virtual;abstract;
-
       procedure Extract(index: integer; NewName: string); overload; virtual;abstract;
       procedure Extract(ContentName, NewName: string); overload; virtual;abstract;
   end;
@@ -85,9 +76,7 @@ Type
   //Классы регистрации архивов, для того что бы по расшырениям архива можно было
   //использовать соответсвующий архиватор. Например: GLFilePak,GLFileZLib
 
-  {TArchiveFileFormat}
   {Запись для зарегестрированного класса}
-
   TArchiveFileFormat = class
   public
     BaseArchiveClass: TVXBaseArchiveClass;
@@ -96,14 +85,10 @@ Type
     DescResID: Integer;
   end;
 
-  {TVXArchiveFileFormatsList}
-  {Список зарегестрированных классов}
-
+  {List of registered classes}
   TVXArchiveFileFormatsList = class(TPersistentObjectList)
   public
-    
     destructor Destroy; override;
-
     procedure Add(const Ext, Desc: string; DescID: Integer; AClass:
       TVXBaseArchiveClass);
     function FindExt(ext: string): TVXBaseArchiveClass;
@@ -113,14 +98,10 @@ Type
 
   //*****************************************************************************
 
-  //Для одновременной работы с несколькими архивами ввел коллекции
-
-  { TLibArchive }
-  {Итем для работы с одним архивом}
-
+  (* To work with several archives simultaniously collections implemented
+     Item to work with one archive *)
   TLibArchive = class(TCollectionItem)
   private
-    
       vArchive: TVXBaseArchive;
       ArcClass: TVXBaseArchiveClass;
       FFileName:  string;
@@ -130,64 +111,44 @@ Type
       function GetContentList: TStrings;
       procedure SetName(const val: string);
   protected
-    
       function GetDisplayName: string; override;
   public
-    
     constructor Create(ACollection: TCollection); override;
     destructor Destroy; override;
-
     property CompressionLevel: TCompressionLevel
                read GetCompressionLevel
                write SetCompressionLevel default clNone;
-
     procedure CreateArchive(FileName: string;
               OverwriteExistingFile: boolean = False);
-
     property ContentList: TStrings read GetContentList;
-
     procedure LoadFromFile(aFileName: string); overload;
     procedure LoadFromFile(aFileName, aAchiverType: string); overload;
-
     procedure Clear;
-
     function ContentExists(aContentName: string): boolean;
     property FileName: string read FFileName;
-
     function GetContent(aindex: integer): TStream; overload;
     function GetContent(aContentName: string): TStream; overload;
-
     function GetContentSize(aindex: integer): integer; overload;
     function GetContentSize(aContentName: string): integer; overload;
-
     procedure AddFromStream(aContentName, aPath: string; aF: TStream); overload;
     procedure AddFromStream(aContentName: string; aF: TStream); overload;
-
     procedure AddFromFile(aFileName, aPath: string); overload;
     procedure AddFromFile(aFileName: string); overload;
-
     procedure RemoveContent(aindex: integer); overload;
     procedure RemoveContent(aContentName: string); overload;
-
     procedure Extract(aindex: integer; aNewName: string); overload;
     procedure Extract(aContentName, aNewName: string); overload;
   published
     property Name: string read FName write SetName;
   end;
 
-  { TLibArchives }
-
   TLibArchives = class(TOwnedCollection)
   protected
-    
     procedure SetItems(index: Integer; const val: TLibArchive);
     function GetItems(index: Integer): TLibArchive;
   public
-    
     constructor Create(AOwner: TComponent);
-
     function Owner: TPersistent;
-
     function IndexOf(const Item: TLibArchive)                  : Integer;
     function Add: TLibArchive;
     function FindItemID(ID: Integer)                           : TLibArchive;
@@ -203,9 +164,6 @@ Type
   end;
 
   //*****************************************************************************
-  //Компонента FMX для работы с архивами.
-
-  { TVXSArchiveManager }
 
   TVXSArchiveManager = class(TComponent)
     Private
@@ -241,19 +199,13 @@ Type
   //Внимание!!! Работает только для одного Менеджера Архивов
   function GetArchiveManager: TVXSArchiveManager;
 
-  // VXS.ApplicationFileIO
   //Эти функции служат для автоматизации загрузки
   //Пользователь вводит LoadFromFile а через эти функции получает результат.
-
   function ArcCreateFileStream(const fileName: string; mode: word): TStream;
   function ArcFileStreamExists(const fileName: string): boolean;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 var
@@ -321,6 +273,7 @@ begin
 end;
 
 //******************************************************************************
+
 { TLibArchive }
 
 constructor TLibArchive.Create(ACollection: TCollection);
@@ -791,7 +744,9 @@ begin
   FArchives.Delete(FArchives.IndexOf(aArchive));
 end;
 
+//--------------------------------------------------------
 initialization
+//--------------------------------------------------------
 
   RegisterClasses([TVXSArchiveManager, TLibArchives]);
 

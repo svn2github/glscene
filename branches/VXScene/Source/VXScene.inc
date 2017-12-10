@@ -34,7 +34,6 @@
 // Avtivate using depricated OpenGL code
 {$DEFINE USE_DEPRECATED}
 
-
 // Activate Multithread support
 {.$DEFINE USE_MULTITHREAD}
 

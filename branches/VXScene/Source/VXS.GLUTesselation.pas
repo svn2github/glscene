@@ -11,20 +11,23 @@ interface
 {$I VXScene.inc}
 
 uses
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
   System.SysUtils,
-  
+
   VXS.VectorFileObjects,
   VXS.VectorLists,
   VXS.VectorGeometry,
-  VXS.OpenGLAdapter,
-  Winapi.OpenGL, Winapi.OpenGLext, 
   VXS.VectorTypes;
 
+{ Tesselates the polygon outlined by the Vertexes.
+  And addeds them to the first facegroup of the Mesh. }
+procedure DoTesselate(Vertexes: TAffineVectorList;
+  Mesh: TVXBaseMesh; normal: PAffineVector = nil; invertNormals: Boolean = False);
 
-{ Tesselates the polygon outlined by the Vertexes. And addeds them to the first facegroup of the Mesh. }
-procedure DoTesselate(Vertexes: TAffineVectorList; Mesh: TVXBaseMesh; normal: PAffineVector = nil; invertNormals: Boolean = False);
-
+//------------------------------------------------
 implementation
+//------------------------------------------------
 
 var
   TessMesh: TVXMeshObject;
@@ -33,9 +36,7 @@ var
   TessVertices: PAffineVectorArray;
 
 procedure DoTessBegin(mode: GLEnum);
-{$IFDEF Win32} stdcall;
-{$ENDIF}{$IFDEF UNIX} cdecl;
-{$ENDIF}
+{$IFDEF MSWIDOWS} stdcall;{$ENDIF}{$IFDEF UNIX} cdecl;{$ENDIF}
 begin
   TessFace := TFGIndexTexCoordList.CreateOwned(TessMesh.FaceGroups);
   case mode of
@@ -46,24 +47,19 @@ begin
 end;
 
 procedure DoTessVertex3fv(v: PAffineVector);
-{$IFDEF Win32} stdcall;
-{$ENDIF}{$IFDEF UNIX} cdecl;
-{$ENDIF}
+{$IFDEF MSWIDOWS} stdcall;{$ENDIF}{$IFDEF UNIX} cdecl;{$ENDIF}
 begin
   TessFace.Add(TessMesh.Vertices.Add(v^), 0, 0);
 end;
 
 procedure DoTessEnd;
-{$IFDEF Win32} stdcall;
-{$ENDIF}{$IFDEF UNIX} cdecl;
-{$ENDIF}
+{$IFDEF MSWIDOWS} stdcall;{$ENDIF}{$IFDEF UNIX} cdecl;{$ENDIF}
 begin
+  //
 end;
 
 procedure DoTessError(errno: GLEnum);
-{$IFDEF Win32} stdcall;
-{$ENDIF}{$IFDEF UNIX} cdecl;
-{$ENDIF}
+{$IFDEF MSWIDOWS} stdcall;{$ENDIF}{$IFDEF UNIX} cdecl;{$ENDIF}
 begin
   Assert(False, IntToStr(errno) + ': ' + string(gluErrorString(errno)));
 end;
@@ -75,9 +71,7 @@ begin
 end;
 
 procedure DoTessCombine(coords: PDoubleVector; vertex_data: Pointer; weight: PGLFloat; var outData: Pointer);
-{$IFDEF Win32} stdcall;
-{$ENDIF}{$IFDEF UNIX} cdecl;
-{$ENDIF}
+{$IFDEF MSWIDOWS} stdcall;{$ENDIF}{$IFDEF UNIX} cdecl;{$ENDIF}
 begin
   outData := AllocNewVertex;
   SetVector(PAffineVector(outData)^, coords[0], coords[1], coords[2]);
@@ -139,13 +133,10 @@ begin
     end;
   end;
   gluTessEndContour(tess);
-
   // End Tesselation of polygon, THIS is where the data is processed! (And all the events triggered!)
   gluTessEndPolygon(tess);
-
   // Destroy the Tessellation GLU object.
   gluDeleteTess(tess);
-
   // deallocate extra buffer used by GLU in complex polygons.
   FreeMem(TessVertices, Vertexes.Count * SizeOf(TAffineVector));
 end;

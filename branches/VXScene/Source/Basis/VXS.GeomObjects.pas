@@ -17,9 +17,9 @@ uses
   Winapi.OpenGLext,
   System.Classes,
   System.Math,
-  
+
   VXS.PersistentClasses,
-  VXS.XOpenGL,
+  VXS.OpenGL1x,
   VXS.Scene,
   VXS.VectorGeometry,
   VXS.Context,
@@ -37,11 +37,11 @@ type
   TVXDisk = class(TVXQuadricObject)
   private
     FStartAngle, FSweepAngle, FOuterRadius, FInnerRadius: GLfloat;
-    FSlices, FLoops: GLint;
+    FSlices, FLoops : TGLInt;
     procedure SetOuterRadius(const aValue: Single);
     procedure SetInnerRadius(const aValue: Single);
-    procedure SetSlices(aValue: GLint);
-    procedure SetLoops(aValue: GLint);
+    procedure SetSlices(aValue: TGLint);
+    procedure SetLoops(aValue: TGLint);
     procedure SetStartAngle(const aValue: Single);
     procedure SetSweepAngle(const aValue: Single);
   public
@@ -130,7 +130,7 @@ type
   TVXCylinder = class(TVXCylinderBase)
   private
     FParts: TVXCylinderParts;
-    FTopRadius: GLfloat;
+    FTopRadius: TGLfloat;
     FAlignment: TVXCylinderAlignment;
   protected
     procedure SetTopRadius(const aValue: Single);
@@ -160,10 +160,10 @@ type
   TVXCapsule = class(TVXSceneObject)
   private
     FParts: TVXCylinderParts;
-    FRadius: GLfloat;
-    FSlices: GLint;
-    FStacks: GLint;
-    FHeight: GLfloat;
+    FRadius: TGLfloat;
+    FSlices: TGLint;
+    FStacks: TGLint;
+    FHeight: TGLfloat;
     FAlignment: TVXCylinderAlignment;
   protected
     procedure SetHeight(const aValue: Single);
@@ -201,9 +201,9 @@ type
   TVXAnnulus = class(TVXCylinderBase)
   private
     FParts: TVXAnnulusParts;
-    FBottomInnerRadius: GLfloat;
-    FTopInnerRadius: GLfloat;
-    FTopRadius: GLfloat;
+    FBottomInnerRadius: TGLfloat;
+    FTopInnerRadius: TGLfloat;
+    FTopRadius: TGLfloat;
   protected
     procedure SetTopRadius(const aValue: Single);
     procedure SetTopInnerRadius(const aValue: Single);
@@ -464,7 +464,7 @@ end;
 
 procedure TVXDisk.BuildList(var rci: TVXRenderContextInfo);
 var
-  quadric: GLUquadricObj;
+  quadric: PGLUquadricObj;
 begin
   quadric := gluNewQuadric();
   SetupQuadricParams(quadric);
@@ -644,9 +644,6 @@ begin
   end;
 end;
 
-// SetStack
-//
-
 procedure TVXCylinderBase.SetStacks(aValue: GLint);
 begin
   if aValue <> FStacks then
@@ -656,9 +653,6 @@ begin
   end;
 end;
 
-// SetLoops
-//
-
 procedure TVXCylinderBase.SetLoops(aValue: GLint);
 begin
   if (aValue >= 1) and (aValue <> FLoops) then
@@ -667,9 +661,6 @@ begin
     StructureChanged;
   end;
 end;
-
-// Assign
-//
 
 procedure TVXCylinderBase.Assign(Source: TPersistent);
 begin
@@ -683,9 +674,6 @@ begin
   end;
   inherited Assign(Source);
 end;
-
-// GenerateSilhouette
-//
 
 function TVXCylinderBase.GenerateSilhouette(const silhouetteParameters
   : TVXSilhouetteParameters): TVXSilhouette;
@@ -769,21 +757,15 @@ end;
 // ------------------ TVXCone ------------------
 // ------------------
 
-// Create
-//
-
 constructor TVXCone.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   FParts := [coSides, coBottom];
 end;
 
-// BuildList
-//
-
 procedure TVXCone.BuildList(var rci: TVXRenderContextInfo);
 var
-  quadric: GLUquadricObj;
+  quadric: PGLUquadricObj;
 begin
   glPushMatrix;
   quadric := gluNewQuadric();
@@ -918,11 +900,11 @@ end;
 
 procedure TVXCylinder.BuildList(var rci: TVXRenderContextInfo);
 var
-  quadric: GLUquadricObj;
+  quadric: PGLUquadricObj;
 begin
   glPushMatrix;
   quadric := gluNewQuadric;
-  SetupQuadricParams(quadric);
+  SetupQuadricParams(Quadric);
   glRotatef(-90, 1, 0, 0);
   case Alignment of
     caTop:
@@ -933,12 +915,12 @@ begin
     glTranslatef(0, 0, -FHeight * 0.5);
   end;
   if cySides in FParts then
-    gluCylinder(quadric, FBottomRadius, FTopRadius, FHeight, FSlices, FStacks);
+    gluCylinder(Quadric, FBottomRadius, FTopRadius, FHeight, FSlices, FStacks);
   if cyTop in FParts then
   begin
     glPushMatrix;
     glTranslatef(0, 0, FHeight);
-    gluDisk(quadric, 0, FTopRadius, FSlices, FLoops);
+    gluDisk(Quadric, 0, FTopRadius, FSlices, FLoops);
     glPopMatrix;
   end;
   if cyBottom in FParts then
@@ -947,7 +929,7 @@ begin
     SetInvertedQuadricOrientation(quadric);
     gluDisk(quadric, 0, FBottomRadius, FSlices, FLoops);
   end;
-  gluDeleteQuadric(quadric);
+  gluDeleteQuadric(Quadric);
   glPopMatrix;
 end;
 
@@ -1563,7 +1545,7 @@ end;
 
 procedure TVXAnnulus.BuildList(var rci: TVXRenderContextInfo);
 var
-  quadric: GLUquadricObj;
+  quadric: PGLUquadricObj;
 begin
   glPushMatrix;
   quadric := gluNewQuadric;
@@ -2286,7 +2268,7 @@ end;
 
 procedure TVXArrowLine.BuildList(var rci: TVXRenderContextInfo);
 var
-  quadric: GLUquadricObj;
+  quadric: PGLUquadricObj;
   cylHeight, cylOffset, headInfluence: Single;
 begin
   case HeadStackingStyle of

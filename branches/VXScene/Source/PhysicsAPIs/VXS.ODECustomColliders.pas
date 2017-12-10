@@ -1,14 +1,14 @@
 //
-// VXScene Component Library, based on GLScene http://glscene.sourceforge.net 
+// VXScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
 {
-   Custom ODE collider implementations. 
+   Custom ODE collider implementations.
 
-   Credits :  
+   Credits :
       Heightfield collider code originally adapted from Mattias Fagerlund's
       DelphiODE terrain collision demo.
       Website: http://www.cambrianlabs.com/Mattias/DelphiODE
-   
+
 }
 unit VXS.ODECustomColliders;
 
@@ -17,10 +17,13 @@ interface
 {$I VXScene.inc}
 
 uses
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
   System.Classes,
   System.SysUtils,
 
   ODEImport,
+  VXS.OpenGL1x,
   VXS.ODEGL,
   VXS.ODEManager,
   VXS.VectorGeometry,
@@ -29,7 +32,6 @@ uses
   VXS.TerrainRenderer,
   VXS.Graph,
   VXS.XCollection,
-  Winapi.OpenGL, Winapi.OpenGLext, 
   VXS.Context,
   VXS.Texture,
   VXS.Color,
@@ -44,70 +46,50 @@ type
     Depth: Single;
   end;
 
-  // TVXODECustomCollider
-  //
   { The custom collider is designed for generic contact handling. There is a
      contact point generator for sphere, box, capped cylinder, cylinder and
-     cone geoms. 
-
+     cone geoms.
      Once the contact points for a collision are generated the abstract Collide
      function is called to generate the depth and the contact position and
      normal. These points are then sorted and the deepest are applied to ODE. }
   TVXODECustomCollider = class(TVXODEBehaviour)
   private
-    
     FGeom: PdxGeom;
-    FContactList,
-      FContactCache: TList;
+    FContactList, FContactCache: TList;
     FTransform: TMatrix;
     FContactResolution: Single;
-
     FRenderContacts: Boolean;
     FContactRenderPoints: TAffineVectorList;
     FPointSize: Single;
     FContactColor: TVXColor;
-
   protected
-    
     procedure Initialize; override;
     procedure Finalize; override;
-
     procedure WriteToFiler(writer: TWriter); override;
     procedure ReadFromFiler(reader: TReader); override;
-
     // Test a position for a collision and fill out the contact information.
     function Collide(aPos: TAffineVector; var Depth: Single;
       var cPos, cNorm: TAffineVector): Boolean; virtual; abstract;
-
     // Clears the contact list so it's ready for another collision.
     procedure ClearContacts;
-
     // Add a contact point to the list for ApplyContacts to processes.
     procedure AddContact(x, y, z: TdReal); overload;
     procedure AddContact(pos: TAffineVector); overload;
-
     // Sort the current contact list and apply the deepest to ODE.
     function ApplyContacts(o1, o2: PdxGeom; flags: Integer;
       contact: PdContactGeom; skip: Integer): Integer;
-
     { Set the transform used that transforms contact points generated with
        AddContact. }
     procedure SetTransform(ATransform: TMatrix);
-
     procedure SetContactResolution(const Value: Single);
     procedure SetRenderContacts(const Value: Boolean);
     procedure SetPointSize(const Value: Single);
     procedure SetContactColor(const Value: TVXColor);
-
   public
-    
     constructor Create(AOwner: TVXXCollection); override;
     destructor Destroy; override;
-
     procedure Render(var rci: TVXRenderContextInfo); override;
-
     property Geom: PdxGeom read FGeom;
-
   published
     { Defines the resolution of the contact points created for the colliding
        Geom. The number of contact points generated change base don the size
@@ -121,61 +103,44 @@ type
     property PointSize: Single read FPointSize write SetPointSize;
     // Contact point rendering color.
     property ContactColor: TVXColor read FContactColor write SetContactColor;
+ end;
 
-  end;
-
-  // TVXODEHeightField
-  //
   { Add this behaviour to a TVXHeightField or TVXTerrainRenderer to enable
-     height based collisions for spheres, boxes, capped cylinders, cylinders
-     and cones. }
+     height based collisions for spheres, boxes, capped cylinders, cylinders and cones. }
   TVXODEHeightField = class(TVXODECustomCollider)
   protected
-    
     procedure WriteToFiler(writer: TWriter); override;
     procedure ReadFromFiler(reader: TReader); override;
-
     function Collide(aPos: TAffineVector; var Depth: Single;
       var cPos, cNorm: TAffineVector): Boolean; override;
-
   public
-    
     constructor Create(AOwner: TVXXCollection); override;
-
     class function FriendlyName: string; override;
     class function FriendlyDescription: string; override;
     class function UniqueItem: Boolean; override;
     class function CanAddTo(collection: TVXXCollection): Boolean; override;
-
   end;
 
 function GetODEHeightField(obj: TVXBaseSceneObject): TVXODEHeightField;
 function GetOrCreateODEHeightField(obj: TVXBaseSceneObject): TVXODEHeightField;
 
+//---------------------------------------------------------
 implementation
+//---------------------------------------------------------
 
 var
   vCustomColliderClass: TdGeomClass;
   vCustomColliderClassNum: Integer;
-
-  // GetODEHeightField
-  //
 
 function GetODEHeightField(obj: TVXBaseSceneObject): TVXODEHeightField;
 begin
   result := TVXODEHeightField(obj.Behaviours.GetByClass(TVXODEHeightField));
 end;
 
-// GetOrCreateODEHeightField
-//
-
 function GetOrCreateODEHeightField(obj: TVXBaseSceneObject): TVXODEHeightField;
 begin
   result := TVXODEHeightField(obj.GetOrCreateBehaviour(TVXODEHeightField));
 end;
-
-// GetColliderFromGeom
-//
 
 function GetColliderFromGeom(aGeom: PdxGeom): TVXODECustomCollider;
 var
@@ -187,9 +152,6 @@ begin
     if temp is TVXODECustomCollider then
       Result := TVXODECustomCollider(temp);
 end;
-
-// ContactSort
-//
 
 function ContactSort(Item1, Item2: Pointer): Integer;
 var
@@ -204,9 +166,6 @@ begin
   else
     result := 1;
 end;
-
-// CollideSphere
-//
 
 function CollideSphere(o1, o2: PdxGeom; flags: Integer;
   contact: PdContactGeom; skip: Integer): Integer; cdecl;
@@ -253,9 +212,6 @@ begin
   Result := Collider.ApplyContacts(o1, o2, flags, contact, skip);
   Collider.SetTransform(IdentityHMGMatrix);
 end;
-
-// CollideBox
-//
 
 function CollideBox(o1, o2: PdxGeom; flags: Integer;
   contact: PdContactGeom; skip: Integer): Integer; cdecl;
@@ -342,9 +298,6 @@ begin
   Collider.SetTransform(IdentityHMGMatrix);
 end;
 
-// CollideCapsule
-//
-
 function CollideCapsule(o1, o2: PdxGeom; flags: Integer;
   contact: PdContactGeom; skip: Integer): Integer; cdecl;
 var
@@ -400,9 +353,6 @@ begin
   Collider.SetTransform(IdentityHMGMatrix);
 end;
 
-// CollideCylinder
-//
-
 function CollideCylinder(o1, o2: PdxGeom; flags: Integer;
   contact: PdContactGeom; skip: Integer): Integer; cdecl;
 var
@@ -457,9 +407,6 @@ begin
   Collider.SetTransform(IdentityHMGMatrix);
 end;
 
-// GetCustomColliderFn
-//
-
 function GetCustomColliderFn(num: Integer): TdColliderFn; cdecl;
 begin
   if num = dSphereClass then
@@ -478,9 +425,6 @@ end;
 // --------------- TVXODECustomCollider --------------
 // ---------------
 
-// Create
-//
-
 constructor TVXODECustomCollider.Create(AOwner: TVXXCollection);
 begin
   inherited;
@@ -496,9 +440,6 @@ begin
   FPointSize := 3;
 end;
 
-// Destroy
-//
-
 destructor TVXODECustomCollider.Destroy;
 var
   i: integer;
@@ -511,9 +452,6 @@ begin
   FContactColor.Free;
   inherited;
 end;
-
-// Initialize
-//
 
 procedure TVXODECustomCollider.Initialize;
 begin
@@ -539,9 +477,6 @@ begin
   inherited;
 end;
 
-// Finalize
-//
-
 procedure TVXODECustomCollider.Finalize;
 begin
   if not Initialized then
@@ -553,9 +488,6 @@ begin
   end;
   inherited;
 end;
-
-// WriteToFiler
-//
 
 procedure TVXODECustomCollider.WriteToFiler(writer: TWriter);
 begin
@@ -569,9 +501,6 @@ begin
     Write(PByte(FContactColor.AsAddress)^, 4);
   end;
 end;
-
-// ReadFromFiler
-//
 
 procedure TVXODECustomCollider.ReadFromFiler(reader: TReader);
 var
@@ -589,24 +518,15 @@ begin
   end;
 end;
 
-// ClearContacts
-//
-
 procedure TVXODECustomCollider.ClearContacts;
 begin
   FContactList.Clear;
 end;
 
-// AddContact (x,y,z)
-//
-
 procedure TVXODECustomCollider.AddContact(x, y, z: TdReal);
 begin
   AddContact(AffineVectorMake(x, y, z));
 end;
-
-// AddContact (pos)
-//
 
 procedure TVXODECustomCollider.AddContact(pos: TAffineVector);
 var
@@ -632,9 +552,6 @@ begin
   if FRenderContacts and Manager.Visible and Manager.VisibleAtRunTime then
     FContactRenderPoints.Add(absPos);
 end;
-
-// ApplyContacts
-//
 
 function TVXODECustomCollider.ApplyContacts(o1, o2: PdxGeom;
   flags: Integer; contact: PdContactGeom; skip: Integer): Integer;
@@ -671,16 +588,10 @@ begin
   end;
 end;
 
-// SetTransform
-//
-
 procedure TVXODECustomCollider.SetTransform(ATransform: TMatrix);
 begin
   FTransform := ATransform;
 end;
-
-// SetContactResolution
-//
 
 procedure TVXODECustomCollider.SetContactResolution(const Value: Single);
 begin
@@ -688,9 +599,6 @@ begin
   if FContactResolution <= 0 then
     FContactResolution := 0.01;
 end;
-
-// Render
-//
 
 procedure TVXODECustomCollider.Render(var rci: TVXRenderContextInfo);
 var
@@ -708,9 +616,6 @@ begin
   FContactRenderPoints.Clear;
 end;
 
-// SetRenderContacts
-//
-
 procedure TVXODECustomCollider.SetRenderContacts(const Value: Boolean);
 begin
   if Value <> FRenderContacts then
@@ -720,16 +625,10 @@ begin
   end;
 end;
 
-// SetContactColor
-//
-
 procedure TVXODECustomCollider.SetContactColor(const Value: TVXColor);
 begin
   FContactColor.Assign(Value);
 end;
-
-// SetPointSize
-//
 
 procedure TVXODECustomCollider.SetPointSize(const Value: Single);
 begin
@@ -743,9 +642,6 @@ end;
 // ---------------
 // --------------- TVXODEHeightField --------------
 // ---------------
-
-// Create
-//
 
 constructor TVXODEHeightField.Create(AOwner: TVXXCollection);
 var
@@ -768,9 +664,6 @@ begin
   inherited Create(AOwner);
 end;
 
-// WriteToFiler
-//
-
 procedure TVXODEHeightField.WriteToFiler(writer: TWriter);
 begin
   inherited;
@@ -779,9 +672,6 @@ begin
     WriteInteger(0); // Archive version
   end;
 end;
-
-// ReadFromFiler
-//
 
 procedure TVXODEHeightField.ReadFromFiler(reader: TReader);
 var
@@ -795,32 +685,20 @@ begin
   end;
 end;
 
-// FriendlyName
-//
-
 class function TVXODEHeightField.FriendlyName: string;
 begin
   Result := 'ODE HeightField Collider';
 end;
-
-// FriendlyDescription
-//
 
 class function TVXODEHeightField.FriendlyDescription: string;
 begin
   Result := 'A custom ODE collider powered by it''s parent TVXTerrainRenderer or TVXHeightField';
 end;
 
-// UniqueItem
-//
-
 class function TVXODEHeightField.UniqueItem: Boolean;
 begin
   Result := True;
 end;
-
-// CanAddTo
-//
 
 class function TVXODEHeightField.CanAddTo(collection: TVXXCollection): Boolean;
 begin
@@ -831,9 +709,6 @@ begin
         or (TVXBehaviours(collection).Owner is TVXTerrainRenderer) then
         Result := True;
 end;
-
-// Collide
-//
 
 function TVXODEHeightField.Collide(aPos: TAffineVector;
   var Depth: Single; var cPos, cNorm: TAffineVector): Boolean;
@@ -925,22 +800,14 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
 
   RegisterXCollectionItemClass(TVXODEHeightField);
 
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
 finalization
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
 
   UnregisterXCollectionItemClass(TVXODEHeightField);
 

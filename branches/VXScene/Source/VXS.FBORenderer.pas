@@ -46,7 +46,7 @@ type
 
   TSetTextureTargetsEvent = procedure(Sender: TObject; var colorTexs: TVXTextureArray) of object;
 
-  TVXFBORenderer = class(TVXBaseSceneObject, IGLMaterialLibrarySupported)
+  TVXFBORenderer = class(TVXBaseSceneObject, IVXMaterialLibrarySupported)
   private
     FFbo: TVXFrameBuffer;
     FDepthRBO: TVXDepthRBO;
@@ -517,7 +517,7 @@ procedure TVXFBORenderer.RenderToFBO(var ARci: TVXRenderContextInfo);
 type
   TVXStoredStates = record
     ColorClearValue: TColorVector;
-    ColorWriteMask: TColorMask;
+    ColorWriteMask: TVXColorMask;
     Tests: TVXStates;
   end;
 
@@ -608,7 +608,7 @@ begin
     else
       ARci.VXStates.SetColorMask([]);
 
-    ARci.VXStates.DepthWriteMask := GLboolean(HasDepth);
+    ARci.VXStates.DepthWriteMask := HasDepth;
 
     if HasStencil then
       ARci.VXStates.Enable(stStencilTest)

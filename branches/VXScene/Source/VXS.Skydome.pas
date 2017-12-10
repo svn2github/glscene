@@ -18,6 +18,7 @@ uses
   System.Math,
   FMX.Graphics,
 
+  VXS.OpenGL1x,
   VXS.Scene,
   VXS.VectorGeometry,
   VXS.Context,
@@ -838,7 +839,7 @@ begin
   rci.VXStates.Disable(stFog);
   rci.VXStates.Disable(stCullFace);
   rci.VXStates.Disable(stBlend); // 2
-  rci.VXStates.DepthWriteMask := 0;
+  rci.VXStates.DepthWriteMask := False;
   rci.VXStates.PolygonMode := pmFill;
 
   f := rci.rcci.farClippingDistance * 0.90;
@@ -991,7 +992,7 @@ begin
     Disable(stCullFace);
     Disable(stBlend);
     Disable(stAlphaTest);
-    DepthWriteMask := 0;
+    DepthWriteMask := False;
     PolygonMode := pmFill;
   end;
 
@@ -1003,7 +1004,7 @@ begin
   Stars.BuildList(rci, (sdoTwinkle in FOptions));
 
   // restore
-  rci.VXStates.DepthWriteMask := GLboolean(True);
+  rci.VXStates.DepthWriteMask := True;
 end;
 
 procedure TVXEarthSkyDome.OnColorChanged(Sender: TObject);

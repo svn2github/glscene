@@ -19,7 +19,7 @@ uses
   System.UITypes,
   FMX.Graphics,
 
-  VXS.XOpenGL,
+  VXS.OpenGL1x,
   VXS.VectorTypes,
   VXS.PersistentClasses,
   VXS.Scene,
@@ -100,7 +100,7 @@ type
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    procedure DoProgress(const progressTime: TProgressTimes); override;
+    procedure DoProgress(const progressTime: TVXProgressTimes); override;
     procedure DoRender(var ARci: TVXRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
@@ -229,7 +229,7 @@ begin
   SetLength(Pixelbuffer, RenderWidth * RenderHeight);
 end;
 
-procedure TVXBlur.DoProgress(const progressTime: TProgressTimes);
+procedure TVXBlur.DoProgress(const progressTime: TVXProgressTimes);
 begin
   inherited;
   if self.Visible and (progressTime.newTime - OldTime > FBlurDeltaTime) then
@@ -450,9 +450,9 @@ begin
   end;
   if ARci.ignoreMaterials then
     Exit;
-///  CheckOpenGLError;
+    CheckOpenGLError;
   Material.Apply(ARci);
-///  CheckOpenGLError;
+  CheckOpenGLError;
   repeat
     if AlphaChannel <> 1 then
       ARci.VXStates.SetMaterialAlphaChannel(GL_FRONT, AlphaChannel);
@@ -475,7 +475,7 @@ begin
     glPushMatrix;
     glLoadIdentity;
     ARci.VXStates.Disable(stDepthTest);
-    ARci.VXStates.DepthWriteMask := GLboolean(False);
+    ARci.VXStates.DepthWriteMask := False;
 
     // calculate offsets in order to keep the quad a square centered in the view
     if ARci.viewPortSize.cx > ARci.viewPortSize.cy then
@@ -788,7 +788,7 @@ begin
     glPushMatrix;
     glLoadIdentity;
     Disable(stDepthTest);
-    DepthWriteMask := 0;
+    DepthWriteMask := False;
 
     glBegin(GL_QUADS);
     glTexCoord2f(0.0, ARci.viewPortSize.cy);
@@ -834,7 +834,7 @@ end;
 
 function TVXMotionBlur.SupportsRequiredExtensions: Boolean;
 begin
-  Result := True; /// GL_ARB_texture_rectangle or GL_EXT_texture_rectangle or GL_NV_texture_rectangle;
+  Result := GL_ARB_texture_rectangle or GL_EXT_texture_rectangle or GL_NV_texture_rectangle;
 end;
 
 // ------------------------------------------------------------------

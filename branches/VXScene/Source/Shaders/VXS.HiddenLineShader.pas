@@ -1,12 +1,12 @@
 //
-// VXScene Component Library, based on GLScene http://glscene.sourceforge.net 
+// VXScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
 {
    A shader that renders hidden (back-faced) lines differently from visible
    (front) lines. Polygon offset is used to displace fragments depths a little
-   so that there is no z-fighting in rendering the same geometry multiple times. 
-                  
-    
+   so that there is no z-fighting in rendering the same geometry multiple times.
+
+
 }
 unit VXS.HiddenLineShader;
 
@@ -15,11 +15,12 @@ interface
 {$I VXScene.inc}
 
 uses
-  Winapi.OpenGL, 
-  Winapi.OpenGLext, 
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
   System.Classes,
-  
-  VXS.Material, 
+
+  VXS.OpenGL1x,
+  VXS.Material,
   VXS.CrossPlatform, 
   VXS.Scene, 
   VXS.Color,
@@ -149,9 +150,6 @@ begin
   FColor.Color := v.Color;
   NotifyChange(Self);
 end;
-
-// SetWidth
-//
 
 procedure TVXLineSettings.SetWidth(const Value: Single);
 begin

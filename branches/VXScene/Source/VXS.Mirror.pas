@@ -24,12 +24,11 @@ uses
   VXS.XCollection,
   VXS.PipelineTransformation,
   VXS.VectorGeometry,
-  VXS.OpenGLAdapter, 
-  VXS.Context, 
-  VXS.Material, 
-  VXS.Color, 
+  VXS.Context,
+  VXS.Material,
+  VXS.Color,
   VXS.RenderContextInfo,
-  VXS.State, 
+  VXS.State,
   VXS.VectorTypes;
 
 
@@ -45,12 +44,12 @@ type
 
   TMirrorShapes = (msRect, msDisk);
 
-  { A simple plane mirror. 
-     This mirror requires a stencil buffer for optimal rendering! 
+  { A simple plane mirror.
+     This mirror requires a stencil buffer for optimal rendering!
      The object is a mix between a plane and a proxy object, in that the plane
      defines the mirror's surface, while the proxy part is used to reference
      the objects that should be mirrored (it is legal to self-mirror, but no
-     self-mirror visuals will be rendered). 
+     self-mirror visuals will be rendered).
      It is strongly recommended to read and understand the explanations in the
      materials/mirror demo before using this component. }
   TVXMirror = class(TVXSceneObject)
@@ -60,7 +59,6 @@ type
     FWidth, FHeight: GLfloat;
     FMirrorOptions: TMirrorOptions;
     FOnBeginRenderingMirrors, FOnEndRenderingMirrors: TNotifyEvent;
-
     FShape: TMirrorShapes; //ORL
     FRadius: GLfloat; //ORL
     FSlices: GLint; //ORL
@@ -97,22 +95,17 @@ type
         moClearZBuffer: mirror area's ZBuffer is cleared so that background
           objects don't interfere with reflected objects (reflected objects
           must be rendered AFTER the mirror in the hierarchy). Works only
-          along with stenciling.
-        
-    }
+          along with stenciling. }
     property MirrorOptions: TMirrorOptions read FMirrorOptions write
       SetMirrorOptions default cDefaultMirrorOptions;
-
     property Height: GLfloat read FHeight write SetHeight;
     property Width: GLfloat read FWidth write SetWidth;
-
     { Fired before the object's mirror images are rendered. }
     property OnBeginRenderingMirrors: TNotifyEvent read FOnBeginRenderingMirrors
       write FOnBeginRenderingMirrors;
     { Fired after the object's mirror images are rendered. }
     property OnEndRenderingMirrors: TNotifyEvent read FOnEndRenderingMirrors
       write FOnEndRenderingMirrors;
-
     property Radius: GLfloat read FRadius write SetRadius; //ORL
     property Slices: GLint read FSlices write SetSlices default 16; //ORL
     property Shape: TMirrorShapes read FShape write SetShape default msRect;
@@ -127,7 +120,7 @@ implementation
 // ------------------ TVXMirror ------------------
 // ------------------
 
- 
+
 constructor TVXMirror.Create(AOwner: Tcomponent);
 begin
   inherited Create(AOwner);
@@ -188,11 +181,11 @@ begin
             SetColorWriting(False);
 
           Enable(stDepthTest);
-          DepthWriteMask := 0;
+          DepthWriteMask := False;
 
           BuildList(ARci);
 
-          DepthWriteMask := GLboolean(True);
+          DepthWriteMask := True;
           if (moUseStencil in MirrorOptions) then
           begin
             SetStencilFunc(cfEqual, 1, 1);
@@ -288,7 +281,6 @@ begin
   end;
 end;
 
-
 procedure TVXMirror.BuildList(var ARci: TVXRenderContextInfo);
 var
   hw, hh: Single;
@@ -364,14 +356,12 @@ begin
   end;
 end;
 
-
 procedure TVXMirror.Notification(AComponent: TComponent; Operation: TOperation);
 begin
   if (Operation = opRemove) and (AComponent = FMirrorObject) then
     MirrorObject := nil;
   inherited;
 end;
-
 
 procedure TVXMirror.SetMirrorObject(const val: TVXBaseSceneObject);
 begin

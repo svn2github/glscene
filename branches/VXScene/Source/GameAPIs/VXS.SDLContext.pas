@@ -18,8 +18,8 @@ uses
   System.Classes,
   System.SysUtils,
 
+  VXS.OpenGL1x,
   VXS.CrossPlatform,
-  VXS.OpenGLAdapter,
   VXS.XOpenGL,
   VXS.Context,
   VXS.SDLWindow,
@@ -139,7 +139,7 @@ end;
 
 procedure TVXSDLViewer.Render(baseObject: TVXBaseSceneObject = nil);
 begin
-  LoadOpenGL;
+  InitOpenGL;
   if Buffer.RenderingContext = nil then
   begin
     Buffer.CreateRC(0, False);

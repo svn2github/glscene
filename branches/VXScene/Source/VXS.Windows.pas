@@ -52,18 +52,15 @@ type
     FRedrawAtOnce: Boolean;
     MoveX, MoveY: GLfloat;
     FRenderStatus: TGUIDrawResult;
-
     FAlphaChannel: Single;
     FRotation: GLfloat;
     FNoZWrite: Boolean;
-
     BlockRendering: Boolean;
     RenderingCount: Integer;
     BlockedCount: Integer;
     GuiDestroying: Boolean;
     FDoChangesOnProgress: Boolean;
     FAutosize: Boolean;
-
     procedure SetGUIRedraw(value: Boolean);
     procedure SetDoChangesOnProgress(const Value: Boolean);
     procedure SetAutosize(const Value: Boolean);
@@ -72,13 +69,10 @@ type
       renderChildren: Boolean);
     procedure RenderFooter(var rci: TVXRenderContextInfo; renderSelf,
       renderChildren: Boolean);
-
     procedure SetGuiLayout(NewGui: TVXGuiLayout); virtual;
     procedure SetGuiLayoutName(NewName: TVXGuiComponentName);
-
     procedure Notification(AComponent: TComponent; Operation: TOperation);
       override;
-
     procedure SetRotation(const val: GLfloat);
     procedure SetAlphaChannel(const val: Single);
     function StoreAlphaChannel: Boolean;
@@ -95,9 +89,7 @@ type
     procedure DoChanges; virtual;
     procedure MoveGUI(XRel, YRel: Single);
     procedure PlaceGUI(XPos, YPos: Single);
-
-    procedure DoProgress(const progressTime: TProgressTimes); override;
-
+    procedure DoProgress(const progressTime: TVXProgressTimes); override;
     procedure DoRender(var rci: TVXRenderContextInfo; renderSelf, renderChildren:
       Boolean); override;
     procedure InternalRender(var rci: TVXRenderContextInfo; renderSelf,
@@ -110,17 +102,15 @@ type
     property GuiLayout: TVXGuiLayout read FGuiLayout write SetGuiLayout;
     property GuiLayoutName: TVXGuiComponentName read FGuiLayoutName write
       SetGuiLayoutName;
-
-    { This the ON-SCREEN rotation of the GuiComponent. 
+    { This the ON-SCREEN rotation of the GuiComponent.
        Rotatation=0 is handled faster. }
     property Rotation: GLfloat read FRotation write SetRotation;
     { If different from 1, this value will replace that of Diffuse.Alpha }
     property AlphaChannel: Single read FAlphaChannel write SetAlphaChannel stored
       StoreAlphaChannel;
-    { If True, GuiComponent will not write to Z-Buffer. 
+    { If True, GuiComponent will not write to Z-Buffer.
        GuiComponent will STILL be maskable by ZBuffer test. }
     property NoZWrite: Boolean read FNoZWrite write SetNoZWrite;
-
     property DoChangesOnProgress: Boolean read FDoChangesOnProgress write
       SetDoChangesOnProgress;
     property Visible;
@@ -160,9 +150,7 @@ type
     procedure SetActiveControl(NewControl: TVXBaseControl);
     procedure SetFocusedControl(NewControl: TVXFocusControl);
     function FindFirstGui: TVXBaseControl;
-    procedure Notification(AComponent: TComponent; Operation: TOperation);
-      override;
-
+    procedure Notification(AComponent: TComponent; Operation: TOperation); override;
     procedure DoMouseEnter;
     procedure DoMouseLeave;
   public
@@ -763,7 +751,7 @@ begin
   glPushMatrix;
   glLoadIdentity;
   rci.VXStates.Disable(stDepthTest);
-  rci.VXStates.DepthWriteMask := 0; //False;
+  rci.VXStates.DepthWriteMask := False;
 end;
 
 procedure TVXBaseComponent.RenderFooter(var rci: TVXRenderContextInfo; renderSelf,
@@ -3890,7 +3878,7 @@ begin
   inherited;
 end;
 
-procedure TVXBaseComponent.DoProgress(const progressTime: TProgressTimes);
+procedure TVXBaseComponent.DoProgress(const progressTime: TVXProgressTimes);
 begin
   inherited;
   if FDoChangesOnProgress then

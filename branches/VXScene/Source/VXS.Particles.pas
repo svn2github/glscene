@@ -77,7 +77,7 @@ type
     procedure BuildList(var ARci: TVXRenderContextInfo); override;
     procedure DoRender(var ARci: TVXRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
-    procedure DoProgress(const progressTime: TProgressTimes); override;
+    procedure DoProgress(const progressTime: TVXProgressTimes); override;
     { Request creation of a new particle.
      Particle will be either created or retrieved from the particlePool. }
     function CreateParticle: TVXBaseSceneObject;
@@ -246,7 +246,7 @@ begin
     FOnAfterRenderParticles(Self, ARci);
 end;
 
-procedure TVXParticles.DoProgress(const progressTime: TProgressTimes);
+procedure TVXParticles.DoProgress(const progressTime: TVXProgressTimes);
 var
   i: Integer;
 begin

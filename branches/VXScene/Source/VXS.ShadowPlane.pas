@@ -19,6 +19,7 @@ uses
   Winapi.OpenGLext,
   System.Classes,
 
+  VXS.OpenGL1x,
   VXS.VectorTypes,
   VXS.PersistentClasses,
   VXS.Scene,
@@ -182,7 +183,7 @@ begin
         if (spoTransparent in ShadowOptions) then
         begin
           SetColorWriting(False);
-          DepthWriteMask := GLboolean(False);
+          DepthWriteMask := False;
           BuildList(ARci);
           SetColorWriting(True);
         end

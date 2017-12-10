@@ -13,8 +13,11 @@ uses
   Winapi.OpenGL,
   Winapi.OpenGLext,
   System.Classes,
-  
-  VXS.VectorTypes, VXS.TextureFormat, VXS.RenderContextInfo;
+
+  VXS.OpenGL1x,
+  VXS.VectorTypes,
+  VXS.TextureFormat,
+  VXS.RenderContextInfo;
 
 type
 
@@ -92,11 +95,10 @@ type
   );
 
 
-  IShaderParameter = interface(IInterface)
+  IVXShaderParameter = interface(IInterface)
     function GetName: string;
     function GetGLSLType: TVXSLDataType;
     function GetGLSLSamplerType: TVXSLSamplerType;
-
     function GetAutoSetMethod: string;
     function GetTextureName: string;
     function GetSamplerName: string;
@@ -105,48 +107,39 @@ type
     procedure SetSamplerName(const AValue: string);
     procedure SetAutoSetMethod(const AValue: string);
     procedure SetTextureSwizzle(const AValue: TSwizzleVector);
-
     function GetFloat: Single;
     function GetVec2: TVector2f;
     function GetVec3: TVector3f;
     function GetVec4: TVector4f;
-
     function GetInt: GLint;
     function GetIVec2: TVector2i;
     function GetIVec3: TVector3i;
     function GetIVec4: TVector4i;
-
     function GetUInt: GLuint;
     function GetUVec2: TVector2ui;
     function GetUVec3: TVector3ui;
     function GetUVec4: TVector4ui;
-
     procedure SetFloat(const Value: GLfloat);
     procedure SetVec2(const Value: TVector2f);
     procedure SetVec3(const Value: TVector3f);
     procedure SetVec4(const Value: TVector4f);
-
     procedure SetInt(const Value: Integer);
     procedure SetIVec2(const Value: TVector2i);
     procedure SetIVec3(const Value: TVector3i);
     procedure SetIVec4(const Value: TVector4i);
-
     procedure SetUInt(const Value: GLuint);
     procedure SetUVec2(const Value: TVector2ui);
     procedure SetUVec3(const Value: TVector3ui);
     procedure SetUVec4(const Value: TVector4ui);
-
     function GetMat2: TMatrix2f;
     function GetMat3: TMatrix3f;
     function GetMat4: TMatrix4f;
     procedure SetMat2(const Value: TMatrix2f);
     procedure SetMat3(const Value: TMatrix3f);
     procedure SetMat4(const Value: TMatrix4f);
-
     procedure SetFloatArray(const Values: PGLFloat; Count: Integer);
     procedure SetIntArray(const Values: PGLInt; Count: Integer);
     procedure SetUIntArray(const Values: PGLUInt; Count: Integer);
-
     property Name: string read GetName;
     property GLSLType: TVXSLDataType read GetGLSLType;
     property GLSLSamplerType: TVXSLSamplerType read GetGLSLSamplerType;
@@ -248,7 +241,7 @@ const
     (GL_POINTS, GL_LINE_STRIP, GL_TRIANGLE_STRIP);
 
 type
-  TUniformAutoSetMethod = procedure(Sender: IShaderParameter; var ARci: TVXRenderContextInfo) of object;
+  TUniformAutoSetMethod = procedure(Sender: IVXShaderParameter; var ARci: TVXRenderContextInfo) of object;
 
 function GLSLTypeEnum(AType: TVXSLDataType): GLEnum;
 function GLSLTypeComponentCount(AType: TVXSLDataType): Integer;
@@ -262,11 +255,7 @@ function GetUniformAutoSetMethod(AMethodName: string): TUniformAutoSetMethod;
 function GetUniformAutoSetMethodName(AMethod: TUniformAutoSetMethod): string;
 
 //---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
 implementation
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 
 const

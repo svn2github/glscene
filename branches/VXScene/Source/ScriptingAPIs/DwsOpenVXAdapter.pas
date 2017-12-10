@@ -4,9 +4,9 @@
 
 {
   DelphiWebScriptII symbol creation for OpenGL procedures
-  and functions. 
+  and functions.
 
-  This unit is still under development. 
+  This unit is still under development.
 }
 unit DwsOpenVXAdapter;
 
@@ -17,9 +17,14 @@ interface
 uses
   Winapi.OpenGL,
   Winapi.OpenGLext,
-  System.Classes, 
+  System.Classes,
   System.Variants,
-  DwsExprs, 
+
+  VXS.OpenGL1x,
+  VXS.Context,
+  VXS.VectorGeometry,
+
+  DwsExprs,
   DwsSymbols, 
   DwsComp;
 
@@ -41,13 +46,10 @@ procedure Register;
 
 //==========================================================
 implementation
-VKS
+//==========================================================
 
 uses
-  DwsFunctions, 
-  VXS.OpenGLAdapter, 
-  VXS.Context, 
-  VXS.VectorGeometry;
+  DwsFunctions;
 
 type
   TglPushAttrib = class(TInternalFunction)

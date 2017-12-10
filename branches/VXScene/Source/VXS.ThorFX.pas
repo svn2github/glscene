@@ -88,7 +88,7 @@ type
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    procedure DoProgress(const progressTime: TProgressTimes); override;
+    procedure DoProgress(const progressTime: TVXProgressTimes); override;
   published
     property Target: TVXCoordinates read FTarget write SetTarget;
     property Cadencer: TVXCadencer read FCadencer write SetCadencer;
@@ -281,7 +281,7 @@ begin
   inherited;
 end;
 
-procedure TVXThorFXManager.DoProgress(const progressTime: TProgressTimes);
+procedure TVXThorFXManager.DoProgress(const progressTime: TVXProgressTimes);
 var
   i: integer;
 

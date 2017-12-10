@@ -29,7 +29,7 @@ uses
   System.Classes,
   System.SysUtils,
 
-  VXS.OpenGLAdapter,
+  VXS.OpenGL1x,
   VXS.XOpenGL,
   VXS.Spline,
   VXS.Context,
@@ -188,7 +188,7 @@ type
     FPageSize: Integer; // number of entries per page
     FArrSize: Integer; // size of one page
     FUsedEntries: Integer; // used entries in actual page
-    FAktArray: VXS.VectorGeometry.PByteArray; // pointer to actual page
+    FAktArray: PByteArray; // pointer to actual page
     procedure CreatePage; // create new page
   public
     constructor Create(APageSize, AEntrySize: Integer);
@@ -531,7 +531,7 @@ end;
 procedure TMultiPolygonBase.RetrieveOutline(List: TPolygonList);
 var
   i, n: Integer;
-  tess: GLUTesselator;
+  tess: PGLUTesselator;
 
   procedure TesselatePath(contour: TVXContour; inverted: Boolean);
 
@@ -543,7 +543,7 @@ var
       vVertexPool.GetNewVector(Pointer(p));
       p^ := v;
       SetVector(dblVector, v);
-      gluTessVertex(tess, @dblVector, p);
+      gluTessVertex(tess, dblVector, p);
     end;
 
   var
@@ -641,7 +641,7 @@ procedure TMultiPolygonBase.RenderTesselatedPolygon(textured: Boolean;
   normal: PAffineVector;
   invertNormals: Boolean);
 var
-  tess: GLUTesselator;
+  tess: PGLUTesselator;
 
   procedure IssueVertex(v: TAffineVector);
   var
@@ -651,7 +651,7 @@ var
     vVertexPool.GetNewVector(Pointer(p));
     p^ := v;
     SetVector(dblVector, v);
-    gluTessVertex(tess, @dblVector, p);
+    gluTessVertex(tess, dblVector, p);
   end;
 
 var

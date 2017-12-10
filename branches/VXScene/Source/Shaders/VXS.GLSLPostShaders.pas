@@ -12,20 +12,23 @@ interface
 
 uses
   System.Classes,
-  
-  VXS.Texture, VXS.Scene, VXS.VectorGeometry, VXS.Context, VXS.Material,
-  VXS.GLSLShader, VXS.CustomShader, VXS.RenderContextInfo, VXS.TextureFormat,
+
+  VXS.Texture,
+  VXS.Scene,
+  VXS.VectorGeometry,
+  VXS.Context,
+  VXS.Material,
+  VXS.GLSLShader,
+  VXS.CustomShader,
+  VXS.RenderContextInfo,
+  VXS.TextureFormat,
   VXS.VectorTypes;
 
-  //TVXCustomGLSLPostBlurShader
-  //
-  { Custom class for GLSLPostBlurShader. 
-   A shader that blurs the entire scene }
+  { Custom class for GLSLPostBlurShader. A shader that blurs the entire scene }
 type
-  TVXCustomGLSLPostBlurShader = class(TVXCustomGLSLShader, IGLPostShader)
+  TVXCustomGLSLPostBlurShader = class(TVXCustomGLSLShader, IVXPostShader)
   private
     FThreshold: Single;
-
     // Implementing IGLPostShader.
     procedure DoUseTempTexture(const TempTexture: TVXTextureHandle;
       TextureTarget: TVXTextureTarget);
@@ -36,7 +39,6 @@ type
     function DoUnApply(var rci: TVXRenderContextInfo): Boolean; override;
   public
     constructor Create(AOwner: TComponent); override;
-
     property Threshold: Single read FThreshold write FThreshold stored StoreThreshold;
   end;
 
@@ -45,33 +47,21 @@ type
     property Threshold;
   end;
 
-
-  //TVXCustomGLSLPostThermalVisionShader
-  //
-  { Custom class for GLSLPostThermalVisionShader. 
-   A Shader that simulate a thermal vision of the entire scene }
-
-type
   { A shader that simulate a Thermal Vision of the entire scene}
-  TVXCustomGLSLPostThermalVisionShader = class(TVXCustomGLSLShader, IGLPostShader)
+  TVXCustomGLSLPostThermalVisionShader = class(TVXCustomGLSLShader, IVXPostShader)
   private
-
     FThreshold : Single;
     Fintensity : Single;
-
     // Implementing IGLPostShader.
     procedure DoUseTempTexture(const TempTexture: TVXTextureHandle;TextureTarget: TVXTextureTarget);
     function GetTextureTarget: TVXTextureTarget;
-
     function StoreThreshold: Boolean;
     function StoreIntensity: Boolean;
-
   protected
     procedure DoApply(var rci: TVXRenderContextInfo; Sender: TObject); override;
     function DoUnApply(var rci: TVXRenderContextInfo): Boolean; override;
   public
     constructor Create(AOwner: TComponent); override;
-
      property Threshold: Single read FThreshold write FThreshold stored StoreThreshold;
      property Intensity: Single read FIntensity write FIntensity stored StoreIntensity;
   end;
@@ -82,30 +72,20 @@ type
     property Intensity;
   end;
 
-
-  //TVXCustomGLSLPostDreamVisionShader
-  //
-  { Custom class for GLSLPostDreamVisionShader. 
-   A shader that simulate a grayscale threshold vision (aka dream) of the entire scene}
-type
-  TVXCustomGLSLPostDreamVisionShader = class(TVXCustomGLSLShader, IGLPostShader)
+  { A shader that simulate a grayscale threshold vision (aka dream) of the entire scene}
+  TVXCustomGLSLPostDreamVisionShader = class(TVXCustomGLSLShader, IVXPostShader)
   private
-
     FThreshold : Single; // In percent 0..100;
-
     // Implementing IGLPostShader.
     procedure DoUseTempTexture(const TempTexture: TVXTextureHandle;TextureTarget: TVXTextureTarget);
     function GetTextureTarget: TVXTextureTarget;
-
-   function StoreThreshold: Boolean;
-
+    function StoreThreshold: Boolean;
   protected
     procedure DoApply(var rci: TVXRenderContextInfo; Sender: TObject); override;
     function DoUnApply(var rci: TVXRenderContextInfo): Boolean; override;
   public
     constructor Create(AOwner: TComponent); override;
-
-     property Threshold: Single read FThreshold write FThreshold stored StoreThreshold;
+    property Threshold: Single read FThreshold write FThreshold stored StoreThreshold;
   end;
 
   TVXSLPostDreamVisionShader = class(TVXCustomGLSLPostDreamVisionShader)
@@ -113,18 +93,11 @@ type
     property Threshold;
   end;
 
-
-  //TVXCustomGLSLPostNightVisionShader
-  //
-  { Custom class for GLSLPostNightVisionShader. 
-   A shader that simulate a Night Vision of the scene throw a mask if enabled,
+  { Custom shader that simulate a Night Vision of the scene throw a mask if enabled,
    or of the entire scene}
-
-type
-  TVXCustomGLSLPostNightVisionShader = class(TVXCustomGLSLShader, IGLPostShader)
+  TVXCustomGLSLPostNightVisionShader = class(TVXCustomGLSLShader, IVXPostShader)
   private
     FMaterialLibrary: TVXAbstractMaterialLibrary;
-
     FLuminanceThreshold: Single;
     FColorAmplification:Single;
     FElapsedTime : Single;
@@ -133,38 +106,27 @@ type
     FMaskTex : TVXTexture;
     FNoiseTexName  : TVXLibMaterialName;
     FMaskTexName        : TVXLibMaterialName;
-
-    // Implementing IGLPostShader.
     procedure DoUseTempTexture(const TempTexture: TVXTextureHandle;TextureTarget: TVXTextureTarget);
     function GetTextureTarget: TVXTextureTarget;
-
     function StoreLuminanceThreshold: Boolean;
     function StoreColorAmplification: Boolean;
-
     procedure SetMaskTexTexture(const Value: TVXTexture);
     procedure SetNoiseTexTexture(const Value: TVXTexture);
-
     function GetNoiseTexName: TVXLibMaterialName;
     procedure SetNoiseTexName(const Value: TVXLibMaterialName);
     function GetMaskTexName: TVXLibMaterialName;
     procedure SetMaskTexName(const Value: TVXLibMaterialName);
-
     function GetMaterialLibrary: TVXAbstractMaterialLibrary;
-
   protected
     procedure DoApply(var rci: TVXRenderContextInfo; Sender: TObject); override;
     function DoUnApply(var rci: TVXRenderContextInfo): Boolean; override;
-
     procedure SetMaterialLibrary(const Value: TVXAbstractMaterialLibrary); virtual;
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
-
   public
     constructor Create(AOwner: TComponent); override;
-
     property LuminanceThreshold: Single read FLuminanceThreshold write FLuminanceThreshold stored StoreLuminanceThreshold;
     property ColorAmplification: Single read FColorAmplification write FColorAmplification stored StoreColorAmplification;
     property ElapsedTime: Single read FElapsedTime write FElapsedTime stored false;
-
     property MaterialLibrary: TVXAbstractMaterialLibrary read getMaterialLibrary write SetMaterialLibrary;
     property NoiseTex: TVXTexture read FNoiseTex write SetNoiseTexTexture;
     property NoiseTexName: TVXLibMaterialName read GetNoiseTexName write SetNoiseTexName;
@@ -184,32 +146,22 @@ type
     property UseMask;
   end;
 
-  //TVXCustomGLSLPostPixelateShader
-  //
-  { Custom class for GLSLPostPixelateShader. 
-   A shader that pixelate of the entire scene}
-type
-  TVXCustomGLSLPostPixelateShader = class(TVXCustomGLSLShader, IGLPostShader)
+  { Custom shader that pixelate of the entire scene}
+  TVXCustomGLSLPostPixelateShader = class(TVXCustomGLSLShader, IVXPostShader)
   private
-
     FPixelWidth  : Single;
     FPixelHeight : Single;
-
-    // Implementing IGLPostShader.
     procedure DoUseTempTexture(const TempTexture: TVXTextureHandle;TextureTarget: TVXTextureTarget);
     function GetTextureTarget: TVXTextureTarget;
-
     function StorePixelWidth: Boolean;
     function StorePixelHeight: Boolean;
-
   protected
     procedure DoApply(var rci: TVXRenderContextInfo; Sender: TObject); override;
     function DoUnApply(var rci: TVXRenderContextInfo): Boolean; override;
   public
     constructor Create(AOwner: TComponent); override;
-
-     property PixelWidth: Single read FPixelWidth write FPixelWidth stored StorePixelWidth;
-     property PixelHeight: Single read FPixelHeight write FPixelHeight stored StorePixelHeight;
+    property PixelWidth: Single read FPixelWidth write FPixelWidth stored StorePixelWidth;
+    property PixelHeight: Single read FPixelHeight write FPixelHeight stored StorePixelHeight;
   end;
 
   TVXSLPostPixelateShader = class(TVXCustomGLSLPostPixelateShader)
@@ -218,30 +170,20 @@ type
     property PixelHeight;
   end;
 
-  //TVXCustomGLSLPostPosterizeShader
-  //
-  { Custom class for GLSLPostPosterizeShader. 
-   A shader that posterize of the entire scene}
-type
-  TVXCustomGLSLPostPosterizeShader = class(TVXCustomGLSLShader, IGLPostShader)
+ { Custom shader that posterize of the entire scene}
+  TVXCustomGLSLPostPosterizeShader = class(TVXCustomGLSLShader, IVXPostShader)
   private
-
     FGamma  : Single;
     FNumColors : Single;
-
-    // Implementing IGLPostShader.
     procedure DoUseTempTexture(const TempTexture: TVXTextureHandle;TextureTarget: TVXTextureTarget);
     function GetTextureTarget: TVXTextureTarget;
-
     function StoreGamma: Boolean;
     function StoreNumColors: Boolean;
-
   protected
     procedure DoApply(var rci: TVXRenderContextInfo; Sender: TObject); override;
     function DoUnApply(var rci: TVXRenderContextInfo): Boolean; override;
   public
     constructor Create(AOwner: TComponent); override;
-
      property Gamma: Single read FGamma write FGamma stored StoreGamma;
      property NumColors: Single read FNumColors write FNumColors stored StoreNumColors;
   end;
@@ -252,32 +194,22 @@ type
     property NumColors;
   end;
 
-  //TVXCustomGLSLPostFrostShader
-  //
-  { Custom class for GLSLPostFrostShader. 
-   A shader that frost of the entire scene}
-type
-  TVXCustomGLSLPostFrostShader = class(TVXCustomGLSLShader, IGLPostShader)
+  { Custom class for shader that frost of the entire scene}
+  TVXCustomGLSLPostFrostShader = class(TVXCustomGLSLShader, IVXPostShader)
   private
-
     FRandScale  : Single;
     FRandFactor : Single;
-
-    // Implementing IGLPostShader.
     procedure DoUseTempTexture(const TempTexture: TVXTextureHandle;TextureTarget: TVXTextureTarget);
     function GetTextureTarget: TVXTextureTarget;
-
     function StoreRandScale: Boolean;
     function StoreRandFactor: Boolean;
-
   protected
     procedure DoApply(var rci: TVXRenderContextInfo; Sender: TObject); override;
     function DoUnApply(var rci: TVXRenderContextInfo): Boolean; override;
   public
     constructor Create(AOwner: TComponent); override;
-
-     property RandScale: Single read FRandScale write FRandScale stored StoreRandScale;
-     property RandFactor: Single read FRandFactor write FRandFactor stored StoreRandFactor;
+    property RandScale: Single read FRandScale write FRandScale stored StoreRandScale;
+    property RandFactor: Single read FRandFactor write FRandFactor stored StoreRandFactor;
   end;
 
   TVXSLPostFrostShader = class(TVXCustomGLSLPostFrostShader)
@@ -286,54 +218,38 @@ type
     property RandFactor;
   end;
 
-  //TVXCustomGLSLPostTroubleShader
-  //
-  { Custom class for GLSLPostTroubleShader. 
-   A shader that trouble of the entire scene. v2  
+  { Custom class for GLSLPostTroubleShader.
+   A shader that trouble of the entire scene. v2
    This Shader is experimental it can do smooth the scene or double the scene and it's
    depends of PixelX, PixelY and Freq values if they are less than 1 or greater
    the effects will be very different}
-type
-  TVXCustomGLSLPostTroubleShader = class(TVXCustomGLSLShader, IGLPostShader)
+  TVXCustomGLSLPostTroubleShader = class(TVXCustomGLSLShader, IVXPostShader)
   private
-
     FPixelX  : Single;
     FPixelY : Single;
     FFreq   : Single;
-
     FMaterialLibrary: TVXAbstractMaterialLibrary;
     FNoiseTex : TVXTexture;
     FNoiseTexName  : TVXLibMaterialName;
-
-    // Implementing IGLPostShader.
     procedure DoUseTempTexture(const TempTexture: TVXTextureHandle;TextureTarget: TVXTextureTarget);
     function GetTextureTarget: TVXTextureTarget;
-
     procedure SetNoiseTexTexture(const Value: TVXTexture);
-
     function GetNoiseTexName: TVXLibMaterialName;
     procedure SetNoiseTexName(const Value: TVXLibMaterialName);
-
-
     function GetMaterialLibrary: TVXAbstractMaterialLibrary;
-
     function StorePixelX: Boolean;
     function StorePixelY: Boolean;
     function StoreFreq: Boolean;
-
   protected
     procedure DoApply(var rci: TVXRenderContextInfo; Sender: TObject); override;
     function DoUnApply(var rci: TVXRenderContextInfo): Boolean; override;
-
     procedure SetMaterialLibrary(const Value: TVXAbstractMaterialLibrary); virtual;
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
   public
     constructor Create(AOwner: TComponent); override;
-
      property PixelX: Single read FPixelX write FPixelX stored StorePixelX;
      property PixelY: Single read FPixelY write FPixelY stored StorePixelY;
      property Freq: Single read FFreq write FFreq stored StoreFreq;
-
      property MaterialLibrary: TVXAbstractMaterialLibrary read getMaterialLibrary write SetMaterialLibrary;
      property NoiseTex: TVXTexture read FNoiseTex write SetNoiseTexTexture;
      property NoiseTexName: TVXLibMaterialName read GetNoiseTexName write SetNoiseTexName;
@@ -349,11 +265,7 @@ type
   end;
 
 //----------------------------------------------------------------------
-//----------------------------------------------------------------------
-//----------------------------------------------------------------------
 implementation
-//----------------------------------------------------------------------
-//----------------------------------------------------------------------
 //----------------------------------------------------------------------
 
 { TVXCustomGLSLPostBlurShader }

@@ -19,7 +19,7 @@ uses
 
 type
 
-  TProgressTimes = record
+  TVXProgressTimes = record
     deltaTime, newTime: Double
   end;
 
@@ -28,18 +28,18 @@ type
      time after the progress event is completed. }
   TVXProgressEvent = procedure(Sender: TObject; const deltaTime, newTime: Double) of object;
 
-  IVKNotifyAble = interface(IInterface)
+  IVXNotifyAble = interface(IInterface)
     ['{00079A6C-D46E-4126-86EE-F9E2951B4593}']
     procedure NotifyChange(Sender: TObject);
   end;
 
-  IVKProgessAble = interface(IInterface)
+  IVXProgessAble = interface(IInterface)
     ['{95E44548-B0FE-4607-98D0-CA51169AF8B5}']
-    procedure DoProgress(const progressTime: TProgressTimes);
+    procedure DoProgress(const progressTime: TVXProgressTimes);
   end;
 
   { An abstract class describing the "update" interface.  }
-  TVXUpdateAbleObject = class(TVXInterfacedPersistent, IVKNotifyAble)
+  TVXUpdateAbleObject = class(TVXInterfacedPersistent, IVXNotifyAble)
   private
     FOwner: TPersistent;
     FUpdating: Integer;
@@ -57,13 +57,13 @@ type
   end;
 
   { A base class describing the "cadenceing" interface.  }
-  TVXCadenceAbleComponent = class(TVXComponent, IVKProgessAble)
+  TVXCadenceAbleComponent = class(TVXComponent, IVXProgessAble)
   public
-    procedure DoProgress(const progressTime: TProgressTimes); virtual;
+    procedure DoProgress(const progressTime: TVXProgressTimes); virtual;
   end;
 
   { A base class describing the "update" interface.  }
-  TVXUpdateAbleComponent = class(TVXCadenceAbleComponent, IVKNotifyAble)
+  TVXUpdateAbleComponent = class(TVXCadenceAbleComponent, IVXNotifyAble)
   public
     procedure NotifyChange(Sender: TObject); virtual;
   end;
@@ -82,7 +82,6 @@ type
 implementation
 //==================================================================
 
-{$IFDEF VXS_REGIONS}{$REGION 'TVXUpdateAbleObject'}{$ENDIF}
 //---------------------- TVXUpdateAbleObject -----------------------------------------
 
 constructor TVXUpdateAbleObject.Create(AOwner: TPersistent);
@@ -130,14 +129,12 @@ begin
     NotifyChange(Self);
   end;
 end;
-{$IFDEF VXS_REGIONS}{$ENDREGION 'TVXUpdateAbleObject'}{$ENDIF}
 
-{$IFDEF VXS_REGIONS}{$REGION 'TVXCadenceAbleComponent'}{$ENDIF}
 // ------------------
 // ------------------ TVXCadenceAbleComponent ------------------
 // ------------------
 
-procedure TVXCadenceAbleComponent.DoProgress(const progressTime: TProgressTimes);
+procedure TVXCadenceAbleComponent.DoProgress(const progressTime: TVXProgressTimes);
 begin
   // nothing
 end;
@@ -152,9 +149,7 @@ begin
     if (Owner is TVXUpdateAbleComponent) then
       (Owner as TVXUpdateAbleComponent).NotifyChange(Self);
 end;
-{$IFDEF VXS_REGIONS}{$ENDREGION 'TVXUpdateAbleObject'}{$ENDIF}
 
-{$IFDEF VXS_REGIONS}{$REGION 'TVXNotifyCollection'}{$ENDIF}
 // ------------------
 // ------------------ TVXNotifyCollection ------------------
 // ------------------
@@ -172,7 +167,6 @@ begin
   if Assigned(FOnNotifyChange) then
     FOnNotifyChange(Self);
 end;
-{$IFDEF VXS_REGIONS}{$ENDREGION 'TVXNotifyCollection'}{$ENDIF}
 
 end.
 

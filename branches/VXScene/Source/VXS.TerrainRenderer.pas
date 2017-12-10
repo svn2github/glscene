@@ -417,7 +417,7 @@ var
   Patch, PrevPatch: TVXROAMPatch;
   PatchList, RowList, prevRow, buf: TList;
   PostRenderPatchList, postRenderHeightDataList: TList;
-  rcci: TRenderContextClippingInfo;
+  rcci: TVXRenderContextClippingInfo;
   CurrentMaterialName: String;
   MaxTilePosX, MaxTilePosY, MinTilePosX, MinTilePosY: single;
   t_l, t_t, t_r, t_b: single;

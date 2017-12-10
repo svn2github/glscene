@@ -104,7 +104,7 @@ type
   end;
 
   { Animations define how the texture coordinates for each offset are to be determined. }
-  TVXSpriteAnimation = class(TVXXCollectionItem, IGLMaterialLibrarySupported)
+  TVXSpriteAnimation = class(TVXXCollectionItem, IVXMaterialLibrarySupported)
   private
     FCurrentFrame,
     FStartFrame,
@@ -226,7 +226,7 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure BuildList(var rci: TVXRenderContextInfo); override;
-    procedure DoProgress(const progressTime: TProgressTimes); override;
+    procedure DoProgress(const progressTime: TVXProgressTimes); override;
     // Steps the current animation to the next frame
     procedure NextFrame;
   published
@@ -816,7 +816,7 @@ begin
 end;
 {$WARNINGS On}
 
-procedure TVXAnimatedSprite.DoProgress(const progressTime: TProgressTimes);
+procedure TVXAnimatedSprite.DoProgress(const progressTime: TVXProgressTimes);
 var
   i, intr: Integer;
 begin

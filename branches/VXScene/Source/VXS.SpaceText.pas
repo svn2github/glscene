@@ -39,23 +39,15 @@ uses
 
 type
 
-  // TSpaceTextCharRange
-  //
   TVXSpaceTextCharRange = (stcrDefault, stcrAlphaNum, stcrNumbers, stcrWide);
 
-  // TVXTextHorzAdjust
-  //
   // Note: haAligned, haCentrically, haFitIn have not been implemented!
   //
   TVXTextHorzAdjust = (haLeft, haCenter, haRight, haAligned,
     haCentrically, haFitIn);
 
-  // TVXTextVertAdjust
-  //
   TVXTextVertAdjust = (vaTop, vaCenter, vaBottom, vaBaseLine);
 
-  // TVXTextAdjust
-  //
   TVXTextAdjust = class(TPersistent)
   private
     
@@ -64,19 +56,13 @@ type
     FOnChange: TNotifyEvent;
     procedure SetHorz(const Value: TVXTextHorzAdjust);
     procedure SetVert(const Value: TVXTextVertAdjust);
-
   public
-    
     constructor Create;
     procedure Assign(Source: TPersistent); override;
-
     property OnChange: TNotifyEvent read FOnChange write FOnChange;
-
   published
-    
     property Horz: TVXTextHorzAdjust read FHorz write SetHorz default haLeft;
-    property Vert: TVXTextVertAdjust read FVert write SetVert
-      default vaBaseLine;
+    property Vert: TVXTextVertAdjust read FVert write SetVert default vaBaseLine;
   end;
 
   // holds an entry in the font manager list (used in TVXSpaceText)
@@ -94,12 +80,9 @@ type
     FClients: TList;
   end;
 
-  // TVXSpaceText
-  //
   { Renders a text in 3D. }
   TVXSpaceText = class(TVXSceneObject)
   private
-    
     FFont: TFont;
     FExtrusion: Single;
     FAllowedDeviation: Single;
@@ -121,7 +104,6 @@ type
     procedure SetOblique(const Value: Single);
     procedure SetTextHeight(const Value: Single);
   protected
-    
     FTextFontEntry: PFontEntry;
     FontChanged: Boolean;
     procedure DestroyHandle; override;
@@ -129,31 +111,24 @@ type
     procedure GetFirstAndLastChar(var firstChar, lastChar: Integer);
     procedure DoOnLinesChange(sender: TObject); virtual;
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
     procedure Assign(Source: TPersistent); override;
-
     procedure BuildList(var rci: TVXRenderContextInfo); override;
     procedure DoRender(var ARci: TVXRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
-
     function TextWidth(const str: WideString = ''): Single;
     function TextMaxHeight(const str: WideString = ''): Single;
     function TextMaxUnder(const str: WideString = ''): Single;
-
     { Note: this fuction is valid only after text has been rendered
       the first time. Before that it returns zeros. }
-    procedure TextMetrics(const str: WideString;
-      out width, maxHeight, maxUnder: Single);
+    procedure TextMetrics(const str: WideString; out width, maxHeight, maxUnder: Single);
     procedure NotifyFontChanged;
     procedure NotifyChange(sender: TObject); override;
     procedure DefaultHandler(var Message); override;
     function AxisAlignedDimensionsUnscaled: TVector; override;
     function BarycenterAbsolutePosition: TVector; override;
   published
-    
     { Adjusts the 3D font extrusion. 
       If Extrusion=0, the characters will be flat (2D), values >0 will
       give them a third dimension. }
@@ -162,8 +137,7 @@ type
     property Text: WideString read GetText write SetText stored False;
     property Lines: TStringList read FLines write SetLines;
     { Quality related, see Win32 help for wglUseFontOutlines }
-    property allowedDeviation: Single read FAllowedDeviation
-      write SetAllowedDeviation;
+    property allowedDeviation: Single read FAllowedDeviation write SetAllowedDeviation;
     { Character range to convert. 
       Converting less characters saves time and memory... }
     property CharacterRange: TVXSpaceTextCharRange read FCharacterRange
@@ -174,32 +148,21 @@ type
     property Adjust: TVXTextAdjust read FAdjust write SetAdjust;
   end;
 
-  // TFontManager
-  //
   { Manages a list of fonts for which display lists were created. }
   TFontManager = class(TList)
   private
-    
     FCurrentBase: Integer;
-
   protected
-    
     procedure NotifyClients(Clients: TList);
-    procedure VirtualHandleAlloc(sender: TVXVirtualHandle;
-      var handle: Cardinal);
-    procedure VirtualHandleDestroy(sender: TVXVirtualHandle;
-      var handle: Cardinal);
-
+    procedure VirtualHandleAlloc(sender: TVXVirtualHandle; var handle: Cardinal);
+    procedure VirtualHandleDestroy(sender: TVXVirtualHandle; var handle: Cardinal);
   public
-    
     constructor Create;
     destructor Destroy; override;
-
     function FindFont(AName: string; FStyles: TFontStyles; FExtrusion: Single;
       FAllowedDeviation: Single; FFirstChar, FLastChar: Integer): PFontEntry;
-    function GetFontBase(AName: string; FStyles: TFontStyles;
-      FExtrusion: Single; allowedDeviation: Single;
-      firstChar, lastChar: Integer; client: TObject): PFontEntry;
+    function GetFontBase(AName: string; FStyles: TFontStyles; FExtrusion: Single; 
+	   allowedDeviation: Single; firstChar, lastChar: Integer; client: TObject): PFontEntry;
     procedure Release(entry: PFontEntry; client: TObject);
   end;
 
@@ -209,13 +172,8 @@ procedure ReleaseFontManager;
 var
   vFontManagerMsgID: Cardinal;
 
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
 implementation
-
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 const
@@ -248,8 +206,6 @@ end;
 // ------------------ TVXTextAdjust ------------------
 // ------------------
 
-// Create
-//
 
 constructor TVXTextAdjust.Create;
 begin
@@ -257,9 +213,6 @@ begin
   FHorz := haLeft;
   FVert := vaBaseLine;
 end;
-
-// Assign
-//
 
 procedure TVXTextAdjust.Assign(Source: TPersistent);
 begin
@@ -274,9 +227,6 @@ begin
     inherited Assign(Source);
 end;
 
-// SetHorz
-//
-
 procedure TVXTextAdjust.SetHorz(const Value: TVXTextHorzAdjust);
 begin
   if FHorz <> Value then
@@ -286,9 +236,6 @@ begin
       FOnChange(Self);
   end;
 end;
-
-// SetVert
-//
 
 procedure TVXTextAdjust.SetVert(const Value: TVXTextVertAdjust);
 begin
@@ -304,9 +251,6 @@ end;
 // ------------------ TVXSpaceText ------------------
 // ------------------
 
-// Create
-//
-
 constructor TVXSpaceText.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
@@ -321,9 +265,6 @@ begin
   FLines.OnChange := DoOnLinesChange;
 end;
 
-// Destroy
-//
-
 destructor TVXSpaceText.Destroy;
 begin
   FAdjust.OnChange := nil;
@@ -334,9 +275,6 @@ begin
   FontManager.Release(FTextFontEntry, Self);
   inherited Destroy;
 end;
-
-// TextMetrics
-//
 
 procedure TVXSpaceText.TextMetrics(const str: WideString;
   out width, maxHeight, maxUnder: Single);
@@ -370,18 +308,12 @@ begin
   end;
 end;
 
-// TextWidth
-//
-
 function TVXSpaceText.TextWidth(const str: WideString = ''): Single;
 var
   mh, mu: Single;
 begin
   TextMetrics(str, Result, mh, mu);
 end;
-
-// TextMaxHeight
-//
 
 function TVXSpaceText.TextMaxHeight(const str: WideString = ''): Single;
 var
@@ -390,17 +322,12 @@ begin
   TextMetrics(str, w, Result, mu);
 end;
 
-// TextMaxUnder
-//
-
 function TVXSpaceText.TextMaxUnder(const str: WideString = ''): Single;
 var
   w, mh: Single;
 begin
   TextMetrics(str, w, mh, Result);
 end;
-
-// Assign
 
 procedure TVXSpaceText.Assign(Source: TPersistent);
 begin
@@ -419,9 +346,6 @@ begin
     StructureChanged;
   end;
 end;
-
-// BuildList
-//
 
 procedure TVXSpaceText.BuildList(var rci: TVXRenderContextInfo);
 var
@@ -451,7 +375,7 @@ begin
       glListBase(glBase);
     end;
 
-    rci.VXStates.PushAttrib([sttPolygon]);
+    glPushAttrib(GL_POLYGON_BIT);
     for i := 0 to FLines.Count - 1 do
     begin
       glPushMatrix;
@@ -514,17 +438,11 @@ begin
   end;
 end;
 
-// DestroyHandle
-//
-
 procedure TVXSpaceText.DestroyHandle;
 begin
   FontChanged := True;
   inherited;
 end;
-
-// GetFirstAndLastChar
-//
 
 procedure TVXSpaceText.GetFirstAndLastChar(var firstChar, lastChar: Integer);
 begin
@@ -551,9 +469,6 @@ begin
       end;
   end;
 end;
-
-// DoRender
-//
 
 procedure TVXSpaceText.DoRender(var ARci: TVXRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);

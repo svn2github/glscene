@@ -86,7 +86,7 @@ type
     class function FriendlyName: string; override;
     class function FriendlyDescription: string; override;
     class function UniqueItem: boolean; override;
-    procedure DoProgress(const progressTime: TProgressTimes); override;
+    procedure DoProgress(const progressTime: TVXProgressTimes); override;
     { Adds time-proportionned acceleration to the speed. }
     procedure ApplyTranslationAcceleration(const deltaTime: double;
       const accel: TVector);
@@ -141,7 +141,7 @@ type
     class function FriendlyName: string; override;
     class function FriendlyDescription: string; override;
     class function UniqueItem: boolean; override;
-    procedure DoProgress(const progressTime: TProgressTimes); override;
+    procedure DoProgress(const progressTime: TVXProgressTimes); override;
   published
     property Acceleration: TVXCoordinates read FAcceleration write FAcceleration;
   end;
@@ -405,7 +405,7 @@ begin
   Result := True;
 end;
 
-procedure TVXBInertia.DoProgress(const progressTime: TProgressTimes);
+procedure TVXBInertia.DoProgress(const progressTime: TVXProgressTimes);
 var
   trnVector: TVector;
   speed, newSpeed: double;
@@ -581,7 +581,7 @@ begin
   Result := False;
 end;
 
-procedure TVXBAcceleration.DoProgress(const progressTime: TProgressTimes);
+procedure TVXBAcceleration.DoProgress(const progressTime: TVXProgressTimes);
 var
   i: integer;
   Inertia: TVXBInertia;

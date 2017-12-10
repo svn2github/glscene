@@ -210,7 +210,7 @@ type
     constructor Create(aOwner: TComponent); override;
     destructor Destroy; override;
     procedure NotifyChange(Sender: TObject); override;
-    procedure DoProgress(const progressTime: TProgressTimes); override;
+    procedure DoProgress(const progressTime: TVXProgressTimes); override;
     // Class of particles created by this manager. }
     class function ParticlesClass: TVXParticleClass; virtual;
     { Creates a new particle controlled by the manager. }
@@ -382,7 +382,7 @@ type
     destructor Destroy; override;
     class function FriendlyName: string; override;
     class function FriendlyDescription: string; override;
-    procedure DoProgress(const progressTime: TProgressTimes); override;
+    procedure DoProgress(const progressTime: TVXProgressTimes); override;
     // Instantaneously creates nb particles
     procedure Burst(time: Double; nb: Integer);
     procedure RingExplosion(time: Double;
@@ -421,7 +421,7 @@ type
   public
     constructor Create(aOwner: TComponent); override;
     destructor Destroy; override;
-    procedure DoProgress(const progressTime: TProgressTimes); override;
+    procedure DoProgress(const progressTime: TVXProgressTimes); override;
   published
       { Oriented acceleration applied to the particles. }
     property Acceleration: TVXCoordinates read FAcceleration write SetAcceleration;
@@ -519,9 +519,9 @@ type
 
   TPFXDirectRenderEvent = procedure(Sender: TObject; aParticle: TVXParticle;
     var rci: TVXRenderContextInfo) of object;
-  TPFXProgressEvent = procedure(Sender: TObject; const progressTime: TProgressTimes;
+  TPFXProgressEvent = procedure(Sender: TObject; const progressTime: TVXProgressTimes;
     var defaultProgress: Boolean) of object;
-  TPFXParticleProgress = procedure(Sender: TObject; const progressTime: TProgressTimes;
+  TPFXParticleProgress = procedure(Sender: TObject; const progressTime: TVXProgressTimes;
     aParticle: TVXParticle; var killParticle: Boolean) of object;
   TPFXGetParticleCountEvent = function(Sender: TObject): Integer of object;
 
@@ -549,7 +549,7 @@ type
     procedure EndParticles(var rci: TVXRenderContextInfo); override;
     procedure FinalizeRendering(var rci: TVXRenderContextInfo); override;
   public
-    procedure DoProgress(const progressTime: TProgressTimes); override;
+    procedure DoProgress(const progressTime: TVXProgressTimes); override;
     function ParticleCount: Integer; override;
   published
     property OnInitializeRendering: TDirectRenderEvent read FOnInitializeRendering write FOnInitializeRendering;
@@ -969,35 +969,23 @@ begin
   FUsers.Free;
 end;
 
-// NotifyChange
-//
-
 procedure TVXParticleFXManager.NotifyChange(Sender: TObject);
 begin
   if Assigned(FRenderer) then
     Renderer.StructureChanged;
 end;
 
-// DoProgress
-//
-
-procedure TVXParticleFXManager.DoProgress(const progressTime: TProgressTimes);
+procedure TVXParticleFXManager.DoProgress(const progressTime: TVXProgressTimes);
 begin
   inherited;
   if FAutoFreeWhenEmpty and (FParticles.ItemCount = 0) then
     Free;
 end;
 
-// ParticlesClass
-//
-
 class function TVXParticleFXManager.ParticlesClass: TVXParticleClass;
 begin
   Result := TVXParticle;
 end;
-
-// CreateParticle
-//
 
 function TVXParticleFXManager.CreateParticle: TVXParticle;
 begin
@@ -1011,9 +999,6 @@ begin
     FOnCreateParticle(Self, Result);
 end;
 
-// CreateParticles
-//
-
 procedure TVXParticleFXManager.CreateParticles(nbParticles: Integer);
 var
   i: Integer;
@@ -1022,9 +1007,6 @@ begin
   for i := 1 to nbParticles do
     CreateParticle;
 end;
-
-// SetRenderer
-//
 
 procedure TVXParticleFXManager.SetRenderer(const val: TVXParticleFXRenderer);
 begin
@@ -1038,24 +1020,15 @@ begin
   end;
 end;
 
-// SetParticles
-//
-
 procedure TVXParticleFXManager.SetParticles(const aParticles: TVXParticleList);
 begin
   FParticles.Assign(aParticles);
 end;
 
-// ParticleCount
-//
-
 function TVXParticleFXManager.ParticleCount: Integer;
 begin
   Result := FParticles.FItemList.Count;
 end;
-
-// ApplyBlendingMode
-//
 
 procedure TVXParticleFXManager.ApplyBlendingMode;
 begin
@@ -1093,9 +1066,6 @@ begin
   end;
 end;
 
-// ApplyBlendingMode
-//
-
 procedure TVXParticleFXManager.UnapplyBlendingMode;
 begin
   if Renderer.BlendingMode <> BlendingMode then
@@ -1132,19 +1102,13 @@ begin
   end;
 end;
 
-// registerUser
-//
-
-procedure TVXParticleFXManager.registerUser(obj: TVXParticleFXEffect);
+procedure TVXParticleFXManager.RegisterUser(obj: TVXParticleFXEffect);
 begin
   if FUsers.IndexOf(obj) = -1 then
     FUsers.Add(obj);
 end;
 
-// unregisterUser
-//
-
-procedure TVXParticleFXManager.unregisterUser(obj: TVXParticleFXEffect);
+procedure TVXParticleFXManager.UnregisterUser(obj: TVXParticleFXEffect);
 begin
   FUsers.Remove(obj);
 end;
@@ -1153,26 +1117,17 @@ end;
 // ------------------ TVXParticleFXEffect ------------------
 // ------------------
 
-// Create
-//
-
 constructor TVXParticleFXEffect.Create(aOwner: TVXXCollection);
 begin
   FEffectScale := 1;
   inherited;
 end;
 
-// Destroy
-//
-
 destructor TVXParticleFXEffect.Destroy;
 begin
   Manager := nil;
   inherited Destroy;
 end;
-
-// WriteToFiler
-//
 
 procedure TVXParticleFXEffect.WriteToFiler(writer: TWriter);
 var
@@ -1192,9 +1147,6 @@ begin
     WriteFloat(FEffectScale);
   end;
 end;
-
-// ReadFromFiler
-//
 
 procedure TVXParticleFXEffect.ReadFromFiler(reader: TReader);
 var
@@ -1218,9 +1170,6 @@ begin
   end;
 end;
 
-// Loaded
-//
-
 procedure TVXParticleFXEffect.Loaded;
 var
   mng: TComponent;
@@ -1234,9 +1183,6 @@ begin
     FManagerName := '';
   end;
 end;
-
-// SetManager
-//
 
 procedure TVXParticleFXEffect.SetManager(val: TVXParticleFXManager);
 begin
@@ -1252,9 +1198,6 @@ begin
   FEffectScale := Value;
 end;
 
-// managerNotification
-//
-
 procedure TVXParticleFXEffect.managerNotification(
   aManager: TVXParticleFXManager; Operation: TOperation);
 begin
@@ -1266,9 +1209,6 @@ end;
 // ------------------ TVXParticleFXRenderer ------------------
 // ------------------
 
-// Create
-//
-
 constructor TVXParticleFXRenderer.Create(aOwner: TComponent);
 begin
   inherited;
@@ -1279,9 +1219,6 @@ begin
   FManagerList := TList.Create;
   FBlendingMode := bmAdditive;
 end;
-
-// Destroy
-//
 
 destructor TVXParticleFXRenderer.Destroy;
 var
@@ -1298,24 +1235,15 @@ begin
   inherited Destroy;
 end;
 
-// RegisterManager
-//
-
 procedure TVXParticleFXRenderer.RegisterManager(aManager: TVXParticleFXManager);
 begin
   FManagerList.Add(aManager);
 end;
 
-// UnRegisterManager
-//
-
 procedure TVXParticleFXRenderer.UnRegisterManager(aManager: TVXParticleFXManager);
 begin
   FManagerList.Remove(aManager);
 end;
-
-// UnRegisterAll
-//
 
 procedure TVXParticleFXRenderer.UnRegisterAll;
 begin
@@ -1323,13 +1251,9 @@ begin
     TVXParticleFXManager(FManagerList[FManagerList.Count - 1]).Renderer := nil;
 end;
 
-// BuildList
 // (beware, large and complex stuff below... this is the heart of the ParticleFX)
-
 procedure TVXParticleFXRenderer.BuildList(var rci: TVXRenderContextInfo);
-{
-   Quick Explanation of what is below:
-
+ { Quick Explanation of what is below:
    The purpose is to depth-sort a large number (thousandths) of particles and
    render them back to front. The rendering part is not particularly complex,
    it just invokes the various PFX managers involved and request particle
@@ -1340,8 +1264,7 @@ procedure TVXParticleFXRenderer.BuildList(var rci: TVXRenderContextInfo);
    The QuickSort itself is the regular classic variant, but the comparison is
    made on singles as if they were integers, this is allowed by the IEEE format
    in a very efficient manner if all values are superior to 1, which is ensured
-   by the distance calculation and a fixed offset of 1.
-}
+   by the distance calculation and a fixed offset of 1.}
 var
   dist, distDelta, invRegionSize: Single;
   managerIdx, particleIdx, regionIdx: Integer;
@@ -1530,7 +1453,7 @@ begin
     rci.VXStates.DepthFunc := cfLEqual;
     if not FZWrite then
     begin
-      rci.VXStates.DepthWriteMask := 0;
+      rci.VXStates.DepthWriteMask := False;
     end;
     if not FZTest then
       rci.VXStates.Disable(stDepthTest);
@@ -1581,16 +1504,13 @@ begin
       rci.PipelineTransformation.Pop;
     end;
     rci.VXStates.ActiveTextureEnabled[ttTexture2D] := False;
-    rci.VXStates.DepthWriteMask := 1;
+    rci.VXStates.DepthWriteMask := True;
   finally
     // cleanup
     for regionIdx := cPFXNbRegions - 1 downto 0 do
       FRegions[regionIdx].count := 0;
   end;
 end;
-
-// StoreZMaxDistance
-//
 
 function TVXParticleFXRenderer.StoreZMaxDistance: Boolean;
 begin
@@ -1718,7 +1638,7 @@ begin
   end;
 end;
 
-procedure TVXSourcePFXEffect.DoProgress(const progressTime: TProgressTimes);
+procedure TVXSourcePFXEffect.DoProgress(const progressTime: TVXProgressTimes);
 var
   n: Integer;
 begin
@@ -2006,7 +1926,7 @@ begin
   inherited Destroy;
 end;
 
-procedure TVXDynamicPFXManager.DoProgress(const progressTime: TProgressTimes);
+procedure TVXDynamicPFXManager.DoProgress(const progressTime: TVXProgressTimes);
 var
   i: Integer;
   curParticle: TVXParticle;
@@ -2404,7 +2324,7 @@ end;
 // ------------------ TVXCustomPFXManager ------------------
 // ------------------
 
-procedure TVXCustomPFXManager.DoProgress(const progressTime: TProgressTimes);
+procedure TVXCustomPFXManager.DoProgress(const progressTime: TVXProgressTimes);
 var
   i: Integer;
   list: PGLParticleArray;

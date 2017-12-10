@@ -19,7 +19,7 @@ uses
   FMX.Graphics,
   FMX.Objects,
 
-  VXS.OpenGLAdapter,
+  VXS.OpenGL1x,
   VXS.CrossPlatform,
   VXS.BaseClasses,
   VXS.VectorGeometry,
@@ -67,7 +67,7 @@ type
   TVXDepthTextureMode = (dtmLuminance, dtmIntensity, dtmAlpha);
 
   // Specifies the depth comparison function.
-  TVXDepthCompareFunc = TDepthFunction;
+  TVXDepthCompareFunc = TVXDepthFunction;
 
   { Texture format for OpenVX (rendering) use. 
   Internally, GLXScene handles all "base" images as 32 Bits RGBA, but you can
@@ -91,12 +91,12 @@ type
 
   TVXTexture = class;
 
-  IVKTextureNotifyAble = interface(IVKNotifyAble)
+  IVXTextureNotifyAble = interface(IVXNotifyAble)
     ['{0D9DC0B0-ECE4-4513-A8A1-5AE7022C9426}']
     procedure NotifyTexMapChange(Sender: TObject);
   end;
 
-  TVXTextureNeededEvent = procedure(Sender: TObject; var textureFileName: string)
+  TVXTextureNeededEvent = procedure(Sender: TObject; var TextureFileName: string)
     of object;
 
   TVXTextureChange = (tcImage, tcParams);
@@ -615,9 +615,8 @@ type
       write FKeepImageAfterTransfer default False;
   end;
 
-  TVXTextureExItem = class(TCollectionItem, IVKTextureNotifyAble)
+  TVXTextureExItem = class(TCollectionItem, IVXTextureNotifyAble)
   private
-    { Private Decalarations }
     FTexture: TVXTexture;
     FTextureIndex: Integer;
     FTextureOffset, FTextureScale: TVXCoordinates;
@@ -672,7 +671,7 @@ type
   end;
 
   ETexture = class(Exception);
-  EGLShaderException = class(Exception);
+  EVXShaderException = class(Exception);
 
 // Register a TVXTextureImageClass (used for persistence and IDE purposes)
 procedure RegisterTextureImageClass(textureImageClass: TVXTextureImageClass);
@@ -2016,12 +2015,12 @@ end;
 
 procedure TVXTexture.SetDisabled(AValue: Boolean);
 var
-  intf: IVKTextureNotifyAble;
+  intf: IVXTextureNotifyAble;
 begin
   if AValue <> FDisabled then
   begin
     FDisabled := AValue;
-    if Supports(Owner, IVKTextureNotifyAble, intf) then
+    if Supports(Owner, IVXTextureNotifyAble, intf) then
       intf.NotifyTexMapChange(Self)
     else
       NotifyChange(Self);
@@ -2168,7 +2167,7 @@ end;
 procedure TVXTexture.SetMappingMode(const val: TVXTextureMappingMode);
 var
   texMapChange: Boolean;
-  intf: IVKTextureNotifyAble;
+  intf: IVXTextureNotifyAble;
 begin
   if val <> FMappingMode then
   begin
@@ -2179,7 +2178,7 @@ begin
     begin
       // when switching between texGen modes and user mode, the geometry
       // must be rebuilt in whole (to specify/remove texCoord data!)
-      if Supports(Owner, IVKTextureNotifyAble, intf) then
+      if Supports(Owner, IVXTextureNotifyAble, intf) then
         intf.NotifyTexMapChange(Self);
     end
     else
@@ -2909,7 +2908,7 @@ begin
   lMinFilter := FMinFilter;
   // Down paramenter to rectangular texture supported
   if (target = GL_TEXTURE_RECTANGLE)
-    or not (GL_EXT_texture_lod or GL_SGIS_texture_lod) then
+    or not (GL_EXT_texture_lod_bias or GL_SGIS_texture_lod) then
   begin
     if lMinFilter in [miNearestMipmapNearest, miNearestMipmapLinear] then
       lMinFilter := miNearest;
@@ -3103,9 +3102,9 @@ end;
 
 procedure TVXTextureExItem.NotifyTexMapChange(Sender: TObject);
 var
-  intf: IVKTextureNotifyAble;
+  intf: IVXTextureNotifyAble;
 begin
-  if Supports(TObject(TVXTextureEx(Collection).FOwner), IVKTextureNotifyAble,
+  if Supports(TObject(TVXTextureEx(Collection).FOwner), IVXTextureNotifyAble,
     intf) then
     intf.NotifyTexMapChange(Sender);
 end;

@@ -1,8 +1,8 @@
 //
-// VXScene Component Library, based on GLScene http://glscene.sourceforge.net 
+// VXScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
 {
-  Coordinate related classes. 
+  Coordinate related classes.
 }
 
 unit VXS.Coordinates;
@@ -13,10 +13,12 @@ interface
 
 uses
   Winapi.OpenGL,
-  System.Classes, 
+  Winapi.OpenGLext,
+  System.Classes,
   System.SysUtils,
-  
-  VXS.VectorGeometry, 
+
+  VXS.OpenGL1x,
+  VXS.VectorGeometry,
   VXS.VectorTypes, 
   VXS.BaseClasses,
   VXS.CrossPlatform;
@@ -156,13 +158,13 @@ type
   { Actually Sender should be TVXCustomCoordinates, but that would require
    changes in a some other VXScene units and some other projects that use
    TVXCoordinatesUpdateAbleComponent }
-  IGLCoordinatesUpdateAble = interface(IInterface)
+  IVXCoordinatesUpdateAble = interface(IInterface)
     ['{ACB98D20-8905-43A7-AFA5-225CF5FA6FF5}']
     procedure CoordinateChanged(Sender: TVXCustomCoordinates);
   end;
 
   TVXCoordinatesUpdateAbleComponent = class(TVXUpdateAbleComponent,
-    IGLCoordinatesUpdateAble)
+    IVXCoordinatesUpdateAble)
   public
     procedure CoordinateChanged(Sender: TVXCustomCoordinates); virtual;
       abstract;
@@ -173,9 +175,9 @@ var
    their default values (ie. design-time) or not (run-time) }
   VUseDefaultCoordinateSets: Boolean = False;
 
-//==================================================================  
+//==================================================================
 implementation
-//==================================================================  
+//==================================================================
 
 const
   CsVectorHelp =
@@ -277,9 +279,9 @@ end;
 
 procedure TVXCustomCoordinates.NotifyChange(Sender: TObject);
 var
-  Int: IGLCoordinatesUpdateAble;
+  Int: IVXCoordinatesUpdateAble;
 begin
-  if Supports(Owner, IGLCoordinatesUpdateAble, Int) then
+  if Supports(Owner, IVXCoordinatesUpdateAble, Int) then
     Int.CoordinateChanged(TVXCoordinates(Self));
   inherited NotifyChange(Sender);
 end;
