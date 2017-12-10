@@ -133,7 +133,7 @@ procedure TVXTextureSharingShaderMaterial.Apply(var rci: TVXRenderContextInfo);
 begin
   if not Assigned(FLibMaterial) then
     Exit;
-  xgl.BeginUpdate;
+  xglBeginUpdate;
   if Assigned(FLibMaterial.Shader) then
   begin
     case FLibMaterial.Shader.ShaderStyle of
@@ -271,7 +271,7 @@ begin
       ssLowLevel: FLibMaterial.Shader.Apply(rci, FLibMaterial);
     end;
   end;
-  xgl.EndUpdate;
+  xglEndUpdate;
 end;
 
 procedure TVXTextureSharingShaderMaterial.coordNotifychange(Sender: TObject);

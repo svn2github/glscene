@@ -518,7 +518,7 @@ begin
   FBufferVertices.Capacity := n;
   FBufferTexPoints.Capacity := n;
 
-  XGL.PushState;
+  xglPushState;
   try
     (*
       if GL_ARB_multitexture then
@@ -526,7 +526,7 @@ begin
       else
       xgl.MapTexCoordToMain;
     *)
-    XGL.MapTexCoordToDual;
+    xglMapTexCoordToDual;
     glPushMatrix;
     glScalef(1, 1, 1 / 128);
     glTranslatef(-0.5 * TileSize, -0.5 * TileSize, 0);
@@ -538,7 +538,7 @@ begin
     glVertexPointer(3, GL_FLOAT, 0, FBufferVertices.list);
     glTexCoordPointer(2, GL_FLOAT, 0, FBufferTexPoints.list);
   finally
-    XGL.PopState;
+    xglPopState;
   end;
 
   HeightDataSource.Data.LockList; // Lock out the HDS thread while rendering
@@ -691,7 +691,7 @@ begin
 
   TVXROAMPatch.FlushAccum(FBufferVertices, FBufferVertexIndices, FBufferTexPoints);
 
-  XGL.PushState;
+  xglPushState;
   try
     (*
       if GL_ARB_multitexture then
@@ -699,11 +699,11 @@ begin
       else
       xgl.MapTexCoordToMain;
     *)
-    XGL.MapTexCoordToDual;
+    xglMapTexCoordToDual;
     glDisableClientState(GL_VERTEX_ARRAY);
-    XGL.DisableClientState(GL_TEXTURE_COORD_ARRAY);
+    xglDisableClientState(GL_TEXTURE_COORD_ARRAY);
   finally
-    XGL.PopState;
+    xglPopState;
   end;
 
   ApplyMaterial('');

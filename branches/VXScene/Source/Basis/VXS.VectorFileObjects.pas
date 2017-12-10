@@ -3698,18 +3698,18 @@ begin
     FArraysDeclared := True;
     FLightMapArrayEnabled := False;
     if mrci.drawState <> dsPicking then
-      FLastXOpenGLTexMapping := XGL.GetBitWiseMapping;
+      FLastXOpenGLTexMapping := xglGetBitWiseMapping;
   end
   else
   begin
     if not mrci.ignoreMaterials and not(mrci.drawState = dsPicking) then
       if texCoords.Count > 0 then
       begin
-        currentMapping := XGL.GetBitWiseMapping;
+        currentMapping := xglGetBitWiseMapping;
         if FLastXOpenGLTexMapping <> currentMapping then
         begin
-          XGL.EnableClientState(GL_TEXTURE_COORD_ARRAY);
-          XGL.TexCoordPointer(2, GL_FLOAT, SizeOf(TAffineVector), texCoords.list);
+          xglEnableClientState(GL_TEXTURE_COORD_ARRAY);
+          xglTexCoordPointer(2, GL_FLOAT, SizeOf(TAffineVector), texCoords.list);
           FLastXOpenGLTexMapping := currentMapping;
         end;
       end;
@@ -6190,7 +6190,7 @@ end;
 procedure TVXBaseMesh.DoRender(var rci: TVXRenderContextInfo; renderSelf, renderChildren: Boolean);
 begin
   if Assigned(LightmapLibrary) then
-    XGL.ForbidSecondTextureUnit;
+    xglForbidSecondTextureUnit;
   if renderSelf then
   begin
     // set winding
@@ -6238,7 +6238,7 @@ begin
       rci.VXStates.InvertFrontFace;
   end;
   if Assigned(LightmapLibrary) then
-    XGL.AllowSecondTextureUnit;
+    xglAllowSecondTextureUnit;
   if renderChildren and (Count > 0) then
     Self.renderChildren(0, Count - 1, rci);
 end;

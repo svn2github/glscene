@@ -3235,20 +3235,20 @@ begin
 
     end;
 
-    xgl.BeginUpdate;
+    xglBeginUpdate;
     if U > 3 then
-      xgl.MapTexCoordToArbitrary(U)
+      xglMapTexCoordToArbitrary(U)
     else if (FTexProps[0].Enabled)
       and (FTexProps[0].MappingMode = tmmUser) then
       if FTexProps[1].MappingMode = tmmUser then
-        xgl.MapTexCoordToDual
+        xglMapTexCoordToDual
       else
-        xgl.MapTexCoordToMain
+        xglMapTexCoordToMain
     else if FTexProps[1].MappingMode = tmmUser then
-      xgl.MapTexCoordToSecond
+      xglMapTexCoordToSecond
     else
-      xgl.MapTexCoordToMain;
-    XGL.EndUpdate;
+      xglMapTexCoordToMain;
+    xglEndUpdate;
 
   end;
 end;
@@ -3529,7 +3529,7 @@ begin
         glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, FEnvColor.AsAddress);
         ApplyMappingMode;
         if ARci.currentMaterialLevel = mlFixedFunction then
-          xgl.MapTexCoordToMain;
+          xglMapTexCoordToMain;
       end;
     end;
 end;

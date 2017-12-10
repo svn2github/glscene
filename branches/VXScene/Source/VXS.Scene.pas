@@ -5065,7 +5065,7 @@ procedure TVXDirectOpenVX.BuildList(var rci: TVXRenderContextInfo);
 begin
   if Assigned(FOnRender) then
   begin
-    xgl.MapTexCoordToMain; // single texturing by default
+    xglMapTexCoordToMain; // single texturing by default
     OnRender(Self, rci);
   end;
 end;
@@ -6990,7 +6990,7 @@ begin
     if not Assigned(FSelector) then
       FSelector := GetBestSelectorClass.Create;
 
-    xgl.MapTexCoordToNull; // turn off
+    xglMapTexCoordToNull; // turn off
     PrepareRenderingMatrices(FViewPort, RenderDPI, @rect);
     FSelector.Hits := -1;
     if objectCountGuess > 0 then
@@ -7144,8 +7144,8 @@ begin
     PrepareRenderingMatrices(AViewport, resolution);
     { if not ForwardContext then }
     begin
-      xgl.MapTexCoordToNull; // force XGL rebind
-      xgl.MapTexCoordToMain;
+      xglMapTexCoordToNull; // force XGL rebind
+      xglMapTexCoordToMain;
     end;
 
     if Assigned(FViewerBeforeRender) and (drawState <> dsPrinting) then

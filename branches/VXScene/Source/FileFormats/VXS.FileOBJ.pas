@@ -262,7 +262,7 @@ var
             idx := TexCoordIndices.List^[Index];
             if idx >= 0 then
             begin
-              if (not xgl.SecondTextureUnitForbidden) then
+              if (not vSecondTextureUnitForbidden) then
               /// and GL_ARB_multitexture
               begin
                 glMultiTexCoord2fv(GL_TEXTURE0, @TexCoordPool[idx]);

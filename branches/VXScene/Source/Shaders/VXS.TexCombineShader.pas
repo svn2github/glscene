@@ -231,7 +231,7 @@ begin
           end;
         end;
         if units > 0 then
-          xgl.MapTexCoordToArbitraryAdd(units);
+          xglMapTexCoordToArbitraryAdd(units);
       end;
 
       if Length(FCommandCache) = 0 then

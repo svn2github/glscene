@@ -2466,12 +2466,12 @@ begin
         cTextureMode[FTextureMode]);
       glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, FEnvColor.AsAddress);
       ApplyMappingMode;
-      xgl.MapTexCoordToMain;
+      xglMapTexCoordToMain;
     end;
   end
   else if not rci.VXStates.ForwardContext then
   begin // default
-    xgl.MapTexCoordToMain;
+    xglMapTexCoordToMain;
   end;
 end;
 
@@ -3198,7 +3198,7 @@ begin
     end;
   end;
   if units > 0 then
-    xgl.MapTexCoordToArbitraryAdd(units);
+    xglMapTexCoordToArbitraryAdd(units);
 end;
 
 procedure TVXTextureEx.UnApply(var rci: TVXRenderContextInfo);

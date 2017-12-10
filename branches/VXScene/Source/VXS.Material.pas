@@ -1811,7 +1811,7 @@ procedure TVXLibMaterial.Apply(var ARci: TVXRenderContextInfo);
 var
   multitextured: Boolean;
 begin
-  xgl.BeginUpdate;
+  xglBeginUpdate;
   if Assigned(FShader) then
   begin
     case Shader.ShaderStyle of
@@ -1826,7 +1826,7 @@ begin
   end
   else
     ARci.VxStates.CurrentProgram := 0;
-  if (Texture2Name <> '') and (not xgl.SecondTextureUnitForbidden) then
+  if (Texture2Name <> '') and (not vSecondTextureUnitForbidden) then
   begin
     if not Assigned(libMatTexture2) then
     begin
@@ -1861,13 +1861,13 @@ begin
 
     if (not Material.Texture.Disabled) and (Material.Texture.MappingMode = tmmUser) then
       if libMatTexture2.Material.Texture.MappingMode = tmmUser then
-        xgl.MapTexCoordToDual
+        xglMapTexCoordToDual
       else
-        xgl.MapTexCoordToMain
+        xglMapTexCoordToMain
     else if libMatTexture2.Material.Texture.MappingMode = tmmUser then
-      xgl.MapTexCoordToSecond
+      xglMapTexCoordToSecond
     else
-      xgl.MapTexCoordToMain;
+      xglMapTexCoordToMain;
 
   end;
 
@@ -1878,7 +1878,7 @@ begin
         Shader.Apply(ARci, Self);
     end;
   end;
-  xgl.EndUpdate;
+  xglEndUpdate;
 end;
 
 function TVXLibMaterial.UnApply(var ARci: TVXRenderContextInfo): Boolean;
@@ -1899,10 +1899,10 @@ begin
 
   if not Result then
   begin
-    if Assigned(libMatTexture2) and (not xgl.SecondTextureUnitForbidden) then
+    if Assigned(libMatTexture2) and (not vSecondTextureUnitForbidden) then
     begin
       libMatTexture2.Material.Texture.UnApplyAsTexture2(ARci, (not libMatTexture2.TextureMatrixIsIdentity));
-      xgl.MapTexCoordToMain;
+      xglMapTexCoordToMain;
     end;
     Material.UnApply(ARci);
     if not Material.Texture.Disabled then

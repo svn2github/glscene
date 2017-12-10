@@ -17,513 +17,430 @@ interface
 {$I VXScene.inc}
 
 uses
-  Winapi.OpenGL,
-  Winapi.OpenGLext,
-
-  VXS.Context;
+  VXS.OpenGL1x;
 
 type
-  TMapTexCoordMode = (mtcmUndefined, mtcmNull, mtcmMain, mtcmDual, mtcmSecond,
-    mtcmArbitrary);
+  TMapTexCoordMode = (mtcmUndefined, mtcmNull, mtcmMain, mtcmDual, mtcmSecond, mtcmArbitrary);
 
-  TVXMultitextureCoordinator = class(TVXAbstractMultitextureCoordinator)
-  private
-    FMapTexCoordMode: TMapTexCoordMode;
-    FSecondTextureUnitForbidden: Boolean;
+  { TexCoord functions will be ignored. }
+procedure xglMapTexCoordToNull;
+{ TexCoord functions will define the main texture coordinates. }
+procedure xglMapTexCoordToMain;
+{ TexCoord functions will define the second texture unit coordinates. }
+procedure xglMapTexCoordToSecond;
+{ TexCoord functions will define the two first texture units coordinates. }
+procedure xglMapTexCoordToDual;
+{ TexCoord functions will define the specified texture units coordinates. }
+procedure xglMapTexCoordToArbitrary(const units: array of Cardinal); overload;
+procedure xglMapTexCoordToArbitrary(const bitWiseUnits: Cardinal); overload;
+procedure xglMapTexCoordToArbitraryAdd(const bitWiseUnits: Cardinal);
 
-    FUpdCount: Integer;
-    FUpdNewMode: TMapTexCoordMode;
-    FStateStack: array of TMapTexCoordMode;
-    FComplexMapping: array of Cardinal;
-    FComplexMappingN: Integer;
-  public
-    // Explicit texture coordinates specification
-    TexCoord2f: procedure(s, t: GLfloat);
-{$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF unix} cdecl;{$ENDIF}
-    TexCoord2fv: procedure(v: PGLfloat);
-{$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF unix} cdecl;{$ENDIF}
-    TexCoord3f: procedure(s, t, r: GLfloat);
-{$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF unix} cdecl;{$ENDIF}
-    TexCoord3fv: procedure(v: PGLfloat);
-{$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF unix} cdecl;{$ENDIF}
-    TexCoord4f: procedure(s, t, r, q: GLfloat);
-{$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF unix} cdecl;{$ENDIF}
-    TexCoord4fv: procedure(v: PGLfloat);
-{$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF unix} cdecl;{$ENDIF}
+{ Defers xglMap calls execution until xglEndUpdate is met.
+  Calls to Begin/EndUpdate may be nested. }
+procedure xglBeginUpdate;
+{ Applies xglMap calls if there were any since xglBeginUpdate was invoked.
+  Calls to Begin/EndUpdate may be nested. }
+procedure xglEndUpdate;
 
-    // TexGen texture coordinates specification
-    TexGenf: procedure(coord, pname: GLEnum; param: GLfloat);
-{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
-    TexGenfv: procedure(coord, pname: GLEnum; params: PGLfloat);
-{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
-    TexGeni: procedure(coord, pname: GLEnum; param: GLint);
-{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
-    TexGeniv: procedure(coord, pname: GLEnum; params: PGLint);
-{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+{ Saves State on the stack. }
+procedure xglPushState;
+{ Restores State from the stack. }
+procedure xglPopState;
 
-    // Vertex Arrays texture coordinates specification
-    TexCoordPointer: procedure(size: GLint; atype: GLEnum; stride: GLsizei;
-      data: pointer);
-{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
-    EnableClientState: procedure(aarray: GLEnum);
-{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
-    DisableClientState: procedure(aarray: GLEnum);
-{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+{ Whenever called, 2nd texture units changes will be forbidden to .
+  Use this function when you're using the 2nd texture unit for your own
+  purposes and don't want to alter it. }
+procedure xglForbidSecondTextureUnit;
+{ Allow to use the second texture unit again. }
+procedure xglAllowSecondTextureUnit;
+{ Returns the complex mapping in bitwise form. }
+function xglGetBitWiseMapping: Cardinal;
 
-    // Misc
-    Enable: procedure(cap: GLEnum);
-{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
-    Disable: procedure(cap: GLEnum);
-{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+{$IFDEF MULTITHREADOPENGL}
+threadvar
+{$ELSE}
 
-    constructor Create(AOwner: TVXContext); override;
+var
+{$ENDIF}
+  xglMapTexCoordMode: TMapTexCoordMode;
+  vSecondTextureUnitForbidden: Boolean;
 
-    { TexCoord functions will be ignored. }
-    procedure MapTexCoordToNull;
-    { TexCoord functions will define the main texture coordinates. }
-    procedure MapTexCoordToMain;
-    { TexCoord functions will define the second texture unit coordinates. }
-    procedure MapTexCoordToSecond;
-    { TexCoord functions will define the two first texture units coordinates. }
-    procedure MapTexCoordToDual;
-    { TexCoord functions will define the specified texture units coordinates. }
-    procedure MapTexCoordToArbitrary(const units: array of Cardinal); overload;
-    procedure MapTexCoordToArbitrary(const bitWiseUnits: Cardinal); overload;
-    procedure MapTexCoordToArbitraryAdd(const bitWiseUnits: Cardinal);
-
-    { Defers Map calls execution until EndUpdate is met.
-       Calls to Begin/EndUpdate may be nested. }
-    procedure BeginUpdate;
-    { Applies Map calls if there were any since BeginUpdate was invoked. 
-       Calls to Begin/EndUpdate may be nested. }
-    procedure EndUpdate;
-
-    { Saves State on the stack. }
-    procedure PushState;
-    { Restores State from the stack. }
-    procedure PopState;
-
-    { Whenever called, 2nd texture units changes will be forbidden to . 
-       Use this function when you're using the 2nd texture unit for your own
-       purposes and don't want to alter it. }
-    procedure ForbidSecondTextureUnit;
-    { Allow to use the second texture unit again. }
-    procedure AllowSecondTextureUnit;
-    { Returns the complex mapping in bitwise form. }
-    function GetBitWiseMapping: Cardinal;
-
-    property MapTexCoordMode: TMapTexCoordMode read FMapTexCoordMode write FMapTexCoordMode;
-    property SecondTextureUnitForbidden: Boolean read FSecondTextureUnitForbidden;
-  end;
-
-function xgl(): TVXMultitextureCoordinator;
+  // Explicit texture coordinates specification
+  xglTexCoord2f: procedure(s, t: TGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
+  xglTexCoord2fv: procedure(v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
+  xglTexCoord3f: procedure(s, t, r: TGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
+  xglTexCoord3fv: procedure(v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
+  xglTexCoord4f: procedure(s, t, r, q: TGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
+  xglTexCoord4fv: procedure(v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
+  // TexGen texture coordinates specification
+  xglTexGenf: procedure(coord, pname: TGLEnum; param: TGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
+  xglTexGenfv: procedure(coord, pname: TGLEnum; params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
+  xglTexGeni: procedure(coord, pname: TGLEnum; param: GLint); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
+  xglTexGeniv: procedure(coord, pname: TGLEnum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
+  // Vertex Arrays texture coordinates specification
+  xglTexCoordPointer: procedure(size: TGLint; atype: GLEnum; stride: GLsizei; data: pointer); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
+  xglEnableClientState: procedure(aarray: TGLEnum); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
+  xglDisableClientState: procedure(aarray: TGLEnum); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
+  // Misc
+  xglEnable: procedure(cap: TGLEnum); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
+  xglDisable: procedure(cap: TGLEnum); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 
 //===================================================================
 implementation
 //===================================================================
 
-threadvar
-  vMTC : TVXMultitextureCoordinator;
 
-function xgl(): TVXMultitextureCoordinator;
 var
-  RC: TVXContext;
+  vUpdCount: Integer;
+  vUpdNewMode: TMapTexCoordMode;
+  vStateStack: array of TMapTexCoordMode;
+  vComplexMapping: array of Cardinal;
+  vComplexMappingN: Integer;
+
+  // ------------------------------------------------------------------
+  // Multitexturing coordinates duplication functions
+  // ------------------------------------------------------------------
+
+  // --------- Complex (arbitrary) mapping
+
+procedure glTexCoord2f_Arbitrary(s, t: GLfloat); {$IFDEF MSWINDOWS} stdcall {$ELSE} cdecl {$ENDIF};
+var
+  i: Integer;
 begin
-  RC := SafeCurrentVXContext;
-  if not Assigned(vMTC) or (vMTC.FOwner <> RC) then
+  for i := 0 to vComplexMappingN do
+    glMultiTexCoord2f(vComplexMapping[i], s, t);
+end;
+
+procedure glTexCoord2fv_Arbitrary(v: PGLfloat); {$IFDEF MSWINDOWS} stdcall {$ELSE} cdecl {$ENDIF};
+var
+  i: Integer;
+begin
+  for i := 0 to vComplexMappingN do
+    glMultiTexCoord2fv(vComplexMapping[i], v);
+end;
+
+procedure glTexCoord3f_Arbitrary(s, t, r: GLfloat); {$IFDEF MSWINDOWS} stdcall {$ELSE} cdecl {$ENDIF};
+var
+  i: Integer;
+begin
+  for i := 0 to vComplexMappingN do
+    glMultiTexCoord3f(vComplexMapping[i], s, t, r);
+end;
+
+procedure glTexCoord3fv_Arbitrary(v: PGLfloat); {$IFDEF MSWINDOWS} stdcall {$ELSE} cdecl {$ENDIF};
+var
+  i: Integer;
+begin
+  for i := 0 to vComplexMappingN do
+    glMultiTexCoord3fv(vComplexMapping[i], v);
+end;
+
+procedure glTexCoord4f_Arbitrary(s, t, r, q: GLfloat); {$IFDEF MSWINDOWS} stdcall {$ELSE} cdecl {$ENDIF};
+var
+  i: Integer;
+begin
+  for i := 0 to vComplexMappingN do
+    glMultiTexCoord4f(vComplexMapping[i], s, t, r, q);
+end;
+
+procedure glTexCoord4fv_Arbitrary(v: PGLfloat); {$IFDEF MSWINDOWS} stdcall {$ELSE} cdecl {$ENDIF};
+var
+  i: Integer;
+begin
+  for i := 0 to vComplexMappingN do
+    glMultiTexCoord4fv(vComplexMapping[i], v);
+end;
+
+procedure glTexGenf_Arbitrary(coord, pname: GLEnum; param: GLfloat); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
+var
+  i: Integer;
+begin
+  for i := 0 to vComplexMappingN do
   begin
-    vMTC := TVXMultitextureCoordinator(RC.MultitextureCoordinator);
-  end;
-  Result := vMTC;
-end;
-
-// ------------------------------------------------------------------
-// Multitexturing coordinates duplication functions
-// ------------------------------------------------------------------
-
-// --------- Complex (arbitrary) mapping
-
-procedure TexCoord2f_Arbitrary(s, t: GLfloat);{$IFDEF MSWINDOWS} stdcall {$ELSE} cdecl {$ENDIF};
-var
-  i: Integer;
-begin
-  for i := 0 to xgl.FComplexMappingN do
-    glMultiTexCoord2f(xgl.FComplexMapping[i], s, t);
-end;
-
-procedure TexCoord2fv_Arbitrary(v: PGLfloat);{$IFDEF MSWINDOWS} stdcall {$ELSE} cdecl {$ENDIF};
-var
-  i: Integer;
-begin
-  for i := 0 to xgl.FComplexMappingN do
-    glMultiTexCoord2fv(xgl.FComplexMapping[i], v);
-end;
-
-procedure TexCoord3f_Arbitrary(s, t, r: GLfloat); {$IFDEF MSWINDOWS} stdcall {$ELSE} cdecl {$ENDIF};
-var
-  i: Integer;
-begin
-  for i := 0 to xgl.FComplexMappingN do
-    glMultiTexCoord3f(xgl.FComplexMapping[i], s, t, r);
-end;
-
-procedure TexCoord3fv_Arbitrary(v: PGLfloat); {$IFDEF MSWINDOWS} stdcall {$ELSE} cdecl {$ENDIF};
-var
-  i: Integer;
-begin
-  for i := 0 to xgl.FComplexMappingN do
-    glMultiTexCoord3fv(xgl.FComplexMapping[i], v);
-end;
-
-procedure TexCoord4f_Arbitrary(s, t, r, q: GLfloat); {$IFDEF MSWINDOWS} stdcall {$ELSE} cdecl {$ENDIF};
-var
-  i: Integer;
-begin
-  for i := 0 to xgl.FComplexMappingN do
-    glMultiTexCoord4f(xgl.FComplexMapping[i], s, t, r, q);
-end;
-
-procedure TexCoord4fv_Arbitrary(v: PGLfloat); {$IFDEF MSWINDOWS} stdcall {$ELSE} cdecl {$ENDIF};
-var
-  i: Integer;
-begin
-  for i := 0 to xgl.FComplexMappingN do
-    glMultiTexCoord4fv(xgl.FComplexMapping[i], v);
-end;
-
-procedure TexGenf_Arbitrary(coord, pname: GLEnum; param: GLfloat);
-{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
-var
-  i: Integer;
-begin
-  for i := 0 to xgl.FComplexMappingN do
-  begin
-    CurrentVXContext.VXStates.ActiveTexture := xgl.FComplexMapping[i];
+    glActiveTexture(vComplexMapping[i]);
     glTexGenf(coord, pname, param);
   end;
+  glActiveTexture(GL_TEXTURE0_ARB);
 end;
 
-procedure TexGenfv_Arbitrary(coord, pname: GLEnum; params: PGLfloat);
-{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+procedure glTexGenfv_Arbitrary(coord, pname: GLEnum; params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 var
   i: Integer;
 begin
-  for i := 0 to xgl.FComplexMappingN do
+  for i := 0 to vComplexMappingN do
   begin
-    CurrentVXContext.VXStates.ActiveTexture := xgl.FComplexMapping[i];
+    glActiveTexture(vComplexMapping[i]);
     glTexGenfv(coord, pname, params);
   end;
+  glActiveTexture(GL_TEXTURE0_ARB);
 end;
 
-procedure TexGeni_Arbitrary(coord, pname: GLEnum; param: GLint);
-{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+procedure glTexGeni_Arbitrary(coord, pname: GLEnum; param: GLint); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 var
   i: Integer;
 begin
-  for i := 0 to xgl.FComplexMappingN do
+  for i := 0 to vComplexMappingN do
   begin
-    CurrentVXContext.VXStates.ActiveTexture := xgl.FComplexMapping[i];
+    glActiveTexture(vComplexMapping[i]);
     glTexGeni(coord, pname, param);
   end;
+  glActiveTexture(GL_TEXTURE0_ARB);
 end;
 
-procedure TexGeniv_Arbitrary(coord, pname: GLEnum; params: PGLint);
-{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+procedure glTexGeniv_Arbitrary(coord, pname: GLEnum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 var
   i: Integer;
 begin
-  for i := 0 to xgl.FComplexMappingN do
+  for i := 0 to vComplexMappingN do
   begin
-    CurrentVXContext.VXStates.ActiveTexture := xgl.FComplexMapping[i];
+    glActiveTexture(vComplexMapping[i]);
     glTexGeniv(coord, pname, params);
   end;
+  glActiveTexture(GL_TEXTURE0_ARB);
 end;
 
-procedure Enable_Arbitrary(cap: GLEnum);
-{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+procedure glEnable_Arbitrary(cap: GLEnum); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 var
   i: Integer;
 begin
-  for i := 0 to xgl.FComplexMappingN do
+  for i := 0 to vComplexMappingN do
   begin
-    CurrentVXContext.VXStates.ActiveTexture := xgl.FComplexMapping[i];
+    glActiveTexture(vComplexMapping[i]);
     glEnable(cap);
   end;
+  glActiveTextureARB(GL_TEXTURE0_ARB);
 end;
 
-procedure Disable_Arbitrary(cap: GLEnum);
-{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+procedure glDisable_Arbitrary(cap: GLEnum); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 var
   i: Integer;
 begin
-  for i := 0 to xgl.FComplexMappingN do
+  for i := 0 to vComplexMappingN do
   begin
-    CurrentVXContext.VXStates.ActiveTexture := xgl.FComplexMapping[i];
+    glActiveTexture(vComplexMapping[i]);
     glDisable(cap);
   end;
+  glActiveTextureARB(GL_TEXTURE0_ARB);
 end;
 
-procedure TexCoordPointer_Arbitrary(size: GLint; atype: GLEnum; stride:
-  GLsizei; data: pointer);
-{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+procedure xglTexCoordPointer_Arbitrary(size: GLint; atype: GLEnum; stride: GLsizei; data: pointer); {$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl; {$ENDIF}
 var
   i: Integer;
 begin
-  for i := 0 to xgl.FComplexMappingN do
+  for i := 0 to vComplexMappingN do
   begin
-    glClientActiveTexture(xgl.FComplexMapping[i]);
+    glClientActiveTexture(vComplexMapping[i]);
     glTexCoordPointer(size, atype, stride, data);
   end;
+  glActiveTextureARB(GL_TEXTURE0_ARB);
 end;
 
-procedure EnableClientState_Arbitrary(aArray: GLEnum);
-{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+procedure xglEnableClientState_Arbitrary(aarray: GLEnum); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 var
   i: Integer;
 begin
-  for i := 0 to xgl.FComplexMappingN do
+  for i := 0 to vComplexMappingN do
   begin
-    glClientActiveTexture(xgl.FComplexMapping[i]);
-    glEnableClientState(aArray);
+    glClientActiveTexture(vComplexMapping[i]);
+    glEnableClientState(aarray);
   end;
+  glActiveTextureARB(GL_TEXTURE0_ARB);
 end;
 
-procedure DisableClientState_Arbitrary(aArray: GLEnum);
-{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+procedure xglDisableClientState_Arbitrary(aarray: GLEnum); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 var
   i: Integer;
 begin
-  for i := 0 to xgl.FComplexMappingN do
+  for i := 0 to vComplexMappingN do
   begin
-    glClientActiveTexture(xgl.FComplexMapping[i]);
-    glDisableClientState(aArray);
+    glClientActiveTexture(vComplexMapping[i]);
+    glDisableClientState(aarray);
   end;
+  glActiveTextureARB(GL_TEXTURE0_ARB);
 end;
 
 // --------- Second unit Texturing
 
-procedure TexCoord2f_Second(s, t: GLfloat);
-{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+procedure glTexCoord2f_Second(s, t: GLfloat); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
   glMultiTexCoord2f(GL_TEXTURE1, s, t);
 end;
 
-procedure TexCoord2fv_Second(v: PGLfloat);
-{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+procedure glTexCoord2fv_Second(v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
   glMultiTexCoord2fv(GL_TEXTURE1, v);
 end;
 
-procedure TexCoord3f_Second(s, t, r: GLfloat);
-{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+procedure glTexCoord3f_Second(s, t, r: GLfloat); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
   glMultiTexCoord3f(GL_TEXTURE1, s, t, r);
 end;
 
-procedure TexCoord3fv_Second(v: PGLfloat);
-{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+procedure glTexCoord3fv_Second(v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
   glMultiTexCoord3fv(GL_TEXTURE1, v);
 end;
 
-procedure TexCoord4f_Second(s, t, r, q: GLfloat);
-{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+procedure glTexCoord4f_Second(s, t, r, q: GLfloat); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
   glMultiTexCoord4f(GL_TEXTURE1, s, t, r, q);
 end;
 
-procedure TexCoord4fv_Second(v: PGLfloat);
-{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+procedure glTexCoord4fv_Second(v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
   glMultiTexCoord4fv(GL_TEXTURE1, v);
 end;
 
-procedure TexGenf_Second(coord, pname: GLEnum; param: GLfloat);
-{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+procedure glTexGenf_Second(coord, pname: GLEnum; param: GLfloat); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
-  CurrentVXContext.VXStates.ActiveTexture := 1;
+  glActiveTexture(GL_TEXTURE1);
   glTexGenf(coord, pname, param);
+  glActiveTexture(GL_TEXTURE0);
 end;
 
-procedure TexGenfv_Second(coord, pname: GLEnum; params: PGLfloat);
-{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+procedure glTexGenfv_Second(coord, pname: GLEnum; params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
-  CurrentVXContext.VXStates.ActiveTexture := 1;
+  glActiveTexture(GL_TEXTURE1);
   glTexGenfv(coord, pname, params);
+  glActiveTexture(GL_TEXTURE0);
 end;
 
-procedure TexGeni_Second(coord, pname: GLEnum; param: GLint);
-{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+procedure glTexGeni_Second(coord, pname: GLEnum; param: GLint); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
-  CurrentVXContext.VXStates.ActiveTexture := 1;
+  glActiveTextureARB(GL_TEXTURE1_ARB);
   glTexGeni(coord, pname, param);
+  glActiveTextureARB(GL_TEXTURE0_ARB);
 end;
 
-procedure TexGeniv_Second(coord, pname: GLEnum; params: PGLint);
-{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+procedure glTexGeniv_Second(coord, pname: GLEnum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
-  CurrentVXContext.VXStates.ActiveTexture := 1;
+  glActiveTexture(GL_TEXTURE1_ARB);
   glTexGeniv(coord, pname, params);
+  glActiveTexture(GL_TEXTURE0_ARB);
 end;
 
-procedure Enable_Second(cap: GLEnum);
-{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+procedure glEnable_Second(cap: GLEnum); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
-  CurrentVXContext.VXStates.ActiveTexture := 1;
+  glActiveTexture(GL_TEXTURE1_ARB);
   glEnable(cap);
+  glActiveTexture(GL_TEXTURE0_ARB);
 end;
 
-procedure Disable_Second(cap: GLEnum);
-{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+procedure glDisable_Second(cap: GLEnum); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
-  CurrentVXContext.VXStates.ActiveTexture := 1;
+  glActiveTexture(GL_TEXTURE1_ARB);
   glDisable(cap);
+  glActiveTexture(GL_TEXTURE0_ARB);
 end;
 
-procedure TexCoordPointer_Second(size: GLint; atype: GLEnum; stride:
-  GLsizei; data: pointer);
-{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+procedure xglTexCoordPointer_Second(size: GLint; atype: GLEnum; stride: GLsizei; data: pointer); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
   glClientActiveTexture(GL_TEXTURE1);
   glTexCoordPointer(size, atype, stride, data);
   glClientActiveTexture(GL_TEXTURE0);
 end;
 
-procedure EnableClientState_Second(aArray: GLEnum);
-{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+procedure xglEnableClientState_Second(aarray: GLEnum); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
   glClientActiveTexture(GL_TEXTURE1);
-  glEnableClientState(aArray);
+  glEnableClientState(aarray);
   glClientActiveTexture(GL_TEXTURE0);
 end;
 
-procedure DisableClientState_Second(aArray: GLEnum);
-{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+procedure xglDisableClientState_Second(aarray: GLEnum); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
   glClientActiveTexture(GL_TEXTURE1);
-  glDisableClientState(aArray);
+  glDisableClientState(aarray);
   glClientActiveTexture(GL_TEXTURE0);
 end;
 
 // --------- Dual Texturing
 
-procedure TexCoord2f_Dual(s, t: GLfloat);
-{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+procedure glTexCoord2f_Dual(s, t: GLfloat); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
   glTexCoord2f(s, t);
   glMultiTexCoord2f(GL_TEXTURE1, s, t);
 end;
 
-procedure TexCoord2fv_Dual(v: PGLfloat);
-{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+procedure glTexCoord2fv_Dual(v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
   glTexCoord2fv(v);
   glMultiTexCoord2fv(GL_TEXTURE1, v);
 end;
 
-procedure TexCoord3f_Dual(s, t, r: GLfloat);
-{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+procedure glTexCoord3f_Dual(s, t, r: GLfloat); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
   glTexCoord3f(s, t, r);
   glMultiTexCoord3f(GL_TEXTURE1, s, t, r);
 end;
 
-procedure TexCoord3fv_Dual(v: PGLfloat);
-{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+procedure glTexCoord3fv_Dual(v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
   glTexCoord3fv(v);
   glMultiTexCoord3fv(GL_TEXTURE1, v);
 end;
 
-procedure TexCoord4f_Dual(s, t, r, q: GLfloat);
-{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+procedure glTexCoord4f_Dual(s, t, r, q: GLfloat); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
   glTexCoord4f(s, t, r, q);
   glMultiTexCoord4f(GL_TEXTURE1, s, t, r, q);
 end;
 
-procedure TexCoord4fv_Dual(v: PGLfloat);
-{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+procedure glTexCoord4fv_Dual(v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
   glTexCoord4fv(v);
   glMultiTexCoord4fv(GL_TEXTURE1, v);
 end;
 
-procedure TexGenf_Dual(coord, pname: GLEnum; param: GLfloat);
-{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+procedure glTexGenf_Dual(coord, pname: GLEnum; param: GLfloat); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
-  with CurrentVXContext.VxStates do
-  begin
-    ActiveTexture := 0;
-    glTexGenf(coord, pname, param);
-    ActiveTexture := 1;
-    glTexGenf(coord, pname, param);
-  end;
+  glTexGenf(coord, pname, param);
+  glActiveTexture(GL_TEXTURE1_ARB);
+  glTexGenf(coord, pname, param);
+  glActiveTexture(GL_TEXTURE0_ARB);
 end;
 
-procedure TexGenfv_Dual(coord, pname: GLEnum; params: PGLfloat);
-{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+procedure glTexGenfv_Dual(coord, pname: GLEnum; params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
-  with CurrentVXContext.VxStates do
-  begin
-    ActiveTexture := 0;
-    glTexGenfv(coord, pname, params);
-    ActiveTexture := 1;
-    glTexGenfv(coord, pname, params);
-  end;
+  glTexGenfv(coord, pname, params);
+  glActiveTexture(GL_TEXTURE1_ARB);
+  glTexGenfv(coord, pname, params);
+  glActiveTexture(GL_TEXTURE0_ARB);
 end;
 
-procedure TexGeni_Dual(coord, pname: GLEnum; param: GLint);
-{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+procedure glTexGeni_Dual(coord, pname: GLEnum; param: GLint); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
-  with CurrentVXContext.VxStates do
-  begin
-    ActiveTexture := 0;
-    glTexGeni(coord, pname, param);
-    ActiveTexture := 1;
-    glTexGeni(coord, pname, param);
-  end;
+  glTexGeni(coord, pname, param);
+  glActiveTexture(GL_TEXTURE1_ARB);
+  glTexGeni(coord, pname, param);
+  glActiveTexture(GL_TEXTURE0_ARB);
 end;
 
-procedure TexGeniv_Dual(coord, pname: GLEnum; params: PGLint);
-{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+procedure glTexGeniv_Dual(coord, pname: GLEnum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
-  with CurrentVXContext.VxStates do
-  begin
-    ActiveTexture := 0;
-    glTexGeniv(coord, pname, params);
-    ActiveTexture := 1;
-    glTexGeniv(coord, pname, params);
-  end;
+  glTexGeniv(coord, pname, params);
+  glActiveTexture(GL_TEXTURE1_ARB);
+  glTexGeniv(coord, pname, params);
+  glActiveTexture(GL_TEXTURE0_ARB);
 end;
 
-procedure Enable_Dual(cap: GLEnum);
-{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+procedure glEnable_Dual(cap: GLEnum); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
-  with CurrentVXContext.VxStates do
-  begin
-    ActiveTexture := 0;
-    glEnable(cap);
-    ActiveTexture := 1;
-    glEnable(cap);
-  end;
+  glEnable(cap);
+  glActiveTexture(GL_TEXTURE1_ARB);
+  glEnable(cap);
+  glActiveTexture(GL_TEXTURE0_ARB);
 end;
 
-procedure Disable_Dual(cap: GLEnum);
-{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+procedure glDisable_Dual(cap: GLEnum); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
-  with CurrentVXContext.VxStates do
-  begin
-    ActiveTexture := 0;
-    glDisable(cap);
-    ActiveTexture := 1;
-    glDisable(cap);
-  end;
+  glDisable(cap);
+  glActiveTexture(GL_TEXTURE1);
+  glDisable(cap);
+  glActiveTexture(GL_TEXTURE0);
 end;
 
-procedure TexCoordPointer_Dual(size: GLint; atype: GLEnum; stride:
-  GLsizei; data: pointer);
-{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+procedure xglTexCoordPointer_Dual(size: GLint; atype: GLEnum; stride: GLsizei; data: pointer); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
   glTexCoordPointer(size, atype, stride, data);
   glClientActiveTexture(GL_TEXTURE1);
@@ -531,99 +448,81 @@ begin
   glClientActiveTexture(GL_TEXTURE0);
 end;
 
-procedure EnableClientState_Dual(aArray: GLEnum);
-{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+procedure xglEnableClientState_Dual(aarray: GLEnum); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
-  glEnableClientState(aArray);
+  glEnableClientState(aarray);
   glClientActiveTexture(GL_TEXTURE1);
-  glEnableClientState(aArray);
+  glEnableClientState(aarray);
   glClientActiveTexture(GL_TEXTURE0);
 end;
 
-procedure DisableClientState_Dual(aArray: GLEnum);
-{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+procedure xglDisableClientState_Dual(aarray: GLEnum); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
-  glDisableClientState(aArray);
+  glDisableClientState(aarray);
   glClientActiveTexture(GL_TEXTURE1);
-  glDisableClientState(aArray);
+  glDisableClientState(aarray);
   glClientActiveTexture(GL_TEXTURE0);
 end;
 
 // --------- Null Texturing
 
-procedure TexCoord2f_Null(s, t: GLfloat);
-{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+procedure glTexCoord2f_Null(s, t: GLfloat); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
 end;
 
-procedure TexCoord2fv_Null(v: PGLfloat);
-{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+procedure glTexCoord2fv_Null(v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
 end;
 
-procedure TexCoord3f_Null(s, t, r: GLfloat);
-{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+procedure glTexCoord3f_Null(s, t, r: GLfloat); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
 end;
 
-procedure TexCoord3fv_Null(v: PGLfloat);
-{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+procedure glTexCoord3fv_Null(v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
 end;
 
-procedure TexCoord4f_Null(s, t, r, q: GLfloat);
-{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+procedure glTexCoord4f_Null(s, t, r, q: GLfloat); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
 end;
 
-procedure TexCoord4fv_Null(v: PGLfloat);
-{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+procedure glTexCoord4fv_Null(v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
 end;
 
-procedure TexGenf_Null(coord, pname: GLEnum; param: GLfloat);
-{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+procedure glTexGenf_Null(coord, pname: GLEnum; param: GLfloat); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
 end;
 
-procedure TexGenfv_Null(coord, pname: GLEnum; params: PGLfloat);
-{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+procedure glTexGenfv_Null(coord, pname: GLEnum; params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
 end;
 
-procedure TexGeni_Null(coord, pname: GLEnum; param: GLint);
-{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+procedure glTexGeni_Null(coord, pname: GLEnum; param: GLint); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
 end;
 
-procedure TexGeniv_Null(coord, pname: GLEnum; params: PGLint);
-{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+procedure glTexGeniv_Null(coord, pname: GLEnum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
 end;
 
-procedure Enable_Null(cap: GLEnum);
-{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+procedure glEnable_Null(cap: GLEnum); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
 end;
 
-procedure Disable_Null(cap: GLEnum);
-{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+procedure glDisable_Null(cap: GLEnum); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
 end;
 
-procedure TexCoordPointer_Null(size: GLint; atype: GLEnum; stride:
-  GLsizei; data: pointer);
-{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+procedure xglTexCoordPointer_Null(size: GLint; atype: GLEnum; stride: GLsizei; data: pointer); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
 end;
 
-procedure EnableClientState_Null(aArray: GLEnum);
-{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+procedure xglEnableClientState_Null(aarray: GLEnum); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
 end;
 
-procedure DisableClientState_Null(aArray: GLEnum);
-{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+procedure xglDisableClientState_Null(aarray: GLEnum); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
 end;
 
@@ -631,255 +530,252 @@ end;
 // Redirections management functions
 // ------------------------------------------------------------------
 
-procedure TVXMultitextureCoordinator.BeginUpdate;
+procedure xglBeginUpdate;
 begin
-  if FUpdCount = 0 then
+  if vUpdCount = 0 then
   begin
-    FUpdCount := 1;
-    FUpdNewMode := MapTexCoordMode;
+    vUpdCount := 1;
+    vUpdNewMode := xglMapTexCoordMode;
   end
   else
-    Inc(FUpdCount);
+    Inc(vUpdCount);
 end;
 
-procedure TVXMultitextureCoordinator.EndUpdate;
+procedure xglEndUpdate;
 begin
-  Dec(FUpdCount);
-  if (FUpdCount = 0) and (FUpdNewMode <> MapTexCoordMode) then
+  Dec(vUpdCount);
+  if (vUpdCount = 0) and (vUpdNewMode <> xglMapTexCoordMode) then
   begin
-    case FUpdNewMode of
-      mtcmNull: MapTexCoordToNull;
-      mtcmMain: MapTexCoordToMain;
-      mtcmDual: MapTexCoordToDual;
-      mtcmSecond: MapTexCoordToSecond;
-      mtcmArbitrary: MapTexCoordToArbitrary(FComplexMapping);
+    case vUpdNewMode of
+      mtcmNull:        xglMapTexCoordToNull;
+      mtcmMain:        xglMapTexCoordToMain;
+      mtcmDual:        xglMapTexCoordToDual;
+      mtcmSecond:      xglMapTexCoordToSecond;
+      mtcmArbitrary:   xglMapTexCoordToArbitrary(vComplexMapping);
     else
       Assert(False);
     end;
   end;
 end;
 
-procedure TVXMultitextureCoordinator.PushState;
+procedure xglPushState;
 var
   i: Integer;
 begin
-  Assert(FUpdCount = 0);
-  i := Length(FStateStack);
-  SetLength(FStateStack, i + 1);
-  FStateStack[i] := MapTexCoordMode;
+  Assert(vUpdCount = 0);
+  i := Length(vStateStack);
+  SetLength(vStateStack, i + 1);
+  vStateStack[i] := xglMapTexCoordMode;
 end;
 
-procedure TVXMultitextureCoordinator.PopState;
+procedure xglPopState;
 var
   i: Integer;
 begin
-  Assert(FUpdCount = 0);
-  i := Length(FStateStack) - 1;
+  Assert(vUpdCount = 0);
+  i := Length(vStateStack) - 1;
   Assert(i >= 0);
-  case FStateStack[i] of
-    mtcmNull: MapTexCoordToNull;
-    mtcmMain: MapTexCoordToMain;
-    mtcmDual: MapTexCoordToDual;
-    mtcmSecond: MapTexCoordToSecond;
-    mtcmArbitrary: MapTexCoordToArbitrary(FComplexMapping);
+  case vStateStack[i] of
+    mtcmNull:
+      xglMapTexCoordToNull;
+    mtcmMain:
+      xglMapTexCoordToMain;
+    mtcmDual:
+      xglMapTexCoordToDual;
+    mtcmSecond:
+      xglMapTexCoordToSecond;
+    mtcmArbitrary:
+      xglMapTexCoordToArbitrary(vComplexMapping);
   else
     Assert(False);
   end;
-  SetLength(FStateStack, i);
+  SetLength(vStateStack, i);
 end;
 
-procedure TVXMultitextureCoordinator.ForbidSecondTextureUnit;
+procedure xglForbidSecondTextureUnit;
 begin
-  FSecondTextureUnitForbidden := True;
+  vSecondTextureUnitForbidden := True;
 end;
 
-procedure TVXMultitextureCoordinator.AllowSecondTextureUnit;
+procedure xglAllowSecondTextureUnit;
 begin
-  FSecondTextureUnitForbidden := False;
+  vSecondTextureUnitForbidden := False;
 end;
 
-constructor TVXMultitextureCoordinator.Create(AOwner: TVXContext);
+procedure xglMapTexCoordToNull;
 begin
-  inherited Create(AOwner);
-  FMapTexCoordMode := mtcmUndefined;
-  MapTexCoordToNull;
-end;
-
-procedure TVXMultitextureCoordinator.MapTexCoordToNull;
-begin
-  if FUpdCount <> 0 then
-    FUpdNewMode := mtcmNull
-  else if MapTexCoordMode <> mtcmNull then
+  if vUpdCount <> 0 then
+    vUpdNewMode := mtcmNull
+  else if xglMapTexCoordMode <> mtcmNull then
   begin
-    MapTexCoordMode := mtcmNull;
+    xglMapTexCoordMode := mtcmNull;
 
-    TexCoord2f := TexCoord2f_Null;
-    TexCoord2fv := TexCoord2fv_Null;
-    TexCoord3f := TexCoord3f_Null;
-    TexCoord3fv := TexCoord3fv_Null;
-    TexCoord4f := TexCoord4f_Null;
-    TexCoord4fv := TexCoord4fv_Null;
+    xglTexCoord2f := glTexCoord2f_Null;
+    xglTexCoord2fv := glTexCoord2fv_Null;
+    xglTexCoord3f := glTexCoord3f_Null;
+    xglTexCoord3fv := glTexCoord3fv_Null;
+    xglTexCoord4f := glTexCoord4f_Null;
+    xglTexCoord4fv := glTexCoord4fv_Null;
 
-    TexGenf := TexGenf_Null;
-    TexGenfv := TexGenfv_Null;
-    TexGeni := TexGeni_Null;
-    TexGeniv := TexGeniv_Null;
+    xglTexGenf := glTexGenf_Null;
+    xglTexGenfv := glTexGenfv_Null;
+    xglTexGeni := glTexGeni_Null;
+    xglTexGeniv := glTexGeniv_Null;
 
-    TexCoordPointer := TexCoordPointer_Null;
-    EnableClientState := EnableClientState_Null;
-    DisableClientState := DisableClientState_Null;
+    xglTexCoordPointer := xglTexCoordPointer_Null;
+    xglEnableClientState := xglEnableClientState_Null;
+    xglDisableClientState := xglDisableClientState_Null;
 
-    Enable := Enable_Null;
-    Disable := Disable_Null;
+    xglEnable := glEnable_Null;
+    xglDisable := glDisable_Null;
   end;
 end;
 
-procedure TVXMultitextureCoordinator.MapTexCoordToMain;
+procedure xglMapTexCoordToMain;
 begin
-  if FUpdCount <> 0 then
-    FUpdNewMode := mtcmMain
-  else if MapTexCoordMode <> mtcmMain then
+  if vUpdCount <> 0 then
+    vUpdNewMode := mtcmMain
+  else if xglMapTexCoordMode <> mtcmMain then
   begin
-    MapTexCoordMode := mtcmMain;
+    xglMapTexCoordMode := mtcmMain;
+    xglTexCoord2f := glTexCoord2f;
+    xglTexCoord2fv := glTexCoord2fv;
+    xglTexCoord3f := glTexCoord3f;
+    xglTexCoord3fv := glTexCoord3fv;
+    xglTexCoord4f := glTexCoord4f;
+    xglTexCoord4fv := glTexCoord4fv;
 
-    TexCoord2f := glTexCoord2f;
-    TexCoord2fv := glTexCoord2fv;
-    TexCoord3f := glTexCoord3f;
-    TexCoord3fv := glTexCoord3fv;
-    TexCoord4f := glTexCoord4f;
-    TexCoord4fv := glTexCoord4fv;
+    xglTexGenf := glTexGenf;
+    xglTexGenfv := glTexGenfv;
+    xglTexGeni := glTexGeni;
+    xglTexGeniv := glTexGeniv;
 
-    TexGenf := glTexGenf;
-    TexGenfv := glTexGenfv;
-    TexGeni := glTexGeni;
-    TexGeniv := glTexGeniv;
+    xglTexCoordPointer := glTexCoordPointer;
+    xglEnableClientState := glEnableClientState;
+    xglDisableClientState := glDisableClientState;
 
-    TexCoordPointer := glTexCoordPointer;
-    EnableClientState := glEnableClientState;
-    DisableClientState := glDisableClientState;
-
-    Enable := glEnable;
-    Disable := glDisable;
+    xglEnable := glEnable;
+    xglDisable := glDisable;
   end;
 end;
 
-procedure TVXMultitextureCoordinator.MapTexCoordToSecond;
+procedure xglMapTexCoordToSecond;
 begin
-  if FSecondTextureUnitForbidden then
+  if vSecondTextureUnitForbidden then
   begin
-    MapTexCoordToNull;
+    xglMapTexCoordToNull;
     Exit;
   end;
-  if FUpdCount <> 0 then
-    FUpdNewMode := mtcmSecond
-  else if MapTexCoordMode <> mtcmSecond then
+  if vUpdCount <> 0 then
+    vUpdNewMode := mtcmSecond
+  else if xglMapTexCoordMode <> mtcmSecond then
   begin
-    MapTexCoordMode := mtcmSecond;
-///    Assert(GL_ARB_multitexture);
+    xglMapTexCoordMode := mtcmSecond;
+    Assert(GL_ARB_multitexture);
 
-    TexCoord2f := TexCoord2f_Second;
-    TexCoord2fv := TexCoord2fv_Second;
-    TexCoord3f := TexCoord3f_Second;
-    TexCoord3fv := TexCoord3fv_Second;
-    TexCoord4f := TexCoord4f_Second;
-    TexCoord4fv := TexCoord4fv_Second;
+    xglTexCoord2f := glTexCoord2f_Second;
+    xglTexCoord2fv := glTexCoord2fv_Second;
+    xglTexCoord3f := glTexCoord3f_Second;
+    xglTexCoord3fv := glTexCoord3fv_Second;
+    xglTexCoord4f := glTexCoord4f_Second;
+    xglTexCoord4fv := glTexCoord4fv_Second;
 
-    TexGenf := TexGenf_Second;
-    TexGenfv := TexGenfv_Second;
-    TexGeni := TexGeni_Second;
-    TexGeniv := TexGeniv_Second;
+    xglTexGenf := glTexGenf_Second;
+    xglTexGenfv := glTexGenfv_Second;
+    xglTexGeni := glTexGeni_Second;
+    xglTexGeniv := glTexGeniv_Second;
 
-    TexCoordPointer := TexCoordPointer_Second;
-    EnableClientState := EnableClientState_Second;
-    DisableClientState := DisableClientState_Second;
+    xglTexCoordPointer := xglTexCoordPointer_Second;
+    xglEnableClientState := xglEnableClientState_Second;
+    xglDisableClientState := xglDisableClientState_Second;
 
-    Enable := Enable_Second;
-    Disable := Disable_Second;
+    xglEnable := glEnable_Second;
+    xglDisable := glDisable_Second;
   end;
 end;
 
-procedure TVXMultitextureCoordinator.MapTexCoordToDual;
+procedure xglMapTexCoordToDual;
 begin
-  if FSecondTextureUnitForbidden then
+  if vSecondTextureUnitForbidden then
   begin
-    MapTexCoordToMain;
+    xglMapTexCoordToMain;
     Exit;
   end;
-  if FUpdCount <> 0 then
-    FUpdNewMode := mtcmDual
-  else if MapTexCoordMode <> mtcmDual then
+  if vUpdCount <> 0 then
+    vUpdNewMode := mtcmDual
+  else if xglMapTexCoordMode <> mtcmDual then
   begin
-    MapTexCoordMode := mtcmDual;
-///    Assert(GL_ARB_multitexture);
+    xglMapTexCoordMode := mtcmDual;
+    Assert(GL_ARB_multitexture);
 
-    TexCoord2f := TexCoord2f_Dual;
-    TexCoord2fv := TexCoord2fv_Dual;
-    TexCoord3f := TexCoord3f_Dual;
-    TexCoord3fv := TexCoord3fv_Dual;
-    TexCoord4f := TexCoord4f_Dual;
-    TexCoord4fv := TexCoord4fv_Dual;
+    xglTexCoord2f := glTexCoord2f_Dual;
+    xglTexCoord2fv := glTexCoord2fv_Dual;
+    xglTexCoord3f := glTexCoord3f_Dual;
+    xglTexCoord3fv := glTexCoord3fv_Dual;
+    xglTexCoord4f := glTexCoord4f_Dual;
+    xglTexCoord4fv := glTexCoord4fv_Dual;
 
-    TexGenf := TexGenf_Dual;
-    TexGenfv := TexGenfv_Dual;
-    TexGeni := TexGeni_Dual;
-    TexGeniv := TexGeniv_Dual;
+    xglTexGenf := glTexGenf_Dual;
+    xglTexGenfv := glTexGenfv_Dual;
+    xglTexGeni := glTexGeni_Dual;
+    xglTexGeniv := glTexGeniv_Dual;
 
-    TexCoordPointer := TexCoordPointer_Dual;
-    EnableClientState := EnableClientState_Dual;
-    DisableClientState := DisableClientState_Dual;
+    xglTexCoordPointer := xglTexCoordPointer_Dual;
+    xglEnableClientState := xglEnableClientState_Dual;
+    xglDisableClientState := xglDisableClientState_Dual;
 
-    Enable := Enable_Dual;
-    Disable := Disable_Dual;
+    xglEnable := glEnable_Dual;
+    xglDisable := glDisable_Dual;
   end;
 end;
 
-procedure TVXMultitextureCoordinator.MapTexCoordToArbitrary(const units: array of Cardinal);
+procedure xglMapTexCoordToArbitrary(const units: array of Cardinal);
 var
   i, j, n: Integer;
 begin
   n := Length(units);
-  SetLength(FComplexMapping, n);
+  SetLength(vComplexMapping, n);
   j := 0;
-  FComplexMappingN := n - 1;
-  for i := 0 to FComplexMappingN do
+  vComplexMappingN := n - 1;
+  for i := 0 to vComplexMappingN do
   begin
-    if (not FSecondTextureUnitForbidden) or (units[i] <> GL_TEXTURE1) then
+    if (not vSecondTextureUnitForbidden) or (units[i] <> GL_TEXTURE1) then
     begin
-      FComplexMapping[j] := units[i];
+      vComplexMapping[j] := units[i];
       Inc(j);
     end;
   end;
 
-  if FUpdCount <> 0 then
-    FUpdNewMode := mtcmArbitrary
-  else if MapTexCoordMode <> mtcmArbitrary then
+  if vUpdCount <> 0 then
+    vUpdNewMode := mtcmArbitrary
+  else if xglMapTexCoordMode <> mtcmArbitrary then
   begin
 
-    MapTexCoordMode := mtcmArbitrary;
-///    Assert(GL_ARB_multitexture);
+    xglMapTexCoordMode := mtcmArbitrary;
+    Assert(GL_ARB_multitexture);
 
-    TexCoord2f := TexCoord2f_Arbitrary;
-    TexCoord2fv := TexCoord2fv_Arbitrary;
-    TexCoord3f := TexCoord3f_Arbitrary;
-    TexCoord3fv := TexCoord3fv_Arbitrary;
-    TexCoord4f := TexCoord4f_Arbitrary;
-    TexCoord4fv := TexCoord4fv_Arbitrary;
+    xglTexCoord2f := glTexCoord2f_Arbitrary;
+    xglTexCoord2fv := glTexCoord2fv_Arbitrary;
+    xglTexCoord3f := glTexCoord3f_Arbitrary;
+    xglTexCoord3fv := glTexCoord3fv_Arbitrary;
+    xglTexCoord4f := glTexCoord4f_Arbitrary;
+    xglTexCoord4fv := glTexCoord4fv_Arbitrary;
 
-    TexGenf := TexGenf_Arbitrary;
-    TexGenfv := TexGenfv_Arbitrary;
-    TexGeni := TexGeni_Arbitrary;
-    TexGeniv := TexGeniv_Arbitrary;
+    xglTexGenf := glTexGenf_Arbitrary;
+    xglTexGenfv := glTexGenfv_Arbitrary;
+    xglTexGeni := glTexGeni_Arbitrary;
+    xglTexGeniv := glTexGeniv_Arbitrary;
 
-    TexCoordPointer := TexCoordPointer_Arbitrary;
-    EnableClientState := EnableClientState_Arbitrary;
-    DisableClientState := DisableClientState_Arbitrary;
+    xglTexCoordPointer := xglTexCoordPointer_Arbitrary;
+    xglEnableClientState := xglEnableClientState_Arbitrary;
+    xglDisableClientState := xglDisableClientState_Arbitrary;
 
-    Enable := Enable_Arbitrary;
-    Disable := Disable_Arbitrary;
+    xglEnable := glEnable_Arbitrary;
+    xglDisable := glDisable_Arbitrary;
   end;
 end;
 
-procedure TVXMultitextureCoordinator.MapTexCoordToArbitrary(const bitWiseUnits: Cardinal);
+procedure xglMapTexCoordToArbitrary(const bitWiseUnits: Cardinal);
 var
   i, n: Integer;
   units: array of Cardinal;
@@ -900,35 +796,35 @@ begin
       Inc(n);
     end;
   end;
-  MapTexCoordToArbitrary(units);
+  xglMapTexCoordToArbitrary(units);
 end;
 
-procedure TVXMultitextureCoordinator.MapTexCoordToArbitraryAdd(const bitWiseUnits: Cardinal);
+procedure xglMapTexCoordToArbitraryAdd(const bitWiseUnits: Cardinal);
 var
   n: Cardinal;
 begin
-  n := GetBitWiseMapping;
-  MapTexCoordToArbitrary(n or bitWiseUnits);
+  n := xglGetBitWiseMapping;
+  xglMapTexCoordToArbitrary(n or bitWiseUnits);
 end;
 
-function TVXMultitextureCoordinator.GetBitWiseMapping: Cardinal;
+function xglGetBitWiseMapping: Cardinal;
 var
   i, n: Cardinal;
   mode: TMapTexCoordMode;
 begin
-  if FUpdCount > 0 then
-    mode := FUpdNewMode
+  if vUpdCount > 0 then
+    mode := vUpdNewMode
   else
-    mode := MapTexCoordMode;
+    mode := xglMapTexCoordMode;
   n := 0;
   case mode of
-    mtcmMain: n := 1;
-    mtcmDual: n := 3;
-    mtcmSecond: n := 2;
-    mtcmArbitrary:
-      begin
-        for i := 0 to FComplexMappingN do
-          n := n or (1 shl (FComplexMapping[i] - GL_TEXTURE0));
+    mtcmMain:      n := 1;
+    mtcmDual:      n := 3;
+    mtcmSecond:    n := 2;
+    mtcmArbitrary:     
+	  begin
+        for i := 0 to vComplexMappingN do
+          n := n or (1 shl (vComplexMapping[i] - GL_TEXTURE0));
       end;
   else
     Assert(False);
@@ -936,11 +832,11 @@ begin
   Result := n;
 end;
 
-//------------------------------------------------------------------------
+// ------------------------------------------------------------------------
 initialization
-//------------------------------------------------------------------------
+// ------------------------------------------------------------------------
 
-  // Register class
-  vMultitextureCoordinatorClass := TVXMultitextureCoordinator;
+xglMapTexCoordMode := mtcmUndefined;
+xglMapTexCoordToNull;
 
 end.
