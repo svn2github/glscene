@@ -1,5 +1,5 @@
 //
-// VXScene Component Library, based on GLScene http://glscene.sourceforge.net 
+// VXScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
 
 {
@@ -8,7 +8,7 @@
 
   This unit is still under development.
 }
-unit DwsOpenVXAdapter;
+unit DwsOpenGLAdapter;
 
 interface
 
@@ -25,7 +25,7 @@ uses
   VXS.VectorGeometry,
 
   DwsExprs,
-  DwsSymbols, 
+  DwsSymbols,
   DwsComp;
 
 type
@@ -266,12 +266,12 @@ type
   public
     procedure Execute; override;
   end;
-  
+
   TglStencilMask = class(TInternalFunction)
   public
     procedure Execute; override;
   end;
-  
+
   TglStencilOp = class(TInternalFunction)
   public
     procedure Execute; override;
@@ -309,18 +309,19 @@ end;
 
 procedure TDwsOpenGLUnit.AddUnitSymbols(SymbolTable: TSymbolTable);
 var
-  CardinalSymbol,
-  ByteSymbol : TSymbol;
+  CardinalSymbol, ByteSymbol: TSymbol;
 begin
-  CardinalSymbol:=SymbolTable.FindSymbol('Cardinal');
-  if not Assigned(CardinalSymbol) then begin
-    CardinalSymbol:=TBaseSymbol.Create('Cardinal', TypCardinalID, VarAsType(0, varLongWord));
+  CardinalSymbol := SymbolTable.FindSymbol('Cardinal');
+  if not Assigned(CardinalSymbol) then
+  begin
+    CardinalSymbol := TBaseSymbol.Create('Cardinal', TypCardinalID, VarAsType(0, varLongWord));
     SymbolTable.AddSymbol(CardinalSymbol);
   end;
 
-  ByteSymbol:=SymbolTable.FindSymbol('Byte');
-  if not Assigned(ByteSymbol) then begin
-    ByteSymbol:=TBaseSymbol.Create('Byte', TypByteID, VarAsType(0, varByte));
+  ByteSymbol := SymbolTable.FindSymbol('Byte');
+  if not Assigned(ByteSymbol) then
+  begin
+    ByteSymbol := TBaseSymbol.Create('Byte', TypByteID, VarAsType(0, varByte));
     SymbolTable.AddSymbol(ByteSymbol);
   end;
 

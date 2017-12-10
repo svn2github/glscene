@@ -26,7 +26,7 @@ uses
   FMX.Types,
   FMX.Dialogs,
 
-///  VXS.OpenGL1x,
+  VXS.OpenGL1x,
   VXS.OpenGLAdapter,
   VXS.Generics,
   VXS.CrossPlatform,
@@ -76,7 +76,8 @@ type
 
   TVXContextAcceleration = (chaUnknown, chaHardware, chaSoftware);
 
-  TVXAntiAliasing = ( // Multisample Antialiasing
+  TVXAntiAliasing = (
+    // Multisample Antialiasing
     aaDefault, aaNone, aa2x, aa2xHQ, aa4x, aa4xHQ, aa6x, aa8x, aa16x,
     // Coverage Sampling Antialiasing
     csa8x, csa8xHQ, csa16x, csa16xHQ);
@@ -117,7 +118,7 @@ type
     procedure SetActive(const aActive: Boolean);
     procedure SetLayer(const Value: TVXContextLayer);
   protected
-    FVX: TVXExtensionsAndEntryPoints;
+    FGL: TGLExtensionsAndEntryPoints;
     FXVX: TVXAbstractMultitextureCoordinator;
     FVXStates: TVXStateCache;
     FTransformation: TVXTransformation;
@@ -239,7 +240,7 @@ type
     property FullScreen: Boolean read FFullScreen write FFullScreen;
   end;
 
-  PGLRCHandle = ^TVXRCHandle;
+  PVXRCHandle = ^TVXRCHandle;
 
   TVXRCHandle = record
     FRenderingContext: TVXContext;
@@ -256,12 +257,12 @@ type
   TVXContextHandle = class
   private
     FHandles: TList;
-    FLastHandle: PGLRCHandle;
+    FLastHandle: PVXRCHandle;
     FOnPrepare: TOnPrepareHandleData;
     function GetHandle: GLuint;
     function GetContext: TVXContext;
-    function SearchRC(aContext: TVXContext): PGLRCHandle;
-    function RCItem(AIndex: Integer): PGLRCHandle; inline;
+    function SearchRC(aContext: TVXContext): PVXRCHandle;
+    function RCItem(AIndex: Integer): PVXRCHandle; inline;
     procedure CheckCurrentRC;
   protected
     // Invoked by when there is no compatible context left for relocation
@@ -858,7 +859,7 @@ type
     function ValidateProgram: Boolean;
     function GetAttribLocation(const aName: string): GLint;
     function GetUniformLocation(const aName: string): GLint;
-    function GetUniformOffset(const aName: string): GLintptr;
+    function GetUniformOffset(const aName: string): PGLint;
     function GetUniformBlockIndex(const aName: string): GLint;
     function GetVaryingLocation(const aName: string): GLint;
     // Currently, NVidia-specific.
@@ -943,9 +944,9 @@ type
 
   EVXContext = class(Exception);
   EPBuffer = class(Exception);
-  EGLShader = class(EVXContext);
+  EVXShader = class(EVXContext);
 
-  { Drivers should register themselves via this function. }
+{ Drivers should register themselves via this function. }
 procedure RegisterVXContextClass(aVXContextClass: TVXContextClass);
 { The TVXContext that is the currently active context, if any.
   Returns nil if no context is active. }
@@ -967,10 +968,10 @@ implementation
 
 var
   vContextClasses: TList;
-  VXWithoutContext: TVXExtensionsAndEntryPoints;
+  GLWithoutContext: TGLExtensionsAndEntryPoints;
   vServiceWindow: TForm;
 
-  vVX: TVXExtensionsAndEntryPoints;
+  vGL: TGLExtensionsAndEntryPoints;
   vCurrentVXContext: TVXContext;
   vMainThread: Boolean;
 
@@ -1036,7 +1037,7 @@ begin
   FSharedContexts.Add(Self);
   FAcceleration := chaUnknown;
   FVXStates := TVXStateCache.Create;
-  FVX := TVXExtensionsAndEntryPoints.Create;
+  FGL := TGLExtensionsAndEntryPoints.Create;
   FTransformation := TVXTransformation.Create;
   FTransformation.LoadMatricesEnabled := True;
   VXContextManager.RegisterContext(Self);
@@ -1049,7 +1050,7 @@ begin
     DestroyContext;
   VXContextManager.UnRegisterContext(Self);
   FVXStates.Free;
-  FVX.Free;
+  FGL.Free;
   FXVX.Free;
   FTransformation.Free;
   FSharedContexts.Free;
@@ -1312,7 +1313,7 @@ begin
       oldContext.Activate;
   end;
   FAcceleration := chaUnknown;
-  /// FVX.Close;
+  FGL.Close;
 end;
 
 procedure TVXContext.Activate;
@@ -1329,7 +1330,7 @@ begin
     except
       vContextActivationFailureOccurred := True;
     end;
-    /// vVX := FVX;
+    vGL := FGL;
     vCurrentVXContext := Self;
   end
   else
@@ -1348,7 +1349,7 @@ begin
     if not vContextActivationFailureOccurred then
       DoDeactivate;
     vCurrentVXContext := nil;
-    /// vVX := VXWithoutContext;
+    vGL := GLWithoutContext;
   end
   else if FActivationCount < 0 then
     raise EVXContext.Create(strUnbalancedContexActivations);
@@ -1380,7 +1381,7 @@ end;
 
 procedure TVXContext.MakeGLCurrent;
 begin
-  vVX := FVX;
+  vGL := FGL;
 end;
 
 function TVXContext.GetXGL: TVXAbstractMultitextureCoordinator;
@@ -1431,7 +1432,7 @@ var
   I: Integer;
   bSucces: Boolean;
   aList: TList;
-  p: PGLRCHandle;
+  p: PVXRCHandle;
 
 begin
   // if handle aready allocated in current context
@@ -1441,7 +1442,7 @@ begin
 
   if vCurrentVXContext = nil then
   begin
-    ShowMessage('Failed to allocate OpenVX identifier - no active rendering context!');
+    ShowMessage('Failed to allocate OpenGL identifier - no active rendering context!');
     exit;
   end;
 
@@ -1496,7 +1497,7 @@ begin
   Result := SearchRC(aContext).FHandle > 0;
 end;
 
-function TVXContextHandle.SearchRC(aContext: TVXContext): PGLRCHandle;
+function TVXContextHandle.SearchRC(aContext: TVXContext): PVXRCHandle;
 var
   I: Integer;
 begin
@@ -1528,7 +1529,7 @@ end;
 
 function TVXContextHandle.GetHandle: GLuint;
 begin
-  // CheckCurrentRC;
+  CheckCurrentRC;
   // inline doesn't always work... so optimize it here
   if vCurrentVXContext <> FLastHandle.FRenderingContext then
     FLastHandle := SearchRC(vCurrentVXContext);
@@ -1539,7 +1540,7 @@ end;
 procedure TVXContextHandle.DestroyHandle;
 var
   oldContext: TVXContext;
-  p: PGLRCHandle;
+  p: PVXRCHandle;
   I: Integer;
 begin
   oldContext := vCurrentVXContext;
@@ -1552,7 +1553,7 @@ begin
       if p.FHandle > 0 then
       begin
         p.FRenderingContext.Activate;
-        if IsValid(p.FHandle) > 0 then
+        if IsValid(p.FHandle) = True then
           DoDestroyHandle(p.FHandle);
         Dec(p.FRenderingContext.FOwnedHandlesCount);
         p.FRenderingContext.Deactivate;
@@ -1575,7 +1576,7 @@ end;
 procedure TVXContextHandle.ContextDestroying;
 var
   I: Integer;
-  p: PGLRCHandle;
+  p: PVXRCHandle;
   aList: TList;
   bShared: Boolean;
 begin
@@ -1606,7 +1607,7 @@ begin
       if (p.FRenderingContext = vCurrentVXContext) and (p.FHandle <> 0) then
       begin
         if not bShared then
-          if IsValid(p.FHandle) > 0 then
+          if IsValid(p.FHandle) = True then
             DoDestroyHandle(p.FHandle);
         Dec(p.FRenderingContext.FOwnedHandlesCount);
         p.FHandle := 0;
@@ -1625,7 +1626,7 @@ end;
 function TVXContextHandle.GetContext: TVXContext;
 var
   I: Integer;
-  p: PGLRCHandle;
+  p: PVXRCHandle;
 begin
   Result := nil;
   // Return first context where handle is allocated
@@ -1698,7 +1699,7 @@ begin
     /// ShowMessages(cNoActiveRC);
 end;
 
-function TVXContextHandle.RCItem(AIndex: Integer): PGLRCHandle;
+function TVXContextHandle.RCItem(AIndex: Integer): PVXRCHandle;
 begin
   Result := FHandles[AIndex];
 end;
@@ -1747,7 +1748,7 @@ end;
 
 class function TVXContextHandle.IsValid(const ID: GLuint): GLboolean;
 begin
-  Result := 1;
+  Result := True;
 end;
 
 class function TVXContextHandle.IsSupported: Boolean;
@@ -1776,7 +1777,7 @@ begin
     if Assigned(FOnDestroy) then
       FOnDestroy(Self, AHandle);
     // check for error
-    { CheckError; } // from OpenVX adapter
+    CheckOpenGLError;
   end;
 end;
 
@@ -1811,7 +1812,7 @@ begin
   // delete
   glDeleteLists(AHandle, 1);
   // check for error
-  { CheckError; }
+  CheckOpenGLError;
 end;
 
 class function TVXListHandle.IsValid(const ID: GLuint): GLboolean;
@@ -1851,22 +1852,19 @@ var
   t: TVXTextureTarget;
 begin
   if not vContextActivationFailureOccurred then
-  /// with GL do
+  // reset error status
+  CheckOpenGLError;
+  { Unbind identifier from all image selectors. }
+  with GetContext.VXStates do
   begin
-    // reset error status
-    glGetError;
-    { Unbind identifier from all image selectors. }
-    with GetContext.VXStates do
-    begin
-      for a := 0 to MaxTextureImageUnits - 1 do
-        for t := Low(TVXTextureTarget) to High(TVXTextureTarget) do
-          if TextureBinding[a, t] = AHandle then
-            TextureBinding[a, t] := 0;
-    end;
-    glDeleteTextures(1, @AHandle);
-    // check for error
-    glGetError;
+    for a := 0 to MaxTextureImageUnits - 1 do
+      for t := Low(TVXTextureTarget) to High(TVXTextureTarget) do
+        if TextureBinding[a, t] = AHandle then
+          TextureBinding[a, t] := 0;
   end;
+  glDeleteTextures(1, @AHandle);
+  // check for error
+  CheckOpenGLError;
 end;
 
 class function TVXTextureHandle.IsValid(const ID: GLuint): GLboolean;
@@ -1893,15 +1891,12 @@ end;
 procedure TVXSamplerHandle.DoDestroyHandle(var AHandle: GLuint);
 begin
   if not vContextActivationFailureOccurred then
-  /// with GL do
-  begin
-    // reset error status
-    glGetError;
-    // delete
-    glDeleteSamplers(1, @AHandle);
-    // check for error
-    { CheckError; }
-  end;
+  // reset error status
+  glGetError;
+  // delete
+  glDeleteSamplers(1, @AHandle);
+  // check for error
+  CheckOpenGLError;
 end;
 
 class function TVXSamplerHandle.IsSupported: Boolean;
@@ -1945,7 +1940,7 @@ begin
     // delete
     glDeleteQueries(1, @AHandle);
     // check for error
-    { CheckError; }
+    CheckOpenGLError;
   end;
 end;
 
@@ -1993,7 +1988,7 @@ var
   I: GLuint;
 begin
   glGetQueryObjectuiv(Handle, GL_QUERY_RESULT, @I);
-  Result := 1;
+  Result := True;
 end;
 
 class function TVXQueryHandle.Transferable: Boolean;
@@ -2121,7 +2116,7 @@ begin
     // delete
     glDeleteBuffers(1, @AHandle);
     // check for error
-    { CheckError; }
+    CheckOpenGLError;
   end;
 end;
 
@@ -2415,7 +2410,7 @@ begin
     // delete
     glDeleteVertexArrays(1, @AHandle);
     // check for error
-    { CheckError; }
+    CheckOpenGLError;
   end;
 end;
 
@@ -2640,7 +2635,7 @@ begin
     // delete
     glDeleteRenderbuffers(1, @AHandle);
     // check for error
-    { CheckError; }
+    CheckOpenGLError;
   end;
 end;
 
@@ -2695,7 +2690,7 @@ begin
     // delete
     glDeleteProgramsARB(1, @AHandle);
     // check for error
-    { CheckError; }
+    CheckOpenGLError;
   end;
 end;
 
@@ -2793,7 +2788,7 @@ begin
     // reset error status
     glGetError;
     // delete
-    glDeleteObjectARB(@AHandle);
+    glDeleteObjectARB(AHandle);
     // check for error
     { CheckError; }
   end;
@@ -2807,11 +2802,11 @@ var
 begin
   maxLength := 0;
   AHandle := GetHandle;
-  glGetObjectParameterivARB(@AHandle, GL_OBJECT_INFO_LOG_LENGTH_ARB, @maxLength);
+  glGetObjectParameterivARB(AHandle, GL_OBJECT_INFO_LOG_LENGTH_ARB, @maxLength);
   SetLength(log, maxLength);
   if maxLength > 0 then
   begin
-    glGetInfoLogARB(@AHandle, maxLength, @maxLength, @log[1]);
+    glGetInfoLogARB(AHandle, maxLength, @maxLength, @log[1]);
     SetLength(log, maxLength);
   end;
   Result := string(log);
@@ -2953,10 +2948,10 @@ begin
   shader := ShaderType.CreateAndAllocate;
   try
     if shader.Handle = 0 then
-      raise EGLShader.Create('Couldn''t allocate ' + ShaderType.ClassName);
+      raise EVXShader.Create('Couldn''t allocate ' + ShaderType.ClassName);
     shader.ShaderSource(AnsiString(ShaderSource));
     if (not shader.CompileShader) or (treatWarningsAsErrors and (Pos('warning', LowerCase(shader.InfoLog)) > 0)) then
-      raise EGLShader.Create(FName + ' (' + shader.ClassName + '): '#13#10 + shader.InfoLog);
+      raise EVXShader.Create(FName + ' (' + shader.ClassName + '): '#13#10 + shader.InfoLog);
     AttachObject(shader);
   finally
     shader.Free;
@@ -3143,7 +3138,7 @@ end;
 
 procedure TVXProgramHandle.SetUniformMatrix2fv(const index: string; const val: TMatrix2f);
 begin
-  glUniformMatrix2fv(GetUniformLocation(index), 1, 0 { False } , @val);
+  glUniformMatrix2fv(GetUniformLocation(index), 1,  False , @val);
 end;
 
 function TVXProgramHandle.GetUniformMatrix3fv(const index: string): TMatrix3f;
@@ -3153,7 +3148,7 @@ end;
 
 procedure TVXProgramHandle.SetUniformMatrix3fv(const index: string; const val: TMatrix3f);
 begin
-  glUniformMatrix3fv(GetUniformLocation(index), 1, 0 { False } , @val);
+  glUniformMatrix3fv(GetUniformLocation(index), 1,  False, @val);
 end;
 
 function TVXProgramHandle.GetUniformMatrix4fv(const index: string): TMatrix;
@@ -3163,7 +3158,7 @@ end;
 
 procedure TVXProgramHandle.SetUniformMatrix4fv(const index: string; const val: TMatrix);
 begin
-  glUniformMatrix4fv(GetUniformLocation(index), 1, 0 { False } , @val);
+  glUniformMatrix4fv(GetUniformLocation(index), 1,  False, @val);
 end;
 
 procedure TVXProgramHandle.SetUniformf(const index: string; const val: Single);
@@ -3229,7 +3224,7 @@ begin
   Result := glGetUniformBufferSizeEXT(Handle, GetUniformLocation(aName));
 end;
 
-function TVXProgramHandle.GetUniformOffset(const aName: string): GLintptr;
+function TVXProgramHandle.GetUniformOffset(const aName: string): PGLint;
 begin
   Result := glGetUniformOffsetEXT(Handle, GetUniformLocation(aName));
 end;

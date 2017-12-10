@@ -11,7 +11,6 @@
    - direct state access can be used for uniforms setting.
    - economy mode for texture bindig to active units,
      i.e. if textures less than maximum units may be not one binding occur per frame.
-
 }
 
 unit VXS.MaterialEx;
@@ -28,7 +27,6 @@ uses
   FMX.Dialogs,
 
   VXS.OpenGL1x,
-  VXS.OpenGLAdapter,
   VXS.XOpenGL,
   VXS.RenderContextInfo,
   VXS.BaseClasses,
@@ -68,9 +66,7 @@ type
   TOnUniformSetting = procedure(Sender: TVXBaseShaderModel;
     var ARci: TVXRenderContextInfo) of object;
 
-  TVXBaseMaterialCollectionItem = class(
-      TVXXCollectionItem,
-      IVXMaterialLibrarySupported)
+  TVXBaseMaterialCollectionItem = class(TVXXCollectionItem, IVXMaterialLibrarySupported)
   private
     FNameHashKey: Integer;
     FUserList: TPersistentObjectList;
@@ -565,7 +561,7 @@ type
   private
     FHandle: TVXVirtualHandle;
     FScript: TStringList;
-    FCommandCache: TCombinerCache;
+    FCommandCache: TVXCombinerCache;
     procedure SetScript(AValue: TStringList);
     procedure DoAllocate(Sender: TVXVirtualHandle; var handle: GLuint);
     procedure DoDeallocate(Sender: TVXVirtualHandle; var handle: GLuint);
@@ -1872,7 +1868,7 @@ begin
 
     if glGetError <> GL_NO_ERROR then
     begin
-      ClearOpenGLError;
+      ClearGLError;
       CurrentVXContext.VXStates.ActiveTextureEnabled[FHandle.Target] := False;
       ShowMessage(Format('Unable to create texture "%s"', [Self.Name]));
       Abort;
@@ -3239,7 +3235,7 @@ begin
 
     end;
 
-    XGL.BeginUpdate;
+    xgl.BeginUpdate;
     if U > 3 then
       xgl.MapTexCoordToArbitrary(U)
     else if (FTexProps[0].Enabled)
@@ -4542,7 +4538,7 @@ begin
                 glGetProgramiv(ID, GL_GEOMETRY_VERTICES_OUT_EXT, @I);
                 if I > 0 then
                   FShaders[shtGeometry].FGeometryVerticesOut := I;
-                ClearOpenGLError;
+                ClearGLError;
               end;
 
               // Get uniforms
@@ -6599,7 +6595,7 @@ begin
 
   if glGetError <> GL_NO_ERROR then
   begin
-    ClearOpenGLError;
+    ClearGLError;
     ShowMessage(Format('Unable to create attachment "%s"', [Self.Name]));
     exit;
   end

@@ -20,7 +20,7 @@ uses
   FMX.Types,
   FMX.Graphics,
 
-  VXS.OpenGLAdapter,
+  VXS.OpenGL1x,
   VXS.VectorGeometry,
   VXS.Scene,
   VXS.VectorLists,
@@ -43,7 +43,6 @@ type
 
   TVXWaterPlane = class(TVXSceneObject)
   private
-
     FLocks: packed array of ByteBool;
     FPositions, FVelocity: packed array of Single;
     FPlaneQuadIndices: TPersistentObjectList;
@@ -71,49 +70,38 @@ type
     procedure SetSimulationFrequency(const val: Single);
     procedure SetMask(val: TVXPicture);
     procedure SetOptions(const val: TVXWaterPlaneOptions);
-
     procedure DoMaskChanged(Sender: TObject);
     procedure InitResolution;
-
     procedure IterComputeVelocity;
     procedure IterComputePositions;
     procedure IterComputeNormals;
     procedure Iterate;
-
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
     procedure DoProgress(const progressTime: TVXProgressTimes); override;
     procedure BuildList(var rci: TVXRenderContextInfo); override;
     procedure Assign(Source: TPersistent); override;
     function AxisAlignedDimensionsUnscaled: TVector; override;
-
     procedure CreateRippleAtGridPos(X, Y: Integer);
     procedure CreateRippleAtWorldPos(const X, Y, z: Single); overload;
     procedure CreateRippleAtWorldPos(const pos: TVector); overload;
     procedure CreateRippleRandom;
     procedure Reset;
-
     { CPU time (in seconds) taken by the last iteration step. }
     property LastIterationStepTime: Single read FLastIterationStepTime;
-
   published
-
     property Active: Boolean read FActive write FActive default True;
-
     { Delay between raindrops in milliseconds (0 = no rain) }
     property RainTimeInterval: Integer read FRainTimeInterval
       write SetRainTimeInterval default 500;
     property RainForce: Single read FRainForce write SetRainForce;
-
     property Viscosity: Single read FViscosity write SetViscosity;
     property Elastic: Single read FElastic write SetElastic;
     property Resolution: Integer read FResolution write SetResolution
       default 64;
     property Options: TVXWaterPlaneOptions read FOptions write SetOptions
       default cDefaultWaterPlaneOptions;
-
     { A picture whose pixels determine what part of the waterplane is active.
       Pixels with a green/gray component beyond 128 are active, the others
       are not (in short, white = active, black = inactive).

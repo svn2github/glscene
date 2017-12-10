@@ -255,7 +255,7 @@ begin
   if not FSDLWin.Active then
     raise Exception.Create('SDLWindow open failed.');
 
-  FVX.Initialize;
+  FGL.Initialize;
   MakeGLCurrent;
 end;
 
@@ -274,14 +274,14 @@ end;
 procedure TVXSDLContext.DoDestroyContext;
 begin
   // Beware, SDL will also terminate the application
-  FVX.Close;
+  FGL.Close;
   FSDLWin.Close;
 end;
 
 procedure TVXSDLContext.DoActivate;
 begin
-  if not FVX.IsInitialized then
-    FVX.Initialize;
+  if not FGL.IsInitialized then
+    FGL.Initialize;
 end;
 
 procedure TVXSDLContext.DoDeactivate;

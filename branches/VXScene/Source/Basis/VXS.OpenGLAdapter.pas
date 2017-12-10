@@ -1372,12 +1372,10 @@ type
   PFNWGLDXUNLOCKOBJECTSNVPROC = function (hDevice: THandle; count: GLint; hObjects: PHandle): BOOL; stdcall;
   {$ENDIF}
 
-
-
 type
   EOpenGLError = class(Exception);
 
-  TVXExtensionsAndEntryPoints = class
+  TGLExtensionsAndEntryPoints = class
   private
     FBuffer: string;
     FInitialized: Boolean;
@@ -1479,8 +1477,6 @@ type
     wglDXUnlockObjectsNV: PFNWGLDXUNLOCKOBJECTSNVPROC;
 
    {$ENDIF}
-
-
 
     {$IFDEF SUPPORT_GLX}
     //---------------------------------------------------------------------
@@ -1611,7 +1607,6 @@ type
     XCopyImageSubDataNV: PFNGLXCOPYIMAGESUBDATANVPROC;
    {$ENDIF}
 
-   
    {$IFDEF EGL_SUPPORT}
     OES_depth24,
     OES_depth32,
@@ -1700,10 +1695,6 @@ type
     ECopyBuffers : function(dpy:EGLDisplay; surface:EGLSurface; target:EGLNativePixmapType):EGLBoolean;
     {$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
     {$ENDIF EGL_SUPPORT}
-
-    {$IFDEF VXS_REGIONS}{$ENDREGION}{$ENDIF}
-
-    {$IFDEF VXS_REGIONS}{$REGION 'locate functions/procedures for OpenGL Utility (GLU) extensions'} {$ENDIF}
 
     // ###########################################################
     // locate functions and procedures for
@@ -1972,12 +1963,12 @@ begin
   Abort;
 end;
 
-constructor TVXExtensionsAndEntryPoints.Create;
+constructor TGLExtensionsAndEntryPoints.Create;
 begin
   FInitialized := False;
 end;
 
-function TVXExtensionsAndEntryPoints.GetAddress(ProcName: string): Pointer;
+function TGLExtensionsAndEntryPoints.GetAddress(ProcName: string): Pointer;
 var
   vName: string;
 begin
@@ -2024,7 +2015,7 @@ begin
 {$ENDIF}
 end;
 
-function TVXExtensionsAndEntryPoints.GetAddressAlt(ProcName1, ProcName2:
+function TGLExtensionsAndEntryPoints.GetAddressAlt(ProcName1, ProcName2:
   string): Pointer;
 begin
   Result := GetAddress(ProcName1);
@@ -2032,7 +2023,7 @@ begin
     Result := GetAddress(ProcName2);
 end;
 
-function TVXExtensionsAndEntryPoints.GetAddressNoSuffixes(ProcName: string): Pointer;
+function TGLExtensionsAndEntryPoints.GetAddressNoSuffixes(ProcName: string): Pointer;
 var
   vName: string;
 begin
@@ -2048,13 +2039,13 @@ begin
 {$ENDIF}
 end;
 
-function TVXExtensionsAndEntryPoints.GetCapAddress: Pointer;
+function TGLExtensionsAndEntryPoints.GetCapAddress: Pointer;
 begin
   Result := @glCap;
 end;
 
 
-function TVXExtensionsAndEntryPoints.CheckExtension(const Extension: string): Boolean;
+function TGLExtensionsAndEntryPoints.CheckExtension(const Extension: string): Boolean;
 var
   ExtPos: integer;
 begin
@@ -2071,7 +2062,7 @@ begin
 {$ENDIF}
 end;
 
-procedure TVXExtensionsAndEntryPoints.Initialize(ATemporary: boolean);
+procedure TGLExtensionsAndEntryPoints.Initialize(ATemporary: boolean);
 var
   i: integer;
   numExt: GLint;
@@ -2414,7 +2405,7 @@ begin
   FInitialized := True;
 end;
 
-procedure TVXExtensionsAndEntryPoints.Close;
+procedure TGLExtensionsAndEntryPoints.Close;
 begin
   if FDebug then
     if GL_ARB_debug_output then
@@ -2690,10 +2681,7 @@ end;
 
 {$IFDEF SUPPORT_WGL}
 
-// ReadWGLExtensions
-//
-
-procedure TVXExtensionsAndEntryPoints.ReadWGLExtensions;
+procedure TGLExtensionsAndEntryPoints.ReadWGLExtensions;
 begin
   // ARB wgl extensions
 
@@ -2767,10 +2755,7 @@ begin
 end;
 {$ENDIF}
 
-// ReadWGLImplementationProperties
-//
-
-procedure TVXExtensionsAndEntryPoints.ReadWGLImplementationProperties;
+procedure TGLExtensionsAndEntryPoints.ReadWGLImplementationProperties;
 begin
   // ARB wgl extensions
   if Assigned(wglGetExtensionsStringARB) then
@@ -2801,10 +2786,8 @@ end;
 
 
 {$IFDEF SUPPORT_GLX}
-// ReadGLXImplementationProperties
-//
 
-procedure TVXExtensionsAndEntryPoints.ReadGLXImplementationProperties;
+procedure TGLExtensionsAndEntryPoints.ReadGLXImplementationProperties;
 var
   MajorVersion, MinorVersion: integer;
   dpy: PDisplay;
@@ -2858,9 +2841,7 @@ begin
   GLX_NV_multisample_coverage := CheckExtension('GLX_NV_multisample_coverage');
 end;
 
-// ReadGLXExtensions
-
-procedure TVXExtensionsAndEntryPoints.ReadGLXExtensions;
+procedure TGLExtensionsAndEntryPoints.ReadGLXExtensions;
 begin
   // ARB glx extensions
 
@@ -2985,10 +2966,8 @@ end;
 {$ENDIF}
 
 {$IFDEF DARWIN}
-// ReadAGLImplementationProperties
-//
 
-procedure TVXExtensionsAndEntryPoints.ReadAGLImplementationProperties;
+procedure TGLExtensionsAndEntryPoints.ReadAGLImplementationProperties;
 var
   MajorVersion, MinorVersion: integer;
 begin
@@ -3019,7 +2998,7 @@ begin
   A_ycbcr_422 := CheckExtension('GL_APPLE_ycbcr_422');
 end;
 
-procedure TVXExtensionsAndEntryPoints.ReadAGLExtensions;
+procedure TGLExtensionsAndEntryPoints.ReadAGLExtensions;
 begin
   // Managing pixel format object
   aglCreatePixelFormat := GetProcAddressAGL('aglCreatePixelFormat');
@@ -3083,7 +3062,7 @@ end;
 {$ENDIF}
 
 {$IFDEF EGL_SUPPORT}
-procedure TVXExtensionsAndEntryPoints.ReadEGLImplementationProperties;
+procedure TGLExtensionsAndEntryPoints.ReadEGLImplementationProperties;
 var
   MajorVersion, MinorVersion: integer;
 begin
@@ -3112,7 +3091,7 @@ begin
   OES_vertex_half_float := CheckExtension('GL_OES_vertex_half_float');
 end;
 
-procedure TVXExtensionsAndEntryPoints.ReadEGLExtensions;
+procedure TGLExtensionsAndEntryPoints.ReadEGLExtensions;
 begin
   eglGetError := EGLGetProcAddress('eglGetError');
   eglGetDisplay := EGLGetProcAddress('eglGetDisplay');
@@ -3148,8 +3127,6 @@ begin
 end;
 {$ENDIF}
 
-// TrimAndSplitVersionString
-//
 procedure TrimAndSplitVersionString(Buffer: String; var Max, Min: Integer);
 // Peels out the X.Y form from the given Buffer which must contain a version string like "text Minor.Major.Build text"
 // at least however "Major.Minor".
@@ -3198,8 +3175,6 @@ begin
     ((actualMajorVersion = MajorVersion) and (actualMinorVersion >= MinorVersion));
 end;
 
-// InitOpenGL
-//
 function InitOpenGL: Boolean;
 begin
 {$IFNDEF EGL_SUPPORT}
@@ -3222,8 +3197,6 @@ begin
 
 end;
 
-// InitOpenGLFromLibrary
-//
 function InitOpenGLFromLibrary(const GLName, GLUName : String) : Boolean;
 begin
   Result := False;
@@ -3251,15 +3224,10 @@ begin
     CloseOpenGL;
 end;
 
-// IsOpenGLInitialized
-//
 function IsOpenGLInitialized: Boolean;
 begin
   Result :={$IFNDEF EGL_SUPPORT}(GLHandle <> INVALID_MODULEHANDLE){$ELSE}(EGL2Handle <> INVALID_MODULEHANDLE){$ENDIF};
 end;
-
-// CloseOpenGL
-//
 
 procedure CloseOpenGL;
 begin
@@ -3305,42 +3273,34 @@ begin
 {$ENDIF}
 end;
 
-// UnloadOpenGL
-//
 procedure UnloadOpenGL;
 begin
   CloseOpenGL;
 end;
 
-// LoadOpenGL
-//
 function LoadOpenGL: Boolean;
 begin
   Result := InitOpenGL;
 end;
 
-// LoadOpenGLFromLibrary
-//
 function LoadOpenGLFromLibrary(GLName, GLUName: String): Boolean;
 begin
   Result := InitOpenGLFromLibrary(GLName, GLUName);
 end;
 
-// IsOpenGLLoaded
-//
 function IsOpenGLLoaded: Boolean;
 begin
   Result := IsOpenGLInitialized();
 end;
 
-// IsMesaGL
-//
 function IsMesaGL : Boolean;
 begin
   Result := GetProcAddressGLS('glResizeBuffersMESA') <> nil;
 end;
 
+//--------------------------------------
 initialization
+//--------------------------------------
 
   Set8087CW($133F);
 

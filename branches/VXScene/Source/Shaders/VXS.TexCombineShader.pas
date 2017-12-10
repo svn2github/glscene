@@ -32,7 +32,7 @@ type
   TVXTexCombineShader = class(TVXShader)
   private
     FCombiners: TStringList;
-    FCommandCache: TCombinerCache;
+    FCommandCache: TVXCombinerCache;
     FCombinerIsValid: Boolean; // to avoid reparsing invalid stuff
     FDesignTimeEnabled: Boolean;
     FMaterialLibrary: TVXMaterialLibrary;

@@ -16,30 +16,26 @@ uses
   System.SysUtils,
   System.Classes,
   
-  VXS.OpenGLAdapter,
+  VXS.OpenGL1x,
   VXS.Context;
 
 type
 
-  TCombinerCommand = record
+  TVXCombinerCommand = record
     ActiveUnit: Integer;
     Arg1: Integer;
     Arg2: Integer;
   end;
 
-  TCombinerCache = array of TCombinerCommand;
+  TVXCombinerCache = array of TVXCombinerCommand;
 
-  // ETextureCombinerError
-  //
-  ETextureCombinerError = class(Exception)
-    ;
+  EVXTextureCombinerError = class(Exception);
 
-  { Parses a TC text description and setups combiners accordingly. 
-     *experimental* 
-     Knowledge of texture combiners is a requirement 
-     Syntax: pascal-like, one instruction per line, use '//' for comment. 
-
-     Examples: 
+  { Parses a TC text description and setups combiners accordingly.
+     *experimental*
+     Knowledge of texture combiners is a requirement
+     Syntax: pascal-like, one instruction per line, use '//' for comment.
+     Examples:
       Tex1:=Tex0;   // replace texture 1 with texture 0
       Tex1:=Tex0+Tex1; // additive blending between textures 0 and 1
       Tex1:=Tex0-Tex1; // subtractive blending between textures 0 and 1
@@ -47,42 +43,29 @@ type
       Tex1:=Tex0+Tex1-0.5; // signed additive blending between textures 0 and 1
       Tex1:=Interpolate(Tex0, Tex1, PrimaryColor); // interpolation between textures 0 and 1 using primary color as factor
       Tex1:=Dot3(Tex0, Tex1); // dot3 product between textures 0 and 1
-       
-
-     Accepted tokens: 
+     Accepted tokens:
       Tex0, Tex1, etc. : texture unit
       PrimaryColor, Col : the primary color
       ConstantColor, EnvCol : texture environment constant color
-       
+
      Tokens can be qualified with '.a' or '.alpha' to specify the alpha channel
      explicitly, and '.rgb' to specify color channels (default). You cannot mix
-     alpha and rgb tokens in the same line.
-  }
-function GetTextureCombiners(const tcCode: TStringList): TCombinerCache;
+     alpha and rgb tokens in the same line. }
+function GetTextureCombiners(const tcCode: TStringList): TVXCombinerCache;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 var
   vActiveUnit: Integer;
-  vCommandCache: TCombinerCache;
-
-// TCAssertCheck
-//
+  vCommandCache: TVXCombinerCache;
 
 procedure TCAssertCheck(const b: Boolean; const errMsg: string);
 begin
   if not b then
-    raise ETextureCombinerError.Create(errMsg);
+    raise EVXTextureCombinerError.Create(errMsg);
 end;
-
-// RemoveSpaces
-//
 
 function RemoveSpaces(const str: string): string;
 var
@@ -104,15 +87,12 @@ begin
   SetLength(Result, p - 1);
 end;
 
-// ProcessTextureCombinerArgument
-//
-
 procedure ProcessTextureCombinerArgument(arg: string; sourceEnum, operandEnum: Integer;
   const dest: string);
 var
   sourceValue, operandValue, n, p: Integer;
   origArg, qualifier: string;
-  cmd: TCombinerCommand;
+  cmd: TVXCombinerCommand;
 begin
   origArg := arg;
   p := Pos('.', arg);
@@ -187,9 +167,6 @@ begin
   vCommandCache[High(vCommandCache)] := cmd;
 end;
 
-// ProcessTextureCombinerLine
-//
-
 procedure ProcessTextureCombinerLine(const tcLine: string);
 var
   line, dest, arg1, arg2, arg3, funcname: string;
@@ -197,7 +174,7 @@ var
   destEnum, operEnum: Integer;
   sourceBaseEnum, operandBaseEnum: Integer;
   sl: TStrings;
-  cmd: TCombinerCommand;
+  cmd: TVXCombinerCommand;
 begin
   // initial filtering
   line := LowerCase(RemoveSpaces(Trim(tcLine)));
@@ -331,10 +308,7 @@ begin
     ProcessTextureCombinerArgument(arg3, sourceBaseEnum + 2, operandBaseEnum + 2, dest);
 end;
 
-// SetupTextureCombiners
-//
-
-function GetTextureCombiners(const tcCode: TStringList): TCombinerCache;
+function GetTextureCombiners(const tcCode: TStringList): TVXCombinerCache;
 var
   i: Integer;
   sl: TStringList;

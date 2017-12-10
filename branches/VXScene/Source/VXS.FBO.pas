@@ -20,7 +20,7 @@ uses
   System.SysUtils,
   FMX.Dialogs,
   
-  VXS.OpenGLAdapter,
+  VXS.OpenGL1x,
   VXS.Scene,
   VXS.Context,
   VXS.State,

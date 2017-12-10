@@ -21,7 +21,7 @@ uses
   FMX.Dialogs,
   FMX.Platform.Win,
 
-  VXS.OpenGLAdapter,
+  VXS.OpenGL1x,
   VXS.Context,
   VXS.CrossPlatform,
   VXS.State,
@@ -327,7 +327,7 @@ const
 
   procedure ChoosePixelFormat;
   begin
-    if not FVX.wglChoosePixelFormatARB(DC, @FiAttribs[0], @FfAttribs[0], 32,
+    if not wglChoosePixelFormatARB(DC, @FiAttribs[0], @FfAttribs[0], 32,
       PGLint(piFormats), @nNumFormats) then
       nNumFormats := 0;
   end;
@@ -517,8 +517,8 @@ begin
         PropagateSharedContext;
       end;
     end;
-    FVX.DebugMode := False;
-    FVX.Initialize;
+    FGL.DebugMode := False;
+    FGL.Initialize;
     MakeGLCurrent;
     // If we are using AntiAliasing, adjust filtering hints
     if AntiAliasing in [aa2xHQ, aa4xHQ, csa8xHQ, csa16xHQ] then
@@ -608,7 +608,7 @@ begin
     if rcoDebug in Options then
     begin
       AddIAttrib(WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_DEBUG_BIT_ARB);
-      FVX.DebugMode := True;
+      FGL.DebugMode := True;
     end;
 
     case Layer of
@@ -625,7 +625,7 @@ begin
     FRC := 0;
     if Assigned(FShareContext) then
     begin
-      FRC := FVX.wglCreateContextAttribsARB(aDC, FShareContext.RC, @FiAttribs[0]);
+      FRC := wglCreateContextAttribsARB(aDC, FShareContext.RC, @FiAttribs[0]);
       if FRC <> 0 then
       begin
         FSharedContexts.Add(FShareContext);
@@ -637,7 +637,7 @@ begin
 
     if FRC = 0 then
     begin
-      FRC := FVX.wglCreateContextAttribsARB(aDC, 0, @FiAttribs[0]);
+      FRC := wglCreateContextAttribsARB(aDC, 0, @FiAttribs[0]);
       if FRC = 0 then
       begin
         if VXStates.ForwardContext then
@@ -659,7 +659,7 @@ begin
       Abort;
     end;
 
-    FVX.Initialize;
+    FGL.Initialize;
     MakeGLCurrent;
     // If we are using AntiAliasing, adjust filtering hints
     if AntiAliasing in [aa2xHQ, aa4xHQ, csa8xHQ, csa16xHQ] then
@@ -777,7 +777,7 @@ begin
       try
         DoActivate;
         try
-          ClearOpenGLError;
+          ClearGLError;
           if WGL_ARB_pixel_format then
           begin
             // New pixel format selection via wglChoosePixelFormatARB
@@ -799,7 +799,7 @@ begin
                 begin
                   pixelFormat := iFormats[i];
                   iValue := GL_FALSE;
-                  FVX.wglGetPixelFormatAttribivARB(ADeviceHandle, pixelFormat, 0,
+                  wglGetPixelFormatAttribivARB(ADeviceHandle, pixelFormat, 0,
                     1, @iAttrib, @iValue);
                   if iValue = GL_FALSE then
                     break;
@@ -963,7 +963,7 @@ begin
     try
       DoActivate;
       try
-        ClearOpenGLError;
+        ClearGLError;
         if WGL_ARB_pixel_format and WGL_ARB_pbuffer then
         begin
           ClearIAttribs;
@@ -974,12 +974,12 @@ begin
               ('Format not supported for pbuffer operation.');
           iPBufferAttribs[0] := 0;
 
-          localHPBuffer := FVX.wglCreatePbufferARB(tempDC, iFormats[0], Width,
+          localHPBuffer := wglCreatePbufferARB(tempDC, iFormats[0], Width,
             Height, @iPBufferAttribs[0]);
           if localHPBuffer = 0 then
             raise EPBuffer.Create('Unabled to create pbuffer.');
           try
-            localDC := FVX.wglGetPbufferDCARB(localHPBuffer);
+            localDC := wglGetPbufferDCARB(localHPBuffer);
             if localDC = 0 then
               raise EPBuffer.Create('Unabled to create pbuffer''s DC.');
             try
@@ -1048,7 +1048,7 @@ begin
                 if rcoDebug in Options then
                 begin
                   AddIAttrib(WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_DEBUG_BIT_ARB);
-                  FVX.DebugMode := True;
+                  FGL.DebugMode := True;
                 end;
 
                 case Layer of
@@ -1062,7 +1062,7 @@ begin
                     AddIAttrib(WGL_CONTEXT_LAYER_PLANE_ARB, 2);
                 end;
 
-                localRC := FVX.wglCreateContextAttribsARB(localDC, 0,
+                localRC := wglCreateContextAttribsARB(localDC, 0,
                   @FiAttribs[0]);
                 if localRC = 0 then
 {$IFDEF USE_LOGGING}
@@ -1092,11 +1092,11 @@ begin
               end;
 
             except
-              FVX.wglReleasePBufferDCARB(localHPBuffer, localDC);
+              wglReleasePBufferDCARB(localHPBuffer, localDC);
               raise;
             end;
           except
-            FVX.wglDestroyPBufferARB(localHPBuffer);
+            wglDestroyPBufferARB(localHPBuffer);
             raise;
           end;
         end
@@ -1129,7 +1129,7 @@ begin
   end;
 
   Activate;
-  FVX.Initialize;
+  FGL.Initialize;
   // If we are using AntiAliasing, adjust filtering hints
   if AntiAliasing in [aa2xHQ, aa4xHQ, csa8xHQ, csa16xHQ] then
     VXStates.MultisampleFilterHint := hintNicest
@@ -1193,8 +1193,8 @@ begin
 
   if FHPBUFFER <> 0 then
   begin
-    FVX.wglReleasePBufferDCARB(FHPBUFFER, FDC);
-    FVX.wglDestroyPBufferARB(FHPBUFFER);
+    wglReleasePBufferDCARB(FHPBUFFER, FDC);
+    wglDestroyPBufferARB(FHPBUFFER);
     FHPBUFFER := 0;
   end;
 
@@ -1217,8 +1217,8 @@ begin
     Abort;
   end;
 
-  if not FVX.IsInitialized then
-    FVX.Initialize(CurrentVXContext = nil);
+  if not FGL.IsInitialized then
+    FGL.Initialize(CurrentVXContext = nil);
 end;
 
 procedure TVXWinContext.DoDeactivate;
