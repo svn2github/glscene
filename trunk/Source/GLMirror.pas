@@ -171,7 +171,7 @@ begin
           begin
             Enable(stStencilTest);
             ARci.GLStates.StencilClearValue := 0;
-            GL.Clear(GL_STENCIL_BUFFER_BIT);
+            gl.Clear(GL_STENCIL_BUFFER_BIT);
             SetStencilFunc(cfAlways, 1, 1);
             SetStencilOp(soReplace, soZero, soReplace);
           end;
@@ -211,10 +211,10 @@ begin
 
         if moMirrorPlaneClip in MirrorOptions then
         begin
-          GL.Enable(GL_CLIP_PLANE0);
+          gl.Enable(GL_CLIP_PLANE0);
           SetPlane(clipPlane, PlaneMake(AffineVectorMake(AbsolutePosition),
             VectorNegate(AffineVectorMake(AbsoluteDirection))));
-          GL.ClipPlane(GL_CLIP_PLANE0, @clipPlane);
+          gl.ClipPlane(GL_CLIP_PLANE0, @clipPlane);
         end;
 
         // Mirror lights
@@ -259,7 +259,7 @@ begin
         Scene.SetupLights(CurrentBuffer.LimitOf[limLights]);
         ARci.PipelineTransformation.Pop;
         if moMirrorPlaneClip in MirrorOptions then
-          GL.Disable(GL_CLIP_PLANE0);
+          gl.Disable(GL_CLIP_PLANE0);
         ARci.GLStates.Disable(stStencilTest);
 
         ARci.proxySubObject := oldProxySubObject;
@@ -295,13 +295,13 @@ begin
   begin
     hw := FWidth * 0.5;
     hh := FHeight * 0.5;
-    GL.Normal3fv(@ZVector);
-    GL.Begin_(GL_QUADS);
-    GL.Vertex3f(hw, hh, 0);
-    GL.Vertex3f(-hw, hh, 0);
-    GL.Vertex3f(-hw, -hh, 0);
-    GL.Vertex3f(hw, -hh, 0);
-    GL.End_;
+    gl.Normal3fv(@ZVector);
+    gl.Begin_(GL_QUADS);
+    gl.Vertex3f(hw, hh, 0);
+    gl.Vertex3f(-hw, hh, 0);
+    gl.Vertex3f(-hw, -hh, 0);
+    gl.Vertex3f(hw, -hh, 0);
+    gl.End_;
   end
   else
   begin
@@ -318,14 +318,14 @@ var
 begin
   with aBuffer do
   begin
-    GL.PushMatrix;
+    gl.PushMatrix;
     worldMat := Self.AbsoluteMatrix;
-    GL.MatrixMode(GL_PROJECTION);
-    GL.PushMatrix;
-    GL.LoadIdentity;
-    GL.Ortho(0, Width, 0, Height, 1, -1);
-    GL.MatrixMode(GL_MODELVIEW);
-    GL.LoadIdentity;
+    gl.MatrixMode(GL_PROJECTION);
+    gl.PushMatrix;
+    gl.LoadIdentity;
+    gl.Ortho(0, Width, 0, Height, 1, -1);
+    gl.MatrixMode(GL_MODELVIEW);
+    gl.LoadIdentity;
 
     with aBuffer.RenderingContext.GLStates do
     begin
@@ -333,20 +333,20 @@ begin
       SetGLColorWriting(False);
     end;
 
-    GL.Begin_(GL_QUADS);
+    gl.Begin_(GL_QUADS);
     p := WorldToScreen(VectorTransform(AffineVectorMake(Self.Width * 0.5,
       Self.Height * 0.5, 0), worldMat));
-    GL.Vertex3f(p.X, p.Y, 0.999);
+    gl.Vertex3f(p.X, p.Y, 0.999);
     p := WorldToScreen(VectorTransform(AffineVectorMake(-Self.Width * 0.5,
       Self.Height * 0.5, 0), worldMat));
-    GL.Vertex3f(p.X, p.Y, 0.999);
+    gl.Vertex3f(p.X, p.Y, 0.999);
     p := WorldToScreen(VectorTransform(AffineVectorMake(-Self.Width * 0.5,
       -Self.Height * 0.5, 0), worldMat));
-    GL.Vertex3f(p.X, p.Y, 0.999);
+    gl.Vertex3f(p.X, p.Y, 0.999);
     p := WorldToScreen(VectorTransform(AffineVectorMake(Self.Width * 0.5,
       -Self.Height * 0.5, 0), worldMat));
-    GL.Vertex3f(p.X, p.Y, 0.999);
-    GL.End_;
+    gl.Vertex3f(p.X, p.Y, 0.999);
+    gl.End_;
 
     with aBuffer.RenderingContext.GLStates do
     begin
@@ -354,10 +354,10 @@ begin
       SetGLColorWriting(True);
     end;
 
-    GL.MatrixMode(GL_PROJECTION);
-    GL.PopMatrix;
-    GL.MatrixMode(GL_MODELVIEW);
-    GL.PopMatrix;
+    gl.MatrixMode(GL_PROJECTION);
+    gl.PopMatrix;
+    gl.MatrixMode(GL_MODELVIEW);
+    gl.PopMatrix;
   end;
 end;
 

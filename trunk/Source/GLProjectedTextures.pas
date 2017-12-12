@@ -263,24 +263,24 @@ begin
     self.RenderChildren(0, Count - 1, ARci);
 
   //generate planes
-  GL.TexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_EYE_LINEAR);
-  GL.TexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_EYE_LINEAR);
-  GL.TexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_EYE_LINEAR);
-  GL.TexGeni(GL_Q, GL_TEXTURE_GEN_MODE, GL_EYE_LINEAR);
+  gl.TexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_EYE_LINEAR);
+  gl.TexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_EYE_LINEAR);
+  gl.TexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_EYE_LINEAR);
+  gl.TexGeni(GL_Q, GL_TEXTURE_GEN_MODE, GL_EYE_LINEAR);
 
-  GL.TexGenfv(GL_S, GL_EYE_PLANE, @PS);
-  GL.TexGenfv(GL_T, GL_EYE_PLANE, @PT);
-  GL.TexGenfv(GL_R, GL_EYE_PLANE, @PR);
-  GL.TexGenfv(GL_Q, GL_EYE_PLANE, @PQ);
+  gl.TexGenfv(GL_S, GL_EYE_PLANE, @PS);
+  gl.TexGenfv(GL_T, GL_EYE_PLANE, @PT);
+  gl.TexGenfv(GL_R, GL_EYE_PLANE, @PR);
+  gl.TexGenfv(GL_Q, GL_EYE_PLANE, @PQ);
 
   //options
   Arci.GLStates.Disable(stLighting);
   Arci.GLStates.DepthFunc := cfLEqual;
   Arci.GLStates.Enable(stBlend);
-  GL.Enable(GL_TEXTURE_GEN_S);
-  GL.Enable(GL_TEXTURE_GEN_T);
-  GL.Enable(GL_TEXTURE_GEN_R);
-  GL.Enable(GL_TEXTURE_GEN_Q);
+  gl.Enable(GL_TEXTURE_GEN_S);
+  gl.Enable(GL_TEXTURE_GEN_T);
+  gl.Enable(GL_TEXTURE_GEN_R);
+  gl.Enable(GL_TEXTURE_GEN_Q);
 
   //second pass (original) first pass (inverse): for each emiter,
   //render projecting the texture summing all emitters
@@ -325,14 +325,14 @@ begin
 
   // LoseTexMatrix
   ARci.GLStates.SetBlendFunc(bfOne, bfZero);
-  GL.Disable(GL_TEXTURE_GEN_S);
-  GL.Disable(GL_TEXTURE_GEN_T);
-  GL.Disable(GL_TEXTURE_GEN_R);
-  GL.Disable(GL_TEXTURE_GEN_Q);
+  gl.Disable(GL_TEXTURE_GEN_S);
+  gl.Disable(GL_TEXTURE_GEN_T);
+  gl.Disable(GL_TEXTURE_GEN_R);
+  gl.Disable(GL_TEXTURE_GEN_Q);
 
-  GL.MatrixMode(GL_TEXTURE);
-  GL.LoadIdentity;
-  GL.MatrixMode(GL_MODELVIEW);
+  gl.MatrixMode(GL_TEXTURE);
+  gl.LoadIdentity;
+  gl.MatrixMode(GL_MODELVIEW);
 
   ARci.GLStates.DepthFunc := cfLEqual;
 

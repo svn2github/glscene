@@ -2164,10 +2164,10 @@ procedure TGLGizmoEx.InternalRender(Sender: TObject; var rci: TGLRenderContextIn
         AVector := VectorScale(AVector, 0.25);
         AVector := VectorAdd(AVector, BB.BBox[I]);
 
-        GL.Begin_(GL_LINES);
-        GL.Vertex3f(BB.BBox[I].X, BB.BBox[I].Y, BB.BBox[I].Z);
-        GL.Vertex3f(AVector.X, AVector.Y, AVector.Z);
-        GL.End_;
+        gl.Begin_(GL_LINES);
+        gl.Vertex3f(BB.BBox[I].X, BB.BBox[I].Y, BB.BBox[I].Z);
+        gl.Vertex3f(AVector.X, AVector.Y, AVector.Z);
+        gl.End_;
       end;
     end;
   end;
@@ -2187,8 +2187,8 @@ procedure TGLGizmoEx.InternalRender(Sender: TObject; var rci: TGLRenderContextIn
     FLayout := GLCrossPlatform.tlCenter;
     FAlignment := taCenter;
 
-    GL.MatrixMode(GL_MODELVIEW);
-    GL.PushMatrix;
+    gl.MatrixMode(GL_MODELVIEW);
+    gl.PushMatrix;
     wm := rci.PipelineTransformation.ViewMatrix^;
 
     TransposeMatrix(wm);
@@ -2199,11 +2199,11 @@ procedure TGLGizmoEx.InternalRender(Sender: TObject; var rci: TGLRenderContextIn
           wm.V[I].C[J] := 1
         else
           wm.V[I].C[J] := 0;
-    GL.LoadMatrixf(@wm);
+    gl.LoadMatrixf(@wm);
 
     rci.GLStates.PolygonMode := pmFill;
-    GL.Scalef(Scale.X, Scale.Y, Scale.Z);
-    GL.Translatef(Position.X, Position.Y, Position.Z);
+    gl.Scalef(Scale.X, Scale.Y, Scale.Z);
+    gl.Translatef(Position.X, Position.Y, Position.Z);
 
 
     if Color.W <> 1 then
@@ -2215,7 +2215,7 @@ procedure TGLGizmoEx.InternalRender(Sender: TObject; var rci: TGLRenderContextIn
     rci.GLStates.Disable(stCullFace);
 
     FLabelFont.RenderString(rci, Text, FAlignment, FLayout, Color);
-    GL.PopMatrix;
+    gl.PopMatrix;
 
   end;
 
@@ -2236,10 +2236,10 @@ begin
     else
       rci.GLStates.LineWidth := 1;
 
-    GL.ColorMaterial(GL_FRONT, GL_EMISSION);
+    gl.ColorMaterial(GL_FRONT, GL_EMISSION);
     rci.GLStates.Enable(stColorMaterial);
 
-    GL.Color4fv(@FBoundingBoxColor.Color);
+    gl.Color4fv(@FBoundingBoxColor.Color);
 
     for I := 0 to FSelectedObjects.Count - 1 do
       ShowBoundingBox(TGLBaseSceneObject(FSelectedObjects.Hit[I]));

@@ -260,21 +260,21 @@ begin
     psrOpenGL:
       begin
         mrci.GLStates.PushAttrib([sttEnable, sttEval]);
-        //GL.Enable(GL_MAP2_TEXTURE_COORD_3);
-        GL.Enable(GL_MAP2_VERTEX_3);
-        GL.Enable(GL_AUTO_NORMAL);
-        GL.Enable(GL_NORMALIZE);
+        //gl.Enable(GL_MAP2_TEXTURE_COORD_3);
+        gl.Enable(GL_MAP2_VERTEX_3);
+        gl.Enable(GL_AUTO_NORMAL);
+        gl.Enable(GL_NORMALIZE);
 
         case FBasis of
           psbBezier:
             begin
-              GL.MapGrid2f(FResolution, 1, 0, FResolution, 0, 1);
-              GL.Map2f(GL_MAP2_TEXTURE_COORD_3,
+              gl.MapGrid2f(FResolution, 1, 0, FResolution, 0, 1);
+              gl.Map2f(GL_MAP2_TEXTURE_COORD_3,
                 0, 1, 3, FOrderU,
                 0, 1, 3 * FCountU, FOrderV,
                 @FWeightedControlPoints.List[0]);
-              GL.Map2f(GL_MAP2_VERTEX_3, 0, 1, 3, FCountU, 0, 1, 3 * FCountU, FCountV, @FWeightedControlPoints.List[0]);
-              GL.EvalMesh2(GL_FILL, 0, FResolution, 0, FResolution);
+              gl.Map2f(GL_MAP2_VERTEX_3, 0, 1, 3, FCountU, 0, 1, 3 * FCountU, FCountV, @FWeightedControlPoints.List[0]);
+              gl.EvalMesh2(GL_FILL, 0, FResolution, 0, FResolution);
             end;
 
           psbBSpline:
@@ -517,24 +517,24 @@ begin
   mrci.GLStates.Enable(stAutoNormal);
   mrci.GLStates.Enable(stNormalize);
 
-  GL.MapGrid2f(FResolution, MaxU, MinU, FResolution, MinV, MaxV);
+  gl.MapGrid2f(FResolution, MaxU, MinU, FResolution, MinV, MaxV);
 
   if FTempTexCoords.Count > 0 then
   begin
-    GL.Enable(GL_MAP2_TEXTURE_COORD_3);
-    GL.Map2f(GL_MAP2_TEXTURE_COORD_3,
+    gl.Enable(GL_MAP2_TEXTURE_COORD_3);
+    gl.Map2f(GL_MAP2_TEXTURE_COORD_3,
       0, 1, 3, FCountU,
       0, 1, 3 * FCountU, FCountV,
       @FTempTexCoords.List[0]);
   end;
 
-  GL.Enable(GL_MAP2_VERTEX_3);
-  GL.Map2f(GL_MAP2_VERTEX_3,
+  gl.Enable(GL_MAP2_VERTEX_3);
+  gl.Map2f(GL_MAP2_VERTEX_3,
     0, 1, 3, FCountU,
     0, 1, 3 * FCountU, FCountV,
     @FTempControlPoints.List[0]);
 
-  GL.EvalMesh2(GL_FILL, 0, FResolution, 0, FResolution);
+  gl.EvalMesh2(GL_FILL, 0, FResolution, 0, FResolution);
 
   mrci.GLStates.PopAttrib;
 end;

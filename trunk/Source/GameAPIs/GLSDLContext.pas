@@ -18,8 +18,9 @@ uses
   Winapi.Windows,
   System.Classes,
   System.SysUtils,
-  
+
   OpenGL1x,
+  XOpenGL,
   GLContext,
   GLSDLWindow,
   GLScene,
@@ -251,8 +252,10 @@ begin
   if not FSDLWin.Active then
     raise Exception.Create('SDLWindow open failed.');
 
-  FGL.Initialize;
-  MakeGLCurrent;
+   xgl.MapTexCoordToNull;
+   ReadExtensions;
+   ReadImplementationProperties;
+   xgl.MapTexCoordToMain;
 end;
 
 procedure TGLSDLContext.DoCreateMemoryContext(outputDevice: HWND; width, height: Integer; BufferCount: integer);
@@ -268,15 +271,13 @@ end;
 
 procedure TGLSDLContext.DoDestroyContext;
 begin
-  // Beware, SDL will also terminate the application
-  FGL.Close;
-  FSDLWin.Close;
+   // Beware, SDL will also terminate the application
+   FSDLWin.Close;
 end;
 
 procedure TGLSDLContext.DoActivate;
 begin
-  if not FGL.IsInitialized then
-    FGL.Initialize;
+   // nothing particular (only one context, always active)
 end;
 
 procedure TGLSDLContext.DoDeactivate;

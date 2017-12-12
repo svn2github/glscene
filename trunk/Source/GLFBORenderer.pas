@@ -388,7 +388,7 @@ begin
     FFbo.DetachTexture(I);
 
   if FMaxSize = 0 then
-    GL.GetIntegerv(GL_MAX_RENDERBUFFER_SIZE, @FMaxSize);
+    gl.GetIntegerv(GL_MAX_RENDERBUFFER_SIZE, @FMaxSize);
   if Width > FMaxSize then
   begin
     FWidth := FMaxSize;
@@ -425,14 +425,14 @@ begin
 
   if FUseLibraryAsMultiTarget or Assigned(FOnSetTextureTargets) then
   begin
-    if not(GL.ARB_draw_buffers or GL.ATI_draw_buffers) then
+    if not(gl.ARB_draw_buffers or gl.ATI_draw_buffers) then
     begin
       GLSLogger.LogError('Hardware do not support MRT');
       Active := False;
       exit;
     end;
     if FMaxAttachment = 0 then
-      GL.GetIntegerv(GL_MAX_COLOR_ATTACHMENTS, @FMaxAttachment);
+      gl.GetIntegerv(GL_MAX_COLOR_ATTACHMENTS, @FMaxAttachment);
 
     if Assigned(FOnSetTextureTargets) then
     begin
@@ -528,16 +528,16 @@ begin
 
   if FColorAttachment = 0 then
   begin
-    GL.DrawBuffer(GL_NONE);
-    GL.ReadBuffer(GL_NONE);
+    gl.DrawBuffer(GL_NONE);
+    gl.ReadBuffer(GL_NONE);
   end
   else
-    GL.DrawBuffers(FColorAttachment, @cDrawBuffers);
+    gl.DrawBuffers(FColorAttachment, @cDrawBuffers);
 
   DoPostInitialize;
   FFbo.Unbind;
 
-  GL.CheckError;
+  gl.CheckError;
   ClearStructureChanged;
 end;
 
@@ -666,7 +666,7 @@ begin
       ARci.GLStates.ColorClearValue := FBackgroundColor.Color;
     end;
 
-    GL.Clear(GetClearBits);
+    gl.Clear(GetClearBits);
 
     FFbo.PreRender;
     // render to fbo

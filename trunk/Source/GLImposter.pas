@@ -412,7 +412,7 @@ begin
   FTexture.AllocateHandle;
   FTexture.Target := ttTexture2D;
   rci.GLStates.TextureBinding[0, ttTexture2D] := FTexture.Handle;
-  if GL.EXT_texture_edge_clamp then
+  if gl.EXT_texture_edge_clamp then
     i := GL_CLAMP_TO_EDGE
   else
     i := GL_CLAMP;
@@ -459,15 +459,15 @@ begin
       filter := GL_NEAREST
     else
       filter := GL_LINEAR;
-    GL.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
-    GL.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
+    gl.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
+    gl.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
     if FModulated then
     begin
-      GL.Color4fv(@XYZWHmgVector);
-      GL.TexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+      gl.Color4fv(@XYZWHmgVector);
+      gl.TexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
     end
     else
-      GL.TexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+      gl.TexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 
     mat := rci.PipelineTransformation.ModelViewMatrix^;
     FVx.X := mat.V[0].X;
@@ -504,7 +504,7 @@ begin
     FQuad[3] := VectorSubtract(VectorCombine(FVx, FVy, fx, -fy + yOffset),
       FStaticOffset);
 
-    GL.Begin_(GL_QUADS);
+    gl.Begin_(GL_QUADS);
   end;
 end;
 
@@ -522,22 +522,22 @@ var
   pos: TVector;
 begin
   VectorCombine(objPos, FQuad[0], size, pos);
-  GL.TexCoord2f(texExtents.Z, texExtents.W);
-  GL.Vertex3fv(@pos);
+  gl.TexCoord2f(texExtents.Z, texExtents.W);
+  gl.Vertex3fv(@pos);
   VectorCombine(objPos, FQuad[1], size, pos);
-  GL.TexCoord2f(texExtents.X, texExtents.W);
-  GL.Vertex3fv(@pos);
+  gl.TexCoord2f(texExtents.X, texExtents.W);
+  gl.Vertex3fv(@pos);
   VectorCombine(objPos, FQuad[2], size, pos);
-  GL.TexCoord2f(texExtents.X, texExtents.Y);
-  GL.Vertex3fv(@pos);
+  gl.TexCoord2f(texExtents.X, texExtents.Y);
+  gl.Vertex3fv(@pos);
   VectorCombine(objPos, FQuad[3], size, pos);
-  GL.TexCoord2f(texExtents.Z, texExtents.Y);
-  GL.Vertex3fv(@pos);
+  gl.TexCoord2f(texExtents.Z, texExtents.Y);
+  gl.Vertex3fv(@pos);
 end;
 
 procedure TImposter.EndRender(var rci: TGLRenderContextInfo);
 begin
-  GL.End_;
+  gl.End_;
   rci.GLStates.ActiveTextureEnabled[ttTexture2D] := False;
 end;
 
@@ -745,7 +745,7 @@ end;
 procedure TGLImposterBuilder.InitializeImpostorTexture(const textureSize:
   TGLPoint);
 begin
-    GL.TexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, textureSize.X, textureSize.Y, 0,
+    gl.TexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, textureSize.X, textureSize.Y, 0,
       GL_RGBA, GL_UNSIGNED_BYTE, nil);
 end;
 
@@ -1172,14 +1172,14 @@ begin
   if destImposter.Texture.Handle = 0 then
   begin
     {$IFDEF USE_OPENGL_DEBUG}
-      if GL.GREMEDY_string_marker then
-        GL.StringMarkerGREMEDY(22, 'Imposter texture setup');
+      if gl.GREMEDY_string_marker then
+        gl.StringMarkerGREMEDY(22, 'Imposter texture setup');
     {$ENDIF}
     destImposter.PrepareTexture(rci);
     InitializeImpostorTexture(FTextureSize);
   end;
 
-  GL.PixelTransferf(GL_ALPHA_SCALE, FSamplesAlphaScale);
+  gl.PixelTransferf(GL_ALPHA_SCALE, FSamplesAlphaScale);
 
   // Now render each sample
   curSample := 0;
@@ -1194,7 +1194,7 @@ begin
       RotateVector(cameraOffset, YHmgVector, (c2PI * i) / corona.Samples);
       ScaleVector(cameraOffset, -radius * 2);
       rci.GLStates.DepthWriteMask := True;
-      GL.Clear(GL_COLOR_BUFFER_BIT + GL_DEPTH_BUFFER_BIT);
+      gl.Clear(GL_COLOR_BUFFER_BIT + GL_DEPTH_BUFFER_BIT);
 
       LM := CreateLookAtMatrix(cameraOffset, NullHmgVector, YHmgVector);
       if Lighting = siblStaticLighting then
@@ -1202,14 +1202,14 @@ begin
       rci.PipelineTransformation.SetViewMatrix(MatrixMultiply(
         CreateTranslationMatrix(FBuildOffset.AsVector), LM));
       impostoredObject.Render(rci);
-      GL.CheckError;
+      gl.CheckError;
 
       xDest := (curSample mod FSamplesPerAxis.X) * SampleSize;
       yDest := (curSample div FSamplesPerAxis.X) * SampleSize;
 
       rci.GLStates.TextureBinding[0, ttTexture2D] :=
         destImposter.Texture.Handle;
-      GL.CopyTexSubImage2D(GL_TEXTURE_2D, 0, xDest, yDest, xSrc, ySrc,
+      gl.CopyTexSubImage2D(GL_TEXTURE_2D, 0, xDest, yDest, xSrc, ySrc,
         SampleSize, SampleSize);
 
       Inc(curSample);
@@ -1217,10 +1217,10 @@ begin
   end;
 
   // Restore buffer stuff
-  GL.PixelTransferf(GL_ALPHA_SCALE, 1);
+  gl.PixelTransferf(GL_ALPHA_SCALE, 1);
   rci.PipelineTransformation.Pop;
 
-  GL.Clear(GL_COLOR_BUFFER_BIT + GL_DEPTH_BUFFER_BIT);
+  gl.Clear(GL_COLOR_BUFFER_BIT + GL_DEPTH_BUFFER_BIT);
   if Lighting = siblStaticLighting then
     (rci.scene as TGLScene).SetupLights(rci.GLStates.MaxLights);
 end;
@@ -1235,7 +1235,7 @@ begin
   if CurrentGLContext = nil then
     maxTexSize := 16 * 1024
   else
-    GL.GetIntegerv(GL_MAX_TEXTURE_SIZE, @maxTexSize);
+    gl.GetIntegerv(GL_MAX_TEXTURE_SIZE, @maxTexSize);
   maxSamples := Sqr(maxTexSize div SampleSize);
   if nbSamples < maxSamples then
   begin

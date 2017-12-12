@@ -328,8 +328,8 @@ var
   rnd: Single;
 begin
 {$IFDEF USE_OPENGL_DEBUG}
-  if GL.GREMEDY_string_marker then
-    GL.StringMarkerGREMEDY(14, 'LensFlare.Rays');
+  if gl.GREMEDY_string_marker then
+    gl.StringMarkerGREMEDY(14, 'LensFlare.Rays');
 {$ENDIF}
 
   with StateCache do
@@ -339,19 +339,19 @@ begin
     Disable(stLineStipple);
   end;
 
-  GL.Begin_(GL_LINES);
+  gl.Begin_(GL_LINES);
   for i := 0 to Resolution * 20 - 1 do
   begin
     if (i and 1) <> 0 then
       rnd := 1.5 * Random * size
     else
       rnd := Random * size;
-    GL.Color4fv(RaysGradient.FromColor.AsAddress);
-    GL.Vertex2f(0, 0);
-    GL.Color4fv(RaysGradient.ToColor.AsAddress);
-    GL.Vertex2f(rnd * FCos20Res[i], rnd * FSin20Res[i] * Squeeze);
+    gl.Color4fv(RaysGradient.FromColor.AsAddress);
+    gl.Vertex2f(0, 0);
+    gl.Color4fv(RaysGradient.ToColor.AsAddress);
+    gl.Vertex2f(rnd * FCos20Res[i], rnd * FSin20Res[i] * Squeeze);
   end;
-  GL.End_;
+  gl.End_;
 end;
 
 procedure TGLLensFlare.RenderStreaks(StateCache: TGLStateCache);
@@ -360,23 +360,23 @@ var
   a, f, s, c: Single;
 begin
 {$IFDEF USE_OPENGL_DEBUG}
-  if GL.GREMEDY_string_marker then
-    GL.StringMarkerGREMEDY(17, 'LensFlare.Streaks');
+  if gl.GREMEDY_string_marker then
+    gl.StringMarkerGREMEDY(17, 'LensFlare.Streaks');
 {$ENDIF}
   StateCache.Enable(stLineSmooth);
   StateCache.LineWidth := StreakWidth;
   a := c2PI / NumStreaks;
   f := 1.5 * FCurrSize;
-  GL.Begin_(GL_LINES);
+  gl.Begin_(GL_LINES);
   for i := 0 to NumStreaks - 1 do
   begin
     SinCosine(StreakAngle * cPIdiv180 + a * i, f, s, c);
-    GL.Color4fv(StreaksGradient.FromColor.AsAddress);
-    GL.Vertex3fv(@NullVector);
-    GL.Color4fv(StreaksGradient.ToColor.AsAddress);
-    GL.Vertex2f(c, Squeeze * s);
+    gl.Color4fv(StreaksGradient.FromColor.AsAddress);
+    gl.Vertex3fv(@NullVector);
+    gl.Color4fv(StreaksGradient.ToColor.AsAddress);
+    gl.Vertex2f(c, Squeeze * s);
   end;
-  GL.End_;
+  gl.End_;
   StateCache.Disable(stLineSmooth);
 end;
 
@@ -386,11 +386,11 @@ var
   rW, s0, c0, s, c: Single;
 begin
 {$IFDEF USE_OPENGL_DEBUG}
-  if GL.GREMEDY_string_marker then
-    GL.StringMarkerGREMEDY(14, 'LensFlare.Ring');
+  if gl.GREMEDY_string_marker then
+    gl.StringMarkerGREMEDY(14, 'LensFlare.Ring');
 {$ENDIF}
   rW := FCurrSize * (1 / 15); // Ring width
-  GL.Begin_(GL_QUADS);
+  gl.Begin_(GL_QUADS);
   s0 := 0;
   c0 := 0.6;
   for i := 0 to Resolution - 1 do
@@ -400,24 +400,24 @@ begin
     s0 := FSinRes[i] * 0.6 * Squeeze;
     c0 := FCosRes[i] * 0.6;
 
-    GL.Color4fv(GlowGradient.ToColor.AsAddress);
-    GL.Vertex2f((FCurrSize - rW) * c, (FCurrSize - rW) * s);
-    GL.Color4fv(RingGradient.FromColor.AsAddress);
-    GL.Vertex2f(FCurrSize * c, Squeeze * FCurrSize * s);
+    gl.Color4fv(GlowGradient.ToColor.AsAddress);
+    gl.Vertex2f((FCurrSize - rW) * c, (FCurrSize - rW) * s);
+    gl.Color4fv(RingGradient.FromColor.AsAddress);
+    gl.Vertex2f(FCurrSize * c, Squeeze * FCurrSize * s);
 
-    GL.Vertex2f(FCurrSize * c0, FCurrSize * s0);
-    GL.Color4fv(GlowGradient.ToColor.AsAddress);
-    GL.Vertex2f((FCurrSize - rW) * c0, (FCurrSize - rW) * s0);
+    gl.Vertex2f(FCurrSize * c0, FCurrSize * s0);
+    gl.Color4fv(GlowGradient.ToColor.AsAddress);
+    gl.Vertex2f((FCurrSize - rW) * c0, (FCurrSize - rW) * s0);
 
-    GL.Color4fv(RingGradient.FromColor.AsAddress);
-    GL.Vertex2f(FCurrSize * c, FCurrSize * s);
-    GL.Vertex2f(FCurrSize * c0, FCurrSize * s0);
+    gl.Color4fv(RingGradient.FromColor.AsAddress);
+    gl.Vertex2f(FCurrSize * c, FCurrSize * s);
+    gl.Vertex2f(FCurrSize * c0, FCurrSize * s0);
 
-    GL.Color4fv(GlowGradient.ToColor.AsAddress);
-    GL.Vertex2f((FCurrSize + rW) * c0, (FCurrSize + rW) * s0);
-    GL.Vertex2f((FCurrSize + rW) * c, (FCurrSize + rW) * s);
+    gl.Color4fv(GlowGradient.ToColor.AsAddress);
+    gl.Vertex2f((FCurrSize + rW) * c0, (FCurrSize + rW) * s0);
+    gl.Vertex2f((FCurrSize + rW) * c, (FCurrSize + rW) * s);
   end;
-  GL.End_;
+  gl.End_;
 end;
 
 procedure TGLLensFlare.RenderSecondaries(const posVector: TAffineVector);
@@ -428,8 +428,8 @@ var
   grad: TGLFlareGradient;
 begin
 {$IFDEF USE_OPENGL_DEBUG}
-  if GL.GREMEDY_string_marker then
-    GL.StringMarkerGREMEDY(21, 'LensFlare.Secondaries');
+  if gl.GREMEDY_string_marker then
+    gl.StringMarkerGREMEDY(21, 'LensFlare.Secondaries');
 {$ENDIF}
   // Other secondaries (plain gradiented circles, like the glow):
   for j := 1 to NumSecs do
@@ -450,13 +450,13 @@ begin
       grad := SecondariesGradient;
     rnd := (Random + 0.1) * FCurrSize * 0.25;
 
-    GL.Begin_(GL_TRIANGLE_FAN);
-    GL.Color4fv(grad.FromColor.AsAddress);
-    GL.Vertex2f(v.X, v.Y);
-    GL.Color4fv(grad.ToColor.AsAddress);
+    gl.Begin_(GL_TRIANGLE_FAN);
+    gl.Color4fv(grad.FromColor.AsAddress);
+    gl.Vertex2f(v.X, v.Y);
+    gl.Color4fv(grad.ToColor.AsAddress);
     for i := 0 to Resolution - 1 do
-      GL.Vertex2f(FCosRes[i] * rnd + v.X, FSinRes[i] * rnd + v.Y);
-    GL.End_;
+      gl.Vertex2f(FCosRes[i] * rnd + v.X, FSinRes[i] * rnd + v.Y);
+    gl.End_;
   end;
 end;
 
@@ -520,15 +520,15 @@ begin
   end;
 
   // Prepare matrices
-  GL.PushMatrix;
-  GL.LoadMatrixf(@CurrentBuffer.BaseProjectionMatrix);
+  gl.PushMatrix;
+  gl.LoadMatrixf(@CurrentBuffer.BaseProjectionMatrix);
 
-  GL.MatrixMode(GL_PROJECTION);
-  GL.PushMatrix;
+  gl.MatrixMode(GL_PROJECTION);
+  gl.PushMatrix;
   projMatrix := IdentityHmgMatrix;
   projMatrix.V[0].X := 2 / rci.viewPortSize.cx;
   projMatrix.V[1].Y := 2 / rci.viewPortSize.cy;
-  GL.LoadMatrixf(@projMatrix);
+  gl.LoadMatrixf(@projMatrix);
 
   MakeVector(posVector,
     screenPos.X - rci.viewPortSize.cx * 0.5,
@@ -537,7 +537,7 @@ begin
 
   if AutoZTest then
   begin
-    if dynamicSize and (GL.HP_occlusion_test or
+    if dynamicSize and (gl.HP_occlusion_test or
       TGLOcclusionQueryHandle.IsSupported) then
     begin
       // hardware-based occlusion test is possible
@@ -564,22 +564,22 @@ begin
       else
       begin
         // occlusion_test, stalls rendering a bit
-        GL.Enable(GL_OCCLUSION_TEST_HP);
+        gl.Enable(GL_OCCLUSION_TEST_HP);
       end;
 
-      GL.Begin_(GL_QUADS);
-      GL.Vertex3f(posVector.X + 2, posVector.Y, 1);
-      GL.Vertex3f(posVector.X, posVector.Y + 2, 1);
-      GL.Vertex3f(posVector.X - 2, posVector.Y, 1);
-      GL.Vertex3f(posVector.X, posVector.Y - 2, 1);
-      GL.End_;
+      gl.Begin_(GL_QUADS);
+      gl.Vertex3f(posVector.X + 2, posVector.Y, 1);
+      gl.Vertex3f(posVector.X, posVector.Y + 2, 1);
+      gl.Vertex3f(posVector.X - 2, posVector.Y, 1);
+      gl.Vertex3f(posVector.X, posVector.Y - 2, 1);
+      gl.End_;
 
       if TGLOcclusionQueryHandle.IsSupported then
         FOcclusionQuery.EndQuery
       else
       begin
-        GL.Disable(GL_OCCLUSION_TEST_HP);
-        GL.GetBooleanv(GL_OCCLUSION_TEST_RESULT_HP, @FFlareIsNotOccluded)
+        gl.Disable(GL_OCCLUSION_TEST_HP);
+        gl.GetBooleanv(GL_OCCLUSION_TEST_RESULT_HP, @FFlareIsNotOccluded)
       end;
 
       rci.GLStates.DepthFunc := cfLEqual;
@@ -608,19 +608,19 @@ begin
 
     if [feGlow, feStreaks, feRays, feRing] * Elements <> [] then
     begin
-      GL.Translatef(posVector.X, posVector.Y, posVector.Z);
+      gl.Translatef(posVector.X, posVector.Y, posVector.Z);
 
       // Glow (a circle with transparent edges):
       if feGlow in Elements then
       begin
-        GL.Begin_(GL_TRIANGLE_FAN);
-        GL.Color4fv(GlowGradient.FromColor.AsAddress);
-        GL.Vertex2f(0, 0);
-        GL.Color4fv(GlowGradient.ToColor.AsAddress);
+        gl.Begin_(GL_TRIANGLE_FAN);
+        gl.Color4fv(GlowGradient.FromColor.AsAddress);
+        gl.Vertex2f(0, 0);
+        gl.Color4fv(GlowGradient.ToColor.AsAddress);
         for i := 0 to Resolution - 1 do
-          GL.Vertex2f(FCurrSize * FCosRes[i],
+          gl.Vertex2f(FCurrSize * FCosRes[i],
             Squeeze * FCurrSize * FSinRes[i]);
-        GL.End_;
+        gl.End_;
       end;
 
       if feStreaks in Elements then
@@ -632,23 +632,23 @@ begin
         if FTexRays.Handle <> 0 then
         begin
         {$IFDEF USE_OPENGL_DEBUG}
-          if GL.GREMEDY_string_marker then
-            GL.StringMarkerGREMEDY(19, 'LensFlare.RaysQuad');
+          if gl.GREMEDY_string_marker then
+            gl.StringMarkerGREMEDY(19, 'LensFlare.RaysQuad');
         {$ENDIF}
           rci.GLStates.TextureBinding[0, ttTexture2D] := FTexRays.Handle;
           rci.GLStates.ActiveTextureEnabled[ttTexture2D] := True;
-          GL.TexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+          gl.TexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 
-          GL.Begin_(GL_QUADS);
-          GL.TexCoord2f(0, 0);
-          GL.Vertex2f(-FCurrSize, -FCurrSize);
-          GL.TexCoord2f(1, 0);
-          GL.Vertex2f(FCurrSize, -FCurrSize);
-          GL.TexCoord2f(1, 1);
-          GL.Vertex2f(FCurrSize, FCurrSize);
-          GL.TexCoord2f(0, 1);
-          GL.Vertex2f(-FCurrSize, FCurrSize);
-          GL.End_;
+          gl.Begin_(GL_QUADS);
+          gl.TexCoord2f(0, 0);
+          gl.Vertex2f(-FCurrSize, -FCurrSize);
+          gl.TexCoord2f(1, 0);
+          gl.Vertex2f(FCurrSize, -FCurrSize);
+          gl.TexCoord2f(1, 1);
+          gl.Vertex2f(FCurrSize, FCurrSize);
+          gl.TexCoord2f(0, 1);
+          gl.Vertex2f(-FCurrSize, FCurrSize);
+          gl.End_;
 
           rci.GLStates.ActiveTextureEnabled[ttTexture2D] := False;
         end
@@ -659,7 +659,7 @@ begin
       if feRing in Elements then
         RenderRing;
 
-      GL.LoadMatrixf(@projMatrix);
+      gl.LoadMatrixf(@projMatrix);
     end;
 
     if feSecondaries in Elements then
@@ -668,9 +668,9 @@ begin
     RandSeed := oldSeed;
   end;
 
-  GL.PopMatrix;
-  GL.MatrixMode(GL_MODELVIEW);
-  GL.PopMatrix;
+  gl.PopMatrix;
+  gl.MatrixMode(GL_MODELVIEW);
+  gl.PopMatrix;
 
   if Count > 0 then
     Self.RenderChildren(0, Count - 1, rci);
@@ -701,39 +701,39 @@ begin
   texSize := RoundUpToPowerOf2(Size);
   if texSize < Size * 1.5 then
     texSize := texSize * 2;
-  GL.GetIntegerv(GL_MAX_TEXTURE_SIZE, @maxSize);
+  gl.GetIntegerv(GL_MAX_TEXTURE_SIZE, @maxSize);
   if texSize > maxSize then
     texSize := maxSize;
 
   stateCache.Disable(stBlend);
-  GL.Color4f(0, 0, 0, 0);
-  GL.Begin_(GL_QUADS);
-  GL.Vertex2f(0, 0);
-  GL.Vertex2f(texSize + 4, 0);
-  GL.Vertex2f(texSize + 4, texSize + 4);
-  GL.Vertex2f(0, texSize + 4);
-  GL.End_;
+  gl.Color4f(0, 0, 0, 0);
+  gl.Begin_(GL_QUADS);
+  gl.Vertex2f(0, 0);
+  gl.Vertex2f(texSize + 4, 0);
+  gl.Vertex2f(texSize + 4, texSize + 4);
+  gl.Vertex2f(0, texSize + 4);
+  gl.End_;
   stateCache.Enable(stBlend);
 
-  GL.Translatef(texSize * 0.5 + 2, texSize * 0.5 + 2, 0);
+  gl.Translatef(texSize * 0.5 + 2, texSize * 0.5 + 2, 0);
   RenderRays(stateCache, texSize * 0.5);
 
   FTexRays.AllocateHandle;
   stateCache.TextureBinding[0, ttTexture2D] := FTexRays.Handle;
-  if GL.EXT_texture_edge_clamp then
+  if gl.EXT_texture_edge_clamp then
     i := GL_CLAMP_TO_EDGE
   else
     i := GL_CLAMP;
-  GL.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, i);
-  GL.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, i);
-  GL.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  GL.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  gl.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, i);
+  gl.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, i);
+  gl.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  gl.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-  GL.CopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 2, 2, texSize, texSize, 0);
+  gl.CopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 2, 2, texSize, texSize, 0);
 
   activeBuffer.RenderingContext.PipelineTransformation.Pop;
 
-  GL.CheckError;
+  gl.CheckError;
 end;
 
 procedure TGLLensFlare.SetGlowGradient(const val: TGLFlareGradient);

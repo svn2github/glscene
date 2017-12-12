@@ -246,7 +246,7 @@ begin
   with rci.GLStates do
   begin
     PolygonMode := pmFill;
-    GL.Color3fv(@BackgroundColor);
+    gl.Color3fv(@BackgroundColor);
     ActiveTextureEnabled[ttTexture2D] := False;
     Enable(stPolygonOffsetFill);
     PolygonOffsetFactor := 1;
@@ -385,7 +385,7 @@ begin
     173 / 256, 1);
   THiddenLineShader(hlShader).BackgroundColor :=
     ConvertWinColor(snViewer.Buffer.BackgroundColor);
-  if not GL.ARB_multisample then
+  if not gl.ARB_multisample then
   begin
     acAADefault.Checked := True;
     acAA2X.Enabled := False;

@@ -198,24 +198,24 @@ begin
         rci.GLStates.SetGLMaterialAlphaChannel(GL_FRONT, AlphaChannel)
       else
         with Material.GetActualPrimaryMaterial.FrontProperties.Diffuse do
-          GL.Color4f(Red, Green, Blue, AlphaChannel);
+          gl.Color4f(Red, Green, Blue, AlphaChannel);
     end;
     // Prepare matrices
-    GL.MatrixMode(GL_MODELVIEW);
-    GL.PushMatrix;
-    GL.LoadMatrixf(@TGLSceneBuffer(rci.buffer).BaseProjectionMatrix);
+    gl.MatrixMode(GL_MODELVIEW);
+    gl.PushMatrix;
+    gl.LoadMatrixf(@TGLSceneBuffer(rci.buffer).BaseProjectionMatrix);
     if rci.renderDPI = 96 then
       f := 1
     else
       f := rci.renderDPI / 96;
-    GL.Scalef(2 / rci.viewPortSize.cx, 2 / rci.viewPortSize.cy, 1);
-    GL.Translatef(f * Position.X - rci.viewPortSize.cx * 0.5,
+    gl.Scalef(2 / rci.viewPortSize.cx, 2 / rci.viewPortSize.cy, 1);
+    gl.Translatef(f * Position.X - rci.viewPortSize.cx * 0.5,
       rci.viewPortSize.cy * 0.5 - f * Position.Y, Position.Z);
     if Rotation <> 0 then
-      GL.Rotatef(Rotation, 0, 0, 1);
-    GL.MatrixMode(GL_PROJECTION);
-    GL.PushMatrix;
-    GL.LoadIdentity;
+      gl.Rotatef(Rotation, 0, 0, 1);
+    gl.MatrixMode(GL_PROJECTION);
+    gl.PushMatrix;
+    gl.LoadIdentity;
     rci.GLStates.Disable(stDepthTest);
     rci.GLStates.DepthWriteMask := False;
 
@@ -249,22 +249,22 @@ begin
     end;
 
     // issue quad
-    GL.Begin_(GL_QUADS);
-    GL.Normal3fv(@YVector);
+    gl.Begin_(GL_QUADS);
+    gl.Normal3fv(@YVector);
     xgl.TexCoord2f(u0, v0);
-    GL.Vertex2f(vx, vy1);
+    gl.Vertex2f(vx, vy1);
     xgl.TexCoord2f(u1, v0);
-    GL.Vertex2f(vx1, vy1);
+    gl.Vertex2f(vx1, vy1);
     xgl.TexCoord2f(u1, v1);
-    GL.Vertex2f(vx1, vy);
+    gl.Vertex2f(vx1, vy);
     xgl.TexCoord2f(u0, v1);
-    GL.Vertex2f(vx, vy);
-    GL.End_;
+    gl.Vertex2f(vx, vy);
+    gl.End_;
 
     // restore state
-    GL.PopMatrix;
-    GL.MatrixMode(GL_MODELVIEW);
-    GL.PopMatrix;
+    gl.PopMatrix;
+    gl.MatrixMode(GL_MODELVIEW);
+    gl.PopMatrix;
   until not Material.UnApply(rci);
   if Count > 0 then
     Self.renderChildren(0, Count - 1, rci);
@@ -362,28 +362,28 @@ begin
   begin
     rci.GLStates.PolygonMode := pmFill;
     // Prepare matrices
-    GL.MatrixMode(GL_MODELVIEW);
-    GL.PushMatrix;
-    GL.LoadMatrixf(@TGLSceneBuffer(rci.buffer).BaseProjectionMatrix);
+    gl.MatrixMode(GL_MODELVIEW);
+    gl.PushMatrix;
+    gl.LoadMatrixf(@TGLSceneBuffer(rci.buffer).BaseProjectionMatrix);
     f := rci.renderDPI / 96;
-    GL.Scalef(2 / rci.viewPortSize.cx, 2 / rci.viewPortSize.cy, 1);
-    GL.Translatef(X * f - rci.viewPortSize.cx / 2, rci.viewPortSize.cy / 2 -
+    gl.Scalef(2 / rci.viewPortSize.cx, 2 / rci.viewPortSize.cy, 1);
+    gl.Translatef(X * f - rci.viewPortSize.cx / 2, rci.viewPortSize.cy / 2 -
       Y * f, Z);
     if FRotation <> 0 then
-      GL.Rotatef(FRotation, 0, 0, 1);
-    GL.Scalef(Scale.DirectX * f, Scale.DirectY * f, 1);
-    GL.MatrixMode(GL_PROJECTION);
-    GL.PushMatrix;
-    GL.LoadIdentity;
+      gl.Rotatef(FRotation, 0, 0, 1);
+    gl.Scalef(Scale.DirectX * f, Scale.DirectY * f, 1);
+    gl.MatrixMode(GL_PROJECTION);
+    gl.PushMatrix;
+    gl.LoadIdentity;
     rci.GLStates.Disable(stDepthTest);
     // render text
     FBitmapFont.RenderString(rci, Text, FAlignment, FLayout,
       FModulateColor.Color);
     // restore state
     rci.GLStates.Enable(stDepthTest);
-    GL.PopMatrix;
-    GL.MatrixMode(GL_MODELVIEW);
-    GL.PopMatrix;
+    gl.PopMatrix;
+    gl.MatrixMode(GL_MODELVIEW);
+    gl.PopMatrix;
   end;
 end;
 

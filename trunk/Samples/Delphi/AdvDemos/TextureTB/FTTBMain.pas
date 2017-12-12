@@ -232,7 +232,7 @@ var
    bmp : TBitmap;
    bmp32 : TGLBitmap32;
    x, y : Integer;
-   pSrc : PGLPixel32Array;
+   pSrc : PPixel32Array;
    pDest : PIntegerArray;
    c : Integer;
 begin

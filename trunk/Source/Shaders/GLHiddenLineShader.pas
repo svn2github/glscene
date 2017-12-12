@@ -153,7 +153,7 @@ var
 procedure TGLLineSettings.Apply(var rci: TGLRenderContextInfo);
 begin
   rci.GLStates.LineWidth := Width;
-  GL.Color4fv(Color.AsAddress);
+  gl.Color4fv(Color.AsAddress);
   if Pattern <> $FFFF then
   begin
     rci.GLStates.Enable(stLineStipple);
@@ -232,14 +232,14 @@ begin
       if FLighting then
       begin
         case ShadeModel of
-          smDefault, smSmooth: GL.ShadeModel(GL_SMOOTH);
-          smFlat: GL.ShadeModel(GL_FLAT);
+          smDefault, smSmooth: gl.ShadeModel(GL_SMOOTH);
+          smFlat: gl.ShadeModel(GL_FLAT);
         end
       end
       else
       begin
         Disable(stLighting);
-        GL.Color4fv(FBackgroundColor.AsAddress); // use background color
+        gl.Color4fv(FBackgroundColor.AsAddress); // use background color
       end;
       // enable and adjust polygon offset
       Enable(stPolygonOffsetFill);

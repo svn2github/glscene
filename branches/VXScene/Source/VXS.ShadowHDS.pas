@@ -534,7 +534,7 @@ procedure TVXShadowHDS.RayCastLine(HeightData:TVXHeightData;Lx,Ly:single;ShadowM
 var sh,h:single;
     HD:TVXHeightData;
     Size:integer;
-    nmRow : PGLPixel32Array;
+    nmRow : PPixel32Array;
     ctr:integer;
     px,py:integer;
     lum:byte;

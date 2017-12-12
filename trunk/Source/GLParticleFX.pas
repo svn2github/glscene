@@ -1480,10 +1480,10 @@ begin
                 if curManager.TexturingMode <> currentTexturingMode then
                 begin
                   if currentTexturingMode <> 0 then
-                    GL.Disable(currentTexturingMode);
+                    gl.Disable(currentTexturingMode);
                   currentTexturingMode := curManager.TexturingMode;
                   if currentTexturingMode <> 0 then
-                    GL.Enable(currentTexturingMode);
+                    gl.Enable(currentTexturingMode);
                 end;
                 curManager.BeginParticles(rci);
               end;
@@ -2442,7 +2442,7 @@ var
   s, c: Single;
 begin
   inherited;
-  GL.GetFloatv(GL_MODELVIEW_MATRIX, @matrix);
+  gl.GetFloatv(GL_MODELVIEW_MATRIX, @matrix);
   for i := 0 to 2 do
   begin
     Fvx.C[i] := matrix.V[i].X * FParticleSize;
@@ -2499,15 +2499,15 @@ begin
   else
     FVertBuf.Translate(pos);
 
-  GL.Begin_(GL_TRIANGLE_FAN);
-  GL.Color4fv(@inner);
-  GL.Vertex3fv(@pos);
-  GL.Color4fv(@outer);
+  gl.Begin_(GL_TRIANGLE_FAN);
+  gl.Color4fv(@inner);
+  gl.Vertex3fv(@pos);
+  gl.Color4fv(@outer);
   for i := 0 to FVertBuf.Count - 1 do
-    GL.Vertex3fv(@vertexList[i]);
+    gl.Vertex3fv(@vertexList[i]);
 
-  GL.Vertex3fv(@vertexList[0]);
-  GL.End_;
+  gl.Vertex3fv(@vertexList[0]);
+  gl.End_;
 end;
 
 procedure TGLPolygonPFXManager.EndParticles(var rci: TGLRenderContextInfo);
@@ -2609,14 +2609,14 @@ begin
       FTexHandle.AllocateHandle;
       FTexHandle.Target := ttTexture2D;
       rci.GLStates.TextureBinding[0, ttTexture2D] := FTexHandle.Handle;
-      GL.Hint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+      gl.Hint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
       rci.GLStates.UnpackAlignment := 4;
       rci.GLStates.UnpackRowLength := 0;
       rci.GLStates.UnpackSkipRows := 0;
       rci.GLStates.UnpackSkipPixels := 0;
 
-      GL.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-      GL.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+      gl.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+      gl.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
       bmp32 := TGLBitmap32.Create;
       try
@@ -2650,7 +2650,7 @@ var
   s, c, w, h: Single;
 begin
   inherited;
-  GL.GetFloatv(GL_MODELVIEW_MATRIX, @matrix);
+  gl.GetFloatv(GL_MODELVIEW_MATRIX, @matrix);
 
   w := FParticleSize * Sqrt(FAspectRatio);
   h := Sqr(FParticleSize) / w;
@@ -2682,12 +2682,12 @@ procedure TGLBaseSpritePFXManager.BeginParticles(var rci: TGLRenderContextInfo);
 begin
   BindTexture(rci);
   if ColorMode = scmNone then
-    GL.TexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE)
+    gl.TexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE)
   else
-    GL.TexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+    gl.TexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
   ApplyBlendingMode(rci);
   if ColorMode <> scmFade then
-    GL.Begin_(GL_QUADS);
+    gl.Begin_(GL_QUADS);
 end;
 
 procedure TGLBaseSpritePFXManager.RenderParticle(var rci: TGLRenderContextInfo; aParticle: TGLParticle);
@@ -2712,14 +2712,14 @@ var
 
   procedure IssueVertices;
   begin
-    GL.TexCoord2fv(@tcs[0]);
-    GL.Vertex3fv(@vertexList[0]);
-    GL.TexCoord2fv(@tcs[1]);
-    GL.Vertex3fv(@vertexList[1]);
-    GL.TexCoord2fv(@tcs[2]);
-    GL.Vertex3fv(@vertexList[2]);
-    GL.TexCoord2fv(@tcs[3]);
-    GL.Vertex3fv(@vertexList[3]);
+    gl.TexCoord2fv(@tcs[0]);
+    gl.Vertex3fv(@vertexList[0]);
+    gl.TexCoord2fv(@tcs[1]);
+    gl.Vertex3fv(@vertexList[1]);
+    gl.TexCoord2fv(@tcs[2]);
+    gl.Vertex3fv(@vertexList[2]);
+    gl.TexCoord2fv(@tcs[3]);
+    gl.Vertex3fv(@vertexList[3]);
   end;
 
 begin
@@ -2765,26 +2765,26 @@ begin
     scmFade:
       begin
         ComputeColors(lifeTime, inner, outer);
-        GL.Begin_(GL_TRIANGLE_FAN);
-        GL.Color4fv(@inner);
-        GL.TexCoord2f((tcs^[0].S + tcs^[2].S) * 0.5, (tcs^[0].T + tcs^[2].T) * 0.5);
-        GL.Vertex3fv(@pos);
-        GL.Color4fv(@outer);
+        gl.Begin_(GL_TRIANGLE_FAN);
+        gl.Color4fv(@inner);
+        gl.TexCoord2f((tcs^[0].S + tcs^[2].S) * 0.5, (tcs^[0].T + tcs^[2].T) * 0.5);
+        gl.Vertex3fv(@pos);
+        gl.Color4fv(@outer);
         IssueVertices;
-        GL.TexCoord2fv(@tcs[0]);
-        GL.Vertex3fv(@vertexList[0]);
-        GL.End_;
+        gl.TexCoord2fv(@tcs[0]);
+        gl.Vertex3fv(@vertexList[0]);
+        gl.End_;
       end;
     scmInner:
       begin
         ComputeInnerColor(lifeTime, inner);
-        GL.Color4fv(@inner);
+        gl.Color4fv(@inner);
         IssueVertices;
       end;
     scmOuter:
       begin
         ComputeOuterColor(lifeTime, outer);
-        GL.Color4fv(@outer);
+        gl.Color4fv(@outer);
         IssueVertices;
       end;
     scmNone:
@@ -2799,7 +2799,7 @@ end;
 procedure TGLBaseSpritePFXManager.EndParticles(var rci: TGLRenderContextInfo);
 begin
   if ColorMode <> scmFade then
-    GL.End_;
+    gl.End_;
   UnApplyBlendingMode(rci);
 end;
 
@@ -2869,7 +2869,7 @@ var
   s: Integer;
   x, y, d, h2: Integer;
   ih2, f, fy: Single;
-  scanLine1, scanLine2: PGLPixel32Array;
+  scanLine1, scanLine2: PPixel32Array;
 begin
   s := (1 shl TexMapSize);
   bmp32.Width := s;

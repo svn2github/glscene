@@ -19,11 +19,13 @@ uses
   System.SysUtils,
 
   VXS.OpenGL1x,
+  VXS.Scene,
   VXS.CrossPlatform,
   VXS.XOpenGL,
   VXS.Context,
   VXS.SDLWindow,
-  VXS.Scene;
+  
+  SDL2;
 
 type
 
@@ -41,7 +43,7 @@ type
     procedure DoOnOpen(sender: TObject);
     procedure DoOnClose(sender: TObject);
     procedure DoOnResize(sender: TObject);
-    procedure DoOnSDLEvent(sender: TObject; const event: TVXSDLEvent);
+    procedure DoOnSDLEvent(sender: TObject; const event: TSDL_Event);
     procedure DoOnEventPollDone(sender: TObject);
     procedure DoBufferStructuralChange(Sender: TObject); override;
     procedure PrepareVXContext; override;
@@ -61,7 +63,7 @@ type
     property OnEventPollDone: TNotifyEvent read FOnEventPollDone write FOnEventPollDone;
   end;
 
-  { A context driver for OpenVX via SDL (libsdl.org).
+  { A context driver for OpenGL via SDL (libsdl.org).
      Due to limitations of SDL:
       you may have only one SDL window opened at any time (you cannot
         have memory viewers)
@@ -71,9 +73,8 @@ type
     FSDLWin: TVXSDLWindow;
     FSimulatedValidity: Boolean; // Hack around SDL's post-notified destruction of context
   protected
-    procedure DoCreateContext(outputDevice: THandle); override; //HDC
-    procedure DoCreateMemoryContext(OutputDevice: THandle; Width, Height: // VCL ->HWND
-      Integer; BufferCount: Integer = 1); override;
+    procedure DoCreateContext(outputDevice : THandle); override;
+    procedure DoCreateMemoryContext(OutputDevice:THandle; Width, Height: Integer; BufferCount: Integer = 1); override;
     function DoShareLists(aContext: TVXContext): Boolean; override;
     procedure DoDestroyContext; override;
     procedure DoActivate; override;
@@ -131,7 +132,7 @@ begin
       OnOpen := DoOnOpen;
       OnClose := DoOnClose;
       OnResize := DoOnResize;
-///?      OnSDLEvent := DoOnSDLEvent;
+      OnSDLEvent := DoOnSDLEvent;
       OnEventPollDone := DoOnEventPollDone;
     end;
   end;
@@ -186,12 +187,10 @@ begin
     FOnResize(Self);
 end;
 
-procedure TVXSDLViewer.DoOnSDLEvent(sender: TObject; const event: TVXSDLEvent);
+procedure TVXSDLViewer.DoOnSDLEvent(sender: TObject; const event: TSDL_Event);
 begin
-{
-  if Assigned(FOnSDLEvent) then
-    FOnSDLEvent(sender, event);
-}
+   if Assigned(FOnSDLEvent) then
+      FOnSDLEvent(sender, event);
 end;
 
 procedure TVXSDLViewer.DoOnEventPollDone(sender: TObject);
@@ -255,8 +254,10 @@ begin
   if not FSDLWin.Active then
     raise Exception.Create('SDLWindow open failed.');
 
-  FGL.Initialize;
-  MakeGLCurrent;
+   xglMapTexCoordToNull;
+   ReadExtensions;
+   ReadImplementationProperties;
+   xglMapTexCoordToMain;
 end;
 
 procedure TVXSDLContext.DoCreateMemoryContext(OutputDevice: THandle; Width, Height: // VCL ->HWND
@@ -273,15 +274,13 @@ end;
 
 procedure TVXSDLContext.DoDestroyContext;
 begin
-  // Beware, SDL will also terminate the application
-  FGL.Close;
-  FSDLWin.Close;
+   // Beware, SDL will also terminate the application
+   FSDLWin.Close;
 end;
 
 procedure TVXSDLContext.DoActivate;
 begin
-  if not FGL.IsInitialized then
-    FGL.Initialize;
+   // nothing particular (only one context, always active)
 end;
 
 procedure TVXSDLContext.DoDeactivate;

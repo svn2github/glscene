@@ -122,9 +122,9 @@ end;
 
 procedure TGLTransformation.LoadProjectionMatrix;
 begin
-  GL.MatrixMode(GL_PROJECTION);
-  GL.LoadMatrixf(PGLFloat(@FStack[FStackPos].FProjectionMatrix));
-  GL.MatrixMode(GL_MODELVIEW);
+  gl.MatrixMode(GL_PROJECTION);
+  gl.LoadMatrixf(PGLFloat(@FStack[FStackPos].FProjectionMatrix));
+  gl.MatrixMode(GL_MODELVIEW);
 end;
 
 function TGLTransformation.GetModelViewMatrix: PMatrix;
@@ -140,7 +140,7 @@ end;
 
 procedure TGLTransformation.LoadModelViewMatrix;
 begin
-  GL.LoadMatrixf(PGLFloat(GetModelViewMatrix));
+  gl.LoadMatrixf(PGLFloat(GetModelViewMatrix));
 end;
 
 procedure TGLTransformation.IdentityAll;

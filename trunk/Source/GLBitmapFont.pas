@@ -32,7 +32,7 @@ uses
   GLBaseClasses,
   GLRenderContextInfo,
   GLTextureFormat,
-  XOpenGL,
+  OpenGL,
   GLVectorTypes,
   GLPersistentClasses;
 
@@ -913,8 +913,8 @@ begin
   end;
 
   // start rendering
-  GL.Color4fv(@aColor);
-  GL.Begin_(GL_QUADS);
+  gl.Color4fv(@aColor);
+  gl.Begin_(GL_QUADS);
   for i := 1 to Length(aText) do
   begin
     currentChar := WideChar(aText[i]);
@@ -941,28 +941,28 @@ begin
         continue; // not found
       pch := @FChars[chi];
       if pch.w > 0 then
-        with GL do
+
         begin
           GetICharTexCoords(ARci, chi, TopLeft, BottomRight);
           vBottomRight.X := vTopLeft.X + pch.w;
 
-          TexCoord2fv(@TopLeft);
-          Vertex4fv(@vTopLeft);
+          gl.TexCoord2fv(@TopLeft);
+          gl.Vertex4fv(@vTopLeft);
 
-          TexCoord2f(TopLeft.S, BottomRight.t);
-          Vertex2f(vTopLeft.X, vBottomRight.Y);
+          gl.TexCoord2f(TopLeft.S, BottomRight.t);
+          gl.Vertex2f(vTopLeft.X, vBottomRight.Y);
 
-          TexCoord2fv(@BottomRight);
-          Vertex4fv(@vBottomRight);
+          gl.TexCoord2fv(@BottomRight);
+          gl.Vertex4fv(@vBottomRight);
 
-          TexCoord2f(BottomRight.S, TopLeft.t);
-          Vertex2f(vBottomRight.X, vTopLeft.Y);
+          gl.TexCoord2f(BottomRight.S, TopLeft.t);
+          gl.Vertex2f(vBottomRight.X, vTopLeft.Y);
 
           vTopLeft.X := vTopLeft.X + pch.w + HSpace;
         end;
     end;
   end;
-  GL.End_;
+  gl.End_;
   // unbind texture
   ARci.GLStates.TextureBinding[0, ttTexture2D] := 0;
   ARci.GLStates.ActiveTextureEnabled[ttTexture2D] := False;
@@ -979,9 +979,6 @@ begin
   V.W := 1;
   RenderString(rci, Text, taLeftJustify, tlTop, Color, @V, true);
 end;
-
-// TextOut
-//
 
 procedure TGLCustomBitmapFont.TextOut(var rci: TGLRenderContextInfo; X, Y: Single;
   const Text: UnicodeString; const Color: TColor);
@@ -1091,13 +1088,12 @@ begin
   BottomRight.t := 1 - (ci.t + CharHeight) / FTextureHeight;
 
   if t <> FLastTexture then
-    with GL do
     begin
       FLastTexture := t;
-      End_;
+      gl.End_;
       ARci.GLStates.TextureBinding[0, ttTexture2D] := t.Handle;
-      TexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-      Begin_(GL_QUADS);
+      gl.TexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+      gl.Begin_(GL_QUADS);
     end;
 end;
 
@@ -1257,14 +1253,9 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 
-// class registrations
 RegisterClasses([TGLBitmapFont, TGLFlatText]);
 
 end.

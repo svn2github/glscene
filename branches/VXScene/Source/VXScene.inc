@@ -4,7 +4,7 @@
 {
   The history is logged in a former GLS version of the unit.
 }
-{$DEFINE VXScene}
+{$DEFINE VXSCENE}
 
 //
 // Additionnal support & dependencies
@@ -21,6 +21,10 @@
 // Activate support for some optimizations by disabling checks that occur very often
 // Warning: it will disable some options (like ShowAxis and OptSaveGLStack)
 {.$DEFINE USE_OPTIMIZATIONS}
+
+// Activate using generic prefix
+{.$DEFINE USE_GENERIC_PREFIX}
+
 
 // Activate assembly routines - Warning! Some components not working!!!
 {.$DEFINE USE_ASM}

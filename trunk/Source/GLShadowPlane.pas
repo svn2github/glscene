@@ -169,14 +169,14 @@ begin
           InflateGLRect(sr, 1, 1);
           ds := GetGLRect(0, 0, ARci.viewPortSize.cx, ARci.viewPortSize.cy);
           IntersectGLRect(sr, ds);
-          GL.Scissor(sr.Left, sr.Top, sr.Right - sr.Left, sr.Bottom - sr.Top);
+          gl.Scissor(sr.Left, sr.Top, sr.Right - sr.Left, sr.Bottom - sr.Top);
           Enable(stScissorTest);
         end;
 
         if (spoUseStencil in ShadowOptions) then
         begin
           StencilClearValue := 0;
-          GL.Clear(GL_STENCIL_BUFFER_BIT);
+          gl.Clear(GL_STENCIL_BUFFER_BIT);
           Enable(stStencilTest);
           SetStencilFunc(cfAlways, 1, 1);
           SetStencilOp(soReplace, soReplace, soReplace);
@@ -237,7 +237,7 @@ begin
           Disable(stLighting);
           Disable(stFog);
 
-          GL.Color4fv(ShadowColor.AsAddress);
+          gl.Color4fv(ShadowColor.AsAddress);
 
           if (spoUseStencil in ShadowOptions) then
           begin

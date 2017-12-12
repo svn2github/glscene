@@ -330,7 +330,7 @@ procedure TGLFrameBuffer.AttachDepthBuffer(DepthBuffer: TGLDepthRBO);
     // forces initialization
     DepthBuffer.Bind;
     DepthBuffer.Unbind;
-    GL.FramebufferRenderbuffer(FTarget, GL_DEPTH_ATTACHMENT_EXT,
+    gl.FramebufferRenderbuffer(FTarget, GL_DEPTH_ATTACHMENT_EXT,
       GL_RENDERBUFFER_EXT, DepthBuffer.Handle);
   end;
 
@@ -443,7 +443,7 @@ procedure TGLFrameBuffer.AttachStencilBuffer(StencilBuffer: TGLStencilRBO);
     // forces initialization
     StencilBuffer.Bind;
     StencilBuffer.Unbind;
-    GL.FramebufferRenderbuffer(FTarget, GL_STENCIL_ATTACHMENT,
+    gl.FramebufferRenderbuffer(FTarget, GL_STENCIL_ATTACHMENT,
       GL_RENDERBUFFER_EXT, StencilBuffer.Handle);
   end;
 
@@ -567,7 +567,7 @@ end;
 procedure TGLFrameBuffer.DetachDepthBuffer;
 begin
   Bind;
-  GL.FramebufferRenderbuffer(FTarget, GL_DEPTH_ATTACHMENT,
+  gl.FramebufferRenderbuffer(FTarget, GL_DEPTH_ATTACHMENT,
     GL_RENDERBUFFER, 0);
   Unbind;
   FDRBO := nil;
@@ -576,7 +576,7 @@ end;
 procedure TGLFrameBuffer.DetachStencilBuffer;
 begin
   Bind;
-  GL.FramebufferRenderbuffer(FTarget, GL_STENCIL_ATTACHMENT,
+  gl.FramebufferRenderbuffer(FTarget, GL_STENCIL_ATTACHMENT,
     GL_RENDERBUFFER, 0);
   Unbind;
   FSRBO := nil;
@@ -586,7 +586,7 @@ function TGLFrameBuffer.GetStatus: TGLFramebufferStatus;
 var
   status: cardinal;
 begin
-  status := GL.CheckFramebufferStatus(FTarget);
+  status := gl.CheckFramebufferStatus(FTarget);
 
   case status of
     GL_FRAMEBUFFER_COMPLETE_EXT: Result := fsComplete;
@@ -642,7 +642,7 @@ begin
         with FFrameBufferHandle.RenderingContext.GLStates do
           TextureBinding[ActiveTexture, textarget] :=
             FAttachedTexture[n].Handle;
-        GL.GenerateMipmap(DecodeGLTextureTarget(textarget));
+        gl.GenerateMipmap(DecodeGLTextureTarget(textarget));
       end;
   end;
 end;
@@ -664,11 +664,11 @@ begin
   buffer := TGLSceneBuffer(rci.buffer);
 
   backColor := ConvertWinColor(buffer.BackgroundColor);
-  GL.ClearColor(backColor.X, backColor.Y, backColor.Z,
+  gl.ClearColor(backColor.X, backColor.Y, backColor.Z,
     buffer.BackgroundAlpha);
   rci.GLStates.SetColorMask(cAllColorComponents);
   rci.GLStates.DepthWriteMask := True;
-  GL.Clear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
+  gl.Clear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
 
   baseObject.Render(rci);
   Unbind;
@@ -728,7 +728,7 @@ begin
   begin
     FDRBO.Bind;
     FDRBO.Unbind;
-    GL.FramebufferRenderbuffer(FTarget, GL_DEPTH_ATTACHMENT_EXT,
+    gl.FramebufferRenderbuffer(FTarget, GL_DEPTH_ATTACHMENT_EXT,
       GL_RENDERBUFFER_EXT, FDRBO.Handle);
     bEmpty := False;
   end;
@@ -737,7 +737,7 @@ begin
   begin
     FSRBO.Bind;
     FSRBO.Unbind;
-    GL.FramebufferRenderbuffer(FTarget, GL_STENCIL_ATTACHMENT,
+    gl.FramebufferRenderbuffer(FTarget, GL_STENCIL_ATTACHMENT,
       GL_RENDERBUFFER_EXT, FSRBO.Handle);
     bEmpty := False;
   end;

@@ -80,7 +80,7 @@ type
     procedure Verlet(const vpt: TVerletProgressTimes); virtual;
     { Initlializes the node. For the base class, it just makes sure that
       FOldPosition = FPosition, so that speed is zero }
-    procedure Initialize; virtual;
+    procedure Initialize; dynamic;
     { Calculates the distance to another node }
     function DistanceToNode(const node: TVerletNode): Single;
     { Calculates the movement of the node }

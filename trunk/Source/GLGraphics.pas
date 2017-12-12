@@ -41,18 +41,18 @@ uses
 
 type
 
-  TGLPixel24 = packed record
+  TPixel24 = packed record
     r, g, b: Byte;
   end;
-  PGLPixel24 = ^TGLPixel24;
+  PPixel24 = ^TPixel24;
 
-  TGLPixel32 = packed record
+  TPixel32 = packed record
     r, g, b, a: Byte;
   end;
-  PGLPixel32 = ^TGLPixel32;
+  PPixel32 = ^TPixel32;
 
-  TGLPixel32Array = array[0..MaxInt shr 3] of TGLPixel32;
-  PGLPixel32Array = ^TGLPixel32Array;
+  TPixel32Array = array[0..MaxInt shr 3] of TPixel32;
+  PPixel32Array = ^TPixel32Array;
 
   TGLLODStreamingState = (ssKeeping, ssLoading, ssLoaded, ssTransfered);
 
@@ -81,7 +81,7 @@ type
     procedure ImageStreamingTask; stdcall;
 {$ENDIF}
   protected
-    fData: PGLPixel32Array;
+    fData: PPixel32Array;
     FLOD: TGLImagePiramid;
     fLevelCount: TGLImageLODRange;
     fColorFormat: Cardinal;
@@ -91,7 +91,7 @@ type
     fCubeMap: Boolean;
     fTextureArray: Boolean;
 
-    function GetData: PGLPixel32Array; virtual;
+    function GetData: PPixel32Array; virtual;
     function GetWidth: Integer;
     function GetHeight: Integer;
     function GetDepth: Integer;
@@ -148,7 +148,7 @@ type
     {Leave top level and remove other }
     procedure UnMipmap; virtual;
     {Direct Access to image data}
-    property Data: PGLPixel32Array read GetData;
+    property Data: PPixel32Array read GetData;
     {Set image of error. }
     procedure SetErrorImage;
     {Recalculate levels information based on first level. }
@@ -207,7 +207,7 @@ type
     procedure SetBlank(const Value: boolean);
     procedure SetCubeMap(const val: Boolean);
     procedure SetArray(const val: Boolean);
-    function GetScanLine(index: Integer): PGLPixel32Array;
+    function GetScanLine(index: Integer): PPixel32Array;
     procedure AssignFrom24BitsBitmap(aBitmap: TBitmap);
     procedure AssignFrom32BitsBitmap(aBitmap: TBitmap);
     {$IFDEF USE_GRAPHICS32}
@@ -255,7 +255,7 @@ type
     {Access to a specific Bitmap ScanLine. index should be in the [0; Height[ range.
       Warning : this function is NOT protected against invalid indexes,
       and invoking it is invalid if the bitmap is Empty. }
-    property ScanLine[index: Integer]: PGLPixel32Array read GetScanLine;
+    property ScanLine[index: Integer]: PPixel32Array read GetScanLine;
     property VerticalReverseOnAssignFromBitmap: Boolean read
       FVerticalReverseOnAssignFromBitmap write
       FVerticalReverseOnAssignFromBitmap;
@@ -271,8 +271,8 @@ type
       This makes pixels of given color totally transparent while the others
       are completely opaque. }
     procedure SetAlphaTransparentForColor(const aColor: TColor); overload;
-    procedure SetAlphaTransparentForColor(const aColor: TGLPixel32); overload;
-    procedure SetAlphaTransparentForColor(const aColor: TGLPixel24); overload;
+    procedure SetAlphaTransparentForColor(const aColor: TPixel32); overload;
+    procedure SetAlphaTransparentForColor(const aColor: TPixel24); overload;
     {Set Alpha channel values to given byte value. }
     procedure SetAlphaToValue(const aValue: Byte);
     {Set Alpha channel values to given float [0..1] value. }
@@ -1301,7 +1301,7 @@ begin
   end;
 end;
 
-function TGLBaseImage.GetData: PGLPixel32Array;
+function TGLBaseImage.GetData: PPixel32Array;
 begin
   Result := fData;
 end;
@@ -1514,7 +1514,7 @@ begin
           else
             p := nil;
 
-          if GL.NV_texture_compression_vtc and bCompress then
+          if gl.NV_texture_compression_vtc and bCompress then
           begin
             // Shufle blocks for Volume Texture Compression
             if Assigned(p) then
@@ -1685,7 +1685,7 @@ begin
     LContext.GLStates.TextureBinding[0, AHandle.Target] := AHandle.Handle;
 
     FLevelCount := 0;
-    GL.GetTexParameteriv(glTarget, GL_TEXTURE_MAX_LEVEL, @texLod);
+    gl.GetTexParameteriv(glTarget, GL_TEXTURE_MAX_LEVEL, @texLod);
     if glTarget = GL_TEXTURE_CUBE_MAP then
     begin
       fCubeMap := true;
@@ -1704,7 +1704,7 @@ begin
     with GL do
     repeat
       // Check level existence
-      GL.GetTexLevelParameteriv(glTarget, FLevelCount,
+      gl.GetTexLevelParameteriv(glTarget, FLevelCount,
         GL_TEXTURE_INTERNAL_FORMAT,
         @texFormat);
       if texFormat = 1 then
@@ -1812,7 +1812,7 @@ begin
       end;
     end;
 
-    GL.CheckError;
+    gl.CheckError;
     Result := True;
 
   finally
@@ -2024,7 +2024,7 @@ begin
   begin
     if (Source is TBitmap)
     and (TBitmap(Source).PixelFormat in [glpf24bit, glpf32bit])
-    and (((TBitmap(Source).Width and 3) = 0) or GL.EXT_bgra) then
+    and (((TBitmap(Source).Width and 3) = 0) or gl.EXT_bgra) then
     begin
       if TBitmap(Source).PixelFormat = glpf24bit then
         AssignFrom24BitsBitmap(TBitmap(Source))
@@ -2086,7 +2086,7 @@ begin
   FLOD[0].Width := aBitmap.Width;
   FLOD[0].Height := aBitmap.Height;
   FLOD[0].Depth := 0;
-  if GL.EXT_bgra then
+  if gl.EXT_bgra then
   begin
     fColorFormat := GL_BGR;
     fElementSize := 3;
@@ -2109,7 +2109,7 @@ begin
     pDest := @PAnsiChar(FData)[GetWidth * fElementSize * (GetHeight - 1)];
     if Height = 1 then
     begin
-      if GL.EXT_bgra then
+      if gl.EXT_bgra then
       begin
         pSrc := BitmapScanLine(aBitmap, 0);
         Move(pSrc^, pDest^, lineSize);
@@ -2130,7 +2130,7 @@ begin
         pSrc := BitmapScanLine(aBitmap, 0);
         rowOffset := Int64(BitmapScanLine(aBitmap, 1)) - Int64(pSrc);
       end;
-      if GL.EXT_bgra then
+      if gl.EXT_bgra then
       begin
         for y := 0 to Height - 1 do
         begin
@@ -2214,7 +2214,7 @@ begin
   FLOD[0].Width := aBitmap.Width;
   FLOD[0].Height := aBitmap.Height;
   FLOD[0].Depth := 0;
-  if GL.EXT_bgra then
+  if gl.EXT_bgra then
     fColorFormat := GL_BGRA
   else
   begin
@@ -2253,7 +2253,7 @@ begin
       else
         rowOffset := 0;
     end;
-    if GL.EXT_bgra then
+    if gl.EXT_bgra then
     begin
       for y := 0 to Height - 1 do
       begin
@@ -2312,7 +2312,7 @@ procedure TGLImage.AssignFromPngImage(aPngImage: TPngImage);
 var
   i, j: Integer;
   SourceScan: PRGBLine;
-  DestScan: PGLPixel32Array;
+  DestScan: PPixel32Array;
   AlphaScan: VCL.Imaging.Pngimage.pByteArray;
   Pixel: Integer;
 begin
@@ -2380,8 +2380,8 @@ begin
     oldTex := TextureBinding[ActiveTexture, ttTexture2D];
     TextureBinding[ActiveTexture, ttTexture2D] := textureHandle;
 
-    GL.GetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, @FLOD[0].Width);
-    GL.GetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, @FLOD[0].Height);
+    gl.GetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, @FLOD[0].Width);
+    gl.GetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, @FLOD[0].Height);
     FLOD[0].Depth := 0;
     fColorFormat := GL_RGBA;
     fInternalFormat := tfRGBA8;
@@ -2390,7 +2390,7 @@ begin
     fCubeMap := false;
     fTextureArray := false;
     ReallocMem(FData, DataSize);
-    GL.GetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, FData);
+    gl.GetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, FData);
     FBlank := false;
 
     TextureBinding[ActiveTexture, ttTexture2D] := oldTex;
@@ -2541,10 +2541,10 @@ begin
   DataConvertTask;
 end;
 
-function TGLImage.GetScanLine(index: Integer): PGLPixel32Array;
+function TGLImage.GetScanLine(index: Integer): PPixel32Array;
 begin
   Narrow;
-  Result := PGLPixel32Array(@FData[index * GetWidth]);
+  Result := PPixel32Array(@FData[index * GetWidth]);
 end;
 
 procedure TGLImage.SetAlphaFromIntensity;
@@ -2559,7 +2559,7 @@ end;
 
 procedure TGLImage.SetAlphaTransparentForColor(const aColor: TColor);
 var
-  color: TGLPixel24;
+  color: TPixel24;
 begin
   color.r := GetRValue(aColor);
   color.g := GetGValue(aColor);
@@ -2567,9 +2567,9 @@ begin
   SetAlphaTransparentForColor(color);
 end;
 
-procedure TGLImage.SetAlphaTransparentForColor(const aColor: TGLPixel32);
+procedure TGLImage.SetAlphaTransparentForColor(const aColor: TPixel32);
 var
-  color: TGLPixel24;
+  color: TPixel24;
 begin
   color.r := aColor.r;
   color.g := aColor.g;
@@ -2577,7 +2577,7 @@ begin
   SetAlphaTransparentForColor(color);
 end;
 
-procedure TGLImage.SetAlphaTransparentForColor(const aColor: TGLPixel24);
+procedure TGLImage.SetAlphaTransparentForColor(const aColor: TPixel24);
 var
   i: Integer;
   intCol: Integer;
@@ -2646,10 +2646,10 @@ end;
 
 procedure TGLImage.DownSampleByFactor2;
 type
-  T2Pixel32 = packed array[0..1] of TGLPixel32;
+  T2Pixel32 = packed array[0..1] of TPixel32;
   P2Pixel32 = ^T2Pixel32;
 
-  procedure ProcessRowPascal(pDest: PGLPixel32; pLineA, pLineB: P2Pixel32; n:
+  procedure ProcessRowPascal(pDest: PPixel32; pLineA, pLineB: P2Pixel32; n:
     Integer);
   var
     i: Integer;
@@ -2676,7 +2676,7 @@ type
 
 var
   y, w2, h2: Integer;
-  pDest: PGLPixel32;
+  pDest: PPixel32;
   pLineA, pLineB: P2Pixel32;
 begin
   if (GetWidth <= 1) or (GetHeight <= 1) then
@@ -2713,7 +2713,7 @@ begin
   fTextureArray := false;
   fBlank := false;
   ReallocMem(FData, DataSize);
-  GL.ReadPixels(0, 0, GetWidth, GetHeight, GL_RGBA, GL_UNSIGNED_BYTE, FData);
+  gl.ReadPixels(0, 0, GetWidth, GetHeight, GL_RGBA, GL_UNSIGNED_BYTE, FData);
 end;
 
 procedure TGLImage.DrawPixels(const x, y: Single);
@@ -2721,8 +2721,8 @@ begin
   if fBlank or IsEmpty then
     Exit;
 {  Assert(not CurrentGLContext.GLStates.ForwardContext);}
-  GL.RasterPos2f(x, y);
-  GL.DrawPixels(Width, Height, fColorFormat, fDataType, FData);
+  gl.RasterPos2f(x, y);
+  gl.DrawPixels(Width, Height, fColorFormat, fDataType, FData);
 end;
 
 procedure TGLImage.GrayScaleToNormalMap(const scale: Single;
@@ -2732,9 +2732,9 @@ var
   dcx, dcy: Single;
   invLen: Single;
   maskX, maskY: Integer;
-  curRow, nextRow, prevRow: PGLPixel32Array;
-  normalMapBuffer: PGLPixel32Array;
-  p: PGLPixel32;
+  curRow, nextRow, prevRow: PPixel32Array;
+  normalMapBuffer: PPixel32Array;
+  p: PPixel32;
 begin
   if Assigned(FData) then
   begin
@@ -2801,8 +2801,8 @@ var
   x, y: Integer;
   sr, sg, sb: Single;
   invLen: Single;
-  curRow: PGLPixel32Array;
-  p: PGLPixel32;
+  curRow: PPixel32Array;
+  p: PPixel32;
 const
   cInv128: Single = 1 / 128;
 begin

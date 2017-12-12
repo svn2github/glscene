@@ -107,7 +107,7 @@ end;
 procedure TForm1.ClearFrameBufferRender(Sender: TObject;
   var rci: TGLRenderContextInfo);
 begin
-  GL.Clear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
+  gl.Clear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
 end;
 
 procedure TForm1.CreateShapes;
@@ -288,29 +288,29 @@ begin
   rci.GLStates.Disable(stBlend);
 
   LayeredFrameBuffer.Layer := 0;
-  GL.Clear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
+  gl.Clear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
   Surround.Render(rci);
   GlDisk1.Render(rci);
 
   rci.GLStates.ColorClearValue := clrTransparent;
   LayeredFrameBuffer.Layer := 1;
-  GL.Clear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
+  gl.Clear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
   GLMesh1.Render(rci);
 
   LayeredFrameBuffer.Layer := 2;
-  GL.Clear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
+  gl.Clear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
   GLMesh2.Render(rci);
 
   LayeredFrameBuffer.Layer := 3;
-  GL.Clear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
+  gl.Clear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
   GLMesh3.Render(rci);
 
   LayeredFrameBuffer.Layer := 4;
-  GL.Clear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
+  gl.Clear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
   GLMesh4.Render(rci);
 
   LayeredFrameBuffer.Layer := 5;
-  GL.Clear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
+  gl.Clear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
   GLMesh5.Render(rci);
 
   rci.ignoreBlendingRequests := True;

@@ -133,7 +133,7 @@ type
     Fsoft: boolean;
     FTolerance: single;
     FColor: TVXColor;
-    SCol: TVXPixel32;
+    SCol: TPixel32;
     //stepX, stepY :single;
     FTexturePrepared: Boolean;
     FTexHandle: TVXTextureHandle;

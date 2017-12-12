@@ -155,7 +155,7 @@ type
     FTolerance: single;
 
     FColor: TGLColor;
-    SCol: TGLPixel32;
+    SCol: TPixel32;
 
     //stepX, stepY :single;
 
@@ -307,13 +307,13 @@ function TGLzBuffer.GetDepthBuffer(CalcVectors: Boolean; ContextIsActive:
 begin
   if ContextIsActive then
   begin
-    GL.ReadPixels(0, 0, FWidth, FHeight, GL_DEPTH_COMPONENT, GL_FLOAT, FData);
+    gl.ReadPixels(0, 0, FWidth, FHeight, GL_DEPTH_COMPONENT, GL_FLOAT, FData);
   end
   else
   begin
     Buffer.RenderingContext.Activate;
     try
-      GL.ReadPixels(0, 0, FWidth, FHeight, GL_DEPTH_COMPONENT, GL_FLOAT, FData);
+      gl.ReadPixels(0, 0, FWidth, FHeight, GL_DEPTH_COMPONENT, GL_FLOAT, FData);
     finally
       Buffer.RenderingContext.Deactivate;
     end;
@@ -712,18 +712,18 @@ begin
       begin
         TextureBinding[0, ttTexture2D] := Handle;
 
-        GL.Hint(GL_PERSPECTIVE_CORRECTION_HINT, GL_Fastest);
+        gl.Hint(GL_PERSPECTIVE_CORRECTION_HINT, GL_Fastest);
         UnpackAlignment := 1;
         UnpackRowLength := 0;
         UnpackSkipRows := 0;
         UnpackSkipPixels := 0;
 
-        GL.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        GL.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        gl.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        gl.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
         ActiveTextureEnabled[ttTexture2D] := True;
         SetBlendFunc(bfSRCALPHA, bfONEMINUSSRCALPHA);
-        GL.TexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+        gl.TexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
         Enable(stBlend);
 
         PrepareAlphaMemory;
@@ -793,32 +793,32 @@ begin
 
   //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-  GL.Color3f(SCol.r, SCol.g, SCol.b);
+  gl.Color3f(SCol.r, SCol.g, SCol.b);
 
   if not FTexturePrepared then
   begin
-    GL.TexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, FXRes, FYRes, 0, GL_ALPHA,
+    gl.TexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, FXRes, FYRes, 0, GL_ALPHA,
       GL_UNSIGNED_BYTE, @FData[0]);
     FTexturePrepared := True;
   end
   else
-    GL.TexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, FXRes, FYRes, GL_ALPHA,
+    gl.TexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, FXRes, FYRes, GL_ALPHA,
       GL_UNSIGNED_BYTE, @FData[0]);
 
   //   NotifyChange(Self);
   //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
      // Prepare matrices
-  GL.MatrixMode(GL_MODELVIEW);
-  GL.PushMatrix;
-  GL.LoadMatrixf(@TGLSceneBuffer(ARci.buffer).BaseProjectionMatrix);
-  GL.Scalef(2 / ARci.viewPortSize.cx, 2 / ARci.viewPortSize.cy, 1);
-  GL.Translatef(Position.X - ARci.viewPortSize.cx * 0.5,
+  gl.MatrixMode(GL_MODELVIEW);
+  gl.PushMatrix;
+  gl.LoadMatrixf(@TGLSceneBuffer(ARci.buffer).BaseProjectionMatrix);
+  gl.Scalef(2 / ARci.viewPortSize.cx, 2 / ARci.viewPortSize.cy, 1);
+  gl.Translatef(Position.X - ARci.viewPortSize.cx * 0.5,
     ARci.viewPortSize.cy * 0.5 - Position.Y, Position.Z);
 
-  GL.MatrixMode(GL_PROJECTION);
-  GL.PushMatrix;
-  GL.LoadIdentity;
+  gl.MatrixMode(GL_PROJECTION);
+  gl.PushMatrix;
+  gl.LoadIdentity;
   ARci.GLStates.Disable(stDepthTest);
   ARci.GLStates.Disable(stLighting);
 
@@ -831,21 +831,21 @@ begin
   Ytex := 1 - (FHeight / FYres); //0
 
   // issue quad
-  GL.Begin_(GL_QUADS);
-  GL.Normal3fv(@YVector);
-  GL.TexCoord2f(0, ytex);
-  GL.Vertex2f(vx, vy1);
-  GL.TexCoord2f(xtex, ytex);
-  GL.Vertex2f(vx1, vy1);
-  GL.TexCoord2f(xtex, 1);
-  GL.Vertex2f(vx1, vy);
-  GL.TexCoord2f(0, 1);
-  GL.Vertex2f(vx, vy);
-  GL.End_;
+  gl.Begin_(GL_QUADS);
+  gl.Normal3fv(@YVector);
+  gl.TexCoord2f(0, ytex);
+  gl.Vertex2f(vx, vy1);
+  gl.TexCoord2f(xtex, ytex);
+  gl.Vertex2f(vx1, vy1);
+  gl.TexCoord2f(xtex, 1);
+  gl.Vertex2f(vx1, vy);
+  gl.TexCoord2f(0, 1);
+  gl.Vertex2f(vx, vy);
+  gl.End_;
   // restore state
-  GL.PopMatrix;
-  GL.MatrixMode(GL_MODELVIEW);
-  GL.PopMatrix;
+  gl.PopMatrix;
+  gl.MatrixMode(GL_MODELVIEW);
+  gl.PopMatrix;
 
   if Count > 0 then
     Self.RenderChildren(0, Count - 1, ARci);

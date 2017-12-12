@@ -733,21 +733,21 @@ begin
   if AlphaChannel <> 1 then
     rci.GLStates.SetGLMaterialAlphaChannel(GL_FRONT, AlphaChannel);
   // Prepare matrices
-  GL.MatrixMode(GL_MODELVIEW);
-  GL.PushMatrix;
-  GL.LoadMatrixf(@TGLSceneBuffer(rci.buffer).BaseProjectionMatrix);
+  gl.MatrixMode(GL_MODELVIEW);
+  gl.PushMatrix;
+  gl.LoadMatrixf(@TGLSceneBuffer(rci.buffer).BaseProjectionMatrix);
   if rci.renderDPI = 96 then
     f := 1
   else
     f := rci.renderDPI / 96;
-  GL.Scalef(f * 2 / rci.viewPortSize.cx, f * 2 / rci.viewPortSize.cy, 1);
-  GL.Translatef(f * Position.X - rci.viewPortSize.cx * 0.5,
+  gl.Scalef(f * 2 / rci.viewPortSize.cx, f * 2 / rci.viewPortSize.cy, 1);
+  gl.Translatef(f * Position.X - rci.viewPortSize.cx * 0.5,
     rci.viewPortSize.cy * 0.5 - f * Position.Y, 0);
   if Rotation <> 0 then
-    GL.Rotatef(Rotation, 0, 0, 1);
-  GL.MatrixMode(GL_PROJECTION);
-  GL.PushMatrix;
-  GL.LoadIdentity;
+    gl.Rotatef(Rotation, 0, 0, 1);
+  gl.MatrixMode(GL_PROJECTION);
+  gl.PushMatrix;
+  gl.LoadIdentity;
   rci.GLStates.Disable(stDepthTest);
   rci.GLStates.DepthWriteMask := False;
 end;
@@ -756,9 +756,9 @@ procedure TGLBaseComponent.RenderFooter(var rci: TGLRenderContextInfo; renderSel
   renderChildren: Boolean);
 
 begin
-  GL.PopMatrix;
-  GL.MatrixMode(GL_MODELVIEW);
-  GL.PopMatrix;
+  gl.PopMatrix;
+  gl.MatrixMode(GL_MODELVIEW);
+  gl.PopMatrix;
   FGuiLayout.Material.UnApply(rci);
 end;
 
@@ -1921,21 +1921,21 @@ begin
 
   GuiLayout.Material.UnApply(rci);
   Material.Apply(rci);
-  GL.Begin_(GL_QUADS);
+  gl.Begin_(GL_QUADS);
 
-  GL.TexCoord2f(FXTexCoord, -FYTexCoord);
-  GL.Vertex2f(X2, Y2);
+  gl.TexCoord2f(FXTexCoord, -FYTexCoord);
+  gl.Vertex2f(X2, Y2);
 
-  GL.TexCoord2f(FXTexCoord, 0);
-  GL.Vertex2f(X2, Y1);
+  gl.TexCoord2f(FXTexCoord, 0);
+  gl.Vertex2f(X2, Y1);
 
-  GL.TexCoord2f(0, 0);
-  GL.Vertex2f(X1, Y1);
+  gl.TexCoord2f(0, 0);
+  gl.Vertex2f(X1, Y1);
 
-  GL.TexCoord2f(0, -FYTexCoord);
-  GL.Vertex2f(X1, Y2);
+  gl.TexCoord2f(0, -FYTexCoord);
+  gl.Vertex2f(X1, Y2);
 
-  GL.End_();
+  gl.End_();
 
   Material.UnApply(rci);
   GuiLayout.Material.Apply(rci);
@@ -2715,23 +2715,23 @@ begin
       if TexHeight = 0 then
         TexHeight := Material.Texture.Image.Height;
 
-      GL.Begin_(GL_QUADS);
+      gl.Begin_(GL_QUADS);
 
-      GL.TexCoord2f(0, 0);
-      GL.Vertex2f(X1 - XOffSet, -Y1 + YOffSet);
+      gl.TexCoord2f(0, 0);
+      gl.Vertex2f(X1 - XOffSet, -Y1 + YOffSet);
 
-      GL.TexCoord2f(0, -(LogicHeight - 1) / TexHeight);
-      GL.Vertex2f(X1 - XOffSet, -Y1 + YOffset - LogicHeight + 1);
+      gl.TexCoord2f(0, -(LogicHeight - 1) / TexHeight);
+      gl.Vertex2f(X1 - XOffSet, -Y1 + YOffset - LogicHeight + 1);
 
-      GL.TexCoord2f((LogicWidth - 1) / TexWidth, -(LogicHeight - 1) /
+      gl.TexCoord2f((LogicWidth - 1) / TexWidth, -(LogicHeight - 1) /
         TexHeight);
-      GL.Vertex2f(X1 - XOffSet + LogicWidth - 1, -Y1 + YOffset - LogicHeight +
+      gl.Vertex2f(X1 - XOffSet + LogicWidth - 1, -Y1 + YOffset - LogicHeight +
         1);
 
-      GL.TexCoord2f((LogicWidth - 1) / TexWidth, 0);
-      GL.Vertex2f(X1 - XOffSet + LogicWidth - 1, -Y1 + YOffSet);
+      gl.TexCoord2f((LogicWidth - 1) / TexWidth, 0);
+      gl.Vertex2f(X1 - XOffSet + LogicWidth - 1, -Y1 + YOffSet);
 
-      GL.End_();
+      gl.End_();
       BitBtn.UnApply(rci);
       GuiLayout.Material.Apply(rci);
     end;

@@ -2870,7 +2870,7 @@ var
   s: Integer;
   x, y, d, h2: Integer;
   ih2, f, fy: Single;
-  scanLine1, scanLine2: PGLPixel32Array;
+  scanLine1, scanLine2: PPixel32Array;
 begin
   s := (1 shl TexMapSize);
   bmp32.Width := s;

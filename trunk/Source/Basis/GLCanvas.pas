@@ -187,13 +187,13 @@ begin
   FBufferSizeX := bufferSizeX;
   FBufferSizeY := bufferSizeY;
 
-  GL.MatrixMode(GL_PROJECTION);
-  GL.PushMatrix;
+  gl.MatrixMode(GL_PROJECTION);
+  gl.PushMatrix;
   PM := CreateOrthoMatrix(0, bufferSizeX, bufferSizeY, 0, -1, 1);
-  GL.LoadMatrixf(@PM);
-  GL.MatrixMode(GL_MODELVIEW);
-  GL.PushMatrix;
-  GL.LoadMatrixf(@baseTransform);
+  gl.LoadMatrixf(@PM);
+  gl.MatrixMode(GL_MODELVIEW);
+  gl.PushMatrix;
+  gl.LoadMatrixf(@baseTransform);
   BackupOpenGLStates;
   FLastPrimitive := cNoPrimitive;
   FArcDirection := adCounterClockWise;
@@ -207,10 +207,10 @@ end;
 destructor TGLCanvas.Destroy;
 begin
   StopPrimitive;
-  GL.MatrixMode(GL_PROJECTION);
-  GL.PopMatrix;
-  GL.MatrixMode(GL_MODELVIEW);
-  GL.PopMatrix;
+  gl.MatrixMode(GL_PROJECTION);
+  gl.PopMatrix;
+  gl.MatrixMode(GL_MODELVIEW);
+  gl.PopMatrix;
 end;
 
 procedure TGLCanvas.BackupOpenGLStates;
@@ -231,7 +231,7 @@ begin
     // Setup and backup pen stuff
     FPenColor := clBlack;
     SetVector(FCurrentPenColorVector, NullHmgPoint);
-    GL.Color4fv(@FCurrentPenColorVector);
+    gl.Color4fv(@FCurrentPenColorVector);
     FPenWidth := 1;
     LineWidth := 1;
     PointSize := 1;
@@ -243,9 +243,9 @@ begin
   if primitiveType <> FLastPrimitive then
   begin
     if FLastPrimitive <> cNoPrimitive then
-      GL.End_;
+      gl.End_;
     if primitiveType <> cNoPrimitive then
-      GL.Begin_(primitiveType);
+      gl.Begin_(primitiveType);
     FLastPrimitive := primitiveType;
   end;
 end;
@@ -262,7 +262,7 @@ begin
   mat := IdentityHmgMatrix;
   mat.V[1].Y := -1;
   mat.V[3].Y := FBufferSizeY;
-  GL.MultMatrixf(@mat);
+  gl.MultMatrixf(@mat);
 end;
 
 procedure TGLCanvas.SetPenColor(const val: TColor);
@@ -270,13 +270,13 @@ begin
   SetVector(FCurrentPenColorVector, ConvertWinColor(val,
     FCurrentPenColorVector.W));
   FPenColor := val;
-  GL.Color4fv(@FCurrentPenColorVector);
+  gl.Color4fv(@FCurrentPenColorVector);
 end;
 
 procedure TGLCanvas.SetPenAlpha(const val: Single);
 begin
   FCurrentPenColorVector.W := val;
-  GL.Color4fv(@FCurrentPenColorVector);
+  gl.Color4fv(@FCurrentPenColorVector);
 end;
 
 procedure TGLCanvas.SetPenWidth(const val: Integer);
@@ -320,17 +320,17 @@ end;
 procedure TGLCanvas.LineTo(const x, y: Integer);
 begin
   StartPrimitive(GL_LINES);
-  GL.Vertex2fv(@FCurrentPos);
+  gl.Vertex2fv(@FCurrentPos);
   MoveTo(x, y);
-  GL.Vertex2fv(@FCurrentPos);
+  gl.Vertex2fv(@FCurrentPos);
 end;
 
 procedure TGLCanvas.LineTo(const x, y: Single);
 begin
   StartPrimitive(GL_LINES);
-  GL.Vertex2fv(@FCurrentPos);
+  gl.Vertex2fv(@FCurrentPos);
   MoveTo(x, y);
-  GL.Vertex2fv(@FCurrentPos);
+  gl.Vertex2fv(@FCurrentPos);
 end;
 
 procedure TGLCanvas.LineToRel(const x, y: Integer);
@@ -346,15 +346,15 @@ end;
 procedure TGLCanvas.Line(const x1, y1, x2, y2: Integer);
 begin
   StartPrimitive(GL_LINES);
-  GL.Vertex2i(x1, y1);
-  GL.Vertex2i(x2, y2);
+  gl.Vertex2i(x1, y1);
+  gl.Vertex2i(x2, y2);
 end;
 
 procedure TGLCanvas.Line(const x1, y1, x2, y2: Single);
 begin
   StartPrimitive(GL_LINES);
-  GL.Vertex2f(x1, y1);
-  GL.Vertex2f(x2, y2);
+  gl.Vertex2f(x1, y1);
+  gl.Vertex2f(x2, y2);
 end;
 
 procedure TGLCanvas.Polyline(const points: array of TGLPoint);
@@ -365,9 +365,9 @@ begin
   if n > 1 then
   begin
     StartPrimitive(GL_LINE_STRIP);
-    GL.Vertex2iv(@points[Low(points)]);
+    gl.Vertex2iv(@points[Low(points)]);
     for i := Low(points) + 1 to High(points) do
-      GL.Vertex2iv(@points[i]);
+      gl.Vertex2iv(@points[i]);
     StopPrimitive;
   end;
 end;
@@ -380,9 +380,9 @@ begin
   if n > 1 then
   begin
     StartPrimitive(GL_LINE_LOOP);
-    GL.Vertex2iv(@points[Low(points)]);
+    gl.Vertex2iv(@points[Low(points)]);
     for i := Low(points) + 1 to High(points) do
-      GL.Vertex2iv(@points[i]);
+      gl.Vertex2iv(@points[i]);
     StopPrimitive;
   end;
 end;
@@ -390,32 +390,32 @@ end;
 procedure TGLCanvas.PlotPixel(const x, y: Integer);
 begin
   StartPrimitive(GL_POINTS);
-  GL.Vertex2i(x, y);
+  gl.Vertex2i(x, y);
 end;
 
 procedure TGLCanvas.PlotPixel(const x, y: Single);
 begin
   StartPrimitive(GL_POINTS);
-  GL.Vertex2f(x, y);
+  gl.Vertex2f(x, y);
 end;
 
 procedure TGLCanvas.FrameRect(const x1, y1, x2, y2: Integer);
 begin
   StartPrimitive(GL_LINE_LOOP);
-  GL.Vertex2i(x1, y1);
-  GL.Vertex2i(x2, y1);
-  GL.Vertex2i(x2, y2);
-  GL.Vertex2i(x1, y2);
+  gl.Vertex2i(x1, y1);
+  gl.Vertex2i(x2, y1);
+  gl.Vertex2i(x2, y2);
+  gl.Vertex2i(x1, y2);
   StopPrimitive;
 end;
 
 procedure TGLCanvas.FrameRect(const x1, y1, x2, y2: Single);
 begin
   StartPrimitive(GL_LINE_LOOP);
-  GL.Vertex2f(x1, y1);
-  GL.Vertex2f(x2, y1);
-  GL.Vertex2f(x2, y2);
-  GL.Vertex2f(x1, y2);
+  gl.Vertex2f(x1, y1);
+  gl.Vertex2f(x2, y1);
+  gl.Vertex2f(x2, y2);
+  gl.Vertex2f(x1, y2);
   StopPrimitive;
 end;
 
@@ -427,20 +427,20 @@ end;
 procedure TGLCanvas.FillRect(const x1, y1, x2, y2: Integer);
 begin
   StartPrimitive(GL_QUADS);
-  GL.Vertex2i(x1, y1);
-  GL.Vertex2i(x2, y1);
-  GL.Vertex2i(x2, y2);
-  GL.Vertex2i(x1, y2);
+  gl.Vertex2i(x1, y1);
+  gl.Vertex2i(x2, y1);
+  gl.Vertex2i(x2, y2);
+  gl.Vertex2i(x1, y2);
   StopPrimitive;
 end;
 
 procedure TGLCanvas.FillRect(const x1, y1, x2, y2: Single);
 begin
   StartPrimitive(GL_QUADS);
-  GL.Vertex2f(x1, y1);
-  GL.Vertex2f(x2, y1);
-  GL.Vertex2f(x2, y2);
-  GL.Vertex2f(x1, y2);
+  gl.Vertex2f(x1, y1);
+  gl.Vertex2f(x2, y1);
+  gl.Vertex2f(x2, y2);
+  gl.Vertex2f(x1, y2);
   StopPrimitive;
 end;
 
@@ -458,16 +458,16 @@ begin
   ScaleFloatArray(c, xRadius);
   // first quadrant (top right)
   for i := 0 to n do
-    GL.Vertex2f(x + c[i], y - s[i]);
+    gl.Vertex2f(x + c[i], y - s[i]);
   // second quadrant (top left)
   for i := n - 1 downto 0 do
-    GL.Vertex2f(x - c[i], y - s[i]);
+    gl.Vertex2f(x - c[i], y - s[i]);
   // third quadrant (bottom left)
   for i := 1 to n do
-    GL.Vertex2f(x - c[i], y + s[i]);
+    gl.Vertex2f(x - c[i], y + s[i]);
   // fourth quadrant (bottom right)
   for i := n - 1 downto 0 do
-    GL.Vertex2f(x + c[i], y + s[i]);
+    gl.Vertex2f(x + c[i], y + s[i]);
 end;
 
 procedure TGLCanvas.EllipseBB(const x1, y1, x2, y2: Integer);
@@ -508,7 +508,7 @@ procedure TGLCanvas.FillEllipse(const x, y: Integer; const xRadius, yRadius:
   Single);
 begin
   StartPrimitive(GL_TRIANGLE_FAN);
-  GL.Vertex2f(x, y); // not really necessary, but may help with memory stride
+  gl.Vertex2f(x, y); // not really necessary, but may help with memory stride
   EllipseVertices(x, y, xRadius, yRadius);
   StopPrimitive;
 end;
@@ -516,7 +516,7 @@ end;
 procedure TGLCanvas.FillEllipse(const x, y, xRadius, yRadius: Single);
 begin
   StartPrimitive(GL_TRIANGLE_FAN);
-  GL.Vertex2f(x, y); // not really necessary, but may help with memory stride
+  gl.Vertex2f(x, y); // not really necessary, but may help with memory stride
   EllipseVertices(x, y, xRadius, yRadius);
   StopPrimitive;
 end;
@@ -530,36 +530,36 @@ procedure TGLCanvas.FillRectGradient(const x1, y1, x2, y2: Single;
   const x1y1Color, x2y1Color, x2y2Color, x1y2Color: TColorVector);
 begin
   StartPrimitive(GL_QUADS);
-  GL.Color4f(x1y1Color.X, x1y1Color.Y, x1y1Color.Z, x1y1Color.W);
-  GL.Vertex2f(x1, y1);
-  GL.Color4f(x2y1Color.X, x2y1Color.Y, x2y1Color.Z, x2y1Color.W);
-  GL.Vertex2f(x2, y1);
-  GL.Color4f(x2y2Color.X, x2y2Color.Y, x2y2Color.Z, x2y2Color.W);
-  GL.Vertex2f(x2, y2);
-  GL.Color4f(x1y2Color.X, x1y2Color.Y, x1y2Color.Z, x1y2Color.W);
-  GL.Vertex2f(x1, y2);
+  gl.Color4f(x1y1Color.X, x1y1Color.Y, x1y1Color.Z, x1y1Color.W);
+  gl.Vertex2f(x1, y1);
+  gl.Color4f(x2y1Color.X, x2y1Color.Y, x2y1Color.Z, x2y1Color.W);
+  gl.Vertex2f(x2, y1);
+  gl.Color4f(x2y2Color.X, x2y2Color.Y, x2y2Color.Z, x2y2Color.W);
+  gl.Vertex2f(x2, y2);
+  gl.Color4f(x1y2Color.X, x1y2Color.Y, x1y2Color.Z, x1y2Color.W);
+  gl.Vertex2f(x1, y2);
   StopPrimitive;
 
   // restore pen color
-  GL.Color4fv(@FCurrentPenColorVector);
+  gl.Color4fv(@FCurrentPenColorVector);
 end;
 
 procedure TGLCanvas.FillRectGradient(const x1, y1, x2, y2: Integer;
   const x1y1Color, x2y1Color, x2y2Color, x1y2Color: TColorVector);
 begin
   StartPrimitive(GL_QUADS);
-  GL.Color4f(x1y1Color.X, x1y1Color.Y, x1y1Color.Z, x1y1Color.W);
-  GL.Vertex2i(x1, y1);
-  GL.Color4f(x2y1Color.X, x2y1Color.Y, x2y1Color.Z, x2y1Color.W);
-  GL.Vertex2i(x2, y1);
-  GL.Color4f(x2y2Color.X, x2y2Color.Y, x2y2Color.Z, x2y2Color.W);
-  GL.Vertex2i(x2, y2);
-  GL.Color4f(x1y2Color.X, x1y2Color.Y, x1y2Color.Z, x1y2Color.W);
-  GL.Vertex2i(x1, y2);
+  gl.Color4f(x1y1Color.X, x1y1Color.Y, x1y1Color.Z, x1y1Color.W);
+  gl.Vertex2i(x1, y1);
+  gl.Color4f(x2y1Color.X, x2y1Color.Y, x2y1Color.Z, x2y1Color.W);
+  gl.Vertex2i(x2, y1);
+  gl.Color4f(x2y2Color.X, x2y2Color.Y, x2y2Color.Z, x2y2Color.W);
+  gl.Vertex2i(x2, y2);
+  gl.Color4f(x1y2Color.X, x1y2Color.Y, x1y2Color.Z, x1y2Color.W);
+  gl.Vertex2i(x1, y2);
   StopPrimitive;
 
   // restore pen color
-  GL.Color4fv(@FCurrentPenColorVector);
+  gl.Color4fv(@FCurrentPenColorVector);
 end;
 
 procedure TGLCanvas.FillEllipseGradient(const x, y: Integer; const xRadius, yRadius: Integer; const edgeColor: TColorVector);
@@ -567,27 +567,27 @@ begin
   StartPrimitive(GL_TRIANGLE_FAN);
 
   // the center will use the last set PenColor and PenAlpha
-  GL.Vertex2f(x, y); // really necessary now :)
+  gl.Vertex2f(x, y); // really necessary now :)
 
   // then openGL will do a gradient from the center to the edge using the edgeColor
-  GL.Color4f(edgeColor.X, edgeColor.Y, edgeColor.Z, edgeColor.W);
+  gl.Color4f(edgeColor.X, edgeColor.Y, edgeColor.Z, edgeColor.W);
   EllipseVertices(x, y, xRadius, yRadius);
   StopPrimitive;
 
   // restore pen color
-  GL.Color4fv(@FCurrentPenColorVector);
+  gl.Color4fv(@FCurrentPenColorVector);
 end;
 
 procedure TGLCanvas.FillEllipseGradient(const x, y, xRadius, yRadius: Single; const edgeColor: TColorVector);
 begin
   StartPrimitive(GL_TRIANGLE_FAN);
-  GL.Vertex2f(x, y); // really necessary now :)
-  GL.Color4f(edgeColor.X, edgeColor.Y, edgeColor.Z, edgeColor.W);
+  gl.Vertex2f(x, y); // really necessary now :)
+  gl.Color4f(edgeColor.X, edgeColor.Y, edgeColor.Z, edgeColor.W);
   EllipseVertices(x, y, xRadius, yRadius);
   StopPrimitive;
 
   // restore pen color
-  GL.Color4fv(@FCurrentPenColorVector);
+  gl.Color4fv(@FCurrentPenColorVector);
 end;
 
 procedure TGLCanvas.FillEllipseGradient(const x, y, Radius: Single; const edgeColor: TColorVector);
@@ -729,7 +729,7 @@ begin
     x := Xc + (Rx * c);
     y := Yc + (Ry * s);
 
-    GL.Vertex2f(x, y);
+    gl.Vertex2f(x, y);
 
     AngleCurrent := AngleCurrent - AngleStep; // always step down, rotate only one way to draw it
   end;
@@ -738,7 +738,7 @@ begin
   x := Xc + (Rx * c);
   y := Yc + (Ry * s);
 
-  GL.Vertex2f(x, y);
+  gl.Vertex2f(x, y);
 
   StopPrimitive();
 

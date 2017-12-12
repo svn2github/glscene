@@ -38,7 +38,7 @@ type
     FDeltaY: Integer;
     function CountBits(Value: byte): shortint;
     function ShiftCount(Mask: longword): shortint;
-    function ExpandColor(Value: longword): TGLPixel32;
+    function ExpandColor(Value: longword): TPixel32;
     procedure ExpandRLE4ScanLine(Row: Integer; Stream: TStream);
     procedure ExpandRLE8ScanLine(Row: Integer; Stream: TStream);
     function Monochrome(N: Integer): Integer;
@@ -178,7 +178,7 @@ begin
   Result := tmp;
 end;
 
-function TGLBMPImage.ExpandColor(Value: longword): TGLPixel32;
+function TGLBMPImage.ExpandColor(Value: longword): TPixel32;
 var
   tmpr, tmpg, tmpb: longword;
 begin
@@ -225,7 +225,7 @@ var
   BitCount, LineSize: Integer;
   Row: Integer;
   nPalette: Integer;
-  LPalette: array of TGLPixel32;
+  LPalette: array of TPixel32;
   BitShiftFunc: TBitShiftFunc;
 
   procedure ReadScanLine;
@@ -236,7 +236,7 @@ var
     begin
       Stream.Read(FLineBuffer[0], FReadSize);
       for I := LInfo.Width - 1 downto 0 do
-        PGLPixel32Array(Ptr)[I] := LPalette[BitShiftFunc(I)];
+        PPixel32Array(Ptr)[I] := LPalette[BitShiftFunc(I)];
     end
     else if LInfo.Compression = BI_RLE8 then
     begin
@@ -252,7 +252,7 @@ var
     begin
       Stream.Read(FLineBuffer[0], FReadSize);
       for I := LInfo.Width - 1 downto 0 do
-        PGLPixel32Array(Ptr)[I] := ExpandColor(PWordArray(FLineBuffer)[I]);
+        PPixel32Array(Ptr)[I] := ExpandColor(PWordArray(FLineBuffer)[I]);
     end
     else
       Stream.Read(Ptr^, FReadSize);
@@ -310,9 +310,9 @@ begin
     nPalette := 1 shl LInfo.BitCount;
     SetLength(LPalette, nPalette);
     if LInfo.ClrUsed > 0 then
-      Stream.Read(LPalette[0], LInfo.ClrUsed * SizeOf(TGLPixel32))
+      Stream.Read(LPalette[0], LInfo.ClrUsed * SizeOf(TPixel32))
     else // Seems to me that this is dangerous.
-      Stream.Read(LPalette[0], nPalette * SizeOf(TGLPixel32));
+      Stream.Read(LPalette[0], nPalette * SizeOf(TPixel32));
   end
   else if LInfo.ClrUsed > 0 then { Skip palette }
     Stream.Position := Stream.Position + LInfo.ClrUsed * 3;

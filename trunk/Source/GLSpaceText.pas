@@ -365,28 +365,28 @@ var
 begin
   if Length(GetText) > 0 then
   begin
-    GL.PushMatrix;
+    gl.PushMatrix;
 
     // FAspectRatio ignore
     if FAspectRatio <> 0 then
-      GL.Scalef(FAspectRatio, 1, 1);
+      gl.Scalef(FAspectRatio, 1, 1);
     if FOblique <> 0 then
-      GL.Rotatef(FOblique, 0, 0, 1);
+      gl.Rotatef(FOblique, 0, 0, 1);
 
     glBase := FTextFontEntry^.FVirtualHandle.handle;
     case FCharacterRange of
       stcrAlphaNum:
-        GL.ListBase(Cardinal(Integer(glBase) - 32));
+        gl.ListBase(Cardinal(Integer(glBase) - 32));
       stcrNumbers:
-        GL.ListBase(Cardinal(Integer(glBase) - Integer('0')));
+        gl.ListBase(Cardinal(Integer(glBase) - Integer('0')));
     else
-      GL.ListBase(glBase);
+      gl.ListBase(glBase);
     end;
 
     rci.GLStates.PushAttrib([sttPolygon]);
     for i := 0 to FLines.Count - 1 do
     begin
-      GL.PushMatrix;
+      gl.PushMatrix;
 
       TextMetrics(FLines.Strings[i], textL, maxHeight, maxUnder);
       if (FAdjust.Horz <> haLeft) or (FAdjust.Vert <> vaBaseLine) or
@@ -395,29 +395,29 @@ begin
         if FTextHeight <> 0 then
         begin
           charScale := FTextHeight / maxHeight;
-          GL.Scalef(charScale, charScale, 1);
+          gl.Scalef(charScale, charScale, 1);
         end;
         case FAdjust.Horz of
           haLeft:
             ; // nothing
           haCenter:
-            GL.Translatef(-textL * 0.5, 0, 0);
+            gl.Translatef(-textL * 0.5, 0, 0);
           haRight:
-            GL.Translatef(-textL, 0, 0);
+            gl.Translatef(-textL, 0, 0);
         end;
         case FAdjust.Vert of
           vaBaseLine:
             ; // nothing;
           vaBottom:
-            GL.Translatef(0, abs(maxUnder), 0);
+            gl.Translatef(0, abs(maxUnder), 0);
           vaCenter:
-            GL.Translatef(0, abs(maxUnder) * 0.5 - maxHeight * 0.5, 0);
+            gl.Translatef(0, abs(maxUnder) * 0.5 - maxHeight * 0.5, 0);
           vaTop:
-            GL.Translatef(0, -maxHeight, 0);
+            gl.Translatef(0, -maxHeight, 0);
         end;
       end;
 
-      GL.Translatef(0, -i * (maxHeight + FAspectRatio), 0);
+      gl.Translatef(0, -i * (maxHeight + FAspectRatio), 0);
       if FCharacterRange = stcrWide then
       begin
         dirtyLine := FLines.Strings[i];
@@ -434,15 +434,15 @@ begin
           end;
         end;
         if k > 1 then
-          GL.CallLists(k - 1, GL_UNSIGNED_SHORT, PWideChar(cleanLine))
+          gl.CallLists(k - 1, GL_UNSIGNED_SHORT, PWideChar(cleanLine))
       end
       else
-        GL.CallLists(Length(FLines.Strings[i]), GL_UNSIGNED_BYTE,
+        gl.CallLists(Length(FLines.Strings[i]), GL_UNSIGNED_BYTE,
           PAnsiChar(AnsiString(FLines.Strings[i])));
-      GL.PopMatrix;
+      gl.PopMatrix;
     end;
     rci.GLStates.PopAttrib();
-    GL.PopMatrix;
+    gl.PopMatrix;
   end;
 end;
 
@@ -724,7 +724,7 @@ procedure TFontManager.VirtualHandleDestroy(sender: TGLVirtualHandle;
   var handle: Cardinal);
 begin
   if handle <> 0 then
-    GL.DeleteLists(handle, sender.Tag);
+    gl.DeleteLists(handle, sender.Tag);
 end;
 
 function TFontManager.FindFont(AName: string; FStyles: TFontStyles;
@@ -800,7 +800,7 @@ begin
       AFont.Name := AName;
       AFont.Style := FStyles;
       SelectObject(MemDC, AFont.handle);
-      FCurrentBase := GL.GenLists(nbLists);
+      FCurrentBase := gl.GenLists(nbLists);
       if FCurrentBase = 0 then
         raise Exception.Create('FontManager: no more display lists available');
       NewEntry^.FVirtualHandle.AllocateHandle;

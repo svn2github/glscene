@@ -123,7 +123,7 @@ var
   i: Integer;
 begin
   for i := 0 to xgl.FComplexMappingN do
-    GL.MultiTexCoord2f(xgl.FComplexMapping[i], s, t);
+    gl.MultiTexCoord2f(xgl.FComplexMapping[i], s, t);
 end;
 
 procedure TexCoord2fv_Arbitrary(v: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
@@ -131,7 +131,7 @@ var
   i: Integer;
 begin
   for i := 0 to xgl.FComplexMappingN do
-    GL.MultiTexCoord2fv(xgl.FComplexMapping[i], v);
+    gl.MultiTexCoord2fv(xgl.FComplexMapping[i], v);
 end;
 
 procedure TexCoord3f_Arbitrary(s, t, r: TGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
@@ -139,7 +139,7 @@ var
   i: Integer;
 begin
   for i := 0 to xgl.FComplexMappingN do
-    GL.MultiTexCoord3f(xgl.FComplexMapping[i], s, t, r);
+    gl.MultiTexCoord3f(xgl.FComplexMapping[i], s, t, r);
 end;
 
 procedure TexCoord3fv_Arbitrary(v: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
@@ -147,7 +147,7 @@ var
   i: Integer;
 begin
   for i := 0 to xgl.FComplexMappingN do
-    GL.MultiTexCoord3fv(xgl.FComplexMapping[i], v);
+    gl.MultiTexCoord3fv(xgl.FComplexMapping[i], v);
 end;
 
 procedure TexCoord4f_Arbitrary(s, t, r, q: TGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
@@ -155,7 +155,7 @@ var
   i: Integer;
 begin
   for i := 0 to xgl.FComplexMappingN do
-    GL.MultiTexCoord4f(xgl.FComplexMapping[i], s, t, r, q);
+    gl.MultiTexCoord4f(xgl.FComplexMapping[i], s, t, r, q);
 end;
 
 procedure TexCoord4fv_Arbitrary(v: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
@@ -163,7 +163,7 @@ var
   i: Integer;
 begin
   for i := 0 to xgl.FComplexMappingN do
-    GL.MultiTexCoord4fv(xgl.FComplexMapping[i], v);
+    gl.MultiTexCoord4fv(xgl.FComplexMapping[i], v);
 end;
 
 procedure TexGenf_Arbitrary(coord, pname: Cardinal; param: TGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
@@ -173,7 +173,7 @@ begin
   for i := 0 to xgl.FComplexMappingN do
   begin
     CurrentGLContext.GLStates.ActiveTexture := xgl.FComplexMapping[i];
-    GL.TexGenf(coord, pname, param);
+    gl.TexGenf(coord, pname, param);
   end;
 end;
 
@@ -184,7 +184,7 @@ begin
   for i := 0 to xgl.FComplexMappingN do
   begin
     CurrentGLContext.GLStates.ActiveTexture := xgl.FComplexMapping[i];
-    GL.TexGenfv(coord, pname, params);
+    gl.TexGenfv(coord, pname, params);
   end;
 end;
 
@@ -195,7 +195,7 @@ begin
   for i := 0 to xgl.FComplexMappingN do
   begin
     CurrentGLContext.GLStates.ActiveTexture := xgl.FComplexMapping[i];
-    GL.TexGeni(coord, pname, param);
+    gl.TexGeni(coord, pname, param);
   end;
 end;
 
@@ -206,7 +206,7 @@ begin
   for i := 0 to xgl.FComplexMappingN do
   begin
     CurrentGLContext.GLStates.ActiveTexture := xgl.FComplexMapping[i];
-    GL.TexGeniv(coord, pname, params);
+    gl.TexGeniv(coord, pname, params);
   end;
 end;
 
@@ -217,7 +217,7 @@ begin
   for i := 0 to xgl.FComplexMappingN do
   begin
     CurrentGLContext.GLStates.ActiveTexture := xgl.FComplexMapping[i];
-    GL.Enable(cap);
+    gl.Enable(cap);
   end;
 end;
 
@@ -228,7 +228,7 @@ begin
   for i := 0 to xgl.FComplexMappingN do
   begin
     CurrentGLContext.GLStates.ActiveTexture := xgl.FComplexMapping[i];
-    GL.Disable(cap);
+    gl.Disable(cap);
   end;
 end;
 
@@ -239,8 +239,8 @@ var
 begin
   for i := 0 to xgl.FComplexMappingN do
   begin
-    GL.ClientActiveTexture(xgl.FComplexMapping[i]);
-    GL.TexCoordPointer(size, atype, stride, data);
+    gl.ClientActiveTexture(xgl.FComplexMapping[i]);
+    gl.TexCoordPointer(size, atype, stride, data);
   end;
 end;
 
@@ -250,8 +250,8 @@ var
 begin
   for i := 0 to xgl.FComplexMappingN do
   begin
-    GL.ClientActiveTexture(xgl.FComplexMapping[i]);
-    GL.EnableClientState(aArray);
+    gl.ClientActiveTexture(xgl.FComplexMapping[i]);
+    gl.EnableClientState(aArray);
   end;
 end;
 
@@ -261,8 +261,8 @@ var
 begin
   for i := 0 to xgl.FComplexMappingN do
   begin
-    GL.ClientActiveTexture(xgl.FComplexMapping[i]);
-    GL.DisableClientState(aArray);
+    gl.ClientActiveTexture(xgl.FComplexMapping[i]);
+    gl.DisableClientState(aArray);
   end;
 end;
 
@@ -270,128 +270,128 @@ end;
 
 procedure TexCoord2f_Second(s, t: TGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
-  GL.MultiTexCoord2f(GL_TEXTURE1, s, t);
+  gl.MultiTexCoord2f(GL_TEXTURE1, s, t);
 end;
 
 procedure TexCoord2fv_Second(v: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
-  GL.MultiTexCoord2fv(GL_TEXTURE1, v);
+  gl.MultiTexCoord2fv(GL_TEXTURE1, v);
 end;
 
 procedure TexCoord3f_Second(s, t, r: TGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
-  GL.MultiTexCoord3f(GL_TEXTURE1, s, t, r);
+  gl.MultiTexCoord3f(GL_TEXTURE1, s, t, r);
 end;
 
 procedure TexCoord3fv_Second(v: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
-  GL.MultiTexCoord3fv(GL_TEXTURE1, v);
+  gl.MultiTexCoord3fv(GL_TEXTURE1, v);
 end;
 
 procedure TexCoord4f_Second(s, t, r, q: TGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
-  GL.MultiTexCoord4f(GL_TEXTURE1, s, t, r, q);
+  gl.MultiTexCoord4f(GL_TEXTURE1, s, t, r, q);
 end;
 
 procedure TexCoord4fv_Second(v: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
-  GL.MultiTexCoord4fv(GL_TEXTURE1, v);
+  gl.MultiTexCoord4fv(GL_TEXTURE1, v);
 end;
 
 procedure TexGenf_Second(coord, pname: Cardinal; param: TGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
   CurrentGLContext.GLStates.ActiveTexture := 1;
-  GL.TexGenf(coord, pname, param);
+  gl.TexGenf(coord, pname, param);
 end;
 
 procedure TexGenfv_Second(coord, pname: Cardinal; params: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
   CurrentGLContext.GLStates.ActiveTexture := 1;
-  GL.TexGenfv(coord, pname, params);
+  gl.TexGenfv(coord, pname, params);
 end;
 
 procedure TexGeni_Second(coord, pname: Cardinal; param: TGLint);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
   CurrentGLContext.GLStates.ActiveTexture := 1;
-  GL.TexGeni(coord, pname, param);
+  gl.TexGeni(coord, pname, param);
 end;
 
 procedure TexGeniv_Second(coord, pname: Cardinal; params: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
   CurrentGLContext.GLStates.ActiveTexture := 1;
-  GL.TexGeniv(coord, pname, params);
+  gl.TexGeniv(coord, pname, params);
 end;
 
 procedure Enable_Second(cap: Cardinal);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
   CurrentGLContext.GLStates.ActiveTexture := 1;
-  GL.Enable(cap);
+  gl.Enable(cap);
 end;
 
 procedure Disable_Second(cap: Cardinal);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
   CurrentGLContext.GLStates.ActiveTexture := 1;
-  GL.Disable(cap);
+  gl.Disable(cap);
 end;
 
 procedure TexCoordPointer_Second(size: TGLint; atype: Cardinal; stride:
   TGLsizei; data: pointer);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
-  GL.ClientActiveTexture(GL_TEXTURE1);
-  GL.TexCoordPointer(size, atype, stride, data);
-  GL.ClientActiveTexture(GL_TEXTURE0);
+  gl.ClientActiveTexture(GL_TEXTURE1);
+  gl.TexCoordPointer(size, atype, stride, data);
+  gl.ClientActiveTexture(GL_TEXTURE0);
 end;
 
 procedure EnableClientState_Second(aArray: Cardinal);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
-  GL.ClientActiveTexture(GL_TEXTURE1);
-  GL.EnableClientState(aArray);
-  GL.ClientActiveTexture(GL_TEXTURE0);
+  gl.ClientActiveTexture(GL_TEXTURE1);
+  gl.EnableClientState(aArray);
+  gl.ClientActiveTexture(GL_TEXTURE0);
 end;
 
 procedure DisableClientState_Second(aArray: Cardinal);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
-  GL.ClientActiveTexture(GL_TEXTURE1);
-  GL.DisableClientState(aArray);
-  GL.ClientActiveTexture(GL_TEXTURE0);
+  gl.ClientActiveTexture(GL_TEXTURE1);
+  gl.DisableClientState(aArray);
+  gl.ClientActiveTexture(GL_TEXTURE0);
 end;
 
 // --------- Dual Texturing
 
 procedure TexCoord2f_Dual(s, t: TGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
-  GL.TexCoord2f(s, t);
-  GL.MultiTexCoord2f(GL_TEXTURE1, s, t);
+  gl.TexCoord2f(s, t);
+  gl.MultiTexCoord2f(GL_TEXTURE1, s, t);
 end;
 
 procedure TexCoord2fv_Dual(v: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
-  GL.TexCoord2fv(v);
-  GL.MultiTexCoord2fv(GL_TEXTURE1, v);
+  gl.TexCoord2fv(v);
+  gl.MultiTexCoord2fv(GL_TEXTURE1, v);
 end;
 
 procedure TexCoord3f_Dual(s, t, r: TGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
-  GL.TexCoord3f(s, t, r);
-  GL.MultiTexCoord3f(GL_TEXTURE1, s, t, r);
+  gl.TexCoord3f(s, t, r);
+  gl.MultiTexCoord3f(GL_TEXTURE1, s, t, r);
 end;
 
 procedure TexCoord3fv_Dual(v: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
-  GL.TexCoord3fv(v);
-  GL.MultiTexCoord3fv(GL_TEXTURE1, v);
+  gl.TexCoord3fv(v);
+  gl.MultiTexCoord3fv(GL_TEXTURE1, v);
 end;
 
 procedure TexCoord4f_Dual(s, t, r, q: TGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
-  GL.TexCoord4f(s, t, r, q);
-  GL.MultiTexCoord4f(GL_TEXTURE1, s, t, r, q);
+  gl.TexCoord4f(s, t, r, q);
+  gl.MultiTexCoord4f(GL_TEXTURE1, s, t, r, q);
 end;
 
 procedure TexCoord4fv_Dual(v: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
-  GL.TexCoord4fv(v);
-  GL.MultiTexCoord4fv(GL_TEXTURE1, v);
+  gl.TexCoord4fv(v);
+  gl.MultiTexCoord4fv(GL_TEXTURE1, v);
 end;
 
 procedure TexGenf_Dual(coord, pname: Cardinal; param: TGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
@@ -399,9 +399,9 @@ begin
   with CurrentGLContext.GLStates do
   begin
     ActiveTexture := 0;
-    GL.TexGenf(coord, pname, param);
+    gl.TexGenf(coord, pname, param);
     ActiveTexture := 1;
-    GL.TexGenf(coord, pname, param);
+    gl.TexGenf(coord, pname, param);
   end;
 end;
 
@@ -411,9 +411,9 @@ begin
   with CurrentGLContext.GLStates do
   begin
     ActiveTexture := 0;
-    GL.TexGenfv(coord, pname, params);
+    gl.TexGenfv(coord, pname, params);
     ActiveTexture := 1;
-    GL.TexGenfv(coord, pname, params);
+    gl.TexGenfv(coord, pname, params);
   end;
 end;
 
@@ -422,9 +422,9 @@ begin
   with CurrentGLContext.GLStates do
   begin
     ActiveTexture := 0;
-    GL.TexGeni(coord, pname, param);
+    gl.TexGeni(coord, pname, param);
     ActiveTexture := 1;
-    GL.TexGeni(coord, pname, param);
+    gl.TexGeni(coord, pname, param);
   end;
 end;
 
@@ -433,9 +433,9 @@ begin
   with CurrentGLContext.GLStates do
   begin
     ActiveTexture := 0;
-    GL.TexGeniv(coord, pname, params);
+    gl.TexGeniv(coord, pname, params);
     ActiveTexture := 1;
-    GL.TexGeniv(coord, pname, params);
+    gl.TexGeniv(coord, pname, params);
   end;
 end;
 
@@ -444,9 +444,9 @@ begin
   with CurrentGLContext.GLStates do
   begin
     ActiveTexture := 0;
-    GL.Enable(cap);
+    gl.Enable(cap);
     ActiveTexture := 1;
-    GL.Enable(cap);
+    gl.Enable(cap);
   end;
 end;
 
@@ -455,35 +455,35 @@ begin
   with CurrentGLContext.GLStates do
   begin
     ActiveTexture := 0;
-    GL.Disable(cap);
+    gl.Disable(cap);
     ActiveTexture := 1;
-    GL.Disable(cap);
+    gl.Disable(cap);
   end;
 end;
 
 procedure TexCoordPointer_Dual(size: TGLint; atype: Cardinal; stride:
   TGLsizei; data: pointer);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
-  GL.TexCoordPointer(size, atype, stride, data);
-  GL.ClientActiveTexture(GL_TEXTURE1);
-  GL.TexCoordPointer(size, atype, stride, data);
-  GL.ClientActiveTexture(GL_TEXTURE0);
+  gl.TexCoordPointer(size, atype, stride, data);
+  gl.ClientActiveTexture(GL_TEXTURE1);
+  gl.TexCoordPointer(size, atype, stride, data);
+  gl.ClientActiveTexture(GL_TEXTURE0);
 end;
 
 procedure EnableClientState_Dual(aArray: Cardinal);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
-  GL.EnableClientState(aArray);
-  GL.ClientActiveTexture(GL_TEXTURE1);
-  GL.EnableClientState(aArray);
-  GL.ClientActiveTexture(GL_TEXTURE0);
+  gl.EnableClientState(aArray);
+  gl.ClientActiveTexture(GL_TEXTURE1);
+  gl.EnableClientState(aArray);
+  gl.ClientActiveTexture(GL_TEXTURE0);
 end;
 
 procedure DisableClientState_Dual(aArray: Cardinal);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
-  GL.DisableClientState(aArray);
-  GL.ClientActiveTexture(GL_TEXTURE1);
-  GL.DisableClientState(aArray);
-  GL.ClientActiveTexture(GL_TEXTURE0);
+  gl.DisableClientState(aArray);
+  gl.ClientActiveTexture(GL_TEXTURE1);
+  gl.DisableClientState(aArray);
+  gl.ClientActiveTexture(GL_TEXTURE0);
 end;
 
 // --------- Null Texturing
@@ -671,24 +671,24 @@ begin
   begin
     MapTexCoordMode := mtcmMain;
 
-    TexCoord2f := GL.TexCoord2f;
-    TexCoord2fv := GL.TexCoord2fv;
-    TexCoord3f := GL.TexCoord3f;
-    TexCoord3fv := GL.TexCoord3fv;
-    TexCoord4f := GL.TexCoord4f;
-    TexCoord4fv := GL.TexCoord4fv;
+    TexCoord2f := gl.TexCoord2f;
+    TexCoord2fv := gl.TexCoord2fv;
+    TexCoord3f := gl.TexCoord3f;
+    TexCoord3fv := gl.TexCoord3fv;
+    TexCoord4f := gl.TexCoord4f;
+    TexCoord4fv := gl.TexCoord4fv;
 
-    TexGenf := GL.TexGenf;
-    TexGenfv := GL.TexGenfv;
-    TexGeni := GL.TexGeni;
-    TexGeniv := GL.TexGeniv;
+    TexGenf := gl.TexGenf;
+    TexGenfv := gl.TexGenfv;
+    TexGeni := gl.TexGeni;
+    TexGeniv := gl.TexGeniv;
 
-    TexCoordPointer := GL.TexCoordPointer;
-    EnableClientState := GL.EnableClientState;
-    DisableClientState := GL.DisableClientState;
+    TexCoordPointer := gl.TexCoordPointer;
+    EnableClientState := gl.EnableClientState;
+    DisableClientState := gl.DisableClientState;
 
-    Enable := GL.Enable;
-    Disable := GL.Disable;
+    Enable := gl.Enable;
+    Disable := gl.Disable;
   end;
 end;
 
@@ -705,7 +705,7 @@ begin
   else if MapTexCoordMode <> mtcmSecond then
   begin
     MapTexCoordMode := mtcmSecond;
-    Assert(GL.ARB_multitexture);
+    Assert(gl.ARB_multitexture);
 
     TexCoord2f := TexCoord2f_Second;
     TexCoord2fv := TexCoord2fv_Second;
@@ -741,7 +741,7 @@ begin
   else if MapTexCoordMode <> mtcmDual then
   begin
     MapTexCoordMode := mtcmDual;
-    Assert(GL.ARB_multitexture);
+    Assert(gl.ARB_multitexture);
 
     TexCoord2f := TexCoord2f_Dual;
     TexCoord2fv := TexCoord2fv_Dual;
@@ -788,7 +788,7 @@ begin
   begin
 
     MapTexCoordMode := mtcmArbitrary;
-    Assert(GL.ARB_multitexture);
+    Assert(gl.ARB_multitexture);
 
     TexCoord2f := TexCoord2f_Arbitrary;
     TexCoord2fv := TexCoord2fv_Arbitrary;

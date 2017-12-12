@@ -249,7 +249,7 @@ var
   refsiz: single;
   BMP: TGLImage;
   x, y: integer;
-  line: PGLPixel32Array;
+  line: PPixel32Array;
   by: Integer;
   bp: Integer;
   DoBlur: Boolean;
@@ -258,7 +258,7 @@ var
   var
     t: integer;
     x, y: integer;
-    lin, linu, lind, linuu, lindd: PGLPixel32Array;
+    lin, linu, lind, linuu, lindd: PPixel32Array;
     r, g, b: single;
 
     procedure ApplyBlurClampAndSetPixel;
@@ -382,7 +382,7 @@ begin
             // Read pixels from buffer. This is slow, but ok with reasonably small render size.
             FViewer.Buffer.RenderingContext.Activate;
             try
-              GL.ReadPixels(0, 0, FViewer.Buffer.Width, FViewer.Buffer.Height, GL_RGB, GL_UNSIGNED_BYTE, Pixelbuffer);
+              gl.ReadPixels(0, 0, FViewer.Buffer.Width, FViewer.Buffer.Height, GL_RGB, GL_UNSIGNED_BYTE, Pixelbuffer);
             except
               FViewer.Buffer.RenderingContext.Deactivate;
             end;
@@ -454,30 +454,30 @@ begin
   end;
   if ARci.ignoreMaterials then
     Exit;
-  GL.CheckError;
+  gl.CheckError;
   Material.Apply(ARci);
-  GL.CheckError;
+  gl.CheckError;
   repeat
     if AlphaChannel <> 1 then
       ARci.GLStates.SetGLMaterialAlphaChannel(GL_FRONT, AlphaChannel);
     // Prepare matrices
-    GL.MatrixMode(GL_MODELVIEW);
-    GL.PushMatrix;
-    GL.LoadMatrixf(@TGLSceneBuffer(ARci.buffer).BaseProjectionMatrix);
+    gl.MatrixMode(GL_MODELVIEW);
+    gl.PushMatrix;
+    gl.LoadMatrixf(@TGLSceneBuffer(ARci.buffer).BaseProjectionMatrix);
     if ARci.renderDPI = 96 then
       f := 1
     else
       f := ARci.renderDPI / 96;
-    GL.Scalef(2 / ARci.viewPortSize.cx, 2 / ARci.viewPortSize.cy, 1);
+    gl.Scalef(2 / ARci.viewPortSize.cx, 2 / ARci.viewPortSize.cy, 1);
 
     // center of viewport:
-    GL.Translatef(0, 0, Position.Z);
+    gl.Translatef(0, 0, Position.Z);
 
     if Rotation <> 0 then
-      GL.Rotatef(Rotation, 0, 0, 1);
-    GL.MatrixMode(GL_PROJECTION);
-    GL.PushMatrix;
-    GL.LoadIdentity;
+      gl.Rotatef(Rotation, 0, 0, 1);
+    gl.MatrixMode(GL_PROJECTION);
+    gl.PushMatrix;
+    gl.LoadIdentity;
     ARci.GLStates.Disable(stDepthTest);
     ARci.GLStates.DepthWriteMask := False;
 
@@ -516,21 +516,21 @@ begin
     end;
 
     // issue quad
-    GL.Begin_(GL_QUADS);
-    GL.Normal3fv(@YVector);
-    GL.TexCoord2f(0, 0);
-    GL.Vertex2f(vx, vy1);
-    GL.TexCoord2f(XTiles, 0);
-    GL.Vertex2f(vx1, vy1);
-    GL.TexCoord2f(XTiles, YTiles);
-    GL.Vertex2f(vx1, vy);
-    GL.TexCoord2f(0, YTiles);
-    GL.Vertex2f(vx, vy);
-    GL.End_;
+    gl.Begin_(GL_QUADS);
+    gl.Normal3fv(@YVector);
+    gl.TexCoord2f(0, 0);
+    gl.Vertex2f(vx, vy1);
+    gl.TexCoord2f(XTiles, 0);
+    gl.Vertex2f(vx1, vy1);
+    gl.TexCoord2f(XTiles, YTiles);
+    gl.Vertex2f(vx1, vy);
+    gl.TexCoord2f(0, YTiles);
+    gl.Vertex2f(vx, vy);
+    gl.End_;
     // restore state
-    GL.PopMatrix;
-    GL.MatrixMode(GL_MODELVIEW);
-    GL.PopMatrix;
+    gl.PopMatrix;
+    gl.MatrixMode(GL_MODELVIEW);
+    gl.PopMatrix;
   until not Material.UnApply(ARci);
   if Count > 0 then
     Self.RenderChildren(0, Count - 1, ARci);
@@ -783,36 +783,36 @@ begin
     ARci.ignoreDepthRequests := True;
     Material.Apply(ARci);
     ActiveTextureEnabled[ttTextureRect] := True;
-    GL.MatrixMode(GL_PROJECTION);
-    GL.PushMatrix;
-    GL.LoadIdentity;
-    GL.Ortho(0, ARci.viewPortSize.cx, ARci.viewPortSize.cy, 0, 0, 1);
-    GL.MatrixMode(GL_MODELVIEW);
-    GL.PushMatrix;
-    GL.LoadIdentity;
+    gl.MatrixMode(GL_PROJECTION);
+    gl.PushMatrix;
+    gl.LoadIdentity;
+    gl.Ortho(0, ARci.viewPortSize.cx, ARci.viewPortSize.cy, 0, 0, 1);
+    gl.MatrixMode(GL_MODELVIEW);
+    gl.PushMatrix;
+    gl.LoadIdentity;
     Disable(stDepthTest);
     DepthWriteMask := False;
 
-    GL.Begin_(GL_QUADS);
-    GL.TexCoord2f(0.0, ARci.viewPortSize.cy);
-    GL.Vertex2f(0, 0);
-    GL.TexCoord2f(0.0, 0.0);
-    GL.Vertex2f(0, ARci.viewPortSize.cy);
-    GL.TexCoord2f(ARci.viewPortSize.cx, 0.0);
-    GL.Vertex2f(ARci.viewPortSize.cx, ARci.viewPortSize.cy);
-    GL.TexCoord2f(ARci.viewPortSize.cx, ARci.viewPortSize.cy);
-    GL.Vertex2f(ARci.viewPortSize.cx, 0);
-    GL.End_;
+    gl.Begin_(GL_QUADS);
+    gl.TexCoord2f(0.0, ARci.viewPortSize.cy);
+    gl.Vertex2f(0, 0);
+    gl.TexCoord2f(0.0, 0.0);
+    gl.Vertex2f(0, ARci.viewPortSize.cy);
+    gl.TexCoord2f(ARci.viewPortSize.cx, 0.0);
+    gl.Vertex2f(ARci.viewPortSize.cx, ARci.viewPortSize.cy);
+    gl.TexCoord2f(ARci.viewPortSize.cx, ARci.viewPortSize.cy);
+    gl.Vertex2f(ARci.viewPortSize.cx, 0);
+    gl.End_;
 
-    GL.PopMatrix;
-    GL.MatrixMode(GL_PROJECTION);
-    GL.PopMatrix;
-    GL.MatrixMode(GL_MODELVIEW);
+    gl.PopMatrix;
+    gl.MatrixMode(GL_PROJECTION);
+    gl.PopMatrix;
+    gl.MatrixMode(GL_MODELVIEW);
     ActiveTextureEnabled[ttTextureRect] := False;
     Material.UnApply(ARci);
     ARci.ignoreDepthRequests := False;
 
-    GL.CopyTexImage2D(GL_TEXTURE_RECTANGLE, 0, GL_RGB, 0, 0, ARci.viewPortSize.cx, ARci.viewPortSize.cy, 0);
+    gl.CopyTexImage2D(GL_TEXTURE_RECTANGLE, 0, GL_RGB, 0, 0, ARci.viewPortSize.cx, ARci.viewPortSize.cy, 0);
 
     Material.FrontProperties.Diffuse.Alpha := FIntensity;
   end;
@@ -838,7 +838,7 @@ end;
 function TGLMotionBlur.SupportsRequiredExtensions: Boolean;
 begin
   Result :=
-    GL.ARB_texture_rectangle or GL.EXT_texture_rectangle or GL.NV_texture_rectangle;
+    gl.ARB_texture_rectangle or gl.EXT_texture_rectangle or gl.NV_texture_rectangle;
 end;
 
 // ------------------------------------------------------------------

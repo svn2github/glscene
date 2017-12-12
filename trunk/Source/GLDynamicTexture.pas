@@ -127,7 +127,7 @@ begin
       ttNoShape: ;
       ttTexture1D: ;
       ttTexture2D:
-        GL.TexImage2D(GL_TEXTURE_2D, 0, TGLTexture(OwnerTexture).OpenGLTextureFormat, Width, Height, 0, TextureFormat, GL_UNSIGNED_BYTE, nil);
+        gl.TexImage2D(GL_TEXTURE_2D, 0, TGLTexture(OwnerTexture).OpenGLTextureFormat, Width, Height, 0, TextureFormat, GL_UNSIGNED_BYTE, nil);
       ttTexture3D: ;
       ttTexture1DArray: ;
       ttTexture2DArray: ;
@@ -140,7 +140,7 @@ begin
     end;
   end;
 
-  GL.CheckError;
+  gl.CheckError;
   
   if assigned(FPBO) then
   begin
@@ -153,7 +153,7 @@ begin
     FData:= FBuffer;
   end;
 
-  GL.CheckError;
+  gl.CheckError;
 
   FDirtyRect:= GetGLRect(0, 0, Width, Height);
 end;
@@ -197,7 +197,7 @@ begin
     ttTexture1D: ;
     ttTexture2D:
       begin
-        GL.TexSubImage2D(GL_TEXTURE_2D, 0,
+        gl.TexSubImage2D(GL_TEXTURE_2D, 0,
           FDirtyRect.Left, FDirtyRect.Top,
           FDirtyRect.Right-FDirtyRect.Left,
           FDirtyRect.Bottom-FDirtyRect.Top,
@@ -219,7 +219,7 @@ begin
 
   FData:= nil;
 
-  GL.CheckError;
+  gl.CheckError;
 end;
 
 procedure TGLDynamicTextureImage.FreeBuffer;

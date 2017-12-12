@@ -266,7 +266,7 @@ begin
         oldProxySubObject := ARci.proxySubObject;
         ARci.proxySubObject := True;
         if pooTransformation in ProxyOptions then
-          GL.MultMatrixf(PGLFloat(MasterObject.Matrix));
+          gl.MultMatrixf(PGLFloat(MasterObject.Matrix));
         GetMasterMaterialObject.Material.FrontProperties.Assign(FFrontColor);
         MasterObject.DoRender(ARci, ARenderSelf, MasterObject.Count > 0);
         ARci.proxySubObject := oldProxySubObject;
@@ -830,7 +830,7 @@ begin
         oldProxySubObject := ARci.proxySubObject;
         ARci.proxySubObject := True;
         if pooTransformation in ProxyOptions then
-          GL.MultMatrixf(PGLFloat(MasterObject.Matrix));
+          gl.MultMatrixf(PGLFloat(MasterObject.Matrix));
 
         if (FMasterLibMaterial <> nil) and (FMaterialLibrary <> nil) then
           GetMasterMaterialObject.Material.QuickAssignMaterial(

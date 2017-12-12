@@ -669,8 +669,8 @@ var
   mi, ma: Single;
 begin
 {$IFDEF USE_OPENGL_DEBUG}
-  if GL.GREMEDY_string_marker then
-    GL.StringMarkerGREMEDY(22, 'CubeWireframeBuildList');
+  if gl.GREMEDY_string_marker then
+    gl.StringMarkerGREMEDY(22, 'CubeWireframeBuildList');
 {$ENDIF}
   rci.GLStates.Disable(stLighting);
   rci.GLStates.Enable(stLineSmooth);
@@ -686,33 +686,33 @@ begin
   ma := 0.5 * Size;
   mi := -ma;
 
-  GL.Color4fv(@Color);
-  GL.Begin_(GL_LINE_STRIP);
+  gl.Color4fv(@Color);
+  gl.Begin_(GL_LINE_STRIP);
   // front face
-  GL.Vertex3f(ma, mi, mi);
-  GL.Vertex3f(ma, ma, mi);
-  GL.Vertex3f(ma, ma, ma);
-  GL.Vertex3f(ma, mi, ma);
-  GL.Vertex3f(ma, mi, mi);
+  gl.Vertex3f(ma, mi, mi);
+  gl.Vertex3f(ma, ma, mi);
+  gl.Vertex3f(ma, ma, ma);
+  gl.Vertex3f(ma, mi, ma);
+  gl.Vertex3f(ma, mi, mi);
   // partial up back face
-  GL.Vertex3f(mi, mi, mi);
-  GL.Vertex3f(mi, mi, ma);
-  GL.Vertex3f(mi, ma, ma);
-  GL.Vertex3f(mi, ma, mi);
+  gl.Vertex3f(mi, mi, mi);
+  gl.Vertex3f(mi, mi, ma);
+  gl.Vertex3f(mi, ma, ma);
+  gl.Vertex3f(mi, ma, mi);
   // right side low
-  GL.Vertex3f(ma, ma, mi);
-  GL.End_;
-  GL.Begin_(GL_LINES);
+  gl.Vertex3f(ma, ma, mi);
+  gl.End_;
+  gl.Begin_(GL_LINES);
   // right high
-  GL.Vertex3f(ma, ma, ma);
-  GL.Vertex3f(mi, ma, ma);
+  gl.Vertex3f(ma, ma, ma);
+  gl.Vertex3f(mi, ma, ma);
   // back low
-  GL.Vertex3f(mi, mi, mi);
-  GL.Vertex3f(mi, ma, mi);
+  gl.Vertex3f(mi, mi, mi);
+  gl.Vertex3f(mi, ma, mi);
   // left high
-  GL.Vertex3f(ma, mi, ma);
-  GL.Vertex3f(mi, mi, ma);
-  GL.End_;
+  gl.Vertex3f(ma, mi, ma);
+  gl.Vertex3f(mi, mi, ma);
+  gl.End_;
 end;
 
 // ------------------
@@ -996,7 +996,7 @@ procedure TGLPlane.BuildList(var rci: TGLRenderContextInfo);
   procedure EmitVertex(ptr: PVertexRec); inline;
   begin
     XGL.TexCoord2fv(@ptr^.TexCoord);
-    GL.Vertex3fv(@ptr^.Position);
+    gl.Vertex3fv(@ptr^.Position);
   end;
 
 var
@@ -1010,15 +1010,15 @@ begin
   hw := FWidth * 0.5;
   hh := FHeight * 0.5;
 
-  GL.Normal3fv(@ZVector);
-  if GL.ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
+  gl.Normal3fv(@ZVector);
+  if gl.ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
   begin
-    TanLoc := GL.GetAttribLocation(rci.GLStates.CurrentProgram, TangentAttributeName);
-    BinLoc := GL.GetAttribLocation(rci.GLStates.CurrentProgram, BinormalAttributeName);
+    TanLoc := gl.GetAttribLocation(rci.GLStates.CurrentProgram, TangentAttributeName);
+    BinLoc := gl.GetAttribLocation(rci.GLStates.CurrentProgram, BinormalAttributeName);
     if TanLoc > -1 then
-      GL.VertexAttrib3fv(TanLoc, @XVector);
+      gl.VertexAttrib3fv(TanLoc, @XVector);
     if BinLoc > -1 then
-      GL.VertexAttrib3fv(BinLoc, @YVector);
+      gl.VertexAttrib3fv(BinLoc, @YVector);
   end;
   // determine tex coords extents
   if psTileTexture in FStyle then
@@ -1039,20 +1039,20 @@ begin
   if psSingleQuad in FStyle then
   begin
     // single quad plane
-    GL.Begin_(GL_TRIANGLES);
+    gl.Begin_(GL_TRIANGLES);
     xgl.TexCoord2f(tx1, ty1);
-    GL.Vertex2f(hw, hh);
+    gl.Vertex2f(hw, hh);
     xgl.TexCoord2f(tx0, ty1);
-    GL.Vertex2f(-hw, hh);
+    gl.Vertex2f(-hw, hh);
     xgl.TexCoord2f(tx0, ty0);
-    GL.Vertex2f(-hw, -hh);
+    gl.Vertex2f(-hw, -hh);
 
-    GL.Vertex2f(-hw, -hh);
+    gl.Vertex2f(-hw, -hh);
     xgl.TexCoord2f(tx1, ty0);
-    GL.Vertex2f(hw, -hh);
+    gl.Vertex2f(hw, -hh);
     xgl.TexCoord2f(tx1, ty1);
-    GL.Vertex2f(hw, hh);
-    GL.End_;
+    gl.Vertex2f(hw, hh);
+    gl.End_;
     exit;
   end
   else
@@ -1080,7 +1080,7 @@ begin
     end;
   end;
 
-  GL.Begin_(GL_TRIANGLES);
+  gl.Begin_(GL_TRIANGLES);
   for Y := 0 to FYTiles-1 do
   begin
     for X := 0 to FXTiles-1 do
@@ -1104,7 +1104,7 @@ begin
       EmitVertex(pVertex);
     end;
   end;
-  GL.End_;
+  gl.End_;
 end;
 
 procedure TGLPlane.SetWidth(const aValue: Single);
@@ -1321,21 +1321,21 @@ begin
 
   if FRotation <> 0 then
   begin
-    GL.PushMatrix;
-    GL.Rotatef(FRotation, mat.V[0].Z, mat.V[1].Z, mat.V[2].Z);
+    gl.PushMatrix;
+    gl.Rotatef(FRotation, mat.V[0].Z, mat.V[1].Z, mat.V[2].Z);
   end;
-  GL.Begin_(GL_QUADS);
+  gl.Begin_(GL_QUADS);
   xgl.TexCoord2f(u1, v1);
-  GL.Vertex3f(vx.X + vy.X, vx.Y + vy.Y, vx.Z + vy.Z);
+  gl.Vertex3f(vx.X + vy.X, vx.Y + vy.Y, vx.Z + vy.Z);
   xgl.TexCoord2f(u0, v1);
-  GL.Vertex3f(-vx.X + vy.X, -vx.Y + vy.Y, -vx.Z + vy.Z);
+  gl.Vertex3f(-vx.X + vy.X, -vx.Y + vy.Y, -vx.Z + vy.Z);
   xgl.TexCoord2f(u0, v0);
-  GL.Vertex3f(-vx.X - vy.X, -vx.Y - vy.Y, -vx.Z - vy.Z);
+  gl.Vertex3f(-vx.X - vy.X, -vx.Y - vy.Y, -vx.Z - vy.Z);
   xgl.TexCoord2f(u1, v0);
-  GL.Vertex3f(vx.X - vy.X, vx.Y - vy.Y, vx.Z - vy.Z);
-  GL.End_;
+  gl.Vertex3f(vx.X - vy.X, vx.Y - vy.Y, vx.Z - vy.Z);
+  gl.End_;
   if FRotation <> 0 then
-    GL.PopMatrix;
+    gl.PopMatrix;
 end;
 
 procedure TGLSprite.SetWidth(const val: TGLFloat);
@@ -1474,24 +1474,24 @@ end;
 
 procedure TGLPointParameters.Apply;
 begin
-  if Enabled and GL.ARB_point_parameters then
+  if Enabled and gl.ARB_point_parameters then
   begin
-    GL.PointParameterf(GL_POINT_SIZE_MIN_ARB, FMinSize);
-    GL.PointParameterf(GL_POINT_SIZE_MAX_ARB, FMaxSize);
-    GL.PointParameterf(GL_POINT_FADE_THRESHOLD_SIZE_ARB, FFadeTresholdSize);
-    GL.PointParameterfv(GL_DISTANCE_ATTENUATION_ARB,
+    gl.PointParameterf(GL_POINT_SIZE_MIN_ARB, FMinSize);
+    gl.PointParameterf(GL_POINT_SIZE_MAX_ARB, FMaxSize);
+    gl.PointParameterf(GL_POINT_FADE_THRESHOLD_SIZE_ARB, FFadeTresholdSize);
+    gl.PointParameterfv(GL_DISTANCE_ATTENUATION_ARB,
       FDistanceAttenuation.AsAddress);
   end;
 end;
 
 procedure TGLPointParameters.UnApply;
 begin
-  if Enabled and GL.ARB_point_parameters then
+  if Enabled and gl.ARB_point_parameters then
   begin
-    GL.PointParameterf(GL_POINT_SIZE_MIN_ARB, 0);
-    GL.PointParameterf(GL_POINT_SIZE_MAX_ARB, 128);
-    GL.PointParameterf(GL_POINT_FADE_THRESHOLD_SIZE_ARB, 1);
-    GL.PointParameterfv(GL_DISTANCE_ATTENUATION_ARB, @XVector);
+    gl.PointParameterf(GL_POINT_SIZE_MIN_ARB, 0);
+    gl.PointParameterf(GL_POINT_SIZE_MAX_ARB, 128);
+    gl.PointParameterf(GL_POINT_FADE_THRESHOLD_SIZE_ARB, 1);
+    gl.PointParameterfv(GL_DISTANCE_ATTENUATION_ARB, @XVector);
   end;
 end;
 
@@ -1593,33 +1593,33 @@ begin
     Exit;
 
   case FColors.Count of
-    0: GL.Color4f(1, 1, 1, 1);
-    1: GL.Color4fv(PGLFloat(FColors.List));
+    0: gl.Color4f(1, 1, 1, 1);
+    1: gl.Color4fv(PGLFloat(FColors.List));
   else
     if FColors.Count < n then
       n := FColors.Count;
-    GL.ColorPointer(4, GL_FLOAT, 0, FColors.List);
-    GL.EnableClientState(GL_COLOR_ARRAY);
+    gl.ColorPointer(4, GL_FLOAT, 0, FColors.List);
+    gl.EnableClientState(GL_COLOR_ARRAY);
   end;
   if FColors.Count < 2 then
-    GL.DisableClientState(GL_COLOR_ARRAY);
+    gl.DisableClientState(GL_COLOR_ARRAY);
   rci.GLStates.Disable(stLighting);
   if n = 0 then
   begin
     v := NullHmgPoint;
-    GL.VertexPointer(3, GL_FLOAT, 0, @v);
+    gl.VertexPointer(3, GL_FLOAT, 0, @v);
     n := 1;
   end
   else
-    GL.VertexPointer(3, GL_FLOAT, 0, FPositions.List);
-  GL.EnableClientState(GL_VERTEX_ARRAY);
+    gl.VertexPointer(3, GL_FLOAT, 0, FPositions.List);
+  gl.EnableClientState(GL_VERTEX_ARRAY);
 
   if NoZWrite then
     rci.GLStates.DepthWriteMask := False;
   rci.GLStates.PointSize := FSize;
   PointParameters.Apply;
-  if GL.EXT_compiled_vertex_array and (n > 64) then
-    GL.LockArrays(0, n);
+  if gl.EXT_compiled_vertex_array and (n > 64) then
+    gl.LockArrays(0, n);
   case FStyle of
     psSquare:
       begin
@@ -1657,13 +1657,13 @@ begin
   else
     Assert(False);
   end;
-  GL.DrawArrays(GL_POINTS, 0, n);
-  if GL.EXT_compiled_vertex_array and (n > 64) then
-    GL.UnlockArrays;
+  gl.DrawArrays(GL_POINTS, 0, n);
+  if gl.EXT_compiled_vertex_array and (n > 64) then
+    gl.UnlockArrays;
   PointParameters.UnApply;
-  GL.DisableClientState(GL_VERTEX_ARRAY);
+  gl.DisableClientState(GL_VERTEX_ARRAY);
   if FColors.Count > 1 then
-    GL.DisableClientState(GL_COLOR_ARRAY);
+    gl.DisableClientState(GL_COLOR_ARRAY);
 end;
 
 function TGLPoints.StoreSize: Boolean;
@@ -1837,10 +1837,10 @@ begin
         Enable(stBlend);
         SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
       end;
-      GL.Color4fv(FLineColor.AsAddress);
+      gl.Color4fv(FLineColor.AsAddress);
     end
     else
-      GL.Color3fv(FLineColor.AsAddress);
+      gl.Color3fv(FLineColor.AsAddress);
 
   end;
 end;
@@ -1986,8 +1986,8 @@ end;
 procedure TGLNodedLines.DrawNode(var rci: TGLRenderContextInfo; X, Y, Z: Single;
   Color: TGLColor);
 begin
-  GL.PushMatrix;
-  GL.Translatef(X, Y, Z);
+  gl.PushMatrix;
+  gl.Translatef(X, Y, Z);
   case NodesAspect of
     lnaAxes:
       AxesBuildList(rci, $CCCC, FNodeSize * 0.5);
@@ -1996,7 +1996,7 @@ begin
   else
     Assert(False)
   end;
-  GL.PopMatrix;
+  gl.PopMatrix;
 end;
 
 function TGLNodedLines.AxisAlignedDimensionsUnscaled: TVector;
@@ -2163,10 +2163,10 @@ begin
     begin
       // map evaluator
       rci.GLStates.PushAttrib([sttEval]);
-      GL.Enable(GL_MAP1_VERTEX_3);
-      GL.Enable(GL_MAP1_COLOR_4);
-      GL.Map1f(GL_MAP1_VERTEX_3, 0, 1, 3, Nodes.Count, @nodeBuffer[0]);
-      GL.Map1f(GL_MAP1_COLOR_4, 0, 1, 4, Nodes.Count, @colorBuffer[0]);
+      gl.Enable(GL_MAP1_VERTEX_3);
+      gl.Enable(GL_MAP1_COLOR_4);
+      gl.Map1f(GL_MAP1_VERTEX_3, 0, 1, 3, Nodes.Count, @nodeBuffer[0]);
+      gl.Map1f(GL_MAP1_COLOR_4, 0, 1, 4, Nodes.Count, @colorBuffer[0]);
     end;
 
     // start drawing the line
@@ -2192,11 +2192,11 @@ begin
     begin
       // lines, cubic splines or bezier
       if FSplineMode = lsmSegments then
-        GL.Begin_(GL_LINES)
+        gl.Begin_(GL_LINES)
       else if FSplineMode = lsmLoop then
-        GL.Begin_(GL_LINE_LOOP)
+        gl.Begin_(GL_LINE_LOOP)
       else
-        GL.Begin_(GL_LINE_STRIP);
+        gl.Begin_(GL_LINE_STRIP);
       if (FDivision < 2) or (FSplineMode in [lsmLines, lsmSegments,
         lsmLoop]) then
       begin
@@ -2207,8 +2207,8 @@ begin
           for i := 0 to Nodes.Count - 1 do
             with TGLLinesNode(Nodes[i]) do
             begin
-              GL.Color4fv(Color.AsAddress);
-              GL.Vertex3f(X, Y, Z);
+              gl.Color4fv(Color.AsAddress);
+              gl.Vertex3f(X, Y, Z);
             end;
         end
         else
@@ -2216,7 +2216,7 @@ begin
           // single color
           for i := 0 to Nodes.Count - 1 do
             with Nodes[i] do
-              GL.Vertex3f(X, Y, Z);
+              gl.Vertex3f(X, Y, Z);
         end;
       end
       else if FSplineMode = lsmCubicSpline then
@@ -2238,9 +2238,9 @@ begin
               else
                 SetVector(vertexColor, TGLLinesNode(Nodes[Nodes.Count - 1])
                   .Color.Color);
-              GL.Color4fv(@vertexColor);
+              gl.Color4fv(@vertexColor);
             end;
-            GL.Vertex3f(A, B, C);
+            gl.Vertex3f(A, B, C);
           end;
         //finally
           Spline.Free;
@@ -2250,9 +2250,9 @@ begin
       begin
         f := 1 / FDivision;
         for i := 0 to FDivision do
-          GL.EvalCoord1f(i * f);
+          gl.EvalCoord1f(i * f);
       end;
-      GL.End_;
+      gl.End_;
     end;
     rci.GLStates.Disable(stColorLogicOp);
     if FSplineMode = lsmBezierSpline then
@@ -2313,115 +2313,115 @@ begin
     nd  := 1;
   end;
 
-  if GL.ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
+  if gl.ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
   begin
-    TanLoc := GL.GetAttribLocation(rci.GLStates.CurrentProgram, TangentAttributeName);
-    BinLoc := GL.GetAttribLocation(rci.GLStates.CurrentProgram, BinormalAttributeName);
+    TanLoc := gl.GetAttribLocation(rci.GLStates.CurrentProgram, TangentAttributeName);
+    BinLoc := gl.GetAttribLocation(rci.GLStates.CurrentProgram, BinormalAttributeName);
   end
   else
   begin
     TanLoc := -1;
     BinLoc := -1;
   end;
-  GL.Begin_(GL_QUADS);
+  gl.Begin_(GL_QUADS);
   if cpFront in FParts then
   begin
-    GL.Normal3f(0, 0, nd);
+    gl.Normal3f(0, 0, nd);
     if TanLoc > -1 then 
-	  GL.VertexAttrib3f(TanLoc, nd, 0, 0);
+	  gl.VertexAttrib3f(TanLoc, nd, 0, 0);
     if BinLoc > -1 then 
-	  GL.VertexAttrib3f(BinLoc, 0, nd, 0);
+	  gl.VertexAttrib3f(BinLoc, 0, nd, 0);
     xgl.TexCoord2fv(@XYTexPoint);    
-	GL.Vertex3fv(@v2);
+	gl.Vertex3fv(@v2);
     xgl.TexCoord2fv(@YTexPoint);     
-	GL.Vertex3f(v1d.x, v2d.y,  v2.z);
+	gl.Vertex3f(v1d.x, v2d.y,  v2.z);
     xgl.TexCoord2fv(@NullTexPoint);  
-	GL.Vertex3f(v1.x,  v1.y,   v2.z);
+	gl.Vertex3f(v1.x,  v1.y,   v2.z);
     xgl.TexCoord2fv(@XTexPoint);     
-	GL.Vertex3f(v2d.x, v1d.y,  v2.z);
+	gl.Vertex3f(v2d.x, v1d.y,  v2.z);
   end;
   if cpBack in FParts then
   begin
-    GL.Normal3f(0, 0, -nd);
+    gl.Normal3f(0, 0, -nd);
     if TanLoc > -1 then 
-	  GL.VertexAttrib3f(TanLoc, -nd, 0, 0);
+	  gl.VertexAttrib3f(TanLoc, -nd, 0, 0);
     if BinLoc > -1 then 
-	  GL.VertexAttrib3f(BinLoc, 0, nd, 0);
+	  gl.VertexAttrib3f(BinLoc, 0, nd, 0);
 
     xgl.TexCoord2fv(@YTexPoint);    
-	GL.Vertex3f(v2.x,   v2.y,   v1.z);
+	gl.Vertex3f(v2.x,   v2.y,   v1.z);
     xgl.TexCoord2fv(@NullTexPoint); 
-	GL.Vertex3f(v2d.x,  v1d.y,  v1.z);
+	gl.Vertex3f(v2d.x,  v1d.y,  v1.z);
     xgl.TexCoord2fv(@XTexPoint);    
-	GL.Vertex3fv(@v1);
+	gl.Vertex3fv(@v1);
     xgl.TexCoord2fv(@XYTexPoint);   
-	GL.Vertex3f(v1d.x,  v2d.y,  v1.z);
+	gl.Vertex3f(v1d.x,  v2d.y,  v1.z);
   end;
   if cpLeft in FParts then
   begin
-    GL.Normal3f(-nd, 0, 0);
+    gl.Normal3f(-nd, 0, 0);
     if TanLoc > -1 then 
-	  GL.VertexAttrib3f(TanLoc, 0, 0, nd);
+	  gl.VertexAttrib3f(TanLoc, 0, 0, nd);
     if BinLoc > -1 then 
-	  GL.VertexAttrib3f(BinLoc, 0, nd, 0);
+	  gl.VertexAttrib3f(BinLoc, 0, nd, 0);
     xgl.TexCoord2fv(@XYTexPoint);   
-	GL.Vertex3f(v1.x, v2.y, v2.z);
+	gl.Vertex3f(v1.x, v2.y, v2.z);
     xgl.TexCoord2fv(@YTexPoint);    
-	GL.Vertex3f(v1.x, v2d.y, v1d.z);
+	gl.Vertex3f(v1.x, v2d.y, v1d.z);
     xgl.TexCoord2fv(@NullTexPoint); 
-	GL.Vertex3fv(@v1);
+	gl.Vertex3fv(@v1);
     xgl.TexCoord2fv(@XTexPoint);    
-	GL.Vertex3f(v1.x, v1d.y, v2d.z);
+	gl.Vertex3f(v1.x, v1d.y, v2d.z);
   end;
   if cpRight in FParts then
   begin
-    GL.Normal3f(nd, 0, 0);
+    gl.Normal3f(nd, 0, 0);
     if TanLoc > -1 then 
-	  GL.VertexAttrib3f(TanLoc, 0, 0, -nd);
+	  gl.VertexAttrib3f(TanLoc, 0, 0, -nd);
     if BinLoc > -1 then 
-	  GL.VertexAttrib3f(BinLoc, 0, nd, 0);
+	  gl.VertexAttrib3f(BinLoc, 0, nd, 0);
     xgl.TexCoord2fv(@YTexPoint);    
-	GL.Vertex3fv(@v2);
+	gl.Vertex3fv(@v2);
     xgl.TexCoord2fv(@NullTexPoint); 
-	GL.Vertex3f(v2.x, v1d.y, v2d.z);
+	gl.Vertex3f(v2.x, v1d.y, v2d.z);
     xgl.TexCoord2fv(@XTexPoint);    
-	GL.Vertex3f(v2.x, v1.y, v1.z);
+	gl.Vertex3f(v2.x, v1.y, v1.z);
     xgl.TexCoord2fv(@XYTexPoint);   
-	GL.Vertex3f(v2.x, v2d.y, v1d.z);
+	gl.Vertex3f(v2.x, v2d.y, v1d.z);
   end;
   if cpTop in FParts then
   begin
-    GL.Normal3f(0, nd, 0);
+    gl.Normal3f(0, nd, 0);
     if TanLoc > -1 then 
-	  GL.VertexAttrib3f(TanLoc, nd, 0, 0);
+	  gl.VertexAttrib3f(TanLoc, nd, 0, 0);
     if BinLoc > -1 then 
-	  GL.VertexAttrib3f(BinLoc, 0, 0, -nd);
+	  gl.VertexAttrib3f(BinLoc, 0, 0, -nd);
     xgl.TexCoord2fv(@YTexPoint);    
-	GL.Vertex3f(v1.x, v2.y, v1.z);
+	gl.Vertex3f(v1.x, v2.y, v1.z);
     xgl.TexCoord2fv(@NullTexPoint); 
-	GL.Vertex3f(v1d.x, v2.y, v2d.z);
+	gl.Vertex3f(v1d.x, v2.y, v2d.z);
     xgl.TexCoord2fv(@XTexPoint);    
-	GL.Vertex3fv(@v2);
+	gl.Vertex3fv(@v2);
     xgl.TexCoord2fv(@XYTexPoint);   
-	GL.Vertex3f(v2d.x, v2.y, v1d.z);
+	gl.Vertex3f(v2d.x, v2.y, v1d.z);
   end;
   if cpBottom in FParts then
   begin
-    GL.Normal3f(0, -nd, 0);
+    gl.Normal3f(0, -nd, 0);
     if TanLoc > -1 then 
-	  GL.VertexAttrib3f(TanLoc, -nd, 0, 0);
+	  gl.VertexAttrib3f(TanLoc, -nd, 0, 0);
     if BinLoc > -1 then 
-	  GL.VertexAttrib3f(BinLoc, 0, 0, nd);
+	  gl.VertexAttrib3f(BinLoc, 0, 0, nd);
     xgl.TexCoord2fv(@NullTexPoint); 
-	GL.Vertex3fv(@v1);
+	gl.Vertex3fv(@v1);
     xgl.TexCoord2fv(@XTexPoint);    
-	GL.Vertex3f(v2d.x, v1.y, v1d.z);
+	gl.Vertex3f(v2d.x, v1.y, v1d.z);
     xgl.TexCoord2fv(@XYTexPoint);   
-	GL.Vertex3f(v2.x, v1.y, v2.z);
+	gl.Vertex3f(v2.x, v1.y, v2.z);
     xgl.TexCoord2fv(@YTexPoint);    
-	GL.Vertex3f(v1d.x, v1.y, v2d.z);
+	gl.Vertex3f(v1d.x, v1.y, v2d.z);
   end;
-  GL.End_;
+  gl.End_;
 end;
 
 function TGLCube.GenerateSilhouette(const silhouetteParameters
@@ -2708,24 +2708,24 @@ begin
   AngStop := DegToRad(1.0 * FStop);
   StepH := (AngStop - AngStart) / FSlices;
   StepV := (AngTop - AngBottom) / FStacks;
-  GL.PushMatrix;
-  GL.Scalef(Radius, Radius, Radius);
+  gl.PushMatrix;
+  gl.Scalef(Radius, Radius, Radius);
 
   // top cap
   if (FTop < 90) and (FTopCap in [ctCenter, ctFlat]) then
   begin
-    GL.Begin_(GL_TRIANGLE_FAN);
+    gl.Begin_(GL_TRIANGLE_FAN);
     SinCosine(AngTop, SinP, CosP);
     xgl.TexCoord2f(0.5, 0.5);
     if DoReverse then
-      GL.Normal3f(0, -1, 0)
+      gl.Normal3f(0, -1, 0)
     else
-      GL.Normal3f(0, 1, 0);
+      gl.Normal3f(0, 1, 0);
     if FTopCap = ctCenter then
-      GL.Vertex3f(0, 0, 0)
+      gl.Vertex3f(0, 0, 0)
     else
     begin
-      GL.Vertex3f(0, SinP, 0);
+      gl.Vertex3f(0, SinP, 0);
       N1 := YVector;
       if DoReverse then
         N1.Y := -N1.Y;
@@ -2744,11 +2744,11 @@ begin
           NegateVector(N1);
       end;
       xgl.TexCoord2f(SinT * 0.5 + 0.5, CosT * 0.5 + 0.5);
-      GL.Normal3fv(@N1);
-      GL.Vertex3fv(@v1);
+      gl.Normal3fv(@N1);
+      gl.Vertex3fv(@v1);
       Theta := Theta + StepH;
     end;
-    GL.End_;
+    gl.End_;
   end;
 
   // main body
@@ -2767,7 +2767,7 @@ begin
     vTexCoord0 := 1 - j * vTexFactor;
     vTexCoord1 := 1 - (j + 1) * vTexFactor;
 
-    GL.Begin_(GL_TRIANGLE_STRIP);
+    gl.Begin_(GL_TRIANGLE_STRIP);
     for i := 0 to FSlices do
     begin
 
@@ -2782,24 +2782,24 @@ begin
       if DoReverse then
       begin
         N1 := VectorNegate(v1);
-        GL.Normal3fv(@N1);
+        gl.Normal3fv(@N1);
       end
       else
-        GL.Normal3fv(@v1);
-      GL.Vertex3fv(@v1);
+        gl.Normal3fv(@v1);
+      gl.Vertex3fv(@v1);
 
       xgl.TexCoord2f(uTexCoord, vTexCoord1);
       if DoReverse then
       begin
         N1 := VectorNegate(V2);
-        GL.Normal3fv(@N1);
+        gl.Normal3fv(@N1);
       end
       else
-        GL.Normal3fv(@V2);
-      GL.Vertex3fv(@V2);
+        gl.Normal3fv(@V2);
+      gl.Vertex3fv(@V2);
       Theta := Theta + StepH;
     end;
-    GL.End_;
+    gl.End_;
     Phi := Phi2;
     Phi2 := Phi2 - StepV;
   end;
@@ -2807,18 +2807,18 @@ begin
   // bottom cap
   if (FBottom > -90) and (FBottomCap in [ctCenter, ctFlat]) then
   begin
-    GL.Begin_(GL_TRIANGLE_FAN);
+    gl.Begin_(GL_TRIANGLE_FAN);
     SinCos(AngBottom, SinP, CosP);
     xgl.TexCoord2f(0.5, 0.5);
     if DoReverse then
-      GL.Normal3f(0, 1, 0)
+      gl.Normal3f(0, 1, 0)
     else
-      GL.Normal3f(0, -1, 0);
+      gl.Normal3f(0, -1, 0);
     if FBottomCap = ctCenter then
-      GL.Vertex3f(0, 0, 0)
+      gl.Vertex3f(0, 0, 0)
     else
     begin
-      GL.Vertex3f(0, SinP, 0);
+      gl.Vertex3f(0, SinP, 0);
       if DoReverse then
         MakeVector(N1, 0, -1, 0)
       else
@@ -2841,15 +2841,15 @@ begin
           NegateVector(N1);
       end;
       xgl.TexCoord2f(SinT * 0.5 + 0.5, CosT * 0.5 + 0.5);
-      GL.Normal3fv(@N1);
-      GL.Vertex3fv(@v1);
+      gl.Normal3fv(@N1);
+      gl.Vertex3fv(@v1);
       Theta := Theta - StepH;
     end;
-    GL.End_;
+    gl.End_;
   end;
   if DoReverse then
     rci.GLStates.InvertGLFrontFace;
-  GL.PopMatrix;
+  gl.PopMatrix;
   rci.GLStates.PopAttrib;
 end;
 
@@ -3182,23 +3182,23 @@ begin
   // top cap
   if (FTop < 90) and (FTopCap in [ctCenter, ctFlat]) then
   begin
-    GL.Begin_(GL_TRIANGLE_FAN);
+    gl.Begin_(GL_TRIANGLE_FAN);
     SinCos(AngTop, SinP, CosP);
     xgl.TexCoord2f(0.5, 0.5);
     if DoReverse then
-      GL.Normal3f(0, -1, 0)
+      gl.Normal3f(0, -1, 0)
     else
-      GL.Normal3f(0, 1, 0);
+      gl.Normal3f(0, 1, 0);
 
     if FTopCap = ctCenter then
-      GL.Vertex3f(0, 0, 0)
+      gl.Vertex3f(0, 0, 0)
     else
     begin { FTopCap = ctFlat }
       if (Sign(SinP) = 1) or (tc1 = VCurve) then
         SinPc1 := Power(SinP, VCurve)
       else
         SinPc1 := -Power(-SinP, VCurve);
-      GL.Vertex3f(0, SinPc1*Radius, 0);
+      gl.Vertex3f(0, SinPc1*Radius, 0);
 
       N1 := YVector;
       if DoReverse then
@@ -3241,13 +3241,13 @@ begin
       end;
       //    xgl.TexCoord2f(SinT * 0.5 + 0.5, CosT * 0.5 + 0.5);
       xgl.TexCoord2f(SinTc2 * 0.5 + 0.5, CosTc2 * 0.5 + 0.5);
-      GL.Normal3fv(@N1);
+      gl.Normal3fv(@N1);
       vs := v1;
       ScaleVector(vs, Radius);
-      GL.Vertex3fv(@vs);
+      gl.Vertex3fv(@vs);
       Theta := Theta + StepH;
     end;
-    GL.End_;
+    gl.End_;
   end;
 
   // main body
@@ -3274,7 +3274,7 @@ begin
     v2.Y := SinPc1;
     vTexCoord0 := 1 - j * vTexFactor;
     vTexCoord1 := 1 - (j + 1) * vTexFactor;
-    GL.Begin_(GL_TRIANGLE_STRIP);
+    gl.Begin_(GL_TRIANGLE_STRIP);
     for i := 0 to FSlices do
     begin
       SinCos(Theta, SinT, CosT);
@@ -3315,28 +3315,28 @@ begin
       if DoReverse then
       begin
         N1 := VectorNegate(v1);
-        GL.Normal3fv(@N1);
+        gl.Normal3fv(@N1);
       end
       else
-        GL.Normal3fv(@v1);
+        gl.Normal3fv(@v1);
       vs := v1;
       ScaleVector(vs, Radius);
-      GL.Vertex3fv(@vs);
+      gl.Vertex3fv(@vs);
 
       xgl.TexCoord2f(uTexCoord, vTexCoord1);
       if DoReverse then
       begin
         N1 := VectorNegate(V2);
-        GL.Normal3fv(@N1);
+        gl.Normal3fv(@N1);
       end
       else
-        GL.Normal3fv(@v2);
+        gl.Normal3fv(@v2);
       vs := v2;
       ScaleVector(vs, Radius);
-      GL.Vertex3fv(@vs);
+      gl.Vertex3fv(@vs);
       Theta := Theta + StepH;
     end;
-    GL.End_;
+    gl.End_;
     Phi := Phi2;
     Phi2 := Phi2 - StepV;
   end;
@@ -3344,22 +3344,22 @@ begin
   // bottom cap
   if (FBottom > -90) and (FBottomCap in [ctCenter, ctFlat]) then
   begin
-    GL.Begin_(GL_TRIANGLE_FAN);
+    gl.Begin_(GL_TRIANGLE_FAN);
     SinCos(AngBottom, SinP, CosP);
     xgl.TexCoord2f(0.5, 0.5);
     if DoReverse then
-      GL.Normal3f(0, 1, 0)
+      gl.Normal3f(0, 1, 0)
     else
-      GL.Normal3f(0, -1, 0);
+      gl.Normal3f(0, -1, 0);
     if FBottomCap = ctCenter then
-      GL.Vertex3f(0, 0, 0)
+      gl.Vertex3f(0, 0, 0)
     else
     begin { FTopCap = ctFlat }
       if (Sign(SinP) = 1) or (tc1 = VCurve) then
         SinPc1 := Power(SinP, VCurve)
       else
         SinPc1 := -Power(-SinP, VCurve);
-      GL.Vertex3f(0, SinPc1*Radius, 0);
+      gl.Vertex3f(0, SinPc1*Radius, 0);
 
       if DoReverse then
         MakeVector(N1, 0, -1, 0)
@@ -3399,16 +3399,16 @@ begin
         N1 := VectorPerpendicular(AffineVectorMake(0, -1, 0), v1);
         if DoReverse then
           NegateVector(N1);
-        GL.Normal3fv(@N1);
+        gl.Normal3fv(@N1);
       end;
       //    xgl.TexCoord2f(SinT * 0.5 + 0.5, CosT * 0.5 + 0.5);
       xgl.TexCoord2f(SinTc2 * 0.5 + 0.5, CosTc2 * 0.5 + 0.5);
       vs := v1;
       ScaleVector(vs, Radius);
-      GL.Vertex3fv(@vs);
+      gl.Vertex3fv(@vs);
       Theta := Theta - StepH;
     end;
-    GL.End_;
+    gl.End_;
   end;
   if DoReverse then
     rci.GLStates.InvertGLFrontFace;

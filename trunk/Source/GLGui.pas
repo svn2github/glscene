@@ -738,21 +738,21 @@ var
   begin
     if (ARect.XTiles = 1) and (ARect.YTiles = 1) then
     begin
-      GL.TexCoord2f(AElement.TopLeft.X / TexWidth, -AElement.TopLeft.Y /
+      gl.TexCoord2f(AElement.TopLeft.X / TexWidth, -AElement.TopLeft.Y /
         TexHeight);
-      GL.Vertex2f(ARect.X1, -ARect.Y1);
+      gl.Vertex2f(ARect.X1, -ARect.Y1);
 
-      GL.TexCoord2f(AElement.TopLeft.X / TexWidth, -AElement.BottomRight.Y /
+      gl.TexCoord2f(AElement.TopLeft.X / TexWidth, -AElement.BottomRight.Y /
         TexHeight);
-      GL.Vertex2f(ARect.X1, -ARect.Y2);
+      gl.Vertex2f(ARect.X1, -ARect.Y2);
 
-      GL.TexCoord2f(AElement.BottomRight.X / TexWidth, -AElement.BottomRight.Y /
+      gl.TexCoord2f(AElement.BottomRight.X / TexWidth, -AElement.BottomRight.Y /
         TexHeight);
-      GL.Vertex2f(ARect.X2, -ARect.Y2);
+      gl.Vertex2f(ARect.X2, -ARect.Y2);
 
-      GL.TexCoord2f(AElement.BottomRight.X / TexWidth, -AElement.TopLeft.Y /
+      gl.TexCoord2f(AElement.BottomRight.X / TexWidth, -AElement.TopLeft.Y /
         TexHeight);
-      GL.Vertex2f(ARect.X2, -ARect.Y1);
+      gl.Vertex2f(ARect.X2, -ARect.Y1);
     end
     else
     begin
@@ -794,17 +794,17 @@ var
             ty := ty3;
           end;
 
-          GL.TexCoord2f(tx1, ty1);
-          GL.Vertex2f(XPos, -YPos);
+          gl.TexCoord2f(tx1, ty1);
+          gl.Vertex2f(XPos, -YPos);
 
-          GL.TexCoord2f(tx1, ty);
-          GL.Vertex2f(XPos, -Y2Pos);
+          gl.TexCoord2f(tx1, ty);
+          gl.Vertex2f(XPos, -Y2Pos);
 
-          GL.TexCoord2f(tx, ty);
-          GL.Vertex2f(X2Pos, -Y2Pos);
+          gl.TexCoord2f(tx, ty);
+          gl.Vertex2f(X2Pos, -Y2Pos);
 
-          GL.TexCoord2f(tx, ty1);
-          GL.Vertex2f(X2Pos, -YPos);
+          gl.TexCoord2f(tx, ty1);
+          gl.Vertex2f(X2Pos, -YPos);
           yc := yc - 1.0;
           ypos := Y2Pos;
         end;
@@ -1087,7 +1087,7 @@ begin
   if TexHeight = 0 then
     TexHeight := Material.Texture.Image.Height;
 
-  GL.Begin_(GL_QUADS);
+  gl.Begin_(GL_QUADS);
 
   for XC := 0 to FElements.Count - 1 do
   begin
@@ -1112,7 +1112,7 @@ begin
     end;
 
   end;
-  GL.End_;
+  gl.End_;
 end;
 
 function TGLGuiComponent.GetOwnerList: TGLGuiComponentList;

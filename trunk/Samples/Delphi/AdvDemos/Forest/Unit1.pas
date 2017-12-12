@@ -509,8 +509,8 @@ var
   clipPlane: TDoubleHmgPlane;
   glTarget: GLEnum;
 begin
-  supportsGLSL := GL.ARB_shader_objects and GL.ARB_fragment_shader and GL.ARB_vertex_shader;
-  enableRectReflection := GL.NV_texture_rectangle and ((not enableGLSL) or GL.EXT_Cg_shader);
+  supportsGLSL := gl.ARB_shader_objects and gl.ARB_fragment_shader and gl.ARB_vertex_shader;
+  enableRectReflection := gl.NV_texture_rectangle and ((not enableGLSL) or gl.EXT_Cg_shader);
 
   if not enableTex2DReflection then
     Exit;
@@ -527,9 +527,9 @@ begin
 
   rci.GLStates.FrontFace := fwClockWise;
 
-  GL.Enable(GL_CLIP_PLANE0);
+  gl.Enable(GL_CLIP_PLANE0);
   SetPlane(clipPlane, PlaneMake(AffineVectorMake(0, 1, 0), VectorNegate(YVector)));
-  GL.ClipPlane(GL_CLIP_PLANE0, @clipPlane);
+  gl.ClipPlane(GL_CLIP_PLANE0, @clipPlane);
 
   cameraPosBackup := rci.cameraPosition;
   cameraDirectionBackup := rci.cameraDirection;
@@ -583,20 +583,20 @@ begin
   if mirrorTexture.IsDataNeedUpdate then
   begin
     rci.GLStates.TextureBinding[0, mirrorTexType] := mirrorTexture.Handle;
-    GL.TexParameteri(glTarget, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    GL.TexParameteri(glTarget, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    GL.TexParameteri(glTarget, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    GL.TexParameteri(glTarget, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    GL.CopyTexImage2d(glTarget, 0, GL_RGBA8, 0, 0, w, h, 0);
+    gl.TexParameteri(glTarget, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    gl.TexParameteri(glTarget, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    gl.TexParameteri(glTarget, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    gl.TexParameteri(glTarget, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    gl.CopyTexImage2d(glTarget, 0, GL_RGBA8, 0, 0, w, h, 0);
     mirrorTexture.NotifyDataUpdated;
   end
   else
   begin
     rci.GLStates.TextureBinding[0, mirrorTexType] := mirrorTexture.Handle;
-    GL.CopyTexSubImage2D(glTarget, 0, 0, 0, 0, 0, w, h);
+    gl.CopyTexSubImage2D(glTarget, 0, 0, 0, 0, 0, w, h);
   end;
 
-  GL.Clear(GL_COLOR_BUFFER_BIT + GL_DEPTH_BUFFER_BIT + GL_STENCIL_BUFFER_BIT);
+  gl.Clear(GL_COLOR_BUFFER_BIT + GL_DEPTH_BUFFER_BIT + GL_STENCIL_BUFFER_BIT);
 end;
 
 procedure TForm1.DOClassicWaterPlaneRender(Sender: TObject;
@@ -656,38 +656,38 @@ begin
     GetTextureCombiners('Tex0:=Tex1*Tex0;'#13#10
       + 'Tex1:=Tex0+Col;'#13#10
       + 'Tex2:=Tex1+Tex2-0.5;');
-    GL.Color4f(0.0, 0.3, 0.3, 1);
+    gl.Color4f(0.0, 0.3, 0.3, 1);
   end
   else
   begin
     //SetupTextureCombiners('Tex0:=Tex1*Tex0;'#13#10
     GetTextureCombiners('Tex0:=Tex1*Tex0;'#13#10
       + 'Tex1:=Tex0+Col;');
-    GL.Color4f(0.0, 0.4, 0.7, 1);
+    gl.Color4f(0.0, 0.4, 0.7, 1);
   end;
   }
-  GL.Color4f(0.0, 0.4, 0.7, 1);
+  gl.Color4f(0.0, 0.4, 0.7, 1);
 
   rci.GLStates.Disable(stCullFace);
   for y := -10 to 10 - 1 do
   begin
-    GL.Begin_(GL_QUAD_STRIP);
+    gl.Begin_(GL_QUAD_STRIP);
     for x := -10 to 10 do
     begin
       SetVector(pos, x * 1500, 0, y * 1500);
       tex := TexPointMake(x, y);
-      GL.MultiTexCoord2fv(GL_TEXTURE0, @tex);
-      GL.MultiTexCoord2fv(GL_TEXTURE1, @tex);
-      GL.MultiTexCoord3fv(GL_TEXTURE2, @pos);
-      GL.Vertex3fv(@pos);
+      gl.MultiTexCoord2fv(GL_TEXTURE0, @tex);
+      gl.MultiTexCoord2fv(GL_TEXTURE1, @tex);
+      gl.MultiTexCoord3fv(GL_TEXTURE2, @pos);
+      gl.Vertex3fv(@pos);
       SetVector(pos, x * 1500, 0, (y + 1) * 1500);
       tex := TexPointMake(x, (y + 1));
-      GL.MultiTexCoord3fv(GL_TEXTURE0, @tex);
-      GL.MultiTexCoord3fv(GL_TEXTURE1, @tex);
-      GL.MultiTexCoord3fv(GL_TEXTURE2, @pos);
-      GL.Vertex3fv(@pos);
+      gl.MultiTexCoord3fv(GL_TEXTURE0, @tex);
+      gl.MultiTexCoord3fv(GL_TEXTURE1, @tex);
+      gl.MultiTexCoord3fv(GL_TEXTURE2, @pos);
+      gl.Vertex3fv(@pos);
     end;
-    GL.End_;
+    gl.End_;
   end;
 
   rci.GLStates.ResetGLTextureMatrix;
@@ -726,13 +726,13 @@ begin
 
   for y := -10 to 10 - 1 do
   begin
-    GL.Begin_(GL_QUAD_STRIP);
+    gl.Begin_(GL_QUAD_STRIP);
     for x := -10 to 10 do
     begin
-      GL.Vertex3f(x * 1500, 0, y * 1500);
-      GL.Vertex3f(x * 1500, 0, (y + 1) * 1500);
+      gl.Vertex3f(x * 1500, 0, y * 1500);
+      gl.Vertex3f(x * 1500, 0, (y + 1) * 1500);
     end;
-    GL.End_;
+    gl.End_;
   end;
 
   reflectionProgram.EndUseProgramObject;

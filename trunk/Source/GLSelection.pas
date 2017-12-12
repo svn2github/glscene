@@ -263,25 +263,25 @@ end;
 
 class function TGLSelectRenderModeTechnique.IsSupported: Boolean;
 begin
-  Result := GL.VERSION_1_1;
+  Result := gl.VERSION_1_1;
 end;
 
 procedure TGLSelectRenderModeTechnique.Start;
 begin
   SetLength(FBuffer, FObjectCountGuess * 4 + 32);
-  GL.SelectBuffer(FObjectCountGuess * SizeOf(Cardinal), @FBuffer[0]);
-  GL.RenderMode(GL_SELECT);
-  GL.InitNames;
+  gl.SelectBuffer(FObjectCountGuess * SizeOf(Cardinal), @FBuffer[0]);
+  gl.RenderMode(GL_SELECT);
+  gl.InitNames;
   FCurrentName := 0;
   SetLength(FObjectStack, MAX_OBJECT_STACK_DEPTH);
   FStackPosition := 0;
-  GL.PushName(0);
+  gl.PushName(0);
 end;
 
 function TGLSelectRenderModeTechnique.Stop: Boolean;
 begin
-  GL.Flush;
-  FHits := GL.RenderMode(GL_RENDER);
+  gl.Flush;
+  FHits := gl.RenderMode(GL_RENDER);
   Result := FHits > -1;
   if not Result then
     Inc(FObjectCountGuess);
@@ -337,7 +337,7 @@ begin
   if FCurrentName >= Length(FObjectStack) then
     SetLength(FObjectStack, Length(FObjectStack) * 2);
   FObjectStack[FCurrentName] := Value;
-  GL.LoadName(FCurrentName);
+  gl.LoadName(FCurrentName);
   Inc(FCurrentName);
 end;
 

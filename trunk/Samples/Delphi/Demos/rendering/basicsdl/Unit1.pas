@@ -75,7 +75,7 @@ begin
       firstPassDone:=True;
       GLSDLViewer1.Buffer.RenderingContext.Activate;
       try
-        if not GL.ARB_texture_cube_map then
+        if not gl.ARB_texture_cube_map then
            ShowMessage('Your graphics board does not support cube maps...'#13#10
                        +'So, no cube maps for ya...')
         else

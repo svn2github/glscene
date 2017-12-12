@@ -585,9 +585,9 @@ begin
   begin
     rci.GLStates.Disable(stLighting);
     rci.GLStates.LineWidth := 3;
-    GL.Color3f(1,1,1);
+    gl.Color3f(1,1,1);
 
-    GL.Begin_(GL_LINES);
+    gl.Begin_(GL_LINES);
       for i := 0 to EdgeList.Count - 1 do
       begin
         Edge := EdgeList[i];
@@ -595,10 +595,10 @@ begin
         Vertex0 := Edge.MeshObject.Vertices[Edge.Vertices[0]];
         Vertex1 := Edge.MeshObject.Vertices[Edge.Vertices[1]];
 
-        GL.Vertex3fv(PGLfloat(@Vertex0));
-        GL.Vertex3fv(PGLfloat(@Vertex1));
+        gl.Vertex3fv(PGLfloat(@Vertex0));
+        gl.Vertex3fv(PGLfloat(@Vertex1));
       end;
-    GL.End_;
+    gl.End_;
   end;//}
 end;
 

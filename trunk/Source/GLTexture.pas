@@ -2330,73 +2330,73 @@ procedure TGLTexture.ApplyMappingMode;
 var
   R_Dim: Boolean;
 begin
-  R_Dim := GL.ARB_texture_cube_map or GL.EXT_texture3D;
+  R_Dim := gl.ARB_texture_cube_map or gl.EXT_texture3D;
   case MappingMode of
     tmmUser: ; // nothing to do, but checked first (common case)
     tmmObjectLinear:
       begin
-        GL.TexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
-        GL.TexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
-        GL.TexGenfv(GL_S, GL_OBJECT_PLANE, @MappingSCoordinates.DirectVector);
-        GL.TexGenfv(GL_T, GL_OBJECT_PLANE, @MappingTCoordinates.DirectVector);
-        GL.Enable(GL_TEXTURE_GEN_S);
-        GL.Enable(GL_TEXTURE_GEN_T);
+        gl.TexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
+        gl.TexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
+        gl.TexGenfv(GL_S, GL_OBJECT_PLANE, @MappingSCoordinates.DirectVector);
+        gl.TexGenfv(GL_T, GL_OBJECT_PLANE, @MappingTCoordinates.DirectVector);
+        gl.Enable(GL_TEXTURE_GEN_S);
+        gl.Enable(GL_TEXTURE_GEN_T);
 
         if R_Dim then
         begin
-          GL.TexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
-          GL.TexGeni(GL_Q, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
-          GL.TexGenfv(GL_R, GL_OBJECT_PLANE, @MappingRCoordinates.DirectVector);
-          GL.TexGenfv(GL_Q, GL_OBJECT_PLANE, @MappingQCoordinates.DirectVector);
-          GL.Enable(GL_TEXTURE_GEN_R);
-          GL.Enable(GL_TEXTURE_GEN_Q);
+          gl.TexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
+          gl.TexGeni(GL_Q, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
+          gl.TexGenfv(GL_R, GL_OBJECT_PLANE, @MappingRCoordinates.DirectVector);
+          gl.TexGenfv(GL_Q, GL_OBJECT_PLANE, @MappingQCoordinates.DirectVector);
+          gl.Enable(GL_TEXTURE_GEN_R);
+          gl.Enable(GL_TEXTURE_GEN_Q);
         end;
       end;
     tmmEyeLinear:
       begin
-        GL.TexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_EYE_LINEAR);
-        GL.TexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_EYE_LINEAR);
+        gl.TexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_EYE_LINEAR);
+        gl.TexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_EYE_LINEAR);
         // specify planes in eye space, not world space
-        GL.MatrixMode(GL_MODELVIEW);
-        GL.PushMatrix;
-        GL.LoadIdentity;
-        GL.TexGenfv(GL_S, GL_EYE_PLANE, @MappingSCoordinates.DirectVector);
-        GL.TexGenfv(GL_T, GL_EYE_PLANE, @MappingTCoordinates.DirectVector);
-        GL.Enable(GL_TEXTURE_GEN_S);
-        GL.Enable(GL_TEXTURE_GEN_T);
+        gl.MatrixMode(GL_MODELVIEW);
+        gl.PushMatrix;
+        gl.LoadIdentity;
+        gl.TexGenfv(GL_S, GL_EYE_PLANE, @MappingSCoordinates.DirectVector);
+        gl.TexGenfv(GL_T, GL_EYE_PLANE, @MappingTCoordinates.DirectVector);
+        gl.Enable(GL_TEXTURE_GEN_S);
+        gl.Enable(GL_TEXTURE_GEN_T);
         if R_Dim then
         begin
-          GL.TexGenfv(GL_R, GL_EYE_PLANE, @MappingRCoordinates.DirectVector);
-          GL.TexGenfv(GL_Q, GL_EYE_PLANE, @MappingQCoordinates.DirectVector);
-          GL.Enable(GL_TEXTURE_GEN_R);
-          GL.Enable(GL_TEXTURE_GEN_Q);
+          gl.TexGenfv(GL_R, GL_EYE_PLANE, @MappingRCoordinates.DirectVector);
+          gl.TexGenfv(GL_Q, GL_EYE_PLANE, @MappingQCoordinates.DirectVector);
+          gl.Enable(GL_TEXTURE_GEN_R);
+          gl.Enable(GL_TEXTURE_GEN_Q);
         end;
-        GL.PopMatrix;
+        gl.PopMatrix;
       end;
     tmmSphere:
       begin
-        GL.TexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
-        GL.TexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
-        GL.Enable(GL_TEXTURE_GEN_S);
-        GL.Enable(GL_TEXTURE_GEN_T);
+        gl.TexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+        gl.TexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+        gl.Enable(GL_TEXTURE_GEN_S);
+        gl.Enable(GL_TEXTURE_GEN_T);
       end;
-    tmmCubeMapReflection, tmmCubeMapCamera: if GL.ARB_texture_cube_map then
+    tmmCubeMapReflection, tmmCubeMapCamera: if gl.ARB_texture_cube_map then
       begin
-        GL.TexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP);
-        GL.TexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP);
-        GL.TexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP);
-        GL.Enable(GL_TEXTURE_GEN_S);
-        GL.Enable(GL_TEXTURE_GEN_T);
-        GL.Enable(GL_TEXTURE_GEN_R);
+        gl.TexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP);
+        gl.TexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP);
+        gl.TexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP);
+        gl.Enable(GL_TEXTURE_GEN_S);
+        gl.Enable(GL_TEXTURE_GEN_T);
+        gl.Enable(GL_TEXTURE_GEN_R);
       end;
-    tmmCubeMapNormal, tmmCubeMapLight0: if GL.ARB_texture_cube_map then
+    tmmCubeMapNormal, tmmCubeMapLight0: if gl.ARB_texture_cube_map then
       begin
-        GL.TexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_NORMAL_MAP);
-        GL.TexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_NORMAL_MAP);
-        GL.TexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_NORMAL_MAP);
-        GL.Enable(GL_TEXTURE_GEN_S);
-        GL.Enable(GL_TEXTURE_GEN_T);
-        GL.Enable(GL_TEXTURE_GEN_R);
+        gl.TexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_NORMAL_MAP);
+        gl.TexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_NORMAL_MAP);
+        gl.TexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_NORMAL_MAP);
+        gl.Enable(GL_TEXTURE_GEN_S);
+        gl.Enable(GL_TEXTURE_GEN_T);
+        gl.Enable(GL_TEXTURE_GEN_R);
       end;
   else
     Assert(False);
@@ -2407,12 +2407,12 @@ procedure TGLTexture.UnApplyMappingMode;
 begin
   if MappingMode <> tmmUser then
   begin
-    GL.Disable(GL_TEXTURE_GEN_S);
-    GL.Disable(GL_TEXTURE_GEN_T);
-    if GL.EXT_texture3D or GL.ARB_texture_cube_map then
+    gl.Disable(GL_TEXTURE_GEN_S);
+    gl.Disable(GL_TEXTURE_GEN_T);
+    if gl.EXT_texture3D or gl.ARB_texture_cube_map then
     begin
-      GL.Disable(GL_TEXTURE_GEN_R);
-      GL.Disable(GL_TEXTURE_GEN_Q);
+      gl.Disable(GL_TEXTURE_GEN_R);
+      gl.Disable(GL_TEXTURE_GEN_Q);
     end;
   end;
 end;
@@ -2482,9 +2482,9 @@ begin
     begin
       if FTextureHandle.Target = ttTextureCube then
         SetCubeMapTextureMatrix;
-      GL.TexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,
+      gl.TexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,
         cTextureMode[FTextureMode]);
-      GL.TexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, FEnvColor.AsAddress);
+      gl.TexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, FEnvColor.AsAddress);
       ApplyMappingMode;
       xgl.MapTexCoordToMain;
     end;
@@ -2554,8 +2554,8 @@ begin
 
       {if not ForwardContext then}
       begin
-        GL.TexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, cTextureMode[FTextureMode]);
-        GL.TexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, FEnvColor.AsAddress);
+        gl.TexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, cTextureMode[FTextureMode]);
+        gl.TexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, FEnvColor.AsAddress);
         ApplyMappingMode;
         ActiveTexture := 0;
       end;
@@ -2671,7 +2671,7 @@ begin
           target := GL_TEXTURE_2D;
         end;
         // Load images
-        if not GL.EXT_direct_state_access then
+        if not gl.EXT_direct_state_access then
           TextureBinding[ActiveTexture, FTextureHandle.Target] := Result;
         PrepareImage(target);
       end;
@@ -2697,7 +2697,7 @@ function TGLTexture.OpenGLTextureFormat: Integer;
 var
   texComp: TGLTextureCompression;
 begin
-  if GL.ARB_texture_compression then
+  if gl.ARB_texture_compression then
   begin
     if Compression = tcDefault then
       if vDefaultTextureCompression = tcDefault then
@@ -2798,7 +2798,7 @@ begin
     if FImageGamma <> 1.0 then
       bitmap32.GammaCorrection(FImageGamma);
 
-    if GL.ARB_texture_compression
+    if gl.ARB_texture_compression
       and (TextureFormat <> tfExtended) then
     begin
       if Compression = tcDefault then
@@ -2839,9 +2839,9 @@ begin
       FTexDepth);
   end;
 
-  if GL.GetError <> GL_NO_ERROR then
+  if gl.GetError <> GL_NO_ERROR then
   begin
-    GL.ClearError;
+    gl.ClearError;
     SetTextureErrorImage;
   end
   else
@@ -2888,7 +2888,7 @@ begin
     or (target = GL_TEXTURE_2D_MULTISAMPLE_ARRAY) then
     Exit;
 
-  R_Dim := GL.ARB_texture_cube_map or GL.EXT_texture3D;
+  R_Dim := gl.ARB_texture_cube_map or gl.EXT_texture3D;
 
   with CurrentGLContext.GLStates do
   begin
@@ -2898,38 +2898,38 @@ begin
     UnpackSkipPixels := 0;
   end;
 
-  GL.TexParameterfv(target, GL_TEXTURE_BORDER_COLOR, FBorderColor.AsAddress);
+  gl.TexParameterfv(target, GL_TEXTURE_BORDER_COLOR, FBorderColor.AsAddress);
 
-  if (GL.VERSION_1_2 or GL.EXT_texture_edge_clamp) then
+  if (gl.VERSION_1_2 or gl.EXT_texture_edge_clamp) then
   begin
     if FTextureWrap = twSeparate then
     begin
-      GL.TexParameteri(target, GL_TEXTURE_WRAP_S,
+      gl.TexParameteri(target, GL_TEXTURE_WRAP_S,
         cSeparateTextureWrap[FTextureWrapS]);
-      GL.TexParameteri(target, GL_TEXTURE_WRAP_T,
+      gl.TexParameteri(target, GL_TEXTURE_WRAP_T,
         cSeparateTextureWrap[FTextureWrapT]);
       if R_Dim then
-        GL.TexParameteri(target, GL_TEXTURE_WRAP_R,
+        gl.TexParameteri(target, GL_TEXTURE_WRAP_R,
           cSeparateTextureWrap[FTextureWrapR]);
     end
     else
     begin
-      GL.TexParameteri(target, GL_TEXTURE_WRAP_S, cTextureSWrap[FTextureWrap]);
-      GL.TexParameteri(target, GL_TEXTURE_WRAP_T, cTextureTWrap[FTextureWrap]);
+      gl.TexParameteri(target, GL_TEXTURE_WRAP_S, cTextureSWrap[FTextureWrap]);
+      gl.TexParameteri(target, GL_TEXTURE_WRAP_T, cTextureTWrap[FTextureWrap]);
       if R_Dim then
-        GL.TexParameteri(target, GL_TEXTURE_WRAP_R, cTextureRWrap[FTextureWrap]);
+        gl.TexParameteri(target, GL_TEXTURE_WRAP_R, cTextureRWrap[FTextureWrap]);
     end;
   end
   else
   begin
-    GL.TexParameteri(target, GL_TEXTURE_WRAP_S, cTextureSWrapOld[FTextureWrap]);
-    GL.TexParameteri(target, GL_TEXTURE_WRAP_T, cTextureTWrapOld[FTextureWrap]);
+    gl.TexParameteri(target, GL_TEXTURE_WRAP_S, cTextureSWrapOld[FTextureWrap]);
+    gl.TexParameteri(target, GL_TEXTURE_WRAP_T, cTextureTWrapOld[FTextureWrap]);
   end;
 
   lMinFilter := FMinFilter;
   // Down paramenter to rectangular texture supported
   if (target = GL_TEXTURE_RECTANGLE)
-    or not (GL.EXT_texture_lod or GL.SGIS_texture_lod) then
+    or not (gl.EXT_texture_lod or gl.SGIS_texture_lod) then
   begin
     if lMinFilter in [miNearestMipmapNearest, miNearestMipmapLinear] then
       lMinFilter := miNearest;
@@ -2937,21 +2937,21 @@ begin
       lMinFilter := miLinear;
   end;
 
-  GL.TexParameteri(target, GL_TEXTURE_MIN_FILTER, cTextureMinFilter[lMinFilter]);
-  GL.TexParameteri(target, GL_TEXTURE_MAG_FILTER, cTextureMagFilter[FMagFilter]);
+  gl.TexParameteri(target, GL_TEXTURE_MIN_FILTER, cTextureMinFilter[lMinFilter]);
+  gl.TexParameteri(target, GL_TEXTURE_MAG_FILTER, cTextureMagFilter[FMagFilter]);
 
-  if GL.EXT_texture_filter_anisotropic then
-    GL.TexParameteri(target, GL_TEXTURE_MAX_ANISOTROPY_EXT,
+  if gl.EXT_texture_filter_anisotropic then
+    gl.TexParameteri(target, GL_TEXTURE_MAX_ANISOTROPY_EXT,
       cFilteringQuality[FFilteringQuality]);
 
   if IsDepthFormat(fTextureFormat) then
   begin
-    GL.TexParameteri(target, GL_TEXTURE_COMPARE_MODE,
+    gl.TexParameteri(target, GL_TEXTURE_COMPARE_MODE,
       cTextureCompareMode[fTextureCompareMode]);
-    GL.TexParameteri(target, GL_TEXTURE_COMPARE_FUNC,
+    gl.TexParameteri(target, GL_TEXTURE_COMPARE_FUNC,
       cGLComparisonFunctionToGLEnum[fTextureCompareFunc]);
 {    if not FTextureHandle.RenderingContext.GLStates.ForwardContext then}
-      GL.TexParameteri(target, GL_DEPTH_TEXTURE_MODE,
+      gl.TexParameteri(target, GL_DEPTH_TEXTURE_MODE,
         cDepthTextureMode[fDepthTextureMode]);
   end;
 end;
@@ -3074,13 +3074,13 @@ begin
   if FTexture.Enabled then
   begin
     rci.GLStates.ActiveTexture := FTextureIndex;
-    GL.MatrixMode(GL_TEXTURE);
-    GL.PushMatrix;
+    gl.MatrixMode(GL_TEXTURE);
+    gl.PushMatrix;
     if FTextureMatrixIsIdentity then
-      GL.LoadIdentity
+      gl.LoadIdentity
     else
-      GL.LoadMatrixf(@FTextureMatrix.V[0].X);
-    GL.MatrixMode(GL_MODELVIEW);
+      gl.LoadMatrixf(@FTextureMatrix.V[0].X);
+    gl.MatrixMode(GL_MODELVIEW);
     rci.GLStates.ActiveTexture := 0;
     if FTextureIndex = 0 then
       FTexture.Apply(rci)
@@ -3103,9 +3103,9 @@ begin
     else if FTextureIndex >= 2 then
       FTexture.UnApplyAsTextureN(FTextureIndex + 1, rci, false);
     rci.GLStates.ActiveTexture := FTextureIndex;
-    GL.MatrixMode(GL_TEXTURE);
-    GL.PopMatrix;
-    GL.MatrixMode(GL_MODELVIEW);
+    gl.MatrixMode(GL_TEXTURE);
+    gl.PopMatrix;
+    gl.MatrixMode(GL_MODELVIEW);
     rci.GLStates.ActiveTexture := 0;
     FApplied := False;
   end;
@@ -3202,11 +3202,11 @@ var
   i, texUnits: Integer;
   units: Cardinal;
 begin
-  if not GL.ARB_multitexture then
+  if not gl.ARB_multitexture then
     exit;
 
   units := 0;
-  GL.GetIntegerv(GL_MAX_TEXTURE_UNITS, @texUnits);
+  gl.GetIntegerv(GL_MAX_TEXTURE_UNITS, @texUnits);
   for i := 0 to Count - 1 do
   begin
     if Items[i].TextureIndex < texUnits then
@@ -3226,7 +3226,7 @@ procedure TGLTextureEx.UnApply(var rci: TGLRenderContextInfo);
 var
   i: Integer;
 begin
-  if not GL.ARB_multitexture then
+  if not gl.ARB_multitexture then
     exit;
   for i := 0 to Count - 1 do
     Items[i].UnApply(rci);

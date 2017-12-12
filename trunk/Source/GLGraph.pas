@@ -179,9 +179,8 @@ type
   end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
+// ------------------------------------------------------------------
 // ------------------
 // ------------------ TGLSamplingScale ------------------
 // ------------------
@@ -363,12 +362,12 @@ var
   begin
     with pt do
     begin
-      GL.Normal3fv(@normal);
+      gl.Normal3fv(@normal);
       if ColorMode <> hfcmNone then
-        GL.Color4fv(@color);
+        gl.Color4fv(@color);
       if hfoTextureCoordinates in Options then
         xgl.TexCoord2fv(@texPoint);
-      GL.Vertex4f(x, y, z, 1);
+      gl.Vertex4f(x, y, z, 1);
     end;
   end;
 
@@ -376,7 +375,7 @@ var
   var
     k: Integer;
   begin
-    GL.Begin_(GL_TRIANGLE_STRIP);
+    gl.Begin_(GL_TRIANGLE_STRIP);
     x := xBase;
     IssuePoint(x, y1, pLowRow^[0]);
     for k := 0 to m - 2 do
@@ -387,7 +386,7 @@ var
       x := x1;
     end;
     IssuePoint(x, y2, pHighRow^[m - 1]);
-    GL.End_;
+    gl.End_;
   end;
 
 begin
@@ -426,7 +425,7 @@ begin
       if ColorMode <> hfcmNone then
       begin
         rci.GLStates.Enable(stColorMaterial);
-        GL.ColorMaterial(GL_FRONT_AND_BACK, cHFCMtoEnum[ColorMode]);
+        gl.ColorMaterial(GL_FRONT_AND_BACK, cHFCMtoEnum[ColorMode]);
         rci.GLStates.SetGLMaterialColors(cmFront, clrBlack, clrGray20,
           clrGray80, clrBlack, 0);
         rci.GLStates.SetGLMaterialColors(cmBack, clrBlack, clrGray20, clrGray80,
@@ -677,22 +676,22 @@ begin
       z := zBase;
       while z <= zMax do
       begin
-        GL.Begin_(GL_LINE_STRIP);
+        gl.Begin_(GL_LINE_STRIP);
         if LinesStyle = glsSegments then
         begin
           x := xBase;
           while x <= xMax do
           begin
-            GL.Vertex3f(x, y, z);
+            gl.Vertex3f(x, y, z);
             x := x + xStep;
           end;
         end
         else
         begin
-          GL.Vertex3f(XSamplingScale.Min, y, z);
-          GL.Vertex3f(XSamplingScale.Max, y, z);
+          gl.Vertex3f(XSamplingScale.Min, y, z);
+          gl.Vertex3f(XSamplingScale.Max, y, z);
         end;
-        GL.End_;
+        gl.End_;
         z := z + zStep;
       end;
       y := y + yStep;
@@ -707,22 +706,22 @@ begin
       z := zBase;
       while z <= zMax do
       begin
-        GL.Begin_(GL_LINE_STRIP);
+        gl.Begin_(GL_LINE_STRIP);
         if LinesStyle = glsSegments then
         begin
           y := yBase;
           while y <= yMax do
           begin
-            GL.Vertex3f(x, y, z);
+            gl.Vertex3f(x, y, z);
             y := y + yStep;
           end;
         end
         else
         begin
-          GL.Vertex3f(x, YSamplingScale.Min, z);
-          GL.Vertex3f(x, YSamplingScale.Max, z);
+          gl.Vertex3f(x, YSamplingScale.Min, z);
+          gl.Vertex3f(x, YSamplingScale.Max, z);
         end;
-        GL.End_;
+        gl.End_;
         z := z + zStep;
       end;
       x := x + xStep;
@@ -737,22 +736,22 @@ begin
       y := yBase;
       while y <= yMax do
       begin
-        GL.Begin_(GL_LINE_STRIP);
+        gl.Begin_(GL_LINE_STRIP);
         if LinesStyle = glsSegments then
         begin
           z := zBase;
           while z <= zMax do
           begin
-            GL.Vertex3f(x, y, z);
+            gl.Vertex3f(x, y, z);
             z := z + zStep;
           end;
         end
         else
         begin
-          GL.Vertex3f(x, y, ZSamplingScale.Min);
-          GL.Vertex3f(x, y, ZSamplingScale.Max);
+          gl.Vertex3f(x, y, ZSamplingScale.Min);
+          gl.Vertex3f(x, y, ZSamplingScale.Max);
         end;
-        GL.End_;
+        gl.End_;
         y := y + yStep;
       end;
       x := x + xStep;
@@ -761,11 +760,7 @@ begin
 end;
 
 // -------------------------------------------------------------
-// -------------------------------------------------------------
-// -------------------------------------------------------------
 initialization
-// -------------------------------------------------------------
-// -------------------------------------------------------------
 // -------------------------------------------------------------
 
 RegisterClasses([TGLHeightField, TGLXYZGrid]);

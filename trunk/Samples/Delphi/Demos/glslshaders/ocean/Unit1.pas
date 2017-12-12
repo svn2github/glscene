@@ -111,8 +111,8 @@ end;
 procedure TForm1.DoInitializeRender(Sender: TObject;
   var rci: TGLRenderContextInfo);
 begin
-  if not (GL.ARB_shader_objects and GL.ARB_vertex_program and GL.ARB_vertex_shader
-    and GL.ARB_fragment_shader) then
+  if not (gl.ARB_shader_objects and gl.ARB_vertex_program and gl.ARB_vertex_shader
+    and gl.ARB_fragment_shader) then
   begin
     ShowMessage('Your hardware/driver doesn''t support GLSL and can''t execute this demo!');
     Halt;
@@ -214,7 +214,7 @@ var
   cont: Boolean;
 begin
   GLUserShader1DoApply(Self, rci);
-  GL.EnableClientState(GL_VERTEX_ARRAY);
+  gl.EnableClientState(GL_VERTEX_ARRAY);
 
   if not Assigned(vbo) then
   begin
@@ -241,8 +241,8 @@ begin
     vbo.BufferData(v.List, v.DataSize, GL_STATIC_DRAW_ARB);
     nbVerts := v.Count;
 
-    GL.VertexPointer(2, GL_FLOAT, 0, nil);
-    GL.DrawArrays(GL_QUAD_STRIP, 0, nbVerts);
+    gl.VertexPointer(2, GL_FLOAT, 0, nil);
+    gl.DrawArrays(GL_QUAD_STRIP, 0, nbVerts);
 
     vbo.UnBind;
 
@@ -252,13 +252,13 @@ begin
   begin
     vbo.Bind;
 
-    GL.VertexPointer(2, GL_FLOAT, 0, nil);
-    GL.DrawArrays(GL_TRIANGLE_STRIP, 0, nbVerts);
+    gl.VertexPointer(2, GL_FLOAT, 0, nil);
+    gl.DrawArrays(GL_TRIANGLE_STRIP, 0, nbVerts);
 
     vbo.UnBind;
   end;
 
-  GL.DisableClientState(GL_VERTEX_ARRAY);
+  gl.DisableClientState(GL_VERTEX_ARRAY);
   GLUserShader1DoUnApply(Self, 0, rci, cont);
 end;
 

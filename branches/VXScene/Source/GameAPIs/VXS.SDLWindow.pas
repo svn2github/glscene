@@ -38,13 +38,13 @@ type
     vpd24bits: 24bpp graphics (565) (and 24 bits depth buffer for OpenGL) }
   TVXSDLWindowPixelDepth = (vpd16bits, vpd24bits);
 
-  {  Specifies optional settings for the SDL window.
+  (*  Specifies optional settings for the SDL window.
     Those options are a simplified subset of the SDL options:
      voDoubleBuffer: create a double-buffered window
      voOpenGL: requires OpenGL capability for the window
      voResizable: window should be resizable
      voFullScreen: requires a full screen "window" (screen resolution may be changed)
-     voStencilBuffer: requires a stencil buffer (8bits, use along voOpenGL)  }
+     voStencilBuffer: requires a stencil buffer (8bits, use along voOpenGL)  *)
   TVXSDLWindowOption = (voDoubleBuffer, voOpenGL, voResizable, voFullScreen, voStencilBuffer);
   TVXSDLWindowOptions = set of TVXSDLWindowOption;
   TVXSDLEvent = procedure(sender: TObject; const event: TSDL_Event) of object;

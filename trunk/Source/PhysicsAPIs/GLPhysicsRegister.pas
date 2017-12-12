@@ -27,7 +27,7 @@ implementation
 
 procedure Register;
 begin
-  RegisterClasses([TGLODEManager, TGLODEJointList, TGLODEJoints, TGLODEElements,
+  RegisterClasses([TGLODEManager, TGLODEJointList, TODEJoints, TODEElements,
                    TGLNGDManager, TGLNGDDynamic, TGLNGDStatic]);
   RegisterComponents('GLScene',[TGLODEManager,TGLODEJointList,
                                 TGLNGDManager, TGLPhysicsManager]);

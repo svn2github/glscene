@@ -212,11 +212,11 @@ begin
         begin
           if GeometryProgram.Enabled then
           begin
-            GL.ProgramParameteri(FGLSLProg.Handle, GL_GEOMETRY_INPUT_TYPE_EXT,
+            gl.ProgramParameteri(FGLSLProg.Handle, GL_GEOMETRY_INPUT_TYPE_EXT,
               cGLgsInTypes[GeometryProgram.InputPrimitiveType]);
-            GL.ProgramParameteri(FGLSLProg.Handle, GL_GEOMETRY_OUTPUT_TYPE_EXT,
+            gl.ProgramParameteri(FGLSLProg.Handle, GL_GEOMETRY_OUTPUT_TYPE_EXT,
               cGLgsOutTypes[GeometryProgram.OutputPrimitiveType]);
-            GL.ProgramParameteri(FGLSLProg.Handle, GL_GEOMETRY_VERTICES_OUT_EXT,
+            gl.ProgramParameteri(FGLSLProg.Handle, GL_GEOMETRY_VERTICES_OUT_EXT,
               GeometryProgram.VerticesOut);
           end;
 
@@ -231,7 +231,7 @@ begin
               sVaryings[i] := AnsiString(FActiveVarying.Strings[i]) + #0;
               pVaryings[i] := PAnsiChar( sVaryings[i] );
             end;
-            GL.TransformFeedbackVaryings(
+            gl.TransformFeedbackVaryings(
               FGLSLProg.Handle, NumVarying, @pVaryings[0],
               cBufferMode[FTransformFeedBackMode] );
           end;
@@ -289,8 +289,8 @@ end;
 
 function TGLCustomGLSLShader.ShaderSupported: Boolean;
 begin
-  Result := (GL.ARB_shader_objects and GL.ARB_vertex_program and
-             GL.ARB_vertex_shader and GL.ARB_fragment_shader);
+  Result := (gl.ARB_shader_objects and gl.ARB_vertex_program and
+             gl.ARB_vertex_shader and gl.ARB_fragment_shader);
 end;
 
 function TGLCustomGLSLShader.GetActiveAttribs: TGLActiveAttribArray;
@@ -308,11 +308,11 @@ begin
   j := 0;
   if FGLSLProg.Handle<>0 then
   begin
-    GL.GetProgramiv(FGLSLProg.Handle, GL_ACTIVE_ATTRIBUTES, @max);
+    gl.GetProgramiv(FGLSLProg.Handle, GL_ACTIVE_ATTRIBUTES, @max);
     for i := 0 to 16 - 1 do
     if i<max then
     begin
-      GL.GetActiveAttrib(FGLSLProg.Handle, i, Length(buff), @len, @Result[j].Size,
+      gl.GetActiveAttrib(FGLSLProg.Handle, i, Length(buff), @len, @Result[j].Size,
         @glType, @buff[0]);
       if glType > 0 then
         with Result[j] do
@@ -453,62 +453,62 @@ end;
 function TGLSLShaderParameter.GetAsCustomTexture(
   const TextureIndex: Integer; TextureTarget: TGLTextureTarget): Cardinal;
 begin
-  GL.GetUniformiv(FGLSLProg.Handle, TextureIndex, @Result);
+  gl.GetUniformiv(FGLSLProg.Handle, TextureIndex, @Result);
 end;
 
 function TGLSLShaderParameter.GetAsMatrix2f: TMatrix2f;
 begin
-  GL.GetUniformfv(FGLSLProg.Handle, FParameterID, @Result);
+  gl.GetUniformfv(FGLSLProg.Handle, FParameterID, @Result);
 end;
 
 function TGLSLShaderParameter.GetAsMatrix3f: TMatrix3f;
 begin
-  GL.GetUniformfv(FGLSLProg.Handle, FParameterID, @Result);
+  gl.GetUniformfv(FGLSLProg.Handle, FParameterID, @Result);
 end;
 
 function TGLSLShaderParameter.GetAsMatrix4f: TMatrix4f;
 begin
-  GL.GetUniformfv(FGLSLProg.Handle, FParameterID, @Result);
+  gl.GetUniformfv(FGLSLProg.Handle, FParameterID, @Result);
 end;
 
 function TGLSLShaderParameter.GetAsVector1f: Single;
 begin
-  GL.GetUniformfv(FGLSLProg.Handle, FParameterID, @Result);
+  gl.GetUniformfv(FGLSLProg.Handle, FParameterID, @Result);
 end;
 
 function TGLSLShaderParameter.GetAsVector1i: Integer;
 begin
-  GL.GetUniformiv(FGLSLProg.Handle, FParameterID, @Result);
+  gl.GetUniformiv(FGLSLProg.Handle, FParameterID, @Result);
 end;
 
 function TGLSLShaderParameter.GetAsVector2f: TVector2f;
 begin
-  GL.GetUniformfv(FGLSLProg.Handle, FParameterID, @Result);
+  gl.GetUniformfv(FGLSLProg.Handle, FParameterID, @Result);
 end;
 
 function TGLSLShaderParameter.GetAsVector2i: TVector2i;
 begin
-  GL.GetUniformiv(FGLSLProg.Handle, FParameterID, @Result);
+  gl.GetUniformiv(FGLSLProg.Handle, FParameterID, @Result);
 end;
 
 function TGLSLShaderParameter.GetAsVector3f: TVector3f;
 begin
-  GL.GetUniformfv(FGLSLProg.Handle, FParameterID, @Result);
+  gl.GetUniformfv(FGLSLProg.Handle, FParameterID, @Result);
 end;
 
 function TGLSLShaderParameter.GetAsVector3i: TVector3i;
 begin
-  GL.GetUniformiv(FGLSLProg.Handle, FParameterID, @Result);
+  gl.GetUniformiv(FGLSLProg.Handle, FParameterID, @Result);
 end;
 
 function TGLSLShaderParameter.GetAsVector4f: TVector;
 begin
-  GL.GetUniformfv(FGLSLProg.Handle, FParameterID, @Result);
+  gl.GetUniformfv(FGLSLProg.Handle, FParameterID, @Result);
 end;
 
 function TGLSLShaderParameter.GetAsVector4i: TVector4i;
 begin
-  GL.GetUniformiv(FGLSLProg.Handle, FParameterID, @Result);
+  gl.GetUniformiv(FGLSLProg.Handle, FParameterID, @Result);
 end;
 
 procedure TGLSLShaderParameter.SetAsCustomTexture(
@@ -516,113 +516,113 @@ procedure TGLSLShaderParameter.SetAsCustomTexture(
   const Value: Cardinal);
 begin
   CurrentGLContext.GLStates.TextureBinding[TextureIndex, TextureTarget] := Value;
-  GL.Uniform1i(FParameterID, TextureIndex);
+  gl.Uniform1i(FParameterID, TextureIndex);
 end;
 
 procedure TGLSLShaderParameter.SetAsMatrix2f(const Value: TMatrix2f);
 begin
-  GL.UniformMatrix2fv(FParameterID, 1, False, @Value);
+  gl.UniformMatrix2fv(FParameterID, 1, False, @Value);
 end;
 
 procedure TGLSLShaderParameter.SetAsMatrix3f(const Value: TMatrix3f);
 begin
-  GL.UniformMatrix3fv(FParameterID, 1, False, @Value);
+  gl.UniformMatrix3fv(FParameterID, 1, False, @Value);
 end;
 
 procedure TGLSLShaderParameter.SetAsMatrix4f(const Value: TMatrix4f);
 begin
-  GL.UniformMatrix4fv(FParameterID, 1, False, @Value);
+  gl.UniformMatrix4fv(FParameterID, 1, False, @Value);
 end;
 
 procedure TGLSLShaderParameter.SetAsVector1f(const Value: Single);
 begin
-  GL.Uniform1f(FParameterID, Value);
+  gl.Uniform1f(FParameterID, Value);
 end;
 
 procedure TGLSLShaderParameter.SetAsVector1i(const Value: Integer);
 begin
-  GL.Uniform1i(FParameterID, Value);
+  gl.Uniform1i(FParameterID, Value);
 end;
 
 procedure TGLSLShaderParameter.SetAsVector2f(const Value: TVector2f);
 begin
-  GL.Uniform2f(FParameterID, Value.X, Value.Y);
+  gl.Uniform2f(FParameterID, Value.X, Value.Y);
 end;
 
 procedure TGLSLShaderParameter.SetAsVector2i(const Value: TVector2i);
 begin
-  GL.Uniform2i(FParameterID, Value.X, Value.Y);
+  gl.Uniform2i(FParameterID, Value.X, Value.Y);
 end;
 
 procedure TGLSLShaderParameter.SetAsVector3f(const Value: TVector3f);
 begin
-  GL.Uniform3f(FParameterID, Value.X, Value.Y, Value.Z);
+  gl.Uniform3f(FParameterID, Value.X, Value.Y, Value.Z);
 end;
 
 procedure TGLSLShaderParameter.SetAsVector3i(const Value: TVector3i);
 begin
-  GL.Uniform3i(FParameterID, Value.X, Value.Y, Value.Z);
+  gl.Uniform3i(FParameterID, Value.X, Value.Y, Value.Z);
 end;
 
 procedure TGLSLShaderParameter.SetAsVector4f(const Value: TVector4f);
 begin
-  GL.Uniform4f(FParameterID, Value.X, Value.Y, Value.Z, Value.W);
+  gl.Uniform4f(FParameterID, Value.X, Value.Y, Value.Z, Value.W);
 end;
 
 procedure TGLSLShaderParameter.SetAsVector4i(const Value: TVector4i);
 begin
-  GL.Uniform4i(FParameterID, Value.X, Value.Y, Value.Z, Value.W);
+  gl.Uniform4i(FParameterID, Value.X, Value.Y, Value.Z, Value.W);
 end;
 
 function TGLSLShaderParameter.GetAsUniformBuffer: Cardinal;
 begin
-  GL.GetUniformiv(FGLSLProg.Handle, FParameterID, @Result);
+  gl.GetUniformiv(FGLSLProg.Handle, FParameterID, @Result);
 end;
 
 function TGLSLShaderParameter.GetAsVector1ui: Cardinal;
 begin
-  GL.GetUniformuiv(FGLSLProg.Handle, FParameterID, @Result);
+  gl.GetUniformuiv(FGLSLProg.Handle, FParameterID, @Result);
 end;
 
 procedure TGLSLShaderParameter.SetAsVector1ui(const Value: Cardinal);
 begin
-  GL.Uniform1ui(FParameterID, Value);
+  gl.Uniform1ui(FParameterID, Value);
 end;
 
 function TGLSLShaderParameter.GetAsVector2ui: TVector2ui;
 begin
-  GL.GetUniformiv(FGLSLProg.Handle, FParameterID, @Result);
+  gl.GetUniformiv(FGLSLProg.Handle, FParameterID, @Result);
 end;
 
 procedure TGLSLShaderParameter.SetAsVector2ui(const Value: TVector2ui);
 begin
-  GL.Uniform2ui(FParameterID, Value.X, Value.Y);
+  gl.Uniform2ui(FParameterID, Value.X, Value.Y);
 end;
 
 function TGLSLShaderParameter.GetAsVector3ui: TVector3ui;
 begin
-  GL.GetUniformiv(FGLSLProg.Handle, FParameterID, @Result);
+  gl.GetUniformiv(FGLSLProg.Handle, FParameterID, @Result);
 end;
 
 procedure TGLSLShaderParameter.SetAsVector3ui(const Value: TVector3ui);
 begin
-  GL.Uniform3ui(FParameterID, Value.X, Value.Y, Value.Z);
+  gl.Uniform3ui(FParameterID, Value.X, Value.Y, Value.Z);
 end;
 
 function TGLSLShaderParameter.GetAsVector4ui: TVector4ui;
 begin
-  GL.GetUniformiv(FGLSLProg.Handle, FParameterID, @Result);
+  gl.GetUniformiv(FGLSLProg.Handle, FParameterID, @Result);
 end;
 
 procedure TGLSLShaderParameter.SetAsVector4ui(const Value: TVector4ui);
 begin
-  GL.Uniform4ui(FParameterID, Value.X, Value.Y, Value.Z, Value.W);
+  gl.Uniform4ui(FParameterID, Value.X, Value.Y, Value.Z, Value.W);
 end;
 
 procedure TGLSLShaderParameter.SetAsUniformBuffer(UBO: Cardinal);
 begin
   CurrentGLContext.GLStates.UniformBufferBinding := UBO;
-  GL.UniformBuffer(FGLSLProg.Handle, FParameterID, UBO);
+  gl.UniformBuffer(FGLSLProg.Handle, FParameterID, UBO);
 end;
 
 //--------------------------------------------------

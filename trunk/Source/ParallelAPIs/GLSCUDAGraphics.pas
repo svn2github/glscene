@@ -747,7 +747,7 @@ end;
 function TGLVertexAttribute.GetLocation: Integer;
 begin
   if FLocation < 0 then
-    FLocation := GL.GetAttribLocation(
+    FLocation := gl.GetAttribLocation(
       CurrentGLContext.GLStates.CurrentProgram,
       PAnsiChar(AnsiString(FName)));
   Result := FLocation;
@@ -866,21 +866,21 @@ begin
       begin
         EnabledLocations[I] := True;
         case Attributes[I].GLSLType of
-            GLSLType1F:  GL.VertexAttribPointer(L, 1, GL_FLOAT, false, 0, pointer(Offset));
-            GLSLType2F:  GL.VertexAttribPointer(L, 2, GL_FLOAT, false, 0, pointer(Offset));
-            GLSLType3F:  GL.VertexAttribPointer(L, 3, GL_FLOAT, false, 0, pointer(Offset));
-            GLSLType4F:  GL.VertexAttribPointer(L, 4, GL_FLOAT, false, 0, pointer(Offset));
-            GLSLType1I:  GL.VertexAttribIPointer(L, 1, GL_INT, 0, pointer(Offset));
-            GLSLType2I:  GL.VertexAttribIPointer(L, 2, GL_INT, 0, pointer(Offset));
-            GLSLType3I:  GL.VertexAttribIPointer(L, 3, GL_INT, 0, pointer(Offset));
-            GLSLType4I:  GL.VertexAttribIPointer(L, 4, GL_INT, 0, pointer(Offset));
-            GLSLType1UI: GL.VertexAttribIPointer(L, 1, GL_UNSIGNED_INT, 0, pointer(Offset));
-            GLSLType2UI: GL.VertexAttribIPointer(L, 2, GL_UNSIGNED_INT, 0, pointer(Offset));
-            GLSLType3UI: GL.VertexAttribIPointer(L, 3, GL_UNSIGNED_INT, 0, pointer(Offset));
-            GLSLType4UI: GL.VertexAttribIPointer(L, 4, GL_UNSIGNED_INT, 0, pointer(Offset));
-            GLSLTypeMat2F: GL.VertexAttribPointer(L, 4, GL_FLOAT, false, 0, pointer(Offset));
-            GLSLTypeMat3F: GL.VertexAttribPointer(L, 9, GL_FLOAT, false, 0, pointer(Offset));
-            GLSLTypeMat4F: GL.VertexAttribPointer(L, 16, GL_FLOAT, false, 0, pointer(Offset));
+            GLSLType1F:  gl.VertexAttribPointer(L, 1, GL_FLOAT, false, 0, pointer(Offset));
+            GLSLType2F:  gl.VertexAttribPointer(L, 2, GL_FLOAT, false, 0, pointer(Offset));
+            GLSLType3F:  gl.VertexAttribPointer(L, 3, GL_FLOAT, false, 0, pointer(Offset));
+            GLSLType4F:  gl.VertexAttribPointer(L, 4, GL_FLOAT, false, 0, pointer(Offset));
+            GLSLType1I:  gl.VertexAttribIPointer(L, 1, GL_INT, 0, pointer(Offset));
+            GLSLType2I:  gl.VertexAttribIPointer(L, 2, GL_INT, 0, pointer(Offset));
+            GLSLType3I:  gl.VertexAttribIPointer(L, 3, GL_INT, 0, pointer(Offset));
+            GLSLType4I:  gl.VertexAttribIPointer(L, 4, GL_INT, 0, pointer(Offset));
+            GLSLType1UI: gl.VertexAttribIPointer(L, 1, GL_UNSIGNED_INT, 0, pointer(Offset));
+            GLSLType2UI: gl.VertexAttribIPointer(L, 2, GL_UNSIGNED_INT, 0, pointer(Offset));
+            GLSLType3UI: gl.VertexAttribIPointer(L, 3, GL_UNSIGNED_INT, 0, pointer(Offset));
+            GLSLType4UI: gl.VertexAttribIPointer(L, 4, GL_UNSIGNED_INT, 0, pointer(Offset));
+            GLSLTypeMat2F: gl.VertexAttribPointer(L, 4, GL_FLOAT, false, 0, pointer(Offset));
+            GLSLTypeMat3F: gl.VertexAttribPointer(L, 9, GL_FLOAT, false, 0, pointer(Offset));
+            GLSLTypeMat4F: gl.VertexAttribPointer(L, 16, GL_FLOAT, false, 0, pointer(Offset));
         end; // of case
       end;
       Inc(Offset, GR.GetAttribArraySize(Attributes[I]));
@@ -1007,7 +1007,7 @@ begin
         // Render mesh
         if FElementNumber > 0 then
         begin
-          GL.DrawElements(
+          gl.DrawElements(
             cPrimitives[FPrimitiveType],
             FElementNumber,
             GL_UNSIGNED_INT,
@@ -1015,7 +1015,7 @@ begin
         end
         else
         begin
-          GL.DrawArrays(
+          gl.DrawArrays(
             cPrimitives[FPrimitiveType],
             0,
             FVertexNumber);

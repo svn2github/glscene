@@ -201,8 +201,8 @@ var
 begin
   if ContourInterval > 0 then
   begin
-    GL.PolygonOffset(1, 1);
-    GL.Enable(GL_POLYGON_OFFSET_FILL);
+    gl.PolygonOffset(1, 1);
+    gl.Enable(GL_POLYGON_OFFSET_FILL);
     i := VertexIndices.Count - 3;
     Contours := TAffineVectorList.Create;
     while i >= 0 do
@@ -212,17 +212,17 @@ begin
         ContourInterval, Contours);
       Dec(i, DecVal);
     end;
-    GL.PushAttrib(GL_ENABLE_BIT or GL_CURRENT_BIT);
-    GL.Disable(GL_TEXTURE_2D);
-    GL.LineWidth(ContourWidth);
-    GL.GetFloatv(GL_CURRENT_COLOR, @CurColor);
-    GL.Color4f(0, 0, 0, 1);
-    GL.Begin_(GL_LINES);
+    gl.PushAttrib(GL_ENABLE_BIT or GL_CURRENT_BIT);
+    gl.Disable(GL_TEXTURE_2D);
+    gl.LineWidth(ContourWidth);
+    gl.GetFloatv(GL_CURRENT_COLOR, @CurColor);
+    gl.Color4f(0, 0, 0, 1);
+    gl.Begin_(GL_LINES);
      for i := 0 to Contours.Count - 1 do
-       GL.Vertex3fv(@Contours.List[i]);
-    GL.End_;
-    GL.Color4fv(@CurColor);
-    GL.PopAttrib;
+       gl.Vertex3fv(@Contours.List[i]);
+    gl.End_;
+    gl.Color4fv(@CurColor);
+    gl.PopAttrib;
     Contours.Free;
   end;
 end;
@@ -725,14 +725,14 @@ begin
     TexCoords.ScaleAndTranslate(PTexPoint(@TextureScale)^,
       PTexPoint(@TextureOffset)^);
 
-    GL.VertexPointer(3, GL_FLOAT, 0, Vertices.List);
+    gl.VertexPointer(3, GL_FLOAT, 0, Vertices.List);
     xgl.TexCoordPointer(2, GL_FLOAT, 0, TexCoords.List);
 
     FListHandle.AllocateHandle;
-    GL.NewList(FListHandle.Handle, GL_COMPILE);
-      GL.DrawElements(Primitive, VertexIndices.Count, GL_UNSIGNED_INT,
+    gl.NewList(FListHandle.Handle, GL_COMPILE);
+      gl.DrawElements(Primitive, VertexIndices.Count, GL_UNSIGNED_INT,
         VertexIndices.List);
-    GL.EndList;
+    gl.EndList;
     DrawContours(Vertices, VertexIndices, FContourInterval, FContourWidth, 1);
     Vertices.Count := 0;
     TexCoords.Count := 0;
@@ -740,7 +740,7 @@ begin
   end;
 
   // perform the render
-  GL.CallList(FListHandle.Handle);
+  gl.CallList(FListHandle.Handle);
 end;
 
 procedure TGLROAMPatch.RenderAccum(Vertices: TAffineVectorList;
@@ -802,33 +802,33 @@ begin
   if VertexIndices.Count = 0 then
     Exit;
 
-  if GL.ARB_vertex_buffer_object then
+  if gl.ARB_vertex_buffer_object then
   begin
     FVBOVertHandle.AllocateHandle;
     FVBOVertHandle.BindBufferData(Vertices.List, Vertices.DataSize,
       GL_STREAM_DRAW_ARB);
-    GL.VertexPointer(3, GL_FLOAT, 0, nil);
+    gl.VertexPointer(3, GL_FLOAT, 0, nil);
 
     FVBOTexHandle.AllocateHandle;
     FVBOTexHandle.BindBufferData(TexCoords.List, TexCoords.DataSize,
       GL_STREAM_DRAW_ARB);
     xgl.TexCoordPointer(2, GL_FLOAT, 0, nil);
 
-    GL.DrawRangeElements(GL_TRIANGLES, 0, Vertices.Count - 1,
+    gl.DrawRangeElements(GL_TRIANGLES, 0, Vertices.Count - 1,
       VertexIndices.Count, GL_UNSIGNED_INT, VertexIndices.List);
-    GL.BindBuffer(GL_ARRAY_BUFFER_ARB, 0);
-    GL.BindBuffer(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
+    gl.BindBuffer(GL_ARRAY_BUFFER_ARB, 0);
+    gl.BindBuffer(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
   end
-  else if GL.EXT_compiled_vertex_array and GL.EXT_draw_range_elements then
+  else if gl.EXT_compiled_vertex_array and gl.EXT_draw_range_elements then
   begin
-    GL.LockArrays(0, Vertices.Count);
-    GL.DrawRangeElements(GL_TRIANGLES, 0, Vertices.Count - 1,
+    gl.LockArrays(0, Vertices.Count);
+    gl.DrawRangeElements(GL_TRIANGLES, 0, Vertices.Count - 1,
       VertexIndices.Count, GL_UNSIGNED_INT, VertexIndices.List);
-    GL.UnLockArrays;
+    gl.UnLockArrays;
   end
   else
   begin
-    GL.DrawElements(GL_TRIANGLES, VertexIndices.Count, GL_UNSIGNED_INT,
+    gl.DrawElements(GL_TRIANGLES, VertexIndices.Count, GL_UNSIGNED_INT,
       VertexIndices.List);
   end;
   Vertices.Count := 0;

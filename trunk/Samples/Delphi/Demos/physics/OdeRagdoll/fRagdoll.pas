@@ -4,15 +4,40 @@ interface
 
 uses
   Winapi.Windows,
-  System.SysUtils, System.Variants, System.Classes, System.Math,
-  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.ComCtrls,
+  System.SysUtils,
+  System.Variants,
+  System.Classes,
+  System.Math,
+  Vcl.Graphics,
+  Vcl.Controls,
+  Vcl.Forms,
+  Vcl.Dialogs,
+  Vcl.ExtCtrls, Vcl.ComCtrls,
 
-  //GLScene
-  GLScene, GLObjects, GLWin32Viewer, GLCadencer, ODEImport,
-  GLShadowPlane, GLVectorGeometry, GLGeomObjects, GLVectorTypes,
-  GLBitmapFont, GLWindowsFont, GLHUDObjects, GLKeyboard, GLVectorFileObjects,
-  GLRagdoll, GLTexture, GLMaterial, GLCoordinates, GLCrossPlatform,
-  GLBaseClasses, GLODERagdoll, ODEGL, GLFileSMD, GLUtils;
+  GLScene,
+  GLObjects,
+  GLWin32Viewer,
+  GLCadencer,
+  ODEImport,
+  GLShadowPlane,
+  GLVectorGeometry,
+  GLGeomObjects,
+  GLVectorTypes,
+  GLBitmapFont,
+  GLWindowsFont,
+  GLHUDObjects,
+  GLKeyboard,
+  GLVectorFileObjects,
+  GLRagdoll,
+  GLTexture,
+  GLMaterial,
+  GLCoordinates,
+  GLCrossPlatform,
+  GLBaseClasses,
+  GLODERagdoll,
+  GLFileSMD,
+  ODEGL,
+  GLUtils;
 
 
 //Physic World ODE

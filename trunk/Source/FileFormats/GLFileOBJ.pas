@@ -255,7 +255,7 @@ var
     { For every Polygon }
     for Polygon := 0 to FPolygonVertices.Count - 1 do
     begin
-      GL.Begin_(GL_POLYGON);
+      gl.Begin_(GL_POLYGON);
       try
         { For every Vertex in the current Polygon }
         for j := 0 to FPolygonVertices[Polygon] - 1 do
@@ -263,34 +263,34 @@ var
           Assert(NormalIndices.List <> nil);
           idx := NormalIndices.List^[Index];
           if idx >= 0 then
-            GL.Normal3fv(@NormalPool[idx]);
+            gl.Normal3fv(@NormalPool[idx]);
 
           if GotColor then
-            GL.Color4fv(@ColorPool[VertexIndices.List^[Index]]);
+            gl.Color4fv(@ColorPool[VertexIndices.List^[Index]]);
 
           if Assigned(TexCoordPool) then
           begin
             idx := TexCoordIndices.List^[Index];
             if idx >= 0 then
             begin
-              if GL.ARB_multitexture and (not xgl.SecondTextureUnitForbidden) then
+              if gl.ARB_multitexture and (not xgl.SecondTextureUnitForbidden) then
               begin
-                GL.MultiTexCoord2fv(GL_TEXTURE0, @TexCoordPool[idx]);
-                GL.MultiTexCoord2fv(GL_TEXTURE1, @TexCoordPool[idx]);
+                gl.MultiTexCoord2fv(GL_TEXTURE0, @TexCoordPool[idx]);
+                gl.MultiTexCoord2fv(GL_TEXTURE1, @TexCoordPool[idx]);
               end
                 else
               begin
-                GL.TexCoord2fv(@TexCoordPool[idx]);
+                gl.TexCoord2fv(@TexCoordPool[idx]);
               end;
             end;
 
           end;
 
-          GL.Vertex3fv(@VertexPool[VertexIndices.List^[Index]]);
+          gl.Vertex3fv(@VertexPool[VertexIndices.List^[Index]]);
           Inc(Index);
         end;
       finally
-        GL.End_;
+        gl.End_;
       end;
     end;
 
@@ -306,13 +306,13 @@ var
           idx := NormalIndices.List^[Index];
           if idx <> -1 then
           begin
-            GL.Begin_(GL_LINES);
+            gl.Begin_(GL_LINES);
             try
-              GL.Vertex3fv(@VertexPool^[VertexIndices.List^[Index]]);
+              gl.Vertex3fv(@VertexPool^[VertexIndices.List^[Index]]);
               N := VectorAdd(VertexPool^[VertexIndices.List^[Index]], VectorScale(NormalPool^[idx], 0.1));
-              GL.Vertex3fv(@N);
+              gl.Vertex3fv(@N);
             finally
-              GL.End_;
+              gl.End_;
             end;
           end;
           inc(Index);
@@ -325,7 +325,7 @@ var
     (*
     begin
       Owner.Owner.DeclareArraysToOpenGL(False);
-      GL.DrawElements(GL_TRIANGLE_STRIP,VertexIndices.Count,
+      gl.DrawElements(GL_TRIANGLE_STRIP,VertexIndices.Count,
                      GL_UNSIGNED_INT,VertexIndices.List);
     end;
     *)
@@ -333,13 +333,13 @@ var
     Index, idx: Integer;
   begin
     { Build it. Ignoring texture-coordinates and normals that are missing. }
-    GL.Begin_(GL_TRIANGLE_STRIP);
+    gl.Begin_(GL_TRIANGLE_STRIP);
     try
       for Index := 0 to VertexIndices.Count - 1 do
       begin
         idx := NormalIndices.List^[Index];
         if idx <> -1 then
-          GL.Normal3fv(@NormalPool^[idx]);
+          gl.Normal3fv(@NormalPool^[idx]);
 
         if Assigned(TexCoordPool) then
         begin
@@ -348,10 +348,10 @@ var
             xgl.TexCoord2fv(@TexCoordPool^[idx]);
         end;
 
-        GL.Vertex3fv(@VertexPool^[VertexIndices.List^[Index]]);
+        gl.Vertex3fv(@VertexPool^[VertexIndices.List^[Index]]);
       end;
     finally
-      GL.End_;
+      gl.End_;
     end;
   end;
 

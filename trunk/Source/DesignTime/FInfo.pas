@@ -192,8 +192,8 @@ begin
     with aSceneBuffer do
     begin
       // common properties
-      VendorLabel.Caption := String(GL.GetString(GL_VENDOR));
-      RendererLabel.Caption := String(GL.GetString(GL_RENDERER));
+      VendorLabel.Caption := String(gl.GetString(GL_VENDOR));
+      RendererLabel.Caption := String(gl.GetString(GL_RENDERER));
       dc := wglGetCurrentDC();
       pixelFormat := GetPixelFormat(dc);
       DescribePixelFormat(dc, pixelFormat, SizeOf(pfd), pfd);
@@ -204,8 +204,8 @@ begin
         AccLabel.Caption := 'Mini-Client Driver'
       else if (DRIVER_MASK and pfd.dwFlags) = PFD_GENERIC_FORMAT then
         AccLabel.Caption := 'Generic Software Driver';
-      VersionLabel.Caption := String(GL.GetString(GL_VERSION));
-      ExtStr := String(GL.GetString(GL_EXTENSIONS));
+      VersionLabel.Caption := String(gl.GetString(GL_VERSION));
+      ExtStr := String(gl.GetString(GL_EXTENSIONS));
       ListBoxExtensions.Clear;
       while Length(ExtStr) > 0 do
       begin
@@ -227,9 +227,9 @@ begin
         StereoLabel.Caption := 'no';
 
       // Include WGL extensions
-      if GL.W_ARB_extensions_string then
+      if gl.W_ARB_extensions_string then
       begin
-        ExtStr := String(GL.WGetExtensionsStringARB(dc));
+        ExtStr := String(gl.WGetExtensionsStringARB(dc));
         while Length(ExtStr) > 0 do
         begin
           i := Pos(' ', ExtStr);

@@ -214,33 +214,33 @@ begin
   ma := FCubeSize * 0.5;
   mi := -ma;
   with EdgeColor do
-    GL.Color3f(Color.X, Color.Y, Color.Z);
-  GL.Begin_(GL_LINE_STRIP);
+    gl.Color3f(Color.X, Color.Y, Color.Z);
+  gl.Begin_(GL_LINE_STRIP);
   // front face
-  GL.Vertex3f(ma, mi, mi);
-  GL.Vertex3f(ma, ma, mi);
-  GL.Vertex3f(ma, ma, ma);
-  GL.Vertex3f(ma, mi, ma);
-  GL.Vertex3f(ma, mi, mi);
+  gl.Vertex3f(ma, mi, mi);
+  gl.Vertex3f(ma, ma, mi);
+  gl.Vertex3f(ma, ma, ma);
+  gl.Vertex3f(ma, mi, ma);
+  gl.Vertex3f(ma, mi, mi);
   // partial up back fac
-  GL.Vertex3f(mi, mi, mi);
-  GL.Vertex3f(mi, mi, ma);
-  GL.Vertex3f(mi, ma, ma);
-  GL.Vertex3f(mi, ma, mi);
+  gl.Vertex3f(mi, mi, mi);
+  gl.Vertex3f(mi, mi, ma);
+  gl.Vertex3f(mi, ma, ma);
+  gl.Vertex3f(mi, ma, mi);
   // right side low
-  GL.Vertex3f(ma, ma, mi);
-  GL.End_;
-  GL.Begin_(GL_LINES);
+  gl.Vertex3f(ma, ma, mi);
+  gl.End_;
+  gl.Begin_(GL_LINES);
   // right high
-  GL.Vertex3f(ma, ma, ma);
-  GL.Vertex3f(mi, ma, ma);
+  gl.Vertex3f(ma, ma, ma);
+  gl.Vertex3f(mi, ma, ma);
   // back low
-  GL.Vertex3f(mi, mi, mi);
-  GL.Vertex3f(mi, ma, mi);
+  gl.Vertex3f(mi, mi, mi);
+  gl.Vertex3f(mi, ma, mi);
   // left high
-  GL.Vertex3f(ma, mi, ma);
-  GL.Vertex3f(mi, mi, ma);
-  GL.End_;
+  gl.Vertex3f(ma, mi, ma);
+  gl.Vertex3f(mi, mi, ma);
+  gl.End_;
 end;
 
 

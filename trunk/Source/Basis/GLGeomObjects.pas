@@ -771,11 +771,11 @@ procedure TGLCone.BuildList(var rci: TGLRenderContextInfo);
 var
   quadric: PGLUquadricObj;
 begin
-  GL.PushMatrix;
+  gl.PushMatrix;
   quadric := gluNewQuadric();
   SetupQuadricParams(quadric);
-  GL.Rotated(-90, 1, 0, 0);
-  GL.Translatef(0, 0, -FHeight * 0.5);
+  gl.Rotated(-90, 1, 0, 0);
+  gl.Translatef(0, 0, -FHeight * 0.5);
   if coSides in FParts then
     gluCylinder(quadric, BottomRadius, 0, Height, Slices, Stacks);
   if coBottom in FParts then
@@ -785,7 +785,7 @@ begin
     gluDisk(quadric, 0, BottomRadius, Slices, FLoops);
   end;
   gluDeleteQuadric(quadric);
-  GL.PopMatrix;
+  gl.PopMatrix;
 end;
 
 procedure TGLCone.SetParts(aValue: TConeParts);
@@ -906,26 +906,26 @@ procedure TGLCylinder.BuildList(var rci: TGLRenderContextInfo);
 var
   quadric: PGLUquadricObj;
 begin
-  GL.PushMatrix;
+  gl.PushMatrix;
   quadric := gluNewQuadric;
   SetupQuadricParams(quadric);
-  GL.Rotatef(-90, 1, 0, 0);
+  gl.Rotatef(-90, 1, 0, 0);
   case Alignment of
     caTop:
-      GL.Translatef(0, 0, -FHeight);
+      gl.Translatef(0, 0, -FHeight);
     caBottom:
       ;
   else // caCenter
-    GL.Translatef(0, 0, -FHeight * 0.5);
+    gl.Translatef(0, 0, -FHeight * 0.5);
   end;
   if cySides in FParts then
     gluCylinder(quadric, FBottomRadius, FTopRadius, FHeight, FSlices, FStacks);
   if cyTop in FParts then
   begin
-    GL.PushMatrix;
-    GL.Translatef(0, 0, FHeight);
+    gl.PushMatrix;
+    gl.Translatef(0, 0, FHeight);
     gluDisk(quadric, 0, FTopRadius, FSlices, FLoops);
-    GL.PopMatrix;
+    gl.PopMatrix;
   end;
   if cyBottom in FParts then
   begin
@@ -934,7 +934,7 @@ begin
     gluDisk(quadric, 0, FBottomRadius, FSlices, FLoops);
   end;
   gluDeleteQuadric(quadric);
-  GL.PopMatrix;
+  gl.PopMatrix;
 end;
 
 procedure TGLCylinder.SetTopRadius(const aValue: Single);
@@ -1161,15 +1161,15 @@ var
   tmp, nx, ny, nz, start_nx, start_ny, a, ca, sa, l: Single;
   nx2, ny2, nz2: Single;
 begin
-  GL.PushMatrix;
-  GL.Rotatef(-90, 0, 0, 1);
+  gl.PushMatrix;
+  gl.Rotatef(-90, 0, 0, 1);
   case Alignment of
     caTop:
-      GL.Translatef(0, 0, FHeight + 1);
+      gl.Translatef(0, 0, FHeight + 1);
     caBottom:
-      GL.Translatef(0, 0, -FHeight);
+      gl.Translatef(0, 0, -FHeight);
   else // caCenter
-    GL.Translatef(0, 0, 0.5);
+    gl.Translatef(0, 0, 0.5);
   end;
   n := FSlices * FStacks;
   l := FHeight;
@@ -1181,20 +1181,20 @@ begin
   nz := 1;
   if cySides in FParts then
   begin
-    GL.Begin_(GL_TRIANGLE_STRIP);
+    gl.Begin_(GL_TRIANGLE_STRIP);
     for i := 0 to n do
     begin
-      GL.Normal3d(ny, nz, 0);
-      GL.TexCoord2f(i / n, 1);
-      GL.Vertex3d(ny * FRadius, nz * FRadius, l - 0.5);
-      GL.Normal3d(ny, nz, 0);
-      GL.TexCoord2f(i / n, 0);
-      GL.Vertex3d(ny * FRadius, nz * FRadius, -l - 0.5);
+      gl.Normal3d(ny, nz, 0);
+      gl.TexCoord2f(i / n, 1);
+      gl.Vertex3d(ny * FRadius, nz * FRadius, l - 0.5);
+      gl.Normal3d(ny, nz, 0);
+      gl.TexCoord2f(i / n, 0);
+      gl.Vertex3d(ny * FRadius, nz * FRadius, -l - 0.5);
       tmp := ca * ny - sa * nz;
       nz := sa * ny + ca * nz;
       ny := tmp;
     end;
-    GL.End_();
+    gl.End_();
   end;
   //
   if cyTop in FParts then
@@ -1211,17 +1211,17 @@ begin
       nx2 := start_nx2;
       ny2 := start_ny2;
       nz2 := 0;
-      GL.PushMatrix;
-      GL.Translatef(0, 0, -0.5);
-      GL.Begin_(GL_TRIANGLE_STRIP);
+      gl.PushMatrix;
+      gl.Translatef(0, 0, -0.5);
+      gl.Begin_(GL_TRIANGLE_STRIP);
       for i := 0 to n do
       begin
-        GL.Normal3d(ny2, nz2, nx2);
-        GL.TexCoord2f(i / n, j / n);
-        GL.Vertex3d(ny2 * FRadius, nz2 * FRadius, l + nx2 * FRadius);
-        GL.Normal3d(ny, nz, nx);
-        GL.TexCoord2f(i / n, (j - 1) / n);
-        GL.Vertex3d(ny * FRadius, nz * FRadius, l + nx * FRadius);
+        gl.Normal3d(ny2, nz2, nx2);
+        gl.TexCoord2f(i / n, j / n);
+        gl.Vertex3d(ny2 * FRadius, nz2 * FRadius, l + nx2 * FRadius);
+        gl.Normal3d(ny, nz, nx);
+        gl.TexCoord2f(i / n, (j - 1) / n);
+        gl.Vertex3d(ny * FRadius, nz * FRadius, l + nx * FRadius);
         tmp := ca * ny - sa * nz;
         nz := sa * ny + ca * nz;
         ny := tmp;
@@ -1229,8 +1229,8 @@ begin
         nz2 := sa * ny2 + ca * nz2;
         ny2 := tmp;
       end;
-      GL.End_();
-      GL.PopMatrix;
+      gl.End_();
+      gl.PopMatrix;
       start_nx := start_nx2;
       start_ny := start_ny2;
     end;
@@ -1250,17 +1250,17 @@ begin
       nx2 := start_nx2;
       ny2 := start_ny2;
       nz2 := 0;
-      GL.PushMatrix;
-      GL.Translatef(0, 0, -0.5);
-      GL.Begin_(GL_TRIANGLE_STRIP);
+      gl.PushMatrix;
+      gl.Translatef(0, 0, -0.5);
+      gl.Begin_(GL_TRIANGLE_STRIP);
       for i := 0 to n do
       begin
-        GL.Normal3d(ny, nz, nx);
-        GL.TexCoord2f(i / n, (j - 1) / n);
-        GL.Vertex3d(ny * FRadius, nz * FRadius, -l + nx * FRadius);
-        GL.Normal3d(ny2, nz2, nx2);
-        GL.TexCoord2f(i / n, j / n);
-        GL.Vertex3d(ny2 * FRadius, nz2 * FRadius, -l + nx2 * FRadius);
+        gl.Normal3d(ny, nz, nx);
+        gl.TexCoord2f(i / n, (j - 1) / n);
+        gl.Vertex3d(ny * FRadius, nz * FRadius, -l + nx * FRadius);
+        gl.Normal3d(ny2, nz2, nx2);
+        gl.TexCoord2f(i / n, j / n);
+        gl.Vertex3d(ny2 * FRadius, nz2 * FRadius, -l + nx2 * FRadius);
         tmp := ca * ny - sa * nz;
         nz := sa * ny + ca * nz;
         ny := tmp;
@@ -1268,13 +1268,13 @@ begin
         nz2 := sa * ny2 + ca * nz2;
         ny2 := tmp;
       end;
-      GL.End_();
-      GL.PopMatrix;
+      gl.End_();
+      gl.PopMatrix;
       start_nx := start_nx2;
       start_ny := start_ny2;
     end;
   end;
-  GL.PopMatrix;
+  gl.PopMatrix;
 end;
 
 procedure TGLCapsule.SetHeight(const aValue: Single);
@@ -1569,19 +1569,19 @@ procedure TGLAnnulus.BuildList(var rci: TGLRenderContextInfo);
 var
   quadric: PGLUquadricObj;
 begin
-  GL.PushMatrix;
+  gl.PushMatrix;
   quadric := gluNewQuadric;
   SetupQuadricParams(quadric);
-  GL.Rotatef(-90, 1, 0, 0);
-  GL.Translatef(0, 0, -FHeight * 0.5);
+  gl.Rotatef(-90, 1, 0, 0);
+  gl.Translatef(0, 0, -FHeight * 0.5);
   if anOuterSides in FParts then
     gluCylinder(quadric, FBottomRadius, FTopRadius, FHeight, FSlices, FStacks);
   if anTop in FParts then
   begin
-    GL.PushMatrix;
-    GL.Translatef(0, 0, FHeight);
+    gl.PushMatrix;
+    gl.Translatef(0, 0, FHeight);
     gluDisk(quadric, FTopInnerRadius, FTopRadius, FSlices, FLoops);
-    GL.PopMatrix;
+    gl.PopMatrix;
   end;
   if [anBottom, anInnerSides] * FParts <> [] then
   begin
@@ -1594,7 +1594,7 @@ begin
         FSlices, FStacks);
   end;
   gluDeleteQuadric(quadric);
-  GL.PopMatrix;
+  gl.PopMatrix;
 end;
 
 
@@ -2330,8 +2330,8 @@ begin
   if alTopArrow in Parts then
   begin
     cylHeight := cylHeight - TopArrowHeadHeight * headInfluence;
-    GL.PushMatrix;
-    GL.Translatef(0, 0, Height * 0.5 - TopArrowHeadHeight * headInfluence);
+    gl.PushMatrix;
+    gl.Translatef(0, 0, Height * 0.5 - TopArrowHeadHeight * headInfluence);
     gluCylinder(quadric, fTopArrowHeadRadius, 0, fTopArrowHeadHeight,
       Slices, Stacks);
     // top of a disk is defined as outside
@@ -2340,17 +2340,17 @@ begin
       gluDisk(quadric, FTopRadius, fTopArrowHeadRadius, Slices, FLoops)
     else
       gluDisk(quadric, 0, fTopArrowHeadRadius, Slices, FLoops);
-    GL.PopMatrix;
+    gl.PopMatrix;
   end;
   // does the bottom arrow part - another cone
   if alBottomArrow in Parts then
   begin
     cylHeight := cylHeight - BottomArrowHeadHeight * headInfluence;
     cylOffset := cylOffset + BottomArrowHeadHeight * headInfluence;
-    GL.PushMatrix;
+    gl.PushMatrix;
     // make the bottom arrow point in the other direction
-    GL.Rotatef(180, 1, 0, 0);
-    GL.Translatef(0, 0, Height * 0.5 - BottomArrowHeadHeight * headInfluence);
+    gl.Rotatef(180, 1, 0, 0);
+    gl.Translatef(0, 0, Height * 0.5 - BottomArrowHeadHeight * headInfluence);
     SetNormalQuadricOrientation(quadric);
     gluCylinder(quadric, fBottomArrowHeadRadius, 0, fBottomArrowHeadHeight,
       Slices, Stacks);
@@ -2360,22 +2360,22 @@ begin
       gluDisk(quadric, FBottomRadius, fBottomArrowHeadRadius, Slices, FLoops)
     else
       gluDisk(quadric, 0, fBottomArrowHeadRadius, Slices, FLoops);
-    GL.PopMatrix;
+    gl.PopMatrix;
   end;
   // does the cylinder that makes the line
   if (cylHeight > 0) and (alLine in Parts) then
   begin
-    GL.PushMatrix;
-    GL.Translatef(0, 0, cylOffset);
+    gl.PushMatrix;
+    gl.Translatef(0, 0, cylOffset);
     SetNormalQuadricOrientation(quadric);
     gluCylinder(quadric, FBottomRadius, FTopRadius, cylHeight, FSlices,
       FStacks);
     if not(alTopArrow in Parts) then
     begin
-      GL.PushMatrix;
-      GL.Translatef(0, 0, cylHeight);
+      gl.PushMatrix;
+      gl.Translatef(0, 0, cylHeight);
       gluDisk(quadric, 0, FTopRadius, FSlices, FLoops);
-      GL.PopMatrix;
+      gl.PopMatrix;
     end;
     if not(alBottomArrow in Parts) then
     begin
@@ -2383,7 +2383,7 @@ begin
       SetInvertedQuadricOrientation(quadric);
       gluDisk(quadric, 0, FBottomRadius, FSlices, FLoops);
     end;
-    GL.PopMatrix;
+    gl.PopMatrix;
   end;
   gluDeleteQuadric(quadric);
 end;
@@ -2528,12 +2528,12 @@ procedure TGLArrowArc.BuildList(var rci: TGLRenderContextInfo);
   procedure EmitVertex(ptr: PVertexRec; L1, L2: integer);
   begin
     XGL.TexCoord2fv(@ptr^.TexCoord);
-    GL.Normal3fv(@ptr^.Normal);
+    gl.Normal3fv(@ptr^.Normal);
     if L1 > -1 then
-      GL.VertexAttrib3fv(L1, @ptr.Tangent);
+      gl.VertexAttrib3fv(L1, @ptr.Tangent);
     if L2 > -1 then
-      GL.VertexAttrib3fv(L2, @ptr.Binormal);
-    GL.Vertex3fv(@ptr^.Position);
+      gl.VertexAttrib3fv(L2, @ptr.Binormal);
+    gl.Vertex3fv(@ptr^.Position);
   end;
 
 var
@@ -2641,11 +2641,11 @@ begin
       end;
       MeshIndex := FStacks + 1;
       begin
-        if GL.ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
+        if gl.ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
         begin
-          TanLoc := GL.GetAttribLocation(rci.GLStates.CurrentProgram,
+          TanLoc := gl.GetAttribLocation(rci.GLStates.CurrentProgram,
             PAnsiChar(TangentAttributeName));
-          BinLoc := GL.GetAttribLocation(rci.GLStates.CurrentProgram,
+          BinLoc := gl.GetAttribLocation(rci.GLStates.CurrentProgram,
             PAnsiChar(BinormalAttributeName));
         end
         else
@@ -2654,7 +2654,7 @@ begin
           BinLoc := TanLoc;
         end;
 
-        GL.Begin_(GL_TRIANGLES);
+        gl.Begin_(GL_TRIANGLES);
         for i := FStacks - 1 downto 0 do
           for j := FSlices - 1 downto 0 do
           begin
@@ -2676,7 +2676,7 @@ begin
             pVertex := @FMesh[i][j + 1];
             EmitVertex(pVertex, TanLoc, BinLoc);
           end;
-        GL.End_;
+        gl.End_;
       end;
     end;
 
@@ -2741,11 +2741,11 @@ begin
       ConeCenter.TexCoord := Vector2fMake(0, 0);
 
       begin
-        if GL.ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
+        if gl.ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
         begin
-          TanLoc := GL.GetAttribLocation(rci.GLStates.CurrentProgram,
+          TanLoc := gl.GetAttribLocation(rci.GLStates.CurrentProgram,
             PAnsiChar(TangentAttributeName));
-          BinLoc := GL.GetAttribLocation(rci.GLStates.CurrentProgram,
+          BinLoc := gl.GetAttribLocation(rci.GLStates.CurrentProgram,
             PAnsiChar(BinormalAttributeName));
         end
         else
@@ -2754,7 +2754,7 @@ begin
           BinLoc := TanLoc;
         end;
 
-        GL.Begin_(GL_TRIANGLE_FAN);
+        gl.Begin_(GL_TRIANGLE_FAN);
         pVertex := @ConeCenter;
         EmitVertex(pVertex, TanLoc, BinLoc);
         for j := FSlices downto 0 do
@@ -2762,9 +2762,9 @@ begin
           pVertex := @FMesh[MeshIndex][j];
           EmitVertex(pVertex, TanLoc, BinLoc);
         end;
-        GL.End_;
+        gl.End_;
 
-        GL.Begin_(GL_TRIANGLES);
+        gl.Begin_(GL_TRIANGLES);
 
         for j := FSlices - 1 downto 0 do
         begin
@@ -2786,7 +2786,7 @@ begin
           pVertex := @FMesh[MeshIndex + 1][j + 1];
           EmitVertex(pVertex, TanLoc, BinLoc);
         end;
-        GL.End_;
+        gl.End_;
 
       end;
       MeshIndex := MeshIndex + 3;
@@ -2907,11 +2907,11 @@ begin
       ConeCenter.TexCoord := Vector2fMake(1, 1);
 
       begin
-        if GL.ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
+        if gl.ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
         begin
-          TanLoc := GL.GetAttribLocation(rci.GLStates.CurrentProgram,
+          TanLoc := gl.GetAttribLocation(rci.GLStates.CurrentProgram,
             PAnsiChar(TangentAttributeName));
-          BinLoc := GL.GetAttribLocation(rci.GLStates.CurrentProgram,
+          BinLoc := gl.GetAttribLocation(rci.GLStates.CurrentProgram,
             PAnsiChar(BinormalAttributeName));
         end
         else
@@ -2920,7 +2920,7 @@ begin
           BinLoc := TanLoc;
         end;
 
-        GL.Begin_(GL_TRIANGLE_FAN);
+        gl.Begin_(GL_TRIANGLE_FAN);
         pVertex := @ConeCenter;
         EmitVertex(pVertex, TanLoc, BinLoc);
         for j := 0 to FSlices do
@@ -2928,9 +2928,9 @@ begin
           pVertex := @FMesh[MeshIndex][j];
           EmitVertex(pVertex, TanLoc, BinLoc);
         end;
-        GL.End_;
+        gl.End_;
 
-        GL.Begin_(GL_TRIANGLES);
+        gl.Begin_(GL_TRIANGLES);
 
         for j := FSlices - 1 downto 0 do
         begin
@@ -2952,7 +2952,7 @@ begin
           pVertex := @FMesh[MeshIndex + 2][j + 1];
           EmitVertex(pVertex, TanLoc, BinLoc);
         end;
-        GL.End_;
+        gl.End_;
 
       end;
     end
@@ -2985,11 +2985,11 @@ begin
       ConeCenter.Binormal := FMesh[MeshIndex][0].Binormal;
       ConeCenter.TexCoord := Vector2fMake(0, 0);
       begin
-        if GL.ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
+        if gl.ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
         begin
-          TanLoc := GL.GetAttribLocation(rci.GLStates.CurrentProgram,
+          TanLoc := gl.GetAttribLocation(rci.GLStates.CurrentProgram,
             PAnsiChar(TangentAttributeName));
-          BinLoc := GL.GetAttribLocation(rci.GLStates.CurrentProgram,
+          BinLoc := gl.GetAttribLocation(rci.GLStates.CurrentProgram,
             PAnsiChar(BinormalAttributeName));
         end
         else
@@ -2997,7 +2997,7 @@ begin
           TanLoc := -1;
           BinLoc := TanLoc;
         end;
-        GL.Begin_(GL_TRIANGLE_FAN);
+        gl.Begin_(GL_TRIANGLE_FAN);
         pVertex := @ConeCenter;
         EmitVertex(pVertex, TanLoc, BinLoc);
         for j := FSlices downto 0 do
@@ -3005,7 +3005,7 @@ begin
           pVertex := @FMesh[MeshIndex][j];
           EmitVertex(pVertex, TanLoc, BinLoc);
         end;
-        GL.End_;
+        gl.End_;
       end;
     end;
   end;
@@ -3063,7 +3063,7 @@ begin
   HTD := HBD * (FApexHeight - FHeight) / FApexHeight;
   HFH := FHeight * 0.5;
 
-  GL.Begin_(GL_QUADS);
+  gl.Begin_(GL_QUADS);
 
   if [fpFront, fpBack] * FParts <> [] then
   begin
@@ -3072,27 +3072,27 @@ begin
     SinCosine(angle, ASin, ACos);
     if fpFront in FParts then
     begin
-      GL.Normal3f(0, Sign * ACos, Sign * ASin);
+      gl.Normal3f(0, Sign * ACos, Sign * ASin);
       XGL.TexCoord2fv(@XYTexPoint);
-      GL.Vertex3f(HTW, HFH, HTD);
+      gl.Vertex3f(HTW, HFH, HTD);
       XGL.TexCoord2fv(@YTexPoint);
-      GL.Vertex3f(-HTW, HFH, HTD);
+      gl.Vertex3f(-HTW, HFH, HTD);
       XGL.TexCoord2fv(@NullTexPoint);
-      GL.Vertex3f(-HBW, -HFH, HBD);
+      gl.Vertex3f(-HBW, -HFH, HBD);
       XGL.TexCoord2fv(@XTexPoint);
-      GL.Vertex3f(HBW, -HFH, HBD);
+      gl.Vertex3f(HBW, -HFH, HBD);
     end;
     if fpBack in FParts then
     begin
-      GL.Normal3f(0, Sign * ACos, -Sign * ASin);
+      gl.Normal3f(0, Sign * ACos, -Sign * ASin);
       XGL.TexCoord2fv(@YTexPoint);
-      GL.Vertex3f(HTW, HFH, -HTD);
+      gl.Vertex3f(HTW, HFH, -HTD);
       XGL.TexCoord2fv(@NullTexPoint);
-      GL.Vertex3f(HBW, -HFH, -HBD);
+      gl.Vertex3f(HBW, -HFH, -HBD);
       XGL.TexCoord2fv(@XTexPoint);
-      GL.Vertex3f(-HBW, -HFH, -HBD);
+      gl.Vertex3f(-HBW, -HFH, -HBD);
       XGL.TexCoord2fv(@XYTexPoint);
-      GL.Vertex3f(-HTW, HFH, -HTD);
+      gl.Vertex3f(-HTW, HFH, -HTD);
     end;
   end;
 
@@ -3102,56 +3102,56 @@ begin
     SinCosine(angle, ASin, ACos);
     if fpLeft in FParts then
     begin
-      GL.Normal3f(-Sign * ASin, Sign * ACos, 0);
+      gl.Normal3f(-Sign * ASin, Sign * ACos, 0);
       XGL.TexCoord2fv(@XYTexPoint);
-      GL.Vertex3f(-HTW, HFH, HTD);
+      gl.Vertex3f(-HTW, HFH, HTD);
       XGL.TexCoord2fv(@YTexPoint);
-      GL.Vertex3f(-HTW, HFH, -HTD);
+      gl.Vertex3f(-HTW, HFH, -HTD);
       XGL.TexCoord2fv(@NullTexPoint);
-      GL.Vertex3f(-HBW, -HFH, -HBD);
+      gl.Vertex3f(-HBW, -HFH, -HBD);
       XGL.TexCoord2fv(@XTexPoint);
-      GL.Vertex3f(-HBW, -HFH, HBD);
+      gl.Vertex3f(-HBW, -HFH, HBD);
     end;
     if fpRight in FParts then
     begin
-      GL.Normal3f(Sign * ASin, Sign * ACos, 0);
+      gl.Normal3f(Sign * ASin, Sign * ACos, 0);
       XGL.TexCoord2fv(@YTexPoint);
-      GL.Vertex3f(HTW, HFH, HTD);
+      gl.Vertex3f(HTW, HFH, HTD);
       XGL.TexCoord2fv(@NullTexPoint);
-      GL.Vertex3f(HBW, -HFH, HBD);
+      gl.Vertex3f(HBW, -HFH, HBD);
       XGL.TexCoord2fv(@XTexPoint);
-      GL.Vertex3f(HBW, -HFH, -HBD);
+      gl.Vertex3f(HBW, -HFH, -HBD);
       XGL.TexCoord2fv(@XYTexPoint);
-      GL.Vertex3f(HTW, HFH, -HTD);
+      gl.Vertex3f(HTW, HFH, -HTD);
     end;
   end;
 
   if (fpTop in FParts) and (FHeight < FApexHeight) then
   begin
-    GL.Normal3f(0, Sign, 0);
+    gl.Normal3f(0, Sign, 0);
     XGL.TexCoord2fv(@YTexPoint);
-    GL.Vertex3f(-HTW, HFH, -HTD);
+    gl.Vertex3f(-HTW, HFH, -HTD);
     XGL.TexCoord2fv(@NullTexPoint);
-    GL.Vertex3f(-HTW, HFH, HTD);
+    gl.Vertex3f(-HTW, HFH, HTD);
     XGL.TexCoord2fv(@XTexPoint);
-    GL.Vertex3f(HTW, HFH, HTD);
+    gl.Vertex3f(HTW, HFH, HTD);
     XGL.TexCoord2fv(@XYTexPoint);
-    GL.Vertex3f(HTW, HFH, -HTD);
+    gl.Vertex3f(HTW, HFH, -HTD);
   end;
   if fpBottom in FParts then
   begin
-    GL.Normal3f(0, -Sign, 0);
+    gl.Normal3f(0, -Sign, 0);
     XGL.TexCoord2fv(@NullTexPoint);
-    GL.Vertex3f(-HBW, -HFH, -HBD);
+    gl.Vertex3f(-HBW, -HFH, -HBD);
     XGL.TexCoord2fv(@XTexPoint);
-    GL.Vertex3f(HBW, -HFH, -HBD);
+    gl.Vertex3f(HBW, -HFH, -HBD);
     XGL.TexCoord2fv(@XYTexPoint);
-    GL.Vertex3f(HBW, -HFH, HBD);
+    gl.Vertex3f(HBW, -HFH, HBD);
     XGL.TexCoord2fv(@YTexPoint);
-    GL.Vertex3f(-HBW, -HFH, HBD);
+    gl.Vertex3f(-HBW, -HFH, HBD);
   end;
 
-  GL.End_;
+  gl.End_;
 end;
 
 procedure TGLFrustrum.SetApexHeight(const aValue: Single);

@@ -14,38 +14,33 @@ unit GLODESkeletonColliders;
 interface
 
 uses
-  Classes, GLPersistentClasses, GLVectorGeometry, GLVectorFileObjects, ODEImport;
+  System.Classes, 
+  GLPersistentClasses, 
+  GLVectorGeometry, 
+  GLVectorFileObjects, 
+  ODEImport;
 
 type
   
-  // TSCODEBase
-  //
   {Base ODE skeleton collider class. }
   TSCODEBase = class(TGLSkeletonCollider)
     private
       FGeom : PdxGeom;
-
     public
       procedure WriteToFiler(writer : TVirtualWriter); override;
       procedure ReadFromFiler(reader : TVirtualReader); override;
-
       procedure AddToSpace(Space : PdxSpace); virtual;
       procedure AlignCollider; override;
-
       {The geoms are created through the AddToSpace procedure. }
       property Geom : PdxGeom read FGeom;
   end;
 
-  // TSCODESphere
-  //
   {Sphere shaped ODE geom in a skeleton collider. }
   TSCODESphere = class(TSCODEBase)
     private
       FRadius : TdReal;
-
     protected
       procedure SetRadius(const val : TdReal);
-
     public
       constructor Create; override;
       procedure WriteToFiler(writer : TVirtualWriter); override;
@@ -55,49 +50,39 @@ type
       property Radius : TdReal read FRadius write SetRadius;
   end;
 
-  // TSCODECCylinder
-  //
   {Capsule (sphere capped cylinder) shaped ODE geom in a skeleton 
      collider. }
   TSCODECCylinder = class(TSCODEBase)
     private
       FRadius,
       FLength : Single;
-
     protected
       procedure SetRadius(const val : Single);
       procedure SetLength(const val : Single);
-
     public
       constructor Create; override;
       procedure WriteToFiler(writer : TVirtualWriter); override;
       procedure ReadFromFiler(reader : TVirtualReader); override;
       procedure AddToSpace(Space : PdxSpace); override;
-
       property Radius : Single read FRadius write SetRadius;
       property Length : Single read FLength write SetLength;
   end;
 
-  // TSCODEBox
-  //
   {Box shaped ODE geom in a skeleton collider. }
   TSCODEBox = class(TSCODEBase)
     private
       FBoxWidth,
       FBoxHeight,
       FBoxDepth : TdReal;
-
     protected
       procedure SetBoxWidth(const val : TdReal);
       procedure SetBoxHeight(const val : TdReal);
       procedure SetBoxDepth(const val : TdReal);
-
     public
       constructor Create; override;
       procedure WriteToFiler(writer : TVirtualWriter); override;
       procedure ReadFromFiler(reader : TVirtualReader); override;
       procedure AddToSpace(Space : PdxSpace); override;
-
       property BoxWidth : TdReal read FBoxWidth write SetBoxWidth;
       property BoxHeight : TdReal read FBoxHeight write SetBoxHeight;
       property BoxDepth : TdReal read FBoxDepth write SetBoxDepth;
@@ -109,19 +94,13 @@ procedure AddSCODEGeomsToODESpace(
   colliders : TGLSkeletonColliderList; space : PdxSpace);
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 // ------------------
 // ------------------ Global methods ------------------
 // ------------------
 
-// AddSCODEGeomsToODESpace
-//
 procedure AddSCODEGeomsToODESpace(
   colliders : TGLSkeletonColliderList; space : PdxSpace);
 var
@@ -136,8 +115,6 @@ end;
 // ------------------ TSCODEBase ------------------
 // ------------------
 
-// WriteToFiler
-//
 procedure TSCODEBase.WriteToFiler(writer : TVirtualWriter);
 begin
   inherited WriteToFiler(writer);
@@ -146,8 +123,6 @@ begin
   end;
 end;
 
-// ReadFromFiler
-//
 procedure TSCODEBase.ReadFromFiler(reader : TVirtualReader);
 var
   archiveVersion : integer;
@@ -159,15 +134,11 @@ begin
   else RaiseFilerException(archiveVersion);
 end;
 
-// AddToSpace
-//
 procedure TSCODEBase.AddToSpace(Space : PdxSpace);
 begin
   AlignCollider;
 end;
 
-// AlignCollider
-//
 procedure TSCODEBase.AlignCollider;
 var
   R : TdMatrix3;
@@ -189,8 +160,6 @@ end;
 // ------------------ TSCODESphere ------------------
 // ------------------
 
- 
-//
 constructor TSCODESphere.Create;
 begin
   inherited;
@@ -198,8 +167,6 @@ begin
   AlignCollider;
 end;
 
-// WriteToFiler
-//
 procedure TSCODESphere.WriteToFiler(writer : TVirtualWriter);
 begin
   inherited WriteToFiler(writer);
@@ -209,8 +176,6 @@ begin
   end;
 end;
 
-// ReadFromFiler
-//
 procedure TSCODESphere.ReadFromFiler(reader : TVirtualReader);
 var
   archiveVersion : integer;
@@ -222,16 +187,12 @@ begin
   else RaiseFilerException(archiveVersion);
 end;
 
-// AddToSpace
-//
 procedure TSCODESphere.AddToSpace(Space : PdxSpace);
 begin
   FGeom:=dCreateSphere(Space, FRadius);
   inherited;
 end;
 
-// SetRadius
-//
 procedure TSCODESphere.SetRadius(const val : TdReal);
 begin
   if val<>FRadius then begin
@@ -246,8 +207,6 @@ end;
 // ------------------ TSCODECCylinder ------------------
 // ------------------
 
- 
-//
 constructor TSCODECCylinder.Create;
 begin
   inherited;
@@ -256,8 +215,6 @@ begin
   AlignCollider;
 end;
 
-// WriteToFiler
-//
 procedure TSCODECCylinder.WriteToFiler(writer : TVirtualWriter);
 begin
   inherited WriteToFiler(writer);
@@ -268,8 +225,6 @@ begin
   end;
 end;
 
-// ReadFromFiler
-//
 procedure TSCODECCylinder.ReadFromFiler(reader : TVirtualReader);
 var
   archiveVersion : integer;
@@ -282,16 +237,12 @@ begin
   end else RaiseFilerException(archiveVersion);
 end;
 
-// AddToSpace
-//
 procedure TSCODECCylinder.AddToSpace(Space : PdxSpace);
 begin
   FGeom:=dCreateCapsule(Space,FRadius,FLength);
   inherited;
 end;
 
-// SetRadius
-//
 procedure TSCODECCylinder.SetRadius(const val : Single);
 begin
   if val<>FRadius then begin
@@ -301,8 +252,6 @@ begin
   end;
 end;
 
-// SetLength
-//
 procedure TSCODECCylinder.SetLength(const val : Single);
 begin
   if val<>FLength then begin
@@ -316,8 +265,6 @@ end;
 // ------------------ TSCODEBox ------------------
 // ------------------
 
- 
-//
 constructor TSCODEBox.Create;
 begin
   inherited;
@@ -327,8 +274,6 @@ begin
   AlignCollider;
 end;
 
-// WriteToFiler
-//
 procedure TSCODEBox.WriteToFiler(writer : TVirtualWriter);
 begin
   inherited WriteToFiler(writer);
@@ -340,8 +285,6 @@ begin
   end;
 end;
 
-// ReadFromFiler
-//
 procedure TSCODEBox.ReadFromFiler(reader : TVirtualReader);
 var
   archiveVersion : integer;
@@ -355,16 +298,12 @@ begin
   end else RaiseFilerException(archiveVersion);
 end;
 
-// AddToSpace
-//
 procedure TSCODEBox.AddToSpace(Space : PdxSpace);
 begin
   FGeom:=dCreateBox(Space, FBoxWidth, FBoxHeight, FBoxDepth);
   inherited;
 end;
 
-// SetBoxWidth
-//
 procedure TSCODEBox.SetBoxWidth(const val : TdReal);
 begin
   if val<>FBoxWidth then begin
@@ -377,8 +316,6 @@ begin
   end;
 end;
 
-// SetBoxHeight
-//
 procedure TSCODEBox.SetBoxHeight(const val : TdReal);
 begin
   if val<>FBoxHeight then begin
@@ -391,8 +328,6 @@ begin
   end;
 end;
 
-// SetBoxDepth
-//
 procedure TSCODEBox.SetBoxDepth(const val : TdReal);
 begin
   if val<>FBoxDepth then begin
@@ -407,11 +342,7 @@ end;
 
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
   RegisterClasses([TSCODEBase,TSCODESphere,TSCODECCylinder,TSCODEBox]);

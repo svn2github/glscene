@@ -1228,11 +1228,11 @@ end;
 
 procedure TGLFile3DSMeshObject.BuildList(var ARci: TGLRenderContextInfo);
 begin
-  GL.PushMatrix;
+  gl.PushMatrix;
   if not FStatic then
-    GL.MultMatrixf(@FAnimTransf.ModelMatrix);
+    gl.MultMatrixf(@FAnimTransf.ModelMatrix);
   inherited;
-  GL.PopMatrix;
+  gl.PopMatrix;
 end;
 
 constructor TGLFile3DSOmniLightObject.Create;

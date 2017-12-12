@@ -458,15 +458,15 @@ var
     inc(i);
     topTPNext := topTPBase;
     bottomTPNext := bottomTPBase;
-    GL.Begin_(GL_TRIANGLE_STRIP);
-    GL.Normal3fv(@topNormal);
+    gl.Begin_(GL_TRIANGLE_STRIP);
+    gl.Normal3fv(@topNormal);
     xgl.TexCoord2fv(@topTPBase);
-    GL.Vertex3fv(@topBase);
+    gl.Vertex3fv(@topBase);
     while alpha < stopAlpha do
     begin
-      GL.Normal3fv(@bottomNormal);
+      gl.Normal3fv(@bottomNormal);
       xgl.TexCoord2fv(@bottomTPBase);
-      GL.Vertex3fv(@bottomBase);
+      gl.Vertex3fv(@bottomBase);
       nextAlpha := alpha + deltaAlpha;
       topTPNext.S := topTPNext.S + deltaS;
       bottomTPNext.S := bottomTPNext.S + deltaS;
@@ -482,18 +482,18 @@ var
       SetLocalNormals;
       inc(i);
       xgl.TexCoord2fv(@topTPNext);
-      GL.Normal3fv(@topNormal);
-      GL.Vertex3fv(@topNext);
+      gl.Normal3fv(@topNormal);
+      gl.Vertex3fv(@topNext);
       alpha := nextAlpha;
       topBase := topNext;
       topTPBase := topTPNext;
       bottomBase := bottomNext;
       bottomTPBase := bottomTPNext;
     end;
-    GL.Normal3fv(@bottomNormal);
+    gl.Normal3fv(@bottomNormal);
     xgl.TexCoord2fv(@bottomTPBase);
-    GL.Vertex3fv(@bottomBase);
-    GL.End_;
+    gl.Vertex3fv(@bottomBase);
+    gl.End_;
     firstStep := False;
   end;
 
@@ -1318,7 +1318,7 @@ begin
 
   if NodesColorMode <> pncmNone then
   begin
-    GL.ColorMaterial(GL_FRONT_AND_BACK, cPNCMtoEnum[NodesColorMode]);
+    gl.ColorMaterial(GL_FRONT_AND_BACK, cPNCMtoEnum[NodesColorMode]);
     rci.GLStates.Enable(stColorMaterial);
   end
   else
@@ -1569,31 +1569,31 @@ var
     bottomNext := bottomBase;
     topTPNext := topTPBase;
     bottomTPNext := bottomTPBase;
-    GL.Begin_(GL_TRIANGLE_STRIP);
-    GL.Normal3fv(@normTop);
+    gl.Begin_(GL_TRIANGLE_STRIP);
+    gl.Normal3fv(@normTop);
     xgl.TexCoord2fv(@topTPBase);
-    GL.Vertex3fv(@topBase);
+    gl.Vertex3fv(@topBase);
     for step := 1 to FStacks do
     begin
-      GL.Normal3fv(@normBottom);
+      gl.Normal3fv(@normBottom);
       xgl.TexCoord2fv(@bottomTPBase);
-      GL.Vertex3fv(@bottomBase);
+      gl.Vertex3fv(@bottomBase);
       topNext.Z := step * DeltaZ;
       bottomNext.Z := topNext.Z;
       topTPNext.T := topNext.Z;
       bottomTPNext.T := bottomNext.Z;
       xgl.TexCoord2fv(@topTPNext);
-      GL.Normal3fv(@normTop);
-      GL.Vertex3fv(@topNext);
+      gl.Normal3fv(@normTop);
+      gl.Vertex3fv(@topNext);
       topBase := topNext;
       topTPBase := topTPNext;
       bottomBase := bottomNext;
       bottomTPBase := bottomTPNext;
     end;
-    GL.Normal3fv(@normBottom);
+    gl.Normal3fv(@normBottom);
     xgl.TexCoord2fv(@bottomTPBase);
-    GL.Vertex3fv(@bottomBase);
-    GL.End_;
+    gl.Vertex3fv(@bottomBase);
+    gl.End_;
   end;
 
 var
@@ -1650,10 +1650,10 @@ begin
     // tessellate stop polygon
     if espStopPolygon in FParts then
     begin
-      GL.PushMatrix;
-      GL.Translatef(0, 0, FHeight);
+      gl.PushMatrix;
+      gl.Translatef(0, 0, FHeight);
       RenderTesselatedPolygon(true, @normal, invertedNormals);
-      GL.PopMatrix;
+      gl.PopMatrix;
     end;
     // tessellate start polygon
     if espStartPolygon in FParts then

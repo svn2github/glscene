@@ -500,7 +500,7 @@ procedure tessIssueVertex(vertexData: Pointer);
 {$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF UNIX} cdecl;{$ENDIF}
 begin
   xgl.TexCoord2fv(vertexData);
-  GL.Vertex3fv(vertexData);
+  gl.Vertex3fv(vertexData);
 end;
 
 procedure tessCombine(coords: PDoubleVector; vertex_data: Pointer;
@@ -664,18 +664,18 @@ begin
   vVertexPool := TVectorPool.Create(n, Sizeof(TAffineVector));
   tess := gluNewTess;
   try
-    gluTessCallback(tess, GLU_TESS_BEGIN, @GL.Begin_);
+    gluTessCallback(tess, GLU_TESS_BEGIN, @gl.Begin_);
     if textured then
       gluTessCallback(tess, GLU_TESS_VERTEX, @tessIssueVertex)
     else
-      gluTessCallback(tess, GLU_TESS_VERTEX, @GL.Vertex3fv);
-    gluTessCallback(tess, GLU_TESS_END, @GL.End_);
+      gluTessCallback(tess, GLU_TESS_VERTEX, @gl.Vertex3fv);
+    gluTessCallback(tess, GLU_TESS_END, @gl.End_);
     gluTessCallback(tess, GLU_TESS_ERROR, @tessError);
     gluTessCallback(tess, GLU_TESS_COMBINE, @tessCombine);
     // Issue normal
     if Assigned(normal) then
     begin
-      GL.Normal3fv(PGLFloat(normal));
+      gl.Normal3fv(PGLFloat(normal));
       gluTessNormal(tess, normal^.X, normal^.Y, normal^.Z);
     end;
     gluTessProperty(Tess, GLU_TESS_WINDING_RULE, GLU_TESS_WINDING_POSITIVE);

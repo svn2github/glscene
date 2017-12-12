@@ -146,7 +146,7 @@ end;
 
 procedure TGLDemoForm.MainViewerBeforeRender(Sender: TObject);
 begin
-  if not GL.EXT_framebuffer_multisample then
+  if not gl.EXT_framebuffer_multisample then
   begin
     ShowMessage
       ('Sorry, your hardware do not support Multisampling');

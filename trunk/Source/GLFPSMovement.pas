@@ -865,37 +865,37 @@ var
   CollisionState: TCollisionState;
 begin
   // caption:= IntToStr(CollisionStates.Count);
-  GL.Color3f(1, 1, 1);
+  gl.Color3f(1, 1, 1);
   rci.GLStates.Disable(stLighting);
   // draw position trail
-  GL.Begin_(GL_LINE_STRIP);
+  gl.Begin_(GL_LINE_STRIP);
   for i := 0 to CollisionStates.count - 1 do
   begin
     CollisionState := TCollisionState(CollisionStates.Items[i]);
     x := CollisionState.Position.X;
     y := CollisionState.Position.Y;
     z := CollisionState.Position.Z;
-    GL.Vertex3f(x, y, z);
+    gl.Vertex3f(x, y, z);
   end;
-  GL.End_();
+  gl.End_();
   // draw normals trail
-  GL.Begin_(GL_LINES);
+  gl.Begin_(GL_LINES);
   for i := 0 to CollisionStates.count - 1 do
   begin
     CollisionState := TCollisionState(CollisionStates.Items[i]);
     t := (Manager.DisplayTime - (tickCount - CollisionState.Time)) /
       Manager.DisplayTime;
-    GL.Color3f(t, t, t);
-    GL.Vertex3f(CollisionState.Contact.intPoint.X,
+    gl.Color3f(t, t, t);
+    gl.Vertex3f(CollisionState.Contact.intPoint.X,
       CollisionState.Contact.intPoint.Y, CollisionState.Contact.intPoint.Z);
-    GL.Vertex3f(CollisionState.Contact.intPoint.X +
+    gl.Vertex3f(CollisionState.Contact.intPoint.X +
       CollisionState.Contact.intNormal.X, // GLSphere4.Radius,
       CollisionState.Contact.intPoint.Y + CollisionState.Contact.intNormal.Y,
       // GLSphere4.Radius,
       CollisionState.Contact.intPoint.Z + CollisionState.Contact.intNormal.Z);
     // GLSphere4.Radius);
   end;
-  GL.End_();
+  gl.End_();
 end;
 
 // ------------------------------------------------------------------

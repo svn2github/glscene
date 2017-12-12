@@ -1504,7 +1504,7 @@ begin
       begin
         ARci.GLStates.ActiveTexture := 0;
         FTexProp.Apply(ARci);
-        GL.TexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,
+        gl.TexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,
           cTextureMode[FTextureMode]);
       end;
     end;
@@ -1962,7 +1962,7 @@ begin
     transferMethod := 1
   else
     transferMethod := 0;
-  if GL.EXT_direct_state_access then
+  if gl.EXT_direct_state_access then
     transferMethod := transferMethod + 2;
 
   bContinueStreaming := False;
@@ -2039,7 +2039,7 @@ begin
       FLODBiasFract := FLODBiasFract + (OldBaseLevel - FBaseLevel);
 
     if FApplicableSampler.IsValid then
-      GL.SamplerParameterf(FApplicableSampler.Handle.Handle,
+      gl.SamplerParameterf(FApplicableSampler.Handle.Handle,
         GL_TEXTURE_LOD_BIAS, FLODBias + FLODBiasFract)
     else
       // To refrash texture parameters when sampler object not supported
@@ -2528,8 +2528,7 @@ begin
       if FHandle.IsDataNeedUpdate then
         with Sender.GL do
         begin
-          SamplerParameterfv(ID, GL_TEXTURE_BORDER_COLOR,
-            FBorderColor.AsAddress);
+          SamplerParameterfv(ID, GL_TEXTURE_BORDER_COLOR, FBorderColor.AsAddress);
           SamplerParameteri(ID, GL_TEXTURE_WRAP_S, cTextureWrapMode[FWrap[0]]);
           SamplerParameteri(ID, GL_TEXTURE_WRAP_T, cTextureWrapMode[FWrap[1]]);
           SamplerParameteri(ID, GL_TEXTURE_WRAP_R, cTextureWrapMode[FWrap[2]]);
@@ -2774,7 +2773,7 @@ procedure TGLTextureCombiner.DoOnPrepare(Sender: TGLContext);
 begin
   if IsDesignTime and FDefferedInit then
     exit;
-  if Sender.GL.ARB_multitexture then
+  if Sender.gl.ARB_multitexture then
   begin
     FHandle.AllocateHandle;
     if FHandle.IsDataNeedUpdate then
@@ -3211,7 +3210,7 @@ begin
           LDir := ARci.GLStates.LightPosition[FLightSourceIndex];
           LDir := VectorTransform(LDir, ARci.PipelineTransformation.InvModelMatrix^);
           NormalizeVector(LDir);
-          GL.TexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, @LDir);
+          gl.TexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, @LDir);
         end;
         U := U or (1 shl N);
       end;
@@ -3220,7 +3219,7 @@ begin
     if Assigned(FLibAsmProg) then
     begin
       FLibAsmProg.Handle.Bind;
-      GL.Enable(GL_VERTEX_PROGRAM_ARB);
+      gl.Enable(GL_VERTEX_PROGRAM_ARB);
       if Assigned(GetMaterial.FOnAsmProgSetting) then
         GetMaterial.FOnAsmProgSetting(Self.FLibAsmProg, ARci);
     end;
@@ -3437,7 +3436,7 @@ begin
   ARci.GLStates.ActiveTexture := 0;
 
   if Assigned(FLibAsmProg) then
-    GL.Disable(GL_VERTEX_PROGRAM_ARB);
+    gl.Disable(GL_VERTEX_PROGRAM_ARB);
 end;
 
 { TVXTextureProperties }
@@ -3535,7 +3534,7 @@ begin
 
       if ARci.currentMaterialLevel < mlSM3 then
       begin
-        GL.TexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, FEnvColor.AsAddress);
+        gl.TexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, FEnvColor.AsAddress);
         ApplyMappingMode;
         if ARci.currentMaterialLevel = mlFixedFunction then
           XGL.MapTexCoordToMain;
@@ -4025,14 +4024,13 @@ end;
 procedure TGLTextureProperties.UnApplyMappingMode;
 begin
   if MappingMode <> tmmUser then
-    with GL do
     begin
-      Disable(GL_TEXTURE_GEN_S);
-      Disable(GL_TEXTURE_GEN_T);
-      if EXT_texture3D or ARB_texture_cube_map then
+      gl.Disable(GL_TEXTURE_GEN_S);
+      gl.Disable(GL_TEXTURE_GEN_T);
+      if gl.EXT_texture3D or gl.ARB_texture_cube_map then
       begin
-        Disable(GL_TEXTURE_GEN_R);
-        Disable(GL_TEXTURE_GEN_Q);
+        gl.Disable(GL_TEXTURE_GEN_R);
+        gl.Disable(GL_TEXTURE_GEN_Q);
       end;
     end;
 end;
@@ -4554,7 +4552,7 @@ begin
               // Get uniforms
               LUniforms := TPersistentObjectList.Create;
 
-              GL.GetProgramiv(ID, GL_ACTIVE_UNIFORMS, @C);
+              gl.GetProgramiv(ID, GL_ACTIVE_UNIFORMS, @C);
               for I := 0 to C - 1 do
               begin
                 GetActiveUniform(
@@ -4970,17 +4968,17 @@ end;
 
 class function TGLShaderModel3.IsSupported: Boolean;
 begin
-  Result := GL.ARB_shader_objects;
+  Result := gl.ARB_shader_objects;
 end;
 
 class function TGLShaderModel4.IsSupported: Boolean;
 begin
-  Result := GL.EXT_gpu_shader4;
+  Result := gl.EXT_gpu_shader4;
 end;
 
 class function TGLShaderModel5.IsSupported: Boolean;
 begin
-  Result := GL.ARB_gpu_shader5;
+  Result := gl.ARB_gpu_shader5;
 end;
 
 procedure BeginPatch(mode: Cardinal);{$IFDEF MSWINDOWS} stdcall{$ELSE}cdecl{$ENDIF};
@@ -4993,14 +4991,14 @@ begin
     or (mode = GL_QUADS) then
   begin
     if mode = GL_QUADS then
-      GL.PatchParameteri(GL_PATCH_VERTICES, 4)
+      gl.PatchParameteri(GL_PATCH_VERTICES, 4)
     else
-      GL.PatchParameteri(GL_PATCH_VERTICES, 3);
+      gl.PatchParameteri(GL_PATCH_VERTICES, 3);
     vStoreBegin(GL_PATCHES);
   end
   else
   begin
-    GL.Begin_ := vStoreBegin;
+    gl.Begin_ := vStoreBegin;
     GLSLogger.LogError('glBegin called with unsupported primitive for tessellation');
     Abort;
   end;
@@ -5010,8 +5008,8 @@ procedure TGLShaderModel5.Apply(var ARci: TGLRenderContextInfo);
 begin
   if Assigned(FShaders[shtControl]) or Assigned(FShaders[shtEvaluation]) then
   begin
-    vStoreBegin := GL.Begin_;
-    GL.Begin_ := BeginPatch;
+    vStoreBegin := gl.Begin_;
+    gl.Begin_ := BeginPatch;
     ARci.amalgamating := True;
   end;
   inherited;
@@ -5021,7 +5019,7 @@ procedure TGLShaderModel5.UnApply(var ARci: TGLRenderContextInfo);
 begin
   inherited;
   if Assigned(FShaders[shtControl]) or Assigned(FShaders[shtEvaluation]) then
-    GL.Begin_ := vStoreBegin;
+    gl.Begin_ := vStoreBegin;
   ARci.amalgamating := False;
 end;
 
@@ -5376,7 +5374,7 @@ procedure TGLShaderUniformTexture.Apply(var ARci: TGLRenderContextInfo);
       begin
         if TextureBinding[I, FTarget] = ID then
         begin
-          GL.Uniform1i(FLocation, I);
+          gl.Uniform1i(FLocation, I);
           ActiveTexture := I;
           Result := True;
           exit;
@@ -5388,7 +5386,7 @@ procedure TGLShaderUniformTexture.Apply(var ARci: TGLRenderContextInfo);
         if TextureBinding[I, FTarget] = 0 then
         begin
           TextureBinding[I, FTarget] := ID;
-          GL.Uniform1i(FLocation, I);
+          gl.Uniform1i(FLocation, I);
           ActiveTexture := I;
           Result := True;
           exit;
@@ -5409,7 +5407,7 @@ procedure TGLShaderUniformTexture.Apply(var ARci: TGLRenderContextInfo);
 
       TextureBinding[J, FTarget] := ID;
       ActiveTexture := J;
-      GL.Uniform1i(FLocation, J);
+      gl.Uniform1i(FLocation, J);
       Result := True;
       exit;
     end;
@@ -5900,42 +5898,42 @@ end;
 function TGLShaderUniform.GetFloat: Single;
 begin
   // TODO: Type checking
-  GL.GetUniformfv(GetProgram, FLocation, @Result);
+  gl.GetUniformfv(GetProgram, FLocation, @Result);
 end;
 
 function TGLShaderUniform.GetInt: TGLint;
 begin
-  GL.GetUniformiv(GetProgram, FLocation, @Result);
+  gl.GetUniformiv(GetProgram, FLocation, @Result);
 end;
 
 function TGLShaderUniform.GetIVec2: TVector2i;
 begin
-  GL.GetUniformiv(GetProgram, FLocation, @Result);
+  gl.GetUniformiv(GetProgram, FLocation, @Result);
 end;
 
 function TGLShaderUniform.GetIVec3: TVector3i;
 begin
-  GL.GetUniformiv(GetProgram, FLocation, @Result);
+  gl.GetUniformiv(GetProgram, FLocation, @Result);
 end;
 
 function TGLShaderUniform.GetIVec4: TVector4i;
 begin
-  GL.GetUniformiv(GetProgram, FLocation, @Result);
+  gl.GetUniformiv(GetProgram, FLocation, @Result);
 end;
 
 function TGLShaderUniform.GetMat2: TMatrix2f;
 begin
-  GL.GetUniformfv(GetProgram, FLocation, @Result);
+  gl.GetUniformfv(GetProgram, FLocation, @Result);
 end;
 
 function TGLShaderUniform.GetMat3: TMatrix3f;
 begin
-  GL.GetUniformfv(GetProgram, FLocation, @Result);
+  gl.GetUniformfv(GetProgram, FLocation, @Result);
 end;
 
 function TGLShaderUniform.GetMat4: TMatrix4f;
 begin
-  GL.GetUniformfv(GetProgram, FLocation, @Result);
+  gl.GetUniformfv(GetProgram, FLocation, @Result);
 end;
 
 function TGLShaderUniform.GetProgram: Cardinal;
@@ -5972,37 +5970,37 @@ end;
 
 function TGLShaderUniform.GetUInt: Cardinal;
 begin
-  GL.GetUniformuiv(GetProgram, FLocation, @Result);
+  gl.GetUniformuiv(GetProgram, FLocation, @Result);
 end;
 
 function TGLShaderUniform.GetUVec2: TVector2ui;
 begin
-  GL.GetUniformuiv(GetProgram, FLocation, @Result);
+  gl.GetUniformuiv(GetProgram, FLocation, @Result);
 end;
 
 function TGLShaderUniform.GetUVec3: TVector3ui;
 begin
-  GL.GetUniformuiv(GetProgram, FLocation, @Result);
+  gl.GetUniformuiv(GetProgram, FLocation, @Result);
 end;
 
 function TGLShaderUniform.GetUVec4: TVector4ui;
 begin
-  GL.GetUniformuiv(GetProgram, FLocation, @Result);
+  gl.GetUniformuiv(GetProgram, FLocation, @Result);
 end;
 
 function TGLShaderUniform.GetVec2: TVector2f;
 begin
-  GL.GetUniformfv(GetProgram, FLocation, @Result);
+  gl.GetUniformfv(GetProgram, FLocation, @Result);
 end;
 
 function TGLShaderUniform.GetVec3: TVector3f;
 begin
-  GL.GetUniformfv(GetProgram, FLocation, @Result);
+  gl.GetUniformfv(GetProgram, FLocation, @Result);
 end;
 
 function TGLShaderUniform.GetVec4: TVector;
 begin
-  GL.GetUniformfv(GetProgram, FLocation, @Result);
+  gl.GetUniformfv(GetProgram, FLocation, @Result);
 end;
 
 procedure TGLShaderUniform.PopProgram;
@@ -6034,7 +6032,7 @@ end;
 procedure TGLShaderUniform.SetFloat(const Value: TGLFloat);
 begin
   PushProgram;
-  GL.Uniform1f(FLocation, Value);
+  gl.Uniform1f(FLocation, Value);
   PopProgram;
 end;
 
@@ -6042,63 +6040,63 @@ procedure TGLShaderUniform.SetFloatArray(const Values: PGLFloat;
   Count: Integer);
 begin
   PushProgram;
-  GL.Uniform1fv(FLocation, Count, Values);
+  gl.Uniform1fv(FLocation, Count, Values);
   PopProgram;
 end;
 
 procedure TGLShaderUniform.SetInt(const Value: Integer);
 begin
   PushProgram;
-  GL.Uniform1i(FLocation, Value);
+  gl.Uniform1i(FLocation, Value);
   PopProgram;
 end;
 
 procedure TGLShaderUniform.SetIntArray(const Values: PGLInt; Count: Integer);
 begin
   PushProgram;
-  GL.Uniform1iv(FLocation, Count, Values);
+  gl.Uniform1iv(FLocation, Count, Values);
   PopProgram;
 end;
 
 procedure TGLShaderUniform.SetIVec2(const Value: TVector2i);
 begin
   PushProgram;
-  GL.Uniform2i(FLocation, Value.X, Value.Y);
+  gl.Uniform2i(FLocation, Value.X, Value.Y);
   PopProgram;
 end;
 
 procedure TGLShaderUniform.SetIVec3(const Value: TVector3i);
 begin
   PushProgram;
-  GL.Uniform3i(FLocation, Value.X, Value.Y, Value.Z);
+  gl.Uniform3i(FLocation, Value.X, Value.Y, Value.Z);
   PopProgram;
 end;
 
 procedure TGLShaderUniform.SetIVec4(const Value: TVector4i);
 begin
   PushProgram;
-  GL.Uniform4i(FLocation, Value.X, Value.Y, Value.Z, Value.W);
+  gl.Uniform4i(FLocation, Value.X, Value.Y, Value.Z, Value.W);
   PopProgram;
 end;
 
 procedure TGLShaderUniform.SetMat2(const Value: TMatrix2f);
 begin
   PushProgram;
-  GL.UniformMatrix2fv(FLocation, 1, False, @Value);
+  gl.UniformMatrix2fv(FLocation, 1, False, @Value);
   PopProgram;
 end;
 
 procedure TGLShaderUniform.SetMat3(const Value: TMatrix3f);
 begin
   PushProgram;
-  GL.UniformMatrix2fv(FLocation, 1, False, @Value);
+  gl.UniformMatrix2fv(FLocation, 1, False, @Value);
   PopProgram;
 end;
 
 procedure TGLShaderUniform.SetMat4(const Value: TMatrix4f);
 begin
   PushProgram;
-  GL.UniformMatrix4fv(FLocation, 1, False, @Value);
+  gl.UniformMatrix4fv(FLocation, 1, False, @Value);
   PopProgram;
 end;
 
@@ -6110,56 +6108,56 @@ end;
 procedure TGLShaderUniform.SetUInt(const Value: Cardinal);
 begin
   PushProgram;
-  GL.Uniform1ui(FLocation, Value);
+  gl.Uniform1ui(FLocation, Value);
   PopProgram;
 end;
 
 procedure TGLShaderUniform.SetUIntArray(const Values: PGLUInt; Count: Integer);
 begin
   PushProgram;
-  GL.Uniform1uiv(FLocation, Count, Values);
+  gl.Uniform1uiv(FLocation, Count, Values);
   PopProgram;
 end;
 
 procedure TGLShaderUniform.SetUVec2(const Value: TVector2ui);
 begin
   PushProgram;
-  GL.Uniform2ui(FLocation, Value.X, Value.Y);
+  gl.Uniform2ui(FLocation, Value.X, Value.Y);
   PopProgram;
 end;
 
 procedure TGLShaderUniform.SetUVec3(const Value: TVector3ui);
 begin
   PushProgram;
-  GL.Uniform3ui(FLocation, Value.X, Value.Y, Value.Z);
+  gl.Uniform3ui(FLocation, Value.X, Value.Y, Value.Z);
   PopProgram;
 end;
 
 procedure TGLShaderUniform.SetUVec4(const Value: TVector4ui);
 begin
   PushProgram;
-  GL.Uniform4ui(FLocation, Value.X, Value.Y, Value.Z, Value.W);
+  gl.Uniform4ui(FLocation, Value.X, Value.Y, Value.Z, Value.W);
   PopProgram;
 end;
 
 procedure TGLShaderUniform.SetVec2(const Value: TVector2f);
 begin
   PushProgram;
-  GL.Uniform2f(FLocation, Value.X, Value.Y);
+  gl.Uniform2f(FLocation, Value.X, Value.Y);
   PopProgram;
 end;
 
 procedure TGLShaderUniform.SetVec3(const Value: TVector3f);
 begin
   PushProgram;
-  GL.Uniform3f(FLocation, Value.X, Value.Y, Value.Z);
+  gl.Uniform3f(FLocation, Value.X, Value.Y, Value.Z);
   PopProgram;
 end;
 
 procedure TGLShaderUniform.SetVec4(const Value: TVector4f);
 begin
   PushProgram;
-  GL.Uniform4f(FLocation, Value.X, Value.Y, Value.Z, Value.W);
+  gl.Uniform4f(FLocation, Value.X, Value.Y, Value.Z, Value.W);
   PopProgram;
 end;
 
@@ -6177,96 +6175,96 @@ end;
 { TVXShaderUniformDSA }
 procedure TGLShaderUniformDSA.SetFloat(const Value: TGLFloat);
 begin
-  GL.ProgramUniform1f(GetProgram, FLocation, Value);
+  gl.ProgramUniform1f(GetProgram, FLocation, Value);
 end;
 
 procedure TGLShaderUniformDSA.SetFloatArray(const Values: PGLFloat;
   Count: Integer);
 begin
-  GL.ProgramUniform1fv(GetProgram, FLocation, Count, Values);
+  gl.ProgramUniform1fv(GetProgram, FLocation, Count, Values);
 end;
 
 procedure TGLShaderUniformDSA.SetInt(const Value: Integer);
 begin
-  GL.ProgramUniform1i(GetProgram, FLocation, Value);
+  gl.ProgramUniform1i(GetProgram, FLocation, Value);
 end;
 
 procedure TGLShaderUniformDSA.SetIntArray(const Values: PGLInt; Count: Integer);
 begin
-  GL.ProgramUniform1iv(GetProgram, FLocation, Count, Values);
+  gl.ProgramUniform1iv(GetProgram, FLocation, Count, Values);
 end;
 
 procedure TGLShaderUniformDSA.SetIVec2(const Value: TVector2i);
 begin
-  GL.ProgramUniform2i(GetProgram, FLocation, Value.X, Value.Y);
+  gl.ProgramUniform2i(GetProgram, FLocation, Value.X, Value.Y);
 end;
 
 procedure TGLShaderUniformDSA.SetIVec3(const Value: TVector3i);
 begin
-  GL.ProgramUniform3i(GetProgram, FLocation, Value.X, Value.Y, Value.Z);
+  gl.ProgramUniform3i(GetProgram, FLocation, Value.X, Value.Y, Value.Z);
 end;
 
 procedure TGLShaderUniformDSA.SetIVec4(const Value: TVector4i);
 begin
-  GL.ProgramUniform4i(GetProgram, FLocation, Value.X, Value.Y, Value.Z,
+  gl.ProgramUniform4i(GetProgram, FLocation, Value.X, Value.Y, Value.Z,
     Value.W);
 end;
 
 procedure TGLShaderUniformDSA.SetMat2(const Value: TMatrix2f);
 begin
-  GL.ProgramUniformMatrix2fv(GetProgram, FLocation, 1, False, @Value);
+  gl.ProgramUniformMatrix2fv(GetProgram, FLocation, 1, False, @Value);
 end;
 
 procedure TGLShaderUniformDSA.SetMat3(const Value: TMatrix3f);
 begin
-  GL.ProgramUniformMatrix3fv(GetProgram, FLocation, 1, False, @Value);
+  gl.ProgramUniformMatrix3fv(GetProgram, FLocation, 1, False, @Value);
 end;
 
 procedure TGLShaderUniformDSA.SetMat4(const Value: TMatrix4f);
 begin
-  GL.ProgramUniformMatrix4fv(GetProgram, FLocation, 1, False, @Value);
+  gl.ProgramUniformMatrix4fv(GetProgram, FLocation, 1, False, @Value);
 end;
 
 procedure TGLShaderUniformDSA.SetUInt(const Value: Cardinal);
 begin
-  GL.ProgramUniform1ui(GetProgram, FLocation, Value);
+  gl.ProgramUniform1ui(GetProgram, FLocation, Value);
 end;
 
 procedure TGLShaderUniformDSA.SetUIntArray(const Values: PGLUInt;
   Count: Integer);
 begin
-  GL.ProgramUniform1uiv(GetProgram, FLocation, Count, Values);
+  gl.ProgramUniform1uiv(GetProgram, FLocation, Count, Values);
 end;
 
 procedure TGLShaderUniformDSA.SetUVec2(const Value: TVector2ui);
 begin
-  GL.ProgramUniform2ui(GetProgram, FLocation, Value.X, Value.Y);
+  gl.ProgramUniform2ui(GetProgram, FLocation, Value.X, Value.Y);
 end;
 
 procedure TGLShaderUniformDSA.SetUVec3(const Value: TVector3ui);
 begin
-  GL.ProgramUniform3ui(GetProgram, FLocation, Value.X, Value.Y, Value.Z);
+  gl.ProgramUniform3ui(GetProgram, FLocation, Value.X, Value.Y, Value.Z);
 end;
 
 procedure TGLShaderUniformDSA.SetUVec4(const Value: TVector4ui);
 begin
-  GL.ProgramUniform4ui(GetProgram, FLocation, Value.X, Value.Y, Value.Z,
+  gl.ProgramUniform4ui(GetProgram, FLocation, Value.X, Value.Y, Value.Z,
     Value.W);
 end;
 
 procedure TGLShaderUniformDSA.SetVec2(const Value: TVector2f);
 begin
-  GL.ProgramUniform2f(GetProgram, FLocation, Value.X, Value.Y);
+  gl.ProgramUniform2f(GetProgram, FLocation, Value.X, Value.Y);
 end;
 
 procedure TGLShaderUniformDSA.SetVec3(const Value: TVector3f);
 begin
-  GL.ProgramUniform3f(GetProgram, FLocation, Value.X, Value.Y, Value.Z);
+  gl.ProgramUniform3f(GetProgram, FLocation, Value.X, Value.Y, Value.Z);
 end;
 
 procedure TGLShaderUniformDSA.SetVec4(const Value: TVector4f);
 begin
-  GL.ProgramUniform4f(GetProgram, FLocation, Value.X, Value.Y, Value.Z,
+  gl.ProgramUniform4f(GetProgram, FLocation, Value.X, Value.Y, Value.Z,
     Value.W);
 end;
 
@@ -6446,7 +6444,7 @@ begin
 
   // Check target support
   if FOnlyWrite and (LTarget = ttTexture2DMultisample)
-    and not Sender.GL.EXT_framebuffer_multisample then
+    and not Sender.gl.EXT_framebuffer_multisample then
   begin
     FIsValid := False;
     exit;
@@ -6523,7 +6521,7 @@ begin
         GL_TEXTURE_1D:
           for Level := 0 to MaxLevel - 1 do
           begin
-            GL.TexImage1D(glTarget, Level, glFormat, w, 0, GL_RGBA,
+            gl.TexImage1D(glTarget, Level, glFormat, w, 0, GL_RGBA,
               GL_UNSIGNED_BYTE, nil);
             Div2(w);
           end;
@@ -6531,7 +6529,7 @@ begin
         GL_TEXTURE_2D:
           for Level := 0 to MaxLevel - 1 do
           begin
-            GL.TexImage2D(glTarget, Level, glFormat, w, h, 0, GL_RGBA,
+            gl.TexImage2D(glTarget, Level, glFormat, w, h, 0, GL_RGBA,
               GL_UNSIGNED_BYTE, nil);
             Div2(w);
             Div2(h);
@@ -6539,14 +6537,14 @@ begin
 
         GL_TEXTURE_RECTANGLE:
           begin
-            GL.TexImage2D(glTarget, 0, glFormat, w, h, 0, GL_RGBA,
+            gl.TexImage2D(glTarget, 0, glFormat, w, h, 0, GL_RGBA,
               GL_UNSIGNED_BYTE, nil);
           end;
 
         GL_TEXTURE_3D:
           for Level := 0 to MaxLevel - 1 do
           begin
-            GL.TexImage3D(glTarget, Level, glFormat, w, h, d, 0, GL_RGBA,
+            gl.TexImage3D(glTarget, Level, glFormat, w, h, d, 0, GL_RGBA,
               GL_UNSIGNED_BYTE, nil);
             Div2(w);
             Div2(h);
@@ -6558,7 +6556,7 @@ begin
           begin
             for glFace := GL_TEXTURE_CUBE_MAP_POSITIVE_X to
               GL_TEXTURE_CUBE_MAP_NEGATIVE_Z do
-              GL.TexImage2D(glFace, Level, glFormat, w, w, 0, GL_RGBA,
+              gl.TexImage2D(glFace, Level, glFormat, w, w, 0, GL_RGBA,
                 GL_UNSIGNED_BYTE, nil);
             Div2(w);
           end;
@@ -6566,7 +6564,7 @@ begin
         GL_TEXTURE_1D_ARRAY:
           for Level := 0 to MaxLevel - 1 do
           begin
-            GL.TexImage2D(glTarget, Level, glFormat, w, h, 0, GL_RGBA,
+            gl.TexImage2D(glTarget, Level, glFormat, w, h, 0, GL_RGBA,
               GL_UNSIGNED_BYTE, nil);
             Div2(w);
           end;
@@ -6574,7 +6572,7 @@ begin
         GL_TEXTURE_2D_ARRAY:
           for Level := 0 to MaxLevel - 1 do
           begin
-            GL.TexImage3D(glTarget, Level, glFormat, w, h, d, 0, GL_RGBA,
+            gl.TexImage3D(glTarget, Level, glFormat, w, h, d, 0, GL_RGBA,
               GL_UNSIGNED_BYTE, nil);
             Div2(w);
             Div2(h);
@@ -6583,7 +6581,7 @@ begin
         GL_TEXTURE_CUBE_MAP_ARRAY:
           for Level := 0 to MaxLevel - 1 do
           begin
-            GL.TexImage3D(glTarget, Level, glFormat, w, w, d, 0, GL_RGBA,
+            gl.TexImage3D(glTarget, Level, glFormat, w, w, d, 0, GL_RGBA,
               GL_UNSIGNED_BYTE, nil);
             Div2(w);
           end;
@@ -6593,9 +6591,9 @@ begin
       FOnlyWrite := False;
     end; // of texture
 
-  if GL.GetError <> GL_NO_ERROR then
+  if gl.GetError <> GL_NO_ERROR then
   begin
-    GL.ClearError;
+    gl.ClearError;
     GLSLogger.LogErrorFmt('Unable to create attachment "%s"', [Self.Name]);
     exit;
   end

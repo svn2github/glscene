@@ -592,7 +592,7 @@ var
   sh, h: single;
   HD: TGLHeightData;
   Size: integer;
-  nmRow: PGLPixel32Array;
+  nmRow: PPixel32Array;
   ctr: integer;
   px, py: integer;
   lum: byte;

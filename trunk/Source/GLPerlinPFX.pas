@@ -196,7 +196,7 @@ procedure TGLPerlinPFXManager.PrepareImage(bmp32: TGLBitmap32;
     x, y, d: Integer;
     is2, f, fy, pf, nBase, nAmp, df, dfg: Single;
     invGamma: Single;
-    scanLine: PGLPixel32Array;
+    scanLine: PPixel32Array;
     gotIntensityCorrection: Boolean;
   begin
     s2 := s shr 1;

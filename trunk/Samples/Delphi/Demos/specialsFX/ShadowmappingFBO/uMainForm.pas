@@ -159,7 +159,7 @@ end;
 
 procedure TForm1.GLSceneViewer1BeforeRender(Sender: TObject);
 begin
-  if not (GLSceneViewer1.Buffer.RenderingContext.GL.EXT_framebuffer_object) then
+  if not (GLSceneViewer1.Buffer.RenderingContext.gl.EXT_framebuffer_object) then
   begin
     ShowMessage('Sorry, this demo requires GL_EXT_framebuffer_object and either');
     Close;
@@ -170,13 +170,13 @@ procedure TForm1.GLSLShader1Apply(Shader: TGLCustomGLSLShader);
 begin
   Shader.Param['ShadowMap'].AsTexture2D[0] := GLMaterialLibrary1.TextureByName(LightFBORenderer.DepthTextureName);
   // set compare to none so we can read off the depth value directly
-  GL.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE_ARB, GL_NONE);
+  gl.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE_ARB, GL_NONE);
 end;
 
 procedure TForm1.GLSLShader1UnApply(Shader: TGLCustomGLSLShader; var ThereAreMorePasses: Boolean);
 begin
   // reset the compare mode to default
-  GL.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE_ARB, GL_COMPARE_R_TO_TEXTURE_ARB);
+  gl.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE_ARB, GL_COMPARE_R_TO_TEXTURE_ARB);
 end;
 
 procedure TForm1.GLSLShader2Apply(Shader: TGLCustomGLSLShader);

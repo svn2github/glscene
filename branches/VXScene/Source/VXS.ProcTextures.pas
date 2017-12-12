@@ -127,7 +127,7 @@ end;
 procedure TVXProcTextureNoise.UpdateNoise;
 var
   X, Y, C: Integer;
-  Line: PGLPixel32Array;
+  Line: PPixel32Array;
   nf: Single;
   n: Byte;
 

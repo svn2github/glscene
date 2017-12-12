@@ -492,10 +492,10 @@ type
 
    procedure IssueQuad(col, row : Integer);
    begin
-      xgl.TexCoord2f(col, row);      GL.Vertex2f(col, row);
-      xgl.TexCoord2f(col+1, row);    GL.Vertex2f(col+1, row);
-      xgl.TexCoord2f(col+1, row+1);  GL.Vertex2f(col+1, row+1);
-      xgl.TexCoord2f(col, row+1);    GL.Vertex2f(col, row+1);
+      xgl.TexCoord2f(col, row);      gl.Vertex2f(col, row);
+      xgl.TexCoord2f(col+1, row);    gl.Vertex2f(col+1, row);
+      xgl.TexCoord2f(col+1, row+1);  gl.Vertex2f(col+1, row+1);
+      xgl.TexCoord2f(col, row+1);    gl.Vertex2f(col, row+1);
    end;
 
 var
@@ -506,7 +506,7 @@ var
 begin
    if MaterialLibrary=nil then Exit;
    // initialize infos
-   GL.Normal3fv(@ZVector);
+   gl.Normal3fv(@ZVector);
    if FNoZWrite then
       rci.GLStates.DepthWriteMask := False;
    if SortByMaterials then begin
@@ -534,10 +534,10 @@ begin
             libMat:=MaterialLibrary.Materials[i];
             libMat.Apply(rci);
             repeat
-               GL.Begin_(GL_QUADS);
+               gl.Begin_(GL_QUADS);
                with quadInfos[i] do for j:=0 to x.Count-1 do
                   IssueQuad(x[j], y[j]);
-               GL.End_;
+               gl.End_;
             until not libMat.UnApply(rci);
          end;
          quadInfos[i].x.Free;
@@ -554,9 +554,9 @@ begin
                   libMat:=MaterialLibrary.Materials[t];
                   libMat.Apply(rci);
                   repeat
-                     GL.Begin_(GL_QUADS);
+                     gl.Begin_(GL_QUADS);
                      IssueQuad(col, row);
-                     GL.End_;
+                     gl.End_;
                   until not libMat.UnApply(rci);
                end;
             end;

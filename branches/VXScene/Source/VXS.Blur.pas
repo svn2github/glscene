@@ -247,7 +247,7 @@ var
   refsiz: single;
   BMP: TVXBitmap32;
   x, y: integer;
-  line: PGLPixel32Array;
+  line: PPixel32Array;
   by: Integer;
   bp: Integer;
   DoBlur: Boolean;
@@ -256,7 +256,7 @@ var
   var
     t: integer;
     x, y: integer;
-    lin, linu, lind, linuu, lindd: PGLPixel32Array;
+    lin, linu, lind, linuu, lindd: PPixel32Array;
     r, g, b: single;
     ir, ig, ib: Smallint;
 

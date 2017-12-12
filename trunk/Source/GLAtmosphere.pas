@@ -295,43 +295,43 @@ begin
       begin
         if I = 13 then
         begin
-          // GL.BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-          GL.Begin_(GL_QUAD_STRIP);
+          // gl.BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+          gl.Begin_(GL_QUAD_STRIP);
           for J := FSlices downto 0 do
           begin
-            GL.Color4fv(@pColor[k1 + J]);
-            GL.Vertex3fv(@pVertex[k1 + J]);
-            GL.Color4fv(@clrTransparent);
-            GL.Vertex3fv(@pVertex[k0 + J]);
+            gl.Color4fv(@pColor[k1 + J]);
+            gl.Vertex3fv(@pVertex[k1 + J]);
+            gl.Color4fv(@clrTransparent);
+            gl.Vertex3fv(@pVertex[k0 + J]);
           end;
-          GL.End_;
+          gl.End_;
         end
         else
         begin
-          // GL.BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_DST_COLOR);
-          GL.Begin_(GL_QUAD_STRIP);
+          // gl.BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_DST_COLOR);
+          gl.Begin_(GL_QUAD_STRIP);
           for J := FSlices downto 0 do
           begin
-            GL.Color4fv(@pColor[k1 + J]);
-            GL.Vertex3fv(@pVertex[k1 + J]);
-            GL.Color4fv(@pColor[k0 + J]);
-            GL.Vertex3fv(@pVertex[k0 + J]);
+            gl.Color4fv(@pColor[k1 + J]);
+            gl.Vertex3fv(@pVertex[k1 + J]);
+            gl.Color4fv(@pColor[k0 + J]);
+            gl.Vertex3fv(@pVertex[k0 + J]);
           end;
-          GL.End_;
+          gl.End_;
         end;
       end
       else if I = 1 then
       begin
-        //GL.BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        GL.Begin_(GL_TRIANGLE_FAN);
-        GL.Color4fv(@pColor[k1]);
-        GL.Vertex3fv(@pVertex[k1]);
+        //gl.BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        gl.Begin_(GL_TRIANGLE_FAN);
+        gl.Color4fv(@pColor[k1]);
+        gl.Vertex3fv(@pVertex[k1]);
         for J := k0 + FSlices downto k0 do
         begin
-          GL.Color4fv(@pColor[J]);
-          GL.Vertex3fv(@pVertex[J]);
+          gl.Color4fv(@pColor[J]);
+          gl.Vertex3fv(@pVertex[J]);
         end;
-        GL.End_;
+        gl.End_;
       end;
     end;
   end;

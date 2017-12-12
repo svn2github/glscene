@@ -175,7 +175,7 @@ begin
     if NewScreenSize <> Length(FRenderBuffer) then
       SetLength(FRenderBuffer, NewScreenSize);
 
-    GL.ReadPixels(0, 0, rci.viewPortSize.cx, rci.viewPortSize.cy, GL_RGBA, GL_UNSIGNED_BYTE, FRenderBuffer);
+    gl.ReadPixels(0, 0, rci.viewPortSize.cx, rci.viewPortSize.cy, GL_RGBA, GL_UNSIGNED_BYTE, FRenderBuffer);
     case FPreset of
       // pepNone is handled in the first line.
       pepGray:        MakeGrayEffect;
@@ -188,7 +188,7 @@ begin
     else
       Assert(False, strErrorEx + strUnknownType);
     end;
-    GL.DrawPixels(rci.viewPortSize.cx, rci.viewPortSize.cy, GL_RGBA, GL_UNSIGNED_BYTE, FRenderBuffer);
+    gl.DrawPixels(rci.viewPortSize.cx, rci.viewPortSize.cy, GL_RGBA, GL_UNSIGNED_BYTE, FRenderBuffer);
   end;
 
   // Start rendering children (if any).

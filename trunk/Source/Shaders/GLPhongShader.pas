@@ -194,9 +194,9 @@ function TGLPhongShader.ShaderSupported: Boolean;
 var
   MaxTextures: Integer;
 begin
-  Result := inherited ShaderSupported and GL.ARB_multitexture;
+  Result := inherited ShaderSupported and gl.ARB_multitexture;
 
-  GL.GetIntegerv(GL_MAX_TEXTURE_UNITS_ARB, @MaxTextures);
+  gl.GetIntegerv(GL_MAX_TEXTURE_UNITS_ARB, @MaxTextures);
   Result := Result and (maxTextures > 2);
 end;
 
@@ -221,10 +221,10 @@ var
 begin
   rci.GLStates.Disable(stLighting);
 
-  GL.GetFloatv(GL_LIGHT_MODEL_AMBIENT, @ambient);
-  GL.GetMaterialfv(GL_FRONT, GL_AMBIENT, @materialAmbient);
+  gl.GetFloatv(GL_LIGHT_MODEL_AMBIENT, @ambient);
+  gl.GetMaterialfv(GL_FRONT, GL_AMBIENT, @materialAmbient);
   ScaleVector(ambient, materialAmbient);
-  GL.Color3fv(@ambient);
+  gl.Color3fv(@ambient);
 end;
 
 procedure TGLPhongShader.DoLightPass(lightID: Cardinal);
@@ -235,13 +235,13 @@ begin
 
   with CurrentGLContext.GLStates do
   begin
-    GL.GetLightfv(GL_LIGHT0+lightID, GL_POSITION, @LightParam);
+    gl.GetLightfv(GL_LIGHT0+lightID, GL_POSITION, @LightParam);
     LightParam := LightParam;
-    GL.ProgramLocalParameter4fv(GL_VERTEX_PROGRAM_ARB, 0, @LightParam);
+    gl.ProgramLocalParameter4fv(GL_VERTEX_PROGRAM_ARB, 0, @LightParam);
     LightParam := LightDiffuse[lightID];
-    GL.ProgramLocalParameter4fv(GL_FRAGMENT_PROGRAM_ARB, 0, @LightParam);
+    gl.ProgramLocalParameter4fv(GL_FRAGMENT_PROGRAM_ARB, 0, @LightParam);
     LightParam := LightSpecular[lightID];
-    GL.ProgramLocalParameter4fv(GL_FRAGMENT_PROGRAM_ARB, 1, @LightParam);
+    gl.ProgramLocalParameter4fv(GL_FRAGMENT_PROGRAM_ARB, 1, @LightParam);
   end;
 end;
 

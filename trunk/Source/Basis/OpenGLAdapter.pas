@@ -17,8 +17,9 @@ interface
 {$ENDIF}
 
 uses
-  System.SysUtils,
   Winapi.Windows,
+  System.SysUtils,
+
   GLStrings,
   GLSLog,
   OpenGLTokens,

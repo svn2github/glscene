@@ -276,17 +276,17 @@ begin
   with FMainTexture do
   begin
     PrepareBuildList;
-    GL.ActiveTexture(GL_TEXTURE0_ARB);
-    GL.BindTexture(GL_TEXTURE_2D, Handle);
-    GL.ActiveTexture(GL_TEXTURE0_ARB);
+    gl.ActiveTexture(GL_TEXTURE0_ARB);
+    gl.BindTexture(GL_TEXTURE_2D, Handle);
+    gl.ActiveTexture(GL_TEXTURE0_ARB);
   end;
 
   with FRefractionTexture do
   begin
     PrepareBuildList;
-    GL.ActiveTexture(GL_TEXTURE1_ARB);
-    GL.BindTexture(GL_TEXTURE_2D, Handle);
-    GL.ActiveTexture(GL_TEXTURE0_ARB);
+    gl.ActiveTexture(GL_TEXTURE1_ARB);
+    gl.BindTexture(GL_TEXTURE_2D, Handle);
+    gl.ActiveTexture(GL_TEXTURE0_ARB);
   end;
 
   FOwnerObject.Visible := False;

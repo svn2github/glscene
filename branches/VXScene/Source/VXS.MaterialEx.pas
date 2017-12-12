@@ -775,10 +775,11 @@ type
 
   TVXShaderUniform = class(TVXAbstractShaderUniform, IVXShaderParameter)
   protected
-    FLocation: GLint;
-    FStoreProgram: GLuint;
+    
+    FLocation: Integer;
+    FStoreProgram: Cardinal;
     FAutoSet: TUniformAutoSetMethod;
-    function GetProgram: GLuint; inline;
+    function GetProgram: Cardinal; inline;
     procedure PushProgram; inline;
     procedure PopProgram; inline;
     function GetFloat: Single; override;
@@ -801,8 +802,7 @@ type
     procedure SetIVec2(const Value: TVector2i); override;
     procedure SetIVec3(const Value: TVector3i); override;
     procedure SetIVec4(const Value: TVector4i); override;
-
-    procedure SetUInt(const Value: GLuint); override;
+    procedure SetUInt(const Value: Cardinal); override;
     procedure SetUVec2(const Value: TVector2ui); override;
     procedure SetUVec3(const Value: TVector3ui); override;
     procedure SetUVec4(const Value: TVector4ui); override;
@@ -837,7 +837,7 @@ type
     procedure SetIVec2(const Value: TVector2i); override;
     procedure SetIVec3(const Value: TVector3i); override;
     procedure SetIVec4(const Value: TVector4i); override;
-    procedure SetUInt(const Value: GLuint); override;
+    procedure SetUInt(const Value: Cardinal); override;
     procedure SetUVec2(const Value: TVector2ui); override;
     procedure SetUVec3(const Value: TVector3ui); override;
     procedure SetUVec4(const Value: TVector4ui); override;
@@ -4549,7 +4549,7 @@ begin
               begin
                 glGetActiveUniform(
                   ID,
-                  GLuint(I),
+                  Cardinal(I),
                   Length(buff),
                   @Len,
                   @Size,
@@ -4630,8 +4630,7 @@ begin
                 if (GLSLData = GLSLTypeUndefined) and (GLSLSampler =
                   GLSLSamplerUndefined) then
                 begin
-                  ShowMessage(Format('Detected active uniform "%s" with unknown type',
-                    [UName]));
+                  ShowMessage(Format('Detected active uniform "%s" with unknown type',  [UName]));
                   continue;
                 end
                 else if GLSLData <> GLSLTypeUndefined then
@@ -5194,7 +5193,6 @@ begin
   end;
 end;
 
-
 { TVXMaterialLibraryEx }
 
 function TVXMaterialLibraryEx.AddAttachment(
@@ -5673,7 +5671,6 @@ begin
   end;
 end;
 
-
 { TVXAbstractShaderUniform }
 
 function TVXAbstractShaderUniform.GetFloat: Single;
@@ -6079,7 +6076,7 @@ end;
 procedure TVXShaderUniform.SetMat2(const Value: TMatrix2f);
 begin
   PushProgram;
-  glUniformMatrix2fv(FLocation, 1, GLboolean(False), @Value);
+  glUniformMatrix2fv(FLocation, 1, False, @Value);
   PopProgram;
 end;
 

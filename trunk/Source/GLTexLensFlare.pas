@@ -192,14 +192,14 @@ begin
     Exit;
 
   // Prepare matrices
-  GL.MatrixMode(GL_MODELVIEW);
-  GL.PushMatrix;
-  GL.LoadMatrixf(@CurrentBuffer.BaseProjectionMatrix);
+  gl.MatrixMode(GL_MODELVIEW);
+  gl.PushMatrix;
+  gl.LoadMatrixf(@CurrentBuffer.BaseProjectionMatrix);
 
-  GL.MatrixMode(GL_PROJECTION);
-  GL.PushMatrix;
-  GL.LoadIdentity;
-  GL.Scalef(2 / rci.viewPortSize.cx, 2 / rci.viewPortSize.cy, 1);
+  gl.MatrixMode(GL_PROJECTION);
+  gl.PushMatrix;
+  gl.LoadIdentity;
+  gl.Scalef(2 / rci.viewPortSize.cx, 2 / rci.viewPortSize.cy, 1);
 
   rci.GLStates.Disable(stLighting);
   rci.GLStates.Disable(stDepthTest);
@@ -207,65 +207,65 @@ begin
   rci.GLStates.SetBlendFunc(bfOne, bfOne);
 
   //Rays and Glow on Same Position
-  GL.PushMatrix;
-  GL.Translatef(posVector.X, posVector.Y, posVector.Z);
+  gl.PushMatrix;
+  gl.Translatef(posVector.X, posVector.Y, posVector.Z);
 
   if not ImgGlow.Disabled and Assigned(ImgGlow.Image) then
   begin
     ImgGlow.Apply(rci);
-    GL.begin_(GL_QUADS);
-    GL.TexCoord2f(0, 0);
-    GL.Vertex3f(-FCurrSize, -FCurrSize, 0);
-    GL.TexCoord2f(1, 0);
-    GL.Vertex3f(FCurrSize, -FCurrSize, 0);
-    GL.TexCoord2f(1, 1);
-    GL.Vertex3f(FCurrSize, FCurrSize, 0);
-    GL.TexCoord2f(0, 1);
-    GL.Vertex3f(-FCurrSize, FCurrSize, 0);
-    GL.end_;
+    gl.begin_(GL_QUADS);
+    gl.TexCoord2f(0, 0);
+    gl.Vertex3f(-FCurrSize, -FCurrSize, 0);
+    gl.TexCoord2f(1, 0);
+    gl.Vertex3f(FCurrSize, -FCurrSize, 0);
+    gl.TexCoord2f(1, 1);
+    gl.Vertex3f(FCurrSize, FCurrSize, 0);
+    gl.TexCoord2f(0, 1);
+    gl.Vertex3f(-FCurrSize, FCurrSize, 0);
+    gl.end_;
     ImgGlow.UnApply(rci);
   end;
 
   if not ImgRays.Disabled and Assigned(ImgRays.Image) then
   begin
     ImgRays.Apply(rci);
-    GL.begin_(GL_QUADS);
-    GL.TexCoord2f(0, 0);
-    GL.Vertex3f(-FCurrSize, -FCurrSize, 0);
-    GL.TexCoord2f(1, 0);
-    GL.Vertex3f(FCurrSize, -FCurrSize, 0);
-    GL.TexCoord2f(1, 1);
-    GL.Vertex3f(FCurrSize, FCurrSize, 0);
-    GL.TexCoord2f(0, 1);
-    GL.Vertex3f(-FCurrSize, FCurrSize, 0);
-    GL.end_;
+    gl.begin_(GL_QUADS);
+    gl.TexCoord2f(0, 0);
+    gl.Vertex3f(-FCurrSize, -FCurrSize, 0);
+    gl.TexCoord2f(1, 0);
+    gl.Vertex3f(FCurrSize, -FCurrSize, 0);
+    gl.TexCoord2f(1, 1);
+    gl.Vertex3f(FCurrSize, FCurrSize, 0);
+    gl.TexCoord2f(0, 1);
+    gl.Vertex3f(-FCurrSize, FCurrSize, 0);
+    gl.end_;
     ImgRays.UnApply(rci);
   end;
-  GL.PopMatrix;
+  gl.PopMatrix;
 
   if not ImgRing.Disabled and Assigned(ImgRing.Image) then
   begin
-    GL.PushMatrix;
-    GL.Translatef(posVector.X * 1.1, posVector.Y * 1.1, posVector.Z);
+    gl.PushMatrix;
+    gl.Translatef(posVector.X * 1.1, posVector.Y * 1.1, posVector.Z);
     ImgRing.Apply(rci);
-    GL.begin_(GL_QUADS);
-    GL.TexCoord2f(0, 0);
-    GL.Vertex3f(-FCurrSize, -FCurrSize, 0);
-    GL.TexCoord2f(1, 0);
-    GL.Vertex3f(FCurrSize, -FCurrSize, 0);
-    GL.TexCoord2f(1, 1);
-    GL.Vertex3f(FCurrSize, FCurrSize, 0);
-    GL.TexCoord2f(0, 1);
-    GL.Vertex3f(-FCurrSize, FCurrSize, 0);
-    GL.end_;
+    gl.begin_(GL_QUADS);
+    gl.TexCoord2f(0, 0);
+    gl.Vertex3f(-FCurrSize, -FCurrSize, 0);
+    gl.TexCoord2f(1, 0);
+    gl.Vertex3f(FCurrSize, -FCurrSize, 0);
+    gl.TexCoord2f(1, 1);
+    gl.Vertex3f(FCurrSize, FCurrSize, 0);
+    gl.TexCoord2f(0, 1);
+    gl.Vertex3f(-FCurrSize, FCurrSize, 0);
+    gl.end_;
     ImgRing.UnApply(rci);
-    GL.PopMatrix;
+    gl.PopMatrix;
   end;
 
   if not ImgSecondaries.Disabled and Assigned(ImgSecondaries.Image) then
   begin
     RandSeed := FSeed;
-    GL.PushMatrix;
+    gl.PushMatrix;
     ImgSecondaries.Apply(rci);
     for i := 1 to FNumSecs do
     begin
@@ -275,31 +275,31 @@ begin
         ScaleVector(V, rnd)
       else
         ScaleVector(V, 0.8 * rnd);
-      GL.PushMatrix;
-      GL.Translatef(v.X, v.Y, v.Z);
+      gl.PushMatrix;
+      gl.Translatef(v.X, v.Y, v.Z);
 
       rnd := random * 0.5 + 0.1;
-      GL.begin_(GL_QUADS);
-      GL.TexCoord2f(0, 0);
-      GL.Vertex3f(-FCurrSize * rnd, -FCurrSize * rnd, 0);
-      GL.TexCoord2f(1, 0);
-      GL.Vertex3f(FCurrSize * rnd, -FCurrSize * rnd, 0);
-      GL.TexCoord2f(1, 1);
-      GL.Vertex3f(FCurrSize * rnd, FCurrSize * rnd, 0);
-      GL.TexCoord2f(0, 1);
-      GL.Vertex3f(-FCurrSize * rnd, FCurrSize * rnd, 0);
-      GL.end_;
-      GL.PopMatrix
+      gl.begin_(GL_QUADS);
+      gl.TexCoord2f(0, 0);
+      gl.Vertex3f(-FCurrSize * rnd, -FCurrSize * rnd, 0);
+      gl.TexCoord2f(1, 0);
+      gl.Vertex3f(FCurrSize * rnd, -FCurrSize * rnd, 0);
+      gl.TexCoord2f(1, 1);
+      gl.Vertex3f(FCurrSize * rnd, FCurrSize * rnd, 0);
+      gl.TexCoord2f(0, 1);
+      gl.Vertex3f(-FCurrSize * rnd, FCurrSize * rnd, 0);
+      gl.end_;
+      gl.PopMatrix
     end;
     ImgSecondaries.UnApply(rci);
-    GL.PopMatrix;
+    gl.PopMatrix;
   end;
 
   // restore state
 
-  GL.PopMatrix;
-  GL.MatrixMode(GL_MODELVIEW);
-  GL.PopMatrix;
+  gl.PopMatrix;
+  gl.MatrixMode(GL_MODELVIEW);
+  gl.PopMatrix;
 
   if Count > 0 then
     Self.RenderChildren(0, Count - 1, rci);

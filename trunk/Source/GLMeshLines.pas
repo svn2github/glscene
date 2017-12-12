@@ -467,9 +467,9 @@ procedure TGLMeshLines.DoRender(var rci : TGLRenderContextInfo; renderSelf, rend
 begin
   if FNoZWrite then
   begin
-    GL.Disable(GL_Depth_Test);
+    gl.Disable(GL_Depth_Test);
     inherited;
-    GL.Enable(GL_Depth_Test);
+    gl.Enable(GL_Depth_Test);
   end
   else
     inherited;
@@ -573,12 +573,12 @@ var
   lNodeSize: Single;
 begin
   lNodeSize := LineWidth* 0.7;
-  GL.PushMatrix;
-  GL.Translatef(Node.x,Node.y,Node.z);
+  gl.PushMatrix;
+  gl.Translatef(Node.x,Node.y,Node.z);
   if lNodeSize <>1 then
   begin
-    GL.PushMatrix;
-    GL.Scalef(lNodeSize, lNodeSize, lNodeSize);
+    gl.PushMatrix;
+    gl.Scalef(lNodeSize, lNodeSize, lNodeSize);
 ///    rci.GLStates.UnSetGLState(stTexture2D);
     rci.GLStates.Disable(stColorMaterial);
     rci.GLStates.Disable(stBlend);
@@ -587,7 +587,7 @@ begin
     else
       rci.GLStates.SetGLMaterialColors(cmFRONT, clrBlack, clrGray20, clrGreen, clrBlack, 0);
     DrawCircle(lNodeSize);
-    GL.PopMatrix;
+    gl.PopMatrix;
   end
   else
   begin
@@ -597,7 +597,7 @@ begin
       rci.GLStates.SetGLMaterialColors(cmFRONT, clrBlack, clrGray20, clrGreen, clrBlack, 0);
     DrawCircle(lNodeSize);
   end;
-  GL.PopMatrix;
+  gl.PopMatrix;
 end;
 
 procedure TGLMeshLines.DrawCircle(Radius: Single);
@@ -609,7 +609,7 @@ var
 begin
   inner := VectorMake(1, 0, 0);
   outer := VectorMake(1.3, 0, 0);
-  GL.Begin_(GL_TRIANGLE_STRIP);
+  gl.Begin_(GL_TRIANGLE_STRIP);
   for i:= 0 to CIRCLESEGMENTS do
   begin
     a := i * 2 * pi / CIRCLESEGMENTS;
@@ -618,10 +618,10 @@ begin
     lUp := Up.AsAffineVector;
     RotateVector(p1,lUp, a);
     RotateVector(p2,lUp, a);
-    GL.Vertex3fv(@p1.X);
-    GL.Vertex3fv(@p2.X);
+    gl.Vertex3fv(@p1.X);
+    gl.Vertex3fv(@p2.X);
   end;
-  GL.End_();
+  gl.End_();
 end;
 
 function TGLMeshLines.SelectNode(LineItem: TLineItem; X,Z: Single): TLineNode;

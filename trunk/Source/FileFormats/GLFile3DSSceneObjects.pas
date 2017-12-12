@@ -176,11 +176,11 @@ procedure TGLFile3DSLight.DoRender(var rci: TGLRenderContextInfo; renderSelf, re
 
   procedure BuildFace;
   begin
-    GL.Begin_(GL_TRIANGLES);
-    GL.Vertex3f(0.03, 0, 0);
-    GL.Vertex3f(0, 0.03, 0);
-    GL.Vertex3f(0, 0, 0.07);
-    GL.End_;
+    gl.Begin_(GL_TRIANGLES);
+    gl.Vertex3f(0.03, 0, 0);
+    gl.Vertex3f(0, 0.03, 0);
+    gl.Vertex3f(0, 0, 0.07);
+    gl.End_;
   end;
 
 var
@@ -192,31 +192,31 @@ begin
     Exit;
 
   rci.GLStates.PolygonMode := pmLines;
-  GL.PushMatrix;
+  gl.PushMatrix;
 
   dv := VectorDistance(Position.AsVector, rci.cameraPosition);
-  GL.Scalef(dv, dv, dv);
+  gl.Scalef(dv, dv, dv);
 
   // Up.
   BuildFace;
-  GL.Rotatef(90, 0, 0, 1);
+  gl.Rotatef(90, 0, 0, 1);
   BuildFace;
-  GL.Rotatef(180, 0, 0, 1);
+  gl.Rotatef(180, 0, 0, 1);
   BuildFace;
-  GL.Rotatef(270, 0, 0, 1);
+  gl.Rotatef(270, 0, 0, 1);
   BuildFace;
 
   // Down.
-  GL.Rotatef(180, 0, 1, 0);
+  gl.Rotatef(180, 0, 1, 0);
   BuildFace;
-  GL.Rotatef(90, 0, 0, 1);
+  gl.Rotatef(90, 0, 0, 1);
   BuildFace;
-  GL.Rotatef(180, 0, 0, 1);
+  gl.Rotatef(180, 0, 0, 1);
   BuildFace;
-  GL.Rotatef(270, 0, 0, 1);
+  gl.Rotatef(270, 0, 0, 1);
   BuildFace;
 
-  GL.PopMatrix;
+  gl.PopMatrix;
 end;
 
 procedure TGLFile3DSLight.CoordinateChanged(Sender: TGLCustomCoordinates);
@@ -257,7 +257,7 @@ procedure TGLFile3DSCamera.DoRender(var rci: TGLRenderContextInfo; renderSelf, r
     //    gluCylinder(FQuadCyl[0], 1, 1, 0.5, 6, 1);
     //    glTranslatef(0, 0, 0.5);
     //    gluDisk(FQuadDisk[0], 0, 1, 6, 1);
-    GL.Translatef(0, 0, -0.5);
+    gl.Translatef(0, 0, -0.5);
     rci.GLStates.InvertGLFrontFace;
     //    gluDisk(FQuadDisk[0], 0, 1, 6, 1);
     rci.GLStates.InvertGLFrontFace;
@@ -265,11 +265,11 @@ procedure TGLFile3DSCamera.DoRender(var rci: TGLRenderContextInfo; renderSelf, r
 
   procedure BuildFace;
   begin
-    GL.Rotatef(-90, 0, 1, 0);
-    GL.Rotatef(45, 0, 0, 1);
-    GL.Translatef(0, -0.5, 1);
+    gl.Rotatef(-90, 0, 1, 0);
+    gl.Rotatef(45, 0, 0, 1);
+    gl.Translatef(0, -0.5, 1);
     //    gluCylinder(FQuadCyl[0], 0.5, 1.3, 2.4, 4, 1);
-    GL.Translatef(0, 0, 2.4);
+    gl.Translatef(0, 0, 2.4);
     //    gluDisk(FQuadDisk[0], 0, 1.3, 4, 1);
   end;
 
@@ -290,18 +290,18 @@ begin
 
   rci.GLStates.PolygonMode := pmLines;
 
-  GL.PushMatrix;
-  GL.Rotatef(ang * 180 / pi, 0, 0, 1);
+  gl.PushMatrix;
+  gl.Rotatef(ang * 180 / pi, 0, 0, 1);
   dv := VectorDistance(Position.AsVector, rci.cameraPosition);
-  GL.Scalef(dv / 25, dv / 25, dv / 25);
+  gl.Scalef(dv / 25, dv / 25, dv / 25);
 
-  GL.RotateF(90, 0, 1, 0);
-  GL.Translatef(0, 1, 0);
+  gl.RotateF(90, 0, 1, 0);
+  gl.Translatef(0, 1, 0);
   BuildCyl;
-  GL.Translatef(1, -1, 0);
+  gl.Translatef(1, -1, 0);
   BuildCyl;
   BuildFace;
-  GL.PopMatrix;
+  gl.PopMatrix;
 
   rci.GLStates.PolygonMode := pmFill;
 end;
@@ -421,13 +421,13 @@ end;
 
 procedure TGLFile3DSFreeForm.BuildList(var rci: TGLRenderContextInfo);
 begin
-  GL.MultMatrixf(@FTransfMat);
-  GL.MultMatrixf(@FScaleMat);
+  gl.MultMatrixf(@FTransfMat);
+  gl.MultMatrixf(@FScaleMat);
 
-  GL.PushMatrix;
-  GL.MultMatrixf(@FRefMat);
+  gl.PushMatrix;
+  gl.MultMatrixf(@FRefMat);
   inherited;
-  GL.PopMatrix;
+  gl.PopMatrix;
 
   if parent is TGLFile3DSFreeForm then
     ParentMatrix := (parent as TGLFile3DSFreeForm).ParentMatrix

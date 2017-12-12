@@ -543,7 +543,7 @@ procedure TessIssueVertex(VertexData: Pointer);
 {$IFDEF WINDOWS} stdcall; {$ENDIF}{$IFDEF UNIX} cdecl; {$ENDIF}
 begin
   Xgl.TexCoord2fv(VertexData);
-  GL.Vertex3fv(VertexData);
+  gl.Vertex3fv(VertexData);
 end;
 
 procedure TessCombine(Coords: PDoubleVector; Vertex_data: Pointer; Weight: PGLFloat; var OutData: Pointer);
@@ -568,19 +568,19 @@ begin
   begin
     // Creates and initialize the GLU tesselator
     Tess := GluNewTess;
-    GluTessCallback(Tess, GLU_TESS_BEGIN, @GL.Begin_);
+    GluTessCallback(Tess, GLU_TESS_BEGIN, @gl.Begin_);
     if ATextured then
       GluTessCallback(Tess, GLU_TESS_VERTEX, @TessIssueVertex)
     else
-      GluTessCallback(Tess, GLU_TESS_VERTEX, @GL.Vertex3fv);
-    GluTessCallback(Tess, GLU_TESS_END, @GL.End_);
+      GluTessCallback(Tess, GLU_TESS_VERTEX, @gl.Vertex3fv);
+    GluTessCallback(Tess, GLU_TESS_END, @gl.End_);
     GluTessCallback(Tess, GLU_TESS_ERROR, @TessError);
     GluTessCallback(Tess, GLU_TESS_COMBINE, @TessCombine);
     NbExtraVertices := 0;
     // Issue normal
     if Assigned(ANormal) then
     begin
-      GL.Normal3fv(PGLFloat(ANormal));
+      gl.Normal3fv(PGLFloat(ANormal));
       GluTessNormal(Tess, ANormal^.X, ANormal^.Y, ANormal^.Z);
     end;
     // Issue polygon

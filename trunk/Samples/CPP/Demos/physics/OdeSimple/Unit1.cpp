@@ -207,7 +207,7 @@ void __fastcall TForm1::CheckBox1Click(TObject *Sender)
 
 void __fastcall TForm1::CheckBox2Click(TObject *Sender)
 {
- ((TGLODEHeightField *)(GLHeightField1->Behaviours->Behaviour[0]))->RenderContacts = CheckBox2->Checked;
+ ((TODEHeightField *)(GLHeightField1->Behaviours->Behaviour[0]))->RenderContacts = CheckBox2->Checked;
 }
 //---------------------------------------------------------------------------
 
@@ -249,7 +249,7 @@ void __fastcall TForm1::ComboBox2Change(TObject *Sender)
 
 void __fastcall TForm1::TrackBar1Change(TObject *Sender)
 {
-  ((TGLODEHeightField *)(GLHeightField1->Behaviours->Behaviour[0]))->ContactResolution =
+  ((TODEHeightField *)(GLHeightField1->Behaviours->Behaviour[0]))->ContactResolution =
 		0.25+(float)(10-TrackBar1->Position)/20;
 }
 

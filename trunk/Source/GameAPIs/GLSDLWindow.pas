@@ -391,10 +391,12 @@ begin
   videoFlags := BuildSDLVideoFlags;
   if voOpenGL in Options then
     SetSDLGLAttributes;
+
   {
   SDL_WM_SetCaption(PAnsiChar(AnsiString(FCaption)), nil);
   FSDLSurface := SDL_SetVideoMode(Width, Height, cPixelDepthToBpp[PixelDepth], videoFlags);
   }
+
   FSDLWindow := SDL_CreateWindow(PChar(AnsiString(FCaption)),
                           SDL_WINDOWPOS_UNDEFINED,
                           SDL_WINDOWPOS_UNDEFINED,

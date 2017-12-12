@@ -187,7 +187,6 @@ contains
   VXS.Objects in '..\..\Source\Basis\VXS.Objects.pas',
   VXS.Octree in '..\..\Source\Basis\VXS.Octree.pas',
   VXS.OpenGL1x in '..\..\Source\Basis\VXS.OpenGL1x.pas',
-  VXS.OpenGLAdapter in '..\..\Source\Basis\VXS.OpenGLAdapter.pas',
   VXS.OpenGLFMX in '..\..\Source\Basis\VXS.OpenGLFMX.pas',
   VXS.OutlineShader in '..\..\Source\VXS.OutlineShader.pas',
   VXS.ParametricSurfaces in '..\..\Source\VXS.ParametricSurfaces.pas',

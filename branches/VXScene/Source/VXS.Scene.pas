@@ -62,8 +62,8 @@ type
 
 const
   cDefaultProxyOptions = [pooEffects, pooObjects, pooTransformation];
-  VXScene_REVISION = '$Revision: 7082$';
-  VXScene_VERSION = '1.8.0.%s';
+  VXSCENE_REVISION = '$Revision: 7100$';
+  VXSCENE_VERSION = '1.8.0.%s';
 
 type
 
@@ -85,8 +85,8 @@ type
     roDoubleBuffer: enables double-buffering.
     roRenderToWindows: ignored (legacy).
     roTwoSideLighting: enables two-side lighting model.
-    roStereo: enables stereo support in the driver (dunno if it works,
-    I don't have a stereo device to test...)
+    roStereo: enables stereo support in the driver 
+	  (dunno if it works, I don't have a stereo device to test...)
     roDestinationAlpha: request an Alpha channel for the rendered output
     roNoColorBuffer: don't request a color buffer (color depth setting ignored)
     roNoColorBufferClear: do not clear the color buffer automatically, if the
@@ -5102,7 +5102,7 @@ begin
 end;
 
 // ------------------
-// ------------------ TxRenderPoint ------------------
+// ------------------ TVXRenderPoint ------------------
 // ------------------
 
 constructor TVXRenderPoint.Create(AOwner: TComponent);
@@ -5174,7 +5174,7 @@ begin
 end;
 
 // ------------------
-// ------------------ TxProxyObject ------------------
+// ------------------ TVXProxyObject ------------------
 // ------------------
 
 constructor TVXProxyObject.Create(AOwner: TComponent);

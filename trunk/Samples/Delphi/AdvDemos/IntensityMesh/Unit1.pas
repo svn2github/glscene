@@ -145,7 +145,7 @@ begin
          PolygonOffsetFactor := -1;
          PolygonOffsetUnits := -1;
          Enable(stPolygonOffsetLine);
-         GL.Color3f(0, 0, 0);
+         gl.Color3f(0, 0, 0);
          Continue:=True;
       end;
    else

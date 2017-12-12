@@ -712,12 +712,12 @@ begin
       for i := n - 1 downto 0 do
       begin
         fp := PFireParticle(objList[i]);
-        GL.Translatef(fp^.Position.X - lastTr.X,
+        gl.Translatef(fp^.Position.X - lastTr.X,
                       fp^.Position.Y - lastTr.Y,
                       fp^.Position.Z - lastTr.Z);
         SetVector(lastTr, fp^.Position);
         innerColor.W := fp^.Alpha * fp^.TimeToLive / Sqr(fp^.LifeLength);
-        GL.Color4fv(@innerColor);
+        gl.Color4fv(@innerColor);
         Manager.AffParticle3d(Manager.FOuterColor.Color, rci.PipelineTransformation.ViewMatrix^);
       end;
 

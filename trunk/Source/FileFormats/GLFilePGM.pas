@@ -153,12 +153,12 @@ begin
     fColorFormat := GL_LUMINANCE;
     fDataType := GL_FLOAT;
     // Check level existence
-    GL.GetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_INTERNAL_FORMAT,
+    gl.GetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_INTERNAL_FORMAT,
       @texFormat);
     if texFormat > 1 then
     begin
-      GL.GetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_WIDTH, @FLOD[0].Width);
-      GL.GetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_HEIGHT,
+      gl.GetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_WIDTH, @FLOD[0].Width);
+      gl.GetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_HEIGHT,
         @FLOD[0].Height);
       FLOD[0].Depth := 0;
       residentFormat := OpenGLFormatToInternalFormat(texFormat);
@@ -172,11 +172,11 @@ begin
     begin
       fElementSize := GetTextureElementSize(fColorFormat, fDataType);
       ReallocMem(fData, DataSize);
-      GL.GetTexImage(glTarget, 0, fColorFormat, fDataType, fData);
+      gl.GetTexImage(glTarget, 0, fColorFormat, fDataType, fData);
     end
     else
       fLevelCount := 1;
-    GL.CheckError;
+    gl.CheckError;
   finally
     if contextActivate then
     begin

@@ -52,7 +52,7 @@ type
     {  Override this function to read subclass data. }
     procedure ReadFromFiler(reader: TReader); virtual;
     {  Override to perform things when owner form has been loaded. }
-    procedure Loaded; virtual;
+    procedure Loaded; dynamic;
     {  Triggers an EFilerException with appropriate version message. }
     procedure RaiseFilerException(const archiveVersion: integer);
   public
@@ -68,7 +68,7 @@ type
     {  Returns a user-friendly denomination for the class. 
       This denomination is used for picking a texture image class
       in the IDE expert. }
-    class function FriendlyName: String; virtual;
+    class function FriendlyName: string; virtual;
     {  Returns a user-friendly description for the class. 
       This denomination is used for helping the user when picking a
       texture image class in the IDE expert. If it's not overriden,
@@ -134,19 +134,19 @@ type
     procedure Remove(anItem: TGLXCollectionItem);
     procedure Clear;
     function IndexOf(anItem: TGLXCollectionItem): integer;
-    // : Returns the index of the first XCollectionItem of the given class (or -1)
+    // Returns the index of the first XCollectionItem of the given class (or -1)
     function IndexOfClass(aClass: TGLXCollectionItemClass): integer;
-    // : Returns the first XCollection of the given class (or nil)
+    // Returns the first XCollection of the given class (or nil)
     function GetByClass(aClass: TGLXCollectionItemClass): TGLXCollectionItem;
-    // : Returns the index of the first XCollectionItem of the given name (or -1)
+    // Returns the index of the first XCollectionItem of the given name (or -1)
     function IndexOfName(const aName: string): integer;
-    {  Indicates if an object of the given class can be added. 
+    {  Indicates if an object of the given class can be added.
       This function is used to enforce Unique XCollection. }
     function CanAdd(aClass: TGLXCollectionItemClass): Boolean; virtual;
     property archiveVersion: integer read FArchiveVersion;
   end;
 
-  {  Registers an event to be called when an XCollection is destroyed. }
+{  Registers an event to be called when an XCollection is destroyed. }
 procedure RegisterXCollectionDestroyEvent(notifyEvent: TNotifyEvent);
 {  DeRegisters event. }
 procedure DeRegisterXCollectionDestroyEvent(notifyEvent: TNotifyEvent);
@@ -155,13 +155,11 @@ procedure RegisterXCollectionItemClass(aClass: TGLXCollectionItemClass);
 {  Removes a TGLXCollectionItem subclass from the list. }
 procedure UnregisterXCollectionItemClass(aClass: TGLXCollectionItemClass);
 {  Retrieves a registered TGLXCollectionItemClass from its classname. }
-function FindXCollectionItemClass(const ClassName: string)
-  : TGLXCollectionItemClass;
-{  Creates and returns a copy of internal list of TGLXCollectionItem classes. 
+function FindXCollectionItemClass(const ClassName: string): TGLXCollectionItemClass;
+{  Creates and returns a copy of internal list of TGLXCollectionItem classes.
   Returned list should be freed by caller, the parameter defines an ancestor
   class filter. If baseClass is left nil, TGLXCollectionItem is used as ancestor. }
-function GetXCollectionItemClassesList(baseClass
-  : TGLXCollectionItemClass = nil): TList;
+function GetXCollectionItemClassesList(baseClass: TGLXCollectionItemClass = nil): TList;
 procedure GetXCollectionClassesList(var ClassesList: TList;
   baseClass: TGLXCollectionItemClass = nil);
 
@@ -220,7 +218,7 @@ function FindXCollectionItemClass(const ClassName: string)
 var
   i: integer;
 begin
-  result := nil;
+  Result := nil;
   if Assigned(vXCollectionItemClasses) then
     for i := 0 to vXCollectionItemClasses.Count - 1 do
       if TGLXCollectionItemClass(vXCollectionItemClasses[i]).ClassName = ClassName
@@ -297,7 +295,7 @@ end;
 
 function TGLXCollectionItem.GetOwner: TPersistent;
 begin
-  result := FOwner;
+  Result := FOwner;
 end;
 
 procedure TGLXCollectionItem.WriteToFiler(writer: TWriter);
@@ -332,7 +330,7 @@ end;
 
 function TGLXCollectionItem.GetName: string;
 begin
-  result := FName;
+  Result := FName;
 end;
 
 function TGLXCollectionItem.GetNamePath: string;
@@ -682,7 +680,7 @@ end;
 
 function TGLXCollection.IndexOf(anItem: TGLXCollectionItem): integer;
 begin
-  result := FList.IndexOf(anItem);
+  Result := FList.IndexOf(anItem);
 end;
 
 function TGLXCollection.IndexOfClass(aClass: TGLXCollectionItemClass): integer;
@@ -703,7 +701,7 @@ function TGLXCollection.GetByClass(aClass: TGLXCollectionItemClass)
 var
   i: integer;
 begin
-  result := nil;
+  Result := nil;
   for i := 0 to FList.Count - 1 do
     if TGLXCollectionItem(FList[i]) is aClass then
     begin
@@ -716,7 +714,7 @@ function TGLXCollection.IndexOfName(const aName: string): integer;
 var
   i: integer;
 begin
-  result := -1;
+  Result := -1;
   for i := 0 to FList.Count - 1 do
     if TGLXCollectionItem(FList[i]).Name = aName then
     begin
@@ -730,13 +728,13 @@ var
   i: integer;
   XCollectionItemClass: TGLXCollectionItemClass;
 begin
-  result := True;
+  Result := True;
 
   // Test if the class allows itself to be added to this collection
   if not aClass.CanAddTo(Self) then
   begin
-    result := False;
-    exit;
+    Result := False;
+    Exit;
   end;
 
   // is the given class compatible with owned ones ?
@@ -764,12 +762,7 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 finalization

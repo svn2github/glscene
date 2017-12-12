@@ -262,6 +262,8 @@ end;
 
 procedure TForm1.cbSurfaceChange(Sender: TObject);
 begin
+  if cbSurface.ItemIndex = -1 then
+    cbSurface.ItemIndex := 0;
   if cbSurface.ItemIndex = 0 then
   begin
     GLPlane1.Visible := True;
@@ -278,13 +280,13 @@ begin
   begin
     GLHeightField1.Visible := True;
     chbContacts.Enabled := True;
-    GetGLODEHeightField(GLHeightField1).Manager := GLODEManager1;
+    GetODEHeightField(GLHeightField1).Manager := GLODEManager1;
   end
   else
   begin
     GLHeightField1.Visible := False;
     chbContacts.Enabled := False;
-    GetGLODEHeightField(GLHeightField1).Manager := nil;
+    GetODEHeightField(GLHeightField1).Manager := nil;
   end;
 end;
 

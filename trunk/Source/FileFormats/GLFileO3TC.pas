@@ -314,7 +314,7 @@ begin
   try
     textureContext.GLStates.TextureBinding[0, textureTarget] := textureHandle;
     fLevelCount := 0;
-    GL.GetTexParameteriv(glTarget, GL_TEXTURE_MAX_LEVEL, @texLod);
+    gl.GetTexParameteriv(glTarget, GL_TEXTURE_MAX_LEVEL, @texLod);
     if glTarget = GL_TEXTURE_CUBE_MAP then
     begin
       fCubeMap := true;
@@ -332,20 +332,20 @@ begin
 
     repeat
       // Check level existence
-      GL.GetTexLevelParameteriv(glTarget, fLevelCount, GL_TEXTURE_INTERNAL_FORMAT,
+      gl.GetTexLevelParameteriv(glTarget, fLevelCount, GL_TEXTURE_INTERNAL_FORMAT,
         @texFormat);
       if texFormat = 1 then
         Break;
       Inc(fLevelCount);
       if fLevelCount = 1 then
       begin
-        GL.GetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_WIDTH, @FLOD[0].Width);
-        GL.GetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_HEIGHT, @FLOD[0].Height);
+        gl.GetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_WIDTH, @FLOD[0].Width);
+        gl.GetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_HEIGHT, @FLOD[0].Height);
         FLOD[0].Depth := 0;
         if (glTarget = GL_TEXTURE_3D)
           or (glTarget = GL_TEXTURE_2D_ARRAY)
           or (glTarget = GL_TEXTURE_CUBE_MAP_ARRAY) then
-          GL.GetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_DEPTH, @FLOD[0].Depth);
+          gl.GetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_DEPTH, @FLOD[0].Depth);
         residentFormat := OpenGLFormatToInternalFormat(texFormat);
         if CurrentFormat then
           fInternalFormat := residentFormat
@@ -379,11 +379,11 @@ begin
           if bCompressed then
           begin
 
-            if GL.NV_texture_compression_vtc and IsVolume then
+            if gl.NV_texture_compression_vtc and IsVolume then
             begin
               if level = 0 then
                 GetMem(vtcBuffer, GetLevelSizeInByte(0));
-              GL.GetCompressedTexImage(glTarget, level, vtcBuffer);
+              gl.GetCompressedTexImage(glTarget, level, vtcBuffer);
               // Shufle blocks from VTC to S3TC
               cw := (FLOD[level].Width + 3) div 4;
               ch := (FLOD[level].Height + 3) div 4;
@@ -399,10 +399,10 @@ begin
                   end;
              end
             else
-              GL.GetCompressedTexImage(glTarget, level, GetLevelAddress(level));
+              gl.GetCompressedTexImage(glTarget, level, GetLevelAddress(level));
           end
           else
-            GL.GetTexImage(glTarget, level, fColorFormat, fDataType, GetLevelAddress(level));
+            gl.GetTexImage(glTarget, level, fColorFormat, fDataType, GetLevelAddress(level));
         end; // for level
       end; // for face
       if Assigned(vtcBuffer) then
@@ -412,7 +412,7 @@ begin
 
       if fLevelCount = 0 then
         fLevelCount := 1;
-      GL.CheckError;
+      gl.CheckError;
     end;
   finally
     if contextActivate then

@@ -117,7 +117,7 @@ var
    matrix : TMatrix;
 begin
    inherited;
-   GL.GetFloatv(GL_MODELVIEW_MATRIX, @matrix);
+   gl.GetFloatv(GL_MODELVIEW_MATRIX, @matrix);
    for i:=0 to 2 do begin
       Fvx.C[i]:=matrix.V[i].X;
       Fvy.C[i]:=matrix.V[i].Y;
@@ -158,18 +158,18 @@ begin
 
    dv:=VectorCombine(Fvx, Fvy, fx, fy);
 
-   GL.Begin_(GL_TRIANGLE_FAN);
-      GL.Color4fv(@inner);
-      GL.Vertex3fv(@start);
-      GL.Color4fv(@outer);
-      GL.Vertex3f(start.X+dv.X, start.Y+dv.Y, start.Z+dv.Z);
-      GL.Vertex3f(stop.X+dv.X, stop.Y+dv.Y, stop.Z+dv.Z);
-      GL.Color4fv(@inner);
-      GL.Vertex3fv(@stop);
-      GL.Color4fv(@outer);
-      GL.Vertex3f(stop.X-dv.X, stop.Y-dv.Y, stop.Z-dv.Z);
-      GL.Vertex3f(start.X-dv.X, start.Y-dv.Y, start.Z-dv.Z);
-   GL.End_;
+   gl.Begin_(GL_TRIANGLE_FAN);
+      gl.Color4fv(@inner);
+      gl.Vertex3fv(@start);
+      gl.Color4fv(@outer);
+      gl.Vertex3f(start.X+dv.X, start.Y+dv.Y, start.Z+dv.Z);
+      gl.Vertex3f(stop.X+dv.X, stop.Y+dv.Y, stop.Z+dv.Z);
+      gl.Color4fv(@inner);
+      gl.Vertex3fv(@stop);
+      gl.Color4fv(@outer);
+      gl.Vertex3f(stop.X-dv.X, stop.Y-dv.Y, stop.Z-dv.Z);
+      gl.Vertex3f(start.X-dv.X, start.Y-dv.Y, start.Z-dv.Z);
+   gl.End_;
 end;
 
 procedure TGLLinePFXManager.EndParticles(var rci: TGLRenderContextInfo);

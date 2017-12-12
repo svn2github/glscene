@@ -354,12 +354,12 @@ end;
 
 procedure CopyScreentoTexture(const ViewPortSize: TGLSize; const TextureTarget: Word = GL_TEXTURE_2D);
 begin
-  GL.CopyTexSubImage2D(TextureTarget, 0, 0, 0, 0, 0, ViewPortSize.cx, ViewPortSize.cy);
+  gl.CopyTexSubImage2D(TextureTarget, 0, 0, 0, 0, 0, ViewPortSize.cx, ViewPortSize.cy);
 end;
 
 procedure CopyScreentoTexture2(const ViewPortSize: TGLSize; const TextureTarget: Word = GL_TEXTURE_2D);
 begin
-  GL.CopyTexImage2D(TextureTarget, 0, GL_RGB, 0, 0, ViewPortSize.cx, ViewPortSize.cy, 0);
+  gl.CopyTexImage2D(TextureTarget, 0, GL_RGB, 0, 0, ViewPortSize.cx, ViewPortSize.cy, 0);
 end;
 
 procedure ApplyBlendingModeEx(const BlendingMode: TGLBlendingModeEx);
@@ -389,104 +389,104 @@ end;
 
 procedure DrawTexturedScreenQuad;
 begin
-  GL.MatrixMode(GL_MODELVIEW);
-  GL.PushMatrix;
-  GL.LoadIdentity;
-  GL.MatrixMode(GL_PROJECTION);
-    GL.PushMatrix;
-    GL.LoadIdentity;
+  gl.MatrixMode(GL_MODELVIEW);
+  gl.PushMatrix;
+  gl.LoadIdentity;
+  gl.MatrixMode(GL_PROJECTION);
+    gl.PushMatrix;
+    gl.LoadIdentity;
 
     // drawing rectangle over screen
-    GL.Disable(GL_DEPTH_TEST);
+    gl.Disable(GL_DEPTH_TEST);
     DrawTexturedScreenQuad3;
-    GL.Enable(GL_DEPTH_TEST);
+    gl.Enable(GL_DEPTH_TEST);
 
-  GL.PopMatrix;
-  GL.MatrixMode(GL_MODELVIEW);
-  GL.PopMatrix;
+  gl.PopMatrix;
+  gl.MatrixMode(GL_MODELVIEW);
+  gl.PopMatrix;
 end;
 
 procedure DrawTexturedScreenQuad2(const ViewPortSize: TGLSize);
 begin
-  GL.PushMatrix;
-  GL.MatrixMode(GL_PROJECTION);
-    GL.PushMatrix;
-    GL.LoadIdentity;
-    GL.Ortho(0, ViewPortSize.cx, ViewPortSize.cy, 0, 0, 1);
-    GL.Disable(GL_DEPTH_TEST);
-    GL.DepthMask(False);
-    GL.Begin_(GL_QUADS);
-      GL.TexCoord2f(0.0, ViewPortSize.cy);             GL.Vertex2f(0, 0);
-      GL.TexCoord2f(0.0, 0.0);                         GL.Vertex2f(0, ViewPortSize.cy);
-      GL.TexCoord2f(ViewPortSize.cx, 0.0);             GL.Vertex2f(ViewPortSize.cx, ViewPortSize.cy);
-      GL.TexCoord2f(ViewPortSize.cx, ViewPortSize.cy); GL.Vertex2f(ViewPortSize.cx, 0);
-    GL.End_;
-    GL.DepthMask(True);
-    GL.Enable(GL_DEPTH_TEST);
-    GL.MatrixMode(GL_PROJECTION);
-    GL.PopMatrix;
-  GL.MatrixMode(GL_MODELVIEW);
-  GL.PopMatrix;
+  gl.PushMatrix;
+  gl.MatrixMode(GL_PROJECTION);
+    gl.PushMatrix;
+    gl.LoadIdentity;
+    gl.Ortho(0, ViewPortSize.cx, ViewPortSize.cy, 0, 0, 1);
+    gl.Disable(GL_DEPTH_TEST);
+    gl.DepthMask(False);
+    gl.Begin_(GL_QUADS);
+      gl.TexCoord2f(0.0, ViewPortSize.cy);             gl.Vertex2f(0, 0);
+      gl.TexCoord2f(0.0, 0.0);                         gl.Vertex2f(0, ViewPortSize.cy);
+      gl.TexCoord2f(ViewPortSize.cx, 0.0);             gl.Vertex2f(ViewPortSize.cx, ViewPortSize.cy);
+      gl.TexCoord2f(ViewPortSize.cx, ViewPortSize.cy); gl.Vertex2f(ViewPortSize.cx, 0);
+    gl.End_;
+    gl.DepthMask(True);
+    gl.Enable(GL_DEPTH_TEST);
+    gl.MatrixMode(GL_PROJECTION);
+    gl.PopMatrix;
+  gl.MatrixMode(GL_MODELVIEW);
+  gl.PopMatrix;
 end;
 
 procedure DrawTexturedScreenQuad4(const ViewPortSize: TGLSize);
 begin
-  GL.Begin_(GL_QUADS);
-    GL.TexCoord2f(0, 0);                             GL.Vertex2f(-1, -1);
-    GL.TexCoord2f(ViewPortSize.cx, 0);               GL.Vertex2f( 1, -1);
-    GL.TexCoord2f(ViewPortSize.cx, ViewPortSize.cy); GL.Vertex2f( 1,  1);
-    GL.TexCoord2f(0, ViewPortSize.cy);               GL.Vertex2f(-1,  1);
-  GL.End_;
+  gl.Begin_(GL_QUADS);
+    gl.TexCoord2f(0, 0);                             gl.Vertex2f(-1, -1);
+    gl.TexCoord2f(ViewPortSize.cx, 0);               gl.Vertex2f( 1, -1);
+    gl.TexCoord2f(ViewPortSize.cx, ViewPortSize.cy); gl.Vertex2f( 1,  1);
+    gl.TexCoord2f(0, ViewPortSize.cy);               gl.Vertex2f(-1,  1);
+  gl.End_;
 end;
 
 procedure DrawTexturedScreenQuad5(const ViewPortSize: TGLSize);
 begin
-  GL.MatrixMode( GL_PROJECTION );
-  GL.PushMatrix;
-    GL.LoadIdentity;
-    GL.Ortho( 0, ViewPortSize.cx, ViewPortSize.cy, 0, 0, 1 );
-    GL.MatrixMode(GL_MODELVIEW);
-    GL.PushMatrix;
-      GL.LoadIdentity;
-      GL.Disable(GL_DEPTH_TEST);
-      GL.DepthMask( FALSE );
+  gl.MatrixMode( GL_PROJECTION );
+  gl.PushMatrix;
+    gl.LoadIdentity;
+    gl.Ortho( 0, ViewPortSize.cx, ViewPortSize.cy, 0, 0, 1 );
+    gl.MatrixMode(GL_MODELVIEW);
+    gl.PushMatrix;
+      gl.LoadIdentity;
+      gl.Disable(GL_DEPTH_TEST);
+      gl.DepthMask( FALSE );
       DrawTexturedScreenQuad3;
-      GL.DepthMask( TRUE );
-      GL.Enable(GL_DEPTH_TEST);
-    GL.PopMatrix;
-    GL.MatrixMode( GL_PROJECTION );
-  GL.PopMatrix;
-  GL.MatrixMode( GL_MODELVIEW );
+      gl.DepthMask( TRUE );
+      gl.Enable(GL_DEPTH_TEST);
+    gl.PopMatrix;
+    gl.MatrixMode( GL_PROJECTION );
+  gl.PopMatrix;
+  gl.MatrixMode( GL_MODELVIEW );
 end;
 
 procedure DrawTexturedScreenQuad6(const ViewPortSize: TGLSize);
 begin
-  GL.MatrixMode( GL_PROJECTION );
-  GL.PushMatrix;
-    GL.LoadIdentity;
-    GL.Ortho( 0, ViewPortSize.cx, ViewPortSize.cy, 0, 0, 1 );
-    GL.MatrixMode(GL_MODELVIEW);
-    GL.PushMatrix;
-      GL.LoadIdentity;
-      GL.Disable(GL_DEPTH_TEST);
-      GL.DepthMask( FALSE );
+  gl.MatrixMode( GL_PROJECTION );
+  gl.PushMatrix;
+    gl.LoadIdentity;
+    gl.Ortho( 0, ViewPortSize.cx, ViewPortSize.cy, 0, 0, 1 );
+    gl.MatrixMode(GL_MODELVIEW);
+    gl.PushMatrix;
+      gl.LoadIdentity;
+      gl.Disable(GL_DEPTH_TEST);
+      gl.DepthMask( FALSE );
       DrawTexturedScreenQuad4(ViewPortSize);;
-      GL.DepthMask( TRUE );
-      GL.Enable(GL_DEPTH_TEST);
-    GL.PopMatrix;
-    GL.MatrixMode( GL_PROJECTION );
-  GL.PopMatrix;
-  GL.MatrixMode( GL_MODELVIEW );
+      gl.DepthMask( TRUE );
+      gl.Enable(GL_DEPTH_TEST);
+    gl.PopMatrix;
+    gl.MatrixMode( GL_PROJECTION );
+  gl.PopMatrix;
+  gl.MatrixMode( GL_MODELVIEW );
 end;
 
 procedure DrawTexturedScreenQuad3;
 begin
-  GL.Begin_(GL_QUADS);
-    GL.TexCoord2f(0, 0); GL.Vertex2f(-1, -1);
-    GL.TexCoord2f(1, 0); GL.Vertex2f(1, -1);
-    GL.TexCoord2f(1, 1); GL.Vertex2f(1, 1);
-    GL.TexCoord2f(0, 1); GL.Vertex2f(-1, 1);
-  GL.End_;
+  gl.Begin_(GL_QUADS);
+    gl.TexCoord2f(0, 0); gl.Vertex2f(-1, -1);
+    gl.TexCoord2f(1, 0); gl.Vertex2f(1, -1);
+    gl.TexCoord2f(1, 1); gl.Vertex2f(1, 1);
+    gl.TexCoord2f(0, 1); gl.Vertex2f(-1, 1);
+  gl.End_;
 end;
 
 procedure InitTexture(
@@ -501,11 +501,11 @@ begin
     TextureBinding[ActiveTexture, TextureTarget] := TextureHandle;
   end;
   glTarget := DecodeGLTextureTarget(TextureTarget);
-  GL.TexParameteri(glTarget, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  GL.TexParameteri(glTarget, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-  GL.TexParameteri(glTarget, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  GL.TexParameteri(glTarget, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  GL.CopyTexImage2D(glTarget, 0, GL_RGBA8, 0, 0, TextureSize.cx, TextureSize.cy, 0);
+  gl.TexParameteri(glTarget, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  gl.TexParameteri(glTarget, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  gl.TexParameteri(glTarget, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  gl.TexParameteri(glTarget, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  gl.CopyTexImage2D(glTarget, 0, GL_RGBA8, 0, 0, TextureSize.cx, TextureSize.cy, 0);
 end;
 
 { TGLShaderProgram }

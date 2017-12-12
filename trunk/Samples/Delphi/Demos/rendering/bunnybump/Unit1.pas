@@ -213,10 +213,10 @@ begin
   if IsInitialized then
     exit;
 
-  if GL.ARB_multitexture and GL.ARB_vertex_program and GL.ARB_texture_env_dot3
+  if gl.ARB_multitexture and gl.ARB_vertex_program and gl.ARB_texture_env_dot3
   then
     ComboBox1.Items.Add('Dot3 Texture Combiner');
-  if GL.ARB_multitexture and GL.ARB_vertex_program and GL.ARB_fragment_program
+  if gl.ARB_multitexture and gl.ARB_vertex_program and gl.ARB_fragment_program
   then
   begin
     ComboBox1.Items.Add('Basic Fragment Program');

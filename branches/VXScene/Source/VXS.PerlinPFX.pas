@@ -1,9 +1,9 @@
 //
-// VXScene Component Library, based on GLScene http://glscene.sourceforge.net 
+// VXScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
 {
-   PFX particle effects revolving around the use of Perlin noise. 
-    
+   PFX particle effects revolving around the use of Perlin noise.
+
 }
 unit VXS.PerlinPFX;
 
@@ -12,96 +12,88 @@ interface
 {$I VXScene.inc}
 
 uses
-  System.Classes, System.Math,
-   
-  VXS.ParticleFX, VXS.Graphics, VXS.CrossPlatform,
-  VXS.PerlinNoise3D, Winapi.OpenGL, Winapi.OpenGLext,  VXS.VectorGeometry;
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
+  System.Classes,
+  System.Math,
+
+  VXS.ParticleFX,
+  VXS.Graphics,
+  VXS.CrossPlatform,
+  VXS.PerlinNoise3D,
+  VXS.VectorGeometry;
 
 type
 
-   // TVXPerlinPFXManager
-   //
-   { A sprite-based particles FX manager using perlin-based sprites. 
+   { A sprite-based particles FX manager using perlin-based sprites.
       This PFX manager is more suited for smoke or fire effects, and with proper
       tweaking of the texture and perlin parameters, may help render a convincing
-      effect with less particles. 
+      effect with less particles.
       The sprite generate by this manager is the composition of a distance-based
       intensity and a perlin noise. }
-   TVXPerlinPFXManager = class (TVXBaseSpritePFXManager)
-      private
-         
-         FTexMapSize : Integer;
-         FNoiseSeed : Integer;
-         FNoiseScale : Integer;
-         FNoiseAmplitude : Integer;
-         FSmoothness : Single;
-         FBrightness, FGamma : Single;
-
-      protected
-         
-         procedure PrepareImage(bmp32 : TVXBitmap32; var texFormat : Integer); override;
-
-         procedure SetTexMapSize(const val : Integer);
-         procedure SetNoiseSeed(const val : Integer);
-         procedure SetNoiseScale(const val : Integer);
-         procedure SetNoiseAmplitude(const val : Integer);
-         procedure SetSmoothness(const val : Single);
-         procedure SetBrightness(const val : Single);
-         procedure SetGamma(const val : Single);
-
-      public
-         
-         constructor Create(aOwner : TComponent); override;
-         destructor Destroy; override;
-
-	   published
-	      
-         { Underlying texture map size, as a power of two. 
-            Min value is 3 (size=8), max value is 9 (size=512). }
-         property TexMapSize : Integer read FTexMapSize write SetTexMapSize default 6;
-         { Smoothness of the distance-based intensity. 
-            This value is the exponent applied to the intensity in the texture,
-            basically with a value of 1 (default) the intensity decreases linearly,
-            with higher values, it will remain 'constant' in the center then
-            fade-off more abruptly, and with values below 1, there will be a
-            sharp spike in the center. }
-         property Smoothness : Single read FSmoothness write SetSmoothness;
-         { Brightness factor applied to the perlin texture intensity. 
-            Brightness acts as a scaling, non-saturating factor. Examples: 
-             Brightness = 1 : intensities in the [0; 1] range
-             Brightness = 2 : intensities in the [0.5; 1] range
-             Brightness = 0.5 : intensities in the [0; 0.5] range
-             Brightness is applied to the final texture (and thus affects
-            the distance based intensity). }
-         property Brightness : Single read FBrightness write SetBrightness;
-         property Gamma : Single read FGamma write SetGamma;
-         { Random seed to use for the perlin noise. }
-         property NoiseSeed : Integer read FNoiseSeed write SetNoiseSeed default 0;
-         { Scale applied to the perlin noise (stretching). }
-         property NoiseScale : Integer read FNoiseScale write SetNoiseScale default 100;
-         { Amplitude applied to the perlin noise (intensity). 
-            This value represent the percentage of the sprite luminance affected by
-            the perlin texture. }
-         property NoiseAmplitude : Integer read FNoiseAmplitude write SetNoiseAmplitude default 50;
-
-         property ColorMode default scmInner;
-         property SpritesPerTexture default sptFour;
-         property ParticleSize;
-         property ColorInner;
-         property ColorOuter;
-         property LifeColors;
+   TVXPerlinPFXManager = class(TVXBaseSpritePFXManager)
+   private
+     FTexMapSize: Integer;
+     FNoiseSeed: Integer;
+     FNoiseScale: Integer;
+     FNoiseAmplitude: Integer;
+     FSmoothness: Single;
+     FBrightness, FGamma: Single;
+   protected
+     procedure PrepareImage(bmp32: TVXBitmap32; var texFormat: Integer); override;
+     procedure SetTexMapSize(const val: Integer);
+     procedure SetNoiseSeed(const val: Integer);
+     procedure SetNoiseScale(const val: Integer);
+     procedure SetNoiseAmplitude(const val: Integer);
+     procedure SetSmoothness(const val: Single);
+     procedure SetBrightness(const val: Single);
+     procedure SetGamma(const val: Single);
+   public
+     constructor Create(aOwner: TComponent); override;
+     destructor Destroy; override;
+   published
+     { Underlying texture map size, as a power of two.
+       Min value is 3 (size=8), max value is 9 (size=512). }
+     property TexMapSize: Integer read FTexMapSize write SetTexMapSize default 6;
+     { Smoothness of the distance-based intensity.
+       This value is the exponent applied to the intensity in the texture,
+       basically with a value of 1 (default) the intensity decreases linearly,
+       with higher values, it will remain 'constant' in the center then
+       fade-off more abruptly, and with values below 1, there will be a
+       sharp spike in the center. }
+     property Smoothness: Single read FSmoothness write SetSmoothness;
+     { Brightness factor applied to the perlin texture intensity.
+       Brightness acts as a scaling, non-saturating factor. Examples:
+       Brightness = 1 : intensities in the [0; 1] range
+       Brightness = 2 : intensities in the [0.5; 1] range
+       Brightness = 0.5 : intensities in the [0; 0.5] range
+       Brightness is applied to the final texture (and thus affects
+       the distance based intensity). }
+     property Brightness: Single read FBrightness write SetBrightness;
+     property Gamma: Single read FGamma write SetGamma;
+     { Random seed to use for the perlin noise. }
+     property NoiseSeed: Integer read FNoiseSeed write SetNoiseSeed default 0;
+     { Scale applied to the perlin noise (stretching). }
+     property NoiseScale: Integer read FNoiseScale write SetNoiseScale default 100;
+     { Amplitude applied to the perlin noise (intensity).
+       This value represent the percentage of the sprite luminance affected by
+       the perlin texture. }
+     property NoiseAmplitude: Integer read FNoiseAmplitude write SetNoiseAmplitude default 50;
+     property ColorMode default scmInner;
+     property SpritesPerTexture default sptFour;
+     property ParticleSize;
+     property ColorInner;
+     property ColorOuter;
+     property LifeColors;
    end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
 // ------------------
+
 // ------------------ TVXPerlinPFXManager ------------------
 // ------------------
 
-// Create
-//
 constructor TVXPerlinPFXManager.Create(aOwner : TComponent);
 begin
    inherited;
@@ -115,15 +107,11 @@ begin
    ColorMode:=scmInner;
 end;
 
-// Destroy
-//
 destructor TVXPerlinPFXManager.Destroy;
 begin
    inherited Destroy;
 end;
 
-// SetTexMapSize
-//
 procedure TVXPerlinPFXManager.SetTexMapSize(const val : Integer);
 begin
    if val<>FTexMapSize then begin
@@ -134,8 +122,6 @@ begin
    end;
 end;
 
-// SetNoiseSeed
-//
 procedure TVXPerlinPFXManager.SetNoiseSeed(const val : Integer);
 begin
    if val<>FNoiseSeed then begin
@@ -144,8 +130,6 @@ begin
    end;
 end;
 
-// SetNoiseScale
-//
 procedure TVXPerlinPFXManager.SetNoiseScale(const val : Integer);
 begin
    if val<>FNoiseScale then begin
@@ -154,8 +138,6 @@ begin
    end;
 end;
 
-// SetNoiseAmplitude
-//
 procedure TVXPerlinPFXManager.SetNoiseAmplitude(const val : Integer);
 begin
    if val<>FNoiseAmplitude then begin
@@ -166,8 +148,6 @@ begin
    end;
 end;
 
-// SetSmoothness
-//
 procedure TVXPerlinPFXManager.SetSmoothness(const val : Single);
 begin
    if FSmoothness<>val then begin
@@ -176,8 +156,6 @@ begin
    end;
 end;
 
-// SetBrightness
-//
 procedure TVXPerlinPFXManager.SetBrightness(const val : Single);
 begin
    if FBrightness<>val then begin
@@ -186,8 +164,6 @@ begin
    end;
 end;
 
-// SetGamma
-//
 procedure TVXPerlinPFXManager.SetGamma(const val : Single);
 begin
    if FGamma<>val then begin
@@ -196,8 +172,6 @@ begin
    end;
 end;
 
-// BindTexture
-//
 procedure TVXPerlinPFXManager.PrepareImage(bmp32 : TVXBitmap32; var texFormat : Integer);
 
    procedure PrepareSubImage(dx, dy, s : Integer; noise : TVXPerlin3DNoise);
@@ -206,7 +180,7 @@ procedure TVXPerlinPFXManager.PrepareImage(bmp32 : TVXBitmap32; var texFormat : 
       x, y, d : Integer;
       is2, f, fy, pf, nBase, nAmp, df, dfg : Single;
       invGamma : Single;
-      scanLine : PGLPixel32Array;
+      scanLine : PPixel32Array;
       gotIntensityCorrection : Boolean;
    begin
       s2:=s shr 1;
@@ -275,14 +249,9 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 
-   // class registrations
    RegisterClasses([TVXPerlinPFXManager]);
 
 end.

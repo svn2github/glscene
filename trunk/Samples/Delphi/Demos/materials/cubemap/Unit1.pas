@@ -61,7 +61,7 @@ end;
 
 procedure TForm1.GLSceneViewer1BeforeRender(Sender: TObject);
 begin
-  CubmapSupported := GL.ARB_texture_cube_map;
+  CubmapSupported := gl.ARB_texture_cube_map;
   GLSceneViewer1.BeforeRender := nil;
 end;
 

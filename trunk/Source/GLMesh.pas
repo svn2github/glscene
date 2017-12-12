@@ -284,7 +284,7 @@ begin
   if val <> Locked then
   begin
     // Only supported with NVidia's right now
-    if GL.NV_vertex_array_range and (CurrentGLContext <> nil) then
+    if gl.NV_vertex_array_range and (CurrentGLContext <> nil) then
     begin
       size := FCount * SizeOf(TGLVertexData);
       if val then
@@ -292,10 +292,10 @@ begin
         // Lock
         FLockedOldValues := FValues;
 {$IFDEF MSWINDOWS}
-        FValues := GL.WAllocateMemoryNV(size, 0, 0, 0.5);
+        FValues := gl.WAllocateMemoryNV(size, 0, 0, 0.5);
 {$ENDIF}
 {$IFDEF LINUX}
-        FValues := GL.XAllocateMemoryNV(size, 0, 0, 0.5);
+        FValues := gl.XAllocateMemoryNV(size, 0, 0, 0.5);
 {$ENDIF}
         if FValues = nil then
         begin
@@ -309,10 +309,10 @@ begin
       begin
         // Unlock
 {$IFDEF MSWINDOWS}
-        GL.WFreeMemoryNV(FValues);
+        gl.WFreeMemoryNV(FValues);
 {$ENDIF}
 {$IFDEF LINUX}
-        GL.XFreeMemoryNV(FValues);
+        gl.XFreeMemoryNV(FValues);
 {$ENDIF}
         FValues := FLockedOldValues;
         FLockedOldValues := nil;
@@ -325,8 +325,8 @@ procedure TGLVertexList.EnterLockSection;
 begin
   if Locked then
   begin
-    GL.VertexArrayRangeNV(FCount * SizeOf(TGLVertexData), FValues);
-    GL.EnableClientState(GL_VERTEX_ARRAY_RANGE_NV);
+    gl.VertexArrayRangeNV(FCount * SizeOf(TGLVertexData), FValues);
+    gl.EnableClientState(GL_VERTEX_ARRAY_RANGE_NV);
   end;
 end;
 
@@ -334,8 +334,8 @@ procedure TGLVertexList.LeaveLockSection;
 begin
   if Locked then
   begin
-    GL.DisableClientState(GL_VERTEX_ARRAY_RANGE_NV);
-    GL.FlushVertexArrayRangeNV;
+    gl.DisableClientState(GL_VERTEX_ARRAY_RANGE_NV);
+    gl.FlushVertexArrayRangeNV;
   end;
 end;
 
@@ -519,11 +519,11 @@ end;
 
 procedure TGLVertexList.DefineOpenGLArrays;
 begin
-  GL.EnableClientState(GL_VERTEX_ARRAY);
-  GL.VertexPointer(3, GL_FLOAT, SizeOf(TGLVertexData) - SizeOf(TAffineVector),
+  gl.EnableClientState(GL_VERTEX_ARRAY);
+  gl.VertexPointer(3, GL_FLOAT, SizeOf(TGLVertexData) - SizeOf(TAffineVector),
     FirstVertex);
-  GL.EnableClientState(GL_NORMAL_ARRAY);
-  GL.NormalPointer(GL_FLOAT, SizeOf(TGLVertexData) - SizeOf(TAffineVector),
+  gl.EnableClientState(GL_NORMAL_ARRAY);
+  gl.NormalPointer(GL_FLOAT, SizeOf(TGLVertexData) - SizeOf(TAffineVector),
     FirstNormal);
   xgl.EnableClientState(GL_TEXTURE_COORD_ARRAY);
   xgl.TexCoordPointer(2, GL_FLOAT, SizeOf(TGLVertexData) - SizeOf(TTexPoint),
@@ -594,24 +594,24 @@ begin
     FVertices.EnterLockSection;
   case FVertexMode of
     vmV:
-      GL.InterleavedArrays(GL_V3F, SizeOf(TGLVertexData), FVertices.FirstVertex);
+      gl.InterleavedArrays(GL_V3F, SizeOf(TGLVertexData), FVertices.FirstVertex);
     vmVN:
-      GL.InterleavedArrays(GL_N3F_V3F, SizeOf(TGLVertexData),
+      gl.InterleavedArrays(GL_N3F_V3F, SizeOf(TGLVertexData),
         FVertices.FirstNormal);
     vmVNC:
-      GL.InterleavedArrays(GL_C4F_N3F_V3F, SizeOf(TGLVertexData),
+      gl.InterleavedArrays(GL_C4F_N3F_V3F, SizeOf(TGLVertexData),
         FVertices.FirstColor);
     vmVNT, vmVNCT:
-      GL.InterleavedArrays(GL_T2F_C4F_N3F_V3F, 0, FVertices.FirstEntry);
+      gl.InterleavedArrays(GL_T2F_C4F_N3F_V3F, 0, FVertices.FirstEntry);
     vmVT:
-      GL.InterleavedArrays(GL_T2F_V3F, 0, FVertices.FirstEntry);
+      gl.InterleavedArrays(GL_T2F_V3F, 0, FVertices.FirstEntry);
   else
     Assert(False, strInterleaveNotSupported);
   end;
   if FVertexMode in [vmVNC, vmVNCT] then
   begin
     rci.GLStates.Enable(stColorMaterial);
-    GL.ColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
+    gl.ColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
     rci.GLStates.SetGLMaterialColors(cmFront, clrBlack, clrGray20, clrGray80,
       clrBlack, 0);
     rci.GLStates.SetGLMaterialColors(cmBack, clrBlack, clrGray20, clrGray80,
@@ -620,17 +620,17 @@ begin
   VertexCount := FVertices.Count;
   case FMode of
     mmTriangleStrip:
-      GL.DrawArrays(GL_TRIANGLE_STRIP, 0, VertexCount);
+      gl.DrawArrays(GL_TRIANGLE_STRIP, 0, VertexCount);
     mmTriangleFan:
-      GL.DrawArrays(GL_TRIANGLE_FAN, 0, VertexCount);
+      gl.DrawArrays(GL_TRIANGLE_FAN, 0, VertexCount);
     mmTriangles:
-      GL.DrawArrays(GL_TRIANGLES, 0, VertexCount);
+      gl.DrawArrays(GL_TRIANGLES, 0, VertexCount);
     mmQuadStrip:
-      GL.DrawArrays(GL_QUAD_STRIP, 0, VertexCount);
+      gl.DrawArrays(GL_QUAD_STRIP, 0, VertexCount);
     mmQuads:
-      GL.DrawArrays(GL_QUADS, 0, VertexCount);
+      gl.DrawArrays(GL_QUADS, 0, VertexCount);
     mmPolygon:
-      GL.DrawArrays(GL_POLYGON, 0, VertexCount);
+      gl.DrawArrays(GL_POLYGON, 0, VertexCount);
   else
     Assert(False);
   end;

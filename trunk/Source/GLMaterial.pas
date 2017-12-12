@@ -735,7 +735,7 @@ end;
 procedure TGLFaceProperties.ApplyNoLighting(var rci: TGLRenderContextInfo;
   aFace: TCullFaceMode);
 begin
-  GL.Color4fv(Diffuse.AsAddress);
+  gl.Color4fv(Diffuse.AsAddress);
 end;
 
 procedure TGLFaceProperties.Assign(Source: TPersistent);
@@ -810,7 +810,7 @@ begin
     DepthWriteMask := FDepthWrite;
     DepthFunc := FCompareFunc;
     SetDepthRange(FZNear, FZFar);
-    if GL.ARB_depth_clamp then
+    if gl.ARB_depth_clamp then
       if FDepthClamp then
         Enable(stDepthClamp)
       else
@@ -1844,7 +1844,7 @@ begin
   end
   else
     ARci.GLStates.CurrentProgram := 0;
-  if (Texture2Name <> '') and GL.ARB_multitexture and (not
+  if (Texture2Name <> '') and gl.ARB_multitexture and (not
     xgl.SecondTextureUnitForbidden) then
   begin
     if not Assigned(libMatTexture2) then
@@ -1920,7 +1920,7 @@ begin
 
   if not Result then
   begin
-    if Assigned(libMatTexture2) and GL.ARB_multitexture and (not
+    if Assigned(libMatTexture2) and gl.ARB_multitexture and (not
       xgl.SecondTextureUnitForbidden) then
     begin
       libMatTexture2.Material.Texture.UnApplyAsTexture2(ARci, (not

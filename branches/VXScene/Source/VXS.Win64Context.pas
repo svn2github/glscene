@@ -50,11 +50,10 @@ type
     procedure ClearFAttribs;
     procedure AddFAttrib(attrib, value: Single);
     procedure DestructionEarlyWarning(sender: TObject);
-    procedure ChooseWGLFormat(DC: HDC; nMaxFormats: Cardinal;
-      piFormats: PInteger; var nNumFormats: Integer; BufferCount: Integer = 1);
+    procedure ChooseWGLFormat(DC: HDC; nMaxFormats: Cardinal; piFormats: PInteger; var nNumFormats: Integer; 
+	  BufferCount: Integer = 1);
     procedure DoCreateContext(ADeviceHandle: THandle); override;
-    procedure DoCreateMemoryContext(OutputDevice: THandle; Width, Height: Integer;
-      BufferCount: Integer); override;
+    procedure DoCreateMemoryContext(OutputDevice: THandle; Width, Height: Integer; BufferCount: Integer); override;
     function DoShareLists(aContext: TVXContext): Boolean; override;
     procedure DoDestroyContext; override;
     procedure DoActivate; override;
@@ -90,8 +89,7 @@ var
   vTrackedEvents: array of TNotifyEvent;
   vTrackingHook: HHOOK;
 
-function TrackHookProc(nCode: Integer; wParam: wParam; lParam: lParam)
-  : Integer; stdcall;
+function TrackHookProc(nCode: Integer; wParam: wParam; lParam: lParam): Integer; stdcall;
 var
   i: Integer;
   p: PCWPStruct;
@@ -128,8 +126,7 @@ begin
   if not IsWindow(h) then
     Exit;
   if vTrackingCount = 0 then
-    vTrackingHook := SetWindowsHookEx(WH_CALLWNDPROC, @TrackHookProc, 0,
-      GetCurrentThreadID);
+    vTrackingHook := SetWindowsHookEx(WH_CALLWNDPROC, @TrackHookProc, 0, GetCurrentThreadID);
   Inc(vTrackingCount);
   SetLength(vTrackedHwnd, vTrackingCount);
   vTrackedHwnd[vTrackingCount - 1] := h;
@@ -137,8 +134,6 @@ begin
   vTrackedEvents[vTrackingCount - 1] := notifyEvent;
 end;
 
-// UnTrackWindows
-//
 procedure UnTrackWindow(h: HWND);
 var
   i, k: Integer;
@@ -171,8 +166,8 @@ end;
 
 var
   vUtilWindowClass: TWndClass = (style: 0; lpfnWndProc: @DefWindowProc;
-    cbClsExtra: 0; cbWndExtra: 0; hInstance: 0; hIcon: 0; hCursor: 0;
-    hbrBackground: 0; lpszMenuName: nil; lpszClassName: 'GLSUtilWindow');
+  cbClsExtra: 0; cbWndExtra: 0; hInstance: 0; hIcon: 0; 
+  hCursor: 0; hbrBackground: 0; lpszMenuName: nil; lpszClassName: 'GLSUtilWindow');
 
 function CreateTempWnd: HWND;
 var
@@ -180,13 +175,10 @@ var
   tempClass: TWndClass;
 begin
   vUtilWindowClass.hInstance := hInstance;
-  classRegistered := GetClassInfo(hInstance, vUtilWindowClass.lpszClassName,
-    tempClass);
+  classRegistered := GetClassInfo(hInstance, vUtilWindowClass.lpszClassName, tempClass);
   if not classRegistered then
-  ///  RegisterClass(vUtilWindowClass) - to do for FMX
-    ;
-  Result := CreateWindowEx(WS_EX_TOOLWINDOW, vUtilWindowClass.lpszClassName, '',
-    WS_POPUP, 0, 0, 0, 0, 0, 0, hInstance, nil);
+  ///  RegisterClass(vUtilWindowClass) - to do for FMX ;
+  Result := CreateWindowEx(WS_EX_TOOLWINDOW, vUtilWindowClass.lpszClassName, '', WS_POPUP, 0, 0, 0, 0, 0, 0, hInstance, nil);
 end;
 
 // ------------------
@@ -220,12 +212,9 @@ begin
   with LogPalette, PFD do
     for i := 0 to nColors - 1 do
     begin
-      palPalEntry[i].peRed := (((i shr cRedShift) and RedMask) * 255)
-        div RedMask;
-      palPalEntry[i].peGreen := (((i shr cGreenShift) and GreenMask) * 255)
-        div GreenMask;
-      palPalEntry[i].peBlue := (((i shr cBlueShift) and BlueMask) * 255)
-        div BlueMask;
+      palPalEntry[i].peRed := (((i shr cRedShift) and RedMask) * 255) div RedMask;
+      palPalEntry[i].peGreen := (((i shr cGreenShift) and GreenMask) * 255) div GreenMask;
+      palPalEntry[i].peBlue := (((i shr cBlueShift) and BlueMask) * 255) div BlueMask;
       palPalEntry[i].peFlags := 0;
     end;
 
@@ -318,17 +307,15 @@ begin
     DestroyContext;
 end;
 
-procedure TVXWinContext.ChooseWGLFormat(DC: HDC; nMaxFormats: Cardinal;
-  piFormats: PInteger; var nNumFormats: Integer; BufferCount: Integer);
+procedure TVXWinContext.ChooseWGLFormat(DC: HDC; nMaxFormats: Cardinal; piFormats: PInteger; var nNumFormats: Integer; 
+  BufferCount: Integer);
 const
-  cAAToSamples: array [aaNone .. csa16xHQ] of Integer = (1, 2, 2, 4, 4, 6, 8,
-    16, 8, 8, 16, 16);
+  cAAToSamples: array [aaNone .. csa16xHQ] of Integer = (1, 2, 2, 4, 4, 6, 8, 16, 8, 8, 16, 16);
   cCSAAToSamples: array [csa8x .. csa16xHQ] of Integer = (4, 8, 4, 8);
 
   procedure ChoosePixelFormat;
   begin
-    if not wglChoosePixelFormatARB(DC, @FiAttribs[0], @FfAttribs[0], 32,
-      PGLint(piFormats), @nNumFormats) then
+    if not wglChoosePixelFormatARB(DC, @FiAttribs[0], @FfAttribs[0], 32, PGLint(piFormats), @nNumFormats) then
       nNumFormats := 0;
   end;
 
@@ -480,16 +467,11 @@ begin
   if not FLegacyContextsOnly then
   begin
     case Layer of
-      clUnderlay2:
-        FRC := wglCreateLayerContext(aDC, -2);
-      clUnderlay1:
-        FRC := wglCreateLayerContext(aDC, -1);
-      clMainPlane:
-        FRC := wglCreateContext(aDC);
-      clOverlay1:
-        FRC := wglCreateLayerContext(aDC, 1);
-      clOverlay2:
-        FRC := wglCreateLayerContext(aDC, 2);
+      clUnderlay2:  FRC := wglCreateLayerContext(aDC, -2);
+      clUnderlay1:  FRC := wglCreateLayerContext(aDC, -1);
+      clMainPlane:  FRC := wglCreateContext(aDC);
+      clOverlay1:   FRC := wglCreateLayerContext(aDC, 1);
+      clOverlay2:   FRC := wglCreateLayerContext(aDC, 2);
     end;
   end
   else
@@ -500,8 +482,7 @@ begin
   FDC := aDC;
 
   if not wglMakeCurrent(FDC, FRC) then
-    raise EVXContext.Create(Format(strContextActivationFailed,
-      [GetLastError, SysErrorMessage(GetLastError)]));
+    raise EVXContext.Create(Format(strContextActivationFailed, [GetLastError, SysErrorMessage(GetLastError)]));
 
   if not FLegacyContextsOnly then
   begin
@@ -517,8 +498,8 @@ begin
         PropagateSharedContext;
       end;
     end;
-    FGL.DebugMode := False;
-    FGL.Initialize;
+    //DebugMode := False;
+    ReadExtensions(); //FGL.Initialize;
     MakeGLCurrent;
     // If we are using AntiAliasing, adjust filtering hints
     if AntiAliasing in [aa2xHQ, aa4xHQ, csa8xHQ, csa16xHQ] then
@@ -549,7 +530,7 @@ begin
   try
     ClearIAttribs;
     // Initialize forward context
-    if VXStates.ForwardContext then
+    if False { VXStates.ForwardContext } then
     begin
       if GL_VERSION_4_2 then
       begin
@@ -608,7 +589,7 @@ begin
     if rcoDebug in Options then
     begin
       AddIAttrib(WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_DEBUG_BIT_ARB);
-      FGL.DebugMode := True;
+      ///DebugMode := True;
     end;
 
     case Layer of
@@ -654,12 +635,11 @@ begin
 
     if not wglMakeCurrent(FDC, FRC) then
     begin
-      ShowMessage(Format(strContextActivationFailed,
-        [GetLastError, SysErrorMessage(GetLastError)]));
+      ShowMessage(Format(strContextActivationFailed, [GetLastError, SysErrorMessage(GetLastError)]));
       Abort;
     end;
 
-    FGL.Initialize;
+    InitOpenGL; ///FGL.Initialize;
     MakeGLCurrent;
     // If we are using AntiAliasing, adjust filtering hints
     if AntiAliasing in [aa2xHQ, aa4xHQ, csa8xHQ, csa16xHQ] then
@@ -784,8 +764,7 @@ begin
             ClearIAttribs;
             AddIAttrib(WGL_DRAW_TO_WINDOW_ARB, GL_TRUE);
             AddIAttrib(WGL_STEREO_ARB, cBoolToInt[rcoStereo in Options]);
-            AddIAttrib(WGL_DOUBLE_BUFFER_ARB,
-              cBoolToInt[rcoDoubleBuffered in Options]);
+            AddIAttrib(WGL_DOUBLE_BUFFER_ARB, cBoolToInt[rcoDoubleBuffered in Options]);
 
             ChooseWGLFormat(ADeviceHandle, 32, @iFormats, nbFormats);
             if nbFormats > 0 then
@@ -799,8 +778,7 @@ begin
                 begin
                   pixelFormat := iFormats[i];
                   iValue := GL_FALSE;
-                  wglGetPixelFormatAttribivARB(ADeviceHandle, pixelFormat, 0,
-                    1, @iAttrib, @iValue);
+                  wglGetPixelFormatAttribivARB(ADeviceHandle, pixelFormat, 0,  1, @iAttrib, @iValue);
                   if iValue = GL_FALSE then
                     break;
                 end;
@@ -836,8 +814,7 @@ begin
   begin
     // Legacy pixel format selection
     pixelFormat := ChoosePixelFormat(ADeviceHandle, @pfDescriptor);
-    if (not(aType in cMemoryDCs)) and
-      (not CurrentPixelFormatIsHardwareAccelerated) then
+    if (not(aType in cMemoryDCs)) and (not CurrentPixelFormatIsHardwareAccelerated) then
     begin
       softwarePixelFormat := pixelFormat;
       pixelFormat := 0;
@@ -874,8 +851,7 @@ begin
   end;
 
   // Check the properties we just set.
-  DescribePixelFormat(ADeviceHandle, pixelFormat, SizeOf(pfDescriptor),
-    pfDescriptor);
+  DescribePixelFormat(ADeviceHandle, pixelFormat, SizeOf(pfDescriptor), pfDescriptor);
   with pfDescriptor do
   begin
     if (dwFlags and PFD_NEED_PALETTE) <> 0 then
@@ -887,16 +863,14 @@ begin
 
   if not FLegacyContextsOnly then
   begin
-    if ((pfDescriptor.dwFlags and PFD_GENERIC_FORMAT) > 0) and
-      (FAcceleration = chaHardware) then
+    if ((pfDescriptor.dwFlags and PFD_GENERIC_FORMAT) > 0) and (FAcceleration = chaHardware) then
     begin
       FAcceleration := chaSoftware;
       ShowMessage(strFailHWRC);
     end;
   end;
 
-  if not FLegacyContextsOnly and WGL_ARB_create_context and
-    (FAcceleration = chaHardware) then
+  if not FLegacyContextsOnly and WGL_ARB_create_context and (FAcceleration = chaHardware) then
     CreateNewContext(ADeviceHandle)
   else
     CreateOldContext(ADeviceHandle);
@@ -929,14 +903,12 @@ begin
   except
     on E: Exception do
     begin
-      raise Exception.Create(strUnableToCreateLegacyContext + #13#10 + E.ClassName
-        + ': ' + E.message);
+      raise Exception.Create(strUnableToCreateLegacyContext + #13#10 + E.ClassName + ': ' + E.message);
     end;
   end;
 end;
 
-procedure TVXWinContext.DoCreateMemoryContext(OutputDevice: THandle;
-  Width, Height: Integer; BufferCount: Integer);
+procedure TVXWinContext.DoCreateMemoryContext(OutputDevice: THandle; Width, Height: Integer; BufferCount: Integer);
 var
   nbFormats: Integer;
   iFormats: array [0 .. 31] of Integer;
@@ -1048,7 +1020,7 @@ begin
                 if rcoDebug in Options then
                 begin
                   AddIAttrib(WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_DEBUG_BIT_ARB);
-                  FGL.DebugMode := True;
+                  ///DebugMode := True;
                 end;
 
                 case Layer of
@@ -1129,7 +1101,7 @@ begin
   end;
 
   Activate;
-  FGL.Initialize;
+  InitOpenGL; ///FGL.Initialize;
   // If we are using AntiAliasing, adjust filtering hints
   if AntiAliasing in [aa2xHQ, aa4xHQ, csa8xHQ, csa16xHQ] then
     VXStates.MultisampleFilterHint := hintNicest
@@ -1217,8 +1189,8 @@ begin
     Abort;
   end;
 
-  if not FGL.IsInitialized then
-    FGL.Initialize(CurrentVXContext = nil);
+  if not LoadOpenGL then
+    InitOpenGL; ///FGL.Initialize(CurrentVXContext = nil);
 end;
 
 procedure TVXWinContext.DoDeactivate;

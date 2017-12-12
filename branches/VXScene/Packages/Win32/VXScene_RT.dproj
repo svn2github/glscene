@@ -334,7 +334,6 @@
         <DCCReference Include="..\..\Source\Basis\VXS.Objects.pas"/>
         <DCCReference Include="..\..\Source\Basis\VXS.Octree.pas"/>
         <DCCReference Include="..\..\Source\Basis\VXS.OpenGL1x.pas"/>
-        <DCCReference Include="..\..\Source\Basis\VXS.OpenGLAdapter.pas"/>
         <DCCReference Include="..\..\Source\Basis\VXS.OpenGLFMX.pas"/>
         <DCCReference Include="..\..\Source\VXS.OutlineShader.pas"/>
         <DCCReference Include="..\..\Source\VXS.ParametricSurfaces.pas"/>

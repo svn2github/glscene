@@ -1202,8 +1202,8 @@ end;
 
 function TCustomCgShader.ShaderSupported: boolean;
 begin
-  result := (GL.ARB_shader_objects and GL.ARB_vertex_program and
-    GL.ARB_vertex_shader and GL.ARB_fragment_shader);
+  result := (gl.ARB_shader_objects and gl.ARB_vertex_program and
+    gl.ARB_vertex_shader and gl.ARB_fragment_shader);
 end;
 
 

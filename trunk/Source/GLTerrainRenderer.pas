@@ -558,20 +558,20 @@ begin
 
   xgl.PushState;
   try
-    if GL.ARB_multitexture then
+    if gl.ARB_multitexture then
       xgl.MapTexCoordToDual
     else
       xgl.MapTexCoordToMain;
 
-    GL.PushMatrix;
-    GL.Scalef(1, 1, 1 / 128);
-    GL.Translatef(-0.5 * TileSize, -0.5 * TileSize, 0);
-    GL.EnableClientState(GL_VERTEX_ARRAY);
+    gl.PushMatrix;
+    gl.Scalef(1, 1, 1 / 128);
+    gl.Translatef(-0.5 * TileSize, -0.5 * TileSize, 0);
+    gl.EnableClientState(GL_VERTEX_ARRAY);
     xgl.EnableClientState(GL_TEXTURE_COORD_ARRAY);
-    GL.DisableClientState(GL_COLOR_ARRAY);
-    GL.DisableClientState(GL_NORMAL_ARRAY);
+    gl.DisableClientState(GL_COLOR_ARRAY);
+    gl.DisableClientState(GL_NORMAL_ARRAY);
 
-    GL.VertexPointer(3, GL_FLOAT, 0, FBufferVertices.list);
+    gl.VertexPointer(3, GL_FLOAT, 0, FBufferVertices.list);
     xgl.TexCoordPointer(2, GL_FLOAT, 0, FBufferTexPoints.list);
   finally
     xgl.PopState;
@@ -733,12 +733,12 @@ begin
 
   xgl.PushState;
   try
-    if GL.ARB_multitexture then
+    if gl.ARB_multitexture then
       xgl.MapTexCoordToDual
     else
       xgl.MapTexCoordToMain;
 
-    GL.DisableClientState(GL_VERTEX_ARRAY);
+    gl.DisableClientState(GL_VERTEX_ARRAY);
     xgl.DisableClientState(GL_TEXTURE_COORD_ARRAY);
   finally
     xgl.PopState;
@@ -756,7 +756,7 @@ begin
     postRenderHeightDataList.Free;
   end;
 
-  GL.PopMatrix;
+  gl.PopMatrix;
 
   if (tmReleaseUnusedTiles in TileManagement) then
   begin // Tile cache management option

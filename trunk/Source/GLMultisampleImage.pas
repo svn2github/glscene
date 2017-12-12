@@ -250,23 +250,23 @@ var
   maxSamples, maxSize: TGLint;
 begin
   // Check smaples count range
-  GL.GetIntegerv(GL_MAX_SAMPLES, @maxSamples);
+  gl.GetIntegerv(GL_MAX_SAMPLES, @maxSamples);
   if FSamplesCount > maxSamples then
     FSamplesCount := maxSamples;
   if IsDepthFormat(AInternalFormat) then
   begin
-    GL.GetIntegerv(GL_MAX_DEPTH_TEXTURE_SAMPLES, @maxSamples);
+    gl.GetIntegerv(GL_MAX_DEPTH_TEXTURE_SAMPLES, @maxSamples);
     if FSamplesCount > maxSamples then
       FSamplesCount := maxSamples;
   end
   else
   begin
-    GL.GetIntegerv(GL_MAX_COLOR_TEXTURE_SAMPLES, @maxSamples);
+    gl.GetIntegerv(GL_MAX_COLOR_TEXTURE_SAMPLES, @maxSamples);
     if FSamplesCount > maxSamples then
       FSamplesCount := maxSamples;
   end;
   // Check texture size
-  GL.GetIntegerv(GL_MAX_TEXTURE_SIZE, @maxSize);
+  gl.GetIntegerv(GL_MAX_TEXTURE_SIZE, @maxSize);
   if FWidth > maxSize then
     FWidth := maxSize;
   if FHeight > maxSize then
@@ -276,7 +276,7 @@ begin
   case target of
 
     ttTexture2DMultisample:
-      GL.TexImage2DMultisample(
+      gl.TexImage2DMultisample(
         DecodeGLTextureTarget(target),
         SamplesCount,
         InternalFormatToOpenGLFormat(AInternalFormat),
@@ -285,7 +285,7 @@ begin
         FFixedSamplesLocation);
 
     ttTexture2DMultisampleArray:
-      GL.TexImage3DMultisample(
+      gl.TexImage3DMultisample(
         DecodeGLTextureTarget(target),
         SamplesCount,
         InternalFormatToOpenGLFormat(AInternalFormat),

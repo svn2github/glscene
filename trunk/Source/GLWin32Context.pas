@@ -340,7 +340,7 @@ begin
 
   if float then
   begin // float_type
-    if GL.W_ATI_pixel_format_float then
+    if gl.W_ATI_pixel_format_float then
     begin // NV40 uses ATI_float, with linear filtering
       AddIAttrib(WGL_PIXEL_TYPE_ARB, WGL_TYPE_RGBA_FLOAT_ATI);
     end

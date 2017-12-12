@@ -135,40 +135,40 @@ begin
   lz := Sides[2] * 0.5;
 
   // sides
-  GL.Begin_(GL_TRIANGLE_STRIP);
-  GL.Normal3f(-1, 0, 0);
-  GL.Vertex3f(-lx, -ly, -lz);
-  GL.Vertex3f(-lx, -ly, lz);
-  GL.Vertex3f(-lx, ly, -lz);
-  GL.Vertex3f(-lx, ly, lz);
-  GL.Normal3f(0, 1, 0);
-  GL.Vertex3f(lx, ly, -lz);
-  GL.Vertex3f(lx, ly, lz);
-  GL.Normal3f(1, 0, 0);
-  GL.Vertex3f(lx, -ly, -lz);
-  GL.Vertex3f(lx, -ly, lz);
-  GL.Normal3f(0, -1, 0);
-  GL.Vertex3f(-lx, -ly, -lz);
-  GL.Vertex3f(-lx, -ly, lz);
-  GL.End_();
+  gl.Begin_(GL_TRIANGLE_STRIP);
+  gl.Normal3f(-1, 0, 0);
+  gl.Vertex3f(-lx, -ly, -lz);
+  gl.Vertex3f(-lx, -ly, lz);
+  gl.Vertex3f(-lx, ly, -lz);
+  gl.Vertex3f(-lx, ly, lz);
+  gl.Normal3f(0, 1, 0);
+  gl.Vertex3f(lx, ly, -lz);
+  gl.Vertex3f(lx, ly, lz);
+  gl.Normal3f(1, 0, 0);
+  gl.Vertex3f(lx, -ly, -lz);
+  gl.Vertex3f(lx, -ly, lz);
+  gl.Normal3f(0, -1, 0);
+  gl.Vertex3f(-lx, -ly, -lz);
+  gl.Vertex3f(-lx, -ly, lz);
+  gl.End_();
 
   // top face
-  GL.Begin_(GL_TRIANGLE_FAN);
-  GL.Normal3f(0, 0, 1);
-  GL.Vertex3f(-lx, -ly, lz);
-  GL.Vertex3f(lx, -ly, lz);
-  GL.Vertex3f(lx, ly, lz);
-  GL.Vertex3f(-lx, ly, lz);
-  GL.End_();
+  gl.Begin_(GL_TRIANGLE_FAN);
+  gl.Normal3f(0, 0, 1);
+  gl.Vertex3f(-lx, -ly, lz);
+  gl.Vertex3f(lx, -ly, lz);
+  gl.Vertex3f(lx, ly, lz);
+  gl.Vertex3f(-lx, ly, lz);
+  gl.End_();
 
   // bottom face
-  GL.Begin_(GL_TRIANGLE_FAN);
-  GL.Normal3f(0, 0, -1);
-  GL.Vertex3f(-lx, -ly, -lz);
-  GL.Vertex3f(-lx, ly, -lz);
-  GL.Vertex3f(lx, ly, -lz);
-  GL.Vertex3f(lx, -ly, -lz);
-  GL.End_();
+  gl.Begin_(GL_TRIANGLE_FAN);
+  gl.Normal3f(0, 0, -1);
+  gl.Vertex3f(-lx, -ly, -lz);
+  gl.Vertex3f(-lx, ly, -lz);
+  gl.Vertex3f(lx, ly, -lz);
+  gl.Vertex3f(lx, -ly, -lz);
+  gl.End_();
 end;
 
 function GLSceneMatrixToODER(m: TMatrix): TdMatrix3;
@@ -194,7 +194,7 @@ procedure dsDrawBox(pos: TdVector3; R: TdMatrix3; Sides: TdVector3);
 begin
   setTransform(pos, R);
   drawBox(sides);
-  GL.PopMatrix();
+  gl.PopMatrix();
 end;
 
 procedure setTransform(pos: TdVector3; R: TdMatrix3);
@@ -217,8 +217,8 @@ begin
   matrix[13] := pos[1];
   matrix[14] := pos[2];
   matrix[15] := 1;
-  GL.PushMatrix();
-  GL.MultMatrixf(PSingle(@matrix));
+  gl.PushMatrix();
+  gl.MultMatrixf(PSingle(@matrix));
 end;
 
 (*$WARNINGS OFF*)

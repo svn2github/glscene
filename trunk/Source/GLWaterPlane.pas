@@ -412,29 +412,29 @@ var
    i : Integer;
    il : TIntegerList;
 begin
-   GL.PushClientAttrib(GL_CLIENT_VERTEX_ARRAY_BIT);
+   gl.PushClientAttrib(GL_CLIENT_VERTEX_ARRAY_BIT);
 
-   GL.EnableClientState(GL_VERTEX_ARRAY);
-   GL.VertexPointer(3, GL_FLOAT, 0, FPlaneQuadVertices.List);
-   GL.EnableClientState(GL_NORMAL_ARRAY);
-   GL.NormalPointer(GL_FLOAT, 0, FPlaneQuadNormals.List);
+   gl.EnableClientState(GL_VERTEX_ARRAY);
+   gl.VertexPointer(3, GL_FLOAT, 0, FPlaneQuadVertices.List);
+   gl.EnableClientState(GL_NORMAL_ARRAY);
+   gl.NormalPointer(GL_FLOAT, 0, FPlaneQuadNormals.List);
    if wpoTextured in Options then begin
-      GL.EnableClientState(GL_TEXTURE_COORD_ARRAY);
-      GL.TexCoordPointer(2, GL_FLOAT, 0, FPlaneQuadTexCoords.List);
-   end else GL.DisableClientState(GL_TEXTURE_COORD_ARRAY);
+      gl.EnableClientState(GL_TEXTURE_COORD_ARRAY);
+      gl.TexCoordPointer(2, GL_FLOAT, 0, FPlaneQuadTexCoords.List);
+   end else gl.DisableClientState(GL_TEXTURE_COORD_ARRAY);
 
-   if GL.EXT_compiled_vertex_array then
-      GL.LockArrays(0, FPlaneQuadVertices.Count);
+   if gl.EXT_compiled_vertex_array then
+      gl.LockArrays(0, FPlaneQuadVertices.Count);
 
    for i:=0 to FPlaneQuadIndices.Count-1 do begin
       il:=TIntegerList(FPlaneQuadIndices[i]);
-      GL.DrawElements(GL_QUAD_STRIP, il.Count, GL_UNSIGNED_INT, il.List);
+      gl.DrawElements(GL_QUAD_STRIP, il.Count, GL_UNSIGNED_INT, il.List);
    end;
 
-   if GL.EXT_compiled_vertex_array then
-      GL.UnLockArrays;
+   if gl.EXT_compiled_vertex_array then
+      gl.UnLockArrays;
 
-   GL.PopClientAttrib;
+   gl.PopClientAttrib;
 end;
 
 procedure TGLWaterPlane.Assign(Source: TPersistent);
