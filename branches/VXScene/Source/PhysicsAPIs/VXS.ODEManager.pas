@@ -199,7 +199,7 @@ type
     procedure SetSurface(Value: TODECollisionSurface);
     function GetAbsoluteMatrix: TMatrix;
   public
-    constructor Create(AOwner: TVXXCollection); override;
+    constructor Create(AOwner: TXCollection); override;
     destructor Destroy; override;
     procedure NotifyChange(Sender: TObject);
     procedure Render(var rci: TVXRenderContextInfo); virtual;
@@ -233,7 +233,7 @@ type
     procedure RegisterJoint(Joint: TODEJointBase);
     procedure UnregisterJoint(Joint: TODEJointBase);
   public
-    constructor Create(AOwner: TVXXCollection); override;
+    constructor Create(AOwner: TXCollection); override;
     destructor Destroy; override;
     procedure Render(var rci: TVXRenderContextInfo); override;
     class function FriendlyName: String; override;
@@ -267,7 +267,7 @@ type
     procedure ReadFromFiler(reader: TReader); override;
     procedure AlignElements;
   public
-    constructor Create(AOwner: TVXXCollection); override;
+    constructor Create(AOwner: TXCollection); override;
     destructor Destroy; override;
     procedure Render(var rci: TVXRenderContextInfo); override;
     class function FriendlyName: String; override;
@@ -277,12 +277,12 @@ type
     property Elements: TODEElements read FElements;
   end;
 
-  TODEElements = class(TVXXCollection)
+  TODEElements = class(TXCollection)
   private
     function GetElement(index: Integer): TODEElementBase;
   public
     destructor Destroy; override;
-    class function ItemsClass: TVXXCollectionItemClass; override;
+    class function ItemsClass: TXCollectionItemClass; override;
     procedure Initialize;
     procedure Finalize;
     procedure NotifyChange(Sender: TObject);
@@ -290,7 +290,7 @@ type
     property Element[index: Integer]: TODEElementBase read GetElement;
   end;
 
-  TODEElementBase = class(TVXXCollectionItem)
+  TODEElementBase = class(TXCollectionItem)
   private
     FMass: TdMass;
     FDensity: TdReal;
@@ -319,7 +319,7 @@ type
     procedure SetDirection(const Value: TVXCoordinates);
     procedure SetUp(const Value: TVXCoordinates);
   public
-    constructor Create(AOwner: TVXXCollection); override;
+    constructor Create(AOwner: TXCollection); override;
     destructor Destroy; override;
     procedure Render(var rci: TVXRenderContextInfo); virtual;
     function AbsoluteMatrix: TMatrix;
@@ -352,7 +352,7 @@ type
     procedure SetBoxHeight(const Value: TdReal);
     procedure SetBoxDepth(const Value: TdReal);
   public
-    constructor Create(AOwner: TVXXCollection); override;
+    constructor Create(AOwner: TXCollection); override;
     procedure Render(var rci: TVXRenderContextInfo); override;
     class function FriendlyName: String; override;
     class function FriendlyDescription: String; override;
@@ -376,7 +376,7 @@ type
     function GetRadius: TdReal;
     procedure SetRadius(const Value: TdReal);
   public
-    constructor Create(AOwner: TVXXCollection); override;
+    constructor Create(AOwner: TXCollection); override;
     procedure Render(var rci: TVXRenderContextInfo); override;
     class function FriendlyName: String; override;
     class function FriendlyDescription: String; override;
@@ -400,7 +400,7 @@ type
     procedure SetRadius(const Value: TdReal);
     procedure SetLength(const Value: TdReal);
   public
-    constructor Create(AOwner: TVXXCollection); override;
+    constructor Create(AOwner: TXCollection); override;
     procedure Render(var rci: TVXRenderContextInfo); override;
     class function FriendlyName: String; override;
     class function FriendlyDescription: String; override;
@@ -425,7 +425,7 @@ type
     procedure SetRadius(const Value: TdReal);
     procedure SetLength(const Value: TdReal);
   public
-    constructor Create(AOwner: TVXXCollection); override;
+    constructor Create(AOwner: TXCollection); override;
     procedure Render(var rci: TVXRenderContextInfo); override;
     class function FriendlyName: String; override;
     class function FriendlyDescription: String; override;
@@ -450,7 +450,7 @@ type
     procedure SetVertices(const Value: TAffineVectorList);
     procedure SetIndices(const Value: TIntegerList);
   public
-    constructor Create(AOwner: TVXXCollection); override;
+    constructor Create(AOwner: TXCollection); override;
     destructor Destroy; override;
     class function FriendlyName: String; override;
     class function FriendlyDescription: String; override;
@@ -471,15 +471,15 @@ type
     class function FriendlyName: String; override;
     class function FriendlyDescription: String; override;
     class function ItemCategory: String; override;
-    class function CanAddTo(collection: TVXXCollection): Boolean; override;
+    class function CanAddTo(collection: TXCollection): Boolean; override;
   end;
 
   { An XCollection decendant for ODE Joints. }
-  TODEJoints = class(TVXXCollection)
+  TODEJoints = class(TXCollection)
   protected
     function GetJoint(index: Integer): TODEJointBase;
   public
-    class function ItemsClass: TVXXCollectionItemClass; override;
+    class function ItemsClass: TXCollectionItemClass; override;
     procedure Initialize;
     procedure Finalize;
     property Joint[index: Integer]: TODEJointBase read GetJoint; default;
@@ -507,7 +507,7 @@ type
   TJointOptions = set of TJointOption;
 
   { Base structures for ODE Joints. }
-  TODEJointBase = class(TVXXCollectionItem)
+  TODEJointBase = class(TXCollectionItem)
   private
     FJointID: TdJointID;
     FObject1, FObject2: TVXBaseSceneObject;
@@ -531,7 +531,7 @@ type
     property JointOptions: TJointOptions read FJointOptions
       write SetJointOptions;
   public
-    constructor Create(AOwner: TVXXCollection); override;
+    constructor Create(AOwner: TXCollection); override;
     destructor Destroy; override;
     procedure StructureChanged; virtual;
     procedure Initialize; virtual;
@@ -626,7 +626,7 @@ type
     function SetAxisParam(Param: Integer; const Value: TdReal): Boolean;
     function GetAxisParam(Param: Integer; var Value: TdReal): Boolean;
   public
-    constructor Create(AOwner: TVXXCollection); override;
+    constructor Create(AOwner: TXCollection); override;
     destructor Destroy; override;
     procedure StructureChanged; override;
     procedure Initialize; override;
@@ -648,7 +648,7 @@ type
     procedure SetAnchor(const Value: TVXCoordinates);
     procedure AnchorChange(Sender: TObject);
   public
-    constructor Create(AOwner: TVXXCollection); override;
+    constructor Create(AOwner: TXCollection); override;
     destructor Destroy; override;
     procedure StructureChanged; override;
     procedure Initialize; override;
@@ -672,7 +672,7 @@ type
     function SetAxisParam(Param: Integer; const Value: TdReal): Boolean;
     function GetAxisParam(Param: Integer; var Value: TdReal): Boolean;
   public
-    constructor Create(AOwner: TVXXCollection); override;
+    constructor Create(AOwner: TXCollection); override;
     destructor Destroy; override;
     procedure StructureChanged; override;
     procedure Initialize; override;
@@ -715,7 +715,7 @@ type
     function GetAxis1Param(Param: Integer; var Value: TdReal): Boolean;
     function GetAxis2Param(Param: Integer; var Value: TdReal): Boolean;
   public
-    constructor Create(AOwner: TVXXCollection); override;
+    constructor Create(AOwner: TXCollection); override;
     destructor Destroy; override;
     procedure StructureChanged; override;
     procedure Initialize; override;
@@ -752,7 +752,7 @@ type
     function GetAxis1Param(Param: Integer; var Value: TdReal): Boolean;
     function GetAxis2Param(Param: Integer; var Value: TdReal): Boolean;
   public
-    constructor Create(AOwner: TVXXCollection); override;
+    constructor Create(AOwner: TXCollection); override;
     destructor Destroy; override;
     procedure Initialize; override;
     procedure StructureChanged; override;
@@ -1551,7 +1551,7 @@ end;
 
 // Create
 //
-constructor TVXODEBehaviour.Create(AOwner: TVXXCollection);
+constructor TVXODEBehaviour.Create(AOwner: TXCollection);
 begin
   inherited;
   FSurface := TODECollisionSurface.Create(Self);
@@ -1703,7 +1703,7 @@ end;
 
 // Create
 //
-constructor TVXODEDynamic.Create(AOwner: TVXXCollection);
+constructor TVXODEDynamic.Create(AOwner: TXCollection);
 begin
   inherited;
   FElements := TODEElements.Create(Self);
@@ -2038,7 +2038,7 @@ end;
 
 // Create
 //
-constructor TVXODEStatic.Create(AOwner: TVXXCollection);
+constructor TVXODEStatic.Create(AOwner: TXCollection);
 begin
   inherited;
   FElements := TODEElements.Create(Self);
@@ -2158,7 +2158,7 @@ begin
   Result := TODEElementBase(Items[index]);
 end;
 
-class function TODEElements.ItemsClass: TVXXCollectionItemClass;
+class function TODEElements.ItemsClass: TXCollectionItemClass;
 begin
   Result := TODEElementBase;
 end;
@@ -2199,7 +2199,7 @@ end;
 // --------------- TODEElementBase ---------------
 // ---------------
 
-constructor TODEElementBase.Create(AOwner: TVXXCollection);
+constructor TODEElementBase.Create(AOwner: TXCollection);
 begin
   inherited;
   FPosition := TVXCoordinates.CreateInitialized(Self, NullHmgPoint, csPoint);
@@ -2553,7 +2553,7 @@ end;
 
 // Create
 //
-constructor TODEElementBox.Create(AOwner: TVXXCollection);
+constructor TODEElementBox.Create(AOwner: TXCollection);
 begin
   inherited;
   BoxWidth := 1;
@@ -2784,7 +2784,7 @@ end;
 
 // Create
 //
-constructor TODEElementSphere.Create(AOwner: TVXXCollection);
+constructor TODEElementSphere.Create(AOwner: TXCollection);
 begin
   inherited;
   FRadius := 0.5;
@@ -2953,7 +2953,7 @@ end;
 
 // Create
 //
-constructor TODEElementCapsule.Create(AOwner: TVXXCollection);
+constructor TODEElementCapsule.Create(AOwner: TXCollection);
 begin
   inherited;
   FRadius := 0.5;
@@ -3143,7 +3143,7 @@ end;
 
 // Create
 //
-constructor TODEElementCylinder.Create(AOwner: TVXXCollection);
+constructor TODEElementCylinder.Create(AOwner: TXCollection);
 begin
   inherited;
   FRadius := 0.5;
@@ -3279,7 +3279,7 @@ end;
 
 // Create
 //
-constructor TODEElementTriMesh.Create(AOwner: TVXXCollection);
+constructor TODEElementTriMesh.Create(AOwner: TXCollection);
 begin
   inherited;
   FVertices := TAffineVectorList.Create;
@@ -3472,7 +3472,7 @@ end;
 
 // CanAddTo
 //
-class function TODEElementPlane.CanAddTo(collection: TVXXCollection): Boolean;
+class function TODEElementPlane.CanAddTo(collection: TXCollection): Boolean;
 begin
   Result := False;
   if Assigned(TODEElements(collection).Owner) then
@@ -3499,7 +3499,7 @@ end;
 
 // ItemsClass
 //
-class function TODEJoints.ItemsClass: TVXXCollectionItemClass;
+class function TODEJoints.ItemsClass: TXCollectionItemClass;
 begin
   Result := TODEJointBase;
 end;
@@ -3625,7 +3625,7 @@ end;
 
 // Create
 //
-constructor TODEJointBase.Create(AOwner: TVXXCollection);
+constructor TODEJointBase.Create(AOwner: TXCollection);
 begin
   inherited;
   FJointID := nil;
@@ -4297,7 +4297,7 @@ end;
 
 // Create
 //
-constructor TGLODEJointHinge.Create(AOwner: TVXXCollection);
+constructor TGLODEJointHinge.Create(AOwner: TXCollection);
 begin
   inherited;
   FAnchor := TVXCoordinates.CreateInitialized(Self, NullHmgPoint, csPoint);
@@ -4457,7 +4457,7 @@ end;
 
 // Create
 //
-constructor TODEJointBall.Create(AOwner: TVXXCollection);
+constructor TODEJointBall.Create(AOwner: TXCollection);
 begin
   inherited;
   FAnchor := TVXCoordinates.CreateInitialized(Self, NullHmgPoint, csPoint);
@@ -4548,7 +4548,7 @@ end;
 
 // Create
 //
-constructor TODEJointSlider.Create(AOwner: TVXXCollection);
+constructor TODEJointSlider.Create(AOwner: TXCollection);
 begin
   inherited;
   FAxis := TVXCoordinates.CreateInitialized(Self, ZHmgVector, csVector);
@@ -4727,7 +4727,7 @@ end;
 // --------------- TGLODEJointHinge2 ---------------
 // ---------------
 
-constructor TGLODEJointHinge2.Create(AOwner: TVXXCollection);
+constructor TGLODEJointHinge2.Create(AOwner: TXCollection);
 begin
   inherited;
   FAnchor := TVXCoordinates.CreateInitialized(Self, NullHmgPoint, csPoint);
@@ -4919,7 +4919,7 @@ end;
 // --------------- TODEJointUniversal ---------------
 // ---------------
 
-constructor TODEJointUniversal.Create(AOwner: TVXXCollection);
+constructor TODEJointUniversal.Create(AOwner: TXCollection);
 begin
   inherited;
   FAnchor := TVXCoordinates.CreateInitialized(Self, NullHmgPoint, csPoint);

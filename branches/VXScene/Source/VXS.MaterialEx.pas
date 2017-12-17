@@ -66,7 +66,7 @@ type
   TOnUniformSetting = procedure(Sender: TVXBaseShaderModel;
     var ARci: TVXRenderContextInfo) of object;
 
-  TVXBaseMaterialCollectionItem = class(TVXXCollectionItem, IVXMaterialLibrarySupported)
+  TVXBaseMaterialCollectionItem = class(TXCollectionItem, IVXMaterialLibrarySupported)
   private
     FNameHashKey: Integer;
     FUserList: TPersistentObjectList;
@@ -143,7 +143,7 @@ type
     procedure SetCompareFunc(AValue: TVXDepthFunction);
     procedure SetDecodeSRGB(AValue: Boolean);
   public
-    constructor Create(AOwner: TVXXCollection); override;
+    constructor Create(AOwner: TXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
     procedure NotifyChange(Sender: TObject); override;
@@ -255,7 +255,7 @@ type
     procedure StreamTransfer;
     procedure CalcLODRange(out AFirstLOD, ALastLOD: Integer);
   public
-    constructor Create(AOwner: TVXXCollection); override;
+    constructor Create(AOwner: TXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
     procedure NotifyChange(Sender: TObject); override;
@@ -332,7 +332,7 @@ type
     procedure SetSamples(AValue: Integer);
     procedure SetFixedSamplesLocation(AValue: Boolean);
   public
-    constructor Create(AOwner: TVXXCollection); override;
+    constructor Create(AOwner: TXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
     procedure NotifyChange(Sender: TObject); override;
@@ -566,7 +566,7 @@ type
     procedure DoAllocate(Sender: TVXVirtualHandle; var handle: GLuint);
     procedure DoDeallocate(Sender: TVXVirtualHandle; var handle: GLuint);
   public
-    constructor Create(AOwner: TVXXCollection); override;
+    constructor Create(AOwner: TXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
     procedure NotifyChange(Sender: TObject); override;
@@ -589,7 +589,7 @@ type
     procedure SetSourceFile(AValue: string);
     function GetHandle: TVXVertexProgramHandle;
   public
-    constructor Create(AOwner: TVXXCollection); override;
+    constructor Create(AOwner: TXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
     procedure DoOnPrepare(Sender: TVXContext); override;
@@ -695,7 +695,7 @@ type
     procedure SetGeometryVerticesOut(AValue: GLint);
     function GetHandle: TVXShaderHandle;
   public
-    constructor Create(AOwner: TVXXCollection); override;
+    constructor Create(AOwner: TXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
     procedure DoOnPrepare(Sender: TVXContext); override;
@@ -1048,12 +1048,12 @@ type
       TVXLibMaterialEx;
   end;
 
-  TVXMatLibComponents = class(TVXXCollection)
+  TVXMatLibComponents = class(TXCollection)
   protected
     function GetItems(index: Integer): TVXBaseMaterialCollectionItem;
   public
     function GetNamePath: string; override;
-    class function ItemsClass: TVXXCollectionItemClass; override;
+    class function ItemsClass: TXCollectionItemClass; override;
     property Items[index: Integer]: TVXBaseMaterialCollectionItem
     read GetItems; default;
 
@@ -1712,7 +1712,7 @@ begin
   inherited;
 end;
 
-constructor TVXTextureImageEx.Create(AOwner: TVXXCollection);
+constructor TVXTextureImageEx.Create(AOwner: TXCollection);
 begin
   inherited;
   FDefferedInit := False;
@@ -2466,7 +2466,7 @@ begin
   inherited;
 end;
 
-constructor TVXTextureSampler.Create(AOwner: TVXXCollection);
+constructor TVXTextureSampler.Create(AOwner: TXCollection);
 begin
   inherited;
   FDefferedInit := False;
@@ -2721,7 +2721,7 @@ begin
   inherited;
 end;
 
-constructor TVXTextureCombiner.Create(AOwner: TVXXCollection);
+constructor TVXTextureCombiner.Create(AOwner: TXCollection);
 begin
   inherited;
   FDefferedInit := False;
@@ -4042,7 +4042,7 @@ begin
   inherited;
 end;
 
-constructor TVXShaderEx.Create(AOwner: TVXXCollection);
+constructor TVXShaderEx.Create(AOwner: TXCollection);
 const
   cShaderClasses: array[TVXShaderType] of TVXShaderHandleClass =
     (
@@ -5174,7 +5174,7 @@ begin
   Result := nil;
 end;
 
-class function TVXMatLibComponents.ItemsClass: TVXXCollectionItemClass;
+class function TVXMatLibComponents.ItemsClass: TXCollectionItemClass;
 begin
   Result := TVXBaseMaterialCollectionItem;
 end;
@@ -6371,7 +6371,7 @@ begin
   inherited;
 end;
 
-constructor TVXFrameBufferAttachment.Create(AOwner: TVXXCollection);
+constructor TVXFrameBufferAttachment.Create(AOwner: TXCollection);
 begin
   inherited;
   FDefferedInit := False;
@@ -6954,7 +6954,7 @@ begin
   inherited;
 end;
 
-constructor TVXASMVertexProgram.Create(AOwner: TVXXCollection);
+constructor TVXASMVertexProgram.Create(AOwner: TXCollection);
 begin
   inherited;
   FHandle := TVXVertexProgramHandle.Create;

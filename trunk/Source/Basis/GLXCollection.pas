@@ -52,7 +52,7 @@ type
     {  Override this function to read subclass data. }
     procedure ReadFromFiler(reader: TReader); virtual;
     {  Override to perform things when owner form has been loaded. }
-    procedure Loaded; dynamic;
+    procedure Loaded; virtual;
     {  Triggers an EFilerException with appropriate version message. }
     procedure RaiseFilerException(const archiveVersion: integer);
   public
@@ -68,7 +68,7 @@ type
     {  Returns a user-friendly denomination for the class. 
       This denomination is used for picking a texture image class
       in the IDE expert. }
-    class function FriendlyName: string; virtual;
+    class function FriendlyName: String; virtual;
     {  Returns a user-friendly description for the class. 
       This denomination is used for helping the user when picking a
       texture image class in the IDE expert. If it's not overriden,

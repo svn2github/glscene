@@ -233,7 +233,7 @@ type
     procedure PathTravelStop(Sender: TObject);
     function GetSceneObject: TVXBaseSceneObject;
   public
-    constructor Create(aOwner: TVXXCollection); override;
+    constructor Create(aOwner: TXCollection); override;
     destructor Destroy; override;
       //add an empty path;
     function AddPath: TVXMovementPath; overload;
@@ -1201,7 +1201,7 @@ end;
 
 
 //--------------------------- TVXMovement --------------------------------------
-constructor TVXMovement.Create(aOwner: TVXXCollection);
+constructor TVXMovement.Create(aOwner: TXCollection);
 begin
   inherited Create(aOwner);
   FPaths           := TVXMovementPaths.Create(Self);

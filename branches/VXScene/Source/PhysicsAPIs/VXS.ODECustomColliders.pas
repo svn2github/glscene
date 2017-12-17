@@ -86,7 +86,7 @@ type
     procedure SetPointSize(const Value: Single);
     procedure SetContactColor(const Value: TVXColor);
   public
-    constructor Create(AOwner: TVXXCollection); override;
+    constructor Create(AOwner: TXCollection); override;
     destructor Destroy; override;
     procedure Render(var rci: TVXRenderContextInfo); override;
     property Geom: PdxGeom read FGeom;
@@ -114,11 +114,11 @@ type
     function Collide(aPos: TAffineVector; var Depth: Single;
       var cPos, cNorm: TAffineVector): Boolean; override;
   public
-    constructor Create(AOwner: TVXXCollection); override;
+    constructor Create(AOwner: TXCollection); override;
     class function FriendlyName: string; override;
     class function FriendlyDescription: string; override;
     class function UniqueItem: Boolean; override;
-    class function CanAddTo(collection: TVXXCollection): Boolean; override;
+    class function CanAddTo(collection: TXCollection): Boolean; override;
   end;
 
 function GetODEHeightField(obj: TVXBaseSceneObject): TVXODEHeightField;
@@ -425,7 +425,7 @@ end;
 // --------------- TVXODECustomCollider --------------
 // ---------------
 
-constructor TVXODECustomCollider.Create(AOwner: TVXXCollection);
+constructor TVXODECustomCollider.Create(AOwner: TXCollection);
 begin
   inherited;
 
@@ -643,7 +643,7 @@ end;
 // --------------- TVXODEHeightField --------------
 // ---------------
 
-constructor TVXODEHeightField.Create(AOwner: TVXXCollection);
+constructor TVXODEHeightField.Create(AOwner: TXCollection);
 var
   Allow: Boolean;
 begin
@@ -700,7 +700,7 @@ begin
   Result := True;
 end;
 
-class function TVXODEHeightField.CanAddTo(collection: TVXXCollection): Boolean;
+class function TVXODEHeightField.CanAddTo(collection: TXCollection): Boolean;
 begin
   Result := False;
   if collection is TVXBehaviours then

@@ -80,7 +80,7 @@ type
     procedure WriteToFiler(writer: TWriter); override;
     procedure ReadFromFiler(reader: TReader); override;
   public
-    constructor Create(aOwner: TVXXCollection); override;
+    constructor Create(aOwner: TXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
     class function FriendlyName: string; override;
@@ -135,7 +135,7 @@ type
     procedure WriteToFiler(writer: TWriter); override;
     procedure ReadFromFiler(reader: TReader); override;
   public
-    constructor Create(aOwner: TVXXCollection); override;
+    constructor Create(aOwner: TXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
     class function FriendlyName: string; override;
@@ -307,7 +307,7 @@ end;
 // ------------------ TVXBInertia ------------------
 // ------------------
 
-constructor TVXBInertia.Create(aOwner: TVXXCollection);
+constructor TVXBInertia.Create(aOwner: TXCollection);
 begin
   inherited Create(aOwner);
   FTranslationSpeed := TVXCoordinates.CreateInitialized(Self, NullHmgVector, csVector);
@@ -517,7 +517,7 @@ end;
 // ------------------ TVXBAcceleration ------------------
 // ------------------
 
-constructor TVXBAcceleration.Create(aOwner: TVXXCollection);
+constructor TVXBAcceleration.Create(aOwner: TXCollection);
 begin
   inherited;
   if aOwner <> nil then

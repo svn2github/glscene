@@ -252,7 +252,7 @@ type
     procedure Loaded; override;
     procedure managerNotification(aManager: TVXParticleFXManager; Operation: TOperation);
   public
-    constructor Create(aOwner: TVXXCollection); override;
+    constructor Create(aOwner: TXCollection); override;
     destructor Destroy; override;
   published
     { Reference to the Particle FX manager }
@@ -378,7 +378,7 @@ type
     procedure ReadFromFiler(reader: TReader); override;
     function ParticleAbsoluteInitialPos: TAffineVector;
   public
-    constructor Create(aOwner: TVXXCollection); override;
+    constructor Create(aOwner: TXCollection); override;
     destructor Destroy; override;
     class function FriendlyName: string; override;
     class function FriendlyDescription: string; override;
@@ -1117,7 +1117,7 @@ end;
 // ------------------ TVXParticleFXEffect ------------------
 // ------------------
 
-constructor TVXParticleFXEffect.Create(aOwner: TVXXCollection);
+constructor TVXParticleFXEffect.Create(aOwner: TXCollection);
 begin
   FEffectScale := 1;
   inherited;
@@ -1521,7 +1521,7 @@ end;
 // ------------------ TVXSourcePFXEffect ------------------
 // ------------------
 
-constructor TVXSourcePFXEffect.Create(aOwner: TVXXCollection);
+constructor TVXSourcePFXEffect.Create(aOwner: TXCollection);
 begin
   inherited;
   FInitialVelocity := TVXCoordinates.CreateInitialized(Self, NullHmgVector, csVector);

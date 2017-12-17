@@ -2,7 +2,7 @@
 // VXScene Component Library, based on GLScene http://glscene.sourceforge.net 
 //
 {
-  Register TVXXCollection property editor 
+  Register TXCollection property editor 
 }
 unit VXS.RegisterXCollection;
 
@@ -35,7 +35,7 @@ type
     function GetValue: string; //override;  <- not found in base class
   end;
 
-	TVXXCollectionProperty = class(TClassProperty)
+	TXCollectionProperty = class(TClassProperty)
 		public
       function GetAttributes: TPropertyAttributes; //override;  <- not found in base class
 			procedure Edit; //override;  <- not found in base class
@@ -70,23 +70,23 @@ procedure Register;
 begin
   { TODO : E2003 Undeclared identifier: 'RegisterPropertyEditor' }
   (*
-  RegisterPropertyEditor(TypeInfo(TVXXCollection), nil, '', TVXXCollectionProperty);
+  RegisterPropertyEditor(TypeInfo(TXCollection), nil, '', TXCollectionProperty);
   *)
 end;
 
-//----------------- TVXXCollectionProperty ------------------------------------
+//----------------- TXCollectionProperty ------------------------------------
 
-function TVXXCollectionProperty.GetAttributes: TPropertyAttributes;
+function TXCollectionProperty.GetAttributes: TPropertyAttributes;
 begin
   Result:=[paDialog];
 end;
 
-procedure TVXXCollectionProperty.Edit;
+procedure TXCollectionProperty.Edit;
 begin
    with XCollectionEditor do
    begin
       { TODO : E2003 Undeclared identifier: 'Designer' }
-      (*SetXCollection(TVXXCollection(GetOrdValue), Self.Designer);*)
+      (*SetXCollection(TXCollection(GetOrdValue), Self.Designer);*)
       Show;
    end;
 end;

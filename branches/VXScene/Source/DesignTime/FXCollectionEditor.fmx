@@ -1,4 +1,4 @@
-object VKXCollectionEditor: TVXXCollectionEditor
+object VKXCollectionEditor: TXCollectionEditor
   Left = 0
   Top = 0
   Caption = 'Form1'

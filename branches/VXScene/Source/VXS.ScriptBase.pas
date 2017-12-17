@@ -30,7 +30,7 @@ type
   { The base script class that defines the abstract functions and properties. 
      Don't use this class directly, use the script classes descended from this 
      base class.  }
-  TVXScriptBase = class(TVXXCollectionItem)
+  TVXScriptBase = class(TXCollectionItem)
 		private
       
       FText : TStringList;
@@ -47,7 +47,7 @@ type
 
 		public
       
-      constructor Create(aOwner : TVXXCollection); override;
+      constructor Create(aOwner : TXCollection); override;
       destructor Destroy; override;
 
       procedure Assign(Source: TPersistent); override;
@@ -74,7 +74,7 @@ type
   // TVXScripts
   //
   { XCollection descendant for storing and handling scripts. }
-  TVXScripts = class(TVXXCollection)
+  TVXScripts = class(TXCollection)
 		private
 			
 
@@ -86,9 +86,9 @@ type
 			
 			procedure Assign(Source: TPersistent); override;
 
-      class function ItemsClass : TVXXCollectionItemClass; override;
+      class function ItemsClass : TXCollectionItemClass; override;
 
-      function CanAdd(aClass : TVXXCollectionItemClass) : Boolean; override;
+      function CanAdd(aClass : TXCollectionItemClass) : Boolean; override;
       property Items[index : Integer] : TVXScriptBase read GetItems; default;
 
   end;
@@ -129,7 +129,7 @@ implementation
 
 // Create
 //
-constructor TVXScriptBase.Create(aOwner: TVXXCollection);
+constructor TVXScriptBase.Create(aOwner: TXCollection);
 begin
   inherited;
   FText:=TStringList.Create;
@@ -220,14 +220,14 @@ end;
 
 // ItemsClass
 //
-class function TVXScripts.ItemsClass: TVXXCollectionItemClass;
+class function TVXScripts.ItemsClass: TXCollectionItemClass;
 begin
   Result:=TVXScriptBase;
 end;
 
 // CanAdd
 //
-function TVXScripts.CanAdd(aClass: TVXXCollectionItemClass): Boolean;
+function TVXScripts.CanAdd(aClass: TXCollectionItemClass): Boolean;
 begin
   Result:=aClass.InheritsFrom(TVXScriptBase);
 end;

@@ -45,7 +45,7 @@ type
 
   { Used by the SpriteAnimation when Dimensions are set manual. The animation
     will use the offsets, width and height to determine the texture coodinates for this frame. }
-  TVXSpriteAnimFrame = class(TVXXCollectionItem)
+  TVXSpriteAnimFrame = class(TXCollectionItem)
   private
     FOffsetX,
       FOffsetY,
@@ -69,10 +69,10 @@ type
     property Height: Integer read FHeight write SetHeight;
   end;
 
-  TVXSpriteAnimFrameList = class(TVXXCollection)
+  TVXSpriteAnimFrameList = class(TXCollection)
   public
     constructor Create(aOwner: TPersistent); override;
-    class function ItemsClass: TVXXCollectionItemClass; override;
+    class function ItemsClass: TXCollectionItemClass; override;
   end;
 
   { Determines if the texture coordinates are Automatically generated
@@ -104,7 +104,7 @@ type
   end;
 
   { Animations define how the texture coordinates for each offset are to be determined. }
-  TVXSpriteAnimation = class(TVXXCollectionItem, IVXMaterialLibrarySupported)
+  TVXSpriteAnimation = class(TXCollectionItem, IVXMaterialLibrarySupported)
   private
     FCurrentFrame,
     FStartFrame,
@@ -133,7 +133,7 @@ type
     // Implementing IGLMaterialLibrarySupported.
     function GetMaterialLibrary: TVXAbstractMaterialLibrary; virtual;
   public
-    constructor Create(aOwner: TVXXCollection); override;
+    constructor Create(aOwner: TXCollection); override;
     destructor Destroy; override;
     class function FriendlyName: string; override;
     class function FriendlyDescription: string; override;
@@ -172,10 +172,10 @@ type
   end;
 
   { A collection for storing SpriteAnimation objects. }
-  TVXSpriteAnimationList = class(TVXXCollection)
+  TVXSpriteAnimationList = class(TXCollection)
   public
     constructor Create(aOwner: TPersistent); override;
-    class function ItemsClass: TVXXCollectionItemClass; override;
+    class function ItemsClass: TXCollectionItemClass; override;
   end;
 
   { Sets the current animation playback mode:
@@ -377,7 +377,7 @@ begin
   inherited;
 end;
 
-class function TVXSpriteAnimFrameList.ItemsClass: TVXXCollectionItemClass;
+class function TVXSpriteAnimFrameList.ItemsClass: TXCollectionItemClass;
 begin
   Result := TVXSpriteAnimFrame;
 end;
@@ -439,7 +439,7 @@ end;
 // ---------- TVXSpriteAnimation ----------
 // ----------
 
-constructor TVXSpriteAnimation.Create(aOwner: TVXXCollection);
+constructor TVXSpriteAnimation.Create(aOwner: TXCollection);
 begin
   inherited;
   FFrames := TVXSpriteAnimFrameList.Create(Self);
@@ -644,7 +644,7 @@ begin
   inherited;
 end;
 
-class function TVXSpriteAnimationList.ItemsClass: TVXXCollectionItemClass;
+class function TVXSpriteAnimationList.ItemsClass: TXCollectionItemClass;
 begin
   Result := TVXSpriteAnimation;
 end;

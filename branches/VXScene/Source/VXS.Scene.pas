@@ -562,7 +562,7 @@ type
     NOTES : Don't forget to override the ReadFromFiler/WriteToFiler persistence
     methods if you add data in a subclass !
     Subclasses must be registered using the RegisterXCollectionItemClass function }
-  TVXBaseBehaviour = class(TVXXCollectionItem)
+  TVXBaseBehaviour = class(TXCollectionItem)
   protected
     procedure SetName(const val: string); override;
     { Override this function to write subclass data. }
@@ -573,7 +573,7 @@ type
       Does NOT check for nil owners. }
     function OwnerBaseSceneObject: TVXBaseSceneObject;
   public
-    constructor Create(AOwner: TVXXCollection); override;
+    constructor Create(AOwner: TXCollection); override;
     destructor Destroy; override;
     procedure DoProgress(const progressTime: TVXProgressTimes); virtual;
   end;
@@ -588,18 +588,18 @@ type
 
   { Holds a list of TVXBehaviour objects.
     This object expects itself to be owned by a TVXBaseSceneObject.
-    As a TVXXCollection (and contrary to a TCollection), this list can contain
+    As a TXCollection (and contrary to a TCollection), this list can contain
     objects of varying class, the only constraint being that they should all
     be TVXBehaviour subclasses. }
-  TVXBehaviours = class(TVXXCollection)
+  TVXBehaviours = class(TXCollection)
   protected
     function GetBehaviour(Index: Integer): TVXBehaviour;
   public
     constructor Create(AOwner: TPersistent); override;
     function GetNamePath: string; override;
-    class function ItemsClass: TVXXCollectionItemClass; override;
+    class function ItemsClass: TXCollectionItemClass; override;
     property Behaviour[index: Integer]: TVXBehaviour read GetBehaviour; default;
-    function CanAdd(aClass: TVXXCollectionItemClass): Boolean; override;
+    function CanAdd(aClass: TXCollectionItemClass): Boolean; override;
     procedure DoProgress(const progressTimes: TVXProgressTimes); inline;
   end;
 
@@ -646,15 +646,15 @@ type
 
   { Holds a list of object effects.
     This object expects itself to be owned by a TVXBaseSceneObject. }
-  TVXObjectEffects = class(TVXXCollection)
+  TVXObjectEffects = class(TXCollection)
   protected
     function GetEffect(Index: Integer): TVXObjectEffect;
   public
     constructor Create(AOwner: TPersistent); override;
     function GetNamePath: string; override;
-    class function ItemsClass: TVXXCollectionItemClass; override;
+    class function ItemsClass: TXCollectionItemClass; override;
     property ObjectEffect[index: Integer]: TVXObjectEffect read GetEffect; default;
-    function CanAdd(aClass: TVXXCollectionItemClass): Boolean; override;
+    function CanAdd(aClass: TXCollectionItemClass): Boolean; override;
     procedure DoProgress(const progressTime: TVXProgressTimes);
     procedure RenderPreEffects(var rci: TVXRenderContextInfo); inline;
     { Also take care of registering after effects with the VXSceneViewer. }
@@ -3972,7 +3972,7 @@ end;
 // ------------------ TVXBaseBehaviour ------------------
 // ------------------
 
-constructor TVXBaseBehaviour.Create(AOwner: TVXXCollection);
+constructor TVXBaseBehaviour.Create(AOwner: TXCollection);
 begin
   inherited Create(AOwner);
   // nothing more, yet
@@ -4051,7 +4051,7 @@ begin
   Result := s + '.Behaviours';
 end;
 
-class function TVXBehaviours.ItemsClass: TVXXCollectionItemClass;
+class function TVXBehaviours.ItemsClass: TXCollectionItemClass;
 begin
   Result := TVXBehaviour;
 end;
@@ -4061,7 +4061,7 @@ begin
   Result := TVXBehaviour(Items[index]);
 end;
 
-function TVXBehaviours.CanAdd(aClass: TVXXCollectionItemClass): Boolean;
+function TVXBehaviours.CanAdd(aClass: TXCollectionItemClass): Boolean;
 begin
   Result := (not aClass.InheritsFrom(TVXObjectEffect)) and (inherited CanAdd(aClass));
 end;
@@ -4129,7 +4129,7 @@ begin
   Result := s + '.Effects';
 end;
 
-class function TVXObjectEffects.ItemsClass: TVXXCollectionItemClass;
+class function TVXObjectEffects.ItemsClass: TXCollectionItemClass;
 begin
   Result := TVXObjectEffect;
 end;
@@ -4139,7 +4139,7 @@ begin
   Result := TVXObjectEffect(Items[index]);
 end;
 
-function TVXObjectEffects.CanAdd(aClass: TVXXCollectionItemClass): Boolean;
+function TVXObjectEffects.CanAdd(aClass: TXCollectionItemClass): Boolean;
 begin
   Result := (aClass.InheritsFrom(TVXObjectEffect)) and (inherited CanAdd(aClass));
 end;

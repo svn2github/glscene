@@ -94,7 +94,7 @@ begin
   my := Y;
 end;
 
-procedure TForm1.GLSceneViewer1MouseMove(Sender: TObject; 
+procedure TForm1.GLSceneViewer1MouseMove(Sender: TObject;
   Shift: TShiftState; X, Y: Integer);
 begin
   if ssLeft in Shift then

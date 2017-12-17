@@ -15,7 +15,13 @@ unit GLODERagdoll;
 interface
 
 uses
-  GLRagdoll, ODEImport, GLScene, GLObjects, GLVectorGeometry, ODEGL, GLTexture,
+  GLRagdoll,
+  ODEImport,
+  GLScene,
+  GLObjects,
+  GLVectorGeometry,
+  ODEGL,
+  GLTexture,
   GLVectorFileObjects;
 
 const
@@ -40,9 +46,7 @@ type
     FWorld: PdxWorld;
     FContactGroup: TdJointGroupID;
     FRagdoll: TODERagdoll;
-
     isWorldCreated : Boolean; // NEW1
-
   public
     constructor Create;
     {Create the world from any existing ODE world }
@@ -122,7 +126,9 @@ var
   vGLODERagdoll_cDensity : Single;
   vGLODERagdoll_cMass : Single;
 
+//----------------------------------------
 implementation
+//----------------------------------------
 
 { TODERagdollWorld }
 
@@ -279,8 +285,8 @@ begin
 
   // prevent ODE 0.9 "bNormalizationResult failed" error:
   for n:=0 to 2 do
-    if (BoneSize.C[n]=0) then
-      BoneSize.C[n]:=0.000001;
+      if (BoneSize.V[n]=0) then
+         BoneSize.V[n]:=0.000001;
 
   dMassSetBox(mass, vGLODERagdoll_cDensity, BoneSize.X, BoneSize.Y, BoneSize.Z);
 

@@ -52,7 +52,7 @@ type
 
   TVXBFPSMovement = class;
 
-  TVXMapCollectionItem = class(TVXXCollectionItem)
+  TVXMapCollectionItem = class(TXCollectionItem)
   private
     FMap: TVXFreeForm;
     FMapName: string;
@@ -64,7 +64,7 @@ type
     procedure ReadFromFiler(reader: TReader); override;
     procedure Loaded; override;
   public
-    constructor Create(aOwner: TVXXCollection); override;
+    constructor Create(aOwner: TXCollection); override;
     class function FriendlyName: String; override;
   published
 
@@ -80,9 +80,9 @@ type
 
   TVXMapCollectionItemClass = class of TVXMapCollectionItem;
 
-  TVXMapCollection = class(TVXXCollection)
+  TVXMapCollection = class(TXCollection)
   public
-    class function ItemsClass: TVXXCollectionItemClass; override;
+    class function ItemsClass: TXCollectionItemClass; override;
     function addMap(Map: TVXFreeForm; CollisionGroup: integer = 0)
       : TVXMapCollectionItem;
     function findMap(mapFreeForm: TVXFreeForm): TVXMapCollectionItem;
@@ -161,7 +161,7 @@ type
   public
     Velocity: TVector;
 
-    constructor Create(aOwner: TVXXCollection); override;
+    constructor Create(aOwner: TXCollection); override;
     destructor Destroy; override;
 
     procedure DoProgress(const progressTime: TVXProgressTimes); override;
@@ -248,7 +248,7 @@ end;
 // ------------------
 // ------------------ TVXMapCollectionItem ------------------
 // ------------------
-constructor TVXMapCollectionItem.Create(aOwner: TVXXCollection);
+constructor TVXMapCollectionItem.Create(aOwner: TXCollection);
 begin
   inherited Create(aOwner);
 
@@ -311,7 +311,7 @@ end;
 // ------------------
 // ------------------ TVXMapCollection ------------------
 // ------------------
-class function TVXMapCollection.ItemsClass: TVXXCollectionItemClass;
+class function TVXMapCollection.ItemsClass: TXCollectionItemClass;
 begin
   Result := TVXMapCollectionItem;
 end;
@@ -622,7 +622,7 @@ end;
 // ------------------ TVXBFPSMovement ------------------
 // ------------------
 
-constructor TVXBFPSMovement.Create(aOwner: TVXXCollection);
+constructor TVXBFPSMovement.Create(aOwner: TXCollection);
 
   procedure setupArrow(arrow: TVXArrowLine; color: TColor); //TDelphiColor
   begin

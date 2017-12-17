@@ -164,7 +164,7 @@ type
     procedure ReadFromFiler(reader: TReader); override;
     procedure Loaded; override;
   public
-    constructor Create(aOwner: TVXXCollection); override;
+    constructor Create(aOwner: TXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
     class function FriendlyName: string; override;
@@ -547,7 +547,7 @@ end;
 // ------------------ TVXBFireFX ------------------
 // ------------------
 
-constructor TVXBFireFX.Create(aOwner: TVXXCollection);
+constructor TVXBFireFX.Create(aOwner: TXCollection);
 begin
   inherited Create(aOwner);
 end;

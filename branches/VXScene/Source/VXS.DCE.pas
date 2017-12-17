@@ -142,7 +142,7 @@ type
     procedure ReadFromFiler(reader : TReader); override;
     procedure Loaded; override;
   public
-    constructor Create(aOwner : TVXXCollection); override;
+    constructor Create(aOwner : TXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
     class function FriendlyName : String; override;
@@ -196,7 +196,7 @@ type
     procedure ReadFromFiler(reader : TReader); override;
     procedure Loaded; override;
   public
-    constructor Create(aOwner : TVXXCollection); override;
+    constructor Create(aOwner : TXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
     class function FriendlyName : String; override;
@@ -577,7 +577,7 @@ begin
    inherited Assign(Source);
 end;
 
-constructor TVXDCEStatic.Create(aOwner: TVXXCollection);
+constructor TVXDCEStatic.Create(aOwner: TXCollection);
 begin
    inherited Create(aOwner);
    FActive := True;
@@ -744,7 +744,7 @@ begin
   inherited Assign(Source);
 end;
 
-constructor TVXDCEDynamic.Create(aOwner: TVXXCollection);
+constructor TVXDCEDynamic.Create(aOwner: TXCollection);
 begin
   inherited Create(aOwner);
   FActive := True;

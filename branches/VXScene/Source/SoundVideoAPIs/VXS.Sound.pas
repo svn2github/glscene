@@ -403,7 +403,7 @@ type
     function GetPlaying: Boolean;
     procedure NotifySourceDestruction(aSource: TVXSoundSource);
   public
-    constructor Create(aOwner: TVXXCollection); override;
+    constructor Create(aOwner: TXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
     class function FriendlyName: string; override;
@@ -1417,7 +1417,7 @@ end;
 // ------------------ TVXBSoundEmitter ------------------
 // ------------------
 
-constructor TVXBSoundEmitter.Create(aOwner: TVXXCollection);
+constructor TVXBSoundEmitter.Create(aOwner: TXCollection);
 begin
   inherited Create(aOwner);
   FSource := TVXSoundSource.Create(nil);

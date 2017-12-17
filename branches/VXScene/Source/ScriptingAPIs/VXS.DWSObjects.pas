@@ -46,7 +46,7 @@ type
       procedure ReadFromFiler(reader : TReader); override;
       procedure Loaded; override;
     public
-      constructor Create(AOwner : TVXXCollection); override;
+      constructor Create(AOwner : TXCollection); override;
       destructor Destroy; override;
       class function FriendlyName : String; override;
       procedure DoProgress(const ProgressTimes : TProgressTimes); override;
@@ -82,7 +82,7 @@ end;
 // ---------- TVXDwsActiveBehaviour ----------
 // ----------
 
-constructor TVXDwsActiveBehaviour.Create(AOwner: TVXXCollection);
+constructor TVXDwsActiveBehaviour.Create(AOwner: TXCollection);
 begin
   inherited;
   FScript:=TStringList.Create;

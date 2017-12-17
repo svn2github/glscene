@@ -77,7 +77,7 @@ type
     procedure ReadFromFiler(reader: TReader); override;
     procedure Loaded; override;
   public
-    constructor Create(AOwner: TVXXCollection); override;
+    constructor Create(AOwner: TXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
     class function FriendlyName: String; override;
@@ -833,7 +833,7 @@ end;
 // ------------------
 // ------------------ TVXBCollision ------------------
 // ------------------
-constructor TVXBCollision.Create(AOwner: TVXXCollection);
+constructor TVXBCollision.Create(AOwner: TXCollection);
 begin
   inherited Create(AOwner);
 

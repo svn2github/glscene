@@ -21,7 +21,7 @@ uses
   NewtonImport, NewtonImport_JointLibrary, // Newton
   VXS.VectorGeometry, // PVector TVector TMatrix PMatrix NullHmgVector...
   VXS.VectorLists, // TaffineVectorList for Tree
-  VXS.XCollection,  //TVXXCollection file function
+  VXS.XCollection,  //TXCollection file function
   VXS.BaseClasses,
   VXS.Scene,
   VXS.Manager,
@@ -286,7 +286,7 @@ type
     class procedure NewtonDeserialize(serializeHandle: Pointer;
       buffer: Pointer; size: Cardinal); static; cdecl;
   public
-    constructor Create(AOwner: TVXXCollection); override;
+    constructor Create(AOwner: TXCollection); override;
     destructor Destroy; override;
     procedure Reinitialize;
     property Initialized: Boolean read FInitialized;
@@ -365,7 +365,7 @@ type
     class procedure NewtonSetTransform(const body: PNewtonBody;
       const matrix: PNGDFloat; threadIndex: Integer); static; cdecl;
   public
-    constructor Create(AOwner: TVXXCollection); override;
+    constructor Create(AOwner: TXCollection); override;
     destructor Destroy; override;
     procedure AddImpulse(const veloc, pointposit: TVector);
     function GetOmega: TVector;
@@ -1367,7 +1367,7 @@ end;
 
 { TVXNGDBehaviour }
 
-constructor TVXNGDBehaviour.Create(AOwner: TVXXCollection);
+constructor TVXNGDBehaviour.Create(AOwner: TXCollection);
 begin
   inherited;
   FInitialized := False;
@@ -1993,7 +1993,7 @@ begin
     NewtonBodyAddImpulse(FNewtonBody, @veloc, @pointposit);
 end;
 
-constructor TVXNGDDynamic.Create(AOwner: TVXXCollection);
+constructor TVXNGDDynamic.Create(AOwner: TXCollection);
 begin
   inherited;
   FAutoSleep := True;

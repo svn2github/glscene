@@ -2,7 +2,7 @@
 // VXScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
 {
-  Edits a TVXXCollection
+  Edits a TXCollection
 }
 unit FXCollectionEditor;
 
@@ -52,7 +52,7 @@ type
   TInstPropList = array[0..1023] of TInstProp;
 
 type
-  TVXXCollectionEditor = class(TForm)
+  TXCollectionEditor = class(TForm)
     ToolBar1: TToolBar;
     TBAdd: TButton;
     ListView: TListView;
@@ -73,7 +73,7 @@ type
     procedure FormHide(Sender: TObject);
     procedure ListViewChange(Sender: TObject);
   private
-    FXCollection: TVXXCollection;
+    FXCollection: TXCollection;
     // ownerComponent : TComponent;
     FDesigner: IDesigner;
     UpdatingListView: Boolean;
@@ -83,10 +83,10 @@ type
     procedure OnNameChanged(Sender: TObject);
     procedure OnXCollectionDestroyed(Sender: TObject);
   public
-    procedure SetXCollection(aXCollection: TVXXCollection; designer: IDesigner);
+    procedure SetXCollection(aXCollection: TXCollection; designer: IDesigner);
   end;
 
-function XCollectionEditor: TVXXCollectionEditor;
+function XCollectionEditor: TXCollectionEditor;
 procedure ReleaseXCollectionEditor;
 
 //=======================================================================
@@ -96,12 +96,12 @@ implementation
 {$R *.fmx}
 
 var
-  vXCollectionEditor: TVXXCollectionEditor;
+  vXCollectionEditor: TXCollectionEditor;
 
-function XCollectionEditor: TVXXCollectionEditor;
+function XCollectionEditor: TXCollectionEditor;
 begin
   if not Assigned(vXCollectionEditor) then
-    vXCollectionEditor := TVXXCollectionEditor.Create(nil);
+    vXCollectionEditor := TXCollectionEditor.Create(nil);
   Result := vXCollectionEditor;
 end;
 
@@ -114,27 +114,27 @@ begin
   end;
 end;
 
-procedure TVXXCollectionEditor.FormCreate(Sender: TObject);
+procedure TXCollectionEditor.FormCreate(Sender: TObject);
 begin
   RegisterGLBehaviourNameChangeEvent(OnNameChanged);
   RegisterGLMaterialExNameChangeEvent(OnNameChanged);
   RegisterXCollectionDestroyEvent(OnXCollectionDestroyed);
 end;
 
-procedure TVXXCollectionEditor.FormDestroy(Sender: TObject);
+procedure TXCollectionEditor.FormDestroy(Sender: TObject);
 begin
   DeRegisterGLBehaviourNameChangeEvent(OnNameChanged);
   DeRegisterGLMaterialExNameChangeEvent(OnNameChanged);
   DeRegisterXCollectionDestroyEvent(OnXCollectionDestroyed);
 end;
 
-procedure TVXXCollectionEditor.FormHide(Sender: TObject);
+procedure TXCollectionEditor.FormHide(Sender: TObject);
 begin
   SetXCollection(nil, nil);
   ReleaseXCollectionEditor;
 end;
 
-procedure TVXXCollectionEditor.SetXCollection(aXCollection: TVXXCollection;
+procedure TXCollectionEditor.SetXCollection(aXCollection: TXCollection;
   designer: IDesigner);
 begin
   // if Assigned(ownerComponent) then
@@ -157,7 +157,7 @@ begin
   PrepareListView;
 end;
 
-procedure TVXXCollectionEditor.ListViewChange(Sender: TObject);
+procedure TXCollectionEditor.ListViewChange(Sender: TObject);
 var
   sel: Boolean;
 begin
@@ -174,14 +174,14 @@ begin
     { TODO : E2003 Undeclared identifier: 'SelectComponent' }
     (*
       if sel then
-        FDesigner.SelectComponent(TVXXCollectionItem(ListView.Selected.Data))
+        FDesigner.SelectComponent(TXCollectionItem(ListView.Selected.Data))
       else
         FDesigner.SelectComponent(nil);
      *)
   end;
 end;
 
-procedure TVXXCollectionEditor.ACMoveDownExecute(Sender: TObject);
+procedure TXCollectionEditor.ACMoveDownExecute(Sender: TObject);
 begin
   if ListView.Selected <> nil then
   begin
@@ -189,7 +189,7 @@ begin
   end;
 end;
 
-procedure TVXXCollectionEditor.ACMoveUpExecute(Sender: TObject);
+procedure TXCollectionEditor.ACMoveUpExecute(Sender: TObject);
 begin
   if ListView.Selected <> nil then
   begin
@@ -197,7 +197,7 @@ begin
   end;
 end;
 
-procedure TVXXCollectionEditor.ACRemoveExecute(Sender: TObject);
+procedure TXCollectionEditor.ACRemoveExecute(Sender: TObject);
 begin
   if ListView.Selected <> nil then
   begin
@@ -205,27 +205,27 @@ begin
   end;
 end;
 
-procedure TVXXCollectionEditor.OnAddXCollectionItemClick(Sender: TObject);
+procedure TXCollectionEditor.OnAddXCollectionItemClick(Sender: TObject);
 begin
   /// to do
 end;
 
-procedure TVXXCollectionEditor.OnNameChanged(Sender: TObject);
+procedure TXCollectionEditor.OnNameChanged(Sender: TObject);
 begin
   /// to do
 end;
 
-procedure TVXXCollectionEditor.OnXCollectionDestroyed(Sender: TObject);
+procedure TXCollectionEditor.OnXCollectionDestroyed(Sender: TObject);
 begin
-  if TVXXCollection(Sender) = FXCollection then
+  if TXCollection(Sender) = FXCollection then
     Close;
 end;
 
-procedure TVXXCollectionEditor.PrepareListView;
+procedure TXCollectionEditor.PrepareListView;
 var
   i: Integer;
   prevSelData: TValue;   // prev Pointer;
-  XCollectionItem: TVXXCollectionItem;
+  XCollectionItem: TXCollectionItem;
   DisplayedName: String;
 begin
   Assert(Assigned(ListView));
@@ -268,11 +268,11 @@ begin
   ListViewChange(Self);
 end;
 
-procedure TVXXCollectionEditor.PrepareXCollectionItemPopup(parent: TMenuItem);
+procedure TXCollectionEditor.PrepareXCollectionItemPopup(parent: TMenuItem);
 var
   i: Integer;
   list: TList;
-  XCollectionItemClass: TVXXCollectionItemClass;
+  XCollectionItemClass: TXCollectionItemClass;
   mi, categoryItem: TMenuItem;
 begin
   list := GetXCollectionItemClassesList(FXCollection.ItemsClass);
@@ -280,7 +280,7 @@ begin
     parent.Clear;
     for i := 0 to list.Count - 1 do
     begin
-      XCollectionItemClass := TVXXCollectionItemClass(list[i]);
+      XCollectionItemClass := TXCollectionItemClass(list[i]);
       if XCollectionItemClass.ItemCategory <> '' then
       begin
         { TODO : E2003 Undeclared identifier: 'Find' }

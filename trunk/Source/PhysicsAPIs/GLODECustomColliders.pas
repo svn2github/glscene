@@ -19,7 +19,6 @@ interface
 {$I GLScene.inc}
 
 uses
-  Winapi.OpenGL,
   System.Classes,
   System.SysUtils,
   System.Math,
@@ -33,6 +32,7 @@ uses
   GLTerrainRenderer,
   GLGraph,
   GLXCollection,
+  OpenGLTokens,
   GLContext,
   GLTexture,
   GLColor,
@@ -52,7 +52,7 @@ type
    Once the contact points for a collision are generated the abstract Collide
    function is called to generate the depth and the contact position and
    normal. These points are then sorted and the deepest are applied to ODE }
-  TGLODECustomCollider = class(TODEBehaviour)
+  TGLODECustomCollider = class(TGLODEBehaviour)
   private
     FGeom: PdxGeom;
     FContactList,
@@ -126,7 +126,11 @@ function GetODEHeightField(obj: TGLBaseSceneObject): TGLODEHeightField;
 function GetOrCreateODEHeightField(obj: TGLBaseSceneObject): TGLODEHeightField;
 
 //------------------------------------------------------------------------
+//------------------------------------------------------------------------
+//------------------------------------------------------------------------
 implementation
+//------------------------------------------------------------------------
+//------------------------------------------------------------------------
 //------------------------------------------------------------------------
 
 var
@@ -185,7 +189,7 @@ begin
 
   pos := dGeomGetPosition(o2);
   R := dGeomGetRotation(o2);
-  ODERToGLSceneMatrix(mat, R^, pos^);
+  ODEGL.ODERToGLSceneMatrix(mat, R^, pos^);
   Collider.SetTransform(mat);
 
   rad := dGeomSphereGetRadius(o2);
@@ -317,7 +321,7 @@ begin
 
   pos := dGeomGetPosition(o2);
   R := dGeomGetRotation(o2);
-  ODERToGLSceneMatrix(mat, R^, pos^);
+  ODEGL.ODERToGLSceneMatrix(mat, R^, pos^);
   Collider.SetTransform(mat);
 
   dGeomCapsuleGetParams(o2, rad, len);
@@ -372,7 +376,7 @@ begin
 
   pos := dGeomGetPosition(o2);
   R := dGeomGetRotation(o2);
-  ODERToGLSceneMatrix(mat, R^, pos^);
+  ODEGL.ODERToGLSceneMatrix(mat, R^, pos^);
   Collider.SetTransform(mat);
 
   dGeomCylinderGetParams(o2, rad, len);
@@ -477,6 +481,9 @@ begin
   inherited;
 end;
 
+// Finalize
+//
+
 procedure TGLODECustomCollider.Finalize;
 begin
   if not Initialized then
@@ -488,6 +495,9 @@ begin
   end;
   inherited;
 end;
+
+// WriteToFiler
+//
 
 procedure TGLODECustomCollider.WriteToFiler(writer: TWriter);
 begin
@@ -501,6 +511,9 @@ begin
     Write(PByte(FContactColor.AsAddress)^, 4);
   end;
 end;
+
+// ReadFromFiler
+//
 
 procedure TGLODECustomCollider.ReadFromFiler(reader: TReader);
 var
@@ -518,15 +531,24 @@ begin
   end;
 end;
 
+// ClearContacts
+//
+
 procedure TGLODECustomCollider.ClearContacts;
 begin
   FContactList.Clear;
 end;
 
+// AddContact (x,y,z)
+//
+
 procedure TGLODECustomCollider.AddContact(x, y, z: TdReal);
 begin
   AddContact(AffineVectorMake(x, y, z));
 end;
+
+// AddContact (pos)
+//
 
 procedure TGLODECustomCollider.AddContact(pos: TAffineVector);
 var
@@ -552,6 +574,9 @@ begin
   if FRenderContacts and Manager.Visible and Manager.VisibleAtRunTime then
     FContactRenderPoints.Add(absPos);
 end;
+
+// ApplyContacts
+//
 
 function TGLODECustomCollider.ApplyContacts(o1, o2: PdxGeom;
   flags: Integer; contact: PdContactGeom; skip: Integer): Integer;
@@ -588,10 +613,16 @@ begin
   end;
 end;
 
+// SetTransform
+//
+
 procedure TGLODECustomCollider.SetTransform(ATransform: TMatrix);
 begin
   FTransform := ATransform;
 end;
+
+// SetContactResolution
+//
 
 procedure TGLODECustomCollider.SetContactResolution(const Value: Single);
 begin
@@ -600,6 +631,8 @@ begin
     FContactResolution := 0.01;
 end;
 
+// Render
+//
 
 procedure TGLODECustomCollider.Render(var rci: TGLRenderContextInfo);
 var
@@ -607,16 +640,18 @@ var
 begin
   if FRenderContacts and (FContactRenderPoints.Count > 0) then
   begin
-    gl.Color3fv(FContactColor.AsAddress);
+    GL.Color3fv(FContactColor.AsAddress);
     rci.GLStates.PointSize := FPointSize;
-    gl.Begin_(GL_POINTS);
+    GL.Begin_(GL_POINTS);
     for i := 0 to FContactRenderPoints.Count - 1 do
-      gl.Vertex3fv(@FContactRenderPoints.List[i]);
-    gl.End_;
+      GL.Vertex3fv(@FContactRenderPoints.List[i]);
+    GL.End_;
   end;
   FContactRenderPoints.Clear;
 end;
 
+// SetRenderContacts
+//
 
 procedure TGLODECustomCollider.SetRenderContacts(const Value: Boolean);
 begin
@@ -627,10 +662,16 @@ begin
   end;
 end;
 
+// SetContactColor
+//
+
 procedure TGLODECustomCollider.SetContactColor(const Value: TGLColor);
 begin
   FContactColor.Assign(Value);
 end;
+
+// SetPointSize
+//
 
 procedure TGLODECustomCollider.SetPointSize(const Value: Single);
 begin
@@ -644,6 +685,9 @@ end;
 // ---------------
 // --------------- TGLODEHeightField --------------
 // ---------------
+
+ 
+//
 
 constructor TGLODEHeightField.Create(AOwner: TGLXCollection);
 var
@@ -666,6 +710,9 @@ begin
   inherited Create(AOwner);
 end;
 
+// WriteToFiler
+//
+
 procedure TGLODEHeightField.WriteToFiler(writer: TWriter);
 begin
   inherited;
@@ -674,6 +721,9 @@ begin
     WriteInteger(0); // Archive version
   end;
 end;
+
+// ReadFromFiler
+//
 
 procedure TGLODEHeightField.ReadFromFiler(reader: TReader);
 var
@@ -687,21 +737,32 @@ begin
   end;
 end;
 
+ 
+//
 
 class function TGLODEHeightField.FriendlyName: string;
 begin
   Result := 'ODE HeightField Collider';
 end;
 
+// FriendlyDescription
+//
+
 class function TGLODEHeightField.FriendlyDescription: string;
 begin
   Result := 'A custom ODE collider powered by it''s parent TGLTerrainRenderer or TGLHeightField';
 end;
 
+// UniqueItem
+//
+
 class function TGLODEHeightField.UniqueItem: Boolean;
 begin
   Result := True;
 end;
+
+// CanAddTo
+//
 
 class function TGLODEHeightField.CanAddTo(collection: TGLXCollection): Boolean;
 begin
@@ -712,6 +773,9 @@ begin
         or (TGLBehaviours(collection).Owner is TGLTerrainRenderer) then
         Result := True;
 end;
+
+// Collide
+//
 
 function TGLODEHeightField.Collide(aPos: TAffineVector;
   var Depth: Single; var cPos, cNorm: TAffineVector): Boolean;
@@ -803,14 +867,22 @@ begin
 end;
 
 // ------------------------------------------------------------------
-initialization
 // ------------------------------------------------------------------
+// ------------------------------------------------------------------
+initialization
+  // ------------------------------------------------------------------
+  // ------------------------------------------------------------------
+  // ------------------------------------------------------------------
 
   RegisterXCollectionItemClass(TGLODEHeightField);
 
-// ------------------------------------------------------------------
+  // ------------------------------------------------------------------
+  // ------------------------------------------------------------------
+  // ------------------------------------------------------------------
 finalization
-// ------------------------------------------------------------------
+  // ------------------------------------------------------------------
+  // ------------------------------------------------------------------
+  // ------------------------------------------------------------------
 
   UnregisterXCollectionItemClass(TGLODEHeightField);
 

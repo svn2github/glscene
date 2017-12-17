@@ -121,7 +121,7 @@ type
     procedure Loaded; override;
     procedure SetTarget(const val: TVXCoordinates);
   public
-    constructor Create(AOwner: TVXXCollection); override;
+    constructor Create(AOwner: TXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
     class function FriendlyName: String; override;
@@ -377,7 +377,7 @@ end;
 // ------------------ TVXBThorFX ------------------
 // ------------------
 
-constructor TVXBThorFX.Create(AOwner: TVXXCollection);
+constructor TVXBThorFX.Create(AOwner: TXCollection);
 begin
   inherited Create(AOwner);
   FTarget := TVXCoordinates.CreateInitialized(Self, VectorMake(0, 1, 0));

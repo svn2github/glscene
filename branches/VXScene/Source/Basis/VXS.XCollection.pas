@@ -25,7 +25,7 @@ uses
 
 
 type
-  TVXXCollection = class;
+  TXCollection = class;
 
   EFilerException = class(Exception)
   end;
@@ -38,9 +38,9 @@ type
     function for proper operation
       }
 
-  TVXXCollectionItem = class(TVXInterfacedPersistent)
+  TXCollectionItem = class(TVXInterfacedPersistent)
   private
-    FOwner: TVXXCollection;
+    FOwner: TXCollection;
     FName: string;
   protected
     function GetName: string; virtual;
@@ -55,10 +55,10 @@ type
     { Triggers an EFilerException with appropriate version message. }
     procedure RaiseFilerException(const archiveVersion: integer);
   public
-    constructor Create(aOwner: TVXXCollection); virtual;
+    constructor Create(aOwner: TXCollection); virtual;
     destructor Destroy; override;
     function GetNamePath: string; override;
-    property Owner: TVXXCollection read FOwner;
+    property Owner: TXCollection read FOwner;
     { Default implementation uses WriteToFiler/ReadFromFiler.  }
     procedure Assign(Source: TPersistent); override;
     procedure MoveUp;
@@ -87,21 +87,21 @@ type
     class function UniqueItem: Boolean; virtual;
     { Allows the XCollectionItem class to determine if it should be allowed
       to be added to the given collection. }
-    class function CanAddTo(collection: TVXXCollection): Boolean; virtual;
+    class function CanAddTo(collection: TXCollection): Boolean; virtual;
   published
     property Name: string read FName write SetName;
   end;
 
-  TVXXCollectionItemClass = class of TVXXCollectionItem;
+  TXCollectionItemClass = class of TXCollectionItem;
 
-  { Holds a list of TVXXCollectionItem objects.
+  { Holds a list of TXCollectionItem objects.
     This class looks a lot like a polymorphic-enabled TCollection, it is
     a much stripped down version of a proprietary TObjectList and persistence
     classes (XClasses & XLists), if the copyrights are ever partially lifted
     on the originals, I'll base this code on them since they are way faster
     than Borland's lists and persistence mechanisms (and unlike Borland's,
     with polymorphism-support and full backward compatibility). }
-  TVXXCollection = class(TPersistent)
+  TXCollection = class(TPersistent)
   private
     FOwner: TPersistent;
     FList: TList;
@@ -109,7 +109,7 @@ type
     { Archive Version is used to update the way data items is loaded. }
     FArchiveVersion: integer;
   protected
-    function GetItems(Index: integer): TVXXCollectionItem;
+    function GetItems(Index: integer): TXCollectionItem;
     function GetOwner: TPersistent; override;
     procedure ReadFromFiler(reader: TReader);
     procedure WriteToFiler(writer: TWriter);
@@ -124,24 +124,24 @@ type
       Unlike TCollection, items can be of ItemsClass OR ANY of its
       subclasses, ie. this function is used only for asserting your adding
       objects of the right class, and not for persistence. }
-    class function ItemsClass: TVXXCollectionItemClass; virtual;
-    property Items[index: integer]: TVXXCollectionItem read GetItems; default;
+    class function ItemsClass: TXCollectionItemClass; virtual;
+    property Items[index: integer]: TXCollectionItem read GetItems; default;
     property Count: integer read FCount;
-    function Add(anItem: TVXXCollectionItem): integer;
-    function GetOrCreate(anItem: TVXXCollectionItemClass): TVXXCollectionItem;
+    function Add(anItem: TXCollectionItem): integer;
+    function GetOrCreate(anItem: TXCollectionItemClass): TXCollectionItem;
     procedure Delete(Index: integer);
-    procedure Remove(anItem: TVXXCollectionItem);
+    procedure Remove(anItem: TXCollectionItem);
     procedure Clear;
-    function IndexOf(anItem: TVXXCollectionItem): integer;
+    function IndexOf(anItem: TXCollectionItem): integer;
     { Returns the index of the first XCollectionItem of the given class (or -1)}
-    function IndexOfClass(aClass: TVXXCollectionItemClass): integer;
+    function IndexOfClass(aClass: TXCollectionItemClass): integer;
     { Returns the first XCollection of the given class (or nil)}
-    function GetByClass(aClass: TVXXCollectionItemClass): TVXXCollectionItem;
+    function GetByClass(aClass: TXCollectionItemClass): TXCollectionItem;
     { Returns the index of the first XCollectionItem of the given name (or -1)}
     function IndexOfName(const aName: string): integer;
     { Indicates if an object of the given class can be added.
       This function is used to enforce Unique XCollection. }
-    function CanAdd(aClass: TVXXCollectionItemClass): Boolean; virtual;
+    function CanAdd(aClass: TXCollectionItemClass): Boolean; virtual;
     property archiveVersion: integer read FArchiveVersion;
   end;
 
@@ -150,20 +150,20 @@ procedure RegisterXCollectionDestroyEvent(notifyEvent: TNotifyEvent);
 { DeRegisters event. }
 procedure DeRegisterXCollectionDestroyEvent(notifyEvent: TNotifyEvent);
 
-{ Registers a TVXXCollectionItem subclass for persistence requirements. }
-procedure RegisterXCollectionItemClass(aClass: TVXXCollectionItemClass);
-{ Removes a TVXXCollectionItem subclass from the list. }
-procedure UnregisterXCollectionItemClass(aClass: TVXXCollectionItemClass);
-{ Retrieves a registered TVXXCollectionItemClass from its classname. }
+{ Registers a TXCollectionItem subclass for persistence requirements. }
+procedure RegisterXCollectionItemClass(aClass: TXCollectionItemClass);
+{ Removes a TXCollectionItem subclass from the list. }
+procedure UnregisterXCollectionItemClass(aClass: TXCollectionItemClass);
+{ Retrieves a registered TXCollectionItemClass from its classname. }
 function FindXCollectionItemClass(const ClassName: string)
-  : TVXXCollectionItemClass;
-{ Creates and returns a copy of internal list of TVXXCollectionItem classes. 
+  : TXCollectionItemClass;
+{ Creates and returns a copy of internal list of TXCollectionItem classes. 
   Returned list should be freed by caller, the parameter defines an ancestor
-  class filter. If baseClass is left nil, TVXXCollectionItem is used as ancestor. }
+  class filter. If baseClass is left nil, TXCollectionItem is used as ancestor. }
 function GetXCollectionItemClassesList(baseClass
-  : TVXXCollectionItemClass = nil): TList;
+  : TXCollectionItemClass = nil): TList;
 procedure GetXCollectionClassesList(var ClassesList: TList;
-  baseClass: TVXXCollectionItemClass = nil);
+  baseClass: TXCollectionItemClass = nil);
 
 //===========================================================================
 implementation
@@ -194,7 +194,7 @@ end;
 
 // ------------------------------------------------------------------------------
 
-procedure RegisterXCollectionItemClass(aClass: TVXXCollectionItemClass);
+procedure RegisterXCollectionItemClass(aClass: TXCollectionItemClass);
 begin
   if not Assigned(vXCollectionItemClasses) then
     vXCollectionItemClasses := TList.Create;
@@ -202,7 +202,7 @@ begin
     vXCollectionItemClasses.Add(aClass);
 end;
 
-procedure UnregisterXCollectionItemClass(aClass: TVXXCollectionItemClass);
+procedure UnregisterXCollectionItemClass(aClass: TXCollectionItemClass);
 begin
   if not Assigned(vXCollectionItemClasses) then
     exit;
@@ -211,53 +211,53 @@ begin
 end;
 
 function FindXCollectionItemClass(const ClassName: string)
-  : TVXXCollectionItemClass;
+  : TXCollectionItemClass;
 var
   i: integer;
 begin
   result := nil;
   if Assigned(vXCollectionItemClasses) then
     for i := 0 to vXCollectionItemClasses.Count - 1 do
-      if TVXXCollectionItemClass(vXCollectionItemClasses[i]).ClassName = ClassName
+      if TXCollectionItemClass(vXCollectionItemClasses[i]).ClassName = ClassName
       then
       begin
-        result := TVXXCollectionItemClass(vXCollectionItemClasses[i]);
+        result := TXCollectionItemClass(vXCollectionItemClasses[i]);
         Break;
       end;
 end;
 
 function GetXCollectionItemClassesList(baseClass
-  : TVXXCollectionItemClass = nil): TList;
+  : TXCollectionItemClass = nil): TList;
 begin
   result := TList.Create;
   GetXCollectionClassesList(result, baseClass);
 end;
 
 procedure GetXCollectionClassesList(var ClassesList: TList;
-  baseClass: TVXXCollectionItemClass = nil);
+  baseClass: TXCollectionItemClass = nil);
 var
   i: integer;
 begin
   if not Assigned(baseClass) then
-    baseClass := TVXXCollectionItem;
+    baseClass := TXCollectionItem;
   if Assigned(vXCollectionItemClasses) then
     for i := 0 to vXCollectionItemClasses.Count - 1 do
-      if TVXXCollectionItemClass(vXCollectionItemClasses[i])
+      if TXCollectionItemClass(vXCollectionItemClasses[i])
         .InheritsFrom(baseClass) then
         ClassesList.Add(vXCollectionItemClasses[i]);
 end;
 
 // ------------------
-// ------------------ TVXXCollectionItem ------------------
+// ------------------ TXCollectionItem ------------------
 // ------------------
 
-constructor TVXXCollectionItem.Create(aOwner: TVXXCollection);
+constructor TXCollectionItem.Create(aOwner: TXCollection);
 begin
   inherited Create;
   FOwner := aOwner;
   if Assigned(aOwner) then
   begin
-    Assert(aOwner.CanAdd(TVXXCollectionItemClass(Self.ClassType)),
+    Assert(aOwner.CanAdd(TXCollectionItemClass(Self.ClassType)),
       'Addition of ' + Self.ClassName + ' to ' + aOwner.ClassName +
       ' rejected.');
     aOwner.FList.Add(Self);
@@ -265,7 +265,7 @@ begin
   end;
 end;
 
-destructor TVXXCollectionItem.Destroy;
+destructor TXCollectionItem.Destroy;
 begin
   if Assigned(FOwner) then
   begin
@@ -275,27 +275,27 @@ begin
   inherited Destroy;
 end;
 
-procedure TVXXCollectionItem.Assign(Source: TPersistent);
+procedure TXCollectionItem.Assign(Source: TPersistent);
 begin
-  if Source is TVXXCollectionItem then
+  if Source is TXCollectionItem then
   begin
-    FName := TVXXCollectionItem(Source).Name;
+    FName := TXCollectionItem(Source).Name;
   end
   else
     inherited Assign(Source);
 end;
 
-procedure TVXXCollectionItem.SetName(const val: string);
+procedure TXCollectionItem.SetName(const val: string);
 begin
   FName := val;
 end;
 
-function TVXXCollectionItem.GetOwner: TPersistent;
+function TXCollectionItem.GetOwner: TPersistent;
 begin
   result := FOwner;
 end;
 
-procedure TVXXCollectionItem.WriteToFiler(writer: TWriter);
+procedure TXCollectionItem.WriteToFiler(writer: TWriter);
 begin
   with writer do
   begin
@@ -304,7 +304,7 @@ begin
   end;
 end;
 
-procedure TVXXCollectionItem.ReadFromFiler(reader: TReader);
+procedure TXCollectionItem.ReadFromFiler(reader: TReader);
 var
   ver: integer;
 begin
@@ -316,17 +316,17 @@ begin
   end;
 end;
 
-procedure TVXXCollectionItem.Loaded;
+procedure TXCollectionItem.Loaded;
 begin
   // does nothing by default
 end;
 
-function TVXXCollectionItem.GetName: string;
+function TXCollectionItem.GetName: string;
 begin
   result := FName;
 end;
 
-function TVXXCollectionItem.GetNamePath: string;
+function TXCollectionItem.GetNamePath: string;
 begin
   if FOwner <> nil then
     result := Format('%s[%d]', [FOwner.GetNamePath, Index])
@@ -334,7 +334,7 @@ begin
     result := inherited GetNamePath;
 end;
 
-procedure TVXXCollectionItem.MoveUp;
+procedure TXCollectionItem.MoveUp;
 var
   i: integer;
 begin
@@ -346,7 +346,7 @@ begin
   end;
 end;
 
-procedure TVXXCollectionItem.MoveDown;
+procedure TXCollectionItem.MoveDown;
 var
   i: integer;
 begin
@@ -358,7 +358,7 @@ begin
   end;
 end;
 
-function TVXXCollectionItem.Index: integer;
+function TXCollectionItem.Index: integer;
 begin
   if Assigned(Owner) then
     result := Owner.FList.IndexOf(Self)
@@ -366,45 +366,45 @@ begin
     result := -1;
 end;
 
-procedure TVXXCollectionItem.RaiseFilerException(const archiveVersion: integer);
+procedure TXCollectionItem.RaiseFilerException(const archiveVersion: integer);
 begin
   raise EFilerException.Create(ClassName + strUnknownArchiveVersion +
     IntToStr(archiveVersion));
 end;
 
-class function TVXXCollectionItem.FriendlyDescription: string;
+class function TXCollectionItem.FriendlyDescription: string;
 begin
   result := FriendlyName;
 end;
 
-class function TVXXCollectionItem.ItemCategory: string;
+class function TXCollectionItem.ItemCategory: string;
 begin
   result := '';
 end;
 
-class function TVXXCollectionItem.UniqueItem: Boolean;
+class function TXCollectionItem.UniqueItem: Boolean;
 begin
   result := False;
 end;
 
-class function TVXXCollectionItem.CanAddTo(collection: TVXXCollection): Boolean;
+class function TXCollectionItem.CanAddTo(collection: TXCollection): Boolean;
 begin
   result := True;
 end;
 
 
 // ------------------
-// ------------------ TVXXCollection ------------------
+// ------------------ TXCollection ------------------
 // ------------------
 
-constructor TVXXCollection.Create(aOwner: TPersistent);
+constructor TXCollection.Create(aOwner: TPersistent);
 begin
   inherited Create;
   FOwner := aOwner;
   FList := TList.Create;
 end;
 
-destructor TVXXCollection.Destroy;
+destructor TXCollection.Destroy;
 begin
   if Assigned(vXCollectionDestroyEvent) then
     vXCollectionDestroyEvent(Self);
@@ -413,10 +413,10 @@ begin
   inherited Destroy;
 end;
 
-procedure TVXXCollection.Assign(Source: TPersistent);
+procedure TXCollection.Assign(Source: TPersistent);
 var
   i: integer;
-  srcItem, newItem: TVXXCollectionItem;
+  srcItem, newItem: TXCollectionItem;
 begin
   if not Assigned(Source) then
   begin
@@ -425,11 +425,11 @@ begin
   else if Source.ClassType = Self.ClassType then
   begin
     Clear;
-    FList.Capacity := TVXXCollection(Source).FList.Count;
-    for i := 0 to TVXXCollection(Source).Count - 1 do
+    FList.Capacity := TXCollection(Source).FList.Count;
+    for i := 0 to TXCollection(Source).Count - 1 do
     begin
-      srcItem := TVXXCollectionItem(TVXXCollection(Source).FList[i]);
-      newItem := TVXXCollectionItemClass(srcItem.ClassType).Create(Self);
+      srcItem := TXCollectionItem(TXCollection(Source).FList[i]);
+      newItem := TXCollectionItemClass(srcItem.ClassType).Create(Self);
       newItem.Assign(srcItem);
     end;
   end
@@ -438,19 +438,19 @@ begin
   FCount := FList.Count;
 end;
 
-procedure TVXXCollection.Loaded;
+procedure TXCollection.Loaded;
 var
   i: integer;
 begin
   for i := 0 to FList.Count - 1 do
-    TVXXCollectionItem(FList[i]).Loaded;
+    TXCollectionItem(FList[i]).Loaded;
 end;
 
-procedure TVXXCollection.WriteToFiler(writer: TWriter);
+procedure TXCollection.WriteToFiler(writer: TWriter);
 var
   i, n: integer;
   classList: TList;
-  XCollectionItem: TVXXCollectionItem;
+  XCollectionItem: TXCollectionItem;
 begin
   // Here, we write all listed XCollection through their WriteToFiler methods,
   // but to be able to restore them, we also write their classname, and to
@@ -471,7 +471,7 @@ begin
       WriteInteger(FList.Count);
       for i := 0 to FList.Count - 1 do
       begin
-        XCollectionItem := TVXXCollectionItem(FList[i]);
+        XCollectionItem := TXCollectionItem(FList[i]);
         n := classList.IndexOf(XCollectionItem.ClassType);
         if n < 0 then
         begin
@@ -488,15 +488,15 @@ begin
   end;
 end;
 
-procedure TVXXCollection.ReadFromFiler(reader: TReader);
+procedure TXCollection.ReadFromFiler(reader: TReader);
 var
   vt: TValueType;
   Header: array [0 .. 3] of AnsiChar;
   n, lc, lcnum: integer;
   classList: TList;
   cName: string;
-  XCollectionItemClass: TVXXCollectionItemClass;
-  XCollectionItem: TVXXCollectionItem;
+  XCollectionItemClass: TXCollectionItemClass;
+  XCollectionItem: TXCollectionItem;
 begin
   // see WriteData for a description of what is going on here
   Clear;
@@ -541,7 +541,7 @@ begin
         begin
           cName := ReadString;
 {$IFDEF DEBUG_XCOLLECTION}
-          writeln('TVXXCollection.ReadFromFiler create class entry: ', cName);
+          writeln('TXCollection.ReadFromFiler create class entry: ', cName);
 {$ENDIF}
           XCollectionItemClass := FindXCollectionItemClass(cName);
           Assert(Assigned(XCollectionItemClass),
@@ -559,9 +559,9 @@ begin
           lcnum := ReadInteger;
           Assert((lcnum >= 0) and (lcnum < classList.Count),
             'Invalid classlistIndex: ' + IntToStr(lcnum));
-          XCollectionItemClass := TVXXCollectionItemClass(classList[lcnum]);
+          XCollectionItemClass := TXCollectionItemClass(classList[lcnum]);
 {$IFDEF DEBUG_XCOLLECTION}
-          writeln('TVXXCollection.ReadFromFiler create by number: ', lcnum,
+          writeln('TXCollection.ReadFromFiler create by number: ', lcnum,
             ' -> ', XCollectionItemClass.ClassName);
 {$ENDIF}
         end;
@@ -579,22 +579,22 @@ begin
   FCount := FList.Count;
 end;
 
-class function TVXXCollection.ItemsClass: TVXXCollectionItemClass;
+class function TXCollection.ItemsClass: TXCollectionItemClass;
 begin
-  result := TVXXCollectionItem;
+  result := TXCollectionItem;
 end;
 
-function TVXXCollection.GetItems(Index: integer): TVXXCollectionItem;
+function TXCollection.GetItems(Index: integer): TXCollectionItem;
 begin
-  result := TVXXCollectionItem(FList[index]);
+  result := TXCollectionItem(FList[index]);
 end;
 
-function TVXXCollection.GetOwner: TPersistent;
+function TXCollection.GetOwner: TPersistent;
 begin
   result := FOwner;
 end;
 
-function TVXXCollection.GetNamePath: string;
+function TXCollection.GetNamePath: string;
 var
   s: string;
 begin
@@ -607,10 +607,10 @@ begin
   result := s + '.XCollection';
 end;
 
-function TVXXCollection.Add(anItem: TVXXCollectionItem): integer;
+function TXCollection.Add(anItem: TXCollectionItem): integer;
 begin
   Assert(anItem.InheritsFrom(ItemsClass));
-  Assert(CanAdd(TVXXCollectionItemClass(anItem.ClassType)));
+  Assert(CanAdd(TXCollectionItemClass(anItem.ClassType)));
   if Assigned(anItem.FOwner) then
   begin
     anItem.FOwner.FList.Remove(anItem);
@@ -621,24 +621,24 @@ begin
   FCount := FList.Count;
 end;
 
-function TVXXCollection.GetOrCreate(anItem: TVXXCollectionItemClass)
-  : TVXXCollectionItem;
+function TXCollection.GetOrCreate(anItem: TXCollectionItemClass)
+  : TXCollectionItem;
 var
   i: integer;
 begin
   Assert(anItem.InheritsFrom(ItemsClass));
   i := Self.IndexOfClass(anItem);
   if i >= 0 then
-    result := TVXXCollectionItem(Self[i])
+    result := TXCollectionItem(Self[i])
   else
     result := anItem.Create(Self);
 end;
 
-procedure TVXXCollection.Delete(Index: integer);
+procedure TXCollection.Delete(Index: integer);
 begin
   Assert(cardinal(index) < cardinal(FList.Count));
   // doin' it the fast way
-  with TVXXCollectionItem(FList[index]) do
+  with TXCollectionItem(FList[index]) do
   begin
     FOwner := nil;
     Free;
@@ -647,7 +647,7 @@ begin
   FCount := FList.Count;
 end;
 
-procedure TVXXCollection.Remove(anItem: TVXXCollectionItem);
+procedure TXCollection.Remove(anItem: TXCollectionItem);
 var
   i: integer;
 begin
@@ -656,13 +656,13 @@ begin
     Delete(i);
 end;
 
-procedure TVXXCollection.Clear;
+procedure TXCollection.Clear;
 var
   i: integer;
 begin
   // Fast kill of owned XCollection
   for i := 0 to FList.Count - 1 do
-    with TVXXCollectionItem(FList[i]) do
+    with TXCollectionItem(FList[i]) do
     begin
       FOwner := nil;
       Free;
@@ -671,55 +671,55 @@ begin
   FCount := 0;
 end;
 
-function TVXXCollection.IndexOf(anItem: TVXXCollectionItem): integer;
+function TXCollection.IndexOf(anItem: TXCollectionItem): integer;
 begin
   result := FList.IndexOf(anItem);
 end;
 
-function TVXXCollection.IndexOfClass(aClass: TVXXCollectionItemClass): integer;
+function TXCollection.IndexOfClass(aClass: TXCollectionItemClass): integer;
 var
   i: integer;
 begin
   result := -1;
   for i := 0 to FList.Count - 1 do
-    if TVXXCollectionItem(FList[i]) is aClass then
+    if TXCollectionItem(FList[i]) is aClass then
     begin
       result := i;
       Break;
     end;
 end;
 
-function TVXXCollection.GetByClass(aClass: TVXXCollectionItemClass)
-  : TVXXCollectionItem;
+function TXCollection.GetByClass(aClass: TXCollectionItemClass)
+  : TXCollectionItem;
 var
   i: integer;
 begin
   result := nil;
   for i := 0 to FList.Count - 1 do
-    if TVXXCollectionItem(FList[i]) is aClass then
+    if TXCollectionItem(FList[i]) is aClass then
     begin
-      result := TVXXCollectionItem(FList[i]);
+      result := TXCollectionItem(FList[i]);
       Break;
     end;
 end;
 
-function TVXXCollection.IndexOfName(const aName: string): integer;
+function TXCollection.IndexOfName(const aName: string): integer;
 var
   i: integer;
 begin
   result := -1;
   for i := 0 to FList.Count - 1 do
-    if TVXXCollectionItem(FList[i]).Name = aName then
+    if TXCollectionItem(FList[i]).Name = aName then
     begin
       result := i;
       Break;
     end;
 end;
 
-function TVXXCollection.CanAdd(aClass: TVXXCollectionItemClass): Boolean;
+function TXCollection.CanAdd(aClass: TXCollectionItemClass): Boolean;
 var
   i: integer;
-  XCollectionItemClass: TVXXCollectionItemClass;
+  XCollectionItemClass: TXCollectionItemClass;
 begin
   result := True;
 
@@ -744,7 +744,7 @@ begin
   if result then
     for i := 0 to Count - 1 do
     begin
-      XCollectionItemClass := TVXXCollectionItemClass(Items[i].ClassType);
+      XCollectionItemClass := TXCollectionItemClass(Items[i].ClassType);
       if (XCollectionItemClass.UniqueItem) and
         aClass.InheritsFrom(XCollectionItemClass) then
       begin

@@ -36,26 +36,19 @@ type
 
   TGLRagdolBoneList = class (TPersistentObjectList)
   private
-     
      FRagdoll : TGLRagdoll;
   protected
-    
     function GetRagdollBone(Index: Integer) : TGLRagdolBone;
   public
-    
     constructor Create(Ragdoll: TGLRagdoll); reintroduce;
     destructor Destroy; override;
-
     procedure WriteToFiler(writer : TVirtualWriter); override;
     procedure ReadFromFiler(reader : TVirtualReader); override;
-
     property Ragdoll : TGLRagdoll read FRagdoll;
     property Items[Index: Integer] : TGLRagdolBone read GetRagdollBone; default;
 	end;
-
 	TGLRagdolBone = class (TGLRagdolBoneList)
   private
-     
     FOwner : TGLRagdolBoneList;
     FName : String;
     FBoneID : Integer; //Refering to TGLActor Bone
@@ -78,21 +71,17 @@ type
     procedure UpdateChild;
     procedure StopChild;
   protected
-    
     function GetRagdollBone(Index: Integer) : TGLRagdolBone;
     procedure Start; virtual; abstract;
     procedure Align; virtual; abstract;
     procedure Update; virtual; abstract;
     procedure Stop; virtual; abstract;
   public
-    
     constructor CreateOwned(aOwner : TGLRagdolBoneList);
     constructor Create(Ragdoll: TGLRagdoll);
     destructor Destroy; override;
-
     procedure WriteToFiler(writer : TVirtualWriter); override;
     procedure ReadFromFiler(reader : TVirtualReader); override;
-
     property Owner : TGLRagdolBoneList read FOwner;
     property Name : String read FName write FName;
     property BoneID : Integer read FBoneID write FBoneID;
@@ -107,38 +96,29 @@ type
 
   TGLRagdoll = class(TPersistentObject)
 	private
-
     FOwner : TGLBaseMesh;
     FRootBone : TGLRagdolBone;
     FEnabled: Boolean;
     FBuilt: Boolean;
-  protected
-
   public
-
     constructor Create(AOwner : TGLBaseMesh); reintroduce;
     destructor Destroy; override;
-
+    procedure WriteToFiler(writer : TVirtualWriter); override;
+    procedure ReadFromFiler(reader : TVirtualReader); override;
     {Must be set before build the ragdoll }
     procedure SetRootBone(RootBone: TGLRagdolBone);
     {Create the bounding box and setup the ragdoll do be started later }
     procedure BuildRagdoll;
-
     procedure Start;
     procedure Update;
     procedure Stop;
-
     property Owner : TGLBaseMesh read FOwner;
     property RootBone : TGLRagdolBone read FRootBone;
     property Enabled : Boolean read FEnabled;
 	end;
 
 //------------------------------------------------------------------------	
-//------------------------------------------------------------------------	
-//------------------------------------------------------------------------	
 implementation
-//------------------------------------------------------------------------	
-//------------------------------------------------------------------------	
 //------------------------------------------------------------------------	
 
 uses
@@ -362,6 +342,10 @@ begin
   inherited Destroy;
 end;
 
+procedure TGLRagdoll.ReadFromFiler(reader: TVirtualReader);
+begin
+  inherited;
+end;
 procedure TGLRagdoll.SetRootBone(RootBone: TGLRagdolBone);
 begin
   FRootBone := RootBone;
@@ -399,6 +383,11 @@ begin
   FOwner.Skeleton.MorphMesh(true);
 end;
 
+procedure TGLRagdoll.WriteToFiler(writer: TVirtualWriter);
+begin
+  inherited;
+
+end;
 
 procedure TGLRagdoll.BuildRagdoll;
 begin

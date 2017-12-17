@@ -428,7 +428,6 @@ type
   private
     FOnStartPreparingData: TStartPreparingDataEvent;
     FOnMarkDirty: TMarkDirtyEvent;
-  protected
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
