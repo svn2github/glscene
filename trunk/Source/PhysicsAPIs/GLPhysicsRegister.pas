@@ -27,10 +27,12 @@ implementation
 
 procedure Register;
 begin
-  RegisterClasses([TGLODEManager, TGLODEJointList, TODEJoints, TODEElements,
-                   TGLNGDManager, TGLNGDDynamic, TGLNGDStatic]);
-  RegisterComponents('GLScene',[TGLODEManager,TGLODEJointList,
-                                TGLNGDManager, TGLPhysicsManager]);
+  //ODE
+  RegisterClasses([TGLODEManager, TGLODEJointList, TODEJoints, TODEElements]);
+  RegisterComponents('GLScene',[TGLODEManager, TGLODEJointList]);
+  //NGD
+  RegisterClasses([TGLNGDManager, TGLNGDDynamic, TGLNGDStatic]);
+  RegisterComponents('GLScene',[TGLNGDManager, TGLPhysicsManager]);
 end;
 
 end.

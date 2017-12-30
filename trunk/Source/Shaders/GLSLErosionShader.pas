@@ -35,30 +35,22 @@ uses
   GLSLShader,
   GLCustomShader;
 
-//TGLCustomGLSLSimpleErosionShader
-//
 {Custom class for GLSLSimpleErosionShader. 
  A shader that Erode surface object }
 Type
   TGLCustomGLSLSimpleErosionShader = class(TGLCustomGLSLShader)
   private
-
-
     FMaterialLibrary: TGLAbstractMaterialLibrary;
-
     FMainTex  : TGLTexture;
     FNoiseTex : TGLTexture;
     FErosionTex : TGLTexture;
-
     FMainTexName   : TGLLibMaterialName;
     FNoiseTexName  : TGLLibMaterialName;
     FErosionTexName  : TGLLibMaterialName;
-
     FErosionScale: Single;
     FErosionFactor: Single;
     FIntensityFactor1: Single;
     FIntensityFactor2: Single;
-
     FSpecularColor : TGLColor;
     FAmbientColor : TGLColor;
     FAmbientFactor : Single;
@@ -66,36 +58,28 @@ Type
     FSpecularFactor : Single;
     FSpecularRoughness : Single;
     FAnisotropicRoughness : Single;
-
     function GetMaterialLibrary: TGLAbstractMaterialLibrary;
-
     procedure SetMainTexTexture(const Value: TGLTexture);
     procedure SetNoiseTexTexture(const Value: TGLTexture);
     procedure SetErosionTexTexture(const Value: TGLTexture);
-
     function GetMainTexName: TGLLibMaterialName;
     procedure SetMainTexName(const Value: TGLLibMaterialName);
     function GetNoiseTexName: TGLLibMaterialName;
     procedure SetNoiseTexName(const Value: TGLLibMaterialName);
     function GetErosionTexName: TGLLibMaterialName;
     procedure SetErosionTexName(const Value: TGLLibMaterialName);
-
     procedure SetAmbientColor(AValue: TGLColor);
     procedure SetSpecularColor(AValue: TGLColor);
-
   protected
     procedure DoApply(var rci : TGLRenderContextInfo; Sender : TObject); override;
     function DoUnApply(var rci: TGLRenderContextInfo): Boolean; override;
-
     procedure SetMaterialLibrary(const Value: TGLAbstractMaterialLibrary); virtual;
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
   public
     constructor Create(AOwner : TComponent); override;
     destructor Destroy; override;
-
 //    property Color1: TGLColor read FColor1;
 //    property Color2: TGLColor read FColor2;
-
     property MaterialLibrary: TGLAbstractMaterialLibrary read getMaterialLibrary write SetMaterialLibrary;
     property MainTexture: TGLTexture read FMainTex write SetMainTexTexture;
     property MainTextureName: TGLLibMaterialName read GetMainTexName write SetMainTexName;
@@ -103,12 +87,10 @@ Type
     property NoiseTextureName: TGLLibMaterialName read GetNoiseTexName write SetNoiseTexName;
     property ErosionTexture: TGLTexture read FErosionTex write SetErosionTexTexture;
     property ErosionTextureName: TGLLibMaterialName read GetErosionTexName write SetErosionTexName;
-
     property ErosionFactor: Single read FErosionFactor write FErosionFactor;
     property ErosionScale: Single read FErosionFactor write FErosionFactor;
     property IntensityFactor1: Single read FIntensityFactor1 write FIntensityFactor1;
     property IntensityFactor2: Single read FIntensityFactor2 write FIntensityFactor2;
-
     property SpecularColor : TGLColor Read FSpecularColor Write setSpecularColor;
     property AmbientColor : TGLColor Read FAmbientColor Write setAmbientColor;
     property AmbientFactor : Single Read FAmbientFactor Write FAmbientFactor;
@@ -116,28 +98,23 @@ Type
     property SpecularFactor : Single Read FSpecularFactor Write FSpecularFactor;
     property SpecularRoughness : Single Read FSpecularRoughness  Write FSpecularRoughness;
     property AnisotropicRoughness : Single Read FAnisotropicRoughness Write FAnisotropicRoughness;
-
   end;
 
   TGLSLSimpleErosionShader = class(TGLCustomGLSLSimpleErosionShader)
   published
 //    property Color1;
 //    property Color2;
-
     property MaterialLibrary;
-
     property MainTexture;
     property MainTextureName;
     property NoiseTexture;
     property NoiseTextureName;
     property ErosionTexture;
     property ErosionTextureName;
-
     property ErosionScale;
     property ErosionFactor;
     property IntensityFactor1;
     property IntensityFactor2;
-
     property SpecularColor;
     property AmbientColor;
     property AmbientFactor;
@@ -145,11 +122,11 @@ Type
     property SpecularFactor;
     property SpecularRoughness;
     property AnisotropicRoughness;
-
   end;
 
+//----------------------------------------------------------
 implementation
-
+//----------------------------------------------------------
 
 
 { TGLCustomGLSLSimpleErosionShader }

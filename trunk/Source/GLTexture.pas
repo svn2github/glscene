@@ -69,16 +69,16 @@ type
 
   TGLMagFilter = (maNearest, maLinear);
 
-  // Specifies how depth values should be treated
-  // during filtering and texture application
+  (* Specifies how depth values should be treated
+     during filtering and texture application *)
   TGLDepthTextureMode = (dtmLuminance, dtmIntensity, dtmAlpha);
 
-  // Specifies the depth comparison function.
+  (* Specifies the depth comparison function. *)
   TGLDepthCompareFunc = TDepthFunction;
 
-  {Texture format for OpenGL (rendering) use. 
+  (* Texture format for OpenGL (rendering) use.
   Internally, GLScene handles all "base" images as 32 Bits RGBA, but you can
-  specify a generic format to reduce OpenGL texture memory use: }
+  specify a generic format to reduce OpenGL texture memory use: *)
   TGLTextureFormat = (
     tfDefault,
     tfRGB, // = tfRGB8
@@ -109,7 +109,7 @@ type
   TGLTextureChange = (tcImage, tcParams);
   TGLTextureChanges = set of TGLTextureChange;
 
-  {Defines how and if Alpha channel is defined for a texture image. 
+  (* Defines how and if Alpha channel is defined for a texture image.
     tiaDefault : uses the alpha channel in the image if any
     tiaAlphaFromIntensity : the alpha channel value is deduced from other
     RGB components intensity (the brighter, the more opaque)
@@ -120,7 +120,7 @@ type
     tiaLuminanceSqrt : same as tiaLuminance but with an Sqrt(Luminance)
     tiaOpaque : alpha channel is uniformously set to 1.0
     tiaTopLeftPointColorTransparent : points of the same color as the
-    top left point of the bitmap are transparent, others are opaque. }
+    top left point of the bitmap are transparent, others are opaque. *)
   TGLTextureImageAlpha =
   (
     tiaDefault,
@@ -135,11 +135,11 @@ type
     tiaBottomRightPointColorTransparent
   );
 
-  {Base class for texture image data.
+  (*Base class for texture image data.
    Basicly, subclasses are to be considered as different ways of getting
    a HBitmap (interfacing the actual source).
    SubClasses should be registered using RegisterGLTextureImageClass to allow
-   proper persistence and editability in the IDE experts. }
+   proper persistence and editability in the IDE experts. *)
   TGLTextureImage = class(TGLUpdateAbleObject)
   private
     function GetResourceName: string;
@@ -267,8 +267,7 @@ type
     {Use this function if you are going to modify the Picture directly.
      Each invokation MUST be balanced by a call to EndUpdate. }
     procedure BeginUpdate;
-    {Ends a direct picture modification session. 
-       Follows a BeginUpdate. }
+    {Ends a direct picture modification session. Follows a BeginUpdate. }
     procedure EndUpdate;
     function GetBitmap32: TGLImage; override;
     procedure ReleaseBitmap32; override;
@@ -501,7 +500,7 @@ type
       is defined), otherwise the estimated size (from TextureFormat
       specification) is returned. }
     function TextureImageRequiredMemory: Integer;
-    {Allocates the texture handle if not already allocated. 
+    {Allocates the texture handle if not already allocated.
       The texture is binded and parameters are setup, but no image data
       is initialized by this call - for expert use only. }
     function AllocateHandle: Cardinal;
@@ -513,7 +512,7 @@ type
     {Is the texture enabled?.
       Always equals to 'not Disabled'. }
     property Enabled: Boolean read GetEnabled write SetEnabled;
-    {Handle to the OpenGL texture object. 
+    {Handle to the OpenGL texture object.
       If the handle hasn't already been allocated, it will be allocated
       by this call (ie. do not use if no OpenGL context is active!) }
     property Handle: Cardinal read GetHandle;
@@ -540,7 +539,7 @@ type
     is computed. }
     property ImageAlpha: TGLTextureImageAlpha read FImageAlpha write
       SetImageAlpha default tiaDefault;
-    {Texture brightness correction. 
+    {Texture brightness correction.
     This correction is applied upon loading a TGLTextureImage, it's a
     simple saturating scaling applied to the RGB components of
     the 32 bits image, before it is passed to OpenGL, and before
@@ -578,8 +577,8 @@ type
     support GL_ARB_texture_compression, or this option is ignored). }
     property Compression: TGLTextureCompression read FCompression write
       SetCompression default tcDefault;
-    {Specifies texture filtering quality. 
-    You can choose between bilinear and trilinear filetring (anisotropic). 
+    {Specifies texture filtering quality.
+    You can choose between bilinear and trilinear filetring (anisotropic).
     The OpenGL ICD must support GL_EXT_texture_filter_anisotropic or
     this property is ignored. }
     property FilteringQuality: TGLTextureFilteringQuality read FFilteringQuality
@@ -588,7 +587,7 @@ type
     This property controls automatic texture coordinates generation. }
     property MappingMode: TGLTextureMappingMode read FMappingMode write
       SetMappingMode default tmmUser;
-    {Texture mapping coordinates mode for S, T, R and Q axis. 
+    {Texture mapping coordinates mode for S, T, R and Q axis.
     This property stores the coordinates for automatic texture
     coordinates generation. }
     property MappingSCoordinates: TGLCoordinates4 read GetMappingSCoordinates
@@ -690,7 +689,7 @@ function FindGLTextureImageClassByFriendlyName(const friendlyName: string):
   TGLTextureImageClass;
 // Defines a TStrings with the list of registered TGLTextureImageClass.
 procedure SetGLTextureImageClassesToStrings(aStrings: TStrings);
-{Creates a TStrings with the list of registered TGLTextureImageClass. 
+{Creates a TStrings with the list of registered TGLTextureImageClass.
  To be freed by caller. }
 function GetGLTextureImageClassesAsStrings: TStrings;
 
@@ -699,11 +698,7 @@ procedure RegisterTGraphicClassFileExtension(const extension: string;
 function CreateGraphicFromFile(const fileName: string): TGraphic;
 
 //------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
 implementation
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
 uses
@@ -1512,9 +1507,6 @@ begin
   SaveAnsiStringToFile(fileName, AnsiString(PictureFileName));
 end;
 
- 
-//
-
 procedure TGLPicFileImage.LoadFromFile(const fileName: string);
 var
   buf: string;
@@ -1535,16 +1527,12 @@ begin
   FResourceFile := FPictureFileName;
 end;
 
- 
-//
 
 class function TGLPicFileImage.FriendlyName: string;
 begin
   Result := 'PicFile Image';
 end;
 
-// FriendlyDescription
-//
 
 class function TGLPicFileImage.FriendlyDescription: string;
 begin
@@ -1555,7 +1543,7 @@ end;
 // ------------------ TGLCubeMapImage ------------------
 // ------------------
 
- 
+
 constructor TGLCubeMapImage.Create(AOwner: TPersistent);
 var
   i: TGLCubeMapTarget;
@@ -1649,9 +1637,6 @@ begin
   Result := FImage;
 end;
 
-// ReleaseBitmap32
-//
-
 procedure TGLCubeMapImage.ReleaseBitmap32;
 begin
   if Assigned(FImage) then
@@ -1705,7 +1690,7 @@ begin
   end;
 end;
 
- 
+
 procedure TGLCubeMapImage.LoadFromFile(const fileName: string);
 var
   fs: TFileStream;
@@ -1729,7 +1714,7 @@ begin
   end;
 end;
 
- 
+
 class function TGLCubeMapImage.FriendlyName: string;
 begin
   Result := 'CubeMap Image';
@@ -2644,6 +2629,7 @@ var
         LBinding[t] := TextureBinding[ActiveTexture, t];
     end;
   end;
+  
   procedure RestoreBindings;
   var
     t: TGLTextureTarget;
@@ -2855,30 +2841,19 @@ end;
 
 procedure TGLTexture.PrepareParams(target: Cardinal);
 const
-  cTextureSWrap: array[twBoth..twHorizontal] of Cardinal =
-    (GL_REPEAT, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_REPEAT);
-  cTextureTWrap: array[twBoth..twHorizontal] of Cardinal =
-    (GL_REPEAT, GL_CLAMP_TO_EDGE, GL_REPEAT, GL_CLAMP_TO_EDGE);
-  cTextureRWrap: array[twBoth..twHorizontal] of Cardinal =
-    (GL_REPEAT, GL_CLAMP_TO_EDGE, GL_REPEAT, GL_CLAMP_TO_EDGE);
-  cTextureSWrapOld: array[twBoth..twHorizontal] of Cardinal =
-    (GL_REPEAT, GL_CLAMP, GL_CLAMP, GL_REPEAT);
-  cTextureTWrapOld: array[twBoth..twHorizontal] of Cardinal =
-    (GL_REPEAT, GL_CLAMP, GL_REPEAT, GL_CLAMP);
-  cTextureMagFilter: array[maNearest..maLinear] of Cardinal =
-    (GL_NEAREST, GL_LINEAR);
-  cTextureMinFilter: array[miNearest..miLinearMipmapLinear] of Cardinal =
-    (GL_NEAREST, GL_LINEAR, GL_NEAREST_MIPMAP_NEAREST,
-    GL_LINEAR_MIPMAP_NEAREST, GL_NEAREST_MIPMAP_LINEAR,
-    GL_LINEAR_MIPMAP_LINEAR);
-  cFilteringQuality: array[tfIsotropic..tfAnisotropic] of Integer = (1, 2);
-  cSeparateTextureWrap: array[twRepeat..twMirrorClampToBorder] of Cardinal =
-    (GL_REPEAT, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_BORDER,
-    GL_MIRRORED_REPEAT, GL_MIRROR_CLAMP_TO_EDGE_ATI, GL_MIRROR_CLAMP_TO_BORDER_EXT);
-  cTextureCompareMode: array[tcmNone..tcmCompareRtoTexture] of Cardinal =
-    (GL_NONE, GL_COMPARE_R_TO_TEXTURE);
-  cDepthTextureMode: array[dtmLuminance..dtmAlpha] of Cardinal =
-    (GL_LUMINANCE, GL_INTENSITY, GL_ALPHA);
+  cTextureSWrap: array [twBoth .. twHorizontal] of Cardinal = (GL_REPEAT, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_REPEAT);
+  cTextureTWrap: array [twBoth .. twHorizontal] of Cardinal = (GL_REPEAT, GL_CLAMP_TO_EDGE, GL_REPEAT, GL_CLAMP_TO_EDGE);
+  cTextureRWrap: array [twBoth .. twHorizontal] of Cardinal = (GL_REPEAT, GL_CLAMP_TO_EDGE, GL_REPEAT, GL_CLAMP_TO_EDGE);
+  cTextureSWrapOld: array [twBoth .. twHorizontal] of Cardinal = (GL_REPEAT, GL_CLAMP, GL_CLAMP, GL_REPEAT);
+  cTextureTWrapOld: array [twBoth .. twHorizontal] of Cardinal = (GL_REPEAT, GL_CLAMP, GL_REPEAT, GL_CLAMP);
+  cTextureMagFilter: array [maNearest .. maLinear] of Cardinal = (GL_NEAREST, GL_LINEAR);
+  cTextureMinFilter: array [miNearest .. miLinearMipmapLinear] of Cardinal = (GL_NEAREST, GL_LINEAR, GL_NEAREST_MIPMAP_NEAREST,
+    GL_LINEAR_MIPMAP_NEAREST, GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
+  cFilteringQuality: array [tfIsotropic .. tfAnisotropic] of Integer = (1, 2);
+  cSeparateTextureWrap: array [twRepeat .. twMirrorClampToBorder] of Cardinal = (GL_REPEAT, GL_CLAMP_TO_EDGE,
+    GL_CLAMP_TO_BORDER, GL_MIRRORED_REPEAT, GL_MIRROR_CLAMP_TO_EDGE_ATI, GL_MIRROR_CLAMP_TO_BORDER_EXT);
+  cTextureCompareMode: array [tcmNone .. tcmCompareRtoTexture] of Cardinal = (GL_NONE, GL_COMPARE_R_TO_TEXTURE);
+  cDepthTextureMode: array [dtmLuminance .. dtmAlpha] of Cardinal = (GL_LUMINANCE, GL_INTENSITY, GL_ALPHA);
 
 var
   R_Dim: Boolean;

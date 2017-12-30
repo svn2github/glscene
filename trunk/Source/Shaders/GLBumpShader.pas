@@ -721,10 +721,8 @@ begin
     and (BumpMethod = bmDot3TexCombiner) then
     with rci.GLStates do
     begin
-
       Enable(stBlend);
       SetBlendFunc(bfDstColor, bfZero);
-
       ActiveTexture := 0;
       ActiveTextureEnabled[ttTexture2D] := False;
       ActiveTexture := 1;
@@ -733,20 +731,16 @@ begin
       ActiveTexture := 2;
       ActiveTextureEnabled[ttTexture2D] := False;
       ActiveTexture := 0;
-
       FDiffusePass := True;
       Result := True;
       Exit;
-
     end
   else if not FAmbientPass then
     with rci.GLStates do
     begin
-
       FVertexProgramHandle.Disable;
       if BumpMethod = bmBasicARBFP then
         FFragmentProgramHandle.Disable;
-
       Disable(stLighting);
       ActiveTexture := 0;
       ActiveTextureEnabled[ttTexture2D] := False;
@@ -770,7 +764,6 @@ begin
       FAmbientPass := True;
       Result := True;
       Exit;
-
     end;
 
   FVertexProgramHandle.Disable;

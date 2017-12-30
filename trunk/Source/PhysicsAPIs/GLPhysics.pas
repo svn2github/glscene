@@ -6,7 +6,7 @@ uses
   System.Classes,
   System.SysUtils,
   Vcl.Dialogs,
-  // GLS
+
   OpenGL1x,
   GLScene,
   GLVectorGeometry,
@@ -19,7 +19,7 @@ type
   // only ssEuler is usable at the moment
   TDESolverType = (ssEuler, ssRungeKutta4, ssVerlet);
   // TDESolver = procedure({RigidBody:TGLRigidBody;}DeltaTime:Real) of object;
-  TStateArray = Array of Real;
+  TStateArray = array of Real;
   TGLPhysicsManager = class;
 
   {
@@ -92,15 +92,11 @@ type
   public
     StateSize: Integer; // don't re-declare this in sub-classes
     // just initialise it in constructor
-    procedure StateToArray(var StateArray: TStateArray;
-      StatePos: Integer); virtual;
-    procedure ArrayToState( { var } StateArray: TStateArray;
-      StatePos: Integer); virtual;
-    procedure CalcStateDot(var StateArray: TStateArray;
-      StatePos: Integer); virtual;
+    procedure StateToArray(var StateArray: TStateArray; StatePos: Integer); virtual;
+    procedure ArrayToState( { var } StateArray: TStateArray; StatePos: Integer); virtual;
+    procedure CalcStateDot(var StateArray: TStateArray; StatePos: Integer); virtual;
     procedure RemoveForces(); virtual;
-    procedure CalculateForceFieldForce(ForceFieldEmitter
-      : TGLBaseForceFieldEmitter); virtual;
+    procedure CalculateForceFieldForce(ForceFieldEmitter: TGLBaseForceFieldEmitter); virtual;
     procedure CalcAuxiliary(); virtual;
     procedure SetUpStartingState(); virtual;
     function CalculateKE(): Real; virtual;
@@ -194,11 +190,7 @@ type
   end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 procedure TGLPhysicsManager.Notification(AComponent: TComponent;
@@ -336,10 +328,8 @@ begin
   currentpos := 0;
   for i := 0 to Owner.fInertias.Count - 1 do
   begin
-    TGLBaseInertia(Owner.fInertias.Items[i]).StateToArray(StateArray,
-      currentpos);
-    currentpos := currentpos + TGLBaseInertia(Owner.fInertias.Items[i])
-      .StateSize;
+    TGLBaseInertia(Owner.fInertias.Items[i]).StateToArray(StateArray, CurrentPos);
+    currentpos := currentpos + TGLBaseInertia(Owner.fInertias.Items[i]).StateSize;
   end;
   Result := StateArray;
 end;
@@ -352,10 +342,8 @@ begin
   currentpos := 0;
   for i := 0 to Owner.fInertias.Count - 1 do
   begin
-    TGLBaseInertia(Owner.fInertias.Items[i]).ArrayToState(StateArray,
-      currentpos);
-    currentpos := currentpos + TGLBaseInertia(Owner.fInertias.Items[i])
-      .StateSize;
+    TGLBaseInertia(Owner.fInertias.Items[i]).ArrayToState(StateArray, CurrentPos);
+    currentpos := currentpos + TGLBaseInertia(Owner.fInertias.Items[i]).StateSize;
   end;
 end;
 
@@ -384,8 +372,7 @@ begin
   for i := 0 to Owner.fInertias.Count - 1 do
   begin
     TGLBaseInertia(Owner.fInertias.Items[i]).CalcStateDot(state, currentpos);
-    currentpos := currentpos + TGLBaseInertia(Owner.fInertias.Items[i])
-      .StateSize;
+    CurrentPos := CurrentPos + TGLBaseInertia(Owner.fInertias.Items[i]).StateSize;
   end;
   Result := state;
 end;
@@ -589,7 +576,7 @@ begin
     TGLBaseInertia(fInertias[i]).FManager := nil;
   fInertias.Clear;
   DESolver.StateSize := 0;
-  // SetLEngth(StateArray,0);
+  // SetLength(StateArray,0);
 end;
 
 procedure TGLPhysicsManager.RegisterForceFieldEmitter
@@ -877,7 +864,6 @@ begin
   inherited Assign(Source);
 end;
 
-// CalculateForceField
 function TGLBaseForceFieldEmitter.CalculateForceField(Body: TGLBaseSceneObject)
   : TAffineVector;
 begin
@@ -885,12 +871,7 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 // class registrations

@@ -32,13 +32,12 @@ type
   EFilerException = class(Exception)
   end;
 
-  {  Base class for implementing a XCollection item. 
+  (*  Base class for implementing a XCollection item. 
     NOTES : 
      Don't forget to override the ReadFromFiler/WriteToFiler persistence
     methods if you add data in a subclass !
      Subclasses must be registered using the RegisterXCollectionItemClass
-    function for proper operation
-     }
+    function for proper operation  *)
   TGLXCollectionItem = class(TGLInterfacedPersistent)
   private
     FOwner: TGLXCollection;
@@ -628,8 +627,7 @@ begin
   FCount := FList.Count;
 end;
 
-function TGLXCollection.GetOrCreate(anItem: TGLXCollectionItemClass)
-  : TGLXCollectionItem;
+function TGLXCollection.GetOrCreate(anItem: TGLXCollectionItemClass): TGLXCollectionItem;
 var
   i: integer;
 begin
@@ -696,8 +694,7 @@ begin
     end;
 end;
 
-function TGLXCollection.GetByClass(aClass: TGLXCollectionItemClass)
-  : TGLXCollectionItem;
+function TGLXCollection.GetByClass(aClass: TGLXCollectionItemClass): TGLXCollectionItem;
 var
   i: integer;
 begin

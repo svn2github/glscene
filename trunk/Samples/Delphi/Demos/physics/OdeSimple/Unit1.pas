@@ -117,12 +117,12 @@ end;
 procedure TForm1.DoSphere;
 var
   sphere: TGLSphere;
-  dyn: TGLODEDynamic;
+  dyn: TODEDynamic;
 begin
   sphere := TGLSphere(ODEObjects.AddNewChild(TGLSphere));
   sphere.Position.SetPoint(5 * random - 2.5, 2, 5 * random - 2.5);
   sphere.Radius := 0.3 * (random + 1);
-  dyn := TGLODEDynamic.Create(sphere.Behaviours);
+  dyn := TODEDynamic.Create(sphere.Behaviours);
   // ELEMENTS MUST BE ADDED BEFORE SETTING MANAGER
   with TODEElementSphere(dyn.AddNewElement(TODEElementSphere)) do
     Radius := sphere.Radius;
@@ -132,17 +132,17 @@ end;
 procedure TForm1.DoBox;
 var
   cube: TGLCube;
-  dyn: TGLODEDynamic;
+  dyn: TODEDynamic;
 begin
   cube := TGLCube(ODEObjects.AddNewChild(TGLCube));
   cube.Position.SetPoint(5 * random - 2.5, 2, 5 * random - 2.5);
   cube.CubeWidth := 0.5 * (random + 1);
   cube.CubeHeight := 0.5 * (random + 1);
   cube.CubeDepth := 0.5 * (random + 1);
-  dyn := TGLODEDynamic.Create(cube.Behaviours);
+  dyn := TODEDynamic.Create(cube.Behaviours);
   // ELEMENTS MUST BE ADDED BEFORE SETTING MANAGER
   with TODEElementBox(dyn.AddNewElement(TODEElementBox)) do
-  begin 
+  begin
     BoxWidth := cube.CubeWidth;
     BoxHeight := cube.CubeHeight;
     BoxDepth := cube.CubeDepth;
@@ -153,7 +153,7 @@ end;
 procedure TForm1.DoCapsule;
 var
   capsule: TGLCylinder;
-  dyn: TGLODEDynamic;
+  dyn: TODEDynamic;
 begin
   capsule := TGLCylinder(ODEObjects.AddNewChild(TGLCylinder));
   with capsule do
@@ -176,10 +176,10 @@ begin
       Top := 0;
     end;
   end;
-  dyn := TGLODEDynamic.Create(capsule.Behaviours);
+  dyn := TODEDynamic.Create(capsule.Behaviours);
   // ELEMENTS MUST BE ADDED BEFORE SETTING MANAGER
   with TODEElementCapsule(dyn.AddNewElement(TODEElementCapsule)) do
-  begin 
+  begin
     Radius := capsule.BottomRadius;
     Length := capsule.Height;
     Direction.SetVector(0, 1, 0);
@@ -191,7 +191,7 @@ end;
 procedure TForm1.DoCylinder;
 var
   cylinder: TGLCylinder;
-  dyn: TGLODEDynamic;
+  dyn: TODEDynamic;
 begin
   cylinder := TGLCylinder(ODEObjects.AddNewChild(TGLCylinder));
   with cylinder do
@@ -201,10 +201,10 @@ begin
     TopRadius := BottomRadius;
     Height := random + 1;
   end;
-  dyn := TGLODEDynamic.Create(cylinder.Behaviours);
+  dyn := TODEDynamic.Create(cylinder.Behaviours);
   // ELEMENTS MUST BE ADDED BEFORE SETTING MANAGER
   with TODEElementCylinder(dyn.AddNewElement(TODEElementCylinder)) do
-  begin 
+  begin
     Radius := cylinder.BottomRadius;
     Length := cylinder.Height;
   end;
@@ -216,7 +216,7 @@ end;
   procedure TForm1.DoCone;
   var
   cone : TGLCone;
-  dyn : TGLODEDynamic;
+  dyn : TODEDynamic;
   begin
   cone:=TGLCone(ODEObjects.AddNewChild(TGLCone));
   with cone do begin
@@ -224,7 +224,7 @@ end;
   BottomRadius:=0.25*(Random+1);
   Height:=random+1;
   end;
-  dyn:=TGLODEDynamic.Create(cone.Behaviours);
+  dyn:=TODEDynamic.Create(cone.Behaviours);
   dyn.Manager:=GLODEManager1;
   with TODEElementCone(dyn.AddNewElement(TODEElementCone)) do begin
   Radius:=cone.BottomRadius;
@@ -251,12 +251,12 @@ end;
 
 procedure TForm1.chbElementsClick(Sender: TObject);
 begin
-  TGLODEHeightField(GLHeightField1.Behaviours[0]).RenderContacts := chbElements.Checked;
+  TODEHeightField(GLHeightField1.Behaviours[0]).RenderContacts := chbElements.Checked;
 end;
 
 procedure TForm1.TrackBar1Change(Sender: TObject);
 begin
-  with TGLODEHeightField(GLHeightField1.Behaviours[0]) do
+  with TODEHeightField(GLHeightField1.Behaviours[0]) do
     ContactResolution := 0.25 + (10 - TrackBar1.Position) / 20;
 end;
 

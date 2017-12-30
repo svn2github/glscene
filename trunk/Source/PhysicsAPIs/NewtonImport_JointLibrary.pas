@@ -67,14 +67,14 @@ const
 
 {$IFDEF UNIX}
 {$IFDEF DARWIN} // MacOS X
-  //JointLibraryDLL = 'libnewton.dylib';
+  JointLibraryDLL = 'libnewton.dylib';
 {$ELSE}
-  //JointLibraryDLL = 'libnewton.so';
+  JointLibraryDLL = 'libnewton.so';
 {$ENDIF}
 {$ENDIF}
 
 {$IFDEF MACOS}
-  //JointLibraryDLL = 'libnewton';
+  JointLibraryDLL = 'libnewton';
 {$ENDIF}
 
 type

@@ -89,7 +89,8 @@ type
       normals and indices are preserved.
       The only valid modes are currently momTriangles and momTriangleStrip
       (ie. momFaceGroups not supported). }
-    procedure BuildNormals(vertexIndices: TIntegerList; mode: TGLMeshObjectMode; normalIndices: TIntegerList = nil);
+    procedure BuildNormals(vertexIndices: TIntegerList; mode: TGLMeshObjectMode; 
+	  NormalIndices: TIntegerList = nil);
     { Extracts all mesh triangles as a triangles list.
       The resulting list size is a multiple of 3, each group of 3 vertices
       making up and independant triangle.
@@ -97,11 +98,12 @@ type
       (all data is duplicated) and should be freed by caller.
       If texCoords is specified, per vertex texture coordinates will be
       placed there, when available. }
-    function ExtractTriangles(texCoords: TAffineVectorList = nil; normals: TAffineVectorList = nil): TAffineVectorList; virtual;
+    function ExtractTriangles(texCoords: TAffineVectorList = nil; 
+	  Normals: TAffineVectorList = nil): TAffineVectorList; virtual;
     property Name: string read FName write FName;
     property Visible: Boolean read FVisible write FVisible;
     property Vertices: TAffineVectorList read FVertices write SetVertices;
-    property normals: TAffineVectorList read FNormals write SetNormals;
+    property Normals: TAffineVectorList read FNormals write SetNormals;
   end;
 
   TGLSkeletonFrameList = class;
@@ -275,7 +277,7 @@ type
     procedure SetLocalMatrix(const val: TMatrix);
   public
     constructor Create; override;
-    constructor CreateOwned(aOwner: TGLSkeletonColliderList);
+    constructor CreateOwned(AOwner: TGLSkeletonColliderList);
     procedure WriteToFiler(writer: TVirtualWriter); override;
     procedure ReadFromFiler(reader: TVirtualReader); override;
     { This method is used to align the colliders and their
@@ -300,7 +302,7 @@ type
   protected
     function GetSkeletonCollider(Index: Integer): TGLSkeletonCollider;
   public
-    constructor CreateOwned(aOwner: TPersistent);
+    constructor CreateOwned(AOwner: TPersistent);
     destructor Destroy; override;
     procedure ReadFromFiler(reader: TVirtualReader); override;
     procedure Clear; override;
@@ -314,12 +316,12 @@ type
 
   { Small structure to store a weighted lerp for use in blending }
   TGLBlendedLerpInfo = record
-    frameIndex1, frameIndex2: Integer;
-    lerpFactor: Single;
-    weight: Single;
-    externalPositions: TAffineVectorList;
-    externalRotations: TAffineVectorList;
-    externalQuaternions: TQuaternionList;
+    FrameIndex1, frameIndex2: Integer;
+    LerpFactor: Single;
+    Weight: Single;
+    ExternalPositions: TAffineVectorList;
+    ExternalRotations: TAffineVectorList;
+    ExternalQuaternions: TQuaternionList;
   end;
 
   { Main skeleton object. This class stores the bones hierarchy and animation frames.
@@ -432,7 +434,8 @@ type
     procedure SetLightmapTexCoords(const val: TAffineVectorList);
     procedure SetColors(const val: TVectorList);
     procedure BufferArrays;
-    procedure DeclareArraysToOpenGL(var mrci: TGLRenderContextInfo; evenIfAlreadyDeclared: Boolean = False);
+    procedure DeclareArraysToOpenGL(var mrci: TGLRenderContextInfo; 
+	  EvenIfAlreadyDeclared: Boolean = False);
     procedure DisableOpenGLArrays(var mrci: TGLRenderContextInfo);
     procedure EnableLightMapArray(var mrci: TGLRenderContextInfo);
     procedure DisableLightMapArray(var mrci: TGLRenderContextInfo);
@@ -446,16 +449,16 @@ type
     procedure SetTangentsTexCoordIndex(const val: Integer);
     property ValidBuffers: TGLVBOBuffers read FValidBuffers write SetValidBuffers;
   public
-    { Creates, assigns Owner and adds to list. }
-    constructor CreateOwned(aOwner: TGLMeshObjectList);
+    {Creates, assigns Owner and adds to list. }
+    constructor CreateOwned(AOwner: TGLMeshObjectList);
     constructor Create; override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
     procedure WriteToFiler(writer: TVirtualWriter); override;
     procedure ReadFromFiler(reader: TVirtualReader); override;
     procedure Clear; override;
-    function ExtractTriangles(texCoords: TAffineVectorList = nil; normals: TAffineVectorList = nil): TAffineVectorList;
-      override;
+    function ExtractTriangles(texCoords: TAffineVectorList = nil; 
+	  Normals: TAffineVectorList = nil): TAffineVectorList; override;
     { Returns number of triangles in the mesh object. }
     function TriangleCount: Integer; virtual;
     procedure PrepareMaterialLibraryCache(matLib: TGLMaterialLibrary);
@@ -483,8 +486,8 @@ type
       and texcoord data, filling the binormals and tangents where specified. }
     procedure BuildTangentSpace(buildBinormals: Boolean = True; buildTangents: Boolean = True);
     property Owner: TGLMeshObjectList read FOwner;
-    property mode: TGLMeshObjectMode read FMode write FMode;
-    property texCoords: TAffineVectorList read FTexCoords write SetTexCoords;
+    property Mode: TGLMeshObjectMode read FMode write FMode;
+    property TexCoords: TAffineVectorList read FTexCoords write SetTexCoords;
     property LightMapTexCoords: TAffineVectorList read FLightMapTexCoords write SetLightmapTexCoords;
     property Colors: TVectorList read FColors write SetColors;
     property FaceGroups: TGLFaceGroups read FFaceGroups;
@@ -739,8 +742,8 @@ type
     procedure ConvertToList;
     // Return the normal from the 1st three points in the facegroup
     function GetNormal: TAffineVector;
-    property mode: TGLFaceGroupMeshMode read FMode write FMode;
-    property vertexIndices: TIntegerList read FVertexIndices write SetVertexIndices;
+    property Mode: TGLFaceGroupMeshMode read FMode write FMode;
+    property VertexIndices: TIntegerList read FVertexIndices write SetVertexIndices;
   end;
 
   { Adds normals and texcoords indices.
@@ -784,7 +787,7 @@ type
       aNormals: TAffineVectorList = nil); override;
     procedure Add(idx: Integer; const texCoord: TAffineVector); overload;
     procedure Add(idx: Integer; const s, t: Single); overload;
-    property texCoords: TAffineVectorList read FTexCoords write SetTexCoords;
+    property TexCoords: TAffineVectorList read FTexCoords write SetTexCoords;
   end;
 
   { A list of TGLFaceGroup objects. }
@@ -891,7 +894,7 @@ type
       are active. Default behaviour is to prepare build lists for the meshobjects }
     procedure PrepareBuildList(var mrci: TGLRenderContextInfo); virtual;
   public
-    constructor Create(aOwner: TComponent); override;
+    constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
@@ -1013,7 +1016,7 @@ type
     { Returns true if Point is inside the free form - this will only work
       properly on closed meshes. Requires that Octree has been prepared. }
     function OctreePointInMesh(const Point: TVector): Boolean;
-    function OctreeAABBIntersect(const aabb: TAABB; objMatrix, invObjMatrix: TMatrix;
+    function OctreeAABBIntersect(const AABB: TAABB; objMatrix, invObjMatrix: TMatrix;
       triangles: TAffineVectorList = nil): Boolean;
     // TODO:  function OctreeSphereIntersect
     { Octree support *experimental*. Use only if you understand what you're doing! }
@@ -1470,7 +1473,8 @@ begin
     FmtStr(descriptions, '%s (%s)|%1:s|%s', [glsAllFilter, filters, descriptions]);
 end;
 
-function TGLVectorFileFormatsList.FindExtByIndex(Index: Integer; formatsThatCanBeOpened: Boolean = True;
+function TGLVectorFileFormatsList.FindExtByIndex(Index: Integer; 
+  formatsThatCanBeOpened: Boolean = True;
   formatsThatCanBeSaved: Boolean = False): string;
 var
   i: Integer;
@@ -1580,7 +1584,7 @@ begin
   FVertices.Translate(delta);
 end;
 
-procedure TGLBaseMeshObject.BuildNormals(vertexIndices: TIntegerList; mode: TGLMeshObjectMode;
+procedure TGLBaseMeshObject.BuildNormals(vertexIndices: TIntegerList; Mode: TGLMeshObjectMode;
   normalIndices: TIntegerList = nil);
 var
   i, base: Integer;
@@ -1607,7 +1611,7 @@ begin
     // build bijection
     Normals.Clear;
     Normals.Count := Vertices.Count;
-    case mode of
+    case Mode of
       momTriangles:
         begin
           i := 0;
@@ -1666,7 +1670,7 @@ begin
     base := Normals.Count;
     newNormals := TIntegerList.Create;
     newNormals.AddSerie(-1, 0, Vertices.Count);
-    case mode of
+    case Mode of
       momTriangles:
         begin
           i := 0;
@@ -1969,7 +1973,7 @@ end;
 
 function TGLSkeletonFrameList.GetSkeletonFrame(Index: Integer): TGLSkeletonFrame;
 begin
-  Result := TGLSkeletonFrame(list^[Index]);
+  Result := TGLSkeletonFrame(List^[Index]);
 end;
 
 procedure TGLSkeletonFrameList.ConvertQuaternionsToRotations(KeepQuaternions: Boolean = True; SetTransformMode: Boolean = True);
@@ -2056,7 +2060,7 @@ end;
 
 function TGLSkeletonBoneList.GetSkeletonBone(Index: Integer): TGLSkeletonBone;
 begin
-  Result := TGLSkeletonBone(list^[Index]);
+  Result := TGLSkeletonBone(List^[Index]);
 end;
 
 function TGLSkeletonBoneList.BoneByID(anID: Integer): TGLSkeletonBone;
@@ -2140,7 +2144,7 @@ begin
   // root node setups and restore OpenGL stuff
   mrci.GLStates.Disable(stColorMaterial);
   mrci.GLStates.Disable(stLighting);
-  GL.Color3f(1, 1, 1);
+  gl.Color3f(1, 1, 1);
   // render root-bones
   for i := 0 to Count - 1 do
     Items[i].BuildList(mrci);
@@ -2206,8 +2210,7 @@ procedure TGLSkeletonBone.BuildList(var mrci: TGLRenderContextInfo);
 
   procedure IssueColor(Color: Cardinal);
   begin
-    GL.Color4f(GetRValue(Color) / 255, GetGValue(Color) / 255, GetBValue(Color) / 255, 
-	  ((Color shr 24) and 255) / 255);
+    gl.Color4f(GetRValue(Color) / 255, GetGValue(Color) / 255, GetBValue(Color) / 255, ((Color shr 24) and 255) / 255);
   end;
 
 var
@@ -2215,17 +2218,17 @@ var
 begin
   // point for self
   mrci.GLStates.PointSize := 5;
-  GL.Begin_(GL_POINTS);
+  gl.Begin_(GL_POINTS);
   IssueColor(Color);
-  GL.Vertex3fv(@GlobalMatrix.V[3].X);
-  GL.End_;
+  gl.Vertex3fv(@GlobalMatrix.V[3].X);
+  gl.End_;
   // parent-self bone line
   if Owner is TGLSkeletonBone then
   begin
-    GL.Begin_(GL_LINES);
-    GL.Vertex3fv(@TGLSkeletonBone(Owner).GlobalMatrix.V[3].X);
-    GL.Vertex3fv(@GlobalMatrix.V[3].X);
-    GL.End_;
+    gl.Begin_(GL_LINES);
+    gl.Vertex3fv(@TGLSkeletonBone(Owner).GlobalMatrix.V[3].X);
+    gl.Vertex3fv(@GlobalMatrix.V[3].X);
+    gl.End_;
   end;
   // render sub-bones
   for i := 0 to Count - 1 do
@@ -2984,9 +2987,10 @@ begin
     TexCoordsEx[i].Clear;
 end;
 
-function TMeshObject.ExtractTriangles(texCoords: TAffineVectorList = nil; normals: TAffineVectorList = nil): TAffineVectorList;
+function TMeshObject.ExtractTriangles(texCoords: TAffineVectorList = nil; 
+  Normals: TAffineVectorList = nil): TAffineVectorList;
 begin
-  case mode of
+  case Mode of
     momTriangles:
       begin
         Result := inherited ExtractTriangles;
@@ -3667,20 +3671,20 @@ begin
       begin
         if FUseVBO then
           FNormalsVBO.Bind;
-        GL.EnableClientState(GL_NORMAL_ARRAY);
-        GL.NormalPointer(GL_FLOAT, 0, lists[1]);
+        gl.EnableClientState(GL_NORMAL_ARRAY);
+        gl.NormalPointer(GL_FLOAT, 0, lists[1]);
       end
       else
-        GL.DisableClientState(GL_NORMAL_ARRAY);
+        gl.DisableClientState(GL_NORMAL_ARRAY);
       if (Colors.Count > 0) and (not mrci.ignoreMaterials) then
       begin
         if FUseVBO then
           FColorsVBO.Bind;
-        GL.EnableClientState(GL_COLOR_ARRAY);
-        GL.ColorPointer(4, GL_FLOAT, 0, lists[2]);
+        gl.EnableClientState(GL_COLOR_ARRAY);
+        gl.ColorPointer(4, GL_FLOAT, 0, lists[2]);
       end
       else
-        GL.DisableClientState(GL_COLOR_ARRAY);
+        gl.DisableClientState(GL_COLOR_ARRAY);
       if TexCoords.Count > 0 then
       begin
         if FUseVBO then
@@ -3690,15 +3694,15 @@ begin
       end
       else
         xgl.DisableClientState(GL_TEXTURE_COORD_ARRAY);
-      if GL.ARB_multitexture then
+      if gl.ARB_multitexture then
       begin
         if LightMapTexCoords.Count > 0 then
         begin
           if FUseVBO then
             FLightmapTexCoordsVBO.Bind;
-          GL.ClientActiveTexture(GL_TEXTURE1);
-          GL.TexCoordPointer(2, GL_FLOAT, SizeOf(TAffineVector), lists[4]);
-          GL.EnableClientState(GL_TEXTURE_COORD_ARRAY);
+          gl.ClientActiveTexture(GL_TEXTURE1);
+          gl.TexCoordPointer(2, GL_FLOAT, SizeOf(TAffineVector), lists[4]);
+          gl.EnableClientState(GL_TEXTURE_COORD_ARRAY);
         end;
         for i := 0 to FTexCoordsEx.Count - 1 do
         begin
@@ -3706,18 +3710,18 @@ begin
           begin
             if FUseVBO then
               FTexCoordsVBO[i].Bind;
-            GL.ClientActiveTexture(GL_TEXTURE0 + i);
-            GL.TexCoordPointer(4, GL_FLOAT, SizeOf(TVector), tlists[i]);
-            GL.EnableClientState(GL_TEXTURE_COORD_ARRAY);
+            gl.ClientActiveTexture(GL_TEXTURE0 + i);
+            gl.TexCoordPointer(4, GL_FLOAT, SizeOf(TVector), tlists[i]);
+            gl.EnableClientState(GL_TEXTURE_COORD_ARRAY);
           end;
         end;
-        GL.ClientActiveTexture(GL_TEXTURE0);
+        gl.ClientActiveTexture(GL_TEXTURE0);
       end;
     end
     else
     begin
-      GL.DisableClientState(GL_NORMAL_ARRAY);
-      GL.DisableClientState(GL_COLOR_ARRAY);
+      gl.DisableClientState(GL_NORMAL_ARRAY);
+      gl.DisableClientState(GL_COLOR_ARRAY);
       xgl.DisableClientState(GL_TEXTURE_COORD_ARRAY);
     end;
 
@@ -3725,14 +3729,14 @@ begin
     begin
       if FUseVBO then
         FVerticesVBO.Bind;
-      GL.EnableClientState(GL_VERTEX_ARRAY);
-      GL.VertexPointer(3, GL_FLOAT, 0, lists[0]);
+      gl.EnableClientState(GL_VERTEX_ARRAY);
+      gl.VertexPointer(3, GL_FLOAT, 0, lists[0]);
     end
     else
-      GL.DisableClientState(GL_VERTEX_ARRAY);
+      gl.DisableClientState(GL_VERTEX_ARRAY);
 
-    if GL.EXT_compiled_vertex_array and (LightMapTexCoords.Count = 0) and not FUseVBO then
-      GL.LockArrays(0, vertices.Count);
+    if gl.EXT_compiled_vertex_array and (LightMapTexCoords.Count = 0) and not FUseVBO then
+      gl.LockArrays(0, Vertices.Count);
 
     FLastLightMapIndex := -1;
     FArraysDeclared := True;
@@ -3763,34 +3767,34 @@ begin
   if FArraysDeclared then
   begin
     DisableLightMapArray(mrci);
-    if GL.EXT_compiled_vertex_array and (LightMapTexCoords.Count = 0) and not FUseVBO then
-      GL.UnLockArrays;
+    if gl.EXT_compiled_vertex_array and (LightMapTexCoords.Count = 0) and not FUseVBO then
+      gl.UnLockArrays;
     if Vertices.Count > 0 then
-      GL.DisableClientState(GL_VERTEX_ARRAY);
+      gl.DisableClientState(GL_VERTEX_ARRAY);
     if not mrci.ignoreMaterials then
     begin
       if Normals.Count > 0 then
-        GL.DisableClientState(GL_NORMAL_ARRAY);
+        gl.DisableClientState(GL_NORMAL_ARRAY);
       if (Colors.Count > 0) and (not mrci.ignoreMaterials) then
-        GL.DisableClientState(GL_COLOR_ARRAY);
+        gl.DisableClientState(GL_COLOR_ARRAY);
       if TexCoords.Count > 0 then
         xgl.DisableClientState(GL_TEXTURE_COORD_ARRAY);
-      if GL.ARB_multitexture then
+      if gl.ARB_multitexture then
       begin
         if LightMapTexCoords.Count > 0 then
         begin
-          GL.ClientActiveTexture(GL_TEXTURE1);
-          GL.DisableClientState(GL_TEXTURE_COORD_ARRAY);
+          gl.ClientActiveTexture(GL_TEXTURE1);
+          gl.DisableClientState(GL_TEXTURE_COORD_ARRAY);
         end;
         for i := 0 to FTexCoordsEx.Count - 1 do
         begin
           if TexCoordsEx[i].Count > 0 then
           begin
-            GL.ClientActiveTexture(GL_TEXTURE0 + i);
-            GL.DisableClientState(GL_TEXTURE_COORD_ARRAY);
+            gl.ClientActiveTexture(GL_TEXTURE0 + i);
+            gl.DisableClientState(GL_TEXTURE_COORD_ARRAY);
           end;
         end;
-        GL.ClientActiveTexture(GL_TEXTURE0);
+        gl.ClientActiveTexture(GL_TEXTURE0);
       end;
     end;
 
@@ -3969,7 +3973,7 @@ begin
 
     Include(FValidBuffers, vbTexCoordsEx);
   end;
-  GL.CheckError;
+  gl.CheckError;
 end;
 
 procedure TMeshObject.BuildList(var mrci: TGLRenderContextInfo);
@@ -3987,12 +3991,13 @@ begin
   if gotColor then
   begin
     mrci.GLStates.Enable(stColorMaterial);
-    GL.ColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
+    gl.ColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
     mrci.GLStates.SetGLMaterialColors(cmFront, clrBlack, clrGray20, clrGray80, clrBlack, 0);
     mrci.GLStates.SetGLMaterialColors(cmBack, clrBlack, clrGray20, clrGray80, clrBlack, 0);
   end;
-  case mode of
-    momTriangles, momTriangleStrip:  if Vertices.Count > 0 then
+  case Mode of
+    momTriangles, momTriangleStrip: 
+	if Vertices.Count > 0 then
       begin
         DeclareArraysToOpenGL(mrci);
         gotNormals := (Vertices.Count = Normals.Count);
@@ -4000,34 +4005,34 @@ begin
         SetLength(gotTexCoordsEx, FTexCoordsEx.Count);
         for i := 0 to FTexCoordsEx.Count - 1 do
           gotTexCoordsEx[i] := (TexCoordsEx[i].Count > 0) and GL.ARB_multitexture;
-        if mode = momTriangles then
-          GL.Begin_(GL_TRIANGLES)
+        if Mode = momTriangles then
+          gl.Begin_(GL_TRIANGLES)
         else
-          GL.Begin_(GL_TRIANGLE_STRIP);
+          gl.Begin_(GL_TRIANGLE_STRIP);
         for i := 0 to Vertices.Count - 1 do
         begin
           if gotNormals then
-            GL.Normal3fv(@Normals.List[i]);
+            gl.Normal3fv(@Normals.List[i]);
           if gotColor then
-            GL.Color4fv(@Colors.List[i]);
+            gl.Color4fv(@Colors.List[i]);
           if FTexCoordsEx.Count > 0 then
           begin
             if gotTexCoordsEx[0] then
-              GL.MultiTexCoord4fv(GL_TEXTURE0, @TexCoordsEx[0].List[i])
+              gl.MultiTexCoord4fv(GL_TEXTURE0, @TexCoordsEx[0].List[i])
             else if gotTexCoords then
               xgl.TexCoord2fv(@TexCoords.List[i]);
             for j := 1 to FTexCoordsEx.Count - 1 do
               if gotTexCoordsEx[j] then
-                GL.MultiTexCoord4fv(GL_TEXTURE0 + j, @TexCoordsEx[j].list[i]);
+                gl.MultiTexCoord4fv(GL_TEXTURE0 + j, @TexCoordsEx[j].list[i]);
           end
           else
           begin
             if gotTexCoords then
               xgl.TexCoord2fv(@TexCoords.List[i]);
           end;
-          GL.Vertex3fv(@Vertices.List[i]);
+          gl.Vertex3fv(@Vertices.List[i]);
         end;
-        GL.End_;
+        gl.End_;
       end;
     momFaceGroups:
       begin
@@ -4246,10 +4251,10 @@ begin
     GetMeshObject(i).GetExtents(lMin, lMax);
     for k := 0 to 2 do
     begin
-      if lMin.V[k] < min.V[k] then
-        min.V[k] := lMin.V[k];
-      if lMax.V[k] > max.V[k] then
-        max.V[k] := lMax.V[k];
+      if lMin.C[k] < min.C[k] then
+        min.C[k] := lMin.C[k];
+      if lMax.C[k] > max.C[k] then
+        max.C[k] := lMax.C[k];
     end;
   end;
 end;
@@ -4348,7 +4353,7 @@ end;
 function TGLMeshObjectList.Volume: Single;
 var
   i: Integer;
-  tri: TxFace;
+  Tri: TxFace;
   List: TAffineVectorList;
 
 begin
@@ -4959,7 +4964,7 @@ begin
     begin
       BoneID := VerticesBonesWeights^[i]^[0].BoneID;
       Bone := Skeleton.BoneByID(BoneID);
-      Vertices.list^[i] := VectorTransform(refVertices.list^[i], Bone.GlobalMatrix);
+      Vertices.List^[i] := VectorTransform(refVertices.List^[i], Bone.GlobalMatrix);
       PAffineVector(@n)^ := refNormals.list^[i];
       nt := VectorTransform(n, Bone.GlobalMatrix);
       Normals.List^[i] := PAffineVector(@nt)^;
@@ -5065,7 +5070,7 @@ begin
     begin
       Assert(Image.NativeTextureTarget = ttTexture2D);
       mrci.GLStates.TextureBinding[1, ttTexture2D] := Handle;
-      GL.TexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+      gl.TexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
       mrci.GLStates.ActiveTexture := 0;
     end;
@@ -5212,12 +5217,12 @@ begin
     SetupVBO;
 
     FIndexVBO.Bind;
-    GL.DrawElements(cFaceGroupMeshModeToOpenGL[mode], vertexIndices.Count, GL_UNSIGNED_INT, nil);
+    gl.DrawElements(cFaceGroupMeshModeToOpenGL[mode], vertexIndices.Count, GL_UNSIGNED_INT, nil);
     FIndexVBO.UnBind;
   end
   else
   begin
-    GL.DrawElements(cFaceGroupMeshModeToOpenGL[mode], vertexIndices.Count, GL_UNSIGNED_INT, vertexIndices.list);
+    gl.DrawElements(cFaceGroupMeshModeToOpenGL[mode], vertexIndices.Count, GL_UNSIGNED_INT, vertexIndices.list);
   end;
 end;
 
@@ -5346,10 +5351,10 @@ begin
     for k := 0 to 2 do
     begin
       f := ref^[k];
-      if f < min.V[k] then
-        min.V[k] := f;
-      if f > max.V[k] then
-        max.V[k] := f;
+      if f < min.C[k] then
+        min.C[k] := f;
+      if f > max.C[k] then
+        max.C[k] := f;
     end;
   end;
 end;
@@ -5477,9 +5482,9 @@ begin
   colorPool := Owner.Owner.Colors.List;
   texCoordPool := Owner.Owner.TexCoords.List;
   case Mode of
-    fgmmTriangles, fgmmFlatTriangles: GL.Begin_(GL_TRIANGLES);
-    fgmmTriangleStrip: GL.Begin_(GL_TRIANGLE_STRIP);
-    fgmmTriangleFan: GL.Begin_(GL_TRIANGLE_FAN);
+    fgmmTriangles, fgmmFlatTriangles: gl.Begin_(GL_TRIANGLES);
+    fgmmTriangleStrip: gl.Begin_(GL_TRIANGLE_STRIP);
+    fgmmTriangleFan: gl.Begin_(GL_TRIANGLE_FAN);
   else
     Assert(False);
   end;
@@ -5495,15 +5500,15 @@ begin
 
   for i := 0 to VertexIndices.Count - 1 do
   begin
-    GL.Normal3fv(@normalPool[normalIdxList^[i]]);
+    gl.Normal3fv(@normalPool[normalIdxList^[i]]);
     if Assigned(colorPool) then
-      GL.Color4fv(@colorPool[vertexIdxList^[i]]);
+      gl.Color4fv(@colorPool[vertexIdxList^[i]]);
     if Assigned(texCoordPool) then
       xgl.TexCoord2fv(@texCoordPool[texCoordIdxList^[i]]);
-    GL.Vertex3fv(@vertexPool[vertexIdxList^[i]]);
+    gl.Vertex3fv(@vertexPool[vertexIdxList^[i]]);
   end;
 
-  GL.End_;
+  gl.End_;
 end;
 
 procedure TFGVertexNormalTexIndexList.AddToTriangles(aList: TAffineVectorList; aTexCoords: TAffineVectorList = nil;
@@ -5586,11 +5591,11 @@ begin
   gotColor := (Owner.Owner.Vertices.Count = Owner.Owner.Colors.Count);
 
   case Mode of
-    fgmmTriangles: GL.Begin_(GL_TRIANGLES);
-    fgmmFlatTriangles: GL.Begin_(GL_TRIANGLES);
-    fgmmTriangleStrip: GL.Begin_(GL_TRIANGLE_STRIP);
-    fgmmTriangleFan: GL.Begin_(GL_TRIANGLE_FAN);
-    fgmmQuads: GL.Begin_(GL_QUADS);
+    fgmmTriangles: gl.Begin_(GL_TRIANGLES);
+    fgmmFlatTriangles: gl.Begin_(GL_TRIANGLES);
+    fgmmTriangleStrip: gl.Begin_(GL_TRIANGLE_STRIP);
+    fgmmTriangleFan: gl.Begin_(GL_TRIANGLE_FAN);
+    fgmmQuads: gl.Begin_(GL_QUADS);
   else
     Assert(False);
   end;
@@ -5602,9 +5607,9 @@ begin
       xgl.TexCoord2fv(@texCoordPool[i]);
       k := indicesPool[i];
       if gotColor then
-        GL.Color4fv(@colorPool[k]);
-      GL.Normal3fv(@normalPool[k]);
-      GL.Vertex3fv(@vertexPool[k]);
+        gl.Color4fv(@colorPool[k]);
+      gl.Normal3fv(@normalPool[k]);
+      gl.Vertex3fv(@vertexPool[k]);
     end;
   end
   else
@@ -5613,12 +5618,12 @@ begin
     begin
       xgl.TexCoord2fv(@texCoordPool[i]);
       if gotColor then
-        GL.Color4fv(@colorPool[indicesPool[i]]);
-      GL.Vertex3fv(@vertexPool[indicesPool[i]]);
+        gl.Color4fv(@colorPool[indicesPool[i]]);
+      gl.Vertex3fv(@vertexPool[indicesPool[i]]);
     end;
   end;
-  GL.End_;
-  GL.CheckError;
+  gl.End_;
+  gl.CheckError;
 end;
 
 procedure TFGIndexTexCoordList.AddToTriangles(aList: TAffineVectorList; aTexCoords: TAffineVectorList = nil;
@@ -6030,10 +6035,10 @@ begin
     TMeshObject(MeshObjects[i]).GetExtents(lMin, lMax);
     for k := 0 to 2 do
     begin
-      if lMin.V[k] < min.V[k] then
-        min.V[k] := lMin.V[k];
-      if lMax.V[k] > max.V[k] then
-        max.V[k] := lMax.V[k];
+      if lMin.C[k] < min.C[k] then
+        min.C[k] := lMin.C[k];
+      if lMax.C[k] > max.C[k] then
+        max.C[k] := lMax.C[k];
     end;
   end;
 end;
@@ -6301,7 +6306,8 @@ begin
         PrepareBuildList(rci);
       Material.Apply(rci);
       repeat
-        if (osDirectDraw in ObjectStyle) or rci.amalgamating or UseMeshMaterials then
+        if (osDirectDraw in ObjectStyle) or 
+		    rci.amalgamating or UseMeshMaterials then
           BuildList(rci)
         else
           rci.GLStates.CallList(GetHandle(rci));
@@ -6430,7 +6436,7 @@ begin
   for i := 0 to MeshObjects.Count - 1 do
   begin
     mo := (MeshObjects[i] as TMeshObject);
-    if mo.Mode <> momFacegroups then
+    if mo.Mode <> momFaceGroups then
       Exit;
     for j := 0 to mo.FaceGroups.Count - 1 do
       if not mo.FaceGroups[j].InheritsFrom(TFGVertexIndexList) then

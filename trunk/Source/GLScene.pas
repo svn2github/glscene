@@ -67,7 +67,7 @@ type
 const
   cDefaultProxyOptions = [pooEffects, pooObjects, pooTransformation];
   GLSCENE_REVISION = '$Revision: 7082$';
-  GLSCENE_VERSION = '1.8.0.%s';
+  GLSCENE_VERSION = '1.6.0.%s';
 
 type
 
@@ -977,8 +977,7 @@ type
     property QuadraticAttenuation: Single read FQuadraticAttenuation write
       SetQuadraticAttenuation;
     property Position;
-    property LightStyle: TGLLightStyle read FLightStyle write SetLightStyle default
-      lsSpot;
+    property LightStyle: TGLLightStyle read FLightStyle write SetLightStyle default lsSpot;
     property Shining: Boolean read FShining write SetShining default True;
     property Specular: TGLColor read FSpecular write SetSpecular;
     property SpotCutOff: Single read FSpotCutOff write SetSpotCutOff;
@@ -1049,7 +1048,6 @@ type
     procedure Reset(aSceneBuffer: TGLSceneBuffer);
     // Position the camera so that the whole scene can be seen
     procedure ZoomAll(aSceneBuffer: TGLSceneBuffer);
-
     procedure RotateObject(obj: TGLBaseSceneObject; pitchDelta, turnDelta: Single; rollDelta: Single = 0);
     procedure RotateTarget(pitchDelta, turnDelta: Single; rollDelta: Single = 0);
     {Change camera's position to make it move around its target.

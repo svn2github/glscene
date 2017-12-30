@@ -70,7 +70,7 @@ type
     procedure AddODECubeClick(Sender: TObject);
 
   private
-     
+
     FUserDirection: TVector;
     FDirectionVector: TVector;
   public

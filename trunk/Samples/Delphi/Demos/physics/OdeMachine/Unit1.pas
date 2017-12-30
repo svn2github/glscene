@@ -75,8 +75,8 @@ var
 begin
   GLODEManager1.Step(deltaTime);
 
-  velWheel:=dBodyGetAngularVel(TGLODEDynamic(Wheel.Behaviours[0]).Body);
- /// velPin2:=dBodyGetLinearVel(TGLODEDynamic(Pin2.Behaviours[0]).Body);
+//  velWheel:=dBodyGetAngularVel(TODEDynamic(Wheel.Behaviours[0]).Body);
+//  velPin2:=dBodyGetLinearVel(TODEDynamic(Pin2.Behaviours[0]).Body);
   GLHUDText1.Text:=Format(
     'Wheel Angular Velocity (Y-Axis) = %.1f'+#13#10+
     'Pin2 Linear Velocity (X-Axis) = %.1f',

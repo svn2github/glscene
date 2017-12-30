@@ -289,8 +289,8 @@ end;
 
 function TGLCustomGLSLShader.ShaderSupported: Boolean;
 begin
-  Result := (gl.ARB_shader_objects and gl.ARB_vertex_program and
-             gl.ARB_vertex_shader and gl.ARB_fragment_shader);
+  Result := (GL.ARB_shader_objects and GL.ARB_vertex_program and
+             GL.ARB_vertex_shader and GL.ARB_fragment_shader);
 end;
 
 function TGLCustomGLSLShader.GetActiveAttribs: TGLActiveAttribArray;

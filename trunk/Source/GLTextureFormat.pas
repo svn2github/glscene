@@ -585,23 +585,23 @@ end;
 function IsTargetSupported(glTarget: Cardinal): Boolean;
 begin
   case glTarget of
-    GL_TEXTURE_1D: Result := gl.VERSION_1_1 or gl.EXT_texture_object;
-    GL_TEXTURE_2D: Result := gl.VERSION_1_1 or gl.EXT_texture_object;
-    GL_TEXTURE_3D: Result := gl.EXT_texture3D;
-    GL_TEXTURE_RECTANGLE: Result := gl.ARB_texture_rectangle;
+    GL_TEXTURE_1D: Result := GL.VERSION_1_1 or GL.EXT_texture_object;
+    GL_TEXTURE_2D: Result := GL.VERSION_1_1 or GL.EXT_texture_object;
+    GL_TEXTURE_3D: Result := GL.EXT_texture3D;
+    GL_TEXTURE_RECTANGLE: Result := GL.ARB_texture_rectangle;
     GL_TEXTURE_CUBE_MAP,
       GL_TEXTURE_CUBE_MAP_POSITIVE_X,
       GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
       GL_TEXTURE_CUBE_MAP_POSITIVE_Y,
       GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
       GL_TEXTURE_CUBE_MAP_POSITIVE_Z,
-      GL_TEXTURE_CUBE_MAP_NEGATIVE_Z: Result := gl.ARB_texture_cube_map;
-    GL_TEXTURE_1D_ARRAY: Result := gl.EXT_texture_array;
-    GL_TEXTURE_2D_ARRAY: Result := gl.EXT_texture_array;
-    GL_TEXTURE_CUBE_MAP_ARRAY: Result := gl.ARB_texture_cube_map_array;
-    GL_TEXTURE_BUFFER: Result := gl.ARB_texture_buffer_object;
+      GL_TEXTURE_CUBE_MAP_NEGATIVE_Z: Result := GL.ARB_texture_cube_map;
+    GL_TEXTURE_1D_ARRAY: Result := GL.EXT_texture_array;
+    GL_TEXTURE_2D_ARRAY: Result := GL.EXT_texture_array;
+    GL_TEXTURE_CUBE_MAP_ARRAY: Result := GL.ARB_texture_cube_map_array;
+    GL_TEXTURE_BUFFER: Result := GL.ARB_texture_buffer_object;
     GL_TEXTURE_2D_MULTISAMPLE,
-      GL_TEXTURE_2D_MULTISAMPLE_ARRAY: Result := gl.ARB_texture_multisample;
+      GL_TEXTURE_2D_MULTISAMPLE_ARRAY: Result := GL.ARB_texture_multisample;
   else
     begin
       Result := false;
@@ -617,112 +617,112 @@ begin
   if ((intFormat >= tfALPHA4) and (intFormat <= tfALPHA16)) or
     ((intFormat >= tfLUMINANCE4) and (intFormat <= tfR16G16B16A16)) then
   begin
-    Result := gl.VERSION_1_1;
+    Result := GL.VERSION_1_1;
     EXIT;
   end;
 
   if ((intFormat >= tfDEPTH_COMPONENT16) and (intFormat <= tfDEPTH_COMPONENT32)) then
   begin
-    Result := gl.ARB_depth_texture;
+    Result := GL.ARB_depth_texture;
     EXIT;
   end;
 
   if ((intFormat >= tfCOMPRESSED_RGB_S3TC_DXT1) and (intFormat <=
     tfCOMPRESSED_RGBA_S3TC_DXT5)) then
   begin
-    Result := gl.EXT_texture_compression_s3tc;
+    Result := GL.EXT_texture_compression_s3tc;
     EXIT;
   end;
 
   if ((intFormat >= tfSIGNED_LUMINANCE8) and (intFormat <=
     tfDSDT8_MAG8_INTENSITY8)) then
   begin
-    Result := gl.NV_texture_shader;
+    Result := GL.NV_texture_shader;
     EXIT;
   end;
 
   if ((intFormat = tfHILO8) or (intFormat = tfSIGNED_HILO8)) then
   begin
-    Result := gl.NV_texture_shader3;
+    Result := GL.NV_texture_shader3;
     EXIT;
   end;
 
   if ((intFormat >= tfFLOAT_R16) and (intFormat <= tfFLOAT_RGBA32)) then
   begin
-    Result := gl.NV_float_buffer;
+    Result := GL.NV_float_buffer;
     EXIT;
   end;
 
   if ((intFormat >= tfRGBA_FLOAT32)
     and (intFormat <= tfLUMINANCE_ALPHA_FLOAT16)) then
   begin
-    Result := gl.ARB_texture_float or gl.ATI_texture_float;
+    Result := GL.ARB_texture_float or GL.ATI_texture_float;
     EXIT;
   end;
 
   if intFormat = tfDEPTH24_STENCIL8 then
   begin
-    Result := gl.EXT_packed_depth_stencil;
+    Result := GL.EXT_packed_depth_stencil;
     EXIT;
   end;
 
   if ((intFormat = tfDEPTH_COMPONENT32F) or (intFormat = tfDEPTH32F_STENCIL8)) then
   begin
-    Result := gl.NV_depth_buffer_float;
+    Result := GL.NV_depth_buffer_float;
     EXIT;
   end;
 
   if ((intFormat >= tfSRGB8) and (intFormat <=
     tfCOMPRESSED_SRGB_ALPHA_S3TC_DXT5)) then
   begin
-    Result := gl.EXT_texture_sRGB;
+    Result := GL.EXT_texture_sRGB;
     EXIT;
   end;
 
   if intFormat = tfRGB9_E5 then
   begin
-    Result := gl.EXT_texture_shared_exponent;
+    Result := GL.EXT_texture_shared_exponent;
     EXIT;
   end;
 
   if intFormat = tfR11F_G11F_B10F then
   begin
-    Result := gl.EXT_packed_float;
+    Result := GL.EXT_packed_float;
     EXIT;
   end;
 
   if ((intFormat >= tfCOMPRESSED_LUMINANCE_LATC1) and (intFormat <=
     tfCOMPRESSED_SIGNED_LUMINANCE_ALPHA_LATC2)) then
   begin
-    Result := gl.EXT_texture_compression_latc;
+    Result := GL.EXT_texture_compression_latc;
     EXIT;
   end;
 
   if intFormat = tfCOMPRESSED_LUMINANCE_ALPHA_3DC then
   begin
-    Result := gl.ATI_texture_compression_3dc;
+    Result := GL.ATI_texture_compression_3dc;
     EXIT;
   end;
 
   if ((intFormat >= tfRGBA32UI) and (intFormat <= tfLUMINANCE_ALPHA8I)) then
   begin
-    Result := gl.EXT_texture_integer;
+    Result := GL.EXT_texture_integer;
     EXIT;
   end;
 
   if ((intFormat >= tfRG32UI) and (intFormat <= tfR32F)) then
-    Result := gl.ARB_texture_rg;
+    Result := GL.ARB_texture_rg;
 
   if ((intFormat >= tfCOMPRESSED_RED_RGTC1) and (intFormat <=
     tfCOMPRESSED_SIGNED_RG_RGTC2)) then
   begin
-    Result := gl.ARB_texture_compression_rgtc;
+    Result := GL.ARB_texture_compression_rgtc;
     EXIT;
   end;
 
   if ((intFormat >= tfR8_SNORM) and (intFormat <= tfRGBA16_SNORM)) then
   begin
-    Result := gl.VERSION_3_1;
+    Result := GL.VERSION_3_1;
     EXIT;
   end
 end;

@@ -367,8 +367,8 @@ var
   emitter: TGLSLTextureEmitter;
   OldSeparator: char;
 begin
-  ShaderSupported := (gl.ARB_shader_objects and gl.ARB_vertex_program and
-    gl.ARB_vertex_shader and gl.ARB_fragment_shader);
+  ShaderSupported := (GL.ARB_shader_objects and GL.ARB_vertex_program and
+    GL.ARB_vertex_shader and GL.ARB_fragment_shader);
 
   if not ShaderSupported then
     exit;

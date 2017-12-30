@@ -93,7 +93,9 @@ type
     property SpecularFactor;
   end;
 
+//-------------------------------------------------------------
 implementation
+//-------------------------------------------------------------
 
 
 { TGLCustomGLSLSimpleGoochShader }
@@ -206,8 +208,6 @@ end;
 procedure TGLCustomGLSLSimpleGoochShader.DoApply(var rci: TGLRenderContextInfo;
   Sender: TObject);
 begin
-
-
   GetGLSLProg.UseProgramObject;
   param['SurfaceColor'].AsVector4f := FDiffuseColor.Color;
   param['WarmColor'].AsVector4f := FWarmColor.Color;

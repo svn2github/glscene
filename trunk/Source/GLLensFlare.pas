@@ -386,8 +386,8 @@ var
   rW, s0, c0, s, c: Single;
 begin
 {$IFDEF USE_OPENGL_DEBUG}
-  if gl.GREMEDY_string_marker then
-    gl.StringMarkerGREMEDY(14, 'LensFlare.Ring');
+  if GL.GREMEDY_string_marker then
+    GL.StringMarkerGREMEDY(14, 'LensFlare.Ring');
 {$ENDIF}
   rW := FCurrSize * (1 / 15); // Ring width
   gl.Begin_(GL_QUADS);
@@ -428,8 +428,8 @@ var
   grad: TGLFlareGradient;
 begin
 {$IFDEF USE_OPENGL_DEBUG}
-  if gl.GREMEDY_string_marker then
-    gl.StringMarkerGREMEDY(21, 'LensFlare.Secondaries');
+  if GL.GREMEDY_string_marker then
+    GL.StringMarkerGREMEDY(21, 'LensFlare.Secondaries');
 {$ENDIF}
   // Other secondaries (plain gradiented circles, like the glow):
   for j := 1 to NumSecs do
@@ -537,7 +537,7 @@ begin
 
   if AutoZTest then
   begin
-    if dynamicSize and (gl.HP_occlusion_test or
+    if dynamicSize and (GL.HP_occlusion_test or
       TGLOcclusionQueryHandle.IsSupported) then
     begin
       // hardware-based occlusion test is possible
@@ -632,8 +632,8 @@ begin
         if FTexRays.Handle <> 0 then
         begin
         {$IFDEF USE_OPENGL_DEBUG}
-          if gl.GREMEDY_string_marker then
-            gl.StringMarkerGREMEDY(19, 'LensFlare.RaysQuad');
+          if GL.GREMEDY_string_marker then
+            GL.StringMarkerGREMEDY(19, 'LensFlare.RaysQuad');
         {$ENDIF}
           rci.GLStates.TextureBinding[0, ttTexture2D] := FTexRays.Handle;
           rci.GLStates.ActiveTextureEnabled[ttTexture2D] := True;

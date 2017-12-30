@@ -2477,10 +2477,14 @@ end;
 
 procedure VectorLerp(const V1, V2: TVector; T: Single; var vr: TVector);
 begin
+{$IFDEF USE_FASTMATH}
+  vr := V1.Lerp(V2,T);
+{$ELSE}
   vr.X := V1.X + (V2.X - V1.X) * T;
   vr.Y := V1.Y + (V2.Y - V1.Y) * T;
   vr.Z := V1.Z + (V2.Z - V1.Z) * T;
   vr.W := V1.W + (V2.W - V1.W) * T;
+{$ENDIF}
 end;
 
 function VectorAngleLerp(const V1, V2: TAffineVector; T: Single): TAffineVector;

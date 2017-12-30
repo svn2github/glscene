@@ -28,7 +28,7 @@ object Form1: TForm1
     TabOrder = 0
   end
   object GLScene1: TGLScene
-    Left = 8
+    Left = 160
     Top = 8
     object GLDummyCube1: TGLDummyCube
       Position.Coordinates = {0000803F00000000000000000000803F}
@@ -103,19 +103,19 @@ object Form1: TForm1
     RenderPoint = ODERenderPoint
     Visible = True
     VisibleAtRunTime = False
-    Left = 40
+    Left = 256
     Top = 8
   end
   object GLODEJointList1: TGLODEJointList
-    Left = 88
+    Left = 392
     Top = 8
   end
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
     MaxDeltaTime = 0.020000000000000000
     OnProgress = GLCadencer1Progress
-    Left = 8
-    Top = 40
+    Left = 152
+    Top = 80
   end
   object GLWindowsBitmapFont1: TGLWindowsBitmapFont
     Font.Charset = DEFAULT_CHARSET
@@ -123,7 +123,7 @@ object Form1: TForm1
     Font.Height = -11
     Font.Name = 'MS Sans Serif'
     Font.Style = [fsBold]
-    Left = 40
-    Top = 40
+    Left = 256
+    Top = 80
   end
 end

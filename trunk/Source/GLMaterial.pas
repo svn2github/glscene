@@ -39,7 +39,7 @@ uses
   XOpenGL,
   GLApplicationFileIO, 
   GLGraphics, 
-  GLUtils, 
+  GLUtils,
   GLSLog;
 
 {$UNDEF USE_MULTITHREAD}
@@ -425,9 +425,9 @@ type
   end;
 
   TGLAbstractLibMaterial = class(
-    TCollectionItem,
-    IGLMaterialLibrarySupported,
-    IGLNotifyAble)
+    TCollectionItem, 
+	IGLMaterialLibrarySupported, 
+	IGLNotifyAble)
   protected
     FUserList: TList;
     FName: TGLLibMaterialName;
@@ -556,10 +556,8 @@ type
     function IndexOf(const Item: TGLLibMaterial): Integer;
     function Add: TGLLibMaterial;
     function FindItemID(ID: Integer): TGLLibMaterial;
-    property Items[index: Integer]: TGLLibMaterial read GetItems write SetItems;
-    default;
-    function GetLibMaterialByName(const AName: TGLLibMaterialName):
-      TGLLibMaterial;
+    property Items[index: Integer]: TGLLibMaterial read GetItems write SetItems; default;
+    function GetLibMaterialByName(const AName: TGLLibMaterialName): TGLLibMaterial;
     {Returns index of this Texture if it exists. }
     function GetTextureIndex(const Texture: TGLTexture): Integer;
     {Returns index of this Material if it exists. }
@@ -675,8 +673,7 @@ type
 implementation
 // ------------------------------------------------------------------------------
 
-procedure TGLShader.DoApply
-(var Rci: TGLRenderContextInfo; Sender: TObject);
+procedure TGLShader.DoApply(var Rci: TGLRenderContextInfo; Sender: TObject);
 begin
 end;
 

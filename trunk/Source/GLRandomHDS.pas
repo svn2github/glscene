@@ -371,9 +371,9 @@ type
   { Random landscape based on the middle-point displacement algorithm }
   TGLFractalHDS = class(TGLCustomRandomHDS)
   private
-    fAmplitude: integer;
-    fDepth: integer;
-    fRoughness: single;
+    FAmplitude: integer;
+    FDepth: integer;
+    FRoughness: single;
     procedure SetAmplitude(const Value: integer);
     procedure SetDepth(const Value: integer);
     procedure SetRoughness(const Value: single);
@@ -397,13 +397,10 @@ type
   TLandTile = TGLCustomRandomHDS;
 
   TRelativeCoordinate = record
-    dx, dz: integer end;
-
+    DX, DZ: integer end;
     TOnCreateLandTile =
     procedure(x, z, Seed: integer; var aLandscape: TLandTile) of object;
-    TIsDefaultTile =
-    function(x, z: integer): boolean of object;
-
+    TIsDefaultTile =  function(X, Z: integer): boolean of object;
     TGLTiledRndLandscape = class(TGLBaseRandomHDS)private FLandTileComputing: boolean; // Is a landtile being computed?
     FExtentX: integer;
     FExtentZ: integer;
@@ -438,11 +435,11 @@ type
     procedure SetGenerationRadius(const Value: integer);
     procedure SetLandTileDensity(const Value: single);
   protected
-    fGenRadius: array of TRelativeCoordinate;
-    fOldCamX: integer;
-    fOldCamZ: integer;
-    fMapUpdating: boolean;
-    fLandTiles: tComponentList;
+    FGenRadius: array of TRelativeCoordinate;
+    FOldCamX: integer;
+    FOldCamZ: integer;
+    FMapUpdating: boolean;
+    FLandTiles: tComponentList;
     procedure BoundaryClamp(var x, z: single); overload;
     procedure BoundaryClamp(var x, z: integer); overload;
     procedure ComputeLandTile(const aX, aZ: integer; var NewLandTile: TLandTile); virtual;
@@ -527,7 +524,7 @@ type
 
   TGLFractalArchipelago = class(TGLTiledRndLandscape)
   private
-    fDepth: integer;
+    FDepth: integer;
     FRoughnessMax: single;
     FRoughnessMin: single;
     FAmplitudeMin: integer;
@@ -605,9 +602,8 @@ procedure PrimerIsland(LowZ, HighZ: single; var z: TMapOfSingle);
 const
   VerticalScalingFactor = 128;
 
-  // ==========================================================================
+// ==========================================================================
 implementation
-
 // ==========================================================================
 
 const { Neighbourhood vectors and weight }

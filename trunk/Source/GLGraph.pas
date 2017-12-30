@@ -99,7 +99,6 @@ type
     procedure SetOnGetHeight(const val: TGLHeightFieldGetHeightEvent);
     procedure SetOnGetHeight2(const val: TGLHeightFieldGetHeight2Event);
     procedure SetColorMode(const val: TGLHeightFieldColorMode);
-
     procedure DefaultHeightField(const x, y: Single; var z: Single;
       var Color: TColorVector; var TexPoint: TTexPoint);
     procedure Height2Field(const x, y: Single; var z: Single;
@@ -181,6 +180,7 @@ type
 // ------------------------------------------------------------------
 implementation
 // ------------------------------------------------------------------
+
 // ------------------
 // ------------------ TGLSamplingScale ------------------
 // ------------------
@@ -211,7 +211,6 @@ begin
   else
     inherited Assign(Source);
 end;
-
 
 procedure TGLSamplingScale.SetMin(const val: Single);
 begin
@@ -304,7 +303,7 @@ begin
   FOptions := [hfoTwoSided];
 end;
 
- 
+
 destructor TGLHeightField.Destroy;
 begin
   FXSamplingScale.Free;

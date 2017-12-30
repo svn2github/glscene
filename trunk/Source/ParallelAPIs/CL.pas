@@ -49,32 +49,31 @@ const
  {$ENDIF}
 
 type
-  T_cl_emptyrecord = record end;
-  T_cl_platform_id = T_cl_emptyrecord;
+  T_cl_platform_id = record end;
   Tcl_platform_id = ^T_cl_platform_id;
   Pcl_platform_id = ^Tcl_platform_id;
-  T_cl_device_id = T_cl_emptyrecord;
+  T_cl_device_id = record end;
   Tcl_device_id = ^T_cl_device_id;
   Pcl_device_id = ^Tcl_device_id;
-  T_cl_context = T_cl_emptyrecord;
+  T_cl_context = record end;
   Tcl_context = ^T_cl_context;
   Pcl_context = ^Tcl_context;
-  T_cl_command_queue = T_cl_emptyrecord;
+  T_cl_command_queue = record end;
   Tcl_command_queue = ^T_cl_command_queue;
   Pcl_command_queue = ^Tcl_command_queue;
-  T_cl_mem = T_cl_emptyrecord;
+  T_cl_mem = record end;
   Tcl_mem = ^T_cl_mem;
   Pcl_mem = ^Tcl_mem;
-  T_cl_program = T_cl_emptyrecord;
+  T_cl_program = record end;
   Tcl_program = ^T_cl_program;
   Pcl_program = ^Tcl_program;
-  T_cl_kernel = T_cl_emptyrecord;
+  T_cl_kernel = record end;
   Tcl_kernel = ^T_cl_kernel;
   Pcl_kernel = ^Tcl_kernel;
-  T_cl_event = T_cl_emptyrecord;
+  T_cl_event = record end;
   Tcl_event = ^T_cl_event;
   Pcl_event = ^Tcl_event;
-  T_cl_sampler = T_cl_emptyrecord;
+  T_cl_sampler = record end;
   Tcl_sampler = ^T_cl_sampler;
   Pcl_sampler = ^Tcl_sampler;
 
@@ -104,7 +103,6 @@ type
   Pcl_device_partition_property = ^Tcl_device_partition_property;
   Tcl_device_affinity_domain = Tcl_bitfield;
   Pcl_device_affinity_domain = ^Tcl_device_affinity_domain;
-
   Tcl_context_properties = intptr_t;
   Pcl_context_properties = ^Tcl_context_properties;
   Tcl_context_info = Tcl_uint;
@@ -348,7 +346,7 @@ const
   CL_DEVICE_AVAILABLE =                            $1027;
   CL_DEVICE_COMPILER_AVAILABLE =                   $1028;
   CL_DEVICE_EXECUTION_CAPABILITIES =               $1029;
-  CL_DEVICE_QUEUE_PROPERTIES =                     $102A; //* deprecated *//
+  CL_DEVICE_QUEUE_PROPERTIES =                     $102A;  (* deprecated *) 
   CL_DEVICE_QUEUE_ON_HOST_PROPERTIES =             $102A;
   CL_DEVICE_NAME = 	                               $102B;
   CL_DEVICE_VENDOR =                               $102C;
@@ -360,7 +358,7 @@ const
   CL_DEVICE_DOUBLE_FP_CONFIG =                     $1032;
   CL_DEVICE_HALF_FP_CONFIG =                       $1033;
   CL_DEVICE_PREFERRED_VECTOR_WIDTH_HALF =          $1034;
-  CL_DEVICE_HOST_UNIFIED_MEMORY =                  $1035;   //* deprecated *//
+  CL_DEVICE_HOST_UNIFIED_MEMORY =                  $1035;  (* deprecated *)
   CL_DEVICE_NATIVE_VECTOR_WIDTH_CHAR =             $1036;
   CL_DEVICE_NATIVE_VECTOR_WIDTH_SHORT =            $1037;
   CL_DEVICE_NATIVE_VECTOR_WIDTH_INT =              $1038;
@@ -461,7 +459,7 @@ const
   CL_DEVICE_SVM_FINE_GRAIN_SYSTEM =              (1 shl 2);
   CL_DEVICE_SVM_ATOMICS =                        (1 shl 3);
 
-  //* cl_command_queue_info *//
+  (* cl_command_queue_info *)
   CL_QUEUE_CONTEXT =                             $1090;
   CL_QUEUE_DEVICE =                              $1091;
   CL_QUEUE_REFERENCE_COUNT =                     $1092;
@@ -469,26 +467,26 @@ const
   CL_QUEUE_SIZE =                                $1094;
   CL_QUEUE_DEVICE_DEFAULT =                      $1095;
 
-  //* cl_mem_flags - bitfield *//
+  (* cl_mem_flags - bitfield *)
   CL_MEM_READ_WRITE =                            (1 shl 0);
   CL_MEM_WRITE_ONLY =                            (1 shl 1);
   CL_MEM_READ_ONLY =                             (1 shl 2);
   CL_MEM_USE_HOST_PTR =                          (1 shl 3);
   CL_MEM_ALLOC_HOST_PTR =                        (1 shl 4);
   CL_MEM_COPY_HOST_PTR =                         (1 shl 5);
-  //* reserved                                   (1 shl 6);  *//
+  (* reserved                                   (1 shl 6);  *)
   CL_MEM_HOST_WRITE_ONLY =                       (1 shl 7);
   CL_MEM_HOST_READ_ONLY =                        (1 shl 8);
   CL_MEM_HOST_NO_ACCESS =                        (1 shl 9);
-  CL_MEM_SVM_FINE_GRAIN_BUFFER =                 (1 shl 10); //* used by cl_svm_mem_flags only *//
-  CL_MEM_SVM_ATOMICS =                           (1 shl 11); //* used by cl_svm_mem_flags only *//
+  CL_MEM_SVM_FINE_GRAIN_BUFFER =                 (1 shl 10); (* used by cl_svm_mem_flags only *)
+  CL_MEM_SVM_ATOMICS =                           (1 shl 11); (* used by cl_svm_mem_flags only *)
   CL_MEM_KERNEL_READ_AND_WRITE =                 (1 shl 12);
 
-  //* cl_mem_migration_flags - bitfield *//
+  (* cl_mem_migration_flags - bitfield *)
   CL_MIGRATE_MEM_OBJECT_HOST =                   (1 shl 0);
   CL_MIGRATE_MEM_OBJECT_CONTENT_UNDEFINED =      (1 shl 1);
 
-  //* cl_channel_order *//
+  (* cl_channel_order *)
   CL_R =                                          $10B0;
   CL_A =                                          $10B1;
   CL_RG =                                         $10B2;
@@ -529,7 +527,7 @@ const
   CL_UNORM_INT24 =                                $10DF;
   CL_UNORM_INT_101010_2 =                         $10E0;
 
-  //* cl_mem_object_type *//
+  (* cl_mem_object_type *)
   CL_MEM_OBJECT_BUFFER =                          $10F0;
   CL_MEM_OBJECT_IMAGE2D =                         $10F1;
   CL_MEM_OBJECT_IMAGE3D =                         $10F2;
@@ -539,7 +537,7 @@ const
   CL_MEM_OBJECT_IMAGE1D_BUFFER =                  $10F6;
   CL_MEM_OBJECT_PIPE =                            $10F7;
 
-  //* cl_mem_info *//
+  (* cl_mem_info *)
   CL_MEM_TYPE =                                   $1100;
   CL_MEM_FLAGS =                                  $1101;
   CL_MEM_SIZE =                                   $1102;
@@ -551,7 +549,7 @@ const
   CL_MEM_OFFSET =                                 $1108;
   CL_MEM_USES_SVM_POINTER =                       $1109;
 
-  //* cl_image_info *//
+  (* cl_image_info *)
   CL_IMAGE_FORMAT =                               $1110;
   CL_IMAGE_ELEMENT_SIZE =                         $1111;
   CL_IMAGE_ROW_PITCH =                            $1112;
@@ -564,22 +562,22 @@ const
   CL_IMAGE_NUM_MIP_LEVELS =                       $1119;
   CL_IMAGE_NUM_SAMPLES =                          $111A;
     
-  //* cl_pipe_info *//
+  (* cl_pipe_info *)
   CL_PIPE_PACKET_SIZE =                           $1120;
   CL_PIPE_MAX_PACKETS =                           $1121;
 
-  //* cl_addressing_mode *//
+  (* cl_addressing_mode *)
   CL_ADDRESS_NONE =                               $1130;
   CL_ADDRESS_CLAMP_TO_EDGE =                      $1131;
   CL_ADDRESS_CLAMP =                              $1132;
   CL_ADDRESS_REPEAT =                             $1133;
   CL_ADDRESS_MIRRORED_REPEAT =                    $1134;
 
-  //* cl_filter_mode *//
+  (* cl_filter_mode *)
   CL_FILTER_NEAREST =                             $1140;
   CL_FILTER_LINEAR =                              $1141;
 
-  //* cl_sampler_info *//
+  (* cl_sampler_info *)
   CL_SAMPLER_REFERENCE_COUNT =                    $1150;
   CL_SAMPLER_CONTEXT =                            $1151;
   CL_SAMPLER_NORMALIZED_COORDS =                  $1152;
@@ -589,12 +587,12 @@ const
   CL_SAMPLER_LOD_MIN =                            $1156;
   CL_SAMPLER_LOD_MAX =                            $1157;
 
-  //* cl_map_flags - bitfield *//
+  (* cl_map_flags - bitfield *)
   CL_MAP_READ =                                   (1 shl 0);
   CL_MAP_WRITE =                                  (1 shl 1);
   CL_MAP_WRITE_INVALIDATE_REGION  =               (1 shl 2);
 
-  //* cl_program_info *//
+  (* cl_program_info *)
   CL_PROGRAM_REFERENCE_COUNT =                    $1160;
   CL_PROGRAM_CONTEXT =                            $1161;
   CL_PROGRAM_NUM_DEVICES =                        $1162;
@@ -605,27 +603,29 @@ const
   CL_PROGRAM_NUM_KERNELS =                        $1167;
   CL_PROGRAM_KERNEL_NAMES =                       $1168;
   CL_PROGRAM_IL =                                 $1169;
+  CL_PROGRAM_SCOPE_GLOBAL_CTORS_PRESENT =         $116A;
+  CL_PROGRAM_SCOPE_GLOBAL_DTORS_PRESENT =         $116B;
 
-  //* cl_program_build_info *//
+  (* cl_program_build_info *)
   CL_PROGRAM_BUILD_STATUS =     			      $1181;
   CL_PROGRAM_BUILD_OPTIONS =                      $1182;
   CL_PROGRAM_BUILD_LOG =                          $1183;
   CL_PROGRAM_BINARY_TYPE =                        $1184;
   CL_PROGRAM_BUILD_GLOBAL_VARIABLE_TOTAL_SIZE =   $1185;
 
-  //* cl_program_binary_type *//
+  (* cl_program_binary_type *)
   CL_PROGBRAM_BINARY_TYPE_NONE =                  $0;
   CL_PROGRAM_BINARY_TYPE_COMPILED_OBJECT =        $1;
   CL_PROGRAM_BINARY_TYPE_LIBRARY =                $2;
   CL_PROGRAM_BINARY_TYPE_EXECUTABLE =             $4;
 
-  //* cl_build_status *//
+  (* cl_build_status *)
   CL_BUILD_SUCCESS =                               0;
   CL_BUILD_NONE =                                 -1;
   CL_BUILD_ERROR =                                -2;
   CL_BUILD_IN_PROGRESS =                          -3;
 
-  //* cl_kernel_info *//
+  (* cl_kernel_info *)
   CL_KERNEL_FUNCTION_NAME =                       $1190;
   CL_KERNEL_NUM_ARGS =                            $1191;
   CL_KERNEL_REFERENCE_COUNT =                     $1192;
@@ -635,33 +635,33 @@ const
   CL_KERNEL_MAX_NUM_SUB_GROUPS =                  $11B9;
   CL_KERNEL_COMPILE_NUM_SUB_GROUPS =              $11BA;
 
-  //* cl_kernel_arg_info *//
+  (* cl_kernel_arg_info *)
   CL_KERNEL_ARG_ADDRESS_QUALIFIER =               $1196;
   CL_KERNEL_ARG_ACCESS_QUALIFIER =                $1197;
   CL_KERNEL_ARG_TYPE_NAME =                       $1198;
   CL_KERNEL_ARG_TYPE_QUALIFIER =                  $1199;
   CL_KERNEL_ARG_NAME =                            $119A;
 
-  //* cl_kernel_arg_address_qualifier *//
+  (* cl_kernel_arg_address_qualifier *)
   CL_KERNEL_ARG_ADDRESS_GLOBAL =                  $119B;
   CL_KERNEL_ARG_ADDRESS_LOCAL =                   $119C;
   CL_KERNEL_ARG_ADDRESS_CONSTANT =                $119D;
   CL_KERNEL_ARG_ADDRESS_PRIVATE =                 $119E;
 
-  //* cl_kernel_arg_access_qualifier *//
+  (* cl_kernel_arg_access_qualifier *)
   CL_KERNEL_ARG_ACCESS_READ_ONLY =                $11A0;
   CL_KERNEL_ARG_ACCESS_WRITE_ONLY =               $11A1;
   CL_KERNEL_ARG_ACCESS_READ_WRITE =               $11A2;
   CL_KERNEL_ARG_ACCESS_NONE =                     $11A3;
 
-  //* cl_kernel_arg_type_qualifer *//
+  (* cl_kernel_arg_type_qualifer *)
   CL_KERNEL_ARG_TYPE_NONE =                       0;
   CL_KERNEL_ARG_TYPE_CONST =                   	  (1 shl 0);
   CL_KERNEL_ARG_TYPE_RESTRICT =                   (1 shl 1);
   CL_KERNEL_ARG_TYPE_VOLATILE =                   (1 shl 2);
   CL_KERNEL_ARG_TYPE_PIPE =                       (1 shl 3);
 
-  //* cl_kernel_work_group_info *//
+  (* cl_kernel_work_group_info *)
   CL_KERNEL_WORK_GROUP_SIZE =                     $11B0;
   CL_KERNEL_COMPILE_WORK_GROUP_SIZE =             $11B1;
   CL_KERNEL_LOCAL_MEM_SIZE =                      $11B2;
@@ -669,22 +669,22 @@ const
   CL_KERNEL_PRIVATE_MEM_SIZE =                    $11B4;
   CL_KERNEL_GLOBAL_WORK_SIZE =                    $11B5;
 
-  //* cl_kernel_sub_group_info *//
+  (* cl_kernel_sub_group_info *)
   CL_KERNEL_MAX_SUB_GROUP_SIZE_FOR_NDRANGE =      $2033;
   CL_KERNEL_SUB_GROUP_COUNT_FOR_NDRANGE =         $2034;
   CL_KERNEL_LOCAL_SIZE_FOR_SUB_GROUP_COUNT =      $11B8;
 
-  //* cl_kernel_exec_info *//
+  (* cl_kernel_exec_info *)
   CL_KERNEL_EXEC_INFO_SVM_PTRS =                  $11B6;
   CL_KERNEL_EXEC_INFO_SVM_FINE_GRAIN_SYSTEM =     $11B7;
-  //* cl_event_info  *//
+  (* cl_event_info  *)
   CL_EVENT_COMMAND_QUEUE =                        $11D0;
   CL_EVENT_COMMAND_TYPE =                         $11D1;
   CL_EVENT_REFERENCE_COUNT =                      $11D2;
   CL_EVENT_COMMAND_EXECUTION_STATUS =             $11D3;
   CL_EVENT_CONTEXT =                              $11D4;
 
-  //* cl_command_type *//
+  (* cl_command_type *)
   CL_COMMAND_NDRANGE_KERNEL =                     $11F0;
   CL_COMMAND_TASK =                               $11F1;
   CL_COMMAND_NATIVE_KERNEL =                      $11F2;
@@ -716,16 +716,16 @@ const
   CL_COMMAND_SVM_MAP =                            $120C;
   CL_COMMAND_SVM_UNMAP =                          $120D;
 
-  //* command execution status *//
+  (* command execution status *)
   CL_COMPLETE =                                   $0;
   CL_RUNNING =                                    $1;
   CL_SUBMITTED =                                  $2;
   CL_QUEUED =                                     $3;
 
-  //* cl_buffer_create_type  *//
+  (* cl_buffer_create_type  *)
   CL_BUFFER_CREATE_TYPE_REGION =                  $1220;
 
-  //* cl_profiling_info *//
+  (* cl_profiling_info *)
   CL_PROFILING_COMMAND_QUEUED =                   $1280;
   CL_PROFILING_COMMAND_SUBMIT =                   $1281;
   CL_PROFILING_COMMAND_START =                    $1282;
@@ -955,7 +955,7 @@ type
     param_value_size_ret: Psize_t): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
    stdcall; external LibOpenCL;
 
-  //* Program Object APIs *//
+  (* Program Object APIs *)
   function clCreateProgramWithSource(context: Pcl_context;
     count: Tcl_uint;
     strings: PPAnsiChar;
@@ -1044,7 +1044,7 @@ type
     param_value_size_ret: Psize_t): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
    stdcall; external LibOpenCL;
 
-  //* Kernel Object APIs *//
+  (* Kernel Object APIs *)
   function clCreateKernel(_program: Pcl_program;
     kernel_name: PAnsiChar;
     errcode_ret: Pcl_int): Pcl_kernel; //CL_API_SUFFIX__VERSION_1_0
@@ -1154,7 +1154,7 @@ type
     user_data: Pointer): Tcl_int; //CL_API_SUFFIX__VERSION_1_1
    stdcall; external LibOpenCL;
 
-  //* Profiling APIs *//
+  (* Profiling APIs *)
   function clGetEventProfilingInfo(event: Pcl_event;
     param_name: Tcl_profiling_info;
     param_value_size: NativeUInt;
@@ -1511,11 +1511,7 @@ function InitFromLibraryOpenCL(const CLName: WideString): Boolean;
 function IsInitializedOpenCL: Boolean;
 
 //---------------------------------------------------------------------
-//---------------------------------------------------------------------
-//---------------------------------------------------------------------
 implementation
-//---------------------------------------------------------------------
-//---------------------------------------------------------------------
 //---------------------------------------------------------------------
 
 const
@@ -1540,8 +1536,6 @@ begin
   result := GetProcAddress(Cardinal(CLHandle), ProcName);
 end;
 
-
-
 function InitOpenCL: Boolean;
 begin
   if CLHandle = INVALID_MODULEHANDLE then
@@ -1549,7 +1543,6 @@ begin
   else
     Result := True;
 end;
-
 
 procedure CloseOpenCL;
 begin
@@ -1559,7 +1552,6 @@ begin
     CLHandle := INVALID_MODULEHANDLE;
   end;
 end;
-
 
 function InitFromLibraryOpenCL(const CLName: WideString): Boolean;
 begin
@@ -1572,7 +1564,6 @@ begin
 
   Result := True;
 end;
-
 
 function IsInitializedOpenCL: Boolean;
 begin

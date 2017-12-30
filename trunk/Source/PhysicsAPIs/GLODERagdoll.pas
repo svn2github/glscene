@@ -2,12 +2,12 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   TGLRagdoll extended using Open Dynamics Engine (ODE).  
+   TGLRagdoll extended using Open Dynamics Engine (ODE).
 
-   History : 
+   History :
      02/11/05 - LucasG - First version created.
      The whole history is logged in previous version of the unit.
-   
+
 }
 
 unit GLODERagdoll;
@@ -31,7 +31,6 @@ const
 type
 
   TODERagdoll = class;
-
   TODERagdollBone = class;
 
   TODERagdollCube = class(TGLCube)
@@ -123,8 +122,8 @@ type
 
 
 var
-  vGLODERagdoll_cDensity : Single;
-  vGLODERagdoll_cMass : Single;
+  vODERagdoll_cDensity : Single;
+  vODERagdoll_cMass : Single;
 
 //----------------------------------------
 implementation
@@ -155,63 +154,63 @@ end;
 
 destructor TODERagdollWorld.Destroy;
 begin
-  if isWorldCreated then begin
-    dJointGroupDestroy (FContactGroup);
+  if isWorldCreated then
+  begin
+    dJointGroupDestroy(FContactGroup);
     dSpaceDestroy(FSpace);
     dWorldDestroy(FWorld);
   end;
   inherited;
 end;
 
-procedure ODERagdollCallback(data : pointer; o1, o2 : PdxGeom); cdecl;
+procedure ODERagdollCallback(data: pointer; o1, o2: PdxGeom); cdecl;
 var
- i,n     :integer;
- b1,b2   :PdxBody;
- c       :TdJointID;
- contact :Array[0..cMaxContacts-1] of TdContact;
+  i, n: integer;
+  b1, b2: PdxBody;
+  c: TdJointID;
+  contact: Array [0 .. cMaxContacts - 1] of TdContact;
 begin
- b1:=dGeomGetBody(o1);
- b2:=dGeomGetBody(o2);
+  b1 := dGeomGetBody(o1);
+  b2 := dGeomGetBody(o2);
 
- if (assigned(b1) and assigned(b2) and (dAreConnected (b1,b2)<>0)) then exit;
+  if (assigned(b1) and assigned(b2) and (dAreConnected(b1, b2) <> 0)) then
+    exit;
 
- n:=dCollide(o1,o2,cMaxContacts,contact[0].geom,sizeof(TdContact));
- if (n > 0) then
- begin
-  for i := 0 to n-1 do
+  n := dCollide(o1, o2, cMaxContacts, contact[0].Geom, sizeof(TdContact));
+  if (n > 0) then
   begin
-    contact[i].surface.mode := ord(dContactBounce) or ord(dContactSoftCFM) or
-      ord(dContactSlip1) or ord(dContactSlip2);
-    contact[i].surface.mu := 10e9;
-    contact[i].surface.mu2 := 0;
-    contact[i].surface.soft_cfm := 0.001;
-    contact[i].surface.bounce := 0.15;
-    contact[i].surface.bounce_vel := 0.2;
-    contact[i].surface.slip1 := 0.1;
-    contact[i].surface.slip2 := 0.1;
+    for i := 0 to n - 1 do
+    begin
+      contact[i].surface.mode := ord(dContactBounce) or ord(dContactSoftCFM) or ord(dContactSlip1) or ord(dContactSlip2);
+      contact[i].surface.mu := 10E9;
+      contact[i].surface.mu2 := 0;
+      contact[i].surface.soft_cfm := 0.001;
+      contact[i].surface.bounce := 0.15;
+      contact[i].surface.bounce_vel := 0.2;
+      contact[i].surface.slip1 := 0.1;
+      contact[i].surface.slip2 := 0.1;
 
-   c:=dJointCreateContact(TODERagdollWorld(Data).World,TODERagdollWorld(Data).Contactgroup,@contact[i]);
-   dJointAttach(c,dGeomGetBody(contact[i].geom.g1),dGeomGetBody(contact[i].geom.g2));
+      c := dJointCreateContact(TODERagdollWorld(data).World, TODERagdollWorld(data).ContactGroup, @contact[i]);
+      dJointAttach(c, dGeomGetBody(contact[i].Geom.g1), dGeomGetBody(contact[i].Geom.g2));
+    end;
   end;
- end;
 
 end;
 
 procedure TODERagdollWorld.WorldUpdate;
 const
-  cDeltaTime = 1/50;
+  cDeltaTime = 1 / 50;
 begin
-  //Update the physic
+  // Update the physic
   dSpaceCollide(FSpace, Self, ODERagdollCallback);
   dWorldQuickStep(FWorld, cDeltaTime);
   // remove all contact joints
-  dJointGroupEmpty (FContactGroup);
+  dJointGroupEmpty(FContactGroup);
 end;
 
 { TODERagdollHingeJoint }
 
-constructor TODERagdollHingeJoint.Create(Axis: TAffineVector;
-  ParamLoStop, ParamHiStop: Single);
+constructor TODERagdollHingeJoint.Create(Axis: TAffineVector; ParamLoStop, ParamHiStop: Single);
 begin
   inherited Create;
   FAxis := Axis;
@@ -221,9 +220,8 @@ end;
 
 { TODERagdollUniversalJoint }
 
-constructor TODERagdollUniversalJoint.Create(Axis: TAffineVector;
-  ParamLoStop, ParamHiStop: Single; Axis2: TAffineVector; ParamLoStop2,
-  ParamHiStop2: Single);
+constructor TODERagdollUniversalJoint.Create(Axis: TAffineVector; ParamLoStop, ParamHiStop: Single; Axis2: TAffineVector;
+  ParamLoStop2, ParamHiStop2: Single);
 begin
   inherited Create(Axis, ParamLoStop, ParamHiStop);
   FAxis2 := Axis2;
@@ -233,7 +231,6 @@ begin
   FParamLoStop2 := ParamLoStop2;
   FParamHiStop2 := ParamHiStop2;
 end;
-
 
 { TODERagdollBone }
 
@@ -250,15 +247,25 @@ begin
   FRagdoll := aOwner.FRagdoll;
 end;
 
-procedure TODERagdollBone.AlignBodyToMatrix(Mat:TMatrix); //By Stuart Gooding
+procedure TODERagdollBone.AlignBodyToMatrix(Mat: TMatrix); // By Stuart Gooding
 var
-  R : TdMatrix3;
+  R: TdMatrix3;
 begin
-  if not Assigned(FBody) then exit;
-  R[0]:=Mat.V[0].X; R[1]:=Mat.V[1].X; R[2]:= Mat.V[2].X; R[3]:= 0;
-  R[4]:=Mat.V[0].Y; R[5]:=Mat.V[1].Y; R[6]:= Mat.V[2].Y; R[7]:= 0;
-  R[8]:=Mat.V[0].Z; R[9]:=Mat.V[1].Z; R[10]:=Mat.V[2].Z; R[11]:=0;
-  dBodySetRotation(FBody,R);
+  if not assigned(FBody) then
+    exit;
+  R[0] := Mat.V[0].X;
+  R[1] := Mat.V[1].X;
+  R[2] := Mat.V[2].X;
+  R[3] := 0;
+  R[4] := Mat.V[0].Y;
+  R[5] := Mat.V[1].Y;
+  R[6] := Mat.V[2].Y;
+  R[7] := 0;
+  R[8] := Mat.V[0].Z;
+  R[9] := Mat.V[1].Z;
+  R[10] := Mat.V[2].Z;
+  R[11] := 0;
+  dBodySetRotation(FBody, R);
   dBodySetPosition(FBody, Mat.V[3].X, Mat.V[3].Y, Mat.V[3].Z);
 end;
 
@@ -266,10 +273,11 @@ procedure TODERagdollBone.Start;
 var
   mass: TdMass;
   boneSize, vAxis, vAxis2: TAffineVector;
-  n:integer;
+  n: integer;
 
   function RotateAxis(Axis: TAffineVector): TAffineVector;
-  var absMat: TMatrix;
+  var
+    absMat: TMatrix;
   begin
     absMat := ReferenceMatrix;
     absMat.V[3] := NullHmgVector;
@@ -279,23 +287,23 @@ var
 begin
   FBody := dBodyCreate(FRagdoll.ODEWorld.World);
 
-  boneSize.X := Size.X*VectorLength(BoneMatrix.V[0]);
-  boneSize.Y := Size.Y*VectorLength(BoneMatrix.V[1]);
-  boneSize.Z := Size.Z*VectorLength(BoneMatrix.V[2]);
+  boneSize.X := Size.X * VectorLength(BoneMatrix.V[0]);
+  boneSize.Y := Size.Y * VectorLength(BoneMatrix.V[1]);
+  boneSize.Z := Size.Z * VectorLength(BoneMatrix.V[2]);
 
   // prevent ODE 0.9 "bNormalizationResult failed" error:
-  for n:=0 to 2 do
-      if (BoneSize.V[n]=0) then
-         BoneSize.V[n]:=0.000001;
+  for n := 0 to 2 do
+    if (boneSize.c[n] = 0) then
+      boneSize.c[n] := 0.000001;
 
-  dMassSetBox(mass, vGLODERagdoll_cDensity, BoneSize.X, BoneSize.Y, BoneSize.Z);
+  dMassSetBox(mass, vODERagdoll_cDensity, boneSize.X, boneSize.Y, boneSize.Z);
 
-  dMassAdjust(mass, vGLODERagdoll_cMass);
+  dMassAdjust(mass, vODERagdoll_cMass);
   dBodySetMass(FBody, @mass);
 
   AlignBodyToMatrix(ReferenceMatrix);
 
-  FGeom := dCreateBox(FRagdoll.ODEWorld.Space, BoneSize.X, BoneSize.Y, BoneSize.Z);
+  FGeom := dCreateBox(FRagdoll.ODEWorld.Space, boneSize.X, boneSize.Y, boneSize.Z);
   FGeom.data := FRagdoll.GLSceneRoot.AddNewChild(TODERagdollCube);
   if (Joint is TODERagdollDummyJoint) then
     dGeomSetBody(FGeom, FOwner.Body)
@@ -306,64 +314,63 @@ begin
   begin
 
     if (Joint is TODERagdollHingeJoint) then
-    with (Joint as TODERagdollHingeJoint) do
-    begin
-      vAxis := RotateAxis(Axis);
-      FJointId := dJointCreateHinge(FRagdoll.ODEWorld.World, nil);
-      dJointAttach(FJointId, TODERagdollBone(Owner).Body, FBody);
-      dJointSetHingeAnchor(FJointId, Anchor.X, Anchor.Y, Anchor.Z);
-      dJointSetHingeAxis (FJointId, vAxis.X, vAxis.Y, vAxis.Z);
-   	  dJointSetHingeParam (FJointId, dParamLoStop, ParamLoStop);
-      dJointSetHingeParam (FJointId, dParamHiStop, ParamHiStop);
-    end;
+      with (Joint as TODERagdollHingeJoint) do
+      begin
+        vAxis := RotateAxis(Axis);
+        FJointId := dJointCreateHinge(FRagdoll.ODEWorld.World, nil);
+        dJointAttach(FJointId, TODERagdollBone(Owner).Body, FBody);
+        dJointSetHingeAnchor(FJointId, Anchor.X, Anchor.Y, Anchor.Z);
+        dJointSetHingeAxis(FJointId, vAxis.X, vAxis.Y, vAxis.Z);
+        dJointSetHingeParam(FJointId, dParamLoStop, ParamLoStop);
+        dJointSetHingeParam(FJointId, dParamHiStop, ParamHiStop);
+      end;
 
     if (Joint is TODERagdollUniversalJoint) then
-    with (Joint as TODERagdollUniversalJoint) do
-    begin
-      vAxis := RotateAxis(Axis);
-      vAxis2 := RotateAxis(Axis2);
-      FJointId := dJointCreateUniversal(FRagdoll.ODEWorld.World, nil);
-      dJointAttach(FJointId, TODERagdollBone(Owner).Body, FBody);
-      dJointSetUniversalAnchor(FJointId, Anchor.X, Anchor.Y, Anchor.Z);
-      dJointSetUniversalAxis1(FJointId, vAxis.X, vAxis.Y, vAxis.Z);
-      dJointSetUniversalAxis2(FJointId, vAxis2.X, vAxis2.Y, vAxis2.Z);
-   	  dJointSetUniversalParam(FJointId, dParamLoStop, ParamLoStop);
-   	  dJointSetUniversalParam(FJointId, dParamHiStop, ParamHiStop);
-   	  dJointSetUniversalParam(FJointId, dParamLoStop2, ParamLoStop2);
-   	  dJointSetUniversalParam(FJointId, dParamHiStop2, ParamHiStop2);
-    end;
-
+      with (Joint as TODERagdollUniversalJoint) do
+      begin
+        vAxis := RotateAxis(Axis);
+        vAxis2 := RotateAxis(Axis2);
+        FJointId := dJointCreateUniversal(FRagdoll.ODEWorld.World, nil);
+        dJointAttach(FJointId, TODERagdollBone(Owner).Body, FBody);
+        dJointSetUniversalAnchor(FJointId, Anchor.X, Anchor.Y, Anchor.Z);
+        dJointSetUniversalAxis1(FJointId, vAxis.X, vAxis.Y, vAxis.Z);
+        dJointSetUniversalAxis2(FJointId, vAxis2.X, vAxis2.Y, vAxis2.Z);
+        dJointSetUniversalParam(FJointId, dParamLoStop, ParamLoStop);
+        dJointSetUniversalParam(FJointId, dParamHiStop, ParamHiStop);
+        dJointSetUniversalParam(FJointId, dParamLoStop2, ParamLoStop2);
+        dJointSetUniversalParam(FJointId, dParamHiStop2, ParamHiStop2);
+      end;
 
   end;
 
   with TODERagdollCube(FGeom.data) do
   begin
     Visible := FRagdoll.ShowBoundingBoxes;
-    Material.FrontProperties.Diffuse.SetColor(1,0,0,0.4);
-    CubeWidth := BoneSize.X;
-    CubeHeight := BoneSize.Y;
-    CubeDepth := BoneSize.Z;
-    Bone:=self;
-    Ragdoll:=self.FRagdoll;
+    Material.FrontProperties.Diffuse.SetColor(1, 0, 0, 0.4);
+    CubeWidth := boneSize.X;
+    CubeHeight := boneSize.Y;
+    CubeDepth := boneSize.Z;
+    Bone := Self;
+    Ragdoll := Self.FRagdoll;
   end;
 
 end;
 
 procedure TODERagdollBone.Stop;
 var
-   o:TGLBaseSceneobject;
+  o: TGLBaseSceneObject;
 begin
   inherited;
   dBodyDestroy(FBody);
-  if Assigned(FGeom.data) then
+  if assigned(FGeom.data) then
   begin
-       o:=TGLBaseSceneObject(FGeom.data);
-       FRagdoll.GLSceneRoot.Remove(o, false);
-       o.free;
+    o := TGLBaseSceneObject(FGeom.data);
+    FRagdoll.GLSceneRoot.Remove(o, False);
+    o.free;
   end;
 
-  if FJointId<>nil then
-       dJointDestroy(FJointId);
+  if FJointId <> nil then
+    dJointDestroy(FJointId);
 
   dGeomDestroy(FGeom);
 end;
@@ -371,7 +378,8 @@ end;
 procedure TODERagdollBone.Update;
 begin
   PositionSceneObject(TGLBaseSceneObject(PdxGeom(FGeom.data)), FGeom);
-  RagDoll.Owner.Skeleton.BoneByID(BoneID).SetGlobalMatrixForRagDoll(TGLBaseSceneObject(PdxGeom(FGeom.data)).AbsoluteMatrix);
+  Ragdoll.Owner.Skeleton.BoneByID(BoneID).SetGlobalMatrixForRagDoll(
+    TGLBaseSceneObject(PdxGeom(FGeom.data)).AbsoluteMatrix);
 end;
 
 procedure TODERagdollBone.Align;
@@ -382,17 +390,16 @@ end;
 
 { TODERagdoll }
 
-constructor TODERagdoll.Create(AOwner : TGLBaseMesh);
+constructor TODERagdoll.Create(aOwner: TGLBaseMesh);
 begin
-  inherited Create(AOwner);
+  inherited Create(aOwner);
   FShowBoundingBoxes := False;
 end;
 
-
-
 initialization
-  vGLODERagdoll_cDensity := 20;
-  vGLODERagdoll_cMass := 1;
+
+vODERagdoll_cDensity := 20;
+vODERagdoll_cMass := 1;
 
 
 end.

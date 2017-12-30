@@ -284,7 +284,7 @@ begin
   if val <> Locked then
   begin
     // Only supported with NVidia's right now
-    if gl.NV_vertex_array_range and (CurrentGLContext <> nil) then
+    if GL.NV_vertex_array_range and (CurrentGLContext <> nil) then
     begin
       size := FCount * SizeOf(TGLVertexData);
       if val then

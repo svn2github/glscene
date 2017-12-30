@@ -272,8 +272,6 @@ begin
     PrepareListView;
 end;
 
-// OnXCollectionDestroyed
-//
 procedure TGLXCollectionEditorForm.OnXCollectionDestroyed(Sender: TObject);
 begin
   if TGLXCollection(Sender) = FXCollection then

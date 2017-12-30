@@ -173,7 +173,7 @@ type
   //PNewtonRagDollBone = Pointer;
 {$ENDIF}
 
-        // NewtonCollisionInfoRecord
+ // NewtonCollisionInfoRecord
 
  TNewtonBoxParam = Packed Record
   m_x,
@@ -397,6 +397,7 @@ type
   m_uv1 : NewtonMeshFloatData;
   m_vertexColor : NewtonMeshFloatData;
  end;
+ 
  // Newton callback functions
 PNewtonAllocMemory                        = ^NewtonAllocMemory;
 NewtonAllocMemory                         = function( sizeInBytes : integer ) : Pointer; cdecl;
@@ -1213,4 +1214,3 @@ procedure NewtonMeshGetFacePointIndices (const Mesh : PNewtonMesh; const Face : 
 implementation
 
 end.
-

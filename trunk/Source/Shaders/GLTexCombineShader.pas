@@ -199,7 +199,7 @@ procedure TGLTexCombineShader.DoApply(var rci: TGLRenderContextInfo; Sender: TOb
 var
   n, units: Integer;
 begin
-  if not gl.ARB_multitexture then
+  if not GL.ARB_multitexture then
     Exit;
   FApplied3 := False;
   FApplied4 := False;

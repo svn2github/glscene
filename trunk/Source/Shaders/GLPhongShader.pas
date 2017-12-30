@@ -194,7 +194,7 @@ function TGLPhongShader.ShaderSupported: Boolean;
 var
   MaxTextures: Integer;
 begin
-  Result := inherited ShaderSupported and gl.ARB_multitexture;
+  Result := inherited ShaderSupported and GL.ARB_multitexture;
 
   gl.GetIntegerv(GL_MAX_TEXTURE_UNITS_ARB, @MaxTextures);
   Result := Result and (maxTextures > 2);

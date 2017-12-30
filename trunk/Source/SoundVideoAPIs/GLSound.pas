@@ -85,7 +85,6 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
   published
-
     property Samples: TGLSoundSamples read FSamples write SetSamples;
   end;
 
@@ -388,7 +387,7 @@ type
     function GetPlaying: Boolean;
     procedure NotifySourceDestruction(aSource: TGLSoundSource);
   public
-    constructor Create(aOwner: TGLXCollection); override;
+    constructor Create(AOwner: TGLXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
     class function FriendlyName: String; override;
@@ -1601,11 +1600,7 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
    // class registrations
@@ -1614,12 +1609,8 @@ initialization
   vSoundLibraries := TList.Create;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 
 finalization
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
   if Assigned(vActiveSoundManager) then
