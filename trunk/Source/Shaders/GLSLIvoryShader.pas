@@ -4,10 +4,6 @@
 {
    Ivory shader simulate Ivory material. 
    At this time only one light source is supported
-
-   History :  
-     08/12/15 - J.Delauney - Creation
-
 }
 
 unit GLSLIvoryShader;

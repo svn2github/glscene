@@ -67,8 +67,8 @@ procedure ProlateSpheroidal_Cartesian(const xi, eta, phi, a: double;
 procedure ProlateSpheroidal_Cartesian(const xi, eta, phi, a: single; 
   var x, y, z: single; var ierr: integer); overload;
 { Convert Prolate-Spheroidal to Cartesian [single](with error check). eta,phi in rad }
-procedure ProlateSpheroidal_Cartesian(const xi, eta, phi, a: double; var x, y, z: double; 
-  var ierr: integer); overload;
+procedure ProlateSpheroidal_Cartesian(const xi, eta, phi, a: double; 
+  var x, y, z: double;  var ierr: integer); overload;
 { Convert Oblate-Spheroidal to Cartesian. [Single] eta, phi in rad }
 procedure OblateSpheroidal_Cartesian(const xi, eta, phi, a: single;
   var x, y, z: single); overload;

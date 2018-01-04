@@ -3,13 +3,7 @@
 //
 {
   Vector File related objects
-  History :
-  The whole history is logged in previous version of the unit
-  07/07/14 - ELR - Added AdjustCapacityToAtLeast to TGLMeshObjectList.ExtractTriangles
-  Originally the list of triangles increased  very often in size
-  and leads sometimes to "OutOfMemory"-Exceptions.
-  Solution: Set a reasonable size right in the beginning
-  09/02/00 - EG - Creation from split of GLObjects }
+}
 unit GLVectorFileObjects;
 
 interface
@@ -1855,9 +1849,9 @@ begin
               rmat := CreateRotationMatrixZ(s, c);
               mat := MatrixMultiply(mat, rmat);
             end;
-            mat.V[3].X := Position[i].X;
-            mat.V[3].Y := Position[i].Y;
-            mat.V[3].Z := Position[i].Z;
+            mat.W.X := Position[i].X;
+            mat.W.Y := Position[i].Y;
+            mat.W.Z := Position[i].Z;
             FLocalMatrixList^[i] := mat;
           end;
         end;
@@ -1868,10 +1862,10 @@ begin
           begin
             quat := Quaternion[i];
             mat := QuaternionToMatrix(quat);
-            mat.V[3].X := Position[i].X;
-            mat.V[3].Y := Position[i].Y;
-            mat.V[3].Z := Position[i].Z;
-            mat.V[3].W := 1;
+            mat.W.X := Position[i].X;
+            mat.W.Y := Position[i].Y;
+            mat.W.Z := Position[i].Z;
+            mat.W.W := 1;
             FLocalMatrixList^[i] := mat;
           end;
         end;
@@ -2220,14 +2214,14 @@ begin
   mrci.GLStates.PointSize := 5;
   gl.Begin_(GL_POINTS);
   IssueColor(Color);
-  gl.Vertex3fv(@GlobalMatrix.V[3].X);
+  gl.Vertex3fv(@GlobalMatrix.W.X);
   gl.End_;
   // parent-self bone line
   if Owner is TGLSkeletonBone then
   begin
     gl.Begin_(GL_LINES);
-    gl.Vertex3fv(@TGLSkeletonBone(Owner).GlobalMatrix.V[3].X);
-    gl.Vertex3fv(@GlobalMatrix.V[3].X);
+    gl.Vertex3fv(@TGLSkeletonBone(Owner).GlobalMatrix.W.X);
+    gl.Vertex3fv(@GlobalMatrix.W.X);
     gl.End_;
   end;
   // render sub-bones
@@ -4327,7 +4321,7 @@ end;
 function TGLMeshObjectList.Area: Single;
 var
   i: Integer;
-  tri: TxFace;
+  Tri: TxFace;
   List: TAffineVectorList;
 
 begin
@@ -4893,7 +4887,7 @@ begin
       // transform normal
       SetVector(p, normals[i]);
       invMat := Bone.GlobalMatrix;
-      invMat.V[3] := NullHmgPoint;
+      invMat.W := NullHmgPoint;
       InvertMatrix(invMat);
       p := VectorTransform(p, invMat);
       invMesh.Normals[i] := PAffineVector(@p)^;
@@ -5260,7 +5254,7 @@ begin
         if Source.Count > 0 then
         begin
           destination.AdjustCapacityToAtLeast(destination.Count + n);
-          for i := 2 to vertexIndices.Count - 1 do
+          for i := 2 to VertexIndices.Count - 1 do
           begin
             destination.Add(Source[indices.list^[0]], Source[indices.list^[i - 1]], Source[indices.list^[i]]);
           end;

@@ -2,8 +2,6 @@ unit GLInertias;
 
 interface
 
-{$I GLScene.inc}
-
 uses
   System.SysUtils,
   System.Classes,
@@ -54,7 +52,7 @@ type
     procedure ApplyImpulse(j, x, y, z: Real); overload; virtual;
     procedure ApplyImpulse(j: Single; normal: TAffineVector); overload; virtual;
     procedure ApplyDamping(damping: TGLDamping); virtual;
-    constructor Create(aOwner: TGLXCollection); override;
+    constructor Create(aOwner: TXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
     procedure WriteToFiler(writer: TWriter); override;
@@ -73,7 +71,7 @@ type
     property TranslationSpeed: TGLCoordinates read FTranslationSpeed
       write SetTranslationSpeed;
 
-    { Enable/Disable damping (damping has a high cpu-cycle cost).<p>
+    { : Enable/Disable damping (damping has a high cpu-cycle cost).<p>
       Damping is enabled by default. }
     // property DampingEnabled : Boolean read FDampingEnabled write FDampingEnabled;
     { Damping applied to translation speed.<br>
@@ -150,7 +148,7 @@ type
     function CalculatePE(): Real; override;
     procedure CalcAuxiliary(); override;
     procedure SetUpStartingState(); override;
-    constructor Create(aOwner: TGLXCollection); override;
+    constructor Create(aOwner: TXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
     procedure WriteToFiler(writer: TWriter); override;
@@ -203,7 +201,7 @@ implementation
 // ------------------ TGLParticleInertia ------------------
 // ------------------
 
-constructor TGLParticleInertia.Create(aOwner: TGLXCollection);
+constructor TGLParticleInertia.Create(aOwner: TXCollection);
 begin
   inherited Create(aOwner);
   FMass := 1;
@@ -456,6 +454,8 @@ begin
   }
 end;
 
+// CalcStateDot
+//
 procedure TGLParticleInertia.CalcStateDot(var StateArray: TStateArray;
   StatePos: Integer);
 var
@@ -775,15 +775,15 @@ procedure TGLRigidBodyInertia.SetUpStartingState();
 begin
   //
   inherited SetUpStartingState();
-  fBodyInertiaTensor.V[0].X := InertiaTensor.fm11;
-  fBodyInertiaTensor.V[0].Y := InertiaTensor.fm12;
-  fBodyInertiaTensor.V[0].Z := InertiaTensor.fm13;
-  fBodyInertiaTensor.V[1].X := InertiaTensor.fm21;
-  fBodyInertiaTensor.V[1].Y  := InertiaTensor.fm22;
-  fBodyInertiaTensor.V[1].Z  := InertiaTensor.fm23;
-  fBodyInertiaTensor.V[2].X := InertiaTensor.fm31;
-  fBodyInertiaTensor.V[2].Y := InertiaTensor.fm32;
-  fBodyInertiaTensor.V[2].Z  := InertiaTensor.fm33;
+  fBodyInertiaTensor.X.X := InertiaTensor.fm11;
+  fBodyInertiaTensor.X.Y := InertiaTensor.fm12;
+  fBodyInertiaTensor.X.Z := InertiaTensor.fm13;
+  fBodyInertiaTensor.Y.X := InertiaTensor.fm21;
+  fBodyInertiaTensor.Y.Y  := InertiaTensor.fm22;
+  fBodyInertiaTensor.Y.Z  := InertiaTensor.fm23;
+  fBodyInertiaTensor.Z.X := InertiaTensor.fm31;
+  fBodyInertiaTensor.Z.Y := InertiaTensor.fm32;
+  fBodyInertiaTensor.Z.Z  := InertiaTensor.fm33;
 
   fBodyInverseInertiaTensor := fBodyInertiaTensor;
 
@@ -891,7 +891,7 @@ begin
 end;
 
 
-constructor TGLRigidBodyInertia.Create(aOwner: TGLXCollection);
+constructor TGLRigidBodyInertia.Create(aOwner: TXCollection);
 begin
   inherited Create(aOwner);
   Mass := 1;
@@ -1130,7 +1130,12 @@ begin
 end;
 
 // ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
 initialization
+
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 // class registrations

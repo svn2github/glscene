@@ -3,9 +3,6 @@
 //
 {
   3DStudio 3DS vector file format implementation.
-  History :
-  05/06/03 - SG - Separated from GLVectorFileObjects.pas
-  The whole history is logged in previous version of the unit
 }
 
 unit GLFile3DS;
@@ -1251,7 +1248,6 @@ begin
   FLightSrc.Diffuse.Color := VectorMake(AData.Color.R, AData.Color.G, AData.Color.B);
   FLightSrc.Specular.Color := VectorMake(AData.Color.R, AData.Color.G, AData.Color.B);
   FLightSrc.Diffuse.Color := VectorScale(FLightSrc.Diffuse.Color, AData.Multiplier);
-  // надо потестить
   FLightSrc.Shining := not AData.DLOff;
   FLightSrc.Multipler := AData.Multiplier;
   FLightSrc.ConstAttenuation := 1;

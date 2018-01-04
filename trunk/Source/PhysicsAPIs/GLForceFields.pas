@@ -21,7 +21,7 @@ private
 protected
   procedure SetGravity(const val : TGLCoordinates);
 public
-  constructor Create(aOwner : TGLXCollection); override;
+  constructor Create(aOwner : TXCollection); override;
   destructor Destroy;override;
   procedure Assign(Source: TPersistent); override;
   procedure WriteToFiler(writer : TWriter); override;
@@ -39,7 +39,7 @@ private
   fMass:Real;
   fMassOverG:Real;
 public
-  constructor Create(aOwner : TGLXCollection); override;
+  constructor Create(aOwner : TXCollection); override;
   destructor Destroy;override;
   procedure Assign(Source: TPersistent); override;
   procedure WriteToFiler(writer : TWriter); override;
@@ -58,7 +58,7 @@ private
 protected
   procedure SetDamping(const val: TGLDamping);
 public
-  constructor Create(aOwner : TGLXCollection); override;
+  constructor Create(aOwner : TXCollection); override;
   destructor Destroy;override;
   procedure Assign(Source: TPersistent); override;
   procedure WriteToFiler(writer : TWriter); override;
@@ -80,7 +80,7 @@ implementation
 //-------------------------------------
 //---- TGLUniformGravityEmitter
 //-------------------------------------
-constructor TGLUniformGravityEmitter.Create(aOwner : TGLXCollection);
+constructor TGLUniformGravityEmitter.Create(aOwner : TXCollection);
 begin
   inherited Create(aOwner);
   fGravity:=TGLCoordinates.CreateInitialized(Self,nullHmgVector,csVector);
@@ -156,7 +156,7 @@ end;
 //------------------------------Radial Gravity Emitter -------------------------
 //------------------------------------------------------------------------------
 
-constructor TGLRadialGravityEmitter.Create(aOwner : TGLXCollection);
+constructor TGLRadialGravityEmitter.Create(aOwner : TXCollection);
 begin
   inherited Create(aOwner);
 end;
@@ -230,7 +230,7 @@ end;
 //------------------------------Damping Field Emitter -------------------------
 //-----------------------------------------------------------------------------
 
-constructor TGLDampingFieldEmitter.Create(aOwner : TGLXCollection);
+constructor TGLDampingFieldEmitter.Create(aOwner : TXCollection);
 begin
   inherited Create(aOwner);
   fDamping:=TGLDamping.Create(Self);

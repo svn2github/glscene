@@ -4,10 +4,6 @@
 {
    Creates a single strand of hair using verlet classes. Can be used to simulate
    ropes, fur or hair. 
-
-   History :  
-      06/03/04 - MF - Creation
-   
 }
 unit GLVerletHairClasses;
 

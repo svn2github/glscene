@@ -4,52 +4,8 @@
 {
    Invisible component for helping to Move, Rotate and Scale an Object
    under GLScene (usefull for an Editor). 
-   This is an enhanced version of TGLGizmo, which was originally created and
-   modified by Adirex, J.Delauney, Degiovani, Marcus Oblak and Da Stranger
-   Rustam Asmandiarov (aka Predator) re-wrote TGLGizmo from scratch and 
-   contributed to GLScene. This is how TGLGizmoEx was born.
-
-    History :  
-     11/13/2009 - DaStr - Initial version (contributed by Predator)
-     The whole history is logged in previous version of the unit}
-//
-//
-// Original Header:
-//
-//------------------------------------------------------------------------------
-// Unit : GLGizmoEx  RC 1.0
-//------------------------------------------------------------------------------
-// Original Author : ???????  (GLGizmoEx In an ODEEditor)
-//------------------------------------------------------------------------------
-// Modified by     : J.Delauney
-// Web Site        : http://KheopsInteractive.cjb.net
-// EMail           : wmkheops@free.fr
-// Date            : 08/05/2005
-//------------------------------------------------------------------------------
-// Modified by     : Marcus Oblak (8/3/2007)
-// - Corrected moving/rotating for children objects
-// - Better quantization for mouse operations (MoveCoef,RotationCoef)
-// - Added ScaleCoef
-// - Added GizmoThickness
-//------------------------------------------------------------------------------
-// Unit : GLGizmoEx  RC 2.0
-//------------------------------------------------------------------------------
-// Modified by     : Rustam Asmandiarov aka Predator
-//   Web Site        : http: cene.ru
-//   EMail           : Predator_Rust@_#_antispam_#_@mail.ru
-//   Date            : 07/10/2009
-// - The code fully new made for convenience to work with objects
-// - So the code less compatible but more functional
-// Knowing bugs
-//  1) GLLines
-//   to use alpha it's need to activate property lineColor.Alpha
-//   (см GLObjects->procedure TGLLineBase.SetupLineStyle)
-//  2) In raycast mode multiple selections will slow down execution
-//  of scan rays, whereas in GetPickedObj it's possible to define
-//  rectangle framework
-//  3) Does not work in lazarus
-//------------------------------------------------------------------------------
-
+   This is an enhanced version of TGLGizmo
+}
 unit GLGizmoEx;
 
 interface

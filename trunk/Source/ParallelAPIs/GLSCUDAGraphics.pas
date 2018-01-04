@@ -3,9 +3,6 @@
 //
 {
    CUDA Graphics for GLScene
-   History :
-     01/04/10 - Yar - Creation
-     The whole history is logged in previous version of the unit
 }
 
 unit GLSCUDAGraphics;

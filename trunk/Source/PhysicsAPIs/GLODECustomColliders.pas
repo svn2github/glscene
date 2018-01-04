@@ -3,14 +3,6 @@
 //
 {
    Custom ODE collider implementations.
-   Credits :
-      Heightfield collider code originally adapted from Mattias Fagerlund's
-      DelphiODE terrain collision demo.
-      Website: http://www.cambrianlabs.com/Mattias/DelphiODE
-
-   History :
-     30/07/03 - SG - Creation.
-    The whole history is logged in previous version of the unit.
 }
 unit GLODECustomColliders;
 
@@ -41,10 +33,10 @@ uses
   GLState;
 
 type
-  TODEContactPoint = class
+  TContactPoint = class
   public
     Position,
-    Normal: TAffineVector;
+      Normal: TAffineVector;
     Depth: Single;
   end;
 
@@ -53,7 +45,7 @@ type
    Once the contact points for a collision are generated the abstract Collide
    function is called to generate the depth and the contact position and
    normal. These points are then sorted and the deepest are applied to ODE }
-  TODECustomCollider = class(TODEBehaviour)
+  TGLODECustomCollider = class(TGLODEBehaviour)
   private
     FGeom: PdxGeom;
     FContactList,
@@ -88,7 +80,7 @@ type
     procedure SetPointSize(const Value: Single);
     procedure SetContactColor(const Value: TGLColor);
   public
-    constructor Create(AOwner: TGLXCollection); override;
+    constructor Create(AOwner: TXCollection); override;
     destructor Destroy; override;
     procedure Render(var rci: TGLRenderContextInfo); override;
     property Geom: PdxGeom read FGeom;
@@ -109,22 +101,22 @@ type
 
   {Add this behaviour to a TGLHeightField or TGLTerrainRenderer to enable
    height based collisions for spheres, boxes, capped cylinders, cylinders and cones }
-  TODEHeightField = class(TODECustomCollider)
+  TGLODEHeightField = class(TGLODECustomCollider)
   protected
     procedure WriteToFiler(writer: TWriter); override;
     procedure ReadFromFiler(reader: TReader); override;
     function Collide(aPos: TAffineVector; var Depth: Single;
       var cPos, cNorm: TAffineVector): Boolean; override;
   public
-    constructor Create(AOwner: TGLXCollection); override;
+    constructor Create(AOwner: TXCollection); override;
     class function FriendlyName: string; override;
     class function FriendlyDescription: string; override;
     class function UniqueItem: Boolean; override;
-    class function CanAddTo(collection: TGLXCollection): Boolean; override;
+    class function CanAddTo(collection: TXCollection): Boolean; override;
   end;
 
-function GetODEHeightField(obj: TGLBaseSceneObject): TODEHeightField;
-function GetOrCreateODEHeightField(obj: TGLBaseSceneObject): TODEHeightField;
+function GetGLODEHeightField(obj: TGLBaseSceneObject): TGLODEHeightField;
+function GetOrCreateGLODEHeightField(obj: TGLBaseSceneObject): TGLODEHeightField;
 
 //------------------------------------------------------------------------
 implementation
@@ -134,33 +126,33 @@ var
   vCustomColliderClass: TdGeomClass;
   vCustomColliderClassNum: Integer;
 
-function GetODEHeightField(obj: TGLBaseSceneObject): TODEHeightField;
+function GetGLODEHeightField(obj: TGLBaseSceneObject): TGLODEHeightField;
 begin
-  result := TODEHeightField(obj.Behaviours.GetByClass(TODEHeightField));
+  result := TGLODEHeightField(obj.Behaviours.GetByClass(TGLODEHeightField));
 end;
 
-function GetOrCreateODEHeightField(obj: TGLBaseSceneObject): TODEHeightField;
+function GetOrCreateGLODEHeightField(obj: TGLBaseSceneObject): TGLODEHeightField;
 begin
-  result := TODEHeightField(obj.GetOrCreateBehaviour(TODEHeightField));
+  result := TGLODEHeightField(obj.GetOrCreateBehaviour(TGLODEHeightField));
 end;
 
-function GetColliderFromGeom(aGeom: PdxGeom): TODECustomCollider;
+function GetColliderFromGeom(aGeom: PdxGeom): TGLODECustomCollider;
 var
   temp: TObject;
 begin
   Result := nil;
   temp := dGeomGetData(aGeom);
   if Assigned(temp) then
-    if temp is TODECustomCollider then
-      Result := TODECustomCollider(temp);
+    if temp is TGLODECustomCollider then
+      Result := TGLODECustomCollider(temp);
 end;
 
 function ContactSort(Item1, Item2: Pointer): Integer;
 var
-  c1, c2: TODEContactPoint;
+  c1, c2: TContactPoint;
 begin
-  c1 := TODEContactPoint(Item1);
-  c2 := TODEContactPoint(Item2);
+  c1 := TContactPoint(Item1);
+  c2 := TContactPoint(Item2);
   if c1.Depth > c2.Depth then
     result := -1
   else if c1.Depth = c2.Depth then
@@ -172,7 +164,7 @@ end;
 function CollideSphere(o1, o2: PdxGeom; flags: Integer;
   contact: PdContactGeom; skip: Integer): Integer; cdecl;
 var
-  Collider: TODECustomCollider;
+  Collider: TGLODECustomCollider;
   i, j, res: Integer;
   pos: PdVector3;
   R: PdMatrix3;
@@ -218,7 +210,7 @@ end;
 function CollideBox(o1, o2: PdxGeom; flags: Integer;
   contact: PdContactGeom; skip: Integer): Integer; cdecl;
 var
-  Collider: TODECustomCollider;
+  Collider: TGLODECustomCollider;
   i, j, res: Integer;
   rcpres, len1, len2: Single;
   s: TdVector3;
@@ -303,7 +295,7 @@ end;
 function CollideCapsule(o1, o2: PdxGeom; flags: Integer;
   contact: PdContactGeom; skip: Integer): Integer; cdecl;
 var
-  Collider: TODECustomCollider;
+  Collider: TGLODECustomCollider;
   i, j, res: Integer;
   pos: PdVector3;
   R: PdMatrix3;
@@ -358,7 +350,7 @@ end;
 function CollideCylinder(o1, o2: PdxGeom; flags: Integer;
   contact: PdContactGeom; skip: Integer): Integer; cdecl;
 var
-  Collider: TODECustomCollider;
+  Collider: TGLODECustomCollider;
   i, j, res: Integer;
   pos: PdVector3;
   R: PdMatrix3;
@@ -424,10 +416,10 @@ begin
 end;
 
 // ---------------
-// --------------- TODECustomCollider --------------
+// --------------- TGLODECustomCollider --------------
 // ---------------
 
-constructor TODECustomCollider.Create(AOwner: TGLXCollection);
+constructor TGLODECustomCollider.Create(AOwner: TXCollection);
 begin
   inherited;
   FContactList := TList.Create;
@@ -441,20 +433,20 @@ begin
   FPointSize := 3;
 end;
 
-destructor TODECustomCollider.Destroy;
+destructor TGLODECustomCollider.Destroy;
 var
   i: integer;
 begin
   FContactList.Free;
   for i := 0 to FContactCache.Count - 1 do
-    TODEContactPoint(FContactCache[i]).Free;
+    TContactPoint(FContactCache[i]).Free;
   FContactCache.Free;
   FContactRenderPoints.Free;
   FContactColor.Free;
   inherited;
 end;
 
-procedure TODECustomCollider.Initialize;
+procedure TGLODECustomCollider.Initialize;
 begin
   if not Assigned(Manager) then
     exit;
@@ -478,7 +470,10 @@ begin
   inherited;
 end;
 
-procedure TODECustomCollider.Finalize;
+// Finalize
+//
+
+procedure TGLODECustomCollider.Finalize;
 begin
   if not Initialized then
     exit;
@@ -490,7 +485,10 @@ begin
   inherited;
 end;
 
-procedure TODECustomCollider.WriteToFiler(writer: TWriter);
+// WriteToFiler
+//
+
+procedure TGLODECustomCollider.WriteToFiler(writer: TWriter);
 begin
   inherited;
   with writer do
@@ -503,7 +501,10 @@ begin
   end;
 end;
 
-procedure TODECustomCollider.ReadFromFiler(reader: TReader);
+// ReadFromFiler
+//
+
+procedure TGLODECustomCollider.ReadFromFiler(reader: TReader);
 var
   archiveVersion: Integer;
 begin
@@ -519,21 +520,30 @@ begin
   end;
 end;
 
-procedure TODECustomCollider.ClearContacts;
+// ClearContacts
+//
+
+procedure TGLODECustomCollider.ClearContacts;
 begin
   FContactList.Clear;
 end;
 
-procedure TODECustomCollider.AddContact(x, y, z: TdReal);
+// AddContact (x,y,z)
+//
+
+procedure TGLODECustomCollider.AddContact(x, y, z: TdReal);
 begin
   AddContact(AffineVectorMake(x, y, z));
 end;
 
-procedure TODECustomCollider.AddContact(pos: TAffineVector);
+// AddContact (pos)
+//
+
+procedure TGLODECustomCollider.AddContact(pos: TAffineVector);
 var
   absPos, colPos, colNorm: TAffineVector;
   depth: Single;
-  ContactPoint: TODEContactPoint;
+  ContactPoint: TContactPoint;
 begin
   absPos := AffineVectorMake(VectorTransform(PointMake(pos), FTransform));
   if Collide(absPos, depth, colPos, colNorm) then
@@ -542,7 +552,7 @@ begin
       ContactPoint := FContactCache[FContactList.Count]
     else
     begin
-      ContactPoint := TODEContactPoint.Create;
+      ContactPoint := TContactPoint.Create;
       FContactCache.Add(ContactPoint);
     end;
     ContactPoint.Position := colPos;
@@ -554,7 +564,10 @@ begin
     FContactRenderPoints.Add(absPos);
 end;
 
-function TODECustomCollider.ApplyContacts(o1, o2: PdxGeom;
+// ApplyContacts
+//
+
+function TGLODECustomCollider.ApplyContacts(o1, o2: PdxGeom;
   flags: Integer; contact: PdContactGeom; skip: Integer): Integer;
 var
   i, maxContacts: integer;
@@ -567,7 +580,7 @@ begin
     begin
       if Result >= maxContacts then
         Exit;
-      with TODEContactPoint(FContactList[i]) do
+      with TContactPoint(FContactList[i]) do
       begin
         contact.depth := Depth;
         contact.pos[0] := Position.X;
@@ -589,19 +602,28 @@ begin
   end;
 end;
 
-procedure TODECustomCollider.SetTransform(ATransform: TMatrix);
+// SetTransform
+//
+
+procedure TGLODECustomCollider.SetTransform(ATransform: TMatrix);
 begin
   FTransform := ATransform;
 end;
 
-procedure TODECustomCollider.SetContactResolution(const Value: Single);
+// SetContactResolution
+//
+
+procedure TGLODECustomCollider.SetContactResolution(const Value: Single);
 begin
   FContactResolution := Value;
   if FContactResolution <= 0 then
     FContactResolution := 0.01;
 end;
 
-procedure TODECustomCollider.Render(var rci: TGLRenderContextInfo);
+// Render
+//
+
+procedure TGLODECustomCollider.Render(var rci: TGLRenderContextInfo);
 var
   i: Integer;
 begin
@@ -617,7 +639,10 @@ begin
   FContactRenderPoints.Clear;
 end;
 
-procedure TODECustomCollider.SetRenderContacts(const Value: Boolean);
+// SetRenderContacts
+//
+
+procedure TGLODECustomCollider.SetRenderContacts(const Value: Boolean);
 begin
   if Value <> FRenderContacts then
   begin
@@ -626,12 +651,18 @@ begin
   end;
 end;
 
-procedure TODECustomCollider.SetContactColor(const Value: TGLColor);
+// SetContactColor
+//
+
+procedure TGLODECustomCollider.SetContactColor(const Value: TGLColor);
 begin
   FContactColor.Assign(Value);
 end;
 
-procedure TODECustomCollider.SetPointSize(const Value: Single);
+// SetPointSize
+//
+
+procedure TGLODECustomCollider.SetPointSize(const Value: Single);
 begin
   if Value <> FPointSize then
   begin
@@ -641,10 +672,13 @@ begin
 end;
 
 // ---------------
-// --------------- TODEHeightField --------------
+// --------------- TGLODEHeightField --------------
 // ---------------
 
-constructor TODEHeightField.Create(AOwner: TGLXCollection);
+ 
+//
+
+constructor TGLODEHeightField.Create(AOwner: TXCollection);
 var
   Allow: Boolean;
 begin
@@ -665,7 +699,10 @@ begin
   inherited Create(AOwner);
 end;
 
-procedure TODEHeightField.WriteToFiler(writer: TWriter);
+// WriteToFiler
+//
+
+procedure TGLODEHeightField.WriteToFiler(writer: TWriter);
 begin
   inherited;
   with writer do
@@ -674,7 +711,10 @@ begin
   end;
 end;
 
-procedure TODEHeightField.ReadFromFiler(reader: TReader);
+// ReadFromFiler
+//
+
+procedure TGLODEHeightField.ReadFromFiler(reader: TReader);
 var
   archiveVersion: Integer;
 begin
@@ -686,22 +726,34 @@ begin
   end;
 end;
 
-class function TODEHeightField.FriendlyName: string;
+ 
+//
+
+class function TGLODEHeightField.FriendlyName: string;
 begin
   Result := 'ODE HeightField Collider';
 end;
 
-class function TODEHeightField.FriendlyDescription: string;
+// FriendlyDescription
+//
+
+class function TGLODEHeightField.FriendlyDescription: string;
 begin
-  Result := 'A custom ODE collider powered by its parent TGLTerrainRenderer or TGLHeightField';
+  Result := 'A custom ODE collider powered by it''s parent TGLTerrainRenderer or TGLHeightField';
 end;
 
-class function TODEHeightField.UniqueItem: Boolean;
+// UniqueItem
+//
+
+class function TGLODEHeightField.UniqueItem: Boolean;
 begin
   Result := True;
 end;
 
-class function TODEHeightField.CanAddTo(collection: TGLXCollection): Boolean;
+// CanAddTo
+//
+
+class function TGLODEHeightField.CanAddTo(collection: TXCollection): Boolean;
 begin
   Result := False;
   if collection is TGLBehaviours then
@@ -711,7 +763,10 @@ begin
         Result := True;
 end;
 
-function TODEHeightField.Collide(aPos: TAffineVector;
+// Collide
+//
+
+function TGLODEHeightField.Collide(aPos: TAffineVector;
   var Depth: Single; var cPos, cNorm: TAffineVector): Boolean;
 
   function AbsoluteToLocal(vec: TVector): TVector;
@@ -801,16 +856,24 @@ begin
 end;
 
 // ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
 initialization
-// ------------------------------------------------------------------
+  // ------------------------------------------------------------------
+  // ------------------------------------------------------------------
+  // ------------------------------------------------------------------
 
-  RegisterXCollectionItemClass(TODEHeightField);
+  RegisterXCollectionItemClass(TGLODEHeightField);
 
-// ------------------------------------------------------------------
+  // ------------------------------------------------------------------
+  // ------------------------------------------------------------------
+  // ------------------------------------------------------------------
 finalization
-// ------------------------------------------------------------------
+  // ------------------------------------------------------------------
+  // ------------------------------------------------------------------
+  // ------------------------------------------------------------------
 
-  UnregisterXCollectionItemClass(TODEHeightField);
+  UnregisterXCollectionItemClass(TGLODEHeightField);
 
 end.
 

@@ -5,10 +5,6 @@
    Support classes for loading various fileformats. 
    These classes work together like vector file formats or Delphi's TGraphic classes. 
 
-   History :  
-     04/06/00 - Egg - Creation
-     The whole history is logged in previous version of the unit.
-	 
 }
 unit GLSoundFileObjects;
 

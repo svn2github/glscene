@@ -3,11 +3,6 @@
 //
 {
   Basic editing frame for TGLTexture 
-
-   History :  
-   13/03/00 - Egg - Creation
-   The whole history is logged in previous version of the unit
-   
 }
 { TODO : Replace STImageClass with a dropdown (polymorphism) }
 unit FRTextureEdit;

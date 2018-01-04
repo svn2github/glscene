@@ -227,7 +227,7 @@ begin
         StereoLabel.Caption := 'no';
 
       // Include WGL extensions
-      if gl.W_ARB_extensions_string then
+      if GL.W_ARB_extensions_string then
       begin
         ExtStr := String(gl.WGetExtensionsStringARB(dc));
         while Length(ExtStr) > 0 do
@@ -434,7 +434,6 @@ end;
 
 // ------------------------------------------------------------------------------
 initialization
-
 // ------------------------------------------------------------------------------
 
 RegisterInfoForm(ShowInfoForm);

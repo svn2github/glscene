@@ -8,10 +8,6 @@
    particle depth-sorting (allowing correct rendering of interwoven separate
    fire and smoke particle systems for instance).
 
-   History :
-     08/09/01 - EG - Creation (GLParticleFX.omm)
-     The whole history is logged in previous version of the unit.
-
 }
 
 unit GLParticleFX;
@@ -254,7 +250,7 @@ type
     procedure Loaded; override;
     procedure managerNotification(aManager: TGLParticleFXManager; Operation: TOperation);
   public
-    constructor Create(aOwner: TGLXCollection); override;
+    constructor Create(aOwner: TXCollection); override;
     destructor Destroy; override;
   published
    {Reference to the Particle FX manager }
@@ -380,7 +376,7 @@ type
     procedure ReadFromFiler(reader: TReader); override;
     function ParticleAbsoluteInitialPos: TAffineVector;
   public
-    constructor Create(aOwner: TGLXCollection); override;
+    constructor Create(aOwner: TXCollection); override;
     destructor Destroy; override;
     class function FriendlyName: string; override;
     class function FriendlyDescription: string; override;
@@ -1126,7 +1122,7 @@ end;
 // ------------------ TGLParticleFXEffect ------------------
 // ------------------
 
-constructor TGLParticleFXEffect.Create(aOwner: TGLXCollection);
+constructor TGLParticleFXEffect.Create(aOwner: TXCollection);
 begin
   FEffectScale := 1;
   inherited;
@@ -1519,7 +1515,7 @@ end;
 // ------------------ TGLSourcePFXEffect ------------------
 // ------------------
 
-constructor TGLSourcePFXEffect.Create(aOwner: TGLXCollection);
+constructor TGLSourcePFXEffect.Create(aOwner: TXCollection);
 begin
   inherited;
   FInitialVelocity := TGLCoordinates.CreateInitialized(Self, NullHmgVector, csVector);

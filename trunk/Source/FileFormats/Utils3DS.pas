@@ -5,13 +5,6 @@
    Utility functions for the universal 3DS file reader and writer (TFile3DS).
    Essentially, the functions here are the heart of the import library as
    they deal actually with the database and chunks.
-
-  History : 
-       12/08/02 -  EG  - ReadMatEntryChunk fix / COLOR_F chunk (coerni)
-       The whole history is logged in previous version of the unit  
-
-   (c) Copyright 1999, Dipl. Ing. Mike Lischke (public@lischke-online.de)
-
 }
 unit Utils3DS;
 

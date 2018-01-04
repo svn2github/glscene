@@ -15,6 +15,7 @@ uses
   Vcl.StdCtrls,
   Vcl.Imaging.Jpeg,
 
+  GLVectorTypes,
   GLScene,
   GLTerrainRenderer,
   GLObjects,
@@ -70,11 +71,9 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormKeyPress(Sender: TObject; var Key: Char);
     procedure GLSceneViewer1BeforeRender(Sender: TObject);
-  private
-     
   public
-     
-    procedure DropODEObject(anElementClass : TODEElementClass);
+
+    procedure DropODEObject(anElementClass : TGLODEElementClass);
   end;
 
 var
@@ -132,7 +131,6 @@ begin
    end;
 
    GLODEManager1.Step(deltaTime);
-
    GLUserInterface1.MouseUpdate;
    GLUserInterface1.MouseLook;
 end;
@@ -217,11 +215,11 @@ begin
          else Options:=Options+[sdoTwinkle];
       end;
       'l' : with GLLensFlare do Visible:=(not Visible) and SPSun.Visible;
-      '1' : DropODEObject(TODEElementSphere);
-      '2' : DropODEObject(TODEElementBox);
-      '3' : DropODEObject(TODEElementCapsule);
-      '4' : DropODEObject(TODEElementCylinder);
-//      '5' : DropODEObject(TODEElementCone); CONE is currently unsupported
+      '1' : DropODEObject(TGLODEElementSphere);
+      '2' : DropODEObject(TGLODEElementBox);
+      '3' : DropODEObject(TGLODEElementCapsule);
+      '4' : DropODEObject(TGLODEElementCylinder);
+//      '5' : DropODEObject(TGLODEElementCone); CONE is currently unsupported
    end;
    Key:=#0;
 end;
@@ -231,7 +229,7 @@ begin
    GLLensFlare.PreRender(Sender as TGLSceneBuffer);
 end;
 
-procedure TForm1.DropODEObject(anElementClass : TODEElementClass);
+procedure TForm1.DropODEObject(anElementClass : TGLODEElementClass);
 var
   dummy : TGLBaseSceneObject;
   dyn : TGLODEDynamic;

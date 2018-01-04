@@ -3,7 +3,6 @@
 //
 {
    Misc. lists of vectors and entities
- 
 }
 unit GLVectorLists;
 

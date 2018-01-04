@@ -3,9 +3,6 @@
 //
 {
   Shader Parameter
-  History :
-    14/03/11 - Yar - Creation
-    The whole history is logged in previous version of the unit.
 }
 unit GLSLParameter;
 

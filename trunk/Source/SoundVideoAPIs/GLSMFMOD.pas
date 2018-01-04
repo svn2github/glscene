@@ -7,11 +7,6 @@
   sound source velocity
   looping (sounds are played either once or forever)
   sound cones
-
-
-  History :
-  09/06/00 - EG - Creation
-  The whole history is logged in previous version of unit
 }
 unit GLSMFMOD;
 
@@ -159,66 +154,40 @@ procedure TGLSMFMOD.NotifyEnvironmentChanged;
 var
   SoundRevProps: TFSoundReverbProperties;
 begin
-  if FActivated and EAXSupported then
-  begin
-    case Environment of
-      seDefault:
-        SoundRevProps := FSOUND_PRESET_GENERIC;
-      sePaddedCell:
-        SoundRevProps := FSOUND_PRESET_PADDEDCELL;
-      seRoom:
-        SoundRevProps := FSOUND_PRESET_ROOM;
-      seBathroom:
-        SoundRevProps := FSOUND_PRESET_BATHROOM;
-      seLivingRoom:
-        SoundRevProps := FSOUND_PRESET_LIVINGROOM;
-      seStoneroom:
-        SoundRevProps := FSOUND_PRESET_STONEROOM;
-      seAuditorium:
-        SoundRevProps := FSOUND_PRESET_AUDITORIUM;
-      seConcertHall:
-        SoundRevProps := FSOUND_PRESET_CONCERTHALL;
-      seCave:
-        SoundRevProps := FSOUND_PRESET_CAVE;
-      seArena:
-        SoundRevProps := FSOUND_PRESET_ARENA;
-      seHangar:
-        SoundRevProps := FSOUND_PRESET_HANGAR;
-      seCarpetedHallway:
-        SoundRevProps := FSOUND_PRESET_CARPETTEDHALLWAY;
-      seHallway:
-        SoundRevProps := FSOUND_PRESET_HALLWAY;
-      seStoneCorridor:
-        SoundRevProps := FSOUND_PRESET_STONECORRIDOR;
-      seAlley:
-        SoundRevProps := FSOUND_PRESET_ALLEY;
-      seForest:
-        SoundRevProps := FSOUND_PRESET_FOREST;
-      seCity:
-        SoundRevProps := FSOUND_PRESET_CITY;
-      seMountains:
-        SoundRevProps := FSOUND_PRESET_MOUNTAINS;
-      seQuarry:
-        SoundRevProps := FSOUND_PRESET_QUARRY;
-      sePlain:
-        SoundRevProps := FSOUND_PRESET_PLAIN;
-      seParkingLot:
-        SoundRevProps := FSOUND_PRESET_PARKINGLOT;
-      seSewerPipe:
-        SoundRevProps := FSOUND_PRESET_SEWERPIPE;
-      seUnderWater:
-        SoundRevProps := FSOUND_PRESET_UNDERWATER;
-      seDrugged:
-        SoundRevProps := FSOUND_PRESET_DRUGGED;
-      seDizzy:
-        SoundRevProps := FSOUND_PRESET_DIZZY;
-      sePsychotic:
-        SoundRevProps := FSOUND_PRESET_PSYCHOTIC;
-    else
-      Assert(False);
-    end;
-    FSOUND_Reverb_SetProperties(SoundRevProps);
-  end;
+   if FActivated and EAXSupported then 
+   begin
+      case Environment of
+         seDefault :          SoundRevProps := FSOUND_PRESET_GENERIC;
+         sePaddedCell :       SoundRevProps := FSOUND_PRESET_PADDEDCELL;
+         seRoom :             SoundRevProps := FSOUND_PRESET_ROOM;
+         seBathroom :         SoundRevProps := FSOUND_PRESET_BATHROOM;
+         seLivingRoom :       SoundRevProps := FSOUND_PRESET_LIVINGROOM;
+         seStoneroom :        SoundRevProps := FSOUND_PRESET_STONEROOM;
+         seAuditorium :       SoundRevProps := FSOUND_PRESET_AUDITORIUM;
+         seConcertHall :      SoundRevProps := FSOUND_PRESET_CONCERTHALL;
+         seCave :             SoundRevProps := FSOUND_PRESET_CAVE;
+         seArena :            SoundRevProps := FSOUND_PRESET_ARENA;
+         seHangar :           SoundRevProps := FSOUND_PRESET_HANGAR;
+         seCarpetedHallway :  SoundRevProps := FSOUND_PRESET_CARPETTEDHALLWAY;
+         seHallway :          SoundRevProps := FSOUND_PRESET_HALLWAY;
+         seStoneCorridor :    SoundRevProps := FSOUND_PRESET_STONECORRIDOR;
+         seAlley :            SoundRevProps := FSOUND_PRESET_ALLEY;
+         seForest :           SoundRevProps := FSOUND_PRESET_FOREST;
+         seCity :             SoundRevProps := FSOUND_PRESET_CITY;
+         seMountains :        SoundRevProps := FSOUND_PRESET_MOUNTAINS;
+         seQuarry :           SoundRevProps := FSOUND_PRESET_QUARRY;
+         sePlain :            SoundRevProps := FSOUND_PRESET_PLAIN;
+         seParkingLot :       SoundRevProps := FSOUND_PRESET_PARKINGLOT;
+         seSewerPipe :        SoundRevProps := FSOUND_PRESET_SEWERPIPE;
+         seUnderWater :       SoundRevProps := FSOUND_PRESET_UNDERWATER;
+         seDrugged :          SoundRevProps := FSOUND_PRESET_DRUGGED;
+         seDizzy :            SoundRevProps := FSOUND_PRESET_DIZZY;
+         sePsychotic :        SoundRevProps := FSOUND_PRESET_PSYCHOTIC;
+      else
+         Assert(False);
+      end;
+      FSOUND_Reverb_SetProperties(SoundRevProps);
+   end;
 end;
 
 procedure TGLSMFMOD.KillSource(aSource: TGLBaseSoundSource);
@@ -356,13 +325,13 @@ var
   p: PFMODInfo;
   dfreq, dVol, dPan, dPri: Integer;
 begin
-  try
-    p := PFMODInfo(aSource.ManagerTag);
-    FSOUND_Sample_GetDefaults(p.pfs, dfreq, dVol, dPan, dPri);
-    Result := dfreq;
-  except
-    Result := -1;
-  end;
+   try
+      p:=PFMODInfo(aSource.ManagerTag);
+      FSOUND_Sample_GetDefaults(p.pfs, dFreq, dVol, dPan, dPri);
+      Result:=dFreq;
+   except
+      Result:=-1;
+   end;
 end;
 
 end.

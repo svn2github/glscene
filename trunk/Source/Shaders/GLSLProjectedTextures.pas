@@ -3,10 +3,6 @@
 //
 {
    Implements projected textures through a GLScene object via GLSL.
-
-   History :
-     22/03/07 - fig -    Initial version.
-     The whole history is logged in previous version of the unit.
 }
 
 {  Known bugs/limitations

@@ -16,11 +16,11 @@ interface
 uses
 {$IFDEF USE_FASTMATH}
   Neslib.FastMath,
+{$ELSE}  
+  System.Math,
 {$ENDIF}
 
   System.Classes,
-  System.Math,
-  
   OpenGLTokens,
   OpenGLAdapter,
   GLScene,
@@ -576,7 +576,7 @@ begin
         else
         begin
           // arctan2 returns results between -pi and +pi, we want between 0 and 360
-          angle := 180 / pi * {$IFDEF USE_FASTMATH}Neslib.FastMath.{$ENDIF}ArcTan2(localIntPoint.X, localIntPoint.Y);
+          angle := 180 / pi * ArcTan2(localIntPoint.X, localIntPoint.Y);
           if angle < 0 then
             angle := angle + 360;
           // we also want StartAngle and StartAngle+SweepAngle to be in this range
@@ -2641,7 +2641,7 @@ begin
       end;
       MeshIndex := FStacks + 1;
       begin
-        if gl.ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
+        if GL.ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
         begin
           TanLoc := gl.GetAttribLocation(rci.GLStates.CurrentProgram,
             PAnsiChar(TangentAttributeName));
@@ -2741,7 +2741,7 @@ begin
       ConeCenter.TexCoord := Vector2fMake(0, 0);
 
       begin
-        if gl.ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
+        if GL.ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
         begin
           TanLoc := gl.GetAttribLocation(rci.GLStates.CurrentProgram,
             PAnsiChar(TangentAttributeName));
@@ -2907,7 +2907,7 @@ begin
       ConeCenter.TexCoord := Vector2fMake(1, 1);
 
       begin
-        if gl.ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
+        if GL.ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
         begin
           TanLoc := gl.GetAttribLocation(rci.GLStates.CurrentProgram,
             PAnsiChar(TangentAttributeName));
@@ -2985,7 +2985,7 @@ begin
       ConeCenter.Binormal := FMesh[MeshIndex][0].Binormal;
       ConeCenter.TexCoord := Vector2fMake(0, 0);
       begin
-        if gl.ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
+        if GL.ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
         begin
           TanLoc := gl.GetAttribLocation(rci.GLStates.CurrentProgram,
             PAnsiChar(TangentAttributeName));

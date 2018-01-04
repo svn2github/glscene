@@ -4,11 +4,6 @@
 {
   Implements an HDS that automatically generates a terrain lightmap texture.
 
-  History :
-  14/02/07 - LIN - Creation
-  The whole history is logged in previous version of the unit
-
-
   Issues:1:Ambient and Diffuse light properties can not be set to 0, to avoid what
   seems to be a Delphi bug: If a property of type 'Single' is set to 0,
   Delphi seems to skip the property's set method at startup, and just

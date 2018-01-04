@@ -6,11 +6,6 @@
 
    It is strongly recommended to read and understand the explanations in the
    materials/mirror demo before using this component.
-
-  History :
-    23/09/02 - EG - Creation (from GLMirror and Mattias FagerLund ShadowPlane.pas)
-    The whole history is logged in previous version of the unit
-
 }
 unit GLShadowPlane;
 

@@ -16,10 +16,6 @@
      2) TGLSLDiffuseSpecularShader takes all Light parameters directly
       from OpenGL (that includes TGLLightSource's)
 
-   History :
-     01/11/06 - DaStr - Initial version (contributed to GLScene)
-     The whole history is logged in previous version of the unit.
-
 }
 unit GLSLDiffuseSpecularShader;
 

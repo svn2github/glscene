@@ -14,15 +14,13 @@ interface
 
 uses
   System.Classes, 
-  System.SysUtils,
-  
-  GLXCollection, 
+  System.SysUtils, 
+  XCollection, 
   GLScriptBase, 
-  GLManager,
-  
   dwsComp, 
   dwsExprs,
-  dwsSymbols;
+  dwsSymbols, 
+  GLManager;
 
 type
   {This class only adds manager registration logic to the TDelphiWebScriptII
@@ -58,18 +56,27 @@ type
       procedure Invalidate; override;
       function Call(aName : String;
         aParams : array of Variant) : Variant; override;
+
       class function FriendlyName : String; override;
       class function FriendlyDescription : String; override;
       class function ItemCategory : String; override;
+
       property DWS2Program : TProgram read FDWS2Program;
+
     published
+      
       property Compiler : TGLDelphiWebScriptII read FCompiler write SetCompiler;
+
   end;
 
 procedure Register;
 
 // --------------------------------------------------
+// --------------------------------------------------
+// --------------------------------------------------
 implementation
+// --------------------------------------------------
+// --------------------------------------------------
 // --------------------------------------------------
 
 // ---------------
@@ -268,13 +275,21 @@ begin
 end;
 
 // --------------------------------------------------
+// --------------------------------------------------
+// --------------------------------------------------
 initialization
+// --------------------------------------------------
+// --------------------------------------------------
 // --------------------------------------------------
 
   RegisterXCollectionItemClass(TGLScriptDWS);
 
 // --------------------------------------------------
+// --------------------------------------------------
+// --------------------------------------------------
 finalization
+// --------------------------------------------------
+// --------------------------------------------------
 // --------------------------------------------------
 
   UnregisterXCollectionItemClass(TGLScriptDWS);

@@ -3,13 +3,10 @@
 //
 {
    Shader code editor. 
-   History:  
-       31/03/11 - Yar - Creation
-    
+// TODO: need to decide how to load templates from external file
+//       and update it without package recompilation
 }
 
-// TODO: decide how to load templates from external file,
-//       update it without package recompilation
 
 unit FShaderMemo;
 

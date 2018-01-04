@@ -3,8 +3,6 @@
 //
 {
   Spatial partitioning related code that also uses GLScene objects
-  History : 03/12/04 - MF - Created
-  The whole history is logged in a former version of the unit.
 }
 
 unit GLSpatialPartitioning;

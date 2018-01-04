@@ -3,8 +3,6 @@
 //
 { 
    CUDA Fourier Transform 
-   28/01/10 - Yar - Creation
-   The whole history is logged in previous version of the unit
 }
 
 /// *
@@ -257,7 +255,7 @@ var
 {$IFDEF LINUX}
   CUFFTHandle: TLibHandle = INVALID_MODULEHANDLE;
 {$ENDIF}
-{$IFDEF GLS_CUDA_DEBUG_MODE}
+{$IFDEF USE_CUDA_DEBUG_MODE}
 
 var
   cufftPlan1d_: TcufftPlan1d;
@@ -445,7 +443,7 @@ begin
     CUFFTHandle := LoadLibraryW(PWideChar(LibName));
   if CUFFTHandle = INVALID_MODULEHANDLE then
     Exit(False);
-{$IFNDEF GLS_CUDA_DEBUG_MODE}
+{$IFNDEF USE_CUDA_DEBUG_MODE}
   cufftPlan1d := CUFFTGetProcAddress(cufftPlan1dName);
   cufftPlan2d := CUFFTGetProcAddress(cufftPlan2dName);
   cufftPlan3d := CUFFTGetProcAddress(cufftPlan3dName);

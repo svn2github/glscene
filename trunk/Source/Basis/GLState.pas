@@ -3,9 +3,6 @@
 //
 {
   Tools for managing an application-side cache of OpenGL state.
-  History :
-  05/09/03 - EG - Creation from GLMisc split
-  The whole history is logged in previous version of the unit.
 }
 
 // TODO: Proper client-side pushing + popping of state, in OpenGL 3+ contexts,
@@ -26,7 +23,7 @@ unit GLState;
 interface
 
 {$I GLScene.inc}
-{ .$DEFINE GLS_CACHE_MISS_CHECK }
+{ .$DEFINE USE_CACHE_MISS_CHECK }
 
 uses
 
@@ -48,9 +45,11 @@ const
 
 type
 
-  TGLStateType = (sttCurrent, sttPoint, sttLine, sttPolygon, sttPolygonStipple, sttPixelMode, sttLighting, sttFog,
-    sttDepthBuffer, sttAccumBuffer, sttStencilBuffer, sttViewport, sttTransform, sttEnable, sttColorBuffer, sttHint, sttEval,
-    sttList, sttTexture, sttScissor, sttMultisample);
+  TGLStateType = (sttCurrent, sttPoint, sttLine, sttPolygon, sttPolygonStipple,
+    sttPixelMode, sttLighting, sttFog, sttDepthBuffer, sttAccumBuffer,
+    sttStencilBuffer, sttViewport, sttTransform, sttEnable, sttColorBuffer,
+    sttHint, sttEval, sttList, sttTexture, sttScissor,
+    sttMultisample);
   TGLStateTypes = set of TGLStateType;
 
 const
@@ -1264,7 +1263,7 @@ begin
       Include(FListStates[FCurrentList], sttEnable)
     else
       Include(FStates, aState);
-{$IFDEF GLS_CACHE_MISS_CHECK}
+{$IFDEF USE_CACHE_MISS_CHECK}
     if gl.IsEnabled(cGLStateToGLEnum[aState].GLConst) then
       GLSLogger.LogError(strStateCashMissing + 'Enable');
 {$ENDIF}
@@ -1282,7 +1281,7 @@ begin
       Include(FListStates[FCurrentList], sttEnable)
     else
       Exclude(FStates, aState);
-{$IFDEF GLS_CACHE_MISS_CHECK}
+{$IFDEF USE_CACHE_MISS_CHECK}
     if not gl.IsEnabled(cGLStateToGLEnum[aState].GLConst) then
       GLSLogger.LogError(strStateCashMissing + 'Disable');
 {$ENDIF}
@@ -2012,7 +2011,7 @@ begin
 end;
 
 procedure TGLStateCache.SetGLAlphaFunction(func: TComparisonFunction; ref: Single);
-{$IFDEF GLS_CACHE_MISS_CHECK}
+{$IFDEF USE_CACHE_MISS_CHECK}
 var
   I: Cardinal;
   E: Single;
@@ -2020,7 +2019,7 @@ var
 begin
   { if FForwardContext then
     exit; }
-{$IFDEF GLS_CACHE_MISS_CHECK}
+{$IFDEF USE_CACHE_MISS_CHECK}
   gl.GetIntegerv(GL_ALPHA_TEST_FUNC, @I);
   if cGLComparisonFunctionToGLEnum[FAlphaFunc] <> I then
     GLSLogger.LogError(strStateCashMissing + 'AlphaTest function');
@@ -2585,12 +2584,12 @@ begin
 end;
 
 procedure TGLStateCache.SetStencilClearValue(const Value: Cardinal);
-{$IFDEF GLS_CACHE_MISS_CHECK}
+{$IFDEF USE_CACHE_MISS_CHECK}
 var
   I: Cardinal;
 {$ENDIF}
 begin
-{$IFDEF GLS_CACHE_MISS_CHECK}
+{$IFDEF USE_CACHE_MISS_CHECK}
   gl.GetIntegerv(GL_STENCIL_CLEAR_VALUE, @I);
   if FStencilClearValue <> I then
     GLSLogger.LogError(strStateCashMissing + 'Stencil clear value');
@@ -2636,7 +2635,7 @@ end;
 
 procedure TGLStateCache.SetStencilFuncSeparate(const face: TCullFaceMode; const func: TStencilFunction; const ref: TGLint;
   const mask: Cardinal);
-{$IFDEF GLS_CACHE_MISS_CHECK}
+{$IFDEF USE_CACHE_MISS_CHECK}
 var
   UI: Cardinal;
   I: TGLint;
@@ -2644,7 +2643,7 @@ var
 begin
   // if (func<>FStencilFunc) or (ref<>FStencilRef) or (mask<>FStencilValueMask)
   // or FInsideList then
-{$IFDEF GLS_CACHE_MISS_CHECK}
+{$IFDEF USE_CACHE_MISS_CHECK}
   gl.GetIntegerv(GL_STENCIL_FUNC, @UI);
   if cGLComparisonFunctionToGLEnum[FStencilFunc] <> UI then
     GLSLogger.LogError(strStateCashMissing + 'Stencil function');
@@ -2705,12 +2704,12 @@ begin
 end;
 
 procedure TGLStateCache.SetStencilOp(const fail, zfail, zpass: TStencilOp);
-{$IFDEF GLS_CACHE_MISS_CHECK}
+{$IFDEF USE_CACHE_MISS_CHECK}
 var
   I: Cardinal;
 {$ENDIF}
 begin
-{$IFDEF GLS_CACHE_MISS_CHECK}
+{$IFDEF USE_CACHE_MISS_CHECK}
   gl.GetIntegerv(GL_STENCIL_FAIL, @I);
   if cGLStencilOpToGLEnum[FStencilFail] <> I then
     GLSLogger.LogError(strStateCashMissing + 'Stencil fail');
@@ -2771,12 +2770,12 @@ begin
 end;
 
 procedure TGLStateCache.SetStencilWriteMask(const Value: Cardinal);
-{$IFDEF GLS_CACHE_MISS_CHECK}
+{$IFDEF USE_CACHE_MISS_CHECK}
 var
   I: Cardinal;
 {$ENDIF}
 begin
-{$IFDEF GLS_CACHE_MISS_CHECK}
+{$IFDEF USE_CACHE_MISS_CHECK}
   gl.GetIntegerv(GL_STENCIL_WRITEMASK, @I);
   if FStencilWriteMask <> I then
     GLSLogger.LogError(strStateCashMissing + 'Stencil write mask');

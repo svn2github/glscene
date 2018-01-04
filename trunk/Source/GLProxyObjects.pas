@@ -3,10 +3,6 @@
 //
 {
   Implements specific proxying classes.
-
-  History :
-    06/12/03 - EG - Creation from GLScene.pas split
-    The whole history is logged in previous version of the unit
 }
 unit GLProxyObjects;
 

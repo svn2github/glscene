@@ -3,10 +3,6 @@
 //
 {
   Editor frame for a TGLFaceProperties. 
-
-   History:  
-   06/02/00 - Egg - Creation
-   The whole history is logged in previous version of the unit
 }
 unit FRFaceEditor;
 
@@ -136,8 +132,6 @@ begin
   end;
 end;
 
-// SetGLFaceProperties
-//
 procedure TRFaceEditor.SetGLFaceProperties(const val: TGLFaceProperties);
 begin
   Updating := True;

@@ -3,11 +3,6 @@
 //
 {
    Skeleton colliders for defining and controlling ODE geoms.
-
-    History :
-       04/12/03 - SG - Creation.
-       The whole history is logged in previous version of the unit.
-
 }
 unit GLODESkeletonColliders;
 
@@ -91,7 +86,6 @@ procedure AddSCODEGeomsToODESpace(colliders: TGLSkeletonColliderList; Space: Pdx
 
 // ------------------------------------------------------------------
 implementation
-
 // ------------------------------------------------------------------
 
 // ------------------

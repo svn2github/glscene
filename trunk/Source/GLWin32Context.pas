@@ -3,11 +3,6 @@
 //
 {
   Win32 specific Context.
-
-  History :
-  22/07/01 - EG - Creation (glcontext.omm)
-  The whole history is logged in previous version of the unit.
-
 }
 unit GLWin32Context;
 

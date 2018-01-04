@@ -1353,8 +1353,7 @@ begin
     TypeInfo(TGLScreenDepth)]); // TGLScreenDepth in GLWin32FullScreenViewer
 {$ENDIF}
   // TGLSceneViewer
-  RegisterPropertiesInCategory(strOpenGLCategoryName, TGLSceneViewer,
-    ['*Render']);
+  RegisterPropertiesInCategory(strOpenGLCategoryName, TGLSceneViewer, ['*Render']);
 
   { GLScene }
   RegisterPropertiesInCategory(strOpenGLCategoryName,
@@ -1368,21 +1367,14 @@ begin
     [TypeInfo(TGLVisibilityCulling), TypeInfo(TGLLightStyle), TypeInfo(TGLColor),
     TypeInfo(TNormalDirection), TypeInfo(TGLCameraStyle)]);
   RegisterPropertiesInCategory(strVisualCategoryName, TGLBaseSceneObject,
-    ['Rotation', 'Direction', 'Position', 'Up', 'Scale', '*Angle', 'ShowAxes',
-    'FocalLength']);
+    ['Rotation', 'Direction', 'Position', 'Up', 'Scale', '*Angle', 'ShowAxes', 'FocalLength']);
   RegisterPropertiesInCategory(strVisualCategoryName, TGLSceneObject, ['Parts']);
-  RegisterPropertiesInCategory(strOpenGLCategoryName, TGLDirectOpenGL,
-    ['UseBuildList']);
-  RegisterPropertiesInCategory(strOpenGLCategoryName,
-    [TypeInfo(TGLProxyObjectOptions)]);
-  RegisterPropertiesInCategory(strVisualCategoryName, TGLLightSource,
-    ['*Attenuation', 'Shining', 'Spot*']);
-  RegisterPropertiesInCategory(strOpenGLCategoryName, TGLCamera,
-    ['TargetObject']);
-  RegisterPropertiesInCategory(strVisualCategoryName, TGLCamera,
-    ['DepthOfView', 'SceneScale']);
-  RegisterPropertiesInCategory(strOpenGLCategoryName, TGLNonVisualViewer,
-    ['*Render']);
+  RegisterPropertiesInCategory(strOpenGLCategoryName, TGLDirectOpenGL, ['UseBuildList']);
+  RegisterPropertiesInCategory(strOpenGLCategoryName, [TypeInfo(TGLProxyObjectOptions)]);
+  RegisterPropertiesInCategory(strVisualCategoryName, TGLLightSource, ['*Attenuation', 'Shining', 'Spot*']);
+  RegisterPropertiesInCategory(strOpenGLCategoryName, TGLCamera, ['TargetObject']);
+  RegisterPropertiesInCategory(strVisualCategoryName, TGLCamera, ['DepthOfView', 'SceneScale']);
+  RegisterPropertiesInCategory(strOpenGLCategoryName, TGLNonVisualViewer, ['*Render']);
 
   { GLObjects }
   RegisterPropertiesInCategory(strOpenGLCategoryName,
@@ -1459,18 +1451,13 @@ begin
   RegisterPropertiesInCategory(strVisualCategoryName,
     [TypeInfo(TGLMeshAutoCenterings), TypeInfo(TGLActorAnimationReference),
     TypeInfo(TGLMeshNormalsOrientation)]);
-  RegisterPropertiesInCategory(strOpenGLCategoryName, TGLFreeForm,
-    ['UseMeshmaterials']);
-  RegisterPropertiesInCategory(strOpenGLCategoryName, TGLAnimationControler,
-    ['AnimationName']);
-  RegisterPropertiesInCategory(sLinkageCategoryName, TGLAnimationControler,
-    ['AnimationName']);
-  RegisterPropertiesInCategory(strOpenGLCategoryName, TGLActorAnimation,
-    ['*Frame']);
+  RegisterPropertiesInCategory(strOpenGLCategoryName, TGLFreeForm, ['UseMeshmaterials']);
+  RegisterPropertiesInCategory(strOpenGLCategoryName, TGLAnimationControler, ['AnimationName']);
+  RegisterPropertiesInCategory(sLinkageCategoryName, TGLAnimationControler, ['AnimationName']);
+  RegisterPropertiesInCategory(strOpenGLCategoryName, TGLActorAnimation, ['*Frame']);
   RegisterPropertiesInCategory(strOpenGLCategoryName, TGLActor,
     ['*Frame*', 'Interval', 'OverlaySkeleton', 'UseMeshmaterials']);
-  RegisterPropertiesInCategory(strVisualCategoryName, TGLActor,
-    ['OverlaySkeleton']);
+  RegisterPropertiesInCategory(strVisualCategoryName, TGLActor,  ['OverlaySkeleton']);
 
   { GLMesh }
   RegisterPropertiesInCategory(strOpenGLCategoryName,
@@ -1482,26 +1469,20 @@ begin
   RegisterPropertiesInCategory(strVisualCategoryName,
     [TypeInfo(TGLHeightFieldColorMode), TypeInfo(TGLSamplingScale),
     TypeInfo(TGLXYZGridLinesStyle), TypeInfo(TGLXYZGridParts)]);
-  RegisterPropertiesInCategory(strOpenGLCategoryName, TGLXYZGrid,
-    ['Antialiased']);
-  RegisterPropertiesInCategory(strVisualCategoryName, TGLXYZGrid,
-    ['Antialiased', 'Line*']);
+  RegisterPropertiesInCategory(strOpenGLCategoryName, TGLXYZGrid, ['Antialiased']);
+  RegisterPropertiesInCategory(strVisualCategoryName, TGLXYZGrid, ['Antialiased', 'Line*']);
 
   { GLParticles }
-  RegisterPropertiesInCategory(strLayoutCategoryName, TGLParticles,
-    ['VisibleAtRunTime']);
-  RegisterPropertiesInCategory(strVisualCategoryName, TGLParticles,
-    ['*Size', 'VisibleAtRunTime']);
+  RegisterPropertiesInCategory(strLayoutCategoryName, TGLParticles, ['VisibleAtRunTime']);
+  RegisterPropertiesInCategory(strVisualCategoryName, TGLParticles, ['*Size', 'VisibleAtRunTime']);
 
   { GLSkydome }
   RegisterPropertiesInCategory(strOpenGLCategoryName,
     [TypeInfo(TGLSkyDomeBands), TypeInfo(TGLSkyDomeOptions),
     TypeInfo(TGLSkyDomeStars)]);
-  RegisterPropertiesInCategory(strVisualCategoryName, TGLSkyDomeBand,
-    ['Slices', 'Stacks', '*Angle']);
-  RegisterPropertiesInCategory(strVisualCategoryName, TGLSkyDomeStar,
-    ['Dec', 'Magnitude', 'RA']);
-  RegisterPropertiesInCategory(strOpenGLCategoryName, TGLEarthSkyDome,
+  RegisterPropertiesInCategory(strVisualCategoryName, TGLSkyDomeBand, ['Slices', 'Stacks', '*Angle']);
+  RegisterPropertiesInCategory(strVisualCategoryName, TGLSkyDomeStar, ['Dec', 'Magnitude', 'RA']);
+  RegisterPropertiesInCategory(strOpenGLCategoryName, TGLEarthSkyDome, 
     ['Slices', 'Stacks', 'SunElevation', 'Turbidity']);
 
   { GLMirror }
@@ -1513,20 +1494,13 @@ begin
   RegisterPropertiesInCategory(strVisualCategoryName,
     [TypeInfo(TGLBlendingMode), TypeInfo(TPFXLifeColors),
     TypeInfo(TSpriteColorMode)]);
-  RegisterPropertiesInCategory(strOpenGLCategoryName, TGLParticleFXRenderer,
-    ['ZWrite']);
-  RegisterPropertiesInCategory(strVisualCategoryName, TGLParticleFXRenderer,
-    ['ZWrite']);
-  RegisterPropertiesInCategory(strOpenGLCategoryName, TPFXLifeColor,
-    ['LifeTime']);
-  RegisterPropertiesInCategory(strVisualCategoryName, TPFXLifeColor,
-    ['LifeTime']);
-  RegisterPropertiesInCategory(strVisualCategoryName, TGLLifeColoredPFXManager,
-    ['Acceleration', 'ParticleSize']);
-  RegisterPropertiesInCategory(strVisualCategoryName, TGLPolygonPFXManager,
-    ['NbSides']);
-  RegisterPropertiesInCategory(strVisualCategoryName, TGLPointLightPFXManager,
-    ['TexMapSize']);
+  RegisterPropertiesInCategory(strOpenGLCategoryName, TGLParticleFXRenderer, ['ZWrite']);
+  RegisterPropertiesInCategory(strVisualCategoryName, TGLParticleFXRenderer, ['ZWrite']);
+  RegisterPropertiesInCategory(strOpenGLCategoryName, TPFXLifeColor, ['LifeTime']);
+  RegisterPropertiesInCategory(strVisualCategoryName, TPFXLifeColor, ['LifeTime']);
+  RegisterPropertiesInCategory(strVisualCategoryName, TGLLifeColoredPFXManager, ['Acceleration', 'ParticleSize']);
+  RegisterPropertiesInCategory(strVisualCategoryName, TGLPolygonPFXManager, ['NbSides']);
+  RegisterPropertiesInCategory(strVisualCategoryName, TGLPointLightPFXManager, ['TexMapSize']);
 
   { GLTerrainRenderer }
   RegisterPropertiesInCategory(strOpenGLCategoryName, [TypeInfo(TGLHeightDataSource)]);

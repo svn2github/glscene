@@ -3,7 +3,6 @@
 //
 {
    TGLSLShader is a wrapper for GLS shaders.
-   The whole history is logged in previous version of the unit
 }
 unit GLSLShader;
 

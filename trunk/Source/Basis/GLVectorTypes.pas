@@ -21,9 +21,9 @@
 }
 unit GLVectorTypes;
 
-interface
-
 {$I GLScene.inc}
+
+interface
 
 {$IFDEF USE_FASTMATH}
 uses

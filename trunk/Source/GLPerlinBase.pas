@@ -3,10 +3,6 @@
 //
 {
   Functions for generating perlin noise. 
-
-   History :  
-   29/01/03 - JaJ - Submitted to GLScene.
-   The whole history is logged in previous version of the unit.   
 }
 unit GLPerlinBase;
 
@@ -42,7 +38,9 @@ procedure Smooth_Interpolate_Strip(B1, B2, B3, Res: T1DPerlinArray;
 // result is crap and is only for "random" usage... eg perlin.
 function ExponateCrap(root, exponant: Integer): Integer;
 
+//-----------------------------------------------------------------
 implementation
+//-----------------------------------------------------------------
 
 uses
   GLCrossPlatform;

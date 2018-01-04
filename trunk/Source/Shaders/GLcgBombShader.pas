@@ -2,9 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-    Just a good looking shader. And my first one;)
-    History : 
-       19/08/06 - DaStr - Initial version (contributed to GLScene)
+    Just a good looking shader
 }
 unit GLCgBombShader;
 

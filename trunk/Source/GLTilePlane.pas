@@ -3,10 +3,6 @@
 //
 {
    Implements a tiled texture plane. 
-
-   History :  
-     09/01/04 - EG - Creation
-     The whole history is logged in previous version of the unit.
 }
 unit GLTilePlane;
 

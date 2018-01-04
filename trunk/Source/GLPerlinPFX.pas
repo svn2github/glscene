@@ -3,10 +3,6 @@
 //
 {
   PFX particle effects revolving around the use of Perlin noise.
-
-  History :
-    15/04/04 - EG - Creation
-    The whole history is logged in previous version of the unit.
 }
 unit GLPerlinPFX;
 
@@ -18,11 +14,11 @@ uses
   System.Classes,
   System.Math,
   
+  OpenGLTokens,
   GLParticleFX,
   GLGraphics,
   GLCrossPlatform,
   GLPerlinNoise3D,
-  OpenGLTokens,
   GLVectorGeometry;
 
 type

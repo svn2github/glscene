@@ -3,9 +3,6 @@
 //
 {
    An ARBvp1.0 + ARBfp1.0 shader that implements phong shading. 
-    History :
-      11/10/04 - SG - Creation.
-      The whole history is logged in previous version of the unit.
 }
 unit GLPhongShader;
 

@@ -3,11 +3,6 @@
 //
 {
    Pipeline transformations
-   History :
-     13/12/13 - PW - Added GLSLog unit
-     16/11/10 - Yar - Added NormalModelMatrix
-     23/08/10 - Yar - Creation
-
 }
 
 unit GLPipelineTransformation;
@@ -220,8 +215,6 @@ begin
   end;
 end;
 
-
-
 procedure TGLTransformation.ReplaceFromStack;
 var
   prevPos: Integer;
@@ -244,8 +237,6 @@ begin
     LoadProjectionMatrix;
   end;
 end;
-
-
 
 function TGLTransformation.GetModelMatrix: PMatrix;
 begin

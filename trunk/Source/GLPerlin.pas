@@ -6,10 +6,6 @@
 
   The components and classes in the unit are a base to generate textures and heightmaps from,
   A Perlin Height Data Source have been included as an example. Use this combined with a terrain renderer for an infinite random landscape  
-
-   History :  
-     29/01/03 - JaJ - Submitted to GLScene.
-     The whole history is logged in previous version of the unit.
 }
 unit GLPerlin;
 

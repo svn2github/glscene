@@ -5,9 +5,6 @@
    Fur shader that simulate Fur / Hair / Grass. 
    At this time only one light source is supported
 
-   History :  
-     08/12/15 - J.Delauney - Initial
-
 }
 unit GLSLFurShader;
 

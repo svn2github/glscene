@@ -10,11 +10,6 @@
                    color array.
        3. Doesn't Works with visible backfaces. 
 
-    History :  
-      04/09/03 - NelC - Converted into a component from the TOutlineShader
-                        in the multipass demo.
-    The whole history is logged in previous version of the unit.
-    
 }
 unit GLOutlineShader;
 

@@ -2,11 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Base classes and interface for GLScene Sound System 
-   History :
-     04/06/00 - EG - Creation
-    The whole history is logged in previous version of the unit
-
+   Base classes and interface for GLScene Sound System
 }
 unit GLSound;
 
@@ -387,7 +383,7 @@ type
     function GetPlaying: Boolean;
     procedure NotifySourceDestruction(aSource: TGLSoundSource);
   public
-    constructor Create(AOwner: TGLXCollection); override;
+    constructor Create(AOwner: TXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
     class function FriendlyName: String; override;
@@ -1474,7 +1470,7 @@ end;
 // ------------------
 
 
-constructor TGLBSoundEmitter.Create(aOwner: TGLXCollection);
+constructor TGLBSoundEmitter.Create(aOwner: TXCollection);
 begin
   inherited Create(aOwner);
   FSource := TGLSoundSource.Create(nil);

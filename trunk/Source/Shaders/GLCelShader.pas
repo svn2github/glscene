@@ -4,10 +4,6 @@
 {
    A shader that applies cel shading through a vertex program
    and shade definition texture. 
-
-    History :  
-       28/05/04 - SG - Creation.
-	   The whole history is logged in previous version of the unit.
 }
 unit GLCelShader;
 

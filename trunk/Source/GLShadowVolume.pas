@@ -7,11 +7,6 @@
    Be aware that only objects that support silhouette determination have a chance
    to cast correct shadows. Transparent/blended/shader objects among the receivers
    or the casters will be rendered incorrectly.
-
-  History :
-    04/06/03 - EG - Creation (based on code from Mattias Fagerlund)
-    The whole history is logged in previous version of the unit
-
 }
 unit GLShadowVolume;
 
@@ -23,10 +18,10 @@ uses
   System.Classes,
   System.SysUtils,
 
+  OpenGLTokens,
   GLScene,
   GLSLog,
   GLVectorGeometry,
-  OpenGLTokens,
   GLContext,
   GLSilhouette,
   GLCrossPlatform,

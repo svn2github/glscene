@@ -19,10 +19,6 @@
   - UseGravity: You can disable the gravity for that object
   - SlideOrBounce: The object can bounce like a ball or slide like an FPS
   - BounceFactor: Restituition factor, 1 means that it will bounce forever
-
-   History :  
-    29/07/04 - LucasG - Creation
-    The whole history is logged in previous version of the unit	 
 }
 
 unit GLDCE;
@@ -37,7 +33,7 @@ uses
   System.Types,
    
   GLScene, 
-  GLXCollection, 
+  GLXCollection,
   GLVectorGeometry, 
   GLVectorLists, 
   GLVectorFileObjects,
@@ -146,7 +142,7 @@ type
     procedure ReadFromFiler(reader : TReader); override;
     procedure Loaded; override;
   public
-    constructor Create(aOwner : TGLXCollection); override;
+    constructor Create(aOwner : TXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
     class function FriendlyName : String; override;
@@ -200,7 +196,7 @@ type
     procedure ReadFromFiler(reader : TReader); override;
     procedure Loaded; override;
   public
-    constructor Create(aOwner : TGLXCollection); override;
+    constructor Create(aOwner : TXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
     class function FriendlyName : String; override;
@@ -580,7 +576,7 @@ begin
    inherited Assign(Source);
 end;
 
-constructor TGLDCEStatic.Create(aOwner: TGLXCollection);
+constructor TGLDCEStatic.Create(aOwner: TXCollection);
 begin
    inherited Create(aOwner);
    FActive := True;
@@ -747,7 +743,7 @@ begin
   inherited Assign(Source);
 end;
 
-constructor TGLDCEDynamic.Create(aOwner: TGLXCollection);
+constructor TGLDCEDynamic.Create(aOwner: TXCollection);
 begin
   inherited Create(aOwner);
   FActive := True;

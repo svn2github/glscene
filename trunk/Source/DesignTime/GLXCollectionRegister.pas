@@ -2,12 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Register TGLXCollection property editor 
-  
-   History :  
-       16/04/00 - Egg - Creation
-	   The whole history is logged in previous version of the unit
-	 
+   Register TXCollection property editor 
 }
 unit GLXCollectionRegister;
 
@@ -19,10 +14,11 @@ uses
   System.Classes,
   GLXCollection,
 
-  DesignEditors, DesignIntf;
+  DesignEditors, 
+  DesignIntf;
 
 type
-	TGLXCollectionProperty = class(TClassProperty)
+	TXCollectionProperty = class(TClassProperty)
 		public
 			
 			function GetAttributes: TPropertyAttributes; override;
@@ -38,24 +34,24 @@ uses
   FXCollectionEditor;
 
 
-//----------------- TGLXCollectionProperty ------------------------------------
+//----------------- TXCollectionProperty ------------------------------------
 
-function TGLXCollectionProperty.GetAttributes: TPropertyAttributes;
+function TXCollectionProperty.GetAttributes: TPropertyAttributes;
 begin
 	Result:=[paDialog];
 end;
 
-procedure TGLXCollectionProperty.Edit;
+procedure TXCollectionProperty.Edit;
 begin
-   with GLXCollectionEditorForm do begin
-     SetXCollection(TGLXCollection(GetOrdValue), Self.Designer);
+   with XCollectionEditorForm do begin
+     SetXCollection(TXCollection(GetOrdValue), Self.Designer);
      Show;
    end;
 end;
 
 procedure Register;
 begin
-  RegisterPropertyEditor(TypeInfo(TGLXCollection), nil, '', TGLXCollectionProperty);
+  RegisterPropertyEditor(TypeInfo(TXCollection), nil, '', TXCollectionProperty);
 end;
 
 

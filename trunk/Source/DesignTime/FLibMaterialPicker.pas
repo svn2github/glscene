@@ -3,11 +3,6 @@
 //
 {
  Allows choosing a material in a material library 
-
-     History :  
-       14/02/00 - Egg - Creation
-       The whole history is logged in previous version of the unit.
-     
 }
 unit FLibMaterialPicker;
 

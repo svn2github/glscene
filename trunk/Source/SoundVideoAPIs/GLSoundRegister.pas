@@ -3,9 +3,6 @@
 //
 {
   Design time registration code for the Sounds
-
-  History:
-    01/12/15 - PW - Creation.
 }
 unit GLSoundRegister;
 

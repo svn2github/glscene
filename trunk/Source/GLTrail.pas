@@ -3,11 +3,6 @@
 //
 {
   Creates a trail-like mesh.
-
-  History :
-    12/10/04 - Mrqzzz - Creation (Based on Jason Lanford's demo - june 2003)
-    The whole history is logged in previous version of the unit.
-
 }
 
 unit GLTrail;

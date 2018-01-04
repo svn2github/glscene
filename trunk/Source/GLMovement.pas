@@ -5,11 +5,6 @@
    Movement path behaviour by Roger Cao
    Note: It is recommended to set TGLMovementPath.RotationMode = rmUpDirection,
    but the default value is rmTurnPitchRoll for backwards compatibility.
-
-   History :
-     24/08/00 - RoC - TGLMovement and relative class added
-     The whole history is logged in previous version of the unit
-
 }
 
 unit GLMovement;
@@ -239,7 +234,7 @@ type
     procedure PathTravelStop(Sender: TObject);
     function GetSceneObject: TGLBaseSceneObject;
   public
-    constructor Create(aOwner: TGLXCollection); override;
+    constructor Create(aOwner: TXCollection); override;
     destructor Destroy; override;
 
       //add an empty path;
@@ -1210,7 +1205,7 @@ end;
 
 
 //--------------------------- TGLMovement --------------------------------------
-constructor TGLMovement.Create(aOwner: TGLXCollection);
+constructor TGLMovement.Create(aOwner: TXCollection);
 begin
   inherited Create(aOwner);
   FPaths           := TGLMovementPaths.Create(Self);

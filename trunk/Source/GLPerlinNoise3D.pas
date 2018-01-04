@@ -3,16 +3,6 @@
 //
 {
   Classes and function for generation of PerlinNoise.
-
-  History :
-  14/04/04 - EG - Creation
-  The whole history is logged in previous version of the unit.
-
-
-  Loosely based on Tom Nuydens's (www.delphi3d.com) Noise.pas unit, itself based on
-  http://students.vassar.edu/mazucker/code/perlin-noise-math-faq.html
-  Darwin Peachey's chapter in "Texturing & Modeling: A Procedural Approach"
-  Further bugs are mine :)
 }
 unit GLPerlinNoise3D;
 
@@ -48,12 +38,7 @@ type
   end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
-
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 // ------------------

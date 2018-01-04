@@ -3,13 +3,6 @@
 //
 {
    Editor for Gui skin. 
-
-    History :  
-       16/12/05 - aidave - moved GUIComponentDialog in from GLGui.pas
-       24/01/05 - adirex - Focus rect for selection
-                     Huge editor enchancements. Too many to write them all :)
-      The whole history is logged in previous version of the unit.
-    
 }
 unit FGuiSkinEditor;
 
@@ -18,13 +11,32 @@ interface
 {$I GLScene.inc}
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Classes,
-  VCL.Graphics, VCL.Controls, VCL.Forms, VCL.Dialogs,
-  VCL.StdCtrls, VCL.ComCtrls, VCL.ExtCtrls, VCL.Menus,
+  Winapi.Windows, 
+  Winapi.Messages, 
+  System.SysUtils, 
+  System.Classes,
+  VCL.Graphics, 
+  VCL.Controls, 
+  VCL.Forms, 
+  VCL.Dialogs,
+  VCL.StdCtrls, 
+  VCL.ComCtrls, 
+  VCL.ExtCtrls, 
+  VCL.Menus,
 
-  GLTexture, GLScene, GLObjects, GLWindows, GLHUDObjects,
-  GLWin32Viewer, GLGui, GLGraphics, GLUtils,  GLCrossPlatform,
-  GLCoordinates, GLBaseClasses, GLMaterial;
+  GLTexture, 
+  GLScene, 
+  GLObjects, 
+  GLWindows, 
+  GLHUDObjects,
+  GLWin32Viewer, 
+  GLGui, 
+  GLGraphics, 
+  GLUtils,  
+  GLCrossPlatform,
+  GLCoordinates, 
+  GLBaseClasses, 
+  GLMaterial;
 
 type
   TGLSkinEditorForm = class(TForm)

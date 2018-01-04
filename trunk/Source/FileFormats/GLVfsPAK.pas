@@ -7,19 +7,13 @@
    GLApplicationFileIO mechanism will be pointed into PAK file. 
    You can change current PAK file by ActivePak variable. 
 
-	 History : 
-	   
-       19/04/04 - PSz - Creation
-       The whole history is logged in previous version of the unit
-	 
-	 Notes on Compression feature : 
 }
 unit GLVfsPAK;
 
 {$I GLScene.inc}
 // Activate support for LZRW1 compression. This line could be moved to GLScene.inc file.
 // Remove the "." characted in order to activate compression features.
-{.$DEFINE GLS_LZRW_SUPPORT}
+{.$DEFINE USE_LZRW_SUPPORT}
 
 interface
 
@@ -29,7 +23,7 @@ uses
   System.SysUtils,
    
   GLApplicationFileIO
-{$IFDEF GLS_LZRW_SUPPORT},LZRW1{$ENDIF};
+{$IFDEF USE_LZRW_SUPPORT},LZRW1{$ENDIF};
 
 const
    SIGN = 'PACK'; //Signature for uncompressed - raw pak.
@@ -43,7 +37,7 @@ type
       Signature: array[0..3] of AnsiChar;
       DirOffset: integer;
       DirLength: integer;
-{$IFDEF GLS_LZRW_SUPPORT}
+{$IFDEF USE_LZRW_SUPPORT}
       CbrMode: TZCompressedMode;
 {$ENDIF}
    end;
@@ -54,8 +48,6 @@ type
       FileLength: integer;
    end;
 
-   // TGLVfsPAK
-   //
    TGLVfsPAK = class (TComponent)
    private
       FPakFiles: TStringList;
@@ -68,7 +60,7 @@ type
       FFilesLists: TObjectList;
 
       FFileName: string;
-{$IFDEF GLS_LZRW_SUPPORT}
+{$IFDEF USE_LZRW_SUPPORT}
       FCompressor: Tlzrw1;
 {$ENDIF}
       FCompressionLevel: TZCompressedMode;
@@ -124,7 +116,9 @@ function PAKFileStreamExists(const fileName: string): boolean;
 var
    ActiveVfsPAK: TGLVfsPak;
 
+//---------------------------------------------------------------------
 implementation
+//---------------------------------------------------------------------
 
 var
    Dir: TFileSection;
@@ -204,8 +198,6 @@ begin
    FStream:=TFileStream(FStreamList[i]);
 end;
 
-// TGLVfsPAK.Create
-//
 constructor TGLVfsPAK.Create(AOwner : TComponent);
 begin
    inherited Create(AOwner);
@@ -219,12 +211,10 @@ begin
    FCompressed := False;
 end;
 
-// TGLVfsPAK.Create
-//
 constructor TGLVfsPAK.Create(AOwner : TComponent; const CbrMode: TZCompressedMode);
 begin
    Self.Create(AOwner);
-{$IFDEF GLS_LZRW_SUPPORT}
+{$IFDEF USE_LZRW_SUPPORT}
    FCompressor := Tlzrw1.Create(nil);
    FCompressor.UseStream := True;
    FCompressor.Visible := False; //DONT remove this, it will cause probs!!!!
@@ -247,7 +237,7 @@ begin
    FStreamList.Free;
    FFilesLists.Free;
    ActiveVfsPAK := nil;
-{$IFDEF GLS_LZRW_SUPPORT}
+{$IFDEF USE_LZRW_SUPPORT}
    FCompressor.Free;
    FCompressor := nil; //I'm not surre if FreeAndNil function exists in Delphi version<7
 {$ENDIF}
@@ -289,7 +279,7 @@ begin
       FHeader.Signature := SIGN;
     FHeader.DirOffset := SizeOf(TPakHeader);
     FHeader.DirLength := 0;
-{$IFDEF GLS_LZRW_SUPPORT}
+{$IFDEF USE_LZRW_SUPPORT}
     if FHeader.Signature = SIGN_COMPRESSED then
       FHeader.CbrMode := FCompressionLevel;
 {$ELSE}
@@ -312,7 +302,7 @@ begin
 
    //Set the compression flag property.
    FCompressed := FHeader.Signature = SIGN_COMPRESSED;
-{$IFDEF GLS_LZRW_SUPPORT}
+{$IFDEF USE_LZRW_SUPPORT}
    FCompressionLevel := FHeader.CbrMode;
    if FCompressed then
     if not Assigned(FCompressor) then begin
@@ -349,12 +339,12 @@ begin
 end;
 
 function TGLVfsPAK.GetFile(index: integer): TStream;
-{$IFDEF GLS_LZRW_SUPPORT}var tempStream: TMemoryStream;{$ENDIF}
+{$IFDEF USE_LZRW_SUPPORT}var tempStream: TMemoryStream;{$ENDIF}
 begin
    FStream.Seek(FHeader.DirOffset + SizeOf(TFileSection) * index, soFromBeginning);
    FStream.Read(Dir, SizeOf(TFileSection));
    FStream.Seek(Dir.FilePos, soFromBeginning);
-{$IFDEF GLS_LZRW_SUPPORT}
+{$IFDEF USE_LZRW_SUPPORT}
    if FHeader.Signature = SIGN_COMPRESSED then begin //Compressed stream.
      tempStream := TMemoryStream.Create;
      tempStream.CopyFrom(FStream, Dir.FileLength);
@@ -408,7 +398,7 @@ end;
 {$WARNINGS OFF}
 procedure TGLVfsPAK.AddFromStream(const FileName, Path: string; F: TStream);
 var
-   Temp{$IFDEF GLS_LZRW_SUPPORT}, compressed{$ENDIF}: TMemoryStream;
+   Temp{$IFDEF USE_LZRW_SUPPORT}, compressed{$ENDIF}: TMemoryStream;
 begin
    FStream.Position := FHeader.DirOffset;
    if FHeader.DirLength > 0 then
@@ -420,7 +410,7 @@ begin
    end;
    Dir.FilePos    := FHeader.DirOffset;
 
-{$IFDEF GLS_LZRW_SUPPORT}
+{$IFDEF USE_LZRW_SUPPORT}
    if (FHeader.Signature = SIGN_COMPRESSED) and (FCompressionLevel <> None)then begin
      compressed := TMemoryStream.Create;
      FCompressor.InputStream := F;

@@ -68,7 +68,7 @@ unit ODEImport;
 
  }
 
-{$I PascalDefines.inc}
+{$I pascaldefines.inc}
 
 interface
 // remove . from line below if you are using a generic ODE DLL

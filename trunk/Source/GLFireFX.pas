@@ -3,10 +3,6 @@
 //
 {
    Fire special effect
-
-   History :
-     08/08/00 - EG - Creation, based on Roger Cao's "FireEffectUnit"
-     The whole history is logged in previous version of the unit
 }
 unit GLFireFX;
 
@@ -167,7 +163,7 @@ type
     procedure ReadFromFiler(reader: TReader); override;
     procedure Loaded; override;
   public
-    constructor Create(aOwner: TGLXCollection); override;
+    constructor Create(aOwner: TXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
     class function FriendlyName: string; override;
@@ -574,7 +570,7 @@ end;
 // ------------------
 
 
-constructor TGLBFireFX.Create(aOwner: TGLXCollection);
+constructor TGLBFireFX.Create(aOwner: TXCollection);
 begin
   inherited Create(aOwner);
 end;

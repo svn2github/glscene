@@ -3,7 +3,6 @@
 //
 {
   OpenGL adapter
-  The whole history is logged in previous version of the unit.
 }
 
 unit OpenGLAdapter;

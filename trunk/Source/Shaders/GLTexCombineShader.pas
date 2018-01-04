@@ -3,10 +3,6 @@
 //
 {
    A shader that allows texture combiner setup. 
-
-   History :  
-     16/05/03 - EG - Creation
-     The whole history is logged in previous version of the unit.
 }
 
 unit GLTexCombineShader;

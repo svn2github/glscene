@@ -8,13 +8,6 @@
    coordinates with standard texture specification call.
    Before using any of the xglTexCoordXxxx fonctions, call one of the
    xglMapTexCoordToXxxx functions to establish the redirectors.
-
-   This unit is Open-Source under MPL
-   Copyright 2001 - Eric Grange (egrange@glscene.org)
-   http://glscene.org
-
-   History:
-     |21/02/01 - EG - Added TexGen and vertex arrays mappings
 }
 unit XOpenGL;
 
@@ -741,7 +734,7 @@ begin
   else if MapTexCoordMode <> mtcmDual then
   begin
     MapTexCoordMode := mtcmDual;
-    Assert(gl.ARB_multitexture);
+    Assert(GL.ARB_multitexture);
 
     TexCoord2f := TexCoord2f_Dual;
     TexCoord2fv := TexCoord2fv_Dual;
@@ -788,7 +781,7 @@ begin
   begin
 
     MapTexCoordMode := mtcmArbitrary;
-    Assert(gl.ARB_multitexture);
+    Assert(GL.ARB_multitexture);
 
     TexCoord2f := TexCoord2f_Arbitrary;
     TexCoord2fv := TexCoord2fv_Arbitrary;

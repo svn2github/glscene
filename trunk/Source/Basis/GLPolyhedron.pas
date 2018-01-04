@@ -3,10 +3,6 @@
 //
 {
   Standard polyhedrons
-  History :
-    21/07/03 - EG - Creation from GLObjects split
-    The whole history is logged in previous version of the unit
-
 }
 unit GLPolyhedron;
 

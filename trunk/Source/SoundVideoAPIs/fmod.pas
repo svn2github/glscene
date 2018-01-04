@@ -1,11 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ History:
-     EG    - 18/10/03 - Renamed from FModDyn
-                        Merged FModTypes and FModPresets content in
-                        8087 stuff commented out
-}
+
 unit fmod;
 { =============================================================================================== }
 { FMOD Main header file. Copyright (c), Firelight Technologies Pty, Ltd. 1999-2004.               }

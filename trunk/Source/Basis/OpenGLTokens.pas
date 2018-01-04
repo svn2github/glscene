@@ -1141,9 +1141,7 @@ const
   GL_CONSTANT_BORDER = $8151 {deprecated};
   GL_REPLICATE_BORDER = $8153 {deprecated};
   GL_CONVOLUTION_BORDER_COLOR = $8154 {deprecated};
- 
-
- 
+  
 
 // ------------------------------ New core constants in OpenGL v1.3 
   // Multitexturing

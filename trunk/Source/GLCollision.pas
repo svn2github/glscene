@@ -2,11 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Collision-detection management for GLScene 
-
-   History :  
-     23/05/00 - Egg - Creation
-     The whole history is logged in previous version of the unit
+   Collision-detection management
 }
 unit GLCollision;
 
@@ -85,7 +81,7 @@ type
          procedure ReadFromFiler(reader : TReader); override;
          procedure Loaded; override;
 		public
-			constructor Create(aOwner : TGLXCollection); override;
+			constructor Create(aOwner : TXCollection); override;
 			destructor Destroy; override;
          procedure Assign(Source: TPersistent); override;
 			class function FriendlyName : String; override;
@@ -440,7 +436,7 @@ function FastCheckCubeVsCube(obj1, obj2 : TGLBaseSceneObject) : Boolean;
   D1,D2,D : Double;
 }
 begin
-//DanB -this bit of code isn't needed (since collision code does BoundingBox elimination)
+//this bit of code isn't needed (since collision code does BoundingBox elimination)
 //also is incorrect when objects further up the "object tree" are scaled
 {
   aad1 := obj1.AxisAlignedDimensions;
@@ -456,8 +452,7 @@ begin
     if D<(D1+D2) then result := true
     else begin
 }
-//DanB
-
+//
       result := DoCubesIntersectPrim(obj1,obj2) or
                 DoCubesIntersectPrim(obj2,obj1);
 {    end;
@@ -498,8 +493,6 @@ function FastCheckFaceVsCube(obj1, obj2 : TGLBaseSceneObject) : Boolean;
 begin
   Result:=FastCheckCubeVsFace(obj2,obj1);
 end;
-
-
 
 //this function does not check for rounds that results from Smoth rendering
 //if anybody needs this, you are welcome to show a solution, but usually this should be good enough
@@ -584,8 +577,6 @@ begin
    RegisterManager(Self);
 end;
 
- 
-//
 destructor TGLCollisionManager.Destroy;
 begin
 	DeRegisterAllClients;
@@ -781,7 +772,7 @@ end;
 // ------------------ TGLBCollision ------------------
 // ------------------
 
-constructor TGLBCollision.Create(aOwner : TGLXCollection);
+constructor TGLBCollision.Create(aOwner : TXCollection);
 begin
    inherited Create(aOwner);
 

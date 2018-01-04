@@ -3,10 +3,6 @@
 //
 {
   DesignTime registration code for the Physics Managers
-
-  History:
-    12/01/16 - PW - Combined ODE&NGD register procedures
-    18/06/03 - SG - Creation.
 }
 
 unit GLPhysicsRegister;
@@ -27,12 +23,10 @@ implementation
 
 procedure Register;
 begin
-  //ODE
-  RegisterClasses([TGLODEManager, TGLODEJointList, TODEJoints, TODEElements]);
-  RegisterComponents('GLScene',[TGLODEManager, TGLODEJointList]);
-  //NGD
-  RegisterClasses([TGLNGDManager, TGLNGDDynamic, TGLNGDStatic]);
-  RegisterComponents('GLScene',[TGLNGDManager, TGLPhysicsManager]);
+  RegisterClasses([TGLODEManager, TGLODEJointList, TGLODEJoints, TGLODEElements,
+                   TGLNGDManager, TGLNGDDynamic, TGLNGDStatic]);
+  RegisterComponents('GLScene',[TGLODEManager,TGLODEJointList,
+                                TGLNGDManager, TGLPhysicsManager]);
 end;
 
 end.

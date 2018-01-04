@@ -14,11 +14,6 @@
   CPUUsagePercent
   No system in place to limit number of sources playing simultaneously,
   can crash if too playing at once.
-  ???
-  History :
-  ??/??/03 - Mrqzz - Creation
-  The whole history is logged in previous version of the unit
-
 }
 unit GLSMOpenAL;
 

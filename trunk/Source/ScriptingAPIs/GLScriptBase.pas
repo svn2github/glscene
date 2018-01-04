@@ -6,10 +6,6 @@
   This unit provides the base methods for compiling and executing scripts as
   well as calling scripted functions. No scripting APIs are implemented here,
   only abstracted functions.
-
-  History :
-  04/11/2004 - SG - Creation
-
 }
 unit GLScriptBase;
 
@@ -30,7 +26,7 @@ type
   { The base script class that defines the abstract functions and properties.
     Don't use this class directly, use the script classes descended from this
     base class. }
-  TGLScriptBase = class(TGLXCollectionItem)
+  TGLScriptBase = class(TXCollectionItem)
   private
     FText: TStringList;
     FDescription: String;
@@ -42,7 +38,7 @@ type
     procedure SetText(const Value: TStringList);
     procedure Notification(AComponent: TComponent; Operation: TOperation); virtual;
   public
-    constructor Create(aOwner: TGLXCollection); override;
+    constructor Create(aOwner: TXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
     procedure Compile; virtual; abstract;
@@ -59,13 +55,13 @@ type
   end;
 
   { XCollection descendant for storing and handling scripts. }
-  TGLScripts = class(TGLXCollection)
+  TGLScripts = class(TXCollection)
   protected
     function GetItems(index: Integer): TGLScriptBase;
   public
     procedure Assign(Source: TPersistent); override;
-    class function ItemsClass: TGLXCollectionItemClass; override;
-    function CanAdd(aClass: TGLXCollectionItemClass): Boolean; override;
+    class function ItemsClass: TXCollectionItemClass; override;
+    function CanAdd(aClass: TXCollectionItemClass): Boolean; override;
     property Items[index: Integer]: TGLScriptBase read GetItems; default;
   end;
 
@@ -95,7 +91,7 @@ implementation
 // --------------- TGLScriptBase ---------------
 // ---------------
 
-constructor TGLScriptBase.Create(aOwner: TGLXCollection);
+constructor TGLScriptBase.Create(aOwner: TXCollection);
 begin
   inherited;
   FText := TStringList.Create;
@@ -170,12 +166,12 @@ begin
   Result := TGLScriptBase(inherited GetItems(index));
 end;
 
-class function TGLScripts.ItemsClass: TGLXCollectionItemClass;
+class function TGLScripts.ItemsClass: TXCollectionItemClass;
 begin
   Result := TGLScriptBase;
 end;
 
-function TGLScripts.CanAdd(aClass: TGLXCollectionItemClass): Boolean;
+function TGLScripts.CanAdd(aClass: TXCollectionItemClass): Boolean;
 begin
   Result := aClass.InheritsFrom(TGLScriptBase);
 end;
@@ -245,9 +241,7 @@ begin
   inherited;
 end;
 
-//-------------------------------------------------
 initialization
-//-------------------------------------------------
 
 RegisterClasses([TGLScriptLibrary, TGLScripts, TGLScriptBase]);
 

@@ -3,10 +3,6 @@
 //
 {
    Scene Editor, for adding + removing scene objects within the Delphi IDE. 
-
-   History :  
-   The whole history is logged in previous version of the unit
-   
 }
 unit FSceneEditor;
 
@@ -172,9 +168,9 @@ type
     procedure AddBehaviourClick(Sender: TObject);
     procedure AddEffectClick(Sender: TObject);
     procedure SetObjectsSubItems(parent: TMenuItem);
-    procedure SetXCollectionSubItems(parent: TMenuItem; XCollection: TGLXCollection; Event: TSetSubItemsEvent);
-    procedure SetBehavioursSubItems(parent: TMenuItem; XCollection: TGLXCollection);
-    procedure SetEffectsSubItems(parent: TMenuItem; XCollection: TGLXCollection);
+    procedure SetXCollectionSubItems(parent: TMenuItem; XCollection: TXCollection; Event: TSetSubItemsEvent);
+    procedure SetBehavioursSubItems(parent: TMenuItem; XCollection: TXCollection);
+    procedure SetEffectsSubItems(parent: TMenuItem; XCollection: TXCollection);
     procedure OnBaseSceneObjectNameChanged(Sender: TObject);
     function IsValidClipBoardNode: Boolean;
     function IsPastePossible: Boolean;
@@ -540,11 +536,11 @@ begin
 end;
 
 procedure TGLSceneEditorForm.SetXCollectionSubItems(parent: TMenuItem;
-  XCollection: TGLXCollection; Event: TSetSubItemsEvent);
+  XCollection: TXCollection; Event: TSetSubItemsEvent);
 var
   i: Integer;
   list: TList;
-  XCollectionItemClass: TGLXCollectionItemClass;
+  XCollectionItemClass: TXCollectionItemClass;
   mi: TMenuItem;
 begin
   parent.Clear;
@@ -554,7 +550,7 @@ begin
     try
       for i := 0 to list.Count - 1 do
       begin
-        XCollectionItemClass := TGLXCollectionItemClass(list[i]);
+        XCollectionItemClass := TXCollectionItemClass(list[i]);
         mi := TMenuItem.Create(owner);
         mi.Caption := XCollectionItemClass.FriendlyName;
         mi.OnClick := Event; // AddBehaviourClick;
@@ -573,7 +569,7 @@ end;
 
 
 procedure TGLSceneEditorForm.SetBehavioursSubItems(parent: TMenuItem;
-  XCollection: TGLXCollection);
+  XCollection: TXCollection);
 begin
   SetXCollectionSubItems(parent, XCollection, AddBehaviourClick);
 end;
@@ -581,7 +577,7 @@ end;
 // SetEffectsSubItems
 //
 procedure TGLSceneEditorForm.SetEffectsSubItems(parent: TMenuItem;
-  XCollection: TGLXCollection);
+  XCollection: TXCollection);
 begin
   SetXCollectionSubItems(parent, XCollection, AddEffectClick);
 end;
@@ -610,13 +606,13 @@ end;
 
 procedure TGLSceneEditorForm.AddBehaviourClick(Sender: TObject);
 var
-  XCollectionItemClass: TGLXCollectionItemClass;
+  XCollectionItemClass: TXCollectionItemClass;
   AParent: TGLBaseSceneObject;
 begin
   if Assigned(Tree.Selected) then
   begin
     AParent := TGLBaseSceneObject(Tree.Selected.data);
-    XCollectionItemClass := TGLXCollectionItemClass((Sender as TMenuItem).Tag);
+    XCollectionItemClass := TXCollectionItemClass((Sender as TMenuItem).Tag);
     XCollectionItemClass.Create(AParent.Behaviours);
     // PrepareListView;
     ShowBehaviours(AParent);
@@ -627,14 +623,14 @@ end;
 
 procedure TGLSceneEditorForm.AddEffectClick(Sender: TObject);
 var
-  XCollectionItemClass: TGLXCollectionItemClass;
+  XCollectionItemClass: TXCollectionItemClass;
   AParent: TGLBaseSceneObject;
 begin
   if Assigned(Tree.Selected) then
   begin
 
     AParent := TGLBaseSceneObject(Tree.Selected.data);
-    XCollectionItemClass := TGLXCollectionItemClass((Sender as TMenuItem).Tag);
+    XCollectionItemClass := TXCollectionItemClass((Sender as TMenuItem).Tag);
     XCollectionItemClass.Create(AParent.Effects);
     // PrepareListView;
     ShowEffects(AParent);
@@ -1317,7 +1313,7 @@ begin
   begin
     FCurrentDesigner.Modified;
     FCurrentDesigner.NoSelection;
-    TGLXCollectionItem(ListView.Selected.data).Free;
+    TXCollectionItem(ListView.Selected.data).Free;
     ListView.Selected.Free;
     // ListViewChange(Self, nil, ctState);
     ShowBehavioursAndEffects(TGLBaseSceneObject(Tree.Selected.data));

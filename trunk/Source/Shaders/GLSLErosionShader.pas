@@ -5,9 +5,6 @@
    Erosion shader Erode surface object and render with Anisotropic Specular Reflection 
    At this time one light source is supported
 
-    History :  
-     08/12/15 - J.Delauney - Improved and Made compatible with the latest SVN version of GLScene
-     02/11/06 - Da Stranger - Creation
 }
 unit GLSLErosionShader;
 

@@ -3,9 +3,6 @@
 //
 {
    Standard TGLBehaviour subclasses for GLScene 
-   History :
-     05/04/00 - Egg - Creation
-     The whole history is logged in previous version of the unit
 }
 unit GLBehaviours;
 
@@ -83,7 +80,7 @@ type
     procedure WriteToFiler(writer: TWriter); override;
     procedure ReadFromFiler(reader: TReader); override;
   public
-    constructor Create(aOwner: TGLXCollection); override;
+    constructor Create(aOwner: TXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
     class function FriendlyName: string; override;
@@ -142,7 +139,7 @@ type
     procedure WriteToFiler(writer: TWriter); override;
     procedure ReadFromFiler(reader: TReader); override;
   public
-    constructor Create(aOwner: TGLXCollection); override;
+    constructor Create(aOwner: TXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
     class function FriendlyName: string; override;
@@ -314,7 +311,7 @@ end;
 // ------------------ TGLBInertia ------------------
 // ------------------
 
-constructor TGLBInertia.Create(aOwner: TGLXCollection);
+constructor TGLBInertia.Create(aOwner: TXCollection);
 begin
   inherited Create(aOwner);
   FTranslationSpeed := TGLCoordinates.CreateInitialized(Self, NullHmgVector, csVector);
@@ -524,7 +521,7 @@ end;
 // ------------------ TGLBAcceleration ------------------
 // ------------------
 
-constructor TGLBAcceleration.Create(aOwner: TGLXCollection);
+constructor TGLBAcceleration.Create(aOwner: TXCollection);
 begin
   inherited;
   if aOwner <> nil then

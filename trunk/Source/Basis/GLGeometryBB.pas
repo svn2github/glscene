@@ -16,11 +16,6 @@ interface
 {$I GLScene.inc}
 
 uses
-
-{$IFDEF USE_FASTMATH}
-  Neslib.FastMath,
-{$ENDIF}
-
   System.SysUtils,
   GLVectorGeometry,
   GLVectorLists;
@@ -236,7 +231,7 @@ var
 begin
   for I := 0 to 3 do
   begin
-    BB.BBox[CBBPlans[NumPlan][I]].C[CDirPlan[NumPlan]] := Valeur;
+    BB.BBox[CBBPlans[NumPlan][I]].V[CDirPlan[NumPlan]] := Valeur;
     BB.BBox[CBBPlans[NumPlan][I]].W := 1;
   end;
 end;
@@ -469,8 +464,8 @@ var
 begin
   for I := 0 to 2 do
   begin
-    Result.Min.C[I] := MaxFloat(Aabb1.Min.C[I], Aabb2.Min.C[I]);
-    Result.Max.C[I] := MinFloat(Aabb1.Max.C[I], Aabb2.Max.C[I]);
+    Result.Min.V[I] := MaxFloat(Aabb1.Min.V[I], Aabb2.Min.V[I]);
+    Result.Max.V[I] := MinFloat(Aabb1.Max.V[I], Aabb2.Max.V[I]);
   end;
 end;
 
@@ -742,15 +737,15 @@ var
 begin
   Result := False;
   for I := 0 to 2 do
-    if Normal.C[I] > 0.0 then
+    if Normal.V[I] > 0.0 then
     begin
-      VMin.C[I] := Aabb.Min.C[I];
-      VMax.C[I] := Aabb.Max.C[I];
+      VMin.V[I] := Aabb.Min.V[I];
+      VMax.V[I] := Aabb.Max.V[I];
     end
     else
     begin
-      VMin.C[I] := Aabb.Max.C[I];
-      VMax.C[I] := Aabb.Min.C[I];
+      VMin.V[I] := Aabb.Max.V[I];
+      VMax.V[I] := Aabb.Min.V[I];
     end;
 
   if VectorDotProduct(Normal, Vmin) + D > 0 then
@@ -801,7 +796,7 @@ begin
     for j := 0 to 2 do
     begin
       index[j] := (i div (1 shl j)) mod 2;
-      vec.C[j] := box[index[j]].C[j];
+      vec.V[j] := box[index[j]].V[j];
     end;
 
     // try to find the right orientation to proceed intersection
@@ -812,19 +807,19 @@ begin
       for j := 0 to 5 do
       begin
         temp := vec;
-        temp.C[j mod 3] := box[(index[j mod 3] + 1) mod 2].C[j mod 3];
+        temp.V[j mod 3] := box[(index[j mod 3] + 1) mod 2].V[j mod 3];
         if (j div 3) > 0 then
         begin
-          temp.C[(j+1) mod 3] := box[(index[(j+1) mod 3] + 1) mod 2].C[(j+1) mod 3];
+          temp.V[(j+1) mod 3] := box[(index[(j+1) mod 3] + 1) mod 2].V[(j+1) mod 3];
           if (j div 3) > 1 then
           begin
-            temp.C[(j+2) mod 3] := box[(index[(j+2) mod 3] + 1) mod 2].C[(j+2) mod 3];
+            temp.V[(j+2) mod 3] := box[(index[(j+2) mod 3] + 1) mod 2].V[(j+2) mod 3];
           end;
         end;
         V[j+1] := temp;
       end;
       for j := 0 to 2 do
-        vec.C[j] := box[(index[j]+1) mod 2].C[j];
+        vec.V[j] := box[(index[j]+1) mod 2].V[j];
       V[7] := vec;
     end;
   end;
@@ -855,15 +850,15 @@ begin
 
   for Q := 0 to 2 do
   begin
-    if (Normal.C[Q] > 0.0) then
+    if (Normal.V[Q] > 0.0) then
     begin
-      Vmin.C[Q] := -Maxbox.C[Q];
-      Vmax.C[Q] := Maxbox.C[Q];
+      Vmin.V[Q] := -Maxbox.V[Q];
+      Vmax.V[Q] := Maxbox.V[Q];
     end
     else
     begin
-      Vmin.C[Q] := Maxbox.C[Q];
-      Vmax.C[Q] := -Maxbox.C[Q];
+      Vmin.V[Q] := Maxbox.V[Q];
+      Vmax.V[Q] := -Maxbox.V[Q];
     end;
   end;
 
@@ -1374,17 +1369,17 @@ begin
 
   for P := 0 to 2 do
   begin
-    if (RayDirection.C[P] = 0) then
+    if (RayDirection.V[P] = 0) then
     begin
-      if ((RayOrigin.C[P] < Aabb.Min.C[P]) or
-        (RayOrigin.C[P] > Aabb.Max.C[P])) then
+      if ((RayOrigin.V[P] < Aabb.Min.V[P]) or
+        (RayOrigin.V[P] > Aabb.Max.V[P])) then
         Exit;
     end
     else
     begin
-      InvDir := 1 / RayDirection.C[P];
-      T0 := (Aabb.Min.C[P] - RayOrigin.C[P]) * InvDir;
-      T1 := (Aabb.Max.C[P] - RayOrigin.C[P]) * InvDir;
+      InvDir := 1 / RayDirection.V[P];
+      T0 := (Aabb.Min.V[P] - RayOrigin.V[P]) * InvDir;
+      T1 := (Aabb.Max.V[P] - RayOrigin.V[P]) * InvDir;
 
       if (T0 > T1) then
       begin

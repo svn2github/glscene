@@ -3,11 +3,6 @@
 //
 {
   TFont Import into a BitmapFont using variable width...
-
-  History :
-    12/08/02 - JAJ - Made into a standalone unit...
-    The whole history is logged in previous version of the unit
-  
 }
 unit GLWindowsFont;
 

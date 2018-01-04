@@ -3,10 +3,6 @@
 //
 {
    RGB+Alpha color editor. 
-
-    History:  
-    06/02/00 - Egg - Creation
-    The whole history is logged in previous version of the unit    
 }
 unit FRColorEditor;
 
@@ -61,7 +57,6 @@ type
     procedure BlueEditChange(Sender: TObject);
     procedure AlphaEditChange(Sender: TObject);
   private
-     
     FOnChange : TNotifyEvent;
     updating : Boolean;
     WorkBitmap : tBitmap;
@@ -76,7 +71,6 @@ type
     procedure DragColorSliderToPosition(XPos : integer);
     procedure ContentsChanged;
   public
-     
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     property Color : THomogeneousFltVector read GetColor write SetColor;
@@ -84,7 +78,9 @@ type
     property OnChange : TNotifyEvent read FOnChange write FOnChange;
   end;
 
+//--------------------------------------------------------------------
 implementation
+//--------------------------------------------------------------------
 
 {$R *.dfm}
 
@@ -118,8 +114,6 @@ begin
    if (not updating) and Assigned(FOnChange) then FOnChange(Self);
 end;
 
-// SetColor
-//
 procedure TRColorEditor.SetColor(const val : THomogeneousFltVector);
 begin
   RedValue:=Round(val.X*255);
@@ -130,8 +124,6 @@ begin
   ContentsChanged;
 end;
 
-// GetColor
-//
 function TRColorEditor.GetColor : THomogeneousFltVector;
 begin
    Result:=VectorMake(RedValue/255, GreenValue/255, BlueValue/255,
@@ -510,5 +502,3 @@ begin
 end;
 
 end.
-
-

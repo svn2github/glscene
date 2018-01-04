@@ -22,10 +22,6 @@
    the secondary texture coordinates for the diffuse and specular
    texture lookups.
 
-    History :
-      22/06/04 - SG - Creation.
-      The whole history is logged in a former version of GLScene
-
 }
 unit GLBumpShader;
 

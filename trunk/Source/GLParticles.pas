@@ -3,11 +3,6 @@
 //
 {
   Particle systems for GLScene, based on replication of full-featured scene objects. 
-
-  History :  
-     16/04/00 - EG - Creation
-     The whole history is logged in previous version of the unit.
-  
 }
 unit GLParticles;
 
@@ -33,8 +28,6 @@ uses
 type
   TGLParticleEvent = procedure(Sender: TObject; particle: TGLBaseSceneObject) of object;
 
-  // TGLParticles
-  //
   {Manager object of a particle system. 
    Particles in a TGLParticles system are described as normal scene objects,
    however their children are to be : 
@@ -51,16 +44,13 @@ type
    instead of freeing them, and will pick in the pool instead of creating
    new objects when new particles are requested. To take advantage of this
    behaviour, you should set the ParticlePoolSize property to a non-null
-   value and use the KillParticle function instead of "Free" to kill a
-       particle.
+   value and use the KillParticle function instead of "Free" to kill a particle.
        All direct access to a TGLParticles children should be avoided. 
        For high-performance particle systems of basic particles, you should
        look into GLParticleFX instead, TGLParticles being rather focused on
-       complex particles.
-  }
+       complex particles. }
   TGLParticles = class(TGLImmaterialSceneObject)
   private
-     
     FCubeSize: TGLFloat;
     FEdgeColor: TGLColor;
     FVisibleAtRunTime: Boolean;
@@ -71,27 +61,20 @@ type
     FOnKillParticle: TGLParticleEvent;
     FOnDestroyParticle: TGLParticleEvent;
     FOnBeforeRenderParticles, FOnAfterRenderParticles: TGLDirectRenderEvent;
-
   protected
-    
     procedure SetCubeSize(const val: TGLFloat);
     procedure SetEdgeColor(const val: TGLColor);
     procedure SetVisibleAtRunTime(const val: Boolean);
     procedure SetParticlePoolSize(val: Integer);
-
     procedure ClearParticlePool;
-
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
     procedure Assign(Source: TPersistent); override;
     procedure BuildList(var ARci: TGLRenderContextInfo); override;
     procedure DoRender(var ARci: TGLRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
     procedure DoProgress(const progressTime: TProgressTimes); override;
-
     {Request creation of a new particle. 
      Particle will be either created or retrieved from the particlePool. }
     function CreateParticle: TGLBaseSceneObject;
@@ -101,29 +84,22 @@ type
     procedure KillParticle(aParticle: TGLBaseSceneObject);
     {Kill all particles. }
     procedure KillParticles;
-
   published
-    
     property CubeSize: TGLFloat read FCubeSize write SetCubeSize;
     property EdgeColor: TGLColor read FEdgeColor write SetEdgeColor;
     property VisibleAtRunTime: Boolean read FVisibleAtRunTime write SetVisibleAtRunTime default False;
-
     {Size of the particle pool (for storing killed particles). 
              Default size is zero, meaning the particlePool is disabled. }
     property ParticlePoolSize: Integer read FParticlePoolSize write SetParticlePoolSize default 0;
-
-    {Fired a particle has been created as a template duplicate. 
-       When the event is triggered, the particle has yet been added  to
-       the scene. }
+    { Fired a particle has been created as a template duplicate. 
+      When the event is triggered, the particle has yet been added  to the scene. }
     property OnCreateParticle: TGLParticleEvent read FOnCreateParticle write FOnCreateParticle;
-    {Fired when a particle will get in the "live" list. 
-       The particle has just been "Assigned" with the template, may happen
-       after a creation or a pick from the particle pool. }
+    { Fired when a particle will get in the "live" list. 
+      The particle has just been "Assigned" with the template, may happen after a creation or a pick from the particle pool. }
     property OnActivateParticle: TGLParticleEvent read FOnActivateParticle write FOnActivateParticle;
-    {Triggered when a particle is killed. 
-             When the event is fired, the particle is still parented, after this
-             event, the particle will either go to the pool or be destroyed if
-             the pool is full. }
+    { Triggered when a particle is killed. 
+      When the event is fired, the particle is still parented, after this event, the particle will either go 
+      to the pool or be destroyed if the pool is full. }
     property OnKillParticle: TGLParticleEvent read FOnKillParticle write FOnKillParticle;
     {Triggered just before destroying a particle. 
        The particle can be in the pool (ie. not parented). }

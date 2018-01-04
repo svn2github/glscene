@@ -9,9 +9,6 @@
    multipass shaders, this unit does magic and allows to reuse and upgrade
    previously written shaders. 
 
-    History :  
-       23/02/07 - DaStr - Initial version (contributed to GLScene)
-
 }
 unit GLShaderCombiner;
 

@@ -10,10 +10,6 @@
 
   Also extents are valid only when SpaceText has one line.  
 
-   History :
-   12/12/01 - EG - Creation (split from GLScene.pas)
-   The whole history is logged in previous version of the unit
-   
 }
 unit GLSpaceText;
 

@@ -3,9 +3,6 @@
 //
 {
    Registration unit for CG shader.
-   History :
-     23/02/07 - DaStr - Initial version
-
 }
 unit GLCgRegister;
 

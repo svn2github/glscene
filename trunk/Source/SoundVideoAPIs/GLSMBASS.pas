@@ -7,10 +7,6 @@
   sound source velocity
   looping (sounds are played either once or forever)
   source priorities (not relevant, channels are not limited)
-
-  History :
-  13/01/01 - EG - Creation (compat BASS 0.8)
-  The whole history is logged in previous version of unit
 }
 unit GLSMBASS;
 

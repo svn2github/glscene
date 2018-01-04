@@ -4,9 +4,6 @@
 {
    Time based events mannager using the Cadencer 
    can be useful to make animations with GlScene 
-
-   History :  
-      07/02/02 - EG - Added Notification, DoEvent, ElapsedTime and changed Event type
 }
 
 unit GLTimeEventsMgr;

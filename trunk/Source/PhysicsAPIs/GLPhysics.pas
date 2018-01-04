@@ -19,7 +19,7 @@ type
   // only ssEuler is usable at the moment
   TDESolverType = (ssEuler, ssRungeKutta4, ssVerlet);
   // TDESolver = procedure({RigidBody:TGLRigidBody;}DeltaTime:Real) of object;
-  TStateArray = array of Real;
+  TStateArray = Array of Real;
   TGLPhysicsManager = class;
 
   {
@@ -92,16 +92,20 @@ type
   public
     StateSize: Integer; // don't re-declare this in sub-classes
     // just initialise it in constructor
-    procedure StateToArray(var StateArray: TStateArray; StatePos: Integer); virtual;
-    procedure ArrayToState( { var } StateArray: TStateArray; StatePos: Integer); virtual;
-    procedure CalcStateDot(var StateArray: TStateArray; StatePos: Integer); virtual;
+    procedure StateToArray(var StateArray: TStateArray;
+      StatePos: Integer); virtual;
+    procedure ArrayToState( { var } StateArray: TStateArray;
+      StatePos: Integer); virtual;
+    procedure CalcStateDot(var StateArray: TStateArray;
+      StatePos: Integer); virtual;
     procedure RemoveForces(); virtual;
-    procedure CalculateForceFieldForce(ForceFieldEmitter: TGLBaseForceFieldEmitter); virtual;
+    procedure CalculateForceFieldForce(ForceFieldEmitter
+      : TGLBaseForceFieldEmitter); virtual;
     procedure CalcAuxiliary(); virtual;
     procedure SetUpStartingState(); virtual;
     function CalculateKE(): Real; virtual;
     function CalculatePE(): Real; virtual;
-    constructor Create(aOwner: TGLXCollection); override; // abstract;
+    constructor Create(aOwner: TXCollection); override; // abstract;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
     procedure SetManager(const val: TGLPhysicsManager);
@@ -120,7 +124,7 @@ type
     procedure WriteToFiler(writer: TWriter); override;
     procedure ReadFromFiler(reader: TReader); override;
   public
-    constructor Create(aOwner: TGLXCollection); override; // abstract;
+    constructor Create(aOwner: TXCollection); override; // abstract;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
     procedure SetManager(const val: TGLPhysicsManager);
@@ -178,19 +182,23 @@ type
     property Scene: TGLScene read fScene write SetScene;
   end;
 
-  TGLForces = class(TGLXCollection)
+  TGLForces = class(TXCollection)
   protected
     function GetForce(index: Integer): TGLForce;
   public
     constructor Create(aOwner: TPersistent); override;
     // destructor Destroy;override;
-    class function ItemsClass: TGLXCollectionItemClass; override;
+    class function ItemsClass: TXCollectionItemClass; override;
     property Force[index: Integer]: TGLForce read GetForce; default;
-    function CanAdd(aClass: TGLXCollectionItemClass): Boolean; override;
+    function CanAdd(aClass: TXCollectionItemClass): Boolean; override;
   end;
 
 // ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
 implementation
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 procedure TGLPhysicsManager.Notification(AComponent: TComponent;
@@ -328,8 +336,10 @@ begin
   currentpos := 0;
   for i := 0 to Owner.fInertias.Count - 1 do
   begin
-    TGLBaseInertia(Owner.fInertias.Items[i]).StateToArray(StateArray, CurrentPos);
-    currentpos := currentpos + TGLBaseInertia(Owner.fInertias.Items[i]).StateSize;
+    TGLBaseInertia(Owner.fInertias.Items[i]).StateToArray(StateArray,
+      currentpos);
+    currentpos := currentpos + TGLBaseInertia(Owner.fInertias.Items[i])
+      .StateSize;
   end;
   Result := StateArray;
 end;
@@ -342,8 +352,10 @@ begin
   currentpos := 0;
   for i := 0 to Owner.fInertias.Count - 1 do
   begin
-    TGLBaseInertia(Owner.fInertias.Items[i]).ArrayToState(StateArray, CurrentPos);
-    currentpos := currentpos + TGLBaseInertia(Owner.fInertias.Items[i]).StateSize;
+    TGLBaseInertia(Owner.fInertias.Items[i]).ArrayToState(StateArray,
+      currentpos);
+    currentpos := currentpos + TGLBaseInertia(Owner.fInertias.Items[i])
+      .StateSize;
   end;
 end;
 
@@ -372,7 +384,8 @@ begin
   for i := 0 to Owner.fInertias.Count - 1 do
   begin
     TGLBaseInertia(Owner.fInertias.Items[i]).CalcStateDot(state, currentpos);
-    CurrentPos := CurrentPos + TGLBaseInertia(Owner.fInertias.Items[i]).StateSize;
+    currentpos := currentpos + TGLBaseInertia(Owner.fInertias.Items[i])
+      .StateSize;
   end;
   Result := state;
 end;
@@ -576,7 +589,7 @@ begin
     TGLBaseInertia(fInertias[i]).FManager := nil;
   fInertias.Clear;
   DESolver.StateSize := 0;
-  // SetLength(StateArray,0);
+  // SetLEngth(StateArray,0);
 end;
 
 procedure TGLPhysicsManager.RegisterForceFieldEmitter
@@ -656,7 +669,7 @@ end;
   end;
 }
 
-class function TGLForces.ItemsClass: TGLXCollectionItemClass;
+class function TGLForces.ItemsClass: TXCollectionItemClass;
 begin
   Result := TGLForce;
 end;
@@ -666,7 +679,7 @@ begin
   Result := TGLForce(Items[index]);
 end;
 
-function TGLForces.CanAdd(aClass: TGLXCollectionItemClass): Boolean;
+function TGLForces.CanAdd(aClass: TXCollectionItemClass): Boolean;
 begin
   Result := { (not aClass.InheritsFrom(TGLObjectEffect)) and }
     (inherited CanAdd(aClass));
@@ -727,7 +740,7 @@ begin
   // Loaded;     //DB100
 end;
 
-constructor TGLBaseInertia.Create(aOwner: TGLXCollection);
+constructor TGLBaseInertia.Create(aOwner: TXCollection);
 begin
   inherited Create(aOwner);
   FDampingEnabled := true;
@@ -844,7 +857,7 @@ begin
   // Loaded;  //DB100
 end;
 
-constructor TGLBaseForceFieldEmitter.Create(aOwner: TGLXCollection);
+constructor TGLBaseForceFieldEmitter.Create(aOwner: TXCollection);
 begin
   inherited Create(aOwner);
 end;
@@ -864,6 +877,7 @@ begin
   inherited Assign(Source);
 end;
 
+// CalculateForceField
 function TGLBaseForceFieldEmitter.CalculateForceField(Body: TGLBaseSceneObject)
   : TAffineVector;
 begin
@@ -871,7 +885,12 @@ begin
 end;
 
 // ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
 initialization
+
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 // class registrations

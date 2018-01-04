@@ -5,10 +5,6 @@
    equirectangular 2D texture and refraction mapping
    with a background texture blended together using the Fresnel terms 
 
-   History :  
-     08/12/15 - J.Delauney - Improved and Made compatible with the latest SVN version of GLScene
-     02/11/06 - Da Stranger - Creation
-
 }
 unit GLSLGlassShader;
 interface
@@ -37,8 +33,6 @@ uses
   GLCustomShader;
 
 
-//TGLCustomGLSLSimpleGlassShader
-//
 {Custom class for GLSLGlassShader. 
   Glass shader : Environment mapping and refraction mapping using the fresnel terms }
 Type

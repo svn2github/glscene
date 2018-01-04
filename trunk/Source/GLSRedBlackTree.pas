@@ -29,12 +29,6 @@
   is larger than _Key_, PrevKey returns the largest key that is
   smaller than _Key_. For Last and First key result not returned.
 
-    History :  
-       05/05/11 - Yar - Fugfixed method Add for Lazarus (unclear node's fields)
-       04/12/10 - Yar - Improved duplicate keys storing
-       04/08/10 - Yar - Fixed field section for FPC 2.5.1 (Bugtracker ID = 3039424)
-       19/04/10 - Yar - Creation (based on grbtree jzombi aka Jani Matyas)
-     
 }
 
 unit GLSRedBlackTree;
@@ -51,19 +45,15 @@ type
 
   TRBColor = (clRed, clBlack);
 
-  // TRedBlackTree
-  //
-{$IFDEF GLS_GENERIC_PREFIX}
+{$IFDEF USE_GENERIC_PREFIX}
   generic
 {$ENDIF}
   GRedBlackTree < TKey, TValue > = class
-  
   public
     type
       TKeyCompareFunc = function(const Item1, Item2: TKey): Integer;
       TValueCompareFunc = function(const Item1, Item2: TValue): Boolean;
       TForEachProc = procedure (AKey: TKey; AValue: TValue; out AContinue: Boolean);
-     
        TRBNode = class
          Key: TKey;
          Left, Right, Parent, Twin: TRBNode;
@@ -91,12 +81,9 @@ type
     function GetLast: TKey;
     procedure SetDuplicateKeys(Value: Boolean);
     class procedure FastErase(x: TRBNode);
-
   public
-    
     constructor Create(KeyCompare: TKeyCompareFunc; ValueCompare: TValueCompareFunc);
     destructor Destroy; override;
-
     procedure Clear;
     {Find value by key. }
     function Find(const key: TKey; out Value: TValue): Boolean;
@@ -115,7 +102,9 @@ type
 
 function CompareInteger(const Item1, Item2: Integer): Integer;
 
+//--------------------------------------------------------------
 implementation
+//--------------------------------------------------------------
 
 function CompareInteger(const Item1, Item2: Integer): Integer;
 begin

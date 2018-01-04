@@ -669,8 +669,8 @@ var
   mi, ma: Single;
 begin
 {$IFDEF USE_OPENGL_DEBUG}
-  if gl.GREMEDY_string_marker then
-    gl.StringMarkerGREMEDY(22, 'CubeWireframeBuildList');
+  if GL.GREMEDY_string_marker then
+    GL.StringMarkerGREMEDY(22, 'CubeWireframeBuildList');
 {$ENDIF}
   rci.GLStates.Disable(stLighting);
   rci.GLStates.Enable(stLineSmooth);
@@ -1011,7 +1011,7 @@ begin
   hh := FHeight * 0.5;
 
   gl.Normal3fv(@ZVector);
-  if gl.ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
+  if GL.ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
   begin
     TanLoc := gl.GetAttribLocation(rci.GLStates.CurrentProgram, TangentAttributeName);
     BinLoc := gl.GetAttribLocation(rci.GLStates.CurrentProgram, BinormalAttributeName);
@@ -1474,7 +1474,7 @@ end;
 
 procedure TGLPointParameters.Apply;
 begin
-  if Enabled and gl.ARB_point_parameters then
+  if Enabled and GL.ARB_point_parameters then
   begin
     gl.PointParameterf(GL_POINT_SIZE_MIN_ARB, FMinSize);
     gl.PointParameterf(GL_POINT_SIZE_MAX_ARB, FMaxSize);
@@ -1486,7 +1486,7 @@ end;
 
 procedure TGLPointParameters.UnApply;
 begin
-  if Enabled and gl.ARB_point_parameters then
+  if Enabled and GL.ARB_point_parameters then
   begin
     gl.PointParameterf(GL_POINT_SIZE_MIN_ARB, 0);
     gl.PointParameterf(GL_POINT_SIZE_MAX_ARB, 128);
@@ -1618,7 +1618,7 @@ begin
     rci.GLStates.DepthWriteMask := False;
   rci.GLStates.PointSize := FSize;
   PointParameters.Apply;
-  if gl.EXT_compiled_vertex_array and (n > 64) then
+  if GL.EXT_compiled_vertex_array and (n > 64) then
     gl.LockArrays(0, n);
   case FStyle of
     psSquare:
@@ -1658,7 +1658,7 @@ begin
     Assert(False);
   end;
   gl.DrawArrays(GL_POINTS, 0, n);
-  if gl.EXT_compiled_vertex_array and (n > 64) then
+  if GL.EXT_compiled_vertex_array and (n > 64) then
     gl.UnlockArrays;
   PointParameters.UnApply;
   gl.DisableClientState(GL_VERTEX_ARRAY);
@@ -2313,7 +2313,7 @@ begin
     nd  := 1;
   end;
 
-  if gl.ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
+  if GL.ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
   begin
     TanLoc := gl.GetAttribLocation(rci.GLStates.CurrentProgram, TangentAttributeName);
     BinLoc := gl.GetAttribLocation(rci.GLStates.CurrentProgram, BinormalAttributeName);
@@ -3492,7 +3492,6 @@ begin
     StructureChanged;
   end;
 end;
-
 
 procedure TGLSuperellipsoid.SetHCurve(const aValue: TGLFloat);
 begin

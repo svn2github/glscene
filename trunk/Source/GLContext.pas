@@ -3,10 +3,6 @@
 //
 {
   Prototypes and base implementation of TGLContext.
-
-  History :
-  22/07/01 - EG - Creation (glcontext.omm)
-  The whole history is logged in previous version of the unit.
 }
 unit GLContext;
 
@@ -63,7 +59,7 @@ type
 
 {$IFDEF USE_SERVICE_CONTEXT}
 
-  TServiceContextTaskList = {$IFDEF GLS_GENERIC_PREFIX} specialize {$ENDIF}
+  TServiceContextTaskList = {$IFDEF USE_GENERIC_PREFIX} specialize {$ENDIF}
     GThreadList<TServiceContextTask>;
 {$ENDIF USE_SERVICE_CONTEXT}
   TGLContextManager = class;

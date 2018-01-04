@@ -5,9 +5,6 @@
    A shader that applies a render pass for each material in
    its assigned MaterialLibrary. 
 
-    History :  
-       29/07/03 - SG - Creation
-      The whole history is logged in previous version of the unit.    
 }
 unit GLMultiMaterialShader;
 

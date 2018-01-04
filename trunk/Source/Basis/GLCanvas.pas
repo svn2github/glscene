@@ -260,8 +260,8 @@ var
   mat: TMatrix;
 begin
   mat := IdentityHmgMatrix;
-  mat.V[1].Y := -1;
-  mat.V[3].Y := FBufferSizeY;
+  mat.Y.Y := -1;
+  mat.W.Y := FBufferSizeY;
   gl.MultMatrixf(@mat);
 end;
 

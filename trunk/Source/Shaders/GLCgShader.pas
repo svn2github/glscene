@@ -3,10 +3,6 @@
 //
 {
   Base Cg shader classes.
-
-  History :
-  18/06/02 - EG - Creation
-
 }
 unit GLCgShader;
 
@@ -29,8 +25,8 @@ uses
   GLRenderContextInfo,
   GLMaterial,
   GLTextureFormat,
-  // CG
-  Cg, CgGL;
+  Cg, 
+  CgGL;
 
 {$I GLScene.inc}
 { .$DEFINE OutputCompilerWarnings }

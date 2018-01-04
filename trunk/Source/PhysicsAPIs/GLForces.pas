@@ -18,7 +18,7 @@ type
 
   TOnCustomForce = procedure() of object;
 
-  TGLForce = class(TGLXCollectionItem)
+  TGLForce = class(TXCollectionItem)
   private
     fObject1: TGLBaseSceneObject;
     fObject2: TGLBaseSceneObject;
@@ -39,7 +39,7 @@ type
     procedure WriteToFiler(writer: TWriter); override;
     { Override this function to read subclass data. }
     procedure ReadFromFiler(reader: TReader); override;
-    constructor Create(aOwner: TGLXCollection); override;
+    constructor Create(aOwner: TXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
     class function FriendlyName: String; override;
@@ -68,7 +68,7 @@ type
   public
     procedure WriteToFiler(writer: TWriter); override;
     procedure ReadFromFiler(reader: TReader); override;
-    constructor Create(aOwner: TGLXCollection); override;
+    constructor Create(aOwner: TXCollection); override;
     destructor Destroy; override;
     class function FriendlyName: String; override;
     class function FriendlyDescription: String; override;
@@ -87,7 +87,7 @@ type
     // procedure WriteToFiler(writer : TWriter); override;
     // procedure ReadFromFiler(reader : TReader); override;
   public
-    constructor Create(aOwner: TGLXCollection); override;
+    constructor Create(aOwner: TXCollection); override;
     destructor Destroy; override;
     class function FriendlyName: String; override;
     class function FriendlyDescription: String; override;
@@ -107,7 +107,7 @@ uses
   GLInertias,
   GLPhysics;
 
-constructor TGLForce.Create(aOwner: TGLXCollection);
+constructor TGLForce.Create(aOwner: TXCollection);
 begin
   inherited { Create(aOwner) };
   fposition1 := TGLCoordinates.CreateInitialized(Self, NullHmgVector, csVector);
@@ -253,7 +253,7 @@ begin
 //
 end;
 
-constructor TGLHookesSpring.Create(aOwner: TGLXCollection);
+constructor TGLHookesSpring.Create(aOwner: TXCollection);
 begin
   inherited Create(aOwner);
   fNaturalLength := 1;
@@ -346,7 +346,7 @@ begin
   Result := false;
 end;
 
-constructor TGLHookesString.Create(aOwner: TGLXCollection);
+constructor TGLHookesString.Create(aOwner: TXCollection);
 begin
   inherited Create(aOwner);
 end;

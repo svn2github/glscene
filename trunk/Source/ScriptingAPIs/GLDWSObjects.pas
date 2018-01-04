@@ -9,7 +9,7 @@
        06/04/2004 - SG - Creation
     
 }
-unit GLdwsObjects;
+unit GLDWSObjects;
 
 interface
 
@@ -17,8 +17,8 @@ uses
   System.Classes, 
   System.SysUtils, 
   GLScene, 
-  GLXCollection, 
-  GLScriptDWS, 
+  XCollection, 
+  GLScriptDWS2, 
   GLBaseClasses, 
   GLManager,
   dwsComp, 
@@ -64,7 +64,11 @@ type
 procedure Register;
 
 // --------------------------------------------------
+// --------------------------------------------------
+// --------------------------------------------------
 implementation
+// --------------------------------------------------
+// --------------------------------------------------
 // --------------------------------------------------
 
 // ----------

@@ -5,11 +5,6 @@
    ZBuffer retrieval and computations. 
    See readme.txt in the Demos/SpecialsFX/Shadows directory.
    By René Lindsay. 
-
-  History :
-    26/06/01 - Lin - Creation of zBuffer class
-    The whole history is logged in previous version of the unit
-  
 }
 
    //--------These formulas are the key to making use of the z-Buffer--------
@@ -37,6 +32,7 @@ uses
   System.Math,
 
   OpenGLTokens,
+  XOpenGL,
   GLScene,
   GLVectorGeometry,
   GLGraphics,
@@ -47,7 +43,6 @@ uses
   GLRenderContextInfo,
   GLState,
   GLTextureFormat,
-  XOpenGL,
   GLVectorTypes,
   GLCoordinates,
   GLPersistentClasses;

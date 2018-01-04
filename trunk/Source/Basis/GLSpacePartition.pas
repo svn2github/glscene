@@ -2,22 +2,14 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-  Space Partition speeds up geometrical queries, like what objects does A
-  overlap.
+  Space Partition speeds up geometrical queries, like what objects does an overlap.
 
-  Nota that the class TOctreeSpacePartition is optimized for dynamic scenes with
-  objects that are small in relation to the size of the Octree space. This from
-  Eric;
-
+  Note that the class TOctreeSpacePartition is optimized for dynamic scenes with
+  objects that are small in relation to the size of the Octree space.
   The non-duplicating octree shouldn't really be used if  you have big objects,
   and this especially if you have lots of big objects (the more objects you have
   the less efficient the partitionning, due to the "magnifying glass" effect of
-  the non-discriminating volume).
-
-  History :
-  20/06/03 - MF - Created
-  The whole history is logged in a former version of the unit.
-}
+  the non-discriminating volume). }
 
 unit GLSpacePartition;
 
@@ -465,9 +457,7 @@ function ExtendedFrustumMake(const AFrustum: TFrustum; const ANearDist, AFarDist
 implementation
 //---------------------------------------------------
 
-// This was copied from Octree.pas!
-//
-// Theory on FlagMax and FlagMin:
+// Theory on COctFlagMin and COctFlagMax:
 // When a node is subdivided, each of the 8 children assumes 1/8th ownership of its
 // parent's bounding box (defined by parent extents).  Calculating a child's min/max
 // extent only requires 3 values: the parent's min extent, the parent's max extent

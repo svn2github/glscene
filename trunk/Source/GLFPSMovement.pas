@@ -3,10 +3,6 @@
 //
 {
   FPS-like movement behaviour and manager. 
-
-  History :  
-   09/06/04 - Mathx - Creation
-   The whole history is logged in previous version of the unit
 }
 
 unit GLFPSMovement;
@@ -54,7 +50,7 @@ type
 
   TGLBFPSMovement = class;
 
-  TGLMapCollectionItem = class(TGLXCollectionItem)
+  TGLMapCollectionItem = class(TXCollectionItem)
   private
     FMap: TGLFreeForm;
     FMapName: string;
@@ -65,7 +61,7 @@ type
     procedure ReadFromFiler(reader: TReader); override;
     procedure Loaded; override;
   public
-    constructor Create(aOwner: TGLXCollection); override;
+    constructor Create(aOwner: TXCollection); override;
     class function FriendlyName: String; override;
   published
      property Map: TGLFreeForm read FMap write setMap;
@@ -79,9 +75,9 @@ type
 
   TGLMapCollectionItemClass = class of TGLMapCollectionItem;
 
-  TGLMapCollection = class(TGLXCollection)
+  TGLMapCollection = class(TXCollection)
   public
-    class function ItemsClass: TGLXCollectionItemClass; override;
+    class function ItemsClass: TXCollectionItemClass; override;
     function addMap(Map: TGLFreeForm; CollisionGroup: integer = 0)
       : TGLMapCollectionItem;
     function findMap(mapFreeForm: TGLFreeForm): TGLMapCollectionItem;
@@ -149,7 +145,7 @@ type
     procedure Loaded; override;
   public
     Velocity: TVector;
-    constructor Create(aOwner: TGLXCollection); override;
+    constructor Create(aOwner: TXCollection); override;
     destructor Destroy; override;
     procedure DoProgress(const progressTime: TProgressTimes); override;
     class function FriendlyName: string; override;
@@ -220,7 +216,7 @@ end;
 // ------------------
 // ------------------ TGLMapCollectionItem ------------------
 // ------------------
-constructor TGLMapCollectionItem.Create(aOwner: TGLXCollection);
+constructor TGLMapCollectionItem.Create(aOwner: TXCollection);
 begin
   inherited Create(aOwner);
 
@@ -283,7 +279,7 @@ end;
 // ------------------
 // ------------------ TGLMapCollection ------------------
 // ------------------
-class function TGLMapCollection.ItemsClass: TGLXCollectionItemClass;
+class function TGLMapCollection.ItemsClass: TXCollectionItemClass;
 begin
   Result := TGLMapCollectionItem;
 end;
@@ -590,7 +586,7 @@ end;
 // ------------------ TGLBFPSMovement ------------------
 // ------------------
 
-constructor TGLBFPSMovement.Create(aOwner: TGLXCollection);
+constructor TGLBFPSMovement.Create(aOwner: TXCollection);
 
   procedure setupArrow(arrow: TGLArrowLine; color: TDelphiColor);
   begin

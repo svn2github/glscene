@@ -3,14 +3,6 @@
 //
 {
    Implements the standard Teapot, build from evaluators. 
-
-   History :  
-       06/04/08 - DaStr - Fixed sizes of some array pointer types.
-                             Now $R- is not required for units that use them.
-       30/03/07 - DaStr - Added $I GLScene.inc
-       20/07/00 -  Egg  - Fixed array declarations (non null range to allow bound checks),
-                             Renamed "TIntegerList" to "TIntegerArray"
-    
 }
 
 // This unit contains all of the data types used by the core routines. Most of these are only used
@@ -35,7 +27,8 @@ uses
 
 //---------------- commonly used structures ----------------------------------
 
-type TDumpLevel = (dlTerseDump, dlMediumDump, dlMaximumDump);
+type 
+     TDumpLevel = (dlTerseDump, dlMediumDump, dlMaximumDump);
 
      PChar3DS = PAnsiChar;
      String3DS = UTF8String;

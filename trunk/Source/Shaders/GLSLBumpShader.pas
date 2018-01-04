@@ -4,10 +4,6 @@
 {
    A GLSL shader that applies bump mapping.
 
-   History :
-     22/02/07 - DaStr - Initial version (contributed to GLScene)
-     The whole history is logged in previous version of the unit.
-
     This is a collection of GLSL Bump shaders, comes in these variaties
          (to know what these abriviations mean, see GLCustomShader.pas):
 

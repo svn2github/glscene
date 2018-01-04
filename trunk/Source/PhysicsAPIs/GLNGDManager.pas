@@ -31,7 +31,7 @@ uses
 
   GLVectorGeometry, // PVector TVector TMatrix PMatrix NullHmgVector...
   GLVectorLists, // TaffineVectorList for Tree
-  GLXCollection, // TGLXCollection file function
+  GLXCollection, // TXCollection file function
   GLBaseClasses,
   GLScene,
   GLManager,
@@ -45,7 +45,7 @@ uses
   GLVectorTypes;
 
 type
-  NGDFloat = NewtonImport.dFloat;
+  NGDFloat = NewtonImport.Float;
   PNGDFloat = ^NGDFloat;
 
   TGLNGDHeightField = record
@@ -284,7 +284,7 @@ type
     class procedure NewtonDeserialize(serializeHandle: Pointer;
       buffer: Pointer; size: Cardinal); static; cdecl;
   public
-    constructor Create(AOwner: TGLXCollection); override;
+    constructor Create(AOwner: TXCollection); override;
     destructor Destroy; override;
     procedure Reinitialize;
     property Initialized: Boolean read FInitialized;
@@ -360,7 +360,7 @@ type
     class procedure NewtonSetTransform(const body: PNewtonBody;
       const matrix: PNGDFloat; threadIndex: Integer); static; cdecl;
   public
-    constructor Create(AOwner: TGLXCollection); override;
+    constructor Create(AOwner: TXCollection); override;
     destructor Destroy; override;
     procedure AddImpulse(const veloc, pointposit: TVector);
     function GetOmega: TVector;
@@ -670,7 +670,11 @@ function GetOrCreateNGDDynamic(Obj: TGLBaseSceneObject): TGLNGDDynamic;
 function GetBodyFromGLSceneObject(Obj: TGLBaseSceneObject): PNewtonBody;
 
 //----------------------------------------------------------------------
+//----------------------------------------------------------------------
+//----------------------------------------------------------------------
 implementation
+//----------------------------------------------------------------------
+//----------------------------------------------------------------------
 //----------------------------------------------------------------------
 
 const
@@ -704,6 +708,10 @@ begin
   Assert(Behaviour <> nil, 'NGD Behaviour (static or dynamic) is missing for this object');
   Result := Behaviour.FNewtonBody;
 end;
+
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
 
 //-----------------------
 // TGLNGDDebugOption
@@ -1092,7 +1100,7 @@ procedure TGLNGDManager.RebuildAllJoint(Sender: TObject);
       if Assigned(FParentObject) and Assigned(FChildObject) then
       begin
         pinAndPivot := IdentityHmgMatrix;
-        pinAndPivot.V[3] := FCustomBallAndSocketOptions.FPivotPoint.AsVector;
+        pinAndPivot.W := FCustomBallAndSocketOptions.FPivotPoint.AsVector;
         FNewtonUserJoint := CreateCustomBallAndSocket(@pinAndPivot,
           GetBodyFromGLSceneObject(FChildObject),
           GetBodyFromGLSceneObject(FParentObject));
@@ -1126,8 +1134,8 @@ procedure TGLNGDManager.RebuildAllJoint(Sender: TObject);
         bso.AbsolutePosition := FCustomHingeOptions.FPivotPoint.AsVector;
         bso.AbsoluteDirection := FCustomHingeOptions.FPinDirection.AsVector;
         pinAndPivot := bso.AbsoluteMatrix;
-        pinAndPivot.V[0] := bso.AbsoluteMatrix.V[2];
-        pinAndPivot.V[2] := bso.AbsoluteMatrix.V[0];
+        pinAndPivot.X := bso.AbsoluteMatrix.Z;
+        pinAndPivot.Z := bso.AbsoluteMatrix.X;
         bso.Free;
 
         FNewtonUserJoint := CreateCustomHinge(@pinAndPivot,
@@ -1165,8 +1173,8 @@ procedure TGLNGDManager.RebuildAllJoint(Sender: TObject);
         bso.AbsolutePosition := FCustomSliderOptions.FPivotPoint.AsVector;
         bso.AbsoluteDirection := FCustomSliderOptions.FPinDirection.AsVector;
         pinAndPivot := bso.AbsoluteMatrix;
-        pinAndPivot.V[0] := bso.AbsoluteMatrix.V[2];
-        pinAndPivot.V[2] := bso.AbsoluteMatrix.V[0];
+        pinAndPivot.X := bso.AbsoluteMatrix.Z;
+        pinAndPivot.Z := bso.AbsoluteMatrix.X;
         bso.Free;
 
         FNewtonUserJoint := CreateCustomSlider(@pinAndPivot, GetBodyFromGLSceneObject(FChildObject), GetBodyFromGLSceneObject(FParentObject));
@@ -1357,7 +1365,7 @@ end;
 //  TGLNGDBehaviour
 //---------------------------
 
-constructor TGLNGDBehaviour.Create(AOwner: TGLXCollection);
+constructor TGLNGDBehaviour.Create(AOwner: TXCollection);
 begin
   inherited;
   FInitialized := False;
@@ -1428,7 +1436,7 @@ begin
   AABBToBSphere(FOwnerBaseSceneObject.AxisAlignedBoundingBoxEx, boundingSphere);
 
   collisionOffsetMatrix := IdentityHmgMatrix;
-  collisionOffsetMatrix.V[3] := VectorMake(boundingSphere.Center, 1);
+  collisionOffsetMatrix.W := VectorMake(boundingSphere.Center, 1);
   Result := NewtonCreateSphere(FManager.FNewtonWorld, boundingSphere.Radius,
     boundingSphere.Radius, boundingSphere.Radius, 0, @collisionOffsetMatrix);
 end;
@@ -1974,7 +1982,7 @@ begin
     NewtonBodyAddImpulse(FNewtonBody, @veloc, @pointposit);
 end;
 
-constructor TGLNGDDynamic.Create(AOwner: TGLXCollection);
+constructor TGLNGDDynamic.Create(AOwner: TXCollection);
 begin
   inherited;
   FAutoSleep := True;
@@ -2147,10 +2155,10 @@ procedure TGLNGDDynamic.Render;
   begin
     NewtonBodyGetCentreOfMass(FNewtonBody, @Result);
     M := IdentityHmgMatrix;
-    M.V[3] := Result;
-    M.V[3].W := 1;
+    M.W := Result;
+    M.W.W := 1;
     M := MatrixMultiply(M, FOwnerBaseSceneObject.AbsoluteMatrix);
-    Result := M.V[3];
+    Result := M.W;
   end;
 
   procedure DrawForce;
@@ -2784,15 +2792,15 @@ procedure TGLNGDJoint.Render;
     FManager.FCurrentColor := FManager.DebugOption.JointAxisColor;
 
     FManager.AddNode(FParentObject.AbsolutePosition);
-    FManager.AddNode(pickedMatrix.V[3]);
+    FManager.AddNode(pickedMatrix.W);
 
     FManager.FCurrentColor := FManager.DebugOption.JointPivotColor;
-    FManager.AddNode(VectorAdd(pickedMatrix.V[3], VectorMake(0, 0, size)));
-    FManager.AddNode(VectorAdd(pickedMatrix.V[3], VectorMake(0, 0, -size)));
-    FManager.AddNode(VectorAdd(pickedMatrix.V[3], VectorMake(0, size, 0)));
-    FManager.AddNode(VectorAdd(pickedMatrix.V[3], VectorMake(0, -size, 0)));
-    FManager.AddNode(VectorAdd(pickedMatrix.V[3], VectorMake(size, 0, 0)));
-    FManager.AddNode(VectorAdd(pickedMatrix.V[3], VectorMake(-size, 0, 0)));
+    FManager.AddNode(VectorAdd(pickedMatrix.W, VectorMake(0, 0, size)));
+    FManager.AddNode(VectorAdd(pickedMatrix.W, VectorMake(0, 0, -size)));
+    FManager.AddNode(VectorAdd(pickedMatrix.W, VectorMake(0, size, 0)));
+    FManager.AddNode(VectorAdd(pickedMatrix.W, VectorMake(0, -size, 0)));
+    FManager.AddNode(VectorAdd(pickedMatrix.W, VectorMake(size, 0, 0)));
+    FManager.AddNode(VectorAdd(pickedMatrix.W, VectorMake(-size, 0, 0)));
 
   end;
 
@@ -3125,15 +3133,21 @@ begin
   inherited put(index, Item);
 end;
 
-// ------------------------------------------------------------------
 initialization
+
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 RegisterXCollectionItemClass(TGLNGDDynamic);
 RegisterXCollectionItemClass(TGLNGDStatic);
 
 // ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
 finalization
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 UnregisterXCollectionItemClass(TGLNGDDynamic);

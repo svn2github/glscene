@@ -31,7 +31,7 @@ uses
   OpenGLTokens, 
   GLMaterial,
   GLPersistentClasses, 
-  GLXCollection, 
+  GLXCollection,
   GLCrossPlatform,
   GLRenderContextInfo,
   GLBaseClasses, 
@@ -47,7 +47,7 @@ type
 
   { Used by the SpriteAnimation when Dimensions are set manual. The animation
     will use the offsets, width and height to determine the texture coodinates for this frame. }
-  TGLSpriteAnimFrame = class(TGLXCollectionItem)
+  TGLSpriteAnimFrame = class(TXCollectionItem)
   private
     FOffsetX,
       FOffsetY,
@@ -71,10 +71,10 @@ type
     property Height: Integer read FHeight write SetHeight;
   end;
 
-  TGLSpriteAnimFrameList = class(TGLXCollection)
+  TGLSpriteAnimFrameList = class(TXCollection)
   public
     constructor Create(aOwner: TPersistent); override;
-    class function ItemsClass: TGLXCollectionItemClass; override;
+    class function ItemsClass: TXCollectionItemClass; override;
   end;
 
   {Determines if the texture coordinates are Automatically generated
@@ -106,7 +106,7 @@ type
   end;
 
   {Animations define how the texture coordinates for each offset are to be determined. }
-  TGLSpriteAnimation = class(TGLXCollectionItem, IGLMaterialLibrarySupported)
+  TGLSpriteAnimation = class(TXCollectionItem, IGLMaterialLibrarySupported)
   private
     FCurrentFrame,
       FStartFrame,
@@ -135,7 +135,7 @@ type
     // Implementing IGLMaterialLibrarySupported.
     function GetMaterialLibrary: TGLAbstractMaterialLibrary;
   public
-    constructor Create(aOwner: TGLXCollection); override;
+    constructor Create(aOwner: TXCollection); override;
     destructor Destroy; override;
     class function FriendlyName: string; override;
     class function FriendlyDescription: string; override;
@@ -174,10 +174,10 @@ type
   end;
 
   {A collection for storing SpriteAnimation objects. }
-  TGLSpriteAnimationList = class(TGLXCollection)
+  TGLSpriteAnimationList = class(TXCollection)
   public
     constructor Create(aOwner: TPersistent); override;
-    class function ItemsClass: TGLXCollectionItemClass; override;
+    class function ItemsClass: TXCollectionItemClass; override;
   end;
 
   {Sets the current animation playback mode:
@@ -380,7 +380,7 @@ begin
   inherited;
 end;
 
-class function TGLSpriteAnimFrameList.ItemsClass: TGLXCollectionItemClass;
+class function TGLSpriteAnimFrameList.ItemsClass: TXCollectionItemClass;
 begin
   Result := TGLSpriteAnimFrame;
 end;
@@ -444,7 +444,7 @@ end;
 // ---------- TGLSpriteAnimation ----------
 // ----------
 
-constructor TGLSpriteAnimation.Create(aOwner: TGLXCollection);
+constructor TGLSpriteAnimation.Create(aOwner: TXCollection);
 begin
   inherited;
   FFrames := TGLSpriteAnimFrameList.Create(Self);
@@ -649,7 +649,7 @@ begin
   inherited;
 end;
 
-class function TGLSpriteAnimationList.ItemsClass: TGLXCollectionItemClass;
+class function TGLSpriteAnimationList.ItemsClass: TXCollectionItemClass;
 begin
   Result := TGLSpriteAnimation;
 end;

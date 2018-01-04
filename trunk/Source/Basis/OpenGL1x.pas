@@ -7280,7 +7280,7 @@ var
    // promoted to core v1.2 from GL_EXT_copy_texture
    glCopyTexSubImage3D: procedure(target: TGLEnum; level, xoffset, yoffset, zoffset, x, y: TGLint; width, height: TGLsizei); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP} {$region 'OpenGL 1.2 deprecated'} {$ENDIF}
+{$IFDEF USE_COMPILER_2005_UP} {$region 'OpenGL 1.2 deprecated'} {$ENDIF}
    // promoted to core v1.2 from GL_SGI_color_table (#14)
    glColorTable: procedure(target, internalformat: TGLEnum; width: TGLsizei; format, Atype: TGLEnum;
                            table: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
@@ -7323,11 +7323,11 @@ var
    glMinmax: procedure(target, internalformat: TGLEnum; sink: TGLboolean); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
    glResetHistogram: procedure(target: TGLEnum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
    glResetMinmax: procedure(target: TGLEnum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-{$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
+{$IFDEF USE_COMPILER_2005_UP} {$endregion} {$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
+{$IFDEF USE_COMPILER_2005_UP} {$endregion} {$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP} {$region 'New core function/procedure definitions in OpenGL 1.3'} {$ENDIF}
+{$IFDEF USE_COMPILER_2005_UP} {$region 'New core function/procedure definitions in OpenGL 1.3'} {$ENDIF}
 
    //  ###########################################################
    //           function and procedure definitions for
@@ -10664,8 +10664,6 @@ end;
 {$ENDIF}
 
 {$IFDEF SUPPORT_GLX}
-// ReadGLXImplementationProperties
-//
 procedure ReadGLXImplementationProperties;
 var
    Buffer: string;
@@ -10757,7 +10755,6 @@ function InitOpenGLFromLibrary(const GLName, GLUName : String) : Boolean;
 begin
   Result := False;
   CloseOpenGL;
-
   GLHandle := LoadLibrary(PChar(GLName));
   GLUHandle := LoadLibrary(PChar(GLUName));
 

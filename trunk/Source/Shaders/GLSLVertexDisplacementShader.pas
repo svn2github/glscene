@@ -8,13 +8,7 @@
    It can be done along the normal or the tangent.
    It can be scaled, twisted, modulated, inverted... 
     Converted from : https://www.clicktorelease.com/blog/vertex-displacement-noise-3d-webgl-glsl-three-js 
-
-
    At this time only one light source is supported
-
-    History :  
-     11/12/15 - J.Delauney - Creation
-
 }
 
 

@@ -16,10 +16,6 @@
   properly handled, these are marked by comments in the code.
   Note: in progress - limited precision.
 
-  History :
-    21/08/01 - EG - Creation
-    The whole history is logged in previous version of the unit
-
 }
 unit GLPolynomials;
 

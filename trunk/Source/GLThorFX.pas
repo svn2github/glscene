@@ -3,10 +3,6 @@
 //
 {
   ThorFX  for GLScene
-  History :  
-   09/03/01 - René Lindsay - unit created
-   The whole history is logged in previous version of the unit.
-
 }
 unit GLThorFX;
 
@@ -19,7 +15,7 @@ uses
   System.SysUtils,
   System.Types,
   System.Math,
-  
+
   OpenGLTokens,
   GLScene,
   GLXCollection,
@@ -121,7 +117,7 @@ type
     procedure Loaded; override;
     procedure SetTarget(const val: TGLCoordinates);
   public
-    constructor Create(AOwner: TGLXCollection); override;
+    constructor Create(AOwner: TXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
     class function FriendlyName: String; override;
@@ -377,7 +373,7 @@ end;
 // ------------------ TGLBThorFX ------------------
 // ------------------
 
-constructor TGLBThorFX.Create(AOwner: TGLXCollection);
+constructor TGLBThorFX.Create(AOwner: TXCollection);
 begin
   inherited Create(AOwner);
   FTarget := TGLCoordinates.CreateInitialized(Self, VectorMake(0, 1, 0));

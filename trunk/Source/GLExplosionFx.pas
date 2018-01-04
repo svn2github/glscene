@@ -2,20 +2,13 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   TGLBExplosionFX Effect 
-
-   History :  
-     07/03/04 - Matheus Degiovani - Creation
-     The whole history is logged in previous version of the unit
-   
-
   Description: this effect explodes a mesh object into triangles
   that fly over. You can define a default direction, in wich case
   the pieces of the mesh will follow that direction, only rotating,
   or if you define a null vector as the direction, a vector will be
   calculated for each triangle, based on the normal vector of that
   triangle, with a little random addition so things look better.
-  Pretty neat :) 
+  Pretty neat :)
 
   Note: the owner of this behaviour should be any class that derives
   from TGLBaseMesh class or any other class derived from TGLBaseMesh.
@@ -41,7 +34,6 @@ uses
   GLRenderContextInfo,
   GLContext,
   GLState;
-
 
 type
   TGLBExplosionFX = class(TGLObjectPreEffect)
@@ -72,7 +64,7 @@ type
   public
     property Enabled: boolean read FEnabled write SetEnabled;
     property Step: integer read FStep;
-    constructor Create(aOwner : TGLXCollection); override;
+    constructor Create(aOwner : TXCollection); override;
     destructor Destroy; override;
     procedure Render(var rci : TGLRenderContextInfo); override;
     { resets the behaviour, so the information can be re-cached and
@@ -92,7 +84,7 @@ implementation
 
 { TGLBExplosionFx }
 
-constructor TGLBExplosionFx.Create(aOwner: TGLXCollection);
+constructor TGLBExplosionFx.Create(aOwner: TXCollection);
 begin
   inherited Create(AOwner);
   FTriList := TAffineVectorList.Create;

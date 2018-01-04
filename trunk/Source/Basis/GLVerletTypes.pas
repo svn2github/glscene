@@ -73,7 +73,8 @@ type
     constructor CreateOwned(const aOwner: TGLVerletWorld); virtual;
     destructor Destroy; override;
     { Applies friction }
-    procedure ApplyFriction(const friction, penetrationDepth: Single; const surfaceNormal: TAffineVector);
+    procedure ApplyFriction(const friction, penetrationDepth: Single; 
+	                        const surfaceNormal: TAffineVector);
     { Simple and less accurate method for friction }
     procedure OldApplyFriction(const friction, penetrationDepth: Single);
     { Perform Verlet integration }
@@ -207,8 +208,10 @@ type
     procedure RemoveNode(const aNode: TVerletNode); override;
     procedure BeforeIterations; override;
     procedure SatisfyConstraint(const iteration, maxIterations: Integer); override;
-    procedure SatisfyConstraintForNode(const aNode: TVerletNode; const iteration, maxIterations: Integer); virtual; abstract;
-    procedure SatisfyConstraintForEdge(const aEdge: TGLVerletEdge; const iteration, maxIterations: Integer); virtual;
+    procedure SatisfyConstraintForNode(const aNode: TVerletNode; 
+	                                   const iteration, maxIterations: Integer); virtual; abstract;
+    procedure SatisfyConstraintForEdge(const aEdge: TGLVerletEdge; 
+	                                   const iteration, maxIterations: Integer); virtual;
     property Location: TAffineVector read FLocation write SetLocation;
     { The force that this collider has experienced while correcting the
       verlet possitions. This force can be applied to ODE bodies, for
@@ -370,9 +373,10 @@ type
     function CreateOwnedNode(const Location: TAffineVector;
 	                         const aRadius: Single = 0;
 							 const aWeight: Single = 1): TVerletNode;
-    function CreateStick(const aNodeA, aNodeB: TVerletNode; const Slack: Single = 0): TVCStick;
-    function CreateSpring(const aNodeA, aNodeB: TVerletNode; const aStrength, aDamping: Single; const aSlack: Single = 0)
-      : TVFSpring;
+    function CreateStick(const aNodeA, aNodeB: TVerletNode; 
+	                     const Slack: Single = 0): TVCStick;
+    function CreateSpring(const aNodeA, aNodeB: TVerletNode; 
+	                      const aStrength, aDamping: Single; const aSlack: Single = 0): TVFSpring;
     function CreateSlider(const aNodeA, aNodeB: TVerletNode;
 	                      const aSlideDirection: TAffineVector): TVCSlider;
     procedure Initialize; virtual;
@@ -497,7 +501,8 @@ type
     FNatMatrix, FInvNatMatrix: TAffineMatrix;
   protected
     procedure ComputeBarycenter(var barycenter: TAffineVector);
-    procedure ComputeNaturals(const barycenter: TAffineVector; var natX, natY, natZ: TAffineVector);
+    procedure ComputeNaturals(const barycenter: TAffineVector; 
+	                          var natX, natY, natZ: TAffineVector);
   public
     procedure ComputeRigidityParameters;
     procedure SatisfyConstraint(const iteration, maxIterations: Integer); override;
@@ -526,8 +531,10 @@ type
     FRadius: Single;
   public
     function GetBSphere: TBSphere; override;
-    procedure SatisfyConstraintForNode(const aNode: TVerletNode; const iteration, maxIterations: Integer); override;
-    procedure SatisfyConstraintForEdge(const aEdge: TGLVerletEdge; const iteration, maxIterations: Integer); override;
+    procedure SatisfyConstraintForNode(const aNode: TVerletNode; 
+	                                   const iteration, maxIterations: Integer); override;
+    procedure SatisfyConstraintForEdge(const aEdge: TGLVerletEdge; 
+	                                   const iteration, maxIterations: Integer); override;
     property Radius: Single read FRadius write FRadius;
   end;
 
@@ -540,7 +547,8 @@ type
   protected
     procedure SetRadius(const val: Single);
   public
-    procedure SatisfyConstraintForNode(const aNode: TVerletNode; const iteration, maxIterations: Integer); override;
+    procedure SatisfyConstraintForNode(const aNode: TVerletNode; 
+	                                   const iteration, maxIterations: Integer); override;
     { A base point on the cylinder axis.
       Can theoretically be anywhere, however, to reduce floating point
       precision issues, choose it in the area where collision detection
@@ -561,9 +569,11 @@ type
     procedure SetSides(const Value: TAffineVector);
   public
     function GetAABB: TAABB; override;
-    procedure SatisfyConstraintForNode(const aNode: TVerletNode; const iteration, maxIterations: Integer); override;
+    procedure SatisfyConstraintForNode(const aNode: TVerletNode; 
+	                                   const iteration, maxIterations: Integer); override;
     // Broken and very slow!
-    procedure SatisfyConstraintForEdge(const aEdge: TGLVerletEdge; const iteration, maxIterations: Integer); override; 
+    procedure SatisfyConstraintForEdge(const aEdge: TGLVerletEdge; 
+	                                   const iteration, maxIterations: Integer); override; 
     property Direction: TAffineVector read FDirection write FDirection;
     property Sides: TAffineVector read FSides write SetSides;
   end;
@@ -579,8 +589,10 @@ type
     procedure SetLength(const val: Single);
   public
     function GetBSphere: TBSphere; override;
-    procedure SatisfyConstraintForNode(const aNode: TVerletNode; const iteration, maxIterations: Integer); override;
-    procedure SatisfyConstraintForEdge(const aEdge: TGLVerletEdge; const iteration, maxIterations: Integer); override;
+    procedure SatisfyConstraintForNode(const aNode: TVerletNode; 
+	                                   const iteration, maxIterations: Integer); override;
+    procedure SatisfyConstraintForEdge(const aEdge: TGLVerletEdge; 
+	                                   const iteration, maxIterations: Integer); override;
     // property Base : TAffineVector read FBase write FBase;
     property Axis: TAffineVector read FAxis write SetAxis;
     property Radius: Single read FRadius write SetRadius;
@@ -1338,8 +1350,7 @@ begin
   begin
     for i := 0 to FSolidEdges.Count - 1 do
       if (FSolidEdges[i].FNodeA.FChangedOnStep = FCurrentStepCount) or
-	     (FSolidEdges[i].FNodeB.FChangedOnStep = FCurrentStepCount)
-      then
+	     (FSolidEdges[i].FNodeB.FChangedOnStep = FCurrentStepCount) then
         FSolidEdges[i].Changed;
 
     for i := 0 to FNodes.Count - 1 do
@@ -1521,14 +1532,16 @@ begin
   Owner.SpacePartition.QueryPlane(FLocation, FNormal);
 end;
 
-procedure TVCFloor.SatisfyConstraintForNode(const aNode: TVerletNode; const iteration, maxIterations: Integer);
+procedure TVCFloor.SatisfyConstraintForNode(const aNode: TVerletNode; 
+  const iteration, maxIterations: Integer);
 var
   penetrationDepth: Single;
   currentPenetrationDepth: Single;
   d: TAffineVector;
   correction: TAffineVector;
 begin
-  currentPenetrationDepth := -PointPlaneDistance(aNode.Location, FLocation, FNormal) + aNode.Radius + FFloorLevel;
+  currentPenetrationDepth := -PointPlaneDistance(aNode.Location, FLocation, FNormal) 
+                             + aNode.Radius + FFloorLevel;
 
   // Record how far down the node goes
   penetrationDepth := currentPenetrationDepth;
@@ -1564,7 +1577,8 @@ end;
 // ------------------ TVCHeightField ------------------
 // ------------------
 
-procedure TVCHeightField.SatisfyConstraintForNode(const aNode: TVerletNode; const iteration, maxIterations: Integer);
+procedure TVCHeightField.SatisfyConstraintForNode(const aNode: TVerletNode; 
+  const iteration, maxIterations: Integer);
 var
   penetrationDepth: Single;
   currentPenetrationDepth: Single;
@@ -1676,7 +1690,8 @@ begin
     ScaleVector(barycenter, 1 / totWeight);
 end;
 
-procedure TVCRigidBody.ComputeNaturals(const barycenter: TAffineVector; var natX, natY, natZ: TAffineVector);
+procedure TVCRigidBody.ComputeNaturals(const barycenter: TAffineVector; 
+                                       var natX, natY, natZ: TAffineVector);
 var
   i: Integer;
   delta: TAffineVector;
@@ -1713,13 +1728,13 @@ begin
     FNodeParams[i].Z := FNodeCoords[i].Z * d;
   end;
 
-   ComputeNaturals(barycenter, FNatMatrix.V[0], FNatMatrix.V[1], FNatMatrix.V[2]);
+   ComputeNaturals(barycenter, FNatMatrix.X, FNatMatrix.Y, FNatMatrix.Z);
 
-   FNatMatrix.V[2]:=VectorCrossProduct(FNatMatrix.V[0], FNatMatrix.V[1]);
-   FNatMatrix.V[1]:=VectorCrossProduct(FNatMatrix.V[2], FNatMatrix.V[0]);
-   NormalizeVector(FNatMatrix.V[0]);
-   NormalizeVector(FNatMatrix.V[1]);
-   NormalizeVector(FNatMatrix.V[2]);
+   FNatMatrix.Z:=VectorCrossProduct(FNatMatrix.X, FNatMatrix.Y);
+   FNatMatrix.Y:=VectorCrossProduct(FNatMatrix.Z, FNatMatrix.X);
+   NormalizeVector(FNatMatrix.X);
+   NormalizeVector(FNatMatrix.Y);
+   NormalizeVector(FNatMatrix.Z);
 
   FInvNatMatrix := FNatMatrix;
   // TransposeMatrix(FInvNatMatrix);
@@ -1774,7 +1789,8 @@ begin
   nrjAdjust := NullVector;
   for i := 0 to Nodes.Count - 1 do
   begin
-    delta := VectorCombine3(natural[0], natural[1], natural[2], FNodeCoords[i].X, FNodeCoords[i].Y, FNodeCoords[i].Z);
+    delta := VectorCombine3(natural[0], natural[1], natural[2], 
+	FNodeCoords[i].X, FNodeCoords[i].Y, FNodeCoords[i].Z);
     deltas[i] := VectorSubtract(VectorAdd(barycenter, delta), Nodes[i].Location);
     nrjAdjust := VectorAdd(nrjBase, VectorCrossProduct(VectorSubtract(Nodes[i].Location, barycenter), deltas[i]));
     Nodes[i].Location := VectorAdd(Nodes[i].Location, deltas[i]);
@@ -1880,7 +1896,8 @@ begin
   end;
 end;
 
-procedure TVCSphere.SatisfyConstraintForNode(const aNode: TVerletNode; const iteration, maxIterations: Integer);
+procedure TVCSphere.SatisfyConstraintForNode(const aNode: TVerletNode; 
+  const iteration, maxIterations: Integer);
 var
   delta, move, contactNormal: TAffineVector;
   deltaLength, diff: Single;
@@ -1926,7 +1943,8 @@ begin
   FRadius2 := Sqr(val);
 end;
 
-procedure TVCCylinder.SatisfyConstraintForNode(const aNode: TVerletNode; const iteration, maxIterations: Integer);
+procedure TVCCylinder.SatisfyConstraintForNode(const aNode: TVerletNode; 
+                                               const iteration, maxIterations: Integer);
 var
   proj, newLocation, move: TAffineVector;
   F, dist2, penetrationDepth: Single;
@@ -1964,7 +1982,8 @@ begin
 end;
 
 // BROKEN AND VERY SLOW!
-procedure TVCCube.SatisfyConstraintForEdge(const aEdge: TGLVerletEdge; const iteration, maxIterations: Integer);
+procedure TVCCube.SatisfyConstraintForEdge(const aEdge: TGLVerletEdge; 
+  const iteration, maxIterations: Integer);
 var
   Corners: array [0 .. 7] of TAffineVector;
   EdgeRelative: array [0 .. 1] of TAffineVector;
@@ -2014,7 +2033,6 @@ var
       end;
     end;
   end;
-
 begin
   // DISABLED!
   Exit;
@@ -2087,7 +2105,8 @@ begin
   end;
 end;
 
-procedure TVCCube.SatisfyConstraintForNode(const aNode: TVerletNode; const iteration, maxIterations: Integer);
+procedure TVCCube.SatisfyConstraintForNode(const aNode: TVerletNode; 
+  const iteration, maxIterations: Integer);
 var
   p, absP, contactNormal: TAffineVector;
   dp: Single;
@@ -2173,7 +2192,8 @@ begin
   result.Radius := Length + Radius;
 end;
 
-procedure TVCCapsule.SatisfyConstraintForNode(const aNode: TVerletNode; const iteration, maxIterations: Integer);
+procedure TVCCapsule.SatisfyConstraintForNode(const aNode: TVerletNode; 
+  const iteration, maxIterations: Integer);
 var
   p, n2, penetrationDepth: Single;
   closest, v: TAffineVector;
@@ -2209,7 +2229,8 @@ begin
   end;
 end;
 
-procedure TVCCapsule.SatisfyConstraintForEdge(const aEdge: TGLVerletEdge; const iteration, maxIterations: Integer);
+procedure TVCCapsule.SatisfyConstraintForEdge(const aEdge: TGLVerletEdge; 
+  const iteration, maxIterations: Integer);
 var
   sphereLocation, closestPoint, dummy, delta, move, contactNormal: TAffineVector;
   Ax0, Ax1: TAffineVector;
@@ -2302,7 +2323,8 @@ begin
   FChangedOnStep := Owner.CurrentStepCount;
 end;
 
-procedure TGLVerletWorld.CreateOctree(const OctreeMin, OctreeMax: TAffineVector; const LeafThreshold, MaxTreeDepth: Integer);
+procedure TGLVerletWorld.CreateOctree(const OctreeMin, 
+  OctreeMax: TAffineVector; const LeafThreshold, MaxTreeDepth: Integer);
 var
   Octree: TOctreeSpacePartition;
 begin

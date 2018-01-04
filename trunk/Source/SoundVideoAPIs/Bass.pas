@@ -174,7 +174,6 @@ const
   DSCCAPS_CERTIFIED = DSCAPS_CERTIFIED;    // device driver has been certified by Microsoft
 
   // defines for formats field of BASS_RECORDINFO (from MMSYSTEM.H)
-{
   WAVE_FORMAT_1M08       = $00000001;      // 11.025 kHz, Mono,   8-bit
   WAVE_FORMAT_1S08       = $00000002;      // 11.025 kHz, Stereo, 8-bit
   WAVE_FORMAT_1M16       = $00000004;      // 11.025 kHz, Mono,   16-bit
@@ -187,7 +186,7 @@ const
   WAVE_FORMAT_4S08       = $00000200;      // 44.1   kHz, Stereo, 8-bit
   WAVE_FORMAT_4M16       = $00000400;      // 44.1   kHz, Mono,   16-bit
   WAVE_FORMAT_4S16       = $00000800;      // 44.1   kHz, Stereo, 16-bit
-}
+
   BASS_SAMPLE_8BITS       = 1;   // 8 bit
   BASS_SAMPLE_FLOAT       = 256; // 32 bit floating-point
   BASS_SAMPLE_MONO        = 2;   // mono
@@ -927,11 +926,7 @@ type
 // Functions
 const
 {$IFDEF MSWINDOWS}
-  {$IFDEF WIN32}
-    bassdll = 'bass.dll';
-  {$ELSE}
-    bassdll = 'bass64.dll';
-  {$ENDIF}
+   bassdll = 'bass32.dll';
 {$ENDIF}
 {$IFDEF LINUX}
   bassdll = 'libbass.so';

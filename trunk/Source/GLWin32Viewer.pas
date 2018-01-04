@@ -3,11 +3,6 @@
 //
 {
    Win32 specific Scene viewer.
-
-   History :
-      12/12/01 - EG - Creation (split from GLScene.pas)
-     The whole history is logged in previous version of the unit.
-
 }
 unit GLWin32Viewer;
 

@@ -3,11 +3,6 @@
 //
 {
    TGLRagdoll extended using Open Dynamics Engine (ODE).
-
-   History :
-     02/11/05 - LucasG - First version created.
-     The whole history is logged in previous version of the unit.
-
 }
 
 unit GLODERagdoll;
@@ -181,7 +176,8 @@ begin
   begin
     for i := 0 to n - 1 do
     begin
-      contact[i].surface.mode := ord(dContactBounce) or ord(dContactSoftCFM) or ord(dContactSlip1) or ord(dContactSlip2);
+      contact[i].surface.mode := ord(dContactBounce) or ord(dContactSoftCFM) or 
+	    ord(dContactSlip1) or ord(dContactSlip2);
       contact[i].surface.mu := 10E9;
       contact[i].surface.mu2 := 0;
       contact[i].surface.soft_cfm := 0.001;
@@ -190,7 +186,7 @@ begin
       contact[i].surface.slip1 := 0.1;
       contact[i].surface.slip2 := 0.1;
 
-      c := dJointCreateContact(TODERagdollWorld(data).World, TODERagdollWorld(data).ContactGroup, @contact[i]);
+      c := dJointCreateContact(TODERagdollWorld(Data).World, TODERagdollWorld(Data).ContactGroup, @contact[i]);
       dJointAttach(c, dGeomGetBody(contact[i].Geom.g1), dGeomGetBody(contact[i].Geom.g2));
     end;
   end;
@@ -247,26 +243,26 @@ begin
   FRagdoll := aOwner.FRagdoll;
 end;
 
-procedure TODERagdollBone.AlignBodyToMatrix(Mat: TMatrix); // By Stuart Gooding
+procedure TODERagdollBone.AlignBodyToMatrix(Mat:TMatrix); 
 var
-  R: TdMatrix3;
+  R : TdMatrix3;
 begin
-  if not assigned(FBody) then
+  if not Assigned(FBody) then 
     exit;
-  R[0] := Mat.V[0].X;
-  R[1] := Mat.V[1].X;
-  R[2] := Mat.V[2].X;
-  R[3] := 0;
-  R[4] := Mat.V[0].Y;
-  R[5] := Mat.V[1].Y;
-  R[6] := Mat.V[2].Y;
-  R[7] := 0;
-  R[8] := Mat.V[0].Z;
-  R[9] := Mat.V[1].Z;
-  R[10] := Mat.V[2].Z;
-  R[11] := 0;
-  dBodySetRotation(FBody, R);
-  dBodySetPosition(FBody, Mat.V[3].X, Mat.V[3].Y, Mat.V[3].Z);
+  R[0]:=Mat.X.X; 
+  R[1]:=Mat.Y.X; 
+  R[2]:= Mat.Z.X; 
+  R[3]:= 0;
+  R[4]:=Mat.X.Y; 
+  R[5]:=Mat.Y.Y; 
+  R[6]:= Mat.Z.Y; 
+  R[7]:= 0;
+  R[8]:=Mat.X.Z; 
+  R[9]:=Mat.Y.Z; 
+  R[10]:=Mat.Z.Z; 
+  R[11]:=0;
+  dBodySetRotation(FBody,R);
+  dBodySetPosition(FBody,Mat.W.X,Mat.W.Y,Mat.W.Z);
 end;
 
 procedure TODERagdollBone.Start;
@@ -280,21 +276,21 @@ var
     absMat: TMatrix;
   begin
     absMat := ReferenceMatrix;
-    absMat.V[3] := NullHmgVector;
+    absMat.W := NullHmgVector;
     Result := VectorNormalize(VectorTransform(Axis, absMat));
   end;
 
 begin
   FBody := dBodyCreate(FRagdoll.ODEWorld.World);
 
-  boneSize.X := Size.X * VectorLength(BoneMatrix.V[0]);
-  boneSize.Y := Size.Y * VectorLength(BoneMatrix.V[1]);
-  boneSize.Z := Size.Z * VectorLength(BoneMatrix.V[2]);
+  boneSize.X := Size.X*VectorLength(BoneMatrix.X);
+  boneSize.Y := Size.Y*VectorLength(BoneMatrix.Y);
+  boneSize.Z := Size.Z*VectorLength(BoneMatrix.Z);
 
   // prevent ODE 0.9 "bNormalizationResult failed" error:
   for n := 0 to 2 do
-    if (boneSize.c[n] = 0) then
-      boneSize.c[n] := 0.000001;
+    if (boneSize.C[n] = 0) then
+      boneSize.C[n] := 0.000001;
 
   dMassSetBox(mass, vODERagdoll_cDensity, boneSize.X, boneSize.Y, boneSize.Z);
 
@@ -362,7 +358,7 @@ var
 begin
   inherited;
   dBodyDestroy(FBody);
-  if assigned(FGeom.data) then
+  if Assigned(FGeom.data) then
   begin
     o := TGLBaseSceneObject(FGeom.data);
     FRagdoll.GLSceneRoot.Remove(o, False);
@@ -392,7 +388,7 @@ end;
 
 constructor TODERagdoll.Create(aOwner: TGLBaseMesh);
 begin
-  inherited Create(aOwner);
+  inherited Create(AOwner);
   FShowBoundingBoxes := False;
 end;
 

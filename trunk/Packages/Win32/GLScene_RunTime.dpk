@@ -228,7 +228,6 @@ contains
   GLSceneForm in '..\..\Source\GLSceneForm.pas',
   GLScreen in '..\..\Source\GLScreen.pas',
   GLScreenSaver in '..\..\Source\GLScreenSaver.pas',
-  GLScriptBase in '..\..\Source\ScriptingAPIs\GLScriptBase.pas',
   GLSelection in '..\..\Source\GLSelection.pas',
   GLShaderCombiner in '..\..\Source\Shaders\GLShaderCombiner.pas',
   GLShadowHDS in '..\..\Source\GLShadowHDS.pas',
@@ -245,6 +244,7 @@ contains
   GLSpaceText in '..\..\Source\GLSpaceText.pas',
   GLSpatialPartitioning in '..\..\Source\Basis\GLSpatialPartitioning.pas',
   GLSpline in '..\..\Source\Basis\GLSpline.pas',
+  GLStarRecord in '..\..\Source\GLStarRecord.pas',
   GLState in '..\..\Source\Basis\GLState.pas',
   GLStrings in '..\..\Source\GLStrings.pas',
   GLTeapot in '..\..\Source\Basis\GLTeapot.pas',
@@ -267,7 +267,6 @@ contains
   GLUserShader in '..\..\Source\Shaders\GLUserShader.pas',
   GLUtils in '..\..\Source\Basis\GLUtils.pas',
   GLVectorGeometry in '..\..\Source\Basis\GLVectorGeometry.pas',
-  GLVectorFileObjects in '..\..\Source\Basis\GLVectorFileObjects.pas',
   GLVectorLists in '..\..\Source\Basis\GLVectorLists.pas',
   GLVectorTypes in '..\..\Source\Basis\GLVectorTypes.pas',
   GLVerletClothify in '..\..\Source\Basis\GLVerletClothify.pas',
@@ -294,9 +293,10 @@ contains
   Types3DS in '..\..\Source\FileFormats\Types3DS.pas',
   Utils3DS in '..\..\Source\FileFormats\Utils3DS.pas',
   VRMLParser in '..\..\Source\FileFormats\VRMLParser.pas',
-  XOpenGL in '..\..\Source\Basis\XOpenGL.pas';
+  XOpenGL in '..\..\Source\Basis\XOpenGL.pas',
+  GLVectorFileObjects in '..\..\Source\Basis\GLVectorFileObjects.pas',
+  GLScriptBase in '..\..\Source\ScriptingAPIs\GLScriptBase.pas';
 
 end.
-
 
 

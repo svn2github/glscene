@@ -3,7 +3,6 @@
 //
 {
    Editor for a vector. 
-    
 }
 unit FVectorEditor;
 

@@ -1191,7 +1191,7 @@ const
   cuGLMapBufferObjectAsyncName = 'cuGLMapBufferObjectAsync';
   cuGLUnmapBufferObjectAsyncName = 'cuGLUnmapBufferObjectAsync';
 
-{$IFDEF GLS_CUDA_DEBUG_MODE}
+{$IFDEF USE_CUDA_DEBUG_MODE}
 
 var
   cuInit_: TcuInit;
@@ -2494,7 +2494,7 @@ begin
 
   if CUDAHandle = INVALID_MODULEHANDLE then
     Exit;
-{$IFNDEF GLS_CUDA_DEBUG_MODE}
+{$IFNDEF USE_CUDA_DEBUG_MODE}
   cuInit := GetProcAddressCUDA(cuInitName);
   cuDriverGetVersion := GetProcAddressCUDA(cuDriverGetVersionName);
   cuDeviceGet := GetProcAddressCUDA(cuDeviceGet_Name);

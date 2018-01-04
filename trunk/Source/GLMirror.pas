@@ -5,10 +5,6 @@
    Implements a basic, stencil-based mirror (as in Mark Kilgard's demo). 
    It is strongly recommended to read and understand the explanations in the
    materials/mirror demo before using this component. 
-
-   History :  
-     07/12/01 - EG - Creation
-     The whole history is logged in previous version of the unit
 }
 
 unit GLMirror;

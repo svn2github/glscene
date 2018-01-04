@@ -6,10 +6,6 @@
    (front) lines. Polygon offset is used to displace fragments depths a little
    so that there is no z-fighting in rendering the same geometry multiple times. 
 
-    History :  
-       03/12/03 - NelC - Creation. Modified from the HiddenLineShader in
-                            the multipass demo.
-      The whole history is logged in previous version of the unit.
 }
 unit GLHiddenLineShader;
 

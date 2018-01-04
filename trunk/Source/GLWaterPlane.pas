@@ -6,10 +6,6 @@
    The Original Code is part of Cosmos4D
    http://users.hol.gr/~sternas/
 
-   History :
-     01/01/03 - Sternas Stefanos - Original code
-     The whole history is logged in previous version of the unit.
-
 }
 unit GLWaterPlane;
 

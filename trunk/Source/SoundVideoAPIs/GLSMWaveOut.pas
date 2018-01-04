@@ -3,11 +3,6 @@
 //
 {
   Basic sound manager based on WinMM
-
-  History :
-  24/04/09 - DanB - Creation, split from GLSound.pas, to remove windows dependency
-  The whole history is logged in previous version of the unit
-
 }
 unit GLSMWaveOut;
 
@@ -51,12 +46,7 @@ function PlayOnWaveOut(pcmData: Pointer; lengthInBytes: Integer;
   waveFormat: TWaveFormatEx): HWaveOut; overload;
 
 // -------------------------------------------------------------
-// -------------------------------------------------------------
-// -------------------------------------------------------------
 implementation
-
-// -------------------------------------------------------------
-// -------------------------------------------------------------
 // -------------------------------------------------------------
 
 type

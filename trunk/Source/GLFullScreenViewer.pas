@@ -9,10 +9,6 @@
   of FPC / Lazarus, you can safely remove work-arounds.
   Note: Linux still has problems intercepting mouse events and problems
   with DoActivate DoDeactivate.
-
-   History :
-   24/07/03 - EG - Creation from GLWin32Viewer split
-   The whole history is logged in previous version of the unit.
 }
 unit GLFullScreenViewer;
 
