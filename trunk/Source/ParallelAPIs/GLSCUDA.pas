@@ -3,7 +3,6 @@
 //
 {
    CUDA routines implementation 
-   History : see the previous version of the unit
 }
 unit GLSCUDA;
 

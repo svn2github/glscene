@@ -3,11 +3,6 @@
 //
 {
   Nodes are used to describe lines, polygons + more.
-
-  History :
-  05/10/08 - DanB - Created from GLMisc.pas split
-  .
-
 }
 unit GLNodes;
 

@@ -3,10 +3,6 @@
 //
 {
    Doom3 MD5 mesh and animation vector file format implementation. 
-   History : 
-       01/06/04 - SG - Initial
-	   
-    
 }
 unit GLFileMD5;
 
@@ -45,9 +41,7 @@ type
       FFirstFrame,
       FFrameRate,
       FNumJoints : Integer;
-
       function ReadLine : String;
-
     public
       class function Capabilities : TGLDataFileCapabilities; override;
       procedure LoadFromStream(aStream : TStream); override;
@@ -540,11 +534,7 @@ initialization
   end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 finalization
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
   vMD5TextureExtensions.Free;

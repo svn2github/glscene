@@ -4,8 +4,6 @@
 { Python implementation for the GLScene scripting layer.
 
    This unit is experimental.
-   History:
-     11/11/2004 - SG - Creation
 }
 unit GLScriptPython;
 
@@ -19,7 +17,6 @@ uses
   GLScriptBase,
   GLManager,
 
-  // Python
   PythonEngine;
 
 type

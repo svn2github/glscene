@@ -5,12 +5,6 @@
   Language created to localize your application.
   In Delphi, the text is encoded using Ansi cp1251 and can not be encoded \ decoding.
   In Lazarus has the ability to upload text from any encoding.
-
-   History :
-   25/01/15 - PW - Fixed usage of String instead of AnsiString types
-   04/11/10 - DaStr - Added Delphi5 and Delphi6 compatibility
-   20/04/10 - Yar - Added to GLScene
-  (Created by Rustam Asmandiarov aka Predator)
 }
 
 unit GLSLanguage;
@@ -153,11 +147,10 @@ begin
   Result := -1;
 end;
 
-{  Translate the Text.
+(*  Translate the Text.
    If Text is an ID, text will be translated according to the current language
    setting. If Text is not a known ID, it will be returned as is.
-   @param Text either an ID or an UTF-8 encoded string
- }
+   @param Text either an ID or an UTF-8 encoded string *)
 function TGLLanguage.Translate(const ID: String): String;
 var
   EntryIndex: integer;
@@ -174,7 +167,6 @@ begin
   end;
 end;
 
-// TGLLanguageExt
 // Add a Constant ID that will be Translated but not Loaded from the LanguageFile
 procedure TGLLanguageExt.AddConst(const ID: String; const Text: String);
 begin

@@ -3,10 +3,6 @@
 //
 {
    HDR File support for GLScene.
-   History :  
-     20/01/10 - Yar - Creation
-     
-
 }
 unit GLFileHDR;
 
@@ -58,20 +54,14 @@ type
     property Exposure: Single read fExposure;
     property ProgramType: Ansistring read GetProgramType write SetProgramType;
   end;
-//---------------------------------------------------------------------
-//---------------------------------------------------------------------
+
 //---------------------------------------------------------------------
 implementation
-//---------------------------------------------------------------------
-//---------------------------------------------------------------------
 //---------------------------------------------------------------------
 
 // ------------------
 // ------------------ TGLHDRImage ------------------
 // ------------------
-
- 
-//
 
 procedure TGLHDRImage.LoadFromFile(const filename: string);
 var
@@ -243,9 +233,6 @@ begin
     fProgramType[i] := aval[i];
 end;
 
-// AssignFromTexture
-//
-
 procedure TGLHDRImage.AssignFromTexture(textureContext: TGLContext;
   const textureHandle: Cardinal;
   textureTarget: TGLTextureTarget;
@@ -312,9 +299,6 @@ begin
     end;
   end;
 end;
-
-// Capabilities
-//
 
 class function TGLHDRImage.Capabilities: TGLDataFileCapabilities;
 begin

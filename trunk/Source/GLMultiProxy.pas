@@ -3,10 +3,6 @@
 //
 {
    Implements a multi-proxy objects, useful for discreet LOD. 
-   History :  
-     24/11/03 - EG - Creation
-     
-
 }
 unit GLMultiProxy;
 

@@ -9,18 +9,6 @@
   to enable support for DXF at run-time. 
 
   Turn on TwoSideLighting in your Buffer! DXF-Faces have no defined winding order
-
-   History :  
-   05/12/14 - PW - Added to GLScene_Runtime.dpk
-   08/01/06 - JCD - Now works with MaterialLibrary=NIL. (will not load any material, still assigns materialnames to meshobj)
-   04/01/06 - JCD - Layer conversion code, material creation, code cleanup</li>
-   24/04/04 - JCD - some basic stream code copied from GLScene Wavefront OBJ-Importer (09/09/03)</li>
-   
-
-  (c) 2004-2006 Jörn Daub http://www.daubnet.com 
-  surrendered to Mozilla Public License for use in GLScene.
-  Original author (Jörn Daub) retains the right to make changes without
-  surrendering  the modified code.
 }
 
 unit GLFileDXF;

@@ -3,8 +3,6 @@
 //
 {
   DelphiWebScript symbol creation for GLVectorGeometry types and functions.
-  History :
-    27/04/2004 - SG - Creation
 }
 unit dwsVectorGeometry;
 

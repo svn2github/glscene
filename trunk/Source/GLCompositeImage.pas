@@ -4,11 +4,6 @@
 {
   This class is required for loading images such classes as TGLDDSImage,
   TGLO3TCImage, TGLHDRImage etc.
-
-  History :  
-    21/01/10 - Yar - Creation
-   
-    
 }
 
 unit GLCompositeImage;
@@ -60,7 +55,6 @@ type
 implementation
 //-----------------------------------------------------------------------
 
- 
 constructor TGLCompositeImage.Create(AOwner: TPersistent);
 begin
   inherited;
@@ -272,7 +266,10 @@ begin
     Result := ttNoShape;
 end;
 
+//-------------------------------------------------
 initialization
+//-------------------------------------------------
+
   RegisterGLTextureImageClass(TGLCompositeImage);
 
 end.

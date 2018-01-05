@@ -4,10 +4,6 @@
 {
     GLScene CUDA Utility
     Wraper of cutil.
-
-    History :
-       02/03/10 - Yar - Creation
-   	   
 }
 unit GLSCUDAUtility;
 
@@ -99,7 +95,6 @@ function IsCUTILInitialized: Boolean;
 
 // ------------------------------------------------------
 implementation
-
 // ------------------------------------------------------
 
 const

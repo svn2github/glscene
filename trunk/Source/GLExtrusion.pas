@@ -4,11 +4,6 @@
 {
    Extrusion objects for GLScene. Extrusion objects are solids defined by the
    surface described by a moving curve.
-
-   History :
-     06/08/00 - Egg - Creation (from split of GLObjects), Added TGLPipe
-     
-
 }
 {  TODO
    ur:
@@ -1770,7 +1765,6 @@ end;
 initialization
 // ------------------------------------------------------------------
 
-   // class registrations
   RegisterClasses([TGLRevolutionSolid, TGLExtrusionSolid, TGLPipe]);
 
 end.

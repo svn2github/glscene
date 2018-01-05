@@ -3,9 +3,6 @@
 //
 {
    TIN (Triangular Irregular Network) vector file format implementation. 
-   History : 
-      05/06/03 - SG - Separated from GLVectorFileObjects.pas
-     .
 }
 unit GLFileTIN;
 

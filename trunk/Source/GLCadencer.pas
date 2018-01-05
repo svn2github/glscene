@@ -3,10 +3,6 @@
 //
 {
   Cadencing composant for GLScene (ease Progress processing)
-
-  History :
-     13/04/00 - EG - Creation
-     
 }
 unit GLCadencer;
 
@@ -25,8 +21,6 @@ uses
   GLScene,
   GLCrossPlatform,
   GLBaseClasses;
-
-//**************************************
 
 type
 

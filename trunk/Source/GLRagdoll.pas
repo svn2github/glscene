@@ -3,10 +3,6 @@
 //
 {
    Base abstract ragdoll class. Should be extended to use any physics system.  
-
-   History : 
-     02/11/05 - LucasG - First version created.
-     .
 }
 
 unit GLRagdoll;

@@ -2,12 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-  Geometric objects. 
-
-  History :  
-   03/02/13 - Yar - Object stack now dynamic array (thanks to  maverick)
-   02/09/10 - Yar - Creation
-   
+  Picking and selection of objects. 
 }
 unit GLSelection;
 
@@ -132,9 +127,6 @@ end;
 var
   vPickListSortFlag: TPickSortType;
 
- 
-//
-
 constructor TGLPickList.Create(aSortType: TPickSortType);
 begin
   vPickListSortFlag := aSortType;
@@ -229,9 +221,6 @@ function TGLPickList.GetNear(aValue: Integer): Single;
 begin
   Result := TPickRecord(Items[AValue]).ZMin;
 end;
-
-// GetSubObjects
-//
 
 function TGLPickList.GetSubObjects(aValue: Integer): TPickSubobjects;
 begin

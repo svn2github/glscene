@@ -3,9 +3,6 @@
 //
 {
   Simple X format support for Delphi (Microsoft's favorite format)
-  History :
-  07/11/09 - DaStr - Initial version (Added from the GLScene-Lazarus SVN)
-  
 }
 
 unit GLFileX;
@@ -133,7 +130,6 @@ var
             vertcount := vertcount + k;
           end;
         end;
-
       end
       else
       begin
@@ -158,7 +154,9 @@ begin
   end;
 end;
 
+//--------------------------------------------------------
 initialization
+//--------------------------------------------------------
 
 RegisterVectorFileFormat('x', 'DirectX Model files', TGLXVectorFile);
 

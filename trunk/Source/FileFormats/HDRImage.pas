@@ -4,11 +4,6 @@
 {
     Good for preview picture in OpenDialog,
     so you may include both HDRImage (preview) and GLFileHDR (loading)
-
-    History:
-      21/01/10 - Yar - Creation
-      
-
 }
 
 unit HDRImage;
@@ -33,9 +28,11 @@ type
     procedure LoadFromStream(stream: TStream); override;
     procedure SaveToStream(stream: TStream); override;
   end;
+  
 //--------------------------------------------------------------------  
 implementation
 //--------------------------------------------------------------------
+
 uses
   GLFileHDR,
   GLTextureFormat;

@@ -3,12 +3,6 @@
 //
 {
   A collection of components that generate post effects.
-
-  History :
-    23/02/07 - DaStr - Initial version of TGLPostEffect
-                       (based on OldCity demo by FedeX)
-    
-
 }
 unit GLPostEffects;
 
@@ -85,7 +79,6 @@ type
   published
     property TempTextureTarget: TGLTextureTarget read FTempTextureTarget write FTempTextureTarget default ttTexture2d;
     property Shaders: TGLPostShaderCollection read FShaders write SetShaders;
-
     // Publish some stuff from TGLBaseSceneObject.
     property Visible;
     property OnProgress;
@@ -476,7 +469,10 @@ begin
   GetItems(Index).Assign(Value);
 end;
 
+//------------------------------------------------
 initialization
+//------------------------------------------------
+
   RegisterClasses([TGLPostEffect, TGLPostShaderHolder,
                    TGLPostShaderCollection, TGLPostShaderCollectionItem]);
 

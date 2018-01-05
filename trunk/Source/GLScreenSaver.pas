@@ -3,23 +3,13 @@
 //
 {
    Component for making screen-savers an easy task 
-
-   History :  
-      11/04/00 - Egg - Creation
-      .
-	 
-
-	Parts of this code are based on DeskSpin sample by	Tom Nuydens
-		(http://www.gamedeveloper.org/delphi3d/). 
-
-	NB : The password stuff does NOT work under NT, dll references I found in
-			Tom's sample simply did not exist under my NT4...
 }
 unit GLScreenSaver;
 
 interface
 
 {$I GLScene.inc}
+
 {$IFDEF UNIX}{$Message Error 'Unit not supported'} {$ENDIF}
 
 uses

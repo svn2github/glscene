@@ -3,8 +3,6 @@
 //
 {  
    GLScene CUDA Runtime 
-     History : 
-	   
 }
 
 /// *
@@ -56,7 +54,6 @@ uses
   GLCrossPlatform,
   GLSCUDAApi,
   GLSLog;
-
 
 const
 {$IFDEF WIN32}

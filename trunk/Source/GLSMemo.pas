@@ -3,9 +3,6 @@
 //
 {
   Memo for GLScene
-  History :
-    30/03/11 - Yar - Initial version
-    (based on kpMemo by Konstantin Polyakov http://kpolyakov.narod.ru/)
 }
 
 unit GLSMemo;

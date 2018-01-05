@@ -5,10 +5,6 @@
    Managers are used to manage many different kinds of clients in GLScene.
    They are registered so that when clients are loaded, the client can
    look up the manager + register themselves with it.
-
-   History :  
-       11/11/09 - DaStr - Added $I GLScene.inc  
-       05/10/08 - DanB - Created from GLTexture.pas split
 }
 
 unit GLManager;

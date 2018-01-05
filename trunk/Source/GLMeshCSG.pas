@@ -6,15 +6,6 @@
    The CSG system uses BSP to optimize what triangles it considers.
    Its kept on a mesh basis to simplyfy things, it allways generates new BSP's,
    even if the meshes allready had BSP optimization.
-
-   Author: Joen Joensen.
-   Contributed to the GLScene community.
-   Features: CSG_Union, CSG_Subtraction, CSG_Intersection.
-
-  History :
-    29/11/03 - JAJ - Created and Submitted to GLScene.
-    .
-  
 }
 unit GLMeshCSG;
 

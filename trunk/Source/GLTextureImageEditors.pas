@@ -3,10 +3,6 @@
 //
 {
   Standard texture image editors for standard texture image classes.
-
-  History :
-  24/07/03 - EG - Creation
-  .
 }
 unit GLTextureImageEditors;
 

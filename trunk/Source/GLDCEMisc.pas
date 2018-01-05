@@ -3,11 +3,6 @@
 //
 {
   Miscelaneous functions used by DCE (Dynamic Collision Engine).
-
-  History :  
-    29/07/04 - LucasG - Creation
-    
-
 }
 unit GLDCEMisc;
 
@@ -77,7 +72,9 @@ const
 
     );
 
+//--------------------------------------------------
 implementation
+//--------------------------------------------------
 
 procedure ECSetCollisionRange(var MovePack: TECMovePack);
 var  N: TAffineVector;

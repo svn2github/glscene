@@ -5,10 +5,6 @@
     TGLAsmShader is a wrapper for all ARB shaders 
     This component is only a template and has to be replaced with a
     proper version by someone who uses ARB shaders more then me.
-
-  History :  
-     22/02/07 - DaStr - Initial version (contributed to GLScene)
-     
 }
 unit GLAsmShader;
 
@@ -35,9 +31,7 @@ type
 
   TGLAsmShaderParameter = class(TGLCustomShaderParameter)
   private
-     
   protected
-    
 {
     function GetAsVector1f: Single; override;
     function GetAsVector1i: Integer; override;
@@ -84,34 +78,27 @@ type
 
   TGLCustomAsmShader = class(TGLCustomShader)
   private
-     
     FVPHandle: TGLARBVertexProgramHandle;
     FFPHandle: TGLARBFragmentProgramHandle;
     FGPHandle: TGLARBGeometryProgramHandle;
-
     FOnInitialize: TGLAsmShaderEvent;
     FOnApply: TGLAsmShaderEvent;
     FOnUnApply: TGLAsmShaderUnUplyEvent;
   protected
-    
     procedure ApplyShaderPrograms;
     procedure UnApplyShaderPrograms;
     procedure DestroyARBPrograms; virtual;
-
     property OnApply: TGLAsmShaderEvent read FOnApply write FOnApply;
     property OnUnApply: TGLAsmShaderUnUplyEvent read FOnUnApply write FOnUnApply;
     property OnInitialize: TGLAsmShaderEvent read FOnInitialize write FOnInitialize;
-
     procedure DoInitialize(var rci: TGLRenderContextInfo; Sender: TObject); override;
     procedure DoApply(var rci: TGLRenderContextInfo; Sender: TObject); override;
     function DoUnApply(var rci: TGLRenderContextInfo): Boolean; override;
     procedure DoFinalize; override;
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
-
     function ShaderSupported: Boolean; override;
   end;
 
@@ -120,21 +107,15 @@ type
     property FragmentProgram;
     property VertexProgram;
     property GeometryProgram;
-
     property OnApply;
     property OnUnApply;
     property OnInitialize;
-
     property ShaderStyle;
     property FailedInitAction;
   end;
 
 //--------------------------------------------------------------
-//--------------------------------------------------------------
-//--------------------------------------------------------------
 implementation
-//--------------------------------------------------------------
-//--------------------------------------------------------------
 //--------------------------------------------------------------
 
 { TGLCustomAsmShader }
@@ -275,7 +256,10 @@ begin
     FGPHandle.Disable;
 end;
 
+//-----------------------------------------
 initialization
+//-----------------------------------------
+
   RegisterClasses([TGLCustomAsmShader, TGLAsmShader]);
 
 end.

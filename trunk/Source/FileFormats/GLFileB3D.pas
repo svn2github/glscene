@@ -3,10 +3,6 @@
 //
 {
   B3D VectorFile class to load Blitz 3D model files 
-
-  History :
-   22/12/05 - Mathx - Added to the GLScene Project.
-   	 
 }
 unit GLFileB3D;
 

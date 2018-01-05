@@ -3,11 +3,6 @@
 //
 {
   Skydome object
-
-  History :
-    14/01/01 - EG - Creation
-    
-
 }
 unit GLSkydome;
 
@@ -142,7 +137,7 @@ type
   TGLSkyDomeOption = (sdoTwinkle);
   TGLSkyDomeOptions = set of TGLSkyDomeOption;
 
-    {Renders a sky dome always centered on the camera. 
+  (*Renders a sky dome always centered on the camera. 
        If you use this object make sure it is rendered *first*, as it ignores
        depth buffering and overwrites everything. All children of a skydome
        are rendered in the skydome's coordinate system. 
@@ -150,8 +145,7 @@ type
        of a sphere, and you can have as many bands as you wish. 
        Estimated CPU cost (K7-500, GeForce SDR, default bands): 
         800x600 fullscreen filled: 4.5 ms (220 FPS, worst case)
-        Geometry cost (0% fill): 0.7 ms (1300 FPS, best case)
-        }
+        Geometry cost (0% fill): 0.7 ms (1300 FPS, best case) *)
   TGLSkyDome = class(TGLCameraInvariantObject)
   private
      

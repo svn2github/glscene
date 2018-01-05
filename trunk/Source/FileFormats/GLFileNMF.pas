@@ -6,10 +6,6 @@
 
   Notes:
   NormalMapper can be found at http://www.ati.com/developer/tools.html
-
-  History:
-   16/05/2003 - SG - Creation
-   
 }
 unit GLFileNMF;
 
@@ -58,13 +54,8 @@ type
     procedure SaveToStream(aStream: TStream); override;
   end;
 
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
 implementation
-
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 procedure TFileNMF.LoadFromStream(Stream: TStream);
@@ -110,15 +101,11 @@ end;
 // ------------------ TGLNMFVectorFile ------------------
 // ------------------
 
-// Capabilities
-//
 class function TGLNMFVectorFile.Capabilities: TGLDataFileCapabilities;
 begin
   Result := [dfcRead, dfcWrite];
 end;
 
-// LoadFromStream
-//
 procedure TGLNMFVectorFile.LoadFromStream(aStream: TStream);
 var
   i, j: Integer;
@@ -144,8 +131,6 @@ begin
   end;
 end;
 
-// SaveToStream
-//
 procedure TGLNMFVectorFile.SaveToStream(aStream: TStream);
 var
   i, j: Integer;
@@ -186,12 +171,7 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 RegisterVectorFileFormat('nmf', 'NormalMapper files', TGLNMFVectorFile);

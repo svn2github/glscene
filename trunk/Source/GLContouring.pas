@@ -3,17 +3,12 @@
 //
 {
   Class and routines to output isolines.
-
-  History :  
-  25/04/15 - PW - Fixed TriangleElevationSegments procedure
-  06/07/02 - Phil Scadden - Added TGLIsoline class and Initialise_Isolining procedure
-  15/08/01 - Alexander Weidauer - Added CONREC Delphi implementation
-             (based on Nicholas Yue CONREC.C and  Paul Bourke CONREC.F)
-  15/07/01 - PW - Creation of the unit
 }
 unit GLContouring;
 
 interface
+
+{$I GLScene.inc}
 
 uses
   System.SysUtils, 
@@ -31,10 +26,6 @@ uses
   GLspaceText, 
   GLVectorTypes,
   GLVectorFileObjects;
-
-
-
-{$I GLScene.inc}
 
 type
   TGLVector = array of Single;

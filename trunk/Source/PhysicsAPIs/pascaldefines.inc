@@ -53,7 +53,7 @@
 {                                                                              }
 {                                                                              }
 {                                                                              }
-{ Revision History                                                             }
+{ Revision:                                                             }
 { ----------------                                                             }
 {   2003-04-03   DL - Initial addition                                         }
 {                                                                              }

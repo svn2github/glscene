@@ -4,10 +4,6 @@
 {
    The console is a popdown window that appears on a game for text output/input.
 
-   History :
-      07/02/07 - DaStr - Initial version (donated to GLScene)
-      
-
    What is different compared to the original component?
      1) Can be aded to any object, not just the root one
      2) Has a *wide* range of built-in commands
@@ -144,7 +140,6 @@ type
     property LongHelp: TStringList read FLongHelp;
     property OnCommand: TGLlConsoleEvent read FOnCommand write FOnCommand;
     property OnHelp: TNotifyEvent read FOnHelp write FOnHelp;
-
     // Disabled commands won't execute
     property Enabled: Boolean read FEnabled write FEnabled default True;
     {If command is disabled and user calls it, no error report will be
@@ -172,7 +167,6 @@ type
     // Standard stuff.
     constructor Create(const AOwner: TGLCustomConsole);
     destructor Destroy; override;
-
     property Items[const Index: Integer]: TGLConsoleCommand read GetItems;
       default;
   end;
@@ -223,18 +217,14 @@ type
     FCurrentCommand: Integer;
     FPreviousTickCount: Integer;
     FSize: Single;
-
     FColsoleLog: TStringList;
     FCommands: TGLConsoleCommandList;
     FAdditionalCommands: TGLConsoleStringList;
     FTypedCommands: TStringList;
     FControls: TGLConsoleControls;
-
     FOnCommandIssued: TGLlConsoleEvent;
-
     FOptions: TGLConsoleOptions;
     FHint: string;
-
     procedure SetSize(const Value: Single);
     procedure SetSceneViewer(const Value: TGLSceneViewer);
     function GetFont: TGLCustomBitmapFont;
@@ -309,8 +299,7 @@ type
       override;
     procedure SetName(const Value: TComponentName); override;
   public
-    // Methods:
-    // User *must* call these methodsin his code.
+    (* Methods: User *must* call these methods in his code. *)
     procedure ProcessKeyPress(const c: Char); virtual;
     procedure ProcessKeyDown(const key: word); virtual;
     // Navigation through code from outside
@@ -329,7 +318,6 @@ type
     procedure ExecuteCommands(const Commands: TStrings);
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    {Properties. }
     {Changes the console font color. }
     property FontColor: TColor read GetFontColor write SetFontColor stored
       False;

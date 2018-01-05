@@ -3,10 +3,6 @@
 //
 {
    File loader for MTS
-   History :
-   10/09/03 - Domin - Creation
-   
-
 }
 unit GLFileLMTS;
 
@@ -690,7 +686,9 @@ begin
   setlength(Matinfo, 0);
 end;
 
+//-----------------------------------------------
 initialization
+//-----------------------------------------------
 
 RegisterVectorFileFormat('lmts', 'Pulsar Studio LMTS File Format',
   TGLLMTSVectorFile);

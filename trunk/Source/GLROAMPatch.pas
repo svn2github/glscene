@@ -3,10 +3,6 @@
 //
 {
    Class for managing a ROAM (square) patch.
-
-   History :
-   10/09/01 - EG - Creation
-   
 }
 
 unit GLROAMPatch;
@@ -137,7 +133,7 @@ type
       write FContourWidth  default 1;
   end;
 
-  {  Specifies the maximum number of ROAM triangles that may be allocated. }
+{  Specifies the maximum number of ROAM triangles that may be allocated. }
 procedure SetROAMTrianglesCapacity(nb: Integer);
 function GetROAMTrianglesCapacity: Integer;
 {  Draw contours on rendering terrain patches }
@@ -145,12 +141,7 @@ procedure DrawContours(Vertices: TAffineVectorList; VertexIndices: TIntegerList;
   ContourInterval: Integer; ContourWidth: Integer; DecVal: Integer);
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
-
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 var

@@ -16,13 +16,6 @@
    WARNING: Only one base texture is mapped onto each terrain tile, so, make
    sure your texture edges are alligned to height tile edges, or gaps will show.
    (Of course you can still multitexture in a detail texture too.)
-
-	 History :  
-       22/01/07 - LIN - Added 'TileSize' and 'TilesPerTexture' properties
-                           Removed 'Active' property
-                           Now works with both TGLHeightTileFileHDS AND TGLBitmapHDS
-       19/01/07 - LIN - Creation
-	 
 }
 
 unit GLTexturedHDS;

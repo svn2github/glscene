@@ -3,10 +3,6 @@
 //
 {
   All color types, constants and utilities should go here
-
-  History :
-  06/06/07 - DaStr - separated from GLTexture.pas and GLCrossPlatform.pas
-  
 }
 unit GLColor;
 
@@ -1036,7 +1032,9 @@ begin
   ColorManager.RemoveColor(aName);
 end;
 
+//-----------------------------------------------------------
 initialization
+//-----------------------------------------------------------
 
 InitGLSceneColors;
 

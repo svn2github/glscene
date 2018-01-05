@@ -3,10 +3,6 @@
 //
 {
   DDS File support for GLScene.
-  History :
-    20/01/10 - Yar - Creation
-    
-
 }
 unit GLFileDDS;
 

@@ -9,11 +9,6 @@
     it uses that material's texture. The referenced material settings will be ignored,
     but the texture's settings (like TextureMode, ImageGamma, ImageBrightness) will be used.
     Instead the local material settings (listed in the collection) will be used.
-
-   History :
-     14/03/08 - Pascal - Initial version (contributed to GLScene)
-     
-
 }
 
 unit GLTextureSharingShader;

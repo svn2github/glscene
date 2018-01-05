@@ -8,11 +8,6 @@
   classes.
 
   CAUTION : both connectivity classes leak memory.
-
-  History :
-  10/06/03 - EG - Creation (based on code from Mattias Fagerlund)
-  .
-
 }
 unit GLSilhouette;
 
@@ -126,9 +121,8 @@ type
     destructor Destroy; override;
   end;
 
-  // -------------------------------------------------------------
+// -------------------------------------------------------------
 implementation
-
 // -------------------------------------------------------------
 
 // ------------------

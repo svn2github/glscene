@@ -4,9 +4,6 @@
 {
     Good to preview pictures in OpenDialog,
     so you may include both O3TCImage (preview) and GLFileO3TC (loading)
-    History:
-      21/01/10 - Yar - Creation
-      
 }
 
 unit O3TCImage;
@@ -34,7 +31,9 @@ type
     procedure SaveToStream(stream: TStream); override;
   end;
 
+//--------------------------------------------------  
 implementation
+//--------------------------------------------------  
 
 uses
   GLFileO3TC,

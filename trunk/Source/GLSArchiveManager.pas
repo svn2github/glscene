@@ -3,9 +3,6 @@
 //
 {
   Archive manager -  the class to work with archives
-  History :
-     04/06/10 - Yar - Added to GLScene
-                     (Created by Rustam Asmandiarov aka Predator)
 }
 
 unit GLSArchiveManager;
@@ -41,8 +38,6 @@ Type
 
   //****************************************************************************
 
-  //Base class for archivers
-  //
   TGLBaseArchive= class(TGLDataFile)
     protected
       FFileName: string;
@@ -73,14 +68,10 @@ Type
 
   TGLBaseArchiveClass = class of TGLBaseArchive;
 
-  //****************************************************************************
-
   //Archive registration classes to use proper srchiver for extensions like:
   // GLFilePak, GLFileZLib etc.
 
-  // TArchiveFileFormat
-  // The type to record a registered class}
-  //
+  (* The type to record a registered class *)
   TArchiveFileFormat = class
   public
     BaseArchiveClass: TGLBaseArchiveClass;
@@ -107,7 +98,6 @@ Type
   //*****************************************************************************
 
   //Using the collection item for simultaneous work with several archives
-  //
   TLibArchive = class(TCollectionItem)
   private
      
@@ -120,28 +110,21 @@ Type
       function GetContentList: TStrings;
       procedure SetName(const val: string);
   protected
-    
       function GetDisplayName: string; override;
   public
-    
     constructor Create(ACollection: TCollection); override;
     destructor Destroy; override;
-
     property CompressionLevel: TCompressionLevel
                read GetCompressionLevel
                write SetCompressionLevel default clDefault;
-
     procedure CreateArchive(FileName: string;
               OverwriteExistingFile: boolean = False);
-
     property ContentList: TStrings read GetContentList;
-
     procedure LoadFromFile(aFileName: string); overload;
     procedure LoadFromFile(aFileName, aAchiverType: string); overload;
     procedure Clear;
     function ContentExists(aContentName: string): boolean;
     property FileName: string read FFileName;
-
     function GetContent(aindex: integer): TStream; overload;
     function GetContent(aContentName: string): TStream; overload;
     function GetContentSize(aindex: integer): integer; overload;
@@ -152,22 +135,17 @@ Type
     procedure AddFromFile(aFileName: string); overload;
     procedure RemoveContent(aindex: integer); overload;
     procedure RemoveContent(aContentName: string); overload;
-
     procedure Extract(aindex: integer; aNewName: string); overload;
     procedure Extract(aContentName, aNewName: string); overload;
   published
     property Name: string read FName write SetName;
   end;
 
-  { TLibArchives }
-
   TLibArchives = class(TOwnedCollection)
   protected
-    
     procedure SetItems(index: Integer; const val: TLibArchive);
     function GetItems(index: Integer): TLibArchive;
   public
-    
     constructor Create(AOwner: TComponent);
     function Owner: TPersistent;
     function IndexOf(const Item: TLibArchive)                  : Integer;
@@ -185,8 +163,6 @@ Type
   end;
 
   //*****************************************************************************
-
-  { TGLSArchiveManager }
 
   TGLSArchiveManager = class(TComponent)
     Private
@@ -216,8 +192,7 @@ Type
     AClass: TGLBaseArchiveClass);
   procedure UnregisterArchiveFormat(AClass: TGLBaseArchiveClass);
 
-  //Получение активного менеджера архивов
-  //Caution!!! Работает только для одного Менеджера Архивов
+  //Caution!!! Work for one archive manager only
   function GetArchiveManager: TGLSArchiveManager;
 
   // GLApplicationFileIO
@@ -228,12 +203,9 @@ Type
   function ArcFileStreamExists(const fileName: string): boolean;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
+
 uses
   GLStrings;
 
@@ -772,7 +744,9 @@ begin
   FArchives.Delete(FArchives.IndexOf(aArchive));
 end;
 
+//-----------------------------------------------------------
 initialization
+//-----------------------------------------------------------
 
   RegisterClasses([TGLSArchiveManager, TLibArchives]);
 

@@ -3,13 +3,8 @@
 //
 {
   Object with support for complex polygons. 
-
-  History :  
-     08/10/00 - EG - Added header, code contributed by Uwe Raabe
-     
 }
 { TODO
-
   ur:
 
   And I reactivated the TVectorPool object. The GLVectorLists are not suitable for this job.
@@ -53,7 +48,6 @@ type
 
   TGLContourNodes = class(TGLNodes)
   public
-    
     procedure NotifyChange; override;
   end;
 
@@ -112,7 +106,7 @@ type
     property List[I: Integer]: TAffineVectorList read GetList;
   end;
 
-  {Multipolygon is defined with multiple contours.
+  (* Multipolygon is defined with multiple contours.
      The contours have to be in the X-Y plane, otherwise they are projected
      to it (this is done automatically by the tesselator).
      The plane normal is pointing in +Z. All contours are automatically closed,
@@ -124,7 +118,7 @@ type
      TMultiPolygonBase will take the input contours and let the tesselator
      make an outline from it (this is done in RetreiveOutline). This outline is
      used for Rendering. Only when there are changes in the contours, the
-     outline will be recalculated. The ouline in fact is a list of GLVectorLists. }
+     outline will be recalculated. The ouline in fact is a list of GLVectorLists. *)
   TMultiPolygonBase = class(TGLSceneObject)
   private
     FContours: TGLContours;

@@ -3,9 +3,6 @@
 //
 {
    CUDA data access implementation
-   History :  
-   13/12/13 - PW - Added GLScene.inc and GLSLog
-   24/02/11 - Yar - Creation
 }
 unit GLSCUDADataAccess;
 
@@ -31,12 +28,10 @@ type
     TVector4 = array[0..3] of TScalar;
   private
     class procedure CheckElementSize(ACNum: Cardinal); inline;
-
     class function GetScalar: TScalar;
     class function GetVector2: TVector2;
     class function GetVector3: TVector3;
     class function GetVector4: TVector4;
-
     class procedure SetScalar(const AValue: TScalar);
     class procedure SetVector2(const AValue: TVector2);
     class procedure SetVector3(const AValue: TVector3);
@@ -61,7 +56,6 @@ type
 procedure SetElementAccessAddress(AValue: PByte; ASize: Cardinal);
 function GetElementAccessAddress: PByte;
 function GetElementAccessSize: Cardinal;
-
 
 //-----------------------------------------------
 implementation

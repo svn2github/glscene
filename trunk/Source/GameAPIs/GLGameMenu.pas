@@ -3,10 +3,6 @@
 //
 {
   Manages a basic game menu UI
-  History :
-  03/03/05 - EG - Creation
-  
-
 }
 unit GLGameMenu;
 

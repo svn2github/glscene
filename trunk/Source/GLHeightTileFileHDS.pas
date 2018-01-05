@@ -3,11 +3,6 @@
 //
 {
    HeightDataSource for the HTF (HeightTileFile) format. 
-
-   History :  
-     29/01/03 - EG - Creation
-     .
-	 
 }
 unit GLHeightTileFileHDS;
 
@@ -16,43 +11,35 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
+  System.Classes, 
+  System.SysUtils,
    
-  GLHeightData, GLHeightTileFile;
+  GLHeightData, 
+  GLHeightTileFile;
 
 type
 
-	// TGLHeightTileFileHDS
-	//
    {An Height Data Source for the HTF format.  }
 	TGLHeightTileFileHDS = class (TGLHeightDataSource)
 	   private
-	       
          FInfiniteWrap : Boolean;
          FInverted     : Boolean;
          FHTFFileName : String;
          FHTF : TGLHeightTileFile;
          FMinElevation : Integer;
-
 	   protected
-	      
          procedure SetHTFFileName(const val : String);
          procedure SetInfiniteWrap(val : Boolean);
          procedure SetInverted(val : Boolean);
          procedure SetMinElevation(val : Integer);
-
 	   public
-	      
-	        constructor Create(AOwner: TComponent); override;
+         constructor Create(AOwner: TComponent); override;
          destructor Destroy; override;
          procedure StartPreparingData(HeightData : TGLHeightData); override;
          function Width :integer;    override;
          function Height:integer;    override;
          function OpenHTF:TGLHeightTileFile; //gives you direct access to the HTF object
-
 	   published
-	      
-
          {FileName of the HTF file. 
             Note that it is accessed via the services of GLApplicationFileIO,
             so this may not necessarily be a regular file on a disk... }
@@ -64,21 +51,14 @@ type
          {Minimum elevation of the tiles that are considered to exist. 
             This property can typically be used to hide underwater tiles. }
          property MinElevation : Integer read FMinElevation write SetMinElevation default -32768;
-
          property MaxPoolSize;
          property DefaultHeight;
 	end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 
- 
-//
 constructor TGLHeightTileFileHDS.Create(AOwner: TComponent);
 begin
 	inherited Create(AOwner);
@@ -87,16 +67,12 @@ begin
    FMinElevation:=-32768;
 end;
 
- 
-//
 destructor TGLHeightTileFileHDS.Destroy;
 begin
    FHTF.Free;
 	inherited Destroy;
 end;
 
-// SetHTFFileName
-//
 procedure TGLHeightTileFileHDS.SetHTFFileName(const val : String);
 begin
    if FHTFFileName<>val then begin
@@ -106,8 +82,6 @@ begin
    end;
 end;
 
-// SetInfiniteWrap
-//
 procedure TGLHeightTileFileHDS.SetInfiniteWrap(val : Boolean);
 begin
   if FInfiniteWrap=val then exit;
@@ -115,8 +89,6 @@ begin
   MarkDirty;
 end;
 
-// SetInverted
-//
 procedure TGLHeightTileFileHDS.SetInverted(val : Boolean);
 begin
   if FInverted=Val then exit;
@@ -124,9 +96,6 @@ begin
   MarkDirty;
 end;
 
-
-// SetMinElevation
-//
 procedure TGLHeightTileFileHDS.SetMinElevation(val : Integer);
 begin
    if FMinElevation<>val then begin
@@ -135,7 +104,6 @@ begin
    end;
 end;
 
-// OpenHTF
 // Tries to open the assigned HeightTileFile.
 //
 function TGLHeightTileFileHDS.OpenHTF:TGLHeightTileFile;
@@ -147,8 +115,6 @@ begin
   result:=FHTF;
 end;
 
-// StartPreparingData
-//
 procedure TGLHeightTileFileHDS.StartPreparingData(HeightData : TGLHeightData);
 var
    oldType : TGLHeightDataType;
@@ -223,14 +189,9 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 
-	// class registrations
-   RegisterClasses([TGLHeightTileFileHDS]);
+RegisterClasses([TGLHeightTileFileHDS]);
 
 end.

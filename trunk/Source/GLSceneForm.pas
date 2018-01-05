@@ -3,10 +3,6 @@
 //
 {
    GLScene form loader
-
-   History : 23/08/10 - Yar - Creation
-   .
-
 }
 
 unit GLSceneForm;
@@ -72,7 +68,6 @@ type
     property Frequency: Integer read FFrequency write FFrequency;
   end;
 
-  { TGLSceneForm }
   TGLSceneForm = class(TForm)
   private
     FBuffer: TGLSceneBuffer;
@@ -88,7 +83,6 @@ type
     procedure SetCamera(const val: TGLCamera);
     function GetCamera: TGLCamera;
     procedure SetBuffer(const val: TGLSceneBuffer);
-
     function GetFieldOfView: single;
     procedure SetFieldOfView(const Value: single);
     function GetIsRenderingContextAvailable: Boolean;

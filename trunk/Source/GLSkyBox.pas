@@ -4,11 +4,6 @@
 {
    A TGLImmaterialSceneObject drawing 6 quads (plus another quad as "Cloud" plane)
    for use as a skybox always centered on the camera. 
-
-   History :  
-     02/09/03 - MRQZZZ - Creation
-    
-    
 }
 unit GLSkyBox;
 

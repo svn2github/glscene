@@ -3,10 +3,6 @@
 //
 {
    Support for MP3 format. 
-   History :  
-       25/07/09 - DaStr - Added $I GLScene.inc  
-       06/05/09 - DanB - Creation from split from GLSoundFileObjects.pas
-	 
 }
 unit GLFileMP3;
 

@@ -3,12 +3,6 @@
 //
 {
    GRD (Grid Text Format) vector file format implementation. 
-   History : 
-     01/05/15 - PW - Fixed LoadFromStream procedure
-     10/04/09 - PW - Separated from GLVectorFileObjects.pas
-     10/04/09 - Aaron Hochwimmer - Added support for Surfer ASCII grd format
-     26/10/00 - Phil Scadden - created import of Arcinfo ASCII grd format
-   
 }
 unit GLFileGRD;
 

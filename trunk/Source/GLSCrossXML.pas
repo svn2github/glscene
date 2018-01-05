@@ -3,9 +3,6 @@
 //
 {
   Cross XML routines
-  History :  
-     23/08/10 - Yar - Creation
-  
 }
 
 unit GLSCrossXML;

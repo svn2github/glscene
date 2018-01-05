@@ -5,12 +5,6 @@
   Raw Mesh support in GLScene.
   This unit is for simple meshes and legacy support,
   GLVectorFileObjects implements more efficient (though more complex) mesh tools.
-
-  History :
-  18/06/00 - EG - Creation from split of GLObjects,
-                  TGLVertexList now uses TGLVertexData,
-                  Rewrite of TGLMesh.CalcNormals (smaller & faster)
-  
 }
 unit GLMesh;
 

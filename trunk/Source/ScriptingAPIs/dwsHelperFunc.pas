@@ -4,10 +4,6 @@
 {
   Helper functions for creating class, properties and
   method symbols in DelphiWebScript
-
-  History :
-  27/04/2004 - SG - Creation
-
 }
 unit dwsHelperFunc;
 
@@ -28,11 +24,7 @@ procedure AddPropertyToClass(Name, DataType, ReadAccess, WriteAccess,
 procedure ValidateExternalObject(ExtObject: TObject; ObjClass: TClass);
 
 // -------------------------------------------------------------------
-// -------------------------------------------------------------------
-// -------------------------------------------------------------------
 implementation
-// -------------------------------------------------------------------
-// -------------------------------------------------------------------
 // -------------------------------------------------------------------
 
 procedure AddForwardDeclaration(ClassName: String; SymbolTable: TSymbolTable);

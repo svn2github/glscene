@@ -9,10 +9,6 @@
   plus very small data!
 
   Original code by Osman Turan (osmanturancom@yahoo.com)
-
-  History :
-  07/02/04 - OT - Creation (Osman Turan)
-
 }
 unit GLFileMDC;
 
@@ -21,9 +17,12 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
+  System.Classes, 
+  System.SysUtils,
 
-  GLVectorFileObjects, GLMaterial, GLApplicationFileIO,
+  GLVectorFileObjects, 
+  GLMaterial, 
+  GLApplicationFileIO,
   GLVectorGeometry;
 
 const
@@ -125,10 +124,9 @@ type
     procedure LoadFromStream(AStream: TStream); override;
   end;
 
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
 implementation
+// ------------------------------------------------------------------
 
 // ------------------
 // ------------------ TGLMDCVectorFile ------------------
@@ -324,12 +322,7 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 RegisterVectorFileFormat('mdc', 'MDC files', TGLMDCVectorFile);

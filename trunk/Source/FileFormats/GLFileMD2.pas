@@ -3,9 +3,6 @@
 //
 {
    Quake2 MD2 vector file format implementation.
-
-   History : 
-      05/06/03 - SG - Separated from GLVectorFileObjects.pas
 }
 
 unit GLFileMD2;

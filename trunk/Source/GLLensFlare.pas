@@ -3,12 +3,6 @@
 //
 {
   Lens flare object. 
-
-  History :  
-       29/10/02 - EG - Initial, added defaults and encapsulation,
-                       fixed positionning, RandSeed now preserved,
-                       minor speedup
-       .
 }
 unit GLLensFlare;
 

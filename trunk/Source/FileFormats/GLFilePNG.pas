@@ -3,9 +3,6 @@
 //
 {
   PNG files loading implementation
-  History :
-    05/03/10 - Yar - Creation
-    
 }
 
 unit GLFilePNG;
@@ -32,15 +29,12 @@ type
   private
   public
     class function Capabilities: TGLDataFileCapabilities; override;
-
     procedure LoadFromFile(const filename: string); override;
     procedure SaveToFile(const filename: string); override;
     procedure LoadFromStream(AStream: TStream); override;
     procedure SaveToStream(AStream: TStream); override;
-
     {Assigns from any Texture.}
-    procedure AssignFromTexture(textureContext: TGLContext;
-      const textureHandle: Cardinal;
+    procedure AssignFromTexture(textureContext: TGLContext; const textureHandle: Cardinal;
       textureTarget: TGLTextureTarget;
       const CurrentFormat: Boolean;
       const intFormat: TGLInternalFormat); reintroduce;
@@ -191,8 +185,10 @@ begin
   Result := [dfcRead, dfcWrite];
 end;
 
+//---------------------------------------------------
 initialization
-  { Register this Fileformat-Handler with GLScene }
+//---------------------------------------------------
+
   RegisterRasterFormat('png', 'Portable Network Graphic', TGLPNGImage);
 
 end.

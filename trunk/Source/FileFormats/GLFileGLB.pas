@@ -3,10 +3,6 @@
 //
 {
    GLB binary file for glTF format implementation. 
-
-   History : 
-       30/03/16 - PW - Creation
-	   	 	   	 
 }
 unit GLFileGLB;
 

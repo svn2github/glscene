@@ -3,12 +3,6 @@
 //
 {
   Handles all the material + material library stuff.
-
-  History :
-    08/10/08 - DanB - Created from split from GLTexture.pas,
-    Textures + materials are no longer so tightly bound
-    
-
 }
 unit GLMaterial;
 
@@ -330,7 +324,7 @@ type
      An instance of this class is available for almost all objects in GLScene
      to allow quick definition of material properties. It can link to a
      TGLLibMaterial (taken for a material library).
-     The TGLLibMaterial has more adavanced properties (like texture transforms)
+     The TGLLibMaterial has more advanced properties (like texture transforms)
      and provides a standard way of sharing definitions and texture maps. *)
   TGLMaterial = class(TGLUpdateAbleObject, IGLMaterialLibrarySupported, IGLTextureNotifyAble)
   private

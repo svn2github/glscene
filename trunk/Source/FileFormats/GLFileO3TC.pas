@@ -3,10 +3,6 @@
 //
 {
   O3TC file loading
-
-  History :
-    20/01/10 - Yar - Creation
-    
 }
 unit GLFileO3TC;
 
@@ -31,25 +27,18 @@ type
   TGLO3TCImage = class(TGLBaseImage)
   public
     class function Capabilities: TGLDataFileCapabilities; override;
-
     procedure LoadFromFile(const filename: string); override;
     procedure SaveToFile(const filename: string); override;
     procedure LoadFromStream(stream: TStream); override;
     procedure SaveToStream(stream: TStream); override;
-
     procedure AssignFromTexture(textureContext: TGLContext;
-      const textureHandle: Cardinal;
-      textureTarget: TGLTextureTarget;
-      const CurrentFormat: Boolean;
-      const intFormat: TGLInternalFormat); reintroduce;
+      const textureHandle: Cardinal; textureTarget: TGLTextureTarget;
+      const CurrentFormat: Boolean; 
+	  const intFormat: TGLInternalFormat); reintroduce;
   end;
 
 //----------------------------------------------------------
-//----------------------------------------------------------
-//----------------------------------------------------------
 implementation
-//----------------------------------------------------------
-//----------------------------------------------------------
 //----------------------------------------------------------
 
 uses

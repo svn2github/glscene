@@ -3,7 +3,6 @@
 //
 {
    Added GLScene's toolbar to Delphi IDE. 
-   History : 21/11/10 - Yar - Creation
 }
 
 unit GLSceneToolbar;
@@ -85,9 +84,7 @@ procedure AddGLSceneToolbar;
 
         Inc(T);
       end;
-
   begin
-
     if not Supports(BorlandIDEServices, INTAServices, Services) then
       exit;
 
@@ -154,7 +151,9 @@ procedure TGLSToolButtonReceiver.OnClick(Sender: TObject);
       vResetDesignView := True;
   end;
 
+//---------------------------------------------------  
 initialization
+//---------------------------------------------------  
 
   AddGLSceneToolbar;
 

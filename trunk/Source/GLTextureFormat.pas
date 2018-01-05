@@ -3,11 +3,6 @@
 //
 { 
   Texture formats and functions 
-
-  History :  
-    21/01/10 - Yar - Creation
-    
-
 }
 
 unit GLTextureFormat;

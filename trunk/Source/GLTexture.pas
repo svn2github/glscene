@@ -2,13 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Handles all the color and texture stuff.
-
-   History :
-     26/06/97 - Mike Lischke - version 0.3.2
-     05/02/00 - EG - fixes and enhancements: TGLColor.Update,
-                     ConvertWinColor, TGLPicImage, TGLMaterial.Apply
-     .
+   Handles all texture stuff.
 }
 unit GLTexture;
 

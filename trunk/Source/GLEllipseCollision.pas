@@ -3,10 +3,6 @@
 //
 {
   Ellipsoid collision functions (mainly used by DCE).
-
-   History :  
-     29/07/04 - LucasG - Creation
-     	 
 }
 unit GLEllipseCollision;
 
@@ -133,7 +129,9 @@ const cECCloseDistance : Single = 0.005;
 
 var debug_tri: Array of TECTriangle;
 
+//---------------------------------------
 implementation
+//---------------------------------------
 
 {$IFDEF DEBUG}
 procedure AddDebugTri(p1,p2,p3: TAffineVector);

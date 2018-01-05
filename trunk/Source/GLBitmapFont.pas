@@ -3,9 +3,6 @@
 //
 {
   Bitmap Fonts management classes for GLScene
-  History :
-   15/01/01 - EG - Creation
-   
 }
 unit GLBitmapFont;
 

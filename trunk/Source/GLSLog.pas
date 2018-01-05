@@ -5,17 +5,6 @@
   Activate USE_LOGGING in "GLSCene.inc" to turn on inner GLScene logger. 
   You may have only one instance of TGLSLogger 
   To obtain it, call UserLog() function from any unit. 
-
-   History :  
-     06/03/10 - Yar - Added to GLScene
-     .
-   
-
-  (C) 2004-2007 George "Mirage" Bakhtadze.
-  <a href="http://www.casteng.com">www.casteng.com</a> 
-  The source code may be used under either MPL 1.1 or LGPL 2.1 license.
-  See included license.txt file 
-  Unit contains some text file related utilities and logging class
 }
 
 unit GLSLog;
@@ -27,9 +16,13 @@ interface
 uses
  {$IFDEF MSWINDOWS} Winapi.Windows, Winapi.ShellApi, {$ENDIF}
  {$IFDEF LINUX} Process, {$ENDIF}
-  System.StrUtils, System.Classes, System.SysUtils,
-  System.UITypes, System.SyncObjs,
-  VCL.Dialogs, VCL.Controls,
+  System.StrUtils, 
+  System.Classes, 
+  System.SysUtils,
+  System.UITypes, 
+  System.SyncObjs,
+  VCL.Dialogs, 
+  VCL.Controls,
   GLCrossPlatform;
 
 type
@@ -217,38 +210,27 @@ type
     {If LogFileMaxSize is not 0, then:
        1) At start, all logs with the same extention will be deleted.
        2) All logs wil be periodically cheked for FileSize.
-          New log file will be created when this size exceeds limit.
-    }
+          New log file will be created when this size exceeds limit. }
     property LogFileMaxSize: Integer  read FLogFileMaxSize  write SetLogFileMaxSize default 0; // In bytes, limited to 2Gb.
     property CheckFileSizePeriod: Integer read FCheckFileSizePeriod write FCheckFileSizePeriod default 4000; // In ms.
   end;
 
-  // TGLSLoger
-  //
-
   {  Abstract class for control loging.  }
-
   TGLSLogger = class(TComponent)
   private
-     
     FReplaceAssertion: Boolean;
     FTimeFormat: TLogTimeFormat;
     FLogLevels: TLogLevels;
     FLog: TGLLogSession;
     procedure SetReplaceAssertion(Value: Boolean);
     function GetLog: TGLLogSession;
-  protected
-    
-
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     {  Set component primary and then UserLog return it's log }
     procedure DoPrimary;
     property Log: TGLLogSession read GetLog;
   published
-    
     property ReplaceAssertion: Boolean read FReplaceAssertion
       write SetReplaceAssertion default False;
     {  Only design time sets. Define Log initial properties }
@@ -260,7 +242,7 @@ type
 
   TIDELogProc = procedure(const AMsg: string);
 
-  {  Return logger wich created by TGLSLogger component }
+{  Return logger wich created by TGLSLogger component }
 function UserLog: TGLLogSession;
 function SkipBeforeSTR(var TextFile: Text; const SkipSTR: string): Boolean;
 function ReadLine(var TextFile: Text): string;
@@ -281,11 +263,7 @@ var
   vIDELogProc: TIDELogProc;
 
 //--------------------------------------------------------------------------
-//--------------------------------------------------------------------------
-//--------------------------------------------------------------------------
 implementation
-//--------------------------------------------------------------------------
-//--------------------------------------------------------------------------
 //--------------------------------------------------------------------------
 
 var
@@ -1246,7 +1224,9 @@ begin
   end;
 end;
 
+//-----------------------------------------------
 initialization
+//-----------------------------------------------
 
 finalization
   if (v_GLSLogger <> nil) then v_GLSLogger.Destroy;

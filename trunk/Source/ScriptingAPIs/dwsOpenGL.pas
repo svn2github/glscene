@@ -4,11 +4,6 @@
 {
    DelphiWebScript symbol creation for OpenGL procedures and functions.
    This unit is still under development.
-
-    History :
-       21/09/2004 - SG - Creation
-	   
-
 }
 unit dwsOpenGL;
 

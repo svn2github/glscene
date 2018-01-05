@@ -3,11 +3,6 @@
 //
 {
   Stores contextual info useful during rendering methods. 
-
-  History :  
-    05/10/08 - DanB - Created from GLTexture.pas split
-    .
-
 }
 unit GLRenderContextInfo;
 

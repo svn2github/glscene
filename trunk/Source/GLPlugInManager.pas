@@ -3,11 +3,6 @@
 //
 {
   An old PlugIn Manager unit. Don't know if if ever wa used... 
-
-   History :  
-   31/03/07 - DaStr - Added $I GLScene.inc
-   28/07/01 -  EG   - Initial version
-   
 }
 unit GLPlugInManager;
 
@@ -16,8 +11,11 @@ interface
 {$I GLScene.inc}
 
 uses
-  Winapi.Windows, System.Classes, System.SysUtils,
-  VCL.Dialogs, VCL.Forms,
+  Winapi.Windows, 
+  System.Classes, 
+  System.SysUtils,
+  VCL.Dialogs, 
+  VCL.Forms,
   GLPlugInIntf;
 
 
@@ -92,9 +90,10 @@ type
     property PlugIns: TGLPlugInList read FLibraryList write FLibraryList;
   end;
 
-  // ------------------------------------------------------------------------------
-
+// ------------------------------------------------------------------------------
 implementation
+// ------------------------------------------------------------------------------
+
 
 // ----------------- TGLPlugInList ------------------------------------------------
 

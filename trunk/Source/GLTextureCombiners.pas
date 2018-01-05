@@ -3,11 +3,6 @@
 //
 {
    Texture combiners setup utility functions. 
-
-   History :  
-     16/05/03 - EG - Creation
-
-    
 }
 unit GLTextureCombiners;
 

@@ -3,10 +3,6 @@
 //
 {  
    Fast Fourier Transform for CUDA  
-
-   History :  
-   19/03/10 - Yar - Creation
-       
 }
 
 unit GLSCUDAFFTPlan;
@@ -41,7 +37,6 @@ type
 
   TCUDAFFTPlan = class(TCUDAComponent)
   private
-     
     FHandle: TcufftHandle;
     FWidth: Integer;
     FHeight: Integer;
@@ -57,7 +52,6 @@ type
     procedure SetBatch(Value: Integer);
     procedure SetTransform(Value: TCUDAFFTransform);
   protected
-    { Protected declaration }
     procedure AllocateHandles; override;
     procedure DestroyHandles; override;
     class procedure CheckLib;

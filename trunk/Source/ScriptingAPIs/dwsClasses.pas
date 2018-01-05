@@ -3,10 +3,6 @@
 //
 {
   DelphiWebScript symbol creation for base Delphi classes.
-
-  History :
-       27/04/2004 - SG - Creation
-
 }
 unit dwsClasses;
 
@@ -141,7 +137,6 @@ type
 // ---------- Internal class method execute procedures ----------
 // ----------
 
-// TPersistent.Assign
 procedure TPersistentAssignMethod.Execute(var ExternalObject: TObject);
 var
   Source : TObject;
@@ -153,16 +148,12 @@ begin
   TPersistent(ExternalObject).Assign(TPersistent(Source));
 end;
 
-// TPersistent.GetNamePath
 procedure TPersistentGetNamePathMethod.Execute(var ExternalObject: TObject);
 begin
   ValidateExternalObject(ExternalObject, TPersistent);
   Info.Result.Value:=TPersistent(ExternalObject).GetNamePath;
 end;
 
-// TComponent internal class method execute procedures
-
-// TComponent.Create
 procedure TComponentCreateMethod.Execute(var ExternalObject: TObject);
 var
   AOwner : TComponent;
@@ -171,77 +162,66 @@ begin
   ExternalObject:=TComponent.Create(AOwner);
 end;
 
-// TComponent.SetTag
 procedure TComponentSetTagMethod.Execute(var ExternalObject: TObject);
 begin
   ValidateExternalObject(ExternalObject, TComponent);
   TComponent(ExternalObject).Tag:=Info['Value'];
 end;
 
-// TComponent.GetTag
 procedure TComponentGetTagMethod.Execute(var ExternalObject: TObject);
 begin
   ValidateExternalObject(ExternalObject, TComponent);
   Info.Result:=TComponent(ExternalObject).Tag;
 end;
 
-// TComponent.SetName
 procedure TComponentSetNameMethod.Execute(var ExternalObject: TObject);
 begin
   ValidateExternalObject(ExternalObject, TComponent);
   TComponent(ExternalObject).Name:=Info['Value'];
 end;
 
-// TComponent.GetName
 procedure TComponentGetNameMethod.Execute(var ExternalObject: TObject);
 begin
   ValidateExternalObject(ExternalObject, TComponent);
   Info.Result:=TComponent(ExternalObject).Name;
 end;
 
-// TComponent.GetOwner
 procedure TComponentGetOwnerMethod.Execute(var ExternalObject: TObject);
 begin
   ValidateExternalObject(ExternalObject, TComponent);
   Info.Result:=Info.RegisterExternalObject(TComponent(ExternalObject).Owner, False, False);
 end;
 
-// TComponent.SetComponentIndex
 procedure TComponentSetComponentIndexMethod.Execute(var ExternalObject: TObject);
 begin
   ValidateExternalObject(ExternalObject, TComponent);
   TComponent(ExternalObject).ComponentIndex:=Info['Value'];
 end;
 
-// TComponent.GetComponentIndex
 procedure TComponentGetComponentIndexMethod.Execute(var ExternalObject: TObject);
 begin
   ValidateExternalObject(ExternalObject, TComponent);
   Info.Result:=TComponent(ExternalObject).ComponentIndex;
 end;
 
-// TComponent.GetComponentCount
 procedure TComponentGetComponentCountMethod.Execute(var ExternalObject: TObject);
 begin
   ValidateExternalObject(ExternalObject, TComponent);
   Info.Result:=TComponent(ExternalObject).ComponentCount;
 end;
 
-// TComponent.GetComponent
 procedure TComponentGetComponentMethod.Execute(var ExternalObject: TObject);
 begin
   ValidateExternalObject(ExternalObject, TComponent);
   Info.Result:=Info.RegisterExternalObject(TComponent(ExternalObject).Components[Info['Index']], False, False);
 end;
 
-// TComponent.FindComponent
 procedure TComponentFindComponentMethod.Execute(var ExternalObject: TObject);
 begin
   ValidateExternalObject(ExternalObject, TComponent);
   Info.Result:=Info.RegisterExternalObject(TComponent(ExternalObject).FindComponent(Info['AName']), False, False);
 end;
 
-// TComponent.FreeNotification
 procedure TComponentFreeNotificationMethod.Execute(var ExternalObject: TObject);
 var
   AComponent : TComponent;
@@ -252,7 +232,6 @@ begin
     TComponent(ExternalObject).FreeNotification(AComponent);
 end;
 
-// TComponent.RemoveFreeNotification
 procedure TComponentRemoveFreeNotificationMethod.Execute(var ExternalObject: TObject);
 var
   AComponent : TComponent;
@@ -263,21 +242,18 @@ begin
     TComponent(ExternalObject).RemoveFreeNotification(AComponent);
 end;
 
-// TComponent.GetParentComponent
 procedure TComponentGetParentComponentMethod.Execute(var ExternalObject: TObject);
 begin
   ValidateExternalObject(ExternalObject, TComponent);
   Info.Result:=Info.RegisterExternalObject(TComponent(ExternalObject).GetParentComponent, False, False);
 end;
 
-// TComponent.GetNamePath
 procedure TComponentGetNamePathMethod.Execute(var ExternalObject: TObject);
 begin
   ValidateExternalObject(ExternalObject, TComponent);
   Info.Result:=TComponent(ExternalObject).GetNamePath;
 end;
 
-// TComponent.HasParent
 procedure TComponentHasParentMethod.Execute(var ExternalObject: TObject);
 begin
   ValidateExternalObject(ExternalObject, TComponent);

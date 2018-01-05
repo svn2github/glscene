@@ -3,11 +3,6 @@
 //
 {
    Helper classes and methods for Quake3 MD3 actors 
-
-   History :
-    17/02/03 - SG - Creation
-    .
-
 }
 unit Q3MD3;
 

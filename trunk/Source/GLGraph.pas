@@ -3,11 +3,6 @@
 //
 {  
   Graph plotting objects for GLScene 
-
-  History :  
-   06/07/00 - EG - Creation (TGLSamplingScale & TGLHeightField)
-   
-
 }
 unit GLGraph;
 

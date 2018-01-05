@@ -3,10 +3,6 @@
 //
 {
    COLLADA DAE file format implementation. 
-
-    History : 
-     15/01/14 - PW - Creation
-     	 
 }
 unit GLFileDAE;
 

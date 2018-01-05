@@ -3,11 +3,6 @@
 //
 {
    SMD vector file format implementation. 
-
-   History : 
-       30/03/04 - EG - Basic Half-Life2/XSI support
-       05/06/03 - SG - Separated from GLVectorFileObjects.pas
-	 
 }
 unit GLFileSMD;
 

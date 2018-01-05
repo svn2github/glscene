@@ -5,9 +5,6 @@
    Implements FBO support for GLScene.
    Original author of the unit is Riz.
    Modified by DaStr, C4 and YarUnderoaker.
-
-   History :
-       09/11/09 - DaStr - Initial version (contributed to GLScene)
 }
 unit GLFBO;
 

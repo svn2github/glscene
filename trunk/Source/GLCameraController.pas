@@ -5,10 +5,6 @@
   Component for animating camera movement.
   Can be used to zoom in/out, for linear movement, orbiting and Google Earth - like "fly-to"
   Main purpose was the SafeOrbitAndZoomToPos method, the others are usable as well
-
-   History :
-     20/03/09 - DanB - Donated to GLScene by Bogdan Deaky.
-     
 }
 
 
@@ -118,7 +114,6 @@ type
   public
     procedure Step; override;
     procedure Init; override;
-    // Properties.
     property RotateSpeed: TVector2f read FRotateSpeed;
     property CameraUpVector: TVector read FCameraUpVector;
     property TargetPosition: TVector read FTargetPosition;
@@ -202,7 +197,6 @@ type
   protected
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
   public
-    // Constructor.
     constructor Create(AOwner:TComponent); override;
     destructor Destroy; override;
     (*linear movement from current pos *)
@@ -355,9 +349,7 @@ begin
       if Assigned(FOnJobFinished) then
         FOnJobFinished(CurrentJob);
     end;
-
   end;
-
   //AdjustScene;
 end;
 
