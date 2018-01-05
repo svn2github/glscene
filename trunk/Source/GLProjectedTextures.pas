@@ -3,9 +3,6 @@
 //
 {
    Implements projected textures through a GLScene object.
-   History :
-     01/10/04 - SG - Initial (by Matheus Degiovani)
-    The whole history is logged in previous version of the unit
 }
 unit GLProjectedTextures;
 

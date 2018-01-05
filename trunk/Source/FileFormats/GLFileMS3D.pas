@@ -3,11 +3,6 @@
 //
 {
    Support for MS3D file format.
-
-   History :
-     03/06/03 - EG - Added header, now self-registers
-     The whole history is logged in previous version of the unit
-
 }
 unit GLFileMS3D;
 

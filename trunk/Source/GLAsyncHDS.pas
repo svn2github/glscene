@@ -12,12 +12,6 @@
    being prepared.  Although this keeps the framerate up, it may cause holes in the
    terrain to show, if the HeightDataThreads cant keep up with the TerrainRenderer's
    requests for new tiles.
-
-
-	 History :
-       12/02/07 - LIN - Creation
-      The whole history is logged in previous versions of the unit
-
 }
 
 unit GLAsyncHDS;

@@ -3,11 +3,6 @@
 //
 {
   Coordinate related classes.
-
-  History :  
-   05/10/08 - DanB - Created, from GLMisc.pas
-   The whole history is logged in previous version of the unit
-  
 }
 unit GLCoordinates;
 
@@ -34,7 +29,7 @@ type
      csUnknown : aucune contrainte }
   TGLCoordinatesStyle = (csPoint2D, csPoint, csVector, csUnknown);
 
-  {  Stores and homogenous vector. 
+  {  Stores and homogeneous vector. 
     This class is basicly a container for a TVector, allowing proper use of
     delphi property editors and editing in the IDE. Vector/Coordinates
     manipulation methods are only minimal.
@@ -159,9 +154,9 @@ type
 
   TGLCoordinates = TGLCoordinates3;
 
-  // Actually Sender should be TGLCustomCoordinates, but that would require
-  // changes in a some other GLScene units and some other projects that use
-  // TGLCoordinatesUpdateAbleComponent
+  (* Actually Sender should be TGLCustomCoordinates, but that would require
+     changes in a some other GLScene units and some other projects that use
+     TGLCoordinatesUpdateAbleComponent *)
   IGLCoordinatesUpdateAble = interface(IInterface)
     ['{ACB98D20-8905-43A7-AFA5-225CF5FA6FF5}']
     procedure CoordinateChanged(Sender: TGLCustomCoordinates);
@@ -174,8 +169,8 @@ type
   end;
 
 var
-  // Specifies if TGLCustomCoordinates should allocate memory for
-  // their default values (ie. design-time) or not (run-time)
+  (* Specifies if TGLCustomCoordinates should allocate memory for
+    their default values (ie. design-time) or not (run-time) *)
   VUseDefaultCoordinateSets: Boolean = False;
 
 //==================================================================  

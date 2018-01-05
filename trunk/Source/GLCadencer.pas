@@ -6,7 +6,7 @@
 
   History :
      13/04/00 - EG - Creation
-     The whole history is logged in previous version of the unit
+     
 }
 unit GLCadencer;
 

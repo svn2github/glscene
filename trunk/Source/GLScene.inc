@@ -4,7 +4,6 @@
 //
 {
   Include File for GLScene
-  The history is logged in a former GLS version of the unit
 }
 
 {$DEFINE GLSCENE}

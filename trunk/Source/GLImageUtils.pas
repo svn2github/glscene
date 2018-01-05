@@ -3,8 +3,6 @@
 //
 {
   Main purpose is as a fallback in cases where there is no other way to process images. 
-  History : 22/10/10 - Yar - Created
-  The whole history is logged in previous version of the unit
 }
 
 unit GLImageUtils;

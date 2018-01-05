@@ -3,10 +3,6 @@
 //
 {
     Unit for navigating TGLBaseObjects.
-
-    History :
-      09/11/00 - JAJ - First submitted. Base Class TGLNavigator included.
-      The whole history is logged in previous version of the unit.
 }
 unit GLNavigator;
 
@@ -28,32 +24,24 @@ uses
 
 type
 
-	// TGLNavigator
-	//
-	{TGLNavigator is the component for moving a TGLBaseSceneObject, and all Classes based on it,
+	{ TGLNavigator is the component for moving a TGLBaseSceneObject, and all Classes based on it,
       this includes all the objects from the Scene Editor. 
-
 	   The four calls to get you started is
-      
   	    TurnHorisontal : it turns left and right.
 	    TurnVertical : it turns up and down.
 	    MoveForward :	moves back and forth.
       FlyForward : moves back and forth in the movingobject's direction
-      
 	   The three properties to get you started is
-      
 	    MovingObject : The Object that you are moving.
 	    UseVirtualUp : When UseVirtualUp is set you navigate Quake style. If it isn't
    		it's more like Descent.
-	    AngleLock : Allows you to block the Vertical angles. Should only be used in
+	  AngleLock : Allows you to block the Vertical angles. Should only be used in
 			conjunction with UseVirtualUp.
-	    MoveUpWhenMovingForward : Changes movement from Quake to Arcade Airplane...
+	  MoveUpWhenMovingForward : Changes movement from Quake to Arcade Airplane...
       (no tilt and flying)
-	    InvertHorizontalSteeringWhenUpsideDown : When using virtual up, and vertically
+      InvertHorizontalSteeringWhenUpsideDown : When using virtual up, and vertically
       rotating beyond 90 degrees, will make steering seem inverted, so we "invert" back
-      to normal.
-      
-   }
+      to normal. }
   TGLNavigator = class(TComponent)
   private
     FObject: TGLBaseSceneObject;
@@ -77,7 +65,6 @@ type
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
     procedure TurnHorizontal(Angle: single);
     procedure TurnVertical(Angle: single);
     procedure MoveForward(Distance: single);
@@ -85,10 +72,8 @@ type
     procedure StrafeVertical(Distance: single);
     procedure Straighten;
     procedure FlyForward(Distance: single);
-
     procedure LoadState(Stream: TStream);
     procedure SaveState(Stream: TStream);
-
     property CurrentVAngle: single read FCurrentVAngle;
     property CurrentHAngle: single read FCurrentHAngle;
   published
@@ -103,26 +88,17 @@ type
     property AngleLock: boolean read FAngleLock write FAngleLock default False;
   end;
 
-	// TGLUserInterface
-	//
 	{TGLUserInterface is the component which reads the userinput and transform it into action. 
-
 	   The four calls to get you started is
-      
  	    MouseLookActivate : set us up the bomb.
  	    MouseLookDeActivate : defuses it.
 	    Mouselook(deltaTime: double) : handles mouse look... Should be called in the Cadencer event. (Though it works every where!)
 	    MouseUpdate : Resets mouse position so that you don't notice that the mouse is limited to the screen should be called after Mouselook.
-      
 	   The four properties to get you started are:
-      
 	    InvertMouse     : Inverts the mouse Y axis.
 	    MouseSpeed      : Also known as mouse sensitivity.
 	    GLNavigator     : The Navigator which receives the user movement.
-	    GLVertNavigator : The Navigator which if set receives the vertical user movement. Used mostly for cameras....
-      
-   }
-
+	    GLVertNavigator : The Navigator which if set receives the vertical user movement. Used mostly for cameras.... }
   TGLUserInterface = class(TComponent)
   private
     FPrevPoint: TGLPoint;
@@ -157,7 +133,9 @@ type
     property GLVertNavigator: TGLNavigator read FGLVertNavigator write setVertNavigator;
   end;
 
+//-------------------------------------------------------------  
 implementation
+//-------------------------------------------------------------  
 
 Constructor TGLNavigator.Create(AOwner : TComponent);
 Begin

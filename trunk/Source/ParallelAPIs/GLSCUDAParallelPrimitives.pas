@@ -3,7 +3,6 @@
 //
 {
    CUDA Parallel Primitives 
-   See history in previous versions of the unit
 }
 
 // -------------------------------------------------------------

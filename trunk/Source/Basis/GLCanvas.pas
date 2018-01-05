@@ -5,10 +5,6 @@
    Implements a basic Canvas-like interface over for OpenGL.
    This class can be used for generic OpenGL applications and has no dependencies
    to the GLScene core units (only to base units).
-
-   History :
-     19/01/02 - EG - Creation
-     The whole history is logged in previous version of the unit
 }
 unit GLCanvas;
 
@@ -33,16 +29,16 @@ type
 
   TArcDirection = (adCounterClockWise, adClockWise);
 
-    {A simple Canvas-like interface for OpenGL.
-       This class implements a small "shell" for 2D operations in OpenGL,
-       it operates over the current OpenGL context and provides methods
-       for drawing lines, ellipses and points.
-       This class is typically used by creating an instance, using it for drawing,
-       and freeing the instance. When drawing (0, 0) is the top left corner.
-       All coordinates are internally maintained with floating point precision.
-       Several states are cached and it is of primary importance not to invoke
-       OpenGL directly throughout the life of an instance (at the cost of
-       unespected behaviour). }
+  (* A simple Canvas-like interface for OpenGL.
+     This class implements a small "shell" for 2D operations in OpenGL,
+     it operates over the current OpenGL context and provides methods
+     for drawing lines, ellipses and points.
+     This class is typically used by creating an instance, using it for drawing,
+     and freeing the instance. When drawing (0, 0) is the top left corner.
+     All coordinates are internally maintained with floating point precision.
+     Several states are cached and it is of primary importance not to invoke
+     OpenGL directly throughout the life of an instance (at the cost of
+     unespected behaviour). *)
   TGLCanvas = class
   private
     FBufferSizeX, FBufferSizeY: Integer;

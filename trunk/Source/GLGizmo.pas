@@ -44,7 +44,7 @@
 // The New Color is not Updated immediately, only after a new Click
 // (see in UpdateGizmo, SetBoundingBoxColor
 // and SetLabelInfosColor Procedures)
-// -  DaStr: Bounding Box is not alway drawn correctly because it does not
+// -  DaStr: Bounding Box is not always drawn correctly because it does not
 // use objects' BarryCenter. For Example, if you select Space Text.
 // ------------------------------------------------------------------------------
 

@@ -3,9 +3,6 @@
 //
 {
   Implements the standard Teapot, build from evaluators. 
-  History : 21/07/03 - EG - Creation from GLObjects split
-  The whole history is logged in a former GLS version of the unit.
-
 }
 unit GLTeapot;
 

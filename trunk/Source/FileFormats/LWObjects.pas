@@ -12,9 +12,6 @@
  License:    This unit is distributed under the Mozilla Public License.
              For license details, refer to http://www.mozilla.org
              Lightwave3D is a registered trademark of Newtek Incorporated.
-			 History:
-			 20/11/02 - BJ - Moved ParamAddr from TLWSurf to TLWParentChunk as v. method
-    	     The whole history is logged in previous version of the unit
 
 -------------------------------------------------------------------------------}
 unit LWObjects;

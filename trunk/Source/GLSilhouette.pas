@@ -11,7 +11,7 @@
 
   History :
   10/06/03 - EG - Creation (based on code from Mattias Fagerlund)
-  The whole history is logged in previous version of the unit.
+  .
 
 }
 unit GLSilhouette;

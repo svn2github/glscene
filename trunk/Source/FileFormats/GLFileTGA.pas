@@ -6,11 +6,6 @@
    Currently supports only 24 and 32 bits RGB formats (uncompressed
    and RLE compressed). 
    Based on David McDuffee's document from www.wotsit.org 
-
-   History :  
-	    21/11/02 - Egg - Creation
-      The whole history is logged in previous version of the unit
-
 }
 unit GLFileTGA;
 

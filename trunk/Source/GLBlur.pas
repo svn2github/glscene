@@ -3,9 +3,6 @@
 //
 {
   Applies a blur effect over the viewport.
-  History :
-    11/06/04 - Mrqzzz - Creation
-    The whole history is logged in previous version of the unit
 }
 unit GLBlur;
 
@@ -40,9 +37,11 @@ type
 
   TGLBlurPreset = (pNone, pGlossy, pBeastView, pOceanDepth, pDream, pOverBlur, pAdvancedBlur);
   TGLBlurkind = (bNone, bSimple, bAdvanced);
+  
   TRGBPixel = record
     R, G, B: TGLubyte;
   end;
+  
   TRGBPixelBuffer = array of TRGBPixel;
   TGLAdvancedBlurImagePrepareEvent = procedure(Sender: TObject; BMP32: TGLImage; var DoBlur: boolean) of object;
 
@@ -164,9 +163,7 @@ type
 implementation
 //------------------------------------------------------------------------
 
-
 uses
-
   GLCoordinates,
   GLPersistentClasses,
   GLStrings,

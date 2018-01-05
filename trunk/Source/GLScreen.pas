@@ -3,7 +3,7 @@
 //
 {
   Routines to interact with the screen/desktop.
-  The whole history is logged in previous version of the unit.
+  .
 }
 
 unit GLScreen;

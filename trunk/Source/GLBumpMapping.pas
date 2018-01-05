@@ -3,10 +3,6 @@
 //
 {
    Some useful methods for setting up bump maps.
-   History :
-     28/07/03 - SG - Creation
-     The whole history is logged in previous version of the unit
-
 }
 unit GLBumpMapping;
 

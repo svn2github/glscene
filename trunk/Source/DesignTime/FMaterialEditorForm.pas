@@ -3,10 +3,6 @@
 //
 {
    Editor window for a material (with preview).
-
-    History:
-       06/02/00 - Egg - Creation
-      The whole history is logged in previous version of the unit.
 }
 unit FMaterialEditorForm;
 
@@ -62,7 +58,9 @@ type
 function GLMaterialEditorForm: TGLMaterialEditorForm;
 procedure ReleaseMaterialEditorForm;
 
+//----------------------------------------------
 implementation
+//----------------------------------------------
 
 {$R *.dfm}
 

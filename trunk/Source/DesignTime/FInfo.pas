@@ -2,11 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-  Informations on OpenGL driver.
-
-   History :
-     17/04/00 - EG - Creation of header, minor layout changes
-     The whole history is logged in previous version of the unit.
+  Informations on OpenGL driver and contributions
 }
 unit FInfo;
 

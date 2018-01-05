@@ -3,10 +3,6 @@
 //
 {
     Simple X format support for Delphi (Microsoft's favorite format) 
-
-    History :  
-       07/11/09 - DaStr - Initial version (Added from the GLScene-Lazarus SVN)
-       The whole history is logged in previous version of the unit.    
 }
 unit FileX;
 

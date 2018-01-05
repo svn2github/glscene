@@ -10,11 +10,6 @@
     But it down color to RGBA8 because becomes to TBitmap
     Good for preview picture in OpenDialog,
     so you may include both DDSImage (preview) and GLFileDDS (loading)
-
-  History :  
-     21/01/10 - Yar - Creation
-     The whole history is logged in previous version of the unit	 
-    
 }
 
 unit DDSImage;
@@ -45,7 +40,9 @@ type
 
   EDDSException = class(Exception);
 
+//-------------------------------------------------  
 implementation
+//-------------------------------------------------  
 
 uses
   DXTC,
@@ -96,8 +93,6 @@ begin
     end;
   FullDDS.Free;
 end;
-
-// SaveToStream
 
 procedure TDDSImage.SaveToStream(stream: TStream);
 const
@@ -154,23 +149,15 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
   TPicture.RegisterFileFormat(
     'dds', 'Microsoft DirectDraw Surface', TDDSImage);
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 finalization
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
 
   TPicture.UnregisterGraphicClass(TDDSImage);
 

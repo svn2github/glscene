@@ -10,10 +10,6 @@
   More complex or more specialized versions should be placed in dedicated
   units where they can grow and prosper untammed. "Generic" geometrical
   objects can be found GLGeomObjects.
-  History:
-    26/06/97 - Mike Lischke - the last change of version 0.1.13
-    The whole history is logged in previous version of the unit
-
 }
 unit GLObjects;
 
@@ -63,13 +59,13 @@ type
     TexCoord: TVector2f;
   end;
 
-  {  A simple cube, invisible at run-time.
+ (*  A simple cube, invisible at run-time.
     This is a usually non-visible object -except at design-time- used for
     building hierarchies or groups, when some kind of joint or movement
     mechanism needs be described, you can use DummyCubes.
     DummyCube's barycenter is its children's barycenter.
     The DummyCube can optionnally amalgamate all its children into a single
-    display list (see Amalgamate property). }
+    display list (see Amalgamate property). *)
   TGLDummyCube = class(TGLCameraInvariantObject)
   private
     FCubeSize: TGLFloat;
@@ -106,7 +102,7 @@ type
       the rendering of all of the dummycube's children objects into a
       single display list. This may provide a significant speed up in some
       situations, however, this means that changes to the children will
-      be ignored untill you call StructureChanged on the dummy cube.
+      be ignored until you call StructureChanged on the dummy cube.
       Some objects, that have their own display list management, may not
       be compatible with this behaviour. This will also prevents sorting
       and culling to operate as usual. 

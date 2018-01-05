@@ -3,11 +3,6 @@
 //
 {
   In GL windows management classes and structures 
-
-  History :  
-    01/06/02 - JAJ - Base Unit built..
-     The whole history is logged in previous version of the unit.
-
 }
 unit GLGui;
 
@@ -167,23 +162,18 @@ type
   protected
     procedure Notification(AComponent: TComponent; Operation: TOperation);
       override;
-
     procedure SetFileName(newName: string);
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
-
     procedure LoadFromStream(Stream: TStream);
     procedure LoadFromFile(FN: string);
-
     procedure Clear;
-
     procedure SaveToStream(Stream: TStream);
     procedure SaveToFile(FN: string);
     procedure AddGuiComponent(Component: TGLUpdateableComponent);
     procedure RemoveGuiComponent(Component: TGLUpdateableComponent);
-
     procedure NotifyChange(Sender: TObject); override;
   published
     property BitmapFont: TGLCustomBitmapFont read FBitmapFont write FBitmapFont;
@@ -199,7 +189,9 @@ const
 
 function IsInRect(const R: TGUIRect; X, Y: Single): Boolean; inline;
 
+//------------------------------------------------------
 implementation
+//------------------------------------------------------
 
 function IsInRect(const R: TGUIRect; X, Y: Single): Boolean; inline;
 
@@ -211,7 +203,6 @@ end;
 // ------------------ TGLBaseGuiObject ------------------
 // ------------------
 
- 
 constructor TGLBaseGuiObject.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);

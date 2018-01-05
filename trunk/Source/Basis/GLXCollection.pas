@@ -3,11 +3,6 @@
 //
 {
   A polymorphism-enabled TCollection-like set of classes 
-
-  History :  
-   16/04/00 - EG - Creation from GLScene split
-   The whole history is logged in previous version of the unit.
-   
 }
 unit GLXCollection;
 

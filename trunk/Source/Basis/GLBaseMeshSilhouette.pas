@@ -3,10 +3,6 @@
 //
 {
   Silhouette classes for GLBaseMesh and FaceGroups.
-  History :
-   24/06/03 - MF - Created file from parts of GLShilouette
-
-   
 }
 
 unit GLBaseMeshSilhouette;

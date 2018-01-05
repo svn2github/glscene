@@ -7,7 +7,7 @@
   History :
     08/10/08 - DanB - Created from split from GLTexture.pas,
     Textures + materials are no longer so tightly bound
-    The whole history is logged in previous version of the unit
+    
 
 }
 unit GLMaterial;

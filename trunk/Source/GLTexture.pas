@@ -8,7 +8,7 @@
      26/06/97 - Mike Lischke - version 0.3.2
      05/02/00 - EG - fixes and enhancements: TGLColor.Update,
                      ConvertWinColor, TGLPicImage, TGLMaterial.Apply
-     The whole history is logged in previous version of the unit.
+     .
 }
 unit GLTexture;
 

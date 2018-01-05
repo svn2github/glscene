@@ -3,7 +3,7 @@
 //
 {
    GLScene RGBE
-  The whole history is logged in previous version of the unit.
+  .
 }
 unit GLSRGBE;
 

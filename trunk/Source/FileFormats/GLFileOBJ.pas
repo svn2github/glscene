@@ -6,16 +6,6 @@
     in GLScene. 
     Note that you must manually add this unit to one of your project's uses
     to enable support for OBJ & OBJF at run-time. 
-
-    History :  
-       08/10/00 - Egg - Added standard header, basic htmlification of old header,
-                           removed specific trim funcs,
-                           renamed TMBAGLOBJVectorFile to TGLOBJVectorFile
-   (c) 2000 Marian Aldenhövel
-       Hainstraße 8
-       53121 Bonn
-       info@MBA-Software.de 
-       The whole history is logged in prior version of the unit
 }
 unit GLFileOBJ;
 

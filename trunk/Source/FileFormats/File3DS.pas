@@ -11,18 +11,6 @@
   LoadFromStream does not make a copy of the passed stream, but keeps a reference
   which must stay valid either during the entire lifetime of TFile3DS or at least
   'til all chunks have been read (by accessing them all once).
-
-   History : 
-   01/11/07 - DaStr - Fixed memory leaks when using the TKeyFramer class
-                      (BugTracker ID = 1823781)
-                      Added a standard GLScene header
-   30/03/07 - DaStr - Added $I GLScene.inc
-   08/06/00 -  Egg  - LoadFromStream no longer free the stream it was passed,
-                   further fixing of the streaming mechanism is needed
-
-  (c) Copyright 1999, 2000
-  Dipl. Ing. Mike Lischke (public@lischke-online.de)
-  Igor T. (GWin), (georgwin@chat.ru)
 }
 unit File3DS;
 
@@ -43,7 +31,6 @@ uses
 type
   TFile3DS = class;
 
-  // gw:
   TLoadProgress = procedure(StreamPos, StreamMax: Longint) of object;
   // Progress : TProgressBar;
   //
@@ -69,7 +56,6 @@ type
   // For convinience and speed the data of the chunks is collected into some
   // special structures (FMaterialList etc.) and presented to the user
   // by the following helper classes:
-
   TMaterialList = class
   private
     FOwner: TFile3DS;
@@ -81,7 +67,6 @@ type
     constructor Create(AOwner: TFile3DS); virtual;
     destructor Destroy; override;
     procedure ClearList;
-
     property Count: Integer read GetCount;
     property Material[Index: Integer]: PMaterial3DS read GetMaterial; default;
     property MaterialByName[const Name: String]: PMaterial3DS read GetMaterialByName;
@@ -2993,4 +2978,3 @@ end;
 //---------------------------------------------------------------------------------------------------------------------
 
 end.
-

@@ -1,18 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
-//       Copyright (C) 2017 GLSteam, All Rights Reserved
-{
-  This Source Code is subject to the terms of the Mozilla Public License v. 2.0.
-  If a copy of the MPL was not distributed with this file,
-  You can obtain one at http://mozilla.org/MPL/2.0/.
-}
+//
 {
   A sprite that uses a scrolling texture for animation. 
-
-  History :  
-    13/07/04 - SG - Creation
-    The whole history is logged in previous versions of the unit
-     
 }
 unit GLAnimatedSprite;
 

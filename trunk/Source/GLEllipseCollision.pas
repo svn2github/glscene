@@ -6,7 +6,7 @@
 
    History :  
      29/07/04 - LucasG - Creation
-     The whole history is logged in previous version of the unit	 
+     	 
 }
 unit GLEllipseCollision;
 

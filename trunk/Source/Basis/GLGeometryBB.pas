@@ -3,10 +3,6 @@
 //
 {
   Calculations and manipulations on Bounding Boxes. 
-
-  History :  
-    31/03/01 - EG - Original Unit by Jacques Tur
-    The whole history is logged in previous version of the unit
 }
 
 unit GLGeometryBB;

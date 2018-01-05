@@ -6,7 +6,7 @@
 
    History : 
      02/11/05 - LucasG - First version created.
-     The whole history is logged in previous version of the unit.
+     .
 }
 
 unit GLRagdoll;

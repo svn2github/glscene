@@ -3,8 +3,6 @@
 //
 {
    3D PDF converter of GLScene's models
-   History :
-     18/05/17 - Dirk - Initial version
 }
 
 

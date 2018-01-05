@@ -3,11 +3,6 @@
 //
 {
    Nurbs surfaces vector file loading. 
-
-   History : 
-     05/08/03 - SG - Initial, adapted LoadFromStream from earlier tests
-                     with GLNurbsSurface (depricated), originally coded by Eric Grange.
-      The whole history is logged in previous version of the unit
 }
 unit GLFileNurbs;
 
@@ -168,11 +163,7 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
    RegisterVectorFileFormat('nurbs', 'Nurbs model files', TGLNurbsVectorFile);

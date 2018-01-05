@@ -7,7 +7,7 @@
 
    History :  
      02/09/03 - MRQZZZ - Creation
-    The whole history is logged in previous version of the unit
+    
     
 }
 unit GLSkyBox;

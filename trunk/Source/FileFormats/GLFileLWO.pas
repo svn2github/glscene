@@ -5,7 +5,7 @@
     Support-code to load Lightwave LWO Files (v6.0+, partial support). 
     History :  
       Original code: "Brian Johns" <brianjohns1@hotmail.com>
-      The whole history is logged in previous version of the unit
+      
 
 }
 unit GLFileLWO;

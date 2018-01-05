@@ -5,12 +5,8 @@
   Support-code to load STL Files into TGLFreeForm-Components in GLScene. 
   Note that you must manually add this unit to one of your project's uses
   to enable support for STL files at run-time. 
-
-  History :
-  17/10/02 - EG - Created from split of GLVectorFileObjects,
-  ASCII STL support (Adem)
-  The whole history is logged in previous version of the unit
 }
+
 unit GLFileSTL;
 
 interface
@@ -42,12 +38,12 @@ type
   end;
 
 type
-  {  The STL vector file (stereolithography format).
+  (*  The STL vector file (stereolithography format).
     It is a list of the triangular surfaces that describe a computer generated
     solid model. This is the standard input for most rapid prototyping machines.
     There are two flavors of STL, the "text" and the "binary", this class
     reads both, but exports only the "binary" version.
-    Original Binary importer code by Paul M. Bearne, Text importer by Adem. }
+    Original Binary importer code by Paul M. Bearne, Text importer by Adem. *)
   TGLSTLVectorFile = class(TGLVectorFile)
   public
     class function Capabilities: TGLDataFileCapabilities; override;

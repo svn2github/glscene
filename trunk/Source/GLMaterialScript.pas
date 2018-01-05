@@ -5,7 +5,7 @@
    Material Script Batch loader for TGLMaterialLibrary for runtime.
    History :
      09/06/04 - Mathx - Addition to GLScene (created by Kenneth Poulter)
-   The whole history is logged in previous version of the unit
+   
 }
 
 unit GLMaterialScript;

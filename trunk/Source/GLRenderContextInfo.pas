@@ -6,7 +6,7 @@
 
   History :  
     05/10/08 - DanB - Created from GLTexture.pas split
-    The whole history is logged in previous version of the unit.
+    .
 
 }
 unit GLRenderContextInfo;

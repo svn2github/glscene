@@ -2,10 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Defines vector types as advanced records.
-   History:
-     17/05/11 - PW - Creation.
-     The whole history is logged in previous version of the unit
+   Defines common vector types as advanced records.
 }
 unit GLTypes;
 

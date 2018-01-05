@@ -6,7 +6,7 @@
 
   History :  
    06/07/00 - EG - Creation (TGLSamplingScale & TGLHeightField)
-   The whole history is logged in previous version of the unit
+   
 
 }
 unit GLGraph;

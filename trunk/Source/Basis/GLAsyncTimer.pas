@@ -4,10 +4,6 @@
 {  
    Asynchronous timer component (actual 1 ms resolution). 
    This component is based on ThreadedTimer by Carlos Barbosa. 
-
-   History :
-   01/04/00 - EG - Re-Creation, minor changes over Carlos's code
-   The whole history is logged in previous version of the unit.
 }
 unit GLAsyncTimer;
 
@@ -28,12 +24,12 @@ const
 
 type
 
-  {  Asynchronous timer component (actual 1 ms resolution, if CPU fast enough). 
-    Keep in mind timer resolution is obtained <i>in-between</i> events, but
+  (*  Asynchronous timer component (actual 1 ms resolution, if CPU fast enough). 
+    Keep in mind timer resolution is obtained in-between events, but
     events are not triggered every x ms. For instance if you set the interval to
     5 ms, and your Timer event takes 1 ms to complete, Timer events will actually
     be triggered every 5+1=6 ms (that's why it's "asynchronous"). 
-    This component is based on ThreadedTimer by Carlos Barbosa. }
+    This component is based on ThreadedTimer by Carlos Barbosa. *)
   TGLAsyncTimer = class(TComponent)
   private
     FEnabled: Boolean;
@@ -60,11 +56,7 @@ type
   end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 type
@@ -195,7 +187,9 @@ begin
   FTimerThread.Priority := Value;
 end;
 
+//-----------------------------------------------------------
 initialization
+//-----------------------------------------------------------
 
   RegisterClass(TGLAsyncTimer);
 

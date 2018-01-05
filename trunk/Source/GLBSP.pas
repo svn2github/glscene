@@ -4,11 +4,6 @@
 {
   Binary Space Partion mesh support for GLScene. 
   The classes of this unit are designed to operate within a TGLBaseMesh. 
-
-  History :  
-   30/01/03 - EG - Creation
-   The whole history is logged in previous version of the unit.
-
 }
 
 unit GLBSP;
@@ -148,7 +143,6 @@ type
     {  Goes through all triangle edges, looking for tjunctions. 
       The candidates are indices of points to lookup a tjunction vertices. }
     procedure FixTJunctions(const tJunctionsCandidates: TIntegerList);
-
     {  BSP node split plane. 
       Divides space between positive and negative half-space, positive
       half-space being the one were the evaluation of an homogeneous
@@ -175,9 +169,9 @@ const
   cOwnTriangleEpsilon = 1E-5;
   cTJunctionEpsilon = 1E-4;
 
-  // ------------------
-  // ------------------ TBSPClusterVisibility ------------------
-  // ------------------
+// ------------------
+// ------------------ TBSPClusterVisibility ------------------
+// ------------------
 
 constructor TBSPClusterVisibility.Create;
 begin

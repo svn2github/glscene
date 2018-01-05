@@ -4,10 +4,6 @@
 {
    This unit contains classes that imitate an atmosphere around a planet.
 
-    History :
-      07/02/07 - DaStr - Initial version (donated to GLScene)
-      The whole history is logged in previous version of the unit
-
    Comments:
       1) Eats a lot of CPU (reduces FPS from 1240 to 520 on my PC with cSlices=100)
       2) Alpha in LowAtmColor, HighAtmColor is ignored.

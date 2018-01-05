@@ -4,9 +4,6 @@
 {
   Registration unit for GLScene library components, property editors and
   IDE experts.
-  History : 
-    05/02/00 - EG - Added TGLColorProperty and TGLCoordinatesProperty
-    30-DEC-99 ml: scene editor added, structural changes
 }
 
 unit GLSceneRegister;
@@ -62,7 +59,6 @@ type
 
   TGLResolutionProperty = class(TPropertyEditor)
   public
-    
     function GetAttributes: TPropertyAttributes; override;
     function GetValue: string; override;
     procedure GetValues(Proc: TGetStrProc); override;
@@ -97,7 +93,6 @@ type
     function GetAttributes: TPropertyAttributes; override;
     procedure GetValues(Proc: TGetStrProc); override;
     procedure Edit; override;
-
     // ICustomPropertyListDrawing  stuff
     procedure ListMeasureHeight(const Value: string; ACanvas: TCanvas;
       var AHeight: Integer);
@@ -141,9 +136,7 @@ type
 
   TGLGUILayoutEditor = class(TComponentEditor)
   public
-    
     procedure Edit; override;
-
     procedure ExecuteVerb(Index: Integer); override;
     function GetVerb(Index: Integer): string; override;
     function GetVerbCount: Integer; override;
@@ -158,16 +151,13 @@ type
     in D6! Grrr... }
   TReuseableDefaultEditor = class(TComponentEditor, IDefaultEditor)
   protected
-    
     FFirst: IProperty;
     FBest: IProperty;
     FContinue: Boolean;
     procedure CheckEdit(const Prop: IProperty);
     procedure EditProperty(const Prop: IProperty;
       var Continue: Boolean); virtual;
-
   public
-    
     procedure Edit; override;
   end;
 
@@ -184,7 +174,6 @@ type
 
   TGLAnimationNameProperty = class(TStringProperty)
   public
-    
     function GetAttributes: TPropertyAttributes; override;
     procedure GetValues(Proc: TGetStrProc); override;
   end;
@@ -219,38 +208,32 @@ type
 
   TGLMaterialComponentNameProperty = class(TStringProperty)
   public
-    
     function GetAttributes: TPropertyAttributes; override;
     procedure Edit; override;
   end;
 
   TGLLibTextureNameProperty = class(TGLMaterialComponentNameProperty)
   public
-    
     procedure GetValues(Proc: TGetStrProc); override;
   end;
 
   TGLLibSamplerNameProperty = class(TGLMaterialComponentNameProperty)
   public
-    
     procedure GetValues(Proc: TGetStrProc); override;
   end;
 
   TGLLibCombinerNameProperty = class(TGLMaterialComponentNameProperty)
   public
-    
     procedure GetValues(Proc: TGetStrProc); override;
   end;
 
   TGLLibShaderNameProperty = class(TGLMaterialComponentNameProperty)
   public
-    
     procedure GetValues(Proc: TGetStrProc); override;
   end;
 
   TGLLibAttachmentNameProperty = class(TGLMaterialComponentNameProperty)
   public
-    
     procedure GetValues(Proc: TGetStrProc); override;
   end;
 
@@ -267,14 +250,12 @@ type
 
   TShaderFileProperty = class(TStringProperty)
   public
-    
     function GetAttributes: TPropertyAttributes; override;
     procedure Edit; override;
   end;
 
   TAsmProgFileProperty = class(TStringProperty)
   public
-    
     function GetAttributes: TPropertyAttributes; override;
     procedure Edit; override;
   end;
@@ -283,19 +264,16 @@ type
   private
     procedure PassUniform(const S: string);
   public
-    
     function GetAttributes: TPropertyAttributes; override;
     procedure Edit; override;
   end;
 
   TGLShaderEditorProperty = class(TClassProperty)
   protected
-    
     function GetStrings: TStrings;
     procedure SetStrings(const Value: TStrings);
     procedure OnShaderCheck(Sender: TObject);
   public
-    
     function GetAttributes: TPropertyAttributes; override;
     procedure Edit; override;
   end;
@@ -306,12 +284,7 @@ procedure Register;
 function ObjectManager: TGLObjectManager;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
-
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 uses

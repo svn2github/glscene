@@ -7,7 +7,7 @@
 
     History :
        02/03/10 - Yar - Creation
-   	   The whole history is logged in previous version of the unit
+   	   
 }
 unit GLSCUDAUtility;
 

@@ -3,10 +3,6 @@
 //
 {
    GLScene Form design
-   History :  
-     03/04/11 - Yar - Added three project wizard for Delphi
-     05/12/10 - PREDATOR - Added three form wizard and three project wizard for Lazarus
-     23/08/10 - Yar - Creation
 }
 
 unit GLSceneFormDesign;

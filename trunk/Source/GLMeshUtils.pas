@@ -6,7 +6,7 @@
 
    History :
       18/08/01 - EG - Creation
-      The whole history is logged in previous version of the unit
+      
 	 
 }
 unit GLMeshUtils;

@@ -3,10 +3,6 @@
 //
 {
    PGM image loader
-   History :
-     08/05/10 - Yar - Removed check for residency in AssignFromTexture
-     04/02/10 - Yar - Creation
-
 }
 unit GLFilePGM;
 
@@ -33,7 +29,6 @@ type
   TGLPGMImage = class(TGLBaseImage)
   public
     class function Capabilities: TGLDataFileCapabilities; override;
-
     procedure LoadFromFile(const filename: string); override;
     procedure SaveToFile(const filename: string); override;
     procedure LoadFromStream(stream: TStream); override;
@@ -46,19 +41,13 @@ type
   end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 
-  // ------------------
-  // ------------------ TGLPGMImage ------------------
-  // ------------------
+// ------------------
+// ------------------ TGLPGMImage ------------------
+// ------------------
 
-   
-  //
 procedure TGLPGMImage.LoadFromFile(const filename: string);
 var
   w, h: Integer;
@@ -95,8 +84,6 @@ begin
     raise EInvalidRasterFile.CreateFmt('File %s not found', [filename]);
 end;
 
-// SaveToFile
-//
 procedure TGLPGMImage.SaveToFile(const filename: string);
 begin
   if not IsCUTILInitialized then
@@ -120,8 +107,6 @@ begin
   Assert(false, 'Stream saving not supported');
 end;
 
-// AssignFromTexture
-//
 procedure TGLPGMImage.AssignFromTexture(textureContext: TGLContext;
   const textureHandle: Cardinal; textureTarget: TGLTextureTarget;
   const CurrentFormat: Boolean; const intFormat: TGLInternalFormat);
@@ -187,14 +172,14 @@ begin
   end;
 end;
 
-// Capabilities
-//
 class function TGLPGMImage.Capabilities: TGLDataFileCapabilities;
 begin
   Result := [dfcRead, dfcWrite];
 end;
 
+//------------------------------------------------
 initialization
+//------------------------------------------------
 
 { Register this Fileformat-Handler with GLScene }
 RegisterRasterFormat('pgm', 'Portable Graymap', TGLPGMImage);

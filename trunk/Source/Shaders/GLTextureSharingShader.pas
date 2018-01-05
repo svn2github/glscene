@@ -12,7 +12,7 @@
 
    History :
      14/03/08 - Pascal - Initial version (contributed to GLScene)
-     The whole history is logged in previous version of the unit
+     
 
 }
 

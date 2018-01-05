@@ -3,16 +3,12 @@
 //
 {
   Provides on demand state of any key on the keyboard as well as a set of
-  utility functions for working with virtual keycodes.
+  utility functions for working with virtual key codes.
 
   Note that windows maps the mouse buttons to virtual key codes too, and you
   can use the functions/classes in this unit to check mouse buttons too.
-  See "Virtual-Key Codes" in the Win32 programmers réferences for a list of
+  See "Virtual-Key Codes" in the Win32 programmers references for a list of
   key code constants (VK_* constants are declared in the "Windows" unit).
-
-  History :
-  03/08/00 - Egg - Creation, partly based Silicon Commander code
-  The whole history is logged in previous version of the unit
 }
 
 unit GLKeyboard;
@@ -70,13 +66,8 @@ procedure KeyboardNotifyWheelMoved(wheelDelta: Integer);
 var
   vLastWheelDelta: Integer;
 
-  // ---------------------------------------------------------------------
-  // ---------------------------------------------------------------------
-  // ---------------------------------------------------------------------
+// ---------------------------------------------------------------------
 implementation
-
-// ---------------------------------------------------------------------
-// ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
 
 const

@@ -3,9 +3,6 @@
 //
 {
   3ds-specific scene objects. 
-  History : 
-    06/04/08 - DaStr - Initial version (by Lexer)
-    The whole history is logged in previous version of the unit
 }
 unit GLFile3DSSceneObjects;
 
@@ -102,7 +99,9 @@ type
 var
   vGLFile3DSSceneObjects_RenderCameraAndLights: Boolean = False;
 
+//---------------------------------------------------------  
 implementation
+//---------------------------------------------------------  
 
 function MakeRotationQuaternion(const axis: TAffineVector; angle: Single): TQuaternion;
 var

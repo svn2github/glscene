@@ -12,12 +12,6 @@
   Non-cached data:
   "Smooth" terrain   1:100 to 1:1000
   Random terrain     1:100
-
-
-
-  History :
-  21/12/01 - Egg - Creation
-  The whole history is logged in previous version of the unit
 }
 unit GLHeightTileFile;
 

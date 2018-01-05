@@ -3,10 +3,6 @@
 //
 {
    Support for Windows WAV format. 
-   History :  
-       06/05/09 - DanB - Creation from split from GLSoundFileObjects.pas
-       The whole history is logged in previous version of the unit
-	 
 }
 unit GLFileWAV;
 

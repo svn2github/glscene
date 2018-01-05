@@ -4,9 +4,6 @@
 {
    DXTC (also S3TC) decoding.
    Adapted from DevIL image library (http://openil.sourceforge.net)
-   History :
-     01/09/04 - SG - Creation
-     The whole history is logged in previous version of the unit
 }
 
 unit DXTC;

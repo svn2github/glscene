@@ -3,7 +3,6 @@
 //
 {
    Conversion of cg NVIDIA header files to cg.pas
-   The history is logged in a former GLS version of the unit.
 }
 {******************************************************************************}
 {*                                                                            *}

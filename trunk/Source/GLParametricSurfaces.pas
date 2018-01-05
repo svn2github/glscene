@@ -23,11 +23,6 @@
    The MinU, MaxU, MinV and MaxV properties allow for drawing specific
    parts of the bezier surface, which can be used to blend a patch with
    other patches. 
-
-   History :
-       18/07/03 - SG - Creation.
-       The whole history is logged in a former version of GLScene
-
 }
 unit GLParametricSurfaces;
 

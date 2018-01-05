@@ -4,10 +4,6 @@
 {
   Helper functions to convert between different three dimensional coordinate
   systems. Room for optimisations.
-
-  History :
-  09/04/03 - ARH - Initial Version (Cylindrical,Spherical)
-
 }
 unit GLGeometryCoordinates;
 

@@ -61,11 +61,6 @@ unit ODEImport;
   at http://www.q12.org/ode/
 
   ***********************************************************************
-
-  History
-  2002.09.16 - Mattias Fagerlund & Christophe Hosten - Conversion started
-  The whole history is logged in previous version of the unit
-
  }
 
 {$I pascaldefines.inc}

@@ -8,11 +8,6 @@
    They implement a slightly different persistence mechanism than that of the VCL,
    allowing for object-level versioning (100% backward compatibility) and full
    polymorphic persistence.
-
-   History :
-     15/03/01 - EG - Creation
-     The whole history is logged in previous version of the unit
-
 }
 unit GLPersistentClasses;
 
@@ -1819,11 +1814,7 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
   RegisterClass(TPersistentObjectList);

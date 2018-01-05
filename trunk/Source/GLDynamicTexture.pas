@@ -4,11 +4,6 @@
 {
   Adds a dynamic texture image, which allows for easy updating of
   texture data.
-
-  History :
-    24/06/07 - LC - Creation
-    The whole history is logged in previous version of the unit
-
 }
 
 unit GLDynamicTexture;

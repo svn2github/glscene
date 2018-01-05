@@ -5,7 +5,7 @@
    GLScene form loader
 
    History : 23/08/10 - Yar - Creation
-   The whole history is logged in previous version of the unit.
+   .
 
 }
 

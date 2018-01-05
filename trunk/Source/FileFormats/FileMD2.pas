@@ -3,12 +3,6 @@
 //
 {
       Loading methods for MD2 file format
-
-      History :
-     07/06/00 - Egg - Added Header, reduced dependencies,
-                       LoadFromFile replaced with LoadFromStream,
-                       some cleanup & optimizations
-     The whole history is logged in previous version of the unit.					   
 }
 unit FileMD2;
 
@@ -85,8 +79,6 @@ type
 
 
 type
-  // TFileMD2
-  //
   TFileMD2 = class
   private
     FiFrames: longint;

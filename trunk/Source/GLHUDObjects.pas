@@ -3,11 +3,6 @@
 //
 {
   GLScene objects that get rendered in 2D coordinates
-
-  History :
-    15/01/01 - EG - Creation
-    The whole history is logged in previous version of the unit.
-
 }
 unit GLHUDObjects;
 

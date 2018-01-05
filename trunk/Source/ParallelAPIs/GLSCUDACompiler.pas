@@ -5,11 +5,6 @@
   Component allows to compile the CUDA-source (*.cu) file.
   in design- and runtime.
   To work requires the presence of CUDA Toolkit 3.X and MS Visual Studio C++.
-
-   History :
-   19/03/10 - Yar - Creation
-   The whole history is logged in previous version of the unit
-
 }
 unit GLSCUDACompiler;
 

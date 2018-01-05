@@ -5,10 +5,6 @@
    Implements a multi-proxy object, useful for discreet LOD. 
    Allows assign a unique material for each proxy master. 
 
-    History :  
-      17/02/07 - DaStr - Initial version (contributed to GLScene)
-      The whole history is logged in previous version of the unit
-
   What changed compared to GLMultiProxy:
     1) Allows assign a unique material for each proxy master
     2) TGLMaterialMultiProxyMaster: FDistanceMin, FDistanceMax removed

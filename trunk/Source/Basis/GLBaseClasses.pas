@@ -3,9 +3,6 @@
 //
 {
   Base classes for GLScene.
-  History:
-     05/10/08 - DanB - Creation, from GLMisc.pas + other places
-     The whole history is logged in previous version of the unit
 }
 
 unit GLBaseClasses;

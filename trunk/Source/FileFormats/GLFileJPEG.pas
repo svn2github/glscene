@@ -3,9 +3,6 @@
 //
 {
    Methods for loading Jpeg images
-   History :
-     27/02/10 - Yar - Creation
-     The whole history is logged in a prior version of the unit
 }
 unit GLFileJPEG;
 
@@ -40,12 +37,10 @@ type
   public
     constructor Create; override;
     class function Capabilities: TGLDataFileCapabilities; override;
-
     procedure LoadFromFile(const filename: string); override;
     procedure SaveToFile(const filename: string); override;
     procedure LoadFromStream(AStream: TStream); override;
     procedure SaveToStream(AStream: TStream); override;
-
     {Assigns from any Texture.}
     procedure AssignFromTexture(textureContext: TGLContext;
       const textureHandle: Cardinal;
@@ -62,11 +57,7 @@ type
 procedure Jpeg2Bmp(const BmpFileName, JpgFileName: string);
 
 //---------------------------------------------------------------------
-//---------------------------------------------------------------------
-//---------------------------------------------------------------------
 implementation
-//---------------------------------------------------------------------
-//---------------------------------------------------------------------
 //---------------------------------------------------------------------
 
 procedure Jpeg2Bmp(const BmpFileName, JpgFileName: string);
@@ -100,8 +91,6 @@ begin
   FDither := False;
 end;
 
- 
-
 procedure TGLJPEGImage.LoadFromFile(const filename: string);
 var
   fs: TStream;
@@ -120,8 +109,6 @@ begin
     raise EInvalidRasterFile.CreateFmt('File %s not found', [filename]);
 end;
 
-// SaveToFile
-
 procedure TGLJPEGImage.SaveToFile(const filename: string);
 var
   fs: TStream;
@@ -134,8 +121,6 @@ begin
   end;
   ResourceName := filename;
 end;
-
-// LoadFromStream
 
 procedure TGLJPEGImage.LoadFromStream(AStream: TStream);
 var
@@ -176,8 +161,6 @@ begin
 
 end;
 
-// AssignFromTexture
-
 procedure TGLJPEGImage.AssignFromTexture(textureContext: TGLContext;
   const textureHandle: Cardinal; textureTarget: TGLTextureTarget;
   const CurrentFormat: boolean; const intFormat: TGLInternalFormat);
@@ -190,9 +173,6 @@ begin
   if FSmoothing <> AValue then
     FSmoothing := AValue;
 end;
-
-// Capabilities
-
 
 class function TGLJPEGImage.Capabilities: TGLDataFileCapabilities;
 begin

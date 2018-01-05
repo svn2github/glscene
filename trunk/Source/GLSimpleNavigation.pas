@@ -7,7 +7,7 @@
     that all demos usually have in themselves. All that is just by dropping
     this component on the form.
 
-    The whole history is logged in previous version of the unit.
+    .
 }
 
 unit GLSimpleNavigation;

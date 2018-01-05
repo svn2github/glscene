@@ -18,10 +18,6 @@
 
    Licenses: Removed. Donated to GLScene's Code Base as long as the author (Kenneth Poulter) is not altered in this file.
              Theft of code also is not allowed, although alterations are allowed.
-
-   History :
-     26/12/2005 - Kenneth Poulter - Creation of base code from experimentation
-     The whole history is logged in previous version of the unit.
 }
 
 unit GLEParticleMasksManager;

@@ -343,7 +343,6 @@
         <DCCReference Include="..\..\Source\GLSpaceText.pas"/>
         <DCCReference Include="..\..\Source\Basis\GLSpatialPartitioning.pas"/>
         <DCCReference Include="..\..\Source\Basis\GLSpline.pas"/>
-        <DCCReference Include="..\..\Source\GLStarRecord.pas"/>
         <DCCReference Include="..\..\Source\Basis\GLState.pas"/>
         <DCCReference Include="..\..\Source\GLStrings.pas"/>
         <DCCReference Include="..\..\Source\Basis\GLTeapot.pas"/>

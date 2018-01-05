@@ -6,7 +6,7 @@
 
   History :
    22/12/05 - Mathx - Added to the GLScene Project.
-   The whole history is logged in previous version of the unit	 
+   	 
 }
 unit GLFileB3D;
 

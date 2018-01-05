@@ -3,10 +3,6 @@
 //
 {
   Code to generate triangle strips and fans for polygons.
-
-  History :
-    08/09/03 - Jaj - Added single outline polygon support
-    The whole history is logged in previous version of the unit
 }
 unit GLGLUTesselation;
 

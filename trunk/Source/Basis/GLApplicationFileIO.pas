@@ -2,12 +2,8 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Components and fonction that abstract file I/O access for an application.
+   Components and functions that abstract file I/O access for an application.
    Allows re-routing file reads to reads from a single archive file f.i. 
-
-  History :  
-     21/11/02 - EG - Creation
-     The whole history is logged in previous version of the unit
 }
 
 unit GLApplicationFileIO;

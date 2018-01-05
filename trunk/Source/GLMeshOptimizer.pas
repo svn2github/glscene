@@ -3,10 +3,6 @@
 //
 {
   Mesh optimization for GLScene.
-
-  History :
-  03/06/03 - EG - Creation
-  The whole history is logged in previous version of the unit
 }
 unit GLMeshOptimizer;
 

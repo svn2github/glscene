@@ -5,10 +5,6 @@
     Support-code to load Q3BSP Files into TGLFreeForm-Components in GLScene.
     Note that you must manually add this unit to one of your project's uses
     to enable support for OBJ & OBJF at run-time.
-
-  History :
-    30/01/03 - EG - Creation
-    The whole history is logged in previous version of the unit
 }
 unit GLFileQ3BSP;
 
@@ -51,10 +47,10 @@ var
   vQ3BSPLightmapBrightness: Single = 2; // scaling factor, 1.0 = unchanged
   vGLFileQ3BSPLoadMaterials: boolean = True; // Mrqzzz : Flag to avoid loading materials (useful for IDE Extentions like GlaredX)
 
- // ------------------------------------------------------------------
- // ------------------------------------------------------------------
- // ------------------------------------------------------------------
+// ------------------------------------------------------------------
 implementation
+// ------------------------------------------------------------------
+
 // ------------------
 // ------------------ TGLSTLVectorFile ------------------
 // ------------------

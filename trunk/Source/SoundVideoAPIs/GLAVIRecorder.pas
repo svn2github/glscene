@@ -3,11 +3,6 @@
 //
 {
   Component to make it easy to record GLScene frames into an AVI file 
-
-   History :  
-     24/02/01 - NelC - Creation and initial code
-     The whole history is logged in previous version of the unit         
-   
 }
 unit GLAVIRecorder;
 
@@ -17,19 +12,27 @@ interface
 {$IFNDEF MSWINDOWS}{$MESSAGE Error 'Unit not supported'} {$ENDIF}
 
 uses
-  Winapi.Windows, WinApi.Messages,
-  System.Classes, System.SysUtils, System.UITypes,
-  VCL.Controls, VCL.Forms, VCL.Extctrls, VCL.Graphics, VCL.Dialogs,
+  Winapi.Windows, 
+  WinApi.Messages,
+  System.Classes, 
+  System.SysUtils, 
+  System.UITypes,
+  VCL.Controls, 
+  VCL.Forms, 
+  VCL.Extctrls, 
+  VCL.Graphics, 
+  VCL.Dialogs,
    
-  GLGraphics, GLSVfw, GLScene, GLWin32Viewer;
+  GLGraphics, 
+  GLSVfw, 
+  GLScene, 
+  GLWin32Viewer;
 
 type
   TAVICompressor = (acDefault, acShowDialog, acDivX);
 
   PAVIStream = ^IAVIStream;
 
-  // TAVISizeRestriction
-  //
   {  Frame size restriction. 
     Forces frame dimensions to be a multiple of 2, 4, or 8. Some compressors
     require this. e.g. DivX 5.2.1 requires mutiples of 2. }
@@ -38,8 +41,6 @@ type
 
   TAVIRecorderState = (rsNone, rsRecording);
 
-  // TAVIImageRetrievalMode
-  //
   {  Image retrieval mode for frame capture. 
     Following modes are supported: 
      irmSnapShot : retrieve OpenGL framebuffer content using glReadPixels
@@ -53,29 +54,20 @@ type
   TAVIRecorderPostProcessEvent = procedure(Sender: TObject; frame: TBitmap)
     of object;
 
-  // TGLAVIRecorder
-  //
   {  Component to make it easy to record GLScene frames into an AVI file. }
   TGLAVIRecorder = class(TComponent)
   private
-     
     AVIBitmap: TBitmap;
     AVIFrameIndex: integer;
-
     AVI_DPI: integer;
-
     asi: TAVIStreamInfo;
-
     pfile: IAVIFile;
     Stream, Stream_c: IAVIStream; // AVI stream and stream to be compressed
-
     FBitmapInfo: PBitmapInfoHeader;
     FBitmapBits: Pointer;
     FBitmapSize: Dword;
-
     FTempName: String;
     // so that we know the filename to delete case of user abort
-
     FAVIFilename: string;
     FFPS: byte;
     FWidth: integer;
@@ -84,17 +76,13 @@ type
     FImageRetrievalMode: TAVIImageRetrievalMode;
     RecorderState: TAVIRecorderState;
     FOnPostProcessEvent: TAVIRecorderPostProcessEvent;
-
     FBuffer: TGLSceneBuffer;
-
     procedure SetHeight(const val: integer);
     procedure SetWidth(const val: integer);
     procedure SetSizeRestriction(const val: TAVISizeRestriction);
     procedure SetGLSceneViewer(const Value: TGLSceneViewer);
     procedure SetGLNonVisualViewer(const Value: TGLNonVisualViewer);
-
   protected
-    
     // Now, TAVIRecorder is tailored for GLScene. Maybe we should make a generic
     // TAVIRecorder, and then sub-class it to use with GLScene
     FGLSceneViewer: TGLSceneViewer;
@@ -112,22 +100,16 @@ type
     // ( BTW, VirtualDub is an excellent freeware for editing your AVI. For
     // converting AVI into MPG, try AVI2MPG1 - http://www.mnsi.net/~jschlic1 )
     function Restricted(s: integer): integer;
-
     procedure InternalAddAVIFrame;
-
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
     function CreateAVIFile(DPI: integer = 0): boolean;
     procedure AddAVIFrame; overload;
     procedure AddAVIFrame(bmp: TBitmap); overload;
     procedure CloseAVIFile(UserAbort: boolean = false);
     function Recording: boolean;
-
   published
-    
     property FPS: byte read FFPS write FFPS default 25;
     property GLSceneViewer: TGLSceneViewer read FGLSceneViewer
       write SetGLSceneViewer;
@@ -142,19 +124,12 @@ type
       write SetSizeRestriction default srForceBlock8x8;
     property ImageRetrievalMode: TAVIImageRetrievalMode read FImageRetrievalMode
       write FImageRetrievalMode default irmBitBlt;
-
     property OnPostProcessEvent: TAVIRecorderPostProcessEvent
       read FOnPostProcessEvent write FOnPostProcessEvent;
-
   end;
 
-  // ---------------------------------------------------------------------
-  // ---------------------------------------------------------------------
-  // ---------------------------------------------------------------------
+// ---------------------------------------------------------------------
 implementation
-
-// ---------------------------------------------------------------------
-// ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
 
 // DIB support rountines for AVI output
@@ -216,8 +191,6 @@ end;
 // ------------------ TAVIRecorder ------------------
 // ------------------
 
- 
-//
 constructor TGLAVIRecorder.Create(AOwner: TComponent);
 begin
   inherited;
@@ -230,8 +203,6 @@ begin
   FImageRetrievalMode := irmBitBlt;
 end;
 
- 
-//
 destructor TGLAVIRecorder.Destroy;
 begin
   // if still open here, abort it
@@ -240,8 +211,6 @@ begin
   inherited;
 end;
 
-// Restricted
-//
 function TGLAVIRecorder.Restricted(s: integer): integer;
 begin
   case FSizeRestriction of
@@ -256,24 +225,18 @@ begin
   end;
 end;
 
-// SetHeight
-//
 procedure TGLAVIRecorder.SetHeight(const val: integer);
 begin
   if (RecorderState <> rsRecording) and (val <> FHeight) and (val > 0) then
     FHeight := Restricted(val);
 end;
 
-// SetWidth
-//
 procedure TGLAVIRecorder.SetWidth(const val: integer);
 begin
   if (RecorderState <> rsRecording) and (val <> FWidth) and (val > 0) then
     FWidth := Restricted(val);
 end;
 
-// SetSizeRestriction
-//
 procedure TGLAVIRecorder.SetSizeRestriction(const val: TAVISizeRestriction);
 begin
   if val <> FSizeRestriction then
@@ -284,8 +247,6 @@ begin
   end;
 end;
 
-// AddAVIFrame (from sceneviewer)
-//
 procedure TGLAVIRecorder.AddAVIFrame;
 var
   bmp32: TGLBitmap32;
@@ -331,8 +292,6 @@ begin
   InternalAddAVIFrame;
 end;
 
-// AddAVIFrame (from custom bitmap)
-//
 procedure TGLAVIRecorder.AddAVIFrame(bmp: TBitmap);
 begin
   if RecorderState <> rsRecording then
@@ -342,8 +301,6 @@ begin
   InternalAddAVIFrame;
 end;
 
-// InternalAddAVIFrame
-//
 procedure TGLAVIRecorder.InternalAddAVIFrame;
 begin
   if Assigned(FOnPostProcessEvent) then
@@ -499,7 +456,6 @@ begin
     CloseAVIFile(True);
     raise;
   end;
-
 end;
 
 procedure TGLAVIRecorder.CloseAVIFile(UserAbort: boolean = false);
@@ -528,8 +484,6 @@ begin
   end;
 end;
 
-// Recording
-//
 function TGLAVIRecorder.Recording: boolean;
 begin
   Result := (RecorderState = rsRecording);

@@ -3,10 +3,6 @@
 //
 {
   File loading methods for the MD3 file format
-
-  History :
-    28/02/03 - SG - Creation
-    The whole history is logged in previous version of the unit.	 	
 }
 unit FileMD3;
 
@@ -18,15 +14,14 @@ uses
 
 type
   // Quake3 MD3 structure types
-
   TMD3Tag = record
     strName: array[0..63] of AnsiChar;
     vPosition: TVector3f;
     rotation: TMatrix3f;
   end;
 
-  // I've seen this part of the MD3 structure called 2 things:
-  // A frame and a bone. It doesn't matter because we don't use it
+  (* This part of the MD3 structure called 2 things:
+    A frame and a bone. It doesn't matter because we don't use it *)
   {TMD3Frame = record
     min_bound,max_bounds,
     local_origin  : TVector3f;

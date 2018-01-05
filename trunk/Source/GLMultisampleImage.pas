@@ -6,11 +6,6 @@
     textures" - two-dimensional and two-dimensional array - as well as
     mechanisms to fetch a specific sample from such a texture in a shader,
     and to attach such textures to FBOs for rendering.
-
-    History :
-      16/05/10 - Yar - Creation (thanks to C4)
-      The whole history is logged in previous version of the unit
-
 }
 unit GLMultisampleImage;
 
@@ -296,7 +291,10 @@ begin
   end;
 end;
 
+//--------------------------------------------
 initialization
+//--------------------------------------------
+
   RegisterGLTextureImageClass(TGLMultisampleImage);
 
 end.

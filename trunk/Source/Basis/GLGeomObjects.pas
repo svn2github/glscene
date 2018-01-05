@@ -3,9 +3,6 @@
 //
 {
   Geometric objects.
-  History :
-   21/07/03 - EG - Creation from GLObjects split
-   The whole history is logged in previous version of the unit.
 }
 unit GLGeomObjects;
 
@@ -38,9 +35,9 @@ uses
 
 
 type
-  { A Disk object that may not be complete, it can have a hole (controled by the
-    InnerRadius property) and can only be a slice (controled by the StartAngle
-    and SweepAngle properties). }
+  (* A Disk object that may not be complete, it can have a hole (controlled by the
+    InnerRadius property) and can only be a slice (controlled by the StartAngle
+    and SweepAngle properties). *)
   TGLDisk = class(TGLQuadricObject)
   private
     FStartAngle, FSweepAngle, FOuterRadius, FInnerRadius: Single;
@@ -447,6 +444,7 @@ type
 // -------------------------------------------------------------
 implementation
 // -------------------------------------------------------------
+
 // ------------------
 // ------------------ TGLDisk ------------------
 // ------------------

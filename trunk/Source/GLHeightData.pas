@@ -13,11 +13,6 @@
   cacheing and manipulation to provide TGLHeightData objects. A TGLHeightData
   is basicly a square, power of two dimensionned raster heightfield, and
   holds the data a renderer needs. 
-
-   History :  
-     11/02/01 - EG - Creation
-     The whole history is logged in previous version of the unit
-
 }
 unit GLHeightData;
 

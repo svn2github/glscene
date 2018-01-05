@@ -8,10 +8,6 @@
    customized shader. Be sure to keep the shader balanced
    by returning the OpenGL state to how you found it. 
 
-    History :  
-       25/02/07 - DaStr - Moved registration to GLSceneRegister.pas
-       05/08/03 - SG - Creation
-    
 }
 unit GLUserShader;
 

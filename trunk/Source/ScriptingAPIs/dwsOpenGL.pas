@@ -7,7 +7,7 @@
 
     History :
        21/09/2004 - SG - Creation
-	   The whole history is logged in previous version of the unit
+	   
 
 }
 unit dwsOpenGL;

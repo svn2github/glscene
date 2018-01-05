@@ -12,12 +12,7 @@
         f  is used for Single precision floating points values (32 bits)
         i  is used for 32 bits signed integers (longint)
         s  is uses for 16 bits signed integers (smallint)
-   
-
    Note : D3D types untested. 
-	 History :
-     04/07/01 - EG - Creation
-     The whole history is logged in previous version of the unit
 }
 unit GLVectorTypes;
 
@@ -367,7 +362,9 @@ type
       1 : (M : TMatrix4f);
   end;
 
+//-----------------------------------------------  
 implementation
+//-----------------------------------------------  
 
 end.
 

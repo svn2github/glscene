@@ -3,8 +3,6 @@
 //
 {
    Methods for PAK Archiving
-   History :  
-     04/06/10 - Yar - Added to GLScene (as created by Rustam Asmandiarov aka Predator)
 }
 
 unit GLFilePAK;
@@ -34,8 +32,6 @@ Type
       FilePos: integer;
       FileLength: integer;
    end;
-
-  { TPAKArchive }
 
   TPAKArchive=class(TGLBaseArchive)
     private
@@ -69,19 +65,15 @@ Type
       procedure Extract(index: integer; NewName: string); override;
       procedure Extract(ContentName, NewName: string); override;
   end;
-//-----------------------------------------------------------
-//-----------------------------------------------------------
+
 //-----------------------------------------------------------
 implementation
-//-----------------------------------------------------------
-//-----------------------------------------------------------
 //-----------------------------------------------------------
 
 var
    Dir: TFileSection;
 
 { TPAKArchive }
-
 
 function TPAKArchive.GetContentCount: integer;
 begin
@@ -299,8 +291,10 @@ begin
       Extract(FContentList.IndexOf(ContentName), NewName);
 end;
 
+//----------------------------------------
 initialization
+//----------------------------------------
 
-RegisterArchiveFormat('pak','GLScene PAK File',TPAKArchive);
+RegisterArchiveFormat('pak','PAK File',TPAKArchive);
 
 end.

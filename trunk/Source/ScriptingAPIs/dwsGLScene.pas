@@ -7,10 +7,6 @@
    This unit is dependent on dws2Classes and dws2VectorGeometry.
    These components must be associated with the same compiler
    for the GLScene classes to inherit from.
-
-    History :
-       27/04/2004 - SG - Creation
-
 }
 unit dwsGLScene;
 
@@ -44,7 +40,9 @@ type
 
 procedure Register;
 
+//--------------------------------------------------------
 implementation
+//--------------------------------------------------------
 
 // ----------
 // ---------- Internal class method class declarations ----------

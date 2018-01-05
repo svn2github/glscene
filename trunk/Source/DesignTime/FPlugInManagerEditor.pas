@@ -3,12 +3,6 @@
 //
 {
   Need a short description of what it does here. 
-
-   History :  
-   17/11/14 - PW - Renamed from PlugInManagerPropEditor.pas to FPlugInManagerEditor.pas
-   16/10/08 - UweR - Compatibility fix for Delphi 2009
-   02/04/07 - DaStr - Added $I GLScene.inc
-   28/07/01 - EG - Creation
 }
 unit FPlugInManagerEditor;
 
@@ -17,11 +11,21 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils, System.ImageList,
-  VCL.Forms, VCL.Dialogs, VCL.StdCtrls,
-  VCL.Controls, VCL.Buttons, Vcl.ExtCtrls, Vcl.ImgList, Vcl.ComCtrls, Vcl.ToolWin,
+  System.Classes, 
+  System.SysUtils, 
+  System.ImageList,
+  VCL.Forms, 
+  VCL.Dialogs, 
+  VCL.StdCtrls,
+  VCL.Controls, 
+  VCL.Buttons, 
+  Vcl.ExtCtrls, 
+  Vcl.ImgList, 
+  Vcl.ComCtrls, 
+  Vcl.ToolWin,
    
-  GLPlugInIntf, GLPlugInManager;
+  GLPlugInIntf, 
+  GLPlugInManager;
 
 type
   TGLPlugInManagerEditorForm = class(TForm)
@@ -56,10 +60,11 @@ type
     class procedure EditPlugIns(AManager: TGLPlugInManager);
   end;
 
-  // ------------------------------------------------------------------------------
-implementation
-{$R *.DFM}
 // ------------------------------------------------------------------------------
+implementation
+// ------------------------------------------------------------------------------
+
+{$R *.DFM}
 
 var
   vGLPlugInManagerEditor: TGLPlugInManagerEditorForm;

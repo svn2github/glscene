@@ -5,10 +5,6 @@
   Implements a HDS that automatically generates an elevation bumpmap.
   The object-space elevation bumpmap can be used for dynamic terrain lighting.
   A bumpmap texture is generated for each terrain tile, and placed into a TGLMaterialLibrary.
-
-   History :
-   20/02/04 - EG - Creation
-   The whole history is logged in previous version of the unit
 }
 unit GLBumpmapHDS;
 
@@ -77,7 +73,7 @@ type
       write FOnNewTilePrepared;
     property BumpScale: Single read FBumpScale write SetBumpScale
       stored StoreBumpScale;
-    {  Specifies the amount of subsampling for the bump texture. 
+    { Specifies the amount of subsampling for the bump texture. 
       This value must be a power of 2, and is used to divide the height
       tile resolution to determine the bump texture resolution (f.i.
       a tile size of 128 with a subsampling of 4 will result in textures
@@ -102,7 +98,6 @@ type
 // ------------------------------------------------------------------
 implementation
 // ------------------------------------------------------------------
-
 
 // ------------------
 // ------------------ TGLBumpmapHDS ------------------
@@ -150,7 +145,6 @@ begin
   inherited;
 end;
 
-
 procedure TGLBumpmapHDS.TrimTextureCache(MaxTextureCount: Integer);
 // Thread-safe Version
 begin
@@ -185,7 +179,6 @@ begin
     end;
   end;
 end;
-
 
 procedure TGLBumpmapHDS.PreparingData(heightData: TGLHeightData);
 var
@@ -251,7 +244,6 @@ begin
   Uno.Release;
 end;
 
-
 procedure TGLBumpmapHDS.GenerateNormalMap(heightData: TGLHeightData;
   normalMap: TGLImage; scale: Single);
 var
@@ -288,7 +280,6 @@ begin
   end;
 end;
 
-
 procedure TGLBumpmapHDS.SetBumpmapLibrary(const val: TGLMaterialLibrary);
 begin
   if val <> FBumpmapLibrary then
@@ -302,7 +293,6 @@ begin
   end;
 end;
 
-
 procedure TGLBumpmapHDS.SetBumpScale(const val: Single);
 begin
   if FBumpScale <> val then
@@ -312,12 +302,10 @@ begin
   end;
 end;
 
-
 function TGLBumpmapHDS.StoreBumpScale: Boolean;
 begin
   Result := (FBumpScale <> cDefaultBumpScale);
 end;
-
 
 procedure TGLBumpmapHDS.SetSubSampling(const val: Integer);
 begin

@@ -3,10 +3,6 @@
 //
 {
    A PFX whose particles are lines
-
-    History :  
-      20/02/05 - EG - Creation
-      The whole history is logged in previous version of the unit
 }
 unit GLLinePFX;
 

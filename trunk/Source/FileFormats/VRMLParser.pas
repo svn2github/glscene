@@ -3,10 +3,6 @@
 //
 {
    VRML file format parser. 
-   History :
-       14/01/05 - SG - Added to GLScene
-       The whole history is logged in previous version of the unit
-
 }
 unit VRMLParser;
 
@@ -162,11 +158,7 @@ type
   end;
 
 //----------------------------------------------------------------------------
-//----------------------------------------------------------------------------
-//----------------------------------------------------------------------------
 implementation
-//----------------------------------------------------------------------------
-//----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
 
 function CreateVRMLTokenList(Text : String) : TStringList;
@@ -193,7 +185,6 @@ begin
       p:=Pos(cSymbols[j], token);
       if (p>0) and (token<>cSymbols[j]) then begin
         str:=Copy(token, p+1, Length(token)-p);
-
         if (p = 1) then begin
           Result.Delete(i);
           Result.Insert(i, trim(str));

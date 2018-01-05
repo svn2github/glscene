@@ -7,7 +7,7 @@
   History :
     23/02/07 - DaStr - Initial version of TGLPostEffect
                        (based on OldCity demo by FedeX)
-    The whole history is logged in previous version of the unit
+    
 
 }
 unit GLPostEffects;

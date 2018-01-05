@@ -6,7 +6,7 @@
     so you may include both O3TCImage (preview) and GLFileO3TC (loading)
     History:
       21/01/10 - Yar - Creation
-      The whole history is logged in previous version of the unit
+      
 }
 
 unit O3TCImage;

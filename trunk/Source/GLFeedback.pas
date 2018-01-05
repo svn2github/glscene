@@ -11,11 +11,6 @@
    BuildMeshFromBuffer procedure. For custom parsing of the
    buffer use the Buffer SingleList. The Buffered property
    will indicate if there is valid data in the buffer. 
-
-    History :  
-      23/07/04 - SG - Creation.
-      The whole history is logged in previous version of the unit
-
 }
 unit GLFeedback;
 
@@ -337,7 +332,9 @@ begin
   end;
 end;
 
+//------------------------------------------------
 initialization
+//------------------------------------------------
 
   RegisterClasses([TGLFeedback]);
 

@@ -3,10 +3,6 @@
 //
 {
 	Loader for FSRad OCT files. 
-
-	 History :  
-     30/01/03 - Egg - Creation
-     The whole history is logged in previous version of the unit.	 
 }
 unit FileOCT;
 
@@ -66,7 +62,6 @@ type
 
    TOCTFile = class (TObject)
       public
-         
          Header         : TOCTHeader;
          Vertices       : array of TOCTVertex;
          Faces          : array of TOCTFace;
@@ -74,21 +69,17 @@ type
          Lightmaps      : array of TOCTLightmap;
          Lights         : array of TOCTLight;
          PlayerPos      : TAffineVector;
-
          constructor Create; overload;
          constructor Create(octStream : TStream); overload;
-
          {Saves content to stream in OCT format. 
             The Header is automatically prepared before streaming. }
          procedure SaveToStream(aStream : TStream);
-
          procedure AddTriangles(vertexCoords : TAffineVectorList;
                                 texMapCoords : TAffineVectorList;
                                 const textureName : String);
          procedure AddLight(const lightPos : TAffineVector;
                             const lightColor : TVector;
                             lightIntensity : Integer);
-
    end;
 
 // ------------------------------------------------------------------

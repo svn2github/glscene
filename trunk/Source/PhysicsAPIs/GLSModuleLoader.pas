@@ -1,11 +1,6 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{
-    History: 
-       17/03/07 - DaStr - Dropped Kylix support in favor of FPC
-                                                         (BugTracekrID=1681585)
-}
 unit GLSModuleLoader;
 {******************************************************************}
 {                                                                  }
@@ -39,13 +34,14 @@ unit GLSModuleLoader;
 interface
 
 {$I pascaldefines.inc}
+
 {$WEAKPACKAGEUNIT ON}
 
 // each OS gets its own IFDEFed complete code block to make reading easier
 
 {$IFDEF MSWINDOWS}
 uses
-  Windows;
+  Winapi.Windows;
 
 type
   // Handle to a loaded DLL
@@ -195,7 +191,9 @@ function GetModuleSymbolEx(Module: TModuleHandle; SymbolName: PChar; var Accu: B
 function ReadModuleData(Module: TModuleHandle; SymbolName: PChar; var Buffer; Size: Cardinal): Boolean;
 function WriteModuleData(Module: TModuleHandle; SymbolName: PChar; var Buffer; Size: Cardinal): Boolean;
 
+//------------------------------------------------------------
 implementation
+//------------------------------------------------------------
 
 // load the .so file FileName
 // the rules for FileName are those of dlopen()

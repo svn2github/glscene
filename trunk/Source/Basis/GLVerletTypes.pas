@@ -8,11 +8,6 @@
   Note that currently, the SatisfyConstraintForEdge methods push the nodes in
   the edge uniformly - it should push the closer node more for correct physics.
   It's a matter of leverage.
-
-  History :
-  21/06/02 - EG - Creation (original code by Mattias Fagerlund)
-  The whole history is logged in previous version of the unit
-
 }
 unit GLVerletTypes;
 
@@ -477,7 +472,7 @@ type
     property OnNeedHeight: TVCHeightFieldOnNeedHeight read FOnNeedHeight write FOnNeedHeight;
   end;
 
-  { Stick constraint.
+  { Stick constraint. 
     Imposes a fixed distance between two nodes. }
   TVCStick = class(TGLVerletDualConstraint)
   private

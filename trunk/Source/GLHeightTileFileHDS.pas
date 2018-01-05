@@ -6,7 +6,7 @@
 
    History :  
      29/01/03 - EG - Creation
-     The whole history is logged in previous version of the unit.
+     .
 	 
 }
 unit GLHeightTileFileHDS;

@@ -3,10 +3,6 @@
 //
 {
   Miscellaneous support utilities & classes. 
-
-  History :  
-    05/09/03 - EG - Creation from GLMisc split
-    The whole history is logged in previous version of the unit
 }
 unit GLUtils;
 

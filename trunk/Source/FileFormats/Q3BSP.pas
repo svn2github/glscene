@@ -3,12 +3,6 @@
 //
 {
   Simple Quake III BSP file loader. 
-
-  History :  
-       16/10/08 - UweR - Compatibility fix for Delphi 2009
-       30/01/03 - Egg - Creation, based on Philip Stefou's document and
-                           bits from Jan Horn's loader 
-	 
 }
 unit Q3BSP;
 
@@ -103,7 +97,6 @@ type
 
    TQ3BSP = class (TObject)
       public
-         
          Header         : TBSPHeader;
          Lumps          : array of TBSPLump;
          NumOfVerts     : Integer;
@@ -121,7 +114,6 @@ type
          Textures       : array of TBSPTexture; // texture names (without extension)
          Lightmaps      : array of TBSPLightmap;
          VisData        : TBSPVisData;
-
          constructor Create(bspStream : TStream);
    end;
 

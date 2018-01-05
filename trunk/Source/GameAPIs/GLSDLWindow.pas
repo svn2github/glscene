@@ -9,10 +9,6 @@
   SDL-specifics should also be avoided in the "interface" section. 
 
   This component uses a Delphi header conversion for SDL from http://libsdl.org 
-
-   History :  
-   11/12/01 - Egg - Creation
-   The whole history is logged in a former GLS version of the unit.
 }
 unit GLSDLWindow;
 

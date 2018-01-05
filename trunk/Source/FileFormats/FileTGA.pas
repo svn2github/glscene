@@ -3,9 +3,6 @@
 //
 {
    Graphic engine friendly loading of TGA image.
-   History :  
-     04/04/11 - Yar - Creation
-     The whole history is logged in previous version of the unit.
 }
 
 unit FileTGA;
@@ -280,7 +277,9 @@ begin
   Result := [dfcRead {, dfcWrite}];
 end;
 
+//-------------------------------------------
 initialization
+//-------------------------------------------
 
   { Register this Fileformat-Handler with GLScene }
   RegisterRasterFormat('tga', 'TARGA Image File', TGLTGAImage);

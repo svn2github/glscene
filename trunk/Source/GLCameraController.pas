@@ -8,7 +8,7 @@
 
    History :
      20/03/09 - DanB - Donated to GLScene by Bogdan Deaky.
-     The whole history is logged in previous version of the unit
+     
 }
 
 

@@ -5,7 +5,7 @@
   Manages a basic game menu UI
   History :
   03/03/05 - EG - Creation
-  The whole history is logged in previous version of the unit
+  
 
 }
 unit GLGameMenu;

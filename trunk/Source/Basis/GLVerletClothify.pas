@@ -3,10 +3,6 @@
 //
 {
    Methods for turning a TGLBaseMesh into a Verlet cloth / jelly
-
-   History :
-       17/06/03 - MF - Creation
-   
 }
 
 unit GLVerletClothify;
@@ -62,33 +58,23 @@ type
     FNodeList : TVerletNodeList;
     FWeldDistance: single;
     FEdgeDoublesSkipped : integer;
-
     procedure SetWeldDistance(const Value: single);
   protected
     procedure ProcessMeshObject(const MeshObject : TMeshObject); virtual;
   public
     procedure ExtractFacesFromVertexIndexList(
       const FaceGroup : TFGVertexIndexList; const MeshObject : TMeshObject);
-
     property FaceList : TFaceList read FFaceList;
-
     procedure Clear; virtual;
     procedure ProcessMesh; virtual;
-
     property WeldDistance : single read FWeldDistance write SetWeldDistance;
     property EdgeDoublesSkipped : integer read FEdgeDoublesSkipped;
-
     property GLBaseMesh : TGLBaseMesh read FGLBaseMesh;
-
     property NodeList : TVerletNodeList read FNodeList;
-
     function AddFace(const Vi0, Vi1, Vi2 : integer; const MeshObject : TMeshObject) : TFace; virtual;
-
     constructor Create(const aGLBaseMesh : TGLBaseMesh); virtual;
     destructor Destroy; override;
   end;
-
-  // ************ EDGE DETECTOR
 
   TEdgeDetector = class;
   TEdge = class
@@ -100,16 +86,12 @@ type
   public
     Vertices : array[0..1] of integer;
     Faces : array[0..1] of TFace;
-
     procedure Contract;
-
     property Owner : TEdgeDetector read FOwner;
     property MeshObject : TMeshObject read FMeshObject write FMeshObject;
     property Length : single read FLength write FLength;
     property Solid : boolean read FSolid write FSolid;
-
     procedure UpdateEdgeLength;
-
     constructor Create(const AOwner: TEdgeDetector; AVi0, AVi1 : integer;
       AFace0, AFace1 : TFace; AMeshObject : TMeshObject; ASolid : boolean);
   end;
@@ -120,7 +102,6 @@ type
     procedure SetItems(i: integer; const Value: TEdge);
   public
     property Items[i : integer] : TEdge read GetItems write SetItems; default;
-
     procedure SortByLength;
     function InsertSorted(AEdge : TEdge) : integer;
   end;
@@ -130,33 +111,25 @@ type
     FEdgeList : TEdgeList;
     FCurrentNodeOffset : integer;
     FNodesAdded : boolean;
-
     procedure BuildOpposingEdges;
   protected
     FCalcEdgeLength : boolean;
   public
     property EdgeList : TEdgeList read FEdgeList;
-
     procedure Clear; override;
     procedure ProcessMesh; override;
-
     function AddEdge(const Vi0, Vi1 : integer; const Face : TFace; const AMeshObject : TMeshObject) : TEdge;
     function AddFace(const Vi0, Vi1, Vi2 : integer; const MeshObject : TMeshObject) : TFace; override;
     function AddNode(const VerletWorld : TGLVerletWorld; const MeshObject : TMeshObject; const VertexIndex : integer) : TVerletNode; virtual;
-
     procedure AddNodes(const VerletWorld : TGLVerletWorld);
     procedure AddEdgesAsSticks(const VerletWorld : TGLVerletWorld; const Slack : single);
     procedure AddEdgesAsSprings(const VerletWorld : TGLVerletWorld; const Strength, Damping, Slack : single);
     procedure AddEdgesAsSolidEdges(const VerletWorld : TGLVerletWorld);
     procedure AddOuterEdgesAsSolidEdges(const VerletWorld : TGLVerletWorld);
-
     procedure RenderEdges(var rci : TGLRenderContextInfo);
-
     property CurrentNodeOffset : integer read FCurrentNodeOffset;
     property NodesAdded : boolean read FNodesAdded;
-
     procedure ReplaceVertexIndex(const ViRemove, ViReplaceWith : integer);
-
     constructor Create(const aGLBaseMesh : TGLBaseMesh); override;
     destructor Destroy; override;
   end;
@@ -167,14 +140,17 @@ type
     VertexIndices : TIntegerList;
   public
     procedure AfterProgress; override;
-
     constructor CreateOwned(const aOwner : TGLVerletWorld); override;
     destructor Destroy; override;
   end;
 
+//----------------------------------------------------  
 implementation
+//----------------------------------------------------  
 
+//------------------
 { TFaceExtractor }
+//------------------
 
 procedure TFaceExtractor.Clear;
 var
@@ -782,7 +758,9 @@ begin
     MeshObject.Vertices[Vertices[2]], Normal);
 end;
 
+//------------------
 { TEdge }
+//------------------
 
 procedure TEdge.Contract;
 begin

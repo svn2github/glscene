@@ -8,7 +8,7 @@
 
   History :
   13/08/00 - Egg - Creation
-  The whole history is logged in previous version of the unit
+  
 
 }
 unit GLPortal;

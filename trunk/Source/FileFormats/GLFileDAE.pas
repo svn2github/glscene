@@ -6,7 +6,7 @@
 
     History : 
      15/01/14 - PW - Creation
-     The whole history is logged in previous version of the unit	 
+     	 
 }
 unit GLFileDAE;
 

@@ -3,10 +3,6 @@
 //
 {
    Registration unit for GLScene GPU Computing package. 
-
-   History :  
-      19/03/10 - Yar - Creation
-      The whole history is logged in previous version of the unit
 }
 unit GLSParallelRegister;
 
@@ -441,7 +437,9 @@ begin
 end;
 
 
+//------------------------------------------------------
 initialization
+//------------------------------------------------------
 
   vFindCuFileFunc := FindCuFile;
 

@@ -9,12 +9,6 @@
 
    TODO: add some notification code, so that when a scene object is registered/
    unregistered, any editor that is using the object manager can be notified.
-
-   History :
-      14/03/09 - DanB - Created the unit by moving TGLObjectManager class in
-                 from GLSceneRegister.pas, made some slight adjustments
-                 to allow resources being loaded from separate packages.
-      The whole history is logged in previous version of the unit
 }
 
 unit GLObjectManager;
@@ -68,9 +62,12 @@ type
     procedure GetRegisteredSceneObjects(ObjectList: TStringList);
     procedure PopulateMenuWithRegisteredSceneObjects(AMenuItem: TMenuItem; aClickEvent: TNotifyEvent);
     // Registers a stock object and adds it to the stock object list
-    procedure RegisterSceneObject(ASceneObject: TGLSceneObjectClass; const aName, aCategory: string); overload;
-    procedure RegisterSceneObject(ASceneObject: TGLSceneObjectClass; const aName, aCategory: string; aBitmap: TBitmap); overload;
-    procedure RegisterSceneObject(ASceneObject: TGLSceneObjectClass; const aName, aCategory: string; ResourceModule: Cardinal; ResourceName: string = ''); overload;
+    procedure RegisterSceneObject(ASceneObject: TGLSceneObjectClass; 
+	  const aName, aCategory: string); overload;
+    procedure RegisterSceneObject(ASceneObject: TGLSceneObjectClass; 
+	  const aName, aCategory: string; aBitmap: TBitmap); overload;
+    procedure RegisterSceneObject(ASceneObject: TGLSceneObjectClass; 
+	  const aName, aCategory: string; ResourceModule: Cardinal; ResourceName: string = ''); overload;
     // Unregisters a stock object and removes it from the stock object list
     procedure UnRegisterSceneObject(ASceneObject: TGLSceneObjectClass);
 
@@ -82,11 +79,7 @@ type
   end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 constructor TGLObjectManager.Create(AOwner: TComponent);
@@ -372,7 +365,9 @@ begin
   end;
 end;
 
+//-------------------------------------------
 initialization
+//-------------------------------------------
 
 end.
 

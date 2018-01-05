@@ -4,9 +4,6 @@
 {
 	Ghoul2 (GLM/GLA) file format loading structures 
 	Note: Also referred to as MDX (MDXM/MDXA) format in C source. 
-
-	 History : 
-	    25/03/03 - SG - Creation	 
 }
 unit FileGL2;
 

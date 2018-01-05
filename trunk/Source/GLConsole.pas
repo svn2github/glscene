@@ -6,7 +6,7 @@
 
    History :
       07/02/07 - DaStr - Initial version (donated to GLScene)
-      The whole history is logged in previous version of the unit
+      
 
    What is different compared to the original component?
      1) Can be aded to any object, not just the root one

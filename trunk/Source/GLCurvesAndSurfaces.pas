@@ -3,9 +3,6 @@
 //
 {
   Bezier and B-Spline Curve and Surface Routines.
-  History :
-  10/07/03 - SG - Creation
-  The whole history is logged in a former version of GLScene
 }
 
 unit GLCurvesAndSurfaces;

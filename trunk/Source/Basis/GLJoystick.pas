@@ -3,11 +3,6 @@
 //
 {
    Component for handling joystick messages 
-
-   History :  
-     20/03/00 - Egg - Creation from GLScene's TGLJoystick
-     The whole history is logged in previous version of the unit		
-	 
 }
 unit GLJoystick;
 

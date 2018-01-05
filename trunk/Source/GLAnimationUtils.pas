@@ -3,11 +3,6 @@
 //
 {
   Main purpose is to give an easy way to create an interpolation. 
-
-  History :  
-     27/06/12 - YP - First pascal implementation of the tweener library
-                      http://code.google.com/p/tweener/
-   
 }
 
 unit GLAnimationUtils;
@@ -74,7 +69,9 @@ type
   function Tweener(Current, Target: TVector2f; Time, Duration: Single; EaseType: TEaseType): TVector2f; overload;
   function Tweener(Current, Target: Single; Time, Duration: Single; EaseType: TEaseType): Single; overload;
 
+//--------------------------------------------------------------------  
 implementation
+//--------------------------------------------------------------------  
 
 type
 

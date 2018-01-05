@@ -2,12 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-  GLScene's brute-force terrain renderer.
-
-  History :
-   12/02/01 - EG - Creation
-   The whole history is logged in previous version of the unit.
-
+  Brute-force terrain renderer.
 
   NOTA : multi-materials terrain support is not yet optimized to minimize
   texture switches (in case of resued tile textures).
@@ -56,13 +51,13 @@ type
     tmReleaseUnusedTiles, tmAllocateNewTiles, tmWaitForPreparing);
   TTileManagementFlags = set of TTileManagementFlag;
 
-  {  Basic terrain renderer. 
+  (*  Basic terrain renderer. 
     This renderer uses no sophisticated meshing, it just builds and maintains
     a set of terrain tiles, performs basic visibility culling and renders its
     stuff. You can use it has a base class/sample for more specialized
     terrain renderers. 
     The Terrain heightdata is retrieved directly from a TGLHeightDataSource, and
-    expressed as z=f(x, y) data. }
+    expressed as z=f(x, y) data. *)
   TGLTerrainRenderer = class(TGLSceneObject)
   private
     FHeightDataSource: TGLHeightDataSource;
@@ -183,10 +178,10 @@ type
     {  Determines if and how occlusion testing affects tesselation. 
       Turning off tesselation of tiles determined invisible can improve
       performance, however, it may result in glitches since the tesselation
-      of an ivisible tile can have a slight effect on the tesselation
+      of an invisible tile can have a slight effect on the tesselation
       of its adjacent tiles (by forcing higher resolution at the border
       for instance). This negative effect can be lessened by increasing
-      the QualityDistance, so that glitches will apear farther away
+      the QualityDistance, so that glitches will appear farther away
       (this will mean increasing your triangle count though, so you'll
       trade CPU power against T&L power). }
     property OcclusionTesselate: TTerrainOcclusionTesselate

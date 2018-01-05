@@ -3,10 +3,6 @@
 //
 {
    ASE (ASCI Scene Export) file format support for GLScene 
-
-   History : 
-     19/05/07 - DaStr - Initial version (contributed by MaX)
-
 }
 unit GLFileASE;
 

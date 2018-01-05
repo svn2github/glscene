@@ -36,24 +36,6 @@ unit GLRandomHDS;
   These components can be freely used. So far, you have to declare and
   create this component manually in your code and link it to a TGLTerrainRenderer.
   If you know how to make a registered component, please do it.
-
-  History :
-  14/03/17 - PW - removed duplicated constructor CreateAsSlave as
-  inaccessible from c++
-  05/07/03 - Alexandre Hirzel -
-  - TGLTiledRndLandscape released
-  - TGLFractalArchipelago released
-  - Water plane and associated parameters (thanks to Eric Grange)
-  - Other classes modified accordingly
-  - HeightData generated as smallint in place of single
-  25/06/03 - Alexandre Hirzel -
-  - Texture drawed for each tile independently
-  - Steps property added
-  - TGLTiledRndLandscape to deal with infinite landscapes
-  - Further hierarchisation
-  21/06/03 - Alexandre Hirzel - First implementation ( Alexandre.Hirzel@nat.unibe.ch )
-
-  The whole history is logged in previous version of the unit
 }
 
 interface
@@ -308,7 +290,7 @@ type
       erosion effects. Too much biological erosion can ruin erase their results
       though. Some tweaking may be needed }
     procedure DoErosionByLife;
-    { Creare sharp valleys and canyons. If DepositRate>0, it will also fill the
+    { Create sharp valleys and canyons. If DepositRate>0, it will also fill the
       low pools, producing flat "lakes" and "ponds" }
     procedure DoErosionByRain;
     // Create a beach and a cliff around the islands
@@ -579,7 +561,7 @@ type
     property WaveSpeed: single read FWaveSpeed write SetWaveSpeed;
   end;
 
-  (* Texture functions *)
+(* Texture functions *)
 function LoadJPGtexture(const JpgName: string): tBitmap;
 function NoisyColor(const Color: tColor; const Noise: single = 0.05): TColorVector;
 function TextureGreen(const x, y: integer): TColorVector;
@@ -3108,7 +3090,9 @@ begin
   end; // for i
 end;
 
+//----------------------------------------------
 initialization
+//----------------------------------------------
 
 rhdsStartTime := GetTickCount;
 

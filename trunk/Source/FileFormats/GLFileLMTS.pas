@@ -5,7 +5,7 @@
    File loader for MTS
    History :
    10/09/03 - Domin - Creation
-   The whole history is logged in previous version of the unit
+   
 
 }
 unit GLFileLMTS;
