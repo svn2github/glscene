@@ -1,9 +1,9 @@
-{: This Form demonstrates basic "hierarchical" movements.<p>
+{: This Form demonstrates basic "hierarchical" movements.
 
 	Our visible (cube) objects are children of TGLDummyCube object and we move
 	them through rotations of the DummyCubes.<br>
 	Movements in this demo differs from the "manual" demo : "earth" now spins,
-	"moon" has an inclined orbit and spins too.<p>
+	"moon" has an inclined orbit and spins too.
 
 	You may use any GLScene object when building hierarchical scenes, but it
 	is recommended to use TGLDummyCube for structural (regroupment only) objects,

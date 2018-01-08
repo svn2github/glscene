@@ -1,4 +1,4 @@
-rem del *.res /s
+del *.res /s
 del *.ico /s
 del *.dcu /s
 del *.local /s

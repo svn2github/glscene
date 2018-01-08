@@ -4,15 +4,36 @@ interface
 
 uses
   Winapi.Windows,
-  System.SysUtils, System.Classes, System.Math,
-  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
-  Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.ComCtrls, Vcl.Imaging.Jpeg,
+  System.SysUtils,
+  System.Classes,
+  System.Math,
+  Vcl.Graphics,
+  Vcl.Controls,
+  Vcl.Forms,
+  Vcl.Dialogs,
+  Vcl.StdCtrls,
+  Vcl.ExtCtrls,
+  Vcl.ComCtrls,
+  Vcl.Imaging.Jpeg,
 
-  
-  GLWin32Viewer, GLScene, GLObjects, GLCadencer, ODEImport,
-  GLTexture, GLExtrusion, GLVectorGeometry, GLShadowPlane, GLNavigator,
-  GLVerletTypes, GLVerletHairClasses, GLKeyboard, GLColor,
-  GLCrossPlatform, GLCoordinates, GLBaseClasses, ODEGL;
+  GLWin32Viewer,
+  GLScene,
+  GLObjects,
+  GLCadencer,
+  ODEImport,
+  GLTexture,
+  GLExtrusion,
+  GLVectorGeometry,
+  GLShadowPlane,
+  GLNavigator,
+  GLVerletTypes,
+  GLVerletHairClasses,
+  GLKeyboard,
+  GLColor,
+  GLCrossPlatform,
+  GLCoordinates,
+  GLBaseClasses,
+  ODEGL;
 
 const
   cMaxWindMag = 8;

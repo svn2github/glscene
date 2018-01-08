@@ -1,4 +1,4 @@
-{: Utility to pack one or many DEM sources into a single HTF.<p>
+{: Utility to pack one or many DEM sources into a single HTF.
 
    Note: this is a *basic* tool, error messages are unfriendly and there are
          memory leaks if you do any, I know. So, don't do errors ;)

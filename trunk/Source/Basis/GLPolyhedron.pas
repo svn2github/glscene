@@ -8,6 +8,8 @@ unit GLPolyhedron;
 
 interface
 
+{$I GLScene.inc}
+
 uses
   Winapi.OpenGL,
   System.Classes,

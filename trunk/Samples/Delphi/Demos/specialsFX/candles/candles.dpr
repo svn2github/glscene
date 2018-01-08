@@ -1,8 +1,8 @@
-{: FireFX and simulated "wind".<p>
+{: FireFX and simulated "wind".
 
    This samples showcases a bare-bones "birthday cake" with three candles,
    you can adjust wind strength with the horizontal slider, but beware, if the
-   wind gets too strong, the candles will be blown off! ;)<p>
+   wind gets too strong, the candles will be blown off! ;)
 
    The "cake" is a simple revolution solid, the candles are based on a cylinder,
    line, fire FX on the line, and a transparent plane (for the 2cents "shadow").

@@ -52,15 +52,12 @@ type
     procedure SamplerBoxChange(Sender: TObject);
     procedure LBUniformsKeyPress(Sender: TObject; var Key: Char);
   private
-     
     FUniformList: array of IShaderParameter;
   public
-    
     procedure Clear;
     procedure AddTextureName(const S: string);
     procedure AddSamplerName(const S: string);
     procedure AddUniform(AValue: IShaderParameter);
-
     procedure Execute;
   end;
 

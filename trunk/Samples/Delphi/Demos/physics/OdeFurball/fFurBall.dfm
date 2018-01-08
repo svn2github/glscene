@@ -139,7 +139,6 @@ object frmFurBall: TfrmFurBall
     Left = 40
     Top = 128
     object DC_LightHolder: TGLDummyCube
-      Up.Coordinates = {000000000000803F0000008000000000}
       OnProgress = DC_LightHolderProgress
       CubeSize = 1.000000000000000000
       object GLLightSource1: TGLLightSource

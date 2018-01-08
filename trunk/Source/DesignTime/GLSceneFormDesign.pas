@@ -20,7 +20,6 @@ uses
 
 type
 
-
   TGLBaseSceneFormWizard = class(
       TNotifierObject,
       IOTAWizard,

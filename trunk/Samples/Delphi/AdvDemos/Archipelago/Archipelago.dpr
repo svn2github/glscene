@@ -1,4 +1,4 @@
-{: Archipelago GLScene demo.<p>
+{: Archipelago GLScene demo.
 
    This demo illustrates several GLScene components:
    - TerrainRenderer, used with a material library

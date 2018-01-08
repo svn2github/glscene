@@ -1,9 +1,9 @@
-{: Demo for color modulation and fade-in/out for bitmap fonts.<p>
+{: Demo for color modulation and fade-in/out for bitmap fonts.
 
-   The bitmap Font used in this demo is obtained from<p>
-   http://www.algonet.se/~guld1/freefont.htm<p>
+   The bitmap Font used in this demo is obtained from
+   http://www.algonet.se/~guld1/freefont.htm
    and was modified by me to have a red background so that I can have the
-   character itself in black.<p>
+   character itself in black.
    Nelson Chu
    cpegnel@ust.hk
 }

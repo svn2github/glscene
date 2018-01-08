@@ -1,8 +1,8 @@
-{: This sample illustrates basic user-driven camera movements.<p>
+{: This sample illustrates basic user-driven camera movements.
 
 	I'm using the GLScene built-in camera movement methods. The camera object is
 	a child of its target dummy cube (this means that the camera is translated
-	when its target is translate, which is good for flyover/scrolling movements).<p>
+	when its target is translate, which is good for flyover/scrolling movements).
 
 	Movements in this sample are done by moving the mouse with a button
 	pressed, left button will translate the dummy cube (and the camera),

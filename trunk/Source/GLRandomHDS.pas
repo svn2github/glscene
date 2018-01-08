@@ -1,3 +1,6 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 unit GLRandomHDS;
 {
   This unit provides tools and objects to generate random Height Data Sources

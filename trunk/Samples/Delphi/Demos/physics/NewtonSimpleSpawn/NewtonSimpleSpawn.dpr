@@ -1,4 +1,4 @@
-{ : Newton Game Dynamics Physics Engine demo.<p>
+{ : Newton Game Dynamics Physics Engine demo.
 
   This is the simplest exemple of how to create dynamic body suported by NGD.
   To execute the simulation we need to indicate to the physics engine the time

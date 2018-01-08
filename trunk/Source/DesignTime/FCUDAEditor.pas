@@ -26,7 +26,8 @@ uses
   Vcl.StdCtrls, 
   Vcl.ComCtrls, 
   Vcl.ToolWin,
-  DesignIntf, VCLEditors,
+  DesignIntf,
+  VCLEditors,
   GLStrings,
   GLSCUDA, 
   GLSCUDAFFTPlan, 
@@ -49,12 +50,10 @@ type
     procedure ListBox1Click(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
   private
-     
     FClassList: TList;
     FCUDA: TGLSCUDA;
     FCurrentDesigner: IDesigner;
   protected
-    { Protected declaration }
     procedure Notification(AComponent: TComponent; Operation: TOperation);
       override;
     procedure OnCUDAComponentNameChanged(Sender : TObject);

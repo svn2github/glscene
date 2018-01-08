@@ -45,7 +45,7 @@ type
    Once the contact points for a collision are generated the abstract Collide
    function is called to generate the depth and the contact position and
    normal. These points are then sorted and the deepest are applied to ODE }
-  TGLODECustomCollider = class(TGLODEBehaviour)
+  TGLODECustomCollider = class(TODEBehaviour)
   private
     FGeom: PdxGeom;
     FContactList,
@@ -115,8 +115,8 @@ type
     class function CanAddTo(collection: TXCollection): Boolean; override;
   end;
 
-function GetGLODEHeightField(obj: TGLBaseSceneObject): TGLODEHeightField;
-function GetOrCreateGLODEHeightField(obj: TGLBaseSceneObject): TGLODEHeightField;
+function GetODEHeightField(obj: TGLBaseSceneObject): TGLODEHeightField;
+function GetOrCreateODEHeightField(obj: TGLBaseSceneObject): TGLODEHeightField;
 
 //------------------------------------------------------------------------
 implementation
@@ -126,12 +126,12 @@ var
   vCustomColliderClass: TdGeomClass;
   vCustomColliderClassNum: Integer;
 
-function GetGLODEHeightField(obj: TGLBaseSceneObject): TGLODEHeightField;
+function GetODEHeightField(obj: TGLBaseSceneObject): TGLODEHeightField;
 begin
   result := TGLODEHeightField(obj.Behaviours.GetByClass(TGLODEHeightField));
 end;
 
-function GetOrCreateGLODEHeightField(obj: TGLBaseSceneObject): TGLODEHeightField;
+function GetOrCreateODEHeightField(obj: TGLBaseSceneObject): TGLODEHeightField;
 begin
   result := TGLODEHeightField(obj.GetOrCreateBehaviour(TGLODEHeightField));
 end;
@@ -470,9 +470,6 @@ begin
   inherited;
 end;
 
-// Finalize
-//
-
 procedure TGLODECustomCollider.Finalize;
 begin
   if not Initialized then
@@ -484,9 +481,6 @@ begin
   end;
   inherited;
 end;
-
-// WriteToFiler
-//
 
 procedure TGLODECustomCollider.WriteToFiler(writer: TWriter);
 begin
@@ -500,9 +494,6 @@ begin
     Write(PByte(FContactColor.AsAddress)^, 4);
   end;
 end;
-
-// ReadFromFiler
-//
 
 procedure TGLODECustomCollider.ReadFromFiler(reader: TReader);
 var
@@ -520,24 +511,15 @@ begin
   end;
 end;
 
-// ClearContacts
-//
-
 procedure TGLODECustomCollider.ClearContacts;
 begin
   FContactList.Clear;
 end;
 
-// AddContact (x,y,z)
-//
-
 procedure TGLODECustomCollider.AddContact(x, y, z: TdReal);
 begin
   AddContact(AffineVectorMake(x, y, z));
 end;
-
-// AddContact (pos)
-//
 
 procedure TGLODECustomCollider.AddContact(pos: TAffineVector);
 var
@@ -563,9 +545,6 @@ begin
   if FRenderContacts and Manager.Visible and Manager.VisibleAtRunTime then
     FContactRenderPoints.Add(absPos);
 end;
-
-// ApplyContacts
-//
 
 function TGLODECustomCollider.ApplyContacts(o1, o2: PdxGeom;
   flags: Integer; contact: PdContactGeom; skip: Integer): Integer;
@@ -602,16 +581,10 @@ begin
   end;
 end;
 
-// SetTransform
-//
-
 procedure TGLODECustomCollider.SetTransform(ATransform: TMatrix);
 begin
   FTransform := ATransform;
 end;
-
-// SetContactResolution
-//
 
 procedure TGLODECustomCollider.SetContactResolution(const Value: Single);
 begin
@@ -619,9 +592,6 @@ begin
   if FContactResolution <= 0 then
     FContactResolution := 0.01;
 end;
-
-// Render
-//
 
 procedure TGLODECustomCollider.Render(var rci: TGLRenderContextInfo);
 var
@@ -639,9 +609,6 @@ begin
   FContactRenderPoints.Clear;
 end;
 
-// SetRenderContacts
-//
-
 procedure TGLODECustomCollider.SetRenderContacts(const Value: Boolean);
 begin
   if Value <> FRenderContacts then
@@ -651,16 +618,10 @@ begin
   end;
 end;
 
-// SetContactColor
-//
-
 procedure TGLODECustomCollider.SetContactColor(const Value: TGLColor);
 begin
   FContactColor.Assign(Value);
 end;
-
-// SetPointSize
-//
 
 procedure TGLODECustomCollider.SetPointSize(const Value: Single);
 begin
@@ -674,9 +635,6 @@ end;
 // ---------------
 // --------------- TGLODEHeightField --------------
 // ---------------
-
- 
-//
 
 constructor TGLODEHeightField.Create(AOwner: TXCollection);
 var
@@ -699,9 +657,6 @@ begin
   inherited Create(AOwner);
 end;
 
-// WriteToFiler
-//
-
 procedure TGLODEHeightField.WriteToFiler(writer: TWriter);
 begin
   inherited;
@@ -710,9 +665,6 @@ begin
     WriteInteger(0); // Archive version
   end;
 end;
-
-// ReadFromFiler
-//
 
 procedure TGLODEHeightField.ReadFromFiler(reader: TReader);
 var
@@ -726,32 +678,20 @@ begin
   end;
 end;
 
- 
-//
-
 class function TGLODEHeightField.FriendlyName: string;
 begin
   Result := 'ODE HeightField Collider';
 end;
-
-// FriendlyDescription
-//
 
 class function TGLODEHeightField.FriendlyDescription: string;
 begin
   Result := 'A custom ODE collider powered by it''s parent TGLTerrainRenderer or TGLHeightField';
 end;
 
-// UniqueItem
-//
-
 class function TGLODEHeightField.UniqueItem: Boolean;
 begin
   Result := True;
 end;
-
-// CanAddTo
-//
 
 class function TGLODEHeightField.CanAddTo(collection: TXCollection): Boolean;
 begin
@@ -762,9 +702,6 @@ begin
         or (TGLBehaviours(collection).Owner is TGLTerrainRenderer) then
         Result := True;
 end;
-
-// Collide
-//
 
 function TGLODEHeightField.Collide(aPos: TAffineVector;
   var Depth: Single; var cPos, cNorm: TAffineVector): Boolean;
@@ -856,22 +793,14 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
 
   RegisterXCollectionItemClass(TGLODEHeightField);
 
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
 finalization
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
 
   UnregisterXCollectionItemClass(TGLODEHeightField);
 

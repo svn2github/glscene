@@ -1,4 +1,4 @@
-{ : Newton Game Dynamics Physics Engine demo.<p>
+{ : Newton Game Dynamics Physics Engine demo.
 
   This exemple show Joints.
   Mouse1 to pick, Mouse2 to move camera.

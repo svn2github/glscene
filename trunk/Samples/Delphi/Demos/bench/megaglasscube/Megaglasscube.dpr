@@ -1,4 +1,4 @@
-{: A variation of the magacube bench for testing sorting.<p>
+{: A variation of the magacube bench for testing sorting.
 
 	The cubes in this sample are transparent, and as such need to be depth-sorted
    to render correctly, this uses an alternate sorting code which this benchmark
@@ -7,7 +7,7 @@
    case situation for osRenderBlendedLast), osRenderFarthestFirst would be more
    suited since all the objets must be sorted (osRenderBlendedLast attempts
    ta take advantange of the fact that only a fraction of the objects must be
-   depth-sorted, which is a disadvantage if most of them must be sorted).<p>
+   depth-sorted, which is a disadvantage if most of them must be sorted).
 
 	Results :
 

@@ -1,5 +1,5 @@
 {:
-  GLSL Bump Shader Demo<p>
+  GLSL Bump Shader Demo
 
   A demo that shows how to use the TGLSLBumpShader component.
 

@@ -3,13 +3,29 @@ unit Unit1;
 interface
 
 uses
-  System.Classes, System.SysUtils, System.Math,
-  Vcl.Forms, Vcl.ExtCtrls, Vcl.ComCtrls, Vcl.Controls, Vcl.StdCtrls,
+  System.Classes,
+  System.SysUtils,
+  System.Math,
+  Vcl.Forms,
+  Vcl.ExtCtrls,
+  Vcl.ComCtrls,
+  Vcl.Controls,
+  Vcl.StdCtrls,
 
-  //GLScene
-  GLCadencer, GLScene, GLObjects, GLSound, GLSMFMOD, GLWin32Viewer,
-  GLGeomObjects, GLCrossPlatform, GLCoordinates, GLBaseClasses, GLFileWAV,
-  GLFileMP3, GLVectorGeometry, GLUtils;
+  GLCadencer,
+  GLScene,
+  GLObjects,
+  GLSound,
+  GLSMFMOD,
+  GLWin32Viewer,
+  GLGeomObjects,
+  GLCrossPlatform,
+  GLCoordinates,
+  GLBaseClasses,
+  GLFileWAV,
+  GLFileMP3,
+  GLVectorGeometry,
+  GLUtils;
 
 
 type

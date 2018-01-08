@@ -1,5 +1,5 @@
 //
-{: Using Verlet Hair with ODE; Fur Balls<p> }
+{: Using Verlet Hair with ODE; Fur Balls }
 //
 program OdeFurBall;
 

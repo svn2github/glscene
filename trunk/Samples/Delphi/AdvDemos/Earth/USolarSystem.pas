@@ -1,10 +1,10 @@
-{: Solar system planetary elements and positions utility unit.<p>
+{: Solar system planetary elements and positions utility unit.
 
    Based on document by Paul Schlyter (Stockholm, Sweden)<br>
-   http://www.stjarnhimlen.se/comp/ppcomp.html<p>
+   http://www.stjarnhimlen.se/comp/ppcomp.html
 
    Coordinates system takes Z as "up", ie. normal to the ecliptic plane,
-   "axis" around which the planets turn.<p>
+   "axis" around which the planets turn.
 
    Eric Grange<br>
    http://glscene.org

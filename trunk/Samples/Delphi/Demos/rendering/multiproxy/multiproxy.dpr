@@ -1,4 +1,4 @@
-{: Illustrates the use of TGLMultiProxy to perform discreet LOD.<p>
+{: Illustrates the use of TGLMultiProxy to perform discreet LOD.
 
    The MultiProxy object is used to switch automatically between three models
    of varying resolution (since I'm no good at modelling, these are only

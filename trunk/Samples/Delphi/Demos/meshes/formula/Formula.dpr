@@ -1,8 +1,8 @@
-{: Generates a 3D mesh from a height-field function.<p>
+{: Generates a 3D mesh from a height-field function.
 
    The left viewer shows a triangle-based mesh, the right viewer uses a
    triangle-strip-based mesh, both mesh are based on the same height-field and
-   have the same resolution.<p>
+   have the same resolution.
 
    This sample wants to demonstrate a few things :<ul>
    <li>how to define a mesh (triangle & triangle strip)
@@ -20,7 +20,7 @@
 
    Sample framerates (K6-400 + Sofware OpenGL), 5000 triangles (cResolution=25) :<br>
    -  mmTriangles : 9.6 FPS<br>
-   -  mmTriangleStrip : 17.2 FPS<p>
+   -  mmTriangleStrip : 17.2 FPS
    Sample framerates (K7-500 + GeForce 256), 20000 triangles (cResolution=50) :<br>
    -  mmTriangles : 53 FPS<br>
    -  mmTriangleStrip : 202 FPS

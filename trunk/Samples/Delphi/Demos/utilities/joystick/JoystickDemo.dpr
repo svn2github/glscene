@@ -1,4 +1,4 @@
-{: Using the TJoystick to retrieve joystick position.<p>
+{: Using the TJoystick to retrieve joystick position.
 
    The component make it fairly easy to get this info. The first method is to use
    the events, the second it use its properties.<br>

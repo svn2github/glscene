@@ -1,4 +1,4 @@
-{: RayCastBoxIntersect example demo <p>
+{: RayCastBoxIntersect example demo 
 
   History:
   22/01/07 - DaStr - Initial version (by dikoe Kenguru)

@@ -1,4 +1,4 @@
-/*: Demo/test case for the PointTo method of objects.<p>
+/*: Demo/test case for the PointTo method of objects.
 
    The PointTo method allows to easily orient an object to point toward another
    object, whatever their relative positions in the scene hierarchy.<br>

@@ -1,5 +1,5 @@
 {: This demo shows how easy it is to use milkshape animations in GLScene. The
-    animations are courtesy of Carnegie-Mellon's motion capture project. <p>
+    animations are courtesy of Carnegie-Mellon's motion capture project. 
 
     Animations also make use of MS3D's weighted vertexes. This was really needed as
     it makes animations much more realistic, as you will see.

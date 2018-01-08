@@ -3,7 +3,6 @@
 //
 {
    Frame combining a TrackBar and an Edit. 
-
 }
 unit FRTrackBarEdit;
 

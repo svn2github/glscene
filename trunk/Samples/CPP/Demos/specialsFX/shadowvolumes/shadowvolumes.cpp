@@ -1,4 +1,4 @@
-/*: Shadow volumes demo.<p>
+/*: Shadow volumes demo.
 
    This demo is under construction...
 

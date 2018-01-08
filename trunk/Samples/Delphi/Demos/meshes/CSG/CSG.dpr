@@ -1,7 +1,7 @@
 {  Demo of Constructive Solid Geometry in GLScene.
 
    Its kept very simple, you can use mouse to rotate view(drag)
-   and mousewheel to zoom/unzoom.<p>
+   and mousewheel to zoom/unzoom.
 
    The CSG system uses BSP to optimize what triangles it considers.
    Its kept on a mesh basis to simplyfy things, it allways generates new BSP's,

@@ -1,4 +1,4 @@
-{: Basic GLMultiMaterialShader example.<p>
+{: Basic GLMultiMaterialShader example.
 
    The GLMultiMaterialShader applies a pass for each material in
    the assigned MaterialLibrary. This example shows how to apply

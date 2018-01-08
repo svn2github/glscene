@@ -1,8 +1,8 @@
-{: Simple TGLShader based multipass demo.<p>
+{: Simple TGLShader based multipass demo.
 
    This demo uses a custom TGLShader subclass to implement the classic
    multipass hidden lines rendering technique on a torus: first pass renders
-   model with filled triangles, second pass does the wireframe.<p>
+   model with filled triangles, second pass does the wireframe.
 
    You'll also note the glPolygonOffset call, it displaces fragments depths
    value a little "farther away" so that surface fill depth values do not
@@ -11,7 +11,7 @@
    The axis and sphere allow you to see the limit of that simple technique:
    it actually "paints" between the lines, so you cannot use it to make
    transparent wireframed objects with hidden lines - if that thought ever
-   blossomed in your mind ;)<p>
+   blossomed in your mind ;)
 
    Additionnal objects around the show a glow/toon edges effect achieved in two
    passes too: the 1st pass activate lines and gives them a width, the second

@@ -7,8 +7,7 @@ unit Const3DS;
  defined constants herein. The guys at Autodesk must be crazy...
  Last Change - 03. October 1999
  (c) Copyright 1999, Dipl. Ing. Mike Lischke (public@lischke-online.de)
- 
-   }
+ }
 
 interface
 

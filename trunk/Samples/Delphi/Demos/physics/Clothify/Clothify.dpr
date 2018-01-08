@@ -1,4 +1,4 @@
-{: Clothify demo.<p>
+{: Clothify demo.
 
    Caution: this demo mixes several experimental thingies, and will probably be
             cleaned-up/split to be easier to follow, ad interim, you enter

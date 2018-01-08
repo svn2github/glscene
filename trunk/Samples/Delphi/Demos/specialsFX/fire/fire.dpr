@@ -1,4 +1,4 @@
-{: The fire special effect basic sample.<p>
+{: The fire special effect basic sample.
 
    If you look at the code you won't see anything fancy. The FireFX is a dynamic
    special effect (driven by a cadencer). Making use of it means two things :<br>
@@ -6,7 +6,7 @@
    - adding a FireFX effect to the object you want to see burning (here, a sphere)<br>
    You may have multiple objects sharing the same FireFXManager, this means they
    will all look the same, but also that the particle system calculations are
-   made only once.<p>
+   made only once.
 
    This effect looks cool but is fill-rate hungry, but un-textured fillrate
    hungry, ie. video card memory bandwith is not an issue. Anyway, you can

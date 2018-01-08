@@ -1,4 +1,4 @@
-{ : Newton Game Dynamics Physics Engine demo.<p>
+{ : Newton Game Dynamics Physics Engine demo.
 
   This exemple show how to move with keyboard.
   There is already a NewtonWalkAndCarry demo but I wanted to do with another way.

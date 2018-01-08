@@ -1,7 +1,7 @@
-{: Scripting a Shader with DelphiWebScriptII<p>
+{: Scripting a Shader with DelphiWebScriptII
 
    A very simple example of how the GLUserShader and scripting
-   components can be used to build a scripted material shader.<p>
+   components can be used to build a scripted material shader.
 
    The Tdws2OpenGL1xUnit requires the Tdws2VectorGeometryUnit to be
    associated with the script.

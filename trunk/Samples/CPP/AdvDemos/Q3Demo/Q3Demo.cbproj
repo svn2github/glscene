@@ -66,7 +66,7 @@
         <Multithreaded>true</Multithreaded>
         <ILINK_LibraryPath>D:\GLScene\Samples\CPP\AdvDemos\Q3Demo\;$(ILINK_LibraryPath)</ILINK_LibraryPath>
         <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Vcl;Vcl.Imaging;Vcl.Touch;Vcl.Samples;Vcl.Shell;$(DCC_Namespace)</DCC_Namespace>
-        <AllPackageLibs>rtl.lib;vcl.lib;fmx.lib;xmlrtl.lib;vclimg.lib;GLScene_RunTime.lib</AllPackageLibs>
+        <AllPackageLibs>rtl.lib;vcl.lib;fmx.lib;xmlrtl.lib;vclimg.lib;GLScene_RT.lib</AllPackageLibs>
         <DCC_CBuilderOutput>JPHNE</DCC_CBuilderOutput>
         <DynamicRTL>true</DynamicRTL>
         <UsePackages>true</UsePackages>
@@ -82,7 +82,7 @@
         <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
         <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
         <VerInfo_Locale>1033</VerInfo_Locale>
-        <PackageImports>IndyIPClient;GLScene_Sounds_RunTime;frx17;fs17;GLScene_Physics_RunTime;GLScene_Cg_RunTime;bindcompfmx;DBXSqliteDriver;vcldbx;GLScene_Physics_RunTime;fmx;rtl;dbrtl;DbxClientDriver;IndySystem;TeeDB;bindcomp;inetdb;inetdbbde;vclib;DBXInterBaseDriver;DataSnapClient;DataSnapCommon;DBXOdbcDriver;DataSnapServer;Tee;GLScene_RunTime;DataSnapProviderClient;xmlrtl;DBXSybaseASEDriver;ibxpress;DbxCommonDriver;vclimg;GLScene_Sounds_RunTime;IndyProtocols;DBXMySQLDriver;dbxcds;MetropolisUILiveTile;bindengine;vclactnband;vcldb;soaprtl;bindcompdbx;vcldsnap;bindcompvcl;FMXTee;TeeUI;GLS_Computing_RunTime_VCL;vclie;DBXDb2Driver;vcltouch;bcbsmp;websnap;DBXOracleDriver;CustomIPTransport;vclribbon;VclSmp;dsnap;DBXInformixDriver;IndyIPServer;fmxase;vcl;DataSnapConnectors;IndyCore;GLScene_Sounds_RunTime;DBXMSSQLDriver;CodeSiteExpressPkg;CloudService;DBXFirebirdDriver;dsnapcon;frxDB17;inet;fsDB17;fmxobj;IndyIPCommon;FmxTeeUI;vclx;frxe17;inetdbxpress;webdsnap;DBXSybaseASADriver;fmxdae;bdertl;dbexpress;DataSnapIndy10ServerTransport;adortl;bcbie;$(PackageImports)</PackageImports>
+        <PackageImports>IndyIPClient;GLScene_Sounds_RT;frx17;fs17;GLScene_Physics_RT;GLScene_Cg_RT;bindcompfmx;DBXSqliteDriver;vcldbx;GLScene_Physics_RT;fmx;rtl;dbrtl;DbxClientDriver;IndySystem;TeeDB;bindcomp;inetdb;inetdbbde;vclib;DBXInterBaseDriver;DataSnapClient;DataSnapCommon;DBXOdbcDriver;DataSnapServer;Tee;GLScene_RT;DataSnapProviderClient;xmlrtl;DBXSybaseASEDriver;ibxpress;DbxCommonDriver;vclimg;GLScene_Sounds_RT;IndyProtocols;DBXMySQLDriver;dbxcds;MetropolisUILiveTile;bindengine;vclactnband;vcldb;soaprtl;bindcompdbx;vcldsnap;bindcompvcl;FMXTee;TeeUI;vclie;DBXDb2Driver;vcltouch;bcbsmp;websnap;DBXOracleDriver;CustomIPTransport;vclribbon;VclSmp;dsnap;DBXInformixDriver;IndyIPServer;fmxase;vcl;DataSnapConnectors;IndyCore;GLScene_Sounds_RT;DBXMSSQLDriver;CodeSiteExpressPkg;CloudService;DBXFirebirdDriver;dsnapcon;frxDB17;inet;fsDB17;fmxobj;IndyIPCommon;FmxTeeUI;vclx;frxe17;inetdbxpress;webdsnap;DBXSybaseASADriver;fmxdae;bdertl;dbexpress;DataSnapIndy10ServerTransport;adortl;bcbie;$(PackageImports)</PackageImports>
         <IncludePath>$(BDSINCLUDE)\windows\vcl;$(IncludePath)</IncludePath>
         <VerInfo_Keys>CompanyName=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductVersion=1.0.0.0;Comments=;ProgramID=com.embarcadero.$(ModuleName);FileDescription=$(ModuleName);ProductName=$(ModuleName)</VerInfo_Keys>
         <DCC_Namespace>Winapi;System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
@@ -93,7 +93,7 @@
         <UWP_CppLogo150>$(BDS)\bin\Artwork\Windows\UWP\cppreg_UwpDefault_150.png</UWP_CppLogo150>
         <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
         <VerInfo_Locale>1033</VerInfo_Locale>
-        <PackageImports>IndyIPClient;GLScene_Sounds_RunTime;frx17;fs17;GLScene_Physics_RunTime;GLScene_Cg_RunTime;bindcompfmx;DBXSqliteDriver;vcldbx;GLScene_Physics_RunTime;fmx;rtl;dbrtl;DbxClientDriver;IndySystem;TeeDB;bindcomp;inetdb;inetdbbde;vclib;DBXInterBaseDriver;DataSnapClient;DataSnapCommon;DBXOdbcDriver;DataSnapServer;Tee;GLScene_RunTime;DataSnapProviderClient;xmlrtl;DBXSybaseASEDriver;ibxpress;DbxCommonDriver;vclimg;GLScene_Sounds_RunTime;IndyProtocols;DBXMySQLDriver;dbxcds;MetropolisUILiveTile;bindengine;vclactnband;vcldb;soaprtl;bindcompdbx;vcldsnap;bindcompvcl;FMXTee;TeeUI;GLS_Computing_RunTime_VCL;vclie;DBXDb2Driver;vcltouch;bcbsmp;websnap;DBXOracleDriver;CustomIPTransport;vclribbon;VclSmp;dsnap;DBXInformixDriver;IndyIPServer;fmxase;vcl;DataSnapConnectors;IndyCore;GLScene_Sounds_RunTime;DBXMSSQLDriver;CodeSiteExpressPkg;CloudService;DBXFirebirdDriver;dsnapcon;frxDB17;inet;fsDB17;fmxobj;IndyIPCommon;FmxTeeUI;vclx;frxe17;inetdbxpress;webdsnap;DBXSybaseASADriver;fmxdae;bdertl;dbexpress;DataSnapIndy10ServerTransport;adortl;bcbie;$(PackageImports)</PackageImports>
+        <PackageImports>IndyIPClient;GLScene_Sounds_RT;frx17;fs17;GLScene_Physics_RT;GLScene_Cg_RT;bindcompfmx;DBXSqliteDriver;vcldbx;GLScene_Physics_RT;fmx;rtl;dbrtl;DbxClientDriver;IndySystem;TeeDB;bindcomp;inetdb;inetdbbde;vclib;DBXInterBaseDriver;DataSnapClient;DataSnapCommon;DBXOdbcDriver;DataSnapServer;Tee;GLScene_RT;DataSnapProviderClient;xmlrtl;DBXSybaseASEDriver;ibxpress;DbxCommonDriver;vclimg;GLScene_Sounds_RT;IndyProtocols;DBXMySQLDriver;dbxcds;MetropolisUILiveTile;bindengine;vclactnband;vcldb;soaprtl;bindcompdbx;vcldsnap;bindcompvcl;FMXTee;TeeUI;vclie;DBXDb2Driver;vcltouch;bcbsmp;websnap;DBXOracleDriver;CustomIPTransport;vclribbon;VclSmp;dsnap;DBXInformixDriver;IndyIPServer;fmxase;vcl;DataSnapConnectors;IndyCore;GLScene_Sounds_RT;DBXMSSQLDriver;CodeSiteExpressPkg;CloudService;DBXFirebirdDriver;dsnapcon;frxDB17;inet;fsDB17;fmxobj;IndyIPCommon;FmxTeeUI;vclx;frxe17;inetdbxpress;webdsnap;DBXSybaseASADriver;fmxdae;bdertl;dbexpress;DataSnapIndy10ServerTransport;adortl;bcbie;$(PackageImports)</PackageImports>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <DCC_Namespace>Winapi;System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;$(DCC_Namespace)</DCC_Namespace>
         <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
@@ -125,7 +125,7 @@
         <FinalOutputDir>.</FinalOutputDir>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
-        <LinkPackageImports>rtl.bpi;vcl.bpi;fmx.bpi;xmlrtl.bpi;vclimg.bpi;GLScene_RunTime.bpi</LinkPackageImports>
+        <LinkPackageImports>rtl.bpi;vcl.bpi;fmx.bpi;xmlrtl.bpi;vclimg.bpi;GLScene_RT.bpi</LinkPackageImports>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win64)'!=''">
         <Defines>_DEBUG;$(Defines)</Defines>

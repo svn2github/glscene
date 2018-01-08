@@ -1,13 +1,13 @@
-{: Synthetic terrain demo.<p>
+{: Synthetic terrain demo.
 
    This demo covers use of TGLCustomHDS to supply custome elevation info
    to the terrain engine as well as per-tile texturing. It also showcases
-   use of simple 1D texturing as an alternative to per-vertex coloring.<p>
+   use of simple 1D texturing as an alternative to per-vertex coloring.
 
    If you're after "nice" terrain rendering, check the "terrain" demo instead,
    this one is more about understanding "what goes inside" than obtaining a
    beautiful output - though obtaining beautiful output without understanding
-   may not be that easy ;)<p>
+   may not be that easy ;)
 
    All you need to understand to use TGLCustomHDS is what goes on in the
    OnStartPreparingData. You can have a quick look at the FormCreate, but there

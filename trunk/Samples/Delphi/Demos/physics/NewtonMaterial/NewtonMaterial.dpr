@@ -1,4 +1,4 @@
-{ : Newton Game Dynamics Physics Engine demo.<p>
+{ : Newton Game Dynamics Physics Engine demo.
 
   This demo demontrate how to use material (or surface) effect of newton.
   Manager owns SurfaceItems and SurfacePair list where we can adjust

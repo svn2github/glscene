@@ -1,17 +1,13 @@
-The release of GLScene for Win32/Win64
-v.1.7
-Compiled and debugged under Embarcadero RAD Studio XE4/10.2
-using VCL library. 
-Read the instruction on how to install packages in
-https://sourceforge.net/p/glscene/code/HEAD/tree/trunk/Help/InstallationGLS.pdf
+The release of GLScene v.1.6 on 
+Embarcadero RAD Studio Delphi & C++Builder  
+for 10.0 Seattle, 10.1 Berlin and 10.2 Tokyo.
 
-Added support for Win64 platform.
-Updated CUDA/OpenCL, BASS and SDL2 support. 
-Upgraded marching cube methods for fast volume rendering, 
-fixed bugs in contouring and isosurface visualisation of voxel models. 
-Supplimented system help and user's guide. 
-Inserted new sample projects for Delphi & C++ Builder.
-
+Updated support for Win32/64 platforms.
+Extended OpenCL, BASS, SDL2, Newton and FastMath supports. 
+Upgraded some components and methods for fast volume rendering and triangulation.
+Fixed bugs in examples at 
+https://sourceforge.net/p/glscene/code/HEAD/tree/branches/examples, 
+where added new projects for Delphi & C++ Builder.
+Ready to use for Win32/Win64 OpenGL applications based on VCL library.
+-------------------------------------------------
 GLS Team
-
-04 Nov 2017

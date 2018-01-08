@@ -1,4 +1,4 @@
-{: Simple cell shading with CgShaders.<p>
+{: Simple cell shading with CgShaders.
 
    This demo uses a vertex program to combine the normal and
    light vector to produce a light intensity which is passed
@@ -10,13 +10,13 @@
    the fragment program. This intensity is multiplied to the
    color value for each fragment retrieved from the texture
    map. Using solid colors on the texture gives nice results
-   once cell shaded.<p>
+   once cell shaded.
 
    While this demo only shows parallel lighting, you could use
    point lights quite easily by modifying the uniform
    parameters passed to the vertex program and the processing
    of the intensity. Multiple lights wouldn't be difficult
-   to implement either.<p>
+   to implement either.
 }
 program cellshading;
 

@@ -1,5 +1,5 @@
 {: This demo shows how to use a GLFeedback object to
-   extract mesh data from regular GLScene objects.<p>
+   extract mesh data from regular GLScene objects.
 
    The GLFeedback object uses the GL_FEEDBACK render
    mode to gather vertex information passed through

@@ -1,4 +1,4 @@
-{: GLSmoothNavigator Demo<p>
+{: GLSmoothNavigator Demo
 
   A demo that shows what all classes inside the GLSmoothNavigator.pas unit
   are capable of.

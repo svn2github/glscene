@@ -1,4 +1,4 @@
-/*: Projected Textures example.<p>
+/*: Projected Textures example.
 
    Controls:
 	 Left Mouse Button: Rotate

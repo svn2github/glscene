@@ -1,4 +1,4 @@
-{: Dynamic cube map generation demo.<p>
+{: Dynamic cube map generation demo.
 
    This a more advanced sample in which the cube map is dynamically generated.
    To generate a cube map, you need three items:<ul>
@@ -11,7 +11,7 @@
       cube map, it also determines the size of the texture (and must be a square)
    </ul>
    Generating the cube map can then be performed with a single call to the
-   memoryviewer's RenderCubeMapTextures method.<p>
+   memoryviewer's RenderCubeMapTextures method.
 
    Note: cube map can be used for "cool" looking reflections, but as you'll
    see in this demo it is not perfect, especially if the reflected objects

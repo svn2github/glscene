@@ -145,29 +145,23 @@ type
       Y: Integer);
   private
     FOriginalWndProc: TWndMethod;
-
     FFocusRect: TRect;
     VisibleRect: TRect;
     PreviewMousePoint: TPoint;
     PreviewWidth,
       PreviewHeight: Integer;
     FullMousePoint: TPoint;
-
     MouseDown: Boolean;
-
     procedure ImageWndProc(var Message: TMessage);
-
     procedure DrawImageFocusRect(ARect: TRect);
     procedure AlignZoomPanel;
     procedure UpdateRegionEdits;
-
     procedure SetEditState(Parent: TControl; Enabled: Boolean);
     procedure AddElement(Index: Integer);
     procedure DrawCrossair(Point: TPoint);
   public
     TheGuiComponent: TGLGuiElementList;
     SelectedElement: TGLGUIElement;
-
     Tex: TGLTexture;
     Zoom: Single;
     Width: Integer;
@@ -183,11 +177,7 @@ var
 function GUIComponentDialog(GuiComponent: TGLGuiElementList): Boolean;
 
 //--------------------------------------------------------------------
-//--------------------------------------------------------------------
-//--------------------------------------------------------------------
 implementation
-//--------------------------------------------------------------------
-//--------------------------------------------------------------------
 //--------------------------------------------------------------------
 
 {$R *.dfm}

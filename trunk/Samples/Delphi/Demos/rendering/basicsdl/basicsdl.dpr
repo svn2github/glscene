@@ -1,4 +1,4 @@
-{ Basic demo for using the SDLViewer in GLScene.<p>
+{ Basic demo for using the SDLViewer in GLScene.
 
    The SDL Viewer allows to use SDL for setting up OpenGL, but still render
    with GLScene. The main differences are that SDL has no design-time preview

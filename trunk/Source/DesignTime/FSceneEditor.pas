@@ -193,7 +193,6 @@ type
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
   public
     procedure SetScene(Scene: TGLScene; Designer: IDesigner);
-
   end;
 
 function GLSceneEditorForm: TGLSceneEditorForm;

@@ -1,4 +1,4 @@
-{: TGLMultiPolygon Sample, contributed by Uwe Raabe.<p>
+{: TGLMultiPolygon Sample, contributed by Uwe Raabe.
 
    Note: this sample has been partly obsoleted/superseded by the TGLExtrusionSolid
    (by Uwe Raabe), which allows building such solids directly.

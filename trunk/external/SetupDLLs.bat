@@ -16,7 +16,7 @@ copy SDL2_64.dll %SystemRoot%\System32\SDL.dll
 
 echo Copying Sound DLLs
 rem win32
-copy bass32.dll %SystemRoot%\SysWOW64\
+copy bass.dll %SystemRoot%\SysWOW64\
 copy fmod.dll %SystemRoot%\SysWOW64\
 copy OpenAL32.dll %SystemRoot%\SysWOW64\
 rem win64

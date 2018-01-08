@@ -1,10 +1,10 @@
-{: A very simple demo of the TGLPipe object, to show what it can do.<p>
+{: A very simple demo of the TGLPipe object, to show what it can do.
 
    The TGLPipe objects extrudes a circle along a trajectory (given by its node).
-   You can specify a radius factor for each node and use spline smoothing.<p>
+   You can specify a radius factor for each node and use spline smoothing.
 
    Here we only use 3 control points, the top ones moves horizontally, and the
-   middle one can be made fat/slim.<p>
+   middle one can be made fat/slim.
 
    The current implementation is very limited when it comes to 3D pipes, as there
    is no "smooth" rotation interpolator, therefore, ou will have best results

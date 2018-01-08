@@ -3,7 +3,6 @@
 //
 {
    GLScene RGBE
-  .
 }
 unit GLSRGBE;
 

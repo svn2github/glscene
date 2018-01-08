@@ -1,12 +1,12 @@
-{: Advanced Demo for the GLScene Portal Renderer.<p>
+{: Advanced Demo for the GLScene Portal Renderer.
 
    This example is quite big since it include a small "maze editor" : the grid
    defines walls and open areas, ala Wolfenstein maps, and the viewer displays
-   the result interactively.<p>
+   the result interactively.
 
    The portal mesh generation has been compacted in BBProcess but does not
    generate a "perfect" portal mesh, indeed it is some kind of a worst case
-   situation since there are many more portals than actual polygons.<p>
+   situation since there are many more portals than actual polygons.
 
    The GLScene portal object can handle all kind of polygonal descriptions,
    with not necessarily convex polygons, and non necessarily closed areas.

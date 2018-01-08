@@ -1,4 +1,4 @@
-{: This Form demonstrates basic "Pathcontrol" movements.<p>
+{: This Form demonstrates basic "Pathcontrol" movements.
 
    You can modified the Looped property of the path to enable the path-looping.
    Set ShowPath property to turn on or turn off the path-displaying

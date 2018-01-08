@@ -1,4 +1,4 @@
-{: A sample for the Gui interface system.<p>
+{: A sample for the Gui interface system.
 
    To use the Gui you must place a TGLGUILayout component on your form,
    this is a storage for Gui layouts within a single texture, each layout

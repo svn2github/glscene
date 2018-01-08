@@ -7,8 +7,14 @@ uses
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
 
   
-  GLScene, GLObjects, GLWin32Viewer, GLODEManager, GLVectorGeometry,
-  GLCadencer, GLGeomObjects, odeimport, GLHUDObjects, GLBitmapFont,
+  GLScene,
+  GLObjects,
+  GLWin32Viewer,
+  GLODEManager,
+  GLVectorGeometry,
+  GLCadencer,
+  GLGeomObjects,
+  odeimport, GLHUDObjects, GLBitmapFont,
   GLWindowsFont, GLCrossPlatform, GLCoordinates, GLBaseClasses;
 
 type
@@ -38,9 +44,9 @@ type
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
   private
-     
+
   public
-     
+
     mx, my : integer;
   end;
 
@@ -75,8 +81,8 @@ var
 begin
   GLODEManager1.Step(deltaTime);
 
-//  velWheel:=dBodyGetAngularVel(TODEDynamic(Wheel.Behaviours[0]).Body);
-//  velPin2:=dBodyGetLinearVel(TODEDynamic(Pin2.Behaviours[0]).Body);
+  velWheel:=dBodyGetAngularVel(TGLODEDynamic(Wheel.Behaviours[0]).Body);
+  velPin2:=dBodyGetLinearVel(TGLODEDynamic(Pin2.Behaviours[0]).Body);
   GLHUDText1.Text:=Format(
     'Wheel Angular Velocity (Y-Axis) = %.1f'+#13#10+
     'Pin2 Linear Velocity (X-Axis) = %.1f',

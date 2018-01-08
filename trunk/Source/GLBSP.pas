@@ -34,7 +34,7 @@ type
   end;
 
   TBSPRenderContextInfo = record
-    // Local coordinates of the camera (can be a vector or point)
+    { Local coordinates of the camera (can be a vector or point) }
     cameraLocal: TVector;
     rci: PRenderContextInfo;
     faceGroups: TList;
@@ -169,10 +169,9 @@ const
   cOwnTriangleEpsilon = 1E-5;
   cTJunctionEpsilon = 1E-4;
 
-// ------------------
-// ------------------ TBSPClusterVisibility ------------------
-// ------------------
-
+// ---------------------------------------
+{ TBSPClusterVisibility }
+// ---------------------------------------
 constructor TBSPClusterVisibility.Create;
 begin
   inherited;
@@ -251,7 +250,6 @@ begin
   Count := NumClusters;
   Move(Source^, FData[0], FSize);
 end;
-
 
 // ------------------
 // ------------------ TBSPMeshObject ------------------
@@ -504,8 +502,6 @@ begin
   end;
 end;
 
-// FindNodeByPoint
-//
 function TBSPMeshObject.FindNodeByPoint(const aPoint: TVector): TFGBSPNode;
 
   function Traverse(nodeIndex: Integer): Integer;

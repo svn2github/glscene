@@ -1,7 +1,7 @@
-{: TexCombineShader demo / mini-lab.<p>
+{: TexCombineShader demo / mini-lab.
 
    This is an advanced demo, which showcases use and setup of extra texture
-   units, along with texture combination possibilities.<p>
+   units, along with texture combination possibilities.
 
    The texture combiner allows to declare how each texture unit should
    be used, and how each should be combined with the others. Basicly,

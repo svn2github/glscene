@@ -36,6 +36,7 @@ type
     Sphere: TGLSphere;
     GLLightSource: TGLLightSource;
     GLSoundLibrary: TGLSoundLibrary;
+    GLSMBASS: TGLSMBASS;
     GLCadencer1: TGLCadencer;
     Timer: TTimer;
     Mickey: TGLSphere;
@@ -47,7 +48,6 @@ type
     Disk1: TGLDisk;
     Torus1: TGLTorus;
     TrackBar1: TTrackBar;
-    GLSMBASS: TGLSMBASS;
     Panel1: TPanel;
     Button1: TButton;
     btnHowl: TButton;

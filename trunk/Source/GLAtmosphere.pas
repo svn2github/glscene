@@ -104,7 +104,6 @@ type
     property LowAtmColor;
     property HighAtmColor;
     property BlendingMode;
-
     property Position;
     property ObjectsSorting;
     property ShowAxes;

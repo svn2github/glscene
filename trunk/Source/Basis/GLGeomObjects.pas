@@ -6,9 +6,9 @@
 }
 unit GLGeomObjects;
 
-{$I GLScene.inc}
-
 interface
+
+{$I GLScene.inc}
 
 uses
 {$IFDEF USE_FASTMATH}

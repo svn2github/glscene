@@ -1,4 +1,4 @@
-{: Octree raycast/mesh sample.<p>
+{: Octree raycast/mesh sample.
    Demonstrating how to find the intersection point between eye-screen ray
    and a high poly mesh with an Octree property.
 
@@ -6,7 +6,7 @@
   -move mouse around on the scene with octree disabled (default)
    -check the "octree enabled" box.  Note the frame-rate difference.
 
-   .<p>
+   .
 }
 program octreedemo;
 

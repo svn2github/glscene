@@ -78,7 +78,7 @@
         <BRCC_IncludePath>$(BDS)\include;$(BDS)\include\vcl;..\..\..\..\include;$(BRCC_IncludePath)</BRCC_IncludePath>
         <ILINK_AppType>Windows</ILINK_AppType>
         <UsePackages>true</UsePackages>
-        <AllPackageLibs>rtl.lib;vcl.lib;GLScene_RunTime.lib;fmx.lib;xmlrtl.lib;vclimg.lib</AllPackageLibs>
+        <AllPackageLibs>rtl.lib;vcl.lib;GLScene_RT.lib;fmx.lib;xmlrtl.lib;vclimg.lib</AllPackageLibs>
         <TASM_AdditionalSwitches> /w2</TASM_AdditionalSwitches>
         <DynamicRTL>true</DynamicRTL>
         <BCC_DisableOptimizations>true</BCC_DisableOptimizations>
@@ -125,7 +125,7 @@
         <BCC_UserSuppliedOptions> -tWM -6 -ff -Vx -r- -k -Ve -k</BCC_UserSuppliedOptions>
         <BCC_Defines>_DEBUG;$(BCC_Defines);$(BCC_Defines)</BCC_Defines>
         <Icon_MainIcon>$(BDS)\bin\cbuilder_PROJECTICON.ico</Icon_MainIcon>
-        <LinkPackageStatics>GLScene_RunTime.lib;fmx.lib;xmlrtl.lib;vclimg.lib</LinkPackageStatics>
+        <LinkPackageStatics>GLScene_RT.lib;fmx.lib;xmlrtl.lib;vclimg.lib</LinkPackageStatics>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <LinkPackageImports>rtl.bpi;vcl.bpi</LinkPackageImports>

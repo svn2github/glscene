@@ -1,9 +1,9 @@
-{: Per-Pixel phong shading demo.<p>
+{: Per-Pixel phong shading demo.
 
    The TGLPhongShader implements phong shading through the use of an
    ARB vertex and fragment program. So far only the material and light
    properties are supported, some form of texture support will be
-   added in future updates.<p>
+   added in future updates.
 
 }
 program phong;

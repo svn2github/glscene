@@ -1,6 +1,6 @@
-{: Using the TOctreeSpacePartition for visibility culling.<p>
+{: Using the TOctreeSpacePartition for visibility culling.
 
-  Demo by HRLI slightly reworked to be a quadtree demo and committed by MF.<p>
+  Demo by HRLI slightly reworked to be a quadtree demo and committed by MF.
 }
 program QuadtreeVisCulling;
 

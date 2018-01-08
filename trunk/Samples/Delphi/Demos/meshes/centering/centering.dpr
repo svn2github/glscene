@@ -1,4 +1,4 @@
-{: Illustrates the effects of AutoCentering for FreeForms.<p>
+{: Illustrates the effects of AutoCentering for FreeForms.
 
    The same mesh is loaded three times and centered with different options
    (by default, the polyhedron is not centered in its mesh).

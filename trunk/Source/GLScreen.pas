@@ -3,7 +3,6 @@
 //
 {
   Routines to interact with the screen/desktop.
-  .
 }
 
 unit GLScreen;

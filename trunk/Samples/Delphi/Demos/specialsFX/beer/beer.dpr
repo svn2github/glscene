@@ -1,10 +1,10 @@
-{: Beer demo.<p>
+{: Beer demo.
 
    The scene is defined in the DFM, the code only takes care of loading
    meshes, textures and reacting to mouse clicks.<br>
    A PerlinPFX is used for the foam, a simpler PolyPFX for the bubbles.
    The glass effect uses a texture in sphere mapping mode, the grouping
-   of faces in the 3DS model does the rest.<p>
+   of faces in the 3DS model does the rest.
 
    Original idea by Vitomir Savic.
 }

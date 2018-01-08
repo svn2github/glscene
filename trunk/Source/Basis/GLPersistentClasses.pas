@@ -12,6 +12,7 @@
 unit GLPersistentClasses;
 
 interface
+
 {$I GLScene.inc}
 
 uses

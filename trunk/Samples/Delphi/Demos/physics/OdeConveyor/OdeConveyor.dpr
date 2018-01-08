@@ -1,4 +1,4 @@
-{ : ODE Conveyor belt demo.<p>
+{ : ODE Conveyor belt demo.
 
   This demo demontrates how to use the Motion1 parameter of ODE.
 

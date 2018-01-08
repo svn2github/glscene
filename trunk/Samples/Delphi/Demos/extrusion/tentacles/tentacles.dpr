@@ -1,4 +1,4 @@
-{: Tentacles demo, a weird use for TGLPipe.<p>
+{: Tentacles demo, a weird use for TGLPipe.
 
    Serves as a test for TGLPipe's ability to have a per-node color with smooth
    interpolation between nodes, and as some kind of sickening modern art...<br>

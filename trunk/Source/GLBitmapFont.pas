@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-  Bitmap Fonts management classes for GLScene
+  Bitmap Fonts management classes
 }
 unit GLBitmapFont;
 
@@ -88,12 +88,11 @@ type
     function CharacterToTileIndex(aChar: WideChar): Integer;
     function TileIndexToChar(aIndex: Integer): WideChar;
     procedure NotifyChange;
-    // Total number of characters in the ranges; cached for performance
+    { Total number of characters in the ranges; cached for performance }
     property CharacterCount: Integer read FCharCount;
   end;
 
   PCharInfo = ^TCharInfo;
-
   TCharInfo = record
     l, t, w: word;
   end;
@@ -493,6 +492,7 @@ end;
 // ------------------
 // ------------------ TGLCustomBitmapFont ------------------
 // ------------------
+
 constructor TGLCustomBitmapFont.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
@@ -1145,6 +1145,7 @@ end;
 // ------------------
 // ------------------ TGLFlatText ------------------
 // ------------------
+
 constructor TGLFlatText.Create(AOwner: TComponent);
 begin
   inherited;

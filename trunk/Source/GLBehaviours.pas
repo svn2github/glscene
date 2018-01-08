@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Standard TGLBehaviour subclasses for GLScene 
+   Standard TGLBehaviour subclasses 
 }
 unit GLBehaviours;
 
@@ -90,12 +90,10 @@ type
     {Adds time-proportionned acceleration to the speed. }
     procedure ApplyTranslationAcceleration(const deltaTime: double;
       const accel: TVector);
-      {Applies a timed force to the inertia. 
-        If Mass is null, nothing is done. }
+      {Applies a timed force to the inertia. If Mass is null, nothing is done. }
     procedure ApplyForce(const deltaTime: double; const force: TVector);
       {Applies a timed torque to the inertia (yuck!). 
-        This gets a "yuck!" because it is as false as the rest of the
-        rotation  model. }
+        This gets a "yuck!" because it is as false as the rest of the rotation  model. }
     procedure ApplyTorque(const deltaTime: double;
       const turnTorque, rollTorque, pitchTorque: single);
     {Inverts the translation vector.  }

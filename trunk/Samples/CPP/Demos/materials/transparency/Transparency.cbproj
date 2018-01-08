@@ -77,7 +77,7 @@
         <BRCC_IncludePath>$(BDS)\include;$(BDS)\include\vcl;..\..\..\..\include;$(BRCC_IncludePath)</BRCC_IncludePath>
         <ILINK_AppType>Windows</ILINK_AppType>
         <UsePackages>true</UsePackages>
-        <AllPackageLibs>rtl.lib;vcl.lib;GLScene_RunTime.lib;fmx.lib;xmlrtl.lib;vclimg.lib</AllPackageLibs>
+        <AllPackageLibs>rtl.lib;vcl.lib;GLScene_RT.lib;fmx.lib;xmlrtl.lib;vclimg.lib</AllPackageLibs>
         <TASM_AdditionalSwitches> /w2</TASM_AdditionalSwitches>
         <DynamicRTL>true</DynamicRTL>
         <BCC_DisableOptimizations>true</BCC_DisableOptimizations>
@@ -127,7 +127,7 @@
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <LinkPackageImports>rtl.bpi;vcl.bpi</LinkPackageImports>
-        <LinkPackageStatics>GLScene_RunTime.lib;fmx.lib;xmlrtl.lib;vclimg.lib</LinkPackageStatics>
+        <LinkPackageStatics>GLScene_RT.lib;fmx.lib;xmlrtl.lib;vclimg.lib</LinkPackageStatics>
         <BT_BuildType>Debug</BT_BuildType>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win64)'!=''">

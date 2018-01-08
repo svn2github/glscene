@@ -1,11 +1,11 @@
-{: Scene-wide Particles FX bench.<p>
+{: Scene-wide Particles FX bench.
 
    Originally planned for the specials FX, but become a bench due to lack of
    time to improve graphics ;)<br>
    This is quite a brute-force situation for the Particles FX Renderer, two
-   systems are present (Red an Blue) but Red contains the bulk of the particles.<p>
+   systems are present (Red an Blue) but Red contains the bulk of the particles.
 
-   Benchmark results (default win size, "Inferno" mode, ie. approx 7000 particles):<p>
+   Benchmark results (default win size, "Inferno" mode, ie. approx 7000 particles):
 
    CPU               Graphics          Colors      FPS         Sort Time
    AXP 2200+         GF3 Ti200         32 bits    126.0        0.82 msec

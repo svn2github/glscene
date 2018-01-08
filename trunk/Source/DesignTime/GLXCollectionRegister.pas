@@ -19,10 +19,9 @@ uses
 
 type
 	TXCollectionProperty = class(TClassProperty)
-		public
-			
-			function GetAttributes: TPropertyAttributes; override;
-			procedure Edit; override;
+	public
+      	  function GetAttributes: TPropertyAttributes; override;
+	  procedure Edit; override;
 	end;
 
 procedure Register;
@@ -30,6 +29,7 @@ procedure Register;
 // ------------------------------------------------------------------
 implementation
 // ------------------------------------------------------------------
+
 uses
   FXCollectionEditor;
 

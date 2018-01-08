@@ -1,4 +1,4 @@
-{ demo showing the use of fog in GLScene<p>
+{ demo showing the use of fog in GLScene
    20/07/03 - php - started
  }
 program fog;

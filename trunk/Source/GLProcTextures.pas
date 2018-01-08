@@ -3,7 +3,6 @@
 //
 {
   Procedural textures. 
-  .
 }
 unit GLProcTextures;
 

@@ -1,4 +1,4 @@
-{: Post Shader Demo<p>
+{: Post Shader Demo
 
   A demo that demostrates how to use different post shaders together.
   More post shaders will be added to it later on.

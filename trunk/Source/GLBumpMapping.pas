@@ -149,7 +149,8 @@ begin
   end;
 end;
 
-procedure CalcTangentSpaceLightVectors(Light: TAffineVector; Vertices, Normals, Tangents, BiNormals: TAffineVectorList;
+procedure CalcTangentSpaceLightVectors(Light: TAffineVector; 
+  Vertices, Normals, Tangents, BiNormals: TAffineVectorList;
   Colors: TVectorList);
 var
   i: Integer;
@@ -174,6 +175,7 @@ end;
 // ------------------------------------------------------------------------
 
 function ConvertNormalToColor(normal: TAffineVector): TDelphiColor;
+
 var
   r, g, b: Byte;
 begin
@@ -214,7 +216,8 @@ begin
       px := (d1 - d2) / (m2 - m1);
       py := m2 * px + d2;
     end;
-    f1 := sqrt((X - x1) * (X - x1) + (Y - y1) * (Y - y1)) / sqrt((px - x1) * (px - x1) + (py - y1) * (py - y1));
+    f1 := sqrt((X - x1) * (X - x1) + (Y - y1) * (Y - y1)) / 
+	sqrt((px - x1) * (px - x1) + (py - y1) * (py - y1));
   end;
 
   if (x2 = X) and (x1 = x3) then
@@ -244,7 +247,8 @@ begin
       px := (d1 - d2) / (m2 - m1);
       py := m2 * px + d2;
     end;
-    f2 := sqrt((X - x2) * (X - x2) + (Y - y2) * (Y - y2)) / sqrt((px - x2) * (px - x2) + (py - y2) * (py - y2));
+    f2 := sqrt((X - x2) * (X - x2) + (Y - y2) * (Y - y2)) /
+	sqrt((px - x2) * (px - x2) + (py - y2) * (py - y2));
   end;
 
   if (x3 = X) and (x1 = x2) then
@@ -274,12 +278,14 @@ begin
       px := (d1 - d2) / (m2 - m1);
       py := m2 * px + d2;
     end;
-    f3 := sqrt((X - x3) * (X - x3) + (Y - y3) * (Y - y3)) / sqrt((px - x3) * (px - x3) + (py - y3) * (py - y3));
+    f3 := sqrt((X - x3) * (X - x3) + (Y - y3) * (Y - y3)) / 
+	sqrt((px - x3) * (px - x3) + (py - y3) * (py - y3));
   end;
 
 end;
 
-function BlendNormals(X, Y, x1, y1, x2, y2, x3, y3: Integer; n1, n2, n3: TAffineVector): TAffineVector;
+function BlendNormals(X, Y, x1, y1, x2, y2, x3, y3: Integer; 
+  n1, n2, n3: TAffineVector): TAffineVector;
 var
   f1, f2, f3: Single;
 begin
@@ -289,7 +295,8 @@ begin
   AddVector(Result, VectorScale(n3, 1 - f3));
 end;
 
-procedure CalcObjectSpaceNormalMap(Width, Height: Integer; NormalMap, Normals, TexCoords: TAffineVectorList);
+procedure CalcObjectSpaceNormalMap(Width, Height: Integer; 
+  NormalMap, Normals, TexCoords: TAffineVectorList);
 var
   i, X, Y, xs, xe, x1, y1, x2, y2, x3, y3: Integer;
   n, n1, n2, n3: TAffineVector;
@@ -374,7 +381,8 @@ begin
   end;
 end;
 
-function CreateObjectSpaceNormalMap(Width, Height: Integer; HiNormals, HiTexCoords: TAffineVectorList): TBitmap;
+function CreateObjectSpaceNormalMap(Width, Height: Integer; 
+  HiNormals, HiTexCoords: TAffineVectorList): TBitmap;
 var
   i: Integer;
   NormalMap: TAffineVectorList;
@@ -433,15 +441,15 @@ begin
     x3 := Round(LoTexCoords[3 * i + 2].X * (Width - 1));
     y3 := Round((1 - LoTexCoords[3 * i + 2].Y) * (Height - 1));
 
-    m1.v[0] := Tangents[3 * i];
-    m1.v[1] := BiNormals[3 * i];
-    m1.v[2] := LoNormals[3 * i];
-    m2.v[0] := Tangents[3 * i + 1];
-    m2.v[1] := BiNormals[3 * i + 1];
-    m2.v[2] := LoNormals[3 * i + 1];
-    m3.v[0] := Tangents[3 * i + 2];
-    m3.v[1] := BiNormals[3 * i + 2];
-    m3.v[2] := LoNormals[3 * i + 2];
+    m1.X := Tangents[3 * i];
+    m1.Y := BiNormals[3 * i];
+    m1.Z := LoNormals[3 * i];
+    m2.X := Tangents[3 * i + 1];
+    m2.Y := BiNormals[3 * i + 1];
+    m2.Z := LoNormals[3 * i + 1];
+    m3.X := Tangents[3 * i + 2];
+    m3.Y := BiNormals[3 * i + 2];
+    m3.Z := LoNormals[3 * i + 2];
     TransposeMatrix(m1);
     TransposeMatrix(m2);
     TransposeMatrix(m3);

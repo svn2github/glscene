@@ -37,20 +37,20 @@ uses
   ODEImport;
 
 type
-  TGLODECustomCollisionEvent = procedure(Geom1, Geom2: PdxGeom) of object;
-  TGLODECollisionEvent = procedure(Sender: TObject; Object1, Object2: TObject;
-    var Contact: TdContact; var HandleCollision: Boolean) of object;
-  TGLODEObjectCollisionEvent = procedure(Sender: TObject; Object2: TObject;
-    var Contact: TdContact; var HandleCollision: Boolean) of object;
-  TGLODECollisionSurfaceMode = (csmMu2, csmFDir1, csmBounce, csmSoftERP,
+  TODECustomCollisionEvent = procedure(Geom1, Geom2: PdxGeom) of object;
+  TODECollisionEvent = procedure(Sender: TObject; Object1, Object2: TObject;
+     var Contact: TdContact; var HandleCollision: Boolean) of object;
+  TODEObjectCollisionEvent = procedure(Sender: TObject; Object2: TObject;
+     var Contact: TdContact; var HandleCollision: Boolean) of object;
+  TODECollisionSurfaceMode = (csmMu2, csmFDir1, csmBounce, csmSoftERP,
     csmSoftCFM, csmMotion1, csmMotion2, csmSlip1, csmSlip2);
-  TGLODESurfaceModes = set of TGLODECollisionSurfaceMode;
-  TGLODESolverMethod = (osmDefault, osmStepFast, osmQuickStep);
+  TODESurfaceModes = set of TODECollisionSurfaceMode;
+  TODESolverMethod = (osmDefault, osmStepFast, osmQuickStep);
 
-  TGLODEElements = class;
-  TGLODEBehaviour = class;
-  TGLODEElementBase = class;
-  TGLODEJointBase = class;
+  TODEElements = class;
+  TODEBehaviour = class;
+  TODEElementBase = class;
+  TODEJointBase = class;
 
   (* The visual component to manage behaviours of ODE objects *)
   TGLODEManager = class(TComponent)
@@ -59,13 +59,14 @@ type
     FSpace: PdxSpace;
     FContactGroup: TdJointGroupID;
     FGravity: TGLCoordinates;
-    FOnCollision: TGLODECollisionEvent;
-    FOnCustomCollision: TGLODECustomCollisionEvent;
-    FNumContactJoints, FMaxContacts: Integer;
+    FOnCollision: TODECollisionEvent;
+    FOnCustomCollision: TODECustomCollisionEvent;
+    FNumContactJoints, 
+	FMaxContacts: Integer;
     FODEBehaviours: TPersistentObjectList;
     FRFContactList: TList;
     FIterations: Integer;
-    FSolver: TGLODESolverMethod;
+    FSolver: TODESolverMethod;
     FContacts: array of TdContact;
     FContactGeoms: array of TdContactGeom;
     FRenderPoint: TGLRenderPoint;
@@ -82,9 +83,9 @@ type
     procedure SetMaxContacts(const Value: Integer);
     procedure SetGravity(Value: TGLCoordinates);
     procedure SetIterations(const val: Integer);
-    function GetODEBehaviour(index: Integer): TGLODEBehaviour;
-    procedure RegisterODEBehaviour(ODEBehaviour: TGLODEBehaviour);
-    procedure UnregisterODEBehaviour(ODEBehaviour: TGLODEBehaviour);
+    function GetODEBehaviour(index: Integer): TODEBehaviour;
+    procedure RegisterODEBehaviour(ODEBehaviour: TODEBehaviour);
+    procedure UnregisterODEBehaviour(ODEBehaviour: TODEBehaviour);
     procedure SetRenderPoint(const Value: TGLRenderPoint);
     procedure RenderEvent(Sender: TObject; var rci: TGLRenderContextInfo);
     procedure RenderPointFreed(Sender: TObject);
@@ -96,8 +97,7 @@ type
     procedure GeomColorChangeDynD(Sender: TObject);
     procedure SetGeomColorStat(const Value: TGLColor);
     procedure GeomColorChangeStat(Sender: TObject);
-    property ODEBehaviours[index: Integer]: TGLODEBehaviour
-      read GetODEBehaviour;
+    property ODEBehaviours[index: Integer]: TODEBehaviour read GetODEBehaviour;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -109,23 +109,20 @@ type
     property NumContactJoints: Integer read FNumContactJoints;
   published
     property Gravity: TGLCoordinates read FGravity write SetGravity;
-    property OnCollision: TGLODECollisionEvent read FOnCollision
-      write FOnCollision;
-    property OnCustomCollision: TGLODECustomCollisionEvent read FOnCustomCollision
-      write FOnCustomCollision;
-    property Solver: TGLODESolverMethod read FSolver write FSolver;
+    property OnCollision: TODECollisionEvent read FOnCollision write FOnCollision;
+    property OnCustomCollision: TODECustomCollisionEvent read FOnCustomCollision write FOnCustomCollision;
+    property Solver: TODESolverMethod read FSolver write FSolver;
     property Iterations: Integer read FIterations write SetIterations;
     property MaxContacts: Integer read FMaxContacts write SetMaxContacts;
     property RenderPoint: TGLRenderPoint read FRenderPoint write SetRenderPoint;
     property Visible: Boolean read FVisible write SetVisible;
-    property VisibleAtRunTime: Boolean read FVisibleAtRunTime
-      write SetVisibleAtRunTime;
+    property VisibleAtRunTime: Boolean read FVisibleAtRunTime write SetVisibleAtRunTime;
     property GeomColorDynD: TGLColor read FGeomColorDynD write SetGeomColorDynD;
     property GeomColorDynE: TGLColor read FGeomColorDynE write SetGeomColorDynE;
     property GeomColorStat: TGLColor read FGeomColorStat write SetGeomColorStat;
   end;
 
-  TGLODECollisionSurface = class(TPersistent)
+  TODECollisionSurface = class(TPersistent)
   private
     FOwner: TPersistent;
     FSurfaceParams: TdSurfaceParameters;
@@ -134,7 +131,7 @@ type
   protected
     procedure WriteToFiler(writer: TWriter);
     procedure ReadFromFiler(reader: TReader);
-    function GetSurfaceMode: TGLODESurfaceModes;
+    function GetSurfaceMode: TODESurfaceModes;
     function GetMu: TdReal;
     function GetMu2: TdReal;
     function GetBounce: TdReal;
@@ -145,8 +142,7 @@ type
     function GetMotion2: TdReal;
     function GetSlip1: TdReal;
     function GetSlip2: TdReal;
-
-    procedure SetSurfaceMode(Value: TGLODESurfaceModes);
+    procedure SetSurfaceMode(Value: TODESurfaceModes);
     procedure SetMu(Value: TdReal);
     procedure SetMu2(Value: TdReal);
     procedure SetBounce(Value: TdReal);
@@ -164,8 +160,7 @@ type
   published
     property RollingFrictionCoeff: Single read FRFCoeff write FRFCoeff;
     property RollingFrictionEnabled: Boolean read FRFEnabled write FRFEnabled;
-    property SurfaceMode: TGLODESurfaceModes read GetSurfaceMode
-      write SetSurfaceMode;
+    property SurfaceMode: TODESurfaceModes read GetSurfaceMode write SetSurfaceMode;
     property Mu: TdReal read GetMu write SetMu;
     property Mu2: TdReal read GetMu2 write SetMu2;
     property Bounce: TdReal read GetBounce write SetBounce;
@@ -178,15 +173,15 @@ type
     property Slip2: TdReal read GetSlip2 write SetSlip2;
   end;
 
-  TGLODEElementClass = class of TGLODEElementBase;
+  TODEElementClass = class of TODEElementBase;
 
   { Basis structures for GLScene behaviour style implementations. }
-  TGLODEBehaviour = class(TGLBehaviour)
+  TODEBehaviour = class(TGLBehaviour)
   private
     FManager: TGLODEManager;
     FManagerName: String;
-    FSurface: TGLODECollisionSurface;
-    FOnCollision: TGLODEObjectCollisionEvent;
+    FSurface: TODECollisionSurface;
+    FOnCollision: TODEObjectCollisionEvent;
     FInitialized: Boolean;
     FOwnerBaseSceneObject: TGLBaseSceneObject;
   protected
@@ -196,7 +191,7 @@ type
     procedure ReadFromFiler(reader: TReader); override;
     procedure Loaded; override;
     procedure SetManager(Value: TGLODEManager);
-    procedure SetSurface(Value: TGLODECollisionSurface);
+    procedure SetSurface(Value: TODECollisionSurface);
     function GetAbsoluteMatrix: TMatrix;
   public
     constructor Create(AOwner: TXCollection); override;
@@ -208,15 +203,15 @@ type
     property AbsoluteMatrix: TMatrix read GetAbsoluteMatrix;
   published
     property Manager: TGLODEManager read FManager write SetManager;
-    property Surface: TGLODECollisionSurface read FSurface write SetSurface;
-    property OnCollision: TGLODEObjectCollisionEvent read FOnCollision write FOnCollision;
+    property Surface: TODECollisionSurface read FSurface write SetSurface;
+    property OnCollision: TODEObjectCollisionEvent read FOnCollision write FOnCollision;
   end;
 
-  TGLODEDynamic = class(TGLODEBehaviour)
+  TGLODEDynamic = class(TODEBehaviour)
   private
     FBody: PdxBody;
     FMass: TdMass;
-    FElements: TGLODEElements;
+    FElements: TODEElements;
     FEnabled: Boolean;
     FJointRegister: TList;
   protected
@@ -229,15 +224,15 @@ type
     procedure AlignBodyToMatrix(Mat: TMatrix);
     procedure SetEnabled(const Value: Boolean);
     function GetEnabled: Boolean;
-    procedure RegisterJoint(Joint: TGLODEJointBase);
-    procedure UnregisterJoint(Joint: TGLODEJointBase);
+    procedure RegisterJoint(Joint: TODEJointBase);
+    procedure UnregisterJoint(Joint: TODEJointBase);
   public
     constructor Create(AOwner: TXCollection); override;
     destructor Destroy; override;
     procedure Render(var rci: TGLRenderContextInfo); override;
     class function FriendlyName: String; override;
     class function UniqueItem: Boolean; override;
-    function AddNewElement(AChild: TGLODEElementClass): TGLODEElementBase; dynamic;
+    function AddNewElement(AChild: TODEElementClass): TODEElementBase; dynamic;
     procedure AlignObject;
     function CalculateMass: TdMass;
     procedure CalibrateCenterOfMass;
@@ -252,13 +247,13 @@ type
     property Body: PdxBody read FBody;
     property Mass: TdMass read GetMass write SetMass;
   published
-    property Elements: TGLODEElements read FElements;
+    property Elements: TODEElements read FElements;
     property Enabled: Boolean read GetEnabled write SetEnabled;
   end;
 
-  TGLODEStatic = class(TGLODEBehaviour)
+  TGLODEStatic = class(TODEBehaviour)
   private
-    FElements: TGLODEElements;
+    FElements: TODEElements;
   protected
     procedure Initialize; override;
     procedure Finalize; override;
@@ -271,14 +266,14 @@ type
     procedure Render(var rci: TGLRenderContextInfo); override;
     class function FriendlyName: String; override;
     class function UniqueItem: Boolean; override;
-    function AddNewElement(AChild: TGLODEElementClass): TGLODEElementBase; dynamic;
+    function AddNewElement(AChild: TODEElementClass): TODEElementBase; dynamic;
   published
-    property Elements: TGLODEElements read FElements;
+    property Elements: TODEElements read FElements;
   end;
 
-  TGLODEElements = class(TXCollection)
+  TODEElements = class(TXCollection)
   private
-    function GetElement(index: Integer): TGLODEElementBase;
+    function GetElement(index: Integer): TODEElementBase;
   public
     destructor Destroy; override;
     class function ItemsClass: TXCollectionItemClass; override;
@@ -286,17 +281,23 @@ type
     procedure Finalize;
     procedure NotifyChange(Sender: TObject);
     procedure Render(var rci: TGLRenderContextInfo);
-    property Element[index: Integer]: TGLODEElementBase read GetElement;
+    property Element[index: Integer]: TODEElementBase read GetElement;
   end;
 
-  TGLODEElementBase = class(TXCollectionItem)
+  TODEElementBase = class(TXCollectionItem)
   private
     FMass: TdMass;
     FDensity: TdReal;
-    FGeomTransform, FGeomElement: PdxGeom;
-    FPosition, FDirection, FUp: TGLCoordinates;
+    FGeomTransform, 
+	FGeomElement: PdxGeom;
+    FPosition, 
+	FDirection, 
+	FUp: TGLCoordinates;
     FLocalMatrix: TMatrix;
-    FRealignODE, FInitialized, FDynamic, FIsCalculating: Boolean;
+    FRealignODE, 
+	FInitialized, 
+	FDynamic, 
+	FIsCalculating: Boolean;
   protected
     procedure Initialize; virtual;
     procedure Finalize; virtual;
@@ -335,9 +336,11 @@ type
   end;
 
   { ODE box implementation. }
-  TGLODEElementBox = class(TGLODEElementBase)
+  TODEElementBox = class(TODEElementBase)
   private
-    FBoxWidth, FBoxHeight, FBoxDepth: TdReal;
+    FBoxWidth, 
+	FBoxHeight, 
+	FBoxDepth: TdReal;
   protected
     procedure Initialize; override;
     function CalculateMass: TdMass; override;
@@ -363,7 +366,7 @@ type
   end;
 
   { ODE sphere implementation. }
-  TGLODEElementSphere = class(TGLODEElementBase)
+  TODEElementSphere = class(TODEElementBase)
   private
     FRadius: TdReal;
   protected
@@ -385,9 +388,10 @@ type
   end;
 
   { ODE capped cylinder implementation. }
-  TGLODEElementCapsule = class(TGLODEElementBase)
+  TODEElementCapsule = class(TODEElementBase)
   private
-    FRadius, FLength: TdReal;
+    FRadius, 
+	FLength: TdReal;
   protected
     procedure Initialize; override;
     function CalculateMass: TdMass; override;
@@ -410,9 +414,10 @@ type
   end;
 
   { ODE cylinder implementation. }
-  TGLODEElementCylinder = class(TGLODEElementBase)
+  TODEElementCylinder = class(TODEElementBase)
   private
-    FRadius, FLength: TdReal;
+    FRadius, 
+	FLength: TdReal;
   protected
     procedure Initialize; override;
     function CalculateMass: TdMass; override;
@@ -435,7 +440,7 @@ type
   end;
 
   { ODE tri-mesh implementation. }
-  TGLODEElementTriMesh = class(TGLODEElementBase)
+  TODEElementTriMesh = class(TODEElementBase)
   private
     FTriMeshData: PdxTriMeshData;
     FVertices: TAffineVectorList;
@@ -460,7 +465,7 @@ type
   end;
 
   { ODE plane implementation. }
-  TGLODEElementPlane = class(TGLODEElementBase)
+  TODEElementPlane = class(TODEElementBase)
   protected
     procedure Initialize; override;
     procedure WriteToFiler(writer: TWriter); override;
@@ -474,45 +479,48 @@ type
   end;
 
   { An XCollection decendant for ODE Joints. }
-  TGLODEJoints = class(TXCollection)
+  TODEJoints = class(TXCollection)
   protected
-    function GetJoint(index: Integer): TGLODEJointBase;
+    function GetJoint(index: Integer): TODEJointBase;
   public
     class function ItemsClass: TXCollectionItemClass; override;
     procedure Initialize;
     procedure Finalize;
-    property Joint[index: Integer]: TGLODEJointBase read GetJoint; default;
+    property Joint[index: Integer]: TODEJointBase read GetJoint; default;
   end;
 
   { Component front-end for storing ODE Joints. }
   TGLODEJointList = class(TComponent)
   private
-    FJoints: TGLODEJoints;
+    FJoints: TODEJoints;
   protected
     procedure WriteJoints(stream: TStream);
     procedure ReadJoints(stream: TStream);
     procedure DefineProperties(Filer: TFiler); override;
     procedure Loaded; override;
-    procedure Notification(AComponent: TComponent;
-      Operation: TOperation); override;
+    procedure Notification(AComponent: TComponent; Operation: TOperation); override;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
   published
-    property Joints: TGLODEJoints read FJoints;
+    property Joints: TODEJoints read FJoints;
   end;
 
   TJointOption = (joBothObjectsMustBeAssigned);
   TJointOptions = set of TJointOption;
 
   { Base structures for ODE Joints. }
-  TGLODEJointBase = class(TXCollectionItem)
+  TODEJointBase = class(TXCollectionItem)
   private
     FJointID: TdJointID;
-    FObject1, FObject2: TGLBaseSceneObject;
+    FObject1, 
+	FObject2: TGLBaseSceneObject;
     FManager: TGLODEManager;
-    FObject1Name, FObject2Name, FManagerName: String;
-    FInitialized, FEnabled: Boolean;
+    FObject1Name, 
+	FObject2Name, 
+	FManagerName: String;
+    FInitialized, 
+	FEnabled: Boolean;
     FJointOptions: TJointOptions;
   protected
     procedure WriteToFiler(writer: TWriter); override;
@@ -545,21 +553,36 @@ type
     property Enabled: Boolean read FEnabled write SetEnabled;
   end;
 
-  TGLODESetParamCallback = function(Param: Integer; const Value: TdReal)
-    : Boolean of object;
-  TGLODEGetParamCallback = function(Param: Integer; var Value: TdReal)
-    : Boolean of object;
+  TODESetParamCallback = function(Param: Integer; const Value: TdReal): Boolean of object;
+  TODEGetParamCallback = function(Param: Integer; var Value: TdReal): Boolean of object;
 
-  TGLODEJointParams = class(TPersistent)
+  TODEJointParams = class(TPersistent)
   private
     FOwner: TPersistent;
-    FSetCallback: TGLODESetParamCallback;
-    FGetCallback: TGLODEGetParamCallback;
-    FLoStop, FHiStop, FVel, FFMax, FFudgeFactor, FBounce, FCFM, FStopERP,
-      FStopCFM, FSuspensionERP, FSuspensionCFM: TdReal;
-    FFlagLoStop, FFlagHiStop, FFlagVel, FFlagFMax, FFlagFudgeFactor,
-      FFlagBounce, FFlagCFM, FFlagStopERP, FFlagStopCFM, FFlagSuspensionERP,
-      FFlagSuspensionCFM: Boolean;
+    FSetCallback: TODESetParamCallback;
+    FGetCallback: TODEGetParamCallback;
+    FLoStop, 
+	FHiStop, 
+	FVel, 
+	FFMax, 
+	FFudgeFactor, 
+	FBounce, 
+	FCFM, 
+	FStopERP,
+    FStopCFM, 
+	FSuspensionERP, 
+	FSuspensionCFM: TdReal;
+    FFlagLoStop, 
+	FFlagHiStop, 
+	FFlagVel, 
+	FFlagFMax, 
+	FFlagFudgeFactor,
+    FFlagBounce, 
+	FFlagCFM, 
+	FFlagStopERP, 
+	FFlagStopCFM, 
+	FFlagSuspensionERP,
+    FFlagSuspensionCFM: Boolean;
   protected
     function GetLoStop: TdReal;
     function GetHiStop: TdReal;
@@ -590,10 +613,8 @@ type
     function GetOwner: TPersistent; override;
     procedure Assign(Source: TPersistent); override;
     procedure ApplyFlagged;
-    property SetCallback: TGLODESetParamCallback read FSetCallback
-      write FSetCallback;
-    property GetCallback: TGLODEGetParamCallback read FGetCallback
-      write FGetCallback;
+    property SetCallback: TODESetParamCallback read FSetCallback write FSetCallback;
+    property GetCallback: TODEGetParamCallback read FGetCallback write FGetCallback;
   published
     property LoStop: TdReal read GetLoStop write SetLoStop;
     property HiStop: TdReal read GetHiStop write SetHiStop;
@@ -609,10 +630,11 @@ type
   end;
 
   { ODE hinge joint implementation. }
-  TGLODEJointHinge = class(TGLODEJointBase)
+  TODEJointHinge = class(TODEJointBase)
   private
-    FAnchor, FAxis: TGLCoordinates;
-    FAxisParams: TGLODEJointParams;
+    FAnchor, 
+	FAxis: TGLCoordinates;
+    FAxisParams: TODEJointParams;
   protected
     procedure WriteToFiler(writer: TWriter); override;
     procedure ReadFromFiler(reader: TReader); override;
@@ -620,7 +642,7 @@ type
     procedure SetAxis(const Value: TGLCoordinates);
     procedure AnchorChange(Sender: TObject);
     procedure AxisChange(Sender: TObject);
-    procedure SetAxisParams(const Value: TGLODEJointParams);
+    procedure SetAxisParams(const Value: TODEJointParams);
     function SetAxisParam(Param: Integer; const Value: TdReal): Boolean;
     function GetAxisParam(Param: Integer; var Value: TdReal): Boolean;
   public
@@ -633,11 +655,11 @@ type
   published
     property Anchor: TGLCoordinates read FAnchor write SetAnchor;
     property Axis: TGLCoordinates read FAxis write SetAxis;
-    property AxisParams: TGLODEJointParams read FAxisParams write SetAxisParams;
+    property AxisParams: TODEJointParams read FAxisParams write SetAxisParams;
   end;
 
   { ODE ball joint implementation. }
-  TGLODEJointBall = class(TGLODEJointBase)
+  TODEJointBall = class(TODEJointBase)
   private
     FAnchor: TGLCoordinates;
   protected
@@ -657,16 +679,16 @@ type
   end;
 
   { ODE slider joint implementation. }
-  TGLODEJointSlider = class(TGLODEJointBase)
+  TODEJointSlider = class(TODEJointBase)
   private
     FAxis: TGLCoordinates;
-    FAxisParams: TGLODEJointParams;
+    FAxisParams: TODEJointParams;
   protected
     procedure WriteToFiler(writer: TWriter); override;
     procedure ReadFromFiler(reader: TReader); override;
     procedure SetAxis(const Value: TGLCoordinates);
     procedure AxisChange(Sender: TObject);
-    procedure SetAxisParams(const Value: TGLODEJointParams);
+    procedure SetAxisParams(const Value: TODEJointParams);
     function SetAxisParam(Param: Integer; const Value: TdReal): Boolean;
     function GetAxisParam(Param: Integer; var Value: TdReal): Boolean;
   public
@@ -678,11 +700,11 @@ type
     class function FriendlyDescription: String; override;
   published
     property Axis: TGLCoordinates read FAxis write SetAxis;
-    property AxisParams: TGLODEJointParams read FAxisParams write SetAxisParams;
+    property AxisParams: TODEJointParams read FAxisParams write SetAxisParams;
   end;
 
   { ODE fixed joint implementation. }
-  TGLODEJointFixed = class(TGLODEJointBase)
+  TODEJointFixed = class(TODEJointBase)
   protected
     procedure WriteToFiler(writer: TWriter); override;
     procedure ReadFromFiler(reader: TReader); override;
@@ -693,10 +715,13 @@ type
   end;
 
   { ODE hinge2 joint implementation. }
-  TGLODEJointHinge2 = class(TGLODEJointBase)
+  TODEJointHinge2 = class(TODEJointBase)
   private
-    FAnchor, FAxis1, FAxis2: TGLCoordinates;
-    FAxis1Params, FAxis2Params: TGLODEJointParams;
+    FAnchor, 
+	FAxis1, 
+	FAxis2: TGLCoordinates;
+    FAxis1Params, 
+	FAxis2Params: TODEJointParams;
   protected
     procedure WriteToFiler(writer: TWriter); override;
     procedure ReadFromFiler(reader: TReader); override;
@@ -706,8 +731,8 @@ type
     procedure AnchorChange(Sender: TObject);
     procedure Axis1Change(Sender: TObject);
     procedure Axis2Change(Sender: TObject);
-    procedure SetAxis1Params(const Value: TGLODEJointParams);
-    procedure SetAxis2Params(const Value: TGLODEJointParams);
+    procedure SetAxis1Params(const Value: TODEJointParams);
+    procedure SetAxis2Params(const Value: TODEJointParams);
     function SetAxis1Param(Param: Integer; const Value: TdReal): Boolean;
     function SetAxis2Param(Param: Integer; const Value: TdReal): Boolean;
     function GetAxis1Param(Param: Integer; var Value: TdReal): Boolean;
@@ -723,15 +748,18 @@ type
     property Anchor: TGLCoordinates read FAnchor write SetAnchor;
     property Axis1: TGLCoordinates read FAxis1 write SetAxis1;
     property Axis2: TGLCoordinates read FAxis2 write SetAxis2;
-    property Axis1Params: TGLODEJointParams read FAxis1Params write SetAxis1Params;
-    property Axis2Params: TGLODEJointParams read FAxis2Params write SetAxis2Params;
+    property Axis1Params: TODEJointParams read FAxis1Params write SetAxis1Params;
+    property Axis2Params: TODEJointParams read FAxis2Params write SetAxis2Params;
   end;
 
   { ODE universal joint implementation. }
-  TGLODEJointUniversal = class(TGLODEJointBase)
+  TODEJointUniversal = class(TODEJointBase)
   private
-    FAnchor, FAxis1, FAxis2: TGLCoordinates;
-    FAxis1Params, FAxis2Params: TGLODEJointParams;
+    FAnchor, 
+	FAxis1, 
+	FAxis2: TGLCoordinates;
+    FAxis1Params, 
+	FAxis2Params: TODEJointParams;
   protected
     procedure WriteToFiler(writer: TWriter); override;
     procedure ReadFromFiler(reader: TReader); override;
@@ -741,8 +769,8 @@ type
     procedure AnchorChange(Sender: TObject);
     procedure Axis1Change(Sender: TObject);
     procedure Axis2Change(Sender: TObject);
-    procedure SetAxis1Params(const Value: TGLODEJointParams);
-    procedure SetAxis2Params(const Value: TGLODEJointParams);
+    procedure SetAxis1Params(const Value: TODEJointParams);
+    procedure SetAxis2Params(const Value: TODEJointParams);
     function SetAxis1Param(Param: Integer; const Value: TdReal): Boolean;
     function SetAxis2Param(Param: Integer; const Value: TdReal): Boolean;
     function GetAxis1Param(Param: Integer; var Value: TdReal): Boolean;
@@ -758,20 +786,17 @@ type
     property Anchor: TGLCoordinates read FAnchor write SetAnchor;
     property Axis1: TGLCoordinates read FAxis1 write SetAxis1;
     property Axis2: TGLCoordinates read FAxis2 write SetAxis2;
-    property Axis1Params: TGLODEJointParams read FAxis1Params
-      write SetAxis1Params;
-    property Axis2Params: TGLODEJointParams read FAxis2Params
-      write SetAxis2Params;
+    property Axis1Params: TODEJointParams read FAxis1Params write SetAxis1Params;
+    property Axis2Params: TODEJointParams read FAxis2Params write SetAxis2Params;
   end;
 
   { ODE nearCallBack, throws near callback to the collision procedure
     of the ODE manager linked by the Data pointer. }
 procedure nearCallBack(Data: Pointer; o1, o2: PdxGeom); cdecl;
-{ Helper functions for extracting data from objects with different
-  inheritance. }
+{ Helper functions for extracting data from objects with different inheritance. }
 function GetBodyFromObject(anObject: TObject): PdxBody;
 function GetBodyFromGLSceneObject(anObject: TGLBaseSceneObject): PdxBody;
-function GetSurfaceFromObject(anObject: TObject): TGLODECollisionSurface;
+function GetSurfaceFromObject(anObject: TObject): TODECollisionSurface;
 
 // GLODEObject register methods (used for joint object persistence)
 procedure RegisterGLSceneObject(anObject: TGLBaseSceneObject);
@@ -785,14 +810,10 @@ function GetOdeDynamic(Obj: TGLBaseSceneObject): TGLODEDynamic;
 function GetOrCreateOdeDynamic(Obj: TGLBaseSceneObject): TGLODEDynamic;
 
 var
-  vGLODEObjectRegister: TList;
+  vODEObjectRegister: TList;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 procedure nearCallBack(Data: Pointer; o1, o2: PdxGeom); cdecl;
@@ -821,20 +842,20 @@ begin
   end;
 end;
 
-function GetSurfaceFromObject(anObject: TObject): TGLODECollisionSurface;
+function GetSurfaceFromObject(anObject: TObject): TODECollisionSurface;
 var
-  ODEBehaviour: TGLODEBehaviour;
+  ODEBehaviour: TODEBehaviour;
 begin
   Result := nil;
   if Assigned(anObject) then
-    if anObject is TGLODEBehaviour then
-      Result := TGLODEBehaviour(anObject).Surface
+    if anObject is TODEBehaviour then
+      Result := TODEBehaviour(anObject).Surface
     else
     begin
       if (anObject is TGLBaseSceneObject) then
       begin
-        ODEBehaviour := TGLODEBehaviour(TGLBaseSceneObject(anObject)
-          .Behaviours.GetByClass(TGLODEBehaviour));
+        ODEBehaviour := TODEBehaviour(TGLBaseSceneObject(anObject)
+          .Behaviours.GetByClass(TODEBehaviour));
         if Assigned(ODEBehaviour) then
           Result := ODEBehaviour.Surface
       end;
@@ -855,13 +876,13 @@ end;
 
 procedure RegisterGLSceneObject(anObject: TGLBaseSceneObject);
 begin
-  if vGLODEObjectRegister.IndexOf(anObject) = -1 then
-    vGLODEObjectRegister.Add(anObject);
+  if vODEObjectRegister.IndexOf(anObject) = -1 then
+    vODEObjectRegister.Add(anObject);
 end;
 
 procedure UnregisterGLSceneObject(anObject: TGLBaseSceneObject);
 begin
-  vGLODEObjectRegister.Remove(anObject);
+  vODEObjectRegister.Remove(anObject);
 end;
 
 function GetGLSceneObject(anObjectName: String): TGLBaseSceneObject;
@@ -869,11 +890,10 @@ var
   i: Integer;
 begin
   Result := nil;
-  for i := 0 to vGLODEObjectRegister.Count - 1 do
-    if TGLBaseSceneObject(vGLODEObjectRegister[i]).GetNamePath = anObjectName
-    then
+  for i := 0 to vODEObjectRegister.Count - 1 do
+    if TGLBaseSceneObject(vODEObjectRegister[i]).GetNamePath = anObjectName then
     begin
-      Result := vGLODEObjectRegister[i];
+      Result := vODEObjectRegister[i];
       Exit;
     end;
 end;
@@ -901,6 +921,7 @@ end;
 // ---------------
 // --------------- TGLODEManager ---------------
 // ---------------
+
 constructor TGLODEManager.Create(AOwner: TComponent);
 begin
   FWorld := nil;
@@ -964,12 +985,12 @@ begin
   inherited Destroy;
 end;
 
-procedure TGLODEManager.RegisterODEBehaviour(ODEBehaviour: TGLODEBehaviour);
+procedure TGLODEManager.RegisterODEBehaviour(ODEBehaviour: TODEBehaviour);
 begin
   FODEBehaviours.Add(ODEBehaviour);
 end;
 
-procedure TGLODEManager.UnregisterODEBehaviour(ODEBehaviour: TGLODEBehaviour);
+procedure TGLODEManager.UnregisterODEBehaviour(ODEBehaviour: TODEBehaviour);
 begin
   FODEBehaviours.Remove(ODEBehaviour);
 end;
@@ -992,7 +1013,7 @@ end;
 
 procedure TGLODEManager.CalcContact(Object1, Object2: TObject; var Contact: TdContact);
 var
-  Surface1, Surface2: TGLODECollisionSurface;
+  Surface1, Surface2: TODECollisionSurface;
   Body1, Body2: PdxBody;
 begin
   Surface1 := GetSurfaceFromObject(Object1);
@@ -1056,8 +1077,7 @@ begin
 
   // Get the collisions
   flags := $0000FFFF and FMaxContacts;
-  num_contacts := dCollide(g1, g2, flags, FContactGeoms[0],
-    SizeOf(TdContactGeom));
+  num_contacts := dCollide(g1, g2, flags, FContactGeoms[0], SizeOf(TdContactGeom));
 
   // Set up the initial contact info
   for i := 0 to num_contacts - 1 do
@@ -1081,14 +1101,12 @@ begin
         FOnCollision(Self, Obj1, Obj2, FContacts[i], HandleCollision);
       end;
       // Fire the OnCollision event for each object
-      if TObject(Obj1) is TGLODEBehaviour then
-        if Assigned(TGLODEBehaviour(Obj1).FOnCollision) then
-          TGLODEBehaviour(Obj1).FOnCollision(Self, Obj2, FContacts[i],
-            HandleCollision);
-      if TObject(Obj2) is TGLODEBehaviour then
-        if Assigned(TGLODEBehaviour(Obj2).FOnCollision) then
-          TGLODEBehaviour(Obj2).FOnCollision(Self, Obj1, FContacts[i],
-            HandleCollision);
+      if TObject(Obj1) is TODEBehaviour then
+        if Assigned(TODEBehaviour(Obj1).FOnCollision) then
+          TODEBehaviour(Obj1).FOnCollision(Self, Obj2, FContacts[i], HandleCollision);
+      if TObject(Obj2) is TODEBehaviour then
+        if Assigned(TODEBehaviour(Obj2).FOnCollision) then
+          TODEBehaviour(Obj2).FOnCollision(Self, Obj1, FContacts[i], HandleCollision);
     end
     else
     begin
@@ -1128,12 +1146,9 @@ begin
   // Run ODE collisions and step the scene
   dSpaceCollide(FSpace, Self, nearCallBack);
   case FSolver of
-    osmDefault:
-      dWorldStep(FWorld, deltaTime);
-    osmStepFast:
-      dWorldStepFast1(FWorld, deltaTime, FIterations);
-    osmQuickStep:
-      dWorldQuickStep(FWorld, deltaTime);
+    osmDefault: dWorldStep(FWorld, deltaTime);
+    osmStepFast: dWorldStepFast1(FWorld, deltaTime, FIterations);
+    osmQuickStep: dWorldQuickStep(FWorld, deltaTime);
   end;
   dJointGroupEmpty(FContactGroup);
 
@@ -1151,9 +1166,8 @@ begin
     if TObject(FRFContactList[0]) is TGLODEDynamic then
     begin
       Body := TGLODEDynamic(FRFContactList[0]).Body;
-      Coeff := 1 - (TGLODEDynamic(FRFContactList[0])
-        .Surface.RollingFrictionCoeff / TGLODEDynamic(FRFContactList[0])
-        .Mass.Mass);
+      Coeff := 1 - (TGLODEDynamic(FRFContactList[0]).Surface.RollingFrictionCoeff / 
+	                TGLODEDynamic(FRFContactList[0]).Mass.Mass);
     end;
     vec := dBodyGetAngularVel(Body);
     dBodySetAngularVel(Body, vec[0] * Coeff, vec[1] * Coeff, vec[2] * Coeff);
@@ -1184,9 +1198,9 @@ begin
   end;
 end;
 
-function TGLODEManager.GetODEBehaviour(index: Integer): TGLODEBehaviour;
+function TGLODEManager.GetODEBehaviour(index: Integer): TODEBehaviour;
 begin
-  Result := TGLODEBehaviour(FODEBehaviours[index]);
+  Result := TODEBehaviour(FODEBehaviours[index]);
 end;
 
 procedure TGLODEManager.SetRenderPoint(const Value: TGLRenderPoint);
@@ -1201,8 +1215,7 @@ begin
   end;
 end;
 
-procedure TGLODEManager.RenderEvent(Sender: TObject;
-  var rci: TGLRenderContextInfo);
+procedure TGLODEManager.RenderEvent(Sender: TObject; var rci: TGLRenderContextInfo);
 var
   i: Integer;
 begin
@@ -1287,10 +1300,10 @@ begin
 end;
 
 // ---------------
-// --------------- TGLODECollisionSurface ---------------
+// --------------- TODECollisionSurface ---------------
 // ---------------
 
-constructor TGLODECollisionSurface.Create(AOwner: TPersistent);
+constructor TODECollisionSurface.Create(AOwner: TPersistent);
 begin
   inherited Create;
   FOwner := AOwner;
@@ -1299,38 +1312,37 @@ begin
   RollingFrictionCoeff := 0.001; // Larger Coeff = more friction
 end;
 
-function TGLODECollisionSurface.GetOwner: TPersistent;
+function TODECollisionSurface.GetOwner: TPersistent;
 begin
   Result := FOwner;
 end;
 
-procedure TGLODECollisionSurface.Assign(Source: TPersistent);
+procedure TODECollisionSurface.Assign(Source: TPersistent);
 begin
   inherited;
   if not Assigned(Source) then
     Exit;
-  if Source is TGLODECollisionSurface then
+  if Source is TODECollisionSurface then
   begin
-    RollingFrictionCoeff := TGLODECollisionSurface(Source).RollingFrictionCoeff;
-    RollingFrictionEnabled := TGLODECollisionSurface(Source)
-      .RollingFrictionEnabled;
-    SurfaceMode := TGLODECollisionSurface(Source).SurfaceMode;
-    Mu := TGLODECollisionSurface(Source).Mu;
-    Mu2 := TGLODECollisionSurface(Source).Mu2;
-    Bounce := TGLODECollisionSurface(Source).Bounce;
-    Bounce_Vel := TGLODECollisionSurface(Source).Bounce_Vel;
-    SoftERP := TGLODECollisionSurface(Source).SoftERP;
-    SoftCFM := TGLODECollisionSurface(Source).SoftCFM;
-    Motion1 := TGLODECollisionSurface(Source).Motion1;
-    Motion2 := TGLODECollisionSurface(Source).Motion2;
-    Slip1 := TGLODECollisionSurface(Source).Slip1;
-    Slip2 := TGLODECollisionSurface(Source).Slip2;
+    RollingFrictionCoeff := TODECollisionSurface(Source).RollingFrictionCoeff;
+    RollingFrictionEnabled := TODECollisionSurface(Source).RollingFrictionEnabled;
+    SurfaceMode := TODECollisionSurface(Source).SurfaceMode;
+    Mu := TODECollisionSurface(Source).Mu;
+    Mu2 := TODECollisionSurface(Source).Mu2;
+    Bounce := TODECollisionSurface(Source).Bounce;
+    Bounce_Vel := TODECollisionSurface(Source).Bounce_Vel;
+    SoftERP := TODECollisionSurface(Source).SoftERP;
+    SoftCFM := TODECollisionSurface(Source).SoftCFM;
+    Motion1 := TODECollisionSurface(Source).Motion1;
+    Motion2 := TODECollisionSurface(Source).Motion2;
+    Slip1 := TODECollisionSurface(Source).Slip1;
+    Slip2 := TODECollisionSurface(Source).Slip2;
   end;
 end;
 
-procedure TGLODECollisionSurface.WriteToFiler(writer: TWriter);
+procedure TODECollisionSurface.WriteToFiler(writer: TWriter);
 var
-  mode: TGLODESurfaceModes;
+  mode: TODESurfaceModes;
 begin
   with writer do
   begin
@@ -1338,7 +1350,7 @@ begin
     WriteFloat(RollingFrictionCoeff);
     WriteBoolean(RollingFrictionEnabled);
     mode := SurfaceMode;
-    Write(mode, SizeOf(TGLODESurfaceModes));
+    Write(mode, SizeOf(TODESurfaceModes));
     WriteFloat(Mu);
     WriteFloat(Mu2);
     WriteFloat(Bounce);
@@ -1352,10 +1364,10 @@ begin
   end;
 end;
 
-procedure TGLODECollisionSurface.ReadFromFiler(reader: TReader);
+procedure TODECollisionSurface.ReadFromFiler(reader: TReader);
 var
   archiveVersion: Integer;
-  mode: TGLODESurfaceModes;
+  mode: TODESurfaceModes;
 begin
   with reader do
   begin
@@ -1363,7 +1375,7 @@ begin
     Assert(archiveVersion = 0);
     RollingFrictionCoeff := ReadFloat;
     RollingFrictionEnabled := ReadBoolean;
-    Read(mode, SizeOf(TGLODESurfaceModes));
+    Read(mode, SizeOf(TODESurfaceModes));
     SurfaceMode := mode;
     Mu := ReadFloat;
     Mu2 := ReadFloat;
@@ -1378,9 +1390,9 @@ begin
   end;
 end;
 
-function TGLODECollisionSurface.GetSurfaceMode: TGLODESurfaceModes;
+function TODECollisionSurface.GetSurfaceMode: TODESurfaceModes;
 var
-  ASurfaceModes: TGLODESurfaceModes;
+  ASurfaceModes: TODESurfaceModes;
 begin
   ASurfaceModes := [];
   if (FSurfaceParams.mode and dContactSlip2) <> 0 then
@@ -1404,7 +1416,7 @@ begin
   Result := ASurfaceModes;
 end;
 
-procedure TGLODECollisionSurface.SetSurfaceMode(Value: TGLODESurfaceModes);
+procedure TODECollisionSurface.SetSurfaceMode(Value: TODESurfaceModes);
 var
   AMode: Integer;
 begin
@@ -1430,122 +1442,122 @@ begin
   FSurfaceParams.mode := AMode;
 end;
 
-function TGLODECollisionSurface.GetMu: TdReal;
+function TODECollisionSurface.GetMu: TdReal;
 begin
   Result := FSurfaceParams.Mu;
 end;
 
-function TGLODECollisionSurface.GetMu2: TdReal;
+function TODECollisionSurface.GetMu2: TdReal;
 begin
   Result := FSurfaceParams.Mu2;
 end;
 
-function TGLODECollisionSurface.GetBounce: TdReal;
+function TODECollisionSurface.GetBounce: TdReal;
 begin
   Result := FSurfaceParams.Bounce;
 end;
 
-function TGLODECollisionSurface.GetBounce_Vel: TdReal;
+function TODECollisionSurface.GetBounce_Vel: TdReal;
 begin
   Result := FSurfaceParams.Bounce_Vel;
 end;
 
-function TGLODECollisionSurface.GetSoftERP: TdReal;
+function TODECollisionSurface.GetSoftERP: TdReal;
 begin
   Result := FSurfaceParams.soft_erp;
 end;
 
-function TGLODECollisionSurface.GetSoftCFM: TdReal;
+function TODECollisionSurface.GetSoftCFM: TdReal;
 begin
   Result := FSurfaceParams.soft_cfm;
 end;
 
-function TGLODECollisionSurface.GetMotion1: TdReal;
+function TODECollisionSurface.GetMotion1: TdReal;
 begin
   Result := FSurfaceParams.Motion1;
 end;
 
-function TGLODECollisionSurface.GetMotion2: TdReal;
+function TODECollisionSurface.GetMotion2: TdReal;
 begin
   Result := FSurfaceParams.Motion2;
 end;
 
-function TGLODECollisionSurface.GetSlip1: TdReal;
+function TODECollisionSurface.GetSlip1: TdReal;
 begin
   Result := FSurfaceParams.Slip1;
 end;
 
-function TGLODECollisionSurface.GetSlip2: TdReal;
+function TODECollisionSurface.GetSlip2: TdReal;
 begin
   Result := FSurfaceParams.Slip2;
 end;
 
-procedure TGLODECollisionSurface.SetMu(Value: TdReal);
+procedure TODECollisionSurface.SetMu(Value: TdReal);
 begin
   FSurfaceParams.Mu := Value;
 end;
 
-procedure TGLODECollisionSurface.SetMu2(Value: TdReal);
+procedure TODECollisionSurface.SetMu2(Value: TdReal);
 begin
   FSurfaceParams.Mu2 := Value;
 end;
 
-procedure TGLODECollisionSurface.SetBounce(Value: TdReal);
+procedure TODECollisionSurface.SetBounce(Value: TdReal);
 begin
   FSurfaceParams.Bounce := Value;
 end;
 
-procedure TGLODECollisionSurface.SetBounce_Vel(Value: TdReal);
+procedure TODECollisionSurface.SetBounce_Vel(Value: TdReal);
 begin
   FSurfaceParams.Bounce_Vel := Value;
 end;
 
-procedure TGLODECollisionSurface.SetSoftERP(Value: TdReal);
+procedure TODECollisionSurface.SetSoftERP(Value: TdReal);
 begin
   FSurfaceParams.soft_erp := Value;
 end;
 
-procedure TGLODECollisionSurface.SetSoftCFM(Value: TdReal);
+procedure TODECollisionSurface.SetSoftCFM(Value: TdReal);
 begin
   FSurfaceParams.soft_cfm := Value;
 end;
 
-procedure TGLODECollisionSurface.SetMotion1(Value: TdReal);
+procedure TODECollisionSurface.SetMotion1(Value: TdReal);
 begin
   FSurfaceParams.Motion1 := Value;
 end;
 
-procedure TGLODECollisionSurface.SetMotion2(Value: TdReal);
+procedure TODECollisionSurface.SetMotion2(Value: TdReal);
 begin
   FSurfaceParams.Motion2 := Value;
 end;
 
-procedure TGLODECollisionSurface.SetSlip1(Value: TdReal);
+procedure TODECollisionSurface.SetSlip1(Value: TdReal);
 begin
   FSurfaceParams.Slip1 := Value;
 end;
 
-procedure TGLODECollisionSurface.SetSlip2(Value: TdReal);
+procedure TODECollisionSurface.SetSlip2(Value: TdReal);
 begin
   FSurfaceParams.Slip2 := Value;
 end;
 
 
 // ---------------
-// --------------- TGLODEBehaviour --------------
+// --------------- TODEBehaviour --------------
 // ---------------
 
-constructor TGLODEBehaviour.Create(AOwner: TXCollection);
+constructor TODEBehaviour.Create(AOwner: TXCollection);
 begin
   inherited;
-  FSurface := TGLODECollisionSurface.Create(Self);
+  FSurface := TODECollisionSurface.Create(Self);
   FInitialized := False;
   FOwnerBaseSceneObject := OwnerBaseSceneObject;
   if Assigned(FOwnerBaseSceneObject) then
     RegisterGLSceneObject(OwnerBaseSceneObject);
 end;
 
-destructor TGLODEBehaviour.Destroy;
+destructor TODEBehaviour.Destroy;
 begin
   if Assigned(Manager) then
     Manager := nil;
@@ -1555,24 +1567,24 @@ begin
   inherited;
 end;
 
-procedure TGLODEBehaviour.Initialize;
+procedure TODEBehaviour.Initialize;
 begin
   FInitialized := True;
 end;
 
-procedure TGLODEBehaviour.Finalize;
+procedure TODEBehaviour.Finalize;
 begin
   FInitialized := False;
 end;
 
-procedure TGLODEBehaviour.Reinitialize;
+procedure TODEBehaviour.Reinitialize;
 begin
   if Initialized then
     Finalize;
   Initialize;
 end;
 
-procedure TGLODEBehaviour.WriteToFiler(writer: TWriter);
+procedure TODEBehaviour.WriteToFiler(writer: TWriter);
 begin
   inherited;
   with writer do
@@ -1586,7 +1598,7 @@ begin
   end;
 end;
 
-procedure TGLODEBehaviour.ReadFromFiler(reader: TReader);
+procedure TODEBehaviour.ReadFromFiler(reader: TReader);
 begin
   inherited;
   with reader do
@@ -1597,7 +1609,7 @@ begin
   end;
 end;
 
-procedure TGLODEBehaviour.Loaded;
+procedure TODEBehaviour.Loaded;
 var
   mng: TComponent;
 begin
@@ -1611,18 +1623,18 @@ begin
   end
 end;
 
-procedure TGLODEBehaviour.Render(var rci: TGLRenderContextInfo);
+procedure TODEBehaviour.Render(var rci: TGLRenderContextInfo);
 begin
   // virtual
 end;
 
-procedure TGLODEBehaviour.NotifyChange(Sender: TObject);
+procedure TODEBehaviour.NotifyChange(Sender: TObject);
 begin
   if Assigned(Manager) then
     Manager.NotifyChange(Self);
 end;
 
-procedure TGLODEBehaviour.SetManager(Value: TGLODEManager);
+procedure TODEBehaviour.SetManager(Value: TGLODEManager);
 begin
   if FManager <> Value then
   begin
@@ -1643,12 +1655,12 @@ begin
   end;
 end;
 
-procedure TGLODEBehaviour.SetSurface(Value: TGLODECollisionSurface);
+procedure TODEBehaviour.SetSurface(Value: TODECollisionSurface);
 begin
   FSurface.Assign(Value);
 end;
 
-function TGLODEBehaviour.GetAbsoluteMatrix: TMatrix;
+function TODEBehaviour.GetAbsoluteMatrix: TMatrix;
 begin
   Result := IdentityHMGMatrix;
   if Assigned(Owner.Owner) then
@@ -1664,7 +1676,7 @@ end;
 constructor TGLODEDynamic.Create(AOwner: TXCollection);
 begin
   inherited;
-  FElements := TGLODEElements.Create(Self);
+  FElements := TODEElements.Create(Self);
   FJointRegister := TList.Create;
   FEnabled := True;
 end;
@@ -1718,7 +1730,7 @@ begin
   Enabled := FEnabled;
 
   for i := 0 to FJointRegister.Count - 1 do
-    TGLODEJointBase(FJointRegister[i]).Attach;
+    TODEJointBase(FJointRegister[i]).Attach;
 
   inherited;
 end;
@@ -1737,7 +1749,7 @@ begin
   end;
   dMassSetZero(FMass);
   for i := 0 to FJointRegister.Count - 1 do
-    TGLODEJointBase(FJointRegister[i]).Attach;
+    TODEJointBase(FJointRegister[i]).Attach;
   inherited;
 end;
 
@@ -1773,19 +1785,19 @@ begin
   end;
 end;
 
-procedure TGLODEDynamic.RegisterJoint(Joint: TGLODEJointBase);
+procedure TGLODEDynamic.RegisterJoint(Joint: TODEJointBase);
 begin
   if FJointRegister.IndexOf(Joint) = -1 then
     FJointRegister.Add(Joint);
 end;
 
-procedure TGLODEDynamic.UnregisterJoint(Joint: TGLODEJointBase);
+procedure TGLODEDynamic.UnregisterJoint(Joint: TODEJointBase);
 begin
   if FJointRegister.IndexOf(Joint) > -1 then
     FJointRegister.Remove(Joint);
 end;
 
-function TGLODEDynamic.AddNewElement(AChild: TGLODEElementClass): TGLODEElementBase;
+function TGLODEDynamic.AddNewElement(AChild: TODEElementClass): TODEElementBase;
 var
   calcmass: TdMass;
 begin
@@ -1841,7 +1853,7 @@ begin
   dMassSetZero(FMass);
   for i := 0 to Elements.Count - 1 do
   begin
-    m := TGLODEElementBase(Elements[i]).CalculateMass;
+    m := TODEElementBase(Elements[i]).CalculateMass;
     dMassAdd(FMass, m);
   end;
   Result := FMass;
@@ -1922,15 +1934,13 @@ end;
 procedure TGLODEDynamic.AddRelForceAtPos(Force, Pos: TAffineVector);
 begin
   if Assigned(FBody) then
-    dBodyAddForceAtPos(FBody, Force.X, Force.Y, Force.Z, Pos.X,
-      Pos.Y, Pos.Z);
+    dBodyAddForceAtPos(FBody, Force.X, Force.Y, Force.Z, Pos.X, Pos.Y, Pos.Z);
 end;
 
 procedure TGLODEDynamic.AddRelForceAtRelPos(Force, Pos: TAffineVector);
 begin
   if Assigned(FBody) then
-    dBodyAddRelForceAtRelPos(FBody, Force.X, Force.Y, Force.Z,
-      Pos.X, Pos.Y, Pos.Z);
+    dBodyAddRelForceAtRelPos(FBody, Force.X, Force.Y, Force.Z, Pos.X, Pos.Y, Pos.Z);
 end;
 
 procedure TGLODEDynamic.AddTorque(Torque: TAffineVector);
@@ -1953,7 +1963,7 @@ end;
 constructor TGLODEStatic.Create(AOwner: TXCollection);
 begin
   inherited;
-  FElements := TGLODEElements.Create(Self);
+  FElements := TODEElements.Create(Self);
 end;
 
 destructor TGLODEStatic.Destroy;
@@ -2030,7 +2040,7 @@ begin
   end;
 end;
 
-function TGLODEStatic.AddNewElement(AChild: TGLODEElementClass): TGLODEElementBase;
+function TGLODEStatic.AddNewElement(AChild: TODEElementClass): TODEElementBase;
 begin
   Result := nil;
   if not Assigned(Manager) then
@@ -2048,67 +2058,67 @@ begin
     Exit;
 
   for i := 0 to FElements.Count - 1 do
-    TGLODEElementBase(FElements[i]).AlignGeomElementToMatrix
-      (TGLODEElementBase(FElements[i]).AbsoluteMatrix);
+    TODEElementBase(FElements[i]).AlignGeomElementToMatrix(
+	TODEElementBase(FElements[i]).AbsoluteMatrix);
 end;
 
 
 // ---------------
-// --------------- TGLODEElements ---------------
+// --------------- TODEElements ---------------
 // ---------------
-destructor TGLODEElements.Destroy;
+destructor TODEElements.Destroy;
 begin
   Finalize;
   inherited;
 end;
 
-function TGLODEElements.GetElement(index: Integer): TGLODEElementBase;
+function TODEElements.GetElement(index: Integer): TODEElementBase;
 begin
-  Result := TGLODEElementBase(Items[index]);
+  Result := TODEElementBase(Items[index]);
 end;
 
-class function TGLODEElements.ItemsClass: TXCollectionItemClass;
+class function TODEElements.ItemsClass: TXCollectionItemClass;
 begin
-  Result := TGLODEElementBase;
+  Result := TODEElementBase;
 end;
 
-procedure TGLODEElements.Initialize;
+procedure TODEElements.Initialize;
 var
   i: Integer;
 begin
   for i := 0 to Count - 1 do
-    TGLODEElementBase(Items[i]).Initialize;
+    TODEElementBase(Items[i]).Initialize;
 end;
 
-procedure TGLODEElements.Finalize;
+procedure TODEElements.Finalize;
 var
   i: Integer;
 begin
   for i := 0 to Count - 1 do
-    TGLODEElementBase(Items[i]).Finalize;
+    TODEElementBase(Items[i]).Finalize;
 end;
 
-procedure TGLODEElements.Render(var rci: TGLRenderContextInfo);
+procedure TODEElements.Render(var rci: TGLRenderContextInfo);
 var
   i: Integer;
 begin
   for i := 0 to Count - 1 do
-    TGLODEElementBase(Items[i]).Render(rci);
+    TODEElementBase(Items[i]).Render(rci);
 end;
 
-procedure TGLODEElements.NotifyChange(Sender: TObject);
+procedure TODEElements.NotifyChange(Sender: TObject);
 begin
   if Assigned(Owner) then
-    if Owner is TGLODEBehaviour then
-      TGLODEBehaviour(Owner).NotifyChange(Self);
+    if Owner is TODEBehaviour then
+      TODEBehaviour(Owner).NotifyChange(Self);
 end;
 
 
 // ---------------
-// --------------- TGLODEElementBase ---------------
+// --------------- TODEElementBase ---------------
 // ---------------
 
-constructor TGLODEElementBase.Create(AOwner: TXCollection);
+constructor TODEElementBase.Create(AOwner: TXCollection);
 begin
   inherited;
   FPosition := TGLCoordinates.CreateInitialized(Self, NullHmgPoint, csPoint);
@@ -2124,7 +2134,7 @@ begin
   FIsCalculating := False;
 end;
 
-destructor TGLODEElementBase.Destroy;
+destructor TODEElementBase.Destroy;
 begin
   if FInitialized then
     Finalize;
@@ -2134,12 +2144,12 @@ begin
   inherited;
 end;
 
-procedure TGLODEElementBase.Render(var rci: TGLRenderContextInfo);
+procedure TODEElementBase.Render(var rci: TGLRenderContextInfo);
 begin
   // Override this procedure with element drawing OpenGL code
 end;
 
-procedure TGLODEElementBase.Initialize;
+procedure TODEElementBase.Initialize;
 var
   Manager: TGLODEManager;
   Body: PdxBody;
@@ -2147,8 +2157,8 @@ begin
   Manager := nil;
   Body := nil;
 
-  if Owner.Owner is TGLODEBehaviour then
-    Manager := TGLODEBehaviour(Owner.Owner).Manager;
+  if Owner.Owner is TODEBehaviour then
+    Manager := TODEBehaviour(Owner.Owner).Manager;
   if not Assigned(Manager) then
     Exit;
 
@@ -2182,7 +2192,7 @@ begin
   FInitialized := True;
 end;
 
-procedure TGLODEElementBase.Finalize;
+procedure TODEElementBase.Finalize;
 begin
   if not FInitialized then
     Exit;
@@ -2199,7 +2209,7 @@ begin
   FInitialized := False;
 end;
 
-procedure TGLODEElementBase.WriteToFiler(writer: TWriter);
+procedure TODEElementBase.WriteToFiler(writer: TWriter);
 begin
   inherited;
   with writer do
@@ -2212,7 +2222,7 @@ begin
   end;
 end;
 
-procedure TGLODEElementBase.ReadFromFiler(reader: TReader);
+procedure TODEElementBase.ReadFromFiler(reader: TReader);
 begin
   inherited;
   with reader do
@@ -2226,22 +2236,22 @@ begin
   NotifyChange(Self);
 end;
 
-function TGLODEElementBase.AbsoluteMatrix: TMatrix;
+function TODEElementBase.AbsoluteMatrix: TMatrix;
 var
   Mat: TMatrix;
 begin
   Mat := IdentityHMGMatrix;
-  if Owner.Owner is TGLODEBehaviour then
-    Mat := TGLODEBehaviour(Owner.Owner).AbsoluteMatrix;
+  if Owner.Owner is TODEBehaviour then
+    Mat := TODEBehaviour(Owner.Owner).AbsoluteMatrix;
   Result := MatrixMultiply(Mat, FLocalMatrix);
 end;
 
-function TGLODEElementBase.AbsolutePosition: TAffineVector;
+function TODEElementBase.AbsolutePosition: TAffineVector;
 begin
   Result := AffineVectorMake(AbsoluteMatrix.W);
 end;
 
-procedure TGLODEElementBase.AlignGeomElementToMatrix(Mat: TMatrix);
+procedure TODEElementBase.AlignGeomElementToMatrix(Mat: TMatrix);
 var
   R: TdMatrix3;
 begin
@@ -2264,25 +2274,25 @@ begin
   FRealignODE := False;
 end;
 
-procedure TGLODEElementBase.SetGeomElement(aGeom: PdxGeom);
+procedure TODEElementBase.SetGeomElement(aGeom: PdxGeom);
 begin
   FGeomElement := aGeom;
 end;
 
-function TGLODEElementBase.IsODEInitialized: Boolean;
+function TODEElementBase.IsODEInitialized: Boolean;
 var
   Manager: TGLODEManager;
 begin
   Result := False;
   Manager := nil;
-  if Owner.Owner is TGLODEBehaviour then
-    Manager := TGLODEBehaviour(Owner.Owner).Manager;
+  if Owner.Owner is TODEBehaviour then
+    Manager := TODEBehaviour(Owner.Owner).Manager;
   if not Assigned(Manager) then
     Exit;
   Result := Assigned(Manager.Space);
 end;
 
-function TGLODEElementBase.CalculateMass: TdMass;
+function TODEElementBase.CalculateMass: TdMass;
 var
   R: TdMatrix3;
 begin
@@ -2304,7 +2314,7 @@ begin
   Result := FMass;
 end;
 
-procedure TGLODEElementBase.CoordinateChanged(Sender: TObject);
+procedure TODEElementBase.CoordinateChanged(Sender: TObject);
 var
   rightVector: TVector;
 begin
@@ -2349,18 +2359,18 @@ begin
   end;
 end;
 
-procedure TGLODEElementBase.NotifyChange(Sender: TObject);
+procedure TODEElementBase.NotifyChange(Sender: TObject);
 begin
   RebuildMatrix;
   ODERebuild;
 end;
 
-function TGLODEElementBase.GetMatrix: TMatrix;
+function TODEElementBase.GetMatrix: TMatrix;
 begin
   Result := FLocalMatrix;
 end;
 
-procedure TGLODEElementBase.RebuildMatrix;
+procedure TODEElementBase.RebuildMatrix;
 begin
   VectorCrossProduct(FUp.AsVector, FDirection.AsVector, FLocalMatrix.X);
   SetVector(FLocalMatrix.Y, FUp.AsVector);
@@ -2368,29 +2378,26 @@ begin
   SetVector(FLocalMatrix.W, FPosition.AsVector);
 end;
 
-procedure TGLODEElementBase.RebuildVectors;
+procedure TODEElementBase.RebuildVectors;
 begin
-  FUp.SetVector(FLocalMatrix.Y.X, FLocalMatrix.Y.Y,
-    FLocalMatrix.Y.Z);
-  FDirection.SetVector(FLocalMatrix.Z.X, FLocalMatrix.Z.Y,
-    FLocalMatrix.Z.Z);
-  FPosition.SetPoint(FLocalMatrix.W.X, FLocalMatrix.W.Y,
-    FLocalMatrix.W.Z);
+  FUp.SetVector(FLocalMatrix.Y.X, FLocalMatrix.Y.Y, FLocalMatrix.Y.Z);
+  FDirection.SetVector(FLocalMatrix.Z.X, FLocalMatrix.Z.Y, FLocalMatrix.Z.Z);
+  FPosition.SetPoint(FLocalMatrix.W.X, FLocalMatrix.W.Y, FLocalMatrix.W.Z);
 end;
 
-procedure TGLODEElementBase.SetDensity(const Value: TdReal);
+procedure TODEElementBase.SetDensity(const Value: TdReal);
 begin
   FDensity := Value;
 end;
 
-procedure TGLODEElementBase.SetMatrix(const Value: TMatrix);
+procedure TODEElementBase.SetMatrix(const Value: TMatrix);
 begin
   FLocalMatrix := Value;
   RebuildVectors;
   ODERebuild;
 end;
 
-procedure TGLODEElementBase.ODERebuild;
+procedure TODEElementBase.ODERebuild;
 begin
   if Initialized then
   begin
@@ -2403,30 +2410,30 @@ begin
       AlignGeomElementToMatrix(AbsoluteMatrix);
   end;
   if Assigned(Owner) then
-    TGLODEElements(Owner).NotifyChange(Self);
+    TODEElements(Owner).NotifyChange(Self);
 end;
 
-procedure TGLODEElementBase.SetPosition(const Value: TGLCoordinates);
+procedure TODEElementBase.SetPosition(const Value: TGLCoordinates);
 begin
   FPosition.Assign(Value);
 end;
 
-procedure TGLODEElementBase.SetDirection(const Value: TGLCoordinates);
+procedure TODEElementBase.SetDirection(const Value: TGLCoordinates);
 begin
   FDirection.Assign(Value);
 end;
 
-procedure TGLODEElementBase.SetUp(const Value: TGLCoordinates);
+procedure TODEElementBase.SetUp(const Value: TGLCoordinates);
 begin
   FUp.Assign(Value);
 end;
 
 
 // ---------------
-// --------------- TGLODEElementBox ---------------
+// --------------- TODEElementBox ---------------
 // ---------------
 
-procedure TGLODEElementBox.Render(var rci: TGLRenderContextInfo);
+procedure TODEElementBox.Render(var rci: TGLRenderContextInfo);
 begin
   GL.PushMatrix;
   GL.MultMatrixf(@FLocalMatrix);
@@ -2457,7 +2464,7 @@ begin
   GL.PopMatrix;
 end;
 
-constructor TGLODEElementBox.Create(AOwner: TXCollection);
+constructor TODEElementBox.Create(AOwner: TXCollection);
 begin
   inherited;
   BoxWidth := 1;
@@ -2465,7 +2472,7 @@ begin
   BoxDepth := 1;
 end;
 
-procedure TGLODEElementBox.Initialize;
+procedure TODEElementBox.Initialize;
 begin
   if FInitialized then
     Exit;
@@ -2476,7 +2483,7 @@ begin
   inherited;
 end;
 
-procedure TGLODEElementBox.WriteToFiler(writer: TWriter);
+procedure TODEElementBox.WriteToFiler(writer: TWriter);
 begin
   inherited;
   with writer do
@@ -2488,7 +2495,7 @@ begin
   end;
 end;
 
-procedure TGLODEElementBox.ReadFromFiler(reader: TReader);
+procedure TODEElementBox.ReadFromFiler(reader: TReader);
 begin
   inherited;
   with reader do
@@ -2500,28 +2507,28 @@ begin
   end;
 end;
 
-class function TGLODEElementBox.FriendlyName: String;
+class function TODEElementBox.FriendlyName: String;
 begin
   Result := 'Box';
 end;
 
-class function TGLODEElementBox.FriendlyDescription: String;
+class function TODEElementBox.FriendlyDescription: String;
 begin
   Result := 'The ODE box element implementation';
 end;
 
-class function TGLODEElementBox.ItemCategory: String;
+class function TODEElementBox.ItemCategory: String;
 begin
   Result := 'Primitives';
 end;
 
-function TGLODEElementBox.CalculateMass: TdMass;
+function TODEElementBox.CalculateMass: TdMass;
 begin
   dMassSetBox(FMass, FDensity, BoxWidth, BoxHeight, BoxDepth);
   Result := inherited CalculateMass;
 end;
 
-function TGLODEElementBox.GetBoxWidth: TdReal;
+function TODEElementBox.GetBoxWidth: TdReal;
 var
   vec: TdVector3;
 begin
@@ -2533,7 +2540,7 @@ begin
   Result := FBoxWidth;
 end;
 
-function TGLODEElementBox.GetBoxHeight: TdReal;
+function TODEElementBox.GetBoxHeight: TdReal;
 var
   vec: TdVector3;
 begin
@@ -2545,7 +2552,7 @@ begin
   Result := FBoxHeight;
 end;
 
-function TGLODEElementBox.GetBoxDepth: TdReal;
+function TODEElementBox.GetBoxDepth: TdReal;
 var
   vec: TdVector3;
 begin
@@ -2557,26 +2564,26 @@ begin
   Result := FBoxDepth;
 end;
 
-procedure TGLODEElementBox.ODERebuild;
+procedure TODEElementBox.ODERebuild;
 begin
   if Assigned(Geom) then
     dGeomBoxSetLengths(Geom, FBoxWidth, FBoxHeight, FBoxDepth);
   inherited;
 end;
 
-procedure TGLODEElementBox.SetBoxWidth(const Value: TdReal);
+procedure TODEElementBox.SetBoxWidth(const Value: TdReal);
 begin
   FBoxWidth := Value;
   ODERebuild;
 end;
 
-procedure TGLODEElementBox.SetBoxHeight(const Value: TdReal);
+procedure TODEElementBox.SetBoxHeight(const Value: TdReal);
 begin
   FBoxHeight := Value;
   ODERebuild;
 end;
 
-procedure TGLODEElementBox.SetBoxDepth(const Value: TdReal);
+procedure TODEElementBox.SetBoxDepth(const Value: TdReal);
 begin
   FBoxDepth := Value;
   ODERebuild;
@@ -2584,10 +2591,10 @@ end;
 
 
 // ---------------
-// --------------- TGLODEElementSphere ---------------
+// --------------- TODEElementSphere ---------------
 // ---------------
 
-procedure TGLODEElementSphere.Render(var rci: TGLRenderContextInfo);
+procedure TODEElementSphere.Render(var rci: TGLRenderContextInfo);
 var
   AngTop, AngBottom, AngStart, AngStop, StepV, StepH: double;
   SinP, CosP, SinP2, CosP2, SinT, CosT, Phi, Phi2, Theta: double;
@@ -2654,13 +2661,13 @@ begin
   GL.PopMatrix;
 end;
 
-constructor TGLODEElementSphere.Create(AOwner: TXCollection);
+constructor TODEElementSphere.Create(AOwner: TXCollection);
 begin
   inherited;
   FRadius := 0.5;
 end;
 
-procedure TGLODEElementSphere.Initialize;
+procedure TODEElementSphere.Initialize;
 begin
   if FInitialized then
     Exit;
@@ -2671,7 +2678,7 @@ begin
   inherited;
 end;
 
-procedure TGLODEElementSphere.WriteToFiler(writer: TWriter);
+procedure TODEElementSphere.WriteToFiler(writer: TWriter);
 begin
   inherited;
   with writer do
@@ -2681,7 +2688,7 @@ begin
   end;
 end;
 
-procedure TGLODEElementSphere.ReadFromFiler(reader: TReader);
+procedure TODEElementSphere.ReadFromFiler(reader: TReader);
 begin
   inherited;
   with reader do
@@ -2691,35 +2698,35 @@ begin
   end;
 end;
 
-class function TGLODEElementSphere.FriendlyName: String;
+class function TODEElementSphere.FriendlyName: String;
 begin
   Result := 'Sphere';
 end;
 
-class function TGLODEElementSphere.FriendlyDescription: String;
+class function TODEElementSphere.FriendlyDescription: String;
 begin
   Result := 'The ODE sphere element implementation';
 end;
 
-class function TGLODEElementSphere.ItemCategory: String;
+class function TODEElementSphere.ItemCategory: String;
 begin
   Result := 'Primitives';
 end;
 
-function TGLODEElementSphere.CalculateMass: TdMass;
+function TODEElementSphere.CalculateMass: TdMass;
 begin
   dMassSetSphere(FMass, FDensity, Radius);
   Result := inherited CalculateMass;
 end;
 
-function TGLODEElementSphere.GetRadius: TdReal;
+function TODEElementSphere.GetRadius: TdReal;
 begin
   if Assigned(FGeomElement) then
     FRadius := dGeomSphereGetRadius(FGeomElement);
   Result := FRadius;
 end;
 
-procedure TGLODEElementSphere.ODERebuild;
+procedure TODEElementSphere.ODERebuild;
 begin
   if Assigned(Geom) then
   begin
@@ -2728,7 +2735,7 @@ begin
   inherited;
 end;
 
-procedure TGLODEElementSphere.SetRadius(const Value: TdReal);
+procedure TODEElementSphere.SetRadius(const Value: TdReal);
 begin
   FRadius := Value;
   ODERebuild;
@@ -2736,10 +2743,10 @@ end;
 
 
 // ---------------
-// --------------- TGLODEElementCapsule ---------------
+// --------------- TODEElementCapsule ---------------
 // ---------------
 
-procedure TGLODEElementCapsule.Render(var rci: TGLRenderContextInfo);
+procedure TODEElementCapsule.Render(var rci: TGLRenderContextInfo);
 var
   i, J, Stacks, Slices: Integer;
 begin
@@ -2756,8 +2763,8 @@ begin
     GL.Begin_(GL_LINE_LOOP);
     for i := 0 to Slices - 1 do
       GL.Vertex3f(FRadius * sin(2 * i * PI / Slices),
-        FRadius * cos(2 * i * PI / Slices), -FLength / 2 + FLength * J /
-        (Stacks - 1));
+        FRadius * cos(2 * i * PI / Slices), 
+		-FLength / 2 + FLength * J /(Stacks - 1));
     GL.End_;
   end;
 
@@ -2801,14 +2808,14 @@ end;
 
  
 //
-constructor TGLODEElementCapsule.Create(AOwner: TXCollection);
+constructor TODEElementCapsule.Create(AOwner: TXCollection);
 begin
   inherited;
   FRadius := 0.5;
   FLength := 1;
 end;
 
-procedure TGLODEElementCapsule.Initialize;
+procedure TODEElementCapsule.Initialize;
 begin
   if FInitialized then
     Exit;
@@ -2819,7 +2826,7 @@ begin
   inherited;
 end;
 
-procedure TGLODEElementCapsule.WriteToFiler(writer: TWriter);
+procedure TODEElementCapsule.WriteToFiler(writer: TWriter);
 begin
   inherited;
   with writer do
@@ -2830,7 +2837,7 @@ begin
   end;
 end;
 
-procedure TGLODEElementCapsule.ReadFromFiler(reader: TReader);
+procedure TODEElementCapsule.ReadFromFiler(reader: TReader);
 begin
   inherited;
   with reader do
@@ -2841,28 +2848,28 @@ begin
   end;
 end;
 
-class function TGLODEElementCapsule.FriendlyName: String;
+class function TODEElementCapsule.FriendlyName: String;
 begin
   Result := 'Capsule';
 end;
 
-class function TGLODEElementCapsule.FriendlyDescription: String;
+class function TODEElementCapsule.FriendlyDescription: String;
 begin
   Result := 'The ODE capped cylinder element implementation';
 end;
 
-class function TGLODEElementCapsule.ItemCategory: String;
+class function TODEElementCapsule.ItemCategory: String;
 begin
   Result := 'Primitives';
 end;
 
-function TGLODEElementCapsule.CalculateMass: TdMass;
+function TODEElementCapsule.CalculateMass: TdMass;
 begin
   dMassSetCapsule(FMass, FDensity, 3, FRadius, FLength);
   Result := inherited CalculateMass;
 end;
 
-function TGLODEElementCapsule.GetRadius: TdReal;
+function TODEElementCapsule.GetRadius: TdReal;
 var
   rad, len: TdReal;
 begin
@@ -2874,7 +2881,7 @@ begin
   Result := FRadius;
 end;
 
-function TGLODEElementCapsule.GetLength: TdReal;
+function TODEElementCapsule.GetLength: TdReal;
 var
   rad, len: TdReal;
 begin
@@ -2886,20 +2893,20 @@ begin
   Result := FLength;
 end;
 
-procedure TGLODEElementCapsule.ODERebuild;
+procedure TODEElementCapsule.ODERebuild;
 begin
   if Assigned(Geom) then
     dGeomCapsuleSetParams(Geom, FRadius, FLength);
   inherited;
 end;
 
-procedure TGLODEElementCapsule.SetRadius(const Value: TdReal);
+procedure TODEElementCapsule.SetRadius(const Value: TdReal);
 begin
   FRadius := Value;
   ODERebuild;
 end;
 
-procedure TGLODEElementCapsule.SetLength(const Value: TdReal);
+procedure TODEElementCapsule.SetLength(const Value: TdReal);
 begin
   FLength := Value;
   ODERebuild;
@@ -2907,10 +2914,10 @@ end;
 
 
 // ---------------
-// --------------- TGLODEElementCylinder ---------------
+// --------------- TODEElementCylinder ---------------
 // ---------------
 
-procedure TGLODEElementCylinder.Render(var rci: TGLRenderContextInfo);
+procedure TODEElementCylinder.Render(var rci: TGLRenderContextInfo);
 var
   i, J, Stacks, Slices: Integer;
 begin
@@ -2924,8 +2931,8 @@ begin
   begin
     GL.Begin_(GL_LINE_LOOP);
     for i := 0 to Slices - 1 do
-      GL.Vertex3f(FRadius * sin(2 * i * PI / Slices), -FLength / 2 + FLength * J
-        / (Stacks - 1), FRadius * cos(2 * i * PI / Slices));
+      GL.Vertex3f(FRadius * sin(2 * i * PI / Slices), -FLength / 2 + FLength * J/ 
+	    (Stacks - 1), FRadius * cos(2 * i * PI / Slices));
     GL.End_;
   end;
 
@@ -2961,14 +2968,14 @@ begin
   GL.PopMatrix;
 end;
 
-constructor TGLODEElementCylinder.Create(AOwner: TXCollection);
+constructor TODEElementCylinder.Create(AOwner: TXCollection);
 begin
   inherited;
   FRadius := 0.5;
   FLength := 1;
 end;
 
-procedure TGLODEElementCylinder.Initialize;
+procedure TODEElementCylinder.Initialize;
 begin
   if FInitialized then
     Exit;
@@ -2979,7 +2986,7 @@ begin
   inherited;
 end;
 
-procedure TGLODEElementCylinder.WriteToFiler(writer: TWriter);
+procedure TODEElementCylinder.WriteToFiler(writer: TWriter);
 begin
   inherited;
   with writer do
@@ -2990,7 +2997,7 @@ begin
   end;
 end;
 
-procedure TGLODEElementCylinder.ReadFromFiler(reader: TReader);
+procedure TODEElementCylinder.ReadFromFiler(reader: TReader);
 begin
   inherited;
   with reader do
@@ -3001,28 +3008,28 @@ begin
   end;
 end;
 
-class function TGLODEElementCylinder.FriendlyName: String;
+class function TODEElementCylinder.FriendlyName: String;
 begin
   Result := 'Cylinder';
 end;
 
-class function TGLODEElementCylinder.FriendlyDescription: String;
+class function TODEElementCylinder.FriendlyDescription: String;
 begin
   Result := 'The ODE cylinder element implementation';
 end;
 
-class function TGLODEElementCylinder.ItemCategory: String;
+class function TODEElementCylinder.ItemCategory: String;
 begin
   Result := 'Primitives';
 end;
 
-function TGLODEElementCylinder.CalculateMass: TdMass;
+function TODEElementCylinder.CalculateMass: TdMass;
 begin
   dMassSetCylinder(FMass, FDensity, 3, FRadius, FLength);
   Result := inherited CalculateMass;
 end;
 
-function TGLODEElementCylinder.GetRadius: TdReal;
+function TODEElementCylinder.GetRadius: TdReal;
 var
   rad, len: TdReal;
 begin
@@ -3034,7 +3041,7 @@ begin
   Result := FRadius;
 end;
 
-function TGLODEElementCylinder.GetLength: TdReal;
+function TODEElementCylinder.GetLength: TdReal;
 var
   rad, len: TdReal;
 begin
@@ -3046,44 +3053,44 @@ begin
   Result := FLength;
 end;
 
-procedure TGLODEElementCylinder.ODERebuild;
+procedure TODEElementCylinder.ODERebuild;
 begin
   if Assigned(Geom) then
     dGeomCylinderSetParams(Geom, FRadius, FLength);
   inherited;
 end;
 
-procedure TGLODEElementCylinder.SetRadius(const Value: TdReal);
+procedure TODEElementCylinder.SetRadius(const Value: TdReal);
 begin
   FRadius := Value;
   ODERebuild;
 end;
 
-procedure TGLODEElementCylinder.SetLength(const Value: TdReal);
+procedure TODEElementCylinder.SetLength(const Value: TdReal);
 begin
   FLength := Value;
   ODERebuild;
 end;
 
 // ---------------
-// --------------- TGLODEElementTriMesh ---------------
+// --------------- TODEElementTriMesh ---------------
 // ---------------
 
-constructor TGLODEElementTriMesh.Create(AOwner: TXCollection);
+constructor TODEElementTriMesh.Create(AOwner: TXCollection);
 begin
   inherited;
   FVertices := TAffineVectorList.Create;
   FIndices := TIntegerList.Create;
 end;
 
-destructor TGLODEElementTriMesh.Destroy;
+destructor TODEElementTriMesh.Destroy;
 begin
   FVertices.Free;
   FIndices.Free;
   inherited;
 end;
 
-procedure TGLODEElementTriMesh.Initialize;
+procedure TODEElementTriMesh.Initialize;
 begin
   if not IsODEInitialized then
     Exit;
@@ -3099,7 +3106,7 @@ begin
   inherited;
 end;
 
-procedure TGLODEElementTriMesh.Finalize;
+procedure TODEElementTriMesh.Finalize;
 begin
   if not FInitialized then
     Exit;
@@ -3108,7 +3115,7 @@ begin
   inherited;
 end;
 
-procedure TGLODEElementTriMesh.WriteToFiler(writer: TWriter);
+procedure TODEElementTriMesh.WriteToFiler(writer: TWriter);
 begin
   inherited;
   with writer do
@@ -3117,7 +3124,7 @@ begin
   end;
 end;
 
-procedure TGLODEElementTriMesh.ReadFromFiler(reader: TReader);
+procedure TODEElementTriMesh.ReadFromFiler(reader: TReader);
 begin
   inherited;
   with reader do
@@ -3126,22 +3133,22 @@ begin
   end;
 end;
 
-class function TGLODEElementTriMesh.FriendlyName: String;
+class function TODEElementTriMesh.FriendlyName: String;
 begin
   Result := 'Tri-Mesh';
 end;
 
-class function TGLODEElementTriMesh.FriendlyDescription: String;
+class function TODEElementTriMesh.FriendlyDescription: String;
 begin
   Result := 'The ODE tri-mesh element implementation';
 end;
 
-class function TGLODEElementTriMesh.ItemCategory: String;
+class function TODEElementTriMesh.ItemCategory: String;
 begin
   Result := 'Meshes';
 end;
 
-function TGLODEElementTriMesh.CalculateMass: TdMass;
+function TODEElementTriMesh.CalculateMass: TdMass;
 var
   R: Single;
   min, max: TAffineVector;
@@ -3157,19 +3164,19 @@ begin
   Result := inherited CalculateMass;
 end;
 
-procedure TGLODEElementTriMesh.SetVertices(const Value: TAffineVectorList);
+procedure TODEElementTriMesh.SetVertices(const Value: TAffineVectorList);
 begin
   FVertices.Assign(Value);
   RefreshTriMeshData;
 end;
 
-procedure TGLODEElementTriMesh.SetIndices(const Value: TIntegerList);
+procedure TODEElementTriMesh.SetIndices(const Value: TIntegerList);
 begin
   FIndices.Assign(Value);
   RefreshTriMeshData;
 end;
 
-procedure TGLODEElementTriMesh.RefreshTriMeshData;
+procedure TODEElementTriMesh.RefreshTriMeshData;
 begin
   if FInitialized then
     Finalize;
@@ -3178,10 +3185,10 @@ end;
 
 
 // ---------------
-// --------------- TGLODEElementPlane ---------------
+// --------------- TODEElementPlane ---------------
 // ---------------
 
-procedure TGLODEElementPlane.Initialize;
+procedure TODEElementPlane.Initialize;
 begin
   if FInitialized then
     Exit;
@@ -3192,14 +3199,14 @@ begin
   inherited;
 end;
 
-procedure TGLODEElementPlane.WriteToFiler(writer: TWriter);
+procedure TODEElementPlane.WriteToFiler(writer: TWriter);
 begin
   // ArchiveVersion 1, added inherited call
   writer.WriteInteger(1);
   inherited;
 end;
 
-procedure TGLODEElementPlane.ReadFromFiler(reader: TReader);
+procedure TODEElementPlane.ReadFromFiler(reader: TReader);
 var
   archiveVersion: Integer;
 begin
@@ -3209,30 +3216,30 @@ begin
     inherited;
 end;
 
-class function TGLODEElementPlane.FriendlyName: String;
+class function TODEElementPlane.FriendlyName: String;
 begin
   Result := 'Plane';
 end;
 
-class function TGLODEElementPlane.FriendlyDescription: String;
+class function TODEElementPlane.FriendlyDescription: String;
 begin
   Result := 'The ODE plane element implementation';
 end;
 
-class function TGLODEElementPlane.ItemCategory: String;
+class function TODEElementPlane.ItemCategory: String;
 begin
   Result := 'Primitives';
 end;
 
-class function TGLODEElementPlane.CanAddTo(collection: TXCollection): Boolean;
+class function TODEElementPlane.CanAddTo(collection: TXCollection): Boolean;
 begin
   Result := False;
-  if Assigned(TGLODEElements(collection).Owner) then
-    if TGLODEElements(collection).Owner is TGLODEStatic then
+  if Assigned(TODEElements(collection).Owner) then
+    if TODEElements(collection).Owner is TGLODEStatic then
       Result := True;
 end;
 
-procedure TGLODEElementPlane.AlignGeomElementToMatrix(Mat: TMatrix);
+procedure TODEElementPlane.AlignGeomElementToMatrix(Mat: TMatrix);
 var
   d: Single;
 begin
@@ -3245,15 +3252,15 @@ end;
 
 
 // ---------------
-// --------------- TGLODEJoints ---------------
+// --------------- TODEJoints ---------------
 // ---------------
 
-class function TGLODEJoints.ItemsClass: TXCollectionItemClass;
+class function TODEJoints.ItemsClass: TXCollectionItemClass;
 begin
-  Result := TGLODEJointBase;
+  Result := TODEJointBase;
 end;
 
-procedure TGLODEJoints.Initialize;
+procedure TODEJoints.Initialize;
 var
   i: Integer;
 begin
@@ -3261,7 +3268,7 @@ begin
     Joint[i].Initialize;
 end;
 
-procedure TGLODEJoints.Finalize;
+procedure TODEJoints.Finalize;
 var
   i: Integer;
 begin
@@ -3269,9 +3276,9 @@ begin
     Joint[i].Finalize;
 end;
 
-function TGLODEJoints.GetJoint(index: Integer): TGLODEJointBase;
+function TODEJoints.GetJoint(index: Integer): TODEJointBase;
 begin
-  Result := TGLODEJointBase(Items[index]);
+  Result := TODEJointBase(Items[index]);
 end;
 
 
@@ -3282,7 +3289,7 @@ end;
 constructor TGLODEJointList.Create(AOwner: TComponent);
 begin
   inherited;
-  FJoints := TGLODEJoints.Create(Self);
+  FJoints := TODEJoints.Create(Self);
 end;
 
 destructor TGLODEJointList.Destroy;
@@ -3331,8 +3338,7 @@ begin
     FJoints[i].Loaded;
 end;
 
-procedure TGLODEJointList.Notification(AComponent: TComponent;
-  Operation: TOperation);
+procedure TGLODEJointList.Notification(AComponent: TComponent; Operation: TOperation);
 var
   i: Integer;
 begin
@@ -3349,10 +3355,10 @@ end;
 
 
 // ---------------
-// --------------- TGLODEJointBase ---------------
+// --------------- TODEJointBase ---------------
 // ---------------
 
-constructor TGLODEJointBase.Create(AOwner: TXCollection);
+constructor TODEJointBase.Create(AOwner: TXCollection);
 begin
   inherited;
   FJointID := nil;
@@ -3360,13 +3366,13 @@ begin
   FInitialized := False;
 end;
 
-destructor TGLODEJointBase.Destroy;
+destructor TODEJointBase.Destroy;
 begin
   Finalize;
   inherited;
 end;
 
-procedure TGLODEJointBase.Initialize;
+procedure TODEJointBase.Initialize;
 begin
   if not IsODEInitialized then
     Exit;
@@ -3380,7 +3386,7 @@ begin
   FInitialized := True;
 end;
 
-procedure TGLODEJointBase.Finalize;
+procedure TODEJointBase.Finalize;
 begin
   if not Initialized then
     Exit;
@@ -3395,7 +3401,7 @@ begin
   FInitialized := False;
 end;
 
-procedure TGLODEJointBase.WriteToFiler(writer: TWriter);
+procedure TODEJointBase.WriteToFiler(writer: TWriter);
 begin
   inherited;
   with writer do
@@ -3417,7 +3423,7 @@ begin
   end;
 end;
 
-procedure TGLODEJointBase.ReadFromFiler(reader: TReader);
+procedure TODEJointBase.ReadFromFiler(reader: TReader);
 begin
   inherited;
   with reader do
@@ -3430,12 +3436,12 @@ begin
   end;
 end;
 
-procedure TGLODEJointBase.Loaded;
+procedure TODEJointBase.Loaded;
 begin
   DoLoaded;
 end;
 
-procedure TGLODEJointBase.RegisterJointWithObject(Obj: TGLBaseSceneObject);
+procedure TODEJointBase.RegisterJointWithObject(Obj: TGLBaseSceneObject);
 var
   temp: TGLODEDynamic;
 begin
@@ -3447,7 +3453,7 @@ begin
   end;
 end;
 
-procedure TGLODEJointBase.UnregisterJointWithObject(Obj: TGLBaseSceneObject);
+procedure TODEJointBase.UnregisterJointWithObject(Obj: TGLBaseSceneObject);
 var
   temp: TGLODEDynamic;
 begin
@@ -3459,7 +3465,7 @@ begin
   end;
 end;
 
-function TGLODEJointBase.IsODEInitialized: Boolean;
+function TODEJointBase.IsODEInitialized: Boolean;
 begin
   Result := False;
   if not Assigned(Manager) then
@@ -3467,7 +3473,7 @@ begin
   Result := Assigned(Manager.World);
 end;
 
-procedure TGLODEJointBase.Attach;
+procedure TODEJointBase.Attach;
 var
   Body1, Body2: PdxBody;
 begin
@@ -3494,7 +3500,7 @@ begin
     StructureChanged;
 end;
 
-procedure TGLODEJointBase.SetManager(const Value: TGLODEManager);
+procedure TODEJointBase.SetManager(const Value: TGLODEManager);
 begin
   if FManager <> Value then
   begin
@@ -3508,7 +3514,7 @@ begin
   end;
 end;
 
-procedure TGLODEJointBase.SetObject1(const Value: TGLBaseSceneObject);
+procedure TODEJointBase.SetObject1(const Value: TGLBaseSceneObject);
 begin
   if FObject1 <> Value then
   begin
@@ -3524,7 +3530,7 @@ begin
   end;
 end;
 
-procedure TGLODEJointBase.SetObject2(const Value: TGLBaseSceneObject);
+procedure TODEJointBase.SetObject2(const Value: TGLBaseSceneObject);
 begin
   if FObject2 <> Value then
   begin
@@ -3540,7 +3546,7 @@ begin
   end;
 end;
 
-procedure TGLODEJointBase.SetEnabled(const Value: Boolean);
+procedure TODEJointBase.SetEnabled(const Value: Boolean);
 begin
   if FEnabled <> Value then
   begin
@@ -3550,12 +3556,12 @@ begin
   end;
 end;
 
-procedure TGLODEJointBase.StructureChanged;
+procedure TODEJointBase.StructureChanged;
 begin
   // nothing yet
 end;
 
-procedure TGLODEJointBase.DoLoaded;
+procedure TODEJointBase.DoLoaded;
 var
   mng: TComponent;
   Obj: TGLBaseSceneObject;
@@ -3585,7 +3591,7 @@ begin
   Attach;
 end;
 
-function TGLODEJointBase.IsAttached: Boolean;
+function TODEJointBase.IsAttached: Boolean;
 var
   Body1, Body2: PdxBody;
 begin
@@ -3601,7 +3607,7 @@ begin
   end;
 end;
 
-procedure TGLODEJointBase.SetJointOptions(const Value: TJointOptions);
+procedure TODEJointBase.SetJointOptions(const Value: TJointOptions);
 begin
   if Value <> FJointOptions then
   begin
@@ -3612,42 +3618,42 @@ end;
 
 
 // ---------------
-// --------------- TGLODEJointParams ---------------
+// --------------- TODEJointParams ---------------
 // ---------------
 
-constructor TGLODEJointParams.Create(AOwner: TPersistent);
+constructor TODEJointParams.Create(AOwner: TPersistent);
 begin
   inherited Create;
   FOwner := AOwner;
 end;
 
-function TGLODEJointParams.GetOwner: TPersistent;
+function TODEJointParams.GetOwner: TPersistent;
 begin
   Result := FOwner;
 end;
 
-procedure TGLODEJointParams.Assign(Source: TPersistent);
+procedure TODEJointParams.Assign(Source: TPersistent);
 begin
   inherited;
   if not Assigned(Source) then
     Exit;
-  if Source is TGLODEJointParams then
+  if Source is TODEJointParams then
   begin
-    LoStop := TGLODEJointParams(Source).LoStop;
-    HiStop := TGLODEJointParams(Source).HiStop;
-    Vel := TGLODEJointParams(Source).Vel;
-    FMax := TGLODEJointParams(Source).FMax;
-    FudgeFactor := TGLODEJointParams(Source).FudgeFactor;
-    Bounce := TGLODEJointParams(Source).Bounce;
-    CFM := TGLODEJointParams(Source).CFM;
-    StopERP := TGLODEJointParams(Source).StopERP;
-    StopCFM := TGLODEJointParams(Source).StopCFM;
-    SuspensionERP := TGLODEJointParams(Source).SuspensionERP;
-    SuspensionCFM := TGLODEJointParams(Source).SuspensionCFM;
+    LoStop := TODEJointParams(Source).LoStop;
+    HiStop := TODEJointParams(Source).HiStop;
+    Vel := TODEJointParams(Source).Vel;
+    FMax := TODEJointParams(Source).FMax;
+    FudgeFactor := TODEJointParams(Source).FudgeFactor;
+    Bounce := TODEJointParams(Source).Bounce;
+    CFM := TODEJointParams(Source).CFM;
+    StopERP := TODEJointParams(Source).StopERP;
+    StopCFM := TODEJointParams(Source).StopCFM;
+    SuspensionERP := TODEJointParams(Source).SuspensionERP;
+    SuspensionCFM := TODEJointParams(Source).SuspensionCFM;
   end;
 end;
 
-procedure TGLODEJointParams.WriteToFiler(writer: TWriter);
+procedure TODEJointParams.WriteToFiler(writer: TWriter);
 begin
   with writer do
   begin
@@ -3666,7 +3672,7 @@ begin
   end;
 end;
 
-procedure TGLODEJointParams.ReadFromFiler(reader: TReader);
+procedure TODEJointParams.ReadFromFiler(reader: TReader);
 var
   archiveVersion: Integer;
 begin
@@ -3689,84 +3695,84 @@ begin
   end;
 end;
 
-function TGLODEJointParams.GetLoStop: TdReal;
+function TODEJointParams.GetLoStop: TdReal;
 begin
   if Assigned(GetCallback) then
     GetCallback(dParamLoStop1, FLoStop);
   Result := FLoStop;
 end;
 
-function TGLODEJointParams.GetHiStop: TdReal;
+function TODEJointParams.GetHiStop: TdReal;
 begin
   if Assigned(GetCallback) then
     GetCallback(dParamHiStop1, FHiStop);
   Result := FHiStop;
 end;
 
-function TGLODEJointParams.GetVel: TdReal;
+function TODEJointParams.GetVel: TdReal;
 begin
   if Assigned(GetCallback) then
     GetCallback(dParamVel1, FVel);
   Result := FVel;
 end;
 
-function TGLODEJointParams.GetFMax: TdReal;
+function TODEJointParams.GetFMax: TdReal;
 begin
   if Assigned(GetCallback) then
     GetCallback(dParamFMax1, FFMax);
   Result := FFMax;
 end;
 
-function TGLODEJointParams.GetFudgeFactor: TdReal;
+function TODEJointParams.GetFudgeFactor: TdReal;
 begin
   if Assigned(GetCallback) then
     GetCallback(dParamFudgeFactor1, FFudgeFactor);
   Result := FFudgeFactor;
 end;
 
-function TGLODEJointParams.GetBounce: TdReal;
+function TODEJointParams.GetBounce: TdReal;
 begin
   if Assigned(GetCallback) then
     GetCallback(dParamBounce1, FBounce);
   Result := FBounce;
 end;
 
-function TGLODEJointParams.GetCFM: TdReal;
+function TODEJointParams.GetCFM: TdReal;
 begin
   if Assigned(GetCallback) then
     GetCallback(dParamCFM1, FCFM);
   Result := FCFM;
 end;
 
-function TGLODEJointParams.GetStopERP: TdReal;
+function TODEJointParams.GetStopERP: TdReal;
 begin
   if Assigned(GetCallback) then
     GetCallback(dParamStopERP1, FStopERP);
   Result := FStopERP;
 end;
 
-function TGLODEJointParams.GetStopCFM: TdReal;
+function TODEJointParams.GetStopCFM: TdReal;
 begin
   if Assigned(GetCallback) then
     GetCallback(dParamStopCFM1, FStopCFM);
   Result := FStopCFM;
 end;
 
-function TGLODEJointParams.GetSuspensionERP: TdReal;
+function TODEJointParams.GetSuspensionERP: TdReal;
 begin
   if Assigned(GetCallback) then
     GetCallback(dParamSuspensionERP, FSuspensionERP);
   Result := FSuspensionERP;
 end;
 
-function TGLODEJointParams.GetSuspensionCFM: TdReal;
+function TODEJointParams.GetSuspensionCFM: TdReal;
 begin
   if Assigned(GetCallback) then
     GetCallback(dParamSuspensionCFM, FSuspensionCFM);
   Result := FSuspensionCFM;
 end;
 
-procedure TGLODEJointParams.SetLoStop(const Value: TdReal);
+procedure TODEJointParams.SetLoStop(const Value: TdReal);
 begin
   if Value <> FLoStop then
   begin
@@ -3778,7 +3784,7 @@ begin
   end;
 end;
 
-procedure TGLODEJointParams.SetHiStop(const Value: TdReal);
+procedure TODEJointParams.SetHiStop(const Value: TdReal);
 begin
   if Value <> FHiStop then
   begin
@@ -3790,7 +3796,7 @@ begin
   end;
 end;
 
-procedure TGLODEJointParams.SetVel(const Value: TdReal);
+procedure TODEJointParams.SetVel(const Value: TdReal);
 begin
   if Value <> FVel then
   begin
@@ -3802,7 +3808,7 @@ begin
   end;
 end;
 
-procedure TGLODEJointParams.SetFMax(const Value: TdReal);
+procedure TODEJointParams.SetFMax(const Value: TdReal);
 begin
   if Value <> FFMax then
   begin
@@ -3814,7 +3820,7 @@ begin
   end;
 end;
 
-procedure TGLODEJointParams.SetFudgeFactor(const Value: TdReal);
+procedure TODEJointParams.SetFudgeFactor(const Value: TdReal);
 begin
   if Value <> FFudgeFactor then
   begin
@@ -3826,7 +3832,7 @@ begin
   end;
 end;
 
-procedure TGLODEJointParams.SetBounce(const Value: TdReal);
+procedure TODEJointParams.SetBounce(const Value: TdReal);
 begin
   if Value <> FBounce then
   begin
@@ -3838,7 +3844,7 @@ begin
   end;
 end;
 
-procedure TGLODEJointParams.SetCFM(const Value: TdReal);
+procedure TODEJointParams.SetCFM(const Value: TdReal);
 begin
   if Value <> FCFM then
   begin
@@ -3850,7 +3856,7 @@ begin
   end;
 end;
 
-procedure TGLODEJointParams.SetStopERP(const Value: TdReal);
+procedure TODEJointParams.SetStopERP(const Value: TdReal);
 begin
   if Value <> FStopERP then
   begin
@@ -3862,7 +3868,7 @@ begin
   end;
 end;
 
-procedure TGLODEJointParams.SetStopCFM(const Value: TdReal);
+procedure TODEJointParams.SetStopCFM(const Value: TdReal);
 begin
   if Value <> FStopCFM then
   begin
@@ -3874,7 +3880,7 @@ begin
   end;
 end;
 
-procedure TGLODEJointParams.SetSuspensionERP(const Value: TdReal);
+procedure TODEJointParams.SetSuspensionERP(const Value: TdReal);
 begin
   if Value <> FSuspensionERP then
   begin
@@ -3886,7 +3892,7 @@ begin
   end;
 end;
 
-procedure TGLODEJointParams.SetSuspensionCFM(const Value: TdReal);
+procedure TODEJointParams.SetSuspensionCFM(const Value: TdReal);
 begin
   if Value <> FSuspensionCFM then
   begin
@@ -3898,7 +3904,7 @@ begin
   end;
 end;
 
-procedure TGLODEJointParams.ApplyFlagged;
+procedure TODEJointParams.ApplyFlagged;
 begin
   if not Assigned(SetCallback) then
     Exit;
@@ -3928,24 +3934,24 @@ end;
 
 
 // ---------------
-// --------------- TGLODEJointHinge ---------------
+// --------------- TODEJointHinge ---------------
 // ---------------
 
-constructor TGLODEJointHinge.Create(AOwner: TXCollection);
+constructor TODEJointHinge.Create(AOwner: TXCollection);
 begin
   inherited;
   FAnchor := TGLCoordinates.CreateInitialized(Self, NullHmgPoint, csPoint);
   FAnchor.OnNotifyChange := AnchorChange;
   FAxis := TGLCoordinates.CreateInitialized(Self, ZHmgVector, csVector);
   FAxis.OnNotifyChange := AxisChange;
-  FAxisParams := TGLODEJointParams.Create(Self);
+  FAxisParams := TODEJointParams.Create(Self);
   FAxisParams.SetCallback := SetAxisParam;
   FAxisParams.GetCallback := GetAxisParam;
 
 end;
 
  
-destructor TGLODEJointHinge.Destroy;
+destructor TODEJointHinge.Destroy;
 begin
   FAnchor.Free;
   FAxis.Free;
@@ -3953,7 +3959,7 @@ begin
   inherited;
 end;
 
-procedure TGLODEJointHinge.Initialize;
+procedure TODEJointHinge.Initialize;
 begin
   if (not IsODEInitialized) or (FInitialized) then
     Exit;
@@ -3961,7 +3967,7 @@ begin
   inherited;
 end;
 
-procedure TGLODEJointHinge.WriteToFiler(writer: TWriter);
+procedure TODEJointHinge.WriteToFiler(writer: TWriter);
 begin
   inherited;
   with writer do
@@ -3973,7 +3979,7 @@ begin
   end;
 end;
 
-procedure TGLODEJointHinge.ReadFromFiler(reader: TReader);
+procedure TODEJointHinge.ReadFromFiler(reader: TReader);
 begin
   inherited;
   with reader do
@@ -3985,20 +3991,20 @@ begin
   end;
 end;
 
-procedure TGLODEJointHinge.StructureChanged;
+procedure TODEJointHinge.StructureChanged;
 begin
   AnchorChange(nil);
   AxisChange(nil);
   FAxisParams.ApplyFlagged;
 end;
 
-procedure TGLODEJointHinge.AnchorChange(Sender: TObject);
+procedure TODEJointHinge.AnchorChange(Sender: TObject);
 begin
   if IsAttached then
     dJointSetHingeAnchor(FJointID, FAnchor.X, FAnchor.Y, FAnchor.Z);
 end;
 
-procedure TGLODEJointHinge.AxisChange(Sender: TObject);
+procedure TODEJointHinge.AxisChange(Sender: TObject);
 var
   vec: TVector;
 begin
@@ -4009,33 +4015,32 @@ begin
     dJointSetHingeAxis(FJointID, FAxis.X, FAxis.Y, FAxis.Z);
 end;
 
-class function TGLODEJointHinge.FriendlyName: String;
+class function TODEJointHinge.FriendlyName: String;
 begin
   Result := 'Hinge';
 end;
 
-class function TGLODEJointHinge.FriendlyDescription: String;
+class function TODEJointHinge.FriendlyDescription: String;
 begin
   Result := 'ODE Hinge joint';
 end;
 
-procedure TGLODEJointHinge.SetAnchor(const Value: TGLCoordinates);
+procedure TODEJointHinge.SetAnchor(const Value: TGLCoordinates);
 begin
   FAnchor.Assign(Value);
 end;
 
-procedure TGLODEJointHinge.SetAxis(const Value: TGLCoordinates);
+procedure TODEJointHinge.SetAxis(const Value: TGLCoordinates);
 begin
   FAxis.Assign(Value);
 end;
 
-procedure TGLODEJointHinge.SetAxisParams(const Value: TGLODEJointParams);
+procedure TODEJointHinge.SetAxisParams(const Value: TODEJointParams);
 begin
   AxisParams.Assign(Value);
 end;
 
-function TGLODEJointHinge.SetAxisParam(Param: Integer;
-  const Value: TdReal): Boolean;
+function TODEJointHinge.SetAxisParam(Param: Integer; const Value: TdReal): Boolean;
 begin
   if IsAttached then
   begin
@@ -4046,8 +4051,7 @@ begin
     Result := False;
 end;
 
-function TGLODEJointHinge.GetAxisParam(Param: Integer; var Value: TdReal)
-  : Boolean;
+function TODEJointHinge.GetAxisParam(Param: Integer; var Value: TdReal): Boolean;
 begin
   if IsAttached then
   begin
@@ -4060,23 +4064,23 @@ end;
 
 
 // ---------------
-// --------------- TGLODEJointBall ---------------
+// --------------- TODEJointBall ---------------
 // ---------------
 
-constructor TGLODEJointBall.Create(AOwner: TXCollection);
+constructor TODEJointBall.Create(AOwner: TXCollection);
 begin
   inherited;
   FAnchor := TGLCoordinates.CreateInitialized(Self, NullHmgPoint, csPoint);
   FAnchor.OnNotifyChange := AnchorChange;
 end;
 
-destructor TGLODEJointBall.Destroy;
+destructor TODEJointBall.Destroy;
 begin
   FAnchor.Free;
   inherited;
 end;
 
-procedure TGLODEJointBall.Initialize;
+procedure TODEJointBall.Initialize;
 begin
   if (not IsODEInitialized) or (FInitialized) then
     Exit;
@@ -4084,7 +4088,7 @@ begin
   inherited;
 end;
 
-procedure TGLODEJointBall.WriteToFiler(writer: TWriter);
+procedure TODEJointBall.WriteToFiler(writer: TWriter);
 begin
   inherited;
   with writer do
@@ -4094,7 +4098,7 @@ begin
   end;
 end;
 
-procedure TGLODEJointBall.ReadFromFiler(reader: TReader);
+procedure TODEJointBall.ReadFromFiler(reader: TReader);
 begin
   inherited;
   with reader do
@@ -4104,56 +4108,56 @@ begin
   end;
 end;
 
-procedure TGLODEJointBall.StructureChanged;
+procedure TODEJointBall.StructureChanged;
 begin
   AnchorChange(nil);
 end;
 
-procedure TGLODEJointBall.AnchorChange(Sender: TObject);
+procedure TODEJointBall.AnchorChange(Sender: TObject);
 begin
   if IsAttached then
     dJointSetBallAnchor(FJointID, FAnchor.X, FAnchor.Y, FAnchor.Z);
 end;
 
-class function TGLODEJointBall.FriendlyName: String;
+class function TODEJointBall.FriendlyName: String;
 begin
   Result := 'Ball';
 end;
 
-class function TGLODEJointBall.FriendlyDescription: String;
+class function TODEJointBall.FriendlyDescription: String;
 begin
   Result := 'ODE Ball joint implementation';
 end;
 
-procedure TGLODEJointBall.SetAnchor(const Value: TGLCoordinates);
+procedure TODEJointBall.SetAnchor(const Value: TGLCoordinates);
 begin
   FAnchor.Assign(Value);
 end;
 
 
 // ---------------
-// --------------- TGLODEJointSlider ---------------
+// --------------- TODEJointSlider ---------------
 // ---------------
 
-constructor TGLODEJointSlider.Create(AOwner: TXCollection);
+constructor TODEJointSlider.Create(AOwner: TXCollection);
 begin
   inherited;
   FAxis := TGLCoordinates.CreateInitialized(Self, ZHmgVector, csVector);
   FAxis.OnNotifyChange := AxisChange;
-  FAxisParams := TGLODEJointParams.Create(Self);
+  FAxisParams := TODEJointParams.Create(Self);
   FAxisParams.SetCallback := SetAxisParam;
   FAxisParams.GetCallback := GetAxisParam;
 end;
 
  
-destructor TGLODEJointSlider.Destroy;
+destructor TODEJointSlider.Destroy;
 begin
   FAxis.Free;
   FAxisParams.Free;
   inherited;
 end;
 
-procedure TGLODEJointSlider.Initialize;
+procedure TODEJointSlider.Initialize;
 begin
   if (not IsODEInitialized) or (FInitialized) then
     Exit;
@@ -4161,7 +4165,7 @@ begin
   inherited;
 end;
 
-procedure TGLODEJointSlider.WriteToFiler(writer: TWriter);
+procedure TODEJointSlider.WriteToFiler(writer: TWriter);
 begin
   inherited;
   with writer do
@@ -4172,7 +4176,7 @@ begin
   end;
 end;
 
-procedure TGLODEJointSlider.ReadFromFiler(reader: TReader);
+procedure TODEJointSlider.ReadFromFiler(reader: TReader);
 begin
   inherited;
   with reader do
@@ -4183,13 +4187,13 @@ begin
   end;
 end;
 
-procedure TGLODEJointSlider.StructureChanged;
+procedure TODEJointSlider.StructureChanged;
 begin
   AxisChange(nil);
   AxisParams.ApplyFlagged;
 end;
 
-procedure TGLODEJointSlider.AxisChange(Sender: TObject);
+procedure TODEJointSlider.AxisChange(Sender: TObject);
 var
   vec: TVector;
 begin
@@ -4200,27 +4204,27 @@ begin
     dJointSetSliderAxis(FJointID, FAxis.X, FAxis.Y, FAxis.Z);
 end;
 
-class function TGLODEJointSlider.FriendlyName: String;
+class function TODEJointSlider.FriendlyName: String;
 begin
   Result := 'Slider';
 end;
 
-class function TGLODEJointSlider.FriendlyDescription: String;
+class function TODEJointSlider.FriendlyDescription: String;
 begin
   Result := 'ODE Slider joint implementation';
 end;
 
-procedure TGLODEJointSlider.SetAxis(const Value: TGLCoordinates);
+procedure TODEJointSlider.SetAxis(const Value: TGLCoordinates);
 begin
   FAxis.Assign(Value);
 end;
 
-procedure TGLODEJointSlider.SetAxisParams(const Value: TGLODEJointParams);
+procedure TODEJointSlider.SetAxisParams(const Value: TODEJointParams);
 begin
   AxisParams.Assign(Value);
 end;
 
-function TGLODEJointSlider.SetAxisParam(Param: Integer;
+function TODEJointSlider.SetAxisParam(Param: Integer;
   const Value: TdReal): Boolean;
 begin
   if IsAttached then
@@ -4232,8 +4236,7 @@ begin
     Result := False;
 end;
 
-function TGLODEJointSlider.GetAxisParam(Param: Integer;
-  var Value: TdReal): Boolean;
+function TODEJointSlider.GetAxisParam(Param: Integer; var Value: TdReal): Boolean;
 begin
   if IsAttached then
   begin
@@ -4246,10 +4249,10 @@ end;
 
 
 // ---------------
-// --------------- TGLODEJointFixed ---------------
+// --------------- TODEJointFixed ---------------
 // ---------------
 
-procedure TGLODEJointFixed.Initialize;
+procedure TODEJointFixed.Initialize;
 begin
   if (not IsODEInitialized) or (FInitialized) then
     Exit;
@@ -4257,7 +4260,7 @@ begin
   inherited;
 end;
 
-procedure TGLODEJointFixed.WriteToFiler(writer: TWriter);
+procedure TODEJointFixed.WriteToFiler(writer: TWriter);
 begin
   inherited;
   with writer do
@@ -4266,7 +4269,7 @@ begin
   end;
 end;
 
-procedure TGLODEJointFixed.ReadFromFiler(reader: TReader);
+procedure TODEJointFixed.ReadFromFiler(reader: TReader);
 begin
   inherited;
   with reader do
@@ -4275,22 +4278,22 @@ begin
   end;
 end;
 
-class function TGLODEJointFixed.FriendlyName: String;
+class function TODEJointFixed.FriendlyName: String;
 begin
   Result := 'Fixed';
 end;
 
-class function TGLODEJointFixed.FriendlyDescription: String;
+class function TODEJointFixed.FriendlyDescription: String;
 begin
   Result := 'ODE Fixed joint implementation';
 end;
 
 
 // ---------------
-// --------------- TGLODEJointHinge2 ---------------
+// --------------- TODEJointHinge2 ---------------
 // ---------------
 
-constructor TGLODEJointHinge2.Create(AOwner: TXCollection);
+constructor TODEJointHinge2.Create(AOwner: TXCollection);
 begin
   inherited;
   FAnchor := TGLCoordinates.CreateInitialized(Self, NullHmgPoint, csPoint);
@@ -4299,17 +4302,17 @@ begin
   FAxis1.OnNotifyChange := Axis1Change;
   FAxis2 := TGLCoordinates.CreateInitialized(Self, ZHmgVector, csVector);
   FAxis2.OnNotifyChange := Axis2Change;
-  FAxis1Params := TGLODEJointParams.Create(Self);
+  FAxis1Params := TODEJointParams.Create(Self);
   FAxis1Params.SetCallback := SetAxis1Param;
   FAxis1Params.GetCallback := GetAxis1Param;
-  FAxis2Params := TGLODEJointParams.Create(Self);
+  FAxis2Params := TODEJointParams.Create(Self);
   FAxis2Params.SetCallback := SetAxis2Param;
   FAxis2Params.GetCallback := GetAxis2Param;
 
   JointOptions := [joBothObjectsMustBeAssigned];
 end;
 
-destructor TGLODEJointHinge2.Destroy;
+destructor TODEJointHinge2.Destroy;
 begin
   FAnchor.Free;
   FAxis1.Free;
@@ -4319,7 +4322,7 @@ begin
   inherited;
 end;
 
-procedure TGLODEJointHinge2.Initialize;
+procedure TODEJointHinge2.Initialize;
 begin
   if (not IsODEInitialized) or (FInitialized) then
     Exit;
@@ -4327,7 +4330,7 @@ begin
   inherited;
 end;
 
-procedure TGLODEJointHinge2.WriteToFiler(writer: TWriter);
+procedure TODEJointHinge2.WriteToFiler(writer: TWriter);
 begin
   inherited;
   with writer do
@@ -4341,7 +4344,7 @@ begin
   end;
 end;
 
-procedure TGLODEJointHinge2.ReadFromFiler(reader: TReader);
+procedure TODEJointHinge2.ReadFromFiler(reader: TReader);
 begin
   inherited;
   with reader do
@@ -4355,7 +4358,7 @@ begin
   end;
 end;
 
-procedure TGLODEJointHinge2.StructureChanged;
+procedure TODEJointHinge2.StructureChanged;
 begin
   AnchorChange(nil);
   Axis1Change(nil);
@@ -4364,13 +4367,13 @@ begin
   Axis2Params.ApplyFlagged;
 end;
 
-procedure TGLODEJointHinge2.AnchorChange(Sender: TObject);
+procedure TODEJointHinge2.AnchorChange(Sender: TObject);
 begin
   if IsAttached then
     dJointSetHinge2Anchor(FJointID, FAnchor.X, FAnchor.Y, FAnchor.Z);
 end;
 
-procedure TGLODEJointHinge2.Axis1Change(Sender: TObject);
+procedure TODEJointHinge2.Axis1Change(Sender: TObject);
 var
   vec: TVector;
 begin
@@ -4381,7 +4384,7 @@ begin
     dJointSetHinge2Axis1(FJointID, FAxis1.X, FAxis1.Y, FAxis1.Z);
 end;
 
-procedure TGLODEJointHinge2.Axis2Change(Sender: TObject);
+procedure TODEJointHinge2.Axis2Change(Sender: TObject);
 var
   vec: TVector;
 begin
@@ -4392,43 +4395,42 @@ begin
     dJointSetHinge2Axis2(FJointID, FAxis2.X, FAxis2.Y, FAxis2.Z);
 end;
 
-class function TGLODEJointHinge2.FriendlyName: String;
+class function TODEJointHinge2.FriendlyName: String;
 begin
   Result := 'Hinge2';
 end;
 
-class function TGLODEJointHinge2.FriendlyDescription: String;
+class function TODEJointHinge2.FriendlyDescription: String;
 begin
   Result := 'ODE Double Axis Hinge joint implementation';
 end;
 
-procedure TGLODEJointHinge2.SetAnchor(const Value: TGLCoordinates);
+procedure TODEJointHinge2.SetAnchor(const Value: TGLCoordinates);
 begin
   FAnchor.Assign(Value);
 end;
 
-procedure TGLODEJointHinge2.SetAxis1(const Value: TGLCoordinates);
+procedure TODEJointHinge2.SetAxis1(const Value: TGLCoordinates);
 begin
   FAxis1.Assign(Value);
 end;
 
-procedure TGLODEJointHinge2.SetAxis2(const Value: TGLCoordinates);
+procedure TODEJointHinge2.SetAxis2(const Value: TGLCoordinates);
 begin
   FAxis2.Assign(Value);
 end;
 
-procedure TGLODEJointHinge2.SetAxis1Params(const Value: TGLODEJointParams);
+procedure TODEJointHinge2.SetAxis1Params(const Value: TODEJointParams);
 begin
   Axis1Params.Assign(Value);
 end;
 
-procedure TGLODEJointHinge2.SetAxis2Params(const Value: TGLODEJointParams);
+procedure TODEJointHinge2.SetAxis2Params(const Value: TODEJointParams);
 begin
   Axis2Params.Assign(Value);
 end;
 
-function TGLODEJointHinge2.SetAxis1Param(Param: Integer;
-  const Value: TdReal): Boolean;
+function TODEJointHinge2.SetAxis1Param(Param: Integer; const Value: TdReal): Boolean;
 begin
   if IsAttached then
   begin
@@ -4439,8 +4441,7 @@ begin
     Result := False;
 end;
 
-function TGLODEJointHinge2.SetAxis2Param(Param: Integer;
-  const Value: TdReal): Boolean;
+function TODEJointHinge2.SetAxis2Param(Param: Integer; const Value: TdReal): Boolean;
 begin
   if IsAttached then
   begin
@@ -4451,8 +4452,7 @@ begin
     Result := False;
 end;
 
-function TGLODEJointHinge2.GetAxis1Param(Param: Integer;
-  var Value: TdReal): Boolean;
+function TODEJointHinge2.GetAxis1Param(Param: Integer; var Value: TdReal): Boolean;
 begin
   if IsAttached then
   begin
@@ -4463,8 +4463,7 @@ begin
     Result := False;
 end;
 
-function TGLODEJointHinge2.GetAxis2Param(Param: Integer;
-  var Value: TdReal): Boolean;
+function TODEJointHinge2.GetAxis2Param(Param: Integer; var Value: TdReal): Boolean;
 begin
   if IsAttached then
   begin
@@ -4476,10 +4475,10 @@ begin
 end;
 
 // ---------------
-// --------------- TGLODEJointUniversal ---------------
+// --------------- TODEJointUniversal ---------------
 // ---------------
 
-constructor TGLODEJointUniversal.Create(AOwner: TXCollection);
+constructor TODEJointUniversal.Create(AOwner: TXCollection);
 begin
   inherited;
   FAnchor := TGLCoordinates.CreateInitialized(Self, NullHmgPoint, csPoint);
@@ -4488,10 +4487,10 @@ begin
   FAxis1.OnNotifyChange := Axis1Change;
   FAxis2 := TGLCoordinates.CreateInitialized(Self, XHmgVector, csVector);
   FAxis2.OnNotifyChange := Axis2Change;
-  FAxis1Params := TGLODEJointParams.Create(Self);
+  FAxis1Params := TODEJointParams.Create(Self);
   FAxis1Params.SetCallback := SetAxis1Param;
   FAxis1Params.GetCallback := GetAxis1Param;
-  FAxis2Params := TGLODEJointParams.Create(Self);
+  FAxis2Params := TODEJointParams.Create(Self);
   FAxis2Params.SetCallback := SetAxis2Param;
   FAxis2Params.GetCallback := GetAxis2Param;
 
@@ -4499,7 +4498,7 @@ begin
 end;
 
 
-destructor TGLODEJointUniversal.Destroy;
+destructor TODEJointUniversal.Destroy;
 begin
   FAnchor.Free;
   FAxis1.Free;
@@ -4509,7 +4508,7 @@ begin
   inherited;
 end;
 
-procedure TGLODEJointUniversal.Initialize;
+procedure TODEJointUniversal.Initialize;
 begin
   if (not IsODEInitialized) or (FInitialized) then
     Exit;
@@ -4517,7 +4516,7 @@ begin
   inherited;
 end;
 
-procedure TGLODEJointUniversal.WriteToFiler(writer: TWriter);
+procedure TODEJointUniversal.WriteToFiler(writer: TWriter);
 begin
   inherited;
   with writer do
@@ -4531,7 +4530,7 @@ begin
   end;
 end;
 
-procedure TGLODEJointUniversal.ReadFromFiler(reader: TReader);
+procedure TODEJointUniversal.ReadFromFiler(reader: TReader);
 begin
   inherited;
   with reader do
@@ -4545,7 +4544,7 @@ begin
   end;
 end;
 
-procedure TGLODEJointUniversal.StructureChanged;
+procedure TODEJointUniversal.StructureChanged;
 begin
   AnchorChange(nil);
   Axis1Change(nil);
@@ -4554,13 +4553,13 @@ begin
   Axis2Params.ApplyFlagged;
 end;
 
-procedure TGLODEJointUniversal.AnchorChange(Sender: TObject);
+procedure TODEJointUniversal.AnchorChange(Sender: TObject);
 begin
   if IsAttached then
     dJointSetUniversalAnchor(FJointID, FAnchor.X, FAnchor.Y, FAnchor.Z);
 end;
 
-procedure TGLODEJointUniversal.Axis1Change(Sender: TObject);
+procedure TODEJointUniversal.Axis1Change(Sender: TObject);
 var
   vec: TVector;
 begin
@@ -4571,7 +4570,7 @@ begin
     dJointSetUniversalAxis1(FJointID, FAxis1.X, FAxis1.Y, FAxis1.Z);
 end;
 
-procedure TGLODEJointUniversal.Axis2Change(Sender: TObject);
+procedure TODEJointUniversal.Axis2Change(Sender: TObject);
 var
   vec: TVector;
 begin
@@ -4582,43 +4581,42 @@ begin
     dJointSetUniversalAxis2(FJointID, FAxis2.X, FAxis2.Y, FAxis2.Z);
 end;
 
-class function TGLODEJointUniversal.FriendlyName: String;
+class function TODEJointUniversal.FriendlyName: String;
 begin
   Result := 'Universal';
 end;
 
-class function TGLODEJointUniversal.FriendlyDescription: String;
+class function TODEJointUniversal.FriendlyDescription: String;
 begin
   Result := 'ODE Universal joint implementation';
 end;
 
-procedure TGLODEJointUniversal.SetAnchor(const Value: TGLCoordinates);
+procedure TODEJointUniversal.SetAnchor(const Value: TGLCoordinates);
 begin
   FAnchor.Assign(Value);
 end;
 
-procedure TGLODEJointUniversal.SetAxis1(const Value: TGLCoordinates);
+procedure TODEJointUniversal.SetAxis1(const Value: TGLCoordinates);
 begin
   FAxis1.Assign(Value);
 end;
 
-procedure TGLODEJointUniversal.SetAxis2(const Value: TGLCoordinates);
+procedure TODEJointUniversal.SetAxis2(const Value: TGLCoordinates);
 begin
   FAxis2.Assign(Value);
 end;
 
-procedure TGLODEJointUniversal.SetAxis1Params(const Value: TGLODEJointParams);
+procedure TODEJointUniversal.SetAxis1Params(const Value: TODEJointParams);
 begin
   Axis1Params.Assign(Value);
 end;
 
-procedure TGLODEJointUniversal.SetAxis2Params(const Value: TGLODEJointParams);
+procedure TODEJointUniversal.SetAxis2Params(const Value: TODEJointParams);
 begin
   Axis2Params.Assign(Value);
 end;
 
-function TGLODEJointUniversal.SetAxis1Param(Param: Integer;
-  const Value: TdReal): Boolean;
+function TODEJointUniversal.SetAxis1Param(Param: Integer; const Value: TdReal): Boolean;
 begin
   if IsAttached then
   begin
@@ -4629,8 +4627,7 @@ begin
     Result := False;
 end;
 
-function TGLODEJointUniversal.SetAxis2Param(Param: Integer;
-  const Value: TdReal): Boolean;
+function TODEJointUniversal.SetAxis2Param(Param: Integer; const Value: TdReal): Boolean;
 begin
   if IsAttached then
   begin
@@ -4641,8 +4638,7 @@ begin
     Result := False;
 end;
 
-function TGLODEJointUniversal.GetAxis1Param(Param: Integer;
-  var Value: TdReal): Boolean;
+function TODEJointUniversal.GetAxis1Param(Param: Integer; var Value: TdReal): Boolean;
 begin
   if IsAttached then
   begin
@@ -4653,8 +4649,7 @@ begin
     Result := False;
 end;
 
-function TGLODEJointUniversal.GetAxis2Param(Param: Integer;
-  var Value: TdReal): Boolean;
+function TODEJointUniversal.GetAxis2Param(Param: Integer; var Value: TdReal): Boolean;
 begin
   if IsAttached then
   begin
@@ -4670,47 +4665,47 @@ end;
 initialization
 // ------------------------------------------------------------------
 
-vGLODEObjectRegister := TList.Create;
+vODEObjectRegister := TList.Create;
 
 RegisterXCollectionItemClass(TGLODEDynamic);
 RegisterXCollectionItemClass(TGLODEStatic);
 
-RegisterXCollectionItemClass(TGLODEElementBox);
-RegisterXCollectionItemClass(TGLODEElementSphere);
-RegisterXCollectionItemClass(TGLODEElementCapsule);
-RegisterXCollectionItemClass(TGLODEElementCylinder);
-RegisterXCollectionItemClass(TGLODEElementTriMesh);
-RegisterXCollectionItemClass(TGLODEElementPlane);
+RegisterXCollectionItemClass(TODEElementBox);
+RegisterXCollectionItemClass(TODEElementSphere);
+RegisterXCollectionItemClass(TODEElementCapsule);
+RegisterXCollectionItemClass(TODEElementCylinder);
+RegisterXCollectionItemClass(TODEElementTriMesh);
+RegisterXCollectionItemClass(TODEElementPlane);
 
-RegisterXCollectionItemClass(TGLODEJointHinge);
-RegisterXCollectionItemClass(TGLODEJointBall);
-RegisterXCollectionItemClass(TGLODEJointSlider);
-RegisterXCollectionItemClass(TGLODEJointFixed);
-RegisterXCollectionItemClass(TGLODEJointHinge2);
-RegisterXCollectionItemClass(TGLODEJointUniversal);
+RegisterXCollectionItemClass(TODEJointHinge);
+RegisterXCollectionItemClass(TODEJointBall);
+RegisterXCollectionItemClass(TODEJointSlider);
+RegisterXCollectionItemClass(TODEJointFixed);
+RegisterXCollectionItemClass(TODEJointHinge2);
+RegisterXCollectionItemClass(TODEJointUniversal);
 
 // ------------------------------------------------------------------
 finalization
 // ------------------------------------------------------------------
 
-vGLODEObjectRegister.Free;
+vODEObjectRegister.Free;
 
 UnregisterXCollectionItemClass(TGLODEDynamic);
 UnregisterXCollectionItemClass(TGLODEStatic);
 
-UnregisterXCollectionItemClass(TGLODEElementBox);
-UnregisterXCollectionItemClass(TGLODEElementSphere);
-UnregisterXCollectionItemClass(TGLODEElementCapsule);
-UnregisterXCollectionItemClass(TGLODEElementCylinder);
-UnregisterXCollectionItemClass(TGLODEElementTriMesh);
-UnregisterXCollectionItemClass(TGLODEElementPlane);
+UnregisterXCollectionItemClass(TODEElementBox);
+UnregisterXCollectionItemClass(TODEElementSphere);
+UnregisterXCollectionItemClass(TODEElementCapsule);
+UnregisterXCollectionItemClass(TODEElementCylinder);
+UnregisterXCollectionItemClass(TODEElementTriMesh);
+UnregisterXCollectionItemClass(TODEElementPlane);
 
-UnregisterXCollectionItemClass(TGLODEJointHinge);
-UnregisterXCollectionItemClass(TGLODEJointBall);
-UnregisterXCollectionItemClass(TGLODEJointSlider);
-UnregisterXCollectionItemClass(TGLODEJointFixed);
-UnregisterXCollectionItemClass(TGLODEJointHinge2);
-UnregisterXCollectionItemClass(TGLODEJointUniversal);
+UnregisterXCollectionItemClass(TODEJointHinge);
+UnregisterXCollectionItemClass(TODEJointBall);
+UnregisterXCollectionItemClass(TODEJointSlider);
+UnregisterXCollectionItemClass(TODEJointFixed);
+UnregisterXCollectionItemClass(TODEJointHinge2);
+UnregisterXCollectionItemClass(TODEJointUniversal);
 
 // CloseODE;
 

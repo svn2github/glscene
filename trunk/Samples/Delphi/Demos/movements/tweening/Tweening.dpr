@@ -1,4 +1,4 @@
-{ : Tweening demo.<p>
+{ : Tweening demo.
 
   Original Tweener (caurina.transitions.Tweener) is a Class used to create tweenings
   and other transitions via ActionScript code for projects built on the Flash platform.

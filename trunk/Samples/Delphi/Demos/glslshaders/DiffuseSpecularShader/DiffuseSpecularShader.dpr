@@ -1,5 +1,5 @@
 {:
-  GLSL Diffuse Specular Shader Demo<p>
+  GLSL Diffuse Specular Shader Demo
 
   A demo that shows how to use the TGLSLDiffuseSpecularShader component.
 

@@ -94,7 +94,6 @@ type
     function GetEnabledSpins: Boolean;
     procedure SetEnabledSpins(Value: Boolean);
   public
-    
     procedure Execute(AGUILayout: TGLGuiLayout);
     property EnabledSpins: Boolean read GetEnabledSpins write SetEnabledSpins;
   end;
@@ -102,7 +101,9 @@ type
 function GUILayoutEditorForm: TGLLayoutEditorForm;
 procedure ReleaseGUILayoutEditor;
 
+//-------------------------------------------------
 implementation
+//-------------------------------------------------
 
 {$R *.dfm}
 

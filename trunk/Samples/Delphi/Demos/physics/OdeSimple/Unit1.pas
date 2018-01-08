@@ -124,7 +124,7 @@ begin
   sphere.Radius := 0.3 * (random + 1);
   dyn := TGLODEDynamic.Create(sphere.Behaviours);
   // ELEMENTS MUST BE ADDED BEFORE SETTING MANAGER
-  with TGLODEElementSphere(dyn.AddNewElement(TGLODEElementSphere)) do
+  with TODEElementSphere(dyn.AddNewElement(TODEElementSphere)) do
     Radius := sphere.Radius;
    dyn.Manager := GLODEManager1;
 end;
@@ -141,7 +141,7 @@ begin
   cube.CubeDepth := 0.5 * (random + 1);
   dyn := TGLODEDynamic.Create(cube.Behaviours);
   // ELEMENTS MUST BE ADDED BEFORE SETTING MANAGER
-  with TGLODEElementBox(dyn.AddNewElement(TGLODEElementBox)) do
+  with TODEElementBox(dyn.AddNewElement(TODEElementBox)) do
   begin
     BoxWidth := cube.CubeWidth;
     BoxHeight := cube.CubeHeight;
@@ -178,7 +178,7 @@ begin
   end;
   dyn := TGLODEDynamic.Create(capsule.Behaviours);
   // ELEMENTS MUST BE ADDED BEFORE SETTING MANAGER
-  with TGLODEElementCapsule(dyn.AddNewElement(TGLODEElementCapsule)) do
+  with TODEElementCapsule(dyn.AddNewElement(TODEElementCapsule)) do
   begin
     Radius := capsule.BottomRadius;
     Length := capsule.Height;
@@ -203,7 +203,7 @@ begin
   end;
   dyn := TGLODEDynamic.Create(cylinder.Behaviours);
   // ELEMENTS MUST BE ADDED BEFORE SETTING MANAGER
-  with TGLODEElementCylinder(dyn.AddNewElement(TGLODEElementCylinder)) do
+  with TODEElementCylinder(dyn.AddNewElement(TODEElementCylinder)) do
   begin
     Radius := cylinder.BottomRadius;
     Length := cylinder.Height;
@@ -226,7 +226,7 @@ end;
   end;
   dyn:=TGLODEDynamic.Create(cone.Behaviours);
   dyn.Manager:=GLODEManager1;
-  with TGLODEElementCone(dyn.AddNewElement(TGLODEElementCone)) do begin
+  with TODEElementCone(dyn.AddNewElement(TODEElementCone)) do begin
   Radius:=cone.BottomRadius;
   Length:=cone.Height;
   Direction.SetVector(0,1,0);
@@ -278,13 +278,13 @@ begin
   begin
     GLHeightField1.Visible := True;
     chbContacts.Enabled := True;
-    GetGLODEHeightField(GLHeightField1).Manager := GLODEManager1;
+    GetODEHeightField(GLHeightField1).Manager := GLODEManager1;
   end
   else
   begin
     GLHeightField1.Visible := False;
     chbContacts.Enabled := False;
-    GetGLODEHeightField(GLHeightField1).Manager := nil;
+    GetODEHeightField(GLHeightField1).Manager := nil;
   end;
 end;
 

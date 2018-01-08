@@ -84,7 +84,7 @@ implementation
 procedure TForm1.FormCreate(Sender: TObject);
 begin
   SetGLSceneMediaDir();
-  // Load our sound sample
+  // Load our sound samples
   GLSoundLibrary.Samples.AddFile('drumloop.wav', 'drumloop.wav');
   GLSoundLibrary.Samples.AddFile('chimes.wav', 'chimes.wav');
   GLSoundLibrary.Samples.AddFile('howl.mp3', 'howl.mp3');
@@ -141,7 +141,7 @@ var
   newManager: TGLSoundManager;
 begin
   // This method switches managers. On a real world project, this would never
-  // happen: you would choose and API and then cling to it, but the GLSS
+  // happen: you would choose an API and then cling to it, but the GLSS
   // completely wraps the underlying complexity and makes it a snap
   if RBFMOD.Checked then
   begin
@@ -176,7 +176,7 @@ begin
   begin
     Source.SoundLibrary := GLSoundLibrary;
     Source.SoundName := 'chimes.wav';
-    Playing := true;
+    Playing := True;
   end;
 end;
 
@@ -186,7 +186,7 @@ begin
   begin
     Source.SoundLibrary := GLSoundLibrary;
     Source.SoundName := 'howl.mp3';
-    Playing := true;
+    Playing := True;
   end;
 end;
 

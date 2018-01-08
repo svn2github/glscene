@@ -215,11 +215,11 @@ begin
          else Options:=Options+[sdoTwinkle];
       end;
       'l' : with GLLensFlare do Visible:=(not Visible) and SPSun.Visible;
-      '1' : DropODEObject(TGLODEElementSphere);
-      '2' : DropODEObject(TGLODEElementBox);
-      '3' : DropODEObject(TGLODEElementCapsule);
-      '4' : DropODEObject(TGLODEElementCylinder);
-//      '5' : DropODEObject(TGLODEElementCone); CONE is currently unsupported
+      '1' : DropODEObject(TODEElementSphere);
+      '2' : DropODEObject(TODEElementBox);
+      '3' : DropODEObject(TODEElementCapsule);
+      '4' : DropODEObject(TODEElementCylinder);
+//      '5' : DropODEObject(TODEElementCone); CONE is currently unsupported
    end;
    Key:=#0;
 end;

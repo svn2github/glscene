@@ -1,4 +1,4 @@
-{: The Simple Paint Program using Gui components from GLScene.<p>
+{: The Simple Paint Program using Gui components from GLScene.
 
    To use the Gui you must place a TGLGUILayout component on your form,
    this is a storage for Gui layouts within a single texture, each layout

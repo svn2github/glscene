@@ -1,5 +1,5 @@
 {:
-  GLSL Shader Component Demo<p>
+  GLSL Shader Component Demo
 
   A demo that shows how to use the TGLSLShader component.
 

@@ -1,4 +1,4 @@
-{: This is a basic use for the Dynamic Collision Engine (DCE) by Lucas Goraieb.<p>
+{: This is a basic use for the Dynamic Collision Engine (DCE) by Lucas Goraieb.
 
      The engine pretty much works by creating a TGLDCEManager, and several
      TGLDCEDynamic and TGLDCEStatic behaviours on the objects that should

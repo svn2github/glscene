@@ -1,9 +1,9 @@
-{ : This sample is basicly a bench for GLScene.<p>
+{ : This sample is basicly a bench for GLScene.
 
   A fair number of TGLCube are created and rendered (for cSize=5, that's about
   1331 cubes, 7986 polygons or 15972 triangles). Only one light and basic
   shading is used, no texture here, the aim is to test the performance of
-  GLScene and T&L, not	the fillrate.<p>
+  GLScene and T&L, not	the fillrate.
 
   Results :
 

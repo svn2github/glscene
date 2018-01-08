@@ -1,4 +1,4 @@
-{ : Newton Game Dynamics Physics Engine demo.<p>
+{ : Newton Game Dynamics Physics Engine demo.
 
   This exemple show how to move a body by calling the pick function of joint.
   Change kinematicControllerOptions.PickModeLinear to feel the difference.

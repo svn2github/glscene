@@ -1,6 +1,8 @@
 ﻿unit OpenGLVCL;
-{ OpenGL for Vcl
-  Adapted from https://github.com/LUXOPHIA }
+{ 
+  OpenGL for Vcl
+  Adapted from https://github.com/LUXOPHIA 
+}
 
 interface
 

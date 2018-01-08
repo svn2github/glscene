@@ -742,8 +742,9 @@ begin
   Result := Abs(FBlurTop - 0.01) > EPS;
 end;
 
+//-------------------------------------------------
 { TGLMotionBlur }
-
+//-------------------------------------------------
 procedure TGLMotionBlur.Assign(Source: TPersistent);
 begin
   inherited;

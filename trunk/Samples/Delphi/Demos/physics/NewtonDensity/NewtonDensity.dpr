@@ -1,4 +1,4 @@
-{ : Newton Game Dynamics Physics Engine demo.<p>
+{ : Newton Game Dynamics Physics Engine demo.
 
   This demo explain how to use customForceAndTorque, and show the newton api
   buoyancy effect as exemple.

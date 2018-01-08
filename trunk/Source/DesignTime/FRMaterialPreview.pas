@@ -56,23 +56,18 @@ type
       Shift: TShiftState; X, Y: Integer);
     procedure SceneViewerMouseWheel(Sender: TObject; Shift: TShiftState;
       WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
-
   private
     FLibMaterial: TGLAbstractLibMaterial;
     function GetMaterial: TGLMaterial;
     procedure SetMaterial(const Value: TGLMaterial);
     function GetLibMaterial: TGLAbstractLibMaterial;
     procedure SetLibMaterial(const Value: TGLAbstractLibMaterial);
-     
   public
-    
     constructor Create(AOwner : TComponent); override;
-
     property Material : TGLMaterial read GetMaterial
       write SetMaterial;
     property LibMaterial : TGLAbstractLibMaterial read GetLibMaterial
       write SetLibMaterial;
-
   end;
 
 // ------------------------------------------------------------------

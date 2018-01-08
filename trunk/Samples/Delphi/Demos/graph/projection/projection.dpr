@@ -1,9 +1,9 @@
-{: Parallel projection demo.<p>
+{: Parallel projection demo.
 
    This simple demo shows how to do parallel projection and blend some custom
    OpenGL calls into the scene.<br>
    You can change the viewpoint with left clic drags, change the plane orientation
-   with right clic drags, and move the plane up/down with the wheel.<p>
+   with right clic drags, and move the plane up/down with the wheel.
 
    The points and plane are rendered directly with regular scene objects,
    but the projection lines between the points and the plane are computed

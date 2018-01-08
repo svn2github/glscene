@@ -1,20 +1,20 @@
-{: GLMirror demo and sample.<p>
+{: GLMirror demo and sample.
 
    Depiste its simplistic look, this sample showcases all the dos and don'ts
    of reflections with TGLMirror, this is a powerfull mirroring component,
-   but it must be handled with care and knowingly.<p>
+   but it must be handled with care and knowingly.
    The object that must be mirrored is specified through the "MirrorObject"
    property, you can specify only one, but with proper use of dummy cubes and/or
    proxies, this is not a real limitation, and allows you to select what will be
    reflected (each reflected object must be rendered twice). If no MirrorObject
-   is specified, the whole scene will be mirrored.<p>
+   is specified, the whole scene will be mirrored.
 
    If you want your mirror to be transparent, you must respect a rendering order
    and have the non-transparent objects rendered last (this includes the mirror,
    like any other blended object, see materials/transparency for an explanation).<br>
    Also note that some of the options (stenciling, clearZBuffer) <b>require</b>
    a stencil buffer (must be enabled in the viewer's buffer), but stenciling may
-   not always be hardware accelerated (modern boards will support it).<p>
+   not always be hardware accelerated (modern boards will support it).
 
    There is also a variety of settings to the right of the screen, those adjust
    internal options that have a direct impact of what the mirror will be able
@@ -35,10 +35,10 @@
       of the mirror get reflected on the "wrong" side... (uncheck the option
       and see for yourself). PlaneClip is better avoided, it can make your FPS
       drop significantly on some 3D boards.
-   </ul><p>
+   </ul>
 
    In addition to being opaque, transparent or semi-transparent, the mirror
-   can also be textured as usual.<p>
+   can also be textured as usual.
 
    Final note: T&L boards like the GeForce will be the one taking the most
       performance hit from the PlaneClip because it basicly turns-off hardware T&L.

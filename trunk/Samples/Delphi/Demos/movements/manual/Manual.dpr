@@ -1,6 +1,6 @@
-{: This Form demonstrates basic "manual" movements.<p>
+{: This Form demonstrates basic "manual" movements.
 
-	Positions are computed directly using Sin/Cos functions.<p>
+	Positions are computed directly using Sin/Cos functions.
 
 	A cadencer is used to "play" the animation, it is not used as a time-controler,
    but just as a way to push the animation as fast as possible. See further
