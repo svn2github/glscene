@@ -1210,7 +1210,7 @@ type
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
     procedure BuildList(var rci: TGLRenderContextInfo); override;
-    procedure DoProgress(const progressTime: TProgressTimes); override;
+    procedure DoProgress(const progressTime: TGLProgressTimes); override;
     procedure LoadFromStream(const filename: string; aStream: TStream); override;
     procedure SwitchToAnimation(anAnimation: TGLActorAnimation; smooth: Boolean = False); overload;
     procedure SwitchToAnimation(const AnimationName: string; smooth: Boolean = False); overload;
@@ -7337,7 +7337,7 @@ begin
   end;
 end;
 
-procedure TGLActor.DoProgress(const progressTime: TProgressTimes);
+procedure TGLActor.DoProgress(const progressTime: TGLProgressTimes);
 var
   fDelta: Single;
 begin

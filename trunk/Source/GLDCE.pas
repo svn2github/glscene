@@ -211,7 +211,7 @@ type
     procedure Move(deltaS: TAffineVector; deltaTime: Double);
     procedure MoveTo(Position: TAffineVector; Amount: Single); // gak:20041119
     procedure DoMove(deltaTime: Double);
-    procedure DoProgress(const progressTime : TProgressTimes); override;
+    procedure DoProgress(const progressTime : TGLProgressTimes); override;
     //Runtime only
     property Speed : TAffineVector read FSpeed write FSpeed;
     property InGround : Boolean read FInGround;
@@ -861,7 +861,7 @@ begin
   FAbsAccel := NullVector;
 end;
 
-procedure TGLDCEDynamic.DoProgress(const progressTime: TProgressTimes);
+procedure TGLDCEDynamic.DoProgress(const progressTime: TGLProgressTimes);
 begin
   inherited doProgress(progressTime);
   assert(assigned(manager), 'DCE Manager not assigned to behaviour.');

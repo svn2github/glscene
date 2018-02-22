@@ -53,7 +53,7 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure BuildList(var rci: TGLRenderContextInfo); override;
-    procedure DoProgress(const progressTime: TProgressTimes); override;
+    procedure DoProgress(const progressTime: TGLProgressTimes); override;
   published
     // MaxRadius of the flare.
     property Size: integer read FSize write SetSize default 50;
@@ -301,7 +301,7 @@ begin
 end;
 
 
-procedure TGLTextureLensFlare.DoProgress(const progressTime: TProgressTimes);
+procedure TGLTextureLensFlare.DoProgress(const progressTime: TGLProgressTimes);
 begin
   FDeltaTime := progressTime.deltaTime;
   inherited;

@@ -77,7 +77,6 @@ procedure OblateSpheroidal_Cartesian(const xi, eta, phi, a: single;
 { Convert Oblate-Spheroidal to Cartesian (with error check).[Double] eta,phi in rad }
 procedure OblateSpheroidal_Cartesian(const xi, eta, phi, a: double;
   var x, y, z: double; var ierr: integer); overload;
-
 { Convert Bipolar to Cartesian. u in rad }
 procedure BipolarCylindrical_Cartesian(const u, v, z1, a: single;
   var x, y, z: single); overload;

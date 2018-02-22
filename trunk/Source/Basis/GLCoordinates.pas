@@ -4,6 +4,7 @@
 {
   Coordinate related classes.
 }
+
 unit GLCoordinates;
 
 interface
@@ -72,10 +73,8 @@ type
     property Style: TGLCoordinatesStyle read FStyle write FStyle;
     procedure Translate(const TranslationVector: TVector); overload;
     procedure Translate(const TranslationVector: TAffineVector); overload;
-    procedure AddScaledVector(const Factor: Single;
-      const TranslationVector: TVector); overload;
-    procedure AddScaledVector(const Factor: Single;
-      const TranslationVector: TAffineVector); overload;
+    procedure AddScaledVector(const Factor: Single; const TranslationVector: TVector); overload;
+    procedure AddScaledVector(const Factor: Single; const TranslationVector: TAffineVector); overload;
     procedure Rotate(const AnAxis: TAffineVector; AnAngle: Single); overload;
     procedure Rotate(const AnAxis: TVector; AnAngle: Single); overload;
     procedure Normalize; inline;
@@ -106,9 +105,7 @@ type
       Assigning a value to this property will trigger notification events,
       if you don't want so, use DirectVector instead.
       The W component is automatically adjustes depending on style. }
-    property AsAffineVector: TAffineVector read GetAsAffineVector
-      write SetAsAffineVector;
-
+    property AsAffineVector: TAffineVector read GetAsAffineVector  write SetAsAffineVector;
     {  The coordinates viewed as a 2D point. 
       Assigning a value to this property will trigger notification events,
       if you don't want so, use DirectVector instead. }
@@ -162,8 +159,7 @@ type
     procedure CoordinateChanged(Sender: TGLCustomCoordinates);
   end;
 
-  TGLCoordinatesUpdateAbleComponent = class(TGLUpdateAbleComponent,
-    IGLCoordinatesUpdateAble)
+  TGLCoordinatesUpdateAbleComponent = class(TGLUpdateAbleComponent, IGLCoordinatesUpdateAble)
   public
     procedure CoordinateChanged(Sender: TGLCustomCoordinates); virtual; abstract;
   end;
@@ -178,12 +174,9 @@ implementation
 //==================================================================  
 
 const
-  CsVectorHelp =
-    'If you are getting assertions here, consider using the SetPoint procedure';
-  CsPointHelp =
-    'If you are getting assertions here, consider using the SetVector procedure';
-  CsPoint2DHelp =
-    'If you are getting assertions here, consider using one of the SetVector or SetPoint procedures';
+  csVectorHelp = 'If you are getting assertions here, consider using the SetPoint procedure';
+  csPointHelp = 'If you are getting assertions here, consider using the SetVector procedure';
+  csPoint2DHelp = 'If you are getting assertions here, consider using one of the SetVector or SetPoint procedures';
 
   // ------------------
   // ------------------ TGLCustomCoordinates ------------------
@@ -374,28 +367,28 @@ end;
 
 procedure TGLCustomCoordinates.SetVector(const X, Y: Single; Z: Single = 0);
 begin
-  Assert(FStyle = CsVector, CsVectorHelp);
+  Assert(FStyle = csVector, csVectorHelp);
   GLVectorGeometry.SetVector(FCoords, X, Y, Z);
   NotifyChange(Self);
 end;
 
 procedure TGLCustomCoordinates.SetVector(const V: TAffineVector);
 begin
-  Assert(FStyle = CsVector, CsVectorHelp);
+  Assert(FStyle = csVector, csVectorHelp);
   GLVectorGeometry.SetVector(FCoords, V);
   NotifyChange(Self);
 end;
 
 procedure TGLCustomCoordinates.SetVector(const V: TVector);
 begin
-  Assert(FStyle = CsVector, CsVectorHelp);
+  Assert(FStyle = csVector, csVectorHelp);
   GLVectorGeometry.SetVector(FCoords, V);
   NotifyChange(Self);
 end;
 
 procedure TGLCustomCoordinates.SetVector(const X, Y, Z, W: Single);
 begin
-  Assert(FStyle = CsVector, CsVectorHelp);
+  Assert(FStyle = csVector, csVectorHelp);
   GLVectorGeometry.SetVector(FCoords, X, Y, Z, W);
   NotifyChange(Self);
 end;

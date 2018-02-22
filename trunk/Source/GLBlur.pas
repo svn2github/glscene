@@ -96,7 +96,7 @@ type
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    procedure DoProgress(const progressTime: TProgressTimes); override;
+    procedure DoProgress(const progressTime: TGLProgressTimes); override;
     procedure DoRender(var ARci: TGLRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
@@ -228,7 +228,7 @@ begin
   SetLength(Pixelbuffer, RenderWidth * RenderHeight);
 end;
 
-procedure TGLBlur.DoProgress(const progressTime: TProgressTimes);
+procedure TGLBlur.DoProgress(const progressTime: TGLProgressTimes);
 begin
   inherited;
   if self.Visible and (progressTime.newTime - OldTime > FBlurDeltaTime) then

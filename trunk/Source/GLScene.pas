@@ -61,7 +61,7 @@ type
 
 const
   cDefaultProxyOptions = [pooEffects, pooObjects, pooTransformation];
-  GLSCENE_REVISION = '$Revision: 7082$';
+  GLSCENE_REVISION = '$Revision: 7084$';
   GLSCENE_VERSION = '1.6.0.%s';
 
 type
@@ -86,12 +86,12 @@ type
      roDoubleBuffer: enables double-buffering.
      roRenderToWindows: ignored (legacy).
      roTwoSideLighting: enables two-side lighting model.
-     roStereo: enables stereo support in the driver
-       (dunno if it works, I don't have a stereo device to test...)
+     roStereo: enables stereo support in the driver (dunno if it works,
+         I don't have a stereo device to test...)
      roDestinationAlpha: request an Alpha channel for the rendered output
      roNoColorBuffer: don't request a color buffer (color depth setting ignored)
-     roNoColorBufferClear: do not clear the color buffer automatically,
-       if the whole viewer is fully repainted each frame, this can improve framerate
+     roNoColorBufferClear: do not clear the color buffer automatically, if the
+         whole viewer is fully repainted each frame, this can improve framerate
      roNoSwapBuffers: don't perform RenderingContext.SwapBuffers after rendering
      roNoDepthBufferClear: do not clear the depth buffer automatically.
        Useful for early-z culling.
@@ -125,7 +125,7 @@ type
   TGLSceneBuffer = class;
 
   {Possible styles/options for a GLScene object.
-     Allowed styles are:
+     Allowed styles are: 
       osDirectDraw : object shall not make use of compiled call lists, but issue
         direct calls each time a render should be performed.
       osIgnoreDepthBuffer : object is rendered with depth test disabled,
@@ -174,6 +174,7 @@ type
     FAbsoluteMatrix, FInvAbsoluteMatrix: TMatrix;
     FLocalMatrix: TMatrix;
     FObjectStyle: TGLObjectStyles;
+    FListHandle: TGLListHandle; // created on 1st use
     FPosition: TGLCoordinates;
     FDirection, FUp: TGLCoordinates;
     FScaling: TGLCoordinates;
@@ -184,7 +185,7 @@ type
     FBoundingBoxPersonalUnscaled: THmgBoundingBox;
     FBoundingBoxOfChildren: THmgBoundingBox;
     FBoundingBoxIncludingChildren: THmgBoundingBox;
-    FChildren: TPersistentObjectList;
+    FChildren: TPersistentObjectList; // created on 1st use
     FVisible: Boolean;
     FUpdateCount: Integer;
     FShowAxes: Boolean;
@@ -240,7 +241,6 @@ type
     function GetDirectAbsoluteMatrix: PMatrix;
     function GetLocalMatrix: PMatrix; inline;
   protected
-    FListHandle: TGLListHandle;
     procedure Loaded; override;
     procedure SetScene(const Value: TGLScene); virtual;
     procedure DefineProperties(Filer: TFiler); override;
@@ -486,7 +486,7 @@ type
     procedure MoveChildDown(anIndex: Integer);
     procedure MoveChildFirst(anIndex: Integer);
     procedure MoveChildLast(anIndex: Integer);
-    procedure DoProgress(const progressTime: TProgressTimes); override;
+    procedure DoProgress(const progressTime: TGLProgressTimes); override;
     procedure MoveTo(newParent: TGLBaseSceneObject); virtual;
     procedure MoveUp;
     procedure MoveDown;
@@ -602,7 +602,7 @@ type
   public
     constructor Create(aOwner: TXCollection); override;
     destructor Destroy; override;
-    procedure DoProgress(const progressTime: TProgressTimes); virtual;
+    procedure DoProgress(const progressTime: TGLProgressTimes); virtual;
   end;
 
   {Ancestor for non-rendering behaviours.
@@ -627,7 +627,7 @@ type
     class function ItemsClass: TXCollectionItemClass; override;
     property Behaviour[index: Integer]: TGLBehaviour read GetBehaviour; default;
     function CanAdd(aClass: TXCollectionItemClass): Boolean; override;
-    procedure DoProgress(const progressTimes: TProgressTimes); inline;
+    procedure DoProgress(const progressTimes: TGLProgressTimes); inline;
   end;
 
   {A rendering effect that can be applied to SceneObjects.
@@ -682,7 +682,7 @@ type
     class function ItemsClass: TXCollectionItemClass; override;
     property ObjectEffect[index: Integer]: TGLObjectEffect read GetEffect; default;
     function CanAdd(aClass: TXCollectionItemClass): Boolean; override;
-    procedure DoProgress(const progressTime: TProgressTimes);
+    procedure DoProgress(const progressTime: TGLProgressTimes);
     procedure RenderPreEffects(var rci: TGLRenderContextInfo); inline;
     {Also take care of registering after effects with the GLSceneViewer. }
     procedure RenderPostEffects(var rci: TGLRenderContextInfo); inline;
@@ -1261,11 +1261,10 @@ type
 
   TFogMode = (fmLinear, fmExp, fmExp2);
 
-   { Fog distance calculation mode. 
-    fdDefault: let OpenGL use its default formula
+  { Fog distance calculation mode. fdDefault: let OpenGL use its default formula
     fdEyeRadial: uses radial "true" distance (best quality)
     fdEyePlane: uses the distance to the projection plane (same as Z-Buffer, faster)
-      Requires support of GL_NV_fog_distance extension, otherwise, it is ignored. }
+    Requires support of GL_NV_fog_distance extension, otherwise, it is ignored. }
   TFogDistance = (fdDefault, fdEyeRadial, fdEyePlane);
 
   {Parameters for fog environment in a scene.
@@ -2006,11 +2005,11 @@ begin
   if FListHandle.IsDataNeedUpdate then
   begin
     rci.GLStates.NewList(Result, GL_COMPILE);
-    //try
+    try
       BuildList(rci);
-    //finally
+    finally
       rci.GLStates.EndList;
-    //end;
+    end;
     FListHandle.NotifyDataUpdated;
   end;
 end;
@@ -3025,7 +3024,7 @@ begin
     FUp.Normalize;
     FDirection.Rotate(rightVector, angle);
     FDirection.Normalize;
-    r := -RadToDeg({$IFDEF USE_FASTMATH}Neslib.FastMath.{$ENDIF}ArcTan2(FDirection.Y, VectorLength(FDirection.X, FDirection.Z)));
+    r := -RadToDeg(ArcTan2(FDirection.Y, VectorLength(FDirection.X, FDirection.Z)));
     if FDirection.X < 0 then
       if FDirection.Y < 0 then
         r := 180 - r
@@ -3048,7 +3047,7 @@ begin
     if not (csLoading in ComponentState) then
     begin
       FIsCalculating := True;
-//      try
+      try
         diff := DegToRadian(FRotation.X - AValue);
         rotMatrix := CreateRotationMatrix(Right, diff);
         FUp.DirectVector := VectorTransform(FUp.AsVector, rotMatrix);
@@ -3057,9 +3056,9 @@ begin
           rotMatrix);
         FDirection.Normalize;
         TransformationChanged;
-//      finally
+      finally
         FIsCalculating := False;
-//      end;
+      end;
     end;
     FRotation.DirectX := NormalizeDegAngle(AValue);
   end;
@@ -3081,7 +3080,7 @@ begin
 
     // calculate new rotation angle from vectors
     rightVector := Right;
-    r := -RadToDeg({$IFDEF USE_FASTMATH}Neslib.FastMath.{$ENDIF}ArcTan2(rightVector.Y,
+    r := -RadToDeg(ArcTan2(rightVector.Y,
               VectorLength(rightVector.X,
                            rightVector.Z)));
     if rightVector.X < 0 then
@@ -3106,7 +3105,7 @@ begin
     if not (csLoading in ComponentState) then
     begin
       FIsCalculating := True;
-//      try
+      try
         diff := DegToRadian(FRotation.Z - AValue);
         rotMatrix := CreateRotationMatrix(Direction.AsVector, diff);
         FUp.DirectVector := VectorTransform(FUp.AsVector, rotMatrix);
@@ -3115,9 +3114,9 @@ begin
           rotMatrix);
         FDirection.Normalize;
         TransformationChanged;
-//      finally
+      finally
         FIsCalculating := False;
-//      end;
+      end;
     end;
     FRotation.DirectZ := NormalizeDegAngle(AValue);
   end;
@@ -3136,7 +3135,7 @@ begin
     FUp.Normalize;
     FDirection.Rotate(upVector, angle);
     FDirection.Normalize;
-    r := -RadToDeg({$IFDEF USE_FASTMATH}Neslib.FastMath.{$ENDIF}ArcTan2(FDirection.X, VectorLength(FDirection.Y,
+    r := -RadToDeg(ArcTan2(FDirection.X, VectorLength(FDirection.Y,
       FDirection.Z)));
     if FDirection.X < 0 then
       if FDirection.Y < 0 then
@@ -3160,7 +3159,7 @@ begin
     if not (csLoading in ComponentState) then
     begin
       FIsCalculating := True;
-//      try
+      try
         diff := DegToRadian(FRotation.Y - AValue);
         rotMatrix := CreateRotationMatrix(Up.AsVector, diff);
         FUp.DirectVector := VectorTransform(FUp.AsVector, rotMatrix);
@@ -3169,9 +3168,9 @@ begin
           rotMatrix);
         FDirection.Normalize;
         TransformationChanged;
-//      finally
+      finally
         FIsCalculating := False;
-//      end;
+      end;
     end;
     FRotation.DirectY := NormalizeDegAngle(AValue);
   end;
@@ -3417,7 +3416,7 @@ begin
       NormalizeVector(normalCameraRight);
     // calculate the current pitch.
     // 0 is looking down and PI is looking up
-    pitchNow := {$IFDEF USE_FASTMATH}Neslib.FastMath.{$ENDIF}ArcCos(VectorDotProduct(AbsoluteUp, normalT2C));
+    pitchNow := ArcCos(VectorDotProduct(AbsoluteUp, normalT2C));
     pitchNow := ClampValue(pitchNow + DegToRad(pitchDelta), 0 + 0.025, PI - 0.025);
     // creates a new vector pointing up and then rotate it down
     // into the new position
@@ -3536,7 +3535,7 @@ begin
   end;
 end;
 
-procedure TGLBaseSceneObject.DoProgress(const progressTime: TProgressTimes);
+procedure TGLBaseSceneObject.DoProgress(const progressTime: TGLProgressTimes);
 var
   i: Integer;
 begin
@@ -3744,7 +3743,8 @@ begin
     RebuildMatrix;
 
   if ARci.proxySubObject then
-    ARci.PipelineTransformation.SetModelMatrix(MatrixMultiply(LocalMatrix^, ARci.PipelineTransformation.ModelMatrix^))
+    ARci.PipelineTransformation.SetModelMatrix(
+	  MatrixMultiply(LocalMatrix^, ARci.PipelineTransformation.ModelMatrix^))
   else
     ARci.PipelineTransformation.SetModelMatrix(AbsoluteMatrix);
 
@@ -3828,7 +3828,7 @@ begin
   end;
   // start rendering children (if any)
   if ARenderChildren then
-    RenderChildren(0, Count - 1, ARci);
+    Self.RenderChildren(0, Count - 1, ARci);
 end;
 
 procedure TGLBaseSceneObject.RenderChildren(firstChildIndex, lastChildIndex:
@@ -4200,7 +4200,7 @@ begin
   Result := TGLBaseSceneObject(Owner.Owner);
 end;
 
-procedure TGLBaseBehaviour.DoProgress(const progressTime: TProgressTimes);
+procedure TGLBaseBehaviour.DoProgress(const progressTime: TGLProgressTimes);
 begin
   // does nothing
 end;
@@ -4247,7 +4247,7 @@ begin
     CanAdd(aClass));
 end;
 
-procedure TGLBehaviours.DoProgress(const progressTimes: TProgressTimes);
+procedure TGLBehaviours.DoProgress(const progressTimes: TGLProgressTimes);
 var
   i: Integer;
 begin
@@ -4326,7 +4326,7 @@ begin
     CanAdd(aClass));
 end;
 
-procedure TGLObjectEffects.DoProgress(const progressTime: TProgressTimes);
+procedure TGLObjectEffects.DoProgress(const progressTime: TGLProgressTimes);
 var
   i: Integer;
 begin
@@ -5908,7 +5908,7 @@ end;
 
 procedure TGLScene.Progress(const deltaTime, newTime: Double);
 var
-  pt: TProgressTimes;
+  pt: TGLProgressTimes;
 begin
   pt.deltaTime := deltaTime;
   pt.newTime := newTime;

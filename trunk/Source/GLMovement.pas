@@ -256,7 +256,7 @@ type
 
     procedure StartPathTravel;
     procedure StopPathTravel;
-    procedure DoProgress(const progressTime : TProgressTimes); override;
+    procedure DoProgress(const progressTime : TGLProgressTimes); override;
     function NextPath: integer;
     function PrevPath: integer;
     function FirstPath: integer;
@@ -1518,7 +1518,7 @@ begin
 end;
 
 //Calculate functions add into this method
-procedure TGLMovement.DoProgress(const progressTime : TProgressTimes);
+procedure TGLMovement.DoProgress(const progressTime : TGLProgressTimes);
 var
   Path: TGLMovementPath;
 begin

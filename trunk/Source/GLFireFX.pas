@@ -46,9 +46,9 @@ type
 
   TGLBFireFX = class;
 
-    {Fire special effect manager. 
-     Defines the looks and behaviour of a particle system that can be made
-     to look fire-like. }
+  { Fire special effect manager.
+    Defines the looks and behaviour of a particle system that can be made
+    to look fire-like. }
   TGLFireFXManager = class(TGLCadenceAbleComponent)
   private
     FClients: TList;
@@ -99,7 +99,7 @@ type
       nbParticles: Integer = -1);
     {Current Nb of particles. }
     property ParticleCount: Integer read NP;
-    procedure DoProgress(const progressTime: TProgressTimes); override;
+    procedure DoProgress(const progressTime: TGLProgressTimes); override;
   published
     {Adjusts the acceleration direction (abs coordinates). }
     property FireDir: TGLCoordinates read FFireDir write SetFireDir;
@@ -142,7 +142,7 @@ type
     property UseInterval: Boolean read FUseInterval write FUseInterval;
     {Particle's render won't write to Z-Buffer }
     property NoZWrite: Boolean read FNoZWrite write FNoZWrite default True;
-    {Specifies an optional object whose position to use as reference. 
+    {Specifies an optional object whose position to use as reference.
        This property allows switching between static/shared fires (for
        fireplaces or static torches) and dynamic fire trails.
        The absolute position of the reference object is 'central' spawning
@@ -151,8 +151,8 @@ type
     property Reference: TGLBaseSceneObject read FReference write SetReference;
   end;
 
-{Fire special effect. 
-     This effect works as a client of TFireFXManager }
+  { Fire special effect.
+    This effect works as a client of TFireFXManager }
   TGLBFireFX = class(TGLObjectPostEffect)
   private
     FManager: TGLFireFXManager;
@@ -369,7 +369,7 @@ begin
 end;
 
 
-procedure TGLFireFXManager.DoProgress(const progressTime: TProgressTimes);
+procedure TGLFireFXManager.DoProgress(const progressTime: TGLProgressTimes);
 var
   i: Integer;
 begin

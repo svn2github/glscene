@@ -63,14 +63,11 @@ type
     procedure SetDoChangesOnProgress(const Value: Boolean);
     procedure SetAutosize(const Value: Boolean);
   protected
-    procedure RenderHeader(var rci: TGLRenderContextInfo; renderSelf,
-      renderChildren: Boolean);
-    procedure RenderFooter(var rci: TGLRenderContextInfo; renderSelf,
-      renderChildren: Boolean);
+    procedure RenderHeader(var rci: TGLRenderContextInfo; renderSelf, renderChildren: Boolean);
+    procedure RenderFooter(var rci: TGLRenderContextInfo; renderSelf, renderChildren: Boolean);
     procedure SetGuiLayout(NewGui: TGLGuiLayout); virtual;
     procedure SetGuiLayoutName(const NewName: TGLGuiComponentName);
-    procedure Notification(AComponent: TComponent; Operation: TOperation);
-      override;
+    procedure Notification(AComponent: TComponent; Operation: TOperation);  override;
     procedure SetRotation(const val: TGLFloat);
     procedure SetAlphaChannel(const val: Single);
     function StoreAlphaChannel: Boolean;
@@ -84,30 +81,25 @@ type
     procedure DoChanges; virtual;
     procedure MoveGUI(XRel, YRel: Single);
     procedure PlaceGUI(XPos, YPos: Single);
-    procedure DoProgress(const progressTime: TProgressTimes); override;
-    procedure DoRender(var rci: TGLRenderContextInfo; renderSelf, renderChildren:
-      Boolean); override;
-    procedure InternalRender(var rci: TGLRenderContextInfo; renderSelf,
-      renderChildren: Boolean); virtual;
+    procedure DoProgress(const progressTime: TGLProgressTimes); override;
+    procedure DoRender(var rci: TGLRenderContextInfo; renderSelf, renderChildren: Boolean); override;
+    procedure InternalRender(var rci: TGLRenderContextInfo; renderSelf, renderChildren: Boolean); virtual;
     property GUIRedraw: Boolean read FGUIRedraw write SetGUIRedraw;
     property ReBuildGui: Boolean read FReBuildGui write FReBuildGui;
   published
     property Autosize: Boolean read FAutosize write SetAutosize;
     property RedrawAtOnce: Boolean read FRedrawAtOnce write FRedrawAtOnce;
     property GuiLayout: TGLGuiLayout read FGuiLayout write SetGuiLayout;
-    property GuiLayoutName: TGLGuiComponentName read FGuiLayoutName write
-      SetGuiLayoutName;
+    property GuiLayoutName: TGLGuiComponentName read FGuiLayoutName write SetGuiLayoutName;
     {This the ON-SCREEN rotation of the GuiComponent. 
        Rotatation=0 is handled faster. }
     property Rotation: TGLFloat read FRotation write SetRotation;
     {If different from 1, this value will replace that of Diffuse.Alpha }
-    property AlphaChannel: Single read FAlphaChannel write SetAlphaChannel stored
-      StoreAlphaChannel;
+    property AlphaChannel: Single read FAlphaChannel write SetAlphaChannel stored StoreAlphaChannel;
     {If True, GuiComponent will not write to Z-Buffer. 
        GuiComponent will STILL be maskable by ZBuffer test. }
     property NoZWrite: Boolean read FNoZWrite write SetNoZWrite;
-    property DoChangesOnProgress: Boolean read FDoChangesOnProgress write
-      SetDoChangesOnProgress;
+    property DoChangesOnProgress: Boolean read FDoChangesOnProgress write SetDoChangesOnProgress;
     property Visible;
     property Width;
     property Height;
@@ -122,8 +114,7 @@ type
   TGLMouseAction = (ma_mouseup, ma_mousedown, ma_mousemove);
 
   TGLAcceptMouseQuery = procedure(Sender: TGLBaseControl; Shift: TShiftState;
-    Action: TGLMouseAction; Button: TGLMouseButton; X, Y: Integer; var Accept:
-    boolean) of object;
+    Action: TGLMouseAction; Button: TGLMouseButton; X, Y: Integer; var Accept: boolean) of object;
   TGLBaseControl = class(TGLBaseComponent)
   private
     FOnMouseDown: TGLMouseEvent;
@@ -137,17 +128,13 @@ type
     FOnMouseEnter: TNotifyEvent;
     FEnteredControl: TGLBaseControl;
   protected
-    procedure InternalMouseDown(Shift: TShiftState; Button: TGLMouseButton; X,
-      Y: Integer); virtual;
-    procedure InternalMouseUp(Shift: TShiftState; Button: TGLMouseButton; X, Y:
-      Integer); virtual;
+    procedure InternalMouseDown(Shift: TShiftState; Button: TGLMouseButton; X, Y: Integer); virtual;
+    procedure InternalMouseUp(Shift: TShiftState; Button: TGLMouseButton; X, Y: Integer); virtual;
     procedure InternalMouseMove(Shift: TShiftState; X, Y: Integer); virtual;
     procedure SetActiveControl(NewControl: TGLBaseControl);
     procedure SetFocusedControl(NewControl: TGLFocusControl);
     function FindFirstGui: TGLBaseControl;
-    procedure Notification(AComponent: TComponent; Operation: TOperation);
-      override;
-
+    procedure Notification(AComponent: TComponent; Operation: TOperation); override;
     procedure DoMouseEnter;
     procedure DoMouseLeave;
   public
@@ -155,28 +142,20 @@ type
       TShiftState; X, Y: Integer): Boolean; virtual;
     function MouseUp(Sender: TObject; Button: TGLMouseButton; Shift:
       TShiftState; X, Y: Integer): Boolean; virtual;
-    function MouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer):
-      Boolean; virtual;
+    function MouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer): Boolean; virtual;
     procedure KeyPress(Sender: TObject; var Key: Char); virtual;
-    procedure KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-      virtual;
-    procedure KeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
-      virtual;
-    property ActiveControl: TGLBaseControl read FActiveControl write
-      SetActiveControl;
-    property KeepMouseEvents: Boolean read FKeepMouseEvents write
-      FKeepMouseEvents default false;
+    procedure KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);  virtual;
+    procedure KeyUp(Sender: TObject; var Key: Word; Shift: TShiftState); virtual;
+    property ActiveControl: TGLBaseControl read FActiveControl write SetActiveControl;
+    property KeepMouseEvents: Boolean read FKeepMouseEvents write FKeepMouseEvents default false;
   published
-    property FocusedControl: TGLFocusControl read FFocusedControl write
-      SetFocusedControl;
+    property FocusedControl: TGLFocusControl read FFocusedControl write SetFocusedControl;
     property OnMouseDown: TGLMouseEvent read FOnMouseDown write FOnMouseDown;
-    property OnMouseMove: TGLMouseMoveEvent read FOnMouseMove write
-      FOnMouseMove;
+    property OnMouseMove: TGLMouseMoveEvent read FOnMouseMove write FOnMouseMove;
     property OnMouseUp: TGLMouseEvent read FOnMouseUp write FOnMouseUp;
     property OnMouseEnter: TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
     property OnMouseLeave: TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
-    property OnAcceptMouseQuery: TGLAcceptMouseQuery read FOnAcceptMouseQuery
-      write FOnAcceptMouseQuery;
+    property OnAcceptMouseQuery: TGLAcceptMouseQuery read FOnAcceptMouseQuery write FOnAcceptMouseQuery;
   end;
 
   TGLBaseFontControl = class(TGLBaseControl)
@@ -196,13 +175,10 @@ type
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    procedure Notification(AComponent: TComponent; Operation: TOperation);
-      override;
+    procedure Notification(AComponent: TComponent; Operation: TOperation); override;
   published
-    property BitmapFont: TGLCustomBitmapFont read GetBitmapFont write
-      SetBitmapFont;
-    property DefaultColor: TDelphiColor read GetDefaultColor write
-      SetDefaultColor;
+    property BitmapFont: TGLCustomBitmapFont read GetBitmapFont write SetBitmapFont;
+    property DefaultColor: TDelphiColor read GetDefaultColor write SetDefaultColor;
   end;
 
   TGLBaseTextControl = class(TGLBaseFontControl)
@@ -241,23 +217,19 @@ type
     procedure PrevControl;
     procedure NextControl;
     procedure KeyPress(Sender: TObject; var Key: Char); override;
-    procedure KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-      override;
-    procedure KeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
-      override;
+    procedure KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState); override;
+    procedure KeyUp(Sender: TObject; var Key: Word; Shift: TShiftState); override;
   published
     property RootControl: TGLBaseControl read GetRootControl;
     property Focused: Boolean read FFocused write SetFocused;
-    property FocusedColor: TDelphiColor read GetFocusedColor write
-      SetFocusedColor;
+    property FocusedColor: TDelphiColor read GetFocusedColor write SetFocusedColor;
     property OnKeyDown: TGLKeyEvent read FOnKeyDown write FOnKeyDown;
     property OnKeyUp: TGLKeyEvent read FOnKeyUp write FOnKeyUp;
     property OnKeyPress: TGLKeyPressEvent read FOnKeyPress write FOnKeyPress;
   end;
 
   TGLCustomControl = class;
-  TGLCustomRenderEvent = procedure(Sender: TGLCustomControl; Bitmap: TGLBitmap)
-    of object;
+  TGLCustomRenderEvent = procedure(Sender: TGLCustomControl; Bitmap: TGLBitmap) of object;
   TGLCustomControl = class(TGLFocusControl)
   private
     FCustomData: Pointer;
@@ -289,13 +261,12 @@ type
     property Centered: Boolean read FCentered write SetCentered;
     property Material: TGLMaterial read FMaterial write SetMaterial;
     property Bitmap: TGLBitmap read FBitmap write SetBitmap;
-    property MaxInvalidRenderCount: Integer read FMaxInvalidRenderCount write
-      FMaxInvalidRenderCount;
+    property MaxInvalidRenderCount: Integer read FMaxInvalidRenderCount 
+	  write FMaxInvalidRenderCount;
   end;
 
   TGLPopupMenu = class;
-  TGLPopupMenuClick = procedure(Sender: TGLPopupMenu; index: Integer; const
-    MenuItemText: string) of object;
+  TGLPopupMenuClick = procedure(Sender: TGLPopupMenu; index: Integer; const MenuItemText: string) of object;
 
   TGLPopupMenu = class(TGLFocusControl)
   private
@@ -309,8 +280,7 @@ type
     procedure SetMenuItems(Value: TStrings);
     procedure SetMarginSize(const val: Single);
     procedure SetSelIndex(const val: Integer);
-    procedure InternalMouseDown(Shift: TShiftState; Button: TGLMouseButton; X,
-      Y: Integer); override;
+    procedure InternalMouseDown(Shift: TShiftState; Button: TGLMouseButton; X, Y: Integer); override;
     procedure InternalMouseMove(Shift: TShiftState; X, Y: Integer); override;
     procedure OnStringListChange(Sender: TObject);
   public
@@ -333,8 +303,7 @@ type
 
   TGLFormCanRequest = procedure(Sender: TGLForm; var Can: Boolean) of object;
   TGLFormCloseOptions = (co_Hide, co_Ignore, co_Destroy);
-  TGLFormCanClose = procedure(Sender: TGLForm; var CanClose: TGLFormCloseOptions)
-    of object;
+  TGLFormCanClose = procedure(Sender: TGLForm; var CanClose: TGLFormCloseOptions) of object;
   TGLFormNotify = procedure(Sender: TGLForm) of object;
   TGLFormMove = procedure(Sender: TGLForm; var Left, Top: Single) of object;
 
@@ -352,10 +321,8 @@ type
     FTitleColor: TColorVector;
     FTitleOffset: Single;
   protected
-    procedure InternalMouseDown(Shift: TShiftState; Button: TGLMouseButton; X,
-      Y: Integer); override;
-    procedure InternalMouseUp(Shift: TShiftState; Button: TGLMouseButton; X, Y:
-      Integer); override;
+    procedure InternalMouseDown(Shift: TShiftState; Button: TGLMouseButton; X, Y: Integer); override;
+    procedure InternalMouseUp(Shift: TShiftState; Button: TGLMouseButton; X, Y: Integer); override;
     procedure InternalMouseMove(Shift: TShiftState; X, Y: Integer); override;
     function GetTitleColor: TDelphiColor;
     procedure SetTitleColor(value: TDelphiColor);
@@ -367,15 +334,12 @@ type
     procedure NotifyHide; override;
     function MouseUp(Sender: TObject; Button: TGLMouseButton; Shift:
       TShiftState; X, Y: Integer): Boolean; override;
-    function MouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer):
-      Boolean; override;
-    procedure InternalRender(var rci: TGLRenderContextInfo; renderSelf,
-      renderChildren: Boolean); override;
+    function MouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer): Boolean; override;
+    procedure InternalRender(var rci: TGLRenderContextInfo; renderSelf, renderChildren: Boolean); override;
   published
     property TitleColor: TDelphiColor read GetTitleColor write SetTitleColor;
     property OnCanMove: TGLFormCanRequest read FOnCanMove write FOnCanMove;
-    property OnCanResize: TGLFormCanRequest read FOnCanResize write
-      FOnCanResize;
+    property OnCanResize: TGLFormCanRequest read FOnCanResize write FOnCanResize;
     property OnCanClose: TGLFormCanClose read FOnCanClose write FOnCanClose;
     property OnShow: TGLFormNotify read FOnShow write FOnShow;
     property OnHide: TGLFormNotify read FOnHide write FOnHide;
@@ -395,10 +359,8 @@ type
     FGroup: Integer;
   protected
     procedure SetChecked(NewChecked: Boolean);
-    procedure InternalMouseDown(Shift: TShiftState; Button: TGLMouseButton; X,
-      Y: Integer); override;
-    procedure InternalMouseUp(Shift: TShiftState; Button: TGLMouseButton; X, Y:
-      Integer); override;
+    procedure InternalMouseDown(Shift: TShiftState; Button: TGLMouseButton; X, Y: Integer); override;
+    procedure InternalMouseUp(Shift: TShiftState; Button: TGLMouseButton; X, Y: Integer); override;
     procedure SetGuiLayoutNameChecked(const newName: TGLGuiComponentName);
     procedure SetGuiLayout(NewGui: TGLGuiLayout); override;
     procedure SetGroup(const val: Integer);
@@ -417,23 +379,21 @@ type
 
   TGLButton = class(TGLFocusControl)
   private
-    FPressed: Boolean;
-    FOnButtonClick: TNotifyEvent;
-    FGuiLayoutNamePressed: TGLGuiComponentName;
-    FGuiPressedComponent: TGLGuiComponent;
-    FBitBtn: TGLMaterial;
-    FGroup: Integer;
-    FLogicWidth: Single;
-    FLogicHeight: Single;
-    FXOffSet: Single;
-    FYOffSet: Single;
-    FAllowUp: Boolean;
+    FPressed              : Boolean;
+    FOnButtonClick        : TNotifyEvent;
+    FGuiLayoutNamePressed : TGLGuiComponentName;
+    FGuiPressedComponent  : TGLGuiComponent;
+    FBitBtn               : TGLMaterial;
+    FGroup                : Integer;
+    FLogicWidth           : Single;
+    FLogicHeight          : Single;
+    FXOffSet              : Single;
+    FYOffSet              : Single;
+    FAllowUp              : Boolean;
   protected
     procedure SetPressed(NewPressed: Boolean);
-    procedure InternalMouseDown(Shift: TShiftState; Button: TGLMouseButton; X,
-      Y: Integer); override;
-    procedure InternalMouseUp(Shift: TShiftState; Button: TGLMouseButton; X, Y:
-      Integer); override;
+    procedure InternalMouseDown(Shift: TShiftState; Button: TGLMouseButton; X, Y: Integer); override;
+    procedure InternalMouseUp(Shift: TShiftState; Button: TGLMouseButton; X, Y: Integer); override;
     procedure InternalKeyDown(var Key: Word; Shift: TShiftState); override;
     procedure InternalKeyUp(var Key: Word; Shift: TShiftState); override;
     procedure SetFocused(Value: Boolean); override;
@@ -449,16 +409,13 @@ type
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    procedure InternalRender(var rci: TGLRenderContextInfo; renderSelf,
-      renderChildren: Boolean); override;
+    procedure InternalRender(var rci: TGLRenderContextInfo; renderSelf, renderChildren: Boolean); override;
   published
     property Group: Integer read FGroup write SetGroup;
     property BitBtn: TGLMaterial read FBitBtn write SetBitBtn;
     property Pressed: Boolean read FPressed write SetPressed;
-    property OnButtonClick: TNotifyEvent read FOnButtonClick write
-      FOnButtonClick;
-    property GuiLayoutNamePressed: TGLGuiComponentName read FGuiLayoutNamePressed
-      write SetGuiLayoutNamePressed;
+    property OnButtonClick: TNotifyEvent read FOnButtonClick write FOnButtonClick;
+    property GuiLayoutNamePressed: TGLGuiComponentName read FGuiLayoutNamePressed write SetGuiLayoutNamePressed;
     property LogicWidth: Single read FLogicWidth write SetLogicWidth;
     property LogicHeight: Single read FLogicHeight write SetLogicHeight;
     property XOffset: Single read FXOffset write SetXOffset;
@@ -473,8 +430,7 @@ type
     FReadOnly: Boolean;
     FEditChar: string;
   protected
-    procedure InternalMouseDown(Shift: TShiftState; Button: TGLMouseButton; X,
-      Y: Integer); override;
+    procedure InternalMouseDown(Shift: TShiftState; Button: TGLMouseButton; X, Y: Integer); override;
     procedure InternalKeyPress(var Key: Char); override;
     procedure InternalKeyDown(var Key: Word; Shift: TShiftState); override;
     procedure InternalKeyUp(var Key: Word; Shift: TShiftState); override;
@@ -501,8 +457,7 @@ type
   protected
   public
     constructor Create(AOwner: TComponent); override;
-    procedure InternalRender(var rci: TGLRenderContextInfo; renderSelf,
-      renderChildren: Boolean); override;
+    procedure InternalRender(var rci: TGLRenderContextInfo; renderSelf, renderChildren: Boolean); override;
   published
     property Alignment: TAlignment read FAlignment write SetAlignment;
     property TextLayout: TGLTextLayout read FTextLayout write SetTextLayout;
@@ -512,8 +467,7 @@ type
   private
   protected
   public
-    procedure InternalRender(var rci: TGLRenderContextInfo; renderSelf,
-      renderChildren: Boolean); override;
+    procedure InternalRender(var rci: TGLRenderContextInfo; renderSelf, renderChildren: Boolean); override;
   published
   end;
 
@@ -544,10 +498,8 @@ type
     function GetYScrollPos(Y: Single): Single;
     function GetScrollPosX(ScrollPos: Single): Single;
     function GetXScrollPos(X: Single): Single;
-    procedure InternalMouseDown(Shift: TShiftState; Button: TGLMouseButton; X,
-      Y: Integer); override;
-    procedure InternalMouseUp(Shift: TShiftState; Button: TGLMouseButton; X, Y:
-      Integer); override;
+    procedure InternalMouseDown(Shift: TShiftState; Button: TGLMouseButton; X, Y: Integer); override;
+    procedure InternalMouseUp(Shift: TShiftState; Button: TGLMouseButton; X, Y: Integer); override;
     procedure InternalMouseMove(Shift: TShiftState; X, Y: Integer); override;
   public
     constructor Create(AOwner: TComponent); override;
@@ -555,12 +507,9 @@ type
     procedure StepDown;
     procedure PageUp;
     procedure PageDown;
-    function MouseUp(Sender: TObject; Button: TGLMouseButton; Shift:
-      TShiftState; X, Y: Integer): Boolean; override;
-    function MouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer):
-      Boolean; override;
-    procedure InternalRender(var rci: TGLRenderContextInfo; renderSelf,
-      renderChildren: Boolean); override;
+    function MouseUp(Sender: TObject; Button: TGLMouseButton; Shift: TShiftState; X, Y: Integer): Boolean; override;
+    function MouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer): Boolean; override;
+    procedure InternalRender(var rci: TGLRenderContextInfo; renderSelf, renderChildren: Boolean); override;
   published
     property Horizontal: Boolean read FHorizontal write SetHorizontal;
     property Pos: Single read FPos write SetPos;
@@ -569,8 +518,7 @@ type
     property Step: Single read FStep write FStep;
     property PageSize: Single read FPageSize write SetPageSize;
     property OnChange: TNotifyEvent read FOnChange write FOnChange;
-    property GuiLayoutKnobName: TGLGuiComponentName read FGuiLayoutKnobName write
-      SetGuiLayoutKnobName;
+    property GuiLayoutKnobName: TGLGuiComponentName read FGuiLayoutKnobName write SetGuiLayoutKnobName;
     property Locked: Boolean read FLocked write FLocked default False;
   end;
 
@@ -589,8 +537,7 @@ type
     FDrawHeader: Boolean;
   protected
     function GetCell(X, Y: Integer; out oCol, oRow: Integer): Boolean;
-    procedure InternalMouseDown(Shift: TShiftState; Button: TGLMouseButton; X,
-      Y: Integer); override;
+    procedure InternalMouseDown(Shift: TShiftState; Button: TGLMouseButton; X, Y: Integer); override;
     procedure SetColumns(const val: TStrings);
     procedure SetColSelect(const val: Boolean);
     function GetRow(index: Integer): TStringList;
@@ -615,11 +562,9 @@ type
     function Add(const Data: array of string): Integer; overload;
     function Add(const Data: string): Integer; overload;
     procedure SetText(Data: string);
-    procedure Notification(AComponent: TComponent; Operation: TOperation);
-      override;
+    procedure Notification(AComponent: TComponent; Operation: TOperation); override;
     procedure NotifyChange(Sender: TObject); override;
-    procedure InternalRender(var rci: TGLRenderContextInfo; renderSelf,
-      renderChildren: Boolean); override;
+    procedure InternalRender(var rci: TGLRenderContextInfo; renderSelf, renderChildren: Boolean); override;
     procedure OnStringListChange(Sender: TObject);
     property Row[index: Integer]: TStringList read GetRow write SetRow;
   published
@@ -637,15 +582,13 @@ type
     property Scrollbar: TGLScrollbar read FScrollbar write SetScrollbar;
   end;
 
-function UnpressGroup(CurrentObject: TGLBaseSceneObject; AGroupID: Integer):
-  Boolean;
+function UnpressGroup(CurrentObject: TGLBaseSceneObject; AGroupID: Integer): Boolean;
 
 //--------------------------------------------------------------------------
 implementation
 //--------------------------------------------------------------------------
 
-function UnpressGroup(CurrentObject: TGLBaseSceneObject; AGroupID: Integer):
-  Boolean;
+function UnpressGroup(CurrentObject: TGLBaseSceneObject; AGroupID: Integer): Boolean;
 
 var
   XC: Integer;
@@ -747,8 +690,7 @@ begin
   rci.GLStates.DepthWriteMask := False;
 end;
 
-procedure TGLBaseComponent.RenderFooter(var rci: TGLRenderContextInfo; renderSelf,
-  renderChildren: Boolean);
+procedure TGLBaseComponent.RenderFooter(var rci: TGLRenderContextInfo; renderSelf, renderChildren: Boolean);
 
 begin
   gl.PopMatrix;
@@ -796,8 +738,7 @@ begin
   end;
 end;
 
-procedure TGLBaseComponent.Notification(AComponent: TComponent; Operation:
-  TOperation);
+procedure TGLBaseComponent.Notification(AComponent: TComponent; Operation: TOperation);
 
 begin
   if Operation = opRemove then
@@ -3856,7 +3797,7 @@ begin
   inherited;
 end;
 
-procedure TGLBaseComponent.DoProgress(const progressTime: TProgressTimes);
+procedure TGLBaseComponent.DoProgress(const progressTime: TGLProgressTimes);
 begin
   inherited;
   if FDoChangesOnProgress then

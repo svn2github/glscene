@@ -14,19 +14,19 @@ interface
 uses
   System.SysUtils,
   
-  GLVectorTypes,
+  OpenGLTokens, 
+  XOpenGL, 
   GLVectorGeometry,
   GLHeightData, 
   GLVectorLists, 
   GLCrossPlatform, 
   GLContext,
-  OpenGLTokens, 
-  XOpenGL, 
+  GLVectorTypes,
   GLContouring;
 
 type
 
-  // Exception use by Split for SafeTesselate
+  // Exception use by splitter for SafeTesselation
   EGLROAMException = class(Exception);
 
   PROAMTriangleNode = ^TROAMTriangleNode;
@@ -107,17 +107,14 @@ type
     property HeightData: TGLHeightData read FHeightData write SetHeightData;
     property VertexScale: TAffineVector read FVertexScale write FVertexScale;
     property VertexOffset: TAffineVector read FVertexOffset write FVertexOffset;
-    property ObserverPosition: TAffineVector read FObserverPosition
-      write FObserverPosition;
+    property ObserverPosition: TAffineVector read FObserverPosition  write FObserverPosition;
     property TextureScale: TAffineVector read FTextureScale write FTextureScale;
-    property TextureOffset: TAffineVector read FTextureOffset
-      write FTextureOffset;
+    property TextureOffset: TAffineVector read FTextureOffset  write FTextureOffset;
     property HighRes: Boolean read FHighRes write FHighRes;
     {  Number of frames to skip after an occlusion test returned zero pixels. }
     property OcclusionSkip: Integer read FOcclusionSkip write SetOcclusionSkip;
     {  Number of frames remaining to next occlusion test. }
-    property OcclusionCounter: Integer read FOcclusionCounter
-      write FOcclusionCounter;
+    property OcclusionCounter: Integer read FOcclusionCounter write FOcclusionCounter;
     {  Result for the last occlusion test. 
       Note that this value is updated upon rendering the tile in
       non-high-res mode only. }
@@ -268,8 +265,7 @@ begin
   if vNbTris >= vTriangleNodesCapacity then
   begin
     // grow by 50%
-    IncreaseTrianglesCapacity(vTriangleNodesCapacity +
-      (vTriangleNodesCapacity shr 1));
+    IncreaseTrianglesCapacity(vTriangleNodesCapacity + (vTriangleNodesCapacity shr 1));
   end;
   Result := vNbTris;
   with vTriangleNodes[vNbTris] do
@@ -575,7 +571,7 @@ function TGLROAMPatch.Tesselate: Boolean;
 var
   tessFrameVarianceDelta: Integer;
 
-  function VertexDist(X, Y: Integer): cardinal;
+  function VertexDist(X, Y: Integer): Cardinal;
   var
     f: Single;
   const
@@ -589,9 +585,9 @@ var
     Result := Round(Sqrt(f) + f * c1Div100);
   end;
 
-procedure FullBaseTess(tri: PROAMTriangleNode; n: cardinal); forward;
+procedure FullBaseTess(tri: PROAMTriangleNode; n: Cardinal); forward;
 
-  procedure FullLeftTess(tri: PROAMTriangleNode; n: cardinal);
+  procedure FullLeftTess(tri: PROAMTriangleNode; n: Cardinal);
   begin
     if Split(tri) then
     begin
@@ -601,7 +597,7 @@ procedure FullBaseTess(tri: PROAMTriangleNode; n: cardinal); forward;
     end;
   end;
 
-  procedure FullRightTess(tri: PROAMTriangleNode; n: cardinal);
+  procedure FullRightTess(tri: PROAMTriangleNode; n: Cardinal);
   begin
     if Split(tri) then
     begin
@@ -611,7 +607,7 @@ procedure FullBaseTess(tri: PROAMTriangleNode; n: cardinal); forward;
     end;
   end;
 
-  procedure FullBaseTess(tri: PROAMTriangleNode; n: cardinal);
+  procedure FullBaseTess(tri: PROAMTriangleNode; n: Cardinal);
   begin
     if Split(tri) then
     begin
@@ -819,8 +815,7 @@ begin
   end
   else
   begin
-    gl.DrawElements(GL_TRIANGLES, VertexIndices.Count, GL_UNSIGNED_INT,
-      VertexIndices.List);
+    gl.DrawElements(GL_TRIANGLES, VertexIndices.Count, GL_UNSIGNED_INT, VertexIndices.List);
   end;
   Vertices.Count := 0;
   TexCoords.Count := 0;
@@ -961,12 +956,7 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 FVBOVertHandle := TGLVBOArrayBufferHandle.Create;

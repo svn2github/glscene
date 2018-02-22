@@ -235,14 +235,12 @@ type
   {  A Torus object. }
   TGLTorus = class(TGLSceneObject)
   private
-
     FParts: TTorusParts;
     FRings, FSides: Cardinal;
     FStartAngle, FStopAngle: Single;
     FMinorRadius, FMajorRadius: Single;
     FMesh: array of array of TVertexRec;
   protected
-    
     procedure SetMajorRadius(const aValue: Single);
     procedure SetMinorRadius(const aValue: Single);
     procedure SetRings(aValue: Cardinal);
@@ -317,7 +315,7 @@ type
   TArrowArcPart = (aaArc, aaTopArrow, aaBottomArrow);
   TArrowArcParts = set of TArrowArcPart;
 
-  {  Draws an arrowhead (Sliced Torus + cone).
+  { Draws an arrowhead (Sliced Torus + cone).
     The arrow head is a cone that shares the attributes of the Torus
     (ie stacks/slices, materials etc).
     This is useful for displaying a movement (eg twist) or
@@ -373,7 +371,7 @@ type
   TPolygonPart = (ppTop, ppBottom);
   TPolygonParts = set of TPolygonPart;
 
-  {  A basic polygon object.
+  { A basic polygon object.
     The curve is described by the Nodes and SplineMode properties, should be
     planar and is automatically tessellated.
     Texture coordinates are deduced from X and Y coordinates only.
@@ -459,7 +457,6 @@ begin
   FStartAngle := 0;
   FSweepAngle := 360;
 end;
-
 
 procedure TGLDisk.BuildList(var rci: TGLRenderContextInfo);
 var
@@ -922,7 +919,7 @@ begin
   begin
     gl.PushMatrix;
     gl.Translatef(0, 0, FHeight);
-    gluDisk(quadric, 0, FTopRadius, FSlices, FLoops);
+    gluDisk(Quadric, 0, FTopRadius, FSlices, FLoops);
     gl.PopMatrix;
   end;
   if cyBottom in FParts then
@@ -931,7 +928,7 @@ begin
     SetInvertedQuadricOrientation(quadric);
     gluDisk(quadric, 0, FBottomRadius, FSlices, FLoops);
   end;
-  gluDeleteQuadric(quadric);
+  gluDeleteQuadric(Quadric);
   gl.PopMatrix;
 end;
 
@@ -1284,7 +1281,6 @@ begin
   end;
 end;
 
-
 procedure TGLCapsule.SetRadius(const aValue: Single);
 begin
   if aValue <> FRadius then
@@ -1293,7 +1289,6 @@ begin
     StructureChanged;
   end;
 end;
-
 
 procedure TGLCapsule.SetSlices(const aValue: integer);
 begin
@@ -1304,7 +1299,6 @@ begin
   end;
 end;
 
-
 procedure TGLCapsule.SetStacks(const aValue: integer);
 begin
   if aValue <> FStacks then
@@ -1313,7 +1307,6 @@ begin
     StructureChanged;
   end;
 end;
-
 
 procedure TGLCapsule.SetParts(aValue: TCylinderParts);
 begin
@@ -1324,7 +1317,6 @@ begin
   end;
 end;
 
-
 procedure TGLCapsule.SetAlignment(val: TCylinderAlignment);
 begin
   if val <> FAlignment then
@@ -1333,7 +1325,6 @@ begin
     StructureChanged;
   end;
 end;
-
 
 procedure TGLCapsule.Assign(Source: TPersistent);
 begin
@@ -1344,7 +1335,6 @@ begin
   end;
   inherited Assign(Source);
 end;
-
 
 function TGLCapsule.AxisAlignedDimensionsUnscaled: TVector;
 var
@@ -1357,7 +1347,6 @@ begin
   Result := VectorMake(r, 0.5 * FHeight, r);
   // ScaleVector(Result, Scale.AsVector);
 end;
-
 
 function TGLCapsule.RayCastIntersect(const rayStart, rayVector: TVector;
   intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean;
@@ -1481,7 +1470,6 @@ begin
     SetLength(roots, 0);
 end;
 
-
 procedure TGLCapsule.Align(const startPoint, endPoint: TVector);
 var
   dir: TAffineVector;
@@ -1495,7 +1483,6 @@ begin
   Lift(FHeight * 0.5);
   Alignment := caCenter;
 end;
-
 
 procedure TGLCapsule.Align(const startObj, endObj: TGLBaseSceneObject);
 begin
@@ -1512,7 +1499,6 @@ end;
 // ------------------ TGLAnnulus ------------------
 // ------------------
 
-
 constructor TGLAnnulus.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
@@ -1521,7 +1507,6 @@ begin
   FTopRadius := 0.5;
   FParts := [anInnerSides, anOuterSides, anBottom, anTop];
 end;
-
 
 procedure TGLAnnulus.SetBottomInnerRadius(const aValue: Single);
 begin
@@ -1532,7 +1517,6 @@ begin
   end;
 end;
 
-
 procedure TGLAnnulus.SetTopRadius(const aValue: Single);
 begin
   if aValue <> FTopRadius then
@@ -1541,7 +1525,6 @@ begin
     StructureChanged;
   end;
 end;
-
 
 procedure TGLAnnulus.SetTopInnerRadius(const aValue: Single);
 begin
@@ -1552,7 +1535,6 @@ begin
   end;
 end;
 
-
 procedure TGLAnnulus.SetParts(aValue: TAnnulusParts);
 begin
   if aValue <> FParts then
@@ -1561,7 +1543,6 @@ begin
     StructureChanged;
   end;
 end;
-
 
 procedure TGLAnnulus.BuildList(var rci: TGLRenderContextInfo);
 var
@@ -1595,7 +1576,6 @@ begin
   gl.PopMatrix;
 end;
 
-
 procedure TGLAnnulus.Assign(Source: TPersistent);
 begin
   if Assigned(Source) and (Source is TGLAnnulus) then
@@ -1609,7 +1589,6 @@ begin
   inherited Assign(Source);
 end;
 
-
 function TGLAnnulus.AxisAlignedDimensionsUnscaled: TVector;
 var
   r, r1: Single;
@@ -1620,7 +1599,6 @@ begin
     r := r1;
   Result := VectorMake(r, 0.5 * FHeight, r);
 end;
-
 
 function TGLAnnulus.RayCastIntersect(const rayStart, rayVector: TVector;
   intersectPoint, intersectNormal: PVector): Boolean;
@@ -1805,7 +1783,6 @@ end;
 // ------------------ TGLTorus ------------------
 // ------------------
 
-
 constructor TGLTorus.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
@@ -1817,7 +1794,6 @@ begin
   FStopAngle := 360.0;
   FParts := [toSides, toStartDisk, toStopDisk];
 end;
-
 
 procedure TGLTorus.BuildList(var rci: TGLRenderContextInfo);
 
@@ -1991,13 +1967,12 @@ begin
     end;
   end;
 
-  with GL do
   begin
-    if ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
+    if GL.ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
     begin
-      TanLoc := GetAttribLocation(rci.GLStates.CurrentProgram,
+      TanLoc := gl.GetAttribLocation(rci.GLStates.CurrentProgram,
         PAnsiChar(TangentAttributeName));
-      BinLoc := GetAttribLocation(rci.GLStates.CurrentProgram,
+      BinLoc := gl.GetAttribLocation(rci.GLStates.CurrentProgram,
         PAnsiChar(BinormalAttributeName));
     end
     else
@@ -2010,7 +1985,7 @@ begin
 
     if toSides in FParts then
     begin
-      Begin_(GL_TRIANGLES);
+      gl.Begin_(GL_TRIANGLES);
       for i := FRings - 1 downto 0 do
         for j := FSides - 1 downto 0 do
         begin
@@ -2032,13 +2007,13 @@ begin
           pVertex := @FMesh[i][j + 1];
           EmitVertex(pVertex, TanLoc, BinLoc);
         end;
-      End_;
+      gl.End_;
       MeshIndex := FRings + 1;
     end;
 
     if toStartDisk in FParts then
     begin
-      Begin_(GL_TRIANGLE_FAN);
+      gl.Begin_(GL_TRIANGLE_FAN);
       pVertex := @Vertex;
       EmitVertex(pVertex, TanLoc, BinLoc);
       for j := 0 to FSides do
@@ -2046,13 +2021,13 @@ begin
         pVertex := @FMesh[MeshIndex][j];
         EmitVertex(pVertex, TanLoc, BinLoc);
       end;
-      End_;
+      gl.End_;
       MeshIndex := MeshIndex + 1;
     end;
 
     if toStopDisk in FParts then
     begin
-      Begin_(GL_TRIANGLE_FAN);
+      gl.Begin_(GL_TRIANGLE_FAN);
       pVertex := @Vertex;
       EmitVertex(pVertex, TanLoc, BinLoc);
       for j := FSides downto 0 do
@@ -2060,12 +2035,11 @@ begin
         pVertex := @FMesh[MeshIndex][j];
         EmitVertex(pVertex, TanLoc, BinLoc);
       end;
-      End_;
+      gl.End_;
     end;
 
   end;
 end;
-
 
 procedure TGLTorus.SetMajorRadius(const aValue: Single);
 begin
@@ -2077,7 +2051,6 @@ begin
   end;
 end;
 
-
 procedure TGLTorus.SetMinorRadius(const aValue: Single);
 begin
   if FMinorRadius <> aValue then
@@ -2087,7 +2060,6 @@ begin
     StructureChanged;
   end;
 end;
-
 
 procedure TGLTorus.SetRings(aValue: Cardinal);
 begin
@@ -2100,7 +2072,6 @@ begin
     StructureChanged;
   end;
 end;
-
 
 procedure TGLTorus.SetSides(aValue: Cardinal);
 begin
@@ -2143,7 +2114,6 @@ begin
   end;
 end;
 
-
 function TGLTorus.AxisAlignedDimensionsUnscaled: TVector;
 var
   r, r1: Single;
@@ -2152,7 +2122,6 @@ begin
   r1 := Abs(FMinorRadius);
   Result := VectorMake(r + r1, r + r1, r1); // Danb
 end;
-
 
 function TGLTorus.RayCastIntersect(const rayStart, rayVector: TVector;
   intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean;
@@ -2220,7 +2189,6 @@ end;
 // ------------------ TGLArrowLine ------------------
 // ------------------
 
-
 constructor TGLArrowLine.Create(AOwner: TComponent);
 begin
   inherited;
@@ -2255,7 +2223,6 @@ begin
   end;
 end;
 
-
 procedure TGLArrowLine.SetTopArrowHeadRadius(const aValue: Single);
 begin
   if aValue <> fTopArrowHeadRadius then
@@ -2264,7 +2231,6 @@ begin
     StructureChanged;
   end;
 end;
-
 
 procedure TGLArrowLine.SetBottomArrowHeadHeight(const aValue: Single);
 begin
@@ -2275,7 +2241,6 @@ begin
   end;
 end;
 
-
 procedure TGLArrowLine.SetBottomArrowHeadRadius(const aValue: Single);
 begin
   if aValue <> fBottomArrowHeadRadius then
@@ -2284,7 +2249,6 @@ begin
     StructureChanged;
   end;
 end;
-
 
 procedure TGLArrowLine.SetParts(aValue: TArrowLineParts);
 begin
@@ -2295,7 +2259,6 @@ begin
   end;
 end;
 
-
 procedure TGLArrowLine.SetHeadStackingStyle(const val: TArrowHeadStackingStyle);
 begin
   if val <> FHeadStackingStyle then
@@ -2304,7 +2267,6 @@ begin
     StructureChanged;
   end;
 end;
-
 
 procedure TGLArrowLine.BuildList(var rci: TGLRenderContextInfo);
 var
@@ -2321,7 +2283,7 @@ begin
   end;
   cylHeight := Height;
   cylOffset := -FHeight * 0.5;
-  // creates a new quadric
+  // create a new quadric
   quadric := gluNewQuadric;
   SetupQuadricParams(quadric);
   // does the top arrow part - the cone

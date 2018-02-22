@@ -61,8 +61,8 @@ Name: "Full"; Description: "All comps"
 Name: "Custom"; Description: "Choose comps"; Flags: iscustom
 
 [Components]
-;Name: "Samples"; Description: "Samples for Delphi&C++Builder"; Types: Full Custom 
-;Name: "Utilities"; Description: "Utilities for GLScene"; Types: Full Custom 
+;Name: "Samples"; Description: "Samples"; Types: Full Custom 
+;Name: "Utilities"; Description: "Utilities"; Types: Full Custom 
 
 [Code]
 function InitializeSetup: Boolean;

@@ -92,7 +92,7 @@ type
   TGLBaseSoundSource = class(TCollectionItem)
   private
     FBehaviourToNotify: TGLBSoundEmitter;
-      // private only, NOT persistent, not assigned
+    // private only, NOT persistent, not assigned
     FPriority: Integer;
     FOrigin: TGLBaseSceneObject; // NOT persistent
     FVolume: Single;
@@ -303,7 +303,7 @@ type
     {Progress notification for time synchronization.
        This method will call UpdateSources depending on the last time
        it was performed and the value of the UpdateFrequency property. }
-    procedure DoProgress(const progressTime: TProgressTimes); override;
+    procedure DoProgress(const progressTime: TGLProgressTimes); override;
     {Sound manager API reported CPU Usage.
        Returns -1 when unsupported. }
     function CPUUsagePercent: Single; virtual;
@@ -389,7 +389,7 @@ type
     class function FriendlyName: String; override;
     class function FriendlyDescription: String; override;
     class function UniqueItem: Boolean; override;
-    procedure DoProgress(const progressTime: TProgressTimes); override;
+    procedure DoProgress(const progressTime: TGLProgressTimes); override;
     property PlayingSource: TGLSoundSource read FPlayingSource;
   published
     property Source: TGLBaseSoundSource read FSource write SetSource;
@@ -1441,7 +1441,7 @@ begin
     Sources.Delete(i);
 end;
 
-procedure TGLSoundManager.DoProgress(const progressTime: TProgressTimes);
+procedure TGLSoundManager.DoProgress(const progressTime: TGLProgressTimes);
 begin
   if not Active then
     Exit;
@@ -1544,7 +1544,7 @@ begin
 end;
 
 
-procedure TGLBSoundEmitter.DoProgress(const progressTime: TProgressTimes);
+procedure TGLBSoundEmitter.DoProgress(const progressTime: TGLProgressTimes);
 begin
   // nothing, yet
 end;

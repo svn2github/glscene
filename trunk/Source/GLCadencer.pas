@@ -540,7 +540,7 @@ var
   deltaTime, newTime, totalDelta: Double;
   fullTotalDelta, firstLastTime : Double;
   i: Integer;
-  pt: TProgressTimes;
+  pt: TGLProgressTimes;
 begin
   // basic protection against infinite loops,
     // shall never happen, unless there is a bug in user code

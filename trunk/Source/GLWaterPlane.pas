@@ -64,10 +64,8 @@ type
          procedure SetSimulationFrequency(const val : Single);
          procedure SetMask(val : TGLPicture);
          procedure SetOptions(const val : TGLWaterPlaneOptions);
-
          procedure DoMaskChanged(Sender : TObject);
          procedure InitResolution;
-
          procedure IterComputeVelocity;
          procedure IterComputePositions;
          procedure IterComputeNormals;
@@ -75,7 +73,7 @@ type
       public
          constructor Create(AOwner : TComponent); override;
          destructor Destroy; override;
-         procedure DoProgress(const progressTime : TProgressTimes); override;
+         procedure DoProgress(const progressTime : TGLProgressTimes); override;
          procedure BuildList(var rci : TGLRenderContextInfo); override;
          procedure Assign(Source: TPersistent); override;
          function AxisAlignedDimensionsUnscaled : TVector; override;
@@ -84,23 +82,23 @@ type
          procedure CreateRippleAtWorldPos(const pos : TVector); overload;
          procedure CreateRippleRandom;
          procedure Reset;
-         {CPU time (in seconds) taken by the last iteration step. }
+         { CPU time (in seconds) taken by the last iteration step. }
          property LastIterationStepTime : Single read FLastIterationStepTime;
       published
          property Active : Boolean read FActive write FActive default True;
-         {Delay between raindrops in milliseconds (0 = no rain) }
+         { Delay between raindrops in milliseconds (0 = no rain) }
          property RainTimeInterval : Integer read FRainTimeInterval write SetRainTimeInterval default 500;
          property RainForce : Single read FRainForce write SetRainForce;
          property Viscosity : Single read FViscosity write SetViscosity ;
          property Elastic : Single read FElastic write SetElastic;
          property Resolution : Integer read FResolution write SetResolution default 64;
          property Options : TGLWaterPlaneOptions read FOptions write SetOptions default cDefaultWaterPlaneOptions;
-         {A picture whose pixels determine what part of the waterplane is active.
+         { A picture whose pixels determine what part of the waterplane is active.
             Pixels with a green/gray component beyond 128 are active, the others
             are not (in short, white = active, black = inactive).
             The picture will automatically be stretched to match the resolution. }
          property Mask : TGLPicture read FMask write SetMask;
-         {Maximum frequency (in Hz) at which simulation iterations happen. }
+         { Maximum frequency (in Hz) at which simulation iterations happen. }
          property SimulationFrequency : Single read FSimulationFrequency write SetSimulationFrequency;
          {Maximum number of simulation iterations during catchups. 
             Catchups happen when for a reason or another, the DoProgress doesn't
@@ -109,11 +107,7 @@ type
    end;
 
 //-------------------------------------------------------------
-//-------------------------------------------------------------
-//-------------------------------------------------------------
 implementation
-//-------------------------------------------------------------
-//-------------------------------------------------------------
 //-------------------------------------------------------------
 
 constructor TGLWaterPlane.Create(AOwner : TComponent);
@@ -149,7 +143,7 @@ begin
    inherited;
 end;
 
-procedure TGLWaterPlane.DoProgress(const progressTime : TProgressTimes);
+procedure TGLWaterPlane.DoProgress(const progressTime : TGLProgressTimes);
 var
    i : Integer;
 begin
@@ -513,12 +507,7 @@ begin
 end;
 
 //-------------------------------------------------------------
-//-------------------------------------------------------------
-//-------------------------------------------------------------
-
 initialization
-//-------------------------------------------------------------
-//-------------------------------------------------------------
 //-------------------------------------------------------------
 
    RegisterClasses([TGLWaterPlane]);

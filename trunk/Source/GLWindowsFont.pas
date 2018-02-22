@@ -384,7 +384,7 @@ initialization
 // ------------------------------------------------------------------
   Win32PlatformIsUnicode := (Win32Platform = VER_PLATFORM_WIN32_NT);
 
-   // class registrations
+
   RegisterClasses([TGLWindowsBitmapFont]);
 
 end.

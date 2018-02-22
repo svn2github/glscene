@@ -124,7 +124,7 @@ type
     destructor Destroy; override;
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
     procedure BuildList(var rci: TGLRenderContextInfo); override;
-    procedure DoProgress(const progressTime: TProgressTimes); override;
+    procedure DoProgress(const progressTime: TGLProgressTimes); override;
     {Prepares pre-rendered texture to speed up actual rendering.
        Will use the currently active context as scratch space, and will
        automatically do nothing if things have already been prepared,
@@ -670,7 +670,7 @@ begin
     Self.RenderChildren(0, Count - 1, rci);
 end;
 
-procedure TGLLensFlare.DoProgress(const progressTime: TProgressTimes);
+procedure TGLLensFlare.DoProgress(const progressTime: TGLProgressTimes);
 begin
   inherited;
   FDeltaTime := progressTime.deltaTime;

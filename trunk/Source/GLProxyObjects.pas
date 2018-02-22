@@ -136,7 +136,7 @@ type
     FEndFrame: Integer;
     FLastFrame: Integer;
     FCurrentFrameDelta: Single;
-    FCurrentTime: TProgressTimes;
+    FCurrentTime: TGLProgressTimes;
     FAnimation: TGLActorAnimationName;
     FTempLibMaterialName: string;
     FMasterLibMaterial: TGLLibMaterial;
@@ -165,12 +165,12 @@ type
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
     procedure DoRender(var ARci: TGLRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
-    procedure DoProgress(const progressTime: TProgressTimes); override;
+    procedure DoProgress(const progressTime: TGLProgressTimes); override;
     property CurrentFrame: Integer read FCurrentFrame;
     property StartFrame: Integer read FStartFrame;
     property EndFrame: Integer read FEndFrame;
     property CurrentFrameDelta: Single read FCurrentFrameDelta;
-    property CurrentTime: TProgressTimes read FCurrentTime;
+    property CurrentTime: TGLProgressTimes read FCurrentTime;
     {Gets the Bones Matrix in the current animation frame.
      (since the masterobject is shared between all proxies, each proxy will have it's bones matrices) }
     function BoneMatrix(BoneIndex: integer): TMatrix; overload;
@@ -441,7 +441,7 @@ begin
   inherited;
 end;
 
-procedure TGLActorProxy.DoProgress(const progressTime: TProgressTimes);
+procedure TGLActorProxy.DoProgress(const progressTime: TGLProgressTimes);
 begin
   inherited;
   FCurrentTime := progressTime;

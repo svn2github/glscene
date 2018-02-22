@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-  Base classes for GLScene.
+  Base classes
 }
 
 unit GLBaseClasses;
@@ -19,11 +19,11 @@ uses
 
 type
 
-  TProgressTimes = record
+  TGLProgressTimes = record
     deltaTime, newTime: Double
   end;
 
-  {Progression event for time-base animations/simulations.
+  { Progression event for time-base animations/simulations.
      deltaTime is the time delta since last progress and newTime is the new
      time after the progress event is completed. }
   TGLProgressEvent = procedure(Sender: TObject; const deltaTime, newTime: Double) of object;
@@ -35,7 +35,7 @@ type
 
   IGLProgessAble = interface(IInterface)
     ['{95E44548-B0FE-4607-98D0-CA51169AF8B5}']
-    procedure DoProgress(const progressTime: TProgressTimes);
+    procedure DoProgress(const progressTime: TGLProgressTimes);
   end;
 
   {An abstract class describing the "update" interface.  }
@@ -57,13 +57,13 @@ type
     property OnNotifyChange: TNotifyEvent read FOnNotifyChange write FOnNotifyChange;
   end;
 
-  {A base class describing the "cadenceing" interface.  }
+  { A base class describing the "cadenceing" interface.  }
   TGLCadenceAbleComponent = class(TGLComponent, IGLProgessAble)
   public
-    procedure DoProgress(const progressTime: TProgressTimes); virtual;
+    procedure DoProgress(const progressTime: TGLProgressTimes); virtual;
   end;
 
-  {A base class describing the "update" interface.  }
+  { A base class describing the "update" interface.  }
   TGLUpdateAbleComponent = class(TGLCadenceAbleComponent, IGLNotifyAble)
   public
     procedure NotifyChange(Sender: TObject); virtual;
@@ -135,7 +135,7 @@ end;
 // ------------------ TGLCadenceAbleComponent ------------------
 // ------------------
 
-procedure TGLCadenceAbleComponent.DoProgress(const progressTime: TProgressTimes);
+procedure TGLCadenceAbleComponent.DoProgress(const progressTime: TGLProgressTimes);
 begin
   // nothing
 end;

@@ -108,14 +108,14 @@ begin
   end;
 end;
 
-//==============================================
-//============ TGLAsyncTimer 
-//==============================================
+//-----------------------------------------
+{ TGLAsyncTimer }
+//-----------------------------------------
 
 constructor TGLAsyncTimer.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  // creates timer thread
+  // create timer thread
   FMutex := TCriticalSection.Create;
   FMutex.Acquire;
   FTimerThread := TTimerThread.Create(False);

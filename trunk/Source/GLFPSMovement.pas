@@ -68,8 +68,7 @@ type
      {  Indicates the collision group of this map. A Collision Group
       is a set of logical maps and movers that can collide between
       themselves (i.e. a Behaviour with group 1 can only collide with
-      maps that are also on group 1).
-    }
+      maps that are also on group 1). }
     property CollisionGroup: integer read FCollisionGroup write FCollisionGroup;
   end;
 
@@ -147,7 +146,7 @@ type
     Velocity: TVector;
     constructor Create(aOwner: TXCollection); override;
     destructor Destroy; override;
-    procedure DoProgress(const progressTime: TProgressTimes); override;
+    procedure DoProgress(const progressTime: TGLProgressTimes); override;
     class function FriendlyName: string; override;
     Procedure TurnHorizontal(Angle: single);
     Procedure TurnVertical(Angle: single);
@@ -796,7 +795,7 @@ begin
   Manager.Navigator.MovingObject := prevObj;
 end;
 
-procedure TGLBFPSMovement.DoProgress(const progressTime: TProgressTimes);
+procedure TGLBFPSMovement.DoProgress(const progressTime: TGLProgressTimes);
 var
   newPosition: TVector;
   CollisionState: TCollisionState;
@@ -895,15 +894,9 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-// class registrations
 RegisterXCollectionItemClass(TGLMapCollectionItem);
 RegisterXCollectionItemClass(TGLBFPSMovement);
 

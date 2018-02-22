@@ -84,19 +84,16 @@ type
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    procedure DoProgress(const progressTime: TProgressTimes); override;
+    procedure DoProgress(const progressTime: TGLProgressTimes); override;
   published
     property Target: TGLCoordinates read FTarget write SetTarget;
     property Cadencer: TGLCadencer read FCadencer write SetCadencer;
     property Maxpoints: integer read FMaxpoints write SetMaxpoints default 256;
-    property GlowSize: single read FGlowSize write FGlowSize
-      stored StoreGlowSize;
+    property GlowSize: single read FGlowSize write FGlowSize stored StoreGlowSize;
     property Vibrate: single read FVibrate write FVibrate stored StoreVibrate;
     property InnerColor: TGLColor read FInnerColor write SetInnerColor;
-    property OuterColor: TGLColor read FOuterColor write SetOuterColor;
-    // default clrWhite;
-    property CoreColor: TGLColor read FCoreColor write SetCoreColor;
-    // default clrWhite;
+    property OuterColor: TGLColor read FOuterColor write SetOuterColor; // default clrWhite;
+    property CoreColor: TGLColor read FCoreColor write SetCoreColor; // default clrWhite;
     property Disabled: boolean read FDisabled write FDisabled;
     property Core: boolean read FCore write FCore;
     property Glow: boolean read FGlow write FGlow;
@@ -129,8 +126,7 @@ type
   end;
 
   {  Returns or creates the TGLBThorFX within the given object's effects.  }
-function GetOrCreateThorFX(obj: TGLBaseSceneObject; const name: String = '')
-  : TGLBThorFX;
+function GetOrCreateThorFX(obj: TGLBaseSceneObject; const name: String = ''): TGLBThorFX;
 
 // ------------------------------------------------------------------
 implementation
@@ -269,15 +265,14 @@ begin
   end;
 end;
 
-procedure TGLThorFXManager.Notification(AComponent: TComponent;
-  Operation: TOperation);
+procedure TGLThorFXManager.Notification(AComponent: TComponent; Operation: TOperation);
 begin
   if (Operation = opRemove) and (AComponent = FCadencer) then
     Cadencer := nil;
   inherited;
 end;
 
-procedure TGLThorFXManager.DoProgress(const progressTime: TProgressTimes);
+procedure TGLThorFXManager.DoProgress(const progressTime: TGLProgressTimes);
 var
   i: integer;
 
@@ -286,8 +281,7 @@ begin
     CalcThor;
   // Invalidate all clients
   for i := 0 to FClients.Count - 1 do
-    TGLBThorFX(FClients[i]).OwnerBaseSceneObject.NotifyChange
-      (TGLBThorFX(FClients[i]));
+    TGLBThorFX(FClients[i]).OwnerBaseSceneObject.NotifyChange(TGLBThorFX(FClients[i]));
 end;
 
 procedure TGLThorFXManager.ThorInit;
@@ -355,10 +349,8 @@ begin
   mid := (left + right) div 2;
   res := (left + right) mod 2;
   fracScale := (right - left) / Maxpoints;
-  midh := (lh + rh) / 2 + (fracScale * FWildness * random) -
-    (fracScale * FWildness) / 2;
-  FThorpoints^[mid].Position.C[xyz] := midh +
-    (FVibrate * random - (FVibrate / 2));
+  midh := (lh + rh) / 2 + (fracScale * FWildness * random) - (fracScale * FWildness) / 2;
+  FThorpoints^[mid].Position.C[xyz] := midh + (FVibrate * random - (FVibrate / 2));
   // if res=1 then FThorpoints[right-1].Position[xyz]:=
   // (FThorpoints[right].Position[xyz]+midh)/(right-mid)*(right-mid-1);
   if res = 1 then

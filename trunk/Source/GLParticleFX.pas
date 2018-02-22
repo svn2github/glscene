@@ -208,7 +208,7 @@ type
     constructor Create(aOwner: TComponent); override;
     destructor Destroy; override;
     procedure NotifyChange(Sender: TObject); override;
-    procedure DoProgress(const progressTime: TProgressTimes); override;
+    procedure DoProgress(const progressTime: TGLProgressTimes); override;
     // Class of particles created by this manager. }
     class function ParticlesClass: TGLParticleClass; virtual;
     {Creates a new particle controled by the manager. }
@@ -380,7 +380,7 @@ type
     destructor Destroy; override;
     class function FriendlyName: string; override;
     class function FriendlyDescription: string; override;
-    procedure DoProgress(const progressTime: TProgressTimes); override;
+    procedure DoProgress(const progressTime: TGLProgressTimes); override;
     // Instantaneously creates nb particles
     procedure Burst(time: Double; nb: Integer);
     procedure RingExplosion(time: Double;
@@ -419,7 +419,7 @@ type
   public
     constructor Create(aOwner: TComponent); override;
     destructor Destroy; override;
-    procedure DoProgress(const progressTime: TProgressTimes); override;
+    procedure DoProgress(const progressTime: TGLProgressTimes); override;
   published
     {Oriented acceleration applied to the particles. }
     property Acceleration: TGLCoordinates read FAcceleration write SetAcceleration;
@@ -516,9 +516,9 @@ type
   end;
   TPFXDirectRenderEvent = procedure(Sender: TObject; aParticle: TGLParticle;
     var rci: TGLRenderContextInfo) of object;
-  TPFXProgressEvent = procedure(Sender: TObject; const progressTime: TProgressTimes;
+  TPFXProgressEvent = procedure(Sender: TObject; const progressTime: TGLProgressTimes;
     var defaultProgress: Boolean) of object;
-  TPFXParticleProgress = procedure(Sender: TObject; const progressTime: TProgressTimes;
+  TPFXParticleProgress = procedure(Sender: TObject; const progressTime: TGLProgressTimes;
     aParticle: TGLParticle; var killParticle: Boolean) of object;
   TPFXGetParticleCountEvent = function(Sender: TObject): Integer of object;
 
@@ -546,7 +546,7 @@ type
     procedure EndParticles(var rci: TGLRenderContextInfo); override;
     procedure FinalizeRendering(var rci: TGLRenderContextInfo); override;
   public
-    procedure DoProgress(const progressTime: TProgressTimes); override;
+    procedure DoProgress(const progressTime: TGLProgressTimes); override;
     function ParticleCount: Integer; override;
   published
     property OnInitializeRendering: TGLDirectRenderEvent read FOnInitializeRendering write FOnInitializeRendering;
@@ -980,7 +980,7 @@ begin
     Renderer.StructureChanged;
 end;
 
-procedure TGLParticleFXManager.DoProgress(const progressTime: TProgressTimes);
+procedure TGLParticleFXManager.DoProgress(const progressTime: TGLProgressTimes);
 begin
   inherited;
   if FAutoFreeWhenEmpty and (FParticles.ItemCount = 0) then
@@ -1632,7 +1632,7 @@ begin
   end;
 end;
 
-procedure TGLSourcePFXEffect.DoProgress(const progressTime: TProgressTimes);
+procedure TGLSourcePFXEffect.DoProgress(const progressTime: TGLProgressTimes);
 var
   n: Integer;
 begin
@@ -1920,7 +1920,7 @@ begin
   inherited Destroy;
 end;
 
-procedure TGLDynamicPFXManager.DoProgress(const progressTime: TProgressTimes);
+procedure TGLDynamicPFXManager.DoProgress(const progressTime: TGLProgressTimes);
 var
   i: Integer;
   curParticle: TGLParticle;
@@ -2318,7 +2318,7 @@ end;
 // ------------------ TGLCustomPFXManager ------------------
 // ------------------
 
-procedure TGLCustomPFXManager.DoProgress(const progressTime: TProgressTimes);
+procedure TGLCustomPFXManager.DoProgress(const progressTime: TGLProgressTimes);
 var
   i: Integer;
   list: PGLParticleArray;

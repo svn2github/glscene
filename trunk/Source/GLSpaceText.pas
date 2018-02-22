@@ -2,14 +2,13 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-  3D Text component. 
+  3D Text component.
 
   Note: You can get valid extents (including AABB's) of this component only
   after it has been rendered for the first time. It means if you ask its
   extents during / after its creation, you will get zeros.
 
-  Also extents are valid only when SpaceText has one line.  
-
+  Also extents are valid only when SpaceText has one line.
 }
 unit GLSpaceText;
 
@@ -28,7 +27,7 @@ uses
   VCL.Dialogs,
   VCL.Graphics,
   VCL.Controls,
-  
+
   OpenGLTokens,
   GLScene,
   GLTexture,
@@ -121,8 +120,7 @@ type
     function TextMaxUnder(const str: WideString = ''): Single;
     {  Note: this fuction is valid only after text has been rendered
       the first time. Before that it returns zeros. }
-    procedure TextMetrics(const str: WideString;
-      out width, maxHeight, maxUnder: Single);
+    procedure TextMetrics(const str: WideString; out width, maxHeight, maxUnder: Single);
     procedure NotifyFontChanged;
     procedure NotifyChange(sender: TObject); override;
     procedure DefaultHandler(var Message); override;
@@ -176,17 +174,12 @@ procedure ReleaseFontManager;
 var
   vFontManagerMsgID: Cardinal;
 
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
 implementation
-
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 const
-  cFontManagerMsg = 'GLScene FontManagerMessage';
+  cFontManagerMsg = 'FontManagerMessage';
 
 var
   vFontManager: TFontManager;
@@ -394,22 +387,15 @@ begin
           gl.Scalef(charScale, charScale, 1);
         end;
         case FAdjust.Horz of
-          haLeft:
-            ; // nothing
-          haCenter:
-            gl.Translatef(-textL * 0.5, 0, 0);
-          haRight:
-            gl.Translatef(-textL, 0, 0);
+          haLeft: ; // nothing
+          haCenter: gl.Translatef(-textL * 0.5, 0, 0);
+          haRight: gl.Translatef(-textL, 0, 0);
         end;
         case FAdjust.Vert of
-          vaBaseLine:
-            ; // nothing;
-          vaBottom:
-            gl.Translatef(0, abs(maxUnder), 0);
-          vaCenter:
-            gl.Translatef(0, abs(maxUnder) * 0.5 - maxHeight * 0.5, 0);
-          vaTop:
-            gl.Translatef(0, -maxHeight, 0);
+          vaBaseLine: ; // nothing;
+          vaBottom: gl.Translatef(0, abs(maxUnder), 0);
+          vaCenter: gl.Translatef(0, abs(maxUnder) * 0.5 - maxHeight * 0.5, 0);
+          vaTop: gl.Translatef(0, -maxHeight, 0);
         end;
       end;
 
@@ -857,12 +843,7 @@ begin
 end;
 
 // -------------------------------------------------------------
-// -------------------------------------------------------------
-// -------------------------------------------------------------
 initialization
-
-// -------------------------------------------------------------
-// -------------------------------------------------------------
 // -------------------------------------------------------------
 
 vFontManagerMsgID := RegisterWindowMessage(cFontManagerMsg);

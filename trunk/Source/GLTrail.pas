@@ -77,7 +77,7 @@ type
 
     //EnableUVmapping: boolean; // generate UV's or not
 
-    procedure DoProgress(const progressTime : TProgressTimes); override;
+    procedure DoProgress(const progressTime : TGLProgressTimes); override;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
@@ -140,7 +140,7 @@ begin
    inherited Destroy;
 end;
 
-procedure TGLTrail.DoProgress(const progressTime: TProgressTimes);
+procedure TGLTrail.DoProgress(const progressTime: TGLProgressTimes);
 begin
   inherited;
   if Enabled and Assigned(TrailObject) then

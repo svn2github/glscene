@@ -28,7 +28,7 @@ const
 
 type
 
-  TGLSApplicationResource = (
+  TGLApplicationResource = (
     aresNone,
     aresSplash,
     aresTexture,
@@ -67,13 +67,13 @@ type
   TGLDataFileCapability = (dfcRead, dfcWrite);
   TGLDataFileCapabilities = set of TGLDataFileCapability;
 
-  {Abstract base class for data file formats interfaces.
-     This class declares base file-related behaviours, ie. ability to load/save
-     from a file or a stream.
-     It is highly recommended to overload ONLY the stream based methods, as the
-     file-based one just call these, and stream-based behaviours allow for more
-     enhancement (such as other I/O abilities, compression, cacheing, etc.)
-     to this class, without the need to rewrite subclasses. }
+  { Abstract base class for data file formats interfaces.
+    This class declares base file-related behaviours, ie. ability to load/save
+    from a file or a stream.
+    It is highly recommended to overload ONLY the stream based methods, as the
+    file-based one just call these, and stream-based behaviours allow for more
+    enhancement (such as other I/O abilities, compression, cacheing, etc.)
+    to this class, without the need to rewrite subclasses. }
   TGLDataFile = class(TGLUpdateAbleObject)
   private
     FResourceName: string;
@@ -84,13 +84,13 @@ type
     class function Capabilities: TGLDataFileCapabilities; virtual;
     {Duplicates Self and returns a copy.
        Subclasses should override this method to duplicate their data. }
-    function CreateCopy(AOwner: TPersistent): TGLDataFile; dynamic;
-    procedure LoadFromFile(const fileName: string); dynamic;
-    procedure SaveToFile(const fileName: string); dynamic;
-    procedure LoadFromStream(stream: TStream); dynamic;
-    procedure SaveToStream(stream: TStream); dynamic;
-    procedure Initialize; dynamic;
-    {Optionnal resource name.
+    function CreateCopy(AOwner: TPersistent): TGLDataFile; virtual;
+    procedure LoadFromFile(const fileName: string); virtual;
+    procedure SaveToFile(const fileName: string); virtual;
+    procedure LoadFromStream(stream: TStream); virtual;
+    procedure SaveToStream(stream: TStream); virtual;
+    procedure Initialize; virtual;
+    { Optionnal resource name. 
        When using LoadFromFile/SaveToFile, the filename is placed in it,
        when using the Stream variants, the caller may place the resource
        name in it for parser use. }
@@ -98,7 +98,7 @@ type
   end;
 
   TGLDataFileClass = class of TGLDataFile;
-  TGLSResourceStream = TResourceStream;
+  TGLResourceStream = TResourceStream;
 
 // Returns true if an ApplicationFileIO has been defined
 function ApplicationFileIODefined: Boolean;
@@ -112,9 +112,9 @@ function CreateFileStream(const fileName: string;
 // Queries is a file stream corresponding to the fileName exists.
 function FileStreamExists(const fileName: string): Boolean;
 
-function CreateResourceStream(const ResName: string; ResType: PChar): TGLSResourceStream;
+function CreateResourceStream(const ResName: string; ResType: PChar): TGLResourceStream;
 
-function StrToGLSResType(const AStrRes: string): TGLSApplicationResource;
+function StrToGLSResType(const AStrRes: string): TGLApplicationResource;
 
 var
   vAFIOCreateFileStream: TAFIOCreateFileStream = nil;
@@ -167,7 +167,7 @@ begin
   end;
 end;
 
-function CreateResourceStream(const ResName: string; ResType: PChar): TGLSResourceStream;
+function CreateResourceStream(const ResName: string; ResType: PChar): TGLResourceStream;
 var
   InfoBlock: HRSRC;
 begin
@@ -257,7 +257,7 @@ begin
   FResourceName := AName;
 end;
 
-function StrToGLSResType(const AStrRes: string): TGLSApplicationResource;
+function StrToGLSResType(const AStrRes: string): TGLApplicationResource;
 begin
   if AStrRes = '[SAMPLERS]' then
   begin

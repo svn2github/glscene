@@ -71,37 +71,26 @@ type
     ang1, ang2, scal, c1, s1, c2, s2, vw, vh: single; //VectorToScreen variables;
     lt, rt, lb, rb: TAffineVector; //ScreenToVector corner vectors;
     UpVec, riVec: TAffineVector;
-
     ltW, rtW, lbW, rbW: TAffineVector; //ScreenToVector corner vectors;(Warped)
     UpVecW, riVecW: TAffineVector;
     OrthInvDov, OrthAddX, OrthMulX, OrthAddY, OrthMulY: single;
-
     dov, np, fp, NpFp, OneMinNp_Fp, invOneMinNp_Fp: single; //Calc Variables;
-
     cam: TGLCamera;
-
     procedure DoCalcVectors;
-
   protected
     procedure PrepareBufferMemory;
     procedure SetWidth(val: Integer);
     procedure SetHeight(const val: Integer);
-
   public
     SceneViewer: TGLSceneViewer;
     MemoryViewer: TGLMemoryViewer;
     Buffer: TGLSceneBuffer;
-
     Normal: TAffineVector; //Absolute direction of camera
-
     constructor Create;
     destructor Destroy; override;
-
     procedure LinkToViewer(viewer: TGLSceneViewer); overload;
     procedure LinkToViewer(viewer: TGLMemoryViewer); overload;
-    function GetDepthBuffer(CalcVectors: Boolean; ContextIsActive: boolean):
-      PZArray;
-
+    function GetDepthBuffer(CalcVectors: Boolean; ContextIsActive: boolean): PZArray;
     function GetPixelzDepth(x, y: integer): Single;
     function PixelToDistance_OLD(x, y: integer): Single;
     function PixelToDistance(x, y: integer): Single;
@@ -111,24 +100,16 @@ type
     property Data: PZArray read FData;
     property DataIdx: TZArrayIdx read FDataIdx;
     property DataInvIdx: TZArrayIdx read FDataIdx;
-
     procedure Refresh;
     function FastScreenToVector(x, y: Integer): TAffineVector;
     function FastVectorToScreen(const vec: TAffineVector): TAffineVector;
-
     function PixelToWorld(const x, y: Integer): TAffineVector;
-    function WorldToPixel(const aPoint: TAffineVector; out pixX, pixY: integer;
-      out pixZ: single): boolean;
-    function WorldToPixelZ(const aPoint: TAffineVector; out pixX, pixY: integer;
-      out pixZ: single): boolean; overload;
-    function WorldToPixelZ(const aPoint: TAffineVector; out pixX, pixY: single;
-      out pixZ: single): boolean; overload;
-    function OrthWorldToPixelZ(const aPoint: TAffineVector; out pixX, pixY:
-      single; out pixZ: single): boolean;
+    function WorldToPixel(const aPoint: TAffineVector; out pixX, pixY: integer; out pixZ: single): boolean;
+    function WorldToPixelZ(const aPoint: TAffineVector; out pixX, pixY: integer; out pixZ: single): boolean; overload;
+    function WorldToPixelZ(const aPoint: TAffineVector; out pixX, pixY: single; out pixZ: single): boolean; overload;
+    function OrthWorldToPixelZ(const aPoint: TAffineVector; out pixX, pixY: single; out pixZ: single): boolean;
   end;
 
-  // TGLZShadows
-  //
   TGLZShadows = class(TGLBaseSceneObject)
   private
     FViewer: TGLSceneViewer;
@@ -137,52 +118,41 @@ type
     FFrustShadow: Boolean;
     FSkyShadow: Boolean;
     FOptimise: TOptimise;
-
     FData: PAArray;
     FDataIdx, FDataInvIdx: TAArrayIdx;
     FDataSize: Integer;
-
     FWidth: integer;
     FHeight: integer;
     FXRes: integer;
     FYRes: integer;
     Fsoft: boolean;
     FTolerance: single;
-
     FColor: TGLColor;
     SCol: TPixel32;
-
     //stepX, stepY :single;
-
     FTexturePrepared: Boolean;
-
     FTexHandle: TGLTextureHandle;
-
   protected
     procedure PrepareAlphaMemory;
-
     function GetViewer: TGLSceneViewer;
     procedure SetViewer(const val: TGLSceneViewer);
     function GetCaster: TGLMemoryViewer;
     procedure SetCaster(const val: TGLMemoryViewer);
     procedure CalcShadowTexture(var rci: TGLRenderContextInfo);
     function HardSet(const x, y: integer): Byte;
-
     function SoftTest(const x, y: integer): Byte;
     procedure SetWidth(const val: integer);
     procedure SetHeight(const val: integer);
     procedure SetXRes(const val: integer);
     procedure SetYRes(const val: integer);
     procedure SetSoft(const val: boolean);
-
     procedure BindTexture;
   public
     ViewerZBuf: TGLzBuffer;
     CasterZBuf: TGLzBuffer;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    procedure DoRender(var ARci: TGLRenderContextInfo; ARenderSelf,
-      ARenderChildren: Boolean); override;
+    procedure DoRender(var ARci: TGLRenderContextInfo; ARenderSelf, ARenderChildren: Boolean); override;
   published
     property Viewer: TGLSceneViewer read GetViewer write SetViewer;
     property Caster: TGLMemoryViewer read GetCaster write SetCaster;
@@ -199,12 +169,13 @@ type
     //          property Material;
     property ObjectsSorting;
     property Visible;
-
     property DepthFade: Boolean read FDepthFade write FDepthFade;
     function CastShadow: boolean;
   end;
 
+//--------------------------------------------------------------------
 implementation
+//--------------------------------------------------------------------
 
 constructor TGLzBuffer.Create;
 begin

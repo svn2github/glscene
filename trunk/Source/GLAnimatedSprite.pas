@@ -218,7 +218,7 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure BuildList(var rci: TGLRenderContextInfo); override;
-    procedure DoProgress(const progressTime: TProgressTimes); override;
+    procedure DoProgress(const progressTime: TGLProgressTimes); override;
     // Steps the current animation to the next frame
     procedure NextFrame;
   published
@@ -811,7 +811,7 @@ begin
 end;
 {$WARNINGS On}
 
-procedure TGLAnimatedSprite.DoProgress(const progressTime: TProgressTimes);
+procedure TGLAnimatedSprite.DoProgress(const progressTime: TGLProgressTimes);
 var
   i, intr: Integer;
 begin

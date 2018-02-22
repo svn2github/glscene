@@ -38,7 +38,7 @@ type
          function GetCell(col : Integer) : Integer;
          procedure SetCell(col, val : Integer);
 		public
-			constructor Create; override;
+		 constructor Create; override;
          destructor Destroy; override;
          procedure WriteToFiler(writer : TVirtualWriter); override;
 	     procedure ReadFromFiler(reader : TVirtualReader); override;
@@ -564,11 +564,7 @@ begin
 end;
 
 //-------------------------------------------------------------
-//-------------------------------------------------------------
-//-------------------------------------------------------------
 initialization
-//-------------------------------------------------------------
-//-------------------------------------------------------------
 //-------------------------------------------------------------
 
    RegisterClasses([TGLTilePlane, TGLTiledAreaRow, TGLTiledArea]);

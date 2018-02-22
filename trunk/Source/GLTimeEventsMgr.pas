@@ -34,7 +34,7 @@ type
    public
       constructor Create(aOwner : TComponent); override;
       destructor Destroy; override;
-      procedure DoProgress(const progressTime : TProgressTimes); override;
+      procedure DoProgress(const progressTime : TGLProgressTimes); override;
       procedure Reset();
    published
       property Cadencer : TGLCadencer read FCadencer write SetCadencer;
@@ -135,7 +135,7 @@ begin
    FEvents.Assign(val);
 end;
 
-procedure TGLTimeEventsMGR.DoProgress(const progressTime : TProgressTimes);
+procedure TGLTimeEventsMGR.DoProgress(const progressTime : TGLProgressTimes);
 var
    i : Integer;
 begin

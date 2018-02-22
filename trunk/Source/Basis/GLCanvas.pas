@@ -69,15 +69,15 @@ type
       const baseTransform: TMatrix); overload;
     constructor Create(bufferSizeX, bufferSizeY: Integer); overload;
     destructor Destroy; override;
-    {Stops the current internal primitive.
-       This function is invoked automatically by TGLCanvas when changeing
-       primitives, you should directly call if you want to render your
-       own stuff intertwined with TGLCanvas drawings. In that case, call
-       it before your own OpenGL calls. }
+    { Stops the current internal primitive.
+      This function is invoked automatically by TGLCanvas when changeing
+      primitives, you should directly call if you want to render your
+      own stuff intertwined with TGLCanvas drawings. In that case, call
+      it before your own OpenGL calls. }
     procedure StopPrimitive;
-    {Inverts the orientation of the Y Axis.
-       If (0, 0) was in the top left corner, it will move to the bottom
-       left corner or vice-versa. }
+    { Inverts the orientation of the Y Axis.
+      If (0, 0) was in the top left corner, it will move to the bottom
+      left corner or vice-versa. }
     procedure InvertYAxis;
     property CanvasSizeX: Integer read FBufferSizeX;
     property CanvasSizeY: Integer read FBufferSizeY;
@@ -175,6 +175,7 @@ const
 // ------------------
 // ------------------ TGLCanvas ------------------
 // ------------------
+
 constructor TGLCanvas.Create(bufferSizeX, bufferSizeY: Integer;
   const baseTransform: TMatrix);
 var
