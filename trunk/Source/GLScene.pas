@@ -5566,7 +5566,6 @@ end;
 constructor TGLLightSource.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  FListHandle := nil;
   FShining := True;
   FSpotDirection := TGLCoordinates.CreateInitialized(Self, VectorMake(0, 0, -1, 0), csVector);
   FConstAttenuation := 1;
