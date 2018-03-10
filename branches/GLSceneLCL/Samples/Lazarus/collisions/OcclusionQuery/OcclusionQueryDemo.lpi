@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectOptions>
-    <Version Value="9"/>
+    <Version Value="10"/>
     <PathDelim Value="\"/>
     <General>
       <MainUnit Value="0"/>
@@ -10,9 +10,6 @@
     <i18n>
       <EnableI18N LFM="False"/>
     </i18n>
-    <VersionInfo>
-      <StringTable ProductVersion=""/>
-    </VersionInfo>
     <BuildModes Count="1">
       <Item1 Name="default" Default="True"/>
     </BuildModes>
@@ -39,7 +36,6 @@
       <Unit0>
         <Filename Value="OcclusionQueryDemo.lpr"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
         <CursorPos X="23" Y="10"/>
         <UsageCount Value="21"/>
         <Loaded Value="True"/>
@@ -51,8 +47,9 @@
         <ComponentName Value="Form1"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="67"/>
+        <TopLine Value="66"/>
         <CursorPos Y="57"/>
         <UsageCount Value="21"/>
         <Loaded Value="True"/>

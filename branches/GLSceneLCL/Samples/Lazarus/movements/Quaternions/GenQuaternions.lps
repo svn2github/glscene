@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="10"/>
+    <BuildModes Active="Default"/>
+    <Units Count="11">
+      <Unit0>
+        <Filename Value="GenQuaternions.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="2"/>
+        <CursorPos X="36" Y="10"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="uMainForm.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="MainForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <IsVisibleTab Value="True"/>
+        <TopLine Value="588"/>
+        <CursorPos X="56" Y="613"/>
+        <FoldState Value=" T3l60B181 TJlg1}:j"/>
+        <UsageCount Value="53"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="GenQuaternions.dpr"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="52"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="UIMU.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="318"/>
+        <CursorPos X="65" Y="339"/>
+        <UsageCount Value="52"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="..\..\Projets\Lazarus\Components\GLSceneLCL\Source\Basis\GLVectorGeometry.pas"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="7982"/>
+        <CursorPos X="46" Y="7967"/>
+        <FoldState Value=" T3lyT0KD"/>
+        <UsageCount Value="26"/>
+        <Bookmarks Count="1">
+          <Item0 Y="8043" ID="1"/>
+        </Bookmarks>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="UGenQuaternions.lfm"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="275"/>
+        <CursorPos X="6" Y="299"/>
+        <UsageCount Value="14"/>
+        <DefaultSyntaxHighlighter Value="LFM"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="..\..\Projets\Lazarus\Applications\SIMD-VectorMath-UnitTest\VectorClasses\vectormath_quaternion_native_imp.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="128"/>
+        <CursorPos X="28" Y="153"/>
+        <UsageCount Value="25"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="C:\lazarus\fpc\3.0.4\source\rtl\objpas\math.pp"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="194"/>
+        <CursorPos X="3" Y="207"/>
+        <UsageCount Value="22"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="..\..\Projets\Lazarus\Components\GLSceneLCL\Source\Plateform\GLCarbonContext.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="9"/>
+        <CursorPos X="3" Y="22"/>
+        <UsageCount Value="20"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit8>
+      <Unit9>
+        <Filename Value="..\..\Projets\Lazarus\Components\GLSceneLCL\Source\Basis\GLVectorTypes.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="291"/>
+        <CursorPos X="3" Y="304"/>
+        <UsageCount Value="18"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit9>
+      <Unit10>
+        <Filename Value="..\..\Projets\Lazarus\Components\GLSceneLCL\Samples\Lazarus\interface\ArcBall\uMainForm.pas"/>
+        <ComponentName Value="MainForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="442"/>
+        <CursorPos X="72" Y="231"/>
+        <UsageCount Value="16"/>
+      </Unit10>
+    </Units>
+    <JumpHistory Count="2" HistoryIndex="1">
+      <Position1>
+        <Filename Value="uMainForm.pas"/>
+        <Caret Line="613" Column="56" TopLine="588"/>
+      </Position1>
+      <Position2>
+        <Filename Value="..\..\Projets\Lazarus\Components\GLSceneLCL\Source\Basis\GLVectorGeometry.pas"/>
+        <Caret Line="1335" Column="21" TopLine="1317"/>
+      </Position2>
+    </JumpHistory>
+  </ProjectSession>
+</CONFIG>

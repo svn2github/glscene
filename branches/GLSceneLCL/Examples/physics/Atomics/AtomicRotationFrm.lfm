@@ -3,6 +3,7 @@ object AtomicRotationForm: TAtomicRotationForm
   Height = 102
   Top = 120
   Width = 382
+  ActiveControl = AtomicLevelsRg.RadioButton0
   Caption = 'Atomic Rotation'
   ClientHeight = 102
   ClientWidth = 382
@@ -12,7 +13,7 @@ object AtomicRotationForm: TAtomicRotationForm
   Font.Name = 'MS Sans Serif'
   OnCreate = FormCreate
   ShowHint = True
-  LCLVersion = '1.8.0.1'
+  Visible = False
   object SpeedButton1: TSpeedButton
     Left = 8
     Height = 27

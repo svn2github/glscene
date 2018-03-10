@@ -345,7 +345,7 @@ begin
 end;
 {$IFEND}
 
-{$ENDIF FPC}
+
 
 procedure TGLFullScreenVideoMode.SetEnabled(aValue: Boolean);
 begin
@@ -589,7 +589,6 @@ begin
   Result := FBuffer.RCInstantiated and FBuffer.RenderingContext.IsValid;
 end;
 
-{$IFDEF FPC}
 {$IF DEFINED(LCLwin32) or DEFINED(LCLwin64)}
 // FixBSod
 
@@ -622,6 +621,8 @@ begin
     Result := WindowProc(Window, Msg, wParam, LParam);
   end;
 end;
+
+{$IFEND}
 
 function GetDesigningBorderStyle(const AForm: TCustomForm): TFormBorderStyle;
 begin

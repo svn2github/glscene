@@ -1,17 +1,23 @@
-unit GLScene_OpenAL; 
+{ This file was automatically created by Lazarus. Do not edit!
+  This source is only used to compile and install the package.
+ }
 
+unit GLScene_OpenAL;
+
+{$warn 5023 off : no warning about unused units}
 interface
 
 uses
-  GLSMOpenAL, LazarusPackageIntf;
+  GLSMOpenAL, GLSound, GLSoundFileObjects, GLSoundFileMP3, GLSoundFileOGG, 
+  GLSoundFileWAV, LazarusPackageIntf;
 
 implementation
 
-procedure Register; 
+procedure Register;
 begin
-  RegisterUnit('GLSMOpenAL', @GLSMOpenAL.Register); 
-end; 
+  RegisterUnit('GLSMOpenAL', @GLSMOpenAL.Register);
+end;
 
 initialization
-  RegisterPackage('GLScene_OpenAL', @Register); 
+  RegisterPackage('GLScene_OpenAL', @Register);
 end.

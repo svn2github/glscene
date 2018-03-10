@@ -1,6 +1,6 @@
 object MainForm: TMainForm
   Left = 444
-  Height = 632
+  Height = 612
   Top = 185
   Width = 832
   ActiveControl = GLSViewer
@@ -11,7 +11,7 @@ object MainForm: TMainForm
   OnCreate = FormCreate
   OnMouseWheel = FormMouseWheel
   OnShow = FormShow
-  LCLVersion = '1.6.4.0'
+  Visible = False
   object Panel1: TPanel
     Left = 0
     Height = 83

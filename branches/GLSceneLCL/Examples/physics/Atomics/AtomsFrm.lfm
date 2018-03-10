@@ -1,6 +1,6 @@
 object AAtomForm: TAAtomForm
   Left = 337
-  Height = 360
+  Height = 340
   Top = 130
   Width = 501
   Caption = 'Atomics'
@@ -20,7 +20,7 @@ object AAtomForm: TAAtomForm
   OnShow = FormShow
   Position = poScreenCenter
   ShowHint = True
-  LCLVersion = '1.8.0.1'
+  Visible = False
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Height = 317
@@ -1072,17 +1072,18 @@ object AAtomForm: TAAtomForm
       PitchAngle = 0
       RollAngle = 0
       TurnAngle = 0
+      AntiAliased = True
       LineColor.Red = 1
       LineColor.Green = 1
       LineColor.Blue = 1
       LineColor.Alpha = 1
+      LineWidth = 2
       NodeColor.Red = 0
       NodeColor.Green = 0
       NodeColor.Blue = 1
       NodeColor.Alpha = 1
       Nodes = <>
       NodesAspect = lnaInvisible
-      NodeSize = 0.200000002980232
       Options = [loUseNodeColorForLines]
     end
     object LittleRed: TGLSphere
@@ -1107,19 +1108,25 @@ object AAtomForm: TAAtomForm
       Material.FrontProperties.Ambient.Green = 0.200000002980232
       Material.FrontProperties.Ambient.Blue = 0.200000002980232
       Material.FrontProperties.Ambient.Alpha = 1
-      Material.FrontProperties.Diffuse.Red = 0.800000011920929
-      Material.FrontProperties.Diffuse.Green = 0.800000011920929
-      Material.FrontProperties.Diffuse.Blue = 0.800000011920929
+      Material.FrontProperties.Diffuse.Red = 1
+      Material.FrontProperties.Diffuse.Green = 0
+      Material.FrontProperties.Diffuse.Blue = 0
       Material.FrontProperties.Diffuse.Alpha = 1
+      Material.FrontProperties.Diffuse.Color = {
+        0000803F00000000000000000000803F
+      }
       Material.FrontProperties.Emission.Red = 0
       Material.FrontProperties.Emission.Green = 0
       Material.FrontProperties.Emission.Blue = 0
       Material.FrontProperties.Emission.Alpha = 1
       Material.FrontProperties.Shininess = 76
-      Material.FrontProperties.Specular.Red = 0
-      Material.FrontProperties.Specular.Green = 0
-      Material.FrontProperties.Specular.Blue = 0
+      Material.FrontProperties.Specular.Red = 0.850000023841858
+      Material.FrontProperties.Specular.Green = 0.850000023841858
+      Material.FrontProperties.Specular.Blue = 0.850000023841858
       Material.FrontProperties.Specular.Alpha = 1
+      Material.FrontProperties.Specular.Color = {
+        9A99593F9A99593F9A99593F0000803F
+      }
       Material.Texture.EnvColor.Red = 0
       Material.Texture.EnvColor.Green = 0
       Material.Texture.EnvColor.Blue = 0
@@ -1134,7 +1141,6 @@ object AAtomForm: TAAtomForm
       }
       RollAngle = 0
       TurnAngle = 0
-      Visible = False
       Radius = 1
     end
     object LittleBlue: TGLSphere
@@ -1159,19 +1165,28 @@ object AAtomForm: TAAtomForm
       Material.FrontProperties.Ambient.Green = 0.200000002980232
       Material.FrontProperties.Ambient.Blue = 0.200000002980232
       Material.FrontProperties.Ambient.Alpha = 1
-      Material.FrontProperties.Diffuse.Red = 0.800000011920929
-      Material.FrontProperties.Diffuse.Green = 0.800000011920929
-      Material.FrontProperties.Diffuse.Blue = 0.800000011920929
+      Material.FrontProperties.Diffuse.Red = 0
+      Material.FrontProperties.Diffuse.Green = 0.501960813999176
+      Material.FrontProperties.Diffuse.Blue = 0.752941191196442
       Material.FrontProperties.Diffuse.Alpha = 1
-      Material.FrontProperties.Emission.Red = 0
+      Material.FrontProperties.Diffuse.Color = {
+        000000008180003FC1C0403F0000803F
+      }
+      Material.FrontProperties.Emission.Red = 0.0941176488995552
       Material.FrontProperties.Emission.Green = 0
       Material.FrontProperties.Emission.Blue = 0
       Material.FrontProperties.Emission.Alpha = 1
+      Material.FrontProperties.Emission.Color = {
+        C1C0C03D00000000000000000000803F
+      }
       Material.FrontProperties.Shininess = 76
-      Material.FrontProperties.Specular.Red = 0
-      Material.FrontProperties.Specular.Green = 0
-      Material.FrontProperties.Specular.Blue = 0
+      Material.FrontProperties.Specular.Red = 0.850000023841858
+      Material.FrontProperties.Specular.Green = 0.850000023841858
+      Material.FrontProperties.Specular.Blue = 0.850000023841858
       Material.FrontProperties.Specular.Alpha = 1
+      Material.FrontProperties.Specular.Color = {
+        9A99593F9A99593F9A99593F0000803F
+      }
       Material.Texture.EnvColor.Red = 0
       Material.Texture.EnvColor.Green = 0
       Material.Texture.EnvColor.Blue = 0
@@ -1186,7 +1201,6 @@ object AAtomForm: TAAtomForm
       }
       RollAngle = 0
       TurnAngle = 0
-      Visible = False
       Radius = 1
     end
     object GLSphereRed: TGLSphere

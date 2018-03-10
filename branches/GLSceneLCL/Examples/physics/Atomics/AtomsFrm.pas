@@ -10,7 +10,7 @@ uses
   Menus, ComCtrls, ExtCtrls, StdCtrls,
 
   //GLScene
-  GLVectorGeometry, GLScene, GLCadencer,
+  GLVectorGeometry, GLScene, GLCadencer, GLColor,
   GLParticles, GLParticleFX, GLFireFX,
   GLExplosionFx,{Dropship explosion}
   GLVectorFileObjects, GLTexture, GLObjects, GLCoordinates, GLCrossPlatform,
@@ -599,10 +599,10 @@ begin
   end;
 
   {The Lines connecting the Spheres}
-  if LevelLine then
+ // if LevelLine then
   begin
     Rotate := Rotate + deltaTime;
-    if Rotate > 0.2 then  {0.1 might work better ... timing ?}
+    if Rotate > 0.1 then  {0.1 might work better ... timing ?}
     begin
       DoLevelLineLevel;
       Rotate := 0;
@@ -766,11 +766,14 @@ begin
   if Lines1.Nodes.Count > MaxLines then // limit trail to ?? points
     Lines1.Nodes[0].Free;
 
+  i:=0;
   for i := 0 to MaxLines - 1 do
   begin
     k := Lines1.Nodes.Count - i - 1;
     if k >= 0 then
-      TGLLinesNode(Lines1.Nodes[k]).Color.Alpha := 0.95 - i * 0.05;
+    begin
+      TGLLinesNode(Lines1.Nodes[k]).Color.Color := clrYellow; //.Alpha := 1.0;//0.95 - i * 0.05;
+    end;
   end;
 end;
 
