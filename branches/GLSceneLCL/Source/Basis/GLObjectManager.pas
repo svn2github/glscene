@@ -493,7 +493,7 @@ end;
 
 initialization
 
-{$I ../../resources/GLSceneObjects.lrs}
+{$I ../../Resources/GLSceneObjects.lrs}
 
 
 end.

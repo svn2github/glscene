@@ -330,8 +330,8 @@
         <UnitName Value="GLFileWAV"/>
       </Item74>
       <Item75>
-        <Filename Value="../Source/FileFormats/GlFileX.pas"/>
-        <UnitName Value="GlFileX"/>
+        <Filename Value="../Source/FileFormats/GLFileX.pas"/>
+        <UnitName Value="GLFileX"/>
       </Item75>
       <Item76>
         <Filename Value="../Source/FileFormats/GLFileZLIB.pas"/>

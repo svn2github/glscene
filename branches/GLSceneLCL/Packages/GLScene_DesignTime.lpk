@@ -115,7 +115,7 @@
       </Item21>
       <Item22>
         <Filename Value="../Source/DesignTime/FGUISkinEditor.pas"/>
-        <UnitName Value="FGuiSkinEditor"/>
+        <UnitName Value="FGUISkinEditor"/>
       </Item22>
     </Files>
     <i18n>

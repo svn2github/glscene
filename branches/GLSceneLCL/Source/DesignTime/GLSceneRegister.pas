@@ -160,7 +160,7 @@ uses
   GLFile3DS, GLFileASE, GLFileB3D, GLFileGL2, GLFileGTS, GLFileLMTS,
   GLFileLWO, GLFileMD2, GLFileMD3, GLFileMD5, GLFileMDC, GLFileMS3D, GLFileNMF,
   GLFileNurbs, GLFileOBJ, GLFilePLY, GLFileSMD, GLFileSTL,
-  GLFileTIN, GLFileVRML, GlFileX,
+  GLFileTIN, GLFileVRML, GLFileX,
 
   // Sound file formats
   GLFileWAV, GLFileMP3,
@@ -1492,7 +1492,7 @@ end;
 
 initialization
 
-{$I ../../resources/GLScene.lrs}
+{$I ../../Resources/GLScene.lrs}
 
   GLColor.vUseDefaultColorSets := True;
   GLCoordinates.vUseDefaultCoordinateSets := True;

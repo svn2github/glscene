@@ -25,10 +25,10 @@
 
       Revision 1.2  2005/08/03 00:41:38  z0m3ie
       - added automatical generated History from CVS
-    
+
 }
 
-unit GlFileX;
+unit GLFileX;
 
 interface
 

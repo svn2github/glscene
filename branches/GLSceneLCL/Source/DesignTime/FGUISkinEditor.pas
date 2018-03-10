@@ -12,8 +12,11 @@ interface
 
 uses
   lresources, 
-  Windows, 
-  Messages, 
+  LCLType, LCLintf, LCLMessages,
+  {$IFDEF MSWINDOWS}
+  Windows,
+  {$ENDIF}
+   
   SysUtils, 
   Classes, 
   Graphics, 

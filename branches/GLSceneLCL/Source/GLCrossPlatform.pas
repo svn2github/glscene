@@ -95,7 +95,7 @@ uses
 {$ENDIF}
   Types,
    Classes, SysUtils, StrUtils, Graphics,  Controls,
-   Forms,  Dialogs,LCLVersion,  LCLType,  LazFileUtils;
+   Forms,  Dialogs,LCLVersion,  LCLType,  LazFileUtils, LazUTF8;
 
 
 
