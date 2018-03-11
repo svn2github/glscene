@@ -300,8 +300,8 @@ var
   MapSize :Integer;
   HD      :TGLHeightData;
   X, Y    :Integer;
-  scaleVec : TVector; //TAffineVector;
-  vec, vvec     : TVector; //TAffineVector;
+  scaleVec : TAffineVector;
+  vec, vvec     : TAffineVector;
   nmRow   :PGLPixel32Array;
   px, py  :Integer;
 begin
@@ -311,9 +311,10 @@ begin
   normalMap.Height := MapSize;
   normalMap.Width := MapSize;
   normalMap.Blank := False;
-  //SetVector(scaleVec, 1, 1, FBumpScale);
-  scaleVec.Create(1,1,FBumpScale);
-  vVec.Create(128,128,128);
+  SetVector(scaleVec, 1, 1, FBumpScale);
+  //scaleVec.Create(1,1,FBumpScale);
+  SetVector(vVec,128,128,128);
+  //vVec.Create(128,128,128);
   for Y := 0 to MapSize - 1 do
   begin
     nmRow := normalMap.ScanLine[MapSize - 1 - Y];
@@ -321,9 +322,9 @@ begin
     begin
       px  := X * SubSampling;
       py  := Y * SubSampling;
-      vec := HD.NormalAtNode(px, py, scaleVec.AsVector3f);
-      Vec:= Vec * 127;
-      Vec:= Vec + vVec;
+      vec := HD.NormalAtNode(px, py, scaleVec);
+      Vec:= vectorscale(Vec,127);
+      Vec:= vectoradd(Vec , vVec);
       nmRow[X].r := round(vec.X); //round(128+127*vec.X);
       // nmRow[x].r:=0;         //Red
       nmRow[X].g := round(vec.Y);

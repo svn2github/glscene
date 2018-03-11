@@ -16,7 +16,7 @@
        17/11/17 - J.Delauney (BeanzMaster) - Creation
 
 }
-Unit glrandomgenerator2;
+Unit GLRandomGenerator;
 
 
 Interface
