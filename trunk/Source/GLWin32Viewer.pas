@@ -26,7 +26,8 @@ uses
 
 
 type
-  TTouchEvent = procedure(X, Y, TouchWidth, TouchHeight : integer; TouchID : Cardinal; MultiTouch : boolean) of object;
+  TTouchEvent = procedure(X, Y, TouchWidth, TouchHeight : integer; TouchID : Cardinal;
+                          TouchCount : integer; FromPen : boolean) of object;
 
   {Component where the GLScene objects get rendered.
      This component delimits the area where OpenGL renders the scene,
@@ -45,6 +46,7 @@ type
     FOnMouseEnter, FOnMouseLeave: TNotifyEvent;
     FMouseInControl: Boolean;
     FLastScreenPos: TPoint;
+    FPenAsTouch: boolean;
     FOnTouchMove: TTouchEvent;
     FOnTouchUp: TTouchEvent;
     FOnTouchDown: TTouchEvent;
@@ -121,6 +123,9 @@ type
     The value isn't persisted, if the width/height or camera.focallength is
     changed, FieldOfView is changed also. }
     property FieldOfView: single read GetFieldOfView write SetFieldOfView;
+    { Since Windows 10 Fall Creators Update in 2017, pen also triggers
+      touch input. You can set PenAsTouch = false to filter out such input. }
+    property PenAsTouch: boolean read FPenAsTouch write FPenAsTouch;
     property OnMouseLeave: TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
     property OnMouseEnter: TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
     property OnTouchMove: TTouchEvent read FOnTouchMove write FOnTouchMove;
@@ -377,33 +382,39 @@ var
   TouchInput: TTouchInput;
   Handled: Boolean;
   Point: TPoint;
-  Multitouch : boolean;
+  TouchCount : integer;
+  LFromPen : boolean;
 begin
   Handled := False;
   SetLength(TouchInputs, Message.WParam);
-  Multitouch := Message.WParam > 1;
+  TouchCount := Message.WParam;
   GetTouchInputInfo(Message.LParam, Message.WParam, @TouchInputs[0],
     SizeOf(TTouchInput));
   try
     for TouchInput in TouchInputs do
     begin
-      Point := TouchPointToPoint(TouchInput);
+      LFromPen := (TouchInput.dwFlags AND TOUCHEVENTF_PEN) > 0; // For Windows 10 Fall Creators Update or later
+      if FPenAsTouch or not LFromPen then // skip if pen input?
+      begin
+        Point := TouchPointToPoint(TouchInput);
 
-      if (TouchInput.dwFlags AND TOUCHEVENTF_MOVE) > 0 then
-      if Assigned(OnTouchMove) then
-      begin
-        OnTouchMove(Point.X, Point.Y, TouchInput.cxContact, TouchInput.cyContact, TouchInput.dwID, Multitouch);
-      end;
+        if (TouchInput.dwFlags AND TOUCHEVENTF_MOVE) > 0 then
+        if Assigned(OnTouchMove) then
+        begin
+          OnTouchMove(Point.X, Point.Y, TouchInput.cxContact, TouchInput.cyContact, TouchInput.dwID, TouchCount, LFromPen);
+        end;
 
-      if (TouchInput.dwFlags AND TOUCHEVENTF_DOWN) > 0 then
-      if Assigned(OnTouchDown) then
-      begin
-        OnTouchDown(Point.X, Point.Y, TouchInput.cxContact, TouchInput.cyContact, TouchInput.dwID, Multitouch);
-      end;
-      if (TouchInput.dwFlags AND TOUCHEVENTF_UP) > 0 then
-      if Assigned(OnTouchUp) then
-      begin
-        OnTouchUp(Point.X, Point.Y, TouchInput.cxContact, TouchInput.cyContact, TouchInput.dwID, Multitouch);
+        if (TouchInput.dwFlags AND TOUCHEVENTF_DOWN) > 0 then
+        if Assigned(OnTouchDown) then
+        begin
+          OnTouchDown(Point.X, Point.Y, TouchInput.cxContact, TouchInput.cyContact, TouchInput.dwID, TouchCount, LFromPen);
+        end;
+
+        if (TouchInput.dwFlags AND TOUCHEVENTF_UP) > 0 then
+        if Assigned(OnTouchUp) then
+        begin
+          OnTouchUp(Point.X, Point.Y, TouchInput.cxContact, TouchInput.cyContact, TouchInput.dwID, TouchCount, LFromPen);
+        end;
       end;
     end;
 
