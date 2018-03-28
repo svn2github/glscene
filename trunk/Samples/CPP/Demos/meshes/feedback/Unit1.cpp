@@ -69,6 +69,7 @@ void __fastcall TForm1::Button1Click(TObject *Sender)
 
   // Vertex indices are required for smooth normals
   // Delphi - mo := TMeshObject.CreateOwned(GLFreeForm1.MeshObjects);
+  GLFreeForm1->MeshObjects->Add(Mesh);
   mo = new TMeshObject;
   mo = GLFreeForm1->MeshObjects->Items[0];
   mo->Mode = momFaceGroups;

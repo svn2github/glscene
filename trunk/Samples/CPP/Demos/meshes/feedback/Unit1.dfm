@@ -22,12 +22,11 @@ object Form1: TForm1
     Buffer.AmbientColor.Color = {0000000000000000000000000000803F}
     Buffer.FaceCulling = False
     FieldOfView = 136.711135864257800000
+    PenAsTouch = False
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
     TabOrder = 0
-    ExplicitWidth = 470
-    ExplicitHeight = 264
   end
   object Button1: TButton
     Left = 152

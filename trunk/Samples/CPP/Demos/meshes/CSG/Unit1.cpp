@@ -86,17 +86,16 @@ void __fastcall TForm1::ButtonClearClick(TObject *Sender)
 
 void __fastcall TForm1::Button2Click(TObject *Sender)
 {
+  // Union
   TMeshObject *Mesh;
-
   ButtonClearClick(Sender);
   if (GLFreeForm3->MeshObjects->Count == 0)
   {
-//Delphi:  TMeshObject.CreateOwned(GLFreeForm3.MeshObjects).Mode := momFaceGroups;
-	Mesh = new  (TMeshObject);
-	Mesh->Mode = momFaceGroups;
+    //Delphi:  TMeshObject.CreateOwned(GLFreeForm3.MeshObjects).Mode := momFaceGroups;
+  	Mesh = new  (TMeshObject);
+	  Mesh->Mode = momFaceGroups;
+    GLFreeForm3->MeshObjects->Add(Mesh);
   }
-// Delphi:  Mesh := GLFreeForm3.MeshObjects[0];
-// Mesh = GLFreeForm3->MeshObjects->Items[0];
   CSG_Operation(GLFreeForm1->MeshObjects->Items[0],
 				GLFreeForm2->MeshObjects->Items[0],
 				CSG_Union,Mesh,'1','2');
@@ -109,19 +108,17 @@ void __fastcall TForm1::Button2Click(TObject *Sender)
 
 void __fastcall TForm1::Button3Click(TObject *Sender)
 {
+  // Subtract A-B
   TMeshObject *Mesh;
-
   ButtonClearClick(Sender);
-
   if (GLFreeForm3->MeshObjects->Count == 0)
   {
-//Delphi:  TMeshObject.CreateOwned(GLFreeForm3.MeshObjects).Mode := momFaceGroups;
-   Mesh = new (TMeshObject);
-   Mesh->Mode = momFaceGroups;
-  }
-// Delphi:  Mesh := GLFreeForm3.MeshObjects[0];
-//  Mesh = GLFreeForm3->MeshObjects->Items[0];
+    //Delphi:  TMeshObject.CreateOwned(GLFreeForm3.MeshObjects).Mode := momFaceGroups;
+    Mesh = new (TMeshObject);
+    Mesh->Mode = momFaceGroups;
+    GLFreeForm3->MeshObjects->Add(Mesh);
 
+  }
   CSG_Operation(GLFreeForm1->MeshObjects->Items[0],
 				GLFreeForm2->MeshObjects->Items[0],
 				CSG_Subtraction,Mesh,'1','2');
@@ -135,19 +132,17 @@ void __fastcall TForm1::Button3Click(TObject *Sender)
 
 void __fastcall TForm1::Button4Click(TObject *Sender)
 {
+  // Subtract B-A
   TMeshObject *Mesh;
-
   ButtonClearClick(Sender);
-
   if (GLFreeForm3->MeshObjects->Count == 0)
   {
 //Delphi:  TMeshObject.CreateOwned(GLFreeForm3.MeshObjects).Mode := momFaceGroups;
    Mesh = new (TMeshObject);
    Mesh->Mode = momFaceGroups;
-  }
-// Delphi:  Mesh := GLFreeForm3.MeshObjects[0];
-//  Mesh = GLFreeForm3->MeshObjects->Items[0];
+   GLFreeForm3->MeshObjects->Add(Mesh);
 
+  }
   CSG_Operation(GLFreeForm2->MeshObjects->Items[0],
 				GLFreeForm1->MeshObjects->Items[0],
 				CSG_Subtraction,Mesh,'1','2');
@@ -161,19 +156,17 @@ void __fastcall TForm1::Button4Click(TObject *Sender)
 
 void __fastcall TForm1::Button5Click(TObject *Sender)
 {
+  // Intersect
   TMeshObject *Mesh;
-
   ButtonClearClick(Sender);
-
   if (GLFreeForm3->MeshObjects->Count == 0)
   {
 //Delphi:  TMeshObject.CreateOwned(GLFreeForm3.MeshObjects).Mode := momFaceGroups;
    Mesh = new (TMeshObject);
    Mesh->Mode = momFaceGroups;
-  }
-// Delphi:  Mesh := GLFreeForm3.MeshObjects[0];
-//  Mesh = GLFreeForm3->MeshObjects->Items[0];
+   GLFreeForm3->MeshObjects->Add(Mesh);
 
+  }
   CSG_Operation(GLFreeForm1->MeshObjects->Items[0],
 				GLFreeForm2->MeshObjects->Items[0],
 				CSG_Intersection,Mesh,'1','2');
@@ -188,13 +181,13 @@ void __fastcall TForm1::CheckBox1Click(TObject *Sender)
 {
   if (CheckBox1->Checked)
   {
-	GLMaterialLibrary1->Materials->Items[0]->Material->PolygonMode = pmFill;
-	GLMaterialLibrary1->Materials->Items[1]->Material->PolygonMode = pmFill;
+   	GLMaterialLibrary1->Materials->Items[0]->Material->PolygonMode = pmFill;
+  	GLMaterialLibrary1->Materials->Items[1]->Material->PolygonMode = pmFill;
   }
   else
   {
-	GLMaterialLibrary1->Materials->Items[0]->Material->PolygonMode = pmLines;
-	GLMaterialLibrary1->Materials->Items[1]->Material->PolygonMode = pmLines;
+	  GLMaterialLibrary1->Materials->Items[0]->Material->PolygonMode = pmLines;
+	  GLMaterialLibrary1->Materials->Items[1]->Material->PolygonMode = pmLines;
   }
   GLFreeForm3->StructureChanged();
 }

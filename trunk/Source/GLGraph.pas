@@ -134,7 +134,7 @@ type
     - glsSegments : line segments are used between each node of the grid,
     this enhances perspective and quality, at the expense of computing
     power. }
-  TGLXYZGridLinesStyle = (strLine, glsSegments);
+  TGLXYZGridLinesStyle = (glsLine, glsSegments);
   {  An XYZ Grid object.
     Renders an XYZ grid using lines. }
   TGLXYZGrid = class(TGLLineBase)
