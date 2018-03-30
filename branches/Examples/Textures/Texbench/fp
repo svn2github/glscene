@@ -1,0 +1,15 @@
+uniform sampler2D tex;
+uniform float ct;
+void main(){
+  vec2 t1 = gl_TexCoord[0].xy;
+  vec2 t2 = vec2( gl_TexCoord[0].x + sin(ct*0.1), gl_TexCoord[0].y + cos(ct*0.2) );
+  vec2 t3 = vec2( gl_TexCoord[0].x - ct*0.23458, gl_TexCoord[0].y + cos(ct*0.2) );
+  vec2 t4 = vec2( gl_TexCoord[0].x + ct*0.32347, gl_TexCoord[0].y + cos(ct*0.4) );
+  vec2 t5 = vec2( gl_TexCoord[0].x - cos(ct*0.4), gl_TexCoord[0].y + cos(ct*0.4) );
+  vec2 t6 = vec2( gl_TexCoord[0].x + sin(ct*0.5), gl_TexCoord[0].y + cos(ct*0.6) );
+  vec2 t7 = vec2( gl_TexCoord[0].x - cos(ct*0.6), gl_TexCoord[0].y + cos(ct*0.6) );
+  vec2 t8 = vec2( gl_TexCoord[0].x*sin(ct*0.7), gl_TexCoord[0].y*cos(ct*0.8) );
+  vec2 t9 = vec2( gl_TexCoord[0].x*cos(ct*0.8), gl_TexCoord[0].y*cos(ct*0.8) );
+  gl_FragColor = (texture2D( tex, t1 ) + texture2D( tex, t2 ) + texture2D( tex, t3 ) + texture2D( tex, t4 ) + texture2D( tex, t5 ) + texture2D( tex, t6 ) + texture2D( tex, t7 ) + texture2D( tex, t8 ) + texture2D( tex, t9 ))/9;
+  gl_FragColor.a = 0.5;
+}

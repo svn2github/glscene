@@ -1,0 +1,120 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{AA663F15-55D4-47D5-BF1B-EF5DA28DAE32}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="AnimatedTexture\AnimatedTexture\AnimatedTexture.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Cubemap\CubeMap.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="LightMap\LightMap.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="ProjectedTextures\ProjectedTextures\ProjectedTextures.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Texbench\texbench.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="TextToTexture\TextToTexture\TextToTexture.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Texture3D\Texture3D\Texture3D.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="UvMapping\UvMapping\UvMapping.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="AnimatedTexture">
+        <MSBuild Projects="AnimatedTexture\AnimatedTexture\AnimatedTexture.dproj"/>
+    </Target>
+    <Target Name="AnimatedTexture:Clean">
+        <MSBuild Projects="AnimatedTexture\AnimatedTexture\AnimatedTexture.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="AnimatedTexture:Make">
+        <MSBuild Projects="AnimatedTexture\AnimatedTexture\AnimatedTexture.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="CubeMap">
+        <MSBuild Projects="Cubemap\CubeMap.dproj"/>
+    </Target>
+    <Target Name="CubeMap:Clean">
+        <MSBuild Projects="Cubemap\CubeMap.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="CubeMap:Make">
+        <MSBuild Projects="Cubemap\CubeMap.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="LightMap">
+        <MSBuild Projects="LightMap\LightMap.dproj"/>
+    </Target>
+    <Target Name="LightMap:Clean">
+        <MSBuild Projects="LightMap\LightMap.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="LightMap:Make">
+        <MSBuild Projects="LightMap\LightMap.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="ProjectedTextures">
+        <MSBuild Projects="ProjectedTextures\ProjectedTextures\ProjectedTextures.dproj"/>
+    </Target>
+    <Target Name="ProjectedTextures:Clean">
+        <MSBuild Projects="ProjectedTextures\ProjectedTextures\ProjectedTextures.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ProjectedTextures:Make">
+        <MSBuild Projects="ProjectedTextures\ProjectedTextures\ProjectedTextures.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="texbench">
+        <MSBuild Projects="Texbench\texbench.dproj"/>
+    </Target>
+    <Target Name="texbench:Clean">
+        <MSBuild Projects="Texbench\texbench.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="texbench:Make">
+        <MSBuild Projects="Texbench\texbench.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="TextToTexture">
+        <MSBuild Projects="TextToTexture\TextToTexture\TextToTexture.dproj"/>
+    </Target>
+    <Target Name="TextToTexture:Clean">
+        <MSBuild Projects="TextToTexture\TextToTexture\TextToTexture.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="TextToTexture:Make">
+        <MSBuild Projects="TextToTexture\TextToTexture\TextToTexture.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Texture3D">
+        <MSBuild Projects="Texture3D\Texture3D\Texture3D.dproj"/>
+    </Target>
+    <Target Name="Texture3D:Clean">
+        <MSBuild Projects="Texture3D\Texture3D\Texture3D.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Texture3D:Make">
+        <MSBuild Projects="Texture3D\Texture3D\Texture3D.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="UvMapping">
+        <MSBuild Projects="UvMapping\UvMapping\UvMapping.dproj"/>
+    </Target>
+    <Target Name="UvMapping:Clean">
+        <MSBuild Projects="UvMapping\UvMapping\UvMapping.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="UvMapping:Make">
+        <MSBuild Projects="UvMapping\UvMapping\UvMapping.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="AnimatedTexture;CubeMap;LightMap;ProjectedTextures;texbench;TextToTexture;Texture3D;UvMapping"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="AnimatedTexture:Clean;CubeMap:Clean;LightMap:Clean;ProjectedTextures:Clean;texbench:Clean;TextToTexture:Clean;Texture3D:Clean;UvMapping:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="AnimatedTexture:Make;CubeMap:Make;LightMap:Make;ProjectedTextures:Make;texbench:Make;TextToTexture:Make;Texture3D:Make;UvMapping:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>
