@@ -12,10 +12,11 @@ object MainForm: TMainForm
   Font.Height = -11
   Font.Name = 'Tahoma'
   KeyPreview = True
+  OnKeyPress = FormKeyPress
   OnResize = FormResize
   OnShow = FormShow
   Position = poScreenCenter
-  LCLVersion = '1.6.4.0'
+  Visible = False
   object Viewer: TGLSceneViewer
     Left = 0
     Height = 571
@@ -319,6 +320,7 @@ object MainForm: TMainForm
   end
   object Cadencer: TGLCadencer
     Scene = Scene
+    Enabled = False
     MaxDeltaTime = 64
     MinDeltaTime = 0
     FixedDeltaTime = 0
@@ -941,6 +943,7 @@ object MainForm: TMainForm
     top = 136
   end
   object Timer1: TTimer
+    Enabled = False
     OnTimer = Timer1Timer
     left = 64
     top = 312

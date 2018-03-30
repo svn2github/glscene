@@ -282,7 +282,7 @@ var
 implementation
 
 {$R *.lfm}
-{$R CURSORS.RES}
+{$R Cursors.res}
 
 uses
   LazFileUtils,

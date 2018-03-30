@@ -4,11 +4,11 @@
 {
    Editor for Gui skin.
 }
-unit FGuiSkinEditor;
+unit FGUISkinEditor;
 
 interface
 
-{$I GLScene.inc}
+{$I ../GLScene.inc}
 
 uses
   lresources, 
@@ -156,7 +156,7 @@ type
 
     MouseDown: Boolean;
 
-    procedure ImageWndProc(var Message: TMessage);
+    procedure ImageWndProc(var Message: TLMessage);
 
     procedure DrawImageFocusRect(ARect: TRect);
     procedure AlignZoomPanel;
@@ -959,9 +959,9 @@ begin
   imgFull.Canvas.LineTo(imgFull.Width, Point.Y);
 end;
 
-procedure TGUISkinEditor.ImageWndProc(var Message: TMessage);
+procedure TGUISkinEditor.ImageWndProc(var Message: TLMessage);
 begin
-  if (Message.Msg = WM_MOUSELEAVE) then
+  if (Message.Msg = LM_MOUSELEAVE) then
   begin
     DrawCrossair(FullMousePoint);
     FullMousePoint := Point(-1, -1);

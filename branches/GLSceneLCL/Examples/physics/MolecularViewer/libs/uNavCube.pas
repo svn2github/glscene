@@ -8,7 +8,7 @@ unit uNavCube;
 interface
 
 uses
-  windows, Classes, SysUtils,
+  lcltype,Classes, SysUtils,
   Graphics, Forms, Controls,
   // GLS
   GLScene, GLObjects, GLHUDObjects, GLGeomObjects, GLMaterial, GLTexture,

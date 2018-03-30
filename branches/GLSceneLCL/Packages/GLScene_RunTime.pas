@@ -20,7 +20,7 @@ uses
   GLFileDDS, GLFileGL2, GLFileGTS, GLFileHDR, GLFileJPEG, GLFileLMTS, 
   GLFileLWO, GLFileMD2, GLFileMD3, GLFileMD5, GLFileMDC, GLFileMS3D, 
   GLFileNMF, GLFileNurbs, GLFileO3TC, GLFileOBJ, GLFilePAK, GLFilePLY, 
-  GLFilePNG, GLFileSMD, GLFileSTL, GLFileTIN, GLFileVRML, GLFileX, GLFileZLIB, 
+  GLFilePNG, GLFileSMD, GLFileSTL, GLFileTIN, GLFileVRML, GLFileZLIB, 
   GLStarRecord, GLVfsPAK, HDRImage, LWObjects, O3TCImage, Q3BSP, Q3MD3, 
   GLSRGBE, GLFileTGA, Types3DS, Utils3DS, VRMLParser, GLSZLibEx, GLSZLibExApi, 
   GLAnimatedSprite, GLAsyncHDS, GLAtmosphere, GLBaseMeshSilhouette, 

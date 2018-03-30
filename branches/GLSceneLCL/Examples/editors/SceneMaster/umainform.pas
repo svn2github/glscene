@@ -5,7 +5,7 @@ unit UMainform;
 interface
 
 uses
-  Classes, SysUtils, Windows, FileUtil, Forms, Controls, Graphics, Dialogs, Menus,
+  Classes, SysUtils,{$ifdef Windwos} Windows,{$endif} FileUtil, Forms, Controls, Graphics, Dialogs, Menus,
   ExtCtrls, ComCtrls, ActnList, Types,
 
   GLLCLViewer, GLScene, GLState, GLMaterial, GLCadencer, GLVectorTypes,
@@ -159,7 +159,7 @@ var
 implementation
 
 {$R *.lfm}
-{$R CURSORS.RES}
+{$R Cursors.res}
 
 uses
   Math,

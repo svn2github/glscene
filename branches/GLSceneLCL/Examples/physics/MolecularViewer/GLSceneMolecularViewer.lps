@@ -4,15 +4,14 @@
     <PathDelim Value="\"/>
     <Version Value="10"/>
     <BuildModes Active="Default"/>
-    <Units Count="35">
+    <Units Count="36">
       <Unit0>
         <Filename Value="GLSceneMolecularViewer.lpr"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="-1"/>
-        <WindowIndex Value="-1"/>
-        <TopLine Value="-1"/>
-        <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="72"/>
+        <EditorIndex Value="1"/>
+        <CursorPos Y="23"/>
+        <UsageCount Value="73"/>
+        <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="uMainForm.pas"/>
@@ -20,9 +19,10 @@
         <ComponentName Value="MainForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <TopLine Value="1116"/>
-        <CursorPos X="47" Y="1127"/>
-        <UsageCount Value="72"/>
+        <IsVisibleTab Value="True"/>
+        <TopLine Value="264"/>
+        <CursorPos X="16" Y="285"/>
+        <UsageCount Value="73"/>
         <Bookmarks Count="1">
           <Item0 X="22" Y="1434" ID="1"/>
         </Bookmarks>
@@ -35,14 +35,15 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="299"/>
         <CursorPos X="5" Y="286"/>
-        <UsageCount Value="70"/>
+        <UsageCount Value="71"/>
       </Unit2>
       <Unit3>
         <Filename Value="libs\uNavCube.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <CursorPos Y="7"/>
-        <UsageCount Value="65"/>
+        <TopLine Value="166"/>
+        <CursorPos X="10" Y="11"/>
+        <UsageCount Value="66"/>
       </Unit3>
       <Unit4>
         <Filename Value="periodictable.dat"/>
@@ -50,18 +51,17 @@
         <EditorIndex Value="2"/>
         <TopLine Value="87"/>
         <CursorPos X="35" Y="100"/>
-        <UsageCount Value="60"/>
+        <UsageCount Value="61"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="None"/>
       </Unit4>
       <Unit5>
         <Filename Value="libs\GLZStringUtils.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="734"/>
         <CursorPos X="7" Y="741"/>
-        <UsageCount Value="56"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="57"/>
       </Unit5>
       <Unit6>
         <Filename Value="uHelpCommandsForm.pas"/>
@@ -71,7 +71,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="8"/>
         <CursorPos X="9" Y="35"/>
-        <UsageCount Value="49"/>
+        <UsageCount Value="50"/>
       </Unit6>
       <Unit7>
         <Filename Value="uCPKForm.pas"/>
@@ -79,7 +79,7 @@
         <ComponentName Value="CPKForm"/>
         <ResourceBaseClass Value="Form"/>
         <EditorIndex Value="-1"/>
-        <UsageCount Value="40"/>
+        <UsageCount Value="41"/>
       </Unit7>
       <Unit8>
         <Filename Value="uAtomInfosForm.pas"/>
@@ -90,15 +90,14 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="11"/>
         <CursorPos X="26" Y="53"/>
-        <UsageCount Value="38"/>
+        <UsageCount Value="39"/>
       </Unit8>
       <Unit9>
         <Filename Value="..\..\..\Source\Basis\GLVectorGeometry.pas"/>
-        <EditorIndex Value="4"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="8510"/>
         <CursorPos X="4" Y="8520"/>
         <UsageCount Value="33"/>
-        <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit9>
       <Unit10>
@@ -124,11 +123,10 @@
       </Unit12>
       <Unit13>
         <Filename Value="..\..\..\Source\GLScene.pas"/>
-        <EditorIndex Value="3"/>
-        <TopLine Value="462"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="484"/>
         <CursorPos X="3" Y="505"/>
         <UsageCount Value="32"/>
-        <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit13>
       <Unit14>
@@ -298,45 +296,52 @@
         <ComponentName Value="ViewForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="5"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="121"/>
+        <CursorPos X="45" Y="17"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit34>
+      <Unit35>
+        <Filename Value="..\..\..\Source\GLWindowsFont.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="44"/>
+        <CursorPos X="3" Y="64"/>
+        <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit35>
     </Units>
     <JumpHistory Count="27" HistoryIndex="26">
       <Position1>
         <Filename Value="uMainForm.pas"/>
-        <Caret Line="12" Column="34"/>
+        <Caret Line="1340" Column="58" TopLine="1210"/>
       </Position1>
       <Position2>
         <Filename Value="uMainForm.pas"/>
-        <Caret Line="1336" Column="3" TopLine="1205"/>
+        <Caret Line="1341" Column="5" TopLine="1183"/>
       </Position2>
       <Position3>
         <Filename Value="uMainForm.pas"/>
-        <Caret Line="1340" Column="58" TopLine="1210"/>
+        <Caret Line="1223" Column="14" TopLine="1200"/>
       </Position3>
       <Position4>
         <Filename Value="uMainForm.pas"/>
-        <Caret Line="1341" Column="5" TopLine="1183"/>
+        <Caret Line="1236" Column="9" TopLine="1224"/>
       </Position4>
       <Position5>
         <Filename Value="uMainForm.pas"/>
-        <Caret Line="1223" Column="14" TopLine="1200"/>
+        <Caret Line="1178" Column="32" TopLine="1171"/>
       </Position5>
       <Position6>
         <Filename Value="uMainForm.pas"/>
-        <Caret Line="1236" Column="9" TopLine="1224"/>
+        <Caret Line="1228" Column="39" TopLine="1203"/>
       </Position6>
       <Position7>
         <Filename Value="uMainForm.pas"/>
-        <Caret Line="1178" Column="32" TopLine="1171"/>
+        <Caret Line="1230" Column="39" TopLine="1205"/>
       </Position7>
       <Position8>
         <Filename Value="uMainForm.pas"/>
-        <Caret Line="1228" Column="39" TopLine="1203"/>
+        <Caret Line="1229" Column="39" TopLine="1204"/>
       </Position8>
       <Position9>
         <Filename Value="uMainForm.pas"/>
@@ -344,7 +349,7 @@
       </Position9>
       <Position10>
         <Filename Value="uMainForm.pas"/>
-        <Caret Line="1229" Column="39" TopLine="1204"/>
+        <Caret Line="1231" Column="39" TopLine="1206"/>
       </Position10>
       <Position11>
         <Filename Value="uMainForm.pas"/>
@@ -352,67 +357,67 @@
       </Position11>
       <Position12>
         <Filename Value="uMainForm.pas"/>
-        <Caret Line="1231" Column="39" TopLine="1206"/>
+        <Caret Line="1344" Column="17" TopLine="1333"/>
       </Position12>
       <Position13>
         <Filename Value="uMainForm.pas"/>
-        <Caret Line="1230" Column="39" TopLine="1205"/>
+        <Caret Line="1348" Column="15" TopLine="1311"/>
       </Position13>
       <Position14>
         <Filename Value="uMainForm.pas"/>
-        <Caret Line="1344" Column="17" TopLine="1333"/>
+        <Caret Line="1312" Column="5" TopLine="1288"/>
       </Position14>
       <Position15>
         <Filename Value="uMainForm.pas"/>
-        <Caret Line="1348" Column="15" TopLine="1311"/>
+        <Caret Line="1313" Column="5" TopLine="1289"/>
       </Position15>
       <Position16>
         <Filename Value="uMainForm.pas"/>
-        <Caret Line="1312" Column="5" TopLine="1288"/>
+        <Caret Line="1314" Column="5" TopLine="1290"/>
       </Position16>
       <Position17>
         <Filename Value="uMainForm.pas"/>
-        <Caret Line="1313" Column="5" TopLine="1289"/>
+        <Caret Line="1315" Column="5" TopLine="1291"/>
       </Position17>
       <Position18>
         <Filename Value="uMainForm.pas"/>
-        <Caret Line="1314" Column="5" TopLine="1290"/>
+        <Caret Line="12" Column="34"/>
       </Position18>
       <Position19>
         <Filename Value="uMainForm.pas"/>
-        <Caret Line="1315" Column="5" TopLine="1291"/>
+        <Caret Line="1120" Column="47" TopLine="1109"/>
       </Position19>
       <Position20>
         <Filename Value="uMainForm.pas"/>
-        <Caret Line="12" Column="34"/>
+        <Caret Line="1121" Column="47" TopLine="1110"/>
       </Position20>
       <Position21>
         <Filename Value="uMainForm.pas"/>
-        <Caret Line="1120" Column="47" TopLine="1109"/>
+        <Caret Line="1122" Column="47" TopLine="1111"/>
       </Position21>
       <Position22>
         <Filename Value="uMainForm.pas"/>
-        <Caret Line="1121" Column="47" TopLine="1110"/>
+        <Caret Line="1123" Column="47" TopLine="1112"/>
       </Position22>
       <Position23>
         <Filename Value="uMainForm.pas"/>
-        <Caret Line="1122" Column="47" TopLine="1111"/>
+        <Caret Line="1124" Column="47" TopLine="1113"/>
       </Position23>
       <Position24>
         <Filename Value="uMainForm.pas"/>
-        <Caret Line="1123" Column="47" TopLine="1112"/>
+        <Caret Line="1125" Column="47" TopLine="1114"/>
       </Position24>
       <Position25>
         <Filename Value="uMainForm.pas"/>
-        <Caret Line="1124" Column="47" TopLine="1113"/>
+        <Caret Line="1126" Column="47" TopLine="1115"/>
       </Position25>
       <Position26>
         <Filename Value="uMainForm.pas"/>
-        <Caret Line="1125" Column="47" TopLine="1114"/>
+        <Caret Line="1127" Column="47"/>
       </Position26>
       <Position27>
         <Filename Value="uMainForm.pas"/>
-        <Caret Line="1126" Column="47" TopLine="1115"/>
+        <Caret Line="222" Column="17" TopLine="199"/>
       </Position27>
     </JumpHistory>
   </ProjectSession>

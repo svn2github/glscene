@@ -3,7 +3,7 @@ unit uMainForm;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  LCLType, LCLIntf, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ExtCtrls, Spin, //UIMU,
   GLVectorGeometry, GLObjects,
   GLCadencer, GLScene, GLLCLViewer,  OpenGL1x, GLState, GLRenderContextInfo, GLVectorTypes,

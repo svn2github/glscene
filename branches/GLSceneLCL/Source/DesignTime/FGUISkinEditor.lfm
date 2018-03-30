@@ -3,6 +3,7 @@ object GUISkinEditor: TGUISkinEditor
   Height = 366
   Top = 216
   Width = 764
+  ActiveControl = Button5
   Caption = 'Skin Editor'
   ClientHeight = 366
   ClientWidth = 764
@@ -11,7 +12,6 @@ object GUISkinEditor: TGUISkinEditor
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnResize = FormResize
-  LCLVersion = '1.8.0.6'
   Visible = False
   object StatusBar: TStatusBar
     Left = 0

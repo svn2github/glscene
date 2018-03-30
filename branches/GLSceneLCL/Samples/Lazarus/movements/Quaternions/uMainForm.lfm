@@ -15,7 +15,6 @@ object MainForm: TMainForm
   OnCreate = FormCreate
   OnShow = FormShow
   Position = poScreenCenter
-  LCLVersion = '1.8.0.6'
   Visible = False
   object Panel3: TPanel
     Left = 558
@@ -114,7 +113,7 @@ object MainForm: TMainForm
       end
       object ScrollBar2: TScrollBar
         Left = 16
-        Height = 17
+        Height = 20
         Top = 90
         Width = 345
         Max = 360
@@ -125,7 +124,7 @@ object MainForm: TMainForm
       end
       object ScrollBar1: TScrollBar
         Left = 13
-        Height = 17
+        Height = 20
         Top = 129
         Width = 345
         Max = 360
@@ -136,7 +135,7 @@ object MainForm: TMainForm
       end
       object ScrollBar3: TScrollBar
         Left = 17
-        Height = 17
+        Height = 20
         Top = 165
         Width = 344
         Max = 360

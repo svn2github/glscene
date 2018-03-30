@@ -713,10 +713,11 @@ begin
   // the LCL defines the size of a form without border, win32 with.
   // -> adjust size according to BorderStyle
   SizeRect := AForm.BoundsRect;
-  Windows.AdjustWindowRectEx(@SizeRect, CalcBorderStyleFlags(AForm),
+  AdjustWindowRectEx(SizeRect, CalcBorderStyleFlags(AForm),
     false, CalcBorderStyleFlagsEx(AForm));
 end;
 
+{$IF DEFINED(LCLwin32) or DEFINED(LCLwin64)}
 class function TGLSOpenGLForm.CreateHandle(const AWinControl: TWinControl; const
   AParams: TCreateParams): HWND;
 var
@@ -794,7 +795,7 @@ procedure GLRegisterWSComponent(aControl: TComponentClass);
 begin
   RegisterWSComponent(aControl, TGLSOpenGLForm);
 end;
-
+{$endif}
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------

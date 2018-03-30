@@ -11,18 +11,19 @@ object MainForm: TMainForm
   OnCreate = FormCreate
   OnMouseWheel = FormMouseWheel
   OnShow = FormShow
+  LCLVersion = '1.8.0.6'
   Visible = False
   object Panel1: TPanel
     Left = 0
     Height = 83
-    Top = 506
+    Top = 479
     Width = 832
     Align = alBottom
     TabOrder = 0
   end
   object Panel2: TPanel
     Left = 662
-    Height = 480
+    Height = 453
     Top = 26
     Width = 170
     Align = alRight
@@ -40,7 +41,7 @@ object MainForm: TMainForm
   end
   object GLSViewer: TGLSceneViewer
     Left = 0
-    Height = 480
+    Height = 453
     Top = 26
     Width = 662
     Camera = Camera1
@@ -49,7 +50,7 @@ object MainForm: TMainForm
     Buffer.AmbientColor.Green = 0.200000002980232
     Buffer.AmbientColor.Blue = 0.200000002980232
     Buffer.AmbientColor.Alpha = 1
-    FieldOfView = 100.388854980469
+    FieldOfView = 97.1108551025391
     Align = alClient
     OnMouseDown = GLSViewerMouseDown
     OnMouseMove = GLSViewerMouseMove
@@ -59,8 +60,8 @@ object MainForm: TMainForm
   end
   object MainStatusBar: TStatusBar
     Left = 0
-    Height = 23
-    Top = 589
+    Height = 21
+    Top = 562
     Width = 832
     Panels = <    
       item
@@ -727,6 +728,7 @@ object MainForm: TMainForm
   end
   object ASyncTimer: TGLAsyncTimer
     OnTimer = MainTimerTimer
+    ThreadPriority = tpNormal
     left = 736
     top = 552
   end

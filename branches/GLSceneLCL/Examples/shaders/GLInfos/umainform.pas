@@ -10,7 +10,7 @@ uses
   GLScene, GLCrossPlatform, GLLCLViewer, OpenGLTokens, OpenGLAdapter, GLContext,
   GLMaterial, GLCadencer, GLBitmapFont, GLWindowsFont, GLHUDObjects, GLCoordinates, GLObjects,
   GLVectorGeometry, GLRenderContextInfo,
-  GLCustomShader, GLSLShader,GLUtils, GLKeyBoard,
+  GLCustomShader, GLSLShader,GLUtils,// GLKeyBoard,
   GLCanvas,GLAsmShader, GLTexture;
 
 type
@@ -44,6 +44,7 @@ type
     HUDHelp: TGLResolutionIndependantHUDText;   
     GLLightSource1: TGLLightSource;
     WindowsBitmapFont2: TGLWindowsBitmapFont;
+    procedure FormKeyPress(Sender: TObject; var Key: char);
     procedure FormShow(Sender: TObject);
     procedure GLSLShader1Apply(Shader: TGLCustomGLSLShader);
     procedure CadencerProgress(Sender: TObject; const deltaTime, newTime: Double);
@@ -77,22 +78,22 @@ implementation
 
 procedure TMainForm.HandleKeys(const deltaTime: Double);
 begin
-   if IsKeyDown(VK_UP) then
-   begin
-      if StartLine>0 then
-        StartLine := StartLine - 1;
-   end
-   else
-   if IsKeyDown(VK_DOWN) then
-   begin
-     if StartLine<(ExtensionsList.Count-1-MaxLines) then
-        StartLine := StartLine + 1;
-   end;
-
-   if IsKeyDown(VK_ESCAPE) then
-   begin
-     Application.Terminate;
-   end
+   //if IsKeyDown(VK_UP) then
+   //begin
+   //   if StartLine>0 then
+   //     StartLine := StartLine - 1;
+   //end
+   //else
+   //if IsKeyDown(VK_DOWN) then
+   //begin
+   //  if StartLine<(ExtensionsList.Count-1-MaxLines) then
+   //     StartLine := StartLine + 1;
+   //end;
+   //
+   //if IsKeyDown(VK_ESCAPE) then
+   //begin
+   //  Application.Terminate;
+   //end
 
 end;
 
@@ -121,7 +122,8 @@ Var
  i : Integer;
  dc: HDC;
 begin
-
+ Timer1.Enabled:=true;
+ Cadencer.Enabled:=true;
  HUDLogo.Position.X := Viewer.Width - 150;
  HUDLogo.Position.Y := Viewer.Height - 70;
  Viewer.Buffer.RenderingContext.Activate;
@@ -145,6 +147,7 @@ begin
       Delete(ExtStr, 1, i);
     end;
     // Include WGL extensions
+    {$IFDEF SUPPORT_WGL}
     if GL.W_ARB_extensions_string then
     begin
       dc := wglGetCurrentDC();
@@ -158,6 +161,7 @@ begin
         Delete(ExtStr, 1, i);
       end;
     end;
+    {$endif}
     NBExtensions := Inttostr(ExtensionsList.Count);
    end;
  finally
@@ -171,6 +175,26 @@ begin
  maxlines:=round( ((Viewer.Height-30) - (Viewer.Height/3)) /12);
  StartLine := 0;
  Viewer.Invalidate;
+end;
+
+procedure TMainForm.FormKeyPress(Sender: TObject; var Key: char);
+begin
+ if (ord(key)=VK_UP) then
+ begin
+    if StartLine>0 then
+      StartLine := StartLine - 1;
+ end
+ else
+ if (ord(key)=VK_DOWN) then
+ begin
+   if StartLine<(ExtensionsList.Count-1-MaxLines) then
+      StartLine := StartLine + 1;
+ end;
+
+ if (ord(key)=VK_ESCAPE) then
+ begin
+   Application.Terminate;
+ end
 end;
 
 procedure TMainForm.GLSLShader1Apply(Shader: TGLCustomGLSLShader);
@@ -188,7 +212,7 @@ var
    i, x, ys,y : Integer;
    glc : TGLCanvas;
    r : TRect;
-   color : TColor;
+   acolor : TColor;
    ext:string;
 begin
    ys:=round( Viewer.Height/3)-20;
@@ -204,18 +228,18 @@ begin
 
       for i:=0 to MaxLines do
       begin
-         color:=clWhite;
+         acolor:=clWhite;
          x:=15;
          y:=ys+(12*i);
          ext:=ExtensionsList.Strings[StartLine+i];
-         if pos('EXT',ext)>0 then color:=clSkyBlue;
-         if pos('ARB',ext)>0 then color:=clYellow;
-         if pos('NV',ext)>0 then color:=clMoneyGreen;
-         if pos('WGL',ext)>0 then color:=clAqua;
+         if pos('EXT',ext)>0 then acolor:=clSkyBlue;
+         if pos('ARB',ext)>0 then acolor:=clYellow;
+         if pos('NV',ext)>0 then acolor:=clMoneyGreen;
+         if pos('WGL',ext)>0 then acolor:=clAqua;
 
 
          WindowsBitmapFont2.Font.Size :=8;
-         WindowsBitmapFont2.TextOut(rci, x, y, ext, color);
+         WindowsBitmapFont2.TextOut(rci, x, y, ansitoutf8(ext), acolor);
       end;
    end;
    glc.Free;
