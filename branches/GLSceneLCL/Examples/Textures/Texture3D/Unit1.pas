@@ -471,8 +471,6 @@ Begin
  Button1.Enabled := false;
 End;
 
-
-
 procedure TForm1.Cutting_Plane_Pos_TBChange(Sender: TObject);
 begin
   Cutting_Plane_Pos_L.Caption := IntToStr(Cutting_Plane_Pos_TB.Position);

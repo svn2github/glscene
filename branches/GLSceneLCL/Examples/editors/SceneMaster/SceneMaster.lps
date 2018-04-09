@@ -8,7 +8,11 @@
       <Unit0>
         <Filename Value="SceneMaster.lpr"/>
         <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="3"/>
+        <CursorPos X="31" Y="6"/>
         <UsageCount Value="25"/>
+        <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="umainform.pas"/>
@@ -384,7 +388,6 @@
         <ComponentName Value="GUISkinEditor"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="2"/>
         <CursorPos X="11" Y="18"/>
         <UsageCount Value="11"/>
@@ -399,7 +402,7 @@
       </Unit64>
       <Unit65>
         <Filename Value="..\..\..\Source\DesignTime\GLSceneForm.pas"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="4"/>
         <TopLine Value="4"/>
         <CursorPos X="3" Y="25"/>
         <UsageCount Value="11"/>

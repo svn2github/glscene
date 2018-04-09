@@ -128,6 +128,9 @@
       <IncludeFiles Value="$(ProjOutDir)"/>
       <UnitOutputDirectory Value="lib\$(BuildMode)\$(TargetOS)-$(TargetCPU)"/>
     </SearchPaths>
+    <Other>
+      <CustomOptions Value="-dUseCThreads"/>
+    </Other>
   </CompilerOptions>
   <Debugging>
     <Exceptions Count="3">
