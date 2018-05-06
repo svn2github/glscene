@@ -860,9 +860,6 @@ begin
   FDirectList := nil;
 end;
 
- 
-//
-
 destructor TGLParticleList.Destroy;
 begin
   FItemList.CleanFree;
@@ -1309,18 +1306,8 @@ var
   end;
 
   procedure DistToRegionIdx; register;
-  {$IFOPT O-}
   begin
     regionIdx := Trunc((dist - distDelta) * invRegionSize);
-  {$ELSE}
-    // !! WARNING !! This may cause incorrect behaviour if optimization is turned
-    // off for the project.
-  asm
-      FLD     dist
-      FSUB    distDelta
-      FMUL    invRegionSize
-      FISTP   regionIdx
-   {$ENDIF}
   end;
 
 var
