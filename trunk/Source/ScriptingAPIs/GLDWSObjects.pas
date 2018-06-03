@@ -30,12 +30,12 @@ type
     private
       FActive : Boolean;
       FScript : TStringList;
-      FDWS2Program : TProgram;
+      FDWSProgram : TProgram;
       FCompiler : TGLDelphiWebScriptII;
       FCompilerName : String;
       procedure SetActive(const Value : Boolean);
       procedure SetScript(const Value : TStringList);
-      procedure SetCompiler(const Value : TGLDelphiWebScriptII);
+      procedure SetCompiler(const Value : TGLDelphiWebScript);
       procedure CompileProgram;
       procedure BeginProgram;
       procedure EndProgram;
@@ -50,7 +50,7 @@ type
       class function FriendlyName : String; override;
       procedure DoProgress(const ProgressTimes : TProgressTimes); override;
       procedure InvalidateScript;
-      property DWSProgram : TProgram read FDWS2Program;
+      property DWSProgram : TProgram read FDWSProgram;
     published
       property Active : Boolean read FActive write SetActive;
       property Script : TStringList read FScript write SetScript;

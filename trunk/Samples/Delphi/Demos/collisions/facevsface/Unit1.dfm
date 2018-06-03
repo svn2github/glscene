@@ -3,8 +3,8 @@ object Form1: TForm1
   Top = 162
   BorderWidth = 3
   Caption = 'Face vs Face'
-  ClientHeight = 399
-  ClientWidth = 549
+  ClientHeight = 393
+  ClientWidth = 543
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -19,10 +19,10 @@ object Form1: TForm1
   PixelsPerInch = 96
   TextHeight = 13
   object Splitter1: TSplitter
-    Left = 335
+    Left = 329
     Top = 0
     Width = 4
-    Height = 247
+    Height = 241
     Align = alRight
     ExplicitLeft = 460
     ExplicitHeight = 331
@@ -30,11 +30,11 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 121
     Top = 0
-    Width = 214
-    Height = 247
+    Width = 208
+    Height = 241
     Camera = GLCamera2
     Buffer.BackgroundColor = 8404992
-    FieldOfView = 29.951969146728520000
+    FieldOfView = 29.148431777954100000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
@@ -44,7 +44,7 @@ object Form1: TForm1
     Left = 0
     Top = 0
     Width = 121
-    Height = 247
+    Height = 241
     Align = alLeft
     BevelOuter = bvLowered
     TabOrder = 1
@@ -96,8 +96,8 @@ object Form1: TForm1
   end
   object Panel2: TPanel
     Left = 0
-    Top = 247
-    Width = 549
+    Top = 241
+    Width = 543
     Height = 152
     Align = alBottom
     TabOrder = 2
@@ -128,10 +128,10 @@ object Form1: TForm1
     end
   end
   object Memo1: TMemo
-    Left = 339
+    Left = 333
     Top = 0
     Width = 210
-    Height = 247
+    Height = 241
     Align = alRight
     Lines.Strings = (
       'Memo1')

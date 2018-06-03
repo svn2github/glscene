@@ -14,9 +14,17 @@ uses
   Vcl.StdCtrls,
 
   
-  GLObjects, GLScene, GLWin32Viewer, GLSkydome,
-  GLCadencer, GLParticleFX, GLTeapot, GLGeomObjects,
-  GLContext, GLCrossPlatform, GLCoordinates, GLBaseClasses;
+  GLObjects,
+  GLScene,
+  GLWin32Viewer,
+  GLSkydome,
+  GLCadencer,
+  GLTeapot,
+  GLGeomObjects,
+  GLContext,
+  GLCrossPlatform,
+  GLCoordinates,
+  GLBaseClasses;
 
 type
   TForm1 = class(TForm)
@@ -46,10 +54,8 @@ type
       newTime: Double);
     procedure GLSceneViewer1BeforeRender(Sender: TObject);
   private
-     
     procedure GenerateCubeMap;
   public
-     
     mx, my : Integer;
     CubmapSupported : Boolean;
     cubeMapWarnDone : Boolean;
@@ -58,7 +64,9 @@ type
 var
   Form1: TForm1;
 
+//===================================
 implementation
+//===================================
 
 {$R *.dfm}
 
@@ -124,7 +132,7 @@ end;
 
 procedure TForm1.GLSceneViewer1BeforeRender(Sender: TObject);
 begin
-  CubmapSupported := gl.ARB_texture_cube_map;
+  CubmapSupported := GL.ARB_texture_cube_map;
   GLSceneViewer1.BeforeRender := nil;
 end;
 

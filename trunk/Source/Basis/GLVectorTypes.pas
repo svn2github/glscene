@@ -16,9 +16,9 @@
 }
 unit GLVectorTypes;
 
-{$I GLScene.inc}
-
 interface
+
+{$I GLScene.inc}
 
 {$IFDEF USE_FASTMATH}
 uses

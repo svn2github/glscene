@@ -49,9 +49,9 @@ type
     procedure TrackBar1Change(Sender: TObject);
     procedure CBClampTex2Click(Sender: TObject);
   private
-     
+
   public
-     
+
   end;
 
 var
@@ -76,7 +76,8 @@ end;
 procedure TForm1.Image1Click(Sender: TObject);
 begin
    // load a new Image1
-   if OpenPictureDialog1.Execute then begin
+   if OpenPictureDialog1.Execute then
+   begin
       Image1.Picture.LoadFromFile(OpenPictureDialog1.FileName);
       GLMaterialLibrary1.Materials[0].Material.Texture.Image.Assign(Image1.Picture);
    end;
@@ -85,7 +86,8 @@ end;
 procedure TForm1.Image2Click(Sender: TObject);
 begin
    // load a new Image2
-   if OpenPictureDialog1.Execute then begin
+   if OpenPictureDialog1.Execute then
+   begin
       Image2.Picture.LoadFromFile(OpenPictureDialog1.FileName);
       GLMaterialLibrary1.Materials[1].Material.Texture.Image.Assign(Image2.Picture);
    end;
@@ -94,7 +96,8 @@ end;
 procedure TForm1.TrackBar1Change(Sender: TObject);
 begin
    // adjust scale
-   with GLMaterialLibrary1.Materials[1].TextureScale do begin
+   with GLMaterialLibrary1.Materials[1].TextureScale do
+   begin
       X:=TrackBar1.Position/10;
       Y:=TrackBar1.Position/10;
    end;

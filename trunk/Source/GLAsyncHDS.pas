@@ -55,10 +55,10 @@ type
       //TilesUpdated:boolean;
       constructor Create(AOwner: TComponent); override;
       destructor Destroy; override;
-      procedure BeforePreparingData(heightData : TGLHeightData); override;
-      procedure StartPreparingData(heightData : TGLHeightData); override;
+      procedure BeforePreparingData(HeightData : TGLHeightData); override;
+      procedure StartPreparingData(HeightData : TGLHeightData); override;
       procedure ThreadIsIdle; override;
-      procedure NewTilePrepared(heightData:TGLHeightData);
+      procedure NewTilePrepared(HeightData:TGLHeightData);
       function  ThreadCount:integer;
 	  (*  Wait for all running threads to finish.
           Should only be called after setting Active to false,

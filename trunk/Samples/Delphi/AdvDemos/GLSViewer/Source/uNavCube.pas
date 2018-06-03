@@ -48,7 +48,7 @@ type
 
   public
     constructor CreateAsChild(aParentOwner: TGLBaseSceneObject); reintroduce;
-    procedure DoProgress(const pt: TProgressTimes); override;
+    procedure DoProgress(const pt: TGLProgressTimes); override;
     procedure DoRender(var ARci: TGLRenderContextInfo;
       ARenderSelf, ARenderChildren: boolean); override;
 
@@ -216,9 +216,7 @@ begin
 
 end;
 
-// DoProgress
-//
-procedure TGLNavCube.DoProgress(const pt: TProgressTimes);
+procedure TGLNavCube.DoProgress(const pt: TGLProgressTimes);
 const
   tb: array [0 .. 1] of array [0 .. 3] of TVector = (((x: 0; y: 20; z: 1;
     W: 0), (x: 1; y: 20; z: 0; W: 0), (x: 0; y: 20; z: - 1; W: 0), (x: - 1;
@@ -268,7 +266,6 @@ begin
       end // start manual rotation
       else if FMouse then
       begin
-
         FMouseRotation := true;
         FMousePos := mouse.CursorPos;
         showCursor(false);
@@ -371,8 +368,6 @@ begin
   end;
 end;
 
-// DoRender (setup)
-//
 procedure TGLNavCube.DoRender(var ARci: TGLRenderContextInfo;
   ARenderSelf, ARenderChildren: boolean);
 begin
@@ -387,7 +382,9 @@ begin
     FHud.Position.SetPoint(FViewer.Width - 80, 50, 0);
 end;
 
+//------------------------------------------------
 initialization
+//------------------------------------------------
 
   sW2 := Screen.Width div 2;
   sH2 := Screen.Height div 2;

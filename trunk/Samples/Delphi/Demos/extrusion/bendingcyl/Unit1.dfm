@@ -3,8 +3,8 @@ object Form1: TForm1
   Top = 106
   BorderWidth = 3
   Caption = 'Bending Cylinder'
-  ClientHeight = 367
-  ClientWidth = 522
+  ClientHeight = 361
+  ClientWidth = 516
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -13,17 +13,17 @@ object Form1: TForm1
   Font.Style = []
   OldCreateOrder = False
   Position = poScreenCenter
-  WindowState = wsMaximized
   PixelsPerInch = 96
   TextHeight = 13
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 522
-    Height = 367
+    Width = 516
+    Height = 361
     Camera = GLCamera1
     Buffer.BackgroundColor = clBackground
-    FieldOfView = 149.516189575195300000
+    FieldOfView = 149.033645629882800000
+    PenAsTouch = False
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove

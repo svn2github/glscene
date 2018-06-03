@@ -16,7 +16,6 @@ uses
   Vcl.Imaging.Jpeg,
   Vcl.Menus,
 
-
   GLScene,
   GLBaseClasses,
   GLVectorFileObjects,

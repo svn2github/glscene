@@ -1,4 +1,4 @@
-{: "Earth" Demo.
+{ "Earth" Demo.
 
    See accompanying Readme.txt for user instructions.
 
@@ -11,7 +11,7 @@
    Stars support is built into the TGLSkyDome, but constellations are rendered
    via a TGLLines, which is filled in the LoadConstellationLines method.
 
-   Eric Grange<br>
+   Eric Grange
    http://glscene.org
 }
 

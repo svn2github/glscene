@@ -179,7 +179,6 @@
         <DCCReference Include="..\..\Source\GLCompositeImage.pas"/>
         <DCCReference Include="..\..\Source\GLConsole.pas"/>
         <DCCReference Include="..\..\Source\GLContext.pas"/>
-        <DCCReference Include="..\..\Source\GLContouring.pas"/>
         <DCCReference Include="..\..\Source\Basis\GLCoordinates.pas"/>
         <DCCReference Include="..\..\Source\GLCrossPlatform.pas"/>
         <DCCReference Include="..\..\Source\GLCurvesAndSurfaces.pas"/>
@@ -254,6 +253,7 @@
         <DCCReference Include="..\..\Source\Shaders\GLHiddenLineShader.pas"/>
         <DCCReference Include="..\..\Source\GLImageUtils.pas"/>
         <DCCReference Include="..\..\Source\GLImposter.pas"/>
+        <DCCReference Include="..\..\Source\GLIsolines.pas"/>
         <DCCReference Include="..\..\Source\GLIsosurface.pas"/>
         <DCCReference Include="..\..\Source\Basis\GLJoystick.pas"/>
         <DCCReference Include="..\..\Source\Basis\GLKeyboard.pas"/>

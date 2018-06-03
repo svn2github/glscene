@@ -22,7 +22,7 @@ uses
   GLCrossPlatform, 
   GLContext,
   GLVectorTypes,
-  GLContouring;
+  GLIsolines;
 
 type
 
@@ -61,8 +61,8 @@ type
     FOcclusionQuery: TGLOcclusionQueryHandle;
     FOcclusionSkip, FOcclusionCounter: Integer;
     FLastOcclusionTestPassed: Boolean;
-    FContourInterval: Integer;
-    FContourWidth: Integer;
+    FIsolineInterval: Integer;
+    FIsolineWidth: Integer;
   protected
     procedure SetHeightData(Val: TGLHeightData);
     procedure SetOcclusionSkip(Val: Integer);
@@ -79,7 +79,7 @@ type
     procedure ConnectToTheNorth(NorthPatch: TGLROAMPatch);
     // Returns false if MaxCLODTriangles limit is reached(Lin)
     function Tesselate: Boolean;
-    {  AV free version of Tesselate. 
+    {  AV free version of Tesselate.
       When IncreaseTrianglesCapacity is called, all PROAMTriangleNode
       values in higher function became invalid due to the memory shifting.
       Recursivity is the main problem, that's why SafeTesselate is calling
@@ -115,7 +115,7 @@ type
     property OcclusionSkip: Integer read FOcclusionSkip write SetOcclusionSkip;
     {  Number of frames remaining to next occlusion test. }
     property OcclusionCounter: Integer read FOcclusionCounter write FOcclusionCounter;
-    {  Result for the last occlusion test. 
+    {  Result for the last occlusion test.
       Note that this value is updated upon rendering the tile in
       non-high-res mode only. }
     property LastOcclusionTestPassed: Boolean read FLastOcclusionTestPassed;
@@ -123,19 +123,19 @@ type
     property TriangleCount: Integer read FTriangleCount;
     property Tag: Integer read FTag write FTag;
     {  Distance between contours - zero (default) for no contours }
-    property ContourInterval: Integer read FContourInterval
-      write FContourInterval default 0;
-    {  Width of contours }
-    property ContourWidth: Integer read FContourWidth
-      write FContourWidth  default 1;
+    property IsolineInterval: Integer read FIsolineInterval
+      write FIsolineInterval default 0;
+    {  Width of Isolines }
+    property IsolineWidth: Integer read FIsolineWidth
+      write FIsolineWidth  default 1;
   end;
 
 {  Specifies the maximum number of ROAM triangles that may be allocated. }
 procedure SetROAMTrianglesCapacity(nb: Integer);
 function GetROAMTrianglesCapacity: Integer;
 {  Draw contours on rendering terrain patches }
-procedure DrawContours(Vertices: TAffineVectorList; VertexIndices: TIntegerList;
-  ContourInterval: Integer; ContourWidth: Integer; DecVal: Integer);
+procedure DrawIsolines(Vertices: TAffineVectorList; VertexIndices: TIntegerList;
+  IsolineInterval: Integer; IsolineWidth: Integer; DecVal: Integer);
 
 // ------------------------------------------------------------------
 implementation
@@ -179,39 +179,39 @@ begin
   Result := vTriangleNodesCapacity;
 end;
 
-procedure DrawContours(Vertices: TAffineVectorList; VertexIndices: TIntegerList;
-  ContourInterval: Integer; ContourWidth: Integer; DecVal: Integer);
+procedure DrawIsolines(Vertices: TAffineVectorList; VertexIndices: TIntegerList;
+  IsolineInterval: Integer; IsolineWidth: Integer; DecVal: Integer);
 var
   i: Integer;
-  Contours: TAffineVectorList;
+  Isolines: TAffineVectorList;
   CurColor: TVector;
 
 begin
-  if ContourInterval > 0 then
+  if IsolineInterval > 0 then
   begin
     gl.PolygonOffset(1, 1);
     gl.Enable(GL_POLYGON_OFFSET_FILL);
     i := VertexIndices.Count - 3;
-    Contours := TAffineVectorList.Create;
+    Isolines := TAffineVectorList.Create;
     while i >= 0 do
     begin
       TriangleElevationSegments(Vertices[VertexIndices[i]],
         Vertices[VertexIndices[i + 1]], Vertices[VertexIndices[i + 2]],
-        ContourInterval, Contours);
+        IsolineInterval, Isolines);
       Dec(i, DecVal);
     end;
     gl.PushAttrib(GL_ENABLE_BIT or GL_CURRENT_BIT);
     gl.Disable(GL_TEXTURE_2D);
-    gl.LineWidth(ContourWidth);
+    gl.LineWidth(IsolineWidth);
     gl.GetFloatv(GL_CURRENT_COLOR, @CurColor);
     gl.Color4f(0, 0, 0, 1);
     gl.Begin_(GL_LINES);
-     for i := 0 to Contours.Count - 1 do
-       gl.Vertex3fv(@Contours.List[i]);
+     for i := 0 to Isolines.Count - 1 do
+       gl.Vertex3fv(@Isolines.List[i]);
     gl.End_;
     gl.Color4fv(@CurColor);
     gl.PopAttrib;
-    Contours.Free;
+    Isolines.Free;
   end;
 end;
 
@@ -377,7 +377,7 @@ begin
   FID := vNextPatchID;
   Inc(vNextPatchID);
   FListHandle := TGLListHandle.Create;
-  FContourInterval := 0;
+  FIsolineInterval := 0;
   FOcclusionQuery := TGLOcclusionQueryHandle.Create;
 end;
 
@@ -720,12 +720,12 @@ begin
       gl.DrawElements(Primitive, VertexIndices.Count, GL_UNSIGNED_INT,
         VertexIndices.List);
     gl.EndList;
-    DrawContours(Vertices, VertexIndices, FContourInterval, FContourWidth, 1);
+
+    DrawIsolines(Vertices, VertexIndices, FIsolineInterval, FIsolineWidth, 1);
     Vertices.Count := 0;
     TexCoords.Count := 0;
     VertexIndices.Count := 0;
   end;
-
   // perform the render
   gl.CallList(FListHandle.Handle);
 end;
@@ -769,7 +769,8 @@ begin
     Vertices.Translate(VertexOffset, n, nb);
     TexCoords.ScaleAndTranslate(PTexPoint(@TextureScale)^,
       PTexPoint(@TextureOffset)^, n, nb);
-    DrawContours(Vertices, VertexIndices, FContourInterval, FContourWidth, 3);
+
+    DrawIsolines(Vertices, VertexIndices, FIsolineInterval, FIsolineWidth, 3);
     if FOcclusionQuery.Active then
     begin
       FlushAccum(Vertices, VertexIndices, TexCoords);
@@ -780,7 +781,6 @@ begin
   end
   else
     FTriangleCount := 0;
-
 end;
 
 class procedure TGLROAMPatch.FlushAccum(Vertices: TAffineVectorList;

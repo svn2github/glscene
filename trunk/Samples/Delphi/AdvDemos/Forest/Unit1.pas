@@ -99,7 +99,7 @@ type
       destImposter: TImposter): TGLBitmap32;
     procedure Timer1Timer(Sender: TObject);
     procedure PFXTreesProgress(Sender: TObject;
-      const progressTime: TProgressTimes; var defaultProgress: Boolean);
+      const progressTime: TGLProgressTimes; var defaultProgress: Boolean);
     function PFXTreesGetParticleCountEvent(Sender: TObject): Integer;
     procedure FormResize(Sender: TObject);
     procedure DOInitializeReflectionRender(Sender: TObject;
@@ -494,7 +494,7 @@ begin
 end;
 
 procedure TForm1.PFXTreesProgress(Sender: TObject;
-  const progressTime: TProgressTimes; var defaultProgress: Boolean);
+  const progressTime: TGLProgressTimes; var defaultProgress: Boolean);
 begin
   defaultProgress := False;
 end;
@@ -509,8 +509,8 @@ var
   clipPlane: TDoubleHmgPlane;
   glTarget: GLEnum;
 begin
-  supportsGLSL := gl.ARB_shader_objects and gl.ARB_fragment_shader and gl.ARB_vertex_shader;
-  enableRectReflection := gl.NV_texture_rectangle and ((not enableGLSL) or gl.EXT_Cg_shader);
+  supportsGLSL := GL.ARB_shader_objects and GL.ARB_fragment_shader and GL.ARB_vertex_shader;
+  enableRectReflection := GL.NV_texture_rectangle and ((not enableGLSL) or GL.EXT_Cg_shader);
 
   if not enableTex2DReflection then
     Exit;
@@ -527,9 +527,9 @@ begin
 
   rci.GLStates.FrontFace := fwClockWise;
 
-  gl.Enable(GL_CLIP_PLANE0);
+  GL.Enable(GL_CLIP_PLANE0);
   SetPlane(clipPlane, PlaneMake(AffineVectorMake(0, 1, 0), VectorNegate(YVector)));
-  gl.ClipPlane(GL_CLIP_PLANE0, @clipPlane);
+  GL.ClipPlane(GL_CLIP_PLANE0, @clipPlane);
 
   cameraPosBackup := rci.cameraPosition;
   cameraDirectionBackup := rci.cameraDirection;
@@ -583,20 +583,20 @@ begin
   if mirrorTexture.IsDataNeedUpdate then
   begin
     rci.GLStates.TextureBinding[0, mirrorTexType] := mirrorTexture.Handle;
-    gl.TexParameteri(glTarget, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    gl.TexParameteri(glTarget, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    gl.TexParameteri(glTarget, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    gl.TexParameteri(glTarget, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    gl.CopyTexImage2d(glTarget, 0, GL_RGBA8, 0, 0, w, h, 0);
+    GL.TexParameteri(glTarget, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    GL.TexParameteri(glTarget, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    GL.TexParameteri(glTarget, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    GL.TexParameteri(glTarget, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    GL.CopyTexImage2d(glTarget, 0, GL_RGBA8, 0, 0, w, h, 0);
     mirrorTexture.NotifyDataUpdated;
   end
   else
   begin
     rci.GLStates.TextureBinding[0, mirrorTexType] := mirrorTexture.Handle;
-    gl.CopyTexSubImage2D(glTarget, 0, 0, 0, 0, 0, w, h);
+    GL.CopyTexSubImage2D(glTarget, 0, 0, 0, 0, 0, w, h);
   end;
 
-  gl.Clear(GL_COLOR_BUFFER_BIT + GL_DEPTH_BUFFER_BIT + GL_STENCIL_BUFFER_BIT);
+  GL.Clear(GL_COLOR_BUFFER_BIT + GL_DEPTH_BUFFER_BIT + GL_STENCIL_BUFFER_BIT);
 end;
 
 procedure TForm1.DOClassicWaterPlaneRender(Sender: TObject;
@@ -656,38 +656,38 @@ begin
     GetTextureCombiners('Tex0:=Tex1*Tex0;'#13#10
       + 'Tex1:=Tex0+Col;'#13#10
       + 'Tex2:=Tex1+Tex2-0.5;');
-    gl.Color4f(0.0, 0.3, 0.3, 1);
+    GL.Color4f(0.0, 0.3, 0.3, 1);
   end
   else
   begin
     //SetupTextureCombiners('Tex0:=Tex1*Tex0;'#13#10
     GetTextureCombiners('Tex0:=Tex1*Tex0;'#13#10
       + 'Tex1:=Tex0+Col;');
-    gl.Color4f(0.0, 0.4, 0.7, 1);
+    GL.Color4f(0.0, 0.4, 0.7, 1);
   end;
   }
-  gl.Color4f(0.0, 0.4, 0.7, 1);
+  GL.Color4f(0.0, 0.4, 0.7, 1);
 
   rci.GLStates.Disable(stCullFace);
   for y := -10 to 10 - 1 do
   begin
-    gl.Begin_(GL_QUAD_STRIP);
+    GL.Begin_(GL_QUAD_STRIP);
     for x := -10 to 10 do
     begin
       SetVector(pos, x * 1500, 0, y * 1500);
       tex := TexPointMake(x, y);
-      gl.MultiTexCoord2fv(GL_TEXTURE0, @tex);
-      gl.MultiTexCoord2fv(GL_TEXTURE1, @tex);
-      gl.MultiTexCoord3fv(GL_TEXTURE2, @pos);
-      gl.Vertex3fv(@pos);
+      GL.MultiTexCoord2fv(GL_TEXTURE0, @tex);
+      GL.MultiTexCoord2fv(GL_TEXTURE1, @tex);
+      GL.MultiTexCoord3fv(GL_TEXTURE2, @pos);
+      GL.Vertex3fv(@pos);
       SetVector(pos, x * 1500, 0, (y + 1) * 1500);
       tex := TexPointMake(x, (y + 1));
-      gl.MultiTexCoord3fv(GL_TEXTURE0, @tex);
-      gl.MultiTexCoord3fv(GL_TEXTURE1, @tex);
-      gl.MultiTexCoord3fv(GL_TEXTURE2, @pos);
-      gl.Vertex3fv(@pos);
+      GL.MultiTexCoord3fv(GL_TEXTURE0, @tex);
+      GL.MultiTexCoord3fv(GL_TEXTURE1, @tex);
+      GL.MultiTexCoord3fv(GL_TEXTURE2, @pos);
+      GL.Vertex3fv(@pos);
     end;
-    gl.End_;
+    GL.End_;
   end;
 
   rci.GLStates.ResetGLTextureMatrix;
@@ -726,13 +726,13 @@ begin
 
   for y := -10 to 10 - 1 do
   begin
-    gl.Begin_(GL_QUAD_STRIP);
+    GL.Begin_(GL_QUAD_STRIP);
     for x := -10 to 10 do
     begin
-      gl.Vertex3f(x * 1500, 0, y * 1500);
-      gl.Vertex3f(x * 1500, 0, (y + 1) * 1500);
+      GL.Vertex3f(x * 1500, 0, y * 1500);
+      GL.Vertex3f(x * 1500, 0, (y + 1) * 1500);
     end;
-    gl.End_;
+    GL.End_;
   end;
 
   reflectionProgram.EndUseProgramObject;

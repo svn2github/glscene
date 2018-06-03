@@ -26,6 +26,7 @@ object Form1: TForm1
     Buffer.FaceCulling = False
     Buffer.AntiAliasing = aa4xHQ
     FieldOfView = 147.220916748046900000
+    PenAsTouch = False
     Align = alClient
     OnMouseDown = SceneViewerMouseDown
     OnMouseMove = SceneViewerMouseMove

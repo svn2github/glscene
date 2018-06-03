@@ -12,9 +12,18 @@ uses
   Vcl.Controls,
 
   
-  GLScene, GLObjects, GLParticles, GLBehaviours,
-  GLVectorGeometry, GLCadencer, GLVectorTypes,
-  GLWin32Viewer, GLCrossPlatform, GLCoordinates, GLBaseClasses, GLUtils;
+  GLScene,
+  GLObjects,
+  GLParticles,
+  GLBehaviours,
+  GLVectorGeometry,
+  GLCadencer,
+  GLVectorTypes,
+  GLWin32Viewer,
+  GLCrossPlatform,
+  GLCoordinates,
+  GLBaseClasses,
+  GLUtils;
 
 type
   TForm1 = class(TForm)
@@ -32,10 +41,7 @@ type
     procedure Timer1Timer(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormResize(Sender: TObject);
-  private
-     
   public
-     
   end;
 
 var

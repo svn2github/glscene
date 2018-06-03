@@ -44,10 +44,7 @@ type
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
       X, Y: Integer);
     procedure Timer1Timer(Sender: TObject);
-  private
-     
   public
-     
     mx, my : Integer;
   end;
 

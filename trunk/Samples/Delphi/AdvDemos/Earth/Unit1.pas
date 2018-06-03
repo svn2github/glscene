@@ -4,6 +4,7 @@ interface
 
 uses
   Winapi.OpenGL,
+  Winapi.OpenGLext,
   System.SysUtils,
   System.Classes,
   System.Math,
@@ -11,10 +12,9 @@ uses
   Vcl.Controls,
   Vcl.Forms,
   Vcl.ExtCtrls,
-  Vcl.FileCtrl,
   Vcl.Imaging.Jpeg,
 
-  OpenGL1x,
+  GLVectorTypes,
   GLMaterial,
   GLTexCombineShader,
   GLCadencer,
@@ -70,10 +70,8 @@ type
     procedure FormKeyPress(Sender: TObject; var Key: Char);
     procedure GLSceneViewerBeforeRender(Sender: TObject);
   private
-     
     procedure LoadConstellationLines;
   public
-     
     constellationsAlpha: Single;
     timeMultiplier: Single;
     mx, my, dmx, dmy: Integer;
@@ -93,12 +91,14 @@ uses
   USolarSystem;
 
 procedure TForm1.FormCreate(Sender: TObject);
+var
+  FileName: String;
 begin
   SetCurrentDir(ExtractFilePath(ParamStr(0)));
-
+  FileName := 'Data\Yale_BSC.stars';
   GLSkyDome.Bands.Clear;
-  if FileExists('Yale_BSC.stars') then
-    GLSkyDome.Stars.LoadStarsFile('Yale_BSC.stars');
+  if FileExists(FileName) then
+    GLSkyDome.Stars.LoadStarsFile(FileName);
 
   LoadConstellationLines;
 
@@ -109,16 +109,8 @@ procedure TForm1.GLSceneViewerBeforeRender(Sender: TObject);
 begin
   GLLensFlare1.PreRender(Sender as TGLSceneBuffer);
   // if no multitexturing or no combiner support, turn off city lights
-  if GL_ARB_multitexture and GL_ARB_texture_env_combine then
-  begin
-    GLMaterialLibrary.Materials[0].Shader := EarthCombiner;
-    GLMaterialLibrary.Materials[0].Texture2Name := 'earthNight';
-  end
-  else
-  begin
-    GLMaterialLibrary.Materials[0].Shader := nil;
-    GLMaterialLibrary.Materials[0].Texture2Name := '';
-  end;
+  GLMaterialLibrary.Materials[0].Shader := EarthCombiner;
+  GLMaterialLibrary.Materials[0].Texture2Name := 'earthNight';
 end;
 
 procedure TForm1.GLDirectOpenGL1Render(Sender: TObject; var rci: TGLRenderContextInfo);

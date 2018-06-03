@@ -1,12 +1,12 @@
-{: Solar system planetary elements and positions utility unit.
+{  Solar system planetary elements and positions utility unit.
 
-   Based on document by Paul Schlyter (Stockholm, Sweden)<br>
+   Based on document by Paul Schlyter (Stockholm, Sweden)
    http://www.stjarnhimlen.se/comp/ppcomp.html
 
    Coordinates system takes Z as "up", ie. normal to the ecliptic plane,
    "axis" around which the planets turn.
 
-   Eric Grange<br>
+   Eric Grange
    http://glscene.org
 }
 unit USolarSystem;
@@ -135,22 +135,14 @@ function ComputePlanetPosition(const orbitalElementsData : TOrbitalElementsData;
                                const d : Double) : TAffineVector; overload;
 
 //------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
 implementation
 //------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
 
-// GMTDateTimeToJulianDay
-//
 function GMTDateTimeToJulianDay(const dt : TDateTime) : Double;
 begin
    Result:=dt-EncodeDate(2000, 1, 1);
 end;
 
-// ComputeOrbitalElements
-//
 function ComputeOrbitalElements(const oeData : TOrbitalElementsData;
                                 const d : Double) : TOrbitalElements;
 begin
@@ -164,8 +156,6 @@ begin
    end;
 end;
 
-// ComputeSunPosition (prepared elements)
-//
 function ComputePlanetPosition(const orbitalElements : TOrbitalElements) : TAffineVector;
 var
    eccentricAnomaly, eA0 : Double;
@@ -207,8 +197,6 @@ begin
    Result.Z:=r*(svw*si);
 end;
 
-// ComputePlanetPosition (data)
-//
 function ComputePlanetPosition(const orbitalElementsData : TOrbitalElementsData;
                                const d : Double) : TAffineVector;
 var

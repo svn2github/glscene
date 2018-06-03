@@ -33,6 +33,7 @@ object Form1: TForm1
     Buffer.FogEnable = True
     Buffer.Lighting = False
     FieldOfView = 147.492416381835900000
+    PenAsTouch = False
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
@@ -91,9 +92,9 @@ object Form1: TForm1
     object LabelContInterval: TLabel
       Left = 703
       Top = 35
-      Width = 70
+      Width = 67
       Height = 13
-      Caption = 'LAContInterval'
+      Caption = 'LAIsoIntervals'
     end
     object TBSubSampling: TTrackBar
       Left = 127
@@ -124,7 +125,7 @@ object Form1: TForm1
       TickMarks = tmBoth
       OnChange = TBIntensityChange
     end
-    object TBContourInterval: TTrackBar
+    object TBIsolineInterval: TTrackBar
       Left = 520
       Top = 30
       Width = 177
@@ -138,7 +139,6 @@ object Form1: TForm1
       TabStop = False
       ThumbLength = 10
       TickMarks = tmBoth
-      OnChange = TBContourIntervalChange
     end
     object TBScaleZ: TTrackBar
       Left = 520
@@ -155,16 +155,16 @@ object Form1: TForm1
       TickMarks = tmBoth
       OnChange = TBScaleZChange
     end
-    object CBContourIntervals: TCheckBox
+    object CBIsolineIntervals: TCheckBox
       Left = 422
       Top = 35
       Width = 97
       Height = 17
-      Caption = 'Contour Interval'
+      Caption = 'Isoline Intervals'
       Checked = True
       State = cbChecked
       TabOrder = 4
-      OnClick = CBContourIntervalsClick
+      OnClick = CBIsolineIntervalsClick
     end
   end
   object GLBitmapHDS1: TGLBitmapHDS
@@ -238,7 +238,7 @@ object Form1: TForm1
       TilesPerTexture = 1.000000000000000000
       MaterialLibrary = GLMaterialLibrary1
       CLODPrecision = 30
-      ContourWidth = 0
+      IsolineWidth = 0
     end
     object GLLensFlare: TGLLensFlare
       Size = 100

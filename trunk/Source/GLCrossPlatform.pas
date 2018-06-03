@@ -225,7 +225,6 @@ function GLSTime: Double;
 
 {Returns the number of CPU cycles since startup. 
    Use the similarly named CPU instruction. }
-function RDTSC: Int64;
 
 function GLOKMessageBox(const Text, Caption: string): Integer;
 procedure GLLoadBitmapFromInstance(Instance: LongInt; ABitmap: TBitmap; const AName: string);
@@ -260,11 +259,7 @@ function IsDirectoryWriteable(const AName: string): Boolean;
 function CharToWideChar(const AChar: AnsiChar): WideChar;
 
 //-----------------------------------------------------------
-//-----------------------------------------------------------
-//-----------------------------------------------------------
 implementation
-//-----------------------------------------------------------
-//-----------------------------------------------------------
 //-----------------------------------------------------------
 
 uses
@@ -630,13 +625,6 @@ begin
 //             tv_usec div 1000) - vGLSStartTime;
 end;
 {$ENDIF}
-
-// RDTSC
-//
-function RDTSC: Int64;
-asm
-   db $0f, $31
-end;
 
 function FindUnitName(anObject: TObject): string;
 begin

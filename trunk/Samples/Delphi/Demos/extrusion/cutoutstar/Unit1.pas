@@ -12,7 +12,7 @@ uses
   Vcl.Dialogs,
   Vcl.ExtCtrls,
 
-  
+
   GLCadencer,
   GLScene,
   GLExtrusion,
@@ -37,10 +37,7 @@ type
       newTime: Double);
     procedure FormCreate(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
-  private
-     
   public
-     
   end;
 
 var
@@ -56,18 +53,18 @@ var
    r, x, y : Single;
 const
    cSteps = 16;
-begin
+ begin
    // a small star contour
-   with ExtrusionSolid.Contours do begin
-      with Add.Nodes do for i:=0 to cSteps do begin
-         r:=2+(i and 1)*2;
-         SinCosine(i*c2PI/cSteps, y, x);
-         AddNode(x*r, y*r, 0);
-      end;
-      // add an empty contour for the square cutout (see progress event)
-      Add;
+   with ExtrusionSolid.Contours.Add.Nodes do
+   for i := 0 to cSteps do
+   begin
+     r := 2 + (i and 1) * 2;
+     SinCosine(i * c2PI / cSteps, y, x);
+     AddNode(x * r, y * r, 0);
    end;
-end;
+   // add an empty contour for the square cutout (see progress event)
+   ExtrusionSolid.Contours.Add;
+ end;
 
 procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
   newTime: Double);
@@ -81,9 +78,11 @@ begin
    // Note that we could also have defined it once in the FormCreate and then moved
    // it around with the TGLNodes methods.
    SinCosine(newTime, 2, y, x);
-   with ExtrusionSolid.Contours do begin
+   with ExtrusionSolid.Contours do
+   begin
       Items[1].Free;
-      with Add.Nodes do begin
+      with Add.Nodes do
+      begin
          AddNode(x-1, y-1, 0);
          AddNode(x+1, y-1, 0);
          AddNode(x+1, y+1, 0);

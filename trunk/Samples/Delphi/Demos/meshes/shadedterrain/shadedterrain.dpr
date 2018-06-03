@@ -1,4 +1,4 @@
-{: Shaded terrain rendering demo.}
+{ Shaded terrain rendering demo.}
 program ShadedTerrain;
 
 uses

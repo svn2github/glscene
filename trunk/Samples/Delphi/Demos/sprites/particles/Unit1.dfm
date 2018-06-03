@@ -11,7 +11,7 @@ object Form1: TForm1
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
-  Position = poScreenCenter
+  WindowState = wsMaximized
   OnCreate = FormCreate
   OnResize = FormResize
   PixelsPerInch = 96
@@ -25,6 +25,7 @@ object Form1: TForm1
     Buffer.BackgroundColor = clBlack
     Buffer.DepthTest = False
     FieldOfView = 150.213058471679700000
+    PenAsTouch = False
     Align = alClient
     TabOrder = 0
   end

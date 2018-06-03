@@ -18,17 +18,17 @@ uses
   System.SysUtils, 
   System.Types,
   
+  OpenGLTokens,
   GLScene,
   GLCoordinates,
-  GLHeightData, 
-  GLMaterial, 
-  GLVectorGeometry, 
-  GLContext, 
+  GLHeightData,
+  GLMaterial,
+  GLVectorGeometry,
+  GLContext,
   GLROAMPatch,
-  GLVectorLists, 
-  GLRenderContextInfo, 
-  OpenGLTokens, 
-  XOpenGL, 
+  GLVectorLists,
+  GLRenderContextInfo,
+  XOpenGL,
   GLUtils, 
   GLVectorTypes;
 
@@ -77,8 +77,8 @@ type
     FQualityStyle: TTerrainHighResStyle;
     FOcclusionFrameSkip: Integer;
     FOcclusionTesselate: TTerrainOcclusionTesselate;
-    FContourInterval: Integer;
-    FContourWidth: Integer;
+    FIsolineInterval: Integer;
+    FIsolineWidth: Integer;
   protected
     FTilesHash: packed array [0 .. cTilesHashSize] of TList;
     procedure MarkAllTilesAsUnused;
@@ -110,7 +110,7 @@ type
     procedure BuildList(var rci: TGLRenderContextInfo); override;
     function RayCastIntersect(const rayStart, rayVector: TVector;
       intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean; override;
-    {  Interpolates height for the given point. 
+    {  Interpolates height for the given point.
       Expects a point expressed in absolute coordinates. }
     function InterpolatedHeight(const p: TVector): Single; overload;
     function InterpolatedHeight(const p: TAffineVector): Single; overload;
@@ -121,13 +121,13 @@ type
     {  Specifies the HeightData provider component. }
     property HeightDataSource: TGLHeightDataSource read FHeightDataSource
       write SetHeightDataSource;
-    {  Size of the terrain tiles. 
+    {  Size of the terrain tiles.
       Must be a power of two. }
     property TileSize: Integer read FTileSize write SetTileSize default 16;
     {  Number of tiles required for a full texture map. }
     property TilesPerTexture: Single read FTilesPerTexture
       write SetTilesPerTexture;
-    {  Link to the material library holding terrain materials. 
+    {  Link to the material library holding terrain materials.
       If unspecified, and for all terrain tiles with unspecified material,
       the terrain renderer's material is used. }
     property MaterialLibrary: TGLMaterialLibrary read FMaterialLibrary
@@ -175,7 +175,7 @@ type
       This optimization requires the hardware to support GL_NV_occlusion_query. }
     property OcclusionFrameSkip: Integer read FOcclusionFrameSkip
       write SetOcclusionFrameSkip default 0;
-    {  Determines if and how occlusion testing affects tesselation. 
+    {  Determines if and how occlusion testing affects tesselation.
       Turning off tesselation of tiles determined invisible can improve
       performance, however, it may result in glitches since the tesselation
       of an invisible tile can have a slight effect on the tesselation
@@ -187,36 +187,36 @@ type
     property OcclusionTesselate: TTerrainOcclusionTesselate
       read FOcclusionTesselate write FOcclusionTesselate
       default totTesselateIfVisible;
-    {  Allows to specify terrain bounds. 
+    {  Allows to specify terrain bounds.
       Default rendering bounds will reach depth of view in all direction,
       with this event you can chose to specify a smaller rendered
       terrain area. }
     property OnGetTerrainBounds: TGetTerrainBoundsEvent read FOnGetTerrainBounds
       write FOnGetTerrainBounds;
-    {  Invoked for each rendered patch after terrain render has completed. 
+    {  Invoked for each rendered patch after terrain render has completed.
       The list holds TGLROAMPatch objects and allows per-patch
       post-processings, like waters, trees... It is invoked *before*
       OnHeightDataPostRender. }
     property OnPatchPostRender: TPatchPostRenderEvent read FOnPatchPostRender
       write FOnPatchPostRender;
-    {  Invoked for each heightData not culled out by the terrain renderer. 
+    {  Invoked for each heightData not culled out by the terrain renderer.
       The list holds TGLHeightData objects and allows per-patch
       post-processings, like waters, trees... It is invoked *after*
       OnPatchPostRender. }
     property OnHeightDataPostRender: TGLHeightDataPostRenderEvent
       read FOnHeightDataPostRender write FOnHeightDataPostRender;
-    {  Invoked whenever the MaxCLODTriangles limit was reached during last rendering. 
+    {  Invoked whenever the MaxCLODTriangles limit was reached during last rendering.
       This forced the terrain renderer to resize the buffer, which affects performance.
       If this event is fired frequently, one should increase MaxCLODTriangles.
      }
     property OnMaxCLODTrianglesReached: TMaxCLODTrianglesReachedEvent
       read FOnMaxCLODTrianglesReached write FOnMaxCLODTrianglesReached;
      {  Distance between contours - zero (default) for no contours  PGS }
-    property ContourInterval: Integer read FContourInterval
-      write FContourInterval default 0;
-     {  Width of contour lines }
-    property ContourWidth: Integer read FContourWidth
-      write FContourWidth default 1;
+    property IsolineInterval: Integer read FIsolineInterval
+      write FIsolineInterval default 0;
+     {  Width of Isolines }
+    property IsolineWidth: Integer read FIsolineWidth
+      write FIsolineWidth default 1;
   end;
 
 // ------------------------------------------------------------------
@@ -918,8 +918,8 @@ begin
     begin
       // spawn ROAM patch
       Patch := TGLROAMPatch.Create;
-      Patch.ContourInterval := ContourInterval;
-      Patch.ContourWidth := ContourWidth;
+      Patch.IsolineInterval := IsolineInterval;
+      Patch.IsolineWidth := IsolineWidth;
       Tile.ObjectTag := patch;
       Patch.HeightData := tile;
       Patch.VertexScale := XYZVector;

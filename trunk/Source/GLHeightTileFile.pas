@@ -81,8 +81,7 @@ type
     FTileMark: array of Cardinal;
     FLastMark: Cardinal;
     FHashTable: array [0 .. cHTFHashTableSize] of array of Integer;
-    FQuadTable: array [0 .. cHTFQuadTableSize, 0 .. cHTFQuadTableSize]
-      of array of Integer;
+    FQuadTable: array [0 .. cHTFQuadTableSize, 0 .. cHTFQuadTableSize] of array of Integer;
     FCreating: Boolean;
     FHeightTile: TGLHeightTile;
     FInBuf: array of ShortInt;
@@ -233,18 +232,15 @@ end;
 
 function TGLHeightTileFile.QuadTableX(x: Integer): Integer;
 begin
-  Result := ((x * (cHTFQuadTableSize + 1)) div (SizeX + 1)) and
-    cHTFQuadTableSize;
+  Result := ((x * (cHTFQuadTableSize + 1)) div (SizeX + 1)) and cHTFQuadTableSize;
 end;
 
 function TGLHeightTileFile.QuadTableY(y: Integer): Integer;
 begin
-  Result := ((y * (cHTFQuadTableSize + 1)) div (SizeY + 1)) and
-    cHTFQuadTableSize;
+  Result := ((y * (cHTFQuadTableSize + 1)) div (SizeY + 1)) and cHTFQuadTableSize;
 end;
 
-procedure TGLHeightTileFile.PackTile(aWidth, aHeight: Integer;
-  src: PSmallIntArray);
+procedure TGLHeightTileFile.PackTile(aWidth, aHeight: Integer; src: PSmallIntArray);
 var
   packWidth: Integer;
 

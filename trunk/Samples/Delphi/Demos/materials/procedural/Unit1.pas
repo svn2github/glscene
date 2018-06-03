@@ -57,10 +57,7 @@ type
     procedure CBFormatChange(Sender: TObject);
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
-  private
-    { Déclarations privées }
   public
-    { Déclarations publiques }
     newSelection : Boolean;
   end;
 

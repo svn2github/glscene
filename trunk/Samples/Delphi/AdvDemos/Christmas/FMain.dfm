@@ -32,6 +32,7 @@ object Main: TMain
     Buffer.ContextOptions = [roDoubleBuffer, roRenderToWindow]
     Buffer.AntiAliasing = aa2x
     FieldOfView = 159.463394165039100000
+    PenAsTouch = False
     Align = alClient
     PopupMenu = PopupMenu
     OnDblClick = ViewerDblClick
@@ -639,6 +640,7 @@ object Main: TMain
       Options = []
     end
     object ParticleFXRenderer: TGLParticleFXRenderer
+      ZWrite = True
     end
     object HUDSprite: TGLHUDSprite
       Material.BlendingMode = bmAdditive
