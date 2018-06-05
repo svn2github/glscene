@@ -62,12 +62,12 @@ type
     Label2: TLabel;
     TBIntensity: TTrackBar;
     LABumpIntensity: TLabel;
-    TBIsolineInterval: TTrackBar;
+    TBContourInterval: TTrackBar;
     TBScaleZ: TTrackBar;
     LaScaleZ: TLabel;
     LabelZ: TLabel;
     LabelContInterval: TLabel;
-    CBIsolineIntervals: TCheckBox;
+    CBContourIntervals: TCheckBox;
     procedure GLSceneViewer1MouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
@@ -86,8 +86,8 @@ type
     procedure FormMouseWheel(Sender: TObject; Shift: TShiftState;
       WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
     procedure TBScaleZChange(Sender: TObject);
-    procedure TBIsolineIntervalChange(Sender: TObject);
-    procedure CBIsolineIntervalsClick(Sender: TObject);
+    procedure TBContourIntervalChange(Sender: TObject);
+    procedure CBContourIntervalsClick(Sender: TObject);
   public
     mx, my: Integer;
     fullScreen: Boolean;
@@ -125,14 +125,14 @@ begin
   // apply texture map scale (our heightmap size is 256)
   TerrainRenderer1.TilesPerTexture := 1; // 256/TerrainRenderer1.TileSize;
   // TerrainRenderer1.MaterialLibrary := GLMaterialLibrary1;
-  TerrainRenderer1.IsolineWidth := 2;
+  TerrainRenderer1.ContourWidth := 2;
 
   // initialize intensity texture
   TBIntensityChange(Self);
   // initialize Scale Z
   TBScaleZChange(Self);
-  // initialize IsolineInterval
-  TBIsolineIntervalChange(Self);
+  // initialize ContourInterval
+  TBContourIntervalChange(Self);
 end;
 
 procedure TForm1.FormShow(Sender: TObject);
@@ -323,10 +323,10 @@ begin
   LABumpIntensity.Caption := IntToStr(TBIntensity.Position) + ' %';
 end;
 
-procedure TForm1.TBIsolineIntervalChange(Sender: TObject);
+procedure TForm1.TBContourIntervalChange(Sender: TObject);
 begin
-  TerrainRenderer1.IsolineInterval := TBIsolineInterval.Position;
-  LabelContInterval.Caption := IntToStr(TerrainRenderer1.IsolineInterval);
+  TerrainRenderer1.ContourInterval := TBContourInterval.Position;
+  LabelContInterval.Caption := IntToStr(TerrainRenderer1.ContourInterval);
 end;
 
 procedure TForm1.TBScaleZChange(Sender: TObject);
@@ -335,12 +335,12 @@ begin
   LabelZ.Caption := FloatToStrF(TerrainRenderer1.Scale.Z, ffFixed, 5, 2);
 end;
 
-procedure TForm1.CBIsolineIntervalsClick(Sender: TObject);
+procedure TForm1.CBContourIntervalsClick(Sender: TObject);
 begin
-  if CBIsolineIntervals.Checked = True then
-    TerrainRenderer1.IsolineInterval := TBIsolineInterval.Position
+  if CBContourIntervals.Checked = True then
+    TerrainRenderer1.ContourInterval := TBContourInterval.Position
   else
-    TerrainRenderer1.IsolineInterval := 0;
+    TerrainRenderer1.ContourInterval := 0;
   SetFocus;
 end;
 
