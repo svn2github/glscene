@@ -1,5 +1,5 @@
 //
-// VXScene Component Library, based on GLScene http://glscene.sourceforge.net
+// This unit is part of the VXScene Project, http://glscene.org
 //
 {
   Implements a HDS Filter that generates HeightData tiles in a seperate thread.
@@ -12,8 +12,6 @@
   being prepared.  Although this keeps the framerate up, it may cause holes in the
   terrain to show, if the HeightDataThreads cant keep up with the TerrainRenderer's
   requests for new tiles.
-      The whole history is logged in previous versions of the unit
-
 }
 
 unit VXS.AsyncHDS;
@@ -34,17 +32,17 @@ type
   TNewTilePreparedEvent = procedure(Sender: TVXAsyncHDS;
      HeightData: TVXHeightData) of object;  // a tile was updated (called INSIDE the sub-thread?)
 
-  { Determines if/how dirty tiles are displayed and when they are released.
-    When a tile is maked as dirty, a replacement is queued immediately.
-    However, the replacement cant be used until the HDThread has finished preparing it.
-    Dirty tiles can be deleted as soon as they are no longer used/displayed.
-    Possible states for a TUseDirtyTiles.
-    hdsNever :            Dirty tiles get released immediately, leaving a hole in the terrain, until the replacement is hdsReady.
-    hdsUntilReplaced :    Dirty tiles are used, until the HDThread has finished preparing the queued replacement.
-    hdsUntilAllReplaced : Waits until the HDSThread has finished preparing ALL queued tiles,
-    before allowing the renderer to switch over to the new set of tiles.
-    (This prevents a fading checkerbox effect.) }
-  TUseDirtyTiles = (dtNever, dtUntilReplaced, dtUntilAllReplaced);
+  (* Determines if/how dirty tiles are displayed and when they are released.
+     When a tile is maked as dirty, a replacement is queued immediately.
+     However, the replacement cant be used until the HDThread has finished preparing it.
+     Dirty tiles can be deleted as soon as they are no longer used/displayed.
+     Possible states for a TUseDirtyTiles.
+       hdsNever :            Dirty tiles get released immediately, leaving a hole in the terrain, until the replacement is hdsReady.
+       hdsUntilReplaced :    Dirty tiles are used, until the HDThread has finished preparing the queued replacement.
+       hdsUntilAllReplaced : Waits until the HDSThread has finished preparing ALL queued tiles,
+                             before allowing the renderer to switch over to the new set of tiles.
+                             (This prevents a fading checkerbox effect.) *)
+  TUseDirtyTiles=(dtNever,dtUntilReplaced,dtUntilAllReplaced);
 
   TVXAsyncHDS = class(TVXHeightDataSourceFilter)
   private
@@ -175,8 +173,7 @@ begin
       begin
         dec(i);
         HD := TVXHeightData(lst.Items[i]);
-        if (HD.DataState in [hdsReady, hdsNone]) and (HD.DontUse) and
-          (HD.OldVersion <> nil) then
+        if (HD.DataState in [hdsReady, hdsNone]) and (HD.DontUse) and (HD.OldVersion <> nil) then
         begin
           HD.DontUse := false;
           HD.OldVersion.DontUse := true;
@@ -204,8 +201,7 @@ begin
       HD := HeightData;
       // --------------- dtUntilReplaced -------------
       // Tell terrain renderer to display the new tile
-      if (FUseDirtyTiles = dtUntilReplaced) and (HD.DontUse) and
-        (HD.OldVersion <> nil) then
+      if (FUseDirtyTiles = dtUntilReplaced) and (HD.DontUse) and (HD.OldVersion <> nil) then
       begin
         HD.DontUse := false; // No longer ignore the new tile
         HD.OldVersion.DontUse := true; // Start ignoring the old tile
@@ -298,7 +294,6 @@ end;
 initialization
 // ------------------------------------------------------------------
 
-// class registrations
 RegisterClass(TVXAsyncHDS);
 
 end.

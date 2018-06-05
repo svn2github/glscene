@@ -21,7 +21,6 @@ const
   cPERLIN_TABLE_SIZE = 256; // must be a power of two
 
 type
-
   { Generates Perlin Noise in the [-1; 1] range.
     2D noise requests are taken in the Z=0 slice }
   TVXPerlin3DNoise = class(TObject)
@@ -43,9 +42,8 @@ type
     function Noise(const v: TVector): Single; overload;
   end;
 
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
 implementation
-
 // ------------------------------------------------------------------
 
 // ------------------
@@ -100,8 +98,6 @@ begin
   Result := FGradients[g] * fx + FGradients[g + 1] * fy + FGradients[g + 2] * fz;
 end;
 
-// Lattice (2d)
-//
 function TVXPerlin3DNoise.Lattice(ix, iy: Integer; fx, fy: Single): Single;
 const
   cMask = cPERLIN_TABLE_SIZE - 1;

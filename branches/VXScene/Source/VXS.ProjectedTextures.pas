@@ -261,10 +261,10 @@ end;
 procedure TVXProjectedTextures.DoRender(var ARci: TVXRenderContextInfo;
   ARenderSelf, ARenderChildren: boolean);
 const
-  PS: array[0..3] of GLfloat = (1, 0, 0, 0);
-  PT: array[0..3] of GLfloat = (0, 1, 0, 0);
-  PR: array[0..3] of GLfloat = (0, 0, 1, 0);
-  PQ: array[0..3] of GLfloat = (0, 0, 0, 1);
+  PS: array[0..3] of Single = (1, 0, 0, 0);
+  PT: array[0..3] of Single = (0, 1, 0, 0);
+  PR: array[0..3] of Single = (0, 0, 1, 0);
+  PQ: array[0..3] of Single = (0, 0, 0, 1);
 var
   i: integer;
   emitter: TVXTextureEmitter;

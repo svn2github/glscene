@@ -26,7 +26,7 @@ uses
   FMX.Types,
   FMX.Dialogs,
 
-  VXS.OpenGL1x,
+  VXS.OpenGL,
   VXS.Generics,
   VXS.CrossPlatform,
   VXS.VectorGeometry,

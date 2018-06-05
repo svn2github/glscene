@@ -32,8 +32,7 @@ package VXScene_RT;
 requires
   rtl,
   fmx,
-  xmlrtl,
-  vcl;
+  xmlrtl;
 
 contains
   SDL2 in '..\..\Source\GameAPIs\sdl2\SDL2.pas',
@@ -82,7 +81,6 @@ contains
   VXS.CompositeImage in '..\..\Source\VXS.CompositeImage.pas',
   VXS.Console in '..\..\Source\VXS.Console.pas',
   VXS.Context in '..\..\Source\VXS.Context.pas',
-  VXS.Contouring in '..\..\Source\VXS.Contouring.pas',
   VXS.Coordinates in '..\..\Source\VXS.Coordinates.pas',
   VXS.CrossPlatform in '..\..\Source\VXS.CrossPlatform.pas',
   VXS.CurvesAndSurfaces in '..\..\Source\VXS.CurvesAndSurfaces.pas',
@@ -134,6 +132,7 @@ contains
   VXS.FileWAV in '..\..\Source\FileFormats\VXS.FileWAV.pas',
   VXS.FileX in '..\..\Source\FileFormats\VXS.FileX.pas',
   VXS.FireFX in '..\..\Source\VXS.FireFX.pas',
+  VXS.FullScreenViewer in '..\..\Source\VXS.FullScreenViewer.pas',
   VXS.GLSLBumpShader in '..\..\Source\Shaders\VXS.GLSLBumpShader.pas',
   VXS.GLSLDiffuseSpecularShader in '..\..\Source\Shaders\VXS.GLSLDiffuseSpecularShader.pas',
   VXS.GLSLParameter in '..\..\Source\Shaders\VXS.GLSLParameter.pas',
@@ -161,7 +160,6 @@ contains
   VXS.Isosurface in '..\..\Source\VXS.Isosurface.pas',
   VXS.Joystick in '..\..\Source\Basis\VXS.Joystick.pas',
   VXS.Keyboard in '..\..\Source\Basis\VXS.Keyboard.pas',
-  VXS.Language in '..\..\Source\VXS.Language.pas',
   VXS.LensFlare in '..\..\Source\VXS.LensFlare.pas',
   VXS.LinePFX in '..\..\Source\VXS.LinePFX.pas',
   VXS.Manager in '..\..\Source\VXS.Manager.pas',
@@ -186,7 +184,7 @@ contains
   VXS.ObjectManager in '..\..\Source\VXS.ObjectManager.pas',
   VXS.Objects in '..\..\Source\Basis\VXS.Objects.pas',
   VXS.Octree in '..\..\Source\Basis\VXS.Octree.pas',
-  VXS.OpenGL1x in '..\..\Source\Basis\VXS.OpenGL1x.pas',
+  VXS.OpenGL in '..\..\Source\Basis\VXS.OpenGL.pas',
   VXS.OpenGLFMX in '..\..\Source\Basis\VXS.OpenGLFMX.pas',
   VXS.OutlineShader in '..\..\Source\VXS.OutlineShader.pas',
   VXS.ParametricSurfaces in '..\..\Source\VXS.ParametricSurfaces.pas',
@@ -212,6 +210,7 @@ contains
   VXS.RGBE in '..\..\Source\VXS.RGBE.pas',
   VXS.ROAMPatch in '..\..\Source\VXS.ROAMPatch.pas',
   VXS.Ragdoll in '..\..\Source\VXS.Ragdoll.pas',
+  VXS.RandomHDS in '..\..\Source\VXS.RandomHDS.pas',
   VXS.RedBlackTree in '..\..\Source\VXS.RedBlackTree.pas',
   VXS.RenderContextInfo in '..\..\Source\VXS.RenderContextInfo.pas',
   VXS.Scene in '..\..\Source\VXS.Scene.pas',
@@ -253,6 +252,7 @@ contains
   VXS.TimeEventsMgr in '..\..\Source\VXS.TimeEventsMgr.pas',
   VXS.Trail in '..\..\Source\VXS.Trail.pas',
   VXS.Tree in '..\..\Source\VXS.Tree.pas',
+  VXS.Triangulation in '..\..\Source\VXS.Triangulation.pas',
   VXS.Types in '..\..\Source\Basis\VXS.Types.pas',
   VXS.Utils in '..\..\Source\Basis\VXS.Utils.pas',
   VXS.VectorFileObjects in '..\..\Source\Basis\VXS.VectorFileObjects.pas',
@@ -275,7 +275,7 @@ contains
   VXS.SDLContext in '..\..\Source\GameAPIs\VXS.SDLContext.pas',
   VXS.SDLWindow in '..\..\Source\GameAPIs\VXS.SDLWindow.pas',
   VXS.ViewerOpenGL in '..\..\Source\VXS.ViewerOpenGL.pas',
-  VXS.FullScreenViewer in '..\..\Source\VXS.FullScreenViewer.pas';
+  VXS.Isolines in '..\..\Source\VXS.Isolines.pas';
 
 end.
 

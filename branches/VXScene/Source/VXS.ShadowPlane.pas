@@ -19,7 +19,7 @@ uses
   Winapi.OpenGLext,
   System.Classes,
 
-  VXS.OpenGL1x,
+  VXS.OpenGL,
   VXS.VectorTypes,
   VXS.PersistentClasses,
   VXS.Scene,

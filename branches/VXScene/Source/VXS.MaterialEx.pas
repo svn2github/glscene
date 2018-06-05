@@ -26,7 +26,7 @@ uses
   System.SysUtils,
   FMX.Dialogs,
 
-  VXS.OpenGL1x,
+  VXS.OpenGL,
   VXS.XOpenGL,
   VXS.RenderContextInfo,
   VXS.BaseClasses,
@@ -745,7 +745,7 @@ type
     function GetUVec2: TVector2ui; virtual;
     function GetUVec3: TVector3ui; virtual;
     function GetUVec4: TVector4ui; virtual;
-    procedure SetFloat(const Value: GLfloat); virtual;
+    procedure SetFloat(const Value: Single); virtual;
     procedure SetVec2(const Value: TVector2f); virtual;
     procedure SetVec3(const Value: TVector3f); virtual;
     procedure SetVec4(const Value: TVector4f); virtual;
@@ -794,7 +794,7 @@ type
     function GetUVec2: TVector2ui; override;
     function GetUVec3: TVector3ui; override;
     function GetUVec4: TVector4ui; override;
-    procedure SetFloat(const Value: GLfloat); override;
+    procedure SetFloat(const Value: Single); override;
     procedure SetVec2(const Value: TVector2f); override;
     procedure SetVec3(const Value: TVector3f); override;
     procedure SetVec4(const Value: TVector4f); override;
@@ -829,7 +829,7 @@ type
 
   TVXShaderUniformDSA = class(TVXShaderUniform)
   protected
-    procedure SetFloat(const Value: GLfloat); override;
+    procedure SetFloat(const Value: Single); override;
     procedure SetVec2(const Value: TVector2f); override;
     procedure SetVec3(const Value: TVector3f); override;
     procedure SetVec4(const Value: TVector4f); override;
@@ -1225,18 +1225,18 @@ type
   end;
 
 var
-  vGLMaterialExNameChangeEvent: TNotifyEvent;
+  vMaterialExNameChangeEvent: TNotifyEvent;
   vStandartUniformAutoSetExecutor: TStandartUniformAutoSetExecutor;
   vStoreBegin: procedure(mode: GLEnum); {$IFDEF MSWINDOWS}stdcall;{$ENDIF}{$IFDEF UNIX}cdecl;{$ENDIF}
 
 procedure RegisterGLMaterialExNameChangeEvent(AEvent: TNotifyEvent);
 begin
-  vGLMaterialExNameChangeEvent := AEvent;
+  vMaterialExNameChangeEvent := AEvent;
 end;
 
 procedure DeRegisterGLMaterialExNameChangeEvent(AEvent: TNotifyEvent);
 begin
-  vGLMaterialExNameChangeEvent := nil;
+  vMaterialExNameChangeEvent := nil;
 end;
 
 function ComputeNameHashKey(
@@ -1384,8 +1384,8 @@ begin
     // Notify users
     NotifyChange(Self);
     // Notify designer
-    if Assigned(vGLMaterialExNameChangeEvent) then
-      vGLMaterialExNameChangeEvent(Self);
+    if Assigned(vMaterialExNameChangeEvent) then
+      vMaterialExNameChangeEvent(Self);
   end;
 end;
 
@@ -5791,7 +5791,7 @@ procedure TVXAbstractShaderUniform.ReadFromFiler(AReader: TReader);
 begin
 end;
 
-procedure TVXAbstractShaderUniform.SetFloat(const Value: GLfloat);
+procedure TVXAbstractShaderUniform.SetFloat(const Value: Single);
 begin
 end;
 
@@ -6023,7 +6023,7 @@ begin
   end;
 end;
 
-procedure TVXShaderUniform.SetFloat(const Value: GLfloat);
+procedure TVXShaderUniform.SetFloat(const Value: Single);
 begin
   PushProgram;
   glUniform1f(FLocation, Value);
@@ -6169,7 +6169,7 @@ end;
 
 { TVXShaderUniformDSA }
 
-procedure TVXShaderUniformDSA.SetFloat(const Value: GLfloat);
+procedure TVXShaderUniformDSA.SetFloat(const Value: Single);
 begin
   glProgramUniform1f(GetProgram, FLocation, Value);
 end;

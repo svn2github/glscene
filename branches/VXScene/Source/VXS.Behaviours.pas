@@ -2,7 +2,7 @@
 // VXScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
 {
-  Standard TVXBehaviour subclasses for GLScene<p>
+  Standard TVXBehaviour subclasses
 }
 unit VXS.Behaviours;
 
@@ -38,14 +38,13 @@ type
     FConstant: single;
     FLinear: single;
     FQuadratic: single;
-  protected
   public
     constructor Create(aOwner: TPersistent); override;
     destructor Destroy; override;
     procedure WriteToFiler(writer: TWriter);
     procedure ReadFromFiler(reader: TReader);
     procedure Assign(Source: TPersistent); override;
-      { Calculates attenuated speed over deltaTime.<p>
+      { Calculates attenuated speed over deltaTime.
             Integration step is 0.01 sec, and the following formula is applied
             at each step: constant+linear*speed+quadratic*speed^2 }
     function Calculate(speed, deltaTime: double): double;
@@ -62,7 +61,7 @@ type
 
   { Simple translation and rotation Inertia behaviour.
     Stores translation and rotation speeds, to which you can apply
-    accelerations.<p>
+    accelerations.
     Note that the rotation model is not physical, so feel free to contribute
     a "realworld" inertia class with realistic, axis-free, rotation inertia
     if this approximation does not suits your needs :). }
@@ -126,7 +125,7 @@ type
     property RotationDamping: TVXDamping read FRotationDamping write SetRotationDamping;
   end;
 
-  { Applies a constant acceleration to a TVXBInertia.<p> }
+  { Applies a constant acceleration to a TVXBInertia. }
   TVXBAcceleration = class(TVXBehaviour)
   private
     FAcceleration: TVXCoordinates;
@@ -146,13 +145,13 @@ type
     property Acceleration: TVXCoordinates read FAcceleration write FAcceleration;
   end;
 
-{ Returns or creates the TVXBInertia within the given behaviours.<p>
+{ Returns or creates the TVXBInertia within the given behaviours.
   This helper function is convenient way to access a TVXBInertia. }
 function GetInertia(const AVXSceneObject: TVXBaseSceneObject): TVXBInertia;
 function GetOrCreateInertia(behaviours: TVXBehaviours): TVXBInertia; overload;
 function GetOrCreateInertia(obj: TVXBaseSceneObject): TVXBInertia; overload;
 
-{ Returns or creates the TVXBAcceleration within the given behaviours.<p>
+{ Returns or creates the TVXBAcceleration within the given behaviours.
   This helper function is convenient way to access a TVXBAcceleration. }
 function GetOrCreateAcceleration(behaviours: TVXBehaviours): TVXBAcceleration;
   overload;

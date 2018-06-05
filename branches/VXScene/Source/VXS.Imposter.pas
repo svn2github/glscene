@@ -16,7 +16,7 @@ uses
   System.Classes,
   System.SysUtils,
   
-  VXS.OpenGL1x,
+  VXS.OpenGL,
   VXS.Scene,
   VXS.Context,
   VXS.VectorTypes,
@@ -180,7 +180,7 @@ type
       SetImposterReference default irCenter;
     { Alpha testing teshold.  }
     property AlphaTreshold: Single read FAlphaTreshold write FAlphaTreshold;
-    { Event fired before preparing/loading an imposter. 
+    { Event fired before preparing/loading an imposter.
        If an already prepared version of the importer is available, place
        it in the TVXBitmap32 the event shall return (the bitmap will be
        freed by the imposter builder). If a bitmap is specified, it will

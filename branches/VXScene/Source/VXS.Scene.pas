@@ -24,7 +24,7 @@ uses
   FMX.Types,
   FMX.Dialogs,
 
-  VXS.OpenGL1x,
+  VXS.OpenGL,
   VXS.Strings,
   VXS.Context,
   VXS.VectorGeometry,
@@ -1791,27 +1791,27 @@ end;
 // ------------------ internal global routines ----------------------------------
 
 var
-  vGLBaseSceneObjectNameChangeEvent: TNotifyEvent;
-  vGLBehaviourNameChangeEvent: TNotifyEvent;
+  vBaseSceneObjectNameChangeEvent: TNotifyEvent;
+  vBehaviourNameChangeEvent: TNotifyEvent;
 
 procedure RegisterGLBaseSceneObjectNameChangeEvent(notifyEvent: TNotifyEvent);
 begin
-  vGLBaseSceneObjectNameChangeEvent := notifyEvent;
+  vBaseSceneObjectNameChangeEvent := notifyEvent;
 end;
 
 procedure DeRegisterGLBaseSceneObjectNameChangeEvent(notifyEvent: TNotifyEvent);
 begin
-  vGLBaseSceneObjectNameChangeEvent := nil;
+  vBaseSceneObjectNameChangeEvent := nil;
 end;
 
 procedure RegisterGLBehaviourNameChangeEvent(notifyEvent: TNotifyEvent);
 begin
-  vGLBehaviourNameChangeEvent := notifyEvent;
+  vBehaviourNameChangeEvent := notifyEvent;
 end;
 
 procedure DeRegisterGLBehaviourNameChangeEvent(notifyEvent: TNotifyEvent);
 begin
-  vGLBehaviourNameChangeEvent := nil;
+  vBehaviourNameChangeEvent := nil;
 end;
 
 // ------------------
@@ -2089,12 +2089,12 @@ end;
 
 procedure TVXBaseSceneObject.WriteRotations(stream: TStream);
 begin
-  stream.Write(FRotation.AsAddress^, 3 * SizeOf(GLFloat));
+  stream.Write(FRotation.AsAddress^, 3 * SizeOf(Single));
 end;
 
 procedure TVXBaseSceneObject.ReadRotations(stream: TStream);
 begin
-  stream.Read(FRotation.AsAddress^, 3 * SizeOf(GLFloat));
+  stream.Read(FRotation.AsAddress^, 3 * SizeOf(Single));
 end;
 
 procedure TVXBaseSceneObject.DrawAxes(var rci: TVXRenderContextInfo; pattern: Word);
@@ -3095,8 +3095,8 @@ begin
   if Name <> NewName then
   begin
     inherited SetName(NewName);
-    if Assigned(vGLBaseSceneObjectNameChangeEvent) then
-      vGLBaseSceneObjectNameChangeEvent(Self);
+    if Assigned(vBaseSceneObjectNameChangeEvent) then
+      vBaseSceneObjectNameChangeEvent(Self);
   end;
 end;
 
@@ -3987,8 +3987,8 @@ end;
 procedure TVXBaseBehaviour.SetName(const val: string);
 begin
   inherited SetName(val);
-  if Assigned(vGLBehaviourNameChangeEvent) then
-    vGLBehaviourNameChangeEvent(Self);
+  if Assigned(vBehaviourNameChangeEvent) then
+    vBehaviourNameChangeEvent(Self);
 end;
 
 procedure TVXBaseBehaviour.WriteToFiler(writer: TWriter);

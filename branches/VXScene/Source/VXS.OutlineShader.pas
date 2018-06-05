@@ -22,7 +22,7 @@ uses
   Winapi.OpenGLext,
   System.Classes,
 
-  VXS.OpenGL1x,
+  VXS.OpenGL,
   VXS.Material,
   VXS.CrossPlatform,
   VXS.Color,

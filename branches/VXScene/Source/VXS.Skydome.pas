@@ -18,7 +18,7 @@ uses
   System.Math,
   FMX.Graphics,
 
-  VXS.OpenGL1x,
+  VXS.OpenGL,
   VXS.Scene,
   VXS.VectorGeometry,
   VXS.Context,

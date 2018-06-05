@@ -1,8 +1,8 @@
 //
-// VXScene Component Library, based on GLScene http://glscene.sourceforge.net
+// This unit is part of the VXScene Project, http://glscene.org
 //
 {
- Applies a blur effect over the viewport.<p>
+  Applies a blur effect over the viewport.
 }
 
 unit VXS.Blur;
@@ -19,7 +19,6 @@ uses
   System.UITypes,
   FMX.Graphics,
 
-  VXS.OpenGL1x,
   VXS.VectorTypes,
   VXS.PersistentClasses,
   VXS.Scene,
@@ -46,6 +45,7 @@ type
   TRGBPixel = record
     R, G, B: GLubyte;
   end;
+  
   TRGBPixelBuffer = array of TRGBPixel;
   TVXAdvancedBlurImagePrepareEvent = procedure(Sender: TObject; BMP32: TVXBitmap32; var DoBlur: boolean) of object;
 
@@ -126,11 +126,9 @@ type
     property OnAfterTargetRender: TNotifyEvent read FOnAfterTargetRender write SetOnAfterTargetRender;
   end;
 
-  {
-    This component blurs everything thatis rendered BEFORE it. So if you want part
+  { This component blurs everything thatis rendered BEFORE it. So if you want part
     of your scene blured, the other not blured, make sure that the other part is
     rendered after this component. It is fast and does not require shaders.
-
     Note: it is FPS-dependant. Also also can produce a "blury trail effect", which
     stays on the screen until something new is rendered over it. It can be overcome
     by changing the Material.FrontProperties.Diffuse property. This, however, also
@@ -138,11 +136,9 @@ type
     your backgroud color is Black, set the Material.FrontProperties.Diffuse to White.
     If it is White, set Material.FrontProperties.Diffuse to Black. I haven't tried
     any others, but I hope you get the idea ;)
-
     I've seen this effect in different Bruring components, even in shaders, but if
     anyone knows another way to fix this issue - please post it on the glscene
-    newsgroup.
-  }
+    newsgroup. }
   TVXMotionBlur = class(TVXCustomSceneObject, IGLInitializable)
   private
     FIntensity: Single;
@@ -167,9 +163,10 @@ type
     property Hint;
   end;
 
-//====================================================================
+//------------------------------------------------------------------------
 implementation
-//====================================================================
+//------------------------------------------------------------------------
+
 
 const
   EPS = 0.001;
@@ -450,9 +447,7 @@ begin
   end;
   if ARci.ignoreMaterials then
     Exit;
-    CheckOpenGLError;
   Material.Apply(ARci);
-  CheckOpenGLError;
   repeat
     if AlphaChannel <> 1 then
       ARci.VXStates.SetMaterialAlphaChannel(GL_FRONT, AlphaChannel);
@@ -834,14 +829,15 @@ end;
 
 function TVXMotionBlur.SupportsRequiredExtensions: Boolean;
 begin
-  Result := GL_ARB_texture_rectangle or GL_EXT_texture_rectangle or GL_NV_texture_rectangle;
+  Result := True;
+//  (GL_TEXTURE_RECTANGLE or GL_TEXTURE_RECTANGLE_ARB or GL_TEXTURE_RECTANGLE_NV);
 end;
 
 // ------------------------------------------------------------------
 initialization
 // ------------------------------------------------------------------
 
-     // class registrations
+  // class registrations
   RegisterClass(TVXBlur);
   RegisterClass(TVXMotionBlur);
 

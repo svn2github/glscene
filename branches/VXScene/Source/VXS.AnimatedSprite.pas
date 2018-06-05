@@ -1,16 +1,9 @@
 //
-// VXScene Component Library, based on GLScene http://glscene.sourceforge.net 
+// This unit is part of the VXScene Project, http://glscene.org
 //
 {
-  This Source Code is subject to the terms of the Mozilla Public License v. 2.0.
-  If a copy of the MPL was not distributed with this file,
-  You can obtain one at http://mozilla.org/MPL/2.0/.
+  A sprite that uses a scrolling texture for animation. 
 }
-{
-  A sprite that uses a scrolling texture for animation.
-  The whole history is logged in previous versions of the unit.
-}
-
 unit VXS.AnimatedSprite;
 
 interface
@@ -24,11 +17,12 @@ uses
   System.SysUtils,
   System.Math,
   
-  VXS.VectorTypes,
-  VXS.PersistentClasses,
   VXS.Scene,
-  VXS.Context,
+  VXS.VectorTypes,
   VXS.VectorGeometry,
+
+  VXS.PersistentClasses,
+  VXS.Context,
   VXS.Material,
   VXS.CrossPlatform,
   VXS.RenderContextInfo,

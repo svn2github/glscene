@@ -33,8 +33,8 @@ type
     procedure SetAsVector(const Value: TVector);
     procedure SetAsAffineVector(const Value: TAffineVector);
     function GetAsAffineVector: TAffineVector;
-    procedure SetCoordinate(AIndex: Integer; AValue: GLfloat);
-    function GetCoordinate(const Index: Integer): GLfloat;
+    procedure SetCoordinate(AIndex: Integer; AValue: Single);
+    function GetCoordinate(const Index: Integer): Single;
   protected
     function StoreCoordinate(AIndex: Integer): Boolean;
     function GetDisplayName: string; override;
@@ -52,12 +52,12 @@ type
       if you don't want so, use DirectVector instead.
       The W component is automatically adjustes depending on style. }
     property AsAffineVector: TAffineVector read GetAsAffineVector write SetAsAffineVector;
-    property W: GLfloat index 3 read GetCoordinate write SetCoordinate stored StoreCoordinate;
+    property W: Single index 3 read GetCoordinate write SetCoordinate stored StoreCoordinate;
     property TagObject: TObject read FTagObject write FTagObject;
   published
-    property X: GLfloat index 0 read GetCoordinate write SetCoordinate stored StoreCoordinate;
-    property Y: GLfloat index 1 read GetCoordinate write SetCoordinate stored StoreCoordinate;
-    property Z: GLfloat index 2 read GetCoordinate write SetCoordinate stored StoreCoordinate;
+    property X: Single index 0 read GetCoordinate write SetCoordinate stored StoreCoordinate;
+    property Y: Single index 1 read GetCoordinate write SetCoordinate stored StoreCoordinate;
+    property Z: Single index 2 read GetCoordinate write SetCoordinate stored StoreCoordinate;
   end;
 
   TVXNodes = class(TOwnedCollection)
@@ -76,7 +76,7 @@ type
     procedure NotifyChange; virtual;
     procedure EndUpdate; override;
     procedure AddNode(const Coords: TVXCustomCoordinates); overload;
-    procedure AddNode(const X, Y, Z: GLfloat); overload;
+    procedure AddNode(const X, Y, Z: Single); overload;
     procedure AddNode(const Value: TVector); overload;
     procedure AddNode(const Value: TAffineVector); overload;
     procedure AddXYArc(XRadius, YRadius: Single; StartAngle, StopAngle: Single; NbSegments: Integer;
@@ -159,22 +159,22 @@ end;
 
 procedure TVXNode.SetAsAffineVector(const Value: TAffineVector);
 begin
-  VXS.VectorGeometry.SetVector(FCoords, Value);
+  SetVector(FCoords, Value);
   (Collection as TVXNodes).NotifyChange;
 end;
 
 function TVXNode.GetAsAffineVector: TAffineVector;
 begin
-  VXS.VectorGeometry.SetVector(Result, FCoords);
+  SetVector(Result, FCoords);
 end;
 
-function TVXNode.GetCoordinate(const Index: Integer): GLfloat;
+function TVXNode.GetCoordinate(const Index: Integer): Single;
 begin
   Result := FCoords.V[Index];
 end;
 
 
-procedure TVXNode.SetCoordinate(AIndex: Integer; AValue: GLfloat);
+procedure TVXNode.SetCoordinate(AIndex: Integer; AValue: Single);
 begin
   FCoords.V[AIndex] := AValue;
   (Collection as TVXNodes).NotifyChange;
@@ -502,9 +502,9 @@ var
   I: Integer;
   Xa, Ya, Za: PFloatArray;
 begin
-  GetMem(Xa, SizeOf(GLfloat) * Count);
-  GetMem(Ya, SizeOf(GLfloat) * Count);
-  GetMem(Za, SizeOf(GLfloat) * Count);
+  GetMem(Xa, SizeOf(Single) * Count);
+  GetMem(Ya, SizeOf(Single) * Count);
+  GetMem(Za, SizeOf(Single) * Count);
   for I := 0 to Count - 1 do
     with Items[I] do
     begin

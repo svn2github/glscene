@@ -7,7 +7,7 @@
         <TargetedPlatforms>1</TargetedPlatforms>
         <AppType>Package</AppType>
         <FrameworkType>FMX</FrameworkType>
-        <ProjectVersion>18.2</ProjectVersion>
+        <ProjectVersion>18.3</ProjectVersion>
         <Platform Condition="'$(Platform)'==''">Win32</Platform>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
@@ -121,8 +121,15 @@
         <VerInfo_Locale>1033</VerInfo_Locale>
         <DCC_Namespace>Winapi;System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
-        <VerInfo_Keys>CompanyName=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductVersion=1.0.0.0;Comments=;ProgramID=com.embarcadero.$(ModuleName);FileDescription=$(ModuleName);ProductName=$(ModuleName)</VerInfo_Keys>
+        <VerInfo_Keys>CompanyName=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductVersion=1.0.0.0;Comments=;ProgramID=com.embarcadero.$(MSBuildProjectName);FileDescription=$(MSBuildProjectName);ProductName=$(MSBuildProjectName)</VerInfo_Keys>
         <DCC_UsePackage>rtl;vcl;$(DCC_UsePackage)</DCC_UsePackage>
+        <DCC_UnitSearchPath>$(VXSCENE)\Source;$(VXSCENE)\Source\Basis;$(VXSCENE)\Source\DesignTime;$(VXSCENE)\Source\FileFormats;$(VXSCENE)\Source\GameAPIs;$(VXSCENE)\Source\ParallelAPIs;$(VXSCENE)\Source\PhysicsAPIs;$(VXSCENE)\Source\ScriptingAPIs;$(VXSCENE)\Source\Shaders;$(VXSCENE)\Source\SoundVideoAPIs;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_DcpOutput>$(VXSCENE)\lib\Win32</DCC_DcpOutput>
+        <DCC_DcuOutput>$(VXSCENE)\lib\Win32</DCC_DcuOutput>
+        <DCC_BplOutput>$(VXSCENE)\bpl\Win32</DCC_BplOutput>
+        <DCC_BpiOutput>$(VXSCENE)\lib\Win32</DCC_BpiOutput>
+        <DCC_ObjOutput>$(VXSCENE)\lib\Win32</DCC_ObjOutput>
+        <DCC_HppOutput>$(VXSCENE)\include\Win32</DCC_HppOutput>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win64)'!=''">
         <DCC_DcuOutput>.\$(Platform)\$(Config)</DCC_DcuOutput>
@@ -152,17 +159,14 @@
         <BT_BuildType>Debug</BT_BuildType>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
-        <DCC_UnitSearchPath>$(VXSCENEDIR)\Source;$(VXSCENEDIR)\Source\Basis;$(VXSCENEDIR)\Source\DesignTime;$(VXSCENEDIR)\Source\FileFormats;$(VXSCENEDIR)\Source\GameAPIs;$(VXSCENEDIR)\Source\ParallelAPIs;$(VXSCENEDIR)\Source\PhysicsAPIs;$(VXSCENEDIR)\Source\ScriptingAPIs;$(VXSCENEDIR)\Source\Shaders;$(VXSCENEDIR)\Source\SoundVideoAPIs;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
-        <DCC_DcuOutput>$(VXSCENEDIR)\lib\Win32</DCC_DcuOutput>
-        <DCC_BpiOutput>$(VXSCENEDIR)\lib\Win32</DCC_BpiOutput>
+        <DCC_DcuOutput>$(VXSCENE)\lib\Win32</DCC_DcuOutput>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <DCC_CBuilderOutput>All</DCC_CBuilderOutput>
-        <DCC_HppOutput>$(VXSCENEDIR)\include\Win32</DCC_HppOutput>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Keys>CompanyName=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductVersion=1.0.0.0;Comments=;ProgramID=com.embarcadero.$(MSBuildProjectName);FileDescription=$(MSBuildProjectName);ProductName=$(MSBuildProjectName)</VerInfo_Keys>
-        <DCC_ObjOutput>$(VXSCENEDIR)\lib\Win32</DCC_ObjOutput>
-        <DCC_DcpOutput>$(VXSCENEDIR)\lib\Win32</DCC_DcpOutput>
+        <DCC_DcpOutput>$(VXSCENE)\lib\Win32</DCC_DcpOutput>
         <DCC_Description>VXScene 3D library</DCC_Description>
+        <DCC_BplOutput>$(VXSCENE)\bpl\Win32</DCC_BplOutput>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win64)'!=''">
         <DCC_DcpOutput>$(VKSCENEDIR)\lib\Win32</DCC_DcpOutput>
@@ -182,7 +186,6 @@
         <DCCReference Include="rtl.dcp"/>
         <DCCReference Include="fmx.dcp"/>
         <DCCReference Include="xmlrtl.dcp"/>
-        <DCCReference Include="vcl.dcp"/>
         <DCCReference Include="..\..\Source\GameAPIs\sdl2\SDL2.pas"/>
         <DCCReference Include="..\..\Source\FileFormats\uConst3DS.pas"/>
         <DCCReference Include="..\..\Source\FileFormats\uDDSImage.pas"/>
@@ -229,7 +232,6 @@
         <DCCReference Include="..\..\Source\VXS.CompositeImage.pas"/>
         <DCCReference Include="..\..\Source\VXS.Console.pas"/>
         <DCCReference Include="..\..\Source\VXS.Context.pas"/>
-        <DCCReference Include="..\..\Source\VXS.Contouring.pas"/>
         <DCCReference Include="..\..\Source\VXS.Coordinates.pas"/>
         <DCCReference Include="..\..\Source\VXS.CrossPlatform.pas"/>
         <DCCReference Include="..\..\Source\VXS.CurvesAndSurfaces.pas"/>
@@ -281,6 +283,7 @@
         <DCCReference Include="..\..\Source\FileFormats\VXS.FileWAV.pas"/>
         <DCCReference Include="..\..\Source\FileFormats\VXS.FileX.pas"/>
         <DCCReference Include="..\..\Source\VXS.FireFX.pas"/>
+        <DCCReference Include="..\..\Source\VXS.FullScreenViewer.pas"/>
         <DCCReference Include="..\..\Source\Shaders\VXS.GLSLBumpShader.pas"/>
         <DCCReference Include="..\..\Source\Shaders\VXS.GLSLDiffuseSpecularShader.pas"/>
         <DCCReference Include="..\..\Source\Shaders\VXS.GLSLParameter.pas"/>
@@ -308,7 +311,6 @@
         <DCCReference Include="..\..\Source\VXS.Isosurface.pas"/>
         <DCCReference Include="..\..\Source\Basis\VXS.Joystick.pas"/>
         <DCCReference Include="..\..\Source\Basis\VXS.Keyboard.pas"/>
-        <DCCReference Include="..\..\Source\VXS.Language.pas"/>
         <DCCReference Include="..\..\Source\VXS.LensFlare.pas"/>
         <DCCReference Include="..\..\Source\VXS.LinePFX.pas"/>
         <DCCReference Include="..\..\Source\VXS.Manager.pas"/>
@@ -333,7 +335,7 @@
         <DCCReference Include="..\..\Source\VXS.ObjectManager.pas"/>
         <DCCReference Include="..\..\Source\Basis\VXS.Objects.pas"/>
         <DCCReference Include="..\..\Source\Basis\VXS.Octree.pas"/>
-        <DCCReference Include="..\..\Source\Basis\VXS.OpenGL1x.pas"/>
+        <DCCReference Include="..\..\Source\Basis\VXS.OpenGL.pas"/>
         <DCCReference Include="..\..\Source\Basis\VXS.OpenGLFMX.pas"/>
         <DCCReference Include="..\..\Source\VXS.OutlineShader.pas"/>
         <DCCReference Include="..\..\Source\VXS.ParametricSurfaces.pas"/>
@@ -359,6 +361,7 @@
         <DCCReference Include="..\..\Source\VXS.RGBE.pas"/>
         <DCCReference Include="..\..\Source\VXS.ROAMPatch.pas"/>
         <DCCReference Include="..\..\Source\VXS.Ragdoll.pas"/>
+        <DCCReference Include="..\..\Source\VXS.RandomHDS.pas"/>
         <DCCReference Include="..\..\Source\VXS.RedBlackTree.pas"/>
         <DCCReference Include="..\..\Source\VXS.RenderContextInfo.pas"/>
         <DCCReference Include="..\..\Source\VXS.Scene.pas"/>
@@ -400,6 +403,7 @@
         <DCCReference Include="..\..\Source\VXS.TimeEventsMgr.pas"/>
         <DCCReference Include="..\..\Source\VXS.Trail.pas"/>
         <DCCReference Include="..\..\Source\VXS.Tree.pas"/>
+        <DCCReference Include="..\..\Source\VXS.Triangulation.pas"/>
         <DCCReference Include="..\..\Source\Basis\VXS.Types.pas"/>
         <DCCReference Include="..\..\Source\Basis\VXS.Utils.pas"/>
         <DCCReference Include="..\..\Source\Basis\VXS.VectorFileObjects.pas"/>
@@ -422,7 +426,7 @@
         <DCCReference Include="..\..\Source\GameAPIs\VXS.SDLContext.pas"/>
         <DCCReference Include="..\..\Source\GameAPIs\VXS.SDLWindow.pas"/>
         <DCCReference Include="..\..\Source\VXS.ViewerOpenGL.pas"/>
-        <DCCReference Include="..\..\Source\VXS.FullScreenViewer.pas"/>
+        <DCCReference Include="..\..\Source\VXS.Isolines.pas"/>
         <BuildConfiguration Include="Debug">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -486,7 +490,7 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="C:\Users\Public\Documents\Embarcadero\Studio\19.0\Bpl\VXScene_RT.bpl" Configuration="Debug" Class="ProjectOutput">
+                <DeployFile LocalName="..\..\bpl\Win32\VXScene_RT.bpl" Configuration="Debug" Class="ProjectOutput">
                     <Platform Name="Win32">
                         <RemoteName>VXScene_RT.bpl</RemoteName>
                         <Overwrite>true</Overwrite>

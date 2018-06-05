@@ -26,7 +26,7 @@ uses
   FMX.Controls,
   FMX.Graphics,
 
-  VXS.OpenGL1x,
+  VXS.OpenGL,
   VXS.Scene,
   VXS.Win64Context,
   VXS.TextureFormat,
@@ -36,7 +36,6 @@ type
 
   TVXSceneViewport = class(TControl)
   private
-    { Private Declarations }
     FGLSBuffer: TVXSceneBuffer;
     FFMXBuffer: TBitmap;
     FFMXContext: TContext3D;
@@ -66,7 +65,7 @@ type
     property BeforeRender: TNotifyEvent read GetBeforeRender write SetBeforeRender;
     { Triggered just after all the scene's objects have been rendered.
        The OpenGL context is still active in this event, and you may use it
-       to execute your own OpenGL rendering.<p> }
+       to execute your own OpenGL rendering. }
     property PostRender: TNotifyEvent read FPostRender write FPostRender;
     { Called after rendering. You cannot issue OpenGL calls in this event, if you want
       to do your own OpenGL stuff, use the PostRender event. }

@@ -1,12 +1,12 @@
 //
-// VXScene Component Library, based on GLScene http://glscene.sourceforge.net
+// This unit is part of the VXScene Project, http://glscene.org
 //
 {
-   This unit contains classes that imitate an atmosphere around a planet.<p>
-    Comments:
+   This unit contains classes that imitate an atmosphere around a planet.
+
+   Comments:
       1) Eats a lot of CPU (reduces FPS from 1240 to 520 on my PC with cSlices=100)
       2) Alpha in LowAtmColor, HighAtmColor is ignored.
-
 }
 
 unit VXS.Atmosphere;
@@ -266,7 +266,7 @@ begin
     rci.VXStates.DepthWriteMask := False;
     rci.VXStates.Disable(stLighting);
     rci.VXStates.Enable(stBlend);
-    EnableGLBlendingMode(rci.VxStates);
+    EnableGLBlendingMode(rci.VXStates);
     for I := 0 to 13 do
     begin
       if I < 5 then

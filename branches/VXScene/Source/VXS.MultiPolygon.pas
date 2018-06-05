@@ -29,7 +29,7 @@ uses
   System.Classes,
   System.SysUtils,
 
-  VXS.OpenGL1x,
+  VXS.OpenGL,
   VXS.XOpenGL,
   VXS.Spline,
   VXS.Context,
@@ -141,7 +141,7 @@ type
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
     procedure AddNode(const i: Integer; const coords: TVXCoordinates); overload;
-    procedure AddNode(const i: Integer; const X, Y, Z: GLfloat); overload;
+    procedure AddNode(const i: Integer; const X, Y, Z: Single); overload;
     procedure AddNode(const i: Integer; const value: TVector); overload;
     procedure AddNode(const i: Integer; const value: TAffineVector); overload;
     property Path[i: Integer]: TVXContourNodes read GetPath write SetPath;
@@ -432,7 +432,7 @@ begin
   Path[i].AddNode(value);
 end;
 
-procedure TMultiPolygonBase.AddNode(const i: Integer; const x, y, z: GLfloat);
+procedure TMultiPolygonBase.AddNode(const i: Integer; const x, y, z: Single);
 begin
   Path[i].AddNode(x, y, z);
 end;

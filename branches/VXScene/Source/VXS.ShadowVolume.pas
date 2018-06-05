@@ -21,7 +21,7 @@ uses
   System.SysUtils,
   System.Classes,
 
-  VXS.OpenGL1x,
+  VXS.OpenGL,
   VXS.Scene,
   VXS.PipelineTransformation,
   VXS.VectorLists,

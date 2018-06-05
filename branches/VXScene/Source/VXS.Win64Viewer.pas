@@ -23,7 +23,7 @@ uses
   FMX.Dialogs.Win,
   FMX.Viewport3D,
   
-  VXS.OpenGL1x,
+  VXS.OpenGL,
   VXS.Scene,
   VXS.Win64Context,
   VXS.Context;

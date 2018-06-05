@@ -120,11 +120,11 @@ type
     FTriangleCount: Integer;
     FNormalDirection: TNormalDirection;
     FParts: TExtrusionSolidParts;
-    FHeight: GLfloat;
+    FHeight: Single;
     FMinSmoothAngle: Single;
     FMinSmoothAngleCos: Single;
     FAxisAlignedDimensionsCache: TVector;
-    procedure SetHeight(const Value: GLfloat);
+    procedure SetHeight(const Value: Single);
     procedure SetMinSmoothAngle(const Value: Single);
   protected
     procedure SetStacks(const val: Integer);
@@ -142,7 +142,7 @@ type
     procedure StructureChanged; override;
   published
     property Parts: TExtrusionSolidParts read FParts write SetParts default [espOutside];
-    property Height: GLfloat read FHeight write SetHeight;
+    property Height: Single read FHeight write SetHeight;
     property Stacks: Integer read FStacks write SetStacks default 1;
     property Normals: TNormalSmoothing read FNormals write SetNormals default nsFlat;
     property NormalDirection: TNormalDirection read FNormalDirection write SetNormalDirection default ndOutside;
@@ -1248,7 +1248,7 @@ begin
     // create position spline
     posSpline := Nodes.CreateNewCubicSpline;
     // create radius spline
-    GetMem(ra, SizeOf(GLfloat) * Nodes.Count);
+    GetMem(ra, SizeOf(Single) * Nodes.Count);
     for i := 0 to Nodes.Count - 1 do
       ra^[i] := TVXPipeNode(Nodes[i]).RadiusFactor;
     rSpline := TCubicSpline.Create(ra, nil, nil, nil, Nodes.Count);
@@ -1609,7 +1609,7 @@ begin
   inherited;
 end;
 
-procedure TVXExtrusionSolid.SetHeight(const Value: GLfloat);
+procedure TVXExtrusionSolid.SetHeight(const Value: Single);
 begin
   if (Value <> FHeight) then
   begin

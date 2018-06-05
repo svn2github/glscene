@@ -16,7 +16,7 @@ uses
   System.SysUtils,
   System.Classes,
   
-  VXS.OpenGL1x,
+  VXS.OpenGL,
   VXS.Context;
 
 type

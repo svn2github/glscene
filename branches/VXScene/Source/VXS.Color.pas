@@ -20,7 +20,7 @@ uses
   FMX.Dialogs,
   FMX.Graphics,
 
-  VXS.OpenGL1x,
+  VXS.OpenGL,
   VXS.VectorTypes,
   VXS.VectorGeometry,
   VXS.CrossPlatform,

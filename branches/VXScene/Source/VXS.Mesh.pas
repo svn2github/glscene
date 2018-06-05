@@ -20,7 +20,7 @@ uses
   System.Classes,
   System.SysUtils,
 
-  VXS.OpenGL1x,
+  VXS.OpenGL,
   VXS.XOpenGL,
   VXS.Strings,
   VXS.Context,

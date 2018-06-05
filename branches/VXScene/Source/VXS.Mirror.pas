@@ -56,11 +56,11 @@ type
   private
     FRendering: Boolean;
     FMirrorObject: TVXBaseSceneObject;
-    FWidth, FHeight: GLfloat;
+    FWidth, FHeight: Single;
     FMirrorOptions: TMirrorOptions;
     FOnBeginRenderingMirrors, FOnEndRenderingMirrors: TNotifyEvent;
     FShape: TMirrorShapes; //ORL
-    FRadius: GLfloat; //ORL
+    FRadius: Single; //ORL
     FSlices: GLint; //ORL
   protected
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
@@ -98,15 +98,15 @@ type
           along with stenciling. }
     property MirrorOptions: TMirrorOptions read FMirrorOptions write
       SetMirrorOptions default cDefaultMirrorOptions;
-    property Height: GLfloat read FHeight write SetHeight;
-    property Width: GLfloat read FWidth write SetWidth;
+    property Height: Single read FHeight write SetHeight;
+    property Width: Single read FWidth write SetWidth;
     { Fired before the object's mirror images are rendered. }
     property OnBeginRenderingMirrors: TNotifyEvent read FOnBeginRenderingMirrors
       write FOnBeginRenderingMirrors;
     { Fired after the object's mirror images are rendered. }
     property OnEndRenderingMirrors: TNotifyEvent read FOnEndRenderingMirrors
       write FOnEndRenderingMirrors;
-    property Radius: GLfloat read FRadius write SetRadius; //ORL
+    property Radius: Single read FRadius write SetRadius; //ORL
     property Slices: GLint read FSlices write SetSlices default 16; //ORL
     property Shape: TMirrorShapes read FShape write SetShape default msRect;
     //ORL
@@ -377,7 +377,7 @@ begin
 end;
 
 
-procedure TVXMirror.SetWidth(AValue: GLfloat);
+procedure TVXMirror.SetWidth(AValue: Single);
 begin
   if AValue <> FWidth then
   begin
@@ -387,7 +387,7 @@ begin
 end;
 
 
-procedure TVXMirror.SetHeight(AValue: GLfloat);
+procedure TVXMirror.SetHeight(AValue: Single);
 begin
   if AValue <> FHeight then
   begin

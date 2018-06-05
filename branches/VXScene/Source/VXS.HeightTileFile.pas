@@ -21,9 +21,11 @@ interface
 {$I VXScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
+  System.Classes, 
+  System.SysUtils,
    
-  VXS.CrossPlatform, VXS.ApplicationFileIO;
+  VXS.CrossPlatform, 
+  VXS.ApplicationFileIO;
 
 type
 
@@ -41,8 +43,6 @@ type
    PShortIntArray = ^TShortIntArray;
    PShortInt = ^ShortInt;
 
-   // TVXHeightTileInfo
-   //
    TVXHeightTileInfo = packed record
       left, top, width, height : Integer;
       min, max, average : SmallInt;
@@ -51,16 +51,12 @@ type
    PHeightTileInfo = ^TVXHeightTileInfo;
    PPHeightTileInfo = ^PHeightTileInfo;
 
-   // TVXHeightTile
-   //
    TVXHeightTile = packed record
       info : TVXHeightTileInfo;
       data : array of SmallInt;
    end;
    PHeightTile = ^TVXHeightTile;
 
-   // THTFHeader
-   //
    THTFHeader = packed record
       FileVersion : array [0..5] of AnsiChar;
       TileIndexOffset : Int64;
@@ -75,12 +71,9 @@ const
 
 type
 
-   // TVXHeightTileFile
-   //
    { Interfaces a Tiled file }
    TVXHeightTileFile = class (TObject)
       private
-         
          FFile : TStream;
          FHeader : THTFHeader;
          FTileIndex : packed array of TVXHeightTileInfo;
@@ -91,9 +84,7 @@ type
          FCreating : Boolean;
          FHeightTile : TVXHeightTile;
          FInBuf : array of ShortInt;
-
       protected
-         
          function GetTiles(index : Integer) : PHeightTileInfo;
          function QuadTableX(x : Integer) : Integer;
          function QuadTableY(y : Integer) : Integer;
@@ -107,22 +98,19 @@ type
          
          { Creates a new HTF file. 
             Read and data access methods are not available when creating. }
-         constructor CreateNew(const fileName : String;
-                               aSizeX, aSizeY, aTileSize : Integer);
+         constructor CreateNew(const fileName : String; aSizeX, aSizeY, aTileSize : Integer);
          constructor Create(const fileName : String);
          destructor Destroy; override;
 
          { Returns tile index for corresponding left/top. }
          function GetTileIndex(aLeft, aTop : Integer) : Integer;
          { Returns tile of corresponding left/top.  }
-         function GetTile(aLeft, aTop : Integer;
-                          pTileInfo : PPHeightTileInfo = nil) : PHeightTile;
+         function GetTile(aLeft, aTop : Integer; pTileInfo : PPHeightTileInfo = nil) : PHeightTile;
 
          { Stores and compresses give tile data. 
             aLeft and top MUST be a multiple of TileSize, aWidth and aHeight
             MUST be lower or equal to TileSize. }
-         procedure CompressTile(aLeft, aTop, aWidth, aHeight : Integer;
-                                aData : PSmallIntArray);
+         procedure CompressTile(aLeft, aTop, aWidth, aHeight : Integer; aData : PSmallIntArray);
 
          { Extract a single row from the HTF file. 
             This is NOT the fastest way to access HTF data. 
@@ -137,8 +125,7 @@ type
          function XYHeight(anX, anY : Integer) : SmallInt;
 
          { Clears the list then add all tiles that overlap the rectangular area. }
-         procedure TilesInRect(aLeft, aTop, aRight, aBottom : Integer;
-                               destList : TList);
+         procedure TilesInRect(aLeft, aTop, aRight, aBottom : Integer; destList : TList);
 
 	      function TileCount : Integer;
          property Tiles[index : Integer] : PHeightTileInfo read GetTiles;
@@ -155,45 +142,13 @@ type
    end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 const
    cFileVersion = 'HTF100';
 
-
-// FillSmallInt
-//
-{$IFDEF USE_ASM}
-procedure FillSmallInt(p : PSmallInt; count : Integer; v : SmallInt); register;
-// EAX contains p
-// EDX contains count
-// ECX contains v
-asm
-   push edi
-   mov edi, p
-   mov ax, cx     // expand v to 32 bits
-   shl eax, 16
-   mov ax, cx
-   mov ecx, edx   // the "odd" case is handled by issueing a lone stosw
-   shr ecx, 1
-   test dl, 1
-   jz @even_nb
-   stosw
-   or ecx, ecx
-   je @fill_done
-@even_nb:
-   rep stosd
-@fill_done:
-   pop edi
-end;
-
-{$ELSE}
-procedure FillSmallInt(p : PSmallInt; count : Integer; v : SmallInt);
+procedure FillSmallInt(p: PSmallInt; count: Integer; v: SmallInt);
 var
   I: Integer;
 begin
@@ -203,18 +158,16 @@ begin
     Inc(p);
   end;
 end;
-{$ENDIF}
 
 // ------------------
 // ------------------ TVXHeightTileFile ------------------
 // ------------------
 
-// CreateNew
-//
 constructor TVXHeightTileFile.CreateNew(const fileName : String;
                                 aSizeX, aSizeY, aTileSize : Integer);
 begin
-   with FHeader do begin
+   with FHeader do 
+   begin
       FileVersion:=cFileVersion;
       SizeX:=aSizeX;
       SizeY:=aSizeY;
@@ -226,8 +179,6 @@ begin
    SetLength(FHeightTile.data, aTileSize*aTileSize);
 end;
 
-// Create
-//
 constructor TVXHeightTileFile.Create(const fileName : String);
 var
    n, i, key, qx, qy : Integer;
@@ -243,16 +194,20 @@ begin
    SetLength(FTileIndex, n);
    FFile.Read(FTileIndex[0], SizeOf(TVXHeightTileInfo)*n);
    // Prepare HashTable & QuadTable
-   for n:=0 to High(FTileIndex) do begin
-      with FTileIndex[n] do begin
+   for n:=0 to High(FTileIndex) do 
+   begin
+      with FTileIndex[n] do 
+	  begin
          key:=Left+(Top shl 4);
          key:=((key and cHTFHashTableSize)+(key shr 10)+(key shr 20))
               and cHTFHashTableSize;
          i:=Length(FHashTable[key]);
          SetLength(FHashTable[key], i+1);
          FHashTable[key][i]:=n;
-         for qx:=QuadTableX(left) to QuadTableX(left+width-1) do begin
-            for qy:=QuadTableY(top) to QuadTableY(top+height-1) do begin
+         for qx:=QuadTableX(left) to QuadTableX(left+width-1) do 
+		 begin
+            for qy:=QuadTableY(top) to QuadTableY(top+height-1) do 
+			begin
                i:=Length(FQuadTable[qx, qy]);
                SetLength(FQuadTable[qx, qy], i+1);
                FQuadTable[qx, qy][i]:=n;
@@ -266,8 +221,6 @@ begin
    SetLength(FTileMark, Length(FTileIndex));
 end;
 
-// Destroy
-//
 destructor TVXHeightTileFile.Destroy;
 var
    n : Integer;
@@ -286,22 +239,16 @@ begin
    inherited Destroy;
 end;
 
-// QuadTableX
-//
 function TVXHeightTileFile.QuadTableX(x : Integer) : Integer;
 begin
    Result:=((x*(cHTFQuadTableSize+1)) div (SizeX+1)) and cHTFQuadTableSize;
 end;
 
-// QuadTableY
-//
 function TVXHeightTileFile.QuadTableY(y : Integer) : Integer;
 begin
    Result:=((y*(cHTFQuadTableSize+1)) div (SizeY+1)) and cHTFQuadTableSize;
 end;
 
-// PackTile
-//
 procedure TVXHeightTileFile.PackTile(aWidth, aHeight : Integer; src : PSmallIntArray);
 var
    packWidth : Integer;
@@ -316,10 +263,12 @@ var
       PSmallIntArray(dest)[0]:=v;
       dest:=PShortIntArray(PtrUInt(dest)+2);
       i:=1;
-      while i<packWidth do begin
+      while i<packWidth do 
+	  begin
          delta:=src[i]-v;
          v:=src[i];
-         if Abs(delta)<=127 then begin
+         if Abs(delta)<=127 then 
+		 begin
             dest[0]:=ShortInt(delta);
             dest:=PShortIntArray(PtrUInt(dest)+1);
          end else begin
@@ -453,8 +402,6 @@ begin
    end;
 end;
 
-// UnPackTile
-//
 procedure TVXHeightTileFile.UnPackTile(source : PShortIntArray);
 var
    unpackWidth, tileWidth : Cardinal;
@@ -575,8 +522,6 @@ begin
    end;
 end;
 
-// GetTileIndex
-//
 function TVXHeightTileFile.GetTileIndex(aLeft, aTop : Integer) : Integer;
 var
    i, key, n : Integer;
@@ -600,8 +545,6 @@ begin
    end;
 end;
 
-// GetTile
-//
 function TVXHeightTileFile.GetTile(aLeft, aTop : Integer;
                                  pTileInfo : PPHeightTileInfo = nil) : PHeightTile;
 var
@@ -635,8 +578,6 @@ begin
    end;
 end;
 
-// CompressTile
-//
 procedure TVXHeightTileFile.CompressTile(aLeft, aTop, aWidth, aHeight : Integer;
                                        aData : PSmallIntArray);
 begin
@@ -677,8 +618,6 @@ begin
    end;
 end;
 
-// TileInfo
-//
 function TVXHeightTileFile.XYTileInfo(anX, anY : Integer) : PHeightTileInfo;
 var
    tileList : TList;
@@ -694,8 +633,6 @@ begin
    end;
 end;
 
-// XYHeight
-//
 function TVXHeightTileFile.XYHeight(anX, anY : Integer) : SmallInt;
 var
    tileInfo : PHeightTileInfo;
@@ -716,8 +653,6 @@ begin
    end else Result:=DefaultZ;
 end;
 
-// TilesInRect
-//
 procedure TVXHeightTileFile.TilesInRect(aLeft, aTop, aRight, aBottom : Integer;
                                       destList : TList);
 var
@@ -753,22 +688,16 @@ begin
    end;
 end;
 
-// TileCount
-//
 function TVXHeightTileFile.TileCount : Integer;
 begin
 	Result:=Length(FTileIndex);
 end;
 
-// GetTiles
-//
 function TVXHeightTileFile.GetTiles(index : Integer) : PHeightTileInfo;
 begin
    Result:=@FTileIndex[index];
 end;
 
-// IndexOfTile
-//
 function TVXHeightTileFile.IndexOfTile(aTile : PHeightTileInfo) : Integer;
 var
    c : PtrUInt;
@@ -781,8 +710,6 @@ begin
    end else Result:=-1;
 end;
 
-// TileCompressedSize
-//
 function TVXHeightTileFile.TileCompressedSize(tileIndex : Integer) : Integer;
 begin
    if tileIndex<High(FTileIndex) then

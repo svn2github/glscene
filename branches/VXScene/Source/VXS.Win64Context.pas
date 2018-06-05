@@ -21,7 +21,7 @@ uses
   FMX.Dialogs,
   FMX.Platform.Win,
 
-  VXS.OpenGL1x,
+  VXS.OpenGL,
   VXS.Context,
   VXS.CrossPlatform,
   VXS.State,

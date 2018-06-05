@@ -1,5 +1,5 @@
 //
-// VXScene Component Library, based on GLScene http://glscene.sourceforge.net 
+// This unit is part of the VXScene Project, http://glscene.org
 //
 { 
   Bitmap Fonts management classes
@@ -7,8 +7,6 @@
 unit VXS.BitmapFont;
 
 {$I VXScene.inc}
-
-{$DEFINE VXS_UNICODE_SUPPORT}
 
 interface
 
@@ -39,11 +37,8 @@ uses
   VXS.VectorTypes;
 
 type
-{$IFNDEF VXS_UNICODE_SUPPORT}
-  UnicodeString = WideString; // Use WideString for earlier versions
-{$ENDIF}
 
-  { An individual character range in a bitmap font.<p>
+  { An individual character range in a bitmap font.
     A range allows mapping ASCII characters to character tiles in a font
     bitmap, tiles are enumerated line then column (raster). }
   TVXBitmapFontRange = class(TCollectionItem)
@@ -91,7 +86,7 @@ type
     function FindItemID(ID: Integer): TVXBitmapFontRange;
     property Items[index: Integer]: TVXBitmapFontRange read GetItems
       write SetItems; default;
-    { Converts an ASCII character into a tile index.<p>
+    { Converts an ASCII character into a tile index.
       Return -1 if character cannot be rendered. }
     function CharacterToTileIndex(aChar: WideChar): Integer;
     function TileIndexToChar(aIndex: Integer): WideChar;
@@ -105,11 +100,11 @@ type
     l, t, w: word;
   end;
 
-  { Provides access to individual characters in a BitmapFont.<p>
+  { Provides access to individual characters in a BitmapFont.
     Only fixed-width bitmap fonts are supported, the characters are enumerated
     in a raster fashion (line then column).
     Transparency is all or nothing, the transparent color being that of the
-    top left pixel of the Glyphs bitmap.<p>
+    top left pixel of the Glyphs bitmap.
     Performance note: as usual, for best performance, you base font bitmap
     dimensions should be close to a power of two, and have at least 1 pixel
     spacing between characters (horizontally and vertically) to avoid artefacts
@@ -158,7 +153,7 @@ type
       out TopLeft, BottomRight: TTexPoint);
     procedure PrepareImage(var ARci: TVXRenderContextInfo); virtual;
     procedure PrepareParams(var ARci: TVXRenderContextInfo);
-    { A single bitmap containing all the characters.<p>
+    { A single bitmap containing all the characters.
       The transparent color is that of the top left pixel. }
     property Glyphs: TVXPicture read FGlyphs write SetGlyphs;
     {  Nb of horizontal pixels between two columns in the Glyphs. }
@@ -167,7 +162,7 @@ type
     { Nb of vertical pixels between two rows in the Glyphs. }
     property GlyphsIntervalY: Integer read FGlyphsIntervalY
       write SetGlyphsIntervalY;
-    { Ranges allow converting between ASCII and tile indexes.<p>
+    { Ranges allow converting between ASCII and tile indexes.
       See TVXCustomBitmapFontRange. }
     property Ranges: TVXBitmapFontRanges read FRanges write SetRanges;
     { Width of a single character. }
@@ -176,7 +171,7 @@ type
     property HSpace: Integer read FHSpace write SetHSpace default 1;
     { Pixels in between rendered lines (vertically). }
     property VSpace: Integer read FVSpace write SetVSpace default 1;
-    { Horizontal spacing fix offset.<p>
+    { Horizontal spacing fix offset.
       This property is for internal use, and is added to the hspacing
       of each character when rendering, typically to fix extra spacing. }
     property HSpaceFix: Integer read FHSpaceFix write FHSpaceFix;
@@ -191,7 +186,7 @@ type
     destructor Destroy; override;
     procedure RegisterUser(anObject: TVXBaseSceneObject); virtual;
     procedure UnRegisterUser(anObject: TVXBaseSceneObject); virtual;
-    { Renders the given string at current position or at position given by the optional position variable.<p>
+    { Renders the given string at current position or at position given by the optional position variable.
       The current matrix is blindly used, meaning you can render all kinds
       of rotated and linear distorted text with this method, OpenGL
       Enable states are also possibly altered. }
@@ -199,7 +194,7 @@ type
       const aText: UnicodeString; aAlignment: TAlignment;
       aLayout: TVXTextLayout; const aColor: TColorVector;
       aPosition: PVector = nil; aReverseY: boolean = False); overload; virtual;
-    { A simpler canvas-style TextOut helper for RenderString.<p>
+    { A simpler canvas-style TextOut helper for RenderString.
       The rendering is reversed along Y by default, to allow direct use
       with TVXCanvas }
     procedure TextOut(var rci: TVXRenderContextInfo; X, Y: Single;
@@ -224,7 +219,7 @@ type
     property TextureHeight: Integer read FTextureHeight write FTextureHeight;
   end;
 
-  { See TVXCustomBitmapFont.<p>
+  { See TVXCustomBitmapFont.
     This class only publuishes some of the properties. }
   TVXBitmapFont = class(TVXCustomBitmapFont)
   published
@@ -244,7 +239,7 @@ type
   TVXFlatTextOption = (ftoTwoSided);
   TVXFlatTextOptions = set of TVXFlatTextOption;
 
-  { A 2D text displayed and positionned in 3D coordinates.<p>
+  { A 2D text displayed and positionned in 3D coordinates.
     The FlatText uses a character font defined and stored by a TVXBitmapFont
     component. Default character scale is 1 font pixel = 1 space unit. }
   TVXFlatText = class(TVXImmaterialSceneObject)
@@ -294,9 +289,9 @@ type
     property Options: TVXFlatTextOptions read FOptions write SetOptions;
   end;
 
-//=======================================================================
+// ------------------------------------------------------------------
 implementation
-//=======================================================================
+// ------------------------------------------------------------------
 
 // ------------------
 // ------------------ TVXBitmapFontRange ------------------
@@ -807,9 +802,8 @@ end;
 
 procedure TVXCustomBitmapFont.PrepareParams(var ARci: TVXRenderContextInfo);
 const
-  cTextureMagFilter: array [maNearest .. maLinear] of GLEnum = (GL_NEAREST,
-    GL_LINEAR);
-  cTextureMinFilter: array [miNearest .. miLinearMipmapLinear] of GLEnum =
+  cTextureMagFilter: array [maNearest .. maLinear] of Cardinal = (GL_NEAREST, GL_LINEAR);
+  cTextureMinFilter: array [miNearest .. miLinearMipmapLinear] of Cardinal =
     (GL_NEAREST, GL_LINEAR, GL_NEAREST_MIPMAP_NEAREST, GL_LINEAR_MIPMAP_NEAREST,
     GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
 begin
@@ -826,10 +820,8 @@ begin
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-      cTextureMinFilter[FMinFilter]);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
-      cTextureMagFilter[FMagFilter]);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, cTextureMinFilter[FMinFilter]);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, cTextureMagFilter[FMagFilter]);
   end;
 end;
 
@@ -877,10 +869,8 @@ procedure TVXCustomBitmapFont.RenderString(var ARci: TVXRenderContextInfo;
       if aText[i] = #13 then
         Inc(n);
     case TVXTextLayout(aLayout) of
-      tlTop:
-        Result := 0;
-      tlBottom:
-        Result := (n * (CharHeight + VSpace) - VSpace);
+      tlTop:  Result := 0;
+      tlBottom: Result := (n * (CharHeight + VSpace) - VSpace);
     else // tlCenter
       Result := Round((n * (CharHeight + VSpace) - VSpace) * 0.5);
     end;
@@ -913,7 +903,7 @@ begin
   vBottomRight.W := 1;
   spaceDeltaH := GetCharWidth(#32) + HSpaceFix + HSpace;
   // set states
-  with ARci.VxStates do
+  with ARci.VXStates do
   begin
     ActiveTextureEnabled[ttTexture2D] := true;
     Disable(stLighting);
@@ -951,6 +941,7 @@ begin
         continue; // not found
       pch := @FChars[chi];
       if pch.w > 0 then
+
         begin
           GetICharTexCoords(ARci, chi, TopLeft, BottomRight);
           vBottomRight.X := vTopLeft.X + pch.w;
@@ -985,7 +976,7 @@ begin
   V.X := X;
   V.Y := Y;
   V.Z := 0;
-  V.w := 1;
+  V.W := 1;
   RenderString(rci, Text, taLeftJustify, tlTop, Color, @V, true);
 end;
 
@@ -1263,16 +1254,9 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-
 initialization
-
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-// class registrations
 RegisterClasses([TVXBitmapFont, TVXFlatText]);
 
 end.

@@ -2,7 +2,7 @@
     <PropertyGroup>
         <ProjectGuid>{E917F444-40A8-4C31-9545-90FB1BF06734}</ProjectGuid>
         <MainSource>VXScene_Sounds_RT.dpk</MainSource>
-        <ProjectVersion>18.2</ProjectVersion>
+        <ProjectVersion>18.3</ProjectVersion>
         <FrameworkType>FMX</FrameworkType>
         <Base>True</Base>
         <Config Condition="'$(Config)'==''">Debug</Config>

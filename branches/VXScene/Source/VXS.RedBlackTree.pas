@@ -16,7 +16,7 @@
   When DuplicateKeys is enabled the second comparison function is used
   for sort _Value_ and it duplicates not allowed.
 
-  To be able to manage the tree, the Create constructor has a argument
+  To be able to manage the tree, the Create constructor has an argument
   specifying the comparison function that should be used.
 
   The function Find can be used to find a _Value_ that was put in the tree,
@@ -37,31 +37,28 @@ interface
 {$I VXScene.inc}
 
 uses
-  System.Classes, VXS.CrossPlatform;
+  System.Classes, 
+  VXS.CrossPlatform;
 
 type
 
   TRBColor = (clRed, clBlack);
 
-  // TRedBlackTree
-  //
 {$IFDEF VXS_GENERIC_PREFIX}
   generic
 {$ENDIF}
   GRedBlackTree < TKey, TValue > = class
-  
   public
     type
       TKeyCompareFunc = function(const Item1, Item2: TKey): Integer;
       TValueCompareFunc = function(const Item1, Item2: TValue): Boolean;
       TForEachProc = procedure (AKey: TKey; AValue: TValue; out AContinue: Boolean);
-    
-       TRBNode = class
+      TRBNode = class
          Key: TKey;
          Left, Right, Parent, Twin: TRBNode;
          Color: TRBColor;
          Value: TValue;
-       end;
+      end;
     var
       FRoot: TRBNode;
       FLeftmost: TRBNode;
@@ -73,7 +70,6 @@ type
       FDuplicateKeys: Boolean;
       FValueCompareFunc: TValueCompareFunc;
       FOnChange: TNotifyEvent;
-
     function FindNode(const key: TKey): TRBNode;
     procedure RotateLeft(var x: TRBNode);
     procedure RotateRight(var x: TRBNode);
@@ -83,12 +79,9 @@ type
     function GetLast: TKey;
     procedure SetDuplicateKeys(Value: Boolean);
     class procedure FastErase(x: TRBNode);
-
   public
-    
     constructor Create(KeyCompare: TKeyCompareFunc; ValueCompare: TValueCompareFunc);
     destructor Destroy; override;
-
     procedure Clear;
     { Find value by key. }
     function Find(const key: TKey; out Value: TValue): Boolean;

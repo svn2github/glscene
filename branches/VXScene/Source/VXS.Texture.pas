@@ -19,7 +19,7 @@ uses
   FMX.Graphics,
   FMX.Objects,
 
-  VXS.OpenGL1x,
+  VXS.OpenGL,
   VXS.CrossPlatform,
   VXS.BaseClasses,
   VXS.VectorGeometry,

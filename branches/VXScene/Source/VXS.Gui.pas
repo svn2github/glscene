@@ -41,10 +41,10 @@ type
     procedure NotifyHide; virtual;
     // child notification on show. Also notifies children.
     procedure NotifyShow; virtual;
-    procedure SetLeft(const Value: GLfloat);
-    function GetLeft: GLfloat;
-    procedure SetTop(const Value: GLfloat);
-    function GetTop: GLfloat;
+    procedure SetLeft(const Value: Single);
+    function GetLeft: Single;
+    procedure SetTop(const Value: Single);
+    function GetTop: Single;
     procedure SetWidth(const val: Single);
     procedure SetHeight(const val: Single);
     procedure SetVisible(aValue: Boolean); override;
@@ -57,21 +57,21 @@ type
     { GuiComponent Height in 3D world units. }
     property Height: Single read FHeight write SetHeight;
     { GuiComponent Left in 3D world units. }
-    property Left: GLfloat read GetLeft write SetLeft;
+    property Left: Single read GetLeft write SetLeft;
     { GuiComponent Top in 3D world units. }
-    property Top: GLfloat read GetTop write SetTop;
+    property Top: Single read GetTop write SetTop;
     property RecursiveVisible: Boolean read FRecursiveVisible;
   end;
 
   TGUIAlignments = (GLAlTopLeft, GLAlTop, GLAlTopRight, GLAlLeft, GLAlCenter,
     GLAlRight, GLAlBottomLeft, GLAlBottom, GLAlBottomRight, GLAlBorder);
   TGUIRect = record
-    X1: GLfloat;
-    Y1: GLfloat;
-    X2: GLfloat;
-    Y2: GLfloat;
-    XTiles: GLfloat;
-    YTiles: GLfloat;
+    X1: Single;
+    Y1: Single;
+    X2: Single;
+    Y2: Single;
+    XTiles: Single;
+    YTiles: Single;
   end;
   TGUIDrawResult = array[TGUIAlignments] of TGUIRect;
 
@@ -130,8 +130,8 @@ type
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
     procedure AssignTo(Dest: TPersistent); override;
-    procedure RenderToArea(X1, Y1, X2, Y2: GLfloat; var Res: TGUIDrawResult;
-      Refresh: Boolean = True; Scale: GLfloat = 1);
+    procedure RenderToArea(X1, Y1, X2, Y2: Single; var Res: TGUIDrawResult;
+      Refresh: Boolean = True; Scale: Single = 1);
     function GetOwnerList: TVXGuiComponentList;
     property Owner: TVXGuiComponentList read GetOwnerList;
   published
@@ -221,11 +221,11 @@ end;
 // SetLeft
 //
 
-procedure TVXBaseGuiObject.SetLeft(const Value: GLfloat);
+procedure TVXBaseGuiObject.SetLeft(const Value: Single);
 var
-  NewPosX: GLfloat;
+  NewPosX: Single;
   i: integer;
-  Diff: GLfloat;
+  Diff: Single;
 begin
   if Assigned(Parent) and (Parent is TVXBaseGuiObject) then
     NewPosX := (Parent as TVXBaseGuiObject).Position.X + Value
@@ -249,7 +249,7 @@ end;
 // GetLeft
 //
 
-function TVXBaseGuiObject.GetLeft: GLfloat;
+function TVXBaseGuiObject.GetLeft: Single;
 begin
   if Assigned(Parent) and (Parent is TVXBaseGuiObject) then
     Result := Position.X - (Parent as TVXBaseGuiObject).Position.X
@@ -260,11 +260,11 @@ end;
 // SetTop
 //
 
-procedure TVXBaseGuiObject.SetTop(const Value: GLfloat);
+procedure TVXBaseGuiObject.SetTop(const Value: Single);
 var
-  NewPosY: GLfloat;
+  NewPosY: Single;
   i: integer;
-  Diff: GLfloat;
+  Diff: Single;
 begin
   if Assigned(Parent) and (Parent is TVXBaseGuiObject) then
     NewPosY := (Parent as TVXBaseGuiObject).Position.Y + Value
@@ -288,7 +288,7 @@ end;
 // GetTop
 //
 
-function TVXBaseGuiObject.GetTop: GLfloat;
+function TVXBaseGuiObject.GetTop: Single;
 begin
   if Assigned(Parent) and (Parent is TVXBaseGuiObject) then
     Result := Position.Y - (Parent as TVXBaseGuiObject).Position.Y
@@ -299,7 +299,7 @@ end;
 // SetWidth
 //
 
-procedure TVXBaseGuiObject.SetWidth(const val: GLfloat);
+procedure TVXBaseGuiObject.SetWidth(const val: Single);
 begin
   if FWidth <> val then
   begin
@@ -311,7 +311,7 @@ end;
 // SetHeight
 //
 
-procedure TVXBaseGuiObject.SetHeight(const val: GLfloat);
+procedure TVXBaseGuiObject.SetHeight(const val: Single);
 begin
   if FHeight <> val then
   begin
@@ -699,18 +699,18 @@ begin
   Result := TVXGuiComponent(inherited Items[index]);
 end;
 
-procedure TVXGuiComponent.RenderToArea(X1, Y1, X2, Y2: GLfloat; var Res:
-  TGUIDrawResult; Refresh: Boolean = True; Scale: GLfloat = 1);
+procedure TVXGuiComponent.RenderToArea(X1, Y1, X2, Y2: Single; var Res:
+  TGUIDrawResult; Refresh: Boolean = True; Scale: Single = 1);
 var
   XC: Integer;
   ThisElement: TVXGuiElement;
-  W, H: GLfloat;
-  Len1, Len2: GLfloat;
+  W, H: Single;
+  Len1, Len2: Single;
   Layout: TVXGuiLayout;
   LibMaterial: TVXLibMaterial;
   Material: TVXMaterial;
   TexWidth,
-    TexHeight: GLfloat;
+    TexHeight: Single;
   AlignCount: TGUIAlignments;
 
   procedure Prepare;
@@ -749,14 +749,14 @@ var
 
   procedure RenderIt(var ARect: TGuiRect; AElement: TVXGuiElement);
   var
-    XC: GLfloat;
-    YC: GLfloat;
-    XPos, X2Pos: GLfloat;
-    YPos, y2Pos: GLfloat;
-    tx1, ty1, tx2, ty2: GLfloat;
-    XTileSize, YTileSize: GLfloat;
-    tx3, ty3: GLfloat;
-    tx, ty: GLfloat;
+    XC: Single;
+    YC: Single;
+    XPos, X2Pos: Single;
+    YPos, y2Pos: Single;
+    tx1, ty1, tx2, ty2: Single;
+    XTileSize, YTileSize: Single;
+    tx3, ty3: Single;
+    tx, ty: Single;
 
   begin
     if (ARect.XTiles = 1) and (ARect.YTiles = 1) then

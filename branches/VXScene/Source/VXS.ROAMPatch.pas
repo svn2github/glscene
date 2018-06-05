@@ -16,7 +16,7 @@ uses
   Winapi.OpenGLext,
   System.SysUtils,
   
-  VXS.OpenGL1x,
+  VXS.OpenGL,
   VXS.XOpenGL,
   VXS.VectorGeometry,
   VXS.HeightData,
@@ -31,7 +31,6 @@ type
   EGLROAMException = class(Exception);
 
   PROAMTriangleNode = ^TROAMTriangleNode;
-
   TROAMTriangleNode = packed record
     Base, Left, Right: PROAMTriangleNode;
     LeftChild, RightChild: PROAMTriangleNode;
@@ -432,8 +431,6 @@ begin
   end;
 end;
 
-// ConnectToTheNorth
-//
 procedure TVXROAMPatch.ConnectToTheNorth(NorthPatch: TVXROAMPatch);
 begin
   if Assigned(NorthPatch) then
@@ -448,8 +445,6 @@ begin
   end;
 end;
 
-// ComputeVariance
-//
 procedure TVXROAMPatch.ComputeVariance(variance: Integer);
 var
   raster: PSmallIntRaster;
@@ -547,8 +542,6 @@ begin
   SetLength(FBRVariance, FMaxBRVarianceDepth);
 end;
 
-// ResetTessellation
-//
 procedure TVXROAMPatch.ResetTessellation;
 begin
   FTLNode := AllocTriangleNode;
@@ -561,8 +554,6 @@ begin
   FEast := nil;
 end;
 
-// RecursTessellate
-//
 function RecursTessellate(tri: PROAMTriangleNode; n: cardinal;
   const Left, Right, apex: cardinal): Boolean;
 // returns false if tessellation failed due to MaxCLODTriangles limit
@@ -586,8 +577,6 @@ begin
   end;
 end;
 
-// Tesselate
-//
 function TVXROAMPatch.Tesselate: boolean;
 // Returns false if MaxCLODTriangles limit is reached.
 var
@@ -607,8 +596,6 @@ var
     Result := Round(Sqrt(f) + f * c1Div100);
   end;
 
-// FullBaseTess
-//
 procedure FullBaseTess(tri: PROAMTriangleNode; n: cardinal); forward;
 
   procedure FullLeftTess(tri: PROAMTriangleNode; n: cardinal);
@@ -686,8 +673,6 @@ begin
       VertexDist(0, s), VertexDist(s, s));
 end;
 
-// SafeTesselate
-//
 function TVXROAMPatch.SafeTesselate: boolean;
 var
   Fail: Boolean;
@@ -709,8 +694,6 @@ begin
   until not Fail;
 end;
 
-// RenderHighRes
-//
 procedure TVXROAMPatch.RenderHighRes(vertices: TAffineVectorList;
   VertexIndices: TIntegerList; TexCoords: TTexPointList; ForceROAM: Boolean);
 
@@ -759,8 +742,6 @@ begin
   glCallList(FListHandle.Handle);
 end;
 
-// RenderAccum
-//
 procedure TVXROAMPatch.RenderAccum(vertices: TAffineVectorList;
   VertexIndices: TIntegerList; TexCoords: TTexPointList;
   AutoFlushVertexCount: Integer);
@@ -814,8 +795,6 @@ begin
 
 end;
 
-// FlushAccum
-//
 class procedure TVXROAMPatch.FlushAccum(vertices: TAffineVectorList;
   VertexIndices: TIntegerList; TexCoords: TTexPointList);
 begin
@@ -856,8 +835,6 @@ begin
   VertexIndices.Count := 0;
 end;
 
-// RecursRender
-//
 procedure RecursRender(const tri: PROAMTriangleNode;
   const Left, Right, apex: TROAMRenderPoint);
 var
@@ -884,8 +861,6 @@ begin
   end;
 end;
 
-// RenderROAM
-//
 procedure TVXROAMPatch.RenderROAM(vertices: TAffineVectorList;
   vertexIndices: TIntegerList; texCoords: TTexPointList);
 
@@ -996,12 +971,7 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 FVBOVertHandle := TVXVBOArrayBufferHandle.Create;

@@ -30,7 +30,7 @@ uses
 {$IFDEF USE_GRAPHICS32}
   GR32,
 {$ENDIF}
-  VXS.OpenGL1x,
+  VXS.OpenGL,
   VXS.ApplicationFileIO,
   VXS.PersistentClasses,
   VXS.Context,

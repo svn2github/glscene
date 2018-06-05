@@ -10,7 +10,7 @@ uses
   Winapi.OpenGL,
   Winapi.OpenGLext,
   VXS.Strings,
-  VXS.OpenGL1x;
+  VXS.OpenGL;
 
 type
   { Texture addressing rules }

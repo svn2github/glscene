@@ -54,7 +54,7 @@ type
   }
   TVXParticles = class(TVXImmaterialSceneObject)
   private
-    FCubeSize: GLfloat;
+    FCubeSize: Single;
     FEdgeColor: TVXColor;
     FVisibleAtRunTime: Boolean;
     particlePool: TList;
@@ -65,7 +65,7 @@ type
     FOnDestroyParticle: TVXParticleEvent;
     FOnBeforeRenderParticles, FOnAfterRenderParticles: TDirectRenderEvent;
   protected
-    procedure SetCubeSize(const val: GLfloat);
+    procedure SetCubeSize(const val: Single);
     procedure SetEdgeColor(const val: TVXColor);
     procedure SetVisibleAtRunTime(const val: Boolean);
     procedure SetParticlePoolSize(val: Integer);
@@ -88,7 +88,7 @@ type
     { Kill all particles. }
     procedure KillParticles;
   published
-    property CubeSize: GLfloat read FCubeSize write SetCubeSize;
+    property CubeSize: Single read FCubeSize write SetCubeSize;
     property EdgeColor: TVXColor read FEdgeColor write SetEdgeColor;
     property VisibleAtRunTime: Boolean read FVisibleAtRunTime write SetVisibleAtRunTime default False;
     { Size of the particle pool (for storing killed particles).
@@ -258,7 +258,7 @@ begin
       OnProgress(Self, deltaTime, newTime);
 end;
 
-procedure TVXParticles.SetCubeSize(const val: GLfloat);
+procedure TVXParticles.SetCubeSize(const val: Single);
 begin
   if val <> FCubeSize then
   begin

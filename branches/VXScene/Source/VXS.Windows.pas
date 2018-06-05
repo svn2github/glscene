@@ -50,10 +50,10 @@ type
     FGuiComponent: TVXGuiComponent;
     FReBuildGui: Boolean;
     FRedrawAtOnce: Boolean;
-    MoveX, MoveY: GLfloat;
+    MoveX, MoveY: Single;
     FRenderStatus: TGUIDrawResult;
     FAlphaChannel: Single;
-    FRotation: GLfloat;
+    FRotation: Single;
     FNoZWrite: Boolean;
     BlockRendering: Boolean;
     RenderingCount: Integer;
@@ -73,7 +73,7 @@ type
     procedure SetGuiLayoutName(NewName: TVXGuiComponentName);
     procedure Notification(AComponent: TComponent; Operation: TOperation);
       override;
-    procedure SetRotation(const val: GLfloat);
+    procedure SetRotation(const val: Single);
     procedure SetAlphaChannel(const val: Single);
     function StoreAlphaChannel: Boolean;
     procedure SetNoZWrite(const val: Boolean);
@@ -104,7 +104,7 @@ type
       SetGuiLayoutName;
     { This the ON-SCREEN rotation of the GuiComponent.
        Rotatation=0 is handled faster. }
-    property Rotation: GLfloat read FRotation write SetRotation;
+    property Rotation: Single read FRotation write SetRotation;
     { If different from 1, this value will replace that of Diffuse.Alpha }
     property AlphaChannel: Single read FAlphaChannel write SetAlphaChannel stored
       StoreAlphaChannel;
@@ -191,10 +191,10 @@ type
     procedure SetDefaultColor(value: TColor);  //in VCL TDelphiColor
     procedure SetBitmapFont(NewFont: TVXCustomBitmapFont);
     function GetBitmapFont: TVXCustomBitmapFont;
-    procedure WriteTextAt(var rci: TVXRenderContextInfo; const X, Y: GLfloat;
+    procedure WriteTextAt(var rci: TVXRenderContextInfo; const X, Y: Single;
       const Data: UnicodeString; const Color: TColorVector); overload;
     procedure WriteTextAt(var rci: TVXRenderContextInfo; const X1, Y1, X2, Y2:
-      GLfloat; const Data: UnicodeString; const Color: TColorVector); overload;
+      Single; const Data: UnicodeString; const Color: TColorVector); overload;
     function GetFontHeight: Integer;
   public
     constructor Create(AOwner: TComponent); override;
@@ -823,7 +823,7 @@ end;
 // SetRotation
 //
 
-procedure TVXBaseComponent.SetRotation(const val: GLfloat);
+procedure TVXBaseComponent.SetRotation(const val: Single);
 begin
   if FRotation <> val then
   begin
@@ -851,10 +851,10 @@ end;
 
 procedure TVXBaseComponent.SetAutosize(const Value: Boolean);
 var
-  MarginLeft, MarginCenter, MarginRight: GLfloat;
-  MarginTop, MarginMiddle, MarginBottom: GLfloat;
-  MaxWidth: GLfloat;
-  MaxHeight: GLfloat;
+  MarginLeft, MarginCenter, MarginRight: Single;
+  MarginTop, MarginMiddle, MarginBottom: Single;
+  MaxWidth: Single;
+  MaxHeight: Single;
   i: integer;
 begin
   if FAutosize <> Value then
@@ -1779,7 +1779,7 @@ begin
 end;
 
 procedure TVXBaseFontControl.WriteTextAt(var rci: TVXRenderContextInfo; const X,
-  Y: GLfloat; const Data: UnicodeString; const Color: TColorVector);
+  Y: Single; const Data: UnicodeString; const Color: TColorVector);
 var
   Position: TVector;
 begin
@@ -1794,7 +1794,7 @@ begin
 end;
 
 procedure TVXBaseFontControl.WriteTextAt(var rci: TVXRenderContextInfo; const X1,
-  Y1, X2, Y2: GLfloat; const Data: UnicodeString; const Color: TColorVector);
+  Y1, X2, Y2: Single; const Data: UnicodeString; const Color: TColorVector);
 var
   Position: TVector;
 begin
@@ -2174,7 +2174,7 @@ procedure TVXForm.InternalMouseDown(Shift: TShiftState; Button: TVXMouseButton;
 
 var
   CanMove: Boolean;
-  YHere: GLfloat;
+  YHere: Single;
 
 begin
   YHere := Y - Position.Y;

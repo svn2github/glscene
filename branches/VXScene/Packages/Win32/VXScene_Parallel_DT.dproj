@@ -2,7 +2,7 @@
     <PropertyGroup>
         <ProjectGuid>{2327C728-600D-4240-8F50-DB6572EB94F6}</ProjectGuid>
         <MainSource>VXScene_Parallel_DT.dpk</MainSource>
-        <ProjectVersion>18.2</ProjectVersion>
+        <ProjectVersion>18.3</ProjectVersion>
         <FrameworkType>FMX</FrameworkType>
         <Base>True</Base>
         <Config Condition="'$(Config)'==''">Debug</Config>
@@ -71,7 +71,6 @@
         <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;$(DCC_Namespace)</DCC_Namespace>
         <SanitizedProjectName>VXScene_Parallel_DT</SanitizedProjectName>
         <DCC_CBuilderOutput>All</DCC_CBuilderOutput>
-        <DCC_DcuOutput>.\$(Platform)\$(Config)</DCC_DcuOutput>
         <DCC_ExeOutput>.\$(Platform)\$(Config)</DCC_ExeOutput>
         <DCC_E>false</DCC_E>
         <DCC_N>false</DCC_N>
@@ -97,6 +96,13 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win32)'!=''">
         <DCC_Namespace>Winapi;System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
+        <DCC_UnitSearchPath>$(VXSCENE)\Source;$(VXSCENE)\Source\Basis;$(VXSCENE)\Source\DesignTime;$(VXSCENE)\Source\FileFormats;$(VXSCENE)\Source\GameAPIs;$(VXSCENE)\Source\ParallelAPIs;$(VXSCENE)\Source\PhysicsAPIs;$(VXSCENE)\Source\ScriptingAPIs;$(VXSCENE)\Source\Shaders;$(VXSCENE)\Source\SoundVideoAPIs;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_DcpOutput>$(VXSCENE)\lib\Win32</DCC_DcpOutput>
+        <DCC_DcuOutput>$(VXSCENE)\lib\Win32</DCC_DcuOutput>
+        <DCC_BplOutput>$(VXSCENE)\bpl\Win32</DCC_BplOutput>
+        <DCC_BpiOutput>$(VXSCENE)\lib\Win32</DCC_BpiOutput>
+        <DCC_ObjOutput>$(VXSCENE)\lib\Win32</DCC_ObjOutput>
+        <DCC_HppOutput>$(VXSCENE)\include\Win32</DCC_HppOutput>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win64)'!=''">
         <DCC_BpiOutput>..\lib\</DCC_BpiOutput>
@@ -113,13 +119,13 @@
         <DCC_RemoteDebug>true</DCC_RemoteDebug>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
-        <DCC_UnitSearchPath>$(VXSCENEDIR)\Source;$(VXSCENEDIR)\Source\Basis;$(VXSCENEDIR)\Source\DesignTime;$(VXSCENEDIR)\Source\FileFormats;$(VXSCENEDIR)\Source\GameAPIs;$(VXSCENEDIR)\Source\ParallelAPIs;$(VXSCENEDIR)\Source\PhysicsAPIs;$(VXSCENEDIR)\Source\ScriptingAPIs;$(VXSCENEDIR)\Source\Shaders;$(VXSCENEDIR)\Source\SoundVideoAPIs;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
-        <DCC_DcpOutput>$(VXSCENEDIR)\lib\Win32</DCC_DcpOutput>
-        <DCC_DcuOutput>$(VXSCENEDIR)\lib\Win32</DCC_DcuOutput>
+        <DCC_UnitSearchPath>$(VXSCENE)\Source;$(VXSCENE)\Source\Basis;$(VXSCENE)\Source\DesignTime;$(VXSCENE)\Source\FileFormats;$(VXSCENE)\Source\GameAPIs;$(VXSCENE)\Source\ParallelAPIs;$(VXSCENE)\Source\PhysicsAPIs;$(VXSCENE)\Source\ScriptingAPIs;$(VXSCENE)\Source\Shaders;$(VXSCENE)\Source\SoundVideoAPIs;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_DcpOutput>$(VXSCENE)\lib\Win32</DCC_DcpOutput>
+        <DCC_DcuOutput>$(VXSCENE)\lib\Win32</DCC_DcuOutput>
         <DCC_Description>VXScene GPU Computing</DCC_Description>
-        <DCC_HppOutput>$(VXSCENEDIR)\lib\Win32</DCC_HppOutput>
-        <DCC_BpiOutput>$(VXSCENEDIR)\lib\Win32</DCC_BpiOutput>
-        <DCC_ObjOutput>$(VXSCENEDIR)\lib\Win32</DCC_ObjOutput>
+        <DCC_HppOutput>$(VXSCENE)\lib\Win32</DCC_HppOutput>
+        <DCC_BpiOutput>$(VXSCENE)\lib\Win32</DCC_BpiOutput>
+        <DCC_ObjOutput>$(VXSCENE)\lib\Win32</DCC_ObjOutput>
         <DCC_RemoteDebug>false</DCC_RemoteDebug>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win64)'!=''">
@@ -141,8 +147,8 @@
         <DCCReference Include="..\..\Resources\VXSceneCUDA.dcr"/>
         <DCCReference Include="rtl.dcp"/>
         <DCCReference Include="fmx.dcp"/>
-        <DCCReference Include="VXScene_Parallel_RT.dcp"/>
         <DCCReference Include="VXScene_DT.dcp"/>
+        <DCCReference Include="VXScene_Parallel_RT.dcp"/>
         <DCCReference Include="..\..\Source\FCUDAEditor.pas">
             <Form>GLSCUDAEditorForm</Form>
         </DCCReference>

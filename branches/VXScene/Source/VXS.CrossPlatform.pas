@@ -53,10 +53,10 @@ type
   PGLRect = ^TVXRect;
   TDelphiColor = TColorRec;
 
-  TVXPicture = TImage;  // in VCL is TPicture
-  TVXGraphic = TBitmap; // in VCL is TGraphic
+  TVXPicture = TImage;  // in VCL it's TPicture
+  TVXGraphic = TBitmap; // in VCL it's TGraphic
 ///-  TBitmap = TBitmap;
-  TGraphicClass = class of TBitmap; // in VCL is class of TGraphic
+  TGraphicClass = class of TBitmap; // in VCL it's class of TGraphic
 
   TVXTextLayout = (tlTop, tlCenter, tlBottom); // idem TTextLayout;
 
@@ -240,11 +240,7 @@ function IsDirectoryWriteable(const AName: string): Boolean;
 function CharToWideChar(const AChar: AnsiChar): WideChar;
 
 //----------------------------------------------------------------------
-//----------------------------------------------------------------------
-//----------------------------------------------------------------------
 implementation
-//----------------------------------------------------------------------
-//----------------------------------------------------------------------
 //----------------------------------------------------------------------
 
 var
@@ -289,23 +285,17 @@ begin
   ShellExecute(0, 'open', PChar(Url), nil, nil, SW_SHOW);
 end;
 
-// GLPoint
-//
 function GLPoint(const x, y: Integer): TVXPoint;
 begin
   Result.X := x;
   Result.Y := y;
 end;
 
-// RGB
-//
 function RGB(const r, g, b: Byte): TColor;
 begin
   Result := r or (g shl 8) or (b shl 16);
 end;
 
-// GetGLRect
-//
 function GetGLRect(const aLeft, aTop, aRight, aBottom: Integer): TVXRect;
 begin
   Result.Left := aLeft;
@@ -314,8 +304,6 @@ begin
   Result.Bottom := aBottom;
 end;
 
-// InflateRect
-//
 procedure InflateGLRect(var aRect: TVXRect; dx, dy: Integer);
 begin
   aRect.Left := aRect.Left - dx;
@@ -328,8 +316,6 @@ begin
     aRect.Bottom := aRect.Top;
 end;
 
-// IntersectGLRect
-//
 procedure IntersectGLRect(var aRect: TVXRect; const rect2: TVXRect);
 var
   a: Integer;
@@ -390,23 +376,15 @@ begin
   end;
 end;
 
-// GetDeviceLogicalPixelsX
-//
 function GetDeviceLogicalPixelsX(device: THandle): Integer;
 begin
   result := GetDeviceCapabilities().Xdpi;
 end;
 
-// GetCurrentColorDepth
-//
-
 function GetCurrentColorDepth: Integer;
 begin
   result := GetDeviceCapabilities().Depth;
 end;
-
-// PixelFormatToColorBits
-//
 
 function PixelFormatToColorBits(aPixelFormat: TPixelFormat): Integer;
 begin
@@ -421,9 +399,6 @@ begin
     Result := 24;
   end;
 end;
-
-// BitmapScanLine
-//
 
 function BitmapScanLine(aBitmap: TBitmap; aRow: Integer): Pointer;
 var
@@ -470,39 +445,26 @@ begin
     Delete(Result, 1, Length(path));
 end;
 
-// QueryPerformanceCounter
-//
 procedure QueryPerformanceCounter(var val: Int64);
 begin
   QueryPerformanceCounter(val);
 end;
-
-// QueryPerformanceFrequency
-//
 
 function QueryPerformanceFrequency(var val: Int64): Boolean;
 begin
   Result := Boolean(QueryPerformanceFrequency(val));
 end;
 
-// StartPrecisionTimer
-//
 function StartPrecisionTimer: Int64;
 begin
   QueryPerformanceCounter(Result);
 end;
-
-// PrecisionTimeLap
-//
 
 function PrecisionTimerLap(const precisionTimer: Int64): Double;
 begin
   // we can do this, because we don't really stop anything
   Result := StopPrecisionTimer(precisionTimer);
 end;
-
-// StopPrecisionTimer
-//
 
 function StopPrecisionTimer(const precisionTimer: Int64): Double;
 var
@@ -519,7 +481,7 @@ begin
 end;
 
 var
-  vGLSStartTime : TDateTime;
+  vSStartTime : TDateTime;
   vLastTime: TDateTime;
   vDeltaMilliSecond: TDateTime;
 
@@ -532,7 +494,7 @@ begin
     Result := (wHour * (MinsPerHour * SecsPerMin * MSecsPerSec) +
              wMinute * (SecsPerMin * MSecsPerSec) +
              wSecond * MSecsPerSec +
-             wMilliSeconds) - vGLSStartTime;
+             wMilliSeconds) - vSStartTime;
   // Hack to fix time precession
   if Result - vLastTime = 0 then
   begin
@@ -545,8 +507,6 @@ begin
   end;
 end;
 
-// RDTSC
-//
 function RDTSC: Int64;
 asm
    db $0f, $31
@@ -860,8 +820,10 @@ begin
     and (P.Y < Rect.Bottom);
 end;
 
+//-------------------------------------------
 initialization
+//-------------------------------------------
 
-  vGLSStartTime := GLSTime;
+  vSStartTime := GLSTime;
 
 end.

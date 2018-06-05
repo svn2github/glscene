@@ -1,10 +1,9 @@
 //
-// VXScene Component Library, based on GLScene http://glscene.sourceforge.net
+// This unit is part of the VXScene Project, http://glscene.org
 //
 {
-  Binary Space Partion mesh support for GLScene.
-  The classes of this unit are designed to operate within a TVXBaseMesh.
-
+  Binary Space Partion mesh support for GLScene. 
+  The classes of this unit are designed to operate within a TGLBaseMesh. 
 }
 unit VXS.BSP;
 
@@ -71,7 +70,6 @@ type
     FRenderSort: TBSPRenderSort;
     FClusterVisibility: TBSPClusterVisibility;
     FUseClusterVisibility: Boolean;
-  protected
   public
     constructor CreateOwned(AOwner: TVXMeshObjectList);
     destructor Destroy; override;
@@ -85,9 +83,9 @@ type
       divides by the number of end nodes. This is a simple estimator
       of tree balancing (structurally speaking, not polygon-wise). }
     function AverageDepth: Single;
-    { Traverses the tree to the given point and returns the node index. }
-    function FindNodeByPoint(aPoint: TVector): TFGBSPNode;
-    { Rendering sort mode.
+    {  Traverses the tree to the given point and returns the node index. }
+    function FindNodeByPoint(const aPoint: TVector): TFGBSPNode;
+    {  Rendering sort mode. 
       This sort mode can currently *not* blend with the sort by materials
       flag, default mode is rsBackToFront.
       Note that in rsNone mode, the hierarchical nature of the tree is
@@ -163,12 +161,7 @@ type
   end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
-
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 const
@@ -260,6 +253,7 @@ end;
 // ------------------
 // ------------------ TBSPMeshObject ------------------
 // ------------------
+
 constructor TBSPMeshObject.CreateOwned(AOwner: TVXMeshObjectList);
 begin
   inherited;
@@ -293,7 +287,7 @@ var
     local.position := Owner.Owner.AbsoluteToLocal(absPos);
     SetVector(v, absRadius, absRadius, absRadius, 0);
     v := Owner.Owner.AbsoluteToLocal(v);
-    local.radius := MaxFloat(v.V);
+    local.radius := MaxFloat(v.X, v.Y, v.Z);
   end;
 
 begin
@@ -507,7 +501,7 @@ begin
   end;
 end;
 
-function TBSPMeshObject.FindNodeByPoint(aPoint: TVector): TFGBSPNode;
+function TBSPMeshObject.FindNodeByPoint(const aPoint: TVector): TFGBSPNode;
 
   function Traverse(nodeIndex: Integer): Integer;
   var
@@ -550,6 +544,7 @@ end;
 // ------------------
 // ------------------ TFGBSPNode ------------------
 // ------------------
+
 constructor TFGBSPNode.CreateOwned(AOwner: TVXFaceGroups);
 begin
   inherited;
@@ -1156,12 +1151,7 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 // class registrations

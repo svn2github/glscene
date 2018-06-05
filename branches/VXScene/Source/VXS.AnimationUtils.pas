@@ -1,13 +1,8 @@
 //
-// VXScene Component Library, based on GLScene http://glscene.sourceforge.net 
+// This unit is part of the VXScene Project, http://glscene.org
 //
 {
   Main purpose is to give an easy way to create an interpolation. 
-
-  History :  
-     27/06/12 - YP - First pascal implementation of the tweener library
-                      http://code.google.com/p/tweener/
-   
 }
 
 unit VXS.AnimationUtils;
@@ -74,7 +69,9 @@ type
   function Tweener(Current, Target: TVector2f; Time, Duration: Single; EaseType: TEaseType): TVector2f; overload;
   function Tweener(Current, Target: Single; Time, Duration: Single; EaseType: TEaseType): Single; overload;
 
+//--------------------------------------------------------------------  
 implementation
+//--------------------------------------------------------------------  
 
 type
 

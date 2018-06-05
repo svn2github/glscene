@@ -1,8 +1,8 @@
 //
-// VXScene Component Library, based on GLScene http://glscene.sourceforge.net
+// This unit is part of the VXScene Project, http://glscene.org
 //
 {
-  Some useful methods for setting up bump maps.
+   Some useful methods for setting up bump maps.
 }
 unit VXS.BumpMapping;
 
@@ -19,26 +19,25 @@ uses
 type
   TNormalMapSpace = (nmsObject, nmsTangent);
 
-{ Object space }
-procedure CalcObjectSpaceLightVectors(Light: TAffineVector;
-  Vertices: TAffineVectorList; Colors: TVectorList);
+procedure CalcObjectSpaceLightVectors(Light : TAffineVector;
+                                      Vertices: TAffineVectorList;
+                                      Colors: TVectorList);
+procedure SetupTangentSpace(Vertices, Normals, TexCoords,
+                            Tangents, BiNormals : TAffineVectorList);
+procedure CalcTangentSpaceLightVectors(Light : TAffineVector;
+                                       Vertices, Normals,
+                                       Tangents, BiNormals : TAffineVectorList;
+                                       Colors: TVectorList);
+function CreateObjectSpaceNormalMap(Width, Height : Integer;
+                                    HiNormals,HiTexCoords : TAffineVectorList) : TBitmap;
+function CreateTangentSpaceNormalMap(Width, Height : Integer;
+                                     HiNormals, HiTexCoords,
+                                     LoNormals, LoTexCoords,
+                                     Tangents, BiNormals : TAffineVectorList) : TBitmap;
 
-{ Tangent space }
-procedure SetupTangentSpace(Vertices, Normals, TexCoords, Tangents,
-  BiNormals: TAffineVectorList);
-procedure CalcTangentSpaceLightVectors(Light: TAffineVector;
-  Vertices, Normals, Tangents, BiNormals: TAffineVectorList;
-  Colors: TVectorList);
-
-function CreateObjectSpaceNormalMap(Width, Height: Integer;
-  HiNormals, HiTexCoords: TAffineVectorList): TBitmap;
-function CreateTangentSpaceNormalMap(Width, Height: Integer;
-  HiNormals, HiTexCoords, LoNormals, LoTexCoords, Tangents,
-  BiNormals: TAffineVectorList): TBitmap;
-
-//=================================================================
+//------------------------------------------------------------
 implementation
-//=================================================================
+//------------------------------------------------------------
 
 procedure CalcObjectSpaceLightVectors(Light: TAffineVector;
   Vertices: TAffineVectorList; Colors: TVectorList);
@@ -54,8 +53,7 @@ begin
   end;
 end;
 
-procedure SetupTangentSpace(Vertices, Normals, TexCoords, Tangents,
-  BiNormals: TAffineVectorList);
+procedure SetupTangentSpace(Vertices, Normals, TexCoords, Tangents, BiNormals: TAffineVectorList);
 var
   i, j: Integer;
   v, n, t: TAffineMatrix;
@@ -162,8 +160,7 @@ begin
     mat.Y := BiNormals[i];
     mat.Z := Normals[i];
     TransposeMatrix(mat);
-    vec := VectorNormalize(VectorTransform(VectorSubtract(Light,
-      Vertices[i]), mat));
+    vec := VectorNormalize(VectorTransform(VectorSubtract(Light, Vertices[i]), mat));
     vec.X := -vec.X;
     Colors[i] := VectorMake(VectorAdd(VectorScale(vec, 0.5), 0.5), 1);
   end;
@@ -172,6 +169,7 @@ end;
 // ------------------------------------------------------------------------
 // Local functions used for creating normal maps
 // ------------------------------------------------------------------------
+
 function ConvertNormalToColor(normal: TAffineVector): TColor;
 // In VCL -> TDelphiColor;
 var
@@ -183,8 +181,7 @@ begin
   Result := RGB(r, g, b);
 end;
 
-procedure GetBlendCoeffs(X, Y, x1, y1, x2, y2, x3, y3: Integer;
-  var f1, f2, f3: Single);
+procedure GetBlendCoeffs(X, Y, x1, y1, x2, y2, x3, y3: Integer; var f1, f2, f3: Single);
 var
   m1, m2, d1, d2, px, py: Single;
 begin
@@ -215,8 +212,8 @@ begin
       px := (d1 - d2) / (m2 - m1);
       py := m2 * px + d2;
     end;
-    f1 := sqrt((X - x1) * (X - x1) + (Y - y1) * (Y - y1)) /
-      sqrt((px - x1) * (px - x1) + (py - y1) * (py - y1));
+    f1 := sqrt((X - x1) * (X - x1) + (Y - y1) * (Y - y1)) / 
+	sqrt((px - x1) * (px - x1) + (py - y1) * (py - y1));
   end;
 
   if (x2 = X) and (x1 = x3) then
@@ -247,7 +244,7 @@ begin
       py := m2 * px + d2;
     end;
     f2 := sqrt((X - x2) * (X - x2) + (Y - y2) * (Y - y2)) /
-      sqrt((px - x2) * (px - x2) + (py - y2) * (py - y2));
+	sqrt((px - x2) * (px - x2) + (py - y2) * (py - y2));
   end;
 
   if (x3 = X) and (x1 = x2) then
@@ -277,13 +274,13 @@ begin
       px := (d1 - d2) / (m2 - m1);
       py := m2 * px + d2;
     end;
-    f3 := sqrt((X - x3) * (X - x3) + (Y - y3) * (Y - y3)) /
-      sqrt((px - x3) * (px - x3) + (py - y3) * (py - y3));
+    f3 := sqrt((X - x3) * (X - x3) + (Y - y3) * (Y - y3)) / 
+	sqrt((px - x3) * (px - x3) + (py - y3) * (py - y3));
   end;
 
 end;
 
-function BlendNormals(X, Y, x1, y1, x2, y2, x3, y3: Integer;
+function BlendNormals(X, Y, x1, y1, x2, y2, x3, y3: Integer; 
   n1, n2, n3: TAffineVector): TAffineVector;
 var
   f1, f2, f3: Single;
@@ -294,7 +291,7 @@ begin
   AddVector(Result, VectorScale(n3, 1 - f3));
 end;
 
-procedure CalcObjectSpaceNormalMap(Width, Height: Integer;
+procedure CalcObjectSpaceNormalMap(Width, Height: Integer; 
   NormalMap, Normals, TexCoords: TAffineVectorList);
 var
   i, X, Y, xs, xe, x1, y1, x2, y2, x3, y3: Integer;
@@ -361,8 +358,7 @@ begin
           xe := X;
         end;
         for X := xs to xe do
-          NormalMap[X + Y * Width] := BlendNormals(X, Y, x1, y1, x2, y2, x3, y3,
-            n1, n2, n3);
+          NormalMap[X + Y * Width] := BlendNormals(X, Y, x1, y1, x2, y2, x3, y3, n1, n2, n3);
       end;
     if y2 < y3 then
       for Y := y2 to y3 do
@@ -376,8 +372,7 @@ begin
           xe := X;
         end;
         for X := xs to xe do
-          NormalMap[X + Y * Width] := BlendNormals(X, Y, x1, y1, x2, y2, x3, y3,
-            n1, n2, n3);
+          NormalMap[X + Y * Width] := BlendNormals(X, Y, x1, y1, x2, y2, x3, y3,  n1, n2, n3);
       end;
   end;
 end;
@@ -393,7 +388,7 @@ begin
 
   CalcObjectSpaceNormalMap(Width, Height, NormalMap, HiNormals, HiTexCoords);
 
-  // Create the bitmap
+  // Creates the bitmap
   Result := TBitmap.Create;
   { TODO : E2129 Cannot assign to a read-only property }
   (* Result.Image.Width := Width;
@@ -513,8 +508,7 @@ begin
         end;
         for X := xs to xe - 1 do
         begin
-          n := NormalToTangentSpace(NormalMap[X + Y * Width], X, Y, x1, y1, x2,
-            y2, x3, y3, m1, m2, m3);
+          n := NormalToTangentSpace(NormalMap[X + Y * Width], X, Y, x1, y1, x2, y2, x3, y3, m1, m2, m3);
           NormalizeVector(n);
           n.X := -n.X;
           NormalMap[X + Y * Width] := n;
@@ -533,8 +527,7 @@ begin
         end;
         for X := xs to xe - 1 do
         begin
-          n := NormalToTangentSpace(NormalMap[X + Y * Width], X, Y, x1, y1, x2,
-            y2, x3, y3, m1, m2, m3);
+          n := NormalToTangentSpace(NormalMap[X + Y * Width], X, Y, x1, y1, x2, y2, x3, y3, m1, m2, m3);
           NormalizeVector(n);
           n.X := -n.X;
           NormalMap[X + Y * Width] := n;

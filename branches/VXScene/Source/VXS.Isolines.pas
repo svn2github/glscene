@@ -1,10 +1,10 @@
 //
-// VXScene Component Library, based on GLScene http://glscene.sourceforge.net 
+// This unit is part of the VXScene Project, http://glscene.org
 //
 {
-  Class and routines to output isolines. 
+  Class and routines to output isolines.
 }
-unit VXS.Contouring;
+unit VXS.Isolines;
 
 interface
 
@@ -13,7 +13,6 @@ uses
   System.Classes, 
   System.Math,
   System.Generics.Collections,
-  
   VXS.VectorGeometry, 
   VXS.VectorLists, 
   VXS.Objects, 
@@ -26,43 +25,41 @@ uses
   VXS.VectorTypes,
   VXS.VectorFileObjects;
 
-{$I VXScene.inc}
-
 type
-  TVXVector = array of Single;
-  TVXByteVector = array of Byte;
+  TVectorArr = array of Single;
+  TByteVectorArr = array of Byte;
 
-  TVXMatrix = array of array of Single;
-  TVXByteMatrix = array of array of Byte;
+  TMatrixArr = array of array of Single;
+  TByteMatrixArr = array of array of Byte;
 
   TVectorL4D = array [0 .. 4] of Single;
   TVectorL4I = array [0 .. 4] of Integer;
   TCastArray = array [0 .. 2, 0 .. 2, 0 .. 2] of Integer;
 
-  TxIsoline2D = array [0 .. 32767] of TxPoint2D;
-  PxIsoline2D = ^TxIsoline2D;
+  TVertex2DArr = array [0 .. 32767] of TxPoint2D;
+  PVertex2DArr = ^TVertex2DArr;
 
-  PxIsoline = ^TxIsoline;
-  TxIsoline = class (TObject)
+  PVXIsoline = ^TVXIsoline;
+  TVXIsoline = class (TObject)
     NP: Integer;
-    Line: PxIsoline2D;
+    Line: PVertex2DArr;
     constructor Create(LineSize: integer); virtual;
     destructor Destroy; override;
   end;
 
-  TxIsolineState = (ilsEmpty, ilsCalculating, ilsReady);
+  TVXIsolineState = (ilsEmpty, ilsCalculating, ilsReady);
 
-  TxIsolines = class (TVXLines)
+  TVXIsolines = class(TVXLines)
   public
-    IsoVertix: TAffineVector;
-    GLSpaceTextSF: array of TVXSpaceText;
-    procedure MakeIsolines(var Depths: TVXMatrix; bmSize: Integer;
+    IsoVertex: TAffineVector;
+    SpaceTextSF: array of TVXSpaceText;
+    procedure MakeIsolines(var Depths: TMatrixArr; bmSize: Integer;
       StartDepth, EndDepth: Single; Interval: Integer);
     procedure FreeList;
     constructor Create(AOwner: TComponent); virtual;
     destructor Destroy; override;
 
-  { CONREC is a contouring routine for rectangular spaced data or regular 2D grids
+  {  CONREC is a contouring routine for rectangular spaced data or regular 2D grids
     It takes each rectangle of adjacent data points and splits it
     into 4 triangles after choosing the height at the centre of the rectangle.
     For each of the triangles the line segment resulting from the intersection
@@ -72,6 +69,8 @@ type
     isolines. See details in http://paulbourke.net/papers/conrec/
 
     The input parameters are as follows :
+    PlaneSFindex -
+    PlaneSF -
     Data -  Scalar field in 2D grid
     ilb - lower bound in west - east direction
     iub - upper bound in west - east direction
@@ -81,22 +80,23 @@ type
     Y - coord. vector for north - south
     NC - number of cut levels
     HgtL - values of cut levels
+    Z_Kfix -
+    res3Dmin -
   }
-    procedure Conrec(PlaneSFindex:Integer; PlaneSF: TVXFreeForm; Data: TVXMatrix; ilb, iub, jlb, jub: Integer;
-         X: TVXVector; Y: TVXVector; NC: Integer; HgtL: TVXVector; Z_Kfix: Single;
-         res3Dmax, res3Dmin: Single);
+   procedure Conrec(PlaneSFindex:Integer; PlaneSF: TVXFreeForm; Data: TMatrixArr; ilb, iub, jlb, jub: Integer;
+         X: TVectorArr; Y: TVectorArr; NC: Integer; HgtL: TVectorArr; Z_Kfix: Single; res3Dmax, res3Dmin: Single);
    private
      CoordRange: Integer;
      LineList: TList;
-     IsolineState: TxIsolineState;
+     IsolineState: TVXIsolineState;
   end;
 
-procedure Initialize_Contouring(var DataGrid: TVXMatrix;
+procedure Initialize_Contouring(var DataGrid: TMatrixArr;
   NXpoints, NYpoints: integer; CurrentIsoline: Single);
 procedure Release_Memory_Isoline;
-function GetNextIsoline(var Isoline: TxIsoline): Boolean;
+function GetNextIsoline(var Isoline: TVXIsoline): Boolean;
 
-{ Defines contouring segments inside a triangle using elevations }
+{Defines contouring segments inside a triangle using elevations }
 procedure TriangleElevationSegments(const p1, p2, p3: TAffineVector;
   ElevationDelta: Single; Segments: TAffineVectorList);
 
@@ -106,13 +106,13 @@ implementation
 
 var
   ii, jj: Integer;
-  Visited: TVXByteMatrix; // 0 = not visited
+  Visited: TByteMatrixArr; // 0 = not visited
   // 1 = visited
   // if it is a saddle points, then bits 1-4 also encode
   // which exit and entry points were used.
-  Grid: TVXMatrix;
+  Grid: TMatrixArr;
   NX, NY: Integer;
-  LineX1, LineY1, LineX2, LineY2: TVXVector;
+  LineX1, LineY1, LineX2, LineY2: TVectorArr;
 
 
 function EqAdd(a, b: integer): integer;
@@ -168,7 +168,7 @@ begin
   SetLength(LineY2, 0);
 end;
 
-procedure Cuts(const g: TVXMatrix; i, j: Integer; var s: array of Integer);
+procedure Cuts(const g: TMatrixArr; i, j: Integer; var s: array of Integer);
 begin
   s[0] := 0;
   if g[i][j + 1] * g[i + 1][j + 1] < 0 then
@@ -193,7 +193,7 @@ begin
   end;
 end;
 
-procedure Intercept(const g: TVXMatrix; i, j, s: Integer; var x, y: Single);
+procedure Intercept(const g: TMatrixArr; i, j, s: Integer; var x, y: Single);
 begin
   case s of
     1:
@@ -219,7 +219,7 @@ begin
   end;
 end;
 
-function Free_Exit(const Visited: TVXByteMatrix;
+function Free_Exit(const Visited: TByteMatrixArr;
   i, j, NX, NY, Lexit: Integer): Boolean;
 var
   ni, nj: Integer;
@@ -237,8 +237,8 @@ begin
   end;
 end;
 
-procedure TraceIsoline(i, j, Lexit, NX, NY: Integer; const Grid: TVXMatrix;
-  const Visited: TVXByteMatrix; var LineX, LineY: TVXVector;
+procedure TraceIsoline(i, j, Lexit, NX, NY: Integer; const Grid: TMatrixArr;
+  const Visited: TByteMatrixArr; var LineX, LineY: TVectorArr;
   var NP: Integer; var OffGrid: Boolean);
 var
   ni, nj, si, sj: Integer;
@@ -317,7 +317,7 @@ end;
 { LineX and LineY are (pointers to) zero-offset vectors, to which
   sufficient space has been allocated to store the coordinates of
   any feasible Isoline }
-function GetNextIsoline(var Isoline: TxIsoline): Boolean;
+function GetNextIsoline(var Isoline: TVXIsoline): Boolean;
 var
   OffGrid: boolean;
   Lexit: integer;
@@ -345,7 +345,7 @@ begin
             TraceIsoline(i, j, Lexit, NX, NY, Grid, Visited, LineX2, LineY2,
               np2, offgrid);
             // Copy both bits of line into Isoline
-            Isoline := TxIsoline.Create(np1 + np2);
+            Isoline := TVXIsoline.Create(np1 + np2);
             for k := 0 to np2 - 1 do
             begin
               Isoline.Line^[k].x := LineX2[np2 - k - 1];
@@ -360,7 +360,7 @@ begin
           else
           begin
             // Just copy the single Isoline loop into LineX & LineY
-            Isoline := TxIsoline.Create(np1);
+            Isoline := TVXIsoline.Create(np1);
             for k := 0 to np1 - 1 do
             begin
               Isoline.Line^[k].x := LineX1[k];
@@ -438,21 +438,21 @@ begin
   end;
 end;
 
-constructor TxIsolines.Create(AOwner: TComponent);
+constructor TVXIsolines.Create(AOwner: TComponent);
 begin
   LineList := TList.Create;
   IsolineState := ilsEmpty;
   Nodes.Create(Self);
 end;
 
-destructor TxIsolines.Destroy;
+destructor TVXIsolines.Destroy;
 begin
   FreeList;
   Nodes.Free;
   inherited;
 end;
 
-procedure TxIsolines.FreeList;
+procedure TVXIsolines.FreeList;
 var
   i: integer;
 begin
@@ -460,18 +460,17 @@ begin
   begin
     for i := LineList.Count - 1 downto 0 do
     begin
-      with TxIsoline(LineList.Items[i]) do
-        Free;
+      TVXIsoline(LineList.Items[i]).Free;
     end;
     LineList.Clear;
     IsolineState := ilsEmpty;
   end;
 end;
 
-procedure TxIsolines.MakeIsolines(var Depths: TVXMatrix; bmSize: integer;
+procedure TVXIsolines.MakeIsolines(var Depths: TMatrixArr; bmSize: integer;
   StartDepth, EndDepth: Single; Interval: Integer);
 var
-  Isoline: TxIsoline;
+  Isoline: TVXIsoline;
 
 begin
   IsolineState := ilsCalculating;
@@ -489,14 +488,14 @@ begin
   IsolineState := ilsReady;
 end;
 
-constructor TxIsoline.Create(LineSize: Integer);
+constructor TVXIsoline.Create(LineSize: Integer);
 begin
   inherited Create;
   NP := LineSize;
   Getmem(Line, NP * 2 * Sizeof(Single));
 end;
 
-destructor TxIsoline.Destroy;
+destructor TVXIsoline.Destroy;
 begin
   inherited;
   if Assigned(Line) then
@@ -504,8 +503,9 @@ begin
   NP := 0;
 end;
 
-procedure TxIsolines.Conrec(PlaneSFindex:Integer;PlaneSF:TVXfreeForm;  Data: TVXMatrix; ilb, iub, jlb, jub: Integer;
-  X: TVXVector; Y: TVXVector;  NC: Integer; HgtL: TVXVector;
+procedure TVXIsolines.Conrec(PlaneSFindex: Integer; PlaneSF: TVXfreeForm; Data:
+  TMatrixArr; ilb, iub, jlb, jub: Integer;
+  X: TVectorArr; Y: TVectorArr;  NC: Integer; HgtL: TVectorArr;
   Z_Kfix: Single; res3Dmax,res3Dmin: Single);
 // ------------------------------------------------------------------------------
 const
@@ -538,7 +538,7 @@ var
   end;
 
 begin
- SetLength(GLSpaceTextSF, NC-1);
+ SetLength(SpaceTextSF, NC-1);
  IUniqueList := TList<Single>.Create;
  ScaleFont:= 0.025 * MaxValue(Y);      // 050515
 
@@ -727,7 +727,6 @@ begin
                 end; // ---  -Case deside;
 
                 // -------Output results ---------------------
-
                 case PlaneSFindex of              // suggestion3Planes
                    0:  begin
                         Nodes.AddNode(x1, y1, Z_kfix);
@@ -742,27 +741,25 @@ begin
                         Nodes.AddNode(y2, Z_kfix, x2);
                        end ;
                 end;
-
-                  if ODD(K) then
-                         begin
-                           MinY1:= 0.1*MaxValue(Y) ; MaxY1:= 0.6*MaxValue(Y);
-                           MinX1:= 0.2*MaxValue(X) ; MaxX1:= 0.4*MaxValue(X);
-                         end
-                  else
-                         begin
-                           MinY1:= 0.55*MaxValue(Y) ; MaxY1:= 0.9*MaxValue(Y);
-                           MinX1:= 0.3*MaxValue(X) ; MaxX1:= 0.7*MaxValue(X);
-                         end ;
-
-                 if (not IUniqueList.Contains(HgtL[K]))
-                                 and
-                    ( (y1<MaxY1) and (y1>MinY1)
-                  and (x1<MaxX1) and (x1>MinX1)     )   then
+                if ODD(K) then
                    begin
-                     GlSpaceTextSF[K].Free;
-                     GlSpaceTextSF[K]:= TVXSpacetext.CreateAsChild(self);
+                     MinY1:= 0.1*MaxValue(Y) ; MaxY1:= 0.6*MaxValue(Y);
+                     MinX1:= 0.2*MaxValue(X) ; MaxX1:= 0.4*MaxValue(X);
+                   end
+                else
+                   begin
+                     MinY1:= 0.55*MaxValue(Y) ; MaxY1:= 0.9*MaxValue(Y);
+                     MinX1:= 0.3*MaxValue(X) ; MaxX1:= 0.7*MaxValue(X);
+                   end ;
 
-                     with GlspaceTextSF[K] do
+                 if (not IUniqueList.Contains(HgtL[K])) and
+                    ( (y1<MaxY1) and (y1>MinY1) and
+                      (x1<MaxX1) and (x1>MinX1)) then
+                   begin
+                     SpaceTextSF[K].Free;
+                     SpaceTextSF[K]:= TVXspacetext.CreateAsChild(self);
+
+                     with SpaceTextSF[K] do
                      begin
                        Scale.AsVector := VectorMake(scaleFont, scaleFont, scaleFont);
                        Material.FrontProperties.Emission.Color :=  clryellow;
@@ -771,8 +768,6 @@ begin
                        ActualValue:= HgtL[K]* (res3Dmax - res3Dmin) +  res3Dmin;
                        Extrusion:= 0.5;
                        Text:= FloatToStrF(ActualValue, ffFixed, 4, 0)  ;
-
-
 
                        case PlaneSFindex of              // suggestion3Planes
                          0:  begin

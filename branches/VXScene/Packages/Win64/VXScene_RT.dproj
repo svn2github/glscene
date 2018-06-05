@@ -7,7 +7,7 @@
         <TargetedPlatforms>3</TargetedPlatforms>
         <AppType>Package</AppType>
         <FrameworkType>FMX</FrameworkType>
-        <ProjectVersion>18.2</ProjectVersion>
+        <ProjectVersion>18.3</ProjectVersion>
         <Platform Condition="'$(Platform)'==''">Win64</Platform>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
@@ -88,14 +88,14 @@
         <VerInfo_Locale>1033</VerInfo_Locale>
         <DCC_Namespace>Winapi;System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
-        <VerInfo_Keys>CompanyName=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductVersion=1.0.0.0;Comments=;ProgramID=com.embarcadero.$(ModuleName);FileDescription=$(ModuleName);ProductName=$(ModuleName)</VerInfo_Keys>
+        <VerInfo_Keys>CompanyName=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductVersion=1.0.0.0;Comments=;ProgramID=com.embarcadero.$(MSBuildProjectName);FileDescription=$(MSBuildProjectName);ProductName=$(MSBuildProjectName)</VerInfo_Keys>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win64)'!=''">
         <DCC_DcuOutput>.\$(Platform)\$(Config)</DCC_DcuOutput>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <DCC_Namespace>Winapi;System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;$(DCC_Namespace)</DCC_Namespace>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
-        <VerInfo_Keys>CompanyName=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductVersion=1.0.0.0;Comments=;ProgramID=com.embarcadero.$(ModuleName);FileDescription=$(ModuleName);ProductName=$(ModuleName)</VerInfo_Keys>
+        <VerInfo_Keys>CompanyName=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductVersion=1.0.0.0;Comments=;ProgramID=com.embarcadero.$(MSBuildProjectName);FileDescription=$(MSBuildProjectName);ProductName=$(MSBuildProjectName)</VerInfo_Keys>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1)'!=''">
         <DCC_LocalDebugSymbols>false</DCC_LocalDebugSymbols>
@@ -126,13 +126,13 @@
         <DCC_ObjOutput>..\include\</DCC_ObjOutput>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win64)'!=''">
-        <DCC_UnitSearchPath>$(VXSCENEDIR)\Source;$(VXSCENEDIR)\Source\Basis;$(VXSCENEDIR)\Source\DesignTime;$(VXSCENEDIR)\Source\FileFormats;$(VXSCENEDIR)\Source\GameAPIs;$(VXSCENEDIR)\Source\ParallelAPIs;$(VXSCENEDIR)\Source\PhysicsAPIs;$(VXSCENEDIR)\Source\ScriptingAPIs;$(VXSCENEDIR)\Source\Shaders;$(VXSCENEDIR)\Source\SoundVideoAPIs;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
-        <DCC_DcpOutput>$(VXSCENEDIR)\lib\Win64</DCC_DcpOutput>
-        <DCC_ObjOutput>$(VXSCENEDIR)\lib\Win64</DCC_ObjOutput>
-        <DCC_BpiOutput>$(VXSCENEDIR)\lib\Win64</DCC_BpiOutput>
-        <DCC_HppOutput>$(VXSCENEDIR)\include\Win64</DCC_HppOutput>
+        <DCC_UnitSearchPath>$(VXSCENE)\Source;$(VXSCENE)\Source\Basis;$(VXSCENE)\Source\DesignTime;$(VXSCENE)\Source\FileFormats;$(VXSCENE)\Source\GameAPIs;$(VXSCENE)\Source\ParallelAPIs;$(VXSCENE)\Source\PhysicsAPIs;$(VXSCENE)\Source\ScriptingAPIs;$(VXSCENE)\Source\Shaders;$(VXSCENE)\Source\SoundVideoAPIs;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_DcpOutput>$(VXSCENE)\lib\Win64</DCC_DcpOutput>
+        <DCC_ObjOutput>$(VXSCENE)\lib\Win64</DCC_ObjOutput>
+        <DCC_BpiOutput>$(VXSCENE)\lib\Win64</DCC_BpiOutput>
+        <DCC_HppOutput>$(VXSCENE)\include\Win64</DCC_HppOutput>
         <DCC_Description>VXScene 3D library</DCC_Description>
-        <DCC_DcuOutput>$(VXSCENEDIR)\lib\Win64</DCC_DcuOutput>
+        <DCC_DcuOutput>$(VXSCENE)\lib\Win64</DCC_DcuOutput>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <VerInfo_Keys>CompanyName=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductVersion=1.0.0.0;Comments=;ProgramID=com.embarcadero.$(MSBuildProjectName);FileDescription=$(MSBuildProjectName);ProductName=$(MSBuildProjectName)</VerInfo_Keys>
@@ -270,7 +270,6 @@
         <DCCReference Include="..\..\Source\VXS.Isosurface.pas"/>
         <DCCReference Include="..\..\Source\Basis\VXS.Joystick.pas"/>
         <DCCReference Include="..\..\Source\Basis\VXS.Keyboard.pas"/>
-        <DCCReference Include="..\..\Source\VXS.Language.pas"/>
         <DCCReference Include="..\..\Source\VXS.LensFlare.pas"/>
         <DCCReference Include="..\..\Source\VXS.LinePFX.pas"/>
         <DCCReference Include="..\..\Source\VXS.Manager.pas"/>
@@ -295,8 +294,7 @@
         <DCCReference Include="..\..\Source\VXS.ObjectManager.pas"/>
         <DCCReference Include="..\..\Source\Basis\VXS.Objects.pas"/>
         <DCCReference Include="..\..\Source\Basis\VXS.Octree.pas"/>
-        <DCCReference Include="..\..\Source\Basis\VXS.OpenGL1x.pas"/>
-        <DCCReference Include="..\..\Source\Basis\VXS.OpenGLAdapter.pas"/>
+        <DCCReference Include="..\..\Source\Basis\VXS.OpenGL.pas"/>
         <DCCReference Include="..\..\Source\Basis\VXS.OpenGLFMX.pas"/>
         <DCCReference Include="..\..\Source\VXS.OutlineShader.pas"/>
         <DCCReference Include="..\..\Source\VXS.ParametricSurfaces.pas"/>
@@ -363,6 +361,7 @@
         <DCCReference Include="..\..\Source\VXS.TimeEventsMgr.pas"/>
         <DCCReference Include="..\..\Source\VXS.Trail.pas"/>
         <DCCReference Include="..\..\Source\VXS.Tree.pas"/>
+        <DCCReference Include="..\..\Source\VXS.Triangulation.pas"/>
         <DCCReference Include="..\..\Source\Basis\VXS.Types.pas"/>
         <DCCReference Include="..\..\Source\Basis\VXS.Utils.pas"/>
         <DCCReference Include="..\..\Source\Basis\VXS.VectorFileObjects.pas"/>
