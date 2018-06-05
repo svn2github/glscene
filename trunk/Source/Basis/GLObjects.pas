@@ -22,7 +22,6 @@ uses
   System.Classes,
   System.SysUtils,
   System.Math,
-  
   GLVectorGeometry,
   GLVectorTypes,
   GLScene,
@@ -574,7 +573,7 @@ type
     FSplineMode: TGLLineSplineMode;
   protected
     FNodes: TGLNodes;
-    procedure CreateNodes; virtual;
+    procedure CreateNodes; dynamic;
     procedure SetSplineMode(const val: TGLLineSplineMode);
     procedure SetDivision(const Value: Integer);
     procedure SetNodes(const aNodes: TGLNodes);

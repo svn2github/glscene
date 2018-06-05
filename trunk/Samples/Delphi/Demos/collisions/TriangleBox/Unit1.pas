@@ -4,6 +4,7 @@ interface
 
 uses
   Winapi.OpenGL,
+  System.Types,
   System.SysUtils,
   System.Classes,
   System.Math,
@@ -14,7 +15,9 @@ uses
   Vcl.ExtCtrls,
   Vcl.StdCtrls,
 
-  
+
+  GLVectorTypes,
+  GLVectorLists,
   GLScene,
   GLObjects,
   GLCadencer,
