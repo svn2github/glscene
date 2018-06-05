@@ -310,8 +310,8 @@ type
     moving: Boolean;
     mx, my: Integer;
 
-    fCursorPos: TGLPoint;
-    fLastCursorPos: TGLPoint;
+    fCursorPos: TPoint;
+    fLastCursorPos: TPoint;
     fChangeRate: TAffineVector;   //total rotate angle
     FEnableLoopCursorMoving: Boolean;
     lastMousePos: TVector;
@@ -2608,7 +2608,7 @@ procedure TGLGizmoEx.MultiSelMouseUp(X, Y: Integer);
 var
   I, J:   Integer;
   pick:   TGLPickList;
-  p1, p2: TGLPoint;
+  p1, p2: TPoint;
   Line:   TGLGizmoExSelRec;
   LastCurPosX, LastCurPosY, CurPosX, CurPosY: Single;
 begin
@@ -3759,8 +3759,8 @@ var
   procedure LoopCursorMoving(isvector: Boolean = False);
   {$IFDEF MSWINDOWS}
   var
-    R, vR: TGLRect;
-    cp:    TGLpoint;
+    R, vR: TRect;
+    cp:    TPoint;
   {$ENDIF}
   begin
   {$IFDEF MSWINDOWS}

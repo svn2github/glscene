@@ -15,6 +15,7 @@ uses
 {$IFDEF USE_FASTMATH}
   Neslib.FastMath,
 {$ENDIF}
+  System.Types,
   System.Classes,
   System.SysUtils,
   System.Math,
@@ -132,7 +133,7 @@ type
     procedure SetBackColor(AValue: TGLColor);
     procedure SetBuildOffset(AValue: TGLCoordinates);
     procedure SetImposterReference(AValue: TImposterReference);
-    procedure InitializeImpostorTexture(const textureSize: TGLPoint);
+    procedure InitializeImpostorTexture(const TextureSize: TPoint);
     property ImposterRegister: TPersistentObjectList read FImposterRegister;
     procedure UnregisterImposter(imposter: TImposter);
     function CreateNewImposter: TImposter; virtual;
@@ -259,8 +260,8 @@ type
   private
     FCoronas: TGLStaticImposterBuilderCoronas;
     FSampleSize: Integer;
-    FTextureSize: TGLPoint;
-    FSamplesPerAxis: TGLPoint;
+    FTextureSize: TPoint;
+    FSamplesPerAxis: TPoint;
     FInvSamplesPerAxis: TVector2f;
     FSamplingRatioBias, FInvSamplingRatioBias: Single;
     FLighting: TSIBLigthing;
@@ -276,7 +277,7 @@ type
     function GetTextureSizeInfo: string;
     procedure SetTextureSizeInfo(const texSize: string);
     {Computes the optimal texture size that would be able to hold all samples. }
-    function ComputeOptimalTextureSize: TGLPoint;
+    function ComputeOptimalTextureSize: TPoint;
     function CreateNewImposter: TImposter; override;
     procedure DoPrepareImposter(var rci: TGLRenderContextInfo;
       impostoredObject: TGLBaseSceneObject;
@@ -299,8 +300,8 @@ type
        as well increase the number of samples. }
     function TextureFillRatio: Single;
     {Meaningful only after imposter texture has been prepared. }
-    property TextureSize: TGLPoint read FTextureSize;
-    property SamplesPerAxis: TGLPoint read FSamplesPerAxis;
+    property TextureSize: TPoint read FTextureSize;
+    property SamplesPerAxis: TPoint read FSamplesPerAxis;
   published
     {Description of the samples looking orientations. }
     property Coronas: TGLStaticImposterBuilderCoronas read FCoronas write
@@ -739,7 +740,7 @@ begin
 end;
 
 procedure TGLImposterBuilder.InitializeImpostorTexture(const textureSize:
-  TGLPoint);
+  TPoint);
 begin
     gl.TexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, textureSize.X, textureSize.Y, 0,
       GL_RGBA, GL_UNSIGNED_BYTE, nil);
@@ -1063,7 +1064,7 @@ end;
 
 function TGLStaticImposterBuilder.GetTextureSizeInfo: string;
 var
-  t: TGLPoint;
+  t: TPoint;
   fill: Integer;
 begin
   t := ComputeOptimalTextureSize;
@@ -1221,10 +1222,10 @@ begin
     (rci.scene as TGLScene).SetupLights(rci.GLStates.MaxLights);
 end;
 
-function TGLStaticImposterBuilder.ComputeOptimalTextureSize: TGLPoint;
+function TGLStaticImposterBuilder.ComputeOptimalTextureSize: TPoint;
 var
   nbSamples, maxSamples, maxTexSize, baseSize: Integer;
-  texDim, bestTexDim: TGLPoint;
+  texDim, bestTexDim: TPoint;
   requiredSurface, currentSurface, bestSurface: Integer;
 begin
   nbSamples := Coronas.SampleCount;
@@ -1278,7 +1279,7 @@ end;
 
 function TGLStaticImposterBuilder.TextureFillRatio: Single;
 var
-  texDim: TGLPoint;
+  texDim: TPoint;
 begin
   texDim := ComputeOptimalTextureSize;
   Result := (Coronas.SampleCount * SampleSize * SampleSize) / (texDim.X *

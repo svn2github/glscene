@@ -23,6 +23,7 @@ uses
   System.Math,
   VCL.Graphics,
   VCL.Imaging.Pngimage,
+  VCL.Consts,
   {$IFDEF USE_GRAPHICS32} GR32, {$ENDIF}
 
   OpenGLTokens,
@@ -294,7 +295,7 @@ type
       The best spot for reading pixels is within a SceneViewer's PostRender
       event : the scene has been fully rendered and the OpenGL context
       is still active. }
-    procedure ReadPixels(const area: TGLRect);
+    procedure ReadPixels(const area: TRect);
     {Draws the whole bitmap at given position in the current OpenGL context.
       This function must be called with a rendering context active.
       Blending and Alpha channel functions are not altered by this function
@@ -531,7 +532,7 @@ begin
   end;
   if (k > 1) and (not formatsThatCanBeSaved) then
     FmtStr(descriptions, '%s (%s)|%1:s|%s',
-      [glsAllFilter, filters, descriptions]);
+      [sAllFilter, filters, descriptions]);
 end;
 
 function TRasterFileFormatsList.FindExtByIndex(index: Integer;
@@ -2699,7 +2700,7 @@ begin
   ReallocMem(FData, DataSize);
 end;
 
-procedure TGLImage.ReadPixels(const area: TGLRect);
+procedure TGLImage.ReadPixels(const area: TRect);
 begin
   UnMipmap;
   FLOD[0].Width := (area.Right - area.Left) and $FFFC;

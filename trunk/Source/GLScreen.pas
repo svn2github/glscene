@@ -73,7 +73,7 @@ procedure RestoreDefaultMode;
 
 procedure GLShowCursor(AShow: Boolean);
 procedure GLSetCursorPos(AScreenX, AScreenY: Integer);
-procedure GLGetCursorPos(var point: TGLPoint);
+procedure GLGetCursorPos(var point: TPoint);
 function GLGetScreenWidth: Integer;
 function GLGetScreenHeight: Integer;
 
@@ -321,7 +321,7 @@ begin
   SetCursorPos(AScreenX, AScreenY);
 end;
 
-procedure GLGetCursorPos(var point: TGLPoint);
+procedure GLGetCursorPos(var point: TPoint);
 begin
   GetCursorPos(point);
 end;

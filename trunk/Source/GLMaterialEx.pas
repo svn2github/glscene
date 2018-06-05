@@ -1806,7 +1806,7 @@ begin
     if not IsDesignTime and FUseStreaming then
     begin
       TFriendlyImage(FImage).StartStreaming;
-      FLastTime := GLSTime;
+      FLastTime := AppTime;
       StreamTransfer;
       FHandle.NotifyDataUpdated;
     end
@@ -2025,7 +2025,7 @@ begin
   if Assigned(FApplicableSampler) then
   with FApplicableSampler do
   begin
-    newTime := GLSTime;
+    newTime := AppTime;
     if FLODBiasFract > 0 then
       FLODBiasFract := FLODBiasFract - 0.05 * (newTime - FLastTime)
     else if FLODBiasFract < 0 then
@@ -5389,7 +5389,7 @@ procedure TGLShaderUniformTexture.Apply(var ARci: TGLRenderContextInfo);
         end;
       end;
       // Find most useless texture unit
-      minTime := GLSTime;
+      minTime := AppTime;
       J := 0;
       for I := 0 to MaxTextureImageUnits - 1 do
       begin

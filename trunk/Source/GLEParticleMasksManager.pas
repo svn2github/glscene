@@ -27,6 +27,7 @@ interface
 {$I GLScene.inc}
 
 uses
+  System.Types,
   System.SysUtils,
   System.Classes,
   System.Math,
@@ -247,7 +248,7 @@ var
   FromBitMap: TBitmap;
   ToBitMap: TBitmap;
   X, Y: Integer;
-  Rect: TGLRect;
+  Rect: TRect;
 begin
 
   FromBitMap := nil;

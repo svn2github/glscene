@@ -24,6 +24,7 @@ interface
 {$I GLScene.inc}
 
 uses
+  System.Types,
   System.Classes,
   
   GLScene,
@@ -418,7 +419,7 @@ type
     procedure MouseLookActiveToggle; virtual;
 
     function MouseLook(const ADeltaTime: Double): Boolean; overload;
-    function MouseLook(const NewXY: TGLPoint; const ADeltaTime: Double): Boolean; overload;
+    function MouseLook(const NewXY: TPoint; const ADeltaTime: Double): Boolean; overload;
     function MouseLook(const NewX, NewY: Integer; const ADeltaTime: Double): Boolean; overload;
   published
     property AutoUpdateMouse: Boolean read FAutoUpdateMouse write FAutoUpdateMouse default True;
@@ -900,7 +901,7 @@ end;
 function TGLSmoothUserInterface.MouseLook(
   const ADeltaTime: Double): Boolean;
 var
-  MousePos: TGLPoint;
+  MousePos: TPoint;
 begin
   Assert(FAutoUpdateMouse, 'AutoUpdateMouse must be True to use this function');
   if FMouseLookActive then
@@ -934,7 +935,7 @@ begin
 end;
 
 
-function TGLSmoothUserInterface.MouseLook(const NewXY: TGLPoint; const ADeltaTime: Double): Boolean;
+function TGLSmoothUserInterface.MouseLook(const NewXY: TPoint; const ADeltaTime: Double): Boolean;
 begin
   Result := Mouselook(NewXY.X, NewXY.Y, ADeltaTime);
 end;
@@ -1008,7 +1009,7 @@ end;
 
 procedure TGLSmoothUserInterface.SetMouseLookActive(const Value: Boolean);
 var
-  MousePos: TGLPoint;
+  MousePos: TPoint;
 begin
   if FMouseLookActive = Value then Exit;
   FMouseLookActive := Value;

@@ -5,7 +5,6 @@
    Cross platform support functions and types for GLScene.
    Ultimately, *no* cross-platform or cross-version defines should be present
    in the core GLScene units, and have all moved here instead.
-   
 }
 unit GLCrossPlatform;
 
@@ -23,14 +22,14 @@ uses
 {$IFDEF X11_SUPPORT}
   xlib,
 {$ENDIF}
-  System.Types, 
+  System.Types,
   System.Classes,
   System.SysUtils,
   System.StrUtils,
-  VCL.Consts,   
+  VCL.Consts,
   VCL.Graphics,
-  VCL.Controls,  
-  VCL.Forms,  
+  VCL.Controls,
+  VCL.Forms,
   VCL.Dialogs;
 
 const
@@ -47,18 +46,12 @@ type
   // in 64 bit mode, because in FPC "Integer" type is always 32 bit
   // (or 16 bit in Pascal mode), but in Delphi it is platform-specific and
   // can be 16, 32 or 64 bit.
-  ptrInt = Integer;
   PtrUInt = Cardinal;
   // Several aliases to shield us from the need of ifdef'ing between
   // the "almost cross-platform" units like Graphics/QGraphics etc.
   // Gives a little "alien" look to names, but that's the only way around :(
   // DaStr: Actually, there is a way around, see TPenStyle for example.
 
-  TGLPoint = TPoint;
-
-  PGLPoint = ^TPoint;
-  TGLRect = TRect;
-  PGLRect = ^TRect;
   TDelphiColor = TColor;
 
   TGLBitmap = TBitmap;
@@ -121,12 +114,6 @@ type
 
   TGLComponent = class(TComponent);
 
-  DWORD = System.Types.DWORD; {$NODEFINE DWORD}
-  TPoint = System.Types.TPoint;{$NODEFINE TPoint}
-  PPoint = System.Types.PPoint;{$NODEFINE PPoint}
-  TRect = System.Types.TRect;  {$NODEFINE TRect}
-  PRect = System.Types.PRect;  {$NODEFINE PRect}
-
   TProjectTargetNameFunc = function(): string;
 
 const
@@ -159,29 +146,26 @@ const
   glKey_NEXT = VK_NEXT;
   glKey_CONTROL = VK_CONTROL;
 
-  // Several define from unit Consts
 const
-  glsAllFilter: string = sAllFilter;
-  GLS_FONT_CHARS_COUNT = 2024;
+  FONT_CHARS_COUNT = 2024;
 
 var
   IsDesignTime: Boolean = False;
   vProjectTargetName: TProjectTargetNameFunc;
 
-function GLPoint(const x, y: Integer): TGLPoint; inline;
+function GLPoint(const x, y: Integer): TPoint; inline;
 {Builds a TColor from Red Green Blue components. }
 function RGB(const r, g, b: Byte): TColor; {$NODEFINE RGB} inline;
-function GetGLRect(const aLeft, aTop, aRight, aBottom: Integer): TGLRect;
+function GetGLRect(const aLeft, aTop, aRight, aBottom: Integer): TRect;
 { Increases or decreases the width and height of the specified rectangle.
    Adds dx units to the left and right ends of the rectangle and dy units to
    the top and bottom. }
-procedure InflateGLRect(var aRect: TGLRect; dx, dy: Integer);
-procedure IntersectGLRect(var aRect: TGLRect; const rect2: TGLRect);
-function PtInRect(const Rect: TGLRect; const P: TPoint): Boolean;
+procedure InflateGLRect(var aRect: TRect; dx, dy: Integer);
+procedure IntersectGLRect(var aRect: TRect; const rect2: TRect);
 
 procedure RaiseLastOSError;
 
-{Number of pixels per logical inch along the screen width for the device. 
+{Number of pixels per logical inch along the screen width for the device.
    Under Win32 awaits a HDC and returns its LOGPIXELSX. }
 function GetDeviceLogicalPixelsX(device: HDC): Integer;
 {Number of bits per pixel for the current desktop resolution. }
@@ -221,9 +205,9 @@ function PrecisionTimerLap(const precisionTimer: Int64): Double;
 function StopPrecisionTimer(const precisionTimer: Int64): Double;
 
 {Returns time in milisecond from application start. }
-function GLSTime: Double;
+function AppTime: Double;
 
-{Returns the number of CPU cycles since startup. 
+{Returns the number of CPU cycles since startup.
    Use the similarly named CPU instruction. }
 
 function GLOKMessageBox(const Text, Caption: string): Integer;
@@ -323,7 +307,7 @@ begin
 {$ENDIF}
 end;
 
-function GLPoint(const x, y: Integer): TGLPoint; inline;
+function GLPoint(const x, y: Integer): TPoint; inline;
 begin
   Result.X := x;
   Result.Y := y;
@@ -334,7 +318,7 @@ begin
   Result := r or (g shl 8) or (b shl 16);
 end;
 
-function GetGLRect(const aLeft, aTop, aRight, aBottom: Integer): TGLRect;
+function GetGLRect(const aLeft, aTop, aRight, aBottom: Integer): TRect;
 begin
   Result.Left := aLeft;
   Result.Top := aTop;
@@ -342,7 +326,7 @@ begin
   Result.Bottom := aBottom;
 end;
 
-procedure InflateGLRect(var aRect: TGLRect; dx, dy: Integer);
+procedure InflateGLRect(var aRect: TRect; dx, dy: Integer);
 begin
   aRect.Left := aRect.Left - dx;
   aRect.Right := aRect.Right + dx;
@@ -354,7 +338,7 @@ begin
     aRect.Bottom := aRect.Top;
 end;
 
-procedure IntersectGLRect(var aRect: TGLRect; const rect2: TGLRect);
+procedure IntersectGLRect(var aRect: TRect; const rect2: TRect);
 var
   a: Integer;
 begin
@@ -577,7 +561,7 @@ var
   vDeltaMilliSecond: TDateTime;
 {$ENDIF}
 
-function GLSTime: Double;
+function AppTime: Double;
 {$IFDEF MSWINDOWS}
 var
   SystemTime: TSystemTime;
@@ -837,7 +821,7 @@ var
   {$ENDIF}
 begin
   {$IFDEF MSWINDOWS}
-  With Result, OSVersionInfo do
+  with Result, OSVersionInfo do
   begin
     dwOSVersionInfoSize := sizeof(TOSVersionInfo);
 
@@ -940,32 +924,51 @@ begin
   {$IFDEF MSWINDOWS}
   with GetPlatformInfo do
   begin
-        if Version='' then Exit;
-        case Major of
-          0: Result := pvUnknown;
-          1..2: Result := pvUnknown;
-          3:  Result := pvWinNT3;              // Windows NT 3
-          4:  case Minor of
-                0: if PlatformId = VER_PLATFORM_WIN32_NT
-                   then Result := pvWinNT4     // Windows NT 4
-                   else Result := pvWin95;     // Windows 95
-                10: Result := pvWin98;         // Windows 98
-                90: Result := pvWinME;         // Windows ME
-              end;
-          5:  case Minor of
-                0: Result := pvWin2000;         // Windows 2000
-                1: Result := pvWinXP;          // Windows XP
-                2: Result := pvWin2003;        // Windows 2003
-              end;
-          6:  case Minor of
-                0: Result := pvWinVista;         // Windows Vista
-                1: Result := pvWinSeven;          // Windows Seven
-                2: Result := pvWin2008;        // Windows 2008
-                3..4: Result := pvWinNew;
-              end;
-          7:  Result := pvWinNew;
+    if Version = '' then
+      exit;
+    case Major of
+      0:
+        Result := pvUnknown;
+      1 .. 2:
+        Result := pvUnknown;
+      3:
+        Result := pvWinNT3; // Windows NT 3
+      4:
+        case Minor of
+          0:
+            if PlatformId = VER_PLATFORM_WIN32_NT then
+              Result := pvWinNT4 // Windows NT 4
+            else
+              Result := pvWin95; // Windows 95
+          10:
+            Result := pvWin98; // Windows 98
+          90:
+            Result := pvWinME; // Windows ME
         end;
-   end;
+      5:
+        case Minor of
+          0:
+            Result := pvWin2000; // Windows 2000
+          1:
+            Result := pvWinXP; // Windows XP
+          2:
+            Result := pvWin2003; // Windows 2003
+        end;
+      6:
+        case Minor of
+          0:
+            Result := pvWinVista; // Windows Vista
+          1:
+            Result := pvWinSeven; // Windows Seven
+          2:
+            Result := pvWin2008; // Windows 2008
+          3 .. 4:
+            Result := pvWinNew;
+        end;
+      7:
+        Result := pvWinNew;
+    end;
+  end;
   {$ENDIF}
   {$IFDEF Unix}
   with GetPlatformInfo do
@@ -1051,14 +1054,8 @@ begin
 {$ENDIF}
 end;
 
-function PtInRect(const Rect: TGLRect; const P: TPoint): Boolean;
-begin
-  Result := (P.X >= Rect.Left) and (P.X < Rect.Right) and (P.Y >= Rect.Top)
-    and (P.Y < Rect.Bottom);
-end;
-
 initialization
-  vGLSStartTime := GLSTime;
+  vGLSStartTime := AppTime;
 {$IFDEF UNIX}
   Init_vProgStartSecond;
 {$ENDIF}

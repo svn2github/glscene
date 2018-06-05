@@ -140,7 +140,7 @@ procedure TGLShadowPlane.DoRender(var ARci: TGLRenderContextInfo;
 var
   oldProxySubObject, oldIgnoreMaterials: Boolean;
   shadowMat: TMatrix;
-  sr, ds: TGLRect;
+  sr, ds: TRect;
   CurrentBuffer: TGLSceneBuffer;
   ModelMat: TMatrix;
 begin

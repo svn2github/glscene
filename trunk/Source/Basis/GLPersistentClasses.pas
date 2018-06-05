@@ -428,7 +428,7 @@ begin
   if objectsStored then
     while i > 0 do
     begin
-      aStrings.AddObject(ReadString, TObject(PtrUInt(ReadInteger)));
+      aStrings.AddObject(ReadString, TObject(ReadInteger));
       Dec(i);
     end
   else

@@ -2,8 +2,8 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Support classes for loading various fileformats. 
-   These classes work together like vector file formats or Delphi's TGraphic classes. 
+   Support classes for loading various fileformats.
+   These classes work together like vector file formats or Delphi's TGraphic classes.
 
 }
 unit GLSoundFileObjects;
@@ -13,10 +13,11 @@ interface
 {$I GLScene.inc}
 
 uses
+  Winapi.MMSystem,
   System.Classes,
   System.SysUtils,
-  Winapi.MMSystem,
-   
+  VCL.Consts,
+
   GLApplicationFileIO,
   GLCrossPlatform;
 
@@ -305,7 +306,7 @@ begin
          end;
    end;
    if C > 1 then
-      FmtStr(Descriptions, '%s (%s)|%1:s|%s', [glsAllFilter, Filters, Descriptions]);
+      FmtStr(Descriptions, '%s (%s)|%1:s|%s', [sAllFilter, Filters, Descriptions]);
 end;
 
 // ------------------------------------------------------------------

@@ -77,8 +77,8 @@ type
     FQualityStyle: TTerrainHighResStyle;
     FOcclusionFrameSkip: Integer;
     FOcclusionTesselate: TTerrainOcclusionTesselate;
-    FIsolineInterval: Integer;
-    FIsolineWidth: Integer;
+    FContourInterval: Integer;
+    FContourWidth: Integer;
   protected
     FTilesHash: packed array [0 .. cTilesHashSize] of TList;
     procedure MarkAllTilesAsUnused;
@@ -212,11 +212,11 @@ type
     property OnMaxCLODTrianglesReached: TMaxCLODTrianglesReachedEvent
       read FOnMaxCLODTrianglesReached write FOnMaxCLODTrianglesReached;
      {  Distance between contours - zero (default) for no contours  PGS }
-    property IsolineInterval: Integer read FIsolineInterval
-      write FIsolineInterval default 0;
+    property ContourInterval: Integer read FContourInterval
+      write FContourInterval default 0;
      {  Width of Isolines }
-    property IsolineWidth: Integer read FIsolineWidth
-      write FIsolineWidth default 1;
+    property ContourWidth: Integer read FContourWidth
+      write FContourWidth default 1;
   end;
 
 // ------------------------------------------------------------------
@@ -918,8 +918,8 @@ begin
     begin
       // spawn ROAM patch
       Patch := TGLROAMPatch.Create;
-      Patch.IsolineInterval := IsolineInterval;
-      Patch.IsolineWidth := IsolineWidth;
+      Patch.ContourInterval := ContourInterval;
+      Patch.ContourWidth := ContourWidth;
       Tile.ObjectTag := patch;
       Patch.HeightData := tile;
       Patch.VertexScale := XYZVector;

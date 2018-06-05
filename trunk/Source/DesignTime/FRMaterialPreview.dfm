@@ -42,6 +42,7 @@ object RMaterialPreview: TRMaterialPreview
     Height = 203
     Camera = Camera
     FieldOfView = 71.615516662597660000
+    PenAsTouch = False
     TabOrder = 2
   end
   object GLScene: TGLScene

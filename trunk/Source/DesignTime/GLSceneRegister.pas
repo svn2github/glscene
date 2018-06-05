@@ -99,11 +99,11 @@ type
     procedure ListMeasureWidth(const Value: string; ACanvas: TCanvas;
       var AWidth: Integer);
     procedure ListDrawValue(const Value: string; ACanvas: TCanvas;
-      const ARect: TGLRect; ASelected: Boolean);
+      const ARect: TRect; ASelected: Boolean);
     // CustomPropertyDrawing
-    procedure PropDrawName(ACanvas: TCanvas; const ARect: TGLRect;
+    procedure PropDrawName(ACanvas: TCanvas; const ARect: TRect;
       ASelected: Boolean);
-    procedure PropDrawValue(ACanvas: TCanvas; const ARect: TGLRect;
+    procedure PropDrawValue(ACanvas: TCanvas; const ARect: TRect;
       ASelected: Boolean);
     function GetValue: string; override;
     procedure SetValue(const Value: string); override;

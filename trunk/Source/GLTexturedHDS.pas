@@ -25,6 +25,7 @@ interface
 {$I GLScene.inc}
 
 uses
+  System.Types,
   System.Classes,
 
   GLVectorTypes,
@@ -49,7 +50,7 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure StartPreparingData(heightData: TGLHeightData); override;
-    procedure MarkDirty(const area: TGLRect); override;
+    procedure MarkDirty(const area: TRect); override;
   published
     property MaxPoolSize;
     property OnStartPreparingData: TStartPreparingDataEvent read FOnStartPreparingData write FOnStartPreparingData;
@@ -85,7 +86,7 @@ begin
 	inherited Destroy;
 end;
 
-procedure TGLTexturedHDS.MarkDirty(const area : TGLRect);
+procedure TGLTexturedHDS.MarkDirty(const area : TRect);
 begin
    inherited;
    if Assigned(FOnMarkDirty) then

@@ -11,6 +11,7 @@ interface
 {$I GLScene.inc}
 
 uses
+  System.Types,
   System.Classes,
   System.SysUtils,
   System.Math,
@@ -101,7 +102,7 @@ type
 	    GLVertNavigator : The Navigator which if set receives the vertical user movement. Used mostly for cameras.... }
   TGLUserInterface = class(TComponent)
   private
-    FPrevPoint: TGLPoint;
+    FPrevPoint: TPoint;
     midScreenX, midScreenY: integer;
     FMouseActive: boolean;
     FMouseSpeed: single;

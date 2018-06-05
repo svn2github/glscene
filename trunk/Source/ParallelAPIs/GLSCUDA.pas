@@ -11,6 +11,7 @@ interface
 {$I cuda.inc}
 
 uses
+  System.Types,
   System.Classes,
   System.SysUtils,
   

@@ -143,7 +143,7 @@ procedure TGLWindowsBitmapFont.LoadWindowsFont;
     PaddedHeight : integer;
     buffer : array[0..2] of WideChar;
     p : PCharInfo;
-    r : TGLRect;
+    r : TRect;
   begin
     buffer[1] := WideChar(#32);
     buffer[2] := WideChar(#0);

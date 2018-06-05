@@ -13,9 +13,10 @@ interface
 {$I GLScene.inc}
 
 uses
+  System.Types,
   System.Classes,
   System.SysUtils,
-  
+
   OpenGLTOkens,
   GLContext,
   GLTexture,
@@ -32,10 +33,10 @@ type
     FBuffer: pointer;
     FPBO: TGLBufferObjectHandle;
     FData: pointer;
-    FDirtyRect: TGLRect;
+    FDirtyRect: TRect;
     FUseBGR: boolean;
     FUsePBO: boolean;
-    procedure SetDirtyRectangle(const Value: TGLRect);
+    procedure SetDirtyRectangle(const Value: TRect);
     procedure SetUsePBO(const Value: boolean);
   protected
     function GetTexSize: integer;
@@ -66,7 +67,7 @@ type
        Override it if you're only changing a small piece of the texture.
        Note that the Data pointer is relative to the DirtyRectangle,
        NOT the entire texture. }
-    property DirtyRectangle: TGLRect read FDirtyRect write SetDirtyRectangle;
+    property DirtyRectangle: TRect read FDirtyRect write SetDirtyRectangle;
     {Indicates that the data is stored as BGR(A) instead of
        RGB(A).  The default is to use BGR(A). }
     property UseBGR: boolean read FUseBGR write FUseBGR;
@@ -287,7 +288,7 @@ begin
   inherited;
 end;
 
-procedure TGLDynamicTextureImage.SetDirtyRectangle(const Value: TGLRect);
+procedure TGLDynamicTextureImage.SetDirtyRectangle(const Value: TRect);
 begin
   FDirtyRect.Left:= MaxInteger(Value.Left, 0);
   FDirtyRect.Top:= MaxInteger(Value.Top, 0);

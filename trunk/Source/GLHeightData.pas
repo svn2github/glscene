@@ -118,7 +118,7 @@ type
     procedure Release(aHeightData: TGLHeightData); virtual;
     {  Marks the given area as "dirty" (ie source data changed). 
       All loaded and in-cache tiles overlapping the area are flushed. }
-    procedure MarkDirty(const Area: TGLRect); overload; virtual;
+    procedure MarkDirty(const Area: TRect); overload; virtual;
     procedure MarkDirty(XLeft, YTop, xRight, yBottom: Integer); overload;
     procedure MarkDirty; overload;
     {  Maximum number of background threads. 
@@ -345,7 +345,7 @@ type
     {  Calculates and returns the normal for cell x, y.(between vertexes)   }
     function NormalAtNode(x, y: Integer; const scale: TAffineVector): TAffineVector;
     {  Returns True if the data tile overlaps the area. }
-    function OverlapsArea(const Area: TGLRect): boolean;
+    function OverlapsArea(const Area: TRect): boolean;
     {  Reserved for renderer use. }
     property ObjectTag: TObject read FObjectTag write FObjectTag;
     {  Reserved for renderer use. }
@@ -394,7 +394,7 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure StartPreparingData(HeightData: TGLHeightData); override;
-    procedure MarkDirty(const Area: TGLRect); override;
+    procedure MarkDirty(const Area: TRect); override;
     function Width: Integer; override;
     function Height: Integer; override;
   published
@@ -412,7 +412,7 @@ type
   end;
 
   TStartPreparingDataEvent = procedure(HeightData: TGLHeightData) of object;
-  TMarkDirtyEvent = procedure(const Area: TGLRect) of object;
+  TMarkDirtyEvent = procedure(const Area: TRect) of object;
 
   // TTexturedHeightDataSource = class (TGLTexturedHeightDataSource)
 
@@ -427,7 +427,7 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure StartPreparingData(HeightData: TGLHeightData); override;
-    procedure MarkDirty(const Area: TGLRect); override;
+    procedure MarkDirty(const Area: TRect); override;
   published
     property MaxPoolSize;
     property OnStartPreparingData: TStartPreparingDataEvent
@@ -753,7 +753,7 @@ begin
   // nothing, yet
 end;
 
-procedure TGLHeightDataSource.MarkDirty(const Area: TGLRect);
+procedure TGLHeightDataSource.MarkDirty(const Area: TRect);
 var
   i: Integer;
   HD: TGLHeightData;
@@ -775,7 +775,7 @@ end;
 
 procedure TGLHeightDataSource.MarkDirty(XLeft, YTop, xRight, yBottom: Integer);
 var
-  r: TGLRect;
+  r: TRect;
 begin
   r.Left := XLeft;
   r.Top := YTop;
@@ -1559,7 +1559,7 @@ begin
   NormalizeVector(Result);
 end;
 
-function TGLHeightData.OverlapsArea(const Area: TGLRect): boolean;
+function TGLHeightData.OverlapsArea(const Area: TRect): boolean;
 begin
   Result := (XLeft <= Area.Right) and (YTop <= Area.Bottom) and
     (XLeft + size > Area.Left) and (YTop + size > Area.Top);
@@ -1634,7 +1634,7 @@ begin
   MarkDirty;
 end;
 
-procedure TGLBitmapHDS.MarkDirty(const Area: TGLRect);
+procedure TGLBitmapHDS.MarkDirty(const Area: TRect);
 begin
   inherited;
   FreeMonochromeBitmap;
@@ -1789,7 +1789,7 @@ begin
   inherited Destroy;
 end;
 
-procedure TGLCustomHDS.MarkDirty(const Area: TGLRect);
+procedure TGLCustomHDS.MarkDirty(const Area: TRect);
 begin
   inherited;
   if Assigned(FOnMarkDirty) then

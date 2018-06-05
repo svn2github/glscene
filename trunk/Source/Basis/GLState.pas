@@ -2807,7 +2807,7 @@ begin
     gl.BindTexture(cGLTexTypeToGLEnum[target], Value);
     ActiveTexture := lastActiveTexture;
   end;
-  FTextureBindingTime[Index, target] := GLSTime;
+  FTextureBindingTime[Index, target] := AppTime;
 end;
 
 function TGLStateCache.GetActiveTextureEnabled(target: TGLTextureTarget): Boolean;

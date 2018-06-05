@@ -18,6 +18,7 @@ uses
   System.SysUtils,
   System.Types,
   System.Math,
+  VCL.Consts,
 
   OpenGLTokens,
   GLScene,
@@ -1464,7 +1465,7 @@ begin
     end;
   end;
   if (k > 1) and (not formatsThatCanBeSaved) then
-    FmtStr(descriptions, '%s (%s)|%1:s|%s', [glsAllFilter, filters, descriptions]);
+    FmtStr(descriptions, '%s (%s)|%1:s|%s', [sAllFilter, filters, descriptions]);
 end;
 
 function TGLVectorFileFormatsList.FindExtByIndex(Index: Integer; 

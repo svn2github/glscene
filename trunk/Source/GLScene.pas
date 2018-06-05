@@ -1385,7 +1385,7 @@ type
     function StoreFog: Boolean;
     procedure SetAccumBufferBits(const val: Integer);
     procedure PrepareRenderingMatrices(const aViewPort: TRectangle;
-      resolution: Integer; pickingRect: PGLRect = nil); inline;
+      resolution: Integer; pickingRect: PRect = nil); inline;
     procedure DoBaseRender(const aViewPort: TRectangle; resolution: Integer;
       drawState: TDrawState; baseObject: TGLBaseSceneObject);
     procedure SetupRenderingContext(context: TGLContext);
@@ -1412,12 +1412,12 @@ type
     // ViewPort for current/last render
     property ViewPort: TRectangle read FViewPort;
     // Fills the PickList with objects in Rect area
-    procedure PickObjects(const rect: TGLRect; pickList: TGLPickList;
+    procedure PickObjects(const rect: TRect; pickList: TGLPickList;
       objectCountGuess: Integer);
     {Returns a PickList with objects in Rect area.
        Returned list should be freed by caller.
        Objects are sorted by depth (nearest objects first). }
-    function GetPickedObjects(const rect: TGLRect; objectCountGuess: Integer =
+    function GetPickedObjects(const rect: TRect; objectCountGuess: Integer =
       64): TGLPickList;
     // Returns the nearest object at x, y coordinates or nil if there is none
     function GetPickedObject(x, y: Integer): TGLBaseSceneObject;
@@ -7207,7 +7207,7 @@ begin
   DoChange;
 end;
 
-procedure TGLSceneBuffer.PickObjects(const rect: TGLRect; pickList: TGLPickList; objectCountGuess: Integer);
+procedure TGLSceneBuffer.PickObjects(const rect: TRect; pickList: TGLPickList; objectCountGuess: Integer);
 var
   I: Integer;
   obj: TGLBaseSceneObject;
@@ -7249,7 +7249,7 @@ begin
   end;
 end;
 
-function TGLSceneBuffer.GetPickedObjects(const rect: TGLRect; objectCountGuess:
+function TGLSceneBuffer.GetPickedObjects(const rect: TRect; objectCountGuess:
   Integer = 64): TGLPickList;
 begin
   Result := TGLPickList.Create(psMinDepth);
@@ -7349,7 +7349,7 @@ begin
 end;
 
 procedure TGLSceneBuffer.PrepareRenderingMatrices(const aViewPort: TRectangle;
-  resolution: Integer; pickingRect: PGLRect = nil);
+  resolution: Integer; pickingRect: PRect = nil);
 begin
   RenderingContext.PipelineTransformation.IdentityAll;
   // setup projection matrix

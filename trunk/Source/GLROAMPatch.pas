@@ -61,8 +61,8 @@ type
     FOcclusionQuery: TGLOcclusionQueryHandle;
     FOcclusionSkip, FOcclusionCounter: Integer;
     FLastOcclusionTestPassed: Boolean;
-    FIsolineInterval: Integer;
-    FIsolineWidth: Integer;
+    FContourInterval: Integer;
+    FContourWidth: Integer;
   protected
     procedure SetHeightData(Val: TGLHeightData);
     procedure SetOcclusionSkip(Val: Integer);
@@ -85,7 +85,7 @@ type
       Recursivity is the main problem, that's why SafeTesselate is calling
       Tesselate in a try..except . }
     function SafeTesselate: Boolean;
-    {  Render the patch in high-resolution. 
+    {  Render the patch in high-resolution.
       The lists are assumed to have enough capacity to allow AddNC calls
       (additions without capacity check). High-resolution renders use
       display lists, and are assumed to be made together. }
@@ -123,19 +123,19 @@ type
     property TriangleCount: Integer read FTriangleCount;
     property Tag: Integer read FTag write FTag;
     {  Distance between contours - zero (default) for no contours }
-    property IsolineInterval: Integer read FIsolineInterval
-      write FIsolineInterval default 0;
+    property ContourInterval: Integer read FContourInterval
+      write FContourInterval default 0;
     {  Width of Isolines }
-    property IsolineWidth: Integer read FIsolineWidth
-      write FIsolineWidth  default 1;
+    property ContourWidth: Integer read FContourWidth
+      write FContourWidth  default 1;
   end;
 
 {  Specifies the maximum number of ROAM triangles that may be allocated. }
 procedure SetROAMTrianglesCapacity(nb: Integer);
 function GetROAMTrianglesCapacity: Integer;
 {  Draw contours on rendering terrain patches }
-procedure DrawIsolines(Vertices: TAffineVectorList; VertexIndices: TIntegerList;
-  IsolineInterval: Integer; IsolineWidth: Integer; DecVal: Integer);
+procedure DrawContours(Vertices: TAffineVectorList; VertexIndices: TIntegerList;
+  ContourInterval: Integer; ContourWidth: Integer; DecVal: Integer);
 
 // ------------------------------------------------------------------
 implementation
@@ -179,15 +179,15 @@ begin
   Result := vTriangleNodesCapacity;
 end;
 
-procedure DrawIsolines(Vertices: TAffineVectorList; VertexIndices: TIntegerList;
-  IsolineInterval: Integer; IsolineWidth: Integer; DecVal: Integer);
+procedure DrawContours(Vertices: TAffineVectorList; VertexIndices: TIntegerList;
+  ContourInterval: Integer; ContourWidth: Integer; DecVal: Integer);
 var
   i: Integer;
   Isolines: TAffineVectorList;
   CurColor: TVector;
 
 begin
-  if IsolineInterval > 0 then
+  if ContourInterval > 0 then
   begin
     gl.PolygonOffset(1, 1);
     gl.Enable(GL_POLYGON_OFFSET_FILL);
@@ -197,12 +197,12 @@ begin
     begin
       TriangleElevationSegments(Vertices[VertexIndices[i]],
         Vertices[VertexIndices[i + 1]], Vertices[VertexIndices[i + 2]],
-        IsolineInterval, Isolines);
+        ContourInterval, Isolines);
       Dec(i, DecVal);
     end;
     gl.PushAttrib(GL_ENABLE_BIT or GL_CURRENT_BIT);
     gl.Disable(GL_TEXTURE_2D);
-    gl.LineWidth(IsolineWidth);
+    gl.LineWidth(ContourWidth);
     gl.GetFloatv(GL_CURRENT_COLOR, @CurColor);
     gl.Color4f(0, 0, 0, 1);
     gl.Begin_(GL_LINES);
@@ -377,7 +377,7 @@ begin
   FID := vNextPatchID;
   Inc(vNextPatchID);
   FListHandle := TGLListHandle.Create;
-  FIsolineInterval := 0;
+  FContourInterval := 0;
   FOcclusionQuery := TGLOcclusionQueryHandle.Create;
 end;
 
@@ -721,7 +721,7 @@ begin
         VertexIndices.List);
     gl.EndList;
 
-    DrawIsolines(Vertices, VertexIndices, FIsolineInterval, FIsolineWidth, 1);
+    DrawContours(Vertices, VertexIndices, FContourInterval, FContourWidth, 1);
     Vertices.Count := 0;
     TexCoords.Count := 0;
     VertexIndices.Count := 0;
@@ -770,7 +770,7 @@ begin
     TexCoords.ScaleAndTranslate(PTexPoint(@TextureScale)^,
       PTexPoint(@TextureOffset)^, n, nb);
 
-    DrawIsolines(Vertices, VertexIndices, FIsolineInterval, FIsolineWidth, 3);
+    DrawContours(Vertices, VertexIndices, FContourInterval, FContourWidth, 3);
     if FOcclusionQuery.Active then
     begin
       FlushAccum(Vertices, VertexIndices, TexCoords);

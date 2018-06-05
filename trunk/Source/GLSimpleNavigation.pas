@@ -15,6 +15,7 @@ interface
 {$I GLScene.inc}
 
 uses
+  System.Types,
   System.Classes,
   System.SysUtils,
   System.TypInfo,
@@ -30,8 +31,6 @@ uses
   GLCrossPlatform;
 
 type
-
-  TPoint = GLCrossPlatform.TGLPoint; // for Mouse Wheel
 
   TGLSimpleNavigationOption = (
     snoInvertMoveAroundX, snoInvertMoveAroundY, // MoveAroundTarget.
@@ -97,7 +96,7 @@ type
     procedure ViewerMouseMove(Sender: TObject;
       Shift: TShiftState; X, Y: Integer);
     procedure ViewerMouseWheel(Sender: TObject; Shift: TShiftState;
-      WheelDelta: Integer; MousePos: TGLPoint; var Handled: Boolean);
+      WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
 
     procedure SetGLSceneViewer(const Value: TGLSceneViewer);
     procedure SetForm(const Value: TCustomForm);
@@ -210,7 +209,7 @@ begin
 end;
 
 procedure TGLSimpleNavigation.ViewerMouseWheel(Sender: TObject;
-  Shift: TShiftState; WheelDelta: Integer; MousePos: TGLPoint;
+  Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint;
   var Handled: Boolean);
 var
   Sign: SmallInt;

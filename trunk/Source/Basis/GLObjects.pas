@@ -18,6 +18,7 @@ interface
 {$I GLScene.inc}
 
 uses
+  System.Types,
   System.Classes,
   System.SysUtils,
   System.Math,
@@ -158,7 +159,7 @@ type
       intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean; override;
     {  Computes the screen coordinates of the smallest rectangle encompassing the plane.
       Returned extents are NOT limited to any physical screen extents. }
-    function ScreenRect(aBuffer: TGLSceneBuffer): TGLRect;
+    function ScreenRect(aBuffer: TGLSceneBuffer): TRect;
     {  Computes the signed distance to the point.
       Point coordinates are expected in absolute coordinates. }
     function PointDistance(const aPoint: TVector): Single;
@@ -1113,7 +1114,7 @@ begin
   end;
 end;
 
-function TGLPlane.ScreenRect(aBuffer: TGLSceneBuffer): TGLRect;
+function TGLPlane.ScreenRect(aBuffer: TGLSceneBuffer): TRect;
 var
   v: array [0 .. 3] of TVector;
   buf: TGLSceneBuffer;
@@ -1135,7 +1136,7 @@ begin
     Result.Bottom := Round(MaxFloat([v[0].Y, v[1].Y, v[2].Y, v[3].Y]));
   end
   else
-    FillChar(Result, SizeOf(TGLRect), 0);
+    FillChar(Result, SizeOf(TRect), 0);
 end;
 
 function TGLPlane.PointDistance(const aPoint: TVector): Single;

@@ -11,6 +11,7 @@ interface
 {$I GLScene.inc}
 
 uses
+  System.Types,
   System.Classes,
   VCL.Graphics,
   VCL.Forms,

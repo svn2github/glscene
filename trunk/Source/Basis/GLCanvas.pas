@@ -13,6 +13,7 @@ interface
 {$I GLScene.inc}
 
 uses
+  System.Types,
   System.Classes,
   System.Math,
   Vcl.Graphics,
@@ -106,9 +107,9 @@ type
     {Draws the set of lines defined by connecting the points.
        Similar to invoking MoveTo on the first point, then LineTo
        on all the following points. }
-    procedure Polyline(const points: array of TGLPoint);
+    procedure Polyline(const points: array of TPoint);
     {Similar to Polyline but also connects the last point to the first. }
-    procedure Polygon(const points: array of TGLPoint);
+    procedure Polygon(const points: array of TPoint);
     {Plots a pixel at given coordinate. PenWidth affects pixel size.
      The current position is NOT updated. }
     procedure PlotPixel(const x, y: Integer); overload;
@@ -354,7 +355,7 @@ begin
   gl.Vertex2f(x2, y2);
 end;
 
-procedure TGLCanvas.Polyline(const points: array of TGLPoint);
+procedure TGLCanvas.Polyline(const points: array of TPoint);
 var
   i, n: Integer;
 begin
@@ -369,7 +370,7 @@ begin
   end;
 end;
 
-procedure TGLCanvas.Polygon(const points: array of TGLPoint);
+procedure TGLCanvas.Polygon(const points: array of TPoint);
 var
   i, n: Integer;
 begin
