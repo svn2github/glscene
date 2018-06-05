@@ -38,22 +38,22 @@ type
   TVectorL4I = array [0 .. 4] of Integer;
   TCastArray = array [0 .. 2, 0 .. 2, 0 .. 2] of Integer;
 
-  TIsoline2D = array [0 .. 32767] of TxPoint2D;
-  PIsoline2D = ^TIsoline2D;
+  TVertex2DArr = array [0 .. 32767] of TxPoint2D;
+  PVertex2DArr = ^TVertex2DArr;
 
-  PIsoline = ^TIsoline;
-  TIsoline = class (TObject)
+  PGLIsoline = ^TGLIsoline;
+  TGLIsoline = class (TObject)
     NP: Integer;
-    Line: PIsoline2D;
+    Line: PVertex2DArr;
     constructor Create(LineSize: integer); virtual;
     destructor Destroy; override;
   end;
 
-  TIsolineState = (ilsEmpty, ilsCalculating, ilsReady);
+  TGLIsolineState = (ilsEmpty, ilsCalculating, ilsReady);
 
-  TIsolines = class(TGLLines)
+  TGLIsolines = class(TGLLines)
   public
-    IsoVertix: TAffineVector;
+    IsoVertex: TAffineVector;
     GLSpaceTextSF: array of TGLSpaceText;
     procedure MakeIsolines(var Depths: TMatrixArr; bmSize: Integer;
       StartDepth, EndDepth: Single; Interval: Integer);
@@ -85,18 +85,18 @@ type
     Z_Kfix -
     res3Dmin -
   }
-    procedure Conrec(PlaneSFindex:Integer; PlaneSF: TGLFreeForm; Data: TMatrixArr; ilb, iub, jlb, jub: Integer;
+   procedure Conrec(PlaneSFindex:Integer; PlaneSF: TGLFreeForm; Data: TMatrixArr; ilb, iub, jlb, jub: Integer;
          X: TVectorArr; Y: TVectorArr; NC: Integer; HgtL: TVectorArr; Z_Kfix: Single; res3Dmax, res3Dmin: Single);
    private
      CoordRange: Integer;
      LineList: TList;
-     IsolineState: TIsolineState;
+     IsolineState: TGLIsolineState;
   end;
 
 procedure Initialize_Contouring(var DataGrid: TMatrixArr;
   NXpoints, NYpoints: integer; CurrentIsoline: Single);
 procedure Release_Memory_Isoline;
-function GetNextIsoline(var Isoline: TIsoline): Boolean;
+function GetNextIsoline(var Isoline: TGLIsoline): Boolean;
 
 {Defines contouring segments inside a triangle using elevations }
 procedure TriangleElevationSegments(const p1, p2, p3: TAffineVector;
@@ -319,7 +319,7 @@ end;
 { LineX and LineY are (pointers to) zero-offset vectors, to which
   sufficient space has been allocated to store the coordinates of
   any feasible Isoline }
-function GetNextIsoline(var Isoline: TIsoline): Boolean;
+function GetNextIsoline(var Isoline: TGLIsoline): Boolean;
 var
   OffGrid: boolean;
   Lexit: integer;
@@ -347,7 +347,7 @@ begin
             TraceIsoline(i, j, Lexit, NX, NY, Grid, Visited, LineX2, LineY2,
               np2, offgrid);
             // Copy both bits of line into Isoline
-            Isoline := TIsoline.Create(np1 + np2);
+            Isoline := TGLIsoline.Create(np1 + np2);
             for k := 0 to np2 - 1 do
             begin
               Isoline.Line^[k].x := LineX2[np2 - k - 1];
@@ -362,7 +362,7 @@ begin
           else
           begin
             // Just copy the single Isoline loop into LineX & LineY
-            Isoline := TIsoline.Create(np1);
+            Isoline := TGLIsoline.Create(np1);
             for k := 0 to np1 - 1 do
             begin
               Isoline.Line^[k].x := LineX1[k];
@@ -440,21 +440,21 @@ begin
   end;
 end;
 
-constructor TIsolines.Create(AOwner: TComponent);
+constructor TGLIsolines.Create(AOwner: TComponent);
 begin
   LineList := TList.Create;
   IsolineState := ilsEmpty;
   Nodes.Create(Self);
 end;
 
-destructor TIsolines.Destroy;
+destructor TGLIsolines.Destroy;
 begin
   FreeList;
   Nodes.Free;
   inherited;
 end;
 
-procedure TIsolines.FreeList;
+procedure TGLIsolines.FreeList;
 var
   i: integer;
 begin
@@ -462,18 +462,17 @@ begin
   begin
     for i := LineList.Count - 1 downto 0 do
     begin
-      with TIsoline(LineList.Items[i]) do
-        Free;
+      TGLIsoline(LineList.Items[i]).Free;
     end;
     LineList.Clear;
     IsolineState := ilsEmpty;
   end;
 end;
 
-procedure TIsolines.MakeIsolines(var Depths: TMatrixArr; bmSize: integer;
+procedure TGLIsolines.MakeIsolines(var Depths: TMatrixArr; bmSize: integer;
   StartDepth, EndDepth: Single; Interval: Integer);
 var
-  Isoline: TIsoline;
+  Isoline: TGLIsoline;
 
 begin
   IsolineState := ilsCalculating;
@@ -491,14 +490,14 @@ begin
   IsolineState := ilsReady;
 end;
 
-constructor TIsoline.Create(LineSize: Integer);
+constructor TGLIsoline.Create(LineSize: Integer);
 begin
   inherited Create;
   NP := LineSize;
   Getmem(Line, NP * 2 * Sizeof(Single));
 end;
 
-destructor TIsoline.Destroy;
+destructor TGLIsoline.Destroy;
 begin
   inherited;
   if Assigned(Line) then
@@ -506,7 +505,7 @@ begin
   NP := 0;
 end;
 
-procedure TIsolines.Conrec(PlaneSFindex:Integer;PlaneSF:TGLfreeForm; Data: TMatrixArr; ilb, iub, jlb, jub: Integer;
+procedure TGLIsolines.Conrec(PlaneSFindex:Integer;PlaneSF:TGLfreeForm; Data: TMatrixArr; ilb, iub, jlb, jub: Integer;
   X: TVectorArr; Y: TVectorArr;  NC: Integer; HgtL: TVectorArr;
   Z_Kfix: Single; res3Dmax,res3Dmin: Single);
 // ------------------------------------------------------------------------------
@@ -729,7 +728,6 @@ begin
                 end; // ---  -Case deside;
 
                 // -------Output results ---------------------
-
                 case PlaneSFindex of              // suggestion3Planes
                    0:  begin
                         Nodes.AddNode(x1, y1, Z_kfix);
@@ -744,22 +742,20 @@ begin
                         Nodes.AddNode(y2, Z_kfix, x2);
                        end ;
                 end;
+                if ODD(K) then
+                   begin
+                     MinY1:= 0.1*MaxValue(Y) ; MaxY1:= 0.6*MaxValue(Y);
+                     MinX1:= 0.2*MaxValue(X) ; MaxX1:= 0.4*MaxValue(X);
+                   end
+                else
+                   begin
+                     MinY1:= 0.55*MaxValue(Y) ; MaxY1:= 0.9*MaxValue(Y);
+                     MinX1:= 0.3*MaxValue(X) ; MaxX1:= 0.7*MaxValue(X);
+                   end ;
 
-                  if ODD(K) then
-                         begin
-                           MinY1:= 0.1*MaxValue(Y) ; MaxY1:= 0.6*MaxValue(Y);
-                           MinX1:= 0.2*MaxValue(X) ; MaxX1:= 0.4*MaxValue(X);
-                         end
-                  else
-                         begin
-                           MinY1:= 0.55*MaxValue(Y) ; MaxY1:= 0.9*MaxValue(Y);
-                           MinX1:= 0.3*MaxValue(X) ; MaxX1:= 0.7*MaxValue(X);
-                         end ;
-
-                 if (not IUniqueList.Contains(HgtL[K]))
-                                 and
-                    ( (y1<MaxY1) and (y1>MinY1)
-                  and (x1<MaxX1) and (x1>MinX1)     )   then
+                 if (not IUniqueList.Contains(HgtL[K])) and
+                    ( (y1<MaxY1) and (y1>MinY1) and
+                      (x1<MaxX1) and (x1>MinX1)) then
                    begin
                      GlSpaceTextSF[K].Free;
                      GlSpaceTextSF[K]:= TGlspacetext.CreateAsChild(self);
@@ -773,8 +769,6 @@ begin
                        ActualValue:= HgtL[K]* (res3Dmax - res3Dmin) +  res3Dmin;
                        Extrusion:= 0.5;
                        Text:= FloatToStrF(ActualValue, ffFixed, 4, 0)  ;
-
-
 
                        case PlaneSFindex of              // suggestion3Planes
                          0:  begin
