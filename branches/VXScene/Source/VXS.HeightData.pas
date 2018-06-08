@@ -1,7 +1,7 @@
 //
-// VXScene Component Library, based on GLScene http://glscene.sourceforge.net 
+// VXScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
-{ 
+{
   Classes for height data access.
 
   The components and classes in the unit are the core data providers for
@@ -13,7 +13,7 @@
   cacheing and manipulation to provide TVXHeightData objects. A TVXHeightData
   is basicly a square, power of two dimensionned raster heightfield, and
   holds the data a renderer needs.
-  
+
 }
 unit VXS.HeightData;
 
@@ -46,32 +46,26 @@ type
   TVXHeightData = class;
   TVXHeightDataClass = class of TVXHeightData;
 
-  // TVXHeightDataType
-  //
-  { Determines the type of data stored in a TVXHeightData. 
-    There are 3 data types (8 bits unsigned, signed 16 bits and 32 bits). 
-    Conversions: (128*(ByteValue-128)) = SmallIntValue = Round(SingleValue). 
+  { Determines the type of data stored in a TVXHeightData.
+    There are 3 data types (8 bits unsigned, signed 16 bits and 32 bits).
+    Conversions: (128*(ByteValue-128)) = SmallIntValue = Round(SingleValue).
     The 'hdtDefault' type is used for request only, and specifies that the
     default type for the source should be used. }
   TVXHeightDataType = (hdtByte, hdtSmallInt, hdtSingle, hdtDefault);
 
-  // TVXHeightDataSource
-  //
-  { Base class for height datasources. 
+  { Base class for height datasources.
     This class is abstract and presents the standard interfaces for height
     data retrieval (TVXHeightData objects). The class offers the following
     features (that a subclass may decide to implement or not, what follow
     is the complete feature set, check subclass doc to see what is actually
-    supported): 
+    supported):
      Pooling / Cacheing (return a TVXHeightData with its "Release" method)
      Pre-loading : specify a list of TVXHeightData you want to preload
      Multi-threaded preload/queueing : specified list can be loaded in
-    a background task.
-      }
+    a background task }
 
   TVXHeightDataSource = class(TComponent)
   private
-    
     FData: TThreadList; // stores all TVXHeightData, whatever their state/type
     FDataHash: array [0 .. 255] of TList; // X/Y hash references for HeightDatas
     FThread: TThread; // queue manager
@@ -81,126 +75,102 @@ type
     // FReleaseLatency : TDateTime;      //Not used anymore???
     FDefaultHeight: Single;
   protected
-    
     procedure SetMaxThreads(const Val: Integer);
-
     function HashKey(XLeft, YTop: Integer): Integer;
-
     { Adjust this property in you subclasses. }
     property HeightDataClass: TVXHeightDataClass read FHeightDataClass
       write FHeightDataClass;
-
     { Looks up the list and returns the matching TVXHeightData, if any. }
     function FindMatchInList(XLeft, YTop, size: Integer;
       DataType: TVXHeightDataType): TVXHeightData;
   public
-    
-
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
     { Access to currently pooled TVXHeightData objects, and Thread locking }
     property Data: TThreadList read FData;
-
-    { Empties the Data list, terminating thread if necessary. 
+    { Empties the Data list, terminating thread if necessary.
       If some TVXHeightData are hdsInUse, triggers an exception and does
       nothing. }
     procedure Clear;
-    { Removes less used TDataHeight objects from the pool. 
+    { Removes less used TDataHeight objects from the pool.
       Only removes objects whose state is hdsReady and UseCounter is zero,
       starting from the end of the list until total data size gets below
       MaxPoolSize (or nothing can be removed). }
     procedure CleanUp;
-
-    { Base TVXHeightData requester method. 
+    { Base TVXHeightData requester method.
       Returns (by rebuilding it or from the cache) a TVXHeightData
-      corresponding to the given area. Size must be a power of two. 
+      corresponding to the given area. Size must be a power of two.
       Subclasses may choose to publish it or just publish datasource-
       specific requester method using specific parameters. }
     function GetData(XLeft, YTop, size: Integer; DataType: TVXHeightDataType)
       : TVXHeightData; virtual;
-    { Preloading request. 
+    { Preloading request.
       See GetData for details. }
     function PreLoad(XLeft, YTop, size: Integer; DataType: TVXHeightDataType)
       : TVXHeightData; virtual;
-
     { Replacing dirty tiles. }
     procedure PreloadReplacement(aHeightData: TVXHeightData);
-
-    { Notification that the data is no longer used by the renderer. 
+    { Notification that the data is no longer used by the renderer.
       Default behaviour is just to change DataState to hdsReady (ie. return
       the data to the pool) }
     procedure Release(aHeightData: TVXHeightData); virtual;
-    { Marks the given area as "dirty" (ie source data changed). 
+    { Marks the given area as "dirty" (ie source data changed).
       All loaded and in-cache tiles overlapping the area are flushed. }
-    procedure MarkDirty(const Area: TVXRect); overload; virtual;
+    procedure MarkDirty(const Area: TRect); overload; virtual;
     procedure MarkDirty(XLeft, YTop, xRight, yBottom: Integer); overload;
     procedure MarkDirty; overload;
-
-    { Maximum number of background threads. 
+    { Maximum number of background threads.
       If 0 (zero), multithreading is disabled and StartPreparingData
       will be called from the mainthread, and all preload requirements
       (queued TVXHeightData objects) will be loaded in sequence from
-      the main thread. 
+      the main thread.
       If 1, basic multithreading and queueing gets enabled,
       ie. StartPreparingData will be called from a thread, but from one
       thread only (ie. there is no need to implement a TVXHeightDataThread,
-      just make sure StartPreparingData code is thread-safe). 
+      just make sure StartPreparingData code is thread-safe).
       Other values (2 and more) are relevant only if you implement
       a TVXHeightDataThread subclass and fire it in StartPreparingData. }
     property MaxThreads: Integer read FMaxThreads write SetMaxThreads;
-    { Maximum Size of TDataHeight pool in bytes. 
+    { Maximum Size of TDataHeight pool in bytes.
       The pool (cache) can actually get larger if more data than the pool
       can accomodate is used, but as soon as data gets released and returns
       to the pool, TDataHeight will be freed until total pool Size gets
-      below this figure. 
+      below this figure.
       The pool manager frees TDataHeight objects who haven't been requested
-      for the longest time first. 
+      for the longest time first.
       The default value of zero effectively disables pooling. }
     property MaxPoolSize: Integer read FMaxPoolSize write FMaxPoolSize;
     { Height to return for undefined tiles. }
     property DefaultHeight: Single read FDefaultHeight write FDefaultHeight;
-
     { Interpolates height for the given point. }
     function InterpolatedHeight(x, y: Single; tileSize: Integer)
       : Single; virtual;
-
     function Width: Integer; virtual; abstract;
     function Height: Integer; virtual; abstract;
     procedure ThreadIsIdle; virtual;
-
     { This is called BEFORE StartPreparing Data, but always from the main thread. }
     procedure BeforePreparingData(HeightData: TVXHeightData); virtual;
-
-    { Request to start preparing data. 
+    { Request to start preparing data.
       If your subclass is thread-enabled, this is here that you'll create
       your thread and fire it (don't forget the requirements), if not,
-      that'll be here you'll be doing your work. 
+      that'll be here you'll be doing your work.
       Either way, you are responsible for adjusting the DataState to
       hdsReady when you're done (DataState will be hdsPreparing when this
       method will be invoked). }
     procedure StartPreparingData(HeightData: TVXHeightData); virtual;
-
     { This is called After "StartPreparingData", but always from the main thread. }
     procedure AfterPreparingData(HeightData: TVXHeightData); virtual;
-
     procedure TextureCoordinates(HeightData: TVXHeightData;
       Stretch: boolean = false);
   end;
 
-  // THDTextureCoordinatesMode
-  //
   THDTextureCoordinatesMode = (tcmWorld, tcmLocal);
 
-  // TVXHeightDataState
-  //
-  { Possible states for a TVXHeightData. 
-     
+  { Possible states for a TVXHeightData.
      hdsQueued : the data has been queued for loading
      hdsPreparing : the data is currently loading or being prepared for use
      hdsReady : the data is fully loaded and ready for use
-     hdsNone : the height data does not exist for this tile
-      }
+     hdsNone : the height data does not exist for this tile }
   TVXHeightDataState = (hdsQueued, hdsPreparing, hdsReady, hdsNone);
 
   TVXHeightDataThread = class;
@@ -211,25 +181,22 @@ type
     event: TOnHeightDataDirtyEvent;
   end;
 
-  // TVXHeightData
-  //
-  { Base class for height data, stores a height-field raster. 
+  { Base class for height data, stores a height-field raster.
     The raster is a square, whose Size must be a power of two. Data can be
     accessed through a base pointer ("ByteData[n]" f.i.), or through pointer
     indirections ("ByteRaster[y][x]" f.i.), this are the fastest way to access
-    height data (and the most unsecure). 
+    height data (and the most unsecure).
     Secure (with range checking) data access is provided by specialized
     methods (f.i. "ByteHeight"), in which coordinates (x & y) are always
-    considered relative (like in raster access). 
+    considered relative (like in raster access).
     The class offers conversion facility between the types (as a whole data
     conversion), but in any case, the TVXHeightData should be directly requested
-    from the TVXHeightDataSource with the appropriate format. 
+    from the TVXHeightDataSource with the appropriate format.
     Though this class can be instantiated, you will usually prefer to subclass
     it in real-world cases, f.i. to add texturing data. }
-  // TVXHeightData = class (TObject)
+  /// TVXHeightData = class (TObject)
   TVXHeightData = class(TVXUpdateAbleObject)
   private
-    
     FUsers: array of TVXHeightDataUser;
     FOwner: TVXHeightDataSource;
     FDataState: TVXHeightDataState;
@@ -253,75 +220,61 @@ type
     FOnDestroy: TNotifyEvent;
     FDirty: boolean;
     FHeightMin, FHeightMax: Single;
-
     procedure BuildByteRaster;
     procedure BuildSmallIntRaster;
     procedure BuildSingleRaster;
-
     procedure ConvertByteToSmallInt;
     procedure ConvertByteToSingle;
     procedure ConvertSmallIntToByte;
     procedure ConvertSmallIntToSingle;
     procedure ConvertSingleToByte;
     procedure ConvertSingleToSmallInt;
-
   protected
-    
     FThread: TVXHeightDataThread;
     // thread used for multi-threaded processing (if any)
-
     procedure SetDataType(const Val: TVXHeightDataType);
     procedure SetMaterialName(const MaterialName: string);
     procedure SetLibMaterial(LibMaterial: TVXLibMaterial);
-
     function GetHeightMin: Single;
     function GetHeightMax: Single;
-
   public
     OldVersion: TVXHeightData; // previous version of this tile
     NewVersion: TVXHeightData; // the replacement tile
     DontUse: boolean; // Tells TerrainRenderer which version to use
-
-    
-
     // constructor Create(AOwner : TComponent); override;
     constructor Create(AOwner: TVXHeightDataSource; aXLeft, aYTop, aSize: Integer;
       aDataType: TVXHeightDataType); reintroduce; virtual;
     destructor Destroy; override;
-
     { The component who created and maintains this data. }
     property Owner: TVXHeightDataSource read FOwner;
-
     { Fired when the object is destroyed. }
     property OnDestroy: TNotifyEvent read FOnDestroy write FOnDestroy;
-
-    { Counter for use registration. 
+    { Counter for use registration.
       A TVXHeightData is not returned to the pool until this counter reaches
       a value of zero. }
     property UseCounter: Integer read FUseCounter;
-    { Increments UseCounter. 
+    { Increments UseCounter.
       User objects should implement a method that will be notified when
       the data becomes dirty, when invoked they should release the heightdata
       immediately after performing their own cleanups. }
     procedure RegisterUse;
-    { Allocate memory and prepare lookup tables for current datatype. 
+    { Allocate memory and prepare lookup tables for current datatype.
       Fails if already allocated. Made Dynamic to allow descendants }
     procedure Allocate(const Val: TVXHeightDataType); virtual;
-    { Decrements UseCounter. 
+    { Decrements UseCounter.
       When the counter reaches zero, notifies the Owner TVXHeightDataSource
-      that the data is no longer used. 
+      that the data is no longer used.
       The renderer should call Release when it no longer needs a THeighData,
       and never free/destroy the object directly. }
     procedure Release;
-    { Marks the tile as dirty. 
+    { Marks the tile as dirty.
       The immediate effect is currently the destruction of the tile. }
     procedure MarkDirty;
-
     { World X coordinate of top left point. }
     property XLeft: Integer read FXLeft;
     { World Y coordinate of top left point. }
     property YTop: Integer read FYTop;
-    { Type of the data. 
+    { Type of the data.
       Assigning a new datatype will result in the data being converted. }
     property DataType: TVXHeightDataType read FDataType write SetDataType;
     { Current state of the data. }
@@ -330,29 +283,26 @@ type
     property Size: Integer read FSize;
     { True if the data is dirty (ie. no longer up-to-date). }
     property Dirty: boolean read FDirty write FDirty;
-
     { Memory Size of the raw data in bytes. }
     property DataSize: Integer read FDataSize;
-
-    { Access to data as a byte array (n = y*Size+x). 
+    { Access to data as a byte array (n = y*Size+x).
       If TVXHeightData is not of type hdtByte, this value is nil. }
     property ByteData: PByteArray read FByteData;
-    { Access to data as a byte raster (y, x). 
+    { Access to data as a byte raster (y, x).
       If TVXHeightData is not of type hdtByte, this value is nil. }
     property ByteRaster: PByteRaster read FByteRaster;
-    { Access to data as a SmallInt array (n = y*Size+x). 
+    { Access to data as a SmallInt array (n = y*Size+x).
       If TVXHeightData is not of type hdtSmallInt, this value is nil. }
     property SmallIntData: PSmallIntArray read FSmallIntData;
-    { Access to data as a SmallInt raster (y, x). 
+    { Access to data as a SmallInt raster (y, x).
       If TVXHeightData is not of type hdtSmallInt, this value is nil. }
     property SmallIntRaster: PSmallIntRaster read FSmallIntRaster;
-    { Access to data as a Single array (n = y*Size+x). 
+    { Access to data as a Single array (n = y*Size+x).
       If TVXHeightData is not of type hdtSingle, this value is nil. }
     property SingleData: PSingleArray read FSingleData;
-    { Access to data as a Single raster (y, x). 
+    { Access to data as a Single raster (y, x).
       If TVXHeightData is not of type hdtSingle, this value is nil. }
     property SingleRaster: PSingleRaster read FSingleRaster;
-
     { Name of material for the tile (if terrain uses multiple materials). }
     // property MaterialName : String read FMaterialName write FMaterialName;
     // (WARNING: Unsafe when deleting textures! If possible, rather use LibMaterial.)
@@ -364,7 +314,7 @@ type
     // used texture by mistake and causing Access Violations.
     // Use this instead of the old MaterialName property, to prevent AV's.
     property LibMaterial: TVXLibMaterial read FLibMaterial write SetLibMaterial;
-    { Texture coordinates generation mode. 
+    { Texture coordinates generation mode.
       Default is tcmWorld coordinates. }
     property TextureCoordinatesMode: THDTextureCoordinatesMode
       read FTextureCoordinatesMode write FTextureCoordinatesMode;
@@ -378,32 +328,26 @@ type
     function SingleHeight(x, y: Integer): Single;
     { Interopolated height of point x, y as a Single.  }
     function InterpolatedHeight(x, y: Single): Single;
-
-    { Minimum height in the tile. 
+    { Minimum height in the tile.
       DataSources may assign a value to prevent automatic computation
       if they have a faster/already computed value. }
     property HeightMin: Single read GetHeightMin write FHeightMin;
-    { Maximum height in the tile. 
+    { Maximum height in the tile.
       DataSources may assign a value to prevent automatic computation
       if they have a faster/already computed value. }
     property HeightMax: Single read GetHeightMax write FHeightMax;
-
     { Returns the height as a single, whatever the DataType (slow). }
     function Height(x, y: Integer): Single;
-
-    { Calculates and returns the normal for vertex point x, y. 
+    { Calculates and returns the normal for vertex point x, y.
       Sub classes may provide normal cacheing, the default implementation
       being rather blunt. }
     function Normal(x, y: Integer; const scale: TAffineVector)
       : TAffineVector; virtual;
-
     { Calculates and returns the normal for cell x, y.(between vertexes)   }
     function NormalAtNode(x, y: Integer; const scale: TAffineVector)
       : TAffineVector; virtual;
-
     { Returns True if the data tile overlaps the area. }
-    function OverlapsArea(const Area: TVXRect): boolean;
-
+    function OverlapsArea(const Area: TRect): boolean;
     { Reserved for renderer use. }
     property ObjectTag: TObject read FObjectTag write FObjectTag;
     { Reserved for renderer use. }
@@ -414,66 +358,49 @@ type
     property Thread: TVXHeightDataThread read FThread write FThread;
   end;
 
-  // TVXHeightDataThread
-  //
-  { A thread specialized for processing TVXHeightData in background. 
-    Requirements: 
+  { A thread specialized for processing TVXHeightData in background.
+    Requirements:
      must have FreeOnTerminate set to true,
-     must check and honour Terminated swiftly
-      }
+     must check and honour Terminated swiftly }
   TVXHeightDataThread = class(TThread)
   protected
-    
     FHeightData: TVXHeightData;
-
   public
-    
     destructor Destroy; override;
     { The Height Data the thread is to prepare.  }
     property HeightData: TVXHeightData read FHeightData write FHeightData;
-
   end;
 
-  // TVXBitmapHDS
-  //
-  { Bitmap-based Height Data Source. 
+  { Bitmap-based Height Data Source.
     The image is automatically wrapped if requested data is out of picture Size,
-    or if requested data is larger than the picture. 
+    or if requested data is larger than the picture.
     The internal format is an 8 bit bitmap whose dimensions are a power of two,
     if the original image does not comply, it is StretchDraw'ed on a monochrome
     (gray) bitmap. }
   TVXBitmapHDS = class(TVXHeightDataSource)
   private
-    
     FScanLineCache: array of PByteArray;
     FBitmap: TBitmap;
     FPicture: TVXPicture;
     FInfiniteWrap: boolean;
     FInverted: boolean;
-
   protected
-    
     procedure SetPicture(const Val: TVXPicture);
     procedure OnPictureChanged(sender: TObject);
     procedure SetInfiniteWrap(Val: boolean);
     procedure SetInverted(Val: boolean);
-
     procedure CreateMonochromeBitmap(size: Integer);
     procedure FreeMonochromeBitmap;
     function GetScanLine(y: Integer): PByteArray;
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
     procedure StartPreparingData(HeightData: TVXHeightData); override;
-    procedure MarkDirty(const Area: TVXRect); override;
+    procedure MarkDirty(const Area: TRect); override;
     function Width: Integer; override;
     function Height: Integer; override;
-
   published
-    
-    { The picture serving as Height field data reference. 
+    { The picture serving as Height field data reference.
       The picture is (if not already) internally converted to a 8 bit
       bitmap (grayscale). For better performance and to save memory,
       feed it this format! }
@@ -483,72 +410,48 @@ type
       default True;
     { If true, the rendered terrain is a mirror image of the input data. }
     property Inverted: boolean read FInverted write SetInverted default True;
-
     property MaxPoolSize;
   end;
 
   TStartPreparingDataEvent = procedure(HeightData: TVXHeightData) of object;
-  TMarkDirtyEvent = procedure(const Area: TVXRect) of object;
+  TMarkDirtyEvent = procedure(const Area: TRect) of object;
 
   // TTexturedHeightDataSource = class (TVXTexturedHeightDataSource)
 
-  // TVXCustomHDS
-  //
-  { An Height Data Source for custom use. 
+  { An Height Data Source for custom use.
     Provides event handlers for the various requests to be implemented
     application-side (for application-specific needs). }
   TVXCustomHDS = class(TVXHeightDataSource)
   private
-    
     FOnStartPreparingData: TStartPreparingDataEvent;
     FOnMarkDirty: TMarkDirtyEvent;
-
-  protected
-    
-
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure StartPreparingData(HeightData: TVXHeightData); override;
-
-    procedure MarkDirty(const Area: TVXRect); override;
-
+    procedure MarkDirty(const Area: TRect); override;
   published
-    
     property MaxPoolSize;
-
     property OnStartPreparingData: TStartPreparingDataEvent
       read FOnStartPreparingData write FOnStartPreparingData;
     property OnMarkDirtyEvent: TMarkDirtyEvent read FOnMarkDirty
       write FOnMarkDirty;
   end;
 
-  // TVXTerrainBaseHDS
-  //
-  { TerrainBase-based Height Data Source. 
+  { TerrainBase-based Height Data Source.
     This component takes its data from the TerrainBase Gobal Terrain Model.
     Though it can be used directly, the resolution of the TerrainBase dataset
     isn't high enough for accurate short-range representation and the data
-    should rather be used as basis for further (fractal) refinement. 
+    should rather be used as basis for further (fractal) refinement.
     TerrainBase is freely available from the National Geophysical Data Center
-    and World Data Center web site (http://ngdc.noaa.com). 
+    and World Data Center web site (http://ngdc.noaa.com).
     (this component expects to find "tbase.bin" in the current directory). }
   TVXTerrainBaseHDS = class(TVXHeightDataSource)
-  private
-    
-
-  protected
-    
-
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure StartPreparingData(HeightData: TVXHeightData); override;
-
   published
-    
     property MaxPoolSize;
   end;
 
@@ -556,9 +459,7 @@ type
   TSourceDataFetchedEvent = procedure(sender: TVXHeightDataSourceFilter;
     HeightData: TVXHeightData) of object;
 
-  // TVXHeightDataSourceFilter
-  //
-  { Height Data Source Filter. 
+  { Height Data Source Filter.
     This component sits between the TVXTerrainRenderer, and a real TVXHeightDataSource.
     i.e. TVXTerrainRenderer links to this. This links to the real TVXHeightDataSource.
     Use the 'HeightDataSource' property, to link to a source HDS.
@@ -568,24 +469,21 @@ type
     The TVXHeightData objects are then cached by THIS component, AFTER you have made your changes.
     This eliminates the need to copy and release the TVXHeightData object from the Source HDS's cache,
     before linking your texture.  See the new version of TVXBumpmapHDS for an example. (LIN)
-    To create your own HDSFilters, Derive from this component, and override the PreparingData procedure.
-  }
+    To create your own HDSFilters, Derive from this component, and override the PreparingData procedure. }
   TVXHeightDataSourceFilter = Class(TVXHeightDataSource)
   private
-    
     FHDS: TVXHeightDataSource;
     FOnSourceDataFetched: TSourceDataFetchedEvent;
     FActive: boolean;
   protected
-    
-    { PreparingData:   
+    { PreparingData:
       Override this function in your filter subclasses, to make any
       updates/changes to HeightData, before it goes into the cache.
       Make sure any code in this function is thread-safe, in case TAsyncHDS was used. }
     procedure PreparingData(HeightData: TVXHeightData); virtual; abstract;
+    { SetHDS  - Set HeightDataSource property }
     procedure SetHDS(Val: TVXHeightDataSource);
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Release(aHeightData: TVXHeightData); override;
@@ -596,19 +494,17 @@ type
     function Height: Integer; override;
     property OnSourceDataFetched: TSourceDataFetchedEvent
       read FOnSourceDataFetched write FOnSourceDataFetched;
-
   published
-    
     property MaxPoolSize;
     property HeightDataSource: TVXHeightDataSource read FHDS write SetHDS;
     property Active: boolean read FActive write FActive;
     // If Active=False, height data passes through unchanged
   end;
 
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
 implementation
+// ------------------------------------------------------------------
+
 // ------------------
 // ------------------ TVXHeightDataSourceThread ------------------
 // ------------------
@@ -850,8 +746,6 @@ begin
   // ---------------------------------------------------------------
 end;
 
-// PreloadReplacement
-//
 // When Multi-threading, this queues a replacement for a dirty tile
 // The Terrain renderer will continue to use the dirty tile, until the replacement is complete
 procedure TVXHeightDataSource.PreloadReplacement(aHeightData: TVXHeightData);
@@ -876,16 +770,12 @@ begin
     end;
 end;
 
-// Release
-//
 procedure TVXHeightDataSource.Release(aHeightData: TVXHeightData);
 begin
   // nothing, yet
 end;
 
-// MarkDirty (rect)
-//
-procedure TVXHeightDataSource.MarkDirty(const Area: TVXRect);
+procedure TVXHeightDataSource.MarkDirty(const Area: TRect);
 var
   i: Integer;
   HD: TVXHeightData;
@@ -905,11 +795,9 @@ begin
   end;
 end;
 
-// MarkDirty (ints)
-//
 procedure TVXHeightDataSource.MarkDirty(XLeft, YTop, xRight, yBottom: Integer);
 var
-  r: TVXRect;
+  r: TRect;
 begin
   r.Left := XLeft;
   r.Top := YTop;
@@ -918,8 +806,6 @@ begin
   MarkDirty(r);
 end;
 
-// MarkDirty
-//
 procedure TVXHeightDataSource.MarkDirty;
 const
   m = MaxInt - 1;
@@ -1738,8 +1624,6 @@ begin
   NormalizeVector(Result);
 end;
 
-// NormalNode
-//
 // Calculates the normal at a surface cell (Between vertexes)
 function TVXHeightData.NormalAtNode(x, y: Integer; const scale: TAffineVector)
   : TAffineVector;
@@ -1757,9 +1641,7 @@ begin
   NormalizeVector(Result);
 end;
 
-// OverlapsArea
-//
-function TVXHeightData.OverlapsArea(const Area: TVXRect): boolean;
+function TVXHeightData.OverlapsArea(const Area: TRect): boolean;
 begin
   Result := (XLeft <= Area.Right) and (YTop <= Area.Bottom) and
     (XLeft + size > Area.Left) and (YTop + size > Area.Top);
@@ -1769,8 +1651,6 @@ end;
 // ------------------ TVXHeightDataThread ------------------
 // ------------------
 
-// Destroy
-//
 destructor TVXHeightDataThread.Destroy;
 begin
   if Assigned(FHeightData) then
@@ -1782,8 +1662,6 @@ end;
 // ------------------ TVXBitmapHDS ------------------
 // ------------------
 
-// Create
-//
 constructor TVXBitmapHDS.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
@@ -1793,8 +1671,6 @@ begin
   FInverted := True;
 end;
 
-// Destroy
-//
 destructor TVXBitmapHDS.Destroy;
 begin
   inherited Destroy;
@@ -1832,8 +1708,6 @@ begin
   end;
 end;
 
-// SetInverted
-//
 procedure TVXBitmapHDS.SetInverted(Val: boolean);
 begin
   if FInverted = Val then
@@ -1842,9 +1716,7 @@ begin
   MarkDirty;
 end;
 
-// MarkDirty
-//
-procedure TVXBitmapHDS.MarkDirty(const Area: TVXRect);
+procedure TVXBitmapHDS.MarkDirty(const Area: TRect);
 begin
   inherited;
   FreeMonochromeBitmap;
@@ -1852,10 +1724,8 @@ begin
     CreateMonochromeBitmap(Round(Picture.Width));
 end;
 
-// CreateMonochromeBitmap
-//
 procedure TVXBitmapHDS.CreateMonochromeBitmap(size: Integer);
-{$IFDEF MSWINDOWS}
+
 type
   TPaletteEntryArray = array [0 .. 255] of TPaletteEntry;
   PPaletteEntryArray = ^TPaletteEntryArray;
@@ -1904,15 +1774,7 @@ begin
   SetLength(FScanLineCache, 0); // clear the cache
   SetLength(FScanLineCache, size);
 end;
-{$ENDIF}
-{$IFDEF UNIX}
-begin
-{$MESSAGE Warn 'CreateMonochromeBitmap: Needs to be implemented'}
-end;
-{$ENDIF}
 
-// FreeMonochromeBitmap
-//
 procedure TVXBitmapHDS.FreeMonochromeBitmap;
 begin
   SetLength(FScanLineCache, 0);
@@ -1920,8 +1782,6 @@ begin
   FBitmap := nil;
 end;
 
-// GetScanLine
-//
 function TVXBitmapHDS.GetScanLine(y: Integer): PByteArray;
 begin
   Result := FScanLineCache[y];
@@ -1932,8 +1792,6 @@ begin
   end;
 end;
 
-// StartPreparingData
-//
 procedure TVXBitmapHDS.StartPreparingData(HeightData: TVXHeightData);
 var
   y, x: Integer;
@@ -2007,31 +1865,23 @@ end;
 // ------------------ TVXCustomHDS ------------------
 // ------------------
 
-// Create
-//
 constructor TVXCustomHDS.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
 end;
 
-// Destroy
-//
 destructor TVXCustomHDS.Destroy;
 begin
   inherited Destroy;
 end;
 
-// MarkDirty
-//
-procedure TVXCustomHDS.MarkDirty(const Area: TVXRect);
+procedure TVXCustomHDS.MarkDirty(const Area: TRect);
 begin
   inherited;
   if Assigned(FOnMarkDirty) then
     FOnMarkDirty(Area);
 end;
 
-// StartPreparingData
-//
 procedure TVXCustomHDS.StartPreparingData(HeightData: TVXHeightData);
 begin
   if Assigned(FOnStartPreparingData) then
@@ -2044,22 +1894,16 @@ end;
 // ------------------ TVXTerrainBaseHDS ------------------
 // ------------------
 
-// Create
-//
 constructor TVXTerrainBaseHDS.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
 end;
 
-// Destroy
-//
 destructor TVXTerrainBaseHDS.Destroy;
 begin
   inherited Destroy;
 end;
 
-// StartPreparingData
-//
 procedure TVXTerrainBaseHDS.StartPreparingData(HeightData: TVXHeightData);
 const
   cTBWidth: Integer = 4320;
@@ -2113,8 +1957,6 @@ begin
   FActive := True;
 end;
 
-// Destroy
-//
 destructor TVXHeightDataSourceFilter.Destroy;
 begin
   HeightDataSource := nil;
@@ -2127,8 +1969,6 @@ begin
     HeightDataSource.Release(aHeightData);
 end;
 
-// Notification
-//
 procedure TVXHeightDataSourceFilter.Notification(AComponent: TComponent;
   Operation: TOperation);
 begin
@@ -2140,8 +1980,6 @@ begin
   inherited;
 end;
 
-// SetHDS  - Set HeightDataSource property
-//
 procedure TVXHeightDataSourceFilter.SetHDS(Val: TVXHeightDataSource);
 begin
   if Val = self then

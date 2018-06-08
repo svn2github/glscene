@@ -2,9 +2,9 @@
 // VXScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
 {
-  Base classes for VXScene
-  The history is logged in a former version of the unit.
+  Base classes
 }
+
 unit VXS.BaseClasses;
 
 interface
@@ -44,11 +44,12 @@ type
     FOwner: TPersistent;
     FUpdating: Integer;
     FOnNotifyChange: TNotifyEvent;
+  protected
+    function GetOwner: TPersistent; override; final;
   public
     constructor Create(AOwner: TPersistent); virtual;
     procedure NotifyChange(Sender: TObject); virtual;
     procedure Notification(Sender: TObject; Operation: TOperation); virtual;
-    function GetOwner: TPersistent; override;
     property Updating: Integer read FUpdating;
     procedure BeginUpdate;
     procedure EndUpdate;
@@ -57,7 +58,7 @@ type
   end;
 
   { A base class describing the "cadenceing" interface.  }
-  TVXCadenceAbleComponent = class(TVXComponent, IVXProgessAble)
+  TVXCadenceAbleComponent = class(TComponent, IVXProgessAble)
   public
     procedure DoProgress(const progressTime: TVXProgressTimes); virtual;
   end;
@@ -69,18 +70,18 @@ type
   end;
 
   TVXNotifyCollection = class(TOwnedCollection)
-  private
+  strict private
     FOnNotifyChange: TNotifyEvent;
-  protected
+  strict protected
     procedure Update(item: TCollectionItem); override;
   public
     constructor Create(AOwner: TPersistent; AItemClass: TCollectionItemClass);
     property OnNotifyChange: TNotifyEvent read FOnNotifyChange write FOnNotifyChange;
   end;
 
-//==================================================================
+//-------------------------------------------------------------------------
 implementation
-//==================================================================
+//-------------------------------------------------------------------------
 
 //---------------------- TVXUpdateAbleObject -----------------------------------------
 
@@ -112,7 +113,7 @@ end;
 
 function TVXUpdateAbleObject.GetOwner: TPersistent;
 begin
-  Result := Owner;
+  Result := FOwner;
 end;
 
 procedure TVXUpdateAbleObject.BeginUpdate;

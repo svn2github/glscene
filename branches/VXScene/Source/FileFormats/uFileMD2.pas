@@ -82,8 +82,6 @@ type
 
 
 type
-  // TFileMD2
-  //
   TFileMD2 = class
   private
     FiFrames: longint;
@@ -106,19 +104,13 @@ type
   end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 // ------------------
 // ------------------ TFileMD2 ------------------
 // ------------------
 
-// Create
-//
 constructor TFileMD2.Create;
 begin
   inherited;
@@ -126,8 +118,6 @@ begin
   FrameNames := TStringList.Create;
 end;
 
-// Destroy
-//
 destructor TFileMD2.Destroy;
 begin
   FreeLists;
@@ -144,8 +134,6 @@ begin
   FiTriangles := 0;
 end;
 
-// LoadFromStream
-//
 procedure TFileMD2.LoadFromStream(aStream : TStream);
 var
   Skins: array[0..MAX_MD2_SKINS - 1, 0..63] of AnsiChar;

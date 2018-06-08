@@ -12,10 +12,9 @@ interface
 
 uses
   System.Classes,
-  Winapi.OpenGL,
-  Winapi.OpenGLext,
   FMX.Graphics,
 
+  VXS.OpenGL,
   VXS.Graphics,
   VXS.Texture,
   VXS.TextureFormat,

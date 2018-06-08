@@ -155,15 +155,12 @@ procedure RegisterXCollectionItemClass(aClass: TXCollectionItemClass);
 { Removes a TXCollectionItem subclass from the list. }
 procedure UnregisterXCollectionItemClass(aClass: TXCollectionItemClass);
 { Retrieves a registered TXCollectionItemClass from its classname. }
-function FindXCollectionItemClass(const ClassName: string)
-  : TXCollectionItemClass;
+function FindXCollectionItemClass(const ClassName: string): TXCollectionItemClass;
 { Creates and returns a copy of internal list of TXCollectionItem classes. 
   Returned list should be freed by caller, the parameter defines an ancestor
   class filter. If baseClass is left nil, TXCollectionItem is used as ancestor. }
-function GetXCollectionItemClassesList(baseClass
-  : TXCollectionItemClass = nil): TList;
-procedure GetXCollectionClassesList(var ClassesList: TList;
-  baseClass: TXCollectionItemClass = nil);
+function GetXCollectionItemClassesList(baseClass: TXCollectionItemClass = nil): TList;
+procedure GetXCollectionClassesList(var ClassesList: TList; baseClass: TXCollectionItemClass = nil);
 
 //===========================================================================
 implementation

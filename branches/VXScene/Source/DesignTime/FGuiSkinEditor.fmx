@@ -118,7 +118,7 @@ object GUISkinEditor: TGUISkinEditor
               507B63C8C29101CDA13D129001CD211D09CA80FAE5E08F68D96154B92E21CDE1
               EB405D1811473640447E010FCE3920A6E55B4AF900199E3F8185674CC3000000
               0049454E44AE426082}
-            FileName = 'D:\Library\GLScene\Source\Resources\bitmaps\Done.bmp'
+            FileName = 'D:\VXScene\Source\Resources\bitmaps\Done.bmp'
           end>
         Align = FitLeft
         Size.Width = 25.000000000000000000
@@ -153,7 +153,7 @@ object GUISkinEditor: TGUISkinEditor
               026D9BAA3E4E8F77599E19AD6C416B86363DAC7CDBA4B9BD0130C8D92DBFB397
               3CC9805458CC3A2354B0338CE500C208E1345DD2660195E19FB4BB3964D334B9
               0908B7C5BF638C0756E6577F8D03BECA0000000049454E44AE426082}
-            FileName = 'D:\Library\GLScene\Source\Resources\bitmaps\Cancel1.bmp'
+            FileName = 'D:\VXScene\Source\Resources\bitmaps\Cancel1.bmp'
           end>
         Align = FitLeft
         Size.Width = 25.000000000000000000

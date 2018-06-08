@@ -12,12 +12,10 @@ interface
 {$I VXScene.inc}
 
 uses
-  Winapi.OpenGL,
-  Winapi.OpenGLext,
   System.Classes,
   System.SysUtils,
 
-  VXS.OpenGL1x,
+  VXS.OpenGL,
   VXS.VectorGeometry,
   VXS.VectorTypes, 
   VXS.BaseClasses,
@@ -25,10 +23,10 @@ uses
 
 type
   { Identifie le type de données stockées au sein d'un TVXCustomCoordinates.
-      csPoint2D : a simple 2D point (Z=0, W=0)
-      csPoint : un point (W=1)
-     csVector : un vecteur (W=0)
-     csUnknown : aucune contrainte  }
+    csPoint2D : a simple 2D point (Z=0, W=0)
+    csPoint : un point (W=1)
+    csVector : un vecteur (W=0)
+    csUnknown : aucune contrainte  }
   TVXCoordinatesStyle = (csPoint2D, csPoint, csVector, csUnknown);
 
   { Stores and homogenous vector.
@@ -47,10 +45,10 @@ type
     function GetAsAffineVector: TAffineVector; inline;
     function GetAsPoint2D: TVector2f;
     function GetAsString: String;
-    function GetCoordinate(const AIndex: Integer): GLfloat; inline;
-    procedure SetCoordinate(const AIndex: Integer; const AValue: GLfloat); inline;
-    function GetDirectCoordinate(const Index: Integer): GLfloat; inline;
-    procedure SetDirectCoordinate(const Index: Integer; const AValue: GLfloat); inline;
+    function GetCoordinate(const AIndex: Integer): Single; inline;
+    procedure SetCoordinate(const AIndex: Integer; const AValue: Single); inline;
+    function GetDirectCoordinate(const Index: Integer): Single; inline;
+    procedure SetDirectCoordinate(const Index: Integer; const AValue: Single); inline;
   protected
     procedure SetDirectVector(const V: TVector); inline;
     procedure DefineProperties(Filer: TFiler); override;
@@ -74,17 +72,15 @@ type
     property Style: TVXCoordinatesStyle read FStyle write FStyle;
     procedure Translate(const TranslationVector: TVector); overload;
     procedure Translate(const TranslationVector: TAffineVector); overload;
-    procedure AddScaledVector(const Factor: Single;
-      const TranslationVector: TVector); overload;
-    procedure AddScaledVector(const Factor: Single;
-      const TranslationVector: TAffineVector); overload;
+    procedure AddScaledVector(const Factor: Single; const TranslationVector: TVector); overload;
+    procedure AddScaledVector(const Factor: Single; const TranslationVector: TAffineVector); overload;
     procedure Rotate(const AnAxis: TAffineVector; AnAngle: Single); overload;
     procedure Rotate(const AnAxis: TVector; AnAngle: Single); overload;
     procedure Normalize; inline;
     procedure Invert;
     procedure Scale(Factor: Single);
-    function VectorLength: GLfloat;
-    function VectorNorm: GLfloat;
+    function VectorLength: Single;
+    function VectorNorm: Single;
     function MaxXYZ: Single;
     function Equals(const AVector: TVector): Boolean; reintroduce;
     procedure SetVector(const X, Y: Single; Z: Single = 0); overload;
@@ -108,25 +104,24 @@ type
       Assigning a value to this property will trigger notification events,
       if you don't want so, use DirectVector instead.
       The W component is automatically adjustes depending on style. }
-    property AsAffineVector: TAffineVector read GetAsAffineVector
-      write SetAsAffineVector;
+    property AsAffineVector: TAffineVector read GetAsAffineVector  write SetAsAffineVector;
     { The coordinates viewed as a 2D point.
       Assigning a value to this property will trigger notification events,
       if you don't want so, use DirectVector instead. }
     property AsPoint2D: TVector2f read GetAsPoint2D write SetAsPoint2D;
-    property X: GLfloat index 0 read GetCoordinate write SetCoordinate;
-    property Y: GLfloat index 1 read GetCoordinate write SetCoordinate;
-    property Z: GLfloat index 2 read GetCoordinate write SetCoordinate;
-    property W: GLfloat index 3 read GetCoordinate write SetCoordinate;
-    property Coordinate[const AIndex: Integer]: GLfloat read GetCoordinate write SetCoordinate; default;
+    property X: Single index 0 read GetCoordinate write SetCoordinate;
+    property Y: Single index 1 read GetCoordinate write SetCoordinate;
+    property Z: Single index 2 read GetCoordinate write SetCoordinate;
+    property W: Single index 3 read GetCoordinate write SetCoordinate;
+    property Coordinate[const AIndex: Integer]: Single read GetCoordinate write SetCoordinate; default;
     { The coordinates, in-between brackets, separated by semi-colons. }
     property AsString: String read GetAsString;
     // Similar to AsVector but does not trigger notification events
     property DirectVector: TVector read FCoords write SetDirectVector;
-    property DirectX: GLfloat index 0 read GetDirectCoordinate write SetDirectCoordinate;
-    property DirectY: GLfloat index 1 read GetDirectCoordinate write SetDirectCoordinate;
-    property DirectZ: GLfloat index 2 read GetDirectCoordinate write SetDirectCoordinate;
-    property DirectW: GLfloat index 3 read GetDirectCoordinate write SetDirectCoordinate;
+    property DirectX: Single index 0 read GetDirectCoordinate write SetDirectCoordinate;
+    property DirectY: Single index 1 read GetDirectCoordinate write SetDirectCoordinate;
+    property DirectZ: Single index 2 read GetDirectCoordinate write SetDirectCoordinate;
+    property DirectW: Single index 3 read GetDirectCoordinate write SetDirectCoordinate;
   end;
 
   { A TVXCustomCoordinates that publishes X, Y properties. }
@@ -180,17 +175,16 @@ implementation
 //==================================================================
 
 const
-  CsVectorHelp =
+  csVectorHelp =
     'If you are getting assertions here, consider using the SetPoint procedure';
-  CsPointHelp =
+  csPointHelp =
     'If you are getting assertions here, consider using the SetVector procedure';
-  CsPoint2DHelp =
+  csPoint2DHelp =
     'If you are getting assertions here, consider using one of the SetVector or SetPoint procedures';
 
-  // ------------------
-  // ------------------ TVXCustomCoordinates ------------------
-  // ------------------
-
+// ------------------
+// ------------------ TVXCustomCoordinates ------------------
+// ------------------
 constructor TVXCustomCoordinates.CreateInitialized(AOwner: TPersistent;
   const AValue: TVector; const AStyle: TVXCoordinatesStyle = CsUnknown);
 begin
@@ -354,12 +348,12 @@ begin
   NotifyChange(Self);
 end;
 
-function TVXCustomCoordinates.VectorLength: GLfloat;
+function TVXCustomCoordinates.VectorLength: Single;
 begin
   Result := VXS.VectorGeometry.VectorLength(FCoords);
 end;
 
-function TVXCustomCoordinates.VectorNorm: GLfloat;
+function TVXCustomCoordinates.VectorNorm: Single;
 begin
   Result := VXS.VectorGeometry.VectorNorm(FCoords);
 end;
@@ -376,34 +370,34 @@ end;
 
 procedure TVXCustomCoordinates.SetVector(const X, Y: Single; Z: Single = 0);
 begin
-  Assert(FStyle = CsVector, CsVectorHelp);
+  Assert(FStyle = csVector, csVectorHelp);
   VXS.VectorGeometry.SetVector(FCoords, X, Y, Z);
   NotifyChange(Self);
 end;
 
 procedure TVXCustomCoordinates.SetVector(const V: TAffineVector);
 begin
-  Assert(FStyle = CsVector, CsVectorHelp);
+  Assert(FStyle = csVector, csVectorHelp);
   VXS.VectorGeometry.SetVector(FCoords, V);
   NotifyChange(Self);
 end;
 
 procedure TVXCustomCoordinates.SetVector(const V: TVector);
 begin
-  Assert(FStyle = CsVector, CsVectorHelp);
+  Assert(FStyle = csVector, csVectorHelp);
   VXS.VectorGeometry.SetVector(FCoords, V);
   NotifyChange(Self);
 end;
 
 procedure TVXCustomCoordinates.SetVector(const X, Y, Z, W: Single);
 begin
-  Assert(FStyle = CsVector, CsVectorHelp);
+  Assert(FStyle = csVector, csVectorHelp);
   VXS.VectorGeometry.SetVector(FCoords, X, Y, Z, W);
   NotifyChange(Self);
 end;
 
 procedure TVXCustomCoordinates.SetDirectCoordinate(const Index: Integer;
-  const AValue: GLfloat);
+  const AValue: Single);
 begin
   FCoords.V[index] := AValue;
 end;
@@ -544,19 +538,19 @@ begin
 end;
 
 procedure TVXCustomCoordinates.SetCoordinate(const AIndex: Integer;
-  const AValue: GLfloat);
+  const AValue: Single);
 begin
   FCoords.C[AIndex] := AValue;
   NotifyChange(Self);
 end;
 
-function TVXCustomCoordinates.GetCoordinate(const AIndex: Integer): GLfloat;
+function TVXCustomCoordinates.GetCoordinate(const AIndex: Integer): Single;
 begin
   Result := FCoords.C[AIndex];
 end;
 
 function TVXCustomCoordinates.GetDirectCoordinate(
-  const Index: Integer): GLfloat;
+  const Index: Integer): Single;
 begin
   Result := FCoords.C[index]
 end;

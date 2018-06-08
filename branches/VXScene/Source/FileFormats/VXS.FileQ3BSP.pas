@@ -47,7 +47,7 @@ var
   // Q3 lightmaps are quite dark, we brighten them a lot by default
   vQ3BSPLightmapGammaCorrection: Single = 2.5;
   vQ3BSPLightmapBrightness: Single = 2; // scaling factor, 1.0 = unchanged
-  vGLFileQ3BSPLoadMaterials: boolean = True; // Mrqzzz : Flag to avoid loading materials (useful for IDE Extentions like GlaredX)
+  vFileQ3BSPLoadMaterials: boolean = True; // Mrqzzz : Flag to avoid loading materials (useful for IDE Extentions like GlaredX)
 
 // ------------------------------------------------------------------
 implementation
@@ -130,7 +130,7 @@ begin
     mo := TBSPMeshObject.CreateOwned(Owner.MeshObjects);
 
     // import all materials
-    if vGLFileQ3BSPLoadMaterials then
+    if vFileQ3BSPLoadMaterials then
     begin
       for i := 0 to High(bsp.Textures) do
       begin
@@ -140,7 +140,7 @@ begin
 
     // import all lightmaps
     lightmapLib := Owner.LightmapLibrary;
-    if Assigned(lightmapLib) and vGLFileQ3BSPLoadMaterials then
+    if Assigned(lightmapLib) and vFileQ3BSPLoadMaterials then
     begin
       // import lightmaps
       n := bsp.NumOfLightmaps;
@@ -191,7 +191,7 @@ begin
       mo.Vertices.Add(bsp.Vertices[i].Position);
       mo.Normals.Add(bsp.Vertices[i].Normal);
       mo.TexCoords.Add(bsp.Vertices[i].TextureCoord);
-      if Assigned(lightMapLib) and vGLFileQ3BSPLoadMaterials then
+      if Assigned(lightMapLib) and vFileQ3BSPLoadMaterials then
         mo.LightMapTexCoords.Add(bsp.Vertices[i].LightmapCoord)
     end;
     mo.TexCoords.Scale(AffineVectorMake(1, -1, 0));
@@ -241,7 +241,7 @@ begin
           // check for BSP corruption
           if Cardinal(facePtr.textureID) <= Cardinal(bsp.NumOfTextures) then
             fg.MaterialName := Trim(string(StrPas(bsp.Textures[facePtr.textureID].TextureName)));
-          if Assigned(lightmapLib) and vGLFileQ3BSPLoadMaterials then
+          if Assigned(lightmapLib) and vFileQ3BSPLoadMaterials then
             fg.LightMapIndex := facePtr.lightmapID;
           lastfg := fg;
           // Q3 Polygon Faces are actually fans, but winded the other way around!

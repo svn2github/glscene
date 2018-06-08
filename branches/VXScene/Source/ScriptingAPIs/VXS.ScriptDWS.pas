@@ -67,11 +67,7 @@ type
 procedure Register;
 
 // --------------------------------------------------
-// --------------------------------------------------
-// --------------------------------------------------
 implementation
-// --------------------------------------------------
-// --------------------------------------------------
 // --------------------------------------------------
 
 // ---------------
@@ -152,9 +148,9 @@ var
 begin
   inherited;
   if FCompilerName<>'' then begin
-    temp:=FindManager(TVXDelphiWebScriptII, FCompilerName);
+    temp:=FindManager(TVXDelphiWebScript, FCompilerName);
     if Assigned(temp) then
-      Compiler:=TVXDelphiWebScriptII(temp);
+      Compiler:=TVXDelphiWebScript(temp);
     FCompilerName:='';
   end;
 end;
@@ -172,7 +168,7 @@ end;
 
 class function TVXScriptDWS.FriendlyDescription : String;
 begin
-  Result:='DelphiWebScriptII script';
+  Result:='DelphiWebScript script';
 end;
 
 class function TVXScriptDWS.ItemCategory : String;
@@ -180,8 +176,6 @@ begin
   Result:='';
 end;
 
-// Compile
-//
 procedure TVXScriptDWS.Compile;
 begin
   Invalidate;
@@ -191,8 +185,6 @@ begin
     raise Exception.Create('No compiler assigned!');
 end;
 
-// Execute
-//
 procedure TVXScriptDWS.Execute;
 begin
   if (State = ssUncompiled) then
@@ -205,9 +197,9 @@ end;
 
 procedure TVXScriptDWS.Invalidate;
 begin
-  if (State <> ssUncompiled) or Assigned(FDWS2Program) then begin
+  if (State <> ssUncompiled) or Assigned(FDWSProgram) then begin
     Stop;
-    FreeAndNil(FDWS2Program);
+    FreeAndNil(FDWSProgram);
   end;
 end;
 
@@ -225,8 +217,7 @@ begin
     FDWS2Program.EndProgram;
 end;
 
-function TVXScriptDWS.Call(aName: String;
-  aParams: array of Variant) : Variant;
+function TVXScriptDWS.Call(aName: String; aParams: array of Variant) : Variant;
 var
   Symbol : TSymbol;
   Output : IInfo;
@@ -234,10 +225,10 @@ begin
   if (State <> ssRunning) then
     Start;
   if State = ssRunning then begin
-    Symbol:=FDWS2Program.Table.FindSymbol(aName);
+    Symbol:=FDWSProgram.Table.FindSymbol(aName);
     if Assigned(Symbol) then begin
       if Symbol is TFuncSymbol then begin
-        Output:=FDWS2Program.Info.Func[aName].Call(aParams);
+        Output:=FDWSProgram.Info.Func[aName].Call(aParams);
         if Assigned(Output) then
           Result:=Output.Value;
       end else
@@ -247,7 +238,7 @@ begin
   end;
 end;
 
-procedure TVXScriptDWS.SetCompiler(const Value : TVXDelphiWebScriptII);
+procedure TVXScriptDWS.SetCompiler(const Value : TVXDelphiWebScript);
 begin
   if Value<>FCompiler then begin
     FCompiler:=Value;
@@ -258,13 +249,13 @@ end;
 function TVXScriptDWS.GetState : TVXScriptState;
 begin
   Result:=ssUncompiled;
-  if Assigned(FDWS2Program) then begin
-    case FDWS2Program.ProgramState of
+  if Assigned(FDWSProgram) then begin
+    case FDWSProgram.ProgramState of
       psReadyToRun : Result:=ssCompiled;
       psRunning : Result:=ssRunning;
     else
-      if FDWS2Program.Msgs.HasErrors then begin
-        if FDWS2Program.Msgs.HasCompilerErrors then
+      if FDWSProgram.Msgs.HasErrors then begin
+        if FDWSProgram.Msgs.HasCompilerErrors then
           Result:=ssCompileErrors
         else if FDWS2Program.Msgs.HasExecutionErrors then
           Result:=ssRunningErrors;
@@ -275,21 +266,13 @@ begin
 end;
 
 // --------------------------------------------------
-// --------------------------------------------------
-// --------------------------------------------------
 initialization
-// --------------------------------------------------
-// --------------------------------------------------
 // --------------------------------------------------
 
   RegisterXCollectionItemClass(TVXScriptDWS);
 
 // --------------------------------------------------
-// --------------------------------------------------
-// --------------------------------------------------
 finalization
-// --------------------------------------------------
-// --------------------------------------------------
 // --------------------------------------------------
 
   UnregisterXCollectionItemClass(TVXScriptDWS);

@@ -18,8 +18,6 @@ interface
 
 uses
   Winapi.Windows,
-  Winapi.OpenGL,
-  Winapi.OpenGLext,
   System.Classes,
   System.SysUtils,
   System.SyncObjs,
@@ -294,7 +292,7 @@ type
       The best spot for reading pixels is within a SceneViewer's PostRender
       event : the scene has been fully rendered and the OpenGL context
       is still active. }
-    procedure ReadPixels(const area: TVXRect);
+    procedure ReadPixels(const area: TRect);
     { Draws the whole bitmap at given position in the current OpenGL context.
       This function must be called with a rendering context active.
       Blending and Alpha channel functions are not altered by this function
@@ -526,7 +524,7 @@ begin
   end;
   if (k > 1) and (not formatsThatCanBeSaved) then
     FmtStr(descriptions, '%s (%s)|%1:s|%s',
-      [glsAllFilter, filters, descriptions]);
+      [sAllFilter, filters, descriptions]);
 end;
 
 function TRasterFileFormatsList.FindExtByIndex(index: Integer;
@@ -1449,8 +1447,8 @@ begin
           case transferMethod of
             0: glTexImage1D(glTarget, Level, aTexFormat, w, 0, FColorFormat, FDataType, p);
             1: glCompressedTexImage1D(glTarget, Level, aTexFormat, w, 0, GetLevelSizeInByte(Level), p);
-            2: glTextureImage1DEXT(glHandle, glTarget, Level, aTexFormat, w, 0, FColorFormat, FDataType, p);
-            3: glCompressedTextureImage1DEXT(glHandle, glTarget, Level, aTexFormat, w, 0, GetLevelSizeInByte(Level), p)
+///            2: glTextureImage1DEXT(glHandle, glTarget, Level, aTexFormat, w, 0, FColorFormat, FDataType, p);
+///            3: glCompressedTexImage1DARB(glHandle, glTarget, Level, aTexFormat, w, 0, GetLevelSizeInByte(Level), p)
           end;
 
           Div2(w);
@@ -1469,8 +1467,8 @@ begin
           case transferMethod of
             0: glTexImage2D(glTarget, Level, aTexFormat, w, h, 0, FColorFormat, FDataType, p);
             1: glCompressedTexImage2D(glTarget, Level, aTexFormat, w, h, 0, GetLevelSizeInByte(Level), p);
-            2: glTextureImage2DEXT(glHandle, glTarget, Level, aTexFormat, w, h, 0, FColorFormat, FDataType, p);
-            3: glCompressedTextureImage2DEXT(glHandle, glTarget, Level, aTexFormat, w, h, 0, GetLevelSizeInByte(Level), p);
+///            2: glTextureImage2DEXT(glHandle, glTarget, Level, aTexFormat, w, h, 0, FColorFormat, FDataType, p);
+///            3: glCompressedTextureImage2DEXT(glHandle, glTarget, Level, aTexFormat, w, h, 0, GetLevelSizeInByte(Level), p);
           end;
 
           Div2(w);
@@ -1489,8 +1487,8 @@ begin
           case transferMethod of
             0: glTexImage2D(glTarget, 0, aTexFormat, w, h, 0, FColorFormat, FDataType, p);
             1: glCompressedTexImage2D(glTarget, 0, aTexFormat, w, h, 0, GetLevelSizeInByte(0), p);
-            2: glTextureImage2DEXT(glHandle, glTarget, 0, aTexFormat, w, h, 0, FColorFormat, FDataType, p);
-            3: glCompressedTextureImage2DEXT(glHandle, glTarget, 0, aTexFormat, w, h, 0, GetLevelSizeInByte(0), p);
+///            2: glTextureImage2DEXT(glHandle, glTarget, 0, aTexFormat, w, h, 0, FColorFormat, FDataType, p);
+///            3: glCompressedTextureImage2DEXT(glHandle, glTarget, 0, aTexFormat, w, h, 0, GetLevelSizeInByte(0), p);
           end;
         end;
 
@@ -1525,7 +1523,7 @@ begin
                   end;
             end;
             if true {EXT_direct_state_access} then
-              glCompressedTextureImage3DEXT(glHandle, glTarget, Level, aTexFormat, w, h, d, 0, GetLevelSizeInByte(Level), vtcBuffer)
+              glCompressedTexImage3D(glTarget, Level, aTexFormat, w, h, d, 0, GetLevelSizeInByte(Level), vtcBuffer)
             else
               glCompressedTexImage3D(glTarget, Level, aTexFormat, w, h, d, 0, GetLevelSizeInByte(Level), vtcBuffer);
           end
@@ -1535,8 +1533,8 @@ begin
             case transferMethod of
               0: glTexImage3D(glTarget, Level, aTexFormat, w, h, d, 0, FColorFormat, FDataType, p);
               1: glCompressedTexImage3D(glTarget, Level, aTexFormat, w, h, d, 0, GetLevelSizeInByte(Level), p);
-              2: glTextureImage3DEXT(glHandle, glTarget, Level, aTexFormat, w, h, d, 0, FColorFormat, FDataType, p);
-              3: glCompressedTextureImage3DEXT(glHandle, glTarget, Level, aTexFormat, w, h, d, 0, GetLevelSizeInByte(Level), p);
+///              2: glTextureImage3DEXT(glHandle, glTarget, Level, aTexFormat, w, h, d, 0, FColorFormat, FDataType, p);
+///              3: glCompressedTextureImage3DEXT(glHandle, glTarget, Level, aTexFormat, w, h, d, 0, GetLevelSizeInByte(Level), p);
             end;
 
           end;
@@ -1561,8 +1559,8 @@ begin
             case transferMethod of
               0: glTexImage2D(face, Level, aTexFormat, w, h, 0, FColorFormat, FDataType, p);
               1: glCompressedTexImage2D(face, Level, aTexFormat, w, h, 0, GetLevelSizeInByte(Level) div 6, p);
-              2: glTextureImage2DEXT(glHandle, face, Level, aTexFormat, w, h, 0, FColorFormat, FDataType, p);
-              3: glCompressedTextureImage2DEXT(glHandle, face, Level, aTexFormat, w, h, 0, GetLevelSizeInByte(Level) div 6, p);
+///              2: glTextureImage2DEXT(glHandle, face, Level, aTexFormat, w, h, 0, FColorFormat, FDataType, p);
+///              3: glCompressedTextureImage2DEXT(glHandle, face, Level, aTexFormat, w, h, 0, GetLevelSizeInByte(Level) div 6, p);
             end;
 
           end;
@@ -1583,8 +1581,8 @@ begin
           case transferMethod of
             0: glTexImage2D(glTarget, Level, aTexFormat, w, h, 0, FColorFormat, FDataType, p);
             1: glCompressedTexImage2D(glTarget, Level, aTexFormat, w, h, 0, GetLevelSizeInByte(Level), p);
-            2: glTextureImage2DEXT(glHandle, glTarget, Level, aTexFormat, w, h, 0, FColorFormat, FDataType, p);
-            3: glCompressedTextureImage2DEXT(glHandle, glTarget, Level, aTexFormat, w, h, 0, GetLevelSizeInByte(Level), p);
+///            2: glTextureImage2DEXT(glHandle, glTarget, Level, aTexFormat, w, h, 0, FColorFormat, FDataType, p);
+///            3: glCompressedTextureImage2DEXT(glHandle, glTarget, Level, aTexFormat, w, h, 0, GetLevelSizeInByte(Level), p);
           end;
 
           Div2(w);
@@ -1603,8 +1601,8 @@ begin
           case transferMethod of
             0: glTexImage3D(glTarget, Level, aTexFormat, w, h, d, 0, FColorFormat, FDataType, p);
             1: glCompressedTexImage3D(glTarget, Level, aTexFormat, w, h, d, 0, GetLevelSizeInByte(Level), p);
-            2: glTextureImage3DEXT(glHandle, glTarget, Level, aTexFormat, w, h, d, 0, FColorFormat, FDataType, p);
-            3: glCompressedTextureImage3DEXT(glHandle, glTarget, Level, aTexFormat, w, h, d, 0, GetLevelSizeInByte(Level), p);
+///            2: glTextureImage3DEXT(glHandle, glTarget, Level, aTexFormat, w, h, d, 0, FColorFormat, FDataType, p);
+///            3: glCompressedTextureImage3DEXT(glHandle, glTarget, Level, aTexFormat, w, h, d, 0, GetLevelSizeInByte(Level), p);
           end;
 
           Div2(w);
@@ -2700,7 +2698,7 @@ begin
   ReallocMem(FData, DataSize);
 end;
 
-procedure TVXImage.ReadPixels(const area: TVXRect);
+procedure TVXImage.ReadPixels(const area: TRect);
 begin
   UnMipmap;
   FLOD[0].Width := (area.Right - area.Left) and $FFFC;

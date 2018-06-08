@@ -25,12 +25,10 @@ interface
 {$I VXScene.inc}
 
 uses
-  Winapi.OpenGL,
-  Winapi.OpenGLext,
   System.Classes,
   System.SysUtils,
 
-  VXS.OpenGL1x,
+  VXS.OpenGL,
   VXS.CrossPlatform,
   VXS.VectorTypes,
   VXS.VectorGeometry,
@@ -177,8 +175,8 @@ type
 
   TUBOStates = record
     FUniformBufferBinding: Cardinal;
-    FOffset: GLintptr;
-    FSize: GLsizeiptr;
+    FOffset: PGLint;
+    FSize: PGLsizei;
   end;
 
   TVXMaterialLevel = (mlAuto, mlFixedFunction, mlMultitexturing, mlSM3, mlSM4, mlSM5);
@@ -227,8 +225,8 @@ type
     FClampReadColor: Cardinal; // GL_FIXED_ONLY
     FProvokingVertex: Cardinal; // GL_LAST_VERTEX_CONVENTION
     // Rasterization state
-    FPointSize: GLfloat;
-    FPointFadeThresholdSize: GLfloat;
+    FPointSize: Single;
+    FPointFadeThresholdSize: Single;
     FPointSpriteCoordOrigin: Cardinal; // GL_UPPER_LEFT
     FLineWidth: Single;
     FLineStippleFactor: GLint;
@@ -239,8 +237,8 @@ type
     FFrontFace: TVXFaceWinding;
     FEnablePolygonSmooth: GLboolean;
     FPolygonMode: TVXPolygonMode;
-    FPolygonOffsetFactor: GLfloat;
-    FPolygonOffsetUnits: GLfloat;
+    FPolygonOffsetFactor: Single;
+    FPolygonOffsetUnits: Single;
     FEnablePolygonOffsetPoint: GLboolean;
     FEnablePolygonOffsetLine: GLboolean;
     FEnablePolygonOffsetFill: GLboolean;
@@ -249,7 +247,7 @@ type
     FEnableSampleAlphaToCoverage: GLboolean;
     FEnableSampleAlphaToOne: GLboolean;
     FEnableSampleCoverage: GLboolean;
-    FSampleCoverageValue: GLfloat;
+    FSampleCoverageValue: Single;
     FSampleCoverageInvert: GLboolean;
     FEnableSampleMask: GLboolean;
     FSampleMaskValue: array[0..15] of GLbitfield;
@@ -303,7 +301,7 @@ type
     FStencilWriteMask: GLuint;
     FStencilBackWriteMask: GLuint;
     FColorClearValue: TVector;
-    FDepthClearValue: GLfloat;
+    FDepthClearValue: Single;
     FStencilClearValue: GLuint;
     // Framebuffer state
     FDrawFrameBuffer: Cardinal;
@@ -377,10 +375,10 @@ type
     procedure SetClampReadColor(const Value: GLEnum);
     procedure SetProvokingVertex(const Value: GLEnum);
     // Rasterization state
-    procedure SetPointSize(const Value: GLfloat);
-    procedure SetPointFadeThresholdSize(const Value: GLfloat);
+    procedure SetPointSize(const Value: Single);
+    procedure SetPointFadeThresholdSize(const Value: Single);
     procedure SetPointSpriteCoordOrigin(const Value: GLEnum);
-    procedure SetLineWidth(const Value: GLfloat);
+    procedure SetLineWidth(const Value: Single);
     procedure SetLineStippleFactor(const Value: GLint);
     procedure SetLineStipplePattern(const Value: GLushort);
     procedure SetEnableLineSmooth(const Value: GLboolean);
@@ -389,8 +387,8 @@ type
     procedure SetFrontFace(const Value: TVXFaceWinding);
     procedure SetEnablePolygonSmooth(const Value: GLboolean);
     procedure SetPolygonMode(const Value: TVXPolygonMode);
-    procedure SetPolygonOffsetFactor(const Value: GLfloat);
-    procedure SetPolygonOffsetUnits(const Value: GLfloat);
+    procedure SetPolygonOffsetFactor(const Value: Single);
+    procedure SetPolygonOffsetUnits(const Value: Single);
     procedure SetEnablePolygonOffsetPoint(const Value: GLboolean);
     procedure SetEnablePolygonOffsetLine(const Value: GLboolean);
     procedure SetEnablePolygonOffsetFill(const Value: GLboolean);
@@ -399,7 +397,7 @@ type
     procedure SetEnableSampleAlphaToCoverage(const Value: GLboolean);
     procedure SetEnableSampleAlphaToOne(const Value: GLboolean);
     procedure SetEnableSampleCoverage(const Value: GLboolean);
-    procedure SetSampleCoverageValue(const Value: GLfloat);
+    procedure SetSampleCoverageValue(const Value: Single);
     procedure SetSampleCoverageInvert(const Value: GLboolean);
     procedure SetEnableSampleMask(const Value: GLboolean);
     function GetSampleMaskValue(Index: Integer): GLbitfield;
@@ -445,7 +443,7 @@ type
     procedure SetStencilWriteMask(const Value: GLuint);
     procedure SetStencilBackWriteMask(const Value: GLuint);
     procedure SetColorClearValue(const Value: TVector);
-    procedure SetDepthClearValue(const Value: GLfloat);
+    procedure SetDepthClearValue(const Value: Single);
     procedure SetStencilClearValue(const Value: GLuint);
     // Framebuffer
     procedure SetDrawFrameBuffer(const Value: GLuint);
@@ -557,7 +555,7 @@ type
     property MaterialShininess[const aFace: TVXCullFaceMode]: Integer
       read GetMaterialShininess;
     { Adjusts material alpha channel for a face. }
-    procedure SetMaterialAlphaChannel(const aFace: GLEnum; const alpha: GLfloat);
+    procedure SetMaterialAlphaChannel(const aFace: GLEnum; const alpha: Single);
     { Adjusts material diffuse color for a face. }
     procedure SetMaterialDiffuseColor(const aFace: GLEnum; const diffuse: TVector);
     { Lighting states }
@@ -638,15 +636,15 @@ type
       SetProvokingVertex;
     // Rasterization state
     { The default point size, used when EnableProgramPointSize = false. }
-    property PointSize: GLfloat read FPointSize write SetPointSize;
+    property PointSize: Single read FPointSize write SetPointSize;
     { If multisampling is enabled, this can control when points are faded out.}
-    property PointFadeThresholdSize: GLfloat read FPointFadeThresholdSize write
+    property PointFadeThresholdSize: Single read FPointFadeThresholdSize write
       SetPointFadeThresholdSize;
     { The texture coordinate origin of point sprites. }
     property PointSpriteCoordOrigin: GLEnum read FPointSpriteCoordOrigin write
       SetPointSpriteCoordOrigin;
     { The line width. }
-    property LineWidth: GLfloat read FLineWidth write SetLineWidth;
+    property LineWidth: Single read FLineWidth write SetLineWidth;
     { The line stipple. }
     property LineStippleFactor: GLint read FLineStippleFactor write
       SetLineStippleFactor;
@@ -671,14 +669,14 @@ type
     { Whether polygons appear filled, lines or points. }
     property PolygonMode: TVXPolygonMode read FPolygonMode write SetPolygonMode;
     { Scales the maximum depth of the polygon. }
-    property PolygonOffsetFactor: GLfloat read FPolygonOffsetFactor write
+    property PolygonOffsetFactor: Single read FPolygonOffsetFactor write
       SetPolygonOffsetFactor;
     { Scales an implementation-dependent constant that relates to the usable
        resolution of the depth buffer. }
-    property PolygonOffsetUnits: GLfloat read FPolygonOffsetUnits write
+    property PolygonOffsetUnits: Single read FPolygonOffsetUnits write
       SetPolygonOffsetUnits;
     { Set polygon offset. }
-    procedure SetPolygonOffset(const factor, units: GLfloat);
+    procedure SetPolygonOffset(const factor, units: Single);
     { Enable/Disable polygon offset for polygons in point mode. }
     property EnablePolygonOffsetPoint: GLboolean read FEnablePolygonOffsetPoint
       write SetEnablePolygonOffsetPoint;
@@ -702,13 +700,13 @@ type
     property EnableSampleCoverage: GLboolean read FEnableSampleCoverage write
       SetEnableSampleCoverage;
     { Sample coverage Value. }
-    property SampleCoverageValue: GLfloat read FSampleCoverageValue write
+    property SampleCoverageValue: Single read FSampleCoverageValue write
       SetSampleCoverageValue;
     { Inverts sample coverage Value. }
     property SampleCoverageInvert: GLboolean read FSampleCoverageInvert write
       SetSampleCoverageInvert;
     { Set sample coverage. }
-    procedure SetSampleCoverage(const Value: GLfloat; invert: GLboolean);
+    procedure SetSampleCoverage(const Value: Single; invert: GLboolean);
     { Enable/Disable sample mask. }
     property EnableSampleMask: GLboolean read FEnableSampleMask write
       SetEnableSampleMask;
@@ -881,7 +879,7 @@ type
     property ColorClearValue: TVector read FColorClearValue write
       SetColorClearValue;
     { The depth clear value. }
-    property DepthClearValue: GLfloat read FDepthClearValue write
+    property DepthClearValue: Single read FDepthClearValue write
       SetDepthClearValue;
     { The stencil clear value. }
     property StencilClearValue: GLuint read FStencilClearValue write
@@ -954,8 +952,8 @@ type
     { Currently bound uniform buffer. }
     property UniformBufferBinding: GLuint read FUniformBufferBinding write SetUniformBufferBinding;
 
-    procedure SetBufferIndexedBinding(const Value: GLuint; ATarget: TVXBufferBindingTarget; AIndex: GLuint; ABufferSize: GLsizeiptr); overload;
-    procedure SetBufferIndexedBinding(const Value: GLuint; ATarget: TVXBufferBindingTarget; AIndex: GLuint; AOffset: GLintptr; ARangeSize: GLsizeiptr); overload;
+    procedure SetBufferIndexedBinding(const Value: GLuint; ATarget: TVXBufferBindingTarget; AIndex: GLuint; ABufferSize: PGLsizei); overload;
+    procedure SetBufferIndexedBinding(const Value: GLuint; ATarget: TVXBufferBindingTarget; AIndex: GLuint; AOffset: GLint; ARangeSize: PGLsizei); overload;
     // Vector + Geometry Shader state
     { Default values to be used when a vertex array is not used for that  attribute. }
     property CurrentVertexAttrib[Index: Integer]: TVector
@@ -1099,7 +1097,7 @@ const
   cGLBlendFunctionToGLEnum: array[TVXBlendFunction] of GLEnum =
     (GL_ZERO, GL_ONE, GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR, GL_DST_COLOR,
     GL_ONE_MINUS_DST_COLOR, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA,
-    GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA, GL_CONSTANT_COLOR,
+    GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA, GL_CONSTANT_COLOR_ARB,
     GL_ONE_MINUS_CONSTANT_COLOR, GL_CONSTANT_ALPHA,
     GL_ONE_MINUS_CONSTANT_ALPHA, GL_SRC_ALPHA_SATURATE {valid for src only});
 
@@ -1505,7 +1503,7 @@ begin
     Include(FListStates[FCurrentList], sttLighting);
 end;
 
-procedure TVXStateCache.SetMaterialAlphaChannel(const aFace: GLEnum; const alpha: GLfloat);
+procedure TVXStateCache.SetMaterialAlphaChannel(const aFace: GLEnum; const alpha: Single);
 var
   i: Integer;
   color: TVector4f;
@@ -1841,7 +1839,7 @@ begin
   end;
 end;
 
-procedure TVXStateCache.SetDepthClearValue(const Value: GLfloat);
+procedure TVXStateCache.SetDepthClearValue(const Value: Single);
 begin
   if (Value <> FDepthClearValue) or FInsideList then
   begin
@@ -2347,7 +2345,7 @@ begin
   end;
 end;
 
-procedure TVXStateCache.SetLineWidth(const Value: GLfloat);
+procedure TVXStateCache.SetLineWidth(const Value: Single);
 begin
   // note: wide lines no longer deprecated (see OpenGL spec)
   if (Value <> FLineWidth) or FInsideList then
@@ -2486,7 +2484,7 @@ begin
   end;
 end;
 
-procedure TVXStateCache.SetPointFadeThresholdSize(const Value: GLfloat);
+procedure TVXStateCache.SetPointFadeThresholdSize(const Value: Single);
 begin
   if (Value <> FPointFadeThresholdSize) or FInsideList then
   begin
@@ -2498,7 +2496,7 @@ begin
   end;
 end;
 
-procedure TVXStateCache.SetPointSize(const Value: GLfloat);
+procedure TVXStateCache.SetPointSize(const Value: Single);
 begin
   if (Value <> FPointSize) or FInsideList then
   begin
@@ -2537,7 +2535,7 @@ begin
   end;
 end;
 
-procedure TVXStateCache.SetPolygonOffset(const factor, units: GLfloat);
+procedure TVXStateCache.SetPolygonOffset(const factor, units: Single);
 begin
   if (factor <> FPolygonOffsetFactor) or (units <> FPolygonOffsetUnits)
     or FInsideList then
@@ -2553,7 +2551,7 @@ begin
   end;
 end;
 
-procedure TVXStateCache.SetPolygonOffsetFactor(const Value: GLfloat);
+procedure TVXStateCache.SetPolygonOffsetFactor(const Value: Single);
 begin
   if (Value <> FPolygonOffsetFactor) or FInsideList then
   begin
@@ -2565,7 +2563,7 @@ begin
   end;
 end;
 
-procedure TVXStateCache.SetPolygonOffsetUnits(const Value: GLfloat);
+procedure TVXStateCache.SetPolygonOffsetUnits(const Value: Single);
 begin
   if (Value <> FPolygonOffsetUnits) or FInsideList then
   begin
@@ -2616,7 +2614,7 @@ begin
   end;
 end;
 
-procedure TVXStateCache.SetSampleCoverage(const Value: GLfloat;
+procedure TVXStateCache.SetSampleCoverage(const Value: Single;
   invert: GLboolean);
 begin
   if (Value <> FSampleCoverageValue) or (invert <> FSampleCoverageInvert)
@@ -2645,7 +2643,7 @@ begin
   end;
 end;
 
-procedure TVXStateCache.SetSampleCoverageValue(const Value: GLfloat);
+procedure TVXStateCache.SetSampleCoverageValue(const Value: Single);
 begin
   if (Value <> FSampleCoverageValue) or FInsideList then
   begin
@@ -2899,7 +2897,7 @@ begin
     glBindTexture(cGLTexTypeToGLEnum[target], Value);
     ActiveTexture := lastActiveTexture;
   end;
-  FTextureBindingTime[Index, target] := GLSTime;
+  FTextureBindingTime[Index, target] := AppTime;
 end;
 
 function TVXStateCache.GetActiveTextureEnabled(Target: TVXTextureTarget):
@@ -3020,11 +3018,11 @@ begin
 end;
 
 procedure TVXStateCache.SetBufferIndexedBinding(const Value: GLuint;
-  ATarget: TVXBufferBindingTarget; AIndex: GLuint; ABufferSize: GLsizeiptr);
+  ATarget: TVXBufferBindingTarget; AIndex: GLuint; ABufferSize: PGLsizei);
 begin
   Assert(not FInsideList);
   if (FUBOStates[ATarget, AIndex].FUniformBufferBinding <> Value)
-    or (FUBOStates[ATarget, AIndex].FOffset > 0)
+    or (FUBOStates[ATarget, AIndex].FOffset^ > 0)
     or (FUBOStates[ATarget, AIndex].FSize <> ABufferSize) then
   begin
     case ATarget of
@@ -3045,11 +3043,11 @@ end;
 
 procedure TVXStateCache.SetBufferIndexedBinding(const Value: GLuint;
   ATarget: TVXBufferBindingTarget; AIndex: GLuint;
-    AOffset: GLintptr; ARangeSize: GLsizeiptr);
+    AOffset: GLint; ARangeSize: PGLsizei);
 begin
   Assert(not FInsideList);
   if (FUBOStates[ATarget, AIndex].FUniformBufferBinding <> Value)
-    or (FUBOStates[ATarget, AIndex].FOffset <> AOffset)
+    or (FUBOStates[ATarget, AIndex].FOffset <> @AOffset)
     or (FUBOStates[ATarget, AIndex].FSize <> ARangeSize) then
   begin
     case ATarget of
@@ -3057,9 +3055,9 @@ begin
       bbtTransformFeedBack: FTransformFeedbackBufferBinding := Value;
     end;
     FUBOStates[ATarget, AIndex].FUniformBufferBinding := Value;
-    FUBOStates[ATarget, AIndex].FOffset := AOffset;
+    FUBOStates[ATarget, AIndex].FOffset := @AOffset;
     FUBOStates[ATarget, AIndex].FSize := ARangeSize;
-    glBindBufferRange(cGLBufferBindingTarget[ATarget], AIndex, Value, AOffset, ARangeSize);
+    glBindBufferRange(cGLBufferBindingTarget[ATarget], AIndex, Value, AOffset, ARangeSize^);
   end;
 end;
 

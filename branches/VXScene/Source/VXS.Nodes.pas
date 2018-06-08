@@ -9,12 +9,11 @@ unit VXS.Nodes;
 interface
 
 uses
-  Winapi.OpenGL,
-  Winapi.OpenGLext,
   System.Classes,
   System.SysUtils,
   System.Math,
 
+  VXS.OpenGL,
   VXS.VectorGeometry,
   VXS.Context,
   VXS.BaseClasses,
@@ -552,7 +551,7 @@ procedure TVXNodes.RenderTesselatedPolygon(ATextured: Boolean; ANormal: PAffineV
   AInvertNormals: Boolean = False);
 var
   I: Integer;
-  Tess: GLUTesselator;
+  Tess: PGLUTesselator;
   DblVector: TAffineDblVector;
   Spline: TCubicSpline;
   SplinePos: PAffineVector;
@@ -590,7 +589,7 @@ begin
         for I := Count - 1 downto 0 do
         begin
           SetVector(DblVector, PAffineVector(Items[I].AsAddress)^);
-          gluTessVertex(Tess, @DblVector, Items[I].AsAddress);
+          gluTessVertex(Tess, DblVector, Items[I].AsAddress);
         end;
       end
       else
@@ -598,7 +597,7 @@ begin
         for I := 0 to Count - 1 do
         begin
           SetVector(DblVector, PAffineVector(Items[I].AsAddress)^);
-          gluTessVertex(Tess, @DblVector, Items[I].AsAddress);
+          gluTessVertex(Tess, DblVector, Items[I].AsAddress);
         end;
       end;
     end
@@ -615,7 +614,7 @@ begin
           SplinePos := AllocNewVertex;
           Spline.SplineAffineVector(I * F, SplinePos^);
           SetVector(DblVector, SplinePos^);
-          gluTessVertex(Tess, @DblVector, SplinePos);
+          gluTessVertex(Tess, DblVector, SplinePos);
         end;
       end
       else
@@ -625,7 +624,7 @@ begin
           SplinePos := AllocNewVertex;
           Spline.SplineAffineVector(I * F, SplinePos^);
           SetVector(DblVector, SplinePos^);
-          gluTessVertex(Tess, @DblVector, SplinePos);
+          gluTessVertex(Tess, DblVector, SplinePos);
         end;
       end;
       Spline.Free;

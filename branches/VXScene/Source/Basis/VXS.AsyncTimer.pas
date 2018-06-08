@@ -4,7 +4,6 @@
 {
   Asynchronous timer component (actual 1 ms resolution). 
   This component is based on ThreadedTimer by Carlos Barbosa. 
-   
 }
 unit VXS.AsyncTimer;
 
@@ -16,6 +15,7 @@ uses
   System.Classes,
   System.SysUtils,
   System.SyncObjs,
+
   VXS.CrossPlatform;
 
 
@@ -24,12 +24,12 @@ const
 
 type
 
-  { Asynchronous timer component (actual 1 ms resolution, if CPU fast enough).
-    Keep in mind timer resolution is obtained <i>in-between</i> events, but
+  (*  Asynchronous timer component (actual 1 ms resolution, if CPU fast enough). 
+    Keep in mind timer resolution is obtained in-between events, but
     events are not triggered every x ms. For instance if you set the interval to
     5 ms, and your Timer event takes 1 ms to complete, Timer events will actually
-    be triggered every 5+1=6 ms (that's why it's "asynchronous").
-    This component is based on ThreadedTimer by Carlos Barbosa. }
+    be triggered every 5+1=6 ms (that's why it's "asynchronous"). 
+    This component is based on ThreadedTimer by Carlos Barbosa. *)
   TVXAsyncTimer = class(TComponent)
   private
     FEnabled: Boolean;
@@ -43,11 +43,9 @@ type
     function GetThreadPriority: TThreadPriority;
     procedure SetThreadPriority(Value: TThreadPriority);
     procedure DoTimer;
-
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
   published
     property Enabled: Boolean read FEnabled write SetEnabled default False;
     property Interval: Word read GetInterval write SetInterval
@@ -62,7 +60,6 @@ implementation
 // ------------------------------------------------------------------
 
 type
-
   TTimerThread = class(TThread)
   private
     FOwner: TVXAsyncTimer;

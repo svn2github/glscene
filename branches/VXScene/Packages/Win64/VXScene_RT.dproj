@@ -190,7 +190,6 @@
         <DCCReference Include="..\..\Source\VXS.CompositeImage.pas"/>
         <DCCReference Include="..\..\Source\VXS.Console.pas"/>
         <DCCReference Include="..\..\Source\VXS.Context.pas"/>
-        <DCCReference Include="..\..\Source\VXS.Contouring.pas"/>
         <DCCReference Include="..\..\Source\VXS.Coordinates.pas"/>
         <DCCReference Include="..\..\Source\VXS.CrossPlatform.pas"/>
         <DCCReference Include="..\..\Source\VXS.CurvesAndSurfaces.pas"/>
@@ -267,6 +266,7 @@
         <DCCReference Include="..\..\Source\Shaders\VXS.HiddenLineShader.pas"/>
         <DCCReference Include="..\..\Source\VXS.ImageUtils.pas"/>
         <DCCReference Include="..\..\Source\VXS.Imposter.pas"/>
+        <DCCReference Include="..\..\Source\VXS.Isolines.pas"/>
         <DCCReference Include="..\..\Source\VXS.Isosurface.pas"/>
         <DCCReference Include="..\..\Source\Basis\VXS.Joystick.pas"/>
         <DCCReference Include="..\..\Source\Basis\VXS.Keyboard.pas"/>
@@ -379,8 +379,8 @@
         <DCCReference Include="..\..\Source\VXS.Windows.pas"/>
         <DCCReference Include="..\..\Source\VXS.WindowsFont.pas"/>
         <DCCReference Include="..\..\Source\Basis\VXS.XCollection.pas"/>
-        <DCCReference Include="..\..\Source\Basis\VXS.Vulkan.pas"/>
         <DCCReference Include="..\..\Source\Basis\VXS.XOpenGL.pas"/>
+        <DCCReference Include="..\..\Source\Basis\VXS.Vulkan.pas"/>
         <DCCReference Include="..\..\Source\VXS.zBuffer.pas"/>
         <BuildConfiguration Include="Debug">
             <Key>Cfg_2</Key>

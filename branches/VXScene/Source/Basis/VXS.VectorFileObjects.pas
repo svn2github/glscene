@@ -12,13 +12,12 @@ interface
 {$I VXScene.inc}
 
 uses
-  Winapi.OpenGL,
-  Winapi.OpenGLext,
   System.Classes,
   System.Math,
   System.SysUtils,
   System.Types,
 
+  VXS.OpenGL,
   VXS.XOpenGL,
   VXS.Scene,
   VXS.VectorGeometry,
@@ -1308,9 +1307,9 @@ procedure RegisterVectorFileFormat(const aExtension, aDescription: string; AClas
 procedure UnregisterVectorFileClass(AClass: TVXVectorFileClass);
 
 var
-  vGLVectorFileObjectsAllocateMaterials: Boolean = True;
+  vVectorFileObjectsAllocateMaterials: Boolean = True;
   // Mrqzzz : Flag to avoid loading materials (useful for IDE Extentions or scene editors)
-  vGLVectorFileObjectsEnableVBOByDefault: Boolean = True;
+  vVectorFileObjectsEnableVBOByDefault: Boolean = True;
 
 // ===========================================================================
 implementation
@@ -1458,7 +1457,7 @@ begin
     end;
   end;
   if (k > 1) and (not formatsThatCanBeSaved) then
-    FmtStr(descriptions, '%s (%s)|%1:s|%s', [glsAllFilter, filters, descriptions]);
+    FmtStr(descriptions, '%s (%s)|%1:s|%s', [sAllFilter, filters, descriptions]);
 end;
 
 function TVXVectorFileFormatsList.FindExtByIndex(Index: Integer; formatsThatCanBeOpened: Boolean = True;
@@ -2798,7 +2797,7 @@ begin
   FTangentsTexCoordIndex := 1;
   FBinormalsTexCoordIndex := 2;
 
-  FUseVBO := vGLVectorFileObjectsEnableVBOByDefault;
+  FUseVBO := vVectorFileObjectsEnableVBOByDefault;
   inherited;
 end;
 

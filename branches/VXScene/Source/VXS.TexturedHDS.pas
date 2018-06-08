@@ -16,7 +16,6 @@
    WARNING: Only one base texture is mapped onto each terrain tile, so, make
    sure your texture edges are alligned to height tile edges, or gaps will show.
    (Of course you can still multitexture in a detail texture too.)
-
 }
 
 unit VXS.TexturedHDS;
@@ -26,6 +25,7 @@ interface
 {$I VXScene.inc}
 
 uses
+  System.Types,
   System.Classes,
 
   VXS.VectorTypes,
@@ -50,7 +50,7 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure StartPreparingData(HeightData: TVXHeightData); override;
-    procedure MarkDirty(const area: TVXRect); override;
+    procedure MarkDirty(const area: TRect); override;
   published
     property MaxPoolSize;
     property OnStartPreparingData: TStartPreparingDataEvent
@@ -91,7 +91,7 @@ begin
   inherited Destroy;
 end;
 
-procedure TVXTexturedHDS.MarkDirty(const area: TVXRect);
+procedure TVXTexturedHDS.MarkDirty(const area: TRect);
 begin
   inherited;
   if Assigned(FOnMarkDirty) then

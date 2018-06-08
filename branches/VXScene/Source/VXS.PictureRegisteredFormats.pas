@@ -28,17 +28,11 @@ function GraphicClassForExtension(const anExtension: string): TGraphicClass;
 procedure HackTPictureRegisteredFormats(destList: TStrings);
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 type
   PInteger = ^integer;
-
-// GraphicClassForExtension
 
 function GraphicClassForExtension(const anExtension: string): TGraphicClass;
 var

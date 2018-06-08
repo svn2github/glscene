@@ -31,7 +31,8 @@ interface
 {$I VXScene.inc}
 
 uses
-  System.SysUtils, 
+  System.Types,
+  System.SysUtils,
   System.Classes, 
   System.UITypes,
   FMX.Graphics,
@@ -270,7 +271,7 @@ var
   FromBitMap: TBitmap;
   ToBitMap: TBitmap;
   X, Y: Integer;
-  Rect: TVXRect;
+  Rect: TRect;
 begin
 
   FromBitMap := nil;

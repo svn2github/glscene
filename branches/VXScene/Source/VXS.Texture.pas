@@ -11,8 +11,6 @@ interface
 {$I VXScene.inc}
 
 uses
-  Winapi.OpenGL,
-  Winapi.OpenGLext,
   System.Classes,
   System.SysUtils,
   System.Types,
@@ -919,7 +917,6 @@ end;
 // WARNING: This Creates a new bitmap. Remember to free it, to prevent leaks.
 // If possible, rather use AssignToBitmap.
 //
-
 function TVXTextureImage.AsBitmap: TBitmap;
 begin
   result := self.GetBitmap32.Create32BitsBitmap;
@@ -1471,7 +1468,7 @@ begin
         if not FAlreadyWarnedAboutMissingFile then
         begin
           FAlreadyWarnedAboutMissingFile := True;
-          GLOKMessageBox(Format(strFailedOpenFileFromCurrentDir, [PictureFileName, GetCurrentDir]),strError);
+          MessageBoxOK(Format(strFailedOpenFileFromCurrentDir, [PictureFileName, GetCurrentDir]),strError);
         end;
       end;
       Result := inherited GetBitmap32;

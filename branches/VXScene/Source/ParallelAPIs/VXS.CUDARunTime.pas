@@ -46,13 +46,13 @@ interface
 uses
 {$IFDEF MSWINDOWS}
   Winapi.Windows,
-  Winapi.OpenGL,
-  Winapi.OpenGLext,
 {$ENDIF}
   System.SysUtils,
   FMX.Dialogs,
   CL,
   CL_Platform,
+
+  VXS.OpenGL,
   VXS.CUDAAPI,
   VXS.CrossPlatform;
 

@@ -9,11 +9,15 @@ interface
 {$I VXScene.inc}
 
 uses
-  Winapi.OpenGL,
-  System.SysUtils, System.Classes,
-  
-  VXS.Context, VXS.VectorLists, VXS.VectorGeometry,
-  VXS.BaseClasses, VXS.PersistentClasses;
+  System.SysUtils,
+  System.Classes,
+
+  VXS.OpenGL,
+  VXS.Context,
+  VXS.VectorLists,
+  VXS.VectorGeometry,
+  VXS.BaseClasses,
+  VXS.PersistentClasses;
 
  const
   MAX_OBJECT_STACK_DEPTH = 512;
@@ -31,23 +35,17 @@ type
 
   TPickSortType = (psDefault, psName, psMinDepth, psMaxDepth);
 
-  // TVXPickList
-  //
-  { List class for object picking. 
+  { List class for object picking.
      This list is used to store the results of a PickObjects call. }
   TVXPickList = class(TPersistentObjectList)
   private
-    
     function GetFar(aValue: Integer): Single;
     function GetHit(aValue: Integer): TObject;
     function GetNear(aValue: Integer): Single;
     function GetSubObjects(aValue: Integer): TPickSubObjects;
   protected
-    
   public
-    
     constructor Create(aSortType: TPickSortType); reintroduce;
-
     procedure AddHit(obj: TObject; const subObj: TPickSubObjects;
       zMin, zMax: Single);
     procedure Clear; override;
@@ -57,9 +55,6 @@ type
     property NearDistance[Index: Integer]: Single read GetNear;
     property SubObjects[Index: Integer]: TPickSubObjects read GetSubObjects;
   end;
-
-  // TVXBaseSelectTechnique
-  //
 
   TVXBaseSelectTechnique = class
   protected
@@ -91,9 +86,6 @@ type
 
   TVXBaseSelectTechniqueClass = class of TVXBaseSelectTechnique;
 
-  // TVXSelectRenderModeTechnique
-  //
-
   TVXSelectRenderModeTechnique = class(TVXBaseSelectTechnique)
   private
     FBuffer: array of Cardinal;
@@ -115,7 +107,9 @@ type
 
 function GetBestSelectorClass: TVXBaseSelectTechniqueClass;
 
+//------------------------------------------------
 implementation
+//------------------------------------------------
 
 function GetBestSelectorClass: TVXBaseSelectTechniqueClass;
 begin

@@ -15,11 +15,9 @@ interface
 {$I VXScene.inc}
 
 uses
-  Winapi.OpenGL,
-  Winapi.OpenGLext,
   System.Classes,
 
-  VXS.OpenGL1x,
+  VXS.OpenGL,
   VXS.Material,
   VXS.CrossPlatform, 
   VXS.Scene, 
@@ -43,16 +41,12 @@ type
     procedure SetColor(const v: TVXColor);
     procedure SetWidth(const Value: Single);
     procedure SetForceMaterial(v: boolean);
-
   public
-    
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
     procedure Apply(var rci: TVXRenderContextInfo);
     procedure UnApply(var rci: TVXRenderContextInfo);
-
   published
-    
     property Width: Single read FWidth write SetWidth;
     property Color: TVXColor read FColor write SetColor;
     property Pattern: GLushort read FPattern write SetPattern default $FFFF;
@@ -65,35 +59,25 @@ type
   TVXHiddenLineShader = class(TVXShader)
   private
     FPassCount: integer;
-
     FLineSmooth: Boolean;
     FSolid: Boolean;
-
     FBackGroundColor: TVXColor;
-
     FFrontLine: TVXLineSettings;
     FBackLine: TVXLineSettings;
-
     FLighting: Boolean;
     FShadeModel: TVXShadeModel;
-
     procedure SetlineSmooth(v: boolean);
     procedure SetSolid(v: boolean);
     procedure SetBackgroundColor(AColor: TVXColor);
     procedure SetLighting(v: boolean);
     procedure SetShadeModel(const val: TVXShadeModel);
-
   protected
     procedure DoApply(var rci: TVXRenderContextInfo; Sender: TObject); override;
     function DoUnApply(var rci: TVXRenderContextInfo): Boolean; override;
-
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
   published
-    
     property FrontLine: TVXLineSettings read FFrontLine write FFrontLine;
     property BackLine: TVXLineSettings read FBackLine write FBackLine;
     { Line smoothing control }
@@ -106,14 +90,12 @@ type
       SetBackgroundColor;
     { When Solid is True, determines if lighting or background color is used. }
     property SurfaceLit: Boolean read FLighting write SetLighting default true;
-    { Shade model. 
+    { Shade model.
        Default is "Smooth".  }
     property ShadeModel: TVXShadeModel read FShadeModel write SetShadeModel
       default smDefault;
   end;
 
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 implementation
 // ------------------
@@ -186,9 +168,6 @@ begin
     rci.ignoreMaterials := IgnoreMatSave;
 end;
 
-// SetForceMaterial
-//
-
 procedure TVXLineSettings.SetForceMaterial(v: boolean);
 begin
   if FForceMaterial <> v then
@@ -224,9 +203,6 @@ begin
   FBackgroundColor.Free;
   inherited;
 end;
-
-// DoApply
-//
 
 procedure TVXHiddenLineShader.DoApply(var rci: TVXRenderContextInfo; Sender:
   TObject);
@@ -269,9 +245,6 @@ begin
 
   rci.VXStates.SetPolygonOffset(1, 2);
 end;
-
-// DoUnApply
-//
 
 function TVXHiddenLineShader.DoUnApply(var rci: TVXRenderContextInfo): Boolean;
 

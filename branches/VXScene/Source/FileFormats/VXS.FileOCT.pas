@@ -40,11 +40,11 @@ type
   end;
 
 var
-  vGLFileOCTLightmapBrightness: single = 1;
+  vFileOCTLightmapBrightness: single = 1;
   // Mrqzzz : scaling factor, 1.0 = unchanged
-  vGLFileOCTLightmapGammaCorrection: single = 1;
+  vFileOCTLightmapGammaCorrection: single = 1;
   // Mrqzzz : scaling factor, 1.0 = unchanged
-  vGLFileOCTAllocateMaterials: boolean = True;
+  vFileOCTAllocateMaterials: boolean = True;
 // Mrqzzz : Flag to avoid loading materials (useful for IDE Extensions or scene editors)
 
 // ------------------------------------------------------------------
@@ -80,7 +80,7 @@ begin
     mo.Mode := momFaceGroups;
 
     lightmapLib := Owner.LightmapLibrary;
-    if (Assigned(lightmapLib)) and (vGLFileOCTAllocateMaterials) then
+    if (Assigned(lightmapLib)) and (vFileOCTAllocateMaterials) then
     begin
       // import lightmaps
       n := oct.Header.numLightmaps;
@@ -94,15 +94,15 @@ begin
         begin
           octLightmap := @oct.Lightmaps[i];
           // Brightness correction
-          if vGLFileOCTLightmapBrightness <> 1.0 then
+          if vFileOCTLightmapBrightness <> 1.0 then
             BrightenRGBArray(@octLightmap.map,
               lightmapBmp.Width * lightmapBmp.Height,
-              vGLFileOCTLightmapBrightness);
+              vFileOCTLightmapBrightness);
           // Gamma correction
-          if vGLFileOCTLightmapGammaCorrection <> 1.0 then
+          if vFileOCTLightmapGammaCorrection <> 1.0 then
             GammaCorrectRGBArray(@octLightmap.map,
               lightmapBmp.Width * lightmapBmp.Height,
-              vGLFileOCTLightmapGammaCorrection);
+              vFileOCTLightmapGammaCorrection);
           // convert RAW RGB to BMP
           for y := 0 to 127 do
           { TODO : E2003 Undeclared identifier: 'ScanLine' }
@@ -145,7 +145,7 @@ begin
       fg := TFGVertexIndexList.CreateOwned(mo.FaceGroups);
       fg.Mode := fgmmTriangleFan;
       fg.VertexIndices.AddSerie(octFace.start, 1, octFace.num);
-      if (Assigned(lightmapLib)) and (vGLFileOCTAllocateMaterials) then
+      if (Assigned(lightmapLib)) and (vFileOCTAllocateMaterials) then
         fg.LightMapIndex := octFace.lid;
     end;
 

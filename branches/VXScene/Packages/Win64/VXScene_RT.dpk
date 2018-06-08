@@ -81,7 +81,6 @@ contains
   VXS.CompositeImage in '..\..\Source\VXS.CompositeImage.pas',
   VXS.Console in '..\..\Source\VXS.Console.pas',
   VXS.Context in '..\..\Source\VXS.Context.pas',
-  VXS.Contouring in '..\..\Source\VXS.Contouring.pas',
   VXS.Coordinates in '..\..\Source\VXS.Coordinates.pas',
   VXS.CrossPlatform in '..\..\Source\VXS.CrossPlatform.pas',
   VXS.CurvesAndSurfaces in '..\..\Source\VXS.CurvesAndSurfaces.pas',
@@ -158,6 +157,7 @@ contains
   VXS.HiddenLineShader in '..\..\Source\Shaders\VXS.HiddenLineShader.pas',
   VXS.ImageUtils in '..\..\Source\VXS.ImageUtils.pas',
   VXS.Imposter in '..\..\Source\VXS.Imposter.pas',
+  VXS.Isolines in '..\..\Source\VXS.Isolines.pas',
   VXS.Isosurface in '..\..\Source\VXS.Isosurface.pas',
   VXS.Joystick in '..\..\Source\Basis\VXS.Joystick.pas',
   VXS.Keyboard in '..\..\Source\Basis\VXS.Keyboard.pas',
@@ -270,8 +270,8 @@ contains
   VXS.Windows in '..\..\Source\VXS.Windows.pas',
   VXS.WindowsFont in '..\..\Source\VXS.WindowsFont.pas',
   VXS.XCollection in '..\..\Source\Basis\VXS.XCollection.pas',
-  VXS.Vulkan in '..\..\Source\Basis\VXS.Vulkan.pas',
   VXS.XOpenGL in '..\..\Source\Basis\VXS.XOpenGL.pas',
+  VXS.Vulkan in '..\..\Source\Basis\VXS.Vulkan.pas',
   VXS.zBuffer in '..\..\Source\VXS.zBuffer.pas';
 
 end.

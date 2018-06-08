@@ -3,7 +3,6 @@
 //
 {
   Silhouette classes for VKBaseMesh and FaceGroups.
-  The history is logged in a former GLS version of the unit.
 }
 
 unit VXS.BaseMeshSilhouette;
@@ -37,24 +36,25 @@ type
 
   TVXBaseMeshConnectivity = class(TBaseConnectivity)
   private
-    FVKBaseMesh: TVXBaseMesh;
+    FBaseMesh: TVXBaseMesh;
     FFaceGroupConnectivityList: TList;
     function GetFaceGroupConnectivity(i: integer): TVXFaceGroupConnectivity;
     function GetConnectivityCount: integer;
-    procedure SetVKBaseMesh(const Value: TVXBaseMesh);
+    procedure SetBaseMesh(const Value: TVXBaseMesh);
   protected
     function GetEdgeCount: integer; override;
     function GetFaceCount: integer; override;
   public
     property ConnectivityCount: integer read GetConnectivityCount;
     property FaceGroupConnectivity[i: integer]: TVXFaceGroupConnectivity read GetFaceGroupConnectivity;
-    property VKBaseMesh: TVXBaseMesh read FVKBaseMesh write SetVKBaseMesh;
+    property BaseMesh: TVXBaseMesh read FBaseMesh write SetBaseMesh;
     procedure Clear(SaveFaceGroupConnectivity: boolean);
     { Builds the connectivity information. }
     procedure RebuildEdgeList;
-    procedure CreateSilhouette(const silhouetteParameters: TVXSilhouetteParameters; var aSilhouette: TVXSilhouette; AddToSilhouette: boolean); override;
+    procedure CreateSilhouette(const silhouetteParameters: TVXSilhouetteParameters; var aSilhouette: TVXSilhouette; 
+	  AddToSilhouette: boolean); 
     constructor Create(APrecomputeFaceNormal: boolean); override;
-    constructor CreateFromMesh(aVKBaseMesh: TVXBaseMesh);
+    constructor CreateFromMesh(aBaseMesh: TVXBaseMesh);
     destructor Destroy; override;
   end;
 
@@ -208,13 +208,13 @@ constructor TVXBaseMeshConnectivity.Create(APrecomputeFaceNormal: boolean);
     inherited;
   end;
 
-constructor TVXBaseMeshConnectivity.CreateFromMesh(aVKBaseMesh: TVXBaseMesh);
+constructor TVXBaseMeshConnectivity.CreateFromMesh(aBaseMesh: TVXBaseMesh);
   begin
-    Create(not(aVKBaseMesh is TVXActor));
-    VKBaseMesh := aVKBaseMesh;
+    Create(not(aBaseMesh is TVXActor));
+    BaseMesh := aBaseMesh;
   end;
 
-procedure TVXBaseMeshConnectivity.SetVKBaseMesh(const Value: TVXBaseMesh);
+procedure TVXBaseMeshConnectivity.SetBaseMesh(const Value: TVXBaseMesh);
   var
     i: integer;
     MO: TVXMeshObject;
@@ -222,11 +222,11 @@ procedure TVXBaseMeshConnectivity.SetVKBaseMesh(const Value: TVXBaseMesh);
   begin
     Clear(false);
 
-    FVKBaseMesh := Value;
+    FBaseMesh := Value;
 
     // Only precompute normals if the basemesh isn't an actor (because they change)
     FPrecomputeFaceNormal := not(Value is TVXActor);
-    FVKBaseMesh := Value;
+    FBaseMesh := Value;
 
     for i := 0 to Value.MeshObjects.Count - 1 do
     begin
@@ -242,18 +242,17 @@ procedure TVXBaseMeshConnectivity.SetVKBaseMesh(const Value: TVXBaseMesh);
   end;
 
 procedure TVXBaseMeshConnectivity.CreateSilhouette(const silhouetteParameters: TVXSilhouetteParameters; var aSilhouette: TVXSilhouette; AddToSilhouette: boolean);
+var
+  i: integer;
+begin
+  if aSilhouette = nil then
+    aSilhouette := TVXSilhouette.Create
+  else
+    aSilhouette.Flush;
 
-  var
-    i: integer;
-  begin
-    if aSilhouette = nil then
-      aSilhouette := TVXSilhouette.Create
-    else
-      aSilhouette.Flush;
-
-    for i := 0 to ConnectivityCount - 1 do
-      FaceGroupConnectivity[i].CreateSilhouette(silhouetteParameters, aSilhouette, true);
-  end;
+  for i := 0 to ConnectivityCount - 1 do
+    FaceGroupConnectivity[i].CreateSilhouette(silhouetteParameters, aSilhouette, true);
+end;
 
 destructor TVXBaseMeshConnectivity.Destroy;
   begin

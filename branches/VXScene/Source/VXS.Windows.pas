@@ -12,14 +12,13 @@ interface
 {$I VXScene.inc}
 
 uses
-  Winapi.OpenGL,
-  Winapi.OpenGLext,
   System.Classes,
   System.SysUtils,
   System.Math,
   System.UITypes,
   FMX.Graphics,
 
+  VXS.OpenGL,
   VXS.Scene,
   VXS.PersistentClasses,
   VXS.Strings,
@@ -1089,7 +1088,7 @@ begin
         FReBuildGui);
     except
       on E: Exception do
-        GLOKMessageBox(E.Message,
+        MessageBoxOK(E.Message,
           'Exception in GuiComponents InternalRender function');
     end;
   end;
@@ -1910,7 +1909,7 @@ begin
           FReBuildGui);
     except
       on E: Exception do
-        GLOKMessageBox(E.Message,
+        MessageBoxOK(E.Message,
           'Exception in TVXCustomControl InternalRender function');
     end;
     X1 := FRenderStatus[GLAlCenter].X1;
@@ -2109,7 +2108,7 @@ begin
           FReBuildGui);
     except
       on E: Exception do
-        GLOKMessageBox(E.Message,
+        MessageBoxOK(E.Message,
           'Exception in GuiComponents InternalRender function');
     end;
   end;
@@ -3367,7 +3366,7 @@ begin
         FReBuildGui);
     except
       on E: Exception do
-        GLOKMessageBox(E.Message,
+        MessageBoxOK(E.Message,
           'Exception in GuiComponents InternalRender function');
     end;
   end;
@@ -3404,7 +3403,7 @@ begin
       end;
     except
       on E: Exception do
-        GLOKMessageBox(E.Message,
+        MessageBoxOK(E.Message,
           'Exception in GuiComponents InternalRender function');
     end;
   end;
@@ -3761,7 +3760,7 @@ begin
       ClientRect.Height := Round(FRenderStatus[GLAlCenter].Y2);
     except
       on E: Exception do
-        GLOKMessageBox(E.Message,
+        MessageBoxOK(E.Message,
           'Exception in GuiComponents InternalRender function');
     end;
   end

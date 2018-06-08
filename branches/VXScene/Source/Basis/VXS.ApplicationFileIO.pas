@@ -3,9 +3,9 @@
 //
 {
    Components and functions that abstract file I/O access for an application.
-   Allows re-routing file reads to reads from a single archive file f.i.
-   The history is logged in a former version of the unit.
+   Allows re-routing file reads to reads from a single archive file f.i. 
 }
+
 unit VXS.ApplicationFileIO;
 
 interface
@@ -28,7 +28,7 @@ const
 
 type
 
-  TVXSApplicationResource = (
+  TVXApplicationResource = (
     aresNone,
     aresSplash,
     aresTexture,
@@ -39,13 +39,13 @@ type
 
   TAFIOCreateFileStream = function(const fileName: string; mode: Word): TStream;
   TAFIOFileStreamExists = function(const fileName: string): Boolean;
-  TAFIOFileStreamEvent = procedure (const fileName : String; mode : Word;var stream : TStream) of object;
+  TAFIOFileStreamEvent = procedure (const fileName : String; mode : Word; var Stream : TStream) of object;
   TAFIOFileStreamExistsEvent = function(const fileName: string): Boolean of object;
 
-    { Allows specifying a custom behaviour for VXS.ApplicationFileIO's CreateFileStream. 
+    { Allows specifying a custom behaviour for CreateFileStream. 
        The component should be considered a helper only, you can directly specify
        a function via the vAFIOCreateFileStream variable. 
-       If multiple TVXApplicationFileIO components exist in the application,
+       If multiple ApplicationFileIO components exist in the application,
        the last one created will be the active one. }
   TVXApplicationFileIO = class(TComponent)
   private
@@ -55,10 +55,10 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
   published
-      { Event that allows you to specify a stream for the file. 
-         Destruction of the stream is at the discretion of the code that
-         invoked CreateFileStream. Return nil to let the default mechanism
-         take place (ie. attempt a regular file system access). }
+    { Event that allows you to specify a stream for the file.
+      Destruction of the stream is at the discretion of the code that
+      invoked CreateFileStream. Return nil to let the default mechanism
+      take place (ie. attempt a regular file system access). }
     property OnFileStream: TAFIOFileStreamEvent read FOnFileStream write FOnFileStream;
     { Event that allows you to specify if a stream for the file exists.  }
     property OnFileStreamExists: TAFIOFileStreamExistsEvent read FOnFileStreamExists write FOnFileStreamExists;
@@ -67,13 +67,13 @@ type
   TVXDataFileCapability = (dfcRead, dfcWrite);
   TVXDataFileCapabilities = set of TVXDataFileCapability;
 
-  { Abstract base class for data file formats interfaces. 
-     This class declares base file-related behaviours, ie. ability to load/save
-     from a file or a stream. 
-     It is highly recommended to overload ONLY the stream based methods, as the
-     file-based one just call these, and stream-based behaviours allow for more
-     enhancement (such as other I/O abilities, compression, cacheing, etc.)
-     to this class, without the need to rewrite subclasses. }
+  { Abstract base class for data file formats interfaces.
+    This class declares base file-related behaviours, ie. ability to load/save
+    from a file or a stream.
+    It is highly recommended to overload ONLY the stream based methods, as the
+    file-based one just call these, and stream-based behaviours allow for more
+    enhancement (such as other I/O abilities, compression, cacheing, etc.)
+    to this class, without the need to rewrite subclasses. }
   TVXDataFile = class(TVXUpdateAbleObject)
   private
     FResourceName: string;
@@ -98,23 +98,23 @@ type
   end;
 
   TVXDataFileClass = class of TVXDataFile;
-  TVXSResourceStream = TResourceStream;
+  TVXResourceStream = TResourceStream;
 
 // Returns true if an ApplicationFileIO has been defined
 function ApplicationFileIODefined: Boolean;
 
-{ Creates a file stream corresponding to the fileName. 
-   If the file does not exists, an exception will be triggered. 
+(*Creates a file stream corresponding to the fileName.
+   If the file does not exists, an exception will be triggered.
    Default mechanism creates a regular TFileStream, the 'mode' parameter
-   is similar to the one for TFileStream. }
+   is similar to the one for TFileStream. *)
 function CreateFileStream(const fileName: string;
   mode: Word = fmOpenRead + fmShareDenyNone): TStream;
-{ Queries is a file stream corresponding to the fileName exists.  }
+// Queries is a file stream corresponding to the fileName exists.
 function FileStreamExists(const fileName: string): Boolean;
 
-function CreateResourceStream(const ResName: string; ResType: PChar): TVXSResourceStream;
+function CreateResourceStream(const ResName: string; ResType: PChar): TVXResourceStream;
 
-function StrToGLSResType(const AStrRes: string): TVXSApplicationResource;
+function StrToGLSResType(const AStrRes: string): TVXApplicationResource;
 
 var
   vAFIOCreateFileStream: TAFIOCreateFileStream = nil;
@@ -143,10 +143,13 @@ begin
       Result:=nil;
       if Assigned(vAFIO) and Assigned(vAFIO.FOnFileStream) then
          vAFIO.FOnFileStream(fileName, mode, Result);
-      if not Assigned(Result) then begin
+      if not Assigned(Result) then 
+	  begin
          if ((mode and fmCreate)=fmCreate) or FileExists(fileName) then
-            Result:=TFileStream.Create(fileName, mode)
-         else raise Exception.Create('File not found: "'+fileName+'"');
+            Result := TFileStream.Create(fileName, mode)
+         else
+         raise
+           Exception.Create('File not found: "'+fileName+'"');
       end;
    end;
 end;
@@ -164,7 +167,7 @@ begin
   end;
 end;
 
-function CreateResourceStream(const ResName: string; ResType: PChar): TVXSResourceStream;
+function CreateResourceStream(const ResName: string; ResType: PChar): TVXResourceStream;
 var
   InfoBlock: HRSRC;
 begin
@@ -237,7 +240,7 @@ end;
 
 procedure TVXDataFile.LoadFromStream(stream: TStream);
 begin
-  Assert(False, 'Imaport for ' + ClassName + ' to ' + stream.ClassName + ' not available.');
+  Assert(False, 'Import for ' + ClassName + ' to ' + stream.ClassName + ' not available.');
 end;
 
 procedure TVXDataFile.SaveToStream(stream: TStream);
@@ -254,7 +257,7 @@ begin
   FResourceName := AName;
 end;
 
-function StrToGLSResType(const AStrRes: string): TVXSApplicationResource;
+function StrToGLSResType(const AStrRes: string): TVXApplicationResource;
 begin
   if AStrRes = '[SAMPLERS]' then
   begin

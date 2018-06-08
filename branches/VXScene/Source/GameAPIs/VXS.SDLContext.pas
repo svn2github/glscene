@@ -18,7 +18,7 @@ uses
   System.Classes,
   System.SysUtils,
 
-  VXS.OpenGL1x,
+  VXS.OpenGL,
   VXS.Scene,
   VXS.CrossPlatform,
   VXS.XOpenGL,

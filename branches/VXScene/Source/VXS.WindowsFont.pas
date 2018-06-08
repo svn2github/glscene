@@ -22,6 +22,7 @@ uses
   System.UITypes,
   FMX.Graphics,
 
+  VXS.OpenGL,
   VXS.Scene,
   VXS.Texture,
   VXS.BitmapFont,
@@ -30,7 +31,6 @@ uses
   VXS.CrossPlatform,
   VXS.Utils,
   VXS.VectorGeometry,
-  Winapi.OpenGL, Winapi.OpenGLext, 
   VXS.ApplicationFileIO,
   VXS.VectorTypes;
 
@@ -179,7 +179,7 @@ procedure TVXWindowsBitmapFont.LoadWindowsFont;
     PaddedHeight : integer;
     buffer : array[0..2] of WideChar;
     p : PCharInfo;
-    r : TVXRect;
+    r : TRect;
   begin
     buffer[1] := WideChar(#32);
     buffer[2] := WideChar(#0);

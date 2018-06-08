@@ -30,8 +30,6 @@ type
   // window-to-screen fitting
   TWindowFitting = (wfDefault, wfFitWindowToScreen, wfFitScreenToWindow);
 
-  // TVXDisplayOptions
-  //
   TVXDisplayOptions = class(TPersistent)
   private
     FFullScreen: Boolean;
@@ -65,7 +63,7 @@ function GetIndexFromResolution(XRes, YRes, BPP: Integer): TResolution;
 
 procedure ReadVideoModes;
 
-// : Changes to the video mode given by 'Index'
+// Changes to the video mode given by 'Index'
 function SetFullscreenMode(modeIndex: TResolution;
   displayFrequency: Integer = 0): Boolean;
 
@@ -75,7 +73,7 @@ procedure RestoreDefaultMode;
 
 procedure GLShowCursor(AShow: Boolean);
 procedure GLSetCursorPos(AScreenX, AScreenY: Integer);
-procedure GLGetCursorPos(var point: TVXPoint);
+procedure GLGetCursorPos(var point: TPoint);
 function GLGetScreenWidth: Integer;
 function GLGetScreenHeight: Integer;
 
@@ -85,11 +83,7 @@ var
   vVideoModes: array of TVideoMode;
 
 // ------------------------------------------------------------------------------
-// ------------------------------------------------------------------------------
-// ------------------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------------------
-// ------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------
 
 
@@ -113,8 +107,6 @@ const
     (Width: 512; Height: 384; ColorDepth: 16), (Width: 512; Height: 384;
     ColorDepth: 24), (Width: 512; Height: 384; ColorDepth: 32));
 
-  // Assign
-  //
 procedure TVXDisplayOptions.Assign(Source: TPersistent);
 begin
   if Source is TVXDisplayOptions then
@@ -128,8 +120,6 @@ begin
     inherited Assign(Source);
 end;
 
-// GetIndexFromResolution
-//
 function GetIndexFromResolution(XRes, YRes, BPP: Integer): TResolution;
 
 // Determines the index of a screen resolution nearest to the
@@ -274,8 +264,6 @@ begin
   end;
 end;
 
-// SetFullscreenMode
-//
 function SetFullscreenMode(modeIndex: TResolution;
   displayFrequency: Integer = 0): Boolean;
 var
@@ -304,8 +292,6 @@ begin
     vCurrentVideoMode := modeIndex;
 end;
 
-// ReadScreenImage
-//
 procedure ReadScreenImage(Dest: HDC; DestLeft, DestTop: Integer;
   SrcRect: TRectangle);
 var
@@ -321,8 +307,6 @@ begin
   end;
 end;
 
-// RestoreDefaultMode
-//
 procedure RestoreDefaultMode;
 var
   t: PDevMode;
@@ -341,7 +325,7 @@ begin
   SetCursorPos(AScreenX, AScreenY);
 end;
 
-procedure GLGetCursorPos(var point: TVXPoint);
+procedure GLGetCursorPos(var point: TPoint);
 begin
   GetCursorPos(point);
 end;
@@ -357,12 +341,7 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 finalization

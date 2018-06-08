@@ -17,7 +17,7 @@ interface
 uses
   System.Classes,
 
-  Winapi.OpenGL, Winapi.OpenGLext, 
+  VXS.OpenGL,
   VXS.Context,
   VXS.Texture,
   VXS.Graphics,
@@ -25,8 +25,6 @@ uses
 
 type
 
-  // TVXMultisampleImage
-  //
   TVXMultisampleImage = class(TVXTextureImage)
   private
     
@@ -46,26 +44,19 @@ type
     function GetDepth: Integer; override;
     function GetTextureTarget: TVXTextureTarget; override;
   public
-    
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
-
     procedure Assign(Source: TPersistent); override;
-
     class function IsSelfLoading: Boolean; override;
     procedure LoadTexture(AInternalFormat: TVXInternalFormat); override;
     function GetBitmap32: TVXBitmap32; override;
     procedure ReleaseBitmap32; override;
-
     procedure SaveToFile(const fileName: string); override;
     procedure LoadFromFile(const fileName: string); override;
     class function FriendlyName: string; override;
     class function FriendlyDescription: string; override;
-
     property NativeTextureTarget;
-
   published
-    
     { Width of the blank image (for memory allocation). }
     property Width: Integer read GetWidth write SetWidth default 256;
     { Width of the blank image (for memory allocation). }
@@ -83,11 +74,6 @@ implementation
 // ------------------ TVXMultisampleImage ------------------
 // ------------------
 
-{$IFDEF VXS_REGIONS}{$REGION 'TVXMultisampleImage'}{$ENDIF}
-
-// Create
-//
-
 constructor TVXMultisampleImage.Create(AOwner: TPersistent);
 begin
   inherited;
@@ -97,17 +83,11 @@ begin
   FSamplesCount := 0;
 end;
 
-// Destroy
-//
-
 destructor TVXMultisampleImage.Destroy;
 begin
   ReleaseBitmap32;
   inherited Destroy;
 end;
-
-// Assign
-//
 
 procedure TVXMultisampleImage.Assign(Source: TPersistent);
 begin
@@ -128,9 +108,6 @@ begin
     inherited;
 end;
 
-// SetWidth
-//
-
 procedure TVXMultisampleImage.SetWidth(val: Integer);
 begin
   if val <> FWidth then
@@ -142,16 +119,10 @@ begin
   end;
 end;
 
-// GetWidth
-//
-
 function TVXMultisampleImage.GetWidth: Integer;
 begin
   Result := FWidth;
 end;
-
-// SetHeight
-//
 
 procedure TVXMultisampleImage.SetHeight(val: Integer);
 begin
@@ -164,24 +135,15 @@ begin
   end;
 end;
 
-// GetHeight
-//
-
 function TVXMultisampleImage.GetHeight: Integer;
 begin
   Result := FHeight;
 end;
 
-// GetDepth
-//
-
 function TVXMultisampleImage.GetDepth: Integer;
 begin
   Result := FDepth;
 end;
-
-// SetHeight
-//
 
 procedure TVXMultisampleImage.SetDepth(val: Integer);
 begin
@@ -193,9 +155,6 @@ begin
     Invalidate;
   end;
 end;
-
-// SetSamplesCount
-//
 
 procedure TVXMultisampleImage.SetSamplesCount(val: Integer);
 begin
@@ -209,9 +168,6 @@ begin
   end;
 end;
 
-// SetFixedSamplesLocation
-//
-
 procedure TVXMultisampleImage.SetFixedSamplesLocation(val: GLboolean);
 begin
   if val <> FFixedSamplesLocation then
@@ -220,9 +176,6 @@ begin
     Invalidate;
   end;
 end;
-
-// GetBitmap32
-//
 
 function TVXMultisampleImage.GetBitmap32: TVXBitmap32;
 begin
@@ -236,47 +189,29 @@ begin
   Result := FBitmap;
 end;
 
-// ReleaseBitmap32
-//
-
 procedure TVXMultisampleImage.ReleaseBitmap32;
 begin
   FBitmap.Free;
   FBitmap := nil;
 end;
 
-// SaveToFile
-//
-
 procedure TVXMultisampleImage.SaveToFile(const fileName: string);
 begin
 end;
 
-// LoadFromFile
-//
-
 procedure TVXMultisampleImage.LoadFromFile(const fileName: string);
 begin
 end;
-
-// FriendlyName
-//
 
 class function TVXMultisampleImage.FriendlyName: string;
 begin
   Result := 'Multisample Image';
 end;
 
-// FriendlyDescription
-//
-
 class function TVXMultisampleImage.FriendlyDescription: string;
 begin
   Result := 'Image for rendering to texture with antialiasing';
 end;
-
-// GetTextureTarget
-//
 
 function TVXMultisampleImage.GetTextureTarget: TVXTextureTarget;
 begin
@@ -343,7 +278,6 @@ begin
   end;
 end;
 
-{$IFDEF VXS_REGIONS}{$ENDREGION}{$ENDIF}
 
 initialization
   RegisterTextureImageClass(TVXMultisampleImage);

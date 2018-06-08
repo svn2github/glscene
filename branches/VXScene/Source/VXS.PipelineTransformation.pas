@@ -9,9 +9,10 @@ interface
 {$I VXScene.inc}
 
 uses
-  Winapi.OpenGL,
   System.Sysutils,
   FMX.Dialogs,
+
+  VXS.OpenGL,
   VXS.VectorGeometry,
   VXS.VectorTypes;
 

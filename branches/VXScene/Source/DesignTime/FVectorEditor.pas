@@ -62,7 +62,7 @@ type
   end;
 
 var
-  vGLVectorEditorForm: TVXVectorEditorForm;
+  vVectorEditorForm: TVXVectorEditorForm;
 
 function GLVectorEditorForm: TVXVectorEditorForm;
 procedure ReleaseVectorEditorForm;
@@ -74,17 +74,17 @@ implementation
 
 function GLVectorEditorForm: TVXVectorEditorForm;
 begin
-  if not Assigned(vGLVectorEditorForm) then
-    vGLVectorEditorForm := TVXVectorEditorForm.Create(nil);
-  Result := vGLVectorEditorForm;
+  if not Assigned(vVectorEditorForm) then
+    vVectorEditorForm := TVXVectorEditorForm.Create(nil);
+  Result := vVectorEditorForm;
 end;
 
 procedure ReleaseVectorEditorForm;
 begin
-  if Assigned(vGLVectorEditorForm) then
+  if Assigned(vVectorEditorForm) then
   begin
-    vGLVectorEditorForm.Free;
-    vGLVectorEditorForm := nil;
+    vVectorEditorForm.Free;
+    vVectorEditorForm := nil;
   end;
 end;
 

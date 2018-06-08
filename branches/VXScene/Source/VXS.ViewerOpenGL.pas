@@ -13,8 +13,6 @@ interface
 
 uses
   WinApi.Windows,
-  WinApi.OpenGL,
-  WinApi.OpenGLext,
   System.Types,
   System.Classes,
   System.UITypes,

@@ -157,6 +157,7 @@ contains
   VXS.HiddenLineShader in '..\..\Source\Shaders\VXS.HiddenLineShader.pas',
   VXS.ImageUtils in '..\..\Source\VXS.ImageUtils.pas',
   VXS.Imposter in '..\..\Source\VXS.Imposter.pas',
+  VXS.Isolines in '..\..\Source\VXS.Isolines.pas',
   VXS.Isosurface in '..\..\Source\VXS.Isosurface.pas',
   VXS.Joystick in '..\..\Source\Basis\VXS.Joystick.pas',
   VXS.Keyboard in '..\..\Source\Basis\VXS.Keyboard.pas',
@@ -164,7 +165,6 @@ contains
   VXS.LinePFX in '..\..\Source\VXS.LinePFX.pas',
   VXS.Manager in '..\..\Source\VXS.Manager.pas',
   VXS.Material in '..\..\Source\VXS.Material.pas',
-  VXS.MaterialEx in '..\..\Source\VXS.MaterialEx.pas',
   VXS.MaterialMultiProxy in '..\..\Source\VXS.MaterialMultiProxy.pas',
   VXS.MaterialScript in '..\..\Source\VXS.MaterialScript.pas',
   VXS.Mesh in '..\..\Source\VXS.Mesh.pas',
@@ -219,6 +219,8 @@ contains
   VXS.Screen in '..\..\Source\VXS.Screen.pas',
   VXS.ScreenSaver in '..\..\Source\VXS.ScreenSaver.pas',
   VXS.ScriptBase in '..\..\Source\VXS.ScriptBase.pas',
+  VXS.SDLContext in '..\..\Source\GameAPIs\VXS.SDLContext.pas',
+  VXS.SDLWindow in '..\..\Source\GameAPIs\VXS.SDLWindow.pas',
   VXS.Selection in '..\..\Source\VXS.Selection.pas',
   VXS.ShaderCombiner in '..\..\Source\Shaders\VXS.ShaderCombiner.pas',
   VXS.ShadowHDS in '..\..\Source\VXS.ShadowHDS.pas',
@@ -269,13 +271,10 @@ contains
   VXS.Windows in '..\..\Source\VXS.Windows.pas',
   VXS.WindowsFont in '..\..\Source\VXS.WindowsFont.pas',
   VXS.XCollection in '..\..\Source\Basis\VXS.XCollection.pas',
-  VXS.zBuffer in '..\..\Source\VXS.zBuffer.pas',
-  VXS.Vulkan in '..\..\Source\Basis\VXS.Vulkan.pas',
   VXS.XOpenGL in '..\..\Source\Basis\VXS.XOpenGL.pas',
-  VXS.SDLContext in '..\..\Source\GameAPIs\VXS.SDLContext.pas',
-  VXS.SDLWindow in '..\..\Source\GameAPIs\VXS.SDLWindow.pas',
+  VXS.zBuffer in '..\..\Source\VXS.zBuffer.pas',
   VXS.ViewerOpenGL in '..\..\Source\VXS.ViewerOpenGL.pas',
-  VXS.Isolines in '..\..\Source\VXS.Isolines.pas';
+  VXS.Vulkan in '..\..\Source\Basis\VXS.Vulkan.pas';
 
 end.
 

@@ -1,9 +1,9 @@
 //
-// VXScene Component Library, based on GLScene http://glscene.sourceforge.net 
+// VXScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
 {
-  Unit for navigating TVXBaseObjects. 
-	 
+  Unit for navigating TVXBaseObjects.
+
 }
 unit VXS.Navigator;
 
@@ -12,6 +12,7 @@ interface
 {$I VXScene.inc}
 
 uses
+  System.Types,
   System.SysUtils,
   System.Classes,
   System.Math,
@@ -102,7 +103,7 @@ type
 	    GLVertNavigator : The Navigator which if set receives the vertical user movement. Used mostly for cameras....   }
   TVXUserInterface = class(TComponent)
   private
-    FPrevPoint: TVXPoint;
+    FPrevPoint: TPoint;
     midScreenX, midScreenY: integer;
     FMouseActive: boolean;
     FMouseSpeed: single;

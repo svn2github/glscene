@@ -46,7 +46,7 @@ object Layouts_Form: TLayouts_Form
               182395660732CAEC1C1383B08810D27483B66D4584ABA253F14F15D007437B43
               87A6A7EB22921D788E168293241181B867C8CF9015B597037111163D4A25D332
               F8AF646774F899FE0EE0178D711F2BAA4EFB930000000049454E44AE426082}
-            FileName = 'D:\Library\GLScene\Source\Resources\bitmaps\LoadSkin.bmp'
+            FileName = 'D:\VXScene\Source\Resources\bitmaps\LoadSkin.bmp'
           end>
         Align = FitLeft
         Size.Width = 25.000000000000000000
@@ -87,7 +87,7 @@ object Layouts_Form: TLayouts_Form
               D078D0098CEA790211E557C7554A39A9E2C2C52084C309F040EBDBB0EF24D29E
               CD81E18B6EDE812B205DED3B3D7615B596BE9B29DB882217131B9027A7ADFDF6
               89FF11C00756B6E020FBBD4BF30000000049454E44AE426082}
-            FileName = 'D:\Library\GLScene\Source\Resources\bitmaps\Open.bmp'
+            FileName = 'D:\VXScene\Source\Resources\bitmaps\Open.bmp'
           end>
         Align = FitLeft
         Size.Width = 25.000000000000000000
@@ -127,7 +127,7 @@ object Layouts_Form: TLayouts_Form
               0C6063197C10465E37D1A1E3343ECC1722AB54EE6F1115C83E322D214B67388D
               23B26AD644E2F4FCB57448314E4FEB0DAADE87A824939EBE4D5ADFE9DCF6B998
               53B8C70000000049454E44AE426082}
-            FileName = 'D:\Library\GLScene\Source\Resources\bitmaps\Save.bmp'
+            FileName = 'D:\VXScene\Source\Resources\bitmaps\Save.bmp'
           end>
         Align = FitLeft
         Size.Width = 25.000000000000000000
@@ -160,7 +160,7 @@ object Layouts_Form: TLayouts_Form
               507B63C8C29101CDA13D129001CD211D09CA80FAE5E08F68D96154B92E21CDE1
               EB405D1811473640447E010FCE3920A6E55B4AF900199E3F8185674CC3000000
               0049454E44AE426082}
-            FileName = 'D:\Library\GLScene\Source\Resources\bitmaps\Done.bmp'
+            FileName = 'D:\VXScene\Source\Resources\bitmaps\Done.bmp'
           end>
         Align = Left
         Size.Width = 25.000000000000000000
@@ -204,7 +204,7 @@ object Layouts_Form: TLayouts_Form
               4E3CD9ED2BC5332C77BA11CE28A2276EA5F64D27A16729DC295C4B3CC3B21FC1
               71DFA2394A6126F394EE95A83CBCFAD87F4236DA27761C4E43B4358DADFB5BD7
               1603FC04E545BF201DF356F30000000049454E44AE426082}
-            FileName = 'D:\Library\GLScene\Source\Resources\bitmaps\ZoomIn.bmp'
+            FileName = 'D:\VXScene\Source\Resources\bitmaps\ZoomIn.bmp'
           end>
         Align = Client
         Size.Width = 25.000000000000000000
@@ -262,7 +262,7 @@ object Layouts_Form: TLayouts_Form
               35C29F685D4F8E8A8E8868548374A630D544BEF1C1B6FA6BDD9AD0FE3E2122ED
               7B69D3B2F33F904BB4152DCD781654962C1882278307934B5489D1C7A800FD28
               F92AC7FE9BFD079301E017673BC8C19E2D94CE0000000049454E44AE426082}
-            FileName = 'D:\Library\GLScene\Source\Resources\bitmaps\ZoomOut.bmp'
+            FileName = 'D:\VXScene\Source\Resources\bitmaps\ZoomOut.bmp'
           end>
         Align = Client
         Size.Width = 25.000000000000000000
@@ -303,7 +303,7 @@ object Layouts_Form: TLayouts_Form
               FC76A30727C73D8CEB62472DD00FAA9B22CB7208A9AABB40CF460525B5682E2B
               C95CEDE7965AB0904AC1F0484535F2B5F75C9FD285B154488877AE3695E3BF35
               67C00D8250FBBA96DB69B80000000049454E44AE426082}
-            FileName = 'D:\Library\GLScene\Source\Resources\bitmaps\Show.bmp'
+            FileName = 'D:\VXScene\Source\Resources\bitmaps\Show.bmp'
           end>
         Align = Client
         Size.Width = 25.000000000000000000
@@ -362,7 +362,7 @@ object Layouts_Form: TLayouts_Form
               82B3117E44B5073EAE3BADC4236F84028405D83A2D72BE2C76EF11187316F6C7
               1BCF8621DF697C305572BE70F59BF73D09FF50FF03F0059754A6585E0351B600
               00000049454E44AE426082}
-            FileName = 'D:\Library\GLScene\Source\Resources\bitmaps\Add.bmp'
+            FileName = 'D:\VXScene\Source\Resources\bitmaps\Add.bmp'
           end>
         Align = FitLeft
         Size.Width = 25.000000000000000000

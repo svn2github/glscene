@@ -1,14 +1,14 @@
 //
-// VXScene Component Library, based on GLScene http://glscene.sourceforge.net 
+// VXScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
 {
-  3D Text component. 
+  3D Text component.
 
   Note: You can get valid extents (including AABB's) of this component only
   after it has been rendered for the first time. It means if you ask its
   extents during / after its creation, you will get zeros.
 
-  Also extents are valid only when SpaceText has one line.  
+  Also extents are valid only when SpaceText has one line.
 
 }
 unit VXS.SpaceText;
@@ -19,22 +19,22 @@ interface
 {$IFDEF UNIX}{$MESSAGE Error 'Unit not supported'}{$ENDIF}
 
 uses
-  Winapi.Windows, 
-  WinApi.Messages, 
-  Winapi.OpenGL, 
-  Winapi.OpenGLext,
-  System.Classes, 
-  System.UITypes, 
+  Winapi.Windows,
+  WinApi.Messages,
+  System.Classes,
+  System.UITypes,
   System.SysUtils,
-  FMX.Dialogs, 
-  FMX.Graphics, 
-  FMX.Controls, 
+  FMX.Dialogs,
+  FMX.Graphics,
+  FMX.Controls,
+
+  VXS.OpenGL,
   VXS.Scene, 
-  VXS.Texture, 
-  VXS.Context, 
-  VXS.VectorGeometry, 
+  VXS.Texture,
+  VXS.Context,
+  VXS.VectorGeometry,
   VXS.Strings,
-  VXS.RenderContextInfo, 
+  VXS.RenderContextInfo,
   VXS.State;
 
 type
@@ -50,7 +50,6 @@ type
 
   TVXTextAdjust = class(TPersistent)
   private
-    
     FHorz: TVXTextHorzAdjust;
     FVert: TVXTextVertAdjust;
     FOnChange: TNotifyEvent;
@@ -161,7 +160,7 @@ type
     destructor Destroy; override;
     function FindFont(AName: string; FStyles: TFontStyles; FExtrusion: Single;
       FAllowedDeviation: Single; FFirstChar, FLastChar: Integer): PFontEntry;
-    function GetFontBase(AName: string; FStyles: TFontStyles; FExtrusion: Single; 
+    function GetFontBase(AName: string; FStyles: TFontStyles; FExtrusion: Single;
 	   allowedDeviation: Single; firstChar, lastChar: Integer; client: TObject): PFontEntry;
     procedure Release(entry: PFontEntry; client: TObject);
   end;
@@ -182,16 +181,12 @@ const
 var
   vFontManager: TFontManager;
 
-  
 function FontManager: TFontManager;
 begin
   if not Assigned(vFontManager) then
     vFontManager := TFontManager.Create;
   Result := vFontManager;
 end;
-
-// ReleaseFontManager
-//
 
 procedure ReleaseFontManager;
 begin
@@ -205,7 +200,6 @@ end;
 // ------------------
 // ------------------ TVXTextAdjust ------------------
 // ------------------
-
 
 constructor TVXTextAdjust.Create;
 begin

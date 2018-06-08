@@ -14,9 +14,8 @@ interface
 {$Z4}  // Minimum enum size = dword
 
 uses
-  Winapi.OpenGL,
-  Winapi.OpenGLext,
   System.SysUtils,
+  VXS.OpenGL,
   VXS.CrossPlatform,
   VXS.TextureFormat;
 
@@ -498,8 +497,6 @@ begin
    b:=(col shr 11) and $1F;
 end;
 
-// DecodeDXT1toBitmap32
-//
 procedure DecodeDXT1toBitmap32(
    encData, decData : PByteArray;
    w,h : Integer; var trans : Boolean);
@@ -569,8 +566,6 @@ begin
    end;
 end;
 
-// DecodeDXT3toBitmap32
-//
 procedure DecodeDXT3toBitmap32(encData, decData : PByteArray; w,h : Integer);
 var
    x,y,i,j,k,select : Integer;
@@ -640,8 +635,6 @@ begin
    end;
 end;
 
-// DecodeDXT5toBitmap32
-//
 procedure DecodeDXT5toBitmap32(encData, decData : PByteArray; w,h : Integer);
 var
    x,y,i,j,k,select : Integer;
@@ -745,8 +738,9 @@ var
   temp : GLubyte;
   i : integer;
 begin
-  curblock := PDXTColBlock( data );
-  for i := 0 to  numBlocks-1 do begin
+  curblock := PDXTColBlock(data);
+  for i := 0 to  numBlocks-1 do
+  begin
     temp := curblock.row[0];
     curblock.row[0] := curblock.row[3];
     curblock.row[3] := temp;

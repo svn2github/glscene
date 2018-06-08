@@ -32,7 +32,7 @@ uses
   DesignIntf,
   DesignEditors,
   *)
-
+  
   VXS.Strings,
   VXS.Scene,
   VXS.Context,
@@ -56,9 +56,7 @@ type
 
   TVXSceneEditor = class(TComponentEditor)
   public
-
     procedure Edit; override;
-
     procedure ExecuteVerb(Index: Integer); override;
     function GetVerb(Index: Integer): string; override;
     function GetVerbCount: Integer; override;
@@ -468,12 +466,6 @@ begin
   Result := vObjectManager;
 end;
 
-{$IFDEF VXS_REGION}{$REGION 'TOpenGLCategory'}{$ENDIF}
-{$IFDEF VXS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF VXS_REGION}{$REGION 'TVXSceneViewerEditor'}{$ENDIF}
-// ExecuteVerb
-//
-
 procedure TVXSceneViewerEditor.ExecuteVerb(Index: Integer);
 var
   source: TVXSceneViewer;
@@ -485,9 +477,6 @@ begin
   end;
 end;
 
-// GetVerb
-//
-
 function TVXSceneViewerEditor.GetVerb(Index: Integer): string;
 begin
   case Index of
@@ -496,16 +485,10 @@ begin
   end;
 end;
 
-// GetVerbCount
-//
-
 function TVXSceneViewerEditor.GetVerbCount: Integer;
 begin
   Result := 1;
 end;
-
-{$IFDEF VXS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF VXS_REGION}{$REGION 'TVXSceneEditor'}{$ENDIF}
 
 procedure TVXSceneEditor.Edit;
 begin
@@ -536,9 +519,6 @@ function TVXSceneEditor.GetVerbCount: Integer;
 begin
   Result := 1;
 end;
-
-{$IFDEF VXS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF VXS_REGION}{$REGION 'TResolutionProperty'}{$ENDIF}
 
 function TResolutionProperty.GetAttributes: TPropertyAttributes;
 begin
@@ -628,8 +608,6 @@ begin
     SetOrdValue(0);
 end;
 
-{$IFDEF VXS_REGION}{$ENDREGION}{$ENDIF}
-
 function TVXTextureProperty.GetAttributes: TPropertyAttributes;
 begin
   Result := [paSubProperties];
@@ -647,7 +625,7 @@ begin
     Designer.Modified;
 end;
 
-{$IFDEF VXS_REGION}{$REGION 'TVXImageClassProperty'}{$ENDIF}
+{ TVXImageClassProperty }
 
 function TVXImageClassProperty.GetAttributes: TPropertyAttributes;
 begin
@@ -684,9 +662,6 @@ begin
     SetStrValue('');
   Modified;
 end;
-
-{$IFDEF VXS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF VXS_REGION}{$REGION 'TVXColorProperty'}{$ENDIF}
 
 procedure TVXColorProperty.Edit;
 var
@@ -799,9 +774,6 @@ begin
   DefaultPropertyDrawName(Self, ACanvas, ARect);
 end;
 
-{$IFDEF VXS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF VXS_REGION}{$REGION 'TSoundFileProperty'}{$ENDIF}
-
 function TSoundFileProperty.GetAttributes: TPropertyAttributes;
 begin
   Result := [paDialog];
@@ -839,8 +811,6 @@ begin
     ODialog.Free;
   end;
 end;
-
-{$IFDEF VXS_REGION}{$ENDREGION}{$ENDIF}
 
 //---------------------------------------------------------
 
@@ -887,8 +857,6 @@ end;
 
 //--------------------------------------------------------
 
-{$IFDEF VXS_REGION}{$REGION 'TVXMaterialProperty'}{$ENDIF}
-
 function TVXMaterialProperty.GetAttributes: TPropertyAttributes;
 begin
   Result := [paDialog, paSubProperties];
@@ -901,9 +869,6 @@ begin
     Modified;
 end;
 
-{$IFDEF VXS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF VXS_REGION}{$REGION 'TVXGUILayoutEditor'}{$ENDIF}
-
 procedure TVXGUILayoutEditor.Edit;
 begin
   GUILayoutEditorForm.Execute(TVXGuiLayout(Self.Component));
@@ -912,16 +877,14 @@ end;
 procedure TVXGUILayoutEditor.ExecuteVerb(Index: Integer);
 begin
   case Index of
-    0:
-      Edit;
+    0: Edit;
   end;
 end;
 
 function TVXGUILayoutEditor.GetVerb(Index: Integer): string;
 begin
   case Index of
-    0:
-      Result := 'Show Layout Editor';
+    0: Result := 'Show Layout Editor';
   end;
 end;
 
@@ -930,19 +893,12 @@ begin
   Result := 1;
 end;
 
-{$IFDEF VXS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF VXS_REGION}{$REGION 'TReuseableDefaultEditor'}{$ENDIF}
-// CheckEdit
-//
-
 procedure TReuseableDefaultEditor.CheckEdit(const Prop: IProperty);
 begin
   if FContinue then
     EditProperty(Prop, FContinue);
 end;
 
-// EditProperty
-//
 procedure TReuseableDefaultEditor.EditProperty(const Prop: IProperty;
   var Continue: Boolean);
 var
@@ -975,8 +931,6 @@ begin
         ReplaceBest;
 end;
 
-// Edit
-//
 procedure TReuseableDefaultEditor.Edit;
 var
   Components: IDesignerSelections;
@@ -999,11 +953,6 @@ begin
   end;
 end;
 
-{$IFDEF VXS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF VXS_REGION}{$REGION 'TVXMaterialLibraryEditor'}{$ENDIF}
-
-// EditProperty
-//
 procedure TVXMaterialLibraryEditor.EditProperty(const Prop: IProperty;
   var Continue: Boolean);
 begin
@@ -1016,8 +965,7 @@ end;
 procedure TVXMaterialLibraryEditor.ExecuteVerb(Index: Integer);
 begin
   case Index of
-    0:
-      Edit;
+    0: Edit;
   end;
 end;
 
@@ -1034,18 +982,10 @@ begin
   Result := 1
 end;
 
-{$IFDEF VXS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF VXS_REGION}{$REGION 'TVXLibMaterialNameProperty'}{$ENDIF}
-// GetAttributes
-//
-
 function TVXLibMaterialNameProperty.GetAttributes: TPropertyAttributes;
 begin
   Result := [paDialog];
 end;
-
-// Edit
-//
 
 procedure TVXLibMaterialNameProperty.Edit;
 var
@@ -1069,18 +1009,11 @@ begin
     SetStrValue(buf);
 end;
 
-{$IFDEF VXS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF VXS_REGION}{$REGION 'TVXAnimationNameProperty'}{$ENDIF}
-// GetAttributes
-//
 
 function TVXAnimationNameProperty.GetAttributes: TPropertyAttributes;
 begin
   Result := [paValueList];
 end;
-
-// GetValues
-//
 
 procedure TVXAnimationNameProperty.GetValues(Proc: TGetStrProc);
 var
@@ -1100,9 +1033,6 @@ begin
       end;
   end;
 end;
-
-{$IFDEF VXS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF VXS_REGION}{$REGION 'TVXBaseSceneObjectSelectionEditor'}{$ENDIF}
 
 procedure TVXBaseSceneObjectSelectionEditor.RequiresUnits(Proc: TGetStrProc);
 var
@@ -1125,9 +1055,6 @@ begin
   end;
 end;
 
-{$IFDEF VXS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF VXS_REGION}{$REGION 'TVXSoundLibrarySelectionEditor'}{$ENDIF}
-
 procedure TVXSoundLibrarySelectionEditor.RequiresUnits(Proc: TGetStrProc);
 var
   i, j: Integer;
@@ -1147,9 +1074,6 @@ begin
     end;
   end;
 end;
-
-{$IFDEF VXS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF VXS_REGION}{$REGION 'TVXSArchiveManagerEditor'}{$ENDIF}
 
 procedure TVXSArchiveManagerEditor.EditProperty(const Prop: IProperty;
   var Continue: Boolean);
@@ -1171,8 +1095,7 @@ end;
 function TVXSArchiveManagerEditor.GetVerb(Index: Integer): string;
 begin
   case Index of
-    0:
-      Result := 'Show Archive Manager Editor';
+    0: Result := 'Show Archive Manager Editor';
   end;
 end;
 
@@ -1180,9 +1103,6 @@ function TVXSArchiveManagerEditor.GetVerbCount: Integer;
 begin
   Result := 1
 end;
-
-{$IFDEF VXS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF VXS_REGION}{$REGION 'TVXMaterialComponentNameProperty'}{$ENDIF}
 
 procedure TVXMaterialComponentNameProperty.Edit;
 var
@@ -1261,9 +1181,6 @@ begin
       .GetNames(Proc, TVXASMVertexProgram);
 end;
 
-{$IFDEF VXS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF VXS_REGION}{$REGION 'TPictureFileProperty'}{$ENDIF}
-
 function TPictureFileProperty.GetAttributes: TPropertyAttributes;
 begin
   Result := [paDialog];
@@ -1279,9 +1196,6 @@ begin
   end;
   Modified;
 end;
-
-{$IFDEF VXS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF VXS_REGION}{$REGION 'TShaderFileProperty'}{$ENDIF}
 
 procedure TShaderFileProperty.Edit;
 var
@@ -1305,9 +1219,6 @@ begin
   Result := [paDialog];
 end;
 
-{$IFDEF VXS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF VXS_REGION}{$REGION 'TAsmProgFileProperty'}{$ENDIF}
-
 procedure TAsmProgFileProperty.Edit;
 var
   ODialog: TOpenDialog;
@@ -1330,8 +1241,7 @@ begin
   Result := [paDialog];
 end;
 
-{$IFDEF VXS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF VXS_REGION}{$REGION 'TUniformAutoSetProperty'}{$ENDIF}
+{ TUniformAutoSetProperty }
 
 function TUniformAutoSetProperty.GetAttributes: TPropertyAttributes;
 begin
@@ -1362,9 +1272,6 @@ begin
     end;
   end;
 end;
-
-{$IFDEF VXS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF VXS_REGION}{$REGION 'TVXShaderEditorProperty'}{$ENDIF}
 
 function TVXShaderEditorProperty.GetAttributes: TPropertyAttributes;
 begin
@@ -1420,148 +1327,85 @@ begin
   end;
 end;
 
-{$IFDEF VXS_REGION}{$ENDREGION}{$ENDIF}
 // ******************************************************************************
-
 procedure GLRegisterPropertiesInCategories;
 begin
 
   { VXS.SceneViewer }
   // property types
 {$IFDEF WIN32}
-  RegisterPropertiesInCategory(sOpenVXCategoryName,
-    [TypeInfo(TVXCamera), TypeInfo(TVXSceneBuffer), TypeInfo(TVSyncMode),
-    TypeInfo(TVXScreenDepth)]); // TVXScreenDepth in GLWin32FullScreenViewer
+  RegisterPropertiesInCategory(sOpenVXCategoryName, [TypeInfo(TVXCamera), TypeInfo(TVXSceneBuffer), 
+    TypeInfo(TVSyncMode), TypeInfo(TVXScreenDepth)]); 
 {$ENDIF}
-  // TVXSceneViewer
-  RegisterPropertiesInCategory(sOpenVXCategoryName, TVXSceneViewer,
-    ['*Render']);
+  RegisterPropertiesInCategory(sOpenVXCategoryName, TVXSceneViewer, ['*Render']);
 
   { VXS.Scene }
-  RegisterPropertiesInCategory(sOpenVXCategoryName,
-    [TypeInfo(TVXx.ObjectsSorting), TypeInfo(TVXProgressEvent),
-    TypeInfo(TVXBehaviours), TypeInfo(TVXObjectEffects),
-    TypeInfo(TDirectRenderEvent), TypeInfo(TVXCameraStyle),
+  RegisterPropertiesInCategory(sOpenVXCategoryName, [TypeInfo(TVXx.ObjectsSorting), TypeInfo(TVXProgressEvent),
+    TypeInfo(TVXBehaviours), TypeInfo(TVXObjectEffects), TypeInfo(TDirectRenderEvent), TypeInfo(TVXCameraStyle),
     TypeInfo(TOnCustomPerspective), TypeInfo(TVXScene)]);
-  RegisterPropertiesInCategory(sLayoutCategoryName,
-    [TypeInfo(TVXx.ObjectsSorting), TypeInfo(TNormalDirection)]);
-  RegisterPropertiesInCategory(sVisualCategoryName,
-    [TypeInfo(TVXVisibilityCulling), TypeInfo(TLightStyle), TypeInfo(TVXColor),
-    TypeInfo(TNormalDirection), TypeInfo(TVXCameraStyle)]);
-  // TVXBaseSceneObject
-  RegisterPropertiesInCategory(sVisualCategoryName, TVXBaseSceneObject,
-    ['Rotation', 'Direction', 'Position', 'Up', 'Scale', '*Angle', 'ShowAxes',
-    'FocalLength']);
-  // TVXSceneObject
+  RegisterPropertiesInCategory(sLayoutCategoryName, [TypeInfo(TVXx.ObjectsSorting), TypeInfo(TNormalDirection)]);
+  RegisterPropertiesInCategory(sVisualCategoryName, [TypeInfo(TVXVisibilityCulling), TypeInfo(TLightStyle), 
+    TypeInfo(TVXColor), TypeInfo(TNormalDirection), TypeInfo(TVXCameraStyle)]);
+  RegisterPropertiesInCategory(sVisualCategoryName, TVXBaseSceneObject, 
+    ['Rotation', 'Direction', 'Position', 'Up', 'Scale', '*Angle', 'ShowAxes', 'FocalLength']);
   RegisterPropertiesInCategory(sVisualCategoryName, TVXSceneObject, ['Parts']);
-  // TVXDirectOpenVX
-  RegisterPropertiesInCategory(sOpenVXCategoryName, TVXDirectOpenVX,
-    ['UseBuildList']);
-  // TVXProxyObject
-  RegisterPropertiesInCategory(sOpenVXCategoryName,
-    [TypeInfo(TVXProxyObjectOptions)]);
-  // TVXLightSource
-  RegisterPropertiesInCategory(sVisualCategoryName, TVXLightSource,
-    ['*Attenuation', 'Shining', 'Spot*']);
-  // TVXCamera
-  RegisterPropertiesInCategory(sOpenVXCategoryName, TVXCamera,
-    ['TargetObject']);
-  RegisterPropertiesInCategory(sVisualCategoryName, TVXCamera,
-    ['DepthOfView', 'SceneScale']);
-  // TVXNonVisualViewer
-  RegisterPropertiesInCategory(sOpenVXCategoryName, TVXNonVisualViewer,
-    ['*Render']);
+  RegisterPropertiesInCategory(sOpenVXCategoryName, TVXDirectOpenVX, ['UseBuildList']);
+  RegisterPropertiesInCategory(sOpenVXCategoryName, [TypeInfo(TVXProxyObjectOptions)]);
+  RegisterPropertiesInCategory(sVisualCategoryName, TVXLightSource, ['*Attenuation', 'Shining', 'Spot*']);
+  RegisterPropertiesInCategory(sOpenVXCategoryName, TVXCamera, ['TargetObject']);
+  RegisterPropertiesInCategory(sVisualCategoryName, TVXCamera, ['DepthOfView', 'SceneScale']);
+  RegisterPropertiesInCategory(sOpenVXCategoryName, TVXNonVisualViewer, ['*Render']);
 
   { VXS.Objects }
-  RegisterPropertiesInCategory(sOpenVXCategoryName,
-    [TypeInfo(TVXLinesNodes), TypeInfo(TLineNodesAspect),
+  RegisterPropertiesInCategory(sOpenVXCategoryName, [TypeInfo(TVXLinesNodes), TypeInfo(TLineNodesAspect),
     TypeInfo(TLineSplineMode), TypeInfo(TLinesOptions)]);
-{$IFDEF WIN32} // unit GLSpaceText
+{$IFDEF WIN32} 
   RegisterPropertiesInCategory(sLayoutCategoryName, [TypeInfo(TVXTextAdjust)]);
-  RegisterPropertiesInCategory(sLocalizableCategoryName,
-    [TypeInfo(TSpaceTextCharRange)]);
+  RegisterPropertiesInCategory(sLocalizableCategoryName, [TypeInfo(TSpaceTextCharRange)]);
   RegisterPropertiesInCategory(sVisualCategoryName, [TypeInfo(TLineSplineMode),
-    TypeInfo(TCapType), TypeInfo(TNormalSmoothing),
-    TypeInfo(TArrowHeadStackingStyle), TypeInfo(TVXTextAdjust)]);
+    TypeInfo(TCapType), TypeInfo(TNormalSmoothing), TypeInfo(TArrowHeadStackingStyle), TypeInfo(TVXTextAdjust)]);
 {$ENDIF}
-  // TVXDummyCube
-  RegisterPropertiesInCategory(sLayoutCategoryName, TVXDummyCube,
-    ['VisibleAtRunTime']);
-  RegisterPropertiesInCategory(sVisualCategoryName, TVXDummyCube,
-    ['CubeSize', 'VisibleAtRunTime']);
-  // TVXPlane
-  RegisterPropertiesInCategory(sVisualCategoryName, TVXPlane,
-    ['*Offset', '*Tiles']);
-  // TVXSprite
+  RegisterPropertiesInCategory(sLayoutCategoryName, TVXDummyCube, ['VisibleAtRunTime']);
+  RegisterPropertiesInCategory(sVisualCategoryName, TVXDummyCube, ['CubeSize', 'VisibleAtRunTime']);
+  RegisterPropertiesInCategory(sVisualCategoryName, TVXPlane, ['*Offset', '*Tiles']);
   RegisterPropertiesInCategory(sOpenVXCategoryName, TVXSprite, ['NoZWrite']);
   RegisterPropertiesInCategory(sLayoutCategoryName, TVXSprite, ['NoZWrite']);
-  RegisterPropertiesInCategory(sVisualCategoryName, TVXSprite,
-    ['AlphaChannel', 'Rotation']);
-  // TVXNode
+  RegisterPropertiesInCategory(sVisualCategoryName, TVXSprite, ['AlphaChannel', 'Rotation']);
   RegisterPropertiesInCategory(sVisualCategoryName, TVXNode, ['X', 'Y', 'Z']);
-  // TVXLines
-  RegisterPropertiesInCategory(sVisualCategoryName, TVXLines,
-    ['Antialiased', 'Division', 'Line*', 'NodeSize']);
-  // TVXCube
+  RegisterPropertiesInCategory(sVisualCategoryName, TVXLines, ['Antialiased', 'Division', 'Line*', 'NodeSize']);
   RegisterPropertiesInCategory(sVisualCategoryName, TVXCube, ['Cube*']);
-  // TVXFrustrum
-  RegisterPropertiesInCategory(sVisualCategoryName, TVXFrustrum,
-    ['ApexHeight', 'Base*']);
-  // TVXSpaceText
-{$IFDEF WIN32} // unit GLSpaceText
-  RegisterPropertiesInCategory(sVisualCategoryName, TVXSpaceText,
-    ['AllowedDeviation', 'AspectRatio', 'Extrusion', 'Oblique', 'TextHeight']);
+  RegisterPropertiesInCategory(sVisualCategoryName, TVXFrustrum, ['ApexHeight', 'Base*']);
+{$IFDEF WIN32} 
+  RegisterPropertiesInCategory(sVisualCategoryName, TVXSpaceText, ['AllowedDeviation', 'AspectRatio', 'Extrusion', 'Oblique', 'TextHeight']);
 {$ENDIF}
-  RegisterPropertiesInCategory(sVisualCategoryName, TVXSphere,
-    ['Bottom', 'Radius', 'Slices', 'Stacks', 'Start', 'Stop']);
-  RegisterPropertiesInCategory(sVisualCategoryName, TVXDisk,
-    ['*Radius', 'Loops', 'Slices']);
-  RegisterPropertiesInCategory(sVisualCategoryName, TVXCone,
-    ['BottomRadius', 'Loops', 'Slices', 'Stacks']);
-  RegisterPropertiesInCategory(sVisualCategoryName, TVXCylinder,
-    ['*Radius', 'Loops', 'Slices', 'Stacks']);
-  RegisterPropertiesInCategory(sVisualCategoryName, TVXCapsule,
-    ['*Radius', 'Loops', 'Slices', 'Stacks']);
-  RegisterPropertiesInCategory(sVisualCategoryName, TVXAnnulus,
-    ['Bottom*', 'Loops', 'Slices', 'Stacks', 'Top*']);
-  RegisterPropertiesInCategory(sVisualCategoryName, TVXTorus,
-    ['*Radius', 'Rings', 'Sides']);
-  RegisterPropertiesInCategory(sVisualCategoryName, TVXArrowLine,
-    ['Bottom*', 'Loops', 'Slices', 'Stacks', 'Top*']);
+  RegisterPropertiesInCategory(sVisualCategoryName, TVXSphere, ['Bottom', 'Radius', 'Slices', 'Stacks', 'Start', 'Stop']);
+  RegisterPropertiesInCategory(sVisualCategoryName, TVXDisk, ['*Radius', 'Loops', 'Slices']);
+  RegisterPropertiesInCategory(sVisualCategoryName, TVXCone, ['BottomRadius', 'Loops', 'Slices', 'Stacks']);
+  RegisterPropertiesInCategory(sVisualCategoryName, TVXCylinder, ['*Radius', 'Loops', 'Slices', 'Stacks']);
+  RegisterPropertiesInCategory(sVisualCategoryName, TVXCapsule, ['*Radius', 'Loops', 'Slices', 'Stacks']);
+  RegisterPropertiesInCategory(sVisualCategoryName, TVXAnnulus, ['Bottom*', 'Loops', 'Slices', 'Stacks', 'Top*']);
+  RegisterPropertiesInCategory(sVisualCategoryName, TVXTorus, ['*Radius', 'Rings', 'Sides']);
+  RegisterPropertiesInCategory(sVisualCategoryName, TVXArrowLine, ['Bottom*', 'Loops', 'Slices', 'Stacks', 'Top*']);
   RegisterPropertiesInCategory(sVisualCategoryName, TVXPolygon, ['Division']);
-  RegisterPropertiesInCategory(sOpenVXCategoryName, [TypeInfo(TVXContourNodes),
-    TypeInfo(TVXContours)]);
+  RegisterPropertiesInCategory(sOpenVXCategoryName, [TypeInfo(TVXContourNodes), TypeInfo(TVXContours)]);
   RegisterPropertiesInCategory(sVisualCategoryName, TVXContour, ['Division']);
-  RegisterPropertiesInCategory(sVisualCategoryName,
-    [TypeInfo(TVXNodes), TypeInfo(TPipeNodesColorMode)]);
-  RegisterPropertiesInCategory(sVisualCategoryName, TVXRevolutionSolid,
-    ['Division', 'Slices', 'YOffsetPerTurn']);
-  RegisterPropertiesInCategory(sVisualCategoryName, TVXExtrusionSolid,
-    ['Stacks']);
-  RegisterPropertiesInCategory(sVisualCategoryName, TVXPipeNode,
-    ['RadiusFactor']);
-  RegisterPropertiesInCategory(sVisualCategoryName, TVXPipe,
-    ['Division', 'Radius', 'Slices']);
-  RegisterPropertiesInCategory(sOpenVXCategoryName,
-    [TypeInfo(TVXActorAnimationMode), TypeInfo(TVXActorAnimations),
-    TypeInfo(TMeshAutoCenterings), TypeInfo(TActorFrameInterpolation),
-    TypeInfo(TVXActorAnimationReference), TypeInfo(TVXActor)]);
-  RegisterPropertiesInCategory(sLayoutCategoryName,
-    [TypeInfo(TMeshNormalsOrientation)]);
-  RegisterPropertiesInCategory(sVisualCategoryName,
-    [TypeInfo(TMeshAutoCenterings), TypeInfo(TVXActorAnimationReference),
-    TypeInfo(TMeshNormalsOrientation)]);
-  RegisterPropertiesInCategory(sOpenVXCategoryName, TVXFreeForm,
-    ['UseMeshmaterials']);
-  RegisterPropertiesInCategory(sOpenVXCategoryName, TVXAnimationControler,
-    ['AnimationName']);
-  RegisterPropertiesInCategory(sLinkageCategoryName, TVXAnimationControler,
-    ['AnimationName']);
+  RegisterPropertiesInCategory(sVisualCategoryName, [TypeInfo(TVXNodes), TypeInfo(TPipeNodesColorMode)]);
+  RegisterPropertiesInCategory(sVisualCategoryName, TVXRevolutionSolid, ['Division', 'Slices', 'YOffsetPerTurn']);
+  RegisterPropertiesInCategory(sVisualCategoryName, TVXExtrusionSolid, ['Stacks']);
+  RegisterPropertiesInCategory(sVisualCategoryName, TVXPipeNode, ['RadiusFactor']);
+  RegisterPropertiesInCategory(sVisualCategoryName, TVXPipe, ['Division', 'Radius', 'Slices']);
+  RegisterPropertiesInCategory(sOpenVXCategoryName, [TypeInfo(TVXActorAnimationMode), TypeInfo(TVXActorAnimations),
+    TypeInfo(TMeshAutoCenterings), TypeInfo(TActorFrameInterpolation), 
+	TypeInfo(TVXActorAnimationReference), TypeInfo(TVXActor)]);
+  RegisterPropertiesInCategory(sLayoutCategoryName, [TypeInfo(TMeshNormalsOrientation)]);
+  RegisterPropertiesInCategory(sVisualCategoryName, [TypeInfo(TMeshAutoCenterings), 
+    TypeInfo(TVXActorAnimationReference), TypeInfo(TMeshNormalsOrientation)]);
+  RegisterPropertiesInCategory(sOpenVXCategoryName, TVXFreeForm, ['UseMeshmaterials']);
+  RegisterPropertiesInCategory(sOpenVXCategoryName, TVXAnimationControler, ['AnimationName']);
+  RegisterPropertiesInCategory(sLinkageCategoryName, TVXAnimationControler, ['AnimationName']);
   RegisterPropertiesInCategory(sOpenVXCategoryName, TVXActorAnimation, ['*Frame']);
-  RegisterPropertiesInCategory(sOpenVXCategoryName, TVXActor,
-    ['*Frame*', 'Interval', 'OverlaySkeleton', 'UseMeshmaterials']);
-  RegisterPropertiesInCategory(sVisualCategoryName, TVXActor,
-    ['OverlaySkeleton']);
+  RegisterPropertiesInCategory(sOpenVXCategoryName, TVXActor, ['*Frame*', 'Interval', 'OverlaySkeleton', 'UseMeshmaterials']);
+  RegisterPropertiesInCategory(sVisualCategoryName, TVXActor, ['OverlaySkeleton']);
   RegisterPropertiesInCategory(sOpenVXCategoryName, [TypeInfo(TMeshMode), TypeInfo(TVertexMode)]);
   RegisterPropertiesInCategory(sOpenVXCategoryName, [TypeInfo(TVXHeightFieldOptions)]);
   RegisterPropertiesInCategory(sVisualCategoryName, [TypeInfo(TVXHeightFieldColorMode),
@@ -1570,87 +1414,50 @@ begin
   RegisterPropertiesInCategory(sVisualCategoryName, TVXXYZGrid, ['Antialiased', 'Line*']);
 
   RegisterPropertiesInCategory(sLayoutCategoryName, TVXParticles, ['VisibleAtRunTime']);
-  RegisterPropertiesInCategory(sVisualCategoryName, TVXParticles,
-    ['*Size', 'VisibleAtRunTime']);
+  RegisterPropertiesInCategory(sVisualCategoryName, TVXParticles, ['*Size', 'VisibleAtRunTime']);
 
-  RegisterPropertiesInCategory(sOpenVXCategoryName,
-    [TypeInfo(TVXSkyDomeBands), TypeInfo(TVXSkyDomeOptions),
+  RegisterPropertiesInCategory(sOpenVXCategoryName, [TypeInfo(TVXSkyDomeBands), TypeInfo(TVXSkyDomeOptions),
     TypeInfo(TVXSkyDomeStars)]);
-  RegisterPropertiesInCategory(sVisualCategoryName, TVXSkyDomeBand,
-    ['Slices', 'Stacks', '*Angle']);
-  RegisterPropertiesInCategory(sVisualCategoryName, TVXSkyDomeStar,
-    ['Dec', 'Magnitude', 'RA']);
-  RegisterPropertiesInCategory(sOpenVXCategoryName, TVXEarthSkyDome,
-    ['Slices', 'Stacks', 'SunElevation', 'Turbidity']);
-  RegisterPropertiesInCategory(sOpenVXCategoryName, [TypeInfo(TMirrorOptions),
-    TypeInfo(TVXBaseSceneObject)]);
+  RegisterPropertiesInCategory(sVisualCategoryName, TVXSkyDomeBand, ['Slices', 'Stacks', '*Angle']);
+  RegisterPropertiesInCategory(sVisualCategoryName, TVXSkyDomeStar, ['Dec', 'Magnitude', 'RA']);
+  RegisterPropertiesInCategory(sOpenVXCategoryName, TVXEarthSkyDome, ['Slices', 'Stacks', 'SunElevation', 'Turbidity']);
+  RegisterPropertiesInCategory(sOpenVXCategoryName, [TypeInfo(TMirrorOptions), TypeInfo(TVXBaseSceneObject)]);
   RegisterPropertiesInCategory(sOpenVXCategoryName, [TypeInfo(TBlendingMode)]);
-  RegisterPropertiesInCategory(sVisualCategoryName,
-    [TypeInfo(TBlendingMode), TypeInfo(TPFXLifeColors),
-    TypeInfo(TSpriteColorMode)]);
-  RegisterPropertiesInCategory(sOpenVXCategoryName, TVXParticleFXRenderer,
-    ['ZWrite']);
-  RegisterPropertiesInCategory(sVisualCategoryName, TVXParticleFXRenderer,
-    ['ZWrite']);
-  RegisterPropertiesInCategory(sOpenVXCategoryName, TPFXLifeColor,
-    ['LifeTime']);
-  RegisterPropertiesInCategory(sVisualCategoryName, TPFXLifeColor,
-    ['LifeTime']);
-  RegisterPropertiesInCategory(sVisualCategoryName, TVXLifeColoredPFXManager,
-    ['Acceleration', 'ParticleSize']);
-  RegisterPropertiesInCategory(sVisualCategoryName, TVXPolygonPFXManager,
-    ['NbSides']);
-  RegisterPropertiesInCategory(sVisualCategoryName, TVXPointLightPFXManager,
-    ['TexMapSize']);
-  RegisterPropertiesInCategory(sOpenVXCategoryName, [TypeInfo(TVXHeightDataSource)]);
-  RegisterPropertiesInCategory(sVisualCategoryName, TVXTerrainRenderer,
-    ['*CLOD*', 'QualityDistance', 'Tile*']);
-  RegisterPropertiesInCategory(sOpenVXCategoryName, [TypeInfo(TVXMemoryViewer),
-    TypeInfo(TVXSceneViewer), TypeInfo(TOptimise)]);
+  RegisterPropertiesInCategory(sVisualCategoryName, [TypeInfo(TBlendingMode), TypeInfo(TPFXLifeColors), TypeInfo(TSpriteColorMode)]);
+  RegisterPropertiesInCategory(sOpenVXCategoryName, TVXParticleFXRenderer, ['ZWrite']);
+  RegisterPropertiesInCategory(sVisualCategoryName, TVXParticleFXRenderer, ['ZWrite']);
+  RegisterPropertiesInCategory(sOpenVXCategoryName, TPFXLifeColor, ['LifeTime']);
+  RegisterPropertiesInCategory(sVisualCategoryName, TPFXLifeColor, ['LifeTime']);
+  RegisterPropertiesInCategory(sVisualCategoryName, TVXLifeColoredPFXManager, ['Acceleration', 'ParticleSize']);
+  RegisterPropertiesInCategory(sVisualCategoryName, TVXPolygonPFXManager, ['NbSides']);
+  RegisterPropertiesInCategory(sVisualCategoryName, TVXPointLightPFXManager, ['TexMapSize']);
+  RegisterPropertiesInCategory(sOpenVXCategoryName, [TypeInfo(TVXHeightDataSource)]); 
+  RegisterPropertiesInCategory(sVisualCategoryName, TVXTerrainRenderer, ['*CLOD*', 'QualityDistance', 'Tile*']);
+  RegisterPropertiesInCategory(sOpenVXCategoryName, [TypeInfo(TVXMemoryViewer), TypeInfo(TVXSceneViewer), TypeInfo(TOptimise)]);
   RegisterPropertiesInCategory(sVisualCategoryName, [TypeInfo(TOptimise)]);
-  RegisterPropertiesInCategory(sVisualCategoryName, TVXZShadows,
-    ['DepthFade', '*Shadow', 'Soft', 'Tolerance']);
+  RegisterPropertiesInCategory(sVisualCategoryName, TVXZShadows, ['DepthFade', '*Shadow', 'Soft', 'Tolerance']);
   RegisterPropertiesInCategory(sLayoutCategoryName, [TypeInfo(TTextLayout)]);
-  RegisterPropertiesInCategory(sVisualCategoryName,
-    [TypeInfo(TVXBitmapFont), TypeInfo(TTextLayout)]);
-  RegisterPropertiesInCategory(sLocalizableCategoryName,
-    [TypeInfo(TVXBitmapFont)]);
-  RegisterPropertiesInCategory(sOpenVXCategoryName,
-    [TypeInfo(TVXMaterial), TypeInfo(TVXMaterialLibrary),
+  RegisterPropertiesInCategory(sVisualCategoryName, [TypeInfo(TVXBitmapFont), TypeInfo(TTextLayout)]);
+  RegisterPropertiesInCategory(sLocalizableCategoryName, [TypeInfo(TVXBitmapFont)]);
+  RegisterPropertiesInCategory(sOpenVXCategoryName, [TypeInfo(TVXMaterial), TypeInfo(TVXMaterialLibrary),
     TypeInfo(TVXLibMaterials), TypeInfo(TTextureNeededEvent)]);
-  RegisterPropertiesInCategory(sOpenVXCategoryName, TVXLibMaterial,
-    ['Texture2Name']);
-  RegisterPropertiesInCategory(sVisualCategoryName, TVXLibMaterial,
-    ['TextureOffset', 'TextureScale']);
-  RegisterPropertiesInCategory(sOpenVXCategoryName, TVXMaterialLibrary,
-    ['TexturePaths']);
+  RegisterPropertiesInCategory(sOpenVXCategoryName, TVXLibMaterial, ['Texture2Name']);
+  RegisterPropertiesInCategory(sVisualCategoryName, TVXLibMaterial, ['TextureOffset', 'TextureScale']);
+  RegisterPropertiesInCategory(sOpenVXCategoryName, TVXMaterialLibrary, ['TexturePaths']);
   RegisterPropertiesInCategory(sOpenVXCategoryName, [TypeInfo(TVXCadencer)]);
-  RegisterPropertiesInCategory(sOpenVXCategoryName,
-    [TypeInfo(TObjectCollisionEvent)]);
-  RegisterPropertiesInCategory(sOpenVXCategoryName, TVXFireFXManager,
-    ['MaxParticles', 'NoZWrite', 'Paused', 'UseInterval']);
-  RegisterPropertiesInCategory(sVisualCategoryName, TVXFireFXManager,
-    ['Fire*', 'InitialDir', 'NoZWrite', 'Particle*', 'Paused']);
-  RegisterPropertiesInCategory(sOpenVXCategoryName,
-    [TypeInfo(TCalcPointEvent)]);
-  RegisterPropertiesInCategory(sOpenVXCategoryName, TVXThorFXManager,
-    ['Maxpoints', 'Paused']);
-  RegisterPropertiesInCategory(sVisualCategoryName, TVXThorFXManager,
-    ['Core', 'Glow*', 'Paused', 'Target', 'Vibrate', 'Wildness']);
-  RegisterPropertiesInCategory(sOpenVXCategoryName,
-    [TypeInfo(TVXMagFilter), TypeInfo(TVXMinFilter)]);
-  RegisterPropertiesInCategory(sLocalizableCategoryName,
-    [TypeInfo(TVXBitmapFontRanges)]);
-  RegisterPropertiesInCategory(sLocalizableCategoryName, TVXBitmapFontRange,
-    ['*ASCII']);
-  RegisterPropertiesInCategory(sLayoutCategoryName, TVXBitmapFont,
-    ['Char*', '*Interval*', '*Space']);
-  RegisterPropertiesInCategory(sLocalizableCategoryName, TVXBitmapFont,
-    ['Glyphs']);
-  RegisterPropertiesInCategory(sVisualCategoryName, TVXBitmapFont,
-    ['Char*', '*Interval*', '*Space', 'Glyphs']);
-  RegisterPropertiesInCategory(sOpenVXCategoryName, TVXBitmapHDS,
-    ['MaxPoolSize']);
+  RegisterPropertiesInCategory(sOpenVXCategoryName, [TypeInfo(TObjectCollisionEvent)]);
+  RegisterPropertiesInCategory(sOpenVXCategoryName, TVXFireFXManager, ['MaxParticles', 'NoZWrite', 'Paused', 'UseInterval']);
+  RegisterPropertiesInCategory(sVisualCategoryName, TVXFireFXManager, ['Fire*', 'InitialDir', 'NoZWrite', 'Particle*', 'Paused']);
+  RegisterPropertiesInCategory(sOpenVXCategoryName, [TypeInfo(TCalcPointEvent)]);
+  RegisterPropertiesInCategory(sOpenVXCategoryName, TVXThorFXManager, ['Maxpoints', 'Paused']);
+  RegisterPropertiesInCategory(sVisualCategoryName, TVXThorFXManager, ['Core', 'Glow*', 'Paused', 'Target', 'Vibrate', 'Wildness']);
+  RegisterPropertiesInCategory(sOpenVXCategoryName, [TypeInfo(TVXMagFilter), TypeInfo(TVXMinFilter)]);
+  RegisterPropertiesInCategory(sLocalizableCategoryName, [TypeInfo(TVXBitmapFontRanges)]);
+  RegisterPropertiesInCategory(sLocalizableCategoryName, TVXBitmapFontRange, ['*ASCII']);
+  RegisterPropertiesInCategory(sLayoutCategoryName, TVXBitmapFont, ['Char*', '*Interval*', '*Space']);
+  RegisterPropertiesInCategory(sLocalizableCategoryName, TVXBitmapFont, ['Glyphs']);
+  RegisterPropertiesInCategory(sVisualCategoryName, TVXBitmapFont, ['Char*', '*Interval*', '*Space', 'Glyphs']);
+  RegisterPropertiesInCategory(sOpenVXCategoryName, TVXBitmapHDS, ['MaxPoolSize']);
   RegisterPropertiesInCategory(sVisualCategoryName, TVXBitmapHDS, ['Picture']);
 end;
 
@@ -1737,10 +1544,8 @@ begin
   RegisterPropertyEditor(TypeInfo(TVXActorAnimationName), TVXAnimationControler,
     '', TVXAnimationNameProperty);
   RegisterPropertyEditor(TypeInfo(TVXLibMaterialName),
-    TVXTextureSharingShaderMaterial, 'LibMaterialName',
-    TVXLibMaterialNameProperty);
-  RegisterSelectionEditor(TVXBaseSceneObject,
-    TVXBaseSceneObjectSelectionEditor);
+    TVXTextureSharingShaderMaterial, 'LibMaterialName', TVXLibMaterialNameProperty);
+  RegisterSelectionEditor(TVXBaseSceneObject, TVXBaseSceneObjectSelectionEditor);
   RegisterSelectionEditor(TVXSoundLibrary, TVXSoundLibrarySelectionEditor);
   RegisterPropertyEditor(TypeInfo(TVXLibMaterialName), TVXLibMaterialProperty,
     'NextPass', TVXLibMaterialNameProperty);
@@ -1773,17 +1578,12 @@ begin
   RegisterPropertyEditor(TypeInfo(TVXMaterialComponentName), TVXShaderModel5,
     'LibTessEvalShaderName', TVXLibShaderNameProperty);
 
-  RegisterPropertyEditor(TypeInfo(string), TVXTextureImageEx, 'SourceFile',
-    TPictureFileProperty);
-  RegisterPropertyEditor(TypeInfo(string), TVXShaderEx, 'SourceFile',
-    TShaderFileProperty);
-  RegisterPropertyEditor(TypeInfo(string), TVXASMVertexProgram, 'SourceFile',
-    TAsmProgFileProperty);
+  RegisterPropertyEditor(TypeInfo(string), TVXTextureImageEx, 'SourceFile', TPictureFileProperty);
+  RegisterPropertyEditor(TypeInfo(string), TVXShaderEx, 'SourceFile', TShaderFileProperty);
+  RegisterPropertyEditor(TypeInfo(string), TVXASMVertexProgram, 'SourceFile', TAsmProgFileProperty);
 
-  RegisterPropertyEditor(TypeInfo(Boolean), TVXBaseShaderModel,
-    'AutoFillOfUniforms', TUniformAutoSetProperty);
-  RegisterPropertyEditor(TypeInfo(TStringList), TVXShaderEx, 'Source',
-    TVXShaderEditorProperty);
+  RegisterPropertyEditor(TypeInfo(Boolean), TVXBaseShaderModel, 'AutoFillOfUniforms', TUniformAutoSetProperty);
+  RegisterPropertyEditor(TypeInfo(TStringList), TVXShaderEx, 'Source', TVXShaderEditorProperty);
 end;
 
 function GetVXSceneVersion: string;

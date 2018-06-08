@@ -12,8 +12,6 @@ interface
 {$I VXScene.inc}
 
 uses
-  Winapi.OpenGL,
-  Winapi.OpenGLext,
   System.Classes,
   System.SysUtils,
   System.Types,
@@ -257,7 +255,7 @@ type
     FUseBlendFunc: Boolean;
     FSeparateBlendFunc: Boolean;
     FAlphaFuncType: TGlAlphaFunc;
-    FAlphaFuncRef: TGLclampf;
+    FAlphaFuncRef: Single;
     FBlendFuncSFactor: TVXBlendFunction;
     FBlendFuncDFactor: TVXBlendFunction;
     FAlphaBlendFuncSFactor: TVXBlendFunction;
@@ -265,7 +263,7 @@ type
     procedure SetUseAlphaFunc(const Value: Boolean);
     procedure SetUseBlendFunc(const Value: Boolean);
     procedure SetSeparateBlendFunc(const Value: Boolean);
-    procedure SetAlphaFuncRef(const Value: TGLclampf);
+    procedure SetAlphaFuncRef(const Value: Single);
     procedure SetAlphaFuncType(const Value: TGlAlphaFunc);
     procedure SetBlendFuncDFactor(const Value: TVXBlendFunction);
     procedure SetBlendFuncSFactor(const Value: TVXBlendFunction);
@@ -278,7 +276,7 @@ type
   published
     property UseAlphaFunc: Boolean read FUseAlphaFunc write SetUseAlphaFunc default False;
     property AlphaFunctType: TGlAlphaFunc read FAlphaFuncType write SetAlphaFuncType default cfGreater;
-    property AlphaFuncRef: TGLclampf read FAlphaFuncRef write SetAlphaFuncRef stored StoreAlphaFuncRef;
+    property AlphaFuncRef: Single read FAlphaFuncRef write SetAlphaFuncRef stored StoreAlphaFuncRef;
 
     property UseBlendFunc: Boolean read FUseBlendFunc write SetUseBlendFunc default True;
     property SeparateBlendFunc: Boolean read FSeparateBlendFunc write SetSeparateBlendFunc default False;

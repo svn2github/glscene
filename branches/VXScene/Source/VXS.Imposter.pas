@@ -11,8 +11,7 @@ interface
 {$I VXScene.inc}
 
 uses
-  Winapi.OpenGL,
-  Winapi.OpenGLext,
+  System.Types,
   System.Classes,
   System.SysUtils,
   
@@ -130,7 +129,7 @@ type
     procedure SetBackColor(AValue: TVXColor);
     procedure SetBuildOffset(AValue: TVXCoordinates);
     procedure SetImposterReference(AValue: TImposterReference);
-    procedure InitializeImpostorTexture(const textureSize: TVXPoint);
+    procedure InitializeImpostorTexture(const TextureSize: TPoint);
     property ImposterRegister: TPersistentObjectList read FImposterRegister;
     procedure UnregisterImposter(imposter: TImposter);
     function CreateNewImposter: TImposter; virtual;
@@ -257,8 +256,8 @@ type
   private
     FCoronas: TVXStaticImposterBuilderCoronas;
     FSampleSize: Integer;
-    FTextureSize: TVXPoint;
-    FSamplesPerAxis: TVXPoint;
+    FTextureSize: TPoint;
+    FSamplesPerAxis: TPoint;
     FInvSamplesPerAxis: TVector2f;
     FSamplingRatioBias, FInvSamplingRatioBias: Single;
     FLighting: TSIBLigthing;
@@ -274,7 +273,7 @@ type
     function GetTextureSizeInfo: string;
     procedure SetTextureSizeInfo(const texSize: string);
     { Computes the optimal texture size that would be able to hold all samples. }
-    function ComputeOptimalTextureSize: TVXPoint;
+    function ComputeOptimalTextureSize: TPoint;
     function CreateNewImposter: TImposter; override;
     procedure DoPrepareImposter(var rci: TVXRenderContextInfo;
       impostoredObject: TVXBaseSceneObject;
@@ -297,22 +296,22 @@ type
        as well increase the number of samples. }
     function TextureFillRatio: Single;
     { Meaningful only after imposter texture has been prepared. }
-    property TextureSize: TVXPoint read FTextureSize;
-    property SamplesPerAxis: TVXPoint read FSamplesPerAxis;
+    property TextureSize: TPoint read FTextureSize;
+    property SamplesPerAxis: TPoint read FSamplesPerAxis;
   published
       { Description of the samples looking orientations. }
     property Coronas: TVXStaticImposterBuilderCoronas read FCoronas write
       SetCoronas;
     { Size of the imposter samples (square). }
     property SampleSize: Integer read FSampleSize write SetSampleSize default  32;
-    { Size ratio applied to the impostor'ed objects during sampling. 
+    { Size ratio applied to the impostor'ed objects during sampling.
        Values greater than one can be used to "fill" the samples more
        by scaling up the object. This is especially useful when the impostor'ed
        object doesn't fill its bounding sphere, and/or if the outer details
        are not relevant for impostoring. }
     property SamplingRatioBias: Single read FSamplingRatioBias write
       SetSamplingRatioBias stored StoreSamplingRatioBias;
-    { Scale factor apply to the sample alpha channel. 
+    { Scale factor apply to the sample alpha channel.
        Main use is to saturate the samples alpha channel, and make fully
        opaque what would have been partially transparent, while leaving
        fully transparent what was fully transparent. }
@@ -321,7 +320,7 @@ type
     { Lighting mode to apply during samples construction. }
     property Lighting: TSIBLigthing read FLighting write FLighting default
       siblStaticLighting;
-    { Dummy property that returns the size of the imposter texture. 
+    { Dummy property that returns the size of the imposter texture.
        This property is essentially here as a helper at design time,
        to give you the requirements your coronas and samplesize parameters
        imply. }
@@ -734,7 +733,7 @@ begin
 end;
 
 procedure TVXImposterBuilder.InitializeImpostorTexture(const textureSize:
-  TVXPoint);
+  TPoint);
 begin
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, textureSize.X, textureSize.Y, 0,
       GL_RGBA, GL_UNSIGNED_BYTE, nil);
@@ -1058,7 +1057,7 @@ end;
 
 function TVXStaticImposterBuilder.GetTextureSizeInfo: string;
 var
-  t: TVXPoint;
+  t: TPoint;
   fill: Integer;
 begin
   t := ComputeOptimalTextureSize;
@@ -1216,10 +1215,10 @@ begin
     (rci.scene as TVXScene).SetupLights(rci.VXStates.MaxLights);
 end;
 
-function TVXStaticImposterBuilder.ComputeOptimalTextureSize: TVXPoint;
+function TVXStaticImposterBuilder.ComputeOptimalTextureSize: TPoint;
 var
   nbSamples, maxSamples, maxTexSize, baseSize: Integer;
-  texDim, bestTexDim: TVXPoint;
+  texDim, bestTexDim: TPoint;
   requiredSurface, currentSurface, bestSurface: Integer;
 begin
   nbSamples := Coronas.SampleCount;
@@ -1273,7 +1272,7 @@ end;
 
 function TVXStaticImposterBuilder.TextureFillRatio: Single;
 var
-  texDim: TVXPoint;
+  texDim: TPoint;
 begin
   texDim := ComputeOptimalTextureSize;
   Result := (Coronas.SampleCount * SampleSize * SampleSize) / (texDim.X *

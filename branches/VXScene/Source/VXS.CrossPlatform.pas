@@ -46,12 +46,6 @@ type
   // Gives a little "alien" look to names, but that's the only way around :(
 
   // DaStr: Actually, there is a way around, see TPenStyle for example.
-  TVXPoint = TPoint;
-
-  PGLPoint = ^TVXPoint;
-  TVXRect = TRect;
-  PGLRect = ^TVXRect;
-  TDelphiColor = TColorRec;
 
   TVXPicture = TImage;  // in VCL it's TPicture
   TVXGraphic = TBitmap; // in VCL it's TGraphic
@@ -112,8 +106,6 @@ type
   EGLOSError = EOSError;
   //      EGLOSError = EOSError;
 
-  TVXComponent = class(TComponent);
-
   TProjectTargetNameFunc = function(): string;
 
 const
@@ -140,24 +132,23 @@ const
 
   // Several define from unit Consts
 const
-  glsAllFilter: string = SMsgDlgAll; //in VCL -> sAllFilter;
+  sAllFilter: string = SMsgDlgAll; //in VCL -> sAllFilter;
 
-  VXS_FONT_CHARS_COUNT = 2024;
+  FONT_CHARS_COUNT = 2024;
 
 var
   IsDesignTime: Boolean = False;
   vProjectTargetName: TProjectTargetNameFunc;
 
-function GLPoint(const x, y: Integer): TVXPoint;
-{ Builds a TColor from Red Green Blue components. }
+{ Builds a TColor from Red Green Blue components,
+  Vcl.Imaging.GIFImg.TGIFColorMap.RGB2Color }
 function RGB(const r, g, b: Byte): TColor; {$NODEFINE RGB}
-function GetGLRect(const aLeft, aTop, aRight, aBottom: Integer): TVXRect;
-{ Increases or decreases the width and height of the specified rectangle. 
+function GetRectangle(const aLeft, aTop, aRight, aBottom: Integer): TRect;
+{ Increases or decreases the width and height of the specified rectangle.
    Adds dx units to the left and right ends of the rectangle and dy units to
    the top and bottom. }
-procedure InflateGLRect(var aRect: TVXRect; dx, dy: Integer);
-procedure IntersectGLRect(var aRect: TVXRect; const rect2: TVXRect);
-function PtInRect(const Rect: TVXRect; const P: TPoint): Boolean;
+procedure InflateRectangle(var aRect: TRect; dx, dy: Integer);
+procedure IntersectRectangle(var aRect: TRect; const rect2: TRect);
 
 procedure RaiseLastOSError;
 
@@ -193,7 +184,7 @@ function QueryPerformanceFrequency(var val: Int64): Boolean;
    they should be used. The timer will and must be stopped/terminated/released
    with StopPrecisionTimer. }
 function StartPrecisionTimer: Int64;
-{ Computes time elapsed since timer start. 
+{ Computes time elapsed since timer start.
    Return time lap in seconds. }
 function PrecisionTimerLap(const precisionTimer: Int64): Double;
 { Computes time elapsed since timer start and stop timer.
@@ -201,16 +192,12 @@ function PrecisionTimerLap(const precisionTimer: Int64): Double;
 function StopPrecisionTimer(const precisionTimer: Int64): Double;
 
 { Returns time in milisecond from application start. }
-function GLSTime: Double;
+function AppTime: Double;
 
-{ Returns the number of CPU cycles since startup. 
-   Use the similarly named CPU instruction. }
-function RDTSC: Int64;
-
-function GLOKMessageBox(const Text, Caption: string): Integer;
+function MessageBoxOK(const Text, Caption: string): Integer;
 procedure GLLoadBitmapFromInstance(Instance: LongInt; ABitmap: TBitmap; AName: string);
 procedure ShowHTMLUrl(Url: string);
-function GLGetTickCount: int64;
+//function GLGetTickCount: int64;
 procedure SetExeDirectory;
 function GetDecimalSeparator: Char;
 procedure SetDecimalSeparator(AValue: Char);
@@ -263,7 +250,7 @@ begin
   Result := AnsiStartsText(ASubText, AText);
 end;
 
-function GLOKMessageBox(const Text, Caption: string): Integer;
+function MessageBoxOK(const Text, Caption: string): Integer;
 begin
   Application.ProcessMessages;
   Result := MB_OK; //<- Instead of Result := Application.MessageBox(PChar(Text), PChar(Caption), MB_OK);
@@ -271,13 +258,13 @@ end;
 
 procedure GLLoadBitmapFromInstance(Instance: LongInt; ABitmap: TBitmap; AName: string);
 begin
-   { TODO : Cannot assign to a read-only property E2129 }
-  {ABitmap.Handle := LoadBitmap(Instance, PChar(AName));}
+  { TODO : Cannot assign to a read-only property E2129 }
+  { ABitmap.Handle := LoadBitmap(Instance, PChar(AName));}
 end;
 
 function GLGetTickCount: int64;
 begin
-  result := GetTickCount;
+  result := TThread.GetTickCount;
 end;
 
 procedure ShowHTMLUrl(Url: string);
@@ -285,18 +272,12 @@ begin
   ShellExecute(0, 'open', PChar(Url), nil, nil, SW_SHOW);
 end;
 
-function GLPoint(const x, y: Integer): TVXPoint;
-begin
-  Result.X := x;
-  Result.Y := y;
-end;
-
 function RGB(const r, g, b: Byte): TColor;
 begin
   Result := r or (g shl 8) or (b shl 16);
 end;
 
-function GetGLRect(const aLeft, aTop, aRight, aBottom: Integer): TVXRect;
+function GetRectangle(const aLeft, aTop, aRight, aBottom: Integer): TRect;
 begin
   Result.Left := aLeft;
   Result.Top := aTop;
@@ -304,7 +285,7 @@ begin
   Result.Bottom := aBottom;
 end;
 
-procedure InflateGLRect(var aRect: TVXRect; dx, dy: Integer);
+procedure InflateRectangle(var aRect: TRect; dx, dy: Integer);
 begin
   aRect.Left := aRect.Left - dx;
   aRect.Right := aRect.Right + dx;
@@ -316,7 +297,7 @@ begin
     aRect.Bottom := aRect.Top;
 end;
 
-procedure IntersectGLRect(var aRect: TVXRect; const rect2: TVXRect);
+procedure IntersectRectangle(var aRect: TRect; const rect2: TRect);
 var
   a: Integer;
 begin
@@ -342,9 +323,6 @@ begin
       aRect.Bottom := rect2.Bottom;
   end;
 end;
-
-// RaiseLastOSError
-//
 
 procedure RaiseLastOSError;
 var
@@ -485,7 +463,7 @@ var
   vLastTime: TDateTime;
   vDeltaMilliSecond: TDateTime;
 
-function GLSTime: Double;
+function AppTime: Double;
 var
   SystemTime: TSystemTime;
 begin
@@ -507,10 +485,6 @@ begin
   end;
 end;
 
-function RDTSC: Int64;
-asm
-   db $0f, $31
-end;
 
 function FindUnitName(anObject: TObject): string;
 begin
@@ -814,16 +788,10 @@ begin
   FreeMem(lResult, 2);
 end;
 
-function PtInRect(const Rect: TVXRect; const P: TPoint): Boolean;
-begin
-  Result := (P.X >= Rect.Left) and (P.X < Rect.Right) and (P.Y >= Rect.Top)
-    and (P.Y < Rect.Bottom);
-end;
-
 //-------------------------------------------
 initialization
 //-------------------------------------------
 
-  vSStartTime := GLSTime;
+  vSStartTime := AppTime;
 
 end.

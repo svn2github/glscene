@@ -24,6 +24,7 @@ interface
 {$I VXScene.inc}
 
 uses
+  System.Types,
   System.Classes,
 
   VXS.VectorTypes,
@@ -384,7 +385,7 @@ type
     procedure MouseLookActiveToggle; virtual;
 
     function MouseLook(const ADeltaTime: Double): Boolean; overload;
-    function MouseLook(const NewXY: TVXPoint; const ADeltaTime: Double): Boolean; overload;
+    function MouseLook(const NewXY: TPoint; const ADeltaTime: Double): Boolean; overload;
     function MouseLook(const NewX, NewY: Integer; const ADeltaTime: Double): Boolean; overload;
   published
     property AutoUpdateMouse: Boolean read FAutoUpdateMouse write FAutoUpdateMouse default True;
@@ -868,7 +869,7 @@ end;
 function TVXSmoothUserInterface.MouseLook(
   const ADeltaTime: Double): Boolean;
 var
-  MousePos: TVXPoint;
+  MousePos: TPoint;
 begin
   Assert(FAutoUpdateMouse, 'AutoUpdateMouse must be True to use this function');
   if FMouseLookActive then
@@ -902,7 +903,7 @@ begin
 end;
 
 
-function TVXSmoothUserInterface.MouseLook(const NewXY: TVXPoint; const ADeltaTime: Double): Boolean;
+function TVXSmoothUserInterface.MouseLook(const NewXY: TPoint; const ADeltaTime: Double): Boolean;
 begin
   Result := Mouselook(NewXY.X, NewXY.Y, ADeltaTime);
 end;
@@ -976,7 +977,7 @@ end;
 
 procedure TVXSmoothUserInterface.SetMouseLookActive(const Value: Boolean);
 var
-  MousePos: TVXPoint;
+  MousePos: TPoint;
 begin
   if FMouseLookActive = Value then Exit;
   FMouseLookActive := Value;

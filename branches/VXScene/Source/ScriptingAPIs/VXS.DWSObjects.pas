@@ -36,7 +36,7 @@ type
       FCompilerName : String;
       procedure SetActive(const Value : Boolean);
       procedure SetScript(const Value : TStringList);
-      procedure SetCompiler(const Value : TVXDelphiWebScriptII);
+      procedure SetCompiler(const Value : TVXDelphiWebScript);
       procedure CompileProgram;
       procedure BeginProgram;
       procedure EndProgram;
@@ -61,11 +61,7 @@ type
 procedure Register;
 
 // --------------------------------------------------
-// --------------------------------------------------
-// --------------------------------------------------
 implementation
-// --------------------------------------------------
-// --------------------------------------------------
 // --------------------------------------------------
 
 // ----------
@@ -97,7 +93,7 @@ end;
 
 class function TVXDwsActiveBehaviour.FriendlyName: String;
 begin
-  Result:='Dws Active Script';
+  Result:='DWS Active Script';
 end;
 
 procedure TVXDwsActiveBehaviour.DoProgress(const ProgressTimes: TProgressTimes);
@@ -121,9 +117,9 @@ var
 begin
   inherited;
   if FCompilerName<>'' then begin
-    temp:=FindManager(TVXDelphiWebScriptII, FCompilerName);
+    temp:=FindManager(TVXDelphiWebScript, FCompilerName);
     if Assigned(temp) then
-      Compiler:=TVXDelphiWebScriptII(temp);
+      Compiler:=TVXDelphiWebScript(temp);
     FCompilerName:='';
     CompileProgram;
     if Active then BeginProgram;
@@ -248,21 +244,13 @@ end;
 
 
 // --------------------------------------------------
-// --------------------------------------------------
-// --------------------------------------------------
 initialization
-// --------------------------------------------------
-// --------------------------------------------------
 // --------------------------------------------------
 
   RegisterXCollectionItemClass(TVXDwsActiveBehaviour);
 
 // --------------------------------------------------
-// --------------------------------------------------
-// --------------------------------------------------
 finalization
-// --------------------------------------------------
-// --------------------------------------------------
 // --------------------------------------------------
 
   UnregisterXCollectionItemClass(TVXDwsActiveBehaviour);

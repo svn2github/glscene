@@ -17,12 +17,12 @@ interface
 {$I VXScene.inc}
 
 uses
-  VXS.OpenGL1x;
+  VXS.OpenGL;
 
 type
   TMapTexCoordMode = (mtcmUndefined, mtcmNull, mtcmMain, mtcmDual, mtcmSecond, mtcmArbitrary);
 
-  { TexCoord functions will be ignored. }
+{ TexCoord functions will be ignored. }
 procedure xglMapTexCoordToNull;
 { TexCoord functions will define the main texture coordinates. }
 procedure xglMapTexCoordToMain;
@@ -66,14 +66,14 @@ var
   vSecondTextureUnitForbidden: Boolean;
 
   // Explicit texture coordinates specification
-  xglTexCoord2f: procedure(s, t: TGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
+  xglTexCoord2f: procedure(s, t: Single); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
   xglTexCoord2fv: procedure(v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
-  xglTexCoord3f: procedure(s, t, r: TGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
+  xglTexCoord3f: procedure(s, t, r: Single); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
   xglTexCoord3fv: procedure(v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
-  xglTexCoord4f: procedure(s, t, r, q: TGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
+  xglTexCoord4f: procedure(s, t, r, q: Single); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
   xglTexCoord4fv: procedure(v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
   // TexGen texture coordinates specification
-  xglTexGenf: procedure(coord, pname: TGLEnum; param: TGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
+  xglTexGenf: procedure(coord, pname: TGLEnum; param: Single); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
   xglTexGenfv: procedure(coord, pname: TGLEnum; params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
   xglTexGeni: procedure(coord, pname: TGLEnum; param: GLint); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
   xglTexGeniv: procedure(coord, pname: TGLEnum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
@@ -103,7 +103,7 @@ var
 
   // --------- Complex (arbitrary) mapping
 
-procedure glTexCoord2f_Arbitrary(s, t: GLfloat); {$IFDEF MSWINDOWS} stdcall {$ELSE} cdecl {$ENDIF};
+procedure glTexCoord2f_Arbitrary(s, t: Single); {$IFDEF MSWINDOWS} stdcall {$ELSE} cdecl {$ENDIF};
 var
   i: Integer;
 begin
@@ -119,7 +119,7 @@ begin
     glMultiTexCoord2fv(vComplexMapping[i], v);
 end;
 
-procedure glTexCoord3f_Arbitrary(s, t, r: GLfloat); {$IFDEF MSWINDOWS} stdcall {$ELSE} cdecl {$ENDIF};
+procedure glTexCoord3f_Arbitrary(s, t, r: Single); {$IFDEF MSWINDOWS} stdcall {$ELSE} cdecl {$ENDIF};
 var
   i: Integer;
 begin
@@ -135,7 +135,7 @@ begin
     glMultiTexCoord3fv(vComplexMapping[i], v);
 end;
 
-procedure glTexCoord4f_Arbitrary(s, t, r, q: GLfloat); {$IFDEF MSWINDOWS} stdcall {$ELSE} cdecl {$ENDIF};
+procedure glTexCoord4f_Arbitrary(s, t, r, q: Single); {$IFDEF MSWINDOWS} stdcall {$ELSE} cdecl {$ENDIF};
 var
   i: Integer;
 begin
@@ -151,7 +151,7 @@ begin
     glMultiTexCoord4fv(vComplexMapping[i], v);
 end;
 
-procedure glTexGenf_Arbitrary(coord, pname: GLEnum; param: GLfloat); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
+procedure glTexGenf_Arbitrary(coord, pname: GLEnum; param: Single); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 var
   i: Integer;
 begin
@@ -261,7 +261,7 @@ end;
 
 // --------- Second unit Texturing
 
-procedure glTexCoord2f_Second(s, t: GLfloat); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
+procedure glTexCoord2f_Second(s, t: Single); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
   glMultiTexCoord2f(GL_TEXTURE1, s, t);
 end;
@@ -271,7 +271,7 @@ begin
   glMultiTexCoord2fv(GL_TEXTURE1, v);
 end;
 
-procedure glTexCoord3f_Second(s, t, r: GLfloat); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
+procedure glTexCoord3f_Second(s, t, r: Single); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
   glMultiTexCoord3f(GL_TEXTURE1, s, t, r);
 end;
@@ -281,7 +281,7 @@ begin
   glMultiTexCoord3fv(GL_TEXTURE1, v);
 end;
 
-procedure glTexCoord4f_Second(s, t, r, q: GLfloat); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
+procedure glTexCoord4f_Second(s, t, r, q: Single); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
   glMultiTexCoord4f(GL_TEXTURE1, s, t, r, q);
 end;
@@ -291,7 +291,7 @@ begin
   glMultiTexCoord4fv(GL_TEXTURE1, v);
 end;
 
-procedure glTexGenf_Second(coord, pname: GLEnum; param: GLfloat); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
+procedure glTexGenf_Second(coord, pname: GLEnum; param: Single); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
   glActiveTexture(GL_TEXTURE1);
   glTexGenf(coord, pname, param);
@@ -340,23 +340,23 @@ begin
   glClientActiveTexture(GL_TEXTURE0);
 end;
 
-procedure xglEnableClientState_Second(aarray: GLEnum); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
+procedure xglEnableClientState_Second(aArray: GLEnum); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
   glClientActiveTexture(GL_TEXTURE1);
   glEnableClientState(aarray);
   glClientActiveTexture(GL_TEXTURE0);
 end;
 
-procedure xglDisableClientState_Second(aarray: GLEnum); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
+procedure xglDisableClientState_Second(aArray: GLEnum); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
   glClientActiveTexture(GL_TEXTURE1);
-  glDisableClientState(aarray);
+  glDisableClientState(aArray);
   glClientActiveTexture(GL_TEXTURE0);
 end;
 
 // --------- Dual Texturing
 
-procedure glTexCoord2f_Dual(s, t: GLfloat); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
+procedure glTexCoord2f_Dual(s, t: Single); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
   glTexCoord2f(s, t);
   glMultiTexCoord2f(GL_TEXTURE1, s, t);
@@ -368,7 +368,7 @@ begin
   glMultiTexCoord2fv(GL_TEXTURE1, v);
 end;
 
-procedure glTexCoord3f_Dual(s, t, r: GLfloat); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
+procedure glTexCoord3f_Dual(s, t, r: Single); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
   glTexCoord3f(s, t, r);
   glMultiTexCoord3f(GL_TEXTURE1, s, t, r);
@@ -380,7 +380,7 @@ begin
   glMultiTexCoord3fv(GL_TEXTURE1, v);
 end;
 
-procedure glTexCoord4f_Dual(s, t, r, q: GLfloat); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
+procedure glTexCoord4f_Dual(s, t, r, q: Single); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
   glTexCoord4f(s, t, r, q);
   glMultiTexCoord4f(GL_TEXTURE1, s, t, r, q);
@@ -392,7 +392,7 @@ begin
   glMultiTexCoord4fv(GL_TEXTURE1, v);
 end;
 
-procedure glTexGenf_Dual(coord, pname: GLEnum; param: GLfloat); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
+procedure glTexGenf_Dual(coord, pname: GLEnum; param: Single); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
   glTexGenf(coord, pname, param);
   glActiveTexture(GL_TEXTURE1_ARB);
@@ -456,17 +456,17 @@ begin
   glClientActiveTexture(GL_TEXTURE0);
 end;
 
-procedure xglDisableClientState_Dual(aarray: GLEnum); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
+procedure xglDisableClientState_Dual(aArray: GLEnum); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
-  glDisableClientState(aarray);
+  glDisableClientState(aArray);
   glClientActiveTexture(GL_TEXTURE1);
-  glDisableClientState(aarray);
+  glDisableClientState(aArray);
   glClientActiveTexture(GL_TEXTURE0);
 end;
 
 // --------- Null Texturing
 
-procedure glTexCoord2f_Null(s, t: GLfloat); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
+procedure glTexCoord2f_Null(s, t: Single); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
 end;
 
@@ -474,7 +474,7 @@ procedure glTexCoord2fv_Null(v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ELSE} c
 begin
 end;
 
-procedure glTexCoord3f_Null(s, t, r: GLfloat); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
+procedure glTexCoord3f_Null(s, t, r: Single); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
 end;
 
@@ -482,7 +482,7 @@ procedure glTexCoord3fv_Null(v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ELSE} c
 begin
 end;
 
-procedure glTexCoord4f_Null(s, t, r, q: GLfloat); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
+procedure glTexCoord4f_Null(s, t, r, q: Single); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
 end;
 
@@ -490,7 +490,7 @@ procedure glTexCoord4fv_Null(v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ELSE} c
 begin
 end;
 
-procedure glTexGenf_Null(coord, pname: GLEnum; param: GLfloat); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
+procedure glTexGenf_Null(coord, pname: GLEnum; param: Single); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
 end;
 
@@ -518,11 +518,11 @@ procedure xglTexCoordPointer_Null(size: GLint; atype: GLEnum; stride: GLsizei; d
 begin
 end;
 
-procedure xglEnableClientState_Null(aarray: GLEnum); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
+procedure xglEnableClientState_Null(aArray: GLEnum); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
 end;
 
-procedure xglDisableClientState_Null(aarray: GLEnum); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
+procedure xglDisableClientState_Null(aArray: GLEnum); {$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
 end;
 

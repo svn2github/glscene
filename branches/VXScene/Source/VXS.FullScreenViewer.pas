@@ -12,8 +12,6 @@ interface
 {$I VXScene.inc}
 
 uses
-  Winapi.OpenGL,
-  Winapi.OpenGLext,
   Winapi.Messages,
   Winapi.Windows,
   System.Classes,
@@ -22,7 +20,7 @@ uses
   FMX.Forms,
   FMX.Controls,
   FMX.Menus,
-  
+
   VXS.Scene,
   VXS.Context,
   VXS.Win64Viewer,

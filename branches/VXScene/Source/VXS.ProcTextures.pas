@@ -10,15 +10,15 @@ unit VXS.ProcTextures;
 interface
 
 uses
-  Winapi.OpenGL, 
-  Winapi.OpenGLext, 
-  System.Classes, 
+  System.Classes,
   System.SysUtils,
   System.Math,
-  VXS.Texture, 
-  VXS.Graphics, 
-  VXS.CrossPlatform, 
-  VXS.TextureFormat, 
+
+  VXS.OpenGL,
+  VXS.Texture,
+  VXS.Graphics,
+  VXS.CrossPlatform,
+  VXS.TextureFormat,
   VXS.VectorGeometry;
 
 const

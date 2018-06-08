@@ -11,11 +11,10 @@ unit VXS.FileHDR;
 interface
 
 uses
-  Winapi.OpenGL,
-  Winapi.OpenGLext,
   System.Classes,
   System.SysUtils,
 
+  VXS.OpenGL,
   VXS.Context,
   VXS.Graphics,
   VXS.TextureFormat,

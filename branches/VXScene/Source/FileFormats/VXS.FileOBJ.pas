@@ -17,11 +17,10 @@ interface
 {$I VXScene.inc}
 
 uses
-  Winapi.OpenGL,
-  Winapi.OpenGLext,
   System.Classes,
   System.SysUtils,
 
+  VXS.OpenGL,
   VXS.XOpenGL,
   VXS.VectorTypes,
   VXS.Strings,
@@ -42,8 +41,7 @@ uses
 
 const
   BufSize = 10240; { Load input data in chunks of BufSize Bytes. }
-  LineLen = 100; { Allocate memory for the current line in chunks
-    of LineLen Bytes. }
+  LineLen = 100; { Allocate memory for the current line in chunks of LineLen Bytes }
 
 type
 
@@ -99,10 +97,8 @@ type
   end;
 
 var
-  { If enabled, main mesh will be splitted into multiple mesh from facegroup
-    data. }
-
-  vGLFileOBJ_SplitMesh: Boolean = False;
+  { If enabled, main mesh will be splitted into multiple mesh from facegroup data. }
+  vFileOBJ_SplitMesh: Boolean = False;
 
 // ===================================================================
 implementation
@@ -162,23 +158,18 @@ type
     FShowNormals: Boolean;
     procedure PolygonComplete; { Current polygon completed. Adds FCurrentVertexCount
       to FPolygonVertices and sets the variable to 0 }
-
     procedure SetMode(aMode: TOBJFGMode);
-
   public
     procedure Assign(Source: TPersistent); override;
     constructor CreateOwned(aOwner: TVXFaceGroups); override;
     destructor Destroy; override;
-
     procedure WriteToFiler(writer: TVirtualWriter); override;
     procedure ReadFromFiler(reader: TVirtualReader); override;
-
     procedure Add(VertexIdx, NormalIdx, TexCoordIdx: Integer);
     procedure BuildList(var mrci: TVXRenderContextInfo); override;
     procedure AddToTriangles(aList: TAffineVectorList; aTexCoords: TAffineVectorList = nil;
       aNormals: TAffineVectorList = nil); override;
     function TriangleCount: Integer; override;
-
     property Mode: TOBJFGMode read FMode write SetMode;
     property Name: string read FName write FName;
     property PolygonVertices: TIntegerList read FPolygonVertices;
@@ -262,19 +253,10 @@ var
             idx := TexCoordIndices.List^[Index];
             if idx >= 0 then
             begin
-              if GL_ARB_multitexture and (not vSecondTextureUnitForbidden) then
-              begin
-                glMultiTexCoord2fv(GL_TEXTURE0, @TexCoordPool[idx]);
-                glMultiTexCoord2fv(GL_TEXTURE1, @TexCoordPool[idx]);
-              end
-              else
-              begin
-                glTexCoord2fv(@TexCoordPool[idx]);
-              end;
+              glMultiTexCoord2fv(GL_TEXTURE0, @TexCoordPool[idx]);
+              glMultiTexCoord2fv(GL_TEXTURE1, @TexCoordPool[idx]);
             end;
-
           end;
-
           glVertex3fv(@VertexPool[VertexIndices.List^[Index]]);
           inc(Index);
         end;
@@ -369,9 +351,6 @@ begin
   end;
 end;
 
-// AddToTriangles
-//
-
 procedure TOBJFGVertexNormalTexIndexList.AddToTriangles(aList: TAffineVectorList; aTexCoords: TAffineVectorList = nil;
   aNormals: TAffineVectorList = nil);
 var
@@ -437,9 +416,6 @@ begin
   end;
 end;
 
-// TriangleCount
-//
-
 function TOBJFGVertexNormalTexIndexList.TriangleCount: Integer;
 var
   i: Integer;
@@ -468,9 +444,6 @@ end;
 // ------------------
 // ------------------ TVXOBJVectorFile ------------------
 // ------------------
-
-// ReadLine
-//
 
 procedure TVXOBJVectorFile.ReadLine;
 var
@@ -538,9 +511,6 @@ begin
   SetLength(FLine, j - 1);
 end;
 
-// Error
-//
-
 procedure TVXOBJVectorFile.Error(const msg: string);
 var
   E: EGLOBJFileError;
@@ -550,16 +520,10 @@ begin
   raise E;
 end;
 
-// Capabilities
-//
-
 class function TVXOBJVectorFile.Capabilities: TVXDataFileCapabilities;
 begin
   Result := [dfcRead, dfcWrite];
 end;
-
-// CalcMissingOBJNormals
-//
 
 procedure TVXOBJVectorFile.CalcMissingOBJNormals(mesh: TVXMeshObject);
 var
@@ -639,9 +603,6 @@ begin
     end;
   end;
 end;
-
-// LoadFromStream
-//
 
 procedure TVXOBJVectorFile.LoadFromStream(aStream: TStream);
 var
@@ -1078,7 +1039,7 @@ begin
       '    %d Normals'#13 + '    %d FaceGroups/Strips', [t2 - t0, t1 - t0, t2 - t1, mesh.Vertices.Count, mesh.TexCoords.Count,
       mesh.Normals.Count, mesh.FaceGroups.Count]));
 {$ENDIF}
-    if vGLFileOBJ_SplitMesh then
+    if vFileOBJ_SplitMesh then
       SplitMesh;
 
   finally
@@ -1309,9 +1270,6 @@ end;
 // ------------------ TVXMTLFile ------------------
 // ------------------
 
-// Prepare
-//
-
 procedure TVXMTLFile.Prepare;
 var
   i: Integer;
@@ -1329,9 +1287,6 @@ begin
     end;
   end;
 end;
-
-// MaterialStringProperty
-//
 
 function TVXMTLFile.MaterialStringProperty(const materialName, propertyName: string): string;
 var
@@ -1360,9 +1315,6 @@ begin
   end;
   Result := '';
 end;
-
-// MaterialVectorProperty
-//
 
 function TVXMTLFile.MaterialVectorProperty(const materialName, propertyName: string; const defaultValue: TVector): TVector;
 var
@@ -1450,7 +1402,9 @@ begin
   end;
 end;
 
+//------------------------------------------------------
 initialization
+//------------------------------------------------------
 
 { Register this Fileformat-Handler with GLScene }
 VXS.VectorFileObjects.RegisterVectorFileFormat('obj', 'WaveFront model file', TVXOBJVectorFile);

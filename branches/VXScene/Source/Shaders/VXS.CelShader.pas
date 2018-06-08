@@ -13,12 +13,10 @@ interface
 {$I VXScene.inc}
 
 uses
-  Winapi.OpenGL,
-  Winapi.OpenGLext,
   System.Classes,
   System.SysUtils,
 
-  VXS.OpenGL1x,
+  VXS.OpenGL,
   VXS.Texture,
   VXS.Context,
   VXS.Graphics,
@@ -31,8 +29,6 @@ uses
   VXS.TextureFormat;
 
 type
-  // TVXCelShaderOption
-  //
   { Cel shading options.
      csoOutlines: Render a second outline pass.
      csoTextured: Allows for a primary texture that the cel shading
@@ -82,20 +78,13 @@ type
       FOnGetIntensity;
   end;
 
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 // ------------------
 // ------------------ TVXCelShader ------------------
 // ------------------
-
-// Create
-//
 
 constructor TVXCelShader.Create(AOwner: TComponent);
 begin
@@ -122,9 +111,6 @@ begin
   FVPHandle := TVXVertexProgramHandle.Create;
 end;
 
-// Destroy
-//
-
 destructor TVXCelShader.Destroy;
 begin
   FVPHandle.Free;
@@ -133,17 +119,11 @@ begin
   inherited;
 end;
 
-// Loaded
-//
-
 procedure TVXCelShader.Loaded;
 begin
   inherited;
   BuildShadeTexture;
 end;
-
-// BuildShadeTexture
-//
 
 procedure TVXCelShader.BuildShadeTexture;
 var
@@ -189,9 +169,6 @@ begin
   end;
 end;
 
-// GenerateVertexProgram
-//
-
 function TVXCelShader.GenerateVertexProgram: string;
 var
   VP: TStringList;
@@ -235,9 +212,6 @@ begin
   VP.Free;
 end;
 
-// DoApply
-//
-
 procedure TVXCelShader.DoApply(var rci: TVXRenderContextInfo; Sender: TObject);
 var
   light: TVector;
@@ -269,9 +243,6 @@ begin
   FOutlinePass := csoOutlines in FCelShaderOptions;
   FUnApplyShadeTexture := True;
 end;
-
-// DoUnApply
-//
 
 function TVXCelShader.DoUnApply(var rci: TVXRenderContextInfo): Boolean;
 begin
@@ -322,9 +293,6 @@ begin
 
 end;
 
-// SetCelShaderOptions
-//
-
 procedure TVXCelShader.SetCelShaderOptions(const val: TVXCelShaderOptions);
 begin
   if val <> FCelShaderOptions then
@@ -336,9 +304,6 @@ begin
   end;
 end;
 
-// SetOutlineWidth
-//
-
 procedure TVXCelShader.SetOutlineWidth(const val: Single);
 begin
   if val <> FOutlineWidth then
@@ -347,9 +312,6 @@ begin
     NotifyChange(Self);
   end;
 end;
-
-// SetOutlineColor
-//
 
 procedure TVXCelShader.SetOutlineColor(const val: TVXColor);
 begin

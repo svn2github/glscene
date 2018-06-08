@@ -9,11 +9,10 @@ interface
 {$I cuda.inc}
 
 uses
-  Winapi.OpenGL,
-  Winapi.OpenGLext,
   System.Classes,
   FMX.Dialogs,
-  
+
+  VXS.OpenGL,
   VXS.CrossPlatform,
   VXS.CUDA,
   VXS.Context,
@@ -39,17 +38,17 @@ type
     FName: string;
     FType: TVXSLDataType;
     FFunc: TCUDAFunction;
-    FLocation: GLint;
+    FLocation: Integer;
     FOnBeforeKernelLaunch: TOnBeforeKernelLaunch;
     procedure SetName(const AName: string);
     procedure SetType(AType: TVXSLDataType);
     procedure SetFunc(AFunc: TCUDAFunction);
-    function GetLocation: GLint;
+    function GetLocation: Integer;
     function GetOwner: TVXVertexAttributes; reintroduce;
   public
     constructor Create(ACollection: TCollection); override;
     procedure NotifyChange(Sender: TObject);
-    property Location: GLint read GetLocation;
+    property Location: Integer read GetLocation;
   published
     property Name: string read FName write SetName;
     property GLSLType: TVXSLDataType read FType write SetType;
@@ -131,10 +130,8 @@ type
        sorting purposes. }
     property Blend: Boolean read FBlend write FBlend default False;
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
     procedure DoRender(var ARci: TVXRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
     property ArrayBufferHandle: TVXVBOArrayBufferHandle read FVBO;
@@ -176,7 +173,6 @@ type
     procedure SetMaterialLibrary(const Value: TVXMaterialLibrary);
     procedure SetTextureName(const Value: TVXLibMaterialName);
   protected
-    { Protected declaration }
     procedure AllocateHandles; override;
     procedure DestroyHandles; override;
     procedure Notification(AComponent: TComponent; Operation: TOperation);
@@ -184,13 +180,11 @@ type
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
     procedure MapResources; override;
     procedure UnMapResources; override;
     procedure BindArrayToTexture(var cudaArray: TCUDAMemData;
       ALeyer, ALevel: LOngWord); override;
   published
-    
     property TextureName: TVXLibMaterialName read fTextureName write
       SetTextureName;
     property MaterialLibrary: TVXMaterialLibrary read fMaterialLibrary write
@@ -200,12 +194,10 @@ type
 
   TCUDAGLGeometryResource = class(TCUDAGraphicResource)
   private
-    
     FFeedBackMesh: TVXCustomFeedBackMesh;
     procedure SetFeedBackMesh(const Value: TVXCustomFeedBackMesh);
     function GetAttribArraySize(AAttr: TVXVertexAttribute): LongWord;
   protected
-    { Protected declaration }
     procedure AllocateHandles; override;
     procedure DestroyHandles; override;
     procedure Notification(AComponent: TComponent;
@@ -313,7 +305,7 @@ const
     CU_GRAPHICS_MAP_RESOURCE_FLAGS_WRITE_DISCARD);
 var
   LTexture: TVXTexture;
-  glHandle: GLUInt;
+  glHandle: LongWord;
 begin
   FGLContextHandle.AllocateHandle;
 
@@ -594,21 +586,21 @@ var
   typeSize: LongWord;
 begin
   case AAttr.GLSLType of
-    GLSLType1F: typeSize := SizeOf(GLFloat);
-    GLSLType2F: typeSize := 2 * SizeOf(GLFloat);
-    GLSLType3F: typeSize := 3 * SizeOf(GLFloat);
-    GLSLType4F: typeSize := 4 * SizeOf(GLFloat);
-    GLSLType1I: typeSize := SizeOf(GLInt);
-    GLSLType2I: typeSize := 2 * SizeOf(GLInt);
-    GLSLType3I: typeSize := 3 * SizeOf(GLInt);
-    GLSLType4I: typeSize := 4 * SizeOf(GLInt);
-    GLSLType1UI: typeSize := SizeOf(GLInt);
-    GLSLType2UI: typeSize := 2 * SizeOf(GLInt);
-    GLSLType3UI: typeSize := 3 * SizeOf(GLInt);
-    GLSLType4UI: typeSize := 4 * SizeOf(GLInt);
-    GLSLTypeMat2F: typeSize := 4 * SizeOf(GLFloat);
-    GLSLTypeMat3F: typeSize := 9 * SizeOf(GLFloat);
-    GLSLTypeMat4F: typeSize := 16 * SizeOf(GLFloat);
+    GLSLType1F: typeSize := SizeOf(Single);
+    GLSLType2F: typeSize := 2 * SizeOf(Single);
+    GLSLType3F: typeSize := 3 * SizeOf(Single);
+    GLSLType4F: typeSize := 4 * SizeOf(Single);
+    GLSLType1I: typeSize := SizeOf(Integer);
+    GLSLType2I: typeSize := 2 * SizeOf(Integer);
+    GLSLType3I: typeSize := 3 * SizeOf(Integer);
+    GLSLType4I: typeSize := 4 * SizeOf(Integer);
+    GLSLType1UI: typeSize := SizeOf(Integer);
+    GLSLType2UI: typeSize := 2 * SizeOf(Integer);
+    GLSLType3UI: typeSize := 3 * SizeOf(Integer);
+    GLSLType4UI: typeSize := 4 * SizeOf(Integer);
+    GLSLTypeMat2F: typeSize := 4 * SizeOf(Single);
+    GLSLTypeMat3F: typeSize := 9 * SizeOf(Single);
+    GLSLTypeMat4F: typeSize := 16 * SizeOf(Single);
   else
     begin
       Assert(False, strErrorEx + strUnknownType);
@@ -670,7 +662,7 @@ end;
 
 function TCUDAGLGeometryResource.GetElementArrayDataSize: LongWord;
 begin
-  Result := FFeedBackMesh.ElementNumber * SizeOf(GLUInt);
+  Result := FFeedBackMesh.ElementNumber * SizeOf(LongWord);
 end;
 
 function TCUDAGLGeometryResource.GetElementArrayAddress: Pointer;
@@ -742,7 +734,7 @@ begin
   end;
 end;
 
-function TVXVertexAttribute.GetLocation: GLint;
+function TVXVertexAttribute.GetLocation: Integer;
 begin
   if FLocation < 0 then
     FLocation := glGetAttribLocation(
@@ -863,16 +855,16 @@ begin
         case Attributes[I].GLSLType of
 
             GLSLType1F:
-              glVertexAttribPointer(L, 1, GL_FLOAT, 0, 0, pointer(Offset));
+              glVertexAttribPointer(L, 1, GL_FLOAT, False, 0, pointer(Offset));
 
             GLSLType2F:
-              glVertexAttribPointer(L, 2, GL_FLOAT, 0, 0, pointer(Offset));
+              glVertexAttribPointer(L, 2, GL_FLOAT, False, 0, pointer(Offset));
 
             GLSLType3F:
-              glVertexAttribPointer(L, 3, GL_FLOAT, 0, 0, pointer(Offset));
+              glVertexAttribPointer(L, 3, GL_FLOAT, False, 0, pointer(Offset));
 
             GLSLType4F:
-              glVertexAttribPointer(L, 4, GL_FLOAT, 0, 0, pointer(Offset));
+              glVertexAttribPointer(L, 4, GL_FLOAT, False, 0, pointer(Offset));
 
             GLSLType1I:
               glVertexAttribIPointer(L, 1, GL_INT, 0, pointer(Offset));
@@ -899,13 +891,13 @@ begin
               glVertexAttribIPointer(L, 4, GL_UNSIGNED_INT, 0, pointer(Offset));
 
             GLSLTypeMat2F:
-              glVertexAttribPointer(L, 4, GL_FLOAT, 0, 0, pointer(Offset));
+              glVertexAttribPointer(L, 4, GL_FLOAT, False, 0, pointer(Offset));
 
             GLSLTypeMat3F:
-              glVertexAttribPointer(L, 9, GL_FLOAT, 0, 0, pointer(Offset));
+              glVertexAttribPointer(L, 9, GL_FLOAT, False, 0, pointer(Offset));
 
             GLSLTypeMat4F:
-              glVertexAttribPointer(L, 16, GL_FLOAT, 0, 0, pointer(Offset));
+              glVertexAttribPointer(L, 16, GL_FLOAT, False, 0, pointer(Offset));
 
         end; // of case
       end;

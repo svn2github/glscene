@@ -7,8 +7,6 @@ unit VXS.TextureFormat;
 interface
 
 uses
-  Winapi.OpenGL,
-  Winapi.OpenGLext,
   VXS.Strings,
   VXS.OpenGL;
 

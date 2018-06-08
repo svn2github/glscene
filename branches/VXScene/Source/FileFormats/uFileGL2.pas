@@ -3,7 +3,6 @@
 //
 {
 	Ghoul2 (GLM/GLA) file format loading structures 
-	Note:
 	Also referred to as MDX (MDXM/MDXA) format in C source. 
 }
 unit uFileGL2;
@@ -146,11 +145,7 @@ function G2_GetVertBoneWeight(vert:TVXMVertex; iWeightNum:Cardinal;
 procedure MC_UnCompressQuat(var mat : TMatrix; const comp : TVXACompQuatBone);
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 // ------------------
@@ -212,8 +207,6 @@ end;
 // ------------------ TFileGLM ------------------
 // ------------------
 
-// LoadFromStream
-//
 procedure TFileGLM.LoadFromStream(aStream: TStream);
 var
   idstr   : array[0..3] of char;
@@ -286,8 +279,6 @@ end;
 // ------------------ TFileGLA ------------------
 // ------------------
 
-// GetCompressedMatrix
-//
 function TFileGLA.GetCompressedMatrix(Frame, Bone: Integer): TVXACompQuatBone;
 begin
   Result:=CompBonePool[BoneIndices[Frame*AnimHeader.numBones+Bone]];
@@ -300,8 +291,6 @@ begin
   MC_UnCompressQuat(Result,CompBonePool[BoneIndices[Frame*AnimHeader.numBones+Bone]]);
 end;
 
-// LoadFromStream
-//
 procedure TFileGLA.LoadFromStream(aStream: TStream);
 var
   idstr  : array[0..3] of char;

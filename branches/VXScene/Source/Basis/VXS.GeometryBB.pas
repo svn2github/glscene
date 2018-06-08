@@ -1,10 +1,10 @@
 //
-// VXScene Component Library, based on GLScene http://glscene.sourceforge.net
+// This unit is part of the VXScene Project, http://glscene.org
 //
 {
   Calculations and manipulations on Bounding Boxes.
-  The history is logged in a former version of the unit.
 }
+
 unit VXS.GeometryBB;
 
 interface
@@ -19,14 +19,14 @@ uses
   VXS.VectorTypes;
 
 type
-  { Structure for storing Bounding Boxes }
+  {  Structure for storing Bounding Boxes }
   PHmgBoundingBox = ^THmgBoundingBox;
 
   THmgBoundingBox = record
     BBox: array [0 .. 7] of TVector;
   end;
 
-  { Structure for storing Axis Aligned Bounding Boxes }
+  {  Structure for storing Axis Aligned Bounding Boxes }
   TAABB = record
     Min, Max: TAffineVector;
   end;
@@ -72,14 +72,14 @@ function BoundingBoxesAreEqual(const ABoundingBox1, ABoundingBox2
 function BoundingBoxesAreEqual(const ABoundingBox1, ABoundingBox2
   : PHmgBoundingBox): Boolean; overload;
 
-{ Adds a BB into another BB.
+{  Adds a BB into another BB. 
   The original BB (c1) is extended if necessary to contain c2. }
 function AddBB(var C1: THmgBoundingBox; const C2: THmgBoundingBox)
   : THmgBoundingBox;
 procedure AddAABB(var Aabb: TAABB; const Aabb1: TAABB);
 
 procedure SetBB(var C: THmgBoundingBox; const V: TVector);
-procedure SetAABB(var Bb: TAABB; const V: TVector);
+procedure SetAABB(var Bb: TAABB; const V: TVector); inline;
 
 procedure BBTransform(var C: THmgBoundingBox; const M: TMatrix);
 procedure AABBTransform(var Bb: TAABB; const M: TMatrix);
@@ -95,31 +95,24 @@ function BBMaxZ(const C: THmgBoundingBox): Single;
 { Resize the AABB if necessary to include p. }
 procedure AABBInclude(var Bb: TAABB; const P: TAffineVector);
 { Make an AABB that is formed by sweeping a sphere (or AABB) from Start to Dest }
-procedure AABBFromSweep(var SweepAABB: TAABB; const Start, Dest: TVector;
-  const Radius: Single);
+procedure AABBFromSweep(var SweepAABB: TAABB; const Start, Dest: TVector; const Radius: Single);
 { Returns the intersection AABB of two AABBs. 
   If the AABBs don't intersect, will return a degenerated AABB (plane, line or point). }
 function AABBIntersection(const Aabb1, Aabb2: TAABB): TAABB;
-
-{ Extract AABB information from a BB. }
+{  Extract AABB information from a BB. }
 function BBToAABB(const ABB: THmgBoundingBox): TAABB;
 { Converts an AABB to its canonical BB. }
 function AABBToBB(const AnAABB: TAABB): THmgBoundingBox; overload;
 { Transforms an AABB to a BB. }
 function AABBToBB(const AnAABB: TAABB; const M: TMatrix): THmgBoundingBox; overload;
-
-{ Adds delta to min and max of the AABB. }
+{  Adds delta to min and max of the AABB. }
 procedure OffsetAABB(var Aabb: TAABB; const Delta: TAffineVector); overload;
 procedure OffsetAABB(var Aabb: TAABB; const Delta: TVector); overload;
-
-{ Adds delta to min and max of the BB. }
-procedure OffsetBB(var Bb: THmgBoundingBox;
-  const Delta: TAffineVector); overload;
+{  Adds delta to min and max of the BB. }
+procedure OffsetBB(var Bb: THmgBoundingBox; const Delta: TAffineVector); overload;
 procedure OffsetBB(var Bb: THmgBoundingBox; const Delta: TVector); overload;
 { The same as above but uses AddPoint() instead of AddVector(). }
-procedure OffsetBBPoint(var Bb: THmgBoundingBox; const Delta: TVector);
-  overload;
-
+procedure OffsetBBPoint(var Bb: THmgBoundingBox; const Delta: TVector); overload;
 { Determines if two AxisAlignedBoundingBoxes intersect. 
   The matrices are the ones that convert one point to the other's AABB system }
 function IntersectAABBs(const Aabb1, Aabb2: TAABB; const M1To2, M2To1: TMatrix)
@@ -139,13 +132,11 @@ function PointInAABB(const P: TAffineVector; const Aabb: TAABB): Boolean; overlo
 function PointInAABB(const P: TVector; const Aabb: TAABB): Boolean; overload;
 
 { Checks if a plane (given by the normal+d) intersects the AABB }
-function PlaneIntersectAABB(Normal: TAffineVector; D: Single;
-  Aabb: TAABB): Boolean;
+function PlaneIntersectAABB(const Normal: TAffineVector; D: Single; const Aabb: TAABB): Boolean;
 { Compute the intersection between a plane and the AABB}
 function PlaneAABBIntersection(const plane : THmgPlane; const AABB : TAABB) : TAffineVectorList;
 { Checks if a triangle (given by vertices v1, v2 and v3) intersects an AABB }
-function TriangleIntersectAABB(const Aabb: TAABB;
-  const V1, V2, V3: TAffineVector): Boolean;
+function TriangleIntersectAABB(const Aabb: TAABB; const V1, V2, V3: TAffineVector): Boolean;
 
 { Extract the corners from an AABB }
 procedure ExtractAABBCorners(const AABB: TAABB; var AABBCorners: TAABBCorners);
@@ -160,11 +151,9 @@ function BSphereToAABB(const Center: TVector; Radius: Single): TAABB; overload;
 { Determines to which extent one AABB contains another AABB }
 function AABBContainsAABB(const MainAABB, TestAABB: TAABB): TSpaceContains;
 { Determines to which extent a BSphere contains an AABB }
-function BSphereContainsAABB(const MainBSphere: TBSphere; const TestAABB: TAABB)
-  : TSpaceContains;
+function BSphereContainsAABB(const MainBSphere: TBSphere; const TestAABB: TAABB): TSpaceContains;
 { Determines to which extent one BSphere contains another BSphere }
-function BSphereContainsBSphere(const MainBSphere, TestBSphere: TBSphere)
-  : TSpaceContains;
+function BSphereContainsBSphere(const MainBSphere, TestBSphere: TBSphere): TSpaceContains;
 { Determines to which extent an AABB contains a BSpher }
 function AABBContainsBSphere(const MainAABB: TAABB; const TestBSphere: TBSphere)
   : TSpaceContains;
@@ -175,18 +164,16 @@ function PlaneContainsBSphere(const Location, Normal: TAffineVector;
 function FrustumContainsBSphere(const Frustum: TFrustum;
   const TestBSphere: TBSphere): TSpaceContains;
 { Determines to which extent a frustum contains an AABB }
-function FrustumContainsAABB(const Frustum: TFrustum; const TestAABB: TAABB)
-  : TSpaceContains;
+function FrustumContainsAABB(const Frustum: TFrustum; const TestAABB: TAABB): TSpaceContains;
 { Clips a position to an AABB }
 function ClipToAABB(const V: TAffineVector; const AABB: TAABB): TAffineVector;
 { Determines if one BSphere intersects another BSphere }
-function BSphereIntersectsBSphere(const MainBSphere,
-  TestBSphere: TBSphere): Boolean;
+function BSphereIntersectsBSphere(const MainBSphere, TestBSphere: TBSphere): Boolean;
 
 { Extend the clip rect to include given coordinate. }
 procedure IncludeInClipRect(var ClipRect: TClipRect; X, Y: Single);
 { Projects an AABB and determines the extent of its projection as a clip rect. }
-function AABBToClipRect(const Aabb: TAABB; ModelViewProjection: TMatrix;
+function AABBToClipRect(const Aabb: TAABB; const ModelViewProjection: TMatrix;
   ViewportSizeX, ViewportSizeY: Integer): TClipRect;
 
 { Finds the intersection between a ray and an axis aligned bounding box. }
@@ -211,10 +198,10 @@ const
     (0, 1, 5, 4), (2, 3, 7, 6));
   CDirPlan: TDirPlan = (0, 0, 1, 1, 2, 2);
 
-//=======================================================================
+// --------------------------------------------------------------
 implementation
-//=======================================================================
-
+// --------------------------------------------------------------
+ 
 // ------------------------------------------------------------------------------
 // ----------------- BB functions -------------------------------------------
 // ------------------------------------------------------------------------------
@@ -243,8 +230,7 @@ begin
   Result := CompareMem(ABoundingBox1, ABoundingBox2, SizeOf(THmgBoundingBox));
 end;
 
-function AddBB(var C1: THmgBoundingBox; const C2: THmgBoundingBox)
-  : THmgBoundingBox;
+function AddBB(var C1: THmgBoundingBox; const C2: THmgBoundingBox): THmgBoundingBox;
 var
   I, J: Integer;
 begin
@@ -721,8 +707,7 @@ begin
     (P.Z >= Aabb.Min.Z);
 end;
 
-function PlaneIntersectAABB(Normal: TAffineVector; D: Single;
-  Aabb: TAABB): Boolean;
+function PlaneIntersectAABB(const Normal: TAffineVector; D: Single; const Aabb: TAABB): Boolean;
 var
   Vmax, Vmin: TAffineVector;
   I: Integer;
@@ -1132,7 +1117,6 @@ begin
   NegRadius := -TestBSphere.Radius;
 
   HitCount := 0;
-
   // This would be fractionally faster to unroll, but oh so ugly!?
   for I := 0 to 5 do
   begin
@@ -1309,7 +1293,7 @@ begin
   end;
 end;
 
-function AABBToClipRect(const Aabb: TAABB; ModelViewProjection: TMatrix;
+function AABBToClipRect(const Aabb: TAABB; const ModelViewProjection: TMatrix;
   ViewportSizeX, ViewportSizeY: Integer): TClipRect;
 var
   I: Integer;

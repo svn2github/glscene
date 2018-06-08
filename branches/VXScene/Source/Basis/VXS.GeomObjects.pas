@@ -1,25 +1,22 @@
 //
-// VXScene Component Library, based on GLScene http://glscene.sourceforge.net
+// This unit is part of the VXScene Project, http://glscene.org
 //
 {
-  Geometric objects
-  The history is logged in a former GLS version of the unit.
+  Geometric objects.
 }
 
 unit VXS.GeomObjects;
 
-{$I VXScene.inc}
 
 interface
 
+{$I VXScene.inc}
 uses
-  Winapi.OpenGL,
-  Winapi.OpenGLext,
   System.Classes,
   System.Math,
 
+  VXS.OpenGL,
   VXS.PersistentClasses,
-  VXS.OpenGL1x,
   VXS.Scene,
   VXS.VectorGeometry,
   VXS.Context,
@@ -36,12 +33,12 @@ type
     and SweepAngle properties). }
   TVXDisk = class(TVXQuadricObject)
   private
-    FStartAngle, FSweepAngle, FOuterRadius, FInnerRadius: GLfloat;
-    FSlices, FLoops : TGLInt;
+    FStartAngle, FSweepAngle, FOuterRadius, FInnerRadius: Single;
+    FSlices, FLoops : Integer;
     procedure SetOuterRadius(const aValue: Single);
     procedure SetInnerRadius(const aValue: Single);
-    procedure SetSlices(aValue: TGLint);
-    procedure SetLoops(aValue: TGLint);
+    procedure SetSlices(aValue: Integer);
+    procedure SetLoops(aValue: Integer);
     procedure SetStartAngle(const aValue: Single);
     procedure SetSweepAngle(const aValue: Single);
   public
@@ -54,17 +51,17 @@ type
       : Boolean; override;
   published
     { Allows defining a "hole" in the disk. }
-    property InnerRadius: GLfloat read FInnerRadius write SetInnerRadius;
+    property InnerRadius: Single read FInnerRadius write SetInnerRadius;
     { Number of radial mesh subdivisions. }
-    property Loops: GLint read FLoops write SetLoops default 2;
+    property Loops: Integer read FLoops write SetLoops default 2;
     { Outer radius for the disk.
       If you leave InnerRadius at 0, this is the disk radius. }
-    property OuterRadius: GLfloat read FOuterRadius write SetOuterRadius;
+    property OuterRadius: Single read FOuterRadius write SetOuterRadius;
     { Number of mesh slices.
       For instance, if Slices=6, your disk will look like an hexagon. }
-    property Slices: GLint read FSlices write SetSlices default 16;
-    property StartAngle: GLfloat read FStartAngle write SetStartAngle;
-    property SweepAngle: GLfloat read FSweepAngle write SetSweepAngle;
+    property Slices: Integer read FSlices write SetSlices default 16;
+    property StartAngle: Single read FStartAngle write SetStartAngle;
+    property SweepAngle: Single read FSweepAngle write SetSweepAngle;
   end;
 
   { Base class to cylinder-like objects.
@@ -74,9 +71,9 @@ type
     Stacks property to 1. }
   TVXCylinderBase = class(TVXQuadricObject)
   private
-    FBottomRadius: GLfloat;
+    FBottomRadius: Single;
     FSlices, FStacks, FLoops: GLint;
-    FHeight: GLfloat;
+    FHeight: Single;
   protected
     procedure SetBottomRadius(const aValue: Single);
     procedure SetHeight(const aValue: Single);
@@ -90,8 +87,8 @@ type
     function GenerateSilhouette(const silhouetteParameters
       : TVXSilhouetteParameters): TVXSilhouette; override;
   published
-    property BottomRadius: GLfloat read FBottomRadius write SetBottomRadius;
-    property Height: GLfloat read FHeight write SetHeight;
+    property BottomRadius: Single read FBottomRadius write SetBottomRadius;
+    property Height: Single read FHeight write SetHeight;
     property Slices: GLint read FSlices write SetSlices default 16;
     property Stacks: GLint read FStacks write SetStacks default 4;
     { Number of concentric rings for top/bottom disk(s). }
@@ -130,7 +127,7 @@ type
   TVXCylinder = class(TVXCylinderBase)
   private
     FParts: TVXCylinderParts;
-    FTopRadius: TGLfloat;
+    FTopRadius: Single;
     FAlignment: TVXCylinderAlignment;
   protected
     procedure SetTopRadius(const aValue: Single);
@@ -149,7 +146,7 @@ type
     procedure Align(const startObj, endObj: TVXBaseSceneObject); overload;
     procedure Align(const startPoint, endPoint: TAffineVector); overload;
   published
-    property TopRadius: GLfloat read FTopRadius write SetTopRadius;
+    property TopRadius: Single read FTopRadius write SetTopRadius;
     property Parts: TVXCylinderParts read FParts write SetParts
       default [cySides, cyBottom, cyTop];
     property Alignment: TVXCylinderAlignment read FAlignment write SetAlignment
@@ -160,10 +157,10 @@ type
   TVXCapsule = class(TVXSceneObject)
   private
     FParts: TVXCylinderParts;
-    FRadius: TGLfloat;
-    FSlices: TGLint;
-    FStacks: TGLint;
-    FHeight: TGLfloat;
+    FRadius: Single;
+    FSlices: Integer;
+    FStacks: Integer;
+    FHeight: Single;
     FAlignment: TVXCylinderAlignment;
   protected
     procedure SetHeight(const aValue: Single);
@@ -184,10 +181,10 @@ type
     procedure Align(const startObj, endObj: TVXBaseSceneObject); overload;
     procedure Align(const startPoint, endPoint: TAffineVector); overload;
   published
-    property Height: GLfloat read FHeight write SetHeight;
+    property Height: Single read FHeight write SetHeight;
     property Slices: GLint read FSlices write SetSlices;
     property Stacks: GLint read FStacks write SetStacks;
-    property Radius: GLfloat read FRadius write SetRadius;
+    property Radius: Single read FRadius write SetRadius;
     property Parts: TVXCylinderParts read FParts write SetParts
       default [cySides, cyBottom, cyTop];
     property Alignment: TVXCylinderAlignment read FAlignment write SetAlignment
@@ -201,9 +198,9 @@ type
   TVXAnnulus = class(TVXCylinderBase)
   private
     FParts: TVXAnnulusParts;
-    FBottomInnerRadius: TGLfloat;
-    FTopInnerRadius: TGLfloat;
-    FTopRadius: TGLfloat;
+    FBottomInnerRadius: Single;
+    FTopInnerRadius: Single;
+    FTopRadius: Single;
   protected
     procedure SetTopRadius(const aValue: Single);
     procedure SetTopInnerRadius(const aValue: Single);
@@ -218,11 +215,11 @@ type
       intersectPoint: PVector = nil; intersectNormal: PVector = nil)
       : Boolean; override;
   published
-    property BottomInnerRadius: GLfloat read FBottomInnerRadius
+    property BottomInnerRadius: Single read FBottomInnerRadius
       write SetBottomInnerRadius;
-    property TopInnerRadius: GLfloat read FTopInnerRadius
+    property TopInnerRadius: Single read FTopInnerRadius
       write SetTopInnerRadius;
-    property TopRadius: GLfloat read FTopRadius write SetTopRadius;
+    property TopRadius: Single read FTopRadius write SetTopRadius;
     property Parts: TVXAnnulusParts read FParts write SetParts
       default [anInnerSides, anOuterSides, anBottom, anTop];
   end;
@@ -251,8 +248,7 @@ type
     procedure BuildList(var rci: TVXRenderContextInfo); override;
     function AxisAlignedDimensionsUnscaled: TVector; override;
     function RayCastIntersect(const rayStart, rayVector: TVector;
-      intersectPoint: PVector = nil; intersectNormal: PVector = nil)
-      : Boolean; override;
+      intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean; override;
   published
     property MajorRadius: Single read FMajorRadius write SetMajorRadius;
     property MinorRadius: Single read FMinorRadius write SetMinorRadius;
@@ -296,18 +292,18 @@ type
     procedure BuildList(var rci: TVXRenderContextInfo); override;
     procedure Assign(Source: TPersistent); override;
   published
-    property TopRadius: GLfloat read FTopRadius write SetTopRadius;
+    property TopRadius: Single read FTopRadius write SetTopRadius;
     property HeadStackingStyle: TVXArrowHeadStackingStyle read FHeadStackingStyle
       write SetHeadStackingStyle default ahssStacked;
     property Parts: TVXArrowLineParts read FParts write SetParts
       default [alLine, alTopArrow];
-    property TopArrowHeadHeight: GLfloat read fTopArrowHeadHeight
+    property TopArrowHeadHeight: Single read fTopArrowHeadHeight
       write SetTopArrowHeadHeight;
-    property TopArrowHeadRadius: GLfloat read fTopArrowHeadRadius
+    property TopArrowHeadRadius: Single read fTopArrowHeadRadius
       write SetTopArrowHeadRadius;
-    property BottomArrowHeadHeight: GLfloat read fBottomArrowHeadHeight
+    property BottomArrowHeadHeight: Single read fBottomArrowHeadHeight
       write SetBottomArrowHeadHeight;
-    property BottomArrowHeadRadius: GLfloat read fBottomArrowHeadRadius
+    property BottomArrowHeadRadius: Single read fBottomArrowHeadRadius
       write SetBottomArrowHeadRadius;
   end;
 
@@ -349,21 +345,21 @@ type
     procedure BuildList(var rci: TVXRenderContextInfo); override;
     procedure Assign(Source: TPersistent); override;
   published
-    property ArcRadius: GLfloat read fArcRadius write SetArcRadius;
-    property StartAngle: GLfloat read FStartAngle write SetStartAngle;
-    property StopAngle: GLfloat read FStopAngle write SetStopAngle;
-    property TopRadius: GLfloat read FTopRadius write SetTopRadius;
+    property ArcRadius: Single read fArcRadius write SetArcRadius;
+    property StartAngle: Single read FStartAngle write SetStartAngle;
+    property StopAngle: Single read FStopAngle write SetStopAngle;
+    property TopRadius: Single read FTopRadius write SetTopRadius;
     property HeadStackingStyle: TVXArrowHeadStackingStyle read FHeadStackingStyle
       write SetHeadStackingStyle default ahssStacked;
     property Parts: TArrowArcParts read FParts write SetParts
       default [aaArc, aaTopArrow];
-    property TopArrowHeadHeight: GLfloat read fTopArrowHeadHeight
+    property TopArrowHeadHeight: Single read fTopArrowHeadHeight
       write SetTopArrowHeadHeight;
-    property TopArrowHeadRadius: GLfloat read fTopArrowHeadRadius
+    property TopArrowHeadRadius: Single read fTopArrowHeadRadius
       write SetTopArrowHeadRadius;
-    property BottomArrowHeadHeight: GLfloat read fBottomArrowHeadHeight
+    property BottomArrowHeadHeight: Single read fBottomArrowHeadHeight
       write SetBottomArrowHeadHeight;
-    property BottomArrowHeadRadius: GLfloat read fBottomArrowHeadRadius
+    property BottomArrowHeadRadius: Single read fBottomArrowHeadRadius
       write SetBottomArrowHeadRadius;
   end;
 
@@ -390,8 +386,7 @@ type
     { Parts of polygon.
       The 'top' of the polygon is the position were the curve describing
       the polygon spin counter-clockwise (i.e. right handed convention). }
-    property Parts: TPolygonParts read FParts write SetParts
-      default [ppTop, ppBottom];
+    property Parts: TPolygonParts read FParts write SetParts default [ppTop, ppBottom];
   end;
 
   TFrustrumPart = (fpTop, fpBottom, fpFront, fpBack, fpLeft, fpRight);
@@ -408,7 +403,7 @@ type
     Height cannot be greater than ApexHeight. }
   TVXFrustrum = class(TVXSceneObject)
   private
-    FApexHeight, FBaseDepth, FBaseWidth, FHeight: GLfloat;
+    FApexHeight, FBaseDepth, FBaseWidth, FHeight: Single;
     FParts: TFrustrumParts;
     FNormalDirection: TNormalDirection;
     procedure SetApexHeight(const aValue: Single);
@@ -425,27 +420,27 @@ type
     constructor Create(AOwner: TComponent); override;
     procedure BuildList(var rci: TVXRenderContextInfo); override;
     procedure Assign(Source: TPersistent); override;
-    function TopDepth: GLfloat;
-    function TopWidth: GLfloat;
+    function TopDepth: Single;
+    function TopWidth: Single;
     function AxisAlignedBoundingBoxUnscaled: TAABB;
     function AxisAlignedDimensionsUnscaled: TVector; override;
   published
-    property ApexHeight: GLfloat read FApexHeight write SetApexHeight
+    property ApexHeight: Single read FApexHeight write SetApexHeight
       stored False;
-    property BaseDepth: GLfloat read FBaseDepth write SetBaseDepth
+    property BaseDepth: Single read FBaseDepth write SetBaseDepth
       stored False;
-    property BaseWidth: GLfloat read FBaseWidth write SetBaseWidth
+    property BaseWidth: Single read FBaseWidth write SetBaseWidth
       stored False;
-    property Height: GLfloat read FHeight write SetHeight stored False;
+    property Height: Single read FHeight write SetHeight stored False;
     property NormalDirection: TNormalDirection read FNormalDirection
       write SetNormalDirection default ndOutside;
     property Parts: TFrustrumParts read FParts write SetParts
       default cAllFrustrumParts;
   end;
 
-//=====================================================================
+// -------------------------------------------------------------
 implementation
-//=====================================================================
+// -------------------------------------------------------------
 
 // ------------------
 // ------------------ TVXDisk ------------------
@@ -467,7 +462,7 @@ var
   quadric: PGLUquadricObj;
 begin
   quadric := gluNewQuadric();
-  SetupQuadricParams(quadric);
+  SetupQuadricParams(@quadric);
   gluPartialDisk(quadric, FInnerRadius, FOuterRadius, FSlices, FLoops,
     FStartAngle, FSweepAngle);
   gluDeleteQuadric(quadric);
@@ -543,7 +538,7 @@ end;
 
 function TVXDisk.AxisAlignedDimensionsUnscaled: TVector;
 var
-  r: GLfloat;
+  r: Single;
 begin
   r := Abs(FOuterRadius);
   Result := VectorMake(r, r, 0);
@@ -592,7 +587,7 @@ begin
         end;
       end;
     end;
-  if Result = true then
+  if Result then
     if Assigned(intersectNormal) then
       SetVector(intersectNormal^, AbsoluteUp);
 
@@ -769,7 +764,7 @@ var
 begin
   glPushMatrix;
   quadric := gluNewQuadric();
-  SetupQuadricParams(quadric);
+  SetupQuadricParams(@quadric);
   glRotated(-90, 1, 0, 0);
   glTranslatef(0, 0, -FHeight * 0.5);
   if coSides in FParts then
@@ -777,7 +772,7 @@ begin
   if coBottom in FParts then
   begin
     // top of a disk is defined as outside
-    SetInvertedQuadricOrientation(quadric);
+    SetInvertedQuadricOrientation(@quadric);
     gluDisk(quadric, 0, BottomRadius, Slices, FLoops);
   end;
   gluDeleteQuadric(quadric);
@@ -804,7 +799,7 @@ end;
 
 function TVXCone.AxisAlignedDimensionsUnscaled: TVector;
 var
-  r: GLfloat;
+  r: Single;
 begin
   r := Abs(FBottomRadius);
   Result := VectorMake(r { *Scale.DirectX } , 0.5 * FHeight { *Scale.DirectY } ,
@@ -904,7 +899,7 @@ var
 begin
   glPushMatrix;
   quadric := gluNewQuadric;
-  SetupQuadricParams(Quadric);
+  SetupQuadricParams(@Quadric);
   glRotatef(-90, 1, 0, 0);
   case Alignment of
     caTop:
@@ -926,7 +921,7 @@ begin
   if cyBottom in FParts then
   begin
     // swap quadric orientation because top of a disk is defined as outside
-    SetInvertedQuadricOrientation(quadric);
+    SetInvertedQuadricOrientation(@quadric);
     gluDisk(quadric, 0, FBottomRadius, FSlices, FLoops);
   end;
   gluDeleteQuadric(Quadric);
@@ -977,7 +972,7 @@ end;
 
 function TVXCylinder.AxisAlignedDimensionsUnscaled: TVector;
 var
-  r, r1: GLfloat;
+  r, r1: Single;
 begin
   r := Abs(FBottomRadius);
   r1 := Abs(FTopRadius);
@@ -1338,7 +1333,7 @@ end;
 
 function TVXCapsule.AxisAlignedDimensionsUnscaled: TVector;
 var
-  r, r1: GLfloat;
+  r, r1: Single;
 begin
   r := Abs(FRadius);
   r1 := Abs(FRadius);
@@ -1549,7 +1544,7 @@ var
 begin
   glPushMatrix;
   quadric := gluNewQuadric;
-  SetupQuadricParams(quadric);
+  SetupQuadricParams(@quadric);
   glRotatef(-90, 1, 0, 0);
   glTranslatef(0, 0, -FHeight * 0.5);
   if anOuterSides in FParts then
@@ -1564,7 +1559,7 @@ begin
   if [anBottom, anInnerSides] * FParts <> [] then
   begin
     // swap quadric orientation because top of a disk is defined as outside
-    SetInvertedQuadricOrientation(quadric);
+    SetInvertedQuadricOrientation(@quadric);
     if anBottom in FParts then
       gluDisk(quadric, FBottomInnerRadius, FBottomRadius, FSlices, FLoops);
     if anInnerSides in FParts then
@@ -1590,7 +1585,7 @@ end;
 
 function TVXAnnulus.AxisAlignedDimensionsUnscaled: TVector;
 var
-  r, r1: GLfloat;
+  r, r1: Single;
 begin
   r := Abs(FBottomRadius);
   r1 := Abs(FTopRadius);
@@ -1811,9 +1806,9 @@ procedure TVXTorus.BuildList(var rci: TVXRenderContextInfo);
 
 var
   i, j: integer;
-  Theta, Phi, Theta1, cosPhi, sinPhi, dist: GLfloat;
-  cosTheta1, sinTheta1: GLfloat;
-  ringDelta, sideDelta: GLfloat;
+  Theta, Phi, Theta1, cosPhi, sinPhi, dist: Single;
+  cosTheta1, sinTheta1: Single;
+  ringDelta, sideDelta: Single;
   ringDir: TAffineVector;
   iFact, jFact: Single;
   pVertex: PVertexRec;
@@ -2114,7 +2109,7 @@ end;
 
 function TVXTorus.AxisAlignedDimensionsUnscaled: TVector;
 var
-  r, r1: GLfloat;
+  r, r1: Single;
 begin
   r := Abs(FMajorRadius);
   r1 := Abs(FMinorRadius);
@@ -2283,7 +2278,7 @@ begin
   cylOffset := -FHeight * 0.5;
   // create a new quadric
   quadric := gluNewQuadric();
-  SetupQuadricParams(quadric);
+  SetupQuadricParams(@quadric);
   // does the top arrow part - the cone
   if alTopArrow in Parts then
   begin
@@ -2293,7 +2288,7 @@ begin
     gluCylinder(quadric, fTopArrowHeadRadius, 0, fTopArrowHeadHeight,
       Slices, Stacks);
     // top of a disk is defined as outside
-    SetInvertedQuadricOrientation(quadric);
+    SetInvertedQuadricOrientation(@quadric);
     if alLine in Parts then
       gluDisk(quadric, FTopRadius, fTopArrowHeadRadius, Slices, FLoops)
     else
@@ -2309,11 +2304,11 @@ begin
     // make the bottom arrow point in the other direction
     glRotatef(180, 1, 0, 0);
     glTranslatef(0, 0, Height * 0.5 - BottomArrowHeadHeight * headInfluence);
-    SetNormalQuadricOrientation(quadric);
+    SetNormalQuadricOrientation(@quadric);
     gluCylinder(quadric, fBottomArrowHeadRadius, 0, fBottomArrowHeadHeight,
       Slices, Stacks);
     // top of a disk is defined as outside
-    SetInvertedQuadricOrientation(quadric);
+    SetInvertedQuadricOrientation(@quadric);
     if alLine in Parts then
       gluDisk(quadric, FBottomRadius, fBottomArrowHeadRadius, Slices, FLoops)
     else
@@ -2325,7 +2320,7 @@ begin
   begin
     glPushMatrix;
     glTranslatef(0, 0, cylOffset);
-    SetNormalQuadricOrientation(quadric);
+    SetNormalQuadricOrientation(@quadric);
     gluCylinder(quadric, FBottomRadius, FTopRadius, cylHeight, FSlices,
       FStacks);
     if not(alTopArrow in Parts) then
@@ -2338,7 +2333,7 @@ begin
     if not(alBottomArrow in Parts) then
     begin
       // swap quadric orientation because top of a disk is defined as outside
-      SetInvertedQuadricOrientation(quadric);
+      SetInvertedQuadricOrientation(@quadric);
       gluDisk(quadric, 0, FBottomRadius, FSlices, FLoops);
     end;
     glPopMatrix;
@@ -3180,12 +3175,12 @@ begin
   inherited Assign(Source);
 end;
 
-function TVXFrustrum.TopDepth: GLfloat;
+function TVXFrustrum.TopDepth: Single;
 begin
   Result := FBaseDepth * (FApexHeight - FHeight) / FApexHeight;
 end;
 
-function TVXFrustrum.TopWidth: GLfloat;
+function TVXFrustrum.TopWidth: Single;
 begin
   Result := FBaseWidth * (FApexHeight - FHeight) / FApexHeight;
 end;

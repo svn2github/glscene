@@ -11,12 +11,11 @@ interface
 {$I VXScene.inc}
 
 uses
-  Winapi.OpenGL,
-  Winapi.OpenGLext,
   System.Classes,
   System.SysUtils,
   System.Math,
 
+  VXS.OpenGL,
   VXS.CrossPlatform,
   VXS.Context,
   VXS.Graphics,
@@ -566,7 +565,6 @@ end;
 
 initialization
 
-{ Register this Fileformat-Handler with GLScene }
 RegisterRasterFormat('dds', 'Direct Draw Surface', TVXDDSImage);
 
 end.

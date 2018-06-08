@@ -12,13 +12,12 @@ interface
 {$I VXScene.inc}
 
 uses
-  Winapi.OpenGL,
-  Winapi.OpenGLext,
   System.Classes,
   System.SysUtils,
   System.UITypes,
   FMX.Graphics,
 
+  VXS.OpenGL,
   VXS.VectorTypes,
   VXS.Context,
   VXS.CrossPlatform,
@@ -602,7 +601,7 @@ begin
         CollisionState.Position := oldPosition;
         CollisionState.Contact.intNormal := intNormal;
         CollisionState.Contact.intPoint := intPoint;
-        CollisionState.Time := GLGetTickCount();
+        CollisionState.Time := TThread.GetTickCount();
 
         behaviour.CollisionStates.add(CollisionState);
 
@@ -764,7 +763,7 @@ procedure TVXBFPSMovement.MoveForward(Distance: single);
 var
   prevObj: TVXBaseSceneObject;
 begin
-  assert(assigned(Manager),
+  Assert(assigned(Manager),
     'Manager not assigned on TVXBFPSMovement behaviour!');
   prevObj := Manager.Navigator.MovingObject;
   Manager.Navigator.MovingObject := OwnerBaseSceneObject;
@@ -776,7 +775,7 @@ procedure TVXBFPSMovement.StrafeHorizontal(Distance: single);
 var
   prevObj: TVXBaseSceneObject;
 begin
-  assert(assigned(Manager),
+  Assert(assigned(Manager),
     'Manager not assigned on TVXBFPSMovement behaviour!');
   prevObj := Manager.Navigator.MovingObject;
   Manager.Navigator.MovingObject := OwnerBaseSceneObject;
@@ -788,7 +787,7 @@ procedure TVXBFPSMovement.StrafeVertical(Distance: single);
 var
   prevObj: TVXBaseSceneObject;
 begin
-  assert(assigned(Manager),
+  Assert(assigned(Manager),
     'Manager not assigned on TVXBFPSMovement behaviour!');
   prevObj := Manager.Navigator.MovingObject;
   Manager.Navigator.MovingObject := OwnerBaseSceneObject;
@@ -800,7 +799,7 @@ procedure TVXBFPSMovement.TurnHorizontal(Angle: single);
 var
   prevObj: TVXBaseSceneObject;
 begin
-  assert(assigned(Manager),
+  Assert(assigned(Manager),
     'Manager not assigned on TVXBFPSMovement behaviour!');
   prevObj := Manager.Navigator.MovingObject;
   Manager.Navigator.MovingObject := OwnerBaseSceneObject;
@@ -824,7 +823,7 @@ procedure TVXBFPSMovement.Straighten;
 var
   prevObj: TVXBaseSceneObject;
 begin
-  assert(assigned(Manager),
+  Assert(assigned(Manager),
     'Manager not assigned on TVXBFPSMovement behaviour!');
   prevObj := Manager.Navigator.MovingObject;
   Manager.Navigator.MovingObject := OwnerBaseSceneObject;
@@ -839,7 +838,7 @@ var
 begin
   inherited DoProgress(progressTime);
 
-  assert(assigned(Manager), 'FPS Manager not assigned to behaviour.');
+  Assert(assigned(Manager), 'FPS Manager not assigned to behaviour.');
 
   // make arrowlines invisible (they are made visible in SphereSweepAndSlide)
   ArrowLine1.Visible := false;
@@ -875,7 +874,7 @@ begin
   if CollisionStates.count > 0 then
   begin
     CollisionState := TCollisionState(CollisionStates.First);
-    tickCount := GLGetTickCount();
+    TickCount := TThread.GetTickCount();
     // remove all old states
     while (CollisionState <> nil) and
       (CollisionState.Time < tickCount - Manager.DisplayTime) do

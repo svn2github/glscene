@@ -19,12 +19,12 @@ interface
 
 uses
   Winapi.Windows,
-  Winapi.OpenGL,
-  Winapi.OpenGLext,
+  System.Types,
   System.Classes,
   System.SysUtils,
   System.Math,
 
+  VXS.OpenGL,
   VXS.Scene,
   VXS.Color,
   VXS.Objects,
@@ -229,9 +229,7 @@ type
   TVXGizmoEx = class(TComponent)
   private
     FUIBaseGizmo: TVXBaseSceneObject;
-
     FUIRootHelpers: TVXBaseSceneObject;
-
     FUIRootSelect: TVXBaseSceneObject; // for None
     FUIRootMovement: TVXBaseSceneObject; // for Move
     FUIRootRotate: TVXBaseSceneObject; //for Rotate
@@ -241,16 +239,13 @@ type
     FUIRootVisibleInfoLabels: TVXBaseSceneObject;
     FInterfaceRender: TVXDirectOpenVX;
     FInternalRender: TVXDirectOpenVX;
-
     FUISelectLineX, FUISelectLineY, FUISelectLineZ: TVXGizmoExUILines;  //  For None (Select)
-
     //IC- Invisible Control
     //For Move
     FUIICMovementLineX, FUIICMovementLineY, FUIICMovementLineZ, FUIICMovementLineXY, FUIICMovementLineXZ, FUIICMovementLineYZ: TVXGizmoExUIFrustrum;
     FUIMovementArrowX, FUIMovementArrowY, FUIMovementArrowZ: TVXGizmoExUIArrowLine; // For Move
     FUIMovementLineX, FUIMovementLineY, FUIMovementLineZ, FUIMovementLineXY, FUIMovementLineXZ, FUIMovementLineYZ: TVXGizmoExUILines; // For Move
     FUIMovementPlaneXY, FUIMovementPlaneXZ, FUIMovementPlaneYZ: TVXGizmoExUIPolyGon; // For Move
-
     //ForRotate
     FUIRotateLineX, FUIRotateLineY, FUIRotateLineZ, FUIRotateLineXY, FUIRotateLineXZ: TVXGizmoExUILines;
     FUIICRotateTorusX, FUIICRotateTorusY, FUIICRotateTorusZ, FUIICRotateTorusXZ: TVXGizmoExUITorus; // For Rotate
@@ -258,54 +253,40 @@ type
     FUIRotateLineArrowX, FUIRotateLineArrowY, FUIRotateLineArrowZ: TVXGizmoExUILines;
     FUIICRotateSphereXY: TVXGizmoExUISphere;
     FUIRotateAxisLabelX, FUIRotateAxisLabelY, FUIRotateAxisLabelZ: TVXGizmoExUIFlatText;
-
     //ForScale
     FUIScaleArrowX, FUIScaleArrowY, FUIScaleArrowZ: TVXGizmoExUISphere; // For Scale
-
     FUIScaleLineX, FUIScaleLineY, FUIScaleLineZ, FUIScaleLineXY, FUIScaleLineYZ, FUIScaleLineXZ: TVXGizmoExUILines;
-
     FUIICScaleLineX, FUIICScaleLineY, FUIICScaleLineZ, FUIICScaleLineXY, FUIICScaleLineXZ, FUIICScaleLineYZ, FUIICScaleLineXYZ: TVXGizmoExUIFrustrum;
     FUIScalePlaneXY, FUIScalePlaneXZ, FUIScalePlaneYZ, FUIScalePlaneXYZ: TVXGizmoExUIPolyGon; // For Move
-
     FUIAxisLabelX, FUIAxisLabelY, FUIAxisLabelZ: TVXGizmoExUIFlatText;
     FUIVisibleInfoLabels: TVXGizmoExUIFlatText;
-
     FRootGizmo: TVXBaseSceneObject;
     FRootObjects: TVXBaseSceneObject;
     FGizmoTmpRoot: TVXBaseSceneObject;
     FSelectedObj: TVXBaseSceneObject;
-
     FOperation: TVXGizmoExOperation;
     FOperationMode: TVXGizmoExOperationMode;
     FSelAxis: TVXGizmoExAxis;
     fInfoLabelCoordType: TInfoLabelCoordType;
     FReferenceCoordSystem: TVXGizmoExReferenceCoordinateSystem;
-
     FBoundingBoxColor: TVXColor;
     FSelectedColor: TVXColor;
     FVisibleInfoLabelsColor: TVXColor;
     FSelectionRegionColor: TVXColor;
-
     FVisibleInfoLabelsColorChanged: Boolean;
-
     FAutoZoom: Boolean;
     FExcludeObjects: Boolean;
     FExcludeClassname: Boolean;
     FNoZWrite: Boolean;
     FEnabled: Boolean;
-
     FAutoZoomFactor: Single;
     FZoomFactor: Single;
     FMoveCoef: Single;
     FRotationCoef: Single;
-
     FViewer: TVXSceneViewer;
-
     FVisibleVisibleInfoLabels: TVXGizmoExVisibleInfoLabels;
-
     FExcludeObjectsList: TStrings;
     FExcludeClassNameList: TStrings;
-
     FSelectionRegion: TVXGizmoExSelectionRegion;
     FEnableMultiSelection: Boolean;
     FShowMultiSelecting: Boolean;
@@ -314,24 +295,17 @@ type
     FCanRemoveObjFromSelectionList: Boolean;
     FSelectedObjects: TVXPickList;
     FAntiAliasedLines: Boolean;
-
     FShowAxisLabel: Boolean;
     FShowObjectInfos: Boolean;
     FShowBoundingBox: Boolean;
-
     FCanChangeWithChildren: Boolean;
-
-
     moving: Boolean;
     mx, my: Integer;
-
-    fCursorPos: TVXPoint;
-    fLastCursorPos: TVXPoint;
+    fCursorPos: TPoint;
+    fLastCursorPos: TPoint;
     fChangeRate: TAffineVector;   //total rotate angle
     FEnableLoopCursorMoving: Boolean;
-
     lastMousePos: TVector;
-
     FOnUpdate: TNotifyEvent;
     FOnSelect: TVXGizmoExAcceptEvent;
     FOnOperationChange: TNotifyEvent;
@@ -341,16 +315,13 @@ type
     FScaleCoef: Single;
     FGizmoThickness: Single;
     FPickMode: TVXGizmoExPickMode;
-
     FEnableHistory: Boolean;
     FHistory: TVXGizmoExActionHistoryCollection;
     FHistoryStepsCount: Integer;
     FLabelFont: TVXCustomBitmapFont;
-
     procedure SetRootGizmo(const AValue: TVXBaseSceneObject);
     procedure SetRootObjects(const AValue: TVXBaseSceneObject);
     procedure SetGizmoTmpRoot(const AValue: TVXBaseSceneObject);
-
     procedure SetGizmoExVisibleInfoLabels(const AValue: TVXGizmoExVisibleInfoLabels);
     procedure SetBoundingBoxColor(const AValue: TVXColor);
     procedure SetSelectedColor(const AValue: TVXColor);
@@ -361,16 +332,13 @@ type
     procedure SetInfoLabelCoordType(aValue: TInfoLabelCoordType);
     procedure SetReferenceCoordSystem(aValue: TVXGizmoExReferenceCoordinateSystem);
     procedure SetHistoryStepsCount(aValue: Integer);
-
     procedure SetExcludeObjectsList(const AValue: TStrings);
     procedure SetExcludeClassNameList(const AValue: TStrings);
-
     function MouseWorldPos(const X, Y: Integer): TVector;
     function CheckObjectInExcludeList(const Obj: TVXBaseSceneObject): Boolean;
     function CheckClassNameInExcludeList(const Obj: TVXBaseSceneObject): Boolean;
     procedure UpdateVisibleInfoLabels;
     procedure SetGizmoExThickness(const Value: Single);
-
     procedure ActivatingElements(PickList: TVXPickList);
     procedure InterfaceRender(Sender: TObject; var rci: TVXRenderContextInfo);
     procedure InternalRender(Sender: TObject; var rci: TVXRenderContextInfo);
@@ -393,14 +361,12 @@ type
     procedure SetZoomFactor(const AValue: Single);
     procedure SetSelAxis(aValue: TVXGizmoExAxis);
     procedure SetPickMode(APickMode: TVXGizmoExPickMode);
-
     procedure AssignPickList(aList: TVXPickList; RemoveObj: Boolean = False);
     procedure AddObjToSelectionList(Obj: TVXBaseSceneObject);
     procedure RemoveObjFromSelectionList(Obj: TVXBaseSceneObject);
     procedure MultiSelMouseDown(X, Y: Integer);
     procedure MultiSelMouseUp(X, Y: Integer);
     procedure MultiSelMouseMove(X, Y: Integer);
-
     function GetPickList: TVXPickList;
     procedure SetPickList(aValue: TVXPickList);
     property SelAxis: TVXGizmoExAxis read FSelAxis write SetSelAxis;
@@ -413,63 +379,45 @@ type
     destructor Destroy; override;
     procedure Loaded; override;
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
-
     procedure ViewerMouseMove(const X, Y: Integer);
     procedure ViewerMouseDown(const X, Y: Integer);
     procedure ViewerMouseUp(const X, Y: Integer);
-
     procedure UpdateGizmo; overload;
-
     procedure LooseSelection; virtual;
-
     procedure UndoAdd(const AObject: TObject);
     procedure RemoveSelectedObjects;
-
     function Undo: TVXGizmoExActionHistoryItem;
     function Redo: TVXGizmoExActionHistoryItem;
-
     property CanAddObjToSelectionList: Boolean read FCanAddObjToSelectionList write FCanAddObjToSelectionList;
     property CanRemoveObjFromSelectionList: Boolean read FCanRemoveObjFromSelectionList write FCanRemoveObjFromSelectionList;
-
     procedure LooseCursorSelection;
     property CursorSelectingRegion: Boolean read FShowMultiSelecting;
-
     property RootObjects: TVXBaseSceneObject read FRootObjects write SetRootObjects;
     property RootGizmo: TVXBaseSceneObject read FRootGizmo write SetRootGizmo;
     property GizmoTmpRoot: TVXBaseSceneObject read FGizmoTmpRoot write SetGizmoTmpRoot;
     //--------------------------------------------------------------------
   published
     property Viewer: TVXSceneViewer read FViewer write SetViewer;
-
     property BoundingBoxColor: TVXColor read FBoundingBoxColor write SetBoundingBoxColor;
     property SelectedColor: TVXColor read FSelectedColor write SetSelectedColor;
     property SelectionRegionColor: TVXColor read FSelectionRegionColor write SetSelectionRegionColor;
-
     property SelectedObj: TVXBaseSceneObject read GetSelectedObj write SetSelectedObj;
     property SelectedObjects: TVXPickList read GetPickList write SetPickList;
-
     property OperationMode: TVXGizmoExOperationMode read FOperationMode write SetOperationMode default gomSelect;
-
     property ExcludeObjects: Boolean read FExcludeObjects write FExcludeObjects;
     property ExcludeObjectsList: TStrings read FExcludeObjectsList write SetExcludeObjectsList;
-
     property ExcludeClassname: Boolean read FExcludeClassname write FExcludeClassname;
     property ExcludeClassnameList: TStrings read FExcludeClassnameList write SetExcludeClassnameList;
-
     property VisibleInfoLabels: TVXGizmoExVisibleInfoLabels read FVisibleVisibleInfoLabels write SetGizmoExVisibleInfoLabels;
     property VisibleInfoLabelsColor: TVXColor read FVisibleInfoLabelsColor write SetVisibleInfoLabelsColor;
-
     property AutoZoom: Boolean read FAutoZoom write FAutoZoom default True;
     property AutoZoomFactor: Single read FAutoZoomFactor write SetAutoZoomFactor;
     property ZoomFactor: Single read FZoomFactor write SetZoomFactor;
-
     property MoveCoef: Single read FMoveCoef write FMoveCoef;
     property RotationCoef: Single read FRotationCoef write FRotationCoef;
     property ScaleCoef: Single read FScaleCoef write FScaleCoef;
     property NoZWrite: Boolean read FNoZWrite write SetNoZWrite default True;
-
     property GizmoThickness: Single read FGizmoThickness write SetGizmoExThickness;
-
     { Indicates whether the gizmo is enabled or not.
        WARNING: When loading/editing (possibly whenever a structureChanged
        call is made) a model, sometimes the gizmo will trigger a
@@ -481,12 +429,9 @@ type
     { Warning Enable is ReadOnly property if you set to False, Gizmo is not Hidden
       use Visible instead if you want to Hide, if you want to Hide but keep enabled
       see the VisibleGizmo property }
-
     { Use the property OperationMode=gomNone to unactivate gizmo and make it invisible}
     property Enabled: Boolean read FEnabled write FEnabled default True;
-
     property LabelFont: TVXCustomBitmapFont read FLabelFont write SetLabelFont default nil;
-
     property OnSelectionLost: TNotifyEvent read FOnSelectionLost write FOnSelectionLost;
     property OnOperationChange: TNotifyEvent read FOnOperationChange write FOnOperationChange;
     property OnOperationModeChange: TNotifyEvent read FOnOperationModeChange write FOnOperationModeChange;
@@ -494,19 +439,14 @@ type
     property OnAxisSelected: TVXGizmoExAxisSelected read FOnAxisSelected write FOnAxisSelected;
     property OnUpdate: TNotifyEvent read FOnUpdate write FOnUpdate;
     property PickMode: TVXGizmoExPickMode read FPickMode write SetPickMode default pmGetPickedObjects;
-
     property EnableActionHistory: Boolean read FEnableHistory write FEnableHistory default True;
     property HistoryStepsCount: Integer read FHistoryStepsCount write SetHistoryStepsCount;
-
     property EnableLoopCursorMoving: Boolean read FEnableLoopCursorMoving write SetEnableLoopCursorMoving default True;
     property EnableMultiSelection: Boolean read FEnableMultiSelection write SetEnableMultiSelection default True;
     property CanChangeWithChildren: Boolean read FCanChangeWithChildren write SetCanChangeWithChildren;
-
     property AntiAliasedLines: Boolean read FAntiAliasedLines write SetAALines default True;
     property InfoLabelCoordType: TInfoLabelCoordType read fInfoLabelCoordType write SetInfoLabelCoordType default ilcChangeRate;
-
     property SelectionRegion: TVXGizmoExSelectionRegion read FSelectionRegion write SetSelectionRegion default gsrRectangular;
-
     property ShowAxisLabel: Boolean read FShowAxisLabel write SetShowAxisLabel default True;
     property ShowObjectInfos: Boolean read FShowObjectInfos write SetShowObjectInfos default True;
     property ShowBoundingBox: Boolean read FShowBoundingBox write SetShowBoundingBox default True;
@@ -514,8 +454,9 @@ type
     property Visible: Boolean read GetVisible write SetVisible;
   end;
 
-
+//--------------------------------------------------------------------
 implementation
+//---------------------------------------------------------------------
 
 procedure RotateAroundArbitraryAxis(const anObject: TVXBaseSceneObject; const Axis, Origin: TAffineVector; const angle: Single);
 var
@@ -2656,7 +2597,7 @@ procedure TVXGizmoEx.MultiSelMouseUp(X, Y: Integer);
 var
   I, J:   Integer;
   pick:   TVXPickList;
-  p1, p2: TVXPoint;
+  p1, p2: TPoint;
   Line:   TVXGizmoExSelRec;
   LastCurPosX, LastCurPosY, CurPosX, CurPosY: Single;
 begin
@@ -3807,8 +3748,8 @@ var
   procedure LoopCursorMoving(isvector: Boolean = False);
   {$IFDEF MSWINDOWS}
   var
-    R, vR: TVXRect;
-    cp:    TVXpoint;
+    R, vR: TRect;
+    cp:    TPoint;
   {$ENDIF}
   begin
   {$IFDEF MSWINDOWS}

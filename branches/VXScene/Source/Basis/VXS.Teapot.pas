@@ -11,9 +11,9 @@ interface
 {$I VXScene.inc}
 
 uses
-  Winapi.OpenGL,
   System.Classes,
 
+  VXS.OpenGL,
   VXS.Scene,
   VXS.PersistentClasses,
   VXS.State,

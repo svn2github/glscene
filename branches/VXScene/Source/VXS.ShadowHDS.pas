@@ -25,12 +25,11 @@ unit VXS.ShadowHDS;
 interface
 
 uses
-  Winapi.OpenGL,
-  Winapi.OpenGLext,
   System.Classes,
   System.SysUtils,
   System.Math,
 
+  VXS.OpenGL,
   VXS.VectorLists,
   VXS.HeightData,
   VXS.Graphics,

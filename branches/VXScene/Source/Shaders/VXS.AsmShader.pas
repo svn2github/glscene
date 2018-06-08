@@ -18,8 +18,7 @@ uses
   System.Classes, 
   System.SysUtils,
   
-  Winapi.OpenGL, 
-  Winapi.OpenGLext,   
+  VXS.OpenGL,
   VXS.Context,
   VXS.VectorGeometry, 
   VXS.VectorTypes, 

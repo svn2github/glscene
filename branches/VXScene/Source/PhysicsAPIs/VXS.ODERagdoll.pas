@@ -120,8 +120,8 @@ type
 
 
 var
-  vGLODERagdoll_cDensity : Single;
-  vGLODERagdoll_cMass : Single;
+  vODERagdoll_cDensity : Single;
+  vODERagdoll_cMass : Single;
 
 //------------------------------------------------------------------------
 implementation
@@ -285,9 +285,9 @@ begin
       if (BoneSize.V[n]=0) then
          BoneSize.V[n]:=0.000001;
 
-  dMassSetBox(mass, vGLODERagdoll_cDensity, BoneSize.X, BoneSize.Y, BoneSize.Z);
+  dMassSetBox(mass, vODERagdoll_cDensity, BoneSize.X, BoneSize.Y, BoneSize.Z);
 
-  dMassAdjust(mass, vGLODERagdoll_cMass);
+  dMassAdjust(mass, vODERagdoll_cMass);
   dBodySetMass(FBody, @mass);
 
   AlignBodyToMatrix(ReferenceMatrix);
@@ -388,8 +388,8 @@ end;
 
 
 initialization
-  vGLODERagdoll_cDensity := 20;
-  vGLODERagdoll_cMass := 1;
+  vODERagdoll_cDensity := 20;
+  vODERagdoll_cMass := 1;
 
 
 end.

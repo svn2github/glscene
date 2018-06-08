@@ -11,12 +11,11 @@ interface
 {$I VXScene.inc}
 
 uses
-  Winapi.OpenGL,
-  Winapi.OpenGLext,
   System.Classes,
   System.SysUtils,
   System.Math,
 
+  VXS.OpenGL,
   VXS.Scene,
   VXS.Objects,
   VXS.VectorFileObjects,
@@ -291,7 +290,7 @@ var
      loaded correctly from a 3ds file.
      Also there is a significant drop in FPS when this option is on
      (for unknown reasons), so it is off by default. }
-  vGLFile3DS_UseTextureEx: boolean = False;
+  vFile3DS_UseTextureEx: boolean = False;
 
   { If enabled, allows 3ds animation and fixes loading of some 3ds models,
      but has a few bugs:
@@ -299,21 +298,21 @@ var
      - TVXMeshObject.vertices return values different from
         TVXMeshObject.ExtractTriangles()
      }
-  vGLFile3DS_EnableAnimation: boolean = False;
+  vFile3DS_EnableAnimation: boolean = False;
 
   { If enabled, a -90 degrees (-PI/2) rotation will occured on X Axis.
      By design 3dsmax has a Z Up-Axis, after the rotation the Up axis will
-     be Y. (Note: you need vGLFile3DS_EnableAnimation = true)
+     be Y. (Note: you need vFile3DS_EnableAnimation = true)
   }
-  vGLFile3DS_FixDefaultUpAxisY: boolean = False;
+  vFile3DS_FixDefaultUpAxisY: boolean = False;
 
 
   { If >= 0, then the vertices list will be updated with selected frame
-     animation data. (Note: you need vGLFile3DS_EnableAnimation = true).
+     animation data. (Note: you need vFile3DS_EnableAnimation = true).
      Be aware that in that case animation will not be usable, it is made
      to be used with a static mesh like GLFreeForm.
   }
-  vGLFile3DS_LoadedStaticFrame: integer = -1;
+  vFile3DS_LoadedStaticFrame: integer = -1;
 
 // ------------------------------------------------------------------
 implementation
@@ -598,7 +597,7 @@ begin
   begin
     FScale[I] := TAffineVector(PPointList(AData)[I]);
 
-    if vGLFile3DS_FixDefaultUpAxisY then
+    if vFile3DS_FixDefaultUpAxisY then
     begin
       AffVect := FScale[I];
 
@@ -686,7 +685,7 @@ begin
     end;
     FRot[I] := Rot[I];
 
-    if vGLFile3DS_FixDefaultUpAxisY then
+    if vFile3DS_FixDefaultUpAxisY then
     begin
       AffVect.X := FRot[I].X;
       AffVect.Y := FRot[I].Y;
@@ -755,7 +754,7 @@ begin
   begin
     FPos[I] := TAffineVector(PPointList(AData)[I]);
 
-    if vGLFile3DS_FixDefaultUpAxisY then
+    if vFile3DS_FixDefaultUpAxisY then
     begin
       FPos[I] := VectorRotateAroundX(FPos[I], cGLFILE3DS_FIXDEFAULTUPAXISY_ROTATIONVALUE);
     end;
@@ -866,7 +865,7 @@ begin
   begin
     FTPos[I] := TaffineVector(PPointList(AData)[I]);
 
-    if vGLFile3DS_FixDefaultUpAxisY then
+    if vFile3DS_FixDefaultUpAxisY then
     begin
       FTPos[I] := VectorRotateAroundX(FTPos[I], cGLFILE3DS_FIXDEFAULTUPAXISY_ROTATIONVALUE);
     end;
@@ -1176,7 +1175,7 @@ var
   p: TVXFile3DSDummyObject;
   lAnimationData: TVXFile3DSAnimationData;
 begin
-  if not vGLFile3DS_EnableAnimation then
+  if not vFile3DS_EnableAnimation then
     Exit;
 
   if (FParentName <> '') then
@@ -1317,7 +1316,7 @@ begin
     with FRefTranf do
     begin
 
-      if vGLFile3DS_FixDefaultUpAxisY then
+      if vFile3DS_FixDefaultUpAxisY then
       begin
         RotMat := CreateRotationMatrixX(cGLFILE3DS_FIXDEFAULTUPAXISY_ROTATIONVALUE);
         InvertMatrix(RotMat);
@@ -1343,10 +1342,10 @@ begin
     end;
   end;
 
-  if vGLFile3DS_LoadedStaticFrame = -1 then
+  if vFile3DS_LoadedStaticFrame = -1 then
     SetFrame(CGLFILE3DS_DEFAULT_FRAME)
   else
-    SetFrame(vGLFile3DS_LoadedStaticFrame);
+    SetFrame(vFile3DS_LoadedStaticFrame);
 end;
 
 procedure TVXFile3DSMeshObject.BuildList(var ARci: TVXRenderContextInfo);
@@ -1408,10 +1407,10 @@ begin
       FParent := TVXFile3DSDummyObject(Owner.FindMeshByName(string(Parent)));
   end;
 
-  if vGLFile3DS_LoadedStaticFrame = -1 then
+  if vFile3DS_LoadedStaticFrame = -1 then
     SetFrame(CGLFILE3DS_DEFAULT_FRAME)
   else
-    SetFrame(vGLFile3DS_LoadedStaticFrame);
+    SetFrame(vFile3DS_LoadedStaticFrame);
 end;
 
 procedure TVXFile3DSOmniLightObject.SetFrame(const AFrame: real);
@@ -1512,10 +1511,10 @@ begin
       FParent := TVXFile3DSDummyObject(Owner.FindMeshByName(string(Parent)));
   end;
 
-  if vGLFile3DS_LoadedStaticFrame = -1 then
+  if vFile3DS_LoadedStaticFrame = -1 then
     SetFrame(CGLFILE3DS_DEFAULT_FRAME)
   else
-    SetFrame(vGLFile3DS_LoadedStaticFrame);
+    SetFrame(vFile3DS_LoadedStaticFrame);
 end;
 
 procedure TVXFile3DSSpotLightObject.SetFrame(const AFrame: real);
@@ -1576,10 +1575,10 @@ begin
     AddKeys(aTPos);
   end;
 
-  if vGLFile3DS_LoadedStaticFrame = -1 then
+  if vFile3DS_LoadedStaticFrame = -1 then
     SetFrame(CGLFILE3DS_DEFAULT_FRAME)
   else
-    SetFrame(vGLFile3DS_LoadedStaticFrame);
+    SetFrame(vFile3DS_LoadedStaticFrame);
 end;
 
 procedure TVXFile3DSCameraObject.SetFrame(const AFrame: real);
@@ -1699,7 +1698,7 @@ var
           end;
           if Trim(string(material.Texture.Map.NameStr)) <> '' then
             try
-              if vGLFile3DS_UseTextureEx then
+              if vFile3DS_UseTextureEx then
                 with libMat.Material.TextureEx.Add do
                 begin
                   Texture.Image.LoadFromFile(string(material.Texture.Map.NameStr));
@@ -1733,7 +1732,7 @@ var
 
           if Trim(string(material.Opacity.Map.NameStr)) <> '' then
             try
-              if vGLFile3DS_UseTextureEx then
+              if vFile3DS_UseTextureEx then
                 with libMat.Material.TextureEx.Add do
                 begin
                   libMat.Material.BlendingMode := bmTransparency;
@@ -1774,7 +1773,7 @@ var
             end;
           if Trim(string(material.Bump.Map.NameStr)) <> '' then
             try
-              if vGLFile3DS_UseTextureEx then
+              if vFile3DS_UseTextureEx then
                 with libMat.Material.TextureEx.Add do
                 begin
                   Texture.Image.LoadFromFile(string(material.Bump.Map.NameStr));
@@ -2290,7 +2289,7 @@ begin
           // now go for each material group
           // if there's no face to material assignment then just copy the
           // face definitions and rely on the default texture of the scene object
-          if (NMats = 0) or (not vGLVectorFileObjectsAllocateMaterials) then
+          if (NMats = 0) or (not vVectorFileObjectsAllocateMaterials) then
           begin
             aFaceGroup := TFGVertexIndexList.CreateOwned(mesh.FaceGroups);
             with aFaceGroup do
@@ -2400,7 +2399,7 @@ begin
       end;
 
       // Apply animation matrix to static data
-      if vGLFile3DS_LoadedStaticFrame >= 0 then
+      if vFile3DS_LoadedStaticFrame >= 0 then
       begin
         for i := 0 to Owner.MeshObjects.Count - 1 do
         begin

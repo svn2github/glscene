@@ -12,8 +12,6 @@ interface
 uses
   Winapi.Windows,
   WinApi.Messages,
-  Winapi.OpenGL,
-  Winapi.OpenGLext,
   System.Classes,
   System.SysUtils,
   System.Types,

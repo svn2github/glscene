@@ -892,7 +892,7 @@ begin
 
   if (key = FControls.AutoCompleteCommand) then
   begin
-    CurrentTickCount := GLGetTickCount;
+    CurrentTickCount := TThread.GetTickCount;
     AutoCompleteCommand(MatchCount, AdditionalCommandsMatchList,
       CommandsMatchList);
     if MatchCount = 0 then

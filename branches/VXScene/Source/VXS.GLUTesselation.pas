@@ -11,10 +11,9 @@ interface
 {$I VXScene.inc}
 
 uses
-  Winapi.OpenGL,
-  Winapi.OpenGLext,
   System.SysUtils,
 
+  VXS.OpenGL,
   VXS.VectorFileObjects,
   VXS.VectorLists,
   VXS.VectorGeometry,
@@ -36,7 +35,7 @@ var
   TessVertices: PAffineVectorArray;
 
 procedure DoTessBegin(mode: GLEnum);
-{$IFDEF MSWIDOWS} stdcall;{$ENDIF}{$IFDEF UNIX} cdecl;{$ENDIF}
+{$IFDEF MSWIDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
 begin
   TessFace := TFGIndexTexCoordList.CreateOwned(TessMesh.FaceGroups);
   case mode of
@@ -47,19 +46,19 @@ begin
 end;
 
 procedure DoTessVertex3fv(v: PAffineVector);
-{$IFDEF MSWIDOWS} stdcall;{$ENDIF}{$IFDEF UNIX} cdecl;{$ENDIF}
+{$IFDEF MSWIDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
 begin
   TessFace.Add(TessMesh.Vertices.Add(v^), 0, 0);
 end;
 
 procedure DoTessEnd;
-{$IFDEF MSWIDOWS} stdcall;{$ENDIF}{$IFDEF UNIX} cdecl;{$ENDIF}
+{$IFDEF MSWIDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
 begin
   //
 end;
 
 procedure DoTessError(errno: GLEnum);
-{$IFDEF MSWIDOWS} stdcall;{$ENDIF}{$IFDEF UNIX} cdecl;{$ENDIF}
+{$IFDEF MSWIDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
 begin
   Assert(False, IntToStr(errno) + ': ' + string(gluErrorString(errno)));
 end;
@@ -71,7 +70,7 @@ begin
 end;
 
 procedure DoTessCombine(coords: PDoubleVector; vertex_data: Pointer; weight: PGLFloat; var outData: Pointer);
-{$IFDEF MSWIDOWS} stdcall;{$ENDIF}{$IFDEF UNIX} cdecl;{$ENDIF}
+{$IFDEF MSWIDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
 begin
   outData := AllocNewVertex;
   SetVector(PAffineVector(outData)^, coords[0], coords[1], coords[2]);
@@ -79,7 +78,7 @@ end;
 
 procedure DoTesselate(Vertexes: TAffineVectorList; Mesh: TVXBaseMesh; normal: PAffineVector = nil; invertNormals: Boolean = False);
 var
-  Tess: GLUTesselator;
+  Tess: PGLUTesselator;
   i: Integer;
   dblVector: TAffineDblVector;
 begin
@@ -121,7 +120,7 @@ begin
     for i := Vertexes.Count - 1 downto 0 do
     begin
       SetVector(dblVector, Vertexes.Items[i]);
-      gluTessVertex(tess, @dblVector, Vertexes.ItemAddress[i]);
+      gluTessVertex(tess, dblVector, Vertexes.ItemAddress[i]);
     end;
   end
   else
@@ -129,7 +128,7 @@ begin
     for i := 0 to Vertexes.Count - 1 do
     begin
       SetVector(dblVector, Vertexes.Items[i]);
-      gluTessVertex(tess, @dblVector, Vertexes.ItemAddress[i]);
+      gluTessVertex(tess, dblVector, Vertexes.ItemAddress[i]);
     end;
   end;
   gluTessEndContour(tess);

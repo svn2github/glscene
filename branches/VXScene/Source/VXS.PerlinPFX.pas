@@ -3,7 +3,6 @@
 //
 {
    PFX particle effects revolving around the use of Perlin noise.
-
 }
 unit VXS.PerlinPFX;
 
@@ -12,11 +11,10 @@ interface
 {$I VXScene.inc}
 
 uses
-  Winapi.OpenGL,
-  Winapi.OpenGLext,
   System.Classes,
   System.Math,
 
+  VXS.OpenGL,
   VXS.ParticleFX,
   VXS.Graphics,
   VXS.CrossPlatform,

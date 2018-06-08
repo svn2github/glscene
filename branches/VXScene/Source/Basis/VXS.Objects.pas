@@ -19,13 +19,12 @@ interface
 {$I VXScene.inc}
 
 uses
-  Winapi.OpenGL,
-  Winapi.OpenGLext,
+  System.Types,
   System.Classes,
   System.SysUtils,
   System.Math,
 
-  VXS.OpenGL1x,
+  VXS.OpenGL,
   VXS.PersistentClasses,
   VXS.XOpenGL,
   VXS.VectorGeometry,
@@ -68,13 +67,13 @@ type
     display list (see Amalgamate property). }
   TVXDummyCube = class(TVXCameraInvariantObject)
   private
-    FCubeSize: GLfloat;
+    FCubeSize: Single;
     FEdgeColor: TVXColor;
     FVisibleAtRunTime, FAmalgamate: Boolean;
     FGroupList: TVXListHandle;
     FOnVisibilityDetermination: TVXVisibilityDeterminationEvent;
   protected
-    procedure SetCubeSize(const val: GLfloat); inline;
+    procedure SetCubeSize(const val: Single); inline;
     procedure SetEdgeColor(const val: TVXColor); inline;
     procedure SetVisibleAtRunTime(const val: Boolean); inline;
     procedure SetAmalgamate(const val: Boolean); inline;
@@ -91,7 +90,7 @@ type
     procedure StructureChanged; override;
     function BarycenterAbsolutePosition: TVector; override;
   published
-    property CubeSize: TGLfloat read FCubeSize write SetCubeSize;
+    property CubeSize: Single read FCubeSize write SetCubeSize;
     property EdgeColor: TVXColor read FEdgeColor write SetEdgeColor;
     { If true the dummycube's edges will be visible at runtime.
       The default behaviour of the dummycube is to be visible at design-time
@@ -129,21 +128,21 @@ type
     tiling is only applied to texture coordinates. }
   TVXPlane = class(TVXSceneObject)
   private
-    FXOffset, FYOffset: GLfloat;
-    FXScope, FYScope: GLfloat;
-    FWidth, FHeight: GLfloat;
+    FXOffset, FYOffset: Single;
+    FXScope, FYScope: Single;
+    FWidth, FHeight: Single;
     FXTiles, FYTiles: Cardinal;
     FStyle: TVXPlaneStyles;
     FMesh: array of array of TVertexRec;
   protected
     procedure SetHeight(const aValue: Single);
     procedure SetWidth(const aValue: Single);
-    procedure SetXOffset(const Value: GLfloat);
-    procedure SetXScope(const Value: GLfloat);
+    procedure SetXOffset(const Value: Single);
+    procedure SetXScope(const Value: Single);
     function StoreXScope: Boolean;
     procedure SetXTiles(const Value: Cardinal);
-    procedure SetYOffset(const Value: GLfloat);
-    procedure SetYScope(const Value: GLfloat);
+    procedure SetYOffset(const Value: Single);
+    procedure SetYScope(const Value: Single);
     function StoreYScope: Boolean;
     procedure SetYTiles(const Value: Cardinal);
     procedure SetStyle(const val: TVXPlaneStyles);
@@ -158,18 +157,18 @@ type
       intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean; override;
     { Computes the screen coordinates of the smallest rectangle encompassing the plane.
       Returned extents are NOT limited to any physical screen extents. }
-    function ScreenRect(aBuffer: TVXSceneBuffer): TVXRect;
+    function ScreenRect(aBuffer: TVXSceneBuffer): TRect;
     { Computes the signed distance to the point.
       Point coordinates are expected in absolute coordinates. }
     function PointDistance(const aPoint: TVector): Single;
   published
-    property Height: GLfloat read FHeight write SetHeight;
-    property Width: GLfloat read FWidth write SetWidth;
-    property XOffset: GLfloat read FXOffset write SetXOffset;
-    property XScope: GLfloat read FXScope write SetXScope stored StoreXScope;
+    property Height: Single read FHeight write SetHeight;
+    property Width: Single read FWidth write SetWidth;
+    property XOffset: Single read FXOffset write SetXOffset;
+    property XScope: Single read FXScope write SetXScope stored StoreXScope;
     property XTiles: Cardinal read FXTiles write SetXTiles default 1;
-    property YOffset: GLfloat read FYOffset write SetYOffset;
-    property YScope: GLfloat read FYScope write SetYScope stored StoreYScope;
+    property YOffset: Single read FYOffset write SetYOffset;
+    property YScope: Single read FYScope write SetYScope stored StoreYScope;
     property YTiles: Cardinal read FYTiles write SetYTiles default 1;
     property Style: TVXPlaneStyles read FStyle write SetStyle default [psSingleQuad, psTileTexture];
   end;
@@ -179,15 +178,15 @@ type
     if you want a 2D sprite that does not get scaled, see TVXHUDSprite. }
   TVXSprite = class(TVXSceneObject)
   private
-    FWidth: GLfloat;
-    FHeight: GLfloat;
-    FRotation: GLfloat;
+    FWidth: Single;
+    FHeight: Single;
+    FRotation: Single;
     FAlphaChannel: Single;
     FMirrorU, FMirrorV: Boolean;
   protected
-    procedure SetWidth(const val: GLfloat);
-    procedure SetHeight(const val: GLfloat);
-    procedure SetRotation(const val: GLfloat);
+    procedure SetWidth(const val: Single);
+    procedure SetHeight(const val: Single);
+    procedure SetRotation(const val: Single);
     procedure SetAlphaChannel(const val: Single);
     function StoreAlphaChannel: Boolean;
     procedure SetMirrorU(const val: Boolean);
@@ -197,17 +196,17 @@ type
     procedure Assign(Source: TPersistent); override;
     procedure BuildList(var rci: TVXRenderContextInfo); override;
     function AxisAlignedDimensionsUnscaled: TVector; override;
-    procedure SetSize(const Width, Height: GLfloat);
+    procedure SetSize(const Width, Height: Single);
     // Set width and height to "size"
-    procedure SetSquareSize(const Size: GLfloat);
+    procedure SetSquareSize(const Size: Single);
   published
     { Sprite Width in 3D world units. }
-    property Width: GLfloat read FWidth write SetWidth;
+    property Width: Single read FWidth write SetWidth;
     { Sprite Height in 3D world units. }
-    property Height: GLfloat read FHeight write SetHeight;
+    property Height: Single read FHeight write SetHeight;
     { This the ON-SCREEN rotation of the sprite. 
       Rotatation=0 is handled faster. }
-    property Rotation: GLfloat read FRotation write SetRotation;
+    property Rotation: Single read FRotation write SetRotation;
     { If different from 1, this value will replace that of Diffuse.Alpha }
     property AlphaChannel: Single read FAlphaChannel write SetAlphaChannel stored StoreAlphaChannel;
     { Reverses the texture coordinates in the U and V direction to mirror
@@ -394,7 +393,7 @@ type
     procedure Assign(Source: TPersistent); override;
     function AxisAlignedDimensionsUnscaled: TVector; override;
     procedure AddNode(const coords: TVXCoordinates); overload;
-    procedure AddNode(const X, Y, Z: GLfloat); overload;
+    procedure AddNode(const X, Y, Z: Single); overload;
     procedure AddNode(const Value: TVector); overload;
     procedure AddNode(const Value: TAffineVector); overload;
   published
@@ -467,8 +466,8 @@ type
     FCubeSize: TAffineVector;
     FParts: TCubeParts;
     FNormalDirection: TNormalDirection;
-    function GetCubeWHD(const Index: Integer): GLfloat; inline;
-    procedure SetCubeWHD(Index: Integer; AValue: GLfloat); inline;
+    function GetCubeWHD(const Index: Integer): Single; inline;
+    procedure SetCubeWHD(Index: Integer; AValue: Single); inline;
     procedure SetParts(aValue: TCubeParts); inline;
     procedure SetNormalDirection(aValue: TNormalDirection); inline;
   protected
@@ -484,9 +483,9 @@ type
     function RayCastIntersect(const rayStart, rayVector: TVector; intersectPoint: PVector = nil; 
 	  intersectNormal: PVector = nil): Boolean; override;
   published
-    property CubeWidth: GLfloat index 0 read GetCubeWHD write SetCubeWHD stored False;
-    property CubeHeight: GLfloat index 1 read GetCubeWHD write SetCubeWHD stored False;
-    property CubeDepth: GLfloat index 2 read GetCubeWHD write SetCubeWHD stored False;
+    property CubeWidth: Single index 0 read GetCubeWHD write SetCubeWHD stored False;
+    property CubeHeight: Single index 1 read GetCubeWHD write SetCubeWHD stored False;
+    property CubeDepth: Single index 2 read GetCubeWHD write SetCubeWHD stored False;
     property NormalDirection: TNormalDirection read FNormalDirection write SetNormalDirection default ndOutside;
     property Parts: TCubeParts read FParts write SetParts default [cpTop, cpBottom, cpFront, cpBack, cpLeft, cpRight];
   end;
@@ -527,7 +526,7 @@ type
     of sphere. }
   TVXSphere = class(TVXQuadricObject)
   private
-    FRadius: GLfloat;
+    FRadius: Single;
     FSlices, FStacks: GLint;
     FTop: TAngleLimit1;
     FBottom: TAngleLimit1;
@@ -536,7 +535,7 @@ type
     FTopCap, FBottomCap: TCapType;
     procedure SetBottom(aValue: TAngleLimit1);
     procedure SetBottomCap(aValue: TCapType);
-    procedure SetRadius(const aValue: GLfloat);
+    procedure SetRadius(const aValue: Single);
     procedure SetSlices(aValue: GLint);
     procedure SetStart(aValue: TAngleLimit2);
     procedure SetStop(aValue: TAngleLimit2);
@@ -557,7 +556,7 @@ type
     property Bottom: TAngleLimit1 read FBottom write SetBottom default -90;
     property BottomCap: TCapType read FBottomCap write SetBottomCap
       default ctNone;
-    property Radius: GLfloat read FRadius write SetRadius;
+    property Radius: Single read FRadius write SetRadius;
     property Slices: GLint read FSlices write SetSlices default 16;
     property Stacks: GLint read FStacks write SetStacks default 16;
     property Start: TAngleLimit2 read FStart write SetStart default 0;
@@ -583,7 +582,7 @@ type
     procedure Assign(Source: TPersistent); override;
     procedure NotifyChange(Sender: TObject); override;
     procedure AddNode(const coords: TVXCoordinates); overload;
-    procedure AddNode(const X, Y, Z: GLfloat); overload;
+    procedure AddNode(const X, Y, Z: Single); overload;
     procedure AddNode(const Value: TVector); overload;
     procedure AddNode(const Value: TAffineVector); overload;
   published
@@ -602,7 +601,7 @@ type
     as well as being just a slice of Superellipsoid. }
   TVXSuperellipsoid = class(TVXQuadricObject)
   private
-    FRadius, FVCurve, FHCurve: GLFloat;
+    FRadius, FVCurve, FHCurve: Single;
     FSlices, FStacks: GLInt;
     FTop: TAngleLimit1;
     FBottom: TAngleLimit1;
@@ -611,9 +610,9 @@ type
     FTopCap, FBottomCap: TCapType;
     procedure SetBottom(aValue: TAngleLimit1);
     procedure SetBottomCap(aValue: TCapType);
-    procedure SetRadius(const aValue: GLFloat);
-    procedure SetVCurve(const aValue: GLFloat);
-    procedure SetHCurve(const aValue: GLFloat);
+    procedure SetRadius(const aValue: Single);
+    procedure SetVCurve(const aValue: Single);
+    procedure SetHCurve(const aValue: Single);
     procedure SetSlices(aValue: GLInt);
     procedure SetStart(aValue: TAngleLimit2);
     procedure SetStop(aValue: TAngleLimit2);
@@ -634,9 +633,9 @@ type
     property Bottom: TAngleLimit1 read FBottom write SetBottom default -90;
     property BottomCap: TCapType read FBottomCap write SetBottomCap
       default ctNone;
-    property Radius: GLfloat read FRadius write SetRadius;
-    property VCurve: GLFloat read FVCurve write SetVCurve;
-    property HCurve: GLFloat read FHCurve write SetHCurve;
+    property Radius: Single read FRadius write SetRadius;
+    property VCurve: Single read FVCurve write SetVCurve;
+    property HCurve: Single read FHCurve write SetHCurve;
     property Slices: GLInt read FSlices write SetSlices default 16;
     property Stacks: GLInt read FStacks write SetStacks default 16;
     property Start: TAngleLimit2 read FStart write SetStart default 0;
@@ -646,7 +645,7 @@ type
   end;
 
 { Issues OpenVX for a unit-size cube stippled wireframe. }
-procedure CubeWireframeBuildList(var rci: TVXRenderContextInfo; Size: GLfloat;
+procedure CubeWireframeBuildList(var rci: TVXRenderContextInfo; Size: Single;
   Stipple: Boolean; const Color: TColorVector);
 
 var
@@ -661,7 +660,7 @@ uses
   VXS.Spline,
   VXS.State;
 
-procedure CubeWireframeBuildList(var rci: TVXRenderContextInfo; Size: GLfloat;
+procedure CubeWireframeBuildList(var rci: TVXRenderContextInfo; Size: Single;
   Stipple: Boolean; const Color: TColorVector);
 var
   mi, ma: Single;
@@ -819,7 +818,7 @@ begin
     Result := AbsolutePosition;
 end;
 
-procedure TVXDummyCube.SetCubeSize(const val: GLfloat);
+procedure TVXDummyCube.SetCubeSize(const val: Single);
 begin
   if val <> FCubeSize then
   begin
@@ -998,9 +997,9 @@ procedure TVXPlane.BuildList(var rci: TVXRenderContextInfo);
   end;
 
 var
-  hw, hh, posXFact, posYFact, pX, pY1: GLfloat;
-  tx0, tx1, ty0, ty1, texSFact, texTFact: GLfloat;
-  texS, texT1: GLfloat;
+  hw, hh, posXFact, posYFact, pX, pY1: Single;
+  tx0, tx1, ty0, ty1, texSFact, texTFact: Single;
+  texS, texT1: Single;
   X, Y: Integer;
   TanLoc, BinLoc: Integer;
   pVertex: PVertexRec;
@@ -1115,11 +1114,11 @@ begin
   end;
 end;
 
-function TVXPlane.ScreenRect(aBuffer: TVXSceneBuffer): TVXRect;
+function TVXPlane.ScreenRect(aBuffer: TVXSceneBuffer): TRect;
 var
   v: array [0 .. 3] of TVector;
   buf: TVXSceneBuffer;
-  hw, hh: GLfloat;
+  hw, hh: Single;
 begin
   buf := aBuffer;
   if Assigned(buf) then
@@ -1137,7 +1136,7 @@ begin
     Result.Bottom := Round(MaxFloat([v[0].Y, v[1].Y, v[2].Y, v[3].Y]));
   end
   else
-    FillChar(Result, SizeOf(TVXRect), 0);
+    FillChar(Result, SizeOf(TRect), 0);
 end;
 
 function TVXPlane.PointDistance(const aPoint: TVector): Single;
@@ -1156,7 +1155,7 @@ begin
   end;
 end;
 
-procedure TVXPlane.SetXOffset(const Value: GLfloat);
+procedure TVXPlane.SetXOffset(const Value: Single);
 begin
   if Value <> FXOffset then
   begin
@@ -1166,7 +1165,7 @@ begin
   end;
 end;
 
-procedure TVXPlane.SetXScope(const Value: GLfloat);
+procedure TVXPlane.SetXScope(const Value: Single);
 begin
   if Value <> FXScope then
   begin
@@ -1193,7 +1192,7 @@ begin
   end;
 end;
 
-procedure TVXPlane.SetYOffset(const Value: GLfloat);
+procedure TVXPlane.SetYOffset(const Value: Single);
 begin
   if Value <> FYOffset then
   begin
@@ -1203,7 +1202,7 @@ begin
   end;
 end;
 
-procedure TVXPlane.SetYScope(const Value: GLfloat);
+procedure TVXPlane.SetYScope(const Value: Single);
 begin
   if Value <> FYScope then
   begin
@@ -1336,7 +1335,7 @@ begin
     glPopMatrix;
 end;
 
-procedure TVXSprite.SetWidth(const val: GLfloat);
+procedure TVXSprite.SetWidth(const val: Single);
 begin
   if FWidth <> val then
   begin
@@ -1345,7 +1344,7 @@ begin
   end;
 end;
 
-procedure TVXSprite.SetHeight(const val: GLfloat);
+procedure TVXSprite.SetHeight(const val: Single);
 begin
   if FHeight <> val then
   begin
@@ -1354,7 +1353,7 @@ begin
   end;
 end;
 
-procedure TVXSprite.SetRotation(const val: GLfloat);
+procedure TVXSprite.SetRotation(const val: Single);
 begin
   if FRotation <> val then
   begin
@@ -1394,14 +1393,14 @@ begin
   NotifyChange(Self);
 end;
 
-procedure TVXSprite.SetSize(const Width, Height: GLfloat);
+procedure TVXSprite.SetSize(const Width, Height: Single);
 begin
   FWidth := Width;
   FHeight := Height;
   NotifyChange(Self);
 end;
 
-procedure TVXSprite.SetSquareSize(const Size: GLfloat);
+procedure TVXSprite.SetSquareSize(const Size: Single);
 begin
   FWidth := Size;
   FHeight := Size;
@@ -2018,7 +2017,7 @@ begin
   StructureChanged;
 end;
 
-procedure TVXNodedLines.AddNode(const X, Y, Z: GLfloat);
+procedure TVXNodedLines.AddNode(const X, Y, Z: Single);
 var
   n: TVXNode;
 begin
@@ -2124,7 +2123,7 @@ end;
 procedure TVXLines.BuildList(var rci: TVXRenderContextInfo);
 var
   i, n: Integer;
-  A, B, C: GLfloat;
+  A, B, C: Single;
   f: Single;
   Spline: TCubicSpline;
   vertexColor: TVector;
@@ -2296,7 +2295,7 @@ var
   v2: TAffineVector;
   v1d: TAffineVector;
   v2d: TAffineVector;
-  nd: GLFloat;
+  nd: Single;
   TanLoc, BinLoc: Integer;
 begin
   VectorScale(FCubeSize, 0.5, v2);
@@ -2427,7 +2426,7 @@ end;
 function TVXCube.GenerateSilhouette(const silhouetteParameters
   : TVXSilhouetteParameters): TVXSilhouette;
 var
-  hw, hh, hd: GLfloat;
+  hw, hh, hd: Single;
   connectivity: TConnectivity;
   sil: TVXSilhouette;
 begin
@@ -2479,13 +2478,13 @@ begin
   connectivity.Free;
 end;
 
-function TVXCube.GetCubeWHD(const Index: Integer): GLfloat;
+function TVXCube.GetCubeWHD(const Index: Integer): Single;
 begin
   Result := FCubeSize.V[index];
 end;
 
 
-procedure TVXCube.SetCubeWHD(Index: Integer; AValue: GLfloat);
+procedure TVXCube.SetCubeWHD(Index: Integer; AValue: Single);
 begin
   if AValue <> FCubeSize.V[index] then
   begin
@@ -2639,10 +2638,10 @@ const
   cNormalSmoothinToEnum: array [nsFlat .. nsNone] of TGLEnum = (GLU_FLAT,
     GLU_SMOOTH, GLU_NONE);
 begin
-	gluQuadricDrawStyle(Quadric, GLU_FILL);
-	gluQuadricNormals(Quadric, cNormalSmoothinToEnum[FNormals]);
+	gluQuadricDrawStyle(@Quadric, GLU_FILL);
+	gluQuadricNormals(@Quadric, cNormalSmoothinToEnum[FNormals]);
    SetNormalQuadricOrientation(Quadric);
-	gluQuadricTexture(Quadric, True);
+	gluQuadricTexture(@Quadric, True);
 end;
 
 procedure TVXQuadricObject.SetNormalQuadricOrientation(quadric: PGLUquadricObj);
@@ -2650,7 +2649,7 @@ const
   cNormalDirectionToEnum: array [ndInside .. ndOutside] of GLEnum =
     (GLU_INSIDE, GLU_OUTSIDE);
 begin
-  gluQuadricOrientation(quadric, cNormalDirectionToEnum[FNormalDirection]);
+  gluQuadricOrientation(@quadric, cNormalDirectionToEnum[FNormalDirection]);
 end;
 
 procedure TVXQuadricObject.SetInvertedQuadricOrientation(quadric: PGLUquadricObj);
@@ -2658,7 +2657,7 @@ const
   cNormalDirectionToEnum: array [ndInside .. ndOutside] of GLEnum =
     (GLU_OUTSIDE, GLU_INSIDE);
 begin
-  gluQuadricOrientation(quadric, cNormalDirectionToEnum[FNormalDirection]);
+  gluQuadricOrientation(@quadric, cNormalDirectionToEnum[FNormalDirection]);
 end;
 
 procedure TVXQuadricObject.Assign(Source: TPersistent);
@@ -2931,7 +2930,7 @@ begin
   end;
 end;
 
-procedure TVXSphere.SetRadius(const aValue: GLfloat);
+procedure TVXSphere.SetRadius(const aValue: Single);
 begin
   if aValue <> FRadius then
   begin
@@ -3103,7 +3102,7 @@ begin
   StructureChanged;
 end;
 
-procedure TVXPolygonBase.AddNode(const X, Y, Z: GLfloat);
+procedure TVXPolygonBase.AddNode(const X, Y, Z: Single);
 var
   n: TVXNode;
 begin
@@ -3495,7 +3494,7 @@ begin
 end;
 
 
-procedure TVXSuperellipsoid.SetHCurve(const aValue: GLfloat);
+procedure TVXSuperellipsoid.SetHCurve(const aValue: Single);
 begin
   if aValue <> FHCurve then
   begin
@@ -3504,7 +3503,7 @@ begin
   end;
 end;
 
-procedure TVXSuperellipsoid.SetRadius(const aValue: GLfloat);
+procedure TVXSuperellipsoid.SetRadius(const aValue: Single);
 begin
   if aValue <> FRadius then
   begin
@@ -3575,7 +3574,7 @@ begin
   end;
 end;
 
-procedure TVXSuperellipsoid.SetVCurve(const aValue: GLFloat);
+procedure TVXSuperellipsoid.SetVCurve(const aValue: Single);
 begin
   if aValue <> FVCurve then
   begin

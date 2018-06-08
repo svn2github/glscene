@@ -10,11 +10,9 @@ interface
 {$M-}
 
 uses
-  Winapi.OpenGL,
-  Winapi.OpenGLext,
   System.Classes,
 
-  VXS.OpenGL1x,
+  VXS.OpenGL,
   VXS.VectorTypes,
   VXS.TextureFormat,
   VXS.RenderContextInfo;
@@ -119,7 +117,7 @@ type
     function GetUVec2: TVector2ui;
     function GetUVec3: TVector3ui;
     function GetUVec4: TVector4ui;
-    procedure SetFloat(const Value: GLfloat);
+    procedure SetFloat(const Value: Single);
     procedure SetVec2(const Value: TVector2f);
     procedure SetVec3(const Value: TVector3f);
     procedure SetVec4(const Value: TVector4f);
@@ -144,7 +142,7 @@ type
     property GLSLType: TVXSLDataType read GetGLSLType;
     property GLSLSamplerType: TVXSLSamplerType read GetGLSLSamplerType;
     { Scalar types. }
-    property float: GLfloat read GetFloat write SetFloat;
+    property float: Single read GetFloat write SetFloat;
     property int: GLint read GetInt write SetInt;
     property uint: GLuint read GetUInt write SetUInt;
 

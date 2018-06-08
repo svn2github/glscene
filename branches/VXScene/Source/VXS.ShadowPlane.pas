@@ -1,12 +1,12 @@
 //
-// VXScene Component Library, based on GLScene http://glscene.sourceforge.net 
+// VXScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
 {
-   Implements a basic shadow plane. 
+   Implements a basic shadow plane.
 
    It is strongly recommended to read and understand the explanations in the
-   materials/mirror demo before using this component. 
-    
+   materials/mirror demo before using this component.
+
 }
 unit VXS.ShadowPlane;
 
@@ -15,9 +15,9 @@ interface
 {$I VXScene.inc}
 
 uses
-  Winapi.OpenGL,
-  Winapi.OpenGLext,
+  System.Types,
   System.Classes,
+  FMX.Effects,
 
   VXS.OpenGL,
   VXS.VectorTypes,
@@ -55,8 +55,7 @@ type
      invisible (so it won't be rendered in the "regular" pass), and under
      it place another visible dummycube under which you have all your
      low quality objects, use it as shadowing object. Apply the same movements
-     to the low-quality objects that you apply to the visible, high-quality ones.
-     }
+     to the low-quality objects that you apply to the visible, high-quality ones }
   TVXShadowPlane = class(TVXPlane)
   private
     FRendering: Boolean;
@@ -97,11 +96,8 @@ type
           may have adverse effects on old hardware in rare cases
         spoTransparent: does not render the plane's material, may help
           improve performance if you're fillrate limited, are using the
-          stencil, and your hardware has optimized stencil-only writes
-        
-    }
+          stencil, and your hardware has optimized stencil-only writes  }
     property ShadowOptions: TShadowPlaneOptions read FShadowOptions write SetShadowOptions default cDefaultShadowPlaneOptions;
-
     { Fired before the shadows are rendered. }
     property OnBeginRenderingShadows: TNotifyEvent read FOnBeginRenderingShadows write FOnBeginRenderingShadows;
     { Fired after the shadows are rendered. }
@@ -142,7 +138,7 @@ procedure TVXShadowPlane.DoRender(var ARci: TVXRenderContextInfo;
 var
   oldProxySubObject, oldIgnoreMaterials: Boolean;
   shadowMat: TMatrix;
-  sr, ds: TVXRect;
+  sr, ds: TRect;
   CurrentBuffer: TVXSceneBuffer;
   ModelMat: TMatrix;
 begin
@@ -163,9 +159,9 @@ begin
           and (PointDistance(ARci.cameraPosition) > BoundingSphereRadius) then
         begin
           sr := ScreenRect(CurrentBuffer);
-          InflateGLRect(sr, 1, 1);
-          ds := GetGLRect(0, 0, ARci.viewPortSize.cx, ARci.viewPortSize.cy);
-          IntersectGLRect(sr, ds);
+          InflateRectangle(sr, 1, 1);
+          ds := GetRectangle(0, 0, ARci.viewPortSize.cx, ARci.viewPortSize.cy);
+          IntersectRectangle(sr, ds);
           glScissor(sr.Left, sr.Top, sr.Right - sr.Left, sr.Bottom - sr.Top);
           Enable(stScissorTest);
         end;

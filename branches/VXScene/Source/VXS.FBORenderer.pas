@@ -12,12 +12,11 @@ interface
 {$I VXScene.inc}
 
 uses
-  Winapi.OpenGL,
-  Winapi.OpenGLext,
   System.Classes,
   System.SysUtils,
   FMX.Dialogs,
 
+  VXS.OpenGL,
   VXS.PersistentClasses,
   VXS.VectorGeometry,
   VXS.Scene,

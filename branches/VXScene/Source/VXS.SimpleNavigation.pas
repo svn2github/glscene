@@ -16,6 +16,7 @@ interface
 {$I VXScene.inc}
 
 uses
+  System.Types,
   System.Classes,
   System.SysUtils,
   System.TypInfo,
@@ -31,8 +32,6 @@ uses
   VXS.CrossPlatform;
 
 type
-
-  TPoint = VXS.CrossPlatform.TVXPoint; // for Mouse Wheel
 
   TVXSimpleNavigationOption = (
     snoInvertMoveAroundX, snoInvertMoveAroundY, // MoveAroundTarget.
@@ -97,7 +96,7 @@ type
     procedure ViewerMouseMove(Sender: TObject;
       Shift: TShiftState; X, Y: Single);
     procedure ViewerMouseWheel(Sender: TObject; Shift: TShiftState;
-      WheelDelta: Integer; MousePos: TVXPoint; var Handled: Boolean);
+      WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
 
     procedure SetVXSceneViewer(const Value: TVXSceneViewer);
     procedure SetForm(const Value: TCustomForm);
@@ -207,7 +206,7 @@ begin
 end;
 
 procedure TVXSimpleNavigation.ViewerMouseWheel(Sender: TObject;
-  Shift: TShiftState; WheelDelta: Integer; MousePos: TVXPoint;
+  Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint;
   var Handled: Boolean);
 var
   Sign: SmallInt;

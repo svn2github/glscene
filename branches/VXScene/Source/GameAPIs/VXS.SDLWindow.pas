@@ -10,10 +10,6 @@
   SDL-specifics should also be avoided in the "interface" section.
 
   This component uses a Delphi header conversion for SDL from http://libsdl.org
-
-   History :
-   11/12/01 - Egg - Creation
-   The whole history is logged in a former GLS version of the unit.
 }
 unit VXS.SDLWindow;
 
@@ -26,7 +22,7 @@ uses
   System.SysUtils,
   System.SyncObjs,
 
-  VXS.OpenGL1x,
+  VXS.OpenGL,
   VXS.VectorTypes,
   VXS.Context,
   VXS.VectorGeometry,
@@ -191,7 +187,6 @@ function SDL_getenv(const name: PAnsiChar): PAnsiChar;
 //function getenv(const name: PAnsiChar): PAnsiChar;
 
 {------------------------------------------------------------------------------}
-
 procedure Register;
 
 // ---------------------------------------------------------------------

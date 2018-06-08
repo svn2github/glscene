@@ -13,8 +13,6 @@ interface
 
 uses
   Winapi.Windows,
-  Winapi.OpenGL,
-  Winapi.OpenGLext,
   System.Classes,
   System.SysUtils,
   System.Types,
@@ -459,7 +457,7 @@ type
     procedure UnBind; virtual; abstract;
     { Bind a buffer object to an indexed target, used by transform feedback
       buffer objects and uniform buffer objects. (OpenVX 3.0+) }
-    procedure BindRange(index: GLuint; offset: GLintptr; size: GLsizeiptr); virtual;
+    procedure BindRange(index: GLuint; offset: PGLint; size: PGLsizei); virtual;
     { Equivalent to calling BindRange with offset = 0, and size = the size of buffer. }
     procedure BindBase(index: GLuint); virtual;
     procedure UnBindBase(index: GLuint); virtual;
@@ -561,7 +559,7 @@ type
     procedure UnBind; override;
     procedure BeginTransformFeedback(primitiveMode: GLenum);
     procedure EndTransformFeedback();
-    procedure BindRange(index: GLuint; offset: GLintptr; size: GLsizeiptr); override;
+    procedure BindRange(index: GLuint; offset: PGLint; size: PGLsizei); override;
     procedure BindBase(index: GLuint); override;
     procedure UnBindBase(index: GLuint); override;
     class function IsSupported: Boolean; override;
@@ -589,7 +587,7 @@ type
   public
     procedure Bind; override;
     procedure UnBind; override;
-    procedure BindRange(index: GLuint; offset: GLintptr; size: GLsizeiptr); override;
+    procedure BindRange(index: GLuint; offset: PGLint; size: PGLsizei); override;
     procedure BindBase(index: GLuint); override;
     procedure UnBindBase(index: GLuint); override;
     class function IsSupported: Boolean; override;
@@ -2219,7 +2217,7 @@ begin
   Result := GL_ARB_vertex_buffer_object;
 end;
 
-procedure TVXBufferObjectHandle.BindRange(index: GLuint; offset: GLintptr; size: GLsizeiptr);
+procedure TVXBufferObjectHandle.BindRange(index: GLuint; offset: PGLint; size: PGLsizei);
 begin
   Assert(False, 'BindRange only XBO and UBO');
 end;
@@ -2397,14 +2395,14 @@ begin
   glEndTransformFeedback();
 end;
 
-procedure TVXTransformFeedbackBufferHandle.BindRange(index: GLuint; offset: GLintptr; size: GLsizeiptr);
+procedure TVXTransformFeedbackBufferHandle.BindRange(index: GLuint; offset: PGLint; size: PGLsizei);
 begin
-  vCurrentContext.VXStates.SetBufferIndexedBinding(Handle, bbtTransformFeedBack, index, offset, size);
+///  vCurrentContext.VXStates.SetBufferIndexedBinding(Handle, bbtTransformFeedBack, index, offset, size);
 end;
 
 procedure TVXTransformFeedbackBufferHandle.BindBase(index: GLuint);
 begin
-  vCurrentContext.VXStates.SetBufferIndexedBinding(Handle, bbtTransformFeedBack, index, BufferSize);
+  vCurrentContext.VXStates.SetBufferIndexedBinding(Handle, bbtTransformFeedBack, index, @BufferSize);
 end;
 
 procedure TVXTransformFeedbackBufferHandle.UnBindBase(index: GLuint);
@@ -2455,14 +2453,14 @@ begin
   vCurrentContext.VXStates.UniformBufferBinding := 0;
 end;
 
-procedure TVXUniformBufferHandle.BindRange(index: GLuint; offset: GLintptr; size: GLsizeiptr);
+procedure TVXUniformBufferHandle.BindRange(index: GLuint; offset: PGLint; size: PGLsizei);
 begin
-  vCurrentContext.VXStates.SetBufferIndexedBinding(Handle, bbtUniform, index, offset, size);
+///  vCurrentContext.VXStates.SetBufferIndexedBinding(Handle, bbtUniform, index, offset, size);
 end;
 
 procedure TVXUniformBufferHandle.BindBase(index: GLuint);
 begin
-  vCurrentContext.VXStates.SetBufferIndexedBinding(Handle, bbtUniform, index, BufferSize);
+  vCurrentContext.VXStates.SetBufferIndexedBinding(Handle, bbtUniform, index, @BufferSize);
 end;
 
 procedure TVXUniformBufferHandle.UnBindBase(index: GLuint);

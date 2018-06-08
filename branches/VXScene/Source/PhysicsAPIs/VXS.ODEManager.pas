@@ -2,7 +2,7 @@
 // VXScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
 {
-  An ODE Manager for GLScene.
+  An ODE Manager for VXScene.
   Notes:
   This code is still under development so any part of it may change at anytime.
 }
@@ -14,14 +14,12 @@ interface
 {$I VXScene.inc}
 
 uses
-  Winapi.OpenGL,
-  Winapi.OpenGLext,
   System.Classes,
   System.SysUtils,
 
   ODEImport,
 
-  VXS.OpenGL1x,
+  VXS.OpenGL,
   VXS.ODEGL,
   VXS.Scene,
   VXS.VectorGeometry,
@@ -789,7 +787,7 @@ function GetOdeDynamic(Obj: TVXBaseSceneObject): TVXODEDynamic;
 function GetOrCreateOdeDynamic(Obj: TVXBaseSceneObject): TVXODEDynamic;
 
 var
-  vGLODEObjectRegister: TList;
+  vODEObjectRegister: TList;
 
 //=====================================================================
 implementation
@@ -858,13 +856,13 @@ end;
 
 procedure RegisterVXSceneObject(anObject: TVXBaseSceneObject);
 begin
-  if vGLODEObjectRegister.IndexOf(anObject) = -1 then
-    vGLODEObjectRegister.Add(anObject);
+  if vODEObjectRegister.IndexOf(anObject) = -1 then
+    vODEObjectRegister.Add(anObject);
 end;
 
 procedure UnregisterVXSceneObject(anObject: TVXBaseSceneObject);
 begin
-  vGLODEObjectRegister.Remove(anObject);
+  vODEObjectRegister.Remove(anObject);
 end;
 
 function GetVXSceneObject(anObjectName: String): TVXBaseSceneObject;
@@ -872,11 +870,11 @@ var
   i: Integer;
 begin
   Result := nil;
-  for i := 0 to vGLODEObjectRegister.Count - 1 do
-    if TVXBaseSceneObject(vGLODEObjectRegister[i]).GetNamePath = anObjectName
+  for i := 0 to vODEObjectRegister.Count - 1 do
+    if TVXBaseSceneObject(vODEObjectRegister[i]).GetNamePath = anObjectName
     then
     begin
-      Result := vGLODEObjectRegister[i];
+      Result := vODEObjectRegister[i];
       Exit;
     end;
 end;
@@ -5109,7 +5107,7 @@ end;
 initialization
 // ------------------------------------------------------------------
 
-vGLODEObjectRegister := TList.Create;
+vODEObjectRegister := TList.Create;
 
 RegisterXCollectionItemClass(TVXODEDynamic);
 RegisterXCollectionItemClass(TVXODEStatic);
@@ -5137,7 +5135,7 @@ finalization
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-vGLODEObjectRegister.Free;
+vODEObjectRegister.Free;
 
 UnregisterXCollectionItemClass(TVXODEDynamic);
 UnregisterXCollectionItemClass(TVXODEStatic);

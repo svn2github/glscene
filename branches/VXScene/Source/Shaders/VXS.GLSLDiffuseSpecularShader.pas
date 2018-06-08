@@ -24,10 +24,19 @@ interface
 {$I VXScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
-  
-  VXS.Texture, VXS.Scene, VXS.VectorGeometry, Winapi.OpenGL, Winapi.OpenGLext,  VXS.Strings,
-  VXS.CustomShader, VXS.GLSLShader, VXS.Color, VXS.RenderContextInfo, VXS.Material;
+  System.Classes,
+  System.SysUtils,
+
+  VXS.OpenGL,
+  VXS.Texture,
+  VXS.Scene,
+  VXS.VectorGeometry,
+  VXS.Strings,
+  VXS.CustomShader,
+  VXS.GLSLShader,
+  VXS.Color,
+  VXS.RenderContextInfo,
+  VXS.Material;
 
 type
   EGLSLDiffuseSpecularShaderException = class(EGLSLShaderException);

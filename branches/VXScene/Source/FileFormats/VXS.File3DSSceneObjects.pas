@@ -11,12 +11,11 @@ interface
 {$I VXScene.inc}
 
 uses
-  Winapi.OpenGL,
-  Winapi.OpenGLext,
   System.Classes,
   System.SysUtils,
   System.Math,
 
+  VXS.OpenGL,
   VXS.VectorGeometry,
   VXS.Context,
   VXS.Scene,
@@ -48,8 +47,8 @@ type
   TVXFile3DSCamera = class(TVXCamera)
   private
     FTargetPos: TVXCoordinates;
-    FQuadCyl: array[0..1] of GLUquadricObj;
-    FQuadDisk: array[0..1] of GLUquadricObj;
+    FQuadCyl: array[0..1] of PGLUquadricObj;
+    FQuadDisk: array[0..1] of PGLUquadricObj;
   public
     constructor Create(AOwner: TComponent); override;
     procedure DoRender(var rci: TVXRenderContextInfo; renderSelf, renderChildren: Boolean); override;
@@ -94,7 +93,7 @@ type
   end;
 
 var
-  vGLFile3DSSceneObjects_RenderCameraAndLights: Boolean = False;
+  vFile3DSSceneObjects_RenderCameraAndLights: Boolean = False;
 
 //===============================================================
 implementation
@@ -185,7 +184,7 @@ var
 
 begin
   inherited;
-  if not vGLFile3DSSceneObjects_RenderCameraAndLights then
+  if not vFile3DSSceneObjects_RenderCameraAndLights then
     Exit;
 
   rci.VXStates.PolygonMode := pmLines;
@@ -276,7 +275,7 @@ var
 
 begin
   inherited;
-  if not vGLFile3DSSceneObjects_RenderCameraAndLights then
+  if not vFile3DSSceneObjects_RenderCameraAndLights then
     Exit;
 
   v := VectorNormalize(VectorSubtract(FTargetPos.AsAffineVector, Position.AsAffineVector));

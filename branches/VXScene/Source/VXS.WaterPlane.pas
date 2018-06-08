@@ -14,8 +14,6 @@ interface
 {$I VXScene.inc}
 
 uses
-  Winapi.OpenGL,
-  Winapi.OpenGLext,
   System.Classes,
   FMX.Types,
   FMX.Graphics,
@@ -443,7 +441,7 @@ var
   i: Integer;
   il: TIntegerList;
 begin
-  glPushClientAttribDefaultEXT(GL_CLIENT_VERTEX_ARRAY_BIT);
+  glPushClientAttrib(GL_CLIENT_VERTEX_ARRAY_BIT);
 
   glEnableClientState(GL_VERTEX_ARRAY);
   glVertexPointer(3, GL_FLOAT, 0, FPlaneQuadVertices.List);

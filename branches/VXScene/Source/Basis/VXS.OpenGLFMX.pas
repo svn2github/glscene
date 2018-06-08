@@ -6,9 +6,9 @@ interface
 
 uses
   Winapi.Windows,
-  Winapi.OpenGL,
-  Winapi.OpenGLext,
-  FMX.Forms;
+  FMX.Forms,
+
+  VXS.OpenGL;
 
 type
   TVXOpenGL = class
@@ -570,7 +570,7 @@ initialization
 
 VXOpenGL := TVXOpenGL.Create;
 VXOpenGL.BeginGL;
-InitOpenGLext;
+////InitOpenGLext;
 
 finalization
 

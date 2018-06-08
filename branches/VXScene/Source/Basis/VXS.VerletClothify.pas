@@ -13,11 +13,19 @@ interface
 {$I VXScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
+  System.Classes,
+  System.SysUtils,
 
-  VXS.VectorFileObjects, VXS.VerletTypes, VXS.VectorTypes, VXS.VectorLists,
-  VXS.VectorGeometry, VXS.Texture, Winapi.OpenGL, Winapi.OpenGLext,  VXS.RenderContextInfo,
-  VXS.State, VXS.Context;
+  VXS.OpenGL,
+  VXS.VectorFileObjects,
+  VXS.VerletTypes,
+  VXS.VectorTypes,
+  VXS.VectorLists,
+  VXS.VectorGeometry,
+  VXS.Texture,
+  VXS.RenderContextInfo,
+  VXS.State,
+  VXS.Context;
 
 
 type
@@ -161,11 +169,11 @@ type
     constructor CreateOwned(const aOwner : TVXVerletWorld); override;
     destructor Destroy; override;
   end;
-//---------------------------------------------------------------------------
+
 //---------------------------------------------------------------------------
 implementation
 //---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
 { TFaceExtractor }
 
 procedure TFaceExtractor.Clear;

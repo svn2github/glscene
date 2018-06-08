@@ -5,7 +5,6 @@
    Implements a basic Canvas-like interface over for OpenVX
    This class can be used for generic OpenVX applications and has no dependencies
    to the VXScene core units (only to base units).
-
 }
 unit VXS.Canvas;
 
@@ -14,13 +13,13 @@ interface
 {$I VXScene.inc}
 
 uses
-  Winapi.OpenGL,
-  Winapi.OpenGLext,
+  System.Types,
   System.Classes,
   System.UITypes,
   System.Math,
   FMX.Graphics,
-  
+
+  VXS.OpenGL,
   VXS.VectorGeometry,
   VXS.Color,
   VXS.CrossPlatform,
@@ -73,14 +72,14 @@ type
     constructor Create(bufferSizeX, bufferSizeY: Integer); overload;
     destructor Destroy; override;
     { Stops the current internal primitive.
-       This function is invoked automatically by TVXCanvas when changeing
-       primitives, you should directly call if you want to render your
-       own stuff intertwined with TVXCanvas drawings. In that case, call
-       it before your own OpenVX calls. }
+      This function is invoked automatically by TVXCanvas when changeing
+      primitives, you should directly call if you want to render your
+      own stuff intertwined with TVXCanvas drawings. In that case, call
+      it before your own OpenVX calls. }
     procedure StopPrimitive;
     { Inverts the orientation of the Y Axis.
-       If (0, 0) was in the top left corner, it will move to the bottom
-       left corner or vice-versa. }
+      If (0, 0) was in the top left corner, it will move to the bottom
+      left corner or vice-versa. }
     procedure InvertYAxis;
     property CanvasSizeX: Integer read FBufferSizeX;
     property CanvasSizeY: Integer read FBufferSizeY;
@@ -109,9 +108,9 @@ type
     { Draws the set of lines defined by connecting the points.
        Similar to invoking MoveTo on the first point, then LineTo
        on all the following points. }
-    procedure Polyline(const points: array of TVXPoint);
+    procedure Polyline(const points: array of TPoint);
     { Similar to Polyline but also connects the last point to the first. }
-    procedure Polygon(const points: array of TVXPoint);
+    procedure Polygon(const points: array of TPoint);
     { Plots a pixel at given coordinate. PenWidth affects pixel size.
        The current position is NOT updated. }
     procedure PlotPixel(const x, y: Integer); overload;
@@ -166,9 +165,9 @@ type
     property ArcDirection: TArcDirection read FArcDirection write FArcDirection;
   end;
 
-//===============================================================
+//-------------------------------------------------------------
 implementation
-//===============================================================
+//-------------------------------------------------------------
 
 const
   cNoPrimitive = MaxInt;
@@ -191,13 +190,10 @@ begin
   glPushMatrix;
   PM := CreateOrthoMatrix(0, bufferSizeX, bufferSizeY, 0, -1, 1);
   glLoadMatrixf(@PM);
-
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix;
   glLoadMatrixf(@baseTransform);
-
   BackupOpenVXStates;
-
   FLastPrimitive := cNoPrimitive;
   FArcDirection := adCounterClockWise;
 end;
@@ -210,10 +206,8 @@ end;
 destructor TVXCanvas.Destroy;
 begin
   StopPrimitive;
-
   glMatrixMode(GL_PROJECTION);
   glPopMatrix;
-
   glMatrixMode(GL_MODELVIEW);
   glPopMatrix;
 end;
@@ -362,7 +356,7 @@ begin
   glVertex2f(x2, y2);
 end;
 
-procedure TVXCanvas.Polyline(const points: array of TVXPoint);
+procedure TVXCanvas.Polyline(const points: array of TPoint);
 var
   i, n: Integer;
 begin
@@ -377,7 +371,7 @@ begin
   end;
 end;
 
-procedure TVXCanvas.Polygon(const points: array of TVXPoint);
+procedure TVXCanvas.Polygon(const points: array of TPoint);
 var
   i, n: Integer;
 begin
@@ -562,6 +556,7 @@ begin
   glColor4f(x1y2Color.X, x1y2Color.Y, x1y2Color.Z, x1y2Color.W);
   glVertex2i(x1, y2);
   StopPrimitive;
+
   // restore pen color
   glColor4fv(@FCurrentPenColorVector);
 end;
@@ -577,6 +572,7 @@ begin
   glColor4f(edgeColor.X, edgeColor.Y, edgeColor.Z, edgeColor.W);
   EllipseVertices(x, y, xRadius, yRadius);
   StopPrimitive;
+
   // restore pen color
   glColor4fv(@FCurrentPenColorVector);
 end;
@@ -588,6 +584,7 @@ begin
   glColor4f(edgeColor.X, edgeColor.Y, edgeColor.Z, edgeColor.W);
   EllipseVertices(x, y, xRadius, yRadius);
   StopPrimitive;
+
   // restore pen color
   glColor4fv(@FCurrentPenColorVector);
 end;
@@ -662,7 +659,6 @@ begin
   Arc(x2, y1, x2 - x2r, y1 + y2r, 0, pi3on2);
   Line(x + xr, y1, x2 - xr, y1);
 end;
-
 
 // wrapper from "ByPoints" methode
 

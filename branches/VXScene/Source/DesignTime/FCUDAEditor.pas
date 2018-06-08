@@ -53,21 +53,21 @@ const
   cRegistryKey = 'Software\GLScene\GLSCUDAEditor';
 
 var
-  vGLSCUDAEditorForm: TVXSCUDAEditorForm;
+  vSCUDAEditorForm: TVXSCUDAEditorForm;
 
 function GLSCUDAEditorForm: TVXSCUDAEditorForm;
 begin
-  if not Assigned(vGLSCUDAEditorForm) then
-    vGLSCUDAEditorForm := TVXSCUDAEditorForm.Create(nil);
-  Result := vGLSCUDAEditorForm;
+  if not Assigned(vSCUDAEditorForm) then
+    vSCUDAEditorForm := TVXSCUDAEditorForm.Create(nil);
+  Result := vSCUDAEditorForm;
 end;
 
 procedure ReleaseGLSCUDAEditorForm;
 begin
-  if Assigned(vGLSCUDAEditorForm) then
+  if Assigned(vSCUDAEditorForm) then
   begin
-    vGLSCUDAEditorForm.Free;
-    vGLSCUDAEditorForm := nil;
+    vSCUDAEditorForm.Free;
+    vSCUDAEditorForm := nil;
   end;
 end;
 

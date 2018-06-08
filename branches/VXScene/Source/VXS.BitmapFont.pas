@@ -11,8 +11,6 @@ unit VXS.BitmapFont;
 interface
 
 uses
-  Winapi.OpenGL,
-  Winapi.OpenGLext,
   System.Classes,
   System.SysUtils,
   System.Types,
@@ -20,6 +18,7 @@ uses
   FMX.Graphics,
   FMX.Types,
 
+  VXS.OpenGL,
   VXS.PersistentClasses,
   VXS.XOpenGL,
   VXS.Scene,

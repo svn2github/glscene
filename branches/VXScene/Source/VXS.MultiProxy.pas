@@ -10,11 +10,10 @@ unit VXS.MultiProxy;
 interface
 
 uses
-  Winapi.OpenGL,
-  Winapi.OpenGLext,
   System.Classes,
   System.SysUtils,
 
+  VXS.OpenGL,
   VXS.PersistentClasses,
   VXS.Context,
   VXS.Scene,

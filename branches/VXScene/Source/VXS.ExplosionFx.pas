@@ -25,9 +25,17 @@ interface
 {$I VXScene.inc}
 
 uses
-  Winapi.OpenGL, Winapi.OpenGLext,  VXS.VectorGeometry, VXS.Scene, VXS.VectorFileObjects,
-  VXS.VectorTypes, VXS.VectorLists, VXS.XCollection, VXS.Coordinates,
-  VXS.RenderContextInfo, VXS.Context, VXS.State;
+  VXS.OpenGL,
+  VXS.VectorGeometry,
+  VXS.Scene,
+  VXS.VectorFileObjects,
+  VXS.VectorTypes,
+  VXS.VectorLists,
+  VXS.XCollection,
+  VXS.Coordinates,
+  VXS.RenderContextInfo,
+  VXS.Context,
+  VXS.State;
 
 type
   TVXBExplosionFX = class(TVXObjectPreEffect)

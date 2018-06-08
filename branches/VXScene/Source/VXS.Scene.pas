@@ -13,8 +13,6 @@ interface
 
 uses
   Winapi.Windows,
-  Winapi.OpenGL,
-  Winapi.OpenGLext,
   System.Classes,
   System.SysUtils,
   System.UITypes,
@@ -1313,7 +1311,7 @@ type
     procedure SetFogEnvironment(aValue: TVXFogEnvironment);
     function StoreFog: Boolean;
     procedure SetAccumBufferBits(const val: Integer);
-    procedure PrepareRenderingMatrices(const AViewport: TRectangle; resolution: Integer; pickingRect: PGLRect = nil);
+    procedure PrepareRenderingMatrices(const AViewport: TRectangle; resolution: Integer; pickingRect: PRect = nil);
     procedure DoBaseRender(const AViewport: TRectangle; resolution: Integer; drawState: TVXDrawState;
       baseObject: TVXBaseSceneObject);
     procedure SetupRenderingContext(Context: TVXContext);
@@ -1339,11 +1337,11 @@ type
     // ViewPort for current/last render
     property viewport: TRectangle read FViewPort;
     // Fills the PickList with objects in Rect area
-    procedure PickObjects(const rect: TVXRect; pickList: TVXPickList; objectCountGuess: Integer);
+    procedure PickObjects(const rect: TRect; pickList: TVXPickList; objectCountGuess: Integer);
     { Returns a PickList with objects in Rect area.
       Returned list should be freed by caller.
       Objects are sorted by depth (nearest objects first). }
-    function GetPickedObjects(const rect: TVXRect; objectCountGuess: Integer = 64): TVXPickList;
+    function GetPickedObjects(const rect: TRect; objectCountGuess: Integer = 64): TVXPickList;
     // Returns the nearest object at x, y coordinates or nil if there is none
     function GetPickedObject(x, y: Integer): TVXBaseSceneObject;
     // Returns the color of the pixel at x, y in the frame buffer
@@ -6070,24 +6068,21 @@ begin
   glFogfv(GL_FOG_COLOR, FFogColor.AsAddress);
   glFogf(GL_FOG_START, FFogStart);
   glFogf(GL_FOG_END, FFogEnd);
-  if GL_NV_fog_distance then
-  begin
-    case FogDistance of
-      fdDefault:
-        begin
-          if vImplemDependantFogDistanceDefault = -1 then
-            glGetIntegerv(Cardinal(GL_NV_fog_distance), // GL_FOG_DISTANCE_MODE_NV,
-              @vImplemDependantFogDistanceDefault)
-          else
-            glFogi(Cardinal(GL_NV_fog_distance), vImplemDependantFogDistanceDefault);
-        end;
-      fdEyePlane:
-        glFogi(Cardinal(GL_NV_fog_distance), GL_EYE_PLANE_ABSOLUTE_NV);
-      fdEyeRadial:
-        glFogi(GL_FOG_DISTANCE_MODE_NV, GL_EYE_RADIAL_NV);
-    else
-      Assert(False);
-    end;
+  case FogDistance of
+    fdDefault:
+      begin
+        if vImplemDependantFogDistanceDefault = -1 then
+          glGetIntegerv(Cardinal(GL_FOG_DISTANCE_MODE_NV), // GL_FOG_DISTANCE_MODE_NV,
+            @vImplemDependantFogDistanceDefault)
+        else
+          glFogi(Cardinal(GL_FOG_DISTANCE_MODE_NV), vImplemDependantFogDistanceDefault);
+      end;
+    fdEyePlane:
+      glFogi(Cardinal(GL_FOG_DISTANCE_MODE_NV), GL_EYE_PLANE_ABSOLUTE_NV);
+    fdEyeRadial:
+      glFogi(GL_FOG_DISTANCE_MODE_NV, GL_EYE_RADIAL_NV);
+  else
+    Assert(False);
   end;
 
   if tempActivation then
@@ -6327,8 +6322,7 @@ begin
     SetState(FaceCulling, stCullFace);
     SetState(Lighting, stLighting);
     SetState(FogEnable, stFog);
-    if GL_ARB_depth_clamp then
-      Disable(stDepthClamp);
+    Disable(stDepthClamp);
     if not(roForwardContext in ContextOptions) then
     begin
       glGetIntegerv(GL_BLUE_BITS, @LColorDepth); // could've used red or green too
@@ -6402,10 +6396,7 @@ begin
     limSubpixelBits:
       glGetIntegerv(GL_SUBPIXEL_BITS, @Result);
     limNbTextureUnits:
-      if GL_ARB_multitexture then
-        glGetIntegerv(GL_MAX_TEXTURE_UNITS_ARB, @Result)
-      else
-        Result := 1;
+      glGetIntegerv(GL_MAX_TEXTURE_UNITS_ARB, @Result);
   else
     Result := 0;
   end;
@@ -6974,7 +6965,7 @@ begin
   DoChange;
 end;
 
-procedure TVXSceneBuffer.PickObjects(const rect: TVXRect; pickList: TVXPickList; objectCountGuess: Integer);
+procedure TVXSceneBuffer.PickObjects(const rect: TRect; pickList: TVXPickList; objectCountGuess: Integer);
 var
   i: Integer;
   obj: TVXBaseSceneObject;
@@ -7015,7 +7006,7 @@ begin
   end;
 end;
 
-function TVXSceneBuffer.GetPickedObjects(const rect: TVXRect; objectCountGuess: Integer = 64): TVXPickList;
+function TVXSceneBuffer.GetPickedObjects(const rect: TRect; objectCountGuess: Integer = 64): TVXPickList;
 begin
   Result := TVXPickList.Create(psMinDepth);
   PickObjects(rect, Result, objectCountGuess);
@@ -7112,7 +7103,7 @@ begin
   // Nothing
 end;
 
-procedure TVXSceneBuffer.PrepareRenderingMatrices(const AViewport: TRectangle; resolution: Integer; pickingRect: PGLRect = nil);
+procedure TVXSceneBuffer.PrepareRenderingMatrices(const AViewport: TRectangle; resolution: Integer; pickingRect: PRect = nil);
 begin
   RenderingContext.PipeLineTransformation.IdentityAll;
   // setup projection matrix
@@ -7234,7 +7225,6 @@ begin
         QueryPerformanceCounter(FFirstPerfCounter);
 
       FRenderDPI := 96; // default value for screen
-      ClearGLError;
       SetupRenderingContext(FRenderingContext);
       // clear the buffers
       FRenderingContext.VXStates.ColorClearValue := ConvertWinColor(FBackgroundColor, FBackgroundAlpha);
@@ -7252,7 +7242,6 @@ begin
       Dec(perfCounter, FFirstPerfCounter);
       if perfCounter > 0 then
         FFramesPerSecond := (FFrameCount * vCounterFrequency) / perfCounter;
-      CheckOpenGLError;
     finally
       FRenderingContext.Deactivate;
     end;
@@ -7576,7 +7565,7 @@ var
         miNearest, miLinear:
           glTexImage2d(target, 0, aTexture.OpenVXTextureFormat, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, buf);
       else
-        if GL_SGIS_generate_mipmap and (target = GL_TEXTURE_2D) then
+        if (target = GL_TEXTURE_2D) then
         begin
           // hardware-accelerated when supported
           glTexParameteri(target, GL_GENERATE_MIPMAP_SGIS, GL_TRUE);
@@ -7631,7 +7620,6 @@ begin
       else
         glCopyTexSubImage2D(target, 0, xDest, yDest, xSrc, ySrc, width, height);
 
-      ClearGLError;
     finally
       Buffer.RenderingContext.Deactivate;
     end;

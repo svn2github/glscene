@@ -10,9 +10,7 @@ unit VXS.SpatialPartitioning;
 interface
 
 uses
-  Winapi.OpenGL,
-  Winapi.OpenGLext,
-
+  VXS.OpenGL,
   VXS.Scene,
   VXS.Coordinates,
   VXS.Win64Viewer,
@@ -49,12 +47,7 @@ procedure RenderAABB(var rci: TVXRenderContextInfo; AABB: TAABB; w, r, g, b: sin
 procedure RenderAABB(var rci: TVXRenderContextInfo; AABB: TAABB); overload;
 
 // -------------------------------------------------------------------
-// -------------------------------------------------------------------
-// -------------------------------------------------------------------
 implementation
-
-// -------------------------------------------------------------------
-// -------------------------------------------------------------------
 // -------------------------------------------------------------------
 
 uses

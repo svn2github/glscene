@@ -63,21 +63,21 @@ implementation
 {$R *.fmx}
 
 var
-  vGLLibMaterialPicker: TVXLibMaterialPicker;
+  vLibMaterialPicker: TVXLibMaterialPicker;
 
 function GLLibMaterialPicker: TVXLibMaterialPicker;
 begin
-  if not Assigned(vGLLibMaterialPicker) then
-    vGLLibMaterialPicker := TVXLibMaterialPicker.Create(nil);
-  Result := vGLLibMaterialPicker;
+  if not Assigned(vLibMaterialPicker) then
+    vLibMaterialPicker := TVXLibMaterialPicker.Create(nil);
+  Result := vLibMaterialPicker;
 end;
 
 procedure ReleaseLibMaterialPicker;
 begin
-  if Assigned(vGLLibMaterialPicker) then
+  if Assigned(vLibMaterialPicker) then
   begin
-    vGLLibMaterialPicker.Free;
-    vGLLibMaterialPicker := nil;
+    vLibMaterialPicker.Free;
+    vLibMaterialPicker := nil;
   end;
 end;
 

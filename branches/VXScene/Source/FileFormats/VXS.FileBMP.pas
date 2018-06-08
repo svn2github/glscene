@@ -1,5 +1,5 @@
 //
-// VXScene Component Library, based on GLScene http://glscene.sourceforge.net 
+// VXScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
 {
    Graphic engine friendly loading of BMP image.
@@ -14,9 +14,9 @@ interface
 uses
   System.Classes,
   System.SysUtils,
-  
+
+  VXS.OpenGL,
   VXS.CrossPlatform,
-  Winapi.OpenGL, Winapi.OpenGLext, 
   VXS.Context,
   VXS.Graphics,
   VXS.TextureFormat,
@@ -26,7 +26,6 @@ type
 
   TVXBMPImage = class(TVXBaseImage)
   private
-    
     FTopDown: Boolean;
     RedMask, GreenMask, BlueMask: LongWord;
     RedShift, GreenShift, BlueShift: ShortInt;
@@ -43,13 +42,11 @@ type
     function Quadrochrome(N: Integer): Integer;
     function Octochrome(N: Integer): Integer;
   public
-    
     procedure LoadFromFile(const filename: string); override;
     procedure SaveToFile(const filename: string); override;
     procedure LoadFromStream(stream: TStream); override;
     procedure SaveToStream(stream: TStream); override;
     class function Capabilities: TVXDataFileCapabilities; override;
-
     procedure AssignFromTexture(textureContext: TVXContext;
       const textureHandle: GLuint;
       textureTarget: TVXTextureTarget;
@@ -57,7 +54,9 @@ type
       const intFormat: TVXInternalFormat); reintroduce;
   end;
 
+//---------------------------------------------------  
 implementation
+//---------------------------------------------------  
 
 const
 
@@ -108,9 +107,6 @@ type
   end;
   PBitMapInfoHeader = ^TBitMapInfoHeader;
 
-// LoadFromFile
-//
-
 procedure TVXBMPImage.LoadFromFile(const filename: string);
 var
   fs: TStream;
@@ -128,9 +124,6 @@ begin
   else
     raise EInvalidRasterFile.CreateFmt('File %s not found', [filename]);
 end;
-
-// SaveToFile
-//
 
 procedure TVXBMPImage.SaveToFile(const filename: string);
 var
@@ -214,9 +207,6 @@ function TVXBMPImage.Octochrome(N: Integer): Integer;
 begin
   Result := FLineBuffer[N];
 end;
-
-// LoadFromStream
-//
 
 procedure TVXBMPImage.LoadFromStream(stream: TStream);
 type
@@ -545,16 +535,10 @@ begin
   end;
 end;
 
-// SaveToStream
-//
-
 procedure TVXBMPImage.SaveToStream(stream: TStream);
 begin
   {$Message Hint 'TVXBMPImage.SaveToStream not yet implemented' }
 end;
-
-// AssignFromTexture
-//
 
 procedure TVXBMPImage.AssignFromTexture(textureContext: TVXContext;
   const textureHandle: GLuint; textureTarget: TVXTextureTarget;
@@ -570,7 +554,6 @@ end;
 
 initialization
 
-  { Register this Fileformat-Handler with GLScene }
   RegisterRasterFormat('bmp', 'Bitmap Image File', TVXBMPImage);
 
 end.

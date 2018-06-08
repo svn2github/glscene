@@ -6,8 +6,6 @@ unit FInfo;
 interface
 
 uses
-  Winapi.OpenGL,
-  Winapi.OpenGLext,
   System.SysUtils,
   System.Types,
   System.UITypes,

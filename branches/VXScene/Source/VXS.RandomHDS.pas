@@ -45,7 +45,6 @@ interface
 
 uses
   Winapi.Windows,
-  Winapi.OpenGL,
   System.Classes,
   System.Math,
   System.SysUtils,
@@ -56,6 +55,7 @@ uses
 //  Fmx.Imaging.jpeg,
   Fmx.Forms,
 
+  Vxs.OpenGL,
   Vxs.Scene,
   Vxs.VectorTypes,
   Vxs.VectorGeometry,
@@ -617,7 +617,7 @@ const { Neighbourhood vectors and weight }
 var
   rhdsStartTime: cardinal;
   rhdsLandscapeCounter: cardinal = 0;
-  // Counter	:tTickCounter;
+  //Counter	:tTickCounter;
 
 {
 function LoadJPGtexture(const JpgName: string): TBitmap;

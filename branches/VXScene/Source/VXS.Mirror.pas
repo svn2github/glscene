@@ -1,12 +1,12 @@
 //
-// VXScene Component Library, based on GLScene http://glscene.sourceforge.net 
+// VXScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
 {
-   Implements a basic, stencil-based mirror (as in Mark Kilgard's demo). 
+   Implements a basic, stencil-based mirror (as in Mark Kilgard's demo).
 
    It is strongly recommended to read and understand the explanations in the
-   materials/mirror demo before using this component. 
-   
+   materials/mirror demo before using this component.
+
 }
 unit VXS.Mirror;
 
@@ -15,10 +15,9 @@ interface
 {$I VXScene.inc}
 
 uses
-  Winapi.OpenGL, 
-  Winapi.OpenGLext, 
   System.Classes,
 
+  VXS.OpenGL,
   VXS.PersistentClasses,
   VXS.Scene,
   VXS.XCollection,
@@ -61,7 +60,7 @@ type
     FOnBeginRenderingMirrors, FOnEndRenderingMirrors: TNotifyEvent;
     FShape: TMirrorShapes; //ORL
     FRadius: Single; //ORL
-    FSlices: GLint; //ORL
+    FSlices: Integer; //ORL
   protected
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
     procedure SetMirrorObject(const val: TVXBaseSceneObject);
@@ -70,10 +69,10 @@ type
     procedure SetHeight(AValue: Single);
     procedure SetWidth(AValue: Single);
     procedure SetRadius(const aValue: Single); //ORL
-    procedure SetSlices(const aValue: GLint); //ORL
+    procedure SetSlices(const aValue: Integer); //ORL
     procedure SetShape(aValue: TMirrorShapes); //ORL
     function GetRadius: Single; //ORL
-    function GetSlices: GLint; //ORL
+    function GetSlices: Integer; //ORL
   public
     constructor Create(AOwner: TComponent); override;
     procedure DoRender(var ARci: TVXRenderContextInfo;
@@ -284,7 +283,7 @@ end;
 procedure TVXMirror.BuildList(var ARci: TVXRenderContextInfo);
 var
   hw, hh: Single;
-  quadric: GLUquadricObj;
+  quadric: PGLUquadricObj;
 begin
   if msRect = FShape then
   begin

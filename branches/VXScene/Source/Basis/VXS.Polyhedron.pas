@@ -9,10 +9,9 @@ unit VXS.Polyhedron;
 interface
 
 uses
-  Winapi.OpenGL,
-  Winapi.OpenGLext,
   System.Classes,
 
+  VXS.OpenGL,
   VXS.Scene,
   VXS.VectorFileObjects,
   VXS.Objects,

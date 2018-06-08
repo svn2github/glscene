@@ -10,10 +10,10 @@ unit VXS.MeshLines;
 interface
 
 uses
-  Winapi.OpenGL,
   System.Classes,
   System.SysUtils,
 
+  VXS.OpenGL,
   VXS.Scene,
   VXS.Objects,
   VXS.Texture,
