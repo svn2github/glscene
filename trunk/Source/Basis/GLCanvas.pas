@@ -567,7 +567,7 @@ begin
   // the center will use the last set PenColor and PenAlpha
   gl.Vertex2f(x, y); // really necessary now :)
 
-  // then openGL will do a gradient from the center to the edge using the edgeColor
+  // then OpenGL will do a gradient from the center to the edge using the edgeColor
   gl.Color4f(edgeColor.X, edgeColor.Y, edgeColor.Z, edgeColor.W);
   EllipseVertices(x, y, xRadius, yRadius);
   StopPrimitive;

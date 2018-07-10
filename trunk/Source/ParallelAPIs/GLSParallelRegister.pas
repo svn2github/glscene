@@ -430,7 +430,7 @@ begin
   RegisterPropertyEditor(TypeInfo(string), TGLSCUDADevice, 'SelectDevice',
     TGLSCUDADeviceProperty);
   RegisterNoIcon([TCUDAModule, TCUDAMemData, TCUDAFunction, TCUDATexture,
-    TCUDAFFTPlan, TCUDAGLImageResource, TCUDAGLGeometryResource, TCUDAConstant,
+    TCUDAFFTPlan, TCUDAImageResource, TCUDAGeometryResource, TCUDAConstant,
     TCUDAFuncParam]);
 
   ObjectManager.RegisterSceneObject(TGLFeedBackMesh, 'GPU generated mesh', 'GPU Computing', HInstance);

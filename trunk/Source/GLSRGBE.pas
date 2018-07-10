@@ -162,13 +162,13 @@ begin
     for I := 0 to 3 do
     begin
       Ptr_end := @Scanline_buffer[(I + 1) * Scanline_width];
-      while PtrUInt(Ptr) < PtrUInt(Ptr_end) do
+      while Cardinal(Ptr) < Cardinal(Ptr_end) do
       begin
         Stream.Read(Buf, SizeOf(TVector2b));
         if Buf.X > 128 then
         begin // a run of the same value
           Count := Buf.X - 128;
-          if (Count = 0) or (Count > PtrUInt(Ptr_end) - PtrUInt(Ptr)) then
+          if (Count = 0) or (Count > Cardinal(Ptr_end) - Cardinal(Ptr)) then
           begin
             FreeMem(Scanline_buffer);
             raise ERGBEexception.Create('Bad HDR scanline data.');
@@ -183,7 +183,7 @@ begin
         else
         begin // a non-run
           Count := Buf.X;
-          if (Count = 0) or (Count > PtrUInt(Ptr_end) - PtrUInt(Ptr)) then
+          if (Count = 0) or (Count > Cardinal(Ptr_end) - Cardinal(Ptr)) then
           begin
             FreeMem(Scanline_buffer);
             raise ERGBEexception.Create('Bad HDR scanline data.');

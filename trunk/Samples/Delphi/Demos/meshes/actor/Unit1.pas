@@ -4,6 +4,7 @@ interface
 
 uses
   Winapi.OpenGL,
+  System.Types,
   System.SysUtils,
   System.Classes,
   System.Math,
@@ -19,7 +20,6 @@ uses
   GLCadencer,
   GLVectorFileObjects,
   GLScene,
-  GLState,
   GLObjects,
   GLVectorGeometry,
   GLWin32Viewer,

@@ -1,8 +1,8 @@
 //
-// VXScene Component Library, based on GLScene http://glscene.sourceforge.net 
+// VXScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
 {
-  OpenGL windows management classes and structures 
+  OpenGL windows management classes and structures
 }
 
 unit VXS.Windows;
@@ -17,6 +17,7 @@ uses
   System.Math,
   System.UITypes,
   FMX.Graphics,
+  FMX.Types,
 
   VXS.OpenGL,
   VXS.Scene,
@@ -76,14 +77,11 @@ type
     procedure SetAlphaChannel(const val: Single);
     function StoreAlphaChannel: Boolean;
     procedure SetNoZWrite(const val: Boolean);
-
   public
     procedure BlockRender;
     procedure UnBlockRender;
-
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
     procedure NotifyChange(Sender: TObject); override;
     procedure DoChanges; virtual;
     procedure MoveGUI(XRel, YRel: Single);
@@ -221,8 +219,8 @@ type
   private
     FRootControl: TVXBaseControl;
     FFocused: Boolean;
-    FOnKeyDown: TVXKeyEvent;
-    FOnKeyUp: TVXKeyEvent;
+    FOnKeyDown: TKeyEvent;
+    FOnKeyUp: TKeyEvent;
     FOnKeyPress: TVXKeyPressEvent;
     FShiftState: TShiftState;
     FFocusedColor: TColorVector;
@@ -252,8 +250,8 @@ type
     property Focused: Boolean read FFocused write SetFocused;
     property FocusedColor: TColor read GetFocusedColor write
       SetFocusedColor;
-    property OnKeyDown: TVXKeyEvent read FOnKeyDown write FOnKeyDown;
-    property OnKeyUp: TVXKeyEvent read FOnKeyUp write FOnKeyUp;
+    property OnKeyDown: TKeyEvent read FOnKeyDown write FOnKeyDown;
+    property OnKeyUp: TKeyEvent read FOnKeyUp write FOnKeyUp;
     property OnKeyPress: TVXKeyPressEvent read FOnKeyPress write FOnKeyPress;
   end;
 

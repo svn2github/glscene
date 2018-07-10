@@ -202,7 +202,6 @@
         <DCCReference Include="..\..\Source\DesignTime\FPlugInManagerEditor.pas">
             <Form>GLPlugInManagerEditorForm</Form>
         </DCCReference>
-        <DCCReference Include="..\..\Source\DesignTime\FShaderMemo.pas"/>
         <DCCReference Include="..\..\Source\DesignTime\FXCollectionEditor.pas">
             <Form>GLXCollectionEditorForm</Form>
         </DCCReference>
@@ -253,7 +252,7 @@
                 <Platform value="Win64">False</Platform>
             </Platforms>
             <Deployment Version="3">
-                <DeployFile LocalName="C:\Users\Public\Documents\Embarcadero\Studio\19.0\Bpl\GLScene_DT.bpl" Configuration="Debug" Class="ProjectOutput">
+                <DeployFile LocalName="..\..\bpl\Win32\GLScene_DT.bpl" Configuration="Debug" Class="ProjectOutput">
                     <Platform Name="Win32">
                         <RemoteName>GLScene_DT.bpl</RemoteName>
                         <Overwrite>true</Overwrite>

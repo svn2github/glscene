@@ -42,10 +42,10 @@ type
   TAFIOFileStreamEvent = procedure (const fileName : String; mode : Word; var Stream : TStream) of object;
   TAFIOFileStreamExistsEvent = function(const fileName: string): Boolean of object;
 
-  { Allows specifying a custom behaviour for GLApplicationFileIO's CreateFileStream.
+  { Allows specifying a custom behaviour for CreateFileStream.
     The component should be considered a helper only, you can directly specify
     a function via the vAFIOCreateFileStream variable.
-    If multiple TGLApplicationFileIO components exist in the application,
+    If multiple ApplicationFileIO components exist in the application,
     the last one created will be the active one. }
   TGLApplicationFileIO = class(TComponent)
   private

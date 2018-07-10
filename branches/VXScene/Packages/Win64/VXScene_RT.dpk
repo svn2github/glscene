@@ -165,7 +165,6 @@ contains
   VXS.LinePFX in '..\..\Source\VXS.LinePFX.pas',
   VXS.Manager in '..\..\Source\VXS.Manager.pas',
   VXS.Material in '..\..\Source\VXS.Material.pas',
-  VXS.MaterialEx in '..\..\Source\VXS.MaterialEx.pas',
   VXS.MaterialMultiProxy in '..\..\Source\VXS.MaterialMultiProxy.pas',
   VXS.MaterialScript in '..\..\Source\VXS.MaterialScript.pas',
   VXS.Mesh in '..\..\Source\VXS.Mesh.pas',

@@ -4737,8 +4737,8 @@ begin
     GetMem(newArea, VerticeBoneWeightCapacity * SizeOf(PVertexBoneWeightArray));
     newArea[0] := AllocMem(n * SizeOf(TVertexBoneWeight));
     for i := 1 to VerticeBoneWeightCapacity - 1 do
-      newArea[i] := PVertexBoneWeightArray(PtrUInt(newArea[0]) + 
-	    PtrUInt(i * SizeOf(TVertexBoneWeight) * BonesPerVertex));
+      newArea[i] := PVertexBoneWeightArray(Cardinal(newArea[0]) +
+	    Cardinal(i * SizeOf(TVertexBoneWeight) * BonesPerVertex));
     // transfer old data
     if FLastVerticeBoneWeightCount < VerticeBoneWeightCount then
       n := FLastVerticeBoneWeightCount

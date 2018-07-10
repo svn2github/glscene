@@ -137,7 +137,7 @@ type
     {Convert flat image to volume by dividing it into slice. }
     function ConvertToVolume(const col, row: Integer; const MakeArray: Boolean): Boolean;
     {Return size in byte of all image }
-    function DataSize: PtrUint;
+    function DataSize: Cardinal;
     {True if the bitmap is empty (ie. width or height is zero). }
     function IsEmpty: Boolean;
     function IsCompressed: Boolean;
@@ -856,10 +856,10 @@ begin
     Result := ttTextureRect;
 end;
 
-function TGLBaseImage.DataSize: PtrUint;
+function TGLBaseImage.DataSize: Cardinal;
 var
   l: TGLImageLODRange;
-  s: PtrUint;
+  s: Cardinal;
 begin
   s := 0;
   if not IsEmpty then
@@ -2185,14 +2185,14 @@ begin
       if VerticalReverseOnAssignFromBitmap then
       begin
         pSrc := BitmapScanLine(aBitmap, GetHeight - 1);
-        rowOffset := PtrUInt(BitmapScanLine(aBitmap, GetHeight - 2));
-        Dec(rowOffset, PtrUInt(pSrc));
+        rowOffset := Cardinal(BitmapScanLine(aBitmap, GetHeight - 2));
+        Dec(rowOffset, Cardinal(pSrc));
       end
       else
       begin
         pSrc := BitmapScanLine(aBitmap, 0);
-        rowOffset := PtrUInt(BitmapScanLine(aBitmap, 1));
-        Dec(rowOffset, PtrUInt(pSrc));
+        rowOffset := Cardinal(BitmapScanLine(aBitmap, 1));
+        Dec(rowOffset, Cardinal(pSrc));
       end;
       for y := 0 to Height - 1 do
       begin
@@ -2237,8 +2237,8 @@ begin
       pSrc := BitmapScanLine(aBitmap, Height - 1);
       if Height > 1 then
       begin
-        rowOffset := PtrUInt(BitmapScanLine(aBitmap, Height - 2));
-        Dec(rowOffset, PtrUInt(pSrc));
+        rowOffset := Cardinal(BitmapScanLine(aBitmap, Height - 2));
+        Dec(rowOffset, Cardinal(pSrc));
       end
       else
         rowOffset := 0;
@@ -2248,8 +2248,8 @@ begin
       pSrc := BitmapScanLine(aBitmap, 0);
       if Height > 1 then
       begin
-        rowOffset := PtrUInt(BitmapScanLine(aBitmap, 1));
-        Dec(rowOffset, PtrUInt(pSrc));
+        rowOffset := Cardinal(BitmapScanLine(aBitmap, 1));
+        Dec(rowOffset, Cardinal(pSrc));
       end
       else
         rowOffset := 0;

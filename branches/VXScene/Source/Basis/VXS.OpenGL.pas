@@ -155,7 +155,9 @@ type
   PGLPointer = ^Pointer;
 
  // the size of these depend on platform (32bit or 64bit)
+  // GL_VERSION_1_5
   TGLintptr = NativeInt;
+  PGLintptr = ^TGLintptr;
   TGLsizeiptr = NativeInt;
   TGLsync = NativeInt;
 
@@ -834,8 +836,8 @@ const
   GL_DEPTH_BUFFER_BIT = $00000100;
   GL_STENCIL_BUFFER_BIT = $00000400;
   GL_COLOR_BUFFER_BIT = $00004000;
-  GL_FALSE = 0;
   GL_TRUE = 1;
+  GL_FALSE = 0;
   { BeginMode }
   GL_POINTS = $0000;
   GL_LINES = $0001;
@@ -10565,8 +10567,6 @@ begin
 end;
 
 {$IFDEF SUPPORT_WGL}
-// ReadWGLImplementationProperties
-//
 procedure ReadWGLImplementationProperties;
 var
    Buffer: string;

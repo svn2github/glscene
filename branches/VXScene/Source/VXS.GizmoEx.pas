@@ -9,7 +9,7 @@
    modified by Adirex, J.Delauney, Degiovani, Marcus Oblak and Da Stranger
    Rustam Asmandiarov (aka Predator) re-wrote TVXGizmo from scratch and
    contributed to GLScene. This is how TVXGizmoEx was born.
-     
+
 }
 unit VXS.GizmoEx;
 
@@ -23,6 +23,7 @@ uses
   System.Classes,
   System.SysUtils,
   System.Math,
+  FMX.TextLayout,
 
   VXS.OpenGL,
   VXS.Scene,
@@ -2129,7 +2130,7 @@ procedure TVXGizmoEx.InternalRender(Sender: TObject; var rci: TVXRenderContextIn
     if not Assigned(FLabelFont) and (Text = '') then
       Exit;
     rci.VXStates.Enable(stDepthTest);
-    FLayout := VXS.CrossPlatform.tlCenter;
+    FLayout := tlCenter;
     FAlignment := taCenter;
 
     glMatrixMode(GL_MODELVIEW);

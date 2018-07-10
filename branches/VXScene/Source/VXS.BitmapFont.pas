@@ -1,7 +1,7 @@
 //
 // This unit is part of the VXScene Project, http://glscene.org
 //
-{ 
+{
   Bitmap Fonts management classes
 }
 unit VXS.BitmapFont;
@@ -867,7 +867,7 @@ procedure TVXCustomBitmapFont.RenderString(var ARci: TVXRenderContextInfo;
     for i := 1 to Length(aText) do
       if aText[i] = #13 then
         Inc(n);
-    case TVXTextLayout(aLayout) of
+    case aLayout of
       tlTop:  Result := 0;
       tlBottom: Result := (n * (CharHeight + VSpace) - VSpace);
     else // tlCenter
@@ -976,7 +976,7 @@ begin
   V.Y := Y;
   V.Z := 0;
   V.W := 1;
-  RenderString(rci, Text, taLeftJustify, tlTop, Color, @V, true);
+///?  RenderString(rci, Text, taLeftJustify, tlTop, Color, @V, true);
 end;
 
 procedure TVXCustomBitmapFont.TextOut(var rci: TVXRenderContextInfo; X, Y: Single;

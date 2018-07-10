@@ -334,7 +334,7 @@ procedure TVXMS3DVectorFile.LoadFromStream(aStream: TStream);
 var
    
   i, j, k: integer;
-  itemp: PtrUInt;
+  itemp: Cardinal;
   wtemp: word;
   TexCoordID: integer;
   MO: TVXMeshObject;
@@ -552,7 +552,7 @@ begin
 
         for j := 0 to Group.numtriangles - 1 do
         begin
-          ms3d_triangle := ms3d_triangles^[PtrUInt(Group.triangleIndices[j])];
+          ms3d_triangle := ms3d_triangles^[Cardinal(Group.triangleIndices[j])];
           AddFaceVertex(0);
           AddFaceVertex(1);
           AddFaceVertex(2);
@@ -613,7 +613,7 @@ begin
           if Group.materialIndex = i then
             for k := 0 to Group.numtriangles - 1 do
             begin
-              ms3d_triangle := ms3d_triangles^[PtrUInt(Group.triangleIndices[k])];
+              ms3d_triangle := ms3d_triangles^[Cardinal(Group.triangleIndices[k])];
 
               AddFaceVertex(0);
               AddFaceVertex(1);

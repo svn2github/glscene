@@ -42,7 +42,7 @@ uses
   GLSound,
   GLSMBASS,
   GLFileWAV,
-  Bass;
+  Bass, GLFireFX;
 
 type
   TMain = class(TForm)

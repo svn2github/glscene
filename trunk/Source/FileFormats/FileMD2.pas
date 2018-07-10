@@ -182,7 +182,7 @@ begin
     else
       FrameName := Copy(FrameName, 1, Length(FrameName) - 1);
     if FrameNames.IndexOf(FrameName) < 0 then
-      FrameNames.AddObject(FrameName, TObject(PtrUInt(I)));
+      FrameNames.AddObject(FrameName, TObject(Cardinal(I)));
     // fill the vertices list
      for J := 0 to FiVertices - 1 do begin
        fVertexList[i][J].X := Frame^.Vertices[J].Vert[0] * Frame^.Scale.X + Frame^.Translate.X;

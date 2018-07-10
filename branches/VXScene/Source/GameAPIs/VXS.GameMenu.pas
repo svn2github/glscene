@@ -351,12 +351,12 @@ end;
 
 function TVXGameMenu.GetEnabled(AIndex: Integer): Boolean;
 begin
-  Result := not Boolean(PtrUint(FItems.Objects[AIndex]));
+  Result := not Boolean(Cardinal(FItems.Objects[AIndex]));
 end;
 
 procedure TVXGameMenu.SetEnabled(AIndex: Integer; AValue: Boolean);
 begin
-  FItems.Objects[AIndex] := TObject(pointer(PtrUint(ord(not AValue))));
+  FItems.Objects[AIndex] := TObject(pointer(Cardinal(ord(not AValue))));
   StructureChanged;
 end;
 

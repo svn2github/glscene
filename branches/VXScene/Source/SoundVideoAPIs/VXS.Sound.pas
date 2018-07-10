@@ -111,7 +111,7 @@ type
     FPause: Boolean;
     FChanges: TVXSoundSourceChanges; // NOT persistent, not assigned
     FNbLoops: Integer;
-    FTag: PtrUInt; // NOT persistent, not assigned
+    FTag: Cardinal; // NOT persistent, not assigned
     FFrequency: Integer;
   protected
     procedure WriteToFiler(writer: TWriter);
@@ -139,7 +139,7 @@ type
     property Changes: TVXSoundSourceChanges read FChanges;
     function Sample: TVXSoundSample;
     // This Tag is reserved for sound manager use only
-    property ManagerTag: PtrUInt read FTag write FTag;
+    property ManagerTag: Cardinal read FTag write FTag;
     { Origin object for the sound sources.
        Absolute object position/orientation are taken into account, the
        object's TVXBInertia is considered if any.

@@ -30,6 +30,7 @@ object GLSLTestForm: TGLSLTestForm
     Buffer.DepthPrecision = dp24bits
     Buffer.ColorDepth = cd24bits
     FieldOfView = 144.653381347656300000
+    PenAsTouch = False
     Align = alClient
     OnMouseDown = ViewerMouseDown
     OnMouseMove = ViewerMouseMove

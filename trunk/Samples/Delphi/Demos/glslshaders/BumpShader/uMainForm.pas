@@ -6,6 +6,7 @@ uses
   System.SysUtils,
   System.Classes,
   System.Math,
+  System.Types,
   Vcl.Controls,
   Vcl.Forms,
   Vcl.ExtCtrls,

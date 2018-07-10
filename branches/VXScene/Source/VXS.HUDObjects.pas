@@ -1,8 +1,8 @@
 //
-// VXScene Component Library, based on GLScene http://glscene.sourceforge.net 
+// VXScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
 {
-  Objects that get rendered in 2D coordinates 
+  Objects that get rendered in 2D coordinates
 }
 unit VXS.HUDObjects;
 

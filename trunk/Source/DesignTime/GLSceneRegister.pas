@@ -87,24 +87,18 @@ type
   TGLColorProperty = class(TClassProperty, ICustomPropertyDrawing,
     ICustomPropertyListDrawing)
   protected
-    function ColorToBorderColor(aColor: TColorVector;
-      selected: Boolean): TColor;
+    function ColorToBorderColor(aColor: TColorVector; selected: Boolean): TColor;
   public
     function GetAttributes: TPropertyAttributes; override;
     procedure GetValues(Proc: TGetStrProc); override;
     procedure Edit; override;
     // ICustomPropertyListDrawing  stuff
-    procedure ListMeasureHeight(const Value: string; ACanvas: TCanvas;
-      var AHeight: Integer);
-    procedure ListMeasureWidth(const Value: string; ACanvas: TCanvas;
-      var AWidth: Integer);
-    procedure ListDrawValue(const Value: string; ACanvas: TCanvas;
-      const ARect: TRect; ASelected: Boolean);
+    procedure ListMeasureHeight(const Value: string; ACanvas: TCanvas; var AHeight: Integer);
+    procedure ListMeasureWidth(const Value: string; ACanvas: TCanvas; var AWidth: Integer);
+    procedure ListDrawValue(const Value: string; ACanvas: TCanvas; const ARect: TRect; ASelected: Boolean);
     // CustomPropertyDrawing
-    procedure PropDrawName(ACanvas: TCanvas; const ARect: TRect;
-      ASelected: Boolean);
-    procedure PropDrawValue(ACanvas: TCanvas; const ARect: TRect;
-      ASelected: Boolean);
+    procedure PropDrawName(ACanvas: TCanvas; const ARect: TRect; ASelected: Boolean);
+    procedure PropDrawValue(ACanvas: TCanvas; const ARect: TRect; ASelected: Boolean);
     function GetValue: string; override;
     procedure SetValue(const Value: string); override;
   end;
@@ -155,8 +149,7 @@ type
     FBest: IProperty;
     FContinue: Boolean;
     procedure CheckEdit(const Prop: IProperty);
-    procedure EditProperty(const Prop: IProperty;
-      var Continue: Boolean); virtual;
+    procedure EditProperty(const Prop: IProperty; var Continue: Boolean); virtual;
   public
     procedure Edit; override;
   end;
@@ -164,8 +157,7 @@ type
   {  Editor for material library.  }
   TGLMaterialLibraryEditor = class(TReuseableDefaultEditor, IDefaultEditor)
   protected
-    procedure EditProperty(const Prop: IProperty;
-      var Continue: Boolean); override;
+    procedure EditProperty(const Prop: IProperty; var Continue: Boolean); override;
   public
     procedure ExecuteVerb(Index: Integer); override;
     function GetVerb(Index: Integer): string; override;
@@ -195,11 +187,9 @@ type
   end;
 
   {  Editor for GLScene Archive Manager.  }
-  TGLSArchiveManagerEditor = class
-    (TReuseableDefaultEditor, IDefaultEditor)
+  TGLSArchiveManagerEditor = class(TReuseableDefaultEditor, IDefaultEditor)
   protected
-    procedure EditProperty(const Prop: IProperty;
-      var Continue: Boolean); override;
+    procedure EditProperty(const Prop: IProperty; var Continue: Boolean); override;
   public
     procedure ExecuteVerb(Index: Integer); override;
     function GetVerb(Index: Integer): string; override;
@@ -398,7 +388,6 @@ uses
   GLVectorFileObjects,
   GLVfsPAK,
   GLWin32Viewer,
-///  GLWinFMXViewer,
   GLWaterPlane,
   GLWindows,
   GLWindowsFont,
@@ -463,22 +452,21 @@ begin
   Result := vObjectManager;
 end;
 
+//----------------- TGLSceneViewerEditor ---------------------------------------
 procedure TGLSceneViewerEditor.ExecuteVerb(Index: Integer);
 var
   source: TGLSceneViewer;
 begin
   source := Component as TGLSceneViewer;
   case Index of
-    0:
-      source.Buffer.ShowInfo;
+    0: source.Buffer.ShowInfo;
   end;
 end;
 
 function TGLSceneViewerEditor.GetVerb(Index: Integer): string;
 begin
   case Index of
-    0:
-      Result := 'Show context info';
+    0: Result := 'Show context info';
   end;
 end;
 
@@ -486,6 +474,8 @@ function TGLSceneViewerEditor.GetVerbCount: Integer;
 begin
   Result := 1;
 end;
+
+//----------------- TGLSceneEditor ---------------------------------------------
 
 procedure TGLSceneEditor.Edit;
 begin
@@ -499,16 +489,14 @@ end;
 procedure TGLSceneEditor.ExecuteVerb(Index: Integer);
 begin
   case Index of
-    0:
-      Edit;
+    0: Edit;
   end;
 end;
 
 function TGLSceneEditor.GetVerb(Index: Integer): string;
 begin
   case Index of
-    0:
-      Result := 'Show Scene Editor';
+    0: Result := 'Show Scene Editor';
   end;
 end;
 
@@ -517,6 +505,7 @@ begin
   Result := 1;
 end;
 
+//----------------- TGLResolutionProperty ----------------------------------------
 function TGLResolutionProperty.GetAttributes: TPropertyAttributes;
 begin
   Result := [paValueList];
@@ -604,11 +593,14 @@ begin
     SetOrdValue(0);
 end;
 
+//----------------- TGLTextureProperty -----------------------------------------
 
 function TGLTextureProperty.GetAttributes: TPropertyAttributes;
 begin
   Result := [paSubProperties];
 end;
+
+//----------------- TGLTextureImageProperty ------------------------------------
 
 function TGLTextureImageProperty.GetAttributes: TPropertyAttributes;
 begin
@@ -620,6 +612,8 @@ begin
   if EditGLTextureImage(TGLTextureImage(GetOrdValue)) then
     Designer.Modified;
 end;
+
+//----------------- TGLImageClassProperty --------------------------------------
 
 function TGLImageClassProperty.GetAttributes: TPropertyAttributes;
 begin
@@ -657,6 +651,8 @@ begin
   Modified;
 end;
 
+//----------------- TGLColorproperty -----------------------------------------------------------------------------------
+
 procedure TGLColorProperty.Edit;
 var
   colorDialog: TColorDialog;
@@ -665,9 +661,7 @@ begin
   colorDialog := TColorDialog.Create(nil);
   try
     GLColor := TGLColor(GetOrdValue);
-{$IFDEF WIN32}
     colorDialog.Options := [cdFullOpen];
-{$ENDIF}
     colorDialog.Color := ConvertColorVector(GLColor.Color);
     if colorDialog.Execute then
     begin
@@ -700,8 +694,7 @@ begin
   Modified;
 end;
 
-function TGLColorProperty.ColorToBorderColor(aColor: TColorVector;
-  selected: Boolean): TColor;
+function TGLColorProperty.ColorToBorderColor(aColor: TColorVector; selected: Boolean): TColor;
 begin
   if (aColor.X > 0.75) or (aColor.Y > 0.75) or (aColor.Z > 0.75) then
     Result := clBlack
@@ -768,6 +761,7 @@ begin
   DefaultPropertyDrawName(Self, ACanvas, ARect);
 end;
 
+//----------------- TSoundFileProperty -----------------------------------------
 function TSoundFileProperty.GetAttributes: TPropertyAttributes;
 begin
   Result := [paDialog];
@@ -805,6 +799,8 @@ begin
   end;
 end;
 
+//----------------- TSoundNameProperty -----------------------------------------
+
 function TSoundNameProperty.GetAttributes: TPropertyAttributes;
 begin
   Result := [paValueList];
@@ -821,6 +817,8 @@ begin
       for i := 0 to Samples.Count - 1 do
         Proc(Samples[i].Name);
 end;
+
+//----------------- TGLCoordinatesProperty -------------------------------------
 
 function TGLCoordinatesProperty.GetAttributes: TPropertyAttributes;
 begin
@@ -842,6 +840,8 @@ begin
     Modified;
   end;
 end;
+
+//----------------- TGLMaterialProperty --------------------------------------------------------------------------------
 
 function TGLMaterialProperty.GetAttributes: TPropertyAttributes;
 begin
@@ -940,9 +940,8 @@ begin
     FBest := nil;
   end;
 end;
-
-procedure TGLMaterialLibraryEditor.EditProperty(const Prop: IProperty;
-  var Continue: Boolean);
+//----------------- TGLMaterialLibraryEditor --------------------------------------------------------------------------------
+procedure TGLMaterialLibraryEditor.EditProperty(const Prop: IProperty; var Continue: Boolean);
 begin
   if CompareText(Prop.GetName, 'MATERIALS') = 0 then
   begin
@@ -953,16 +952,14 @@ end;
 procedure TGLMaterialLibraryEditor.ExecuteVerb(Index: Integer);
 begin
   case Index of
-    0:
-      Edit;
+    0: Edit;
   end;
 end;
 
 function TGLMaterialLibraryEditor.GetVerb(Index: Integer): string;
 begin
   case Index of
-    0:
-      Result := 'Show Material Library Editor';
+    0: Result := 'Show Material Library Editor';
   end;
 end;
 
@@ -970,6 +967,8 @@ function TGLMaterialLibraryEditor.GetVerbCount: Integer;
 begin
   Result := 1
 end;
+
+//----------------- TGLLibMaterialNameProperty ---------------------------------
 
 function TGLLibMaterialNameProperty.GetAttributes: TPropertyAttributes;
 begin
@@ -998,6 +997,8 @@ begin
     SetStrValue(buf);
 end;
 
+//----------------- TGLAnimationNameProperty -----------------------------------
+
 function TGLAnimationNameProperty.GetAttributes: TPropertyAttributes;
 begin
   Result := [paValueList];
@@ -1021,6 +1022,7 @@ begin
       end;
   end;
 end;
+//---------------- TGLBaseSceneObjectSelectionEditor -----------------------
 
 procedure TGLBaseSceneObjectSelectionEditor.RequiresUnits(Proc: TGetStrProc);
 var
@@ -1043,6 +1045,8 @@ begin
   end;
 end;
 
+//---------------------------- TGLSoundLibrarySelectionEditor -----------------------
+
 procedure TGLSoundLibrarySelectionEditor.RequiresUnits(Proc: TGetStrProc);
 var
   i, j: Integer;
@@ -1063,6 +1067,8 @@ begin
   end;
 end;
 
+//-------------------- TGLSArchiveManagerEditor -----------------------
+
 procedure TGLSArchiveManagerEditor.EditProperty(const Prop: IProperty;
   var Continue: Boolean);
 begin
@@ -1075,8 +1081,7 @@ end;
 procedure TGLSArchiveManagerEditor.ExecuteVerb(Index: Integer);
 begin
   case Index of
-    0:
-      Edit;
+    0: Edit;
   end;
 end;
 
@@ -1320,11 +1325,9 @@ procedure GLRegisterPropertiesInCategories;
 begin
   { GLViewer }
   // property types
-{$IFDEF WIN32}
   RegisterPropertiesInCategory(strOpenGLCategoryName,
     [TypeInfo(TGLCamera), TypeInfo(TGLSceneBuffer), TypeInfo(TGLVSyncMode),
     TypeInfo(TGLScreenDepth)]); // TGLScreenDepth in GLWin32FullScreenViewer
-{$ENDIF}
   // TGLSceneViewer
   RegisterPropertiesInCategory(strOpenGLCategoryName, TGLSceneViewer, ['*Render']);
 
@@ -1353,14 +1356,14 @@ begin
   RegisterPropertiesInCategory(strOpenGLCategoryName,
     [TypeInfo(TGLLinesNodes), TypeInfo(TGLLineNodesAspect),
     TypeInfo(TGLLineSplineMode), TypeInfo(TGLLinesOptions)]);
-{$IFDEF WIN32} // unit GLSpaceText
+  { GLSpaceText }
   RegisterPropertiesInCategory(strLayoutCategoryName, [TypeInfo(TGLTextAdjust)]);
   RegisterPropertiesInCategory(strLocalizableCategoryName,
     [TypeInfo(TGLSpaceTextCharRange)]);
   RegisterPropertiesInCategory(strVisualCategoryName, [TypeInfo(TGLLineSplineMode),
     TypeInfo(TCapType), TypeInfo(TNormalSmoothing),
     TypeInfo(TArrowHeadStackingStyle), TypeInfo(TGLTextAdjust)]);
-{$ENDIF}
+
   RegisterPropertiesInCategory(strLayoutCategoryName, TGLDummyCube,
     ['VisibleAtRunTime']);
   RegisterPropertiesInCategory(strVisualCategoryName, TGLDummyCube,
@@ -1369,18 +1372,15 @@ begin
     ['*Offset', '*Tiles']);
   RegisterPropertiesInCategory(strOpenGLCategoryName, TGLSprite, ['NoZWrite']);
   RegisterPropertiesInCategory(strLayoutCategoryName, TGLSprite, ['NoZWrite']);
-  RegisterPropertiesInCategory(strVisualCategoryName, TGLSprite,
-    ['AlphaChannel', 'Rotation']);
+  RegisterPropertiesInCategory(strVisualCategoryName, TGLSprite, ['AlphaChannel', 'Rotation']);
   RegisterPropertiesInCategory(strVisualCategoryName, TGLNode, ['X', 'Y', 'Z']);
   RegisterPropertiesInCategory(strVisualCategoryName, TGLLines,
     ['Antialiased', 'Division', 'Line*', 'NodeSize']);
   RegisterPropertiesInCategory(strVisualCategoryName, TGLCube, ['Cube*']);
-  RegisterPropertiesInCategory(strVisualCategoryName, TGLFrustrum,
-    ['ApexHeight', 'Base*']);
-{$IFDEF WIN32} // unit GLSpaceText
+  RegisterPropertiesInCategory(strVisualCategoryName, TGLFrustrum, ['ApexHeight', 'Base*']);
+  { GLSpaceText }
   RegisterPropertiesInCategory(strVisualCategoryName, TGLSpaceText,
     ['AllowedDeviation', 'AspectRatio', 'Extrusion', 'Oblique', 'TextHeight']);
-{$ENDIF}
   RegisterPropertiesInCategory(strVisualCategoryName, TGLSphere,
     ['Bottom', 'Radius', 'Slices', 'Stacks', 'Start', 'Stop']);
   RegisterPropertiesInCategory(strVisualCategoryName, TGLDisk,
@@ -1465,8 +1465,7 @@ begin
   { GLParticleFX }
   RegisterPropertiesInCategory(strOpenGLCategoryName, [TypeInfo(TGLBlendingMode)]);
   RegisterPropertiesInCategory(strVisualCategoryName,
-    [TypeInfo(TGLBlendingMode), TypeInfo(TPFXLifeColors),
-    TypeInfo(TSpriteColorMode)]);
+    [TypeInfo(TGLBlendingMode), TypeInfo(TPFXLifeColors), TypeInfo(TSpriteColorMode)]);
   RegisterPropertiesInCategory(strOpenGLCategoryName, TGLParticleFXRenderer, ['ZWrite']);
   RegisterPropertiesInCategory(strVisualCategoryName, TGLParticleFXRenderer, ['ZWrite']);
   RegisterPropertiesInCategory(strOpenGLCategoryName, TPFXLifeColor, ['LifeTime']);
@@ -1595,13 +1594,10 @@ begin
   RegisterPropertyEditor(TypeInfo(string), TGLTexture, 'ImageClassName',
     TGLImageClassProperty);
 
-  RegisterPropertyEditor(TypeInfo(TGLSoundFile), TGLSoundSample, '',
-    TSoundFileProperty);
-  RegisterPropertyEditor(TypeInfo(string), TGLBaseSoundSource, 'SoundName',
-    TSoundNameProperty);
+  RegisterPropertyEditor(TypeInfo(TGLSoundFile), TGLSoundSample, '', TSoundFileProperty);
+  RegisterPropertyEditor(TypeInfo(string), TGLBaseSoundSource, 'SoundName', TSoundNameProperty);
 
-  RegisterPropertyEditor(TypeInfo(TGLCoordinates), nil, '',
-    TGLCoordinatesProperty);
+  RegisterPropertyEditor(TypeInfo(TGLCoordinates), nil, '', TGLCoordinatesProperty);
 
   RegisterPropertyEditor(TypeInfo(TGLColor), nil, '', TGLColorProperty);
   RegisterPropertyEditor(TypeInfo(TGLMaterial), nil, '', TGLMaterialProperty);
@@ -1856,9 +1852,9 @@ begin
   RegisterSceneObject(TGLProjectedTextures, 'Projected Textures', strOCSpecialObjects, HInstance);
   RegisterSceneObject(TGLBlur, 'Blur', strOCSpecialObjects, HInstance);
   RegisterSceneObject(TGLMotionBlur, 'MotionBlur', strOCSpecialObjects, HInstance);
-{$IFDEF WIN32}
+
   RegisterSceneObject(TGLSpaceText, 'SpaceText', strOCDoodad, HInstance);
-{$ENDIF}
+
   RegisterSceneObject(TGLTrail, 'GLTrail', strOCSpecialObjects, HInstance);
   RegisterSceneObject(TGLPostEffect, 'PostEffect', strOCSpecialObjects,
     HInstance);

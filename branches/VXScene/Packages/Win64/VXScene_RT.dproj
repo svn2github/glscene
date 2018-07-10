@@ -274,7 +274,6 @@
         <DCCReference Include="..\..\Source\VXS.LinePFX.pas"/>
         <DCCReference Include="..\..\Source\VXS.Manager.pas"/>
         <DCCReference Include="..\..\Source\VXS.Material.pas"/>
-        <DCCReference Include="..\..\Source\VXS.MaterialEx.pas"/>
         <DCCReference Include="..\..\Source\VXS.MaterialMultiProxy.pas"/>
         <DCCReference Include="..\..\Source\VXS.MaterialScript.pas"/>
         <DCCReference Include="..\..\Source\VXS.Mesh.pas"/>

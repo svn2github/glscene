@@ -947,7 +947,7 @@ begin
           Inc(pk);
         end;
       end;
-      SetCount((PtrUInt(pk) - PtrUInt(p)) div SizeOf(TObject));
+      SetCount((Cardinal(pk) - Cardinal(p)) div SizeOf(TObject));
       Exit;
     end;
   end;
@@ -1130,7 +1130,7 @@ begin
               begin
                 // stored 'as was' value
                 ReadBoolean; // ignored
-                Add(TObject(PtrUInt(ReadInteger)));
+                Add(TObject(Cardinal(ReadInteger)));
               end;
             Cardinal(vaString), Cardinal(vaLString), Cardinal(vaWString),
               Cardinal(vaInt64) + 1 { vaUTF8String }:

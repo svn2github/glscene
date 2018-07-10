@@ -94,7 +94,6 @@ begin
   end;
 end;
 
-{$IFDEF MSWINDOWS}
 
 function ReadRegistryInteger(reg: TRegistry; const name: string;
   defaultValue: Integer): Integer;
@@ -104,7 +103,6 @@ begin
   else
     Result := defaultValue;
 end;
-{$ENDIF}
 
 procedure TGLSCUDAEditorForm.AddItemButtonClick(Sender: TObject);
 var
@@ -141,13 +139,10 @@ begin
 end;
 
 procedure TGLSCUDAEditorForm.FormCreate(Sender: TObject);
-{$IFDEF MSWINDOWS}
 var
   reg: TRegistry;
-{$ENDIF}
 begin
   RegisterCUDAComponentNameChangeEvent(OnCUDAComponentNameChanged);
-{$IFDEF MSWINDOWS}
   reg := TRegistry.Create;
   try
     if reg.OpenKey(cRegistryKey, True) then
@@ -160,24 +155,20 @@ begin
   finally
     reg.Free;
   end;
-{$ENDIF}
   FClassList := TList.Create;
   AddModuleButton.Tag := FClassList.Add(TCUDAModule);
   AddMemDataButton.Tag := FClassList.Add(TCUDAMemData);
   AddFFTPlanButton.Tag := FClassList.Add(TCUDAFFTPlan);
-  AddGeometryResButton.Tag := FClassList.Add(TCUDAGLGeometryResource);
-  AddImageResButton.Tag := FClassList.Add(TCUDAGLImageResource);
+  AddGeometryResButton.Tag := FClassList.Add(TCUDAGeometryResource);
+  AddImageResButton.Tag := FClassList.Add(TCUDAImageResource);
 end;
 
 procedure TGLSCUDAEditorForm.FormDestroy(Sender: TObject);
-{$IFDEF MSWINDOWS}
 var
   reg: TRegistry;
-{$ENDIF}
 begin
   DeRegisterCUDAComponentNameChangeEvent;
   FClassList.Destroy;
-{$IFDEF MSWINDOWS}
   reg := TRegistry.Create;
   try
     if reg.OpenKey(cRegistryKey, True) then
@@ -190,7 +181,6 @@ begin
   finally
     reg.Free;
   end;
-{$ENDIF}
 end;
 
 procedure TGLSCUDAEditorForm.ListBox1Click(Sender: TObject);

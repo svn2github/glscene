@@ -2706,9 +2706,9 @@ var
   Alt: AnsiString;
 begin
   Alt := AnsiString(ProcName) + '_v2';
-  Result := GetProcAddress(PtrUInt(CUDAHandle), PAnsiChar(Alt));
+  Result := GetProcAddress(Cardinal(CUDAHandle), PAnsiChar(Alt));
   if Result = nil then
-      Result := GetProcAddress(PtrUInt(CUDAHandle), ProcName);
+      Result := GetProcAddress(Cardinal(CUDAHandle), ProcName);
 end;
 
 function InitCUDA: Boolean;

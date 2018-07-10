@@ -252,7 +252,7 @@ begin
 
   // go through all the old nodes and fix the pointers
   // YP: Delphi needs int64 dual casting to avoid overflow exception
-  Result := int64(PtrUInt(newbase)) - int64(PtrUInt(oldbase));
+  Result := int64(Cardinal(newbase)) - int64(Cardinal(oldbase));
   for i := 0 to oldsize - 1 do
   begin
     node := @vTriangleNodes[i];
@@ -890,7 +890,7 @@ begin
   RecursRender(@vTriangleNodes[FTLNode], rbl, rtr, rtl);
   RecursRender(@vTriangleNodes[FBRNode], rtr, rbl, rbr);
 
-  VertexIndices.Count := (PtrUInt(RenderIndices) - PtrUInt(VertexIndices.List))
+  VertexIndices.Count := (Cardinal(RenderIndices) - Cardinal(VertexIndices.List))
     div SizeOf(Integer);
 end;
 

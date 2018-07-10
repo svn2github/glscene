@@ -24,7 +24,7 @@ uses
   VXS.Coordinates,
   VXS.VectorGeometry,
   VXS.Objects,
-  VXS.BitmapFont,
+//  VXS.BitmapFont,
   VXS.Texture,
   VXS.Material,
   VXS.HudObjects,

@@ -677,7 +677,7 @@ begin
         or (obj.DistanceTo(ARci.cameraPosition) < caster.EffectiveRadius)) then
       begin
         opaques.Add(obj);
-        opaqueCapping.Add(Pointer(PtrUInt(ord((caster.Capping = svcAlways)
+        opaqueCapping.Add(Pointer(Cardinal(ord((caster.Capping = svcAlways)
           or ((caster.Capping = svcDefault)
           and (Capping = svcAlways))))));
       end
@@ -815,7 +815,7 @@ begin
               ARci.PipelineTransformation.SetModelMatrix(obj.AbsoluteMatrix);
               glVertexPointer(4, GL_FLOAT, 0, sil.Vertices.List);
 
-              if Boolean(PtrUInt(opaqueCapping[k])) then
+              if Boolean(Cardinal(opaqueCapping[k])) then
               begin
                 // z-fail
                 if GL_EXT_compiled_vertex_array then

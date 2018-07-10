@@ -34,31 +34,18 @@ type
   THalfFloat = type Word;
   PHalfFloat = ^THalfFloat;
 
-  // These new types were added to be able to cast pointers to integers
-  // in 64 bit mode, because in FPC "Integer" type is always 32 bit
-  // (or 16 bit in Pascal mode), but in Delphi it is platform-specific and
-  // can be 16, 32 or 64 bit.
-  ptrInt = Integer;
-  PtrUInt = Cardinal;
-
-  // Several aliases to shield us from the need of ifdef'ing between
-  // the "almost cross-platform" units like Graphics/QGraphics etc.
-  // Gives a little "alien" look to names, but that's the only way around :(
-
-  // DaStr: Actually, there is a way around, see TPenStyle for example.
-
   TVXPicture = TImage;  // in VCL it's TPicture
   TVXGraphic = TBitmap; // in VCL it's TGraphic
-///-  TBitmap = TBitmap;
+
   TGraphicClass = class of TBitmap; // in VCL it's class of TGraphic
 
-  TVXTextLayout = (tlTop, tlCenter, tlBottom); // idem TTextLayout;
+  TVXTextLayout = (tlTop, tlCenter, tlBottom);
 
   TVXMouseButton = (mbLeft, mbRight, mbMiddle); // idem TMouseButton;
   TVXMouseEvent = procedure(Sender: TObject; Button: TVXMouseButton;
     Shift: TShiftState; X, Y: Integer) of object;
   TVXMouseMoveEvent = TMouseMoveEvent;
-  TVXKeyEvent = TKeyEvent;
+
   TVXKeyPressEvent = TKeyEvent; // instead of TKeyPressEvent;
 
   TPlatformInfo = record

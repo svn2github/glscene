@@ -424,7 +424,7 @@ begin
       end;
       Inc(refListI);
    end;
-   reference.Count:=(PtrUInt(refListN)-PtrUInt(@reference.List[0])) div SizeOf(TAffineVector);
+   reference.Count:=(Cardinal(refListN)-Cardinal(@reference.List[0])) div SizeOf(TAffineVector);
 end;
 
 procedure RemapReferences(reference : TIntegerList;
@@ -626,8 +626,6 @@ begin
    end;
 end;
 
-// BuildNormals
-//
 function BuildNormals(reference : TAffineVectorList;
                       indices : TIntegerList) : TAffineVectorList;
 var
@@ -672,8 +670,6 @@ end;
    of the triangle in triangleIndices that have this edge. A maximum of two
    triangles can be referred by this list, and its final size will be that
    of the Result (ie. non oriented edges list). }
-// BuildNonOrientedEdgesList
-//
 function BuildNonOrientedEdgesList(triangleIndices : TIntegerList;
                                    triangleEdges : TIntegerList = nil;
                                    edgesTriangles : TIntegerList = nil) : TIntegerList;
@@ -730,9 +726,11 @@ var
       hashList:=edgesHash[hashKey];
       iList:=@hashList.List[0];
       iListEnd:=@hashList.List[hashList.Count];
-      while PtrUInt(iList)<PtrUInt(iListEnd) do begin
+      while Cardinal(iList)<Cardinal(iListEnd) do
+      begin
          n:=iList^;
-         if (edgesList[n]=a) and (edgesList[n+1]=b) then begin
+         if (edgesList[n]=a) and (edgesList[n+1]=b) then
+         begin
             edgesTriangles[n+1]:=curTri;
             Result:=n;
             Exit;

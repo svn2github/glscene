@@ -14,6 +14,7 @@ interface
 uses
   System.Classes,
   System.SysUtils,
+  FMX.TextLayout,
   
   VXS.PersistentClasses,
   VXS.Scene,
@@ -616,8 +617,8 @@ begin
   with _GZOAxisLabelY do
   begin
     ModulateColor.Color := clrLime;
-    Alignment := TaCenter;
-    Layout := TlCenter;
+    Alignment := taCenter;
+    Layout := tlCenter;
     Options := Options + [FtoTwoSided];
     Position.Y := 1.5;
     Scale.X := 0.02;
@@ -629,8 +630,8 @@ begin
   with _GZOAxisLabelZ do
   begin
     ModulateColor.Color := ClrBlue;
-    Alignment := TaCenter;
-    Layout := TlCenter;
+    Alignment := taCenter;
+    Layout := tlCenter;
     Options := Options + [FtoTwoSided];
     Position.Z := 1.5;
     Scale.X := 0.02;
@@ -643,8 +644,8 @@ begin
   with _GZOVisibleInfoLabels do
   begin
     ModulateColor.Color := clrYellow;
-    Alignment := TaCenter;
-    Layout := TlCenter;
+    Alignment := taCenter;
+    Layout := tlCenter;
     Options := Options + [FtoTwoSided];
     Position.Y := 1.8;
     Position.X := 0;

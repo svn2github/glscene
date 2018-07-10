@@ -16,6 +16,7 @@ uses
   Vcl.ComCtrls,
   Vcl.Imaging.Jpeg,
 
+  GLVectorTypes,
   GLWin32Viewer,
   GLScene,
   GLObjects,

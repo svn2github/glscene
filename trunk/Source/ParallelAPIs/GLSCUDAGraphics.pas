@@ -168,7 +168,7 @@ type
     property Effects;
   end;
 
-  TCUDAGLImageResource = class(TCUDAGraphicResource)
+  TCUDAImageResource = class(TCUDAGraphicResource)
   private
     fMaterialLibrary: TGLMaterialLibrary;
     fTextureName: TGLLibMaterialName;
@@ -180,16 +180,13 @@ type
     procedure Notification(AComponent: TComponent; Operation: TOperation);
       override;
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
     procedure MapResources; override;
     procedure UnMapResources; override;
     procedure BindArrayToTexture(var cudaArray: TCUDAMemData;
       ALeyer, ALevel: LOngWord); override;
   published
-    
     property TextureName: TGLLibMaterialName read fTextureName write
       SetTextureName;
     property MaterialLibrary: TGLMaterialLibrary read fMaterialLibrary write
@@ -197,7 +194,7 @@ type
     property Mapping;
   end;
 
-  TCUDAGLGeometryResource = class(TCUDAGraphicResource)
+  TCUDAGeometryResource = class(TCUDAGraphicResource)
   private
     FFeedBackMesh: TGLCustomFeedBackMesh;
     procedure SetFeedBackMesh(const Value: TGLCustomFeedBackMesh);
@@ -239,7 +236,7 @@ uses
 // ------------------ TCUDAGLImageResource ------------------
 // ------------------
 
-constructor TCUDAGLImageResource.Create(AOwner: TComponent);
+constructor TCUDAImageResource.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   fHandle[0] := nil;
@@ -249,13 +246,13 @@ begin
   FGLContextHandle.OnDestroy := OnGLHandleDestroy;
 end;
 
-destructor TCUDAGLImageResource.Destroy;
+destructor TCUDAImageResource.Destroy;
 begin
   FGLContextHandle.Destroy;
   inherited;
 end;
 
-procedure TCUDAGLImageResource.SetMaterialLibrary(const Value:
+procedure TCUDAImageResource.SetMaterialLibrary(const Value:
   TGLMaterialLibrary);
 begin
   if fMaterialLibrary <> Value then
@@ -272,7 +269,7 @@ begin
   end;
 end;
 
-procedure TCUDAGLImageResource.SetTextureName(const Value: TGLLibMaterialName);
+procedure TCUDAImageResource.SetTextureName(const Value: TGLLibMaterialName);
 begin
   if fTextureName <> Value then
   begin
@@ -281,7 +278,7 @@ begin
   end;
 end;
 
-procedure TCUDAGLImageResource.UnMapResources;
+procedure TCUDAImageResource.UnMapResources;
 begin
   if FMapCounter > 0 then
     Dec(FMapCounter);
@@ -299,7 +296,7 @@ begin
   end;
 end;
 
-procedure TCUDAGLImageResource.AllocateHandles;
+procedure TCUDAImageResource.AllocateHandles;
 const
   cMapping: array[TCUDAMapping] of TCUgraphicsMapResourceFlags = (
     CU_GRAPHICS_MAP_RESOURCE_FLAGS_NONE,
@@ -343,7 +340,7 @@ begin
   end;
 end;
 
-procedure TCUDAGLImageResource.DestroyHandles;
+procedure TCUDAImageResource.DestroyHandles;
 begin
   if Assigned(FHandle[0]) then
   begin
@@ -356,7 +353,7 @@ begin
   end;
 end;
 
-procedure TCUDAGLImageResource.MapResources;
+procedure TCUDAImageResource.MapResources;
 begin
   AllocateHandles;
 
@@ -374,7 +371,7 @@ begin
   Inc(FMapCounter);
 end;
 
-procedure TCUDAGLImageResource.Notification(AComponent: TComponent; Operation:
+procedure TCUDAImageResource.Notification(AComponent: TComponent; Operation:
   TOperation);
 begin
   inherited;
@@ -386,7 +383,7 @@ begin
   end;
 end;
 
-procedure TCUDAGLImageResource.BindArrayToTexture(var cudaArray: TCUDAMemData;
+procedure TCUDAImageResource.BindArrayToTexture(var cudaArray: TCUDAMemData;
   ALeyer, ALevel: LOngWord);
 var
   LTexture: TGLTexture;
@@ -416,7 +413,7 @@ end;
 // ------------------ TCUDAGLGeometryResource ------------------
 // ------------------
 
-constructor TCUDAGLGeometryResource.Create(AOwner: TComponent);
+constructor TCUDAGeometryResource.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   FHandle[0] := nil;
@@ -428,14 +425,14 @@ begin
   FGLContextHandle.OnDestroy := OnGLHandleDestroy;
 end;
 
-destructor TCUDAGLGeometryResource.Destroy;
+destructor TCUDAGeometryResource.Destroy;
 begin
   FeedBackMesh := nil;
   FGLContextHandle.Destroy;
   inherited;
 end;
 
-procedure TCUDAGLGeometryResource.SetFeedBackMesh(const Value:
+procedure TCUDAGeometryResource.SetFeedBackMesh(const Value:
   TGLCustomFeedBackMesh);
 begin
   if FFeedBackMesh <> Value then
@@ -455,7 +452,7 @@ begin
   end;
 end;
 
-procedure TCUDAGLGeometryResource.AllocateHandles;
+procedure TCUDAGeometryResource.AllocateHandles;
 const
   cMapping: array[TCUDAMapping] of TCUgraphicsMapResourceFlags = (
     CU_GRAPHICS_MAP_RESOURCE_FLAGS_NONE,
@@ -497,7 +494,7 @@ begin
   end;
 end;
 
-procedure TCUDAGLGeometryResource.DestroyHandles;
+procedure TCUDAGeometryResource.DestroyHandles;
 begin
   if Assigned(fHandle[0]) or Assigned(fHandle[1]) then
   begin
@@ -527,7 +524,7 @@ begin
   end;
 end;
 
-procedure TCUDAGLGeometryResource.Notification(AComponent: TComponent;
+procedure TCUDAGeometryResource.Notification(AComponent: TComponent;
   Operation:
   TOperation);
 begin
@@ -539,7 +536,7 @@ begin
   end;
 end;
 
-procedure TCUDAGLGeometryResource.MapResources;
+procedure TCUDAGeometryResource.MapResources;
 var
   count: Integer;
 begin
@@ -562,7 +559,7 @@ begin
   Inc(FMapCounter);
 end;
 
-procedure TCUDAGLGeometryResource.UnMapResources;
+procedure TCUDAGeometryResource.UnMapResources;
 var
   count: Integer;
 begin
@@ -585,7 +582,7 @@ begin
   end;
 end;
 
-function TCUDAGLGeometryResource.GetAttribArraySize(AAttr: TGLVertexAttribute): LongWord;
+function TCUDAGeometryResource.GetAttribArraySize(AAttr: TGLVertexAttribute): LongWord;
 var
   typeSize: LongWord;
 begin
@@ -614,7 +611,7 @@ begin
   Result := Cardinal(FFeedBackMesh.VertexNumber) * typeSize;
 end;
 
-function TCUDAGLGeometryResource.GetAttributeArraySize(
+function TCUDAGeometryResource.GetAttributeArraySize(
   const AName: string): LongWord;
 var
   LAttr: TGLVertexAttribute;
@@ -628,7 +625,7 @@ begin
   Result := GetAttribArraySize(LAttr);
 end;
 
-function TCUDAGLGeometryResource.GetAttributeArrayAddress(
+function TCUDAGeometryResource.GetAttributeArrayAddress(
   const AName: string): Pointer;
 var
   i: Integer;
@@ -655,21 +652,21 @@ begin
   if FStatus <> CUDA_SUCCESS then
     Abort;
 
-  if PtrUInt(Result) + GetAttribArraySize(LAttr) > Size then
+  if Cardinal(Result) + GetAttribArraySize(LAttr) > Size then
   begin
     GLSLogger.LogError(strOutOfAttribSize);
     Abort;
   end;
 
-  Inc(Pbyte(Result), PtrUInt(MapPtr));
+  Inc(Pbyte(Result), Cardinal(MapPtr));
 end;
 
-function TCUDAGLGeometryResource.GetElementArrayDataSize: LongWord;
+function TCUDAGeometryResource.GetElementArrayDataSize: LongWord;
 begin
   Result := FFeedBackMesh.ElementNumber * SizeOf(Cardinal);
 end;
 
-function TCUDAGLGeometryResource.GetElementArrayAddress: Pointer;
+function TCUDAGeometryResource.GetElementArrayAddress: Pointer;
 var
   Size: Cardinal;
   MapPtr: Pointer;
@@ -692,7 +689,7 @@ begin
     Abort;
   end;
 
-  Inc(Pbyte(Result), PtrUInt(MapPtr));
+  Inc(Pbyte(Result), Cardinal(MapPtr));
 end;
 
 
@@ -830,7 +827,7 @@ procedure TGLCustomFeedBackMesh.AllocateHandles;
 var
   I, L: Integer;
   Size, Offset: Cardinal;
-  GR: TCUDAGLGeometryResource;
+  GR: TCUDAGeometryResource;
   EnabledLocations: array[0..GLS_VERTEX_ATTR_NUM - 1] of Boolean;
 begin
   FVAO.AllocateHandle;
@@ -839,7 +836,7 @@ begin
 
   if Assigned(FGeometryResource) then
   begin
-    GR := TCUDAGLGeometryResource(FGeometryResource);
+    GR := TCUDAGeometryResource(FGeometryResource);
     size := 0;
     for I := 0 to Attributes.Count - 1 do
       Inc(size, GR.GetAttribArraySize(Attributes[I]));
@@ -926,14 +923,14 @@ end;
 procedure TGLCustomFeedBackMesh.LaunchKernels;
 var
   i: Integer;
-  GR: TCUDAGLGeometryResource;
+  GR: TCUDAGeometryResource;
 //  IR: TCUDAGLImageResource;
 begin
 
   if Assigned(FGeometryResource) then
   begin
     // Produce geometry resource
-    GR := TCUDAGLGeometryResource(FGeometryResource);
+    GR := TCUDAGeometryResource(FGeometryResource);
     GR.MapResources;
     // Produce vertex attributes
     case Launching of
@@ -1135,7 +1132,7 @@ end;
 
 initialization
 
-  RegisterClasses([TCUDAGLImageResource, TCUDAGLGeometryResource,
+  RegisterClasses([TCUDAImageResource, TCUDAGeometryResource,
     TGLCustomFeedBackMesh, TGLFeedBackMesh]);
 
 end.

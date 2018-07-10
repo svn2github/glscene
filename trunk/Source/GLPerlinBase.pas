@@ -119,13 +119,13 @@ begin
   C1 := @B2[0];
   L1 := @B3[0];
 
-  T2 := Pointer(PtrUInt(T1) + SizeOf(Double));
-  C2 := Pointer(PtrUInt(C1) + SizeOf(Double));
-  L2 := Pointer(PtrUInt(L1) + SizeOf(Double));
+  T2 := Pointer(Cardinal(T1) + SizeOf(Double));
+  C2 := Pointer(Cardinal(C1) + SizeOf(Double));
+  L2 := Pointer(Cardinal(L1) + SizeOf(Double));
 
-  T3 := Pointer(PtrUInt(T2) + SizeOf(Double));
-  C3 := Pointer(PtrUInt(C2) + SizeOf(Double));
-  L3 := Pointer(PtrUInt(L2) + SizeOf(Double));
+  T3 := Pointer(Cardinal(T2) + SizeOf(Double));
+  C3 := Pointer(Cardinal(C2) + SizeOf(Double));
+  L3 := Pointer(Cardinal(L2) + SizeOf(Double));
 
   for XC := 0 to Width - 1 do
   begin

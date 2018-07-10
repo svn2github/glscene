@@ -253,33 +253,33 @@ procedure TVXHeightTileFile.PackTile(aWidth, aHeight : Integer; src : PSmallIntA
 var
    packWidth : Integer;
 
-   function DiffEncode(src : PSmallIntArray; dest : PShortIntArray) : PtrUInt;
+   function DiffEncode(src : PSmallIntArray; dest : PShortIntArray) : Cardinal;
    var
       i : Integer;
       v, delta : SmallInt;
    begin
-      Result:=PtrUInt(dest);
+      Result:=Cardinal(dest);
       v:=src[0];
       PSmallIntArray(dest)[0]:=v;
-      dest:=PShortIntArray(PtrUInt(dest)+2);
+      dest:=PShortIntArray(Cardinal(dest)+2);
       i:=1;
-      while i<packWidth do 
+      while i<packWidth do
 	  begin
          delta:=src[i]-v;
          v:=src[i];
-         if Abs(delta)<=127 then 
+         if Abs(delta)<=127 then
 		 begin
             dest[0]:=ShortInt(delta);
-            dest:=PShortIntArray(PtrUInt(dest)+1);
+            dest:=PShortIntArray(Cardinal(dest)+1);
          end else begin
             dest[0]:=-128;
-            dest:=PShortIntArray(PtrUInt(dest)+1);
+            dest:=PShortIntArray(Cardinal(dest)+1);
             PSmallIntArray(dest)[0]:=v;
-            dest:=PShortIntArray(PtrUInt(dest)+2);
+            dest:=PShortIntArray(Cardinal(dest)+2);
          end;
          Inc(i);
       end;
-      Result:=PtrUInt(dest)-Result;
+      Result:=Cardinal(dest)-Result;
    end;
 
    function RLEEncode(src : PSmallIntArray; dest : PAnsiChar) : Cardinal;
@@ -288,7 +288,7 @@ var
       i, n : Integer;
    begin
       i:=0;
-      Result:=PtrUInt(dest);
+      Result:=Cardinal(dest);
       while (i<packWidth) do begin
          v:=src[i];
          Inc(i);
@@ -309,7 +309,7 @@ var
             Inc(dest);
          end;
       end;
-      Result:=PtrUInt(dest)-Result;
+      Result:=Cardinal(dest)-Result;
    end;
 
 var
@@ -346,7 +346,7 @@ begin
       // Lookup leftPack
       leftPack:=0;
       while (leftPack<255) and (packWidth>0) and (p[0]=DefaultZ) do begin
-         p:=PSmallIntArray(PtrUInt(p)+2);
+         p:=PSmallIntArray(Cardinal(p)+2);
          Dec(packWidth);
          Inc(leftPack);
       end;
@@ -415,16 +415,16 @@ var
       locSrc : PShortInt;
       destEnd, locDest : PSmallInt;
    begin
-      locSrc:=PShortInt(PtrUInt(src)-1);
+      locSrc:=PShortInt(Cardinal(src)-1);
       locDest:=dest;
-      destEnd:=PSmallInt(PtrUInt(dest)+unpackWidth*2);
-      while PtrUInt(locDest)<PtrUInt(destEnd) do begin
+      destEnd:=PSmallInt(Cardinal(dest)+unpackWidth*2);
+      while Cardinal(locDest)<Cardinal(destEnd) do begin
          Inc(locSrc);
          v:=PSmallInt(locSrc)^;
          Inc(locSrc, 2);
          locDest^:=v;
          Inc(locDest);
-         while (PtrUInt(locDest)<PtrUInt(destEnd)) do begin
+         while (Cardinal(locDest)<Cardinal(destEnd)) do begin
             delta:=locSrc^;
             if delta<>-128 then begin
                v:=v+delta;
@@ -447,12 +447,14 @@ var
    begin
       locSrc:=src;
       locDest:=dest;
-      destEnd:=PSmallInt(PtrUInt(dest)+unpackWidth*2);
-      while PtrUInt(locDest)<PtrUInt(destEnd) do begin
+      destEnd:=PSmallInt(Cardinal(dest)+unpackWidth*2);
+      while Cardinal(locDest)<Cardinal(destEnd) do
+      begin
          v:=PSmallIntArray(locSrc)[0];
          Inc(locSrc, 2);
          repeat
-            if PtrUInt(locDest)=PtrUInt(destEnd)-2 then begin
+            if Cardinal(locDest)=Cardinal(destEnd)-2 then
+            begin
                locDest^:=v;
                Inc(locDest);
                n:=0;
@@ -464,7 +466,7 @@ var
                   Inc(locDest);
                end;
             end;
-         until (n<255) or (PtrUInt(locDest)>=PtrUInt(destEnd));
+         until (n<255) or (Cardinal(locDest)>=Cardinal(destEnd));
       end;
       src:=locSrc;
       dest:=locDest;
@@ -612,7 +614,7 @@ begin
       if n>Cardinal(len) then n:=Cardinal(len);
       tile:=GetTile(tileInfo.left, tileInfo.top);
       Move(tile.data[(y-tileInfo.top)*tileInfo.width+rx], dest^, n*2);
-      dest:=PSmallIntArray(PtrUInt(dest)+n*2);
+      dest:=PSmallIntArray(Cardinal(dest)+n*2);
       Dec(len, n);
       Inc(x, n);
    end;
@@ -700,10 +702,11 @@ end;
 
 function TVXHeightTileFile.IndexOfTile(aTile : PHeightTileInfo) : Integer;
 var
-   c : PtrUInt;
+   c : Cardinal;
 begin
-   c:=PtrUInt(aTile)-PtrUInt(@FTileIndex[0]);
-   if (c mod SizeOf(TVXHeightTileInfo))=0 then begin
+   c:=Cardinal(aTile)-Cardinal(@FTileIndex[0]);
+   if (c mod SizeOf(TVXHeightTileInfo))=0 then
+   begin
       Result:=(c div SizeOf(TVXHeightTileInfo));
       if (Result<0) or (Result>High(FTileIndex)) then
          Result:=-1;
