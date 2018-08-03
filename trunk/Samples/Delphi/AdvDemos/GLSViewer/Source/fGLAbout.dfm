@@ -2418,7 +2418,8 @@ inherited GLAbout: TGLAbout
       Height = 187
       TabOrder = 1
       Visible = False
-      ExplicitTop = 0
+      ExplicitLeft = 1
+      ExplicitTop = 1
       ExplicitWidth = 444
       ExplicitHeight = 187
     end
@@ -2428,7 +2429,7 @@ inherited GLAbout: TGLAbout
       Width = 77
       Height = 17
       BevelOuter = bvNone
-      Caption = ' '#169'  2002, 2017'
+      Caption = ' '#169'  2002, 2018'
       TabOrder = 0
     end
   end

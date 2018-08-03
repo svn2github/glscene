@@ -5,7 +5,8 @@ interface
 uses
   Winapi.Windows, 
   Winapi.Messages,
-  System.SysUtils, 
+  System.SysUtils,
+  System.UITypes,
   System.Variants, 
   System.Classes, 
   System.IniFiles,
@@ -128,9 +129,6 @@ end;
 
 
 procedure TGLOptions.PanelBackgroundClick(Sender: TObject);
-var
-   bmp : TBitmap;
-   col : TColor;
 
 begin
    dmGLSViewer.ColorDialog.Color := PanelBackground.Color;

@@ -6,6 +6,7 @@ uses
   Winapi.OpenGL,
   System.SysUtils,
   System.Classes,
+  System.Types,
   System.Math,
   Vcl.Graphics,
   Vcl.Controls,
@@ -13,12 +14,30 @@ uses
   Vcl.ComCtrls,
   Vcl.StdCtrls,
   Vcl.ExtCtrls,
-  
-  GLScene, GLVectorFileObjects, GLWin32Viewer, GLMesh, GLTexture,
-  GLUserShader, GLHUDObjects, GLVectorGeometry, GLContext,  GLObjects,
-  GLBitmapFont, GLWindowsFont, GLUtils, GLMaterial, GLCoordinates,
-  GLCrossPlatform, GLBaseClasses, GLRenderContextInfo, GLGraphics,
-  GLState, GLTextureFormat;
+
+  GLScene,
+  GLVectorTypes,
+  GLVectorFileObjects,
+  GLVectorLists,
+  GLWin32Viewer,
+  GLMesh,
+  GLTexture,
+  GLUserShader,
+  GLHUDObjects,
+  GLVectorGeometry,
+  GLContext,
+  GLObjects,
+  GLBitmapFont,
+  GLWindowsFont,
+  GLUtils,
+  GLMaterial,
+  GLCoordinates,
+  GLCrossPlatform,
+  GLBaseClasses,
+  GLRenderContextInfo,
+  GLGraphics,
+  GLState,
+  GLTextureFormat;
 
 
 type

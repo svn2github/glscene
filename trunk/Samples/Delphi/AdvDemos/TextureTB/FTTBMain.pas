@@ -4,9 +4,23 @@ interface
 
 uses
   Winapi.Windows,
-  System.SysUtils, System.Classes, System.Actions, Vcl.Graphics, Vcl.Controls, Vcl.Forms,
-  Vcl.Dialogs, Vcl.ExtCtrls, Vcl.ExtDlgs, Vcl.StdCtrls, Vcl.ComCtrls, Vcl.ActnList, 
-  Vcl.ToolWin, Vcl.Menus, Vcl.ImgList, Vcl.Imaging.Jpeg,
+  System.SysUtils,
+  System.UITypes,
+  System.Classes,
+  System.Actions,
+  Vcl.Graphics,
+  Vcl.Controls,
+  Vcl.Forms,
+  Vcl.Dialogs,
+  Vcl.ExtCtrls,
+  Vcl.ExtDlgs,
+  Vcl.StdCtrls,
+  Vcl.ComCtrls,
+  Vcl.ActnList,
+  Vcl.ToolWin,
+  Vcl.Menus,
+  Vcl.ImgList,
+  Vcl.Imaging.Jpeg,
   
   GLObjects, 
   GLHUDObjects, 
@@ -20,7 +34,7 @@ uses
   GLGraphics, 
   GLVectorGeometry, 
   GLState, 
-  GLUtils;
+  GLUtils, System.ImageList;
 
 
 type

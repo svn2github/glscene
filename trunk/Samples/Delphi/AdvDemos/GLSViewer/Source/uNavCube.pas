@@ -8,6 +8,7 @@ interface
 uses
   Winapi.Windows,
   System.Classes,
+  System.Types,
   System.Math,
   System.SysUtils,
   Vcl.Graphics,
@@ -16,6 +17,9 @@ uses
 
   GLScene,
   GLObjects,
+  GLCoordinates,
+  GLPersistentClasses,
+  GLVectorTypes,
   GLHUDObjects,
   GLGeomObjects,
   GLMaterial,

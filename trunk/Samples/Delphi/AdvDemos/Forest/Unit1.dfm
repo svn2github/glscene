@@ -36,6 +36,7 @@ object Form1: TForm1
     Buffer.Lighting = False
     Buffer.AntiAliasing = aaNone
     FieldOfView = 152.777770996093800000
+    PenAsTouch = False
     Align = alClient
     TabOrder = 0
   end

@@ -2,8 +2,6 @@ inherited GLOptions: TGLOptions
   HelpContext = 0
   Caption = 'Options'
   OnClose = FormClose
-  ExplicitWidth = 320
-  ExplicitHeight = 240
   PixelsPerInch = 96
   TextHeight = 16
   inherited PanelMiddle: TPanel

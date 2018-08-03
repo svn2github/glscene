@@ -290,8 +290,6 @@ begin
 end;
 
 procedure TMainForm.FormShow(Sender: TObject);
-var
-  i: Integer;
 begin
   if not nthShow then
   begin
@@ -925,7 +923,6 @@ procedure TMainForm.acObjectsExecute(Sender: TObject);
 var
   i: Integer;
   Color : TVector3f;
-  Points: TGLPoints;
 const
   RandMax: Integer = 1000;
 begin

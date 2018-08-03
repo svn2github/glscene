@@ -28,6 +28,7 @@ object Form1: TForm1
     Buffer.FaceCulling = False
     Buffer.Lighting = False
     FieldOfView = 153.398193359375000000
+    PenAsTouch = False
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove

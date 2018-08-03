@@ -49,6 +49,10 @@ object TTBMain: TTTBMain
       TabOrder = 0
       object TSRGB: TTabSheet
         Caption = 'RGB'
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object ScrollBox1: TScrollBox
           Left = 0
           Top = 0
@@ -219,6 +223,7 @@ object TTBMain: TTTBMain
       Camera = GLCamera
       Buffer.AntiAliasing = aa2x
       FieldOfView = 140.033782958984400000
+      PenAsTouch = False
       Align = alClient
       OnMouseDown = GLSceneViewerMouseDown
       OnMouseMove = GLSceneViewerMouseMove
@@ -326,7 +331,7 @@ object TTBMain: TTTBMain
     Left = 48
     Top = 72
     Bitmap = {
-      494C010102000400100010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010102000400140010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

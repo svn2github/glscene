@@ -105,7 +105,10 @@ uses
   CWString,
 {$endif}
 {$endif}
-  Classes, StrUtils, SysUtils, TypInfo;
+  Classes,
+  StrUtils,
+  SysUtils,
+  TypInfo;
 
  (*****************************************************************************)
  (*                                                                           *)
@@ -414,12 +417,12 @@ type
     TP_GlobalClassHandling: TList;
     /// Items are TClassMode. If a is derived from b, a comes first
     TP_Retranslator: TExecutable; /// Cast this to TTP_Retranslator
-      FWhenNewLanguageListeners: TInterfaceList;  /// List of all registered WhenNewLanguage listeners
-      {$ifdef DXGETTEXTDEBUG}
-      DebugLogCS:TMultiReadExclusiveWriteSynchronizer;
-      DebugLog:TStream;
-      DebugLogOutputPaused:Boolean;
-      {$endif}
+    FWhenNewLanguageListeners: TInterfaceList;  /// List of all registered WhenNewLanguage listeners
+    {$ifdef DXGETTEXTDEBUG}
+    DebugLogCS:TMultiReadExclusiveWriteSynchronizer;
+    DebugLog:TStream;
+    DebugLogOutputPaused:Boolean;
+    {$endif}
     function TP_CreateRetranslator: TExecutable;  // Must be freed by caller!
     procedure FreeTP_ClassHandlingItems;
       {$ifdef DXGETTEXTDEBUG}
@@ -1976,10 +1979,8 @@ begin
             old := GetStrProp(AnObject, PropName);
           tkWString:
             old := GetStrProp(AnObject, PropName);
-            {$IFDEF UNICODE}
             tkUString :
-              old := GetUnicodeStrProp(AnObject, PropName);
-            {$ENDIF}
+              old := GetStrProp(AnObject, PropName);
           else
             raise Exception.Create(
               'Internal error: Illegal property type. This problem needs to be solved by a programmer, try to find a workaround.');
@@ -2331,9 +2332,6 @@ var
   i: integer;
   s:TStringList;
   slAsTStringList:TStringList;
-  {$ifdef DELPHI2009OROLDER}
-  originalOwnsObjects: Boolean;
-  {$endif}
 begin
   if sl.Count > 0 then
   begin
