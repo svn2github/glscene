@@ -25,6 +25,7 @@ object Form1: TForm1
     Camera = Camera
     Buffer.BackgroundColor = clMedGray
     FieldOfView = 156.367706298828100000
+    PenAsTouch = False
     Align = alClient
     OnMouseDown = ViewerMouseDown
     OnMouseMove = ViewerMouseMove

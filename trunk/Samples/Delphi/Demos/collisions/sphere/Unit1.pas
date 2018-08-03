@@ -15,6 +15,7 @@ uses
 
   
   GLScene,
+  GLVectorTypes,
   GLObjects,
   GLCollision,
   GLWin32Viewer,

@@ -13,9 +13,9 @@ uses
   Vcl.ExtCtrls,
   Vcl.StdCtrls,
 
-  
   GLObjects,
   GLScene,
+  GLVectorTypes,
   GLWin32Viewer,
   GLSkydome,
   GLCadencer,

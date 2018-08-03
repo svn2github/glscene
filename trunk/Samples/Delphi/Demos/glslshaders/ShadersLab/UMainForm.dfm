@@ -42,6 +42,10 @@ object MainForm: TMainForm
       TabOrder = 0
       object TabSheet1: TTabSheet
         Caption = 'Fur'
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object lblFurDistance: TLabel
           Left = 3
           Top = 53
@@ -363,6 +367,10 @@ object MainForm: TMainForm
       object TabSheet2: TTabSheet
         Caption = 'Lattice'
         ImageIndex = 1
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object lblLatticeScaleX: TLabel
           Left = 291
           Top = 41
@@ -594,6 +602,10 @@ object MainForm: TMainForm
       object TabSheet3: TTabSheet
         Caption = 'Erosion'
         ImageIndex = 2
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object Label1: TLabel
           Left = 8
           Top = 46
@@ -902,6 +914,10 @@ object MainForm: TMainForm
       object TabSheet4: TTabSheet
         Caption = 'Ivory'
         ImageIndex = 3
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object chkIvoryShader: TCheckBox
           Left = 16
           Top = 16
@@ -915,6 +931,10 @@ object MainForm: TMainForm
       object TabSheet5: TTabSheet
         Caption = 'Gootch'
         ImageIndex = 4
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object Label13: TLabel
           Left = 16
           Top = 47
@@ -1196,6 +1216,10 @@ object MainForm: TMainForm
       object TabSheet6: TTabSheet
         Caption = 'S.E.M'
         ImageIndex = 5
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object Label19: TLabel
           Left = 16
           Top = 44
@@ -1329,6 +1353,10 @@ object MainForm: TMainForm
       object Displacement: TTabSheet
         Caption = 'Displacement'
         ImageIndex = 6
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object Label21: TLabel
           Left = 24
           Top = 52
@@ -1641,6 +1669,10 @@ object MainForm: TMainForm
       object TabSheet7: TTabSheet
         Caption = 'Glass'
         ImageIndex = 7
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object Label56: TLabel
           Left = 11
           Top = 36
@@ -1827,6 +1859,10 @@ object MainForm: TMainForm
       object TabSheet8: TTabSheet
         Caption = 'Toon'
         ImageIndex = 8
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object Label64: TLabel
           Left = 7
           Top = 51
@@ -2095,6 +2131,7 @@ object MainForm: TMainForm
     Buffer.BackgroundColor = clBlack
     Buffer.AntiAliasing = aa2x
     FieldOfView = 160.468215942382800000
+    PenAsTouch = False
     Align = alClient
     TabOrder = 1
   end

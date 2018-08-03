@@ -54,7 +54,7 @@ type
     GLSCUDA1: TGLSCUDA;
     GLSCUDACompiler1: TGLSCUDACompiler;
     MainModule: TCUDAModule;
-    processedTextureMapper: TCUDAGLImageResource;
+    processedTextureMapper: TCUDAImageResource;
     CallPostProcess: TGLDirectOpenGL;
     GLCapsule1: TGLCapsule;
     ResultShader: TGLSLShader;
@@ -87,9 +87,8 @@ type
     procedure TrackBar1Change(Sender: TObject);
     procedure GLSCUDA1OpenGLInteropInit(out Context: TGLContext);
   private
-     
+
   public
-     
     Radius: Integer;
     Threshold: Single;
     Highlight: SIngle;

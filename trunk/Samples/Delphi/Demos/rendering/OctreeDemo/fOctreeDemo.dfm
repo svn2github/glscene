@@ -26,6 +26,7 @@ object frmOctreeDemo: TfrmOctreeDemo
     Buffer.BackgroundColor = clBackground
     Buffer.FaceCulling = False
     FieldOfView = 144.739837646484400000
+    PenAsTouch = False
     Align = alClient
     TabOrder = 0
   end

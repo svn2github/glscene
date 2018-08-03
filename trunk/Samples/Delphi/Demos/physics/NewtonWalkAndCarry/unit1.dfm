@@ -24,6 +24,7 @@ object Form1: TForm1
     Camera = Player_Cam
     VSync = vsmSync
     FieldOfView = 90.285766601562500000
+    PenAsTouch = False
     OnMouseMove = GLSceneViewer1MouseMove
     TabOrder = 0
   end
@@ -252,84 +253,7 @@ object Form1: TForm1
     end
     object GLLines1: TGLLines
       Pickable = False
-      Nodes = <
-        item
-          Color.Color = {0000803F0000803F000000000000803F}
-        end
-        item
-          Color.Color = {0000803F0000803F000000000000803F}
-        end
-        item
-          Color.Color = {0000803F0000803F000000000000803F}
-        end
-        item
-          Color.Color = {0000803F0000803F000000000000803F}
-        end
-        item
-          Color.Color = {0000803F0000803F000000000000803F}
-        end
-        item
-          Color.Color = {0000803F0000803F000000000000803F}
-        end
-        item
-          Color.Color = {0000803F0000803F000000000000803F}
-        end
-        item
-          Color.Color = {0000803F0000803F000000000000803F}
-        end
-        item
-          Color.Color = {0000803F0000803F000000000000803F}
-        end
-        item
-          Color.Color = {0000803F0000803F000000000000803F}
-        end
-        item
-          Color.Color = {0000803F0000803F000000000000803F}
-        end
-        item
-          Color.Color = {0000803F0000803F000000000000803F}
-        end
-        item
-          Color.Color = {0000803F0000803F000000000000803F}
-        end
-        item
-          Color.Color = {0000803F0000803F000000000000803F}
-        end
-        item
-          Color.Color = {0000803F0000803F000000000000803F}
-        end
-        item
-          Color.Color = {0000803F0000803F000000000000803F}
-        end
-        item
-          Color.Color = {0000803F0000803F000000000000803F}
-        end
-        item
-          Color.Color = {0000803F0000803F000000000000803F}
-        end
-        item
-          Color.Color = {0000803F0000803F000000000000803F}
-        end
-        item
-          Color.Color = {0000803F0000803F000000000000803F}
-        end
-        item
-          Color.Color = {0000803F0000803F000000000000803F}
-        end
-        item
-          Color.Color = {0000803F0000803F000000000000803F}
-        end
-        item
-          Color.Color = {0000803F0000803F000000000000803F}
-        end
-        item
-          Color.Color = {0000803F0000803F000000000000803F}
-        end
-        item
-        end
-        item
-          Y = 1.000000000000000000
-        end>
+      Nodes = <>
       NodesAspect = lnaInvisible
       SplineMode = lsmSegments
       Options = [loUseNodeColorForLines]

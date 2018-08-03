@@ -20,6 +20,7 @@ uses
   GLCrossPlatform,
   GLBaseClasses,
   GLScene,
+  GLPersistentClasses,
   GLVectorGeometry,
   GLWin32Viewer,
   GLParticles,

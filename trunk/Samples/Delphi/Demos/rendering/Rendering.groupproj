@@ -3,9 +3,6 @@
         <ProjectGuid>{94992228-6C4B-4053-9F29-E7A25E3BB86D}</ProjectGuid>
     </PropertyGroup>
     <ItemGroup>
-        <Projects Include="basicsdl\basicsdl.dproj">
-            <Dependencies/>
-        </Projects>
         <Projects Include="Blur\Blur.dproj">
             <Dependencies/>
         </Projects>
@@ -60,6 +57,9 @@
         <Projects Include="tobitmap\tobitmap.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="basicsdl\basicsdl.dproj">
+            <Dependencies/>
+        </Projects>
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -68,15 +68,6 @@
             <Default.Personality/>
         </BorlandProject>
     </ProjectExtensions>
-    <Target Name="basicsdl">
-        <MSBuild Projects="basicsdl\basicsdl.dproj"/>
-    </Target>
-    <Target Name="basicsdl:Clean">
-        <MSBuild Projects="basicsdl\basicsdl.dproj" Targets="Clean"/>
-    </Target>
-    <Target Name="basicsdl:Make">
-        <MSBuild Projects="basicsdl\basicsdl.dproj" Targets="Make"/>
-    </Target>
     <Target Name="Blur">
         <MSBuild Projects="Blur\Blur.dproj"/>
     </Target>
@@ -239,14 +230,23 @@
     <Target Name="tobitmap:Make">
         <MSBuild Projects="tobitmap\tobitmap.dproj" Targets="Make"/>
     </Target>
+    <Target Name="basicsdl">
+        <MSBuild Projects="basicsdl\basicsdl.dproj"/>
+    </Target>
+    <Target Name="basicsdl:Clean">
+        <MSBuild Projects="basicsdl\basicsdl.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="basicsdl:Make">
+        <MSBuild Projects="basicsdl\basicsdl.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="basicsdl;Blur;BlurAdvanced;bunnybump;celshading;culling;fog;fullscreen;invariance;lining;memviewer;multiproxy;MultiSampleTextures;OctreeDemo;phong;QuadtreeVisCulling;RenderToTexture;SkyBox;tobitmap"/>
+        <CallTarget Targets="Blur;BlurAdvanced;bunnybump;celshading;culling;fog;fullscreen;invariance;lining;memviewer;multiproxy;MultiSampleTextures;OctreeDemo;phong;QuadtreeVisCulling;RenderToTexture;SkyBox;tobitmap;basicsdl"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="basicsdl:Clean;Blur:Clean;BlurAdvanced:Clean;bunnybump:Clean;celshading:Clean;culling:Clean;fog:Clean;fullscreen:Clean;invariance:Clean;lining:Clean;memviewer:Clean;multiproxy:Clean;MultiSampleTextures:Clean;OctreeDemo:Clean;phong:Clean;QuadtreeVisCulling:Clean;RenderToTexture:Clean;SkyBox:Clean;tobitmap:Clean"/>
+        <CallTarget Targets="Blur:Clean;BlurAdvanced:Clean;bunnybump:Clean;celshading:Clean;culling:Clean;fog:Clean;fullscreen:Clean;invariance:Clean;lining:Clean;memviewer:Clean;multiproxy:Clean;MultiSampleTextures:Clean;OctreeDemo:Clean;phong:Clean;QuadtreeVisCulling:Clean;RenderToTexture:Clean;SkyBox:Clean;tobitmap:Clean;basicsdl:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="basicsdl:Make;Blur:Make;BlurAdvanced:Make;bunnybump:Make;celshading:Make;culling:Make;fog:Make;fullscreen:Make;invariance:Make;lining:Make;memviewer:Make;multiproxy:Make;MultiSampleTextures:Make;OctreeDemo:Make;phong:Make;QuadtreeVisCulling:Make;RenderToTexture:Make;SkyBox:Make;tobitmap:Make"/>
+        <CallTarget Targets="Blur:Make;BlurAdvanced:Make;bunnybump:Make;celshading:Make;culling:Make;fog:Make;fullscreen:Make;invariance:Make;lining:Make;memviewer:Make;multiproxy:Make;MultiSampleTextures:Make;OctreeDemo:Make;phong:Make;QuadtreeVisCulling:Make;RenderToTexture:Make;SkyBox:Make;tobitmap:Make;basicsdl:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

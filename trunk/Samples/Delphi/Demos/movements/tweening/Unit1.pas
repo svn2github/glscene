@@ -18,6 +18,7 @@ uses
   Vcl.Samples.Spin,
   
   GLScene,
+  GLVectorTypes,
   GLObjects,
   GLCoordinates,
   GLWin32Viewer,

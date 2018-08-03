@@ -11,9 +11,10 @@ uses
   Vcl.Forms,
   Vcl.Dialogs,
 
-  GLNGDManager,
   GLScene,
+  GLVectorTypes,
   GLObjects,
+  GLNGDManager,
   GLCoordinates,
   GLCadencer,
   GLWin32Viewer,

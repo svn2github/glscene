@@ -33,6 +33,7 @@ object Form1: TForm1
     AfterRender = GLSceneViewer1AfterRender
     Buffer.DepthTest = False
     FieldOfView = 141.948791503906300000
+    PenAsTouch = False
     Align = alClient
     OnMouseMove = GLSceneViewer1MouseMove
     TabOrder = 0

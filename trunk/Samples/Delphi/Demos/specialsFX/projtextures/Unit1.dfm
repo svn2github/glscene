@@ -26,6 +26,7 @@ object Form1: TForm1
     Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow]
     Buffer.DepthPrecision = dp32bits
     FieldOfView = 154.614669799804700000
+    PenAsTouch = False
     Align = alClient
     OnMouseDown = viewerMouseDown
     OnMouseUp = viewerMouseUp

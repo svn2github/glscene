@@ -13,9 +13,18 @@ uses
   Vcl.Dialogs,
   Vcl.ExtCtrls,
   
-  GLParticleFX, GLCadencer, GLScene, GLObjects, GLWin32Viewer,
-  GLBehaviours, GLVectorGeometry, GLCrossPlatform, GLFullScreenViewer,
-  GLCoordinates, GLBaseClasses;
+  GLScene,
+  GLObjects,
+  GLVectorTypes,
+  GLParticleFX,
+  GLCadencer,
+  GLWin32Viewer,
+  GLBehaviours,
+  GLVectorGeometry,
+  GLCrossPlatform,
+  GLFullScreenViewer,
+  GLCoordinates,
+  GLBaseClasses;
 
 type
   TForm1 = class(TForm)

@@ -7,6 +7,7 @@ uses
   System.SysUtils,
   System.Variants,
   System.Classes,
+  System.UITypes,
   Vcl.Graphics,
   Vcl.Controls,
   Vcl.Forms,
@@ -15,8 +16,17 @@ uses
   Vcl.ExtCtrls,
 
   
-  GLScene,  GLGeomObjects,  GLObjects, GLCadencer, GLWin32Viewer,
-  GLCrossPlatform, GLCoordinates, GLBaseClasses, GLRenderContextInfo, GLContext;
+  GLScene,
+  GLVectorTypes,
+  GLGeomObjects,
+  GLObjects,
+  GLCadencer,
+  GLWin32Viewer,
+  GLCrossPlatform,
+  GLCoordinates,
+  GLBaseClasses,
+  GLRenderContextInfo,
+  GLContext;
 
 type
   TForm1 = class(TForm)

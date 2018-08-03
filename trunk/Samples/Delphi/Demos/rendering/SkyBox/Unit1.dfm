@@ -26,6 +26,7 @@ object Form1: TForm1
     Buffer.BackgroundColor = 7168
     Buffer.AmbientColor.Color = {0000803F0000803F0000803F0000803F}
     FieldOfView = 158.177749633789100000
+    PenAsTouch = False
     Align = alClient
     TabOrder = 0
   end

@@ -15,6 +15,7 @@ uses
   GLCadencer,
   GLObjects,
   GLScene,
+  GLVectorTypes,
   GLVectorGeometry,
   GLSound,
   GLSMWaveOut,

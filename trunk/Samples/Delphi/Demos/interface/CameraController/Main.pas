@@ -7,6 +7,7 @@ uses
   System.SysUtils,
   System.Variants,
   System.Classes,
+  System.Types,
   System.Math,
   Vcl.Graphics,
   Vcl.Controls,

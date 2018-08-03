@@ -15,8 +15,8 @@ uses
 
   
   GLScene,
-  GLPersistentClasses,
   GLCadencer,
+  GLPersistentClasses,
   GLObjects,
   GLSpaceText,
   GLPolyhedron,
@@ -191,9 +191,8 @@ end;
 
 procedure TForm1.edAutoZoomFactorKeyPress(Sender: TObject; var Key: Char);
 begin
-  if not CharInSet(Key,['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', ','])
-  then
-    key := #0;
+  if not CharInSet(Key,['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', ',']) then
+    Key := #0;
 
 end;
 

@@ -14,9 +14,11 @@ uses
   Vcl.StdCtrls,
   Vcl.Samples.Spin,
   
+  GLScene,
+  GLVectorTypes,
   GLNGDManager,
   GLObjects,
-  GLScene,
+  GLPersistentClasses,
   GLCoordinates,
   GLSimpleNavigation,
   GLCadencer,

@@ -6,6 +6,7 @@ uses
   Winapi.OpenGL,
   System.SysUtils,
   System.Classes,
+  System.Types,
   System.Math,
   Vcl.Graphics,
   Vcl.Controls,
@@ -15,10 +16,22 @@ uses
   Vcl.ComCtrls,
   Vcl.StdCtrls,
 
-  
-  GLBitmapFont, GLWindowsFont, GLTexture,  GLCadencer, GLWin32Viewer, GLScene,
-  GLObjects,  GLParticleFX, GLVectorGeometry, GLVectorTypes, GLEParticleMasksManager,
-  GLGeomObjects, GLAsyncTimer, GLCrossPlatform, GLMaterial, GLCoordinates,
+  GLScene,
+  GLObjects,
+  GLBitmapFont,
+  GLWindowsFont,
+  GLTexture,
+  GLCadencer,
+  GLWin32Viewer,
+  GLParticleFX,
+  GLVectorGeometry,
+  GLVectorTypes,
+  GLEParticleMasksManager,
+  GLGeomObjects,
+  GLAsyncTimer,
+  GLCrossPlatform,
+  GLMaterial,
+  GLCoordinates,
   GLBaseClasses;
 
 const

@@ -14,6 +14,8 @@ uses
 
   CgGL,
   GLScene,
+  GLVectorTypes,
+  GLVectorGeometry,
   GLObjects,
   GLCadencer,
   GLTexture,

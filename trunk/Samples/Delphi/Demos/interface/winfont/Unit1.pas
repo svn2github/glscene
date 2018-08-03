@@ -15,6 +15,7 @@ uses
 
   
   GLScene,
+  GLVectorTypes,
   GLHUDObjects,
   GLObjects,
   GLCadencer,

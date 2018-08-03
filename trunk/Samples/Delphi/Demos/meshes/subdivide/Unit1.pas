@@ -14,8 +14,8 @@ uses
   Vcl.ExtCtrls,
 
   GLScene,
-  GLPersistentClasses,
   GLVectorFileObjects,
+  GLPersistentClasses,
   GLObjects,
   GLTexture,
   GLWin32Viewer,

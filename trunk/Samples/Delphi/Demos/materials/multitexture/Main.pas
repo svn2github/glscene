@@ -16,8 +16,8 @@ uses
   Vcl.ExtDlgs,
   Vcl.Imaging.Jpeg,
 
-  
   GLScene,
+  GLVectorTypes,
   GLObjects,
   GLTexture,
   GLWin32Viewer,

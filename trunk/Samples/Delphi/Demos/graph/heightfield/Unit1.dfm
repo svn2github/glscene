@@ -3,8 +3,8 @@ object Form1: TForm1
   Top = 94
   BorderWidth = 4
   Caption = 'Height Field'
-  ClientHeight = 356
-  ClientWidth = 451
+  ClientHeight = 348
+  ClientWidth = 443
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -20,21 +20,22 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 284
-    Height = 356
+    Width = 276
+    Height = 348
     Camera = GLCamera1
     Buffer.BackgroundColor = clBackground
-    FieldOfView = 109.691642761230500000
+    FieldOfView = 108.142997741699200000
+    PenAsTouch = False
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
     TabOrder = 0
   end
   object Panel1: TPanel
-    Left = 284
+    Left = 276
     Top = 0
     Width = 167
-    Height = 356
+    Height = 348
     Align = alRight
     TabOrder = 1
     object Label1: TLabel

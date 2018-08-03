@@ -219,6 +219,10 @@ object Form1: TForm1
       object TabSheet2: TTabSheet
         Caption = 'Fragment Program'
         ImageIndex = 1
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object Splitter2: TSplitter
           Left = 0
           Top = 301
@@ -412,6 +416,7 @@ object Form1: TForm1
       Camera = GLCamera1
       Buffer.AntiAliasing = aa4x
       FieldOfView = 150.288558959960900000
+      PenAsTouch = False
       Align = alClient
       OnMouseDown = GLSceneViewer1MouseDown
       OnMouseMove = GLSceneViewer1MouseMove

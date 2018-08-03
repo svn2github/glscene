@@ -14,9 +14,17 @@ uses
   Vcl.StdCtrls,
   Vcl.ExtCtrls,
 
-  
-  GLScene, GLObjects, GLWin32Viewer,  GLVectorGeometry, GLVectorLists,
-  GLCadencer, GLTexture, GLColor, GLCrossPlatform, GLCoordinates,
+  GLScene,
+  GLVectorTypes,
+  GLObjects,
+  GLWin32Viewer,
+  GLVectorGeometry,
+  GLVectorLists,
+  GLCadencer,
+  GLTexture,
+  GLColor,
+  GLCrossPlatform,
+  GLCoordinates,
   GLBaseClasses;
 
 type

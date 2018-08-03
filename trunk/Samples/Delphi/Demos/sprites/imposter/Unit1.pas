@@ -13,9 +13,21 @@ uses
   Vcl.StdCtrls,
   Vcl.ExtCtrls,
   
-  GLScene, GLTeapot, GLObjects, GLWin32Viewer,
-  GLVectorGeometry, GLTexture, GLCadencer, GLImposter, GLSkydome,
-  GLCrossPlatform, GLCoordinates, GLBaseClasses, GLRenderContextInfo;
+  GLScene,
+  GLContext,
+  GLVectorTypes,
+  GLTeapot,
+  GLObjects,
+  GLWin32Viewer,
+  GLVectorGeometry,
+  GLTexture,
+  GLCadencer,
+  GLImposter,
+  GLSkydome,
+  GLCrossPlatform,
+  GLCoordinates,
+  GLBaseClasses,
+  GLRenderContextInfo;
 
 type
   TForm1 = class(TForm)

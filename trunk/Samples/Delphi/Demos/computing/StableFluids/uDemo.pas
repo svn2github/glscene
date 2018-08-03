@@ -53,7 +53,7 @@ type
     GLMaterialLibrary1: TGLMaterialLibrary;
     ForwardFFT: TCUDAFFTPlan;
     InverseFFT: TCUDAFFTPlan;
-    ParticleMapper: TCUDAGLGeometryResource;
+    ParticleMapper: TCUDAGeometryResource;
     ResetButton: TGLButton;
     GLWindowsBitmapFont1: TGLWindowsBitmapFont;
     GLGuiLayout1: TGLGuiLayout;

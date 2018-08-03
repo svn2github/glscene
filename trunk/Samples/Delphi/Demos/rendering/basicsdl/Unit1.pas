@@ -26,7 +26,7 @@ uses
 type
   TDataModule1 = class(TDataModule)
     GLScene1: TGLScene;
-    GLSDLViewer1: TSDLViewer;
+    GLSDLViewer1: TGLSDLViewer;
     GLCamera1: TGLCamera;
     GLLightSource1: TGLLightSource;
     Teapot1: TGLTeapot;
@@ -75,7 +75,7 @@ begin
       firstPassDone:=True;
       GLSDLViewer1.Buffer.RenderingContext.Activate;
       try
-        if not gl.ARB_texture_cube_map then
+        if not GL.ARB_texture_cube_map then
            ShowMessage('Your graphics board does not support cube maps...'#13#10
                        +'So, no cube maps for ya...')
         else

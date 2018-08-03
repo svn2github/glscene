@@ -25,6 +25,7 @@ object Form1: TForm1
     Buffer.BackgroundColor = clMedGray
     Buffer.Lighting = False
     FieldOfView = 148.366622924804700000
+    PenAsTouch = False
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     TabOrder = 0

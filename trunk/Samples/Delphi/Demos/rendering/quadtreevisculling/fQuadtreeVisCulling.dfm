@@ -30,6 +30,7 @@ object frmQuadtreeVisCulling: TfrmQuadtreeVisCulling
     Buffer.BackgroundColor = clWhite
     Buffer.Lighting = False
     FieldOfView = 151.586471557617200000
+    PenAsTouch = False
     Align = alClient
     TabOrder = 0
   end

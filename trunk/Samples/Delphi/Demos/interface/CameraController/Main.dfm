@@ -526,6 +526,7 @@ object Form1: TForm1
     Camera = GLCamera
     VSync = vsmSync
     FieldOfView = 101.165214538574200000
+    PenAsTouch = False
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove

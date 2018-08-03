@@ -6,16 +6,20 @@ uses
   Winapi.OpenGL,
   System.SysUtils,
   System.Classes,
+  System.Types,
   Vcl.Graphics,
   Vcl.Controls,
   Vcl.Forms,
   Vcl.Dialogs,
-  Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.ComCtrls,
+  Vcl.StdCtrls,
+  Vcl.ExtCtrls,
+  Vcl.ComCtrls,
 
   //nVIDIA
   Cg, CgGL,
   
   GLScene,
+  GLVectorTypes,
   GLObjects,
   GLWin32Viewer,
   GLTexture,

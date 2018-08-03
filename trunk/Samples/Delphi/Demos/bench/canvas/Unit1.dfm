@@ -66,6 +66,7 @@ object Form1: TForm1
     Camera = GLCamera1
     Buffer.Lighting = False
     FieldOfView = 137.326278686523400000
+    PenAsTouch = False
     TabOrder = 2
   end
   object RBPenWidth1: TRadioButton

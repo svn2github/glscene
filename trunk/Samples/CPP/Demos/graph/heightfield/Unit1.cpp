@@ -56,7 +56,7 @@ void __fastcall TForm1::Formula3(const float x, const float y, float &z,
 {
    // 3rd formula, dynamic
    z = 1/(1+VectorNorm(Sphere1->Position->X-x,Sphere1->Position->Y-y));
-   if (((Int(x*4)+Int(y*4)) && 1)==1)
+   if (((Round(x*4)+Round(y*4)) && 1)==1)
 	  color = clrBlue;
    else
 	  color=clrYellow;

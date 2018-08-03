@@ -13,6 +13,7 @@ uses
   Vcl.Dialogs,
   
   GLScene,
+  GLVectorTypes,
   GLObjects,
   GLTexture,
   GLVectorGeometry,

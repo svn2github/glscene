@@ -16,9 +16,11 @@ uses
   Vcl.ComCtrls,
   Vcl.ExtCtrls,
   Vcl.Imaging.Jpeg,
-  
+
   GLScene,
   GLObjects,
+  GLVectorTypes,
+  GLPersistentClasses,
   GLParticles,
   GLTexture,
   GLCadencer,

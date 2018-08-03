@@ -384,6 +384,10 @@ object Form1: TForm1
       object TabSheet3: TTabSheet
         Caption = 'Controls'
         ImageIndex = 2
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         DesignSize = (
           301
           363)
@@ -691,6 +695,7 @@ object Form1: TForm1
       Buffer.Lighting = False
       Buffer.AntiAliasing = aa4xHQ
       FieldOfView = 146.851989746093800000
+      PenAsTouch = False
       Align = alClient
       OnMouseDown = GLSceneViewer1MouseDown
       OnMouseMove = GLSceneViewer1MouseMove

@@ -6,6 +6,7 @@ uses
   Winapi.OpenGL,
   System.SysUtils,
   System.Classes,
+  System.Types,
   Vcl.Controls,
   Vcl.Forms,
   

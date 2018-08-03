@@ -19,6 +19,7 @@ uses
 
   
   GLScene,
+  GLVectorTypes,
   GLObjects,
   GLTerrainRenderer,
   GLHeightData,

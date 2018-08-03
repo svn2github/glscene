@@ -5,13 +5,27 @@ interface
 uses
   System.Classes,
   System.SysUtils,
+  System.Math,
   Vcl.Forms,
   Vcl.StdCtrls,
   Vcl.Controls,
   
-  GLObjects, GLScene, GLBlur, GLSimpleNavigation, GLTexture,
-  GLCadencer, GLVectorGeometry, GLTeapot, GLPolyhedron, GLGeomObjects,
-  GLWin32Viewer, GLCrossPlatform, GLMaterial, GLCoordinates, GLBaseClasses;
+  GLObjects,
+  GLScene,
+  GLVectorTypes,
+  GLBlur,
+  GLSimpleNavigation,
+  GLTexture,
+  GLCadencer,
+  GLVectorGeometry,
+  GLTeapot,
+  GLPolyhedron,
+  GLGeomObjects,
+  GLWin32Viewer,
+  GLCrossPlatform,
+  GLMaterial,
+  GLCoordinates,
+  GLBaseClasses, GLVectorFileObjects;
 
 type
   TForm1 = class(TForm)
@@ -33,9 +47,7 @@ type
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
   private
-     
   public
-     
     MotionBlur: TGLMotionBlur;
   end;
 

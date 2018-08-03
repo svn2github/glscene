@@ -23,6 +23,7 @@ object Form1: TForm1
     Camera = GLCamera1
     AfterRender = GLSceneViewer1AfterRender
     FieldOfView = 179.348922729492200000
+    PenAsTouch = False
     Align = alClient
     TabOrder = 0
   end

@@ -15,6 +15,8 @@ uses
   Vcl.Imaging.jpeg,
   
   OpenGLTokens,
+  GLPipelineTransformation,
+  GLVectorLists,
   GLCadencer,
   GLWin32Viewer,
   GLCrossPlatform,

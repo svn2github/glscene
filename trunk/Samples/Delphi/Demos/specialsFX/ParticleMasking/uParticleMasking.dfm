@@ -113,6 +113,7 @@ object Form1: TForm1
     Camera = Camera
     Buffer.BackgroundColor = clBackground
     FieldOfView = 175.973831176757800000
+    PenAsTouch = False
     Align = alClient
     OnMouseMove = SceneViewerMouseMove
     TabOrder = 1

@@ -17,6 +17,7 @@ uses
   
   GLCadencer,
   GLScene,
+  GLVectorTypes,
   GLWin32Viewer,
   GLTexture,
   GLFileTGA,

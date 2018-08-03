@@ -6,8 +6,8 @@ uses
   Winapi.Windows,
   Winapi.OpenGL,
   System.SysUtils,
-  System.UITypes,
   System.Classes,
+  System.UITypes,
   Vcl.Graphics,
   Vcl.Controls,
   Vcl.Forms,
@@ -15,10 +15,21 @@ uses
   Vcl.ExtCtrls,
   Vcl.StdCtrls,
   Vcl.Imaging.Jpeg,
-  
-  GLScene, GLObjects, GLTerrainRenderer, GLHeightData, GLCadencer, GLVectorTypes,
-  GLTexture, GLWin32Viewer, GLVectorGeometry, GLCrossPlatform, GLMaterial,
-  GLCoordinates, GLBaseClasses, GLKeyboard;
+
+  GLScene,
+  GLObjects,
+  GLTerrainRenderer,
+  GLHeightData,
+  GLCadencer,
+  GLVectorTypes,
+  GLTexture,
+  GLWin32Viewer,
+  GLVectorGeometry,
+  GLCrossPlatform,
+  GLMaterial,
+  GLCoordinates,
+  GLBaseClasses,
+  GLKeyboard;
 
 type
   TForm1 = class(TForm)
@@ -42,9 +53,9 @@ type
     procedure FormKeyPress(Sender: TObject; var Key: Char);
     procedure GLCustomHDSStartPreparingData(heightData: TGLHeightData);
   private
-     
+
   public
-     
+
     mx, my : Integer;
     fullScreen : Boolean;
     FCamHeight : Single;
@@ -62,52 +73,58 @@ var
    i : Integer;
    bmp : TBitmap;
 begin
-   // 8 MB height data cache
-   // Note this is the data size in terms of elevation samples, it does not
-   // take into account all the data required/allocated by the renderer
-   GLCustomHDS.MaxPoolSize:=8*1024*1024;
-   // Move camera starting point to an interesting hand-picked location
-   DummyCube1.Position.X:=50;
-   DummyCube1.Position.Z:=150;
-   // Initial camera height offset (controled with pageUp/pageDown)
-   FCamHeight:=20;
-   // We build several basic 1D textures which are just color ramps
-   // all use automatic texture mapping corodinates, in ObjectLinear method
-   // (ie. texture coordinates for a vertex depend on that vertex coordinates)
-   bmp:=TBitmap.Create;
-   bmp.PixelFormat:=pf24bit;
-   bmp.Width:=256;
-   bmp.Height:=1;
-   // Black-White ramp, autotexture maps to Z coordinate
-   // This one changes with altitude, this is a quick way to obtain
-   // altitude-dependant coloring
-   for i:=0 to 255 do
-      bmp.Canvas.Pixels[i, 0]:=RGB(i, i, i);
-   with GLMaterialLibrary1.AddTextureMaterial('BW', bmp) do begin
-      with Material.Texture do begin
-         MappingMode:=tmmObjectLinear;
-         MappingSCoordinates.AsVector:=VectorMake(0, 0, 0.0001, 0);
-      end;
-   end;
-   // Red, Blue map linearly to X and Y axis respectively
-   for i:=0 to 255 do
-      bmp.Canvas.Pixels[i, 0]:=RGB(i, 0, 0);
-   with GLMaterialLibrary1.AddTextureMaterial('Red', bmp) do begin
-      with Material.Texture do begin
-         MappingMode:=tmmObjectLinear;
-         MappingSCoordinates.AsVector:=VectorMake(0.1, 0, 0, 0);
-      end;
-   end;
-   for i:=0 to 255 do
-      bmp.Canvas.Pixels[i, 0]:=RGB(0, 0, i);
-   with GLMaterialLibrary1.AddTextureMaterial('Blue', bmp) do begin
-      with Material.Texture do begin
-         MappingMode:=tmmObjectLinear;
-         MappingSCoordinates.AsVector:=VectorMake(0, 0.1, 0, 0);
-      end;
-   end;
-   bmp.Free;
-   TerrainRenderer1.MaterialLibrary:=GLMaterialLibrary1;
+  // 8 MB height data cache
+  // Note this is the data size in terms of elevation samples, it does not
+  // take into account all the data required/allocated by the renderer
+  GLCustomHDS.MaxPoolSize := 8 * 1024 * 1024;
+  // Move camera starting point to an interesting hand-picked location
+  DummyCube1.Position.X := 50;
+  DummyCube1.Position.Z := 150;
+  // Initial camera height offset (controled with pageUp/pageDown)
+  FCamHeight := 20;
+  // We build several basic 1D textures which are just color ramps
+  // all use automatic texture mapping corodinates, in ObjectLinear method
+  // (ie. texture coordinates for a vertex depend on that vertex coordinates)
+  bmp := TBitmap.Create;
+  bmp.PixelFormat := pf24bit;
+  bmp.Width := 256;
+  bmp.Height := 1;
+  // Black-White ramp, autotexture maps to Z coordinate
+  // This one changes with altitude, this is a quick way to obtain
+  // altitude-dependant coloring
+  for i := 0 to 255 do
+    bmp.Canvas.Pixels[i, 0] := RGB(i, i, i);
+  with GLMaterialLibrary1.AddTextureMaterial('BW', bmp) do
+  begin
+    with Material.Texture do
+    begin
+      MappingMode := tmmObjectLinear;
+      MappingSCoordinates.AsVector := VectorMake(0, 0, 0.0001, 0);
+    end;
+  end;
+  // Red, Blue map linearly to X and Y axis respectively
+  for i := 0 to 255 do
+    bmp.Canvas.Pixels[i, 0] := RGB(i, 0, 0);
+  with GLMaterialLibrary1.AddTextureMaterial('Red', bmp) do
+  begin
+    with Material.Texture do
+    begin
+      MappingMode := tmmObjectLinear;
+      MappingSCoordinates.AsVector := VectorMake(0.1, 0, 0, 0);
+    end;
+  end;
+  for i := 0 to 255 do
+    bmp.Canvas.Pixels[i, 0] := RGB(0, 0, i);
+  with GLMaterialLibrary1.AddTextureMaterial('Blue', bmp) do
+  begin
+    with Material.Texture do
+    begin
+      MappingMode := tmmObjectLinear;
+      MappingSCoordinates.AsVector := VectorMake(0, 0.1, 0, 0);
+    end;
+  end;
+  bmp.Free;
+  TerrainRenderer1.MaterialLibrary := GLMaterialLibrary1;
 end;
 
 //
@@ -210,28 +227,31 @@ procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
 var
    speed : Single;
 begin
-   // handle keypresses
-   if IsKeyDown(VK_SHIFT) then
-      speed:=5*deltaTime
-   else speed:=deltaTime;
-   with GLCamera1.Position do begin
-      if IsKeyDown(VK_RIGHT) then
-         DummyCube1.Translate(Z*speed, 0, -X*speed);
-      if IsKeyDown(VK_LEFT) then
-         DummyCube1.Translate(-Z*speed, 0, X*speed);
-      if IsKeyDown(VK_UP) then
-         DummyCube1.Translate(-X*speed, 0, -Z*speed);
-      if IsKeyDown(VK_DOWN) then
-         DummyCube1.Translate(X*speed, 0, Z*speed);
-      if IsKeyDown(VK_PRIOR) then
-         FCamHeight:=FCamHeight+10*speed;
-      if IsKeyDown(VK_NEXT) then
-         FCamHeight:=FCamHeight-10*speed;
-      if IsKeyDown(VK_ESCAPE) then Close;
-   end;
-   // don't drop through terrain!
-   with DummyCube1.Position do
-      Y:=TerrainRenderer1.InterpolatedHeight(AsVector)+FCamHeight;
+  // handle keypresses
+  if IsKeyDown(VK_SHIFT) then
+    speed := 5 * deltaTime
+  else
+    speed := deltaTime;
+  with GLCamera1.Position do
+  begin
+    if IsKeyDown(VK_RIGHT) then
+      DummyCube1.Translate(Z * speed, 0, -X * speed);
+    if IsKeyDown(VK_LEFT) then
+      DummyCube1.Translate(-Z * speed, 0, X * speed);
+    if IsKeyDown(VK_UP) then
+      DummyCube1.Translate(-X * speed, 0, -Z * speed);
+    if IsKeyDown(VK_DOWN) then
+      DummyCube1.Translate(X * speed, 0, Z * speed);
+    if IsKeyDown(VK_PRIOR) then
+      FCamHeight := FCamHeight + 10 * speed;
+    if IsKeyDown(VK_NEXT) then
+      FCamHeight := FCamHeight - 10 * speed;
+    if IsKeyDown(VK_ESCAPE) then
+      Close;
+  end;
+  // don't drop through terrain!
+  with DummyCube1.Position do
+    Y := TerrainRenderer1.InterpolatedHeight(AsVector) + FCamHeight;
 end;
 
 end.

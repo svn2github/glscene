@@ -3,11 +3,23 @@ unit Unit1;
 interface
 
 uses
-  System.SysUtils, System.Classes,
-  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
-  
-  GLJoystick, GLScene, GLObjects, GLGeomObjects, GLCadencer, GLWin32Viewer,
-  GLCrossPlatform, GLCoordinates, GLBaseClasses;
+  System.SysUtils,
+  System.Classes,
+  Vcl.Graphics,
+  Vcl.Controls,
+  Vcl.Forms,
+  Vcl.Dialogs,
+
+  GLScene,
+  GLObjects,
+  GLPersistentClasses,
+  GLJoystick,
+  GLGeomObjects,
+  GLCadencer,
+  GLWin32Viewer,
+  GLCrossPlatform,
+  GLCoordinates,
+  GLBaseClasses;
 
 type
   TForm1 = class(TForm)
@@ -32,9 +44,7 @@ type
     procedure Joystick1JoystickButtonChange(Sender: TObject; JoyID: TJoystickID;
       Buttons: TJoystickButtons; XDeflection, YDeflection: Integer);
   private
-    { Déclarations privées }
   public
-    { Déclarations publiques }
   end;
 
 var
@@ -73,14 +83,15 @@ var
    i : Integer;
 begin
    // Browse all buttons and adjusts matching spheres color
-   // All the spheres are accessed in an arrayed fashion (I made them
-   // child of a single dummycube)
-   i:=0;
-   for button:=jbButton1 to jbButton4 do begin
-      with TGLSphere(DummyCube2.Children[i]).Material.FrontProperties.Diffuse do
-         AsWinColor:=cPressedColor[button in buttons];
-      Inc(i);
-   end;
+  // All the spheres are accessed in an arrayed fashion (I made them
+  // child of a single dummycube)
+  i := 0;
+  for button := jbButton1 to jbButton4 do
+  begin
+    with TGLSphere(DummyCube2.Children[i]).Material.FrontProperties.Diffuse do
+      AsWinColor := cPressedColor[button in Buttons];
+    Inc(i);
+  end;
 end;
 
 end.

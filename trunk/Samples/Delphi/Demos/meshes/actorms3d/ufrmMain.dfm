@@ -28,6 +28,7 @@ object frmMain: TfrmMain
     Buffer.AntiAliasing = aa4xHQ
     Buffer.ShadeModel = smSmooth
     FieldOfView = 140.638275146484400000
+    PenAsTouch = False
     Align = alClient
     TabOrder = 0
   end

@@ -24,7 +24,7 @@ __published:	// IDE-managed Components
 	TGLLightSource *GLLightSource1;
 	TGLTeapot *Teapot1;
 	TGLCamera *GLCamera1;
-	TSDLViewer *GLSDLViewer1;
+	TGLSDLViewer *SDLViewer1;
 	void DataModuleCreate(TObject *Sender);
 	void GLSDLViewer1EventPollDone(TObject *Sender);
 	void GLSDLViewer1Resize(TObject *Sender);

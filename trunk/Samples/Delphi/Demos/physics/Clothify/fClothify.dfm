@@ -28,6 +28,7 @@ object frmClothify: TfrmClothify
     Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow, roTwoSideLighting]
     Buffer.FaceCulling = False
     FieldOfView = 142.190841674804700000
+    PenAsTouch = False
     Align = alClient
     OnMouseMove = GLSceneViewer1MouseMove
     TabOrder = 0
@@ -429,7 +430,7 @@ object frmClothify: TfrmClothify
       Blend = False
     end
     object GLCamera1: TGLCamera
-      DepthOfView = 1.000000033181353E32
+      DepthOfView = 1.000000033181354E32
       FocalLength = 75.000000000000000000
       TargetObject = GLDummyCube1
       Position.Coordinates = {0000704100002041000070410000803F}

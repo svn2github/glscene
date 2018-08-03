@@ -30,6 +30,7 @@ object Form1: TForm1
     Buffer.Lighting = False
     Buffer.AntiAliasing = aaNone
     FieldOfView = 153.816207885742200000
+    PenAsTouch = False
     Anchors = [akLeft, akTop, akRight, akBottom]
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
@@ -89,7 +90,7 @@ object Form1: TForm1
           Aspect = 1.000000000000000000
           Style = ptsShadow
           Attenuation = 100.000000000000000000
-          Brightness = 0.800000011920928900
+          Brightness = 0.800000011920929000
           Color.Color = {0000803F0000803F0000803F0000803F}
           UseAttenuation = False
           UseQuadraticAttenuation = False

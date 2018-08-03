@@ -14,10 +14,24 @@ uses
   Vcl.Dialogs,
   Vcl.Imaging.Jpeg,
   
-  GLScene, GLCadencer, GLWin32Viewer, GLVectorFileObjects,
-  GLAsyncTimer, GLCelShader, GLGeomObjects, GLTexture, GLObjects,
-  GLCrossPlatform, GLMaterial, GLCoordinates, GLBaseClasses,
-  GLFileMD2, GLKeyboard, GLUtils;
+  GLScene,
+  GLVectorTypes,
+  GLVectorGeometry,
+  GLCadencer,
+  GLWin32Viewer,
+  GLVectorFileObjects,
+  GLAsyncTimer,
+  GLCelShader,
+  GLGeomObjects,
+  GLTexture,
+  GLObjects,
+  GLCrossPlatform,
+  GLMaterial,
+  GLCoordinates,
+  GLBaseClasses,
+  GLFileMD2,
+  GLKeyboard,
+  GLUtils;
 
 type
   TForm1 = class(TForm)

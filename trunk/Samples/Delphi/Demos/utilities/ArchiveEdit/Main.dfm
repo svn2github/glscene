@@ -81,6 +81,7 @@ object Form1: TForm1
     Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow]
     Buffer.AntiAliasing = aa2x
     FieldOfView = 77.668128967285160000
+    PenAsTouch = False
     Anchors = [akLeft, akBottom]
     TabOrder = 2
   end

@@ -16,6 +16,8 @@ uses
 
   
   GLScene,
+  GLVectorTypes,
+  GLPersistentClasses,
   GLVectorFileObjects,
   GLObjects,
   GLWin32Viewer,

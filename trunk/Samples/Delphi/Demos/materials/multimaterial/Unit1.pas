@@ -7,6 +7,7 @@ uses
   System.SysUtils,
   System.Classes,
   System.Math,
+  System.Types,
   Vcl.Graphics,
   Vcl.Controls,
   Vcl.Forms,
@@ -51,6 +52,8 @@ type
       newTime: Double);
     procedure FormMouseWheel(Sender: TObject; Shift: TShiftState;
       WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
+  private
+     
   public
     mx,my : integer;
   end;
@@ -86,7 +89,7 @@ begin
 
   // GLMaterialLibrary2 is the source of the GLMultiMaterialShader
   // passes.
-  // Pass 1 : Base texture
+    // Pass 1 : Base texture
   GLMaterialLibrary2.AddTextureMaterial('Pass1','glscene.bmp');//}
 
     // Pass 2 : Add a bit of detail

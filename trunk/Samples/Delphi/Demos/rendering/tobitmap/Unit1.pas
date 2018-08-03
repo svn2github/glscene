@@ -13,10 +13,18 @@ uses
   Vcl.StdCtrls,
   Vcl.Imaging.Jpeg,
 
-  
-  GLCadencer, GLObjects, GLScene, GLWin32Viewer,
-  GLHUDObjects, GLSpaceText, GLCrossPlatform, GLCoordinates,
-  GLGraphics, GLUtils, GLBaseClasses;
+  GLScene,
+  GLVectorTypes,
+  GLCadencer,
+  GLObjects,
+  GLWin32Viewer,
+  GLHUDObjects,
+  GLSpaceText,
+  GLCrossPlatform,
+  GLCoordinates,
+  GLGraphics,
+  GLUtils,
+  GLBaseClasses;
 
 type
   TForm1 = class(TForm)

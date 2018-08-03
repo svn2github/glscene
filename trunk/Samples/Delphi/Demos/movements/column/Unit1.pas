@@ -11,6 +11,7 @@ uses
   Vcl.StdCtrls,
 
   GLScene,
+  GLPersistentClasses,
   GLObjects,
   GLTexture,
   GLVectorTypes,

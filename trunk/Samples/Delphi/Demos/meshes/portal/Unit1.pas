@@ -7,6 +7,7 @@ uses
   System.SysUtils,
   System.Classes,
   System.Math,
+  System.Types,
   Vcl.Graphics,
   Vcl.Controls,
   Vcl.Forms,
@@ -15,10 +16,12 @@ uses
   Vcl.StdCtrls,
   Vcl.ExtCtrls,
   Vcl.Imaging.Jpeg,
-  
+
   GLScene,
+  GLVectorTypes,
   GLTexture,
   GLVectorFileObjects,
+  GLPersistentClasses,
   GLObjects,
   GLCadencer,
   GLPortal,
@@ -72,10 +75,10 @@ type
     procedure FormMouseWheel(Sender: TObject; Shift: TShiftState;
       WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
   private
-     
+
     mx, my: Integer;
   public
-     
+
     portalCount, triangleCount : Integer;
   end;
 
@@ -90,19 +93,21 @@ procedure TForm1.FormCreate(Sender: TObject);
 var
   i:Integer;
 begin
-   SetGLSceneMediaDir();
-   for i:=0 to 15 do
-      SGMap.Cells[i, i]:='X';
-   SGMap.Cells[8, 8]:='';
-   SGMap.Col:=8;
-   SGMap.Row:=12;
-   with GLMaterialLibrary1 do begin
-      AddTextureMaterial('gnd', 'walkway.jpg');
-      with AddTextureMaterial('wall', 'rawwall.jpg') do begin
-         TextureScale.Y:=3;
-      end;
-   end;
-   BBProcessClick(Self);
+  SetGLSceneMediaDir();
+  for i := 0 to 15 do
+    SGMap.Cells[i, i] := 'X';
+  SGMap.Cells[8, 8] := '';
+  SGMap.Col := 8;
+  SGMap.Row := 12;
+  with GLMaterialLibrary1 do
+  begin
+    AddTextureMaterial('gnd', 'walkway.jpg');
+    with AddTextureMaterial('wall', 'rawwall.jpg') do
+    begin
+      TextureScale.Y := 3;
+    end;
+  end;
+  BBProcessClick(Self);
 end;
 
 procedure TForm1.FormMouseWheel(Sender: TObject; Shift: TShiftState;

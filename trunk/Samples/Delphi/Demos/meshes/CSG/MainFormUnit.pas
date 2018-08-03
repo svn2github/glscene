@@ -6,6 +6,7 @@ uses
   Winapi.OpenGL,
   System.SysUtils,
   System.Classes,
+  System.Types,
   Vcl.Graphics,
   Vcl.Controls,
   Vcl.Forms,
@@ -16,6 +17,7 @@ uses
 
   
   GLScene,
+  GLPersistentClasses,
   GLVectorFileObjects,
   GLBSP,
   GLMeshCSG,

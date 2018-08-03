@@ -4,13 +4,29 @@ interface
 
 uses
   Winapi.Windows,
-  System.SysUtils, System.Classes, System.Types, System.Math,
-  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls,
+  System.SysUtils,
+  System.UITypes,
+  System.Classes,
+  System.Types,
+  System.Math,
+  Vcl.Graphics,
+  Vcl.Controls,
+  Vcl.Forms,
+  Vcl.Dialogs,
+  Vcl.StdCtrls,
+  Vcl.ExtCtrls,
 
-  
+
   GLUtils,
-  GLFilePGM, GLGraphics, GLSCUDAUtility, GLSCUDADataAccess,
-  GLVectorTypes, CPUFFT, GLSCUDAFFTPlan, GLSCUDA, GLSCUDAContext;
+  GLFilePGM,
+  GLGraphics,
+  GLSCUDAUtility,
+  GLSCUDADataAccess,
+  GLVectorTypes,
+  CPUFFT,
+  GLSCUDAFFTPlan,
+  GLSCUDA,
+  GLSCUDAContext;
 
 type
   TDemoMode = (dmNone, dm1D, dm2D, dmLena);

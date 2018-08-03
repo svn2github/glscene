@@ -12,7 +12,9 @@ uses
   Vcl.Dialogs,
 
   GLScene,
+  GLVectorTypes,
   GLVectorGeometry,
+  GLPipelineTransformation,
   GLCadencer,
   GLWin32Viewer,
   GLCrossPlatform,
@@ -41,7 +43,7 @@ type
     GLSCUDA1: TGLSCUDA;
     GLSCUDACompiler1: TGLSCUDACompiler;
     MainModule: TCUDAModule;
-    DotFieldMapper: TCUDAGLGeometryResource;
+    DotFieldMapper: TCUDAGeometryResource;
     GLSLShader1: TGLSLShader;
     MakeDotField: TCUDAFunction;
     GLFeedBackMesh1: TGLFeedBackMesh;

@@ -13,6 +13,7 @@ uses
   Vcl.StdCtrls,
 
   GLScene,
+  GLVectorTypes,
   GLObjects,
   GLCadencer,
   GLVectorGeometry,

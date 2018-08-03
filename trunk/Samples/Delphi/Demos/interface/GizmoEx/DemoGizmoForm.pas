@@ -15,9 +15,9 @@ uses
   Vcl.Buttons,
   Vcl.ComCtrls,
 
-
-  GLPersistentClasses,
+  
   GLScene,
+  GLPersistentClasses,
   GLCadencer,
   GLObjects,
   GLVectorTypes,
@@ -170,7 +170,9 @@ type
     function ObjectName(value: string): string;
     procedure Timer1Timer(Sender: TObject);
   private
+     
   public
+     
     mx, my: Integer;
     MousePos,LostMousePos: TVector;
     MouseMoving: boolean;
@@ -595,9 +597,8 @@ end;
 
 procedure TForm1.edAutoZoomFactorKeyPress(Sender: TObject; var Key: Char);
 begin
-  if not CharInSet(Key, ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', ','])
-  then
-    key := #0;
+  if not CharInSet(Key,['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', ',']) then
+    Key := #0;
 end;
 
 procedure TForm1.CheckBox12Click(Sender: TObject);
@@ -660,7 +661,7 @@ var
   value: single;
 begin
 
-  TryStrToFloat((Sender as TEdit).Text, value);
+  tryStrToFloat((Sender as TEdit).Text, value);
   if value > 0 then
   case (Sender as TEdit).Tag of
     1: Gizmo.GizmoThickness := value;

@@ -6,6 +6,7 @@ uses
   Winapi.OpenGL,
   System.SysUtils,
   System.Classes,
+  System.Types,
   System.Math,
   Vcl.Graphics,
   Vcl.Controls,
@@ -13,6 +14,7 @@ uses
   Vcl.ExtCtrls,
 
   GLScene,
+  GLVectorTypes,
   GLObjects,
   GLTexture,
   GLWin32Viewer,
@@ -24,6 +26,7 @@ uses
   GLFileLMTS,
   GLContext,
   GLVectorGeometry,
+  GLPipelineTransformation,
   GLSLProjectedTextures,
   GLCrossPlatform,
   GLGraphics,

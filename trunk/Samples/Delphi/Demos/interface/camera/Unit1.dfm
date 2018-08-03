@@ -28,6 +28,7 @@ object Form1: TForm1
     VSync = vsmSync
     Buffer.BackgroundColor = clTeal
     FieldOfView = 153.215011596679700000
+    PenAsTouch = False
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove

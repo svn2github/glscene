@@ -6,6 +6,7 @@ uses
   Winapi.OpenGL,
   System.SysUtils,
   System.Classes,
+  System.Types,
   Vcl.Graphics,
   Vcl.Controls,
   Vcl.Forms,
@@ -17,8 +18,9 @@ uses
 
   //nVIDIA
   Cg, cgGL,
-  
+
   GLScene,
+  GLVectorTypes,
   GLObjects,
   GLWin32Viewer,
   GLTexture,
@@ -45,7 +47,7 @@ type
     Splitter1: TSplitter;
     Panel2: TPanel;
     CBVertexProgram: TCheckBox;
-    LabelVertProfile: TLabel;                       
+    LabelVertProfile: TLabel;
     Panel4: TPanel;
     LabelFragProfile: TLabel;
     CBFragmentProgram: TCheckBox;
@@ -133,9 +135,9 @@ type
     procedure CgShader1Initialize(CgShader: TCustomCgShader);
     procedure CheckBox2Click(Sender: TObject);
   private
-     
+
   public
-     
+
     mx, my : Integer;
   end;
 
@@ -171,7 +173,7 @@ end;
 procedure TForm1.CgShader1Initialize(CgShader: TCustomCgShader);
 begin
   // Due to parameter shadowing (ref. Cg Manual), parameters that doesn't change
-  // once set can be assigned for once in the OnInitialize event. 
+  // once set can be assigned for once in the OnInitialize event.
   with CgShader1.FragmentProgram, GLMatLib do begin
     ParamByName('Map0').SetToTextureOf(Materials[0]);
     ParamByName('Map1').SetToTextureOf(Materials[1]);
@@ -200,11 +202,12 @@ var v : TVector;
 
 begin
   with CgProgram.ParamByName('ModelViewProj') do
-    SetAsStateMatrix( CG_GL_MODELVIEW_PROJECTION_MATRIX, CG_GL_MATRIX_IDENTITY);
-// Alternatively, you can set it using:
-// CgProgram.SetStateMatrix('ModelViewProj', CG_GL_MODELVIEW_PROJECTION_MATRIX, CG_GL_MATRIX_IDENTITY);
+    SetAsStateMatrix(CG_GL_MODELVIEW_PROJECTION_MATRIX, CG_GL_MATRIX_IDENTITY);
+  // Alternatively, you can set it using:
+  // CgProgram.SetStateMatrix('ModelViewProj', CG_GL_MODELVIEW_PROJECTION_MATRIX, CG_GL_MATRIX_IDENTITY);
 
-  v:= vectormake( conv(TrackBar1), conv(TrackBar2), conv(TrackBar3), conv(TrackBar4) );
+  v := vectormake(conv(TrackBar1), conv(TrackBar2), conv(TrackBar3),
+    conv(TrackBar4));
 
   CgProgram.ParamByName('shifts').SetAsVector(v);
 end;

@@ -38,6 +38,7 @@ object Form1: TForm1
     Camera = Camera
     Buffer.BackgroundColor = clMedGray
     FieldOfView = 153.578933715820300000
+    PenAsTouch = False
     Align = alClient
     OnMouseDown = ViewerMouseDown
     OnMouseMove = ViewerMouseMove
@@ -1625,6 +1626,10 @@ object Form1: TForm1
     TabOrder = 3
     object TabSheet1: TTabSheet
       Caption = 'Main Settings'
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Label10: TLabel
         Left = 0
         Top = 118

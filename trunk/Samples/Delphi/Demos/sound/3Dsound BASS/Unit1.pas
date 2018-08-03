@@ -12,10 +12,11 @@ uses
   Vcl.Controls,
   Vcl.StdCtrls,
 
+  GLScene,
+  GLVectorTypes,
+  GLVectorGeometry,
   GLCadencer,
   GLObjects,
-  GLScene,
-  GLVectorGeometry,
   GLSound,
   GLSMBASS,
   GLWin32Viewer,

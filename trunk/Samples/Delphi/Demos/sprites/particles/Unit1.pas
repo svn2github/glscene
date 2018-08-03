@@ -17,6 +17,7 @@ uses
   GLParticles,
   GLBehaviours,
   GLVectorGeometry,
+  GLPersistentClasses,
   GLCadencer,
   GLVectorTypes,
   GLWin32Viewer,
@@ -53,7 +54,6 @@ implementation
 
 procedure TForm1.FormCreate(Sender: TObject);
 var
-  I: Integer;
   MediaPath: String;
 begin
   SetGLSceneMediaDir;

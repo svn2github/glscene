@@ -14,11 +14,13 @@ uses
   Vcl.StdCtrls,
 
   GLScene,
+  GLPersistentClasses,
   GLObjects,
   GLCadencer,
   GLWin32Viewer,
   GLShadowVolume,
   GLVectorFileObjects,
+  GLVectorLists,
   GLFileSMD,
   GLTexture,
   GLVectorTypes,

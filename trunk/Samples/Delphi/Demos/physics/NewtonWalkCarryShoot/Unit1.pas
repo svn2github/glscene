@@ -13,6 +13,9 @@ uses
   Vcl.Dialogs,
 
   GLScene,
+  GLVectorTypes,
+  GLVectorLists,
+  GLPersistentClasses,
   GLObjects,
   GLCoordinates,
   GLCadencer,

@@ -14,9 +14,10 @@ uses
   Vcl.ExtCtrls,
 
   
+  GLScene,
+  GLVectorTypes,
   GLObjects,
   GLExtrusion,
-  GLScene,
   GLCadencer,
   GLFireFX,
   GLWin32Viewer,

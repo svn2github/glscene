@@ -31,6 +31,7 @@ object Form1: TForm1
     Buffer.BackgroundColor = clGray
     Buffer.FogEnable = True
     FieldOfView = 154.614669799804700000
+    PenAsTouch = False
     Align = alClient
     TabOrder = 0
   end

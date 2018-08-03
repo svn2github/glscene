@@ -23,6 +23,7 @@ object Form1: TForm1
     Buffer.BackgroundColor = clBlack
     Buffer.AntiAliasing = aaNone
     FieldOfView = 137.020797729492200000
+    PenAsTouch = False
     Align = alClient
     TabOrder = 0
   end

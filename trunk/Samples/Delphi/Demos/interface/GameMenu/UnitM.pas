@@ -17,8 +17,8 @@ uses
 
   
   GLScene,
-  GLVectorTypes,
   GLObjects,
+  GLVectorTypes,
   GLWin32Viewer,
   GLGeomObjects,
   GLBitmapFont,

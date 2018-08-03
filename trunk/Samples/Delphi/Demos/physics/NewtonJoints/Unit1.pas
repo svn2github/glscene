@@ -12,8 +12,9 @@ uses
   Vcl.Dialogs,
   Vcl.Controls,
 
-  GLNGDManager,
   GLScene,
+  GLVectorTypes,
+  GLNGDManager,
   GLObjects,
   GLCoordinates,
   GLCadencer,

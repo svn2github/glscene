@@ -6,6 +6,7 @@ uses
   Winapi.OpenGL,
   System.SysUtils,
   System.UITypes,
+  System.Types,
   System.Classes,
   System.Math,
   Vcl.Graphics,
@@ -17,6 +18,7 @@ uses
 
   
   GLScene,
+  GLVectorTypes,
   GLObjects,
   GLCadencer,
   GLWin32Viewer,

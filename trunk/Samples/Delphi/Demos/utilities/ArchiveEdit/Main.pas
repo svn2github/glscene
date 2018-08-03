@@ -1,26 +1,49 @@
-{
-  <b>History : </b><font size=-1><ul>
-  <li>01/02/11 - Yar - Added file preview (thaks Dev)
-  <li>04/06/10 - Predator - Created
-  </ul>
-}
-
 unit Main;
 
 interface
 
 uses
   Winapi.Windows,
-  System.SysUtils, System.Classes, System.StrUtils, System.ImageList,
-  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
-  Vcl.Menus, Vcl.ImgList, Vcl.ExtCtrls, Vcl.ComCtrls, Vcl.Imaging.Jpeg,
-  
-  GLSArchiveManager, GLFilePAK, GLFileZLIB, GLWin32Viewer, GLCrossPlatform,
-  GLBaseClasses, GLScene, GLSimpleNavigation, GLMaterial, GLVectorFileObjects,
-  GLObjects, GLCoordinates, GLGraphics, GLState, GLCompositeImage,
+  System.SysUtils,
+  System.Classes,
+  System.StrUtils,
+  System.ImageList,
+  Vcl.Graphics,
+  Vcl.Controls,
+  Vcl.Forms,
+  Vcl.Dialogs,
+  Vcl.Menus,
+  Vcl.ImgList,
+  Vcl.ExtCtrls,
+  Vcl.ComCtrls,
+  Vcl.Imaging.Jpeg,
+
+  GLSArchiveManager,
+  GLFilePAK,
+  GLFileZLIB,
+  GLWin32Viewer,
+  GLCrossPlatform,
+  GLBaseClasses,
+  GLScene,
+  GLSimpleNavigation,
+  GLMaterial,
+  GLVectorFileObjects,
+  GLObjects,
+  GLCoordinates,
+  GLGraphics,
+  GLState,
+  GLCompositeImage,
   // FileFormats 3D
-  GLFileMS3D, GLFile3DS, GLFileMD2, GLFileMD3, GLFileLMTS, GLFileOBJ, GLFileSMD,
-  GLFileTGA, GLFilePNG, GLFileDDS;
+  GLFileMS3D,
+  GLFile3DS,
+  GLFileMD2,
+  GLFileMD3,
+  GLFileLMTS,
+  GLFileOBJ,
+  GLFileSMD,
+  GLFileTGA,
+  GLFilePNG,
+  GLFileDDS;
 
 type
   TForm1 = class(TForm)

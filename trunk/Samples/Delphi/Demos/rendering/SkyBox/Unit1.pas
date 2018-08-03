@@ -14,9 +14,21 @@ uses
   Vcl.ExtCtrls,
   Vcl.Imaging.Jpeg,
   
-  GLScene, GLTexture, GLSkyBox, GLCrossPlatform,
-  GLCadencer, GLNavigator, GLWin32Viewer, GLKeyboard, GLLensFlare, GLObjects,
-  GLMaterial, GLCoordinates, GLBaseClasses, GLSimpleNavigation,
+  GLScene,
+  GLVectorTypes,
+  GLTexture,
+  GLSkyBox,
+  GLCrossPlatform,
+  GLCadencer,
+  GLNavigator,
+  GLWin32Viewer,
+  GLKeyboard,
+  GLLensFlare,
+  GLObjects,
+  GLMaterial,
+  GLCoordinates,
+  GLBaseClasses,
+  GLSimpleNavigation,
   GLUtils;
 
 type
@@ -50,9 +62,7 @@ type
   private
     procedure HandleKeys(d: double);
     function LoadTexture(Matname,Filename : string) : TGLLibMaterial;
-     
   public
-     
   end;
 
 var

@@ -19,6 +19,8 @@ uses
 
   
   GLScene,
+  GLPersistentClasses,
+  GLVectorTypes,
   GLObjects,
   GLCadencer,
   GLVectorFileObjects,
