@@ -129,7 +129,7 @@ type
   TVXBaseControl = class(TVXBaseComponent)
   private
     FOnMouseDown: TVXMouseEvent;
-    FOnMouseMove: TVXMouseMoveEvent;
+    FOnMouseMove: TMouseMoveEvent;
     FOnMouseUp: TVXMouseEvent;
     FKeepMouseEvents: Boolean;
     FActiveControl: TVXBaseControl;
@@ -170,7 +170,7 @@ type
     property FocusedControl: TVXFocusControl read FFocusedControl write
       SetFocusedControl;
     property OnMouseDown: TVXMouseEvent read FOnMouseDown write FOnMouseDown;
-    property OnMouseMove: TVXMouseMoveEvent read FOnMouseMove write
+    property OnMouseMove: TMouseMoveEvent read FOnMouseMove write
       FOnMouseMove;
     property OnMouseUp: TVXMouseEvent read FOnMouseUp write FOnMouseUp;
     property OnMouseEnter: TNotifyEvent read FOnMouseEnter write FOnMouseEnter;

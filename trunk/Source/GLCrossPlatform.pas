@@ -54,9 +54,6 @@ type
   TGLMouseButton = (mbLeft, mbRight, mbMiddle); // idem TMouseButton;
   TGLMouseEvent = procedure(Sender: TObject; Button: TGLMouseButton;
     Shift: TShiftState; X, Y: Integer) of object;
-  TGLMouseMoveEvent = TMouseMoveEvent;
-  TGLKeyEvent = TKeyEvent;
-  TGLKeyPressEvent = TKeyPressEvent;
 
   TPlatformInfo = record
     Major: DWORD;

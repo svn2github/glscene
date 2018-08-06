@@ -21,8 +21,9 @@ uses
 
   GLSound,
   GLScene,
-  Bass,
-  GLVectorGeometry;
+  GLVectorGeometry,
+
+  Bass;
 
 type
   TBASS3DAlgorithm = (algDefault, algOff, algFull, algLight);

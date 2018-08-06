@@ -15,6 +15,7 @@ uses
   System.Classes,
   System.SysUtils,
   System.Math,
+  Vcl.Controls,
 
   OpenGLTokens,
   GLPersistentClasses,
@@ -118,7 +119,7 @@ type
   TGLBaseControl = class(TGLBaseComponent)
   private
     FOnMouseDown: TGLMouseEvent;
-    FOnMouseMove: TGLMouseMoveEvent;
+    FOnMouseMove: TMouseMoveEvent;
     FOnMouseUp: TGLMouseEvent;
     FKeepMouseEvents: Boolean;
     FActiveControl: TGLBaseControl;
@@ -151,7 +152,7 @@ type
   published
     property FocusedControl: TGLFocusControl read FFocusedControl write SetFocusedControl;
     property OnMouseDown: TGLMouseEvent read FOnMouseDown write FOnMouseDown;
-    property OnMouseMove: TGLMouseMoveEvent read FOnMouseMove write FOnMouseMove;
+    property OnMouseMove: TMouseMoveEvent read FOnMouseMove write FOnMouseMove;
     property OnMouseUp: TGLMouseEvent read FOnMouseUp write FOnMouseUp;
     property OnMouseEnter: TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
     property OnMouseLeave: TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
@@ -195,9 +196,9 @@ type
   private
     FRootControl: TGLBaseControl;
     FFocused: Boolean;
-    FOnKeyDown: TGLKeyEvent;
-    FOnKeyUp: TGLKeyEvent;
-    FOnKeyPress: TGLKeyPressEvent;
+    FOnKeyDown: TKeyEvent;
+    FOnKeyUp: TKeyEvent;
+    FOnKeyPress: TKeyPressEvent;
     FShiftState: TShiftState;
     FFocusedColor: TColorVector;
   protected
@@ -223,9 +224,9 @@ type
     property RootControl: TGLBaseControl read GetRootControl;
     property Focused: Boolean read FFocused write SetFocused;
     property FocusedColor: TDelphiColor read GetFocusedColor write SetFocusedColor;
-    property OnKeyDown: TGLKeyEvent read FOnKeyDown write FOnKeyDown;
-    property OnKeyUp: TGLKeyEvent read FOnKeyUp write FOnKeyUp;
-    property OnKeyPress: TGLKeyPressEvent read FOnKeyPress write FOnKeyPress;
+    property OnKeyDown: TKeyEvent read FOnKeyDown write FOnKeyDown;
+    property OnKeyUp: TKeyEvent read FOnKeyUp write FOnKeyUp;
+    property OnKeyPress: TKeyPressEvent read FOnKeyPress write FOnKeyPress;
   end;
 
   TGLCustomControl = class;

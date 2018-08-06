@@ -88,16 +88,15 @@
         <BT_BuildType>Debug</BT_BuildType>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
-        <DCC_DcpOutput>$(GLSCENE)\lib\Win32</DCC_DcpOutput>
-        <DCC_DcuOutput>$(GLSCENE)\lib\Win32</DCC_DcuOutput>
+        <DCC_DcuOutput>..\..\lib\Win32</DCC_DcuOutput>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=;ProgramID=com.embarcadero.$(MSBuildProjectName)</VerInfo_Keys>
-        <DCC_UnitSearchPath>$(GLSCENE)\Source;$(GLSCENE)\Source\Basis;$(GLSCENE)\Source\DesignTime;$(GLSCENE)\Source\FileFormats;$(GLSCENE)\Source\GameAPIs;$(GLSCENE)\Source\ParallelAPIs;$(GLSCENE)\Source\PhysicsAPIs;$(GLSCENE)\Source\ScriptingAPIs;$(GLSCENE)\Source\Shaders;$(GLSCENE)\Source\SoundVideoAPIs;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
-        <DCC_BpiOutput>$(GLSCENE)\lib\Win32</DCC_BpiOutput>
-        <DCC_ObjOutput>$(GLSCENE)\lib\Win32</DCC_ObjOutput>
+        <DCC_BpiOutput>..\..\lib\Win32</DCC_BpiOutput>
+        <DCC_ObjOutput>..\..\lib\Win32</DCC_ObjOutput>
         <DCC_CBuilderOutput>All</DCC_CBuilderOutput>
-        <DCC_HppOutput>$(GLSCENE)\include\Win32</DCC_HppOutput>
+        <DCC_UnitSearchPath>..\..\Source;..\..\Source\Basis;..\..\Source\DesignTime;..\..\Source\FileFormats;..\..\Source\GameAPIs;..\..\Source\ParallelAPIs;..\..\Source\PhysicsAPIs;..\..\Source\ScriptingAPIs;..\..\Source\Shaders;..\..\Source\SoundVideoAPIs</DCC_UnitSearchPath>
+        <DCC_HppOutput>..\..\include\Win32</DCC_HppOutput>
     </PropertyGroup>
     <ItemGroup>
         <DelphiCompile Include="$(MainSource)">
@@ -132,12 +131,7 @@
                 <Source>
                     <Source Name="MainSource">GLScene_Scripts_RT.dpk</Source>
                 </Source>
-                <Excluded_Packages>
-                    <Excluded_Packages Name="$(BDSBIN)\bcboffice2k250.bpl">Embarcadero C++Builder Office 2000 Servers Package</Excluded_Packages>
-                    <Excluded_Packages Name="$(BDSBIN)\bcbofficexp250.bpl">Embarcadero C++Builder Office XP Servers Package</Excluded_Packages>
-                    <Excluded_Packages Name="$(BDSBIN)\dcloffice2k250.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
-                    <Excluded_Packages Name="$(BDSBIN)\dclofficexp250.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
-                </Excluded_Packages>
+                <Excluded_Packages/>
             </Delphi.Personality>
             <Platforms>
                 <Platform value="Android">False</Platform>

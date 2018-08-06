@@ -379,12 +379,12 @@ type
 
   (* TMapOfLandscapes	:array of array of TGLBaseRandomHDS; *)
 
-  TLandTile = TGLCustomRandomHDS;
+  TGLLandTile = TGLCustomRandomHDS;
 
   TRelativeCoordinate = record
     DX, DZ: integer end;
     TOnCreateLandTile =
-    procedure(x, z, Seed: integer; var aLandscape: TLandTile) of object;
+    procedure(x, z, Seed: integer; var aLandscape: TGLLandTile) of object;
     TIsDefaultTile =  function(X, Z: integer): boolean of object;
     TGLTiledRndLandscape = class(TGLBaseRandomHDS)private FLandTileComputing: boolean; // Is a landtile being computed?
     FExtentX: integer;
@@ -401,7 +401,7 @@ type
     FIsDefaultTile: TIsDefaultTile;
     FSeed: integer;
     fBaseSeed: integer;
-    fComputedLandTile: TLandTile;
+    fComputedLandTile: TGLLandTile;
     FLandTileCapacity: integer;
     FGenerationRadius: integer;
     FLandTileDensity: single;
@@ -427,7 +427,7 @@ type
     FLandTiles: tComponentList;
     procedure BoundaryClamp(var x, z: single); overload;
     procedure BoundaryClamp(var x, z: integer); overload;
-    procedure ComputeLandTile(const aX, aZ: integer; var NewLandTile: TLandTile); virtual;
+    procedure ComputeLandTile(const aX, aZ: integer; var NewLandTile: TGLLandTile); virtual;
     procedure CyclicClamp(var x, z: single); overload;
     procedure CyclicClamp(var x, z: integer); overload;
     { tTerrainRenderer event handler }
@@ -442,9 +442,9 @@ type
     { tTerrainRender event handler }
     procedure SetTerrainRenderer(const Value: TGLTerrainRenderer); override;
   public
-    procedure ApplyLighting(var aLandTile: TLandTile);
-    procedure ApplyTexture(var aLandTile: TLandTile);
-    procedure ApplyTopography(var aLandTile: TLandTile);
+    procedure ApplyLighting(var aLandTile: TGLLandTile);
+    procedure ApplyTexture(var aLandTile: TGLLandTile);
+    procedure ApplyTopography(var aLandTile: TGLLandTile);
     procedure CameraPosition(var TileX, TileZ: integer);
     procedure CleanUp;
     { Constrain x,y to be in the boundaries of the height field array. This is
@@ -537,10 +537,10 @@ type
     procedure SetWaveSpeed(const Value: single);
   protected
     procedure SetTerrainRenderer(const Value: TGLTerrainRenderer); override;
-    procedure fOnCreateLandTile(aX, aZ, aSeed: integer; var aLandscape: TLandTile);
+    procedure fOnCreateLandTile(aX, aZ, aSeed: integer; var aLandscape: TGLLandTile);
     procedure fOnCreateDefaultTile(heightData: TGLHeightData);
   public
-    procedure ComputeLandTile(const aX, aZ: integer; var NewLandTile: TLandTile); override;
+    procedure ComputeLandTile(const aX, aZ: integer; var NewLandTile: TGLLandTile); override;
     constructor Create(AOwner: TComponent); override;
   published
     { Ranges for the amplitude parameter in the fractal algorithm }
@@ -2011,7 +2011,7 @@ end;
 
 { TGLRandomLandscape }
 
-procedure TGLTiledRndLandscape.ApplyLighting(var aLandTile: TLandTile);
+procedure TGLTiledRndLandscape.ApplyLighting(var aLandTile: TGLLandTile);
 begin
   with aLandTile do
   begin
@@ -2023,7 +2023,7 @@ begin
   end; // with
 end;
 
-procedure TGLTiledRndLandscape.ApplyTexture(var aLandTile: TLandTile);
+procedure TGLTiledRndLandscape.ApplyTexture(var aLandTile: TGLLandTile);
 begin
   with aLandTile do
   begin
@@ -2035,7 +2035,7 @@ begin
   end; // with
 end;
 
-procedure TGLTiledRndLandscape.ApplyTopography(var aLandTile: TLandTile);
+procedure TGLTiledRndLandscape.ApplyTopography(var aLandTile: TGLLandTile);
 begin
   with aLandTile do
   begin
@@ -2078,15 +2078,15 @@ var
 begin
   for i := fLandTiles.Count - 1 downto 0 do
   begin
-    if TLandTile(fLandTiles.Items[i]).LandTileInfo.State = hdsNone then
+    if TGLLandTile(fLandTiles.Items[i]).LandTileInfo.State = hdsNone then
     begin
-      fLandTiles.Delete(i); // Free the landtile and remove it from the list
+      fLandTiles.Delete(i); // Free the Landtile and remove it from the list
       // FTerrainRenderer.MaterialLibrary.Materials.DeleteUnusedMaterials;
     end; // if
   end; // for
 end;
 
-procedure TGLTiledRndLandscape.ComputeLandTile(const aX, aZ: integer; var NewLandTile: TLandTile);
+procedure TGLTiledRndLandscape.ComputeLandTile(const aX, aZ: integer; var NewLandTile: TGLLandTile);
 var
   sx, sz: string;
 begin
@@ -2199,8 +2199,8 @@ var
   d1, d2: single;
 begin
   CameraPosition(x, z);
-  d1 := sqr(x - TLandTile(Item1^).LandTileInfo.x) + sqr(z - TLandTile(Item1^).LandTileInfo.z);
-  d2 := sqr(x - TLandTile(Item2^).LandTileInfo.x) + sqr(z - TLandTile(Item2^).LandTileInfo.z);
+  d1 := sqr(x - TGLLandTile(Item1^).LandTileInfo.x) + sqr(z - TGLLandTile(Item1^).LandTileInfo.z);
+  d2 := sqr(x - TGLLandTile(Item2^).LandTileInfo.x) + sqr(z - TGLLandTile(Item2^).LandTileInfo.z);
   Result := Round(d1 - d2);
 end;
 
@@ -2231,7 +2231,7 @@ end;
 procedure TGLTiledRndLandscape.Initialize(const aX, aZ: single);
 var
   cx, cz: integer;
-  NewLandTile: TLandTile;
+  NewLandTile: TGLLandTile;
   x, z, dx, dz: integer;
 begin
   fOldCamX := -99999;
@@ -2449,13 +2449,13 @@ begin
       { Look if the landtile has already been computed }
       for i := 0 to fLandTiles.Count - 1 do
       begin
-        with TLandTile(fLandTiles.Items[i]).LandTileInfo do
+        with TGLLandTile(fLandTiles.Items[i]).LandTileInfo do
         begin
           if (x = tx) and (z = tz) then
           begin
             if (State = hdsReady) then
             begin
-              TLandTile(fLandTiles.Items[i]).StartPreparingData(heightData);
+              TGLLandTile(fLandTiles.Items[i]).StartPreparingData(heightData);
               exit;
             end
             else
@@ -2486,7 +2486,7 @@ var
   cx, cz: integer;
   cx0, cz0: integer;
   Found: boolean;
-  NewLandTile: TLandTile;
+  NewLandTile: TGLLandTile;
 begin
   CameraPosition(cx0, cz0);
   if fMapUpdating or (fOldCamX = cx0) and (fOldCamZ = cz0) then
@@ -2505,7 +2505,7 @@ begin
     Found := False;
     for i := 0 to fLandTiles.Count - 1 do
     begin
-      with TLandTile(fLandTiles.Items[i]).LandTileInfo do
+      with TGLLandTile(fLandTiles.Items[i]).LandTileInfo do
       begin
         if (x = cx) and (z = cz) and (State = hdsReady) then
         begin
@@ -2523,7 +2523,7 @@ begin
         maxd := -1; // ...replace the farthest tile
         maxi := -1;
         for i := 0 to fLandTiles.Count - 1 do
-          with TLandTile(fLandTiles.Items[i]) do
+          with TGLLandTile(fLandTiles.Items[i]) do
           begin
             d := sqr(cx0 - LandTileInfo.x) + sqr(cz0 - LandTileInfo.z);
             if d > maxd then
@@ -2534,7 +2534,7 @@ begin
           end; // for i
         if sqrt(maxd) > FGenerationRadius + 1 then
         begin
-          TLandTile(fLandTiles.Items[maxi]).Free;
+          TGLLandTile(fLandTiles.Items[maxi]).Free;
         end; // if
       end; // if
       ComputeLandTile(cx, cz, NewLandTile);
@@ -2561,7 +2561,7 @@ end;
 //
 // TGLFractalArchipelago
 //
-procedure TGLFractalArchipelago.ComputeLandTile(const aX, aZ: integer; var NewLandTile: TLandTile);
+procedure TGLFractalArchipelago.ComputeLandTile(const aX, aZ: integer; var NewLandTile: TGLLandTile);
 begin
   NewLandTile := TGLFractalHDS.Create(Self);
   NewLandTile.FSlave := True;
@@ -2606,7 +2606,7 @@ begin
   end; // with
 end;
 
-procedure TGLFractalArchipelago.fOnCreateLandTile(aX, aZ, aSeed: integer; var aLandscape: TLandTile);
+procedure TGLFractalArchipelago.fOnCreateLandTile(aX, aZ, aSeed: integer; var aLandscape: TGLLandTile);
 begin
   InitializeRandomGenerator(aSeed);
   with TGLFractalHDS(aLandscape) do

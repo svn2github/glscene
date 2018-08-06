@@ -3,19 +3,14 @@
         <ProjectGuid>{955E4CF0-C856-4D8D-90BA-CFD08D80559C}</ProjectGuid>
         <MainSource>GLScene_Sounds_RT.dpk</MainSource>
         <Base>True</Base>
-        <Config Condition="'$(Config)'==''">Debug</Config>
+        <Config Condition="'$(Config)'==''">Release</Config>
         <TargetedPlatforms>3</TargetedPlatforms>
         <AppType>Package</AppType>
         <FrameworkType>VCL</FrameworkType>
-        <ProjectVersion>18.3</ProjectVersion>
+        <ProjectVersion>18.4</ProjectVersion>
         <Platform Condition="'$(Platform)'==''">Win64</Platform>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
-        <Base>true</Base>
-    </PropertyGroup>
-    <PropertyGroup Condition="('$(Platform)'=='Android' and '$(Base)'=='true') or '$(Base_Android)'!=''">
-        <Base_Android>true</Base_Android>
-        <CfgParent>Base</CfgParent>
         <Base>true</Base>
     </PropertyGroup>
     <PropertyGroup Condition="('$(Platform)'=='Win32' and '$(Base)'=='true') or '$(Base_Win32)'!=''">
@@ -82,11 +77,6 @@
         <RuntimeOnlyPackage>true</RuntimeOnlyPackage>
         <DCC_ImageBase>00400000</DCC_ImageBase>
     </PropertyGroup>
-    <PropertyGroup Condition="'$(Base_Android)'!=''">
-        <BT_BuildType>Debug</BT_BuildType>
-        <EnabledSysJars>android-support-v4.dex.jar;apk-expansion.dex.jar;cloud-messaging.dex.jar;fmx.dex.jar;google-analytics-v2.dex.jar;google-play-billing.dex.jar;google-play-licensing.dex.jar;google-play-services.dex.jar</EnabledSysJars>
-        <VerInfo_Keys>package=com.embarcadero.$(MSBuildProjectName);label=$(MSBuildProjectName);versionCode=1;versionName=1.0.0;persistent=False;restoreAnyVersion=False;installLocation=auto;largeHeap=False;theme=TitleBar;hardwareAccelerated=true;apiKey=</VerInfo_Keys>
-    </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win32)'!=''">
         <DCC_Description>GLScene Sound Managers</DCC_Description>
         <DCC_Namespace>System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
@@ -103,10 +93,7 @@
         <DCC_BpiOutput>$(GLSCENE)\lib\Win64</DCC_BpiOutput>
         <DCC_ObjOutput>$(GLSCENE)\lib\Win64</DCC_ObjOutput>
         <DCC_HppOutput>$(GLSCENE)\include\Win64</DCC_HppOutput>
-        <DCC_DcpOutput>$(GLSCENE)\lib\Win64</DCC_DcpOutput>
         <DCC_DcuOutput>$(GLSCENE)\lib\Win64</DCC_DcuOutput>
-        <DCC_BplOutput>$(GLSCENE)\bpl\Win64</DCC_BplOutput>
-        <DCC_UnitSearchPath>$(GLSCENE)\Source;$(GLSCENE)\Source\Basis;$(GLSCENE)\Source\DesignTime;$(GLSCENE)\Source\FileFormats;$(GLSCENE)\Source\GameAPIs;$(GLSCENE)\Source\ParallelAPIs;$(GLSCENE)\Source\PhysicsAPIs;$(GLSCENE)\Source\ScriptingAPIs;$(GLSCENE)\Source\Shaders;$(GLSCENE)\Source\SoundVideoAPIs;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1)'!=''">
         <DCC_DebugInformation>0</DCC_DebugInformation>
@@ -123,8 +110,13 @@
     <PropertyGroup Condition="'$(Cfg_1_Win64)'!=''">
         <DCC_Description>GLScene Sound Managers</DCC_Description>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
-        <VerInfo_Keys>CompanyName=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductVersion=1.0.0.0;Comments=;ProgramID=com.embarcadero.$(ModuleName);FileDescription=$(ModuleName);ProductName=$(ModuleName)</VerInfo_Keys>
+        <VerInfo_Keys>CompanyName=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductVersion=1.0.0.0;Comments=;ProgramID=com.embarcadero.$(MSBuildProjectName);FileDescription=$(MSBuildProjectName);ProductName=$(MSBuildProjectName)</VerInfo_Keys>
         <VerInfo_Locale>1033</VerInfo_Locale>
+        <DCC_DcuOutput>..\..\lib\Win64</DCC_DcuOutput>
+        <DCC_BpiOutput>..\..\lib\Win64</DCC_BpiOutput>
+        <DCC_HppOutput>..\..\include\Win64</DCC_HppOutput>
+        <DCC_ObjOutput>..\..\lib\Win64</DCC_ObjOutput>
+        <DCC_UnitSearchPath>..\..\Source;..\..\Source\Basis;..\..\Source\DesignTime;..\..\Source\FileFormats;..\..\Source\GameAPIs;..\..\Source\ParallelAPIs;..\..\Source\PhysicsAPIs;..\..\Source\ScriptingAPIs;..\..\Source\Shaders;..\..\Source\SoundVideoAPIs</DCC_UnitSearchPath>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2)'!=''">
         <DCC_GenerateStackFrames>true</DCC_GenerateStackFrames>
@@ -147,13 +139,10 @@
         <DCC_HppOutput>$(GLSCENE)\include\Win64</DCC_HppOutput>
         <DCC_ObjOutput>$(GLSCENE)\lib\Win64</DCC_ObjOutput>
         <DCC_BpiOutput>$(GLSCENE)\lib\Win64</DCC_BpiOutput>
-        <DCC_UnitSearchPath>$(GLSCENE)\Source;$(GLSCENE)\Source\Basis;$(GLSCENE)\Source\DesignTime;$(GLSCENE)\Source\FileFormats;$(GLSCENE)\Source\GameAPIs;$(GLSCENE)\Source\ParallelAPIs;$(GLSCENE)\Source\PhysicsAPIs;$(GLSCENE)\Source\ScriptingAPIs;$(GLSCENE)\Source\Shaders;$(GLSCENE)\Source\SoundVideoAPIs;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
-        <DCC_DcpOutput>$(GLSCENE)\lib\Win64</DCC_DcpOutput>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <DCC_DcuOutput>$(GLSCENE)\lib\Win64</DCC_DcuOutput>
         <VerInfo_Keys>CompanyName=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductVersion=1.0.0.0;Comments=;ProgramID=com.embarcadero.$(MSBuildProjectName);FileDescription=$(MSBuildProjectName);ProductName=$(MSBuildProjectName)</VerInfo_Keys>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
-        <DCC_BplOutput>$(GLSCENE)\bpl\Win64</DCC_BplOutput>
     </PropertyGroup>
     <ItemGroup>
         <DelphiCompile Include="$(MainSource)">
@@ -200,10 +189,6 @@
                 </Excluded_Packages>
             </Delphi.Personality>
             <Platforms>
-                <Platform value="Android">False</Platform>
-                <Platform value="iOSDevice32">False</Platform>
-                <Platform value="iOSDevice64">False</Platform>
-                <Platform value="iOSSimulator">False</Platform>
                 <Platform value="Win32">True</Platform>
                 <Platform value="Win64">True</Platform>
             </Platforms>

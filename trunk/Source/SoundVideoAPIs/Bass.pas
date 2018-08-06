@@ -14,10 +14,8 @@ unit Bass;
 
 interface
 
-{$IFDEF MSWINDOWS}
 uses
   Winapi.Windows;
-{$ENDIF}
 
 const
   BASSVERSION = $204;             // API version

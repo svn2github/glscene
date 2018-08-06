@@ -18,21 +18,20 @@ interface
 
 uses
   Winapi.Windows,
-  System.Classes, System.SysUtils, FMX.Forms,
-  
-  Bass,  
-  VXS.Sound, 
-  VXS.Scene, 
-  VXS.VectorGeometry;
+  System.Classes,
+  System.SysUtils,
+  FMX.Forms,
+
+  VXS.Sound,
+  VXS.Scene,
+  VXS.VectorGeometry,
+
+  Bass;
 
 type
 
-   // TBASS3DAlgorithm
-   //
    TBASS3DAlgorithm = (algDefault, algOff, algFull, algLight);
 
-	// TVXSMBASS
-	//
 	TVXSMBASS = class (TVXSoundManager)
 	   private
 	      
@@ -71,11 +70,7 @@ type
 
 
 // ---------------------------------------------------------------------
-// ---------------------------------------------------------------------
-// ---------------------------------------------------------------------
 implementation
-// ---------------------------------------------------------------------
-// ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
 
 type
@@ -98,8 +93,6 @@ end;
 // ------------------ TVXSMBASS ------------------
 // ------------------
 
-// Create
-//
 constructor TVXSMBASS.Create(AOwner : TComponent);
 begin
 	inherited Create(AOwner);
@@ -107,16 +100,12 @@ begin
    MaxChannels:=32;
 end;
 
-// Destroy
-//
 destructor TVXSMBASS.Destroy;
 begin
 	inherited Destroy;
   BASS_UnLoad;
 end;
 
-// DoActivate
-//
 function TVXSMBASS.DoActivate : Boolean;
 const
    c3DAlgo : array [algDefault..algLight] of Integer =
@@ -143,8 +132,6 @@ begin
    Result:=True;
 end;
 
-// DoDeActivate
-//
 procedure TVXSMBASS.DoDeActivate;
 begin
    FActivated:=False;
@@ -152,24 +139,18 @@ begin
    BASS_Free;
 end;
 
-// NotifyMasterVolumeChange
-//
 procedure TVXSMBASS.NotifyMasterVolumeChange;
 begin
    if FActivated then
       BASS_SetVolume(Round(MasterVolume*100));
 end;
 
-// Notify3DFactorsChanged
-//
 procedure TVXSMBASS.Notify3DFactorsChanged;
 begin
    if FActivated then
       BASS_Set3DFactors(DistanceFactor, RollOffFactor, DopplerFactor);
 end;
 
-// NotifyEnvironmentChanged
-//
 procedure TVXSMBASS.NotifyEnvironmentChanged;
 const
    cEnvironmentToBASSConstant : array [seDefault..sePsychotic] of Integer = (
@@ -187,8 +168,6 @@ begin
       BASS_SetEAXParameters(cEnvironmentToBASSConstant[Environment],-1,-1,-1);
 end;
 
-// KillSource
-//
 procedure TVXSMBASS.KillSource(aSource : TVXBaseSoundSource);
 var
    p : PBASSInfo;
@@ -203,8 +182,6 @@ begin
    end;
 end;
 
-// UpdateSource
-//
 procedure TVXSMBASS.UpdateSource(aSource : TVXBaseSoundSource);
 var
    i : Integer;
@@ -280,8 +257,6 @@ begin
    inherited UpdateSource(aSource);
 end;
 
-// MuteSource
-//
 procedure TVXSMBASS.MuteSource(aSource : TVXBaseSoundSource; muted : Boolean);
 var
    p : PBASSInfo;
@@ -296,8 +271,6 @@ begin
    end;
 end;
 
-// PauseSource
-//
 procedure TVXSMBASS.PauseSource(aSource : TVXBaseSoundSource; paused : Boolean);
 var
    p : PBASSInfo;
@@ -310,8 +283,6 @@ begin
    end;
 end;
 
-// UpdateSources
-//
 procedure TVXSMBASS.UpdateSources;
 var
    objPos, objVel, objDir, objUp : TVector;
@@ -329,15 +300,11 @@ begin
    {if not }BASS_Apply3D;{ then Assert(False);}
 end;
 
-// CPUUsagePercent
-//
 function TVXSMBASS.CPUUsagePercent : Single;
 begin
    Result:=BASS_GetCPU*100;
 end;
 
-// EAXSupported
-//
 function TVXSMBASS.EAXSupported : Boolean;
 var
    c : Cardinal;
@@ -346,8 +313,6 @@ begin
    Result:=BASS_GetEAXParameters(c, s, s, s);
 end;
 
-// GetDefaultFrequency
-//
 function TVXSMBASS.GetDefaultFrequency(aSource : TVXBaseSoundSource): integer;
 var
    p : PBASSInfo;

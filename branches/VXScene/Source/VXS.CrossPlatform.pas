@@ -5,7 +5,7 @@
    Cross platform support functions and types.  
 
    Ultimately, *no* cross-platform or cross-version defines should be present
-   in the core units, and have all moved here instead. 
+   in the core units, and have all moved here instead.
           
 }
 unit VXS.CrossPlatform;
@@ -34,64 +34,20 @@ type
   THalfFloat = type Word;
   PHalfFloat = ^THalfFloat;
 
-  TVXPicture = TImage;  // in VCL it's TPicture
-  TVXGraphic = TBitmap; // in VCL it's TGraphic
+  TVXPicture = TImage;  //  TPicture in VCL
+  TVXGraphic = TBitmap; //  TGraphic in VCL
 
-  TGraphicClass = class of TBitmap; // in VCL it's class of TGraphic
+  TGraphicClass = class of TBitmap; // class of TGraphic in VCL
 
   TVXTextLayout = (tlTop, tlCenter, tlBottom);
 
   TVXMouseButton = (mbLeft, mbRight, mbMiddle); // idem TMouseButton;
   TVXMouseEvent = procedure(Sender: TObject; Button: TVXMouseButton;
     Shift: TShiftState; X, Y: Integer) of object;
-  TVXMouseMoveEvent = TMouseMoveEvent;
 
   TVXKeyPressEvent = TKeyEvent; // instead of TKeyPressEvent;
 
-  TPlatformInfo = record
-    Major: DWORD;
-    Minor: DWORD;
-    Revision: DWORD;
-    Version: string;
-    PlatformId   :DWORD;
-    ID: string;
-    CodeName: string;
-    Description: string;
-    ProductBuildVersion: string;
-  end;
-
-  TPlatformVersion =
-    (
-      pvUnknown,
-      pvWin95,
-      pvWin98,
-      pvWinME,
-      pvWinNT3,
-      pvWinNT4,
-      pvWin2000,
-      pvWinXP,
-      pvWin2003,
-      pvWinVista,
-      pvWinSeven,
-      pvWin2008,
-      pvWinNew,
-
-      pvLinuxArc,
-      pvLinuxDebian,
-      pvLinuxopenSUSE,
-      pvLinuxFedora,
-      pvLinuxGentoo,
-      pvLinuxMandriva,
-      pvLinuxRedHat,
-      pvLinuxTurboLinux,
-      pvLinuxUbuntu,
-      pvLinuxXandros,
-      pvLinuxOracle,
-      pvAppleMacOSX
-    );
-
   EGLOSError = EOSError;
-  //      EGLOSError = EOSError;
 
   TProjectTargetNameFunc = function(): string;
 
@@ -139,7 +95,7 @@ procedure IntersectRectangle(var aRect: TRect; const rect2: TRect);
 
 procedure RaiseLastOSError;
 
-{ Number of pixels per logical inch along the screen width for the device. 
+{ Number of pixels per logical inch along the screen width for the device.
    Under Win32 awaits a HDC and returns its LOGPIXELSX. }
 function GetDeviceLogicalPixelsX(device: THandle): Integer; ///in VCL -> HDC
 { Number of bits per pixel for the current desktop resolution. }
@@ -154,17 +110,17 @@ function BitmapScanLine(aBitmap: TBitmap; aRow: Integer): Pointer;
 procedure FixPathDelimiter(var S: string);
 { Remove if possible part of path witch leads to project executable. }
 function RelativePath(const S: string): string;
-{ Returns the current value of the highest-resolution counter. 
+{ Returns the current value of the highest-resolution counter.
    If the platform has none, should return a value derived from the highest
    precision time reference available, avoiding, if possible, timers that
    allocate specific system resources. }
 procedure QueryPerformanceCounter(var val: Int64);
-{ Returns the frequency of the counter used by QueryPerformanceCounter. 
+{ Returns the frequency of the counter used by QueryPerformanceCounter.
    Return value is in ticks per second (Hz), returns False if no precision
    counter is available. }
 function QueryPerformanceFrequency(var val: Int64): Boolean;
 
-{ Starts a precision timer. 
+{ Starts a precision timer.
    Returned value should just be considered as 'handle', even if it ain't so.
    Default platform implementation is to use QueryPerformanceCounter and
    QueryPerformanceFrequency, if higher precision references are available,
@@ -203,10 +159,6 @@ function FloatToHalf(Float: Single): THalfFloat;
 function HalfToFloat(Half: THalfFloat): Single;
 
 function GetValueFromStringsIndex(const AStrings: TStrings; const AIndex: Integer): string;
-
-function GetPlatformInfo: TPlatformInfo;
-function GetPlatformVersion : TPlatformVersion;
-function GetPlatformVersionStr : string;
 
 { Determine if the directory is writable.  }
 function IsDirectoryWriteable(const AName: string): Boolean;
@@ -472,7 +424,6 @@ begin
   end;
 end;
 
-
 function FindUnitName(anObject: TObject): string;
 begin
   if Assigned(anObject) then
@@ -666,90 +617,7 @@ begin
   Result := AStrings.ValueFromIndex[AIndex];
 end;
 
-function GetPlatformInfo: TPlatformInfo;
-var
-  OSVersionInfo : TOSVersionInfo;
-begin
-  With Result, OSVersionInfo do
-  begin
-    dwOSVersionInfoSize := sizeof(TOSVersionInfo);
 
-    if not GetVersionEx(OSVersionInfo) then Exit;
-
-    Minor := DwMinorVersion;
-    Major := DwMajorVersion;
-    Revision := 0;
-    PlatformId := dwPlatformId;
-    Version :=  InttoStr(DwMajorVersion)+'.'+InttoStr(DwMinorVersion);
-  end;
-end;
-
-
-function GetPlatformVersion : TPlatformVersion;
-begin
-  Result := pvUnknown;                      // Unknown OS version
-  with GetPlatformInfo do
-  begin
-        if Version='' then Exit;
-        case Major of
-          0: Result := pvUnknown;
-          1..2: Result := pvUnknown;
-          3:  Result := pvWinNT3;              // Windows NT 3
-          4:  case Minor of
-                0: if PlatformId = VER_PLATFORM_WIN32_NT
-                   then Result := pvWinNT4     // Windows NT 4
-                   else Result := pvWin95;     // Windows 95
-                10: Result := pvWin98;         // Windows 98
-                90: Result := pvWinME;         // Windows ME
-              end;
-          5:  case Minor of
-                0: Result := pvWin2000;         // Windows 2000
-                1: Result := pvWinXP;          // Windows XP
-                2: Result := pvWin2003;        // Windows 2003
-              end;
-          6:  case Minor of
-                0: Result := pvWinVista;         // Windows Vista
-                1: Result := pvWinSeven;          // Windows Seven
-                2: Result := pvWin2008;        // Windows 2008   //возможно
-                3..4: Result := pvWinNew;
-              end;
-          7:  Result := pvWinNew;
-        end;
-   end;
-end;
-
-function GetPlatformVersionStr : string;
-const
-  VersStr : array[TPlatformVersion] of string = (
-    'Unknown',
-    'Windows 95',
-    'Windows 98',
-    'Windows ME',
-    'Windows NT 3',
-    'Windows NT 4',
-    'Windows 2000',
-    'Windows XP',
-    'Windows 2003',
-    'Windows Vista',
-    'Windows Seven',
-    'Windows 2008',
-    'Windows New',
-
-    'Linux Arc',
-    'Linux Debian',
-    'Linux openSUSE',
-    'Linux Fedora',
-    'Linux Gentoo',
-    'Linux Mandriva',
-    'Linux RedHat',
-    'Linux TurboLinux',
-    'Linux Ubuntu',
-    'Linux Xandros',
-    'Linux Oracle',
-    'Apple MacOSX');
-begin
-  Result := VersStr[GetPlatformVersion];
-end;
 
 function IsDirectoryWriteable(const AName: string): Boolean;
 var

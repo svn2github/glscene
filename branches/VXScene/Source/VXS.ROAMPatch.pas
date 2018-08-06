@@ -18,7 +18,7 @@ uses
   VXS.XOpenGL,
   VXS.VectorGeometry,
   VXS.HeightData,
-  VXS.Contouring,
+  VXS.Isolines,
   VXS.VectorLists,
   VXS.CrossPlatform,
   VXS.Context;

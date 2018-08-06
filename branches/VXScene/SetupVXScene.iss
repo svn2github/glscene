@@ -3,7 +3,7 @@
 ;-----------------------------------------------------------------------------
 
 #define VXSceneName "VXScene"
-#define VXSceneVersion "v.1.0.0_for_Win64"
+#define VXSceneVersion "v.1.6"
 #define VXScenePublisher "VXSteam"
 #define VXSceneURL "http://glscene.sourceforge.net"
 
@@ -54,10 +54,7 @@ WindowStartMaximized=yes
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"; LicenseFile: "Help\en\License.txt"
-Name: "french"; MessagesFile: "compiler:Languages\French.isl"; 
 Name: "russian"; MessagesFile: "compiler:Languages\Russian.isl"; LicenseFile: "Help\ru\License.txt"
-Name: "german"; MessagesFile: "compiler:Languages\German.isl"; 
-Name: "spanish"; MessagesFile: "compiler:Languages\Spanish.isl"; 
 
 [Types]
 Name: "Full"; Description: "All comps"
@@ -78,8 +75,10 @@ end;
 
 [Files]
 Source: "CleanForRelease.bat"; DestDir: "{app}"; Flags: ignoreversion
-Source: "CleanForRelease.bat"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\Public\Documents\Embarcadero\Studio\18.0\Bpl\*"; DestDir: "{app}\bpl"; Flags: ignoreversion
+Source: "SetupVXScene.iss"; DestDir: "{app}"; Flags: ignoreversion
+Source: "Readme.txt"; DestDir: "{app}"; Flags: ignoreversion
+
+Source: "bpl\*"; DestDir: "{app}\bpl"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "external\*"; DestDir: "{app}\external"; Flags: ignoreversion
 Source: "Help\*"; DestDir: "{app}\Help"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "include\*"; DestDir: "{app}\include"; Flags: ignoreversion recursesubdirs createallsubdirs
@@ -93,33 +92,37 @@ Source: "Source\*"; DestDir: "{app}\Source"; Flags: ignoreversion recursesubdirs
 [Code]
 function IsDadRegistryExist: Boolean;
 begin
-  if RegKeyExists(HKEY_CURRENT_USER, 'Software\Embarcadero\BDS\16.0') or    
-     RegKeyExists(HKEY_CURRENT_USER, 'Software\Embarcadero\BDS\17.0') or
-     RegKeyExists(HKEY_CURRENT_USER, 'Software\Embarcadero\BDS\18.0')
+  if RegKeyExists(HKEY_CURRENT_USER, 'Software\Embarcadero\BDS\17.0') or    
+     RegKeyExists(HKEY_CURRENT_USER, 'Software\Embarcadero\BDS\18.0') or
+     RegKeyExists(HKEY_CURRENT_USER, 'Software\Embarcadero\BDS\19.0')
   then
   begin
     /// "Yes". Update 
-     
   end  
   else
     begin
-      if MsgBox('Do you really want to install GLScene?', mbError, MB_YESNO) = idYes
+      if MsgBox('Do you have in registry Software\Embarcadero\BDS\19.0?', mbError, MB_YESNO) = idYes
       then 
         /// Full installation
       else 
+        /// Exit
     end;
 end;
 
 [Registry]
-; Parameters for VXScene
+; Write parameters for the project
 Root: HKCU; Subkey: "Software\VXScene"; ValueType: string; ValueName: "Version"; ValueData: {#VXSceneVersion}; Flags: createvalueifdoesntexist uninsdeletekey 
 Root: HKCU; Subkey: "Software\VXScene"; ValueType: string; ValueName: InslallSettings; ValueData: "{src}\SetupVXScene.exe"; Flags: createvalueifdoesntexist uninsdeletekey 
 Root: HKCU; Subkey: "Software\VXScene"; ValueType: string; ValueName: LibraryDir; ValueData: "{app}"; Flags: createvalueifdoesntexist uninsdeletekey 
 
-; Parameters for RAD Studio   
-; Auto Save
+; Write parameters for RAD Studio   
+; Auto Save of Desktop and Editor Files
+Root: HKCU; Subkey: "Software\Embarcadero\BDS\17.0\Auto Save"; ValueType: string; ValueName: Desktop; ValueData: "True"; 
+Root: HKCU; Subkey: "Software\Embarcadero\BDS\17.0\Auto Save"; ValueType: string; ValueName: Editor Files; ValueData: "True"; 
 Root: HKCU; Subkey: "Software\Embarcadero\BDS\18.0\Auto Save"; ValueType: string; ValueName: Desktop; ValueData: "True"; 
 Root: HKCU; Subkey: "Software\Embarcadero\BDS\18.0\Auto Save"; ValueType: string; ValueName: Editor Files; ValueData: "True"; 
+Root: HKCU; Subkey: "Software\Embarcadero\BDS\19.0\Auto Save"; ValueType: string; ValueName: Desktop; ValueData: "True"; 
+Root: HKCU; Subkey: "Software\Embarcadero\BDS\19.0\Auto Save"; ValueType: string; ValueName: Editor Files; ValueData: "True"; 
                      
 ; Environmental Variables, the ValueData needs to be changed from SourceDir to {app}   
 ; New user variable VXSceneDIR
@@ -143,8 +146,6 @@ Root: HKCU; Subkey: "Software\Embarcadero\BDS\18.0\Known Packages"; ValueType: s
 Root: HKCU; Subkey: "Software\Embarcadero\BDS\18.0\Known Packages"; ValueType: string; ValueName: $(BDSCOMMONDIR)\Bpl\Win32\VXScene_Sounds_DesignTime.bpl; ValueData: "VXScene Sound Managers"; Flags: createvalueifdoesntexist uninsdeletevalue
 
 [Code]
-
- 
 
 function IsRegularUser(): Boolean;
 begin
