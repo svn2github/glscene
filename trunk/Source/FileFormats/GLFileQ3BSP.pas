@@ -144,7 +144,7 @@ begin
       n := bsp.NumOfLightmaps;
       lightmapBmp := TBitmap.Create;
       try
-        lightmapBmp.PixelFormat := glpf24bit;
+        lightmapBmp.PixelFormat := pf24bit;
         lightmapBmp.Width := 128;
         lightmapBmp.Height := 128;
         for i := 0 to n - 1 do

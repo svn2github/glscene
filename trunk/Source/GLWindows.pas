@@ -12,10 +12,13 @@ interface
 {$I GLScene.inc}
 
 uses
+  Winapi.Windows,
   System.Classes,
   System.SysUtils,
   System.Math,
+  Vcl.StdCtrls,
   Vcl.Controls,
+  Vcl.Graphics,
 
   OpenGLTokens,
   GLPersistentClasses,
@@ -115,7 +118,7 @@ type
   TGLMouseAction = (ma_mouseup, ma_mousedown, ma_mousemove);
 
   TGLAcceptMouseQuery = procedure(Sender: TGLBaseControl; Shift: TShiftState;
-    Action: TGLMouseAction; Button: TGLMouseButton; X, Y: Integer; var Accept: boolean) of object;
+    Action: TGLMouseAction; Button: TMouseButton; X, Y: Integer; var Accept: boolean) of object;
   TGLBaseControl = class(TGLBaseComponent)
   private
     FOnMouseDown: TGLMouseEvent;
@@ -129,8 +132,8 @@ type
     FOnMouseEnter: TNotifyEvent;
     FEnteredControl: TGLBaseControl;
   protected
-    procedure InternalMouseDown(Shift: TShiftState; Button: TGLMouseButton; X, Y: Integer); virtual;
-    procedure InternalMouseUp(Shift: TShiftState; Button: TGLMouseButton; X, Y: Integer); virtual;
+    procedure InternalMouseDown(Shift: TShiftState; Button: TMouseButton; X, Y: Integer); virtual;
+    procedure InternalMouseUp(Shift: TShiftState; Button: TMouseButton; X, Y: Integer); virtual;
     procedure InternalMouseMove(Shift: TShiftState; X, Y: Integer); virtual;
     procedure SetActiveControl(NewControl: TGLBaseControl);
     procedure SetFocusedControl(NewControl: TGLFocusControl);
@@ -139,9 +142,9 @@ type
     procedure DoMouseEnter;
     procedure DoMouseLeave;
   public
-    function MouseDown(Sender: TObject; Button: TGLMouseButton; Shift:
+    function MouseDown(Sender: TObject; Button: TMouseButton; Shift:
       TShiftState; X, Y: Integer): Boolean; virtual;
-    function MouseUp(Sender: TObject; Button: TGLMouseButton; Shift:
+    function MouseUp(Sender: TObject; Button: TMouseButton; Shift:
       TShiftState; X, Y: Integer): Boolean; virtual;
     function MouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer): Boolean; virtual;
     procedure KeyPress(Sender: TObject; var Key: Char); virtual;
@@ -164,8 +167,8 @@ type
     FBitmapFont: TGLCustomBitmapFont;
     FDefaultColor: TColorVector;
   protected
-    function GetDefaultColor: TDelphiColor;
-    procedure SetDefaultColor(value: TDelphiColor);
+    function GetDefaultColor: TColor;
+    procedure SetDefaultColor(value: TColor);
     procedure SetBitmapFont(NewFont: TGLCustomBitmapFont);
     function GetBitmapFont: TGLCustomBitmapFont;
     procedure WriteTextAt(var rci: TGLRenderContextInfo; const X, Y: TGLFloat;
@@ -179,7 +182,7 @@ type
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
   published
     property BitmapFont: TGLCustomBitmapFont read GetBitmapFont write SetBitmapFont;
-    property DefaultColor: TDelphiColor read GetDefaultColor write SetDefaultColor;
+    property DefaultColor: TColor read GetDefaultColor write SetDefaultColor;
   end;
 
   TGLBaseTextControl = class(TGLBaseFontControl)
@@ -207,8 +210,8 @@ type
     procedure InternalKeyUp(var Key: Word; Shift: TShiftState); virtual;
     procedure SetFocused(Value: Boolean); virtual;
     function GetRootControl: TGLBaseControl;
-    function GetFocusedColor: TDelphiColor;
-    procedure SetFocusedColor(const Val: TDelphiColor);
+    function GetFocusedColor: TColor;
+    procedure SetFocusedColor(const Val: TColor);
   public
     destructor Destroy; override;
     procedure NotifyHide; override;
@@ -223,22 +226,22 @@ type
   published
     property RootControl: TGLBaseControl read GetRootControl;
     property Focused: Boolean read FFocused write SetFocused;
-    property FocusedColor: TDelphiColor read GetFocusedColor write SetFocusedColor;
+    property FocusedColor: TColor read GetFocusedColor write SetFocusedColor;
     property OnKeyDown: TKeyEvent read FOnKeyDown write FOnKeyDown;
     property OnKeyUp: TKeyEvent read FOnKeyUp write FOnKeyUp;
     property OnKeyPress: TKeyPressEvent read FOnKeyPress write FOnKeyPress;
   end;
 
   TGLCustomControl = class;
-  TGLCustomRenderEvent = procedure(Sender: TGLCustomControl; Bitmap: TGLBitmap) of object;
+  TGLCustomRenderEvent = procedure(Sender: TGLCustomControl; Bitmap: TBitmap) of object;
   TGLCustomControl = class(TGLFocusControl)
   private
     FCustomData: Pointer;
     FCustomObject: TObject;
     FOnRender: TGLCustomRenderEvent;
     FMaterial: TGLMaterial;
-    FBitmap: TGLBitmap;
-    FInternalBitmap: TGLBitmap;
+    FBitmap: TBitmap;
+    FInternalBitmap: TBitmap;
     FBitmapChanged: Boolean;
     FXTexCoord: Single;
     FYTexCoord: Single;
@@ -248,7 +251,7 @@ type
     procedure SetCentered(const Value: Boolean);
   protected
     procedure OnBitmapChanged(Sender: TObject);
-    procedure SetBitmap(ABitmap: TGLBitmap);
+    procedure SetBitmap(ABitmap: TBitmap);
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -261,8 +264,8 @@ type
     property OnRender: TGLCustomRenderEvent read FOnRender write FOnRender;
     property Centered: Boolean read FCentered write SetCentered;
     property Material: TGLMaterial read FMaterial write SetMaterial;
-    property Bitmap: TGLBitmap read FBitmap write SetBitmap;
-    property MaxInvalidRenderCount: Integer read FMaxInvalidRenderCount 
+    property Bitmap: TBitmap read FBitmap write SetBitmap;
+    property MaxInvalidRenderCount: Integer read FMaxInvalidRenderCount
 	  write FMaxInvalidRenderCount;
   end;
 
@@ -281,7 +284,7 @@ type
     procedure SetMenuItems(Value: TStrings);
     procedure SetMarginSize(const val: Single);
     procedure SetSelIndex(const val: Integer);
-    procedure InternalMouseDown(Shift: TShiftState; Button: TGLMouseButton; X, Y: Integer); override;
+    procedure InternalMouseDown(Shift: TShiftState; Button: TMouseButton; X, Y: Integer); override;
     procedure InternalMouseMove(Shift: TShiftState; X, Y: Integer); override;
     procedure OnStringListChange(Sender: TObject);
   public
@@ -292,7 +295,7 @@ type
       renderChildren: Boolean); override;
     procedure DoRender(var rci: TGLRenderContextInfo; renderSelf, renderChildren:
       Boolean); override;
-    function MouseDown(Sender: TObject; Button: TGLMouseButton; Shift:
+    function MouseDown(Sender: TObject; Button: TMouseButton; Shift:
       TShiftState; X, Y: Integer): Boolean; override;
   published
     property MenuItems: TStrings read FMenuItems write SetMenuItems;
@@ -322,23 +325,23 @@ type
     FTitleColor: TColorVector;
     FTitleOffset: Single;
   protected
-    procedure InternalMouseDown(Shift: TShiftState; Button: TGLMouseButton; X, Y: Integer); override;
-    procedure InternalMouseUp(Shift: TShiftState; Button: TGLMouseButton; X, Y: Integer); override;
+    procedure InternalMouseDown(Shift: TShiftState; Button: TMouseButton; X, Y: Integer); override;
+    procedure InternalMouseUp(Shift: TShiftState; Button: TMouseButton; X, Y: Integer); override;
     procedure InternalMouseMove(Shift: TShiftState; X, Y: Integer); override;
-    function GetTitleColor: TDelphiColor;
-    procedure SetTitleColor(value: TDelphiColor);
+    function GetTitleColor: TColor;
+    procedure SetTitleColor(value: TColor);
   public
     constructor Create(AOwner: TComponent); override;
     procedure Close;
 
     procedure NotifyShow; override;
     procedure NotifyHide; override;
-    function MouseUp(Sender: TObject; Button: TGLMouseButton; Shift:
+    function MouseUp(Sender: TObject; Button: TMouseButton; Shift:
       TShiftState; X, Y: Integer): Boolean; override;
     function MouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer): Boolean; override;
     procedure InternalRender(var rci: TGLRenderContextInfo; renderSelf, renderChildren: Boolean); override;
   published
-    property TitleColor: TDelphiColor read GetTitleColor write SetTitleColor;
+    property TitleColor: TColor read GetTitleColor write SetTitleColor;
     property OnCanMove: TGLFormCanRequest read FOnCanMove write FOnCanMove;
     property OnCanResize: TGLFormCanRequest read FOnCanResize write FOnCanResize;
     property OnCanClose: TGLFormCanClose read FOnCanClose write FOnCanClose;
@@ -360,8 +363,8 @@ type
     FGroup: Integer;
   protected
     procedure SetChecked(NewChecked: Boolean);
-    procedure InternalMouseDown(Shift: TShiftState; Button: TGLMouseButton; X, Y: Integer); override;
-    procedure InternalMouseUp(Shift: TShiftState; Button: TGLMouseButton; X, Y: Integer); override;
+    procedure InternalMouseDown(Shift: TShiftState; Button: TMouseButton; X, Y: Integer); override;
+    procedure InternalMouseUp(Shift: TShiftState; Button: TMouseButton; X, Y: Integer); override;
     procedure SetGuiLayoutNameChecked(const newName: TGLGuiComponentName);
     procedure SetGuiLayout(NewGui: TGLGuiLayout); override;
     procedure SetGroup(const val: Integer);
@@ -393,8 +396,8 @@ type
     FAllowUp              : Boolean;
   protected
     procedure SetPressed(NewPressed: Boolean);
-    procedure InternalMouseDown(Shift: TShiftState; Button: TGLMouseButton; X, Y: Integer); override;
-    procedure InternalMouseUp(Shift: TShiftState; Button: TGLMouseButton; X, Y: Integer); override;
+    procedure InternalMouseDown(Shift: TShiftState; Button: TMouseButton; X, Y: Integer); override;
+    procedure InternalMouseUp(Shift: TShiftState; Button: TMouseButton; X, Y: Integer); override;
     procedure InternalKeyDown(var Key: Word; Shift: TShiftState); override;
     procedure InternalKeyUp(var Key: Word; Shift: TShiftState); override;
     procedure SetFocused(Value: Boolean); override;
@@ -431,7 +434,7 @@ type
     FReadOnly: Boolean;
     FEditChar: string;
   protected
-    procedure InternalMouseDown(Shift: TShiftState; Button: TGLMouseButton; X, Y: Integer); override;
+    procedure InternalMouseDown(Shift: TShiftState; Button: TMouseButton; X, Y: Integer); override;
     procedure InternalKeyPress(var Key: Char); override;
     procedure InternalKeyDown(var Key: Word; Shift: TShiftState); override;
     procedure InternalKeyUp(var Key: Word; Shift: TShiftState); override;
@@ -452,16 +455,16 @@ type
   TGLLabel = class(TGLBaseTextControl)
   private
     FAlignment: TAlignment;
-    FTextLayout: TGLTextLayout;
+    FTextLayout: TTextLayout;
     procedure SetAlignment(const Value: TAlignment);
-    procedure SetTextLayout(const Value: TGLTextLayout);
+    procedure SetTextLayout(const Value: TTextLayout);
   protected
   public
     constructor Create(AOwner: TComponent); override;
     procedure InternalRender(var rci: TGLRenderContextInfo; renderSelf, renderChildren: Boolean); override;
   published
     property Alignment: TAlignment read FAlignment write SetAlignment;
-    property TextLayout: TGLTextLayout read FTextLayout write SetTextLayout;
+    property TextLayout: TTextLayout read FTextLayout write SetTextLayout;
   end;
 
   TGLAdvancedLabel = class(TGLFocusControl)
@@ -499,8 +502,8 @@ type
     function GetYScrollPos(Y: Single): Single;
     function GetScrollPosX(ScrollPos: Single): Single;
     function GetXScrollPos(X: Single): Single;
-    procedure InternalMouseDown(Shift: TShiftState; Button: TGLMouseButton; X, Y: Integer); override;
-    procedure InternalMouseUp(Shift: TShiftState; Button: TGLMouseButton; X, Y: Integer); override;
+    procedure InternalMouseDown(Shift: TShiftState; Button: TMouseButton; X, Y: Integer); override;
+    procedure InternalMouseUp(Shift: TShiftState; Button: TMouseButton; X, Y: Integer); override;
     procedure InternalMouseMove(Shift: TShiftState; X, Y: Integer); override;
   public
     constructor Create(AOwner: TComponent); override;
@@ -508,7 +511,7 @@ type
     procedure StepDown;
     procedure PageUp;
     procedure PageDown;
-    function MouseUp(Sender: TObject; Button: TGLMouseButton; Shift: TShiftState; X, Y: Integer): Boolean; override;
+    function MouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer): Boolean; override;
     function MouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer): Boolean; override;
     procedure InternalRender(var rci: TGLRenderContextInfo; renderSelf, renderChildren: Boolean); override;
   published
@@ -538,7 +541,7 @@ type
     FDrawHeader: Boolean;
   protected
     function GetCell(X, Y: Integer; out oCol, oRow: Integer): Boolean;
-    procedure InternalMouseDown(Shift: TShiftState; Button: TGLMouseButton; X, Y: Integer); override;
+    procedure InternalMouseDown(Shift: TShiftState; Button: TMouseButton; X, Y: Integer); override;
     procedure SetColumns(const val: TStrings);
     procedure SetColSelect(const val: Boolean);
     function GetRow(index: Integer): TStringList;
@@ -549,8 +552,8 @@ type
     procedure SetSelRow(const val: Integer);
     procedure SetRowSelect(const val: Boolean);
     procedure SetDrawHeader(const val: Boolean);
-    function GetHeaderColor: TDelphiColor;
-    procedure SetHeaderColor(const val: TDelphiColor);
+    function GetHeaderColor: TColor;
+    procedure SetHeaderColor(const val: TColor);
     procedure SetMarginSize(const val: Integer);
     procedure SetColumnSize(const val: Integer);
     procedure SetRowHeight(const val: Integer);
@@ -569,7 +572,7 @@ type
     procedure OnStringListChange(Sender: TObject);
     property Row[index: Integer]: TStringList read GetRow write SetRow;
   published
-    property HeaderColor: TDelphiColor read GetHeaderColor write SetHeaderColor;
+    property HeaderColor: TColor read GetHeaderColor write SetHeaderColor;
     property Columns: TStrings read FColumns write SetColumns;
     property MarginSize: Integer read FMarginSize write SetMarginSize;
     property ColumnSize: Integer read FColumnSize write SetColumnSize;
@@ -1057,7 +1060,7 @@ begin
 end;
 
 procedure TGLBaseControl.InternalMouseDown(Shift: TShiftState; Button:
-  TGLMouseButton; X, Y: Integer);
+  TMouseButton; X, Y: Integer);
 
 begin
   if Assigned(FOnMouseDown) then
@@ -1065,7 +1068,7 @@ begin
 end;
 
 procedure TGLBaseControl.InternalMouseUp(Shift: TShiftState; Button:
-  TGLMouseButton; X, Y: Integer);
+  TMouseButton; X, Y: Integer);
 
 begin
   if Assigned(FOnMouseUp) then
@@ -1142,7 +1145,7 @@ begin
   inherited;
 end;
 
-function TGLBaseControl.MouseDown(Sender: TObject; Button: TGLMouseButton;
+function TGLBaseControl.MouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer): Boolean;
 var
   Xc: Integer;
@@ -1181,7 +1184,7 @@ begin
   end;
 end;
 
-function TGLBaseControl.MouseUp(Sender: TObject; Button: TGLMouseButton; Shift:
+function TGLBaseControl.MouseUp(Sender: TObject; Button: TMouseButton; Shift:
   TShiftState; X, Y: Integer): Boolean;
 var
   Xc: Integer;
@@ -1381,13 +1384,13 @@ begin
   FRootControl := FindFirstGui;
 end;
 
-function TGLFocusControl.GetFocusedColor: TDelphiColor;
+function TGLFocusControl.GetFocusedColor: TColor;
 
 begin
   Result := ConvertColorVector(FFocusedColor);
 end;
 
-procedure TGLFocusControl.SetFocusedColor(const Val: TDelphiColor);
+procedure TGLFocusControl.SetFocusedColor(const Val: TColor);
 
 begin
   FFocusedColor := ConvertWinColor(val);
@@ -1577,7 +1580,7 @@ procedure TGLFocusControl.KeyDown(Sender: TObject; var Key: Word; Shift:
 begin
   FShiftState := Shift;
   InternalKeyDown(Key, Shift);
-  if Key = glKey_TAB then
+  if Key = VK_TAB then
   begin
     if ssShift in FShiftState then
     begin
@@ -1595,7 +1598,7 @@ procedure TGLFocusControl.KeyUp(Sender: TObject; var Key: Word; Shift:
 begin
   FShiftState := Shift;
   InternalKeyUp(Key, Shift);
-  if Key = glKey_TAB then
+  if Key = VK_TAB then
   begin
     if ssShift in FShiftState then
     begin
@@ -1669,13 +1672,13 @@ begin
     end;
 end;
 
-function TGLBaseFontControl.GetDefaultColor: TDelphiColor;
+function TGLBaseFontControl.GetDefaultColor: TColor;
 
 begin
   Result := ConvertColorVector(FDefaultColor);
 end;
 
-procedure TGLBaseFontControl.SetDefaultColor(value: TDelphiColor);
+procedure TGLBaseFontControl.SetDefaultColor(value: TColor);
 
 begin
   FDefaultColor := ConvertWinColor(value);
@@ -1752,7 +1755,7 @@ constructor TGLCustomControl.Create(AOwner: TComponent);
 begin
   inherited;
   FMaterial := TGLMaterial.create(Self);
-  FBitmap := TGLBitmap.create;
+  FBitmap := TBitmap.create;
   FBitmap.OnChange := OnBitmapChanged;
   FInternalBitmap := nil;
   FInvalidRenderCount := 0;
@@ -1780,7 +1783,7 @@ begin
   FBitmapChanged := True;
 end;
 
-procedure TGLCustomControl.SetBitmap(ABitmap: TGLBitmap);
+procedure TGLCustomControl.SetBitmap(ABitmap: TBitmap);
 begin
   FBitmap.Assign(ABitmap);
 end;
@@ -1800,7 +1803,7 @@ begin
     begin
       FInvalidRenderCount := 0;
       if not Assigned(FInternalBitmap) then
-        FInternalBitmap := TGLBitmap.Create;
+        FInternalBitmap := TBitmap.Create;
 
       FInternalBitmap.PixelFormat := FBitmap.PixelFormat;
       FInternalBitmap.Width := RoundUpToPowerOf2(FBitmap.Width);
@@ -1921,7 +1924,7 @@ begin
 end;
 
 procedure TGLPopupMenu.InternalMouseDown(Shift: TShiftState; Button:
-  TGLMouseButton; X, Y: Integer);
+  TMouseButton; X, Y: Integer);
 var
   ClickIndex: Integer;
   Tx: Single;
@@ -2077,7 +2080,7 @@ begin
   end;
 end;
 
-function TGLPopupMenu.MouseDown(Sender: TObject; Button: TGLMouseButton; Shift:
+function TGLPopupMenu.MouseDown(Sender: TObject; Button: TMouseButton; Shift:
   TShiftState; X, Y: Integer): Boolean;
 begin
   Result := inherited MouseDown(Sender, Button, Shift, X, Y);
@@ -2089,7 +2092,7 @@ begin
   end;
 end;
 
-procedure TGLForm.InternalMouseDown(Shift: TShiftState; Button: TGLMouseButton;
+procedure TGLForm.InternalMouseDown(Shift: TShiftState; Button: TMouseButton;
   X, Y: Integer);
 
 var
@@ -2125,7 +2128,7 @@ begin
     inherited;
 end;
 
-procedure TGLForm.InternalMouseUp(Shift: TShiftState; Button: TGLMouseButton; X,
+procedure TGLForm.InternalMouseUp(Shift: TShiftState; Button: TMouseButton; X,
   Y: Integer);
 
 begin
@@ -2178,13 +2181,13 @@ begin
     inherited;
 end;
 
-function TGLForm.GetTitleColor: TDelphiColor;
+function TGLForm.GetTitleColor: TColor;
 
 begin
   Result := ConvertColorVector(FTitleColor);
 end;
 
-procedure TGLForm.SetTitleColor(value: TDelphiColor);
+procedure TGLForm.SetTitleColor(value: TColor);
 
 begin
   FTitleColor := ConvertWinColor(value);
@@ -2230,7 +2233,7 @@ begin
     FOnHide(Self);
 end;
 
-function TGLForm.MouseUp(Sender: TObject; Button: TGLMouseButton; Shift:
+function TGLForm.MouseUp(Sender: TObject; Button: TMouseButton; Shift:
   TShiftState; X, Y: Integer): Boolean;
 
 begin
@@ -2298,14 +2301,14 @@ begin
 end;
 
 procedure TGLCheckBox.InternalMouseDown(Shift: TShiftState; Button:
-  TGLMouseButton; X, Y: Integer);
+  TMouseButton; X, Y: Integer);
 begin
   Checked := not Checked;
   inherited;
 end;
 
 procedure TGLCheckBox.InternalMouseUp(Shift: TShiftState; Button:
-  TGLMouseButton; X, Y: Integer);
+  TMouseButton; X, Y: Integer);
 
 begin
   inherited;
@@ -2436,7 +2439,7 @@ begin
 end;
 
 procedure TGLButton.InternalMouseDown(Shift: TShiftState; Button:
-  TGLMouseButton; X, Y: Integer);
+  TMouseButton; X, Y: Integer);
 begin
   SetFocus;
   inherited;
@@ -2447,7 +2450,7 @@ begin
       Pressed := True;
 end;
 
-procedure TGLButton.InternalMouseUp(Shift: TShiftState; Button: TGLMouseButton;
+procedure TGLButton.InternalMouseUp(Shift: TShiftState; Button: TMouseButton;
   X, Y: Integer);
 
 begin
@@ -2460,11 +2463,11 @@ procedure TGLButton.InternalKeyDown(var Key: Word; Shift: TShiftState);
 
 begin
   inherited;
-  if Key = glKey_SPACE then
+  if Key = VK_SPACE then
   begin
     Pressed := True;
   end;
-  if Key = glKey_RETURN then
+  if Key = VK_RETURN then
   begin
     Pressed := True;
   end;
@@ -2473,7 +2476,7 @@ end;
 procedure TGLButton.InternalKeyUp(var Key: Word; Shift: TShiftState);
 
 begin
-  if ((Key = glKey_SPACE) or (Key = glKey_RETURN)) and (Group < 0) then
+  if ((Key = VK_SPACE) or (Key = VK_RETURN)) and (Group < 0) then
   begin
     Pressed := False;
   end;
@@ -2695,7 +2698,7 @@ begin
   end;
 end;
 
-procedure TGLEdit.InternalMouseDown(Shift: TShiftState; Button: TGLMouseButton;
+procedure TGLEdit.InternalMouseDown(Shift: TShiftState; Button: TMouseButton;
   X, Y: Integer);
 begin
   if not FReadOnly then
@@ -2736,7 +2739,7 @@ begin
     exit;
   inherited;
   case Key of
-    glKey_DELETE:
+    VK_DELETE:
       begin
         if FSelStart <= Length(Caption) then
         begin
@@ -2744,7 +2747,7 @@ begin
           GUIRedraw := True;
         end;
       end;
-    glKey_LEFT:
+    VK_LEFT:
       begin
         if FSelStart > 1 then
         begin
@@ -2752,7 +2755,7 @@ begin
           GUIRedraw := True;
         end;
       end;
-    glKey_RIGHT:
+    VK_RIGHT:
       begin
         if FSelStart < Length(Caption) + 1 then
         begin
@@ -2760,7 +2763,7 @@ begin
           GUIRedraw := True;
         end;
       end;
-    glKey_HOME:
+    VK_HOME:
       begin
         if FSelStart > 1 then
         begin
@@ -2768,7 +2771,7 @@ begin
           GUIRedraw := True;
         end;
       end;
-    glKey_END:
+    VK_END:
       begin
         if FSelStart < Length(Caption) + 1 then
         begin
@@ -2959,7 +2962,7 @@ begin
   end;
 end;
 
-procedure TGLLabel.SetTextLayout(const Value: TGLTextLayout);
+procedure TGLLabel.SetTextLayout(const Value: TTextLayout);
 begin
   if FTextLayout <> Value then
   begin
@@ -3112,7 +3115,7 @@ begin
 end;
 
 procedure TGLScrollbar.InternalMouseDown(Shift: TShiftState; Button:
-  TGLMouseButton; X, Y: Integer);
+  TMouseButton; X, Y: Integer);
 
 var
   Tx, Ty: Single;
@@ -3178,7 +3181,7 @@ begin
 end;
 
 procedure TGLScrollbar.InternalMouseUp(Shift: TShiftState; Button:
-  TGLMouseButton; X, Y: Integer);
+  TMouseButton; X, Y: Integer);
 begin
   if fScrolling then
   begin
@@ -3248,7 +3251,7 @@ begin
   Pos := Pos + FPageSize;
 end;
 
-function TGLScrollbar.MouseUp(Sender: TObject; Button: TGLMouseButton; Shift:
+function TGLScrollbar.MouseUp(Sender: TObject; Button: TMouseButton; Shift:
   TShiftState; X, Y: Integer): Boolean;
 
 begin
@@ -3396,7 +3399,7 @@ begin
 end;
 
 procedure TGLStringGrid.InternalMouseDown(Shift: TShiftState; Button:
-  TGLMouseButton; X, Y: Integer);
+  TMouseButton; X, Y: Integer);
 
 var
   tRow, tCol: Integer;
@@ -3515,13 +3518,13 @@ begin
   NotifyChange(Self);
 end;
 
-function TGLStringGrid.GetHeaderColor: TDelphiColor;
+function TGLStringGrid.GetHeaderColor: TColor;
 
 begin
   Result := ConvertColorVector(FHeaderColor);
 end;
 
-procedure TGLStringGrid.SetHeaderColor(const val: TDelphiColor);
+procedure TGLStringGrid.SetHeaderColor(const val: TColor);
 
 begin
   FHeaderColor := ConvertWinColor(val);

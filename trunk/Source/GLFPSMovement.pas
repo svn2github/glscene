@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-  FPS-like movement behaviour and manager. 
+  FPS-like movement behaviour and manager.
 }
 
 unit GLFPSMovement;
@@ -12,15 +12,16 @@ interface
 {$I GLScene.inc}
 
 uses
+  Winapi.Windows,
   System.Classes,
   System.SysUtils,
   Vcl.Graphics,
-  
+
   OpenGLTokens,
   GLCoordinates,
   GLVectorTypes,
   GLContext,
-  GLCrossPlatform,
+//  GLCrossPlatform,
   GLVectorGeometry,
   GLScene,
   GLVectorFileObjects,
@@ -565,7 +566,7 @@ begin
         CollisionState.Position := oldPosition;
         CollisionState.Contact.intNormal := intNormal;
         CollisionState.Contact.intPoint := intPoint;
-        CollisionState.Time := GLGetTickCount();
+        CollisionState.Time := GetTickCount();
 
         behaviour.CollisionStates.add(CollisionState);
 
@@ -587,7 +588,7 @@ end;
 
 constructor TGLBFPSMovement.Create(aOwner: TXCollection);
 
-  procedure setupArrow(arrow: TGLArrowLine; color: TDelphiColor);
+  procedure setupArrow(arrow: TGLArrowLine; color: TColor);
   begin
     with arrow do
     begin
@@ -838,7 +839,7 @@ begin
   if CollisionStates.count > 0 then
   begin
     CollisionState := TCollisionState(CollisionStates.First);
-    tickCount := GLGetTickCount();
+    tickCount := GetTickCount();
     // remove all old states
     while (CollisionState <> nil) and
       (CollisionState.Time < tickCount - Manager.DisplayTime) do

@@ -29,7 +29,6 @@ uses
   System.Classes,
 
   VXS.VectorTypes,
-  VXS.CrossPlatform,
   VXS.Coordinates,
   VXS.HeightData,
   VXS.Material;

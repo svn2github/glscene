@@ -153,7 +153,7 @@ constructor TRColorEditor.Create(AOwner: TComponent);
 begin
   inherited;
   WorkBitmap := TBitmap.Create;
-  WorkBitmap.PixelFormat := glpf24bit;
+  WorkBitmap.PixelFormat := pf24bit;
   WorkBitmap.HandleType := bmDib;
 
   RedValue := 200;

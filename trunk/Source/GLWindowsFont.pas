@@ -236,7 +236,7 @@ begin
 
   bitmap.Height      := 0;
   //due to lazarus doesn't properly support pixel formats
-     bitmap.PixelFormat := glpf32bit;
+     bitmap.PixelFormat := pf32bit;
   with bitmap.Canvas do
   begin
     Font := Self.Font;

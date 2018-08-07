@@ -171,7 +171,6 @@ end;
 // ------------------------------------------------------------------------
 
 function ConvertNormalToColor(normal: TAffineVector): TColor;
-// In VCL -> TDelphiColor;
 var
   r, g, b: Byte;
 begin

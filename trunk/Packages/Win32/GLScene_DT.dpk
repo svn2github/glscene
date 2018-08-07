@@ -50,6 +50,7 @@ contains
   FMaterialEditorForm in '..\..\Source\DesignTime\FMaterialEditorForm.pas' {GLMaterialEditorForm},
   FGUILayoutEditor in '..\..\Source\DesignTime\FGUILayoutEditor.pas' {GLLayoutEditorForm},
   FGuiSkinEditor in '..\..\Source\DesignTime\FGuiSkinEditor.pas' {GLSkinEditorForm},
+  FShaderMemo in '..\..\Source\DesignTime\FShaderMemo.pas' {ShaderMemoForm},
   FShaderUniformEditor in '..\..\Source\DesignTime\FShaderUniformEditor.pas' {GLShaderUniformEditor},
   FVectorEditor in '..\..\Source\DesignTime\FVectorEditor.pas' {GLVectorEditorForm},
   FSceneEditor in '..\..\Source\DesignTime\FSceneEditor.pas' {GLSceneEditorForm},
@@ -61,5 +62,6 @@ contains
   GLSceneRegister in '..\..\Source\DesignTime\GLSceneRegister.pas';
 
 end.
+
 
 

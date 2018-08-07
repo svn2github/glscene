@@ -241,15 +241,15 @@ type
   TVXPictureImage = class(TVXTextureImage)
   private
     FBitmap: TVXImage;
-    FVKPicture: TVXPicture;
+    FVKPicture: TImage;
     FUpdateCounter: Integer;
   protected
     function GetHeight: Integer; override;
     function GetWidth: Integer; override;
     function GetDepth: Integer; override;
     function GetTextureTarget: TVXTextureTarget; override;
-    function GetPicture: TVXPicture;
-    procedure SetPicture(const aPicture: TVXPicture);
+    function GetPicture: TImage;
+    procedure SetPicture(const aPicture: TImage);
     procedure PictureChanged(Sender: TObject);
   public
     constructor Create(AOwner: TPersistent); override;
@@ -264,7 +264,7 @@ type
     function GetBitmap32: TVXImage; override;
     procedure ReleaseBitmap32; override;
     {Holds the image content. }
-    property Picture: TVXPicture read GetPicture write SetPicture;
+    property Picture: TImage read GetPicture write SetPicture;
   end;
 
   {Stores any image compatible with Delphi's TVXPicture mechanism.
@@ -327,13 +327,13 @@ type
   private
     FImage: TVXImage;
     FUpdateCounter: Integer;
-    FPicture: array[cmtPX..cmtNZ] of TVXPicture;
+    FPicture: array[cmtPX..cmtNZ] of TImage;
   protected
     function GetWidth: Integer; override;
     function GetHeight: Integer; override;
     function GetDepth: Integer; override;
-    procedure SetPicture(index: TVXCubeMapTarget; const val: TVXPicture);
-    function GetPicture(index: TVXCubeMapTarget): TVXPicture;
+    procedure SetPicture(index: TVXCubeMapTarget; const val: TImage);
+    function GetPicture(index: TVXCubeMapTarget): TImage;
     function GetTextureTarget: TVXTextureTarget; override;
     procedure PictureChanged(Sender: TObject);
   public
@@ -352,14 +352,14 @@ type
     class function FriendlyDescription: string; override;
     property NativeTextureTarget;
     {Indexed access to the cube map's sub pictures. }
-    property Picture[index: TVXCubeMapTarget]: TVXPicture read GetPicture write SetPicture;
+    property Picture[index: TVXCubeMapTarget]: TImage read GetPicture write SetPicture;
   published
-    property PicturePX: TVXPicture index cmtPX read GetPicture write SetPicture;
-    property PictureNX: TVXPicture index cmtNX read GetPicture write SetPicture;
-    property PicturePY: TVXPicture index cmtPY read GetPicture write SetPicture;
-    property PictureNY: TVXPicture index cmtNY read GetPicture write SetPicture;
-    property PicturePZ: TVXPicture index cmtPZ read GetPicture write SetPicture;
-    property PictureNZ: TVXPicture index cmtNZ read GetPicture write SetPicture;
+    property PicturePX: TImage index cmtPX read GetPicture write SetPicture;
+    property PictureNX: TImage index cmtNX read GetPicture write SetPicture;
+    property PicturePY: TImage index cmtPY read GetPicture write SetPicture;
+    property PictureNY: TImage index cmtNY read GetPicture write SetPicture;
+    property PicturePZ: TImage index cmtPZ read GetPicture write SetPicture;
+    property PictureNZ: TImage index cmtNZ read GetPicture write SetPicture;
   end;
 
   TVXTextureMappingMode = (tmmUser, tmmObjectLinear, tmmEyeLinear, tmmSphere,
@@ -686,7 +686,7 @@ function GetTextureImageClassesAsStrings: TStrings;
 
 procedure RegisterTGraphicClassFileExtension(const extension: string;
   const aClass: TGraphicClass);
-function CreateGraphicFromFile(const fileName: string): TVXGraphic;
+function CreateGraphicFromFile(const fileName: string): TBitmap;
 
 //------------------------------------------------------------------------------
 implementation
@@ -770,7 +770,7 @@ begin
   vTGraphicClass[n] := aClass;
 end;
 
-function CreateGraphicFromFile(const fileName: string): TVXGraphic;
+function CreateGraphicFromFile(const fileName: string): TBitmap;
 var
   i: Integer;
   ext: string;
@@ -1210,9 +1210,9 @@ begin
   begin
     if (Source is TVXPersistentImage) then
       Picture.Assign(TVXPersistentImage(Source).Picture)
-    else if (Source is TVXGraphic) then
+    else if (Source is TBitmap) then
       Picture.Assign(Source)
-    else if (Source is TVXPicture) then
+    else if (Source is TImage) then
       Picture.Assign(Source)
     else if (Source is TVXImage) then
     begin
@@ -1299,17 +1299,17 @@ begin
   Invalidate;
 end;
 
-function TVXPictureImage.GetPicture: TVXPicture;
+function TVXPictureImage.GetPicture: TImage;
 begin
   if not Assigned(FVKPicture) then
   begin
-    FVKPicture := TVXPicture.Create(nil);
+    FVKPicture := TImage.Create(nil);
     FVKPicture.Bitmap.OnChange := PictureChanged;
   end;
   Result := FVKPicture;
 end;
 
-procedure TVXPictureImage.SetPicture(const aPicture: TVXPicture);
+procedure TVXPictureImage.SetPicture(const aPicture: TImage);
 begin
   Picture.Assign(aPicture);
 end;
@@ -1344,7 +1344,7 @@ end;
 procedure TVXPersistentImage.LoadFromFile(const fileName: string);
 var
   buf: string;
-  gr: TVXGraphic;
+  gr: TBitmap;
 begin
   buf := fileName;
   FResourceFile := fileName;
@@ -1446,7 +1446,7 @@ end;
 function TVXPicFileImage.GetBitmap32: TVXImage;
 var
   buf: string;
-  gr: TVXGraphic;
+  gr: TBitmap;
 begin
   if (GetWidth <= 0) and (PictureFileName <> '') then
   begin
@@ -1540,7 +1540,7 @@ begin
   inherited;
   for i := Low(FPicture) to High(FPicture) do
   begin
-    FPicture[i] := TVXPicture.Create(nil);
+    FPicture[i] := TImage.Create(nil);
     FPicture[i].Bitmap.OnChange := PictureChanged;
   end;
 end;
@@ -1727,12 +1727,12 @@ begin
   Result := ttTextureCube;
 end;
 
-procedure TVXCubeMapImage.SetPicture(index: TVXCubeMapTarget; const val: TVXPicture);
+procedure TVXCubeMapImage.SetPicture(index: TVXCubeMapTarget; const val: TImage);
 begin
   FPicture[index].Assign(val);
 end;
 
-function TVXCubeMapImage.GetPicture(index: TVXCubeMapTarget): TVXPicture;
+function TVXCubeMapImage.GetPicture(index: TVXCubeMapTarget): TImage;
 begin
   Result := FPicture[index];
 end;
@@ -1822,10 +1822,10 @@ begin
         FSamplerHandle.NotifyChangesOfData;
       end;
     end
-    else if (Source is TVXGraphic) then
+    else if (Source is TBitmap) then
       Image.Assign(Source)
-    else if (Source is TVXPicture) then
-      Image.Assign(TVXPicture(Source).Bitmap)
+    else if (Source is TImage) then
+      Image.Assign(TImage(Source).Bitmap)
     else
       inherited Assign(Source);
   end

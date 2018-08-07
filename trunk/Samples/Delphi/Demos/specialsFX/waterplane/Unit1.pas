@@ -13,13 +13,28 @@ uses
   Vcl.ExtCtrls,
   Vcl.Imaging.Jpeg,
 
-  
-  GLScene, GLObjects, GLWin32Viewer, GLWaterPlane,
-  GLCadencer, GLTexture, GLUserShader, OpenGLTokens, GLContext,
-  GLVectorGeometry, GLGraph, GLVectorTypes, GLState, GLCrossPlatform,
+
+  OpenGLTokens,
+  GLCrossPlatform,
+  GLScene,
+  GLObjects,
+  GLWin32Viewer,
+  GLWaterPlane,
+  GLCadencer,
+  GLTexture,
+  GLUserShader,
+  GLContext,
+  GLVectorGeometry,
+  GLGraph,
+  GLVectorTypes,
+  GLState,
   GLMaterial,
-  GLCoordinates, GLRenderContextInfo, GLSimpleNavigation,
-  GLColor, GLUtils, GLBaseClasses;
+  GLCoordinates,
+  GLRenderContextInfo,
+  GLSimpleNavigation,
+  GLColor,
+  GLUtils,
+  GLBaseClasses;
 
 type
   TForm1 = class(TForm)

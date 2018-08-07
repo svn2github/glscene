@@ -22,6 +22,7 @@ uses
   System.Classes,
   System.SysUtils,
   System.StrUtils,
+
   FMX.Types,
   FMX.Objects,
   FMX.Consts,
@@ -34,44 +35,16 @@ type
   THalfFloat = type Word;
   PHalfFloat = ^THalfFloat;
 
-  TVXPicture = TImage;  //  TPicture in VCL
-  TVXGraphic = TBitmap; //  TGraphic in VCL
-
   TGraphicClass = class of TBitmap; // class of TGraphic in VCL
 
   TVXTextLayout = (tlTop, tlCenter, tlBottom);
 
-  TVXMouseButton = (mbLeft, mbRight, mbMiddle); // idem TMouseButton;
-  TVXMouseEvent = procedure(Sender: TObject; Button: TVXMouseButton;
+  TVXMouseEvent = procedure(Sender: TObject; Button: TMouseButton;
     Shift: TShiftState; X, Y: Integer) of object;
-
-  TVXKeyPressEvent = TKeyEvent; // instead of TKeyPressEvent;
 
   EGLOSError = EOSError;
 
   TProjectTargetNameFunc = function(): string;
-
-const
-  glpf8Bit = TPixelFormat.RGBA; //in VCL ->  pf8bit;
-  glpf24bit = TPixelFormat.RGBA16; //in VCL -> pf24bit;
-  glpf32Bit = TPixelFormat.RGBA32F; //in VCL -> pf32bit;
-  glpfDevice = TPixelFormat.RGBA; //in VCL -> pfDevice;
-
-  // standard keyboard
-  glKey_TAB = VK_TAB;
-  glKey_SPACE = VK_SPACE;
-  glKey_RETURN = VK_RETURN;
-  glKey_DELETE = VK_DELETE;
-  glKey_LEFT = VK_LEFT;
-  glKey_RIGHT = VK_RIGHT;
-  glKey_HOME = VK_HOME;
-  glKey_END = VK_END;
-  glKey_CANCEL = VK_CANCEL;
-  glKey_UP = VK_UP;
-  glKey_DOWN = VK_DOWN;
-  glKey_PRIOR = VK_PRIOR;
-  glKey_NEXT = VK_NEXT;
-  glKey_CONTROL = VK_CONTROL;
 
   // Several define from unit Consts
 const
@@ -134,7 +107,7 @@ function PrecisionTimerLap(const precisionTimer: Int64): Double;
    Return time lap in seconds. }
 function StopPrecisionTimer(const precisionTimer: Int64): Double;
 
-{ Returns time in milisecond from application start. }
+{ Returns time in millisecond from application start. }
 function AppTime: Double;
 
 function MessageBoxOK(const Text, Caption: string): Integer;

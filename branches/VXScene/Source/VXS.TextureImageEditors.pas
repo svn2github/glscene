@@ -11,28 +11,26 @@ interface
 {$I VXScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
+  System.Classes,
+  System.SysUtils,
 
-  VXS.Texture, VXS.ProcTextures,
-  VXS.CrossPlatform, VXS.Utils;
+  VXS.Texture,
+  VXS.ProcTextures,
+  VXS.Utils;
 
 type
 
-   // TVXTextureImageEditor
-   //
    TVXTextureImageEditor = class(TObject)
 		public
          { Public Properties }
-			{ Request to edit a textureImage. 
-				Returns True if changes have been made. 
+			{ Request to edit a textureImage.
+				Returns True if changes have been made.
 				This method may be invoked from the IDE or at run-time. }
 			class function Edit(aTexImage : TVXTextureImage) : Boolean; virtual; abstract;
    end;
 
    TVXTextureImageEditorClass = class of TVXTextureImageEditor;
 
-   // TVXBlankTIE
-   //
    TVXBlankTIE = class(TVXTextureImageEditor)
 		public
          { Public Properties }
@@ -47,16 +45,12 @@ type
 			class function Edit(aTexImage : TVXTextureImage) : Boolean; override;
    end;
 
-   // TVXPicFileTIE
-   //
    TVXPicFileTIE = class(TVXTextureImageEditor)
 		public
          { Public Properties }
 			class function Edit(aTexImage : TVXTextureImage) : Boolean; override;
    end;
 
-   // TVXProcTextureNoiseTIE
-   //
    TVXProcTextureNoiseTIE = class(TVXTextureImageEditor)
 		public
          { Public Properties }
@@ -72,18 +66,12 @@ procedure UnRegisterTextureImageEditor(texImageEditor : TVXTextureImageEditorCla
 
 
 //------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
 implementation
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
 var
    vTIEClass, vTIEEditor : TList;
 
-// EditTextureImage
-//
 function EditTextureImage(aTexImage : TVXTextureImage) : Boolean;
 var
    i : Integer;
@@ -101,8 +89,6 @@ begin
    Result:=False;
 end;
 
-// RegisterTextureImageEditor
-//
 procedure RegisterTextureImageEditor(aTexImageClass : TVXTextureImageClass;
                                        texImageEditor : TVXTextureImageEditorClass);
 begin
@@ -114,8 +100,6 @@ begin
    vTIEEditor.Add(texImageEditor);
 end;
 
-// UnRegisterTextureImageEditor
-//
 procedure UnRegisterTextureImageEditor(texImageEditor : TVXTextureImageEditorClass);
 var
    i : Integer;
@@ -133,8 +117,6 @@ end;
 // ------------------ TVXBlankTIE ------------------
 // ------------------
 
-// Edit
-//
 class function TVXBlankTIE.Edit(aTexImage : TVXTextureImage) : Boolean;
 var
    p1, p2 : Integer;
@@ -173,8 +155,6 @@ end;
 // ------------------ TVXPersistentTIE ------------------
 // ------------------
 
-// Edit
-//
 class function TVXPersistentTIE.Edit(aTexImage : TVXTextureImage) : Boolean;
 var
    fName : String;
@@ -191,8 +171,6 @@ end;
 // ------------------ TVXPicFileTIE ------------------
 // ------------------
 
-// Edit
-//
 class function TVXPicFileTIE.Edit(aTexImage : TVXTextureImage) : Boolean;
 var
 	newName : String;
@@ -206,8 +184,6 @@ begin
 		texImage.PictureFileName:=newName
 end;
 
-// Edit
-//
 class function TVXProcTextureNoiseTIE.Edit(aTexImage : TVXTextureImage) : Boolean;
 var
    p : Integer;
@@ -239,11 +215,7 @@ end;
 
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
   RegisterTextureImageEditor(TVXBlankImage, TVXBlankTIE);

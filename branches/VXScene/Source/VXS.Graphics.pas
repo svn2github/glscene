@@ -25,9 +25,12 @@ uses
   System.Math,
   FMX.Graphics,
   FMX.Dialogs,
+  FMX.Types,
+
 {$IFDEF USE_GRAPHICS32}
   GR32,
 {$ENDIF}
+
   VXS.OpenGL,
   VXS.ApplicationFileIO,
   VXS.PersistentClasses,
@@ -1979,7 +1982,7 @@ end;
 procedure TVXImage.Assign(Source: TPersistent);
 var
   bmp: TBitmap;
-  graphic: TVXGraphic;
+  graphic: TBitmap;
 begin
   if (Source is TVXImage) or (Source is TVXBaseImage) then
   begin
@@ -2002,13 +2005,13 @@ begin
       fTextureArray := TVXImage(Source).fTextureArray;
     end;
   end
-  else if Source is TVXGraphic then
+  else if Source is TBitmap then
   begin
     if (Source is TBitmap)
-    and (TBitmap(Source).PixelFormat in [glpf24bit, glpf32bit])
+    and (TBitmap(Source).PixelFormat in [TPixelFormat.RGBA16, TPixelFormat.RGBA32F])
     and (((TBitmap(Source).Width and 3) = 0) or (GL_EXT_bgra)) then
     begin
-      if TBitmap(Source).PixelFormat = glpf24bit then
+      if TBitmap(Source).PixelFormat = TPixelFormat.RGBA32F then
         AssignFrom24BitsBitmap(TBitmap(Source))
       else
         AssignFrom32BitsBitmap(TBitmap(Source))
@@ -2019,7 +2022,7 @@ begin
 {$ENDIF}
     else
     begin
-      graphic := TVXGraphic(Source);
+      graphic := TBitmap(Source);
       bmp := TBitmap.Create;
       try
         // crossbuilder: useless to set pixelformat before setting the size ?
@@ -2072,7 +2075,7 @@ var
   rowOffset: Int64;
   pSrc, pDest: PAnsiChar;
 begin
-  Assert(aBitmap.PixelFormat = glpf24bit);
+  Assert(aBitmap.PixelFormat = TPixelFormat.RGBA32F);
   UnMipmap;
   FLOD[0].Width := aBitmap.Width;
   FLOD[0].Height := aBitmap.Height;
@@ -2149,7 +2152,7 @@ var
   rowOffset: Int64;
   pSrc, pDest: PAnsiChar;
 begin
-  Assert(aBitmap.PixelFormat = glpf24bit);
+  Assert(aBitmap.PixelFormat = TPixelFormat.RGBA32F);
   Assert((aBitmap.Width and 3) = 0);
   UnMipmap;
   FLOD[0].Width := aBitmap.Width;
@@ -2200,7 +2203,7 @@ var
   rowOffset: Int64;
   pSrc, pDest: PAnsiChar;
 begin
-  Assert(aBitmap.PixelFormat = glpf32bit);
+  Assert(aBitmap.PixelFormat = TPixelFormat.RGBA32F);
   UnMipmap;
   FLOD[0].Width := aBitmap.Width;
   FLOD[0].Height := aBitmap.Height;

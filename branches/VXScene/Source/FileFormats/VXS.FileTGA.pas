@@ -17,6 +17,7 @@ uses
   System.Classes,
   System.SysUtils,
   FMX.Graphics,
+  FMX.Types,
 
   VXS.Graphics,
   VXS.CrossPlatform;
@@ -254,9 +255,7 @@ begin
   header.Width := Width;
   header.Height := Height;
   case PixelFormat of
-    glpf24bit:
-      header.PixelSize := 24;
-    glpf32bit:
+    TPixelFormat.RGBA32F:
       header.PixelSize := 32;
   else
     raise ETGAException.Create('Unsupported Bitmap format');

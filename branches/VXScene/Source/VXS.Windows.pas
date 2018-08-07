@@ -12,6 +12,7 @@ interface
 {$I VXScene.inc}
 
 uses
+  Winapi.Windows,
   System.Classes,
   System.SysUtils,
   System.Math,
@@ -124,13 +125,13 @@ type
   TVXMouseAction = (ma_mouseup, ma_mousedown, ma_mousemove);
 
   TVXAcceptMouseQuery = procedure(Sender: TVXBaseControl; Shift: TShiftState;
-    Action: TVXMouseAction; Button: TVXMouseButton; X, Y: Integer; var Accept:
+    Action: TVXMouseAction; Button: TMouseButton; X, Y: Integer; var Accept:
     boolean) of object;
   TVXBaseControl = class(TVXBaseComponent)
   private
-    FOnMouseDown: TVXMouseEvent;
+    FOnMouseDown: TMouseEvent;
     FOnMouseMove: TMouseMoveEvent;
-    FOnMouseUp: TVXMouseEvent;
+    FOnMouseUp: TMouseEvent;
     FKeepMouseEvents: Boolean;
     FActiveControl: TVXBaseControl;
     FFocusedControl: TVXFocusControl;
@@ -139,9 +140,9 @@ type
     FOnMouseEnter: TNotifyEvent;
     FEnteredControl: TVXBaseControl;
   protected
-    procedure InternalMouseDown(Shift: TShiftState; Button: TVXMouseButton; X,
+    procedure InternalMouseDown(Shift: TShiftState; Button: TMouseButton; X,
       Y: Integer); virtual;
-    procedure InternalMouseUp(Shift: TShiftState; Button: TVXMouseButton; X, Y:
+    procedure InternalMouseUp(Shift: TShiftState; Button: TMouseButton; X, Y:
       Integer); virtual;
     procedure InternalMouseMove(Shift: TShiftState; X, Y: Integer); virtual;
     procedure SetActiveControl(NewControl: TVXBaseControl);
@@ -151,9 +152,9 @@ type
     procedure DoMouseEnter;
     procedure DoMouseLeave;
   public
-    function MouseDown(Sender: TObject; Button: TVXMouseButton; Shift:
+    function MouseDown(Sender: TObject; Button: TMouseButton; Shift:
       TShiftState; X, Y: Integer): Boolean; virtual;
-    function MouseUp(Sender: TObject; Button: TVXMouseButton; Shift:
+    function MouseUp(Sender: TObject; Button: TMouseButton; Shift:
       TShiftState; X, Y: Integer): Boolean; virtual;
     function MouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer):
       Boolean; virtual;
@@ -169,10 +170,10 @@ type
   published
     property FocusedControl: TVXFocusControl read FFocusedControl write
       SetFocusedControl;
-    property OnMouseDown: TVXMouseEvent read FOnMouseDown write FOnMouseDown;
+    property OnMouseDown: TMouseEvent read FOnMouseDown write FOnMouseDown;
     property OnMouseMove: TMouseMoveEvent read FOnMouseMove write
       FOnMouseMove;
-    property OnMouseUp: TVXMouseEvent read FOnMouseUp write FOnMouseUp;
+    property OnMouseUp: TMouseEvent read FOnMouseUp write FOnMouseUp;
     property OnMouseEnter: TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
     property OnMouseLeave: TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
     property OnAcceptMouseQuery: TVXAcceptMouseQuery read FOnAcceptMouseQuery
@@ -184,8 +185,8 @@ type
     FBitmapFont: TVXCustomBitmapFont;
     FDefaultColor: TColorVector;
   protected
-    function GetDefaultColor: TColor; //in VCL TDelphiColor
-    procedure SetDefaultColor(value: TColor);  //in VCL TDelphiColor
+    function GetDefaultColor: TColor; 
+    procedure SetDefaultColor(value: TColor);  
     procedure SetBitmapFont(NewFont: TVXCustomBitmapFont);
     function GetBitmapFont: TVXCustomBitmapFont;
     procedure WriteTextAt(var rci: TVXRenderContextInfo; const X, Y: Single;
@@ -221,7 +222,7 @@ type
     FFocused: Boolean;
     FOnKeyDown: TKeyEvent;
     FOnKeyUp: TKeyEvent;
-    FOnKeyPress: TVXKeyPressEvent;
+    FOnKeyPress: TKeyEvent;
     FShiftState: TShiftState;
     FFocusedColor: TColorVector;
   protected
@@ -230,8 +231,8 @@ type
     procedure InternalKeyUp(var Key: Word; Shift: TShiftState); virtual;
     procedure SetFocused(Value: Boolean); virtual;
     function GetRootControl: TVXBaseControl;
-    function GetFocusedColor: TColor; //in VCL TDelphiColor;
-    procedure SetFocusedColor(const Val: TColor); //in VCL TDelphiColor;
+    function GetFocusedColor: TColor; 
+    procedure SetFocusedColor(const Val: TColor); 
   public
     destructor Destroy; override;
     procedure NotifyHide; override;
@@ -252,7 +253,7 @@ type
       SetFocusedColor;
     property OnKeyDown: TKeyEvent read FOnKeyDown write FOnKeyDown;
     property OnKeyUp: TKeyEvent read FOnKeyUp write FOnKeyUp;
-    property OnKeyPress: TVXKeyPressEvent read FOnKeyPress write FOnKeyPress;
+    property OnKeyPress: TKeyEvent read FOnKeyPress write FOnKeyPress;
   end;
 
   TVXCustomControl = class;
@@ -309,7 +310,7 @@ type
     procedure SetMenuItems(Value: TStrings);
     procedure SetMarginSize(const val: Single);
     procedure SetSelIndex(const val: Integer);
-    procedure InternalMouseDown(Shift: TShiftState; Button: TVXMouseButton; X,
+    procedure InternalMouseDown(Shift: TShiftState; Button: TMouseButton; X,
       Y: Integer); override;
     procedure InternalMouseMove(Shift: TShiftState; X, Y: Integer); override;
     procedure OnStringListChange(Sender: TObject);
@@ -321,7 +322,7 @@ type
       renderChildren: Boolean); override;
     procedure DoRender(var rci: TVXRenderContextInfo; renderSelf, renderChildren:
       Boolean); override;
-    function MouseDown(Sender: TObject; Button: TVXMouseButton; Shift:
+    function MouseDown(Sender: TObject; Button: TMouseButton; Shift:
       TShiftState; X, Y: Integer): Boolean; override;
   published
     property MenuItems: TStrings read FMenuItems write SetMenuItems;
@@ -352,20 +353,20 @@ type
     FTitleColor: TColorVector;
     FTitleOffset: Single;
   protected
-    procedure InternalMouseDown(Shift: TShiftState; Button: TVXMouseButton; X,
+    procedure InternalMouseDown(Shift: TShiftState; Button: TMouseButton; X,
       Y: Integer); override;
-    procedure InternalMouseUp(Shift: TShiftState; Button: TVXMouseButton; X, Y:
+    procedure InternalMouseUp(Shift: TShiftState; Button: TMouseButton; X, Y:
       Integer); override;
     procedure InternalMouseMove(Shift: TShiftState; X, Y: Integer); override;
-    function GetTitleColor: TColor; //in VCL TDelphiColor;
-    procedure SetTitleColor(value: TColor); //in VCL TDelphiColor;
+    function GetTitleColor: TColor;
+    procedure SetTitleColor(value: TColor);
   public
     constructor Create(AOwner: TComponent); override;
     procedure Close;
 
     procedure NotifyShow; override;
     procedure NotifyHide; override;
-    function MouseUp(Sender: TObject; Button: TVXMouseButton; Shift:
+    function MouseUp(Sender: TObject; Button: TMouseButton; Shift:
       TShiftState; X, Y: Integer): Boolean; override;
     function MouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer):
       Boolean; override;
@@ -395,9 +396,9 @@ type
     FGroup: Integer;
   protected
     procedure SetChecked(NewChecked: Boolean);
-    procedure InternalMouseDown(Shift: TShiftState; Button: TVXMouseButton; X,
+    procedure InternalMouseDown(Shift: TShiftState; Button: TMouseButton; X,
       Y: Integer); override;
-    procedure InternalMouseUp(Shift: TShiftState; Button: TVXMouseButton; X, Y:
+    procedure InternalMouseUp(Shift: TShiftState; Button: TMouseButton; X, Y:
       Integer); override;
     procedure SetGuiLayoutNameChecked(newName: TVXGuiComponentName);
     procedure SetGuiLayout(NewGui: TVXGuiLayout); override;
@@ -430,9 +431,9 @@ type
     FAllowUp: Boolean;
   protected
     procedure SetPressed(NewPressed: Boolean);
-    procedure InternalMouseDown(Shift: TShiftState; Button: TVXMouseButton; X,
+    procedure InternalMouseDown(Shift: TShiftState; Button: TMouseButton; X,
       Y: Integer); override;
-    procedure InternalMouseUp(Shift: TShiftState; Button: TVXMouseButton; X, Y:
+    procedure InternalMouseUp(Shift: TShiftState; Button: TMouseButton; X, Y:
       Integer); override;
     procedure InternalKeyDown(var Key: Word; Shift: TShiftState); override;
     procedure InternalKeyUp(var Key: Word; Shift: TShiftState); override;
@@ -473,7 +474,7 @@ type
     FReadOnly: Boolean;
     FEditChar: string;
   protected
-    procedure InternalMouseDown(Shift: TShiftState; Button: TVXMouseButton; X,
+    procedure InternalMouseDown(Shift: TShiftState; Button: TMouseButton; X,
       Y: Integer); override;
     procedure InternalKeyPress(var Key: Char); override;
     procedure InternalKeyDown(var Key: Word; Shift: TShiftState); override;
@@ -547,9 +548,9 @@ type
     function GetScrollPosX(ScrollPos: Single): Single;
     function GetXScrollPos(X: Single): Single;
 
-    procedure InternalMouseDown(Shift: TShiftState; Button: TVXMouseButton; X,
+    procedure InternalMouseDown(Shift: TShiftState; Button: TMouseButton; X,
       Y: Integer); override;
-    procedure InternalMouseUp(Shift: TShiftState; Button: TVXMouseButton; X, Y:
+    procedure InternalMouseUp(Shift: TShiftState; Button: TMouseButton; X, Y:
       Integer); override;
     procedure InternalMouseMove(Shift: TShiftState; X, Y: Integer); override;
   public
@@ -559,7 +560,7 @@ type
     procedure StepDown;
     procedure PageUp;
     procedure PageDown;
-    function MouseUp(Sender: TObject; Button: TVXMouseButton; Shift:
+    function MouseUp(Sender: TObject; Button: TMouseButton; Shift:
       TShiftState; X, Y: Integer): Boolean; override;
     function MouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer):
       Boolean; override;
@@ -593,7 +594,7 @@ type
     FDrawHeader: Boolean;
   protected
     function GetCell(X, Y: Integer; out oCol, oRow: Integer): Boolean;
-    procedure InternalMouseDown(Shift: TShiftState; Button: TVXMouseButton; X,
+    procedure InternalMouseDown(Shift: TShiftState; Button: TMouseButton; X,
       Y: Integer); override;
     procedure SetColumns(const val: TStrings);
     procedure SetColSelect(const val: Boolean);
@@ -1127,7 +1128,7 @@ begin
 end;
 
 procedure TVXBaseControl.InternalMouseDown(Shift: TShiftState; Button:
-  TVXMouseButton; X, Y: Integer);
+  TMouseButton; X, Y: Integer);
 
 begin
   if Assigned(FOnMouseDown) then
@@ -1135,7 +1136,7 @@ begin
 end;
 
 procedure TVXBaseControl.InternalMouseUp(Shift: TShiftState; Button:
-  TVXMouseButton; X, Y: Integer);
+  TMouseButton; X, Y: Integer);
 
 begin
   if Assigned(FOnMouseUp) then
@@ -1212,7 +1213,7 @@ begin
   inherited;
 end;
 
-function TVXBaseControl.MouseDown(Sender: TObject; Button: TVXMouseButton;
+function TVXBaseControl.MouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer): Boolean;
 var
   Xc: Integer;
@@ -1251,7 +1252,7 @@ begin
   end;
 end;
 
-function TVXBaseControl.MouseUp(Sender: TObject; Button: TVXMouseButton; Shift:
+function TVXBaseControl.MouseUp(Sender: TObject; Button: TMouseButton; Shift:
   TShiftState; X, Y: Integer): Boolean;
 var
   Xc: Integer;
@@ -1301,7 +1302,7 @@ begin
   AcceptMouseEvent := RecursiveVisible and ((Position.X <= X) and (Position.X +
     Width > X) and (Position.Y <= Y) and (Position.Y + Height > Y));
   if Assigned(OnAcceptMouseQuery) then
-    OnAcceptMouseQuery(Self, shift, ma_mousemove, mbMiddle, X, Y,
+    OnAcceptMouseQuery(Self, shift, ma_mousemove, TMouseButton.mbMiddle, X, Y,
       AcceptMouseEvent);
 
   if AcceptMouseEvent then
@@ -1454,13 +1455,13 @@ begin
   FRootControl := FindFirstGui;
 end;
 
-function TVXFocusControl.GetFocusedColor: TColor; //in VCL TDelphiColor;
+function TVXFocusControl.GetFocusedColor: TColor; 
 
 begin
   Result := ConvertColorVector(FFocusedColor);
 end;
 
-procedure TVXFocusControl.SetFocusedColor(const Val: TColor); //in VCL TDelphiColor;
+procedure TVXFocusControl.SetFocusedColor(const Val: TColor); 
 
 begin
   FFocusedColor := ConvertWinColor(val);
@@ -1650,7 +1651,7 @@ procedure TVXFocusControl.KeyDown(Sender: TObject; var Key: Word; Shift:
 begin
   FShiftState := Shift;
   InternalKeyDown(Key, Shift);
-  if Key = glKey_TAB then
+  if Key = VK_TAB then
   begin
     if ssShift in FShiftState then
     begin
@@ -1668,7 +1669,7 @@ procedure TVXFocusControl.KeyUp(Sender: TObject; var Key: Word; Shift:
 begin
   FShiftState := Shift;
   InternalKeyUp(Key, Shift);
-  if Key = glKey_TAB then
+  if Key = VK_TAB then
   begin
     if ssShift in FShiftState then
     begin
@@ -1998,7 +1999,7 @@ begin
 end;
 
 procedure TVXPopupMenu.InternalMouseDown(Shift: TShiftState; Button:
-  TVXMouseButton; X, Y: Integer);
+  TMouseButton; X, Y: Integer);
 var
   ClickIndex: Integer;
   Tx: Single;
@@ -2007,7 +2008,7 @@ var
 begin
   Tx := X - Position.X;
   Ty := Y - Position.Y;
-  if Button = mbLeft then
+  if Button = TMouseButton.mbLeft then
     if IsInRect(fRenderStatus[glAlCenter], Tx, Ty) then
       if Assigned(BitmapFont) then
       begin
@@ -2154,7 +2155,7 @@ begin
   end;
 end;
 
-function TVXPopupMenu.MouseDown(Sender: TObject; Button: TVXMouseButton; Shift:
+function TVXPopupMenu.MouseDown(Sender: TObject; Button: TMouseButton; Shift:
   TShiftState; X, Y: Integer): Boolean;
 begin
   Result := inherited MouseDown(Sender, Button, Shift, X, Y);
@@ -2166,7 +2167,7 @@ begin
   end;
 end;
 
-procedure TVXForm.InternalMouseDown(Shift: TShiftState; Button: TVXMouseButton;
+procedure TVXForm.InternalMouseDown(Shift: TShiftState; Button: TMouseButton;
   X, Y: Integer);
 
 var
@@ -2177,7 +2178,7 @@ begin
   YHere := Y - Position.Y;
   if YHere < FRenderStatus[GLALTop].Y2 then
   begin
-    if Button = mbLeft then
+    if Button = TMouseButton.mbLeft then
     begin
       {      If contains(Width-22,Width-6,XHere) and contains(8,24,YHere) then
             Begin
@@ -2202,11 +2203,11 @@ begin
     inherited;
 end;
 
-procedure TVXForm.InternalMouseUp(Shift: TShiftState; Button: TVXMouseButton; X,
+procedure TVXForm.InternalMouseUp(Shift: TShiftState; Button: TMouseButton; X,
   Y: Integer);
 
 begin
-  if (Button = mbLeft) and Moving then
+  if (Button = TMouseButton.mbLeft) and Moving then
   begin
     Moving := False;
     if Parent is TVXFocusControl then
@@ -2307,11 +2308,11 @@ begin
     FOnHide(Self);
 end;
 
-function TVXForm.MouseUp(Sender: TObject; Button: TVXMouseButton; Shift:
+function TVXForm.MouseUp(Sender: TObject; Button: TMouseButton; Shift:
   TShiftState; X, Y: Integer): Boolean;
 
 begin
-  if (Button = mbLeft) and (Moving) then
+  if (Button = TMouseButton.mbLeft) and (Moving) then
   begin
     Result := True;
     InternalMouseUp(Shift, Button, X, Y);
@@ -2375,14 +2376,14 @@ begin
 end;
 
 procedure TVXCheckBox.InternalMouseDown(Shift: TShiftState; Button:
-  TVXMouseButton; X, Y: Integer);
+  TMouseButton; X, Y: Integer);
 begin
   Checked := not Checked;
   inherited;
 end;
 
 procedure TVXCheckBox.InternalMouseUp(Shift: TShiftState; Button:
-  TVXMouseButton; X, Y: Integer);
+  TMouseButton; X, Y: Integer);
 
 begin
   inherited;
@@ -2513,22 +2514,22 @@ begin
 end;
 
 procedure TVXButton.InternalMouseDown(Shift: TShiftState; Button:
-  TVXMouseButton; X, Y: Integer);
+  TMouseButton; X, Y: Integer);
 begin
   SetFocus;
   inherited;
-  if Button = mbLeft then
+  if Button = TMouseButton.mbLeft then
     if AllowUp then
       Pressed := not Pressed
     else
       Pressed := True;
 end;
 
-procedure TVXButton.InternalMouseUp(Shift: TShiftState; Button: TVXMouseButton;
+procedure TVXButton.InternalMouseUp(Shift: TShiftState; Button: TMouseButton;
   X, Y: Integer);
 
 begin
-  if (Button = mbLeft) and (Group < 0) then
+  if (Button = TMouseButton.mbLeft) and (Group < 0) then
     Pressed := False;
   inherited;
 end;
@@ -2537,11 +2538,11 @@ procedure TVXButton.InternalKeyDown(var Key: Word; Shift: TShiftState);
 
 begin
   inherited;
-  if Key = glKey_SPACE then
+  if Key = VK_SPACE then
   begin
     Pressed := True;
   end;
-  if Key = glKey_RETURN then
+  if Key = VK_RETURN then
   begin
     Pressed := True;
   end;
@@ -2550,7 +2551,7 @@ end;
 procedure TVXButton.InternalKeyUp(var Key: Word; Shift: TShiftState);
 
 begin
-  if ((Key = glKey_SPACE) or (Key = glKey_RETURN)) and (Group < 0) then
+  if ((Key = VK_SPACE) or (Key = VK_RETURN)) and (Group < 0) then
   begin
     Pressed := False;
   end;
@@ -2772,7 +2773,7 @@ begin
   end;
 end;
 
-procedure TVXEdit.InternalMouseDown(Shift: TShiftState; Button: TVXMouseButton;
+procedure TVXEdit.InternalMouseDown(Shift: TShiftState; Button: TMouseButton;
   X, Y: Integer);
 begin
   if not FReadOnly then
@@ -2813,7 +2814,7 @@ begin
     exit;
   inherited;
   case Key of
-    glKey_DELETE:
+    VK_DELETE:
       begin
         if FSelStart <= Length(Caption) then
         begin
@@ -2821,7 +2822,7 @@ begin
           GUIRedraw := True;
         end;
       end;
-    glKey_LEFT:
+    VK_LEFT:
       begin
         if FSelStart > 1 then
         begin
@@ -2829,7 +2830,7 @@ begin
           GUIRedraw := True;
         end;
       end;
-    glKey_RIGHT:
+    VK_RIGHT:
       begin
         if FSelStart < Length(Caption) + 1 then
         begin
@@ -2837,7 +2838,7 @@ begin
           GUIRedraw := True;
         end;
       end;
-    glKey_HOME:
+    VK_HOME:
       begin
         if FSelStart > 1 then
         begin
@@ -2845,7 +2846,7 @@ begin
           GUIRedraw := True;
         end;
       end;
-    glKey_END:
+    VK_END:
       begin
         if FSelStart < Length(Caption) + 1 then
         begin
@@ -3189,13 +3190,13 @@ begin
 end;
 
 procedure TVXScrollbar.InternalMouseDown(Shift: TShiftState; Button:
-  TVXMouseButton; X, Y: Integer);
+  TMouseButton; X, Y: Integer);
 
 var
   Tx, Ty: Single;
 
 begin
-  if (Button = mbLeft)
+  if (Button = TMouseButton.mbLeft)
     and not FLocked then
   begin
     Tx := x - Position.X;
@@ -3255,7 +3256,7 @@ begin
 end;
 
 procedure TVXScrollbar.InternalMouseUp(Shift: TShiftState; Button:
-  TVXMouseButton; X, Y: Integer);
+  TMouseButton; X, Y: Integer);
 begin
   if fScrolling then
   begin
@@ -3325,11 +3326,11 @@ begin
   Pos := Pos + FPageSize;
 end;
 
-function TVXScrollbar.MouseUp(Sender: TObject; Button: TVXMouseButton; Shift:
+function TVXScrollbar.MouseUp(Sender: TObject; Button: TMouseButton; Shift:
   TShiftState; X, Y: Integer): Boolean;
 
 begin
-  if (Button = mbLeft) and (FScrolling) then
+  if (Button = TMouseButton.mbLeft) and (FScrolling) then
   begin
     Result := True;
     InternalMouseUp(Shift, Button, X, Y);
@@ -3473,7 +3474,7 @@ begin
 end;
 
 procedure StringGrid.InternalMouseDown(Shift: TShiftState; Button:
-  TVXMouseButton; X, Y: Integer);
+  TMouseButton; X, Y: Integer);
 
 var
   tRow, tCol: Integer;

@@ -66,10 +66,10 @@
         <VerInfo_Locale>1033</VerInfo_Locale>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Keys>CompanyName=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductVersion=1.0.0.0;Comments=;ProgramID=com.embarcadero.$(MSBuildProjectName);FileDescription=$(MSBuildProjectName);ProductName=$(MSBuildProjectName)</VerInfo_Keys>
-        <DCC_DcuOutput>$(GLSCENE)\lib\Win32</DCC_DcuOutput>
-        <DCC_BpiOutput>$(GLSCENE)\lib\Win32</DCC_BpiOutput>
-        <DCC_HppOutput>$(GLSCENE)\include\Win32</DCC_HppOutput>
-        <DCC_ObjOutput>$(GLSCENE)\lib\Win32</DCC_ObjOutput>
+        <DCC_DcuOutput>..\..\lib\Win32</DCC_DcuOutput>
+        <DCC_BpiOutput>..\..\lib\Win32</DCC_BpiOutput>
+        <DCC_HppOutput>..\..\include\Win32</DCC_HppOutput>
+        <DCC_ObjOutput>..\..\lib\Win32</DCC_ObjOutput>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1)'!=''">
         <DCC_DebugInformation>0</DCC_DebugInformation>

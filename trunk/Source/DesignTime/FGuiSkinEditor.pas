@@ -627,17 +627,17 @@ end;
 procedure TGLSkinEditorForm.lbElementsKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
-  if key = glKey_LEFT then
+  if key = VK_LEFT then
   begin
     if lbElements.ItemIndex > 0 then
       lbElements.ItemIndex := lbElements.ItemIndex - 1;
-    key := glKey_CANCEL;
+    key := VK_CANCEL;
   end;
-  if key = glKey_RIGHT then
+  if key = VK_RIGHT then
   begin
     if lbElements.ItemIndex + 1 < lbElements.Items.Count then
       lbElements.ItemIndex := lbElements.ItemIndex + 1;
-    key := glKey_CANCEL;
+    key := VK_CANCEL;
   end;
 
 end;

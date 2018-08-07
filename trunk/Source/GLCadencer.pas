@@ -19,7 +19,6 @@ uses
   VCL.Forms,
 
   GLScene,
-  GLCrossPlatform,
   GLBaseClasses;
 
 type

@@ -16,8 +16,7 @@ uses
   System.SysUtils, 
   System.Classes, 
   System.Math,
-  GLCrossPlatform, 
-  GLVectorTypes, 
+  GLVectorTypes,
   GLVectorGeometry;
 
 type
@@ -69,20 +68,18 @@ type
   function Tweener(Current, Target: TVector2f; Time, Duration: Single; EaseType: TEaseType): TVector2f; overload;
   function Tweener(Current, Target: Single; Time, Duration: Single; EaseType: TEaseType): Single; overload;
 
-//--------------------------------------------------------------------  
+//--------------------------------------------------------------------
 implementation
-//--------------------------------------------------------------------  
+//--------------------------------------------------------------------
 
 type
 
   TEaseFunction = function(t:Single; b:Single; c:Single; d:Single):Single;
 
 
-{.$REGION 'ease functions'}
-
 (*
   Easing equation function for a simple linear tweening, with no easing.
- 
+
   t		Current time (in frames or seconds).
   b		Starting value.
   c		Change needed in value.
@@ -96,7 +93,7 @@ end;
 
 (*
   Easing equation function for a quadratic (t^2) easing in: accelerating from zero velocity.
- 
+
   t		Current time (in frames or seconds).
   b		Starting value.
   c		Change needed in value.
@@ -861,9 +858,6 @@ begin
   else
     Result := easeInBounce((t*2)-d, b+c/2, c/2, d);
 end;
-{.$ENDREGION}
-
-
 
 function GetEaseFunctionFromType(const EaseType: TEaseType): TEaseFunction;
 begin

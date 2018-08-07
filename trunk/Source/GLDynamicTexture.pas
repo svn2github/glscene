@@ -18,11 +18,11 @@ uses
   System.SysUtils,
 
   OpenGLTOkens,
+  GLCrossPlatform,
   GLContext,
   GLTexture,
   GLTextureFormat,
-  GLGraphics,
-  GLCrossPlatform;
+  GLGraphics;
 
 type
   {Allows for fast updating of the texture at runtime. }

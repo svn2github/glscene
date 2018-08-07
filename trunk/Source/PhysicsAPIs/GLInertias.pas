@@ -71,7 +71,7 @@ type
     property TranslationSpeed: TGLCoordinates read FTranslationSpeed
       write SetTranslationSpeed;
 
-    { : Enable/Disable damping (damping has a high cpu-cycle cost).<p>
+    { Enable/Disable damping (damping has a high cpu-cycle cost).
       Damping is enabled by default. }
     // property DampingEnabled : Boolean read FDampingEnabled write FDampingEnabled;
     { Damping applied to translation speed.<br>
@@ -206,12 +206,9 @@ begin
   inherited Create(aOwner);
   FMass := 1;
   StateSize := 6;
-  FTranslationSpeed := TGLCoordinates.CreateInitialized(Self, NullHmgVector,
-    csVector);
-
+  FTranslationSpeed := TGLCoordinates.CreateInitialized(Self, NullHmgVector, csVector);
   LinearPosition := OwnerBaseSceneObject.position.AsAffineVector;
   LinearMomentum := FTranslationSpeed.AsAffineVector;
-
   FTranslationDamping := TGLDamping.Create(Self);
 end;
 
@@ -249,9 +246,7 @@ begin
     WriteFloat(FMass);
     Write(LinearPosition, SizeOf(LinearPosition));
     Write(LinearMomentum, SizeOf(LinearMomentum));
-
     Write(fForce, SizeOf(fForce));
-
     FTranslationSpeed.WriteToFiler(writer);
     FTranslationDamping.WriteToFiler(writer);
   end;
@@ -266,9 +261,7 @@ begin
     FMass := ReadFloat;
     Read(LinearPosition, SizeOf(LinearPosition));
     Read(LinearMomentum, SizeOf(LinearMomentum));
-
     Read(fForce, SizeOf(fForce));
-
     FTranslationSpeed.ReadFromFiler(reader);
     FTranslationDamping.ReadFromFiler(reader);
   end;

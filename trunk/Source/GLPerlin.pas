@@ -17,6 +17,7 @@ uses
   System.Classes,
   System.SysUtils,
   System.Math,
+  Vcl.Graphics,
 
   GLVectorGeometry,
   GLPerlinBase,
@@ -105,7 +106,7 @@ type
     Constructor Create(AOwner: TComponent); override;
     Procedure Generate; override;
     Function GetPerlinValue_2D(x, y: Double): Double;
-    Procedure MakeBitmap(Param: TGLBitmap);
+    Procedure MakeBitmap(Param: TBitmap);
     Procedure SetHeightData(heightData: TGLHeightData);
   end;
 
@@ -541,7 +542,7 @@ Begin
   Result := total;
 End;
 
-procedure TGL2DPerlin.MakeBitmap(Param: TGLBitmap);
+procedure TGL2DPerlin.MakeBitmap(Param: TBitmap);
 
 Var
   XC, YC: Integer;
@@ -561,7 +562,7 @@ Begin
 
   For YC := 0 to Height - 1 do
   Begin
-    Posi := BitmapScanLine(Param, YC);
+    Posi := Param.ScanLine[YC];
     For XC := 0 to Width - 1 do
     Begin
       Value := 0;
@@ -685,7 +686,7 @@ begin
     Thread := TGLPerlinHDSThread.Create(True);
     Thread.FreeOnTerminate := True;
     heightData.Thread := Thread;
-    Thread.FHeightData := heightData;
+    Thread.FHeightData := HeightData;
     Thread.Perlin := Perlin;
     Thread.PerlinSource := self;
     Thread.Start;

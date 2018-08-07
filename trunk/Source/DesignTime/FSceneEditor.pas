@@ -1490,7 +1490,7 @@ procedure TGLSceneEditorForm.TreeKeyDown(Sender: TObject; var Key: Word;
 var
   FNode: TTreeNode;
 begin
-  if (Key = glKey_DELETE) and not Tree.IsEditing then
+  if (Key = VK_DELETE) and not Tree.IsEditing then
   begin
     Key := 0;
     ACDeleteObject.Execute;

@@ -92,17 +92,17 @@
         <DCC_RangeChecking>true</DCC_RangeChecking>
         <DCC_IOChecking>false</DCC_IOChecking>
         <DCC_IntegerOverflowCheck>true</DCC_IntegerOverflowCheck>
-        <DCC_DcpOutput>$(GLSCENE)\lib\Win64</DCC_DcpOutput>
-        <DCC_DcuOutput>$(GLSCENE)\lib\Win64</DCC_DcuOutput>
-        <DCC_UnitSearchPath>$(GLSCENE)\Source;$(GLSCENE)\Source\Basis;$(GLSCENE)\Source\DesignTime;$(GLSCENE)\Source\FileFormats;$(GLSCENE)\Source\GameAPIs;$(GLSCENE)\Source\ParallelAPIs;$(GLSCENE)\Source\PhysicsAPIs;$(GLSCENE)\Source\ScriptingAPIs;$(GLSCENE)\Source\Shaders;$(GLSCENE)\Source\SoundVideoAPIs;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_DcpOutput>..\..\lib\Win64</DCC_DcpOutput>
+        <DCC_DcuOutput>..\..\lib\Win64</DCC_DcuOutput>
+        <DCC_UnitSearchPath>..\..\Source;..\..\Source\Basis;..\..\Source\DesignTime;..\..\Source\FileFormats;..\..\Source\GameAPIs;..\..\Source\ParallelAPIs;..\..\Source\PhysicsAPIs;..\..\Source\ScriptingAPIs;..\..\Source\Shaders;..\..\Source\SoundVideoAPIs;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <VerInfo_Keys>CompanyName=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductVersion=1.0.0.0;Comments=;ProgramID=com.embarcadero.$(MSBuildProjectName);FileDescription=$(MSBuildProjectName);ProductName=$(MSBuildProjectName)</VerInfo_Keys>
         <DCC_CBuilderOutput>All</DCC_CBuilderOutput>
-        <DCC_HppOutput>$(GLSCENE)\include\Win64</DCC_HppOutput>
-        <DCC_BpiOutput>$(GLSCENE)\lib\Win64</DCC_BpiOutput>
-        <DCC_ObjOutput>$(GLSCENE)\lib\Win64</DCC_ObjOutput>
-        <DCC_BplOutput>$(GLSCENE)\bpl\Win64</DCC_BplOutput>
+        <DCC_HppOutput>..\..\include\Win64</DCC_HppOutput>
+        <DCC_BpiOutput>..\..\lib\Win64</DCC_BpiOutput>
+        <DCC_ObjOutput>..\..\lib\Win64</DCC_ObjOutput>
+        <DCC_BplOutput>..\..\bpl\Win64</DCC_BplOutput>
     </PropertyGroup>
     <ItemGroup>
         <DelphiCompile Include="$(MainSource)">

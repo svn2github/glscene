@@ -39,7 +39,6 @@ uses
   GLVectorGeometry,
   GLVectorTypes,
   GLParticleFX,
-  GLCrossPlatform,
   GLCoordinates;
 
 type
@@ -56,8 +55,8 @@ type
     FZMask: TGLLibMaterialName;
     FXMask: TGLLibMaterialName;
     FMaterialLibrary: TGLMaterialLibrary;
-    FBackgroundColor: TDelphiColor;
-    FMaskColor: TDelphiColor;
+    FBackgroundColor: TColor;
+    FMaskColor: TColor;
     FMaxX, FMaxY, FMaxZ, FMinX, FMinY, FMinZ: Integer;
     IXW, IXH, IYW, IYH, IZW, IZH: Integer;
     LX, LY, LZ: Integer;
@@ -107,9 +106,9 @@ type
     property YMask: TGLLibMaterialName read FYMask write SetYMask;
     property ZMask: TGLLibMaterialName read FZMask write SetZMask;
     // background color is the color that prevents particles from being positioned there
-    property BackgroundColor: TDelphiColor read FBackgroundColor write FBackgroundColor;
+    property BackgroundColor: TColor read FBackgroundColor write FBackgroundColor;
     // maskcolor is where particles are allowed to be positioned
-    property MaskColor: TDelphiColor read FMaskColor write FMaskColor;
+    property MaskColor: TColor read FMaskColor write FMaskColor;
     // just the average angles for orientation
     property RollAngle: Single read FRollAngle write FRollAngle;
     property PitchAngle: Single read FPitchAngle write FPitchAngle;

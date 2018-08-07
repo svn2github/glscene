@@ -1659,7 +1659,7 @@ var
 begin
   size := RoundUpToPowerOf2(size);
   FBitmap := TBitmap.Create;
-  FBitmap.PixelFormat := glpf8bit;
+  FBitmap.PixelFormat := pf8bit;
   FBitmap.Width := size;
   FBitmap.Height := size;
   for x := 0 to 255 do
@@ -1701,7 +1701,7 @@ begin
   Result := FScanLineCache[y];
   if not Assigned(Result) then
   begin
-    Result := BitmapScanLine(FBitmap, y); // FBitmap.ScanLine[y];
+    Result := FBitmap.ScanLine[y];
     FScanLineCache[y] := Result;
   end;
 end;

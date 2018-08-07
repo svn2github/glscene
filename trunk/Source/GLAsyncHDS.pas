@@ -24,8 +24,7 @@ uses
   System.Classes,
   System.SysUtils,
 
-  GLHeightData,
-  GLCrossPlatform;
+  GLHeightData;
 
 type
   TGLAsyncHDS = class;

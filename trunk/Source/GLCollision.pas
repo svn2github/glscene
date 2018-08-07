@@ -22,7 +22,6 @@ uses
   GLVectorLists,
   GLVectorFileObjects,
   GLGeometryBB,
-  GLCrossPlatform,
   GLManager,
   GLVectorTypes;
 

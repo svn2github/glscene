@@ -20,7 +20,6 @@ uses
   VXS.Context,
   VXS.Material,
   VXS.Objects,
-  VXS.CrossPlatform,
   VXS.PersistentClasses,
   VXS.VectorLists,
   VXS.RenderContextInfo;

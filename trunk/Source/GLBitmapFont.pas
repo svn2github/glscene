@@ -15,6 +15,7 @@ uses
   System.SysUtils,
   System.Types,
   Vcl.Graphics,
+  Vcl.StdCtrls,
   
   OpenGLTokens,
   GLScene,
@@ -29,7 +30,6 @@ uses
   GLBaseClasses,
   GLRenderContextInfo,
   GLTextureFormat,
-  OpenGL,
   GLVectorTypes,
   GLPersistentClasses;
 
@@ -189,7 +189,7 @@ type
       Enable states are also possibly altered. }
     procedure RenderString(var ARci: TGLRenderContextInfo;
       const aText: UnicodeString; aAlignment: TAlignment;
-      aLayout: TGLTextLayout; const aColor: TColorVector;
+      aLayout: TTextLayout; const aColor: TColorVector;
       aPosition: PVector = nil; aReverseY: boolean = False); overload; virtual;
     {  A simpler canvas-style TextOut helper for RenderString.
       The rendering is reversed along Y by default, to allow direct use
@@ -244,14 +244,14 @@ type
     FBitmapFont: TGLCustomBitmapFont;
     FText: UnicodeString;
     FAlignment: TAlignment;
-    FLayout: TGLTextLayout;
+    FLayout: TTextLayout;
     FModulateColor: TGLColor;
     FOptions: TGLFlatTextOptions;
   protected
     procedure SetBitmapFont(const val: TGLCustomBitmapFont);
     procedure SetText(const val: UnicodeString);
     procedure SetAlignment(const val: TAlignment);
-    procedure SetLayout(const val: TGLTextLayout);
+    procedure SetLayout(const val: TTextLayout);
     procedure SetModulateColor(const val: TGLColor);
     procedure SetOptions(const val: TGLFlatTextOptions);
     procedure Notification(AComponent: TComponent;
@@ -277,7 +277,7 @@ type
     property Alignment: TAlignment read FAlignment write SetAlignment;
     {  Controls the text layout (vertical).
       Possible values : tlTop, tlCenter, tlBottom }
-    property Layout: TGLTextLayout read FLayout write SetLayout;
+    property Layout: TTextLayout read FLayout write SetLayout;
     {  Color modulation, can be used for fade in/out too. }
     property ModulateColor: TGLColor read FModulateColor write SetModulateColor;
     {  Flat text options.
@@ -734,7 +734,7 @@ begin
   begin
 {$IFDEF MSWINDOWS}
     // due to lazarus doesn't properly support pixel formats
-    PixelFormat := glpf32bit;
+    PixelFormat := pf32bit;
 {$ENDIF}
     SetSize(RoundUpToPowerOf2(FTextureWidth),
       RoundUpToPowerOf2(FTextureHeight));
@@ -833,7 +833,7 @@ begin
 end;
 
 procedure TGLCustomBitmapFont.RenderString(var ARci: TGLRenderContextInfo;
-  const aText: UnicodeString; aAlignment: TAlignment; aLayout: TGLTextLayout;
+  const aText: UnicodeString; aAlignment: TAlignment; aLayout: TTextLayout;
   const aColor: TColorVector; aPosition: PVector = nil;
   aReverseY: boolean = False);
 
@@ -865,7 +865,7 @@ procedure TGLCustomBitmapFont.RenderString(var ARci: TGLRenderContextInfo;
     for i := 1 to Length(aText) do
       if aText[i] = #13 then
         Inc(n);
-    case TGLTextLayout(aLayout) of
+    case TTextLayout(aLayout) of
       tlTop:     Result := 0;
       tlBottom:  Result := (n * (CharHeight + VSpace) - VSpace);
     else // tlCenter
@@ -1196,7 +1196,7 @@ begin
   StructureChanged;
 end;
 
-procedure TGLFlatText.SetLayout(const val: TGLTextLayout);
+procedure TGLFlatText.SetLayout(const val: TTextLayout);
 begin
   FLayout := val;
   StructureChanged;

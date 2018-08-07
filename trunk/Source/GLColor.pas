@@ -20,7 +20,6 @@ uses
 
   GLVectorTypes,
   GLVectorGeometry,
-  GLCrossPlatform,
   GLPersistentClasses,
   GLBaseClasses;
 
@@ -96,6 +95,8 @@ type
     procedure RemoveColor(const aName: String);
   end;
 
+{Builds a TColor from Red Green Blue components. }
+function RGB(const r, g, b: Byte): TColor; {$NODEFINE RGB} inline;
 function ColorManager: TGLColorManager;
 procedure RegisterColor(const aName: String; const aColor: TColorVector);
 procedure UnRegisterColor(const aName: String);
@@ -109,8 +110,7 @@ function ConvertWinColor(aColor: TColor; Alpha: Single = 1): TColorVector;
 function ConvertColorVector(const aColor: TColorVector): TColor; overload;
 { Converts a color vector (containing float values) and alter intensity.
   intensity is in [0..1] }
-function ConvertColorVector(const aColor: TColorVector; intensity: Single)
-  : TColor; overload;
+function ConvertColorVector(const aColor: TColorVector; intensity: Single): TColor; overload;
 // Converts RGB components into a color vector with correct range
 function ConvertRGBColor(const aColor: array of Byte): TColorVector;
 
@@ -371,6 +371,13 @@ implementation
 var
   vColorManager: TGLColorManager;
 
+
+function RGB(const r, g, b: Byte): TColor;
+begin
+  Result := r or (g shl 8) or (b shl 16);
+end;
+
+
 function ColorManager: TGLColorManager;
 begin
   if not Assigned(vColorManager) then
@@ -440,7 +447,7 @@ end;
 
 function ConvertColorVector(const aColor: TColorVector): TColor;
 begin
-  Result := rgb(Round(255 * aColor.X), Round(255 * aColor.Y),
+  Result := RGB(Round(255 * aColor.X), Round(255 * aColor.Y),
     Round(255 * aColor.Z));
 end;
 

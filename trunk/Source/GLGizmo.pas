@@ -60,6 +60,7 @@ uses
 {$ENDIF}
   System.Classes,
   System.SysUtils,
+  Vcl.StdCtrls,
 
   GLScene,
   GLPersistentClasses,
@@ -650,7 +651,7 @@ begin
   begin
     ModulateColor.Color := ClrRed;
     Alignment := TaCenter;
-    Layout := TlCenter;
+    Layout := TTextLayout.tlCenter;
     Options := Options + [FtoTwoSided];
     Position.X := 1.5;
     Scale.X := 0.02;

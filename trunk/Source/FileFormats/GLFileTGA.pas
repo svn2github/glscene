@@ -4,8 +4,8 @@
 {
    Simple TGA formats supports for Delphi.
    Currently supports only 24 and 32 bits RGB formats (uncompressed
-   and RLE compressed). 
-   Based on David McDuffee's document from www.wotsit.org 
+   and RLE compressed).
+   Based on David McDuffee's document from www.wotsit.org
 }
 unit GLFileTGA;
 
@@ -16,6 +16,7 @@ interface
 uses
   System.Classes,
   System.SysUtils,
+  Vcl.Graphics,
 
   GLCrossPlatform,
   GLGraphics;
@@ -23,16 +24,16 @@ uses
 
 type
 
-   {TGA image load/save capable class for Delphi.
+ {TGA image load/save capable class for Delphi.
       TGA formats supported : 24 and 32 bits uncompressed or RLE compressed,
       saves only to uncompressed TGA. }
-        TTGAImage = class (TGLBitmap)
-	   public
-	      constructor Create; override;
-         destructor Destroy; override;
-         procedure LoadFromStream(stream : TStream); override;
-         procedure SaveToStream(stream : TStream); override;
-	end;
+  TTGAImage = class(TBitmap)
+  public
+    constructor Create; override;
+    destructor Destroy; override;
+    procedure LoadFromStream(stream: TStream); override;
+    procedure SaveToStream(stream: TStream); override;
+  end;
 
    ETGAException = class (Exception)
    end;
@@ -156,8 +157,8 @@ begin
       raise ETGAException.Create('ColorMapped TGA unsupported');
 
    case header.PixelSize of
-      24 : PixelFormat:=glpf24bit;
-      32 : PixelFormat:=glpf32bit;
+      24 : PixelFormat:=pf24bit;
+      32 : PixelFormat:=pf32bit;
    else
       raise ETGAException.Create('Unsupported TGA ImageType');
    end;
@@ -224,8 +225,8 @@ begin
    header.Width:=Width;
    header.Height:=Height;
    case PixelFormat of
-      glpf24bit : header.PixelSize:=24;
-      glpf32bit : header.PixelSize:=32;
+      pf24bit : header.PixelSize:=24;
+      pf32bit : header.PixelSize:=32;
    else
       raise ETGAException.Create('Unsupported Bitmap format');
    end;
@@ -242,9 +243,9 @@ end;
 initialization
 // ------------------------------------------------------------------
 
-   TGLPicture.RegisterFileFormat('tga', 'Targa', TTGAImage);
+   TPicture.RegisterFileFormat('tga', 'Targa', TTGAImage);
 
 finalization
 
-   TGLPicture.UnregisterGraphicClass(TTGAImage);
+   TPicture.UnregisterGraphicClass(TTGAImage);
 end.

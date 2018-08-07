@@ -65,7 +65,7 @@
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <DCC_Namespace>Winapi;System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
         <VerInfo_Locale>1033</VerInfo_Locale>
-        <DCC_DcuOutput>$(GLSCENE)\lib\Win32</DCC_DcuOutput>
+        <DCC_DcuOutput>..\..\lib\Win32</DCC_DcuOutput>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win64)'!=''">
         <DCC_UsePackage>rtl;vcl;vclimg;VclSmp;$(DCC_UsePackage)</DCC_UsePackage>
@@ -142,6 +142,9 @@
         <DCCReference Include="..\..\Source\DesignTime\FGuiSkinEditor.pas">
             <Form>GLSkinEditorForm</Form>
         </DCCReference>
+        <DCCReference Include="..\..\Source\DesignTime\FShaderMemo.pas">
+            <Form>ShaderMemoForm</Form>
+        </DCCReference>
         <DCCReference Include="..\..\Source\DesignTime\FShaderUniformEditor.pas">
             <Form>GLShaderUniformEditor</Form>
         </DCCReference>
@@ -190,7 +193,7 @@
                 <Platform value="Win64">False</Platform>
             </Platforms>
             <Deployment Version="3">
-                <DeployFile LocalName="..\..\bpl\Win32\GLScene_DT.bpl" Configuration="Debug" Class="ProjectOutput">
+                <DeployFile LocalName="C:\Users\Public\Documents\Embarcadero\Studio\19.0\Bpl\GLScene_DT.bpl" Configuration="Debug" Class="ProjectOutput">
                     <Platform Name="Win32">
                         <RemoteName>GLScene_DT.bpl</RemoteName>
                         <Overwrite>true</Overwrite>

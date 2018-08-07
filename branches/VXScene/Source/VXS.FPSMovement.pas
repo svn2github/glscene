@@ -141,16 +141,12 @@ type
       ArrowLine6: TVXArrowLine;
     dirGl: TVXDirectOpenVX;
     tickCount: Int64;
-
     oldPosition: TVector;
-
     FGravityEnabled: boolean;
-
     FSphereRadius: single;
     FShowArrows: boolean;
     FCollisionGroup: integer;
     FManagerName: string;
-
     procedure setShowArrows(value: boolean);
     procedure RenderArrowLines(Sender: TObject; var rci: TVXRenderContextInfo);
   protected
@@ -159,14 +155,10 @@ type
     procedure Loaded; override;
   public
     Velocity: TVector;
-
     constructor Create(aOwner: TXCollection); override;
     destructor Destroy; override;
-
     procedure DoProgress(const progressTime: TVXProgressTimes); override;
-
     class function FriendlyName: string; override;
-
     Procedure TurnHorizontal(Angle: single);
     Procedure TurnVertical(Angle: single);
     Procedure MoveForward(Distance: single);
@@ -175,23 +167,18 @@ type
     Procedure Straighten;
   published
     property Manager: TVXFPSMovementManager read FManager write FManager;
-
     { 
       Radius to execute the testing with. A value < 0 indicates to use
       the boundingSphereRadius of the object.
     }
     property sphereRadius: single read FSphereRadius write FSphereRadius;
-
     { Show Arrows and trailing for debuging. }
     property ShowArrows: boolean read FShowArrows write setShowArrows;
-
     { Indicates the collision group of this behaviour. A Collision Group
       is a set of logical maps and movers that can collide between
       themselves (i.e. a Behaviour with group 1 can only collide with
-      maps that are also on group 1).
-    }
+      maps that are also on group 1) }
     property CollisionGroup: integer read FCollisionGroup write FCollisionGroup;
-
     property GravityEnabled: boolean read FGravityEnabled write FGravityEnabled;
   end;
 
@@ -203,11 +190,7 @@ function GetOrCreateFPSMovement(obj: TVXBaseSceneObject)
   : TVXBFPSMovement; overload;
 
 //-------------------------------------------------------------------------
-//-------------------------------------------------------------------------
-//-------------------------------------------------------------------------
 implementation
-//-------------------------------------------------------------------------
-//-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
 
 function GetFPSMovement(behaviours: TVXBehaviours): TVXBFPSMovement; overload;
@@ -402,8 +385,6 @@ begin
   end;
 end;
 
-// ReadBehaviours
-//
 procedure TVXFPSMovementManager.ReadMaps(stream: TStream);
 var
   reader: TReader;
@@ -623,7 +604,7 @@ end;
 
 constructor TVXBFPSMovement.Create(aOwner: TXCollection);
 
-  procedure setupArrow(arrow: TVXArrowLine; color: TColor); //TDelphiColor
+  procedure setupArrow(arrow: TVXArrowLine; color: TColor); 
   begin
     with arrow do
     begin

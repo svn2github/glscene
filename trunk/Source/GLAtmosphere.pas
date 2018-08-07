@@ -29,7 +29,6 @@ uses
   GLColor,
   GLRenderContextInfo,
   GLState,
-  GLCrossPlatform,
   GLVectorTypes;
 
 type

@@ -6625,7 +6625,7 @@ begin
   try
     aBitmap.Width := FViewPort.Width;
     aBitmap.Height := FViewPort.Height;
-    aBitmap.PixelFormat := glpf24Bit;
+    aBitmap.PixelFormat := pf24Bit;
     RenderToBitmap(ABitmap, DPI);
     fileName := aFile;
     if fileName = '' then
@@ -6656,7 +6656,7 @@ begin
   try
     aBitmap.Width := bmpWidth;
     aBitmap.Height := bmpHeight;
-    aBitmap.PixelFormat := glpf24Bit;
+    aBitmap.PixelFormat := pf24Bit;
     RenderToBitmap(aBitmap,
       (GetDeviceLogicalPixelsX(Cardinal(ABitmap.Canvas.Handle)) * bmpWidth) div
       FViewPort.Width);
@@ -7286,7 +7286,7 @@ begin
   finally
     FRenderingContext.Deactivate;
   end;
-  Result := GLCrossPlatform.RGB(buf[0], buf[1], buf[2]);
+  Result := GLColor.RGB(buf[0], buf[1], buf[2]);
 end;
 
 function TGLSceneBuffer.GetPixelDepth(x, y: Integer): Single;

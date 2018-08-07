@@ -263,7 +263,7 @@ begin
           try
             // If we just add the bitmap, and it has different dimensions, then
             // all icons will be cleared, so ensure this doesn't happen
-            bmp.PixelFormat := glpf24bit;
+            bmp.PixelFormat := pf24bit;
             bmp.Width := FObjectIcons.Width;
             bmp.Height := FObjectIcons.Height;
             bmp.Canvas.Draw(0, 0, ABitmap);

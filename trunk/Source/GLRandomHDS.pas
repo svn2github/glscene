@@ -48,6 +48,7 @@ uses
   System.Classes,
   System.Math,
   System.SysUtils,
+  System.UITypes,
   System.Contnrs,
   Vcl.Graphics,
   Vcl.Imaging.jpeg,

@@ -28,7 +28,8 @@ uses
   System.Classes,
   System.SysUtils,
   System.Math,
-  
+  Vcl.Graphics,
+
   OpenGLTokens,
   GLRenderContextInfo,
   GLPipelineTransformation,
@@ -2067,8 +2068,8 @@ const
 var
   ext, filename: string;
   BaseImageClass: TGLBaseImageClass;
-  LPicture: TGLPicture;
-  LGraphic: TGLGraphic;
+  LPicture: TPicture;
+  LGraphic: TGraphic;
   LImage: TGLImage;
   level: Integer;
   glColorFormat, glDataType: Cardinal;
@@ -2150,7 +2151,7 @@ begin
             end
             else
             begin
-              LPicture := TGLPicture.Create;
+              LPicture := TPicture.Create;
               LPicture.LoadFromFile(FSourceFile);
               FImage.Assign(LPicture.Graphic);
               LPicture.Destroy;

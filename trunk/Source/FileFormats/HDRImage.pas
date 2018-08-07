@@ -16,14 +16,15 @@ uses
   Winapi.Windows,
   System.Classes,
   System.SysUtils,
-  GLCrossPlatform,
+  Vcl.Graphics,
+
+  OpenGLTokens,
   GLVectorGeometry,
-  GLGraphics,
-  OpenGLTokens;
+  GLGraphics;
 
 type
 
-  THDRImage = class(TGLBitmap)
+  THDRImage = class(TBitmap)
   public
     procedure LoadFromStream(stream: TStream); override;
     procedure SaveToStream(stream: TStream); override;
@@ -60,7 +61,7 @@ begin
   Width := FullHDR.LevelWidth[0];
   Height := FullHDR.LevelHeight[0];
   Transparent := false;
-  PixelFormat := glpf32bit;
+  PixelFormat := pf32bit;
 
   src := PGLubyte(FullHDR.Data);
   for y := 0 to Height - 1 do
@@ -81,13 +82,13 @@ end;
 initialization
 // ------------------------------------------------------------------
 
-  TGLPicture.RegisterFileFormat('HDR', 'High Dynamic Range Image', THDRImage);
+  TPicture.RegisterFileFormat('HDR', 'High Dynamic Range Image', THDRImage);
 
 // ------------------------------------------------------------------
 finalization
 // ------------------------------------------------------------------
 
-  TGLPicture.UnregisterGraphicClass(THDRImage);
+  TPicture.UnregisterGraphicClass(THDRImage);
 
 end.
 

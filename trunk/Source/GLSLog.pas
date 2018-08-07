@@ -721,7 +721,7 @@ begin
   FBufferCriticalSection := TCriticalSection.Create;
   FFileAccessCriticalSection := TCriticalSection.Create;
   FBuffered := ABuffered; // Do not call the setter, create thread later.
-  FStartedMs := GLGetTickCount;
+  FStartedMs := GetTickCount;
   FTimeFormat := ATimeFormat;
   FLogLevels := ALevels;
   FMessageLimitAction := mlaHalt;
@@ -1137,7 +1137,7 @@ begin
       lfDateTime:
         line := DateTimeToStr(Now) + #9 + lkPrefix[ALevel] + AString;
       lfElapsed:
-        line := IntToStr(GLGetTickCount - FStartedMs) + #9 +
+        line := IntToStr(GetTickCount - FStartedMs) + #9 +
           lkPrefix[ALevel] + AString;
     end
   else

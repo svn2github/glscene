@@ -3,7 +3,7 @@
 //
 {
    Invisible component for helping to Move, Rotate and Scale an Object
-   under GLScene (usefull for an Editor). 
+   under GLScene (usefull for an Editor).
    This is an enhanced version of TGLGizmo
 }
 unit GLGizmoEx;
@@ -17,6 +17,8 @@ uses
   System.Classes,
   System.SysUtils,
   System.Types,
+  Vcl.StdCtrls,
+
   GLScene,
   GLColor,
   GLObjects,
@@ -1378,7 +1380,7 @@ begin
   begin
     ModulateColor.Color := clrRed;
     Alignment := taCenter;
-    Layout := tlCenter;
+    Layout := TTextLayout.tlCenter;
     Options := Options + [ftoTwoSided];
     Position.X := 0.5;
 
@@ -2132,7 +2134,7 @@ procedure TGLGizmoEx.InternalRender(Sender: TObject; var rci: TGLRenderContextIn
   //
   procedure ShowText(const Text: UnicodeString; Position: Tvector; Scale: TVector; Color: Tvector);
   var
-    FLayout: TGLTextLayout;
+    FLayout: TTextLayout;
     FAlignment: TAlignment;
     wm:   TMatrix;
     I, J: Integer;
@@ -2140,7 +2142,7 @@ procedure TGLGizmoEx.InternalRender(Sender: TObject; var rci: TGLRenderContextIn
     if not Assigned(FLabelFont) and (Text = '') then
       Exit;
     rci.GLStates.Enable(stDepthTest);
-    FLayout := GLCrossPlatform.tlCenter;
+    FLayout := TTextLayout.tlCenter;
     FAlignment := taCenter;
 
     gl.MatrixMode(GL_MODELVIEW);

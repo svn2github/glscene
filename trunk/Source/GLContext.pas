@@ -24,7 +24,6 @@ uses
   GLSGenerics,
 {$ENDIF}
   GLSLog,
-  GLCrossPlatform,
   OpenGLTokens,
   OpenGLAdapter,
   GLVectorGeometry,

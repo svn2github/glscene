@@ -3,8 +3,6 @@
 //
 {
    Cross platform support functions and types for GLScene.
-   Ultimately, *no* cross-platform or cross-version defines should be present
-   in the core GLScene units, and have all moved here instead.
 }
 unit GLCrossPlatform;
 
@@ -13,15 +11,8 @@ interface
 {$I GLScene.inc}
 
 uses
-{$IFDEF MSWINDOWS}
   Windows,
-{$ENDIF}
-{$IFDEF UNIX}
-  Unix, BaseUnix,
-{$ENDIF}
-{$IFDEF X11_SUPPORT}
-  xlib,
-{$ENDIF}
+
   System.Types,
   System.Classes,
   System.SysUtils,
@@ -32,106 +23,17 @@ uses
   VCL.Forms,
   VCL.Dialogs;
 
-const
-  FPC_VERSION = 0;
-  FPC_RELEASE = 0;
-  FPC_PATCH = 0;
-  LCL_RELEASE = 0;
-
 type
   THalfFloat = type Word;
   PHalfFloat = ^THalfFloat;
 
-  TDelphiColor = TColor;
-
-  TGLBitmap = TBitmap;
-  TGLPicture = TPicture;
-  TGLGraphic = TGraphic;
-  TGraphicClass = class of TGraphic;
-
-  TGLTextLayout = (tlTop, tlCenter, tlBottom); // idem TTextLayout;
-
-  TGLMouseButton = (mbLeft, mbRight, mbMiddle); // idem TMouseButton;
-  TGLMouseEvent = procedure(Sender: TObject; Button: TGLMouseButton;
+  TGLMouseEvent = procedure(Sender: TObject; Button: TMouseButton;
     Shift: TShiftState; X, Y: Integer) of object;
-
-  TPlatformInfo = record
-    Major: DWORD;
-    Minor: DWORD;
-    Revision: DWORD;
-    Version: string;
-    PlatformId   :DWORD;
-    ID: string;
-    CodeName: string;
-    Description: string;
-    ProductBuildVersion: string;
-  end;
-
-  TPlatformVersion =
-    (
-      pvUnknown,
-      pvWin95,
-      pvWin98,
-      pvWinME,
-      pvWinNT3,
-      pvWinNT4,
-      pvWin2000,
-      pvWinXP,
-      pvWin2003,
-      pvWinVista,
-      pvWinSeven,
-      pvWin2008,
-      pvWinNew,
-
-      pvLinuxArc,
-      pvLinuxDebian,
-      pvLinuxopenSUSE,
-      pvLinuxFedora,
-      pvLinuxGentoo,
-      pvLinuxMandriva,
-      pvLinuxRedHat,
-      pvLinuxTurboLinux,
-      pvLinuxUbuntu,
-      pvLinuxXandros,
-      pvLinuxOracle,
-      pvAppleMacOSX
-    );
 
   EGLOSError = EOSError;
 
   TGLComponent = class(TComponent);
-
   TProjectTargetNameFunc = function(): string;
-
-const
-{$IFDEF MSWINDOWS}
-  glpf8Bit = pf8bit;
-  glpf24bit = pf24bit;
-  glpf32Bit = pf32bit;
-  glpfDevice = pfDevice;
-{$ENDIF}
-{$IFDEF UNIX}
-  glpf8Bit = pf8bit;
-  glpf24bit = pf32bit;
-  glpf32Bit = pf32bit;
-  glpfDevice = pf32bit;
-{$ENDIF}
-
-  // standard keyboard
-  glKey_TAB = VK_TAB;
-  glKey_SPACE = VK_SPACE;
-  glKey_RETURN = VK_RETURN;
-  glKey_DELETE = VK_DELETE;
-  glKey_LEFT = VK_LEFT;
-  glKey_RIGHT = VK_RIGHT;
-  glKey_HOME = VK_HOME;
-  glKey_END = VK_END;
-  glKey_CANCEL = VK_CANCEL;
-  glKey_UP = VK_UP;
-  glKey_DOWN = VK_DOWN;
-  glKey_PRIOR = VK_PRIOR;
-  glKey_NEXT = VK_NEXT;
-  glKey_CONTROL = VK_CONTROL;
 
 const
   FONT_CHARS_COUNT = 2024;
@@ -140,18 +42,13 @@ var
   IsDesignTime: Boolean = False;
   vProjectTargetName: TProjectTargetNameFunc;
 
-function GLPoint(const x, y: Integer): TPoint; inline;
-{Builds a TColor from Red Green Blue components. }
-function RGB(const r, g, b: Byte): TColor; {$NODEFINE RGB} inline;
 function GetGLRect(const aLeft, aTop, aRight, aBottom: Integer): TRect;
 { Increases or decreases the width and height of the specified rectangle.
    Adds dx units to the left and right ends of the rectangle and dy units to
    the top and bottom. }
 procedure InflateGLRect(var aRect: TRect; dx, dy: Integer);
 procedure IntersectGLRect(var aRect: TRect; const rect2: TRect);
-
 procedure RaiseLastOSError;
-
 {Number of pixels per logical inch along the screen width for the device.
    Under Win32 awaits a HDC and returns its LOGPIXELSX. }
 function GetDeviceLogicalPixelsX(device: HDC): Integer;
@@ -159,10 +56,6 @@ function GetDeviceLogicalPixelsX(device: HDC): Integer;
 function GetCurrentColorDepth: Integer;
 {Returns the number of color bits associated to the given pixel format. }
 function PixelFormatToColorBits(aPixelFormat: TPixelFormat): Integer;
-
-{Returns the bitmap's scanline for the specified row. }
-function BitmapScanLine(aBitmap: TBitmap; aRow: Integer): Pointer;
-
 {Replace path delimiter to delimiter of the current platform. }
 procedure FixPathDelimiter(var S: string);
 {Remove if possible part of path witch leads to project executable. }
@@ -184,49 +77,31 @@ function QueryPerformanceFrequency(out val: Int64): Boolean;
    they should be used. The timer will and must be stopped/terminated/released
    with StopPrecisionTimer. }
 function StartPrecisionTimer: Int64;
-{Computes time elapsed since timer start.
-   Return time lap in seconds. }
+{Computes time elapsed since timer start. Return time lap in seconds. }
 function PrecisionTimerLap(const precisionTimer: Int64): Double;
-{Computes time elapsed since timer start and stop timer.
-   Return time lap in seconds. }
+{Computes time elapsed since timer start and stop timer. Return time lap in seconds. }
 function StopPrecisionTimer(const precisionTimer: Int64): Double;
-
 {Returns time in milisecond from application start. }
 function AppTime: Double;
-
-{Returns the number of CPU cycles since startup.
-   Use the similarly named CPU instruction. }
-
+{Returns the number of CPU cycles since startup. Use the similarly named CPU instruction. }
 function GLOKMessageBox(const Text, Caption: string): Integer;
 procedure GLLoadBitmapFromInstance(Instance: LongInt; ABitmap: TBitmap; const AName: string);
 procedure ShowHTMLUrl(const Url: string);
-function GLGetTickCount: int64;
 procedure SetExeDirectory;
 function GetDecimalSeparator: Char;
 procedure SetDecimalSeparator(AValue: Char);
-
 // StrUtils.pas
 function AnsiStartsText(const ASubText, AText: string): Boolean;
-
 // Classes.pas
 function IsSubComponent(const AComponent: TComponent): Boolean; inline;
 procedure MakeSubComponent(const AComponent: TComponent; const Value: Boolean);
-
 function FindUnitName(anObject: TObject): string; overload;
 function FindUnitName(aClass: TClass): string; overload;
-
 function FloatToHalf(Float: Single): THalfFloat;
 function HalfToFloat(Half: THalfFloat): Single;
-
 function GetValueFromStringsIndex(const AStrings: TStrings; const AIndex: Integer): string;
-
-function GetPlatformInfo: TPlatformInfo;
-function GetPlatformVersion : TPlatformVersion;
-function GetPlatformVersionStr : string;
-
 {Determine if the directory is writable.  }
 function IsDirectoryWriteable(const AName: string): Boolean;
-
 function CharToWideChar(const AChar: AnsiChar): WideChar;
 
 //-----------------------------------------------------------
@@ -234,10 +109,7 @@ implementation
 //-----------------------------------------------------------
 
 uses
-{$IFDEF MSWINDOWS}ShellApi{$ENDIF}
-{$IFDEF Darwin}XMLRead,DOM,{$ENDIF}
-{$IFDEF UNIX}  LCLProc  {$ENDIF} ;
-
+  ShellApi;
 
 var
   vInvPerformanceCounterFrequency: Double;
@@ -266,43 +138,12 @@ end;
 
 procedure GLLoadBitmapFromInstance(Instance: LongInt; ABitmap: TBitmap; const AName: string);
 begin
-{$IFDEF MSWINDOWS}
   ABitmap.Handle := LoadBitmap(Instance, PChar(AName));
-{$ENDIF}
-{$IFDEF UNIX}
-  ABitmap.LoadFromResourceName(Instance, PChar(AName));
-{$ENDIF}
-end;
-
-function GLGetTickCount: int64;
-begin
-{$IFDEF MSWINDOWS}
-  result := GetTickCount;
-{$ENDIF}
-{$IFDEF UNIX}
-  QueryPerformanceCounter(result);
-{$ENDIF}
 end;
 
 procedure ShowHTMLUrl(const Url: string);
 begin
-{$IFDEF MSWINDOWS}
   ShellExecute(0, 'open', PChar(Url), nil, nil, SW_SHOW);
-{$ENDIF}
-{$IFDEF UNIX}
-  fpSystem(PChar('env xdg-open ' + Url));
-{$ENDIF}
-end;
-
-function GLPoint(const x, y: Integer): TPoint; inline;
-begin
-  Result.X := x;
-  Result.Y := y;
-end;
-
-function RGB(const r, g, b: Byte): TColor;
-begin
-  Result := r or (g shl 8) or (b shl 16);
 end;
 
 function GetGLRect(const aLeft, aTop, aRight, aBottom: Integer): TRect;
@@ -368,7 +209,6 @@ type
   end;
 
 function GetDeviceCapabilities: TDeviceCapabilities;
-{$IFDEF MSWINDOWS}
 var
   Device: HDC;
 begin
@@ -382,26 +222,6 @@ begin
     ReleaseDC(0, Device);
   end;
 end;
-{$ELSE}
-{$IFDEF X11_SUPPORT}
-var
-  dpy: PDisplay;
-begin
-  dpy := XOpenDisplay(nil);
-  Result.Depth := DefaultDepth(dpy, DefaultScreen(dpy));
-  XCloseDisplay(dpy);
-
-  Result.Xdpi := 96;
-  Result.Ydpi := 96;
-  Result.NumColors := 1;
-end;
-{$ELSE}
-begin
-  {$MESSAGE Warn 'Needs to be implemented'}
-end;
-{$ENDIF}
-
-{$ENDIF}
 
 function GetDeviceLogicalPixelsX(device: HDC): Integer;
 begin
@@ -429,11 +249,6 @@ begin
   else
     Result := 24;
   end;
-end;
-
-function BitmapScanLine(aBitmap: TBitmap; aRow: Integer): Pointer;
-begin
-  Result := aBitmap.ScanLine[aRow];
 end;
 
 procedure FixPathDelimiter(var S: string);
@@ -473,48 +288,15 @@ begin
     Delete(Result, 1, Length(path));
 end;
 
-{$IFDEF UNIX}
-var
-  vProgStartSecond: int64;
-
-procedure Init_vProgStartSecond;
-var
-  tz: timeval;
-begin
-  fpgettimeofday(@tz, nil);
-  vProgStartSecond := tz.tv_sec;
-end;
-{$ENDIF}
-
 procedure QueryPerformanceCounter(out val: Int64);
-{$IFDEF MSWINDOWS}
 begin
   Windows.QueryPerformanceCounter(val);
 end;
-{$ENDIF}
-{$IFDEF UNIX}
-var
-  tz: timeval;
-begin
-  fpgettimeofday(@tz, nil);
-  val := tz.tv_sec - vProgStartSecond;
-  val := val * 1000000;
-  val := val + tz.tv_usec;
-end;
-{$ENDIF}
 
 function QueryPerformanceFrequency(out val: Int64): Boolean;
-{$IFDEF MSWINDOWS}
 begin
   Result := Boolean(Windows.QueryPerformanceFrequency(val));
 end;
-{$ENDIF}
-{$IFDEF UNIX}
-begin
-  val := 1000000;
-  Result := True;
-end;
-{$ENDIF}
 
 function StartPrecisionTimer: Int64;
 begin
@@ -543,13 +325,10 @@ end;
 
 var
   vGLSStartTime : TDateTime;
-{$IFDEF MSWINDOWS}
   vLastTime: TDateTime;
   vDeltaMilliSecond: TDateTime;
-{$ENDIF}
 
 function AppTime: Double;
-{$IFDEF MSWINDOWS}
 var
   SystemTime: TSystemTime;
 begin
@@ -570,32 +349,6 @@ begin
     vDeltaMilliSecond := 0.1;
   end;
 end;
-{$ENDIF}
-
-{$IFDEF UNIX}
-var
-  tz: timeval;
-begin
-  fpgettimeofday(@tz, nil);
-  Result := tz.tv_sec - vGLSStartTime;
-  Result := Result * 1000000;
-  Result := Result + tz.tv_usec;
-// Delphi for Linux variant (for future ;)
-//var
-//  T: TTime_T;
-//  TV: TTimeVal;
-//  UT: TUnixTime;
-//begin
-//  gettimeofday(TV, nil);
-//  T := TV.tv_sec;
-//  localtime_r(@T, UT);
-//  with UT do
-//    Result := (tm_hour * (MinsPerHour * SecsPerMin * MSecsPerSec) +
-//             tm_min * (SecsPerMin * MSecsPerSec) +
-//             tm_sec * MSecsPerSec +
-//             tv_usec div 1000) - vGLSStartTime;
-end;
-{$ENDIF}
 
 function FindUnitName(anObject: TObject): string;
 begin
@@ -761,7 +514,6 @@ begin
     else
     begin
       // Exp is > 0 so input float is normalized Single
-
       // round to nearest
       if (Mantissa and $00001000) > 0 then
       begin
@@ -790,239 +542,21 @@ begin
   Result := AStrings.ValueFromIndex[AIndex];
 end;
 
-function GetPlatformInfo: TPlatformInfo;
-var
-  {$IFDEF MSWINDOWS}
-  OSVersionInfo : TOSVersionInfo;
-  {$ENDIF}
-  {$IFDEF UNIX}
-    {$IFNDEF DARWIN}
-  ReleseList: TStringList;
-    {$ENDIF}
-  str: String;
-    {$IFDEF DARWIN}
-  Documento: TXMLDocument;
-  Child: TDOMNode;
-  i:integer;
-    {$ENDIF}
-  {$ENDIF}
-begin
-  {$IFDEF MSWINDOWS}
-  with Result, OSVersionInfo do
-  begin
-    dwOSVersionInfoSize := sizeof(TOSVersionInfo);
-
-    if not GetVersionEx(OSVersionInfo) then Exit;
-
-    Minor := DwMinorVersion;
-    Major := DwMajorVersion;
-    Revision := 0;
-    PlatformId := dwPlatformId;
-    Version :=  InttoStr(DwMajorVersion)+'.'+InttoStr(DwMinorVersion);
-  end;
-  {$ENDIF}
-  {$IFDEF UNIX}
-  {$IFNDEF DARWIN}
-  ReleseList := TStringList.Create;
-
-  with Result,ReleseList do
-  begin
-    if FileExists('/etc/lsb-release')  then
-      LoadFromFile('/etc/lsb-release')
-    else Exit;
-
-    ID := Values['DISTRIB_ID'];
-    Version := Values['DISTRIB_RELEASE'];
-    CodeName := Values['DISTRIB_CODENAME'];
-    Description := Values['DISTRIB_DESCRIPTION'];
-    Destroy;
-  end;
-  {$ENDIF}
-  {$IFDEF Darwin}
-  if FileExists('System/Library/CoreServices/ServerVersion.plist')  then
-    ReadXMLFile(Documento, 'System/Library/CoreServices/ServerVersion.plist')
-  else Exit;
-  Child := Documento.DocumentElement.FirstChild;
-
-  if Assigned(Child) then
-  begin
-    with Child.ChildNodes do
-    try
-      for i := 0 to (Count - 1) do
-      begin
-        if Item[i].FirstChild.NodeValue='ProductBuildVersion' then
-          Result.ProductBuildVersion:=Item[i].NextSibling.FirstChild.NodeValue;
-        if Item[i].FirstChild.NodeValue='ProductName' then
-          Result.ID:=Item[i].NextSibling.FirstChild.NodeValue;
-        if Item[i].FirstChild.NodeValue='ProductVersion' then
-          Result.Version:=Item[i].NextSibling.FirstChild.NodeValue;
-      end;
-    finally
-      Free;
-    end;
-  end;
-  {$ENDIF}
-  //Major.Minor.Revision
-  str:=Result.Version;
-  if str='' then Exit;
-  Result.Major:=StrtoInt( Utf8Copy(str, 1, Utf8Pos('.',str)-1) );
-  Utf8Delete(str, 1, Utf8Pos('.', str) );
-
-  //10.04
-  if Utf8Pos('.', str) = 0 then
-  begin
-    Result.Minor:=StrtoInt( Utf8Copy(str, 1, Utf8Length(str)) );
-    Result.Revision:=0;
-  end else
-  //10.6.5
-    begin
-       Result.Minor:=StrtoInt( Utf8Copy(str, 1, Utf8Pos('.',str)-1) );
-       Utf8Delete(str, 1, Utf8Pos('.', str) );
-       Result.Revision:=StrtoInt( Utf8Copy(str, 1, Utf8Length(str)) );
-    end;
-  {$ENDIF}
-end;
-
-function GetPlatformVersion : TPlatformVersion;
-{$IFDEF Unix}
-var
-  i: integer;
-const
-VersStr : array[TPlatformVersion] of string = (
-  '',  '',  '',  '',  '',  '',
-  '',  '',  '',  '',  '',  '',
-  '',
-  'Arc',
-  'Debian',
-  'openSUSE',
-  'Fedora',
-  'Gentoo',
-  'Mandriva',
-  'RedHat',
-  'TurboLinux',
-  'Ubuntu',  // tested
-  'Xandros',
-  'Oracle',
-  'Mac OS X' // workable
-  );
-{$ENDIF}
-begin
-  Result := pvUnknown;
-  {$IFDEF MSWINDOWS}
-  with GetPlatformInfo do
-  begin
-    if Version = '' then
-      exit;
-    case Major of
-      0:
-        Result := pvUnknown;
-      1 .. 2:
-        Result := pvUnknown;
-      3:
-        Result := pvWinNT3; // Windows NT 3
-      4:
-        case Minor of
-          0:
-            if PlatformId = VER_PLATFORM_WIN32_NT then
-              Result := pvWinNT4 // Windows NT 4
-            else
-              Result := pvWin95; // Windows 95
-          10:
-            Result := pvWin98; // Windows 98
-          90:
-            Result := pvWinME; // Windows ME
-        end;
-      5:
-        case Minor of
-          0:
-            Result := pvWin2000; // Windows 2000
-          1:
-            Result := pvWinXP; // Windows XP
-          2:
-            Result := pvWin2003; // Windows 2003
-        end;
-      6:
-        case Minor of
-          0:
-            Result := pvWinVista; // Windows Vista
-          1:
-            Result := pvWinSeven; // Windows Seven
-          2:
-            Result := pvWin2008; // Windows 2008
-          3 .. 4:
-            Result := pvWinNew;
-        end;
-      7:
-        Result := pvWinNew;
-    end;
-  end;
-  {$ENDIF}
-  {$IFDEF Unix}
-  with GetPlatformInfo do
-  begin
-    if Version='' then Exit;
-    For i:= 13 to Length(VersStr)-1 do
-     if ID=VersStr[TPlatformVersion(i)] then
-       Result := TPlatformVersion(i);
-  end;
-  {$ENDIF}
-end;
-
-function GetPlatformVersionStr : string;
-const
-  VersStr : array[TPlatformVersion] of string = (
-    'Unknown',
-    'Windows 95',
-    'Windows 98',
-    'Windows ME',
-    'Windows NT 3',
-    'Windows NT 4',
-    'Windows 2000',
-    'Windows XP',
-    'Windows 2003',
-    'Windows Vista',
-    'Windows Seven',
-    'Windows 2008',
-    'Windows New',
-
-    'Linux Arc',
-    'Linux Debian',
-    'Linux openSUSE',
-    'Linux Fedora',
-    'Linux Gentoo',
-    'Linux Mandriva',
-    'Linux RedHat',
-    'Linux TurboLinux',
-    'Linux Ubuntu',
-    'Linux Xandros',
-    'Linux Oracle',
-    'Apple MacOSX');
-begin
-  Result := VersStr[GetPlatformVersion];
-end;
-
 function IsDirectoryWriteable(const AName: string): Boolean;
 var
   LFileName: String;
-{$IFDEF MSWINDOWS}
   LHandle: THandle;
-{$ENDIF}
 begin
   LFileName := IncludeTrailingPathDelimiter(AName) + 'chk.tmp';
-{$IFDEF MSWINDOWS}
   LHandle := CreateFile(PChar(LFileName), GENERIC_READ or GENERIC_WRITE, 0, nil,
     CREATE_NEW, FILE_ATTRIBUTE_TEMPORARY or FILE_FLAG_DELETE_ON_CLOSE, 0);
   Result := LHandle <> INVALID_HANDLE_VALUE;
   if Result then
     CloseHandle(LHandle);
-{$ELSE}
-  Result := fpAccess(PChar(LFileName), W_OK) <> 0;
-{$ENDIF}
 end;
 
 
 function CharToWideChar(const AChar: AnsiChar): WideChar;
-{$IFDEF MSWINDOWS}
 var
   lResult: PWideChar;
 begin
@@ -1030,20 +564,12 @@ begin
   MultiByteToWideChar(CP_ACP, 0, @AChar, 1, lResult, 2);
   Result := lResult^;
   FreeMem(lResult, 2);
-{$ELSE}
-var
-  S: string;
-  lResult: WideString;
-begin
-  S := AnsiToUtf8(AChar);
-  lResult := Utf8ToUtf16(S);
-  Result := lResult[1];
-{$ENDIF}
 end;
 
+//----------------------------------------
 initialization
+//----------------------------------------
+
   vGLSStartTime := AppTime;
-{$IFDEF UNIX}
-  Init_vProgStartSecond;
-{$ENDIF}
+
 end.

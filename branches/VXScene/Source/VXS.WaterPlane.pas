@@ -15,6 +15,7 @@ interface
 
 uses
   System.Classes,
+  FMX.Objects,
   FMX.Types,
   FMX.Graphics,
 
@@ -57,7 +58,7 @@ type
     FTimeToNextRainDrop: Single;
     FMaximumCatchupIterations: Integer;
     FLastIterationStepTime: Single;
-    FMask: TVXPicture;
+    FMask: TImage;
     FOptions: TVXWaterPlaneOptions;
   protected
     procedure SetElastic(const value: Single);
@@ -66,7 +67,7 @@ type
     procedure SetViscosity(const val: Single);
     procedure SetRainForce(const val: Single);
     procedure SetSimulationFrequency(const val: Single);
-    procedure SetMask(val: TVXPicture);
+    procedure SetMask(val: TImage);
     procedure SetOptions(const val: TVXWaterPlaneOptions);
     procedure DoMaskChanged(Sender: TObject);
     procedure InitResolution;
@@ -104,7 +105,7 @@ type
       Pixels with a green/gray component beyond 128 are active, the others
       are not (in short, white = active, black = inactive).
       The picture will automatically be stretched to match the resolution. }
-    property Mask: TVXPicture read FMask write SetMask;
+    property Mask: TImage read FMask write SetMask;
 
     { Maximum frequency (in Hz) at which simulation iterations happen. }
     property SimulationFrequency: Single read FSimulationFrequency
@@ -138,7 +139,7 @@ begin
   FPlaneQuadTexCoords := TTexPointList.Create;
   FPlaneQuadVertices := TAffineVectorList.Create;
   FPlaneQuadNormals := TAffineVectorList.Create;
-  FMask := TVXPicture.Create(AOwner);
+  FMask := TImage.Create(AOwner);
   FMask.Bitmap.OnChange := DoMaskChanged;
 
   SetResolution(64);
@@ -534,7 +535,7 @@ begin
   end;
 end;
 
-procedure TVXWaterPlane.SetMask(val: TVXPicture);
+procedure TVXWaterPlane.SetMask(val: TImage);
 begin
   FMask.Assign(val);
 end;

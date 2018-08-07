@@ -12,6 +12,7 @@ interface
 
 uses
   System.Classes,
+  Vcl.StdCtrls,
 
   GLScene,
   GLVectorTypes,
@@ -73,14 +74,14 @@ type
     FText: UnicodeString;
     FRotation: Single;
     FAlignment: TAlignment;
-    FLayout: TGLTextLayout;
+    FLayout: TTextLayout;
     FModulateColor: TGLColor;
   protected
     procedure SetBitmapFont(const val: TGLCustomBitmapFont);
     procedure SetText(const val: UnicodeString);
     procedure SetRotation(const val: Single);
     procedure SetAlignment(const val: TAlignment);
-    procedure SetLayout(const val: TGLTextLayout);
+    procedure SetLayout(const val: TTextLayout);
     procedure SetModulateColor(const val: TGLColor);
     procedure Notification(AComponent: TComponent;
       Operation: TOperation); override;
@@ -109,7 +110,7 @@ type
       default taLeftJustify;
     {  Controls the text layout (vertical).
       Possible values : tlTop, tlCenter, tlBottom }
-    property Layout: TGLTextLayout read FLayout write SetLayout default tlTop;
+    property Layout: TTextLayout read FLayout write SetLayout default tlTop;
     {  Color modulation, can be used for fade in/out too. }
     property ModulateColor: TGLColor read FModulateColor write SetModulateColor;
   end;
@@ -337,7 +338,7 @@ begin
   StructureChanged;
 end;
 
-procedure TGLHUDText.SetLayout(const val: TGLTextLayout);
+procedure TGLHUDText.SetLayout(const val: TTextLayout);
 begin
   FLayout := val;
   StructureChanged;

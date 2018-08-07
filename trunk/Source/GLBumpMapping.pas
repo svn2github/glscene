@@ -16,9 +16,9 @@ uses
 {$ENDIF}
   System.UITypes,
   Vcl.Graphics,
+  GLColor,
   GLVectorGeometry,
   GLVectorLists,
-  GLCrossPlatform,
   GLVectorTypes;
 
 type
@@ -174,7 +174,7 @@ end;
 // Local functions used for creating normal maps
 // ------------------------------------------------------------------------
 
-function ConvertNormalToColor(normal: TAffineVector): TDelphiColor;
+function ConvertNormalToColor(normal: TAffineVector): TColor;
 
 var
   r, g, b: Byte;
@@ -396,7 +396,7 @@ begin
   Result := TBitmap.Create;
   Result.Width := Width;
   Result.Height := Height;
-  Result.PixelFormat := glpf24bit;
+  Result.PixelFormat := pf24bit;
 
   // Paint bitmap with normal map normals (X,Y,Z) -> (R,G,B)
   for i := 0 to NormalMap.Count - 1 do
@@ -537,7 +537,7 @@ begin
   Result := TBitmap.Create;
   Result.Width := Width;
   Result.Height := Height;
-  Result.PixelFormat := glpf24bit;
+  Result.PixelFormat := pf24bit;
 
   // Paint bitmap with normal map normals (X,Y,Z) -> (R,G,B)
   for i := 0 to NormalMap.Count - 1 do

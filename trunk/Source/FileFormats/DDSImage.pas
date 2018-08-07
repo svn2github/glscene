@@ -71,7 +71,7 @@ begin
   bCubeMap := FullDDS.CubeMap;
   FullDDS.Narrow;
 
-  PixelFormat := glpf32bit;
+  PixelFormat := pf32bit;
   Transparent := True;
   Width := FullDDS.LevelWidth[0];
   Height := FullDDS.LevelHeight[0];
@@ -114,7 +114,7 @@ begin
     ddpf.dwSize := sizeof(TDDPIXELFORMAT);
     case PixelFormat of
 {$IFDEF MSWINDOWS}
-      glpf24bit:
+      pf24bit:
         begin
           ddpf.dwFlags := DDPF_RGB;
           ddpf.dwRGBBitCount := 24;
@@ -123,7 +123,7 @@ begin
           ddpf.dwBBitMask := $000000FF;
         end;
 {$ENDIF}
-      glpf32bit:
+      pf32bit:
         begin
           ddpf.dwFlags := DDPF_RGB;
           ddpf.dwRGBBitCount := 32;

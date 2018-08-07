@@ -25,6 +25,7 @@ uses
   Winapi.Windows, // for CreateMonochromeBitmap
   System.Classes,
   System.SysUtils,
+  FMX.Objects,
   FMX.Graphics,
 
   VXS.ApplicationFileIO,
@@ -381,11 +382,11 @@ type
   private
     FScanLineCache: array of PByteArray;
     FBitmap: TBitmap;
-    FPicture: TVXPicture;
+    FPicture: TImage;
     FInfiniteWrap: boolean;
     FInverted: boolean;
   protected
-    procedure SetPicture(const Val: TVXPicture);
+    procedure SetPicture(const Val: TImage);
     procedure OnPictureChanged(sender: TObject);
     procedure SetInfiniteWrap(Val: boolean);
     procedure SetInverted(Val: boolean);
@@ -404,7 +405,7 @@ type
       The picture is (if not already) internally converted to a 8 bit
       bitmap (grayscale). For better performance and to save memory,
       feed it this format! }
-    property Picture: TVXPicture read FPicture write SetPicture;
+    property Picture: TImage read FPicture write SetPicture;
     { If true the height field is wrapped indefinetely. }
     property InfiniteWrap: boolean read FInfiniteWrap write SetInfiniteWrap
       default True;
@@ -1665,7 +1666,7 @@ end;
 constructor TVXBitmapHDS.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  FPicture := TVXPicture.Create(AOwner);
+  FPicture := TImage.Create(AOwner);
   FPicture.OnDblClick := OnPictureChanged;
   FInfiniteWrap := True;
   FInverted := True;
@@ -1678,7 +1679,7 @@ begin
   FPicture.Free;
 end;
 
-procedure TVXBitmapHDS.SetPicture(const Val: TVXPicture);
+procedure TVXBitmapHDS.SetPicture(const Val: TImage);
 begin
   FPicture.Assign(Val);
 end;
@@ -2040,12 +2041,7 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
-
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 // class registrations

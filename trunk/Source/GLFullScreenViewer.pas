@@ -3,12 +3,6 @@
 //
 {
   A Platform specific full-screen viewer.
-  Note: Lazarus has problems with minimizing and normalizing windows.
-  See code DoAvtivate DoDeactivate. Tests were conducted on
-  Lazarus 0.9.29.24627. If these problems are fixed in future versions
-  of FPC / Lazarus, you can safely remove work-arounds.
-  Note: Linux still has problems intercepting mouse events and problems
-  with DoActivate DoDeactivate.
 }
 unit GLFullScreenViewer;
 
@@ -24,11 +18,12 @@ uses
   VCL.Forms,
   VCL.Controls,
   VCL.Menus,
+
+  OpenGLTokens,
+  OpenGLAdapter,
   GLContext,
   GLScene,
-  GLWin32Viewer,
-  OpenGLTokens,
-  OpenGLAdapter;
+  GLWin32Viewer;
 
 type
 
@@ -658,3 +653,4 @@ ShowWindow(FindWindow('BUTTON', nil), SW_SHOWNA);
 {$ENDIF}
 
 end.
+

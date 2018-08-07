@@ -15,6 +15,7 @@ uses
   System.SysUtils,
   System.Types,
   System.UITypes,
+  FMX.Objects,
   FMX.Graphics,
   FMX.Types,
 
@@ -111,7 +112,7 @@ type
   TVXCustomBitmapFont = class(TVXUpdateAbleComponent)
   private
     FRanges: TVXBitmapFontRanges;
-    FGlyphs: TVXPicture;
+    FGlyphs: TImage;
     FCharWidth, FCharHeight: Integer;
     FGlyphsIntervalX, FGlyphsIntervalY: Integer;
     FHSpace, FVSpace, FHSpaceFix: Integer;
@@ -130,7 +131,7 @@ type
     procedure ResetCharWidths(w: Integer = -1);
     procedure SetCharWidths(index, value: Integer);
     procedure SetRanges(const val: TVXBitmapFontRanges);
-    procedure SetGlyphs(const val: TVXPicture);
+    procedure SetGlyphs(const val: TImage);
     procedure SetCharWidth(const val: Integer);
     procedure SetCharHeight(const val: Integer);
     procedure SetGlyphsIntervalX(const val: Integer);
@@ -154,7 +155,7 @@ type
     procedure PrepareParams(var ARci: TVXRenderContextInfo);
     { A single bitmap containing all the characters.
       The transparent color is that of the top left pixel. }
-    property Glyphs: TVXPicture read FGlyphs write SetGlyphs;
+    property Glyphs: TImage read FGlyphs write SetGlyphs;
     {  Nb of horizontal pixels between two columns in the Glyphs. }
     property GlyphsIntervalX: Integer read FGlyphsIntervalX
       write SetGlyphsIntervalX;
@@ -499,7 +500,7 @@ constructor TVXCustomBitmapFont.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   FRanges := TVXBitmapFontRanges.Create(Self);
-  FGlyphs := TVXPicture.Create(AOwner);
+  FGlyphs := TImage.Create(AOwner);
   FGlyphs.Bitmap.OnChange := OnGlyphsChanged;
   FCharWidth := 16;
   FCharHeight := 16;
@@ -577,7 +578,7 @@ begin
   InvalidateUsers;
 end;
 
-procedure TVXCustomBitmapFont.SetGlyphs(const val: TVXPicture);
+procedure TVXCustomBitmapFont.SetGlyphs(const val: TImage);
 begin
   FGlyphs.Assign(val);
 end;

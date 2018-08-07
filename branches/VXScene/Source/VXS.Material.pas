@@ -598,7 +598,7 @@ type
     function AddTextureMaterial(const MaterialName, fileName: string; persistent: Boolean = True): TVXLibMaterial; overload;
     { Add a "standard" texture material.
       TVXGraphic based variant. }
-    function AddTextureMaterial(const MaterialName: string; Graphic: TVXGraphic): TVXLibMaterial; overload;
+    function AddTextureMaterial(const MaterialName: string; Graphic: TBitmap): TVXLibMaterial; overload;
     { Returns libMaterial of given name if any exists. }
     function LibMaterialByName(const AName: TVXLibMaterialName): TVXLibMaterial;
     { Returns Texture of given material's name if any exists. }
@@ -2823,7 +2823,7 @@ begin
   end;
 end;
 
-function TVXMaterialLibrary.AddTextureMaterial(const MaterialName: string; Graphic: TVXGraphic): TVXLibMaterial;
+function TVXMaterialLibrary.AddTextureMaterial(const MaterialName: string; Graphic: TBitmap): TVXLibMaterial;
 begin
   Result := Materials.Add;
   with Result do

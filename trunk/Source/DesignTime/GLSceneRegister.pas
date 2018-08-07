@@ -1487,21 +1487,17 @@ begin
     ['DepthFade', '*Shadow', 'Soft', 'Tolerance']);
 
   { GLHUDObjects }
-  RegisterPropertiesInCategory(strLayoutCategoryName, [TypeInfo(TGLTextLayout)]);
-  RegisterPropertiesInCategory(strVisualCategoryName,
-    [TypeInfo(TGLBitmapFont), TypeInfo(TGLTextLayout)]);
+  RegisterPropertiesInCategory(strLayoutCategoryName, [TypeInfo(TTextLayout)]);
+  RegisterPropertiesInCategory(strVisualCategoryName, [TypeInfo(TGLBitmapFont), TypeInfo(TTextLayout)]);
   RegisterPropertiesInCategory(strLocalizableCategoryName,[TypeInfo(TGLBitmapFont)]);
 
   { GLTexture }
   RegisterPropertiesInCategory(strOpenGLCategoryName,
     [TypeInfo(TGLMaterial), TypeInfo(TGLMaterialLibrary),
     TypeInfo(TGLLibMaterials), TypeInfo(TGLTextureNeededEvent)]);
-  RegisterPropertiesInCategory(strOpenGLCategoryName, TGLLibMaterial,
-    ['Texture2Name']);
-  RegisterPropertiesInCategory(strVisualCategoryName, TGLLibMaterial,
-    ['TextureOffset', 'TextureScale']);
-  RegisterPropertiesInCategory(strOpenGLCategoryName, TGLMaterialLibrary,
-    ['TexturePaths']);
+  RegisterPropertiesInCategory(strOpenGLCategoryName, TGLLibMaterial, ['Texture2Name']);
+  RegisterPropertiesInCategory(strVisualCategoryName, TGLLibMaterial, ['TextureOffset', 'TextureScale']);
+  RegisterPropertiesInCategory(strOpenGLCategoryName, TGLMaterialLibrary, ['TexturePaths']);
 
   { GLCadencer }
   RegisterPropertiesInCategory(strOpenGLCategoryName, [TypeInfo(TGLCadencer)]);

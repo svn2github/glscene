@@ -63,16 +63,16 @@
         <DCC_F>false</DCC_F>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win32)'!=''">
-        <DCC_ObjOutput>$(GLSCENE)\lib\Win32</DCC_ObjOutput>
-        <DCC_BpiOutput>$(GLSCENE)\lib\Win32</DCC_BpiOutput>
-        <DCC_HppOutput>$(GLSCENE)\include\Win32</DCC_HppOutput>
+        <DCC_ObjOutput>..\..\lib\Win32</DCC_ObjOutput>
+        <DCC_BpiOutput>..\..\lib\Win32</DCC_BpiOutput>
+        <DCC_HppOutput>..\..\include\Win32</DCC_HppOutput>
         <DCC_Description>GLScene Physics Managers</DCC_Description>
         <DCC_UsePackage>rtl;vcl;GLScene_RT;GLScene_RT;GLScene_Physics_RT;GLScene_RT;GLScene_Physics_RT;$(DCC_UsePackage)</DCC_UsePackage>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <VerInfo_Keys>CompanyName=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductVersion=1.0.0.0;Comments=;ProgramID=com.embarcadero.$(MSBuildProjectName);FileDescription=$(MSBuildProjectName);ProductName=$(MSBuildProjectName)</VerInfo_Keys>
         <DCC_Namespace>Winapi;System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
-        <DCC_DcuOutput>$(GLSCENE)\lib\Win32</DCC_DcuOutput>
+        <DCC_DcuOutput>..\..\lib\Win32</DCC_DcuOutput>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win64)'!=''">
         <DCC_UsePackage>rtl;vcl;GLScene_RT;$(DCC_UsePackage)</DCC_UsePackage>

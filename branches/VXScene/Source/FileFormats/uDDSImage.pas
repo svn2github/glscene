@@ -24,6 +24,7 @@ uses
   System.Classes,
   System.SysUtils,
   FMX.Graphics,
+  FMX.Types,
   
   VXS.OpenGL,
   VXS.CrossPlatform,
@@ -126,17 +127,7 @@ begin
     dwHeight := Height;
     ddpf.dwSize := sizeof(TDDPIXELFORMAT);
     case PixelFormat of
-{$IFDEF MSWINDOWS}
-      glpf24bit:
-        begin
-          ddpf.dwFlags := DDPF_RGB;
-          ddpf.dwRGBBitCount := 24;
-          ddpf.dwRBitMask := $00FF0000;
-          ddpf.dwGBitMask := $0000FF00;
-          ddpf.dwBBitMask := $000000FF;
-        end;
-{$ENDIF}
-      glpf32bit:
+      TPixelFormat.RGBA:
         begin
           ddpf.dwFlags := DDPF_RGB;
           ddpf.dwRGBBitCount := 32;

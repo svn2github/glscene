@@ -19,7 +19,6 @@ uses
 
   GLVectorFileObjects,
   GLMaterial,
-  GLCrossPlatform,
   GLVectorGeometry,
   GLVectorLists,
   GLColor,

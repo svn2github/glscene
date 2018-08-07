@@ -15,6 +15,7 @@ interface
 
 uses
   System.Classes,
+  Vcl.Graphics,
 
   OpenGLTokens,
   GLVectorGeometry,
@@ -53,7 +54,7 @@ type
          FTimeToNextRainDrop : Single;
          FMaximumCatchupIterations : Integer;
          FLastIterationStepTime : Single;
-         FMask : TGLPicture;
+         FMask : TPicture;
          FOptions : TGLWaterPlaneOptions;
       protected
          procedure SetElastic(const value : Single);
@@ -62,7 +63,7 @@ type
          procedure SetViscosity(const val : Single);
          procedure SetRainForce(const val : Single);
          procedure SetSimulationFrequency(const val : Single);
-         procedure SetMask(val : TGLPicture);
+         procedure SetMask(val : TPicture);
          procedure SetOptions(const val : TGLWaterPlaneOptions);
          procedure DoMaskChanged(Sender : TObject);
          procedure InitResolution;
@@ -97,10 +98,10 @@ type
             Pixels with a green/gray component beyond 128 are active, the others
             are not (in short, white = active, black = inactive).
             The picture will automatically be stretched to match the resolution. }
-         property Mask : TGLPicture read FMask write SetMask;
+         property Mask : TPicture read FMask write SetMask;
          { Maximum frequency (in Hz) at which simulation iterations happen. }
          property SimulationFrequency : Single read FSimulationFrequency write SetSimulationFrequency;
-         {Maximum number of simulation iterations during catchups. 
+         {Maximum number of simulation iterations during catchups.
             Catchups happen when for a reason or another, the DoProgress doesn't
             happen as fast SimulationFrequency. }
          property MaximumCatchupIterations : Integer read FMaximumCatchupIterations write FMaximumCatchupIterations default 1;
@@ -128,7 +129,7 @@ begin
    FPlaneQuadTexCoords:=TTexPointList.Create;
    FPlaneQuadVertices:=TAffineVectorList.Create;
    FPlaneQuadNormals:=TAffineVectorList.Create;
-   FMask := TGLPicture.Create;
+   FMask := TPicture.Create;
    FMask.OnChange:=DoMaskChanged;
    SetResolution(64);
 end;
@@ -253,112 +254,125 @@ end;
 
 procedure TGLWaterPlane.Reset;
 var
-   i, j, ij, resSqr : Integer;
-   maskBmp : TGLBitmap;
-   scanLine : PIntegerArray;
-   il : TIntegerList;
-   locked : Boolean;
+  i, j, ij, resSqr: Integer;
+  maskBmp: TBitmap;
+  scanLine: PIntegerArray;
+  il: TIntegerList;
+  locked: Boolean;
 begin
-   resSqr:=FResolution*FResolution;
-   for i:=0 to resSqr-1 do begin
-      FPositions[i]:=0;
-      FVelocity[i]:=0;
-      FLocks[i]:=False;
-   end;
-   if FMask.Width>0 then begin
-      maskBmp := TGLBitmap.Create;
-      try
-         maskBmp.PixelFormat:=glpf32bit;
-         maskBmp.Width:=Resolution;
-         maskBmp.Height:=Resolution;
-         maskBmp.Canvas.StretchDraw(Rect(0, 0, Resolution, Resolution), FMask.Graphic);
-         for j:=0 to Resolution-1 do begin
-            scanLine:=BitmapScanLine(maskBmp, Resolution-1-j); //maskBmp.ScanLine[Resolution-1-j];
-            for i:=0 to Resolution-1 do
-               FLocks[i+j*Resolution]:=(((scanLine[i] shr 8) and $FF)<128);
-         end;
-      finally
-         maskBmp.Free;
+  resSqr := FResolution * FResolution;
+  for i := 0 to resSqr - 1 do
+  begin
+    FPositions[i] := 0;
+    FVelocity[i] := 0;
+    FLocks[i] := False;
+  end;
+  if FMask.Width > 0 then
+  begin
+    maskBmp := TBitmap.Create;
+    try
+      maskBmp.PixelFormat := pf32bit;
+      maskBmp.Width := Resolution;
+      maskBmp.Height := Resolution;
+      maskBmp.Canvas.StretchDraw(Rect(0, 0, Resolution, Resolution),
+        FMask.Graphic);
+      for j := 0 to Resolution - 1 do
+      begin
+        scanLine := maskBmp.scanLine[Resolution - 1 - j];
+        for i := 0 to Resolution - 1 do
+          FLocks[i + j * Resolution] := (((scanLine[i] shr 8) and $FF) < 128);
       end;
-   end;
+    finally
+      maskBmp.Free;
+    end;
+  end;
 
-   FPlaneQuadIndices.Clean;
-   for j:=0 to Resolution-2 do begin
-      il:=TIntegerList.Create;
-      for i:=0 to Resolution-1 do begin
-         ij:=i+j*Resolution;
-         if (il.Count and 2)<>0 then
-            locked:=False
-         else begin
-            locked:=FLocks[ij] and FLocks[ij+Resolution];
-            if locked and (i<Resolution-1) then
-               locked:=FLocks[ij+1] and FLocks[ij+Resolution+1];
-         end;
-         if not locked then
-            il.Add(ij, ij+Resolution)
-         else if il.Count>0 then begin
-            FPlaneQuadIndices.Add(il);
-            il:=TIntegerList.Create;
-         end;
+  FPlaneQuadIndices.Clean;
+  for j := 0 to Resolution - 2 do
+  begin
+    il := TIntegerList.Create;
+    for i := 0 to Resolution - 1 do
+    begin
+      ij := i + j * Resolution;
+      if (il.Count and 2) <> 0 then
+        locked := False
+      else
+      begin
+        locked := FLocks[ij] and FLocks[ij + Resolution];
+        if locked and (i < Resolution - 1) then
+          locked := FLocks[ij + 1] and FLocks[ij + Resolution + 1];
       end;
-      if il.Count>0 then
-         FPlaneQuadIndices.Add(il)
-      else il.Free;
-   end;
+      if not locked then
+        il.Add(ij, ij + Resolution)
+      else if il.Count > 0 then
+      begin
+        FPlaneQuadIndices.Add(il);
+        il := TIntegerList.Create;
+      end;
+    end;
+    if il.Count > 0 then
+      FPlaneQuadIndices.Add(il)
+    else
+      il.Free;
+  end;
 end;
 
 procedure TGLWaterPlane.IterComputeVelocity;
 var
-   i, j, ij : Integer;
-   f1, f2 : Single;
-   posList, velList : PSingleArray;
-   lockList : PByteArray;
+  i, j, ij: Integer;
+  f1, f2: Single;
+  posList, velList: PSingleArray;
+  lockList: PByteArray;
 begin
-   f1:=0.05;
-   f2:=0.01*FElastic;
+  f1 := 0.05;
+  f2 := 0.01 * FElastic;
 
-   posList:=@FPositions[0];
-   velList:=@FVelocity[0];
-   lockList:=@FLocks[0];
-   for i:=1 to Resolution-2 do begin
-      ij:=i*Resolution;
-      for j:=1 to Resolution-2 do begin
-         Inc(ij);
-         if lockList[ij]<>0 then continue;
-         velList[ij]:= velList[ij]
-                      +f2*( posList[ij]
-                           -f1*( 4*( posList[ij-1]         +posList[ij+1]
-                                    +posList[ij-Resolution]+posList[ij+Resolution])
-                                +posList[ij-1-Resolution]+posList[ij+1-Resolution]
-                                +posList[ij-1+Resolution]+posList[ij+1+Resolution]));
-      end;
-   end;
+  posList := @FPositions[0];
+  velList := @FVelocity[0];
+  lockList := @FLocks[0];
+  for i := 1 to Resolution - 2 do
+  begin
+    ij := i * Resolution;
+    for j := 1 to Resolution - 2 do
+    begin
+      Inc(ij);
+      if lockList[ij] <> 0 then
+        continue;
+      velList[ij] := velList[ij] + f2 *
+        (posList[ij] - f1 * (4 * (posList[ij - 1] + posList[ij + 1] +
+        posList[ij - Resolution] + posList[ij + Resolution]) +
+        posList[ij - 1 - Resolution] + posList[ij + 1 - Resolution] +
+        posList[ij - 1 + Resolution] + posList[ij + 1 + Resolution]));
+    end;
+  end;
 end;
 
 procedure TGLWaterPlane.IterComputePositions;
 const
-   cVelocityIntegrationCoeff : Single = 0.02;
-   cHeightFactor : Single = 1e-4;
+  cVelocityIntegrationCoeff: Single = 0.02;
+  cHeightFactor: Single = 1E-4;
 var
-   ij : Integer;
-   f  : Single;
-   coeff : Single;
-   posList, velList : PSingleArray;
-   lockList : PByteArray;
+  ij: Integer;
+  f: Single;
+  coeff: Single;
+  posList, velList: PSingleArray;
+  lockList: PByteArray;
 begin
-   // Calculate the new ripple positions and update vertex coordinates
-   coeff:=cVelocityIntegrationCoeff*Resolution;
-   f:=cHeightFactor/Resolution;
-   posList:=@FPositions[0];
-   velList:=@FVelocity[0];
-   lockList:=@FLocks[0];
-   for ij:=0 to Resolution*Resolution-1 do begin
-      if lockList[ij]=0 then begin
-         posList[ij]:=posList[ij]-coeff*velList[ij];
-         velList[ij]:=velList[ij]*FViscosity;
-         FPlaneQuadVertices.List[ij].Y:=posList[ij]*f;
-      end;
-   end;
+  // Calculate the new ripple positions and update vertex coordinates
+  coeff := cVelocityIntegrationCoeff * Resolution;
+  f := cHeightFactor / Resolution;
+  posList := @FPositions[0];
+  velList := @FVelocity[0];
+  lockList := @FLocks[0];
+  for ij := 0 to Resolution * Resolution - 1 do
+  begin
+    if lockList[ij] = 0 then
+    begin
+      posList[ij] := posList[ij] - coeff * velList[ij];
+      velList[ij] := velList[ij] * FViscosity;
+      FPlaneQuadVertices.List[ij].Y := posList[ij] * f;
+    end;
+  end;
 end;
 
 procedure TGLWaterPlane.IterComputeNormals;
@@ -384,17 +398,18 @@ end;
 
 procedure TGLWaterPlane.Iterate;
 var
-   t : Int64;
+  t: Int64;
 begin
-   if Visible then begin
-      t:=StartPrecisionTimer;
+  if Visible then
+  begin
+    t := StartPrecisionTimer;
 
-      IterComputeVelocity;
-      IterComputePositions;
-      IterComputeNormals;
+    IterComputeVelocity;
+    IterComputePositions;
+    IterComputeNormals;
 
-      FLastIterationStepTime:=StopPrecisionTimer(t);
-   end;
+    FLastIterationStepTime := StopPrecisionTimer(t);
+  end;
 end;
 
 procedure TGLWaterPlane.BuildList(var rci : TGLRenderContextInfo);
@@ -487,7 +502,7 @@ begin
    end;
 end;
 
-procedure TGLWaterPlane.SetMask(val : TGLPicture);
+procedure TGLWaterPlane.SetMask(val : TPicture);
 begin
    FMask.Assign(val);
 end;

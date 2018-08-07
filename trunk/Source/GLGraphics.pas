@@ -33,7 +33,7 @@ uses
   GLContext,
   GLImageUtils,
   GLUtils,
-  GLCrossPlatform,
+//  GLCrossPlatform,
   GLColor,
   GLTextureFormat,
   GLVectorGeometry,
@@ -2024,10 +2024,10 @@ begin
   else if Source is TGraphic then
   begin
     if (Source is TBitmap)
-    and (TBitmap(Source).PixelFormat in [glpf24bit, glpf32bit])
+    and (TBitmap(Source).PixelFormat in [pf24bit, pf32bit])
     and (((TBitmap(Source).Width and 3) = 0) or gl.EXT_bgra) then
     begin
-      if TBitmap(Source).PixelFormat = glpf24bit then
+      if TBitmap(Source).PixelFormat = pf24bit then
         AssignFrom24BitsBitmap(TBitmap(Source))
       else
         AssignFrom32BitsBitmap(TBitmap(Source))
@@ -2047,7 +2047,7 @@ begin
         // bmp.Height:=graphic.Height;
         // crossbuilder: using setsize because setting width or height while
         // the other one is zero results in not setting with/hight
-        bmp.PixelFormat := glpf24bit;
+        bmp.PixelFormat := pf24bit;
         bmp.Height := graphic.Height;
         if (graphic.Width and 3) = 0 then
         begin
@@ -2082,7 +2082,7 @@ var
   rowOffset: Int64;
   pSrc, pDest: PAnsiChar;
 begin
-  Assert(aBitmap.PixelFormat = glpf24bit);
+  Assert(aBitmap.PixelFormat = pf24bit);
   UnMipmap;
   FLOD[0].Width := aBitmap.Width;
   FLOD[0].Height := aBitmap.Height;
@@ -2112,24 +2112,24 @@ begin
     begin
       if gl.EXT_bgra then
       begin
-        pSrc := BitmapScanLine(aBitmap, 0);
+        pSrc := aBitmap.ScanLine[0]; //BitmapScanLine(aBitmap, 0);
         Move(pSrc^, pDest^, lineSize);
       end
       else
-        BGR24ToRGBA32(BitmapScanLine(aBitmap, 0), pDest, GetWidth);
+        BGR24ToRGBA32(aBitmap.ScanLine[0], pDest, GetWidth);
     end
     else
     begin
       if VerticalReverseOnAssignFromBitmap then
       begin
-        pSrc := BitmapScanLine(aBitmap, GetHeight - 1);
-        rowOffset := Integer(BitmapScanLine(aBitmap, GetHeight - 2)) -
+        pSrc := aBitmap.ScanLine[GetHeight - 1];
+        rowOffset := Integer(aBitmap.ScanLine[GetHeight - 2]) -
           Integer(pSrc);
       end
       else
       begin
-        pSrc := BitmapScanLine(aBitmap, 0);
-        rowOffset := Int64(BitmapScanLine(aBitmap, 1)) - Int64(pSrc);
+        pSrc := aBitmap.ScanLine[0];
+        rowOffset := Int64(aBitmap.ScanLine[1]) - Int64(pSrc);
       end;
       if gl.EXT_bgra then
       begin
@@ -2159,7 +2159,7 @@ var
   rowOffset: Int64;
   pSrc, pDest: PAnsiChar;
 begin
-  Assert(aBitmap.PixelFormat = glpf24bit);
+  Assert(aBitmap.PixelFormat = pf24bit);
   Assert((aBitmap.Width and 3) = 0);
   UnMipmap;
   FLOD[0].Width := aBitmap.Width;
@@ -2178,20 +2178,20 @@ begin
     pDest := @PAnsiChar(FData)[Width * 4 * (Height - 1)];
     if Height = 1 then
     begin
-      RGB24ToRGBA32(BitmapScanLine(aBitmap, 0), pDest, GetWidth);
+      RGB24ToRGBA32(aBitmap.ScanLine[0], pDest, GetWidth);
     end
     else
     begin
       if VerticalReverseOnAssignFromBitmap then
       begin
-        pSrc := BitmapScanLine(aBitmap, GetHeight - 1);
-        rowOffset := Cardinal(BitmapScanLine(aBitmap, GetHeight - 2));
+        pSrc := aBitmap.ScanLine[GetHeight - 1];
+        rowOffset := Cardinal(aBitmap.ScanLine[GetHeight - 2]);
         Dec(rowOffset, Cardinal(pSrc));
       end
       else
       begin
-        pSrc := BitmapScanLine(aBitmap, 0);
-        rowOffset := Cardinal(BitmapScanLine(aBitmap, 1));
+        pSrc := aBitmap.ScanLine[0];
+        rowOffset := Cardinal(aBitmap.ScanLine[1]);
         Dec(rowOffset, Cardinal(pSrc));
       end;
       for y := 0 to Height - 1 do
@@ -2210,7 +2210,7 @@ var
   rowOffset: Int64;
   pSrc, pDest: PAnsiChar;
 begin
-  Assert(aBitmap.PixelFormat = glpf32bit);
+  Assert(aBitmap.PixelFormat = pf32bit);
   UnMipmap;
   FLOD[0].Width := aBitmap.Width;
   FLOD[0].Height := aBitmap.Height;
@@ -2234,10 +2234,10 @@ begin
     pDest := @PAnsiChar(FData)[Width * 4 * (Height - 1)];
     if VerticalReverseOnAssignFromBitmap then
     begin
-      pSrc := BitmapScanLine(aBitmap, Height - 1);
+      pSrc := aBitmap.ScanLine[Height - 1];
       if Height > 1 then
       begin
-        rowOffset := Cardinal(BitmapScanLine(aBitmap, Height - 2));
+        rowOffset := Cardinal(aBitmap.ScanLine[Height - 2]);
         Dec(rowOffset, Cardinal(pSrc));
       end
       else
@@ -2245,10 +2245,10 @@ begin
     end
     else
     begin
-      pSrc := BitmapScanLine(aBitmap, 0);
+      pSrc := aBitmap.ScanLine[0];
       if Height > 1 then
       begin
-        rowOffset := Cardinal(BitmapScanLine(aBitmap, 1));
+        rowOffset := Cardinal(aBitmap.ScanLine[1]);
         Dec(rowOffset, Cardinal(pSrc));
       end
       else
@@ -2455,7 +2455,7 @@ begin
   Narrow;
 
   Result := TBitmap.Create;
-  Result.PixelFormat := glpf32bit;
+  Result.PixelFormat := pf32bit;
   Result.Width := Width;
   Result.Height := Height;
 
@@ -2464,7 +2464,7 @@ begin
     pSrc := @PAnsiChar(FData)[Width * 4 * (Height - 1)];
     for y := 0 to Height - 1 do
     begin
-      pDest := BitmapScanLine(Result, y);
+      pDest := Result.ScanLine[y];
       for x := 0 to Width - 1 do
       begin
         x4 := x * 4;
@@ -2843,13 +2843,13 @@ begin
   Narrow;
   aBitmap.Width := GetWidth;
   aBitmap.Height := GetHeight;
-  aBitmap.PixelFormat := glpf32bit;
+  aBitmap.PixelFormat := pf32bit;
   if FVerticalReverseOnAssignFromBitmap then
   begin
     for y := 0 to GetHeight - 1 do
     begin
       pSrc := @PAnsiChar(FData)[y * (GetWidth * 4)];
-      pDest := BitmapScanLine(aBitmap, y);
+      pDest := aBitmap.ScanLine[y];
       BGRA32ToRGBA32(pSrc, pDest, GetWidth);
     end;
   end
@@ -2858,7 +2858,7 @@ begin
     for y := 0 to GetHeight - 1 do
     begin
       pSrc := @PAnsiChar(FData)[y * (GetWidth * 4)];
-      pDest := BitmapScanLine(aBitmap, GetHeight - 1 - y);
+      pDest := aBitmap.ScanLine[GetHeight - 1 - y];
       BGRA32ToRGBA32(pSrc, pDest, GetWidth);
     end;
   end;

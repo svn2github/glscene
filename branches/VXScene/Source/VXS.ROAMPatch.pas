@@ -20,7 +20,6 @@ uses
   VXS.HeightData,
   VXS.Isolines,
   VXS.VectorLists,
-  VXS.CrossPlatform,
   VXS.Context;
 
 type

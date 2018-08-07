@@ -21,7 +21,6 @@ uses
 
   VXS.OpenGL,
   VXS.Context,
-  VXS.CrossPlatform,
   VXS.State,
   VXS.Strings,
   VXS.VectorGeometry;

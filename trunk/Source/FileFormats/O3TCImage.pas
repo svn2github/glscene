@@ -16,7 +16,8 @@ uses
   Winapi.Windows,
   System.Classes,
   System.SysUtils,
-   
+  Vcl.Graphics,
+
   GLCrossPlatform,
   GLVectorGeometry,
   GLGraphics,
@@ -24,9 +25,8 @@ uses
 
 type
 
-  TO3TCImage = class(TGLBitmap)
+  TO3TCImage = class(TBitmap)
   public
-    
     procedure LoadFromStream(stream: TStream); override;
     procedure SaveToStream(stream: TStream); override;
   end;
@@ -62,7 +62,7 @@ begin
   Width := FullO3TC.LevelWidth[0];
   Height := FullO3TC.LevelHeight[0];
   Transparent := true;
-  PixelFormat := glpf32bit;
+  PixelFormat := pf32bit;
 
   src := PGLubyte(FullO3TC.Data);
   for y := 0 to Height - 1 do
@@ -80,25 +80,17 @@ begin
 end;
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 initialization
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 
-  TGLPicture.RegisterFileFormat(
+  TPicture.RegisterFileFormat(
     'o3tc', 'oZone3D Texture Compression', TO3TCImage);
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 finalization
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 
-  TGLPicture.UnregisterGraphicClass(TO3TCImage);
+  TPicture.UnregisterGraphicClass(TO3TCImage);
 
 end.
 

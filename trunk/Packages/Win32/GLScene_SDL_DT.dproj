@@ -87,15 +87,15 @@
         <BT_BuildType>Debug</BT_BuildType>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
-        <DCC_BpiOutput>$(GLSCENE)\lib\Win32</DCC_BpiOutput>
-        <DCC_HppOutput>$(GLSCENE)\include\Win32</DCC_HppOutput>
-        <DCC_ObjOutput>$(GLSCENE)\lib\Win32</DCC_ObjOutput>
+        <DCC_BpiOutput>..\..\lib\Win32</DCC_BpiOutput>
+        <DCC_HppOutput>..\..\include\Win32</DCC_HppOutput>
+        <DCC_ObjOutput>..\..\lib\Win32</DCC_ObjOutput>
         <DCC_CBuilderOutput>All</DCC_CBuilderOutput>
         <VerInfo_Locale>1033</VerInfo_Locale>
-        <DCC_DcpOutput>$(GLSCENE)\lib\Win32</DCC_DcpOutput>
-        <DCC_DcuOutput>$(GLSCENE)\lib\Win32</DCC_DcuOutput>
+        <DCC_DcpOutput>..\..\lib\Win32</DCC_DcpOutput>
+        <DCC_DcuOutput>..\..\lib\Win32</DCC_DcuOutput>
         <VerInfo_Keys>CompanyName=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductVersion=1.0.0.0;Comments=;ProgramID=com.embarcadero.$(MSBuildProjectName);FileDescription=$(MSBuildProjectName);ProductName=$(MSBuildProjectName)</VerInfo_Keys>
-        <DCC_UnitSearchPath>$(GLSCENE)\Source;$(GLSCENE)\Source\Basis;$(GLSCENE)\Source\DesignTime;$(GLSCENE)\Source\FileFormats;$(GLSCENE)\Source\GameAPIs;$(GLSCENE)\Source\ParallelAPIs;$(GLSCENE)\Source\PhysicsAPIs;$(GLSCENE)\Source\ScriptingAPIs;$(GLSCENE)\Source\Shaders;$(GLSCENE)\Source\SoundVideoAPIs;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_UnitSearchPath>..\..\Source;..\..\Source\Basis;..\..\Source\DesignTime;..\..\Source\FileFormats;..\..\Source\GameAPIs;..\..\Source\ParallelAPIs;..\..\Source\PhysicsAPIs;..\..\Source\ScriptingAPIs;..\..\Source\Shaders;..\..\Source\SoundVideoAPIs;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
     </PropertyGroup>
     <ItemGroup>

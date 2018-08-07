@@ -41,10 +41,13 @@ interface
 {$I GLScene.inc}
 
 uses
+  Winapi.Windows,
   System.Classes,
   System.SysUtils,
   System.TypInfo,
   Vcl.Graphics,
+
+  GLCrossPlatform,
 
   GLScene,
   GLCoordinates,
@@ -57,7 +60,6 @@ uses
   GLTexture,
   GLUtils,
   GLStrings,
-  GLCrossPlatform,
   GLMaterial,
   GLVectorTypes;
 
@@ -189,19 +191,19 @@ type
     procedure Assign(Source: TPersistent); override;
   published
     property NavigateUp: Byte read FNavigateUp write FNavigateUp default
-      glKey_HOME;
+      VK_HOME;
     property NavigateDown: Byte read FNavigateDown write FNavigateDown default
-      glKey_END;
+      VK_END;
     property NavigatePageUp: Byte read FNavigatePageUp write FNavigatePageUp
-      default glKey_PRIOR;
+      default VK_PRIOR;
     property NavigatePageDown: Byte read FNavigatePageDown write
-      FNavigatePageDown default glKey_NEXT;
+      FNavigatePageDown default VK_NEXT;
     property NextCommand: Byte read FNextCommand write FNextCommand default
-      glKey_DOWN;
+      VK_DOWN;
     property PreviousCommand: Byte read FPreviousCommand write FPreviousCommand
-      default glKey_UP;
+      default VK_UP;
     property AutoCompleteCommand: Byte read FAutoCompleteCommand write
-      FAutoCompleteCommand default glKey_CONTROL;
+      FAutoCompleteCommand default VK_CONTROL;
     property DblClickDelay: Integer read FDblClickDelay write FDblClickDelay
       default 300;
   end;
@@ -797,9 +799,9 @@ begin
   if not Visible then
     Exit;
 
-  if c = #8 then //glKey_BACK
+  if c = #8 then //VK_BACK
     FInputLine := copy(FInputLine, 1, Length(FInputLine) - 1)
-  else if c = #13 then //glKey_RETURN
+  else if c = #13 then //VK_RETURN
   begin
     if coAutoCompleteCommandsOnEnter in FOptions then
       AutoCompleteCommand;
@@ -856,7 +858,7 @@ begin
 
   if (key = FControls.AutoCompleteCommand) then
   begin
-    CurrentTickCount := GLGetTickCount;
+    CurrentTickCount := GetTickCount;
     AutoCompleteCommand(MatchCount, AdditionalCommandsMatchList,
       CommandsMatchList);
     if MatchCount = 0 then
@@ -1475,13 +1477,13 @@ constructor TGLConsoleControls.Create(AOwner: TPersistent);
 begin
   FOwner := AOwner;
 
-  FNavigateUp := glKey_HOME;
-  FNavigateDown := glKey_END;
-  FNavigatePageUp := glKey_PRIOR;
-  FNavigatePageDown := glKey_NEXT;
-  FNextCommand := glKey_DOWN;
-  FPreviousCommand := glKey_UP;
-  FAutoCompleteCommand := glKey_CONTROL;
+  FNavigateUp := VK_HOME;
+  FNavigateDown := VK_END;
+  FNavigatePageUp := VK_PRIOR;
+  FNavigatePageDown := VK_NEXT;
+  FNextCommand := VK_DOWN;
+  FPreviousCommand := VK_UP;
+  FAutoCompleteCommand := VK_CONTROL;
 
   FDblClickDelay := 300;
 end;
