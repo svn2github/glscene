@@ -48,16 +48,17 @@ type
       {Calculates attenuated speed over deltaTime. 
             Integration step is 0.01 sec, and the following formula is applied
             at each step: constant+linear*speed+quadratic*speed^2 }
-    function Calculate(speed, deltaTime: double): double;
-    // Returns a "[constant; linear; quadractic]" string
-    function AsString(const damping: TGLDamping): string;
+    function Calculate(speed, deltaTime: Double): Double;
+    // Returns a "[constant; linear; quadractic]" String
+    function AsString(const damping: TGLDamping): String;
     {Sets all damping parameters in a single call. }
-    procedure SetDamping(const constant: single = 0; const linear: single = 0;
-      const quadratic: single = 0);
+    procedure SetDamping(const constant: Single = 0; 
+	  const linear: Single = 0;
+      const quadratic: Single = 0);
   published
-    property Constant: single read FConstant write FConstant;
-    property Linear: single read FLinear write FLinear;
-    property Quadratic: single read FQuadratic write FQuadratic;
+    property Constant: Single read FConstant write FConstant;
+    property Linear: Single read FLinear write FLinear;
+    property Quadratic: Single read FQuadratic write FQuadratic;
   end;
 
   {Simple translation and rotation Inertia behaviour. 
@@ -91,7 +92,7 @@ type
     procedure ApplyTranslationAcceleration(const deltaTime: double;
       const accel: TVector);
       {Applies a timed force to the inertia. If Mass is null, nothing is done. }
-    procedure ApplyForce(const deltaTime: double; const force: TVector);
+    procedure ApplyForce(const deltaTime: Double; const Force: TVector);
       {Applies a timed torque to the inertia (yuck!). 
         This gets a "yuck!" because it is as false as the rest of the rotation  model. }
     procedure ApplyTorque(const deltaTime: double;
@@ -104,27 +105,25 @@ type
     procedure SurfaceBounce(const surfaceNormal: TVector; restitution: single);
   published
     property Mass: single read FMass write FMass;
-    property TranslationSpeed: TGLCoordinates
-      read FTranslationSpeed write SetTranslationSpeed;
+    property TranslationSpeed: TGLCoordinates read FTranslationSpeed write SetTranslationSpeed;
     property TurnSpeed: single read FTurnSpeed write FTurnSpeed;
     property RollSpeed: single read FRollSpeed write FRollSpeed;
     property PitchSpeed: single read FPitchSpeed write FPitchSpeed;
 
-      {Enable/Disable damping (damping has a high cpu-cycle cost). 
+    {Enable/Disable damping (damping has a high cpu-cycle cost). 
         Damping is enabled by default. }
     property DampingEnabled: boolean read FDampingEnabled write FDampingEnabled;
-      {Damping applied to translation speed.
-        Note that it is not "exactly" applied, ie. if damping would stop
-        your object after 0.5 time unit, and your progression steps are
-        of 1 time unit, there will be an integration error of 0.5 time unit. }
-    property TranslationDamping: TGLDamping read FTranslationDamping
-      write SetTranslationDamping;
-      {Damping applied to rotation speed (yuck!).
-        Well, this one is not "exact", like TranslationDamping, and neither
-        it is "physical" since I'm reusing the mass and... and... well don't
-        show this to your science teacher 8).
-        Anyway that's easier to use than the realworld formulas, calculated
-        faster, and properly used can give a good illusion of reality. }
+    {Damping applied to translation speed.
+     Note that it is not "exactly" applied, ie. if damping would stop
+     your object after 0.5 time unit, and your progression steps are
+     of 1 time unit, there will be an integration error of 0.5 time unit. }
+    property TranslationDamping: TGLDamping read FTranslationDamping write SetTranslationDamping;
+    {Damping applied to rotation speed (yuck!).
+     Well, this one is not "exact", like TranslationDamping, and neither
+     it is "physical" since I'm reusing the mass and... and... well don't
+     show this to your science teacher 8).
+     Anyway that's easier to use than the realworld formulas, calculated
+     faster, and properly used can give a good illusion of reality. }
     property RotationDamping: TGLDamping read FRotationDamping write SetRotationDamping;
   end;
 

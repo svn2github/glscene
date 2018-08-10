@@ -44,7 +44,6 @@ interface
 
 uses
   Winapi.Windows,
-  GLCrossPlatform,
   GLSLog;
 
 const

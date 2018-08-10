@@ -1,12 +1,12 @@
 //
-// VXScene Component Library, based on GLScene http://glscene.sourceforge.net 
+// VXScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
 {
-  Classes for generating perlin noise. 
+  Classes for generating perlin noise.
 
   The components and classes in the unit are a base to generate textures and heightmaps from,
-  A Perlin Height Data Source have been included as an example. Use this combined with a terrain renderer for an infinite random landscape  
-   
+  A Perlin Height Data Source have been included as an example. Use this combined with a terrain renderer for an infinite random landscape
+
 }
 unit VXS.Perlin;
 
@@ -20,10 +20,10 @@ uses
   System.Math,
   FMX.Graphics,
 
+  VXS.CrossPlatform,
   VXS.VectorGeometry,
   VXS.PerlinBase, 
-  VXS.HeightData,
-  VXS.CrossPlatform;
+  VXS.HeightData;
 
 Type
   TVXPerlinInterpolation = (pi_none, pi_simple, pi_linear, pi_Smoothed,

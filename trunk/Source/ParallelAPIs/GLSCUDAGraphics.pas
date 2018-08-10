@@ -16,7 +16,6 @@ uses
   System.SysUtils,
   
   OpenGLTokens,
-  GLCrossPlatform,
   GLSCUDAApi,
   GLSCUDA,
   GLContext,

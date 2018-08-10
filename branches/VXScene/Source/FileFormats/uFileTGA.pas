@@ -16,7 +16,6 @@ uses
   System.SysUtils,
 
   VXS.OpenGL,
-  VXS.CrossPlatform,
   VXS.Context,
   VXS.Graphics,
   VXS.TextureFormat,

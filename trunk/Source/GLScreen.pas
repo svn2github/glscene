@@ -14,8 +14,8 @@ uses
   System.SysUtils,
   Winapi.Windows,
   VCL.Forms,
-  GLVectorGeometry,
-  GLCrossPlatform;
+
+  GLVectorGeometry;
 
 const
   MaxVideoModes = 200;

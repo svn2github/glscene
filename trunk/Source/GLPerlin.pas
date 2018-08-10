@@ -21,8 +21,7 @@ uses
 
   GLVectorGeometry,
   GLPerlinBase,
-  GLHeightData,
-  GLCrossPlatform;
+  GLHeightData;
 
 type
   TGLPerlinInterpolation = (pi_none, pi_simple, pi_linear, pi_Smoothed,

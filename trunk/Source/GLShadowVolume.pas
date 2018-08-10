@@ -24,7 +24,6 @@ uses
   GLVectorGeometry,
   GLContext,
   GLSilhouette,
-  GLCrossPlatform,
   GLPersistentClasses,
   GLCoordinates,
   GLPipelineTransformation,

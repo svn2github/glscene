@@ -19,7 +19,6 @@ uses
   
   OpenGLTokens,
   GLScene,
-  GLCrossPlatform,
   GLBaseClasses,
   GLState,
   GLContext,

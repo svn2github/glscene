@@ -27,7 +27,6 @@ uses
   GLVectorGeometry,
   GLPersistentClasses,
   GLPipelineTransformation,
-  GLCrossPlatform,
   GLGraphics,
   GLColor,
   GLRenderContextInfo,

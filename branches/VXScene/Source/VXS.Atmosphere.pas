@@ -29,7 +29,6 @@ uses
   VXS.Color,
   VXS.RenderContextInfo,
   VXS.State,
-  VXS.CrossPlatform,
   VXS.VectorTypes;
 
 type

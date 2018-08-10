@@ -1,12 +1,12 @@
 ﻿//
-// VXScene Component Library, based on GLScene http://glscene.sourceforge.net 
+// VXScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
 {
-   Cross platform support functions and types.  
+   Cross platform support functions and types.
 
    Ultimately, *no* cross-platform or cross-version defines should be present
    in the core units, and have all moved here instead.
-          
+
 }
 unit VXS.CrossPlatform;
 
@@ -56,9 +56,6 @@ var
   IsDesignTime: Boolean = False;
   vProjectTargetName: TProjectTargetNameFunc;
 
-{ Builds a TColor from Red Green Blue components,
-  Vcl.Imaging.GIFImg.TGIFColorMap.RGB2Color }
-function RGB(const r, g, b: Byte): TColor; {$NODEFINE RGB}
 function GetRectangle(const aLeft, aTop, aRight, aBottom: Integer): TRect;
 { Increases or decreases the width and height of the specified rectangle.
    Adds dx units to the left and right ends of the rectangle and dy units to
@@ -115,8 +112,6 @@ procedure GLLoadBitmapFromInstance(Instance: LongInt; ABitmap: TBitmap; AName: s
 procedure ShowHTMLUrl(Url: string);
 //function GLGetTickCount: int64;
 procedure SetExeDirectory;
-function GetDecimalSeparator: Char;
-procedure SetDecimalSeparator(AValue: Char);
 
 // StrUtils.pas
 function AnsiStartsText(const ASubText, AText: string): Boolean;
@@ -182,11 +177,6 @@ end;
 procedure ShowHTMLUrl(Url: string);
 begin
   ShellExecute(0, 'open', PChar(Url), nil, nil, SW_SHOW);
-end;
-
-function RGB(const r, g, b: Byte): TColor;
-begin
-  Result := r or (g shl 8) or (b shl 16);
 end;
 
 function GetRectangle(const aLeft, aTop, aRight, aBottom: Integer): TRect;
@@ -436,16 +426,6 @@ begin
     path := IncludeTrailingPathDelimiter(path);
     SetCurrentDir(path);
   end;
-end;
-
-function GetDecimalSeparator: Char;
-begin
-  Result := FormatSettings.DecimalSeparator;
-end;
-
-procedure SetDecimalSeparator(AValue: Char);
-begin
-  FormatSettings.DecimalSeparator := AValue;
 end;
 
 function HalfToFloat(Half: THalfFloat): Single;

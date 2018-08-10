@@ -19,7 +19,6 @@ uses
   GLVectorGeometry,
   GLHeightData, 
   GLVectorLists, 
-  GLCrossPlatform, 
   GLContext,
   GLVectorTypes,
   GLIsolines;

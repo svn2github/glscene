@@ -18,7 +18,6 @@ uses
   System.SysUtils,
   Vcl.Graphics,
 
-  GLCrossPlatform,
   GLGraphics;
 
 

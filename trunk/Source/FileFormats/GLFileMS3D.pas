@@ -19,7 +19,6 @@ uses
   System.Classes,
   System.SysUtils, 
    
-  GLCrossPlatform, 
   GLVectorFileObjects,
   GLVectorTypes, 
   GLMaterial, 

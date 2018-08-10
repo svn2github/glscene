@@ -18,8 +18,7 @@ uses
   GLVectorTypes, 
   GLVectorGeometry, 
   GLVectorLists,
-  GLCrossPlatform, 
-  GLTexture, 
+  GLTexture,
   GLMaterial;
 
 const

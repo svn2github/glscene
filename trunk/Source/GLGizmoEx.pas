@@ -29,7 +29,6 @@ uses
   GLBitmapFont,
   GLWin32Viewer,
   GLVectorFileObjects,
-  GLCrossPlatform,
   GLCoordinates,
   GLRenderContextInfo,
   GLGeometryBB,

@@ -25,8 +25,7 @@ uses
   System.Classes, 
   System.SysUtils,
    
-  Types3DS, 
-  GLCrossPlatform;
+  Types3DS;
 
 type
   TFile3DS = class;
@@ -104,7 +103,7 @@ type
   TKeyFramer = class
   private
     FOwner: TFile3DS;
-    FMeshMotionList, 
+    FMeshMotionList,
 	FOmniMotionList, 
 	FSpotMotionList, 
 	FCameraMotionList: TList;
@@ -845,7 +844,7 @@ begin
               IDParentNode := FindNodeByID(IDNode.ParentID);
               if assigned(IDParentNode) then
               begin
-                Name := UTF8String(IDParentNode.Name); 
+                Name := UTF8String(IDParentNode.Name);
                 Inst := UTF8String(IDParentNode.InstStr);
               end;
 
@@ -936,13 +935,13 @@ var
 
 begin
 
-  OldSeparator := GetDecimalSeparator;
-  SetDecimalSeparator('.');
+  OldSeparator := FormatSettings.DecimalSeparator;
+  FormatSettings.DecimalSeparator := '.';
   try
-    if assigned(FDatabase.TopChunk) then
+    if Assigned(FDatabase.TopChunk) then
       DumpChunk(Self, Strings, FDatabase.TopChunk, 0, DumpLevel);
   finally
-  	SetDecimalSeparator(OldSeparator);
+    FormatSettings.DecimalSeparator := OldSeparator;
   end;
 end;
 

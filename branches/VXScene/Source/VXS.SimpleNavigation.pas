@@ -28,8 +28,7 @@ uses
   VXS.VectorGeometry,
   VXS.Scene,
   VXS.Win64Viewer,
-  VXS.Strings,
-  VXS.CrossPlatform;
+  VXS.Strings;
 
 type
 

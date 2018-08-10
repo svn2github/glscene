@@ -14,7 +14,6 @@ uses
 
   VXS.OpenGL,
   VXS.VectorGeometry,
-  VXS.CrossPlatform,
   VXS.Context,
   VXS.Graphics,
   VXS.TextureFormat,

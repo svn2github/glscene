@@ -27,8 +27,7 @@ uses
   GLVectorGeometry,
   GLScene,
   GLWin32Viewer,
-  GLStrings,
-  GLCrossPlatform;
+  GLStrings;
 
 type
 

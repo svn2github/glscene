@@ -21,7 +21,6 @@ uses
   VXS.Coordinates,
   VXS.Material,
   VXS.BitmapFont,
-  VXS.CrossPlatform,
   VXS.Color,
   VXS.RenderContextInfo,
   VXS.Canvas,

@@ -18,8 +18,7 @@ uses
   GLVectorGeometry, 
   GLVectorTypes, 
   OpenGLTokens, 
-  GLBaseClasses,
-  GLCrossPlatform;
+  GLBaseClasses;
 
 type
 

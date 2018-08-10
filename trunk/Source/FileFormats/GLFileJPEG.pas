@@ -16,7 +16,6 @@ uses
   Vcl.Graphics,
   Vcl.Imaging.Jpeg,
   
-  GLCrossPlatform,
   OpenGLTokens,
   GLContext,
   GLGraphics,

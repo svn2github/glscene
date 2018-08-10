@@ -17,7 +17,6 @@ uses
   VXS.OpenGL,
   VXS.ParticleFX,
   VXS.Graphics,
-  VXS.CrossPlatform,
   VXS.PerlinNoise3D,
   VXS.VectorGeometry;
 

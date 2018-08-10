@@ -1,9 +1,9 @@
 //
-// VXScene Component Library, based on GLScene http://glscene.sourceforge.net 
+// VXScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
 {
-   A cross-platform full-screen viewer. 
-   
+   A cross-platform full-screen viewer.
+
 }
 unit VXS.FullScreenViewer;
 
@@ -310,12 +310,9 @@ begin
     Width := Screen.Width;
     Height := Screen.Height;
     case GetCurrentColorDepth of
-      24:
-        ScreenDepth := sd24bits;
-      16:
-        ScreenDepth := sd16bits;
-      8:
-        ScreenDepth := sd8bits;
+      24: ScreenDepth := sd24bits;
+      16: ScreenDepth := sd16bits;
+      8:  ScreenDepth := sd8bits;
     else
       // highest depth possible otherwise
       ScreenDepth := sd32bits;
@@ -379,13 +376,11 @@ begin
       FormStyle := TFormStyle.StayOnTop
     else
       FormStyle := TFormStyle.Normal;
-{$IFDEF MSWINDOWS}
      { TODO : E2010 Incompatible types: 'HWND' and 'TWindowHandle' }
      (*
     SetWindowLong(Handle, GWL_STYLE, GetWindowLong(Handle, GWL_STYLE) and
       not WS_CAPTION);
      *)
-{$ENDIF}
     // WindowState:=wsMaximized;
     // Switch video mode
     if (Screen.Width <> Width) or (Screen.Height <> Height) or
@@ -394,11 +389,9 @@ begin
       SetFullscreenMode(res, FRefreshRate);
       FSwitchedResolution := True;
     end;
-{$IFDEF MSWINDOWS}
     // Hides Taskbar + Windows 7 Button
     ShowWindow(FindWindow('Shell_TrayWnd', nil), SW_HIDE);
     ShowWindow(FindWindow('BUTTON', nil), SW_HIDE);
-{$ENDIF}
     // Show;
   end;
 
@@ -427,11 +420,9 @@ begin
     (*Cursor := crDefault;*)
     PopupMenu := nil;
   end;
-{$IFDEF MSWINDOWS}
   // Restore Taskbar + Windows 7 Button
   ShowWindow(FindWindow('Shell_TrayWnd', nil), SW_SHOWNA);
   ShowWindow(FindWindow('BUTTON', nil), SW_SHOWNA);
-{$ENDIF}
   // attempt that, at the very least...
   if FSwitchedResolution then
     RestoreDefaultMode;
@@ -662,10 +653,8 @@ RegisterClasses([TVXFullScreenViewer]);
 
 finalization
 
-{$IFDEF MSWINDOWS}
 // Restore Taskbar + Windows 7 Button
 ShowWindow(FindWindow('Shell_TrayWnd', nil), SW_SHOWNA);
 ShowWindow(FindWindow('BUTTON', nil), SW_SHOWNA);
-{$ENDIF}
 
 end.

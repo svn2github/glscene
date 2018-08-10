@@ -8,18 +8,12 @@
 
 unit VXS.ImageUtils;
 
-// DONE: ConvertImage
 // TODO: Complite InfToXXX
-// DONE: S3TC decompression
-// DONE: LATC decompression
-// DONE: RGTC decompression
 // TODO: BPTC decompression
 // TODO: S3TC compression
 // TODO: LATC compression
 // TODO: RGTC compression
 // TODO: BPTC compression
-// DONE: ResizeImage
-// DONE: Build2DMipmap
 // TODO: Build3DMipmap
 
 interface
@@ -32,8 +26,8 @@ uses
   System.Math,
 
   VXS.OpenGL,
-  VXS.Strings,
   VXS.CrossPlatform,
+  VXS.Strings,
   VXS.TextureFormat,
   VXS.VectorGeometry;
 

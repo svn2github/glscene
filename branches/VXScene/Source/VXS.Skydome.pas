@@ -22,7 +22,6 @@ uses
   VXS.Context,
   VXS.State,
   VXS.Graphics,
-  VXS.CrossPlatform,
   VXS.VectorTypes,
   VXS.Color,
   VXS.RenderContextInfo;
@@ -718,7 +717,7 @@ begin
     star.Dec := ArcSine(coord.Z) * c180divPI;
     star.Ra := Random * 360 - 180;
     // pick a color
-    star.Color := RGB(RandomTT(ColorMin.X, ColorMax.X),
+    star.Color := RGB2Color(RandomTT(ColorMin.X, ColorMax.X),
       RandomTT(ColorMin.Y, ColorMax.Y),
       RandomTT(ColorMin.Z, ColorMax.Z));
     // pick a magnitude
@@ -1050,7 +1049,7 @@ begin
 
   //fade stars if required
   if SunElevation>-40 then ts:=PowerInteger(1-(SunElevation+40)/90,11)else ts:=1;
-  color := RGB(round(ts * 255), round(ts * 255), round(ts * 255));
+  color := RGB2Color(round(ts * 255), round(ts * 255), round(ts * 255));
   if esoFadeStarsWithSun in ExtendedOptions then for i:=0 to Stars.Count-1 do stars[i].Color:=color;
 
 
@@ -1096,7 +1095,7 @@ begin
     ts := PowerInteger(1 - (SunElevation+40) / 90, 11)
   else
     ts := 1;
-  color := RGB(round(ts * 255), round(ts * 255), round(ts * 255));
+  color := RGB2Color(round(ts * 255), round(ts * 255), round(ts * 255));
   if esoFadeStarsWithSun in ExtendedOptions then
     for i := 0 to Stars.Count - 1 do
       stars[i].Color := color;

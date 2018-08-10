@@ -28,7 +28,6 @@ uses
   VXS.VectorFileObjects,
   VXS.State,
   VXS.PersistentClasses,
-  VXS.CrossPlatform,
   VXS.Coordinates,
   VXS.RenderContextInfo;
 

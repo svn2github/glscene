@@ -15,7 +15,6 @@ uses
   
   GLTexture,
   GLGraphics,
-  GLCrossPlatform,
   GLTextureFormat,
   GLVectorGeometry;
 

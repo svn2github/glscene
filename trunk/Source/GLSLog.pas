@@ -14,16 +14,15 @@ interface
 {$I GLScene.inc}
 
 uses
- {$IFDEF MSWINDOWS} Winapi.Windows, Winapi.ShellApi, {$ENDIF}
- {$IFDEF LINUX} Process, {$ENDIF}
+  Winapi.Windows,
+  Winapi.ShellApi,
   System.StrUtils, 
   System.Classes, 
   System.SysUtils,
   System.UITypes, 
   System.SyncObjs,
   VCL.Dialogs, 
-  VCL.Controls,
-  GLCrossPlatform;
+  VCL.Controls;
 
 type
   {  Levels of importance of log messages }
@@ -160,16 +159,14 @@ type
       const AMaxSize: Integer = 0; const ABackUpOldLogs: Boolean = False;
       const AClearOldLogs: Boolean = True; const AWriteInternalMessages: Boolean = True); virtual;
 
-    {  Destructor }
     destructor Destroy; override;
-
     {  General Logging procedures }
     procedure Log(const Desc: string; const Level: TLogLevel = lkInfo);
     procedure LogAdv(const args: array of const; const ALevel: TLogLevel = lkError);
     procedure LogException(const E: Exception; const aFunctionName: string;
       const args: array of const; const ALevel: TLogLevel = lkError);
 
-    {  Logs a string  Desc  if  Level 
+    {  Logs a string  Desc  if  Level
       matches current USE_LOGGING level (see @Link(LogLevels)) }
     procedure LogDebug(const Desc: string);
     procedure LogInfo(const Desc: string);

@@ -23,7 +23,6 @@ uses
   System.Classes, 
   System.SysUtils,
 
-  GLCrossPlatform, 
   GLApplicationFileIO;
 
 type

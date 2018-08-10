@@ -1646,10 +1646,10 @@ var
   oldDc: Char;
 begin
   ReadLine(cVTInteger);
-  oldDc := GetDecimalSeparator;
-  SetDecimalSeparator('.');
+  oldDc := FormatSettings.DecimalSeparator;
+  FormatSettings.DecimalSeparator := '.';
   Result := StrToFloat(FData);
-  SetDecimalSeparator(oldDc);
+  FormatSettings.DecimalSeparator := oldDc;
 end;
 
 procedure TTextReader.ReadListBegin;

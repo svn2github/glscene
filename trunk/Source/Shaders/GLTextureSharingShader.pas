@@ -31,8 +31,7 @@ uses
   XOpenGL, 
   GLState, 
   GLPersistentClasses,
-  GlCrossPlatform, 
-  GLCoordinates, 
+  GLCoordinates,
   GLRenderContextInfo;
 
 type

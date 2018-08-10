@@ -16,7 +16,6 @@ interface
 uses
   System.SysUtils,
   VXS.OpenGL,
-  VXS.CrossPlatform,
   VXS.TextureFormat;
 
 const

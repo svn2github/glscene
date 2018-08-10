@@ -28,7 +28,6 @@ uses
   VXS.BitmapFont,
   VXS.RenderContextInfo,
   VXS.VectorLists,
-  VXS.CrossPlatform,
   VXS.Utils,
   VXS.VectorGeometry,
   VXS.ApplicationFileIO,

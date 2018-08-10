@@ -21,7 +21,6 @@ uses
   VXS.VectorLists,
   VXS.VectorFileObjects,
   VXS.GeometryBB,
-  VXS.CrossPlatform,
   VXS.Manager,
   VXS.VectorTypes;
 

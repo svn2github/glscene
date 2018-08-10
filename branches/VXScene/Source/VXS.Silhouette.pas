@@ -22,8 +22,7 @@ uses
 
   VXS.VectorTypes,
   VXS.VectorGeometry,
-  VXS.VectorLists,
-  VXS.CrossPlatform;
+  VXS.VectorLists;
 
 type
   TVXSilhouetteStyle = (ssOmni, ssParallel);

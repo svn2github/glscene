@@ -3,9 +3,9 @@
 //
 {
     Support-Code to load Wavefront OBJ Files into TGLFreeForm-Components
-    in GLScene. 
+    in GLScene.
     Note that you must manually add this unit to one of your project's uses
-    to enable support for OBJ & OBJF at run-time. 
+    to enable support for OBJ & OBJF at run-time.
 }
 unit GLFileOBJ;
 
@@ -17,10 +17,9 @@ interface
 uses
   System.Classes,
   System.SysUtils,
-   
+
   GLApplicationFileIO,
-  GLCrossPlatform, 
-  GLPersistentClasses, 
+  GLPersistentClasses,
   GLVectorGeometry,
   GLScene,  
   GLVectorFileObjects, 
@@ -1293,9 +1292,9 @@ var
 begin
   Assert(Owner is TGLFreeForm, 'Can only save FreeForms.');
 
-  OldDecimalSeparator := GetDecimalSeparator;
-  SetDecimalSeparator('.');
-    
+  OldDecimalSeparator := FormatSettings.DecimalSeparator;
+  FormatSettings.DecimalSeparator := '.';
+
   { Better not call anything that wants the system-locale intact
     from this block }
   try
@@ -1305,7 +1304,7 @@ begin
     WriteTexCoords;
     WriteFaceGroups;
   finally
-    SetDecimalSeparator(OldDecimalSeparator);
+    FormatSettings.DecimalSeparator := OldDecimalSeparator;
   end;
 end;
 

@@ -15,8 +15,7 @@ interface
 uses
   System.SysUtils,
   System.Classes,
-  System.SyncObjs,
-  VXS.CrossPlatform;
+  System.SyncObjs;
 
 const
   MaxListSize = Maxint div 16;

@@ -12,8 +12,7 @@ interface
 
 uses
   System.Classes,
-  Vcl.Graphics,
-  GLCrossPlatform;
+  Vcl.Graphics;
 
 {$DEFINE PRF_HACK_PASSES}
 

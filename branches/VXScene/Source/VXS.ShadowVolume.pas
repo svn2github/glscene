@@ -28,7 +28,6 @@ uses
   VXS.VectorGeometry,
   VXS.Context,
   VXS.Silhouette,
-  VXS.CrossPlatform,
   VXS.PersistentClasses,
   VXS.GeometryBB,
   VXS.Color,

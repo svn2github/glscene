@@ -16,7 +16,6 @@ uses
   System.Math,
 
   OpenGLTokens,
-  GLCrossPlatform,
   GLContext,
   GLGraphics,
   GLTextureFormat,

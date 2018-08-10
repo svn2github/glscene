@@ -220,7 +220,6 @@ implementation
 {$R *.res}
 
 uses
-  GLCrossPlatform,
   GLSceneForm,
   GLScene,
   GLCadencer,

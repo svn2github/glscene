@@ -20,7 +20,6 @@ uses
   GLContext,
   GLMaterial,
   GLObjects,
-  GLCrossPlatform,
   GLPersistentClasses,
   GLVectorLists,
   GLRenderContextInfo,

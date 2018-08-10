@@ -18,8 +18,7 @@ uses
   VXS.Context,
   VXS.Graphics,
   VXS.TextureFormat,
-  VXS.ApplicationFileIO,
-  VXS.CrossPlatform;
+  VXS.ApplicationFileIO;
 
 type
 

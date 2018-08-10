@@ -18,7 +18,6 @@ interface
 uses
   System.Classes,
   System.SysUtils,
-  GLCrossPlatform,
   GLStrings;
 
 type
@@ -1643,10 +1642,10 @@ var
   oldDc: Char;
 begin
   ReadLine(cVTInteger);
-  oldDc := GetDecimalSeparator;
-  SetDecimalSeparator('.');
+  oldDc := FormatSettings.DecimalSeparator;
+  FormatSettings.DecimalSeparator := '.';
   Result := StrToFloat(FData);
-  SetDecimalSeparator(oldDc);
+  FormatSettings.DecimalSeparator := oldDc;
 end;
 
 procedure TGLTextReader.ReadListBegin;

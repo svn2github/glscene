@@ -16,8 +16,7 @@ uses
   System.Math,
   
   GLVectorTypes,
-  GLVectorGeometry,
-  GLCrossPlatform;
+  GLVectorGeometry;
 
 procedure Float2rgbe(var RGBE: TVector4b; const Red, Green, Blue: Single);
 procedure Rgbe2float(var Red, Green, Blue: Single; const RGBE: TVector4b);

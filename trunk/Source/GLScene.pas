@@ -7286,7 +7286,7 @@ begin
   finally
     FRenderingContext.Deactivate;
   end;
-  Result := GLColor.RGB(buf[0], buf[1], buf[2]);
+  Result := RGB2Color(buf[0], buf[1], buf[2]);
 end;
 
 function TGLSceneBuffer.GetPixelDepth(x, y: Integer): Single;

@@ -14,8 +14,7 @@ uses
   System.SysUtils,
   
   VXS.Strings,
-  VXS.PersistentClasses,
-  VXS.CrossPlatform;
+  VXS.PersistentClasses;
 
 type
 

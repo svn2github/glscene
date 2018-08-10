@@ -25,7 +25,6 @@ uses
   GLBitmapFont,
   GLRenderContextInfo,
   GLVectorLists,
-  GLCrossPlatform,
   GLUtils,
   GLVectorGeometry,
   OpenGLTokens,

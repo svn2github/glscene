@@ -28,7 +28,6 @@ uses
   GLObjects,
   GLScene,
   GLCoordinates,
-  GLCrossPlatform,
   GLVectorGeometry,
   GLVectorLists,
   GLSpacePartition,

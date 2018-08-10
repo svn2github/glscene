@@ -19,7 +19,6 @@ uses
   GLTexture,
   GLStrings,
   GLCadencer,
-  GLCrossPlatform,
   GLContext,
   GLBaseClasses,
   GLRenderContextInfo,

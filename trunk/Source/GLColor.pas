@@ -96,7 +96,7 @@ type
   end;
 
 {Builds a TColor from Red Green Blue components. }
-function RGB(const r, g, b: Byte): TColor; {$NODEFINE RGB} inline;
+function RGB2Color(const r, g, b: Byte): TColor; inline;
 function ColorManager: TGLColorManager;
 procedure RegisterColor(const aName: String; const aColor: TColorVector);
 procedure UnRegisterColor(const aName: String);
@@ -372,7 +372,7 @@ var
   vColorManager: TGLColorManager;
 
 
-function RGB(const r, g, b: Byte): TColor;
+function RGB2Color(const r, g, b: Byte): TColor;
 begin
   Result := r or (g shl 8) or (b shl 16);
 end;
@@ -447,7 +447,7 @@ end;
 
 function ConvertColorVector(const aColor: TColorVector): TColor;
 begin
-  Result := RGB(Round(255 * aColor.X), Round(255 * aColor.Y),
+  Result := RGB2Color(Round(255 * aColor.X), Round(255 * aColor.Y),
     Round(255 * aColor.Z));
 end;
 
@@ -455,7 +455,7 @@ function ConvertColorVector(const aColor: TColorVector;
   intensity: Single): TColor;
 begin
   intensity := 255 * intensity;
-  Result := rgb(Round(intensity * aColor.X), Round(intensity * aColor.Y),
+  Result := RGB2Color(Round(intensity * aColor.X), Round(intensity * aColor.Y),
     Round(intensity * aColor.Z));
 end;
 

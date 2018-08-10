@@ -42,9 +42,6 @@ function ExponateCrap(root, exponant: Integer): Integer;
 implementation
 //-----------------------------------------------------------------
 
-uses
-  GLCrossPlatform;
-
 function ExponateCrap(root, exponant: Integer): Integer;
 var
   D: Extended;

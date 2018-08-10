@@ -19,7 +19,6 @@ uses
   VXS.VectorTypes,
   VXS.VectorFileObjects,
   VXS.Material,
-  VXS.CrossPlatform,
   VXS.VectorGeometry,
   VXS.VectorLists,
   VXS.Color,

@@ -30,7 +30,6 @@ uses
 
   GLVectorTypes,
   GLCoordinates,
-  GLCrossPlatform,
   GLHeightData,
   GLMaterial;
 

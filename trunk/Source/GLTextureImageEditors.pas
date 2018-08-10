@@ -60,7 +60,6 @@ implementation
 // ------------------------------------------------------------------------------
 
 uses
-  GLCrossPlatform,
   GLUtils;
 
 var

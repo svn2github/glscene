@@ -16,8 +16,7 @@ uses
   System.SysUtils,
    
   GLVectorGeometry, 
-  GLVectorTypes, 
-  GLCrossPlatform;
+  GLVectorTypes;
 
 const
   MAX_MD2_TRIANGLES = 4096;

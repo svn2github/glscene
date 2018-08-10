@@ -21,7 +21,6 @@ uses
   VXS.OpenGL,
   VXS.VectorTypes,
   VXS.VectorGeometry,
-  VXS.CrossPlatform,
   VXS.PersistentClasses,
   VXS.BaseClasses;
 
@@ -98,6 +97,9 @@ type
     procedure RemoveColor(const aName: String);
   end;
 
+{ Builds a TColor from Red Green Blue components,
+  there is a Vcl.Imaging.GIFImg.TGIFColorMap.RGB2Color }
+function RGB2Color(const r, g, b: Byte): TColor;
 function ColorManager: TVXColorManager;
 procedure RegisterColor(const aName: String; const aColor: TColorVector);
 procedure UnRegisterColor(const aName: String);
@@ -373,6 +375,11 @@ implementation
 var
   vColorManager: TVXColorManager;
 
+function RGB2Color(const r, g, b: Byte): TColor;
+begin
+  Result := r or (g shl 8) or (b shl 16);
+end;
+
 function ColorManager: TVXColorManager;
 begin
   if not Assigned(vColorManager) then
@@ -440,7 +447,7 @@ end;
 
 function ConvertColorVector(const aColor: TColorVector): TColor;
 begin
-  Result := RGB(Round(255 * aColor.X), Round(255 * aColor.Y),
+  Result := RGB2Color(Round(255 * aColor.X), Round(255 * aColor.Y),
     Round(255 * aColor.Z));
 end;
 
@@ -448,7 +455,7 @@ function ConvertColorVector(const aColor: TColorVector;
   intensity: Single): TColor;
 begin
   intensity := 255 * intensity;
-  Result := RGB(Round(intensity * aColor.X), Round(intensity * aColor.Y),
+  Result := RGB2Color(Round(intensity * aColor.X), Round(intensity * aColor.Y),
     Round(intensity * aColor.Z));
 end;
 

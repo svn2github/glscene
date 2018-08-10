@@ -11,9 +11,10 @@ interface
 uses
   System.UITypes,
   FMX.Graphics,
+
+  VXS.Color,
   VXS.VectorGeometry,
   VXS.VectorLists,
-  VXS.CrossPlatform,
   VXS.VectorTypes;
 
 type
@@ -177,7 +178,7 @@ begin
   r := Round(255 * (normal.X * 0.5 + 0.5));
   g := Round(255 * (normal.Y * 0.5 + 0.5));
   b := Round(255 * (normal.Z * 0.5 + 0.5));
-  Result := RGB(r, g, b);
+  Result := RGB2Color(r, g, b);
 end;
 
 procedure GetBlendCoeffs(X, Y, x1, y1, x2, y2, x3, y3: Integer; var f1, f2, f3: Single);

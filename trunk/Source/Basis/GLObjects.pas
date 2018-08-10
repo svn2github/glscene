@@ -28,7 +28,6 @@ uses
   OpenGLAdapter,
   OpenGLTokens,
   GLVectorLists,
-  GLCrossPlatform,
   GLPipelineTransformation,
   GLContext,
   GLSilhouette,

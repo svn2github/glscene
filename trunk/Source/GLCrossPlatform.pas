@@ -88,8 +88,6 @@ function GLOKMessageBox(const Text, Caption: string): Integer;
 procedure GLLoadBitmapFromInstance(Instance: LongInt; ABitmap: TBitmap; const AName: string);
 procedure ShowHTMLUrl(const Url: string);
 procedure SetExeDirectory;
-function GetDecimalSeparator: Char;
-procedure SetDecimalSeparator(AValue: Char);
 // StrUtils.pas
 function AnsiStartsText(const ASubText, AText: string): Boolean;
 // Classes.pas
@@ -389,16 +387,6 @@ begin
     path := IncludeTrailingPathDelimiter(path);
     SetCurrentDir(path);
   end;
-end;
-
-function GetDecimalSeparator: Char;
-begin
-  Result := FormatSettings.DecimalSeparator;
-end;
-
-procedure SetDecimalSeparator(AValue: Char);
-begin
-  FormatSettings.DecimalSeparator := AValue;
 end;
 
 function HalfToFloat(Half: THalfFloat): Single;

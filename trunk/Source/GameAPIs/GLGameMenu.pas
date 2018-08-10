@@ -20,7 +20,7 @@ uses
   GLCoordinates,
   GLMaterial,
   GLBitmapFont,
-  GLCrossPlatform,
+
   GLColor,
   GLRenderContextInfo,
   GLCanvas,

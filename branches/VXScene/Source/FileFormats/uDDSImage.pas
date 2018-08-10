@@ -27,7 +27,6 @@ uses
   FMX.Types,
   
   VXS.OpenGL,
-  VXS.CrossPlatform,
   VXS.VectorGeometry,
   VXS.Graphics,
   VXS.Context,

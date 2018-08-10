@@ -26,7 +26,6 @@ uses
   OpenGLTokens,
   GLScene,
   GLStrings,
-  GLCrossPlatform,
   GLContext,
   GLRenderContextInfo,
   GLMaterial,

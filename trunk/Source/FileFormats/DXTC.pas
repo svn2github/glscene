@@ -17,7 +17,6 @@ uses
    System.SysUtils,
    
    OpenGLTokens,
-   GLCrossPlatform,
    GLTextureFormat;
 
 const

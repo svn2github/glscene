@@ -17,7 +17,6 @@ uses
   OpenGLTokens,
   GLParticleFX,
   GLGraphics,
-  GLCrossPlatform,
   GLPerlinNoise3D,
   GLVectorGeometry;
 

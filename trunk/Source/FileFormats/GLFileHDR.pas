@@ -19,7 +19,6 @@ uses
   GLGraphics,
   GLTextureFormat,
   GLApplicationFileIO,
-  GLCrossPlatform,
   GLSRGBE,
   GLVectorTypes,
   GLVectorGeometry;

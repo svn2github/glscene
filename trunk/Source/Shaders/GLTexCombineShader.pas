@@ -23,7 +23,6 @@ uses
   GLState,
   XOpenGL,
   GLContext,
-  GLCrossPlatform,
   GLUtils;
 
 

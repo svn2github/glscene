@@ -21,7 +21,6 @@ uses
   OpenGLAdapter,
   GLPipelineTransformation,
   GLContext,
-  GLCrossPlatform,
   GLState,
   GLSLog,
   GLStrings,

@@ -21,7 +21,7 @@ uses
   VXS.VectorTypes,
   VXS.VectorGeometry,
   VXS.PersistentClasses,
-  VXS.CrossPlatform,
+//  VXS.CrossPlatform,
   VXS.Graphics,
   VXS.Color,
   VXS.RenderContextInfo,

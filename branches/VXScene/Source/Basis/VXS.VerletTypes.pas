@@ -22,7 +22,6 @@ uses
   VXS.Objects,
   VXS.Scene,
   VXS.Coordinates,
-  VXS.CrossPlatform,
   VXS.VectorGeometry,
   VXS.VectorLists,
   VXS.SpacePartition,

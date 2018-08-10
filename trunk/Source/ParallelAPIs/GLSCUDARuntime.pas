@@ -48,10 +48,7 @@ interface
 {$I Cuda.inc}
 
 uses
-{$IFDEF MSWINDOWS}
   Winapi.Windows,
-{$ENDIF}
-  GLCrossPlatform,
   GLSCUDAApi,
   GLSLog;
 
@@ -1045,9 +1042,13 @@ begin
   Result := (CUDARTHandle <> INVALID_MODULEHANDLE);
 end;
 
+//-----------------------------------------------
 initialization
+//-----------------------------------------------
 
+//-----------------------------------------------
 finalization
+//-----------------------------------------------
 
 CloseCUDART;
 

@@ -16,7 +16,6 @@ uses
   System.SysUtils,
   VCL.Imaging.pngimage,
   GLStrings,
-  GLCrossPlatform,
   OpenGLTokens,
   GLContext,
   GLGraphics,

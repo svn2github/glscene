@@ -15,7 +15,6 @@ uses
   System.Classes,
   
   GLScene,
-  GLCrossPlatform,
   GLBaseClasses,
   GLState,
   OpenGLTokens,

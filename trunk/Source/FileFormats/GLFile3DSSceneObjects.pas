@@ -26,7 +26,6 @@ uses
   GLVectorFileObjects,
   GLVectorTypes,
   GLPersistentClasses,
-  GLCrossPlatform,
   GLCoordinates,
   GLRenderContextInfo,
   GLState;

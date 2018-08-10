@@ -26,7 +26,6 @@ uses
   GLBSP,
   GLTexture,
   GLGraphics,
-  GLCrossPlatform,
   GLState,
   GLUtils,
   GLMaterial,

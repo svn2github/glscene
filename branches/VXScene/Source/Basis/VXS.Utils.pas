@@ -20,9 +20,9 @@ uses
   FMX.Controls,
   FMX.Dialogs,
 
-  VxS.VectorGeometry,
-  VxS.Strings,
-  VxS.CrossPlatform;
+  VXS.VectorGeometry,
+  VXS.Strings,
+  VXS.CrossPlatform;
 
 type
   EGLUtilsException = class(Exception);

@@ -1315,7 +1315,6 @@ implementation
 
 uses
   XOpenGL,
-  GLCrossPlatform,
   GLMeshUtils,
   GLState, GLUtils,
   GLBaseMeshSilhouette,

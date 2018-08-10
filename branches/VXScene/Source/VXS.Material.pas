@@ -2021,7 +2021,9 @@ end;
 
 procedure TVXLibMaterial.CalculateTextureMatrix;
 begin
-  if TextureOffset.Equals(NullHmgVector) and TextureScale.Equals(XYZHmgVector) and not StoreTextureRotate then
+  if TextureOffset.Equals(NullHmgVector) and
+     TextureScale.Equals(XYZHmgVector) and
+     not StoreTextureRotate then
     FTextureMatrixIsIdentity := True
   else
   begin

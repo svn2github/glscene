@@ -19,7 +19,6 @@ uses
   System.SysUtils,
   System.Types,
   VXS.Strings,
-  VXS.CrossPlatform,
   VXS.PersistentClasses
   {$IFDEF DEBUG_XCOLLECTION}, TypInfo {$ENDIF};
 

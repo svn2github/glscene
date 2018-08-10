@@ -23,7 +23,6 @@ uses
   OpenGLTokens,
   GLMaterial,
   GLContext,
-  GLCrossPlatform,
   GLColor,
   GLState,
   GLRenderContextInfo;

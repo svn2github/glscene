@@ -29,7 +29,6 @@ uses
   System.SysUtils,
   
   VXS.PersistentClasses,
-  VXS.CrossPlatform,
   VXS.Scene,
   VXS.Texture,
   VXS.VectorGeometry,
@@ -355,8 +354,8 @@ begin
 
   Shader := TVXProgramHandle.CreateAndAllocate;
 
-  OldSeparator := GetDecimalSeparator;
-  SetDecimalSeparator('.');
+  OldSeparator := FormatSettings.DecimalSeparator;
+  FormatSettings.DecimalSeparator := '.';
   vp := TStringlist.create;
   fp := TStringlist.create;
 
@@ -479,7 +478,7 @@ begin
     Shader.AddShader(TVXVertexShaderHandle, vp.Text, True);
     Shader.AddShader(TVXFragmentShaderHandle, fp.Text, True);
   finally
-    SetDecimalSeparator(OldSeparator);
+    FormatSettings.DecimalSeparator := OldSeparator;
     vp.free;
     fp.free;
   end;

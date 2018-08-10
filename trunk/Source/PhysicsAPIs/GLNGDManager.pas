@@ -31,8 +31,7 @@ uses
   GLBaseClasses,
   GLScene,
   GLManager,
-  GLCrossPlatform,
-  GLCoordinates, //
+  GLCoordinates,
   GLObjects,
   GLGeomObjects,
   GLVectorFileObjects, // cube cone freeform...

@@ -32,8 +32,7 @@ uses
   GLVectorTypes, 
   GLNavigator, 
   GLVectorGeometry,
-  GLCrossPlatform, 
-  GLCoordinates, 
+  GLCoordinates,
   GLScreen, 
   GLXCollection;
 

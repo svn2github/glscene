@@ -28,9 +28,9 @@ interface
 uses
   System.SysUtils,
   System.Classes,
+
   uTypes3DS,
-  VXS.ApplicationFileIO,
-  VXS.CrossPlatform;
+  VXS.ApplicationFileIO;
 
 type
   TFile3DS = class;
@@ -940,13 +940,13 @@ var
 
 begin
 
-  OldSeparator := GetDecimalSeparator;
-  SetDecimalSeparator('.');
+  OldSeparator := FormatSettings.DecimalSeparator;
+  FormatSettings.DecimalSeparator := '.';
   try
     if assigned(FDatabase.TopChunk) then
       DumpChunk(Self, Strings, FDatabase.TopChunk, 0, DumpLevel);
   finally
-  	SetDecimalSeparator(OldSeparator);
+  	FormatSettings.DecimalSeparator := OldSeparator;
   end;
 end;
 

@@ -15,7 +15,6 @@ uses
   System.SysUtils,
   System.Math,
 
-  VXS.CrossPlatform,
   VXS.VectorFileObjects,
   VXS.VectorTypes,
   VXS.Material,

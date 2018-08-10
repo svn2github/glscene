@@ -24,7 +24,6 @@ uses
   System.SysUtils,
   Vcl.Graphics,
    
-  GLCrossPlatform,
   GLVectorGeometry,
   GLGraphics,
   OpenGLTokens,

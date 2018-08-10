@@ -18,10 +18,9 @@ uses
   System.SysUtils,
   Vcl.Graphics,
 
-  GLCrossPlatform,
+  OpenGLTokens,
   GLVectorGeometry,
-  GLGraphics,
-  OpenGLTokens;
+  GLGraphics;
 
 type
 

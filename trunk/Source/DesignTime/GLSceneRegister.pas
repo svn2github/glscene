@@ -1678,7 +1678,7 @@ var
   LProject: IOTAProject;
   LExePath, LProjectPath, LSVN, LRevision: string;
 begin
-  LRevision := Copy(GLSCENE_REVISION, 12, 4);
+  LRevision := Copy(GLSCENE_REVISION, 18, 8);
 
   // will be assigned after project compilation
   // after each compilation get it from file \.svn\entries in 4-th line

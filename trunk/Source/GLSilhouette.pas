@@ -21,8 +21,7 @@ uses
 
   GLVectorTypes,
   GLVectorGeometry,
-  GLVectorLists,
-  GLCrossPlatform;
+  GLVectorLists;
 
 type
   TGLSilhouetteStyle = (ssOmni, ssParallel);

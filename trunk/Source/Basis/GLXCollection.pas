@@ -17,7 +17,6 @@ uses
   System.SysUtils,
   System.Types,
   GLStrings,
-  GLCrossPlatform,
   GLPersistentClasses
   {$IFDEF DEBUG_XCOLLECTION}, TypInfo {$ENDIF};
 

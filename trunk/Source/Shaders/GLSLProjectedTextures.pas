@@ -29,7 +29,6 @@ uses
   System.SysUtils,
 
   GLPipelineTransformation,
-  GLCrossPlatform,
   GLScene,
   GLPersistentClasses,
   GLTexture,
@@ -374,8 +373,8 @@ begin
 
   Shader := TGLProgramHandle.CreateAndAllocate;
 
-  OldSeparator := GetDecimalSeparator;
-  SetDecimalSeparator('.');
+  OldSeparator := FormatSettings.DecimalSeparator;
+  FormatSettings.DecimalSeparator := '.';
   vp := TStringlist.create;
   fp := TStringlist.create;
 
@@ -498,7 +497,7 @@ begin
     Shader.AddShader(TGLVertexShaderHandle, vp.Text, True);
     Shader.AddShader(TGLFragmentShaderHandle, fp.Text, True);
   finally
-    SetDecimalSeparator(OldSeparator);
+    FormatSettings.DecimalSeparator := OldSeparator;
     vp.free;
     fp.free;
   end;

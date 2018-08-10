@@ -78,7 +78,8 @@ implementation
 //-----------------------------------------------------------------------
 
 uses
-  GLCrossPlatform, GLSLog;
+  GLCrossPlatform,
+  GLSLog;
 
 { TGLLanguage }
 

@@ -28,7 +28,6 @@ uses
   VXS.MeshUtils,
   VXS.Utils,
   VXS.ApplicationFileIO,
-  VXS.CrossPlatform,
   VXS.PersistentClasses,
   VXS.VectorGeometry,
   VXS.Scene,
@@ -1250,8 +1249,8 @@ var
 begin
   Assert(Owner is TVXFreeForm, 'Can only save FreeForms.');
 
-  OldDecimalSeparator := GetDecimalSeparator;
-  SetDecimalSeparator('.');
+  OldDecimalSeparator := FormatSettings.DecimalSeparator;
+  FormatSettings.DecimalSeparator := '.';
 
   { Better not call anything that wants the system-locale intact
     from this block }
@@ -1262,7 +1261,7 @@ begin
     WriteTexCoords;
     WriteFaceGroups;
   finally
-    SetDecimalSeparator(OldDecimalSeparator);
+    FormatSettings.DecimalSeparator := OldDecimalSeparator;
   end;
 end;
 

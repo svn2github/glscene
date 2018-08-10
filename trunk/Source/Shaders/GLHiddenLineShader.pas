@@ -16,12 +16,11 @@ interface
 uses
   System.Classes,
    
-  GLMaterial, 
-  OpenGLTokens, 
-  GLCrossPlatform, 
-  GLScene, 
+  OpenGLTokens,
+  GLScene,
   GLColor,
-  GLBaseClasses, 
+  GLMaterial,
+  GLBaseClasses,
   GLRenderContextInfo, 
   GLState, 
   GLContext;

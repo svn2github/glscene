@@ -11,9 +11,6 @@ interface
 
 {$I VXScene.inc}
 
-uses
-  VXS.CrossPlatform;
-
 type
   T1DPerlinArray = array of Double;
   T2DPerlinArray = array of T1DPerlinArray;

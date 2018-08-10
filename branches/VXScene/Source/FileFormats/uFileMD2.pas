@@ -17,8 +17,7 @@ uses
   System.SysUtils,
   
   VXS.VectorGeometry,
-  VXS.VectorTypes,
-  VXS.CrossPlatform;
+  VXS.VectorTypes;
 
 const
   MAX_MD2_TRIANGLES = 4096;

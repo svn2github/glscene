@@ -21,6 +21,7 @@ uses
 
   OpenGLTokens,
   OpenGLAdapter,
+  GLCrossPlatform,
   GLContext,
   GLScene,
   GLWin32Viewer;
@@ -175,7 +176,7 @@ implementation
 // ------------------------------------------------------------------
 
 uses
-  GLCrossPlatform, 
+//  GLCrossPlatform,
   GLScreen, 
   GLWin32Context;
 
@@ -302,12 +303,9 @@ begin
     Width := Screen.Width;
     Height := Screen.Height;
     case GetCurrentColorDepth of
-      24:
-        ScreenDepth := sd24bits;
-      16:
-        ScreenDepth := sd16bits;
-      8:
-        ScreenDepth := sd8bits;
+      24: ScreenDepth := sd24bits;
+      16: ScreenDepth := sd16bits;
+      8:  ScreenDepth := sd8bits;
     else
       // highest depth possible otherwise
       ScreenDepth := sd32bits;

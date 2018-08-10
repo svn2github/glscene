@@ -20,8 +20,7 @@ uses
   GLVectorLists,
   GLVectorFileObjects,
   GLApplicationFileIO,
-  GLUtils, 
-  GLCrossPlatform;
+  GLUtils;
 
 type
   TSTLHeader = packed record

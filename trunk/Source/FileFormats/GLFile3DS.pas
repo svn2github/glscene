@@ -32,7 +32,6 @@ uses
   GLContext,
   GLPersistentClasses,
   GLFile3DSSceneObjects,
-  GLCrossPlatform,
   GLVectorTypes,
   GLVectorLists,
   GLRenderContextInfo,
