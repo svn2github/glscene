@@ -10,9 +10,9 @@ unit GLScreen;
 interface
 
 uses
+  Winapi.Windows,
   System.Classes,
   System.SysUtils,
-  Winapi.Windows,
   VCL.Forms,
 
   GLVectorGeometry;

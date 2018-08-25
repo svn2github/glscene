@@ -1051,3 +1051,4 @@ finalization
 vColorManager.Free;
 
 end.
+

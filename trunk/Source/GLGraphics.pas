@@ -33,7 +33,6 @@ uses
   GLContext,
   GLImageUtils,
   GLUtils,
-//  GLCrossPlatform,
   GLColor,
   GLTextureFormat,
   GLVectorGeometry,

@@ -61,8 +61,8 @@ type
 
 const
   cDefaultProxyOptions = [pooEffects, pooObjects, pooTransformation];
-  GLSCENE_REVISION = '$Revision: 7084$';
-  GLSCENE_VERSION = '1.6.0.%s';
+  GLSCENE_REVISION = '$Revision: 7145$';
+  GLSCENE_VERSION = '1.7.0.%s';
 
 type
 
@@ -73,7 +73,6 @@ type
   TGLObjectChange = (ocTransformation, ocAbsoluteMatrix, ocInvAbsoluteMatrix,
     ocStructure);
   TGLObjectChanges = set of TGLObjectChange;
-
   TObjectBBChange = (oBBcChild, oBBcStructure);
   TObjectBBChanges = set of TObjectBBChange;
 
@@ -81,7 +80,7 @@ type
   TGLSceneOperation = (soAdd, soRemove, soMove, soRename, soSelect, soBeginUpdate,
     soEndUpdate);
 
-  (*Options for the rendering context.
+  (* Options for the rendering context.
      roSoftwareMode: force software rendering.
      roDoubleBuffer: enables double-buffering.
      roRenderToWindows: ignored (legacy).
@@ -93,8 +92,7 @@ type
      roNoColorBufferClear: do not clear the color buffer automatically, if the
          whole viewer is fully repainted each frame, this can improve framerate
      roNoSwapBuffers: don't perform RenderingContext.SwapBuffers after rendering
-     roNoDepthBufferClear: do not clear the depth buffer automatically.
-       Useful for early-z culling.
+     roNoDepthBufferClear: do not clear the depth buffer automatically. Useful for early-z culling.
      roForwardContext: force OpenGL forward context *)
   TGLContextOption = (roSoftwareMode, roDoubleBuffer, roStencilBuffer,
     roRenderToWindow, roTwoSideLighting, roStereo,
@@ -124,13 +122,12 @@ type
   TGLObjectEffects = class;
   TGLSceneBuffer = class;
 
-  {Possible styles/options for a GLScene object.
-     Allowed styles are: 
-      osDirectDraw : object shall not make use of compiled call lists, but issue
+  {Possible styles/options for a GLScene object. Allowed styles are:
+   osDirectDraw : object shall not make use of compiled call lists, but issue
         direct calls each time a render should be performed.
-      osIgnoreDepthBuffer : object is rendered with depth test disabled,
+   osIgnoreDepthBuffer : object is rendered with depth test disabled,
         this is true for its children too.
-      osNoVisibilityCulling : whatever the VisibilityCulling setting,
+   osNoVisibilityCulling : whatever the VisibilityCulling setting,
         it will be ignored and the object rendered  }
   TGLObjectStyle = (
     osDirectDraw,
@@ -8096,8 +8093,6 @@ begin
 end;
 
 procedure TGLMemoryViewer.SetBufferCount(const Value: integer);
-//var
-//   MaxAxuBufCount : integer;
 const
   MaxAxuBufCount = 4; // Current hardware limit = 4
 begin
