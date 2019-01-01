@@ -86,6 +86,7 @@ object Form1: TForm1
     Buffer.BackgroundColor = 3881787
     Buffer.Lighting = False
     FieldOfView = 125.938278198242200000
+    PenAsTouch = False
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
     OnMouseUp = GLSceneViewer1MouseUp

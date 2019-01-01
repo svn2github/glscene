@@ -133,11 +133,10 @@ begin
   SetGLSceneMediaDir();
   GLMaterialLibrary1.TexturePaths := GetCurrentDir();
 
-
-//  GLTexture.Image.GetBitmap32(0).Assign(Bitmap32);
-//  GLTexture.Image.NotifyChange(self);
-//  Image32.Bitmap.LoadFromFile('GLScene.bmp');
-//  Cube1.Material.Texture.
+  GLTexture.Image.GetBitmap32(0).Assign(Bitmap32);
+  GLTexture.Image.NotifyChange(self);
+  Image32.Bitmap.LoadFromFile('GLScene.bmp');
+  Cube1.Material.Texture.
   Cube1.Material.Texture.Image.GetBitmap32.Assign(Image32.Bitmap);
   Cube1.Material.Texture.Image.NotifyChange(Self);
 
@@ -200,13 +199,10 @@ begin
   for Y := HeatMap.Height - 2 downto 2 do // do some kind of averaging
     for X := 2 to HeatMap.Width - 2 do
       case random(6) of
-        0:
-          HeatMap[X, Y] := (HeatMap[X - 1, Y + 1] + HeatMap[X + 1, Y + 1] + HeatMap[X - 2, Y + 2] + HeatMap[X + 1,
+        0: HeatMap[X, Y] := (HeatMap[X - 1, Y + 1] + HeatMap[X + 1, Y + 1] + HeatMap[X - 2, Y + 2] + HeatMap[X + 1,
             Y + 2]) div 4;
-        1:
-          HeatMap[X, Y] := (HeatMap[X - 1, Y + 1] + HeatMap[X - 2, Y + 1] + HeatMap[X + 1, Y - 1]) div 3;
-        2:
-          HeatMap[X, Y] := (HeatMap[X - 1, Y + 1] + HeatMap[X - 2, Y + 1] + HeatMap[X + 1, Y - 1]) div 4;
+        1: HeatMap[X, Y] := (HeatMap[X - 1, Y + 1] + HeatMap[X - 2, Y + 1] + HeatMap[X + 1, Y - 1]) div 3;
+        2: HeatMap[X, Y] := (HeatMap[X - 1, Y + 1] + HeatMap[X - 2, Y + 1] + HeatMap[X + 1, Y - 1]) div 4;
       else
         HeatMap[X, Y] := (HeatMap[X, Y] + HeatMap[X - 1, Y + 1] + HeatMap[X + 1, Y + 1] + HeatMap[X - 2, Y + 2] + HeatMap[X + 2,
           Y + 2]) div 5;

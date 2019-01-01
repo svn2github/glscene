@@ -1,14 +1,11 @@
-The release of GLScene v.1.7 on 
+The release of GLScene v.1.8 for 
 Embarcadero RAD Studio Delphi & C++Builder  
-for 10.0 Seattle, 10.1 Berlin, 10.2 Tokyo
-and Delphi Community Edition 10.2.3
+10.0 Seattle, 10.1 Berlin, 10.2 Tokyo
+and 10.3 Rio.
 
-Updated support for Win32/Win64 platforms
-for applications based on VCL library.
-Upgraded some components and units for isoline and isosurface 
-visualisation.
-Added GLScene's examples for Delphi & C++ Builder at 
-https://sourceforge.net/p/glscene/code/HEAD/tree/branches/examples, 
+This new version of GLScene includes many bug fixes
+and brings some improved features to use it in 3D OpenGL 
+Win32/Win64 applications based on VCL library.
 
 -------------------------------------------------
 GLS Team
